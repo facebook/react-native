@@ -34,20 +34,20 @@ void BaseTextShadowNode::buildAttributedString(
     auto rawTextShadowNode =
         dynamic_cast<const RawTextShadowNode*>(childNode.get());
     if (rawTextShadowNode != nullptr) {
-      auto fragment = AttributedString::Fragment{};
+      auto textFragment = AttributedString::TextFragment{};
       const auto& text = rawTextShadowNode->getConcreteProps().text;
 
       if (!text.empty()) {
-        fragment.string = text;
-        fragment.textAttributes = baseTextAttributes;
+        textFragment.string = text;
+        textFragment.textAttributes = baseTextAttributes;
 
         // Storing a retaining pointer to `ParagraphShadowNode` inside
         // `attributedString` causes a retain cycle (besides that fact that we
         // don't need it at all). Storing a `ShadowView` instance instead of
         // `ShadowNode` should properly fix this problem.
-        fragment.parentShadowView = shadowViewFromShadowNode(parentNode);
+        textFragment.parentShadowView = shadowViewFromShadowNode(parentNode);
 
-        outAttributedString.appendFragment(fragment);
+        outAttributedString.appendTextFragment(fragment);
       }
 
       continue;
@@ -68,12 +68,12 @@ void BaseTextShadowNode::buildAttributedString(
     }
 
     // Any *other* kind of ShadowNode
-    auto fragment = AttributedString::Fragment{};
-    fragment.string = AttributedString::Fragment::AttachmentCharacter();
-    fragment.parentShadowView = shadowViewFromShadowNode(*childNode);
-    fragment.textAttributes = baseTextAttributes;
+    auto textFragment = AttributedString::TextFragment{};
+    textFragment.string = AttributedString::TextFragment::AttachmentCharacter();
+    textFragment.parentShadowView = shadowViewFromShadowNode(*childNode);
+    textFragment.textAttributes = baseTextAttributes;
 
-    auto fragmentHandle = outAttributedString.appendFragment(fragment);
+    auto fragmentHandle = outAttributedString.appendTextFragment(textFragment);
     outAttachments.push_back(Attachment{childNode.get(), fragmentHandle});
   }
 }

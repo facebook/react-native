@@ -21,7 +21,7 @@ namespace facebook::react {
 
 TEST(ParagraphLocalDataTest, testSomething) {
   auto attributedString = AttributedString();
-  auto fragment = AttributedString::Fragment();
+  auto fragment = AttributedString::TextFragment();
   fragment.string = "test";
 
   auto text = TextAttributes();
@@ -32,7 +32,7 @@ TEST(ParagraphLocalDataTest, testSomething) {
   text.fontWeight = FontWeight::Thin;
   text.fontVariant = FontVariant::TabularNums;
   fragment.textAttributes = text;
-  attributedString.prependFragment(fragment);
+  attributedString.prependTextFragment(fragment);
 
   auto paragraphState = ParagraphState{};
   paragraphState.attributedString = attributedString;

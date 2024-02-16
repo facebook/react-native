@@ -17,7 +17,7 @@ namespace facebook::react {
 
 TEST(AttributedStringTest, testToDynamic) {
   auto attributedString = AttributedString{};
-  auto fragment = AttributedString::Fragment{};
+  auto fragment = AttributedString::TextFragment{};
   fragment.string = "test";
 
   auto text = TextAttributes{};
@@ -29,7 +29,7 @@ TEST(AttributedStringTest, testToDynamic) {
   text.fontVariant = FontVariant::TabularNums;
   fragment.textAttributes = text;
 
-  attributedString.appendFragment(fragment);
+  attributedString.appendTextFragment(fragment);
 
   auto result = toDynamic(attributedString);
   EXPECT_EQ(result["string"], fragment.string);

@@ -11,12 +11,12 @@
 
 namespace facebook::react {
 
-using Fragment = AttributedString::Fragment;
+using TextFragment = AttributedString::TextFragment;
 using Fragments = AttributedString::Fragments;
 
-#pragma mark - Fragment
+#pragma mark - TextFragment
 
-std::string Fragment::AttachmentCharacter() {
+std::string TextFragment::AttachmentCharacter() {
   // C++20 makes char8_t a distinct type from char, and u8 string literals
   // consist of char8_t instead of char, which in turn requires std::u8string,
   // etc. Here we were assuming char was UTF-8 anyway, so just cast to that
@@ -25,11 +25,11 @@ std::string Fragment::AttachmentCharacter() {
       u8"\uFFFC"); // Unicode `OBJECT REPLACEMENT CHARACTER`
 }
 
-bool Fragment::isAttachment() const {
+bool TextFragment::isAttachment() const {
   return string == AttachmentCharacter();
 }
 
-bool Fragment::operator==(const Fragment& rhs) const {
+bool TextFragment::operator==(const TextFragment& rhs) const {
   return std::tie(
              string,
              textAttributes,
@@ -42,34 +42,36 @@ bool Fragment::operator==(const Fragment& rhs) const {
              rhs.parentShadowView.layoutMetrics);
 }
 
-bool Fragment::isContentEqual(const Fragment& rhs) const {
+bool TextFragment::isContentEqual(const TextFragment& rhs) const {
   return std::tie(string, textAttributes) ==
       std::tie(rhs.string, rhs.textAttributes);
 }
 
-bool Fragment::operator!=(const Fragment& rhs) const {
+bool TextFragment::operator!=(const TextFragment& rhs) const {
   return !(*this == rhs);
 }
 
 #pragma mark - AttributedString
 
-AttributedString::FragmentHandle AttributedString::appendFragment(
-    const Fragment& fragment) {
+AttributedString::FragmentHandle AttributedString::appendTextFragment(
+    const TextFragment& textFragment) {
   ensureUnsealed();
 
-  fragments_.push_back(fragment);
+  if (!textFragment.string.empty()) {
+    fragments_.push_back(textFragment);
+  }
 
   return AttributedString::FragmentHandle{fragments_.size() - 1};
 }
 
-void AttributedString::prependFragment(const Fragment& fragment) {
+void AttributedString::prependTextFragment(const TextFragment& textFragment) {
   ensureUnsealed();
 
-  if (fragment.string.empty()) {
+  if (textFragment.string.empty()) {
     return;
   }
 
-  fragments_.insert(fragments_.begin(), fragment);
+  fragments_.insert(fragments_.begin(), textFragment);
 }
 
 void AttributedString::appendAttributedString(
@@ -98,20 +100,20 @@ Fragments& AttributedString::getFragments() {
   return fragments_;
 }
 
-Fragment& AttributedString::getFragment(
+TextFragment& AttributedString::getFragment(
     AttributedString::FragmentHandle handle) {
   return fragments_[handle.fragmentIndex];
 }
 
-const Fragment& AttributedString::getFragment(
+const TextFragment& AttributedString::getFragment(
     AttributedString::FragmentHandle handle) const {
   return fragments_[handle.fragmentIndex];
 }
 
 std::string AttributedString::getString() const {
   auto string = std::string{};
-  for (const auto& fragment : fragments_) {
-    string += fragment.string;
+  for (const auto& textFragment : fragments_) {
+    string += textFragment.string;
   }
   return string;
 }
@@ -148,13 +150,13 @@ bool AttributedString::isContentEqual(const AttributedString& rhs) const {
 SharedDebugStringConvertibleList AttributedString::getDebugChildren() const {
   auto list = SharedDebugStringConvertibleList{};
 
-  for (auto&& fragment : fragments_) {
+  for (auto&& textFragment : fragments_) {
     auto propsList =
-        fragment.textAttributes.DebugStringConvertible::getDebugProps();
+        textFragment.textAttributes.DebugStringConvertible::getDebugProps();
 
     list.push_back(std::make_shared<DebugStringConvertibleItem>(
-        "Fragment",
-        fragment.string,
+        "TextFragment",
+        textFragment.string,
         SharedDebugStringConvertibleList(),
         propsList));
   }

@@ -896,7 +896,8 @@ inline folly::dynamic toDynamic(const TextAttributes& textAttributes) {
   return _textAttributes;
 }
 
-inline folly::dynamic toDynamic(const AttributedString::Fragment& fragment) {
+inline folly::dynamic toDynamic(
+    const AttributedString::TextFragment& fragment) {
   folly::dynamic value = folly::dynamic::object();
 
   value["string"] = fragment.string;
@@ -939,13 +940,13 @@ constexpr static MapBuffer::Key AS_KEY_STRING = 1;
 constexpr static MapBuffer::Key AS_KEY_FRAGMENTS = 2;
 constexpr static MapBuffer::Key AS_KEY_CACHE_ID = 3;
 
-// constants for Fragment serialization
-constexpr static MapBuffer::Key FR_KEY_STRING = 0;
-constexpr static MapBuffer::Key FR_KEY_REACT_TAG = 1;
-constexpr static MapBuffer::Key FR_KEY_IS_ATTACHMENT = 2;
-constexpr static MapBuffer::Key FR_KEY_WIDTH = 3;
-constexpr static MapBuffer::Key FR_KEY_HEIGHT = 4;
-constexpr static MapBuffer::Key FR_KEY_TEXT_ATTRIBUTES = 5;
+// constants for TextFragment serialization
+constexpr static MapBuffer::Key TF_KEY_STRING = 0;
+constexpr static MapBuffer::Key TF_KEY_REACT_TAG = 1;
+constexpr static MapBuffer::Key TF_KEY_IS_ATTACHMENT = 2;
+constexpr static MapBuffer::Key TF_KEY_WIDTH = 3;
+constexpr static MapBuffer::Key TF_KEY_HEIGHT = 4;
+constexpr static MapBuffer::Key TF_KEY_TEXT_ATTRIBUTES = 5;
 
 // constants for Text Attributes serialization
 constexpr static MapBuffer::Key TA_KEY_FOREGROUND_COLOR = 0;
@@ -1138,23 +1139,23 @@ inline MapBuffer toMapBuffer(const TextAttributes& textAttributes) {
   return builder.build();
 }
 
-inline MapBuffer toMapBuffer(const AttributedString::Fragment& fragment) {
+inline MapBuffer toMapBuffer(const AttributedString::TextFragment& fragment) {
   auto builder = MapBufferBuilder();
 
-  builder.putString(FR_KEY_STRING, fragment.string);
+  builder.putString(TF_KEY_STRING, fragment.string);
   if (fragment.parentShadowView.componentHandle) {
-    builder.putInt(FR_KEY_REACT_TAG, fragment.parentShadowView.tag);
+    builder.putInt(TF_KEY_REACT_TAG, fragment.parentShadowView.tag);
   }
   if (fragment.isAttachment()) {
-    builder.putBool(FR_KEY_IS_ATTACHMENT, true);
+    builder.putBool(TF_KEY_IS_ATTACHMENT, true);
     builder.putDouble(
-        FR_KEY_WIDTH, fragment.parentShadowView.layoutMetrics.frame.size.width);
+        TF_KEY_WIDTH, fragment.parentShadowView.layoutMetrics.frame.size.width);
     builder.putDouble(
-        FR_KEY_HEIGHT,
+        TF_KEY_HEIGHT,
         fragment.parentShadowView.layoutMetrics.frame.size.height);
   }
   auto textAttributesMap = toMapBuffer(fragment.textAttributes);
-  builder.putMapBuffer(FR_KEY_TEXT_ATTRIBUTES, textAttributesMap);
+  builder.putMapBuffer(TF_KEY_TEXT_ATTRIBUTES, textAttributesMap);
 
   return builder.build();
 }

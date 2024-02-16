@@ -9,34 +9,34 @@ package com.facebook.react.views.text.fragments
 
 import com.facebook.react.common.mapbuffer.MapBuffer
 import com.facebook.react.views.text.TextAttributeProps
-import com.facebook.react.views.text.TextLayoutManagerMapBuffer.FR_KEY_HEIGHT
-import com.facebook.react.views.text.TextLayoutManagerMapBuffer.FR_KEY_IS_ATTACHMENT
-import com.facebook.react.views.text.TextLayoutManagerMapBuffer.FR_KEY_REACT_TAG
+import com.facebook.react.views.text.TextLayoutManagerMapBuffer.TF_KEY_HEIGHT
+import com.facebook.react.views.text.TextLayoutManagerMapBuffer.TF_KEY_IS_ATTACHMENT
+import com.facebook.react.views.text.TextLayoutManagerMapBuffer.TF_KEY_REACT_TAG
 import com.facebook.react.views.text.TextLayoutManagerMapBuffer.FR_KEY_STRING
-import com.facebook.react.views.text.TextLayoutManagerMapBuffer.FR_KEY_TEXT_ATTRIBUTES
-import com.facebook.react.views.text.TextLayoutManagerMapBuffer.FR_KEY_WIDTH
+import com.facebook.react.views.text.TextLayoutManagerMapBuffer.TF_KEY_TEXT_ATTRIBUTES
+import com.facebook.react.views.text.TextLayoutManagerMapBuffer.TF_KEY_WIDTH
 
 /** A [TextFragment] implementation backed by a [MapBuffer] */
 internal class MapBufferTextFragment(private val fragment: MapBuffer) : TextFragment {
   override val textAttributeProps: TextAttributeProps
-    get() = TextAttributeProps.fromMapBuffer(fragment.getMapBuffer(FR_KEY_TEXT_ATTRIBUTES.toInt()))
+    get() = TextAttributeProps.fromMapBuffer(fragment.getMapBuffer(TF_KEY_TEXT_ATTRIBUTES.toInt()))
 
   override val string: String
     get() = fragment.getString(FR_KEY_STRING.toInt())
 
-  override fun hasReactTag(): Boolean = fragment.contains(FR_KEY_REACT_TAG.toInt())
+  override fun hasReactTag(): Boolean = fragment.contains(TF_KEY_REACT_TAG.toInt())
 
   override val reactTag: Int
-    get() = fragment.getInt(FR_KEY_REACT_TAG.toInt())
+    get() = fragment.getInt(TF_KEY_REACT_TAG.toInt())
 
-  override fun hasIsAttachment(): Boolean = fragment.contains(FR_KEY_IS_ATTACHMENT.toInt())
+  override fun hasIsAttachment(): Boolean = fragment.contains(TF_KEY_IS_ATTACHMENT.toInt())
 
   override val isAttachment: Boolean
-    get() = fragment.getBoolean(FR_KEY_IS_ATTACHMENT.toInt())
+    get() = fragment.getBoolean(TF_KEY_IS_ATTACHMENT.toInt())
 
   override val width: Double
-    get() = fragment.getDouble(FR_KEY_WIDTH.toInt())
+    get() = fragment.getDouble(TF_KEY_WIDTH.toInt())
 
   override val height: Double
-    get() = fragment.getDouble(FR_KEY_HEIGHT.toInt())
+    get() = fragment.getDouble(TF_KEY_HEIGHT.toInt())
 }

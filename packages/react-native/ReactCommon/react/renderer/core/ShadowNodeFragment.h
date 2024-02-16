@@ -19,7 +19,7 @@ namespace facebook::react {
  * An object which supposed to be used as a parameter specifying a shape
  * of created or cloned ShadowNode.
  * Note: Most of the fields are `const &` references (essentially just raw
- * pointers) which means that the Fragment does not copy/store them nor
+ * pointers) which means that the TextFragment does not copy/store them nor
  * retain ownership of them.
  * Use `ShadowNodeFragment::Value` (see below) to create an owning copy of the
  * fragment content to store or pass the data asynchronously.

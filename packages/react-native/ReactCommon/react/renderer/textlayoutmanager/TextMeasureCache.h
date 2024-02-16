@@ -128,9 +128,9 @@ inline size_t textAttributesHashLayoutWise(
       textAttributes.alignment);
 }
 
-inline bool areAttributedStringFragmentsEquivalentLayoutWise(
-    const AttributedString::Fragment& lhs,
-    const AttributedString::Fragment& rhs) {
+inline bool areAttributedStringTextFragmentsEquivalentLayoutWise(
+    const AttributedString::TextFragment& lhs,
+    const AttributedString::TextFragment& rhs) {
   return lhs.string == rhs.string &&
       areTextAttributesEquivalentLayoutWise(
              lhs.textAttributes, rhs.textAttributes) &&
@@ -141,8 +141,8 @@ inline bool areAttributedStringFragmentsEquivalentLayoutWise(
         rhs.parentShadowView.layoutMetrics));
 }
 
-inline size_t attributedStringFragmentHashLayoutWise(
-    const AttributedString::Fragment& fragment) {
+inline size_t attributedStringTextFragmentHashLayoutWise(
+    const AttributedString::TextFragment& fragment) {
   // Here we are not taking `isAttachment` and `layoutMetrics` into account
   // because they are logically interdependent and this can break an invariant
   // between hash and equivalence functions (and cause cache misses).
@@ -162,7 +162,7 @@ inline bool areAttributedStringsEquivalentLayoutWise(
 
   auto size = lhsFragment.size();
   for (auto i = size_t{0}; i < size; i++) {
-    if (!areAttributedStringFragmentsEquivalentLayoutWise(
+    if (!areAttributedStringTextFragmentsEquivalentLayoutWise(
             lhsFragment.at(i), rhsFragment.at(i))) {
       return false;
     }
@@ -177,7 +177,7 @@ inline size_t attributedStringHashLayoutWise(
 
   for (const auto& fragment : attributedString.getFragments()) {
     facebook::react::hash_combine(
-        seed, attributedStringFragmentHashLayoutWise(fragment));
+        seed, attributedStringTextFragmentHashLayoutWise(fragment));
   }
 
   return seed;

@@ -30,7 +30,11 @@ using SharedAttributedString = std::shared_ptr<const AttributedString>;
  */
 class AttributedString : public Sealable, public DebugStringConvertible {
  public:
-  class Fragment {
+  /*
+   * A TextFragment represents a part of the AttributedString with its own set
+   * of attributes.
+   */
+  class TextFragment {
    public:
     static std::string AttachmentCharacter();
 
@@ -39,7 +43,7 @@ class AttributedString : public Sealable, public DebugStringConvertible {
     ShadowView parentShadowView;
 
     /*
-     * Returns true is the Fragment represents an attachment.
+     * Returns true is the TextFragment represents an attachment.
      * Equivalent to `string == AttachmentCharacter()`.
      */
     bool isAttachment() const;
@@ -48,10 +52,10 @@ class AttributedString : public Sealable, public DebugStringConvertible {
      * Returns whether the underlying text and attributes are equal,
      * disregarding layout or other information.
      */
-    bool isContentEqual(const Fragment& rhs) const;
+    bool isContentEqual(const TextFragment& rhs) const;
 
-    bool operator==(const Fragment& rhs) const;
-    bool operator!=(const Fragment& rhs) const;
+    bool operator==(const TextFragment& rhs) const;
+    bool operator!=(const TextFragment& rhs) const;
   };
 
   class FragmentHandle {
@@ -69,17 +73,18 @@ class AttributedString : public Sealable, public DebugStringConvertible {
     int length{0};
   };
 
-  using Fragments = std::vector<Fragment>;
+  using Fragments = std::vector<TextFragment>;
 
   /*
    * Appends a `fragment` to the string. Returns a handle to the added fragment.
    */
-  AttributedString::FragmentHandle appendFragment(const Fragment& fragment);
+  AttributedString::FragmentHandle appendTextFragment(
+      const TextFragment& fragment);
 
   /*
    * Prepends a `fragment` to the string (if that fragment is not empty).
    */
-  void prependFragment(const Fragment& fragment);
+  void prependTextFragment(const TextFragment& fragment);
 
   /*
    * Appends and prepends an `attributedString` (all its fragments) to
@@ -98,8 +103,8 @@ class AttributedString : public Sealable, public DebugStringConvertible {
    */
   Fragments& getFragments();
 
-  Fragment& getFragment(FragmentHandle handle);
-  const Fragment& getFragment(FragmentHandle handle) const;
+  TextFragment& getFragment(FragmentHandle handle);
+  const TextFragment& getFragment(FragmentHandle handle) const;
 
   /*
    * Returns a string constructed from all strings in all fragments.
@@ -130,9 +135,9 @@ class AttributedString : public Sealable, public DebugStringConvertible {
 
 namespace std {
 template <>
-struct hash<facebook::react::AttributedString::Fragment> {
+struct hash<facebook::react::AttributedString::TextFragment> {
   size_t operator()(
-      const facebook::react::AttributedString::Fragment& fragment) const {
+      const facebook::react::AttributedString::TextFragment& fragment) const {
     return facebook::react::hash_combine(
         fragment.string,
         fragment.textAttributes,

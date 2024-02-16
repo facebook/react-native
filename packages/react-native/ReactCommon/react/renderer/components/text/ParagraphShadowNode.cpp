@@ -150,7 +150,7 @@ Size ParagraphShadowNode::measureContent(
     auto textAttributes = TextAttributes::defaultTextAttributes();
     textAttributes.fontSizeMultiplier = layoutContext.fontSizeMultiplier;
     textAttributes.apply(getConcreteProps().textAttributes);
-    attributedString.appendFragment({string, textAttributes, {}});
+    attributedString.appendTextFragment({string, textAttributes, {}});
   }
 
   TextLayoutContext textLayoutContext{};

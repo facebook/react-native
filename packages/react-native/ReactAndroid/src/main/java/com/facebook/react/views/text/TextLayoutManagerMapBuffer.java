@@ -66,13 +66,13 @@ public class TextLayoutManagerMapBuffer {
   public static final short AS_KEY_FRAGMENTS = 2;
   public static final short AS_KEY_CACHE_ID = 3;
 
-  // constants for Fragment serialization
-  public static final short FR_KEY_STRING = 0;
-  public static final short FR_KEY_REACT_TAG = 1;
-  public static final short FR_KEY_IS_ATTACHMENT = 2;
-  public static final short FR_KEY_WIDTH = 3;
-  public static final short FR_KEY_HEIGHT = 4;
-  public static final short FR_KEY_TEXT_ATTRIBUTES = 5;
+  // constants for TextFragment serialization
+  public static final short TF_KEY_STRING = 0;
+  public static final short TF_KEY_REACT_TAG = 1;
+  public static final short TF_KEY_IS_ATTACHMENT = 2;
+  public static final short TF_KEY_WIDTH = 3;
+  public static final short TF_KEY_HEIGHT = 4;
+  public static final short TF_KEY_TEXT_ATTRIBUTES = 5;
 
   // constants for ParagraphAttributes serialization
   public static final short PA_KEY_MAX_NUMBER_OF_LINES = 0;
@@ -127,7 +127,7 @@ public class TextLayoutManagerMapBuffer {
     }
 
     MapBuffer fragment = fragments.getMapBuffer(0);
-    MapBuffer textAttributes = fragment.getMapBuffer(FR_KEY_TEXT_ATTRIBUTES);
+    MapBuffer textAttributes = fragment.getMapBuffer(TF_KEY_TEXT_ATTRIBUTES);
 
     if (!textAttributes.contains(TextAttributeProps.TA_KEY_LAYOUT_DIRECTION)) {
       return false;
@@ -155,17 +155,17 @@ public class TextLayoutManagerMapBuffer {
       int start = sb.length();
 
       TextAttributeProps textAttributes =
-          TextAttributeProps.fromMapBuffer(fragment.getMapBuffer(FR_KEY_TEXT_ATTRIBUTES));
+          TextAttributeProps.fromMapBuffer(fragment.getMapBuffer(TF_KEY_TEXT_ATTRIBUTES));
 
       sb.append(
-          TextTransform.apply(fragment.getString(FR_KEY_STRING), textAttributes.mTextTransform));
+          TextTransform.apply(fragment.getString(TF_KEY_STRING), textAttributes.mTextTransform));
 
       int end = sb.length();
       int reactTag =
-          fragment.contains(FR_KEY_REACT_TAG) ? fragment.getInt(FR_KEY_REACT_TAG) : View.NO_ID;
-      if (fragment.contains(FR_KEY_IS_ATTACHMENT) && fragment.getBoolean(FR_KEY_IS_ATTACHMENT)) {
-        float width = PixelUtil.toPixelFromSP(fragment.getDouble(FR_KEY_WIDTH));
-        float height = PixelUtil.toPixelFromSP(fragment.getDouble(FR_KEY_HEIGHT));
+          fragment.contains(TF_KEY_REACT_TAG) ? fragment.getInt(TF_KEY_REACT_TAG) : View.NO_ID;
+      if (fragment.contains(TF_KEY_IS_ATTACHMENT) && fragment.getBoolean(TF_KEY_IS_ATTACHMENT)) {
+        float width = PixelUtil.toPixelFromSP(fragment.getDouble(TF_KEY_WIDTH));
+        float height = PixelUtil.toPixelFromSP(fragment.getDouble(TF_KEY_HEIGHT));
         ops.add(
             new SetSpanOperation(
                 sb.length() - INLINE_VIEW_PLACEHOLDER.length(),

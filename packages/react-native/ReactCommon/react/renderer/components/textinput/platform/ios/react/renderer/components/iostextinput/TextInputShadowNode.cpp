@@ -48,7 +48,7 @@ AttributedStringBox TextInputShadowNode::attributedStringBoxToMeasure(
         : BaseTextShadowNode::getEmptyPlaceholder();
     auto textAttributes = getConcreteProps().getEffectiveTextAttributes(
         layoutContext.fontSizeMultiplier);
-    attributedString.appendFragment({string, textAttributes, {}});
+    attributedString.appendTextFragment({string, textAttributes, {}});
   }
 
   return AttributedStringBox{attributedString};
@@ -63,7 +63,7 @@ AttributedString TextInputShadowNode::getAttributedString(
   const auto& text = getConcreteProps().text;
 
   if (!text.empty()) {
-    attributedString.appendFragment(AttributedString::Fragment{
+    attributedString.appendTextFragment(AttributedString::Fragment{
         .string = text,
         .textAttributes = textAttributes,
         // TODO: Is this really meant to be by value?
