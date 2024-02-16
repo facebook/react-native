@@ -27,7 +27,8 @@ class JsiIntegrationTestGenericEngineAdapter : public RuntimeTargetDelegate {
 
   virtual std::unique_ptr<RuntimeAgentDelegate> createAgentDelegate(
       FrontendChannel frontendChannel,
-      SessionState& sessionState) override;
+      SessionState& sessionState,
+      const ExecutionContextDescription& executionContextDescription) override;
 
   jsi::Runtime& getRuntime() const noexcept;
 

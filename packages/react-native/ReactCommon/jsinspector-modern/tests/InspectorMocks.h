@@ -129,7 +129,9 @@ class MockRuntimeTargetDelegate : public RuntimeTargetDelegate {
   MOCK_METHOD(
       std::unique_ptr<RuntimeAgentDelegate>,
       createAgentDelegate,
-      (FrontendChannel channel, SessionState& sessionState),
+      (FrontendChannel channel,
+       SessionState& sessionState,
+       const ExecutionContextDescription&),
       (override));
 };
 
@@ -137,9 +139,11 @@ class MockRuntimeAgentDelegate : public RuntimeAgentDelegate {
  public:
   inline MockRuntimeAgentDelegate(
       FrontendChannel frontendChannel,
-      SessionState& sessionState)
+      SessionState& sessionState,
+      const ExecutionContextDescription& executionContextDescription)
       : frontendChannel(std::move(frontendChannel)),
-        sessionState(sessionState) {}
+        sessionState(sessionState),
+        executionContextDescription(executionContextDescription) {}
 
   // RuntimeAgentDelegate methods
   MOCK_METHOD(
@@ -150,6 +154,7 @@ class MockRuntimeAgentDelegate : public RuntimeAgentDelegate {
 
   const FrontendChannel frontendChannel;
   SessionState& sessionState;
+  const ExecutionContextDescription executionContextDescription;
 };
 
 } // namespace facebook::react::jsinspector_modern

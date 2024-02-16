@@ -146,7 +146,9 @@ class RN_EXPORT JSExecutor : public jsinspector_modern::RuntimeTargetDelegate {
   virtual std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate>
   createAgentDelegate(
       jsinspector_modern::FrontendChannel frontendChannel,
-      jsinspector_modern::SessionState& sessionState) override;
+      jsinspector_modern::SessionState& sessionState,
+      const jsinspector_modern::ExecutionContextDescription&
+          executionContextDescription) override;
 };
 
 } // namespace facebook::react

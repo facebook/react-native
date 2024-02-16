@@ -31,10 +31,11 @@ class PageTargetTest : public Test {
 
  protected:
   PageTargetTest() {
-    EXPECT_CALL(runtimeTargetDelegate_, createAgentDelegate(_, _))
-        .WillRepeatedly(
-            runtimeAgentDelegates_
-                .lazily_make_unique<FrontendChannel, SessionState&>());
+    EXPECT_CALL(runtimeTargetDelegate_, createAgentDelegate(_, _, _))
+        .WillRepeatedly(runtimeAgentDelegates_.lazily_make_unique<
+                        FrontendChannel,
+                        SessionState&,
+                        const ExecutionContextDescription&>());
   }
 
   void connect() {
@@ -443,7 +444,7 @@ TEST_F(PageTargetProtocolTest, MessageRoutingWhileNoRuntimeAgentDelegate) {
 TEST_F(PageTargetProtocolTest, InstanceWithNullRuntimeAgentDelegate) {
   InSequence s;
 
-  EXPECT_CALL(runtimeTargetDelegate_, createAgentDelegate(_, _))
+  EXPECT_CALL(runtimeTargetDelegate_, createAgentDelegate(_, _, _))
       .WillRepeatedly(ReturnNull());
 
   auto& instanceTarget = page_->registerInstance(instanceTargetDelegate_);
@@ -475,13 +476,20 @@ TEST_F(PageTargetProtocolTest, RuntimeAgentDelegateHasAccessToSessionState) {
   EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
                                                "id": 1,
                                                "result": {}
-                                             })")));
+                                             })")))
+      .RetiresOnSaturation();
   toPage_->sendMessage(R"({
                            "id": 1,
                            "method": "Runtime.enable"
                          })");
 
   auto& instanceTarget = page_->registerInstance(instanceTargetDelegate_);
+
+  EXPECT_CALL(
+      fromPage(),
+      onMessage(
+          JsonParsed(AtJsonPtr("/method", "Runtime.executionContextCreated"))))
+      .RetiresOnSaturation();
   instanceTarget.registerRuntime(runtimeTargetDelegate_, runtimeExecutor_);
   ASSERT_TRUE(runtimeAgentDelegates_[0]);
 

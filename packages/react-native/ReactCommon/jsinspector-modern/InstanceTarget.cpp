@@ -50,7 +50,15 @@ RuntimeTarget& InstanceTarget::registerRuntime(
     RuntimeExecutor jsExecutor) {
   assert(!currentRuntime_ && "Only one Runtime allowed");
   currentRuntime_ = RuntimeTarget::create(
-      delegate, jsExecutor, makeVoidExecutor(executorFromThis()));
+      ExecutionContextDescription{
+          // TODO: IDs should be unique within the current Page.
+          .id = 1,
+          .origin = "",
+          .name = "main",
+          .uniqueId = std::nullopt},
+      delegate,
+      jsExecutor,
+      makeVoidExecutor(executorFromThis()));
 
   agents_.forEach([currentRuntime = &*currentRuntime_](InstanceAgent& agent) {
     agent.setCurrentRuntime(currentRuntime);
