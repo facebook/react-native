@@ -19,10 +19,10 @@ const WORKSPACES_CONFIG = 'packages/*';
 /*::
 export type PackageJson = {
   name: string,
-  private?: boolean,
   version: string,
-  dependencies: Record<string, string>,
-  devDependencies: Record<string, string>,
+  private?: boolean,
+  dependencies?: Record<string, string>,
+  devDependencies?: Record<string, string>,
   ...
 };
 
@@ -31,17 +31,19 @@ type PackagesFilter = $ReadOnly<{
   includePrivate?: boolean,
 }>;
 
+export type PackageInfo = {
+  // The name of the package
+  name: string,
+
+  // The absolute path to the package
+  path: string,
+
+  // The parsed package.json contents
+  packageJson: PackageJson,
+};
+
 type ProjectInfo = {
-  [packageName: string]: {
-    // The name of the package
-    name: string,
-
-    // The absolute path to the package
-    path: string,
-
-    // The parsed package.json contents
-    packageJson: PackageJson,
-  },
+  [packageName: string]: PackageInfo,
 };
 */
 

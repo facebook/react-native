@@ -11,124 +11,92 @@
 
 'use strict';
 
-const forEachPackage = require('../../monorepo/for-each-package');
+/*::
+import type {PackageJson} from '../utils/monorepo';
+*/
+
+const {REACT_NATIVE_PACKAGE_DIR} = require('../../consts');
 const {updateGradleFile, updateSourceFiles} = require('../set-rn-version');
+const {getPackages} = require('../utils/monorepo');
 const {parseVersion} = require('../utils/version-utils');
-const {promises: fs, readFileSync} = require('fs');
+const {promises: fs} = require('fs');
 const path = require('path');
 const yargs = require('yargs');
 
-function getPublicPackages() {
-  // eslint-disable-next-line func-call-spacing
-  const packages = new Set /*::<string>*/();
-  forEachPackage(
-    (_, __, packageJson) => {
-      if (packageJson.private !== true) {
-        packages.add(packageJson.name);
-      }
-    },
-    {includeReactNative: true},
+const TEMPLATE_DIR = path.join(REACT_NATIVE_PACKAGE_DIR, 'template');
+
+async function updatePackages(
+  version /*: string */,
+  skipReactNativeVersion /*: boolean */,
+) {
+  const packages = await getPackages({
+    includePrivate: false,
+    includeReactNative: true,
+  });
+  const newPackageVersions = Object.fromEntries(
+    Object.keys(packages).map(packageName => [packageName, version]),
   );
-  return packages;
+  const templatePackageJson /*: PackageJson */ = JSON.parse(
+    await fs.readFile(path.join(TEMPLATE_DIR, 'package.json'), 'utf-8'),
+  );
+  const packagesToUpdate = [
+    ...Object.values(packages),
+    {
+      path: TEMPLATE_DIR,
+      packageJson: templatePackageJson,
+    },
+  ];
+
+  await Promise.all(
+    packagesToUpdate.map(({path: packagePath, packageJson}) =>
+      updatePackageJson(
+        packagePath,
+        packageJson,
+        newPackageVersions,
+        skipReactNativeVersion,
+      ),
+    ),
+  );
 }
 
-function updatePackages(
-  version /*: string */,
-  skipReactNativeVersion /*: ?boolean */,
-) {
-  const publicPackages = getPublicPackages();
-  const writes = [];
+async function updatePackageJson(
+  packagePath /*: string */,
+  packageJson /*: PackageJson */,
+  newPackageVersions /*: $ReadOnly<{[string]: string}> */,
+  skipReactNativeVersion /*: boolean */,
+) /*: Promise<void> */ {
+  const packageName = packageJson.name;
 
-  forEachPackage(
-    (packageAbsolutePath, _, packageJson) => {
-      if (packageJson.private === true) {
-        return;
+  if (
+    packageName in newPackageVersions &&
+    (!skipReactNativeVersion || packageName !== 'react-native')
+  ) {
+    packageJson.version = newPackageVersions[packageName];
+  }
+
+  for (const dependencyField of ['dependencies', 'devDependencies']) {
+    const deps = packageJson[dependencyField];
+
+    if (deps == null) {
+      continue;
+    }
+
+    for (const dependency of Object.keys(deps)) {
+      if (dependency === 'react-native' && skipReactNativeVersion) {
+        continue;
       }
 
-      if (
-        packageJson.name === 'react-native' &&
-        skipReactNativeVersion === true
-      ) {
-        // Don't set react-native's version if skipReactNativeVersion
-        // but still update its dependencies
-      } else {
-        packageJson.version = version;
+      if (dependency in newPackageVersions) {
+        deps[dependency] = newPackageVersions[dependency];
       }
+    }
+  }
 
-      if (packageJson.dependencies != null) {
-        for (const dependency of Object.keys(packageJson.dependencies)) {
-          if (publicPackages.has(dependency)) {
-            packageJson.dependencies[dependency] = version;
-          }
-        }
-      }
-
-      if (packageJson.devDependencies != null) {
-        for (const devDependency of Object.keys(packageJson.devDependencies)) {
-          if (publicPackages.has(devDependency)) {
-            packageJson.devDependencies[devDependency] = version;
-          }
-        }
-      }
-
-      writes.push(
-        fs.writeFile(
-          path.join(packageAbsolutePath, 'package.json'),
-          JSON.stringify(packageJson, null, 2) + '\n',
-          'utf-8',
-        ),
-      );
-
-      // Update template package.json
-      if (packageJson.name === 'react-native') {
-        const templatePackageJsonPath = path.join(
-          packageAbsolutePath,
-          'template',
-          'package.json',
-        );
-        const templatePackageJson = JSON.parse(
-          readFileSync(templatePackageJsonPath).toString(),
-        );
-        if (templatePackageJson.dependencies != null) {
-          for (const dependency of Object.keys(
-            templatePackageJson.dependencies,
-          )) {
-            if (
-              dependency === 'react-native' &&
-              skipReactNativeVersion === true
-            ) {
-              // Skip updating react-native version in template package.json
-              continue;
-            }
-
-            if (publicPackages.has(dependency)) {
-              templatePackageJson.dependencies[dependency] = version;
-            }
-          }
-        }
-
-        if (templatePackageJson.devDependencies != null) {
-          for (const devDependency of Object.keys(
-            templatePackageJson.devDependencies,
-          )) {
-            if (publicPackages.has(devDependency)) {
-              templatePackageJson.devDependencies[devDependency] = version;
-            }
-          }
-        }
-        writes.push(
-          fs.writeFile(
-            templatePackageJsonPath,
-            JSON.stringify(templatePackageJson, null, 2) + '\n',
-            'utf-8',
-          ),
-        );
-      }
-    },
-    {includeReactNative: true},
+  return fs.writeFile(
+    path.join(packagePath, 'package.json'),
+    JSON.stringify(packageJson, null, 2) + '\n',
+    'utf-8',
   );
-
-  return Promise.all(writes);
 }
 
 /**
@@ -146,14 +114,15 @@ function updatePackages(
  */
 async function setVersion(
   version /*: string */,
-  skipReactNativeVersion /*: ?boolean */,
+  skipReactNativeVersion /*: boolean */ = false,
 ) {
   const parsedVersion = parseVersion(version);
 
-  if (skipReactNativeVersion !== true) {
+  if (!skipReactNativeVersion) {
     await updateSourceFiles(parsedVersion);
     await updateGradleFile(parsedVersion.version);
   }
+
   await updatePackages(parsedVersion.version, skipReactNativeVersion);
 }
 
@@ -172,6 +141,7 @@ if (require.main === module) {
     .option('skip-react-native-version', {
       description: "Don't update the version of the react-native package",
       type: 'boolean',
+      default: false,
     })
     .parseSync();
   setVersion(toVersion, !!skipReactNativeVersion).then(
