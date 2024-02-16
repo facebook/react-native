@@ -41,12 +41,6 @@ const argv = yargs
     describe: 'all, components, or modules.',
     default: 'all',
   })
-  .option('c', {
-    alias: 'cxxModules',
-    describe:
-      'A colon separated list of modules name & modules header path, used to support CXX TurboModule linking.',
-    default: 'all',
-  })
   .usage('Usage: $0 <args>')
   .demandOption(
     ['platform', 'schemaPath', 'outputDir'],
@@ -61,7 +55,6 @@ function main() {
     argv.libraryName,
     argv.javaPackageName,
     argv.libraryType,
-    argv.cxxModules,
   );
 }
 
