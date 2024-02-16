@@ -37,12 +37,6 @@
     "jsSrcsDir": ".",
     "android": {
       "javaPackageName": "com.facebook.fbreact.specs"
-    },
-    "cxxModules": [
-      {
-        "name": "NativeCxxModuleExample",
-        "headerPath": "NativeCxxModuleExample.h"
-      }
-    ]
+    }
   }
 }
