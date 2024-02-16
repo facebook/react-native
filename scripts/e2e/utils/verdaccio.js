@@ -11,11 +11,11 @@
 
 'use strict';
 
+const {REPO_ROOT} = require('../../consts');
 const {execSync, spawn} = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-const REPO_ROOT = path.join(__dirname, '../../..');
 const NPM_CONFIG_PATH = path.join(REPO_ROOT, '.npmrc');
 const VERDACCIO_CONFIG_PATH = path.join(__dirname, '..', 'verdaccio.yml');
 const VERDACCIO_STORAGE_PATH = '/tmp/verdaccio';

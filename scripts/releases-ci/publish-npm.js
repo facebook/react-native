@@ -15,6 +15,7 @@
 import type {BuildType} from '../releases/utils/version-utils';
 */
 
+const {REPO_ROOT} = require('../consts');
 const {getNpmInfo, publishPackage} = require('../npm-utils');
 const {removeNewArchFlags} = require('../releases/remove-new-arch-flags');
 const {setReactNativeVersion} = require('../releases/set-rn-version');
@@ -26,8 +27,6 @@ const {
 } = require('../releases/utils/release-utils');
 const path = require('path');
 const yargs = require('yargs');
-
-const REPO_ROOT = path.resolve(__dirname, '../..');
 
 /**
  * This script prepares a release version of react-native and may publish to NPM.

@@ -21,6 +21,7 @@
  * --retries [num] - how many times to retry possible flaky commands: yarn add and running tests, default 1
  */
 
+const {REACT_NATIVE_PACKAGE_DIR, REPO_ROOT, SCRIPTS_DIR} = require('../consts');
 const forEachPackage = require('../monorepo/for-each-package');
 const tryExecNTimes = require('./utils/try-n-times');
 const {setupVerdaccio} = require('./utils/verdaccio');
@@ -29,10 +30,6 @@ const fs = require('fs');
 const path = require('path');
 const {cd, cp, echo, exec, exit, mv} = require('shelljs');
 const argv = require('yargs').argv;
-
-const SCRIPTS = path.join(__dirname, '..');
-const REPO_ROOT = path.join(__dirname, '../..');
-const REACT_NATIVE_PACKAGE_DIR = path.join(REPO_ROOT, 'packages/react-native');
 
 const REACT_NATIVE_TEMP_DIR = exec(
   'mktemp -d /tmp/react-native-XXXXXXXX',
@@ -150,7 +147,7 @@ try {
         'Failed to install appium. Most common reason is npm registry connectivity, try again.',
       );
     }
-    cp(`${SCRIPTS}/android-e2e-test.js`, 'android-e2e-test.js');
+    cp(`${SCRIPTS_DIR}/android-e2e-test.js`, 'android-e2e-test.js');
     cd('android');
     describe('Download Maven deps');
     exec('./gradlew :app:copyDownloadableDepsToLibs');

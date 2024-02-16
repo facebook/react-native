@@ -13,6 +13,7 @@
 import type {BuildType, Version} from './utils/version-utils';
 */
 
+const {REPO_ROOT} = require('../consts');
 const {applyPackageVersions} = require('../npm-utils');
 const {getNpmInfo} = require('../npm-utils');
 const updateTemplatePackage = require('./update-template-package');
@@ -21,7 +22,6 @@ const {parseArgs} = require('@pkgjs/parseargs');
 const {promises: fs} = require('fs');
 const path = require('path');
 
-const REPO_ROOT = path.join(path.dirname(__filename), '..', '..');
 const GRADLE_FILE_PATH = path.join(
   REPO_ROOT,
   'packages/react-native/ReactAndroid/gradle.properties',

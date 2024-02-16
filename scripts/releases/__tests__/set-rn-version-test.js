@@ -23,10 +23,9 @@ jest.mock('fs', () => ({
 }));
 jest.mock('./../update-template-package', () => updateTemplatePackageMock);
 
+const {REPO_ROOT} = require('../../consts');
 const {setReactNativeVersion} = require('../set-rn-version');
 const path = require('path');
-
-const REPO_ROOT = path.resolve(__filename, '../../../..');
 
 describe('setReactNativeVersion', () => {
   beforeAll(() => {
