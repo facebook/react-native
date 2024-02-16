@@ -16,6 +16,9 @@ export interface Spec extends TurboModule {
 
   +requestSession: (sessionId?: string) => Promise<void>;
   +endSession: () => Promise<void>;
+
+  +openWindow: (windowId: string, userInfo: Object) => Promise<void>;
+  +closeWindow: (windowId: string) => Promise<void>;
 }
 
 export default (TurboModuleRegistry.get<Spec>('XRModule'): ?Spec);

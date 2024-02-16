@@ -45,7 +45,7 @@ struct ImmersiveBridgeView: View {
   }
 }
 
-@objc public class ImmersiveBridgeFactory: NSObject {
+@objc public class SwiftUIBridgeFactory: NSObject {
   @objc public static func makeImmersiveBridgeView(
     spaceId: String,
     completionHandler: @escaping CompletionHandlerType

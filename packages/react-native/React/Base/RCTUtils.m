@@ -565,7 +565,17 @@ UIWindow *__nullable RCTKeyWindow(void)
   if (RCTRunningInAppExtension()) {
     return nil;
   }
-
+  
+  id<UIApplicationDelegate> delegate = RCTSharedApplication().delegate;
+  
+  SEL lastFocusedWindowSelector = NSSelectorFromString(@"lastFocusedWindow");
+  if ([delegate respondsToSelector:lastFocusedWindowSelector]) {
+    UIWindow *lastFocusedWindow = [delegate performSelector:lastFocusedWindowSelector];
+    if (lastFocusedWindow) {
+      return lastFocusedWindow;
+    }
+  }
+  
   for (UIScene *scene in RCTSharedApplication().connectedScenes) {
     if (scene.activationState != UISceneActivationStateForegroundActive ||
         ![scene isKindOfClass:[UIWindowScene class]]) {
@@ -580,12 +590,7 @@ UIWindow *__nullable RCTKeyWindow(void)
 #endif
     
     UIWindowScene *windowScene = (UIWindowScene *)scene;
-
-    for (UIWindow *window in windowScene.windows) {
-      if (window.isKeyWindow) {
-        return window;
-      }
-    }
+    return windowScene.keyWindow;
   }
 
   return nil;

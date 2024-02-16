@@ -22,11 +22,11 @@ public struct RCTRootViewRepresentable: UIViewControllerRepresentable {
     self.initialProps = initialProps
   }
   
-  public func makeUIViewController(context: Context) -> UIViewController {
+  public func makeUIViewController(context: Context) -> RCTReactViewController {
     RCTReactViewController(moduleName: moduleName, initProps: initialProps)
   }
   
-  public func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
+  public func updateUIViewController(_ uiViewController: RCTReactViewController, context: Context) {
     // noop
   }
 }

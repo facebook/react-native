@@ -32,9 +32,8 @@ const OpenXRSession = () => {
   };
 
   const closeXRSession = async () => {
-    if (isOpen) {
-      await XR.endSession();
-    }
+    await XR.endSession();
+    setIsOpen(false);
   };
 
   return (
@@ -42,6 +41,21 @@ const OpenXRSession = () => {
       <Text style={styles.title}>Is XR session open: {isOpen}</Text>
       <Button title="Open XR Session" onPress={openXRSession} />
       <Button title="Close XR Session" onPress={closeXRSession} />
+      <Button
+        title="Open Orange Window"
+        onPress={async () => {
+          await XR.openWindow('FirstWindow', {
+            backgroundColor: 'orange',
+            title: 'Orange RN Window',
+          });
+        }}
+      />
+      <Button
+        title="Close Window"
+        onPress={() => {
+          XR.closeWindow();
+        }}
+      />
     </View>
   );
 };
