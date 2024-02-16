@@ -13,15 +13,20 @@
 namespace facebook::react::jsinspector_modern {
 
 std::shared_ptr<InstanceTarget> InstanceTarget::create(
+    std::shared_ptr<ExecutionContextManager> executionContextManager,
     InstanceTargetDelegate& delegate,
     VoidExecutor executor) {
-  std::shared_ptr<InstanceTarget> instanceTarget{new InstanceTarget(delegate)};
+  std::shared_ptr<InstanceTarget> instanceTarget{
+      new InstanceTarget(executionContextManager, delegate)};
   instanceTarget->setExecutor(executor);
   return instanceTarget;
 }
 
-InstanceTarget::InstanceTarget(InstanceTargetDelegate& delegate)
-    : delegate_(delegate) {
+InstanceTarget::InstanceTarget(
+    std::shared_ptr<ExecutionContextManager> executionContextManager,
+    InstanceTargetDelegate& delegate)
+    : delegate_(delegate),
+      executionContextManager_(std::move(executionContextManager)) {
   (void)delegate_;
 }
 
@@ -51,8 +56,7 @@ RuntimeTarget& InstanceTarget::registerRuntime(
   assert(!currentRuntime_ && "Only one Runtime allowed");
   currentRuntime_ = RuntimeTarget::create(
       ExecutionContextDescription{
-          // TODO: IDs should be unique within the current Page.
-          .id = 1,
+          .id = executionContextManager_->allocateExecutionContextId(),
           .origin = "",
           .name = "main",
           .uniqueId = std::nullopt},

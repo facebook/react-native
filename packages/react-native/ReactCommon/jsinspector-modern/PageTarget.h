@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "ExecutionContextManager.h"
 #include "ScopedExecutor.h"
 #include "WeakList.h"
 
@@ -166,6 +167,10 @@ class JSINSPECTOR_EXPORT PageTarget
   PageTargetDelegate& delegate_;
   WeakList<PageTargetSession> sessions_;
   PageTargetController controller_{*this};
+  // executionContextManager_ is a shared_ptr to guarantee its validity while
+  // the InstanceTarget is alive (just in case the InstanceTarget ends up
+  // briefly outliving the PageTarget, which it generally shouldn't).
+  std::shared_ptr<ExecutionContextManager> executionContextManager_;
   std::shared_ptr<InstanceTarget> currentInstance_{nullptr};
 
   inline PageTargetDelegate& getDelegate() {
