@@ -211,12 +211,11 @@ TYPED_TEST(JsiIntegrationPortableTest, ExecutionContextNotifications) {
                                                    })")))
       .RetiresOnSaturation();
 
-  // TODO: Each new execution context should receive a new ID.
   EXPECT_CALL(this->fromPage(), onMessage(JsonEq(R"({
                                                      "method": "Runtime.executionContextCreated",
                                                      "params": {
                                                        "context": {
-                                                         "id": 1,
+                                                         "id": 2,
                                                          "origin": "",
                                                          "name": "main"
                                                        }
@@ -226,11 +225,10 @@ TYPED_TEST(JsiIntegrationPortableTest, ExecutionContextNotifications) {
   // Simulate a reload triggered by the app (not by the debugger).
   this->reload();
 
-  // TODO: Each new execution context should receive a new ID.
   EXPECT_CALL(this->fromPage(), onMessage(JsonEq(R"({
                                                      "method": "Runtime.executionContextDestroyed",
                                                      "params": {
-                                                       "executionContextId": 1
+                                                       "executionContextId": 2
                                                      }
                                                    })")))
       .RetiresOnSaturation();
@@ -239,12 +237,11 @@ TYPED_TEST(JsiIntegrationPortableTest, ExecutionContextNotifications) {
                                                      "method": "Runtime.executionContextsCleared"
                                                    })")))
       .RetiresOnSaturation();
-  // TODO: Each new execution context should receive a new ID.
   EXPECT_CALL(this->fromPage(), onMessage(JsonEq(R"({
                                                      "method": "Runtime.executionContextCreated",
                                                      "params": {
                                                        "context": {
-                                                         "id": 1,
+                                                         "id": 3,
                                                          "origin": "",
                                                          "name": "main"
                                                        }

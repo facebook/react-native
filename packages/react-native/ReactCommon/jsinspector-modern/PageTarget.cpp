@@ -107,7 +107,9 @@ std::shared_ptr<PageTarget> PageTarget::create(
   return pageTarget;
 }
 
-PageTarget::PageTarget(PageTargetDelegate& delegate) : delegate_(delegate) {}
+PageTarget::PageTarget(PageTargetDelegate& delegate)
+    : delegate_(delegate),
+      executionContextManager_{std::make_shared<ExecutionContextManager>()} {}
 
 std::unique_ptr<ILocalConnection> PageTarget::connect(
     std::unique_ptr<IRemoteConnection> connectionToFrontend,
@@ -132,8 +134,8 @@ PageTargetDelegate::~PageTargetDelegate() {}
 
 InstanceTarget& PageTarget::registerInstance(InstanceTargetDelegate& delegate) {
   assert(!currentInstance_ && "Only one instance allowed");
-  currentInstance_ =
-      InstanceTarget::create(delegate, makeVoidExecutor(executorFromThis()));
+  currentInstance_ = InstanceTarget::create(
+      executionContextManager_, delegate, makeVoidExecutor(executorFromThis()));
   sessions_.forEach(
       [currentInstance = &*currentInstance_](PageTargetSession& session) {
         session.setCurrentInstance(currentInstance);
