@@ -263,6 +263,11 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
   }
 }
 
+- (UIView *)paperView
+{
+  return _adapter.paperView;
+}
+
 #pragma mark - Native Commands
 
 - (void)handleCommand:(const NSString *)commandName args:(const NSArray *)args
