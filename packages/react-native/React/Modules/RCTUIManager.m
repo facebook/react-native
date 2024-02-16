@@ -374,7 +374,7 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
   if (!view) {
     view = _viewRegistry[reactTag];
   }
-  return view;
+  return [RCTUIManager paperViewOrCurrentView:view];
 }
 
 - (RCTShadowView *)shadowViewForReactTag:(NSNumber *)reactTag
@@ -1157,7 +1157,9 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand
 
     @try {
       for (RCTViewManagerUIBlock block in previousPendingUIBlocks) {
-        block(strongSelf, strongSelf->_viewRegistry);
+        RCTComposedViewRegistry *composedViewRegistry =
+            [[RCTComposedViewRegistry alloc] initWithUIManager:strongSelf andRegistry:strongSelf->_viewRegistry];
+        block(strongSelf, composedViewRegistry);
       }
     } @catch (NSException *exception) {
       RCTLogError(@"Exception thrown while executing UI block: %@", exception);
@@ -1639,6 +1641,19 @@ static UIView *_jsResponder;
   return _jsResponder;
 }
 
++ (UIView *)paperViewOrCurrentView:(UIView *)view
+{
+  if ([view respondsToSelector:@selector(paperView)]) {
+    return [view performSelector:@selector(paperView)];
+  }
+  return view;
+}
+
+- (void)removeViewFromRegistry:(NSNumber *)reactTag
+{
+  [_viewRegistry removeObjectForKey:reactTag];
+}
+
 @end
 
 @implementation RCTBridge (RCTUIManager)
@@ -1646,6 +1661,58 @@ static UIView *_jsResponder;
 - (RCTUIManager *)uiManager
 {
   return [self moduleForClass:[RCTUIManager class]];
+}
+
+@end
+
+@implementation RCTComposedViewRegistry {
+  __weak RCTUIManager *_uiManager;
+  NSDictionary<NSNumber *, UIView *> *_registry;
+}
+
+- (instancetype)initWithUIManager:(RCTUIManager *)uiManager andRegistry:(NSDictionary<NSNumber *, UIView *> *)registry
+{
+  self = [super init];
+  if (self) {
+    self->_uiManager = uiManager;
+    self->_registry = registry;
+  }
+  return self;
+}
+
+- (id)objectForKey:(id)key
+{
+  if (![key isKindOfClass:[NSNumber class]]) {
+    return [super objectForKeyedSubscript:key];
+  }
+
+  NSNumber *index = (NSNumber *)key;
+  UIView *view = [_uiManager viewForReactTag:index];
+  if (view) {
+    return [RCTUIManager paperViewOrCurrentView:view];
+  }
+  view = _registry[index];
+  if (view) {
+    return [RCTUIManager paperViewOrCurrentView:view];
+  }
+  return [super objectForKeyedSubscript:key];
+}
+
+- (void)removeObjectForKey:(id)key
+{
+  if (![key isKindOfClass:[NSNumber class]]) {
+    return [super removeObjectForKey:key];
+  }
+  NSNumber *tag = (NSNumber *)key;
+
+  if (_registry[key]) {
+    NSMutableDictionary *mutableRegistry = (NSMutableDictionary *)_registry;
+    [mutableRegistry removeObjectForKey:tag];
+  } else if ([_uiManager viewForReactTag:tag]) {
+    [_uiManager removeViewFromRegistry:tag];
+  } else {
+    [super removeObjectForKey:key];
+  }
 }
 
 @end

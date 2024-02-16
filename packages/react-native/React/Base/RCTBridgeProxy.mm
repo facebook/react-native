@@ -414,8 +414,9 @@ using namespace facebook;
 {
   [self logWarning:@"Please migrate to RCTViewRegistry: @synthesize viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED."
                cmd:_cmd];
-  return [_viewRegistry viewForReactTag:reactTag] ? [_viewRegistry viewForReactTag:reactTag]
-                                                  : [_legacyViewRegistry objectForKey:reactTag];
+  UIView *view = [_viewRegistry viewForReactTag:reactTag] ? [_viewRegistry viewForReactTag:reactTag]
+                                                          : [_legacyViewRegistry objectForKey:reactTag];
+  return [RCTUIManager paperViewOrCurrentView:view];
 }
 
 - (void)addUIBlock:(RCTViewManagerUIBlock)block
@@ -428,7 +429,11 @@ using namespace facebook;
   RCTExecuteOnMainQueue(^{
     __typeof(self) strongSelf = weakSelf;
     if (strongSelf) {
-      block((RCTUIManager *)strongSelf, strongSelf->_legacyViewRegistry);
+      RCTUIManager *proxiedManager = (RCTUIManager *)strongSelf;
+      RCTComposedViewRegistry *composedViewRegistry =
+          [[RCTComposedViewRegistry alloc] initWithUIManager:proxiedManager
+                                                 andRegistry:strongSelf->_legacyViewRegistry];
+      block(proxiedManager, composedViewRegistry);
     }
   });
 }
