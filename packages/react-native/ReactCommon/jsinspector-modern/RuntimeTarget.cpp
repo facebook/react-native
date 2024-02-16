@@ -10,19 +10,23 @@
 namespace facebook::react::jsinspector_modern {
 
 std::shared_ptr<RuntimeTarget> RuntimeTarget::create(
+    const ExecutionContextDescription& executionContextDescription,
     RuntimeTargetDelegate& delegate,
     RuntimeExecutor jsExecutor,
     VoidExecutor selfExecutor) {
   std::shared_ptr<RuntimeTarget> runtimeTarget{
-      new RuntimeTarget(delegate, jsExecutor)};
+      new RuntimeTarget(executionContextDescription, delegate, jsExecutor)};
   runtimeTarget->setExecutor(selfExecutor);
   return runtimeTarget;
 }
 
 RuntimeTarget::RuntimeTarget(
+    const ExecutionContextDescription& executionContextDescription,
     RuntimeTargetDelegate& delegate,
     RuntimeExecutor jsExecutor)
-    : delegate_(delegate), jsExecutor_(jsExecutor) {}
+    : executionContextDescription_(executionContextDescription),
+      delegate_(delegate),
+      jsExecutor_(jsExecutor) {}
 
 std::shared_ptr<RuntimeAgent> RuntimeTarget::createAgent(
     FrontendChannel channel,
@@ -30,8 +34,10 @@ std::shared_ptr<RuntimeAgent> RuntimeTarget::createAgent(
   auto runtimeAgent = std::make_shared<RuntimeAgent>(
       channel,
       *this,
+      executionContextDescription_,
       sessionState,
-      delegate_.createAgentDelegate(channel, sessionState));
+      delegate_.createAgentDelegate(
+          channel, sessionState, executionContextDescription_));
   agents_.insert(runtimeAgent);
   return runtimeAgent;
 }

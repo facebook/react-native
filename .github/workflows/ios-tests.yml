@@ -29,7 +29,9 @@ jobs:
         uses: actions/cache@v3
         with:
           path: packages/rn-tester/Pods
-          key: ${{ runner.os }}-RNTesterPods-${{ hashFiles('packages/rn-tester/Podfile.lock') }}-${{ hashFiles('packages/rn-tester/Podfile') }}
+          # NOTE: Sometimes we need to increment the cache version manually to pick up the latest Hermes API changes.
+          # This is hacky and needs to be fixed.
+          key: v1-${{ runner.os }}-RNTesterPods-${{ hashFiles('packages/rn-tester/Podfile.lock') }}-${{ hashFiles('packages/rn-tester/Podfile') }}
       - name: Pod Install
         run: |
           cd packages/rn-tester

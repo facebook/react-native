@@ -12,12 +12,14 @@ namespace facebook::react::jsinspector_modern {
 RuntimeAgent::RuntimeAgent(
     FrontendChannel frontendChannel,
     RuntimeTarget& target,
+    const ExecutionContextDescription& executionContextDescription,
     SessionState& sessionState,
     std::unique_ptr<RuntimeAgentDelegate> delegate)
     : frontendChannel_(std::move(frontendChannel)),
       target_(target),
       sessionState_(sessionState),
-      delegate_(std::move(delegate)) {
+      delegate_(std::move(delegate)),
+      executionContextDescription_(executionContextDescription) {
   (void)target_;
   (void)sessionState_;
 }
