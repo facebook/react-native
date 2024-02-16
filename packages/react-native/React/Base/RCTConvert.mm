@@ -439,7 +439,8 @@ RCT_ENUM_CONVERTER(
     mapping = temporaryMapping;
   });
 
-  UIKeyboardType type = RCTConvertEnumValue("UIKeyboardType", mapping, @(UIKeyboardTypeDefault), json).integerValue;
+  UIKeyboardType type =
+      (UIKeyboardType)RCTConvertEnumValue("UIKeyboardType", mapping, @(UIKeyboardTypeDefault), json).integerValue;
   return type;
 }
 
@@ -844,7 +845,7 @@ static UIColor *RCTColorFromSemanticColorName(NSString *semanticColorName)
     RCTAssert([UIColor respondsToSelector:selector], @"RCTUIColor does not respond to a semantic color selector.");
     Class klass = [UIColor class];
     IMP imp = [klass methodForSelector:selector];
-    id (*getSemanticColorObject)(id, SEL) = (void *)imp;
+    id (*getSemanticColorObject)(id, SEL) = (id(*)(id, SEL))imp;
     id colorObject = getSemanticColorObject(klass, selector);
     if ([colorObject isKindOfClass:[UIColor class]]) {
       color = colorObject;
