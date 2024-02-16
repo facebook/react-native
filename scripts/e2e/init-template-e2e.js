@@ -12,6 +12,7 @@
 'use strict';
 
 const {retry} = require('../circleci/retry');
+const {REPO_ROOT} = require('../consts');
 const forEachPackage = require('../monorepo/for-each-package');
 const {
   VERDACCIO_SERVER_URL,
@@ -21,9 +22,6 @@ const {
 const {parseArgs} = require('@pkgjs/parseargs');
 const chalk = require('chalk');
 const {execSync} = require('child_process');
-const path = require('path');
-
-const REPO_ROOT = path.resolve(__dirname, '../..');
 
 const config = {
   options: {

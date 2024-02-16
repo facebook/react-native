@@ -9,11 +9,11 @@
  * @oncall react_native
  */
 
+const {REPO_ROOT} = require('../../consts');
 const fs = require('fs');
 const glob = require('glob');
 const path = require('path');
 
-const REPO_ROOT = path.resolve(__dirname, '../../..');
 const WORKSPACES_CONFIG = 'packages/*';
 
 /*::

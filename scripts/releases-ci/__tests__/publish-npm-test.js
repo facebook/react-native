@@ -22,10 +22,9 @@ const getNpmInfoMock = jest.fn();
 const generateAndroidArtifactsMock = jest.fn();
 const getPackagesMock = jest.fn();
 
+const {REPO_ROOT} = require('../../consts');
 const {publishNpm} = require('../publish-npm');
 const path = require('path');
-
-const REPO_ROOT = path.resolve(__filename, '../../../..');
 
 let consoleLog;
 

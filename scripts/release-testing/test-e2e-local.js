@@ -17,6 +17,7 @@
  * and to make it more accessible for other devs to play around with.
  */
 
+const {REPO_ROOT} = require('../consts');
 const {initNewProjectFromSource} = require('../e2e/init-template-e2e');
 const updateTemplatePackage = require('../releases/update-template-package');
 const {
@@ -35,8 +36,6 @@ const yargs = require('yargs');
 /* ::
 type Unwrap<T> = T extends Promise<infer U> ? U : T;
 */
-
-const REPO_ROOT = path.resolve(__dirname, '../..');
 
 const argv = yargs
   .option('t', {

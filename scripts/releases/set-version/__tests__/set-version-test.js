@@ -11,6 +11,11 @@
 const setVersion = require('../index');
 const path = require('path');
 
+jest.mock('../../../consts', () => ({
+  REPO_ROOT: path.join(__dirname, '__fixtures__'),
+  PACKAGES_DIR: path.join(__dirname, '__fixtures__', 'packages'),
+}));
+
 let customWriteFileExpect = null;
 const writeFileMock = jest.fn().mockImplementation((filePath, content) => {
   if (customWriteFileExpect != null) {
@@ -32,15 +37,6 @@ describe('setVersion', () => {
   });
 
   beforeAll(() => {
-    jest.mock('path', () => {
-      // $FlowIgnore[underconstrained-implicit-instantiation]
-      const originalPath = jest.requireActual('path');
-      return {
-        ...originalPath,
-        dirname: () => originalPath.join(__dirname, '__fixtures__/two/levels'),
-      };
-    });
-
     jest.mock('fs', () => {
       // $FlowIgnore[underconstrained-implicit-instantiation]
       const originalFs = jest.requireActual('fs');
