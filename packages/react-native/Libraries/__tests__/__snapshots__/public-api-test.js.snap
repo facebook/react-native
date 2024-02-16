@@ -6372,10 +6372,7 @@ declare class PushNotificationIOS {
     type: PushNotificationEventName,
     handler: Function
   ): void;
-  static removeEventListener(
-    type: PushNotificationEventName,
-    handler: Function
-  ): void;
+  static removeEventListener(type: PushNotificationEventName): void;
   static requestPermissions(permissions?: {
     alert?: boolean,
     badge?: boolean,
