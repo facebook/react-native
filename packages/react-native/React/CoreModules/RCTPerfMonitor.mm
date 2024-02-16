@@ -171,15 +171,13 @@ RCT_EXPORT_MODULE()
 - (UIView *)container
 {
   if (!_container) {
-    CGSize statusBarSize = RCTUIStatusBarManager().statusBarFrame.size;
-    CGFloat statusBarHeight = statusBarSize.height;
-    _container = [[UIView alloc] initWithFrame:CGRectMake(10, statusBarHeight, 180, RCTPerfMonitorBarHeight)];
+    UIEdgeInsets safeInsets = RCTKeyWindow().safeAreaInsets;
+      
+    _container = [[UIView alloc] initWithFrame:CGRectMake(safeInsets.left, safeInsets.top, 180, RCTPerfMonitorBarHeight)];
     _container.layer.borderWidth = 2;
     _container.layer.borderColor = [UIColor lightGrayColor].CGColor;
     [_container addGestureRecognizer:self.gestureRecognizer];
     [_container addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tap)]];
-
-    _container.backgroundColor = [UIColor whiteColor];
 
     _container.backgroundColor = [UIColor systemBackgroundColor];
   }
