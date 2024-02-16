@@ -36,19 +36,17 @@ TEST(MapBufferTest, testSimpleLongMap) {
 
   builder.putLong(0, minInt64);
   builder.putLong(1, maxInt64);
-  builder.putLong(2, 9876543210123456789LL);
-  builder.putLong(3, -9876543210123456789LL);
-  builder.putLong(4, -1);
+  builder.putLong(2, 1125899906842623LL);
+  builder.putLong(3, -1125899906842623LL);
 
 
   auto map = builder.build();
 
-  EXPECT_EQ(map.count(), 2);
+  EXPECT_EQ(map.count(), 4);
   EXPECT_EQ(map.getLong(0), minInt64);
   EXPECT_EQ(map.getLong(1), maxInt64);
-  EXPECT_EQ(map.getLong(2), 9876543210123456789LL);
-  EXPECT_EQ(map.getLong(3), -9876543210123456789LL);
-  EXPECT_EQ(map.getLong(4), -1);
+  EXPECT_EQ(map.getLong(2), 1125899906842623LL);
+  EXPECT_EQ(map.getLong(3), -1125899906842623LL);
 }
 
 TEST(MapBufferTest, testMapBufferExtension) {
