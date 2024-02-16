@@ -43,7 +43,9 @@ class JSIRuntimeHolder : public JSRuntime {
   jsi::Runtime& getRuntime() noexcept override;
   std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate> createAgentDelegate(
       jsinspector_modern::FrontendChannel frontendChannel,
-      jsinspector_modern::SessionState& sessionState) override;
+      jsinspector_modern::SessionState& sessionState,
+      const jsinspector_modern::ExecutionContextDescription&
+          executionContextDescription) override;
 
   explicit JSIRuntimeHolder(std::unique_ptr<jsi::Runtime> runtime);
 

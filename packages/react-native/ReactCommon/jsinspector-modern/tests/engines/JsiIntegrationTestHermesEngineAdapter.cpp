@@ -22,10 +22,15 @@ JsiIntegrationTestHermesEngineAdapter::JsiIntegrationTestHermesEngineAdapter(
 std::unique_ptr<RuntimeAgentDelegate>
 JsiIntegrationTestHermesEngineAdapter::createAgentDelegate(
     FrontendChannel frontendChannel,
-    SessionState& sessionState) {
+    SessionState& sessionState,
+    const ExecutionContextDescription& executionContextDescription) {
   return std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate>(
       new HermesRuntimeAgentDelegate(
-          frontendChannel, sessionState, runtime_, getRuntimeExecutor()));
+          frontendChannel,
+          sessionState,
+          executionContextDescription,
+          runtime_,
+          getRuntimeExecutor()));
 }
 
 jsi::Runtime& JsiIntegrationTestHermesEngineAdapter::getRuntime()

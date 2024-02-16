@@ -65,6 +65,8 @@ class HermesRuntimeAgentDelegateAdapter
  */
 class HermesRuntimeAgentDelegate::Impl final : public RuntimeAgentDelegate {
   using HermesCDPHandler = hermes::inspector_modern::chrome::CDPHandler;
+  using HermesExecutionContextDescription =
+      hermes::inspector_modern::chrome::CDPHandlerExecutionContextDescription;
 
  public:
   /**
@@ -73,6 +75,10 @@ class HermesRuntimeAgentDelegate::Impl final : public RuntimeAgentDelegate {
    * \param sessionState The state of the current CDP session. This will only
    * be accessed on the main thread (during the constructor, in handleRequest,
    * etc).
+   * \param executionContextDescription A description of the execution context
+   * represented by this runtime. This is used for disambiguating the
+   * source/destination of CDP messages when there are multiple runtimes
+   * (concurrently or over the life of a Page).
    * \param runtime The HermesRuntime that this agent is attached to.
    * \param runtimeExecutor A callback for scheduling work on the JS thread.
    * \c runtimeExecutor may drop scheduled work if the runtime is destroyed
@@ -81,6 +87,7 @@ class HermesRuntimeAgentDelegate::Impl final : public RuntimeAgentDelegate {
   Impl(
       FrontendChannel frontendChannel,
       SessionState& sessionState,
+      const ExecutionContextDescription& executionContextDescription,
       std::shared_ptr<hermes::HermesRuntime> runtime,
       RuntimeExecutor runtimeExecutor)
       : hermes_(HermesCDPHandler::create(
@@ -90,7 +97,13 @@ class HermesRuntimeAgentDelegate::Impl final : public RuntimeAgentDelegate {
             /* waitForDebugger */ false,
             /* enableConsoleAPICapturing */ false,
             /* state */ nullptr,
-            {.isRuntimeDomainEnabled = sessionState.isRuntimeDomainEnabled})) {
+            {.isRuntimeDomainEnabled = sessionState.isRuntimeDomainEnabled},
+            HermesExecutionContextDescription{
+                .id = executionContextDescription.id,
+                .origin = executionContextDescription.origin,
+                .name = executionContextDescription.name,
+                .auxData = std::nullopt,
+                .shouldSendNotifications = false})) {
     hermes_->registerCallbacks(
         /* msgCallback */
         [frontendChannel =
@@ -142,6 +155,7 @@ class HermesRuntimeAgentDelegate::Impl final
   Impl(
       FrontendChannel frontendChannel,
       SessionState& sessionState,
+      const ExecutionContextDescription&,
       std::shared_ptr<hermes::HermesRuntime> runtime,
       RuntimeExecutor)
       : FallbackRuntimeAgentDelegate(
@@ -155,11 +169,13 @@ class HermesRuntimeAgentDelegate::Impl final
 HermesRuntimeAgentDelegate::HermesRuntimeAgentDelegate(
     FrontendChannel frontendChannel,
     SessionState& sessionState,
+    const ExecutionContextDescription& executionContextDescription,
     std::shared_ptr<hermes::HermesRuntime> runtime,
     RuntimeExecutor runtimeExecutor)
     : impl_(std::make_unique<Impl>(
           std::move(frontendChannel),
           sessionState,
+          executionContextDescription,
           std::move(runtime),
           std::move(runtimeExecutor))) {}
 

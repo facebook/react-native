@@ -174,6 +174,94 @@ TYPED_TEST(JsiIntegrationPortableTest, ErrorOnUnknownMethod) {
                                })");
 }
 
+TYPED_TEST(JsiIntegrationPortableTest, ExecutionContextNotifications) {
+  this->connect();
+
+  InSequence s;
+
+  EXPECT_CALL(this->fromPage(), onMessage(JsonEq(R"({
+                                                     "method": "Runtime.executionContextCreated",
+                                                     "params": {
+                                                       "context": {
+                                                         "id": 1,
+                                                         "origin": "",
+                                                         "name": "main"
+                                                       }
+                                                     }
+                                                   })")))
+      .RetiresOnSaturation();
+  EXPECT_CALL(this->fromPage(), onMessage(JsonEq(R"({
+                                                     "id": 1,
+                                                     "result": {}
+                                                   })")));
+  this->toPage_->sendMessage(R"({
+                                 "id": 1,
+                                 "method": "Runtime.enable"
+                               })");
+
+  EXPECT_CALL(this->fromPage(), onMessage(JsonEq(R"({
+                                                     "method": "Runtime.executionContextDestroyed",
+                                                     "params": {
+                                                       "executionContextId": 1
+                                                     }
+                                                   })")))
+      .RetiresOnSaturation();
+  EXPECT_CALL(this->fromPage(), onMessage(JsonEq(R"({
+                                                     "method": "Runtime.executionContextsCleared"
+                                                   })")))
+      .RetiresOnSaturation();
+
+  // TODO: Each new execution context should receive a new ID.
+  EXPECT_CALL(this->fromPage(), onMessage(JsonEq(R"({
+                                                     "method": "Runtime.executionContextCreated",
+                                                     "params": {
+                                                       "context": {
+                                                         "id": 1,
+                                                         "origin": "",
+                                                         "name": "main"
+                                                       }
+                                                     }
+                                                   })")))
+      .RetiresOnSaturation();
+  // Simulate a reload triggered by the app (not by the debugger).
+  this->reload();
+
+  // TODO: Each new execution context should receive a new ID.
+  EXPECT_CALL(this->fromPage(), onMessage(JsonEq(R"({
+                                                     "method": "Runtime.executionContextDestroyed",
+                                                     "params": {
+                                                       "executionContextId": 1
+                                                     }
+                                                   })")))
+      .RetiresOnSaturation();
+
+  EXPECT_CALL(this->fromPage(), onMessage(JsonEq(R"({
+                                                     "method": "Runtime.executionContextsCleared"
+                                                   })")))
+      .RetiresOnSaturation();
+  // TODO: Each new execution context should receive a new ID.
+  EXPECT_CALL(this->fromPage(), onMessage(JsonEq(R"({
+                                                     "method": "Runtime.executionContextCreated",
+                                                     "params": {
+                                                       "context": {
+                                                         "id": 1,
+                                                         "origin": "",
+                                                         "name": "main"
+                                                       }
+                                                     }
+                                                   })")))
+      .RetiresOnSaturation();
+  EXPECT_CALL(this->fromPage(), onMessage(JsonEq(R"({
+                                                     "id": 2,
+                                                     "result": {}
+                                                   })")))
+      .RetiresOnSaturation();
+  this->toPage_->sendMessage(R"({
+                                 "id": 2,
+                                 "method": "Page.reload"
+                               })");
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 TEST_F(JsiIntegrationHermesTest, EvaluateExpression) {
@@ -192,64 +280,6 @@ TEST_F(JsiIntegrationHermesTest, EvaluateExpression) {
                            "id": 1,
                            "method": "Runtime.evaluate",
                            "params": {"expression": "42"}
-                         })");
-}
-
-TEST_F(JsiIntegrationHermesTest, ExecutionContextNotifications) {
-  connect();
-
-  InSequence s;
-
-  // NOTE: This is the wrong sequence of responses from Hermes - the
-  // notification should come before the method response.
-  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
-                                             "id": 1,
-                                             "result": {}
-                                            })")));
-  EXPECT_CALL(
-      fromPage(),
-      onMessage(JsonParsed(
-          AllOf(AtJsonPtr("/method", Eq("Runtime.executionContextCreated"))))))
-      .RetiresOnSaturation();
-
-  toPage_->sendMessage(R"({
-                           "id": 1,
-                           "method": "Runtime.enable"
-                         })");
-
-  // NOTE: Missing a Runtime.executionContextDestroyed notification here.
-
-  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
-                                               "method": "Runtime.executionContextsCleared"
-                                             })")))
-      .RetiresOnSaturation();
-  EXPECT_CALL(
-      fromPage(),
-      onMessage(JsonParsed(
-          AllOf(AtJsonPtr("/method", Eq("Runtime.executionContextCreated"))))))
-      .RetiresOnSaturation();
-  // Simulate a reload triggered by the app (not by the debugger).
-  reload();
-
-  // NOTE: Missing a Runtime.executionContextDestroyed notification here.
-
-  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
-                                               "method": "Runtime.executionContextsCleared"
-                                             })")))
-      .RetiresOnSaturation();
-  EXPECT_CALL(
-      fromPage(),
-      onMessage(JsonParsed(
-          AllOf(AtJsonPtr("/method", Eq("Runtime.executionContextCreated"))))))
-      .RetiresOnSaturation();
-  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
-                                               "id": 2,
-                                               "result": {}
-                                             })")))
-      .RetiresOnSaturation();
-  toPage_->sendMessage(R"({
-                           "id": 2,
-                           "method": "Page.reload"
                          })");
 }
 

@@ -55,6 +55,8 @@ class InstanceAgent final {
   void setCurrentRuntime(RuntimeTarget* runtime);
 
  private:
+  void maybeSendExecutionContextCreatedNotification();
+
   FrontendChannel frontendChannel_;
   InstanceTarget& target_;
   std::shared_ptr<RuntimeAgent> runtimeAgent_;

@@ -26,6 +26,10 @@ class HermesRuntimeAgentDelegate : public RuntimeAgentDelegate {
    * \param sessionState The state of the current CDP session. This will only
    * be accessed on the main thread (during the constructor, in handleRequest,
    * etc).
+   * \param executionContextDescription A description of the execution context
+   * represented by this runtime. This is used for disambiguating the
+   * source/destination of CDP messages when there are multiple runtimes
+   * (concurrently or over the life of a Page).
    * \param runtime The HermesRuntime that this agent is attached to.
    * \param runtimeExecutor A callback for scheduling work on the JS thread.
    * \c runtimeExecutor may drop scheduled work if the runtime is destroyed
@@ -34,6 +38,7 @@ class HermesRuntimeAgentDelegate : public RuntimeAgentDelegate {
   HermesRuntimeAgentDelegate(
       FrontendChannel frontendChannel,
       SessionState& sessionState,
+      const ExecutionContextDescription& executionContextDescription,
       std::shared_ptr<hermes::HermesRuntime> runtime,
       RuntimeExecutor runtimeExecutor);
 

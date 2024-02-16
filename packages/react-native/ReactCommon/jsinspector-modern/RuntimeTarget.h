@@ -8,6 +8,8 @@
 #pragma once
 
 #include <ReactCommon/RuntimeExecutor.h>
+
+#include "ExecutionContext.h"
 #include "InspectorInterfaces.h"
 #include "RuntimeAgent.h"
 #include "ScopedExecutor.h"
@@ -43,7 +45,8 @@ class RuntimeTargetDelegate {
   virtual ~RuntimeTargetDelegate() = default;
   virtual std::unique_ptr<RuntimeAgentDelegate> createAgentDelegate(
       FrontendChannel channel,
-      SessionState& sessionState) = 0;
+      SessionState& sessionState,
+      const ExecutionContextDescription& executionContextDescription) = 0;
 };
 
 /**
@@ -55,9 +58,13 @@ class JSINSPECTOR_EXPORT RuntimeTarget
   /**
    * Constructs a new RuntimeTarget. The caller must call setExecutor
    * immediately afterwards.
-   * \param delegate The object that will receive events from this target.
-   * The caller is responsible for ensuring that the delegate outlives this
-   * object.
+   * \param executionContextDescription A description of the execution context
+   * represented by this runtime. This is used for disambiguating the
+   * source/destination of CDP messages when there are multiple runtimes
+   * (concurrently or over the life of a Page).
+   * \param delegate The object that will receive events from this target. The
+   * caller is responsible for
+   * ensuring that the delegate outlives this object.
    * \param jsExecutor A RuntimeExecutor that can be used to schedule work on
    * the JS runtime's thread. The executor's queue should be empty when
    * RuntimeTarget is constructed (i.e. anything scheduled during the
@@ -67,6 +74,7 @@ class JSINSPECTOR_EXPORT RuntimeTarget
    * executor will not be called after the RuntimeTarget is destroyed.
    */
   static std::shared_ptr<RuntimeTarget> create(
+      const ExecutionContextDescription& executionContextDescription,
       RuntimeTargetDelegate& delegate,
       RuntimeExecutor jsExecutor,
       VoidExecutor selfExecutor);
@@ -94,6 +102,10 @@ class JSINSPECTOR_EXPORT RuntimeTarget
   /**
    * Constructs a new RuntimeTarget. The caller must call setExecutor
    * immediately afterwards.
+   * \param executionContextDescription A description of the execution context
+   * represented by this runtime. This is used for disambiguating the
+   * source/destination of CDP messages when there are multiple runtimes
+   * (concurrently or over the life of a Page).
    * \param delegate The object that will receive events from this target.
    * The caller is responsible for ensuring that the delegate outlives this
    * object.
@@ -102,8 +114,12 @@ class JSINSPECTOR_EXPORT RuntimeTarget
    * RuntimeTarget is constructed (i.e. anything scheduled during the
    * constructor should be executed before any user code is run).
    */
-  RuntimeTarget(RuntimeTargetDelegate& delegate, RuntimeExecutor jsExecutor);
+  RuntimeTarget(
+      const ExecutionContextDescription& executionContextDescription,
+      RuntimeTargetDelegate& delegate,
+      RuntimeExecutor jsExecutor);
 
+  const ExecutionContextDescription executionContextDescription_;
   RuntimeTargetDelegate& delegate_;
   RuntimeExecutor jsExecutor_;
   WeakList<RuntimeAgent> agents_;

@@ -33,6 +33,10 @@ class RuntimeAgent final {
    * \param target The RuntimeTarget that this agent is attached to. The
    * caller is responsible for ensuring that the RuntimeTarget outlives this
    * object.
+   * \param executionContextDescription A description of the execution context
+   * represented by this runtime. This is used for disambiguating the
+   * source/destination of CDP messages when there are multiple runtimes
+   * (concurrently or over the life of a Page).
    * \param sessionState The state of the session that created this agent.
    * \param delegate The RuntimeAgentDelegate providing engine-specific
    * CDP functionality.
@@ -40,6 +44,7 @@ class RuntimeAgent final {
   RuntimeAgent(
       FrontendChannel frontendChannel,
       RuntimeTarget& target,
+      const ExecutionContextDescription& executionContextDescription,
       SessionState& sessionState,
       std::unique_ptr<RuntimeAgentDelegate> delegate);
 
@@ -55,11 +60,17 @@ class RuntimeAgent final {
    */
   bool handleRequest(const cdp::PreparsedRequest& req);
 
+  inline const ExecutionContextDescription& getExecutionContextDescription()
+      const {
+    return executionContextDescription_;
+  }
+
  private:
   FrontendChannel frontendChannel_;
   RuntimeTarget& target_;
   SessionState& sessionState_;
   const std::unique_ptr<RuntimeAgentDelegate> delegate_;
+  const ExecutionContextDescription executionContextDescription_;
 };
 
 } // namespace facebook::react::jsinspector_modern
