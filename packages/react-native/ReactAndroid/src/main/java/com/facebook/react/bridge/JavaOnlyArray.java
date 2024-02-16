@@ -163,7 +163,7 @@ public class JavaOnlyArray implements ReadableArray, WritableArray {
 
   @Override
   public void pushLong(long value) {
-    mBackingList.add(new Double(value));
+    mBackingList.add(value);
   }
 
   @Override
