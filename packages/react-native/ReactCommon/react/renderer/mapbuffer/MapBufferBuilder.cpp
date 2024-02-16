@@ -13,9 +13,9 @@ using namespace facebook::react;
 namespace facebook::react {
 
 constexpr uint32_t INT_SIZE = sizeof(uint32_t);
+constexpr uint32_t LONG_SIZE = sizeof(uint64_t);
 constexpr uint32_t DOUBLE_SIZE = sizeof(double);
 constexpr uint32_t MAX_BUCKET_VALUE_SIZE = sizeof(uint64_t);
-constexpr uint64_t LONG_SIZE = sizeof(uint64_t);
 
 MapBuffer MapBufferBuilder::EMPTY() {
   return MapBufferBuilder(0).build();
