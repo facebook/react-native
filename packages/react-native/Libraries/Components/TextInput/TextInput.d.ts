@@ -387,6 +387,13 @@ export interface TextInputAndroidProps {
   returnKeyLabel?: string | undefined;
 
   /**
+   * Sets the number of rows for a `TextInput`. Use it with multiline set to
+   * `true` to be able to fill the lines.
+   * @platform android
+   */
+  rows?: number | undefined,
+
+  /**
    * Set text break strategy on Android API Level 23+, possible values are simple, highQuality, balanced
    * The default value is simple.
    */
