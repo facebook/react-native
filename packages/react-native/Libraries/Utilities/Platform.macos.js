@@ -52,6 +52,10 @@ const Platform = {
     return false;
   },
   // $FlowFixMe[unsafe-getters-setters]
+  get isVision(): boolean {
+    return false;
+  },
+  // $FlowFixMe[unsafe-getters-setters]
   get isTesting(): boolean {
     if (__DEV__) {
       // $FlowFixMe[object-this-reference]
