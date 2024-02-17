@@ -447,7 +447,8 @@ RCT_EXPORT_MODULE()
 {
   [self loadPerformanceLoggerData];
   if (CGRectIsEmpty(_storedMonitorFrame)) {
-    _storedMonitorFrame = CGRectMake(0, 20, self.container.window.frame.size.width, RCTPerfMonitorExpandHeight);
+    UIEdgeInsets safeInsets = RCTKeyWindow().safeAreaInsets;
+    _storedMonitorFrame = CGRectMake(safeInsets.left, safeInsets.top, self.container.window.frame.size.width, RCTPerfMonitorExpandHeight);
     [self.container addSubview:self.metrics];
   } else {
     [_metrics reloadData];
