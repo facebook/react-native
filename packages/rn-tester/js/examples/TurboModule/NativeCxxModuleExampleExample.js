@@ -59,7 +59,8 @@ type Examples =
   | 'voidFunc'
   | 'setMenuItem'
   | 'optionalArgs'
-  | 'emitDeviceEvent';
+  | 'emitDeviceEvent'
+  | 'installGlobals';
 
 type ErrorExamples =
   | 'voidFuncThrows'
@@ -136,6 +137,19 @@ class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
         .then(() => {})
         .catch(e => this._setResult('rejectPromise', e.message)),
     voidFunc: () => NativeCxxModuleExample?.voidFunc(),
+    installGlobals: () => {
+      console.log(
+        'sammy',
+        'globals are undefined',
+        global.NativeCxxModuleExample$global,
+      );
+      NativeCxxModuleExample?.installGlobals();
+      console.log(
+        'sammy',
+        'globals are defined',
+        global.NativeCxxModuleExample$global,
+      );
+    },
     setMenuItem: () => {
       let curValue = '';
       NativeCxxModuleExample?.setMenu({

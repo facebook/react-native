@@ -99,6 +99,7 @@ export interface Spec extends TurboModule {
   +getValueWithPromise: (error: boolean) => Promise<string>;
   +getWithWithOptionalArgs: (optionalArg?: boolean) => ?boolean;
   +voidFunc: () => void;
+  +installGlobals: () => void;
   +setMenu: (menuItem: MenuItem) => void;
   +emitCustomDeviceEvent: (eventName: string) => void;
   +voidFuncThrows: () => void;

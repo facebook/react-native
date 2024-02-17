@@ -12,7 +12,13 @@ namespace facebook::react {
 
 NativeCxxModuleExample::NativeCxxModuleExample(
     std::shared_ptr<CallInvoker> jsInvoker)
-    : NativeCxxModuleExampleCxxSpec(std::move(jsInvoker)) {}
+    : NativeCxxModuleExampleCxxSpec(std::move(jsInvoker)) {
+  LOG(ERROR) << "[sammy] NativeCxxModuleExample::NativeCxxModuleExample";
+}
+
+NativeCxxModuleExample::~NativeCxxModuleExample() {
+  LOG(ERROR) << "[sammy] NativeCxxModuleExample::~NativeCxxModuleExample";
+}
 
 void NativeCxxModuleExample::getValueWithCallback(
     jsi::Runtime& rt,
@@ -166,7 +172,15 @@ std::optional<bool> NativeCxxModuleExample::getWithWithOptionalArgs(
 }
 
 void NativeCxxModuleExample::voidFunc(jsi::Runtime& rt) {
-  // Nothing to do
+  LOG(ERROR) << "[sammy] NativeCxxModuleExample::voidFunc";
+}
+
+void NativeCxxModuleExample::installGlobals(jsi::Runtime& rt) {
+  LOG(ERROR) << "[sammy] NativeCxxModuleExample::installBindings";
+  rt.global().setProperty(
+      rt,
+      "NativeCxxModuleExample$global",
+      jsi::String::createFromUtf8(rt, "my nice global"));
 }
 
 void NativeCxxModuleExample::setMenu(jsi::Runtime& rt, MenuItem menuItem) {

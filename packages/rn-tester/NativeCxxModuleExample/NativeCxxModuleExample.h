@@ -121,6 +121,7 @@ class NativeCxxModuleExample
     : public NativeCxxModuleExampleCxxSpec<NativeCxxModuleExample> {
  public:
   NativeCxxModuleExample(std::shared_ptr<CallInvoker> jsInvoker);
+  ~NativeCxxModuleExample();
 
   void getValueWithCallback(
       jsi::Runtime& rt,
@@ -182,6 +183,8 @@ class NativeCxxModuleExample
       std::optional<bool> optionalArg);
 
   void voidFunc(jsi::Runtime& rt);
+
+  void installGlobals(jsi::Runtime& rt);
 
   void setMenu(jsi::Runtime& rt, MenuItem menuItem);
 
