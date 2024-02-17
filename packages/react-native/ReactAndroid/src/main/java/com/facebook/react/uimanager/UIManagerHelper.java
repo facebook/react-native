@@ -17,7 +17,6 @@ import android.widget.EditText;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 import com.facebook.react.bridge.CatalystInstance;
-import com.facebook.react.bridge.JSIModuleType;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
@@ -53,7 +52,7 @@ public class UIManagerHelper {
       @UIManagerType int uiManagerType,
       boolean returnNullIfCatalystIsInactive) {
     if (context.isBridgeless()) {
-      @Nullable UIManager uiManager = (UIManager) context.getJSIModule(JSIModuleType.UIManager);
+      @Nullable UIManager uiManager = context.getFabricUIManager();
       if (uiManager == null) {
         ReactSoftExceptionLogger.logSoftException(
             TAG,
@@ -85,7 +84,7 @@ public class UIManagerHelper {
     CatalystInstance catalystInstance = context.getCatalystInstance();
     try {
       return uiManagerType == FABRIC
-          ? (UIManager) catalystInstance.getJSIModule(JSIModuleType.UIManager)
+          ? context.getFabricUIManager()
           : catalystInstance.getNativeModule(UIManagerModule.class);
     } catch (IllegalArgumentException ex) {
       // TODO T67518514 Clean this up once we migrate everything over to bridgeless mode
@@ -206,7 +205,7 @@ public class UIManagerHelper {
    * @return the default padding used by Android EditText's. This method returns the padding in an
    *     array to avoid extra classloading during hot-path of RN Android.
    */
-  public static float[] getDefaultTextInputPadding(ThemedReactContext context) {
+  public static float[] getDefaultTextInputPadding(Context context) {
     EditText editText = new EditText(context);
     float[] padding = new float[4];
     padding[PADDING_START_INDEX] = PixelUtil.toDIPFromPixel(ViewCompat.getPaddingStart(editText));

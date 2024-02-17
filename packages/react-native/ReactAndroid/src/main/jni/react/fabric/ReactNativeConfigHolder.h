@@ -15,7 +15,7 @@
 namespace facebook::react {
 
 /**
- * Implementation of ReactNativeConfig that wraps a FabricMobileConfig Java
+ * Implementation of ReactNativeConfig that wraps a ReactNativeConfig Java
  * object.
  */
 class ReactNativeConfigHolder : public ReactNativeConfig {
@@ -23,10 +23,10 @@ class ReactNativeConfigHolder : public ReactNativeConfig {
   explicit ReactNativeConfigHolder(jni::alias_ref<jobject> reactNativeConfig)
       : reactNativeConfig_(make_global(reactNativeConfig)){};
 
-  bool getBool(const std::string &param) const override;
-  std::string getString(const std::string &param) const override;
-  int64_t getInt64(const std::string &param) const override;
-  double getDouble(const std::string &param) const override;
+  bool getBool(const std::string& param) const override;
+  std::string getString(const std::string& param) const override;
+  int64_t getInt64(const std::string& param) const override;
+  double getDouble(const std::string& param) const override;
 
  private:
   jni::global_ref<jobject> reactNativeConfig_;

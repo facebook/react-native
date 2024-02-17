@@ -68,10 +68,7 @@ class GenerateCodegenSchemaTaskTest {
     assertEquals(jsRootDir, task.jsInputFiles.dir)
     assertEquals(
         setOf(
-            "**/build/ASSETS/**/*",
-            "**/build/RES/**/*",
-            "**/build/generated/**/*",
-            "**/build/intermediates/**/*",
+            "**/build/**/*",
         ),
         task.jsInputFiles.excludes)
     assertEquals(1, task.jsInputFiles.files.size)
@@ -148,6 +145,8 @@ class GenerateCodegenSchemaTaskTest {
             File(codegenDir, "lib/cli/combine/combine-js-to-schema-cli.js").toString(),
             "--platform",
             "android",
+            "--exclude",
+            "NativeSampleTurboModule",
             File(outputDir, "schema.json").toString(),
             jsRootDir.toString(),
         ),
@@ -183,6 +182,8 @@ class GenerateCodegenSchemaTaskTest {
                 .path,
             "--platform",
             "android",
+            "--exclude",
+            "NativeSampleTurboModule",
             File(outputDir, "schema.json").relativeTo(project.projectDir).path,
             jsRootDir.relativeTo(project.projectDir).path,
         ),

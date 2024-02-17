@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
+import type {ElementsHierarchy, InspectedElement} from './Inspector';
 
 import SafeAreaView from '../Components/SafeAreaView/SafeAreaView';
 
@@ -34,22 +34,10 @@ type Props = $ReadOnly<{|
   setTouchTargeting: (val: boolean) => void,
   networking: boolean,
   setNetworking: (val: boolean) => void,
-  hierarchy?: ?Array<{|name: string|}>,
+  hierarchy?: ?ElementsHierarchy,
   selection?: ?number,
   setSelection: number => mixed,
-  inspected?: ?$ReadOnly<{|
-    style?: ?ViewStyleProp,
-    frame?: ?$ReadOnly<{|
-      top?: ?number,
-      left?: ?number,
-      width?: ?number,
-      height: ?number,
-    |}>,
-    source?: ?{|
-      fileName?: string,
-      lineNumber?: number,
-    |},
-  |}>,
+  inspected?: ?InspectedElement,
 |}>;
 
 class InspectorPanel extends React.Component<Props> {
@@ -70,8 +58,6 @@ class InspectorPanel extends React.Component<Props> {
           <ElementProperties
             style={this.props.inspected.style}
             frame={this.props.inspected.frame}
-            source={this.props.inspected.source}
-            // $FlowFixMe[incompatible-type] : Hierarchy should be non-nullable
             hierarchy={this.props.hierarchy}
             selection={this.props.selection}
             setSelection={this.props.setSelection}

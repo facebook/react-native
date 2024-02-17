@@ -9,6 +9,7 @@
 
 #import <React/RCTBridgeDelegate.h>
 #import <React/RCTBridgeModule.h>
+#import <React/RCTBridgeModuleDecorator.h>
 #import <React/RCTDefines.h>
 #import <React/RCTFrameUpdate.h>
 #import <React/RCTInvalidating.h>
@@ -30,43 +31,55 @@
  */
 typedef NSArray<id<RCTBridgeModule>> * (^RCTBridgeModuleListProvider)(void);
 
-/**
- * These blocks are used to report whether an additional bundle
- * fails or succeeds loading.
- */
-typedef void (^RCTLoadAndExecuteErrorBlock)(NSError *error);
+RCT_EXTERN_C_BEGIN
 
 /**
  * This function returns the module name for a given class.
  */
-RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
+NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
 
 /**
  * Experimental.
  * Check/set if JSI-bound NativeModule is enabled. By default it's off.
  */
-RCT_EXTERN BOOL RCTTurboModuleEnabled(void);
-RCT_EXTERN void RCTEnableTurboModule(BOOL enabled);
-
-// Turn on TurboModule eager initialization
-RCT_EXTERN BOOL RCTTurboModuleEagerInitEnabled(void);
-RCT_EXTERN void RCTEnableTurboModuleEagerInit(BOOL enabled);
-
-// Turn off TurboModule delegate locking
-RCT_EXTERN BOOL RCTTurboModuleManagerDelegateLockingDisabled(void);
-RCT_EXTERN void RCTDisableTurboModuleManagerDelegateLocking(BOOL enabled);
+BOOL RCTTurboModuleEnabled(void);
+void RCTEnableTurboModule(BOOL enabled);
 
 // Turn on TurboModule interop
-RCT_EXTERN BOOL RCTTurboModuleInteropEnabled(void);
-RCT_EXTERN void RCTEnableTurboModuleInterop(BOOL enabled);
+BOOL RCTTurboModuleInteropEnabled(void);
+void RCTEnableTurboModuleInterop(BOOL enabled);
 
 // Turn on TurboModule interop's Bridge proxy
-RCT_EXTERN BOOL RCTTurboModuleInteropBridgeProxyEnabled(void);
-RCT_EXTERN void RCTEnableTurboModuleInteropBridgeProxy(BOOL enabled);
+BOOL RCTTurboModuleInteropBridgeProxyEnabled(void);
+void RCTEnableTurboModuleInteropBridgeProxy(BOOL enabled);
+
+// Turn on the fabric interop layer
+BOOL RCTFabricInteropLayerEnabled(void);
+void RCTEnableFabricInteropLayer(BOOL enabled);
+
+// Turn on TurboModule sync execution of void methods
+BOOL RCTTurboModuleSyncVoidMethodsEnabled(void);
+void RCTEnableTurboModuleSyncVoidMethods(BOOL enabled);
+
+// Use a shared queue for executing module methods
+BOOL RCTTurboModuleSharedQueueEnabled(void);
+void RCTEnableTurboModuleSharedQueue(BOOL enabled);
+
+BOOL RCTUIManagerDispatchAccessibilityManagerInitOntoMain(void);
+void RCTUIManagerSetDispatchAccessibilityManagerInitOntoMain(BOOL enabled);
+
+typedef enum {
+  kRCTBridgeProxyLoggingLevelNone,
+  kRCTBridgeProxyLoggingLevelWarning,
+  kRCTBridgeProxyLoggingLevelError,
+} RCTBridgeProxyLoggingLevel;
+
+RCTBridgeProxyLoggingLevel RCTTurboModuleInteropBridgeProxyLogLevel(void);
+void RCTSetTurboModuleInteropBridgeProxyLogLevel(RCTBridgeProxyLoggingLevel logLevel);
 
 // Route all TurboModules through TurboModule interop
-RCT_EXTERN BOOL RCTTurboModuleInteropForAllTurboModulesEnabled(void);
-RCT_EXTERN void RCTEnableTurboModuleInteropForAllTurboModules(BOOL enabled);
+BOOL RCTTurboModuleInteropForAllTurboModulesEnabled(void);
+void RCTEnableTurboModuleInteropForAllTurboModules(BOOL enabled);
 
 typedef enum {
   kRCTGlobalScope,
@@ -74,8 +87,10 @@ typedef enum {
   kRCTTurboModuleManagerScope,
 } RCTTurboModuleCleanupMode;
 
-RCT_EXTERN RCTTurboModuleCleanupMode RCTGetTurboModuleCleanupMode(void);
-RCT_EXTERN void RCTSetTurboModuleCleanupMode(RCTTurboModuleCleanupMode mode);
+RCTTurboModuleCleanupMode RCTGetTurboModuleCleanupMode(void);
+void RCTSetTurboModuleCleanupMode(RCTTurboModuleCleanupMode mode);
+
+RCT_EXTERN_C_END
 
 /**
  * Async batched bridge used to communicate with the JavaScript application.
@@ -149,7 +164,7 @@ RCT_EXTERN void RCTSetTurboModuleCleanupMode(RCTTurboModuleCleanupMode mode);
  * It allows the bridge to attach properties to ObjC modules that give those modules
  * access to Bridge APIs.
  */
-- (void)attachBridgeAPIsToObjCModule:(id<RCTBridgeModule>)module;
+- (RCTBridgeModuleDecorator *)bridgeModuleDecorator;
 
 /**
  * Convenience method for retrieving all modules conforming to a given protocol.

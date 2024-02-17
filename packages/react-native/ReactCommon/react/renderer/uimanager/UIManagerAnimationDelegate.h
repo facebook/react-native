@@ -23,10 +23,10 @@ class UIManagerAnimationDelegate {
    * TODO: need SurfaceId here
    */
   virtual void uiManagerDidConfigureNextLayoutAnimation(
-      jsi::Runtime &runtime,
-      RawValue const &config,
-      jsi::Value const &successCallback,
-      jsi::Value const &failureCallback) const = 0;
+      jsi::Runtime& runtime,
+      const RawValue& config,
+      const jsi::Value& successCallback,
+      const jsi::Value& failureCallback) const = 0;
 
   /**
    * Set ComponentDescriptor registry.
@@ -34,15 +34,7 @@ class UIManagerAnimationDelegate {
    * @param componentDescriptorRegistry
    */
   virtual void setComponentDescriptorRegistry(
-      const SharedComponentDescriptorRegistry &componentDescriptorRegistry) = 0;
-
-  /**
-   * Set Animation flags for dropping delete and create mutations
-   *
-   * @param reduceDeleteCreateMutation
-   */
-  virtual void setReduceDeleteCreateMutation(
-      bool reduceDeleteCreateMutation) = 0;
+      const SharedComponentDescriptorRegistry& componentDescriptorRegistry) = 0;
 
   /**
    * Only needed on Android to drive animations.

@@ -37,7 +37,11 @@ public @interface ReactModule {
   /**
    * Whether this module has constants to add, defaults to true as that is safer for when a correct
    * annotation is not included
+   *
+   * @deprecated This property is unused and it's planning to be removed in a future version of
+   *     React Native. Please refrain from using it.
    */
+  @Deprecated
   boolean hasConstants() default true;
 
   /**

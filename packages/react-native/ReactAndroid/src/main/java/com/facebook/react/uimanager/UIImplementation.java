@@ -29,7 +29,9 @@ import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -479,27 +481,6 @@ public class UIImplementation {
   }
 
   /**
-   * Method which takes a container tag and then releases all subviews for that container upon
-   * receipt. TODO: The method name is incorrect and will be renamed, #6033872
-   *
-   * @param containerTag the tag of the container for which the subviews must be removed
-   */
-  public void removeSubviewsFromContainerWithID(int containerTag) {
-    ReactShadowNode containerNode = mShadowNodeRegistry.getNode(containerTag);
-    if (containerNode == null) {
-      throw new IllegalViewOperationException(
-          "Trying to remove subviews of an unknown view tag: " + containerTag);
-    }
-
-    WritableArray indicesToRemove = Arguments.createArray();
-    for (int childIndex = 0; childIndex < containerNode.getChildCount(); childIndex++) {
-      indicesToRemove.pushInt(childIndex);
-    }
-
-    manageChildren(containerTag, null, null, null, null, indicesToRemove);
-  }
-
-  /**
    * Find the touch target child native view in the supplied root view hierarchy, given a react
    * target location.
    *
@@ -665,7 +646,20 @@ public class UIImplementation {
               .arg("rootTag", cssRoot.getReactTag())
               .flush();
           try {
-            applyUpdatesRecursive(cssRoot, 0f, 0f);
+            List<ReactShadowNode> onLayoutNodes = new ArrayList<>();
+            applyUpdatesRecursive(cssRoot, 0f, 0f, onLayoutNodes);
+
+            for (ReactShadowNode node : onLayoutNodes) {
+              mEventDispatcher.dispatchEvent(
+                  OnLayoutEvent.obtain(
+                      -1, /* surfaceId not used in classic renderer */
+                      node.getReactTag(),
+                      node.getScreenX(),
+                      node.getScreenY(),
+                      node.getScreenWidth(),
+                      node.getScreenHeight()));
+            }
+
           } finally {
             Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
           }
@@ -756,6 +750,10 @@ public class UIImplementation {
   /**
    * Show a PopupMenu.
    *
+   * <p>This is deprecated, please use the <PopupMenuAndroid /> component instead.
+   *
+   * <p>TODO(T175424986): Remove UIManager.showPopupMenu() in React Native v0.75.
+   *
    * @param reactTag the tag of the anchor view (the PopupMenu is displayed next to this view); this
    *     needs to be the tag of a native view (shadow views can not be anchors)
    * @param items the menu items as an array of strings
@@ -763,6 +761,7 @@ public class UIImplementation {
    * @param success will be called with the position of the selected item as the first argument, or
    *     no arguments if the menu is dismissed
    */
+  @Deprecated
   public void showPopupMenu(int reactTag, ReadableArray items, Callback error, Callback success) {
     boolean viewExists = checkOrAssertViewExists(reactTag, "showPopupMenu");
     if (!viewExists) {
@@ -772,6 +771,8 @@ public class UIImplementation {
     mOperationsQueue.enqueueShowPopupMenu(reactTag, items, error, success);
   }
 
+  /** TODO(T175424986): Remove UIManager.dismissPopupMenu() in React Native v0.75. */
+  @Deprecated
   public void dismissPopupMenu() {
     mOperationsQueue.enqueueDismissPopupMenu();
   }
@@ -951,39 +952,34 @@ public class UIImplementation {
     }
   }
 
-  protected void applyUpdatesRecursive(ReactShadowNode cssNode, float absoluteX, float absoluteY) {
+  protected void applyUpdatesRecursive(
+      ReactShadowNode cssNode,
+      float absoluteX,
+      float absoluteY,
+      List<ReactShadowNode> onLayoutNodes) {
     if (!cssNode.hasUpdates()) {
       return;
+    }
+
+    if (cssNode.dispatchUpdatesWillChangeLayout(absoluteX, absoluteY)
+        && cssNode.shouldNotifyOnLayout()
+        && !mShadowNodeRegistry.isRootNode(cssNode.getReactTag())) {
+      onLayoutNodes.add(cssNode);
     }
 
     Iterable<? extends ReactShadowNode> cssChildren = cssNode.calculateLayoutOnChildren();
     if (cssChildren != null) {
       for (ReactShadowNode cssChild : cssChildren) {
         applyUpdatesRecursive(
-            cssChild, absoluteX + cssNode.getLayoutX(), absoluteY + cssNode.getLayoutY());
+            cssChild,
+            absoluteX + cssNode.getLayoutX(),
+            absoluteY + cssNode.getLayoutY(),
+            onLayoutNodes);
       }
     }
 
-    int tag = cssNode.getReactTag();
-    if (!mShadowNodeRegistry.isRootNode(tag)) {
-      boolean frameDidChange =
-          cssNode.dispatchUpdates(
-              absoluteX, absoluteY, mOperationsQueue, mNativeViewHierarchyOptimizer);
+    cssNode.dispatchUpdates(absoluteX, absoluteY, mOperationsQueue, mNativeViewHierarchyOptimizer);
 
-      // Notify JS about layout event if requested
-      // and if the position or dimensions actually changed
-      // (consistent with iOS).
-      if (frameDidChange && cssNode.shouldNotifyOnLayout()) {
-        mEventDispatcher.dispatchEvent(
-            OnLayoutEvent.obtain(
-                -1, /* surfaceId not used in classic renderer */
-                tag,
-                cssNode.getScreenX(),
-                cssNode.getScreenY(),
-                cssNode.getScreenWidth(),
-                cssNode.getScreenHeight()));
-      }
-    }
     cssNode.markUpdateSeen();
     mNativeViewHierarchyOptimizer.onViewUpdatesCompleted(cssNode);
   }

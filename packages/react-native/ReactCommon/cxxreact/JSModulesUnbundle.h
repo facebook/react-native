@@ -40,7 +40,7 @@ class JSModulesUnbundle {
   virtual Module getModule(uint32_t moduleId) const = 0;
 
  private:
-  JSModulesUnbundle(const JSModulesUnbundle &) = delete;
+  JSModulesUnbundle(const JSModulesUnbundle&) = delete;
 };
 
 } // namespace facebook::react

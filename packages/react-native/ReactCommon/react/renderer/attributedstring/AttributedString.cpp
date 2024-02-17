@@ -17,14 +17,19 @@ using Fragments = AttributedString::Fragments;
 #pragma mark - Fragment
 
 std::string Fragment::AttachmentCharacter() {
-  return u8"\uFFFC"; // Unicode `OBJECT REPLACEMENT CHARACTER`
+  // C++20 makes char8_t a distinct type from char, and u8 string literals
+  // consist of char8_t instead of char, which in turn requires std::u8string,
+  // etc. Here we were assuming char was UTF-8 anyway, so just cast to that
+  // (which is valid because char* is allowed to alias anything).
+  return reinterpret_cast<const char*>(
+      u8"\uFFFC"); // Unicode `OBJECT REPLACEMENT CHARACTER`
 }
 
 bool Fragment::isAttachment() const {
   return string == AttachmentCharacter();
 }
 
-bool Fragment::operator==(const Fragment &rhs) const {
+bool Fragment::operator==(const Fragment& rhs) const {
   return std::tie(
              string,
              textAttributes,
@@ -37,18 +42,18 @@ bool Fragment::operator==(const Fragment &rhs) const {
              rhs.parentShadowView.layoutMetrics);
 }
 
-bool Fragment::isContentEqual(const Fragment &rhs) const {
+bool Fragment::isContentEqual(const Fragment& rhs) const {
   return std::tie(string, textAttributes) ==
       std::tie(rhs.string, rhs.textAttributes);
 }
 
-bool Fragment::operator!=(const Fragment &rhs) const {
+bool Fragment::operator!=(const Fragment& rhs) const {
   return !(*this == rhs);
 }
 
 #pragma mark - AttributedString
 
-void AttributedString::appendFragment(const Fragment &fragment) {
+void AttributedString::appendFragment(const Fragment& fragment) {
   ensureUnsealed();
 
   if (fragment.string.empty()) {
@@ -58,7 +63,7 @@ void AttributedString::appendFragment(const Fragment &fragment) {
   fragments_.push_back(fragment);
 }
 
-void AttributedString::prependFragment(const Fragment &fragment) {
+void AttributedString::prependFragment(const Fragment& fragment) {
   ensureUnsealed();
 
   if (fragment.string.empty()) {
@@ -69,7 +74,7 @@ void AttributedString::prependFragment(const Fragment &fragment) {
 }
 
 void AttributedString::appendAttributedString(
-    const AttributedString &attributedString) {
+    const AttributedString& attributedString) {
   ensureUnsealed();
   fragments_.insert(
       fragments_.end(),
@@ -78,7 +83,7 @@ void AttributedString::appendAttributedString(
 }
 
 void AttributedString::prependAttributedString(
-    const AttributedString &attributedString) {
+    const AttributedString& attributedString) {
   ensureUnsealed();
   fragments_.insert(
       fragments_.begin(),
@@ -86,17 +91,17 @@ void AttributedString::prependAttributedString(
       attributedString.fragments_.end());
 }
 
-Fragments const &AttributedString::getFragments() const {
+const Fragments& AttributedString::getFragments() const {
   return fragments_;
 }
 
-Fragments &AttributedString::getFragments() {
+Fragments& AttributedString::getFragments() {
   return fragments_;
 }
 
 std::string AttributedString::getString() const {
   auto string = std::string{};
-  for (const auto &fragment : fragments_) {
+  for (const auto& fragment : fragments_) {
     string += fragment.string;
   }
   return string;
@@ -107,7 +112,7 @@ bool AttributedString::isEmpty() const {
 }
 
 bool AttributedString::compareTextAttributesWithoutFrame(
-    const AttributedString &rhs) const {
+    const AttributedString& rhs) const {
   if (fragments_.size() != rhs.fragments_.size()) {
     return false;
   }
@@ -122,15 +127,15 @@ bool AttributedString::compareTextAttributesWithoutFrame(
   return true;
 }
 
-bool AttributedString::operator==(const AttributedString &rhs) const {
+bool AttributedString::operator==(const AttributedString& rhs) const {
   return fragments_ == rhs.fragments_;
 }
 
-bool AttributedString::operator!=(const AttributedString &rhs) const {
+bool AttributedString::operator!=(const AttributedString& rhs) const {
   return !(*this == rhs);
 }
 
-bool AttributedString::isContentEqual(const AttributedString &rhs) const {
+bool AttributedString::isContentEqual(const AttributedString& rhs) const {
   if (fragments_.size() != rhs.fragments_.size()) {
     return false;
   }
@@ -150,7 +155,7 @@ bool AttributedString::isContentEqual(const AttributedString &rhs) const {
 SharedDebugStringConvertibleList AttributedString::getDebugChildren() const {
   auto list = SharedDebugStringConvertibleList{};
 
-  for (auto &&fragment : fragments_) {
+  for (auto&& fragment : fragments_) {
     auto propsList =
         fragment.textAttributes.DebugStringConvertible::getDebugProps();
 

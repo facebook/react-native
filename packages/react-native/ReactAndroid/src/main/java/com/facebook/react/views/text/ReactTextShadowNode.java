@@ -7,7 +7,6 @@
 
 package com.facebook.react.views.text;
 
-import android.annotation.TargetApi;
 import android.os.Build;
 import android.text.BoringLayout;
 import android.text.Layout;
@@ -24,6 +23,7 @@ import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.NativeViewHierarchyOptimizer;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactShadowNode;
@@ -32,6 +32,8 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIViewOperationQueue;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
+import com.facebook.react.views.text.internal.span.ReactAbsoluteSizeSpan;
+import com.facebook.react.views.text.internal.span.TextInlineViewPlaceholderSpan;
 import com.facebook.yoga.YogaBaselineFunction;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
@@ -47,7 +49,6 @@ import java.util.ArrayList;
  * <p>The class measures text in {@code <Text>} view and feeds native {@link TextView} using {@code
  * Spannable} object constructed in superclass.
  */
-@TargetApi(Build.VERSION_CODES.M)
 public class ReactTextShadowNode extends ReactBaseTextShadowNode {
 
   // It's important to pass the ANTI_ALIAS_FLAG flag to the constructor rather than setting it
@@ -82,7 +83,7 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
             int minimumFontSize =
                 (int) Math.max(mMinimumFontScale * initialFontSize, PixelUtil.toPixelFromDIP(4));
             while (currentFontSize > minimumFontSize
-                && (mNumberOfLines != UNSET && layout.getLineCount() > mNumberOfLines
+                && (mNumberOfLines != ReactConstants.UNSET && layout.getLineCount() > mNumberOfLines
                     || heightMode != YogaMeasureMode.UNDEFINED && layout.getHeight() > height)) {
               // TODO: We could probably use a smarter algorithm here. This will require 0(n)
               // measurements
@@ -124,7 +125,7 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
           }
 
           final int lineCount =
-              mNumberOfLines == UNSET
+              mNumberOfLines == ReactConstants.UNSET
                   ? layout.getLineCount()
                   : Math.min(mNumberOfLines, layout.getLineCount());
 
@@ -148,7 +149,7 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
             }
           }
 
-          if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.Q) {
+          if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
             layoutWidth = (float) Math.ceil(layoutWidth);
           }
           float layoutHeight = height;
@@ -222,28 +223,22 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
             || (!YogaConstants.isUndefined(desiredWidth) && desiredWidth <= width))) {
       // Is used when the width is not known and the text is not boring, ie. if it contains
       // unicode characters.
-
       int hintWidth = (int) Math.ceil(desiredWidth);
-      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-        layout =
-            new StaticLayout(text, textPaint, hintWidth, alignment, 1.f, 0.f, mIncludeFontPadding);
-      } else {
-        StaticLayout.Builder builder =
-            StaticLayout.Builder.obtain(text, 0, text.length(), textPaint, hintWidth)
-                .setAlignment(alignment)
-                .setLineSpacing(0.f, 1.f)
-                .setIncludePad(mIncludeFontPadding)
-                .setBreakStrategy(mTextBreakStrategy)
-                .setHyphenationFrequency(mHyphenationFrequency);
+      StaticLayout.Builder builder =
+          StaticLayout.Builder.obtain(text, 0, text.length(), textPaint, hintWidth)
+              .setAlignment(alignment)
+              .setLineSpacing(0.f, 1.f)
+              .setIncludePad(mIncludeFontPadding)
+              .setBreakStrategy(mTextBreakStrategy)
+              .setHyphenationFrequency(mHyphenationFrequency);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-          builder.setJustificationMode(mJustificationMode);
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-          builder.setUseLineSpacingFromFallbacks(true);
-        }
-        layout = builder.build();
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        builder.setJustificationMode(mJustificationMode);
       }
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        builder.setUseLineSpacingFromFallbacks(true);
+      }
+      layout = builder.build();
 
     } else if (boring != null && (unconstrainedWidth || boring.width <= width)) {
       // Is used for single-line, boring text when the width is either unknown or bigger
@@ -260,32 +255,25 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
               mIncludeFontPadding);
     } else {
       // Is used for multiline, boring text and the width is known.
-
-      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-        layout =
-            new StaticLayout(
-                text, textPaint, (int) width, alignment, 1.f, 0.f, mIncludeFontPadding);
-      } else {
-        // Android 11+ introduces changes in text width calculation which leads to cases
-        // where the container is measured smaller than text. Math.ceil prevents it
-        // See T136756103 for investigation
-        if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.Q) {
-          width = (float) Math.ceil(width);
-        }
-
-        StaticLayout.Builder builder =
-            StaticLayout.Builder.obtain(text, 0, text.length(), textPaint, (int) width)
-                .setAlignment(alignment)
-                .setLineSpacing(0.f, 1.f)
-                .setIncludePad(mIncludeFontPadding)
-                .setBreakStrategy(mTextBreakStrategy)
-                .setHyphenationFrequency(mHyphenationFrequency);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-          builder.setUseLineSpacingFromFallbacks(true);
-        }
-        layout = builder.build();
+      // Android 11+ introduces changes in text width calculation which leads to cases
+      // where the container is measured smaller than text. Math.ceil prevents it
+      // See T136756103 for investigation
+      if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
+        width = (float) Math.ceil(width);
       }
+
+      StaticLayout.Builder builder =
+          StaticLayout.Builder.obtain(text, 0, text.length(), textPaint, (int) width)
+              .setAlignment(alignment)
+              .setLineSpacing(0.f, 1.f)
+              .setIncludePad(mIncludeFontPadding)
+              .setBreakStrategy(mTextBreakStrategy)
+              .setHyphenationFrequency(mHyphenationFrequency);
+
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        builder.setUseLineSpacingFromFallbacks(true);
+      }
+      layout = builder.build();
     }
     return layout;
   }
@@ -342,7 +330,7 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
       ReactTextUpdate reactTextUpdate =
           new ReactTextUpdate(
               mPreparedSpannableText,
-              UNSET,
+              ReactConstants.UNSET,
               mContainsImages,
               getPadding(Spacing.START),
               getPadding(Spacing.TOP),
@@ -361,6 +349,7 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
   }
 
   @Override
+  @Nullable
   public Iterable<? extends ReactShadowNode> calculateLayoutOnChildren() {
     // Run flexbox on and return the descendants which are inline views.
 
@@ -370,11 +359,10 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
 
     Spanned text =
         Assertions.assertNotNull(
-            this.mPreparedSpannableText,
-            "Spannable element has not been prepared in onBeforeLayout");
+            mPreparedSpannableText, "Spannable element has not been prepared in onBeforeLayout");
     TextInlineViewPlaceholderSpan[] placeholders =
         text.getSpans(0, text.length(), TextInlineViewPlaceholderSpan.class);
-    ArrayList<ReactShadowNode> shadowNodes = new ArrayList<ReactShadowNode>(placeholders.length);
+    ArrayList<ReactShadowNode> shadowNodes = new ArrayList<>(placeholders.length);
 
     for (TextInlineViewPlaceholderSpan placeholder : placeholders) {
       ReactShadowNode child = mInlineViews.get(placeholder.getReactTag());

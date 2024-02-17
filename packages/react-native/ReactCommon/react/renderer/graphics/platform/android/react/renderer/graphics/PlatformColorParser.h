@@ -8,35 +8,39 @@
 #pragma once
 
 #include <fbjni/fbjni.h>
-#include <react/renderer/core/PropsParserContext.h>
-#include <react/renderer/core/RawProps.h>
-#include <react/renderer/graphics/ColorComponents.h>
+#include <react/debug/react_native_expect.h>
+#include <react/renderer/core/RawValue.h>
+#include <react/renderer/graphics/Color.h>
+#include <react/renderer/graphics/fromRawValueShared.h>
+#include <react/utils/ContextContainer.h>
+#include <unordered_map>
 
 namespace facebook::react {
 
-inline ColorComponents parsePlatformColor(
-    const PropsParserContext &context,
-    const RawValue &value) {
+inline SharedColor parsePlatformColor(
+    const ContextContainer& contextContainer,
+    int32_t surfaceId,
+    const RawValue& value) {
   ColorComponents colorComponents = {0, 0, 0, 0};
 
-  if (value.hasType<butter::map<std::string, std::vector<std::string>>>()) {
-    const auto &fabricUIManager =
-        context.contextContainer.at<jni::global_ref<jobject>>(
-            "FabricUIManager");
+  if (value.hasType<
+          std::unordered_map<std::string, std::vector<std::string>>>()) {
+    const auto& fabricUIManager =
+        contextContainer.at<jni::global_ref<jobject>>("FabricUIManager");
     static auto getColorFromJava =
         fabricUIManager->getClass()
             ->getMethod<jint(jint, jni::JArrayClass<jni::JString>)>("getColor");
 
-    auto map = (butter::map<std::string, std::vector<std::string>>)value;
-    auto &resourcePaths = map["resource_paths"];
+    auto map = (std::unordered_map<std::string, std::vector<std::string>>)value;
+    auto& resourcePaths = map["resource_paths"];
 
     auto javaResourcePaths =
         jni::JArrayClass<jni::JString>::newArray(resourcePaths.size());
     for (int i = 0; i < resourcePaths.size(); i++) {
       javaResourcePaths->setElement(i, *jni::make_jstring(resourcePaths[i]));
     }
-    auto color = getColorFromJava(
-        fabricUIManager, context.surfaceId, *javaResourcePaths);
+    auto color =
+        getColorFromJava(fabricUIManager, surfaceId, *javaResourcePaths);
 
     auto argb = (int64_t)color;
     auto ratio = 255.f;
@@ -46,7 +50,16 @@ inline ColorComponents parsePlatformColor(
     colorComponents.blue = (argb & 0xFF) / ratio;
   }
 
-  return colorComponents;
+  return {colorFromComponents(colorComponents)};
+}
+
+inline void fromRawValue(
+    const ContextContainer& contextContainer,
+    int32_t surfaceId,
+    const RawValue& value,
+    SharedColor& result) {
+  fromRawValueShared(
+      contextContainer, surfaceId, value, result, parsePlatformColor);
 }
 
 } // namespace facebook::react

@@ -28,9 +28,9 @@ class ClipboardModuleTest {
 
   @Before
   fun setUp() {
-    clipboardModule = ClipboardModule(ReactApplicationContext(RuntimeEnvironment.application))
+    clipboardModule = ClipboardModule(ReactApplicationContext(RuntimeEnvironment.getApplication()))
     clipboardManager =
-        RuntimeEnvironment.application.getSystemService(Context.CLIPBOARD_SERVICE)
+        RuntimeEnvironment.getApplication().getSystemService(Context.CLIPBOARD_SERVICE)
             as ClipboardManager
   }
 

@@ -24,11 +24,11 @@ class StubView final {
   using Shared = std::shared_ptr<StubView>;
 
   StubView() = default;
-  StubView(StubView const &stubView) = default;
+  StubView(const StubView& stubView) = default;
 
   operator ShadowView() const;
 
-  void update(ShadowView const &shadowView);
+  void update(const ShadowView& shadowView);
 
   ComponentName componentName;
   ComponentHandle componentHandle;
@@ -42,18 +42,18 @@ class StubView final {
   Tag parentTag{NO_VIEW_TAG};
 };
 
-bool operator==(StubView const &lhs, StubView const &rhs);
-bool operator!=(StubView const &lhs, StubView const &rhs);
+bool operator==(const StubView& lhs, const StubView& rhs);
+bool operator!=(const StubView& lhs, const StubView& rhs);
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 
-std::string getDebugName(StubView const &stubView);
+std::string getDebugName(const StubView& stubView);
 
 std::vector<DebugStringConvertibleObject> getDebugProps(
-    StubView const &stubView,
+    const StubView& stubView,
     DebugStringConvertibleOptions options);
 std::vector<StubView> getDebugChildren(
-    StubView const &stubView,
+    const StubView& stubView,
     DebugStringConvertibleOptions options);
 
 #endif

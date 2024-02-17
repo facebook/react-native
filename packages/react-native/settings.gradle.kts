@@ -19,7 +19,7 @@ pluginManagement {
   }
 }
 
-rootProject.name = "react-native-github"
+rootProject.name = "react-native-build-from-source"
 
 include(":packages:react-native:ReactAndroid")
 

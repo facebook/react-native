@@ -29,6 +29,7 @@ function asyncRequest(
   let dataListener;
   let completeListener;
   let responseListener;
+  let incrementalDataListener;
   return new Promise<{body: string, headers: {[string]: string}}>(
     (resolve, reject) => {
       dataListener = Networking.addListener(
@@ -36,6 +37,18 @@ function asyncRequest(
         ([requestId, response]) => {
           if (requestId === id) {
             responseText = response;
+          }
+        },
+      );
+      incrementalDataListener = Networking.addListener(
+        'didReceiveNetworkIncrementalData',
+        ([requestId, data]) => {
+          if (requestId === id) {
+            if (responseText != null) {
+              responseText += data;
+            } else {
+              responseText = data;
+            }
           }
         },
       );
@@ -67,7 +80,7 @@ function asyncRequest(
         {},
         '',
         'text',
-        false,
+        true,
         0,
         requestId => {
           id = requestId;
@@ -76,9 +89,10 @@ function asyncRequest(
       );
     },
   ).finally(() => {
-    dataListener && dataListener.remove();
-    completeListener && completeListener.remove();
-    responseListener && responseListener.remove();
+    dataListener?.remove();
+    completeListener?.remove();
+    responseListener?.remove();
+    incrementalDataListener?.remove();
   });
 }
 
@@ -91,7 +105,6 @@ function buildUrlForBundle(bundlePathAndQuery: string) {
 
 module.exports = function (bundlePathAndQuery: string): Promise<void> {
   const requestUrl = buildUrlForBundle(bundlePathAndQuery);
-
   let loadPromise = cachedPromisesByUrl.get(requestUrl);
 
   if (loadPromise) {

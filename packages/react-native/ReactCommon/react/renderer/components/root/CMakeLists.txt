@@ -9,14 +9,13 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 add_compile_options(
         -fexceptions
         -frtti
-        -std=c++17
+        -std=c++20
         -Wall
         -Wpedantic
-        -Wno-gnu-zero-variadic-macro-arguments
         -DLOG_TAG=\"Fabric\")
 
 file(GLOB rrc_root_SRC CONFIGURE_DEPENDS *.cpp)
-add_library(rrc_root SHARED ${rrc_root_SRC})
+add_library(rrc_root STATIC ${rrc_root_SRC})
 
 target_include_directories(rrc_root PUBLIC ${REACT_COMMON_DIR})
 

@@ -11,17 +11,17 @@
 'use strict';
 
 import type {
-  UnionTypeAnnotationMemberType,
-  SchemaType,
+  ExtendsPropsShape,
   NamedShape,
-  Nullable,
-  NativeModuleParamTypeAnnotation,
-  NativeModuleEnumMembers,
-  NativeModuleEnumMemberType,
   NativeModuleAliasMap,
   NativeModuleEnumMap,
+  NativeModuleEnumMembers,
+  NativeModuleEnumMemberType,
+  NativeModuleParamTypeAnnotation,
+  Nullable,
   PropTypeAnnotation,
-  ExtendsPropsShape,
+  SchemaType,
+  UnionTypeAnnotationMemberType,
 } from '../../CodegenSchema';
 import type {ParserType} from '../errors';
 import type {
@@ -32,39 +32,35 @@ import type {
 } from '../parser';
 import type {
   ParserErrorCapturer,
-  TypeDeclarationMap,
   PropAST,
+  TypeDeclarationMap,
   TypeResolutionStatus,
 } from '../utils';
-const invariant = require('invariant');
-
-const {typeScriptTranslateTypeAnnotation} = require('./modules');
-
-// $FlowFixMe[untyped-import] Use flow-types for @babel/parser
-const babelParser = require('@babel/parser');
-
-const {Visitor} = require('../parsers-primitives');
-const {buildComponentSchema} = require('./components');
-const {wrapComponentSchema} = require('../schema.js');
-const {
-  buildSchema,
-  buildModuleSchema,
-  extendsForProp,
-  buildPropSchema,
-  handleGenericTypeAnnotation,
-} = require('../parsers-commons.js');
-
-const {parseTopLevelType} = require('./parseTopLevelType');
-const {
-  getSchemaInfo,
-  getTypeAnnotation,
-  flattenProperties,
-} = require('./components/componentsUtils');
-const fs = require('fs');
 
 const {
   UnsupportedObjectPropertyTypeAnnotationParserError,
 } = require('../errors');
+const {
+  buildModuleSchema,
+  buildPropSchema,
+  buildSchema,
+  extendsForProp,
+  handleGenericTypeAnnotation,
+} = require('../parsers-commons.js');
+const {Visitor} = require('../parsers-primitives');
+const {wrapComponentSchema} = require('../schema.js');
+const {buildComponentSchema} = require('./components');
+const {
+  flattenProperties,
+  getSchemaInfo,
+  getTypeAnnotation,
+} = require('./components/componentsUtils');
+const {typeScriptTranslateTypeAnnotation} = require('./modules');
+const {parseTopLevelType} = require('./parseTopLevelType');
+// $FlowFixMe[untyped-import] Use flow-types for @babel/parser
+const babelParser = require('@babel/parser');
+const fs = require('fs');
+const invariant = require('invariant');
 
 class TypeScriptParser implements Parser {
   typeParameterInstantiation: string = 'TSTypeParameterInstantiation';
@@ -94,7 +90,7 @@ class TypeScriptParser implements Parser {
     return 'TypeScript';
   }
 
-  nameForGenericTypeAnnotation(typeAnnotation: $FlowFixMe): string {
+  getTypeAnnotationName(typeAnnotation: $FlowFixMe): string {
     return typeAnnotation?.typeName?.name;
   }
 
@@ -146,7 +142,7 @@ class TypeScriptParser implements Parser {
     return this.parseString(contents, 'path/NativeSampleTurboModule.ts');
   }
 
-  getAst(contents: string): $FlowFixMe {
+  getAst(contents: string, filename?: ?string): $FlowFixMe {
     return babelParser.parse(contents, {
       sourceType: 'module',
       plugins: ['typescript'],
@@ -413,7 +409,7 @@ class TypeScriptParser implements Parser {
         break;
       }
 
-      const typeAnnotationName = this.nameForGenericTypeAnnotation(node);
+      const typeAnnotationName = this.getTypeAnnotationName(node);
       const resolvedTypeAnnotation = types[typeAnnotationName];
       if (resolvedTypeAnnotation == null) {
         break;
@@ -447,7 +443,7 @@ class TypeScriptParser implements Parser {
       return false;
     }
     const eventNames = new Set(['BubblingEventHandler', 'DirectEventHandler']);
-    return eventNames.has(typeAnnotation.typeName.name);
+    return eventNames.has(this.getTypeAnnotationName(typeAnnotation));
   }
 
   isProp(name: string, typeAnnotation: $FlowFixMe): boolean {
@@ -457,7 +453,7 @@ class TypeScriptParser implements Parser {
     const isStyle =
       name === 'style' &&
       typeAnnotation.type === 'GenericTypeAnnotation' &&
-      typeAnnotation.typeName.name === 'ViewStyleProp';
+      this.getTypeAnnotationName(typeAnnotation) === 'ViewStyleProp';
     return !isStyle;
   }
 
@@ -556,6 +552,16 @@ class TypeScriptParser implements Parser {
 
   getObjectProperties(typeAnnotation: $FlowFixMe): $FlowFixMe {
     return typeAnnotation.members;
+  }
+
+  getLiteralValue(option: $FlowFixMe): $FlowFixMe {
+    return option.literal.value;
+  }
+
+  getPaperTopLevelNameDeprecated(typeAnnotation: $FlowFixMe): $FlowFixMe {
+    return typeAnnotation.typeParameters.params.length > 1
+      ? typeAnnotation.typeParameters.params[1].literal.value
+      : null;
   }
 }
 

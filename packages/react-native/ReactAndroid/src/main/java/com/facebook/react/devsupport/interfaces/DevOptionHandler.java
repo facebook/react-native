@@ -18,5 +18,5 @@ public interface DevOptionHandler {
    * Triggered in case when user select custom developer option from the developers options menu
    * displayed with {@link DevSupportManager}.
    */
-  public void onOptionSelected();
+  void onOptionSelected();
 }

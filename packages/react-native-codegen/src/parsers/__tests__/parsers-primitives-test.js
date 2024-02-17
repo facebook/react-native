@@ -17,39 +17,40 @@ import type {
   UnionTypeAnnotationMemberType,
 } from '../../CodegenSchema';
 
+const {UnsupportedUnionTypeAnnotationParserError} = require('../errors');
+const {extractArrayElementType} = require('../flow/components/events');
+const {FlowParser} = require('../flow/parser');
+const {MockedParser} = require('../parserMock');
+const {emitUnion} = require('../parsers-primitives');
 const {
+  Visitor,
   emitArrayType,
   emitBoolean,
   emitBoolProp,
+  emitCommonTypes,
   emitDouble,
   emitDoubleProp,
   emitFloat,
   emitFloatProp,
-  emitNumber,
+  emitGenericObject,
   emitInt32,
   emitInt32Prop,
-  emitGenericObject,
+  emitMixed,
+  emitNumber,
   emitObject,
+  emitObjectProp,
+  emitPartial,
   emitPromise,
   emitRootTag,
-  emitVoid,
   emitString,
   emitStringish,
-  emitMixed,
-  emitPartial,
-  emitCommonTypes,
+  emitStringProp,
+  emitUnionProp,
+  emitVoid,
   typeAliasResolution,
   typeEnumResolution,
-  Visitor,
-  emitStringProp,
-  emitObjectProp,
 } = require('../parsers-primitives.js');
-const {MockedParser} = require('../parserMock');
-const {emitUnion} = require('../parsers-primitives');
-const {UnsupportedUnionTypeAnnotationParserError} = require('../errors');
-const {FlowParser} = require('../flow/parser');
 const {TypeScriptParser} = require('../typescript/parser');
-const {extractArrayElementType} = require('../flow/components/events');
 
 const parser = new MockedParser();
 const flowParser = new FlowParser();
@@ -1769,6 +1770,74 @@ describe('emitObjectProp', () => {
             },
           ],
           type: 'ObjectTypeAnnotation',
+        },
+      };
+
+      expect(result).toEqual(expected);
+    });
+  });
+});
+
+describe('emitUnionProp', () => {
+  describe('when property is optional', () => {
+    it('returns optional type annotation with Flow parser', () => {
+      const typeAnnotation = {
+        types: [
+          {
+            value: 'someValue1',
+          },
+          {
+            value: 'someValue2',
+          },
+        ],
+      };
+      const result = emitUnionProp(
+        'someProp',
+        true,
+        flowParser,
+        typeAnnotation,
+      );
+      const expected = {
+        name: 'someProp',
+        optional: true,
+        typeAnnotation: {
+          type: 'StringEnumTypeAnnotation',
+          options: ['someValue1', 'someValue2'],
+        },
+      };
+
+      expect(result).toEqual(expected);
+    });
+  });
+  describe('when property is required', () => {
+    it('returns required type annotation with TypeScript parser', () => {
+      const typeAnnotation = {
+        types: [
+          {
+            literal: {
+              value: 'someValue1',
+            },
+          },
+          {
+            literal: {
+              value: 'someValue2',
+            },
+          },
+        ],
+      };
+      const result = emitUnionProp(
+        'someProp',
+        false,
+        typeScriptParser,
+        typeAnnotation,
+      );
+
+      const expected = {
+        name: 'someProp',
+        optional: false,
+        typeAnnotation: {
+          type: 'StringEnumTypeAnnotation',
+          options: ['someValue1', 'someValue2'],
         },
       };
 

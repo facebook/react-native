@@ -11,6 +11,7 @@
 #import <react/renderer/components/view/primitives.h>
 #import <react/renderer/core/LayoutPrimitives.h>
 #import <react/renderer/graphics/Color.h>
+#import <react/renderer/graphics/RCTPlatformColorUtils.h>
 #import <react/renderer/graphics/Transform.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -19,7 +20,7 @@ inline NSString *RCTNSStringFromString(
     const std::string &string,
     const NSStringEncoding &encoding = NSUTF8StringEncoding)
 {
-  return [NSString stringWithCString:string.c_str() encoding:encoding];
+  return [NSString stringWithCString:string.c_str() encoding:encoding] ?: @"";
 }
 
 inline NSString *_Nullable RCTNSStringFromStringNilIfEmpty(
@@ -34,30 +35,13 @@ inline std::string RCTStringFromNSString(NSString *string)
   return std::string{string.UTF8String ?: ""};
 }
 
-inline UIColor *_Nullable RCTUIColorFromSharedColor(facebook::react::SharedColor const &sharedColor)
+inline UIColor *_Nullable RCTUIColorFromSharedColor(const facebook::react::SharedColor &sharedColor)
 {
-  if (!sharedColor) {
-    return nil;
-  }
-
-  if (*facebook::react::clearColor() == *sharedColor) {
-    return [UIColor clearColor];
-  }
-
-  if (*facebook::react::blackColor() == *sharedColor) {
-    return [UIColor blackColor];
-  }
-
-  if (*facebook::react::whiteColor() == *sharedColor) {
-    return [UIColor whiteColor];
-  }
-
-  auto components = facebook::react::colorComponentsFromColor(sharedColor);
-  return [UIColor colorWithRed:components.red green:components.green blue:components.blue alpha:components.alpha];
+  return RCTPlatformColorFromColor(*sharedColor);
 }
 
-inline CF_RETURNS_RETAINED CGColorRef
-RCTCreateCGColorRefFromSharedColor(const facebook::react::SharedColor &sharedColor)
+inline CF_RETURNS_RETAINED CGColorRef _Nullable RCTCreateCGColorRefFromSharedColor(
+    const facebook::react::SharedColor &sharedColor)
 {
   return CGColorRetain(RCTUIColorFromSharedColor(sharedColor).CGColor);
 }
@@ -82,7 +66,7 @@ inline UIEdgeInsets RCTUIEdgeInsetsFromEdgeInsets(const facebook::react::EdgeIns
   return {edgeInsets.top, edgeInsets.left, edgeInsets.bottom, edgeInsets.right};
 }
 
-UIAccessibilityTraits const AccessibilityTraitSwitch = 0x20000000000001;
+const UIAccessibilityTraits AccessibilityTraitSwitch = 0x20000000000001;
 
 inline UIAccessibilityTraits RCTUIAccessibilityTraitsFromAccessibilityTraits(
     facebook::react::AccessibilityTraits accessibilityTraits)

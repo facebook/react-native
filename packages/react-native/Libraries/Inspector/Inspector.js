@@ -10,10 +10,14 @@
 
 'use strict';
 
-import type {TouchedViewDataAtPoint} from '../Renderer/shims/ReactNativeTypes';
-import type {HostRef} from './getInspectorDataForViewAtPoint';
+import type {InspectedViewRef} from '../ReactNative/AppContainer-dev';
+import type {
+  InspectorData,
+  TouchedViewDataAtPoint,
+} from '../Renderer/shims/ReactNativeTypes';
+import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
+import type {ReactDevToolsAgent} from '../Types/ReactDevToolsTypes';
 
-const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleAttributes');
 const View = require('../Components/View/View');
 const PressabilityDebug = require('../Pressability/PressabilityDebug');
 const {findNodeHandle} = require('../ReactNative/RendererProxy');
@@ -25,114 +29,68 @@ const InspectorOverlay = require('./InspectorOverlay');
 const InspectorPanel = require('./InspectorPanel');
 const React = require('react');
 
-const hook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
+const {useState} = React;
 
-// Required for React DevTools to view/edit React Native styles in Flipper.
-// Flipper doesn't inject these values when initializing DevTools.
-hook.resolveRNStyle = require('../StyleSheet/flattenStyle');
-hook.nativeStyleEditorValidAttributes = Object.keys(ReactNativeStyleAttributes);
+type PanelPosition = 'top' | 'bottom';
+type SelectedTab =
+  | 'elements-inspector'
+  | 'network-profiling'
+  | 'performance-profiling';
 
-class Inspector extends React.Component<
-  {
-    inspectedView: ?HostRef,
-    onRequestRerenderApp: (callback: (instance: ?HostRef) => void) => void,
-    ...
-  },
-  {
-    devtoolsAgent: ?Object,
-    hierarchy: any,
-    panelPos: string,
-    inspecting: boolean,
-    selection: ?number,
-    perfing: boolean,
-    inspected: any,
-    inspectedView: ?HostRef,
-    networking: boolean,
-    ...
-  },
-> {
-  _hideTimeoutID: TimeoutID | null = null;
-  _subs: ?Array<() => void>;
-  _setTouchedViewData: ?(TouchedViewDataAtPoint) => void;
+export type InspectedElementFrame = TouchedViewDataAtPoint['frame'];
+export type InspectedElement = $ReadOnly<{
+  frame: InspectedElementFrame,
+  style?: ViewStyleProp,
+}>;
+export type ElementsHierarchy = InspectorData['hierarchy'];
 
-  constructor(props: Object) {
-    super(props);
+type Props = {
+  inspectedViewRef: InspectedViewRef,
+  onRequestRerenderApp: () => void,
+  reactDevToolsAgent?: ReactDevToolsAgent,
+};
 
-    this.state = {
-      devtoolsAgent: null,
-      hierarchy: null,
-      panelPos: 'bottom',
-      inspecting: true,
-      perfing: false,
-      inspected: null,
-      selection: null,
-      inspectedView: this.props.inspectedView,
-      networking: false,
-    };
-  }
+function Inspector({
+  inspectedViewRef,
+  onRequestRerenderApp,
+  reactDevToolsAgent,
+}: Props): React.Node {
+  const [selectedTab, setSelectedTab] =
+    useState<?SelectedTab>('elements-inspector');
 
-  componentDidMount() {
-    hook.on('react-devtools', this._attachToDevtools);
-    // if devtools is already started
-    if (hook.reactDevtoolsAgent) {
-      this._attachToDevtools(hook.reactDevtoolsAgent);
+  const [panelPosition, setPanelPosition] = useState<PanelPosition>('bottom');
+  const [inspectedElement, setInspectedElement] =
+    useState<?InspectedElement>(null);
+  const [selectionIndex, setSelectionIndex] = useState<?number>(null);
+  const [elementsHierarchy, setElementsHierarchy] =
+    useState<?ElementsHierarchy>(null);
+
+  const setSelection = (i: number) => {
+    const hierarchyItem = elementsHierarchy?.[i];
+    if (hierarchyItem == null) {
+      return;
     }
-  }
 
-  componentWillUnmount() {
-    if (this._subs) {
-      this._subs.map(fn => fn());
-    }
-    hook.off('react-devtools', this._attachToDevtools);
-    this._setTouchedViewData = null;
-  }
-
-  UNSAFE_componentWillReceiveProps(newProps: Object) {
-    this.setState({inspectedView: newProps.inspectedView});
-  }
-
-  _attachToDevtools = (agent: Object) => {
-    agent.addListener('shutdown', this._onAgentShutdown);
-
-    this.setState({
-      devtoolsAgent: agent,
-    });
-  };
-
-  _onAgentShutdown = () => {
-    const agent = this.state.devtoolsAgent;
-    if (agent != null) {
-      agent.removeListener('shutdown', this._onAgentShutdown);
-
-      this.setState({devtoolsAgent: null});
-    }
-  };
-
-  setSelection(i: number) {
-    const hierarchyItem = this.state.hierarchy[i];
-    // we pass in findNodeHandle as the method is injected
-    const {measure, props, source} =
-      hierarchyItem.getInspectorData(findNodeHandle);
+    // We pass in findNodeHandle as the method is injected
+    const {measure, props} = hierarchyItem.getInspectorData(findNodeHandle);
 
     measure((x, y, width, height, left, top) => {
-      this.setState({
-        inspected: {
-          frame: {left, top, width, height},
-          style: props.style,
-          source,
-        },
-        selection: i,
+      // $FlowFixMe[incompatible-call] `props` from InspectorData are defined as <string, string> dictionary, which is incompatible with ViewStyleProp
+      setInspectedElement({
+        frame: {left, top, width, height},
+        style: props.style,
       });
-    });
-  }
 
-  onTouchPoint(locationX: number, locationY: number) {
-    this._setTouchedViewData = viewData => {
+      setSelectionIndex(i);
+    });
+  };
+
+  const onTouchPoint = (locationX: number, locationY: number) => {
+    const setTouchedViewData = (viewData: TouchedViewDataAtPoint) => {
       const {
         hierarchy,
         props,
         selectedIndex,
-        source,
         frame,
         pointerY,
         touchedViewTag,
@@ -142,111 +100,89 @@ class Inspector extends React.Component<
       // Sync the touched view with React DevTools.
       // Note: This is Paper only. To support Fabric,
       // DevTools needs to be updated to not rely on view tags.
-      const agent = this.state.devtoolsAgent;
-      if (agent) {
-        agent.selectNode(findNodeHandle(touchedViewTag));
+      if (reactDevToolsAgent) {
+        reactDevToolsAgent.selectNode(findNodeHandle(touchedViewTag));
         if (closestInstance != null) {
-          agent.selectNode(closestInstance);
+          reactDevToolsAgent.selectNode(closestInstance);
         }
       }
 
-      this.setState({
-        panelPos:
-          pointerY > Dimensions.get('window').height / 2 ? 'top' : 'bottom',
-        selection: selectedIndex,
-        hierarchy,
-        inspected: {
-          style: props.style,
-          frame,
-          source,
-        },
+      setPanelPosition(
+        pointerY > Dimensions.get('window').height / 2 ? 'top' : 'bottom',
+      );
+      setSelectionIndex(selectedIndex);
+      setElementsHierarchy(hierarchy);
+      // $FlowFixMe[incompatible-call] `props` from InspectorData are defined as <string, string> dictionary, which is incompatible with ViewStyleProp
+      setInspectedElement({
+        frame,
+        style: props.style,
       });
     };
+
     getInspectorDataForViewAtPoint(
-      this.state.inspectedView,
+      inspectedViewRef.current,
       locationX,
       locationY,
       viewData => {
-        if (this._setTouchedViewData != null) {
-          this._setTouchedViewData(viewData);
-          this._setTouchedViewData = null;
-        }
+        setTouchedViewData(viewData);
         return false;
       },
     );
-  }
+  };
 
-  setPerfing(val: boolean) {
-    this.setState({
-      perfing: val,
-      inspecting: false,
-      inspected: null,
-      networking: false,
-    });
-  }
+  const setInspecting = (enabled: boolean) => {
+    setSelectedTab(enabled ? 'elements-inspector' : null);
+    setInspectedElement(null);
+  };
 
-  setInspecting(val: boolean) {
-    this.setState({
-      inspecting: val,
-      inspected: null,
-    });
-  }
+  const setPerfing = (enabled: boolean) => {
+    setSelectedTab(enabled ? 'performance-profiling' : null);
+    setInspectedElement(null);
+  };
 
-  setTouchTargeting(val: boolean) {
+  const setNetworking = (enabled: boolean) => {
+    setSelectedTab(enabled ? 'network-profiling' : null);
+    setInspectedElement(null);
+  };
+
+  const setTouchTargeting = (val: boolean) => {
     PressabilityDebug.setEnabled(val);
-    this.props.onRequestRerenderApp(inspectedView => {
-      this.setState({inspectedView});
-    });
-  }
+    onRequestRerenderApp();
+  };
 
-  setNetworking(val: boolean) {
-    this.setState({
-      networking: val,
-      perfing: false,
-      inspecting: false,
-      inspected: null,
-    });
-  }
+  const panelContainerStyle =
+    panelPosition === 'bottom'
+      ? {bottom: 0}
+      : Platform.select({ios: {top: 0}, default: {top: 0}});
 
-  render(): React.Node {
-    const panelContainerStyle =
-      this.state.panelPos === 'bottom'
-        ? {bottom: 0}
-        : {top: Platform.OS === 'ios' ? 20 : 0};
-    return (
-      <View style={styles.container} pointerEvents="box-none">
-        {this.state.inspecting && (
-          <InspectorOverlay
-            inspected={this.state.inspected}
-            // $FlowFixMe[method-unbinding] added when improving typing for this parameters
-            onTouchPoint={this.onTouchPoint.bind(this)}
-          />
-        )}
-        <View style={[styles.panelContainer, panelContainerStyle]}>
-          <InspectorPanel
-            devtoolsIsOpen={!!this.state.devtoolsAgent}
-            inspecting={this.state.inspecting}
-            perfing={this.state.perfing}
-            // $FlowFixMe[method-unbinding] added when improving typing for this parameters
-            setPerfing={this.setPerfing.bind(this)}
-            // $FlowFixMe[method-unbinding] added when improving typing for this parameters
-            setInspecting={this.setInspecting.bind(this)}
-            inspected={this.state.inspected}
-            hierarchy={this.state.hierarchy}
-            selection={this.state.selection}
-            // $FlowFixMe[method-unbinding] added when improving typing for this parameters
-            setSelection={this.setSelection.bind(this)}
-            touchTargeting={PressabilityDebug.isEnabled()}
-            // $FlowFixMe[method-unbinding] added when improving typing for this parameters
-            setTouchTargeting={this.setTouchTargeting.bind(this)}
-            networking={this.state.networking}
-            // $FlowFixMe[method-unbinding] added when improving typing for this parameters
-            setNetworking={this.setNetworking.bind(this)}
-          />
-        </View>
+  return (
+    <View style={styles.container} pointerEvents="box-none">
+      {selectedTab === 'elements-inspector' && (
+        <InspectorOverlay
+          inspected={inspectedElement}
+          onTouchPoint={onTouchPoint}
+        />
+      )}
+
+      <View style={[styles.panelContainer, panelContainerStyle]}>
+        <InspectorPanel
+          devtoolsIsOpen={!!reactDevToolsAgent}
+          inspecting={selectedTab === 'elements-inspector'}
+          perfing={selectedTab === 'performance-profiling'}
+          setPerfing={setPerfing}
+          setInspecting={setInspecting}
+          inspected={inspectedElement}
+          hierarchy={elementsHierarchy}
+          selection={selectionIndex}
+          setSelection={setSelection}
+          touchTargeting={PressabilityDebug.isEnabled()}
+          setTouchTargeting={setTouchTargeting}
+          networking={selectedTab === 'network-profiling'}
+          setNetworking={setNetworking}
+        />
       </View>
-    );
-  }
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({

@@ -47,7 +47,7 @@ struct ExposedReadableNativeArray : public ReadableNativeArray {
       : ReadableNativeArray(std::move(array)) {}
 };
 
-jdouble extractDouble(const folly::dynamic &value) {
+jdouble extractDouble(const folly::dynamic& value) {
   if (value.isInt()) {
     return static_cast<jdouble>(value.getInt());
   } else {
@@ -55,11 +55,12 @@ jdouble extractDouble(const folly::dynamic &value) {
   }
 }
 
-jint extractInteger(const folly::dynamic &value) {
+jint extractInteger(const folly::dynamic& value) {
   // The logic here is taken from convertDynamicIfIntegral, but the
   // return type and exception are different.
   if (value.isInt()) {
-    return value.getInt();
+    // TODO: this truncates 64 bit ints, valid in JS
+    return static_cast<jint>(value.getInt());
   }
   double dbl = value.getDouble();
   jint result = static_cast<jint>(dbl);
@@ -72,8 +73,8 @@ jint extractInteger(const folly::dynamic &value) {
 }
 
 local_ref<JCxxCallbackImpl::jhybridobject> extractCallback(
-    std::weak_ptr<Instance> &instance,
-    const folly::dynamic &value) {
+    std::weak_ptr<Instance>& instance,
+    const folly::dynamic& value) {
   if (value.isNull()) {
     return local_ref<JCxxCallbackImpl::jhybridobject>(nullptr);
   } else {
@@ -82,9 +83,9 @@ local_ref<JCxxCallbackImpl::jhybridobject> extractCallback(
 }
 
 local_ref<JPromiseImpl::javaobject> extractPromise(
-    std::weak_ptr<Instance> &instance,
-    dynamic_iterator &it,
-    dynamic_iterator &end) {
+    std::weak_ptr<Instance>& instance,
+    dynamic_iterator& it,
+    dynamic_iterator& end) {
   auto resolve = extractCallback(instance, *it++);
   CHECK(it != end);
   auto reject = extractCallback(instance, *it++);
@@ -108,10 +109,10 @@ bool isNullable(char type) {
 }
 
 jvalue extract(
-    std::weak_ptr<Instance> &instance,
+    std::weak_ptr<Instance>& instance,
     char type,
-    dynamic_iterator &it,
-    dynamic_iterator &end) {
+    dynamic_iterator& it,
+    dynamic_iterator& end) {
   CHECK(it != end);
   jvalue value;
   if (type == 'P') {
@@ -119,7 +120,7 @@ jvalue extract(
     return value;
   }
 
-  const auto &arg = *it++;
+  const auto& arg = *it++;
   if (isNullable(type) && arg.isNull()) {
     value.l = nullptr;
     return value;
@@ -170,7 +171,7 @@ jvalue extract(
   return value;
 }
 
-std::size_t countJsArgs(const std::string &signature) {
+std::size_t countJsArgs(const std::string& signature) {
   std::size_t count = 0;
   for (char c : signature) {
     switch (c) {
@@ -209,9 +210,9 @@ std::string MethodInvoker::getMethodName() const {
 }
 
 MethodCallResult MethodInvoker::invoke(
-    std::weak_ptr<Instance> &instance,
+    std::weak_ptr<Instance>& instance,
     alias_ref<JBaseJavaModule::javaobject> module,
-    const folly::dynamic &params) {
+    const folly::dynamic& params) {
 #ifdef WITH_FBSYSTRACE
   fbsystrace::FbSystraceSection s(
       TRACE_TAG_REACT_CXX_BRIDGE,
@@ -227,7 +228,7 @@ MethodCallResult MethodInvoker::invoke(
 
   auto env = Environment::current();
   auto argCount = signature_.size() - 2;
-  JniLocalScope scope(env, argCount);
+  JniLocalScope scope(env, static_cast<int>(argCount));
   jvalue args[argCount];
   std::transform(
       signature_.begin() + 2,

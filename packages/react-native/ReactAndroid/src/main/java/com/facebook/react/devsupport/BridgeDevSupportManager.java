@@ -14,6 +14,7 @@ import com.facebook.common.logging.FLog;
 import com.facebook.debug.holder.PrinterHolder;
 import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.R;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.JavaJSExecutor;
@@ -86,9 +87,6 @@ public final class BridgeDevSupportManager extends DevSupportManagerBase {
         surfaceDelegateFactory,
         devLoadingViewManager);
 
-    mReactInstanceManagerHelper = reactInstanceManagerHelper;
-    mDevLoadingViewManager = devLoadingViewManager;
-
     if (getDevSettings().isStartSamplingProfilerOnInit()) {
       // Only start the profiler. If its already running, there is an error
       if (!mIsSamplingProfilerEnabled) {
@@ -103,21 +101,13 @@ public final class BridgeDevSupportManager extends DevSupportManagerBase {
     }
 
     addCustomDevOption(
-        mIsSamplingProfilerEnabled ? "Disable Sampling Profiler" : "Enable Sampling Profiler",
+        applicationContext.getString(R.string.catalyst_sample_profiler_toggle),
         new DevOptionHandler() {
           @Override
           public void onOptionSelected() {
             toggleJSSamplingProfiler();
           }
         });
-  }
-
-  public DevLoadingViewManager getDevLoadingViewManager() {
-    return mDevLoadingViewManager;
-  }
-
-  public ReactInstanceDevHelper getReactInstanceManagerHelper() {
-    return mReactInstanceManagerHelper;
   }
 
   @Override

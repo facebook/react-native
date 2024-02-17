@@ -21,7 +21,7 @@
 
 namespace facebook::react {
 
-static void hermesFatalHandler(const std::string &reason) {
+static void hermesFatalHandler(const std::string& reason) {
   LOG(ERROR) << "Hermes Fatal: " << reason << "\n";
   __android_log_assert(nullptr, "Hermes", "%s", reason.c_str());
 }
@@ -41,12 +41,11 @@ static ::hermes::vm::RuntimeConfig makeRuntimeConfig(jlong heapSizeMB) {
       .build();
 }
 
-static void installBindings(jsi::Runtime &runtime) {
+static void installBindings(jsi::Runtime& runtime) {
   react::Logger androidLogger =
-      static_cast<void (*)(const std::string &, unsigned int)>(
+      static_cast<void (*)(const std::string&, unsigned int)>(
           &reactAndroidLoggingHook);
   react::bindNativeLogger(runtime, androidLogger);
-  react::bindNativePerformanceNow(runtime);
 }
 
 class HermesExecutorHolder
@@ -91,17 +90,12 @@ class HermesExecutorHolder
     return makeCxxInstance(std::move(factory));
   }
 
-  static bool canLoadFile(jni::alias_ref<jclass>, const std::string &path) {
-    return true;
-  }
-
   static void registerNatives() {
     registerHybrid(
         {makeNativeMethod("initHybrid", HermesExecutorHolder::initHybrid),
          makeNativeMethod(
              "initHybridDefaultConfig",
-             HermesExecutorHolder::initHybridDefaultConfig),
-         makeNativeMethod("canLoadFile", HermesExecutorHolder::canLoadFile)});
+             HermesExecutorHolder::initHybridDefaultConfig)});
   }
 
  private:
@@ -111,7 +105,7 @@ class HermesExecutorHolder
 
 } // namespace facebook::react
 
-JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
+JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved) {
   return facebook::jni::initialize(
       vm, [] { facebook::react::HermesExecutorHolder::registerNatives(); });
 }

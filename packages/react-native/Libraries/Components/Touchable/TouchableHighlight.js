@@ -344,7 +344,7 @@ class TouchableHighlight extends React.Component<Props, State> {
         focusable={
           this.props.focusable !== false && this.props.onPress !== undefined
         }
-        nativeID={this.props.nativeID}
+        nativeID={this.props.id ?? this.props.nativeID}
         testID={this.props.testID}
         ref={this.props.hostRef}
         {...eventHandlersWithoutBlurAndFocus}>
@@ -363,6 +363,7 @@ class TouchableHighlight extends React.Component<Props, State> {
 
   componentDidMount(): void {
     this._isMounted = true;
+    this.state.pressability.configure(this._createPressabilityConfig());
   }
 
   componentDidUpdate(prevProps: Props, prevState: State) {
@@ -378,12 +379,12 @@ class TouchableHighlight extends React.Component<Props, State> {
   }
 }
 
-const Touchable = (React.forwardRef((props, hostRef) => (
-  <TouchableHighlight {...props} hostRef={hostRef} />
-)): React.AbstractComponent<
+const Touchable: React.AbstractComponent<
   $ReadOnly<$Diff<Props, {|hostRef: React.Ref<typeof View>|}>>,
   React.ElementRef<typeof View>,
->);
+> = React.forwardRef((props, hostRef) => (
+  <TouchableHighlight {...props} hostRef={hostRef} />
+));
 
 Touchable.displayName = 'TouchableHighlight';
 

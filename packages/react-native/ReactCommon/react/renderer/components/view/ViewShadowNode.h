@@ -21,9 +21,9 @@ class ViewShadowNodeProps final : public ViewProps {
  public:
   ViewShadowNodeProps() = default;
   ViewShadowNodeProps(
-      const PropsParserContext &context,
-      ViewShadowNodeProps const &sourceProps,
-      RawProps const &rawProps);
+      const PropsParserContext& context,
+      const ViewShadowNodeProps& sourceProps,
+      const RawProps& rawProps);
 };
 
 /*
@@ -34,20 +34,14 @@ class ViewShadowNode final : public ConcreteViewShadowNode<
                                  ViewShadowNodeProps,
                                  ViewEventEmitter> {
  public:
-  static ShadowNodeTraits BaseTraits() {
-    auto traits = ConcreteViewShadowNode::BaseTraits();
-    traits.set(ShadowNodeTraits::Trait::View);
-    return traits;
-  }
-
   ViewShadowNode(
-      ShadowNodeFragment const &fragment,
-      ShadowNodeFamily::Shared const &family,
+      const ShadowNodeFragment& fragment,
+      const ShadowNodeFamily::Shared& family,
       ShadowNodeTraits traits);
 
   ViewShadowNode(
-      ShadowNode const &sourceShadowNode,
-      ShadowNodeFragment const &fragment);
+      const ShadowNode& sourceShadowNode,
+      const ShadowNodeFragment& fragment);
 
  private:
   void initialize() noexcept;

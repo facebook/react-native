@@ -7,6 +7,9 @@
 
 package com.facebook.react.devsupport.interfaces;
 
+import com.facebook.infer.annotation.Nullsafe;
+
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public enum ErrorType {
   JS("JS"),
   NATIVE("Native");

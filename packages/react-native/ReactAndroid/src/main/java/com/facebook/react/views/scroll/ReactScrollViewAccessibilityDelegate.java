@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.R;
 import com.facebook.react.bridge.AssertionException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
@@ -19,7 +20,8 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
 
-public class ReactScrollViewAccessibilityDelegate extends AccessibilityDelegateCompat {
+@Nullsafe(Nullsafe.Mode.LOCAL)
+class ReactScrollViewAccessibilityDelegate extends AccessibilityDelegateCompat {
   private final String TAG = ReactScrollViewAccessibilityDelegate.class.getSimpleName();
 
   @Override

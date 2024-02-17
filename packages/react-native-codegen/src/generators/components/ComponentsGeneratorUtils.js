@@ -11,25 +11,23 @@
 'use strict';
 
 import type {NamedShape, PropTypeAnnotation} from '../../CodegenSchema';
-
 import type {
-  StringTypeAnnotation,
-  ReservedPropTypeAnnotation,
-  ObjectTypeAnnotation,
-  Int32TypeAnnotation,
-  FloatTypeAnnotation,
-  DoubleTypeAnnotation,
   BooleanTypeAnnotation,
+  DoubleTypeAnnotation,
+  FloatTypeAnnotation,
+  Int32TypeAnnotation,
+  ObjectTypeAnnotation,
+  ReservedPropTypeAnnotation,
+  StringTypeAnnotation,
 } from '../../CodegenSchema';
 
+const {getEnumName} = require('../Utils');
 const {
+  generateStructName,
   getCppTypeForAnnotation,
   getEnumMaskName,
-  generateStructName,
   getImports,
 } = require('./CppHelpers.js');
-
-const {getEnumName} = require('../Utils');
 
 function getNativeTypeFromAnnotation(
   componentName: string,

@@ -1,0 +1,81 @@
+[versions]
+# Android versions
+minSdk = "23"
+targetSdk = "34"
+compileSdk = "34"
+buildTools = "34.0.0"
+ndkVersion = "26.1.10909125"
+# Dependencies versions
+agp = "8.2.1"
+androidx-annotation = "1.6.0"
+androidx-appcompat = "1.6.1"
+androidx-autofill = "1.1.0"
+androidx-swiperefreshlayout = "1.1.0"
+androidx-test = "1.5.0"
+androidx-tracing = "1.1.0"
+assertj = "3.21.0"
+binary-compatibility-validator = "0.13.2"
+download = "5.4.0"
+fbjni = "0.6.0"
+fresco = "3.1.3"
+infer-annotation = "0.18.0"
+javax-annotation-api = "1.3.2"
+javax-inject = "1"
+jsr305 = "3.0.2"
+junit = "4.13.2"
+kotlin = "1.9.22"
+mockito = "3.12.4"
+nexus-publish = "1.3.0"
+okhttp = "4.9.2"
+okio = "2.9.0"
+robolectric = "4.9.2"
+soloader = "0.10.5"
+xstream = "1.4.20"
+yoga-proguard-annotations = "1.19.0"
+# Native Dependencies
+boost="1_83_0"
+doubleconversion="1.1.6"
+fmt="9.1.0"
+folly="2024.01.01.00"
+glog="0.3.5"
+gtest="1.12.1"
+
+[libraries]
+androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
+androidx-appcompat-resources = { module = "androidx.appcompat:appcompat-resources", version.ref = "androidx-appcompat" }
+androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }
+androidx-autofill = { module = "androidx.autofill:autofill", version.ref = "androidx-autofill" }
+androidx-swiperefreshlayout = { module = "androidx.swiperefreshlayout:swiperefreshlayout", version.ref = "androidx-swiperefreshlayout" }
+androidx-tracing = { module = "androidx.tracing:tracing", version.ref = "androidx-tracing" }
+androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidx-test" }
+androidx-test-rules = { module = "androidx.test:rules", version.ref = "androidx-test" }
+
+fbjni = { module = "com.facebook.fbjni:fbjni", version.ref = "fbjni" }
+fresco = { module = "com.facebook.fresco:fresco", version.ref = "fresco" }
+fresco-middleware = { module = "com.facebook.fresco:middleware", version.ref = "fresco" }
+fresco-imagepipeline-okhttp3 = { module = "com.facebook.fresco:imagepipeline-okhttp3", version.ref = "fresco" }
+fresco-ui-common = { module = "com.facebook.fresco:ui-common", version.ref = "fresco" }
+infer-annotation = { module = "com.facebook.infer.annotation:infer-annotation", version.ref = "infer-annotation" }
+soloader = { module = "com.facebook.soloader:soloader", version.ref = "soloader" }
+yoga-proguard-annotations = { module = "com.facebook.yoga:proguard-annotations", version.ref = "yoga-proguard-annotations" }
+
+jsr305 = { module = "com.google.code.findbugs:jsr305", version.ref = "jsr305" }
+okhttp3-urlconnection = { module = "com.squareup.okhttp3:okhttp-urlconnection", version.ref = "okhttp" }
+okhttp3 = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
+okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
+javax-inject = { module = "javax.inject:javax.inject", version.ref = "javax-inject" }
+javax-annotation-api = { module = "javax.annotation:javax.annotation-api", version.ref = "javax-annotation-api" }
+
+junit = {module = "junit:junit", version.ref = "junit" }
+assertj = {module = "org.assertj:assertj-core", version.ref = "assertj" }
+mockito = {module = "org.mockito:mockito-inline", version.ref = "mockito" }
+robolectric = {module = "org.robolectric:robolectric", version.ref = "robolectric" }
+thoughtworks = {module = "com.thoughtworks.xstream:xstream", version.ref = "xstream" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+android-library = { id = "com.android.library", version.ref = "agp" }
+download = { id = "de.undercouch.download", version.ref = "download" }
+nexus-publish = { id = "io.github.gradle-nexus.publish-plugin", version.ref = "nexus-publish" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+binary-compatibility-validator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version.ref = "binary-compatibility-validator" }

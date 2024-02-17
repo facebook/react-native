@@ -9,11 +9,10 @@
 
 'use strict';
 
+const utils = require('./codegen-utils');
 const fs = require('fs');
 const mkdirp = require('mkdirp');
 const path = require('path');
-const utils = require('./codegen-utils');
-const RNCodegen = utils.getCodegen();
 
 const GENERATORS = {
   all: {
@@ -35,12 +34,6 @@ function createOutputDirectoryIfNeeded(outputDirectory, libraryName) {
     outputDirectory = path.resolve(__dirname, '..', 'Libraries', libraryName);
   }
   mkdirp.sync(outputDirectory);
-}
-
-function createFolderIfDefined(folder) {
-  if (folder) {
-    mkdirp.sync(folder);
-  }
 }
 
 /**
@@ -71,35 +64,24 @@ function validateLibraryType(libraryType) {
   }
 }
 
-function generateSpec(
+function generateSpecFromInMemorySchema(
   platform,
-  schemaPath,
+  schema,
   outputDirectory,
   libraryName,
   packageName,
   libraryType,
+  useLocalIncludePaths,
 ) {
   validateLibraryType(libraryType);
-
-  let schema = readAndParseSchema(schemaPath);
-
   createOutputDirectoryIfNeeded(outputDirectory, libraryName);
-  function composePath(intermediate) {
-    return path.join(outputDirectory, intermediate, libraryName);
-  }
-
-  // These are hardcoded and should not be changed.
-  // The codegen creates some C++ code with #include directive
-  // which uses these paths. Those directive are not customizable yet.
-  createFolderIfDefined(composePath('react/renderer/components/'));
-  createFolderIfDefined(composePath('./'));
-
-  RNCodegen.generate(
+  utils.getCodegen().generate(
     {
       libraryName,
       schema,
       outputDirectory,
       packageName,
+      useLocalIncludePaths,
     },
     {
       generators: GENERATORS[libraryType][platform],
@@ -122,6 +104,25 @@ function generateSpec(
   }
 }
 
+function generateSpec(
+  platform,
+  schemaPath,
+  outputDirectory,
+  libraryName,
+  packageName,
+  libraryType,
+) {
+  generateSpecFromInMemorySchema(
+    platform,
+    readAndParseSchema(schemaPath),
+    outputDirectory,
+    libraryName,
+    packageName,
+    libraryType,
+  );
+}
+
 module.exports = {
   execute: generateSpec,
+  generateSpecFromInMemorySchema: generateSpecFromInMemorySchema,
 };

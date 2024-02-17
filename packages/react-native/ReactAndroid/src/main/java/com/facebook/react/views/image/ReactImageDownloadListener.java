@@ -14,9 +14,11 @@ import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import com.facebook.drawee.controller.ControllerListener;
 import com.facebook.drawee.drawable.ForwardingDrawable;
+import com.facebook.infer.annotation.Nullsafe;
 import javax.annotation.Nullable;
 
-public class ReactImageDownloadListener<INFO> extends ForwardingDrawable
+@Nullsafe(Nullsafe.Mode.LOCAL)
+class ReactImageDownloadListener<INFO> extends ForwardingDrawable
     implements ControllerListener<INFO> {
 
   private static final int MAX_LEVEL = 10000;

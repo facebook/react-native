@@ -30,6 +30,10 @@ static NSString *interfaceIdiom(UIUserInterfaceIdiom idiom)
       return @"tv";
     case UIUserInterfaceIdiomCarPlay:
       return @"carplay";
+#if TARGET_OS_VISION
+    case UIUserInterfaceIdiomVision:
+      return @"vision";
+#endif
     default:
       return @"unknown";
   }
@@ -65,18 +69,21 @@ RCT_EXPORT_MODULE(PlatformConstants)
     UIDevice *device = [UIDevice currentDevice];
     auto versions = RCTGetReactNativeVersion();
     constants = typedConstants<JS::NativePlatformConstantsIOS::Constants>({
-        .forceTouchAvailable = RCTForceTouchAvailable() ? true : false,
-        .osVersion = [device systemVersion],
-        .systemName = [device systemName],
-        .interfaceIdiom = interfaceIdiom([device userInterfaceIdiom]),
-        .isTesting = RCTRunningInTestEnvironment() ? true : false,
-        .reactNativeVersion = JS::NativePlatformConstantsIOS::ConstantsReactNativeVersion::Builder(
-            {.minor = [versions[@"minor"] doubleValue],
-             .major = [versions[@"major"] doubleValue],
-             .patch = [versions[@"patch"] doubleValue],
-             .prerelease = [versions[@"prerelease"] isKindOfClass:[NSNull class]]
-                 ? std::optional<double>{}
-                 : [versions[@"prerelease"] doubleValue]}),
+      .forceTouchAvailable = RCTForceTouchAvailable() ? true : false, .osVersion = [device systemVersion],
+      .systemName = [device systemName], .interfaceIdiom = interfaceIdiom([device userInterfaceIdiom]),
+      .isTesting = RCTRunningInTestEnvironment() ? true : false,
+      .reactNativeVersion = JS::NativePlatformConstantsIOS::ConstantsReactNativeVersion::Builder(
+          {.minor = [versions[@"minor"] doubleValue],
+           .major = [versions[@"major"] doubleValue],
+           .patch = [versions[@"patch"] doubleValue],
+           .prerelease = [versions[@"prerelease"] isKindOfClass:[NSNull class]]
+               ? std::optional<double>{}
+               : [versions[@"prerelease"] doubleValue]}),
+#if TARGET_OS_MACCATALYST
+      .isMacCatalyst = true,
+#else
+        .isMacCatalyst = false,
+#endif
     });
   });
 

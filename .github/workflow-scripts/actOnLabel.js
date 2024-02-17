@@ -121,7 +121,7 @@ module.exports = async (github, context, labelWithContext) => {
       await addComment(
         `| :warning: | Missing Reproducible Example |\n` +
           `| --- | --- |\n` +
-          `| :information_source: | It looks like your issue is missing a reproducible example. Please provide either: <br /><ul><li>If your bug is UI related: a [Snack](https://snack.expo.dev)</li><li> If your bug is build/update related: use our [Reproducer Template](https://github.com/react-native-community/reproducer-react-native/generate)</li></ul> |`,
+          `| :information_source: | We could not detect a reproducible example in your issue report. Please provide either: <br /><ul><li>If your bug is UI related: a [Snack](https://snack.expo.dev)</li><li> If your bug is build/update related: use our [Reproducer Template](https://github.com/react-native-community/reproducer-react-native/generate)</li></ul> |`,
       );
       await requestAuthorFeedback();
       return;
@@ -129,9 +129,20 @@ module.exports = async (github, context, labelWithContext) => {
       await addComment(
         `| :warning: | Unsupported Version of React Native |\n` +
           `| --- | --- |\n` +
-          `| :information_source: | It looks like your issue or the example you provided uses an [unsupported version of React Native](https://github.com/reactwg/react-native-releases/blob/main/README.md#releases-support-policy). Due to the number of issues we receive, we're currently only accepting new issues against one of the supported versions. Please [upgrade](https://reactnative.dev/docs/upgrading) to latest and verify if the issue persists (alternatively, create a new project and repro the issue in it). If you cannot upgrade, please open your issue on [StackOverflow](https://stackoverflow.com/questions/tagged/react-native) to get further community support. |`,
+          `| :information_source: | It looks like your issue or the example you provided uses an [unsupported version of React Native](https://github.com/reactwg/react-native-releases/blob/main/README.md#releases-support-policy).<br/><br/>Due to the number of issues we receive, we're currently only accepting new issues against one of the supported versions. Please [upgrade](https://reactnative.dev/docs/upgrading) to latest and verify if the issue persists (alternatively, create a new project and repro the issue in it). If you cannot upgrade, please open your issue on [StackOverflow](https://stackoverflow.com/questions/tagged/react-native) to get further community support. |`,
       );
       await requestAuthorFeedback();
+      return;
+    case 'Type: Too Old Version':
+      await addComment(
+        `| :warning: | Too Old Version of React Native |\n` +
+          `| --- | --- |\n` +
+          `| :information_source: | It looks like your issue or the example you provided uses a [**Too Old Version of React Native**](https://github.com/reactwg/react-native-releases/blob/main/README.md#releases-support-policy).<br/><br/>Due to the number of issues we receive, we're currently only accepting new issues against one of the supported versions. Please [upgrade](https://reactnative.dev/docs/upgrading) to latest and verify if the issue persists (alternatively, create a new project and repro the issue in it). If you cannot upgrade, please open your issue on [StackOverflow](https://stackoverflow.com/questions/tagged/react-native) to get further community support. |`,
+      );
+      await closeIssue();
+      return;
+    default:
+      // No action needed
       return;
   }
 };

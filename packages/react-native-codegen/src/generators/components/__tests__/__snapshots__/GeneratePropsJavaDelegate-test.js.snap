@@ -271,6 +271,9 @@ public class CommandNativeComponentManagerDelegate<T extends View, U extends Bas
       case \\"hotspotUpdate\\":
         mViewManager.hotspotUpdate(view, args.getInt(0), args.getInt(1));
         break;
+      case \\"addItems\\":
+        mViewManager.addItems(view, args.getArray(0));
+        break;
     }
   }
 }

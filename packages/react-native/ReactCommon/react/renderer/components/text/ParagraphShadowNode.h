@@ -18,7 +18,7 @@
 
 namespace facebook::react {
 
-extern char const ParagraphComponentName[];
+extern const char ParagraphComponentName[];
 
 /*
  * `ShadowNode` for <Paragraph> component, represents <View>-like component
@@ -34,10 +34,13 @@ class ParagraphShadowNode final : public ConcreteViewShadowNode<
  public:
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 
+  ParagraphShadowNode(
+      const ShadowNode& sourceShadowNode,
+      const ShadowNodeFragment& fragment);
+
   static ShadowNodeTraits BaseTraits() {
     auto traits = ConcreteViewShadowNode::BaseTraits();
     traits.set(ShadowNodeTraits::Trait::LeafYogaNode);
-    traits.set(ShadowNodeTraits::Trait::TextKind);
     traits.set(ShadowNodeTraits::Trait::MeasurableYogaNode);
 
 #ifdef ANDROID
@@ -55,14 +58,14 @@ class ParagraphShadowNode final : public ConcreteViewShadowNode<
    * and construct `ParagraphState` objects.
    */
   void setTextLayoutManager(
-      std::shared_ptr<TextLayoutManager const> textLayoutManager);
+      std::shared_ptr<const TextLayoutManager> textLayoutManager);
 
 #pragma mark - LayoutableShadowNode
 
   void layout(LayoutContext layoutContext) override;
   Size measureContent(
-      LayoutContext const &layoutContext,
-      LayoutConstraints const &layoutConstraints) const override;
+      const LayoutContext& layoutContext,
+      const LayoutConstraints& layoutConstraints) const override;
 
   /*
    * Internal representation of the nested content of the node in a format
@@ -79,20 +82,20 @@ class ParagraphShadowNode final : public ConcreteViewShadowNode<
   /*
    * Builds (if needed) and returns a reference to a `Content` object.
    */
-  Content const &getContent(LayoutContext const &layoutContext) const;
+  const Content& getContent(const LayoutContext& layoutContext) const;
 
   /*
    * Builds and returns a `Content` object with given `layoutConstraints`.
    */
   Content getContentWithMeasuredAttachments(
-      LayoutContext const &layoutContext,
-      LayoutConstraints const &layoutConstraints) const;
+      const LayoutContext& layoutContext,
+      const LayoutConstraints& layoutConstraints) const;
 
   /*
    * Creates a `State` object (with `AttributedText` and
    * `TextLayoutManager`) if needed.
    */
-  void updateStateIfNeeded(Content const &content);
+  void updateStateIfNeeded(const Content& content);
 
   /*
    * Cached content of the subtree started from the node.

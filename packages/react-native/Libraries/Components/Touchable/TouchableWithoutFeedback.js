@@ -181,10 +181,15 @@ class TouchableWithoutFeedback extends React.Component<Props, State> {
       }
     }
 
+    // $FlowFixMe[incompatible-call]
     return React.cloneElement(element, elementProps, ...children);
   }
 
   componentDidUpdate(): void {
+    this.state.pressability.configure(createPressabilityConfig(this.props));
+  }
+
+  componentDidMount(): mixed {
     this.state.pressability.configure(createPressabilityConfig(this.props));
   }
 

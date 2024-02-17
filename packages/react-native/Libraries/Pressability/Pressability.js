@@ -132,8 +132,16 @@ export type PressabilityConfig = $ReadOnly<{|
   onPressOut?: ?(event: PressEvent) => mixed,
 
   /**
+   * Whether to prevent any other native components from becoming responder
+   * while this pressable is responder.
+   */
+  blockNativeResponder?: ?boolean,
+
+  /**
    * Returns whether a long press gesture should cancel the press gesture.
    * Defaults to true.
+   *
+   * @deprecated
    */
   onLongPressShouldCancelPress_DEPRECATED?: ?() => boolean,
 
@@ -142,6 +150,8 @@ export type PressabilityConfig = $ReadOnly<{|
    *
    * Returns whether to yield to a lock termination request (e.g. if a native
    * scroll gesture attempts to steal the responder lock).
+   *
+   * @deprecated
    */
   onResponderTerminationRequest_DEPRECATED?: ?() => boolean,
 
@@ -163,7 +173,7 @@ export type EventHandlers = $ReadOnly<{|
   onMouseLeave?: (event: MouseEvent) => void,
   onPointerEnter?: (event: PointerEvent) => void,
   onPointerLeave?: (event: PointerEvent) => void,
-  onResponderGrant: (event: PressEvent) => void,
+  onResponderGrant: (event: PressEvent) => void | boolean,
   onResponderMove: (event: PressEvent) => void,
   onResponderRelease: (event: PressEvent) => void,
   onResponderTerminate: (event: PressEvent) => void,
@@ -283,6 +293,7 @@ const DEFAULT_MIN_PRESS_DURATION = 130;
 
 const DEFAULT_LONG_PRESS_DEACTIVATION_DISTANCE = 10;
 let longPressDeactivationDistance = DEFAULT_LONG_PRESS_DEACTIVATION_DISTANCE;
+
 /**
  * Pressability implements press handling capabilities.
  *
@@ -303,7 +314,8 @@ let longPressDeactivationDistance = DEFAULT_LONG_PRESS_DEACTIVATION_DISTANCE;
  * bounds should trigger deactivation, but moving the same finger back within an
  * element's bounds should trigger reactivation.
  *
- * In order to use `Pressability`, do the following:
+ * This should be consumed by functional components using `usePressability`. The
+ * following steps are only relevant for using `Pressability` in classes:
  *
  * 1. Instantiate `Pressability` and store it on your component's state.
  *
@@ -320,7 +332,15 @@ let longPressDeactivationDistance = DEFAULT_LONG_PRESS_DEACTIVATION_DISTANCE;
  *      <View {...this.state.pressability.getEventHandlers()} />
  *    );
  *
- * 3. Reset `Pressability` when your component unmounts.
+ * 3. Update `Pressability` when your component mounts, updates, and unmounts.
+ *
+ *    componentDidMount() {
+ *      this.state.pressability.configure(...);
+ *    }
+ *
+ *    componentDidUpdate() {
+ *      this.state.pressability.configure(...);
+ *    }
  *
  *    componentWillUnmount() {
  *      this.state.pressability.reset();
@@ -464,7 +484,7 @@ export default class Pressability {
         return !disabled;
       },
 
-      onResponderGrant: (event: PressEvent): void => {
+      onResponderGrant: (event: PressEvent): void | boolean => {
         event.persist();
 
         this._cancelPressOutDelayTimeout();
@@ -490,6 +510,8 @@ export default class Pressability {
         this._longPressDelayTimeout = setTimeout(() => {
           this._handleLongPress(event);
         }, delayLongPress + delayPressIn);
+
+        return this._config.blockNativeResponder === true;
       },
 
       onResponderMove: (event: PressEvent): void => {

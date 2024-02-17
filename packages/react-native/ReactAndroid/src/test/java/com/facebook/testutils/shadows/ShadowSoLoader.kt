@@ -13,10 +13,11 @@ import kotlin.jvm.JvmStatic
 import org.robolectric.annotation.Implementation
 import org.robolectric.annotation.Implements
 
+@Suppress("UNUSED_PARAMETER")
 @Implements(SoLoader::class)
 class ShadowSoLoader {
   companion object {
-    @JvmStatic @Implementation fun init(context: Context?, flags: Int) {}
+    @JvmStatic @Implementation fun init(context: Context?, flags: Int) = Unit
 
     @JvmStatic @Implementation fun loadLibrary(shortName: String?): Boolean = true
   }

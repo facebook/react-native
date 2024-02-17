@@ -26,7 +26,7 @@
 // Enables some Shadow Tree introspection features (maintains a StubViewTree,
 // and logs prev/next tree and mutations if there are any discrepancies). If you
 // define this, also define `RN_DEBUG_STRING_CONVERTIBLE`.
-#ifdef REACT_NATIVE_DEBUG
+#if (defined(REACT_NATIVE_DEBUG) && defined(WITH_FBSYSTRACE))
 #define RN_SHADOW_TREE_INTROSPECTION 1
 #endif
 
@@ -34,6 +34,8 @@
 // Enable if `RN_SHADOW_TREE_INTROSPECTION` is enabled.
 #ifdef RN_SHADOW_TREE_INTROSPECTION
 #define RN_DEBUG_STRING_CONVERTIBLE 1
+#else
+#define RN_DEBUG_STRING_CONVERTIBLE 0
 #endif
 
 // Enables *very* verbose, noisy logs in the differ. Useful for debugging
@@ -44,7 +46,3 @@
 // are logged to console before the `assert` is fired. More useful on Android vs
 // other platforms.
 //#define STUB_VIEW_TREE_VERBOSE 1
-
-// Verbose logging for certain Yoga-related things in the RN codebase (not Yoga
-// codebase). Useful for debugging layout.
-//#define RN_DEBUG_YOGA_LOGGER 1

@@ -9,14 +9,13 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 add_compile_options(
         -fexceptions
         -frtti
-        -std=c++17
+        -std=c++20
         -Wall
         -Wpedantic
-        -Wno-gnu-zero-variadic-macro-arguments
         -DLOG_TAG=\"Fabric\")
 
 file(GLOB react_render_animations_SRC CONFIGURE_DEPENDS *.cpp)
-add_library(react_render_animations SHARED ${react_render_animations_SRC})
+add_library(react_render_animations STATIC ${react_render_animations_SRC})
 
 target_include_directories(react_render_animations PUBLIC ${REACT_COMMON_DIR})
 

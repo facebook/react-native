@@ -22,6 +22,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.common.UIManagerType;
@@ -295,6 +296,7 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
     // same time. Therefore it does not make much sense to create an animationId -> animation
     // object map that would require additional memory just to support the use-case of stopping
     // an animation
+    WritableArray events = null;
     for (int i = 0; i < mActiveAnimations.size(); i++) {
       AnimationDriver animation = mActiveAnimations.valueAt(i);
       if (animatedNode.equals(animation.mAnimatedValue)) {
@@ -312,12 +314,17 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
           params.putInt("animationId", animation.mId);
           params.putBoolean("finished", false);
           params.putDouble("value", animation.mAnimatedValue.mValue);
-          mReactApplicationContext.emitDeviceEvent(
-              "onNativeAnimatedModuleAnimationFinished", params);
+          if (events == null) {
+            events = Arguments.createArray();
+          }
+          events.pushMap(params);
         }
         mActiveAnimations.removeAt(i);
         i--;
       }
+    }
+    if (events != null) {
+      mReactApplicationContext.emitDeviceEvent("onNativeAnimatedModuleAnimationFinished", events);
     }
   }
 
@@ -327,6 +334,7 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
     // same time. Therefore it does not make much sense to create an animationId -> animation
     // object map that would require additional memory just to support the use-case of stopping
     // an animation
+    WritableArray events = null;
     for (int i = 0; i < mActiveAnimations.size(); i++) {
       AnimationDriver animation = mActiveAnimations.valueAt(i);
       if (animation.mId == animationId) {
@@ -344,12 +352,17 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
           params.putInt("animationId", animation.mId);
           params.putBoolean("finished", false);
           params.putDouble("value", animation.mAnimatedValue.mValue);
-          mReactApplicationContext.emitDeviceEvent(
-              "onNativeAnimatedModuleAnimationFinished", params);
+          if (events == null) {
+            events = Arguments.createArray();
+          }
+          events.pushMap(params);
         }
         mActiveAnimations.removeAt(i);
-        return;
+        break;
       }
+    }
+    if (events != null) {
+      mReactApplicationContext.emitDeviceEvent("onNativeAnimatedModuleAnimationFinished", events);
     }
     // Do not throw an error in the case animation could not be found. We only keep "active"
     // animations in the registry and there is a chance that Animated.js will enqueue a
@@ -590,7 +603,7 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
         if (matchSpec.match(driver.mViewTag, driver.mEventName)) {
           foundAtLeastOneDriver = true;
           stopAnimationsForNode(driver.mValueNode);
-          event.dispatch(driver);
+          event.dispatchModern(driver);
           mRunUpdateNodeList.add(driver.mValueNode);
         }
       }
@@ -643,6 +656,7 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
     // Cleanup finished animations. Iterate over the array of animations and override ones that has
     // finished, then resize `mActiveAnimations`.
     if (hasFinishedAnimations) {
+      WritableArray events = null;
       for (int i = mActiveAnimations.size() - 1; i >= 0; i--) {
         AnimationDriver animation = mActiveAnimations.valueAt(i);
         if (animation.mHasFinished) {
@@ -659,11 +673,16 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
             params.putInt("animationId", animation.mId);
             params.putBoolean("finished", true);
             params.putDouble("value", animation.mAnimatedValue.mValue);
-            mReactApplicationContext.emitDeviceEvent(
-                "onNativeAnimatedModuleAnimationFinished", params);
+            if (events == null) {
+              events = Arguments.createArray();
+            }
+            events.pushMap(params);
           }
           mActiveAnimations.removeAt(i);
         }
+      }
+      if (events != null) {
+        mReactApplicationContext.emitDeviceEvent("onNativeAnimatedModuleAnimationFinished", events);
       }
     }
   }

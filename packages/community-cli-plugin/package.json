@@ -1,0 +1,44 @@
+{
+  "name": "@react-native/community-cli-plugin",
+  "version": "0.74.0",
+  "description": "Core CLI commands for React Native",
+  "keywords": [
+    "react-native",
+    "tools"
+  ],
+  "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/community-cli-plugin#readme",
+  "bugs": "https://github.com/facebook/react-native/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/facebook/react-native.git",
+    "directory": "packages/community-cli-plugin"
+  },
+  "license": "MIT",
+  "exports": {
+    ".": "./src/index.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@react-native-community/cli-server-api": "13.5.1",
+    "@react-native-community/cli-tools": "13.5.1",
+    "@react-native/dev-middleware": "0.74.0",
+    "@react-native/metro-babel-transformer": "0.74.0",
+    "chalk": "^4.0.0",
+    "execa": "^5.1.1",
+    "metro": "^0.80.3",
+    "metro-config": "^0.80.3",
+    "metro-core": "^0.80.3",
+    "node-fetch": "^2.2.0",
+    "querystring": "^0.2.1",
+    "readline": "^1.3.0"
+  },
+  "devDependencies": {
+    "metro-resolver": "^0.80.3"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

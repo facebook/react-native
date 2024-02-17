@@ -6,6 +6,7 @@
  */
 
 #import "RNTMyNativeViewComponentView.h"
+#import "UIView+ColorOverlays.h"
 
 #import <react/renderer/components/AppSpecs/ComponentDescriptors.h>
 #import <react/renderer/components/AppSpecs/EventEmitters.h>
@@ -51,23 +52,10 @@ using namespace facebook::react;
   return self;
 }
 
-- (UIColor *)UIColorFromHexString:(const std::string)hexString
+- (void)updateProps:(const Props::Shared &)props oldProps:(const Props::Shared &)oldProps
 {
-  unsigned rgbValue = 0;
-  NSString *colorString = [NSString stringWithCString:hexString.c_str() encoding:[NSString defaultCStringEncoding]];
-  NSScanner *scanner = [NSScanner scannerWithString:colorString];
-  [scanner setScanLocation:1]; // bypass '#' character
-  [scanner scanHexInt:&rgbValue];
-  return [UIColor colorWithRed:((rgbValue & 0xFF0000) >> 16) / 255.0
-                         green:((rgbValue & 0xFF00) >> 8) / 255.0
-                          blue:(rgbValue & 0xFF) / 255.0
-                         alpha:1.0];
-}
-
-- (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
-{
-  const auto &oldViewProps = *std::static_pointer_cast<RNTMyNativeViewProps const>(_props);
-  const auto &newViewProps = *std::static_pointer_cast<RNTMyNativeViewProps const>(props);
+  const auto &oldViewProps = *std::static_pointer_cast<const RNTMyNativeViewProps>(_props);
+  const auto &newViewProps = *std::static_pointer_cast<const RNTMyNativeViewProps>(props);
 
   if (oldViewProps.values != newViewProps.values) {
     if (_eventEmitter) {
@@ -100,7 +88,7 @@ using namespace facebook::react;
           newStringVector,
           newLatLonVector,
           newIntVectorVector};
-      std::static_pointer_cast<RNTMyNativeViewEventEmitter const>(_eventEmitter)->onIntArrayChanged(value);
+      std::static_pointer_cast<const RNTMyNativeViewEventEmitter>(_eventEmitter)->onIntArrayChanged(value);
     }
   }
 
@@ -123,9 +111,26 @@ using namespace facebook::react;
 
 - (void)callNativeMethodToChangeBackgroundColor:(NSString *)colorString
 {
-  UIColor *color = [self UIColorFromHexString:std::string([colorString UTF8String])];
-  _view.backgroundColor = color;
+  [_view setBackgroundColorWithColorString:colorString];
 }
+
+- (void)callNativeMethodToAddOverlays:(const NSArray *)overlayColors
+{
+  [_view addColorOverlays:overlayColors];
+}
+
+- (void)callNativeMethodToRemoveOverlays
+{
+  [_view removeOverlays];
+}
+
+- (void)fireLagacyStyleEvent
+{
+  RNTMyNativeViewEventEmitter::OnLegacyStyleEvent value = {"Legacy Style Event Fired."};
+
+  std::static_pointer_cast<const RNTMyNativeViewEventEmitter>(_eventEmitter)->onLegacyStyleEvent(value);
+}
+
 @end
 
 Class<RCTComponentViewProtocol> RNTMyNativeViewCls(void)

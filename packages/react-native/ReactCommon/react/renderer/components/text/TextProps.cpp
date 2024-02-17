@@ -10,17 +10,17 @@
 namespace facebook::react {
 
 TextProps::TextProps(
-    const PropsParserContext &context,
-    const TextProps &sourceProps,
-    const RawProps &rawProps)
+    const PropsParserContext& context,
+    const TextProps& sourceProps,
+    const RawProps& rawProps)
     : Props(context, sourceProps, rawProps),
       BaseTextProps::BaseTextProps(context, sourceProps, rawProps){};
 
 void TextProps::setProp(
-    const PropsParserContext &context,
+    const PropsParserContext& context,
     RawPropsPropNameHash hash,
-    const char *propName,
-    RawValue const &value) {
+    const char* propName,
+    const RawValue& value) {
   BaseTextProps::setProp(context, hash, propName, value);
   Props::setProp(context, hash, propName, value);
 }

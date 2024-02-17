@@ -16,28 +16,36 @@
 
 namespace facebook::react {
 
+static bool hasPrefix(const std::string& str, const std::string& prefix) {
+  return str.compare(0, prefix.length(), prefix) == 0;
+}
+
 // TODO(T29874519): Get rid of "top" prefix once and for all.
 /*
- * Capitalizes the first letter of the event type and adds "top" prefix if
- * necessary (e.g. "layout" becames "topLayout").
+ * Replaces "on" with "top" if present. Or capitalizes the first letter and adds
+ * "top" prefix. E.g. "eventName" becomes "topEventName", "onEventName" also
+ * becomes "topEventName".
  */
 static std::string normalizeEventType(std::string type) {
   auto prefixedType = std::move(type);
-  if (prefixedType.find("top", 0) != 0) {
-    prefixedType.insert(0, "top");
-    prefixedType[3] = static_cast<char>(toupper(prefixedType[3]));
+  if (facebook::react::hasPrefix(prefixedType, "top")) {
+    return prefixedType;
   }
-  return prefixedType;
+  if (facebook::react::hasPrefix(prefixedType, "on")) {
+    return "top" + prefixedType.substr(2);
+  }
+  prefixedType[0] = static_cast<char>(toupper(prefixedType[0]));
+  return "top" + prefixedType;
 }
 
-std::mutex &EventEmitter::DispatchMutex() {
+std::mutex& EventEmitter::DispatchMutex() {
   static std::mutex mutex;
   return mutex;
 }
 
 ValueFactory EventEmitter::defaultPayloadFactory() {
   static auto payloadFactory =
-      ValueFactory{[](jsi::Runtime &runtime) { return jsi::Object(runtime); }};
+      ValueFactory{[](jsi::Runtime& runtime) { return jsi::Object(runtime); }};
   return payloadFactory;
 }
 
@@ -49,12 +57,12 @@ EventEmitter::EventEmitter(
 
 void EventEmitter::dispatchEvent(
     std::string type,
-    const folly::dynamic &payload,
+    const folly::dynamic& payload,
     EventPriority priority,
     RawEvent::Category category) const {
   dispatchEvent(
       std::move(type),
-      [payload](jsi::Runtime &runtime) {
+      [payload](jsi::Runtime& runtime) {
         return valueFromDynamic(runtime, payload);
       },
       priority,
@@ -63,15 +71,27 @@ void EventEmitter::dispatchEvent(
 
 void EventEmitter::dispatchUniqueEvent(
     std::string type,
-    const folly::dynamic &payload) const {
-  dispatchUniqueEvent(std::move(type), [payload](jsi::Runtime &runtime) {
+    const folly::dynamic& payload) const {
+  dispatchUniqueEvent(std::move(type), [payload](jsi::Runtime& runtime) {
     return valueFromDynamic(runtime, payload);
   });
 }
 
 void EventEmitter::dispatchEvent(
     std::string type,
-    const ValueFactory &payloadFactory,
+    const ValueFactory& payloadFactory,
+    EventPriority priority,
+    RawEvent::Category category) const {
+  dispatchEvent(
+      std::move(type),
+      std::make_shared<ValueFactoryEventPayload>(payloadFactory),
+      priority,
+      category);
+}
+
+void EventEmitter::dispatchEvent(
+    std::string type,
+    SharedEventPayload payload,
     EventPriority priority,
     RawEvent::Category category) const {
   SystraceSection s("EventEmitter::dispatchEvent", "type", type);
@@ -84,7 +104,7 @@ void EventEmitter::dispatchEvent(
   eventDispatcher->dispatchEvent(
       RawEvent(
           normalizeEventType(std::move(type)),
-          payloadFactory,
+          std::move(payload),
           eventTarget_,
           category),
       priority);
@@ -92,7 +112,15 @@ void EventEmitter::dispatchEvent(
 
 void EventEmitter::dispatchUniqueEvent(
     std::string type,
-    const ValueFactory &payloadFactory) const {
+    const ValueFactory& payloadFactory) const {
+  dispatchUniqueEvent(
+      std::move(type),
+      std::make_shared<ValueFactoryEventPayload>(payloadFactory));
+}
+
+void EventEmitter::dispatchUniqueEvent(
+    std::string type,
+    SharedEventPayload payload) const {
   SystraceSection s("EventEmitter::dispatchUniqueEvent");
 
   auto eventDispatcher = eventDispatcher_.lock();
@@ -102,7 +130,7 @@ void EventEmitter::dispatchUniqueEvent(
 
   eventDispatcher->dispatchUniqueEvent(RawEvent(
       normalizeEventType(std::move(type)),
-      payloadFactory,
+      std::move(payload),
       eventTarget_,
       RawEvent::Category::Continuous));
 }
@@ -128,6 +156,10 @@ void EventEmitter::setEnabled(bool enabled) const {
       eventTarget_.reset();
     }
   }
+}
+
+const SharedEventTarget& EventEmitter::getEventTarget() const {
+  return eventTarget_;
 }
 
 } // namespace facebook::react

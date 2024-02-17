@@ -9,6 +9,7 @@ package com.facebook.react.fabric;
 
 import android.annotation.SuppressLint;
 import androidx.annotation.NonNull;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.NativeMap;
@@ -20,6 +21,7 @@ import com.facebook.react.fabric.events.EventBeatManager;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.uimanager.PixelUtil;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @DoNotStrip
 @SuppressLint("MissingNativeLoadLibrary")
 public class BindingImpl implements Binding {
@@ -62,9 +64,6 @@ public class BindingImpl implements Binding {
       float offsetY,
       boolean isRTL,
       boolean doLeftAndRightSwapInRTL);
-
-  @Override
-  public native void renderTemplateToSurface(int surfaceId, String uiTemplate);
 
   @Override
   public native void stopSurface(int surfaceId);

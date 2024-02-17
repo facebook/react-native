@@ -9,20 +9,18 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 add_compile_options(
         -fexceptions
         -frtti
-        -std=c++17
+        -std=c++20
         -Wall
         -Wpedantic
-        -Wno-gnu-zero-variadic-macro-arguments
         -DLOG_TAG=\"Fabric\")
 
 file(GLOB react_render_mounting_SRC CONFIGURE_DEPENDS *.cpp)
-add_library(react_render_mounting SHARED ${react_render_mounting_SRC})
+add_library(react_render_mounting STATIC ${react_render_mounting_SRC})
 
 target_include_directories(react_render_mounting PRIVATE .)
 target_include_directories(react_render_mounting PUBLIC ${REACT_COMMON_DIR})
 
 target_link_libraries(react_render_mounting
-        butter
         folly_runtime
         glog
         glog_init

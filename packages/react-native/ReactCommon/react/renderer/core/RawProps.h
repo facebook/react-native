@@ -10,9 +10,6 @@
 #include <limits>
 #include <optional>
 
-#include <butter/map.h>
-#include <butter/small_vector.h>
-
 #include <folly/dynamic.h>
 #include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
@@ -51,7 +48,13 @@ class RawProps final {
   /*
    * Creates an object with given `runtime` and `value`.
    */
-  RawProps(jsi::Runtime &runtime, jsi::Value const &value) noexcept;
+  RawProps(jsi::Runtime& runtime, const jsi::Value& value) noexcept;
+
+  explicit RawProps(const RawProps& rawProps) noexcept;
+  RawProps& operator=(const RawProps& other) noexcept;
+
+  RawProps(RawProps&& other) noexcept = default;
+  RawProps& operator=(RawProps&& other) noexcept = default;
 
   /*
    * Creates an object with given `folly::dynamic` object.
@@ -59,22 +62,9 @@ class RawProps final {
    * We need this temporary, only because we have a callsite that does not have
    * a `jsi::Runtime` behind the data.
    */
-  RawProps(folly::dynamic const &dynamic) noexcept;
+  explicit RawProps(folly::dynamic dynamic) noexcept;
 
-  /*
-   * Not moveable.
-   */
-  RawProps(RawProps &&other) noexcept = delete;
-  RawProps &operator=(RawProps &&other) noexcept = delete;
-
-  /*
-   * Not copyable.
-   */
-  RawProps(RawProps const &other) noexcept = delete;
-  RawProps &operator=(RawProps const &other) noexcept = delete;
-
-  void parse(RawPropsParser const &parser, const PropsParserContext &)
-      const noexcept;
+  void parse(const RawPropsParser& parser) noexcept;
 
   /*
    * Deprecated. Do not use.
@@ -82,6 +72,15 @@ class RawProps final {
    * will be removed as soon Android implementation does not need it.
    */
   explicit operator folly::dynamic() const noexcept;
+
+  /*
+   * Once called, Yoga style props will be filtered out during conversion to
+   * folly::dynamic. folly::dynamic conversion is only used on Android and props
+   * specific to Yoga do not need to be send over JNI to Android.
+   * This is a performance optimisation to minimise traffic between C++ and
+   * Java.
+   */
+  void filterYogaStylePropsInDynamicConversion() noexcept;
 
   /*
    * Returns `true` if the object is empty.
@@ -93,7 +92,7 @@ class RawProps final {
    * Returns a const unowning pointer to `RawValue` of a prop with a given name.
    * Returns `nullptr` if a prop with the given name does not exist.
    */
-  const RawValue *at(char const *name, char const *prefix, char const *suffix)
+  const RawValue* at(const char* name, const char* prefix, const char* suffix)
       const noexcept;
 
   /**
@@ -101,14 +100,13 @@ class RawProps final {
    * instead of using `at` to access values randomly.
    */
   void iterateOverValues(
-      std::function<
-          void(RawPropsPropNameHash, const char *, RawValue const &)> const &fn)
-      const;
+      const std::function<
+          void(RawPropsPropNameHash, const char*, RawValue const&)>& fn) const;
 
  private:
   friend class RawPropsParser;
 
-  mutable RawPropsParser const *parser_{nullptr};
+  mutable const RawPropsParser* parser_{nullptr};
 
   /*
    * Source artefacts:
@@ -117,7 +115,7 @@ class RawProps final {
   mutable Mode mode_;
 
   // Case 1: Source data is represented as `jsi::Object`.
-  jsi::Runtime *runtime_{};
+  jsi::Runtime* runtime_{};
   jsi::Value value_;
 
   // Case 2: Source data is represented as `folly::dynamic`.
@@ -133,12 +131,22 @@ class RawProps final {
    * Parsed artefacts:
    * To be used by `RawPropParser`.
    */
-  mutable butter::
-      small_vector<RawPropsValueIndex, kNumberOfPropsPerComponentSoftCap>
-          keyIndexToValueIndex_;
-  mutable butter::
-      small_vector<RawValue, kNumberOfExplicitlySpecifiedPropsSoftCap>
-          values_;
+  mutable std::vector<RawPropsValueIndex> keyIndexToValueIndex_;
+  mutable std::vector<RawValue> values_;
+
+  bool ignoreYogaStyleProps_{false};
+};
+
+/*
+ * Once called, props will be filtered out during conversion to
+ * folly::dynamic. folly::dynamic conversion is only used on Android and props
+ * specific to Yoga do not need to be send over JNI to Android.
+ * This is a performance optimisation to minimise traffic between C++ and
+ * Java.
+ */
+template <typename T>
+concept RawPropsFilterable = requires(RawProps& rawProps) {
+  { T::filterRawProps(rawProps) } -> std::same_as<void>;
 };
 
 } // namespace facebook::react

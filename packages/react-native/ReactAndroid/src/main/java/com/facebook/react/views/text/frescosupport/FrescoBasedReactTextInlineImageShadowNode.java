@@ -21,13 +21,13 @@ import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
-import com.facebook.react.views.text.ReactTextInlineImageShadowNode;
-import com.facebook.react.views.text.TextInlineImageSpan;
+import com.facebook.react.views.text.internal.ReactTextInlineImageShadowNode;
+import com.facebook.react.views.text.internal.span.TextInlineImageSpan;
 import com.facebook.yoga.YogaConstants;
 import java.util.Locale;
 
 /** Shadow node that represents an inline image. Loading is done using Fresco. */
-public class FrescoBasedReactTextInlineImageShadowNode extends ReactTextInlineImageShadowNode {
+class FrescoBasedReactTextInlineImageShadowNode extends ReactTextInlineImageShadowNode {
 
   private @Nullable Uri mUri;
   private ReadableMap mHeaders;

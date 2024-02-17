@@ -22,7 +22,7 @@ import * as React from 'react';
 // require BackHandler so it sets the default handler that exits the app if no listeners respond
 import '../Utilities/BackHandler';
 
-type OffscreenType = React.AbstractComponent<{
+type ActivityType = React.AbstractComponent<{
   mode: 'visible' | 'hidden',
   children: React.Node,
 }>;
@@ -73,20 +73,23 @@ export default function renderApplication<Props: Object>(
   if (useOffscreen && displayMode != null) {
     // $FlowFixMe[incompatible-type]
     // $FlowFixMe[prop-missing]
-    const Offscreen: OffscreenType = React.unstable_Offscreen;
+    const Activity: ActivityType = React.unstable_Activity;
 
     renderable = (
-      <Offscreen
+      <Activity
         mode={displayMode === DisplayMode.VISIBLE ? 'visible' : 'hidden'}>
         {renderable}
-      </Offscreen>
+      </Activity>
     );
   }
+
+  // We want to have concurrentRoot always enabled when you're on Fabric.
+  const useConcurrentRootOverride = fabric;
 
   performanceLogger.startTimespan('renderApplication_React_render');
   performanceLogger.setExtra(
     'usedReactConcurrentRoot',
-    useConcurrentRoot ? '1' : '0',
+    useConcurrentRootOverride ? '1' : '0',
   );
   performanceLogger.setExtra('usedReactFabric', fabric ? '1' : '0');
   performanceLogger.setExtra(
@@ -97,7 +100,7 @@ export default function renderApplication<Props: Object>(
     element: renderable,
     rootTag,
     useFabric: Boolean(fabric),
-    useConcurrentRoot: Boolean(useConcurrentRoot),
+    useConcurrentRoot: Boolean(useConcurrentRootOverride),
   });
   performanceLogger.stopTimespan('renderApplication_React_render');
 }

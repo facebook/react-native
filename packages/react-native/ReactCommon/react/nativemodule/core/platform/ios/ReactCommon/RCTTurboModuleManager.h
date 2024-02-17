@@ -9,14 +9,16 @@
 
 #import <memory>
 
+#import <React/RCTBridgeModuleDecorator.h>
 #import <React/RCTBridgeProxy.h>
 #import <React/RCTDefines.h>
 #import <React/RCTTurboModuleRegistry.h>
 #import <ReactCommon/RuntimeExecutor.h>
 #import <ReactCommon/TurboModuleBinding.h>
+
 #import "RCTTurboModule.h"
 
-RCT_EXTERN void RCTTurboModuleSetBindingMode(facebook::react::TurboModuleBindingMode bindingMode);
+@class RCTTurboModuleManager;
 
 @protocol RCTTurboModuleManagerDelegate <NSObject>
 
@@ -53,22 +55,27 @@ RCT_EXTERN void RCTTurboModuleSetBindingMode(facebook::react::TurboModuleBinding
 
 @end
 
+@protocol RCTTurboModuleManagerRuntimeHandler <NSObject>
+
+- (facebook::react::RuntimeExecutor)runtimeExecutorForTurboModuleManager:(RCTTurboModuleManager *)turboModuleManager;
+
+@end
+
 @interface RCTTurboModuleManager : NSObject <RCTTurboModuleRegistry>
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
                       delegate:(id<RCTTurboModuleManagerDelegate>)delegate
                      jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker;
 
+- (instancetype)initWithBridgeProxy:(RCTBridgeProxy *)bridgeProxy
+              bridgeModuleDecorator:(RCTBridgeModuleDecorator *)bridgeModuleDecorator
+                           delegate:(id<RCTTurboModuleManagerDelegate>)delegate
+                          jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker;
+
 - (void)installJSBindings:(facebook::jsi::Runtime &)runtime;
 
-/**
- * @deprecated: use installJSBindings instead
- */
-- (void)installJSBindingWithRuntimeExecutor:(facebook::react::RuntimeExecutor &)runtimeExecutor;
-
-// TODO: Should we move this into the initializer?
-- (void)setBridgeProxy:(RCTBridgeProxy *)bridgeProxy;
-
 - (void)invalidate;
+
+@property (nonatomic, weak, readwrite) id<RCTTurboModuleManagerRuntimeHandler> runtimeHandler;
 
 @end

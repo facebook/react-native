@@ -14,6 +14,9 @@
 
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 
+static NSString *const kStatusBarFrameDidChange = @"statusBarFrameDidChange";
+static NSString *const kStatusBarFrameWillChange = @"statusBarFrameWillChange";
+
 @implementation RCTConvert (UIStatusBar)
 
 + (UIStatusBarStyle)UIStatusBarStyle:(id)json RCT_DYNAMIC
@@ -71,7 +74,7 @@ RCT_EXPORT_MODULE()
 
 - (NSArray<NSString *> *)supportedEvents
 {
-  return @[ @"statusBarFrameDidChange", @"statusBarFrameWillChange" ];
+  return @[ kStatusBarFrameDidChange, kStatusBarFrameWillChange ];
 }
 
 - (void)startObserving
@@ -92,11 +95,6 @@ RCT_EXPORT_MODULE()
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (dispatch_queue_t)methodQueue
-{
-  return dispatch_get_main_queue();
-}
-
 - (void)emitEvent:(NSString *)eventName forNotification:(NSNotification *)notification
 {
   CGRect frame = [notification.userInfo[UIApplicationStatusBarFrameUserInfoKey] CGRectValue];
@@ -113,12 +111,12 @@ RCT_EXPORT_MODULE()
 
 - (void)applicationDidChangeStatusBarFrame:(NSNotification *)notification
 {
-  [self emitEvent:@"statusBarFrameDidChange" forNotification:notification];
+  [self emitEvent:kStatusBarFrameDidChange forNotification:notification];
 }
 
 - (void)applicationWillChangeStatusBarFrame:(NSNotification *)notification
 {
-  [self emitEvent:@"statusBarFrameWillChange" forNotification:notification];
+  [self emitEvent:kStatusBarFrameWillChange forNotification:notification];
 }
 
 RCT_EXPORT_METHOD(getHeight : (RCTResponseSenderBlock)callback)
@@ -130,35 +128,41 @@ RCT_EXPORT_METHOD(getHeight : (RCTResponseSenderBlock)callback)
 
 RCT_EXPORT_METHOD(setStyle : (NSString *)style animated : (BOOL)animated)
 {
-  UIStatusBarStyle statusBarStyle = [RCTConvert UIStatusBarStyle:style];
-  if (RCTViewControllerBasedStatusBarAppearance()) {
-    RCTLogError(@"RCTStatusBarManager module requires that the \
+  dispatch_async(dispatch_get_main_queue(), ^{
+    UIStatusBarStyle statusBarStyle = [RCTConvert UIStatusBarStyle:style];
+    if (RCTViewControllerBasedStatusBarAppearance()) {
+      RCTLogError(@"RCTStatusBarManager module requires that the \
                 UIViewControllerBasedStatusBarAppearance key in the Info.plist is set to NO");
-  } else {
+    } else {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [RCTSharedApplication() setStatusBarStyle:statusBarStyle animated:animated];
-  }
+      [RCTSharedApplication() setStatusBarStyle:statusBarStyle animated:animated];
+    }
 #pragma clang diagnostic pop
+  });
 }
 
 RCT_EXPORT_METHOD(setHidden : (BOOL)hidden withAnimation : (NSString *)withAnimation)
 {
-  UIStatusBarAnimation animation = [RCTConvert UIStatusBarAnimation:withAnimation];
-  if (RCTViewControllerBasedStatusBarAppearance()) {
-    RCTLogError(@"RCTStatusBarManager module requires that the \
+  dispatch_async(dispatch_get_main_queue(), ^{
+    UIStatusBarAnimation animation = [RCTConvert UIStatusBarAnimation:withAnimation];
+    if (RCTViewControllerBasedStatusBarAppearance()) {
+      RCTLogError(@"RCTStatusBarManager module requires that the \
                 UIViewControllerBasedStatusBarAppearance key in the Info.plist is set to NO");
-  } else {
+    } else {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [RCTSharedApplication() setStatusBarHidden:hidden withAnimation:animation];
+      [RCTSharedApplication() setStatusBarHidden:hidden withAnimation:animation];
 #pragma clang diagnostic pop
-  }
+    }
+  });
 }
 
 RCT_EXPORT_METHOD(setNetworkActivityIndicatorVisible : (BOOL)visible)
 {
-  RCTSharedApplication().networkActivityIndicatorVisible = visible;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    RCTSharedApplication().networkActivityIndicatorVisible = visible;
+  });
 }
 
 - (facebook::react::ModuleConstants<JS::NativeStatusBarManagerIOS::Constants>)getConstants
@@ -166,7 +170,7 @@ RCT_EXPORT_METHOD(setNetworkActivityIndicatorVisible : (BOOL)visible)
   __block facebook::react::ModuleConstants<JS::NativeStatusBarManagerIOS::Constants> constants;
   RCTUnsafeExecuteOnMainQueueSync(^{
     constants = facebook::react::typedConstants<JS::NativeStatusBarManagerIOS::Constants>({
-        .HEIGHT = RCTSharedApplication().statusBarFrame.size.height,
+        .HEIGHT = RCTUIStatusBarManager().statusBarFrame.size.height,
         .DEFAULT_BACKGROUND_COLOR = std::nullopt,
     });
   });

@@ -16,18 +16,15 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
-folly_version = '2021.07.22.00'
+folly_config = get_folly_config()
+folly_compiler_flags = folly_config[:compiler_flags]
+folly_version = folly_config[:version]
 
 header_search_paths = [
     "\"$(PODS_ROOT)/RCT-Folly\"",
     "\"$(PODS_TARGET_SRCROOT)\"",
     "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"",
 ]
-
-if ENV["USE_FRAMEWORKS"]
-  header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-debug/React_debug.framework/Headers\""
-end
 
 Pod::Spec.new do |s|
   s.name                   = "React-utils"
@@ -36,15 +33,15 @@ Pod::Spec.new do |s|
   s.homepage               = "https://reactnative.dev/"
   s.license                = package["license"]
   s.author                 = "Meta Platforms, Inc. and its affiliates"
-  s.platforms              = { :ios => min_ios_version_supported }
+  s.platforms              = min_supported_versions
   s.source                 = source
   s.source_files           = "**/*.{cpp,h,mm}"
   s.compiler_flags         = folly_compiler_flags
   s.header_dir             = "react/utils"
   s.exclude_files          = "tests"
-  s.pod_target_xcconfig    = {
-    "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
-    "HEADER_SEARCH_PATHS" => header_search_paths.join(' ')}
+  s.pod_target_xcconfig    = { "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
+                               "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
+                               "DEFINES_MODULE" => "YES" }
 
   if ENV['USE_FRAMEWORKS']
     s.module_name            = "React_utils"
@@ -52,6 +49,7 @@ Pod::Spec.new do |s|
   end
 
   s.dependency "RCT-Folly", folly_version
-  s.dependency "React-debug"
   s.dependency "glog"
+
+  add_dependency(s, "React-debug")
 end

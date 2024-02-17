@@ -16,19 +16,23 @@ pluginManagement {
 include(
     ":packages:react-native:ReactAndroid",
     ":packages:react-native:ReactAndroid:hermes-engine",
-    ":packages:react-native:ReactAndroid:external-artifacts")
+    ":packages:react-native:ReactAndroid:external-artifacts",
+    ":packages:rn-tester:android:app")
 
-// If the ./packages folder exists, then we're inside the React Native repository.
-// If not, a users is consuming this project for a build from source.
-if (File("${rootDir}/packages").exists()) {
-  include(":packages:rn-tester:android:app")
-  // Include this to enable codegen Gradle plugin.
-  includeBuild("packages/react-native-gradle-plugin/")
+includeBuild("packages/react-native-gradle-plugin/")
+
+dependencyResolutionManagement {
+  versionCatalogs {
+    create("libs") { from(files("packages/react-native/gradle/libs.versions.toml")) }
+  }
 }
 
 rootProject.name = "react-native-github"
 
-plugins { id("com.gradle.enterprise").version("3.7.1") }
+plugins {
+  id("com.gradle.enterprise").version("3.7.1")
+  id("org.gradle.toolchains.foojay-resolver-convention").version("0.5.0")
+}
 
 // If you specify a file inside gradle/gradle-enterprise.gradle.kts
 // you can configure your custom Gradle Enterprise instance

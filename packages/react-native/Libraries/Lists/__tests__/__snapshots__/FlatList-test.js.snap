@@ -28,7 +28,7 @@ exports[`FlatList ignores invalid data 1`] = `
   pagingEnabled={false}
   removeClippedSubviews={false}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   scrollViewRef={[Function]}
   sendMomentumEvents={true}
   snapToEnd={true}
@@ -104,7 +104,7 @@ exports[`FlatList renders all the bells and whistles 1`] = `
   refreshing={false}
   removeClippedSubviews={false}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
   viewabilityConfigCallbackPairs={Array []}
 >
@@ -222,7 +222,7 @@ exports[`FlatList renders array-like data 1`] = `
   pagingEnabled={false}
   removeClippedSubviews={false}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   scrollViewRef={[Function]}
   sendMomentumEvents={true}
   snapToEnd={true}
@@ -295,7 +295,7 @@ exports[`FlatList renders empty list 1`] = `
   onScrollEndDrag={[Function]}
   removeClippedSubviews={false}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
   viewabilityConfigCallbackPairs={Array []}
 >
@@ -317,7 +317,7 @@ exports[`FlatList renders null list 1`] = `
   onScrollEndDrag={[Function]}
   removeClippedSubviews={false}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
   viewabilityConfigCallbackPairs={Array []}
 >
@@ -352,7 +352,7 @@ exports[`FlatList renders simple list (multiple columns) 1`] = `
   onScrollEndDrag={[Function]}
   removeClippedSubviews={false}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
   viewabilityConfigCallbackPairs={Array []}
 >
@@ -425,7 +425,7 @@ exports[`FlatList renders simple list 1`] = `
   onScrollEndDrag={[Function]}
   removeClippedSubviews={false}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
   viewabilityConfigCallbackPairs={Array []}
 >
@@ -488,7 +488,7 @@ exports[`FlatList renders simple list using ListItemComponent (multiple columns)
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   removeClippedSubviews={false}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
   viewabilityConfigCallbackPairs={Array []}
 >
@@ -561,7 +561,7 @@ exports[`FlatList renders simple list using ListItemComponent 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   removeClippedSubviews={false}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
   viewabilityConfigCallbackPairs={Array []}
 >

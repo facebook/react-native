@@ -7,104 +7,152 @@
 
 #pragma once
 
-#include <yoga/Yoga.h>
+#include <stdarg.h>
+#include <stdbool.h>
+#include <stddef.h>
 
-#include "BitUtils.h"
-#include "Yoga-internal.h"
+#include <yoga/YGEnums.h>
+#include <yoga/YGMacros.h>
 
-namespace facebook {
-namespace yoga {
+YG_EXTERN_C_BEGIN
 
-// Whether moving a node from config "a" to config "b" should dirty previously
-// calculated layout results.
-bool configUpdateInvalidatesLayout(YGConfigRef a, YGConfigRef b);
+typedef struct YGNode* YGNodeRef;
+typedef const struct YGNode* YGNodeConstRef;
 
-// Internal variants of log functions, currently used only by JNI bindings.
-// TODO: Reconcile this with the public API
-using LogWithContextFn = int (*)(
+/**
+ * Handle to a mutable Yoga configuration.
+ */
+typedef struct YGConfig* YGConfigRef;
+
+/**
+ * Handle to an immutable Yoga configruation.
+ */
+typedef const struct YGConfig* YGConfigConstRef;
+
+/**
+ * Allocates a set of configuration options. The configuration may be applied to
+ * multiple nodes (i.e. a single global config), or can be applied more
+ * granularly per-node.
+ */
+YG_EXPORT YGConfigRef YGConfigNew(void);
+
+/**
+ * Frees the associated Yoga configuration.
+ */
+YG_EXPORT void YGConfigFree(YGConfigRef config);
+
+/**
+ * Returns the default config values set by Yoga.
+ */
+YG_EXPORT YGConfigConstRef YGConfigGetDefault(void);
+
+/**
+ * Yoga by default creates new nodes with style defaults different from flexbox
+ * on web (e.g. `YGFlexDirectionColumn` and `YGPositionRelative`).
+ * `UseWebDefaults` instructs Yoga to instead use a default style consistent
+ * with the web.
+ */
+YG_EXPORT void YGConfigSetUseWebDefaults(YGConfigRef config, bool enabled);
+
+/**
+ * Whether the configuration is set to use web defaults.
+ */
+YG_EXPORT bool YGConfigGetUseWebDefaults(YGConfigConstRef config);
+
+/**
+ * Yoga will by deafult round final layout positions and dimensions to the
+ * nearst point. `pointScaleFactor` controls the density of the grid used for
+ * layout rounding (e.g. to round to the closest display pixel).
+ *
+ * May be set to 0.0f to avoid rounding the layout results.
+ */
+YG_EXPORT void YGConfigSetPointScaleFactor(
     YGConfigRef config,
-    YGNodeRef node,
+    float pixelsInPoint);
+
+/**
+ * Get the currently set point scale factor.
+ */
+YG_EXPORT float YGConfigGetPointScaleFactor(YGConfigConstRef config);
+
+/**
+ * Configures how Yoga balances W3C conformance vs compatibility with layouts
+ * created against earlier versions of Yoga.
+ *
+ * By deafult Yoga will prioritize W3C conformance. `Errata` may be set to ask
+ * Yoga to produce specific incorrect behaviors. E.g. `YGConfigSetErrata(config,
+ * YGErrataStretchFlexBasis)`.
+ *
+ * YGErrata is a bitmask, and multiple errata may be set at once. Predfined
+ * constants exist for convenience:
+ * 1. YGErrataNone: No errata
+ * 2. YGErrataClassic: Match layout behaviors of Yoga 1.x
+ * 3. YGErrataAll: Match layout behaviors of Yoga 1.x, including
+ * `UseLegacyStretchBehaviour`
+ */
+YG_EXPORT void YGConfigSetErrata(YGConfigRef config, YGErrata errata);
+
+/**
+ * Get the currently set errata.
+ */
+YG_EXPORT YGErrata YGConfigGetErrata(YGConfigConstRef config);
+
+/**
+ * Function pointer type for YGConfigSetLogger.
+ */
+typedef int (*YGLogger)(
+    YGConfigConstRef config,
+    YGNodeConstRef node,
     YGLogLevel level,
-    void* context,
     const char* format,
     va_list args);
-using CloneWithContextFn = YGNodeRef (*)(
-    YGNodeRef node,
-    YGNodeRef owner,
-    int childIndex,
-    void* cloneContext);
 
-using ExperimentalFeatureSet =
-    facebook::yoga::detail::EnumBitset<YGExperimentalFeature>;
+/**
+ * Set a custom log function for to use when logging diagnostics or fatal.
+ * errors.
+ */
+YG_EXPORT void YGConfigSetLogger(YGConfigRef config, YGLogger logger);
 
-#pragma pack(push)
-#pragma pack(1)
-// Packed structure of <32-bit options to miminize size per node.
-struct YGConfigFlags {
-  bool useWebDefaults : 1;
-  bool printTree : 1;
-  bool cloneNodeUsesContext : 1;
-  bool loggerUsesContext : 1;
-};
-#pragma pack(pop)
+/**
+ * Sets an arbitrary context pointer on the config which may be read from during
+ * callbacks.
+ */
+YG_EXPORT void YGConfigSetContext(YGConfigRef config, void* context);
 
-} // namespace yoga
-} // namespace facebook
+/**
+ * Gets the currently set context.
+ */
+YG_EXPORT void* YGConfigGetContext(YGConfigConstRef config);
 
-struct YOGA_EXPORT YGConfig {
-  YGConfig(YGLogger logger);
+/**
+ * Function pointer type for YGConfigSetCloneNodeFunc.
+ */
+typedef YGNodeRef (*YGCloneNodeFunc)(
+    YGNodeConstRef oldNode,
+    YGNodeConstRef owner,
+    size_t childIndex);
 
-  void setUseWebDefaults(bool useWebDefaults);
-  bool useWebDefaults() const;
+/**
+ * Enable an experimental/unsupported feature in Yoga.
+ */
+YG_EXPORT void YGConfigSetExperimentalFeatureEnabled(
+    YGConfigRef config,
+    YGExperimentalFeature feature,
+    bool enabled);
 
-  void setShouldPrintTree(bool printTree);
-  bool shouldPrintTree() const;
+/**
+ * Whether an experimental feature is set.
+ */
+YG_EXPORT bool YGConfigIsExperimentalFeatureEnabled(
+    YGConfigConstRef config,
+    YGExperimentalFeature feature);
 
-  void setExperimentalFeatureEnabled(
-      YGExperimentalFeature feature,
-      bool enabled);
-  bool isExperimentalFeatureEnabled(YGExperimentalFeature feature) const;
-  facebook::yoga::ExperimentalFeatureSet getEnabledExperiments() const;
+/**
+ * Sets a callback, called during layout, to create a new mutable Yoga node if
+ * Yoga must write to it and its owner is not its parent observed during layout.
+ */
+YG_EXPORT void YGConfigSetCloneNodeFunc(
+    YGConfigRef config,
+    YGCloneNodeFunc callback);
 
-  void setErrata(YGErrata errata);
-  void addErrata(YGErrata errata);
-  void removeErrata(YGErrata errata);
-  YGErrata getErrata() const;
-  bool hasErrata(YGErrata errata) const;
-
-  void setPointScaleFactor(float pointScaleFactor);
-  float getPointScaleFactor() const;
-
-  void setContext(void* context);
-  void* getContext() const;
-
-  void setLogger(YGLogger logger);
-  void setLogger(facebook::yoga::LogWithContextFn logger);
-  void setLogger(std::nullptr_t);
-  void log(YGConfig*, YGNode*, YGLogLevel, void*, const char*, va_list) const;
-
-  void setCloneNodeCallback(YGCloneNodeFunc cloneNode);
-  void setCloneNodeCallback(facebook::yoga::CloneWithContextFn cloneNode);
-  void setCloneNodeCallback(std::nullptr_t);
-  YGNodeRef cloneNode(
-      YGNodeRef node,
-      YGNodeRef owner,
-      int childIndex,
-      void* cloneContext) const;
-
-private:
-  union {
-    facebook::yoga::CloneWithContextFn withContext;
-    YGCloneNodeFunc noContext;
-  } cloneNodeCallback_;
-  union {
-    facebook::yoga::LogWithContextFn withContext;
-    YGLogger noContext;
-  } logger_;
-
-  facebook::yoga::YGConfigFlags flags_{};
-  facebook::yoga::ExperimentalFeatureSet experimentalFeatures_{};
-  YGErrata errata_ = YGErrataNone;
-  float pointScaleFactor_ = 1.0f;
-  void* context_ = nullptr;
-};
+YG_EXTERN_C_END

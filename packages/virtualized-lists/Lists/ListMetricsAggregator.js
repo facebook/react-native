@@ -9,8 +9,9 @@
  */
 
 import type {Props as VirtualizedListProps} from './VirtualizedListProps';
-import {keyExtractor as defaultKeyExtractor} from './VirtualizeUtils';
+import type {Layout} from 'react-native/Libraries/Types/CoreEventTypes';
 
+import {keyExtractor as defaultKeyExtractor} from './VirtualizeUtils';
 import invariant from 'invariant';
 
 export type CellMetrics = {
@@ -23,13 +24,21 @@ export type CellMetrics = {
    */
   length: number,
   /**
-   * Offset to the cell along the scrolling axis
+   * Distance between this cell and the start of the list along the scrolling
+   * axis
    */
   offset: number,
   /**
    * Whether the cell is last known to be mounted
    */
   isMounted: boolean,
+};
+
+// TODO: `inverted` can be incorporated here if it is moved to an order
+// based implementation instead of transform.
+export type ListOrientation = {
+  horizontal: boolean,
+  rtl: boolean,
 };
 
 /**
@@ -49,47 +58,61 @@ export type CellMetricProps = {
  */
 export default class ListMetricsAggregator {
   _averageCellLength = 0;
-  _frames: {[string]: CellMetrics} = {};
+  _cellMetrics: Map<string, CellMetrics> = new Map();
+  _contentLength: ?number;
   _highestMeasuredCellIndex = 0;
-  _totalCellLength = 0;
-  _totalCellsMeasured = 0;
+  _measuredCellsLength = 0;
+  _measuredCellsCount = 0;
+  _orientation: ListOrientation = {
+    horizontal: false,
+    rtl: false,
+  };
 
   /**
    * Notify the ListMetricsAggregator that a cell has been laid out.
    *
    * @returns whether the cell layout has changed since last notification
    */
-  notifyCellLayout(
+  notifyCellLayout({
+    cellIndex,
+    cellKey,
+    orientation,
+    layout,
+  }: {
+    cellIndex: number,
     cellKey: string,
-    index: number,
-    length: number,
-    offset: number,
-  ): boolean {
+    orientation: ListOrientation,
+    layout: Layout,
+  }): boolean {
+    this._invalidateIfOrientationChanged(orientation);
+
     const next: CellMetrics = {
-      offset,
-      length,
-      index,
+      index: cellIndex,
+      length: this._selectLength(layout),
       isMounted: true,
+      offset: this.flowRelativeOffset(layout),
     };
-    const curr = this._frames[cellKey];
-    if (
-      !curr ||
-      next.offset !== curr.offset ||
-      next.length !== curr.length ||
-      index !== curr.index
-    ) {
-      this._totalCellLength += next.length - (curr ? curr.length : 0);
-      this._totalCellsMeasured += curr ? 0 : 1;
+    const curr = this._cellMetrics.get(cellKey);
+
+    if (!curr || next.offset !== curr.offset || next.length !== curr.length) {
+      if (curr) {
+        const dLength = next.length - curr.length;
+        this._measuredCellsLength += dLength;
+      } else {
+        this._measuredCellsLength += next.length;
+        this._measuredCellsCount += 1;
+      }
+
       this._averageCellLength =
-        this._totalCellLength / this._totalCellsMeasured;
-      this._frames[cellKey] = next;
+        this._measuredCellsLength / this._measuredCellsCount;
+      this._cellMetrics.set(cellKey, next);
       this._highestMeasuredCellIndex = Math.max(
         this._highestMeasuredCellIndex,
-        index,
+        cellIndex,
       );
       return true;
     } else {
-      this._frames[cellKey].isMounted = true;
+      curr.isMounted = true;
       return false;
     }
   }
@@ -98,10 +121,24 @@ export default class ListMetricsAggregator {
    * Notify ListMetricsAggregator that a cell has been unmounted.
    */
   notifyCellUnmounted(cellKey: string): void {
-    const curr = this._frames[cellKey];
+    const curr = this._cellMetrics.get(cellKey);
     if (curr) {
-      this._frames[cellKey] = {...curr, isMounted: false};
+      curr.isMounted = false;
     }
+  }
+
+  /**
+   * Notify ListMetricsAggregator that the lists content container has been laid out.
+   */
+  notifyListContentLayout({
+    orientation,
+    layout,
+  }: {
+    orientation: ListOrientation,
+    layout: $ReadOnly<{width: number, height: number}>,
+  }): void {
+    this._invalidateIfOrientationChanged(orientation);
+    this._contentLength = this._selectLength(layout);
   }
 
   /**
@@ -112,7 +149,8 @@ export default class ListMetricsAggregator {
   }
 
   /**
-   * Return the highest measured cell index
+   * Return the highest measured cell index (or 0 if nothing has been measured
+   * yet)
    */
   getHighestMeasuredCellIndex(): number {
     return this._highestMeasuredCellIndex;
@@ -150,17 +188,24 @@ export default class ListMetricsAggregator {
     const {data, getItem, getItemCount, getItemLayout} = props;
     invariant(
       index >= 0 && index < getItemCount(data),
-      'Tried to get frame for out of range index ' + index,
+      'Tried to get metrics for out of range cell index ' + index,
     );
     const keyExtractor = props.keyExtractor ?? defaultKeyExtractor;
-    const frame = this._frames[keyExtractor(getItem(data, index), index)];
-    if (!frame || frame.index !== index) {
-      if (getItemLayout) {
-        const {length, offset} = getItemLayout(data, index);
-        return {index, length, offset, isMounted: true};
-      }
+    const frame = this._cellMetrics.get(
+      keyExtractor(getItem(data, index), index),
+    );
+    if (frame && frame.index === index) {
+      return frame;
     }
-    return frame;
+
+    if (getItemLayout) {
+      const {length, offset} = getItemLayout(data, index);
+      // TODO: `isMounted` is used for both "is exact layout" and "has been
+      // unmounted". Should be refactored.
+      return {index, length, offset, isMounted: true};
+    }
+
+    return null;
   }
 
   /**
@@ -175,5 +220,84 @@ export default class ListMetricsAggregator {
       const remainder = index - Math.floor(index);
       return frameMetrics.offset + remainder * frameMetrics.length;
     }
+  }
+
+  /**
+   * Returns the length of all ScrollView content along the scrolling axis.
+   */
+  getContentLength(): number {
+    return this._contentLength ?? 0;
+  }
+
+  /**
+   * Whether a content length has been observed
+   */
+  hasContentLength(): boolean {
+    return this._contentLength != null;
+  }
+
+  /**
+   * Finds the flow-relative offset (e.g. starting from the left in LTR, but
+   * right in RTL) from a layout box.
+   */
+  flowRelativeOffset(layout: Layout, referenceContentLength?: ?number): number {
+    const {horizontal, rtl} = this._orientation;
+
+    if (horizontal && rtl) {
+      const contentLength = referenceContentLength ?? this._contentLength;
+      invariant(
+        contentLength != null,
+        'ListMetricsAggregator must be notified of list content layout before resolving offsets',
+      );
+      return (
+        contentLength -
+        (this._selectOffset(layout) + this._selectLength(layout))
+      );
+    } else {
+      return this._selectOffset(layout);
+    }
+  }
+
+  /**
+   * Converts a flow-relative offset to a cartesian offset
+   */
+  cartesianOffset(flowRelativeOffset: number): number {
+    const {horizontal, rtl} = this._orientation;
+
+    if (horizontal && rtl) {
+      invariant(
+        this._contentLength != null,
+        'ListMetricsAggregator must be notified of list content layout before resolving offsets',
+      );
+      return this._contentLength - flowRelativeOffset;
+    } else {
+      return flowRelativeOffset;
+    }
+  }
+
+  _invalidateIfOrientationChanged(orientation: ListOrientation): void {
+    if (orientation.rtl !== this._orientation.rtl) {
+      this._cellMetrics.clear();
+    }
+
+    if (orientation.horizontal !== this._orientation.horizontal) {
+      this._averageCellLength = 0;
+      this._highestMeasuredCellIndex = 0;
+      this._measuredCellsLength = 0;
+      this._measuredCellsCount = 0;
+    }
+
+    this._orientation = orientation;
+  }
+
+  _selectLength({
+    width,
+    height,
+  }: $ReadOnly<{width: number, height: number, ...}>): number {
+    return this._orientation.horizontal ? width : height;
+  }
+
+  _selectOffset({x, y}: $ReadOnly<{x: number, y: number, ...}>): number {
+    return this._orientation.horizontal ? x : y;
   }
 }

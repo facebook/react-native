@@ -11,7 +11,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Build;
 import android.util.Base64;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
@@ -90,27 +89,11 @@ import okio.Source;
     file.deleteOnExit();
 
     final URL url = new URL(uri.toString());
-    final InputStream is = url.openStream();
-    try {
-      final ReadableByteChannel channel = Channels.newChannel(is);
-      try {
-        final FileOutputStream stream = new FileOutputStream(file);
-        try {
-          long maxBytes = Long.MAX_VALUE;
-          if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
-            // Old version of Android internally cast value to integer
-            maxBytes = (long) Integer.MAX_VALUE;
-          }
-          stream.getChannel().transferFrom(channel, 0, maxBytes);
-          return new FileInputStream(file);
-        } finally {
-          stream.close();
-        }
-      } finally {
-        channel.close();
-      }
-    } finally {
-      is.close();
+    try (FileOutputStream stream = new FileOutputStream(file);
+        InputStream is = url.openStream();
+        ReadableByteChannel channel = Channels.newChannel(is)) {
+      stream.getChannel().transferFrom(channel, 0, Long.MAX_VALUE);
+      return new FileInputStream(file);
     }
   }
 

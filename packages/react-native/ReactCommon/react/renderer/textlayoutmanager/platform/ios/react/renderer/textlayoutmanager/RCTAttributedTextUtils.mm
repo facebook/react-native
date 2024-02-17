@@ -135,7 +135,7 @@ inline static CGFloat RCTEffectiveFontSizeMultiplierFromTextAttributes(const Tex
 
 inline static UIFont *RCTEffectiveFontFromTextAttributes(const TextAttributes &textAttributes)
 {
-  NSString *fontFamily = [NSString stringWithCString:textAttributes.fontFamily.c_str() encoding:NSUTF8StringEncoding];
+  NSString *fontFamily = [NSString stringWithUTF8String:textAttributes.fontFamily.c_str()];
 
   RCTFontProperties fontProperties;
   fontProperties.family = fontFamily;
@@ -178,7 +178,7 @@ inline static UIColor *RCTEffectiveBackgroundColorFromTextAttributes(const TextA
   return effectiveBackgroundColor ?: [UIColor clearColor];
 }
 
-NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(TextAttributes const &textAttributes)
+NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(const TextAttributes &textAttributes)
 {
   NSMutableDictionary<NSAttributedStringKey, id> *attributes = [NSMutableDictionary dictionaryWithCapacity:10];
 
@@ -291,10 +291,10 @@ NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(T
 
   if (textAttributes.role.has_value()) {
     std::string roleStr = toString(textAttributes.role.value());
-    attributes[RCTTextAttributesAccessibilityRoleAttributeName] = [NSString stringWithCString:roleStr.c_str()];
+    attributes[RCTTextAttributesAccessibilityRoleAttributeName] = [NSString stringWithUTF8String:roleStr.c_str()];
   } else if (textAttributes.accessibilityRole.has_value()) {
     std::string roleStr = toString(textAttributes.accessibilityRole.value());
-    attributes[RCTTextAttributesAccessibilityRoleAttributeName] = [NSString stringWithCString:roleStr.c_str()];
+    attributes[RCTTextAttributesAccessibilityRoleAttributeName] = [NSString stringWithUTF8String:roleStr.c_str()];
   }
 
   return [attributes copy];
@@ -344,6 +344,55 @@ static void RCTApplyBaselineOffset(NSMutableAttributedString *attributedText)
                          range:NSMakeRange(0, attributedText.length)];
 }
 
+static NSMutableAttributedString *RCTNSAttributedStringFragmentFromFragment(
+    const AttributedString::Fragment &fragment,
+    UIImage *placeholderImage)
+{
+  if (fragment.isAttachment()) {
+    auto layoutMetrics = fragment.parentShadowView.layoutMetrics;
+    CGRect bounds = {
+        .origin = {.x = layoutMetrics.frame.origin.x, .y = layoutMetrics.frame.origin.y},
+        .size = {.width = layoutMetrics.frame.size.width, .height = layoutMetrics.frame.size.height}};
+
+    NSTextAttachment *attachment = [NSTextAttachment new];
+    attachment.image = placeholderImage;
+    attachment.bounds = bounds;
+
+    return [[NSMutableAttributedString attributedStringWithAttachment:attachment] mutableCopy];
+  } else {
+    NSString *string = [NSString stringWithUTF8String:fragment.string.c_str()];
+
+    if (fragment.textAttributes.textTransform.has_value()) {
+      auto textTransform = fragment.textAttributes.textTransform.value();
+      string = RCTNSStringFromStringApplyingTextTransform(string, textTransform);
+    }
+
+    return [[NSMutableAttributedString alloc]
+        initWithString:string
+            attributes:RCTNSTextAttributesFromTextAttributes(fragment.textAttributes)];
+  }
+}
+
+static NSMutableAttributedString *RCTNSAttributedStringFragmentWithAttributesFromFragment(
+    const AttributedString::Fragment &fragment,
+    UIImage *placeholderImage)
+{
+  auto nsAttributedStringFragment = RCTNSAttributedStringFragmentFromFragment(fragment, placeholderImage);
+
+  if (fragment.parentShadowView.componentHandle) {
+    RCTWeakEventEmitterWrapper *eventEmitterWrapper = [RCTWeakEventEmitterWrapper new];
+    eventEmitterWrapper.eventEmitter = fragment.parentShadowView.eventEmitter;
+
+    NSDictionary<NSAttributedStringKey, id> *additionalTextAttributes =
+        @{RCTAttributedStringEventEmitterKey : eventEmitterWrapper};
+
+    [nsAttributedStringFragment addAttributes:additionalTextAttributes
+                                        range:NSMakeRange(0, nsAttributedStringFragment.length)];
+  }
+
+  return nsAttributedStringFragment;
+}
+
 NSAttributedString *RCTNSAttributedStringFromAttributedString(const AttributedString &attributedString)
 {
   static UIImage *placeholderImage;
@@ -357,42 +406,8 @@ NSAttributedString *RCTNSAttributedStringFromAttributedString(const AttributedSt
   [nsAttributedString beginEditing];
 
   for (auto fragment : attributedString.getFragments()) {
-    NSMutableAttributedString *nsAttributedStringFragment;
-
-    if (fragment.isAttachment()) {
-      auto layoutMetrics = fragment.parentShadowView.layoutMetrics;
-      CGRect bounds = {
-          .origin = {.x = layoutMetrics.frame.origin.x, .y = layoutMetrics.frame.origin.y},
-          .size = {.width = layoutMetrics.frame.size.width, .height = layoutMetrics.frame.size.height}};
-
-      NSTextAttachment *attachment = [NSTextAttachment new];
-      attachment.image = placeholderImage;
-      attachment.bounds = bounds;
-
-      nsAttributedStringFragment = [[NSMutableAttributedString attributedStringWithAttachment:attachment] mutableCopy];
-    } else {
-      NSString *string = [NSString stringWithCString:fragment.string.c_str() encoding:NSUTF8StringEncoding];
-
-      if (fragment.textAttributes.textTransform.has_value()) {
-        auto textTransform = fragment.textAttributes.textTransform.value();
-        string = RCTNSStringFromStringApplyingTextTransform(string, textTransform);
-      }
-
-      nsAttributedStringFragment = [[NSMutableAttributedString alloc]
-          initWithString:string
-              attributes:RCTNSTextAttributesFromTextAttributes(fragment.textAttributes)];
-    }
-
-    if (fragment.parentShadowView.componentHandle) {
-      RCTWeakEventEmitterWrapper *eventEmitterWrapper = [RCTWeakEventEmitterWrapper new];
-      eventEmitterWrapper.eventEmitter = fragment.parentShadowView.eventEmitter;
-
-      NSDictionary<NSAttributedStringKey, id> *additionalTextAttributes =
-          @{RCTAttributedStringEventEmitterKey : eventEmitterWrapper};
-
-      [nsAttributedStringFragment addAttributes:additionalTextAttributes
-                                          range:NSMakeRange(0, nsAttributedStringFragment.length)];
-    }
+    NSMutableAttributedString *nsAttributedStringFragment =
+        RCTNSAttributedStringFragmentWithAttributesFromFragment(fragment, placeholderImage);
 
     [nsAttributedString appendAttributedString:nsAttributedStringFragment];
   }
@@ -402,7 +417,7 @@ NSAttributedString *RCTNSAttributedStringFromAttributedString(const AttributedSt
   return nsAttributedString;
 }
 
-NSAttributedString *RCTNSAttributedStringFromAttributedStringBox(AttributedStringBox const &attributedStringBox)
+NSAttributedString *RCTNSAttributedStringFromAttributedStringBox(const AttributedStringBox &attributedStringBox)
 {
   switch (attributedStringBox.getMode()) {
     case AttributedStringBox::Mode::Value:

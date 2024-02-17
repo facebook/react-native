@@ -25,5 +25,5 @@
     <string name="state_unselected_description" gender="unknown">neselectat</string>
     <string name="state_on_description" gender="unknown">activat</string>
     <string name="state_off_description" gender="unknown">dezactivat</string>
-    <string name="state_mixed_description" gender="unknown">mixt</string>
+    <string name="state_mixed_description" gender="unknown">combinat</string>
 </resources>

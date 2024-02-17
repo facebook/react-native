@@ -17,8 +17,8 @@ class LayoutAnimationDriver : public LayoutAnimationKeyFrameManager {
  public:
   LayoutAnimationDriver(
       RuntimeExecutor runtimeExecutor,
-      ContextContainer::Shared &contextContainer,
-      LayoutAnimationStatusDelegate *delegate)
+      ContextContainer::Shared& contextContainer,
+      LayoutAnimationStatusDelegate* delegate)
       : LayoutAnimationKeyFrameManager(
             runtimeExecutor,
             contextContainer,
@@ -27,7 +27,7 @@ class LayoutAnimationDriver : public LayoutAnimationKeyFrameManager {
  protected:
   virtual void animationMutationsForFrame(
       SurfaceId surfaceId,
-      ShadowViewMutation::List &mutationsList,
+      ShadowViewMutation::List& mutationsList,
       uint64_t now) const override;
 };
 

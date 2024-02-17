@@ -134,6 +134,7 @@ class FallbackJSBundleLoaderTest {
 
   private fun recoverableMsg(errMsg: String): String = FallbackJSBundleLoader.RECOVERABLE + errMsg
 
+  @Suppress("UNUSED_PARAMETER")
   private fun recoverableLoader(url: String, errMsg: String): JSBundleLoader {
     val loader = mock(JSBundleLoader::class.java)
     whenever(loader.loadScript(null))
@@ -144,6 +145,7 @@ class FallbackJSBundleLoaderTest {
 
   private fun fatalMsg(errMsg: String): String = UNRECOVERABLE + errMsg
 
+  @Suppress("UNUSED_PARAMETER")
   private fun fatalLoader(url: String, errMsg: String): JSBundleLoader {
     val loader = mock(JSBundleLoader::class.java)
     whenever(loader.loadScript(null)).thenThrow(RuntimeException(UNRECOVERABLE + errMsg))

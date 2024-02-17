@@ -9,14 +9,13 @@
  */
 
 import {RNTesterThemeContext} from '../../components/RNTesterTheme';
-
 import * as React from 'react';
 import {
-  useLayoutEffect,
-  useState,
-  useRef,
   type ElementRef,
   useContext,
+  useLayoutEffect,
+  useRef,
+  useState,
 } from 'react';
 import {Button, ScrollView, StyleSheet, Text, View} from 'react-native';
 

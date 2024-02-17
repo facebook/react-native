@@ -9,10 +9,9 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 add_compile_options(
         -fexceptions
         -frtti
-        -std=c++17
+        -std=c++20
         -Wall
         -Wpedantic
-        -Wno-gnu-zero-variadic-macro-arguments
         -DLOG_TAG=\"Fabric\")
 
 file(GLOB react_render_graphics_SRC CONFIGURE_DEPENDS *.cpp)
@@ -24,5 +23,4 @@ target_include_directories(react_render_graphics
           ${CMAKE_CURRENT_SOURCE_DIR}/platform/android/
         )
 
-target_link_libraries(react_render_graphics glog fb fbjni folly_runtime react_debug)
-
+target_link_libraries(react_render_graphics glog fb fbjni folly_runtime react_debug react_utils)

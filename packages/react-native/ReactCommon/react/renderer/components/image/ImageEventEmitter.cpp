@@ -22,7 +22,7 @@ void ImageEventEmitter::onLoadEnd() const {
 }
 
 void ImageEventEmitter::onProgress(double progress) const {
-  dispatchEvent("progress", [=](jsi::Runtime &runtime) {
+  dispatchEvent("progress", [=](jsi::Runtime& runtime) {
     auto payload = jsi::Object(runtime);
     payload.setProperty(runtime, "progress", progress);
     return payload;

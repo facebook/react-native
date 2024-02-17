@@ -7,6 +7,9 @@
 
 package com.facebook.react.jstasks;
 
+import com.facebook.infer.annotation.Nullsafe;
+
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class LinearCountingRetryPolicy implements HeadlessJsTaskRetryPolicy {
 
   private final int mRetryAttempts;

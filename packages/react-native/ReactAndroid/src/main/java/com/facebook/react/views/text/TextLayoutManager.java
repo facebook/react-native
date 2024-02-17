@@ -7,8 +7,6 @@
 
 package com.facebook.react.views.text;
 
-import static com.facebook.react.views.text.TextAttributeProps.UNSET;
-
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Build;
@@ -31,12 +29,28 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.build.ReactBuildConfig;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.Role;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ViewProps;
+import com.facebook.react.views.text.fragments.BridgeTextFragmentList;
+import com.facebook.react.views.text.internal.span.CustomLetterSpacingSpan;
+import com.facebook.react.views.text.internal.span.CustomLineHeightSpan;
+import com.facebook.react.views.text.internal.span.CustomStyleSpan;
+import com.facebook.react.views.text.internal.span.ReactAbsoluteSizeSpan;
+import com.facebook.react.views.text.internal.span.ReactBackgroundColorSpan;
+import com.facebook.react.views.text.internal.span.ReactClickableSpan;
+import com.facebook.react.views.text.internal.span.ReactForegroundColorSpan;
+import com.facebook.react.views.text.internal.span.ReactStrikethroughSpan;
+import com.facebook.react.views.text.internal.span.ReactTagSpan;
+import com.facebook.react.views.text.internal.span.ReactUnderlineSpan;
+import com.facebook.react.views.text.internal.span.SetSpanOperation;
+import com.facebook.react.views.text.internal.span.ShadowStyleSpan;
+import com.facebook.react.views.text.internal.span.TextInlineViewPlaceholderSpan;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureOutput;
@@ -99,7 +113,19 @@ public class TextLayoutManager {
     sTagToSpannableCache.remove(reactTag);
   }
 
-  private static void buildSpannableFromFragment(
+  private static void buildSpannableFromFragments(
+      Context context,
+      ReadableArray fragments,
+      SpannableStringBuilder sb,
+      List<SetSpanOperation> ops) {
+    if (ReactNativeFeatureFlags.enableSpannableBuildingUnification()) {
+      buildSpannableFromFragmentsUnified(context, fragments, sb, ops);
+    } else {
+      buildSpannableFromFragmentsDuplicated(context, fragments, sb, ops);
+    }
+  }
+
+  private static void buildSpannableFromFragmentsDuplicated(
       Context context,
       ReadableArray fragments,
       SpannableStringBuilder sb,
@@ -152,8 +178,8 @@ public class TextLayoutManager {
         }
         ops.add(
             new SetSpanOperation(start, end, new ReactAbsoluteSizeSpan(textAttributes.mFontSize)));
-        if (textAttributes.mFontStyle != UNSET
-            || textAttributes.mFontWeight != UNSET
+        if (textAttributes.mFontStyle != ReactConstants.UNSET
+            || textAttributes.mFontWeight != ReactConstants.UNSET
             || textAttributes.mFontFamily != null) {
           ops.add(
               new SetSpanOperation(
@@ -197,6 +223,17 @@ public class TextLayoutManager {
     }
   }
 
+  private static void buildSpannableFromFragmentsUnified(
+      Context context,
+      ReadableArray fragments,
+      SpannableStringBuilder sb,
+      List<SetSpanOperation> ops) {
+
+    final BridgeTextFragmentList textFragmentList = new BridgeTextFragmentList(fragments);
+
+    TextLayoutUtils.buildSpannableFromTextFragmentList(context, textFragmentList, sb, ops);
+  }
+
   // public because both ReactTextViewManager and ReactTextInputManager need to use this
   public static Spannable getOrCreateSpannableForText(
       Context context,
@@ -219,7 +256,7 @@ public class TextLayoutManager {
     // a new spannable will be wiped out
     List<SetSpanOperation> ops = new ArrayList<>();
 
-    buildSpannableFromFragment(context, attributedString.getArray("fragments"), sb, ops);
+    buildSpannableFromFragments(context, attributedString.getArray("fragments"), sb, ops);
 
     // TODO T31905686: add support for inline Images
     // While setting the Spans on the final text, we also check whether any of them are images.
@@ -258,26 +295,14 @@ public class TextLayoutManager {
       // unicode characters.
 
       int hintWidth = (int) Math.ceil(desiredWidth);
-      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-        layout =
-            new StaticLayout(
-                text,
-                sTextPaintInstance,
-                hintWidth,
-                Layout.Alignment.ALIGN_NORMAL,
-                1.f,
-                0.f,
-                includeFontPadding);
-      } else {
-        layout =
-            StaticLayout.Builder.obtain(text, 0, spanLength, sTextPaintInstance, hintWidth)
-                .setAlignment(Layout.Alignment.ALIGN_NORMAL)
-                .setLineSpacing(0.f, 1.f)
-                .setIncludePad(includeFontPadding)
-                .setBreakStrategy(textBreakStrategy)
-                .setHyphenationFrequency(hyphenationFrequency)
-                .build();
-      }
+      layout =
+          StaticLayout.Builder.obtain(text, 0, spanLength, sTextPaintInstance, hintWidth)
+              .setAlignment(Layout.Alignment.ALIGN_NORMAL)
+              .setLineSpacing(0.f, 1.f)
+              .setIncludePad(includeFontPadding)
+              .setBreakStrategy(textBreakStrategy)
+              .setHyphenationFrequency(hyphenationFrequency)
+              .build();
     } else if (boring != null && (unconstrainedWidth || boring.width <= width)) {
       int boringLayoutWidth = boring.width;
       if (boring.width < 0) {
@@ -300,32 +325,19 @@ public class TextLayoutManager {
               includeFontPadding);
     } else {
       // Is used for multiline, boring text and the width is known.
+      StaticLayout.Builder builder =
+          StaticLayout.Builder.obtain(text, 0, spanLength, sTextPaintInstance, (int) width)
+              .setAlignment(Layout.Alignment.ALIGN_NORMAL)
+              .setLineSpacing(0.f, 1.f)
+              .setIncludePad(includeFontPadding)
+              .setBreakStrategy(textBreakStrategy)
+              .setHyphenationFrequency(hyphenationFrequency);
 
-      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-        layout =
-            new StaticLayout(
-                text,
-                sTextPaintInstance,
-                (int) width,
-                Layout.Alignment.ALIGN_NORMAL,
-                1.f,
-                0.f,
-                includeFontPadding);
-      } else {
-        StaticLayout.Builder builder =
-            StaticLayout.Builder.obtain(text, 0, spanLength, sTextPaintInstance, (int) width)
-                .setAlignment(Layout.Alignment.ALIGN_NORMAL)
-                .setLineSpacing(0.f, 1.f)
-                .setIncludePad(includeFontPadding)
-                .setBreakStrategy(textBreakStrategy)
-                .setHyphenationFrequency(hyphenationFrequency);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-          builder.setUseLineSpacingFromFallbacks(true);
-        }
-
-        layout = builder.build();
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        builder.setUseLineSpacingFromFallbacks(true);
       }
+
+      layout = builder.build();
     }
     return layout;
   }
@@ -393,10 +405,10 @@ public class TextLayoutManager {
     int maximumNumberOfLines =
         paragraphAttributes.hasKey(MAXIMUM_NUMBER_OF_LINES_KEY)
             ? paragraphAttributes.getInt(MAXIMUM_NUMBER_OF_LINES_KEY)
-            : UNSET;
+            : ReactConstants.UNSET;
 
     int calculatedLineCount =
-        maximumNumberOfLines == UNSET || maximumNumberOfLines == 0
+        maximumNumberOfLines == ReactConstants.UNSET || maximumNumberOfLines == 0
             ? layout.getLineCount()
             : Math.min(maximumNumberOfLines, layout.getLineCount());
 
@@ -423,7 +435,7 @@ public class TextLayoutManager {
     // Android 11+ introduces changes in text width calculation which leads to cases
     // where the container is measured smaller than text. Math.ceil prevents it
     // See T136756103 for investigation
-    if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.Q) {
+    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
       calculatedWidth = (float) Math.ceil(calculatedWidth);
     }
 

@@ -11,11 +11,11 @@ namespace facebook::react {
 
 RawEvent::RawEvent(
     std::string type,
-    ValueFactory payloadFactory,
+    SharedEventPayload eventPayload,
     SharedEventTarget eventTarget,
     Category category)
     : type(std::move(type)),
-      payloadFactory(std::move(payloadFactory)),
+      eventPayload(std::move(eventPayload)),
       eventTarget(std::move(eventTarget)),
       category(category) {}
 

@@ -15,7 +15,7 @@ namespace facebook::react {
 const char RootComponentName[] = "RootView";
 
 bool RootShadowNode::layoutIfNeeded(
-    std::vector<LayoutableShadowNode const *> *affectedNodes) {
+    std::vector<const LayoutableShadowNode*>* affectedNodes) {
   SystraceSection s("RootShadowNode::layout");
 
   if (getIsLayoutClean()) {
@@ -38,10 +38,10 @@ Transform RootShadowNode::getTransform() const {
 }
 
 RootShadowNode::Unshared RootShadowNode::clone(
-    PropsParserContext const &propsParserContext,
-    LayoutConstraints const &layoutConstraints,
-    LayoutContext const &layoutContext) const {
-  auto props = std::make_shared<RootProps const>(
+    const PropsParserContext& propsParserContext,
+    const LayoutConstraints& layoutConstraints,
+    const LayoutContext& layoutContext) const {
+  auto props = std::make_shared<const RootProps>(
       propsParserContext, getConcreteProps(), layoutConstraints, layoutContext);
   auto newRootShadowNode = std::make_shared<RootShadowNode>(
       *this,

@@ -39,11 +39,11 @@ class LogcatSink : public google::LogSink {
  public:
   void send(
       google::LogSeverity severity,
-      const char *full_filename,
-      const char *base_filename,
+      const char* full_filename,
+      const char* base_filename,
       int line,
-      const struct ::tm *tm_time,
-      const char *message,
+      const struct ::tm* tm_time,
+      const char* message,
       size_t message_len) override {
     auto level = toAndroidLevel(severity);
     __android_log_print(
@@ -58,22 +58,22 @@ class TaggedLogcatSink : public google::LogSink {
   const std::string tag_;
 
  public:
-  TaggedLogcatSink(const std::string &tag) : tag_{tag} {}
+  TaggedLogcatSink(const std::string& tag) : tag_{tag} {}
 
   void send(
       google::LogSeverity severity,
-      const char *full_filename,
-      const char *base_filename,
+      const char* full_filename,
+      const char* base_filename,
       int line,
-      const struct ::tm *tm_time,
-      const char *message,
+      const struct ::tm* tm_time,
+      const char* message,
       size_t message_len) override {
     auto level = toAndroidLevel(severity);
     __android_log_print(level, tag_.c_str(), "%.*s", (int)message_len, message);
   }
 };
 
-static google::LogSink *make_sink(const std::string &tag) {
+static google::LogSink* make_sink(const std::string& tag) {
   if (tag.empty()) {
     return new LogcatSink{};
   } else {
@@ -81,7 +81,7 @@ static google::LogSink *make_sink(const std::string &tag) {
   }
 }
 
-static void sendGlogOutputToLogcat(const char *tag) {
+static void sendGlogOutputToLogcat(const char* tag) {
   google::AddLogSink(make_sink(tag));
 
   // Disable logging to files
@@ -93,7 +93,7 @@ static void sendGlogOutputToLogcat(const char *tag) {
 #endif // __ANDROID__
 
 static void
-lastResort(const char *tag, const char *msg, const char *arg = nullptr) {
+lastResort(const char* tag, const char* msg, const char* arg = nullptr) {
 #ifdef __ANDROID__
   if (!arg) {
     __android_log_write(ANDROID_LOG_ERROR, tag, msg);
@@ -112,7 +112,7 @@ lastResort(const char *tag, const char *msg, const char *arg = nullptr) {
 namespace facebook {
 namespace gloginit {
 
-void initialize(const char *tag) {
+void initialize(const char* tag) {
   static std::once_flag flag{};
   static auto failed = false;
 
@@ -123,7 +123,7 @@ void initialize(const char *tag) {
 #ifdef __ANDROID__
       sendGlogOutputToLogcat(tag);
 #endif
-    } catch (std::exception &ex) {
+    } catch (std::exception& ex) {
       lastResort(tag, "Failed to initialize glog", ex.what());
       failed = true;
     } catch (...) {

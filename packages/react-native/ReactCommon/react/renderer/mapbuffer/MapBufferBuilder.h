@@ -8,8 +8,8 @@
 #pragma once
 
 #include <react/debug/react_native_assert.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
 #include <vector>
+#include "MapBuffer.h"
 
 namespace facebook::react {
 
@@ -27,17 +27,19 @@ class MapBufferBuilder {
 
   void putInt(MapBuffer::Key key, int32_t value);
 
+  // TODO: Support 64 bit integers
+
   void putBool(MapBuffer::Key key, bool value);
 
   void putDouble(MapBuffer::Key key, double value);
 
-  void putString(MapBuffer::Key key, std::string const &value);
+  void putString(MapBuffer::Key key, const std::string& value);
 
-  void putMapBuffer(MapBuffer::Key key, MapBuffer const &map);
+  void putMapBuffer(MapBuffer::Key key, const MapBuffer& map);
 
   void putMapBufferList(
       MapBuffer::Key key,
-      const std::vector<MapBuffer> &mapBufferList);
+      const std::vector<MapBuffer>& mapBufferList);
 
   MapBuffer build();
 
@@ -55,7 +57,7 @@ class MapBufferBuilder {
   void storeKeyValue(
       MapBuffer::Key key,
       MapBuffer::DataType type,
-      uint8_t const *value,
+      const uint8_t* value,
       uint32_t valueSize);
 };
 

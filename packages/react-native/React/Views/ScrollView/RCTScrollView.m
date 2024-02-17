@@ -307,6 +307,7 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
   }
 
   double duration = [notification.userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+
   UIViewAnimationCurve curve =
       (UIViewAnimationCurve)[notification.userInfo[UIKeyboardAnimationCurveUserInfoKey] unsignedIntegerValue];
   CGRect beginFrame = [notification.userInfo[UIKeyboardFrameBeginUserInfoKey] CGRectValue];
@@ -324,7 +325,24 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
   }
 
   CGPoint newContentOffset = _scrollView.contentOffset;
-  CGFloat contentDiff = endFrame.origin.y - beginFrame.origin.y;
+  self.firstResponderFocus = CGRectNull;
+
+  CGFloat contentDiff = 0;
+  if ([[UIApplication sharedApplication] sendAction:@selector(reactUpdateResponderOffsetForScrollView:)
+                                                 to:nil
+                                               from:self
+                                           forEvent:nil]) {
+    // Inner text field focused
+    CGFloat focusEnd = CGRectGetMaxY(self.firstResponderFocus);
+    BOOL didFocusExternalTextField = focusEnd == INFINITY;
+    if (!didFocusExternalTextField && focusEnd > endFrame.origin.y) {
+      // Text field active region is below visible area with keyboard - update diff to bring into view
+      contentDiff = endFrame.origin.y - focusEnd;
+    }
+  } else if (endFrame.origin.y <= beginFrame.origin.y) {
+    // Keyboard opened for other reason
+    contentDiff = endFrame.origin.y - beginFrame.origin.y;
+  }
   if (self.inverted) {
     newContentOffset.y += contentDiff;
   } else {
@@ -550,6 +568,10 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(
 
 - (void)scrollToOffset:(CGPoint)offset animated:(BOOL)animated
 {
+  if ([self reactLayoutDirection] == UIUserInterfaceLayoutDirectionRightToLeft) {
+    offset.x = _scrollView.contentSize.width - _scrollView.frame.size.width - offset.x;
+  }
+
   if (!CGPointEqualToPoint(_scrollView.contentOffset, offset)) {
     CGRect maxRect = CGRectMake(
         fmin(-_scrollView.contentInset.left, 0),
@@ -656,8 +678,7 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
    * We limit the delta to 17ms so that small throttles intended to enable 60fps updates will not
    * inadvertently filter out any scroll events.
    */
-  if (_allowNextScrollNoMatterWhat ||
-      (_scrollEventThrottle > 0 && _scrollEventThrottle < MAX(0.017, now - _lastScrollDispatchTime))) {
+  if (_allowNextScrollNoMatterWhat || (_scrollEventThrottle < MAX(0.017, now - _lastScrollDispatchTime))) {
     RCT_SEND_SCROLL_EVENT(onScroll, nil);
     // Update dispatch time
     _lastScrollDispatchTime = now;
@@ -954,7 +975,7 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
             CGPointMake(self->_scrollView.contentOffset.x + deltaX, self->_scrollView.contentOffset.y);
         if (autoscrollThreshold != nil) {
           // If the offset WAS within the threshold of the start, animate to the start.
-          if (x - deltaX <= [autoscrollThreshold integerValue]) {
+          if (x <= [autoscrollThreshold integerValue]) {
             [self scrollToOffset:CGPointMake(-leftInset, self->_scrollView.contentOffset.y) animated:YES];
           }
         }
@@ -970,7 +991,7 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
             CGPointMake(self->_scrollView.contentOffset.x, self->_scrollView.contentOffset.y + deltaY);
         if (autoscrollThreshold != nil) {
           // If the offset WAS within the threshold of the start, animate to the start.
-          if (y - deltaY <= [autoscrollThreshold integerValue]) {
+          if (y <= [autoscrollThreshold integerValue]) {
             [self scrollToOffset:CGPointMake(self->_scrollView.contentOffset.x, -bottomInset) animated:YES];
           }
         }
@@ -1038,9 +1059,15 @@ RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, scrollIndicatorInsets, UIE
     _coalescingKey++;
     _lastEmittedEventName = [eventName copy];
   }
+
+  CGPoint offset = scrollView.contentOffset;
+  if ([self reactLayoutDirection] == UIUserInterfaceLayoutDirectionRightToLeft) {
+    offset.x = scrollView.contentSize.width - scrollView.frame.size.width - offset.x;
+  }
+
   RCTScrollEvent *scrollEvent = [[RCTScrollEvent alloc] initWithEventName:eventName
                                                                  reactTag:self.reactTag
-                                                  scrollViewContentOffset:scrollView.contentOffset
+                                                  scrollViewContentOffset:offset
                                                    scrollViewContentInset:scrollView.contentInset
                                                     scrollViewContentSize:scrollView.contentSize
                                                           scrollViewFrame:scrollView.frame

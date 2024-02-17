@@ -1094,9 +1094,7 @@ describe('Animated tests', () => {
       const listener = jest.fn();
       color.addListener(listener);
 
-      const callback = jest.fn(() => {
-        console.log('callback', color.__getValue());
-      });
+      const callback = jest.fn();
       const node = new AnimatedProps({style: {color}}, callback);
       node.__attach();
 

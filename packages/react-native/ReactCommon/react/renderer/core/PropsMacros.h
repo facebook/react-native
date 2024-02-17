@@ -8,6 +8,8 @@
 #pragma once
 
 #include <react/renderer/core/RawPropsPrimitives.h>
+#include <react/utils/fnv1a.h>
+#include <functional>
 
 // We need to use clang pragmas inside of a macro below,
 // so we need to pull out the "if" statement here.
@@ -22,11 +24,11 @@
   ([]() constexpr->RawPropsPropNameHash {                 \
     CLANG_PRAGMA("clang diagnostic push")                 \
     CLANG_PRAGMA("clang diagnostic ignored \"-Wshadow\"") \
-    return folly::hash::fnv32_buf(s, sizeof(s) - 1);      \
+    return RAW_PROPS_KEY_HASH(s);                         \
     CLANG_PRAGMA("clang diagnostic pop")                  \
   }())
 
-#define RAW_PROPS_KEY_HASH(s) folly::hash::fnv32_buf(s, std::strlen(s))
+#define RAW_PROPS_KEY_HASH(s) facebook::react::fnv1a(s)
 
 // Convenience for building setProps switch statements.
 // This injects `fromRawValue` into source; each file that uses

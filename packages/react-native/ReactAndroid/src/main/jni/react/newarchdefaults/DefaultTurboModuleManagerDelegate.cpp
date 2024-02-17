@@ -7,23 +7,42 @@
 
 #include "DefaultTurboModuleManagerDelegate.h"
 
+#include <algorithm>
+
 #include <rncore.h>
 
 namespace facebook::react {
 
+DefaultTurboModuleManagerDelegate::DefaultTurboModuleManagerDelegate(
+    jni::alias_ref<jni::JList<CxxReactPackage::javaobject>::javaobject>
+        cxxReactPackages)
+    : cxxReactPackages_() {
+  cxxReactPackages_.reserve(cxxReactPackages->size());
+  std::transform(
+      cxxReactPackages->begin(),
+      cxxReactPackages->end(),
+      std::back_inserter(cxxReactPackages_),
+      [](jni::alias_ref<CxxReactPackage::javaobject> elem) {
+        return jni::make_global(elem);
+      });
+};
+
 std::function<std::shared_ptr<TurboModule>(
-    const std::string &,
-    const std::shared_ptr<CallInvoker> &)>
+    const std::string&,
+    const std::shared_ptr<CallInvoker>&)>
     DefaultTurboModuleManagerDelegate::cxxModuleProvider{nullptr};
 
 std::function<std::shared_ptr<TurboModule>(
-    const std::string &,
-    const JavaTurboModule::InitParams &)>
+    const std::string&,
+    const JavaTurboModule::InitParams&)>
     DefaultTurboModuleManagerDelegate::javaModuleProvider{nullptr};
 
 jni::local_ref<DefaultTurboModuleManagerDelegate::jhybriddata>
-DefaultTurboModuleManagerDelegate::initHybrid(jni::alias_ref<jhybridobject>) {
-  return makeCxxInstance();
+DefaultTurboModuleManagerDelegate::initHybrid(
+    jni::alias_ref<jclass> jClass,
+    jni::alias_ref<jni::JList<CxxReactPackage::javaobject>::javaobject>
+        cxxReactPackages) {
+  return makeCxxInstance(cxxReactPackages);
 }
 
 void DefaultTurboModuleManagerDelegate::registerNatives() {
@@ -34,8 +53,18 @@ void DefaultTurboModuleManagerDelegate::registerNatives() {
 }
 
 std::shared_ptr<TurboModule> DefaultTurboModuleManagerDelegate::getTurboModule(
-    const std::string &name,
-    const std::shared_ptr<CallInvoker> &jsInvoker) {
+    const std::string& name,
+    const std::shared_ptr<CallInvoker>& jsInvoker) {
+  for (const auto& cxxReactPackage : cxxReactPackages_) {
+    auto cppPart = cxxReactPackage->cthis();
+    if (cppPart) {
+      auto module = cppPart->getModule(name, jsInvoker);
+      if (module) {
+        return module;
+      }
+    }
+  }
+
   auto moduleProvider = DefaultTurboModuleManagerDelegate::cxxModuleProvider;
   if (moduleProvider) {
     return moduleProvider(name, jsInvoker);
@@ -44,8 +73,8 @@ std::shared_ptr<TurboModule> DefaultTurboModuleManagerDelegate::getTurboModule(
 }
 
 std::shared_ptr<TurboModule> DefaultTurboModuleManagerDelegate::getTurboModule(
-    const std::string &name,
-    const JavaTurboModule::InitParams &params) {
+    const std::string& name,
+    const JavaTurboModule::InitParams& params) {
   auto moduleProvider = DefaultTurboModuleManagerDelegate::javaModuleProvider;
   if (moduleProvider) {
     if (auto resolvedModule = moduleProvider(name, params)) {

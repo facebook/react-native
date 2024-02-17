@@ -20,7 +20,7 @@ module.exports = {
   setupFiles: ['./packages/react-native/jest/local-setup.js'],
   fakeTimers: {
     enableGlobally: true,
-    legacyFakeTimers: true,
+    legacyFakeTimers: false,
   },
   snapshotFormat: {
     escapeString: true,
@@ -31,8 +31,10 @@ module.exports = {
   testPathIgnorePatterns: [
     '/node_modules/',
     '<rootDir>/packages/react-native/template',
+    '<rootDir>/packages/react-native/sdks',
     '<rootDir>/packages/react-native/Libraries/Renderer',
     '<rootDir>/packages/rn-tester/e2e',
+    '<rootDir>/packages/react-native-test-renderer/src',
   ],
   transformIgnorePatterns: ['node_modules/(?!@react-native/)'],
   haste: {
@@ -46,6 +48,7 @@ module.exports = {
       '<rootDir>/packages/react-native/jest/ReactNativeInternalFeatureFlagsMock.js',
   },
   moduleFileExtensions: ['fb.js'].concat(defaults.moduleFileExtensions),
+  modulePathIgnorePatterns: ['scripts/.*/__fixtures__/'],
   unmockedModulePathPatterns: [
     'node_modules/react/',
     'packages/react-native/Libraries/Renderer',
@@ -55,7 +58,10 @@ module.exports = {
     'denodeify',
   ],
   testEnvironment: 'node',
-  collectCoverageFrom: ['packages/react-native/Libraries/**/*.js'],
+  collectCoverageFrom: [
+    'packages/react-native/Libraries/**/*.js',
+    'packages/react-native/src/**/*.js',
+  ],
   coveragePathIgnorePatterns: [
     '/__tests__/',
     '/vendor/',

@@ -17,10 +17,9 @@ import com.facebook.react.fabric.events.EventEmitterWrapper;
 
 public interface Binding {
 
-  public void startSurface(
-      int surfaceId, @NonNull String moduleName, @NonNull NativeMap initialProps);
+  void startSurface(int surfaceId, @NonNull String moduleName, @NonNull NativeMap initialProps);
 
-  public void startSurfaceWithConstraints(
+  void startSurfaceWithConstraints(
       int surfaceId,
       String moduleName,
       NativeMap initialProps,
@@ -33,13 +32,11 @@ public interface Binding {
       boolean isRTL,
       boolean doLeftAndRightSwapInRTL);
 
-  public void renderTemplateToSurface(int surfaceId, String uiTemplate);
+  void stopSurface(int surfaceId);
 
-  public void stopSurface(int surfaceId);
+  void setPixelDensity(float pointScaleFactor);
 
-  public void setPixelDensity(float pointScaleFactor);
-
-  public void setConstraints(
+  void setConstraints(
       int surfaceId,
       float minWidth,
       float maxWidth,
@@ -50,13 +47,13 @@ public interface Binding {
       boolean isRTL,
       boolean doLeftAndRightSwapInRTL);
 
-  public void driveCxxAnimations();
+  void driveCxxAnimations();
 
-  public void reportMount(int surfaceId);
+  void reportMount(int surfaceId);
 
-  public ReadableNativeMap getInspectorDataForInstance(EventEmitterWrapper eventEmitterWrapper);
+  ReadableNativeMap getInspectorDataForInstance(EventEmitterWrapper eventEmitterWrapper);
 
-  public void register(
+  void register(
       @NonNull RuntimeExecutor runtimeExecutor,
       @NonNull RuntimeScheduler runtimeScheduler,
       @NonNull FabricUIManager fabricUIManager,
@@ -64,9 +61,9 @@ public interface Binding {
       @NonNull ComponentFactory componentFactory,
       @NonNull ReactNativeConfig reactNativeConfig);
 
-  public void unregister();
+  void unregister();
 
-  public void registerSurface(SurfaceHandlerBinding surfaceHandler);
+  void registerSurface(SurfaceHandlerBinding surfaceHandler);
 
-  public void unregisterSurface(SurfaceHandlerBinding surfaceHandler);
+  void unregisterSurface(SurfaceHandlerBinding surfaceHandler);
 }

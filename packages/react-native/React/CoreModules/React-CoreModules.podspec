@@ -16,21 +16,19 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
-folly_version = '2021.07.22.00'
-socket_rocket_version = '0.6.0'
+folly_config = get_folly_config()
+folly_compiler_flags = folly_config[:compiler_flags]
+folly_version = folly_config[:version]
+socket_rocket_version = '0.7.0'
 
 header_search_paths = [
+  "\"$(PODS_ROOT)/boost\"",
   "\"$(PODS_TARGET_SRCROOT)/React/CoreModules\"",
   "\"$(PODS_ROOT)/RCT-Folly\"",
+  "\"$(PODS_ROOT)/DoubleConversion\"",
+  "\"$(PODS_ROOT)/fmt/include\"",
   "\"${PODS_ROOT}/Headers/Public/React-Codegen/react/renderer/components\"",
-  "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Codegen/React_Codegen.framework/Headers\""
 ]
-
-if ENV['USE_FRAMEWORKS']
-  header_search_paths.append("\"$(PODS_CONFIGURATION_BUILD_DIR)/React-NativeModulesApple/React_NativeModulesApple.framework/Headers\"")
-  header_search_paths.append("\"$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\"")
-end
 
 Pod::Spec.new do |s|
   s.name                   = "React-CoreModules"
@@ -39,24 +37,29 @@ Pod::Spec.new do |s|
   s.homepage               = "https://reactnative.dev/"
   s.license                = package["license"]
   s.author                 = "Meta Platforms, Inc. and its affiliates"
-  s.platforms              = { :ios => min_ios_version_supported }
+  s.platforms              = min_supported_versions
   s.compiler_flags         = folly_compiler_flags + ' -Wno-nullability-completeness'
   s.source                 = source
   s.source_files           = "**/*.{c,m,mm,cpp}"
   s.header_dir             = "CoreModules"
   s.pod_target_xcconfig    = {
                                "USE_HEADERMAP" => "YES",
-                               "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
+                               "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
                                "HEADER_SEARCH_PATHS" => header_search_paths.join(" ")
                              }
-
-  s.dependency "React-Codegen", version
+  s.framework = "UIKit"
+  s.dependency "DoubleConversion"
+  s.dependency "fmt", "9.1.0"
   s.dependency "RCT-Folly", folly_version
   s.dependency "RCTTypeSafety", version
   s.dependency "React-Core/CoreModulesHeaders", version
   s.dependency "React-RCTImage", version
-  s.dependency "ReactCommon/turbomodule/core", version
   s.dependency "React-jsi", version
   s.dependency 'React-RCTBlob'
   s.dependency "SocketRocket", socket_rocket_version
+  add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
+
+  add_dependency(s, "React-Codegen")
+  add_dependency(s, "ReactCommon", :subspec => "turbomodule/core", :additional_framework_paths => ["react/nativemodule/core"])
+  add_dependency(s, "React-NativeModulesApple")
 end

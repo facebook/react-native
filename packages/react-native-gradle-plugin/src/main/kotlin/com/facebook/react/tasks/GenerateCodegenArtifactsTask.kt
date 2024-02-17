@@ -53,7 +53,7 @@ abstract class GenerateCodegenArtifactsTask : Exec() {
   internal fun resolveTaskParameters(): Pair<String, String> {
     val parsedPackageJson =
         if (packageJsonFile.isPresent && packageJsonFile.get().asFile.exists()) {
-          JsonUtils.fromCodegenJson(packageJsonFile.get().asFile)
+          JsonUtils.fromPackageJson(packageJsonFile.get().asFile)
         } else {
           null
         }

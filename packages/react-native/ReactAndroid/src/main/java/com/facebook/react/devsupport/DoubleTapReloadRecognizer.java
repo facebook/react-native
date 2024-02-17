@@ -11,11 +11,13 @@ import android.os.Handler;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
+import com.facebook.infer.annotation.Nullsafe;
 
 /**
  * A class allows recognizing double key tap of "R", used to reload JS in {@link
  * AbstractReactActivity}, {@link RedBoxDialogSurfaceDelegate} and {@link ReactActivity}.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class DoubleTapReloadRecognizer {
   private boolean mDoRefresh = false;
   private static final long DOUBLE_TAP_DELAY = 200;

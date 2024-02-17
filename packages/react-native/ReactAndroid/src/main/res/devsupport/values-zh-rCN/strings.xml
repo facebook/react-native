@@ -3,6 +3,4 @@
 <!-- @generated -->
 <!-- FB Locale: zh_CN -->
 <resources exclude-from-buck-resource-map="true">
-    <string name="catalyst_dev_menu_header" gender="unknown">React Native 开发者菜单(%1$s)</string>
-    <string name="catalyst_dev_menu_sub_header" gender="unknown">正在运行%1$s</string>
 </resources>

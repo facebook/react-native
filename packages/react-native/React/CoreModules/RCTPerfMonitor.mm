@@ -36,8 +36,8 @@
 
 static NSString *const RCTPerfMonitorCellIdentifier = @"RCTPerfMonitorCellIdentifier";
 
-static CGFloat const RCTPerfMonitorBarHeight = 50;
-static CGFloat const RCTPerfMonitorExpandHeight = 250;
+static const CGFloat RCTPerfMonitorBarHeight = 50;
+static const CGFloat RCTPerfMonitorExpandHeight = 250;
 
 typedef BOOL (*RCTJSCSetOptionType)(const char *);
 
@@ -60,13 +60,8 @@ static vm_size_t RCTGetResidentMemorySize(void)
   return memoryUsageInByte;
 }
 
-@interface RCTPerfMonitor : NSObject <
-                                RCTBridgeModule,
-                                RCTTurboModule,
-                                RCTInitializing,
-                                RCTInvalidating,
-                                UITableViewDataSource,
-                                UITableViewDelegate>
+@interface RCTPerfMonitor
+    : NSObject <RCTBridgeModule, RCTTurboModule, RCTInvalidating, UITableViewDataSource, UITableViewDelegate>
 
 #if __has_include(<React/RCTDevMenu.h>)
 @property (nonatomic, strong, readonly) RCTDevMenuItem *devMenuItem;
@@ -131,13 +126,6 @@ RCT_EXPORT_MODULE()
   return dispatch_get_main_queue();
 }
 
-- (void)initialize
-{
-#if __has_include(<React/RCTDevMenu.h>)
-  [(RCTDevMenu *)[_moduleRegistry moduleForName:"DevMenu"] addItem:self.devMenuItem];
-#endif
-}
-
 - (void)invalidate
 {
   [self hide];
@@ -183,7 +171,9 @@ RCT_EXPORT_MODULE()
 - (UIView *)container
 {
   if (!_container) {
-    _container = [[UIView alloc] initWithFrame:CGRectMake(10, 25, 180, RCTPerfMonitorBarHeight)];
+    CGSize statusBarSize = RCTSharedApplication().statusBarFrame.size;
+    CGFloat statusBarHeight = statusBarSize.height;
+    _container = [[UIView alloc] initWithFrame:CGRectMake(10, statusBarHeight, 180, RCTPerfMonitorBarHeight)];
     _container.layer.borderWidth = 2;
     _container.layer.borderColor = [UIColor lightGrayColor].CGColor;
     [_container addGestureRecognizer:self.gestureRecognizer];

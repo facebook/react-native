@@ -10,9 +10,9 @@
 
 import typeof {enable} from 'promise/setimmediate/rejection-tracking';
 
-type ExtractOptionsType = <P>(((options?: ?P) => void)) => P;
+import LogBox from './LogBox/LogBox';
 
-let rejectionTrackingOptions: $Call<ExtractOptionsType, enable> = {
+let rejectionTrackingOptions: $NonMaybeType<Parameters<enable>[0]> = {
   allRejections: true,
   onUnhandled: (id, rejection = {}) => {
     let message: string;
@@ -34,19 +34,36 @@ let rejectionTrackingOptions: $Call<ExtractOptionsType, enable> = {
             ? rejection
             : JSON.stringify((rejection: $FlowFixMe));
       }
+      // It could although this object is not a standard error, it still has stack information to unwind
+      // $FlowFixMe ignore types just check if stack is there
+      if (rejection.stack && typeof rejection.stack === 'string') {
+        stack = rejection.stack;
+      }
     }
 
-    const warning =
-      `Possible Unhandled Promise Rejection (id: ${id}):\n` +
-      `${message ?? ''}\n` +
-      (stack == null ? '' : stack);
-    console.warn(warning);
+    const warning = `Possible unhandled promise rejection (id: ${id}):\n${
+      message ?? ''
+    }`;
+    if (__DEV__) {
+      LogBox.addLog({
+        level: 'warn',
+        message: {
+          content: warning,
+          substitutions: [],
+        },
+        componentStack: [],
+        stack,
+        category: 'possible_unhandled_promise_rejection',
+      });
+    } else {
+      console.warn(warning);
+    }
   },
   onHandled: id => {
     const warning =
-      `Promise Rejection Handled (id: ${id})\n` +
+      `Promise rejection handled (id: ${id})\n` +
       'This means you can ignore any previous messages of the form ' +
-      `"Possible Unhandled Promise Rejection (id: ${id}):"`;
+      `"Possible unhandled promise rejection (id: ${id}):"`;
     console.warn(warning);
   },
 };

@@ -11,7 +11,7 @@ package com.facebook.react.uimanager;
  * Exception thrown when a class tries to access a native view by a tag that has no native view
  * associated with it.
  */
-public class NoSuchNativeViewException extends IllegalViewOperationException {
+class NoSuchNativeViewException extends IllegalViewOperationException {
 
   public NoSuchNativeViewException(String detailMessage) {
     super(detailMessage);

@@ -10,6 +10,7 @@
 
 'use strict';
 
+import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
 import {isPublicInstance as isFabricPublicInstance} from '../ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstanceUtils';
 import useRefEffect from '../Utilities/useRefEffect';
 import {AnimatedEvent} from './AnimatedEvent';
@@ -45,6 +46,8 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
     () => new AnimatedProps(props, () => onUpdateRef.current?.()),
     [props],
   );
+  const useNativePropsInFabric =
+    ReactNativeFeatureFlags.shouldUseSetNativePropsInFabric();
   useAnimatedPropsLifecycle(node);
 
   // TODO: This "effect" does three things:
@@ -74,7 +77,7 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
           process.env.NODE_ENV === 'test' ||
           typeof instance !== 'object' ||
           typeof instance?.setNativeProps !== 'function' ||
-          isFabricInstance(instance)
+          (isFabricInstance(instance) && !useNativePropsInFabric)
         ) {
           // Schedule an update for this component to update `reducedProps`,
           // but do not compute it immediately. If a parent also updated, we
@@ -106,7 +109,7 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
         }
       };
     },
-    [props, node],
+    [props, node, useNativePropsInFabric],
   );
   const callbackRef = useRefEffect<TInstance>(refEffect);
 

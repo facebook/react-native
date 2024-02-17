@@ -7,8 +7,8 @@
 
 package com.facebook.react.modules.share
 
-import android.app.Activity
 import android.content.Intent
+import androidx.fragment.app.FragmentActivity
 import com.facebook.react.bridge.JavaOnlyMap
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactTestHelper
@@ -23,19 +23,20 @@ import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.Shadows.shadowOf
+import org.robolectric.android.controller.ActivityController
 import org.robolectric.annotation.Config
 
 @Config(shadows = [ShadowArguments::class])
 @RunWith(RobolectricTestRunner::class)
 class ShareModuleTest {
 
-  private lateinit var activity: Activity
   private lateinit var shareModule: ShareModule
+  private lateinit var activityController: ActivityController<FragmentActivity>
 
   @Before
   fun prepareModules() {
-    activity = Robolectric.setupActivity(Activity::class.java)
-
+    activityController = Robolectric.buildActivity(FragmentActivity::class.java)
+    val activity = activityController.create().start().resume().get()
     val applicationContext = ReactTestHelper.createCatalystContextForTest()
     applicationContext.onNewIntent(activity, Intent())
     shareModule = ShareModule(applicationContext)
@@ -55,16 +56,16 @@ class ShareModuleTest {
 
     shareModule.share(content, dialogTitle, promise)
 
-    val chooserIntent = shadowOf(RuntimeEnvironment.application).nextStartedActivity
+    val chooserIntent = shadowOf(RuntimeEnvironment.getApplication()).nextStartedActivity
     assertNotNull("Dialog was not displayed", chooserIntent)
     assertEquals(Intent.ACTION_CHOOSER, chooserIntent.action)
-    assertEquals(dialogTitle, chooserIntent.extras?.get(Intent.EXTRA_TITLE))
+    assertEquals(dialogTitle, chooserIntent.extras?.getString(Intent.EXTRA_TITLE))
 
-    val contentIntent = chooserIntent.extras?.get(Intent.EXTRA_INTENT) as Intent?
+    val contentIntent = chooserIntent.extras?.getParcelable(Intent.EXTRA_INTENT, Intent::class.java)
     assertNotNull("Intent was not built correctly", contentIntent)
     assertEquals(Intent.ACTION_SEND, contentIntent?.action)
-    assertEquals(title, contentIntent?.extras?.get(Intent.EXTRA_SUBJECT))
-    assertEquals(message, contentIntent?.extras?.get(Intent.EXTRA_TEXT))
+    assertEquals(title, contentIntent?.extras?.getString(Intent.EXTRA_SUBJECT))
+    assertEquals(message, contentIntent?.extras?.getString(Intent.EXTRA_TEXT))
 
     assertEquals(1, promise.resolved)
   }

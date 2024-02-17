@@ -82,6 +82,7 @@ class AppendingList extends React.Component<
           nestedScrollEnabled
           style={styles.scrollView}>
           {this.state.items.map(item =>
+            // $FlowFixMe[prop-missing] React.Element internal inspection
             React.cloneElement(item, {key: item.props.msg}),
           )}
         </ScrollView>
@@ -94,6 +95,7 @@ class AppendingList extends React.Component<
           }}
           style={[styles.scrollView, styles.horizontalScrollView]}>
           {this.state.items.map(item =>
+            // $FlowFixMe[prop-missing] React.Element internal inspection
             React.cloneElement(item, {key: item.props.msg, style: null}),
           )}
         </ScrollView>
@@ -191,61 +193,72 @@ function ContentOffsetList(): React.Node {
   );
 }
 
+function ScrollViewScrollToExample(): React.Node {
+  let _scrollView: ?React.ElementRef<typeof ScrollView>;
+  const [scrolledToTop, setScrolledToTop] = useState(false);
+  const textStyle = {color: 'blue', marginBottom: 10, textAlign: 'center'};
+  return (
+    <View>
+      {scrolledToTop ? (
+        <Text style={textStyle}>scrolledToTop invoked</Text>
+      ) : null}
+      <ScrollView
+        accessibilityRole="grid"
+        ref={scrollView => {
+          _scrollView = scrollView;
+        }}
+        automaticallyAdjustContentInsets={false}
+        nestedScrollEnabled
+        onScroll={() => {
+          console.log('onScroll!');
+          setScrolledToTop(false);
+        }}
+        onScrollToTop={() => {
+          setScrolledToTop(true);
+        }}
+        scrollEventThrottle={200}
+        style={styles.scrollView}
+        testID="scroll_vertical">
+        {ITEMS.map(createItemRow)}
+      </ScrollView>
+      <Button
+        label="Scroll to top"
+        onPress={() => {
+          nullthrows<$FlowFixMe>(_scrollView).scrollTo({y: 0});
+        }}
+        testID="scroll_to_top_button"
+      />
+      <Button
+        label="Scroll to bottom"
+        onPress={() => {
+          nullthrows<$FlowFixMe>(_scrollView).scrollToEnd({animated: true});
+        }}
+        testID="scroll_to_bottom_button"
+      />
+      <Button
+        label="Flash scroll indicators"
+        onPress={() => {
+          nullthrows<$FlowFixMe>(_scrollView).flashScrollIndicators();
+        }}
+        testID="flash_scroll_indicators_button"
+      />
+    </View>
+  );
+}
+
 exports.displayName = 'ScrollViewExample';
 exports.title = 'ScrollView';
 exports.documentationURL = 'https://reactnative.dev/docs/scrollview';
 exports.category = 'Basic';
 exports.description =
   'Component that enables scrolling through child components';
-const examples = ([
+const examples: Array<RNTesterModuleExample> = [
   {
     name: 'scrollTo',
     title: '<ScrollView>\n',
     description:
       'To make content scrollable, wrap it within a <ScrollView> component',
-    render: function (): React.Node {
-      let _scrollView: ?React.ElementRef<typeof ScrollView>;
-      return (
-        <View>
-          <ScrollView
-            accessibilityRole="grid"
-            ref={scrollView => {
-              _scrollView = scrollView;
-            }}
-            automaticallyAdjustContentInsets={false}
-            nestedScrollEnabled
-            onScroll={() => {
-              console.log('onScroll!');
-            }}
-            scrollEventThrottle={200}
-            style={styles.scrollView}
-            testID="scroll_vertical">
-            {ITEMS.map(createItemRow)}
-          </ScrollView>
-          <Button
-            label="Scroll to top"
-            onPress={() => {
-              nullthrows<$FlowFixMe>(_scrollView).scrollTo({y: 0});
-            }}
-            testID="scroll_to_top_button"
-          />
-          <Button
-            label="Scroll to bottom"
-            onPress={() => {
-              nullthrows<$FlowFixMe>(_scrollView).scrollToEnd({animated: true});
-            }}
-            testID="scroll_to_bottom_button"
-          />
-          <Button
-            label="Flash scroll indicators"
-            onPress={() => {
-              nullthrows<$FlowFixMe>(_scrollView).flashScrollIndicators();
-            }}
-            testID="flash_scroll_indicators_button"
-          />
-        </View>
-      );
-    },
+    render: ScrollViewScrollToExample,
   },
   {
     name: 'horizontalScrollTo',
@@ -322,7 +335,7 @@ const examples = ([
     },
   },
   {
-    name: 'pressableStickyHeaders',
+    name: 'pressableStickyHeader',
     title: '<ScrollView> Pressable Sticky Header\n',
     description:
       'Press the blue box to toggle it between blue and yellow. The box should remain Pressable after scrolling.',
@@ -412,7 +425,7 @@ const examples = ([
       return <AppendingList />;
     },
   },
-]: Array<RNTesterModuleExample>);
+];
 
 if (Platform.OS === 'ios') {
   examples.push({

@@ -128,6 +128,13 @@ RCT_EXPORT_MODULE()
   _paused = YES;
   _timers = [NSMutableDictionary new];
   _inBackground = NO;
+  RCTExecuteOnMainQueue(^{
+    if (!self->_inBackground &&
+        ([RCTSharedApplication() applicationState] == UIApplicationStateBackground ||
+         [UIDevice currentDevice].proximityState)) {
+      [self appDidMoveToBackground];
+    }
+  });
 
   for (NSString *name in @[
          UIApplicationWillResignActiveNotification,
@@ -146,6 +153,11 @@ RCT_EXPORT_MODULE()
                                                  name:name
                                                object:nil];
   }
+
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(proximityChanged)
+                                               name:UIDeviceProximityStateDidChangeNotification
+                                             object:nil];
 }
 
 - (void)dealloc
@@ -180,6 +192,16 @@ RCT_EXPORT_MODULE()
 {
   _inBackground = NO;
   [self startTimers];
+}
+
+- (void)proximityChanged
+{
+  BOOL isClose = [UIDevice currentDevice].proximityState;
+  if (isClose) {
+    [self appDidMoveToBackground];
+  } else {
+    [self appDidMoveToForeground];
+  }
 }
 
 - (void)stopTimers
@@ -256,9 +278,9 @@ RCT_EXPORT_MODULE()
   }
 
   if (_sendIdleEvents) {
-    NSTimeInterval currentTimestamp = [[NSDate date] timeIntervalSince1970];
-    NSTimeInterval frameElapsed = currentTimestamp - update.timestamp;
+    NSTimeInterval frameElapsed = (CACurrentMediaTime() - update.timestamp);
     if (kFrameDuration - frameElapsed >= kIdleCallbackFrameDeadline) {
+      NSTimeInterval currentTimestamp = [[NSDate date] timeIntervalSince1970];
       NSNumber *absoluteFrameStartMS = @((currentTimestamp - frameElapsed) * 1000);
       if (_bridge) {
         [_bridge enqueueJSCall:@"JSTimers" method:@"callIdleCallbacks" args:@[ absoluteFrameStartMS ] completion:NULL];

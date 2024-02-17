@@ -7,7 +7,10 @@
 
 package com.facebook.react.jstasks;
 
-public class NoRetryPolicy implements HeadlessJsTaskRetryPolicy {
+import com.facebook.infer.annotation.Nullsafe;
+
+@Nullsafe(Nullsafe.Mode.LOCAL)
+class NoRetryPolicy implements HeadlessJsTaskRetryPolicy {
 
   public static final NoRetryPolicy INSTANCE = new NoRetryPolicy();
 

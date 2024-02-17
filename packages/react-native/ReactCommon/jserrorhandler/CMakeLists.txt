@@ -6,12 +6,12 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(-std=c++17)
+add_compile_options(-std=c++20)
 
 file(GLOB_RECURSE js_error_handler_SRC CONFIGURE_DEPENDS *.cpp)
 add_library(
         jserrorhandler
-        SHARED
+        STATIC
         ${js_error_handler_SRC}
 )
 target_include_directories(jserrorhandler PUBLIC .)

@@ -18,7 +18,7 @@ LeakChecker::LeakChecker(RuntimeExecutor runtimeExecutor)
     : runtimeExecutor_(std::move(runtimeExecutor)) {}
 
 void LeakChecker::uiManagerDidCreateShadowNodeFamily(
-    ShadowNodeFamily::Shared const &shadowNodeFamily) const {
+    const ShadowNodeFamily::Shared& shadowNodeFamily) const {
   registry_.add(shadowNodeFamily);
 }
 
@@ -27,7 +27,7 @@ void LeakChecker::stopSurface(SurfaceId surfaceId) {
     // Dispatch the check onto JavaScript thread to make sure all other
     // cleanup code has had chance to run.
     runtimeExecutor_([previouslyStoppedSurface = previouslyStoppedSurface_,
-                      this](jsi::Runtime &runtime) {
+                      this](jsi::Runtime& runtime) {
       runtime.instrumentation().collectGarbage("LeakChecker");
       // For now check the previous surface because React uses double
       // buffering which keeps the surface that was just stopped in
@@ -43,7 +43,7 @@ void LeakChecker::stopSurface(SurfaceId surfaceId) {
 void LeakChecker::checkSurfaceForLeaks(SurfaceId surfaceId) const {
   auto weakFamilies = registry_.weakFamiliesForSurfaceId(surfaceId);
   unsigned int numberOfLeaks = 0;
-  for (auto const &weakFamily : weakFamilies) {
+  for (const auto& weakFamily : weakFamilies) {
     auto strong = weakFamily.lock();
     if (strong) {
       ++numberOfLeaks;

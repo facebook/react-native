@@ -10,9 +10,21 @@
     <string name="alert_description" gender="unknown">Предупредување</string>
     <string name="combobox_description" gender="unknown">Комбинирано поле</string>
     <string name="menu_description" gender="unknown">Мени</string>
+    <string name="menubar_description" gender="unknown">Мени лента</string>
+    <string name="menuitem_description" gender="unknown">Производ на мени</string>
+    <string name="progressbar_description" gender="unknown">Лента за напредок</string>
+    <string name="radiogroup_description" gender="unknown">Радио група</string>
     <string name="scrollbar_description" gender="unknown">Лента за лизгање</string>
+    <string name="spinbutton_description" gender="unknown">Копче за вртење</string>
+    <string name="rn_tab_description" gender="unknown">Картичка</string>
     <string name="tablist_description" gender="unknown">Список со картички</string>
+    <string name="timer_description" gender="unknown">Тајмер</string>
+    <string name="toolbar_description" gender="unknown">Лента со алатки</string>
+    <string name="summary_description" gender="unknown">Резиме</string>
     <string name="state_busy_description" gender="unknown">зафатено</string>
+    <string name="state_expanded_description" gender="unknown">проширено</string>
+    <string name="state_collapsed_description" gender="unknown">собрано</string>
+    <string name="state_unselected_description" gender="unknown">изборот е поништен</string>
     <string name="state_on_description" gender="unknown">вклучено</string>
     <string name="state_off_description" gender="unknown">исклучено</string>
     <string name="state_mixed_description" gender="unknown">мешано</string>

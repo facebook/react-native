@@ -9,8 +9,10 @@
  */
 
 import type {RootTag} from '../Types/RootTagTypes';
+import type {UIManagerJSInterface} from '../Types/UIManagerJSInterface';
 
 import NativeUIManager from './NativeUIManager';
+import nullthrows from 'nullthrows';
 
 const NativeModules = require('../BatchedBridge/NativeModules');
 const defineLazyObjectProperty = require('../Utilities/defineLazyObjectProperty');
@@ -66,7 +68,7 @@ function getViewManagerConfig(viewManagerName: string): any {
     NativeUIManager.lazilyLoadView &&
     !triedLoadingConfig.has(viewManagerName)
   ) {
-    const result = NativeUIManager.lazilyLoadView(viewManagerName);
+    const result = nullthrows(NativeUIManager.lazilyLoadView)(viewManagerName);
     triedLoadingConfig.add(viewManagerName);
     if (result != null && result.viewConfig != null) {
       getConstants()[viewManagerName] = result.viewConfig;
@@ -77,13 +79,11 @@ function getViewManagerConfig(viewManagerName: string): any {
   return viewManagerConfigs[viewManagerName];
 }
 
-/* $FlowFixMe[cannot-spread-interface] (>=0.123.0 site=react_native_fb) This
- * comment suppresses an error found when Flow v0.123.0 was deployed. To see
- * the error, delete this comment and run Flow. */
-const UIManagerJS = {
+// $FlowFixMe[cannot-spread-interface]
+const UIManagerJS: UIManagerJSInterface = {
   ...NativeUIManager,
   createView(
-    reactTag: ?number,
+    reactTag: number,
     viewName: string,
     rootTag: RootTag,
     props: Object,
@@ -162,7 +162,8 @@ if (Platform.OS === 'ios') {
 } else if (getConstants().ViewManagerNames) {
   NativeUIManager.getConstants().ViewManagerNames.forEach(viewManagerName => {
     defineLazyObjectProperty(NativeUIManager, viewManagerName, {
-      get: () => NativeUIManager.getConstantsForViewManager(viewManagerName),
+      get: () =>
+        nullthrows(NativeUIManager.getConstantsForViewManager)(viewManagerName),
     });
   });
 }

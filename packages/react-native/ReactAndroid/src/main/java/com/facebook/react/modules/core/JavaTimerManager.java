@@ -8,6 +8,7 @@
 package com.facebook.react.modules.core;
 
 import android.util.SparseArray;
+import android.view.Choreographer;
 import androidx.annotation.Nullable;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.Arguments;
@@ -51,7 +52,7 @@ public class JavaTimerManager {
     }
   }
 
-  private class TimerFrameCallback extends ChoreographerCompat.FrameCallback {
+  private class TimerFrameCallback implements Choreographer.FrameCallback {
 
     // Temporary map for constructing the individual arrays of timers to call
     private @Nullable WritableArray mTimersToCall = null;
@@ -89,7 +90,7 @@ public class JavaTimerManager {
     }
   }
 
-  private class IdleFrameCallback extends ChoreographerCompat.FrameCallback {
+  private class IdleFrameCallback implements Choreographer.FrameCallback {
 
     @Override
     public void doFrame(long frameTimeNanos) {

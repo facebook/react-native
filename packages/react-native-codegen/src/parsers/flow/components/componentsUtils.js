@@ -10,11 +10,13 @@
 
 'use strict';
 
-const {getValueFromTypes} = require('../utils.js');
-const {verifyPropNotAlreadyDefined} = require('../../parsers-commons');
-import type {TypeDeclarationMap, PropAST, ASTNode} from '../../utils';
 import type {BuildSchemaFN, Parser} from '../../parser';
+import type {ASTNode, PropAST, TypeDeclarationMap} from '../../utils';
 
+const {verifyPropNotAlreadyDefined} = require('../../parsers-commons');
+const {getValueFromTypes} = require('../utils.js');
+
+// $FlowFixMe[unsupported-variance-annotation]
 function getTypeAnnotationForArray<+T>(
   name: string,
   typeAnnotation: $FlowFixMe,
@@ -32,7 +34,7 @@ function getTypeAnnotationForArray<+T>(
 
   if (
     extractedTypeAnnotation.type === 'GenericTypeAnnotation' &&
-    extractedTypeAnnotation.id.name === 'WithDefault'
+    parser.getTypeAnnotationName(extractedTypeAnnotation) === 'WithDefault'
   ) {
     throw new Error(
       'Nested defaults such as "$ReadOnlyArray<WithDefault<boolean, false>>" are not supported, please declare defaults at the top level of value definitions as in "WithDefault<$ReadOnlyArray<boolean>, false>"',
@@ -82,7 +84,7 @@ function getTypeAnnotationForArray<+T>(
 
   const type =
     extractedTypeAnnotation.type === 'GenericTypeAnnotation'
-      ? extractedTypeAnnotation.id.name
+      ? parser.getTypeAnnotationName(extractedTypeAnnotation)
       : extractedTypeAnnotation.type;
 
   switch (type) {
@@ -170,7 +172,6 @@ function getTypeAnnotationForArray<+T>(
         );
       }
     default:
-      (type: empty);
       throw new Error(`Unknown property type for "${name}": ${type}`);
   }
 }
@@ -207,6 +208,7 @@ function flattenProperties(
     .filter(Boolean);
 }
 
+// $FlowFixMe[unsupported-variance-annotation]
 function getTypeAnnotation<+T>(
   name: string,
   annotation: $FlowFixMe | ASTNode,
@@ -220,7 +222,7 @@ function getTypeAnnotation<+T>(
 
   if (
     typeAnnotation.type === 'GenericTypeAnnotation' &&
-    typeAnnotation.id.name === '$ReadOnlyArray'
+    parser.getTypeAnnotationName(typeAnnotation) === '$ReadOnlyArray'
   ) {
     return {
       type: 'ArrayTypeAnnotation',
@@ -237,7 +239,7 @@ function getTypeAnnotation<+T>(
 
   if (
     typeAnnotation.type === 'GenericTypeAnnotation' &&
-    typeAnnotation.id.name === '$ReadOnly'
+    parser.getTypeAnnotationName(typeAnnotation) === '$ReadOnly'
   ) {
     return {
       type: 'ObjectTypeAnnotation',
@@ -253,7 +255,7 @@ function getTypeAnnotation<+T>(
 
   const type =
     typeAnnotation.type === 'GenericTypeAnnotation'
-      ? typeAnnotation.id.name
+      ? parser.getTypeAnnotationName(typeAnnotation)
       : typeAnnotation.type;
 
   switch (type) {
@@ -379,7 +381,6 @@ function getTypeAnnotation<+T>(
         type: 'MixedTypeAnnotation',
       };
     default:
-      (type: empty);
       throw new Error(
         `Unknown property type for "${name}": "${type}" in the State`,
       );

@@ -26,6 +26,16 @@ react_native_dependency_path = ENV['REACT_NATIVE_PATH']
 # Relative path to react native from current podspec
 react_native_sources_path = '..'
 
+header_search_paths = [
+  "\"$(PODS_TARGET_SRCROOT)\"",
+  "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"",
+]
+
+if ENV["USE_FRAMEWORKS"]
+  create_header_search_path_for_frameworks("ReactCommon", :additional_framework_paths => ["react/nativemodule/core"], :include_base_folder => false)
+    .each { |search_path| header_search_paths << "\"#{search_path}\"" }
+end
+
 Pod::Spec.new do |s|
   s.name                   = "React-rncore"
   s.version                = version
@@ -33,18 +43,10 @@ Pod::Spec.new do |s|
   s.homepage               = "https://reactnative.dev/"
   s.license                = package["license"]
   s.author                 = "Meta Platforms, Inc. and its affiliates"
-  s.platforms              = { :ios => min_ios_version_supported }
+  s.platforms              = min_supported_versions
   s.source                 = source
   s.source_files           = "dummyFile.cpp"
   s.pod_target_xcconfig = { "USE_HEADERMAP" => "YES",
-                            "CLANG_CXX_LANGUAGE_STANDARD" => "c++17" }
-
-
-  use_react_native_codegen!(s, {
-    :react_native_path => react_native_sources_path,
-    :js_srcs_dir => "#{react_native_sources_path}/Libraries",
-    :library_name => "rncore",
-    :library_type => "components",
-    :output_dir => "#{react_native_dependency_path}/ReactCommon"
-  })
+                            "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
+                            "CLANG_CXX_LANGUAGE_STANDARD" => "c++20" }
 end

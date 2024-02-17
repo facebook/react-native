@@ -9,14 +9,13 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 add_compile_options(
         -fexceptions
         -frtti
-        -std=c++17
+        -std=c++20
         -Wall
         -Wpedantic
-        -Wno-gnu-zero-variadic-macro-arguments
         -DLOG_TAG=\"Fabric\")
 
 file(GLOB react_render_scheduler_SRC CONFIGURE_DEPENDS *.cpp)
-add_library(react_render_scheduler SHARED ${react_render_scheduler_SRC})
+add_library(react_render_scheduler STATIC ${react_render_scheduler_SRC})
 
 target_include_directories(react_render_scheduler PUBLIC ${REACT_COMMON_DIR})
 
@@ -32,7 +31,6 @@ target_link_libraries(react_render_scheduler
         react_render_graphics
         react_render_mounting
         react_render_runtimescheduler
-        react_render_templateprocessor
         react_render_uimanager
         react_utils
         rrc_root

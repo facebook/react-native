@@ -11,6 +11,7 @@ import android.annotation.SuppressLint;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.NativeMap;
@@ -23,6 +24,7 @@ import com.facebook.react.uimanager.StateWrapper;
  * This class holds reference to the C++ EventEmitter object. Instances of this class are created on
  * the Bindings.cpp, where the pointer to the C++ event emitter is set.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @SuppressLint("MissingNativeLoadLibrary")
 @DoNotStrip
 public class StateWrapperImpl implements StateWrapper {
@@ -82,5 +84,19 @@ public class StateWrapperImpl implements StateWrapper {
       mDestroyed = true;
       mHybridData.resetNative();
     }
+  }
+
+  @Override
+  public String toString() {
+    if (mDestroyed) {
+      return "<destroyed>";
+    }
+
+    ReadableNativeMap map = getStateDataImpl();
+    if (map == null) {
+      return "<unexpected null>";
+    }
+
+    return map.toString();
   }
 }

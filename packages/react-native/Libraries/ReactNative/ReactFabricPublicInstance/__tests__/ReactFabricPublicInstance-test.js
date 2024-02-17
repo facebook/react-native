@@ -9,6 +9,9 @@
  * @oncall react_native
  */
 
+// TODO(legacy-fake-timers): Fix these tests to work with modern timers.
+jest.useFakeTimers({legacyFakeTimers: true});
+
 import type {HostComponent} from '../../../Renderer/shims/ReactNativeTypes';
 
 import * as React from 'react';
@@ -126,8 +129,12 @@ async function mockRenderKeys(
       jest.spyOn(TextInputState, 'blurTextInput');
       jest.spyOn(TextInputState, 'focusTextInput');
 
-      require('../../../ReactNative/ReactNativeFeatureFlags').enableAccessToHostTreeInFabric =
-        () => flags.enableAccessToHostTreeInFabric;
+      require('../../../../src/private/featureflags/ReactNativeFeatureFlags').override(
+        {
+          enableAccessToHostTreeInFabric: () =>
+            flags.enableAccessToHostTreeInFabric,
+        },
+      );
     });
 
     describe('blur', () => {

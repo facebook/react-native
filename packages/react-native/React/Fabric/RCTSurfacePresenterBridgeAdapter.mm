@@ -31,7 +31,7 @@ using namespace facebook::react;
 
 static ContextContainer::Shared RCTContextContainerFromBridge(RCTBridge *bridge)
 {
-  auto contextContainer = std::make_shared<ContextContainer const>();
+  auto contextContainer = std::make_shared<const ContextContainer>();
 
   RCTImageLoader *imageLoader = RCTTurboModuleEnabled()
       ? [bridge moduleForName:@"RCTImageLoader" lazilyLoadIfNecessary:YES]

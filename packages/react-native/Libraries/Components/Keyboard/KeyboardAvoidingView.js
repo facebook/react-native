@@ -65,6 +65,7 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
   _subscriptions: Array<EventSubscription> = [];
   viewRef: {current: React.ElementRef<typeof View> | null, ...};
   _initialFrameHeight: number = 0;
+  _bottom: number = 0;
 
   constructor(props: Props) {
     super(props);
@@ -129,20 +130,32 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
     }
   };
 
+  // Avoid unnecessary renders if the KeyboardAvoidingView is disabled.
+  _setBottom = (value: number) => {
+    const enabled = this.props.enabled ?? true;
+    this._bottom = value;
+    if (enabled) {
+      this.setState({bottom: value});
+    }
+  };
+
   _updateBottomIfNecessary = async () => {
     if (this._keyboardEvent == null) {
-      this.setState({bottom: 0});
+      this._setBottom(0);
       return;
     }
 
     const {duration, easing, endCoordinates} = this._keyboardEvent;
     const height = await this._relativeKeyboardHeight(endCoordinates);
 
-    if (this.state.bottom === height) {
+    if (this._bottom === height) {
       return;
     }
 
-    if (duration && easing) {
+    this._setBottom(height);
+
+    const enabled = this.props.enabled ?? true;
+    if (enabled && duration && easing) {
       LayoutAnimation.configureNext({
         // We have to pass the duration equal to minimal accepted duration defined here: RCTLayoutAnimation.m
         duration: duration > 10 ? duration : 10,
@@ -152,8 +165,14 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
         },
       });
     }
-    this.setState({bottom: height});
   };
+
+  componentDidUpdate(_: Props, prevState: State): void {
+    const enabled = this.props.enabled ?? true;
+    if (enabled && this._bottom !== prevState.bottom) {
+      this.setState({bottom: this._bottom});
+    }
+  }
 
   componentDidMount(): void {
     if (Platform.OS === 'ios') {

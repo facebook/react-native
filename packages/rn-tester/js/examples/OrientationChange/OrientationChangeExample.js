@@ -8,11 +8,10 @@
  * @flow
  */
 
-const React = require('react');
-
-const {DeviceEventEmitter, Text, View} = require('react-native');
-
 import {type EventSubscription} from 'react-native/Libraries/vendor/emitter/EventEmitter';
+
+const React = require('react');
+const {DeviceEventEmitter, Text, View} = require('react-native');
 
 class OrientationChangeExample extends React.Component<{...}, $FlowFixMeState> {
   _orientationSubscription: EventSubscription;

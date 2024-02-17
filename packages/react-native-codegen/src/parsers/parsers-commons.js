@@ -11,68 +11,66 @@
 'use strict';
 
 import type {
-  Nullable,
+  EventTypeAnnotation,
+  EventTypeShape,
   NamedShape,
   NativeModuleAliasMap,
   NativeModuleBaseTypeAnnotation,
-  NativeModuleSchema,
-  NativeModuleTypeAnnotation,
+  NativeModuleEnumMap,
   NativeModuleFunctionTypeAnnotation,
   NativeModuleParamTypeAnnotation,
   NativeModulePropertyShape,
-  SchemaType,
-  NativeModuleEnumMap,
+  NativeModuleSchema,
+  NativeModuleTypeAnnotation,
+  Nullable,
+  ObjectTypeAnnotation,
   OptionsShape,
   PropTypeAnnotation,
-  EventTypeAnnotation,
-  ObjectTypeAnnotation,
+  SchemaType,
 } from '../CodegenSchema.js';
-
-import type {Parser} from './parser';
 import type {ParserType} from './errors';
+import type {Parser} from './parser';
+import type {ComponentSchemaBuilderConfig} from './schema.js';
 import type {
   ParserErrorCapturer,
-  TypeDeclarationMap,
   PropAST,
+  TypeDeclarationMap,
   TypeResolutionStatus,
 } from './utils';
-import type {ComponentSchemaBuilderConfig} from './schema.js';
 
 const {
-  getConfigType,
-  extractNativeModuleName,
-  createParserErrorCapturer,
-  visit,
-  isModuleRegistryCall,
-  verifyPlatforms,
-} = require('./utils');
-
-const {
+  throwIfConfigNotfound,
+  throwIfIncorrectModuleRegistryCallArgument,
+  throwIfIncorrectModuleRegistryCallTypeParameterParserError,
+  throwIfModuleInterfaceIsMisnamed,
+  throwIfModuleInterfaceNotFound,
+  throwIfModuleTypeIsUnsupported,
+  throwIfMoreThanOneCodegenNativecommands,
+  throwIfMoreThanOneConfig,
+  throwIfMoreThanOneModuleInterfaceParserError,
+  throwIfMoreThanOneModuleRegistryCalls,
   throwIfPropertyValueTypeIsUnsupported,
+  throwIfTypeAliasIsNotInterface,
   throwIfUnsupportedFunctionParamTypeAnnotationParserError,
   throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
-  throwIfModuleTypeIsUnsupported,
-  throwIfUnusedModuleInterfaceParserError,
-  throwIfMoreThanOneModuleRegistryCalls,
-  throwIfWrongNumberOfCallExpressionArgs,
   throwIfUntypedModule,
-  throwIfIncorrectModuleRegistryCallTypeParameterParserError,
-  throwIfIncorrectModuleRegistryCallArgument,
-  throwIfModuleInterfaceNotFound,
-  throwIfMoreThanOneModuleInterfaceParserError,
-  throwIfModuleInterfaceIsMisnamed,
-  throwIfMoreThanOneCodegenNativecommands,
-  throwIfConfigNotfound,
-  throwIfMoreThanOneConfig,
-  throwIfTypeAliasIsNotInterface,
+  throwIfUnusedModuleInterfaceParserError,
+  throwIfWrongNumberOfCallExpressionArgs,
 } = require('./error-utils');
-
 const {
   MissingTypeParameterGenericParserError,
   MoreThanOneTypeParameterGenericParserError,
   UnnamedFunctionParamParserError,
+  UnsupportedObjectDirectRecursivePropertyParserError,
 } = require('./errors');
-
+const {
+  createParserErrorCapturer,
+  extractNativeModuleName,
+  getConfigType,
+  isModuleRegistryCall,
+  verifyPlatforms,
+  visit,
+} = require('./utils');
 const invariant = require('invariant');
 
 export type CommandOptions = $ReadOnly<{
@@ -87,6 +85,12 @@ type ExtendedPropResult = {
   knownTypeName: 'ReactNativeCoreViewProps',
 } | null;
 
+export type EventArgumentReturnType = {
+  argumentProps: ?$ReadOnlyArray<$FlowFixMe>,
+  paperTopLevelNameDeprecated: ?$FlowFixMe,
+  bubblingType: ?'direct' | 'bubble',
+};
+
 function wrapModuleSchema(
   nativeModuleSchema: NativeModuleSchema,
   hasteModuleName: string,
@@ -98,6 +102,7 @@ function wrapModuleSchema(
   };
 }
 
+// $FlowFixMe[unsupported-variance-annotation]
 function unwrapNullable<+T: NativeModuleTypeAnnotation>(
   x: Nullable<T>,
 ): [T, boolean] {
@@ -108,6 +113,7 @@ function unwrapNullable<+T: NativeModuleTypeAnnotation>(
   return [x, false];
 }
 
+// $FlowFixMe[unsupported-variance-annotation]
 function wrapNullable<+T: NativeModuleTypeAnnotation>(
   nullable: boolean,
   typeAnnotation: T,
@@ -166,6 +172,7 @@ function isObjectProperty(property: $FlowFixMe, language: ParserType): boolean {
 }
 
 function parseObjectProperty(
+  parentObject?: $FlowFixMe,
   property: $FlowFixMe,
   hasteModuleName: string,
   types: TypeDeclarationMap,
@@ -186,6 +193,41 @@ function parseObjectProperty(
       ? property.typeAnnotation.typeAnnotation
       : property.value;
 
+  // Handle recursive types
+  if (parentObject) {
+    const propertyType = parser.getResolveTypeAnnotationFN()(
+      languageTypeAnnotation,
+      types,
+      parser,
+    );
+    if (
+      propertyType.typeResolutionStatus.successful === true &&
+      propertyType.typeResolutionStatus.type === 'alias' &&
+      (language === 'TypeScript'
+        ? parentObject.typeName &&
+          parentObject.typeName.name === languageTypeAnnotation.typeName?.name
+        : parentObject.id &&
+          parentObject.id.name === languageTypeAnnotation.id?.name)
+    ) {
+      if (!optional) {
+        throw new UnsupportedObjectDirectRecursivePropertyParserError(
+          name,
+          languageTypeAnnotation,
+          hasteModuleName,
+        );
+      }
+      return {
+        name,
+        optional,
+        typeAnnotation: {
+          type: 'TypeAliasTypeAnnotation',
+          name: propertyType.typeResolutionStatus.name,
+        },
+      };
+    }
+  }
+
+  // Handle non-recursive types
   const [propertyTypeAnnotation, isPropertyNullable] =
     unwrapNullable<$FlowFixMe>(
       translateTypeAnnotation(
@@ -201,7 +243,7 @@ function parseObjectProperty(
     );
 
   if (
-    propertyTypeAnnotation.type === 'FunctionTypeAnnotation' ||
+    (propertyTypeAnnotation.type === 'FunctionTypeAnnotation' && !cxxOnly) ||
     propertyTypeAnnotation.type === 'PromiseTypeAnnotation' ||
     propertyTypeAnnotation.type === 'VoidTypeAnnotation'
   ) {
@@ -475,7 +517,7 @@ function buildSchema(
     return {modules: {}};
   }
 
-  const ast = parser.getAst(contents);
+  const ast = parser.getAst(contents, filename);
   const configType = getConfigType(ast, Visitor);
 
   return buildSchemaFromConfigType(
@@ -698,6 +740,7 @@ function findNativeComponentType(
   // expression so we need to go one level deeper
   if (
     declaration.type === 'TSAsExpression' ||
+    declaration.type === 'AsExpression' ||
     declaration.type === 'TypeCastExpression'
   ) {
     declaration = declaration.expression;
@@ -818,7 +861,7 @@ function getCommandTypeNameAndOptionsExpression(
   }
 
   return {
-    commandTypeName: parser.nameForGenericTypeAnnotation(typeArgumentParam),
+    commandTypeName: parser.getTypeAnnotationName(typeArgumentParam),
     commandOptionsExpression: callExpression.arguments[0],
   };
 }
@@ -998,7 +1041,7 @@ function getTypeResolutionStatus(
   return {
     successful: true,
     type,
-    name: parser.nameForGenericTypeAnnotation(typeAnnotation),
+    name: parser.getTypeAnnotationName(typeAnnotation),
   };
 }
 
@@ -1083,6 +1126,73 @@ function verifyPropNotAlreadyDefined(
   }
 }
 
+function handleEventHandler(
+  name: 'BubblingEventHandler' | 'DirectEventHandler',
+  typeAnnotation: $FlowFixMe,
+  parser: Parser,
+  types: TypeDeclarationMap,
+  findEventArgumentsAndType: (
+    parser: Parser,
+    typeAnnotation: $FlowFixMe,
+    types: TypeDeclarationMap,
+    bubblingType: void | 'direct' | 'bubble',
+    paperName: ?$FlowFixMe,
+  ) => EventArgumentReturnType,
+): EventArgumentReturnType {
+  const eventType = name === 'BubblingEventHandler' ? 'bubble' : 'direct';
+  const paperTopLevelNameDeprecated =
+    parser.getPaperTopLevelNameDeprecated(typeAnnotation);
+
+  switch (typeAnnotation.typeParameters.params[0].type) {
+    case parser.nullLiteralTypeAnnotation:
+    case parser.undefinedLiteralTypeAnnotation:
+      return {
+        argumentProps: [],
+        bubblingType: eventType,
+        paperTopLevelNameDeprecated,
+      };
+    default:
+      return findEventArgumentsAndType(
+        parser,
+        typeAnnotation.typeParameters.params[0],
+        types,
+        eventType,
+        paperTopLevelNameDeprecated,
+      );
+  }
+}
+
+function emitBuildEventSchema(
+  paperTopLevelNameDeprecated: $FlowFixMe,
+  name: $FlowFixMe,
+  optional: $FlowFixMe,
+  nonNullableBubblingType: 'direct' | 'bubble',
+  argument: ObjectTypeAnnotation<EventTypeAnnotation>,
+): ?EventTypeShape {
+  if (paperTopLevelNameDeprecated != null) {
+    return {
+      name,
+      optional,
+      bubblingType: nonNullableBubblingType,
+      paperTopLevelNameDeprecated,
+      typeAnnotation: {
+        type: 'EventTypeAnnotation',
+        argument: argument,
+      },
+    };
+  }
+
+  return {
+    name,
+    optional,
+    bubblingType: nonNullableBubblingType,
+    typeAnnotation: {
+      type: 'EventTypeAnnotation',
+      argument: argument,
+    },
+  };
+}
+
 module.exports = {
   wrapModuleSchema,
   unwrapNullable,
@@ -1111,4 +1221,6 @@ module.exports = {
   getTypeResolutionStatus,
   buildPropertiesForEvent,
   verifyPropNotAlreadyDefined,
+  handleEventHandler,
+  emitBuildEventSchema,
 };

@@ -1,0 +1,1 @@
+import*as n from"./breakpoints.js";self.Bindings=self.Bindings||{},Bindings=Bindings||{},Bindings.BreakpointManager=n.BreakpointManager.BreakpointManager,Bindings.BreakpointManager.Events=n.BreakpointManager.Events,Bindings.BreakpointManager.Breakpoint=n.BreakpointManager.Breakpoint,Bindings.BreakpointManager.ModelBreakpoint=n.BreakpointManager.ModelBreakpoint;

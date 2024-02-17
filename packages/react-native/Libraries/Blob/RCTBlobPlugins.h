@@ -29,8 +29,8 @@ extern "C" {
 Class RCTBlobClassProvider(const char *name);
 
 // Lookup functions
-Class RCTFileReaderModuleCls(void) __attribute__((used));
 Class RCTBlobManagerCls(void) __attribute__((used));
+Class RCTFileReaderModuleCls(void) __attribute__((used));
 
 #ifdef __cplusplus
 }

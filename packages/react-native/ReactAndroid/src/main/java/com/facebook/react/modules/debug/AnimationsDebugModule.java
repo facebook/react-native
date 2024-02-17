@@ -23,7 +23,7 @@ import java.util.Locale;
  * going from one screen to another).
  */
 @ReactModule(name = NativeAnimationsDebugModuleSpec.NAME)
-public class AnimationsDebugModule extends NativeAnimationsDebugModuleSpec {
+class AnimationsDebugModule extends NativeAnimationsDebugModuleSpec {
 
   private @Nullable FpsDebugFrameCallback mFrameCallback;
   private @Nullable final DeveloperSettings mCatalystSettings;
@@ -65,7 +65,8 @@ public class AnimationsDebugModule extends NativeAnimationsDebugModuleSpec {
     FpsDebugFrameCallback.FpsInfo fpsInfo = mFrameCallback.getFpsInfo((long) animationStopTimeMs);
 
     if (fpsInfo == null) {
-      Toast.makeText(getReactApplicationContext(), "Unable to get FPS info", Toast.LENGTH_LONG);
+      Toast.makeText(getReactApplicationContext(), "Unable to get FPS info", Toast.LENGTH_LONG)
+          .show();
     } else {
       String fpsString =
           String.format(

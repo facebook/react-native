@@ -15,7 +15,7 @@ import type {
 
 import getNativeComponentAttributes from '../ReactNative/getNativeComponentAttributes';
 import UIManager from '../ReactNative/UIManager';
-import ReactNativeViewConfigRegistry from '../Renderer/shims/ReactNativeViewConfigRegistry';
+import * as ReactNativeViewConfigRegistry from '../Renderer/shims/ReactNativeViewConfigRegistry';
 import verifyComponentAttributeEquivalence from '../Utilities/verifyComponentAttributeEquivalence';
 import * as StaticViewConfigValidator from './StaticViewConfigValidator';
 import {createViewConfig} from './ViewConfig';
@@ -38,11 +38,9 @@ export function setRuntimeConfigProvider(
     verify: boolean,
   },
 ): void {
-  invariant(
-    getRuntimeConfig == null,
-    'NativeComponentRegistry.setRuntimeConfigProvider() called more than once.',
-  );
-  getRuntimeConfig = runtimeConfigProvider;
+  if (getRuntimeConfig === undefined) {
+    getRuntimeConfig = runtimeConfigProvider;
+  }
 }
 
 /**
@@ -57,14 +55,20 @@ export function get<Config>(
 ): HostComponent<Config> {
   ReactNativeViewConfigRegistry.register(name, () => {
     const {native, strict, verify} = getRuntimeConfig?.(name) ?? {
-      native: true,
+      native: !global.RN$Bridgeless,
       strict: false,
       verify: false,
     };
 
-    const viewConfig = native
-      ? getNativeComponentAttributes(name)
-      : createViewConfig(viewConfigProvider());
+    let viewConfig;
+    if (native) {
+      viewConfig = getNativeComponentAttributes(name);
+    } else {
+      viewConfig = createViewConfig(viewConfigProvider());
+      if (viewConfig == null) {
+        viewConfig = getNativeComponentAttributes(name);
+      }
+    }
 
     if (verify) {
       const nativeViewConfig = native

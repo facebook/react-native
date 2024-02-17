@@ -19,11 +19,15 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.hardware.SensorManager;
+import android.os.Build;
 import android.util.Pair;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
@@ -39,6 +43,7 @@ import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.DebugServerException;
+import com.facebook.react.common.JavascriptException;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.ShakeDetector;
 import com.facebook.react.common.SurfaceDelegate;
@@ -61,10 +66,12 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 public abstract class DevSupportManagerBase implements DevSupportManager {
 
@@ -77,9 +84,6 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
   private static final int JAVA_ERROR_COOKIE = -1;
   private static final int JSEXCEPTION_ERROR_COOKIE = -1;
   private static final String RELOAD_APP_ACTION_SUFFIX = ".RELOAD_APP_ACTION";
-  private static final String FLIPPER_DEBUGGER_URL =
-      "flipper://null/Hermesdebuggerrn?device=React%20Native";
-  private static final String FLIPPER_DEVTOOLS_URL = "flipper://null/React?device=React%20Native";
   private static final String EXOPACKAGE_LOCATION_FORMAT =
       "/data/local/tmp/exopackage/%s//secondary-dex";
 
@@ -105,6 +109,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
   private boolean mIsReceiverRegistered = false;
   private boolean mIsShakeDetectorStarted = false;
   private boolean mIsDevSupportEnabled = false;
+  private boolean mIsPackagerConnected;
   private @Nullable final RedBoxHandler mRedBoxHandler;
   private @Nullable String mLastErrorTitle;
   private @Nullable StackFrame[] mLastErrorStack;
@@ -113,8 +118,6 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
   private @Nullable final DevBundleDownloadListener mBundleDownloadListener;
   private @Nullable List<ErrorCustomizer> mErrorCustomizers;
   private @Nullable PackagerLocationCustomizer mPackagerLocationCustomizer;
-
-  private final InspectorPackagerConnection.BundleStatus mBundleStatus;
 
   private @Nullable final Map<String, RequestHandler> mCustomPackagerCommandHandlers;
 
@@ -135,12 +138,10 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
     mApplicationContext = applicationContext;
     mJSAppBundleName = packagerPathForJSBundleName;
     mDevSettings = new DevInternalSettings(applicationContext, this::reloadSettings);
-    mBundleStatus = new InspectorPackagerConnection.BundleStatus();
     mDevServerHelper =
         new DevServerHelper(
             mDevSettings,
             mApplicationContext.getPackageName(),
-            () -> mBundleStatus,
             mDevSettings.getPackagerConnectionSettings());
     mBundleDownloadListener = devBundleDownloadListener;
 
@@ -212,13 +213,10 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
       cause = cause.getCause();
     }
 
-    if (e instanceof JSException) {
+    if (e instanceof JavascriptException) {
       FLog.e(ReactConstants.TAG, "Exception in native call from JS", e);
-      String stack = ((JSException) e).getStack();
-      message.append("\n\n").append(stack);
-
-      // TODO #11638796: convert the stack into something useful
-      showNewError(message.toString(), new StackFrame[] {}, JSEXCEPTION_ERROR_COOKIE, ErrorType.JS);
+      showNewError(
+          e.getMessage().toString(), new StackFrame[] {}, JSEXCEPTION_ERROR_COOKIE, ErrorType.JS);
     } else {
       showNewJavaError(message.toString(), e);
     }
@@ -348,6 +346,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
       return;
     }
     LinkedHashMap<String, DevOptionHandler> options = new LinkedHashMap<>();
+    Set<String> disabledItemKeys = new HashSet<>();
     /* register standard options */
     options.put(
         mApplicationContext.getString(R.string.catalyst_reload),
@@ -367,30 +366,29 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
           }
         });
 
-    if (mDevSettings.isDeviceDebugEnabled()) {
-      // For on-device debugging we link out to Flipper.
-      // Since we're assuming Flipper is available, also include the DevTools.
+    if (mDevSettings.isRemoteJSDebugEnabled()) {
+      // [Deprecated in React Native 0.73] Remote JS debugging. Handle reload
+      // via external JS executor. This capability will be removed in a future
+      // release.
+      mDevSettings.setRemoteJSDebugEnabled(false);
+      handleReloadJS();
+    }
 
-      // Reset the old debugger setting so no one gets stuck.
-      // TODO: Remove in a few weeks.
-      if (mDevSettings.isRemoteJSDebugEnabled()) {
-        mDevSettings.setRemoteJSDebugEnabled(false);
-        handleReloadJS();
+    if (mDevSettings.isDeviceDebugEnabled() && !mDevSettings.isRemoteJSDebugEnabled()) {
+      // On-device JS debugging (CDP). Render action to open debugger frontend.
+      boolean isConnected = mIsPackagerConnected;
+      String debuggerItemString =
+          mApplicationContext.getString(
+              isConnected ? R.string.catalyst_debug_open : R.string.catalyst_debug_open_disabled);
+      if (!isConnected) {
+        disabledItemKeys.add(debuggerItemString);
       }
       options.put(
-          mApplicationContext.getString(R.string.catalyst_debug_open),
+          debuggerItemString,
           () ->
-              mDevServerHelper.openUrl(
+              mDevServerHelper.openDebugger(
                   mCurrentContext,
-                  FLIPPER_DEBUGGER_URL,
-                  mApplicationContext.getString(R.string.catalyst_open_flipper_error)));
-      options.put(
-          mApplicationContext.getString(R.string.catalyst_devtools_open),
-          () ->
-              mDevServerHelper.openUrl(
-                  mCurrentContext,
-                  FLIPPER_DEVTOOLS_URL,
-                  mApplicationContext.getString(R.string.catalyst_open_flipper_error)));
+                  mApplicationContext.getString(R.string.catalyst_open_debugger_error)));
     }
 
     options.put(
@@ -426,9 +424,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
         });
 
     options.put(
-        mDevSettings.isElementInspectorEnabled()
-            ? mApplicationContext.getString(R.string.catalyst_inspector_stop)
-            : mApplicationContext.getString(R.string.catalyst_inspector),
+        mApplicationContext.getString(R.string.catalyst_inspector_toggle),
         new DevOptionHandler() {
           @Override
           public void onOptionSelected() {
@@ -509,22 +505,47 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
     title.setGravity(Gravity.CENTER);
     title.setTextSize(16);
     title.setTypeface(title.getTypeface(), Typeface.BOLD);
-
-    final TextView jsExecutorLabel = new TextView(context);
-    jsExecutorLabel.setText(
-        context.getString(R.string.catalyst_dev_menu_sub_header, getJSExecutorDescription()));
-    jsExecutorLabel.setPadding(0, 20, 0, 0);
-    jsExecutorLabel.setGravity(Gravity.CENTER);
-    jsExecutorLabel.setTextSize(14);
-
     header.addView(title);
-    header.addView(jsExecutorLabel);
+
+    String jsExecutorDescription = getJSExecutorDescription();
+
+    if (jsExecutorDescription != null) {
+      final TextView jsExecutorLabel = new TextView(context);
+      jsExecutorLabel.setText(
+          context.getString(R.string.catalyst_dev_menu_sub_header, jsExecutorDescription));
+      jsExecutorLabel.setPadding(0, 20, 0, 0);
+      jsExecutorLabel.setGravity(Gravity.CENTER);
+      jsExecutorLabel.setTextSize(14);
+      header.addView(jsExecutorLabel);
+    }
+
+    ListAdapter adapter =
+        new ArrayAdapter<String>(
+            context, android.R.layout.simple_list_item_1, options.keySet().toArray(new String[0])) {
+          @Override
+          public boolean areAllItemsEnabled() {
+            return false;
+          }
+
+          @Override
+          public boolean isEnabled(int position) {
+            return !disabledItemKeys.contains(getItem(position));
+          }
+
+          @Override
+          public View getView(int position, @Nullable View convertView, ViewGroup parent) {
+            View view = super.getView(position, convertView, parent);
+            view.setEnabled(isEnabled(position));
+
+            return view;
+          }
+        };
 
     mDevOptionsDialog =
         new AlertDialog.Builder(context)
             .setCustomTitle(header)
-            .setItems(
-                options.keySet().toArray(new String[0]),
+            .setAdapter(
+                adapter,
                 (dialog, which) -> {
                   optionHandlers[which].onOptionSelected();
                   mDevOptionsDialog = null;
@@ -538,7 +559,11 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
   }
 
   private String getJSExecutorDescription() {
-    return getReactInstanceDevHelper().getJavaScriptExecutorFactory().toString();
+    try {
+      return getReactInstanceDevHelper().getJavaScriptExecutorFactory().toString();
+    } catch (IllegalStateException e) {
+      return null;
+    }
   }
 
   /**
@@ -699,7 +724,11 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
     return mDevServerHelper;
   }
 
-  protected ReactInstanceDevHelper getReactInstanceDevHelper() {
+  public DevLoadingViewManager getDevLoadingViewManager() {
+    return mDevLoadingViewManager;
+  }
+
+  public ReactInstanceDevHelper getReactInstanceDevHelper() {
     return mReactInstanceDevHelper;
   }
 
@@ -889,10 +918,6 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
           @Override
           public void onSuccess() {
             hideDevLoadingView();
-            synchronized (DevSupportManagerBase.this) {
-              mBundleStatus.isLastDownloadSuccess = true;
-              mBundleStatus.updateTimestamp = System.currentTimeMillis();
-            }
             if (mBundleDownloadListener != null) {
               mBundleDownloadListener.onSuccess();
             }
@@ -914,9 +939,6 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
           @Override
           public void onFailure(final Exception cause) {
             hideDevLoadingView();
-            synchronized (DevSupportManagerBase.this) {
-              mBundleStatus.isLastDownloadSuccess = false;
-            }
             if (mBundleDownloadListener != null) {
               mBundleDownloadListener.onFailure(cause);
             }
@@ -1022,7 +1044,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
       if (!mIsReceiverRegistered) {
         IntentFilter filter = new IntentFilter();
         filter.addAction(getReloadAppAction(mApplicationContext));
-        mApplicationContext.registerReceiver(mReloadAppBroadcastReceiver, filter);
+        compatRegisterReceiver(mApplicationContext, mReloadAppBroadcastReceiver, filter, true);
         mIsReceiverRegistered = true;
       }
 
@@ -1036,18 +1058,20 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
           new PackagerCommandListener() {
             @Override
             public void onPackagerConnected() {
-              // No-op
+              mIsPackagerConnected = true;
             }
 
             @Override
             public void onPackagerDisconnected() {
-              // No-op
+              mIsPackagerConnected = false;
             }
 
             @Override
             public void onPackagerReloadCommand() {
-              // Disable debugger to resume the JsVM & avoid thread locks while reloading
-              mDevServerHelper.disableDebugger();
+              if (!InspectorFlags.getEnableModernCDPRegistry()) {
+                // Disable debugger to resume the JsVM & avoid thread locks while reloading
+                mDevServerHelper.disableDebugger();
+              }
               UiThreadUtil.runOnUiThread(() -> handleReloadJS());
             }
 
@@ -1119,5 +1143,23 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
     }
 
     return mSurfaceDelegateFactory.createSurfaceDelegate(moduleName);
+  }
+
+  /**
+   * Starting with Android 14, apps and services that target Android 14 and use context-registered
+   * receivers are required to specify a flag to indicate whether or not the receiver should be
+   * exported to all other apps on the device: either RECEIVER_EXPORTED or RECEIVER_NOT_EXPORTED
+   *
+   * <p>https://developer.android.com/about/versions/14/behavior-changes-14#runtime-receivers-exported
+   */
+  private void compatRegisterReceiver(
+      Context context, BroadcastReceiver receiver, IntentFilter filter, boolean exported) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+        && context.getApplicationInfo().targetSdkVersion >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+      context.registerReceiver(
+          receiver, filter, exported ? Context.RECEIVER_EXPORTED : Context.RECEIVER_NOT_EXPORTED);
+    } else {
+      context.registerReceiver(receiver, filter);
+    }
   }
 }

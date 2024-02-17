@@ -14,7 +14,7 @@
 using namespace facebook::react;
 
 TEST(ComponentDescriptorTest, createShadowNode) {
-  auto eventDispatcher = std::shared_ptr<EventDispatcher const>();
+  auto eventDispatcher = std::shared_ptr<const EventDispatcher>();
   SharedComponentDescriptor descriptor =
       std::make_shared<TestComponentDescriptor>(
           ComponentDescriptorParameters{eventDispatcher, nullptr, nullptr});
@@ -26,8 +26,9 @@ TEST(ComponentDescriptorTest, createShadowNode) {
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  const auto &raw = RawProps(folly::dynamic::object("nativeID", "abc"));
-  Props::Shared props = descriptor->cloneProps(parserContext, nullptr, raw);
+  auto rawProps = RawProps(folly::dynamic::object("nativeID", "abc"));
+  Props::Shared props =
+      descriptor->cloneProps(parserContext, nullptr, std::move(rawProps));
 
   auto family = descriptor->createFamily(ShadowNodeFamilyFragment{
       /* .tag = */ 9,
@@ -50,7 +51,7 @@ TEST(ComponentDescriptorTest, createShadowNode) {
 }
 
 TEST(ComponentDescriptorTest, cloneShadowNode) {
-  auto eventDispatcher = std::shared_ptr<EventDispatcher const>();
+  auto eventDispatcher = std::shared_ptr<const EventDispatcher>();
   SharedComponentDescriptor descriptor =
       std::make_shared<TestComponentDescriptor>(
           ComponentDescriptorParameters{eventDispatcher, nullptr, nullptr});
@@ -58,8 +59,9 @@ TEST(ComponentDescriptorTest, cloneShadowNode) {
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  const auto &raw = RawProps(folly::dynamic::object("nativeID", "abc"));
-  Props::Shared props = descriptor->cloneProps(parserContext, nullptr, raw);
+  auto rawProps = RawProps(folly::dynamic::object("nativeID", "abc"));
+  Props::Shared props =
+      descriptor->cloneProps(parserContext, nullptr, std::move(rawProps));
   auto family = descriptor->createFamily(ShadowNodeFamilyFragment{
       /* .tag = */ 9,
       /* .surfaceId = */ 1,
@@ -83,7 +85,7 @@ TEST(ComponentDescriptorTest, cloneShadowNode) {
 }
 
 TEST(ComponentDescriptorTest, appendChild) {
-  auto eventDispatcher = std::shared_ptr<EventDispatcher const>();
+  auto eventDispatcher = std::shared_ptr<const EventDispatcher>();
   SharedComponentDescriptor descriptor =
       std::make_shared<TestComponentDescriptor>(
           ComponentDescriptorParameters{eventDispatcher, nullptr, nullptr});
@@ -91,8 +93,9 @@ TEST(ComponentDescriptorTest, appendChild) {
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  const auto &raw = RawProps(folly::dynamic::object("nativeID", "abc"));
-  Props::Shared props = descriptor->cloneProps(parserContext, nullptr, raw);
+  auto rawProps = RawProps(folly::dynamic::object("nativeID", "abc"));
+  Props::Shared props =
+      descriptor->cloneProps(parserContext, nullptr, std::move(rawProps));
   auto family1 = descriptor->createFamily(ShadowNodeFamilyFragment{
       /* .tag = */ 1,
       /* .surfaceId = */ 1,

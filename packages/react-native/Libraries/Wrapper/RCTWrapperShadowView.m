@@ -30,7 +30,7 @@
 }
 
 static YGSize RCTWrapperShadowViewMeasure(
-    YGNodeRef node,
+    YGNodeConstRef node,
     float width,
     YGMeasureMode widthMode,
     float height,

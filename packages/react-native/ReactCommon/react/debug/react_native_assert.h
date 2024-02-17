@@ -36,10 +36,10 @@
 extern "C" {
 #endif // __cplusplus
 void react_native_assert_fail(
-    const char *func,
-    const char *file,
+    const char* func,
+    const char* file,
     int line,
-    const char *expr);
+    const char* expr);
 #ifdef __cplusplus
 }
 #endif // __cpusplus

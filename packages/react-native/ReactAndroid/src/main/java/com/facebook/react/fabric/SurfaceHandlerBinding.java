@@ -11,12 +11,15 @@ import static com.facebook.react.fabric.mounting.LayoutMetricsConversions.getMax
 import static com.facebook.react.fabric.mounting.LayoutMetricsConversions.getMinSize;
 
 import androidx.annotation.IntDef;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.NativeMap;
+import com.facebook.react.interfaces.fabric.SurfaceHandler;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class SurfaceHandlerBinding implements SurfaceHandler {
   static {
     FabricSoLoader.staticInit();

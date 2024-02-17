@@ -5,7 +5,7 @@
 ## Installation
 
 ```
-yarn add --dev @react-native/js-polyfills metro-config metro-react-native-babel-transformer metro-runtime @react-native/metro-config
+yarn add --dev @react-native/js-polyfills metro-config @react-native/metro-babel-transformer metro-runtime @react-native/metro-config
 ```
 
 *Note: We're using `yarn` to install deps. Feel free to change commands to use `npm` 3+ and `npx` if you like*

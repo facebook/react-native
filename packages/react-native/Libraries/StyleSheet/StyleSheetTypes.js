@@ -11,7 +11,6 @@
 'use strict';
 
 import type AnimatedNode from '../Animated/nodes/AnimatedNode';
-import type {NativeColorValue} from './PlatformColorValueTypes';
 import type {
   ____DangerouslyImpreciseStyle_InternalOverrides,
   ____ImageStyle_InternalOverrides,
@@ -21,6 +20,7 @@ import type {
 } from './private/_StyleSheetTypesOverrides';
 import type {____TransformStyle_Internal} from './private/_TransformStyle';
 
+declare export opaque type NativeColorValue;
 export type ____ColorValue_Internal = null | string | number | NativeColorValue;
 export type ColorArrayValue = null | $ReadOnlyArray<____ColorValue_Internal>;
 export type PointValue = {
@@ -469,22 +469,23 @@ type ____LayoutStyle_Internal = $ReadOnly<{
   borderTopWidth?: number,
 
   /** `position` in React Native is similar to regular CSS, but
-   *  everything is set to `relative` by default, so `absolute`
-   *  positioning is always just relative to the parent.
+   *  everything is set to `relative` by default.
    *
    *  If you want to position a child using specific numbers of logical
    *  pixels relative to its parent, set the child to have `absolute`
    *  position.
    *
    *  If you want to position a child relative to something
-   *  that is not its parent, just don't use styles for that. Use the
-   *  component tree.
+   *  that is not its parent, set the child to have `absolute` position and the
+   *  nodes between to have `static` position.
+   *
+   *  Note that `static` is only available on the new renderer.
    *
    *  See https://github.com/facebook/yoga
    *  for more details on how `position` differs between React Native
    *  and CSS.
    */
-  position?: 'absolute' | 'relative',
+  position?: 'absolute' | 'relative' | 'static',
 
   /** `flexDirection` controls which directions children of a container go.
    *  `row` goes left to right, `column` goes top to bottom, and you may
@@ -552,7 +553,8 @@ type ____LayoutStyle_Internal = $ReadOnly<{
     | 'center'
     | 'stretch'
     | 'space-between'
-    | 'space-around',
+    | 'space-around'
+    | 'space-evenly',
 
   /** `overflow` controls how children are measured and displayed.
    *  `overflow: hidden` causes views to be clipped while `overflow: scroll`
@@ -625,7 +627,7 @@ type ____LayoutStyle_Internal = $ReadOnly<{
   /** `direction` specifies the directional flow of the user interface.
    *  The default is `inherit`, except for root node which will have
    *  value based on the current locale.
-   *  See https://yogalayout.com/docs/layout-direction
+   *  See https://yogalayout.dev/docs/layout-direction
    *  for more details.
    *  @platform ios
    */
@@ -911,7 +913,10 @@ export type ____Styles_Internal = {
   ...
 };
 
-export type ____FlattenStyleProp_Internal<+TStyleProp> = $Call<
-  <T>(GenericStyleProp<T>) => T,
-  TStyleProp,
->;
+export type ____FlattenStyleProp_Internal<
+  +TStyleProp: GenericStyleProp<mixed>,
+> = TStyleProp extends null | void | false | ''
+  ? empty
+  : TStyleProp extends $ReadOnlyArray<infer V>
+  ? ____FlattenStyleProp_Internal<V>
+  : TStyleProp;

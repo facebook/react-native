@@ -9,19 +9,17 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 add_compile_options(
         -fexceptions
         -frtti
-        -std=c++17
+        -std=c++20
         -Wall
         -Wpedantic
-        -Wno-gnu-zero-variadic-macro-arguments
         -DLOG_TAG=\"Fabric\")
 
 file(GLOB react_render_attributedstring_SRC CONFIGURE_DEPENDS *.cpp)
-add_library(react_render_attributedstring SHARED ${react_render_attributedstring_SRC})
+add_library(react_render_attributedstring STATIC ${react_render_attributedstring_SRC})
 
 target_include_directories(react_render_attributedstring PUBLIC ${REACT_COMMON_DIR})
 
 target_link_libraries(react_render_attributedstring
-        butter
         folly_runtime
         glog
         glog_init

@@ -10,15 +10,14 @@
 
 'use strict';
 
-import type {Spec as FabricUIManagerSpec} from '../ReactNative/FabricUIManager';
 import type {
   LayoutAnimationConfig as LayoutAnimationConfig_,
   LayoutAnimationProperty,
   LayoutAnimationType,
 } from '../Renderer/shims/ReactNativeTypes';
 
+import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
 import {getFabricUIManager} from '../ReactNative/FabricUIManager';
-import ReactNativeFeatureFlags from '../ReactNative/ReactNativeFeatureFlags';
 import Platform from '../Utilities/Platform';
 
 const UIManager = require('../ReactNative/UIManager');
@@ -49,7 +48,7 @@ function configureNext(
   onAnimationDidEnd?: OnAnimationDidEndCallback,
   onAnimationDidFail?: OnAnimationDidFailCallback,
 ) {
-  if (Platform.isTesting) {
+  if (Platform.isDisableAnimations) {
     return;
   }
 

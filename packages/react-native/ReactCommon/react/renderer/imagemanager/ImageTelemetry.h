@@ -18,7 +18,7 @@ namespace facebook::react {
  */
 class ImageTelemetry final {
  public:
-  ImageTelemetry(SurfaceId const surfaceId) : surfaceId_(surfaceId) {
+  ImageTelemetry(const SurfaceId surfaceId) : surfaceId_(surfaceId) {
     willRequestUrlTime_ = telemetryTimePointNow();
   }
 

@@ -10,7 +10,7 @@
 namespace facebook::react {
 
 void ComponentDescriptorProviderRegistry::add(
-    const ComponentDescriptorProvider &provider) const {
+    const ComponentDescriptorProvider& provider) const {
   std::unique_lock lock(mutex_);
 
   /*
@@ -31,7 +31,7 @@ void ComponentDescriptorProviderRegistry::add(
 
   componentDescriptorProviders_.insert({provider.handle, provider});
 
-  for (auto const &weakRegistry : componentDescriptorRegistries_) {
+  for (const auto& weakRegistry : componentDescriptorRegistries_) {
     auto registry = weakRegistry.lock();
     if (!registry) {
       continue;
@@ -65,13 +65,13 @@ void ComponentDescriptorProviderRegistry::request(
 
 ComponentDescriptorRegistry::Shared
 ComponentDescriptorProviderRegistry::createComponentDescriptorRegistry(
-    ComponentDescriptorParameters const &parameters) const {
+    const ComponentDescriptorParameters& parameters) const {
   std::shared_lock lock(mutex_);
 
-  auto registry = std::make_shared<ComponentDescriptorRegistry const>(
+  auto registry = std::make_shared<const ComponentDescriptorRegistry>(
       parameters, *this, parameters.contextContainer);
 
-  for (auto const &pair : componentDescriptorProviders_) {
+  for (const auto& pair : componentDescriptorProviders_) {
     registry->add(pair.second);
   }
 

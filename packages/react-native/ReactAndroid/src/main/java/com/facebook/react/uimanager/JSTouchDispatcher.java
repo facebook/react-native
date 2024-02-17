@@ -59,8 +59,9 @@ public class JSTouchDispatcher {
    * Main catalyst view is responsible for collecting and sending touch events to JS. This method
    * reacts for an incoming android native touch events ({@link MotionEvent}) and calls into {@link
    * com.facebook.react.uimanager.events.EventDispatcher} when appropriate. It uses {@link
-   * com.facebook.react.uimanager.TouchTargetHelper#findTouchTargetView} helper method for figuring
-   * out a react view ID in the case of ACTION_DOWN event (when the gesture starts).
+   * com.facebook.react.uimanager.TouchTargetHelper#findTargetTagAndCoordinatesForTouch} helper
+   * method for figuring out a react view ID in the case of ACTION_DOWN event (when the gesture
+   * starts).
    */
   public void handleTouchEvent(MotionEvent ev, EventDispatcher eventDispatcher) {
     int action = ev.getAction() & MotionEvent.ACTION_MASK;

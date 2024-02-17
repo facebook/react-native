@@ -11,10 +11,11 @@
 
 namespace facebook::react {
 
-Binding *JFabricUIManager::getBinding() {
+Binding* JFabricUIManager::getBinding() {
   static const auto bindingField =
-      javaClassStatic()->getField<Binding::javaobject>("mBinding");
+      javaClassStatic()->getField<JBinding::javaobject>("mBinding");
 
-  return getFieldValue(bindingField)->cthis();
+  return jni::static_ref_cast<Binding::javaobject>(getFieldValue(bindingField))
+      ->cthis();
 }
 } // namespace facebook::react

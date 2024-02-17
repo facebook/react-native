@@ -8,16 +8,16 @@
  * @flow
  */
 
-import {useState, useCallback, useMemo, useRef, useEffect} from 'react';
-
 import type {
-  PlatformTestResult,
-  PlatformTestHarness,
-  PlatformTestCase,
   PlatformTestAssertionResult,
+  PlatformTestCase,
   PlatformTestContext,
+  PlatformTestHarness,
+  PlatformTestResult,
   SyncTestOptions,
 } from './RNTesterPlatformTestTypes';
+
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 
 type AsyncTestStatus = 'NOT_RAN' | 'COMPLETED' | 'TIMED_OUT';
 

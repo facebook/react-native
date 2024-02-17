@@ -30,8 +30,14 @@
 -keepclassmembers class * {
     @com.facebook.proguard.annotations.DoNotStrip *;
 }
-
 -keep @com.facebook.proguard.annotations.DoNotStripAny class * {
+    *;
+}
+-keep @com.facebook.jni.annotations.DoNotStrip class *
+-keepclassmembers class * {
+    @com.facebook.jni.annotations.DoNotStrip *;
+}
+-keep @com.facebook.jni.annotations.DoNotStripAny class * {
     *;
 }
 
@@ -49,6 +55,7 @@
 -dontwarn com.facebook.react.**
 -keep,includedescriptorclasses class com.facebook.react.bridge.** { *; }
 -keep,includedescriptorclasses class com.facebook.react.turbomodule.core.** { *; }
+-keep,includedescriptorclasses class com.facebook.react.internal.turbomodule.core.** { *; }
 
 # hermes
 -keep class com.facebook.jni.** { *; }

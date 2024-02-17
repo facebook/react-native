@@ -18,7 +18,7 @@ import org.junit.*
 import org.junit.Assert.*
 import org.junit.runner.RunWith
 import org.mockito.Mockito.mock
-import org.powermock.api.mockito.PowerMockito.`when` as whenever
+import org.mockito.Mockito.`when` as whenever
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
@@ -39,7 +39,7 @@ class DialogModuleTest {
       private set
 
     override fun invoke(vararg args: Any?) {
-      this.calls++
+      calls++
       this.args = args
     }
   }

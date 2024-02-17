@@ -10,7 +10,7 @@ add_compile_options(
         -fexceptions
         -frtti
         -Wno-unused-lambda-capture
-        -std=c++17)
+        -std=c++20)
 
 #########################
 ### callinvokerholder ###

@@ -450,6 +450,12 @@ JSError::JSError(std::string what, Runtime& rt, Value&& value)
   setValue(rt, std::move(value));
 }
 
+JSError::JSError(Value&& value, std::string message, std::string stack)
+    : JSIException(message + "\n\n" + stack),
+      value_(std::make_shared<Value>(std::move(value))),
+      message_(std::move(message)),
+      stack_(std::move(stack)) {}
+
 void JSError::setValue(Runtime& rt, Value&& value) {
   value_ = std::make_shared<Value>(std::move(value));
 

@@ -33,6 +33,13 @@ function describe(message) {
 try {
   echo('Executing JavaScript tests');
 
+  describe('Test: feature flags codegen');
+  if (exec(`${YARN_BINARY} run featureflags-check`).code) {
+    echo('Failed to run featureflags check.');
+    exitCode = 1;
+    throw Error(exitCode);
+  }
+
   describe('Test: eslint');
   if (exec(`${YARN_BINARY} run lint`).code) {
     echo('Failed to run eslint.');
@@ -40,14 +47,8 @@ try {
     throw Error(exitCode);
   }
 
-  describe('Test: Flow check (iOS)');
-  if (exec(`${YARN_BINARY} run flow-check-ios`).code) {
-    echo('Failed to run flow.');
-    exitCode = 1;
-    throw Error(exitCode);
-  }
-  describe('Test: Flow check (Android)');
-  if (exec(`${YARN_BINARY} run flow-check-android`).code) {
+  describe('Test: Flow check');
+  if (exec(`${YARN_BINARY} run flow-check`).code) {
     echo('Failed to run flow.');
     exitCode = 1;
     throw Error(exitCode);

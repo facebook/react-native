@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 RCT_EXTERN inline void
-RCTTextInputHandleCommand(id<RCTTextInputViewProtocol> componentView, NSString const *commandName, NSArray const *args)
+RCTTextInputHandleCommand(id<RCTTextInputViewProtocol> componentView, const NSString *commandName, const NSArray *args)
 {
   if ([commandName isEqualToString:@"focus"]) {
 #if RCT_DEBUG

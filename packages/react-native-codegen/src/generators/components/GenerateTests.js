@@ -12,9 +12,8 @@
 import type {ComponentShape, PropTypeAnnotation} from '../../CodegenSchema';
 import type {SchemaType} from '../../CodegenSchema';
 
-const {getImports} = require('./CppHelpers');
-
 const {toSafeCppString} = require('../Utils');
+const {getImports} = require('./CppHelpers');
 
 type FilesOutput = Map<string, string>;
 type PropValueType = string | number | boolean;
@@ -172,6 +171,7 @@ module.exports = {
     schema: SchemaType,
     packageName?: string,
     assumeNonnull: boolean = false,
+    headerPrefix?: string,
   ): FilesOutput {
     const fileName = 'Tests.cpp';
     const allImports = new Set([
