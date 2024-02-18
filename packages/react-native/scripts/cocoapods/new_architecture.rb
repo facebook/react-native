@@ -27,6 +27,7 @@ class NewArchitectureHelper
             projects = installer.aggregate_targets
                 .map{ |t| t.user_project }
                 .uniq{ |p| p.path }
+                .compact
 
             projects.each do |project|
                 Pod::UI.puts("Setting CLANG_CXX_LANGUAGE_STANDARD to #{ language_standard } on #{ project.path }")
