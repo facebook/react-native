@@ -201,7 +201,7 @@
   [super setSelectedTextRange:selectedTextRange];
 }
 
-- (void)scrollRangeToVisible:(NSRange)range
+- (void)scrollToSelectedRange
 {
   // not implemented for single line text
   NSLog(@"Warning: RCTUITextField does not implement scrollRangeToVisible.");

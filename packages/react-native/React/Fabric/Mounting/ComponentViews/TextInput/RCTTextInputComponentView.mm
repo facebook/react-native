@@ -604,7 +604,7 @@ using namespace facebook::react;
                                                                    offset:newOffset];
     [_backedTextInputView setSelectedTextRange:[_backedTextInputView textRangeFromPosition:position toPosition:position]
                                 notifyDelegate:YES];
-    [_backedTextInputView scrollRangeToVisible:NSMakeRange(offsetStart, 0)];
+    [_backedTextInputView scrollToSelectedRange];
   }
   [self _restoreTextSelection];
   _lastStringStateWasUpdatedWith = attributedString;
