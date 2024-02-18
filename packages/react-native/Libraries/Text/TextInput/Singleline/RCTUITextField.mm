@@ -203,7 +203,8 @@
 
 - (void)scrollRangeToVisible:(NSRange)range
 {
-  // do nothing
+  // not implemented for single line text
+  NSLog(@"Warning: RCTUITextField does not implement scrollRangeToVisible.");
 }
 
 - (void)paste:(id)sender

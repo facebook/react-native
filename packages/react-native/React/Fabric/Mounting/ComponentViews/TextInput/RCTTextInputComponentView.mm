@@ -604,8 +604,7 @@ using namespace facebook::react;
                                                                    offset:newOffset];
     [_backedTextInputView setSelectedTextRange:[_backedTextInputView textRangeFromPosition:position toPosition:position]
                                 notifyDelegate:YES];
-    // instead of stop the scroll effect, set it correctly here
-    [_backedTextInputView scrollRangeToVisible:NSMakeRange(offsetStart, 1)];
+    [_backedTextInputView scrollRangeToVisible:NSMakeRange(offsetStart, 0)];
   }
   [self _restoreTextSelection];
   _lastStringStateWasUpdatedWith = attributedString;
