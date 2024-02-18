@@ -24,8 +24,7 @@ const PAGES_POLLING_DELAY = 1000;
 
 jest.useFakeTimers();
 
-// TODO T169943794
-xdescribe('inspector proxy HTTP API', () => {
+describe('inspector proxy HTTP API', () => {
   const serverRef = withServerForEachTest({
     logger: undefined,
     projectRoot: '',
@@ -192,8 +191,8 @@ xdescribe('inspector proxy HTTP API', () => {
             faviconUrl: 'https://reactjs.org/favicon.ico',
             id: 'device1-page1',
             reactNative: {
+              capabilities: {},
               logicalDeviceId: 'device1',
-              type: 'Legacy',
             },
             title: 'bar-title',
             type: 'node',
@@ -207,8 +206,8 @@ xdescribe('inspector proxy HTTP API', () => {
             faviconUrl: 'https://reactjs.org/favicon.ico',
             id: 'device2-page1',
             reactNative: {
+              capabilities: {},
               logicalDeviceId: 'device2',
-              type: 'Legacy',
             },
             title: 'bar-title',
             type: 'node',

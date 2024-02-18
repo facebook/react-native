@@ -7,9 +7,13 @@
 
 #pragma once
 
-#include <jsinspector-modern/InspectorInterfaces.h>
+#include "ExecutionContextManager.h"
+#include "ScopedExecutor.h"
+#include "WeakList.h"
 
-#include <list>
+#include <jsinspector-modern/InspectorInterfaces.h>
+#include <jsinspector-modern/InstanceTarget.h>
+
 #include <optional>
 #include <string>
 
@@ -77,11 +81,13 @@ class PageTargetDelegate {
  * The limited interface that PageTarget exposes to its associated
  * sessions/agents.
  */
-class PageTargetController {
+class PageTargetController final {
  public:
   explicit PageTargetController(PageTarget& target);
 
   PageTargetDelegate& getDelegate();
+
+  bool hasInstance() const;
 
  private:
   PageTarget& target_;
@@ -92,7 +98,8 @@ class PageTargetController {
  * "Host" in React Native's architecture - the entity that manages the
  * lifecycle of a React Instance.
  */
-class JSINSPECTOR_EXPORT PageTarget {
+class JSINSPECTOR_EXPORT PageTarget
+    : public EnableExecutorFromThis<PageTarget> {
  public:
   struct SessionMetadata {
     std::optional<std::string> integrationName;
@@ -100,14 +107,19 @@ class JSINSPECTOR_EXPORT PageTarget {
 
   /**
    * Constructs a new PageTarget.
-   * \param delegate The PageTargetDelegate that will receive events from
-   * this PageTarget. The caller is responsible for ensuring that the
-   * PageTargetDelegate outlives this object.
+   * \param delegate The PageTargetDelegate that will
+   * receive events from this PageTarget. The caller is responsible for ensuring
+   * that the PageTargetDelegate outlives this object.
+   * \param executor An executor that may be used to call methods on this
+   * PageTarget while it exists. \c create additionally guarantees that the
+   * executor will not be called after the PageTarget is destroyed.
    */
-  explicit PageTarget(PageTargetDelegate& delegate);
+  static std::shared_ptr<PageTarget> create(
+      PageTargetDelegate& delegate,
+      VoidExecutor executor);
 
   PageTarget(const PageTarget&) = delete;
-  PageTarget(PageTarget&&) = default;
+  PageTarget(PageTarget&&) = delete;
   PageTarget& operator=(const PageTarget&) = delete;
   PageTarget& operator=(PageTarget&&) = delete;
   ~PageTarget();
@@ -123,32 +135,50 @@ class JSINSPECTOR_EXPORT PageTarget {
       std::unique_ptr<IRemoteConnection> connectionToFrontend,
       SessionMetadata sessionMetadata = {});
 
- private:
-  std::list<std::weak_ptr<PageTargetSession>> sessions_;
-
-  PageTargetDelegate& delegate_;
-  PageTargetController controller_{*this};
+  /**
+   * Registers an instance with this PageTarget.
+   * \param delegate The InstanceTargetDelegate that will receive events from
+   * this InstanceTarget. The caller is responsible for ensuring that the
+   * InstanceTargetDelegate outlives this object.
+   * \return An InstanceTarget reference representing the newly created
+   * instance. This reference is only valid until unregisterInstance is called
+   * (or the PageTarget is destroyed). \pre There isn't currently an instance
+   * registered with this PageTarget.
+   */
+  InstanceTarget& registerInstance(InstanceTargetDelegate& delegate);
 
   /**
-   * Call the given function for every active session, and clean up any
-   * references to inactive sessions.
+   * Unregisters an instance from this PageTarget.
+   * \param instance The InstanceTarget reference previously returned by
+   * registerInstance.
    */
-  template <typename Fn>
-  void forEachSession(Fn&& fn) {
-    for (auto it = sessions_.begin(); it != sessions_.end();) {
-      if (auto session = it->lock()) {
-        fn(*session);
-        ++it;
-      } else {
-        it = sessions_.erase(it);
-      }
-    }
-  }
+  void unregisterInstance(InstanceTarget& instance);
 
-  void removeExpiredSessions();
+ private:
+  /**
+   * Constructs a new PageTarget.
+   * The caller must call setExecutor immediately afterwards.
+   * \param delegate The PageTargetDelegate that will
+   * receive events from this PageTarget. The caller is responsible for ensuring
+   * that the PageTargetDelegate outlives this object.
+   */
+  PageTarget(PageTargetDelegate& delegate);
+
+  PageTargetDelegate& delegate_;
+  WeakList<PageTargetSession> sessions_;
+  PageTargetController controller_{*this};
+  // executionContextManager_ is a shared_ptr to guarantee its validity while
+  // the InstanceTarget is alive (just in case the InstanceTarget ends up
+  // briefly outliving the PageTarget, which it generally shouldn't).
+  std::shared_ptr<ExecutionContextManager> executionContextManager_;
+  std::shared_ptr<InstanceTarget> currentInstance_{nullptr};
 
   inline PageTargetDelegate& getDelegate() {
     return delegate_;
+  }
+
+  inline bool hasInstance() const {
+    return currentInstance_ != nullptr;
   }
 
   // Necessary to allow PageAgent to access PageTarget's internals in a

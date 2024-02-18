@@ -85,27 +85,25 @@ type Props = $ReadOnly<{|
   backgroundColor?: ?ColorValue,
 |}>;
 
-class InputAccessoryView extends React.Component<Props> {
-  render(): React.Node {
-    if (Platform.OS === 'ios') {
-      if (React.Children.count(this.props.children) === 0) {
-        return null;
-      }
-
-      return (
-        <RCTInputAccessoryViewNativeComponent
-          style={[this.props.style, styles.container]}
-          nativeID={this.props.nativeID}
-          backgroundColor={this.props.backgroundColor}>
-          {this.props.children}
-        </RCTInputAccessoryViewNativeComponent>
-      );
-    } else {
-      console.warn('<InputAccessoryView> is only supported on iOS.');
+const InputAccessoryView: React.AbstractComponent<Props> = (props: Props) => {
+  if (Platform.OS === 'ios') {
+    if (React.Children.count(props.children) === 0) {
       return null;
     }
+
+    return (
+      <RCTInputAccessoryViewNativeComponent
+        style={[props.style, styles.container]}
+        nativeID={props.nativeID}
+        backgroundColor={props.backgroundColor}>
+        {props.children}
+      </RCTInputAccessoryViewNativeComponent>
+    );
+  } else {
+    console.warn('<InputAccessoryView> is only supported on iOS.');
+    return null;
   }
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -113,4 +111,4 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = InputAccessoryView;
+export default InputAccessoryView;

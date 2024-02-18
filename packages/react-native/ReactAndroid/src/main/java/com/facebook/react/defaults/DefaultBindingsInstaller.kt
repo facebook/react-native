@@ -15,4 +15,6 @@ import com.facebook.react.runtime.BindingsInstaller
  * A utility class that provides users a default [BindingsInstaller] class that's used to initialize
  * [ReactHostDelegate]
  */
-@DoNotStrip @UnstableReactNativeAPI class DefaultBindingsInstaller : BindingsInstaller(null) {}
+@DoNotStrip
+@UnstableReactNativeAPI
+public class DefaultBindingsInstaller : BindingsInstaller(null) {}

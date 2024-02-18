@@ -137,4 +137,16 @@ class RawProps final {
   bool ignoreYogaStyleProps_{false};
 };
 
+/*
+ * Once called, props will be filtered out during conversion to
+ * folly::dynamic. folly::dynamic conversion is only used on Android and props
+ * specific to Yoga do not need to be send over JNI to Android.
+ * This is a performance optimisation to minimise traffic between C++ and
+ * Java.
+ */
+template <typename T>
+concept RawPropsFilterable = requires(RawProps& rawProps) {
+  { T::filterRawProps(rawProps) } -> std::same_as<void>;
+};
+
 } // namespace facebook::react

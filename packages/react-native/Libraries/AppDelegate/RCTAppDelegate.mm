@@ -39,8 +39,6 @@
 #import <react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h>
 #import <react/runtime/JSRuntimeFactory.h>
 
-static NSString *const kRNConcurrentRoot = @"concurrentRoot";
-
 @interface RCTAppDelegate () <
     RCTTurboModuleManagerDelegate,
     RCTComponentViewFactoryComponentProvider,
@@ -53,9 +51,6 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabricEnabled)
 {
   NSMutableDictionary *mutableProps = [initialProps mutableCopy] ?: [NSMutableDictionary new];
-  // Hardcoding the Concurrent Root as it it not recommended to
-  // have the concurrentRoot turned off when Fabric is enabled.
-  mutableProps[kRNConcurrentRoot] = @(isFabricEnabled);
   return mutableProps;
 }
 
@@ -87,7 +82,7 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 
   NSDictionary *initProps = updateInitialProps([self prepareInitialProps], fabricEnabled);
 
-  RCTAppSetupPrepareApp(application, enableTM, *_reactNativeConfig);
+  RCTAppSetupPrepareApp(application, enableTM);
 
   UIView *rootView;
   if (enableBridgeless) {
@@ -107,6 +102,7 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
         sizeMeasureMode:RCTSurfaceSizeMeasureModeWidthExact | RCTSurfaceSizeMeasureModeHeightExact];
 
     rootView = (RCTRootView *)surfaceHostingProxyRootView;
+    rootView.backgroundColor = [UIColor systemBackgroundColor];
   } else {
     if (!self.bridge) {
       self.bridge = [self createBridgeWithDelegate:self launchOptions:launchOptions];
@@ -202,6 +198,7 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 }
 
 #pragma mark - UISceneDelegate
+
 - (void)windowScene:(UIWindowScene *)windowScene
     didUpdateCoordinateSpace:(id<UICoordinateSpace>)previousCoordinateSpace
         interfaceOrientation:(UIInterfaceOrientation)previousInterfaceOrientation
@@ -211,6 +208,7 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 }
 
 #pragma mark - RCTCxxBridgeDelegate
+
 - (std::unique_ptr<facebook::react::JSExecutorFactory>)jsExecutorFactoryForBridge:(RCTBridge *)bridge
 {
   _runtimeScheduler = std::make_shared<facebook::react::RuntimeScheduler>(RCTRuntimeExecutorFromBridge(bridge));
@@ -251,7 +249,7 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 
 - (BOOL)bridgelessEnabled
 {
-  return NO;
+  return [self newArchEnabled];
 }
 
 #pragma mark - RCTComponentViewFactoryComponentProvider

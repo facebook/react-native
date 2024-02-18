@@ -11,7 +11,7 @@
     "directory": "packages/rn-tester-e2e"
   },
   "scripts": {
-    "test-e2e": "node ./../../scripts/e2e/run-e2e-tests.js"
+    "test-e2e": "node scripts/e2e/run-e2e-tests.js"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

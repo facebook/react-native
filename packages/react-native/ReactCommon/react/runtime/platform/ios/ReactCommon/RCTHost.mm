@@ -42,7 +42,7 @@ class RCTHostPageTargetDelegate : public facebook::react::jsinspector_modern::Pa
   __weak RCTHost *host_;
 };
 
-@interface RCTHost () <RCTReloadListener, RCTInstanceDelegate, RCTInstanceDelegateInternal>
+@interface RCTHost () <RCTReloadListener, RCTInstanceDelegate>
 @end
 
 @implementation RCTHost {
@@ -68,7 +68,7 @@ class RCTHostPageTargetDelegate : public facebook::react::jsinspector_modern::Pa
   RCTModuleRegistry *_moduleRegistry;
 
   std::unique_ptr<RCTHostPageTargetDelegate> _inspectorPageDelegate;
-  std::unique_ptr<jsinspector_modern::PageTarget> _inspectorTarget;
+  std::shared_ptr<jsinspector_modern::PageTarget> _inspectorTarget;
   std::optional<int> _inspectorPageId;
 }
 
@@ -168,7 +168,12 @@ class RCTHostPageTargetDelegate : public facebook::react::jsinspector_modern::Pa
 {
   auto &inspectorFlags = jsinspector_modern::InspectorFlags::getInstance();
   if (inspectorFlags.getEnableModernCDPRegistry() && !_inspectorPageId.has_value()) {
-    _inspectorTarget = std::make_unique<jsinspector_modern::PageTarget>(*_inspectorPageDelegate);
+    _inspectorTarget =
+        facebook::react::jsinspector_modern::PageTarget::create(*_inspectorPageDelegate, [](auto callback) {
+          RCTExecuteOnMainQueue(^{
+            callback();
+          });
+        });
     __weak RCTHost *weakSelf = self;
     _inspectorPageId = facebook::react::jsinspector_modern::getInspectorInstance().addPage(
         "React Native Bridgeless (Experimental)",
@@ -186,7 +191,7 @@ class RCTHostPageTargetDelegate : public facebook::react::jsinspector_modern::Pa
                   .integrationName = "iOS Bridgeless (RCTHost)",
               });
         },
-        facebook::react::jsinspector_modern::InspectorPageType::Modern);
+        {.nativePageReloads = true});
   }
   if (_instance) {
     RCTLogWarn(
@@ -198,7 +203,8 @@ class RCTHostPageTargetDelegate : public facebook::react::jsinspector_modern::Pa
                                       bundleManager:_bundleManager
                          turboModuleManagerDelegate:_turboModuleManagerDelegate
                                 onInitialBundleLoad:_onInitialBundleLoad
-                                     moduleRegistry:_moduleRegistry];
+                                     moduleRegistry:_moduleRegistry
+                              parentInspectorTarget:_inspectorTarget.get()];
   [_hostDelegate hostDidStart:self];
 }
 
@@ -265,7 +271,8 @@ class RCTHostPageTargetDelegate : public facebook::react::jsinspector_modern::Pa
                                       bundleManager:_bundleManager
                          turboModuleManagerDelegate:_turboModuleManagerDelegate
                                 onInitialBundleLoad:_onInitialBundleLoad
-                                     moduleRegistry:_moduleRegistry];
+                                     moduleRegistry:_moduleRegistry
+                              parentInspectorTarget:_inspectorTarget.get()];
   [_hostDelegate hostDidStart:self];
 
   for (RCTFabricSurface *surface in [self _getAttachedSurfaces]) {
@@ -275,12 +282,12 @@ class RCTHostPageTargetDelegate : public facebook::react::jsinspector_modern::Pa
 
 - (void)dealloc
 {
+  [_instance invalidate];
   if (_inspectorPageId.has_value()) {
     facebook::react::jsinspector_modern::getInspectorInstance().removePage(*_inspectorPageId);
     _inspectorPageId.reset();
     _inspectorTarget.reset();
   }
-  [_instance invalidate];
 }
 
 #pragma mark - RCTInstanceDelegate
@@ -297,17 +304,6 @@ class RCTHostPageTargetDelegate : public facebook::react::jsinspector_modern::Pa
 - (void)instance:(RCTInstance *)instance didInitializeRuntime:(facebook::jsi::Runtime &)runtime
 {
   [self.runtimeDelegate host:self didInitializeRuntime:runtime];
-}
-
-#pragma mark - RCTInstanceDelegateInternal
-
-- (BOOL)useModernRuntimeScheduler:(RCTHost *)host
-{
-  if ([_hostDelegate respondsToSelector:@selector(useModernRuntimeScheduler:)]) {
-    return [(id)_hostDelegate useModernRuntimeScheduler:self];
-  }
-
-  return NO;
 }
 
 #pragma mark - RCTContextContainerHandling

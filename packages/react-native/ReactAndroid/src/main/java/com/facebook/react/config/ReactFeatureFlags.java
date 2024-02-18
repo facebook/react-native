@@ -7,6 +7,7 @@
 
 package com.facebook.react.config;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.proguard.annotations.DoNotStripAny;
 import com.facebook.react.common.build.ReactBuildConfig;
 
@@ -17,6 +18,8 @@ import com.facebook.react.common.build.ReactBuildConfig;
  *
  * <p>These values are safe defaults and should not require manual changes.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
+@Deprecated(since = "Use com.facebook.react.internal.featureflags.ReactNativeFeatureFlags instead.")
 @DoNotStripAny
 public class ReactFeatureFlags {
   /**
@@ -109,32 +112,14 @@ public class ReactFeatureFlags {
   /** Report mount operations from the host platform to notify mount hooks. */
   public static boolean enableMountHooks = false;
 
-  /** Fixes a leak in SurfaceMountingManager.mTagSetForStoppedSurface */
-  public static boolean fixStoppedSurfaceTagSetLeak = true;
-
-  /** Disable the background executor for layout in Fabric */
-  public static boolean enableBackgroundExecutor = false;
-
   /** Use native view configs in bridgeless mode. */
   public static boolean useNativeViewConfigsInBridgelessMode = false;
-
-  /** Default state updates and events to async batched priority. */
-  public static boolean enableDefaultAsyncBatchedPriority = false;
-
-  /** Utilize shared Event C++ pipeline with fabric's renderer */
-  public static boolean enableFabricSharedEventPipeline = true;
 
   /** When enabled, Fabric will avoid cloning notes to perform state progression. */
   public static boolean enableClonelessStateProgression = false;
 
   /** When enabled, rawProps in Props will not include Yoga specific props. */
   public static boolean excludeYogaFromRawProps = false;
-
-  /**
-   * When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with
-   * priorities from any thread.
-   */
-  public static boolean useModernRuntimeScheduler = false;
 
   /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case
@@ -155,13 +140,4 @@ public class ReactFeatureFlags {
    * longer work as they won't subscribe to ReactChoreographer for updates.
    */
   public static boolean enableFabricRendererExclusively = false;
-
-  /*
-   * When enabled, uses of ReactChoreographer (e.g. FabricUIManager) will only post callback
-   *  when there is work to do.
-   */
-  public static boolean enableOnDemandReactChoreographer = false;
-
-  /** Enables the new unified {@link android.text.Spannable} building logic. */
-  public static boolean enableSpannableBuildingUnification = false;
 }

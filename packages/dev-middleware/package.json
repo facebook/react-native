@@ -33,7 +33,8 @@
     "open": "^7.0.3",
     "selfsigned": "^2.4.1",
     "serve-static": "^1.13.1",
-    "temp-dir": "^2.0.0"
+    "temp-dir": "^2.0.0",
+    "ws": "^6.2.2"
   },
   "engines": {
     "node": ">=18"

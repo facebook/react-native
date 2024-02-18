@@ -304,10 +304,6 @@ public class MountItemDispatcher {
     return true;
   }
 
-  public boolean hasMountItems() {
-    return !mPreMountItems.isEmpty() || !mMountItems.isEmpty() || !mViewCommandMountItems.isEmpty();
-  }
-
   /*
    * Executes pre mount items. Pre mount items are operations that can be executed before the mount items come. For example view preallocation.
    * This is a performance optimisation to do as much work ahead of time as possible.

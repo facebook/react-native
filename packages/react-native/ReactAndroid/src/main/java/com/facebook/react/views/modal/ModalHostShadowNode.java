@@ -8,6 +8,7 @@
 package com.facebook.react.views.modal;
 
 import android.graphics.Point;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.ReactShadowNodeImpl;
 
@@ -19,6 +20,7 @@ import com.facebook.react.uimanager.ReactShadowNodeImpl;
  * to be the window size. This will then cause the children of the Modal to layout as if they can
  * fill the window.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class ModalHostShadowNode extends LayoutShadowNode {
 
   public ModalHostShadowNode() {}

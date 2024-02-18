@@ -76,6 +76,7 @@ Pod::Spec.new do |s|
   s.dependency "React-RCTImage"
   s.dependency "React-CoreModules"
   s.dependency "React-nativeconfig"
+  s.dependency "React-Codegen"
 
   add_dependency(s, "ReactCommon", :subspec => "turbomodule/core", :additional_framework_paths => ["react/nativemodule/core"])
   add_dependency(s, "React-NativeModulesApple")
@@ -88,7 +89,6 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-utils")
   add_dependency(s, "React-debug")
   add_dependency(s, "React-rendererdebug")
-  add_dependency(s, "React-jsinspector")
 
   if use_hermes
     s.dependency "React-hermes"

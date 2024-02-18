@@ -155,9 +155,4 @@ YG_EXPORT void YGConfigSetCloneNodeFunc(
     YGConfigRef config,
     YGCloneNodeFunc callback);
 
-/**
- * Allows printing the Yoga node tree during layout for debugging purposes.
- */
-YG_EXPORT void YGConfigSetPrintTreeFlag(YGConfigRef config, bool enabled);
-
 YG_EXTERN_C_END

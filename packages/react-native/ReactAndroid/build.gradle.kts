@@ -429,11 +429,6 @@ fun reactNativeDevServerPort(): String {
   return value?.toString() ?: "8081"
 }
 
-fun reactNativeInspectorProxyPort(): String {
-  val value = project.properties["reactNativeInspectorProxyPort"]
-  return value?.toString() ?: reactNativeDevServerPort()
-}
-
 fun reactNativeArchitectures(): List<String> {
   val value = project.properties["reactNativeArchitectures"]
   return value?.toString()?.split(",") ?: listOf("armeabi-v7a", "x86", "x86_64", "arm64-v8a")
@@ -498,7 +493,6 @@ android {
     buildConfigField("int", "EXOPACKAGE_FLAGS", "0")
 
     resValue("integer", "react_native_dev_server_port", reactNativeDevServerPort())
-    resValue("integer", "react_native_inspector_proxy_port", reactNativeInspectorProxyPort())
 
     testApplicationId = "com.facebook.react.tests.gradle"
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -530,8 +524,10 @@ android {
             "react_render_debug",
             "turbomodulejsijni",
             "runtimeexecutor",
+            "react_featureflagsjni",
             "react_codegen_rncore",
             "react_debug",
+            "react_featureflags",
             "react_utils",
             "react_render_componentregistry",
             "react_newarchdefaults",
@@ -599,17 +595,12 @@ android {
       ":packages:react-native:ReactAndroid:hermes-engine:preBuild")
 
   sourceSets.getByName("main") {
-    res.srcDirs(
+    res.setSrcDirs(
         listOf(
             "src/main/res/devsupport",
             "src/main/res/shell",
             "src/main/res/views/modal",
             "src/main/res/views/uimanager"))
-    java.srcDirs(
-        listOf(
-            "src/main/java",
-            "src/main/libraries/soloader/java",
-            "src/main/jni/first-party/fb/jni/java"))
     java.exclude("com/facebook/annotationprocessors")
     java.exclude("com/facebook/react/processing")
     java.exclude("com/facebook/react/module/processing")

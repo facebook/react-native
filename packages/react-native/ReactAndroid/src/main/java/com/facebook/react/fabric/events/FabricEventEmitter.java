@@ -9,6 +9,7 @@ package com.facebook.react.fabric.events;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.fabric.FabricUIManager;
@@ -16,9 +17,9 @@ import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.events.EventCategoryDef;
 import com.facebook.react.uimanager.events.RCTModernEventEmitter;
 import com.facebook.react.uimanager.events.TouchEvent;
-import com.facebook.react.uimanager.events.TouchesHelper;
 import com.facebook.systrace.Systrace;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class FabricEventEmitter implements RCTModernEventEmitter {
 
   @NonNull private final FabricUIManager mUIManager;
@@ -63,11 +64,14 @@ public class FabricEventEmitter implements RCTModernEventEmitter {
       @NonNull String eventName,
       @NonNull WritableArray touches,
       @NonNull WritableArray changedIndices) {
-    throw new IllegalStateException("EventEmitter#receiveTouches is not supported by Fabric");
+    throw new UnsupportedOperationException(
+        "EventEmitter#receiveTouches is not supported by Fabric");
   }
 
   @Override
   public void receiveTouches(TouchEvent event) {
-    TouchesHelper.sendTouchEvent(this, event);
+    // Calls are expected to go via TouchesHelper
+    throw new UnsupportedOperationException(
+        "EventEmitter#receiveTouches is not supported by Fabric");
   }
 }

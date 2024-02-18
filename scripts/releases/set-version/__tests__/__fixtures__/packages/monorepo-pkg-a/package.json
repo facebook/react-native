@@ -1,0 +1,12 @@
+{
+  "name": "@monorepo/pkg-a",
+  "version": "0.0.1",
+  "description": "@monorepo/pkg-a",
+  "dependencies": {
+    "@monorepo/pkg-b": "0.0.1",
+    "@monorepo/other": "0.0.1"
+  },
+  "devDependencies": {
+    "@monorepo/pkg-c": "0.0.1"
+  }
+}

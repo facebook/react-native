@@ -66,19 +66,11 @@ Scheduler::Scheduler(
               runtime, eventTarget, type, priority, payload);
         },
         runtime);
-
-    // We only want to run this per-event if we are not batching by default
-    if (!CoreFeatures::enableDefaultAsyncBatchedPriority) {
-      if (runtimeScheduler != nullptr) {
-        runtimeScheduler->callExpiredTasks(runtime);
-      }
-    }
   };
 
   auto eventPipeConclusion =
       [runtimeScheduler = runtimeScheduler.get()](jsi::Runtime& runtime) {
-        if (CoreFeatures::enableDefaultAsyncBatchedPriority &&
-            runtimeScheduler != nullptr) {
+        if (runtimeScheduler != nullptr) {
           runtimeScheduler->callExpiredTasks(runtime);
         }
       };
@@ -141,17 +133,6 @@ Scheduler::Scheduler(
   removeOutstandingSurfacesOnDestruction_ = reactNativeConfig_->getBool(
       "react_fabric:remove_outstanding_surfaces_on_destruction_ios");
 #endif
-
-#ifdef ANDROID
-  CoreFeatures::enableMicrotasks =
-      reactNativeConfig_->getBool("react_fabric:enable_microtasks_android");
-#else
-  CoreFeatures::enableMicrotasks =
-      reactNativeConfig_->getBool("react_fabric:enable_microtasks_ios");
-#endif
-
-  CoreFeatures::blockPaintForUseLayoutEffect = reactNativeConfig_->getBool(
-      "react_fabric:block_paint_for_use_layout_effect");
 
   CoreFeatures::cacheLastTextMeasurement =
       reactNativeConfig_->getBool("react_fabric:enable_text_measure_cache");

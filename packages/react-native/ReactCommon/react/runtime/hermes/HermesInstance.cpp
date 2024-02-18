@@ -7,8 +7,10 @@
 
 #include "HermesInstance.h"
 
+#include <hermes/inspector-modern/chrome/HermesRuntimeAgentDelegate.h>
 #include <jsi/jsilib.h>
 #include <jsinspector-modern/InspectorFlags.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 
 #ifdef HERMES_ENABLE_DEBUGGER
 #include <hermes/inspector-modern/chrome/Registration.h>
@@ -90,6 +92,50 @@ class DecoratedRuntime : public jsi::RuntimeDecorator<jsi::Runtime> {
 
 #endif
 
+class HermesJSRuntime : public JSRuntime {
+ public:
+  HermesJSRuntime(
+      std::unique_ptr<HermesRuntime> runtime,
+      std::shared_ptr<MessageQueueThread> msgQueueThread)
+      : runtime_(std::move(runtime)),
+        msgQueueThread_(std::move(msgQueueThread)) {}
+
+  jsi::Runtime& getRuntime() noexcept override {
+    return *runtime_;
+  }
+
+  std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate> createAgentDelegate(
+      jsinspector_modern::FrontendChannel frontendChannel,
+      jsinspector_modern::SessionState& sessionState,
+      const jsinspector_modern::ExecutionContextDescription&
+          executionContextDescription) override {
+    return std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate>(
+        new jsinspector_modern::HermesRuntimeAgentDelegate(
+            frontendChannel,
+            sessionState,
+            executionContextDescription,
+            runtime_,
+            [msgQueueThreadWeak = std::weak_ptr(msgQueueThread_),
+             runtimeWeak = std::weak_ptr(runtime_)](auto fn) {
+              auto msgQueueThread = msgQueueThreadWeak.lock();
+              if (!msgQueueThread) {
+                return;
+              }
+              msgQueueThread->runOnQueue([runtimeWeak, fn]() {
+                auto runtime = runtimeWeak.lock();
+                if (!runtime) {
+                  return;
+                }
+                fn(*runtime);
+              });
+            }));
+  }
+
+ private:
+  std::shared_ptr<HermesRuntime> runtime_;
+  std::shared_ptr<MessageQueueThread> msgQueueThread_;
+};
+
 std::unique_ptr<JSRuntime> HermesInstance::createJSRuntime(
     std::shared_ptr<const ReactNativeConfig> reactNativeConfig,
     std::shared_ptr<::hermes::vm::CrashManager> cm,
@@ -107,16 +153,6 @@ std::unique_ptr<JSRuntime> HermesInstance::createJSRuntime(
       ? static_cast<::hermes::vm::gcheapsize_t>(heapSizeConfig)
       : 3072;
 
-#ifdef ANDROID
-  bool enableMicrotasks = reactNativeConfig
-      ? reactNativeConfig->getBool("react_fabric:enable_microtasks_android")
-      : false;
-#else
-  bool enableMicrotasks = reactNativeConfig
-      ? reactNativeConfig->getBool("react_fabric:enable_microtasks_ios")
-      : false;
-#endif
-
   ::hermes::vm::RuntimeConfig::Builder runtimeConfigBuilder =
       ::hermes::vm::RuntimeConfig::Builder()
           .withGCConfig(::hermes::vm::GCConfig::Builder()
@@ -131,7 +167,7 @@ std::unique_ptr<JSRuntime> HermesInstance::createJSRuntime(
                             .build())
           .withES6Proxy(false)
           .withEnableSampleProfiling(true)
-          .withMicrotaskQueue(enableMicrotasks)
+          .withMicrotaskQueue(ReactNativeFeatureFlags::enableMicrotasks())
           .withVMExperimentFlags(vmExperimentFlags);
 
   if (cm) {
@@ -151,7 +187,8 @@ std::unique_ptr<JSRuntime> HermesInstance::createJSRuntime(
   }
 #endif
 
-  return std::make_unique<JSIRuntimeHolder>(std::move(hermesRuntime));
+  return std::make_unique<HermesJSRuntime>(
+      std::move(hermesRuntime), std::move(msgQueueThread));
 }
 
 } // namespace facebook::react

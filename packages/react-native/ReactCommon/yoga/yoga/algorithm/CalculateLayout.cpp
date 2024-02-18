@@ -26,7 +26,6 @@
 #include <yoga/algorithm/TrailingPosition.h>
 #include <yoga/debug/AssertFatal.h>
 #include <yoga/debug/Log.h>
-#include <yoga/debug/NodeToString.h>
 #include <yoga/event/event.h>
 #include <yoga/node/Node.h>
 #include <yoga/numeric/Comparison.h>
@@ -2366,14 +2365,6 @@ void calculateLayout(
     node->setPosition(
         node->getLayout().direction(), ownerWidth, ownerHeight, ownerWidth);
     roundLayoutResultsToPixelGrid(node, 0.0f, 0.0f);
-
-#ifdef DEBUG
-    if (node->getConfig()->shouldPrintTree()) {
-      yoga::print(
-          node,
-          PrintOptions::Layout | PrintOptions::Children | PrintOptions::Style);
-    }
-#endif
   }
 
   Event::publish<Event::LayoutPassEnd>(node, {&markerData});

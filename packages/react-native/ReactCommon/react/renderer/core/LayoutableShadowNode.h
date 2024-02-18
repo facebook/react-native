@@ -39,9 +39,6 @@ class LayoutableShadowNode : public ShadowNode {
       const ShadowNode& sourceShadowNode,
       const ShadowNodeFragment& fragment);
 
-  static ShadowNodeTraits BaseTraits();
-  static ShadowNodeTraits::Trait IdentifierTrait();
-
   struct LayoutInspectingPolicy {
     bool includeTransform{true};
     bool includeViewportOffset{false};

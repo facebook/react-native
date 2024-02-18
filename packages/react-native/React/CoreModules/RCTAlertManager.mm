@@ -49,9 +49,11 @@ RCT_EXPORT_MODULE()
 
 - (void)invalidate
 {
-  for (UIAlertController *alertController in _alertControllers) {
-    [alertController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
-  }
+  RCTExecuteOnMainQueue(^{
+    for (UIAlertController *alertController in self->_alertControllers) {
+      [alertController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+    }
+  });
 }
 
 /**
@@ -82,6 +84,7 @@ RCT_EXPORT_METHOD(alertWithArgs : (JS::NativeAlertManager::Args &)args callback 
   NSString *destructiveButtonKey = [RCTConvert NSString:args.destructiveButtonKey()];
   NSString *preferredButtonKey = [RCTConvert NSString:args.preferredButtonKey()];
   UIKeyboardType keyboardType = [RCTConvert UIKeyboardType:args.keyboardType()];
+  UIUserInterfaceStyle userInterfaceStyle = [RCTConvert UIUserInterfaceStyle:args.userInterfaceStyle()];
 
   if (!title && !message) {
     RCTLogError(@"Must specify either an alert title, or message, or both");
@@ -101,101 +104,99 @@ RCT_EXPORT_METHOD(alertWithArgs : (JS::NativeAlertManager::Args &)args callback 
     }
   }
 
-  RCTAlertController *alertController = [RCTAlertController alertControllerWithTitle:title
-                                                                             message:nil
-                                                                      preferredStyle:UIAlertControllerStyleAlert];
+  RCTExecuteOnMainQueue(^{
+    RCTAlertController *alertController = [RCTAlertController alertControllerWithTitle:title
+                                                                               message:nil
+                                                                        preferredStyle:UIAlertControllerStyleAlert];
 
-  UIUserInterfaceStyle userInterfaceStyle = [RCTConvert UIUserInterfaceStyle:args.userInterfaceStyle()];
-  alertController.overrideUserInterfaceStyle = userInterfaceStyle;
+    alertController.overrideUserInterfaceStyle = userInterfaceStyle;
 
-  switch (type) {
-    case RCTAlertViewStylePlainTextInput: {
-      [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-        textField.secureTextEntry = NO;
-        textField.text = defaultValue;
-        textField.keyboardType = keyboardType;
-      }];
-      break;
+    switch (type) {
+      case RCTAlertViewStylePlainTextInput: {
+        [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+          textField.secureTextEntry = NO;
+          textField.text = defaultValue;
+          textField.keyboardType = keyboardType;
+        }];
+        break;
+      }
+      case RCTAlertViewStyleSecureTextInput: {
+        [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+          textField.placeholder = RCTUIKitLocalizedString(@"Password");
+          textField.secureTextEntry = YES;
+          textField.text = defaultValue;
+          textField.keyboardType = keyboardType;
+        }];
+        break;
+      }
+      case RCTAlertViewStyleLoginAndPasswordInput: {
+        [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+          textField.placeholder = RCTUIKitLocalizedString(@"Login");
+          textField.text = defaultValue;
+          textField.keyboardType = keyboardType;
+        }];
+        [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+          textField.placeholder = RCTUIKitLocalizedString(@"Password");
+          textField.secureTextEntry = YES;
+        }];
+        break;
+      }
+      case RCTAlertViewStyleDefault:
+        break;
     }
-    case RCTAlertViewStyleSecureTextInput: {
-      [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-        textField.placeholder = RCTUIKitLocalizedString(@"Password");
-        textField.secureTextEntry = YES;
-        textField.text = defaultValue;
-        textField.keyboardType = keyboardType;
-      }];
-      break;
-    }
-    case RCTAlertViewStyleLoginAndPasswordInput: {
-      [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-        textField.placeholder = RCTUIKitLocalizedString(@"Login");
-        textField.text = defaultValue;
-        textField.keyboardType = keyboardType;
-      }];
-      [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-        textField.placeholder = RCTUIKitLocalizedString(@"Password");
-        textField.secureTextEntry = YES;
-      }];
-      break;
-    }
-    case RCTAlertViewStyleDefault:
-      break;
-  }
 
-  alertController.message = message;
+    alertController.message = message;
 
-  for (NSDictionary<NSString *, id> *button in buttons) {
-    if (button.count != 1) {
-      RCTLogError(@"Button definitions should have exactly one key.");
-    }
-    NSString *buttonKey = button.allKeys.firstObject;
-    NSString *buttonTitle = [RCTConvert NSString:button[buttonKey]];
-    UIAlertActionStyle buttonStyle = UIAlertActionStyleDefault;
-    if ([buttonKey isEqualToString:cancelButtonKey]) {
-      buttonStyle = UIAlertActionStyleCancel;
-    } else if ([buttonKey isEqualToString:destructiveButtonKey]) {
-      buttonStyle = UIAlertActionStyleDestructive;
-    }
-    __weak RCTAlertController *weakAlertController = alertController;
+    for (NSDictionary<NSString *, id> *button in buttons) {
+      if (button.count != 1) {
+        RCTLogError(@"Button definitions should have exactly one key.");
+      }
+      NSString *buttonKey = button.allKeys.firstObject;
+      NSString *buttonTitle = [RCTConvert NSString:button[buttonKey]];
+      UIAlertActionStyle buttonStyle = UIAlertActionStyleDefault;
+      if ([buttonKey isEqualToString:cancelButtonKey]) {
+        buttonStyle = UIAlertActionStyleCancel;
+      } else if ([buttonKey isEqualToString:destructiveButtonKey]) {
+        buttonStyle = UIAlertActionStyleDestructive;
+      }
+      __weak RCTAlertController *weakAlertController = alertController;
 
-    UIAlertAction *alertAction =
-        [UIAlertAction actionWithTitle:buttonTitle
-                                 style:buttonStyle
-                               handler:^(__unused UIAlertAction *action) {
-                                 switch (type) {
-                                   case RCTAlertViewStylePlainTextInput:
-                                   case RCTAlertViewStyleSecureTextInput:
-                                     callback(@[ buttonKey, [weakAlertController.textFields.firstObject text] ]);
-                                     [weakAlertController hide];
-                                     break;
-                                   case RCTAlertViewStyleLoginAndPasswordInput: {
-                                     NSDictionary<NSString *, NSString *> *loginCredentials = @{
-                                       @"login" : [weakAlertController.textFields.firstObject text],
-                                       @"password" : [weakAlertController.textFields.lastObject text]
-                                     };
-                                     callback(@[ buttonKey, loginCredentials ]);
-                                     [weakAlertController hide];
-                                     break;
+      UIAlertAction *alertAction =
+          [UIAlertAction actionWithTitle:buttonTitle
+                                   style:buttonStyle
+                                 handler:^(__unused UIAlertAction *action) {
+                                   switch (type) {
+                                     case RCTAlertViewStylePlainTextInput:
+                                     case RCTAlertViewStyleSecureTextInput:
+                                       callback(@[ buttonKey, [weakAlertController.textFields.firstObject text] ]);
+                                       [weakAlertController hide];
+                                       break;
+                                     case RCTAlertViewStyleLoginAndPasswordInput: {
+                                       NSDictionary<NSString *, NSString *> *loginCredentials = @{
+                                         @"login" : [weakAlertController.textFields.firstObject text],
+                                         @"password" : [weakAlertController.textFields.lastObject text]
+                                       };
+                                       callback(@[ buttonKey, loginCredentials ]);
+                                       [weakAlertController hide];
+                                       break;
+                                     }
+                                     case RCTAlertViewStyleDefault:
+                                       callback(@[ buttonKey ]);
+                                       [weakAlertController hide];
+                                       break;
                                    }
-                                   case RCTAlertViewStyleDefault:
-                                     callback(@[ buttonKey ]);
-                                     [weakAlertController hide];
-                                     break;
-                                 }
-                               }];
-    [alertController addAction:alertAction];
+                                 }];
+      [alertController addAction:alertAction];
 
-    if ([buttonKey isEqualToString:preferredButtonKey]) {
-      [alertController setPreferredAction:alertAction];
+      if ([buttonKey isEqualToString:preferredButtonKey]) {
+        [alertController setPreferredAction:alertAction];
+      }
     }
-  }
 
-  if (!_alertControllers) {
-    _alertControllers = [NSHashTable weakObjectsHashTable];
-  }
-  [_alertControllers addObject:alertController];
-
-  dispatch_async(dispatch_get_main_queue(), ^{
+    if (!self->_alertControllers) {
+      self->_alertControllers = [NSHashTable weakObjectsHashTable];
+    }
+    [self->_alertControllers addObject:alertController];
     [alertController show:YES completion:nil];
   });
 }

@@ -31,7 +31,6 @@ const IGNORE_PATTERNS = [
 // review your changes before adding new entries.
 const FILES_WITH_KNOWN_ERRORS = new Set([
   'Libraries/Blob/FileReader.js',
-  'Libraries/Blob/URL.js',
   'Libraries/Components/DrawerAndroid/DrawerLayoutAndroid.android.js',
   'Libraries/Components/Keyboard/KeyboardAvoidingView.js',
   'Libraries/Components/RefreshControl/RefreshControl.js',
@@ -42,8 +41,6 @@ const FILES_WITH_KNOWN_ERRORS = new Set([
   'Libraries/Components/Touchable/TouchableNativeFeedback.js',
   'Libraries/Components/Touchable/TouchableWithoutFeedback.js',
   'Libraries/Components/UnimplementedViews/UnimplementedView.js',
-  'Libraries/Core/ReactNativeVersion.js',
-  'Libraries/Core/ReactNativeVersionCheck.js',
   'Libraries/Image/ImageBackground.js',
   'Libraries/Inspector/ElementProperties.js',
   'Libraries/Inspector/BorderBox.js',
@@ -84,6 +81,13 @@ describe('public API', () => {
       const source = await fs.readFile(path.join(PACKAGE_ROOT, file), 'utf-8');
 
       if (/@flow/.test(source)) {
+        if (source.includes('// $FlowFixMe[unsupported-syntax]')) {
+          expect(
+            'UNTYPED MODULE (unsupported-syntax suppression)',
+          ).toMatchSnapshot();
+          return;
+        }
+
         try {
           expect(await translateFlowToExportedAPI(source)).toMatchSnapshot();
 

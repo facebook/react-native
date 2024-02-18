@@ -27,6 +27,7 @@ import typeof Clipboard from './Libraries/Components/Clipboard/Clipboard';
 import typeof DrawerLayoutAndroid from './Libraries/Components/DrawerAndroid/DrawerLayoutAndroid';
 import typeof Keyboard from './Libraries/Components/Keyboard/Keyboard';
 import typeof KeyboardAvoidingView from './Libraries/Components/Keyboard/KeyboardAvoidingView';
+import typeof PopupMenuAndroid from './Libraries/Components/PopupMenuAndroid/PopupMenuAndroid';
 import typeof Pressable from './Libraries/Components/Pressable/Pressable';
 import typeof ProgressBarAndroid from './Libraries/Components/ProgressBarAndroid/ProgressBarAndroid';
 import typeof RefreshControl from './Libraries/Components/RefreshControl/RefreshControl';
@@ -43,6 +44,7 @@ import typeof TouchableNativeFeedback from './Libraries/Components/Touchable/Tou
 import typeof TouchableOpacity from './Libraries/Components/Touchable/TouchableOpacity';
 import typeof TouchableWithoutFeedback from './Libraries/Components/Touchable/TouchableWithoutFeedback';
 import typeof View from './Libraries/Components/View/View';
+import typeof RegisterCallableModule from './Libraries/Core/registerCallableModule';
 import typeof NativeEventEmitter from './Libraries/EventEmitter/NativeEventEmitter';
 import typeof RCTDeviceEventEmitter from './Libraries/EventEmitter/RCTDeviceEventEmitter';
 import typeof RCTNativeAppEventEmitter from './Libraries/EventEmitter/RCTNativeAppEventEmitter';
@@ -97,6 +99,9 @@ const invariant = require('invariant');
 export type HostComponent<T> = _HostComponentInternal<T>;
 
 module.exports = {
+  get registerCallableModule(): RegisterCallableModule {
+    return require('./Libraries/Core/registerCallableModule').default;
+  },
   // Components
   get AccessibilityInfo(): AccessibilityInfo {
     return require('./Libraries/Components/AccessibilityInfo/AccessibilityInfo')
@@ -107,7 +112,7 @@ module.exports = {
       .default;
   },
   get Button(): Button {
-    return require('./Libraries/Components/Button');
+    return require('./Libraries/Components/Button').default;
   },
   // $FlowFixMe[value-as-type]
   get DrawerLayoutAndroid(): DrawerLayoutAndroid {
@@ -123,10 +128,15 @@ module.exports = {
     return require('./Libraries/Image/ImageBackground');
   },
   get InputAccessoryView(): InputAccessoryView {
-    return require('./Libraries/Components/TextInput/InputAccessoryView');
+    return require('./Libraries/Components/TextInput/InputAccessoryView')
+      .default;
   },
   get KeyboardAvoidingView(): KeyboardAvoidingView {
     return require('./Libraries/Components/Keyboard/KeyboardAvoidingView')
+      .default;
+  },
+  get PopupMenuAndroid(): PopupMenuAndroid {
+    return require('./Libraries/Components/PopupMenuAndroid/PopupMenuAndroid')
       .default;
   },
   get Modal(): Modal {

@@ -69,10 +69,10 @@ import com.facebook.react.views.text.ReactTextUpdate;
 import com.facebook.react.views.text.ReactTextViewManagerCallback;
 import com.facebook.react.views.text.ReactTypefaceUtils;
 import com.facebook.react.views.text.TextAttributeProps;
-import com.facebook.react.views.text.TextInlineImageSpan;
 import com.facebook.react.views.text.TextLayoutManager;
 import com.facebook.react.views.text.TextLayoutManagerMapBuffer;
 import com.facebook.react.views.text.TextTransform;
+import com.facebook.react.views.text.internal.span.TextInlineImageSpan;
 import com.facebook.yoga.YogaConstants;
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -380,6 +380,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       view.maybeSetTextFromState(update);
       view.maybeSetSelection(update.getJsEventCounter(), selectionStart, selectionEnd);
     }
+  }
+
+  @ReactProp(name = ViewProps.LINE_HEIGHT, defaultFloat = ViewDefaults.LINE_HEIGHT)
+  public void setLineHeight(ReactEditText view, int lineHeight) {
+    view.setLineHeight(lineHeight);
   }
 
   @ReactProp(name = ViewProps.FONT_SIZE, defaultFloat = ViewDefaults.FONT_SIZE_SP)

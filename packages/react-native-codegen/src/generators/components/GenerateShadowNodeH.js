@@ -12,6 +12,8 @@
 
 import type {SchemaType} from '../../CodegenSchema';
 
+const {IncludeTemplate} = require('./CppHelpers');
+
 // File path -> contents
 type FilesOutput = Map<string, string>;
 
@@ -33,9 +35,9 @@ const FileTemplate = ({
 
 #pragma once
 
-#include <${headerPrefix}EventEmitters.h>
-#include <${headerPrefix}Props.h>
-#include <${headerPrefix}States.h>
+${IncludeTemplate({headerPrefix, file: 'EventEmitters.h'})}
+${IncludeTemplate({headerPrefix, file: 'Props.h'})}
+${IncludeTemplate({headerPrefix, file: 'States.h'})}
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 #include <jsi/jsi.h>
 

@@ -10,12 +10,12 @@
 
 'use strict';
 
+const {parseVersion} = require('./releases/utils/version-utils');
 const {
   exitIfNotOnGit,
   getCurrentCommit,
   isTaggedLatest,
 } = require('./scm-utils');
-const {parseVersion} = require('./version-utils');
 const {exec} = require('shelljs');
 
 /*::

@@ -12,7 +12,6 @@
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/components/view/PointerEvent.h>
 #include <react/renderer/core/LayoutableShadowNode.h>
-#include <react/renderer/core/TraitCast.h>
 #include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
 #include <react/renderer/uimanager/primitives.h>
@@ -326,6 +325,12 @@ jsi::Value UIManagerBinding::get(
               arguments[3].getObject(runtime).getFunction(runtime);
           auto targetNode =
               uiManager->findNodeAtPoint(node, Point{locationX, locationY});
+
+          if (!targetNode) {
+            onSuccessFunction.call(runtime, jsi::Value::null());
+            return jsi::Value::undefined();
+          }
+
           auto& eventTarget = targetNode->getEventEmitter()->eventTarget_;
 
           EventEmitter::DispatchMutex().lock();
@@ -700,7 +705,7 @@ jsi::Value UIManagerBinding::get(
           auto newestCloneOfShadowNode =
               uiManager->getNewestCloneOfShadowNode(*shadowNode);
 
-          auto layoutableShadowNode = traitCast<LayoutableShadowNode const*>(
+          auto layoutableShadowNode = dynamic_cast<const LayoutableShadowNode*>(
               newestCloneOfShadowNode.get());
           Point originRelativeToParent = layoutableShadowNode != nullptr
               ? layoutableShadowNode->getLayoutMetrics().frame.origin
@@ -1215,7 +1220,7 @@ jsi::Value UIManagerBinding::get(
             return jsi::Value::undefined();
           }
 
-          auto layoutableShadowNode = traitCast<LayoutableShadowNode const*>(
+          auto layoutableShadowNode = dynamic_cast<LayoutableShadowNode const*>(
               newestCloneOfShadowNode.get());
           // This should never happen
           if (layoutableShadowNode == nullptr) {
@@ -1286,7 +1291,7 @@ jsi::Value UIManagerBinding::get(
           }
 
           auto layoutableShadowNode =
-              traitCast<YogaLayoutableShadowNode const*>(
+              dynamic_cast<YogaLayoutableShadowNode const*>(
                   newestCloneOfShadowNode.get());
           // This should never happen
           if (layoutableShadowNode == nullptr) {

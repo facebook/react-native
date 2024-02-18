@@ -25,12 +25,13 @@ std::shared_ptr<const ComponentDescriptorProviderRegistry>
 DefaultComponentsRegistry::sharedProviderRegistry() {
   auto providerRegistry = CoreComponentsRegistry::sharedProviderRegistry();
 
-  react_native_assert(
-      DefaultComponentsRegistry::registerComponentDescriptorsFromEntryPoint &&
-      "'registerComponentDescriptorsFromEntryPoint' was not initialized in 'JNI_OnLoad'");
-
-  (DefaultComponentsRegistry::registerComponentDescriptorsFromEntryPoint)(
-      providerRegistry);
+  if (DefaultComponentsRegistry::registerComponentDescriptorsFromEntryPoint) {
+    (DefaultComponentsRegistry::registerComponentDescriptorsFromEntryPoint)(
+        providerRegistry);
+  } else {
+    LOG(WARNING)
+        << "Custom component descriptors were not configured from JNI_OnLoad";
+  }
 
   return providerRegistry;
 }

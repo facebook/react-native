@@ -44,7 +44,6 @@ class RuntimeScheduler final : RuntimeSchedulerBase {
  public:
   explicit RuntimeScheduler(
       RuntimeExecutor runtimeExecutor,
-      bool useModernRuntimeScheduler = false,
       std::function<RuntimeSchedulerTimePoint()> now =
           RuntimeSchedulerClock::now);
 

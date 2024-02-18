@@ -116,12 +116,20 @@ static NSString *kBundlePath = @"js/RNTesterApp.ios";
 
 // Required for the remoteNotificationReceived and localNotificationReceived events
 // Called when a notification is tapped from background. (Foreground notification will not be shown per
-// the presentation option selected above.)
+// the presentation option selected above).
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
     didReceiveNotificationResponse:(UNNotificationResponse *)response
              withCompletionHandler:(void (^)(void))completionHandler
 {
-  [RCTPushNotificationManager didReceiveNotification:response.notification];
+  UNNotification *notification = response.notification;
+
+  // This condition will be true if tapping the notification launched the app.
+  if ([response.actionIdentifier isEqualToString:UNNotificationDefaultActionIdentifier]) {
+    // This can be retrieved with getInitialNotification.
+    [RCTPushNotificationManager setInitialNotification:notification];
+  }
+
+  [RCTPushNotificationManager didReceiveNotification:notification];
   completionHandler();
 }
 

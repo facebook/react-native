@@ -15,8 +15,8 @@
 #include <jsi/JSIDynamic.h>
 #include <jsi/instrumentation.h>
 #include <jsireact/JSIExecutor.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
-#include <react/utils/CoreFeatures.h>
 
 #include <cxxreact/ReactMarker.h>
 #include <iostream>
@@ -30,12 +30,13 @@ ReactInstance::ReactInstance(
     std::shared_ptr<MessageQueueThread> jsMessageQueueThread,
     std::shared_ptr<TimerManager> timerManager,
     JsErrorHandler::JsErrorHandlingFunc jsErrorHandlingFunc,
-    bool useModernRuntimeScheduler)
+    jsinspector_modern::PageTarget* parentInspectorTarget)
     : runtime_(std::move(runtime)),
       jsMessageQueueThread_(jsMessageQueueThread),
       timerManager_(std::move(timerManager)),
       jsErrorHandler_(jsErrorHandlingFunc),
-      hasFatalJsError_(std::make_shared<bool>(false)) {
+      hasFatalJsError_(std::make_shared<bool>(false)),
+      parentInspectorTarget_(parentInspectorTarget) {
   auto runtimeExecutor = [weakRuntime = std::weak_ptr<JSRuntime>(runtime_),
                           weakTimerManager =
                               std::weak_ptr<TimerManager>(timerManager_),
@@ -70,7 +71,7 @@ ReactInstance::ReactInstance(
 
                 // If we have first-class support for microtasks,
                 // they would've been called as part of the previous callback.
-                if (!CoreFeatures::enableMicrotasks) {
+                if (!ReactNativeFeatureFlags::enableMicrotasks()) {
                   if (auto strongTimerManager = weakTimerManager.lock()) {
                     strongTimerManager->callReactNativeMicrotasks(jsiRuntime);
                   }
@@ -83,8 +84,14 @@ ReactInstance::ReactInstance(
     }
   };
 
-  runtimeScheduler_ = std::make_shared<RuntimeScheduler>(
-      std::move(runtimeExecutor), useModernRuntimeScheduler);
+  if (parentInspectorTarget_) {
+    inspectorTarget_ = &parentInspectorTarget_->registerInstance(*this);
+    runtimeInspectorTarget_ =
+        &inspectorTarget_->registerRuntime(*runtime_, runtimeExecutor);
+  }
+
+  runtimeScheduler_ =
+      std::make_shared<RuntimeScheduler>(std::move(runtimeExecutor));
 
   auto pipedRuntimeExecutor =
       [runtimeScheduler = runtimeScheduler_.get()](
@@ -94,6 +101,16 @@ ReactInstance::ReactInstance(
 
   bufferedRuntimeExecutor_ =
       std::make_shared<BufferedRuntimeExecutor>(pipedRuntimeExecutor);
+}
+
+void ReactInstance::unregisterFromInspector() {
+  if (inspectorTarget_) {
+    assert(runtimeInspectorTarget_);
+    inspectorTarget_->unregisterRuntime(*runtimeInspectorTarget_);
+    assert(parentInspectorTarget_);
+    parentInspectorTarget_->unregisterInstance(*inspectorTarget_);
+    inspectorTarget_ = nullptr;
+  }
 }
 
 RuntimeExecutor ReactInstance::getUnbufferedRuntimeExecutor() noexcept {
@@ -446,6 +463,10 @@ void ReactInstance::handleMemoryPressureJs(int pressureLevel) {
                    << ") received by JS VM, unrecognized pressure level";
       break;
   }
+}
+
+void* ReactInstance::getJavaScriptContext() {
+  return &runtime_->getRuntime();
 }
 
 } // namespace facebook::react

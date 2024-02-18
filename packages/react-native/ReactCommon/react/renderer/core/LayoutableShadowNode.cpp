@@ -11,7 +11,6 @@
 #include <react/renderer/core/LayoutContext.h>
 #include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/core/ShadowNode.h>
-#include <react/renderer/core/TraitCast.h>
 #include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/debug/DebugStringConvertibleItem.h>
 
@@ -29,13 +28,13 @@ static LayoutableSmallVector<Rect> calculateTransformedFrames(
 
   for (auto i = size; i > 0; --i) {
     auto currentShadowNode =
-        traitCast<const LayoutableShadowNode*>(shadowNodeList.at(i - 1));
+        dynamic_cast<const LayoutableShadowNode*>(shadowNodeList.at(i - 1));
     auto currentFrame = currentShadowNode->getLayoutMetrics().frame;
 
     if (policy.includeTransform) {
       if (Transform::isVerticalInversion(transformation)) {
         auto parentShadowNode =
-            traitCast<const LayoutableShadowNode*>(shadowNodeList.at(i));
+            dynamic_cast<const LayoutableShadowNode*>(shadowNodeList.at(i));
         currentFrame.origin.y =
             parentShadowNode->getLayoutMetrics().frame.size.height -
             currentFrame.size.height - currentFrame.origin.y;
@@ -43,7 +42,7 @@ static LayoutableSmallVector<Rect> calculateTransformedFrames(
 
       if (Transform::isHorizontalInversion(transformation)) {
         auto parentShadowNode =
-            traitCast<const LayoutableShadowNode*>(shadowNodeList.at(i));
+            dynamic_cast<const LayoutableShadowNode*>(shadowNodeList.at(i));
         currentFrame.origin.x =
             parentShadowNode->getLayoutMetrics().frame.size.width -
             currentFrame.size.width - currentFrame.origin.x;
@@ -51,7 +50,7 @@ static LayoutableSmallVector<Rect> calculateTransformedFrames(
 
       if (i != size) {
         auto parentShadowNode =
-            traitCast<const LayoutableShadowNode*>(shadowNodeList.at(i));
+            dynamic_cast<const LayoutableShadowNode*>(shadowNodeList.at(i));
         auto contentOriginOffset = parentShadowNode->getContentOriginOffset();
         if (Transform::isVerticalInversion(transformation)) {
           contentOriginOffset.y = -contentOriginOffset.y;
@@ -152,7 +151,7 @@ LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
   // Step 2.
   // Computing the initial size of the measured node.
   auto descendantLayoutableNode =
-      traitCast<const LayoutableShadowNode*>(descendantNode);
+      dynamic_cast<const LayoutableShadowNode*>(descendantNode);
 
   if (descendantLayoutableNode == nullptr) {
     return EmptyLayoutMetrics;
@@ -183,7 +182,7 @@ LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
   auto size = shadowNodeList.size();
   for (size_t i = 0; i < size; i++) {
     auto currentShadowNode =
-        traitCast<const LayoutableShadowNode*>(shadowNodeList.at(i));
+        dynamic_cast<const LayoutableShadowNode*>(shadowNodeList.at(i));
 
     if (currentShadowNode == nullptr) {
       return EmptyLayoutMetrics;
@@ -241,16 +240,6 @@ LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
   return layoutMetrics;
 }
 
-ShadowNodeTraits LayoutableShadowNode::BaseTraits() {
-  auto traits = ShadowNodeTraits{};
-  traits.set(IdentifierTrait());
-  return traits;
-}
-
-ShadowNodeTraits::Trait LayoutableShadowNode::IdentifierTrait() {
-  return ShadowNodeTraits::Trait::LayoutableKind;
-}
-
 LayoutMetrics LayoutableShadowNode::getLayoutMetrics() const {
   return layoutMetrics_;
 }
@@ -278,7 +267,7 @@ LayoutableShadowNode::getLayoutableChildNodes() const {
   LayoutableShadowNode::UnsharedList layoutableChildren;
   for (const auto& childShadowNode : getChildren()) {
     auto layoutableChildShadowNode =
-        traitCast<const LayoutableShadowNode*>(childShadowNode.get());
+        dynamic_cast<const LayoutableShadowNode*>(childShadowNode.get());
     if (layoutableChildShadowNode != nullptr) {
       layoutableChildren.push_back(
           const_cast<LayoutableShadowNode*>(layoutableChildShadowNode));
@@ -320,7 +309,7 @@ ShadowNode::Shared LayoutableShadowNode::findNodeAtPoint(
     const ShadowNode::Shared& node,
     Point point) {
   auto layoutableShadowNode =
-      traitCast<const LayoutableShadowNode*>(node.get());
+      dynamic_cast<const LayoutableShadowNode*>(node.get());
 
   if (layoutableShadowNode == nullptr) {
     return nullptr;

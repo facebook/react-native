@@ -45,7 +45,7 @@ Pod::Spec.new do |s|
   s.dependency "fmt", "9.1.0"
   s.dependency "RCT-Folly", folly_version
   s.dependency "glog"
-  s.dependency "React-jsinspector", version
+  add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
   s.dependency "React-callinvoker", version
   s.dependency "React-runtimeexecutor", version
   s.dependency "React-perflogger", version

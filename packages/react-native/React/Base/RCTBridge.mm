@@ -209,7 +209,7 @@ class RCTBridgePageTargetDelegate : public facebook::react::jsinspector_modern::
   NSURL *_delegateBundleURL;
 
   std::unique_ptr<RCTBridgePageTargetDelegate> _inspectorPageDelegate;
-  std::unique_ptr<facebook::react::jsinspector_modern::PageTarget> _inspectorTarget;
+  std::shared_ptr<facebook::react::jsinspector_modern::PageTarget> _inspectorTarget;
   std::optional<int> _inspectorPageId;
 }
 
@@ -274,6 +274,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
    * This runs only on the main thread, but crashes the subclass
    * RCTAssertMainQueue();
    */
+  // NOTE: RCTCxxBridge will use _inspectorTarget during [self invalidate], so we must
+  // keep it alive until after the call returns.
   [self invalidate];
   if (_inspectorPageId.has_value()) {
     facebook::react::jsinspector_modern::getInspectorInstance().removePage(*_inspectorPageId);
@@ -410,7 +412,12 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
   auto &inspectorFlags = facebook::react::jsinspector_modern::InspectorFlags::getInstance();
   if (inspectorFlags.getEnableModernCDPRegistry() && !_inspectorPageId.has_value()) {
-    _inspectorTarget = std::make_unique<facebook::react::jsinspector_modern::PageTarget>(*_inspectorPageDelegate);
+    _inspectorTarget =
+        facebook::react::jsinspector_modern::PageTarget::create(*_inspectorPageDelegate, [](auto callback) {
+          RCTExecuteOnMainQueue(^{
+            callback();
+          });
+        });
     __weak RCTBridge *weakSelf = self;
     _inspectorPageId = facebook::react::jsinspector_modern::getInspectorInstance().addPage(
         "React Native Bridge (Experimental)",
@@ -428,7 +435,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
                   .integrationName = "iOS Bridge (RCTBridge)",
               });
         },
-        facebook::react::jsinspector_modern::InspectorPageType::Modern);
+        {.nativePageReloads = true});
   }
 
   Class bridgeClass = self.bridgeClass;
@@ -519,4 +526,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   [self.batchedBridge registerSegmentWithId:segmentId path:path];
 }
 
+- (facebook::react::jsinspector_modern::PageTarget *)inspectorTarget
+{
+  return _inspectorTarget.get();
+}
 @end

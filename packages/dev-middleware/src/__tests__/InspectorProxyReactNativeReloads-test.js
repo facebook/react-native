@@ -23,8 +23,7 @@ jest.useRealTimers();
 
 jest.setTimeout(10000);
 
-// TODO T169943794
-xdescribe('inspector proxy React Native reloads', () => {
+describe('inspector proxy React Native reloads', () => {
   const serverRef = withServerForEachTest({
     logger: undefined,
     projectRoot: '',
@@ -398,7 +397,7 @@ xdescribe('inspector proxy React Native reloads', () => {
     }
   });
 
-  test('disabled for modern targets', async () => {
+  test("disabled when target has 'nativePageReloads' capability flag", async () => {
     let device1;
     try {
       /***
@@ -415,7 +414,9 @@ xdescribe('inspector proxy React Native reloads', () => {
           // NOTE: 'React' is a magic string used to detect React Native pages
           // in legacy mode.
           title: 'React Native (mock)',
-          type: 'Modern',
+          capabilities: {
+            nativePageReloads: true,
+          },
           vm: 'vm',
         },
       ]);
@@ -450,7 +451,9 @@ xdescribe('inspector proxy React Native reloads', () => {
           id: 'originalPage-updated',
           // NOTE: 'React' is a magic string used to detect React Native pages.
           title: 'React Native (mock)',
-          type: 'Modern',
+          capabilities: {
+            nativePageReloads: true,
+          },
           vm: 'vm',
         },
       ]);

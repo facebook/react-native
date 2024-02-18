@@ -6,9 +6,12 @@
  */
 
 #include "PageTarget.h"
+#include "InspectorInterfaces.h"
 #include "InspectorUtilities.h"
+#include "InstanceTarget.h"
 #include "PageAgent.h"
 #include "Parsing.h"
+#include "SessionState.h"
 
 #include <folly/dynamic.h>
 #include <folly/json.h>
@@ -37,7 +40,8 @@ class PageTargetSession {
         pageAgent_(
             frontendChannel_,
             targetController,
-            std::move(sessionMetadata)) {}
+            std::move(sessionMetadata),
+            state_) {}
 
   /**
    * Called by CallbackLocalConnection to send a message to this Session's
@@ -72,33 +76,53 @@ class PageTargetSession {
     }
   }
 
+  /**
+   * Replace the current instance agent inside pageAgent_ with a new one
+   * connected to the new InstanceTarget.
+   * \param instance The new instance target. May be nullptr to indicate
+   * there's no current instance.
+   */
+  void setCurrentInstance(InstanceTarget* instance) {
+    if (instance) {
+      pageAgent_.setCurrentInstanceAgent(
+          instance->createAgent(frontendChannel_, state_));
+    } else {
+      pageAgent_.setCurrentInstanceAgent(nullptr);
+    }
+  }
+
  private:
   // Owned by this instance, but shared (weakly) with the frontend channel
   std::shared_ptr<RAIIRemoteConnection> remote_;
   FrontendChannel frontendChannel_;
   PageAgent pageAgent_;
+  SessionState state_;
 };
 
-PageTarget::PageTarget(PageTargetDelegate& delegate) : delegate_(delegate) {}
+std::shared_ptr<PageTarget> PageTarget::create(
+    PageTargetDelegate& delegate,
+    VoidExecutor executor) {
+  std::shared_ptr<PageTarget> pageTarget{new PageTarget(delegate)};
+  pageTarget->setExecutor(executor);
+  return pageTarget;
+}
+
+PageTarget::PageTarget(PageTargetDelegate& delegate)
+    : delegate_(delegate),
+      executionContextManager_{std::make_shared<ExecutionContextManager>()} {}
 
 std::unique_ptr<ILocalConnection> PageTarget::connect(
     std::unique_ptr<IRemoteConnection> connectionToFrontend,
     SessionMetadata sessionMetadata) {
   auto session = std::make_shared<PageTargetSession>(
       std::move(connectionToFrontend), controller_, std::move(sessionMetadata));
-  sessions_.push_back(std::weak_ptr(session));
+  session->setCurrentInstance(currentInstance_.get());
+  sessions_.insert(std::weak_ptr(session));
   return std::make_unique<CallbackLocalConnection>(
       [session](std::string message) { (*session)(message); });
 }
 
-void PageTarget::removeExpiredSessions() {
-  // Remove all expired sessions.
-  forEachSession([](auto&) {});
-}
-
 PageTarget::~PageTarget() {
-  removeExpiredSessions();
-
   // Sessions are owned by InspectorPackagerConnection, not by PageTarget, but
   // they hold a PageTarget& that we must guarantee is valid.
   assert(
@@ -108,11 +132,35 @@ PageTarget::~PageTarget() {
 
 PageTargetDelegate::~PageTargetDelegate() {}
 
+InstanceTarget& PageTarget::registerInstance(InstanceTargetDelegate& delegate) {
+  assert(!currentInstance_ && "Only one instance allowed");
+  currentInstance_ = InstanceTarget::create(
+      executionContextManager_, delegate, makeVoidExecutor(executorFromThis()));
+  sessions_.forEach(
+      [currentInstance = &*currentInstance_](PageTargetSession& session) {
+        session.setCurrentInstance(currentInstance);
+      });
+  return *currentInstance_;
+}
+
+void PageTarget::unregisterInstance(InstanceTarget& instance) {
+  assert(
+      currentInstance_ && currentInstance_.get() == &instance &&
+      "Invalid unregistration");
+  sessions_.forEach(
+      [](PageTargetSession& session) { session.setCurrentInstance(nullptr); });
+  currentInstance_.reset();
+}
+
 PageTargetController::PageTargetController(PageTarget& target)
     : target_(target) {}
 
 PageTargetDelegate& PageTargetController::getDelegate() {
   return target_.getDelegate();
+}
+
+bool PageTargetController::hasInstance() const {
+  return target_.hasInstance();
 }
 
 } // namespace facebook::react::jsinspector_modern

@@ -13,11 +13,13 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.view.View;
 import androidx.annotation.UiThread;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.UiThreadUtil;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class DebuggingOverlay extends View {
 
   private final Paint mTraceUpdatePaint = new Paint();

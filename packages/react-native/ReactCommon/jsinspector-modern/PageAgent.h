@@ -8,8 +8,10 @@
 #pragma once
 
 #include "PageTarget.h"
+#include "SessionState.h"
 
 #include <jsinspector-modern/InspectorInterfaces.h>
+#include <jsinspector-modern/InstanceAgent.h>
 #include <jsinspector-modern/Parsing.h>
 
 #include <functional>
@@ -18,6 +20,8 @@
 namespace facebook::react::jsinspector_modern {
 
 class PageTarget;
+class InstanceAgent;
+class InstanceTarget;
 
 /**
  * An Agent that handles requests from the Chrome DevTools Protocol for the
@@ -26,7 +30,7 @@ class PageTarget;
  * same thread, which is also the thread where the associated PageTarget is
  * constructed and managed.
  */
-class PageAgent {
+class PageAgent final {
  public:
   /**
    * \param frontendChannel A channel used to send responses and events to the
@@ -34,11 +38,14 @@ class PageAgent {
    * \param targetController An interface to the PageTarget that this agent is
    * attached to. The caller is responsible for ensuring that the
    * PageTargetDelegate and underlying PageTarget both outlive the agent.
+   * \param sessionMetadata Metadata about the session that created this agent.
+   * \param sessionState The state of the session that created this agent.
    */
   PageAgent(
       FrontendChannel frontendChannel,
       PageTargetController& targetController,
-      PageTarget::SessionMetadata sessionMetadata);
+      PageTarget::SessionMetadata sessionMetadata,
+      SessionState& sessionState);
 
   /**
    * Handle a CDP request. The response will be sent over the provided
@@ -46,6 +53,14 @@ class PageAgent {
    * \param req The parsed request.
    */
   void handleRequest(const cdp::PreparsedRequest& req);
+
+  /**
+   * Replace the current InstanceAgent with the given one and notify the
+   * frontend about the new instance.
+   * \param agent The new InstanceAgent. May be null to signify that there is
+   * currently no active instance.
+   */
+  void setCurrentInstanceAgent(std::shared_ptr<InstanceAgent> agent);
 
  private:
   /**
@@ -62,6 +77,13 @@ class PageAgent {
   FrontendChannel frontendChannel_;
   PageTargetController& targetController_;
   const PageTarget::SessionMetadata sessionMetadata_;
+  std::shared_ptr<InstanceAgent> instanceAgent_;
+
+  /**
+   * A shared reference to the session's state. This is only safe to access
+   * during handleRequest and other method calls on the same thread.
+   */
+  SessionState& sessionState_;
 };
 
 } // namespace facebook::react::jsinspector_modern

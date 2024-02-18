@@ -50,9 +50,9 @@ type Notification = {|
   /** Whether to silence the notification sound. */
   +isSilent?: ?boolean,
   /**
-   * Custom notification sound to play. Write-only: soundName will be null when
-   * accessing already created notifications using getScheduledLocalNotifications
-   * or getDeliveredNotifications.
+   * Custom notification sound. Can only be set when creating notifications.
+   * This will be null for notifications retrieved via
+   * getScheduledLocalNotifications or getDeliveredNotifications.
    */
   +soundName?: ?string,
   /** DEPRECATED. This was used for iOS's legacy UILocalNotification. */

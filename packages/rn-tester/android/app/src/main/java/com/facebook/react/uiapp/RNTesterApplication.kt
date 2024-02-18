@@ -49,6 +49,7 @@ class RNTesterApplication : Application(), ReactApplication {
                   name: String,
                   reactContext: ReactApplicationContext
               ): NativeModule? {
+                @Suppress("DEPRECATION")
                 if (!ReactFeatureFlags.useTurboModules) {
                   return null
                 }
@@ -66,6 +67,7 @@ class RNTesterApplication : Application(), ReactApplication {
               // modules.
               override fun getReactModuleInfoProvider(): ReactModuleInfoProvider =
                   ReactModuleInfoProvider {
+                    @Suppress("DEPRECATION")
                     if (ReactFeatureFlags.useTurboModules) {
                       mapOf(
                           SampleTurboModule.NAME to
@@ -122,7 +124,7 @@ class RNTesterApplication : Application(), ReactApplication {
   }
 
   override val reactHost: ReactHost
-    get() = DefaultReactHost.getDefaultReactHost(this.applicationContext, reactNativeHost)
+    get() = DefaultReactHost.getDefaultReactHost(applicationContext, reactNativeHost)
 
   override fun onCreate() {
     ReactFontManager.getInstance().addCustomFont(this, "Rubik", R.font.rubik)

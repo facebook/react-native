@@ -64,6 +64,12 @@ export interface Spec {
     commandName: string,
     args: Array<mixed>,
   ) => void;
+  +findNodeAtPoint: (
+    node: Node,
+    locationX: number,
+    locationY: number,
+    callback: (instanceHandle: ?InternalInstanceHandle) => void,
+  ) => void;
 
   /**
    * Support methods for the DOM-compatible APIs.

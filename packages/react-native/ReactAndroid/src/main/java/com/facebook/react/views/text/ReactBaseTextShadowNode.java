@@ -21,7 +21,7 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.config.ReactFeatureFlags;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.NativeViewHierarchyOptimizer;
@@ -31,6 +31,22 @@ import com.facebook.react.uimanager.ReactAccessibilityDelegate.Role;
 import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.views.text.internal.ReactTextInlineImageShadowNode;
+import com.facebook.react.views.text.internal.span.CustomLetterSpacingSpan;
+import com.facebook.react.views.text.internal.span.CustomLineHeightSpan;
+import com.facebook.react.views.text.internal.span.CustomStyleSpan;
+import com.facebook.react.views.text.internal.span.ReactAbsoluteSizeSpan;
+import com.facebook.react.views.text.internal.span.ReactBackgroundColorSpan;
+import com.facebook.react.views.text.internal.span.ReactClickableSpan;
+import com.facebook.react.views.text.internal.span.ReactForegroundColorSpan;
+import com.facebook.react.views.text.internal.span.ReactSpan;
+import com.facebook.react.views.text.internal.span.ReactStrikethroughSpan;
+import com.facebook.react.views.text.internal.span.ReactTagSpan;
+import com.facebook.react.views.text.internal.span.ReactUnderlineSpan;
+import com.facebook.react.views.text.internal.span.SetSpanOperation;
+import com.facebook.react.views.text.internal.span.ShadowStyleSpan;
+import com.facebook.react.views.text.internal.span.TextInlineImageSpan;
+import com.facebook.react.views.text.internal.span.TextInlineViewPlaceholderSpan;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaUnit;
 import com.facebook.yoga.YogaValue;
@@ -77,7 +93,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode
       boolean supportsInlineViews,
       @Nullable Map<Integer, ReactShadowNode> inlineViews,
       int start) {
-    if (ReactFeatureFlags.enableSpannableBuildingUnification) {
+    if (ReactNativeFeatureFlags.enableSpannableBuildingUnification()) {
       buildSpannedFromShadowNodeUnified(
           textShadowNode, sb, ops, parentTextAttributes, supportsInlineViews, inlineViews, start);
     } else {
@@ -366,15 +382,16 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode
     // or images.
     for (int priorityIndex = 0; priorityIndex < ops.size(); priorityIndex++) {
       final SetSpanOperation op = ops.get(ops.size() - priorityIndex - 1);
+      final ReactSpan what = op.getWhat();
 
-      boolean isInlineImage = op.what instanceof TextInlineImageSpan;
-      if (isInlineImage || op.what instanceof TextInlineViewPlaceholderSpan) {
+      boolean isInlineImage = what instanceof TextInlineImageSpan;
+      if (isInlineImage || what instanceof TextInlineViewPlaceholderSpan) {
         int height;
         if (isInlineImage) {
-          height = ((TextInlineImageSpan) op.what).getHeight();
+          height = ((TextInlineImageSpan) what).getHeight();
           textShadowNode.mContainsImages = true;
         } else {
-          TextInlineViewPlaceholderSpan placeholder = (TextInlineViewPlaceholderSpan) op.what;
+          TextInlineViewPlaceholderSpan placeholder = (TextInlineViewPlaceholderSpan) what;
           height = placeholder.getHeight();
 
           // Inline views cannot be layout-only because the ReactTextView needs to be able to grab

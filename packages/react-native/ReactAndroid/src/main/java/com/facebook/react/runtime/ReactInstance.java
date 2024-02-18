@@ -20,6 +20,7 @@ import com.facebook.react.ViewManagerOnDemandReactPackage;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.JSBundleLoaderDelegate;
+import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.NativeArray;
 import com.facebook.react.bridge.NativeMap;
@@ -94,6 +95,8 @@ final class ReactInstance {
   private final FabricUIManager mFabricUIManager;
   private final JavaTimerManager mJavaTimerManager;
   private final BridgelessViewManagerResolver mViewManagerResolver;
+
+  private JavaScriptContextHolder mJavaScriptContextHolder;
 
   @DoNotStrip @Nullable private ComponentNameResolverManager mComponentNameResolverManager;
   @DoNotStrip @Nullable private UIConstantsProviderManager mUIConstantsProviderManager;
@@ -170,9 +173,6 @@ final class ReactInstance {
     // Notify JS if profiling is enabled
     boolean isProfiling =
         Systrace.isTracing(Systrace.TRACE_TAG_REACT_APPS | Systrace.TRACE_TAG_REACT_JS_VM_CALLS);
-    // TODO(T166383606): Remove this parameter when we remove the legacy runtime scheduler or we
-    // have access to ReactNativeConfig before we initialize it.
-    boolean useModernRuntimeScheduler = ReactFeatureFlags.useModernRuntimeScheduler;
     mHybridData =
         initHybrid(
             jsRuntimeFactory,
@@ -182,8 +182,9 @@ final class ReactInstance {
             jsTimerExecutor,
             reactExceptionManager,
             bindingsInstaller,
-            isProfiling,
-            useModernRuntimeScheduler);
+            isProfiling);
+
+    mJavaScriptContextHolder = new JavaScriptContextHolder(getJavaScriptContext());
 
     // Set up TurboModules
     Systrace.beginSection(
@@ -434,6 +435,10 @@ final class ReactInstance {
     mFabricUIManager.stopSurface(surface.getSurfaceHandler());
   }
 
+  /* package */ JavaScriptContextHolder getJavaScriptContextHolder() {
+    return mJavaScriptContextHolder;
+  }
+
   /* --- Lifecycle methods --- */
   @ThreadConfined("ReactHost")
   /* package */ void destroy() {
@@ -444,6 +449,7 @@ final class ReactInstance {
     mHybridData.resetNative();
     mComponentNameResolverManager = null;
     mUIConstantsProviderManager = null;
+    mJavaScriptContextHolder.clear();
   }
 
   /* --- Native methods --- */
@@ -457,8 +463,7 @@ final class ReactInstance {
       JSTimerExecutor jsTimerExecutor,
       ReactJsExceptionHandler jReactExceptionsManager,
       @Nullable BindingsInstaller jBindingsInstaller,
-      boolean isProfiling,
-      boolean useModernRuntimeScheduler);
+      boolean isProfiling);
 
   @DoNotStrip
   private static native JSTimerExecutor createJSTimerExecutor();
@@ -476,9 +481,11 @@ final class ReactInstance {
 
   private native RuntimeExecutor getUnbufferedRuntimeExecutor();
 
-  private native RuntimeExecutor getBufferedRuntimeExecutor();
+  /* package */ native RuntimeExecutor getBufferedRuntimeExecutor();
 
   private native RuntimeScheduler getRuntimeScheduler();
+
+  private native long getJavaScriptContext();
 
   /* package */ native void callFunctionOnModule(
       String moduleName, String methodName, NativeArray args);

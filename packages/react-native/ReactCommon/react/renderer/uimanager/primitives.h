@@ -14,7 +14,6 @@
 #include <react/renderer/components/text/RawTextShadowNode.h>
 #include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/core/ShadowNode.h>
-#include <react/renderer/core/TraitCast.h>
 #include <react/renderer/graphics/Rect.h>
 
 namespace facebook::react {
@@ -193,7 +192,7 @@ inline static jsi::Value getArrayOfInstanceHandlesFromShadowNodes(
 inline static void getTextContentInShadowNode(
     const ShadowNode& shadowNode,
     std::string& result) {
-  auto rawTextShadowNode = traitCast<const RawTextShadowNode*>(&shadowNode);
+  auto rawTextShadowNode = dynamic_cast<const RawTextShadowNode*>(&shadowNode);
   if (rawTextShadowNode != nullptr) {
     result.append(rawTextShadowNode->getConcreteProps().text);
   }

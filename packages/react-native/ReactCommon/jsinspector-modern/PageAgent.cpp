@@ -7,6 +7,7 @@
 
 #include <folly/dynamic.h>
 #include <folly/json.h>
+#include <jsinspector-modern/InstanceAgent.h>
 #include <jsinspector-modern/PageAgent.h>
 #include <jsinspector-modern/PageTarget.h>
 
@@ -31,16 +32,22 @@ static constexpr auto kModernCDPBackendNotice =
 PageAgent::PageAgent(
     FrontendChannel frontendChannel,
     PageTargetController& targetController,
-    PageTarget::SessionMetadata sessionMetadata)
+    PageTarget::SessionMetadata sessionMetadata,
+    SessionState& sessionState)
     : frontendChannel_(frontendChannel),
       targetController_(targetController),
-      sessionMetadata_(std::move(sessionMetadata)) {}
+      sessionMetadata_(std::move(sessionMetadata)),
+      sessionState_(sessionState) {}
 
 void PageAgent::handleRequest(const cdp::PreparsedRequest& req) {
+  bool shouldSendOKResponse = false;
+  bool isFinishedHandlingRequest = false;
+
+  // Domain enable/disable requests: write to state (because we're the top-level
+  // Agent in the Session), trigger any side effects, and decide whether we are
+  // finished handling the request (or need to delegate to the InstanceAgent).
   if (req.method == "Log.enable") {
-    // Send an "OK" response.
-    frontendChannel_(
-        folly::toJson(folly::dynamic::object("id", req.id)("result", nullptr)));
+    sessionState_.isLogDomainEnabled = true;
 
     // Send a log entry identifying the modern CDP backend.
     sendInfoLogEntry(kModernCDPBackendNotice);
@@ -50,10 +57,27 @@ void PageAgent::handleRequest(const cdp::PreparsedRequest& req) {
       sendInfoLogEntry("Integration: " + *sessionMetadata_.integrationName);
     }
 
-    return;
-  }
+    shouldSendOKResponse = true;
+    isFinishedHandlingRequest = false;
+  } else if (req.method == "Log.disable") {
+    sessionState_.isLogDomainEnabled = false;
 
-  if (req.method == "Page.reload") {
+    shouldSendOKResponse = true;
+    isFinishedHandlingRequest = false;
+  } else if (req.method == "Runtime.enable") {
+    sessionState_.isRuntimeDomainEnabled = true;
+
+    shouldSendOKResponse = true;
+    isFinishedHandlingRequest = false;
+  } else if (req.method == "Runtime.disable") {
+    sessionState_.isRuntimeDomainEnabled = false;
+
+    shouldSendOKResponse = true;
+    isFinishedHandlingRequest = false;
+  }
+  // Methods other than domain enables/disables: handle anything we know how
+  // to handle, and delegate to the InstanceAgent otherwise.
+  else if (req.method == "Page.reload") {
     targetController_.getDelegate().onReload({
         .ignoreCache = req.params.isObject() && req.params.count("ignoreCache")
             ? std::optional(req.params.at("ignoreCache").asBool())
@@ -63,6 +87,17 @@ void PageAgent::handleRequest(const cdp::PreparsedRequest& req) {
             ? std::optional(req.params.at("scriptToEvaluateOnLoad").asString())
             : std::nullopt,
     });
+
+    shouldSendOKResponse = true;
+    isFinishedHandlingRequest = true;
+  }
+
+  if (!isFinishedHandlingRequest && instanceAgent_ &&
+      instanceAgent_->handleRequest(req)) {
+    return;
+  }
+
+  if (shouldSendOKResponse) {
     folly::dynamic res = folly::dynamic::object("id", req.id)(
         "result", folly::dynamic::object());
     std::string json = folly::toJson(res);
@@ -90,6 +125,29 @@ void PageAgent::sendInfoLogEntry(std::string_view text) {
                       system_clock::now().time_since_epoch())
                       .count())("source", "other")(
                   "level", "info")("text", text)))));
+}
+
+void PageAgent::setCurrentInstanceAgent(
+    std::shared_ptr<InstanceAgent> instanceAgent) {
+  auto previousInstanceAgent = std::move(instanceAgent_);
+  instanceAgent_ = std::move(instanceAgent);
+  if (!sessionState_.isRuntimeDomainEnabled) {
+    return;
+  }
+  if (previousInstanceAgent != nullptr) {
+    // TODO: Send Runtime.executionContextDestroyed here - at the moment we
+    // expect the runtime to do it for us.
+
+    // Because we can only have a single instance, we can report all contexts
+    // as cleared.
+    folly::dynamic contextsCleared =
+        folly::dynamic::object("method", "Runtime.executionContextsCleared");
+    frontendChannel_(folly::toJson(contextsCleared));
+  }
+  if (instanceAgent_) {
+    // TODO: Send Runtime.executionContextCreated here - at the moment we expect
+    // the runtime to do it for us.
+  }
 }
 
 } // namespace facebook::react::jsinspector_modern

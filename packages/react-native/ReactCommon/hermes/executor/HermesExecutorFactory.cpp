@@ -15,6 +15,7 @@
 #include <jsi/decorator.h>
 #include <jsinspector-modern/InspectorFlags.h>
 
+#include <hermes/inspector-modern/chrome/HermesRuntimeAgentDelegate.h>
 #include <hermes/inspector-modern/chrome/Registration.h>
 #include <hermes/inspector/RuntimeAdapter.h>
 
@@ -230,7 +231,12 @@ std::unique_ptr<JSExecutor> HermesExecutorFactory::createJSExecutor(
   errorPrototype.setProperty(*decoratedRuntime, "jsEngine", "hermes");
 
   return std::make_unique<HermesExecutor>(
-      decoratedRuntime, delegate, jsQueue, timeoutInvoker_, runtimeInstaller_);
+      decoratedRuntime,
+      delegate,
+      jsQueue,
+      timeoutInvoker_,
+      runtimeInstaller_,
+      hermesRuntimeRef);
 }
 
 ::hermes::vm::RuntimeConfig HermesExecutorFactory::defaultRuntimeConfig() {
@@ -244,7 +250,40 @@ HermesExecutor::HermesExecutor(
     std::shared_ptr<ExecutorDelegate> delegate,
     std::shared_ptr<MessageQueueThread> jsQueue,
     const JSIScopedTimeoutInvoker& timeoutInvoker,
-    RuntimeInstaller runtimeInstaller)
-    : JSIExecutor(runtime, delegate, timeoutInvoker, runtimeInstaller) {}
+    RuntimeInstaller runtimeInstaller,
+    HermesRuntime& hermesRuntime)
+    : JSIExecutor(runtime, delegate, timeoutInvoker, runtimeInstaller),
+      jsQueue_(jsQueue),
+      runtime_(runtime),
+      hermesRuntime_(hermesRuntime) {}
+
+std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate>
+HermesExecutor::createAgentDelegate(
+    jsinspector_modern::FrontendChannel frontendChannel,
+    jsinspector_modern::SessionState& sessionState,
+    const jsinspector_modern::ExecutionContextDescription&
+        executionContextDescription) {
+  std::shared_ptr<HermesRuntime> hermesRuntimeShared(runtime_, &hermesRuntime_);
+  return std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate>(
+      new jsinspector_modern::HermesRuntimeAgentDelegate(
+          frontendChannel,
+          sessionState,
+          executionContextDescription,
+          hermesRuntimeShared,
+          [jsQueueWeak = std::weak_ptr(jsQueue_),
+           runtimeWeak = std::weak_ptr(runtime_)](auto fn) {
+            auto jsQueue = jsQueueWeak.lock();
+            if (!jsQueue) {
+              return;
+            }
+            jsQueue->runOnQueue([runtimeWeak, fn]() {
+              auto runtime = runtimeWeak.lock();
+              if (!runtime) {
+                return;
+              }
+              fn(*runtime);
+            });
+          }));
+}
 
 } // namespace facebook::react
