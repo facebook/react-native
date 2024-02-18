@@ -594,6 +594,8 @@ using namespace facebook::react;
   UITextRange *selectedRange = _backedTextInputView.selectedTextRange;
   NSInteger oldTextLength = _backedTextInputView.attributedText.string.length;
   _backedTextInputView.attributedText = attributedString;
+  // Updating the UITextView attributedText causes the cursor to move to the end.
+  // Moving the cursor to the end of the text triggers a scroll to the bottom (PR 38679).
   if (selectedRange.empty) {
     // Maintaining a cursor position relative to the end of the old text.
     NSInteger offsetStart = [_backedTextInputView offsetFromPosition:_backedTextInputView.beginningOfDocument
@@ -602,8 +604,10 @@ using namespace facebook::react;
     NSInteger newOffset = attributedString.string.length - offsetFromEnd;
     UITextPosition *position = [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument
                                                                    offset:newOffset];
+    // Restoring the previous cursor position.
     [_backedTextInputView setSelectedTextRange:[_backedTextInputView textRangeFromPosition:position toPosition:position]
                                 notifyDelegate:YES];
+    // Scrolling to the previous cursor position.
     [_backedTextInputView scrollToSelectedRange];
   }
   [self _restoreTextSelection];
