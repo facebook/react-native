@@ -370,6 +370,7 @@ class ReactNativePodsUtils
             .map{ |t| t.user_project }
             .uniq{ |p| p.path }
             .push(installer.pods_project)
+            .compact
     end
 
     def self.safe_init(config, setting_name)
