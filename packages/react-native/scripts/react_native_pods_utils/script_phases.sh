@@ -103,8 +103,17 @@ generateArtifacts () {
 moveOutputs () {
     mkdir -p "$RCT_SCRIPT_OUTPUT_DIR"
 
+    # Test if 'cp' supports the '-X' flag (GNU's cp doesn't, but macOS's cp does)
+    touch /tmp/test-cp-X-flag-one /tmp/test-cp-X-flag-two
+    if cp -X /tmp/test-cp-X-flag-one /tmp/test-cp-X-flag-two > /dev/null 2>&1; then
+        CP_FLAGS="-R -X"
+    else
+        CP_FLAGS="-R"
+    fi
+    rm /tmp/test-cp-X-flag-one /tmp/test-cp-X-flag-two
+
     # Copy all output to output_dir
-    cp -R -X "$TEMP_OUTPUT_DIR/." "$RCT_SCRIPT_OUTPUT_DIR" || exit 1
+    cp $CP_FLAGS "$TEMP_OUTPUT_DIR/." "$RCT_SCRIPT_OUTPUT_DIR" || exit 1
     echo "$LIBRARY_NAME output has been written to $RCT_SCRIPT_OUTPUT_DIR:" >> "${SCRIPT_OUTPUT_FILE_0}" 2>&1
     ls -1 "$RCT_SCRIPT_OUTPUT_DIR" >> "${SCRIPT_OUTPUT_FILE_0}" 2>&1
 }
