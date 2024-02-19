@@ -95,11 +95,6 @@ class AttributedString : public Sealable, public DebugStringConvertible {
    */
   bool isEmpty() const;
 
-  /**
-   * Compares equality of TextAttributes of all Fragments on both sides.
-   */
-  bool compareTextAttributesWithoutFrame(const AttributedString& rhs) const;
-
   bool isContentEqual(const AttributedString& rhs) const;
 
   bool operator==(const AttributedString& rhs) const;

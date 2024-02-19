@@ -107,7 +107,7 @@ AttributedString AndroidTextInputShadowNode::getMostRecentAttributedString()
   // the parent which has changed Thus, we can't directly compare the entire
   // AttributedString
   bool treeAttributedStringChanged =
-      !state.reactTreeAttributedString.compareTextAttributesWithoutFrame(
+      !state.reactTreeAttributedString.isContentEqual(
           reactTreeAttributedString);
 
   return (
