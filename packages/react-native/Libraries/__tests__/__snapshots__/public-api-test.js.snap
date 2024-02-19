@@ -3239,7 +3239,7 @@ declare module.exports: PooledClass;
 
 exports[`public API should not change unintentionally Libraries/Components/Touchable/Position.js 1`] = `"UNTYPED MODULE"`;
 
-exports[`public API should not change unintentionally Libraries/Components/Touchable/Touchable.flow.js 1`] = `
+exports[`public API should not change unintentionally Libraries/Components/Touchable/Touchable.js 1`] = `
 "declare const States: {
   NOT_RESPONDER: \\"NOT_RESPONDER\\",
   RESPONDER_INACTIVE_PRESS_IN: \\"RESPONDER_INACTIVE_PRESS_IN\\",
@@ -3259,40 +3259,81 @@ type State =
   | typeof States.RESPONDER_ACTIVE_LONG_PRESS_IN
   | typeof States.RESPONDER_ACTIVE_LONG_PRESS_OUT
   | typeof States.ERROR;
-interface TouchableMixinType {
-  touchableHandleFocus: (e: Event) => void;
-  touchableHandleBlur: (e: Event) => void;
-  componentDidMount: () => void;
-  componentWillUnmount: () => void;
+declare const Signals: {
+  DELAY: \\"DELAY\\",
+  RESPONDER_GRANT: \\"RESPONDER_GRANT\\",
+  RESPONDER_RELEASE: \\"RESPONDER_RELEASE\\",
+  RESPONDER_TERMINATED: \\"RESPONDER_TERMINATED\\",
+  ENTER_PRESS_RECT: \\"ENTER_PRESS_RECT\\",
+  LEAVE_PRESS_RECT: \\"LEAVE_PRESS_RECT\\",
+  LONG_PRESS_DETECTED: \\"LONG_PRESS_DETECTED\\",
+};
+type Signal =
+  | typeof Signals.DELAY
+  | typeof Signals.RESPONDER_GRANT
+  | typeof Signals.RESPONDER_RELEASE
+  | typeof Signals.RESPONDER_TERMINATED
+  | typeof Signals.ENTER_PRESS_RECT
+  | typeof Signals.LEAVE_PRESS_RECT
+  | typeof Signals.LONG_PRESS_DETECTED;
+declare const TouchableMixin: {
+  componentDidMount: () => void,
+  componentWillUnmount: () => void,
   touchableGetInitialState: () => {
     touchable: {
       touchState: ?State,
       responderID: ?PressEvent[\\"currentTarget\\"],
     },
-  };
-  touchableHandleResponderTerminationRequest: () => any;
-  touchableHandleStartShouldSetResponder: () => any;
-  touchableLongPressCancelsPress: () => boolean;
-  touchableHandleResponderGrant: (e: PressEvent) => void;
-  touchableHandleResponderRelease: (e: PressEvent) => void;
-  touchableHandleResponderTerminate: (e: PressEvent) => void;
-  touchableHandleResponderMove: (e: PressEvent) => void;
-  withoutDefaultFocusAndBlur: { ... };
-}
-export type TouchableType = {
-  Mixin: TouchableMixinType,
+  },
+  touchableHandleResponderTerminationRequest: () => any,
+  touchableHandleStartShouldSetResponder: () => any,
+  touchableLongPressCancelsPress: () => boolean,
+  touchableHandleResponderGrant: (e: PressEvent) => void,
+  touchableHandleResponderRelease: (e: PressEvent) => void,
+  touchableHandleResponderTerminate: (e: PressEvent) => void,
+  touchableHandleResponderMove: (e: PressEvent) => void,
+  touchableHandleFocus: (e: Event) => void,
+  touchableHandleBlur: (e: Event) => void,
+  _remeasureMetricsOnActivation: () => void,
+  _handleQueryLayout: (
+    l: number,
+    t: number,
+    w: number,
+    h: number,
+    globalX: number,
+    globalY: number
+  ) => void,
+  _handleDelay: (e: PressEvent) => void,
+  _handleLongDelay: (e: PressEvent) => void,
+  _receiveSignal: (signal: Signal, e: PressEvent) => void,
+  _cancelLongPressDelayTimeout: () => void,
+  _isHighlight: (state: State) => boolean,
+  _savePressInLocation: (e: PressEvent) => void,
+  _getDistanceBetweenPoints: (
+    aX: number,
+    aY: number,
+    bX: number,
+    bY: number
+  ) => number,
+  _performSideEffectsForTransition: (
+    curState: State,
+    nextState: State,
+    signal: Signal,
+    e: PressEvent
+  ) => void,
+  _startHighlight: (e: PressEvent) => void,
+  _endHighlight: (e: PressEvent) => void,
+  withoutDefaultFocusAndBlur: { ... },
+};
+declare const Touchable: {
+  Mixin: TouchableMixin,
   renderDebugView: ({
     color: ColorValue,
     hitSlop: EdgeInsetsProp,
     ...
   }) => null | React.Node,
 };
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/Components/Touchable/Touchable.js 1`] = `
-"declare const Touchable: TouchableType;
-declare module.exports: Touchable;
+declare export default typeof Touchable;
 "
 `;
 
