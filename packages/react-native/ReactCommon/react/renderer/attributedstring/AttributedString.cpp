@@ -53,10 +53,13 @@ bool Fragment::operator!=(const Fragment& rhs) const {
 
 #pragma mark - AttributedString
 
-void AttributedString::appendFragment(const Fragment& fragment) {
+AttributedString::FragmentHandle AttributedString::appendFragment(
+    const Fragment& fragment) {
   ensureUnsealed();
 
   fragments_.push_back(fragment);
+
+  return AttributedString::FragmentHandle{fragments_.size() - 1};
 }
 
 void AttributedString::prependFragment(const Fragment& fragment) {
@@ -93,6 +96,16 @@ const Fragments& AttributedString::getFragments() const {
 
 Fragments& AttributedString::getFragments() {
   return fragments_;
+}
+
+Fragment& AttributedString::getFragment(
+    AttributedString::FragmentHandle handle) {
+  return fragments_[handle.fragmentIndex];
+}
+
+const Fragment& AttributedString::getFragment(
+    AttributedString::FragmentHandle handle) const {
+  return fragments_[handle.fragmentIndex];
 }
 
 std::string AttributedString::getString() const {

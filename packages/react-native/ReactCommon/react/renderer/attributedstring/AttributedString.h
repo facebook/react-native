@@ -54,6 +54,15 @@ class AttributedString : public Sealable, public DebugStringConvertible {
     bool operator!=(const Fragment& rhs) const;
   };
 
+  class FragmentHandle {
+    friend class AttributedString;
+
+    inline FragmentHandle(size_t fragmentIndex)
+        : fragmentIndex(fragmentIndex) {}
+
+    size_t fragmentIndex;
+  };
+
   class Range {
    public:
     int location{0};
@@ -63,9 +72,9 @@ class AttributedString : public Sealable, public DebugStringConvertible {
   using Fragments = std::vector<Fragment>;
 
   /*
-   * Appends a `fragment` to the string.
+   * Appends a `fragment` to the string. Returns a handle to the added fragment.
    */
-  void appendFragment(const Fragment& fragment);
+  AttributedString::FragmentHandle appendFragment(const Fragment& fragment);
 
   /*
    * Prepends a `fragment` to the string (if that fragment is not empty).
@@ -88,6 +97,9 @@ class AttributedString : public Sealable, public DebugStringConvertible {
    * Returns a reference to a list of fragments.
    */
   Fragments& getFragments();
+
+  Fragment& getFragment(FragmentHandle handle);
+  const Fragment& getFragment(FragmentHandle handle) const;
 
   /*
    * Returns a string constructed from all strings in all fragments.

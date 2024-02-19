@@ -72,9 +72,9 @@ void BaseTextShadowNode::buildAttributedString(
     fragment.string = AttributedString::Fragment::AttachmentCharacter();
     fragment.parentShadowView = shadowViewFromShadowNode(*childNode);
     fragment.textAttributes = baseTextAttributes;
-    outAttributedString.appendFragment(fragment);
-    outAttachments.push_back(Attachment{
-        childNode.get(), outAttributedString.getFragments().size() - 1});
+
+    auto fragmentHandle = outAttributedString.appendFragment(fragment);
+    outAttachments.push_back(Attachment{childNode.get(), fragmentHandle});
   }
 }
 
