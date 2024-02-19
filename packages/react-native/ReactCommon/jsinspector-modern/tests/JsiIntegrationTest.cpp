@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <folly/Format.h>
 #include <folly/dynamic.h>
 #include <folly/executors/QueuedImmediateExecutor.h>
 #include <folly/json.h>
@@ -23,6 +24,7 @@
 #include "engines/JsiIntegrationTestHermesEngineAdapter.h"
 
 using namespace ::testing;
+using folly::sformat;
 
 namespace facebook::react::jsinspector_modern {
 
@@ -468,6 +470,64 @@ TEST_F(JsiIntegrationHermesTest, EvaluateExpression) {
                            "method": "Runtime.evaluate",
                            "params": {"expression": "42"}
                          })");
+}
+
+TEST_F(JsiIntegrationHermesTest, EvaluateExpressionInExecutionContext) {
+  connect();
+
+  InSequence s;
+
+  auto executionContextInfo = this->expectMessageFromPage(JsonParsed(
+      AllOf(AtJsonPtr("/method", "Runtime.executionContextCreated"))));
+  this->expectMessageFromPage(JsonEq(R"({
+                                         "id": 1,
+                                         "result": {}
+                                       })"));
+  this->toPage_->sendMessage(R"({
+                                 "id": 1,
+                                 "method": "Runtime.enable"
+                               })");
+  auto executionContextId =
+      executionContextInfo->value()["params"]["context"]["id"].getInt();
+
+  expectMessageFromPage(JsonEq(R"({
+                                   "id": 1,
+                                   "result": {
+                                     "result": {
+                                       "type": "number",
+                                       "value": 42
+                                     }
+                                   }
+                                 })"));
+  toPage_->sendMessage(sformat(
+      R"({{
+        "id": 1,
+        "method": "Runtime.evaluate",
+        "params": {{"expression": "42", "contextId": {0}}}
+      }})",
+      std::to_string(executionContextId)));
+
+  // Silence notifications about execution contexts.
+  this->expectMessageFromPage(JsonEq(R"({
+                                         "id": 2,
+                                         "result": {}
+                                       })"));
+  this->toPage_->sendMessage(R"({
+                                 "id": 2,
+                                 "method": "Runtime.disable"
+                               })");
+  this->reload();
+
+  // Now the old execution context is stale.
+  this->expectMessageFromPage(
+      JsonParsed(AllOf(AtJsonPtr("/id", 3), AtJsonPtr("/error/code", -32000))));
+  toPage_->sendMessage(sformat(
+      R"({{
+        "id": 3,
+        "method": "Runtime.evaluate",
+        "params": {{"expression": "10000", "contextId": {0}}}
+      }})",
+      std::to_string(executionContextId)));
 }
 
 } // namespace facebook::react::jsinspector_modern
