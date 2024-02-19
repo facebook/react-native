@@ -38,4 +38,5 @@ target_link_libraries(
         react_utils
         jsinspector
         react_featureflags
+        react_utils
 )

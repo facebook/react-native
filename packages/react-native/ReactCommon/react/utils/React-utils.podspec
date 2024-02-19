@@ -49,7 +49,14 @@ Pod::Spec.new do |s|
   end
 
   s.dependency "RCT-Folly", folly_version
+  s.dependency "React-jsi", version
   s.dependency "glog"
+
+  if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
+    s.dependency "hermes-engine"
+  else
+    s.dependency "React-jsc"
+  end
 
   add_dependency(s, "React-debug")
 end

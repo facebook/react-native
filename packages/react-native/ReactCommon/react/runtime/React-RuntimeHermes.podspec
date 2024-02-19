@@ -47,8 +47,8 @@ Pod::Spec.new do |s|
   s.dependency folly_dep_name, folly_version
   s.dependency "React-nativeconfig"
   s.dependency "React-jsitracing"
-  s.dependency "React-utils"
   s.dependency "React-jsi"
+  s.dependency "React-utils"
   s.dependency "React-RuntimeCore"
   s.dependency "React-featureflags"
   add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
