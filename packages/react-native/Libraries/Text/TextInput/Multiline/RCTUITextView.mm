@@ -163,9 +163,9 @@ static UIColor *defaultPlaceholderColor(void)
   [super setSelectedTextRange:selectedTextRange];
 }
 
-- (void)scrollToSelectedRange
+- (void)scrollRangeToVisible:(NSRange)range
 {
-  [super scrollRangeToVisible:self.selectedRange];
+  [super scrollRangeToVisible:range];
 }
 
 - (void)paste:(id)sender

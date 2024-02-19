@@ -608,7 +608,7 @@ using namespace facebook::react;
     [_backedTextInputView setSelectedTextRange:[_backedTextInputView textRangeFromPosition:position toPosition:position]
                                 notifyDelegate:YES];
     // Scrolling to the previous cursor position.
-    [_backedTextInputView scrollToSelectedRange];
+    [_backedTextInputView scrollRangeToVisible:NSMakeRange(offsetStart, 0)];
   }
   [self _restoreTextSelection];
   _lastStringStateWasUpdatedWith = attributedString;
