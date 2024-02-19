@@ -10,6 +10,7 @@
  */
 
 const {PUBLISH_PACKAGES_TAG} = require('../monorepo/constants');
+// $FlowExpectedError[untyped-import]
 const {publishPackage} = require('../npm-utils');
 const {getPackages} = require('../releases/utils/monorepo');
 const {parseArgs} = require('@pkgjs/parseargs');
@@ -28,7 +29,7 @@ async function main() {
     values: {help},
   } = parseArgs(config);
 
-  if (help) {
+  if (help != null) {
     console.log(`
   Usage: node ./scripts/releases/publish-updated-packages.js
 
@@ -95,7 +96,7 @@ async function publishUpdatedPackages() {
   console.log('Done ✅');
   console.log('Publishing updated packages to npm');
 
-  const tags = getTagsFromCommitMessage(commitMessage);
+  const tags /*: Array<string> */ = [];
   const failedPackages = [];
 
   for (const packageName of packagesToUpdate) {
@@ -130,7 +131,7 @@ function runPublish(
   tags /*: Array<string> */,
 ) {
   const result = publishPackage(packagePath, {
-    tags,
+    tag: null,
     otp: NPM_CONFIG_OTP,
   });
 
