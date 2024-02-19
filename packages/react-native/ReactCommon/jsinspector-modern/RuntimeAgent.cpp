@@ -20,19 +20,52 @@ RuntimeAgent::RuntimeAgent(
       sessionState_(sessionState),
       delegate_(std::move(delegate)),
       executionContextDescription_(executionContextDescription) {
-  for (auto& name : sessionState_.subscribedBindingNames) {
-    targetController_.installBindingHandler(name);
+  for (auto& [name, contextSelectors] : sessionState_.subscribedBindings) {
+    if (matchesAny(executionContextDescription_, contextSelectors)) {
+      targetController_.installBindingHandler(name);
+    }
   }
 }
 
 bool RuntimeAgent::handleRequest(const cdp::PreparsedRequest& req) {
   if (req.method == "Runtime.addBinding") {
     std::string bindingName = req.params["name"].getString();
-    // TODO: Respect @cdp Runtime.addBinding's executionContextId and
-    // executionContextName params.
-    sessionState_.subscribedBindingNames.emplace(bindingName);
 
-    targetController_.installBindingHandler(bindingName);
+    ExecutionContextSelector contextSelector = ExecutionContextSelector::all();
+
+    // TODO: Eventually, move execution context targeting out of RuntimeAgent.
+    // Right now, there's only ever one context (Runtime) in a Page, so we can
+    // handle it here for simplicity, and use session state to propagate
+    // bindings to the next RuntimeAgent.
+    if (req.params.count("executionContextId")) {
+      auto executionContextId = req.params["executionContextId"].getInt();
+      if (executionContextId < (int64_t)std::numeric_limits<int32_t>::min() ||
+          executionContextId > (int64_t)std::numeric_limits<int32_t>::max()) {
+        frontendChannel_(folly::toJson(folly::dynamic::object("id", req.id)(
+            "error",
+            folly::dynamic::object("code", -32602)(
+                "message", "Invalid execution context id"))));
+        return true;
+      }
+      contextSelector =
+          ExecutionContextSelector::byId((int32_t)executionContextId);
+
+      if (req.params.count("executionContextName")) {
+        frontendChannel_(folly::toJson(folly::dynamic::object("id", req.id)(
+            "error",
+            folly::dynamic::object("code", -32602)(
+                "message",
+                "executionContextName is mutually exclusive with executionContextId"))));
+        return true;
+      }
+    } else if (req.params.count("executionContextName")) {
+      contextSelector = ExecutionContextSelector::byName(
+          req.params["executionContextName"].getString());
+    }
+    if (contextSelector.matches(executionContextDescription_)) {
+      targetController_.installBindingHandler(bindingName);
+    }
+    sessionState_.subscribedBindings[bindingName].insert(contextSelector);
 
     folly::dynamic res = folly::dynamic::object("id", req.id)(
         "result", folly::dynamic::object());
@@ -42,7 +75,12 @@ bool RuntimeAgent::handleRequest(const cdp::PreparsedRequest& req) {
     return true;
   }
   if (req.method == "Runtime.removeBinding") {
-    sessionState_.subscribedBindingNames.erase(req.params["name"].getString());
+    // @cdp Runtime.removeBinding has no targeting by execution context. We
+    // interpret it to mean "unsubscribe, and stop installing the binding on
+    // all new contexts". This diverges slightly from V8, which continues
+    // to install the binding on new contexts after it's "removed", but *only*
+    // if the subscription is targeted by context name.
+    sessionState_.subscribedBindings.erase(req.params["name"].getString());
 
     folly::dynamic res = folly::dynamic::object("id", req.id)(
         "result", folly::dynamic::object());
@@ -60,7 +98,17 @@ bool RuntimeAgent::handleRequest(const cdp::PreparsedRequest& req) {
 void RuntimeAgent::notifyBindingCalled(
     const std::string& bindingName,
     const std::string& payload) {
-  if (!sessionState_.subscribedBindingNames.count(bindingName)) {
+  // NOTE: When dispatching @cdp Runtime.bindingCalled notifications, we don't
+  // re-check whether the session is expecting notifications from the current
+  // context - only that it's subscribed to that binding name.
+  // Theoretically, this can result in over-sending notifications from contexts
+  // that the client no longer cares about, or never cared about to begin with
+  // (e.g. if the binding handler was installed by a previous session).
+  //
+  // React Native intentionally replicates this behavior for the sake of
+  // bug-for-bug compatibility with Chrome, but clients should probably not rely
+  // on it.
+  if (!sessionState_.subscribedBindings.count(bindingName)) {
     return;
   }
 
