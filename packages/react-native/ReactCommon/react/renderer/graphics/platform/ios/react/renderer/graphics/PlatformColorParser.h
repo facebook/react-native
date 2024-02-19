@@ -8,7 +8,7 @@
 #pragma once
 
 #include <react/debug/react_native_expect.h>
-#include <react/renderer/core/rawValue.h>
+#include <react/renderer/core/RawValue.h>
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/graphics/fromRawValueShared.h>
 #include <react/utils/ContextContainer.h>
