@@ -157,7 +157,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     if ((currentHeight != oldHeight || currentWidth != oldWidth)) {
       ReadableArray transformOrigin = (ReadableArray) v.getTag(R.id.transform_origin);
       ReadableArray transformMatrix = (ReadableArray) v.getTag(R.id.transform);
-      if (transformMatrix != null && transformOrigin != null) {
+      if (transformMatrix != null || transformOrigin != null) {
         setTransformProperty((T) v, transformMatrix, transformOrigin);
       }
     }
@@ -177,6 +177,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   public void setTransform(@NonNull T view, @Nullable ReadableArray matrix) {
     view.setTag(R.id.transform, matrix);
     view.setTag(R.id.invalidate_transform, true);
+    view.addOnLayoutChangeListener(this);
   }
 
   @Override
@@ -184,11 +185,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   public void setTransformOrigin(@NonNull T view, @Nullable ReadableArray transformOrigin) {
     view.setTag(R.id.transform_origin, transformOrigin);
     view.setTag(R.id.invalidate_transform, true);
-    if (transformOrigin != null) {
-      view.addOnLayoutChangeListener(this);
-    } else {
-      view.removeOnLayoutChangeListener(this);
-    }
+    view.addOnLayoutChangeListener(this);
   }
 
   @Override

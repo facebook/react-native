@@ -108,9 +108,30 @@ public class TransformHelper {
           double z = value.size() > 2 ? value.getDouble(2) : 0d;
           MatrixMathHelper.applyTranslate3D(helperMatrix, x, y, z);
         } else if ("translateX".equals(transformType)) {
-          MatrixMathHelper.applyTranslate2D(helperMatrix, transform.getDouble(transformType), 0d);
+          double translateValue = 0;
+          if (transform.getType(transformType) == ReadableType.String) {
+            String stringValue = transform.getString(transformType);
+            if (stringValue.endsWith("%")) {
+              double percentageValue = Double.parseDouble(stringValue.substring(0, stringValue.length() - 1));
+              translateValue = viewWidth * percentageValue / 100.0;
+            }
+          } else {
+            translateValue = transform.getDouble(transformType);
+          }
+          MatrixMathHelper.applyTranslate2D(helperMatrix, translateValue, 0d);
         } else if ("translateY".equals(transformType)) {
-          MatrixMathHelper.applyTranslate2D(helperMatrix, 0d, transform.getDouble(transformType));
+          double translateValue = 0;
+          if (transform.getType(transformType) == ReadableType.String) {
+            String stringValue = transform.getString(transformType);
+            if (stringValue.endsWith("%")) {
+              stringValue = stringValue.substring(0, stringValue.length() - 1);
+              double percentageValue = Double.parseDouble(stringValue.substring(0, stringValue.length() - 1));
+              translateValue = viewHeight * percentageValue / 100.0;
+            }
+          } else {
+            translateValue = transform.getDouble(transformType);
+          }
+          MatrixMathHelper.applyTranslate2D(helperMatrix, 0d, translateValue);
         } else if ("skewX".equals(transformType)) {
           MatrixMathHelper.applySkewX(helperMatrix, convertToRadians(transform, transformType));
         } else if ("skewY".equals(transformType)) {
