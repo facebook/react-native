@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include "SessionState.h"
+
 #include <jsinspector-modern/RuntimeTarget.h>
 
 using namespace facebook::jsi;
@@ -33,13 +35,18 @@ RuntimeTarget::RuntimeTarget(
 std::shared_ptr<RuntimeAgent> RuntimeTarget::createAgent(
     FrontendChannel channel,
     SessionState& sessionState) {
+  auto runtimeAgentState =
+      std::move(sessionState.lastRuntimeAgentExportedState);
   auto runtimeAgent = std::make_shared<RuntimeAgent>(
       channel,
       controller_,
       executionContextDescription_,
       sessionState,
       delegate_.createAgentDelegate(
-          channel, sessionState, executionContextDescription_));
+          channel,
+          sessionState,
+          std::move(runtimeAgentState.delegateState),
+          executionContextDescription_));
   agents_.insert(runtimeAgent);
   return runtimeAgent;
 }

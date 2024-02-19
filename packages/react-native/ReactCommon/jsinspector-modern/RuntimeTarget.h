@@ -13,7 +13,6 @@
 #include "InspectorInterfaces.h"
 #include "RuntimeAgent.h"
 #include "ScopedExecutor.h"
-#include "SessionState.h"
 #include "WeakList.h"
 
 #include <memory>
@@ -35,6 +34,7 @@ namespace facebook::react::jsinspector_modern {
 class RuntimeAgent;
 class RuntimeAgentDelegate;
 class RuntimeTarget;
+struct SessionState;
 
 /**
  * Receives events from a RuntimeTarget. This is a shared interface that
@@ -47,6 +47,8 @@ class RuntimeTargetDelegate {
   virtual std::unique_ptr<RuntimeAgentDelegate> createAgentDelegate(
       FrontendChannel channel,
       SessionState& sessionState,
+      std::unique_ptr<RuntimeAgentDelegate::ExportedState>
+          previouslyExportedState,
       const ExecutionContextDescription& executionContextDescription) = 0;
 };
 

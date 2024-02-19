@@ -6,6 +6,7 @@
  */
 
 #include "RuntimeAgent.h"
+#include "SessionState.h"
 
 namespace facebook::react::jsinspector_modern {
 
@@ -118,6 +119,20 @@ void RuntimeAgent::notifyBindingCalled(
           folly::dynamic::object(
               "executionContextId", executionContextDescription_.id)(
               "name", bindingName)("payload", payload))));
+}
+
+RuntimeAgent::ExportedState RuntimeAgent::getExportedState() {
+  return {
+      .delegateState = delegate_ ? delegate_->getExportedState() : nullptr,
+  };
+}
+
+RuntimeAgent::~RuntimeAgent() {
+  // TODO: Eventually, there may be more than one Runtime per Page, and we'll
+  // need to store multiple agent states here accordingly. For now let's do
+  // the simple thing and assume (as we do elsewhere) that only one Runtime
+  // per Page can exist at a time.
+  sessionState_.lastRuntimeAgentExportedState = getExportedState();
 }
 
 } // namespace facebook::react::jsinspector_modern

@@ -23,11 +23,14 @@ std::unique_ptr<RuntimeAgentDelegate>
 JsiIntegrationTestHermesEngineAdapter::createAgentDelegate(
     FrontendChannel frontendChannel,
     SessionState& sessionState,
+    std::unique_ptr<RuntimeAgentDelegate::ExportedState>
+        previouslyExportedState,
     const ExecutionContextDescription& executionContextDescription) {
   return std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate>(
       new HermesRuntimeAgentDelegate(
           frontendChannel,
           sessionState,
+          std::move(previouslyExportedState),
           executionContextDescription,
           runtime_,
           getRuntimeExecutor()));

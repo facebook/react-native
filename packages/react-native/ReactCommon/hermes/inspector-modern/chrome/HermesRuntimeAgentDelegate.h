@@ -26,6 +26,10 @@ class HermesRuntimeAgentDelegate : public RuntimeAgentDelegate {
    * \param sessionState The state of the current CDP session. This will only
    * be accessed on the main thread (during the constructor, in handleRequest,
    * etc).
+   * \param previouslyExportedState The exported state from a previous instance
+   * of RuntimeAgentDelegate (NOT necessarily HermesRuntimeAgentDelegate). This
+   * may be nullptr, and if not nullptr it may be of any concrete type that
+   * implements RuntimeAgentDelegate::ExportedState.
    * \param executionContextDescription A description of the execution context
    * represented by this runtime. This is used for disambiguating the
    * source/destination of CDP messages when there are multiple runtimes
@@ -38,6 +42,8 @@ class HermesRuntimeAgentDelegate : public RuntimeAgentDelegate {
   HermesRuntimeAgentDelegate(
       FrontendChannel frontendChannel,
       SessionState& sessionState,
+      std::unique_ptr<RuntimeAgentDelegate::ExportedState>
+          previouslyExportedState,
       const ExecutionContextDescription& executionContextDescription,
       std::shared_ptr<hermes::HermesRuntime> runtime,
       RuntimeExecutor runtimeExecutor);
@@ -51,6 +57,8 @@ class HermesRuntimeAgentDelegate : public RuntimeAgentDelegate {
    * agent expects another agent to respond to the request instead.
    */
   bool handleRequest(const cdp::PreparsedRequest& req) override;
+
+  virtual std::unique_ptr<ExportedState> getExportedState() override;
 
  private:
   // We use the private implementation idiom to keep HERMES_ENABLE_DEBUGGER

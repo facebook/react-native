@@ -24,6 +24,7 @@ std::unique_ptr<RuntimeAgentDelegate>
 JsiIntegrationTestGenericEngineAdapter::createAgentDelegate(
     FrontendChannel frontendChannel,
     SessionState& sessionState,
+    std::unique_ptr<RuntimeAgentDelegate::ExportedState>,
     const ExecutionContextDescription&) {
   return std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate>(
       new FallbackRuntimeAgentDelegate(

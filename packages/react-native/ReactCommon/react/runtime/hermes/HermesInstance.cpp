@@ -107,12 +107,15 @@ class HermesJSRuntime : public JSRuntime {
   std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate> createAgentDelegate(
       jsinspector_modern::FrontendChannel frontendChannel,
       jsinspector_modern::SessionState& sessionState,
+      std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate::ExportedState>
+          previouslyExportedState,
       const jsinspector_modern::ExecutionContextDescription&
           executionContextDescription) override {
     return std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate>(
         new jsinspector_modern::HermesRuntimeAgentDelegate(
             frontendChannel,
             sessionState,
+            std::move(previouslyExportedState),
             executionContextDescription,
             runtime_,
             [msgQueueThreadWeak = std::weak_ptr(msgQueueThread_),
