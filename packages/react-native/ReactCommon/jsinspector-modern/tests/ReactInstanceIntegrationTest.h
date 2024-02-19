@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <folly/executors/QueuedImmediateExecutor.h>
 #include <folly/json.h>
 #include <gtest/gtest.h>
 #include <jsinspector-modern/InspectorInterfaces.h>
@@ -18,7 +19,14 @@
 
 namespace facebook::react::jsinspector_modern {
 
-class ReactInstanceIntegrationTest : public ::testing::Test {
+using namespace ::testing;
+
+struct FeatureFlags {
+  const bool enableCxxInspectorPackagerConnection = true;
+  const bool enableModernCDPRegistry = true;
+};
+
+class ReactInstanceIntegrationTest : public Test {
  protected:
   ReactInstanceIntegrationTest();
   void SetUp() override;
@@ -36,6 +44,7 @@ class ReactInstanceIntegrationTest : public ::testing::Test {
   std::unique_ptr<react::ReactInstance> instance;
   std::shared_ptr<MockMessageQueueThread> messageQueueThread;
   std::shared_ptr<ErrorUtils> errorHandler;
+  std::unique_ptr<FeatureFlags> featureFlags;
 
   MockRemoteConnection& getRemoteConnection() {
     return *mockRemoteConnections_[0];
@@ -48,6 +57,15 @@ class ReactInstanceIntegrationTest : public ::testing::Test {
   bool verbose_ = false;
   UniquePtrFactory<MockRemoteConnection> mockRemoteConnections_;
   std::unique_ptr<ILocalConnection> clientToVM_;
+  folly::QueuedImmediateExecutor immediateExecutor_;
 };
 
+class ReactInstanceIntegrationTestWithFlags
+    : public ReactInstanceIntegrationTest,
+      public ::testing::WithParamInterface<FeatureFlags> {
+  void SetUp() override {
+    featureFlags = std::make_unique<FeatureFlags>(GetParam());
+    ReactInstanceIntegrationTest::SetUp();
+  }
+};
 } // namespace facebook::react::jsinspector_modern

@@ -11,17 +11,42 @@
 
 #include <folly/json.h>
 #include <glog/logging.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
+#include <react/featureflags/ReactNativeFeatureFlagsDefaults.h>
 #include <react/runtime/hermes/HermesInstance.h>
 
 namespace facebook::react::jsinspector_modern {
+
+class ReactInstanceIntegrationTestFeatureFlagsProvider
+    : public ReactNativeFeatureFlagsDefaults {
+ private:
+  FeatureFlags flags_;
+
+ public:
+  explicit ReactInstanceIntegrationTestFeatureFlagsProvider(
+      FeatureFlags featureFlags)
+      : flags_(featureFlags) {}
+
+  bool inspectorEnableModernCDPRegistry() override {
+    return flags_.enableModernCDPRegistry;
+  }
+  bool inspectorEnableCxxInspectorPackagerConnection() override {
+    return flags_.enableCxxInspectorPackagerConnection;
+  }
+};
 
 ReactInstanceIntegrationTest::ReactInstanceIntegrationTest()
     : runtime(nullptr),
       instance(nullptr),
       messageQueueThread(std::make_shared<MockMessageQueueThread>()),
-      errorHandler(std::make_shared<ErrorUtils>()) {}
+      errorHandler(std::make_shared<ErrorUtils>()),
+      featureFlags(std::make_unique<FeatureFlags>()) {}
 
 void ReactInstanceIntegrationTest::SetUp() {
+  ReactNativeFeatureFlags::override(
+      std::make_unique<ReactInstanceIntegrationTestFeatureFlagsProvider>(
+          *featureFlags));
+
   auto mockRegistry = std::make_unique<MockTimerRegistry>();
   auto timerManager =
       std::make_shared<react::TimerManager>(std::move(mockRegistry));
@@ -44,11 +69,25 @@ void ReactInstanceIntegrationTest::SetUp() {
       "ErrorUtils",
       jsi::Object::createFromHostObject(*jsiRuntime, errorHandler));
 
+  std::shared_ptr<PageTarget> pageTargetIfModernCDP_ = nullptr;
+
+  if (featureFlags->enableModernCDPRegistry) {
+    VoidExecutor inspectorExecutor_ = [this](auto callback) {
+      immediateExecutor_.add(callback);
+    };
+    MockPageTargetDelegate pageTargetDelegate_;
+    pageTargetIfModernCDP_ =
+        PageTarget::create(pageTargetDelegate_, inspectorExecutor_);
+  }
+
   instance = std::make_unique<react::ReactInstance>(
       std::move(runtime_),
       messageQueueThread,
       timerManager,
-      std::move(jsErrorHandlingFunc));
+      std::move(jsErrorHandlingFunc),
+      pageTargetIfModernCDP_ == nullptr ? nullptr
+                                        : pageTargetIfModernCDP_.get());
+
   timerManager->setRuntimeExecutor(instance->getBufferedRuntimeExecutor());
 
   // JS Environment:
@@ -56,17 +95,38 @@ void ReactInstanceIntegrationTest::SetUp() {
 
   // Inspector:
   auto& inspector = getInspectorInstance();
-  auto pages = inspector.getPages();
 
-  // We should now have at least a single page once the above runtime has been
-  // initialized.
-  assert(pages.size() > 0);
-  size_t pageId = pages.back().id;
+  int pageId;
+  if (pageTargetIfModernCDP_ != nullptr) {
+    // Under modern CDP, the React host is responsible for adding its page on
+    // startup.
+    pageId = inspector.addPage(
+        "mock-title",
+        "mock-vm",
+        [pageTargetIfModernCDP_](std::unique_ptr<IRemoteConnection> remote)
+            -> std::unique_ptr<ILocalConnection> {
+          auto localConnection = pageTargetIfModernCDP_->connect(
+              std::move(remote),
+              {
+                  .integrationName = "ReactInstanceIntegrationTest",
+              });
+          return localConnection;
+        },
+        // TODO: Allow customisation of InspectorTargetCapabilities
+        {});
+  } else {
+    // Under legacy CDP, Hermes' DecoratedRuntime adds its page automatically
+    // within ConnectionDemux.enableDebugging.
+    auto pages = inspector.getPages();
+    assert(pages.size() > 0);
+    pageId = pages.back().id;
+  }
 
   clientToVM_ = inspector.connect(pageId, mockRemoteConnections_.make_unique());
 }
 
 void ReactInstanceIntegrationTest::TearDown() {
+  ReactNativeFeatureFlags::dangerouslyReset();
   clientToVM_->disconnect();
 }
 
@@ -100,6 +160,7 @@ void ReactInstanceIntegrationTest::send(
 void ReactInstanceIntegrationTest::sendJSONString(const std::string& message) {
   // The runtime must be initialized and connected to before messaging
   clientToVM_->sendMessage(message);
+  messageQueueThread->flush();
 }
 
 jsi::Value ReactInstanceIntegrationTest::run(const std::string& script) {
