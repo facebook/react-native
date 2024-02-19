@@ -201,6 +201,7 @@
   [super setSelectedTextRange:selectedTextRange];
 }
 
+// Multiline TextInput does not require scrolling after calling setSelectedTextRange (PR 38679).
 - (void)scrollRangeToVisible:(NSRange)range
 {
   // not implemented for single line text

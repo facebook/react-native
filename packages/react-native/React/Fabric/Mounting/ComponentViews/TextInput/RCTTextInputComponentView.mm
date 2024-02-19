@@ -604,10 +604,9 @@ using namespace facebook::react;
     NSInteger newOffset = attributedString.string.length - offsetFromEnd;
     UITextPosition *position = [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument
                                                                    offset:newOffset];
-    // Restoring the previous cursor position.
     [_backedTextInputView setSelectedTextRange:[_backedTextInputView textRangeFromPosition:position toPosition:position]
                                 notifyDelegate:YES];
-    // Scrolling to the previous cursor position.
+    // After restoring the previous cursor position, we manually trigger the scroll to the new cursor position (PR 38679).
     [_backedTextInputView scrollRangeToVisible:NSMakeRange(offsetStart, 0)];
   }
   [self _restoreTextSelection];

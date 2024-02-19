@@ -163,6 +163,7 @@ static UIColor *defaultPlaceholderColor(void)
   [super setSelectedTextRange:selectedTextRange];
 }
 
+// After restoring the previous cursor position, we manually trigger the scroll to the new cursor position (PR 38679).
 - (void)scrollRangeToVisible:(NSRange)range
 {
   [super scrollRangeToVisible:range];
