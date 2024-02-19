@@ -18,6 +18,7 @@ export default function getDevToolsFrontendUrl(
   experiments: Experiments,
   webSocketDebuggerUrl: string,
   devServerUrl: string,
+  unstable_extras?: string,
 ): string {
   const scheme = new URL(webSocketDebuggerUrl).protocol.slice(0, -1);
   const webSocketUrlWithoutProtocol = webSocketDebuggerUrl.replace(
@@ -32,6 +33,9 @@ export default function getDevToolsFrontendUrl(
   ]);
   if (experiments.enableNetworkInspector) {
     searchParams.append('unstable_enableNetworkPanel', 'true');
+  }
+  if (unstable_extras != null && unstable_extras.trim() !== '') {
+    searchParams.append('unstable_extras', unstable_extras);
   }
 
   return appUrl + '?' + searchParams.toString();
