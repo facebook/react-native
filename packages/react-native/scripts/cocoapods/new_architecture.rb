@@ -7,7 +7,7 @@ require 'json'
 
 require_relative "./utils.rb"
 require_relative "./helpers.rb"
-\
+
 class NewArchitectureHelper
     @@cplusplus_version = "c++20"
 
