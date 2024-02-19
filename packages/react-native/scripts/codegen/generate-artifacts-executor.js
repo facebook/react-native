@@ -32,7 +32,13 @@ const REACT_NATIVE_PACKAGE_ROOT_FOLDER = path.join(__dirname, '..', '..');
 
 const CODEGEN_DEPENDENCY_NAME = '@react-native/codegen';
 const CODEGEN_REPO_PATH = `${REACT_NATIVE_REPOSITORY_ROOT}/packages/react-native-codegen`;
-const CODEGEN_NPM_PATH = `${REACT_NATIVE_PACKAGE_ROOT_FOLDER}/../${CODEGEN_DEPENDENCY_NAME}`;
+// This is a change for 0.73-stable only since this piece of code was replaced:
+// https://github.com/facebook/react-native/commit/9071a3a0b0e11ad711927651bcb2412f553b6fe9
+const CODEGEN_NPM_PATH = path.dirname(
+  require.resolve(path.join(CODEGEN_DEPENDENCY_NAME, 'package.json'), {
+    paths: [REACT_NATIVE_PACKAGE_ROOT_FOLDER],
+  }),
+);
 const CORE_LIBRARIES_WITH_OUTPUT_FOLDER = {
   rncore: path.join(REACT_NATIVE_PACKAGE_ROOT_FOLDER, 'ReactCommon'),
   FBReactNativeSpec: null,
@@ -189,33 +195,34 @@ function handleThirdPartyLibraries(
   codegenConfigKey,
 ) {
   // Determine which of these are codegen-enabled libraries
-  const configDir =
-    baseCodegenConfigFileDir ||
-    path.join(REACT_NATIVE_PACKAGE_ROOT_FOLDER, '..');
+  const configDir = baseCodegenConfigFileDir || process.cwd();
   console.log(
     `\n\n[Codegen] >>>>> Searching for codegen-enabled libraries in ${configDir}`,
   );
 
   // Handle third-party libraries
+  const resolveOptions = {paths: [configDir]};
   Object.keys(dependencies).forEach(dependency => {
     if (dependency === REACT_NATIVE_DEPENDENCY_NAME) {
       // react-native should already be added.
       return;
     }
-    const codegenConfigFileDir = path.join(configDir, dependency);
-    const configFilePath = path.join(
-      codegenConfigFileDir,
-      codegenConfigFilename,
-    );
-    if (fs.existsSync(configFilePath)) {
+
+    try {
+      const configFilePath = require.resolve(
+        `${dependency}/${codegenConfigFilename}`,
+        resolveOptions,
+      );
       const configFile = JSON.parse(fs.readFileSync(configFilePath));
       extractLibrariesFromJSON(
         configFile,
         libraries,
         codegenConfigKey,
         dependency,
-        codegenConfigFileDir,
+        path.dirname(configFilePath),
       );
+    } catch (_) {
+      // ignore
     }
   });
 }
