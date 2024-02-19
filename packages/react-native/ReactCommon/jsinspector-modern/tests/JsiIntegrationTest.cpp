@@ -158,11 +158,8 @@ class JsiIntegrationPortableTest : public Test, private PageTargetDelegate {
 ////////////////////////////////////////////////////////////////////////////////
 
 // Some tests are specific to Hermes's CDP capabilities and some are not.
-// We'll use JsiIntegrationHermesTest as a fixture for Hermes-specific tests
-// and typed tests for the engine-agnostic ones.
-
-using JsiIntegrationHermesTest =
-    JsiIntegrationPortableTest<JsiIntegrationTestHermesEngineAdapter>;
+// We'll use JsiIntegrationHermesTest as an alias for Hermes-specific tests
+// and JsiIntegrationPortableTest for the engine-agnostic ones.
 
 /**
  * The list of engine adapters for which engine-agnostic tests should pass.
@@ -171,7 +168,13 @@ using AllEngines = Types<
     JsiIntegrationTestHermesEngineAdapter,
     JsiIntegrationTestGenericEngineAdapter>;
 
+using AllHermesVariants = Types<JsiIntegrationTestHermesEngineAdapter>;
+
 TYPED_TEST_SUITE(JsiIntegrationPortableTest, AllEngines);
+
+template <typename EngineAdapter>
+using JsiIntegrationHermesTest = JsiIntegrationPortableTest<EngineAdapter>;
+TYPED_TEST_SUITE(JsiIntegrationHermesTest, AllHermesVariants);
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -453,27 +456,27 @@ TYPED_TEST(JsiIntegrationPortableTest, ExceptionDuringAddBindingIsIgnored) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-TEST_F(JsiIntegrationHermesTest, EvaluateExpression) {
-  connect();
+TYPED_TEST(JsiIntegrationHermesTest, EvaluateExpression) {
+  this->connect();
 
-  expectMessageFromPage(JsonEq(R"({
-                                   "id": 1,
-                                   "result": {
-                                     "result": {
-                                       "type": "number",
-                                       "value": 42
-                                     }
-                                   }
-                                 })"));
-  toPage_->sendMessage(R"({
-                           "id": 1,
-                           "method": "Runtime.evaluate",
-                           "params": {"expression": "42"}
-                         })");
+  this->expectMessageFromPage(JsonEq(R"({
+                                         "id": 1,
+                                         "result": {
+                                           "result": {
+                                             "type": "number",
+                                             "value": 42
+                                           }
+                                         }
+                                       })"));
+  this->toPage_->sendMessage(R"({
+                                 "id": 1,
+                                 "method": "Runtime.evaluate",
+                                 "params": {"expression": "42"}
+                               })");
 }
 
-TEST_F(JsiIntegrationHermesTest, EvaluateExpressionInExecutionContext) {
-  connect();
+TYPED_TEST(JsiIntegrationHermesTest, EvaluateExpressionInExecutionContext) {
+  this->connect();
 
   InSequence s;
 
@@ -490,16 +493,16 @@ TEST_F(JsiIntegrationHermesTest, EvaluateExpressionInExecutionContext) {
   auto executionContextId =
       executionContextInfo->value()["params"]["context"]["id"].getInt();
 
-  expectMessageFromPage(JsonEq(R"({
-                                   "id": 1,
-                                   "result": {
-                                     "result": {
-                                       "type": "number",
-                                       "value": 42
-                                     }
-                                   }
-                                 })"));
-  toPage_->sendMessage(sformat(
+  this->expectMessageFromPage(JsonEq(R"({
+                                         "id": 1,
+                                         "result": {
+                                           "result": {
+                                             "type": "number",
+                                             "value": 42
+                                           }
+                                         }
+                                       })"));
+  this->toPage_->sendMessage(sformat(
       R"({{
         "id": 1,
         "method": "Runtime.evaluate",
@@ -521,7 +524,7 @@ TEST_F(JsiIntegrationHermesTest, EvaluateExpressionInExecutionContext) {
   // Now the old execution context is stale.
   this->expectMessageFromPage(
       JsonParsed(AllOf(AtJsonPtr("/id", 3), AtJsonPtr("/error/code", -32000))));
-  toPage_->sendMessage(sformat(
+  this->toPage_->sendMessage(sformat(
       R"({{
         "id": 3,
         "method": "Runtime.evaluate",
