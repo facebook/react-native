@@ -1231,6 +1231,10 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
                   public void run() {
                     mMountNotificationScheduled.set(false);
 
+                    if (mDestroyed) {
+                      return;
+                    }
+
                     final @Nullable Binding binding = mBinding;
                     if (mountItems == null || binding == null) {
                       return;
