@@ -94,23 +94,19 @@
 }
 
 -(void)viewDidLoad {
-  CGFloat bottomSafeAreaInset = RCTSharedApplication().delegate.window.safeAreaInsets.bottom;
+  CGFloat bottomSafeAreaInset = RCTKeyWindow().safeAreaInsets.bottom;
   
   CGFloat buttonHeight = 60;
   CGFloat buttonWidth = self.view.bounds.size.width / 2;
   
-  CGRect frame = self.view.bounds;
-  frame.size.height -= buttonHeight + bottomSafeAreaInset;
-  
-  _tableView = [[UITableView alloc] initWithFrame:frame style:UITableViewStylePlain];
-  _tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+  _tableView = [UITableView new];
+  _tableView.translatesAutoresizingMaskIntoConstraints = NO;
   _tableView.delegate = self;
   _tableView.dataSource = self;
   _tableView.backgroundColor = [UIColor colorWithRed:0.8 green:0 blue:0 alpha:1];
   _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
   _tableView.indicatorStyle = UIScrollViewIndicatorStyleWhite;
   _tableView.allowsSelection = NO;
-  
   [self.view addSubview:_tableView];
   
 #if TARGET_OS_SIMULATOR || TARGET_OS_MACCATALYST
@@ -134,17 +130,20 @@
   [buttonStackView addArrangedSubview:dismissButton];
   [buttonStackView addArrangedSubview:reloadButton];
   
+  [self.view addSubview:buttonStackView];
+  
   [NSLayoutConstraint activateConstraints:@[
+    [_tableView.topAnchor constraintEqualToAnchor:self.view.topAnchor],
+    [_tableView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
+    [_tableView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
+    [_tableView.bottomAnchor constraintEqualToAnchor:buttonStackView.topAnchor],
+    
     [dismissButton.heightAnchor constraintEqualToConstant:buttonHeight],
     [dismissButton.widthAnchor constraintEqualToConstant:buttonWidth],
     [reloadButton.heightAnchor constraintEqualToConstant:buttonHeight],
     [reloadButton.widthAnchor constraintEqualToConstant:buttonWidth],
-  ]];
-  
-  [self.view addSubview:buttonStackView];
-  
-  [NSLayoutConstraint activateConstraints:@[
     [buttonStackView.heightAnchor constraintEqualToConstant:buttonHeight + bottomSafeAreaInset],
+    
     [buttonStackView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
     [buttonStackView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
     [buttonStackView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor],
