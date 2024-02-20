@@ -9,7 +9,7 @@
  * @oncall react_native
  */
 
-const {REPO_ROOT} = require('../../consts');
+const {REPO_ROOT} = require('../consts');
 const fs = require('fs');
 const glob = require('glob');
 const path = require('path');
@@ -67,7 +67,7 @@ async function getPackages(
       })
       .map(async packageJsonPath => {
         const packagePath = path.dirname(packageJsonPath);
-        const packageJson = JSON.parse(
+        const packageJson /*: PackageJson */ = JSON.parse(
           await fs.promises.readFile(packageJsonPath, 'utf-8'),
         );
 
@@ -84,7 +84,7 @@ async function getPackages(
 
   return Object.fromEntries(
     packagesEntries.filter(
-      ([_, {packageJson}]) => !packageJson.private || includePrivate,
+      ([_, {packageJson}]) => packageJson.private !== true || includePrivate,
     ),
   );
 }

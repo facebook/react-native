@@ -14,15 +14,16 @@
 const {REPO_ROOT} = require('../consts');
 const detectPackageUnreleasedChanges = require('../monorepo/bump-all-updated-packages/bump-utils.js');
 const checkForGitChanges = require('../monorepo/check-for-git-changes');
-const forEachPackage = require('../monorepo/for-each-package');
 const {failIfTagExists} = require('../releases/utils/release-utils');
 const {
   isReleaseBranch,
   parseVersion,
 } = require('../releases/utils/version-utils');
 const {exitIfNotOnGit, getBranchName} = require('../scm-utils');
+const {getPackages} = require('../utils/monorepo');
 const chalk = require('chalk');
 const inquirer = require('inquirer');
+const path = require('path');
 const request = require('request');
 const {echo, exit} = require('shelljs');
 const yargs = require('yargs');
@@ -92,22 +93,22 @@ const buildExecutor =
     }
   };
 
-const buildAllExecutors = () => {
-  const executors = [];
-
-  forEachPackage((...params) => {
-    executors.push(buildExecutor(...params));
-  });
-
-  return executors;
-};
-
 async function exitIfUnreleasedPackages() {
   // use the other script to verify that there's no packages in the monorepo
   // that have changes that haven't been released
 
-  const executors = buildAllExecutors();
-  for (const executor of executors) {
+  const packages = await getPackages({
+    includeReactNative: false,
+    includePrivate: true,
+  });
+
+  for (const pkg of Object.values(packages)) {
+    const executor = buildExecutor(
+      pkg.path,
+      path.relative(REPO_ROOT, pkg.path),
+      pkg.packageJson,
+    );
+
     await executor().catch(error => {
       echo(chalk.red(error));
       // need to throw upward
