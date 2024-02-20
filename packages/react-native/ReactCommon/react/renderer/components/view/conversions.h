@@ -400,6 +400,10 @@ inline void fromRawValue(
     result = yoga::Display::Flex;
     return;
   }
+  if (stringValue == "inline") {
+    result = yoga::Display::Inline;
+    return;
+  }
   if (stringValue == "none") {
     result = yoga::Display::None;
     return;

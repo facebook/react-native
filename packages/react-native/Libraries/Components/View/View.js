@@ -127,7 +127,7 @@ const View: React.AbstractComponent<
       />
     );
 
-    if (hasTextAncestor) {
+    if (hasTextAncestor && style?.display !== 'inline') {
       return (
         <TextAncestor.Provider value={false}>
           {actualView}

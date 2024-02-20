@@ -59,6 +59,8 @@ const char* YGDisplayToString(const YGDisplay value) {
   switch (value) {
     case YGDisplayFlex:
       return "flex";
+    case YGDisplayInline:
+      return "inline";
     case YGDisplayNone:
       return "none";
   }
