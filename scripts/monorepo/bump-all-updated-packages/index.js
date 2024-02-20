@@ -4,12 +4,17 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow
  * @format
+ * @oncall react_native
  */
 
 const {getPackageVersionStrByTag} = require('../../npm-utils');
+const {
+  isReleaseBranch,
+  parseVersion,
+} = require('../../releases/utils/version-utils');
 const {getBranchName} = require('../../scm-utils');
-const {isReleaseBranch, parseVersion} = require('../../version-utils');
 const alignPackageVersions = require('../align-package-versions');
 const checkForGitChanges = require('../check-for-git-changes');
 const {
@@ -31,7 +36,11 @@ const {echo, exec, exit} = require('shelljs');
 const ROOT_LOCATION = path.join(__dirname, '..', '..', '..');
 
 const buildExecutor =
-  (packageAbsolutePath, packageRelativePathFromRoot, packageManifest) =>
+  (
+    packageAbsolutePath /*: string */,
+    packageRelativePathFromRoot /*: string */,
+    packageManifest /*: $FlowFixMe */,
+  ) =>
   async () => {
     const {name: packageName} = packageManifest;
     if (packageManifest.private) {
@@ -247,4 +256,7 @@ const main = async () => {
   exit(0);
 };
 
-main();
+if (require.main === module) {
+  // eslint-disable-next-line no-void
+  void main();
+}
