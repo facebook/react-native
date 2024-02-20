@@ -11,6 +11,7 @@
 
 'use strict';
 
+const {REPO_ROOT} = require('../consts');
 const detectPackageUnreleasedChanges = require('../monorepo/bump-all-updated-packages/bump-utils.js');
 const checkForGitChanges = require('../monorepo/check-for-git-changes');
 const forEachPackage = require('../monorepo/for-each-package');
@@ -22,16 +23,14 @@ const {
 const {exitIfNotOnGit, getBranchName} = require('../scm-utils');
 const chalk = require('chalk');
 const inquirer = require('inquirer');
-const path = require('path');
 const request = require('request');
+const {echo, exit} = require('shelljs');
+const yargs = require('yargs');
+
 /**
  * This script walks a releaser through bumping the version for a release
  * It will commit the appropriate tags to trigger the CircleCI jobs.
  */
-const {echo, exit} = require('shelljs');
-const yargs = require('yargs');
-
-const ROOT_LOCATION = path.join(__dirname, '..');
 
 let argv = yargs
   .option('r', {
@@ -83,7 +82,7 @@ const buildExecutor =
       detectPackageUnreleasedChanges(
         packageRelativePathFromRoot,
         packageName,
-        ROOT_LOCATION,
+        REPO_ROOT,
       )
     ) {
       // if I enter here, I want to throw an error upward
