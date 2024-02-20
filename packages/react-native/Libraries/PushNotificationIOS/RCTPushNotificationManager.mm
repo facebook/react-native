@@ -565,27 +565,6 @@ RCT_EXPORT_METHOD(getInitialNotification
     return;
   }
 
-  NSMutableDictionary<NSString *, id> *initialRemoteNotification =
-      [self.bridge.launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey] mutableCopy];
-
-  // The user actioned a remote notification to launch the app. This is a fallback that is deprecated
-  // in the new architecture.
-  if (initialRemoteNotification) {
-    initialRemoteNotification[@"remote"] = @YES;
-    resolve(initialRemoteNotification);
-    return;
-  }
-
-  UILocalNotification *initialLocalNotification =
-      self.bridge.launchOptions[UIApplicationLaunchOptionsLocalNotificationKey];
-
-  // The user actioned a local notification to launch the app. Notification is represented by UILocalNotification. This
-  // is deprecated.
-  if (initialLocalNotification) {
-    resolve(RCTFormatLocalNotification(initialLocalNotification));
-    return;
-  }
-
   resolve((id)kCFNull);
 }
 
