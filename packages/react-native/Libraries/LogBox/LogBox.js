@@ -34,7 +34,10 @@ interface ILogBox {
  */
 if (__DEV__) {
   const LogBoxData = require('./Data/LogBoxData');
-  const {parseLogBoxLog, parseInterpolation} = require('./Data/parseLogBoxLog');
+  const {
+    parseLogBoxLog,
+    formatComponentStack,
+  } = require('./Data/parseLogBoxLog');
 
   let originalConsoleError;
   let originalConsoleWarn;
@@ -207,8 +210,15 @@ if (__DEV__) {
 
       // Interpolate the message so they are formatted for adb and other CLIs.
       // This is different than the message.content above because it includes component stacks.
-      const interpolated = parseInterpolation(args);
-      originalConsoleError(interpolated.message.content);
+      let consoleMessage = message.content;
+
+      // If the component stack was parsed, format it for the console.
+      // This removes any unsymbolicated frames from the component stack.
+      if (componentStack) {
+        consoleMessage += formatComponentStack(componentStack);
+      }
+
+      originalConsoleError(consoleMessage);
 
       if (!LogBoxData.isMessageIgnored(message.content)) {
         LogBoxData.addLog({

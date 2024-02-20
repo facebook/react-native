@@ -348,6 +348,26 @@ export function parseLogBoxException(
   };
 }
 
+export function formatComponentStack(componentStack: ComponentStack): string {
+  return componentStack
+    .map(frame => {
+      if (frame.fileName) {
+        location = frame.fileName;
+        if (frame.location) {
+          if (frame.location.row >= 0) {
+            location += `:${frame.location.row}`;
+            if (frame.location.column >= 0) {
+              location += `:${frame.location.column}`;
+            }
+          }
+        }
+      }
+
+      return `    in ${frame.content}` + (location ? ` (at ${location})` : '');
+    })
+    .join('\n');
+}
+
 export function parseLogBoxLog(args: $ReadOnlyArray<mixed>): {|
   componentStack: ComponentStack,
   category: Category,
