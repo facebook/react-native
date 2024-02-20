@@ -1,6 +1,6 @@
 {
   "name": "@react-native/dev-middleware",
-  "version": "0.73.7",
+  "version": "0.73.8",
   "description": "Dev server middleware for React Native",
   "keywords": [
     "react-native",
