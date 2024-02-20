@@ -12,8 +12,8 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include <jsinspector-modern/HostTarget.h>
 #include <jsinspector-modern/InspectorInterfaces.h>
-#include <jsinspector-modern/PageTarget.h>
 
 #include <memory>
 
@@ -48,7 +48,7 @@ namespace {
  * the provided folly::Executor) and the corresponding jsi::Runtime.
  */
 template <typename EngineAdapter>
-class JsiIntegrationPortableTest : public Test, private PageTargetDelegate {
+class JsiIntegrationPortableTest : public Test, private HostTargetDelegate {
   folly::QueuedImmediateExecutor immediateExecutor_;
 
  protected:
@@ -129,8 +129,8 @@ class JsiIntegrationPortableTest : public Test, private PageTargetDelegate {
     return result;
   }
 
-  std::shared_ptr<PageTarget> page_ =
-      PageTarget::create(*this, inspectorExecutor_);
+  std::shared_ptr<HostTarget> page_ =
+      HostTarget::create(*this, inspectorExecutor_);
   InstanceTarget* instance_{};
   RuntimeTarget* runtimeTarget_{};
 
@@ -145,7 +145,7 @@ class JsiIntegrationPortableTest : public Test, private PageTargetDelegate {
   std::unique_ptr<ILocalConnection> toPage_;
 
  private:
-  // PageTargetDelegate methods
+  // HostTargetDelegate methods
 
   void onReload(const PageReloadRequest& request) override {
     (void)request;

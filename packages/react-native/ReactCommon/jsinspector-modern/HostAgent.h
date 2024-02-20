@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "PageTarget.h"
+#include "HostTarget.h"
 #include "SessionState.h"
 
 #include <jsinspector-modern/InspectorInterfaces.h>
@@ -19,32 +19,32 @@
 
 namespace facebook::react::jsinspector_modern {
 
-class PageTarget;
+class HostTarget;
 class InstanceAgent;
 class InstanceTarget;
 
 /**
  * An Agent that handles requests from the Chrome DevTools Protocol for the
- * given page.
+ * given Host.
  * The constructor, destructor and all public methods must be called on the
- * same thread, which is also the thread where the associated PageTarget is
+ * same thread, which is also the thread where the associated HostTarget is
  * constructed and managed.
  */
-class PageAgent final {
+class HostAgent final {
  public:
   /**
    * \param frontendChannel A channel used to send responses and events to the
    * frontend.
-   * \param targetController An interface to the PageTarget that this agent is
+   * \param targetController An interface to the HostTarget that this agent is
    * attached to. The caller is responsible for ensuring that the
-   * PageTargetDelegate and underlying PageTarget both outlive the agent.
+   * HostTargetDelegate and underlying HostTarget both outlive the agent.
    * \param sessionMetadata Metadata about the session that created this agent.
    * \param sessionState The state of the session that created this agent.
    */
-  PageAgent(
+  HostAgent(
       FrontendChannel frontendChannel,
-      PageTargetController& targetController,
-      PageTarget::SessionMetadata sessionMetadata,
+      HostTargetController& targetController,
+      HostTarget::SessionMetadata sessionMetadata,
       SessionState& sessionState);
 
   /**
@@ -70,13 +70,13 @@ class PageAgent final {
    * DevTools, the message will appear in the Console tab along with regular
    * console messages. The difference between Log.entryAdded and
    * Runtime.consoleAPICalled is that the latter requires an execution context
-   * ID, which does not exist at the Page level.
+   * ID, which does not exist at the Host level.
    */
   void sendInfoLogEntry(std::string_view text);
 
   FrontendChannel frontendChannel_;
-  PageTargetController& targetController_;
-  const PageTarget::SessionMetadata sessionMetadata_;
+  HostTargetController& targetController_;
+  const HostTarget::SessionMetadata sessionMetadata_;
   std::shared_ptr<InstanceAgent> instanceAgent_;
 
   /**

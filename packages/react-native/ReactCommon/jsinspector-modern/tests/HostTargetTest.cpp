@@ -11,8 +11,8 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include <jsinspector-modern/HostTarget.h>
 #include <jsinspector-modern/InspectorInterfaces.h>
-#include <jsinspector-modern/PageTarget.h>
 
 #include <memory>
 
@@ -26,11 +26,11 @@ namespace facebook::react::jsinspector_modern {
 
 namespace {
 
-class PageTargetTest : public Test {
+class HostTargetTest : public Test {
   folly::QueuedImmediateExecutor immediateExecutor_;
 
  protected:
-  PageTargetTest() {
+  HostTargetTest() {
     EXPECT_CALL(runtimeTargetDelegate_, createAgentDelegate(_, _, _, _))
         .WillRepeatedly(runtimeAgentDelegates_.lazily_make_unique<
                         FrontendChannel,
@@ -40,17 +40,17 @@ class PageTargetTest : public Test {
   }
 
   void connect() {
-    ASSERT_FALSE(toPage_) << "Can only connect once in a PageTargetTest.";
+    ASSERT_FALSE(toPage_) << "Can only connect once in a HostTargetTest.";
     toPage_ = page_->connect(
         remoteConnections_.make_unique(),
-        {.integrationName = "PageTargetTest"});
+        {.integrationName = "HostTargetTest"});
 
     // We'll always get an onDisconnect call when we tear
     // down the test. Expect it in order to satisfy the strict mock.
     EXPECT_CALL(*remoteConnections_[0], onDisconnect());
   }
 
-  MockPageTargetDelegate pageTargetDelegate_;
+  MockHostTargetDelegate hostTargetDelegate_;
 
   MockRemoteConnection& fromPage() {
     assert(toPage_);
@@ -61,8 +61,8 @@ class PageTargetTest : public Test {
     immediateExecutor_.add(callback);
   };
 
-  std::shared_ptr<PageTarget> page_ =
-      PageTarget::create(pageTargetDelegate_, inspectorExecutor_);
+  std::shared_ptr<HostTarget> page_ =
+      HostTarget::create(hostTargetDelegate_, inspectorExecutor_);
 
   MockInstanceTargetDelegate instanceTargetDelegate_;
   MockRuntimeTargetDelegate runtimeTargetDelegate_;
@@ -81,22 +81,22 @@ class PageTargetTest : public Test {
 };
 
 /**
- * Simplified test harness focused on sending messages to and from a PageTarget.
+ * Simplified test harness focused on sending messages to and from a HostTarget.
  */
-class PageTargetProtocolTest : public PageTargetTest {
+class HostTargetProtocolTest : public HostTargetTest {
  public:
-  PageTargetProtocolTest() {
+  HostTargetProtocolTest() {
     connect();
   }
 
  private:
   // Protocol tests shouldn't manually call connect()
-  using PageTargetTest::connect;
+  using HostTargetTest::connect;
 };
 
 } // namespace
 
-TEST_F(PageTargetProtocolTest, UnrecognizedMethod) {
+TEST_F(HostTargetProtocolTest, UnrecognizedMethod) {
   EXPECT_CALL(
       fromPage(),
       onMessage(JsonParsed(AllOf(
@@ -109,7 +109,7 @@ TEST_F(PageTargetProtocolTest, UnrecognizedMethod) {
                          })");
 }
 
-TEST_F(PageTargetProtocolTest, TypeErrorInMethodName) {
+TEST_F(HostTargetProtocolTest, TypeErrorInMethodName) {
   EXPECT_CALL(
       fromPage(),
       onMessage(JsonParsed(AllOf(
@@ -123,7 +123,7 @@ TEST_F(PageTargetProtocolTest, TypeErrorInMethodName) {
                          })");
 }
 
-TEST_F(PageTargetProtocolTest, MissingId) {
+TEST_F(HostTargetProtocolTest, MissingId) {
   EXPECT_CALL(
       fromPage(),
       onMessage(JsonParsed(AllOf(
@@ -136,7 +136,7 @@ TEST_F(PageTargetProtocolTest, MissingId) {
                          })");
 }
 
-TEST_F(PageTargetProtocolTest, MalformedJson) {
+TEST_F(HostTargetProtocolTest, MalformedJson) {
   EXPECT_CALL(
       fromPage(),
       onMessage(JsonParsed(AllOf(
@@ -146,7 +146,7 @@ TEST_F(PageTargetProtocolTest, MalformedJson) {
   toPage_->sendMessage("{");
 }
 
-TEST_F(PageTargetProtocolTest, InjectLogsToIdentifyBackend) {
+TEST_F(HostTargetProtocolTest, InjectLogsToIdentifyBackend) {
   InSequence s;
 
   EXPECT_CALL(
@@ -167,12 +167,12 @@ TEST_F(PageTargetProtocolTest, InjectLogsToIdentifyBackend) {
                          })");
 }
 
-TEST_F(PageTargetProtocolTest, PageReloadMethod) {
+TEST_F(HostTargetProtocolTest, PageReloadMethod) {
   InSequence s;
 
   EXPECT_CALL(
-      pageTargetDelegate_,
-      onReload(Eq(PageTargetDelegate::PageReloadRequest{
+      hostTargetDelegate_,
+      onReload(Eq(HostTargetDelegate::PageReloadRequest{
           .ignoreCache = std::nullopt,
           .scriptToEvaluateOnLoad = std::nullopt})))
       .RetiresOnSaturation();
@@ -187,8 +187,8 @@ TEST_F(PageTargetProtocolTest, PageReloadMethod) {
                          })");
 
   EXPECT_CALL(
-      pageTargetDelegate_,
-      onReload(Eq(PageTargetDelegate::PageReloadRequest{
+      hostTargetDelegate_,
+      onReload(Eq(HostTargetDelegate::PageReloadRequest{
           .ignoreCache = true, .scriptToEvaluateOnLoad = "alert('hello');"})))
       .RetiresOnSaturation();
   EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
@@ -206,13 +206,13 @@ TEST_F(PageTargetProtocolTest, PageReloadMethod) {
                          })");
 }
 
-TEST_F(PageTargetProtocolTest, RegisterUnregisterInstanceWithoutEvents) {
+TEST_F(HostTargetProtocolTest, RegisterUnregisterInstanceWithoutEvents) {
   auto& instanceTarget = page_->registerInstance(instanceTargetDelegate_);
 
   page_->unregisterInstance(instanceTarget);
 }
 
-TEST_F(PageTargetTest, ConnectToAlreadyRegisteredInstanceWithoutEvents) {
+TEST_F(HostTargetTest, ConnectToAlreadyRegisteredInstanceWithoutEvents) {
   auto& instanceTarget = page_->registerInstance(instanceTargetDelegate_);
 
   connect();
@@ -220,7 +220,7 @@ TEST_F(PageTargetTest, ConnectToAlreadyRegisteredInstanceWithoutEvents) {
   page_->unregisterInstance(instanceTarget);
 }
 
-TEST_F(PageTargetProtocolTest, RegisterUnregisterInstanceWithEvents) {
+TEST_F(HostTargetProtocolTest, RegisterUnregisterInstanceWithEvents) {
   InSequence s;
 
   EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
@@ -240,7 +240,7 @@ TEST_F(PageTargetProtocolTest, RegisterUnregisterInstanceWithEvents) {
   page_->unregisterInstance(instanceTarget);
 }
 
-TEST_F(PageTargetTest, ConnectToAlreadyRegisteredInstanceWithEvents) {
+TEST_F(HostTargetTest, ConnectToAlreadyRegisteredInstanceWithEvents) {
   auto& instanceTarget = page_->registerInstance(instanceTargetDelegate_);
 
   connect();
@@ -263,7 +263,7 @@ TEST_F(PageTargetTest, ConnectToAlreadyRegisteredInstanceWithEvents) {
   page_->unregisterInstance(instanceTarget);
 }
 
-TEST_F(PageTargetTest, ConnectToAlreadyRegisteredRuntimeWithEvents) {
+TEST_F(HostTargetTest, ConnectToAlreadyRegisteredRuntimeWithEvents) {
   auto& instanceTarget = page_->registerInstance(instanceTargetDelegate_);
   auto& runtimeTarget =
       instanceTarget.registerRuntime(runtimeTargetDelegate_, runtimeExecutor_);
@@ -298,7 +298,7 @@ TEST_F(PageTargetTest, ConnectToAlreadyRegisteredRuntimeWithEvents) {
   page_->unregisterInstance(instanceTarget);
 }
 
-TEST_F(PageTargetProtocolTest, RuntimeAgentDelegateLifecycle) {
+TEST_F(HostTargetProtocolTest, RuntimeAgentDelegateLifecycle) {
   {
     auto& instanceTarget = page_->registerInstance(instanceTargetDelegate_);
     auto& runtimeTarget = instanceTarget.registerRuntime(
@@ -326,7 +326,7 @@ TEST_F(PageTargetProtocolTest, RuntimeAgentDelegateLifecycle) {
   EXPECT_FALSE(runtimeAgentDelegates_[1]);
 }
 
-TEST_F(PageTargetProtocolTest, MethodNotHandledByRuntimeAgentDelegate) {
+TEST_F(HostTargetProtocolTest, MethodNotHandledByRuntimeAgentDelegate) {
   InSequence s;
 
   auto& instanceTarget = page_->registerInstance(instanceTargetDelegate_);
@@ -352,7 +352,7 @@ TEST_F(PageTargetProtocolTest, MethodNotHandledByRuntimeAgentDelegate) {
   page_->unregisterInstance(instanceTarget);
 }
 
-TEST_F(PageTargetProtocolTest, MethodHandledByRuntimeAgentDelegate) {
+TEST_F(HostTargetProtocolTest, MethodHandledByRuntimeAgentDelegate) {
   InSequence s;
 
   auto& instanceTarget = page_->registerInstance(instanceTargetDelegate_);
@@ -385,7 +385,7 @@ TEST_F(PageTargetProtocolTest, MethodHandledByRuntimeAgentDelegate) {
   page_->unregisterInstance(instanceTarget);
 }
 
-TEST_F(PageTargetProtocolTest, MessageRoutingWhileNoRuntimeAgentDelegate) {
+TEST_F(HostTargetProtocolTest, MessageRoutingWhileNoRuntimeAgentDelegate) {
   InSequence s;
 
   EXPECT_CALL(
@@ -442,7 +442,7 @@ TEST_F(PageTargetProtocolTest, MessageRoutingWhileNoRuntimeAgentDelegate) {
                          })");
 }
 
-TEST_F(PageTargetProtocolTest, InstanceWithNullRuntimeAgentDelegate) {
+TEST_F(HostTargetProtocolTest, InstanceWithNullRuntimeAgentDelegate) {
   InSequence s;
 
   EXPECT_CALL(runtimeTargetDelegate_, createAgentDelegate(_, _, _, _))
@@ -469,7 +469,7 @@ TEST_F(PageTargetProtocolTest, InstanceWithNullRuntimeAgentDelegate) {
   page_->unregisterInstance(instanceTarget);
 }
 
-TEST_F(PageTargetProtocolTest, RuntimeAgentDelegateHasAccessToSessionState) {
+TEST_F(HostTargetProtocolTest, RuntimeAgentDelegateHasAccessToSessionState) {
   InSequence s;
 
   // Send Runtime.enable before registering the Instance (which in turns creates

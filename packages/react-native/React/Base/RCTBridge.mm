@@ -188,9 +188,9 @@ void RCTUIManagerSetDispatchAccessibilityManagerInitOntoMain(BOOL enabled)
   kDispatchAccessibilityManagerInitOntoMain = enabled;
 }
 
-class RCTBridgePageTargetDelegate : public facebook::react::jsinspector_modern::PageTargetDelegate {
+class RCTBridgeHostTargetDelegate : public facebook::react::jsinspector_modern::HostTargetDelegate {
  public:
-  RCTBridgePageTargetDelegate(RCTBridge *bridge) : bridge_(bridge) {}
+  RCTBridgeHostTargetDelegate(RCTBridge *bridge) : bridge_(bridge) {}
 
   void onReload(const PageReloadRequest &request) override
   {
@@ -208,8 +208,8 @@ class RCTBridgePageTargetDelegate : public facebook::react::jsinspector_modern::
 @implementation RCTBridge {
   NSURL *_delegateBundleURL;
 
-  std::unique_ptr<RCTBridgePageTargetDelegate> _inspectorPageDelegate;
-  std::shared_ptr<facebook::react::jsinspector_modern::PageTarget> _inspectorTarget;
+  std::unique_ptr<RCTBridgeHostTargetDelegate> _inspectorHostDelegate;
+  std::shared_ptr<facebook::react::jsinspector_modern::HostTarget> _inspectorTarget;
   std::optional<int> _inspectorPageId;
 }
 
@@ -259,7 +259,7 @@ static RCTBridge *RCTCurrentBridgeInstance = nil;
     _bundleURL = bundleURL;
     _moduleProvider = block;
     _launchOptions = [launchOptions copy];
-    _inspectorPageDelegate = std::make_unique<RCTBridgePageTargetDelegate>(self);
+    _inspectorHostDelegate = std::make_unique<RCTBridgeHostTargetDelegate>(self);
 
     [self setUp];
   }
@@ -413,7 +413,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   auto &inspectorFlags = facebook::react::jsinspector_modern::InspectorFlags::getInstance();
   if (inspectorFlags.getEnableModernCDPRegistry() && !_inspectorPageId.has_value()) {
     _inspectorTarget =
-        facebook::react::jsinspector_modern::PageTarget::create(*_inspectorPageDelegate, [](auto callback) {
+        facebook::react::jsinspector_modern::HostTarget::create(*_inspectorHostDelegate, [](auto callback) {
           RCTExecuteOnMainQueue(^{
             callback();
           });
@@ -526,7 +526,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   [self.batchedBridge registerSegmentWithId:segmentId path:path];
 }
 
-- (facebook::react::jsinspector_modern::PageTarget *)inspectorTarget
+- (facebook::react::jsinspector_modern::HostTarget *)inspectorTarget
 {
   return _inspectorTarget.get();
 }

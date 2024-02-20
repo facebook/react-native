@@ -30,7 +30,7 @@ ReactInstance::ReactInstance(
     std::shared_ptr<MessageQueueThread> jsMessageQueueThread,
     std::shared_ptr<TimerManager> timerManager,
     JsErrorHandler::JsErrorHandlingFunc jsErrorHandlingFunc,
-    jsinspector_modern::PageTarget* parentInspectorTarget)
+    jsinspector_modern::HostTarget* parentInspectorTarget)
     : runtime_(std::move(runtime)),
       jsMessageQueueThread_(jsMessageQueueThread),
       timerManager_(std::move(timerManager)),

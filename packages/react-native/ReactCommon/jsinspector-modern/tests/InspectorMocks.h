@@ -115,9 +115,9 @@ class MockInspectorPackagerConnectionDelegate
   folly::Executor& executor_;
 };
 
-class MockPageTargetDelegate : public PageTargetDelegate {
+class MockHostTargetDelegate : public HostTargetDelegate {
  public:
-  // PageTargetDelegate methods
+  // HostTargetDelegate methods
   MOCK_METHOD(void, onReload, (const PageReloadRequest& request), (override));
 };
 
