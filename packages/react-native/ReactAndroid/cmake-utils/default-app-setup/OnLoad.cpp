@@ -62,8 +62,16 @@ void registerComponents(
 std::shared_ptr<TurboModule> cxxModuleProvider(
     const std::string& name,
     const std::shared_ptr<CallInvoker>& jsInvoker) {
-  // Not implemented yet: provide pure-C++ NativeModules here.
-  return nullptr;
+  // Here you can provide your CXX Turbo Modules coming from
+  // either your application or from external libraries. The approach to follow
+  // is similar to the following (for a module called `NativeCxxModuleExample`):
+  //
+  // if (name == NativeCxxModuleExample::kModuleName) {
+  //   return std::make_shared<NativeCxxModuleExample>(jsInvoker);
+  // }
+
+  // And we fallback to the CXX module providers autolinked by RN CLI
+  return rncli_cxxModuleProvider(name, jsInvoker);
 }
 
 std::shared_ptr<TurboModule> javaModuleProvider(
