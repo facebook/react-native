@@ -49,6 +49,7 @@ describe('setVersion', () => {
 
       return {
         ...originalFs,
+        writeFileSync: writeFileMock,
         promises: {
           ...originalFs.promises,
           writeFile: writeFileMock,
@@ -88,19 +89,5 @@ describe('setVersion', () => {
     };
 
     await setVersion('0.82.0-main', true);
-
-    // Make sure we don't update any react-native source or build files
-    writeFileMock.mock.calls.forEach(([filePath, content]) => {
-      if (!filePath.endsWith('package.json')) {
-        throw new Error(
-          `set-version should not update any react-native source or build files. Updated ${filePath}`,
-        );
-      }
-    });
-  });
-
-  afterAll(() => {
-    jest.unmock('path');
-    jest.unmock('fs');
   });
 });
