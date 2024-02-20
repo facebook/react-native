@@ -131,6 +131,8 @@ class MockRuntimeTargetDelegate : public RuntimeTargetDelegate {
       createAgentDelegate,
       (FrontendChannel channel,
        SessionState& sessionState,
+       std::unique_ptr<RuntimeAgentDelegate::ExportedState>
+           previouslyExportedState,
        const ExecutionContextDescription&),
       (override));
 };
@@ -140,6 +142,7 @@ class MockRuntimeAgentDelegate : public RuntimeAgentDelegate {
   inline MockRuntimeAgentDelegate(
       FrontendChannel frontendChannel,
       SessionState& sessionState,
+      std::unique_ptr<RuntimeAgentDelegate::ExportedState>,
       const ExecutionContextDescription& executionContextDescription)
       : frontendChannel(std::move(frontendChannel)),
         sessionState(sessionState),

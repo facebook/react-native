@@ -22,6 +22,7 @@ std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate>
 JSIRuntimeHolder::createAgentDelegate(
     jsinspector_modern::FrontendChannel frontendChannel,
     jsinspector_modern::SessionState& sessionState,
+    std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate::ExportedState>,
     const jsinspector_modern::ExecutionContextDescription&
         executionContextDescription) {
   (void)executionContextDescription;

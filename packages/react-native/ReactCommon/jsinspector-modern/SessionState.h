@@ -8,6 +8,7 @@
 #pragma once
 
 #include "ExecutionContext.h"
+#include "RuntimeAgent.h"
 
 #include <string>
 #include <string_view>
@@ -33,6 +34,12 @@ struct SessionState {
    */
   std::unordered_map<std::string, ExecutionContextSelectorSet>
       subscribedBindings;
+
+  /**
+   * Stores the state object exported from the last main RuntimeAgent, if any,
+   * before it was destroyed.
+   */
+  RuntimeAgent::ExportedState lastRuntimeAgentExportedState;
 
   // Here, we will eventually allow RuntimeAgents to store their own arbitrary
   // state (e.g. some sort of K/V storage of folly::dynamic?)

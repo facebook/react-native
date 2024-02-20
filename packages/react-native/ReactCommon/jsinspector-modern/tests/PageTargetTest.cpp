@@ -31,10 +31,11 @@ class PageTargetTest : public Test {
 
  protected:
   PageTargetTest() {
-    EXPECT_CALL(runtimeTargetDelegate_, createAgentDelegate(_, _, _))
+    EXPECT_CALL(runtimeTargetDelegate_, createAgentDelegate(_, _, _, _))
         .WillRepeatedly(runtimeAgentDelegates_.lazily_make_unique<
                         FrontendChannel,
                         SessionState&,
+                        std::unique_ptr<RuntimeAgentDelegate::ExportedState>,
                         const ExecutionContextDescription&>());
   }
 
@@ -444,7 +445,7 @@ TEST_F(PageTargetProtocolTest, MessageRoutingWhileNoRuntimeAgentDelegate) {
 TEST_F(PageTargetProtocolTest, InstanceWithNullRuntimeAgentDelegate) {
   InSequence s;
 
-  EXPECT_CALL(runtimeTargetDelegate_, createAgentDelegate(_, _, _))
+  EXPECT_CALL(runtimeTargetDelegate_, createAgentDelegate(_, _, _, _))
       .WillRepeatedly(ReturnNull());
 
   auto& instanceTarget = page_->registerInstance(instanceTargetDelegate_);
