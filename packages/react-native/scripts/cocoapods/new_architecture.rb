@@ -104,6 +104,10 @@ class NewArchitectureHelper
         current_config = hash["pod_target_xcconfig"] != nil ? hash["pod_target_xcconfig"] : {}
         current_headers = current_config["HEADER_SEARCH_PATHS"] != nil ? current_config["HEADER_SEARCH_PATHS"] : ""
 
+        flags_to_add = new_arch_enabled ?
+            "#{@@folly_compiler_flags} -DRCT_NEW_ARCH_ENABLED=1" :
+            "#{@@folly_compiler_flags}"
+
         header_search_paths = ["\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/Headers/Private/Yoga\""]
         if ENV['USE_FRAMEWORKS']
             header_search_paths << "\"$(PODS_ROOT)/DoubleConversion\""
@@ -123,7 +127,7 @@ class NewArchitectureHelper
                 }
         end
         header_search_paths_string = header_search_paths.join(" ")
-        spec.compiler_flags = compiler_flags.empty? ? @@folly_compiler_flags : "#{compiler_flags} #{@@folly_compiler_flags}"
+        spec.compiler_flags = compiler_flags.empty? ? "$(inherited) #{flags_to_add}" : "$(inherited) #{compiler_flags} #{flags_to_add}"
         current_config["HEADER_SEARCH_PATHS"] = current_headers.empty? ?
             header_search_paths_string :
             "#{current_headers} #{header_search_paths_string}"
