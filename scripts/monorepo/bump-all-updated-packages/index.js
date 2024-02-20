@@ -9,12 +9,14 @@
  * @oncall react_native
  */
 
+const {REPO_ROOT} = require('../../consts');
 const {getPackageVersionStrByTag} = require('../../npm-utils');
 const {
   isReleaseBranch,
   parseVersion,
 } = require('../../releases/utils/version-utils');
 const {getBranchName} = require('../../scm-utils');
+const {getPackages} = require('../../utils/monorepo');
 const alignPackageVersions = require('../align-package-versions');
 const checkForGitChanges = require('../check-for-git-changes');
 const {
@@ -24,7 +26,6 @@ const {
   NO_COMMIT_CHOICE,
   PUBLISH_PACKAGES_TAG,
 } = require('../constants');
-const forEachPackage = require('../for-each-package');
 const bumpPackageVersion = require('./bump-package-version');
 const detectPackageUnreleasedChanges = require('./bump-utils');
 const chalk = require('chalk');
@@ -32,8 +33,6 @@ const {execSync} = require('child_process');
 const inquirer = require('inquirer');
 const path = require('path');
 const {echo, exec, exit} = require('shelljs');
-
-const ROOT_LOCATION = path.join(__dirname, '..', '..', '..');
 
 const buildExecutor =
   (
@@ -53,7 +52,7 @@ const buildExecutor =
       !detectPackageUnreleasedChanges(
         packageRelativePathFromRoot,
         packageName,
-        ROOT_LOCATION,
+        REPO_ROOT,
       )
     ) {
       return;
@@ -99,16 +98,6 @@ const buildExecutor =
       });
   };
 
-const buildAllExecutors = () => {
-  const executors = [];
-
-  forEachPackage((...params) => {
-    executors.push(buildExecutor(...params));
-  });
-
-  return executors;
-};
-
 const main = async () => {
   if (checkForGitChanges()) {
     echo(
@@ -119,8 +108,18 @@ const main = async () => {
     exit(1);
   }
 
-  const executors = buildAllExecutors();
-  for (const executor of executors) {
+  const packages = await getPackages({
+    includeReactNative: false,
+    includePrivate: true,
+  });
+
+  for (const pkg of Object.values(packages)) {
+    const executor = buildExecutor(
+      pkg.path,
+      path.relative(REPO_ROOT, pkg.path),
+      pkg.packageJson,
+    );
+
     await executor()
       .catch(() => exit(1))
       .then(() => echo());
@@ -132,7 +131,7 @@ const main = async () => {
   }
 
   echo('Aligning new versions across monorepo...');
-  alignPackageVersions();
+  await alignPackageVersions();
   echo(chalk.green('Done!\n'));
 
   // Figure out the npm dist-tags we want for all monorepo packages we're bumping
@@ -219,7 +218,7 @@ const main = async () => {
 
         case COMMIT_WITH_GENERIC_MESSAGE_CHOICE: {
           exec(`git commit -am "${GENERIC_COMMIT_MESSAGE}${tagString}"`, {
-            cwd: ROOT_LOCATION,
+            cwd: REPO_ROOT,
             silent: true,
           });
 
@@ -229,17 +228,17 @@ const main = async () => {
         case COMMIT_WITH_CUSTOM_MESSAGE_CHOICE: {
           // exec from shelljs currently does not support interactive input
           // https://github.com/shelljs/shelljs/wiki/FAQ#running-interactive-programs-with-exec
-          execSync('git commit -a', {cwd: ROOT_LOCATION, stdio: 'inherit'});
+          execSync('git commit -a', {cwd: REPO_ROOT, stdio: 'inherit'});
 
           const enteredCommitMessage = exec('git log -n 1 --format=format:%B', {
-            cwd: ROOT_LOCATION,
+            cwd: REPO_ROOT,
             silent: true,
           }).stdout.trim();
           const commitMessageWithTag =
             enteredCommitMessage + `\n\n${PUBLISH_PACKAGES_TAG}${tagString}`;
 
           exec(`git commit --amend -m "${commitMessageWithTag}"`, {
-            cwd: ROOT_LOCATION,
+            cwd: REPO_ROOT,
             silent: true,
           });
 

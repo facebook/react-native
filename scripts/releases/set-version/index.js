@@ -12,11 +12,11 @@
 'use strict';
 
 /*::
-import type {PackageJson} from '../utils/monorepo';
+import type {PackageJson} from '../../utils/monorepo';
 */
 
+const {getPackages} = require('../../utils/monorepo');
 const {setReactNativeVersion} = require('../set-rn-version');
-const {getPackages} = require('../utils/monorepo');
 const {promises: fs} = require('fs');
 const path = require('path');
 const yargs = require('yargs');

@@ -11,7 +11,7 @@
 
 const {PUBLISH_PACKAGES_TAG} = require('../monorepo/constants');
 const {publishPackage} = require('../npm-utils');
-const {getPackages} = require('../releases/utils/monorepo');
+const {getPackages} = require('../utils/monorepo');
 const {parseArgs} = require('@pkgjs/parseargs');
 const {execSync} = require('child_process');
 

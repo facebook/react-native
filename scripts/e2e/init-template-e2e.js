@@ -13,7 +13,7 @@
 
 const {retry} = require('../circleci/retry');
 const {REPO_ROOT} = require('../consts');
-const forEachPackage = require('../monorepo/for-each-package');
+const {getPackages} = require('../utils/monorepo');
 const {
   VERDACCIO_SERVER_URL,
   VERDACCIO_STORAGE_PATH,
@@ -22,6 +22,7 @@ const {
 const {parseArgs} = require('@pkgjs/parseargs');
 const chalk = require('chalk');
 const {execSync} = require('child_process');
+const path = require('path');
 
 const config = {
   options: {
@@ -86,26 +87,28 @@ async function initNewProjectFromSource(
     console.log('\nDone ✅');
 
     console.log('Publishing packages to local npm proxy\n');
-    forEachPackage(
-      (packageAbsolutePath, packageRelativePathFromRoot, packageManifest) => {
-        if (packageManifest.private) {
-          return;
-        }
+    const packages = await getPackages({
+      includeReactNative: false,
+      includePrivate: false,
+    });
 
-        const desc = `${packageManifest.name} (${packageRelativePathFromRoot})`;
-        process.stdout.write(
-          `${desc} ${chalk.dim('.').repeat(Math.max(0, 72 - desc.length))} `,
-        );
-        execSync(
-          `npm publish --registry ${VERDACCIO_SERVER_URL} --access public`,
-          {
-            cwd: packageAbsolutePath,
-            stdio: verbose ? 'inherit' : [process.stderr],
-          },
-        );
-        process.stdout.write(chalk.reset.inverse.bold.green(' DONE ') + '\n');
-      },
-    );
+    for (const {path: packagePath, packageJson} of Object.values(packages)) {
+      const desc = `${packageJson.name} (${path.relative(
+        REPO_ROOT,
+        packagePath,
+      )})`;
+      process.stdout.write(
+        `${desc} ${chalk.dim('.').repeat(Math.max(0, 72 - desc.length))} `,
+      );
+      execSync(
+        `npm publish --registry ${VERDACCIO_SERVER_URL} --access public`,
+        {
+          cwd: packagePath,
+          stdio: verbose ? 'inherit' : [process.stderr],
+        },
+      );
+      process.stdout.write(chalk.reset.inverse.bold.green(' DONE ') + '\n');
+    }
     console.log('\nDone ✅');
 
     console.log('Running react-native init without install');

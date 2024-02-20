@@ -20,11 +20,11 @@ const {getNpmInfo, publishPackage} = require('../npm-utils');
 const {removeNewArchFlags} = require('../releases/remove-new-arch-flags');
 const {setReactNativeVersion} = require('../releases/set-rn-version');
 const setVersion = require('../releases/set-version');
-const {getPackages} = require('../releases/utils/monorepo');
 const {
   generateAndroidArtifacts,
   publishAndroidArtifactsToMaven,
 } = require('../releases/utils/release-utils');
+const {getPackages} = require('../utils/monorepo');
 const path = require('path');
 const yargs = require('yargs');
 
