@@ -533,4 +533,44 @@ TYPED_TEST(JsiIntegrationHermesTest, EvaluateExpressionInExecutionContext) {
       std::to_string(executionContextId)));
 }
 
+TYPED_TEST(JsiIntegrationHermesTest, ResolveBreakpointAfterReload) {
+  this->connect();
+
+  InSequence s;
+
+  this->expectMessageFromPage(JsonParsed(AtJsonPtr("/id", 1)));
+  this->toPage_->sendMessage(R"({
+                                 "id": 1,
+                                 "method": "Debugger.setBreakpointByUrl",
+                                 "params": {"lineNumber": 2, "url": "breakpointTest.js"}
+                               })");
+
+  this->reload();
+
+  this->expectMessageFromPage(JsonEq(R"({
+                                         "id": 2,
+                                         "result": {}
+                                       })"));
+  this->toPage_->sendMessage(R"({
+                                 "id": 2,
+                                 "method": "Debugger.enable"
+                               })");
+
+  auto scriptInfo = this->expectMessageFromPage(JsonParsed(AllOf(
+      AtJsonPtr("/method", "Debugger.scriptParsed"),
+      AtJsonPtr("/params/url", "breakpointTest.js"))));
+  auto breakpointInfo = this->expectMessageFromPage(JsonParsed(AllOf(
+      AtJsonPtr("/method", "Debugger.breakpointResolved"),
+      AtJsonPtr("/params/location/lineNumber", 2))));
+  this->eval(R"( // line 0
+    globalThis.foo = function() { // line 1
+      Date.now(); // line 2
+    };
+    //# sourceURL=breakpointTest.js
+  )");
+  EXPECT_EQ(
+      breakpointInfo->value()["params"]["location"]["scriptId"],
+      scriptInfo->value()["params"]["scriptId"]);
+}
+
 } // namespace facebook::react::jsinspector_modern
