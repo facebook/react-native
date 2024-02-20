@@ -43,7 +43,7 @@ void BaseTextShadowNode::buildAttributedString(
       // don't need it at all). Storing a `ShadowView` instance instead of
       // `ShadowNode` should properly fix this problem.
       fragment.parentShadowView = shadowViewFromShadowNode(parentNode);
-      outAttributedString.appendFragment(fragment);
+      outAttributedString.appendFragmentIfNotEmpty(fragment);
       continue;
     }
 
@@ -66,7 +66,7 @@ void BaseTextShadowNode::buildAttributedString(
     fragment.string = AttributedString::Fragment::AttachmentCharacter();
     fragment.parentShadowView = shadowViewFromShadowNode(*childNode);
     fragment.textAttributes = baseTextAttributes;
-    outAttributedString.appendFragment(fragment);
+    outAttributedString.appendFragmentIfNotEmpty(fragment);
     outAttachments.push_back(Attachment{
         childNode.get(), outAttributedString.getFragments().size() - 1});
   }

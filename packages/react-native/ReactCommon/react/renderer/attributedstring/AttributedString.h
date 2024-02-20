@@ -63,9 +63,13 @@ class AttributedString : public Sealable, public DebugStringConvertible {
   using Fragments = std::vector<Fragment>;
 
   /*
-   * Appends and prepends a `fragment` to the string.
+   * Appends a `fragment` to the string (if that fragment is not empty).
    */
-  void appendFragment(const Fragment& fragment);
+  void appendFragmentIfNotEmpty(const Fragment& fragment);
+
+  /*
+   * Prepends a `fragment` to the string (if that fragment is not empty).
+   */
   void prependFragment(const Fragment& fragment);
 
   /*

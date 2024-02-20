@@ -48,7 +48,7 @@ AttributedStringBox TextInputShadowNode::attributedStringBoxToMeasure(
         : BaseTextShadowNode::getEmptyPlaceholder();
     auto textAttributes = getConcreteProps().getEffectiveTextAttributes(
         layoutContext.fontSizeMultiplier);
-    attributedString.appendFragment({string, textAttributes, {}});
+    attributedString.appendFragmentIfNotEmpty({string, textAttributes, {}});
   }
 
   return AttributedStringBox{attributedString};
@@ -60,7 +60,7 @@ AttributedString TextInputShadowNode::getAttributedString(
       layoutContext.fontSizeMultiplier);
   auto attributedString = AttributedString{};
 
-  attributedString.appendFragment(AttributedString::Fragment{
+  attributedString.appendFragmentIfNotEmpty(AttributedString::Fragment{
       .string = getConcreteProps().text,
       .textAttributes = textAttributes,
       // TODO: Is this really meant to be by value?
