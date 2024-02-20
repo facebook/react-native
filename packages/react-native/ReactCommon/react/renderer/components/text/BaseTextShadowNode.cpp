@@ -35,15 +35,21 @@ void BaseTextShadowNode::buildAttributedString(
         dynamic_cast<const RawTextShadowNode*>(childNode.get());
     if (rawTextShadowNode != nullptr) {
       auto fragment = AttributedString::Fragment{};
-      fragment.string = rawTextShadowNode->getConcreteProps().text;
-      fragment.textAttributes = baseTextAttributes;
+      const auto& text = rawTextShadowNode->getConcreteProps().text;
 
-      // Storing a retaining pointer to `ParagraphShadowNode` inside
-      // `attributedString` causes a retain cycle (besides that fact that we
-      // don't need it at all). Storing a `ShadowView` instance instead of
-      // `ShadowNode` should properly fix this problem.
-      fragment.parentShadowView = shadowViewFromShadowNode(parentNode);
-      outAttributedString.appendFragmentIfNotEmpty(fragment);
+      if (!text.empty()) {
+        fragment.string = text;
+        fragment.textAttributes = baseTextAttributes;
+
+        // Storing a retaining pointer to `ParagraphShadowNode` inside
+        // `attributedString` causes a retain cycle (besides that fact that we
+        // don't need it at all). Storing a `ShadowView` instance instead of
+        // `ShadowNode` should properly fix this problem.
+        fragment.parentShadowView = shadowViewFromShadowNode(parentNode);
+
+        outAttributedString.appendFragment(fragment);
+      }
+
       continue;
     }
 
@@ -66,7 +72,7 @@ void BaseTextShadowNode::buildAttributedString(
     fragment.string = AttributedString::Fragment::AttachmentCharacter();
     fragment.parentShadowView = shadowViewFromShadowNode(*childNode);
     fragment.textAttributes = baseTextAttributes;
-    outAttributedString.appendFragmentIfNotEmpty(fragment);
+    outAttributedString.appendFragment(fragment);
     outAttachments.push_back(Attachment{
         childNode.get(), outAttributedString.getFragments().size() - 1});
   }

@@ -29,7 +29,7 @@ TEST(AttributedStringTest, testToDynamic) {
   text.fontVariant = FontVariant::TabularNums;
   fragment.textAttributes = text;
 
-  attributedString.appendFragmentIfNotEmpty(fragment);
+  attributedString.appendFragment(fragment);
 
   auto result = toDynamic(attributedString);
   EXPECT_EQ(result["string"], fragment.string);

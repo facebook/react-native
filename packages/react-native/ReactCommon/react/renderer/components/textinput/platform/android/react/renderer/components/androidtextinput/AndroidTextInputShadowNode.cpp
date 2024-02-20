@@ -85,7 +85,7 @@ AttributedString AndroidTextInputShadowNode::getPlaceholderAttributedString()
   // appended to the AttributedString (see implementation of appendFragment)
   fragment.textAttributes = textAttributes;
   fragment.parentShadowView = ShadowView(*this);
-  textAttributedString.appendFragmentIfNotEmpty(fragment);
+  textAttributedString.appendFragment(fragment);
 
   return textAttributedString;
 }

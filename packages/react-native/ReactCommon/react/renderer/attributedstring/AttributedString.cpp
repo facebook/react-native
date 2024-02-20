@@ -53,12 +53,8 @@ bool Fragment::operator!=(const Fragment& rhs) const {
 
 #pragma mark - AttributedString
 
-void AttributedString::appendFragmentIfNotEmpty(const Fragment& fragment) {
+void AttributedString::appendFragment(const Fragment& fragment) {
   ensureUnsealed();
-
-  if (fragment.string.empty()) {
-    return;
-  }
 
   fragments_.push_back(fragment);
 }
