@@ -78,7 +78,7 @@ async function main() {
 async function setReactNativeVersion(
   version /*: string */,
   dependencyVersions /*: ?Record<string, string> */,
-  buildType /*: BuildType */,
+  buildType /*: ?BuildType */,
 ) {
   const versionInfo = parseVersion(version, buildType);
 

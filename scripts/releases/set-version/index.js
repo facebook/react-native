@@ -15,62 +15,20 @@
 import type {PackageJson} from '../utils/monorepo';
 */
 
-const {REACT_NATIVE_PACKAGE_DIR} = require('../../consts');
-const {updateGradleFile, updateSourceFiles} = require('../set-rn-version');
+const {setReactNativeVersion} = require('../set-rn-version');
 const {getPackages} = require('../utils/monorepo');
-const {parseVersion} = require('../utils/version-utils');
 const {promises: fs} = require('fs');
 const path = require('path');
 const yargs = require('yargs');
-
-const TEMPLATE_DIR = path.join(REACT_NATIVE_PACKAGE_DIR, 'template');
-
-async function updatePackages(
-  version /*: string */,
-  skipReactNativeVersion /*: boolean */,
-) {
-  const packages = await getPackages({
-    includePrivate: false,
-    includeReactNative: true,
-  });
-  const newPackageVersions = Object.fromEntries(
-    Object.keys(packages).map(packageName => [packageName, version]),
-  );
-  const templatePackageJson /*: PackageJson */ = JSON.parse(
-    await fs.readFile(path.join(TEMPLATE_DIR, 'package.json'), 'utf-8'),
-  );
-  const packagesToUpdate = [
-    ...Object.values(packages),
-    {
-      path: TEMPLATE_DIR,
-      packageJson: templatePackageJson,
-    },
-  ];
-
-  await Promise.all(
-    packagesToUpdate.map(({path: packagePath, packageJson}) =>
-      updatePackageJson(
-        packagePath,
-        packageJson,
-        newPackageVersions,
-        skipReactNativeVersion,
-      ),
-    ),
-  );
-}
 
 async function updatePackageJson(
   packagePath /*: string */,
   packageJson /*: PackageJson */,
   newPackageVersions /*: $ReadOnly<{[string]: string}> */,
-  skipReactNativeVersion /*: boolean */,
 ) /*: Promise<void> */ {
   const packageName = packageJson.name;
 
-  if (
-    packageName in newPackageVersions &&
-    (!skipReactNativeVersion || packageName !== 'react-native')
-  ) {
+  if (packageName in newPackageVersions) {
     packageJson.version = newPackageVersions[packageName];
   }
 
@@ -81,12 +39,8 @@ async function updatePackageJson(
       continue;
     }
 
-    for (const dependency of Object.keys(deps)) {
-      if (dependency === 'react-native' && skipReactNativeVersion) {
-        continue;
-      }
-
-      if (dependency in newPackageVersions) {
+    for (const dependency in newPackageVersions) {
+      if (dependency in deps) {
         deps[dependency] = newPackageVersions[dependency];
       }
     }
@@ -115,15 +69,31 @@ async function updatePackageJson(
 async function setVersion(
   version /*: string */,
   skipReactNativeVersion /*: boolean */ = false,
-) {
-  const parsedVersion = parseVersion(version);
+) /*: Promise<void> */ {
+  const packages = await getPackages({
+    includePrivate: false,
+    includeReactNative: true,
+  });
+  const newPackageVersions = Object.fromEntries(
+    Object.keys(packages).map(packageName => [packageName, version]),
+  );
 
-  if (!skipReactNativeVersion) {
-    await updateSourceFiles(parsedVersion);
-    await updateGradleFile(parsedVersion.version);
-  }
+  await setReactNativeVersion(
+    skipReactNativeVersion ? '1000.0.0' : version,
+    newPackageVersions,
+  );
 
-  await updatePackages(parsedVersion.version, skipReactNativeVersion);
+  // Exclude the react-native package, since this (and the template) are
+  // handled by `setReactNativeVersion`.
+  const packagesToUpdate = Object.values(packages).filter(
+    pkg => pkg.name !== 'react-native',
+  );
+
+  await Promise.all(
+    packagesToUpdate.map(({path: packagePath, packageJson}) =>
+      updatePackageJson(packagePath, packageJson, newPackageVersions),
+    ),
+  );
 }
 
 if (require.main === module) {
