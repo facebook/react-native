@@ -39,9 +39,6 @@ public class WritableNativeArray extends ReadableNativeArray implements Writable
   public native void pushInt(int value);
 
   @Override
-  public native void pushLong(long value);
-
-  @Override
   public native void pushString(@Nullable String value);
 
   // Note: this consumes the map so do not reuse it.

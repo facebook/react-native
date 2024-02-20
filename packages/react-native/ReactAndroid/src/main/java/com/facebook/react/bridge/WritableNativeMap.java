@@ -33,9 +33,6 @@ public class WritableNativeMap extends ReadableNativeMap implements WritableMap 
   public native void putInt(@NonNull String key, int value);
 
   @Override
-  public native void putLong(@NonNull String key, long value);
-
-  @Override
   public native void putNull(@NonNull String key);
 
   @Override
