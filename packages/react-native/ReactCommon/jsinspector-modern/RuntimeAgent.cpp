@@ -35,7 +35,7 @@ bool RuntimeAgent::handleRequest(const cdp::PreparsedRequest& req) {
     ExecutionContextSelector contextSelector = ExecutionContextSelector::all();
 
     // TODO: Eventually, move execution context targeting out of RuntimeAgent.
-    // Right now, there's only ever one context (Runtime) in a Page, so we can
+    // Right now, there's only ever one context (Runtime) in a Host, so we can
     // handle it here for simplicity, and use session state to propagate
     // bindings to the next RuntimeAgent.
     if (req.params.count("executionContextId")) {

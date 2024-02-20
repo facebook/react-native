@@ -31,22 +31,22 @@
 
 namespace facebook::react::jsinspector_modern {
 
-class PageTargetSession;
-class PageAgent;
-class PageTarget;
+class HostTargetSession;
+class HostAgent;
+class HostTarget;
 
 /**
- * Receives events from a PageTarget. This is a shared interface that each
+ * Receives events from a HostTarget. This is a shared interface that each
  * React Native platform needs to implement in order to integrate with the
  * debugging stack.
  */
-class PageTargetDelegate {
+class HostTargetDelegate {
  public:
-  PageTargetDelegate() = default;
-  PageTargetDelegate(const PageTargetDelegate&) = delete;
-  PageTargetDelegate(PageTargetDelegate&&) = default;
-  PageTargetDelegate& operator=(const PageTargetDelegate&) = delete;
-  PageTargetDelegate& operator=(PageTargetDelegate&&) = default;
+  HostTargetDelegate() = default;
+  HostTargetDelegate(const HostTargetDelegate&) = delete;
+  HostTargetDelegate(HostTargetDelegate&&) = default;
+  HostTargetDelegate& operator=(const HostTargetDelegate&) = delete;
+  HostTargetDelegate& operator=(HostTargetDelegate&&) = default;
 
   // TODO(moti): This is 1:1 the shape of the corresponding CDP message -
   // consider reusing typed/generated CDP interfaces when we have those.
@@ -67,7 +67,7 @@ class PageTargetDelegate {
     }
   };
 
-  virtual ~PageTargetDelegate();
+  virtual ~HostTargetDelegate();
 
   /**
    * Called when the debugger requests a reload of the page. This is called on
@@ -78,19 +78,19 @@ class PageTargetDelegate {
 };
 
 /**
- * The limited interface that PageTarget exposes to its associated
+ * The limited interface that HostTarget exposes to its associated
  * sessions/agents.
  */
-class PageTargetController final {
+class HostTargetController final {
  public:
-  explicit PageTargetController(PageTarget& target);
+  explicit HostTargetController(HostTarget& target);
 
-  PageTargetDelegate& getDelegate();
+  HostTargetDelegate& getDelegate();
 
   bool hasInstance() const;
 
  private:
-  PageTarget& target_;
+  HostTarget& target_;
 };
 
 /**
@@ -98,37 +98,37 @@ class PageTargetController final {
  * "Host" in React Native's architecture - the entity that manages the
  * lifecycle of a React Instance.
  */
-class JSINSPECTOR_EXPORT PageTarget
-    : public EnableExecutorFromThis<PageTarget> {
+class JSINSPECTOR_EXPORT HostTarget
+    : public EnableExecutorFromThis<HostTarget> {
  public:
   struct SessionMetadata {
     std::optional<std::string> integrationName;
   };
 
   /**
-   * Constructs a new PageTarget.
-   * \param delegate The PageTargetDelegate that will
-   * receive events from this PageTarget. The caller is responsible for ensuring
-   * that the PageTargetDelegate outlives this object.
+   * Constructs a new HostTarget.
+   * \param delegate The HostTargetDelegate that will
+   * receive events from this HostTarget. The caller is responsible for ensuring
+   * that the HostTargetDelegate outlives this object.
    * \param executor An executor that may be used to call methods on this
-   * PageTarget while it exists. \c create additionally guarantees that the
-   * executor will not be called after the PageTarget is destroyed.
+   * HostTarget while it exists. \c create additionally guarantees that the
+   * executor will not be called after the HostTarget is destroyed.
    */
-  static std::shared_ptr<PageTarget> create(
-      PageTargetDelegate& delegate,
+  static std::shared_ptr<HostTarget> create(
+      HostTargetDelegate& delegate,
       VoidExecutor executor);
 
-  PageTarget(const PageTarget&) = delete;
-  PageTarget(PageTarget&&) = delete;
-  PageTarget& operator=(const PageTarget&) = delete;
-  PageTarget& operator=(PageTarget&&) = delete;
-  ~PageTarget();
+  HostTarget(const HostTarget&) = delete;
+  HostTarget(HostTarget&&) = delete;
+  HostTarget& operator=(const HostTarget&) = delete;
+  HostTarget& operator=(HostTarget&&) = delete;
+  ~HostTarget();
 
   /**
-   * Creates a new Session connected to this PageTarget, wrapped in an
+   * Creates a new Session connected to this HostTarget, wrapped in an
    * interface which is compatible with \c IInspector::addPage.
-   * The caller is responsible for destroying the connection before PageTarget
-   * is destroyed, on the same thread where PageTarget's constructor and
+   * The caller is responsible for destroying the connection before HostTarget
+   * is destroyed, on the same thread where HostTarget's constructor and
    * destructor execute.
    */
   std::unique_ptr<ILocalConnection> connect(
@@ -136,19 +136,19 @@ class JSINSPECTOR_EXPORT PageTarget
       SessionMetadata sessionMetadata = {});
 
   /**
-   * Registers an instance with this PageTarget.
+   * Registers an instance with this HostTarget.
    * \param delegate The InstanceTargetDelegate that will receive events from
    * this InstanceTarget. The caller is responsible for ensuring that the
    * InstanceTargetDelegate outlives this object.
    * \return An InstanceTarget reference representing the newly created
    * instance. This reference is only valid until unregisterInstance is called
-   * (or the PageTarget is destroyed). \pre There isn't currently an instance
-   * registered with this PageTarget.
+   * (or the HostTarget is destroyed). \pre There isn't currently an instance
+   * registered with this HostTarget.
    */
   InstanceTarget& registerInstance(InstanceTargetDelegate& delegate);
 
   /**
-   * Unregisters an instance from this PageTarget.
+   * Unregisters an instance from this HostTarget.
    * \param instance The InstanceTarget reference previously returned by
    * registerInstance.
    */
@@ -156,24 +156,24 @@ class JSINSPECTOR_EXPORT PageTarget
 
  private:
   /**
-   * Constructs a new PageTarget.
+   * Constructs a new HostTarget.
    * The caller must call setExecutor immediately afterwards.
-   * \param delegate The PageTargetDelegate that will
-   * receive events from this PageTarget. The caller is responsible for ensuring
-   * that the PageTargetDelegate outlives this object.
+   * \param delegate The HostTargetDelegate that will
+   * receive events from this HostTarget. The caller is responsible for ensuring
+   * that the HostTargetDelegate outlives this object.
    */
-  PageTarget(PageTargetDelegate& delegate);
+  HostTarget(HostTargetDelegate& delegate);
 
-  PageTargetDelegate& delegate_;
-  WeakList<PageTargetSession> sessions_;
-  PageTargetController controller_{*this};
+  HostTargetDelegate& delegate_;
+  WeakList<HostTargetSession> sessions_;
+  HostTargetController controller_{*this};
   // executionContextManager_ is a shared_ptr to guarantee its validity while
   // the InstanceTarget is alive (just in case the InstanceTarget ends up
-  // briefly outliving the PageTarget, which it generally shouldn't).
+  // briefly outliving the HostTarget, which it generally shouldn't).
   std::shared_ptr<ExecutionContextManager> executionContextManager_;
   std::shared_ptr<InstanceTarget> currentInstance_{nullptr};
 
-  inline PageTargetDelegate& getDelegate() {
+  inline HostTargetDelegate& getDelegate() {
     return delegate_;
   }
 
@@ -181,10 +181,10 @@ class JSINSPECTOR_EXPORT PageTarget
     return currentInstance_ != nullptr;
   }
 
-  // Necessary to allow PageAgent to access PageTarget's internals in a
-  // controlled way (i.e. only PageTargetController gets friend access, while
-  // PageAgent itself doesn't).
-  friend class PageTargetController;
+  // Necessary to allow HostAgent to access HostTarget's internals in a
+  // controlled way (i.e. only HostTargetController gets friend access, while
+  // HostAgent itself doesn't).
+  friend class HostTargetController;
 };
 
 } // namespace facebook::react::jsinspector_modern

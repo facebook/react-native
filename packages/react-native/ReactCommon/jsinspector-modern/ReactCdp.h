@@ -9,8 +9,8 @@
 
 #include <jsinspector-modern/ExecutionContext.h>
 #include <jsinspector-modern/FallbackRuntimeAgentDelegate.h>
+#include <jsinspector-modern/HostTarget.h>
 #include <jsinspector-modern/InstanceTarget.h>
-#include <jsinspector-modern/PageTarget.h>
 #include <jsinspector-modern/RuntimeTarget.h>
 #include <jsinspector-modern/ScopedExecutor.h>
 #include <jsinspector-modern/SessionState.h>

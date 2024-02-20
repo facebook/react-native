@@ -437,7 +437,7 @@ struct RCTInstanceCallback : public InstanceCallback {
   // pointer into a member of RCTBridge! But we only use it while _reactInstance exists, meaning we
   // haven't been invalidated, and therefore RCTBridge hasn't been deallocated yet.
   RCTAssertMainQueue();
-  facebook::react::jsinspector_modern::PageTarget *parentInspectorTarget = _parentBridge.inspectorTarget;
+  facebook::react::jsinspector_modern::HostTarget *parentInspectorTarget = _parentBridge.inspectorTarget;
 
   // Dispatch the instance initialization as soon as the initial module metadata has
   // been collected (see initModules)
@@ -658,7 +658,7 @@ struct RCTInstanceCallback : public InstanceCallback {
 }
 
 - (void)_initializeBridge:(std::shared_ptr<JSExecutorFactory>)executorFactory
-    parentInspectorTarget:(facebook::react::jsinspector_modern::PageTarget *)parentInspectorTarget
+    parentInspectorTarget:(facebook::react::jsinspector_modern::HostTarget *)parentInspectorTarget
 {
   if (!self.valid) {
     return;
@@ -691,7 +691,7 @@ struct RCTInstanceCallback : public InstanceCallback {
 }
 
 - (void)_initializeBridgeLocked:(std::shared_ptr<JSExecutorFactory>)executorFactory
-          parentInspectorTarget:(facebook::react::jsinspector_modern::PageTarget *)parentInspectorTarget
+          parentInspectorTarget:(facebook::react::jsinspector_modern::HostTarget *)parentInspectorTarget
 {
   std::lock_guard<std::mutex> guard(_moduleRegistryLock);
 

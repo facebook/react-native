@@ -84,7 +84,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   // APIs supporting interop with native modules and view managers
   RCTBridgeModuleDecorator *_bridgeModuleDecorator;
 
-  jsinspector_modern::PageTarget *_parentInspectorTarget;
+  jsinspector_modern::HostTarget *_parentInspectorTarget;
 }
 
 #pragma mark - Public
@@ -95,7 +95,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
       turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)tmmDelegate
              onInitialBundleLoad:(RCTInstanceInitialBundleLoadCompletionBlock)onInitialBundleLoad
                   moduleRegistry:(RCTModuleRegistry *)moduleRegistry
-           parentInspectorTarget:(jsinspector_modern::PageTarget *)parentInspectorTarget
+           parentInspectorTarget:(jsinspector_modern::HostTarget *)parentInspectorTarget
 {
   if (self = [super init]) {
     _performanceLogger = [RCTPerformanceLogger new];

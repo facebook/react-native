@@ -102,7 +102,7 @@ class HermesRuntimeAgentDelegate::Impl final : public RuntimeAgentDelegate {
    * \param executionContextDescription A description of the execution context
    * represented by this runtime. This is used for disambiguating the
    * source/destination of CDP messages when there are multiple runtimes
-   * (concurrently or over the life of a Page).
+   * (concurrently or over the life of a Host).
    * \param runtime The HermesRuntime that this agent is attached to.
    * \param runtimeExecutor A callback for scheduling work on the JS thread.
    * \c runtimeExecutor may drop scheduled work if the runtime is destroyed
@@ -155,7 +155,7 @@ class HermesRuntimeAgentDelegate::Impl final : public RuntimeAgentDelegate {
     // TODO: Change to string::starts_with when we're on C++20.
     if (req.method.rfind("Log.", 0) == 0) {
       // Since we know Hermes doesn't do anything useful with Log messages, but
-      // our containing PageAgent will, just bail out early.
+      // our containing HostAgent will, just bail out early.
       // TODO: We need a way to negotiate this more dynamically with Hermes
       // through the API.
       return false;

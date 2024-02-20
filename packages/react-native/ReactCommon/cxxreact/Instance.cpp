@@ -54,7 +54,7 @@ void Instance::initializeBridge(
     std::shared_ptr<JSExecutorFactory> jsef,
     std::shared_ptr<MessageQueueThread> jsQueue,
     std::shared_ptr<ModuleRegistry> moduleRegistry,
-    jsinspector_modern::PageTarget* parentInspectorTarget) {
+    jsinspector_modern::HostTarget* parentInspectorTarget) {
   callback_ = std::move(callback);
   moduleRegistry_ = std::move(moduleRegistry);
   parentInspectorTarget_ = parentInspectorTarget;

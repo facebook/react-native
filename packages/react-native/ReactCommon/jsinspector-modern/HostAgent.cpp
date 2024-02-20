@@ -7,9 +7,9 @@
 
 #include <folly/dynamic.h>
 #include <folly/json.h>
+#include <jsinspector-modern/HostAgent.h>
+#include <jsinspector-modern/HostTarget.h>
 #include <jsinspector-modern/InstanceAgent.h>
-#include <jsinspector-modern/PageAgent.h>
-#include <jsinspector-modern/PageTarget.h>
 
 #include <chrono>
 
@@ -27,19 +27,19 @@ namespace facebook::react::jsinspector_modern {
 static constexpr auto kModernCDPBackendNotice =
     ANSI_COLOR_BG_YELLOW ANSI_WEIGHT_BOLD
     "NOTE:" ANSI_WEIGHT_RESET " You are using the " ANSI_STYLE_ITALIC
-    "modern" ANSI_STYLE_RESET " CDP backend for React Native (PageTarget)."sv;
+    "modern" ANSI_STYLE_RESET " CDP backend for React Native (HostTarget)."sv;
 
-PageAgent::PageAgent(
+HostAgent::HostAgent(
     FrontendChannel frontendChannel,
-    PageTargetController& targetController,
-    PageTarget::SessionMetadata sessionMetadata,
+    HostTargetController& targetController,
+    HostTarget::SessionMetadata sessionMetadata,
     SessionState& sessionState)
     : frontendChannel_(frontendChannel),
       targetController_(targetController),
       sessionMetadata_(std::move(sessionMetadata)),
       sessionState_(sessionState) {}
 
-void PageAgent::handleRequest(const cdp::PreparsedRequest& req) {
+void HostAgent::handleRequest(const cdp::PreparsedRequest& req) {
   bool shouldSendOKResponse = false;
   bool isFinishedHandlingRequest = false;
 
@@ -113,7 +113,7 @@ void PageAgent::handleRequest(const cdp::PreparsedRequest& req) {
   frontendChannel_(json);
 }
 
-void PageAgent::sendInfoLogEntry(std::string_view text) {
+void HostAgent::sendInfoLogEntry(std::string_view text) {
   frontendChannel_(
       folly::toJson(folly::dynamic::object("method", "Log.entryAdded")(
           "params",
@@ -127,7 +127,7 @@ void PageAgent::sendInfoLogEntry(std::string_view text) {
                   "level", "info")("text", text)))));
 }
 
-void PageAgent::setCurrentInstanceAgent(
+void HostAgent::setCurrentInstanceAgent(
     std::shared_ptr<InstanceAgent> instanceAgent) {
   auto previousInstanceAgent = std::move(instanceAgent_);
   instanceAgent_ = std::move(instanceAgent);

@@ -35,7 +35,7 @@ class ReactInstance final : private jsinspector_modern::InstanceTargetDelegate {
       std::shared_ptr<MessageQueueThread> jsMessageQueueThread,
       std::shared_ptr<TimerManager> timerManager,
       JsErrorHandler::JsErrorHandlingFunc JsErrorHandlingFunc,
-      jsinspector_modern::PageTarget* parentInspectorTarget = nullptr);
+      jsinspector_modern::HostTarget* parentInspectorTarget = nullptr);
 
   RuntimeExecutor getUnbufferedRuntimeExecutor() noexcept;
 
@@ -87,7 +87,7 @@ class ReactInstance final : private jsinspector_modern::InstanceTargetDelegate {
 
   jsinspector_modern::InstanceTarget* inspectorTarget_{nullptr};
   jsinspector_modern::RuntimeTarget* runtimeInspectorTarget_{nullptr};
-  jsinspector_modern::PageTarget* parentInspectorTarget_{nullptr};
+  jsinspector_modern::HostTarget* parentInspectorTarget_{nullptr};
 };
 
 } // namespace facebook::react

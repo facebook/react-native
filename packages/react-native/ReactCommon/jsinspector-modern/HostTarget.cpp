@@ -5,11 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "PageTarget.h"
+#include "HostTarget.h"
+#include "HostAgent.h"
 #include "InspectorInterfaces.h"
 #include "InspectorUtilities.h"
 #include "InstanceTarget.h"
-#include "PageAgent.h"
 #include "Parsing.h"
 #include "SessionState.h"
 
@@ -21,15 +21,15 @@
 namespace facebook::react::jsinspector_modern {
 
 /**
- * A Session connected to a PageTarget, passing CDP messages to and from a
- * PageAgent which it owns.
+ * A Session connected to a HostTarget, passing CDP messages to and from a
+ * HostAgent which it owns.
  */
-class PageTargetSession {
+class HostTargetSession {
  public:
-  explicit PageTargetSession(
+  explicit HostTargetSession(
       std::unique_ptr<IRemoteConnection> remote,
-      PageTargetController& targetController,
-      PageTarget::SessionMetadata sessionMetadata)
+      HostTargetController& targetController,
+      HostTarget::SessionMetadata sessionMetadata)
       : remote_(std::make_shared<RAIIRemoteConnection>(std::move(remote))),
         frontendChannel_(
             [remoteWeak = std::weak_ptr(remote_)](std::string_view message) {
@@ -37,7 +37,7 @@ class PageTargetSession {
                 remote->onMessage(std::string(message));
               }
             }),
-        pageAgent_(
+        hostAgent_(
             frontendChannel_,
             targetController,
             std::move(sessionMetadata),
@@ -67,7 +67,7 @@ class PageTargetSession {
     // Catch exceptions that may arise from accessing dynamic params during
     // request handling.
     try {
-      pageAgent_.handleRequest(request);
+      hostAgent_.handleRequest(request);
     } catch (const cdp::TypeError& e) {
       frontendChannel_(folly::toJson(folly::dynamic::object("id", request.id)(
           "error",
@@ -77,17 +77,17 @@ class PageTargetSession {
   }
 
   /**
-   * Replace the current instance agent inside pageAgent_ with a new one
+   * Replace the current instance agent inside hostAgent_ with a new one
    * connected to the new InstanceTarget.
    * \param instance The new instance target. May be nullptr to indicate
    * there's no current instance.
    */
   void setCurrentInstance(InstanceTarget* instance) {
     if (instance) {
-      pageAgent_.setCurrentInstanceAgent(
+      hostAgent_.setCurrentInstanceAgent(
           instance->createAgent(frontendChannel_, state_));
     } else {
-      pageAgent_.setCurrentInstanceAgent(nullptr);
+      hostAgent_.setCurrentInstanceAgent(nullptr);
     }
   }
 
@@ -95,26 +95,26 @@ class PageTargetSession {
   // Owned by this instance, but shared (weakly) with the frontend channel
   std::shared_ptr<RAIIRemoteConnection> remote_;
   FrontendChannel frontendChannel_;
-  PageAgent pageAgent_;
+  HostAgent hostAgent_;
   SessionState state_;
 };
 
-std::shared_ptr<PageTarget> PageTarget::create(
-    PageTargetDelegate& delegate,
+std::shared_ptr<HostTarget> HostTarget::create(
+    HostTargetDelegate& delegate,
     VoidExecutor executor) {
-  std::shared_ptr<PageTarget> pageTarget{new PageTarget(delegate)};
-  pageTarget->setExecutor(executor);
-  return pageTarget;
+  std::shared_ptr<HostTarget> hostTarget{new HostTarget(delegate)};
+  hostTarget->setExecutor(executor);
+  return hostTarget;
 }
 
-PageTarget::PageTarget(PageTargetDelegate& delegate)
+HostTarget::HostTarget(HostTargetDelegate& delegate)
     : delegate_(delegate),
       executionContextManager_{std::make_shared<ExecutionContextManager>()} {}
 
-std::unique_ptr<ILocalConnection> PageTarget::connect(
+std::unique_ptr<ILocalConnection> HostTarget::connect(
     std::unique_ptr<IRemoteConnection> connectionToFrontend,
     SessionMetadata sessionMetadata) {
-  auto session = std::make_shared<PageTargetSession>(
+  auto session = std::make_shared<HostTargetSession>(
       std::move(connectionToFrontend), controller_, std::move(sessionMetadata));
   session->setCurrentInstance(currentInstance_.get());
   sessions_.insert(std::weak_ptr(session));
@@ -122,44 +122,44 @@ std::unique_ptr<ILocalConnection> PageTarget::connect(
       [session](std::string message) { (*session)(message); });
 }
 
-PageTarget::~PageTarget() {
-  // Sessions are owned by InspectorPackagerConnection, not by PageTarget, but
-  // they hold a PageTarget& that we must guarantee is valid.
+HostTarget::~HostTarget() {
+  // Sessions are owned by InspectorPackagerConnection, not by HostTarget, but
+  // they hold a HostTarget& that we must guarantee is valid.
   assert(
       sessions_.empty() &&
-      "PageTargetSession objects must be destroyed before their PageTarget. Did you call getInspectorInstance().removePage()?");
+      "HostTargetSession objects must be destroyed before their HostTarget. Did you call getInspectorInstance().removePage()?");
 }
 
-PageTargetDelegate::~PageTargetDelegate() {}
+HostTargetDelegate::~HostTargetDelegate() {}
 
-InstanceTarget& PageTarget::registerInstance(InstanceTargetDelegate& delegate) {
+InstanceTarget& HostTarget::registerInstance(InstanceTargetDelegate& delegate) {
   assert(!currentInstance_ && "Only one instance allowed");
   currentInstance_ = InstanceTarget::create(
       executionContextManager_, delegate, makeVoidExecutor(executorFromThis()));
   sessions_.forEach(
-      [currentInstance = &*currentInstance_](PageTargetSession& session) {
+      [currentInstance = &*currentInstance_](HostTargetSession& session) {
         session.setCurrentInstance(currentInstance);
       });
   return *currentInstance_;
 }
 
-void PageTarget::unregisterInstance(InstanceTarget& instance) {
+void HostTarget::unregisterInstance(InstanceTarget& instance) {
   assert(
       currentInstance_ && currentInstance_.get() == &instance &&
       "Invalid unregistration");
   sessions_.forEach(
-      [](PageTargetSession& session) { session.setCurrentInstance(nullptr); });
+      [](HostTargetSession& session) { session.setCurrentInstance(nullptr); });
   currentInstance_.reset();
 }
 
-PageTargetController::PageTargetController(PageTarget& target)
+HostTargetController::HostTargetController(HostTarget& target)
     : target_(target) {}
 
-PageTargetDelegate& PageTargetController::getDelegate() {
+HostTargetDelegate& HostTargetController::getDelegate() {
   return target_.getDelegate();
 }
 
-bool PageTargetController::hasInstance() const {
+bool HostTargetController::hasInstance() const {
   return target_.hasInstance();
 }
 

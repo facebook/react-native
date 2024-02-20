@@ -54,7 +54,7 @@ static __weak ShimRCTInstance *weakShim = nil;
       turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)tmmDelegate
              onInitialBundleLoad:(RCTInstanceInitialBundleLoadCompletionBlock)onInitialBundleLoad
                   moduleRegistry:(RCTModuleRegistry *)moduleRegistry
-           parentInspectorTarget:(facebook::react::jsinspector_modern::PageTarget *)parentInspectorTarget
+           parentInspectorTarget:(facebook::react::jsinspector_modern::HostTarget *)parentInspectorTarget
 {
   weakShim.initCount++;
   return self;

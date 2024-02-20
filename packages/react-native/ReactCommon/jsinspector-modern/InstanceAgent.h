@@ -47,7 +47,7 @@ class InstanceAgent final {
   bool handleRequest(const cdp::PreparsedRequest& req);
 
   /**
-   * Replace the current RuntimeAgent pageAgent_ with a new one
+   * Replace the current RuntimeAgent hostAgent_ with a new one
    * connected to the new RuntimeTarget.
    * \param runtime The new runtime target. May be nullptr to indicate
    * there's no current debuggable runtime.
