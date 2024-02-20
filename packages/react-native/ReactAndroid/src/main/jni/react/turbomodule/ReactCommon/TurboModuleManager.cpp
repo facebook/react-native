@@ -130,8 +130,9 @@ void TurboModuleManager::registerNatives() {
 }
 
 TurboModuleProviderFunctionType TurboModuleManager::createTurboModuleProvider(
-    bool enableSyncVoidMethods) {
+    jsi::Runtime *runtime, bool enableSyncVoidMethods) {
   return [turboModuleCache_ = std::weak_ptr<ModuleCache>(turboModuleCache_),
+          runtime,
           jsCallInvoker_ = std::weak_ptr<CallInvoker>(jsCallInvoker_),
           nativeMethodCallInvoker_ =
               std::weak_ptr<NativeMethodCallInvoker>(nativeMethodCallInvoker_),
@@ -210,6 +211,11 @@ TurboModuleProviderFunctionType TurboModuleManager::createTurboModuleProvider(
           .shouldVoidMethodsExecuteSync = enableSyncVoidMethods};
 
       auto turboModule = delegate->cthis()->getTurboModule(name, params);
+      if (moduleInstance->isInstanceOf(JTurboModuleWithJSIBindings::javaClassStatic())) {
+        auto installJSIBindingsForModule = moduleInstance->getClass()->getMethod<void(jlong)>("installJSIBindings");
+        installJSIBindingsForModule(moduleInstance, reinterpret_cast<jlong>(runtime));
+      }
+
       turboModuleCache->insert({name, turboModule});
       TurboModulePerfLogger::moduleJSRequireEndingEnd(moduleName);
       return turboModule;
@@ -325,13 +331,13 @@ void TurboModuleManager::installJSIBindings(
                        jsi::Runtime& runtime) {
     if (isInteropLayerDisabled) {
       TurboModuleBinding::install(
-          runtime, createTurboModuleProvider(enableSyncVoidMethods));
+          runtime, createTurboModuleProvider(&runtime, enableSyncVoidMethods));
       return;
     }
 
     TurboModuleBinding::install(
         runtime,
-        createTurboModuleProvider(enableSyncVoidMethods),
+        createTurboModuleProvider(&runtime, enableSyncVoidMethods),
         createLegacyModuleProvider());
   });
 }

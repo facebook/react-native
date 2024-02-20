@@ -9,6 +9,7 @@
 #include <DefaultTurboModuleManagerDelegate.h>
 #include <NativeCxxModuleExample.h>
 #include <ReactCommon/SampleTurboModuleSpec.h>
+#include <ReactCommon/SampleTurboModuleJSIBindings.h>
 #include <fbjni/fbjni.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 
@@ -66,5 +67,6 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void*) {
     facebook::react::DefaultComponentsRegistry::
         registerComponentDescriptorsFromEntryPoint =
             &facebook::react::registerComponents;
+    facebook::react::SampleTurboModuleJSIBindings::registerNatives();
   });
 }

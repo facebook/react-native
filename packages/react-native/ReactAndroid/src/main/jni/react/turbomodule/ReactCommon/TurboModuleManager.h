@@ -67,7 +67,7 @@ class TurboModuleManager : public jni::HybridClass<TurboModuleManager> {
       jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate);
 
   TurboModuleProviderFunctionType createTurboModuleProvider(
-      bool enableSyncVoidMethods);
+      jsi::Runtime *runtime, bool enableSyncVoidMethods);
   TurboModuleProviderFunctionType createLegacyModuleProvider();
 };
 
