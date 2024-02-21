@@ -488,6 +488,8 @@ android {
   }
   if (rootProject.hasProperty("ndkVersion") && rootProject.properties["ndkVersion"] != null) {
     ndkVersion = rootProject.properties["ndkVersion"].toString()
+  } else {
+    ndkVersion = libs.versions.ndkVersion.get()
   }
 
   compileOptions {
