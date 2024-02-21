@@ -65,6 +65,10 @@ async function main() {
   }
 
   await initNewProjectFromSource(options);
+
+  // TODO(T179377112): Fix memory leak from `spawn` in `setupVerdaccio` (above
+  // kill command does not wait for kill success).
+  process.exit(0);
 }
 
 async function initNewProjectFromSource(
@@ -122,48 +126,43 @@ async function initNewProjectFromSource(
       {
         // Avoid loading packages/react-native/react-native.config.js
         cwd: REPO_ROOT,
-        stdio: verbose ? 'inherit' : [process.stderr],
+        stdio: 'inherit',
       },
     );
     console.log('\nDone ✅');
 
     console.log('Installing project dependencies');
-    await runYarnUsingProxy(directory);
+    await installProjectUsingProxy(directory);
     console.log('Done ✅');
   } catch (e) {
     console.log('Failed ❌');
     throw e;
   } finally {
     console.log(`Cleanup: Killing Verdaccio process (PID: ${verdaccioPid})`);
-    execSync(`kill -9 ${verdaccioPid}`);
-    console.log('Done ✅');
-
+    try {
+      execSync(`kill -9 ${verdaccioPid}`);
+      console.log('Done ✅');
+    } catch {
+      console.warn('Failed to kill Verdaccio process');
+    }
     console.log('Cleanup: Removing Verdaccio storage directory');
     execSync(`rm -rf ${VERDACCIO_STORAGE_PATH}`);
     console.log('Done ✅');
-
-    // TODO(huntie): Fix memory leak from `spawn` in `setupVerdaccio` (above
-    // kill command does not wait for kill success).
-    process.exit(0);
   }
 }
 
-async function runYarnUsingProxy(cwd /*: string */) {
+async function installProjectUsingProxy(cwd /*: string */) {
   const execOptions = {
     cwd,
     stdio: 'inherit',
   };
-  execSync(
-    `yarn config set npmRegistryServer "${VERDACCIO_SERVER_URL}"`,
-    execOptions,
-  );
-  execSync(
-    'yarn config set unsafeHttpWhitelist --json \'["localhost"]\'',
-    execOptions,
-  );
 
   // TODO(huntie): Review pre-existing retry limit
-  const success = await retry('yarn', execOptions, 3, 500, ['install']);
+  const success = await retry('npm', execOptions, 3, 500, [
+    'install',
+    '--registry',
+    VERDACCIO_SERVER_URL,
+  ]);
 
   if (!success) {
     throw new Error('Failed to install project dependencies');

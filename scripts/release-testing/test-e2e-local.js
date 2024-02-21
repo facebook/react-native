@@ -27,6 +27,7 @@ const {
   prepareArtifacts,
   setupCircleCIArtifacts,
 } = require('./utils/testing-utils');
+const chalk = require('chalk');
 const debug = require('debug')('test-e2e-local');
 const fs = require('fs');
 const path = require('path');
@@ -301,10 +302,10 @@ async function testRNTestProject(
     );
 
     cd('..');
-    exec('yarn ios');
+    exec('npm run ios');
   } else {
     // android
-    exec('yarn android');
+    exec('npm run android');
   }
   popd();
 }
@@ -329,7 +330,7 @@ async function main() {
 
   let circleCIArtifacts = await setupCircleCIArtifacts(
     // $FlowIgnoreError[prop-missing]
-    argv.circleCIToken,
+    argv.circleciToken,
     branchName,
   );
 
@@ -337,6 +338,15 @@ async function main() {
     await testRNTester(circleCIArtifacts, onReleaseBranch);
   } else {
     await testRNTestProject(circleCIArtifacts);
+
+    console.warn(
+      chalk.yellow(`
+================================================================================
+NOTE: Verdaccio may still be running on after this script has finished. Please
+Force Quit via Activity Monitor.
+================================================================================
+    `),
+    );
   }
 }
 
