@@ -17,7 +17,7 @@
 const metroBabelRegister = require('metro-babel-register');
 const nullthrows = require('nullthrows');
 const createCacheKeyFunction =
-  require('@jest/create-cache-key-function').default;
+  require('@jest/create-cache-key-function').default; // test
 
 const {
   transformSync: babelTransformSync,
