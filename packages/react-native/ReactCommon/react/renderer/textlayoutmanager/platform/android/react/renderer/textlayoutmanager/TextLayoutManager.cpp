@@ -26,12 +26,58 @@ static int countAttachments(const AttributedString& attributedString) {
   int count = 0;
 
   for (const auto& fragment : attributedString.getFragments()) {
-    if (fragment.isAttachment()) {
-      count++;
+    switch (fragment.getKind()) {
+      case AttributedString::Fragment::Kind::Text: {
+        if (fragment.asText().isAttachment()) {
+          count++;
+        }
+        break;
+      }
+
+      case AttributedString::Fragment::Kind::Span: {
+        count += countAttachments(fragment.asSpan().attributedSubstring);
+        break;
+      }
     }
   }
 
   return count;
+}
+
+static void collectAttachments(
+    const jfloat* attachmentData,
+    const AttributedString& attributedString,
+    TextMeasurement::Attachments& outAttachments) {
+  int attachmentIndex = 0;
+  for (const auto& fragment : attributedString.getFragments()) {
+    switch (fragment.getKind()) {
+      case AttributedString::Fragment::Kind::Text: {
+        const auto& textFragment = fragment.asText();
+
+        if (textFragment.isAttachment()) {
+          float top = attachmentData[attachmentIndex * 2];
+          float left = attachmentData[attachmentIndex * 2 + 1];
+          float width =
+              textFragment.parentShadowView.layoutMetrics.frame.size.width;
+          float height =
+              textFragment.parentShadowView.layoutMetrics.frame.size.height;
+
+          auto rect = facebook::react::Rect{
+              {left, top}, facebook::react::Size{width, height}};
+          outAttachments.push_back(TextMeasurement::Attachment{rect, false});
+          attachmentIndex++;
+        }
+        break;
+      }
+
+      case AttributedString::Fragment::Kind::Span: {
+        collectAttachments(
+            attachmentData,
+            fragment.asSpan().attributedSubstring,
+            outAttachments);
+      }
+    }
+  }
 }
 
 Size measureAndroidComponent(
@@ -371,22 +417,9 @@ TextMeasurement TextLayoutManager::doMeasureMapBuffer(
       env->GetFloatArrayElements(attachmentPositions, nullptr);
 
   auto attachments = TextMeasurement::Attachments{};
-  if (attachmentCount > 0) {
-    int attachmentIndex = 0;
-    for (const auto& fragment : attributedString.getFragments()) {
-      if (fragment.isAttachment()) {
-        float top = attachmentData[attachmentIndex * 2];
-        float left = attachmentData[attachmentIndex * 2 + 1];
-        float width = fragment.parentShadowView.layoutMetrics.frame.size.width;
-        float height =
-            fragment.parentShadowView.layoutMetrics.frame.size.height;
 
-        auto rect = facebook::react::Rect{
-            {left, top}, facebook::react::Size{width, height}};
-        attachments.push_back(TextMeasurement::Attachment{rect, false});
-        attachmentIndex++;
-      }
-    }
+  if (attachmentCount > 0) {
+    collectAttachments(attachmentData, attributedString, attachments);
   }
 
   // Clean up allocated ref

@@ -57,7 +57,12 @@ const Content& ParagraphShadowNode::getContent(
       : LayoutDirection::LeftToRight;
   auto attributedString = AttributedString{};
   auto attachments = Attachments{};
-  buildAttributedString(textAttributes, *this, attributedString, attachments);
+  buildAttributedString(
+      textAttributes,
+      *this,
+      AttributedString::FragmentHandle::nil,
+      attributedString,
+      attachments);
 
   content_ = Content{
       attributedString, getConcreteProps().paragraphAttributes, attachments};
@@ -89,7 +94,8 @@ Content ParagraphShadowNode::getContentWithMeasuredAttachments(
       continue;
     }
 
-    auto& fragment = attributedString.getFragment(attachment.fragmentHandle);
+    auto& fragment =
+        attributedString.getFragment(attachment.textFragmentHandle).asText();
 
     auto size =
         laytableShadowNode->measure(layoutContext, localLayoutConstraints);

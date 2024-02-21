@@ -40,7 +40,11 @@ AttributedString AndroidTextInputShadowNode::getAttributedString() const {
   auto attributedString = AttributedString{};
   auto attachments = BaseTextShadowNode::Attachments{};
   BaseTextShadowNode::buildAttributedString(
-      childTextAttributes, *this, attributedString, attachments);
+      childTextAttributes,
+      *this,
+      AttributedString::FragmentHandle::nil,
+      attributedString,
+      attachments);
 
   // BaseTextShadowNode only gets children. We must detect and prepend text
   // value attributes manually.

@@ -918,7 +918,9 @@ inline folly::dynamic toDynamic(const AttributedString& attributedString) {
   auto value = folly::dynamic::object();
   auto fragments = folly::dynamic::array();
   for (auto fragment : attributedString.getFragments()) {
-    fragments.push_back(toDynamic(fragment));
+    if (fragment.getKind() != AttributedString::Fragment::Kind::Text)
+      continue;
+    fragments.push_back(toDynamic(fragment.asText()));
   }
   value("fragments", fragments);
   value(
@@ -1165,7 +1167,9 @@ inline MapBuffer toMapBuffer(const AttributedString& attributedString) {
 
   int index = 0;
   for (auto fragment : attributedString.getFragments()) {
-    fragmentsBuilder.putMapBuffer(index++, toMapBuffer(fragment));
+    if (fragment.getKind() != AttributedString::Fragment::Kind::Text)
+      continue;
+    fragmentsBuilder.putMapBuffer(index++, toMapBuffer(fragment.asText()));
   }
 
   auto builder = MapBufferBuilder();

@@ -13,6 +13,23 @@ void* TextLayoutManager::getNativeTextLayoutManager() const {
   return (void*)this;
 }
 
+static void collectAttachments(
+    const AttributedString& attributedString,
+    TextMeasurement::Attachments& outAttachments) {
+  for (const auto& fragment : attributedString.getFragments()) {
+    switch (fragment.getKind()) {
+      case AttributedString::Fragment::Kind::Text:
+        outAttachments.push_back(
+            TextMeasurement::Attachment{{{0, 0}, {0, 0}}, false});
+        break;
+      case AttributedString::Fragment::Kind::Span:
+        collectAttachments(
+            fragment.asSpan().attributedSubstring, outAttachments);
+        break;
+    }
+  }
+}
+
 TextMeasurement TextLayoutManager::measure(
     AttributedStringBox attributedStringBox,
     ParagraphAttributes paragraphAttributes,
@@ -20,12 +37,9 @@ TextMeasurement TextLayoutManager::measure(
     LayoutConstraints layoutConstraints,
     std::shared_ptr<void>) const {
   TextMeasurement::Attachments attachments;
-  for (const auto& fragment : attributedStringBox.getValue().getFragments()) {
-    if (fragment.isAttachment()) {
-      attachments.push_back(
-          TextMeasurement::Attachment{{{0, 0}, {0, 0}}, false});
-    }
-  }
+
+  collectAttachments(attributedStringBox.getValue(), attachments);
+
   return TextMeasurement{{0, 0}, attachments};
 }
 

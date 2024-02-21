@@ -11,6 +11,7 @@
 #include <react/renderer/components/text/RawTextShadowNode.h>
 #include <react/renderer/components/text/TextProps.h>
 #include <react/renderer/components/text/TextShadowNode.h>
+#include <react/renderer/components/view/ViewShadowNode.h>
 #include <react/renderer/mounting/ShadowView.h>
 
 namespace facebook::react {
@@ -27,6 +28,7 @@ inline ShadowView shadowViewFromShadowNode(const ShadowNode& shadowNode) {
 void BaseTextShadowNode::buildAttributedString(
     const TextAttributes& baseTextAttributes,
     const ShadowNode& parentNode,
+    const AttributedString::FragmentHandle& containerHandle,
     AttributedString& outAttributedString,
     Attachments& outAttachments) {
   for (const auto& childNode : parentNode.getChildren()) {
@@ -47,7 +49,7 @@ void BaseTextShadowNode::buildAttributedString(
         // `ShadowNode` should properly fix this problem.
         textFragment.parentShadowView = shadowViewFromShadowNode(parentNode);
 
-        outAttributedString.appendTextFragment(fragment);
+        outAttributedString.appendTextFragment(textFragment);
       }
 
       continue;
@@ -62,8 +64,44 @@ void BaseTextShadowNode::buildAttributedString(
       buildAttributedString(
           localTextAttributes,
           *textShadowNode,
+          containerHandle,
           outAttributedString,
           outAttachments);
+      continue;
+    }
+
+    // ViewShadowNode (inline)
+    auto viewShadowNode = dynamic_cast<const ViewShadowNode*>(childNode.get());
+    if (viewShadowNode != nullptr &&
+        viewShadowNode->getConcreteProps().yogaStyle.display() ==
+            yoga::Display::Inline) {
+      auto spanFragment = AttributedString::SpanFragment{};
+
+      auto spanAttributes =
+          SpanAttributes::extract(viewShadowNode->getConcreteProps());
+
+      // TODO(cubuspl42): Extract a subset
+      spanAttributes.textAttributes = baseTextAttributes;
+
+      spanFragment.spanAttributes = spanAttributes;
+
+      auto spanInnerHandle =
+          outAttributedString.appendSpanFragment(spanFragment);
+
+      auto& outSpanFragment =
+          outAttributedString.getFragment(spanInnerHandle).asSpan();
+
+      auto spanHandle = spanInnerHandle.concat(containerHandle);
+
+      auto attributedSubstring = AttributedString{};
+
+      buildAttributedString(
+          baseTextAttributes,
+          *viewShadowNode,
+          spanHandle,
+          outSpanFragment.attributedSubstring,
+          outAttachments);
+
       continue;
     }
 
@@ -73,7 +111,9 @@ void BaseTextShadowNode::buildAttributedString(
     textFragment.parentShadowView = shadowViewFromShadowNode(*childNode);
     textFragment.textAttributes = baseTextAttributes;
 
-    auto fragmentHandle = outAttributedString.appendTextFragment(textFragment);
+    auto fragmentInnerHandle =
+        outAttributedString.appendTextFragment(textFragment);
+    auto fragmentHandle = fragmentInnerHandle.concat(containerHandle);
     outAttachments.push_back(Attachment{childNode.get(), fragmentHandle});
   }
 }
