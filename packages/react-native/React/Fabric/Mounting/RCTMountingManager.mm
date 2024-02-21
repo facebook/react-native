@@ -49,6 +49,9 @@ static void RCTPerformMountInstructions(
 {
   SystraceSection s("RCTPerformMountInstructions");
 
+  [CATransaction begin];
+  [CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
+
   for (const auto &mutation : mutations) {
     switch (mutation.type) {
       case ShadowViewMutation::Create: {
@@ -146,6 +149,7 @@ static void RCTPerformMountInstructions(
       }
     }
   }
+  [CATransaction commit];
 }
 
 @implementation RCTMountingManager {
