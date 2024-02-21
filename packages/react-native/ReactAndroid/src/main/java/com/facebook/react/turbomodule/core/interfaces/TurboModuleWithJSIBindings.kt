@@ -7,18 +7,18 @@
 
 package com.facebook.react.turbomodule.core.interfaces
 
-import com.facebook.proguard.annotations.DoNotStrip
+import com.facebook.proguard.annotations.DoNotStripAny
+import com.facebook.react.turbomodule.core.JSIBindingsInstaller
 
 /**
  * If a turbo module needs to install its custom JSI bindings, it should implement this interface.
  */
-@DoNotStrip
+@DoNotStripAny
 public interface TurboModuleWithJSIBindings {
   /**
-   * The method to install JSI bindings.
-   * The implementation will typically call into C++ for JSI setup through JNI.
-   * @param runtime The (facebook::jsi::Runtime *) pointer casted to Long type.
+   * Returns the [JSIBindingsInstaller] callback that the core will later invoke with
+   * an `facebook::jsi::Runtime` instance.
+   * The implementation will typically mix with JNI and C++.
    */
-  @DoNotStrip
-  public fun installJSIBindings(runtime: Long)
+  public fun getJSIBindingsInstaller(): JSIBindingsInstaller
 }

@@ -23,6 +23,7 @@ import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
+import com.facebook.react.turbomodule.core.JSIBindingsInstaller;
 import com.facebook.react.turbomodule.core.interfaces.TurboModuleWithJSIBindings;
 import java.util.HashMap;
 import java.util.Map;
@@ -249,9 +250,9 @@ public class SampleTurboModule extends NativeSampleTurboModuleSpec implements Tu
 
   @Override
   @DoNotStrip
-  public void installJSIBindings(long runtime) {
-    installJSIBindingsCxx(runtime);
+  public JSIBindingsInstaller getJSIBindingsInstaller() {
+    return getJSIBindingsInstallerCxx();
   }
 
-  private static native void installJSIBindingsCxx(long runtime);
+  private static native JSIBindingsInstaller getJSIBindingsInstallerCxx();
 }

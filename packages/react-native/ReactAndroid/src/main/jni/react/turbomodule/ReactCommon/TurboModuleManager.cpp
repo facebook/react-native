@@ -14,6 +14,7 @@
 
 #include <ReactCommon/CxxTurboModuleUtils.h>
 #include <ReactCommon/JavaInteropTurboModule.h>
+#include <ReactCommon/JJSIBindingsInstaller.h>
 #include <ReactCommon/TurboCxxModule.h>
 #include <ReactCommon/TurboModuleBinding.h>
 #include <ReactCommon/TurboModulePerfLogger.h>
@@ -212,8 +213,11 @@ TurboModuleProviderFunctionType TurboModuleManager::createTurboModuleProvider(
 
       auto turboModule = delegate->cthis()->getTurboModule(name, params);
       if (moduleInstance->isInstanceOf(JTurboModuleWithJSIBindings::javaClassStatic())) {
-        auto installJSIBindingsForModule = moduleInstance->getClass()->getMethod<void(jlong)>("installJSIBindings");
-        installJSIBindingsForModule(moduleInstance, reinterpret_cast<jlong>(runtime));
+        auto getJSIBindingsInstaller = moduleInstance->getClass()->getMethod<JJSIBindingsInstaller::javaobject ()>("getJSIBindingsInstaller");
+        auto installer = getJSIBindingsInstaller(moduleInstance);
+        if (installer) {
+          installer->cthis()->get()(*runtime);
+        }
       }
 
       turboModuleCache->insert({name, turboModule});

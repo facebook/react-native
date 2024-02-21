@@ -12,14 +12,15 @@ namespace facebook::react {
 // static
 void SampleTurboModuleJSIBindings::registerNatives() {
   javaClassLocal()->registerNatives({
-    makeNativeMethod("installJSIBindingsCxx", SampleTurboModuleJSIBindings::installJSIBindingsCxx),
+    makeNativeMethod("getJSIBindingsInstallerCxx", SampleTurboModuleJSIBindings::getJSIBindingsInstallerCxx),
   });
 }
 
 // static
-void SampleTurboModuleJSIBindings::installJSIBindingsCxx(jni::alias_ref<jni::JClass> clazz, jlong runtimePtr) {
-  jsi::Runtime &runtime = *reinterpret_cast<jsi::Runtime *>(runtimePtr);
-  runtime.global().setProperty(runtime, "__SampleTurboModuleJSIBindings", "Hello JSI!");
+jni::local_ref<JJSIBindingsInstaller::javaobject> SampleTurboModuleJSIBindings::getJSIBindingsInstallerCxx(jni::alias_ref<jni::JClass> clazz) {
+  return jni::make_local(JJSIBindingsInstaller::newObjectCxxArgs([](jsi::Runtime &runtime) {
+    runtime.global().setProperty(runtime, "__SampleTurboModuleJSIBindings", "Hello JSI!");
+  }));
 }
 
 } // namespace facebook::react

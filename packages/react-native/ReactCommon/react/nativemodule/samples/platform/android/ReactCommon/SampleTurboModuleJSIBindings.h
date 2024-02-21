@@ -9,6 +9,7 @@
 
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
+#include <ReactCommon/JJSIBindingsInstaller.h>
 
 namespace facebook::react {
 
@@ -23,7 +24,7 @@ class SampleTurboModuleJSIBindings : public jni::JavaClass<SampleTurboModuleJSIB
 
  private:
   // Using static function as a simple demonstration
-  static void installJSIBindingsCxx(jni::alias_ref<jni::JClass> clazz, jlong runtimePtr);
+  static jni::local_ref<JJSIBindingsInstaller::javaobject> getJSIBindingsInstallerCxx(jni::alias_ref<jni::JClass> clazz);
 };
 
 } // namespace facebook::react

@@ -45,6 +45,7 @@ add_library(
         turbomodulejsijni
         SHARED
         ReactCommon/CompositeTurboModuleManagerDelegate.cpp
+        ReactCommon/JJSIBindingsInstaller.cpp
         ReactCommon/OnLoad.cpp
         ReactCommon/TurboModuleManager.cpp
 )
