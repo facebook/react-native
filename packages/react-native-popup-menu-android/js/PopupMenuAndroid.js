@@ -12,8 +12,29 @@ import type {RefObject} from 'react';
 import type {Node} from 'react';
 
 import * as React from 'react';
+import {StyleSheet, View} from 'react-native';
 
-const UnimplementedView = require('../UnimplementedViews/UnimplementedView');
+/**
+ * Common implementation for a simple stubbed view. Simply applies the view's styles to the inner
+ * View component and renders its children.
+ */
+class UnimplementedView extends React.Component<{children: Node}> {
+  render(): React.Node {
+    return (
+      <View style={[styles.unimplementedView]}>{this.props.children}</View>
+    );
+  }
+}
+
+const styles = StyleSheet.create({
+  unimplementedView: __DEV__
+    ? {
+        alignSelf: 'flex-start',
+        borderColor: 'red',
+        borderWidth: 1,
+      }
+    : {},
+});
 
 export type PopupMenuAndroidInstance = {
   +show: () => void,
@@ -27,7 +48,7 @@ type Props = {
 };
 
 function PopupMenuAndroid(props: Props): Node {
-  return <UnimplementedView />;
+  return <UnimplementedView>{props.children}</UnimplementedView>;
 }
 
 export default PopupMenuAndroid;
