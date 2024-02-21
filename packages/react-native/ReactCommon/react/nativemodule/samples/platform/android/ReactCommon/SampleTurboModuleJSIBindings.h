@@ -7,13 +7,14 @@
 
 #pragma once
 
+#include <ReactCommon/JJSIBindingsInstaller.h>
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
-#include <ReactCommon/JJSIBindingsInstaller.h>
 
 namespace facebook::react {
 
-class SampleTurboModuleJSIBindings : public jni::JavaClass<SampleTurboModuleJSIBindings> {
+class SampleTurboModuleJSIBindings
+    : public jni::JavaClass<SampleTurboModuleJSIBindings> {
  public:
   static constexpr const char* kJavaDescriptor =
       "Lcom/facebook/fbreact/specs/SampleTurboModule;";
@@ -24,7 +25,8 @@ class SampleTurboModuleJSIBindings : public jni::JavaClass<SampleTurboModuleJSIB
 
  private:
   // Using static function as a simple demonstration
-  static jni::local_ref<JJSIBindingsInstaller::javaobject> getJSIBindingsInstallerCxx(jni::alias_ref<jni::JClass> clazz);
+  static jni::local_ref<JJSIBindingsInstaller::javaobject>
+  getJSIBindingsInstallerCxx(jni::alias_ref<jni::JClass> clazz);
 };
 
 } // namespace facebook::react

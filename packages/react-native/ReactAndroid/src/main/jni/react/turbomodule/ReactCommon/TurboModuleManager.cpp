@@ -13,8 +13,8 @@
 #include <jsi/jsi.h>
 
 #include <ReactCommon/CxxTurboModuleUtils.h>
-#include <ReactCommon/JavaInteropTurboModule.h>
 #include <ReactCommon/JJSIBindingsInstaller.h>
+#include <ReactCommon/JavaInteropTurboModule.h>
 #include <ReactCommon/TurboCxxModule.h>
 #include <ReactCommon/TurboModuleBinding.h>
 #include <ReactCommon/TurboModulePerfLogger.h>
@@ -131,7 +131,8 @@ void TurboModuleManager::registerNatives() {
 }
 
 TurboModuleProviderFunctionType TurboModuleManager::createTurboModuleProvider(
-    jsi::Runtime *runtime, bool enableSyncVoidMethods) {
+    jsi::Runtime* runtime,
+    bool enableSyncVoidMethods) {
   return [turboModuleCache_ = std::weak_ptr<ModuleCache>(turboModuleCache_),
           runtime,
           jsCallInvoker_ = std::weak_ptr<CallInvoker>(jsCallInvoker_),
@@ -212,8 +213,12 @@ TurboModuleProviderFunctionType TurboModuleManager::createTurboModuleProvider(
           .shouldVoidMethodsExecuteSync = enableSyncVoidMethods};
 
       auto turboModule = delegate->cthis()->getTurboModule(name, params);
-      if (moduleInstance->isInstanceOf(JTurboModuleWithJSIBindings::javaClassStatic())) {
-        auto getJSIBindingsInstaller = moduleInstance->getClass()->getMethod<JJSIBindingsInstaller::javaobject ()>("getJSIBindingsInstaller");
+      if (moduleInstance->isInstanceOf(
+              JTurboModuleWithJSIBindings::javaClassStatic())) {
+        auto getJSIBindingsInstaller =
+            moduleInstance->getClass()
+                ->getMethod<JJSIBindingsInstaller::javaobject()>(
+                    "getJSIBindingsInstaller");
         auto installer = getJSIBindingsInstaller(moduleInstance);
         if (installer) {
           installer->cthis()->get()(*runtime);

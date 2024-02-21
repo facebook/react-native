@@ -9,7 +9,8 @@
 
 namespace facebook::react {
 
-JJSIBindingsInstaller::JJSIBindingsInstaller(TurboModule::JSIBindingsInstaller jsiBindingsInstaller)
+JJSIBindingsInstaller::JJSIBindingsInstaller(
+    TurboModule::JSIBindingsInstaller jsiBindingsInstaller)
     : jsiBindingsInstaller_(jsiBindingsInstaller) {}
 
 TurboModule::JSIBindingsInstaller JJSIBindingsInstaller::get() {

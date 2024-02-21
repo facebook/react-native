@@ -22,7 +22,8 @@ struct JTurboModule : jni::JavaClass<JTurboModule> {
       "Lcom/facebook/react/internal/turbomodule/core/interfaces/TurboModule;";
 };
 
-struct JTurboModuleWithJSIBindings : jni::JavaClass<JTurboModuleWithJSIBindings> {
+struct JTurboModuleWithJSIBindings
+    : jni::JavaClass<JTurboModuleWithJSIBindings> {
   static auto constexpr kJavaDescriptor =
       "Lcom/facebook/react/turbomodule/core/interfaces/TurboModuleWithJSIBindings;";
 };

@@ -29,7 +29,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 @ReactModule(name = SampleTurboModule.NAME)
-public class SampleTurboModule extends NativeSampleTurboModuleSpec implements TurboModuleWithJSIBindings {
+public class SampleTurboModule extends NativeSampleTurboModuleSpec
+    implements TurboModuleWithJSIBindings {
 
   public static final String NAME = "SampleTurboModule";
 
