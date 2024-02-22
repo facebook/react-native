@@ -26,6 +26,7 @@ import com.facebook.react.views.text.internal.span.ReactAbsoluteSizeSpan
 import com.facebook.react.views.text.internal.span.ReactBackgroundColorSpan
 import com.facebook.react.views.text.internal.span.ReactClickableSpan
 import com.facebook.react.views.text.internal.span.ReactForegroundColorSpan
+import com.facebook.react.views.text.internal.span.ReactSpanSpan
 import com.facebook.react.views.text.internal.span.ReactStrikethroughSpan
 import com.facebook.react.views.text.internal.span.ReactTagSpan
 import com.facebook.react.views.text.internal.span.ReactUnderlineSpan
@@ -63,7 +64,12 @@ internal object TextLayoutUtils {
     ops: MutableList<SetSpanOperation>,
   ) {
     when(fragment){
-      is SpanFragment -> {} // TODO(cubuspl42): Implement
+      is SpanFragment -> addSpanFragmentSpan(
+        context = context,
+        fragment = fragment,
+        sb = sb,
+        ops = ops
+      )
       is TextFragment -> addApplicableTextFragmentSpans(
         context = context,
         fragment = fragment,
@@ -109,6 +115,35 @@ internal object TextLayoutUtils {
           end = end,
       )
     }
+  }
+
+  private fun addSpanFragmentSpan(
+    context: Context,
+    fragment: SpanFragment,
+    sb: SpannableStringBuilder,
+    ops: MutableList<SetSpanOperation>,
+  ) {
+    val start = sb.length
+
+    buildSpannableFromTextFragmentList(
+      context = context,
+      textFragmentList = fragment.subFragmentList,
+      sb = sb,
+      ops = ops,
+    )
+
+    val end = sb.length
+
+    ops.add(
+      SetSpanOperation(
+        start,
+        end,
+        ReactSpanSpan(
+          spanAttributeProps = fragment.spanAttributeProps,
+          radius = 4.0f,
+        ),
+      ),
+    )
   }
 
   @JvmStatic

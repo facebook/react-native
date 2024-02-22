@@ -205,6 +205,22 @@ class TextExample extends React.Component<{...}> {
   render(): React.Node {
     return (
       <RNTesterPage title="<Text>">
+        <RNTesterBlock title="Spans">
+          <Text style={{color: 'red', fontWeight: 'bold', fontSize: 24, lineHeight: 32}}>
+            <Text style={{textDecorationLine: 'underline'}}>
+              Foo
+            </Text>
+            {' '}
+            <View style={{display: 'inline'}}>
+              <Text>
+                Foo Bar Baz Foo Bar{' '}
+              </Text>
+              <Text style={{color: 'blue', fontWeight: 'bold'}}>
+                ajkÉ
+              </Text>
+            </View>
+          </Text>
+        </RNTesterBlock>
         <RNTesterBlock title="Dynamic Font Size Adjustment">
           <AdjustingFontSize />
         </RNTesterBlock>

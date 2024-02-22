@@ -8,6 +8,7 @@
 package com.facebook.react.views.textinput;
 
 import static com.facebook.react.uimanager.UIManagerHelper.getReactContext;
+import static com.facebook.react.views.text.ReactTextViewUtilsKt.findEffectiveTypeface;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -587,9 +588,7 @@ public class ReactEditText extends AppCompatEditText {
 
     mTypefaceDirty = false;
 
-    Typeface newTypeface =
-        ReactTypefaceUtils.applyStyles(
-            getTypeface(), mFontStyle, mFontWeight, mFontFamily, getContext().getAssets());
+    Typeface newTypeface = findEffectiveTypeface(this, mFontFamily, mFontStyle, mFontWeight);
     setTypeface(newTypeface);
 
     // Match behavior of CustomStyleSpan and enable SUBPIXEL_TEXT_FLAG when setting anything
