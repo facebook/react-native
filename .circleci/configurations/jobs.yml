@@ -621,7 +621,7 @@ jobs:
       - run:
           name: Install Node JS
           # Note: Version set separately for non-Windows builds, see above.
-          command: choco install nodejs --version=18.18.0 --allow-downgrade
+          command: choco install -y nodejs --version=18.18.0 --allow-downgrade
 
       # Setup Dependencies
       - run:
@@ -1083,7 +1083,7 @@ jobs:
           name: Build HermesC for Windows
           command: |
             if (-not(Test-Path -Path $Env:HERMES_WS_DIR\win64-bin\hermesc.exe)) {
-              choco install --no-progress cmake --version 3.14.7
+              choco install -y --no-progress cmake --version 3.14.7
               if (-not $?) { throw "Failed to install CMake" }
 
               cd $Env:HERMES_WS_DIR\icu
