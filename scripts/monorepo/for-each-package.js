@@ -38,8 +38,6 @@ const getDirectories = source =>
  *
  * @param {forEachPackageCallback} callback The callback which will be called for each package
  * @param {{includeReactNative: (boolean|undefined)}} [options={}] description
- *
- * @deprecated Use scripts/releases/utils/monorepo.js#getPackages instead
  */
 const forEachPackage = (callback, options = DEFAULT_OPTIONS) => {
   const {includeReactNative} = options;
