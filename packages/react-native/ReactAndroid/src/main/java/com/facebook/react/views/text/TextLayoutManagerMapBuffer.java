@@ -66,13 +66,17 @@ public class TextLayoutManagerMapBuffer {
   public static final short AS_KEY_FRAGMENTS = 2;
   public static final short AS_KEY_CACHE_ID = 3;
 
+  // constants for Fragment serialization
+  public static final short FR_KEY_KIND = 0;
+  public static final short FR_VALUE_KIND_TEXT = 0;
+
   // constants for TextFragment serialization
-  public static final short TF_KEY_STRING = 0;
-  public static final short TF_KEY_REACT_TAG = 1;
-  public static final short TF_KEY_IS_ATTACHMENT = 2;
-  public static final short TF_KEY_WIDTH = 3;
-  public static final short TF_KEY_HEIGHT = 4;
-  public static final short TF_KEY_TEXT_ATTRIBUTES = 5;
+  public static final short TF_KEY_STRING = 1;
+  public static final short TF_KEY_REACT_TAG = 2;
+  public static final short TF_KEY_IS_ATTACHMENT = 3;
+  public static final short TF_KEY_WIDTH = 4;
+  public static final short TF_KEY_HEIGHT = 5;
+  public static final short TF_KEY_TEXT_ATTRIBUTES = 6;
 
   // constants for ParagraphAttributes serialization
   public static final short PA_KEY_MAX_NUMBER_OF_LINES = 0;
@@ -152,6 +156,9 @@ public class TextLayoutManagerMapBuffer {
 
     for (int i = 0, length = fragments.getCount(); i < length; i++) {
       MapBuffer fragment = fragments.getMapBuffer(i);
+
+      if (fragment.getInt(FR_KEY_KIND) != FR_VALUE_KIND_TEXT) continue;
+
       int start = sb.length();
 
       TextAttributeProps textAttributes =

@@ -8,12 +8,19 @@
 package com.facebook.react.views.text.fragments
 
 import com.facebook.react.common.mapbuffer.MapBuffer
+import com.facebook.react.views.text.TextLayoutManagerMapBuffer.FR_KEY_KIND
+import com.facebook.react.views.text.TextLayoutManagerMapBuffer.FR_VALUE_KIND_TEXT
 
 /** A list of [TextFragment]s backed by a [MapBuffer] */
 internal class MapBufferTextFragmentList(private val fragments: MapBuffer) : TextFragmentList {
+  private val textFragments = (0 until fragments.count).map { fragments.getMapBuffer(it) }.filter {
+    // TODO(cubuspl42): Load span fragments
+    it.getInt(FR_KEY_KIND.toInt()).toShort() == FR_VALUE_KIND_TEXT
+  }
+
   override fun getFragment(index: Int): TextFragment =
-      MapBufferTextFragment(fragments.getMapBuffer(index))
+      MapBufferTextFragment(textFragments[index])
 
   override val count: Int
-    get() = fragments.count
+    get() = textFragments.size
 }
