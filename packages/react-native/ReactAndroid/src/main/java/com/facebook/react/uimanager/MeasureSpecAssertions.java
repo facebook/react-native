@@ -8,8 +8,10 @@
 package com.facebook.react.uimanager;
 
 import android.view.View;
+import com.facebook.infer.annotation.Nullsafe;
 
 /** Shared utility for asserting on MeasureSpecs. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class MeasureSpecAssertions {
 
   public static final void assertExplicitMeasureSpec(int widthMeasureSpec, int heightMeasureSpec) {
