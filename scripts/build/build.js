@@ -184,10 +184,7 @@ async function rewritePackageExports(packageName /*: string */) {
 
   pkg.exports = rewriteExportsField(pkg.exports);
 
-  await fs.writeFile(
-    packageJsonPath,
-    prettier.format(JSON.stringify(pkg), {parser: 'json'}),
-  );
+  await fs.writeFile(packageJsonPath, JSON.stringify(pkg, null, 2) + '\n');
 }
 
 /*::
