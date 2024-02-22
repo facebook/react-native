@@ -9,9 +9,11 @@ package com.facebook.react.uimanager;
 
 import android.view.View;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.JSApplicationCausedNativeException;
 
 /** An exception caused by JS requesting the UI manager to perform an illegal view operation. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class IllegalViewOperationException extends JSApplicationCausedNativeException {
 
   @Nullable private View mView;
