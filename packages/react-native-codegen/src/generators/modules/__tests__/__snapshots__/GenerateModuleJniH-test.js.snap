@@ -50,7 +50,7 @@ add_library(
   \${react_codegen_SRCS}
 )
 
-target_include_directories(react_codegen_SampleWithUppercaseName PUBLIC . react/renderer/components/SampleWithUppercaseName)
+target_include_directories(react_codegen_SampleWithUppercaseName PUBLIC . react/renderer/components react/renderer/components/SampleWithUppercaseName)
 
 target_link_libraries(
   react_codegen_SampleWithUppercaseName
@@ -137,7 +137,7 @@ add_library(
   \${react_codegen_SRCS}
 )
 
-target_include_directories(react_codegen_complex_objects PUBLIC . react/renderer/components/complex_objects)
+target_include_directories(react_codegen_complex_objects PUBLIC . react/renderer/components react/renderer/components/complex_objects)
 
 target_link_libraries(
   react_codegen_complex_objects
@@ -217,7 +217,7 @@ add_library(
   \${react_codegen_SRCS}
 )
 
-target_include_directories(react_codegen_cxx_only_native_modules PUBLIC . react/renderer/components/cxx_only_native_modules)
+target_include_directories(react_codegen_cxx_only_native_modules PUBLIC . react/renderer/components react/renderer/components/cxx_only_native_modules)
 
 target_link_libraries(
   react_codegen_cxx_only_native_modules
@@ -304,7 +304,7 @@ add_library(
   \${react_codegen_SRCS}
 )
 
-target_include_directories(react_codegen_empty_native_modules PUBLIC . react/renderer/components/empty_native_modules)
+target_include_directories(react_codegen_empty_native_modules PUBLIC . react/renderer/components react/renderer/components/empty_native_modules)
 
 target_link_libraries(
   react_codegen_empty_native_modules
@@ -391,7 +391,7 @@ add_library(
   \${react_codegen_SRCS}
 )
 
-target_include_directories(react_codegen_native_modules_with_type_aliases PUBLIC . react/renderer/components/native_modules_with_type_aliases)
+target_include_directories(react_codegen_native_modules_with_type_aliases PUBLIC . react/renderer/components react/renderer/components/native_modules_with_type_aliases)
 
 target_link_libraries(
   react_codegen_native_modules_with_type_aliases
@@ -486,7 +486,7 @@ add_library(
   \${react_codegen_SRCS}
 )
 
-target_include_directories(react_codegen_real_module_example PUBLIC . react/renderer/components/real_module_example)
+target_include_directories(react_codegen_real_module_example PUBLIC . react/renderer/components react/renderer/components/real_module_example)
 
 target_link_libraries(
   react_codegen_real_module_example
@@ -573,7 +573,7 @@ add_library(
   \${react_codegen_SRCS}
 )
 
-target_include_directories(react_codegen_simple_native_modules PUBLIC . react/renderer/components/simple_native_modules)
+target_include_directories(react_codegen_simple_native_modules PUBLIC . react/renderer/components react/renderer/components/simple_native_modules)
 
 target_link_libraries(
   react_codegen_simple_native_modules
@@ -668,7 +668,7 @@ add_library(
   \${react_codegen_SRCS}
 )
 
-target_include_directories(react_codegen_two_modules_different_files PUBLIC . react/renderer/components/two_modules_different_files)
+target_include_directories(react_codegen_two_modules_different_files PUBLIC . react/renderer/components react/renderer/components/two_modules_different_files)
 
 target_link_libraries(
   react_codegen_two_modules_different_files

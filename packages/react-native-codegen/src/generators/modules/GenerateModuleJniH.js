@@ -80,7 +80,7 @@ add_library(
   \${react_codegen_SRCS}
 )
 
-target_include_directories(react_codegen_${libraryName} PUBLIC . react/renderer/components/${libraryName})
+target_include_directories(react_codegen_${libraryName} PUBLIC . react/renderer/components react/renderer/components/${libraryName})
 
 target_link_libraries(
   react_codegen_${libraryName}
