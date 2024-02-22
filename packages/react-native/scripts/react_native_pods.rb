@@ -169,7 +169,7 @@ def use_react_native! (
     :folly_version => folly_config[:version]
   )
 
-  pod 'React-Codegen', :path => $CODEGEN_OUTPUT_DIR, :modular_headers => true
+  pod 'ReactCodegen', :path => $CODEGEN_OUTPUT_DIR, :modular_headers => true
 
   # Always need fabric to access the RCTSurfacePresenterBridgeAdapter which allow to enable the RuntimeScheduler
   # If the New Arch is turned off, we will use the Old Renderer, though.
@@ -286,7 +286,7 @@ def react_native_post_install(
   ReactNativePodsUtils.set_use_hermes_build_setting(installer, hermes_enabled)
   ReactNativePodsUtils.set_node_modules_user_settings(installer, react_native_path)
   ReactNativePodsUtils.set_ccache_compiler_and_linker_build_settings(installer, react_native_path, ccache_enabled)
-  ReactNativePodsUtils.apply_xcode_15_patch(installer) 
+  ReactNativePodsUtils.apply_xcode_15_patch(installer)
   ReactNativePodsUtils.updateOSDeploymentTarget(installer)
   ReactNativePodsUtils.set_dynamic_frameworks_flags(installer)
   ReactNativePodsUtils.add_ndebug_flag_to_pods_in_release(installer)

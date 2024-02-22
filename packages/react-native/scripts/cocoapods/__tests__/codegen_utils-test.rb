@@ -64,7 +64,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
         CodegenUtils.new().generate_react_codegen_podspec!(spec, codegen_output_dir, file_manager: FileMock)
 
         # Assert
-        assert_equal(Pod::UI.collected_messages, ["[Codegen] Skipping React-Codegen podspec generation."])
+        assert_equal(Pod::UI.collected_messages, ["[Codegen] Skipping ReactCodegen podspec generation."])
         assert_equal(Pathname.pwd_invocation_count, 0)
         assert_equal(Pod::Executable.executed_commands, [])
         assert_equal(Pod::Config.instance.installation_root.relative_path_from_invocation_count, 0)
@@ -83,8 +83,8 @@ class CodegenUtilsTests < Test::Unit::TestCase
         assert_equal(Pathname.pwd_invocation_count, 1)
         assert_equal(Pod::Config.instance.installation_root.relative_path_from_invocation_count, 1)
         assert_equal(Pod::Executable.executed_commands, [{ "command" => 'mkdir', "arguments" => ["-p", "~/app/ios/build"]}])
-        assert_equal(Pod::UI.collected_messages, ["[Codegen] Generating ~/app/ios/build/React-Codegen.podspec.json"])
-        assert_equal(FileMock.open_files_with_mode["~/app/ios/build/React-Codegen.podspec.json"], 'w')
+        assert_equal(Pod::UI.collected_messages, ["[Codegen] Generating ~/app/ios/build/ReactCodegen.podspec.json"])
+        assert_equal(FileMock.open_files_with_mode["~/app/ios/build/ReactCodegen.podspec.json"], 'w')
         assert_equal(FileMock.open_files[0].collected_write, ['{"name":"Test Podspec"}'])
         assert_equal(FileMock.open_files[0].fsync_invocation_count, 1)
 
@@ -108,7 +108,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
 
         # Assert
         assert_equal(podspec, get_podspec_fabric_and_script_phases("echo Test Script Phase"))
-        assert_equal(Pod::UI.collected_messages, ["[Codegen] Adding script_phases to React-Codegen."])
+        assert_equal(Pod::UI.collected_messages, ["[Codegen] Adding script_phases to ReactCodegen."])
     end
 
     def testGetReactCodegenSpec_whenUseFrameworksAndNewArch_generatesAPodspec
@@ -337,7 +337,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
         # Arrange
         app_path = "~/app"
         computed_script = "echo TestScript"
-        codegen_spec = {"name" => "React-Codegen"}
+        codegen_spec = {"name" => "ReactCodegen"}
 
         codegen_utils_mock = CodegenUtilsMock.new(
             :react_codegen_script_phases => computed_script,
@@ -370,7 +370,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
         }])
         assert_equal(codegen_utils_mock.generate_react_codegen_spec_params,  [{
             :codegen_output_dir=>"build/generated/ios",
-            :react_codegen_spec=>{"name"=>"React-Codegen"}
+            :react_codegen_spec=>{"name"=>"ReactCodegen"}
         }])
         assert_equal(Pod::Executable.executed_commands, [
             {
@@ -501,7 +501,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
 
     def get_podspec_no_fabric_no_script
         spec = {
-          'name' => "React-Codegen",
+          'name' => "ReactCodegen",
           'version' => "99.98.97",
           'summary' => 'Temp pod for generated files for React Native',
           'homepage' => 'https://facebook.com/',
@@ -522,7 +522,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
                 "\"$(PODS_ROOT)/RCT-Folly\"",
                 "\"$(PODS_ROOT)/DoubleConversion\"",
                 "\"$(PODS_ROOT)/fmt/include\"",
-                "\"${PODS_ROOT}/Headers/Public/React-Codegen/react/renderer/components\"",
+                "\"${PODS_ROOT}/Headers/Public/ReactCodegen/react/renderer/components\"",
                 "\"$(PODS_ROOT)/Headers/Private/React-Fabric\"",
                 "\"$(PODS_ROOT)/Headers/Private/React-RCTFabric\"",
                 "\"$(PODS_ROOT)/Headers/Private/Yoga\"",
