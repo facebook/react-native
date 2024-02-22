@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<30481dc57cc7f389d1ed87d097caedda>>
+ * @generated SignedSource<<e3760a947742d471dc64dde3f719fb0b>>
  */
 
 /**
@@ -19,7 +19,11 @@
 
 #pragma once
 
+#if __has_include("rncoreJSI.h") // Cmake headers on Android
+#include "rncoreJSI.h"
+#else
 #include <FBReactNativeSpec/FBReactNativeSpecJSI.h>
+#endif
 
 namespace facebook::react {
 
