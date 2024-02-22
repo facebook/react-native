@@ -54,6 +54,15 @@ class AsyncCallback {
     callWithFunction(priority, std::move(callImpl));
   }
 
+  /// Invoke the function write-away as if it was a synchronous function
+  /// without any synchronization or delegating to JS context.
+  /// @note Caller is responsible for calling this from within JS context.
+  void unsafeCallSync(Args... args) const noexcept {
+    if (callback_) {
+      (*callback_)(std::forward<Args>(args)...);
+    }
+  }
+
  private:
   friend Bridging<AsyncCallback>;
 
