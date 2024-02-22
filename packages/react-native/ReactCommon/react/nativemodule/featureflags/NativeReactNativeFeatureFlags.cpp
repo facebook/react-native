@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2466af777a1d69da2c3810e5a2d53a70>>
+ * @generated SignedSource<<003a5e1b1e52d504e9cd29583b475041>>
  */
 
 /**
@@ -20,7 +20,9 @@
 #include "NativeReactNativeFeatureFlags.h"
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 
+#ifdef RN_DISABLE_OSS_PLUGIN_HEADER
 #include "Plugins.h"
+#endif
 
 std::shared_ptr<facebook::react::TurboModule>
 NativeReactNativeFeatureFlagsModuleProvider(
