@@ -419,10 +419,10 @@ class NewArchitectureTests < Test::Unit::TestCase
         assert_false(is_enabled)
     end
 
-    def test_newArchEnabled_whenRCTNewArchEnabledIsNotSet_returnFalse
+    def test_newArchEnabled_whenRCTNewArchEnabledIsNotSet_returnTrue
         ENV["RCT_NEW_ARCH_ENABLED"] = nil
         is_enabled = NewArchitectureHelper.new_arch_enabled
-        assert_false(is_enabled)
+        assert_true(is_enabled)
     end
 
 
