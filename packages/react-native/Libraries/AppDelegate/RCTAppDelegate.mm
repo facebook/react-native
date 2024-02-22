@@ -116,6 +116,7 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
     }
     rootView = [self createRootViewWithBridge:self.bridge moduleName:self.moduleName initProps:initProps];
   }
+  [self _logWarnIfCreateRootViewWithBridgeIsOverridden];
   [self customizeRootView:(RCTRootView *)rootView];
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
   UIViewController *rootViewController = [self createRootViewController];
@@ -158,7 +159,6 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
                           moduleName:(NSString *)moduleName
                            initProps:(NSDictionary *)initProps
 {
-  [self _logWarnIfCreateRootViewWithBridgeIsOverridden];
   BOOL enableFabric = self.fabricEnabled;
   UIView *rootView = RCTAppSetupDefaultRootView(bridge, moduleName, initProps, enableFabric);
 
