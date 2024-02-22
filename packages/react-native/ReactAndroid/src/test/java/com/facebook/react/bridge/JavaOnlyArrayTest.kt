@@ -27,4 +27,11 @@ class JavaOnlyArrayTest {
     assertThat(values.getType(7)).isEqualTo(ReadableType.Map)
     assertThat(values.getType(8)).isEqualTo(ReadableType.Null)
   }
+
+  @Test
+  fun testLongValueNotTruncated() {
+    val values = JavaOnlyArray.of(1125899906842623L)
+
+    assertThat(values.getLong(0)).isEqualTo(1125899906842623L)
+  }
 }

@@ -27,4 +27,11 @@ class JavaOnlyMapTest {
     assertThat(values.getType("map")).isEqualTo(ReadableType.Map)
     assertThat(values.getType("null")).isEqualTo(ReadableType.Null)
   }
+
+  @Test
+  fun testLongValueNotTruncated() {
+    val values = JavaOnlyMap.of("long", 1125899906842623L)
+
+    assertThat(values.getLong("long")).isEqualTo(1125899906842623L)
+  }
 }
