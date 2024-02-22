@@ -24,7 +24,9 @@
 #import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTFollyConvert.h>
 #import <React/RCTJavaScriptLoader.h>
+#import <React/RCTReloadCommand.h>
 #import <React/RCTLog.h>
+#import <React/RCTRedBox.h>
 #import <React/RCTLogBox.h>
 #import <React/RCTModuleData.h>
 #import <React/RCTPerformanceLogger.h>
@@ -64,7 +66,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   sRuntimeDiagnosticFlags = [flags copy];
 }
 
-@interface RCTInstance () <RCTTurboModuleManagerDelegate, RCTTurboModuleManagerRuntimeHandler>
+@interface RCTInstance () <RCTTurboModuleManagerDelegate, RCTTurboModuleManagerRuntimeHandler, RCTReloadListener>
 @end
 
 @implementation RCTInstance {
@@ -339,6 +341,10 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
     if (RCTGetUseNativeViewConfigsInBridgelessMode()) {
       installLegacyUIManagerConstantsProviderBinding(runtime);
     }
+    
+    RCTExecuteOnMainQueue(^{
+      RCTRegisterReloadCommandListener(self);
+    });
 
     [strongSelf->_delegate instance:strongSelf didInitializeRuntime:runtime];
 
@@ -389,6 +395,27 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   }
 }
 
+- (void)handleError:(NSError *)error
+{
+  if (!_valid) {
+    return;
+  }
+  
+  RCTRedBox *redBox = [self->_turboModuleManager moduleForName:"RedBox"];
+  
+  RCTExecuteOnMainQueue(^{
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidFailToLoadNotification
+                                                         object:self
+                                                       userInfo:@{@"error": error}];
+    
+    // TODO: Attach error raw stack RCTJSRawStackTraceKey
+    [redBox showErrorMessage:[error localizedDescription]];
+
+    RCTFatal(error);
+  });
+}
+
+
 - (void)_loadJSBundle:(NSURL *)sourceURL
 {
 #if RCT_DEV_MENU && __has_include(<React/RCTDevLoadingViewProtocol.h>)
@@ -420,8 +447,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
         }
 
         if (error) {
-          // TODO(T91461138): Properly address bundle loading errors.
-          RCTLogError(@"RCTInstance: Error while loading bundle: %@", error);
+          [strongSelf handleError:error];
           [strongSelf invalidate];
           return;
         }
@@ -488,6 +514,10 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
                      message:message
                  exceptionId:errorMap.getInt(JSErrorHandlerKey::kExceptionId)
                      isFatal:errorMap.getBool(JSErrorHandlerKey::kIsFatal)];
+}
+
+- (void)didReceiveReloadCommand { 
+  [self _loadJSBundle:[self->_bridgeModuleDecorator.bundleManager bundleURL]];
 }
 
 @end
