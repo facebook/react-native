@@ -36,7 +36,7 @@ import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.Role;
-import com.facebook.react.views.text.fragments.MapBufferTextFragmentList;
+import com.facebook.react.views.text.fragments.MapBufferStringFragmentList;
 import com.facebook.react.views.text.internal.span.CustomLetterSpacingSpan;
 import com.facebook.react.views.text.internal.span.CustomLineHeightSpan;
 import com.facebook.react.views.text.internal.span.CustomStyleSpan;
@@ -69,6 +69,7 @@ public class TextLayoutManagerMapBuffer {
   // constants for Fragment serialization
   public static final short FR_KEY_KIND = 0;
   public static final short FR_VALUE_KIND_TEXT = 0;
+  public static final short FR_VALUE_KIND_SPAN = 1;
 
   // constants for TextFragment serialization
   public static final short TF_KEY_STRING = 1;
@@ -77,6 +78,10 @@ public class TextLayoutManagerMapBuffer {
   public static final short TF_KEY_WIDTH = 4;
   public static final short TF_KEY_HEIGHT = 5;
   public static final short TF_KEY_TEXT_ATTRIBUTES = 6;
+
+  // constants for SpanFragment serialization
+  public static final short SF_KEY_FRAGMENTS = 1;
+  public static final short SF_KEY_SPAN_ATTRIBUTES = 2;
 
   // constants for ParagraphAttributes serialization
   public static final short PA_KEY_MAX_NUMBER_OF_LINES = 0;
@@ -251,7 +256,7 @@ public class TextLayoutManagerMapBuffer {
   private static void buildSpannableFromFragmentsUnified(
       Context context, MapBuffer fragments, SpannableStringBuilder sb, List<SetSpanOperation> ops) {
 
-    final MapBufferTextFragmentList textFragmentList = new MapBufferTextFragmentList(fragments);
+    final MapBufferStringFragmentList textFragmentList = new MapBufferStringFragmentList(fragments);
 
     TextLayoutUtils.buildSpannableFromTextFragmentList(context, textFragmentList, sb, ops);
   }

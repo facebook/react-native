@@ -10,7 +10,7 @@ package com.facebook.react.views.text.fragments
 import com.facebook.react.views.text.TextAttributeProps
 
 /** Interface for a text fragment */
-internal interface TextFragment {
+internal interface TextFragment : StringFragment {
   val textAttributeProps: TextAttributeProps
 
   val string: String?

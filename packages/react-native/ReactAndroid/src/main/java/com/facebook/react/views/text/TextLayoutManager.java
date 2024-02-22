@@ -37,7 +37,7 @@ import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.Role;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ViewProps;
-import com.facebook.react.views.text.fragments.BridgeTextFragmentList;
+import com.facebook.react.views.text.fragments.BridgeStringFragmentList;
 import com.facebook.react.views.text.internal.span.CustomLetterSpacingSpan;
 import com.facebook.react.views.text.internal.span.CustomLineHeightSpan;
 import com.facebook.react.views.text.internal.span.CustomStyleSpan;
@@ -229,7 +229,7 @@ public class TextLayoutManager {
       SpannableStringBuilder sb,
       List<SetSpanOperation> ops) {
 
-    final BridgeTextFragmentList textFragmentList = new BridgeTextFragmentList(fragments);
+    final BridgeStringFragmentList textFragmentList = new BridgeStringFragmentList(fragments);
 
     TextLayoutUtils.buildSpannableFromTextFragmentList(context, textFragmentList, sb, ops);
   }

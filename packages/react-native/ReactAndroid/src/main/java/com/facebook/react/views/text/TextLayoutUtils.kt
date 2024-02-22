@@ -15,8 +15,10 @@ import android.view.View
 import com.facebook.react.common.ReactConstants
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.ReactAccessibilityDelegate
+import com.facebook.react.views.text.fragments.SpanFragment
+import com.facebook.react.views.text.fragments.StringFragment
 import com.facebook.react.views.text.fragments.TextFragment
-import com.facebook.react.views.text.fragments.TextFragmentList
+import com.facebook.react.views.text.fragments.StringFragmentList
 import com.facebook.react.views.text.internal.span.CustomLetterSpacingSpan
 import com.facebook.react.views.text.internal.span.CustomLineHeightSpan
 import com.facebook.react.views.text.internal.span.CustomStyleSpan
@@ -37,15 +39,15 @@ internal object TextLayoutUtils {
 
   @JvmStatic
   fun buildSpannableFromTextFragmentList(
-      context: Context,
-      textFragmentList: TextFragmentList,
-      sb: SpannableStringBuilder,
-      ops: MutableList<SetSpanOperation>,
+    context: Context,
+    textFragmentList: StringFragmentList,
+    sb: SpannableStringBuilder,
+    ops: MutableList<SetSpanOperation>,
   ) {
     for (i in 0 until textFragmentList.count) {
       val fragment = textFragmentList.getFragment(i)
 
-      addApplicableFragmentSpans(
+      addApplicableStringFragmentSpans(
           context = context,
           fragment = fragment,
           sb = sb,
@@ -54,7 +56,24 @@ internal object TextLayoutUtils {
     }
   }
 
-  private fun addApplicableFragmentSpans(
+  private fun addApplicableStringFragmentSpans(
+    context: Context,
+    fragment: StringFragment,
+    sb: SpannableStringBuilder,
+    ops: MutableList<SetSpanOperation>,
+  ) {
+    when(fragment){
+      is SpanFragment -> {} // TODO(cubuspl42): Implement
+      is TextFragment -> addApplicableTextFragmentSpans(
+        context = context,
+        fragment = fragment,
+        sb = sb,
+        ops = ops
+      )
+    }
+  }
+
+  private fun addApplicableTextFragmentSpans(
       context: Context,
       fragment: TextFragment,
       sb: SpannableStringBuilder,

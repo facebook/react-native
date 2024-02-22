@@ -12,7 +12,7 @@ import com.facebook.react.views.text.TextAttributeProps
 import com.facebook.react.views.text.TextLayoutManagerMapBuffer.TF_KEY_HEIGHT
 import com.facebook.react.views.text.TextLayoutManagerMapBuffer.TF_KEY_IS_ATTACHMENT
 import com.facebook.react.views.text.TextLayoutManagerMapBuffer.TF_KEY_REACT_TAG
-import com.facebook.react.views.text.TextLayoutManagerMapBuffer.FR_KEY_STRING
+import com.facebook.react.views.text.TextLayoutManagerMapBuffer.TF_KEY_STRING
 import com.facebook.react.views.text.TextLayoutManagerMapBuffer.TF_KEY_TEXT_ATTRIBUTES
 import com.facebook.react.views.text.TextLayoutManagerMapBuffer.TF_KEY_WIDTH
 
@@ -22,7 +22,7 @@ internal class MapBufferTextFragment(private val fragment: MapBuffer) : TextFrag
     get() = TextAttributeProps.fromMapBuffer(fragment.getMapBuffer(TF_KEY_TEXT_ATTRIBUTES.toInt()))
 
   override val string: String
-    get() = fragment.getString(FR_KEY_STRING.toInt())
+    get() = fragment.getString(TF_KEY_STRING.toInt())
 
   override fun hasReactTag(): Boolean = fragment.contains(TF_KEY_REACT_TAG.toInt())
 
