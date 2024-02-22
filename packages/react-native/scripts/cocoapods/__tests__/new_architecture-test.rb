@@ -161,7 +161,7 @@ class NewArchitectureTests < Test::Unit::TestCase
                 { :dependency_name => "RCT-Folly", "version"=>"2024.01.01.00" },
                 { :dependency_name => "glog" },
                 { :dependency_name => "React-RCTFabric" },
-                { :dependency_name => "React-Codegen" },
+                { :dependency_name => "ReactCodegen" },
                 { :dependency_name => "RCTRequired" },
                 { :dependency_name => "RCTTypeSafety" },
                 { :dependency_name => "ReactCommon/turbomodule/bridging" },
@@ -184,7 +184,7 @@ class NewArchitectureTests < Test::Unit::TestCase
         #  Arrange
         spec = SpecMock.new
         spec.compiler_flags = ''
-        other_flags = "\"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/boost\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Codegen/React_Codegen.framework/Headers\""
+        other_flags = "\"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/boost\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCodegen/ReactCodegen.framework/Headers\""
         spec.pod_target_xcconfig = {
             "HEADER_SEARCH_PATHS" => other_flags
         }
@@ -203,7 +203,7 @@ class NewArchitectureTests < Test::Unit::TestCase
                 { :dependency_name => "RCT-Folly", "version"=>"2024.01.01.00" },
                 { :dependency_name => "glog" },
                 { :dependency_name => "React-RCTFabric" },
-                { :dependency_name => "React-Codegen" },
+                { :dependency_name => "ReactCodegen" },
                 { :dependency_name => "RCTRequired" },
                 { :dependency_name => "RCTTypeSafety" },
                 { :dependency_name => "ReactCommon/turbomodule/bridging" },

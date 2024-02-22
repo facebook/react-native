@@ -529,9 +529,9 @@ class ReactNativePodsUtils
     end
 
     def self.set_codegen_search_paths(target_installation_result)
-        header_search_paths = ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-Codegen", "React_Codegen", [])
+        header_search_paths = ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "ReactCodegen", "ReactCodegen", [])
             .map { |search_path| "\"#{search_path}\"" }
-        ReactNativePodsUtils.update_header_paths_if_depends_on(target_installation_result, "React-Codegen", header_search_paths)
+        ReactNativePodsUtils.update_header_paths_if_depends_on(target_installation_result, "ReactCodegen", header_search_paths)
     end
 
     def self.set_reactcommon_searchpaths(target_installation_result)
@@ -564,7 +564,7 @@ class ReactNativePodsUtils
             "RCTRequired",
             "RCTTypeSafety",
             "React",
-            "React-Codegen",
+            "ReactCodegen",
             "React-Core",
             "React-CoreModules",
             "React-Fabric",

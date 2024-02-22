@@ -30,7 +30,7 @@ header_search_paths = [
   "\"$(PODS_ROOT)/RCT-Folly\"",
   "\"$(PODS_ROOT)/Headers/Private/React-Core\"",
   "\"$(PODS_ROOT)/Headers/Private/Yoga\"",
-  "\"$(PODS_ROOT)/Headers/Public/React-Codegen\"",
+  "\"$(PODS_ROOT)/Headers/Public/ReactCodegen\"",
 ]
 
 if ENV['USE_FRAMEWORKS']
