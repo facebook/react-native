@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<82f226df2b3824d03b755a042b20bec5>>
+ * @generated SignedSource<<bebbf1ec03ad9dfdf59dd566618f69ef>>
  */
 
 /**
@@ -59,6 +59,10 @@ bool ReactNativeFeatureFlags::inspectorEnableCxxInspectorPackagerConnection() {
 
 bool ReactNativeFeatureFlags::inspectorEnableModernCDPRegistry() {
   return getAccessor().inspectorEnableModernCDPRegistry();
+}
+
+bool ReactNativeFeatureFlags::enablePropIteratorSetter() {
+  return getAccessor().enablePropIteratorSetter();
 }
 
 void ReactNativeFeatureFlags::override(

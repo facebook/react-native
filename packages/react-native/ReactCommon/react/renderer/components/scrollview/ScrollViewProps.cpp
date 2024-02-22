@@ -7,10 +7,10 @@
 
 #include "ScrollViewProps.h"
 
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/components/scrollview/conversions.h>
 #include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/debug/debugStringConvertibleUtils.h>
-#include <react/utils/CoreFeatures.h>
 
 #include <react/renderer/core/propsConversions.h>
 
@@ -22,7 +22,7 @@ ScrollViewProps::ScrollViewProps(
     const RawProps& rawProps)
     : ViewProps(context, sourceProps, rawProps),
       alwaysBounceHorizontal(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
               ? sourceProps.alwaysBounceHorizontal
               : convertRawProp(
                     context,
@@ -31,7 +31,7 @@ ScrollViewProps::ScrollViewProps(
                     sourceProps.alwaysBounceHorizontal,
                     {})),
       alwaysBounceVertical(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
               ? sourceProps.alwaysBounceVertical
               : convertRawProp(
                     context,
@@ -40,23 +40,25 @@ ScrollViewProps::ScrollViewProps(
                     sourceProps.alwaysBounceVertical,
                     {})),
       bounces(
-          CoreFeatures::enablePropIteratorSetter ? sourceProps.bounces
-                                                 : convertRawProp(
-                                                       context,
-                                                       rawProps,
-                                                       "bounces",
-                                                       sourceProps.bounces,
-                                                       true)),
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
+              ? sourceProps.bounces
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "bounces",
+                    sourceProps.bounces,
+                    true)),
       bouncesZoom(
-          CoreFeatures::enablePropIteratorSetter ? sourceProps.bouncesZoom
-                                                 : convertRawProp(
-                                                       context,
-                                                       rawProps,
-                                                       "bouncesZoom",
-                                                       sourceProps.bouncesZoom,
-                                                       true)),
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
+              ? sourceProps.bouncesZoom
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "bouncesZoom",
+                    sourceProps.bouncesZoom,
+                    true)),
       canCancelContentTouches(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
               ? sourceProps.canCancelContentTouches
               : convertRawProp(
                     context,
@@ -65,7 +67,7 @@ ScrollViewProps::ScrollViewProps(
                     sourceProps.canCancelContentTouches,
                     true)),
       centerContent(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
               ? sourceProps.centerContent
               : convertRawProp(
                     context,
@@ -74,7 +76,7 @@ ScrollViewProps::ScrollViewProps(
                     sourceProps.centerContent,
                     {})),
       automaticallyAdjustContentInsets(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
               ? sourceProps.automaticallyAdjustContentInsets
               : convertRawProp(
                     context,
@@ -83,7 +85,7 @@ ScrollViewProps::ScrollViewProps(
                     sourceProps.automaticallyAdjustContentInsets,
                     {})),
       automaticallyAdjustsScrollIndicatorInsets(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
               ? sourceProps.automaticallyAdjustsScrollIndicatorInsets
               : convertRawProp(
                     context,
@@ -92,7 +94,7 @@ ScrollViewProps::ScrollViewProps(
                     sourceProps.automaticallyAdjustsScrollIndicatorInsets,
                     true)),
       decelerationRate(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
               ? sourceProps.decelerationRate
               : convertRawProp(
                     context,
@@ -101,7 +103,7 @@ ScrollViewProps::ScrollViewProps(
                     sourceProps.decelerationRate,
                     (Float)0.998)),
       endDraggingSensitivityMultiplier(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
               ? sourceProps.endDraggingSensitivityMultiplier
               : convertRawProp(
                     context,
@@ -110,7 +112,7 @@ ScrollViewProps::ScrollViewProps(
                     sourceProps.endDraggingSensitivityMultiplier,
                     1)),
       endDraggingSensitivityVelocityMultiplier(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
               ? sourceProps.endDraggingSensitivityVelocityMultiplier
               : convertRawProp(
                     context,
@@ -119,7 +121,7 @@ ScrollViewProps::ScrollViewProps(
                     sourceProps.endDraggingSensitivityVelocityMultiplier,
                     0)),
       directionalLockEnabled(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
               ? sourceProps.directionalLockEnabled
               : convertRawProp(
                     context,
@@ -128,7 +130,7 @@ ScrollViewProps::ScrollViewProps(
                     sourceProps.directionalLockEnabled,
                     {})),
       indicatorStyle(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
               ? sourceProps.indicatorStyle
               : convertRawProp(
                     context,
@@ -137,7 +139,7 @@ ScrollViewProps::ScrollViewProps(
                     sourceProps.indicatorStyle,
                     {})),
       keyboardDismissMode(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
               ? sourceProps.keyboardDismissMode
               : convertRawProp(
                     context,
@@ -146,7 +148,7 @@ ScrollViewProps::ScrollViewProps(
                     sourceProps.keyboardDismissMode,
                     {})),
       maintainVisibleContentPosition(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
               ? sourceProps.maintainVisibleContentPosition
               : convertRawProp(
                     context,
@@ -155,7 +157,7 @@ ScrollViewProps::ScrollViewProps(
                     sourceProps.maintainVisibleContentPosition,
                     {})),
       maximumZoomScale(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
               ? sourceProps.maximumZoomScale
               : convertRawProp(
                     context,
@@ -164,7 +166,7 @@ ScrollViewProps::ScrollViewProps(
                     sourceProps.maximumZoomScale,
                     (Float)1.0)),
       minimumZoomScale(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
               ? sourceProps.minimumZoomScale
               : convertRawProp(
                     context,
@@ -173,7 +175,7 @@ ScrollViewProps::ScrollViewProps(
                     sourceProps.minimumZoomScale,
                     (Float)1.0)),
       scrollEnabled(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
               ? sourceProps.scrollEnabled
               : convertRawProp(
                     context,
@@ -182,7 +184,7 @@ ScrollViewProps::ScrollViewProps(
                     sourceProps.scrollEnabled,
                     true)),
       pagingEnabled(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
               ? sourceProps.pagingEnabled
               : convertRawProp(
                     context,
@@ -191,7 +193,7 @@ ScrollViewProps::ScrollViewProps(
                     sourceProps.pagingEnabled,
                     {})),
       pinchGestureEnabled(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
               ? sourceProps.pinchGestureEnabled
               : convertRawProp(
                     context,
@@ -200,15 +202,16 @@ ScrollViewProps::ScrollViewProps(
                     sourceProps.pinchGestureEnabled,
                     true)),
       scrollsToTop(
-          CoreFeatures::enablePropIteratorSetter ? sourceProps.scrollsToTop
-                                                 : convertRawProp(
-                                                       context,
-                                                       rawProps,
-                                                       "scrollsToTop",
-                                                       sourceProps.scrollsToTop,
-                                                       true)),
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
+              ? sourceProps.scrollsToTop
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "scrollsToTop",
+                    sourceProps.scrollsToTop,
+                    true)),
       showsHorizontalScrollIndicator(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
               ? sourceProps.showsHorizontalScrollIndicator
               : convertRawProp(
                     context,
@@ -217,7 +220,7 @@ ScrollViewProps::ScrollViewProps(
                     sourceProps.showsHorizontalScrollIndicator,
                     true)),
       showsVerticalScrollIndicator(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
               ? sourceProps.showsVerticalScrollIndicator
               : convertRawProp(
                     context,
@@ -226,7 +229,7 @@ ScrollViewProps::ScrollViewProps(
                     sourceProps.showsVerticalScrollIndicator,
                     true)),
       scrollEventThrottle(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
               ? sourceProps.scrollEventThrottle
               : convertRawProp(
                     context,
@@ -235,23 +238,25 @@ ScrollViewProps::ScrollViewProps(
                     sourceProps.scrollEventThrottle,
                     {})),
       zoomScale(
-          CoreFeatures::enablePropIteratorSetter ? sourceProps.zoomScale
-                                                 : convertRawProp(
-                                                       context,
-                                                       rawProps,
-                                                       "zoomScale",
-                                                       sourceProps.zoomScale,
-                                                       (Float)1.0)),
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
+              ? sourceProps.zoomScale
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "zoomScale",
+                    sourceProps.zoomScale,
+                    (Float)1.0)),
       contentInset(
-          CoreFeatures::enablePropIteratorSetter ? sourceProps.contentInset
-                                                 : convertRawProp(
-                                                       context,
-                                                       rawProps,
-                                                       "contentInset",
-                                                       sourceProps.contentInset,
-                                                       {})),
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
+              ? sourceProps.contentInset
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "contentInset",
+                    sourceProps.contentInset,
+                    {})),
       contentOffset(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
               ? sourceProps.contentOffset
               : convertRawProp(
                     context,
@@ -260,7 +265,7 @@ ScrollViewProps::ScrollViewProps(
                     sourceProps.contentOffset,
                     {})),
       scrollIndicatorInsets(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
               ? sourceProps.scrollIndicatorInsets
               : convertRawProp(
                     context,
@@ -269,7 +274,7 @@ ScrollViewProps::ScrollViewProps(
                     sourceProps.scrollIndicatorInsets,
                     {})),
       snapToInterval(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
               ? sourceProps.snapToInterval
               : convertRawProp(
                     context,
@@ -278,7 +283,7 @@ ScrollViewProps::ScrollViewProps(
                     sourceProps.snapToInterval,
                     {})),
       snapToAlignment(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
               ? sourceProps.snapToAlignment
               : convertRawProp(
                     context,
@@ -287,7 +292,7 @@ ScrollViewProps::ScrollViewProps(
                     sourceProps.snapToAlignment,
                     {})),
       disableIntervalMomentum(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
               ? sourceProps.disableIntervalMomentum
               : convertRawProp(
                     context,
@@ -296,7 +301,7 @@ ScrollViewProps::ScrollViewProps(
                     sourceProps.disableIntervalMomentum,
                     {})),
       snapToOffsets(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
               ? sourceProps.snapToOffsets
               : convertRawProp(
                     context,
@@ -305,23 +310,25 @@ ScrollViewProps::ScrollViewProps(
                     sourceProps.snapToOffsets,
                     {})),
       snapToStart(
-          CoreFeatures::enablePropIteratorSetter ? sourceProps.snapToStart
-                                                 : convertRawProp(
-                                                       context,
-                                                       rawProps,
-                                                       "snapToStart",
-                                                       sourceProps.snapToStart,
-                                                       true)),
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
+              ? sourceProps.snapToStart
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "snapToStart",
+                    sourceProps.snapToStart,
+                    true)),
       snapToEnd(
-          CoreFeatures::enablePropIteratorSetter ? sourceProps.snapToEnd
-                                                 : convertRawProp(
-                                                       context,
-                                                       rawProps,
-                                                       "snapToEnd",
-                                                       sourceProps.snapToEnd,
-                                                       true)),
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
+              ? sourceProps.snapToEnd
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "snapToEnd",
+                    sourceProps.snapToEnd,
+                    true)),
       contentInsetAdjustmentBehavior(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
               ? sourceProps.contentInsetAdjustmentBehavior
               : convertRawProp(
                     context,
@@ -330,7 +337,7 @@ ScrollViewProps::ScrollViewProps(
                     sourceProps.contentInsetAdjustmentBehavior,
                     {ContentInsetAdjustmentBehavior::Never})),
       scrollToOverflowEnabled(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
               ? sourceProps.scrollToOverflowEnabled
               : convertRawProp(
                     context,
@@ -339,7 +346,7 @@ ScrollViewProps::ScrollViewProps(
                     sourceProps.scrollToOverflowEnabled,
                     {})),
       isInvertedVirtualizedList(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
               ? sourceProps.isInvertedVirtualizedList
               : convertRawProp(
                     context,

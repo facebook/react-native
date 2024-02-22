@@ -25,6 +25,7 @@ target_link_libraries(rrc_text
         glog_init
         jsi
         react_debug
+        react_featureflags
         react_render_attributedstring
         react_render_core
         react_render_debug

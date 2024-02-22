@@ -413,8 +413,6 @@ void Binding::installFabricUIManager(
       "CalculateTransformedFramesEnabled",
       getFeatureFlagValue("calculateTransformedFramesEnabled"));
 
-  CoreFeatures::enablePropIteratorSetter =
-      getFeatureFlagValue("enableCppPropsIteratorSetter");
   CoreFeatures::enableClonelessStateProgression =
       getFeatureFlagValue("enableClonelessStateProgression");
   CoreFeatures::excludeYogaFromRawProps =
