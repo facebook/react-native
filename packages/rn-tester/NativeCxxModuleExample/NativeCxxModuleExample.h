@@ -7,8 +7,8 @@
 
 #pragma once
 
-#if __has_include(<React-Codegen/AppSpecsJSI.h>) // CocoaPod headers on Apple
-#include <React-Codegen/AppSpecsJSI.h>
+#if __has_include(<ReactCodegen/AppSpecsJSI.h>) // CocoaPod headers on Apple
+#include <ReactCodegen/AppSpecsJSI.h>
 #elif __has_include("AppSpecsJSI.h") // Cmake headers on Android
 #include "AppSpecsJSI.h"
 #else // BUCK headers
