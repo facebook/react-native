@@ -77,12 +77,7 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
   }
 
   override fun enableSpannableBuildingUnification(): Boolean {
-    var cached = enableSpannableBuildingUnificationCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.enableSpannableBuildingUnification()
-      enableSpannableBuildingUnificationCache = cached
-    }
-    return cached
+    return true
   }
 
   override fun enableCustomDrawOrderFabric(): Boolean {

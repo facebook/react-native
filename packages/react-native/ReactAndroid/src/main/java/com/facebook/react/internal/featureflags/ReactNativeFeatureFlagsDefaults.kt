@@ -33,7 +33,7 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun batchRenderingUpdatesInEventLoop(): Boolean = false
 
-  override fun enableSpannableBuildingUnification(): Boolean = false
+  override fun enableSpannableBuildingUnification(): Boolean = true
 
   override fun enableCustomDrawOrderFabric(): Boolean = false
 
