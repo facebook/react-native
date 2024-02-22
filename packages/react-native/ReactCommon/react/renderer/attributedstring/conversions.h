@@ -1035,11 +1035,11 @@ inline MapBuffer toMapBuffer(const FontVariant& fontVariant) {
 inline MapBuffer toMapBuffer(const TextAttributes& textAttributes) {
   auto builder = MapBufferBuilder();
   if (textAttributes.foregroundColor) {
-    builder.putInt(
+    builder.putLong(
         TA_KEY_FOREGROUND_COLOR, toAndroidRepr(textAttributes.foregroundColor));
   }
   if (textAttributes.backgroundColor) {
-    builder.putInt(
+    builder.putLong(
         TA_KEY_BACKGROUND_COLOR, toAndroidRepr(textAttributes.backgroundColor));
   }
   if (!std::isnan(textAttributes.opacity)) {
@@ -1095,7 +1095,7 @@ inline MapBuffer toMapBuffer(const TextAttributes& textAttributes) {
 
   // Decoration
   if (textAttributes.textDecorationColor) {
-    builder.putInt(
+    builder.putLong(
         TA_KEY_TEXT_DECORATION_COLOR,
         toAndroidRepr(textAttributes.textDecorationColor));
   }
@@ -1116,7 +1116,7 @@ inline MapBuffer toMapBuffer(const TextAttributes& textAttributes) {
         TA_KEY_TEXT_SHADOW_RADIUS, textAttributes.textShadowRadius);
   }
   if (textAttributes.textShadowColor) {
-    builder.putInt(
+    builder.putLong(
         TA_KEY_TEXT_SHADOW_COLOR,
         toAndroidRepr(textAttributes.textShadowColor));
   }

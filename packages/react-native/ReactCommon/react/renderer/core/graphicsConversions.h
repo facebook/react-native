@@ -34,7 +34,7 @@ inline void fromRawValue(
 }
 
 #ifdef ANDROID
-inline int toAndroidRepr(const SharedColor& color) {
+inline int64_t toAndroidRepr(const SharedColor& color) {
   return *color;
 }
 inline folly::dynamic toDynamic(const SharedColor& color) {
