@@ -566,11 +566,9 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
           'array with 1-%s columns; instead, received a single item.',
         numColumns,
       );
-      return items
-        .map((item, kk) =>
-          keyExtractor(((item: $FlowFixMe): ItemT), index * numColumns + kk),
-        )
-        .join(':');
+        // This is not the item key - this is the row key
+        // Row is static wrapper for items inside and it's key should be static
+        return `row-index-${index}`;
     }
 
     // $FlowFixMe[incompatible-call] Can't call keyExtractor with an array
