@@ -7,11 +7,11 @@
 
 #include "AccessibilityProps.h"
 
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/components/view/accessibilityPropsConversions.h>
 #include <react/renderer/components/view/propsConversions.h>
 #include <react/renderer/core/propsConversions.h>
 #include <react/renderer/debug/debugStringConvertibleUtils.h>
-#include <react/utils/CoreFeatures.h>
 
 namespace facebook::react {
 
@@ -20,15 +20,16 @@ AccessibilityProps::AccessibilityProps(
     const AccessibilityProps& sourceProps,
     const RawProps& rawProps)
     : accessible(
-          CoreFeatures::enablePropIteratorSetter ? sourceProps.accessible
-                                                 : convertRawProp(
-                                                       context,
-                                                       rawProps,
-                                                       "accessible",
-                                                       sourceProps.accessible,
-                                                       false)),
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
+              ? sourceProps.accessible
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "accessible",
+                    sourceProps.accessible,
+                    false)),
       accessibilityState(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
               ? sourceProps.accessibilityState
               : convertRawProp(
                     context,
@@ -37,7 +38,7 @@ AccessibilityProps::AccessibilityProps(
                     sourceProps.accessibilityState,
                     {})),
       accessibilityLabel(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
               ? sourceProps.accessibilityLabel
               : convertRawProp(
                     context,
@@ -46,7 +47,7 @@ AccessibilityProps::AccessibilityProps(
                     sourceProps.accessibilityLabel,
                     "")),
       accessibilityLabelledBy(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
               ? sourceProps.accessibilityLabelledBy
               : convertRawProp(
                     context,
@@ -55,7 +56,7 @@ AccessibilityProps::AccessibilityProps(
                     sourceProps.accessibilityLabelledBy,
                     {})),
       accessibilityLiveRegion(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
               ? sourceProps.accessibilityLiveRegion
               : convertRawProp(
                     context,
@@ -64,7 +65,7 @@ AccessibilityProps::AccessibilityProps(
                     sourceProps.accessibilityLiveRegion,
                     AccessibilityLiveRegion::None)),
       accessibilityHint(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
               ? sourceProps.accessibilityHint
               : convertRawProp(
                     context,
@@ -73,7 +74,7 @@ AccessibilityProps::AccessibilityProps(
                     sourceProps.accessibilityHint,
                     "")),
       accessibilityLanguage(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
               ? sourceProps.accessibilityLanguage
               : convertRawProp(
                     context,
@@ -82,7 +83,7 @@ AccessibilityProps::AccessibilityProps(
                     sourceProps.accessibilityLanguage,
                     "")),
       accessibilityValue(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
               ? sourceProps.accessibilityValue
               : convertRawProp(
                     context,
@@ -91,7 +92,7 @@ AccessibilityProps::AccessibilityProps(
                     sourceProps.accessibilityValue,
                     {})),
       accessibilityActions(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
               ? sourceProps.accessibilityActions
               : convertRawProp(
                     context,
@@ -100,7 +101,7 @@ AccessibilityProps::AccessibilityProps(
                     sourceProps.accessibilityActions,
                     {})),
       accessibilityViewIsModal(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
               ? sourceProps.accessibilityViewIsModal
               : convertRawProp(
                     context,
@@ -109,7 +110,7 @@ AccessibilityProps::AccessibilityProps(
                     sourceProps.accessibilityViewIsModal,
                     false)),
       accessibilityElementsHidden(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
               ? sourceProps.accessibilityElementsHidden
               : convertRawProp(
                     context,
@@ -118,7 +119,7 @@ AccessibilityProps::AccessibilityProps(
                     sourceProps.accessibilityElementsHidden,
                     false)),
       accessibilityIgnoresInvertColors(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
               ? sourceProps.accessibilityIgnoresInvertColors
               : convertRawProp(
                     context,
@@ -127,7 +128,7 @@ AccessibilityProps::AccessibilityProps(
                     sourceProps.accessibilityIgnoresInvertColors,
                     false)),
       onAccessibilityTap(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
               ? sourceProps.onAccessibilityTap
               : convertRawProp(
                     context,
@@ -136,7 +137,7 @@ AccessibilityProps::AccessibilityProps(
                     sourceProps.onAccessibilityTap,
                     {})),
       onAccessibilityMagicTap(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
               ? sourceProps.onAccessibilityMagicTap
               : convertRawProp(
                     context,
@@ -145,7 +146,7 @@ AccessibilityProps::AccessibilityProps(
                     sourceProps.onAccessibilityMagicTap,
                     {})),
       onAccessibilityEscape(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
               ? sourceProps.onAccessibilityEscape
               : convertRawProp(
                     context,
@@ -154,7 +155,7 @@ AccessibilityProps::AccessibilityProps(
                     sourceProps.onAccessibilityEscape,
                     {})),
       onAccessibilityAction(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
               ? sourceProps.onAccessibilityAction
               : convertRawProp(
                     context,
@@ -163,7 +164,7 @@ AccessibilityProps::AccessibilityProps(
                     sourceProps.onAccessibilityAction,
                     {})),
       importantForAccessibility(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
               ? sourceProps.importantForAccessibility
               : convertRawProp(
                     context,
@@ -172,13 +173,14 @@ AccessibilityProps::AccessibilityProps(
                     sourceProps.importantForAccessibility,
                     ImportantForAccessibility::Auto)),
       testId(
-          CoreFeatures::enablePropIteratorSetter ? sourceProps.testId
-                                                 : convertRawProp(
-                                                       context,
-                                                       rawProps,
-                                                       "testID",
-                                                       sourceProps.testId,
-                                                       "")) {
+          ReactNativeFeatureFlags::enablePropIteratorSetter()
+              ? sourceProps.testId
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "testID",
+                    sourceProps.testId,
+                    "")) {
   // It is a (severe!) perf deoptimization to request props out-of-order.
   // Thus, since we need to request the same prop twice here
   // (accessibilityRole) we "must" do them subsequently here to prevent
@@ -186,7 +188,7 @@ AccessibilityProps::AccessibilityProps(
   // it probably can, but this is a fairly rare edge-case that (1) is easy-ish
   // to work around here, and (2) would require very careful work to address
   // this case and not regress the more common cases.
-  if (!CoreFeatures::enablePropIteratorSetter) {
+  if (!ReactNativeFeatureFlags::enablePropIteratorSetter()) {
     auto* accessibilityRoleValue =
         rawProps.at("accessibilityRole", nullptr, nullptr);
     auto* roleValue = rawProps.at("role", nullptr, nullptr);

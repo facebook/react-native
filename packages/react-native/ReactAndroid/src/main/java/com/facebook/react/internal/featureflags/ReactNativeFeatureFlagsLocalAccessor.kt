@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<63356ad414e641eae11ca07b1a876fd3>>
+ * @generated SignedSource<<ac6fa0c879e4748ad503944c9d10b3fd>>
  */
 
 /**
@@ -34,6 +34,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var enableFixForClippedSubviewsCrashCache: Boolean? = null
   private var inspectorEnableCxxInspectorPackagerConnectionCache: Boolean? = null
   private var inspectorEnableModernCDPRegistryCache: Boolean? = null
+  private var enablePropIteratorSetterCache: Boolean? = null
 
   override fun commonTestFlag(): Boolean {
     var cached = commonTestFlagCache
@@ -131,6 +132,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.inspectorEnableModernCDPRegistry()
       accessedFeatureFlags.add("inspectorEnableModernCDPRegistry")
       inspectorEnableModernCDPRegistryCache = cached
+    }
+    return cached
+  }
+
+  override fun enablePropIteratorSetter(): Boolean {
+    var cached = enablePropIteratorSetterCache
+    if (cached == null) {
+      cached = currentProvider.enablePropIteratorSetter()
+      accessedFeatureFlags.add("enablePropIteratorSetter")
+      enablePropIteratorSetterCache = cached
     }
     return cached
   }

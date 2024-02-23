@@ -6,10 +6,10 @@
  */
 
 #include "AndroidTextInputProps.h"
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/components/image/conversions.h>
 #include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/core/propsConversions.h>
-#include <react/utils/CoreFeatures.h>
 
 namespace facebook::react {
 
@@ -38,209 +38,209 @@ AndroidTextInputProps::AndroidTextInputProps(
     const RawProps &rawProps)
     : ViewProps(context, sourceProps, rawProps),
       BaseTextProps(context, sourceProps, rawProps),
-      autoComplete(CoreFeatures::enablePropIteratorSetter? sourceProps.autoComplete : convertRawProp(
+      autoComplete(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.autoComplete : convertRawProp(
           context,
           rawProps,
           "autoComplete",
           sourceProps.autoComplete,
           {})),
-      returnKeyLabel(CoreFeatures::enablePropIteratorSetter? sourceProps.autoComplete : convertRawProp(context, rawProps,
+      returnKeyLabel(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.autoComplete : convertRawProp(context, rawProps,
           "returnKeyLabel",
           sourceProps.returnKeyLabel,
           {})),
-      numberOfLines(CoreFeatures::enablePropIteratorSetter? sourceProps.numberOfLines : convertRawProp(context, rawProps,
+      numberOfLines(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.numberOfLines : convertRawProp(context, rawProps,
           "numberOfLines",
           sourceProps.numberOfLines,
           {0})),
-      disableFullscreenUI(CoreFeatures::enablePropIteratorSetter? sourceProps.disableFullscreenUI : convertRawProp(context, rawProps,
+      disableFullscreenUI(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.disableFullscreenUI : convertRawProp(context, rawProps,
           "disableFullscreenUI",
           sourceProps.disableFullscreenUI,
           {false})),
-      textBreakStrategy(CoreFeatures::enablePropIteratorSetter? sourceProps.textBreakStrategy : convertRawProp(context, rawProps,
+      textBreakStrategy(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.textBreakStrategy : convertRawProp(context, rawProps,
           "textBreakStrategy",
           sourceProps.textBreakStrategy,
           {})),
-      underlineColorAndroid(CoreFeatures::enablePropIteratorSetter? sourceProps.underlineColorAndroid : convertRawProp(context, rawProps,
+      underlineColorAndroid(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.underlineColorAndroid : convertRawProp(context, rawProps,
           "underlineColorAndroid",
           sourceProps.underlineColorAndroid,
           {})),
-      inlineImageLeft(CoreFeatures::enablePropIteratorSetter? sourceProps.inlineImageLeft : convertRawProp(context, rawProps,
+      inlineImageLeft(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.inlineImageLeft : convertRawProp(context, rawProps,
           "inlineImageLeft",
           sourceProps.inlineImageLeft,
           {})),
-      inlineImagePadding(CoreFeatures::enablePropIteratorSetter? sourceProps.inlineImagePadding : convertRawProp(context, rawProps,
+      inlineImagePadding(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.inlineImagePadding : convertRawProp(context, rawProps,
           "inlineImagePadding",
           sourceProps.inlineImagePadding,
           {0})),
-      importantForAutofill(CoreFeatures::enablePropIteratorSetter? sourceProps.importantForAutofill : convertRawProp(context, rawProps,
+      importantForAutofill(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.importantForAutofill : convertRawProp(context, rawProps,
           "importantForAutofill",
           sourceProps.importantForAutofill,
           {})),
-      showSoftInputOnFocus(CoreFeatures::enablePropIteratorSetter? sourceProps.showSoftInputOnFocus : convertRawProp(context, rawProps,
+      showSoftInputOnFocus(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.showSoftInputOnFocus : convertRawProp(context, rawProps,
           "showSoftInputOnFocus",
           sourceProps.showSoftInputOnFocus,
           {false})),
-      autoCapitalize(CoreFeatures::enablePropIteratorSetter? sourceProps.autoCapitalize : convertRawProp(context, rawProps,
+      autoCapitalize(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.autoCapitalize : convertRawProp(context, rawProps,
           "autoCapitalize",
           sourceProps.autoCapitalize,
           {})),
-      autoCorrect(CoreFeatures::enablePropIteratorSetter? sourceProps.autoCorrect : convertRawProp(context, rawProps,
+      autoCorrect(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.autoCorrect : convertRawProp(context, rawProps,
           "autoCorrect",
           sourceProps.autoCorrect,
           {false})),
-      autoFocus(CoreFeatures::enablePropIteratorSetter? sourceProps.autoFocus : convertRawProp(context, rawProps,
+      autoFocus(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.autoFocus : convertRawProp(context, rawProps,
           "autoFocus",
           sourceProps.autoFocus,
           {false})),
-      allowFontScaling(CoreFeatures::enablePropIteratorSetter? sourceProps.allowFontScaling : convertRawProp(context, rawProps,
+      allowFontScaling(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.allowFontScaling : convertRawProp(context, rawProps,
           "allowFontScaling",
           sourceProps.allowFontScaling,
           {false})),
-      maxFontSizeMultiplier(CoreFeatures::enablePropIteratorSetter? sourceProps.maxFontSizeMultiplier : convertRawProp(context, rawProps,
+      maxFontSizeMultiplier(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.maxFontSizeMultiplier : convertRawProp(context, rawProps,
           "maxFontSizeMultiplier",
           sourceProps.maxFontSizeMultiplier,
           {0.0})),
-      editable(CoreFeatures::enablePropIteratorSetter? sourceProps.editable :
+      editable(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.editable :
           convertRawProp(context, rawProps, "editable", sourceProps.editable, {false})),
-      keyboardType(CoreFeatures::enablePropIteratorSetter? sourceProps.keyboardType : convertRawProp(context, rawProps,
+      keyboardType(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.keyboardType : convertRawProp(context, rawProps,
           "keyboardType",
           sourceProps.keyboardType,
           {})),
-      returnKeyType(CoreFeatures::enablePropIteratorSetter? sourceProps.returnKeyType : convertRawProp(context, rawProps,
+      returnKeyType(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.returnKeyType : convertRawProp(context, rawProps,
           "returnKeyType",
           sourceProps.returnKeyType,
           {})),
-      maxLength(CoreFeatures::enablePropIteratorSetter? sourceProps.maxLength :
+      maxLength(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.maxLength :
           convertRawProp(context, rawProps, "maxLength", sourceProps.maxLength, {0})),
-      multiline(CoreFeatures::enablePropIteratorSetter? sourceProps.multiline : convertRawProp(context, rawProps,
+      multiline(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.multiline : convertRawProp(context, rawProps,
           "multiline",
           sourceProps.multiline,
           {false})),
-      placeholder(CoreFeatures::enablePropIteratorSetter? sourceProps.placeholder :
+      placeholder(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.placeholder :
           convertRawProp(context, rawProps, "placeholder", sourceProps.placeholder, {})),
-      placeholderTextColor(CoreFeatures::enablePropIteratorSetter? sourceProps.placeholderTextColor : convertRawProp(context, rawProps,
+      placeholderTextColor(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.placeholderTextColor : convertRawProp(context, rawProps,
           "placeholderTextColor",
           sourceProps.placeholderTextColor,
           {})),
-      secureTextEntry(CoreFeatures::enablePropIteratorSetter? sourceProps.secureTextEntry : convertRawProp(context, rawProps,
+      secureTextEntry(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.secureTextEntry : convertRawProp(context, rawProps,
           "secureTextEntry",
           sourceProps.secureTextEntry,
           {false})),
-      selectionColor(CoreFeatures::enablePropIteratorSetter? sourceProps.selectionColor : convertRawProp(context, rawProps,
+      selectionColor(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.selectionColor : convertRawProp(context, rawProps,
           "selectionColor",
           sourceProps.selectionColor,
           {})),
-      selectionHandleColor(CoreFeatures::enablePropIteratorSetter? sourceProps.selectionHandleColor : convertRawProp(context, rawProps,
+      selectionHandleColor(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.selectionHandleColor : convertRawProp(context, rawProps,
           "selectionHandleColor",
           sourceProps.selectionHandleColor,
           {})),
-      value(CoreFeatures::enablePropIteratorSetter? sourceProps.value : convertRawProp(context, rawProps, "value", sourceProps.value, {})),
-      defaultValue(CoreFeatures::enablePropIteratorSetter? sourceProps.defaultValue : convertRawProp(context, rawProps,
+      value(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.value : convertRawProp(context, rawProps, "value", sourceProps.value, {})),
+      defaultValue(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.defaultValue : convertRawProp(context, rawProps,
           "defaultValue",
           sourceProps.defaultValue,
           {})),
-      selectTextOnFocus(CoreFeatures::enablePropIteratorSetter? sourceProps.selectTextOnFocus : convertRawProp(context, rawProps,
+      selectTextOnFocus(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.selectTextOnFocus : convertRawProp(context, rawProps,
           "selectTextOnFocus",
           sourceProps.selectTextOnFocus,
           {false})),
-      submitBehavior(CoreFeatures::enablePropIteratorSetter? sourceProps.submitBehavior : convertRawProp(context, rawProps,
+      submitBehavior(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.submitBehavior : convertRawProp(context, rawProps,
            "submitBehavior",
           sourceProps.submitBehavior,
           {})),
-      caretHidden(CoreFeatures::enablePropIteratorSetter? sourceProps.caretHidden : convertRawProp(context, rawProps,
+      caretHidden(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.caretHidden : convertRawProp(context, rawProps,
           "caretHidden",
           sourceProps.caretHidden,
           {false})),
-      contextMenuHidden(CoreFeatures::enablePropIteratorSetter? sourceProps.contextMenuHidden : convertRawProp(context, rawProps,
+      contextMenuHidden(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.contextMenuHidden : convertRawProp(context, rawProps,
           "contextMenuHidden",
           sourceProps.contextMenuHidden,
           {false})),
-      textShadowColor(CoreFeatures::enablePropIteratorSetter? sourceProps.textShadowColor : convertRawProp(context, rawProps,
+      textShadowColor(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.textShadowColor : convertRawProp(context, rawProps,
           "textShadowColor",
           sourceProps.textShadowColor,
           {})),
-      textShadowRadius(CoreFeatures::enablePropIteratorSetter? sourceProps.textShadowRadius : convertRawProp(context, rawProps,
+      textShadowRadius(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.textShadowRadius : convertRawProp(context, rawProps,
           "textShadowRadius",
           sourceProps.textShadowRadius,
           {0.0})),
-      textDecorationLine(CoreFeatures::enablePropIteratorSetter? sourceProps.textDecorationLine : convertRawProp(context, rawProps,
+      textDecorationLine(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.textDecorationLine : convertRawProp(context, rawProps,
           "textDecorationLine",
           sourceProps.textDecorationLine,
           {})),
-      fontStyle(CoreFeatures::enablePropIteratorSetter? sourceProps.fontStyle :
+      fontStyle(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.fontStyle :
           convertRawProp(context, rawProps, "fontStyle", sourceProps.fontStyle, {})),
-      textShadowOffset(CoreFeatures::enablePropIteratorSetter? sourceProps.textShadowOffset : convertRawProp(context, rawProps,
+      textShadowOffset(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.textShadowOffset : convertRawProp(context, rawProps,
           "textShadowOffset",
           sourceProps.textShadowOffset,
           {})),
-      lineHeight(CoreFeatures::enablePropIteratorSetter? sourceProps.lineHeight : convertRawProp(context, rawProps,
+      lineHeight(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.lineHeight : convertRawProp(context, rawProps,
           "lineHeight",
           sourceProps.lineHeight,
           {0.0})),
-      textTransform(CoreFeatures::enablePropIteratorSetter? sourceProps.textTransform : convertRawProp(context, rawProps,
+      textTransform(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.textTransform : convertRawProp(context, rawProps,
           "textTransform",
           sourceProps.textTransform,
           {})),
       color(0 /*convertRawProp(context, rawProps, "color", sourceProps.color, {0})*/),
-      letterSpacing(CoreFeatures::enablePropIteratorSetter? sourceProps.letterSpacing : convertRawProp(context, rawProps,
+      letterSpacing(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.letterSpacing : convertRawProp(context, rawProps,
           "letterSpacing",
           sourceProps.letterSpacing,
           {0.0})),
-      fontSize(CoreFeatures::enablePropIteratorSetter? sourceProps.fontSize :
+      fontSize(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.fontSize :
           convertRawProp(context, rawProps, "fontSize", sourceProps.fontSize, {0.0})),
-      textAlign(CoreFeatures::enablePropIteratorSetter? sourceProps.textAlign :
+      textAlign(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.textAlign :
           convertRawProp(context, rawProps, "textAlign", sourceProps.textAlign, {})),
-      includeFontPadding(CoreFeatures::enablePropIteratorSetter? sourceProps.includeFontPadding : convertRawProp(context, rawProps,
+      includeFontPadding(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.includeFontPadding : convertRawProp(context, rawProps,
           "includeFontPadding",
           sourceProps.includeFontPadding,
           {false})),
-      fontWeight(CoreFeatures::enablePropIteratorSetter? sourceProps.fontWeight :
+      fontWeight(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.fontWeight :
           convertRawProp(context, rawProps, "fontWeight", sourceProps.fontWeight, {})),
-      fontFamily(CoreFeatures::enablePropIteratorSetter? sourceProps.fontFamily :
+      fontFamily(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.fontFamily :
           convertRawProp(context, rawProps, "fontFamily", sourceProps.fontFamily, {})),
-      textAlignVertical(CoreFeatures::enablePropIteratorSetter? sourceProps.textAlignVertical : convertRawProp(context, rawProps,
+      textAlignVertical(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.textAlignVertical : convertRawProp(context, rawProps,
           "textAlignVertical",
           sourceProps.textAlignVertical,
           {})),
-      cursorColor(CoreFeatures::enablePropIteratorSetter? sourceProps.cursorColor :
+      cursorColor(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.cursorColor :
           convertRawProp(context, rawProps, "cursorColor", sourceProps.cursorColor, {})),
-      mostRecentEventCount(CoreFeatures::enablePropIteratorSetter? sourceProps.mostRecentEventCount : convertRawProp(context, rawProps,
+      mostRecentEventCount(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.mostRecentEventCount : convertRawProp(context, rawProps,
           "mostRecentEventCount",
           sourceProps.mostRecentEventCount,
           {0})),
-      text(CoreFeatures::enablePropIteratorSetter? sourceProps.text : convertRawProp(context, rawProps, "text", sourceProps.text, {})),
-      paragraphAttributes(CoreFeatures::enablePropIteratorSetter? sourceProps.paragraphAttributes :
+      text(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.text : convertRawProp(context, rawProps, "text", sourceProps.text, {})),
+      paragraphAttributes(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.paragraphAttributes :
           convertRawProp(context, rawProps, sourceProps.paragraphAttributes, {})),
       // See AndroidTextInputComponentDescriptor for usage
       // TODO T63008435: can these, and this feature, be removed entirely?
-      hasPadding(CoreFeatures::enablePropIteratorSetter? sourceProps.hasPadding : hasValue(rawProps, sourceProps.hasPadding, "padding")),
-      hasPaddingHorizontal(CoreFeatures::enablePropIteratorSetter? sourceProps.hasPaddingHorizontal : hasValue(
+      hasPadding(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.hasPadding : hasValue(rawProps, sourceProps.hasPadding, "padding")),
+      hasPaddingHorizontal(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.hasPaddingHorizontal : hasValue(
           rawProps,
           sourceProps.hasPaddingHorizontal,
           "paddingHorizontal")),
-      hasPaddingVertical(CoreFeatures::enablePropIteratorSetter? sourceProps.hasPaddingVertical : hasValue(
+      hasPaddingVertical(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.hasPaddingVertical : hasValue(
           rawProps,
           sourceProps.hasPaddingVertical,
           "paddingVertical")),
-      hasPaddingLeft(CoreFeatures::enablePropIteratorSetter? sourceProps.hasPaddingLeft : hasValue(
+      hasPaddingLeft(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.hasPaddingLeft : hasValue(
           rawProps,
           sourceProps.hasPaddingLeft,
           "paddingLeft")),
-      hasPaddingTop(CoreFeatures::enablePropIteratorSetter? sourceProps.hasPaddingTop :
+      hasPaddingTop(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.hasPaddingTop :
           hasValue(rawProps, sourceProps.hasPaddingTop, "paddingTop")),
-      hasPaddingRight(CoreFeatures::enablePropIteratorSetter? sourceProps.hasPaddingRight : hasValue(
+      hasPaddingRight(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.hasPaddingRight : hasValue(
           rawProps,
           sourceProps.hasPaddingRight,
           "paddingRight")),
-      hasPaddingBottom(CoreFeatures::enablePropIteratorSetter? sourceProps.hasPaddingBottom : hasValue(
+      hasPaddingBottom(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.hasPaddingBottom : hasValue(
           rawProps,
           sourceProps.hasPaddingBottom,
           "paddingBottom")),
-      hasPaddingStart(CoreFeatures::enablePropIteratorSetter? sourceProps.hasPaddingStart : hasValue(
+      hasPaddingStart(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.hasPaddingStart : hasValue(
           rawProps,
           sourceProps.hasPaddingStart,
           "paddingStart")),
-      hasPaddingEnd(CoreFeatures::enablePropIteratorSetter? sourceProps.hasPaddingEnd :
+      hasPaddingEnd(ReactNativeFeatureFlags::enablePropIteratorSetter()? sourceProps.hasPaddingEnd :
           hasValue(rawProps, sourceProps.hasPaddingEnd, "paddingEnd")) {
 }
 

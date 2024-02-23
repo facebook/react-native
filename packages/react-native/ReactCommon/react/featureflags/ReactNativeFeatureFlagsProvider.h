@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f707d15cf978d7342cdf5aab18444219>>
+ * @generated SignedSource<<37a53122381f8d5c2b953c609963e59b>>
  */
 
 /**
@@ -35,6 +35,7 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool enableFixForClippedSubviewsCrash() = 0;
   virtual bool inspectorEnableCxxInspectorPackagerConnection() = 0;
   virtual bool inspectorEnableModernCDPRegistry() = 0;
+  virtual bool enablePropIteratorSetter() = 0;
 };
 
 } // namespace facebook::react
