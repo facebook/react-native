@@ -27,7 +27,11 @@ ${DO_NOT_MODIFY_COMMENT}
 
 #pragma once
 
+#if __has_include("rncoreJSI.h") // Cmake headers on Android
+#include "rncoreJSI.h"
+#else
 #include <FBReactNativeSpec/FBReactNativeSpecJSI.h>
+#endif
 
 namespace facebook::react {
 

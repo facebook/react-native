@@ -27,12 +27,9 @@
 // jsinspector-modern
 #import <jsinspector-modern/InspectorFlags.h>
 
-#if __has_include(<React-Codegen/RCTModulesConformingToProtocolsProvider.h>)
+#if __has_include(<ReactCodegen/RCTModulesConformingToProtocolsProvider.h>)
 #define USE_OSS_CODEGEN 1
-#import <React-Codegen/RCTModulesConformingToProtocolsProvider.h>
-#elif __has_include(<React_Codegen/RCTModulesConformingToProtocolsProvider.h>)
-#define USE_OSS_CODEGEN 1
-#import <React_Codegen/RCTModulesConformingToProtocolsProvider.h>
+#import <ReactCodegen/RCTModulesConformingToProtocolsProvider.h>
 #else
 // Meta internal system do not generate the RCTModulesConformingToProtocolsProvider.h file
 #define USE_OSS_CODEGEN 0

@@ -12,11 +12,33 @@
 describe('ReactNativeFeatureFlags', () => {
   beforeEach(() => {
     jest.resetModules();
+    jest.restoreAllMocks();
+    jest.spyOn(console, 'error').mockImplementation(() => {});
   });
 
-  it('should provide default values for common flags if the native module is NOT available', () => {
+  it('should provide default values for common flags and log an error if the native module is NOT available', () => {
     const ReactNativeFeatureFlags = require('../ReactNativeFeatureFlags');
     expect(ReactNativeFeatureFlags.commonTestFlag()).toBe(false);
+
+    expect(console.error).toHaveBeenCalledTimes(1);
+    expect(console.error).toHaveBeenCalledWith(
+      "Could not access feature flag 'commonTestFlag' because native module method was not available",
+    );
+  });
+
+  it('should provide default values for common flags and log an error if the method in the native module is NOT available', () => {
+    jest.doMock('../NativeReactNativeFeatureFlags', () => ({
+      __esModule: true,
+      default: {},
+    }));
+
+    const ReactNativeFeatureFlags = require('../ReactNativeFeatureFlags');
+    expect(ReactNativeFeatureFlags.commonTestFlag()).toBe(false);
+
+    expect(console.error).toHaveBeenCalledTimes(1);
+    expect(console.error).toHaveBeenCalledWith(
+      "Could not access feature flag 'commonTestFlag' because native module method was not available",
+    );
   });
 
   it('should access and cache common flags from the native module if it is available', () => {
