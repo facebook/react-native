@@ -609,6 +609,53 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
     });
   });
 
+  it('parses an error log with a component stack in the message without debug source', () => {
+    const error = {
+      id: 0,
+      isFatal: true,
+      isComponentError: true,
+      message:
+        'Error: Some kind of message\n\nThis error is located at:\n    in MyComponent (created by MyOtherComponent)\n',
+      originalMessage: 'Some kind of message',
+      name: '',
+      componentStack: '\n    in MyComponent (created by MyOtherComponent)\n',
+      stack: [
+        {
+          column: 1,
+          file: 'foo.js',
+          lineNumber: 1,
+          methodName: 'bar',
+          collapse: false,
+        },
+      ],
+    };
+    expect(parseLogBoxException(error)).toEqual({
+      level: 'fatal',
+      isComponentError: true,
+      stack: [
+        {
+          collapse: false,
+          column: 1,
+          file: 'foo.js',
+          lineNumber: 1,
+          methodName: 'bar',
+        },
+      ],
+      componentStack: [
+        {
+          content: 'MyComponent',
+          fileName: '',
+          location: null,
+        },
+      ],
+      category: 'Some kind of message',
+      message: {
+        content: 'Some kind of message',
+        substitutions: [],
+      },
+    });
+  });
+
   it('parses a fatal exception', () => {
     const error = {
       id: 0,
