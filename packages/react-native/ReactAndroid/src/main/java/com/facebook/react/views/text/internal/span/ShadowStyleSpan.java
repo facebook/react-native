@@ -7,14 +7,23 @@
 
 package com.facebook.react.views.text.internal.span;
 
+import android.graphics.Color;
+import android.graphics.ColorSpace;
 import android.text.TextPaint;
 import android.text.style.CharacterStyle;
 
 public class ShadowStyleSpan extends CharacterStyle implements ReactSpan {
   private final float mDx, mDy, mRadius;
-  private final int mColor;
+  private final long mColor;
 
   public ShadowStyleSpan(float dx, float dy, float radius, int color) {
+    mDx = dx;
+    mDy = dy;
+    mRadius = radius;
+    mColor = Color.pack(color);
+  }
+
+  public ShadowStyleSpan(float dx, float dy, float radius, long color) {
     mDx = dx;
     mDy = dy;
     mRadius = radius;
