@@ -1448,14 +1448,6 @@ public abstract interface class com/facebook/react/bridge/UIManager : com/facebo
 	public abstract fun updateRootLayoutSpecs (IIIII)V
 }
 
-public abstract interface class com/facebook/react/bridge/UIManagerListener {
-	public abstract fun didDispatchMountItems (Lcom/facebook/react/bridge/UIManager;)V
-	public abstract fun didMountItems (Lcom/facebook/react/bridge/UIManager;)V
-	public abstract fun didScheduleMountItems (Lcom/facebook/react/bridge/UIManager;)V
-	public abstract fun willDispatchViewUpdates (Lcom/facebook/react/bridge/UIManager;)V
-	public abstract fun willMountItems (Lcom/facebook/react/bridge/UIManager;)V
-}
-
 public abstract interface class com/facebook/react/bridge/UIManagerProvider {
 	public abstract fun createUIManager (Lcom/facebook/react/bridge/ReactApplicationContext;)Lcom/facebook/react/bridge/UIManager;
 }
