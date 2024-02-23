@@ -15,8 +15,12 @@ import com.facebook.react.views.text.TextAttributeProps
 /** A [TextFragment] implementation backed by a a [ReadableMap] */
 internal class BridgeTextFragment(private val fragment: ReadableMap) : TextFragment {
   override val textAttributeProps: TextAttributeProps
-    get() =
-        TextAttributeProps.fromReadableMap(ReactStylesDiffMap(fragment.getMap("textAttributes")))
+    get() {
+      val textAttributesMap =
+          fragment.getMap("textAttributes")
+              ?: throw IllegalStateException("Missing required field `textAttributes`")
+      return TextAttributeProps.fromReadableMap(ReactStylesDiffMap(textAttributesMap))
+    }
 
   override val string: String?
     get() = fragment.getString("string")
