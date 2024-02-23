@@ -7,7 +7,10 @@
 
 package com.facebook.react.bridge
 
+import com.facebook.react.common.annotations.UnstableReactNativeAPI
+
 /** Listener used to hook into the UIManager update process. */
+@UnstableReactNativeAPI
 public interface UIManagerListener {
   /**
    * Called right before view updates are dispatched at the end of a batch. This is useful if a
