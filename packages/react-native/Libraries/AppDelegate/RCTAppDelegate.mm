@@ -12,6 +12,7 @@
 #import <React/RCTSurfacePresenterBridgeAdapter.h>
 #import <React/RCTUtils.h>
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
+#import "RCTAppDelegate+Protected.h"
 #import "RCTAppSetupUtils.h"
 
 #if RN_DISABLE_OSS_PLUGIN_HEADER
@@ -35,14 +36,12 @@
 #import <ReactCommon/RCTHost.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
 #import <react/config/ReactNativeConfig.h>
+#import <react/nativemodule/featureflags/NativeReactNativeFeatureFlags.h>
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import <react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h>
 #import <react/runtime/JSRuntimeFactory.h>
 
-@interface RCTAppDelegate () <
-    RCTTurboModuleManagerDelegate,
-    RCTComponentViewFactoryComponentProvider,
-    RCTContextContainerHandling> {
+@interface RCTAppDelegate () <RCTComponentViewFactoryComponentProvider, RCTContextContainerHandling> {
   std::shared_ptr<const facebook::react::ReactNativeConfig> _reactNativeConfig;
   facebook::react::ContextContainer::Shared _contextContainer;
 }
@@ -273,6 +272,10 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
                                                       jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
 {
+  if (name == facebook::react::NativeReactNativeFeatureFlags::kModuleName) {
+    return std::make_shared<facebook::react::NativeReactNativeFeatureFlags>(jsInvoker);
+  }
+
   return nullptr;
 }
 
