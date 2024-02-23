@@ -8,6 +8,7 @@
 package com.facebook.react.uimanager;
 
 import android.view.Choreographer;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.JSExceptionHandler;
 import com.facebook.react.bridge.ReactContext;
 
@@ -15,6 +16,7 @@ import com.facebook.react.bridge.ReactContext;
  * Abstract base for a Choreographer FrameCallback that should have any RuntimeExceptions it throws
  * handled by the {@link JSExceptionHandler} registered if the app is in dev mode.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public abstract class GuardedFrameCallback implements Choreographer.FrameCallback {
 
   private final ReactContext mReactContext;
