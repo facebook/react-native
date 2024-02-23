@@ -7,6 +7,9 @@
 
 package com.facebook.react.uimanager;
 
+import com.facebook.infer.annotation.Nullsafe;
+
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class FloatUtil {
 
   private static final float EPSILON = .00001f;
