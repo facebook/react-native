@@ -20,11 +20,11 @@ internal interface BasicTextAttributeProvider {
 
   val isBackgroundColorSet: Boolean
 
-  val backgroundColor: Int
+  val backgroundColor: Long
 
   val isColorSet: Boolean
 
-  val color: Int
+  val color: Long
 
   val fontStyle: Int
 
@@ -44,5 +44,5 @@ internal interface BasicTextAttributeProvider {
 
   val textShadowRadius: Float
 
-  val textShadowColor: Int
+  val textShadowColor: Long
 }

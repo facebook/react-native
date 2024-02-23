@@ -339,7 +339,7 @@ internal object TextLayoutUtils {
         textAttributeProvider.textShadowOffsetDx != 0f ||
             textAttributeProvider.textShadowOffsetDy != 0f
     val hasTextShadowRadius = textAttributeProvider.textShadowRadius != 0f
-    val hasTextShadowColorAlpha = Color.alpha(textAttributeProvider.textShadowColor) != 0
+    val hasTextShadowColorAlpha = Color.alpha(textAttributeProvider.textShadowColor) != 0f
 
     if ((hasTextShadowOffset || hasTextShadowRadius) && hasTextShadowColorAlpha) {
       ops.add(
