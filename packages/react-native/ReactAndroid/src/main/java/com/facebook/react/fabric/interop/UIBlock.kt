@@ -9,6 +9,8 @@
 
 package com.facebook.react.fabric.interop
 
+import com.facebook.react.common.annotations.UnstableReactNativeAPI
+
 /**
  * Interop Interface added to support `addUiBlock` and `prependUIBlock` methods in Fabric.
  * Historically those methods were only available in `UIManagerModule` (Paper, the old renderer).
@@ -17,6 +19,7 @@ package com.facebook.react.fabric.interop
  * @deprecated When developing new libraries for Fabric you should instead use [UIManagerListener]
  *   or View Commands to achieve a same results.
  */
+@UnstableReactNativeAPI
 @Deprecated("Use UIManagerListener or View Commands instead of addUIBlock and prependUIBlock.")
 public fun interface UIBlock {
   /**

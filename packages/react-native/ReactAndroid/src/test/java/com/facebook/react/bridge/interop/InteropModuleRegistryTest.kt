@@ -19,6 +19,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
+@OptIn(UnstableReactNativeAPI::class)
 class InteropModuleRegistryTest {
 
   lateinit var underTest: InteropModuleRegistry

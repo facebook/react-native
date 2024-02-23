@@ -2626,14 +2626,6 @@ public class com/facebook/react/fabric/events/FabricEventEmitter : com/facebook/
 	public fun receiveTouches (Ljava/lang/String;Lcom/facebook/react/bridge/WritableArray;Lcom/facebook/react/bridge/WritableArray;)V
 }
 
-public abstract interface class com/facebook/react/fabric/interop/UIBlock {
-	public abstract fun execute (Lcom/facebook/react/fabric/interop/UIBlockViewResolver;)V
-}
-
-public abstract interface class com/facebook/react/fabric/interop/UIBlockViewResolver {
-	public abstract fun resolveView (I)Landroid/view/View;
-}
-
 public abstract interface class com/facebook/react/fabric/mounting/LayoutMetricsConversions {
 	public static fun getMaxSize (I)F
 	public static fun getMinSize (I)F
