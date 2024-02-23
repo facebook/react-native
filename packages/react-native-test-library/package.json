@@ -1,0 +1,49 @@
+{
+  "name": "@react-native/oss-library-example",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Package that includes native module exapmle, native component example, targets both the old and the new architecture. It should serve as an example of a real-world OSS library.",
+  "license": "MIT",
+  "homepage": "https://github.com/facebook/react-native.git",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/facebook/react-native.git",
+    "directory": "packages/react-native-test-library"
+  },
+  "main": "./lib/index.js",
+  "exports": {
+    "./": "./lib/index.js",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "yarn clean && babel --out-dir lib src",
+    "clean": "rimraf lib",
+    "prepare": "yarn run build"
+  },
+  "files": [
+    "lib",
+    "generated"
+  ],
+  "devDependencies": {
+    "@babel/core": "^7.20.0",
+    "@react-native/babel-preset": "*",
+    "react-native": "*"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  },
+  "codegenConfig": {
+    "name": "OSSLibraryExampleSpec",
+    "type": "all",
+    "jsSrcsDir": "src",
+    "outputDir": {
+      "ios": "ios",
+      "android": "android"
+    },
+    "includesGeneratedCode": true,
+    "android": {
+      "javaPackageName": "com.reactnative.osslibraryexample"
+    }
+  }
+}
