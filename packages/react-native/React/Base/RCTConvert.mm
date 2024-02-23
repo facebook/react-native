@@ -545,6 +545,15 @@ RCT_ENUM_CONVERTER(
     UIBarStyleDefault,
     integerValue)
 
+RCT_ENUM_CONVERTER(
+    RCTCursor,
+    (@{
+      @"auto" : @(RCTCursorAuto),
+      @"pointer" : @(RCTCursorPointer),
+    }),
+    RCTCursorAuto,
+    integerValue)
+
 static void convertCGStruct(const char *type, NSArray *fields, CGFloat *result, id json)
 {
   NSUInteger count = fields.count;
