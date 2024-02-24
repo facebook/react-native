@@ -8,9 +8,9 @@
  * @flow strict-local
  */
 
-import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
-import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 import type {RefObject} from 'react';
+import type {HostComponent} from 'react-native';
+import type {SyntheticEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 
 import PopupMenuAndroidNativeComponent, {
   Commands,

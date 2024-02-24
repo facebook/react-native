@@ -8,7 +8,7 @@
  */
 
 import type * as React from 'react';
-import {HostComponent} from '../../../types/public/ReactNativeTypes';
+import {HostComponent} from 'react-native';
 
 type PopupMenuAndroidInstance = {
   show: () => void;
