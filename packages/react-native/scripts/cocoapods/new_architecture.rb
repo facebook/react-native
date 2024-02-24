@@ -7,7 +7,7 @@ require 'json'
 
 require_relative "./utils.rb"
 require_relative "./helpers.rb"
-\
+
 class NewArchitectureHelper
     @@cplusplus_version = "c++20"
 
@@ -114,7 +114,7 @@ class NewArchitectureHelper
         ReactNativePodsUtils.add_flag_to_map_with_inheritance(current_config, "OTHER_CPLUSPLUSFLAGS", self.computeFlags(new_arch_enabled))
 
         spec.dependency "React-RCTFabric" # This is for Fabric Component
-        spec.dependency "React-Codegen"
+        spec.dependency "ReactCodegen"
 
         spec.dependency "RCTRequired"
         spec.dependency "RCTTypeSafety"
@@ -186,6 +186,6 @@ class NewArchitectureHelper
     end
 
     def self.new_arch_enabled
-        return ENV["RCT_NEW_ARCH_ENABLED"] == "1"
+        return ENV["RCT_NEW_ARCH_ENABLED"] == nil || ENV["RCT_NEW_ARCH_ENABLED"] == "1"
     end
 end

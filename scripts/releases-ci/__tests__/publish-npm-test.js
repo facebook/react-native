@@ -121,14 +121,14 @@ describe('publish-npm', () => {
 
   describe("publishNpm('nightly')", () => {
     beforeAll(() => {
-      jest.mock('../../releases/utils/monorepo', () => ({
-        ...jest.requireActual('../../releases/utils/monorepo'),
+      jest.mock('../../utils/monorepo', () => ({
+        ...jest.requireActual('../../utils/monorepo'),
         getPackages: getPackagesMock,
       }));
     });
 
     afterAll(() => {
-      jest.unmock('../../releases/utils/monorepo');
+      jest.unmock('../../utils/monorepo');
     });
 
     it('should publish', async () => {

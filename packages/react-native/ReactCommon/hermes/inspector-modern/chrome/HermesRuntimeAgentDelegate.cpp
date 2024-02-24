@@ -67,6 +67,26 @@ class HermesRuntimeAgentDelegate::Impl final : public RuntimeAgentDelegate {
   using HermesCDPHandler = hermes::inspector_modern::chrome::CDPHandler;
   using HermesExecutionContextDescription =
       hermes::inspector_modern::chrome::CDPHandlerExecutionContextDescription;
+  using HermesState = hermes::inspector_modern::chrome::State;
+
+  struct HermesStateWrapper : public ExportedState {
+    explicit HermesStateWrapper(std::unique_ptr<HermesState> state)
+        : state_(std::move(state)) {}
+
+    static std::unique_ptr<HermesState> unwrapDestructively(
+        ExportedState* wrapper) {
+      if (!wrapper) {
+        return nullptr;
+      }
+      if (auto* typedWrapper = dynamic_cast<HermesStateWrapper*>(wrapper)) {
+        return std::move(typedWrapper->state_);
+      }
+      return nullptr;
+    }
+
+   private:
+    std::unique_ptr<HermesState> state_;
+  };
 
  public:
   /**
@@ -75,10 +95,14 @@ class HermesRuntimeAgentDelegate::Impl final : public RuntimeAgentDelegate {
    * \param sessionState The state of the current CDP session. This will only
    * be accessed on the main thread (during the constructor, in handleRequest,
    * etc).
+   * \param previouslyExportedState The exported state from a previous instance
+   * of RuntimeAgentDelegate (NOT necessarily HermesRuntimeAgentDelegate). This
+   * may be nullptr, and if not nullptr it may be of any concrete type that
+   * implements RuntimeAgentDelegate::ExportedState.
    * \param executionContextDescription A description of the execution context
    * represented by this runtime. This is used for disambiguating the
    * source/destination of CDP messages when there are multiple runtimes
-   * (concurrently or over the life of a Page).
+   * (concurrently or over the life of a Host).
    * \param runtime The HermesRuntime that this agent is attached to.
    * \param runtimeExecutor A callback for scheduling work on the JS thread.
    * \c runtimeExecutor may drop scheduled work if the runtime is destroyed
@@ -87,6 +111,8 @@ class HermesRuntimeAgentDelegate::Impl final : public RuntimeAgentDelegate {
   Impl(
       FrontendChannel frontendChannel,
       SessionState& sessionState,
+      std::unique_ptr<RuntimeAgentDelegate::ExportedState>
+          previouslyExportedState,
       const ExecutionContextDescription& executionContextDescription,
       std::shared_ptr<hermes::HermesRuntime> runtime,
       RuntimeExecutor runtimeExecutor)
@@ -96,7 +122,9 @@ class HermesRuntimeAgentDelegate::Impl final : public RuntimeAgentDelegate {
                 runtimeExecutor),
             /* waitForDebugger */ false,
             /* enableConsoleAPICapturing */ false,
-            /* state */ nullptr,
+            /* state */
+            HermesStateWrapper::unwrapDestructively(
+                previouslyExportedState.get()),
             {.isRuntimeDomainEnabled = sessionState.isRuntimeDomainEnabled},
             HermesExecutionContextDescription{
                 .id = executionContextDescription.id,
@@ -127,7 +155,7 @@ class HermesRuntimeAgentDelegate::Impl final : public RuntimeAgentDelegate {
     // TODO: Change to string::starts_with when we're on C++20.
     if (req.method.rfind("Log.", 0) == 0) {
       // Since we know Hermes doesn't do anything useful with Log messages, but
-      // our containing PageAgent will, just bail out early.
+      // our containing HostAgent will, just bail out early.
       // TODO: We need a way to negotiate this more dynamically with Hermes
       // through the API.
       return false;
@@ -137,6 +165,10 @@ class HermesRuntimeAgentDelegate::Impl final : public RuntimeAgentDelegate {
     // Let the call know that this request is handled (i.e. it is Hermes's
     // responsibility to respond with either success or an error).
     return true;
+  }
+
+  virtual std::unique_ptr<ExportedState> getExportedState() override {
+    return std::make_unique<HermesStateWrapper>(hermes_->getState());
   }
 
  private:
@@ -155,6 +187,7 @@ class HermesRuntimeAgentDelegate::Impl final
   Impl(
       FrontendChannel frontendChannel,
       SessionState& sessionState,
+      std::unique_ptr<RuntimeAgentDelegate::ExportedState>,
       const ExecutionContextDescription&,
       std::shared_ptr<hermes::HermesRuntime> runtime,
       RuntimeExecutor)
@@ -169,12 +202,15 @@ class HermesRuntimeAgentDelegate::Impl final
 HermesRuntimeAgentDelegate::HermesRuntimeAgentDelegate(
     FrontendChannel frontendChannel,
     SessionState& sessionState,
+    std::unique_ptr<RuntimeAgentDelegate::ExportedState>
+        previouslyExportedState,
     const ExecutionContextDescription& executionContextDescription,
     std::shared_ptr<hermes::HermesRuntime> runtime,
     RuntimeExecutor runtimeExecutor)
     : impl_(std::make_unique<Impl>(
           std::move(frontendChannel),
           sessionState,
+          std::move(previouslyExportedState),
           executionContextDescription,
           std::move(runtime),
           std::move(runtimeExecutor))) {}
@@ -182,6 +218,11 @@ HermesRuntimeAgentDelegate::HermesRuntimeAgentDelegate(
 bool HermesRuntimeAgentDelegate::handleRequest(
     const cdp::PreparsedRequest& req) {
   return impl_->handleRequest(req);
+}
+
+std::unique_ptr<HermesRuntimeAgentDelegate::ExportedState>
+HermesRuntimeAgentDelegate::getExportedState() {
+  return impl_->getExportedState();
 }
 
 } // namespace facebook::react::jsinspector_modern

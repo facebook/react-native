@@ -78,7 +78,7 @@ async function main() {
 async function setReactNativeVersion(
   version /*: string */,
   dependencyVersions /*: ?Record<string, string> */,
-  buildType /*: BuildType */,
+  buildType /*: ?BuildType */,
 ) {
   const versionInfo = parseVersion(version, buildType);
 
@@ -110,8 +110,7 @@ async function setReactNativePackageVersion(
 
   await fs.writeFile(
     path.join(REPO_ROOT, 'packages/react-native/package.json'),
-    JSON.stringify(packageJson, null, 2),
-    'utf-8',
+    JSON.stringify(packageJson, null, 2) + '\n',
   );
 }
 

@@ -107,12 +107,15 @@ class HermesJSRuntime : public JSRuntime {
   std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate> createAgentDelegate(
       jsinspector_modern::FrontendChannel frontendChannel,
       jsinspector_modern::SessionState& sessionState,
+      std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate::ExportedState>
+          previouslyExportedState,
       const jsinspector_modern::ExecutionContextDescription&
           executionContextDescription) override {
     return std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate>(
         new jsinspector_modern::HermesRuntimeAgentDelegate(
             frontendChannel,
             sessionState,
+            std::move(previouslyExportedState),
             executionContextDescription,
             runtime_,
             [msgQueueThreadWeak = std::weak_ptr(msgQueueThread_),
@@ -145,18 +148,11 @@ std::unique_ptr<JSRuntime> HermesInstance::createJSRuntime(
       ? reactNativeConfig->getInt64("ios_hermes:vm_experiment_flags")
       : 0;
 
-  int64_t heapSizeConfig = reactNativeConfig
-      ? reactNativeConfig->getInt64("ios_hermes:rn_heap_size_mb")
-      : 0;
-  // Default to 3GB if MobileConfigs is not available
-  auto heapSizeMB = heapSizeConfig > 0
-      ? static_cast<::hermes::vm::gcheapsize_t>(heapSizeConfig)
-      : 3072;
-
   ::hermes::vm::RuntimeConfig::Builder runtimeConfigBuilder =
       ::hermes::vm::RuntimeConfig::Builder()
           .withGCConfig(::hermes::vm::GCConfig::Builder()
-                            .withMaxHeapSize(heapSizeMB << 20)
+                            // Default to 3GB
+                            .withMaxHeapSize(3072 << 20)
                             .withName("RNBridgeless")
                             // For the next two arguments: avoid GC before TTI
                             // by initializing the runtime to allocate directly

@@ -115,9 +115,9 @@ class MockInspectorPackagerConnectionDelegate
   folly::Executor& executor_;
 };
 
-class MockPageTargetDelegate : public PageTargetDelegate {
+class MockHostTargetDelegate : public HostTargetDelegate {
  public:
-  // PageTargetDelegate methods
+  // HostTargetDelegate methods
   MOCK_METHOD(void, onReload, (const PageReloadRequest& request), (override));
 };
 
@@ -131,6 +131,8 @@ class MockRuntimeTargetDelegate : public RuntimeTargetDelegate {
       createAgentDelegate,
       (FrontendChannel channel,
        SessionState& sessionState,
+       std::unique_ptr<RuntimeAgentDelegate::ExportedState>
+           previouslyExportedState,
        const ExecutionContextDescription&),
       (override));
 };
@@ -140,6 +142,7 @@ class MockRuntimeAgentDelegate : public RuntimeAgentDelegate {
   inline MockRuntimeAgentDelegate(
       FrontendChannel frontendChannel,
       SessionState& sessionState,
+      std::unique_ptr<RuntimeAgentDelegate::ExportedState>,
       const ExecutionContextDescription& executionContextDescription)
       : frontendChannel(std::move(frontendChannel)),
         sessionState(sessionState),

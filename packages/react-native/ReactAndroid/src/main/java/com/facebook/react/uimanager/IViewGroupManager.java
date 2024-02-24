@@ -8,9 +8,11 @@
 package com.facebook.react.uimanager;
 
 import android.view.View;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.UiThreadUtil;
 
 /** Interface providing children management API for view managers of classes extending ViewGroup. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public interface IViewGroupManager<T extends View> extends IViewManagerWithChildren {
 
   /** Adds a child view into the parent at the index specified as a parameter */

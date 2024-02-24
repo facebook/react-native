@@ -179,8 +179,8 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
 
 - (void)unmountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
-  if (_adapter) {
-    [_adapter.paperView removeReactSubview:childComponentView];
+  if (_adapter && index < _adapter.paperView.reactSubviews.count) {
+    [_adapter.paperView removeReactSubview:_adapter.paperView.reactSubviews[index]];
   } else {
     [_viewsToBeUnmounted addObject:childComponentView];
   }

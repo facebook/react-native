@@ -292,4 +292,20 @@ Pod::Spec.new do |s|
     ss.header_dir           = "react/renderer/leakchecker"
     ss.pod_target_xcconfig  = { "GCC_WARN_PEDANTIC" => "YES" }
   end
+
+  s.script_phases = [
+    {
+      :name => '[RN]Check rncore',
+      :execution_position => :before_compile,
+      :script => <<-EOS
+echo "Checking whether Codegen has run..."
+rncorePath="$REACT_NATIVE_PATH/ReactCommon/react/renderer/components/rncore"
+
+if [[ ! -d "$rncorePath" ]]; then
+  echo 'error: Codegen did not run properly in your project. Please reinstall cocoapods with `bundle exec pod install`.'
+  exit 1
+fi
+      EOS
+    }
+  ]
 end

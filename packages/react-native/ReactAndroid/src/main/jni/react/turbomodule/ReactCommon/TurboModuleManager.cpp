@@ -12,6 +12,7 @@
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
 
+#include <ReactCommon/CxxTurboModuleUtils.h>
 #include <ReactCommon/JavaInteropTurboModule.h>
 #include <ReactCommon/TurboCxxModule.h>
 #include <ReactCommon/TurboModuleBinding.h>
@@ -166,6 +167,14 @@ TurboModuleProviderFunctionType TurboModuleManager::createTurboModuleProvider(
     if (cxxModule) {
       turboModuleCache->insert({name, cxxModule});
       return cxxModule;
+    }
+
+    auto& cxxTurboModuleMapProvider = globalExportedCxxTurboModuleMap();
+    auto it = cxxTurboModuleMapProvider.find(name);
+    if (it != cxxTurboModuleMapProvider.end()) {
+      auto turboModule = it->second(jsCallInvoker);
+      turboModuleCache->insert({name, turboModule});
+      return turboModule;
     }
 
     static auto getTurboLegacyCxxModule =

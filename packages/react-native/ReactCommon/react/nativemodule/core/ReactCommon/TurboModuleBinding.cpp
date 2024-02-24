@@ -7,10 +7,10 @@
 
 #include "TurboModuleBinding.h"
 
+#include <cxxreact/SystraceSection.h>
+#include <react/utils/jsi.h>
 #include <stdexcept>
 #include <string>
-
-#include <cxxreact/SystraceSection.h>
 
 using namespace facebook;
 
@@ -61,33 +61,6 @@ class BridgelessNativeModuleProxy : public jsi::HostObject {
         "Tried to insert a NativeModule into the bridge's NativeModule proxy.");
   }
 };
-
-// TODO(148359183): Merge this with the Bridgeless defineReadOnlyGlobal util
-static void defineReadOnlyGlobal(
-    jsi::Runtime& runtime,
-    std::string propName,
-    jsi::Value&& value) {
-  if (runtime.global().hasProperty(runtime, propName.c_str())) {
-    throw jsi::JSError(
-        runtime,
-        "Tried to redefine read-only global \"" + propName +
-            "\", but read-only globals can only be defined once.");
-  }
-  jsi::Object jsObject =
-      runtime.global().getProperty(runtime, "Object").asObject(runtime);
-  jsi::Function defineProperty = jsObject.getProperty(runtime, "defineProperty")
-                                     .asObject(runtime)
-                                     .asFunction(runtime);
-
-  jsi::Object descriptor = jsi::Object(runtime);
-  descriptor.setProperty(runtime, "value", std::move(value));
-  defineProperty.callWithThis(
-      runtime,
-      jsObject,
-      runtime.global(),
-      jsi::String::createFromUtf8(runtime, propName),
-      descriptor);
-}
 
 /**
  * Public API to install the TurboModule system.

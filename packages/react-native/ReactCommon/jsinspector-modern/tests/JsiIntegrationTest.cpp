@@ -5,14 +5,15 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <folly/Format.h>
 #include <folly/dynamic.h>
 #include <folly/executors/QueuedImmediateExecutor.h>
 #include <folly/json.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include <jsinspector-modern/HostTarget.h>
 #include <jsinspector-modern/InspectorInterfaces.h>
-#include <jsinspector-modern/PageTarget.h>
 
 #include <memory>
 
@@ -23,6 +24,7 @@
 #include "engines/JsiIntegrationTestHermesEngineAdapter.h"
 
 using namespace ::testing;
+using folly::sformat;
 
 namespace facebook::react::jsinspector_modern {
 
@@ -46,7 +48,7 @@ namespace {
  * the provided folly::Executor) and the corresponding jsi::Runtime.
  */
 template <typename EngineAdapter>
-class JsiIntegrationPortableTest : public Test, private PageTargetDelegate {
+class JsiIntegrationPortableTest : public Test, private HostTargetDelegate {
   folly::QueuedImmediateExecutor immediateExecutor_;
 
  protected:
@@ -127,8 +129,8 @@ class JsiIntegrationPortableTest : public Test, private PageTargetDelegate {
     return result;
   }
 
-  std::shared_ptr<PageTarget> page_ =
-      PageTarget::create(*this, inspectorExecutor_);
+  std::shared_ptr<HostTarget> page_ =
+      HostTarget::create(*this, inspectorExecutor_);
   InstanceTarget* instance_{};
   RuntimeTarget* runtimeTarget_{};
 
@@ -143,7 +145,7 @@ class JsiIntegrationPortableTest : public Test, private PageTargetDelegate {
   std::unique_ptr<ILocalConnection> toPage_;
 
  private:
-  // PageTargetDelegate methods
+  // HostTargetDelegate methods
 
   void onReload(const PageReloadRequest& request) override {
     (void)request;
@@ -156,11 +158,8 @@ class JsiIntegrationPortableTest : public Test, private PageTargetDelegate {
 ////////////////////////////////////////////////////////////////////////////////
 
 // Some tests are specific to Hermes's CDP capabilities and some are not.
-// We'll use JsiIntegrationHermesTest as a fixture for Hermes-specific tests
-// and typed tests for the engine-agnostic ones.
-
-using JsiIntegrationHermesTest =
-    JsiIntegrationPortableTest<JsiIntegrationTestHermesEngineAdapter>;
+// We'll use JsiIntegrationHermesTest as an alias for Hermes-specific tests
+// and JsiIntegrationPortableTest for the engine-agnostic ones.
 
 /**
  * The list of engine adapters for which engine-agnostic tests should pass.
@@ -169,7 +168,13 @@ using AllEngines = Types<
     JsiIntegrationTestHermesEngineAdapter,
     JsiIntegrationTestGenericEngineAdapter>;
 
+using AllHermesVariants = Types<JsiIntegrationTestHermesEngineAdapter>;
+
 TYPED_TEST_SUITE(JsiIntegrationPortableTest, AllEngines);
+
+template <typename EngineAdapter>
+using JsiIntegrationHermesTest = JsiIntegrationPortableTest<EngineAdapter>;
+TYPED_TEST_SUITE(JsiIntegrationHermesTest, AllHermesVariants);
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -451,23 +456,121 @@ TYPED_TEST(JsiIntegrationPortableTest, ExceptionDuringAddBindingIsIgnored) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-TEST_F(JsiIntegrationHermesTest, EvaluateExpression) {
-  connect();
+TYPED_TEST(JsiIntegrationHermesTest, EvaluateExpression) {
+  this->connect();
 
-  expectMessageFromPage(JsonEq(R"({
-                                   "id": 1,
-                                   "result": {
-                                     "result": {
-                                       "type": "number",
-                                       "value": 42
-                                     }
-                                   }
-                                 })"));
-  toPage_->sendMessage(R"({
-                           "id": 1,
-                           "method": "Runtime.evaluate",
-                           "params": {"expression": "42"}
-                         })");
+  this->expectMessageFromPage(JsonEq(R"({
+                                         "id": 1,
+                                         "result": {
+                                           "result": {
+                                             "type": "number",
+                                             "value": 42
+                                           }
+                                         }
+                                       })"));
+  this->toPage_->sendMessage(R"({
+                                 "id": 1,
+                                 "method": "Runtime.evaluate",
+                                 "params": {"expression": "42"}
+                               })");
+}
+
+TYPED_TEST(JsiIntegrationHermesTest, EvaluateExpressionInExecutionContext) {
+  this->connect();
+
+  InSequence s;
+
+  auto executionContextInfo = this->expectMessageFromPage(JsonParsed(
+      AllOf(AtJsonPtr("/method", "Runtime.executionContextCreated"))));
+  this->expectMessageFromPage(JsonEq(R"({
+                                         "id": 1,
+                                         "result": {}
+                                       })"));
+  this->toPage_->sendMessage(R"({
+                                 "id": 1,
+                                 "method": "Runtime.enable"
+                               })");
+  auto executionContextId =
+      executionContextInfo->value()["params"]["context"]["id"].getInt();
+
+  this->expectMessageFromPage(JsonEq(R"({
+                                         "id": 1,
+                                         "result": {
+                                           "result": {
+                                             "type": "number",
+                                             "value": 42
+                                           }
+                                         }
+                                       })"));
+  this->toPage_->sendMessage(sformat(
+      R"({{
+        "id": 1,
+        "method": "Runtime.evaluate",
+        "params": {{"expression": "42", "contextId": {0}}}
+      }})",
+      std::to_string(executionContextId)));
+
+  // Silence notifications about execution contexts.
+  this->expectMessageFromPage(JsonEq(R"({
+                                         "id": 2,
+                                         "result": {}
+                                       })"));
+  this->toPage_->sendMessage(R"({
+                                 "id": 2,
+                                 "method": "Runtime.disable"
+                               })");
+  this->reload();
+
+  // Now the old execution context is stale.
+  this->expectMessageFromPage(
+      JsonParsed(AllOf(AtJsonPtr("/id", 3), AtJsonPtr("/error/code", -32000))));
+  this->toPage_->sendMessage(sformat(
+      R"({{
+        "id": 3,
+        "method": "Runtime.evaluate",
+        "params": {{"expression": "10000", "contextId": {0}}}
+      }})",
+      std::to_string(executionContextId)));
+}
+
+TYPED_TEST(JsiIntegrationHermesTest, ResolveBreakpointAfterReload) {
+  this->connect();
+
+  InSequence s;
+
+  this->expectMessageFromPage(JsonParsed(AtJsonPtr("/id", 1)));
+  this->toPage_->sendMessage(R"({
+                                 "id": 1,
+                                 "method": "Debugger.setBreakpointByUrl",
+                                 "params": {"lineNumber": 2, "url": "breakpointTest.js"}
+                               })");
+
+  this->reload();
+
+  this->expectMessageFromPage(JsonEq(R"({
+                                         "id": 2,
+                                         "result": {}
+                                       })"));
+  this->toPage_->sendMessage(R"({
+                                 "id": 2,
+                                 "method": "Debugger.enable"
+                               })");
+
+  auto scriptInfo = this->expectMessageFromPage(JsonParsed(AllOf(
+      AtJsonPtr("/method", "Debugger.scriptParsed"),
+      AtJsonPtr("/params/url", "breakpointTest.js"))));
+  auto breakpointInfo = this->expectMessageFromPage(JsonParsed(AllOf(
+      AtJsonPtr("/method", "Debugger.breakpointResolved"),
+      AtJsonPtr("/params/location/lineNumber", 2))));
+  this->eval(R"( // line 0
+    globalThis.foo = function() { // line 1
+      Date.now(); // line 2
+    };
+    //# sourceURL=breakpointTest.js
+  )");
+  EXPECT_EQ(
+      breakpointInfo->value()["params"]["location"]["scriptId"],
+      scriptInfo->value()["params"]["scriptId"]);
 }
 
 } // namespace facebook::react::jsinspector_modern

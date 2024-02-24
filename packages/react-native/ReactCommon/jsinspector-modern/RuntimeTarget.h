@@ -13,7 +13,6 @@
 #include "InspectorInterfaces.h"
 #include "RuntimeAgent.h"
 #include "ScopedExecutor.h"
-#include "SessionState.h"
 #include "WeakList.h"
 
 #include <memory>
@@ -35,6 +34,7 @@ namespace facebook::react::jsinspector_modern {
 class RuntimeAgent;
 class RuntimeAgentDelegate;
 class RuntimeTarget;
+struct SessionState;
 
 /**
  * Receives events from a RuntimeTarget. This is a shared interface that
@@ -47,6 +47,8 @@ class RuntimeTargetDelegate {
   virtual std::unique_ptr<RuntimeAgentDelegate> createAgentDelegate(
       FrontendChannel channel,
       SessionState& sessionState,
+      std::unique_ptr<RuntimeAgentDelegate::ExportedState>
+          previouslyExportedState,
       const ExecutionContextDescription& executionContextDescription) = 0;
 };
 
@@ -80,7 +82,7 @@ class JSINSPECTOR_EXPORT RuntimeTarget
    * \param executionContextDescription A description of the execution context
    * represented by this runtime. This is used for disambiguating the
    * source/destination of CDP messages when there are multiple runtimes
-   * (concurrently or over the life of a Page).
+   * (concurrently or over the life of a Host).
    * \param delegate The object that will receive events from this target. The
    * caller is responsible for
    * ensuring that the delegate outlives this object.
@@ -107,9 +109,9 @@ class JSINSPECTOR_EXPORT RuntimeTarget
   /**
    * Create a new RuntimeAgent that can be used to debug the underlying JS VM.
    * The agent will be destroyed when the session ends, the containing
-   * InstanceTarget is unregistered from its PageTarget, or the RuntimeAgent is
+   * InstanceTarget is unregistered from its HostTarget, or the RuntimeAgent is
    * unregistered from its InstanceTarget (whichever happens first).
-   * \param channel A thread-safe channel for sending CDP messages to the
+   * \param channel A thread-safe channel forHostTargetDP messages to the
    * frontend.
    * \returns The new agent, or nullptr if the runtime is not debuggable.
    */
@@ -124,7 +126,7 @@ class JSINSPECTOR_EXPORT RuntimeTarget
    * \param executionContextDescription A description of the execution context
    * represented by this runtime. This is used for disambiguating the
    * source/destination of CDP messages when there are multiple runtimes
-   * (concurrently or over the life of a Page).
+   * (concurrently or over the life of a Host).
    * \param delegate The object that will receive events from this target.
    * The caller is responsible for ensuring that the delegate outlives this
    * object.

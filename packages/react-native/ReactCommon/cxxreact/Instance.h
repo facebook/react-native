@@ -47,7 +47,7 @@ class RN_EXPORT Instance : private jsinspector_modern::InstanceTargetDelegate {
       std::shared_ptr<JSExecutorFactory> jsef,
       std::shared_ptr<MessageQueueThread> jsQueue,
       std::shared_ptr<ModuleRegistry> moduleRegistry,
-      jsinspector_modern::PageTarget* inspectorTarget = nullptr);
+      jsinspector_modern::HostTarget* inspectorTarget = nullptr);
 
   void initializeRuntime();
 
@@ -178,7 +178,7 @@ class RN_EXPORT Instance : private jsinspector_modern::InstanceTargetDelegate {
   std::shared_ptr<JSCallInvoker> jsCallInvoker_ =
       std::make_shared<JSCallInvoker>();
 
-  jsinspector_modern::PageTarget* parentInspectorTarget_{nullptr};
+  jsinspector_modern::HostTarget* parentInspectorTarget_{nullptr};
   jsinspector_modern::InstanceTarget* inspectorTarget_{nullptr};
   jsinspector_modern::RuntimeTarget* runtimeInspectorTarget_{nullptr};
 };

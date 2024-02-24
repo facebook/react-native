@@ -8,7 +8,7 @@
  */
 
 const {getVersionsBySpec} = require('../../npm-utils');
-const forEachPackage = require('../for-each-package');
+const {getPackages} = require('../../utils/monorepo');
 const {exit} = require('shelljs');
 const yargs = require('yargs');
 
@@ -41,40 +41,46 @@ function reversePatchComp(semverA, semverB) {
   return patchB - patchA;
 }
 
-const main = () => {
+async function main() {
   const data = [];
-  forEachPackage(
-    (_packageAbsolutePath, _packageRelativePathFromRoot, packageManifest) => {
-      const isPublic = !packageManifest.private;
-      if (
-        type === 'all' ||
-        (type === 'private' && !isPublic) ||
-        (type === 'public' && isPublic)
-      ) {
-        const packageInfo = {
-          'Public?': isPublic ? '\u{2705}' : '\u{274C}',
-          Name: packageManifest.name,
-          'Version (main)': packageManifest.version,
-        };
+  const packages = await getPackages({
+    includeReactNative: true,
+    includePrivate: true,
+  });
 
-        if (isPublic && minor !== 0) {
-          try {
-            const versions = getVersionsBySpec(
-              packageManifest.name,
-              `^0.${minor}.0`,
-            ).sort(reversePatchComp);
-            packageInfo[`Version (${minor})`] = versions[0];
-          } catch (e) {
-            packageInfo[`Version (${minor})`] = e.message;
-          }
+  for (const {packageJson} of Object.values(packages)) {
+    const isPublic = !packageJson.private;
+    if (
+      type === 'all' ||
+      (type === 'private' && !isPublic) ||
+      (type === 'public' && isPublic)
+    ) {
+      const packageInfo = {
+        'Public?': isPublic ? '\u{2705}' : '\u{274C}',
+        Name: packageJson.name,
+        'Version (main)': packageJson.version,
+      };
+
+      if (isPublic && minor !== 0) {
+        try {
+          const versions = getVersionsBySpec(
+            packageJson.name,
+            `^0.${minor}.0`,
+          ).sort(reversePatchComp);
+          packageInfo[`Version (${minor})`] = versions[0];
+        } catch (e) {
+          packageInfo[`Version (${minor})`] = e.message;
         }
-        data.push(packageInfo);
       }
-    },
-    {includeReactNative: true},
-  );
+      data.push(packageInfo);
+    }
+  }
+
   console.table(data);
   exit(0);
-};
+}
 
-main();
+if (require.main === module) {
+  // eslint-disable-next-line no-void
+  void main();
+}

@@ -119,7 +119,7 @@ class BridgelessDevSupportManager extends DevSupportManagerBase {
 
       @Override
       public void onJSBundleLoadedFromServer() {
-        throw new IllegalStateException("Not implemented for bridgeless mode");
+        // Not implemented
       }
 
       @Override

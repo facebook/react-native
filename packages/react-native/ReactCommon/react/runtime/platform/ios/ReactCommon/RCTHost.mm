@@ -28,9 +28,9 @@ RCT_MOCK_DEF(RCTHost, _RCTLogNativeInternal);
 
 using namespace facebook::react;
 
-class RCTHostPageTargetDelegate : public facebook::react::jsinspector_modern::PageTargetDelegate {
+class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::HostTargetDelegate {
  public:
-  RCTHostPageTargetDelegate(RCTHost *host) : host_(host) {}
+  RCTHostHostTargetDelegate(RCTHost *host) : host_(host) {}
 
   void onReload(const PageReloadRequest &request) override
   {
@@ -67,8 +67,8 @@ class RCTHostPageTargetDelegate : public facebook::react::jsinspector_modern::Pa
 
   RCTModuleRegistry *_moduleRegistry;
 
-  std::unique_ptr<RCTHostPageTargetDelegate> _inspectorPageDelegate;
-  std::shared_ptr<jsinspector_modern::PageTarget> _inspectorTarget;
+  std::unique_ptr<RCTHostHostTargetDelegate> _inspectorHostDelegate;
+  std::shared_ptr<jsinspector_modern::HostTarget> _inspectorTarget;
   std::optional<int> _inspectorPageId;
 }
 
@@ -157,7 +157,7 @@ class RCTHostPageTargetDelegate : public facebook::react::jsinspector_modern::Pa
       RCTRegisterReloadCommandListener(self);
     });
 
-    _inspectorPageDelegate = std::make_unique<RCTHostPageTargetDelegate>(self);
+    _inspectorHostDelegate = std::make_unique<RCTHostHostTargetDelegate>(self);
   }
   return self;
 }
@@ -169,7 +169,7 @@ class RCTHostPageTargetDelegate : public facebook::react::jsinspector_modern::Pa
   auto &inspectorFlags = jsinspector_modern::InspectorFlags::getInstance();
   if (inspectorFlags.getEnableModernCDPRegistry() && !_inspectorPageId.has_value()) {
     _inspectorTarget =
-        facebook::react::jsinspector_modern::PageTarget::create(*_inspectorPageDelegate, [](auto callback) {
+        facebook::react::jsinspector_modern::HostTarget::create(*_inspectorHostDelegate, [](auto callback) {
           RCTExecuteOnMainQueue(^{
             callback();
           });
