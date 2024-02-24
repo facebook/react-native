@@ -134,7 +134,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     return view;
   }
 
-  // Currently. onLayout listener is only attached when transform origin prop is being used.
+  // Currently, layout listener is only attached when transform or transformOrigin is set.
   @Override
   public void onLayoutChange(
       View v,
