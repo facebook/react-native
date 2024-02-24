@@ -8,16 +8,16 @@
  * @format
  */
 
-import type {ViewProps} from '../../../../Libraries/Components/View/ViewPropTypes';
-import type {HostComponent} from '../../../../Libraries/Renderer/shims/ReactNativeTypes';
+import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
+import type {HostComponent} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
 import type {
   DirectEventHandler,
   Int32,
-} from '../../../../Libraries/Types/CodegenTypes';
+} from 'react-native/Libraries/Types/CodegenTypes';
 
-import codegenNativeCommands from '../../../../Libraries/Utilities/codegenNativeCommands';
-import codegenNativeComponent from '../../../../Libraries/Utilities/codegenNativeComponent';
 import * as React from 'react';
+import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
+import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
 
 type PopupMenuSelectionEvent = $ReadOnly<{
   item: Int32,

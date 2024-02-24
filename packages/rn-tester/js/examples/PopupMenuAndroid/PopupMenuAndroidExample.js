@@ -10,11 +10,12 @@
 
 'use strict';
 
+import type {PopupMenuAndroidInstance} from '@react-native/popup-menu-android';
 import type {Node} from 'react';
-import type {PopupMenuAndroidInstance} from 'react-native/Libraries/Components/PopupMenuAndroid/PopupMenuAndroid';
 
+import PopupMenuAndroid from '@react-native/popup-menu-android';
 import * as React from 'react';
-import {Button, PopupMenuAndroid, StyleSheet, Text, View} from 'react-native';
+import {Button, StyleSheet, Text, View} from 'react-native';
 
 type Fruit = 'Apple' | 'Pear' | 'Banana' | 'Orange' | 'Kiwi';
 

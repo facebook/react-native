@@ -42,6 +42,7 @@ project.xcworkspace
 /packages/react-native/ReactAndroid/hermes-engine/.cxx/
 /packages/react-native/template/android/app/build/
 /packages/react-native/template/android/build/
+/packages/react-native-popup-menu-android/android/build/
 
 # Buck
 .buckd

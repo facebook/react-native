@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.views.popupmenu
+package com.facebook.react.popupmenu
 
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.module.annotations.ReactModule

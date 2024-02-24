@@ -5,9 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-@file:Suppress("DEPRECATION") // We want to use RCTEventEmitter for interop purposes
-
-package com.facebook.react.views.popupmenu
+package com.facebook.react.popupmenu
 
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.WritableMap
