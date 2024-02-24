@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.EditText;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
@@ -26,6 +27,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.EventDispatcherProvider;
 
 /** Helper class for {@link UIManager}. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class UIManagerHelper {
 
   private static final String TAG = UIManagerHelper.class.getName();
