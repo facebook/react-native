@@ -407,7 +407,7 @@ RCT_ARRAY_CONVERTER(RCTFontVariantDescriptor)
     fontSize = font.pointSize ?: defaultFontSize;
     fontWeight = weightOfFont(font);
     isItalic = isItalicFont(font);
-    isCondensed = isCondensedFont(font);
+    isCondensed = isCondensedFont(font) || [familyName isEqualToString:@"SystemCondensed"];
   }
 
   // Get font attributes
@@ -423,7 +423,11 @@ RCT_ARRAY_CONVERTER(RCTFontVariantDescriptor)
 
   // Handle system font as special case. This ensures that we preserve
   // the specific metrics of the standard system font as closely as possible.
-  if ([familyName isEqual:defaultFontFamily] || [familyName isEqualToString:@"System"]) {
+  if (
+    [familyName isEqual:defaultFontFamily] ||
+    [familyName isEqualToString:@"System"] ||
+    [familyName isEqualToString:@"SystemCondensed"]
+  ) {
     font = cachedSystemFont(fontSize, fontWeight);
     if (font) {
       didFindFont = YES;
