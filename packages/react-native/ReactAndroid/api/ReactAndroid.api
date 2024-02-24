@@ -5603,20 +5603,20 @@ public abstract interface class com/facebook/react/util/RCTLog : com/facebook/re
 	public abstract fun logIfNoNativeHook (Ljava/lang/String;Ljava/lang/String;)V
 }
 
-public class com/facebook/react/util/RNLog {
+public final class com/facebook/react/util/RNLog {
 	public static final field ADVICE I
 	public static final field ERROR I
+	public static final field INSTANCE Lcom/facebook/react/util/RNLog;
 	public static final field LOG I
 	public static final field MINIMUM_LEVEL_FOR_UI I
 	public static final field TRACE I
 	public static final field WARN I
-	public fun <init> ()V
-	public static fun a (Ljava/lang/String;)V
-	public static fun e (Lcom/facebook/react/bridge/ReactContext;Ljava/lang/String;)V
-	public static fun e (Ljava/lang/String;)V
-	public static fun l (Ljava/lang/String;)V
-	public static fun t (Ljava/lang/String;)V
-	public static fun w (Lcom/facebook/react/bridge/ReactContext;Ljava/lang/String;)V
+	public static final fun a (Ljava/lang/String;)V
+	public static final fun e (Lcom/facebook/react/bridge/ReactContext;Ljava/lang/String;)V
+	public static final fun e (Ljava/lang/String;)V
+	public static final fun l (Ljava/lang/String;)V
+	public static final fun t (Ljava/lang/String;)V
+	public static final fun w (Lcom/facebook/react/bridge/ReactContext;Ljava/lang/String;)V
 }
 
 public class com/facebook/react/viewmanagers/ActivityIndicatorViewManagerDelegate : com/facebook/react/uimanager/BaseViewManagerDelegate {
