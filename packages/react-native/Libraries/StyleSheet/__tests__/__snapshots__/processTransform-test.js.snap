@@ -32,7 +32,7 @@ exports[`processTransform validation should throw when passing an invalid angle 
 
 exports[`processTransform validation should throw when passing an invalid angle prop 4`] = `"Rotate transform must be expressed in degrees (deg) or radians (rad): {\\"skewX\\":\\"10drg\\"}"`;
 
-exports[`processTransform validation should throw when passing an invalid value to a number prop 1`] = `"Transform with key of \\"translateY\\" must be a number: {\\"translateY\\":\\"20deg\\"}"`;
+exports[`processTransform validation should throw when passing an invalid value to a number prop 1`] = `"Transform with key of \\"translateY\\" must be number or a percentage. Passed value: {\\"translateY\\":\\"20deg\\"}."`;
 
 exports[`processTransform validation should throw when passing an invalid value to a number prop 2`] = `"Transform with key of \\"scale\\" must be a number: {\\"scale\\":{\\"x\\":10,\\"y\\":10}}"`;
 
