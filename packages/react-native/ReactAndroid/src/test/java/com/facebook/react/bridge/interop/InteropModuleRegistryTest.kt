@@ -10,6 +10,7 @@
 
 package com.facebook.react.bridge.interop
 
+import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.config.ReactFeatureFlags
 import com.facebook.react.modules.core.JSTimers
 import com.facebook.react.uimanager.events.RCTEventEmitter
