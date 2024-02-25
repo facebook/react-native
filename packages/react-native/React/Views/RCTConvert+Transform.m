@@ -217,11 +217,11 @@ static const NSUInteger kMatrixArrayLength = 4 * 4;
         transform = CATransform3DTranslate(transform, translateX, translateY, translateZ);
         
       } else if ([property isEqualToString:@"translateX"]) {
-        CGFloat translate = [self convertValue:value withDimension:width];
+        CGFloat translate = [self parseTranslate:value withDimension:width];
         transform = CATransform3DTranslate(transform, translate, 0, 0);
         
       } else if ([property isEqualToString:@"translateY"]) {
-        CGFloat translate = [self convertValue:value withDimension:height];
+        CGFloat translate = [self parseTranslate:value withDimension:height];
         transform = CATransform3DTranslate(transform, 0, translate, 0);
         
       } else if ([property isEqualToString:@"skewX"]) {
@@ -244,7 +244,7 @@ static const NSUInteger kMatrixArrayLength = 4 * 4;
   }
 }
 
-+ (CGFloat)convertValue:(id)value withDimension:(CGFloat)dimension {
++ (CGFloat)parseTranslate:(id)value withDimension:(CGFloat)dimension {
     if ([value isKindOfClass:[NSNumber class]]) {
         return [value floatValue];
     } else if ([value isKindOfClass:[NSString class]]) {
