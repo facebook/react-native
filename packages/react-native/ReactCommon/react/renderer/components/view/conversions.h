@@ -511,8 +511,9 @@ inline void fromRawValue(
       for (auto number : numbers) {
         transformMatrix.matrix[i++] = number;
       }
+      auto Zero = ValueUnit(0, UnitType::Point);
       transformMatrix.operations.push_back(
-          TransformOperation{TransformOperationType::Arbitrary, 0, 0, 0});
+          TransformOperation{TransformOperationType::Arbitrary, Zero, Zero, Zero});
     } else if (operation == "perspective") {
       transformMatrix =
           transformMatrix * Transform::Perspective((Float)parameters);

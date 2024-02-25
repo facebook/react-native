@@ -41,8 +41,9 @@ Transform Transform::HorizontalInversion() {
 
 Transform Transform::Perspective(Float perspective) {
   auto transform = Transform{};
+  auto Zero = ValueUnit(0, UnitType::Point);
   transform.operations.push_back(TransformOperation{
-      TransformOperationType::Perspective, perspective, 0, 0});
+      TransformOperationType::Perspective, ValueUnit(perspective, UnitType::Point), Zero, Zero});
   transform.matrix[11] = -1 / perspective;
   return transform;
 }
@@ -54,7 +55,7 @@ Transform Transform::Scale(Float x, Float y, Float z) {
   Float zprime = isZero(z) ? 0 : z;
   if (xprime != 1 || yprime != 1 || zprime != 1) {
     transform.operations.push_back(TransformOperation{
-        TransformOperationType::Scale, xprime, yprime, zprime});
+        TransformOperationType::Scale, ValueUnit(xprime, UnitType::Point), ValueUnit(yprime, UnitType::Point), ValueUnit(zprime, UnitType::Point)});
     transform.matrix[0] = xprime;
     transform.matrix[5] = yprime;
     transform.matrix[10] = zprime;
@@ -69,7 +70,7 @@ Transform Transform::Translate(Float x, Float y, Float z) {
   Float zprime = isZero(z) ? 0 : z;
   if (xprime != 0 || yprime != 0 || zprime != 0) {
     transform.operations.push_back(TransformOperation{
-        TransformOperationType::Translate, xprime, yprime, zprime});
+        TransformOperationType::Translate, ValueUnit(xprime, UnitType::Point), ValueUnit(yprime, UnitType::Point), ValueUnit(zprime, UnitType::Point)});
     transform.matrix[12] = xprime;
     transform.matrix[13] = yprime;
     transform.matrix[14] = zprime;
@@ -82,7 +83,7 @@ Transform Transform::Skew(Float x, Float y) {
   Float xprime = isZero(x) ? 0 : x;
   Float yprime = isZero(y) ? 0 : y;
   transform.operations.push_back(
-      TransformOperation{TransformOperationType::Skew, xprime, yprime, 0});
+      TransformOperation{TransformOperationType::Skew, ValueUnit(xprime, UnitType::Point), ValueUnit(yprime, UnitType::Point), ValueUnit(0, UnitType::Point)});
   transform.matrix[4] = std::tan(xprime);
   transform.matrix[1] = std::tan(yprime);
   return transform;
@@ -91,8 +92,9 @@ Transform Transform::Skew(Float x, Float y) {
 Transform Transform::RotateX(Float radians) {
   auto transform = Transform{};
   if (!isZero(radians)) {
+    auto Zero = ValueUnit(0, UnitType::Point);
     transform.operations.push_back(
-        TransformOperation{TransformOperationType::Rotate, radians, 0, 0});
+        TransformOperation{TransformOperationType::Rotate, ValueUnit(radians, UnitType::Point), Zero, Zero});
     transform.matrix[5] = std::cos(radians);
     transform.matrix[6] = std::sin(radians);
     transform.matrix[9] = -std::sin(radians);
@@ -104,8 +106,9 @@ Transform Transform::RotateX(Float radians) {
 Transform Transform::RotateY(Float radians) {
   auto transform = Transform{};
   if (!isZero(radians)) {
+    auto Zero = ValueUnit(0, UnitType::Point);
     transform.operations.push_back(
-        TransformOperation{TransformOperationType::Rotate, 0, radians, 0});
+        TransformOperation{TransformOperationType::Rotate, Zero, ValueUnit(radians, UnitType::Point), Zero});
     transform.matrix[0] = std::cos(radians);
     transform.matrix[2] = -std::sin(radians);
     transform.matrix[8] = std::sin(radians);
@@ -117,8 +120,9 @@ Transform Transform::RotateY(Float radians) {
 Transform Transform::RotateZ(Float radians) {
   auto transform = Transform{};
   if (!isZero(radians)) {
+    auto Zero = ValueUnit(0, UnitType::Point);
     transform.operations.push_back(
-        TransformOperation{TransformOperationType::Rotate, 0, 0, radians});
+        TransformOperation{TransformOperationType::Rotate, Zero, Zero, ValueUnit(radians, UnitType::Point)});
     transform.matrix[0] = std::cos(radians);
     transform.matrix[1] = std::sin(radians);
     transform.matrix[4] = -std::sin(radians);
@@ -130,7 +134,7 @@ Transform Transform::RotateZ(Float radians) {
 Transform Transform::Rotate(Float x, Float y, Float z) {
   auto transform = Transform{};
   transform.operations.push_back(
-      TransformOperation{TransformOperationType::Rotate, x, y, z});
+      TransformOperation{TransformOperationType::Rotate, ValueUnit(x, UnitType::Point), ValueUnit(y, UnitType::Point), ValueUnit(z, UnitType::Point)});
   if (!isZero(x)) {
     transform = transform * Transform::RotateX(x);
   }
@@ -144,24 +148,24 @@ Transform Transform::Rotate(Float x, Float y, Float z) {
 }
 
 Transform Transform::FromTransformOperation(
-    TransformOperation transformOperation) {
+    TransformOperation transformOperation, Float viewWidth, Float viewHeight) {
   if (transformOperation.type == TransformOperationType::Perspective) {
-    return Transform::Perspective(transformOperation.x);
+    return Transform::Perspective(transformOperation.x.value);
   }
   if (transformOperation.type == TransformOperationType::Scale) {
     return Transform::Scale(
-        transformOperation.x, transformOperation.y, transformOperation.z);
+        transformOperation.x.value, transformOperation.y.value, transformOperation.z.value);
   }
   if (transformOperation.type == TransformOperationType::Translate) {
     return Transform::Translate(
-        transformOperation.x, transformOperation.y, transformOperation.z);
+        transformOperation.x.value, transformOperation.y.value, transformOperation.z.value);
   }
   if (transformOperation.type == TransformOperationType::Skew) {
-    return Transform::Skew(transformOperation.x, transformOperation.y);
+    return Transform::Skew(transformOperation.x.value, transformOperation.y.value);
   }
   if (transformOperation.type == TransformOperationType::Rotate) {
     return Transform::Rotate(
-        transformOperation.x, transformOperation.y, transformOperation.z);
+        transformOperation.x.value, transformOperation.y.value, transformOperation.z.value);
   }
 
   // Identity or Arbitrary
@@ -170,29 +174,33 @@ Transform Transform::FromTransformOperation(
 
 TransformOperation Transform::DefaultTransformOperation(
     TransformOperationType type) {
+  auto Zero = ValueUnit{0, UnitType::Point};
+  auto One = ValueUnit{1, UnitType::Point};
   switch (type) {
     case TransformOperationType::Arbitrary:
-      return TransformOperation{TransformOperationType::Arbitrary, 0, 0, 0};
+      return TransformOperation{TransformOperationType::Arbitrary, Zero, Zero, Zero};
     case TransformOperationType::Perspective:
-      return TransformOperation{TransformOperationType::Perspective, 0, 0, 0};
+      return TransformOperation{TransformOperationType::Perspective, Zero, Zero, Zero};
     case TransformOperationType::Scale:
-      return TransformOperation{TransformOperationType::Scale, 1, 1, 1};
+      return TransformOperation{TransformOperationType::Scale, One, One, One};
     case TransformOperationType::Translate:
-      return TransformOperation{TransformOperationType::Translate, 0, 0, 0};
+      return TransformOperation{TransformOperationType::Translate, Zero, Zero, Zero};
     case TransformOperationType::Rotate:
-      return TransformOperation{TransformOperationType::Rotate, 0, 0, 0};
+      return TransformOperation{TransformOperationType::Rotate, Zero, Zero, Zero};
     case TransformOperationType::Skew:
-      return TransformOperation{TransformOperationType::Skew, 0, 0, 0};
+      return TransformOperation{TransformOperationType::Skew, Zero, Zero, Zero};
     default:
     case TransformOperationType::Identity:
-      return TransformOperation{TransformOperationType::Identity, 0, 0, 0};
+      return TransformOperation{TransformOperationType::Identity, Zero, Zero, Zero};
   }
 }
 
 Transform Transform::Interpolate(
     Float animationProgress,
     const Transform& lhs,
-    const Transform& rhs) {
+    const Transform& rhs,
+    Float viewWidth,
+    Float viewHeight) {
   // Iterate through operations and reconstruct an interpolated resulting
   // transform If at any point we hit an "Arbitrary" Transform, return at that
   // point
@@ -240,9 +248,9 @@ Transform Transform::Interpolate(
     result = result *
         Transform::FromTransformOperation(TransformOperation{
             type,
-            lhsOp.x + (rhsOp.x - lhsOp.x) * animationProgress,
-            lhsOp.y + (rhsOp.y - lhsOp.y) * animationProgress,
-            lhsOp.z + (rhsOp.z - lhsOp.z) * animationProgress});
+            ValueUnit(lhsOp.x.value + (rhsOp.x.value - lhsOp.x.value) * animationProgress, UnitType::Point),
+            ValueUnit(lhsOp.y.value + (rhsOp.y.value - lhsOp.y.value) * animationProgress, UnitType::Point),
+            ValueUnit(lhsOp.z.value + (rhsOp.z.value - lhsOp.z.value) * animationProgress, UnitType::Point)}, viewWidth, viewHeight);
   }
 
   return result;

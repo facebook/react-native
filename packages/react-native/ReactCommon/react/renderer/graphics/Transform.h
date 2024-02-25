@@ -17,6 +17,7 @@
 #include <react/renderer/graphics/ValueUnit.h>
 #include <react/renderer/graphics/Vector.h>
 #include <react/utils/hash_combine.h>
+#include <react/renderer/core/RawValue.h>
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
@@ -47,9 +48,15 @@ enum class TransformOperationType {
 
 struct TransformOperation {
   TransformOperationType type;
-  Float x;
-  Float y;
-  Float z;
+  ValueUnit x;
+  ValueUnit y;
+  ValueUnit z;
+  bool operator==(const TransformOperation& other) const {
+    return type == other.type && x == other.x && y == other.y && z == other.z;
+  }
+  bool operator!=(const TransformOperation& other) const {
+    return !(*this == other);
+  }
 };
 
 struct TransformOrigin {
@@ -88,7 +95,7 @@ struct Transform {
    * Given a TransformOperation, return the proper transform.
    */
   static Transform FromTransformOperation(
-      TransformOperation transformOperation);
+      TransformOperation transformOperation, Float viewWidth, Float viewHeight);
   static TransformOperation DefaultTransformOperation(
       TransformOperationType type);
 
@@ -151,7 +158,9 @@ struct Transform {
   static Transform Interpolate(
       Float animationProgress,
       const Transform& lhs,
-      const Transform& rhs);
+      const Transform& rhs,
+      Float viewWidth,
+      Float viewHeight);
 
   static bool isVerticalInversion(const Transform& transform);
   static bool isHorizontalInversion(const Transform& transform);

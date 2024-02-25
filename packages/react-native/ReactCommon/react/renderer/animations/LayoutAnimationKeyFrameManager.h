@@ -179,7 +179,9 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
       const PropsParserContext& context,
       Float animationProgress,
       const Props::Shared& props,
-      const Props::Shared& newProps) const;
+      const Props::Shared& newProps,
+      Float viewWidth,
+      Float viewHeight) const;
 };
 
 } // namespace facebook::react
