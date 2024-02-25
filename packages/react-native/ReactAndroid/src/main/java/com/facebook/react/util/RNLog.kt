@@ -13,14 +13,14 @@ import com.facebook.react.bridge.ReactContext
 import com.facebook.react.common.ReactConstants
 
 /** Logging wrapper for FLog with LogBox support. */
-object RNLog {
+public object RNLog {
 
-  const val MINIMUM_LEVEL_FOR_UI = Log.WARN
-  const val LOG = Log.VERBOSE
-  const val TRACE = Log.DEBUG
-  const val ADVICE = Log.INFO
-  const val WARN = Log.WARN
-  const val ERROR = Log.ERROR
+  public const val MINIMUM_LEVEL_FOR_UI: Int = Log.WARN
+  public const val LOG: Int = Log.VERBOSE
+  public const val TRACE: Int = Log.DEBUG
+  public const val ADVICE: Int = Log.INFO
+  public const val WARN: Int = Log.WARN
+  public const val ERROR: Int = Log.ERROR
 
   /**
    * Log a log level message tagged as React Native to the console.
@@ -28,7 +28,7 @@ object RNLog {
    * @param message The message to log.
    */
   @JvmStatic
-  fun l(message: String) {
+  public fun l(message: String) {
     FLog.i(ReactConstants.TAG, message)
   }
 
@@ -38,7 +38,7 @@ object RNLog {
    * @param message The message to log.
    */
   @JvmStatic
-  fun t(message: String) {
+  public fun t(message: String) {
     FLog.i(ReactConstants.TAG, message)
   }
 
@@ -49,7 +49,7 @@ object RNLog {
    * @param message The message to log.
    */
   @JvmStatic
-  fun a(message: String) {
+  public fun a(message: String) {
     FLog.w(ReactConstants.TAG, "(ADVICE)$message")
   }
 
@@ -60,7 +60,7 @@ object RNLog {
    * @param message The message to log.
    */
   @JvmStatic
-  fun w(context: ReactContext?, message: String) {
+  public fun w(context: ReactContext?, message: String) {
     logInternal(context, message, WARN)
     FLog.w(ReactConstants.TAG, message)
   }
@@ -72,7 +72,7 @@ object RNLog {
    * @param message The message to log.
    */
   @JvmStatic
-  fun e(context: ReactContext?, message: String) {
+  public fun e(context: ReactContext?, message: String) {
     logInternal(context, message, ERROR)
     FLog.e(ReactConstants.TAG, message)
   }
@@ -84,7 +84,7 @@ object RNLog {
    * @param message The message to log.
    */
   @JvmStatic
-  fun e(message: String) {
+  public fun e(message: String) {
     FLog.e(ReactConstants.TAG, message)
   }
 
