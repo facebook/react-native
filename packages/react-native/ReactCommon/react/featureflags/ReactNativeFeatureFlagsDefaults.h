@@ -4,14 +4,14 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b39abca7a1fcce7ae124565cfc619d04>>
+ * @generated SignedSource<<4832483bb3648380f2bb9312311f579c>>
  */
 
 /**
  * IMPORTANT: Do NOT modify this file directly.
  *
  * To change the definition of the flags, edit
- *   packages/react-native/scripts/featureflags/ReactNativeFeatureFlags.json.
+ *   packages/react-native/scripts/featureflags/ReactNativeFeatureFlags.config.js.
  *
  * To regenerate this code, run the following script from the repo root:
  *   yarn featureflags-update
@@ -28,6 +28,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   ReactNativeFeatureFlagsDefaults() = default;
 
   bool commonTestFlag() override {
+    return false;
+  }
+
+  bool enableBackgroundExecutor() override {
     return false;
   }
 
@@ -52,6 +56,14 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableFixForClippedSubviewsCrash() override {
+    return false;
+  }
+
+  bool inspectorEnableCxxInspectorPackagerConnection() override {
+    return false;
+  }
+
+  bool inspectorEnableModernCDPRegistry() override {
     return false;
   }
 };

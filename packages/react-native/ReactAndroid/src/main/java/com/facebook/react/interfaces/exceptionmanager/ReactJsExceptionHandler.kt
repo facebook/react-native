@@ -13,6 +13,6 @@ import com.facebook.react.common.mapbuffer.ReadableMapBuffer
 
 @DoNotStripAny
 @UnstableReactNativeAPI
-fun interface ReactJsExceptionHandler {
-  fun reportJsException(errorMap: ReadableMapBuffer?)
+public fun interface ReactJsExceptionHandler {
+  public fun reportJsException(errorMap: ReadableMapBuffer?)
 }

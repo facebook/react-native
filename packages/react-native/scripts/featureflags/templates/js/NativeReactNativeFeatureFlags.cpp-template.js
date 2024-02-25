@@ -4,19 +4,17 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict
  * @format
  */
 
-'use strict';
+import type {FeatureFlagDefinitions} from '../../types';
 
-const {
-  DO_NOT_MODIFY_COMMENT,
-  getCxxTypeFromDefaultValue,
-} = require('../../utils');
-const signedsource = require('signedsource');
+import {DO_NOT_MODIFY_COMMENT, getCxxTypeFromDefaultValue} from '../../utils';
+import signedsource from 'signedsource';
 
-module.exports = config =>
-  signedsource.signFile(`/*
+export default function (definitions: FeatureFlagDefinitions): string {
+  return signedsource.signFile(`/*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -30,7 +28,9 @@ ${DO_NOT_MODIFY_COMMENT}
 #include "NativeReactNativeFeatureFlags.h"
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 
+#ifdef RN_DISABLE_OSS_PLUGIN_HEADER
 #include "Plugins.h"
+#endif
 
 std::shared_ptr<facebook::react::TurboModule>
 NativeReactNativeFeatureFlagsModuleProvider(
@@ -45,7 +45,7 @@ NativeReactNativeFeatureFlags::NativeReactNativeFeatureFlags(
     std::shared_ptr<CallInvoker> jsInvoker)
     : NativeReactNativeFeatureFlagsCxxSpec(std::move(jsInvoker)) {}
 
-${Object.entries(config.common)
+${Object.entries(definitions.common)
   .map(
     ([flagName, flagConfig]) =>
       `${getCxxTypeFromDefaultValue(
@@ -59,3 +59,4 @@ ${Object.entries(config.common)
 
 } // namespace facebook::react
 `);
+}

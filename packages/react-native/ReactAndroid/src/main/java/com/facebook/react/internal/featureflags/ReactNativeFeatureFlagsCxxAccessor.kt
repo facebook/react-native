@@ -4,14 +4,14 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5b653e8a53f557ffc0f46b3e81e99bed>>
+ * @generated SignedSource<<11824621ee7ca5dbdf2f09bdf1a1f983>>
  */
 
 /**
  * IMPORTANT: Do NOT modify this file directly.
  *
  * To change the definition of the flags, edit
- *   packages/react-native/scripts/featureflags/ReactNativeFeatureFlags.json.
+ *   packages/react-native/scripts/featureflags/ReactNativeFeatureFlags.config.js.
  *
  * To regenerate this code, run the following script from the repo root:
  *   yarn featureflags-update
@@ -19,20 +19,32 @@
 
 package com.facebook.react.internal.featureflags
 
-class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccessor {
+public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccessor {
   private var commonTestFlagCache: Boolean? = null
+  private var enableBackgroundExecutorCache: Boolean? = null
   private var useModernRuntimeSchedulerCache: Boolean? = null
   private var enableMicrotasksCache: Boolean? = null
   private var batchRenderingUpdatesInEventLoopCache: Boolean? = null
   private var enableSpannableBuildingUnificationCache: Boolean? = null
   private var enableCustomDrawOrderFabricCache: Boolean? = null
   private var enableFixForClippedSubviewsCrashCache: Boolean? = null
+  private var inspectorEnableCxxInspectorPackagerConnectionCache: Boolean? = null
+  private var inspectorEnableModernCDPRegistryCache: Boolean? = null
 
   override fun commonTestFlag(): Boolean {
     var cached = commonTestFlagCache
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.commonTestFlag()
       commonTestFlagCache = cached
+    }
+    return cached
+  }
+
+  override fun enableBackgroundExecutor(): Boolean {
+    var cached = enableBackgroundExecutorCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableBackgroundExecutor()
+      enableBackgroundExecutorCache = cached
     }
     return cached
   }
@@ -91,8 +103,26 @@ class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccessor {
     return cached
   }
 
-  override fun override(provider: ReactNativeFeatureFlagsProvider) =
+  override fun inspectorEnableCxxInspectorPackagerConnection(): Boolean {
+    var cached = inspectorEnableCxxInspectorPackagerConnectionCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.inspectorEnableCxxInspectorPackagerConnection()
+      inspectorEnableCxxInspectorPackagerConnectionCache = cached
+    }
+    return cached
+  }
+
+  override fun inspectorEnableModernCDPRegistry(): Boolean {
+    var cached = inspectorEnableModernCDPRegistryCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.inspectorEnableModernCDPRegistry()
+      inspectorEnableModernCDPRegistryCache = cached
+    }
+    return cached
+  }
+
+  override fun override(provider: ReactNativeFeatureFlagsProvider): Unit =
       ReactNativeFeatureFlagsCxxInterop.override(provider as Any)
 
-  override fun dangerouslyReset() = ReactNativeFeatureFlagsCxxInterop.dangerouslyReset()
+  override fun dangerouslyReset(): Unit = ReactNativeFeatureFlagsCxxInterop.dangerouslyReset()
 }

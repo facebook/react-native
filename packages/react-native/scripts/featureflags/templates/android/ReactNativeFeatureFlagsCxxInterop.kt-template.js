@@ -4,19 +4,20 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict
  * @format
  */
 
-'use strict';
+import type {FeatureFlagDefinitions} from '../../types';
 
-const {
+import {
   DO_NOT_MODIFY_COMMENT,
   getKotlinTypeFromDefaultValue,
-} = require('../../utils');
-const signedsource = require('signedsource');
+} from '../../utils';
+import signedsource from 'signedsource';
 
-module.exports = config =>
-  signedsource.signFile(`/*
+export default function (definitions: FeatureFlagDefinitions): string {
+  return signedsource.signFile(`/*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -33,22 +34,23 @@ import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.soloader.SoLoader
 
 @DoNotStrip
-object ReactNativeFeatureFlagsCxxInterop {
+public object ReactNativeFeatureFlagsCxxInterop {
   init {
     SoLoader.loadLibrary("react_featureflagsjni")
   }
 
-${Object.entries(config.common)
+${Object.entries(definitions.common)
   .map(
     ([flagName, flagConfig]) =>
-      `  @DoNotStrip @JvmStatic external fun ${flagName}(): ${getKotlinTypeFromDefaultValue(
+      `  @DoNotStrip @JvmStatic public external fun ${flagName}(): ${getKotlinTypeFromDefaultValue(
         flagConfig.defaultValue,
       )}`,
   )
   .join('\n\n')}
 
-  @DoNotStrip @JvmStatic external fun override(provider: Any)
+  @DoNotStrip @JvmStatic public external fun override(provider: Any)
 
-  @DoNotStrip @JvmStatic external fun dangerouslyReset()
+  @DoNotStrip @JvmStatic public external fun dangerouslyReset()
 }
 `);
+}

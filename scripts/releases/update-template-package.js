@@ -9,9 +9,12 @@
  * @oncall react_native
  */
 
+const {REACT_NATIVE_PACKAGE_DIR} = require('../consts');
 const {applyPackageVersions} = require('../npm-utils');
 const fs = require('fs');
 const path = require('path');
+
+const TEMPLATE_DIR = path.join(REACT_NATIVE_PACKAGE_DIR, 'template');
 
 /**
  * Updates the react-native template package.json with
@@ -21,12 +24,8 @@ const path = require('path');
  * ex. {"react-native": "0.23.0", "other-dep": "nightly"}
  */
 function updateTemplatePackage(dependencyMap /*: Record<string, string> */) {
-  const jsonPath = path.join(
-    __dirname,
-    '../../packages/react-native/template/package.json',
-  );
-  // $FlowFixMe[unsupported-syntax]
-  const templatePackageJson = require(jsonPath);
+  const jsonPath = path.join(TEMPLATE_DIR, 'package.json');
+  const templatePackageJson = JSON.parse(fs.readFileSync(jsonPath, 'utf-8'));
 
   const updatedPackageJson = applyPackageVersions(
     templatePackageJson,

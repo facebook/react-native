@@ -18,11 +18,15 @@ JSIRuntimeHolder::JSIRuntimeHolder(std::unique_ptr<jsi::Runtime> runtime)
   assert(runtime_ != nullptr);
 }
 
-std::unique_ptr<jsinspector_modern::RuntimeAgent>
-JSIRuntimeHolder::createInspectorAgent(
+std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate>
+JSIRuntimeHolder::createAgentDelegate(
     jsinspector_modern::FrontendChannel frontendChannel,
-    jsinspector_modern::SessionState& sessionState) {
-  return std::make_unique<jsinspector_modern::FallbackRuntimeAgent>(
+    jsinspector_modern::SessionState& sessionState,
+    std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate::ExportedState>,
+    const jsinspector_modern::ExecutionContextDescription&
+        executionContextDescription) {
+  (void)executionContextDescription;
+  return std::make_unique<jsinspector_modern::FallbackRuntimeAgentDelegate>(
       std::move(frontendChannel), sessionState, runtime_->description());
 }
 

@@ -15,19 +15,18 @@
 import type {BuildType} from '../releases/utils/version-utils';
 */
 
-const getAndUpdatePackages = require('../monorepo/get-and-update-packages');
+const {REPO_ROOT} = require('../consts');
 const {getNpmInfo, publishPackage} = require('../npm-utils');
 const {removeNewArchFlags} = require('../releases/remove-new-arch-flags');
 const {setReactNativeVersion} = require('../releases/set-rn-version');
+const setVersion = require('../releases/set-version');
 const {
   generateAndroidArtifacts,
   publishAndroidArtifactsToMaven,
 } = require('../releases/utils/release-utils');
+const {getPackages} = require('../utils/monorepo');
 const path = require('path');
-const {echo, exit} = require('shelljs');
 const yargs = require('yargs');
-
-const REPO_ROOT = path.resolve(__dirname, '../..');
 
 /**
  * This script prepares a release version of react-native and may publish to NPM.
@@ -67,6 +66,31 @@ async function main() {
   await publishNpm(buildType);
 }
 
+async function publishMonorepoPackages(tag /*: ?string */) {
+  const projectInfo = await getPackages({
+    includePrivate: false,
+    includeReactNative: false,
+  });
+
+  for (const packageInfo of Object.values(projectInfo)) {
+    console.log(`Publishing ${packageInfo.name}...`);
+    const result = publishPackage(packageInfo.path, {
+      // $FlowFixMe[incompatible-call]
+      tags: [tag],
+      otp: process.env.NPM_CONFIG_OTP,
+    });
+
+    const spec = `${packageInfo.name}@${packageInfo.packageJson.version}`;
+
+    if (result.code) {
+      throw new Error(
+        `Failed to publish ${spec} to npm. Stopping all nightly publishes`,
+      );
+    }
+    console.log(`Published ${spec} to npm`);
+  }
+}
+
 async function publishNpm(buildType /*: BuildType */) /*: Promise<void> */ {
   const {version, tag} = getNpmInfo(buildType);
 
@@ -74,30 +98,22 @@ async function publishNpm(buildType /*: BuildType */) /*: Promise<void> */ {
     removeNewArchFlags();
   }
 
-  // Here we update the react-native package and template package with the right versions
-  // For releases, CircleCI job `prepare_package_for_release` handles this
+  // For stable releases, CircleCI job `prepare_package_for_release` handles this
   if (['dry-run', 'nightly', 'prealpha'].includes(buildType)) {
-    // Publish monorepo nightlies and prealphas if there are updates, returns the new version for each package
-    const monorepoVersions =
-      // $FlowFixMe[incompatible-call]
-      buildType === 'dry-run' ? null : getAndUpdatePackages(version, buildType);
-
-    try {
-      // Update the react-native and template packages with the react-native version
-      // and nightly versions of monorepo deps
-      await setReactNativeVersion(version, monorepoVersions, buildType);
-    } catch (e) {
-      console.error(`Failed to set version number to ${version}`);
-      console.error(e);
-      return exit(1);
+    if (buildType === 'nightly') {
+      // Set same version for all monorepo packages
+      await setVersion(version);
+      await publishMonorepoPackages(tag);
+    } else {
+      await setReactNativeVersion(version, null, buildType);
     }
   }
 
   generateAndroidArtifacts(version);
 
   if (buildType === 'dry-run') {
-    echo('Skipping `npm publish` because --dry-run is set.');
-    return exit(0);
+    console.log('Skipping `npm publish` because --dry-run is set.');
+    return;
   }
 
   // We first publish on Maven Central all the necessary artifacts.
@@ -112,12 +128,9 @@ async function publishNpm(buildType /*: BuildType */) /*: Promise<void> */ {
   });
 
   if (result.code) {
-    echo('Failed to publish package to npm');
-    return exit(1);
-  } else {
-    echo(`Published to npm ${version}`);
-    return exit(0);
+    throw new Error(`Failed to publish react-native@${version} to npm.`);
   }
+  console.log(`Published react-native@${version} to npm`);
 }
 
 module.exports = {

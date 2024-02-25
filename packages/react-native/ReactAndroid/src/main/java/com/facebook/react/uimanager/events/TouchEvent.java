@@ -11,6 +11,7 @@ import android.view.MotionEvent;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pools;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.SoftAssertions;
 
@@ -22,6 +23,7 @@ import com.facebook.react.bridge.SoftAssertions;
  * and coalescing key. See {@link TouchEventCoalescingKeyHelper} for more information about how
  * these coalescing keys are determined.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class TouchEvent extends Event<TouchEvent> {
   private static final String TAG = TouchEvent.class.getSimpleName();
 

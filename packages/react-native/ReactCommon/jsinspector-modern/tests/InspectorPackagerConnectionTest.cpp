@@ -203,7 +203,8 @@ TEST_F(InspectorPackagerConnectionTest, TestGetPages) {
       "mock-title",
       "mock-vm",
       localConnections_
-          .lazily_make_unique<std::unique_ptr<IRemoteConnection>>());
+          .lazily_make_unique<std::unique_ptr<IRemoteConnection>>(),
+      {.nativePageReloads = true});
 
   // getPages now reports the page we registered.
   EXPECT_CALL(
@@ -217,7 +218,10 @@ TEST_F(InspectorPackagerConnectionTest, TestGetPages) {
                   AtJsonPtr("/title", Eq("mock-title [C++ connection]")),
                   AtJsonPtr("/vm", Eq("mock-vm")),
                   AtJsonPtr("/id", Eq(std::to_string(pageId))),
-                  AtJsonPtr("/type", Eq("Legacy")))}))))))
+                  AtJsonPtr("/capabilities/nativePageReloads", Eq(true)),
+                  AtJsonPtr(
+                      "/capabilities/nativeSourceCodeFetching",
+                      Eq(false)))}))))))
       .RetiresOnSaturation();
   webSockets_[0]->getDelegate().didReceiveMessage(R"({
       "event": "getPages"

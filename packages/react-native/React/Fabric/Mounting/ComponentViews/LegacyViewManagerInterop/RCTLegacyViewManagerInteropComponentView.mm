@@ -41,17 +41,6 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
   return self;
 }
 
-- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
-{
-  UIView *result = [super hitTest:point withEvent:event];
-
-  if (result == _adapter.paperView) {
-    return self;
-  }
-
-  return result;
-}
-
 - (RCTLegacyViewManagerInteropCoordinator *)_coordinator
 {
   if (_state != nullptr) {
@@ -190,8 +179,8 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
 
 - (void)unmountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
-  if (_adapter) {
-    [_adapter.paperView removeReactSubview:childComponentView];
+  if (_adapter && index < _adapter.paperView.reactSubviews.count) {
+    [_adapter.paperView removeReactSubview:_adapter.paperView.reactSubviews[index]];
   } else {
     [_viewsToBeUnmounted addObject:childComponentView];
   }
@@ -272,6 +261,11 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
     const auto &newProps = static_cast<const LegacyViewManagerInteropViewProps &>(*_props);
     [_adapter setProps:newProps.otherProps];
   }
+}
+
+- (UIView *)paperView
+{
+  return _adapter.paperView;
 }
 
 #pragma mark - Native Commands

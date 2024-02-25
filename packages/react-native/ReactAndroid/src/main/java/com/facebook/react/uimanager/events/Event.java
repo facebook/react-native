@@ -8,6 +8,7 @@
 package com.facebook.react.uimanager.events;
 
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.SystemClock;
 
@@ -27,6 +28,7 @@ import com.facebook.react.common.SystemClock;
  * surfaceId. Fabric will work without surfaceId - making {@code Event} backwards-compatible - but
  * Events without SurfaceId are slightly slower to propagate.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public abstract class Event<T extends Event> {
 
   private static int sUniqueID = 0;

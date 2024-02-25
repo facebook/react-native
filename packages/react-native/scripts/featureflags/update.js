@@ -4,18 +4,20 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict
  * @format
  */
 
-const generateFiles = require('./generateFiles');
-const path = require('path');
+import generateFiles from './generateFiles';
+import featureFlagDefinitions from './ReactNativeFeatureFlags.config';
+import path from 'path';
 
 const REACT_NATIVE_PACKAGE_ROOT = path.join(__dirname, '..', '..');
 
-function update() {
+export default function update(verifyUnchanged: boolean): void {
   generateFiles(
     {
-      configPath: path.join(__dirname, 'ReactNativeFeatureFlags.json'),
+      featureFlagDefinitions,
       jsPath: path.join(
         REACT_NATIVE_PACKAGE_ROOT,
         'src',
@@ -58,11 +60,7 @@ function update() {
       ),
     },
     {
-      verifyUnchanged: process.argv.includes('--verify-unchanged'),
+      verifyUnchanged,
     },
   );
-}
-
-if (require.main === module) {
-  update();
 }

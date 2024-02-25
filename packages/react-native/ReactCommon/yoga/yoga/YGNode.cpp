@@ -329,6 +329,10 @@ void YGNodeSetAlwaysFormsContainingBlock(
   resolveRef(node)->setAlwaysFormsContainingBlock(alwaysFormsContainingBlock);
 }
 
+bool YGNodeGetAlwaysFormsContainingBlock(YGNodeConstRef node) {
+  return resolveRef(node)->alwaysFormsContainingBlock();
+}
+
 // TODO: This leaks internal details to the public API. Remove after removing
 // ComponentKit usage of it.
 bool YGNodeCanUseCachedMeasurement(

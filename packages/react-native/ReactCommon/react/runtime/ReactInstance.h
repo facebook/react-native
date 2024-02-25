@@ -35,7 +35,7 @@ class ReactInstance final : private jsinspector_modern::InstanceTargetDelegate {
       std::shared_ptr<MessageQueueThread> jsMessageQueueThread,
       std::shared_ptr<TimerManager> timerManager,
       JsErrorHandler::JsErrorHandlingFunc JsErrorHandlingFunc,
-      jsinspector_modern::PageTarget* parentInspectorTarget = nullptr);
+      jsinspector_modern::HostTarget* parentInspectorTarget = nullptr);
 
   RuntimeExecutor getUnbufferedRuntimeExecutor() noexcept;
 
@@ -71,11 +71,9 @@ class ReactInstance final : private jsinspector_modern::InstanceTargetDelegate {
    */
   void unregisterFromInspector();
 
- private:
-  std::unique_ptr<jsinspector_modern::RuntimeAgent> createRuntimeAgent(
-      jsinspector_modern::FrontendChannel channel,
-      jsinspector_modern::SessionState& sessionState) override;
+  void* getJavaScriptContext();
 
+ private:
   std::shared_ptr<JSRuntime> runtime_;
   std::shared_ptr<MessageQueueThread> jsMessageQueueThread_;
   std::shared_ptr<BufferedRuntimeExecutor> bufferedRuntimeExecutor_;
@@ -88,7 +86,8 @@ class ReactInstance final : private jsinspector_modern::InstanceTargetDelegate {
   std::shared_ptr<bool> hasFatalJsError_;
 
   jsinspector_modern::InstanceTarget* inspectorTarget_{nullptr};
-  jsinspector_modern::PageTarget* parentInspectorTarget_{nullptr};
+  jsinspector_modern::RuntimeTarget* runtimeInspectorTarget_{nullptr};
+  jsinspector_modern::HostTarget* parentInspectorTarget_{nullptr};
 };
 
 } // namespace facebook::react

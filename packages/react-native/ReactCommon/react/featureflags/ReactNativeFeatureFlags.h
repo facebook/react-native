@@ -4,14 +4,14 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<252f46e2c95e08d1180f656c870087b7>>
+ * @generated SignedSource<<3bfae310dfd28040f4b80d1a1df8b7b3>>
  */
 
 /**
  * IMPORTANT: Do NOT modify this file directly.
  *
  * To change the definition of the flags, edit
- *   packages/react-native/scripts/featureflags/ReactNativeFeatureFlags.json.
+ *   packages/react-native/scripts/featureflags/ReactNativeFeatureFlags.config.js.
  *
  * To regenerate this code, run the following script from the repo root:
  *   yarn featureflags-update
@@ -37,6 +37,11 @@ class ReactNativeFeatureFlags {
    * Common flag for testing. Do NOT modify.
    */
   static bool commonTestFlag();
+
+  /**
+   * Enables the use of a background executor to compute layout and commit updates on Fabric (this system is deprecated and should not be used).
+   */
+  static bool enableBackgroundExecutor();
 
   /**
    * When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.
@@ -67,6 +72,16 @@ class ReactNativeFeatureFlags {
    * Attempt at fixing a crash related to subview clipping on Android. This is a kill switch for the fix
    */
   static bool enableFixForClippedSubviewsCrash();
+
+  /**
+   * Flag determining if the C++ implementation of InspectorPackagerConnection should be used instead of the per-platform one. This flag is global and should not be changed across React Host lifetimes.
+   */
+  static bool inspectorEnableCxxInspectorPackagerConnection();
+
+  /**
+   * Flag determining if the modern CDP backend should be enabled. This flag is global and should not be changed across React Host lifetimes.
+   */
+  static bool inspectorEnableModernCDPRegistry();
 
   /**
    * Overrides the feature flags with the ones provided by the given provider

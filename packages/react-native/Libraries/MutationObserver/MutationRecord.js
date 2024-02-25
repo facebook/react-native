@@ -32,15 +32,15 @@ export default class MutationRecord {
   _removedNodes: NodeList<ReadOnlyNode>;
 
   constructor(nativeRecord: NativeMutationRecord) {
-    // $FlowExpectedError[incompatible-cast] the codegen doesn't support the actual type.
-    const target = (nativeRecord.target: ReactNativeElement);
+    // $FlowExpectedError[incompatible-type] the codegen doesn't support the actual type.
+    const target: ReactNativeElement = nativeRecord.target;
     this._target = target;
-    // $FlowExpectedError[incompatible-cast] the codegen doesn't support the actual type.
-    const addedNodes = (nativeRecord.addedNodes: $ReadOnlyArray<ReadOnlyNode>);
+    // $FlowExpectedError[incompatible-type] the codegen doesn't support the actual type.
+    const addedNodes: $ReadOnlyArray<ReadOnlyNode> = nativeRecord.addedNodes;
     this._addedNodes = createNodeList(addedNodes);
-    const removedNodes =
-      // $FlowExpectedError[incompatible-cast] the codegen doesn't support the actual type.
-      (nativeRecord.removedNodes: $ReadOnlyArray<ReadOnlyNode>);
+    const removedNodes: $ReadOnlyArray<ReadOnlyNode> =
+      // $FlowFixMe[incompatible-type]
+      nativeRecord.removedNodes;
     this._removedNodes = createNodeList(removedNodes);
   }
 

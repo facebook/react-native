@@ -15,7 +15,7 @@ import com.facebook.soloader.SoLoader
 
 /** CxxReactPackage is used to register C++ Turbo Modules with React Native. */
 @UnstableReactNativeAPI()
-abstract class CxxReactPackage {
+public abstract class CxxReactPackage {
 
   @DoNotStrip @Suppress("NoHungarianNotation") private var mHybridData: HybridData?
 
@@ -23,7 +23,7 @@ abstract class CxxReactPackage {
     mHybridData = hybridData
   }
 
-  companion object {
+  private companion object {
     init {
       SoLoader.loadLibrary("react_cxxreactpackage")
     }

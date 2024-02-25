@@ -25,6 +25,7 @@ import com.facebook.react.defaults.DefaultReactHost
 import com.facebook.react.defaults.DefaultReactNativeHost
 import com.facebook.react.module.model.ReactModuleInfo
 import com.facebook.react.module.model.ReactModuleInfoProvider
+import com.facebook.react.popupmenu.PopupMenuPackage
 import com.facebook.react.shell.MainReactPackage
 import com.facebook.react.uiapp.component.MyLegacyViewManager
 import com.facebook.react.uiapp.component.MyNativeViewManager
@@ -44,6 +45,7 @@ class RNTesterApplication : Application(), ReactApplication {
       public override fun getPackages(): List<ReactPackage> {
         return listOf(
             MainReactPackage(),
+            PopupMenuPackage(),
             object : TurboReactPackage() {
               override fun getModule(
                   name: String,

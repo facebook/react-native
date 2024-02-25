@@ -45,4 +45,19 @@ describe('render', () => {
       expect(result.toJSON()).toMatchSnapshot();
     });
   });
+
+  describe('findAll', () => {
+    it('returns all nodes matching the predicate', () => {
+      const result = ReactNativeTestRenderer.render(<TestComponent />);
+      const textNode = result.findAll(node => {
+        return node.props?.text === 'Hello';
+      })[0];
+      expect(textNode).not.toBeUndefined();
+
+      const viewNodes = result.findAll(node => {
+        return node.viewName === 'RCTView';
+      });
+      expect(viewNodes.length).toBe(2);
+    });
+  });
 });

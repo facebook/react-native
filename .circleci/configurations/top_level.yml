@@ -98,11 +98,6 @@ references:
     template_cocoapods_cache_key: &template_cocoapods_cache_key v6-cocoapods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/iOSTemplateProject/ios/Podfile.lock" }}-{{ checksum "/tmp/iOSTemplateProject/ios/Podfile" }}-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "packages/rn-tester/Podfile.lock" }}
     template_podfile_lock_cache_key: &template_podfile_lock_cache_key v6-podfilelock-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/iOSTemplateProject/ios/Podfile" }}-{{ checksum "/tmp/week_year" }}-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "packages/rn-tester/Podfile.lock" }}
 
-    # Windows
-    windows_yarn_cache_key: &windows_yarn_cache_key v1-win-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
-    windows_choco_cache_key: &windows_choco_cache_key v1-win-choco-cache-{{ .Environment.CIRCLE_JOB }}
-
-
   cache_paths:
     hermes_workspace_macos_cache_paths: &hermes_workspace_macos_cache_paths
       - ~/react-native/packages/react-native/sdks/hermes/build_macosx

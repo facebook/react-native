@@ -7,7 +7,10 @@
 
 package com.facebook.react.uimanager;
 
+import com.facebook.infer.annotation.Nullsafe;
+
 /** Incremental counter for React Root View tag. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ReactRootViewTagGenerator {
 
   // Keep in sync with ReactIOSTagHandles JS module - see that file for an explanation on why the

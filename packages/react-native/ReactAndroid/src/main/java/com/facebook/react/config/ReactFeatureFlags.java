@@ -112,14 +112,8 @@ public class ReactFeatureFlags {
   /** Report mount operations from the host platform to notify mount hooks. */
   public static boolean enableMountHooks = false;
 
-  /** Disable the background executor for layout in Fabric */
-  public static boolean enableBackgroundExecutor = false;
-
   /** Use native view configs in bridgeless mode. */
   public static boolean useNativeViewConfigsInBridgelessMode = false;
-
-  /** Utilize shared Event C++ pipeline with fabric's renderer */
-  public static boolean enableFabricSharedEventPipeline = true;
 
   /** When enabled, Fabric will avoid cloning notes to perform state progression. */
   public static boolean enableClonelessStateProgression = false;
@@ -146,10 +140,4 @@ public class ReactFeatureFlags {
    * longer work as they won't subscribe to ReactChoreographer for updates.
    */
   public static boolean enableFabricRendererExclusively = false;
-
-  /*
-   * When enabled, uses of ReactChoreographer (e.g. FabricUIManager) will only post callback
-   *  when there is work to do.
-   */
-  public static boolean enableOnDemandReactChoreographer = false;
 }

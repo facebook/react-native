@@ -47,7 +47,6 @@ import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.views.drawer.ReactDrawerLayoutManager;
 import com.facebook.react.views.image.ReactImageManager;
 import com.facebook.react.views.modal.ReactModalHostManager;
-import com.facebook.react.views.popupmenu.ReactPopupMenuManager;
 import com.facebook.react.views.progressbar.ReactProgressBarViewManager;
 import com.facebook.react.views.scroll.ReactHorizontalScrollContainerViewManager;
 import com.facebook.react.views.scroll.ReactHorizontalScrollViewManager;
@@ -171,7 +170,6 @@ public class MainReactPackage extends TurboReactPackage implements ViewManagerOn
     viewManagers.add(new ReactScrollViewManager());
     viewManagers.add(new ReactSwitchManager());
     viewManagers.add(new SwipeRefreshLayoutManager());
-    viewManagers.add(new ReactPopupMenuManager());
 
     // Native equivalents
     viewManagers.add(new FrescoBasedReactTextInlineImageViewManager());
@@ -213,7 +211,6 @@ public class MainReactPackage extends TurboReactPackage implements ViewManagerOn
       appendMap(viewManagers, ReactSwitchManager.REACT_CLASS, ReactSwitchManager::new);
       appendMap(
           viewManagers, SwipeRefreshLayoutManager.REACT_CLASS, SwipeRefreshLayoutManager::new);
-      appendMap(viewManagers, ReactPopupMenuManager.REACT_CLASS, ReactPopupMenuManager::new);
       appendMap(
           viewManagers,
           FrescoBasedReactTextInlineImageViewManager.REACT_CLASS,

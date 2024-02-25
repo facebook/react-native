@@ -10,6 +10,7 @@
 #include <cxxreact/ErrorUtils.h>
 #include <cxxreact/JSBigString.h>
 #include <cxxreact/JSExecutor.h>
+#include <cxxreact/ReactMarker.h>
 #include <cxxreact/SystraceSection.h>
 #include <glog/logging.h>
 #include <jsi/JSIDynamic.h>
@@ -17,8 +18,7 @@
 #include <jsireact/JSIExecutor.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
-
-#include <cxxreact/ReactMarker.h>
+#include <react/utils/jsi.h>
 #include <iostream>
 #include <tuple>
 #include <utility>
@@ -30,16 +30,13 @@ ReactInstance::ReactInstance(
     std::shared_ptr<MessageQueueThread> jsMessageQueueThread,
     std::shared_ptr<TimerManager> timerManager,
     JsErrorHandler::JsErrorHandlingFunc jsErrorHandlingFunc,
-    jsinspector_modern::PageTarget* parentInspectorTarget)
+    jsinspector_modern::HostTarget* parentInspectorTarget)
     : runtime_(std::move(runtime)),
       jsMessageQueueThread_(jsMessageQueueThread),
       timerManager_(std::move(timerManager)),
       jsErrorHandler_(jsErrorHandlingFunc),
       hasFatalJsError_(std::make_shared<bool>(false)),
       parentInspectorTarget_(parentInspectorTarget) {
-  if (parentInspectorTarget_) {
-    inspectorTarget_ = &parentInspectorTarget_->registerInstance(*this);
-  }
   auto runtimeExecutor = [weakRuntime = std::weak_ptr<JSRuntime>(runtime_),
                           weakTimerManager =
                               std::weak_ptr<TimerManager>(timerManager_),
@@ -87,6 +84,12 @@ ReactInstance::ReactInstance(
     }
   };
 
+  if (parentInspectorTarget_) {
+    inspectorTarget_ = &parentInspectorTarget_->registerInstance(*this);
+    runtimeInspectorTarget_ =
+        &inspectorTarget_->registerRuntime(*runtime_, runtimeExecutor);
+  }
+
   runtimeScheduler_ =
       std::make_shared<RuntimeScheduler>(std::move(runtimeExecutor));
 
@@ -102,6 +105,8 @@ ReactInstance::ReactInstance(
 
 void ReactInstance::unregisterFromInspector() {
   if (inspectorTarget_) {
+    assert(runtimeInspectorTarget_);
+    inspectorTarget_->unregisterRuntime(*runtimeInspectorTarget_);
     assert(parentInspectorTarget_);
     parentInspectorTarget_->unregisterInstance(*inspectorTarget_);
     inspectorTarget_ = nullptr;
@@ -133,43 +138,6 @@ RuntimeExecutor ReactInstance::getBufferedRuntimeExecutor() noexcept {
 std::shared_ptr<RuntimeScheduler>
 ReactInstance::getRuntimeScheduler() noexcept {
   return runtimeScheduler_;
-}
-
-/**
- * Defines a property on the global object that is neither enumerable, nor
- * configurable, nor writable. This ensures that the private globals exposed by
- * ReactInstance cannot overwritten by third-party JavaScript code. It also
- * ensures that third-party JavaScript code unaware of these globals isn't able
- * to accidentally access them. In JavaScript, equivalent to:
- *
- * Object.defineProperty(global, propName, {
- *   value: value
- * })
- */
-static void defineReadOnlyGlobal(
-    jsi::Runtime& runtime,
-    std::string propName,
-    jsi::Value&& value) {
-  if (runtime.global().hasProperty(runtime, propName.c_str())) {
-    throw jsi::JSError(
-        runtime,
-        "Tried to redefine read-only global \"" + propName +
-            "\", but read-only globals can only be defined once.");
-  }
-  jsi::Object jsObject =
-      runtime.global().getProperty(runtime, "Object").asObject(runtime);
-  jsi::Function defineProperty = jsObject.getProperty(runtime, "defineProperty")
-                                     .asObject(runtime)
-                                     .asFunction(runtime);
-
-  jsi::Object descriptor = jsi::Object(runtime);
-  descriptor.setProperty(runtime, "value", std::move(value));
-  defineProperty.callWithThis(
-      runtime,
-      jsObject,
-      runtime.global(),
-      jsi::String::createFromUtf8(runtime, propName),
-      descriptor);
 }
 
 namespace {
@@ -460,12 +428,8 @@ void ReactInstance::handleMemoryPressureJs(int pressureLevel) {
   }
 }
 
-std::unique_ptr<jsinspector_modern::RuntimeAgent>
-ReactInstance::createRuntimeAgent(
-    jsinspector_modern::FrontendChannel channel,
-    jsinspector_modern::SessionState& sessionState) {
-  auto agent = runtime_->createInspectorAgent(std::move(channel), sessionState);
-  return agent;
+void* ReactInstance::getJavaScriptContext() {
+  return &runtime_->getRuntime();
 }
 
 } // namespace facebook::react

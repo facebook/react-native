@@ -29,8 +29,8 @@ class ReactActivityDelegateTest {
         }
 
     assertNotNull(delegate.inspectLaunchOptions)
-    assertTrue(delegate.inspectLaunchOptions!!.containsKey("concurrentRoot"))
-    assertTrue(delegate.inspectLaunchOptions!!.getBoolean("concurrentRoot"))
+    // False because oncurrentRoot is hardcoded to true for Fabric inside renderApplication
+    assertFalse(delegate.inspectLaunchOptions!!.containsKey("concurrentRoot"))
   }
 
   @Test
@@ -60,8 +60,8 @@ class ReactActivityDelegateTest {
         }
 
     assertNotNull(delegate.inspectLaunchOptions)
-    assertTrue(delegate.inspectLaunchOptions!!.containsKey("concurrentRoot"))
-    assertTrue(delegate.inspectLaunchOptions!!.getBoolean("concurrentRoot"))
+    // False because oncurrentRoot is hardcoded to true for Fabric inside renderApplication
+    assertFalse(delegate.inspectLaunchOptions!!.containsKey("concurrentRoot"))
     assertTrue(delegate.inspectLaunchOptions!!.containsKey("test-property"))
     assertEquals("test-value", delegate.inspectLaunchOptions!!.getString("test-property"))
   }

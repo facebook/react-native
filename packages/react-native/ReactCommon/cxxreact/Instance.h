@@ -41,13 +41,13 @@ struct InstanceCallback {
 
 class RN_EXPORT Instance : private jsinspector_modern::InstanceTargetDelegate {
  public:
-  ~Instance();
+  ~Instance() override;
   void initializeBridge(
       std::unique_ptr<InstanceCallback> callback,
       std::shared_ptr<JSExecutorFactory> jsef,
       std::shared_ptr<MessageQueueThread> jsQueue,
       std::shared_ptr<ModuleRegistry> moduleRegistry,
-      jsinspector_modern::PageTarget* inspectorTarget = nullptr);
+      jsinspector_modern::HostTarget* inspectorTarget = nullptr);
 
   void initializeRuntime();
 
@@ -151,11 +151,6 @@ class RN_EXPORT Instance : private jsinspector_modern::InstanceTargetDelegate {
       std::unique_ptr<const JSBigString> startupScript,
       std::string startupScriptSourceURL);
 
-  // From InstanceTargetDelegate
-  std::unique_ptr<jsinspector_modern::RuntimeAgent> createRuntimeAgent(
-      jsinspector_modern::FrontendChannel channel,
-      jsinspector_modern::SessionState& sessionState) override;
-
   std::shared_ptr<InstanceCallback> callback_;
   std::shared_ptr<NativeToJsBridge> nativeToJsBridge_;
   std::shared_ptr<ModuleRegistry> moduleRegistry_;
@@ -183,8 +178,9 @@ class RN_EXPORT Instance : private jsinspector_modern::InstanceTargetDelegate {
   std::shared_ptr<JSCallInvoker> jsCallInvoker_ =
       std::make_shared<JSCallInvoker>();
 
-  jsinspector_modern::PageTarget* parentInspectorTarget_{nullptr};
+  jsinspector_modern::HostTarget* parentInspectorTarget_{nullptr};
   jsinspector_modern::InstanceTarget* inspectorTarget_{nullptr};
+  jsinspector_modern::RuntimeTarget* runtimeInspectorTarget_{nullptr};
 };
 
 } // namespace facebook::react

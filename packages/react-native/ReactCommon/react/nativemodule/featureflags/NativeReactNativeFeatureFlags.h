@@ -4,14 +4,14 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<994628655312f57c8ab774e9f119eb18>>
+ * @generated SignedSource<<26be12cc19ed1a9cd2dbdab684594204>>
  */
 
 /**
  * IMPORTANT: Do NOT modify this file directly.
  *
  * To change the definition of the flags, edit
- *   packages/react-native/scripts/featureflags/ReactNativeFeatureFlags.json.
+ *   packages/react-native/scripts/featureflags/ReactNativeFeatureFlags.config.js.
  *
  * To regenerate this code, run the following script from the repo root:
  *   yarn featureflags-update
@@ -19,7 +19,13 @@
 
 #pragma once
 
+#if __has_include("rncoreJSI.h") // Cmake headers on Android
+#include "rncoreJSI.h"
+#elif __has_include("FBReactNativeSpecJSI.h") // CocoaPod headers on Apple
+#include "FBReactNativeSpecJSI.h"
+#else
 #include <FBReactNativeSpec/FBReactNativeSpecJSI.h>
+#endif
 
 namespace facebook::react {
 
@@ -32,6 +38,8 @@ class NativeReactNativeFeatureFlags
 
   bool commonTestFlag(jsi::Runtime& runtime);
 
+  bool enableBackgroundExecutor(jsi::Runtime& runtime);
+
   bool useModernRuntimeScheduler(jsi::Runtime& runtime);
 
   bool enableMicrotasks(jsi::Runtime& runtime);
@@ -43,6 +51,10 @@ class NativeReactNativeFeatureFlags
   bool enableCustomDrawOrderFabric(jsi::Runtime& runtime);
 
   bool enableFixForClippedSubviewsCrash(jsi::Runtime& runtime);
+
+  bool inspectorEnableCxxInspectorPackagerConnection(jsi::Runtime& runtime);
+
+  bool inspectorEnableModernCDPRegistry(jsi::Runtime& runtime);
 };
 
 } // namespace facebook::react

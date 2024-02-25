@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "react": "18.2.0",
-    "react-native": "0.0.0"
+    "react-native": "1000.0.0"
   },
   "devDependencies": {
     "@monorepo/pkg-a": "0.0.1",

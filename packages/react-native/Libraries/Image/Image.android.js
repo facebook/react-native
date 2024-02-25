@@ -171,7 +171,11 @@ let BaseImage: AbstractImageAndroid = React.forwardRef(
       ...restProps,
       style,
       shouldNotifyLoadEvents: !!(onLoadStart || onLoad || onLoadEnd || onError),
+      // Both iOS and C++ sides expect to have "source" prop, whereas on Android it's "src"
+      // (for historical reasons). So in the latter case we populate both "src" and "source",
+      // in order to have a better alignment between platforms in the future.
       src: sources,
+      source: sources,
       /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
        * when making Flow check .android.js files. */
       headers: (source?.[0]?.headers || source?.headers: ?{[string]: string}),

@@ -9,9 +9,11 @@ package com.facebook.react.views.common;
 
 import android.view.View;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.R;
 
 /** Class containing static methods involving manipulations of Views */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ViewUtils {
 
   /**

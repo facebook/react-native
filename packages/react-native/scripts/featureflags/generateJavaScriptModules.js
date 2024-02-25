@@ -4,33 +4,32 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict
  * @format
  */
 
-'use strict';
+import type {GeneratorConfig, GeneratorResult} from './types';
 
-const NativeReactNativeFeatureFlagsCPP = require('./templates/js/NativeReactNativeFeatureFlags.cpp-template');
-const NativeReactNativeFeatureFlagsH = require('./templates/js/NativeReactNativeFeatureFlags.h-template');
-const NativeReactNativeFeatureFlagsJS = require('./templates/js/NativeReactNativeFeatureFlags.js-template');
-const ReactNativeFeatureFlagsJS = require('./templates/js/ReactNativeFeatureFlags.js-template');
-const path = require('path');
+import NativeReactNativeFeatureFlagsCPP from './templates/js/NativeReactNativeFeatureFlags.cpp-template';
+import NativeReactNativeFeatureFlagsH from './templates/js/NativeReactNativeFeatureFlags.h-template';
+import NativeReactNativeFeatureFlagsJS from './templates/js/NativeReactNativeFeatureFlags.js-template';
+import ReactNativeFeatureFlagsJS from './templates/js/ReactNativeFeatureFlags.js-template';
+import path from 'path';
 
-module.exports = function generateCommonCxxModules(
-  generatorConfig,
-  featureFlagsConfig,
-) {
+export default function generateCommonCxxModules(
+  generatorConfig: GeneratorConfig,
+): GeneratorResult {
+  const {jsPath, commonNativeModuleCxxPath, featureFlagDefinitions} =
+    generatorConfig;
+
   return {
-    [path.join(generatorConfig.jsPath, 'ReactNativeFeatureFlags.js')]:
-      ReactNativeFeatureFlagsJS(featureFlagsConfig),
-    [path.join(generatorConfig.jsPath, 'NativeReactNativeFeatureFlags.js')]:
-      NativeReactNativeFeatureFlagsJS(featureFlagsConfig),
-    [path.join(
-      generatorConfig.commonNativeModuleCxxPath,
-      'NativeReactNativeFeatureFlags.h',
-    )]: NativeReactNativeFeatureFlagsH(featureFlagsConfig),
-    [path.join(
-      generatorConfig.commonNativeModuleCxxPath,
-      'NativeReactNativeFeatureFlags.cpp',
-    )]: NativeReactNativeFeatureFlagsCPP(featureFlagsConfig),
+    [path.join(jsPath, 'ReactNativeFeatureFlags.js')]:
+      ReactNativeFeatureFlagsJS(featureFlagDefinitions),
+    [path.join(jsPath, 'NativeReactNativeFeatureFlags.js')]:
+      NativeReactNativeFeatureFlagsJS(featureFlagDefinitions),
+    [path.join(commonNativeModuleCxxPath, 'NativeReactNativeFeatureFlags.h')]:
+      NativeReactNativeFeatureFlagsH(featureFlagDefinitions),
+    [path.join(commonNativeModuleCxxPath, 'NativeReactNativeFeatureFlags.cpp')]:
+      NativeReactNativeFeatureFlagsCPP(featureFlagDefinitions),
   };
-};
+}

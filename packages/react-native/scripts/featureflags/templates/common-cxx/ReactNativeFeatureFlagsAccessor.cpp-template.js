@@ -4,19 +4,17 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict
  * @format
  */
 
-'use strict';
+import type {FeatureFlagDefinitions} from '../../types';
 
-const {
-  DO_NOT_MODIFY_COMMENT,
-  getCxxTypeFromDefaultValue,
-} = require('../../utils');
-const signedsource = require('signedsource');
+import {DO_NOT_MODIFY_COMMENT, getCxxTypeFromDefaultValue} from '../../utils';
+import signedsource from 'signedsource';
 
-module.exports = config =>
-  signedsource.signFile(`/*
+export default function (definitions: FeatureFlagDefinitions): string {
+  return signedsource.signFile(`/*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -28,17 +26,18 @@ module.exports = config =>
 ${DO_NOT_MODIFY_COMMENT}
 
 #include <react/featureflags/ReactNativeFeatureFlagsDefaults.h>
-#include <algorithm>
 #include <sstream>
 #include <stdexcept>
+#include <string>
 #include "ReactNativeFeatureFlags.h"
 
 namespace facebook::react {
 
 ReactNativeFeatureFlagsAccessor::ReactNativeFeatureFlagsAccessor()
-    : currentProvider_(std::make_unique<ReactNativeFeatureFlagsDefaults>()) {}
+    : currentProvider_(std::make_unique<ReactNativeFeatureFlagsDefaults>()),
+      wasOverridden_(false) {}
 
-${Object.entries(config.common)
+${Object.entries(definitions.common)
   .map(
     ([flagName, flagConfig], flagPosition) =>
       `${getCxxTypeFromDefaultValue(
@@ -52,9 +51,7 @@ ${Object.entries(config.common)
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    // Mark the flag as accessed.
-    static const char* flagName = "${flagName}";
-    markFlagAsAccessed(${flagPosition}, flagName);
+    markFlagAsAccessed(${flagPosition}, "${flagName}");
 
     flagValue = currentProvider_->${flagName}();
     ${flagName}_ = flagValue;
@@ -67,7 +64,13 @@ ${Object.entries(config.common)
 
 void ReactNativeFeatureFlagsAccessor::override(
     std::unique_ptr<ReactNativeFeatureFlagsProvider> provider) {
+  if (wasOverridden_) {
+    throw std::runtime_error(
+        "Feature flags cannot be overridden more than once");
+  }
+
   ensureFlagsNotAccessed();
+  wasOverridden_ = true;
   currentProvider_ = std::move(provider);
 }
 
@@ -78,8 +81,6 @@ void ReactNativeFeatureFlagsAccessor::markFlagAsAccessed(
 }
 
 void ReactNativeFeatureFlagsAccessor::ensureFlagsNotAccessed() {
-  std::string accessedFeatureFlagNames;
-
   std::ostringstream featureFlagListBuilder;
   for (const auto& featureFlagName : accessedFeatureFlags_) {
     if (featureFlagName != nullptr) {
@@ -87,7 +88,7 @@ void ReactNativeFeatureFlagsAccessor::ensureFlagsNotAccessed() {
     }
   }
 
-  accessedFeatureFlagNames = featureFlagListBuilder.str();
+  std::string accessedFeatureFlagNames = featureFlagListBuilder.str();
   if (!accessedFeatureFlagNames.empty()) {
     accessedFeatureFlagNames =
         accessedFeatureFlagNames.substr(0, accessedFeatureFlagNames.size() - 2);
@@ -102,3 +103,4 @@ void ReactNativeFeatureFlagsAccessor::ensureFlagsNotAccessed() {
 
 } // namespace facebook::react
 `);
+}

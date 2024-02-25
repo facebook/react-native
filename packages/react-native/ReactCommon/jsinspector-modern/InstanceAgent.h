@@ -7,9 +7,13 @@
 
 #pragma once
 
+#include "RuntimeTarget.h"
+#include "SessionState.h"
+
 #include <jsinspector-modern/InspectorInterfaces.h>
 #include <jsinspector-modern/Parsing.h>
 #include <jsinspector-modern/RuntimeAgent.h>
+
 #include <functional>
 
 namespace facebook::react::jsinspector_modern {
@@ -20,7 +24,7 @@ class InstanceTarget;
  * An Agent that handles requests from the Chrome DevTools Protocol for the
  * given InstanceTarget.
  */
-class InstanceAgent {
+class InstanceAgent final {
  public:
   /**
    * \param frontendChannel A channel used to send responses and events to the
@@ -28,13 +32,12 @@ class InstanceAgent {
    * \param target The InstanceTarget that this agent is attached to. The
    * caller is responsible for ensuring that the InstanceTarget outlives this
    * object.
-   * \param runtimeAgent The RuntimeAgent that this agent will use to
-   * communicate with the JS runtime.
+   * \param sessionState The state of the session that created this agent.
    */
   explicit InstanceAgent(
       FrontendChannel frontendChannel,
       InstanceTarget& target,
-      std::unique_ptr<RuntimeAgent> runtimeAgent);
+      SessionState& sessionState);
 
   /**
    * Handle a CDP request. The response will be sent over the provided
@@ -43,10 +46,21 @@ class InstanceAgent {
    */
   bool handleRequest(const cdp::PreparsedRequest& req);
 
+  /**
+   * Replace the current RuntimeAgent hostAgent_ with a new one
+   * connected to the new RuntimeTarget.
+   * \param runtime The new runtime target. May be nullptr to indicate
+   * there's no current debuggable runtime.
+   */
+  void setCurrentRuntime(RuntimeTarget* runtime);
+
  private:
+  void maybeSendExecutionContextCreatedNotification();
+
   FrontendChannel frontendChannel_;
   InstanceTarget& target_;
-  std::unique_ptr<RuntimeAgent> runtimeAgent_;
+  std::shared_ptr<RuntimeAgent> runtimeAgent_;
+  SessionState& sessionState_;
 };
 
 } // namespace facebook::react::jsinspector_modern

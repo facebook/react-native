@@ -191,8 +191,8 @@ describe('inspector proxy HTTP API', () => {
             faviconUrl: 'https://reactjs.org/favicon.ico',
             id: 'device1-page1',
             reactNative: {
+              capabilities: {},
               logicalDeviceId: 'device1',
-              type: 'Legacy',
             },
             title: 'bar-title',
             type: 'node',
@@ -206,8 +206,8 @@ describe('inspector proxy HTTP API', () => {
             faviconUrl: 'https://reactjs.org/favicon.ico',
             id: 'device2-page1',
             reactNative: {
+              capabilities: {},
               logicalDeviceId: 'device2',
-              type: 'Legacy',
             },
             title: 'bar-title',
             type: 'node',

@@ -11,112 +11,115 @@
 
 'use strict';
 
-const forEachPackage = require('../../monorepo/for-each-package');
-const {readFileSync, writeFileSync} = require('fs');
+/*::
+import type {PackageJson} from '../../utils/monorepo';
+*/
+
+const {getPackages} = require('../../utils/monorepo');
+const {setReactNativeVersion} = require('../set-rn-version');
+const {promises: fs} = require('fs');
 const path = require('path');
 const yargs = require('yargs');
 
-function getPublicPackages() {
-  // eslint-disable-next-line func-call-spacing
-  const packages = new Set /*::<string>*/();
-  forEachPackage(
-    (_, __, packageJson) => {
-      if (packageJson.private !== true) {
-        packages.add(packageJson.name);
+async function updatePackageJson(
+  packagePath /*: string */,
+  packageJson /*: PackageJson */,
+  newPackageVersions /*: $ReadOnly<{[string]: string}> */,
+) /*: Promise<void> */ {
+  const packageName = packageJson.name;
+
+  if (packageName in newPackageVersions) {
+    packageJson.version = newPackageVersions[packageName];
+  }
+
+  for (const dependencyField of ['dependencies', 'devDependencies']) {
+    const deps = packageJson[dependencyField];
+
+    if (deps == null) {
+      continue;
+    }
+
+    for (const dependency in newPackageVersions) {
+      if (dependency in deps) {
+        deps[dependency] = newPackageVersions[dependency];
       }
-    },
-    {includeReactNative: true},
-  );
-  return packages;
-}
+    }
+  }
 
-function setVersion(version /*: string */) {
-  const publicPackages = getPublicPackages();
-
-  forEachPackage(
-    (packageAbsolutePath, _, packageJson) => {
-      if (packageJson.private === true) {
-        return;
-      }
-
-      packageJson.version = version;
-
-      if (packageJson.dependencies != null) {
-        for (const dependency of Object.keys(packageJson.dependencies)) {
-          if (publicPackages.has(dependency)) {
-            packageJson.dependencies[dependency] = version;
-          }
-        }
-      }
-
-      if (packageJson.devDependencies != null) {
-        for (const devDependency of Object.keys(packageJson.devDependencies)) {
-          if (publicPackages.has(devDependency)) {
-            packageJson.devDependencies[devDependency] = version;
-          }
-        }
-      }
-
-      writeFileSync(
-        path.join(packageAbsolutePath, 'package.json'),
-        JSON.stringify(packageJson, null, 2) + '\n',
-        'utf-8',
-      );
-
-      // Update template package.json
-      if (packageJson.name === 'react-native') {
-        const templatePackageJsonPath = path.join(
-          packageAbsolutePath,
-          'template',
-          'package.json',
-        );
-        const templatePackageJson = JSON.parse(
-          readFileSync(templatePackageJsonPath).toString(),
-        );
-        if (templatePackageJson.dependencies != null) {
-          for (const dependency of Object.keys(
-            templatePackageJson.dependencies,
-          )) {
-            if (publicPackages.has(dependency)) {
-              templatePackageJson.dependencies[dependency] = version;
-            }
-          }
-        }
-
-        if (templatePackageJson.devDependencies != null) {
-          for (const devDependency of Object.keys(
-            templatePackageJson.devDependencies,
-          )) {
-            if (publicPackages.has(devDependency)) {
-              templatePackageJson.devDependencies[devDependency] = version;
-            }
-          }
-        }
-        writeFileSync(
-          templatePackageJsonPath,
-          JSON.stringify(templatePackageJson, null, 2) + '\n',
-          'utf-8',
-        );
-      }
-    },
-    {includeReactNative: true},
+  return fs.writeFile(
+    path.join(packagePath, 'package.json'),
+    JSON.stringify(packageJson, null, 2) + '\n',
   );
 }
 
-module.exports = setVersion;
+/**
+ * Sets a singular version for the entire monorepo.
+ *
+ * Set `skipReactNativeVersion` to true when we don't want to update the version of react-native.
+ * The use-case is when we update versions on `main` after a release cut. The version of react-native
+ * stays 1000.0.0.
+ *
+ * This script does the following:
+ * - Update all public npm packages under `<root>/packages` to specified version
+ * - Update all npm dependencies of a `<root>/packages` package to specified version
+ * - Update npm dependencies of the template app (`packages/react-native/template`) to specified version
+ * - Update `packages/react-native` native source and build files to specified version if relevant
+ */
+async function setVersion(
+  version /*: string */,
+  skipReactNativeVersion /*: boolean */ = false,
+) /*: Promise<void> */ {
+  const packages = await getPackages({
+    includePrivate: false,
+    includeReactNative: true,
+  });
+  const newPackageVersions = Object.fromEntries(
+    Object.keys(packages).map(packageName => [packageName, version]),
+  );
+
+  await setReactNativeVersion(
+    skipReactNativeVersion ? '1000.0.0' : version,
+    newPackageVersions,
+  );
+
+  // Exclude the react-native package, since this (and the template) are
+  // handled by `setReactNativeVersion`.
+  const packagesToUpdate = Object.values(packages).filter(
+    pkg => pkg.name !== 'react-native',
+  );
+
+  await Promise.all(
+    packagesToUpdate.map(({path: packagePath, packageJson}) =>
+      updatePackageJson(packagePath, packageJson, newPackageVersions),
+    ),
+  );
+}
 
 if (require.main === module) {
-  const {toVersion} = yargs(process.argv.slice(2))
+  const {toVersion, skipReactNativeVersion} = yargs(process.argv.slice(2))
     .command(
       '$0 <to-version>',
       'Update all monorepo packages to <to-version>',
       args =>
         args.positional('to-version', {
           type: 'string',
-          description: 'Set the version of all packages to this value',
+          description: 'Sets entire monorepo to version provided',
           required: true,
         }),
     )
+    .option('skip-react-native-version', {
+      description: "Don't update the version of the react-native package",
+      type: 'boolean',
+      default: false,
+    })
     .parseSync();
-  setVersion(toVersion);
+  setVersion(toVersion, !!skipReactNativeVersion).then(
+    () => process.exit(0),
+    error => {
+      console.error(`Failed to set version ${toVersion}\n`, error);
+      process.exit(1);
+    },
+  );
 }
+
+module.exports = setVersion;

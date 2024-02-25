@@ -40,6 +40,8 @@ Instance::~Instance() {
 
 void Instance::unregisterFromInspector() {
   if (inspectorTarget_) {
+    assert(runtimeInspectorTarget_);
+    inspectorTarget_->unregisterRuntime(*runtimeInspectorTarget_);
     assert(parentInspectorTarget_);
     parentInspectorTarget_->unregisterInstance(*inspectorTarget_);
     parentInspectorTarget_ = nullptr;
@@ -52,7 +54,7 @@ void Instance::initializeBridge(
     std::shared_ptr<JSExecutorFactory> jsef,
     std::shared_ptr<MessageQueueThread> jsQueue,
     std::shared_ptr<ModuleRegistry> moduleRegistry,
-    jsinspector_modern::PageTarget* parentInspectorTarget) {
+    jsinspector_modern::HostTarget* parentInspectorTarget) {
   callback_ = std::move(callback);
   moduleRegistry_ = std::move(moduleRegistry);
   parentInspectorTarget_ = parentInspectorTarget;
@@ -65,6 +67,10 @@ void Instance::initializeBridge(
 
         if (parentInspectorTarget) {
           inspectorTarget_ = &parentInspectorTarget->registerInstance(*this);
+          RuntimeExecutor runtimeExecutorIfJsi = getRuntimeExecutor();
+          runtimeInspectorTarget_ = &inspectorTarget_->registerRuntime(
+              nativeToJsBridge_->getInspectorTargetDelegate(),
+              runtimeExecutorIfJsi ? runtimeExecutorIfJsi : [](auto) {});
         }
 
         /**
@@ -314,12 +320,6 @@ void Instance::JSCallInvoker::scheduleAsync(
           executor->flush();
         });
   }
-}
-
-std::unique_ptr<jsinspector_modern::RuntimeAgent> Instance::createRuntimeAgent(
-    jsinspector_modern::FrontendChannel frontendChannel,
-    jsinspector_modern::SessionState& sessionState) {
-  return nativeToJsBridge_->createRuntimeAgent(frontendChannel, sessionState);
 }
 
 } // namespace facebook::react

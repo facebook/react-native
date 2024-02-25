@@ -8,10 +8,10 @@
 package com.facebook.react.uimanager.events;
 
 import android.view.Choreographer;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.UiThreadUtil;
-import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.systrace.Systrace;
@@ -21,6 +21,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * A singleton class that overrides {@link EventDispatcher} with no-op methods, to be used by
  * callers that expect an EventDispatcher when the instance doesn't exist.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class FabricEventDispatcher implements EventDispatcher, LifecycleEventListener {
   private final ReactEventEmitter mReactEventEmitter;
   private final ReactApplicationContext mReactContext;
@@ -85,9 +86,7 @@ public class FabricEventDispatcher implements EventDispatcher, LifecycleEventLis
 
   @Override
   public void onHostResume() {
-    if (!ReactFeatureFlags.enableOnDemandReactChoreographer) {
-      maybePostFrameCallbackFromNonUI();
-    }
+    maybePostFrameCallbackFromNonUI();
   }
 
   @Override
@@ -97,21 +96,17 @@ public class FabricEventDispatcher implements EventDispatcher, LifecycleEventLis
 
   @Override
   public void onHostDestroy() {
-    if (!ReactFeatureFlags.enableOnDemandReactChoreographer) {
-      stopFrameCallback();
-    }
+    stopFrameCallback();
   }
 
   public void onCatalystInstanceDestroyed() {
-    if (!ReactFeatureFlags.enableOnDemandReactChoreographer) {
-      UiThreadUtil.runOnUiThread(
-          new Runnable() {
-            @Override
-            public void run() {
-              stopFrameCallback();
-            }
-          });
-    }
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            stopFrameCallback();
+          }
+        });
   }
 
   private void stopFrameCallback() {
@@ -140,7 +135,7 @@ public class FabricEventDispatcher implements EventDispatcher, LifecycleEventLis
     public void doFrame(long frameTimeNanos) {
       UiThreadUtil.assertOnUiThread();
 
-      if (ReactFeatureFlags.enableOnDemandReactChoreographer || mShouldStop) {
+      if (mShouldStop) {
         mIsPosted = false;
       } else {
         post();

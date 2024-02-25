@@ -3,17 +3,28 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ */
+
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow strict
  * @format
  */
 
-'use strict';
+import type {FeatureFlagDefinitions} from '../../types';
 
-const {DO_NOT_MODIFY_COMMENT} = require('../../utils');
-const signedsource = require('signedsource');
+import {
+  DO_NOT_MODIFY_COMMENT,
+  getKotlinTypeFromDefaultValue,
+} from '../../utils';
+import signedsource from 'signedsource';
 
-module.exports = config =>
-  signedsource.signFile(`/*
+export default function (definitions: FeatureFlagDefinitions): string {
+  return signedsource.signFile(`/*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -31,18 +42,18 @@ package com.facebook.react.internal.featureflags
  *
  * All the methods are thread-safe if you handle \`override\` correctly.
  */
-object ReactNativeFeatureFlags {
+public object ReactNativeFeatureFlags {
   private var accessorProvider: () -> ReactNativeFeatureFlagsAccessor = { ReactNativeFeatureFlagsCxxAccessor() }
   private var accessor: ReactNativeFeatureFlagsAccessor = accessorProvider()
 
-${Object.entries(config.common)
+${Object.entries(definitions.common)
   .map(
     ([flagName, flagConfig]) =>
       `  /**
    * ${flagConfig.description}
    */
   @JvmStatic
-  fun ${flagName}() = accessor.${flagName}()`,
+  public fun ${flagName}(): ${getKotlinTypeFromDefaultValue(flagConfig.defaultValue)} = accessor.${flagName}()`,
   )
   .join('\n\n')}
 
@@ -60,7 +71,8 @@ ${Object.entries(config.common)
    * })
    * \`\`\`
    */
-  fun override(provider: ReactNativeFeatureFlagsProvider) = accessor.override(provider)
+  @JvmStatic
+  public fun override(provider: ReactNativeFeatureFlagsProvider): Unit = accessor.override(provider)
 
   /**
    * Removes the overridden feature flags and makes the API return default
@@ -71,7 +83,8 @@ ${Object.entries(config.common)
    * call \`dangerouslyReset\` after destroying the runtime and \`override\`
    * again before initializing the new one.
    */
-  fun dangerouslyReset() {
+  @JvmStatic
+  public fun dangerouslyReset() {
     // This is necessary when the accessor interops with C++ and we need to
     // remove the overrides set there.
     accessor.dangerouslyReset()
@@ -90,3 +103,4 @@ ${Object.entries(config.common)
   }
 }
 `);
+}

@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  * @oncall react_native
  */
@@ -15,19 +16,16 @@ const {
   validateBuildType,
 } = require('../version-utils');
 
-let execResult = null;
 jest.mock('shelljs', () => ({
   exec: () => {
     return {
-      stdout: execResult,
+      stdout: null,
     };
   },
   echo: message => {
     console.log(message);
   },
-  exit: exitCode => {
-    exit(exitCode);
-  },
+  exit: jest.fn(),
 }));
 
 describe('version-utils', () => {
@@ -44,23 +42,16 @@ describe('version-utils', () => {
   });
 
   describe('parseVersion', () => {
-    it('should throw error if buildType is undefined', () => {
-      function testInvalidVersion() {
-        parseVersion('v0.10.5');
-      }
-      expect(testInvalidVersion).toThrowErrorMatchingInlineSnapshot(
-        `"Unsupported build type: undefined"`,
-      );
-    });
-
     it('should throw error if buildType is not `release`, `dry-run`, `prealpha`` or `nightly`', () => {
       function testInvalidVersion() {
+        // $FlowExpectedError[incompatible-call]
         parseVersion('v0.10.5', 'invalid_build_type');
       }
       expect(testInvalidVersion).toThrowErrorMatchingInlineSnapshot(
         `"Unsupported build type: invalid_build_type"`,
       );
     });
+
     it('should throw error if invalid match with release', () => {
       function testInvalidVersion() {
         parseVersion('<invalid version>', 'release');
@@ -69,6 +60,7 @@ describe('version-utils', () => {
         `"You must pass a correctly formatted version; couldn't parse <invalid version>"`,
       );
     });
+
     it('should throw error if invalid match with dry-run', () => {
       function testInvalidVersion() {
         parseVersion('<invalid version>', 'dry-run');
@@ -361,6 +353,12 @@ describe('version-utils', () => {
 
       expect(testInvalidFunction).toThrowErrorMatchingInlineSnapshot(
         '"Version 1.0.0-2023100416 is not valid for prealphas"',
+      );
+    });
+
+    it('should reject stable releases with major > 0', () => {
+      expect(() => parseVersion('1.0.1', 'release')).toThrow(
+        'Version 1.0.1 is not valid for Release',
       );
     });
   });

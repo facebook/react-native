@@ -4,14 +4,14 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7ba0cb94c10989838250252fa06768a0>>
+ * @generated SignedSource<<63356ad414e641eae11ca07b1a876fd3>>
  */
 
 /**
  * IMPORTANT: Do NOT modify this file directly.
  *
  * To change the definition of the flags, edit
- *   packages/react-native/scripts/featureflags/ReactNativeFeatureFlags.json.
+ *   packages/react-native/scripts/featureflags/ReactNativeFeatureFlags.config.js.
  *
  * To regenerate this code, run the following script from the repo root:
  *   yarn featureflags-update
@@ -19,18 +19,21 @@
 
 package com.facebook.react.internal.featureflags
 
-class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAccessor {
+public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAccessor {
   private var currentProvider: ReactNativeFeatureFlagsProvider = ReactNativeFeatureFlagsDefaults()
 
   private val accessedFeatureFlags = mutableSetOf<String>()
 
   private var commonTestFlagCache: Boolean? = null
+  private var enableBackgroundExecutorCache: Boolean? = null
   private var useModernRuntimeSchedulerCache: Boolean? = null
   private var enableMicrotasksCache: Boolean? = null
   private var batchRenderingUpdatesInEventLoopCache: Boolean? = null
   private var enableSpannableBuildingUnificationCache: Boolean? = null
   private var enableCustomDrawOrderFabricCache: Boolean? = null
   private var enableFixForClippedSubviewsCrashCache: Boolean? = null
+  private var inspectorEnableCxxInspectorPackagerConnectionCache: Boolean? = null
+  private var inspectorEnableModernCDPRegistryCache: Boolean? = null
 
   override fun commonTestFlag(): Boolean {
     var cached = commonTestFlagCache
@@ -38,6 +41,16 @@ class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAccessor {
       cached = currentProvider.commonTestFlag()
       accessedFeatureFlags.add("commonTestFlag")
       commonTestFlagCache = cached
+    }
+    return cached
+  }
+
+  override fun enableBackgroundExecutor(): Boolean {
+    var cached = enableBackgroundExecutorCache
+    if (cached == null) {
+      cached = currentProvider.enableBackgroundExecutor()
+      accessedFeatureFlags.add("enableBackgroundExecutor")
+      enableBackgroundExecutorCache = cached
     }
     return cached
   }
@@ -98,6 +111,26 @@ class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAccessor {
       cached = currentProvider.enableFixForClippedSubviewsCrash()
       accessedFeatureFlags.add("enableFixForClippedSubviewsCrash")
       enableFixForClippedSubviewsCrashCache = cached
+    }
+    return cached
+  }
+
+  override fun inspectorEnableCxxInspectorPackagerConnection(): Boolean {
+    var cached = inspectorEnableCxxInspectorPackagerConnectionCache
+    if (cached == null) {
+      cached = currentProvider.inspectorEnableCxxInspectorPackagerConnection()
+      accessedFeatureFlags.add("inspectorEnableCxxInspectorPackagerConnection")
+      inspectorEnableCxxInspectorPackagerConnectionCache = cached
+    }
+    return cached
+  }
+
+  override fun inspectorEnableModernCDPRegistry(): Boolean {
+    var cached = inspectorEnableModernCDPRegistryCache
+    if (cached == null) {
+      cached = currentProvider.inspectorEnableModernCDPRegistry()
+      accessedFeatureFlags.add("inspectorEnableModernCDPRegistry")
+      inspectorEnableModernCDPRegistryCache = cached
     }
     return cached
   }

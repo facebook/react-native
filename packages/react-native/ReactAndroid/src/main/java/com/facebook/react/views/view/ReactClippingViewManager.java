@@ -8,6 +8,7 @@
 package com.facebook.react.views.view;
 
 import android.view.View;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -16,6 +17,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
  * View manager which handles clipped subviews. Useful for custom views which extends from {@link
  * com.facebook.react.views.view.ReactViewGroup}
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public abstract class ReactClippingViewManager<T extends ReactViewGroup>
     extends ViewGroupManager<T> {
 

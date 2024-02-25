@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2ca87dc970592f66d83f4799c4047c9b>>
+ * @generated SignedSource<<8509d5ee87efb5aa8da7efcd2085d0a2>>
  * @flow strict-local
  */
 
@@ -12,7 +12,7 @@
  * IMPORTANT: Do NOT modify this file directly.
  *
  * To change the definition of the flags, edit
- *   packages/react-native/scripts/featureflags/ReactNativeFeatureFlags.json.
+ *   packages/react-native/scripts/featureflags/ReactNativeFeatureFlags.config.js.
  *
  * To regenerate this code, run the following script from the repo root:
  *   yarn featureflags-update
@@ -24,12 +24,15 @@ import * as TurboModuleRegistry from '../../../Libraries/TurboModule/TurboModule
 
 export interface Spec extends TurboModule {
   +commonTestFlag?: () => boolean;
+  +enableBackgroundExecutor?: () => boolean;
   +useModernRuntimeScheduler?: () => boolean;
   +enableMicrotasks?: () => boolean;
   +batchRenderingUpdatesInEventLoop?: () => boolean;
   +enableSpannableBuildingUnification?: () => boolean;
   +enableCustomDrawOrderFabric?: () => boolean;
   +enableFixForClippedSubviewsCrash?: () => boolean;
+  +inspectorEnableCxxInspectorPackagerConnection?: () => boolean;
+  +inspectorEnableModernCDPRegistry?: () => boolean;
 }
 
 const NativeReactNativeFeatureFlags: ?Spec = TurboModuleRegistry.get<Spec>(

@@ -4,10 +4,16 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow
  * @format
+ * @oncall react_native
  */
 
-const forEachPackage = require('./for-each-package');
+/*::
+import type {PackageJson} from '../utils/monorepo';
+*/
+
+const {getPackages} = require('../utils/monorepo');
 const {readFileSync, writeFileSync} = require('fs');
 const path = require('path');
 
@@ -19,12 +25,13 @@ const TEMPLATE_LOCATION = path.join(
   'template',
 );
 
-const readJSONFile = pathToFile => JSON.parse(readFileSync(pathToFile));
+const readJSONFile = (pathToFile /*: string */) /*: PackageJson */ =>
+  JSON.parse(readFileSync(pathToFile, 'utf-8'));
 
 const checkIfShouldUpdateDependencyPackageVersion = (
-  consumerPackageAbsolutePath,
-  updatedPackageName,
-  updatedPackageVersion,
+  consumerPackageAbsolutePath /*: string */,
+  updatedPackageName /*: string */,
+  updatedPackageVersion /*: string */,
 ) => {
   const consumerPackageManifestPath = path.join(
     consumerPackageAbsolutePath,
@@ -91,8 +98,18 @@ const checkIfShouldUpdateDependencyPackageVersion = (
   }
 };
 
-const alignPackageVersions = () => {
-  forEachPackage((_, __, packageManifest) => {
+async function alignPackageVersions() {
+  const allPackages = await getPackages({
+    includeReactNative: true,
+    includePrivate: true,
+  });
+  const packagesExcludingReactNative = Object.keys(allPackages).filter(
+    packageName => packageName !== 'react-native',
+  );
+
+  for (const packageName of packagesExcludingReactNative) {
+    const {packageJson: packageManifest} = allPackages[packageName];
+
     checkIfShouldUpdateDependencyPackageVersion(
       ROOT_LOCATION,
       packageManifest.name,
@@ -105,16 +122,14 @@ const alignPackageVersions = () => {
       packageManifest.version,
     );
 
-    forEachPackage(
-      pathToPackage =>
-        checkIfShouldUpdateDependencyPackageVersion(
-          pathToPackage,
-          packageManifest.name,
-          packageManifest.version,
-        ),
-      {includeReactNative: true},
-    );
-  });
-};
+    for (const {path: pathToPackage} of Object.values(allPackages)) {
+      checkIfShouldUpdateDependencyPackageVersion(
+        pathToPackage,
+        packageManifest.name,
+        packageManifest.version,
+      );
+    }
+  }
+}
 
 module.exports = alignPackageVersions;

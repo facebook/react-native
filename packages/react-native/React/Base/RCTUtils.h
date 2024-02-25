@@ -99,6 +99,9 @@ RCT_EXTERN UIWindow *__nullable RCTKeyWindow(void);
 // e.g. to present a modal view controller or alert over it
 RCT_EXTERN UIViewController *__nullable RCTPresentedViewController(void);
 
+// Retrieve current window UIStatusBarManager
+RCT_EXTERN UIStatusBarManager *__nullable RCTUIStatusBarManager(void) API_AVAILABLE(ios(13));
+
 // Does this device support force touch (aka 3D Touch)?
 RCT_EXTERN BOOL RCTForceTouchAvailable(void);
 
