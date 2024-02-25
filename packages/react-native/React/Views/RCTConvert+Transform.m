@@ -209,10 +209,9 @@ static const NSUInteger kMatrixArrayLength = 4 * 4;
         transform = CATransform3DScale(transform, 1, scale, 1);
         
       } else if ([property isEqualToString:@"translate"]) {
-        
-        NSArray *array = (NSArray<NSNumber *> *)value;
-        CGFloat translateX = [array[0] floatValue];
-        CGFloat translateY = [array[1] floatValue];
+        NSArray *array = (NSArray *)value;
+        CGFloat translateX = [self parseTranslate:array[0] withDimension:width];
+        CGFloat translateY = [self parseTranslate:array[1] withDimension:height];
         CGFloat translateZ = array.count > 2 ? [array[2] floatValue] : 0;
         transform = CATransform3DTranslate(transform, translateX, translateY, translateZ);
         
