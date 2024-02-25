@@ -157,8 +157,17 @@ Transform Transform::FromTransformOperation(
         transformOperation.x.value, transformOperation.y.value, transformOperation.z.value);
   }
   if (transformOperation.type == TransformOperationType::Translate) {
+    auto translateX = transformOperation.x.value;
+    auto translateY = transformOperation.y.value;
+    if (transformOperation.x.unit == UnitType::Percent) {
+      translateX = translateX * viewWidth / 100.0;
+    }
+    if (transformOperation.y.unit == UnitType::Percent) {
+      translateY = translateY * viewHeight / 100.0;
+    }
+
     return Transform::Translate(
-        transformOperation.x.value, transformOperation.y.value, transformOperation.z.value);
+        translateX, translateY, transformOperation.z.value);
   }
   if (transformOperation.type == TransformOperationType::Skew) {
     return Transform::Skew(transformOperation.x.value, transformOperation.y.value);
@@ -267,6 +276,14 @@ bool Transform::isHorizontalInversion(const Transform& transform) {
 bool Transform::operator==(const Transform& rhs) const {
   for (auto i = 0; i < 16; i++) {
     if (matrix[i] != rhs.matrix[i]) {
+      return false;
+    }
+  }
+  if (this->operations.size() != rhs.operations.size()) {
+    return false;
+  }
+  for (size_t i = 0; i < this->operations.size(); i++) {
+    if (this->operations[i] != rhs.operations[i]) {
       return false;
     }
   }

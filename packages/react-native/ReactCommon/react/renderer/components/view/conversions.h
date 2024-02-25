@@ -502,6 +502,8 @@ inline void fromRawValue(
     auto pair = configurationPair.begin();
     auto operation = pair->first;
     auto& parameters = pair->second;
+    auto Zero = ValueUnit(0, UnitType::Point);
+    auto One = ValueUnit(1, UnitType::Point);
 
     if (operation == "matrix") {
       react_native_expect(parameters.hasType<std::vector<Float>>());
@@ -511,50 +513,53 @@ inline void fromRawValue(
       for (auto number : numbers) {
         transformMatrix.matrix[i++] = number;
       }
-      auto Zero = ValueUnit(0, UnitType::Point);
       transformMatrix.operations.push_back(
           TransformOperation{TransformOperationType::Arbitrary, Zero, Zero, Zero});
     } else if (operation == "perspective") {
-      transformMatrix =
-          transformMatrix * Transform::Perspective((Float)parameters);
+      transformMatrix.operations.push_back(TransformOperation{
+          TransformOperationType::Perspective, ValueUnit((Float)parameters, UnitType::Point), Zero, Zero});
     } else if (operation == "rotateX") {
-      transformMatrix = transformMatrix *
-          Transform::Rotate(toRadians(parameters, 0.0f), 0, 0);
+      transformMatrix.operations.push_back(
+          TransformOperation{TransformOperationType::Rotate, ValueUnit(toRadians(parameters, 0.0f), UnitType::Point), Zero, Zero});
     } else if (operation == "rotateY") {
-      transformMatrix = transformMatrix *
-          Transform::Rotate(0, toRadians(parameters, 0.0f), 0);
+      transformMatrix.operations.push_back(
+          TransformOperation{TransformOperationType::Rotate, Zero, ValueUnit(toRadians(parameters, 0.0f), UnitType::Point), Zero});
     } else if (operation == "rotateZ" || operation == "rotate") {
-      transformMatrix = transformMatrix *
-          Transform::Rotate(0, 0, toRadians(parameters, 0.0f));
+      transformMatrix.operations.push_back(
+          TransformOperation{TransformOperationType::Rotate, Zero, Zero, ValueUnit(toRadians(parameters, 0.0f), UnitType::Point)});
     } else if (operation == "scale") {
-      auto number = (Float)parameters;
-      transformMatrix =
-          transformMatrix * Transform::Scale(number, number, number);
+      auto number = ValueUnit((Float)parameters, UnitType::Point);
+      transformMatrix.operations.push_back(TransformOperation{
+          TransformOperationType::Scale, number, number, number});
     } else if (operation == "scaleX") {
-      transformMatrix =
-          transformMatrix * Transform::Scale((Float)parameters, 1, 1);
+      transformMatrix.operations.push_back(TransformOperation{
+          TransformOperationType::Scale, ValueUnit((Float)parameters, UnitType::Point), One, One});
     } else if (operation == "scaleY") {
-      transformMatrix =
-          transformMatrix * Transform::Scale(1, (Float)parameters, 1);
+      transformMatrix.operations.push_back(TransformOperation{
+          TransformOperationType::Scale, One, ValueUnit((Float)parameters, UnitType::Point), One});
     } else if (operation == "scaleZ") {
-      transformMatrix =
-          transformMatrix * Transform::Scale(1, 1, (Float)parameters);
+      transformMatrix.operations.push_back(TransformOperation{
+          TransformOperationType::Scale, One, One, ValueUnit((Float)parameters, UnitType::Point)});
     } else if (operation == "translate") {
-      auto numbers = (std::vector<Float>)parameters;
-      transformMatrix = transformMatrix *
-          Transform::Translate(numbers.at(0), numbers.at(1), 0);
+      auto numbers = (std::vector<RawValue>)parameters;
+      auto valueX = ValueUnit::getValueUnitFromRawValue(numbers.at(0));
+      auto valueY = ValueUnit::getValueUnitFromRawValue(numbers.at(1));
+      transformMatrix.operations.push_back(TransformOperation{
+            TransformOperationType::Translate, valueX, valueY, Zero});
     } else if (operation == "translateX") {
-      transformMatrix =
-          transformMatrix * Transform::Translate((Float)parameters, 0, 0);
+      auto value = ValueUnit::getValueUnitFromRawValue(parameters);
+      transformMatrix.operations.push_back(TransformOperation{
+          TransformOperationType::Translate, value, Zero, Zero});
     } else if (operation == "translateY") {
-      transformMatrix =
-          transformMatrix * Transform::Translate(0, (Float)parameters, 0);
+      auto value = ValueUnit::getValueUnitFromRawValue(parameters);
+      transformMatrix.operations.push_back(TransformOperation{
+          TransformOperationType::Translate, Zero, value, Zero});
     } else if (operation == "skewX") {
-      transformMatrix =
-          transformMatrix * Transform::Skew(toRadians(parameters, 0.0f), 0);
+      transformMatrix.operations.push_back(
+          TransformOperation{TransformOperationType::Skew, ValueUnit(toRadians(parameters, 0.0f), UnitType::Point), Zero, Zero});
     } else if (operation == "skewY") {
-      transformMatrix =
-          transformMatrix * Transform::Skew(0, toRadians(parameters, 0.0f));
+      transformMatrix.operations.push_back(
+          TransformOperation{TransformOperationType::Skew, Zero, ValueUnit(toRadians(parameters, 0.0f), UnitType::Point), Zero});
     }
   }
 

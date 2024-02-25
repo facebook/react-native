@@ -392,19 +392,33 @@ Transform BaseViewProps::resolveTransform(
     LayoutMetrics const& layoutMetrics) const {
   float viewWidth = layoutMetrics.frame.size.width;
   float viewHeight = layoutMetrics.frame.size.height;
-  if (!transformOrigin.isSet() || (viewWidth == 0 && viewHeight == 0)) {
-    return transform;
+  auto transformMatrix = Transform{};
+
+  if (viewWidth == 0 && viewHeight == 0){
+    return transformMatrix;
   }
-  std::array<float, 3> translateOffsets =
-      getTranslateForTransformOrigin(viewWidth, viewHeight, transformOrigin);
-  auto newTransform = Transform::Translate(
-      translateOffsets[0], translateOffsets[1], translateOffsets[2]);
-  newTransform = newTransform * transform;
-  newTransform =
-      newTransform *
+
+  // transform is matrix
+  if (transform.operations.size() == 1 && transform.operations[0].type == TransformOperationType::Arbitrary) {
+    transformMatrix = transformMatrix * transform;
+  } else {
+    for (size_t i = 0; i < transform.operations.size(); i++) {
+      auto transformFromOperation = transform.FromTransformOperation(transform.operations[i], viewWidth, viewHeight);
+      transformMatrix = transformMatrix * transformFromOperation;
+    }
+  }
+      
+  if (transformOrigin.isSet()) {
+    std::array<float, 3> translateOffsets =
+          getTranslateForTransformOrigin(viewWidth, viewHeight, transformOrigin);
+    transformMatrix = 
       Transform::Translate(
-          -translateOffsets[0], -translateOffsets[1], -translateOffsets[2]);
-  return newTransform;
+            translateOffsets[0], translateOffsets[1], translateOffsets[2])
+      * transformMatrix
+      * Transform::Translate(-translateOffsets[0], -translateOffsets[1], -translateOffsets[2]);
+  }
+  
+  return transformMatrix;
 }
 
 bool BaseViewProps::getClipsContentToBounds() const {
