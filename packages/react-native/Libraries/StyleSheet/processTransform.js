@@ -69,7 +69,7 @@ const _getKeyAndValueFromCSSTransform: (
     | $TEMPORARY$string<'translateY'>,
   args: string,
 ) => {key: string, value?: number[] | number | string} = (key, args) => {
-  const argsWithUnitsRegex = new RegExp(/([+-]?\d+(\.\d+)?)([a-zA-Z]+)?/g);
+  const argsWithUnitsRegex = new RegExp(/([+-]?\d+(\.\d+)?)([a-zA-Z%]+)?/g);
 
   switch (key) {
     case 'matrix':
@@ -88,7 +88,11 @@ const _getKeyAndValueFromCSSTransform: (
           missingUnitOfMeasurement = true;
         }
 
-        parsedArgs.push(value);
+        if (unitOfMeasurement === '%') {
+          parsedArgs.push(`${value}%`);
+        } else {
+          parsedArgs.push(value);
+        }
       }
 
       if (__DEV__) {
