@@ -11,6 +11,10 @@
 
 import getDevToolsFrontendUrl from '../utils/getDevToolsFrontendUrl';
 
+function makeRandomString() {
+  return (Math.random() * 10000).toFixed(0);
+}
+
 describe('getDevToolsFrontendUrl', () => {
   const webSocketDebuggerUrl =
     'ws://localhost:8081/inspector/debug?device=1a9372c&page=-1';
@@ -52,6 +56,28 @@ describe('getDevToolsFrontendUrl', () => {
       expect(url.host).toBe('localhost:8081');
       expect(url.pathname).toBe('/debugger-frontend/rn_inspector.html');
       expect(url.searchParams.get('unstable_enableNetworkPanel')).toBe('true');
+      expect(url.searchParams.get('ws')).toBe(
+        'localhost:8081/inspector/debug?device=1a9372c&page=-1',
+      );
+    });
+
+    it('should pass unstable_extras param to the returned url', async () => {
+      const experiments = {
+        enableNetworkInspector: false,
+        enableNewDebugger: false,
+        enableOpenDebuggerRedirect: false,
+      };
+      const unstableExtras = makeRandomString();
+      const actual = getDevToolsFrontendUrl(
+        experiments,
+        webSocketDebuggerUrl,
+        devServerUrl,
+        unstableExtras,
+      );
+      const url = new URL(actual);
+      expect(url.host).toBe('localhost:8081');
+      expect(url.pathname).toBe('/debugger-frontend/rn_inspector.html');
+      expect(url.searchParams.get('unstable_extras')).toBe(unstableExtras);
       expect(url.searchParams.get('ws')).toBe(
         'localhost:8081/inspector/debug?device=1a9372c&page=-1',
       );
@@ -103,6 +129,27 @@ describe('getDevToolsFrontendUrl', () => {
       const url = assertValidRelativeURL(actual);
       expect(url.pathname).toBe('/debugger-frontend/rn_inspector.html');
       expect(url.searchParams.get('unstable_enableNetworkPanel')).toBe('true');
+      expect(url.searchParams.get('ws')).toBe(
+        'localhost:8081/inspector/debug?device=1a9372c&page=-1',
+      );
+    });
+
+    it('should pass unstable_extras param to the returned url', async () => {
+      const experiments = {
+        enableNetworkInspector: false,
+        enableNewDebugger: false,
+        enableOpenDebuggerRedirect: false,
+      };
+      const unstableExtras = makeRandomString();
+      const actual = getDevToolsFrontendUrl(
+        experiments,
+        webSocketDebuggerUrl,
+        relativeDevServerUrl,
+        unstableExtras,
+      );
+      const url = assertValidRelativeURL(actual);
+      expect(url.pathname).toBe('/debugger-frontend/rn_inspector.html');
+      expect(url.searchParams.get('unstable_extras')).toBe(unstableExtras);
       expect(url.searchParams.get('ws')).toBe(
         'localhost:8081/inspector/debug?device=1a9372c&page=-1',
       );

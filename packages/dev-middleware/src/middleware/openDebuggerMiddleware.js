@@ -57,7 +57,12 @@ export default function openDebuggerMiddleware({
       (experiments.enableOpenDebuggerRedirect && req.method === 'GET')
     ) {
       const {query} = url.parse(req.url, true);
-      const {appId, device}: {appId?: string, device?: string, ...} = query;
+      const {
+        appId,
+        device,
+        unstable_extras,
+      }: {appId?: string, device?: string, unstable_extras?: string, ...} =
+        query;
 
       const targets = inspectorProxy.getPageDescriptions().filter(
         // Only use targets with better reloading support
@@ -122,6 +127,7 @@ export default function openDebuggerMiddleware({
                   experiments,
                   target.webSocketDebuggerUrl,
                   serverBaseUrl,
+                  unstable_extras,
                 ),
               ),
             );
@@ -134,6 +140,7 @@ export default function openDebuggerMiddleware({
                 target.webSocketDebuggerUrl,
                 // Use a relative URL.
                 '',
+                unstable_extras,
               ),
             });
             res.end();
