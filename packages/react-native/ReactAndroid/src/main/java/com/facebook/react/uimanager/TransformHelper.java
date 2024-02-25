@@ -103,18 +103,24 @@ public class TransformHelper {
           MatrixMathHelper.applyScaleY(helperMatrix, transform.getDouble(transformType));
         } else if ("translate".equals(transformType)) {
           ReadableArray value = transform.getArray(transformType);
-          double x = value.getDouble(0);
-          double y = value.getDouble(1);
+          double x = 0;
+          if (value.getType(0) == ReadableType.String) {
+            x = parsePercentageToValue(value.getString(0), viewWidth);
+          } else {
+            x = value.getDouble(0);
+          }
+          double y = 0;
+          if (value.getType(1) == ReadableType.String) {
+            y = parsePercentageToValue(value.getString(1), viewHeight);
+          } else {
+            y = value.getDouble(1);
+          }
           double z = value.size() > 2 ? value.getDouble(2) : 0d;
           MatrixMathHelper.applyTranslate3D(helperMatrix, x, y, z);
         } else if ("translateX".equals(transformType)) {
           double translateValue = 0;
           if (transform.getType(transformType) == ReadableType.String) {
-            String stringValue = transform.getString(transformType);
-            if (stringValue.endsWith("%")) {
-              double percentageValue = Double.parseDouble(stringValue.substring(0, stringValue.length() - 1));
-              translateValue = viewWidth * percentageValue / 100.0;
-            }
+            translateValue = parsePercentageToValue(transform.getString(transformType), viewWidth);
           } else {
             translateValue = transform.getDouble(transformType);
           }
@@ -122,12 +128,7 @@ public class TransformHelper {
         } else if ("translateY".equals(transformType)) {
           double translateValue = 0;
           if (transform.getType(transformType) == ReadableType.String) {
-            String stringValue = transform.getString(transformType);
-            if (stringValue.endsWith("%")) {
-              stringValue = stringValue.substring(0, stringValue.length() - 1);
-              double percentageValue = Double.parseDouble(stringValue.substring(0, stringValue.length() - 1));
-              translateValue = viewHeight * percentageValue / 100.0;
-            }
+            translateValue = parsePercentageToValue(transform.getString(transformType), viewHeight);
           } else {
             translateValue = transform.getDouble(transformType);
           }
@@ -151,6 +152,14 @@ public class TransformHelper {
     }
   }
 
+  private static double parsePercentageToValue(String stringValue, double dimension) {
+    if (stringValue.endsWith("%")) {
+      double percentage = Double.parseDouble(stringValue.substring(0, stringValue.length() - 1));
+      return percentage * dimension / 100.0;
+    } else {
+      return Double.parseDouble(stringValue);
+    }
+  }
   private static float[] getTranslateForTransformOrigin(
       float viewWidth, float viewHeight, ReadableArray transformOrigin) {
     if (transformOrigin == null || (viewHeight == 0 && viewWidth == 0)) {
