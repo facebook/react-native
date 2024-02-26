@@ -71,7 +71,6 @@ references:
     hermes_tarball_debug_cache_key: &hermes_tarball_debug_cache_key v4-hermes-tarball-debug-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
     hermes_tarball_release_cache_key: &hermes_tarball_release_cache_key v3-hermes-tarball-release-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
     pods_cache_key: &pods_cache_key v8-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
-    windows_yarn_cache_key: &windows_yarn_cache_key v1-win-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
     yarn_cache_key: &yarn_cache_key v5-yarn-cache-{{ .Environment.CIRCLE_JOB }}
 
   cache_paths:
@@ -1022,95 +1021,6 @@ jobs:
               -sdk iphonesimulator
 
   # -------------------------
-  #    JOBS: Windows
-  # -------------------------
-  test_windows:
-    executor:
-      name: win/default
-    parameters:
-      run_disabled_tests:
-        type: boolean
-        default: false
-    environment:
-      - ANDROID_HOME: "C:\\Android\\android-sdk"
-      - ANDROID_NDK: "C:\\Android\\android-sdk\\ndk\\20.1.5948944"
-      - ANDROID_BUILD_VERSION: 33
-      - ANDROID_TOOLS_VERSION: 33.0.0
-      - GRADLE_OPTS: -Dorg.gradle.daemon=false
-    steps:
-      - checkout_code_with_cache
-
-      - run:
-          name: Disable NVM
-          # Use choco to manage node versions due to https://github.com/npm/cli/issues/4234
-          command: nvm off
-
-      - run:
-          name: Install Node JS
-          # Note: Version set separately for non-Windows builds, see above.
-          command: choco install nodejs-lts
-
-      # Setup Dependencies
-      - run:
-          name: Enable Yarn with corepack
-          command: corepack enable
-
-      - run:
-          name: Display Environment info
-          command: |
-            npm install -g envinfo
-            envinfo -v
-            envinfo
-
-      - restore_cache:
-          keys:
-            - *windows_yarn_cache_key
-      - run:
-          name: "Yarn: Install Dependencies"
-          command: yarn install --frozen-lockfile --non-interactive
-      - save_cache:
-          key: *windows_yarn_cache_key
-          paths:
-            - C:\Users\circleci\AppData\Local\Yarn
-
-      # Try to install the SDK up to 3 times, since network flakiness can cause install failures
-      # Using a timeout of 9 mins, as circle ci will timeout if there is no output for 10 mins
-      - run:
-          name: Install Android SDK Tools
-          command: choco install android-sdk --timeout 540; if (!$?) { choco install android-sdk --timeout 540 --force --forcedependencies}; if (!$?) { choco install android-sdk  --force --forcedependencies}
-
-      - run:
-          name: Setup Android SDKs
-          command: |
-            sdkmanager --licenses
-            sdkmanager "system-images;android-21;google_apis;armeabi-v7a"
-            sdkmanager "platforms;android-%ANDROID_BUILD_VERSION%"
-            sdkmanager "build-tools;%ANDROID_TOOLS_VERSION%"
-            sdkmanager "add-ons;addon-google_apis-google-23"
-            sdkmanager "extras;android;m2repository"
-
-      # -------------------------
-      # Run Tests
-      - run:
-          name: "Flow: Check Android"
-          command: yarn flow-check-android
-      - run:
-          name: "Flow: Check iOS"
-          command: yarn flow-check-ios
-      - run:
-          name: "Run Tests: JavaScript Tests"
-          command: yarn test
-
-      # Optionally, run disabled tests
-      - when:
-          condition: << parameters.run_disabled_tests >>
-          steps:
-            - run: echo "Failing tests may be moved here temporarily."
-            - run:
-                name: Android Build
-                command: ./gradlew.bat packages:rn-tester:android:app:assembleRelease
-
-  # -------------------------
   #      JOBS: Coverage
   # -------------------------
   # Collect JavaScript test coverage
@@ -1847,8 +1757,6 @@ workflows:
       - test_js:
           name: test_js_prev_lts
           executor: nodeprevlts
-      - test_windows:
-          run_disabled_tests: false
 
   # This workflow should only be triggered by release script
   package_release:
