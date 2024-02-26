@@ -70,7 +70,12 @@ void ReactInstanceIntegrationTest::SetUp() {
 }
 
 void ReactInstanceIntegrationTest::TearDown() {
+  ASSERT_NE(clientToVM_, nullptr);
   clientToVM_->disconnect();
+  // Expect the remote connection to have been destroyed.
+  EXPECT_EQ(mockRemoteConnections_.back(), nullptr);
+  // Destroy the local connection.
+  clientToVM_.reset();
 }
 
 void ReactInstanceIntegrationTest::initializeRuntime(std::string_view script) {

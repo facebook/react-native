@@ -75,6 +75,24 @@ class UniquePtrFactory {
   }
 
   /**
+   * Returns a pointer to the last object created by this factory, or nullptr if
+   * it has been destroyed or the factory has never created an object.
+   */
+  const T* back() const {
+    auto sz = objectPtrs_.size();
+    return sz > 0 ? objectPtrs_[sz - 1] : nullptr;
+  }
+
+  /**
+   * Returns a pointer to the last object created by this factory, or nullptr if
+   * it has been destroyed or the factory has never created an object.
+   */
+  T* back() {
+    auto sz = objectPtrs_.size();
+    return sz > 0 ? objectPtrs_[sz - 1] : nullptr;
+  }
+
+  /**
    * Returns the total number of objects created by this factory, including
    * those that have already been destroyed.
    */

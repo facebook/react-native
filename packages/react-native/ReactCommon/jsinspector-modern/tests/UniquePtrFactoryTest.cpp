@@ -81,4 +81,26 @@ TEST(UniquePtrFactoryTest, LazilyMakeUnique) {
   EXPECT_EQ(fooObjects.objectsVended(), 2);
 }
 
+TEST(UniquePtrFactoryTest, Back) {
+  UniquePtrFactory<Foo> fooObjects;
+  EXPECT_EQ(fooObjects.back(), nullptr)
+      << "back should return nullptr when empty";
+
+  auto foo0 = fooObjects.make_unique(100);
+  EXPECT_EQ(fooObjects.back(), fooObjects[0])
+      << "back should return the first object of one";
+
+  foo0.reset();
+  EXPECT_EQ(fooObjects.back(), fooObjects[0])
+      << "back should return nullptr if the last object was destroyed";
+
+  auto foo1 = fooObjects.make_unique(200);
+  EXPECT_EQ(fooObjects.back(), fooObjects[1])
+      << "back should return the second object of two";
+
+  foo1.reset();
+  EXPECT_EQ(fooObjects.back(), nullptr)
+      << "back should return nullptr if the last object was destroyed";
+}
+
 } // namespace facebook

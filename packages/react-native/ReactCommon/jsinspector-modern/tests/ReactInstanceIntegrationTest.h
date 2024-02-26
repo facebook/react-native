@@ -38,7 +38,9 @@ class ReactInstanceIntegrationTest : public ::testing::Test {
   std::shared_ptr<ErrorUtils> errorHandler;
 
   MockRemoteConnection& getRemoteConnection() {
-    return *mockRemoteConnections_[0];
+    auto rawPtr = mockRemoteConnections_.back();
+    ASSERT(rawPtr != nullptr);
+    return *rawPtr;
   }
 
  private:
