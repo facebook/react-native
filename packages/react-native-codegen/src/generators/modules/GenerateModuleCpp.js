@@ -147,7 +147,7 @@ function serializeArg(
     case 'ReservedTypeAnnotation':
       switch (realTypeAnnotation.name) {
         case 'RootTag':
-          return wrap(val => `${val}.getNumber()`);
+          return wrap(val => `${val}.asNumber()`);
         default:
           (realTypeAnnotation.name: empty);
           throw new Error(
