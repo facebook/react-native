@@ -68,7 +68,6 @@ references:
     hermes_tarball_release_cache_key: &hermes_tarball_release_cache_key v3-hermes-tarball-release-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
     pods_cache_key: &pods_cache_key v8-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
     windows_yarn_cache_key: &windows_yarn_cache_key v1-win-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
-    windows_choco_cache_key: &windows_choco_cache_key v1-win-choco-cache-{{ .Environment.CIRCLE_JOB }}
     yarn_cache_key: &yarn_cache_key v5-yarn-cache-{{ .Environment.CIRCLE_JOB }}
     rbenv_cache_key: &rbenv_cache_key v1-rbenv-{{ checksum "/tmp/required_ruby" }}
 
@@ -1003,116 +1002,6 @@ jobs:
               -sdk iphonesimulator
 
   # -------------------------
-  #    JOBS: Windows
-  # -------------------------
-  test_windows:
-    executor:
-      name: win/default
-    parameters:
-      run_disabled_tests:
-        type: boolean
-        default: false
-    environment:
-      - ANDROID_HOME: "C:\\Android\\android-sdk"
-      - ANDROID_NDK: "C:\\Android\\android-sdk\\ndk\\20.1.5948944"
-      - ANDROID_BUILD_VERSION: 33
-      - ANDROID_TOOLS_VERSION: 33.0.0
-      - GRADLE_OPTS: -Dorg.gradle.daemon=false
-      - CHOCO_CACHE_DIR: "C:\\ChocoCache"
-    steps:
-      - checkout_code_with_cache
-
-      - restore_cache:
-          keys:
-            - *windows_choco_cache_key
-
-      - run:
-          name: Choco cache
-          # Cache our dependencies which can be flakey to download
-          command: |
-            if (!Test-Path $env:CHOCO_CACHE_DIR) {
-              mkdir $env:CHOCO_CACHE_DIR
-            }
-            choco config set --name cacheLocation --value $env:CHOCO_CACHE_DIR
-
-      - run:
-          name: Disable NVM
-          # Use choco to manage node versions due to https://github.com/npm/cli/issues/4234
-          command: nvm off
-
-      - run:
-          name: Install Node JS
-          # Note: Version set separately for non-Windows builds, see above.
-          command: choco install nodejs --version=18.18.0 --allow-downgrade
-
-      # Setup Dependencies
-      - run:
-          name: Enable Yarn with corepack
-          command: corepack enable
-
-      # it looks like that, last week, envinfo released version 7.9.0 which does not works
-      # with Windows. I have opened an issue here: https://github.com/tabrindle/envinfo/issues/238
-      # TODO: T156811874 - Revert this to npx envinfo@latest when the issue is addressed
-      - run:
-          name: Display Environment info
-          command: |
-            npm install -g envinfo
-            envinfo -v
-            envinfo
-
-      - restore_cache:
-          keys:
-            - *windows_yarn_cache_key
-      - run:
-          name: "Yarn: Install Dependencies"
-          command: yarn install --frozen-lockfile --non-interactive
-
-      - save_cache:
-          key: *windows_yarn_cache_key
-          paths:
-            - C:\Users\circleci\AppData\Local\Yarn
-
-      - run:
-          name: Install Android SDK Tools
-          command: choco install android-sdk;
-
-      - save_cache:
-          key: *windows_choco_cache_key
-          paths:
-            - $env:CHOCO_CACHE_DIR
-
-      - run:
-          name: Setup Android SDKs
-          command: |
-            sdkmanager --licenses
-            sdkmanager "system-images;android-21;google_apis;armeabi-v7a"
-            sdkmanager "platforms;android-%ANDROID_BUILD_VERSION%"
-            sdkmanager "build-tools;%ANDROID_TOOLS_VERSION%"
-            sdkmanager "add-ons;addon-google_apis-google-23"
-            sdkmanager "extras;android;m2repository"
-
-      # -------------------------
-      # Run Tests
-      - run:
-          name: "Flow: Check Android"
-          command: yarn flow-check-android
-      - run:
-          name: "Flow: Check iOS"
-          command: yarn flow-check-ios
-      - run:
-          name: "Run Tests: JavaScript Tests"
-          command: yarn test
-
-      # Optionally, run disabled tests
-      - when:
-          condition: << parameters.run_disabled_tests >>
-          steps:
-            - run: echo "Failing tests may be moved here temporarily."
-            - run:
-                name: Android Build
-                command: ./gradlew.bat packages:rn-tester:android:app:assembleRelease
-
-  # -------------------------
   #      JOBS: Coverage
   # -------------------------
   # Collect JavaScript test coverage
@@ -1374,9 +1263,9 @@ jobs:
           name: Build HermesC for Windows
           command: |
             if (-not(Test-Path -Path $Env:HERMES_WS_DIR\win64-bin\hermesc.exe)) {
-              choco install --no-progress cmake --version 3.14.7
+              choco install -y --no-progress cmake --version 3.14.7
               if (-not $?) { throw "Failed to install CMake" }
-              choco install --no-progress python3
+              choco install -y --no-progress python3
               if (-not $?) { throw "Failed to install Python" }
 
               cd $Env:HERMES_WS_DIR\icu
@@ -1883,8 +1772,6 @@ workflows:
       - test_js:
           name: test_js_prev_lts
           executor: nodeprevlts
-      - test_windows:
-          run_disabled_tests: false
 
   # This workflow should only be triggered by release script
   package_release:
