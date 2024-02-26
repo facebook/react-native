@@ -407,7 +407,7 @@ RCT_ARRAY_CONVERTER(RCTFontVariantDescriptor)
     fontSize = font.pointSize ?: defaultFontSize;
     fontWeight = weightOfFont(font);
     isItalic = isItalicFont(font);
-    isCondensed = isCondensedFont(font) || [familyName isEqualToString:@"SystemCondensed"];
+    isCondensed = isCondensedFont(font);
   }
 
   // Get font attributes
@@ -418,6 +418,7 @@ RCT_ARRAY_CONVERTER(RCTFontVariantDescriptor)
   familyName = [RCTConvert NSString:family] ?: familyName;
   isItalic = style ? [RCTConvert RCTFontStyle:style] : isItalic;
   fontWeight = weight ? [RCTConvert RCTFontWeight:weight] : fontWeight;
+  isCondensed = isCondensed || [familyName isEqualToString:@"SystemCondensed"];
 
   BOOL didFindFont = NO;
 
