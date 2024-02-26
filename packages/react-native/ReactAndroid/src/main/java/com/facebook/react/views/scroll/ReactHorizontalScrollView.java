@@ -17,6 +17,7 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -96,7 +97,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   private @Nullable FpsListener mFpsListener = null;
   private @Nullable String mScrollPerfTag;
   private @Nullable Drawable mEndBackground;
-  private int mEndFillColor = Color.TRANSPARENT;
+  private long mEndFillColor = Color.pack(Color.TRANSPARENT);
   private boolean mDisableIntervalMomentum = false;
   private int mSnapInterval = 0;
   private @Nullable List<Integer> mSnapOffsets;
@@ -780,7 +781,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     return getChildAt(0);
   }
 
-  public void setEndFillColor(int color) {
+  public void setEndFillColor(long color) {
     if (color != mEndFillColor) {
       mEndFillColor = color;
       mEndBackground = new ColorDrawable(mEndFillColor);
@@ -857,9 +858,10 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   public void draw(Canvas canvas) {
     if (mEndFillColor != Color.TRANSPARENT) {
       final View content = getContentView();
-      if (mEndBackground != null && content != null && content.getRight() < getWidth()) {
-        mEndBackground.setBounds(content.getRight(), 0, getWidth(), getHeight());
-        mEndBackground.draw(canvas);
+      if (content != null && content.getRight() < getWidth()) {
+        Paint paint = new Paint();
+        paint.setColor(mEndFillColor);
+        canvas.drawRect(content.getRight(), 0, getWidth(), getHeight(), paint);
       }
     }
     super.draw(canvas);
@@ -1273,12 +1275,16 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     mReactBackgroundManager.setBackgroundColor(color);
   }
 
+  public void setBackgroundColor(long color) {
+    mReactBackgroundManager.setBackgroundColor(color);
+  }
+
   public void setBorderWidth(int position, float width) {
     mReactBackgroundManager.setBorderWidth(position, width);
   }
 
-  public void setBorderColor(int position, float color, float alpha) {
-    mReactBackgroundManager.setBorderColor(position, color, alpha);
+  public void setBorderColor(int position, long color) {
+    mReactBackgroundManager.setBorderColor(position, color);
   }
 
   public void setBorderRadius(float borderRadius) {
