@@ -18,16 +18,21 @@ export default function getDevToolsFrontendUrl(
   experiments: Experiments,
   webSocketDebuggerUrl: string,
   devServerUrl: string,
+  options?: $ReadOnly<{
+    relative?: boolean,
+  }>,
 ): string {
-  const scheme = new URL(webSocketDebuggerUrl).protocol.slice(0, -1);
-  const webSocketUrlWithoutProtocol = webSocketDebuggerUrl.replace(
-    /^wss?:\/\//,
-    '',
-  );
-  const appUrl = `${devServerUrl}/debugger-frontend/rn_inspector.html`;
+  const wsParam = getWsParam({
+    webSocketDebuggerUrl,
+    devServerUrl,
+  });
+
+  const appUrl =
+    (options?.relative === true ? '' : devServerUrl) +
+    '/debugger-frontend/rn_inspector.html';
 
   const searchParams = new URLSearchParams([
-    [scheme, webSocketUrlWithoutProtocol],
+    [wsParam.key, wsParam.value],
     ['sources.hide_add_folder', 'true'],
   ]);
   if (experiments.enableNetworkInspector) {
@@ -35,4 +40,29 @@ export default function getDevToolsFrontendUrl(
   }
 
   return appUrl + '?' + searchParams.toString();
+}
+
+function getWsParam({
+  webSocketDebuggerUrl,
+  devServerUrl,
+}: $ReadOnly<{
+  webSocketDebuggerUrl: string,
+  devServerUrl: string,
+}>): {
+  key: string,
+  value: string,
+} {
+  const wsUrl = new URL(webSocketDebuggerUrl);
+  const serverHost = new URL(devServerUrl).host;
+  let value;
+  if (wsUrl.host === serverHost) {
+    // Use a path-absolute (host-relative) URL
+    // Depends on https://github.com/facebookexperimental/rn-chrome-devtools-frontend/pull/4
+    value = wsUrl.pathname + wsUrl.search + wsUrl.hash;
+  } else {
+    // Standard URL format accepted by the DevTools frontend
+    value = wsUrl.host + wsUrl.pathname + wsUrl.search + wsUrl.hash;
+  }
+  const key = wsUrl.protocol.slice(0, -1);
+  return {key, value};
 }
