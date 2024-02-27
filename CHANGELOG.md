@@ -499,6 +499,21 @@
 
 - Bump activesupport to minimum 6.1.7.5 CVE-2023-38037. ([07a159f279](https://github.com/facebook/react-native/commit/07a159f279cdcbed29c9c437dec1c0b8ac2d852f) by [@lunaleaps](https://github.com/lunaleaps))
 
+## v0.73.5
+
+### Security
+
+- Update CLI to 12.3.6 ([ffcd8f5249](https://github.com/facebook/react-native/commit/ffcd8f524903d5d6e92e864472aaefd52dea77cf) by [@szymonrybczak](https://github.com/szymonrybczak))
+
+### Changed
+
+- Hermes bump ([3bdd54a51c](https://github.com/facebook/react-native/commit/3bdd54a51ceea30cbbd0d1c45e9c391a80371dd2) by [@lunaleaps](https://github.com/lunaleaps))
+
+### Fixed
+
+- Fix: fix codegen not finding all third-party libraries ([67e2bb455f](https://github.com/facebook/react-native/commit/67e2bb455fd39f00fbf2b4d4f2f019327929efa6) by [@tido64](https://github.com/tido64))
+- Fix compiler flags passed to libraries ([929df582c8](https://github.com/facebook/react-native/commit/929df582c885ad60bd34e52ced481f8e9d5666d9) by [@cipolleschi](https://github.com/cipolleschi))
+
 ## v0.73.4
 
 ### Fixed
@@ -1489,6 +1504,12 @@ This file contains all changelogs for latest releases, from 0.70.0 onward. Pleas
 #### iOS specific
 
 - Enable Address and Undefined Behavior Sanitizers on RNTester ([65e61f3c88](https://github.com/facebook/react-native/commit/65e61f3c88388d4a2ed88bcc9a2cb5ba63fd8afa) by [@Saadnajmi](https://github.com/Saadnajmi))
+
+## v0.71.17
+
+### Security
+
+- Update CLI to 10.2.7 ([28998075d9](https://github.com/facebook/react-native/commit/28998075d98754bc72a65887346f027a9657b6a3) by [@szymonrybczak](https://github.com/szymonrybczak))
 
 ## v0.71.16
 
