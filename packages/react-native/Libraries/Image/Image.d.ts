@@ -325,20 +325,31 @@ export interface ImageProps extends ImagePropsBase {
   style?: StyleProp<ImageStyle> | undefined;
 }
 
+export interface ImageSize {
+  width: number;
+  height: number;
+}
+
 declare class ImageComponent extends React.Component<ImageProps> {}
 declare const ImageBase: Constructor<NativeMethods> & typeof ImageComponent;
 export class Image extends ImageBase {
+  static getSize(uri: string): Promise<ImageSize>;
   static getSize(
     uri: string,
     success: (width: number, height: number) => void,
     failure?: (error: any) => void,
-  ): any;
+  ): void;
+
+  static getSizeWithHeaders(
+    uri: string,
+    headers: {[index: string]: string},
+  ): Promise<ImageSize>;
   static getSizeWithHeaders(
     uri: string,
     headers: {[index: string]: string},
     success: (width: number, height: number) => void,
     failure?: (error: any) => void,
-  ): any;
+  ): void;
   static prefetch(url: string): Promise<boolean>;
   static prefetchWithMetadata(
     url: string,

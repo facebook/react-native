@@ -4484,11 +4484,16 @@ exports[`public API should not change unintentionally Libraries/Image/ImageSourc
 
 exports[`public API should not change unintentionally Libraries/Image/ImageTypes.flow.js 1`] = `
 "type ImageComponentStaticsIOS = $ReadOnly<{
-  getSize: (
+  getSize(uri: string): Promise<{ width: number, height: number }>,
+  getSize(
     uri: string,
     success: (width: number, height: number) => void,
     failure?: (error: mixed) => void
-  ) => void,
+  ): void,
+  getSizeWithHeaders(
+    uri: string,
+    headers: { [string]: string, ... }
+  ): Promise<{ width: number, height: number }>,
   getSizeWithHeaders(
     uri: string,
     headers: { [string]: string, ... },
