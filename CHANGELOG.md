@@ -1,5 +1,19 @@
 # Changelog
 
+## v0.74.0-rc.1
+
+### Added
+
+- Warn with future command when using `npx react-native init` ([a6397afb7f](https://github.com/facebook/react-native/commit/a6397afb7f4279e70afa025fe6f9fa0b8e3de3fd) by [@byCedric](https://github.com/byCedric))
+
+### Fixed
+
+- Fix undefined props crash in FlatList ([e33767a36d](https://github.com/facebook/react-native/commit/e33767a36daf7901cb46854b6612dd52b0dbdeec) by [@dieguezz](https://github.com/dieguezz))
+
+#### Android specific
+
+- Do not crash on onJSBundleLoadedFromServer when fast-refreshing on bridgeless mode ([44e5bc9e2c](https://github.com/facebook/react-native/commit/44e5bc9e2c73235ba5d8bf0f5323181948e74197) by [@cortinico](https://github.com/cortinico))
+
 ## 0.74.0-rc0
 
 ### Breaking
