@@ -879,6 +879,48 @@ static NSString *RCTSemanticColorNames(void)
   return names;
 }
 
+// The iOS side is kept in synch with the C++ side by using the
+// RCTAppDelegate which, at startup, sets the default color space.
+// The usage of dispatch_once and of once_flag ensoure that those are
+// set only once when the app starts and that they can't change while
+// the app is running.
+static RCTColorSpace _defaultColorSpace = RCTColorSpaceSRGB;
+RCTColorSpace RCTGetDefaultColorSpace(void)
+{
+  return _defaultColorSpace;
+}
+void RCTSetDefaultColorSpace(RCTColorSpace colorSpace)
+{
+  _defaultColorSpace = colorSpace;
+}
+
++ (UIColor *)UIColorWithRed:(CGFloat)red green:(CGFloat)green blue:(CGFloat)blue alpha:(CGFloat)alpha
+{
+  RCTColorSpace space = RCTGetDefaultColorSpace();
+  return [self UIColorWithRed:red green:green blue:blue alpha:alpha andColorSpace:space];
+}
++ (UIColor *)UIColorWithRed:(CGFloat)red
+                      green:(CGFloat)green
+                       blue:(CGFloat)blue
+                      alpha:(CGFloat)alpha
+              andColorSpace:(RCTColorSpace)colorSpace
+{
+  if (colorSpace == RCTColorSpaceDisplayP3) {
+    return [UIColor colorWithDisplayP3Red:red green:green blue:blue alpha:alpha];
+  }
+  return [UIColor colorWithRed:red green:green blue:blue alpha:alpha];
+}
+
++ (RCTColorSpace)RCTColorSpaceFromString:(NSString *)colorSpace
+{
+  if ([colorSpace isEqualToString:@"display-p3"]) {
+    return RCTColorSpaceDisplayP3;
+  } else if ([colorSpace isEqualToString:@"srgb"]) {
+    return RCTColorSpaceSRGB;
+  }
+  return RCTGetDefaultColorSpace();
+}
+
 + (UIColor *)UIColor:(id)json
 {
   if (!json) {
@@ -887,21 +929,29 @@ static NSString *RCTSemanticColorNames(void)
   if ([json isKindOfClass:[NSArray class]]) {
     NSArray *components = [self NSNumberArray:json];
     CGFloat alpha = components.count > 3 ? [self CGFloat:components[3]] : 1.0;
-    return [UIColor colorWithRed:[self CGFloat:components[0]]
-                           green:[self CGFloat:components[1]]
-                            blue:[self CGFloat:components[2]]
-                           alpha:alpha];
+    return [self UIColorWithRed:[self CGFloat:components[0]]
+                          green:[self CGFloat:components[1]]
+                           blue:[self CGFloat:components[2]]
+                          alpha:alpha];
   } else if ([json isKindOfClass:[NSNumber class]]) {
     NSUInteger argb = [self NSUInteger:json];
     CGFloat a = ((argb >> 24) & 0xFF) / 255.0;
     CGFloat r = ((argb >> 16) & 0xFF) / 255.0;
     CGFloat g = ((argb >> 8) & 0xFF) / 255.0;
     CGFloat b = (argb & 0xFF) / 255.0;
-    return [UIColor colorWithRed:r green:g blue:b alpha:a];
+    return [self UIColorWithRed:r green:g blue:b alpha:a];
   } else if ([json isKindOfClass:[NSDictionary class]]) {
     NSDictionary *dictionary = json;
     id value = nil;
-    if ((value = [dictionary objectForKey:@"semantic"])) {
+    NSString *rawColorSpace = [dictionary objectForKey:@"space"];
+    if ([rawColorSpace isEqualToString:@"display-p3"] || [rawColorSpace isEqualToString:@"srgb"]) {
+      CGFloat r = [[dictionary objectForKey:@"r"] floatValue];
+      CGFloat g = [[dictionary objectForKey:@"g"] floatValue];
+      CGFloat b = [[dictionary objectForKey:@"b"] floatValue];
+      CGFloat a = [[dictionary objectForKey:@"a"] floatValue];
+      RCTColorSpace colorSpace = [self RCTColorSpaceFromString:rawColorSpace];
+      return [self UIColorWithRed:r green:g blue:b alpha:a andColorSpace:colorSpace];
+    } else if ((value = [dictionary objectForKey:@"semantic"])) {
       if ([value isKindOfClass:[NSString class]]) {
         NSString *semanticName = value;
         UIColor *color = [UIColor colorNamed:semanticName];

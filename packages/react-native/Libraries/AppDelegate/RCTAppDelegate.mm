@@ -6,11 +6,13 @@
  */
 
 #import "RCTAppDelegate.h"
+#import <React/RCTColorSpaceUtils.h>
 #import <React/RCTCxxBridgeDelegate.h>
 #import <React/RCTLog.h>
 #import <React/RCTRootView.h>
 #import <React/RCTSurfacePresenterBridgeAdapter.h>
 #import <React/RCTUtils.h>
+#import <react/renderer/graphics/ColorComponents.h>
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import "RCTAppDelegate+Protected.h"
 #import "RCTAppSetupUtils.h"
@@ -75,6 +77,7 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   RCTSetNewArchEnabled([self newArchEnabled]);
+  [RCTColorSpaceUtils applyDefaultColorSpace:self.defaultColorSpace];
   BOOL enableTM = self.turboModuleEnabled;
   BOOL fabricEnabled = self.fabricEnabled;
   BOOL enableBridgeless = self.bridgelessEnabled;
@@ -223,6 +226,11 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
   } else {
     return RCTAppSetupJsExecutorFactoryForOldArch(bridge, _runtimeScheduler);
   }
+}
+
+- (RCTColorSpace)defaultColorSpace
+{
+  return RCTColorSpaceSRGB;
 }
 
 #pragma mark - New Arch Enabled settings

@@ -6,6 +6,7 @@
  */
 
 #import <React/RCTBridgeDelegate.h>
+#import <React/RCTConvert.h>
 #import <UIKit/UIKit.h>
 
 @class RCTBridge;
@@ -130,6 +131,11 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 /// @return: `YES` to use RuntimeScheduler, `NO` to use JavaScript scheduler. The default value is `YES`.
 - (BOOL)runtimeSchedulerEnabled;
+
+/**
+ * The default `RCTColorSpace` for the app. It defaults to `RCTColorSpaceSRGB`.
+ */
+@property (nonatomic, readonly) RCTColorSpace defaultColorSpace;
 
 @property (nonatomic, strong) RCTSurfacePresenterBridgeAdapter *bridgeAdapter;
 
