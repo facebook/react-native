@@ -8,11 +8,13 @@
 package com.facebook.react.uimanager;
 
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 
 /**
  * Provides helper methods for converting transform operations into a matrix and then into a list of
  * translate, scale and rotate commands.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class MatrixMathHelper {
 
   private static final double EPSILON = .00001d;

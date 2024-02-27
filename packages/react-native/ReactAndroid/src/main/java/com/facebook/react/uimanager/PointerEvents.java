@@ -7,12 +7,14 @@
 
 package com.facebook.react.uimanager;
 
+import com.facebook.infer.annotation.Nullsafe;
 import java.util.Locale;
 
 /**
  * Possible values for pointer events that a view and its descendants should receive. See
  * https://developer.mozilla.org/en-US/docs/Web/CSS/pointer-events for more info.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public enum PointerEvents {
 
   /** Neither the container nor its children receive events. */

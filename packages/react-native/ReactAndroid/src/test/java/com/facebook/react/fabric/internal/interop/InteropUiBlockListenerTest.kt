@@ -7,10 +7,12 @@
 
 package com.facebook.react.fabric.internal.interop
 
+import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.testutils.fakes.FakeUIManager
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
+@OptIn(UnstableReactNativeAPI::class)
 class InteropUiBlockListenerTest {
 
   @Test

@@ -1773,41 +1773,6 @@ declare export default typeof NativeKeyboardObserver;
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/Components/PopupMenuAndroid/PopupMenuAndroid.android.js 1`] = `
-"export type PopupMenuAndroidInstance = {
-  +show: () => void,
-};
-type Props = {
-  menuItems: $ReadOnlyArray<string>,
-  onSelectionChange: (number) => void,
-  children: React.Node,
-  instanceRef: RefObject<?PopupMenuAndroidInstance>,
-};
-declare export default function PopupMenuAndroid(Props): React.Node;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/Components/PopupMenuAndroid/PopupMenuAndroid.js 1`] = `
-"export type PopupMenuAndroidInstance = {
-  +show: () => void,
-};
-type Props = {
-  menuItems: $ReadOnlyArray<string>,
-  onSelectionChange: (number) => void,
-  children: Node,
-  instanceRef: RefObject<?PopupMenuAndroidInstance>,
-};
-declare function PopupMenuAndroid(props: Props): Node;
-declare export default typeof PopupMenuAndroid;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/Components/PopupMenuAndroid/PopupMenuAndroidNativeComponent.js 1`] = `
-"export * from \\"../../../src/private/specs/components/PopupMenuAndroidNativeComponent\\";
-declare export default typeof PopupMenuAndroidNativeComponent;
-"
-`;
-
 exports[`public API should not change unintentionally Libraries/Components/Pressable/Pressable.js 1`] = `
 "type ViewStyleProp = $ElementType<React.ElementConfig<typeof View>, \\"style\\">;
 export type StateCallbackType = $ReadOnly<{|
@@ -9026,7 +8991,6 @@ declare module.exports: {
   get ImageBackground(): ImageBackground,
   get InputAccessoryView(): InputAccessoryView,
   get KeyboardAvoidingView(): KeyboardAvoidingView,
-  get PopupMenuAndroid(): PopupMenuAndroid,
   get Modal(): Modal,
   get Pressable(): Pressable,
   get ProgressBarAndroid(): ProgressBarAndroid,

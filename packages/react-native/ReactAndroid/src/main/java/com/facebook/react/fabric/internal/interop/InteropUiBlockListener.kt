@@ -11,6 +11,7 @@ package com.facebook.react.fabric.internal.interop
 
 import com.facebook.react.bridge.UIManager
 import com.facebook.react.bridge.UIManagerListener
+import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.fabric.interop.UIBlock
 import com.facebook.react.fabric.interop.UIBlockViewResolver
 
@@ -21,6 +22,7 @@ import com.facebook.react.fabric.interop.UIBlockViewResolver
  * class effectively re-implements this logic by using a [UIManagerListener] and exposing the two
  * methods that the user intend to call.
  */
+@OptIn(UnstableReactNativeAPI::class)
 internal class InteropUIBlockListener : UIManagerListener {
 
   internal val beforeUIBlocks: MutableList<UIBlock> = mutableListOf()

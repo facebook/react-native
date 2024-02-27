@@ -49,7 +49,6 @@ async function updatePackageJson(
   return fs.writeFile(
     path.join(packagePath, 'package.json'),
     JSON.stringify(packageJson, null, 2) + '\n',
-    'utf-8',
   );
 }
 

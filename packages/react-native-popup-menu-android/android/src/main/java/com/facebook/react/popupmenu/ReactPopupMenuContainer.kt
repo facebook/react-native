@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.views.popupmenu
+package com.facebook.react.popupmenu
 
 import android.content.Context
 import android.os.Build

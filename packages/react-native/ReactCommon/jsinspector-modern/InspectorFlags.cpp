@@ -37,6 +37,10 @@ bool InspectorFlags::getEnableCxxInspectorPackagerConnection() const {
       enableModernCDPRegistry_;
 }
 
+void InspectorFlags::dangerouslyResetFlags() {
+  *this = InspectorFlags{};
+}
+
 void InspectorFlags::assertFlagsMatchUpstream() const {
   if (inconsistentFlagsStateLogged_) {
     return;

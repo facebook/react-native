@@ -9,10 +9,12 @@
 
 #import <UserNotifications/UserNotifications.h>
 
+#import <RCTAppDelegate+Protected.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTDefines.h>
 #import <React/RCTLinkingManager.h>
 #import <ReactCommon/RCTSampleTurboModule.h>
+#import <ReactCommon/RCTTurboModuleManager.h>
 #import <ReactCommon/SampleTurboCxxModule.h>
 
 #import <React/RCTPushNotificationManager.h>
@@ -83,10 +85,12 @@ static NSString *kBundlePath = @"js/RNTesterApp.ios";
   if (name == std::string([@"SampleTurboCxxModule" UTF8String])) {
     return std::make_shared<facebook::react::SampleTurboCxxModule>(jsInvoker);
   }
+
   if (name == facebook::react::NativeCxxModuleExample::kModuleName) {
     return std::make_shared<facebook::react::NativeCxxModuleExample>(jsInvoker);
   }
-  return nullptr;
+
+  return [super getTurboModule:name jsInvoker:jsInvoker];
 }
 
 // Required for the remoteNotificationsRegistered event.

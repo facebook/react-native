@@ -14,16 +14,16 @@ import getDevToolsFrontendUrl from '../utils/getDevToolsFrontendUrl';
 describe('getDevToolsFrontendUrl', () => {
   const webSocketDebuggerUrl =
     'ws://localhost:8081/inspector/debug?device=1a9372c&page=-1';
+  const devServerUrl = 'http://localhost:8081';
 
-  describe('given an absolute devServerUrl', () => {
-    const devServerUrl = 'http://localhost:8081';
+  const experiments = {
+    enableNetworkInspector: false,
+    enableNewDebugger: false,
+    enableOpenDebuggerRedirect: false,
+  };
 
-    it('should return a valid url for all experiments off', async () => {
-      const experiments = {
-        enableNetworkInspector: false,
-        enableNewDebugger: false,
-        enableOpenDebuggerRedirect: false,
-      };
+  describe('relative: false (default)', () => {
+    test('should return a valid url for all experiments off', async () => {
       const actual = getDevToolsFrontendUrl(
         experiments,
         webSocketDebuggerUrl,
@@ -33,18 +33,13 @@ describe('getDevToolsFrontendUrl', () => {
       expect(url.host).toBe('localhost:8081');
       expect(url.pathname).toBe('/debugger-frontend/rn_inspector.html');
       expect(url.searchParams.get('ws')).toBe(
-        'localhost:8081/inspector/debug?device=1a9372c&page=-1',
+        '/inspector/debug?device=1a9372c&page=-1',
       );
     });
 
-    it('should return a valid url for enableNetworkInspector experiment on', async () => {
-      const experiments = {
-        enableNetworkInspector: true,
-        enableNewDebugger: true,
-        enableOpenDebuggerRedirect: false,
-      };
+    test('should return a valid url for enableNetworkInspector experiment on', async () => {
       const actual = getDevToolsFrontendUrl(
-        experiments,
+        {...experiments, enableNetworkInspector: true, enableNewDebugger: true},
         webSocketDebuggerUrl,
         devServerUrl,
       );
@@ -53,14 +48,26 @@ describe('getDevToolsFrontendUrl', () => {
       expect(url.pathname).toBe('/debugger-frontend/rn_inspector.html');
       expect(url.searchParams.get('unstable_enableNetworkPanel')).toBe('true');
       expect(url.searchParams.get('ws')).toBe(
-        'localhost:8081/inspector/debug?device=1a9372c&page=-1',
+        '/inspector/debug?device=1a9372c&page=-1',
+      );
+    });
+
+    test('should return a full WS URL if on a different host than the dev server', () => {
+      const otherWebSocketDebuggerUrl =
+        'ws://localhost:9000/inspector/debug?device=1a9372c&page=-1';
+      const actual = getDevToolsFrontendUrl(
+        experiments,
+        otherWebSocketDebuggerUrl,
+        devServerUrl,
+      );
+      const url = new URL(actual);
+      expect(url.searchParams.get('ws')).toBe(
+        'localhost:9000/inspector/debug?device=1a9372c&page=-1',
       );
     });
   });
 
-  describe('given a relative devServerUrl', () => {
-    const relativeDevServerUrl = '';
-
+  describe('relative: true', () => {
     function assertValidRelativeURL(relativeURL: string): URL {
       const anyBaseURL = new URL('https://www.example.com');
       try {
@@ -71,40 +78,53 @@ describe('getDevToolsFrontendUrl', () => {
       }
     }
 
-    it('should return a valid url for all experiments off', async () => {
-      const experiments = {
-        enableNetworkInspector: false,
-        enableNewDebugger: false,
-        enableOpenDebuggerRedirect: false,
-      };
+    test('should return a valid url for all experiments off', async () => {
       const actual = getDevToolsFrontendUrl(
         experiments,
         webSocketDebuggerUrl,
-        relativeDevServerUrl,
+        devServerUrl,
+        {
+          relative: true,
+        },
       );
       const url = assertValidRelativeURL(actual);
       expect(url.pathname).toBe('/debugger-frontend/rn_inspector.html');
       expect(url.searchParams.get('ws')).toBe(
-        'localhost:8081/inspector/debug?device=1a9372c&page=-1',
+        '/inspector/debug?device=1a9372c&page=-1',
       );
     });
 
-    it('should return a valid url for enableNetworkInspector experiment on', async () => {
-      const experiments = {
-        enableNetworkInspector: true,
-        enableNewDebugger: true,
-        enableOpenDebuggerRedirect: false,
-      };
+    test('should return a valid url for enableNetworkInspector experiment on', async () => {
       const actual = getDevToolsFrontendUrl(
-        experiments,
+        {...experiments, enableNetworkInspector: true, enableNewDebugger: true},
         webSocketDebuggerUrl,
-        relativeDevServerUrl,
+        devServerUrl,
+        {
+          relative: true,
+        },
       );
       const url = assertValidRelativeURL(actual);
       expect(url.pathname).toBe('/debugger-frontend/rn_inspector.html');
       expect(url.searchParams.get('unstable_enableNetworkPanel')).toBe('true');
       expect(url.searchParams.get('ws')).toBe(
-        'localhost:8081/inspector/debug?device=1a9372c&page=-1',
+        '/inspector/debug?device=1a9372c&page=-1',
+      );
+    });
+
+    test('should return a full WS URL if on a different host than the dev server', () => {
+      const otherWebSocketDebuggerUrl =
+        'ws://localhost:8082/inspector/debug?device=1a9372c&page=-1';
+      const actual = getDevToolsFrontendUrl(
+        experiments,
+        otherWebSocketDebuggerUrl,
+        devServerUrl,
+        {
+          relative: true,
+        },
+      );
+      const url = assertValidRelativeURL(actual);
+      expect(url.searchParams.get('ws')).toBe(
+        'localhost:8082/inspector/debug?device=1a9372c&page=-1',
       );
     });
   });

@@ -30,14 +30,20 @@ class InspectorFlags {
    */
   bool getEnableCxxInspectorPackagerConnection() const;
 
+  /**
+   * Reset flags to their upstream values. The caller must ensure any resources
+   * that have read previous flag values have been cleaned up.
+   */
+  void dangerouslyResetFlags();
+
  private:
   InspectorFlags();
   InspectorFlags(const InspectorFlags&) = delete;
-  InspectorFlags& operator=(const InspectorFlags&) = delete;
+  InspectorFlags& operator=(const InspectorFlags&) = default;
   ~InspectorFlags() = default;
 
-  const bool enableModernCDPRegistry_;
-  const bool enableCxxInspectorPackagerConnection_;
+  bool enableModernCDPRegistry_;
+  bool enableCxxInspectorPackagerConnection_;
 
   mutable bool inconsistentFlagsStateLogged_;
   void assertFlagsMatchUpstream() const;
