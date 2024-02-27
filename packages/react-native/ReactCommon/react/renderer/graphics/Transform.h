@@ -51,12 +51,7 @@ struct TransformOperation {
   ValueUnit x;
   ValueUnit y;
   ValueUnit z;
-  bool operator==(const TransformOperation& other) const {
-    return type == other.type && x == other.x && y == other.y && z == other.z;
-  }
-  bool operator!=(const TransformOperation& other) const {
-    return !(*this == other);
-  }
+  bool operator==(const TransformOperation& other) const = default;
 };
 
 struct TransformOrigin {
