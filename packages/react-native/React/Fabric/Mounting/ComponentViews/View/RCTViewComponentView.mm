@@ -454,6 +454,7 @@ using namespace facebook::react;
   _eventEmitter.reset();
   _isJSResponder = NO;
   _removeClippedSubviews = NO;
+  self.autoresizingMask = UIViewAutoresizingNone;
   _reactSubviews = [NSMutableArray new];
 }
 
