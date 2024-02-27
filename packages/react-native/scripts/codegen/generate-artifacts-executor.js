@@ -283,11 +283,7 @@ function findLibrariesFromReactNativeConfig(projectRoot) {
       return [];
     }
 
-    return extractLibrariesFromJSON(
-      configFile,
-      configFile.name,
-      codegenConfigFileDir,
-    );
+    return extractLibrariesFromJSON(configFile, codegenConfigFileDir);
   });
 }
 
