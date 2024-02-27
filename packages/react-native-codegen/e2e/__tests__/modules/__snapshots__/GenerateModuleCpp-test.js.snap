@@ -349,7 +349,7 @@ static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getAlias(jsi:
 static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getRootTag(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getRootTag(
     rt,
-    args[0].getNumber()
+    args[0].asNumber()
   );
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getValue(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
@@ -550,7 +550,7 @@ static jsi::Value __hostFunction_NativeSampleTurboModuleNullableCxxSpecJSI_getAl
 static jsi::Value __hostFunction_NativeSampleTurboModuleNullableCxxSpecJSI_getRootTag(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   auto result = static_cast<NativeSampleTurboModuleNullableCxxSpecJSI *>(&turboModule)->getRootTag(
     rt,
-    args[0].isNull() || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].getNumber())
+    args[0].isNull() || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asNumber())
   );
   return result ? jsi::Value(std::move(*result)) : jsi::Value::null();
 }
@@ -656,7 +656,7 @@ static jsi::Value __hostFunction_NativeSampleTurboModuleNullableAndOptionalCxxSp
 static jsi::Value __hostFunction_NativeSampleTurboModuleNullableAndOptionalCxxSpecJSI_getRootTag(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   auto result = static_cast<NativeSampleTurboModuleNullableAndOptionalCxxSpecJSI *>(&turboModule)->getRootTag(
     rt,
-    count <= 0 || args[0].isNull() || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].getNumber())
+    count <= 0 || args[0].isNull() || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asNumber())
   );
   return result ? jsi::Value(std::move(*result)) : jsi::Value::null();
 }
@@ -756,7 +756,7 @@ static jsi::Value __hostFunction_NativeSampleTurboModuleOptionalCxxSpecJSI_getAl
 static jsi::Value __hostFunction_NativeSampleTurboModuleOptionalCxxSpecJSI_getRootTag(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   return static_cast<NativeSampleTurboModuleOptionalCxxSpecJSI *>(&turboModule)->getRootTag(
     rt,
-    count <= 0 || args[0].isNull() || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].getNumber())
+    count <= 0 || args[0].isNull() || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asNumber())
   );
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleOptionalCxxSpecJSI_getValue(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
@@ -1170,7 +1170,7 @@ static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getAlias(jsi:
 static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getRootTag(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getRootTag(
     rt,
-    args[0].getNumber()
+    args[0].asNumber()
   );
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getValue(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
@@ -1371,7 +1371,7 @@ static jsi::Value __hostFunction_NativeSampleTurboModuleNullableCxxSpecJSI_getAl
 static jsi::Value __hostFunction_NativeSampleTurboModuleNullableCxxSpecJSI_getRootTag(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   auto result = static_cast<NativeSampleTurboModuleNullableCxxSpecJSI *>(&turboModule)->getRootTag(
     rt,
-    args[0].isNull() || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].getNumber())
+    args[0].isNull() || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asNumber())
   );
   return result ? jsi::Value(std::move(*result)) : jsi::Value::null();
 }
@@ -1477,7 +1477,7 @@ static jsi::Value __hostFunction_NativeSampleTurboModuleNullableAndOptionalCxxSp
 static jsi::Value __hostFunction_NativeSampleTurboModuleNullableAndOptionalCxxSpecJSI_getRootTag(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   auto result = static_cast<NativeSampleTurboModuleNullableAndOptionalCxxSpecJSI *>(&turboModule)->getRootTag(
     rt,
-    count <= 0 || args[0].isNull() || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].getNumber())
+    count <= 0 || args[0].isNull() || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asNumber())
   );
   return result ? jsi::Value(std::move(*result)) : jsi::Value::null();
 }
@@ -1577,7 +1577,7 @@ static jsi::Value __hostFunction_NativeSampleTurboModuleOptionalCxxSpecJSI_getAl
 static jsi::Value __hostFunction_NativeSampleTurboModuleOptionalCxxSpecJSI_getRootTag(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   return static_cast<NativeSampleTurboModuleOptionalCxxSpecJSI *>(&turboModule)->getRootTag(
     rt,
-    count <= 0 || args[0].isNull() || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].getNumber())
+    count <= 0 || args[0].isNull() || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asNumber())
   );
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleOptionalCxxSpecJSI_getValue(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
