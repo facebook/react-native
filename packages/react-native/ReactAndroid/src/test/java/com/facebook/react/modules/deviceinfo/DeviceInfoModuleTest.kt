@@ -7,8 +7,8 @@
 
 package com.facebook.react.modules.deviceinfo
 
+import com.facebook.react.bridge.BridgeReactContext
 import com.facebook.react.bridge.JavaOnlyMap
-import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReactTestHelper
 import com.facebook.react.bridge.WritableMap
@@ -32,7 +32,7 @@ class DeviceInfoModuleTest : TestCase() {
   private lateinit var deviceInfoModule: DeviceInfoModule
   private lateinit var fakePortraitDisplayMetrics: WritableMap
   private lateinit var fakeLandscapeDisplayMetrics: WritableMap
-  private lateinit var reactContext: ReactApplicationContext
+  private lateinit var reactContext: BridgeReactContext
   private lateinit var displayMetricsHolder: MockedStatic<DisplayMetricsHolder>
 
   @Before
@@ -45,9 +45,9 @@ class DeviceInfoModuleTest : TestCase() {
     fakeLandscapeDisplayMetrics.putInt("height", 100)
 
     displayMetricsHolder = mockStatic(DisplayMetricsHolder::class.java)
-    reactContext = spy(ReactApplicationContext(RuntimeEnvironment.getApplication()))
+    reactContext = spy(BridgeReactContext(RuntimeEnvironment.getApplication()))
     val catalystInstanceMock = ReactTestHelper.createMockCatalystInstance()
-    reactContext.initializeWithInstance(catalystInstanceMock)
+    reactContext.initialize(catalystInstanceMock)
     deviceInfoModule = DeviceInfoModule(reactContext)
   }
 

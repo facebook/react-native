@@ -17,9 +17,9 @@ import android.util.DisplayMetrics
 import android.view.Gravity
 import android.view.inputmethod.EditorInfo
 import androidx.core.content.res.ResourcesCompat.ID_NULL
+import com.facebook.react.bridge.BridgeReactContext
 import com.facebook.react.bridge.CatalystInstance
 import com.facebook.react.bridge.JavaOnlyMap
-import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactTestHelper.createMockCatalystInstance
 import com.facebook.react.uimanager.DisplayMetricsHolder
 import com.facebook.react.uimanager.ReactStylesDiffMap
@@ -36,7 +36,7 @@ import org.robolectric.RuntimeEnvironment
 @RunWith(RobolectricTestRunner::class)
 class ReactTextInputPropertyTest {
 
-  private lateinit var context: ReactApplicationContext
+  private lateinit var context: BridgeReactContext
   private lateinit var catalystInstanceMock: CatalystInstance
   private lateinit var themedContext: ThemedReactContext
   private lateinit var manager: ReactTextInputManager
@@ -54,9 +54,9 @@ class ReactTextInputPropertyTest {
 
   @Before
   fun setup() {
-    context = ReactApplicationContext(RuntimeEnvironment.getApplication())
+    context = BridgeReactContext(RuntimeEnvironment.getApplication())
     catalystInstanceMock = createMockCatalystInstance()
-    context.initializeWithInstance(catalystInstanceMock)
+    context.initialize(catalystInstanceMock)
     themedContext = ThemedReactContext(context, context.baseContext, null, ID_NULL)
     manager = ReactTextInputManager()
     DisplayMetricsHolder.setWindowDisplayMetrics(DisplayMetrics())

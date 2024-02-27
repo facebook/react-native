@@ -24,8 +24,8 @@ object ReactTestHelper {
    */
   @JvmStatic
   fun createCatalystContextForTest(): ReactApplicationContext =
-      ReactApplicationContext(RuntimeEnvironment.getApplication()).apply {
-        initializeWithInstance(createMockCatalystInstance())
+      BridgeReactContext(RuntimeEnvironment.getApplication()).apply {
+        initialize(createMockCatalystInstance())
       }
 
   /** @return a CatalystInstance mock that has a default working ReactQueueConfiguration. */

@@ -132,8 +132,8 @@ final class ReactInstance {
             .setNativeModulesQueueThreadSpec(nativeModulesSpec)
             .build();
     mQueueConfiguration = ReactQueueConfigurationImpl.create(spec, exceptionHandler);
-    FLog.d(TAG, "Calling initializeMessageQueueThreads()");
-    mBridgelessReactContext.initializeMessageQueueThreads(mQueueConfiguration);
+    FLog.d(TAG, "Calling ReactContext.initialize(ReactQueueConfiguration)");
+    mBridgelessReactContext.initialize(mQueueConfiguration);
     MessageQueueThread jsMessageQueueThread = mQueueConfiguration.getJSQueueThread();
     MessageQueueThread nativeModulesMessageQueueThread =
         mQueueConfiguration.getNativeModulesQueueThread();

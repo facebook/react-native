@@ -9,9 +9,9 @@ package com.facebook.react.uimanager
 
 import android.graphics.drawable.ColorDrawable
 import android.view.View
+import com.facebook.react.bridge.BridgeReactContext
 import com.facebook.react.bridge.CatalystInstance
 import com.facebook.react.bridge.JavaOnlyMap
-import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactTestHelper.createMockCatalystInstance
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.touch.JSResponderHandler
@@ -45,16 +45,16 @@ class SimpleViewPropertyTest {
     }
   }
 
-  private lateinit var context: ReactApplicationContext
+  private lateinit var context: BridgeReactContext
   private lateinit var catalystInstanceMock: CatalystInstance
   private lateinit var themedContext: ThemedReactContext
   private lateinit var manager: ConcreteViewManager
 
   @Before
   fun setup() {
-    context = ReactApplicationContext(RuntimeEnvironment.getApplication())
+    context = BridgeReactContext(RuntimeEnvironment.getApplication())
     catalystInstanceMock = createMockCatalystInstance()
-    context.initializeWithInstance(catalystInstanceMock)
+    context.initialize(catalystInstanceMock)
     themedContext = ThemedReactContext(context, context, null, surfaceId)
     manager = ConcreteViewManager()
   }

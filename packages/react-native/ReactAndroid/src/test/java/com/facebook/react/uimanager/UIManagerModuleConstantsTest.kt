@@ -8,7 +8,7 @@
 package com.facebook.react.uimanager
 
 import android.view.View
-import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.bridge.BridgeReactContext
 import com.facebook.react.common.MapBuilder
 import org.assertj.core.api.Assertions
 import org.assertj.core.data.MapEntry
@@ -45,11 +45,11 @@ class UIManagerModuleConstantsTest {
     override fun getNativeProps(): MutableMap<String, String> = MapBuilder.of("fooProp", "number")
   }
 
-  private lateinit var reactContext: ReactApplicationContext
+  private lateinit var reactContext: BridgeReactContext
 
   @Before
   fun setUp() {
-    reactContext = ReactApplicationContext(RuntimeEnvironment.getApplication())
+    reactContext = BridgeReactContext(RuntimeEnvironment.getApplication())
   }
 
   @Suppress("UNCHECKED_CAST")

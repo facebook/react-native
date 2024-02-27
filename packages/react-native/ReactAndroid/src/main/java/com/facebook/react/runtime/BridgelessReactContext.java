@@ -91,10 +91,24 @@ class BridgelessReactContext extends ReactApplicationContext implements EventDis
     throw new UnsupportedOperationException("There is no Catalyst instance in bridgeless mode.");
   }
 
+  @Deprecated
+  @Override
+  public boolean hasActiveCatalystInstance() {
+    return hasActiveReactInstance();
+  }
+
   @Override
   public boolean hasActiveReactInstance() {
     return mReactHost.isInstanceInitialized();
   }
+
+  @Override
+  public boolean hasCatalystInstance() {
+    return mReactHost.isInstanceInitialized();
+  }
+
+  @Override
+  public void destroy() {}
 
   DevSupportManager getDevSupportManager() {
     return mReactHost.getDevSupportManager();

@@ -7,8 +7,8 @@
 
 package com.facebook.react
 
+import com.facebook.react.bridge.BridgeReactContext
 import com.facebook.react.bridge.NativeModule
-import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.uimanager.ViewManager
 import java.util.*
 import org.junit.Assert
@@ -26,14 +26,14 @@ class CompositeReactPackageTest {
   private lateinit var packageNo1: ReactPackage
   private lateinit var packageNo2: ReactPackage
   private lateinit var packageNo3: ReactPackage
-  private lateinit var reactContext: ReactApplicationContext
+  private lateinit var reactContext: BridgeReactContext
 
   @Before
   fun setUp() {
     packageNo1 = mock(ReactPackage::class.java)
     packageNo2 = mock(ReactPackage::class.java)
     packageNo3 = mock(ReactPackage::class.java)
-    reactContext = ReactApplicationContext(RuntimeEnvironment.getApplication())
+    reactContext = BridgeReactContext(RuntimeEnvironment.getApplication())
   }
 
   @Test

@@ -16,10 +16,10 @@ import android.view.MotionEvent
 import android.view.WindowInsets
 import android.view.WindowManager
 import com.facebook.react.bridge.Arguments
+import com.facebook.react.bridge.BridgeReactContext
 import com.facebook.react.bridge.CatalystInstance
 import com.facebook.react.bridge.JavaOnlyArray
 import com.facebook.react.bridge.JavaOnlyMap
-import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReactTestHelper
 import com.facebook.react.bridge.WritableArray
@@ -66,8 +66,8 @@ class RootViewTest {
     systemClock.`when`<Long> { SystemClock.uptimeMillis() }.thenReturn(ts)
 
     catalystInstanceMock = ReactTestHelper.createMockCatalystInstance()
-    reactContext = spy(ReactApplicationContext(RuntimeEnvironment.getApplication()))
-    reactContext.initializeWithInstance(catalystInstanceMock)
+    reactContext = spy(BridgeReactContext(RuntimeEnvironment.getApplication()))
+    reactContext.initialize(catalystInstanceMock)
 
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(reactContext)
     val uiManagerModuleMock = mock(UIManagerModule::class.java)

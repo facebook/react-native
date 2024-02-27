@@ -12,10 +12,10 @@ import android.util.DisplayMetrics
 import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.drawee.drawable.ScalingUtils
 import com.facebook.react.bridge.Arguments
+import com.facebook.react.bridge.BridgeReactContext
 import com.facebook.react.bridge.CatalystInstance
 import com.facebook.react.bridge.JavaOnlyArray
 import com.facebook.react.bridge.JavaOnlyMap
-import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactTestHelper.createMockCatalystInstance
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.bridge.WritableMap
@@ -41,7 +41,7 @@ import org.robolectric.RuntimeEnvironment
 @RunWith(RobolectricTestRunner::class)
 class ReactImagePropertyTest {
 
-  private var context: ReactApplicationContext? = null
+  private var context: BridgeReactContext? = null
   private var catalystInstanceMock: CatalystInstance? = null
   private var themeContext: ThemedReactContext? = null
   private lateinit var arguments: MockedStatic<Arguments>
@@ -57,9 +57,9 @@ class ReactImagePropertyTest {
     rnLog.`when`<Boolean> { RNLog.w(any(), anyString()) }.thenAnswer {}
 
     SoLoader.setInTestMode()
-    context = ReactApplicationContext(RuntimeEnvironment.getApplication())
+    context = BridgeReactContext(RuntimeEnvironment.getApplication())
     catalystInstanceMock = createMockCatalystInstance()
-    context!!.initializeWithInstance(catalystInstanceMock)
+    context!!.initialize(catalystInstanceMock)
     themeContext = ThemedReactContext(context, context, null, -1)
     Fresco.initialize(context)
     DisplayMetricsHolder.setWindowDisplayMetrics(DisplayMetrics())
