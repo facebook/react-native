@@ -193,7 +193,7 @@ inline void fromRawValue(
   result = ImportantForAccessibility::Auto;
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
-    auto string = (std::string)value;
+    auto string = std::string_view{(std::string)value};
     if (string == "auto") {
       result = ImportantForAccessibility::Auto;
     } else if (string == "yes") {
@@ -284,7 +284,7 @@ inline void fromRawValue(
   result = AccessibilityLiveRegion::None;
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
-    auto string = (std::string)value;
+    auto string = std::string_view{(std::string)value};
     if (string == "none") {
       result = AccessibilityLiveRegion::None;
     } else if (string == "polite") {
@@ -396,7 +396,7 @@ inline void fromRawValue(
     AccessibilityRole& result) {
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
-    auto string = (std::string)value;
+    auto string = std::string_view{(std::string)value};
     if (string == "none") {
       result = AccessibilityRole::None;
     } else if (string == "button") {
@@ -636,7 +636,7 @@ inline void fromRawValue(
     Role& result) {
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
-    auto string = (std::string)value;
+    auto string = std::string_view{(std::string)value};
     if (string == "alert") {
       result = Role::Alert;
     } else if (string == "alertdialog") {

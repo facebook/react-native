@@ -173,7 +173,7 @@ inline void fromRawValue(
   if (!value.hasType<std::string>()) {
     return;
   }
-  auto stringValue = (std::string)value;
+  auto stringValue = std::string_view{(std::string)value};
   if (stringValue == "inherit") {
     result = yoga::Direction::Inherit;
     return;
@@ -199,7 +199,7 @@ inline void fromRawValue(
   if (!value.hasType<std::string>()) {
     return;
   }
-  auto stringValue = (std::string)value;
+  auto stringValue = std::string_view{(std::string)value};
   if (stringValue == "row") {
     result = yoga::FlexDirection::Row;
     return;
@@ -229,7 +229,7 @@ inline void fromRawValue(
   if (!value.hasType<std::string>()) {
     return;
   }
-  auto stringValue = (std::string)value;
+  auto stringValue = std::string_view{(std::string)value};
   if (stringValue == "flex-start") {
     result = yoga::Justify::FlexStart;
     return;
@@ -267,7 +267,7 @@ inline void fromRawValue(
   if (!value.hasType<std::string>()) {
     return;
   }
-  auto stringValue = (std::string)value;
+  auto stringValue = std::string_view{(std::string)value};
   if (stringValue == "auto") {
     result = yoga::Align::Auto;
     return;
@@ -317,7 +317,7 @@ inline void fromRawValue(
   if (!value.hasType<std::string>()) {
     return;
   }
-  auto stringValue = (std::string)value;
+  auto stringValue = std::string_view{(std::string)value};
   if (stringValue == "static") {
     result = yoga::PositionType::Static;
     return;
@@ -343,7 +343,7 @@ inline void fromRawValue(
   if (!value.hasType<std::string>()) {
     return;
   }
-  auto stringValue = (std::string)value;
+  auto stringValue = std::string_view{(std::string)value};
   if (stringValue == "nowrap") {
     result = yoga::Wrap::NoWrap;
     return;
@@ -369,7 +369,7 @@ inline void fromRawValue(
   if (!value.hasType<std::string>()) {
     return;
   }
-  auto stringValue = (std::string)value;
+  auto stringValue = std::string_view{(std::string)value};
   if (stringValue == "visible") {
     result = yoga::Overflow::Visible;
     return;
@@ -395,7 +395,7 @@ inline void fromRawValue(
   if (!value.hasType<std::string>()) {
     return;
   }
-  auto stringValue = (std::string)value;
+  auto stringValue = std::string_view{(std::string)value};
   if (stringValue == "flex") {
     result = yoga::Display::Flex;
     return;
@@ -416,7 +416,7 @@ inline void fromRawValue(
     result = yoga::value::points((float)value);
     return;
   } else if (value.hasType<std::string>()) {
-    const auto stringValue = (std::string)value;
+    const auto stringValue = std::string_view{(std::string)value};
     if (stringValue == "auto") {
       result = yoga::value::ofAuto();
       return;
@@ -467,7 +467,7 @@ inline Float toRadians(
   if (!value.hasType<std::string>() && defaultValue.has_value()) {
     return *defaultValue;
   }
-  auto stringValue = (std::string)value;
+  auto stringValue = std::string_view{(std::string)value};
   char* suffixStart;
   double num = strtod(
       stringValue.c_str(), &suffixStart); // can't use std::stod, probably
@@ -610,7 +610,7 @@ inline void fromRawValue(
   if (!value.hasType<std::string>()) {
     return;
   }
-  auto stringValue = (std::string)value;
+  auto stringValue = std::string_view{(std::string)value};
   if (stringValue == "auto") {
     result = PointerEventsMode::Auto;
     return;
@@ -640,7 +640,7 @@ inline void fromRawValue(
   if (!value.hasType<std::string>()) {
     return;
   }
-  auto stringValue = (std::string)value;
+  auto stringValue = std::string_view{(std::string)value};
   if (stringValue == "auto") {
     result = BackfaceVisibility::Auto;
     return;
@@ -666,7 +666,7 @@ inline void fromRawValue(
   if (!value.hasType<std::string>()) {
     return;
   }
-  auto stringValue = (std::string)value;
+  auto stringValue = std::string_view{(std::string)value};
   if (stringValue == "circular") {
     result = BorderCurve::Circular;
     return;
@@ -688,7 +688,7 @@ inline void fromRawValue(
   if (!value.hasType<std::string>()) {
     return;
   }
-  auto stringValue = (std::string)value;
+  auto stringValue = std::string_view{(std::string)value};
   if (stringValue == "solid") {
     result = BorderStyle::Solid;
     return;
@@ -714,7 +714,7 @@ inline void fromRawValue(
   if (!value.hasType<std::string>()) {
     return;
   }
-  auto stringValue = (std::string)value;
+  auto stringValue = std::string_view{(std::string)value};
   if (stringValue == "classic") {
     result = LayoutConformance::Classic;
     return;
