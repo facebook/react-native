@@ -1,6 +1,6 @@
 {
   "name": "@react-native/metro-config",
-  "version": "0.72.11",
+  "version": "0.72.12",
   "description": "Metro configuration for React Native.",
   "repository": {
     "type": "git",
