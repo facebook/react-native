@@ -17,7 +17,8 @@ import {type EventSubscription} from '../vendor/emitter/EventEmitter';
 import {RootTagContext, createRootTag} from './RootTag';
 import * as React from 'react';
 
-const reactDevToolsHook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
+const reactDevToolsHook = 
+window?.__REACT_DEVTOOLS_GLOBAL_HOOK__;
 
 type Props = $ReadOnly<{|
   children?: React.Node,
