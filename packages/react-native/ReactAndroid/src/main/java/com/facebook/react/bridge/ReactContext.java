@@ -78,12 +78,30 @@ public class ReactContext extends ContextWrapper {
   protected @Nullable InteropModuleRegistry mInteropModuleRegistry;
   private boolean mIsInitialized = false;
 
+  private @Nullable ReactContext mOtherReactContext = null;
+
   public ReactContext(Context base) {
     super(base);
   }
 
+  /**
+   * Use this constructor to create a ReactContext that decorates another. One usage is
+   * ThemedReactContext, which decorates the ReactContext with rendering-related APIs.
+   * @param other
+   * @param base
+   */
+  protected ReactContext(ReactContext other, Context base) {
+    super(base);
+    mOtherReactContext = other;
+  }
+
   /** Set and initialize CatalystInstance for this Context. This should be called exactly once. */
   public void initializeWithInstance(CatalystInstance catalystInstance) {
+    if (mOtherReactContext != null) {
+      mOtherReactContext.initializeWithInstance(catalystInstance);
+      return;
+    }
+
     if (catalystInstance == null) {
       throw new IllegalArgumentException("CatalystInstance cannot be null.");
     }
@@ -105,6 +123,11 @@ public class ReactContext extends ContextWrapper {
 
   /** Initialize message queue threads using a ReactQueueConfiguration. */
   public synchronized void initializeMessageQueueThreads(ReactQueueConfiguration queueConfig) {
+    if (mOtherReactContext != null) {
+      mOtherReactContext.initializeMessageQueueThreads(queueConfig);
+      return;
+    }
+
     FLog.d(TAG, "initializeMessageQueueThreads() is called.");
     if (mUiMessageQueueThread != null
         || mNativeModulesMessageQueueThread != null
@@ -129,14 +152,29 @@ public class ReactContext extends ContextWrapper {
   }
 
   protected void initializeInteropModules() {
+    if (mOtherReactContext != null) {
+      mOtherReactContext.initializeInteropModules();
+      return;
+    }
+
     mInteropModuleRegistry = new InteropModuleRegistry();
   }
 
   protected void initializeInteropModules(ReactContext reactContext) {
+    if (mOtherReactContext != null) {
+      mOtherReactContext.initializeInteropModules(reactContext);
+      return;
+    }
+
     mInteropModuleRegistry = reactContext.mInteropModuleRegistry;
   }
 
   public void resetPerfStats() {
+    if (mOtherReactContext != null) {
+      mOtherReactContext.resetPerfStats();
+      return;
+    }
+
     if (mNativeModulesMessageQueueThread != null) {
       mNativeModulesMessageQueueThread.resetPerfStats();
     }
@@ -146,6 +184,11 @@ public class ReactContext extends ContextWrapper {
   }
 
   public void setJSExceptionHandler(@Nullable JSExceptionHandler jSExceptionHandler) {
+    if (mOtherReactContext != null) {
+      mOtherReactContext.setJSExceptionHandler(jSExceptionHandler);
+      return;
+    }
+
     mJSExceptionHandler = jSExceptionHandler;
   }
 
@@ -160,6 +203,10 @@ public class ReactContext extends ContextWrapper {
   // TODO: T7538796 Check requirement for Override of getSystemService ReactContext
   @Override
   public Object getSystemService(String name) {
+    if (mOtherReactContext != null) {
+      return mOtherReactContext.getSystemService(name);
+    }
+
     if (LAYOUT_INFLATER_SERVICE.equals(name)) {
       if (mInflater == null) {
         mInflater = LayoutInflater.from(getBaseContext()).cloneInContext(this);
@@ -173,6 +220,10 @@ public class ReactContext extends ContextWrapper {
    * @return handle to the specified JS module for the CatalystInstance associated with this Context
    */
   public <T extends JavaScriptModule> T getJSModule(Class<T> jsInterface) {
+    if (mOtherReactContext != null) {
+      return mOtherReactContext.getJSModule(jsInterface);
+    }
+
     if (mCatalystInstance == null) {
       if (mDestroyed) {
         throw new IllegalStateException(LATE_JS_ACCESS_EXCEPTION_MESSAGE);
@@ -187,6 +238,10 @@ public class ReactContext extends ContextWrapper {
   }
 
   public <T extends NativeModule> boolean hasNativeModule(Class<T> nativeModuleInterface) {
+    if (mOtherReactContext != null) {
+      return mOtherReactContext.hasNativeModule(nativeModuleInterface);
+    }
+
     if (mCatalystInstance == null) {
       raiseCatalystInstanceMissingException();
     }
@@ -194,6 +249,10 @@ public class ReactContext extends ContextWrapper {
   }
 
   public Collection<NativeModule> getNativeModules() {
+    if (mOtherReactContext != null) {
+      return mOtherReactContext.getNativeModules();
+    }
+
     if (mCatalystInstance == null) {
       raiseCatalystInstanceMissingException();
     }
@@ -203,6 +262,10 @@ public class ReactContext extends ContextWrapper {
   /** @return the instance of the specified module interface associated with this ReactContext. */
   @Nullable
   public <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface) {
+    if (mOtherReactContext != null) {
+      return mOtherReactContext.getNativeModule(nativeModuleInterface);
+    }
+
     if (mCatalystInstance == null) {
       raiseCatalystInstanceMissingException();
     }
@@ -217,6 +280,10 @@ public class ReactContext extends ContextWrapper {
   @FrameworkAPI
   @UnstableReactNativeAPI
   public RuntimeExecutor getRuntimeExecutor() {
+    if (mOtherReactContext != null) {
+      return mOtherReactContext.getRuntimeExecutor();
+    }
+
     if (mCatalystInstance == null) {
       raiseCatalystInstanceMissingException();
     }
@@ -228,6 +295,11 @@ public class ReactContext extends ContextWrapper {
    * arguments.
    */
   public void emitDeviceEvent(String eventName, @Nullable Object args) {
+    if (mOtherReactContext != null) {
+      mOtherReactContext.emitDeviceEvent(eventName, args);
+      return;
+    }
+
     RCTDeviceEventEmitter eventEmitter = getJSModule(RCTDeviceEventEmitter.class);
     if (eventEmitter != null) {
       eventEmitter.emit(eventName, args);
@@ -235,10 +307,19 @@ public class ReactContext extends ContextWrapper {
   }
 
   public void emitDeviceEvent(String eventName) {
+    if (mOtherReactContext != null) {
+      mOtherReactContext.emitDeviceEvent(eventName);
+      return;
+    }
+
     emitDeviceEvent(eventName, null);
   }
 
   public CatalystInstance getCatalystInstance() {
+    if (mOtherReactContext != null) {
+      return mOtherReactContext.getCatalystInstance();
+    }
+
     return Assertions.assertNotNull(mCatalystInstance);
   }
 
@@ -250,23 +331,44 @@ public class ReactContext extends ContextWrapper {
    */
   @Deprecated
   public boolean hasActiveCatalystInstance() {
+    if (mOtherReactContext != null) {
+      return mOtherReactContext.hasActiveCatalystInstance();
+    }
+
     return hasActiveReactInstance();
   }
 
   /** @return true if there is an non-null, alive react native instance */
   public boolean hasActiveReactInstance() {
+    if (mOtherReactContext != null) {
+      return mOtherReactContext.hasActiveReactInstance();
+    }
+
     return mCatalystInstance != null && !mCatalystInstance.isDestroyed();
   }
 
   public boolean hasCatalystInstance() {
+    if (mOtherReactContext != null) {
+      return mOtherReactContext.hasCatalystInstance();
+    }
+
     return mCatalystInstance != null;
   }
 
   public LifecycleState getLifecycleState() {
+    if (mOtherReactContext != null) {
+      return mOtherReactContext.getLifecycleState();
+    }
+
     return mLifecycleState;
   }
 
   public void addLifecycleEventListener(final LifecycleEventListener listener) {
+    if (mOtherReactContext != null) {
+      mOtherReactContext.addLifecycleEventListener(listener);
+      return;
+    }
+
     mLifecycleEventListeners.add(listener);
     if (hasActiveReactInstance() || isBridgeless()) {
       switch (mLifecycleState) {
@@ -296,28 +398,58 @@ public class ReactContext extends ContextWrapper {
   }
 
   public void removeLifecycleEventListener(LifecycleEventListener listener) {
+    if (mOtherReactContext != null) {
+      mOtherReactContext.removeLifecycleEventListener(listener);
+      return;
+    }
+
     mLifecycleEventListeners.remove(listener);
   }
 
   public void addActivityEventListener(ActivityEventListener listener) {
+    if (mOtherReactContext != null) {
+      mOtherReactContext.addActivityEventListener(listener);
+      return;
+    }
+
     mActivityEventListeners.add(listener);
   }
 
   public void removeActivityEventListener(ActivityEventListener listener) {
+    if (mOtherReactContext != null) {
+      mOtherReactContext.removeActivityEventListener(listener);
+      return;
+    }
+
     mActivityEventListeners.remove(listener);
   }
 
   public void addWindowFocusChangeListener(WindowFocusChangeListener listener) {
+    if (mOtherReactContext != null) {
+      mOtherReactContext.addWindowFocusChangeListener(listener);
+      return;
+    }
+
     mWindowFocusEventListeners.add(listener);
   }
 
   public void removeWindowFocusChangeListener(WindowFocusChangeListener listener) {
+    if (mOtherReactContext != null) {
+      mOtherReactContext.removeWindowFocusChangeListener(listener);
+      return;
+    }
+
     mWindowFocusEventListeners.remove(listener);
   }
 
   /** Should be called by the hosting Fragment in {@link Fragment#onResume} */
   @ThreadConfined(UI)
   public void onHostResume(@Nullable Activity activity) {
+    if (mOtherReactContext != null) {
+      mOtherReactContext.onHostResume(activity);
+      return;
+    }
+
     mLifecycleState = LifecycleState.RESUMED;
     mCurrentActivity = new WeakReference(activity);
     ReactMarker.logMarker(ReactMarkerConstants.ON_HOST_RESUME_START);
@@ -333,6 +465,11 @@ public class ReactContext extends ContextWrapper {
 
   @ThreadConfined(UI)
   public void onNewIntent(@Nullable Activity activity, Intent intent) {
+    if (mOtherReactContext != null) {
+      mOtherReactContext.onNewIntent(activity, intent);
+      return;
+    }
+
     UiThreadUtil.assertOnUiThread();
     mCurrentActivity = new WeakReference(activity);
     for (ActivityEventListener listener : mActivityEventListeners) {
@@ -347,6 +484,11 @@ public class ReactContext extends ContextWrapper {
   /** Should be called by the hosting Fragment in {@link Fragment#onPause} */
   @ThreadConfined(UI)
   public void onHostPause() {
+    if (mOtherReactContext != null) {
+      mOtherReactContext.onHostPause();
+      return;
+    }
+
     mLifecycleState = LifecycleState.BEFORE_RESUME;
     ReactMarker.logMarker(ReactMarkerConstants.ON_HOST_PAUSE_START);
     for (LifecycleEventListener listener : mLifecycleEventListeners) {
@@ -362,6 +504,11 @@ public class ReactContext extends ContextWrapper {
   /** Should be called by the hosting Fragment in {@link Fragment#onDestroy} */
   @ThreadConfined(UI)
   public void onHostDestroy() {
+    if (mOtherReactContext != null) {
+      mOtherReactContext.onHostDestroy();
+      return;
+    }
+
     UiThreadUtil.assertOnUiThread();
     mLifecycleState = LifecycleState.BEFORE_CREATE;
     for (LifecycleEventListener listener : mLifecycleEventListeners) {
@@ -377,6 +524,11 @@ public class ReactContext extends ContextWrapper {
   /** Destroy this instance, making it unusable. */
   @ThreadConfined(UI)
   public void destroy() {
+    if (mOtherReactContext != null) {
+      mOtherReactContext.destroy();
+      return;
+    }
+
     UiThreadUtil.assertOnUiThread();
 
     mDestroyed = true;
@@ -388,6 +540,11 @@ public class ReactContext extends ContextWrapper {
   /** Should be called by the hosting Fragment in {@link Fragment#onActivityResult} */
   public void onActivityResult(
       Activity activity, int requestCode, int resultCode, @Nullable Intent data) {
+    if (mOtherReactContext != null) {
+      mOtherReactContext.onActivityResult(activity, requestCode, resultCode, data);
+      return;
+    }
+
     for (ActivityEventListener listener : mActivityEventListeners) {
       try {
         listener.onActivityResult(activity, requestCode, resultCode, data);
@@ -399,6 +556,11 @@ public class ReactContext extends ContextWrapper {
 
   @ThreadConfined(UI)
   public void onWindowFocusChange(boolean hasFocus) {
+    if (mOtherReactContext != null) {
+      mOtherReactContext.onWindowFocusChange(hasFocus);
+      return;
+    }
+
     UiThreadUtil.assertOnUiThread();
     for (WindowFocusChangeListener listener : mWindowFocusEventListeners) {
       try {
@@ -410,18 +572,37 @@ public class ReactContext extends ContextWrapper {
   }
 
   public void assertOnUiQueueThread() {
+    if (mOtherReactContext != null) {
+      mOtherReactContext.assertOnUiQueueThread();
+      return;
+    }
+
     Assertions.assertNotNull(mUiMessageQueueThread).assertIsOnThread();
   }
 
   public boolean isOnUiQueueThread() {
+    if (mOtherReactContext != null) {
+      return mOtherReactContext.isOnUiQueueThread();
+    }
+
     return Assertions.assertNotNull(mUiMessageQueueThread).isOnThread();
   }
 
   public void runOnUiQueueThread(Runnable runnable) {
+    if (mOtherReactContext != null) {
+      mOtherReactContext.runOnUiQueueThread(runnable);
+      return;
+    }
+
     Assertions.assertNotNull(mUiMessageQueueThread).runOnQueue(runnable);
   }
 
   public void assertOnNativeModulesQueueThread() {
+    if (mOtherReactContext != null) {
+      mOtherReactContext.assertOnNativeModulesQueueThread();
+      return;
+    }
+
     /** TODO(T85807990): Fail fast if the ReactContext isn't initialized */
     if (!mIsInitialized) {
       throw new IllegalStateException(
@@ -431,6 +612,11 @@ public class ReactContext extends ContextWrapper {
   }
 
   public void assertOnNativeModulesQueueThread(String message) {
+    if (mOtherReactContext != null) {
+      mOtherReactContext.assertOnNativeModulesQueueThread(message);
+      return;
+    }
+
     /** TODO(T85807990): Fail fast if the ReactContext isn't initialized */
     if (!mIsInitialized) {
       throw new IllegalStateException(
@@ -440,34 +626,68 @@ public class ReactContext extends ContextWrapper {
   }
 
   public boolean isOnNativeModulesQueueThread() {
+    if (mOtherReactContext != null) {
+      return mOtherReactContext.isOnNativeModulesQueueThread();
+    }
+
     return Assertions.assertNotNull(mNativeModulesMessageQueueThread).isOnThread();
   }
 
   public void runOnNativeModulesQueueThread(Runnable runnable) {
+    if (mOtherReactContext != null) {
+      mOtherReactContext.runOnNativeModulesQueueThread(runnable);
+      return;
+    }
+
     Assertions.assertNotNull(mNativeModulesMessageQueueThread).runOnQueue(runnable);
   }
 
   public void assertOnJSQueueThread() {
+    if (mOtherReactContext != null) {
+      mOtherReactContext.assertOnJSQueueThread();
+      return;
+    }
+
     Assertions.assertNotNull(mJSMessageQueueThread).assertIsOnThread();
   }
 
   public boolean isOnJSQueueThread() {
+    if (mOtherReactContext != null) {
+      return mOtherReactContext.isOnJSQueueThread();
+    }
+
     return Assertions.assertNotNull(mJSMessageQueueThread).isOnThread();
   }
 
   public boolean runOnJSQueueThread(Runnable runnable) {
+    if (mOtherReactContext != null) {
+      return mOtherReactContext.runOnJSQueueThread(runnable);
+    }
+
     return Assertions.assertNotNull(mJSMessageQueueThread).runOnQueue(runnable);
   }
 
   public @Nullable MessageQueueThread getJSMessageQueueThread() {
+    if (mOtherReactContext != null) {
+      return mOtherReactContext.getJSMessageQueueThread();
+    }
+
     return mJSMessageQueueThread;
   }
 
   public @Nullable MessageQueueThread getNativeModulesMessageQueueThread() {
+    if (mOtherReactContext != null) {
+      return mOtherReactContext.getNativeModulesMessageQueueThread();
+    }
+
     return mNativeModulesMessageQueueThread;
   }
 
   public @Nullable MessageQueueThread getUiMessageQueueThread() {
+    if (mOtherReactContext != null) {
+      return mOtherReactContext.getUiMessageQueueThread();
+    }
+
     return mUiMessageQueueThread;
   }
 
@@ -476,6 +696,11 @@ public class ReactContext extends ContextWrapper {
    * otherwise.
    */
   public void handleException(Exception e) {
+    if (mOtherReactContext != null) {
+      mOtherReactContext.handleException(e);
+      return;
+    }
+
     boolean catalystInstanceVariableExists = mCatalystInstance != null;
     boolean isCatalystInstanceAlive =
         catalystInstanceVariableExists && !mCatalystInstance.isDestroyed();
@@ -505,6 +730,10 @@ public class ReactContext extends ContextWrapper {
   }
 
   public JSExceptionHandler getExceptionHandler() {
+    if (mOtherReactContext != null) {
+      return mOtherReactContext.getExceptionHandler();
+    }
+
     if (mExceptionHandlerWrapper == null) {
       mExceptionHandlerWrapper = new ExceptionHandlerWrapper();
     }
@@ -512,10 +741,18 @@ public class ReactContext extends ContextWrapper {
   }
 
   public JSExceptionHandler getJSExceptionHandler() {
+    if (mOtherReactContext != null) {
+      return mOtherReactContext.getJSExceptionHandler();
+    }
+
     return mJSExceptionHandler;
   }
 
   public boolean hasCurrentActivity() {
+    if (mOtherReactContext != null) {
+      return mOtherReactContext.hasCurrentActivity();
+    }
+
     return mCurrentActivity != null && mCurrentActivity.get() != null;
   }
 
@@ -525,6 +762,10 @@ public class ReactContext extends ContextWrapper {
    * called before the context is in the right state.
    */
   public boolean startActivityForResult(Intent intent, int code, Bundle bundle) {
+    if (mOtherReactContext != null) {
+      return mOtherReactContext.startActivityForResult(intent, code, bundle);
+    }
+
     Activity activity = getCurrentActivity();
     if (activity != null) {
       activity.startActivityForResult(intent, code, bundle);
@@ -539,6 +780,10 @@ public class ReactContext extends ContextWrapper {
    * MEMORY LEAKS.
    */
   public @Nullable Activity getCurrentActivity() {
+    if (mOtherReactContext != null) {
+      return mOtherReactContext.getCurrentActivity();
+    }
+
     if (mCurrentActivity == null) {
       return null;
     }
@@ -548,6 +793,10 @@ public class ReactContext extends ContextWrapper {
   /** @deprecated DO NOT USE, this method will be removed in the near future. */
   @Deprecated
   public boolean isBridgeless() {
+    if (mOtherReactContext != null) {
+      return mOtherReactContext.isBridgeless();
+    }
+
     return false;
   }
 
@@ -558,6 +807,10 @@ public class ReactContext extends ContextWrapper {
    * synchronized(jsContext) { nativeThingNeedingJsContext(jsContext.get()); }
    */
   public @Nullable JavaScriptContextHolder getJavaScriptContextHolder() {
+    if (mOtherReactContext != null) {
+      return mOtherReactContext.getJavaScriptContextHolder();
+    }
+
     if (mCatalystInstance != null) {
       return mCatalystInstance.getJavaScriptContextHolder();
     }
@@ -573,6 +826,10 @@ public class ReactContext extends ContextWrapper {
    * @return The UIManager when CatalystInstance is active.
    */
   public @Nullable UIManager getFabricUIManager() {
+    if (mOtherReactContext != null) {
+      return mOtherReactContext.getFabricUIManager();
+    }
+
     UIManager uiManager = mCatalystInstance.getFabricUIManager();
     return uiManager != null
         ? uiManager
@@ -586,6 +843,10 @@ public class ReactContext extends ContextWrapper {
    * @return The JS bundle URL set when the bundle was loaded
    */
   public @Nullable String getSourceURL() {
+    if (mOtherReactContext != null) {
+      return mOtherReactContext.getSourceURL();
+    }
+
     return mCatalystInstance == null ? null : mCatalystInstance.getSourceURL();
   }
 
@@ -594,6 +855,11 @@ public class ReactContext extends ContextWrapper {
    * properly initialised and not null before calling.
    */
   public void registerSegment(int segmentId, String path, Callback callback) {
+    if (mOtherReactContext != null) {
+      mOtherReactContext.registerSegment(segmentId, path, callback);
+      return;
+    }
+
     Assertions.assertNotNull(mCatalystInstance).registerSegment(segmentId, path);
     Assertions.assertNotNull(callback).invoke();
   }
@@ -606,6 +872,11 @@ public class ReactContext extends ContextWrapper {
    */
   public <T extends JavaScriptModule> void internal_registerInteropModule(
       Class<T> interopModuleInterface, Object interopModule) {
+    if (mOtherReactContext != null) {
+      mOtherReactContext.internal_registerInteropModule(interopModuleInterface, interopModule);
+      return;
+    }
+
     if (mInteropModuleRegistry != null) {
       mInteropModuleRegistry.registerInteropModule(interopModuleInterface, interopModule);
     }
