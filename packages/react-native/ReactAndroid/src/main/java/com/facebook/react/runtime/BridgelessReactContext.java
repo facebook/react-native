@@ -82,6 +82,7 @@ class BridgelessReactContext extends ReactApplicationContext implements EventDis
     return mReactHost.getUIManager();
   }
 
+  @Deprecated
   @Override
   public CatalystInstance getCatalystInstance() {
     ReactSoftExceptionLogger.logSoftExceptionVerbose(
@@ -102,6 +103,7 @@ class BridgelessReactContext extends ReactApplicationContext implements EventDis
     return mReactHost.isInstanceInitialized();
   }
 
+  @Deprecated
   @Override
   public boolean hasCatalystInstance() {
     return mReactHost.isInstanceInitialized();

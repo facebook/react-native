@@ -211,6 +211,7 @@ public abstract class ReactContext extends ContextWrapper {
     emitDeviceEvent(eventName, null);
   }
 
+  @Deprecated
   public abstract CatalystInstance getCatalystInstance();
 
   /**
@@ -225,6 +226,7 @@ public abstract class ReactContext extends ContextWrapper {
   /** @return true if there is an non-null, alive react native instance */
   public abstract boolean hasActiveReactInstance();
 
+  @Deprecated
   public abstract boolean hasCatalystInstance();
 
   public LifecycleState getLifecycleState() {
@@ -636,6 +638,7 @@ public abstract class ReactContext extends ContextWrapper {
    * JavaScriptContextHolder jsContext = reactContext.getJavaScriptContextHolder()
    * synchronized(jsContext) { nativeThingNeedingJsContext(jsContext.get()); }
    */
+  @Deprecated
   public abstract @Nullable JavaScriptContextHolder getJavaScriptContextHolder();
 
   @DeprecatedInNewArchitecture(

@@ -93,6 +93,7 @@ class BridgeReactContext(base: Context) : ReactApplicationContext(base) {
     return instance.getRuntimeExecutor()
   }
 
+  @Deprecated("This API is unsupported in the New Architecture.")
   override fun getCatalystInstance(): CatalystInstance {
     return Assertions.assertNotNull(catalystInstance)
   }
@@ -108,6 +109,7 @@ class BridgeReactContext(base: Context) : ReactApplicationContext(base) {
     return instance != null && !instance.isDestroyed
   }
 
+  @Deprecated("This API is unsupported in the New Architecture.")
   override fun hasCatalystInstance(): Boolean {
     return catalystInstance != null
   }
@@ -142,6 +144,7 @@ class BridgeReactContext(base: Context) : ReactApplicationContext(base) {
     return false
   }
 
+  @Deprecated("This API is unsupported in the New Architecture.")
   override fun getJavaScriptContextHolder(): JavaScriptContextHolder? {
     return catalystInstance?.javaScriptContextHolder
   }

@@ -86,6 +86,7 @@ public class ThemedReactContext extends ReactContext {
     return mReactApplicationContext.getRuntimeExecutor();
   }
 
+  @Deprecated
   @Override
   public CatalystInstance getCatalystInstance() {
     return mReactApplicationContext.getCatalystInstance();
@@ -102,6 +103,7 @@ public class ThemedReactContext extends ReactContext {
     return mReactApplicationContext.hasActiveCatalystInstance();
   }
 
+  @Deprecated
   @Override
   public boolean hasCatalystInstance() {
     return mReactApplicationContext.hasCatalystInstance();
@@ -151,6 +153,7 @@ public class ThemedReactContext extends ReactContext {
     return mReactApplicationContext.isBridgeless();
   }
 
+  @Deprecated
   @Nullable
   @Override
   public JavaScriptContextHolder getJavaScriptContextHolder() {
