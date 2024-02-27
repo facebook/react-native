@@ -34,8 +34,9 @@ type PackageJSON = {
   ...
 }
 type NpmPackageOptions = {
-  tags: ?Array<string>,
+  tags: ?Array<string> | ?Array<?string>,
   otp: ?string,
+  access?: ?('public' | 'restricted')
 }
 */
 
@@ -131,14 +132,21 @@ function publishPackage(
   packageOptions /*: NpmPackageOptions */,
   execOptions /*: ?ExecOptsSync */,
 ) /*: ShellString */ {
-  const {otp, tags} = packageOptions;
-  const tagsFlag = tags != null ? tags.map(t => ` --tag ${t}`).join('') : '';
+  const {otp, tags, access} = packageOptions;
+  const tagsFlag =
+    tags != null
+      ? tags
+          .filter(Boolean)
+          .map(t => ` --tag ${t}`)
+          .join('')
+      : '';
   const otpFlag = otp != null ? ` --otp ${otp}` : '';
+  const accessFlag = access != null ? ` --access ${access}` : '';
   const options = execOptions
     ? {...execOptions, cwd: packagePath}
     : {cwd: packagePath};
 
-  return exec(`npm publish${tagsFlag}${otpFlag}`, options);
+  return exec(`npm publish${tagsFlag}${otpFlag}${accessFlag}`, options);
 }
 
 function diffPackages(
