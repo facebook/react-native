@@ -470,7 +470,7 @@ inline Float toRadians(
   auto stringValue = std::string_view{(std::string)value};
   char* suffixStart;
   double num = strtod(
-      stringValue.c_str(), &suffixStart); // can't use std::stod, probably
+      stringValue.data(), &suffixStart); // can't use std::stod, probably
                                           // because of old Android NDKs
   if (0 == strncmp(suffixStart, "deg", 3)) {
     return static_cast<Float>(num * M_PI / 180.0f);
