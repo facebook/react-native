@@ -108,6 +108,7 @@ public class ReactHostImpl implements ReactHost {
   private final MemoryPressureRouter mMemoryPressureRouter;
   private final boolean mAllowPackagerServerAccess;
   private final boolean mUseDevSupport;
+  private final ReactHostInspectorTarget mReactHostInspectorTarget;
   private final Collection<ReactInstanceEventListener> mReactInstanceEventListeners =
       Collections.synchronizedList(new ArrayList<>());
 
@@ -184,6 +185,7 @@ public class ReactHostImpl implements ReactHost {
       mDevSupportManager = new DisabledDevSupportManager();
     }
     mUseDevSupport = useDevSupport;
+    mReactHostInspectorTarget = new ReactHostInspectorTarget(this);
   }
 
   @Override
@@ -759,6 +761,7 @@ public class ReactHostImpl implements ReactHost {
   @ThreadConfined(UI)
   private void moveToHostDestroy(@Nullable ReactContext currentContext) {
     mReactLifecycleStateManager.moveToOnHostDestroy(currentContext);
+    mReactHostInspectorTarget.close();
     setCurrentActivity(null);
   }
 
