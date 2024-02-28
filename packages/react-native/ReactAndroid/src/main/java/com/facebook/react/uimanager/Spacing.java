@@ -7,6 +7,7 @@
 
 package com.facebook.react.uimanager;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.yoga.YogaConstants;
 import java.util.Arrays;
 
@@ -15,6 +16,7 @@ import java.util.Arrays;
  * properly implement interactions and updates for properties like margin, marginLeft, and
  * marginHorizontal.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class Spacing {
 
   /** Spacing type that represents the left direction. E.g. {@code marginLeft}. */
