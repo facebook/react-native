@@ -752,13 +752,13 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
   BOOL horizontal = _scrollView.contentSize.width > self.frame.size.width;
   int minIdx = props.maintainVisibleContentPosition.value().minIndexForVisible;
   for (NSUInteger ii = minIdx; ii < _contentView.subviews.count; ++ii) {
-    // Find the first entirely visible view.
+    // Find the first view that is partially or fully visible.
     UIView *subview = _contentView.subviews[ii];
     BOOL hasNewView = NO;
     if (horizontal) {
-      hasNewView = subview.frame.origin.x > _scrollView.contentOffset.x;
+      hasNewView = subview.frame.origin.x + subview.frame.size.width > _scrollView.contentOffset.x;
     } else {
-      hasNewView = subview.frame.origin.y > _scrollView.contentOffset.y;
+      hasNewView = subview.frame.origin.y + subview.frame.size.height > _scrollView.contentOffset.y;
     }
     if (hasNewView || ii == _contentView.subviews.count - 1) {
       _prevFirstVisibleFrame = subview.frame;
