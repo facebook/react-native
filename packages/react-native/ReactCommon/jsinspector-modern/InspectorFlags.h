@@ -45,7 +45,7 @@ class InspectorFlags {
   bool enableModernCDPRegistry_;
   bool enableCxxInspectorPackagerConnection_;
 
-  mutable bool inconsistentFlagsStateLogged_;
+  mutable bool inconsistentFlagsStateLogged_{false};
   void assertFlagsMatchUpstream() const;
 };
 
