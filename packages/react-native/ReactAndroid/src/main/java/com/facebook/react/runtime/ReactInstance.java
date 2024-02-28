@@ -114,7 +114,8 @@ final class ReactInstance {
       DevSupportManager devSupportManager,
       QueueThreadExceptionHandler exceptionHandler,
       ReactJsExceptionHandler reactExceptionManager,
-      boolean useDevSupport) {
+      boolean useDevSupport,
+      ReactHostInspectorTarget reactHostInspectorTarget) {
     mBridgelessReactContext = bridgelessReactContext;
     mDelegate = delegate;
 
@@ -182,7 +183,8 @@ final class ReactInstance {
             jsTimerExecutor,
             reactExceptionManager,
             bindingsInstaller,
-            isProfiling);
+            isProfiling,
+            reactHostInspectorTarget);
 
     mJavaScriptContextHolder = new JavaScriptContextHolder(getJavaScriptContext());
 
@@ -463,7 +465,8 @@ final class ReactInstance {
       JSTimerExecutor jsTimerExecutor,
       ReactJsExceptionHandler jReactExceptionsManager,
       @Nullable BindingsInstaller jBindingsInstaller,
-      boolean isProfiling);
+      boolean isProfiling,
+      ReactHostInspectorTarget reactHostInspectorTarget);
 
   @DoNotStrip
   private static native JSTimerExecutor createJSTimerExecutor();
@@ -493,6 +496,9 @@ final class ReactInstance {
   private native void registerSegmentNative(int segmentId, String segmentPath);
 
   private native void handleMemoryPressureJs(int pressureLevel);
+
+  @ThreadConfined(ThreadConfined.UI)
+  /* package */ native void unregisterFromInspector();
 
   public void handleMemoryPressure(int level) {
     try {

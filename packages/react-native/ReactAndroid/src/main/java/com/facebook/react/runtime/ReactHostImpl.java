@@ -915,7 +915,8 @@ public class ReactHostImpl implements ReactHost {
                             devSupportManager,
                             mQueueThreadExceptionHandler,
                             mReactJsExceptionHandler,
-                            mUseDevSupport);
+                            mUseDevSupport,
+                            mReactHostInspectorTarget);
 
                     if (ReactFeatureFlags
                         .unstable_bridgelessArchitectureMemoryPressureHackyBoltsFix) {
@@ -1200,6 +1201,10 @@ public class ReactHostImpl implements ReactHost {
                     final ReactInstance reactInstance =
                         reactInstanceTaskUnwrapper.unwrap(task, "1: Starting reload");
 
+                    if (reactInstance != null) {
+                      reactInstance.unregisterFromInspector();
+                    }
+
                     final ReactContext reactContext = mBridgelessReactContextRef.getNullable();
                     if (reactContext == null) {
                       raiseSoftException(method, "ReactContext is null. Reload reason: " + reason);
@@ -1372,6 +1377,10 @@ public class ReactHostImpl implements ReactHost {
 
                     final ReactInstance reactInstance =
                         reactInstanceTaskUnwrapper.unwrap(task, "1: Starting destroy");
+
+                    if (reactInstance != null) {
+                      reactInstance.unregisterFromInspector();
+                    }
 
                     // Step 1: Destroy DevSupportManager
                     if (mUseDevSupport) {
