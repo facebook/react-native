@@ -10,13 +10,13 @@
 
 'use strict';
 
-import type { RNTesterModuleExample } from '../../types/RNTesterTypes';
-import type { TextStyle } from 'react-native/Libraries/StyleSheet/StyleSheet';
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+import type {TextStyle} from 'react-native/Libraries/StyleSheet/StyleSheet';
 
 import RNTesterButton from '../../components/RNTesterButton';
-import { RNTesterThemeContext } from '../../components/RNTesterTheme';
+import {RNTesterThemeContext} from '../../components/RNTesterTheme';
 import * as React from 'react';
-import { useContext, useState } from 'react';
+import {useContext, useState} from 'react';
 import {
   Button,
   Platform,
@@ -107,7 +107,7 @@ class WithLabel extends React.Component<$FlowFixMeProps> {
 class RewriteExample extends React.Component<$FlowFixMeProps, any> {
   constructor(props: any | void) {
     super(props);
-    this.state = { text: '' };
+    this.state = {text: ''};
   }
   render(): React.Node {
     const limit = 20;
@@ -122,12 +122,12 @@ class RewriteExample extends React.Component<$FlowFixMeProps, any> {
           maxLength={limit}
           onChangeText={text => {
             text = text.replace(/ /g, '_');
-            this.setState({ text });
+            this.setState({text});
           }}
           style={styles.default}
           value={this.state.text}
         />
-        <Text style={[styles.remainder, { color: remainderColor }]}>
+        <Text style={[styles.remainder, {color: remainderColor}]}>
           {remainder}
         </Text>
       </View>
@@ -141,7 +141,7 @@ class RewriteExampleInvalidCharacters extends React.Component<
 > {
   constructor(props: any | void) {
     super(props);
-    this.state = { text: '' };
+    this.state = {text: ''};
   }
   render(): React.Node {
     return (
@@ -151,7 +151,7 @@ class RewriteExampleInvalidCharacters extends React.Component<
           autoCorrect={false}
           multiline={false}
           onChangeText={text => {
-            this.setState({ text: text.replace(/\s/g, '') });
+            this.setState({text: text.replace(/\s/g, '')});
           }}
           style={styles.default}
           value={this.state.text}
@@ -169,7 +169,7 @@ class RewriteInvalidCharactersAndClearExample extends React.Component<
 
   constructor(props: any | void) {
     super(props);
-    this.state = { text: '' };
+    this.state = {text: ''};
   }
   render(): React.Node {
     return (
@@ -182,7 +182,7 @@ class RewriteInvalidCharactersAndClearExample extends React.Component<
           }}
           multiline={true}
           onChangeText={text => {
-            this.setState({ text: text.replace(/ /g, '') });
+            this.setState({text: text.replace(/ /g, '')});
           }}
           style={styles.default}
           value={this.state.text}
@@ -201,7 +201,7 @@ class RewriteInvalidCharactersAndClearExample extends React.Component<
   }
 }
 
-type ExampleRef = { current: null | { focus(): void, ... } };
+type ExampleRef = {current: null | {focus(): void, ...}};
 
 class BlurOnSubmitExample extends React.Component<{...}> {
   ref1: ExampleRef = React.createRef();
@@ -343,72 +343,72 @@ class SubmitBehaviorExample extends React.Component<{...}> {
   }
 }
 
-class TextEventsExample extends React.Component<{...}, $FlowFixMeState > {
+class TextEventsExample extends React.Component<{...}, $FlowFixMeState> {
   state:
     | any
     | {
-      curText: string,
-      prev2Text: string,
-      prev3Text: string,
-      prevText: string,
-    } = {
-  curText: '<No Event>',
+        curText: string,
+        prev2Text: string,
+        prev3Text: string,
+        prevText: string,
+      } = {
+    curText: '<No Event>',
     prevText: '<No Event>',
-      prev2Text: '<No Event>',
-        prev3Text: '<No Event>',
+    prev2Text: '<No Event>',
+    prev3Text: '<No Event>',
   };
 
-updateText = (text: string) => {
-  this.setState(state => {
-    return {
-      curText: text,
-      prevText: state.curText,
-      prev2Text: state.prevText,
-      prev3Text: state.prev2Text,
-    };
-  });
-};
+  updateText = (text: string) => {
+    this.setState(state => {
+      return {
+        curText: text,
+        prevText: state.curText,
+        prev2Text: state.prevText,
+        prev3Text: state.prev2Text,
+      };
+    });
+  };
 
-render(): React.Node {
-  return (
-    <View>
-      <TextInput
-        autoCapitalize="none"
-        placeholder="Enter text to see events"
-        autoCorrect={false}
-        multiline
-        onFocus={() => this.updateText('onFocus')}
-        onBlur={() => this.updateText('onBlur')}
-        onChange={event =>
-          this.updateText('onChange text: ' + event.nativeEvent.text)
-        }
-        onContentSizeChange={event =>
-          this.updateText(
-            'onContentSizeChange size: ' +
-            JSON.stringify(event.nativeEvent.contentSize),
-          )
-        }
-        onEndEditing={event =>
-          this.updateText('onEndEditing text: ' + event.nativeEvent.text)
-        }
-        onSubmitEditing={event =>
-          this.updateText('onSubmitEditing text: ' + event.nativeEvent.text)
-        }
-        onKeyPress={event =>
-          this.updateText('onKeyPress key: ' + event.nativeEvent.key)
-        }
-        style={styles.singleLine}
-      />
-      <Text style={styles.eventLabel}>
-        {this.state.curText}
-        {'\n'}
-        (prev: {this.state.prevText}){'\n'}
-        (prev2: {this.state.prev2Text}){'\n'}
-        (prev3: {this.state.prev3Text})
-      </Text>
-    </View>
-  );
-}
+  render(): React.Node {
+    return (
+      <View>
+        <TextInput
+          autoCapitalize="none"
+          placeholder="Enter text to see events"
+          autoCorrect={false}
+          multiline
+          onFocus={() => this.updateText('onFocus')}
+          onBlur={() => this.updateText('onBlur')}
+          onChange={event =>
+            this.updateText('onChange text: ' + event.nativeEvent.text)
+          }
+          onContentSizeChange={event =>
+            this.updateText(
+              'onContentSizeChange size: ' +
+                JSON.stringify(event.nativeEvent.contentSize),
+            )
+          }
+          onEndEditing={event =>
+            this.updateText('onEndEditing text: ' + event.nativeEvent.text)
+          }
+          onSubmitEditing={event =>
+            this.updateText('onSubmitEditing text: ' + event.nativeEvent.text)
+          }
+          onKeyPress={event =>
+            this.updateText('onKeyPress key: ' + event.nativeEvent.key)
+          }
+          style={styles.singleLine}
+        />
+        <Text style={styles.eventLabel}>
+          {this.state.curText}
+          {'\n'}
+          (prev: {this.state.prevText}){'\n'}
+          (prev2: {this.state.prev2Text}){'\n'}
+          (prev3: {this.state.prev3Text})
+        </Text>
+      </View>
+    );
+  }
 }
 
 class TokenizedTextExample extends React.Component<
@@ -417,7 +417,7 @@ class TokenizedTextExample extends React.Component<
 > {
   constructor(props: any | void) {
     super(props);
-    this.state = { text: 'Hello #World' };
+    this.state = {text: 'Hello #World'};
   }
   render(): React.Node {
     //define delimiter
@@ -459,13 +459,13 @@ class TokenizedTextExample extends React.Component<
     });
 
     return (
-      <View style={{ flexDirection: 'row' }}>
+      <View style={{flexDirection: 'row'}}>
         <TextInput
           testID="text-input"
           multiline={true}
           style={styles.multiline}
           onChangeText={text => {
-            this.setState({ text });
+            this.setState({text});
           }}>
           <Text>{parts}</Text>
         </TextInput>
@@ -477,7 +477,7 @@ class TokenizedTextExample extends React.Component<
 type SelectionExampleState = {
   selection: $ReadOnly<{|
     start: number,
-  end: number,
+    end: number,
   |}>,
   value: string,
   ...
@@ -494,15 +494,15 @@ class SelectionExample extends React.Component<
   constructor(props) {
     super(props);
     this.state = {
-      selection: { start: 0, end: 0 },
+      selection: {start: 0, end: 0},
       value: props.value,
     };
   }
 
   /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
    * LTI update could not be added via codemod */
-  onSelectionChange({ nativeEvent: { selection } }) {
-    this.setState({ selection });
+  onSelectionChange({nativeEvent: {selection}}) {
+    this.setState({selection});
   }
 
   getRandomPosition(): number {
@@ -512,7 +512,7 @@ class SelectionExample extends React.Component<
 
   select(start: number, end: number) {
     this._textInput?.focus();
-    this.setState({ selection: { start, end } });
+    this.setState({selection: {start, end}});
     if (this.props.imperative) {
       this._textInput?.setSelection(start, end);
     }
@@ -539,11 +539,11 @@ class SelectionExample extends React.Component<
 
     return (
       <View>
-        <View style={{ flexDirection: 'row' }}>
+        <View style={{flexDirection: 'row'}}>
           <TextInput
             testID={`${this.props.testID}-text-input`}
             multiline={this.props.multiline}
-            onChangeText={value => this.setState({ value })}
+            onChangeText={value => this.setState({value})}
             // $FlowFixMe[method-unbinding] added when improving typing for this parameters
             onSelectionChange={this.onSelectionChange.bind(this)}
             ref={textInput => (this._textInput = textInput)}
@@ -610,87 +610,87 @@ const TextStylesExample = React.memo(() => {
         {
           name: 'backgroundColor',
           textStyles: [
-            { backgroundColor: theme.SystemBackgroundColor },
-            { backgroundColor: 'red' },
-            { backgroundColor: 'orange' },
-            { backgroundColor: 'yellow' },
-            { backgroundColor: 'green' },
-            { backgroundColor: 'blue' },
+            {backgroundColor: theme.SystemBackgroundColor},
+            {backgroundColor: 'red'},
+            {backgroundColor: 'orange'},
+            {backgroundColor: 'yellow'},
+            {backgroundColor: 'green'},
+            {backgroundColor: 'blue'},
           ],
         },
         {
           name: 'color',
           textStyles: [
-            { color: theme.LabelColor },
-            { color: 'red' },
-            { color: 'orange' },
-            { color: 'yellow' },
-            { color: 'green' },
-            { color: 'blue' },
+            {color: theme.LabelColor},
+            {color: 'red'},
+            {color: 'orange'},
+            {color: 'yellow'},
+            {color: 'green'},
+            {color: 'blue'},
           ],
         },
         {
           name: 'fontFamily',
           textStyles: [
-            { fontFamily: 'sans-serif' },
-            { fontFamily: 'serif' },
-            { fontFamily: 'monospace' },
+            {fontFamily: 'sans-serif'},
+            {fontFamily: 'serif'},
+            {fontFamily: 'monospace'},
           ],
         },
         {
           name: 'fontSize',
           textStyles: [
-            { fontSize: 8 },
-            { fontSize: 10 },
-            { fontSize: 12 },
-            { fontSize: 14 },
-            { fontSize: 16 },
-            { fontSize: 18 },
+            {fontSize: 8},
+            {fontSize: 10},
+            {fontSize: 12},
+            {fontSize: 14},
+            {fontSize: 16},
+            {fontSize: 18},
           ],
         },
         {
           name: 'fontStyle',
-          textStyles: [{ fontStyle: 'normal' }, { fontStyle: 'italic' }],
+          textStyles: [{fontStyle: 'normal'}, {fontStyle: 'italic'}],
         },
         {
           name: 'fontWeight',
           textStyles: [
-            { fontWeight: 'normal' },
-            { fontWeight: 'bold' },
-            { fontWeight: '200' },
-            { fontWeight: '400' },
-            { fontWeight: '600' },
-            { fontWeight: '800' },
+            {fontWeight: 'normal'},
+            {fontWeight: 'bold'},
+            {fontWeight: '200'},
+            {fontWeight: '400'},
+            {fontWeight: '600'},
+            {fontWeight: '800'},
           ],
         },
         {
           name: 'letterSpacing',
           textStyles: [
-            { letterSpacing: 0 },
-            { letterSpacing: 1 },
-            { letterSpacing: 2 },
-            { letterSpacing: 3 },
-            { letterSpacing: 4 },
-            { letterSpacing: 5 },
+            {letterSpacing: 0},
+            {letterSpacing: 1},
+            {letterSpacing: 2},
+            {letterSpacing: 3},
+            {letterSpacing: 4},
+            {letterSpacing: 5},
           ],
         },
         {
           name: 'lineHeight',
           multiline: true,
           textStyles: [
-            { lineHeight: 4 },
-            { lineHeight: 8 },
-            { lineHeight: 16 },
-            { lineHeight: 24 },
+            {lineHeight: 4},
+            {lineHeight: 8},
+            {lineHeight: 16},
+            {lineHeight: 24},
           ],
         },
         {
           name: 'textDecorationLine',
           textStyles: [
-            { textDecorationLine: 'none' },
-            { textDecorationLine: 'underline' },
-            { textDecorationLine: 'line-through' },
-            { textDecorationLine: 'underline line-through' },
+            {textDecorationLine: 'none'},
+            {textDecorationLine: 'underline'},
+            {textDecorationLine: 'line-through'},
+            {textDecorationLine: 'underline line-through'},
           ],
         },
         {
@@ -698,32 +698,32 @@ const TextStylesExample = React.memo(() => {
           textStyles: [
             {
               textShadowColor: 'black',
-              textShadowOffset: { width: 0, height: 0 },
+              textShadowOffset: {width: 0, height: 0},
               textShadowRadius: 0,
             },
             {
               textShadowColor: 'black',
-              textShadowOffset: { width: 0, height: 0 },
+              textShadowOffset: {width: 0, height: 0},
               textShadowRadius: 5,
             },
             {
               textShadowColor: 'red',
-              textShadowOffset: { width: 0, height: 0 },
+              textShadowOffset: {width: 0, height: 0},
               textShadowRadius: 5,
             },
             {
               textShadowColor: 'blue',
-              textShadowOffset: { width: 0, height: -5 },
+              textShadowOffset: {width: 0, height: -5},
               textShadowRadius: 5,
             },
             {
               textShadowColor: 'green',
-              textShadowOffset: { width: 0, height: 5 },
+              textShadowOffset: {width: 0, height: 5},
               textShadowRadius: 5,
             },
             {
               textShadowColor: 'orange',
-              textShadowOffset: { width: 10, height: 0 },
+              textShadowOffset: {width: 10, height: 0},
               textShadowRadius: 5,
             },
           ],
@@ -741,7 +741,7 @@ type TextStylesContainerProps = {
   }>,
 };
 
-function TextStylesContainer({ examples }: TextStylesContainerProps) {
+function TextStylesContainer({examples}: TextStylesContainerProps) {
   const [offset, setOffset] = useState(0);
 
   const MAX_CYCLES = 6;
@@ -756,7 +756,7 @@ function TextStylesContainer({ examples }: TextStylesContainerProps) {
       </RNTesterButton>
       <View>
         <View testID="styles-screenshot-area" style={styles.screenshotArea} />
-        {examples.map(({ name, multiline, textStyles }) => (
+        {examples.map(({name, multiline, textStyles}) => (
           <WithLabel label={name} key={name}>
             {multiline ? (
               <MultilineStyledTextInput
@@ -1034,32 +1034,32 @@ module.exports = ([
       return (
         <View>
           <TextInput
-            style={[styles.singleLine, { fontFamily: fontFamilyA }]}
+            style={[styles.singleLine, {fontFamily: fontFamilyA}]}
             placeholder={`Custom fonts like ${fontFamilyA} are supported`}
           />
           <TextInput
             style={[
               styles.singleLine,
-              { fontFamily: fontFamilyA, fontWeight: 'bold' },
+              {fontFamily: fontFamilyA, fontWeight: 'bold'},
             ]}
             placeholder={`${fontFamilyA} bold`}
           />
           <TextInput
             style={[
               styles.singleLine,
-              { fontFamily: fontFamilyA, fontWeight: '500' },
+              {fontFamily: fontFamilyA, fontWeight: '500'},
             ]}
             placeholder={`${fontFamilyA} 500`}
           />
           <TextInput
             style={[
               styles.singleLine,
-              { fontFamily: fontFamilyA, fontStyle: 'italic' },
+              {fontFamily: fontFamilyA, fontStyle: 'italic'},
             ]}
             placeholder={`${fontFamilyA} italic`}
           />
           <TextInput
-            style={[styles.singleLine, { fontFamily: fontFamilyB }]}
+            style={[styles.singleLine, {fontFamily: fontFamilyB}]}
             placeholder={fontFamilyB}
           />
         </View>
@@ -1127,4 +1127,4 @@ module.exports = ([
     name: 'textStyles',
     render: () => <TextStylesExample />,
   },
-]: Array < RNTesterModuleExample >);
+]: Array<RNTesterModuleExample>);
