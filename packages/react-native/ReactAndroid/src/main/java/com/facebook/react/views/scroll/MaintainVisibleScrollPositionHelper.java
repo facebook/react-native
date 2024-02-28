@@ -34,6 +34,7 @@ import java.lang.ref.WeakReference;
 @Nullsafe(Nullsafe.Mode.LOCAL)
 class MaintainVisibleScrollPositionHelper<ScrollViewT extends ViewGroup & HasSmoothScroll>
     implements UIManagerListener {
+
   private final ScrollViewT mScrollView;
   private final boolean mHorizontal;
   private @Nullable Config mConfig;
@@ -42,6 +43,7 @@ class MaintainVisibleScrollPositionHelper<ScrollViewT extends ViewGroup & HasSmo
   private boolean mListening = false;
 
   public static class Config {
+
     public final int minIndexForVisible;
     public final @Nullable Integer autoScrollToTopThreshold;
 
@@ -160,7 +162,12 @@ class MaintainVisibleScrollPositionHelper<ScrollViewT extends ViewGroup & HasSmo
     int currentScroll = mHorizontal ? mScrollView.getScrollX() : mScrollView.getScrollY();
     for (int i = mConfig.minIndexForVisible; i < contentView.getChildCount(); i++) {
       View child = contentView.getChildAt(i);
-      float position = mHorizontal ? child.getX() : child.getY();
+
+      // Compute the position of the end of the child
+      float position =
+          mHorizontal ? child.getX() + child.getWidth() : child.getY() + child.getHeight();
+
+      // If the child is partially visible or this is the last child, select it as the anchor.
       if (position > currentScroll || i == contentView.getChildCount() - 1) {
         mFirstVisibleView = new WeakReference<>(child);
         Rect frame = new Rect();

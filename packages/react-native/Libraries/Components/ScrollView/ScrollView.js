@@ -267,33 +267,6 @@ type IOSProps = $ReadOnly<{|
    */
   canCancelContentTouches?: ?boolean,
   /**
-   * When set, the scroll view will adjust the scroll position so that the first child that is
-   * currently visible and at or beyond `minIndexForVisible` will not change position. This is
-   * useful for lists that are loading content in both directions, e.g. a chat thread, where new
-   * messages coming in might otherwise cause the scroll position to jump. A value of 0 is common,
-   * but other values such as 1 can be used to skip loading spinners or other content that should
-   * not maintain position.
-   *
-   * The optional `autoscrollToTopThreshold` can be used to make the content automatically scroll
-   * to the top after making the adjustment if the user was within the threshold of the top before
-   * the adjustment was made. This is also useful for chat-like applications where you want to see
-   * new messages scroll into place, but not if the user has scrolled up a ways and it would be
-   * disruptive to scroll a bunch.
-   *
-   * Caveat 1: Reordering elements in the scrollview with this enabled will probably cause
-   * jumpiness and jank. It can be fixed, but there are currently no plans to do so. For now,
-   * don't re-order the content of any ScrollViews or Lists that use this feature.
-   *
-   * Caveat 2: This simply uses `contentOffset` and `frame.origin` in native code to compute
-   * visibility. Occlusion, transforms, and other complexity won't be taken into account as to
-   * whether content is "visible" or not.
-   *
-   */
-  maintainVisibleContentPosition?: ?$ReadOnly<{|
-    minIndexForVisible: number,
-    autoscrollToTopThreshold?: ?number,
-  |}>,
-  /**
    * The maximum allowed zoom scale. The default value is 1.0.
    * @platform ios
    */
@@ -505,6 +478,33 @@ export type Props = $ReadOnly<{|
    *   - `true`, deprecated, use 'always' instead
    */
   keyboardShouldPersistTaps?: ?('always' | 'never' | 'handled' | true | false),
+  /**
+   * When set, the scroll view will adjust the scroll position so that the first child that is
+   * partially or fully visible and at or beyond `minIndexForVisible` will not change position.
+   * This is useful for lists that are loading content in both directions, e.g. a chat thread,
+   * where new messages coming in might otherwise cause the scroll position to jump. A value of 0
+   * is common, but other values such as 1 can be used to skip loading spinners or other content
+   * that should not maintain position.
+   *
+   * The optional `autoscrollToTopThreshold` can be used to make the content automatically scroll
+   * to the top after making the adjustment if the user was within the threshold of the top before
+   * the adjustment was made. This is also useful for chat-like applications where you want to see
+   * new messages scroll into place, but not if the user has scrolled up a ways and it would be
+   * disruptive to scroll a bunch.
+   *
+   * Caveat 1: Reordering elements in the scrollview with this enabled will probably cause
+   * jumpiness and jank. It can be fixed, but there are currently no plans to do so. For now,
+   * don't re-order the content of any ScrollViews or Lists that use this feature.
+   *
+   * Caveat 2: This simply uses `contentOffset` and `frame.origin` in native code to compute
+   * visibility. Occlusion, transforms, and other complexity won't be taken into account as to
+   * whether content is "visible" or not.
+   *
+   */
+  maintainVisibleContentPosition?: ?$ReadOnly<{|
+    minIndexForVisible: number,
+    autoscrollToTopThreshold?: ?number,
+  |}>,
   /**
    * Called when the momentum scroll starts (scroll which occurs as the ScrollView glides to a stop).
    */
