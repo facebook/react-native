@@ -67,6 +67,7 @@ public abstract class ViewGroupManager<T extends ViewGroup>
   }
 
   @Override
+  @Nullable
   public View getChildAt(T parent, int index) {
     return parent.getChildAt(index);
   }
