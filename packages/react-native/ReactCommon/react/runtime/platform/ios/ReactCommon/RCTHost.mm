@@ -212,7 +212,7 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
                                              mode:(DisplayMode)displayMode
                                 initialProperties:(NSDictionary *)properties
 {
-  RCTFabricSurface *surface = [[RCTFabricSurface alloc] initWithSurfacePresenter:[self getSurfacePresenter]
+  RCTFabricSurface *surface = [[RCTFabricSurface alloc] initWithSurfacePresenter:self.surfacePresenter
                                                                       moduleName:moduleName
                                                                initialProperties:properties];
   surface.surfaceHandler.setDisplayMode(displayMode);
@@ -235,14 +235,26 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
   return [self createSurfaceWithModuleName:moduleName mode:DisplayMode::Visible initialProperties:properties];
 }
 
-- (RCTModuleRegistry *)getModuleRegistry
+- (RCTModuleRegistry *)moduleRegistry
 {
   return _moduleRegistry;
 }
 
-- (RCTSurfacePresenter *)getSurfacePresenter
+// Deprecated
+- (RCTModuleRegistry *)getModuleRegistry
+{
+  return self.moduleRegistry;
+}
+
+- (RCTSurfacePresenter *)surfacePresenter
 {
   return [_instance surfacePresenter];
+}
+
+// Deprecated
+- (RCTSurfacePresenter *)getSurfacePresenter
+{
+  return self.surfacePresenter;
 }
 
 - (void)callFunctionOnJSModule:(NSString *)moduleName method:(NSString *)method args:(NSArray *)args
@@ -276,7 +288,7 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
   [_hostDelegate hostDidStart:self];
 
   for (RCTFabricSurface *surface in [self _getAttachedSurfaces]) {
-    [surface resetWithSurfacePresenter:[self getSurfacePresenter]];
+    [surface resetWithSurfacePresenter:self.surfacePresenter];
   }
 }
 
