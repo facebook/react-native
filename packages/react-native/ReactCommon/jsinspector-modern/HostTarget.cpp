@@ -95,8 +95,10 @@ class HostTargetSession {
   // Owned by this instance, but shared (weakly) with the frontend channel
   std::shared_ptr<RAIIRemoteConnection> remote_;
   FrontendChannel frontendChannel_;
-  HostAgent hostAgent_;
   SessionState state_;
+
+  // NOTE: hostAgent_ has a raw reference to state_ so must be destroyed first.
+  HostAgent hostAgent_;
 };
 
 std::shared_ptr<HostTarget> HostTarget::create(
