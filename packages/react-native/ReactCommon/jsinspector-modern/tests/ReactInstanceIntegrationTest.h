@@ -7,15 +7,17 @@
 
 #pragma once
 
+#include "InspectorMocks.h"
+#include "ReactNativeMocks.h"
+#include "UniquePtrFactory.h"
+
 #include <folly/executors/QueuedImmediateExecutor.h>
 #include <folly/json.h>
 #include <gtest/gtest.h>
 #include <jsinspector-modern/InspectorInterfaces.h>
-#include <memory>
 
-#include "InspectorMocks.h"
-#include "ReactNativeMocks.h"
-#include "UniquePtrFactory.h"
+#include <cassert>
+#include <memory>
 
 namespace facebook::react::jsinspector_modern {
 
@@ -49,7 +51,7 @@ class ReactInstanceIntegrationTest : public Test {
   MockRemoteConnection& getRemoteConnection() {
     EXPECT_EQ(mockRemoteConnections_.objectsVended(), 1);
     auto rawPtr = mockRemoteConnections_[0];
-    ASSERT(rawPtr != nullptr);
+    assert(rawPtr);
     return *rawPtr;
   }
 
