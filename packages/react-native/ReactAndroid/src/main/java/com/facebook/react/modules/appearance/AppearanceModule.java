@@ -13,12 +13,14 @@ import android.content.res.Configuration;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
 import com.facebook.fbreact.specs.NativeAppearanceSpec;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.module.annotations.ReactModule;
 
 /** Module that exposes the user's preferred color scheme. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @ReactModule(name = NativeAppearanceSpec.NAME)
 public class AppearanceModule extends NativeAppearanceSpec {
 

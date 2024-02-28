@@ -8,6 +8,7 @@
 package com.facebook.react.modules.common;
 
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactContext;
@@ -18,6 +19,7 @@ import java.util.Collection;
  * Cleans sensitive user data from native modules that implement the {@code Cleanable} interface.
  * This is useful e.g. when a user logs out from an app.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ModuleDataCleaner {
 
   /**

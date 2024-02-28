@@ -9,9 +9,11 @@ package com.facebook.react.modules.fresco;
 
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ReadableMap;
 
 /** Extended ImageRequest with request headers */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ReactNetworkImageRequest extends ImageRequest {
 
   /** Headers for the request */

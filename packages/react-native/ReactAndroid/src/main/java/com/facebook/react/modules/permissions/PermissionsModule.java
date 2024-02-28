@@ -13,6 +13,7 @@ import android.content.pm.PackageManager;
 import android.util.SparseArray;
 import com.facebook.common.logging.FLog;
 import com.facebook.fbreact.specs.NativePermissionsAndroidSpec;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -25,6 +26,7 @@ import com.facebook.react.modules.core.PermissionListener;
 import java.util.ArrayList;
 
 /** Module that exposes the Android M Permission system to JS. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @ReactModule(name = NativePermissionsAndroidSpec.NAME)
 public class PermissionsModule extends NativePermissionsAndroidSpec implements PermissionListener {
 

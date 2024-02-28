@@ -9,6 +9,7 @@ package com.facebook.react.modules.core;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.fbreact.specs.NativeHeadlessJsTaskSupportSpec;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.jstasks.HeadlessJsTaskContext;
@@ -18,6 +19,7 @@ import com.facebook.react.module.annotations.ReactModule;
  * Simple native module that allows JS to notify native of having completed some task work, so that
  * it can e.g. release any resources, stop timers etc.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @ReactModule(name = NativeHeadlessJsTaskSupportSpec.NAME)
 public class HeadlessJsTaskSupportModule extends NativeHeadlessJsTaskSupportSpec {
 

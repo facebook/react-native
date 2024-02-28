@@ -8,6 +8,7 @@
 package com.facebook.react.uimanager;
 
 import android.view.View;
+import com.facebook.infer.annotation.Nullsafe;
 
 /**
  * Common base class for most of the {@link ViewManager}s. It provides support for most common
@@ -17,6 +18,7 @@ import android.view.View;
  *
  * @param <T> the view handled by this manager
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public abstract class SimpleViewManager<T extends View>
     extends BaseViewManager<T, LayoutShadowNode> {
 

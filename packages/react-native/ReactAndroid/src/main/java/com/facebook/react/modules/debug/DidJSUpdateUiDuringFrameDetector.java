@@ -8,6 +8,7 @@
 package com.facebook.react.modules.debug;
 
 import android.view.Choreographer;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
 import com.facebook.react.bridge.ReactBridge;
 import com.facebook.react.common.LongArray;
@@ -20,6 +21,7 @@ import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugL
  * a {@link ReactBridge} and a {@link UIManagerModule}, {@link #getDidJSHitFrameAndCleanup} should
  * be called once per frame via a {@link Choreographer.FrameCallback}.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class DidJSUpdateUiDuringFrameDetector
     implements NotThreadSafeBridgeIdleDebugListener, NotThreadSafeViewHierarchyUpdateDebugListener {
 

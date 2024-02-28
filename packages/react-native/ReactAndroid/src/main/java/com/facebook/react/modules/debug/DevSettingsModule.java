@@ -8,6 +8,7 @@
 package com.facebook.react.modules.debug;
 
 import com.facebook.fbreact.specs.NativeDevSettingsSpec;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.UiThreadUtil;
@@ -19,6 +20,7 @@ import com.facebook.react.module.annotations.ReactModule;
 /**
  * Module that exposes the URL to the source code map (used for exception stack trace parsing) to JS
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @ReactModule(name = NativeDevSettingsSpec.NAME)
 public class DevSettingsModule extends NativeDevSettingsSpec {
 

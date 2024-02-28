@@ -12,9 +12,11 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import androidx.annotation.Nullable;
 import com.facebook.fbreact.specs.NativeDevToolsSettingsManagerSpec;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.module.annotations.ReactModule;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @ReactModule(name = NativeDevToolsSettingsManagerSpec.NAME)
 public class DevToolsSettingsManagerModule extends NativeDevToolsSettingsManagerSpec {
   private static final String SHARED_PREFERENCES_PREFIX = "ReactNative__DevToolsSettings";

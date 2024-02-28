@@ -8,6 +8,7 @@
 package com.facebook.react.modules.core;
 
 import com.facebook.fbreact.specs.NativeTimingSpec;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.WritableArray;
@@ -18,6 +19,7 @@ import com.facebook.react.jstasks.HeadlessJsTaskEventListener;
 import com.facebook.react.module.annotations.ReactModule;
 
 /** Native module for JS timer execution. Timers fire on frame boundaries. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @ReactModule(name = NativeTimingSpec.NAME)
 public final class TimingModule extends NativeTimingSpec
     implements LifecycleEventListener, HeadlessJsTaskEventListener {

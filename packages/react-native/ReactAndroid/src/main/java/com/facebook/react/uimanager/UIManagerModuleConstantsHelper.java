@@ -10,6 +10,7 @@ package com.facebook.react.uimanager;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.config.ReactFeatureFlags;
@@ -24,6 +25,7 @@ import java.util.Set;
  * Helps generate constants map for {@link UIManagerModule} by collecting and merging constants from
  * registered view managers.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class UIManagerModuleConstantsHelper {
   private static final String TAG = "UIManagerModuleConstantsHelper";
   private static final String BUBBLING_EVENTS_KEY = "bubblingEventTypes";

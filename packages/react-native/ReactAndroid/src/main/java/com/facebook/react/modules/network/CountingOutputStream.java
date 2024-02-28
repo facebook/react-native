@@ -16,6 +16,7 @@
 
 package com.facebook.react.modules.network;
 
+import com.facebook.infer.annotation.Nullsafe;
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -26,6 +27,7 @@ import java.io.OutputStream;
  * @author Chris Nokleberg
  * @since 1.0
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class CountingOutputStream extends FilterOutputStream {
 
   private long mCount;

@@ -7,6 +7,7 @@
 
 package com.facebook.react.uimanager;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.proguard.annotations.DoNotStripAny;
@@ -15,6 +16,7 @@ import com.facebook.react.bridge.RuntimeExecutor;
 import com.facebook.soloader.SoLoader;
 import javax.annotation.Nullable;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @DoNotStripAny
 public class UIConstantsProviderManager {
 

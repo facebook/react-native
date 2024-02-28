@@ -9,6 +9,7 @@ package com.facebook.react.modules.network;
 
 import android.content.Context;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import java.io.File;
 import java.util.concurrent.TimeUnit;
 import okhttp3.Cache;
@@ -18,6 +19,7 @@ import okhttp3.OkHttpClient;
  * Helper class that provides the same OkHttpClient instance that will be used for all networking
  * requests.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class OkHttpClientProvider {
 
   // Centralized OkHttpClient for all networking requests.

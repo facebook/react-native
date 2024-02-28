@@ -8,6 +8,7 @@
 package com.facebook.react.modules.network;
 
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -17,6 +18,7 @@ import okhttp3.Headers;
 import okhttp3.HttpUrl;
 
 /** Basic okhttp3 CookieJar container */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ReactCookieJarContainer implements CookieJarContainer {
 
   @Nullable private CookieJar cookieJar = null;

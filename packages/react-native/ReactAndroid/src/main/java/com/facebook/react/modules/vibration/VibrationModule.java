@@ -13,10 +13,12 @@ import android.os.Build;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import com.facebook.fbreact.specs.NativeVibrationSpec;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.module.annotations.ReactModule;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @SuppressLint("MissingPermission")
 @ReactModule(name = NativeVibrationSpec.NAME)
 public class VibrationModule extends NativeVibrationSpec {
