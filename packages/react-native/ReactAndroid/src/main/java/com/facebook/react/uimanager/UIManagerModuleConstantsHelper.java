@@ -180,7 +180,7 @@ public class UIManagerModuleConstantsHelper {
   }
 
   @VisibleForTesting
-  /* package */ static void normalizeEventTypes(Map events) {
+  /* package */ static void normalizeEventTypes(@Nullable Map events) {
     if (events == null) {
       return;
     }
