@@ -1793,6 +1793,7 @@ public abstract interface class com/facebook/react/common/mapbuffer/MapBuffer : 
 	public abstract fun getDouble (I)D
 	public abstract fun getInt (I)I
 	public abstract fun getKeyOffset (I)I
+	public abstract fun getLong (I)J
 	public abstract fun getMapBuffer (I)Lcom/facebook/react/common/mapbuffer/MapBuffer;
 	public abstract fun getMapBufferList (I)Ljava/util/List;
 	public abstract fun getString (I)Ljava/lang/String;
@@ -1806,6 +1807,7 @@ public final class com/facebook/react/common/mapbuffer/MapBuffer$DataType : java
 	public static final field BOOL Lcom/facebook/react/common/mapbuffer/MapBuffer$DataType;
 	public static final field DOUBLE Lcom/facebook/react/common/mapbuffer/MapBuffer$DataType;
 	public static final field INT Lcom/facebook/react/common/mapbuffer/MapBuffer$DataType;
+	public static final field LONG Lcom/facebook/react/common/mapbuffer/MapBuffer$DataType;
 	public static final field MAP Lcom/facebook/react/common/mapbuffer/MapBuffer$DataType;
 	public static final field STRING Lcom/facebook/react/common/mapbuffer/MapBuffer$DataType;
 	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/common/mapbuffer/MapBuffer$DataType;
@@ -1817,6 +1819,7 @@ public abstract interface class com/facebook/react/common/mapbuffer/MapBuffer$En
 	public abstract fun getDoubleValue ()D
 	public abstract fun getIntValue ()I
 	public abstract fun getKey ()I
+	public abstract fun getLongValue ()J
 	public abstract fun getMapBufferValue ()Lcom/facebook/react/common/mapbuffer/MapBuffer;
 	public abstract fun getStringValue ()Ljava/lang/String;
 	public abstract fun getType ()Lcom/facebook/react/common/mapbuffer/MapBuffer$DataType;
@@ -1837,6 +1840,7 @@ public final class com/facebook/react/common/mapbuffer/ReadableMapBuffer : com/f
 	public fun getDouble (I)D
 	public fun getInt (I)I
 	public fun getKeyOffset (I)I
+	public fun getLong (I)J
 	public synthetic fun getMapBuffer (I)Lcom/facebook/react/common/mapbuffer/MapBuffer;
 	public fun getMapBuffer (I)Lcom/facebook/react/common/mapbuffer/ReadableMapBuffer;
 	public fun getMapBufferList (I)Ljava/util/List;
@@ -1859,6 +1863,7 @@ public final class com/facebook/react/common/mapbuffer/WritableMapBuffer : com/f
 	public fun getDouble (I)D
 	public fun getInt (I)I
 	public fun getKeyOffset (I)I
+	public fun getLong (I)J
 	public fun getMapBuffer (I)Lcom/facebook/react/common/mapbuffer/MapBuffer;
 	public fun getMapBufferList (I)Ljava/util/List;
 	public fun getString (I)Ljava/lang/String;
@@ -1866,6 +1871,7 @@ public final class com/facebook/react/common/mapbuffer/WritableMapBuffer : com/f
 	public fun iterator ()Ljava/util/Iterator;
 	public final fun put (ID)Lcom/facebook/react/common/mapbuffer/WritableMapBuffer;
 	public final fun put (II)Lcom/facebook/react/common/mapbuffer/WritableMapBuffer;
+	public final fun put (IJ)Lcom/facebook/react/common/mapbuffer/WritableMapBuffer;
 	public final fun put (ILcom/facebook/react/common/mapbuffer/MapBuffer;)Lcom/facebook/react/common/mapbuffer/WritableMapBuffer;
 	public final fun put (ILjava/lang/String;)Lcom/facebook/react/common/mapbuffer/WritableMapBuffer;
 	public final fun put (IZ)Lcom/facebook/react/common/mapbuffer/WritableMapBuffer;

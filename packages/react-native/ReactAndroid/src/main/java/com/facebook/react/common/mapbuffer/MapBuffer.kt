@@ -44,7 +44,8 @@ public interface MapBuffer : Iterable<MapBuffer.Entry> {
     INT,
     DOUBLE,
     STRING,
-    MAP
+    MAP,
+    LONG
   }
 
   /**
@@ -108,6 +109,16 @@ public interface MapBuffer : Iterable<MapBuffer.Entry> {
    * @throws IllegalStateException if the data type doesn't match
    */
   public fun getInt(key: Int): Int
+
+  /**
+   * Provides parsed [Long] value if the entry for given key exists with [DataType.LONG] type
+   *
+   * @param key key to lookup [Long] value for
+   * @return value associated with the requested key
+   * @throws IllegalArgumentException if the key doesn't exist
+   * @throws IllegalStateException if the data type doesn't match
+   */
+  public fun getLong(key: Int): Long
 
   /**
    * Provides parsed [Double] value if the entry for given key exists with [DataType.DOUBLE] type
@@ -174,6 +185,13 @@ public interface MapBuffer : Iterable<MapBuffer.Entry> {
      * @throws IllegalStateException if the data type doesn't match [DataType.INT]
      */
     public val intValue: Int
+
+    /**
+     * Entry value represented as [Long]
+     *
+     * @throws IllegalStateException if the data type doesn't match [DataType.LONG]
+     */
+    public val longValue: Long
 
     /**
      * Entry value represented as [Double]
