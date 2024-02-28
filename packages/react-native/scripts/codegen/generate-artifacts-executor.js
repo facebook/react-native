@@ -415,7 +415,31 @@ function generateSchemaInfo(library, platform) {
   };
 }
 
+function shouldSkipGenerationForRncore(schemaInfo, platform) {
+  if (platform !== 'ios' || schemaInfo.library.config.name !== 'rncore') {
+    return false;
+  }
+  const rncoreOutputPath = path.join(
+    RNCORE_CONFIGS.ios,
+    'react',
+    'renderer',
+    'components',
+    'rncore',
+  );
+  return (
+    fs.existsSync(rncoreOutputPath) &&
+    fs.readdirSync(rncoreOutputPath).length > 0
+  );
+}
+
 function generateCode(outputPath, schemaInfo, includesGeneratedCode, platform) {
+  if (shouldSkipGenerationForRncore(schemaInfo, platform)) {
+    console.log(
+      '[Codegen - rncore] Skipping iOS code generation for rncore as it has been generated already.',
+    );
+    return;
+  }
+
   const libraryName = schemaInfo.library.config.name;
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), libraryName));
   const tmpOutputDir = path.join(tmpDir, 'out');
