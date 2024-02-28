@@ -56,6 +56,8 @@ class ReactHostTest {
   private lateinit var bridgelessReactContext: BridgelessReactContext
 
   private lateinit var mockedReactInstanceCtor: MockedConstruction<ReactInstance>
+  private lateinit var mockedReactHostInspectorTargetCtor:
+      MockedConstruction<ReactHostInspectorTarget>
   private lateinit var mockedDevSupportManagerCtor: MockedConstruction<BridgelessDevSupportManager>
   private lateinit var mockedBridgelessReactContextCtor: MockedConstruction<BridgelessReactContext>
   private lateinit var mockedMemoryPressureRouterCtor: MockedConstruction<MemoryPressureRouter>
@@ -73,6 +75,8 @@ class ReactHostTest {
     bridgelessReactContext = Mockito.mock(BridgelessReactContext::class.java)
 
     mockedReactInstanceCtor = Mockito.mockConstruction(ReactInstance::class.java)
+    mockedReactHostInspectorTargetCtor =
+        Mockito.mockConstruction(ReactHostInspectorTarget::class.java)
     mockedDevSupportManagerCtor = Mockito.mockConstruction(BridgelessDevSupportManager::class.java)
     mockedBridgelessReactContextCtor = Mockito.mockConstruction(BridgelessReactContext::class.java)
     mockedMemoryPressureRouterCtor = Mockito.mockConstruction(MemoryPressureRouter::class.java)
@@ -95,6 +99,7 @@ class ReactHostTest {
   @After
   fun tearDown() {
     mockedReactInstanceCtor.close()
+    mockedReactHostInspectorTargetCtor.close()
     mockedDevSupportManagerCtor.close()
     mockedBridgelessReactContextCtor.close()
     mockedMemoryPressureRouterCtor.close()
