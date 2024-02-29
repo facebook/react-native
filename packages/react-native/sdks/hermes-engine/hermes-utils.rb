@@ -17,7 +17,7 @@ end
 # - To use a specific tarball, install the dependencies with:
 # `HERMES_ENGINE_TARBALL_PATH=<path_to_tarball> bundle exec pod install`
 # - To force a build from source, install the dependencies with:
-# `BUILD_FROM_SOURCE=true bundle exec pod install`
+# `RCT_BUILD_HERMES_FROM_SOURCE=true bundle exec pod install`
 # If none of the two are provided, Cocoapods will check whether there is a tarball for the current version
 # (either release or nightly). If not, it will fall back building from source (the latest commit on main).
 #
