@@ -48,6 +48,7 @@ import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.devsupport.DevSupportManagerBase;
 import com.facebook.react.devsupport.DisabledDevSupportManager;
+import com.facebook.react.devsupport.InspectorFlags;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.fabric.ComponentFactory;
 import com.facebook.react.fabric.FabricUIManager;
@@ -108,7 +109,6 @@ public class ReactHostImpl implements ReactHost {
   private final MemoryPressureRouter mMemoryPressureRouter;
   private final boolean mAllowPackagerServerAccess;
   private final boolean mUseDevSupport;
-  private final ReactHostInspectorTarget mReactHostInspectorTarget;
   private final Collection<ReactInstanceEventListener> mReactInstanceEventListeners =
       Collections.synchronizedList(new ArrayList<>());
 
@@ -135,6 +135,8 @@ public class ReactHostImpl implements ReactHost {
 
   private final Set<Function0<Unit>> mBeforeDestroyListeners =
       Collections.synchronizedSet(new HashSet<>());
+
+  private @Nullable ReactHostInspectorTarget mReactHostInspectorTarget;
 
   public ReactHostImpl(
       Context context,
@@ -185,7 +187,6 @@ public class ReactHostImpl implements ReactHost {
       mDevSupportManager = new DisabledDevSupportManager();
     }
     mUseDevSupport = useDevSupport;
-    mReactHostInspectorTarget = new ReactHostInspectorTarget(this);
   }
 
   @Override
@@ -761,7 +762,7 @@ public class ReactHostImpl implements ReactHost {
   @ThreadConfined(UI)
   private void moveToHostDestroy(@Nullable ReactContext currentContext) {
     mReactLifecycleStateManager.moveToOnHostDestroy(currentContext);
-    mReactHostInspectorTarget.close();
+    destroyReactHostInspectorTarget();
     setCurrentActivity(null);
   }
 
@@ -916,7 +917,7 @@ public class ReactHostImpl implements ReactHost {
                             mQueueThreadExceptionHandler,
                             mReactJsExceptionHandler,
                             mUseDevSupport,
-                            mReactHostInspectorTarget);
+                            getOrCreateReactHostInspectorTarget());
 
                     if (ReactFeatureFlags
                         .unstable_bridgelessArchitectureMemoryPressureHackyBoltsFix) {
@@ -1528,5 +1529,20 @@ public class ReactHostImpl implements ReactHost {
   public void setJsEngineResolutionAlgorithm(
       @Nullable JSEngineResolutionAlgorithm jsEngineResolutionAlgorithm) {
     mJSEngineResolutionAlgorithm = jsEngineResolutionAlgorithm;
+  }
+
+  private @Nullable ReactHostInspectorTarget getOrCreateReactHostInspectorTarget() {
+    if (mReactHostInspectorTarget == null && InspectorFlags.getEnableModernCDPRegistry()) {
+      mReactHostInspectorTarget = new ReactHostInspectorTarget(this);
+    }
+
+    return mReactHostInspectorTarget;
+  }
+
+  private void destroyReactHostInspectorTarget() {
+    if (mReactHostInspectorTarget != null) {
+      mReactHostInspectorTarget.close();
+      mReactHostInspectorTarget = null;
+    }
   }
 }

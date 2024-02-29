@@ -115,7 +115,7 @@ final class ReactInstance {
       QueueThreadExceptionHandler exceptionHandler,
       ReactJsExceptionHandler reactExceptionManager,
       boolean useDevSupport,
-      ReactHostInspectorTarget reactHostInspectorTarget) {
+      @Nullable ReactHostInspectorTarget reactHostInspectorTarget) {
     mBridgelessReactContext = bridgelessReactContext;
     mDelegate = delegate;
 
@@ -466,7 +466,7 @@ final class ReactInstance {
       ReactJsExceptionHandler jReactExceptionsManager,
       @Nullable BindingsInstaller jBindingsInstaller,
       boolean isProfiling,
-      ReactHostInspectorTarget reactHostInspectorTarget);
+      @Nullable ReactHostInspectorTarget reactHostInspectorTarget);
 
   @DoNotStrip
   private static native JSTimerExecutor createJSTimerExecutor();
