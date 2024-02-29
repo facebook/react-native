@@ -435,13 +435,17 @@ public class TextLayoutManagerMapBuffer {
     if (widthYogaMeasureMode == YogaMeasureMode.EXACTLY) {
       calculatedWidth = width;
     } else {
-      for (int lineIndex = 0; lineIndex < calculatedLineCount; lineIndex++) {
-        boolean endsWithNewLine =
-            text.length() > 0 && text.charAt(layout.getLineEnd(lineIndex) - 1) == '\n';
-        float lineWidth =
-            endsWithNewLine ? layout.getLineMax(lineIndex) : layout.getLineWidth(lineIndex);
-        if (lineWidth > calculatedWidth) {
-          calculatedWidth = lineWidth;
+      if (calculatedLineCount == 1) {
+        calculatedWidth = (int) layout.getEllipsizedWidth();
+      } else {
+        for (int lineIndex = 0; lineIndex < calculatedLineCount; lineIndex++) {
+          boolean endsWithNewLine =
+              text.length() > 0 && text.charAt(layout.getLineEnd(lineIndex) - 1) == '\n';
+          float lineWidth =
+              endsWithNewLine ? layout.getLineMax(lineIndex) : layout.getLineWidth(lineIndex);
+          if (lineWidth > calculatedWidth) {
+            calculatedWidth = lineWidth;
+          }
         }
       }
       if (widthYogaMeasureMode == YogaMeasureMode.AT_MOST && calculatedWidth > width) {
