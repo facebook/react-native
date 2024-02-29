@@ -120,7 +120,7 @@ public interface CatalystInstance
   RuntimeScheduler getRuntimeScheduler();
 
   @Deprecated
-  void addJSIModules(List<JSIModuleSpec> jsiModules);
+  <T extends JSIModule> void addJSIModules(List<JSIModuleSpec<T>> jsiModules);
 
   /**
    * Returns a hybrid object that contains a pointer to a JS CallInvoker, which is used to schedule

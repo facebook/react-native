@@ -537,7 +537,8 @@ public class CatalystInstanceImpl implements CatalystInstance {
   public native RuntimeScheduler getRuntimeScheduler();
 
   @Override
-  public void addJSIModules(List<JSIModuleSpec> jsiModules) {
+  @Deprecated
+  public <T extends JSIModule> void addJSIModules(List<JSIModuleSpec<T>> jsiModules) {
     mJSIModuleRegistry.registerModules(jsiModules);
   }
 
