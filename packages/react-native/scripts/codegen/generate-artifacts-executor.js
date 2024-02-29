@@ -593,6 +593,22 @@ function cleanupEmptyFilesAndFolders(filepath) {
   }
 }
 
+function generateRNCoreComponentsIOS(projectRoot /*: string */) /*: void*/ {
+  const ios = 'ios';
+  buildCodegenIfNeeded();
+  const pkgJson = readPkgJsonInDirectory(projectRoot);
+  const rncoreLib = findProjectRootLibraries(pkgJson, projectRoot).filter(
+    library => library.config.name === 'rncore',
+  )[0];
+  if (!rncoreLib) {
+    throw new Error(
+      "[Codegen] Can't find rncore library. Failed to generate rncore artifacts",
+    );
+  }
+  const rncoreSchemaInfo = generateSchemaInfo(rncoreLib, ios);
+  generateCode('', rncoreSchemaInfo, false, ios);
+}
+
 // Execute
 
 /**
@@ -686,7 +702,8 @@ function execute(projectRoot, targetPlatform, baseOutputPath) {
 }
 
 module.exports = {
-  execute: execute,
+  execute,
+  generateRNCoreComponentsIOS,
   // exported for testing purposes only:
   _extractLibrariesFromJSON: extractLibrariesFromJSON,
   _cleanupEmptyFilesAndFolders: cleanupEmptyFilesAndFolders,
