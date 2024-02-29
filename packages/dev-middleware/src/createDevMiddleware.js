@@ -126,5 +126,6 @@ function getExperiments(config: ExperimentsConfig): Experiments {
   return {
     enableNewDebugger: config.enableNewDebugger ?? false,
     enableOpenDebuggerRedirect: config.enableOpenDebuggerRedirect ?? false,
+    enableNetworkInspector: config.enableNetworkInspector ?? false,
   };
 }

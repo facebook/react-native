@@ -35,17 +35,15 @@ const ModuleDeclarationTemplate = ({
 ${protocolMethods}
 
 @end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module '${hasteModuleName}'
-     */
-    class JSI_EXPORT ${hasteModuleName}SpecJSI : public ObjCTurboModule {
-    public:
-      ${hasteModuleName}SpecJSI(const ObjCTurboModule::InitParams &params);
-    };
-  } // namespace react
-} // namespace facebook`;
+namespace facebook::react {
+  /**
+   * ObjC++ class for module '${hasteModuleName}'
+   */
+  class JSI_EXPORT ${hasteModuleName}SpecJSI : public ObjCTurboModule {
+  public:
+    ${hasteModuleName}SpecJSI(const ObjCTurboModule::InitParams &params);
+  };
+} // namespace facebook::react`;
 
 const HeaderFileTemplate = ({
   moduleDeclarations,
@@ -120,6 +118,7 @@ module.exports = {
     schema: SchemaType,
     packageName?: string,
     assumeNonnull: boolean,
+    headerPrefix?: string,
   ): FilesOutput {
     const nativeModules = getModules(schema);
 

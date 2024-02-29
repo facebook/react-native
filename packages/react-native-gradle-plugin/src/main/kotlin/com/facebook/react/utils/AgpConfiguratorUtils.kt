@@ -53,15 +53,11 @@ internal object AgpConfiguratorUtils {
   fun configureDevPorts(project: Project) {
     val devServerPort =
         project.properties["reactNativeDevServerPort"]?.toString() ?: DEFAULT_DEV_SERVER_PORT
-    val inspectorProxyPort =
-        project.properties["reactNativeInspectorProxyPort"]?.toString() ?: devServerPort
 
     val action =
         Action<AppliedPlugin> {
           project.extensions.getByType(AndroidComponentsExtension::class.java).finalizeDsl { ext ->
             ext.defaultConfig.resValue("integer", "react_native_dev_server_port", devServerPort)
-            ext.defaultConfig.resValue(
-                "integer", "react_native_inspector_proxy_port", inspectorProxyPort)
           }
         }
 

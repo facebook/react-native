@@ -27,6 +27,8 @@ class MapBufferBuilder {
 
   void putInt(MapBuffer::Key key, int32_t value);
 
+  void putLong(MapBuffer::Key key, int64_t value);
+
   void putBool(MapBuffer::Key key, bool value);
 
   void putDouble(MapBuffer::Key key, double value);

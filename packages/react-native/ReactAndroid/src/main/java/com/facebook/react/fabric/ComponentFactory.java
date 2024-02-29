@@ -8,9 +8,11 @@
 package com.facebook.react.fabric;
 
 import androidx.annotation.NonNull;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @DoNotStrip
 public class ComponentFactory {
 

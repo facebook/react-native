@@ -105,6 +105,9 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
 
   CGRect _prevFirstVisibleFrame;
   __weak UIView *_firstVisibleView;
+
+  CGFloat _endDraggingSensitivityMultiplier;
+  CGFloat _endDraggingSensitivityVelocityMultiplier;
 }
 
 + (RCTScrollViewComponentView *_Nullable)findScrollViewComponentViewForView:(UIView *)view
@@ -134,6 +137,8 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
     [self.scrollViewDelegateSplitter addDelegate:self];
 
     _scrollEventThrottle = 0;
+    _endDraggingSensitivityVelocityMultiplier = 0;
+    _endDraggingSensitivityMultiplier = 1;
   }
 
   return self;
@@ -230,6 +235,9 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
     _scrollView.indicatorStyle = RCTUIScrollViewIndicatorStyleFromProps(newScrollViewProps);
   }
 
+  _endDraggingSensitivityMultiplier = newScrollViewProps.endDraggingSensitivityMultiplier;
+  _endDraggingSensitivityVelocityMultiplier = newScrollViewProps.endDraggingSensitivityVelocityMultiplier;
+
   if (oldScrollViewProps.scrollEventThrottle != newScrollViewProps.scrollEventThrottle) {
     // Zero means "send value only once per significant logical event".
     // Prop value is in milliseconds.
@@ -284,7 +292,7 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
     } else if (contentInsetAdjustmentBehavior == ContentInsetAdjustmentBehavior::Automatic) {
       scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAutomatic;
     } else if (contentInsetAdjustmentBehavior == ContentInsetAdjustmentBehavior::ScrollableAxes) {
-      scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAutomatic;
+      scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentScrollableAxes;
     } else if (contentInsetAdjustmentBehavior == ContentInsetAdjustmentBehavior::Always) {
       scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAlways;
     }
@@ -432,6 +440,20 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
 
 #pragma mark - UIScrollViewDelegate
 
+- (void)scrollViewWillEndDragging:(UIScrollView *)scrollView
+                     withVelocity:(CGPoint)velocity
+              targetContentOffset:(inout CGPoint *)targetContentOffset
+{
+  if (fabs(_endDraggingSensitivityMultiplier - 1) > 0.0001f ||
+      fabs(_endDraggingSensitivityVelocityMultiplier) > 0.0001f) {
+    if (targetContentOffset->y > 0) {
+      const CGFloat travel = targetContentOffset->y - scrollView.contentOffset.y;
+      targetContentOffset->y = scrollView.contentOffset.y + travel * _endDraggingSensitivityMultiplier +
+          velocity.y * _endDraggingSensitivityVelocityMultiplier;
+    }
+  }
+}
+
 - (BOOL)touchesShouldCancelInContentView:(__unused UIView *)view
 {
   // Historically, `UIScrollView`s in React Native do not cancel touches
@@ -471,7 +493,12 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
 
 - (void)scrollViewDidScrollToTop:(UIScrollView *)scrollView
 {
+  if (!_eventEmitter) {
+    return;
+  }
+
   _isUserTriggeredScrolling = NO;
+  static_cast<const ScrollViewEventEmitter &>(*_eventEmitter).onScrollToTop([self _scrollViewMetrics]);
   [self _updateStateWithContentOffset];
 }
 
@@ -725,13 +752,13 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
   BOOL horizontal = _scrollView.contentSize.width > self.frame.size.width;
   int minIdx = props.maintainVisibleContentPosition.value().minIndexForVisible;
   for (NSUInteger ii = minIdx; ii < _contentView.subviews.count; ++ii) {
-    // Find the first entirely visible view.
+    // Find the first view that is partially or fully visible.
     UIView *subview = _contentView.subviews[ii];
     BOOL hasNewView = NO;
     if (horizontal) {
-      hasNewView = subview.frame.origin.x > _scrollView.contentOffset.x;
+      hasNewView = subview.frame.origin.x + subview.frame.size.width > _scrollView.contentOffset.x;
     } else {
-      hasNewView = subview.frame.origin.y > _scrollView.contentOffset.y;
+      hasNewView = subview.frame.origin.y + subview.frame.size.height > _scrollView.contentOffset.y;
     }
     if (hasNewView || ii == _contentView.subviews.count - 1) {
       _prevFirstVisibleFrame = subview.frame;

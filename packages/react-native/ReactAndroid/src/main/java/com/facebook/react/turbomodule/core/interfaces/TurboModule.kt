@@ -16,4 +16,5 @@ import com.facebook.react.common.annotations.DeprecatedInNewArchitecture
  * See description of https://github.com/facebook/react-native/pull/41412 for more context.
  */
 @DeprecatedInNewArchitecture
-interface TurboModule : com.facebook.react.internal.turbomodule.core.interfaces.TurboModule {}
+public interface TurboModule :
+    com.facebook.react.internal.turbomodule.core.interfaces.TurboModule {}

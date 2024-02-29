@@ -343,4 +343,9 @@ NativeToJsBridge::getDecoratedNativeMethodCallInvoker(
       m_delegate, std::move(nativeMethodCallInvoker));
 }
 
+jsinspector_modern::RuntimeTargetDelegate&
+NativeToJsBridge::getInspectorTargetDelegate() {
+  return *m_executor;
+}
+
 } // namespace facebook::react

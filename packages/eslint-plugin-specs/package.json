@@ -31,7 +31,7 @@
     "@babel/eslint-parser": "^7.20.0",
     "@babel/plugin-transform-flow-strip-types": "^7.20.0",
     "@babel/preset-flow": "^7.20.0",
-    "@react-native/codegen": "*",
+    "@react-native/codegen": "0.74.0",
     "make-dir": "^2.1.0",
     "pirates": "^4.0.1",
     "source-map-support": "0.5.0"

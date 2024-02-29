@@ -37,17 +37,15 @@ exports[`GenerateModuleObjCpp can generate a header file NativeModule specs 1`] 
                                          b:(NSArray *)b;
 
 @end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'NativeArrayTurboModule'
-     */
-    class JSI_EXPORT NativeArrayTurboModuleSpecJSI : public ObjCTurboModule {
-    public:
-      NativeArrayTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
-    };
-  } // namespace react
-} // namespace facebook
+namespace facebook::react {
+  /**
+   * ObjC++ class for module 'NativeArrayTurboModule'
+   */
+  class JSI_EXPORT NativeArrayTurboModuleSpecJSI : public ObjCTurboModule {
+  public:
+    NativeArrayTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
+  };
+} // namespace facebook::react
 
 @protocol NativeBooleanTurboModuleSpec <RCTBridgeModule, RCTTurboModule>
 
@@ -55,17 +53,15 @@ namespace facebook {
 - (NSNumber *)getBooleanWithAlias:(BOOL)arg;
 
 @end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'NativeBooleanTurboModule'
-     */
-    class JSI_EXPORT NativeBooleanTurboModuleSpecJSI : public ObjCTurboModule {
-    public:
-      NativeBooleanTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
-    };
-  } // namespace react
-} // namespace facebook
+namespace facebook::react {
+  /**
+   * ObjC++ class for module 'NativeBooleanTurboModule'
+   */
+  class JSI_EXPORT NativeBooleanTurboModuleSpecJSI : public ObjCTurboModule {
+  public:
+    NativeBooleanTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
+  };
+} // namespace facebook::react
 
 @protocol NativeCallbackTurboModuleSpec <RCTBridgeModule, RCTTurboModule>
 
@@ -73,17 +69,15 @@ namespace facebook {
 - (void)getValueWithCallbackWithAlias:(RCTResponseSenderBlock)c;
 
 @end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'NativeCallbackTurboModule'
-     */
-    class JSI_EXPORT NativeCallbackTurboModuleSpecJSI : public ObjCTurboModule {
-    public:
-      NativeCallbackTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
-    };
-  } // namespace react
-} // namespace facebook
+namespace facebook::react {
+  /**
+   * ObjC++ class for module 'NativeCallbackTurboModule'
+   */
+  class JSI_EXPORT NativeCallbackTurboModuleSpecJSI : public ObjCTurboModule {
+  public:
+    NativeCallbackTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
+  };
+} // namespace facebook::react
 namespace JS {
   namespace NativeEnumTurboModule {
     struct StateType {
@@ -131,17 +125,15 @@ namespace JS {
 - (NSDictionary *)getStateTypeWithEnums:(JS::NativeEnumTurboModule::StateTypeWithEnums &)paramOfTypeWithEnums;
 
 @end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'NativeEnumTurboModule'
-     */
-    class JSI_EXPORT NativeEnumTurboModuleSpecJSI : public ObjCTurboModule {
-    public:
-      NativeEnumTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
-    };
-  } // namespace react
-} // namespace facebook
+namespace facebook::react {
+  /**
+   * ObjC++ class for module 'NativeEnumTurboModule'
+   */
+  class JSI_EXPORT NativeEnumTurboModuleSpecJSI : public ObjCTurboModule {
+  public:
+    NativeEnumTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
+  };
+} // namespace facebook::react
 
 @protocol NativeNullableTurboModuleSpec <RCTBridgeModule, RCTTurboModule>
 
@@ -154,17 +146,15 @@ namespace facebook {
                      reject:(RCTPromiseRejectBlock)reject;
 
 @end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'NativeNullableTurboModule'
-     */
-    class JSI_EXPORT NativeNullableTurboModuleSpecJSI : public ObjCTurboModule {
-    public:
-      NativeNullableTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
-    };
-  } // namespace react
-} // namespace facebook
+namespace facebook::react {
+  /**
+   * ObjC++ class for module 'NativeNullableTurboModule'
+   */
+  class JSI_EXPORT NativeNullableTurboModuleSpecJSI : public ObjCTurboModule {
+  public:
+    NativeNullableTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
+  };
+} // namespace facebook::react
 
 @protocol NativeNumberTurboModuleSpec <RCTBridgeModule, RCTTurboModule>
 
@@ -172,17 +162,15 @@ namespace facebook {
 - (NSNumber *)getNumberWithAlias:(double)arg;
 
 @end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'NativeNumberTurboModule'
-     */
-    class JSI_EXPORT NativeNumberTurboModuleSpecJSI : public ObjCTurboModule {
-    public:
-      NativeNumberTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
-    };
-  } // namespace react
-} // namespace facebook
+namespace facebook::react {
+  /**
+   * ObjC++ class for module 'NativeNumberTurboModule'
+   */
+  class JSI_EXPORT NativeNumberTurboModuleSpecJSI : public ObjCTurboModule {
+  public:
+    NativeNumberTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
+  };
+} // namespace facebook::react
 namespace JS {
   namespace NativeObjectTurboModule {
     struct SpecDifficultObjectAE {
@@ -343,17 +331,15 @@ namespace JS {
 - (facebook::react::ModuleConstants<JS::NativeObjectTurboModule::Constants::Builder>)getConstants;
 
 @end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'NativeObjectTurboModule'
-     */
-    class JSI_EXPORT NativeObjectTurboModuleSpecJSI : public ObjCTurboModule {
-    public:
-      NativeObjectTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
-    };
-  } // namespace react
-} // namespace facebook
+namespace facebook::react {
+  /**
+   * ObjC++ class for module 'NativeObjectTurboModule'
+   */
+  class JSI_EXPORT NativeObjectTurboModuleSpecJSI : public ObjCTurboModule {
+  public:
+    NativeObjectTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
+  };
+} // namespace facebook::react
 namespace JS {
   namespace NativeOptionalObjectTurboModule {
     struct ConstantsEEE {
@@ -448,7 +434,7 @@ namespace JS {
       struct Builder {
         struct Input {
           std::optional<bool> D;
-          id<NSObject> _Nullable  A;
+          id<NSObject> _Nullable A;
           std::optional<JS::NativeOptionalObjectTurboModule::ConstantsE::Builder> E;
           NSString *F;
         };
@@ -477,17 +463,15 @@ namespace JS {
 - (facebook::react::ModuleConstants<JS::NativeOptionalObjectTurboModule::Constants::Builder>)getConstants;
 
 @end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'NativeOptionalObjectTurboModule'
-     */
-    class JSI_EXPORT NativeOptionalObjectTurboModuleSpecJSI : public ObjCTurboModule {
-    public:
-      NativeOptionalObjectTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
-    };
-  } // namespace react
-} // namespace facebook
+namespace facebook::react {
+  /**
+   * ObjC++ class for module 'NativeOptionalObjectTurboModule'
+   */
+  class JSI_EXPORT NativeOptionalObjectTurboModuleSpecJSI : public ObjCTurboModule {
+  public:
+    NativeOptionalObjectTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
+  };
+} // namespace facebook::react
 namespace JS {
   namespace NativePartialAnnotationTurboModule {
     struct SpecGetSomeObjFromPartialSomeObjValue {
@@ -545,17 +529,15 @@ namespace JS {
                              value2:(JS::NativePartialAnnotationTurboModule::SpecGetPartialPartialValue2 &)value2;
 
 @end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'NativePartialAnnotationTurboModule'
-     */
-    class JSI_EXPORT NativePartialAnnotationTurboModuleSpecJSI : public ObjCTurboModule {
-    public:
-      NativePartialAnnotationTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
-    };
-  } // namespace react
-} // namespace facebook
+namespace facebook::react {
+  /**
+   * ObjC++ class for module 'NativePartialAnnotationTurboModule'
+   */
+  class JSI_EXPORT NativePartialAnnotationTurboModuleSpecJSI : public ObjCTurboModule {
+  public:
+    NativePartialAnnotationTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
+  };
+} // namespace facebook::react
 
 @protocol NativePromiseTurboModuleSpec <RCTBridgeModule, RCTTurboModule>
 
@@ -567,17 +549,15 @@ namespace facebook {
                               reject:(RCTPromiseRejectBlock)reject;
 
 @end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'NativePromiseTurboModule'
-     */
-    class JSI_EXPORT NativePromiseTurboModuleSpecJSI : public ObjCTurboModule {
-    public:
-      NativePromiseTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
-    };
-  } // namespace react
-} // namespace facebook
+namespace facebook::react {
+  /**
+   * ObjC++ class for module 'NativePromiseTurboModule'
+   */
+  class JSI_EXPORT NativePromiseTurboModuleSpecJSI : public ObjCTurboModule {
+  public:
+    NativePromiseTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
+  };
+} // namespace facebook::react
 namespace JS {
   namespace NativeSampleTurboModule {
     struct SpecGetObjectShapeArg {
@@ -659,17 +639,15 @@ getValuegetValuegetValuegetValuegetValuey:(NSString *)getValuegetValuegetValuege
 - (facebook::react::ModuleConstants<JS::NativeSampleTurboModule::Constants::Builder>)getConstants;
 
 @end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'NativeSampleTurboModule'
-     */
-    class JSI_EXPORT NativeSampleTurboModuleSpecJSI : public ObjCTurboModule {
-    public:
-      NativeSampleTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
-    };
-  } // namespace react
-} // namespace facebook
+namespace facebook::react {
+  /**
+   * ObjC++ class for module 'NativeSampleTurboModule'
+   */
+  class JSI_EXPORT NativeSampleTurboModuleSpecJSI : public ObjCTurboModule {
+  public:
+    NativeSampleTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
+  };
+} // namespace facebook::react
 namespace JS {
   namespace NativeSampleTurboModuleArrays {
     struct ConstantsIdElement {
@@ -749,17 +727,15 @@ namespace JS {
 - (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleArrays::Constants::Builder>)getConstants;
 
 @end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'NativeSampleTurboModuleArrays'
-     */
-    class JSI_EXPORT NativeSampleTurboModuleArraysSpecJSI : public ObjCTurboModule {
-    public:
-      NativeSampleTurboModuleArraysSpecJSI(const ObjCTurboModule::InitParams &params);
-    };
-  } // namespace react
-} // namespace facebook
+namespace facebook::react {
+  /**
+   * ObjC++ class for module 'NativeSampleTurboModuleArrays'
+   */
+  class JSI_EXPORT NativeSampleTurboModuleArraysSpecJSI : public ObjCTurboModule {
+  public:
+    NativeSampleTurboModuleArraysSpecJSI(const ObjCTurboModule::InitParams &params);
+  };
+} // namespace facebook::react
 namespace JS {
   namespace NativeSampleTurboModuleNullable {
     struct SpecGetObjectShapeArg {
@@ -841,17 +817,15 @@ namespace JS {
 - (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleNullable::Constants::Builder>)getConstants;
 
 @end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'NativeSampleTurboModuleNullable'
-     */
-    class JSI_EXPORT NativeSampleTurboModuleNullableSpecJSI : public ObjCTurboModule {
-    public:
-      NativeSampleTurboModuleNullableSpecJSI(const ObjCTurboModule::InitParams &params);
-    };
-  } // namespace react
-} // namespace facebook
+namespace facebook::react {
+  /**
+   * ObjC++ class for module 'NativeSampleTurboModuleNullable'
+   */
+  class JSI_EXPORT NativeSampleTurboModuleNullableSpecJSI : public ObjCTurboModule {
+  public:
+    NativeSampleTurboModuleNullableSpecJSI(const ObjCTurboModule::InitParams &params);
+  };
+} // namespace facebook::react
 namespace JS {
   namespace NativeSampleTurboModuleNullableAndOptional {
     struct SpecGetObjectShapeArg {
@@ -933,17 +907,15 @@ namespace JS {
 - (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleNullableAndOptional::Constants::Builder>)getConstants;
 
 @end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'NativeSampleTurboModuleNullableAndOptional'
-     */
-    class JSI_EXPORT NativeSampleTurboModuleNullableAndOptionalSpecJSI : public ObjCTurboModule {
-    public:
-      NativeSampleTurboModuleNullableAndOptionalSpecJSI(const ObjCTurboModule::InitParams &params);
-    };
-  } // namespace react
-} // namespace facebook
+namespace facebook::react {
+  /**
+   * ObjC++ class for module 'NativeSampleTurboModuleNullableAndOptional'
+   */
+  class JSI_EXPORT NativeSampleTurboModuleNullableAndOptionalSpecJSI : public ObjCTurboModule {
+  public:
+    NativeSampleTurboModuleNullableAndOptionalSpecJSI(const ObjCTurboModule::InitParams &params);
+  };
+} // namespace facebook::react
 namespace JS {
   namespace NativeSampleTurboModuleOptional {
     struct SpecGetObjectShapeArg {
@@ -1025,17 +997,15 @@ namespace JS {
 - (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleOptional::Constants::Builder>)getConstants;
 
 @end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'NativeSampleTurboModuleOptional'
-     */
-    class JSI_EXPORT NativeSampleTurboModuleOptionalSpecJSI : public ObjCTurboModule {
-    public:
-      NativeSampleTurboModuleOptionalSpecJSI(const ObjCTurboModule::InitParams &params);
-    };
-  } // namespace react
-} // namespace facebook
+namespace facebook::react {
+  /**
+   * ObjC++ class for module 'NativeSampleTurboModuleOptional'
+   */
+  class JSI_EXPORT NativeSampleTurboModuleOptionalSpecJSI : public ObjCTurboModule {
+  public:
+    NativeSampleTurboModuleOptionalSpecJSI(const ObjCTurboModule::InitParams &params);
+  };
+} // namespace facebook::react
 
 @protocol NativeStringTurboModuleSpec <RCTBridgeModule, RCTTurboModule>
 
@@ -1043,17 +1013,15 @@ namespace facebook {
 - (NSString *)getStringWithAlias:(NSString *)arg;
 
 @end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'NativeStringTurboModule'
-     */
-    class JSI_EXPORT NativeStringTurboModuleSpecJSI : public ObjCTurboModule {
-    public:
-      NativeStringTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
-    };
-  } // namespace react
-} // namespace facebook
+namespace facebook::react {
+  /**
+   * ObjC++ class for module 'NativeStringTurboModule'
+   */
+  class JSI_EXPORT NativeStringTurboModuleSpecJSI : public ObjCTurboModule {
+  public:
+    NativeStringTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
+  };
+} // namespace facebook::react
 
 
 
@@ -1415,17 +1383,15 @@ NS_ASSUME_NONNULL_BEGIN
                                          b:(NSArray *)b;
 
 @end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'NativeArrayTurboModule'
-     */
-    class JSI_EXPORT NativeArrayTurboModuleSpecJSI : public ObjCTurboModule {
-    public:
-      NativeArrayTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
-    };
-  } // namespace react
-} // namespace facebook
+namespace facebook::react {
+  /**
+   * ObjC++ class for module 'NativeArrayTurboModule'
+   */
+  class JSI_EXPORT NativeArrayTurboModuleSpecJSI : public ObjCTurboModule {
+  public:
+    NativeArrayTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
+  };
+} // namespace facebook::react
 
 @protocol NativeBooleanTurboModuleSpec <RCTBridgeModule, RCTTurboModule>
 
@@ -1433,17 +1399,15 @@ namespace facebook {
 - (NSNumber *)getBooleanWithAlias:(BOOL)arg;
 
 @end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'NativeBooleanTurboModule'
-     */
-    class JSI_EXPORT NativeBooleanTurboModuleSpecJSI : public ObjCTurboModule {
-    public:
-      NativeBooleanTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
-    };
-  } // namespace react
-} // namespace facebook
+namespace facebook::react {
+  /**
+   * ObjC++ class for module 'NativeBooleanTurboModule'
+   */
+  class JSI_EXPORT NativeBooleanTurboModuleSpecJSI : public ObjCTurboModule {
+  public:
+    NativeBooleanTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
+  };
+} // namespace facebook::react
 
 @protocol NativeCallbackTurboModuleSpec <RCTBridgeModule, RCTTurboModule>
 
@@ -1451,17 +1415,15 @@ namespace facebook {
 - (void)getValueWithCallbackWithAlias:(RCTResponseSenderBlock)c;
 
 @end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'NativeCallbackTurboModule'
-     */
-    class JSI_EXPORT NativeCallbackTurboModuleSpecJSI : public ObjCTurboModule {
-    public:
-      NativeCallbackTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
-    };
-  } // namespace react
-} // namespace facebook
+namespace facebook::react {
+  /**
+   * ObjC++ class for module 'NativeCallbackTurboModule'
+   */
+  class JSI_EXPORT NativeCallbackTurboModuleSpecJSI : public ObjCTurboModule {
+  public:
+    NativeCallbackTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
+  };
+} // namespace facebook::react
 namespace JS {
   namespace NativeEnumTurboModule {
     struct StateType {
@@ -1509,17 +1471,15 @@ namespace JS {
 - (NSDictionary *)getStateTypeWithEnums:(JS::NativeEnumTurboModule::StateTypeWithEnums &)paramOfTypeWithEnums;
 
 @end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'NativeEnumTurboModule'
-     */
-    class JSI_EXPORT NativeEnumTurboModuleSpecJSI : public ObjCTurboModule {
-    public:
-      NativeEnumTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
-    };
-  } // namespace react
-} // namespace facebook
+namespace facebook::react {
+  /**
+   * ObjC++ class for module 'NativeEnumTurboModule'
+   */
+  class JSI_EXPORT NativeEnumTurboModuleSpecJSI : public ObjCTurboModule {
+  public:
+    NativeEnumTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
+  };
+} // namespace facebook::react
 
 @protocol NativeNullableTurboModuleSpec <RCTBridgeModule, RCTTurboModule>
 
@@ -1532,17 +1492,15 @@ namespace facebook {
                      reject:(RCTPromiseRejectBlock)reject;
 
 @end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'NativeNullableTurboModule'
-     */
-    class JSI_EXPORT NativeNullableTurboModuleSpecJSI : public ObjCTurboModule {
-    public:
-      NativeNullableTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
-    };
-  } // namespace react
-} // namespace facebook
+namespace facebook::react {
+  /**
+   * ObjC++ class for module 'NativeNullableTurboModule'
+   */
+  class JSI_EXPORT NativeNullableTurboModuleSpecJSI : public ObjCTurboModule {
+  public:
+    NativeNullableTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
+  };
+} // namespace facebook::react
 
 @protocol NativeNumberTurboModuleSpec <RCTBridgeModule, RCTTurboModule>
 
@@ -1550,17 +1508,15 @@ namespace facebook {
 - (NSNumber *)getNumberWithAlias:(double)arg;
 
 @end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'NativeNumberTurboModule'
-     */
-    class JSI_EXPORT NativeNumberTurboModuleSpecJSI : public ObjCTurboModule {
-    public:
-      NativeNumberTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
-    };
-  } // namespace react
-} // namespace facebook
+namespace facebook::react {
+  /**
+   * ObjC++ class for module 'NativeNumberTurboModule'
+   */
+  class JSI_EXPORT NativeNumberTurboModuleSpecJSI : public ObjCTurboModule {
+  public:
+    NativeNumberTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
+  };
+} // namespace facebook::react
 namespace JS {
   namespace NativeObjectTurboModule {
     struct SpecDifficultObjectAE {
@@ -1721,17 +1677,15 @@ namespace JS {
 - (facebook::react::ModuleConstants<JS::NativeObjectTurboModule::Constants::Builder>)getConstants;
 
 @end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'NativeObjectTurboModule'
-     */
-    class JSI_EXPORT NativeObjectTurboModuleSpecJSI : public ObjCTurboModule {
-    public:
-      NativeObjectTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
-    };
-  } // namespace react
-} // namespace facebook
+namespace facebook::react {
+  /**
+   * ObjC++ class for module 'NativeObjectTurboModule'
+   */
+  class JSI_EXPORT NativeObjectTurboModuleSpecJSI : public ObjCTurboModule {
+  public:
+    NativeObjectTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
+  };
+} // namespace facebook::react
 namespace JS {
   namespace NativeOptionalObjectTurboModule {
     struct ConstantsEEE {
@@ -1826,7 +1780,7 @@ namespace JS {
       struct Builder {
         struct Input {
           std::optional<bool> D;
-          id<NSObject> _Nullable  A;
+          id<NSObject> _Nullable A;
           std::optional<JS::NativeOptionalObjectTurboModule::ConstantsE::Builder> E;
           NSString *F;
         };
@@ -1855,17 +1809,15 @@ namespace JS {
 - (facebook::react::ModuleConstants<JS::NativeOptionalObjectTurboModule::Constants::Builder>)getConstants;
 
 @end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'NativeOptionalObjectTurboModule'
-     */
-    class JSI_EXPORT NativeOptionalObjectTurboModuleSpecJSI : public ObjCTurboModule {
-    public:
-      NativeOptionalObjectTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
-    };
-  } // namespace react
-} // namespace facebook
+namespace facebook::react {
+  /**
+   * ObjC++ class for module 'NativeOptionalObjectTurboModule'
+   */
+  class JSI_EXPORT NativeOptionalObjectTurboModuleSpecJSI : public ObjCTurboModule {
+  public:
+    NativeOptionalObjectTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
+  };
+} // namespace facebook::react
 namespace JS {
   namespace NativePartialAnnotationTurboModule {
     struct SpecGetSomeObjFromPartialSomeObjValue {
@@ -1923,17 +1875,15 @@ namespace JS {
                              value2:(JS::NativePartialAnnotationTurboModule::SpecGetPartialPartialValue2 &)value2;
 
 @end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'NativePartialAnnotationTurboModule'
-     */
-    class JSI_EXPORT NativePartialAnnotationTurboModuleSpecJSI : public ObjCTurboModule {
-    public:
-      NativePartialAnnotationTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
-    };
-  } // namespace react
-} // namespace facebook
+namespace facebook::react {
+  /**
+   * ObjC++ class for module 'NativePartialAnnotationTurboModule'
+   */
+  class JSI_EXPORT NativePartialAnnotationTurboModuleSpecJSI : public ObjCTurboModule {
+  public:
+    NativePartialAnnotationTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
+  };
+} // namespace facebook::react
 
 @protocol NativePromiseTurboModuleSpec <RCTBridgeModule, RCTTurboModule>
 
@@ -1945,17 +1895,15 @@ namespace facebook {
                               reject:(RCTPromiseRejectBlock)reject;
 
 @end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'NativePromiseTurboModule'
-     */
-    class JSI_EXPORT NativePromiseTurboModuleSpecJSI : public ObjCTurboModule {
-    public:
-      NativePromiseTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
-    };
-  } // namespace react
-} // namespace facebook
+namespace facebook::react {
+  /**
+   * ObjC++ class for module 'NativePromiseTurboModule'
+   */
+  class JSI_EXPORT NativePromiseTurboModuleSpecJSI : public ObjCTurboModule {
+  public:
+    NativePromiseTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
+  };
+} // namespace facebook::react
 namespace JS {
   namespace NativeSampleTurboModule {
     struct SpecGetObjectShapeArg {
@@ -2037,17 +1985,15 @@ getValuegetValuegetValuegetValuegetValuey:(NSString *)getValuegetValuegetValuege
 - (facebook::react::ModuleConstants<JS::NativeSampleTurboModule::Constants::Builder>)getConstants;
 
 @end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'NativeSampleTurboModule'
-     */
-    class JSI_EXPORT NativeSampleTurboModuleSpecJSI : public ObjCTurboModule {
-    public:
-      NativeSampleTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
-    };
-  } // namespace react
-} // namespace facebook
+namespace facebook::react {
+  /**
+   * ObjC++ class for module 'NativeSampleTurboModule'
+   */
+  class JSI_EXPORT NativeSampleTurboModuleSpecJSI : public ObjCTurboModule {
+  public:
+    NativeSampleTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
+  };
+} // namespace facebook::react
 namespace JS {
   namespace NativeSampleTurboModuleArrays {
     struct ConstantsIdElement {
@@ -2127,17 +2073,15 @@ namespace JS {
 - (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleArrays::Constants::Builder>)getConstants;
 
 @end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'NativeSampleTurboModuleArrays'
-     */
-    class JSI_EXPORT NativeSampleTurboModuleArraysSpecJSI : public ObjCTurboModule {
-    public:
-      NativeSampleTurboModuleArraysSpecJSI(const ObjCTurboModule::InitParams &params);
-    };
-  } // namespace react
-} // namespace facebook
+namespace facebook::react {
+  /**
+   * ObjC++ class for module 'NativeSampleTurboModuleArrays'
+   */
+  class JSI_EXPORT NativeSampleTurboModuleArraysSpecJSI : public ObjCTurboModule {
+  public:
+    NativeSampleTurboModuleArraysSpecJSI(const ObjCTurboModule::InitParams &params);
+  };
+} // namespace facebook::react
 namespace JS {
   namespace NativeSampleTurboModuleNullable {
     struct SpecGetObjectShapeArg {
@@ -2219,17 +2163,15 @@ namespace JS {
 - (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleNullable::Constants::Builder>)getConstants;
 
 @end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'NativeSampleTurboModuleNullable'
-     */
-    class JSI_EXPORT NativeSampleTurboModuleNullableSpecJSI : public ObjCTurboModule {
-    public:
-      NativeSampleTurboModuleNullableSpecJSI(const ObjCTurboModule::InitParams &params);
-    };
-  } // namespace react
-} // namespace facebook
+namespace facebook::react {
+  /**
+   * ObjC++ class for module 'NativeSampleTurboModuleNullable'
+   */
+  class JSI_EXPORT NativeSampleTurboModuleNullableSpecJSI : public ObjCTurboModule {
+  public:
+    NativeSampleTurboModuleNullableSpecJSI(const ObjCTurboModule::InitParams &params);
+  };
+} // namespace facebook::react
 namespace JS {
   namespace NativeSampleTurboModuleNullableAndOptional {
     struct SpecGetObjectShapeArg {
@@ -2311,17 +2253,15 @@ namespace JS {
 - (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleNullableAndOptional::Constants::Builder>)getConstants;
 
 @end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'NativeSampleTurboModuleNullableAndOptional'
-     */
-    class JSI_EXPORT NativeSampleTurboModuleNullableAndOptionalSpecJSI : public ObjCTurboModule {
-    public:
-      NativeSampleTurboModuleNullableAndOptionalSpecJSI(const ObjCTurboModule::InitParams &params);
-    };
-  } // namespace react
-} // namespace facebook
+namespace facebook::react {
+  /**
+   * ObjC++ class for module 'NativeSampleTurboModuleNullableAndOptional'
+   */
+  class JSI_EXPORT NativeSampleTurboModuleNullableAndOptionalSpecJSI : public ObjCTurboModule {
+  public:
+    NativeSampleTurboModuleNullableAndOptionalSpecJSI(const ObjCTurboModule::InitParams &params);
+  };
+} // namespace facebook::react
 namespace JS {
   namespace NativeSampleTurboModuleOptional {
     struct SpecGetObjectShapeArg {
@@ -2403,17 +2343,15 @@ namespace JS {
 - (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleOptional::Constants::Builder>)getConstants;
 
 @end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'NativeSampleTurboModuleOptional'
-     */
-    class JSI_EXPORT NativeSampleTurboModuleOptionalSpecJSI : public ObjCTurboModule {
-    public:
-      NativeSampleTurboModuleOptionalSpecJSI(const ObjCTurboModule::InitParams &params);
-    };
-  } // namespace react
-} // namespace facebook
+namespace facebook::react {
+  /**
+   * ObjC++ class for module 'NativeSampleTurboModuleOptional'
+   */
+  class JSI_EXPORT NativeSampleTurboModuleOptionalSpecJSI : public ObjCTurboModule {
+  public:
+    NativeSampleTurboModuleOptionalSpecJSI(const ObjCTurboModule::InitParams &params);
+  };
+} // namespace facebook::react
 
 @protocol NativeStringTurboModuleSpec <RCTBridgeModule, RCTTurboModule>
 
@@ -2421,17 +2359,15 @@ namespace facebook {
 - (NSString *)getStringWithAlias:(NSString *)arg;
 
 @end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'NativeStringTurboModule'
-     */
-    class JSI_EXPORT NativeStringTurboModuleSpecJSI : public ObjCTurboModule {
-    public:
-      NativeStringTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
-    };
-  } // namespace react
-} // namespace facebook
+namespace facebook::react {
+  /**
+   * ObjC++ class for module 'NativeStringTurboModule'
+   */
+  class JSI_EXPORT NativeStringTurboModuleSpecJSI : public ObjCTurboModule {
+  public:
+    NativeStringTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
+  };
+} // namespace facebook::react
 
 
 
@@ -2772,9 +2708,8 @@ exports[`GenerateModuleObjCpp can generate an implementation file NativeModule s
 #import \\"RNCodegenModuleFixtures.h\\"
 
 
-namespace facebook {
-  namespace react {
-    
+namespace facebook::react {
+  
     static facebook::jsi::Value __hostFunction_NativeArrayTurboModuleSpecJSI_getArray(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ArrayKind, \\"getArray\\", @selector(getArray:), args, count);
     }
@@ -2787,9 +2722,9 @@ namespace facebook {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ArrayKind, \\"getArrayWithAlias\\", @selector(getArrayWithAlias:b:), args, count);
     }
 
-    NativeArrayTurboModuleSpecJSI::NativeArrayTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
-      : ObjCTurboModule(params) {
-        
+  NativeArrayTurboModuleSpecJSI::NativeArrayTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
+    : ObjCTurboModule(params) {
+      
         methodMap_[\\"getArray\\"] = MethodMetadata {1, __hostFunction_NativeArrayTurboModuleSpecJSI_getArray};
         
         
@@ -2798,13 +2733,11 @@ namespace facebook {
         
         methodMap_[\\"getArrayWithAlias\\"] = MethodMetadata {2, __hostFunction_NativeArrayTurboModuleSpecJSI_getArrayWithAlias};
         
-    }
-  } // namespace react
-} // namespace facebook
+  }
+} // namespace facebook::react
 
-namespace facebook {
-  namespace react {
-    
+namespace facebook::react {
+  
     static facebook::jsi::Value __hostFunction_NativeBooleanTurboModuleSpecJSI_getBoolean(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, BooleanKind, \\"getBoolean\\", @selector(getBoolean:), args, count);
     }
@@ -2813,21 +2746,19 @@ namespace facebook {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, BooleanKind, \\"getBooleanWithAlias\\", @selector(getBooleanWithAlias:), args, count);
     }
 
-    NativeBooleanTurboModuleSpecJSI::NativeBooleanTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
-      : ObjCTurboModule(params) {
-        
+  NativeBooleanTurboModuleSpecJSI::NativeBooleanTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
+    : ObjCTurboModule(params) {
+      
         methodMap_[\\"getBoolean\\"] = MethodMetadata {1, __hostFunction_NativeBooleanTurboModuleSpecJSI_getBoolean};
         
         
         methodMap_[\\"getBooleanWithAlias\\"] = MethodMetadata {1, __hostFunction_NativeBooleanTurboModuleSpecJSI_getBooleanWithAlias};
         
-    }
-  } // namespace react
-} // namespace facebook
+  }
+} // namespace facebook::react
 
-namespace facebook {
-  namespace react {
-    
+namespace facebook::react {
+  
     static facebook::jsi::Value __hostFunction_NativeCallbackTurboModuleSpecJSI_getValueWithCallback(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, \\"getValueWithCallback\\", @selector(getValueWithCallback:), args, count);
     }
@@ -2836,17 +2767,16 @@ namespace facebook {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, \\"getValueWithCallbackWithAlias\\", @selector(getValueWithCallbackWithAlias:), args, count);
     }
 
-    NativeCallbackTurboModuleSpecJSI::NativeCallbackTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
-      : ObjCTurboModule(params) {
-        
+  NativeCallbackTurboModuleSpecJSI::NativeCallbackTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
+    : ObjCTurboModule(params) {
+      
         methodMap_[\\"getValueWithCallback\\"] = MethodMetadata {1, __hostFunction_NativeCallbackTurboModuleSpecJSI_getValueWithCallback};
         
         
         methodMap_[\\"getValueWithCallbackWithAlias\\"] = MethodMetadata {1, __hostFunction_NativeCallbackTurboModuleSpecJSI_getValueWithCallbackWithAlias};
         
-    }
-  } // namespace react
-} // namespace facebook
+  }
+} // namespace facebook::react
 @implementation RCTCxxConvert (NativeEnumTurboModule_StateType)
 + (RCTManagedPointer *)JS_NativeEnumTurboModule_StateType:(id)json
 {
@@ -2859,9 +2789,8 @@ namespace facebook {
   return facebook::react::managedPointer<JS::NativeEnumTurboModule::StateTypeWithEnums>(json);
 }
 @end
-namespace facebook {
-  namespace react {
-    
+namespace facebook::react {
+  
     static facebook::jsi::Value __hostFunction_NativeEnumTurboModuleSpecJSI_getStatusRegular(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, StringKind, \\"getStatusRegular\\", @selector(getStatusRegular:), args, count);
     }
@@ -2886,9 +2815,9 @@ namespace facebook {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getStateTypeWithEnums\\", @selector(getStateTypeWithEnums:), args, count);
     }
 
-    NativeEnumTurboModuleSpecJSI::NativeEnumTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
-      : ObjCTurboModule(params) {
-        
+  NativeEnumTurboModuleSpecJSI::NativeEnumTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
+    : ObjCTurboModule(params) {
+      
         methodMap_[\\"getStatusRegular\\"] = MethodMetadata {1, __hostFunction_NativeEnumTurboModuleSpecJSI_getStatusRegular};
         setMethodArgConversionSelector(@\\"getStatusRegular\\", 0, @\\"JS_NativeEnumTurboModule_StateType:\\");
         
@@ -2906,13 +2835,11 @@ namespace facebook {
         
         methodMap_[\\"getStateTypeWithEnums\\"] = MethodMetadata {1, __hostFunction_NativeEnumTurboModuleSpecJSI_getStateTypeWithEnums};
         setMethodArgConversionSelector(@\\"getStateTypeWithEnums\\", 0, @\\"JS_NativeEnumTurboModule_StateTypeWithEnums:\\");
-    }
-  } // namespace react
-} // namespace facebook
+  }
+} // namespace facebook::react
 
-namespace facebook {
-  namespace react {
-    
+namespace facebook::react {
+  
     static facebook::jsi::Value __hostFunction_NativeNullableTurboModuleSpecJSI_getBool(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, BooleanKind, \\"getBool\\", @selector(getBool:), args, count);
     }
@@ -2937,9 +2864,9 @@ namespace facebook {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, \\"getValueWithPromise\\", @selector(getValueWithPromise:reject:), args, count);
     }
 
-    NativeNullableTurboModuleSpecJSI::NativeNullableTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
-      : ObjCTurboModule(params) {
-        
+  NativeNullableTurboModuleSpecJSI::NativeNullableTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
+    : ObjCTurboModule(params) {
+      
         methodMap_[\\"getBool\\"] = MethodMetadata {1, __hostFunction_NativeNullableTurboModuleSpecJSI_getBool};
         
         
@@ -2957,13 +2884,11 @@ namespace facebook {
         
         methodMap_[\\"getValueWithPromise\\"] = MethodMetadata {0, __hostFunction_NativeNullableTurboModuleSpecJSI_getValueWithPromise};
         
-    }
-  } // namespace react
-} // namespace facebook
+  }
+} // namespace facebook::react
 
-namespace facebook {
-  namespace react {
-    
+namespace facebook::react {
+  
     static facebook::jsi::Value __hostFunction_NativeNumberTurboModuleSpecJSI_getNumber(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, NumberKind, \\"getNumber\\", @selector(getNumber:), args, count);
     }
@@ -2972,17 +2897,16 @@ namespace facebook {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, NumberKind, \\"getNumberWithAlias\\", @selector(getNumberWithAlias:), args, count);
     }
 
-    NativeNumberTurboModuleSpecJSI::NativeNumberTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
-      : ObjCTurboModule(params) {
-        
+  NativeNumberTurboModuleSpecJSI::NativeNumberTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
+    : ObjCTurboModule(params) {
+      
         methodMap_[\\"getNumber\\"] = MethodMetadata {1, __hostFunction_NativeNumberTurboModuleSpecJSI_getNumber};
         
         
         methodMap_[\\"getNumberWithAlias\\"] = MethodMetadata {1, __hostFunction_NativeNumberTurboModuleSpecJSI_getNumberWithAlias};
         
-    }
-  } // namespace react
-} // namespace facebook
+  }
+} // namespace facebook::react
 @implementation RCTCxxConvert (NativeObjectTurboModule_SpecDifficultObjectAE)
 + (RCTManagedPointer *)JS_NativeObjectTurboModule_SpecDifficultObjectAE:(id)json
 {
@@ -2995,9 +2919,8 @@ namespace facebook {
   return facebook::react::managedPointer<JS::NativeObjectTurboModule::SpecDifficultObjectA>(json);
 }
 @end
-namespace facebook {
-  namespace react {
-    
+namespace facebook::react {
+  
     static facebook::jsi::Value __hostFunction_NativeObjectTurboModuleSpecJSI_getGenericObject(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getGenericObject\\", @selector(getGenericObject:), args, count);
     }
@@ -3018,9 +2941,9 @@ namespace facebook {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getConstants\\", @selector(getConstants), args, count);
     }
 
-    NativeObjectTurboModuleSpecJSI::NativeObjectTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
-      : ObjCTurboModule(params) {
-        
+  NativeObjectTurboModuleSpecJSI::NativeObjectTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
+    : ObjCTurboModule(params) {
+      
         methodMap_[\\"getGenericObject\\"] = MethodMetadata {1, __hostFunction_NativeObjectTurboModuleSpecJSI_getGenericObject};
         
         
@@ -3035,25 +2958,22 @@ namespace facebook {
         
         methodMap_[\\"getConstants\\"] = MethodMetadata {0, __hostFunction_NativeObjectTurboModuleSpecJSI_getConstants};
         
-    }
-  } // namespace react
-} // namespace facebook
+  }
+} // namespace facebook::react
 
-namespace facebook {
-  namespace react {
-    
+namespace facebook::react {
+  
     static facebook::jsi::Value __hostFunction_NativeOptionalObjectTurboModuleSpecJSI_getConstants(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getConstants\\", @selector(getConstants), args, count);
     }
 
-    NativeOptionalObjectTurboModuleSpecJSI::NativeOptionalObjectTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
-      : ObjCTurboModule(params) {
-        
+  NativeOptionalObjectTurboModuleSpecJSI::NativeOptionalObjectTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
+    : ObjCTurboModule(params) {
+      
         methodMap_[\\"getConstants\\"] = MethodMetadata {0, __hostFunction_NativeOptionalObjectTurboModuleSpecJSI_getConstants};
         
-    }
-  } // namespace react
-} // namespace facebook
+  }
+} // namespace facebook::react
 @implementation RCTCxxConvert (NativePartialAnnotationTurboModule_SpecGetSomeObjFromPartialSomeObjValue)
 + (RCTManagedPointer *)JS_NativePartialAnnotationTurboModule_SpecGetSomeObjFromPartialSomeObjValue:(id)json
 {
@@ -3072,9 +2992,8 @@ namespace facebook {
   return facebook::react::managedPointer<JS::NativePartialAnnotationTurboModule::SpecGetPartialPartialValue2>(json);
 }
 @end
-namespace facebook {
-  namespace react {
-    
+namespace facebook::react {
+  
     static facebook::jsi::Value __hostFunction_NativePartialAnnotationTurboModuleSpecJSI_getSomeObj(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getSomeObj\\", @selector(getSomeObj), args, count);
     }
@@ -3091,9 +3010,9 @@ namespace facebook {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getPartialPartial\\", @selector(getPartialPartial:value2:), args, count);
     }
 
-    NativePartialAnnotationTurboModuleSpecJSI::NativePartialAnnotationTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
-      : ObjCTurboModule(params) {
-        
+  NativePartialAnnotationTurboModuleSpecJSI::NativePartialAnnotationTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
+    : ObjCTurboModule(params) {
+      
         methodMap_[\\"getSomeObj\\"] = MethodMetadata {0, __hostFunction_NativePartialAnnotationTurboModuleSpecJSI_getSomeObj};
         
         
@@ -3106,13 +3025,11 @@ namespace facebook {
         methodMap_[\\"getPartialPartial\\"] = MethodMetadata {2, __hostFunction_NativePartialAnnotationTurboModuleSpecJSI_getPartialPartial};
         setMethodArgConversionSelector(@\\"getPartialPartial\\", 0, @\\"JS_NativePartialAnnotationTurboModule_SpecGetPartialPartialValue1:\\");
         setMethodArgConversionSelector(@\\"getPartialPartial\\", 1, @\\"JS_NativePartialAnnotationTurboModule_SpecGetPartialPartialValue2:\\");
-    }
-  } // namespace react
-} // namespace facebook
+  }
+} // namespace facebook::react
 
-namespace facebook {
-  namespace react {
-    
+namespace facebook::react {
+  
     static facebook::jsi::Value __hostFunction_NativePromiseTurboModuleSpecJSI_getValueWithPromise(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, \\"getValueWithPromise\\", @selector(getValueWithPromise:resolve:reject:), args, count);
     }
@@ -3121,17 +3038,16 @@ namespace facebook {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, \\"getValueWithPromiseWithAlias\\", @selector(getValueWithPromiseWithAlias:resolve:reject:), args, count);
     }
 
-    NativePromiseTurboModuleSpecJSI::NativePromiseTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
-      : ObjCTurboModule(params) {
-        
+  NativePromiseTurboModuleSpecJSI::NativePromiseTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
+    : ObjCTurboModule(params) {
+      
         methodMap_[\\"getValueWithPromise\\"] = MethodMetadata {1, __hostFunction_NativePromiseTurboModuleSpecJSI_getValueWithPromise};
         
         
         methodMap_[\\"getValueWithPromiseWithAlias\\"] = MethodMetadata {1, __hostFunction_NativePromiseTurboModuleSpecJSI_getValueWithPromiseWithAlias};
         
-    }
-  } // namespace react
-} // namespace facebook
+  }
+} // namespace facebook::react
 @implementation RCTCxxConvert (NativeSampleTurboModule_SpecGetObjectShapeArg)
 + (RCTManagedPointer *)JS_NativeSampleTurboModule_SpecGetObjectShapeArg:(id)json
 {
@@ -3144,9 +3060,8 @@ namespace facebook {
   return facebook::react::managedPointer<JS::NativeSampleTurboModule::Animal>(json);
 }
 @end
-namespace facebook {
-  namespace react {
-    
+namespace facebook::react {
+  
     static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_voidFunc(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, \\"voidFunc\\", @selector(voidFunc), args, count);
     }
@@ -3199,9 +3114,9 @@ namespace facebook {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getConstants\\", @selector(getConstants), args, count);
     }
 
-    NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
-      : ObjCTurboModule(params) {
-        
+  NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
+    : ObjCTurboModule(params) {
+      
         methodMap_[\\"voidFunc\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleSpecJSI_voidFunc};
         
         
@@ -3240,13 +3155,11 @@ namespace facebook {
         
         methodMap_[\\"getConstants\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleSpecJSI_getConstants};
         
-    }
-  } // namespace react
-} // namespace facebook
+  }
+} // namespace facebook::react
 
-namespace facebook {
-  namespace react {
-    
+namespace facebook::react {
+  
     static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleArraysSpecJSI_voidFunc(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, \\"voidFunc\\", @selector(voidFunc), args, count);
     }
@@ -3299,9 +3212,9 @@ namespace facebook {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getConstants\\", @selector(getConstants), args, count);
     }
 
-    NativeSampleTurboModuleArraysSpecJSI::NativeSampleTurboModuleArraysSpecJSI(const ObjCTurboModule::InitParams &params)
-      : ObjCTurboModule(params) {
-        
+  NativeSampleTurboModuleArraysSpecJSI::NativeSampleTurboModuleArraysSpecJSI(const ObjCTurboModule::InitParams &params)
+    : ObjCTurboModule(params) {
+      
         methodMap_[\\"voidFunc\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleArraysSpecJSI_voidFunc};
         
         
@@ -3340,9 +3253,8 @@ namespace facebook {
         
         methodMap_[\\"getConstants\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleArraysSpecJSI_getConstants};
         
-    }
-  } // namespace react
-} // namespace facebook
+  }
+} // namespace facebook::react
 @implementation RCTCxxConvert (NativeSampleTurboModuleNullable_SpecGetObjectShapeArg)
 + (RCTManagedPointer *)JS_NativeSampleTurboModuleNullable_SpecGetObjectShapeArg:(id)json
 {
@@ -3355,9 +3267,8 @@ namespace facebook {
   return facebook::react::managedPointer<JS::NativeSampleTurboModuleNullable::Animal>(json);
 }
 @end
-namespace facebook {
-  namespace react {
-    
+namespace facebook::react {
+  
     static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableSpecJSI_voidFunc(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, \\"voidFunc\\", @selector(voidFunc), args, count);
     }
@@ -3410,9 +3321,9 @@ namespace facebook {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getConstants\\", @selector(getConstants), args, count);
     }
 
-    NativeSampleTurboModuleNullableSpecJSI::NativeSampleTurboModuleNullableSpecJSI(const ObjCTurboModule::InitParams &params)
-      : ObjCTurboModule(params) {
-        
+  NativeSampleTurboModuleNullableSpecJSI::NativeSampleTurboModuleNullableSpecJSI(const ObjCTurboModule::InitParams &params)
+    : ObjCTurboModule(params) {
+      
         methodMap_[\\"voidFunc\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleNullableSpecJSI_voidFunc};
         
         
@@ -3451,9 +3362,8 @@ namespace facebook {
         
         methodMap_[\\"getConstants\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleNullableSpecJSI_getConstants};
         
-    }
-  } // namespace react
-} // namespace facebook
+  }
+} // namespace facebook::react
 @implementation RCTCxxConvert (NativeSampleTurboModuleNullableAndOptional_SpecGetObjectShapeArg)
 + (RCTManagedPointer *)JS_NativeSampleTurboModuleNullableAndOptional_SpecGetObjectShapeArg:(id)json
 {
@@ -3466,9 +3376,8 @@ namespace facebook {
   return facebook::react::managedPointer<JS::NativeSampleTurboModuleNullableAndOptional::Animal>(json);
 }
 @end
-namespace facebook {
-  namespace react {
-    
+namespace facebook::react {
+  
     static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableAndOptionalSpecJSI_voidFunc(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, \\"voidFunc\\", @selector(voidFunc), args, count);
     }
@@ -3521,9 +3430,9 @@ namespace facebook {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getConstants\\", @selector(getConstants), args, count);
     }
 
-    NativeSampleTurboModuleNullableAndOptionalSpecJSI::NativeSampleTurboModuleNullableAndOptionalSpecJSI(const ObjCTurboModule::InitParams &params)
-      : ObjCTurboModule(params) {
-        
+  NativeSampleTurboModuleNullableAndOptionalSpecJSI::NativeSampleTurboModuleNullableAndOptionalSpecJSI(const ObjCTurboModule::InitParams &params)
+    : ObjCTurboModule(params) {
+      
         methodMap_[\\"voidFunc\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleNullableAndOptionalSpecJSI_voidFunc};
         
         
@@ -3562,9 +3471,8 @@ namespace facebook {
         
         methodMap_[\\"getConstants\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleNullableAndOptionalSpecJSI_getConstants};
         
-    }
-  } // namespace react
-} // namespace facebook
+  }
+} // namespace facebook::react
 @implementation RCTCxxConvert (NativeSampleTurboModuleOptional_SpecGetObjectShapeArg)
 + (RCTManagedPointer *)JS_NativeSampleTurboModuleOptional_SpecGetObjectShapeArg:(id)json
 {
@@ -3577,9 +3485,8 @@ namespace facebook {
   return facebook::react::managedPointer<JS::NativeSampleTurboModuleOptional::Animal>(json);
 }
 @end
-namespace facebook {
-  namespace react {
-    
+namespace facebook::react {
+  
     static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleOptionalSpecJSI_voidFunc(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, \\"voidFunc\\", @selector(voidFunc), args, count);
     }
@@ -3632,9 +3539,9 @@ namespace facebook {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getConstants\\", @selector(getConstants), args, count);
     }
 
-    NativeSampleTurboModuleOptionalSpecJSI::NativeSampleTurboModuleOptionalSpecJSI(const ObjCTurboModule::InitParams &params)
-      : ObjCTurboModule(params) {
-        
+  NativeSampleTurboModuleOptionalSpecJSI::NativeSampleTurboModuleOptionalSpecJSI(const ObjCTurboModule::InitParams &params)
+    : ObjCTurboModule(params) {
+      
         methodMap_[\\"voidFunc\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleOptionalSpecJSI_voidFunc};
         
         
@@ -3673,13 +3580,11 @@ namespace facebook {
         
         methodMap_[\\"getConstants\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleOptionalSpecJSI_getConstants};
         
-    }
-  } // namespace react
-} // namespace facebook
+  }
+} // namespace facebook::react
 
-namespace facebook {
-  namespace react {
-    
+namespace facebook::react {
+  
     static facebook::jsi::Value __hostFunction_NativeStringTurboModuleSpecJSI_getString(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, StringKind, \\"getString\\", @selector(getString:), args, count);
     }
@@ -3688,16 +3593,15 @@ namespace facebook {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, StringKind, \\"getStringWithAlias\\", @selector(getStringWithAlias:), args, count);
     }
 
-    NativeStringTurboModuleSpecJSI::NativeStringTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
-      : ObjCTurboModule(params) {
-        
+  NativeStringTurboModuleSpecJSI::NativeStringTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
+    : ObjCTurboModule(params) {
+      
         methodMap_[\\"getString\\"] = MethodMetadata {1, __hostFunction_NativeStringTurboModuleSpecJSI_getString};
         
         
         methodMap_[\\"getStringWithAlias\\"] = MethodMetadata {1, __hostFunction_NativeStringTurboModuleSpecJSI_getStringWithAlias};
         
-    }
-  } // namespace react
-} // namespace facebook
+  }
+} // namespace facebook::react
 "
 `;

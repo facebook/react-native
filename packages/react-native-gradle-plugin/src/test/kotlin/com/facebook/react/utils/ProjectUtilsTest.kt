@@ -263,7 +263,7 @@ class ProjectUtilsTest {
   @Test
   fun needsCodegenFromPackageJson_withCodegenConfigInModel_returnsTrue() {
     val project = createProject()
-    val model = ModelPackageJson("1000.0.0", ModelCodegenConfig(null, null, null, null))
+    val model = ModelPackageJson("1000.0.0", ModelCodegenConfig(null, null, null, null, false))
 
     assertTrue(project.needsCodegenFromPackageJson(model))
   }

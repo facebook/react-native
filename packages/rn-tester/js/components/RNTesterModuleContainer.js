@@ -85,7 +85,7 @@ export default function RNTesterModuleContainer(props: Props): React.Node {
     },
   ];
 
-  return module.showIndividualExamples === true && example != null ? (
+  return example != null ? (
     <>
       <RNTTestDetails
         title={example.title}
@@ -93,7 +93,7 @@ export default function RNTesterModuleContainer(props: Props): React.Node {
         expect={example.expect}
         theme={theme}
       />
-      <View style={styles.examplesContainer}>
+      <View style={styles.examplesContainer} testID="example-container">
         <example.render />
       </View>
     </>
@@ -139,7 +139,9 @@ function Header(props: {
               : props.theme.BackgroundColor,
         },
       ]}>
-      <Text style={styles.headerDescription}>{props.description}</Text>
+      <Text style={[styles.headerDescription, {color: props.theme.LabelColor}]}>
+        {props.description}
+      </Text>
     </View>
   );
 }

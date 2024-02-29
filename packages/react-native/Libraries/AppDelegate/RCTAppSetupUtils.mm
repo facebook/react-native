@@ -24,6 +24,17 @@
 #import <React/RCTFabricSurface.h>
 #import <React/RCTSurfaceHostingProxyRootView.h>
 
+// jsinspector-modern
+#import <jsinspector-modern/InspectorFlags.h>
+
+#if __has_include(<ReactCodegen/RCTModulesConformingToProtocolsProvider.h>)
+#define USE_OSS_CODEGEN 1
+#import <ReactCodegen/RCTModulesConformingToProtocolsProvider.h>
+#else
+// Meta internal system do not generate the RCTModulesConformingToProtocolsProvider.h file
+#define USE_OSS_CODEGEN 0
+#endif
+
 void RCTAppSetupPrepareApp(UIApplication *application, BOOL turboModuleEnabled)
 {
   RCTEnableTurboModule(turboModuleEnabled);
@@ -49,23 +60,59 @@ RCTAppSetupDefaultRootView(RCTBridge *bridge, NSString *moduleName, NSDictionary
 
 id<RCTTurboModule> RCTAppSetupDefaultModuleFromClass(Class moduleClass)
 {
+  // private block used to filter out modules depending on protocol conformance
+  NSArray * (^extractModuleConformingToProtocol)(RCTModuleRegistry *, Protocol *) =
+      ^NSArray *(RCTModuleRegistry *moduleRegistry, Protocol *protocol)
+  {
+    NSArray<NSString *> *classNames = @[];
+
+#if USE_OSS_CODEGEN
+    if (protocol == @protocol(RCTImageURLLoader)) {
+      classNames = [RCTModulesConformingToProtocolsProvider imageURLLoaderClassNames];
+    } else if (protocol == @protocol(RCTImageDataDecoder)) {
+      classNames = [RCTModulesConformingToProtocolsProvider imageDataDecoderClassNames];
+    } else if (protocol == @protocol(RCTURLRequestHandler)) {
+      classNames = [RCTModulesConformingToProtocolsProvider URLRequestHandlerClassNames];
+    }
+#endif
+
+    NSMutableArray *modules = [NSMutableArray new];
+
+    for (NSString *className in classNames) {
+      const char *cModuleName = [className cStringUsingEncoding:NSUTF8StringEncoding];
+      id moduleFromLibrary = [moduleRegistry moduleForName:cModuleName];
+      if (![moduleFromLibrary conformsToProtocol:protocol]) {
+        continue;
+      }
+      [modules addObject:moduleFromLibrary];
+    }
+    return modules;
+  };
+
   // Set up the default RCTImageLoader and RCTNetworking modules.
   if (moduleClass == RCTImageLoader.class) {
     return [[moduleClass alloc] initWithRedirectDelegate:nil
         loadersProvider:^NSArray<id<RCTImageURLLoader>> *(RCTModuleRegistry *moduleRegistry) {
-          return @[ [RCTBundleAssetImageLoader new] ];
+          NSArray *imageURLLoaderModules =
+              extractModuleConformingToProtocol(moduleRegistry, @protocol(RCTImageURLLoader));
+
+          return [@[ [RCTBundleAssetImageLoader new] ] arrayByAddingObjectsFromArray:imageURLLoaderModules];
         }
         decodersProvider:^NSArray<id<RCTImageDataDecoder>> *(RCTModuleRegistry *moduleRegistry) {
-          return @[ [RCTGIFImageDecoder new] ];
+          NSArray *imageDataDecoder = extractModuleConformingToProtocol(moduleRegistry, @protocol(RCTImageDataDecoder));
+          return [@[ [RCTGIFImageDecoder new] ] arrayByAddingObjectsFromArray:imageDataDecoder];
         }];
   } else if (moduleClass == RCTNetworking.class) {
     return [[moduleClass alloc]
         initWithHandlersProvider:^NSArray<id<RCTURLRequestHandler>> *(RCTModuleRegistry *moduleRegistry) {
-          return @[
+          NSArray *URLRequestHandlerModules =
+              extractModuleConformingToProtocol(moduleRegistry, @protocol(RCTURLRequestHandler));
+          return [@[
             [RCTHTTPRequestHandler new],
             [RCTDataRequestHandler new],
             [RCTFileRequestHandler new],
-          ];
+            [moduleRegistry moduleForName:"BlobModule"],
+          ] arrayByAddingObjectsFromArray:URLRequestHandlerModules];
         }];
   }
   // No custom initializer here.
@@ -90,11 +137,11 @@ std::unique_ptr<facebook::react::JSExecutorFactory> RCTAppSetupDefaultJsExecutor
   [turboModuleManager moduleForName:"RCTDevMenu"];
 #endif // end RCT_DEV
 
-#if RCT_USE_HERMES
+#if USE_HERMES
   return std::make_unique<facebook::react::HermesExecutorFactory>(
 #else
   return std::make_unique<facebook::react::JSCExecutorFactory>(
-#endif // end RCT_USE_HERMES
+#endif // USE_HERMES
       facebook::react::RCTJSIExecutorRuntimeInstaller(
           [turboModuleManager, bridge, runtimeScheduler](facebook::jsi::Runtime &runtime) {
             if (!bridge || !turboModuleManager) {
@@ -111,11 +158,11 @@ std::unique_ptr<facebook::react::JSExecutorFactory> RCTAppSetupJsExecutorFactory
     RCTBridge *bridge,
     const std::shared_ptr<facebook::react::RuntimeScheduler> &runtimeScheduler)
 {
-#if RCT_USE_HERMES
+#if USE_HERMES
   return std::make_unique<facebook::react::HermesExecutorFactory>(
 #else
   return std::make_unique<facebook::react::JSCExecutorFactory>(
-#endif // end RCT_USE_HERMES
+#endif // USE_HERMES
       facebook::react::RCTJSIExecutorRuntimeInstaller([bridge, runtimeScheduler](facebook::jsi::Runtime &runtime) {
         if (!bridge) {
           return;

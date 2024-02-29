@@ -46,15 +46,6 @@ commands:
               echo "rbenv found; Skipping installation"
             fi
 
-            xcode=$(xcodebuild -version | cut -d' ' -f2 | head -n 1)
-            # For some reason, the Xcode 14.1 machnine is already properly configured.
-            if [[ $xcode != '14.1' ]]; then
-              brew reinstall libyaml
-              gem install psych -- --with-libyaml-dir=$(brew --prefix libyaml)
-              export RUBY_CONFIGURE_OPTS=--with-libyaml-dir=$(brew --prefix libyaml)
-            fi
-
-
             # Install the right version of ruby
             if [[ -z "$(rbenv versions | grep << parameters.ruby_version >>)" ]]; then
               # ensure that `ruby-build` can see all the available versions of Ruby
@@ -66,7 +57,11 @@ commands:
 
             # Set ruby dependencies
             rbenv global << parameters.ruby_version >>
-            gem install bundler
+            if [[ << parameters.ruby_version >> == "2.6.10" ]]; then
+              gem install bundler -v 2.4.22
+            else
+              gem install bundler
+            fi
             bundle check || bundle install --path vendor/bundle --clean
       - save_cache:
           key: *rbenv_cache_key
@@ -84,18 +79,6 @@ commands:
         type: string
 
     steps:
-      - run:
-          name: Move to Node 18 if Needed
-          command: |
-            node_version=$(node -v)
-            major_version=$(echo $node_version | cut -c 2- | cut -d '.' -f 1)
-
-            if [[ $major_version < 18 ]]; then
-              nvm install 18.18.0
-              nvm alias default 18.18.0
-            else
-              echo 'We have the right node version!'
-            fi
       - restore_cache:
           keys:
             - << parameters.yarn_base_cache_key >>-{{ arch }}-{{ checksum "yarn.lock" }}
@@ -184,7 +167,7 @@ commands:
     steps:
       - run:
           name: "Run Tests: << parameters.platform >> End-to-End Tests"
-          command: node ./scripts/run-ci-e2e-tests.js --<< parameters.platform >> --retries << parameters.retries >>
+          command: node ./scripts/e2e/run-ci-e2e-tests.js --<< parameters.platform >> --retries << parameters.retries >>
 
   report_bundle_size:
     parameters:

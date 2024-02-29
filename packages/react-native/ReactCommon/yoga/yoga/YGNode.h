@@ -262,18 +262,24 @@ YG_EXPORT void YGNodeSetNodeType(YGNodeRef node, YGNodeType nodeType);
  */
 YG_EXPORT YGNodeType YGNodeGetNodeType(YGNodeConstRef node);
 
-typedef void (*YGPrintFunc)(YGNodeConstRef node);
+/**
+ * Make it so that this node will always form a containing block for any
+ * descendant nodes. This is useful for when a node has a property outside of
+ * of Yoga that will form a containing block. For example, transforms or some of
+ * the others listed in
+ * https://developer.mozilla.org/en-US/docs/Web/CSS/Containing_block
+ */
+YG_EXPORT void YGNodeSetAlwaysFormsContainingBlock(
+    YGNodeRef node,
+    bool alwaysFormsContainingBlock);
 
 /**
- * Set a function to be called when configured to print nodes during layout for
- * debugging.
+ * Whether the node will always form a containing block for any descendant. This
+ * can happen in situation where the client implements something like a
+ * transform that can affect containing blocks but is not handled by Yoga
+ * directly.
  */
-YG_EXPORT void YGNodeSetPrintFunc(YGNodeRef node, YGPrintFunc printFunc);
-
-/**
- * Print a node to log output.
- */
-YG_EXPORT void YGNodePrint(YGNodeConstRef node, YGPrintOptions options);
+YG_EXPORT bool YGNodeGetAlwaysFormsContainingBlock(YGNodeConstRef node);
 
 /**
  * @deprecated

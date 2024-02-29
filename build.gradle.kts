@@ -11,12 +11,27 @@ plugins {
   alias(libs.plugins.android.application) apply false
   alias(libs.plugins.download) apply false
   alias(libs.plugins.kotlin.android) apply false
+  alias(libs.plugins.binary.compatibility.validator) apply true
 }
 
 val reactAndroidProperties = java.util.Properties()
 
 File("$rootDir/packages/react-native/ReactAndroid/gradle.properties").inputStream().use {
   reactAndroidProperties.load(it)
+}
+
+fun getListReactAndroidProperty(name: String) = reactAndroidProperties.getProperty(name).split(",")
+
+apiValidation {
+  ignoredPackages.addAll(
+      getListReactAndroidProperty("binaryCompatibilityValidator.ignoredPackages"))
+  ignoredClasses.addAll(getListReactAndroidProperty("binaryCompatibilityValidator.ignoredClasses"))
+  nonPublicMarkers.addAll(
+      getListReactAndroidProperty("binaryCompatibilityValidator.nonPublicMarkers"))
+  validationDisabled =
+      reactAndroidProperties
+          .getProperty("binaryCompatibilityValidator.validationDisabled")
+          ?.toBoolean() == true
 }
 
 version =
@@ -30,7 +45,7 @@ version =
 group = "com.facebook.react"
 
 val ndkPath by extra(System.getenv("ANDROID_NDK"))
-val ndkVersion by extra(System.getenv("ANDROID_NDK_VERSION") ?: "26.0.10792818")
+val ndkVersion by extra(System.getenv("ANDROID_NDK_VERSION") ?: libs.versions.ndkVersion.get())
 val sonatypeUsername = findProperty("SONATYPE_USERNAME")?.toString()
 val sonatypePassword = findProperty("SONATYPE_PASSWORD")?.toString()
 
@@ -72,15 +87,6 @@ tasks.register("clean", Delete::class.java) {
 tasks.register("build") {
   description = "Build and test all the React Native relevant projects."
   dependsOn(gradle.includedBuild("react-native-gradle-plugin").task(":build"))
-}
-
-tasks.register("publishAllInsideNpmPackage") {
-  description =
-      "Publish all the artifacts to be available inside the NPM package in the `android` folder."
-  // Due to size constraints of NPM, we publish only react-native and hermes-engine inside
-  // the NPM package.
-  dependsOn(":packages:react-native:ReactAndroid:installArchives")
-  dependsOn(":packages:react-native:ReactAndroid:hermes-engine:installArchives")
 }
 
 tasks.register("publishAllToMavenTempLocal") {

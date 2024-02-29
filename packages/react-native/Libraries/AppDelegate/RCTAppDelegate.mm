@@ -6,12 +6,16 @@
  */
 
 #import "RCTAppDelegate.h"
+#import <React/RCTColorSpaceUtils.h>
 #import <React/RCTCxxBridgeDelegate.h>
+#import <React/RCTLog.h>
 #import <React/RCTRootView.h>
 #import <React/RCTSurfacePresenterBridgeAdapter.h>
+#import <React/RCTUtils.h>
+#import <react/renderer/graphics/ColorComponents.h>
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
+#import "RCTAppDelegate+Protected.h"
 #import "RCTAppSetupUtils.h"
-#import "RCTLegacyInteropComponents.h"
 
 #if RN_DISABLE_OSS_PLUGIN_HEADER
 #import <RCTTurboModulePlugin/RCTTurboModulePlugin.h>
@@ -22,7 +26,6 @@
 #import <React/RCTComponentViewFactory.h>
 #import <React/RCTComponentViewProtocol.h>
 #import <React/RCTFabricSurface.h>
-#import <React/RCTLegacyViewManagerInteropComponentView.h>
 #import <React/RCTSurfaceHostingProxyRootView.h>
 #import <React/RCTSurfacePresenter.h>
 #import <ReactCommon/RCTContextContainerHandling.h>
@@ -35,16 +38,12 @@
 #import <ReactCommon/RCTHost.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
 #import <react/config/ReactNativeConfig.h>
+#import <react/nativemodule/featureflags/NativeReactNativeFeatureFlags.h>
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import <react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h>
 #import <react/runtime/JSRuntimeFactory.h>
 
-static NSString *const kRNConcurrentRoot = @"concurrentRoot";
-
-@interface RCTAppDelegate () <
-    RCTTurboModuleManagerDelegate,
-    RCTComponentViewFactoryComponentProvider,
-    RCTContextContainerHandling> {
+@interface RCTAppDelegate () <RCTComponentViewFactoryComponentProvider, RCTContextContainerHandling> {
   std::shared_ptr<const facebook::react::ReactNativeConfig> _reactNativeConfig;
   facebook::react::ContextContainer::Shared _contextContainer;
 }
@@ -53,9 +52,6 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabricEnabled)
 {
   NSMutableDictionary *mutableProps = [initialProps mutableCopy] ?: [NSMutableDictionary new];
-  // Hardcoding the Concurrent Root as it it not recommended to
-  // have the concurrentRoot turned off when Fabric is enabled.
-  mutableProps[kRNConcurrentRoot] = @(isFabricEnabled);
   return mutableProps;
 }
 
@@ -80,9 +76,11 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+  RCTSetNewArchEnabled([self newArchEnabled]);
+  [RCTColorSpaceUtils applyDefaultColorSpace:self.defaultColorSpace];
   BOOL enableTM = self.turboModuleEnabled;
-  BOOL enableBridgeless = self.bridgelessEnabled;
   BOOL fabricEnabled = self.fabricEnabled;
+  BOOL enableBridgeless = self.bridgelessEnabled;
 
   NSDictionary *initProps = updateInitialProps([self prepareInitialProps], fabricEnabled);
 
@@ -98,7 +96,6 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
     RCTEnableTurboModuleInteropBridgeProxy(YES);
 
     [self createReactHost];
-    [self unstable_registerLegacyComponents];
     [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
     RCTFabricSurface *surface = [_reactHost createSurfaceWithModuleName:self.moduleName initialProperties:initProps];
 
@@ -107,6 +104,7 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
         sizeMeasureMode:RCTSurfaceSizeMeasureModeWidthExact | RCTSurfaceSizeMeasureModeHeightExact];
 
     rootView = (RCTRootView *)surfaceHostingProxyRootView;
+    rootView.backgroundColor = [UIColor systemBackgroundColor];
   } else {
     if (!self.bridge) {
       self.bridge = [self createBridgeWithDelegate:self launchOptions:launchOptions];
@@ -116,12 +114,12 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
                                                                    contextContainer:_contextContainer];
       self.bridge.surfacePresenter = self.bridgeAdapter.surfacePresenter;
 
-      [self unstable_registerLegacyComponents];
       [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
     }
-
     rootView = [self createRootViewWithBridge:self.bridge moduleName:self.moduleName initProps:initProps];
   }
+  [self _logWarnIfCreateRootViewWithBridgeIsOverridden];
+  [self customizeRootView:(RCTRootView *)rootView];
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
   UIViewController *rootViewController = [self createRootViewController];
   [self setRootView:rootView toRootViewController:rootViewController];
@@ -130,6 +128,11 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
   [self.window makeKeyAndVisible];
 
   return YES;
+}
+
+- (void)applicationDidEnterBackground:(UIApplication *)application
+{
+  // Noop
 }
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
@@ -149,6 +152,11 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
   return [[RCTBridge alloc] initWithDelegate:delegate launchOptions:launchOptions];
 }
 
+- (void)customizeRootView:(RCTRootView *)rootView
+{
+  // Override point for customization after application launch.
+}
+
 - (UIView *)createRootViewWithBridge:(RCTBridge *)bridge
                           moduleName:(NSString *)moduleName
                            initProps:(NSDictionary *)initProps
@@ -159,6 +167,21 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
   rootView.backgroundColor = [UIColor systemBackgroundColor];
 
   return rootView;
+}
+
+// TODO T173939093 - Remove _logWarnIfCreateRootViewWithBridgeIsOverridden after 0.74 is cut
+- (void)_logWarnIfCreateRootViewWithBridgeIsOverridden
+{
+  SEL selector = @selector(createRootViewWithBridge:moduleName:initProps:);
+  IMP baseClassImp = method_getImplementation(class_getInstanceMethod([RCTAppDelegate class], selector));
+  IMP currentClassImp = method_getImplementation(class_getInstanceMethod([self class], selector));
+  if (currentClassImp != baseClassImp) {
+    NSString *warnMessage =
+        @"If you are using the `createRootViewWithBridge` to customize the root view appearence,"
+         "for example to set the backgroundColor, please migrate to `customiseView` method.\n"
+         "The `createRootViewWithBridge` method is not invoked in bridgeless.";
+    RCTLogWarn(@"%@", warnMessage);
+  }
 }
 
 - (UIViewController *)createRootViewController
@@ -177,6 +200,7 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 }
 
 #pragma mark - UISceneDelegate
+
 - (void)windowScene:(UIWindowScene *)windowScene
     didUpdateCoordinateSpace:(id<UICoordinateSpace>)previousCoordinateSpace
         interfaceOrientation:(UIInterfaceOrientation)previousInterfaceOrientation
@@ -186,6 +210,7 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 }
 
 #pragma mark - RCTCxxBridgeDelegate
+
 - (std::unique_ptr<facebook::react::JSExecutorFactory>)jsExecutorFactoryForBridge:(RCTBridge *)bridge
 {
   _runtimeScheduler = std::make_shared<facebook::react::RuntimeScheduler>(RCTRuntimeExecutorFromBridge(bridge));
@@ -203,11 +228,16 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
   }
 }
 
+- (RCTColorSpace)defaultColorSpace
+{
+  return RCTColorSpaceSRGB;
+}
+
 #pragma mark - New Arch Enabled settings
 
 - (BOOL)newArchEnabled
 {
-#if USE_NEW_ARCH
+#if RCT_NEW_ARCH_ENABLED
   return YES;
 #else
   return NO;
@@ -226,7 +256,7 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 
 - (BOOL)bridgelessEnabled
 {
-  return NO;
+  return [self newArchEnabled];
 }
 
 #pragma mark - RCTComponentViewFactoryComponentProvider
@@ -250,6 +280,10 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
                                                       jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
 {
+  if (name == facebook::react::NativeReactNativeFeatureFlags::kModuleName) {
+    return std::make_shared<facebook::react::NativeReactNativeFeatureFlags>(jsInvoker);
+  }
+
   return nullptr;
 }
 
@@ -266,13 +300,6 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 }
 
 #pragma mark - New Arch Utilities
-
-- (void)unstable_registerLegacyComponents
-{
-  for (NSString *legacyComponent in [RCTLegacyInteropComponents legacyInteropComponents]) {
-    [RCTLegacyViewManagerInteropComponentView supportLegacyViewManagerWithName:legacyComponent];
-  }
-}
 
 - (void)createReactHost
 {

@@ -27,6 +27,8 @@ import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
+import com.facebook.react.common.annotations.FrameworkAPI;
+import com.facebook.react.common.annotations.UnstableReactNativeAPI;
 import java.lang.ref.WeakReference;
 import java.util.Collection;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -36,6 +38,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
  * CatalystInstance}
  */
 public class ReactContext extends ContextWrapper {
+
   @DoNotStrip
   public interface RCTDeviceEventEmitter extends JavaScriptModule {
     void emit(@NonNull String eventName, @Nullable Object data);
@@ -204,6 +207,20 @@ public class ReactContext extends ContextWrapper {
       raiseCatalystInstanceMissingException();
     }
     return mCatalystInstance.getNativeModule(nativeModuleInterface);
+  }
+
+  /**
+   * @return the RuntimeExecutor, a thread-safe handler for accessing the runtime.
+   * @experimental
+   */
+  @Nullable
+  @FrameworkAPI
+  @UnstableReactNativeAPI
+  public RuntimeExecutor getRuntimeExecutor() {
+    if (mCatalystInstance == null) {
+      raiseCatalystInstanceMissingException();
+    }
+    return mCatalystInstance.getRuntimeExecutor();
   }
 
   /**
@@ -545,14 +562,6 @@ public class ReactContext extends ContextWrapper {
       return mCatalystInstance.getJavaScriptContextHolder();
     }
     return null;
-  }
-
-  public @Nullable JSIModule getJSIModule(JSIModuleType moduleType) {
-    if (!hasActiveReactInstance()) {
-      throw new IllegalStateException(
-          "Unable to retrieve a JSIModule if CatalystInstance is not active.");
-    }
-    return mCatalystInstance.getJSIModule(moduleType);
   }
 
   @DeprecatedInNewArchitecture(

@@ -24,8 +24,7 @@ const PAGES_POLLING_DELAY = 1000;
 
 jest.useFakeTimers();
 
-// TODO T169943794
-xdescribe('inspector proxy HTTP API', () => {
+describe('inspector proxy HTTP API', () => {
   const serverRef = withServerForEachTest({
     logger: undefined,
     projectRoot: '',
@@ -192,6 +191,7 @@ xdescribe('inspector proxy HTTP API', () => {
             faviconUrl: 'https://reactjs.org/favicon.ico',
             id: 'device1-page1',
             reactNative: {
+              capabilities: {},
               logicalDeviceId: 'device1',
             },
             title: 'bar-title',
@@ -206,6 +206,7 @@ xdescribe('inspector proxy HTTP API', () => {
             faviconUrl: 'https://reactjs.org/favicon.ico',
             id: 'device2-page1',
             reactNative: {
+              capabilities: {},
               logicalDeviceId: 'device2',
             },
             title: 'bar-title',
@@ -217,6 +218,45 @@ xdescribe('inspector proxy HTTP API', () => {
       } finally {
         device1.close();
         device2.close();
+      }
+    });
+
+    test('removes pages with duplicate IDs', async () => {
+      const device1 = await createDeviceMock(
+        `${serverRef.serverBaseWsUrl}/inspector/device?device=device1&name=foo&app=bar`,
+        autoCleanup.signal,
+      );
+      try {
+        device1.getPages.mockImplementation(() => [
+          {
+            app: 'bar-app',
+            id: 'page1',
+            title: 'bar-title',
+            vm: 'bar-vm',
+          },
+          {
+            app: 'bar-app-other',
+            id: 'page1',
+            title: 'bar-title-other',
+            vm: 'bar-vm-other',
+          },
+        ]);
+
+        jest.advanceTimersByTime(PAGES_POLLING_DELAY);
+
+        const json = await fetchJson<JsonPagesListResponse>(
+          `${serverRef.serverBaseUrl}${endpoint}`,
+        );
+
+        expect(json).toEqual([
+          expect.objectContaining({
+            id: 'device1-page1',
+            title: 'bar-title-other',
+            vm: 'bar-vm-other',
+          }),
+        ]);
+      } finally {
+        device1.close();
       }
     });
 

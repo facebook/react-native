@@ -81,7 +81,7 @@ YG_EXPORT float YGConfigGetPointScaleFactor(YGConfigConstRef config);
  *
  * By deafult Yoga will prioritize W3C conformance. `Errata` may be set to ask
  * Yoga to produce specific incorrect behaviors. E.g. `YGConfigSetErrata(config,
- * YGErrataPositionStaticBehavesLikeRelative)`.
+ * YGErrataStretchFlexBasis)`.
  *
  * YGErrata is a bitmask, and multiple errata may be set at once. Predfined
  * constants exist for convenience:
@@ -154,10 +154,5 @@ YG_EXPORT bool YGConfigIsExperimentalFeatureEnabled(
 YG_EXPORT void YGConfigSetCloneNodeFunc(
     YGConfigRef config,
     YGCloneNodeFunc callback);
-
-/**
- * Allows printing the Yoga node tree during layout for debugging purposes.
- */
-YG_EXPORT void YGConfigSetPrintTreeFlag(YGConfigRef config, bool enabled);
 
 YG_EXTERN_C_END

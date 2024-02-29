@@ -10,8 +10,8 @@
 
 'use strict';
 
+import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
 import {isPublicInstance as isFabricPublicInstance} from '../ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstanceUtils';
-import ReactNativeFeatureFlags from '../ReactNative/ReactNativeFeatureFlags';
 import useRefEffect from '../Utilities/useRefEffect';
 import {AnimatedEvent} from './AnimatedEvent';
 import NativeAnimatedHelper from './NativeAnimatedHelper';
@@ -37,6 +37,7 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
 ): [ReducedProps<TProps>, CallbackRef<TInstance | null>] {
   const [, scheduleUpdate] = useReducer<number, void>(count => count + 1, 0);
   const onUpdateRef = useRef<?() => void>(null);
+  const timerRef = useRef<TimeoutID | null>(null);
 
   // TODO: Only invalidate `node` if animated props or `style` change. In the
   // previous implementation, we permitted `style` to override props with the
@@ -87,6 +88,25 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
           // $FlowIgnore[not-a-function] - Assume it's still a function.
           // $FlowFixMe[incompatible-use]
           instance.setNativeProps(node.__getAnimatedValue());
+          if (isFabricInstance(instance)) {
+            // Keeping state of Fiber tree and Shadow tree in sync.
+            //
+            // This is done by calling `scheduleUpdate` which will trigger a commit.
+            // However, React commit is not fast enough to drive animations.
+            // This is where setNativeProps comes in handy but the state between
+            // Fiber tree and Shadow tree needs to be kept in sync.
+            // The goal is to call `scheduleUpdate` as little as possible to maintain
+            // performance but frequently enough to keep state in sync.
+            // Debounce is set to 48ms, which is 3 * the duration of a frame.
+            // 3 frames was the highest value where flickering state was not observed.
+            if (timerRef.current != null) {
+              clearTimeout(timerRef.current);
+            }
+            timerRef.current = setTimeout(() => {
+              timerRef.current = null;
+              scheduleUpdate();
+            }, 48);
+          }
         }
       };
 

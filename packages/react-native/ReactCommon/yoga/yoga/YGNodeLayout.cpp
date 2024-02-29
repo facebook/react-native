@@ -25,39 +25,39 @@ float getResolvedLayoutProperty(const YGNodeConstRef nodeRef, const Edge edge) {
 
   if (edge == Edge::Start) {
     if (node->getLayout().direction() == Direction::RTL) {
-      return (node->getLayout().*LayoutMember)(Edge::Right);
+      return (node->getLayout().*LayoutMember)(PhysicalEdge::Right);
     } else {
-      return (node->getLayout().*LayoutMember)(Edge::Left);
+      return (node->getLayout().*LayoutMember)(PhysicalEdge::Left);
     }
   }
 
   if (edge == Edge::End) {
     if (node->getLayout().direction() == Direction::RTL) {
-      return (node->getLayout().*LayoutMember)(Edge::Left);
+      return (node->getLayout().*LayoutMember)(PhysicalEdge::Left);
     } else {
-      return (node->getLayout().*LayoutMember)(Edge::Right);
+      return (node->getLayout().*LayoutMember)(PhysicalEdge::Right);
     }
   }
 
-  return (node->getLayout().*LayoutMember)(edge);
+  return (node->getLayout().*LayoutMember)(static_cast<PhysicalEdge>(edge));
 }
 
 } // namespace
 
 float YGNodeLayoutGetLeft(const YGNodeConstRef node) {
-  return resolveRef(node)->getLayout().position(Edge::Left);
+  return resolveRef(node)->getLayout().position(PhysicalEdge::Left);
 }
 
 float YGNodeLayoutGetTop(const YGNodeConstRef node) {
-  return resolveRef(node)->getLayout().position(Edge::Top);
+  return resolveRef(node)->getLayout().position(PhysicalEdge::Top);
 }
 
 float YGNodeLayoutGetRight(const YGNodeConstRef node) {
-  return resolveRef(node)->getLayout().position(Edge::Right);
+  return resolveRef(node)->getLayout().position(PhysicalEdge::Right);
 }
 
 float YGNodeLayoutGetBottom(const YGNodeConstRef node) {
-  return resolveRef(node)->getLayout().position(Edge::Bottom);
+  return resolveRef(node)->getLayout().position(PhysicalEdge::Bottom);
 }
 
 float YGNodeLayoutGetWidth(const YGNodeConstRef node) {

@@ -9,6 +9,7 @@
  * @oncall react_native
  */
 
+const {PACKAGES_DIR} = require('../consts');
 const {parseArgs} = require('@pkgjs/parseargs');
 // $FlowFixMe[untyped-import]: TODO type ansi-styles
 const ansiStyles = require('ansi-styles');
@@ -26,9 +27,6 @@ const supportsColor = require('supports-color');
 
 const DEVTOOLS_FRONTEND_REPO_URL =
   'https://github.com/facebookexperimental/rn-chrome-devtools-frontend';
-
-const REPO_ROOT = path.resolve(__dirname, '../..');
-const PACKAGES_DIR /*: string */ = path.join(REPO_ROOT, 'packages');
 
 const config = {
   allowPositionals: true,

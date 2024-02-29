@@ -23,8 +23,11 @@ import android.os.Build;
 import android.util.Pair;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
@@ -63,10 +66,12 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 public abstract class DevSupportManagerBase implements DevSupportManager {
 
@@ -104,6 +109,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
   private boolean mIsReceiverRegistered = false;
   private boolean mIsShakeDetectorStarted = false;
   private boolean mIsDevSupportEnabled = false;
+  private boolean mIsPackagerConnected;
   private @Nullable final RedBoxHandler mRedBoxHandler;
   private @Nullable String mLastErrorTitle;
   private @Nullable StackFrame[] mLastErrorStack;
@@ -112,8 +118,6 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
   private @Nullable final DevBundleDownloadListener mBundleDownloadListener;
   private @Nullable List<ErrorCustomizer> mErrorCustomizers;
   private @Nullable PackagerLocationCustomizer mPackagerLocationCustomizer;
-
-  private final InspectorPackagerConnection.BundleStatus mBundleStatus;
 
   private @Nullable final Map<String, RequestHandler> mCustomPackagerCommandHandlers;
 
@@ -134,12 +138,10 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
     mApplicationContext = applicationContext;
     mJSAppBundleName = packagerPathForJSBundleName;
     mDevSettings = new DevInternalSettings(applicationContext, this::reloadSettings);
-    mBundleStatus = new InspectorPackagerConnection.BundleStatus();
     mDevServerHelper =
         new DevServerHelper(
             mDevSettings,
             mApplicationContext.getPackageName(),
-            () -> mBundleStatus,
             mDevSettings.getPackagerConnectionSettings());
     mBundleDownloadListener = devBundleDownloadListener;
 
@@ -344,6 +346,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
       return;
     }
     LinkedHashMap<String, DevOptionHandler> options = new LinkedHashMap<>();
+    Set<String> disabledItemKeys = new HashSet<>();
     /* register standard options */
     options.put(
         mApplicationContext.getString(R.string.catalyst_reload),
@@ -373,8 +376,15 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
 
     if (mDevSettings.isDeviceDebugEnabled() && !mDevSettings.isRemoteJSDebugEnabled()) {
       // On-device JS debugging (CDP). Render action to open debugger frontend.
+      boolean isConnected = mIsPackagerConnected;
+      String debuggerItemString =
+          mApplicationContext.getString(
+              isConnected ? R.string.catalyst_debug_open : R.string.catalyst_debug_open_disabled);
+      if (!isConnected) {
+        disabledItemKeys.add(debuggerItemString);
+      }
       options.put(
-          mApplicationContext.getString(R.string.catalyst_debug_open),
+          debuggerItemString,
           () ->
               mDevServerHelper.openDebugger(
                   mCurrentContext,
@@ -509,11 +519,33 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
       header.addView(jsExecutorLabel);
     }
 
+    ListAdapter adapter =
+        new ArrayAdapter<String>(
+            context, android.R.layout.simple_list_item_1, options.keySet().toArray(new String[0])) {
+          @Override
+          public boolean areAllItemsEnabled() {
+            return false;
+          }
+
+          @Override
+          public boolean isEnabled(int position) {
+            return !disabledItemKeys.contains(getItem(position));
+          }
+
+          @Override
+          public View getView(int position, @Nullable View convertView, ViewGroup parent) {
+            View view = super.getView(position, convertView, parent);
+            view.setEnabled(isEnabled(position));
+
+            return view;
+          }
+        };
+
     mDevOptionsDialog =
         new AlertDialog.Builder(context)
             .setCustomTitle(header)
-            .setItems(
-                options.keySet().toArray(new String[0]),
+            .setAdapter(
+                adapter,
                 (dialog, which) -> {
                   optionHandlers[which].onOptionSelected();
                   mDevOptionsDialog = null;
@@ -886,10 +918,6 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
           @Override
           public void onSuccess() {
             hideDevLoadingView();
-            synchronized (DevSupportManagerBase.this) {
-              mBundleStatus.isLastDownloadSuccess = true;
-              mBundleStatus.updateTimestamp = System.currentTimeMillis();
-            }
             if (mBundleDownloadListener != null) {
               mBundleDownloadListener.onSuccess();
             }
@@ -911,9 +939,6 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
           @Override
           public void onFailure(final Exception cause) {
             hideDevLoadingView();
-            synchronized (DevSupportManagerBase.this) {
-              mBundleStatus.isLastDownloadSuccess = false;
-            }
             if (mBundleDownloadListener != null) {
               mBundleDownloadListener.onFailure(cause);
             }
@@ -1033,18 +1058,20 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
           new PackagerCommandListener() {
             @Override
             public void onPackagerConnected() {
-              // No-op
+              mIsPackagerConnected = true;
             }
 
             @Override
             public void onPackagerDisconnected() {
-              // No-op
+              mIsPackagerConnected = false;
             }
 
             @Override
             public void onPackagerReloadCommand() {
-              // Disable debugger to resume the JsVM & avoid thread locks while reloading
-              mDevServerHelper.disableDebugger();
+              if (!InspectorFlags.getEnableModernCDPRegistry()) {
+                // Disable debugger to resume the JsVM & avoid thread locks while reloading
+                mDevServerHelper.disableDebugger();
+              }
               UiThreadUtil.runOnUiThread(() -> handleReloadJS());
             }
 

@@ -34,9 +34,6 @@ class HostPlatformViewProps : public BaseViewProps {
       const char* propName,
       const RawValue& value);
 
-  void propsDiffMapBuffer(const Props* oldProps, MapBufferBuilder& builder)
-      const override;
-
 #pragma mark - Props
 
   Float elevation{};

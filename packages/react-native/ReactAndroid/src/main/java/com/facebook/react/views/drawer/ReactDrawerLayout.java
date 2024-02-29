@@ -16,6 +16,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.R;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.ReactConstants;
@@ -26,7 +27,8 @@ import com.facebook.react.uimanager.events.NativeGestureUtil;
  * Wrapper view for {@link DrawerLayout}. It manages the properties that can be set on the drawer
  * and contains some ReactNative-specific functionality.
  */
-/* package */ class ReactDrawerLayout extends DrawerLayout {
+/* package */ @Nullsafe(Nullsafe.Mode.LOCAL)
+class ReactDrawerLayout extends DrawerLayout {
 
   public static final int DEFAULT_DRAWER_WIDTH = LayoutParams.MATCH_PARENT;
   private int mDrawerPosition = Gravity.START;

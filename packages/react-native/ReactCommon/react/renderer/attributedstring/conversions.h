@@ -896,24 +896,28 @@ inline folly::dynamic toDynamic(const TextAttributes& textAttributes) {
   return _textAttributes;
 }
 
+inline folly::dynamic toDynamic(const AttributedString::Fragment& fragment) {
+  folly::dynamic value = folly::dynamic::object();
+
+  value["string"] = fragment.string;
+  if (fragment.parentShadowView.componentHandle) {
+    value["reactTag"] = fragment.parentShadowView.tag;
+  }
+  if (fragment.isAttachment()) {
+    value["isAttachment"] = true;
+    value["width"] = fragment.parentShadowView.layoutMetrics.frame.size.width;
+    value["height"] = fragment.parentShadowView.layoutMetrics.frame.size.height;
+  }
+  value["textAttributes"] = toDynamic(fragment.textAttributes);
+
+  return value;
+}
+
 inline folly::dynamic toDynamic(const AttributedString& attributedString) {
   auto value = folly::dynamic::object();
   auto fragments = folly::dynamic::array();
   for (auto fragment : attributedString.getFragments()) {
-    folly::dynamic dynamicFragment = folly::dynamic::object();
-    dynamicFragment["string"] = fragment.string;
-    if (fragment.parentShadowView.componentHandle) {
-      dynamicFragment["reactTag"] = fragment.parentShadowView.tag;
-    }
-    if (fragment.isAttachment()) {
-      dynamicFragment["isAttachment"] = true;
-      dynamicFragment["width"] =
-          fragment.parentShadowView.layoutMetrics.frame.size.width;
-      dynamicFragment["height"] =
-          fragment.parentShadowView.layoutMetrics.frame.size.height;
-    }
-    dynamicFragment["textAttributes"] = toDynamic(fragment.textAttributes);
-    fragments.push_back(dynamicFragment);
+    fragments.push_back(toDynamic(fragment));
   }
   value("fragments", fragments);
   value(
@@ -1134,37 +1138,40 @@ inline MapBuffer toMapBuffer(const TextAttributes& textAttributes) {
   return builder.build();
 }
 
+inline MapBuffer toMapBuffer(const AttributedString::Fragment& fragment) {
+  auto builder = MapBufferBuilder();
+
+  builder.putString(FR_KEY_STRING, fragment.string);
+  if (fragment.parentShadowView.componentHandle) {
+    builder.putInt(FR_KEY_REACT_TAG, fragment.parentShadowView.tag);
+  }
+  if (fragment.isAttachment()) {
+    builder.putBool(FR_KEY_IS_ATTACHMENT, true);
+    builder.putDouble(
+        FR_KEY_WIDTH, fragment.parentShadowView.layoutMetrics.frame.size.width);
+    builder.putDouble(
+        FR_KEY_HEIGHT,
+        fragment.parentShadowView.layoutMetrics.frame.size.height);
+  }
+  auto textAttributesMap = toMapBuffer(fragment.textAttributes);
+  builder.putMapBuffer(FR_KEY_TEXT_ATTRIBUTES, textAttributesMap);
+
+  return builder.build();
+}
+
 inline MapBuffer toMapBuffer(const AttributedString& attributedString) {
   auto fragmentsBuilder = MapBufferBuilder();
 
   int index = 0;
   for (auto fragment : attributedString.getFragments()) {
-    auto dynamicFragmentBuilder = MapBufferBuilder();
-    dynamicFragmentBuilder.putString(FR_KEY_STRING, fragment.string);
-    if (fragment.parentShadowView.componentHandle) {
-      dynamicFragmentBuilder.putInt(
-          FR_KEY_REACT_TAG, fragment.parentShadowView.tag);
-    }
-    if (fragment.isAttachment()) {
-      dynamicFragmentBuilder.putBool(FR_KEY_IS_ATTACHMENT, true);
-      dynamicFragmentBuilder.putDouble(
-          FR_KEY_WIDTH,
-          fragment.parentShadowView.layoutMetrics.frame.size.width);
-      dynamicFragmentBuilder.putDouble(
-          FR_KEY_HEIGHT,
-          fragment.parentShadowView.layoutMetrics.frame.size.height);
-    }
-    auto textAttributesMap = toMapBuffer(fragment.textAttributes);
-    dynamicFragmentBuilder.putMapBuffer(
-        FR_KEY_TEXT_ATTRIBUTES, textAttributesMap);
-    auto dynamicFragmentMap = dynamicFragmentBuilder.build();
-    fragmentsBuilder.putMapBuffer(index++, dynamicFragmentMap);
+    fragmentsBuilder.putMapBuffer(index++, toMapBuffer(fragment));
   }
 
   auto builder = MapBufferBuilder();
-  builder.putInt(
-      AS_KEY_HASH,
-      std::hash<facebook::react::AttributedString>{}(attributedString));
+  size_t hash =
+      std::hash<facebook::react::AttributedString>{}(attributedString);
+  // TODO: This truncates half the hash
+  builder.putInt(AS_KEY_HASH, static_cast<int>(hash));
   builder.putString(AS_KEY_STRING, attributedString.getString());
   auto fragmentsMap = fragmentsBuilder.build();
   builder.putMapBuffer(AS_KEY_FRAGMENTS, fragmentsMap);

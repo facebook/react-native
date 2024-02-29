@@ -88,7 +88,10 @@ MapBuffer AndroidTextInputState::getMapBuffer() const {
   auto builder = MapBufferBuilder();
   // See comment in getDynamic block.
   if (cachedAttributedStringId == 0) {
-    builder.putInt(TX_STATE_KEY_MOST_RECENT_EVENT_COUNT, mostRecentEventCount);
+    // TODO truncation
+    builder.putInt(
+        TX_STATE_KEY_MOST_RECENT_EVENT_COUNT,
+        static_cast<int32_t>(mostRecentEventCount));
 
     auto attStringMapBuffer = toMapBuffer(attributedString);
     builder.putMapBuffer(TX_STATE_KEY_ATTRIBUTED_STRING, attStringMapBuffer);

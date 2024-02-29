@@ -12,7 +12,6 @@
 #include <react/renderer/core/DynamicPropsUtilities.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/ShadowNodeFragment.h>
-#include <react/renderer/core/TraitCast.h>
 #include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/uimanager/SurfaceRegistryBinding.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
@@ -173,8 +172,8 @@ void UIManager::completeSurface(
           return std::make_shared<RootShadowNode>(
               oldRootShadowNode,
               ShadowNodeFragment{
-                  /* .props = */ ShadowNodeFragment::propsPlaceholder(),
-                  /* .children = */ rootChildren,
+                  .props = ShadowNodeFragment::propsPlaceholder(),
+                  .children = rootChildren,
               });
         },
         commitOptions);
@@ -258,6 +257,12 @@ ShadowNode::Shared UIManager::getNewestCloneOfShadowNode(
     return nullptr;
   }
 
+  // If the given shadow node is of the same family as the root shadow node,
+  // return the latest root shadow node
+  if (ShadowNode::sameFamily(*ancestorShadowNode, shadowNode)) {
+    return ancestorShadowNode;
+  }
+
   auto ancestors = shadowNode.getFamily().getAncestors(*ancestorShadowNode);
 
   if (ancestors.empty()) {
@@ -294,6 +299,48 @@ ShadowNode::Shared UIManager::getNewestParentOfShadowNode(
   auto parentOfParentPair = ancestors[ancestors.size() - 2];
   return parentOfParentPair.first.get().getChildren().at(
       parentOfParentPair.second);
+}
+
+ShadowNode::Shared UIManager::getNewestPositionedAncestorOfShadowNode(
+    const ShadowNode& shadowNode) const {
+  auto rootShadowNode = ShadowNode::Shared{};
+  shadowTreeRegistry_.visit(
+      shadowNode.getSurfaceId(), [&](const ShadowTree& shadowTree) {
+        rootShadowNode = shadowTree.getCurrentRevision().rootShadowNode;
+      });
+
+  if (!rootShadowNode) {
+    return nullptr;
+  }
+
+  auto ancestors = shadowNode.getFamily().getAncestors(*rootShadowNode);
+
+  if (ancestors.empty()) {
+    return nullptr;
+  }
+
+  for (auto it = ancestors.rbegin(); it != ancestors.rend(); it++) {
+    const auto layoutableAncestorShadowNode =
+        dynamic_cast<const LayoutableShadowNode*>(&(it->first.get()));
+    if (layoutableAncestorShadowNode == nullptr) {
+      return nullptr;
+    }
+    if (layoutableAncestorShadowNode->getLayoutMetrics().positionType !=
+        PositionType::Static) {
+      // We have found our nearest positioned ancestor, now to get a shared
+      // pointer of it
+      it++;
+      if (it != ancestors.rend()) {
+        return it->first.get().getChildren().at(it->second);
+      }
+      // else the positioned ancestor is the root which we return outside of the
+      // loop
+    }
+  }
+
+  // If there is no positioned ancestor then we just consider the root
+  // to be one
+  return rootShadowNode;
 }
 
 std::string UIManager::getTextContentInNewestCloneOfShadowNode(
@@ -391,7 +438,7 @@ LayoutMetrics UIManager::getRelativeLayoutMetrics(
   }
 
   auto layoutableAncestorShadowNode =
-      traitCast<const LayoutableShadowNode*>(ancestorShadowNode);
+      dynamic_cast<const LayoutableShadowNode*>(ancestorShadowNode);
 
   if (layoutableAncestorShadowNode == nullptr) {
     return EmptyLayoutMetrics;

@@ -23,6 +23,11 @@ export type Experiments = $ReadOnly<{
    * interface.
    */
   enableOpenDebuggerRedirect: boolean,
+
+  /**
+   * Enables the Network panel when launching the custom debugger frontend.
+   */
+  enableNetworkInspector: boolean,
 }>;
 
 export type ExperimentsConfig = Partial<Experiments>;

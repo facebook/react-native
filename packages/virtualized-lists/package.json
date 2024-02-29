@@ -27,6 +27,7 @@
     "react-test-renderer": "18.2.0"
   },
   "peerDependencies": {
+    "react": "*",
     "react-native": "*"
   }
 }

@@ -7,7 +7,10 @@
 
 package com.facebook.react.uimanager;
 
+import com.facebook.infer.annotation.Nullsafe;
+
 /** Default property values for Views to be shared between Views and ShadowViews. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ViewDefaults {
 
   public static final float FONT_SIZE_SP = 14.0f;

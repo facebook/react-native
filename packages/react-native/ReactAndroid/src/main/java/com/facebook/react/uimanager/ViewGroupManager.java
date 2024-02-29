@@ -10,11 +10,13 @@ package com.facebook.react.uimanager;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.UiThreadUtil;
 import java.util.List;
 import java.util.WeakHashMap;
 
 /** Class providing children management API for view managers of classes extending ViewGroup. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public abstract class ViewGroupManager<T extends ViewGroup>
     extends BaseViewManager<T, LayoutShadowNode> implements IViewGroupManager<T> {
 
@@ -67,6 +69,7 @@ public abstract class ViewGroupManager<T extends ViewGroup>
   }
 
   @Override
+  @Nullable
   public View getChildAt(T parent, int index) {
     return parent.getChildAt(index);
   }
@@ -86,14 +89,6 @@ public abstract class ViewGroupManager<T extends ViewGroup>
         removeViewAt(parent, i);
         break;
       }
-    }
-  }
-
-  public void removeAllViews(T parent) {
-    UiThreadUtil.assertOnUiThread();
-
-    for (int i = getChildCount(parent) - 1; i >= 0; i--) {
-      removeViewAt(parent, i);
     }
   }
 

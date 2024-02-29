@@ -603,7 +603,7 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
         if (matchSpec.match(driver.mViewTag, driver.mEventName)) {
           foundAtLeastOneDriver = true;
           stopAnimationsForNode(driver.mValueNode);
-          event.dispatch(driver);
+          event.dispatchModern(driver);
           mRunUpdateNodeList.add(driver.mValueNode);
         }
       }

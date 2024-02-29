@@ -9,8 +9,10 @@ package com.facebook.react.uimanager;
 
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
+import com.facebook.infer.annotation.Nullsafe;
 
 /** Android dp to pixel manipulation */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class PixelUtil {
 
   /** Convert from DIP to PX */

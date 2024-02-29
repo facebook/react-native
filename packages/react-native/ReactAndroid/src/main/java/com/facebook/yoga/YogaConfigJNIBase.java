@@ -35,10 +35,6 @@ public abstract class YogaConfigJNIBase extends YogaConfig {
     YogaNative.jni_YGConfigSetUseWebDefaultsJNI(mNativePointer, useWebDefaults);
   }
 
-  public void setPrintTreeFlag(boolean enable) {
-    YogaNative.jni_YGConfigSetPrintTreeFlagJNI(mNativePointer, enable);
-  }
-
   public void setPointScaleFactor(float pixelsInPoint) {
     YogaNative.jni_YGConfigSetPointScaleFactorJNI(mNativePointer, pixelsInPoint);
   }
@@ -60,7 +56,7 @@ public abstract class YogaConfigJNIBase extends YogaConfig {
     return mLogger;
   }
 
-  long getNativePointer() {
+  protected long getNativePointer() {
     return mNativePointer;
   }
 }

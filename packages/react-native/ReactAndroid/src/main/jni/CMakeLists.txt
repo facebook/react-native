@@ -70,6 +70,7 @@ add_react_common_subdir(hermes/inspector-modern)
 add_react_common_subdir(react/renderer/runtimescheduler)
 add_react_common_subdir(react/debug)
 add_react_common_subdir(react/config)
+add_react_common_subdir(react/featureflags)
 add_react_common_subdir(react/renderer/animations)
 add_react_common_subdir(react/renderer/attributedstring)
 add_react_common_subdir(react/renderer/componentregistry)
@@ -100,6 +101,7 @@ add_react_common_subdir(react/utils)
 add_react_common_subdir(react/bridging)
 add_react_common_subdir(react/renderer/mapbuffer)
 add_react_common_subdir(react/nativemodule/core)
+add_react_common_subdir(react/nativemodule/featureflags)
 add_react_common_subdir(jserrorhandler)
 add_react_common_subdir(react/runtime)
 add_react_common_subdir(react/runtime/hermes)
@@ -118,6 +120,7 @@ add_react_android_subdir(src/main/jni/react/uimanager)
 add_react_android_subdir(src/main/jni/react/mapbuffer)
 add_react_android_subdir(src/main/jni/react/reactnativeblob)
 add_react_android_subdir(src/main/jni/react/fabric)
+add_react_android_subdir(src/main/jni/react/featureflags)
 add_react_android_subdir(src/main/jni/react/newarchdefaults)
 add_react_android_subdir(src/main/jni/react/hermes/reactexecutor)
 add_react_android_subdir(src/main/jni/react/hermes/instrumentation/)
@@ -125,6 +128,7 @@ add_react_android_subdir(src/main/jni/react/runtime/cxxreactpackage)
 add_react_android_subdir(src/main/jni/react/runtime/jni)
 add_react_android_subdir(src/main/jni/react/runtime/hermes/jni)
 add_react_android_subdir(src/main/jni/react/runtime/jsc/jni)
+add_react_android_subdir(src/main/jni/react/devsupport)
 
 # GTest dependencies
 add_executable(reactnative_unittest
@@ -151,7 +155,6 @@ add_executable(reactnative_unittest
   ${REACT_COMMON_DIR}/react/renderer/core/tests/PrimitivesTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/core/tests/RawPropsTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/core/tests/ShadowNodeFamilyTest.cpp
-  ${REACT_COMMON_DIR}/react/renderer/core/tests/traitCastTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/debug/tests/DebugStringConvertibleTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/element/tests/ElementTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/graphics/tests/GraphicsTest.cpp

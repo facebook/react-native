@@ -62,8 +62,10 @@ export default function openDebuggerMiddleware({
       const targets = inspectorProxy.getPageDescriptions().filter(
         // Only use targets with better reloading support
         app =>
-          app.title === 'React Native Experimental (Improved Chrome Reloads)',
+          app.title === 'React Native Experimental (Improved Chrome Reloads)' ||
+          app.reactNative.capabilities?.nativePageReloads === true,
       );
+
       let target;
 
       const launchType: 'launch' | 'redirect' =
@@ -117,6 +119,7 @@ export default function openDebuggerMiddleware({
               frontendInstanceId,
               await browserLauncher.launchDebuggerAppWindow(
                 getDevToolsFrontendUrl(
+                  experiments,
                   target.webSocketDebuggerUrl,
                   serverBaseUrl,
                 ),
@@ -127,9 +130,10 @@ export default function openDebuggerMiddleware({
           case 'redirect':
             res.writeHead(302, {
               Location: getDevToolsFrontendUrl(
+                experiments,
                 target.webSocketDebuggerUrl,
-                // Use a relative URL.
-                '',
+                serverBaseUrl,
+                {relative: true},
               ),
             });
             res.end();

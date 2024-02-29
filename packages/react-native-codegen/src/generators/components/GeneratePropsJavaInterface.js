@@ -171,6 +171,8 @@ function getCommandArgJavaType(param: NamedShape<CommandParamTypeAnnotation>) {
       return 'int';
     case 'StringTypeAnnotation':
       return 'String';
+    case 'ArrayTypeAnnotation':
+      return 'ReadableArray';
     default:
       (typeAnnotation.type: empty);
       throw new Error('Receieved invalid typeAnnotation');
@@ -235,6 +237,7 @@ module.exports = {
     schema: SchemaType,
     packageName?: string,
     assumeNonnull: boolean = false,
+    headerPrefix?: string,
   ): FilesOutput {
     // TODO: This doesn't support custom package name yet.
     const normalizedPackageName = 'com.facebook.react.viewmanagers';

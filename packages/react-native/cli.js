@@ -10,7 +10,7 @@
 
 'use strict';
 
-const {version: currentVersion} = require('./package.json');
+const {name, version: currentVersion} = require('./package.json');
 const cli = require('@react-native-community/cli');
 const chalk = require('chalk');
 const {get} = require('https');
@@ -40,6 +40,16 @@ async function getLatestVersion(registryHost = DEFAULT_REGISTRY_HOST) {
 }
 
 /**
+ * Warn when users are using `npx react-native init`, to raise awareness of the changes from RFC 0759.
+ * @see https://github.com/react-native-community/discussions-and-proposals/tree/main/proposals/0759-react-native-frameworks.md
+ */
+function warnWhenRunningInit() {
+  if (process.argv[2] === 'init') {
+    console.warn('\nRunning: npx @react-native-community/cli init\n');
+  }
+}
+
+/**
  * npx react-native -> @react-native-community/cli
  *
  * Will perform a version check and warning if you're not running the latest community cli when executed using npx. If
@@ -66,7 +76,10 @@ async function main() {
       // Ignore errors, since it's a nice to have warning
     }
   }
-  return cli.run();
+
+  warnWhenRunningInit();
+
+  return cli.run(name);
 }
 
 if (require.main === module) {

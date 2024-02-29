@@ -9,8 +9,10 @@ package com.facebook.react.common;
 
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 
 /** Simple class for asserting that operations only run on a single thread. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class SingleThreadAsserter {
   private @Nullable Thread mThread = null;
 

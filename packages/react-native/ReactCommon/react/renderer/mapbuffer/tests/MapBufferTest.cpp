@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <limits>
 #include <memory>
 #include <vector>
 
@@ -25,6 +26,26 @@ TEST(MapBufferTest, testSimpleIntMap) {
   EXPECT_EQ(map.count(), 2);
   EXPECT_EQ(map.getInt(0), 1234);
   EXPECT_EQ(map.getInt(1), 4321);
+}
+
+TEST(MapBufferTest, testSimpleLongMap) {
+  auto builder = MapBufferBuilder();
+
+  int64_t minInt64 = std::numeric_limits<int64_t>::min();
+  int64_t maxInt64 = std::numeric_limits<int64_t>::max();
+
+  builder.putLong(0, minInt64);
+  builder.putLong(1, maxInt64);
+  builder.putLong(2, 1125899906842623LL);
+  builder.putLong(3, -1125899906842623LL);
+
+  auto map = builder.build();
+
+  EXPECT_EQ(map.count(), 4);
+  EXPECT_EQ(map.getLong(0), minInt64);
+  EXPECT_EQ(map.getLong(1), maxInt64);
+  EXPECT_EQ(map.getLong(2), 1125899906842623LL);
+  EXPECT_EQ(map.getLong(3), -1125899906842623LL);
 }
 
 TEST(MapBufferTest, testMapBufferExtension) {

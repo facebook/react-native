@@ -14,11 +14,13 @@ import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.UnexpectedNativeTypeException;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.uimanager.events.RCTEventEmitter;
+import com.facebook.react.uimanager.events.EventCategoryDef;
+import com.facebook.react.uimanager.events.RCTModernEventEmitter;
+import com.facebook.react.uimanager.events.TouchEvent;
 import java.util.List;
 
 /** Handles updating a {@link ValueAnimatedNode} when an event gets dispatched. */
-/* package */ class EventAnimationDriver implements RCTEventEmitter {
+/* package */ class EventAnimationDriver implements RCTModernEventEmitter {
   private List<String> mEventPath;
   /* package */ ValueAnimatedNode mValueNode;
   /* package */ String mEventName;
@@ -33,7 +35,39 @@ import java.util.List;
   }
 
   @Override
-  public void receiveEvent(int targetTag, String eventName, @Nullable WritableMap event) {
+  public void receiveEvent(int targetReactTag, String eventName, @Nullable WritableMap event) {
+    receiveEvent(-1, targetReactTag, eventName, event);
+  }
+
+  @Override
+  public void receiveEvent(
+      int surfaceId, int targetTag, String eventName, @Nullable WritableMap event) {
+    // We assume this event can't be coalesced. `customCoalesceKey` has no meaning in Fabric.
+    receiveEvent(surfaceId, targetTag, eventName, false, 0, event, EventCategoryDef.UNSPECIFIED);
+  }
+
+  @Override
+  public void receiveTouches(
+      String eventName, WritableArray touches, WritableArray changedIndices) {
+    throw new UnsupportedOperationException(
+        "receiveTouches is not support by native animated events");
+  }
+
+  @Override
+  public void receiveTouches(TouchEvent touchEvent) {
+    throw new UnsupportedOperationException(
+        "receiveTouches is not support by native animated events");
+  }
+
+  @Override
+  public void receiveEvent(
+      int surfaceId,
+      int targetTag,
+      String eventName,
+      boolean canCoalesceEvent,
+      int customCoalesceKey,
+      @Nullable WritableMap event,
+      @EventCategoryDef int category) {
     if (event == null) {
       throw new IllegalArgumentException("Native animated events must have event data.");
     }
@@ -78,11 +112,5 @@ import java.util.List;
       int lastIndex = Integer.parseInt(lastKey);
       mValueNode.mValue = currArray.getDouble(lastIndex);
     }
-  }
-
-  @Override
-  public void receiveTouches(
-      String eventName, WritableArray touches, WritableArray changedIndices) {
-    throw new RuntimeException("receiveTouches is not support by native animated events");
   }
 }

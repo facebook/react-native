@@ -1444,8 +1444,13 @@ TEST_P(JSITest, ArrayBufferSizeTest) {
   auto ab =
       eval("var x = new ArrayBuffer(10); x").getObject(rt).getArrayBuffer(rt);
   EXPECT_EQ(ab.size(rt), 10);
-  // Ensure we can safely write some data to the buffer.
-  memset(ab.data(rt), 0xab, 10);
+
+  try {
+    // Ensure we can safely write some data to the buffer.
+    memset(ab.data(rt), 0xab, 10);
+  } catch (const JSINativeException& ex) {
+    // data() is unimplemented by some runtimes, ignore such failures.
+  }
 
   // Ensure that setting the byteLength property does not change the length.
   eval("Object.defineProperty(x, 'byteLength', {value: 20})");

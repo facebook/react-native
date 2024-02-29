@@ -43,6 +43,7 @@ import typeof TouchableNativeFeedback from './Libraries/Components/Touchable/Tou
 import typeof TouchableOpacity from './Libraries/Components/Touchable/TouchableOpacity';
 import typeof TouchableWithoutFeedback from './Libraries/Components/Touchable/TouchableWithoutFeedback';
 import typeof View from './Libraries/Components/View/View';
+import typeof RegisterCallableModule from './Libraries/Core/registerCallableModule';
 import typeof NativeEventEmitter from './Libraries/EventEmitter/NativeEventEmitter';
 import typeof RCTDeviceEventEmitter from './Libraries/EventEmitter/RCTDeviceEventEmitter';
 import typeof RCTNativeAppEventEmitter from './Libraries/EventEmitter/RCTNativeAppEventEmitter';
@@ -97,6 +98,9 @@ const invariant = require('invariant');
 export type HostComponent<T> = _HostComponentInternal<T>;
 
 module.exports = {
+  get registerCallableModule(): RegisterCallableModule {
+    return require('./Libraries/Core/registerCallableModule').default;
+  },
   // Components
   get AccessibilityInfo(): AccessibilityInfo {
     return require('./Libraries/Components/AccessibilityInfo/AccessibilityInfo')
@@ -107,7 +111,7 @@ module.exports = {
       .default;
   },
   get Button(): Button {
-    return require('./Libraries/Components/Button');
+    return require('./Libraries/Components/Button').default;
   },
   // $FlowFixMe[value-as-type]
   get DrawerLayoutAndroid(): DrawerLayoutAndroid {
@@ -123,7 +127,8 @@ module.exports = {
     return require('./Libraries/Image/ImageBackground');
   },
   get InputAccessoryView(): InputAccessoryView {
-    return require('./Libraries/Components/TextInput/InputAccessoryView');
+    return require('./Libraries/Components/TextInput/InputAccessoryView')
+      .default;
   },
   get KeyboardAvoidingView(): KeyboardAvoidingView {
     return require('./Libraries/Components/Keyboard/KeyboardAvoidingView')
@@ -170,7 +175,7 @@ module.exports = {
     return require('./Libraries/Components/TextInput/TextInput');
   },
   get Touchable(): Touchable {
-    return require('./Libraries/Components/Touchable/Touchable');
+    return require('./Libraries/Components/Touchable/Touchable').default;
   },
   get TouchableHighlight(): TouchableHighlight {
     return require('./Libraries/Components/Touchable/TouchableHighlight');
@@ -374,47 +379,6 @@ module.exports = {
       console.warn(
         'LogBox is enabled by default so there is no need to call unstable_enableLogBox() anymore. This is a no op and will be removed in the next version.',
       );
-  },
-  // Deprecated Prop Types
-  get ColorPropType(): $FlowFixMe {
-    console.error(
-      'ColorPropType will be removed from React Native, along with all ' +
-        'other PropTypes. We recommend that you migrate away from PropTypes ' +
-        'and switch to a type system like TypeScript. If you need to ' +
-        'continue using ColorPropType, migrate to the ' +
-        "'deprecated-react-native-prop-types' package.",
-    );
-    return require('deprecated-react-native-prop-types').ColorPropType;
-  },
-  get EdgeInsetsPropType(): $FlowFixMe {
-    console.error(
-      'EdgeInsetsPropType will be removed from React Native, along with all ' +
-        'other PropTypes. We recommend that you migrate away from PropTypes ' +
-        'and switch to a type system like TypeScript. If you need to ' +
-        'continue using EdgeInsetsPropType, migrate to the ' +
-        "'deprecated-react-native-prop-types' package.",
-    );
-    return require('deprecated-react-native-prop-types').EdgeInsetsPropType;
-  },
-  get PointPropType(): $FlowFixMe {
-    console.error(
-      'PointPropType will be removed from React Native, along with all ' +
-        'other PropTypes. We recommend that you migrate away from PropTypes ' +
-        'and switch to a type system like TypeScript. If you need to ' +
-        'continue using PointPropType, migrate to the ' +
-        "'deprecated-react-native-prop-types' package.",
-    );
-    return require('deprecated-react-native-prop-types').PointPropType;
-  },
-  get ViewPropTypes(): $FlowFixMe {
-    console.error(
-      'ViewPropTypes will be removed from React Native, along with all ' +
-        'other PropTypes. We recommend that you migrate away from PropTypes ' +
-        'and switch to a type system like TypeScript. If you need to ' +
-        'continue using ViewPropTypes, migrate to the ' +
-        "'deprecated-react-native-prop-types' package.",
-    );
-    return require('deprecated-react-native-prop-types').ViewPropTypes;
   },
 };
 

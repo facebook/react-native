@@ -23,53 +23,55 @@ import com.facebook.react.runtime.cxxreactpackage.CxxReactPackage
  * is hosted inside the React Native framework
  */
 @OptIn(UnstableReactNativeAPI::class)
-class DefaultTurboModuleManagerDelegate
+public class DefaultTurboModuleManagerDelegate
 private constructor(
     context: ReactApplicationContext,
     packages: List<ReactPackage>,
-    private val eagerlyInitializedModules: List<String>,
     cxxReactPackages: List<CxxReactPackage>,
 ) : ReactPackageTurboModuleManagerDelegate(context, packages, initHybrid(cxxReactPackages)) {
 
-  override fun initHybrid(): HybridData? {
+  override fun initHybrid(): HybridData {
     throw UnsupportedOperationException(
         "DefaultTurboModuleManagerDelegate.initHybrid() must never be called!")
   }
 
-  override fun getEagerInitModuleNames(): List<String> {
-    if (unstable_isLazyTurboModuleDelegate()) {
-      return eagerlyInitializedModules
-    }
+  public class Builder : ReactPackageTurboModuleManagerDelegate.Builder() {
+    private var cxxReactPackageProviders:
+        MutableList<((context: ReactApplicationContext) -> CxxReactPackage)> =
+        mutableListOf()
 
-    // Use ReactModuleInfo to get the eager init module names
-    return super.getEagerInitModuleNames()
-  }
-
-  class Builder : ReactPackageTurboModuleManagerDelegate.Builder() {
-    private var eagerInitModuleNames: List<String> = emptyList()
-    private var cxxReactPackages: MutableList<CxxReactPackage> = mutableListOf()
-
-    fun setEagerInitModuleNames(eagerInitModuleNames: List<String>): Builder {
-      this.eagerInitModuleNames = eagerInitModuleNames
+    public fun addCxxReactPackage(provider: () -> CxxReactPackage): Builder {
+      cxxReactPackageProviders.add { _ -> provider() }
       return this
     }
 
-    fun addCxxReactPackage(cxxReactPackage: CxxReactPackage): Builder {
-      this.cxxReactPackages.add(cxxReactPackage)
+    public fun addCxxReactPackage(
+        provider: (context: ReactApplicationContext) -> CxxReactPackage
+    ): Builder {
+      cxxReactPackageProviders.add(provider)
       return this
     }
 
-    override fun build(context: ReactApplicationContext, packages: List<ReactPackage>) =
-        DefaultTurboModuleManagerDelegate(context, packages, eagerInitModuleNames, cxxReactPackages)
+    override fun build(
+        context: ReactApplicationContext,
+        packages: List<ReactPackage>
+    ): DefaultTurboModuleManagerDelegate {
+      val cxxReactPackages = mutableListOf<CxxReactPackage>()
+      for (cxxReactPackageProvider in cxxReactPackageProviders) {
+        cxxReactPackages.add(cxxReactPackageProvider(context))
+      }
+
+      return DefaultTurboModuleManagerDelegate(context, packages, cxxReactPackages)
+    }
   }
 
-  companion object {
+  private companion object {
     init {
       DefaultSoLoader.maybeLoadSoLibrary()
     }
 
     @DoNotStrip
     @JvmStatic
-    external fun initHybrid(cxxReactPackages: List<CxxReactPackage>): HybridData?
+    external fun initHybrid(cxxReactPackages: List<CxxReactPackage>): HybridData
   }
 }

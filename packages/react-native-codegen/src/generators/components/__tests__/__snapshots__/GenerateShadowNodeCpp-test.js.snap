@@ -14,13 +14,11 @@ Map {
 
 #include <react/renderer/components/ARRAY_PROPS/ShadowNodes.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 extern const char ArrayPropsNativeComponentComponentName[] = \\"ArrayPropsNativeComponent\\";
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -39,13 +37,11 @@ Map {
 
 #include <react/renderer/components/ARRAY_PROPS_WITH_NESTED_OBJECT/ShadowNodes.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 extern const char ArrayPropsNativeComponentComponentName[] = \\"ArrayPropsNativeComponent\\";
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -64,13 +60,11 @@ Map {
 
 #include <react/renderer/components/BOOLEAN_PROP/ShadowNodes.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 extern const char BooleanPropNativeComponentComponentName[] = \\"BooleanPropNativeComponent\\";
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -89,13 +83,11 @@ Map {
 
 #include <react/renderer/components/COLOR_PROP/ShadowNodes.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 extern const char ColorPropNativeComponentComponentName[] = \\"ColorPropNativeComponent\\";
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -114,13 +106,11 @@ Map {
 
 #include <react/renderer/components/COMMANDS/ShadowNodes.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 extern const char CommandNativeComponentComponentName[] = \\"CommandNativeComponent\\";
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -139,13 +129,11 @@ Map {
 
 #include <react/renderer/components/COMMANDS_AND_PROPS/ShadowNodes.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 extern const char CommandNativeComponentComponentName[] = \\"CommandNativeComponent\\";
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -164,13 +152,11 @@ Map {
 
 #include <react/renderer/components/DIMENSION_PROP/ShadowNodes.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 extern const char DimensionPropNativeComponentComponentName[] = \\"DimensionPropNativeComponent\\";
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -189,13 +175,11 @@ Map {
 
 #include <react/renderer/components/DOUBLE_PROPS/ShadowNodes.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 extern const char DoublePropNativeComponentComponentName[] = \\"DoublePropNativeComponent\\";
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -214,13 +198,11 @@ Map {
 
 #include <react/renderer/components/EVENT_NESTED_OBJECT_PROPS/ShadowNodes.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 extern const char EventsNestedObjectNativeComponentComponentName[] = \\"EventsNestedObjectNativeComponent\\";
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -239,13 +221,11 @@ Map {
 
 #include <react/renderer/components/EVENT_PROPS/ShadowNodes.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 extern const char EventsNativeComponentComponentName[] = \\"EventsNativeComponent\\";
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -264,13 +244,11 @@ Map {
 
 #include <react/renderer/components/EVENTS_WITH_PAPER_NAME/ShadowNodes.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -289,13 +267,11 @@ Map {
 
 #include <react/renderer/components/EXCLUDE_ANDROID/ShadowNodes.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 extern const char ExcludedAndroidComponentComponentName[] = \\"ExcludedAndroidComponent\\";
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -314,13 +290,11 @@ Map {
 
 #include <react/renderer/components/EXCLUDE_ANDROID_IOS/ShadowNodes.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 extern const char ExcludedAndroidIosComponentComponentName[] = \\"ExcludedAndroidIosComponent\\";
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -339,14 +313,12 @@ Map {
 
 #include <react/renderer/components/EXCLUDE_IOS_TWO_COMPONENTS_DIFFERENT_FILES/ShadowNodes.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 extern const char ExcludedIosComponentComponentName[] = \\"ExcludedIosComponent\\";
 extern const char MultiFileIncludedNativeComponentComponentName[] = \\"MultiFileIncludedNativeComponent\\";
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -365,13 +337,11 @@ Map {
 
 #include <react/renderer/components/FLOAT_PROPS/ShadowNodes.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 extern const char FloatPropNativeComponentComponentName[] = \\"FloatPropNativeComponent\\";
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -390,13 +360,11 @@ Map {
 
 #include <react/renderer/components/IMAGE_PROP/ShadowNodes.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 extern const char ImagePropNativeComponentComponentName[] = \\"ImagePropNativeComponent\\";
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -415,13 +383,11 @@ Map {
 
 #include <react/renderer/components/INSETS_PROP/ShadowNodes.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 extern const char InsetsPropNativeComponentComponentName[] = \\"InsetsPropNativeComponent\\";
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -440,13 +406,11 @@ Map {
 
 #include <react/renderer/components/INT32_ENUM_PROP/ShadowNodes.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 extern const char Int32EnumPropsNativeComponentComponentName[] = \\"Int32EnumPropsNativeComponent\\";
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -465,13 +429,11 @@ Map {
 
 #include <react/renderer/components/INTEGER_PROPS/ShadowNodes.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 extern const char IntegerPropNativeComponentComponentName[] = \\"IntegerPropNativeComponent\\";
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -490,13 +452,11 @@ Map {
 
 #include <react/renderer/components/INTERFACE_ONLY/ShadowNodes.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -515,13 +475,11 @@ Map {
 
 #include <react/renderer/components/MIXED_PROP/ShadowNodes.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 extern const char MixedPropNativeComponentComponentName[] = \\"MixedPropNativeComponent\\";
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -540,13 +498,11 @@ Map {
 
 #include <react/renderer/components/MULTI_NATIVE_PROP/ShadowNodes.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 extern const char ImageColorPropNativeComponentComponentName[] = \\"ImageColorPropNativeComponent\\";
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -565,13 +521,11 @@ Map {
 
 #include <react/renderer/components/NO_PROPS_NO_EVENTS/ShadowNodes.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 extern const char NoPropsNoEventsComponentComponentName[] = \\"NoPropsNoEventsComponent\\";
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -590,13 +544,11 @@ Map {
 
 #include <react/renderer/components/OBJECT_PROPS/ShadowNodes.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 extern const char ObjectPropsComponentName[] = \\"ObjectProps\\";
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -615,13 +567,11 @@ Map {
 
 #include <react/renderer/components/POINT_PROP/ShadowNodes.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 extern const char PointPropNativeComponentComponentName[] = \\"PointPropNativeComponent\\";
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -640,13 +590,11 @@ Map {
 
 #include <react/renderer/components/STRING_ENUM_PROP/ShadowNodes.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 extern const char StringEnumPropsNativeComponentComponentName[] = \\"StringEnumPropsNativeComponent\\";
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -665,13 +613,11 @@ Map {
 
 #include <react/renderer/components/STRING_PROP/ShadowNodes.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 extern const char StringPropComponentComponentName[] = \\"StringPropComponent\\";
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -690,14 +636,12 @@ Map {
 
 #include <react/renderer/components/TWO_COMPONENTS_DIFFERENT_FILES/ShadowNodes.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 extern const char MultiFile1NativeComponentComponentName[] = \\"MultiFile1NativeComponent\\";
 extern const char MultiFile2NativeComponentComponentName[] = \\"MultiFile2NativeComponent\\";
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -716,14 +660,12 @@ Map {
 
 #include <react/renderer/components/TWO_COMPONENTS_SAME_FILE/ShadowNodes.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 extern const char MultiComponent1NativeComponentComponentName[] = \\"MultiComponent1NativeComponent\\";
 extern const char MultiComponent2NativeComponentComponentName[] = \\"MultiComponent2NativeComponent\\";
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;

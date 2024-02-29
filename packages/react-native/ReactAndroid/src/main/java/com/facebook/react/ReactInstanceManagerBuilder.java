@@ -20,7 +20,6 @@ import com.facebook.hermes.reactexecutor.HermesExecutorFactory;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.JSExceptionHandler;
-import com.facebook.react.bridge.JSIModulePackage;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
 import com.facebook.react.bridge.UIManagerProvider;
@@ -68,7 +67,6 @@ public class ReactInstanceManagerBuilder {
   private @Nullable JavaScriptExecutorFactory mJavaScriptExecutorFactory;
   private int mMinNumShakes = 1;
   private int mMinTimeLeftInFrameForNonBatchedOperationMs = -1;
-  private @Nullable JSIModulePackage mJSIModulesPackage;
   private @Nullable UIManagerProvider mUIManagerProvider;
   private @Nullable Map<String, RequestHandler> mCustomPackagerCommandHandlers;
   private @Nullable ReactPackageTurboModuleManagerDelegate.Builder mTMMDelegateBuilder;
@@ -78,12 +76,6 @@ public class ReactInstanceManagerBuilder {
   private @Nullable ChoreographerProvider mChoreographerProvider = null;
 
   /* package protected */ ReactInstanceManagerBuilder() {}
-
-  public ReactInstanceManagerBuilder setJSIModulesPackage(
-      @Nullable JSIModulePackage jsiModulePackage) {
-    mJSIModulesPackage = jsiModulePackage;
-    return this;
-  }
 
   /** Factory for desired implementation of JavaScriptExecutor. */
   public ReactInstanceManagerBuilder setJavaScriptExecutorFactory(
@@ -361,7 +353,6 @@ public class ReactInstanceManagerBuilder {
         mDevBundleDownloadListener,
         mMinNumShakes,
         mMinTimeLeftInFrameForNonBatchedOperationMs,
-        mJSIModulesPackage,
         mUIManagerProvider,
         mCustomPackagerCommandHandlers,
         mTMMDelegateBuilder,
@@ -373,31 +364,28 @@ public class ReactInstanceManagerBuilder {
   private JavaScriptExecutorFactory getDefaultJSExecutorFactory(
       String appName, String deviceName, Context applicationContext) {
 
-    // Relying solely on try catch block and loading jsc even when
-    // project is using hermes can lead to launch-time crashes especially in
-    // monorepo architectures and hybrid apps using both native android
-    // and react native.
-    // So we can use the value of enableHermes received by the constructor
-    // to decide which library to load at launch
-
-    // if nothing is specified, use old loading method
-    // else load the required engine
+    initializeSoLoaderIfNecessary(applicationContext);
+    // Hermes has been enabled by default in OSS since React Native 0.70.
+    // If the user hasn't specified a JSEngineResolutionAlgorithm,
+    // we attempt to load Hermes first, and fallback to JSC if we can't resolve the library.
     if (mJSEngineResolutionAlgorithm == null) {
-      FLog.w(
-          TAG,
-          "You're not setting the JS Engine Resolution Algorithm. "
-              + "We'll try to load JSC first, and if it fails we'll fallback to Hermes");
       try {
-        // If JSC is included, use it as normal
-        initializeSoLoaderIfNecessary(applicationContext);
-        JSCExecutor.loadLibrary();
-        return new JSCExecutorFactory(appName, deviceName);
-      } catch (UnsatisfiedLinkError jscE) {
-        if (jscE.getMessage().contains("__cxa_bad_typeid")) {
-          throw jscE;
-        }
         HermesExecutor.loadLibrary();
         return new HermesExecutorFactory();
+      } catch (UnsatisfiedLinkError ignoredHermesError) {
+        try {
+          JSCExecutor.loadLibrary();
+          return new JSCExecutorFactory(appName, deviceName);
+        } catch (UnsatisfiedLinkError jscError) {
+          FLog.e(
+              TAG,
+              "Unable to load neither the Hermes nor the JSC native library. "
+                  + "Your application is not built correctly and will fail to execute");
+          if (jscError.getMessage().contains("__cxa_bad_typeid")) {
+            throw jscError;
+          }
+          return null;
+        }
       }
     } else if (mJSEngineResolutionAlgorithm == JSEngineResolutionAlgorithm.HERMES) {
       HermesExecutor.loadLibrary();

@@ -61,6 +61,7 @@ const {
   MissingTypeParameterGenericParserError,
   MoreThanOneTypeParameterGenericParserError,
   UnnamedFunctionParamParserError,
+  UnsupportedObjectDirectRecursivePropertyParserError,
 } = require('./errors');
 const {
   createParserErrorCapturer,
@@ -171,6 +172,7 @@ function isObjectProperty(property: $FlowFixMe, language: ParserType): boolean {
 }
 
 function parseObjectProperty(
+  parentObject?: $FlowFixMe,
   property: $FlowFixMe,
   hasteModuleName: string,
   types: TypeDeclarationMap,
@@ -191,6 +193,41 @@ function parseObjectProperty(
       ? property.typeAnnotation.typeAnnotation
       : property.value;
 
+  // Handle recursive types
+  if (parentObject) {
+    const propertyType = parser.getResolveTypeAnnotationFN()(
+      languageTypeAnnotation,
+      types,
+      parser,
+    );
+    if (
+      propertyType.typeResolutionStatus.successful === true &&
+      propertyType.typeResolutionStatus.type === 'alias' &&
+      (language === 'TypeScript'
+        ? parentObject.typeName &&
+          parentObject.typeName.name === languageTypeAnnotation.typeName?.name
+        : parentObject.id &&
+          parentObject.id.name === languageTypeAnnotation.id?.name)
+    ) {
+      if (!optional) {
+        throw new UnsupportedObjectDirectRecursivePropertyParserError(
+          name,
+          languageTypeAnnotation,
+          hasteModuleName,
+        );
+      }
+      return {
+        name,
+        optional,
+        typeAnnotation: {
+          type: 'TypeAliasTypeAnnotation',
+          name: propertyType.typeResolutionStatus.name,
+        },
+      };
+    }
+  }
+
+  // Handle non-recursive types
   const [propertyTypeAnnotation, isPropertyNullable] =
     unwrapNullable<$FlowFixMe>(
       translateTypeAnnotation(
@@ -206,7 +243,7 @@ function parseObjectProperty(
     );
 
   if (
-    propertyTypeAnnotation.type === 'FunctionTypeAnnotation' ||
+    (propertyTypeAnnotation.type === 'FunctionTypeAnnotation' && !cxxOnly) ||
     propertyTypeAnnotation.type === 'PromiseTypeAnnotation' ||
     propertyTypeAnnotation.type === 'VoidTypeAnnotation'
   ) {

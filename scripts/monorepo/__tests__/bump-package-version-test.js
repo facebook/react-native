@@ -16,8 +16,6 @@ jest.mock('fs', () => ({
   readFileSync: jest.fn(() => '{}'),
 }));
 
-jest.mock('../for-each-package', () => callback => {});
-
 describe('bumpPackageVersionTest', () => {
   it('updates patch version of the package', () => {
     const mockedPackageLocation = '~/packages/assets';

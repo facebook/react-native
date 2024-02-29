@@ -46,6 +46,7 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
           },
           decelerationRate: true,
           disableIntervalMomentum: true,
+          maintainVisibleContentPosition: true,
           pagingEnabled: true,
           scrollEnabled: true,
           showsVerticalScrollIndicator: true,

@@ -267,33 +267,6 @@ type IOSProps = $ReadOnly<{|
    */
   canCancelContentTouches?: ?boolean,
   /**
-   * When set, the scroll view will adjust the scroll position so that the first child that is
-   * currently visible and at or beyond `minIndexForVisible` will not change position. This is
-   * useful for lists that are loading content in both directions, e.g. a chat thread, where new
-   * messages coming in might otherwise cause the scroll position to jump. A value of 0 is common,
-   * but other values such as 1 can be used to skip loading spinners or other content that should
-   * not maintain position.
-   *
-   * The optional `autoscrollToTopThreshold` can be used to make the content automatically scroll
-   * to the top after making the adjustment if the user was within the threshold of the top before
-   * the adjustment was made. This is also useful for chat-like applications where you want to see
-   * new messages scroll into place, but not if the user has scrolled up a ways and it would be
-   * disruptive to scroll a bunch.
-   *
-   * Caveat 1: Reordering elements in the scrollview with this enabled will probably cause
-   * jumpiness and jank. It can be fixed, but there are currently no plans to do so. For now,
-   * don't re-order the content of any ScrollViews or Lists that use this feature.
-   *
-   * Caveat 2: This simply uses `contentOffset` and `frame.origin` in native code to compute
-   * visibility. Occlusion, transforms, and other complexity won't be taken into account as to
-   * whether content is "visible" or not.
-   *
-   */
-  maintainVisibleContentPosition?: ?$ReadOnly<{|
-    minIndexForVisible: number,
-    autoscrollToTopThreshold?: ?number,
-  |}>,
-  /**
    * The maximum allowed zoom scale. The default value is 1.0.
    * @platform ios
    */
@@ -506,6 +479,33 @@ export type Props = $ReadOnly<{|
    */
   keyboardShouldPersistTaps?: ?('always' | 'never' | 'handled' | true | false),
   /**
+   * When set, the scroll view will adjust the scroll position so that the first child that is
+   * partially or fully visible and at or beyond `minIndexForVisible` will not change position.
+   * This is useful for lists that are loading content in both directions, e.g. a chat thread,
+   * where new messages coming in might otherwise cause the scroll position to jump. A value of 0
+   * is common, but other values such as 1 can be used to skip loading spinners or other content
+   * that should not maintain position.
+   *
+   * The optional `autoscrollToTopThreshold` can be used to make the content automatically scroll
+   * to the top after making the adjustment if the user was within the threshold of the top before
+   * the adjustment was made. This is also useful for chat-like applications where you want to see
+   * new messages scroll into place, but not if the user has scrolled up a ways and it would be
+   * disruptive to scroll a bunch.
+   *
+   * Caveat 1: Reordering elements in the scrollview with this enabled will probably cause
+   * jumpiness and jank. It can be fixed, but there are currently no plans to do so. For now,
+   * don't re-order the content of any ScrollViews or Lists that use this feature.
+   *
+   * Caveat 2: This simply uses `contentOffset` and `frame.origin` in native code to compute
+   * visibility. Occlusion, transforms, and other complexity won't be taken into account as to
+   * whether content is "visible" or not.
+   *
+   */
+  maintainVisibleContentPosition?: ?$ReadOnly<{|
+    minIndexForVisible: number,
+    autoscrollToTopThreshold?: ?number,
+  |}>,
+  /**
    * Called when the momentum scroll starts (scroll which occurs as the ScrollView glides to a stop).
    */
   onMomentumScrollBegin?: ?(event: ScrollEvent) => void,
@@ -515,8 +515,7 @@ export type Props = $ReadOnly<{|
   onMomentumScrollEnd?: ?(event: ScrollEvent) => void,
 
   /**
-   * Fires at most once per frame during scrolling. The frequency of the
-   * events can be controlled using the `scrollEventThrottle` prop.
+   * Fires at most once per frame during scrolling.
    */
   onScroll?: ?(event: ScrollEvent) => void,
   /**
@@ -556,19 +555,10 @@ export type Props = $ReadOnly<{|
    */
   scrollEnabled?: ?boolean,
   /**
-   * This controls how often the scroll event will be fired while scrolling
-   * (as a time interval in ms). A lower number yields better accuracy for code
-   * that is tracking the scroll position, but can lead to scroll performance
-   * problems due to the volume of information being send over the bridge.
-   *
-   * Values between 0 and 17ms indicate 60fps updates are needed and throttling
-   * will be disabled.
-   *
-   * If you do not need precise scroll position tracking, set this value higher
-   * to limit the information being sent across the bridge.
-   *
-   * The default value is zero, which results in the scroll event being sent only
-   * once each time the view is scrolled.
+   * Limits how often scroll events will be fired while scrolling, specified as
+   * a time interval in ms. This may be useful when expensive work is performed
+   * in response to scrolling. Values <= `16` will disable throttling,
+   * regardless of the refresh rate of the device.
    */
   scrollEventThrottle?: ?number,
   /**
@@ -1668,13 +1658,14 @@ class ScrollView extends React.Component<Props, State> {
 
     const {stickyHeaderIndices} = this.props;
     let children = this.props.children;
+    /**
+     * This function can cause unnecessary remount when nested in conditionals as it causes remap of children keys.
+     * https://react.dev/reference/react/Children#children-toarray-caveats
+     */
+    children = React.Children.toArray<$FlowFixMe>(children);
 
     if (stickyHeaderIndices != null && stickyHeaderIndices.length > 0) {
-      const childArray = React.Children.toArray<$FlowFixMe>(
-        this.props.children,
-      );
-
-      children = childArray.map((child, index) => {
+      children = children.map((child, index) => {
         const indexOfIndex = child ? stickyHeaderIndices.indexOf(index) : -1;
         if (indexOfIndex > -1) {
           const key = child.key;
@@ -1686,7 +1677,7 @@ class ScrollView extends React.Component<Props, State> {
               key={key}
               ref={ref => this._setStickyHeaderRef(key, ref)}
               nextHeaderLayoutY={this._headerLayoutYs.get(
-                this._getKeyForIndex(nextIndex, childArray),
+                this._getKeyForIndex(nextIndex, children),
               )}
               onLayout={event => this._onStickyHeaderLayout(index, event, key)}
               scrollAnimatedValue={this._scrollAnimatedValue}

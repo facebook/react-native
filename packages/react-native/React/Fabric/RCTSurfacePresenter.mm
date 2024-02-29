@@ -27,6 +27,7 @@
 #import <React/RCTUtils.h>
 
 #import <react/config/ReactNativeConfig.h>
+#import <react/featureflags/ReactNativeFeatureFlags.h>
 #import <react/renderer/componentregistry/ComponentDescriptorFactory.h>
 #import <react/renderer/components/text/BaseTextProps.h>
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
@@ -256,16 +257,8 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 {
   auto reactNativeConfig = _contextContainer->at<std::shared_ptr<const ReactNativeConfig>>("ReactNativeConfig");
 
-  if (reactNativeConfig && reactNativeConfig->getBool("rn_convergence:dispatch_pointer_events")) {
-    RCTSetDispatchW3CPointerEvents(YES);
-  }
-
   if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_cpp_props_iterator_setter_ios")) {
     CoreFeatures::enablePropIteratorSetter = true;
-  }
-
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:cancel_image_downloads_on_recycle")) {
-    CoreFeatures::cancelImageDownloadsOnRecycle = true;
   }
 
   if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_granular_scroll_view_state_updates_ios")) {
@@ -276,16 +269,8 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     CoreFeatures::enableMountHooks = true;
   }
 
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_default_async_batched_priority")) {
-    CoreFeatures::enableDefaultAsyncBatchedPriority = true;
-  }
-
   if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_cloneless_state_progression")) {
     CoreFeatures::enableClonelessStateProgression = true;
-  }
-
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:position_relative_default")) {
-    CoreFeatures::positionRelativeDefault = true;
   }
 
   auto componentRegistryFactory =
@@ -317,7 +302,7 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     return std::make_unique<MainRunLoopObserver>(activities, owner);
   };
 
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_background_executor_ios")) {
+  if (ReactNativeFeatureFlags::enableBackgroundExecutor()) {
     toolbox.backgroundExecutor = RCTGetBackgroundExecutor();
   }
 

@@ -105,11 +105,8 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
       return ShadowNodeT::defaultSharedProps();
     }
 
-    if (CoreFeatures::excludeYogaFromRawProps) {
-      if (ShadowNodeT::IdentifierTrait() ==
-          ShadowNodeTraits::Trait::YogaLayoutableKind) {
-        rawProps.filterYogaStylePropsInDynamicConversion();
-      }
+    if constexpr (RawPropsFilterable<ShadowNodeT>) {
+      ShadowNodeT::filterRawProps(rawProps);
     }
 
     rawProps.parse(rawPropsParser_);

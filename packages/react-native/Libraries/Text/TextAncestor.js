@@ -15,9 +15,8 @@ const React = require('react');
 /**
  * Whether the current element is the descendant of a <Text> element.
  */
-const TextAncestorContext = (React.createContext(
-  false,
-): React$Context<$FlowFixMe>);
+const TextAncestorContext: React$Context<$FlowFixMe> =
+  React.createContext(false);
 if (__DEV__) {
   TextAncestorContext.displayName = 'TextAncestorContext';
 }

@@ -66,19 +66,11 @@ Scheduler::Scheduler(
               runtime, eventTarget, type, priority, payload);
         },
         runtime);
-
-    // We only want to run this per-event if we are not batching by default
-    if (!CoreFeatures::enableDefaultAsyncBatchedPriority) {
-      if (runtimeScheduler != nullptr) {
-        runtimeScheduler->callExpiredTasks(runtime);
-      }
-    }
   };
 
   auto eventPipeConclusion =
       [runtimeScheduler = runtimeScheduler.get()](jsi::Runtime& runtime) {
-        if (CoreFeatures::enableDefaultAsyncBatchedPriority &&
-            runtimeScheduler != nullptr) {
+        if (runtimeScheduler != nullptr) {
           runtimeScheduler->callExpiredTasks(runtime);
         }
       };
@@ -129,26 +121,18 @@ Scheduler::Scheduler(
     uiManager->registerCommitHook(*commitHook);
   }
 
+  if (animationDelegate != nullptr) {
+    animationDelegate->setComponentDescriptorRegistry(
+        componentDescriptorRegistry_);
+  }
+  uiManager_->setAnimationDelegate(animationDelegate);
+
 #ifdef ANDROID
   removeOutstandingSurfacesOnDestruction_ = true;
-  reduceDeleteCreateMutationLayoutAnimation_ = reactNativeConfig_->getBool(
-      "react_fabric:reduce_delete_create_mutation_layout_animation_android");
 #else
   removeOutstandingSurfacesOnDestruction_ = reactNativeConfig_->getBool(
       "react_fabric:remove_outstanding_surfaces_on_destruction_ios");
-  reduceDeleteCreateMutationLayoutAnimation_ = true;
 #endif
-
-#ifdef ANDROID
-  CoreFeatures::enableMicrotasks =
-      reactNativeConfig_->getBool("react_fabric:enable_microtasks_android");
-#else
-  CoreFeatures::enableMicrotasks =
-      reactNativeConfig_->getBool("react_fabric:enable_microtasks_ios");
-#endif
-
-  CoreFeatures::blockPaintForUseLayoutEffect = reactNativeConfig_->getBool(
-      "react_fabric:block_paint_for_use_layout_effect");
 
   CoreFeatures::cacheLastTextMeasurement =
       reactNativeConfig_->getBool("react_fabric:enable_text_measure_cache");
@@ -159,14 +143,6 @@ Scheduler::Scheduler(
 
   CoreFeatures::enableReportEventPaintTime = reactNativeConfig_->getBool(
       "rn_responsiveness_performance:enable_paint_time_reporting");
-
-  if (animationDelegate != nullptr) {
-    animationDelegate->setComponentDescriptorRegistry(
-        componentDescriptorRegistry_);
-    animationDelegate->setReduceDeleteCreateMutation(
-        reduceDeleteCreateMutationLayoutAnimation_);
-  }
-  uiManager_->setAnimationDelegate(animationDelegate);
 }
 
 Scheduler::~Scheduler() {

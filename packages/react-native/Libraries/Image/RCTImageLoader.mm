@@ -44,16 +44,10 @@ static NSInteger RCTImageBytesForImage(UIImage *image)
   return image.images ? image.images.count * singleImageBytes : singleImageBytes;
 }
 
-static uint64_t monotonicTimeGetCurrentNanoseconds(void)
+static uint64_t getNextImageRequestCount(void)
 {
-  static struct mach_timebase_info tb_info = {0};
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    __unused int ret = mach_timebase_info(&tb_info);
-    assert(0 == ret);
-  });
-
-  return (mach_absolute_time() * tb_info.numer) / tb_info.denom;
+  static uint64_t requestCounter = 0;
+  return requestCounter++;
 }
 
 static NSError *addResponseHeadersToError(NSError *originalError, NSHTTPURLResponse *response)
@@ -528,8 +522,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image, CGSize size, CGFloat scal
   auto cancelled = std::make_shared<std::atomic<int>>(0);
   __block dispatch_block_t cancelLoad = nil;
   __block NSLock *cancelLoadLock = [NSLock new];
-  NSString *requestId =
-      [NSString stringWithFormat:@"%@-%llu", [[NSUUID UUID] UUIDString], monotonicTimeGetCurrentNanoseconds()];
+  NSString *requestId = [NSString stringWithFormat:@"%@-%llu", [[NSUUID UUID] UUIDString], getNextImageRequestCount()];
 
   void (^completionHandler)(NSError *, id, id, NSURLResponse *) =
       ^(NSError *error, id imageOrData, id imageMetadata, NSURLResponse *response) {

@@ -65,6 +65,22 @@ std::string NativeCxxModuleExample::consumeCustomHostObject(
   return value->a_ + std::to_string(value->b_);
 }
 
+BinaryTreeNode NativeCxxModuleExample::getBinaryTreeNode(
+    jsi::Runtime& rt,
+    BinaryTreeNode arg) {
+  return arg;
+}
+
+GraphNode NativeCxxModuleExample::getGraphNode(
+    jsi::Runtime& rt,
+    GraphNode arg) {
+  if (arg.neighbors) {
+    arg.neighbors->emplace_back(GraphNode{.label = "top"});
+    arg.neighbors->emplace_back(GraphNode{.label = "down"});
+  }
+  return arg;
+}
+
 NativeCxxModuleExampleCxxEnumFloat NativeCxxModuleExample::getNumEnum(
     jsi::Runtime& rt,
     NativeCxxModuleExampleCxxEnumInt arg) {
@@ -151,6 +167,15 @@ std::optional<bool> NativeCxxModuleExample::getWithWithOptionalArgs(
 
 void NativeCxxModuleExample::voidFunc(jsi::Runtime& rt) {
   // Nothing to do
+}
+
+void NativeCxxModuleExample::setMenu(jsi::Runtime& rt, MenuItem menuItem) {
+  menuItem.onPress("value", true);
+  if (menuItem.items) {
+    for (auto subMenuItem : *menuItem.items) {
+      subMenuItem.onPress("another value", false);
+    }
+  }
 }
 
 void NativeCxxModuleExample::emitCustomDeviceEvent(
