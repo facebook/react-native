@@ -673,7 +673,7 @@ jobs:
     environment:
       - HERMES_WS_DIR: *hermes_workspace_root
       - HERMES_VERSION_FILE: "packages/react-native/sdks/.hermesversion"
-      - BUILD_FROM_SOURCE: true
+      - RCT_BUILD_HERMES_FROM_SOURCE: true
     steps:
       - run:
           name: Install dependencies
