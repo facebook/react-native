@@ -89,7 +89,7 @@
     "types"
   ],
   "scripts": {
-    "prepack": "cp ../../README.md .",
+    "prepack": "node ./scripts/prepack.js",
     "featureflags-check": "node ./scripts/featureflags/index.js --verify-unchanged",
     "featureflags-update": "node ./scripts/featureflags/index.js"
   },
