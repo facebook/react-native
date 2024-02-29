@@ -17,7 +17,7 @@ version = package['version']
 
 # sdks/.hermesversion
 hermestag_file = File.join(react_native_path, "sdks", ".hermesversion")
-build_from_source = ENV['BUILD_FROM_SOURCE'] === 'true'
+build_from_source = ENV['RCT_BUILD_HERMES_FROM_SOURCE'] === 'true'
 
 git = "https://github.com/facebook/hermes.git"
 
