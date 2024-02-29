@@ -34,18 +34,19 @@ const REACT_NATIVE_REPOSITORY_ROOT = path.join(
 );
 const REACT_NATIVE_PACKAGE_ROOT_FOLDER = path.join(__dirname, '..', '..');
 const CODEGEN_REPO_PATH = `${REACT_NATIVE_REPOSITORY_ROOT}/packages/react-native-codegen`;
+const RNCORE_CONFIGS = {
+  ios: path.join(REACT_NATIVE_PACKAGE_ROOT_FOLDER, 'ReactCommon'),
+  android: path.join(
+    REACT_NATIVE_PACKAGE_ROOT_FOLDER,
+    'ReactAndroid',
+    'build',
+    'generated',
+    'source',
+    'codegen',
+  ),
+};
 const CORE_LIBRARIES_WITH_OUTPUT_FOLDER = {
-  rncore: {
-    ios: path.join(REACT_NATIVE_PACKAGE_ROOT_FOLDER, 'ReactCommon'),
-    android: path.join(
-      REACT_NATIVE_PACKAGE_ROOT_FOLDER,
-      'ReactAndroid',
-      'build',
-      'generated',
-      'source',
-      'codegen',
-    ),
-  },
+  rncore: RNCORE_CONFIGS,
   FBReactNativeSpec: {
     ios: null,
     android: path.join(
