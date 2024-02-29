@@ -61,7 +61,7 @@ static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_optionalMetho
     rt,
     count <= 0 ? throw jsi::JSError(rt, \\"Expected argument in position 0 to be passed\\") : args[0].asObject(rt),
     count <= 1 ? throw jsi::JSError(rt, \\"Expected argument in position 1 to be passed\\") : args[1].asObject(rt).asFunction(rt),
-    count <= 2 || args[2].isNull() || args[2].isUndefined() ? std::nullopt : std::make_optional(args[2].asObject(rt).asArray(rt))
+    count <= 2 || args[2].isUndefined() ? std::nullopt : std::make_optional(args[2].asObject(rt).asArray(rt))
   );
   return jsi::Value::undefined();
 }
@@ -243,7 +243,7 @@ static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getValueWithP
 static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getWithWithOptionalArgs(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   auto result = static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getWithWithOptionalArgs(
     rt,
-    count <= 0 || args[0].isNull() || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asBool())
+    count <= 0 || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asBool())
   );
   return result ? jsi::Value(std::move(*result)) : jsi::Value::null();
 }
@@ -591,7 +591,7 @@ static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getValueWithP
 static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getValueWithOptionalArg(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getValueWithOptionalArg(
     rt,
-    count <= 0 || args[0].isNull() || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asObject(rt))
+    count <= 0 || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asObject(rt))
   );
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getEnums(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
