@@ -131,15 +131,15 @@ ReactInstance::ReactInstance(
 }
 
 void ReactInstance::unregisterFromInspector() {
-  assert(inspectorTarget_);
+  if (inspectorTarget_) {
+    assert(runtimeInspectorTarget_);
+    inspectorTarget_->unregisterRuntime(*runtimeInspectorTarget_);
 
-  assert(runtimeInspectorTarget_);
-  inspectorTarget_->unregisterRuntime(*runtimeInspectorTarget_);
+    assert(parentInspectorTarget_);
+    parentInspectorTarget_->unregisterInstance(*inspectorTarget_);
 
-  assert(parentInspectorTarget_);
-  parentInspectorTarget_->unregisterInstance(*inspectorTarget_);
-
-  inspectorTarget_ = nullptr;
+    inspectorTarget_ = nullptr;
+  }
 }
 
 RuntimeExecutor ReactInstance::getUnbufferedRuntimeExecutor() noexcept {

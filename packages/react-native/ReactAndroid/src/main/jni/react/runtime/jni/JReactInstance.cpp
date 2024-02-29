@@ -67,7 +67,9 @@ JReactInstance::JReactInstance(
       sharedJSMessageQueueThread,
       timerManager,
       std::move(jsErrorHandlingFunc),
-      jReactHostInspectorTarget->cthis()->getInspectorTarget());
+      jReactHostInspectorTarget
+          ? jReactHostInspectorTarget->cthis()->getInspectorTarget()
+          : nullptr);
 
   auto bufferedRuntimeExecutor = instance_->getBufferedRuntimeExecutor();
   timerManager->setRuntimeExecutor(bufferedRuntimeExecutor);
