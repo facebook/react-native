@@ -416,19 +416,20 @@ function generateSchemaInfo(library, platform) {
 }
 
 function generateCode(outputPath, schemaInfo, includesGeneratedCode, platform) {
-  const tmpDir = fs.mkdtempSync(
-    path.join(os.tmpdir(), schemaInfo.library.config.name),
-  );
+  const libraryName = schemaInfo.library.config.name;
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), libraryName));
   const tmpOutputDir = path.join(tmpDir, 'out');
   fs.mkdirSync(tmpOutputDir, {recursive: true});
 
-  console.log(`[Codegen] Generating Native Code for ${platform}`);
+  console.log(
+    `[Codegen] Generating Native Code for ${libraryName} - ${platform}`,
+  );
   const useLocalIncludePaths = includesGeneratedCode;
   generateSpecsCLIExecutor.generateSpecFromInMemorySchema(
     platform,
     schemaInfo.schema,
     tmpOutputDir,
-    schemaInfo.library.config.name,
+    libraryName,
     'com.facebook.fbreact.specs',
     schemaInfo.library.config.type,
     useLocalIncludePaths,
@@ -436,10 +437,7 @@ function generateCode(outputPath, schemaInfo, includesGeneratedCode, platform) {
 
   // Finally, copy artifacts to the final output directory.
   const outputDir =
-    reactNativeCoreLibraryOutputPath(
-      schemaInfo.library.config.name,
-      platform,
-    ) ?? outputPath;
+    reactNativeCoreLibraryOutputPath(libraryName, platform) ?? outputPath;
   fs.mkdirSync(outputDir, {recursive: true});
   // TODO: Fix this. This will not work on Windows.
   execSync(`cp -R ${tmpOutputDir}/* "${outputDir}"`);
