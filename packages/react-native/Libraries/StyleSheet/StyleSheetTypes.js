@@ -918,5 +918,5 @@ export type ____FlattenStyleProp_Internal<
 > = TStyleProp extends null | void | false | ''
   ? empty
   : TStyleProp extends $ReadOnlyArray<infer V>
-  ? ____FlattenStyleProp_Internal<V>
-  : TStyleProp;
+    ? ____FlattenStyleProp_Internal<V>
+    : TStyleProp;

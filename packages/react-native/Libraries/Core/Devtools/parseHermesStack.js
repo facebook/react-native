@@ -88,25 +88,25 @@ function parseLine(line: string): ?HermesStackEntry {
         asFrame[2] === 'native'
           ? {type: 'NATIVE'}
           : asFrame[3] === 'address at '
-          ? isInternalBytecodeSourceUrl(asFrame[4])
-            ? {
-                type: 'INTERNAL_BYTECODE',
-                sourceUrl: asFrame[4],
-                line1Based: Number.parseInt(asFrame[5], 10),
-                virtualOffset0Based: Number.parseInt(asFrame[6], 10),
-              }
+            ? isInternalBytecodeSourceUrl(asFrame[4])
+              ? {
+                  type: 'INTERNAL_BYTECODE',
+                  sourceUrl: asFrame[4],
+                  line1Based: Number.parseInt(asFrame[5], 10),
+                  virtualOffset0Based: Number.parseInt(asFrame[6], 10),
+                }
+              : {
+                  type: 'BYTECODE',
+                  sourceUrl: asFrame[4],
+                  line1Based: Number.parseInt(asFrame[5], 10),
+                  virtualOffset0Based: Number.parseInt(asFrame[6], 10),
+                }
             : {
-                type: 'BYTECODE',
+                type: 'SOURCE',
                 sourceUrl: asFrame[4],
                 line1Based: Number.parseInt(asFrame[5], 10),
-                virtualOffset0Based: Number.parseInt(asFrame[6], 10),
-              }
-          : {
-              type: 'SOURCE',
-              sourceUrl: asFrame[4],
-              line1Based: Number.parseInt(asFrame[5], 10),
-              column1Based: Number.parseInt(asFrame[6], 10),
-            },
+                column1Based: Number.parseInt(asFrame[6], 10),
+              },
     };
   }
   const asSkipped = line.match(RE_SKIPPED);

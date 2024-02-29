@@ -115,8 +115,8 @@ function getNpmInfo(buildType /*: BuildType */) /*: NpmInfo */ {
       prerelease != null
         ? 'next'
         : isLatest === true
-        ? 'latest'
-        : releaseBranchTag;
+          ? 'latest'
+          : releaseBranchTag;
 
     return {
       version,

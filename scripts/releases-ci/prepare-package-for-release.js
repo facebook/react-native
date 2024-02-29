@@ -68,8 +68,8 @@ async function main() {
   const buildType = isDryRun
     ? 'dry-run'
     : isReleaseBranch(branch)
-    ? 'release'
-    : 'nightly';
+      ? 'release'
+      : 'nightly';
 
   failIfTagExists(releaseVersion, buildType);
 

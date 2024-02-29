@@ -1158,8 +1158,8 @@ function InternalTextInput(props: Props): React.Node {
     typeof props.value === 'string'
       ? props.value
       : typeof props.defaultValue === 'string'
-      ? props.defaultValue
-      : '';
+        ? props.defaultValue
+        : '';
 
   // This is necessary in case native updates the text and JS decides
   // that the update should be ignored and we should stick with the value
@@ -1736,12 +1736,12 @@ const ExportedForwardRef: React.AbstractComponent<
         textContentType != null
           ? textContentType
           : Platform.OS === 'ios' &&
-            autoComplete &&
-            autoComplete in autoCompleteWebToTextContentTypeMap
-          ? // $FlowFixMe[invalid-computed-prop]
-            // $FlowFixMe[prop-missing]
-            autoCompleteWebToTextContentTypeMap[autoComplete]
-          : textContentType
+              autoComplete &&
+              autoComplete in autoCompleteWebToTextContentTypeMap
+            ? // $FlowFixMe[invalid-computed-prop]
+              // $FlowFixMe[prop-missing]
+              autoCompleteWebToTextContentTypeMap[autoComplete]
+            : textContentType
       }
       {...restProps}
       forwardedRef={forwardedRef}
