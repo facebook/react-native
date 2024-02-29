@@ -563,6 +563,25 @@
 - Fix race condition between A11yManager and UIManager ([f39f34ed82](https://github.com/facebook/react-native/commit/f39f34ed82997d0595522a285c3cb8693594e718) by [@cipolleschi](https://github.com/cipolleschi))
 - Fix symbol not found _jump_fcontext with use_frameworks ([a2771ce58a](https://github.com/facebook/react-native/commit/a2771ce58ac221d1ac0de265c1ce571212fbcf83) by [@cipolleschi](https://github.com/cipolleschi))
 
+## v0.72.11
+
+### Changed
+
+- Upgrade CLI to 11.4.1 ([c57a29a08c](https://github.com/facebook/react-native/commit/c57a29a08c086728ea3bbb6b077c92fae6792d11) by [@szymonrybczak](https://github.com/szymonrybczak))
+- Update Metro to ^0.76.9, CLI to ^11.4.0 ([ddff36f770](https://github.com/facebook/react-native/commit/ddff36f7705f1b5b2e27bfb2ee62f6726dfdd7bd) by [@robhogan](https://github.com/robhogan))
+
+#### iOS specific
+
+- Improve Swift support for 3rd party libs ([6939021518](https://github.com/facebook/react-native/commit/693902151899c85ff00418d75df4377a1096efee) by [@cipolleschi](https://github.com/cipolleschi))
+
+### Fixed
+
+- Fix overriding EXCLUDED_ARCHS when installing Hermes on RN v0.72 ([a4282a91c3](https://github.com/facebook/react-native/commit/a4282a91c32f947adfb4f210e296e8dfeefdae34) by [@ken0nek](https://github.com/ken0nek))
+
+#### iOS specific
+
+- Don't allow cocoapods 1.15. ([08fd9170fc](https://github.com/facebook/react-native/commit/08fd9170fcdc7042fdcfe5f54eec71ed245d9795) by [@blakef](https://github.com/blakef))
+
 ## v0.72.10
 
 ### Added
