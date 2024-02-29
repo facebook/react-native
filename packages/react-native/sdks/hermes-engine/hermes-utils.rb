@@ -7,6 +7,7 @@ require 'net/http'
 require 'rexml/document'
 
 HERMES_GITHUB_URL = "https://github.com/facebook/hermes.git"
+ENV_BUILD_FROM_SOURCE = "RCT_BUILD_HERMES_FROM_SOURCE"
 
 module HermesEngineSourceType
     LOCAL_PREBUILT_TARBALL = :local_prebuilt_tarball
@@ -30,7 +31,7 @@ end
 # - To use a specific tarball, install the dependencies with:
 # `HERMES_ENGINE_TARBALL_PATH=<path_to_tarball> bundle exec pod install`
 # - To force a build from source, install the dependencies with:
-# `BUILD_FROM_SOURCE=true bundle exec pod install`
+# `RCT_BUILD_HERMES_FROM_SOURCE=true bundle exec pod install`
 # If none of the two are provided, Cocoapods will check whether there is a tarball for the current version
 # (either release or nightly). If not, it will fall back to building from source (the latest commit on main).
 #
@@ -85,11 +86,11 @@ def hermes_commit_envvar_defined()
 end
 
 def force_build_from_tag(react_native_path)
-    return ENV['BUILD_FROM_SOURCE'] === 'true' && File.exist?(hermestag_file(react_native_path))
+    return ENV[ENV_BUILD_FROM_SOURCE] === 'true' && File.exist?(hermestag_file(react_native_path))
 end
 
 def force_build_from_main(react_native_path)
-    return ENV['BUILD_FROM_SOURCE'] === 'true' && !File.exist?(hermestag_file(react_native_path))
+    return ENV[ENV_BUILD_FROM_SOURCE] === 'true' && !File.exist?(hermestag_file(react_native_path))
 end
 
 def release_artifact_exists(version)
