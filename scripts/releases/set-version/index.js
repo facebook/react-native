@@ -15,42 +15,13 @@
 import type {PackageJson} from '../../utils/monorepo';
 */
 
-const {getPackages, getWorkspaceRoot} = require('../../utils/monorepo');
+const {
+  getPackages,
+  getWorkspaceRoot,
+  updatePackageJson,
+} = require('../../utils/monorepo');
 const {setReactNativeVersion} = require('../set-rn-version');
-const {promises: fs} = require('fs');
-const path = require('path');
 const yargs = require('yargs');
-
-async function updatePackageJson(
-  packagePath /*: string */,
-  packageJson /*: PackageJson */,
-  newPackageVersions /*: $ReadOnly<{[string]: string}> */,
-) /*: Promise<void> */ {
-  const packageName = packageJson.name;
-
-  if (packageName in newPackageVersions) {
-    packageJson.version = newPackageVersions[packageName];
-  }
-
-  for (const dependencyField of ['dependencies', 'devDependencies']) {
-    const deps = packageJson[dependencyField];
-
-    if (deps == null) {
-      continue;
-    }
-
-    for (const dependency in newPackageVersions) {
-      if (dependency in deps) {
-        deps[dependency] = newPackageVersions[dependency];
-      }
-    }
-  }
-
-  return fs.writeFile(
-    path.join(packagePath, 'package.json'),
-    JSON.stringify(packageJson, null, 2) + '\n',
-  );
-}
 
 /**
  * Sets a singular version for the entire monorepo.
