@@ -438,6 +438,20 @@ export type Props = $ReadOnly<{|
    *   - `'fast'`: 0.99 on iOS, 0.9 on Android
    */
   decelerationRate?: ?DecelerationRateType,
+
+  /**
+   * *Experimental, iOS Only*. The API is experimental and will change in future releases.
+   *
+   * Controls how much distance is travelled after user stops scrolling.
+   * Value greater than 1 will increase the distance travelled.
+   * Value less than 1 will decrease the distance travelled.
+   *
+   * @deprecated
+   *
+   * The default value is 1.
+   */
+  experimental_endDraggingSensitivityMultiplier?: ?number,
+
   /**
    * When true, the scroll view's children are arranged horizontally in a row
    * instead of vertically in a column. The default value is false.
@@ -1733,8 +1747,11 @@ class ScrollView extends React.Component<Props, State> {
       this.props.horizontal === true
         ? styles.baseHorizontal
         : styles.baseVertical;
+
+    const {experimental_endDraggingSensitivityMultiplier, ...otherProps} =
+      this.props;
     const props = {
-      ...this.props,
+      ...otherProps,
       alwaysBounceHorizontal,
       alwaysBounceVertical,
       style: StyleSheet.compose(baseStyle, this.props.style),
@@ -1759,6 +1776,8 @@ class ScrollView extends React.Component<Props, State> {
       onTouchStart: this._handleTouchStart,
       onTouchCancel: this._handleTouchCancel,
       onScroll: this._handleScroll,
+      endDraggingSensitivityMultiplier:
+        experimental_endDraggingSensitivityMultiplier,
       scrollEventThrottle: hasStickyHeaders
         ? 1
         : this.props.scrollEventThrottle,

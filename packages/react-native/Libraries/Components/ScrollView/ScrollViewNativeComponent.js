@@ -132,6 +132,7 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
           },
           contentInsetAdjustmentBehavior: true,
           decelerationRate: true,
+          endDraggingSensitivityMultiplier: true,
           directionalLockEnabled: true,
           disableIntervalMomentum: true,
           indicatorStyle: true,
