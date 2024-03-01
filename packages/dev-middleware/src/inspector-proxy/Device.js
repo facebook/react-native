@@ -28,6 +28,7 @@ import type {
 } from './types';
 
 import DeviceEventReporter from './DeviceEventReporter';
+import {createMiddlewareDebuggerInfo} from './DeviceMessageMiddleware';
 import * as fs from 'fs';
 import fetch from 'node-fetch';
 import * as path from 'path';
@@ -44,7 +45,7 @@ const EMULATOR_LOCALHOST_ADDRESSES: Array<string> = ['10.0.2.2', '10.0.3.2'];
 // more details.
 const FILE_PREFIX = 'file://';
 
-type DebuggerInfo = {
+export type DebuggerInfo = {
   // Debugger web socket connection
   socket: WS,
   // If we replaced address (like '10.0.2.2') to localhost we need to store original
@@ -127,7 +128,14 @@ export default class Device {
         })
       : null;
     this.#messageMiddleware = createMessageMiddleware
-      ? createMessageMiddleware({})
+      ? createMessageMiddleware({
+          appId: app,
+          deviceId: id,
+          deviceName: name,
+          deviceSocket: socket,
+          pageHasCapability: (page, capability) =>
+            this.#pageHasCapability(page, capability),
+        })
       : null;
 
     // $FlowFixMe[incompatible-call]
@@ -242,6 +250,18 @@ export default class Device {
         frontendUserAgent: metadata.userAgent,
       });
       let processedReq = debuggerRequest;
+
+      if (
+        this.#messageMiddleware &&
+        this.#messageMiddleware.handleDebuggerMessage(
+          debuggerRequest,
+          page,
+          createMiddlewareDebuggerInfo(debuggerInfo),
+        ) === true
+      ) {
+        return;
+      }
+
       if (!page || !this.#pageHasCapability(page, 'nativeSourceCodeFetching')) {
         processedReq = this.#interceptClientMessageForSourceFetching(
           debuggerRequest,
@@ -382,6 +402,18 @@ export default class Device {
       // for unknown pages.
       const page: ?Page = this.#pages.get(pageId);
 
+      // NOTE(bycedric): Notify the device message middleware of the disconnect event, without any further actions.
+      // This can be used to clean up state in the device message middleware.
+      if (this.#messageMiddleware) {
+        this.#messageMiddleware.handleDeviceMessage(
+          message,
+          page,
+          this.#debuggerConnection
+            ? createMiddlewareDebuggerInfo(this.#debuggerConnection)
+            : null,
+        );
+      }
+
       if (page != null && this.#pageHasCapability(page, 'nativePageReloads')) {
         return;
       }
@@ -420,6 +452,23 @@ export default class Device {
           pageId,
           frontendUserAgent: this.#debuggerConnection?.userAgent ?? null,
         });
+      }
+
+      if (this.#messageMiddleware) {
+        const middleware = this.#messageMiddleware;
+        const debuggerInfo = this.#debuggerConnection;
+
+        if (
+          middleware.handleDeviceMessage(
+            parsedPayload,
+            debuggerInfo ? this.#pages.get(debuggerInfo.pageId) : null,
+            this.#debuggerConnection
+              ? createMiddlewareDebuggerInfo(this.#debuggerConnection)
+              : null,
+          ) === true
+        ) {
+          return;
+        }
       }
 
       if (this.#debuggerConnection != null) {
