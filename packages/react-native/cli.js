@@ -11,15 +11,23 @@
 'use strict';
 
 const {name, version: currentVersion} = require('./package.json');
-const cli = require('@react-native-community/cli');
 const chalk = require('chalk');
 const {get} = require('https');
 const {URL} = require('url');
+
+let cli = {
+  run: () => {
+    throw new Error(
+      'react-native/cli is deprecated, please use @react-native-community/cli instead',
+    );
+  },
+};
 
 const isNpxRuntime = process.env.npm_lifecycle_event === 'npx';
 const DEFAULT_REGISTRY_HOST =
   process.env.npm_config_registry ?? 'https://registry.npmjs.org/';
 const HEAD = '1000.0.0';
+const CLI_DEPRECATION_DATE = new Date('2024-10-01');
 
 async function getLatestVersion(registryHost = DEFAULT_REGISTRY_HOST) {
   return new Promise((res, rej) => {
@@ -41,12 +49,62 @@ async function getLatestVersion(registryHost = DEFAULT_REGISTRY_HOST) {
 
 /**
  * Warn when users are using `npx react-native init`, to raise awareness of the changes from RFC 0759.
+ *
+ * Phase 1
+ *
  * @see https://github.com/react-native-community/discussions-and-proposals/tree/main/proposals/0759-react-native-frameworks.md
  */
 function warnWhenRunningInit() {
   if (process.argv[2] === 'init') {
-    console.warn('\nRunning: npx @react-native-community/cli init\n');
+    console.warn(
+      `\nRunning: ${chalk.grey.bold('npx @react-native-community/cli init')}\n`,
+    );
   }
+}
+
+/**
+ * Warn more sternly that the ability to call `npx react-native init` is going away.
+ *
+ * Phase 2
+ *
+ * @see https://github.com/react-native-community/discussions-and-proposals/tree/main/proposals/0759-react-native-frameworks.md
+ */
+function warnWithDeprecationSchedule() {
+  if (process.argv[2] !== 'init') {
+    return;
+  }
+
+  const daysRemaining = Math.ceil(
+    (CLI_DEPRECATION_DATE.getTime() - new Date().getTime()) / 86_400_000,
+  );
+
+  const emphasis =
+    daysRemaining < 10
+      ? chalk.bgRed.white.bold
+      : daysRemaining < 30
+        ? chalk.red.bold
+        : daysRemaining < 60
+          ? chalk.green.bold
+          : chalk.blueBright.bold;
+
+  console.warn(`
+${chalk.yellow('⚠️')} The \`init\` command is deprecated.
+The behavior will be changed on ${chalk.white.bold(CLI_DEPRECATION_DATE.toLocaleDateString())} ${emphasis(`(${daysRemaining} day${daysRemaining > 1 ? 's' : ''})`)}.
+
+- Switch to ${chalk.dim('npx @react-native-community/cli init')} for the identical behavior.
+- Refer to the documentation for information about alternative tools: ${chalk.dim('https://reactnative.dev/docs/getting-started')}`);
+}
+
+function warnWithDeprecated() {
+  if (process.argv[2] !== 'init') {
+    return;
+  }
+
+  console.warn(`
+${chalk.yellow('⚠')}️ The \`init\` command is deprecated.
+
+- Switch to ${chalk.dim('npx @react-native-community/cli init')} for the identical behavior.
+- Refer to the documentation for information about alternative tools: ${chalk.dim('https://reactnative.dev/docs/getting-started')}`);
 }
 
 /**
@@ -77,13 +135,32 @@ async function main() {
     }
   }
 
+  const isDeprecated =
+    CLI_DEPRECATION_DATE.getTime() <= new Date().getTime() ||
+    currentVersion.startsWith('0.76');
+
+  if (currentVersion !== HEAD && isDeprecated) {
+    warnWithDeprecated();
+    process.exit(1);
+  }
+
+  if (currentVersion.startsWith('0.75')) {
+    warnWithDeprecationSchedule();
+  }
+
   warnWhenRunningInit();
 
-  return cli.run(name);
+  return require('@react-native-community/cli').run(name);
 }
 
 if (require.main === module) {
   main();
+} else {
+  try {
+    cli = require('@react-native-community/cli');
+  } catch (_) {
+    // Ignore errors, once this dependency goes use MUST throw an exception
+  }
 }
 
 module.exports = cli;
