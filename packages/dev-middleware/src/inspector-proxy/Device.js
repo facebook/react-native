@@ -17,6 +17,10 @@ import type {
   CDPServerMessage,
 } from './cdp-types/messages';
 import type {
+  DeviceMessageMiddleware,
+  createDeviceMessageMiddleware,
+} from './DeviceMessageMiddleware';
+import type {
   MessageFromDevice,
   MessageToDevice,
   Page,
@@ -97,6 +101,9 @@ export default class Device {
 
   #pagesPollingIntervalId: ReturnType<typeof setInterval>;
 
+  // Device message middleware allowing implementers to handle unsupported CDP messages.
+  #messageMiddleware: ?DeviceMessageMiddleware;
+
   constructor(
     id: string,
     name: string,
@@ -104,6 +111,7 @@ export default class Device {
     socket: WS,
     projectRoot: string,
     eventReporter: ?EventReporter,
+    createMessageMiddleware: ?createDeviceMessageMiddleware,
   ) {
     this.#id = id;
     this.#name = name;
@@ -117,6 +125,9 @@ export default class Device {
           deviceName: name,
           appId: app,
         })
+      : null;
+    this.#messageMiddleware = createMessageMiddleware
+      ? createMessageMiddleware({})
       : null;
 
     // $FlowFixMe[incompatible-call]

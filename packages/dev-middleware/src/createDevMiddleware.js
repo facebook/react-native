@@ -9,6 +9,7 @@
  * @oncall react_native
  */
 
+import type {createDeviceMessageMiddleware} from './inspector-proxy/DeviceMessageMiddleware';
 import type {BrowserLauncher} from './types/BrowserLauncher';
 import type {EventReporter} from './types/EventReporter';
 import type {Experiments, ExperimentsConfig} from './types/Experiments';
@@ -59,6 +60,13 @@ type Options = $ReadOnly<{
    * This is an unstable API with no semver guarantees.
    */
   unstable_experiments?: ExperimentsConfig,
+
+  /**
+   * Create a middleware for handling unsupported CDP events, per device.
+   *
+   * This is an unstable API with no semver guarantees.
+   */
+  unstable_deviceMessageMiddleware?: createDeviceMessageMiddleware,
 }>;
 
 type DevMiddlewareAPI = $ReadOnly<{
@@ -73,6 +81,7 @@ export default function createDevMiddleware({
   unstable_browserLauncher = DefaultBrowserLauncher,
   unstable_eventReporter,
   unstable_experiments: experimentConfig = {},
+  unstable_deviceMessageMiddleware,
 }: Options): DevMiddlewareAPI {
   const experiments = getExperiments(experimentConfig);
 
@@ -81,6 +90,7 @@ export default function createDevMiddleware({
     serverBaseUrl,
     unstable_eventReporter,
     experiments,
+    unstable_deviceMessageMiddleware,
   );
 
   const middleware = connect()
