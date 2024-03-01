@@ -16,6 +16,7 @@ export type ResolvedAssetSource = {|
   +height: ?number,
   +uri: string,
   +scale: number,
+  +headers?: ?{[string]: string},
 |};
 
 import type {PackagerAsset} from '@react-native/assets-registry/registry';

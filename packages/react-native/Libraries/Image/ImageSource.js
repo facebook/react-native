@@ -39,7 +39,7 @@ export interface ImageURISource {
    * `headers` is an object representing the HTTP headers to send along with the
    * request for a remote image.
    */
-  +headers?: ?{[string]: string};
+  +headers?: ?{[string]: string} | ?Headers;
 
   /**
    * `body` is the HTTP body to send with the request. This must be a valid
@@ -116,7 +116,10 @@ export function getImageSourceProperties(
     object.cache = imageSource.cache;
   }
   if (imageSource.headers != null) {
-    object.headers = imageSource.headers;
+    object.headers =
+      imageSource.headers instanceof Headers
+        ? Object.fromEntries<string, string>(imageSource.headers.entries())
+        : imageSource.headers;
   }
   if (imageSource.height != null) {
     object.height = imageSource.height;
