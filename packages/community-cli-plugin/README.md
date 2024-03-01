@@ -69,24 +69,6 @@ npx react-native bundle --entry-file <path> [options]
 | `--read-global-cache` | Attempt to fetch transformed JS code from the global cache, if configured. Defaults to `false`. |
 | `--config <string>` | Path to the CLI configuration file. |
 
-### `ram-bundle`
-
-Build the [RAM bundle](https://reactnative.dev/docs/ram-bundles-inline-requires) for the provided JavaScript entry file.
-
-#### Usage
-
-```sh
-npx react-native ram-bundle --entry-file <path> [options]
-```
-
-#### Options
-
-Accepts all options supported by [`bundle`](#bundle) and the following:
-
-| Option | Description |
-| - | - |
-| `--indexed-ram-bundle` | Force the "Indexed RAM" bundle file format, even when building for Android. |
-
 ## Contributing
 
 Changes to this package can be made locally and tested against the `rn-tester` app, per the [Contributing guide](https://reactnative.dev/contributing/overview#contributing-code). During development, this package is automatically run from source with no build step.
