@@ -13,21 +13,7 @@
 #import "RCTModalManager.h"
 #import "RCTShadowView.h"
 #import "RCTUtils.h"
-
-@implementation RCTConvert (RCTModalHostView)
-
-RCT_ENUM_CONVERTER(
-    UIModalPresentationStyle,
-    (@{
-      @"fullScreen" : @(UIModalPresentationFullScreen),
-      @"pageSheet" : @(UIModalPresentationPageSheet),
-      @"formSheet" : @(UIModalPresentationFormSheet),
-      @"overFullScreen" : @(UIModalPresentationOverFullScreen),
-    }),
-    UIModalPresentationFullScreen,
-    integerValue)
-
-@end
+#import <React/RCTConvert.h>
 
 @interface RCTModalHostShadowView : RCTShadowView
 
