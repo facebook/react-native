@@ -9,23 +9,16 @@
  */
 
 import type {DebuggerInfo} from './Device';
-import type {
-  MessageFromDevice,
-  MessageToDevice,
-  Page,
-  TargetCapabilityFlags,
-} from './types';
+import type {MessageFromDevice, MessageToDevice, Page} from './types';
 import type WS from 'ws';
 
 type ExposedDeviceInfo = $ReadOnly<{
+  appId: string,
   deviceId: string,
   deviceName: string,
   deviceSocket: WS,
-  appId: string,
-  pageHasCapability: (
-    page: Page,
-    capability: $Keys<TargetCapabilityFlags>,
-  ) => boolean,
+  page: Page,
+  projectRoot: string,
 }>;
 
 type ExposedDebuggerInfo = $ReadOnly<{
@@ -40,7 +33,7 @@ type ExposedDebuggerInfo = $ReadOnly<{
 
 export type createDeviceMessageMiddleware = (
   deviceInfo: ExposedDeviceInfo,
-) => DeviceMessageMiddleware;
+) => ?DeviceMessageMiddleware;
 
 /**
  * The device message middleware allows implementers to handle unsupported CDP messages.
@@ -55,7 +48,6 @@ export interface DeviceMessageMiddleware {
    */
   handleDeviceMessage(
     message: MessageFromDevice,
-    page: ?Page,
     debuggerInfo: ?ExposedDebuggerInfo,
   ): true | void;
 
@@ -66,7 +58,6 @@ export interface DeviceMessageMiddleware {
    */
   handleDebuggerMessage(
     message: MessageToDevice,
-    page: ?Page,
     debuggerInfo: ExposedDebuggerInfo,
   ): true | void;
 }

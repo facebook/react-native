@@ -132,7 +132,6 @@ describe('inspector proxy device message middleware', () => {
       await until(() =>
         expect(handleDeviceMessage).toBeCalledWith(
           message, // CDP event
-          expect.any(Object), // Page
           expect.any(Object), // Debugger info
         ),
       );
@@ -255,7 +254,6 @@ describe('inspector proxy device message middleware', () => {
       await until(() =>
         expect(handleDebuggerMessage).toBeCalledWith(
           message, // CDP event
-          expect.any(Object), // Page
           expect.any(Object), // Debugger info
         ),
       );

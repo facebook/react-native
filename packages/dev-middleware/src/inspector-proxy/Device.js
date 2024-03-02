@@ -56,6 +56,8 @@ export type DebuggerInfo = {
   userAgent: string | null,
 };
 
+type PageWithMiddleware = {...Page, middleware: ?DeviceMessageMiddleware};
+
 const REACT_NATIVE_RELOADABLE_PAGE_ID = '-1';
 
 /**
@@ -76,7 +78,7 @@ export default class Device {
   #deviceSocket: WS;
 
   // Stores the most recent listing of device's pages, keyed by the `id` field.
-  #pages: $ReadOnlyMap<string, Page>;
+  #pages: $ReadOnlyMap<string, PageWithMiddleware>;
 
   // Stores information about currently connected debugger (if any).
   #debuggerConnection: ?DebuggerInfo = null;
@@ -102,8 +104,8 @@ export default class Device {
 
   #pagesPollingIntervalId: ReturnType<typeof setInterval>;
 
-  // Device message middleware allowing implementers to handle unsupported CDP messages.
-  #messageMiddleware: ?DeviceMessageMiddleware;
+  // The device message middleware factory function allowing implementers to handle unsupported CDP messages.
+  #createMessageMiddleware: ?createDeviceMessageMiddleware;
 
   constructor(
     id: string,
@@ -127,16 +129,7 @@ export default class Device {
           appId: app,
         })
       : null;
-    this.#messageMiddleware = createMessageMiddleware
-      ? createMessageMiddleware({
-          appId: app,
-          deviceId: id,
-          deviceName: name,
-          deviceSocket: socket,
-          pageHasCapability: (page, capability) =>
-            this.#pageHasCapability(page, capability),
-        })
-      : null;
+    this.#createMessageMiddleware = createMessageMiddleware;
 
     // $FlowFixMe[incompatible-call]
     this.#deviceSocket.on('message', (message: string) => {
@@ -180,6 +173,10 @@ export default class Device {
   }
 
   getPagesList(): $ReadOnlyArray<Page> {
+    const pages = [...this.#pages.values()].map(
+      ({middleware, ...page}) => page,
+    );
+
     if (this.#lastConnectedLegacyReactNativePage) {
       const reactNativeReloadablePage = {
         id: REACT_NATIVE_RELOADABLE_PAGE_ID,
@@ -188,9 +185,9 @@ export default class Device {
         app: this.#app,
         capabilities: {},
       };
-      return [...this.#pages.values(), reactNativeReloadablePage];
+      return [...pages, reactNativeReloadablePage];
     } else {
-      return [...this.#pages.values()];
+      return [...pages];
     }
   }
 
@@ -228,7 +225,7 @@ export default class Device {
 
     // TODO(moti): Handle null case explicitly, e.g. refuse to connect to
     // unknown pages.
-    const page: ?Page = this.#pages.get(pageId);
+    const page: ?PageWithMiddleware = this.#pages.get(pageId);
 
     this.#debuggerConnection = debuggerInfo;
 
@@ -252,10 +249,8 @@ export default class Device {
       let processedReq = debuggerRequest;
 
       if (
-        this.#messageMiddleware &&
-        this.#messageMiddleware.handleDebuggerMessage(
+        page?.middleware?.handleDebuggerMessage(
           debuggerRequest,
-          page,
           createMiddlewareDebuggerInfo(debuggerInfo),
         ) === true
       ) {
@@ -352,13 +347,21 @@ export default class Device {
   #handleMessageFromDevice(message: MessageFromDevice) {
     if (message.event === 'getPages') {
       this.#pages = new Map(
-        message.payload.map(({capabilities, ...page}) => [
-          page.id,
-          {
-            ...page,
-            capabilities: capabilities ?? {},
-          },
-        ]),
+        message.payload.map(({capabilities, ...pageProps}) => {
+          const page = {...pageProps, capabilities: capabilities ?? {}};
+          const middleware = this.#createMessageMiddleware
+            ? this.#createMessageMiddleware({
+                appId: this.#app,
+                deviceId: this.#id,
+                deviceName: this.#name,
+                deviceSocket: this.#deviceSocket,
+                page,
+                projectRoot: this.#projectRoot,
+              })
+            : null;
+
+          return [page.id, {...page, middleware}];
+        }),
       );
       if (message.payload.length !== this.#pages.size) {
         const duplicateIds = new Set<string>();
@@ -400,19 +403,16 @@ export default class Device {
       const pageId = message.payload.pageId;
       // TODO(moti): Handle null case explicitly, e.g. swallow disconnect events
       // for unknown pages.
-      const page: ?Page = this.#pages.get(pageId);
+      const page: ?PageWithMiddleware = this.#pages.get(pageId);
 
       // NOTE(bycedric): Notify the device message middleware of the disconnect event, without any further actions.
       // This can be used to clean up state in the device message middleware.
-      if (this.#messageMiddleware) {
-        this.#messageMiddleware.handleDeviceMessage(
-          message,
-          page,
-          this.#debuggerConnection
-            ? createMiddlewareDebuggerInfo(this.#debuggerConnection)
-            : null,
-        );
-      }
+      page?.middleware?.handleDeviceMessage(
+        message,
+        this.#debuggerConnection
+          ? createMiddlewareDebuggerInfo(this.#debuggerConnection)
+          : null,
+      );
 
       if (page != null && this.#pageHasCapability(page, 'nativePageReloads')) {
         return;
@@ -454,21 +454,17 @@ export default class Device {
         });
       }
 
-      if (this.#messageMiddleware) {
-        const middleware = this.#messageMiddleware;
-        const debuggerInfo = this.#debuggerConnection;
-
-        if (
-          middleware.handleDeviceMessage(
-            parsedPayload,
-            debuggerInfo ? this.#pages.get(debuggerInfo.pageId) : null,
-            this.#debuggerConnection
-              ? createMiddlewareDebuggerInfo(this.#debuggerConnection)
-              : null,
-          ) === true
-        ) {
-          return;
-        }
+      const page: ?PageWithMiddleware =
+        pageId !== null ? this.#pages.get(pageId) : null;
+      if (
+        page?.middleware?.handleDeviceMessage(
+          parsedPayload,
+          this.#debuggerConnection
+            ? createMiddlewareDebuggerInfo(this.#debuggerConnection)
+            : null,
+        ) === true
+      ) {
+        return;
       }
 
       if (this.#debuggerConnection != null) {
@@ -565,7 +561,8 @@ export default class Device {
     // TODO(moti): Handle null case explicitly, or ideally associate a copy
     // of the page metadata object with the connection so this can never be
     // null.
-    const page: ?Page = pageId != null ? this.#pages.get(pageId) : null;
+    const page: ?PageWithMiddleware =
+      pageId != null ? this.#pages.get(pageId) : null;
 
     // Replace Android addresses for scriptParsed event.
     if (
