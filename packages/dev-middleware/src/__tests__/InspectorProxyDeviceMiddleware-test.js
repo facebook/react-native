@@ -30,6 +30,52 @@ describe('inspector proxy device message middleware', () => {
     jest.clearAllMocks();
   });
 
+  test('middleware is created with device information', async () => {
+    const createMiddleware = jest.fn().mockImplementation(() => null);
+    const {server} = await createServer({
+      logger: undefined,
+      projectRoot: '',
+      unstable_deviceMessageMiddleware: createMiddleware,
+    });
+
+    let device_;
+    try {
+      // Create and connect the device
+      device_ = await createDeviceMock(
+        `${baseUrlForServer(server, 'ws')}/inspector/device?device=device1&name=foo&app=bar`,
+        autoCleanup.signal,
+      );
+      const page = {
+        app: 'bar',
+        id: 'page1',
+        // NOTE: 'React' is a magic string used to detect React Native pages.
+        title: 'React Native (mock)',
+        vm: 'vm',
+      };
+      device_.getPages.mockImplementation(() => [page]);
+
+      // Ensure the middleware was created with the device information
+      await until(() =>
+        expect(createMiddleware).toBeCalledWith(
+          expect.objectContaining({
+            deviceId: 'device1',
+            deviceName: 'foo',
+            deviceSocket: expect.anything(), // Websocket
+            appId: 'bar',
+            projectRoot: '',
+            page: expect.objectContaining({
+              ...page,
+              capabilities: expect.any(Object),
+            }),
+          }),
+        ),
+      );
+    } finally {
+      device_?.close();
+      await closeServer(server);
+    }
+  });
+
   test('device message is passed to message middleware', async () => {
     const handleDeviceMessage = jest.fn();
     const {server} = await createServer({
