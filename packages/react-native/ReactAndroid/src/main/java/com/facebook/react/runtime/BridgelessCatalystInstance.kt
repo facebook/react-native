@@ -32,7 +32,7 @@ import com.facebook.react.turbomodule.core.interfaces.NativeMethodCallInvokerHol
 
 @DoNotStrip
 @DeprecatedInNewArchitecture
-class BridgelessCatalystInstance : CatalystInstance {
+public class BridgelessCatalystInstance : CatalystInstance {
   override fun handleMemoryPressure(level: Int) {
     throw UnsupportedOperationException("Unimplemented method 'handleMemoryPressure'")
   }
