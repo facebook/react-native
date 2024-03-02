@@ -498,9 +498,14 @@ public class TextLayoutManagerMapBuffer {
           // the last offset in the layout will result in an endless loop. Work around
           // this bug by avoiding getPrimaryHorizontal in that case.
           if (start == text.length() - 1) {
-            boolean endsWithNewLine =
-                text.length() > 0 && text.charAt(layout.getLineEnd(line) - 1) == '\n';
-            float lineWidth = endsWithNewLine ? layout.getLineMax(line) : layout.getLineWidth(line);
+            float lineWidth;
+            if (calculatedLineCount == 1) {
+              lineWidth = (int) layout.getEllipsizedWidth();
+            } else {
+              boolean endsWithNewLine =
+                  text.length() > 0 && text.charAt(layout.getLineEnd(line) - 1) == '\n';
+              lineWidth = endsWithNewLine ? layout.getLineMax(line) : layout.getLineWidth(line);
+            }
             placeholderLeftPosition =
                 isRtlParagraph
                     // Equivalent to `layout.getLineLeft(line)` but `getLineLeft` returns
