@@ -20,7 +20,7 @@ bool configUpdateInvalidatesLayout(
       oldConfig.useWebDefaults() != newConfig.useWebDefaults();
 }
 
-Config::Config(YGLogger logger) : cloneNodeCallback_{nullptr} {
+Config::Config(YGLogger logger) {
   setLogger(logger);
 }
 
