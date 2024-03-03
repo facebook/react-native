@@ -549,7 +549,38 @@ RCT_ENUM_CONVERTER(
     }),
     UIBarStyleDefault,
     integerValue)
-#else // [macOS
+#endif // [macOS]
+
+// [macOS [visionOS]
+RCT_ENUM_CONVERTER(
+    RCTCursor,
+    (@{
+      @"alias" : @(RCTCursorAlias),
+      @"auto" : @(RCTCursorAuto),
+      @"col-resize" : @(RCTCursorColumnResize),
+      @"context-menu" : @(RCTCursorContextualMenu),
+      @"copy" : @(RCTCursorCopy),
+      @"crosshair" : @(RCTCursorCrosshair),
+      @"default" : @(RCTCursorDefault),
+      @"disappearing-item" : @(RCTCursorDisappearingItem),
+      @"e-resize" : @(RCTCursorEastResize),
+      @"grab" : @(RCTCursorGrab),
+      @"grabbing" : @(RCTCursorGrabbing),
+      @"n-resize" : @(RCTCursorNorthResize),
+      @"no-drop" : @(RCTCursorNoDrop),
+      @"not-allowed" : @(RCTCursorNotAllowed),
+      @"pointer" : @(RCTCursorPointer),
+      @"row-resize" : @(RCTCursorRowResize),
+      @"s-resize" : @(RCTCursorSouthResize),
+      @"text" : @(RCTCursorText),
+      @"vertical-text" : @(RCTCursorVerticalText),
+      @"w-resize" : @(RCTCursorWestResize),
+    }),
+    RCTCursorAuto,
+    integerValue)
+// macOS] [visionOS]
+
+#if TARGET_OS_OSX // [macOS
 RCT_MULTI_ENUM_CONVERTER(NSTextCheckingTypes, (@{
   @"ortography": @(NSTextCheckingTypeOrthography),
   @"spelling": @(NSTextCheckingTypeSpelling),

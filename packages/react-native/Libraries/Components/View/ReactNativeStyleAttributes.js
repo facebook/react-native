@@ -144,7 +144,7 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   borderTopLeftRadius: true,
   borderTopRightRadius: true,
   borderTopStartRadius: true,
-  cursor: true,
+  cursor: true, // [macOS] [visionOS]
   opacity: true,
   pointerEvents: true,
 

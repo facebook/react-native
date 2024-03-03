@@ -11,6 +11,7 @@
 #import <React/RCTAnimationType.h>
 #import <React/RCTBorderCurve.h>
 #import <React/RCTBorderStyle.h>
+#import <React/RCTCursor.h> // [macOS] [visionOS]
 #import <React/RCTDefines.h>
 #import <React/RCTLog.h>
 #import <React/RCTPointerEvents.h>
@@ -83,6 +84,8 @@ typedef NSURL RCTFileURL;
 + (UIBarStyle)UIBarStyle:(id)json;
 #endif
 #endif // [macOS]
+
++ (RCTCursor)RCTCursor:(id)json; // [macOS] [visionOS]
 
 #if TARGET_OS_OSX // [macOS
 + (NSTextCheckingTypes)NSTextCheckingTypes:(id)json;

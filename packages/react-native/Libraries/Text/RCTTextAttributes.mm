@@ -8,12 +8,9 @@
 #import <React/RCTTextAttributes.h>
 
 #import <React/RCTAssert.h>
+#import <React/RCTCursor.h> // [macOS]
 #import <React/RCTFont.h>
 #import <React/RCTLog.h>
-
-#if TARGET_OS_OSX // [macOS
-#import <React/RCTCursor.h>
-#endif // macOS]
 
 NSString *const RCTTextAttributesIsHighlightedAttributeName = @"RCTTextAttributesIsHighlightedAttributeName";
 NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttributeName";
@@ -235,7 +232,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
 
 #if TARGET_OS_OSX // [macOS
   if (_cursor != RCTCursorAuto) {
-    attributes[NSCursorAttributeName] = [RCTConvert NSCursor:_cursor];
+    attributes[NSCursorAttributeName] = NSCursorFromRCTCursor(_cursor);
   }
 #endif // macOS]
 

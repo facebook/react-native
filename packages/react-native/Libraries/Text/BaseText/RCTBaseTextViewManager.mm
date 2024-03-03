@@ -6,9 +6,7 @@
  */
 
 #import <React/RCTBaseTextViewManager.h>
-#if TARGET_OS_OSX // [macOS
-#import <React/RCTCursor.h>
-#endif // macOS]
+#import <React/RCTCursor.h> // [macOS]
 
 @implementation RCTBaseTextViewManager
 

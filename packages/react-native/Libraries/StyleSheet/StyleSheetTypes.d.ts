@@ -27,6 +27,30 @@ export type DimensionValue =
 type AnimatableNumericValue = number | Animated.AnimatedNode;
 type AnimatableStringValue = string | Animated.AnimatedNode;
 
+// [macOS
+export type CursorValue =
+  | 'alias'
+  | 'auto'
+  | 'col-resize'
+  | 'context-menu'
+  | 'copy'
+  | 'crosshair'
+  | 'default'
+  | 'disappearing-item'
+  | 'e-resize'
+  | 'grab'
+  | 'grabbing'
+  | 'n-resize'
+  | 'no-drop'
+  | 'not-allowed'
+  | 'pointer'
+  | 'row-resize'
+  | 's-resize'
+  | 'text'
+  | 'vertical-text'
+  | 'w-resize';
+// macOS]
+
 /**
  * Flex Prop Types
  * @see https://reactnative.dev/docs/flexbox
@@ -273,6 +297,7 @@ export interface ViewStyle extends FlexStyle, ShadowStyleIOS, TransformsStyle {
    * Controls whether the View can be the target of touch events.
    */
   pointerEvents?: 'box-none' | 'none' | 'box-only' | 'auto' | undefined;
+  cursor?: CursorValue | undefined;
 }
 
 export type FontVariant =
@@ -363,4 +388,5 @@ export interface ImageStyle extends FlexStyle, ShadowStyleIOS, TransformsStyle {
   tintColor?: ColorValue | undefined;
   opacity?: AnimatableNumericValue | undefined;
   objectFit?: 'cover' | 'contain' | 'fill' | 'scale-down' | undefined;
+  cursor?: CursorValue | undefined;
 }

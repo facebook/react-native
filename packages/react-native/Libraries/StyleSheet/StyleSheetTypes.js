@@ -20,8 +20,25 @@ import type {
 } from './private/_StyleSheetTypesOverrides';
 import type {____TransformStyle_Internal} from './private/_TransformStyle';
 
+declare export opaque type NativeColorValue;
+export type ____ColorValue_Internal = null | string | number | NativeColorValue;
+export type ColorArrayValue = null | $ReadOnlyArray<____ColorValue_Internal>;
+export type PointValue = {
+  x: number,
+  y: number,
+};
+export type EdgeInsetsValue = {
+  top: number,
+  left: number,
+  right: number,
+  bottom: number,
+};
+
+export type DimensionValue = number | string | 'auto' | AnimatedNode | null;
+export type AnimatableNumericValue = number | AnimatedNode;
+
 // [macOS
-export type CursorValue = ?(
+export type CursorValue =
   | 'alias'
   | 'auto'
   | 'col-resize'
@@ -41,26 +58,8 @@ export type CursorValue = ?(
   | 's-resize'
   | 'text'
   | 'vertical-text'
-  | 'w-resize'
-);
+  | 'w-resize';
 // macOS]
-
-declare export opaque type NativeColorValue;
-export type ____ColorValue_Internal = null | string | number | NativeColorValue;
-export type ColorArrayValue = null | $ReadOnlyArray<____ColorValue_Internal>;
-export type PointValue = {
-  x: number,
-  y: number,
-};
-export type EdgeInsetsValue = {
-  top: number,
-  left: number,
-  right: number,
-  bottom: number,
-};
-
-export type DimensionValue = number | string | 'auto' | AnimatedNode | null;
-export type AnimatableNumericValue = number | AnimatedNode;
 
 /**
  * React Native's layout system is based on Flexbox and is powered both
@@ -752,7 +751,7 @@ export type ____ViewStyle_InternalCore = $ReadOnly<{
   opacity?: AnimatableNumericValue,
   elevation?: number,
   pointerEvents?: 'auto' | 'none' | 'box-none' | 'box-only',
-  cursor?: CursorValue, // [macOS]
+  cursor?: CursorValue, // [macOS][visionOS]
 }>;
 
 export type ____ViewStyle_Internal = $ReadOnly<{

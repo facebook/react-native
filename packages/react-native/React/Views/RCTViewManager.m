@@ -13,6 +13,7 @@
 #import "RCTBridge.h"
 #import "RCTConvert+Transform.h"
 #import "RCTConvert.h"
+#import "RCTCursor.h" // [macOS] [visionOS]
 #import "RCTLog.h"
 #import "RCTShadowView.h"
 #import "RCTUIManager.h"
@@ -20,10 +21,6 @@
 #import "RCTUtils.h"
 #import "RCTView.h"
 #import "UIView+React.h"
-
-#if TARGET_OS_OSX  // [macOS
-#import "RCTCursor.h"
-#endif  // macOS]
 
 @implementation RCTConvert (UIAccessibilityTraits)
 
@@ -245,6 +242,7 @@ RCT_REMAP_VIEW_PROPERTY(testID, reactAccessibilityElement.accessibilityIdentifie
 
 RCT_EXPORT_VIEW_PROPERTY(backgroundColor, UIColor)
 RCT_REMAP_VIEW_PROPERTY(backfaceVisibility, layer.doubleSided, css_backface_visibility_t)
+RCT_EXPORT_VIEW_PROPERTY(cursor, RCTCursor) // [visionOS]
 #if !TARGET_OS_OSX // [macOS]
 RCT_REMAP_VIEW_PROPERTY(opacity, alpha, CGFloat)
 #else // [macOS
@@ -580,7 +578,6 @@ RCT_EXPORT_VIEW_PROPERTY(onBlur, RCTBubblingEventBlock)
 #if TARGET_OS_OSX // [macOS
 #pragma mark - macOS properties
 
-RCT_EXPORT_VIEW_PROPERTY(cursor, RCTCursor)
 RCT_EXPORT_VIEW_PROPERTY(onMouseEnter, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onMouseLeave, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onDragEnter, RCTDirectEventBlock)
