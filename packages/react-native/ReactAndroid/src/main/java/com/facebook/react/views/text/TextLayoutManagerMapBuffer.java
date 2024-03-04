@@ -512,9 +512,7 @@ public class TextLayoutManagerMapBuffer {
                     // incorrect
                     // values when the paragraph is RTL and `setSingleLine(true)`.
                     ? calculatedWidth - lineWidth
-                    // add a check that text is single line (not only 1 line, but forced to
-                    // singleline)
-                    : layout.getEllipsizedWidth() - placeholderWidth;
+                    : layout.getLineRight(line) - placeholderWidth;
           } else {
             // The direction of the paragraph may not be exactly the direction the string is
             // heading
@@ -546,13 +544,7 @@ public class TextLayoutManagerMapBuffer {
             }
           }
           // Vertically align the inline view to the baseline of the line of text.
-          float placeholderTopPosition;
-          if (calculatedLineCount == 1) {
-            // you need to check that text is actually single line and not only rendering on 1 line
-            placeholderTopPosition = layout.getLineBaseline(0) - placeholderHeight;
-          } else {
-            placeholderTopPosition = layout.getLineBaseline(line) - placeholderHeight;
-          }
+          float placeholderTopPosition = layout.getLineBaseline(line) - placeholderHeight;
           int attachmentPosition = attachmentIndex * 2;
 
           // The attachment array returns the positions of each of the attachments as
