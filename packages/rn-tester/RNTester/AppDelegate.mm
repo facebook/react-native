@@ -146,13 +146,6 @@ static NSString *kBundlePath = @"js/RNTesterApp.ios";
 
 #pragma mark - RCTComponentViewFactoryComponentProvider
 
-#ifndef RN_DISABLE_OSS_PLUGIN_HEADER
-- (nonnull NSDictionary<NSString *, Class<RCTComponentViewProtocol>> *)thirdPartyFabricComponents
-{
-  return @{@"RNTMyNativeView" : RNTMyNativeViewComponentView.class};
-}
-#endif
-
 - (NSURL *)bundleURL
 {
   return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:kBundlePath];

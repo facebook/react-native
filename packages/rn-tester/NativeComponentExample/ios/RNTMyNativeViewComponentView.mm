@@ -29,14 +29,6 @@ using namespace facebook::react;
   return concreteComponentDescriptorProvider<RNTMyNativeViewComponentDescriptor>();
 }
 
-// Load is not invoked if it is not defined, therefore, we must ask to update this.
-// See the Apple documentation: https://developer.apple.com/documentation/objectivec/nsobject/1418815-load?language=objc
-// "[...] but only if the newly loaded class or category implements a method that can respond."
-+ (void)load
-{
-  [super load];
-}
-
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
