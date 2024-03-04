@@ -435,7 +435,7 @@ public class TextLayoutManagerMapBuffer {
     if (widthYogaMeasureMode == YogaMeasureMode.EXACTLY) {
       calculatedWidth = width;
     } else {
-      if (calculatedLineCount == 1) {
+      if (maximumNumberOfLines == 1) {
         calculatedWidth = (int) layout.getEllipsizedWidth();
       } else {
         for (int lineIndex = 0; lineIndex < calculatedLineCount; lineIndex++) {
@@ -499,7 +499,7 @@ public class TextLayoutManagerMapBuffer {
           // this bug by avoiding getPrimaryHorizontal in that case.
           if (start == text.length() - 1) {
             float lineWidth;
-            if (calculatedLineCount == 1) {
+            if (maximumNumberOfLines == 1) {
               lineWidth = (int) layout.getEllipsizedWidth();
             } else {
               boolean endsWithNewLine =
