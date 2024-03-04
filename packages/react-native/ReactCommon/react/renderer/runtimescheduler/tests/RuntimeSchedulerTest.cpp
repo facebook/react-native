@@ -200,13 +200,7 @@ TEST_P(
           return jsi::Value::undefined();
         });
 
-    // Hermes doesn't expose a C++ API to schedule microtasks, so we just access
-    // the API that it exposes to JS.
-    auto global = runtime_->global();
-    auto enqueueJobFn = global.getPropertyAsObject(*runtime_, "HermesInternal")
-                            .getPropertyAsFunction(*runtime_, "enqueueJob");
-
-    enqueueJobFn.call(*runtime_, std::move(microtaskCallback));
+    runtime_->queueMicrotask(microtaskCallback);
 
     return jsi::Value::undefined();
   });
