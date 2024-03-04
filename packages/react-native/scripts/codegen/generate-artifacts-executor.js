@@ -17,7 +17,10 @@
  */
 
 const utils = require('./codegen-utils');
-const {generateCustomURLHandlers} = require('./generate-modules-protocols.js');
+const {
+  generateLocalComponentProvider,
+} = require('./generate-fabric-comp-provider');
+const {generateCustomURLHandlers} = require('./generate-modules-protocols');
 const generateSpecsCLIExecutor = require('./generate-specs-cli-executor');
 const {execSync} = require('child_process');
 const fs = require('fs');
@@ -61,22 +64,6 @@ const CORE_LIBRARIES_WITH_OUTPUT_FOLDER = {
   },
 };
 const REACT_NATIVE = 'react-native';
-
-const COMPONENTS_MAPPING_H_TEMPLATE_PATH = path.join(
-  REACT_NATIVE_PACKAGE_ROOT_FOLDER,
-  'scripts',
-  'codegen',
-  'templates',
-  'RCTFabricComponentsProviderH.template',
-);
-
-const COMPONENTS_MAPPING_MM_TEMPLATE_PATH = path.join(
-  REACT_NATIVE_PACKAGE_ROOT_FOLDER,
-  'scripts',
-  'codegen',
-  'templates',
-  'RCTFabricComponentsProviderMM.template',
-);
 
 // HELPERS
 
@@ -539,33 +526,6 @@ function findCodegenEnabledLibraries(pkgJson, projectRoot) {
       ...findLibrariesFromReactNativeConfig(projectRoot),
     ];
   }
-}
-
-function generateLocalComponentProvider(libraries, outputDir) {
-  const componentNameClassMap = libraries
-    .flatMap(library => library?.config?.ios?.componentsMapping)
-    .filter(Boolean)
-    .flatMap(components => Object.entries(components))
-    .map(
-      ([componentName, componentClass]) =>
-        `@"${componentName}": NSClassFromString(@"${componentClass}")`,
-    )
-    .join(',\n\t\t');
-
-  const template = fs.readFileSync(COMPONENTS_MAPPING_MM_TEMPLATE_PATH, 'utf8');
-  const finalMMFile = template.replace(
-    /{componentNameClassMap}/,
-    componentNameClassMap,
-  );
-  fs.writeFileSync(
-    path.join(outputDir, 'RCTFabricComponentsProvider.mm'),
-    finalMMFile,
-  );
-  const templateH = fs.readFileSync(COMPONENTS_MAPPING_H_TEMPLATE_PATH, 'utf8');
-  fs.writeFileSync(
-    path.join(outputDir, 'RCTFabricComponentsProvider.h'),
-    templateH,
-  );
 }
 
 // It removes all the empty files and empty folders
