@@ -1,6 +1,6 @@
 {
   "name": "@react-native/popup-menu-android",
-  "version": "0.74.0",
+  "version": "0.74.1",
   "description": "PopupMenu for the Android platform",
   "react-native": "js/PopupMenuAndroid",
   "source": "js/PopupMenuAndroid",
@@ -12,7 +12,10 @@
     "!**/__fixtures__",
     "!**/__mocks__"
   ],
-  "keywords": ["react-native", "android"],
+  "keywords": [
+    "react-native",
+    "android"
+  ],
   "license": "MIT",
   "devDependencies": {
     "@react-native/codegen": "*"
