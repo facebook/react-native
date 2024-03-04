@@ -38,7 +38,7 @@ const FileTemplate = ({lookupFuncs}: {lookupFuncs: string}) => `
 extern "C" {
 #endif
 
-Class<RCTComponentViewProtocol> RCTThirdPartyFabricComponentsProvider(const char *name);
+Class<RCTComponentViewProtocol> RCTThirdPartyFabricComponentsProvider(const char *name) __attribute__((deprecated("please ask to 3rd party library maintainer to use the 'package.json'")));
 #if RCT_NEW_ARCH_ENABLED
 #ifndef RCT_DYNAMIC_FRAMEWORKS
 
