@@ -214,7 +214,7 @@ class JSI_EXPORT Runtime {
   /// its event loop implementation.
   ///
   /// \param callback a function to be executed as a microtask.
-  virtual void queueMicrotask(const jsi::Function& callback);
+  virtual void queueMicrotask(const jsi::Function& callback) = 0;
 
   /// Drain the JavaScript VM internal Microtask (a.k.a. Job in ECMA262) queue.
   ///
