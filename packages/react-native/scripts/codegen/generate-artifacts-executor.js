@@ -77,6 +77,22 @@ const MODULES_PROTOCOLS_MM_TEMPLATE_PATH = path.join(
   'RCTModulesConformingToProtocolsProviderMM.template',
 );
 
+const COMPONENTS_MAPPING_H_TEMPLATE_PATH = path.join(
+  REACT_NATIVE_PACKAGE_ROOT_FOLDER,
+  'scripts',
+  'codegen',
+  'templates',
+  'RCTFabricComponentsProviderH.template',
+);
+
+const COMPONENTS_MAPPING_MM_TEMPLATE_PATH = path.join(
+  REACT_NATIVE_PACKAGE_ROOT_FOLDER,
+  'scripts',
+  'codegen',
+  'templates',
+  'RCTFabricComponentsProviderMM.template',
+);
+
 // HELPERS
 
 function pkgJsonIncludesGeneratedCode(pkgJson) {
@@ -586,6 +602,33 @@ function generateCustomURLHandlers(libraries, outputDir) {
   );
 }
 
+function generateLocalComponentProvider(libraries, outputDir) {
+  const componentNameClassMap = libraries
+    .flatMap(library => library?.config?.ios?.componentsMapping)
+    .filter(Boolean)
+    .flatMap(components => Object.entries(components))
+    .map(
+      ([componentName, componentClass]) =>
+        `@"${componentName}": NSClassFromString(@"${componentClass}")`,
+    )
+    .join(',\n\t\t');
+
+  const template = fs.readFileSync(COMPONENTS_MAPPING_MM_TEMPLATE_PATH, 'utf8');
+  const finalMMFile = template.replace(
+    /{componentNameClassMap}/,
+    componentNameClassMap,
+  );
+  fs.writeFileSync(
+    path.join(outputDir, 'RCTFabricComponentsProvider.mm'),
+    finalMMFile,
+  );
+  const templateH = fs.readFileSync(COMPONENTS_MAPPING_H_TEMPLATE_PATH, 'utf8');
+  fs.writeFileSync(
+    path.join(outputDir, 'RCTFabricComponentsProvider.h'),
+    templateH,
+  );
+}
+
 // It removes all the empty files and empty folders
 // it finds, starting from `filepath`, recursively.
 //
@@ -712,8 +755,9 @@ function execute(projectRoot, targetPlatform, baseOutputPath) {
           schemaInfo => schemaInfo.supportedApplePlatforms,
         );
 
-        createComponentProvider(schemas, supportedApplePlatforms);
+        createComponentProvider(schemas, supportedApplePlatforms); //this will be deprecated because it is generated in node_modules
         generateCustomURLHandlers(libraries, outputPath);
+        generateLocalComponentProvider(libraries, outputPath);
       }
 
       cleanupEmptyFilesAndFolders(outputPath);
