@@ -18,6 +18,7 @@ import http from 'http';
 import https from 'https';
 import * as selfsigned from 'selfsigned';
 import url from 'url';
+import {networkInterfaces} from 'os';
 
 type CreateDevMiddlewareOptions = Parameters<typeof createDevMiddleware>[0];
 type CreateServerOptions = {
@@ -158,5 +159,34 @@ export function serveStaticText(text: string): HandleFunction {
     }
     res.writeHead(200, {'Content-Type': 'text/plain'});
     res.end(text);
+  };
+}
+
+export function getServerRefWithLanUrls(
+  serverRef: ReturnType<typeof withServerForEachTest>,
+): ReturnType<typeof withServerForEachTest> {
+  const {serverBaseUrl, serverBaseWsUrl} = serverRef;
+  const lanInterface = Object.values(networkInterfaces())
+    .flat()
+    .find(({internal, family}) => !internal && family === 'IPv4');
+
+  if (!lanInterface) {
+    throw new Error('No IPv4 LAN interface found');
+  }
+
+  const lanBaseUrl = serverBaseUrl.replace('localhost', lanInterface.address);
+  const lanBaseWsUrl = serverBaseWsUrl.replace(
+    'localhost',
+    lanInterface.address,
+  );
+
+  if (lanBaseUrl === serverBaseUrl || lanBaseWsUrl === serverBaseWsUrl) {
+    throw new Error('Could not replace localhost with LAN address');
+  }
+
+  return {
+    ...serverRef,
+    serverBaseUrl: lanBaseUrl,
+    serverBaseWsUrl: lanBaseWsUrl,
   };
 }
