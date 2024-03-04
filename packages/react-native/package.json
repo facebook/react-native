@@ -103,7 +103,7 @@
     "@react-native-community/cli-platform-ios": "13.6.1",
     "@react-native/assets-registry": "0.74.0",
     "@react-native/codegen": "0.74.2",
-    "@react-native/community-cli-plugin": "0.74.3",
+    "@react-native/community-cli-plugin": "0.74.4",
     "@react-native/gradle-plugin": "0.74.1",
     "@react-native/js-polyfills": "0.74.0",
     "@react-native/normalize-colors": "0.74.1",
