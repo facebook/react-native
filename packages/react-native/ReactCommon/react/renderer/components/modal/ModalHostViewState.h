@@ -30,7 +30,11 @@ class ModalHostViewState final {
   using Shared = std::shared_ptr<const ModalHostViewState>;
 
 #if defined(__APPLE__) && TARGET_OS_IOS
-  ModalHostViewState() : screenSize(RCTModalHostViewScreenSize()) {
+  static Size getScreenSize() {
+    auto screenSize = RCTModalHostViewScreenSize();
+    return {screenSize.width, screenSize.height};
+  }
+  ModalHostViewState() : screenSize(getScreenSize()) {
 #else
   ModalHostViewState(){
 #endif

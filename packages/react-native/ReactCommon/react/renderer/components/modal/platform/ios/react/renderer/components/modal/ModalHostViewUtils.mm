@@ -9,11 +9,12 @@
 #import <Foundation/Foundation.h>
 #import <React/RCTUtils.h>
 
-namespace facebook::react {
+extern "C" {
 
-Size RCTModalHostViewScreenSize(void)
+RCTSize RCTModalHostViewScreenSize(void)
 {
   CGSize screenSize = RCTScreenSize();
+
   return {screenSize.width, screenSize.height};
 }
 
