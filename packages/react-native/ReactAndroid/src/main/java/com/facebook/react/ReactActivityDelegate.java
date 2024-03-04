@@ -144,7 +144,9 @@ public class ReactActivityDelegate {
   }
 
   public boolean onKeyDown(int keyCode, KeyEvent event) {
-    if (!ReactFeatureFlags.enableBridgelessArchitecture) {
+    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      // TODO T156475655: support onKeyDown
+    } else {
       if (getReactNativeHost().hasInstance()
           && getReactNativeHost().getUseDeveloperSupport()
           && keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD) {
@@ -160,7 +162,9 @@ public class ReactActivityDelegate {
   }
 
   public boolean onKeyLongPress(int keyCode, KeyEvent event) {
-    if (!ReactFeatureFlags.enableBridgelessArchitecture) {
+    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      // TODO T156475655: support onKeyLongPress
+    } else {
       if (getReactNativeHost().hasInstance()
           && getReactNativeHost().getUseDeveloperSupport()
           && keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD) {
@@ -176,7 +180,9 @@ public class ReactActivityDelegate {
   }
 
   public boolean onNewIntent(Intent intent) {
-    if (!ReactFeatureFlags.enableBridgelessArchitecture) {
+    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      // TODO T156475655: support onNewIntent
+    } else {
       if (getReactNativeHost().hasInstance()) {
         getReactNativeHost().getReactInstanceManager().onNewIntent(intent);
         return true;
@@ -186,7 +192,9 @@ public class ReactActivityDelegate {
   }
 
   public void onWindowFocusChanged(boolean hasFocus) {
-    if (!ReactFeatureFlags.enableBridgelessArchitecture) {
+    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      // TODO T156475655: support onWindowFocusChanged
+    } else {
       if (getReactNativeHost().hasInstance()) {
         getReactNativeHost().getReactInstanceManager().onWindowFocusChange(hasFocus);
       }
@@ -194,7 +202,9 @@ public class ReactActivityDelegate {
   }
 
   public void onConfigurationChanged(Configuration newConfig) {
-    if (!ReactFeatureFlags.enableBridgelessArchitecture) {
+    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      // TODO T156475655: support onConfigurationChanged
+    } else {
       if (getReactNativeHost().hasInstance()) {
         getReactInstanceManager().onConfigurationChanged(getContext(), newConfig);
       }
