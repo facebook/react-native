@@ -86,7 +86,7 @@ export default class Device {
   // Last known Page ID of the React Native page.
   // This is used by debugger connections that don't have PageID specified
   // (and will interact with the latest React Native page).
-  #lastConnectedLegacyReactNativePage: ?Page = null;
+  #lastConnectedLegacyReactNativePage: ?Page | ?PageWithMiddleware = null;
 
   // Whether we are in the middle of a reload in the REACT_NATIVE_RELOADABLE_PAGE.
   #isLegacyPageReloading: boolean = false;
@@ -333,7 +333,10 @@ export default class Device {
   /**
    * Returns `true` if a page supports the given target capability flag.
    */
-  #pageHasCapability(page: Page, flag: $Keys<TargetCapabilityFlags>): boolean {
+  #pageHasCapability(
+    page: Page | PageWithMiddleware,
+    flag: $Keys<TargetCapabilityFlags>,
+  ): boolean {
     return page.capabilities[flag] === true;
   }
 
@@ -495,7 +498,7 @@ export default class Device {
   }
 
   // We received new React Native Page ID.
-  #newLegacyReactNativePage(page: Page) {
+  #newLegacyReactNativePage(page: Page | PageWithMiddleware) {
     debug(`React Native page updated to ${page.id}`);
     if (
       this.#debuggerConnection == null ||
