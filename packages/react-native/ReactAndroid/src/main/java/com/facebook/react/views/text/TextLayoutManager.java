@@ -418,7 +418,7 @@ public class TextLayoutManager {
     if (widthYogaMeasureMode == YogaMeasureMode.EXACTLY) {
       calculatedWidth = width;
     } else {
-      if (calculatedLineCount == 1) {
+      if (maximumNumberOfLines == 1) {
         calculatedWidth = (int) layout.getEllipsizedWidth();
       } else {
         for (int lineIndex = 0; lineIndex < calculatedLineCount; lineIndex++) {
@@ -482,7 +482,7 @@ public class TextLayoutManager {
           // this bug by avoiding getPrimaryHorizontal in that case.
           if (start == text.length() - 1) {
             float lineWidth;
-            if (calculatedLineCount == 1) {
+            if (maximumNumberOfLines == 1) {
               lineWidth = layout.getEllipsizedWidth();
             } else {
               boolean endsWithNewLine =

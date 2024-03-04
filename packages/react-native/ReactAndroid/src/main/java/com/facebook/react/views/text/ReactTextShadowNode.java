@@ -135,7 +135,7 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
           if (widthMode == YogaMeasureMode.EXACTLY) {
             layoutWidth = width;
           } else {
-            if (lineCount == 1) {
+            if (mNumberOfLines == 1) {
               layoutWidth = (int) layout.getEllipsizedWidth();
             } else {
               for (int lineIndex = 0; lineIndex < lineCount; lineIndex++) {
