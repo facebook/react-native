@@ -10,7 +10,7 @@
  */
 
 const {REPO_ROOT} = require('../consts');
-const fs = require('fs');
+const {promises: fs} = require('fs');
 const glob = require('glob');
 const path = require('path');
 
@@ -91,7 +91,7 @@ async function parsePackageInfo(
 ) /*: Promise<[string, PackageInfo]> */ {
   const packagePath = path.dirname(packageJsonPath);
   const packageJson /*: PackageJson */ = JSON.parse(
-    await fs.promises.readFile(packageJsonPath, 'utf-8'),
+    await fs.readFile(packageJsonPath, 'utf-8'),
   );
 
   return [
@@ -104,7 +104,52 @@ async function parsePackageInfo(
   ];
 }
 
+/**
+ * Update a given package with the package versions.
+ */
+async function updatePackageJson(
+  packagePath /*: string */,
+  packageJson /*: PackageJson */,
+  newPackageVersions /*: $ReadOnly<{[string]: string}> */,
+) /*: Promise<void> */ {
+  const packageName = packageJson.name;
+
+  if (packageName in newPackageVersions) {
+    packageJson.version = newPackageVersions[packageName];
+  }
+
+  for (const dependencyField of ['dependencies', 'devDependencies']) {
+    const deps = packageJson[dependencyField];
+
+    if (deps == null) {
+      continue;
+    }
+
+    for (const dependency in newPackageVersions) {
+      if (dependency in deps) {
+        deps[dependency] = newPackageVersions[dependency];
+      }
+    }
+  }
+
+  return writePackageJson(path.join(packagePath, 'package.json'), packageJson);
+}
+
+/**
+ * Write a `package.json` file to disk.
+ */
+async function writePackageJson(
+  packageJsonPath /*: string */,
+  packageJson /*: PackageJson */,
+) /*: Promise<void> */ {
+  return fs.writeFile(
+    packageJsonPath,
+    JSON.stringify(packageJson, null, 2) + '\n',
+  );
+}
+
 module.exports = {
   getPackages,
   getWorkspaceRoot,
+  updatePackageJson,
 };
