@@ -7,10 +7,17 @@
 
 #pragma once
 
-#include <react/renderer/core/graphicsConversions.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-namespace facebook::react {
+typedef struct {
+  CGFloat width;
+  CGFloat height;
+} RCTSize;
 
-Size RCTModalHostViewScreenSize(void);
+RCTSize RCTModalHostViewScreenSize(void);
 
-} // namespace facebook::react
+#ifdef __cplusplus
+}
+#endif
