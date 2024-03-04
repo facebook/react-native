@@ -21,4 +21,13 @@ folly::dynamic mergeDynamicProps(
     const folly::dynamic& source,
     const folly::dynamic& patch);
 
+/*
+ * Accepts two `folly::dynamic` objects as arguments. Both arguments need to
+ * represent a dictionary. It updates `source` with key/value pairs from
+ * `patch`, overriding existing keys only if they are not null.
+ */
+folly::dynamic overrideDynamicProps(
+    const folly::dynamic& source,
+    const folly::dynamic& patch);
+
 } // namespace facebook::react

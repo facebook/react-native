@@ -31,4 +31,28 @@ folly::dynamic mergeDynamicProps(
   return result;
 }
 
+folly::dynamic overrideDynamicProps(
+    const folly::dynamic& source,
+    const folly::dynamic& patch) {
+  auto result = source;
+
+  if (!result.isObject()) {
+    result = folly::dynamic::object();
+  }
+
+  if (!patch.isObject()) {
+    return result;
+  }
+
+  // Note, here we have to preserve sub-prop objects with `null` value as
+  // an indication for the legacy mounting layer that it needs to clean them up.
+  for (const auto& pair : patch.items()) {
+    if (source.find(pair.first) != source.items().end()) {
+      result[pair.first] = pair.second;
+    }
+  }
+
+  return result;
+}
+
 } // namespace facebook::react

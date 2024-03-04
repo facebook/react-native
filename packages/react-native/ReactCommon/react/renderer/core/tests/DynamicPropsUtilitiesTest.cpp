@@ -64,3 +64,17 @@ TEST(DynamicPropsUtilitiesTest, handleNull) {
 
   EXPECT_TRUE(result["height"].isNull());
 }
+
+TEST(DynamicPropsUtilitiesTest, testOverrideDynamicProps) {
+  dynamic map1 = dynamic::object;
+  map1["height"] = 100;
+
+  dynamic map2 = dynamic::object;
+  map2["width"] = 200;
+  map2["height"] = 101;
+
+  auto result = overrideDynamicProps(map1, map2);
+
+  EXPECT_EQ(result["height"], 101);
+  EXPECT_TRUE(result["width"].isNull());
+}

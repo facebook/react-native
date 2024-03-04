@@ -128,7 +128,7 @@ std::shared_ptr<ShadowNode> UIManager::cloneNode(
       // and `rawProps` contain key 'A'. Value from `rawProps` overrides what
       // was previously in `nativeProps_DEPRECATED`.
       family.nativeProps_DEPRECATED =
-          std::make_unique<folly::dynamic>(mergeDynamicProps(
+          std::make_unique<folly::dynamic>(overrideDynamicProps(
               *family.nativeProps_DEPRECATED, (folly::dynamic)rawProps));
 
       props = componentDescriptor.cloneProps(
