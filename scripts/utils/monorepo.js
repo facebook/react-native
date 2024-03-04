@@ -65,21 +65,7 @@ async function getPackages(
           ? []
           : ['packages/react-native/package.json'],
       })
-      .map(async packageJsonPath => {
-        const packagePath = path.dirname(packageJsonPath);
-        const packageJson /*: PackageJson */ = JSON.parse(
-          await fs.promises.readFile(packageJsonPath, 'utf-8'),
-        );
-
-        return [
-          packageJson.name,
-          {
-            name: packageJson.name,
-            path: packagePath,
-            packageJson,
-          },
-        ];
-      }),
+      .map(parsePackageInfo),
   );
 
   return Object.fromEntries(
@@ -89,6 +75,36 @@ async function getPackages(
   );
 }
 
+/**
+ * Get the parsed package metadata for the workspace root.
+ */
+async function getWorkspaceRoot() /*: Promise<PackageInfo> */ {
+  const [, packageInfo] = await parsePackageInfo(
+    path.join(REPO_ROOT, 'package.json'),
+  );
+
+  return packageInfo;
+}
+
+async function parsePackageInfo(
+  packageJsonPath /*: string */,
+) /*: Promise<[string, PackageInfo]> */ {
+  const packagePath = path.dirname(packageJsonPath);
+  const packageJson /*: PackageJson */ = JSON.parse(
+    await fs.promises.readFile(packageJsonPath, 'utf-8'),
+  );
+
+  return [
+    packageJson.name,
+    {
+      name: packageJson.name,
+      path: packagePath,
+      packageJson,
+    },
+  ];
+}
+
 module.exports = {
   getPackages,
+  getWorkspaceRoot,
 };
