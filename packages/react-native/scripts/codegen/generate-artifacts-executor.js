@@ -17,6 +17,7 @@
  */
 
 const utils = require('./codegen-utils');
+const {generateCustomURLHandlers} = require('./generate-modules-protocols.js');
 const generateSpecsCLIExecutor = require('./generate-specs-cli-executor');
 const {execSync} = require('child_process');
 const fs = require('fs');
@@ -60,22 +61,6 @@ const CORE_LIBRARIES_WITH_OUTPUT_FOLDER = {
   },
 };
 const REACT_NATIVE = 'react-native';
-
-const MODULES_PROTOCOLS_H_TEMPLATE_PATH = path.join(
-  REACT_NATIVE_PACKAGE_ROOT_FOLDER,
-  'scripts',
-  'codegen',
-  'templates',
-  'RCTModulesConformingToProtocolsProviderH.template',
-);
-
-const MODULES_PROTOCOLS_MM_TEMPLATE_PATH = path.join(
-  REACT_NATIVE_PACKAGE_ROOT_FOLDER,
-  'scripts',
-  'codegen',
-  'templates',
-  'RCTModulesConformingToProtocolsProviderMM.template',
-);
 
 const COMPONENTS_MAPPING_H_TEMPLATE_PATH = path.join(
   REACT_NATIVE_PACKAGE_ROOT_FOLDER,
@@ -554,52 +539,6 @@ function findCodegenEnabledLibraries(pkgJson, projectRoot) {
       ...findLibrariesFromReactNativeConfig(projectRoot),
     ];
   }
-}
-
-function generateCustomURLHandlers(libraries, outputDir) {
-  const customImageURLLoaderClasses = libraries
-    .flatMap(
-      library =>
-        library?.config?.ios?.modulesConformingToProtocol?.RCTImageURLLoader,
-    )
-    .filter(Boolean)
-    .map(className => `@"${className}"`)
-    .join(',\n\t\t');
-
-  const customImageDataDecoderClasses = libraries
-    .flatMap(
-      library =>
-        library?.config?.ios?.modulesConformingToProtocol?.RCTImageDataDecoder,
-    )
-    .filter(Boolean)
-    .map(className => `@"${className}"`)
-    .join(',\n\t\t');
-
-  const customURLHandlerClasses = libraries
-    .flatMap(
-      library =>
-        library?.config?.ios?.modulesConformingToProtocol?.RCTURLRequestHandler,
-    )
-    .filter(Boolean)
-    .map(className => `@"${className}"`)
-    .join(',\n\t\t');
-
-  const template = fs.readFileSync(MODULES_PROTOCOLS_MM_TEMPLATE_PATH, 'utf8');
-  const finalMMFile = template
-    .replace(/{imageURLLoaderClassNames}/, customImageURLLoaderClasses)
-    .replace(/{imageDataDecoderClassNames}/, customImageDataDecoderClasses)
-    .replace(/{requestHandlersClassNames}/, customURLHandlerClasses);
-
-  fs.writeFileSync(
-    path.join(outputDir, 'RCTModulesConformingToProtocolsProvider.mm'),
-    finalMMFile,
-  );
-
-  const templateH = fs.readFileSync(MODULES_PROTOCOLS_H_TEMPLATE_PATH, 'utf8');
-  fs.writeFileSync(
-    path.join(outputDir, 'RCTModulesConformingToProtocolsProvider.h'),
-    templateH,
-  );
 }
 
 function generateLocalComponentProvider(libraries, outputDir) {
