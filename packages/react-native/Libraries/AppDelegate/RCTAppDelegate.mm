@@ -17,6 +17,10 @@
 #import "RCTAppDelegate+Protected.h"
 #import "RCTAppSetupUtils.h"
 
+#ifndef RN_DISABLE_OSS_PLUGIN_HEADER
+#import <ReactCodegen/RCTFabricComponentsProvider.h>
+#endif
+
 #if RN_DISABLE_OSS_PLUGIN_HEADER
 #import <RCTTurboModulePlugin/RCTTurboModulePlugin.h>
 #else
@@ -263,7 +267,11 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 
 - (NSDictionary<NSString *, Class<RCTComponentViewProtocol>> *)thirdPartyFabricComponents
 {
+#ifndef RN_DISABLE_OSS_PLUGIN_HEADER
+  return [RCTFabricComponentsProvider fabricComponents];
+#else
   return @{};
+#endif
 }
 
 #pragma mark - RCTTurboModuleManagerDelegate
