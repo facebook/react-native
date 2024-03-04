@@ -12,7 +12,10 @@ import StyleSheet, {
   type ColorValue,
   type ViewStyleProp,
 } from '../../StyleSheet/StyleSheet';
+import SafeAreaView from '../../Components/SafeAreaView/SafeAreaView';
 import Platform from '../../Utilities/Platform';
+import useWindowDimensions from '../../Utilities/useWindowDimensions';
+import View from '../View/View';
 import RCTInputAccessoryViewNativeComponent from './RCTInputAccessoryViewNativeComponent';
 import * as React from 'react';
 
@@ -86,6 +89,8 @@ type Props = $ReadOnly<{|
 |}>;
 
 const InputAccessoryView: React.AbstractComponent<Props> = (props: Props) => {
+  const {width} = useWindowDimensions();
+
   if (Platform.OS === 'ios') {
     if (React.Children.count(props.children) === 0) {
       return null;
@@ -96,7 +101,9 @@ const InputAccessoryView: React.AbstractComponent<Props> = (props: Props) => {
         style={[props.style, styles.container]}
         nativeID={props.nativeID}
         backgroundColor={props.backgroundColor}>
-        {props.children}
+        <SafeAreaView style={[styles.safeAreaView, {width}]}>
+          {props.children}
+        </SafeAreaView>
       </RCTInputAccessoryViewNativeComponent>
     );
   } else {
@@ -108,6 +115,9 @@ const InputAccessoryView: React.AbstractComponent<Props> = (props: Props) => {
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
+  },
+  safeAreaView: {
+    flex: 1,
   },
 });
 
