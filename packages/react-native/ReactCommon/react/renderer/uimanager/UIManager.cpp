@@ -129,7 +129,9 @@ std::shared_ptr<ShadowNode> UIManager::cloneNode(
       // was previously in `nativeProps_DEPRECATED`.
       family.nativeProps_DEPRECATED =
           std::make_unique<folly::dynamic>(mergeDynamicProps(
-              *family.nativeProps_DEPRECATED, (folly::dynamic)rawProps));
+              *family.nativeProps_DEPRECATED,
+              (folly::dynamic)rawProps,
+              NullValueStrategy::Ignore));
 
       props = componentDescriptor.cloneProps(
           propsParserContext,
@@ -513,7 +515,9 @@ void UIManager::setNativeProps_DEPRECATED(
     // previously in `nativeProps_DEPRECATED`.
     family.nativeProps_DEPRECATED =
         std::make_unique<folly::dynamic>(mergeDynamicProps(
-            *family.nativeProps_DEPRECATED, (folly::dynamic)rawProps));
+            *family.nativeProps_DEPRECATED,
+            (folly::dynamic)rawProps,
+            NullValueStrategy::Override));
   } else {
     family.nativeProps_DEPRECATED =
         std::make_unique<folly::dynamic>((folly::dynamic)rawProps);
