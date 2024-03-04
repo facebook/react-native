@@ -26,6 +26,7 @@ import {
 } from './ServerUtils';
 import {createHash} from 'crypto';
 import fs from 'fs';
+import {networkInterfaces} from 'os';
 import path from 'path';
 
 const fsPromise = fs.promises;
@@ -83,6 +84,78 @@ describe.each(['HTTP', 'HTTPS'])(
             method: 'Debugger.scriptParsed',
             params: {
               sourceMapURL: `${serverRef.serverBaseUrl}/source-map`,
+            },
+          },
+        );
+        expect(
+          parseJsonFromDataUri(scriptParsedMessage.params.sourceMapURL),
+        ).toEqual({version: 3, file: '\u2757.js'});
+      } finally {
+        device.close();
+        debugger_.close();
+      }
+    });
+
+    test('source map fetching when using lan in Debugger.scriptParsed', async () => {
+      serverRef.app.use(
+        '/source-map',
+        serveStaticJson({
+          version: 3,
+          // Mojibake insurance.
+          file: '\u2757.js',
+        }),
+      );
+
+      // Find the current LAN IP address of this machine
+      const lanInterface = Object.values(networkInterfaces())
+        .flat()
+        .find(interface => !interface.internal && interface.family === 'IPv4');
+      if (!lanInterface) {
+        throw new Error('No IPv4 LAN interface found');
+      }
+
+      const serverRefWithLanUrls = {
+        ...serverRef,
+        serverBaseUrl: serverRef.serverBaseUrl.replace(
+          'localhost',
+          lanInterface.address,
+        ),
+        serverBaseWsUrl: serverRef.serverBaseWsUrl.replace(
+          'localhost',
+          lanInterface.address,
+        ),
+      };
+      if (serverRefWithLanUrls.serverBaseUrl === serverRef.serverBaseUrl) {
+        throw new Error(
+          'Failed to replace localhost with LAN address for "serverBaseUrl"',
+        );
+      }
+      if (serverRefWithLanUrls.serverBaseWsUrl === serverRef.serverBaseWsUrl) {
+        throw new Error(
+          'Failed to replace localhost with LAN address for "serverBaseWsUrl"',
+        );
+      }
+
+      // Connect to the target using the LAN address instead of localhost
+      const {device, debugger_} = await createAndConnectTarget(
+        serverRefWithLanUrls,
+        autoCleanup.signal,
+        {
+          app: 'bar-app',
+          id: 'page1',
+          title: 'bar-title',
+          vm: 'bar-vm',
+        },
+      );
+      try {
+        const scriptParsedMessage = await sendFromTargetToDebugger(
+          device,
+          debugger_,
+          'page1',
+          {
+            method: 'Debugger.scriptParsed',
+            params: {
+              sourceMapURL: `${serverRefWithLanUrls.serverBaseUrl}/source-map`,
             },
           },
         );
