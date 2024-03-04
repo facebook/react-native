@@ -1,6 +1,6 @@
 {
   "name": "@react-native/community-cli-plugin",
-  "version": "0.74.2",
+  "version": "0.74.3",
   "description": "Core CLI commands for React Native",
   "keywords": [
     "react-native",
