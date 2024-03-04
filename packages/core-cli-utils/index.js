@@ -9,7 +9,8 @@
  * @oncall react_native
  */
 
-export {default as bundleCommand} from './commands/bundle';
-export {default as startCommand} from './commands/start';
+import {tasks as clean} from './private/clean.js';
 
-export {unstable_buildBundleWithConfig} from './commands/bundle/buildBundle';
+export default {
+  clean,
+};

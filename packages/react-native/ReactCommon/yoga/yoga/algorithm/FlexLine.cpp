@@ -69,7 +69,7 @@ FlexLine calculateFlexLine(
     if (sizeConsumedIncludingMinConstraint + flexBasisWithMinAndMaxConstraints +
                 childMarginMainAxis + childLeadingGapMainAxis >
             availableInnerMainDim &&
-        isNodeFlexWrap && itemsInFlow.size() > 0) {
+        isNodeFlexWrap && !itemsInFlow.empty()) {
       break;
     }
 

@@ -87,6 +87,10 @@ NativeState::~NativeState() {}
 
 Runtime::~Runtime() {}
 
+void Runtime::queueMicrotask(const jsi::Function& /*callback*/) {
+  throw JSINativeException("queueMicrotask is not implemented in this runtime");
+}
+
 Instrumentation& Runtime::instrumentation() {
   class NoInstrumentation : public Instrumentation {
     std::string getRecordedGCStats() override {
