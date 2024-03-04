@@ -737,6 +737,262 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
     });
   });
 
+  describe('Handles component stack frames without debug source', () => {
+    it('detects a component stack in an interpolated warning', () => {
+      expect(
+        parseLogBoxLog([
+          'Warning: Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?%s%s',
+          '\n\nCheck the render method of `MyComponent`.',
+          '\n    in MyComponent (created by MyOtherComponent)\n    in MyOtherComponent (created by MyComponent)\n    in MyAppComponent (created by MyOtherComponent)',
+        ]),
+      ).toEqual({
+        componentStack: [
+          {
+            content: 'MyComponent',
+            fileName: '',
+            location: null,
+          },
+          {
+            content: 'MyOtherComponent',
+            fileName: '',
+            location: null,
+          },
+          {
+            content: 'MyAppComponent',
+            fileName: '',
+            location: null,
+          },
+        ],
+        category:
+          'Warning: Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?﻿%s',
+        message: {
+          content:
+            'Warning: Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?\n\nCheck the render method of `MyComponent`.',
+          substitutions: [
+            {
+              length: 43,
+              offset: 129,
+            },
+          ],
+        },
+      });
+    });
+
+    it('detects a component stack in the first argument', () => {
+      expect(
+        parseLogBoxLog([
+          'Some kind of message\n    in MyComponent (created by MyOtherComponent)\n    in MyOtherComponent (created by MyComponent)\n    in MyAppComponent (created by MyOtherComponent)',
+        ]),
+      ).toEqual({
+        componentStack: [
+          {
+            content: 'MyComponent',
+            fileName: '',
+            location: null,
+          },
+          {
+            content: 'MyOtherComponent',
+            fileName: '',
+            location: null,
+          },
+          {
+            content: 'MyAppComponent',
+            fileName: '',
+            location: null,
+          },
+        ],
+        category: 'Some kind of message',
+        message: {
+          content: 'Some kind of message',
+          substitutions: [],
+        },
+      });
+    });
+
+    it('detects a component stack in the second argument', () => {
+      expect(
+        parseLogBoxLog([
+          'Some kind of message',
+          '\n    in MyComponent (created by MyOtherComponent)\n    in MyOtherComponent (created by MyComponent)\n    in MyAppComponent (created by MyOtherComponent)',
+        ]),
+      ).toEqual({
+        componentStack: [
+          {
+            content: 'MyComponent',
+            fileName: '',
+            location: null,
+          },
+          {
+            content: 'MyOtherComponent',
+            fileName: '',
+            location: null,
+          },
+          {
+            content: 'MyAppComponent',
+            fileName: '',
+            location: null,
+          },
+        ],
+        category: 'Some kind of message',
+        message: {
+          content: 'Some kind of message',
+          substitutions: [],
+        },
+      });
+    });
+
+    it('detects a component stack in the nth argument', () => {
+      expect(
+        parseLogBoxLog([
+          'Warning: Each child in a list should have a unique "key" prop.%s%s See https://fb.me/react-warning-keys for more information.%s',
+          '\n\nCheck the render method of `MyOtherComponent`.',
+          '',
+          '\n    in MyComponent (created by MyOtherComponent)\n    in MyOtherComponent (created by MyComponent)\n    in MyAppComponent (created by MyOtherComponent)',
+        ]),
+      ).toEqual({
+        componentStack: [
+          {
+            content: 'MyComponent',
+            fileName: '',
+            location: null,
+          },
+          {
+            content: 'MyOtherComponent',
+            fileName: '',
+            location: null,
+          },
+          {
+            content: 'MyAppComponent',
+            fileName: '',
+            location: null,
+          },
+        ],
+        category:
+          'Warning: Each child in a list should have a unique "key" prop.﻿%s﻿%s See https://fb.me/react-warning-keys for more information.',
+        message: {
+          content:
+            'Warning: Each child in a list should have a unique "key" prop.\n\nCheck the render method of `MyOtherComponent`. See https://fb.me/react-warning-keys for more information.',
+          substitutions: [
+            {
+              length: 48,
+              offset: 62,
+            },
+            {
+              length: 0,
+              offset: 110,
+            },
+          ],
+        },
+      });
+    });
+
+    it('detects a single component in a component stack', () => {
+      const error = {
+        id: 0,
+        isFatal: true,
+        isComponentError: true,
+        message:
+          'Error: Some kind of message\n\nThis error is located at:\n    in MyComponent (created by MyOtherComponent)\n',
+        originalMessage: 'Some kind of message',
+        name: '',
+        componentStack: '\n    in MyComponent (created by MyOtherComponent)\n',
+        stack: [
+          {
+            column: 1,
+            file: 'foo.js',
+            lineNumber: 1,
+            methodName: 'bar',
+            collapse: false,
+          },
+        ],
+      };
+
+      expect(parseLogBoxException(error)).toEqual({
+        level: 'fatal',
+        isComponentError: true,
+        stack: [
+          {
+            collapse: false,
+            column: 1,
+            file: 'foo.js',
+            lineNumber: 1,
+            methodName: 'bar',
+          },
+        ],
+        componentStack: [
+          {
+            content: 'MyComponent',
+            fileName: '',
+            location: null,
+          },
+        ],
+        category: 'Some kind of message',
+        message: {
+          content: 'Some kind of message',
+          substitutions: [],
+        },
+      });
+    });
+
+    it('parses an error log with `error.componentStack`', () => {
+      const error = {
+        id: 0,
+        isFatal: false,
+        isComponentError: false,
+        message: '### Error',
+        originalMessage: '### Error',
+        name: '',
+        componentStack:
+          '\n    in MyComponent (created by MyOtherComponent)\n    in MyOtherComponent (created by MyComponent)\n    in MyAppComponent (created by MyOtherComponent)',
+        stack: [
+          {
+            column: 1,
+            file: 'foo.js',
+            lineNumber: 1,
+            methodName: 'bar',
+            collapse: false,
+          },
+        ],
+      };
+
+      expect(parseLogBoxException(error)).toEqual({
+        level: 'error',
+        category: '### Error',
+        isComponentError: false,
+        message: {
+          content: '### Error',
+          substitutions: [],
+        },
+        componentStack: [
+          {
+            content: 'MyComponent',
+            fileName: '',
+            location: null,
+          },
+          {
+            content: 'MyOtherComponent',
+            fileName: '',
+            location: null,
+          },
+          {
+            content: 'MyAppComponent',
+            fileName: '',
+            location: null,
+          },
+        ],
+        stack: [
+          {
+            column: 1,
+            file: 'foo.js',
+            lineNumber: 1,
+            methodName: 'bar',
+            collapse: false,
+          },
+        ],
+      });
+    });
+  });
+
   describe('Handles component stack frames formatted as call stacks', () => {
     // In new versions of React, the component stack frame format changed to match call stacks.
     it('detects a component stack in an interpolated warning', () => {

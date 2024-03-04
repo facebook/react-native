@@ -193,16 +193,26 @@ export function parseComponentStack(message: string): ComponentStack {
         return null;
       }
       const match = s.match(/(.*) \(at (.*\.js):([\d]+)\)/);
-      if (!match) {
-        return null;
+      if (match) {
+        let [content, fileName, row] = match.slice(1);
+        return {
+          content,
+          fileName,
+          location: {column: -1, row: parseInt(row, 10)},
+        };
       }
 
-      let [content, fileName, row] = match.slice(1);
-      return {
-        content,
-        fileName,
-        location: {column: -1, row: parseInt(row, 10)},
-      };
+      // In some cases, the component stack doesn't have a source.
+      const matchWithoutSource = s.match(/(.*) \(created by .*\)/);
+      if (matchWithoutSource) {
+        return {
+          content: matchWithoutSource[1],
+          fileName: '',
+          location: null,
+        };
+      }
+
+      return null;
     })
     .filter(Boolean);
 }
