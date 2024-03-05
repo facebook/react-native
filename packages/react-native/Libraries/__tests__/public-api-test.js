@@ -36,7 +36,6 @@ const FILES_WITH_KNOWN_ERRORS = new Set([
   'Libraries/Components/RefreshControl/RefreshControl.js',
   'Libraries/Components/ScrollView/ScrollView.js',
   'Libraries/Components/StatusBar/StatusBar.js',
-  'Libraries/Components/TextInput/InputAccessoryView.js',
   'Libraries/Components/StaticRenderer.js',
   'Libraries/Components/Touchable/TouchableNativeFeedback.js',
   'Libraries/Components/Touchable/TouchableWithoutFeedback.js',
