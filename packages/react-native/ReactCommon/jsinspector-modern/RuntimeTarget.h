@@ -49,7 +49,8 @@ class RuntimeTargetDelegate {
       SessionState& sessionState,
       std::unique_ptr<RuntimeAgentDelegate::ExportedState>
           previouslyExportedState,
-      const ExecutionContextDescription& executionContextDescription) = 0;
+      const ExecutionContextDescription& executionContextDescription,
+      RuntimeExecutor runtimeExecutor) = 0;
 };
 
 /**
