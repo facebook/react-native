@@ -17,7 +17,7 @@
   "dependencies": {
     "@babel/core": "^7.20.0",
     "@react-native/babel-preset": "0.75.0-main",
-    "hermes-parser": "0.20.0",
+    "hermes-parser": "0.20.1",
     "nullthrows": "^1.1.1"
   },
   "peerDependencies": {
