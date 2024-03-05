@@ -8,103 +8,113 @@
  * @format
  */
 
+/* eslint sort-keys: 'error' */
+
 import type {FeatureFlagDefinitions} from './types';
+
+// These flags are only used in tests for the feature flags system
+const testDefinitions: FeatureFlagDefinitions = {
+  common: {
+    commonTestFlag: {
+      defaultValue: false,
+      description: 'Common flag for testing. Do NOT modify.',
+    },
+  },
+  jsOnly: {
+    jsOnlyTestFlag: {
+      defaultValue: false,
+      description: 'JS-only flag for testing. Do NOT modify.',
+    },
+  },
+};
 
 const definitions: FeatureFlagDefinitions = {
   common: {
-    // This is only used in unit tests for the feature flags system.
-    commonTestFlag: {
-      description: 'Common flag for testing. Do NOT modify.',
-      defaultValue: false,
-    },
+    ...testDefinitions.common,
 
-    enableBackgroundExecutor: {
-      description:
-        'Enables the use of a background executor to compute layout and commit updates on Fabric (this system is deprecated and should not be used).',
-      defaultValue: false,
-    },
-    useModernRuntimeScheduler: {
-      description:
-        'When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.',
-      defaultValue: false,
-    },
-    enableMicrotasks: {
-      description:
-        'Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).',
-      defaultValue: false,
-    },
     batchRenderingUpdatesInEventLoop: {
+      defaultValue: false,
       description:
         'When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.',
-      defaultValue: false,
     },
-    enableSpannableBuildingUnification: {
-      description:
-        'Uses new, deduplicated logic for constructing Android Spannables from text fragments',
+    enableBackgroundExecutor: {
       defaultValue: false,
+      description:
+        'Enables the use of a background executor to compute layout and commit updates on Fabric (this system is deprecated and should not be used).',
     },
     enableCustomDrawOrderFabric: {
+      defaultValue: false,
       description:
         'When enabled, Fabric will use customDrawOrder in ReactViewGroup (similar to old architecture).',
-      defaultValue: false,
     },
     enableFixForClippedSubviewsCrash: {
+      defaultValue: false,
       description:
         'Attempt at fixing a crash related to subview clipping on Android. This is a kill switch for the fix',
+    },
+    enableMicrotasks: {
       defaultValue: false,
+      description:
+        'Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).',
+    },
+    enableSpannableBuildingUnification: {
+      defaultValue: false,
+      description:
+        'Uses new, deduplicated logic for constructing Android Spannables from text fragments',
     },
     inspectorEnableCxxInspectorPackagerConnection: {
+      defaultValue: false,
       description:
         'Flag determining if the C++ implementation of InspectorPackagerConnection should be used instead of the per-platform one. This flag is global and should not be changed across React Host lifetimes.',
-      defaultValue: false,
     },
     inspectorEnableModernCDPRegistry: {
+      defaultValue: false,
       description:
         'Flag determining if the modern CDP backend should be enabled. This flag is global and should not be changed across React Host lifetimes.',
+    },
+    useModernRuntimeScheduler: {
       defaultValue: false,
+      description:
+        'When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.',
     },
   },
 
   jsOnly: {
-    // This is only used in unit tests for the feature flags system.
-    jsOnlyTestFlag: {
-      description: 'JS-only flag for testing. Do NOT modify.',
-      defaultValue: false,
-    },
+    ...testDefinitions.jsOnly,
 
-    isLayoutAnimationEnabled: {
-      description:
-        'Function used to enable / disabled Layout Animations in React Native.',
-      defaultValue: true,
-    },
     animatedShouldDebounceQueueFlush: {
+      defaultValue: false,
       description:
         'Enables an experimental flush-queue debouncing in Animated.js.',
-      defaultValue: false,
     },
     animatedShouldUseSingleOp: {
+      defaultValue: false,
       description:
         'Enables an experimental mega-operation for Animated.js that replaces many calls to native with a single call into native, to reduce JSI/JNI traffic.',
-      defaultValue: false,
     },
     enableAccessToHostTreeInFabric: {
+      defaultValue: false,
       description:
         'Enables access to the host tree in Fabric using DOM-compatible APIs.',
-      defaultValue: false,
+    },
+    isLayoutAnimationEnabled: {
+      defaultValue: true,
+      description:
+        'Function used to enable / disabled Layout Animations in React Native.',
     },
     shouldUseAnimatedObjectForTransform: {
+      defaultValue: false,
       description:
         'Enables use of AnimatedObject for animating transform values.',
-      defaultValue: false,
-    },
-    shouldUseSetNativePropsInFabric: {
-      description: 'Enables use of setNativeProps in JS driven animations.',
-      defaultValue: true,
     },
     shouldUseRemoveClippedSubviewsAsDefaultOnIOS: {
+      defaultValue: false,
       description:
         'removeClippedSubviews prop will be used as the default in FlatList on iOS to match Android',
-      defaultValue: false,
+    },
+    shouldUseSetNativePropsInFabric: {
+      defaultValue: true,
+      description: 'Enables use of setNativeProps in JS driven animations.',
     },
   },
 };
