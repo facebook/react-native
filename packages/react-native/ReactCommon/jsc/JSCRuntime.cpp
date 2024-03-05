@@ -446,8 +446,7 @@ jsi::Value JSCRuntime::evaluateJavaScript(
 }
 
 void JSCRuntime::queueMicrotask(const jsi::Function& callback) {
-  microtaskQueue_.emplace_back(
-      jsi::Value(*this, callback).asObject(*this).asFunction(*this));
+  microtaskQueue_.emplace_back(callback.getFunction(*this));
 }
 
 bool JSCRuntime::drainMicrotasks(int /*maxMicrotasksHint*/) {
