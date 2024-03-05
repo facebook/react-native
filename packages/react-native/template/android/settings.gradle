@@ -1,4 +1,10 @@
 rootProject.name = 'HelloWorld'
-apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesSettingsGradle(settings)
+
+def reactNativePath = resolveNodePackage('react-native', rootDir)
+def cliPlatformAndroidPath = resolveNodePackage('@react-native-community/cli-platform-android', reactNativePath)
+def gradlePluginPath = resolveNodePackage("@react-native/gradle-plugin", reactNativePath)
+
+apply from: new File(cliPlatformAndroidPath, "native_modules.gradle"); applyNativeModulesSettingsGradle(settings)
+
 include ':app'
-includeBuild('../node_modules/@react-native/gradle-plugin')
+includeBuild(gradlePluginPath)
