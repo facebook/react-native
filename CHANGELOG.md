@@ -1,5 +1,38 @@
 # Changelog
 
+## v0.74.0-rc.2
+
+### Changed
+
+#### Android specific
+
+- Rename `PopupMenuAndroidNativeComponent.js` to `PopupMenuAndroidNativeComponent.android.js` ([fcabb2ad21](https://github.com/facebook/react-native/commit/fcabb2ad21b2c17f4e0d40b0637c22ba84568038) by [@cipolleschi](https://github.com/cipolleschi))
+
+#### iOS specific
+
+- Rename BUILD_FROM_SOURCE to RCT_BUILD_HERMES_FROM_SOURCE ([f7644be6d4](https://github.com/facebook/react-native/commit/f7644be6d4d79b72c26f740cf5ac021dfd5fedc0) by [@cipolleschi](https://github.com/cipolleschi))
+
+### Deprecated
+
+#### iOS specific
+
+- Deprecate `getSurfacePresenter` and `getModuleRegistry` for `surfacePresenter` and moduleRegistry` props. ([c3b0a8f162](https://github.com/facebook/react-native/commit/c3b0a8f1626939cf5c7b3864a5acf9d3dad26fb3) by [@cipolleschi](https://github.com/cipolleschi))
+
+### Removed
+
+#### Android specific
+
+- Move PopupMenu out of React Native core ([8bced4b29d](https://github.com/facebook/react-native/commit/8bced4b29db9b41a68ef726df81449a399eff604) by [@RSNara](https://github.com/RSNara))
+
+### Fixed
+
+- Re-enable listing Hermes debugger targets in chrome://inspect, broken in 0.74 RC ([4cfac8eea6](https://github.com/facebook/react-native/commit/4cfac8eea63129059559f0a65c038dfe95e12d7c) by [@motiz88](https://github.com/motiz88))
+
+#### iOS specific
+
+- Properly warn about `createRootViewWithBridge` being deprecated ([a1197695fc](https://github.com/facebook/react-native/commit/a1197695fc7dd7750001dc60853fd19f162dc69e) by [@okwasniewski](https://github.com/okwasniewski))
+- Codegen correctly handles react-native.config.js. ([f5d5d9d284](https://github.com/facebook/react-native/commit/f5d5d9d284fae2bce42c9202bbfcf948e6a9ed37) by [@dmytrorykun](https://github.com/dmytrorykun))
+
 ## v0.74.0-rc.1
 
 ### Added
