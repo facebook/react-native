@@ -1,6 +1,6 @@
 {
   "name": "@react-native/core-cli-utils",
-  "version": "0.74.0",
+  "version": "0.75.0-main",
   "description": "React Native CLI library for Frameworks to build on",
   "main": "index.js",
   "license": "MIT",
