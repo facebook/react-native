@@ -22,8 +22,7 @@ static inline void interpolateViewProps(
     const Props::Shared& oldPropsShared,
     const Props::Shared& newPropsShared,
     Props::Shared& interpolatedPropsShared,
-    Float viewWidth, 
-    Float viewHeight) {
+    const Size& size) {
   const ViewProps* oldViewProps =
       static_cast<const ViewProps*>(oldPropsShared.get());
   const ViewProps* newViewProps =
@@ -34,7 +33,7 @@ static inline void interpolateViewProps(
   interpolatedProps->opacity = oldViewProps->opacity +
       (newViewProps->opacity - oldViewProps->opacity) * animationProgress;
   interpolatedProps->transform = Transform::Interpolate(
-      animationProgress, oldViewProps->transform, newViewProps->transform, viewWidth, viewHeight);
+      animationProgress, oldViewProps->transform, newViewProps->transform, size);
 
   // Android uses RawProps, not props, to update props on the platform...
   // Since interpolated props don't interpolate at all using RawProps, we need

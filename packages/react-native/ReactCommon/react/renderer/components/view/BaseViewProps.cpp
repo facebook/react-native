@@ -400,11 +400,11 @@ Transform BaseViewProps::resolveTransform(
 
   // transform is matrix
   if (transform.operations.size() == 1 && transform.operations[0].type == TransformOperationType::Arbitrary) {
-    transformMatrix = transformMatrix * transform;
+    transformMatrix = transform;
   } else {
+    auto viewSize = Size{viewWidth, viewHeight};
     for (size_t i = 0; i < transform.operations.size(); i++) {
-      auto transformFromOperation = transform.FromTransformOperation(transform.operations[i], viewWidth, viewHeight);
-      transformMatrix = transformMatrix * transformFromOperation;
+      transformMatrix = transformMatrix * transform.FromTransformOperation(transform.operations[i], viewSize);
     }
   }
       

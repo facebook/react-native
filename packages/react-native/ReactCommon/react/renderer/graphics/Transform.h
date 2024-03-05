@@ -90,7 +90,7 @@ struct Transform {
    * Given a TransformOperation, return the proper transform.
    */
   static Transform FromTransformOperation(
-      TransformOperation transformOperation, Float viewWidth, Float viewHeight);
+      TransformOperation transformOperation, const Size& size);
   static TransformOperation DefaultTransformOperation(
       TransformOperationType type);
 
@@ -154,8 +154,7 @@ struct Transform {
       Float animationProgress,
       const Transform& lhs,
       const Transform& rhs,
-      Float viewWidth,
-      Float viewHeight);
+      const Size& size);
 
   static bool isVerticalInversion(const Transform& transform);
   static bool isHorizontalInversion(const Transform& transform);

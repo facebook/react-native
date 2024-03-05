@@ -148,7 +148,7 @@ Transform Transform::Rotate(Float x, Float y, Float z) {
 }
 
 Transform Transform::FromTransformOperation(
-    TransformOperation transformOperation, Float viewWidth, Float viewHeight) {
+    TransformOperation transformOperation, const Size& size) {
   if (transformOperation.type == TransformOperationType::Perspective) {
     return Transform::Perspective(transformOperation.x.value);
   }
@@ -160,10 +160,10 @@ Transform Transform::FromTransformOperation(
     auto translateX = transformOperation.x.value;
     auto translateY = transformOperation.y.value;
     if (transformOperation.x.unit == UnitType::Percent) {
-      translateX = translateX * viewWidth / 100.0;
+      translateX = translateX * size.width / 100.0;
     }
     if (transformOperation.y.unit == UnitType::Percent) {
-      translateY = translateY * viewHeight / 100.0;
+      translateY = translateY * size.height / 100.0;
     }
 
     return Transform::Translate(
@@ -208,8 +208,7 @@ Transform Transform::Interpolate(
     Float animationProgress,
     const Transform& lhs,
     const Transform& rhs,
-    Float viewWidth,
-    Float viewHeight) {
+    const Size& size) {
   // Iterate through operations and reconstruct an interpolated resulting
   // transform If at any point we hit an "Arbitrary" Transform, return at that
   // point
@@ -259,7 +258,7 @@ Transform Transform::Interpolate(
             type,
             ValueUnit(lhsOp.x.value + (rhsOp.x.value - lhsOp.x.value) * animationProgress, UnitType::Point),
             ValueUnit(lhsOp.y.value + (rhsOp.y.value - lhsOp.y.value) * animationProgress, UnitType::Point),
-            ValueUnit(lhsOp.z.value + (rhsOp.z.value - lhsOp.z.value) * animationProgress, UnitType::Point)}, viewWidth, viewHeight);
+            ValueUnit(lhsOp.z.value + (rhsOp.z.value - lhsOp.z.value) * animationProgress, UnitType::Point)}, size);
   }
 
   return result;
