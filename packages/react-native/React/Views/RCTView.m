@@ -136,6 +136,7 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
     _borderCurve = RCTBorderCurveCircular;
     _borderStyle = RCTBorderStyleSolid;
     _hitTestEdgeInsets = UIEdgeInsetsZero;
+    _cursor = RCTCursorAuto;
 
     _backgroundColor = super.backgroundColor;
   }
@@ -796,6 +797,8 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
 
   RCTUpdateShadowPathForView(self);
 
+  RCTUpdateHoverStyleForView(self);
+
   const RCTCornerRadii cornerRadii = [self cornerRadii];
   const UIEdgeInsets borderInsets = [self bordersAsInsets];
   const RCTBorderColors borderColors = [self borderColorsWithTraitCollection:self.traitCollection];
@@ -888,6 +891,31 @@ static void RCTUpdateShadowPathForView(RCTView *view)
           view.reactTag,
           [view class]);
     }
+  }
+}
+
+static void RCTUpdateHoverStyleForView(RCTView *view)
+{
+  if (@available(iOS 17.0, *)) {
+    UIHoverStyle *hoverStyle = nil;
+    if ([view cursor] == RCTCursorPointer) {
+      const RCTCornerRadii cornerRadii = [view cornerRadii];
+      const RCTCornerInsets cornerInsets = RCTGetCornerInsets(cornerRadii, UIEdgeInsetsZero);
+#if TARGET_OS_IOS
+      // Due to an Apple bug, it seems on iOS, `[UIShape shapeWithBezierPath:]` needs to
+      // be calculated in the superviews' coordinate space (view.frame). This is not true
+      // on other platforms like visionOS.
+      CGPathRef borderPath = RCTPathCreateWithRoundedRect(view.frame, cornerInsets, NULL);
+#else // TARGET_OS_VISION
+      CGPathRef borderPath = RCTPathCreateWithRoundedRect(view.bounds, cornerInsets, NULL);
+#endif
+      UIBezierPath *bezierPath = [UIBezierPath bezierPathWithCGPath:borderPath];
+      CGPathRelease(borderPath);
+      UIShape *shape = [UIShape shapeWithBezierPath:bezierPath];
+
+      hoverStyle = [UIHoverStyle styleWithEffect:[UIHoverHighlightEffect effect] shape:shape];
+    }
+    [view setHoverStyle:hoverStyle];
   }
 }
 

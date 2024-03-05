@@ -37,6 +37,8 @@ export type EdgeInsetsValue = {
 export type DimensionValue = number | string | 'auto' | AnimatedNode | null;
 export type AnimatableNumericValue = number | AnimatedNode;
 
+export type CursorValue = 'auto' | 'pointer';
+
 /**
  * React Native's layout system is based on Flexbox and is powered both
  * on iOS and Android by an open source project called `Yoga`:
@@ -729,6 +731,7 @@ export type ____ViewStyle_InternalCore = $ReadOnly<{
   opacity?: AnimatableNumericValue,
   elevation?: number,
   pointerEvents?: 'auto' | 'none' | 'box-none' | 'box-only',
+  cursor?: CursorValue,
 }>;
 
 export type ____ViewStyle_Internal = $ReadOnly<{

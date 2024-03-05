@@ -52,6 +52,8 @@ class BaseViewProps : public YogaStylableProps, public AccessibilityProps {
   Float shadowOpacity{};
   Float shadowRadius{3};
 
+  Cursor cursor{};
+
   // Transform
   Transform transform{};
   TransformOrigin transformOrigin{};

@@ -11,6 +11,7 @@
 #import <React/RCTAnimationType.h>
 #import <React/RCTBorderCurve.h>
 #import <React/RCTBorderStyle.h>
+#import <React/RCTCursor.h>
 #import <React/RCTDefines.h>
 #import <React/RCTLog.h>
 #import <React/RCTPointerEvents.h>
@@ -79,6 +80,8 @@ typedef NSURL RCTFileURL;
 #if !TARGET_OS_TV
 + (UIBarStyle)UIBarStyle:(id)json __deprecated;
 #endif
+
++ (RCTCursor)RCTCursor:(id)json;
 
 + (CGFloat)CGFloat:(id)json;
 + (CGPoint)CGPoint:(id)json;

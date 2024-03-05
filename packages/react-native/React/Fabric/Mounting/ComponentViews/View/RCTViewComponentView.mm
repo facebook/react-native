@@ -257,6 +257,11 @@ using namespace facebook::react;
     self.layer.doubleSided = newViewProps.backfaceVisibility == BackfaceVisibility::Visible;
   }
 
+  // `cursor`
+  if (oldViewProps.cursor != newViewProps.cursor) {
+    needsInvalidateLayer = YES;
+  }
+
   // `shouldRasterize`
   if (oldViewProps.shouldRasterize != newViewProps.shouldRasterize) {
     self.layer.shouldRasterize = newViewProps.shouldRasterize;
@@ -590,6 +595,31 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     }
   } else {
     layer.shadowPath = nil;
+  }
+
+  // Stage 1.5. Cursor / Hover Effects
+  if (@available(iOS 17.0, *)) {
+    UIHoverStyle *hoverStyle = nil;
+    if (_props->cursor == Cursor::Pointer) {
+      const RCTCornerInsets cornerInsets =
+          RCTGetCornerInsets(RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii), UIEdgeInsetsZero);
+#if TARGET_OS_IOS
+      // Due to an Apple bug, it seems on iOS, UIShapes made with `[UIShape shapeWithBezierPath:]`
+      // evaluate their shape on the superviews' coordinate space. This leads to the hover shape
+      // rendering incorrectly on iOS, iOS apps in compatibility mode on visionOS, but not on visionOS.
+      // To work around this, for iOS, we can calculate the border path based on `view.frame` (the
+      // superview's coordinate space) instead of view.bounds.
+      CGPathRef borderPath = RCTPathCreateWithRoundedRect(self.frame, cornerInsets, NULL);
+#else // TARGET_OS_VISION
+      CGPathRef borderPath = RCTPathCreateWithRoundedRect(self.bounds, cornerInsets, NULL);
+#endif
+      UIBezierPath *bezierPath = [UIBezierPath bezierPathWithCGPath:borderPath];
+      CGPathRelease(borderPath);
+      UIShape *shape = [UIShape shapeWithBezierPath:bezierPath];
+
+      hoverStyle = [UIHoverStyle styleWithEffect:[UIHoverAutomaticEffect effect] shape:shape];
+    }
+    [self setHoverStyle:hoverStyle];
   }
 
   // Stage 2. Border Rendering
