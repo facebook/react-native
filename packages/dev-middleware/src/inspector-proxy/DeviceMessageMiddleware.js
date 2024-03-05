@@ -14,26 +14,21 @@ import type WS from 'ws';
 
 type ExposedDeviceInfo = $ReadOnly<{
   appId: string,
-  deviceId: string,
-  deviceName: string,
-  deviceSocket: WS,
-  page: Page,
-  projectRoot: string,
+  id: string,
+  name: string,
+  socket: WS,
 }>;
 
 type ExposedDebuggerInfo = $ReadOnly<{
-  debuggerSocket: $ElementType<DebuggerInfo, 'socket'>,
-  debuggerUserAgent: $ElementType<DebuggerInfo, 'userAgent'>,
-  prependedFilePrefix: $ElementType<DebuggerInfo, 'prependedFilePrefix'>,
-  originalSourceURLAddress: $ElementType<
-    DebuggerInfo,
-    'originalSourceURLAddress',
-  >,
+  socket: $ElementType<DebuggerInfo, 'socket'>,
+  userAgent: $ElementType<DebuggerInfo, 'userAgent'>,
 }>;
 
-export type createDeviceMessageMiddleware = (
+export type createDeviceMessageMiddleware = (connection: {
+  page: Page,
   deviceInfo: ExposedDeviceInfo,
-) => ?DeviceMessageMiddleware;
+  debuggerInfo: ExposedDebuggerInfo,
+}) => ?DeviceMessageMiddleware;
 
 /**
  * The device message middleware allows implementers to handle unsupported CDP messages.
@@ -46,29 +41,21 @@ export interface DeviceMessageMiddleware {
    * This is invoked before the message is sent to the debugger.
    * When returning true, the message is considered handled and will not be sent to the debugger.
    */
-  handleDeviceMessage(
-    message: MessageFromDevice,
-    debuggerInfo: ?ExposedDebuggerInfo,
-  ): true | void;
+  handleDeviceMessage(message: MessageFromDevice): true | void;
 
   /**
    * Handle a CDP message coming from the debugger.
    * This is invoked before the message is sent to the device.
    * When reeturning true, the message is considered handled and will not be sent to the device.
    */
-  handleDebuggerMessage(
-    message: MessageToDevice,
-    debuggerInfo: ExposedDebuggerInfo,
-  ): true | void;
+  handleDebuggerMessage(message: MessageToDevice): true | void;
 }
 
 export function createMiddlewareDebuggerInfo(
   debuggerInfo: DebuggerInfo,
 ): ExposedDebuggerInfo {
   return {
-    debuggerSocket: debuggerInfo.socket,
-    debuggerUserAgent: debuggerInfo.userAgent,
-    prependedFilePrefix: debuggerInfo.prependedFilePrefix,
-    originalSourceURLAddress: debuggerInfo.originalSourceURLAddress,
+    socket: debuggerInfo.socket,
+    userAgent: debuggerInfo.userAgent,
   };
 }

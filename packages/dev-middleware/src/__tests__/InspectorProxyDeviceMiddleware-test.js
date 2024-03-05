@@ -9,11 +9,7 @@
  * @oncall react_native
  */
 
-import type {PageDescription} from '../inspector-proxy/types';
-
-import {fetchJson} from './FetchUtils';
-import {createDebuggerMock} from './InspectorDebuggerUtils';
-import {createDeviceMock} from './InspectorDeviceUtils';
+import {createAndConnectTarget} from './InspectorProtocolUtils';
 import {withAbortSignalForEachTest} from './ResourceUtils';
 import {baseUrlForServer, createServer} from './ServerUtils';
 import until from 'wait-for-expect';
@@ -25,12 +21,18 @@ jest.setTimeout(10000);
 
 describe('inspector proxy device message middleware', () => {
   const autoCleanup = withAbortSignalForEachTest();
+  const page = {
+    id: 'page1',
+    app: 'bar-app',
+    title: 'bar-title',
+    vm: 'bar-vm',
+  };
 
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  test('middleware is created with device information', async () => {
+  test('middleware is created with device, debugger, and page information', async () => {
     const createMiddleware = jest.fn().mockImplementation(() => null);
     const {server} = await createServer({
       logger: undefined,
@@ -38,40 +40,38 @@ describe('inspector proxy device message middleware', () => {
       unstable_deviceMessageMiddleware: createMiddleware,
     });
 
-    let device_;
+    let device, debugger_;
     try {
-      // Create and connect the device
-      device_ = await createDeviceMock(
-        `${baseUrlForServer(server, 'ws')}/inspector/device?device=device1&name=foo&app=bar`,
+      ({device, debugger_} = await createAndConnectTarget(
+        serverRefUrls(server),
         autoCleanup.signal,
-      );
-      const page = {
-        app: 'bar',
-        id: 'page1',
-        // NOTE: 'React' is a magic string used to detect React Native pages.
-        title: 'React Native (mock)',
-        vm: 'vm',
-      };
-      device_.getPages.mockImplementation(() => [page]);
+        page,
+      ));
 
       // Ensure the middleware was created with the device information
       await until(() =>
         expect(createMiddleware).toBeCalledWith(
           expect.objectContaining({
-            deviceId: 'device1',
-            deviceName: 'foo',
-            deviceSocket: expect.anything(), // Websocket
-            appId: 'bar',
-            projectRoot: '',
             page: expect.objectContaining({
               ...page,
               capabilities: expect.any(Object),
+            }),
+            deviceInfo: expect.objectContaining({
+              appId: expect.any(String),
+              id: expect.any(String),
+              name: expect.any(String),
+              socket: expect.anything(),
+            }),
+            debuggerInfo: expect.objectContaining({
+              socket: expect.anything(),
+              userAgent: null,
             }),
           }),
         ),
       );
     } finally {
-      device_?.close();
+      device?.close();
+      debugger_?.close();
       await closeServer(server);
     }
   });
@@ -87,43 +87,23 @@ describe('inspector proxy device message middleware', () => {
       }),
     });
 
-    let device_, debugger_;
+    let device, debugger_;
     try {
-      // Create and connect the device
-      device_ = await createDeviceMock(
-        `${baseUrlForServer(server, 'ws')}/inspector/device?device=device1&name=foo&app=bar`,
+      ({device, debugger_} = await createAndConnectTarget(
+        serverRefUrls(server),
         autoCleanup.signal,
-      );
-      device_.getPages.mockImplementation(() => [
-        {
-          app: 'bar',
-          id: 'page1',
-          // NOTE: 'React' is a magic string used to detect React Native pages.
-          title: 'React Native (mock)',
-          vm: 'vm',
-        },
-      ]);
-
-      // Find the debugger URL
-      const [{webSocketDebuggerUrl}] = await fetchPageList(server);
-      expect(webSocketDebuggerUrl).toBeDefined();
-
-      // Create and connect the debugger
-      debugger_ = await createDebuggerMock(
-        webSocketDebuggerUrl,
-        autoCleanup.signal,
-      );
-      await until(() => expect(device_.connect).toBeCalled());
+        page,
+      ));
 
       // Send a message from the device, and ensure the middleware received it
-      device_.sendWrappedEvent('page1', {id: 1337});
+      device.sendWrappedEvent(page.id, {id: 1337});
 
       // Ensure the debugger received the message
       await until(() => expect(debugger_.handle).toBeCalledWith({id: 1337}));
       // Ensure the middleware received the message
       await until(() => expect(handleDeviceMessage).toBeCalled());
     } finally {
-      device_?.close();
+      device?.close();
       debugger_?.close();
       await closeServer(server);
     }
@@ -140,49 +120,24 @@ describe('inspector proxy device message middleware', () => {
       }),
     });
 
-    let device_, debugger_;
+    let device, debugger_;
     try {
-      // Create and connect the device
-      device_ = await createDeviceMock(
-        `${baseUrlForServer(server, 'ws')}/inspector/device?device=device1&name=foo&app=bar`,
+      ({device, debugger_} = await createAndConnectTarget(
+        serverRefUrls(server),
         autoCleanup.signal,
-      );
-      device_.getPages.mockImplementation(() => [
-        {
-          app: 'bar',
-          id: 'page1',
-          // NOTE: 'React' is a magic string used to detect React Native pages.
-          title: 'React Native (mock)',
-          vm: 'vm',
-        },
-      ]);
-
-      // Find the debugger URL
-      const [{webSocketDebuggerUrl}] = await fetchPageList(server);
-      expect(webSocketDebuggerUrl).toBeDefined();
-
-      // Create and connect the debugger
-      debugger_ = await createDebuggerMock(
-        webSocketDebuggerUrl,
-        autoCleanup.signal,
-      );
-      await until(() => expect(device_.connect).toBeCalled());
+        page,
+      ));
 
       // Send a message from the device, and ensure the middleware received it
       const message = {
         event: 'disconnect',
-        payload: {pageId: 'page1'},
+        payload: {pageId: page.id},
       };
-      device_.send(message);
+      device.send(message);
 
-      await until(() =>
-        expect(handleDeviceMessage).toBeCalledWith(
-          message, // CDP event
-          expect.any(Object), // Debugger info
-        ),
-      );
+      await until(() => expect(handleDeviceMessage).toBeCalledWith(message));
     } finally {
-      device_?.close();
+      device?.close();
       debugger_?.close();
       await closeServer(server);
     }
@@ -199,50 +154,30 @@ describe('inspector proxy device message middleware', () => {
       }),
     });
 
-    let device_, debugger_;
+    let device, debugger_;
     try {
-      // Create and connect the device
-      device_ = await createDeviceMock(
-        `${baseUrlForServer(server, 'ws')}/inspector/device?device=device1&name=foo&app=bar`,
+      ({device, debugger_} = await createAndConnectTarget(
+        serverRefUrls(server),
         autoCleanup.signal,
-      );
-      device_.getPages.mockImplementation(() => [
-        {
-          app: 'bar',
-          id: 'page1',
-          // NOTE: 'React' is a magic string used to detect React Native pages.
-          title: 'React Native (mock)',
-          vm: 'vm',
-        },
-      ]);
-
-      // Find the debugger URL
-      const [{webSocketDebuggerUrl}] = await fetchPageList(server);
-      expect(webSocketDebuggerUrl).toBeDefined();
-
-      // Create and connect the debugger
-      debugger_ = await createDebuggerMock(
-        webSocketDebuggerUrl,
-        autoCleanup.signal,
-      );
-      await until(() => expect(device_.connect).toBeCalled());
+        page,
+      ));
 
       // Stop the first message from propagating by returning true (once) from middleware
       handleDeviceMessage.mockReturnValueOnce(true);
 
       // Send the first message which should NOT be received by the debugger
-      device_.sendWrappedEvent('page1', {id: -1});
+      device.sendWrappedEvent(page.id, {id: -1});
       await until(() => expect(handleDeviceMessage).toBeCalled());
 
       // Send the second message which should be received by the debugger
-      device_.sendWrappedEvent('page1', {id: 1337});
+      device.sendWrappedEvent(page.id, {id: 1337});
 
       // Ensure only the last message was received by the debugger
       await until(() => expect(debugger_.handle).toBeCalledWith({id: 1337}));
       // Ensure the first message was not received by the debugger
       expect(debugger_.handle).not.toBeCalledWith({id: -1});
     } finally {
-      device_?.close();
+      device?.close();
       debugger_?.close();
       await closeServer(server);
     }
@@ -259,33 +194,13 @@ describe('inspector proxy device message middleware', () => {
       }),
     });
 
-    let device_, debugger_;
+    let device, debugger_;
     try {
-      // Create and connect the device
-      device_ = await createDeviceMock(
-        `${baseUrlForServer(server, 'ws')}/inspector/device?device=device1&name=foo&app=bar`,
+      ({device, debugger_} = await createAndConnectTarget(
+        serverRefUrls(server),
         autoCleanup.signal,
-      );
-      device_.getPages.mockImplementation(() => [
-        {
-          app: 'bar',
-          id: 'page1',
-          // NOTE: 'React' is a magic string used to detect React Native pages.
-          title: 'React Native (mock)',
-          vm: 'vm',
-        },
-      ]);
-
-      // Find the debugger URL
-      const [{webSocketDebuggerUrl}] = await fetchPageList(server);
-      expect(webSocketDebuggerUrl).toBeDefined();
-
-      // Create and connect the debugger
-      debugger_ = await createDebuggerMock(
-        webSocketDebuggerUrl,
-        autoCleanup.signal,
-      );
-      await until(() => expect(device_.connect).toBeCalled());
+        page,
+      ));
 
       // Send a message from the debugger
       const message = {
@@ -295,16 +210,11 @@ describe('inspector proxy device message middleware', () => {
       debugger_.send(message);
 
       // Ensure the device received the message
-      await until(() => expect(device_.wrappedEvent).toBeCalled());
+      await until(() => expect(device.wrappedEvent).toBeCalled());
       // Ensure the middleware received the message
-      await until(() =>
-        expect(handleDebuggerMessage).toBeCalledWith(
-          message, // CDP event
-          expect.any(Object), // Debugger info
-        ),
-      );
+      await until(() => expect(handleDebuggerMessage).toBeCalledWith(message));
     } finally {
-      device_?.close();
+      device?.close();
       debugger_?.close();
       await closeServer(server);
     }
@@ -321,33 +231,13 @@ describe('inspector proxy device message middleware', () => {
       }),
     });
 
-    let device_, debugger_;
+    let device, debugger_;
     try {
-      // Create and connect the device
-      device_ = await createDeviceMock(
-        `${baseUrlForServer(server, 'ws')}/inspector/device?device=device1&name=foo&app=bar`,
+      ({device, debugger_} = await createAndConnectTarget(
+        serverRefUrls(server),
         autoCleanup.signal,
-      );
-      device_.getPages.mockImplementation(() => [
-        {
-          app: 'bar',
-          id: 'page1',
-          // NOTE: 'React' is a magic string used to detect React Native pages.
-          title: 'React Native (mock)',
-          vm: 'vm',
-        },
-      ]);
-
-      // Find the debugger URL
-      const [{webSocketDebuggerUrl}] = await fetchPageList(server);
-      expect(webSocketDebuggerUrl).toBeDefined();
-
-      // Create and connect the debugger
-      debugger_ = await createDebuggerMock(
-        webSocketDebuggerUrl,
-        autoCleanup.signal,
-      );
-      await until(() => expect(device_.connect).toBeCalled());
+        page,
+      ));
 
       // Stop the first message from propagating by returning true (once) from middleware
       handleDebuggerMessage.mockReturnValueOnce(true);
@@ -359,34 +249,26 @@ describe('inspector proxy device message middleware', () => {
 
       // Ensure only the last message was received by the device
       await until(() =>
-        expect(device_.wrappedEvent).toBeCalledWith({
+        expect(device.wrappedEvent).toBeCalledWith({
           event: 'wrappedEvent',
-          payload: {pageId: 'page1', wrappedEvent: JSON.stringify({id: 1337})},
+          payload: {pageId: page.id, wrappedEvent: JSON.stringify({id: 1337})},
         }),
       );
       // Ensure the first message was not received by the device
-      expect(device_.wrappedEvent).not.toBeCalledWith({id: -1});
+      expect(device.wrappedEvent).not.toBeCalledWith({id: -1});
     } finally {
-      device_?.close();
+      device?.close();
       debugger_?.close();
       await closeServer(server);
     }
   });
 });
 
-async function fetchPageList(
-  server: http$Server | https$Server,
-): Promise<PageDescription[]> {
-  let pageList: Array<PageDescription> = [];
-  await until(async () => {
-    pageList = (await fetchJson(
-      `${baseUrlForServer(server, 'http')}/json`,
-      // $FlowIgnore[unclear-type]
-    ): any);
-    expect(pageList.length).toBeGreaterThanOrEqual(1);
-  });
-
-  return pageList;
+function serverRefUrls(server: http$Server | https$Server) {
+  return {
+    serverBaseUrl: baseUrlForServer(server, 'http'),
+    serverBaseWsUrl: baseUrlForServer(server, 'ws'),
+  };
 }
 
 async function closeServer(server: http$Server | https$Server): Promise<void> {
