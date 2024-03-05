@@ -13,7 +13,6 @@
 #import "RCTModalManager.h"
 #import "RCTShadowView.h"
 #import "RCTUtils.h"
-#import <React/RCTConvert.h>
 
 @interface RCTModalHostShadowView : RCTShadowView
 
