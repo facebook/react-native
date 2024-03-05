@@ -597,6 +597,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     layer.shadowPath = nil;
   }
 
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 170000 /* __IPHONE_17_0 */
   // Stage 1.5. Cursor / Hover Effects
   if (@available(iOS 17.0, *)) {
     UIHoverStyle *hoverStyle = nil;
@@ -621,6 +622,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     }
     [self setHoverStyle:hoverStyle];
   }
+#endif
 
   // Stage 2. Border Rendering
   const bool useCoreAnimationBorderRendering =
