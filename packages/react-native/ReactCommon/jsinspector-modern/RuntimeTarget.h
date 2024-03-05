@@ -77,15 +77,15 @@ class JSINSPECTOR_EXPORT RuntimeTarget
     : public EnableExecutorFromThis<RuntimeTarget> {
  public:
   /**
-   * Constructs a new RuntimeTarget. The caller must call setExecutor
-   * immediately afterwards.
    * \param executionContextDescription A description of the execution context
    * represented by this runtime. This is used for disambiguating the
    * source/destination of CDP messages when there are multiple runtimes
    * (concurrently or over the life of a Host).
    * \param delegate The object that will receive events from this target. The
-   * caller is responsible for
-   * ensuring that the delegate outlives this object.
+   * caller is responsible for ensuring that the delegate outlives this object
+   * AND that it remains valid for as long as the JS runtime is executing any
+   * code, even if the \c RuntimeTarget itself is destroyed. The delegate SHOULD
+   * be the object that owns the underlying jsi::Runtime, if any.
    * \param jsExecutor A RuntimeExecutor that can be used to schedule work on
    * the JS runtime's thread. The executor's queue should be empty when
    * RuntimeTarget is constructed (i.e. anything scheduled during the
@@ -127,9 +127,11 @@ class JSINSPECTOR_EXPORT RuntimeTarget
    * represented by this runtime. This is used for disambiguating the
    * source/destination of CDP messages when there are multiple runtimes
    * (concurrently or over the life of a Host).
-   * \param delegate The object that will receive events from this target.
-   * The caller is responsible for ensuring that the delegate outlives this
-   * object.
+   * \param delegate The object that will receive events from this target. The
+   * caller is responsible for ensuring that the delegate outlives this object
+   * AND that it remains valid for as long as the JS runtime is executing any
+   * code, even if the \c RuntimeTarget itself is destroyed. The delegate SHOULD
+   * be the object that owns the underlying jsi::Runtime, if any.
    * \param jsExecutor A RuntimeExecutor that can be used to schedule work on
    * the JS runtime's thread. The executor's queue should be empty when
    * RuntimeTarget is constructed (i.e. anything scheduled during the
