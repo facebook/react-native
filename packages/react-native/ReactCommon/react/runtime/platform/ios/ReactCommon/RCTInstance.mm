@@ -66,7 +66,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   sRuntimeDiagnosticFlags = [flags copy];
 }
 
-@interface RCTInstance () <RCTTurboModuleManagerDelegate, RCTTurboModuleManagerRuntimeHandler, RCTReloadListener>
+@interface RCTInstance () <RCTTurboModuleManagerDelegate, RCTTurboModuleManagerRuntimeHandler>
 @end
 
 @implementation RCTInstance {
@@ -123,11 +123,18 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
             [weakSelf callFunctionOnJSModule:moduleName method:methodName args:args];
           }];
     }
+    
+    NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];
 
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(_notifyEventDispatcherObserversOfEvent_DEPRECATED:)
-                                                 name:@"RCTNotifyEventDispatcherObserversOfEvent_DEPRECATED"
-                                               object:nil];
+    [defaultCenter addObserver:self
+               selector:@selector(_notifyEventDispatcherObserversOfEvent_DEPRECATED:)
+                   name:@"RCTNotifyEventDispatcherObserversOfEvent_DEPRECATED"
+                 object:nil];
+    
+    [defaultCenter addObserver:self
+                      selector:@selector(didReceiveReloadCommand)
+                          name:RCTTriggerReloadCommandNotification
+                        object:nil];
 
     [self _start];
   }
@@ -341,10 +348,6 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
     if (RCTGetUseNativeViewConfigsInBridgelessMode()) {
       installLegacyUIManagerConstantsProviderBinding(runtime);
     }
-    
-    RCTExecuteOnMainQueue(^{
-      RCTRegisterReloadCommandListener(self);
-    });
 
     [strongSelf->_delegate instance:strongSelf didInitializeRuntime:runtime];
 
@@ -472,6 +475,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   const auto *url = deriveSourceURL(source.url).UTF8String;
   _reactInstance->loadScript(std::move(script), url);
   [[NSNotificationCenter defaultCenter] postNotificationName:@"RCTInstanceDidLoadBundle" object:nil];
+  
 
   if (_onInitialBundleLoad) {
     _onInitialBundleLoad();
