@@ -15,7 +15,6 @@
 #include <jsi/decorator.h>
 #include <jsinspector-modern/InspectorFlags.h>
 
-#include <hermes/inspector-modern/chrome/HermesRuntimeAgentDelegate.h>
 #include <hermes/inspector-modern/chrome/Registration.h>
 #include <hermes/inspector/RuntimeAdapter.h>
 
@@ -253,9 +252,10 @@ HermesExecutor::HermesExecutor(
     RuntimeInstaller runtimeInstaller,
     HermesRuntime& hermesRuntime)
     : JSIExecutor(runtime, delegate, timeoutInvoker, runtimeInstaller),
-      jsQueue_(jsQueue),
       runtime_(runtime),
-      hermesRuntime_(hermesRuntime) {}
+      targetDelegate_(
+          std::shared_ptr<HermesRuntime>(runtime_, &hermesRuntime),
+          std::move(jsQueue)) {}
 
 std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate>
 HermesExecutor::createAgentDelegate(
@@ -265,28 +265,11 @@ HermesExecutor::createAgentDelegate(
         previouslyExportedState,
     const jsinspector_modern::ExecutionContextDescription&
         executionContextDescription) {
-  std::shared_ptr<HermesRuntime> hermesRuntimeShared(runtime_, &hermesRuntime_);
-  return std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate>(
-      new jsinspector_modern::HermesRuntimeAgentDelegate(
-          frontendChannel,
-          sessionState,
-          std::move(previouslyExportedState),
-          executionContextDescription,
-          hermesRuntimeShared,
-          [jsQueueWeak = std::weak_ptr(jsQueue_),
-           runtimeWeak = std::weak_ptr(runtime_)](auto fn) {
-            auto jsQueue = jsQueueWeak.lock();
-            if (!jsQueue) {
-              return;
-            }
-            jsQueue->runOnQueue([runtimeWeak, fn]() {
-              auto runtime = runtimeWeak.lock();
-              if (!runtime) {
-                return;
-              }
-              fn(*runtime);
-            });
-          }));
+  return targetDelegate_.createAgentDelegate(
+      std::move(frontendChannel),
+      sessionState,
+      std::move(previouslyExportedState),
+      executionContextDescription);
 }
 
 } // namespace facebook::react
