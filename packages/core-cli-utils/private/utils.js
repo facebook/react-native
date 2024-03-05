@@ -24,6 +24,9 @@ export function task(label: string, action: Task['action']): Task {
 export const isWindows = os.platform() === 'win32';
 export const isMacOS = os.platform() === 'darwin';
 
+export const toPascalCase = (label: string): string =>
+  label.length === 0 ? '' : label[0].toUpperCase() + label.slice(1);
+
 type PathCheckResult = {
   found: boolean,
   dep: string,
