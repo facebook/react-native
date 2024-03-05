@@ -11,44 +11,11 @@
 #include <cxxreact/ErrorUtils.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/debug/SystraceSection.h>
+#include <react/utils/OnScopeExit.h>
 #include <utility>
 #include "ErrorUtils.h"
 
 namespace facebook::react {
-
-namespace {
-/**
- * This is partially equivalent to the "Perform a microtask checkpoint" step in
- * the Web event loop. See
- * https://html.spec.whatwg.org/multipage/webappapis.html#perform-a-microtask-checkpoint.
- *
- * Iterates on \c drainMicrotasks until it completes or hits the retries bound.
- */
-void executeMicrotasks(jsi::Runtime& runtime) {
-  SystraceSection s("RuntimeScheduler::executeMicrotasks");
-
-  uint8_t retries = 0;
-  // A heuristic number to guard infinite or absurd numbers of retries.
-  const static unsigned int kRetriesBound = 255;
-
-  while (retries < kRetriesBound) {
-    try {
-      // The default behavior of \c drainMicrotasks is unbounded execution.
-      // We may want to make it bounded in the future.
-      if (runtime.drainMicrotasks()) {
-        break;
-      }
-    } catch (jsi::JSError& error) {
-      handleJSError(runtime, error, true);
-    }
-    retries++;
-  }
-
-  if (retries == kRetriesBound) {
-    throw std::runtime_error("Hits microtasks retries bound.");
-  }
-}
-} // namespace
 
 #pragma mark - Public
 
@@ -298,7 +265,7 @@ void RuntimeScheduler_Modern::executeTask(
 
   if (ReactNativeFeatureFlags::enableMicrotasks()) {
     // "Perform a microtask checkpoint" step.
-    executeMicrotasks(runtime);
+    performMicrotaskCheckpoint(runtime);
   }
 
   if (ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop()) {
@@ -336,6 +303,46 @@ void RuntimeScheduler_Modern::executeMacrotask(
     // If the task returned a continuation callback, we re-assign it to the task
     // and keep the task in the queue.
     task->callback = result.getObject(runtime).getFunction(runtime);
+  }
+}
+
+/**
+ * This is partially equivalent to the "Perform a microtask checkpoint" step in
+ * the Web event loop. See
+ * https://html.spec.whatwg.org/multipage/webappapis.html#perform-a-microtask-checkpoint.
+ *
+ * Iterates on \c drainMicrotasks until it completes or hits the retries bound.
+ */
+void RuntimeScheduler_Modern::performMicrotaskCheckpoint(
+    jsi::Runtime& runtime) {
+  SystraceSection s("RuntimeScheduler::performMicrotaskCheckpoint");
+
+  if (performingMicrotaskCheckpoint_) {
+    return;
+  }
+
+  performingMicrotaskCheckpoint_ = true;
+  OnScopeExit restoreFlag([&]() { performingMicrotaskCheckpoint_ = false; });
+
+  uint8_t retries = 0;
+  // A heuristic number to guard infinite or absurd numbers of retries.
+  const static unsigned int kRetriesBound = 255;
+
+  while (retries < kRetriesBound) {
+    try {
+      // The default behavior of \c drainMicrotasks is unbounded execution.
+      // We may want to make it bounded in the future.
+      if (runtime.drainMicrotasks()) {
+        break;
+      }
+    } catch (jsi::JSError& error) {
+      handleJSError(runtime, error, true);
+    }
+    retries++;
+  }
+
+  if (retries == kRetriesBound) {
+    throw std::runtime_error("Hits microtasks retries bound.");
   }
 }
 

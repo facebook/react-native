@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <stdio.h>
 #include <cstdint>
+#include <cstdio>
 #include <vector>
 
 #include <yoga/Yoga.h>
@@ -34,7 +34,7 @@ class YG_EXPORT Node : public ::YGNode {
   Node();
   explicit Node(const Config* config);
 
-  Node(Node&&);
+  Node(Node&& node) noexcept;
 
   // Does not expose true value semantics, as children are not cloned eagerly.
   // Should we remove this?
@@ -65,7 +65,11 @@ class YG_EXPORT Node : public ::YGNode {
     return measureFunc_ != nullptr;
   }
 
-  YGSize measure(float, MeasureMode, float, MeasureMode);
+  YGSize measure(
+      float width,
+      MeasureMode widthMode,
+      float height,
+      MeasureMode heightMode);
 
   bool hasBaselineFunc() const noexcept {
     return baselineFunc_ != nullptr;
@@ -73,9 +77,9 @@ class YG_EXPORT Node : public ::YGNode {
 
   float baseline(float width, float height) const;
 
-  float dimensionWithMargin(const FlexDirection axis, const float widthSize);
+  float dimensionWithMargin(FlexDirection axis, float widthSize);
 
-  bool isLayoutDimensionDefined(const FlexDirection axis);
+  bool isLayoutDimensionDefined(FlexDirection axis);
 
   /**
    * Whether the node has a "definite length" along the given axis.
@@ -214,7 +218,7 @@ class YG_EXPORT Node : public ::YGNode {
 
   void setDirty(bool isDirty);
   void setLayoutLastOwnerDirection(Direction direction);
-  void setLayoutComputedFlexBasis(const FloatOptional computedFlexBasis);
+  void setLayoutComputedFlexBasis(FloatOptional computedFlexBasis);
   void setLayoutComputedFlexBasisGeneration(
       uint32_t computedFlexBasisGeneration);
   void setLayoutMeasuredDimension(float measuredDimension, Dimension dimension);
@@ -226,15 +230,15 @@ class YG_EXPORT Node : public ::YGNode {
   void setLayoutPadding(float padding, PhysicalEdge edge);
   void setLayoutPosition(float position, PhysicalEdge edge);
   void setPosition(
-      const Direction direction,
-      const float mainSize,
-      const float crossSize,
-      const float ownerWidth);
+      Direction direction,
+      float mainSize,
+      float crossSize,
+      float ownerWidth);
 
   // Other methods
   Style::Length resolveFlexBasisPtr() const;
   void resolveDimension();
-  Direction resolveDirection(const Direction ownerDirection);
+  Direction resolveDirection(Direction ownerDirection);
   void clearChildren();
   /// Replaces the occurrences of oldChild with newChild
   void replaceChild(Node* oldChild, Node* newChild);
@@ -253,12 +257,12 @@ class YG_EXPORT Node : public ::YGNode {
 
  private:
   // Used to allow resetting the node
-  Node& operator=(Node&&) = default;
+  Node& operator=(Node&&) noexcept = default;
 
   float relativePosition(
       FlexDirection axis,
       Direction direction,
-      const float axisSize) const;
+      float axisSize) const;
 
   void useWebDefaults() {
     style_.setFlexDirection(FlexDirection::Row);

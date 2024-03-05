@@ -151,9 +151,8 @@ export default class ReadOnlyElement extends ReadOnlyNode {
     const node = getShadowNode(this);
 
     if (node != null) {
-      const scrollPosition = nullthrows(getFabricUIManager()).getScrollPosition(
-        node,
-      );
+      const scrollPosition =
+        nullthrows(getFabricUIManager()).getScrollPosition(node);
       if (scrollPosition != null) {
         return scrollPosition[0];
       }
@@ -166,9 +165,8 @@ export default class ReadOnlyElement extends ReadOnlyNode {
     const node = getShadowNode(this);
 
     if (node != null) {
-      const scrollPosition = nullthrows(getFabricUIManager()).getScrollPosition(
-        node,
-      );
+      const scrollPosition =
+        nullthrows(getFabricUIManager()).getScrollPosition(node);
       if (scrollPosition != null) {
         return scrollPosition[1];
       }

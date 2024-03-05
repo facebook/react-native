@@ -91,6 +91,8 @@ enum class BorderCurve : uint8_t { Circular, Continuous };
 
 enum class BorderStyle : uint8_t { Solid, Dotted, Dashed };
 
+enum class Cursor : uint8_t { Auto, Pointer };
+
 enum class LayoutConformance : uint8_t { Undefined, Classic, Strict };
 
 template <typename T>

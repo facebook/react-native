@@ -178,6 +178,9 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
 
   void updateRendering();
 
+  bool performingMicrotaskCheckpoint_{false};
+  void performMicrotaskCheckpoint(jsi::Runtime& runtime);
+
   /*
    * Returns a time point representing the current point in time. May be called
    * from multiple threads.

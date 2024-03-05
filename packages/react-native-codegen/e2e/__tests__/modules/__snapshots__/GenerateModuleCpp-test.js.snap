@@ -643,7 +643,7 @@ static jsi::Value __hostFunction_NativeSampleTurboModuleNullableAndOptionalCxxSp
 static jsi::Value __hostFunction_NativeSampleTurboModuleNullableAndOptionalCxxSpecJSI_getObjectShape(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   return static_cast<NativeSampleTurboModuleNullableAndOptionalCxxSpecJSI *>(&turboModule)->getObjectShape(
     rt,
-    count <= 0 || args[0].isNull() || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asObject(rt))
+    count <= 0 || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asObject(rt))
   );
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleNullableAndOptionalCxxSpecJSI_getAlias(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
@@ -714,70 +714,70 @@ static jsi::Value __hostFunction_NativeSampleTurboModuleOptionalCxxSpecJSI_voidF
 static jsi::Value __hostFunction_NativeSampleTurboModuleOptionalCxxSpecJSI_getBool(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   return static_cast<NativeSampleTurboModuleOptionalCxxSpecJSI *>(&turboModule)->getBool(
     rt,
-    count <= 0 || args[0].isNull() || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asBool())
+    count <= 0 || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asBool())
   );
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleOptionalCxxSpecJSI_getNumber(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   return static_cast<NativeSampleTurboModuleOptionalCxxSpecJSI *>(&turboModule)->getNumber(
     rt,
-    count <= 0 || args[0].isNull() || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asNumber())
+    count <= 0 || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asNumber())
   );
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleOptionalCxxSpecJSI_getString(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   return static_cast<NativeSampleTurboModuleOptionalCxxSpecJSI *>(&turboModule)->getString(
     rt,
-    count <= 0 || args[0].isNull() || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asString(rt))
+    count <= 0 || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asString(rt))
   );
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleOptionalCxxSpecJSI_getArray(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   return static_cast<NativeSampleTurboModuleOptionalCxxSpecJSI *>(&turboModule)->getArray(
     rt,
-    count <= 0 || args[0].isNull() || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asObject(rt).asArray(rt))
+    count <= 0 || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asObject(rt).asArray(rt))
   );
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleOptionalCxxSpecJSI_getObject(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   return static_cast<NativeSampleTurboModuleOptionalCxxSpecJSI *>(&turboModule)->getObject(
     rt,
-    count <= 0 || args[0].isNull() || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asObject(rt))
+    count <= 0 || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asObject(rt))
   );
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleOptionalCxxSpecJSI_getObjectShape(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   return static_cast<NativeSampleTurboModuleOptionalCxxSpecJSI *>(&turboModule)->getObjectShape(
     rt,
-    count <= 0 || args[0].isNull() || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asObject(rt))
+    count <= 0 || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asObject(rt))
   );
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleOptionalCxxSpecJSI_getAlias(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   return static_cast<NativeSampleTurboModuleOptionalCxxSpecJSI *>(&turboModule)->getAlias(
     rt,
-    count <= 0 || args[0].isNull() || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asObject(rt))
+    count <= 0 || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asObject(rt))
   );
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleOptionalCxxSpecJSI_getRootTag(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   return static_cast<NativeSampleTurboModuleOptionalCxxSpecJSI *>(&turboModule)->getRootTag(
     rt,
-    count <= 0 || args[0].isNull() || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asNumber())
+    count <= 0 || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asNumber())
   );
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleOptionalCxxSpecJSI_getValue(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   return static_cast<NativeSampleTurboModuleOptionalCxxSpecJSI *>(&turboModule)->getValue(
     rt,
-    count <= 0 || args[0].isNull() || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asNumber()),
-    count <= 1 || args[1].isNull() || args[1].isUndefined() ? std::nullopt : std::make_optional(args[1].asString(rt)),
-    count <= 2 || args[2].isNull() || args[2].isUndefined() ? std::nullopt : std::make_optional(args[2].asObject(rt))
+    count <= 0 || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asNumber()),
+    count <= 1 || args[1].isUndefined() ? std::nullopt : std::make_optional(args[1].asString(rt)),
+    count <= 2 || args[2].isUndefined() ? std::nullopt : std::make_optional(args[2].asObject(rt))
   );
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleOptionalCxxSpecJSI_getValueWithCallback(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   static_cast<NativeSampleTurboModuleOptionalCxxSpecJSI *>(&turboModule)->getValueWithCallback(
     rt,
-    count <= 0 || args[0].isNull() || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asObject(rt).asFunction(rt))
+    count <= 0 || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asObject(rt).asFunction(rt))
   );
   return jsi::Value::undefined();
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleOptionalCxxSpecJSI_getValueWithPromise(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   return static_cast<NativeSampleTurboModuleOptionalCxxSpecJSI *>(&turboModule)->getValueWithPromise(
     rt,
-    count <= 0 || args[0].isNull() || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asBool())
+    count <= 0 || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asBool())
   );
 }
 
@@ -1464,7 +1464,7 @@ static jsi::Value __hostFunction_NativeSampleTurboModuleNullableAndOptionalCxxSp
 static jsi::Value __hostFunction_NativeSampleTurboModuleNullableAndOptionalCxxSpecJSI_getObjectShape(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   return static_cast<NativeSampleTurboModuleNullableAndOptionalCxxSpecJSI *>(&turboModule)->getObjectShape(
     rt,
-    count <= 0 || args[0].isNull() || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asObject(rt))
+    count <= 0 || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asObject(rt))
   );
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleNullableAndOptionalCxxSpecJSI_getAlias(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
@@ -1535,70 +1535,70 @@ static jsi::Value __hostFunction_NativeSampleTurboModuleOptionalCxxSpecJSI_voidF
 static jsi::Value __hostFunction_NativeSampleTurboModuleOptionalCxxSpecJSI_getBool(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   return static_cast<NativeSampleTurboModuleOptionalCxxSpecJSI *>(&turboModule)->getBool(
     rt,
-    count <= 0 || args[0].isNull() || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asBool())
+    count <= 0 || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asBool())
   );
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleOptionalCxxSpecJSI_getNumber(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   return static_cast<NativeSampleTurboModuleOptionalCxxSpecJSI *>(&turboModule)->getNumber(
     rt,
-    count <= 0 || args[0].isNull() || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asNumber())
+    count <= 0 || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asNumber())
   );
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleOptionalCxxSpecJSI_getString(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   return static_cast<NativeSampleTurboModuleOptionalCxxSpecJSI *>(&turboModule)->getString(
     rt,
-    count <= 0 || args[0].isNull() || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asString(rt))
+    count <= 0 || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asString(rt))
   );
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleOptionalCxxSpecJSI_getArray(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   return static_cast<NativeSampleTurboModuleOptionalCxxSpecJSI *>(&turboModule)->getArray(
     rt,
-    count <= 0 || args[0].isNull() || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asObject(rt).asArray(rt))
+    count <= 0 || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asObject(rt).asArray(rt))
   );
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleOptionalCxxSpecJSI_getObject(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   return static_cast<NativeSampleTurboModuleOptionalCxxSpecJSI *>(&turboModule)->getObject(
     rt,
-    count <= 0 || args[0].isNull() || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asObject(rt))
+    count <= 0 || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asObject(rt))
   );
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleOptionalCxxSpecJSI_getObjectShape(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   return static_cast<NativeSampleTurboModuleOptionalCxxSpecJSI *>(&turboModule)->getObjectShape(
     rt,
-    count <= 0 || args[0].isNull() || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asObject(rt))
+    count <= 0 || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asObject(rt))
   );
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleOptionalCxxSpecJSI_getAlias(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   return static_cast<NativeSampleTurboModuleOptionalCxxSpecJSI *>(&turboModule)->getAlias(
     rt,
-    count <= 0 || args[0].isNull() || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asObject(rt))
+    count <= 0 || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asObject(rt))
   );
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleOptionalCxxSpecJSI_getRootTag(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   return static_cast<NativeSampleTurboModuleOptionalCxxSpecJSI *>(&turboModule)->getRootTag(
     rt,
-    count <= 0 || args[0].isNull() || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asNumber())
+    count <= 0 || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asNumber())
   );
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleOptionalCxxSpecJSI_getValue(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   return static_cast<NativeSampleTurboModuleOptionalCxxSpecJSI *>(&turboModule)->getValue(
     rt,
-    count <= 0 || args[0].isNull() || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asNumber()),
-    count <= 1 || args[1].isNull() || args[1].isUndefined() ? std::nullopt : std::make_optional(args[1].asString(rt)),
-    count <= 2 || args[2].isNull() || args[2].isUndefined() ? std::nullopt : std::make_optional(args[2].asObject(rt))
+    count <= 0 || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asNumber()),
+    count <= 1 || args[1].isUndefined() ? std::nullopt : std::make_optional(args[1].asString(rt)),
+    count <= 2 || args[2].isUndefined() ? std::nullopt : std::make_optional(args[2].asObject(rt))
   );
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleOptionalCxxSpecJSI_getValueWithCallback(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   static_cast<NativeSampleTurboModuleOptionalCxxSpecJSI *>(&turboModule)->getValueWithCallback(
     rt,
-    count <= 0 || args[0].isNull() || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asObject(rt).asFunction(rt))
+    count <= 0 || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asObject(rt).asFunction(rt))
   );
   return jsi::Value::undefined();
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleOptionalCxxSpecJSI_getValueWithPromise(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   return static_cast<NativeSampleTurboModuleOptionalCxxSpecJSI *>(&turboModule)->getValueWithPromise(
     rt,
-    count <= 0 || args[0].isNull() || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asBool())
+    count <= 0 || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asBool())
   );
 }
 

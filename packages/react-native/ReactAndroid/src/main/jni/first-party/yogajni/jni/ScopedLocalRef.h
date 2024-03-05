@@ -70,12 +70,13 @@ class ScopedLocalRef {
   /**
    * Move construction is allowed.
    */
-  ScopedLocalRef(ScopedLocalRef&& s) : mEnv(s.mEnv), mLocalRef(s.release()) {}
+  ScopedLocalRef(ScopedLocalRef&& s) noexcept
+      : mEnv(s.mEnv), mLocalRef(s.release()) {}
 
   /**
    * Move assignment is allowed.
    */
-  ScopedLocalRef& operator=(ScopedLocalRef&& s) {
+  ScopedLocalRef& operator=(ScopedLocalRef&& s) noexcept {
     reset(s.release());
     mEnv = s.mEnv;
     return *this;

@@ -379,16 +379,4 @@ export interface ImageBackgroundProps extends ImagePropsBase {
 declare class ImageBackgroundComponent extends React.Component<ImageBackgroundProps> {}
 declare const ImageBackgroundBase: Constructor<NativeMethods> &
   typeof ImageBackgroundComponent;
-export class ImageBackground extends ImageBackgroundBase {
-  resizeMode: ImageResizeMode;
-  getSize(
-    uri: string,
-    success: (width: number, height: number) => void,
-    failure: (error: any) => void,
-  ): any;
-  prefetch(url: string): any;
-  abortPrefetch?(requestId: number): void;
-  queryCache?(
-    urls: string[],
-  ): Promise<{[url: string]: 'memory' | 'disk' | 'disk/memory'}>;
-}
+export class ImageBackground extends ImageBackgroundBase {}

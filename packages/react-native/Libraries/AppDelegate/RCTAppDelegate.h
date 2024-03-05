@@ -8,6 +8,7 @@
 #import <React/RCTBridgeDelegate.h>
 #import <React/RCTConvert.h>
 #import <UIKit/UIKit.h>
+#import "RCTRootViewFactory.h"
 
 @class RCTBridge;
 @protocol RCTBridgeDelegate;
@@ -58,9 +59,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// The window object, used to render the UViewControllers
 @property (nonatomic, strong, nonnull) UIWindow *window;
-@property (nonatomic, strong, nullable) RCTBridge *bridge;
+@property (nonatomic, nullable) RCTBridge *bridge;
 @property (nonatomic, strong, nullable) NSString *moduleName;
 @property (nonatomic, strong, nullable) NSDictionary *initialProps;
+@property (nonatomic, strong, nonnull) RCTRootViewFactory *rootViewFactory;
+
+@property (nonatomic, nullable) RCTSurfacePresenterBridgeAdapter *bridgeAdapter;
 
 /**
  * It creates a `RCTBridge` using a delegate and some launch options.
@@ -127,17 +131,10 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)setRootView:(UIView *)rootView toRootViewController:(UIViewController *)rootViewController;
 
-/// This method controls whether the App will use RuntimeScheduler. Only applicable in the legacy architecture.
-///
-/// @return: `YES` to use RuntimeScheduler, `NO` to use JavaScript scheduler. The default value is `YES`.
-- (BOOL)runtimeSchedulerEnabled;
-
 /**
  * The default `RCTColorSpace` for the app. It defaults to `RCTColorSpaceSRGB`.
  */
 @property (nonatomic, readonly) RCTColorSpace defaultColorSpace;
-
-@property (nonatomic, strong) RCTSurfacePresenterBridgeAdapter *bridgeAdapter;
 
 /// This method returns a map of Component Descriptors and Components classes that needs to be registered in the
 /// new renderer. The Component Descriptor is a string which represent the name used in JS to refer to the native

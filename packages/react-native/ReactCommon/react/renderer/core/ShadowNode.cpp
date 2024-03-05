@@ -42,7 +42,9 @@ Props::Shared ShadowNode::propsForClonedShadowNode(
   if (!hasBeenMounted && sourceNodeHasRawProps && props) {
     auto& castedProps = const_cast<Props&>(*props);
     castedProps.rawProps = mergeDynamicProps(
-        sourceShadowNode.getProps()->rawProps, props->rawProps);
+        sourceShadowNode.getProps()->rawProps,
+        props->rawProps,
+        NullValueStrategy::Override);
     return props;
   }
 #endif

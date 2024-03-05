@@ -140,6 +140,14 @@ BaseViewProps::BaseViewProps(
                                                        "shadowRadius",
                                                        sourceProps.shadowRadius,
                                                        {})),
+      cursor(
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.cursor
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "cursor",
+                                                       sourceProps.cursor,
+                                                       {})),
       transform(
           CoreFeatures::enablePropIteratorSetter ? sourceProps.transform
                                                  : convertRawProp(
@@ -281,6 +289,7 @@ void BaseViewProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(collapsable);
     RAW_SET_PROP_SWITCH_CASE_BASIC(removeClippedSubviews);
     RAW_SET_PROP_SWITCH_CASE_BASIC(experimental_layoutConformance);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(cursor);
     // events field
     VIEW_EVENT_CASE(PointerEnter);
     VIEW_EVENT_CASE(PointerEnterCapture);

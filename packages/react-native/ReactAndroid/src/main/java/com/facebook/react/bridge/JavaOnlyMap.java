@@ -7,6 +7,8 @@
 
 package com.facebook.react.bridge;
 
+import static androidx.core.util.Preconditions.checkNotNull;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import java.util.HashMap;
@@ -111,6 +113,11 @@ public class JavaOnlyMap implements ReadableMap, WritableMap {
   }
 
   @Override
+  public long getLong(@NonNull String name) {
+    return ((Number) checkNotNull(mBackingMap.get(name))).longValue();
+  }
+
+  @Override
   public String getString(@NonNull String name) {
     return (String) mBackingMap.get(name);
   }
@@ -188,6 +195,11 @@ public class JavaOnlyMap implements ReadableMap, WritableMap {
   @Override
   public void putInt(@NonNull String key, int value) {
     mBackingMap.put(key, new Double(value));
+  }
+
+  @Override
+  public void putLong(@NonNull String key, long value) {
+    mBackingMap.put(key, value);
   }
 
   @Override

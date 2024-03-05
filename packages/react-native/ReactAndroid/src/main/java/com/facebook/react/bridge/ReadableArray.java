@@ -26,6 +26,8 @@ public interface ReadableArray {
 
   int getInt(int index);
 
+  long getLong(int index);
+
   @NonNull
   String getString(int index);
 

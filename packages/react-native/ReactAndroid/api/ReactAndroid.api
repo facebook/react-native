@@ -322,7 +322,7 @@ public abstract class com/facebook/react/ReactPackageTurboModuleManagerDelegate 
 	protected fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Ljava/util/List;Lcom/facebook/jni/HybridData;)V
 	public fun getEagerInitModuleNames ()Ljava/util/List;
 	public fun getLegacyModule (Ljava/lang/String;)Lcom/facebook/react/bridge/NativeModule;
-	public fun getModule (Ljava/lang/String;)Lcom/facebook/react/internal/turbomodule/core/interfaces/TurboModule;
+	public fun getModule (Ljava/lang/String;)Lcom/facebook/react/turbomodule/core/interfaces/TurboModule;
 	public fun unstable_enableSyncVoidMethods ()Z
 	public fun unstable_isLegacyModuleRegistered (Ljava/lang/String;)Z
 	public fun unstable_isModuleRegistered (Ljava/lang/String;)Z
@@ -823,6 +823,7 @@ public class com/facebook/react/bridge/JavaOnlyArray : com/facebook/react/bridge
 	public fun getDouble (I)D
 	public fun getDynamic (I)Lcom/facebook/react/bridge/Dynamic;
 	public fun getInt (I)I
+	public fun getLong (I)J
 	public fun getMap (I)Lcom/facebook/react/bridge/ReadableMap;
 	public fun getString (I)Ljava/lang/String;
 	public fun getType (I)Lcom/facebook/react/bridge/ReadableType;
@@ -833,6 +834,7 @@ public class com/facebook/react/bridge/JavaOnlyArray : com/facebook/react/bridge
 	public fun pushBoolean (Z)V
 	public fun pushDouble (D)V
 	public fun pushInt (I)V
+	public fun pushLong (J)V
 	public fun pushMap (Lcom/facebook/react/bridge/ReadableMap;)V
 	public fun pushNull ()V
 	public fun pushString (Ljava/lang/String;)V
@@ -853,6 +855,7 @@ public class com/facebook/react/bridge/JavaOnlyMap : com/facebook/react/bridge/R
 	public fun getDynamic (Ljava/lang/String;)Lcom/facebook/react/bridge/Dynamic;
 	public fun getEntryIterator ()Ljava/util/Iterator;
 	public fun getInt (Ljava/lang/String;)I
+	public fun getLong (Ljava/lang/String;)J
 	public fun getMap (Ljava/lang/String;)Lcom/facebook/react/bridge/ReadableMap;
 	public fun getString (Ljava/lang/String;)Ljava/lang/String;
 	public fun getType (Ljava/lang/String;)Lcom/facebook/react/bridge/ReadableType;
@@ -866,6 +869,7 @@ public class com/facebook/react/bridge/JavaOnlyMap : com/facebook/react/bridge/R
 	public fun putBoolean (Ljava/lang/String;Z)V
 	public fun putDouble (Ljava/lang/String;D)V
 	public fun putInt (Ljava/lang/String;I)V
+	public fun putLong (Ljava/lang/String;J)V
 	public fun putMap (Ljava/lang/String;Lcom/facebook/react/bridge/ReadableMap;)V
 	public fun putNull (Ljava/lang/String;)V
 	public fun putString (Ljava/lang/String;Ljava/lang/String;)V
@@ -947,6 +951,10 @@ public class com/facebook/react/bridge/ModuleSpec {
 public abstract class com/facebook/react/bridge/NativeArray : com/facebook/react/bridge/NativeArrayInterface {
 	protected fun <init> (Lcom/facebook/jni/HybridData;)V
 	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class com/facebook/react/bridge/NativeArrayInterface {
+	public abstract fun toString ()Ljava/lang/String;
 }
 
 public abstract class com/facebook/react/bridge/NativeMap {
@@ -1322,6 +1330,7 @@ public abstract interface class com/facebook/react/bridge/ReadableArray {
 	public abstract fun getDouble (I)D
 	public abstract fun getDynamic (I)Lcom/facebook/react/bridge/Dynamic;
 	public abstract fun getInt (I)I
+	public abstract fun getLong (I)J
 	public abstract fun getMap (I)Lcom/facebook/react/bridge/ReadableMap;
 	public abstract fun getString (I)Ljava/lang/String;
 	public abstract fun getType (I)Lcom/facebook/react/bridge/ReadableType;
@@ -1337,6 +1346,7 @@ public abstract interface class com/facebook/react/bridge/ReadableMap {
 	public abstract fun getDynamic (Ljava/lang/String;)Lcom/facebook/react/bridge/Dynamic;
 	public abstract fun getEntryIterator ()Ljava/util/Iterator;
 	public abstract fun getInt (Ljava/lang/String;)I
+	public abstract fun getLong (Ljava/lang/String;)J
 	public abstract fun getMap (Ljava/lang/String;)Lcom/facebook/react/bridge/ReadableMap;
 	public abstract fun getString (Ljava/lang/String;)Ljava/lang/String;
 	public abstract fun getType (Ljava/lang/String;)Lcom/facebook/react/bridge/ReadableType;
@@ -1361,6 +1371,7 @@ public class com/facebook/react/bridge/ReadableNativeArray : com/facebook/react/
 	public fun getDynamic (I)Lcom/facebook/react/bridge/Dynamic;
 	public fun getInt (I)I
 	public static fun getJNIPassCounter ()I
+	public fun getLong (I)J
 	public synthetic fun getMap (I)Lcom/facebook/react/bridge/ReadableMap;
 	public fun getMap (I)Lcom/facebook/react/bridge/ReadableNativeMap;
 	public fun getString (I)Ljava/lang/String;
@@ -1381,6 +1392,7 @@ public class com/facebook/react/bridge/ReadableNativeMap : com/facebook/react/br
 	public fun getEntryIterator ()Ljava/util/Iterator;
 	public fun getInt (Ljava/lang/String;)I
 	public static fun getJNIPassCounter ()I
+	public fun getLong (Ljava/lang/String;)J
 	public synthetic fun getMap (Ljava/lang/String;)Lcom/facebook/react/bridge/ReadableMap;
 	public fun getMap (Ljava/lang/String;)Lcom/facebook/react/bridge/ReadableNativeMap;
 	public fun getString (Ljava/lang/String;)Ljava/lang/String;
@@ -1476,6 +1488,7 @@ public abstract interface class com/facebook/react/bridge/WritableArray : com/fa
 	public abstract fun pushBoolean (Z)V
 	public abstract fun pushDouble (D)V
 	public abstract fun pushInt (I)V
+	public abstract fun pushLong (J)V
 	public abstract fun pushMap (Lcom/facebook/react/bridge/ReadableMap;)V
 	public abstract fun pushNull ()V
 	public abstract fun pushString (Ljava/lang/String;)V
@@ -1488,6 +1501,7 @@ public abstract interface class com/facebook/react/bridge/WritableMap : com/face
 	public abstract fun putBoolean (Ljava/lang/String;Z)V
 	public abstract fun putDouble (Ljava/lang/String;D)V
 	public abstract fun putInt (Ljava/lang/String;I)V
+	public abstract fun putLong (Ljava/lang/String;J)V
 	public abstract fun putMap (Ljava/lang/String;Lcom/facebook/react/bridge/ReadableMap;)V
 	public abstract fun putNull (Ljava/lang/String;)V
 	public abstract fun putString (Ljava/lang/String;Ljava/lang/String;)V
@@ -1499,6 +1513,7 @@ public class com/facebook/react/bridge/WritableNativeArray : com/facebook/react/
 	public fun pushBoolean (Z)V
 	public fun pushDouble (D)V
 	public fun pushInt (I)V
+	public fun pushLong (J)V
 	public fun pushMap (Lcom/facebook/react/bridge/ReadableMap;)V
 	public fun pushNull ()V
 	public fun pushString (Ljava/lang/String;)V
@@ -1512,6 +1527,7 @@ public class com/facebook/react/bridge/WritableNativeMap : com/facebook/react/br
 	public fun putBoolean (Ljava/lang/String;Z)V
 	public fun putDouble (Ljava/lang/String;D)V
 	public fun putInt (Ljava/lang/String;I)V
+	public fun putLong (Ljava/lang/String;J)V
 	public fun putMap (Ljava/lang/String;Lcom/facebook/react/bridge/ReadableMap;)V
 	public fun putNull (Ljava/lang/String;)V
 	public fun putString (Ljava/lang/String;Ljava/lang/String;)V
@@ -2846,6 +2862,7 @@ public class com/facebook/react/module/model/ReactModuleInfo {
 	public fun <init> (Ljava/lang/String;Ljava/lang/String;ZZZZ)V
 	public fun <init> (Ljava/lang/String;Ljava/lang/String;ZZZZZ)V
 	public fun canOverrideExistingModule ()Z
+	public static fun classIsTurboModule (Ljava/lang/Class;)Z
 	public fun className ()Ljava/lang/String;
 	public fun hasConstants ()Z
 	public fun isCxxModule ()Z
@@ -3189,7 +3206,7 @@ public class com/facebook/react/modules/dialog/DialogModule : com/facebook/fbrea
 	public fun showAlert (Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/Callback;Lcom/facebook/react/bridge/Callback;)V
 }
 
-public class com/facebook/react/modules/fresco/FrescoModule : com/facebook/react/bridge/ReactContextBaseJavaModule, com/facebook/react/bridge/LifecycleEventListener, com/facebook/react/internal/turbomodule/core/interfaces/TurboModule, com/facebook/react/modules/common/ModuleDataCleaner$Cleanable {
+public class com/facebook/react/modules/fresco/FrescoModule : com/facebook/react/bridge/ReactContextBaseJavaModule, com/facebook/react/bridge/LifecycleEventListener, com/facebook/react/modules/common/ModuleDataCleaner$Cleanable, com/facebook/react/turbomodule/core/interfaces/TurboModule {
 	public static final field NAME Ljava/lang/String;
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Lcom/facebook/imagepipeline/core/ImagePipeline;Z)V
@@ -3430,7 +3447,7 @@ public class com/facebook/react/modules/systeminfo/AndroidInfoHelpers {
 	public static fun getServerHost (Ljava/lang/Integer;)Ljava/lang/String;
 }
 
-public class com/facebook/react/modules/systeminfo/AndroidInfoModule : com/facebook/fbreact/specs/NativePlatformConstantsAndroidSpec, com/facebook/react/internal/turbomodule/core/interfaces/TurboModule {
+public class com/facebook/react/modules/systeminfo/AndroidInfoModule : com/facebook/fbreact/specs/NativePlatformConstantsAndroidSpec, com/facebook/react/turbomodule/core/interfaces/TurboModule {
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
 	public fun getAndroidID ()Ljava/lang/String;
 	public fun getTypedExportedConstants ()Ljava/util/Map;
@@ -3562,6 +3579,43 @@ public abstract class com/facebook/react/perflogger/NativeModulePerfLogger {
 
 public abstract class com/facebook/react/runtime/BindingsInstaller {
 	public fun <init> (Lcom/facebook/jni/HybridData;)V
+}
+
+public final class com/facebook/react/runtime/BridgelessCatalystInstance : com/facebook/react/bridge/CatalystInstance {
+	public fun <init> ()V
+	public fun addBridgeIdleDebugListener (Lcom/facebook/react/bridge/NotThreadSafeBridgeIdleDebugListener;)V
+	public fun addJSIModules (Ljava/util/List;)V
+	public fun callFunction (Ljava/lang/String;Ljava/lang/String;Lcom/facebook/react/bridge/NativeArray;)V
+	public fun destroy ()V
+	public fun extendNativeModules (Lcom/facebook/react/bridge/NativeModuleRegistry;)V
+	public fun getFabricUIManager ()Lcom/facebook/react/bridge/UIManager;
+	public fun getJSCallInvokerHolder ()Lcom/facebook/react/turbomodule/core/interfaces/CallInvokerHolder;
+	public fun getJSIModule (Lcom/facebook/react/bridge/JSIModuleType;)Lcom/facebook/react/bridge/JSIModule;
+	public fun getJSModule (Ljava/lang/Class;)Lcom/facebook/react/bridge/JavaScriptModule;
+	public fun getJavaScriptContextHolder ()Lcom/facebook/react/bridge/JavaScriptContextHolder;
+	public fun getNativeMethodCallInvokerHolder ()Lcom/facebook/react/turbomodule/core/interfaces/NativeMethodCallInvokerHolder;
+	public fun getNativeModule (Ljava/lang/Class;)Lcom/facebook/react/bridge/NativeModule;
+	public fun getNativeModule (Ljava/lang/String;)Lcom/facebook/react/bridge/NativeModule;
+	public fun getNativeModules ()Ljava/util/Collection;
+	public fun getReactQueueConfiguration ()Lcom/facebook/react/bridge/queue/ReactQueueConfiguration;
+	public fun getRuntimeExecutor ()Lcom/facebook/react/bridge/RuntimeExecutor;
+	public fun getRuntimeScheduler ()Lcom/facebook/react/bridge/RuntimeScheduler;
+	public fun getSourceURL ()Ljava/lang/String;
+	public fun handleMemoryPressure (I)V
+	public fun hasNativeModule (Ljava/lang/Class;)Z
+	public fun hasRunJSBundle ()Z
+	public fun invokeCallback (ILcom/facebook/react/bridge/NativeArrayInterface;)V
+	public fun isDestroyed ()Z
+	public fun loadScriptFromAssets (Landroid/content/res/AssetManager;Ljava/lang/String;Z)V
+	public fun loadScriptFromFile (Ljava/lang/String;Ljava/lang/String;Z)V
+	public fun loadSplitBundleFromFile (Ljava/lang/String;Ljava/lang/String;)V
+	public fun registerSegment (ILjava/lang/String;)V
+	public fun removeBridgeIdleDebugListener (Lcom/facebook/react/bridge/NotThreadSafeBridgeIdleDebugListener;)V
+	public fun runJSBundle ()V
+	public fun setFabricUIManager (Lcom/facebook/react/bridge/UIManager;)V
+	public fun setSourceURLs (Ljava/lang/String;Ljava/lang/String;)V
+	public fun setTurboModuleManager (Lcom/facebook/react/bridge/JSIModule;)V
+	public fun setTurboModuleRegistry (Lcom/facebook/react/internal/turbomodule/core/interfaces/TurboModuleRegistry;)V
 }
 
 public class com/facebook/react/runtime/CoreReactPackage$$ReactModuleInfoProvider : com/facebook/react/module/model/ReactModuleInfoProvider {
@@ -3797,7 +3851,9 @@ public abstract interface class com/facebook/react/turbomodule/core/interfaces/C
 public abstract interface class com/facebook/react/turbomodule/core/interfaces/NativeMethodCallInvokerHolder {
 }
 
-public abstract interface class com/facebook/react/turbomodule/core/interfaces/TurboModule : com/facebook/react/internal/turbomodule/core/interfaces/TurboModule {
+public abstract interface class com/facebook/react/turbomodule/core/interfaces/TurboModule {
+	public abstract fun initialize ()V
+	public abstract fun invalidate ()V
 }
 
 public abstract class com/facebook/react/uimanager/BaseViewManager : com/facebook/react/uimanager/ViewManager, android/view/View$OnLayoutChangeListener, com/facebook/react/uimanager/BaseViewManagerInterface {

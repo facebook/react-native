@@ -54,15 +54,6 @@ class AsyncCallback {
     callWithFunction(priority, std::move(callImpl));
   }
 
-  /// Invoke the function write-away as if it was a synchronous function
-  /// without any synchronization or delegating to JS context.
-  /// @note Caller is responsible for calling this from within JS context.
-  void unsafeCallSync(Args... args) const noexcept {
-    if (callback_) {
-      (*callback_)(std::forward<Args>(args)...);
-    }
-  }
-
  private:
   friend Bridging<AsyncCallback>;
 
@@ -110,6 +101,9 @@ class AsyncCallback {
   }
 };
 
+// You must ensure that when invoking this you're located on the JS thread, or
+// have exclusive control of the JS VM context. If you cannot ensure this, use
+// AsyncCallback instead.
 template <typename R, typename... Args>
 class SyncCallback<R(Args...)> {
  public:
@@ -122,9 +116,19 @@ class SyncCallback<R(Args...)> {
             rt,
             std::move(jsInvoker))) {}
 
-  // Disallow moving to prevent function from get called on another thread.
-  SyncCallback(SyncCallback&&) = delete;
-  SyncCallback& operator=(SyncCallback&&) = delete;
+  // Disallow copying, as we can no longer safely destroy the callback
+  // from the destructor if there's multiple copies
+  SyncCallback(const SyncCallback&) = delete;
+  SyncCallback& operator=(const SyncCallback&) = delete;
+
+  // Allow move
+  SyncCallback(SyncCallback&& other) noexcept
+      : wrapper_(std::move(other.wrapper_)) {}
+
+  SyncCallback& operator=(SyncCallback&& other) noexcept {
+    wrapper_ = std::move(other.wrapper_);
+    return *this;
+  }
 
   ~SyncCallback() {
     if (auto wrapper = wrapper_.lock()) {

@@ -62,7 +62,7 @@ class ScopedGlobalRef {
    *
    * @param globalRef the global reference to wrap. Can be NULL.
    */
-  ScopedGlobalRef(T globalRef) : mGlobalRef(globalRef) {}
+  explicit ScopedGlobalRef(T globalRef) : mGlobalRef(globalRef) {}
 
   /**
    * Equivalent to ScopedGlobalRef(NULL)
@@ -72,12 +72,12 @@ class ScopedGlobalRef {
   /**
    * Move construction is allowed.
    */
-  ScopedGlobalRef(ScopedGlobalRef&& s) : mGlobalRef(s.release()) {}
+  ScopedGlobalRef(ScopedGlobalRef&& s) noexcept : mGlobalRef(s.release()) {}
 
   /**
    * Move assignment is allowed.
    */
-  ScopedGlobalRef& operator=(ScopedGlobalRef&& s) {
+  ScopedGlobalRef& operator=(ScopedGlobalRef&& s) noexcept {
     reset(s.release());
     return *this;
   }

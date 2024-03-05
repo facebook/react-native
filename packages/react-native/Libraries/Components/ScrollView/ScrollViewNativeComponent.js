@@ -60,6 +60,7 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
           sendMomentumEvents: true,
           borderRadius: true,
           nestedScrollEnabled: true,
+          scrollEventThrottle: true,
           borderStyle: true,
           borderRightColor: {
             process: require('../../StyleSheet/processColor').default,
@@ -131,6 +132,7 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
           },
           contentInsetAdjustmentBehavior: true,
           decelerationRate: true,
+          endDraggingSensitivityMultiplier: true,
           directionalLockEnabled: true,
           disableIntervalMomentum: true,
           indicatorStyle: true,
