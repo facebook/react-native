@@ -59,7 +59,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
 
   #experiments: Experiments;
 
-  // Device message middleware allowing implementers to handle unsupported CDP messages.
+  // custom message handler factory allowing implementers to handle unsupported CDP messages.
   #customMessageHandler: ?CreateCustomMessageHandlerFn;
 
   constructor(
