@@ -11,6 +11,7 @@
 
 #include <folly/executors/QueuedImmediateExecutor.h>
 #include <hermes/hermes.h>
+#include <hermes/inspector-modern/chrome/HermesRuntimeTargetDelegate.h>
 #include <jsi/jsi.h>
 
 #include <memory>
@@ -39,6 +40,7 @@ class JsiIntegrationTestHermesEngineAdapter : public RuntimeTargetDelegate {
  private:
   std::shared_ptr<facebook::hermes::HermesRuntime> runtime_;
   folly::Executor& jsExecutor_;
+  HermesRuntimeTargetDelegate targetDelegate_;
 };
 
 } // namespace facebook::react::jsinspector_modern

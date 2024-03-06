@@ -7,7 +7,7 @@
 
 #include "HermesInstance.h"
 
-#include <hermes/inspector-modern/chrome/HermesRuntimeAgentDelegate.h>
+#include <hermes/inspector-modern/chrome/HermesRuntimeTargetDelegate.h>
 #include <jsi/jsilib.h>
 #include <jsinspector-modern/InspectorFlags.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
@@ -98,7 +98,7 @@ class HermesJSRuntime : public JSRuntime {
       std::unique_ptr<HermesRuntime> runtime,
       std::shared_ptr<MessageQueueThread> msgQueueThread)
       : runtime_(std::move(runtime)),
-        msgQueueThread_(std::move(msgQueueThread)) {}
+        targetDelegate_(runtime_, std::move(msgQueueThread)) {}
 
   jsi::Runtime& getRuntime() noexcept override {
     return *runtime_;
@@ -111,32 +111,16 @@ class HermesJSRuntime : public JSRuntime {
           previouslyExportedState,
       const jsinspector_modern::ExecutionContextDescription&
           executionContextDescription) override {
-    return std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate>(
-        new jsinspector_modern::HermesRuntimeAgentDelegate(
-            frontendChannel,
-            sessionState,
-            std::move(previouslyExportedState),
-            executionContextDescription,
-            runtime_,
-            [msgQueueThreadWeak = std::weak_ptr(msgQueueThread_),
-             runtimeWeak = std::weak_ptr(runtime_)](auto fn) {
-              auto msgQueueThread = msgQueueThreadWeak.lock();
-              if (!msgQueueThread) {
-                return;
-              }
-              msgQueueThread->runOnQueue([runtimeWeak, fn]() {
-                auto runtime = runtimeWeak.lock();
-                if (!runtime) {
-                  return;
-                }
-                fn(*runtime);
-              });
-            }));
+    return targetDelegate_.createAgentDelegate(
+        std::move(frontendChannel),
+        sessionState,
+        std::move(previouslyExportedState),
+        executionContextDescription);
   }
 
  private:
   std::shared_ptr<HermesRuntime> runtime_;
-  std::shared_ptr<MessageQueueThread> msgQueueThread_;
+  jsinspector_modern::HermesRuntimeTargetDelegate targetDelegate_;
 };
 
 std::unique_ptr<JSRuntime> HermesInstance::createJSRuntime(
