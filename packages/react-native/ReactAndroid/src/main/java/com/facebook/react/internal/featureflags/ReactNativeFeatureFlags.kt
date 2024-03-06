@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bdd9f28c6de15e64ce03c505a3f4f34b>>
+ * @generated SignedSource<<a3cb24f7faddd86beb617c8314c1bfed>>
  */
 
 /**
@@ -87,6 +87,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun inspectorEnableModernCDPRegistry(): Boolean = accessor.inspectorEnableModernCDPRegistry()
+
+  /**
+   * This is a temporary flag to disable part of the mount hooks pipeline to investigate a crash.
+   */
+  @JvmStatic
+  public fun skipMountHookNotifications(): Boolean = accessor.skipMountHookNotifications()
 
   /**
    * When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.

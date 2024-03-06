@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f7d54fe8d458d80359a8d6e0e5816b1b>>
+ * @generated SignedSource<<6c1e6b6a51cd6fdddae40d3b61ae2b36>>
  */
 
 /**
@@ -209,6 +209,24 @@ bool ReactNativeFeatureFlagsAccessor::inspectorEnableModernCDPRegistry() {
   return flagValue.value();
 }
 
+bool ReactNativeFeatureFlagsAccessor::skipMountHookNotifications() {
+  auto flagValue = skipMountHookNotifications_.load();
+
+  if (!flagValue.has_value()) {
+    // This block is not exclusive but it is not necessary.
+    // If multiple threads try to initialize the feature flag, we would only
+    // be accessing the provider multiple times but the end state of this
+    // instance and the returned flag value would be the same.
+
+    markFlagAsAccessed(10, "skipMountHookNotifications");
+
+    flagValue = currentProvider_->skipMountHookNotifications();
+    skipMountHookNotifications_ = flagValue;
+  }
+
+  return flagValue.value();
+}
+
 bool ReactNativeFeatureFlagsAccessor::useModernRuntimeScheduler() {
   auto flagValue = useModernRuntimeScheduler_.load();
 
@@ -218,7 +236,7 @@ bool ReactNativeFeatureFlagsAccessor::useModernRuntimeScheduler() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(10, "useModernRuntimeScheduler");
+    markFlagAsAccessed(11, "useModernRuntimeScheduler");
 
     flagValue = currentProvider_->useModernRuntimeScheduler();
     useModernRuntimeScheduler_ = flagValue;

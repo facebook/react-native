@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<393c6cf93399cfe0b0533927877531d5>>
+ * @generated SignedSource<<d697a8ac9c347c63a5fd592bccbfb8b5>>
  */
 
 /**
@@ -99,6 +99,12 @@ class ReactNativeFeatureFlagsProviderHolder
     return method(javaProvider_);
   }
 
+  bool skipMountHookNotifications() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("skipMountHookNotifications");
+    return method(javaProvider_);
+  }
+
   bool useModernRuntimeScheduler() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useModernRuntimeScheduler");
@@ -159,6 +165,11 @@ bool JReactNativeFeatureFlagsCxxInterop::inspectorEnableModernCDPRegistry(
   return ReactNativeFeatureFlags::inspectorEnableModernCDPRegistry();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::skipMountHookNotifications(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::skipMountHookNotifications();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::useModernRuntimeScheduler(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::useModernRuntimeScheduler();
@@ -211,6 +222,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "inspectorEnableModernCDPRegistry",
         JReactNativeFeatureFlagsCxxInterop::inspectorEnableModernCDPRegistry),
+      makeNativeMethod(
+        "skipMountHookNotifications",
+        JReactNativeFeatureFlagsCxxInterop::skipMountHookNotifications),
       makeNativeMethod(
         "useModernRuntimeScheduler",
         JReactNativeFeatureFlagsCxxInterop::useModernRuntimeScheduler),

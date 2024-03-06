@@ -77,6 +77,11 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Flag determining if the modern CDP backend should be enabled. This flag is global and should not be changed across React Host lifetimes.',
     },
+    skipMountHookNotifications: {
+      defaultValue: false,
+      description:
+        'This is a temporary flag to disable part of the mount hooks pipeline to investigate a crash.',
+    },
     useModernRuntimeScheduler: {
       defaultValue: false,
       description:

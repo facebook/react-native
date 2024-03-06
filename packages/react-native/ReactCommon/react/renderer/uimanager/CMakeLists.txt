@@ -24,6 +24,7 @@ target_link_libraries(react_render_uimanager
         folly_runtime
         jsi
         react_debug
+        react_featureflags
         react_render_componentregistry
         react_render_core
         react_render_debug

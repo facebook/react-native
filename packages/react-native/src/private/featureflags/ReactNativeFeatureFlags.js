@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<aade6c478e09fb1f92319c3f46adaf13>>
+ * @generated SignedSource<<5d1eca67ace8cccc336a6c6f65b40c99>>
  * @flow strict-local
  */
 
@@ -50,6 +50,7 @@ export type ReactNativeFeatureFlags = {
   enableSpannableBuildingUnification: Getter<boolean>,
   inspectorEnableCxxInspectorPackagerConnection: Getter<boolean>,
   inspectorEnableModernCDPRegistry: Getter<boolean>,
+  skipMountHookNotifications: Getter<boolean>,
   useModernRuntimeScheduler: Getter<boolean>,
 }
 
@@ -133,6 +134,10 @@ export const inspectorEnableCxxInspectorPackagerConnection: Getter<boolean> = cr
  * Flag determining if the modern CDP backend should be enabled. This flag is global and should not be changed across React Host lifetimes.
  */
 export const inspectorEnableModernCDPRegistry: Getter<boolean> = createNativeFlagGetter('inspectorEnableModernCDPRegistry', false);
+/**
+ * This is a temporary flag to disable part of the mount hooks pipeline to investigate a crash.
+ */
+export const skipMountHookNotifications: Getter<boolean> = createNativeFlagGetter('skipMountHookNotifications', false);
 /**
  * When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.
  */
