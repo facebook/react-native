@@ -22,17 +22,11 @@ namespace facebook::react::jsinspector_modern {
  * An engine adapter for JsiIntegrationTest that uses Hermes (and Hermes's
  * CDP support).
  */
-class JsiIntegrationTestHermesEngineAdapter : public RuntimeTargetDelegate {
+class JsiIntegrationTestHermesEngineAdapter {
  public:
   explicit JsiIntegrationTestHermesEngineAdapter(folly::Executor& jsExecutor);
 
-  virtual std::unique_ptr<RuntimeAgentDelegate> createAgentDelegate(
-      FrontendChannel frontendChannel,
-      SessionState& sessionState,
-      std::unique_ptr<RuntimeAgentDelegate::ExportedState>
-          previouslyExportedState,
-      const ExecutionContextDescription& executionContextDescription,
-      RuntimeExecutor runtimeExecutor) override;
+  RuntimeTargetDelegate& getRuntimeTargetDelegate();
 
   jsi::Runtime& getRuntime() const noexcept;
 
@@ -41,7 +35,7 @@ class JsiIntegrationTestHermesEngineAdapter : public RuntimeTargetDelegate {
  private:
   std::shared_ptr<facebook::hermes::HermesRuntime> runtime_;
   folly::Executor& jsExecutor_;
-  HermesRuntimeTargetDelegate targetDelegate_;
+  HermesRuntimeTargetDelegate runtimeTargetDelegate_;
 };
 
 } // namespace facebook::react::jsinspector_modern

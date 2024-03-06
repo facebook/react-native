@@ -18,20 +18,14 @@ namespace facebook::react::jsinspector_modern {
 
 JsiIntegrationTestGenericEngineAdapter::JsiIntegrationTestGenericEngineAdapter(
     folly::Executor& jsExecutor)
-    : runtime_{hermes::makeHermesRuntime()}, jsExecutor_{jsExecutor} {}
+    : runtime_{hermes::makeHermesRuntime()},
+      jsExecutor_{jsExecutor},
+      runtimeTargetDelegate_{
+          "Generic engine (" + runtime_->description() + ")"} {}
 
-std::unique_ptr<RuntimeAgentDelegate>
-JsiIntegrationTestGenericEngineAdapter::createAgentDelegate(
-    FrontendChannel frontendChannel,
-    SessionState& sessionState,
-    std::unique_ptr<RuntimeAgentDelegate::ExportedState>,
-    const ExecutionContextDescription& /*executionContextDescription*/,
-    RuntimeExecutor /*runtimeExecutor*/) {
-  return std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate>(
-      new FallbackRuntimeAgentDelegate(
-          frontendChannel,
-          sessionState,
-          "Generic engine (" + runtime_->description() + ")"));
+RuntimeTargetDelegate&
+JsiIntegrationTestGenericEngineAdapter::getRuntimeTargetDelegate() {
+  return runtimeTargetDelegate_;
 }
 
 jsi::Runtime& JsiIntegrationTestGenericEngineAdapter::getRuntime()

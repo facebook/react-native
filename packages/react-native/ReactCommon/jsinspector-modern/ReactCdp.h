@@ -8,7 +8,7 @@
 #pragma once
 
 #include <jsinspector-modern/ExecutionContext.h>
-#include <jsinspector-modern/FallbackRuntimeAgentDelegate.h>
+#include <jsinspector-modern/FallbackRuntimeTargetDelegate.h>
 #include <jsinspector-modern/HostTarget.h>
 #include <jsinspector-modern/InstanceTarget.h>
 #include <jsinspector-modern/RuntimeTarget.h>

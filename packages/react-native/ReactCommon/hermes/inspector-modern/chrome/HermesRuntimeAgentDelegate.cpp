@@ -14,6 +14,9 @@
 #include <hermes/inspector/RuntimeAdapter.h>
 #include <hermes/inspector/chrome/CDPHandler.h>
 #else // HERMES_ENABLE_DEBUGGER
+// TODO(moti): FallbackRuntimeAgentDelegate should be private. We should fall
+// back at the *TargetDelegate* level, in HermesRuntimeTargetDelegate, rather
+// than within HermesRuntimeAgentDelegate.
 #include <jsinspector-modern/FallbackRuntimeAgentDelegate.h>
 #endif // HERMES_ENABLE_DEBUGGER
 
