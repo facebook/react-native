@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<59573653a5f37505d9a52ac76a9dbcff>>
+ * @generated SignedSource<<cc7c7aa6ac71f94f8dd8fc8cc0c18308>>
  */
 
 /**
@@ -43,6 +43,10 @@ bool ReactNativeFeatureFlags::enableFixForClippedSubviewsCrash() {
 
 bool ReactNativeFeatureFlags::enableMicrotasks() {
   return getAccessor().enableMicrotasks();
+}
+
+bool ReactNativeFeatureFlags::enableMountHooksAndroid() {
+  return getAccessor().enableMountHooksAndroid();
 }
 
 bool ReactNativeFeatureFlags::enableSpannableBuildingUnification() {

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5b40c18d94331e9ec3fdd1a8814b1292>>
+ * @generated SignedSource<<393c6cf93399cfe0b0533927877531d5>>
  */
 
 /**
@@ -75,6 +75,12 @@ class ReactNativeFeatureFlagsProviderHolder
     return method(javaProvider_);
   }
 
+  bool enableMountHooksAndroid() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableMountHooksAndroid");
+    return method(javaProvider_);
+  }
+
   bool enableSpannableBuildingUnification() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableSpannableBuildingUnification");
@@ -133,6 +139,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableMicrotasks(
   return ReactNativeFeatureFlags::enableMicrotasks();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableMountHooksAndroid(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableMountHooksAndroid();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableSpannableBuildingUnification(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableSpannableBuildingUnification();
@@ -188,6 +199,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableMicrotasks",
         JReactNativeFeatureFlagsCxxInterop::enableMicrotasks),
+      makeNativeMethod(
+        "enableMountHooksAndroid",
+        JReactNativeFeatureFlagsCxxInterop::enableMountHooksAndroid),
       makeNativeMethod(
         "enableSpannableBuildingUnification",
         JReactNativeFeatureFlagsCxxInterop::enableSpannableBuildingUnification),

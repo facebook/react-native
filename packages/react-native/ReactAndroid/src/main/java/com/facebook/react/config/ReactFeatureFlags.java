@@ -109,9 +109,6 @@ public class ReactFeatureFlags {
    */
   public static boolean enableRemoveDeleteTreeInstruction = false;
 
-  /** Report mount operations from the host platform to notify mount hooks. */
-  public static boolean enableMountHooks = false;
-
   /** Use native view configs in bridgeless mode. */
   public static boolean useNativeViewConfigsInBridgelessMode = false;
 

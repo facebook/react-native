@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6d6fd79bdd221b3aeed0057ac756ee92>>
+ * @generated SignedSource<<bdd9f28c6de15e64ce03c505a3f4f34b>>
  */
 
 /**
@@ -63,6 +63,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableMicrotasks(): Boolean = accessor.enableMicrotasks()
+
+  /**
+   * Enables the notification of mount operations to mount hooks on Android.
+   */
+  @JvmStatic
+  public fun enableMountHooksAndroid(): Boolean = accessor.enableMountHooksAndroid()
 
   /**
    * Uses new, deduplicated logic for constructing Android Spannables from text fragments

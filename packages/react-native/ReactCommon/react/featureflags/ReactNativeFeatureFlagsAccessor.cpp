@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d7a724033028f9edc2b0f9a6714a554d>>
+ * @generated SignedSource<<f7d54fe8d458d80359a8d6e0e5816b1b>>
  */
 
 /**
@@ -137,6 +137,24 @@ bool ReactNativeFeatureFlagsAccessor::enableMicrotasks() {
   return flagValue.value();
 }
 
+bool ReactNativeFeatureFlagsAccessor::enableMountHooksAndroid() {
+  auto flagValue = enableMountHooksAndroid_.load();
+
+  if (!flagValue.has_value()) {
+    // This block is not exclusive but it is not necessary.
+    // If multiple threads try to initialize the feature flag, we would only
+    // be accessing the provider multiple times but the end state of this
+    // instance and the returned flag value would be the same.
+
+    markFlagAsAccessed(6, "enableMountHooksAndroid");
+
+    flagValue = currentProvider_->enableMountHooksAndroid();
+    enableMountHooksAndroid_ = flagValue;
+  }
+
+  return flagValue.value();
+}
+
 bool ReactNativeFeatureFlagsAccessor::enableSpannableBuildingUnification() {
   auto flagValue = enableSpannableBuildingUnification_.load();
 
@@ -146,7 +164,7 @@ bool ReactNativeFeatureFlagsAccessor::enableSpannableBuildingUnification() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(6, "enableSpannableBuildingUnification");
+    markFlagAsAccessed(7, "enableSpannableBuildingUnification");
 
     flagValue = currentProvider_->enableSpannableBuildingUnification();
     enableSpannableBuildingUnification_ = flagValue;
@@ -164,7 +182,7 @@ bool ReactNativeFeatureFlagsAccessor::inspectorEnableCxxInspectorPackagerConnect
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(7, "inspectorEnableCxxInspectorPackagerConnection");
+    markFlagAsAccessed(8, "inspectorEnableCxxInspectorPackagerConnection");
 
     flagValue = currentProvider_->inspectorEnableCxxInspectorPackagerConnection();
     inspectorEnableCxxInspectorPackagerConnection_ = flagValue;
@@ -182,7 +200,7 @@ bool ReactNativeFeatureFlagsAccessor::inspectorEnableModernCDPRegistry() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(8, "inspectorEnableModernCDPRegistry");
+    markFlagAsAccessed(9, "inspectorEnableModernCDPRegistry");
 
     flagValue = currentProvider_->inspectorEnableModernCDPRegistry();
     inspectorEnableModernCDPRegistry_ = flagValue;
@@ -200,7 +218,7 @@ bool ReactNativeFeatureFlagsAccessor::useModernRuntimeScheduler() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(9, "useModernRuntimeScheduler");
+    markFlagAsAccessed(10, "useModernRuntimeScheduler");
 
     flagValue = currentProvider_->useModernRuntimeScheduler();
     useModernRuntimeScheduler_ = flagValue;

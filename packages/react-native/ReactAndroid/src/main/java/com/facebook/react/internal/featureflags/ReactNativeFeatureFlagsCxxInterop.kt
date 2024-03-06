@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f9c16b18d93c786db2c5a90c0c4340f6>>
+ * @generated SignedSource<<244a0656beee8e018585bdd4bb4e5cd1>>
  */
 
 /**
@@ -39,6 +39,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun enableFixForClippedSubviewsCrash(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableMicrotasks(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun enableMountHooksAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableSpannableBuildingUnification(): Boolean
 
