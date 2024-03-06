@@ -126,6 +126,11 @@ val preparePrefab by
                       Pair("../ReactCommon/react/renderer/components/view/platform/android/", ""),
                   )),
               PrefabPreprocessingEntry(
+                  "rrc_text",
+                  Pair(
+                      "../ReactCommon/react/renderer/components/text/",
+                      "react/renderer/components/text/")),
+              PrefabPreprocessingEntry(
                   "rrc_textinput",
                   Pair(
                       "../ReactCommon/react/renderer/components/textinput/",
@@ -545,6 +550,7 @@ android {
             "rrc_image",
             "rrc_root",
             "rrc_view",
+            "rrc_text",
             "rrc_textinput",
             "rrc_legacyviewmanagerinterop",
             "jsi",
@@ -670,6 +676,7 @@ android {
     create("rrc_image") { headers = File(prefabHeadersDir, "rrc_image").absolutePath }
     create("rrc_root") { headers = File(prefabHeadersDir, "rrc_root").absolutePath }
     create("rrc_view") { headers = File(prefabHeadersDir, "rrc_view").absolutePath }
+    create("rrc_text") { headers = File(prefabHeadersDir, "rrc_text").absolutePath }
     create("rrc_textinput") { headers = File(prefabHeadersDir, "rrc_textinput").absolutePath }
     create("rrc_legacyviewmanagerinterop") {
       headers = File(prefabHeadersDir, "rrc_legacyviewmanagerinterop").absolutePath
