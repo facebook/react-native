@@ -6,7 +6,14 @@
  */
 
 #include "HermesRuntimeTargetDelegate.h"
+
+// If HERMES_ENABLE_DEBUGGER isn't defined, we can't access any Hermes
+// CDPHandler headers or types.
+#ifdef HERMES_ENABLE_DEBUGGER
 #include "HermesRuntimeAgentDelegate.h"
+#else
+#include <jsinspector-modern/FallbackRuntimeTargetDelegate.h>
+#endif // HERMES_ENABLE_DEBUGGER
 
 #include <utility>
 
@@ -14,7 +21,8 @@ using namespace facebook::hermes;
 
 namespace facebook::react::jsinspector_modern {
 
-class HermesRuntimeTargetDelegate::Impl : public RuntimeTargetDelegate {
+#ifdef HERMES_ENABLE_DEBUGGER
+class HermesRuntimeTargetDelegate::Impl final : public RuntimeTargetDelegate {
  public:
   explicit Impl(std::shared_ptr<HermesRuntime> hermesRuntime)
       : runtime_(std::move(hermesRuntime)) {}
@@ -40,6 +48,21 @@ class HermesRuntimeTargetDelegate::Impl : public RuntimeTargetDelegate {
  private:
   std::shared_ptr<HermesRuntime> runtime_;
 };
+
+#else
+
+/**
+ * A stub for HermesRuntimeTargetDelegate when Hermes is compiled without
+ * debugging support.
+ */
+class HermesRuntimeTargetDelegate::Impl final
+    : public FallbackRuntimeTargetDelegate {
+ public:
+  explicit Impl(std::shared_ptr<HermesRuntime> hermesRuntime)
+      : FallbackRuntimeTargetDelegate{hermesRuntime->description()} {}
+};
+
+#endif // HERMES_ENABLE_DEBUGGER
 
 HermesRuntimeTargetDelegate::HermesRuntimeTargetDelegate(
     std::shared_ptr<HermesRuntime> hermesRuntime)

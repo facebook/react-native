@@ -42,6 +42,8 @@ class HermesRuntimeTargetDelegate : public RuntimeTargetDelegate {
       RuntimeExecutor runtimeExecutor) override;
 
  private:
+  // We use the private implementation idiom to keep HERMES_ENABLE_DEBUGGER
+  // checks out of the header.
   class Impl;
 
   std::unique_ptr<Impl> impl_;

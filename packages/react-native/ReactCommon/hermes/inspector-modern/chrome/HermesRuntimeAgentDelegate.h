@@ -7,6 +7,8 @@
 
 #pragma once
 
+#ifdef HERMES_ENABLE_DEBUGGER
+
 #include <ReactCommon/RuntimeExecutor.h>
 
 #include <hermes/hermes.h>
@@ -61,11 +63,14 @@ class HermesRuntimeAgentDelegate : public RuntimeAgentDelegate {
   virtual std::unique_ptr<ExportedState> getExportedState() override;
 
  private:
-  // We use the private implementation idiom to keep HERMES_ENABLE_DEBUGGER
-  // checks out of the header.
   class Impl;
 
   const std::unique_ptr<Impl> impl_;
 };
 
 } // namespace facebook::react::jsinspector_modern
+
+#else
+#error \
+    "HERMES_ENABLE_DEBUGGER must be enabled to use HermesRuntimeAgentDelegate."
+#endif // HERMES_ENABLE_DEBUGGER
