@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4f72683fb2a832d5b77ee2cb37343526>>
+ * @generated SignedSource<<d0985b19d61af8bdf47c322b7a59e203>>
  */
 
 /**
@@ -34,6 +34,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableFixForClippedSubviewsCrash(): Boolean = false
 
   override fun enableMicrotasks(): Boolean = false
+
+  override fun enableMountHooksAndroid(): Boolean = false
 
   override fun enableSpannableBuildingUnification(): Boolean = false
 

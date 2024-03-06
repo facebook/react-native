@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c055b3ee44111eb5e3367c664befc685>>
+ * @generated SignedSource<<aade6c478e09fb1f92319c3f46adaf13>>
  * @flow strict-local
  */
 
@@ -46,6 +46,7 @@ export type ReactNativeFeatureFlags = {
   enableCustomDrawOrderFabric: Getter<boolean>,
   enableFixForClippedSubviewsCrash: Getter<boolean>,
   enableMicrotasks: Getter<boolean>,
+  enableMountHooksAndroid: Getter<boolean>,
   enableSpannableBuildingUnification: Getter<boolean>,
   inspectorEnableCxxInspectorPackagerConnection: Getter<boolean>,
   inspectorEnableModernCDPRegistry: Getter<boolean>,
@@ -116,6 +117,10 @@ export const enableFixForClippedSubviewsCrash: Getter<boolean> = createNativeFla
  * Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).
  */
 export const enableMicrotasks: Getter<boolean> = createNativeFlagGetter('enableMicrotasks', false);
+/**
+ * Enables the notification of mount operations to mount hooks on Android.
+ */
+export const enableMountHooksAndroid: Getter<boolean> = createNativeFlagGetter('enableMountHooksAndroid', false);
 /**
  * Uses new, deduplicated logic for constructing Android Spannables from text fragments
  */
