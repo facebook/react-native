@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f06d27ff4e4f35af5020d6a95aeb8343>>
+ * @generated SignedSource<<cbf10b0a7ed3d4892d53e5ae2319f4a8>>
  */
 
 /**
@@ -23,6 +23,10 @@
 #include <react/featureflags/ReactNativeFeatureFlagsProvider.h>
 #include <memory>
 
+#ifndef RN_EXPORT
+#define RN_EXPORT __attribute__((visibility("default")))
+#endif
+
 namespace facebook::react {
 
 /**
@@ -36,62 +40,62 @@ class ReactNativeFeatureFlags {
   /**
    * Common flag for testing. Do NOT modify.
    */
-  static bool commonTestFlag();
+  RN_EXPORT static bool commonTestFlag();
 
   /**
    * When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.
    */
-  static bool batchRenderingUpdatesInEventLoop();
+  RN_EXPORT static bool batchRenderingUpdatesInEventLoop();
 
   /**
    * Enables the use of a background executor to compute layout and commit updates on Fabric (this system is deprecated and should not be used).
    */
-  static bool enableBackgroundExecutor();
+  RN_EXPORT static bool enableBackgroundExecutor();
 
   /**
    * When enabled, Fabric will use customDrawOrder in ReactViewGroup (similar to old architecture).
    */
-  static bool enableCustomDrawOrderFabric();
+  RN_EXPORT static bool enableCustomDrawOrderFabric();
 
   /**
    * Attempt at fixing a crash related to subview clipping on Android. This is a kill switch for the fix
    */
-  static bool enableFixForClippedSubviewsCrash();
+  RN_EXPORT static bool enableFixForClippedSubviewsCrash();
 
   /**
    * Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).
    */
-  static bool enableMicrotasks();
+  RN_EXPORT static bool enableMicrotasks();
 
   /**
    * Enables the notification of mount operations to mount hooks on Android.
    */
-  static bool enableMountHooksAndroid();
+  RN_EXPORT static bool enableMountHooksAndroid();
 
   /**
    * Uses new, deduplicated logic for constructing Android Spannables from text fragments
    */
-  static bool enableSpannableBuildingUnification();
+  RN_EXPORT static bool enableSpannableBuildingUnification();
 
   /**
    * Flag determining if the C++ implementation of InspectorPackagerConnection should be used instead of the per-platform one. This flag is global and should not be changed across React Host lifetimes.
    */
-  static bool inspectorEnableCxxInspectorPackagerConnection();
+  RN_EXPORT static bool inspectorEnableCxxInspectorPackagerConnection();
 
   /**
    * Flag determining if the modern CDP backend should be enabled. This flag is global and should not be changed across React Host lifetimes.
    */
-  static bool inspectorEnableModernCDPRegistry();
+  RN_EXPORT static bool inspectorEnableModernCDPRegistry();
 
   /**
    * This is a temporary flag to disable part of the mount hooks pipeline to investigate a crash.
    */
-  static bool skipMountHookNotifications();
+  RN_EXPORT static bool skipMountHookNotifications();
 
   /**
    * When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.
    */
-  static bool useModernRuntimeScheduler();
+  RN_EXPORT static bool useModernRuntimeScheduler();
 
   /**
    * Overrides the feature flags with the ones provided by the given provider
@@ -111,7 +115,7 @@ class ReactNativeFeatureFlags {
    *     std::make_unique<MyReactNativeFeatureFlags>());
    * ```
    */
-  static void override(
+  RN_EXPORT static void override(
       std::unique_ptr<ReactNativeFeatureFlagsProvider> provider);
 
   /**
@@ -126,7 +130,7 @@ class ReactNativeFeatureFlags {
    * call `dangerouslyReset` after destroying the runtime and `override` again
    * before initializing the new one.
    */
-  static void dangerouslyReset();
+  RN_EXPORT static void dangerouslyReset();
 
  private:
   ReactNativeFeatureFlags() = delete;
