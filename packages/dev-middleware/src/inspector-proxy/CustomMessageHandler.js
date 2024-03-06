@@ -8,19 +8,18 @@
  * @format
  */
 
-import type {CDPRequest, CDPResponse} from './cdp-types/messages';
-import type {Page} from './types';
+import type {JSONSerializable, Page} from './types';
 
 type ExposedDeviceInfo = $ReadOnly<{
   appId: string,
   id: string,
   name: string,
-  sendMessage: (message: CDPRequest<> | CDPResponse<>) => void,
+  sendMessage: (message: JSONSerializable) => void,
 }>;
 
 type ExposedDebuggerInfo = $ReadOnly<{
   userAgent: string | null,
-  sendMessage: (message: CDPRequest<> | CDPResponse<>) => void,
+  sendMessage: (message: JSONSerializable) => void,
 }>;
 
 export type CustomMessageHandlerConnection = $ReadOnly<{
@@ -44,12 +43,12 @@ export interface CustomMessageHandler {
    * This is invoked before the message is sent to the debugger.
    * When returning true, the message is considered handled and will not be sent to the debugger.
    */
-  handleDeviceMessage(message: CDPRequest<> | CDPResponse<>): true | void;
+  handleDeviceMessage(message: JSONSerializable): true | void;
 
   /**
    * Handle a CDP message coming from the debugger.
    * This is invoked before the message is sent to the device.
    * When reeturning true, the message is considered handled and will not be sent to the device.
    */
-  handleDebuggerMessage(message: CDPRequest<> | CDPResponse<>): true | void;
+  handleDebuggerMessage(message: JSONSerializable): true | void;
 }

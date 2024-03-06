@@ -248,7 +248,13 @@ export default class Device {
             name: this.#name,
             sendMessage: message => {
               try {
-                const payload = JSON.stringify(message);
+                const payload = JSON.stringify({
+                  event: 'wrappedEvent',
+                  payload: {
+                    pageId: this.#mapToDevicePageId(pageId),
+                    wrappedEvent: JSON.stringify(message),
+                  },
+                });
                 debug('(Debugger) -> (Proxy)    (Device): ' + payload);
                 this.#deviceSocket.send(payload);
               } catch {}

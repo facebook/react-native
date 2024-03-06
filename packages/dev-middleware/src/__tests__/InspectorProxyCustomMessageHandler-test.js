@@ -76,6 +76,74 @@ describe('inspector proxy device message middleware', () => {
     }
   });
 
+  test('send message functions are passing messages to sockets', async () => {
+    const handleDebuggerMessage = jest.fn();
+    const handleDeviceMessage = jest.fn();
+    const createCustomMessageHandler = jest.fn().mockImplementation(() => ({
+      handleDebuggerMessage,
+      handleDeviceMessage,
+    }));
+
+    const {server} = await createServer({
+      logger: undefined,
+      projectRoot: '',
+      unstable_customInspectorMessageHandler: createCustomMessageHandler,
+    });
+
+    let device, debugger_;
+    try {
+      ({device, debugger_} = await createAndConnectTarget(
+        serverRefUrls(server),
+        autoCleanup.signal,
+        page,
+      ));
+
+      // Ensure the middleware was created with the send message methods
+      await until(() =>
+        expect(createCustomMessageHandler).toBeCalledWith(
+          expect.objectContaining({
+            deviceInfo: expect.objectContaining({
+              sendMessage: expect.any(Function),
+            }),
+            debuggerInfo: expect.objectContaining({
+              sendMessage: expect.any(Function),
+            }),
+          }),
+        ),
+      );
+
+      // Send a message to the device
+      createCustomMessageHandler.mock.calls[0][0].deviceInfo.sendMessage({
+        id: 1,
+      });
+      // Ensure the device received the message
+      await until(() =>
+        expect(device.wrappedEvent).toBeCalledWith({
+          event: 'wrappedEvent',
+          payload: {
+            pageId: page.id,
+            wrappedEvent: JSON.stringify({id: 1}),
+          },
+        }),
+      );
+
+      // Send a message to the debugger
+      createCustomMessageHandler.mock.calls[0][0].debuggerInfo.sendMessage({
+        id: 2,
+      });
+      // Ensure the debugger received the message
+      await until(() =>
+        expect(debugger_.handle).toBeCalledWith({
+          id: 2,
+        }),
+      );
+    } finally {
+      device?.close();
+      debugger_?.close();
+      await closeServer(server);
+    }
+  });
+
   test('device message is passed to message middleware', async () => {
     const handleDeviceMessage = jest.fn();
     const {server} = await createServer({
