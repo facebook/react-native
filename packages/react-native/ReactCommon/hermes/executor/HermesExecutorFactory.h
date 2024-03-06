@@ -62,7 +62,8 @@ class HermesExecutor : public JSIExecutor {
       std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate::ExportedState>
           previouslyExportedState,
       const jsinspector_modern::ExecutionContextDescription&
-          executionContextDescription) override;
+          executionContextDescription,
+      RuntimeExecutor runtimeExecutor) override;
 
  private:
   JSIScopedTimeoutInvoker timeoutInvoker_;

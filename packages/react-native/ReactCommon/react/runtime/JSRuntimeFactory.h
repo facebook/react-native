@@ -47,7 +47,8 @@ class JSIRuntimeHolder : public JSRuntime {
       std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate::ExportedState>
           previouslyExportedState,
       const jsinspector_modern::ExecutionContextDescription&
-          executionContextDescription) override;
+          executionContextDescription,
+      RuntimeExecutor runtimeExecutor) override;
 
   explicit JSIRuntimeHolder(std::unique_ptr<jsi::Runtime> runtime);
 

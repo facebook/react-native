@@ -7,8 +7,6 @@
 
 #include "HermesExecutorFactory.h"
 
-#include <thread>
-
 #include <cxxreact/MessageQueueThread.h>
 #include <cxxreact/SystraceSection.h>
 #include <hermes/hermes.h>
@@ -154,6 +152,8 @@ class DecoratedRuntime : public jsi::WithRuntimeDecorator<ReentrancyCheck> {
       debugToken_ = facebook::hermes::inspector_modern::chrome::enableDebugging(
           std::move(adapter), debuggerName);
     }
+#else
+    (void)jsQueue;
 #endif // HERMES_ENABLE_DEBUGGER
   }
 
@@ -253,9 +253,8 @@ HermesExecutor::HermesExecutor(
     HermesRuntime& hermesRuntime)
     : JSIExecutor(runtime, delegate, timeoutInvoker, runtimeInstaller),
       runtime_(runtime),
-      targetDelegate_(
-          std::shared_ptr<HermesRuntime>(runtime_, &hermesRuntime),
-          std::move(jsQueue)) {}
+      targetDelegate_{
+          std::shared_ptr<HermesRuntime>(runtime_, &hermesRuntime)} {}
 
 std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate>
 HermesExecutor::createAgentDelegate(
@@ -264,12 +263,14 @@ HermesExecutor::createAgentDelegate(
     std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate::ExportedState>
         previouslyExportedState,
     const jsinspector_modern::ExecutionContextDescription&
-        executionContextDescription) {
+        executionContextDescription,
+    RuntimeExecutor runtimeExecutor) {
   return targetDelegate_.createAgentDelegate(
       std::move(frontendChannel),
       sessionState,
       std::move(previouslyExportedState),
-      executionContextDescription);
+      executionContextDescription,
+      std::move(runtimeExecutor));
 }
 
 } // namespace facebook::react

@@ -94,11 +94,8 @@ class DecoratedRuntime : public jsi::RuntimeDecorator<jsi::Runtime> {
 
 class HermesJSRuntime : public JSRuntime {
  public:
-  HermesJSRuntime(
-      std::unique_ptr<HermesRuntime> runtime,
-      std::shared_ptr<MessageQueueThread> msgQueueThread)
-      : runtime_(std::move(runtime)),
-        targetDelegate_(runtime_, std::move(msgQueueThread)) {}
+  HermesJSRuntime(std::unique_ptr<HermesRuntime> runtime)
+      : runtime_(std::move(runtime)), targetDelegate_{runtime_} {}
 
   jsi::Runtime& getRuntime() noexcept override {
     return *runtime_;
@@ -110,12 +107,14 @@ class HermesJSRuntime : public JSRuntime {
       std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate::ExportedState>
           previouslyExportedState,
       const jsinspector_modern::ExecutionContextDescription&
-          executionContextDescription) override {
+          executionContextDescription,
+      RuntimeExecutor runtimeExecutor) override {
     return targetDelegate_.createAgentDelegate(
         std::move(frontendChannel),
         sessionState,
         std::move(previouslyExportedState),
-        executionContextDescription);
+        executionContextDescription,
+        std::move(runtimeExecutor));
   }
 
  private:
@@ -165,10 +164,11 @@ std::unique_ptr<JSRuntime> HermesInstance::createJSRuntime(
             std::move(hermesRuntime), msgQueueThread);
     return std::make_unique<JSIRuntimeHolder>(std::move(decoratedRuntime));
   }
+#else
+  (void)msgQueueThread;
 #endif
 
-  return std::make_unique<HermesJSRuntime>(
-      std::move(hermesRuntime), std::move(msgQueueThread));
+  return std::make_unique<HermesJSRuntime>(std::move(hermesRuntime));
 }
 
 } // namespace facebook::react

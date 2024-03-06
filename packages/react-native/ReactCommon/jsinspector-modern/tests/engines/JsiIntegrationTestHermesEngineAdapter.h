@@ -31,7 +31,8 @@ class JsiIntegrationTestHermesEngineAdapter : public RuntimeTargetDelegate {
       SessionState& sessionState,
       std::unique_ptr<RuntimeAgentDelegate::ExportedState>
           previouslyExportedState,
-      const ExecutionContextDescription& executionContextDescription) override;
+      const ExecutionContextDescription& executionContextDescription,
+      RuntimeExecutor runtimeExecutor) override;
 
   jsi::Runtime& getRuntime() const noexcept;
 

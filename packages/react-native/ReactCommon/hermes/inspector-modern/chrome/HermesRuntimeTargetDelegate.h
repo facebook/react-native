@@ -23,19 +23,10 @@ namespace facebook::react::jsinspector_modern {
 class HermesRuntimeTargetDelegate : public RuntimeTargetDelegate {
  public:
   /**
-   * Creates a HermesRuntimeTargetDelegate for the given runtime and message
-   * queue thread.
+   * Creates a HermesRuntimeTargetDelegate for the given runtime.
    */
-  HermesRuntimeTargetDelegate(
-      std::shared_ptr<hermes::HermesRuntime> hermesRuntime,
-      std::shared_ptr<MessageQueueThread> jsMessageQueueThread);
-
-  /**
-   * Creates a HermesRuntimeTargetDelegate for the given runtime and executor.
-   */
-  HermesRuntimeTargetDelegate(
-      std::shared_ptr<hermes::HermesRuntime> hermesRuntime,
-      RuntimeExecutor runtimeExecutor);
+  explicit HermesRuntimeTargetDelegate(
+      std::shared_ptr<hermes::HermesRuntime> hermesRuntime);
 
   ~HermesRuntimeTargetDelegate() override;
 
@@ -47,7 +38,8 @@ class HermesRuntimeTargetDelegate : public RuntimeTargetDelegate {
       std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate::ExportedState>
           previouslyExportedState,
       const jsinspector_modern::ExecutionContextDescription&
-          executionContextDescription) override;
+          executionContextDescription,
+      RuntimeExecutor runtimeExecutor) override;
 
  private:
   class Impl;
