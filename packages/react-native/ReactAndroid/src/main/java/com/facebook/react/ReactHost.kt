@@ -9,6 +9,7 @@ package com.facebook.react
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.queue.ReactQueueConfiguration
@@ -71,6 +72,9 @@ public interface ReactHost {
 
   /** To be called when the host activity is destroyed. */
   public fun onHostDestroy(activity: Activity?)
+
+  /** To be called when the host activity receives a result . */
+  public fun onActivityResult(activity: Activity?, requestCode: Int, resultCode: Int, data: Intent)
 
   /** To be called to create and setup an ReactSurface. */
   public fun createSurface(

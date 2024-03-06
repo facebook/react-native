@@ -139,7 +139,7 @@ public class ReactDelegate {
   public void onActivityResult(
       int requestCode, int resultCode, Intent data, boolean shouldForwardToReactInstance) {
     if (ReactFeatureFlags.enableBridgelessArchitecture) {
-      // TODO T156475655: Implement onActivityResult for Bridgeless
+      mReactHost.onActivityResult(mActivity, requestCode, resultCode, data);
     } else {
       if (getReactNativeHost().hasInstance() && shouldForwardToReactInstance) {
         getReactNativeHost()

@@ -15,6 +15,7 @@ import static java.lang.Boolean.TRUE;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -354,6 +355,19 @@ public class ReactHostImpl implements ReactHost {
     // TODO(T137233065): Disable DevSupportManager here
     if (currentActivity == activity) {
       moveToHostDestroy(getCurrentReactContext());
+    }
+  }
+
+  /** To be called when the host activity receives a result. */
+  @ThreadConfined(UI)
+  @Override
+  public void onActivityResult(@Nullable Activity activity, int requestCode, int resultCode, @Nullable Intent data) {
+    final String method = "onActivityResult(activity, requestCode, resultCode, data)";
+    log(method);
+
+    ReactContext currentContext = this.getCurrentReactContext();
+    if (currentContext != null) {
+      currentContext.onActivityResult(activity, requestCode, resultCode, data);
     }
   }
 
