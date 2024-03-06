@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4f72683fb2a832d5b77ee2cb37343526>>
+ * @generated SignedSource<<651851c7106c97b59669b5eff93934cc>>
  */
 
 /**
@@ -38,6 +38,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableSpannableBuildingUnification(): Boolean = false
 
   override fun inspectorEnableCxxInspectorPackagerConnection(): Boolean = false
+
+  override fun inspectorEnableHermesCDPAgent(): Boolean = false
 
   override fun inspectorEnableModernCDPRegistry(): Boolean = false
 

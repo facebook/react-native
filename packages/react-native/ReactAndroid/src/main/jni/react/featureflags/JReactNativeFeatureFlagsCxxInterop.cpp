@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5b40c18d94331e9ec3fdd1a8814b1292>>
+ * @generated SignedSource<<2c7012cc44b84ea9668b5ff3edacc3ff>>
  */
 
 /**
@@ -87,6 +87,12 @@ class ReactNativeFeatureFlagsProviderHolder
     return method(javaProvider_);
   }
 
+  bool inspectorEnableHermesCDPAgent() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("inspectorEnableHermesCDPAgent");
+    return method(javaProvider_);
+  }
+
   bool inspectorEnableModernCDPRegistry() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("inspectorEnableModernCDPRegistry");
@@ -143,6 +149,11 @@ bool JReactNativeFeatureFlagsCxxInterop::inspectorEnableCxxInspectorPackagerConn
   return ReactNativeFeatureFlags::inspectorEnableCxxInspectorPackagerConnection();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::inspectorEnableHermesCDPAgent(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::inspectorEnableHermesCDPAgent();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::inspectorEnableModernCDPRegistry(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::inspectorEnableModernCDPRegistry();
@@ -194,6 +205,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "inspectorEnableCxxInspectorPackagerConnection",
         JReactNativeFeatureFlagsCxxInterop::inspectorEnableCxxInspectorPackagerConnection),
+      makeNativeMethod(
+        "inspectorEnableHermesCDPAgent",
+        JReactNativeFeatureFlagsCxxInterop::inspectorEnableHermesCDPAgent),
       makeNativeMethod(
         "inspectorEnableModernCDPRegistry",
         JReactNativeFeatureFlagsCxxInterop::inspectorEnableModernCDPRegistry),

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2fa6a12c1d9b10483d8e2e23125d231e>>
+ * @generated SignedSource<<6960a406278e4dc4a9fa54156ba87dbb>>
  */
 
 /**
@@ -39,6 +39,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableMicrotasks();
   bool enableSpannableBuildingUnification();
   bool inspectorEnableCxxInspectorPackagerConnection();
+  bool inspectorEnableHermesCDPAgent();
   bool inspectorEnableModernCDPRegistry();
   bool useModernRuntimeScheduler();
 
@@ -51,7 +52,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 10> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 11> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> batchRenderingUpdatesInEventLoop_;
@@ -61,6 +62,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableMicrotasks_;
   std::atomic<std::optional<bool>> enableSpannableBuildingUnification_;
   std::atomic<std::optional<bool>> inspectorEnableCxxInspectorPackagerConnection_;
+  std::atomic<std::optional<bool>> inspectorEnableHermesCDPAgent_;
   std::atomic<std::optional<bool>> inspectorEnableModernCDPRegistry_;
   std::atomic<std::optional<bool>> useModernRuntimeScheduler_;
 };

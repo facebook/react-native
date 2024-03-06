@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5fd54183222961f5557dbe0ac111a6ec>>
+ * @generated SignedSource<<6882df78b616c5a898109434511ba6f8>>
  */
 
 /**
@@ -32,6 +32,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var enableMicrotasksCache: Boolean? = null
   private var enableSpannableBuildingUnificationCache: Boolean? = null
   private var inspectorEnableCxxInspectorPackagerConnectionCache: Boolean? = null
+  private var inspectorEnableHermesCDPAgentCache: Boolean? = null
   private var inspectorEnableModernCDPRegistryCache: Boolean? = null
   private var useModernRuntimeSchedulerCache: Boolean? = null
 
@@ -111,6 +112,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.inspectorEnableCxxInspectorPackagerConnection()
       accessedFeatureFlags.add("inspectorEnableCxxInspectorPackagerConnection")
       inspectorEnableCxxInspectorPackagerConnectionCache = cached
+    }
+    return cached
+  }
+
+  override fun inspectorEnableHermesCDPAgent(): Boolean {
+    var cached = inspectorEnableHermesCDPAgentCache
+    if (cached == null) {
+      cached = currentProvider.inspectorEnableHermesCDPAgent()
+      accessedFeatureFlags.add("inspectorEnableHermesCDPAgent")
+      inspectorEnableHermesCDPAgentCache = cached
     }
     return cached
   }

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c9ed3da29eba982bc9cbc122e077e04c>>
+ * @generated SignedSource<<48b75b37734bfa54dcbddac2f7e69605>>
  */
 
 /**
@@ -51,6 +51,8 @@ class NativeReactNativeFeatureFlags
   bool enableSpannableBuildingUnification(jsi::Runtime& runtime);
 
   bool inspectorEnableCxxInspectorPackagerConnection(jsi::Runtime& runtime);
+
+  bool inspectorEnableHermesCDPAgent(jsi::Runtime& runtime);
 
   bool inspectorEnableModernCDPRegistry(jsi::Runtime& runtime);
 

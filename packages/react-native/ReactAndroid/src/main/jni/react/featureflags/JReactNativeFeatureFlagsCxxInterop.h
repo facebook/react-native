@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<514446a9fd1351df1f7f3b307de54b56>>
+ * @generated SignedSource<<f65471fe98a6dfff31d021724adbbd85>>
  */
 
 /**
@@ -52,6 +52,9 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool inspectorEnableCxxInspectorPackagerConnection(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool inspectorEnableHermesCDPAgent(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool inspectorEnableModernCDPRegistry(
