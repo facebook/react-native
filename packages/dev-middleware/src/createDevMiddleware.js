@@ -62,7 +62,8 @@ type Options = $ReadOnly<{
   unstable_experiments?: ExperimentsConfig,
 
   /**
-   * Create a middleware for handling unsupported CDP events, per device.
+   * Create custom handler to add support for unsupported CDP events, or debuggers.
+   * This handler is instantiated per logical device and debugger pair.
    *
    * This is an unstable API with no semver guarantees.
    */
