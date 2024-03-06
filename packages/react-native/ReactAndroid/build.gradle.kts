@@ -169,7 +169,6 @@ val preparePrefab by
                       Pair(File(buildDir, "third-party-ndk/fmt/include/").absolutePath, ""),
                       Pair(File(buildDir, "third-party-ndk/folly/").absolutePath, ""),
                       Pair(File(buildDir, "third-party-ndk/glog/exported/").absolutePath, ""),
-                      Pair("../ReactCommon/butter/", "butter/"),
                       Pair("../ReactCommon/callinvoker/", ""),
                       Pair("../ReactCommon/cxxreact/", "cxxreact/"),
                       Pair("../ReactCommon/react/bridging/", "react/bridging/"),
