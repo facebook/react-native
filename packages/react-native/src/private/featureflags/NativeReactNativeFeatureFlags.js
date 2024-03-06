@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8509d5ee87efb5aa8da7efcd2085d0a2>>
+ * @generated SignedSource<<fd6c4691a532a520ba08ef0ed2ae297c>>
  * @flow strict-local
  */
 
@@ -24,15 +24,15 @@ import * as TurboModuleRegistry from '../../../Libraries/TurboModule/TurboModule
 
 export interface Spec extends TurboModule {
   +commonTestFlag?: () => boolean;
-  +enableBackgroundExecutor?: () => boolean;
-  +useModernRuntimeScheduler?: () => boolean;
-  +enableMicrotasks?: () => boolean;
   +batchRenderingUpdatesInEventLoop?: () => boolean;
-  +enableSpannableBuildingUnification?: () => boolean;
+  +enableBackgroundExecutor?: () => boolean;
   +enableCustomDrawOrderFabric?: () => boolean;
   +enableFixForClippedSubviewsCrash?: () => boolean;
+  +enableMicrotasks?: () => boolean;
+  +enableSpannableBuildingUnification?: () => boolean;
   +inspectorEnableCxxInspectorPackagerConnection?: () => boolean;
   +inspectorEnableModernCDPRegistry?: () => boolean;
+  +useModernRuntimeScheduler?: () => boolean;
 }
 
 const NativeReactNativeFeatureFlags: ?Spec = TurboModuleRegistry.get<Spec>(

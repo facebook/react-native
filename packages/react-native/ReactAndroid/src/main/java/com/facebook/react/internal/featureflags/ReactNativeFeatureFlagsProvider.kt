@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c5388e841a06044520f6c89fcca27286>>
+ * @generated SignedSource<<c4f4d28210d5437839616d49120eb921>>
  */
 
 /**
@@ -25,21 +25,21 @@ import com.facebook.proguard.annotations.DoNotStrip
 public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun commonTestFlag(): Boolean
 
-  @DoNotStrip public fun enableBackgroundExecutor(): Boolean
-
-  @DoNotStrip public fun useModernRuntimeScheduler(): Boolean
-
-  @DoNotStrip public fun enableMicrotasks(): Boolean
-
   @DoNotStrip public fun batchRenderingUpdatesInEventLoop(): Boolean
 
-  @DoNotStrip public fun enableSpannableBuildingUnification(): Boolean
+  @DoNotStrip public fun enableBackgroundExecutor(): Boolean
 
   @DoNotStrip public fun enableCustomDrawOrderFabric(): Boolean
 
   @DoNotStrip public fun enableFixForClippedSubviewsCrash(): Boolean
 
+  @DoNotStrip public fun enableMicrotasks(): Boolean
+
+  @DoNotStrip public fun enableSpannableBuildingUnification(): Boolean
+
   @DoNotStrip public fun inspectorEnableCxxInspectorPackagerConnection(): Boolean
 
   @DoNotStrip public fun inspectorEnableModernCDPRegistry(): Boolean
+
+  @DoNotStrip public fun useModernRuntimeScheduler(): Boolean
 }

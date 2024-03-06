@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c526fb1c44f00f5b032684396246e4d4>>
+ * @generated SignedSource<<6d6fd79bdd221b3aeed0057ac756ee92>>
  */
 
 /**
@@ -35,34 +35,16 @@ public object ReactNativeFeatureFlags {
   public fun commonTestFlag(): Boolean = accessor.commonTestFlag()
 
   /**
-   * Enables the use of a background executor to compute layout and commit updates on Fabric (this system is deprecated and should not be used).
-   */
-  @JvmStatic
-  public fun enableBackgroundExecutor(): Boolean = accessor.enableBackgroundExecutor()
-
-  /**
-   * When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.
-   */
-  @JvmStatic
-  public fun useModernRuntimeScheduler(): Boolean = accessor.useModernRuntimeScheduler()
-
-  /**
-   * Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).
-   */
-  @JvmStatic
-  public fun enableMicrotasks(): Boolean = accessor.enableMicrotasks()
-
-  /**
    * When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.
    */
   @JvmStatic
   public fun batchRenderingUpdatesInEventLoop(): Boolean = accessor.batchRenderingUpdatesInEventLoop()
 
   /**
-   * Uses new, deduplicated logic for constructing Android Spannables from text fragments
+   * Enables the use of a background executor to compute layout and commit updates on Fabric (this system is deprecated and should not be used).
    */
   @JvmStatic
-  public fun enableSpannableBuildingUnification(): Boolean = accessor.enableSpannableBuildingUnification()
+  public fun enableBackgroundExecutor(): Boolean = accessor.enableBackgroundExecutor()
 
   /**
    * When enabled, Fabric will use customDrawOrder in ReactViewGroup (similar to old architecture).
@@ -77,6 +59,18 @@ public object ReactNativeFeatureFlags {
   public fun enableFixForClippedSubviewsCrash(): Boolean = accessor.enableFixForClippedSubviewsCrash()
 
   /**
+   * Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).
+   */
+  @JvmStatic
+  public fun enableMicrotasks(): Boolean = accessor.enableMicrotasks()
+
+  /**
+   * Uses new, deduplicated logic for constructing Android Spannables from text fragments
+   */
+  @JvmStatic
+  public fun enableSpannableBuildingUnification(): Boolean = accessor.enableSpannableBuildingUnification()
+
+  /**
    * Flag determining if the C++ implementation of InspectorPackagerConnection should be used instead of the per-platform one. This flag is global and should not be changed across React Host lifetimes.
    */
   @JvmStatic
@@ -87,6 +81,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun inspectorEnableModernCDPRegistry(): Boolean = accessor.inspectorEnableModernCDPRegistry()
+
+  /**
+   * When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.
+   */
+  @JvmStatic
+  public fun useModernRuntimeScheduler(): Boolean = accessor.useModernRuntimeScheduler()
 
   /**
    * Overrides the feature flags with the ones provided by the given provider

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3bfae310dfd28040f4b80d1a1df8b7b3>>
+ * @generated SignedSource<<036e7f3ee4def5b955ed61c707bbc8f8>>
  */
 
 /**
@@ -39,29 +39,14 @@ class ReactNativeFeatureFlags {
   static bool commonTestFlag();
 
   /**
-   * Enables the use of a background executor to compute layout and commit updates on Fabric (this system is deprecated and should not be used).
-   */
-  static bool enableBackgroundExecutor();
-
-  /**
-   * When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.
-   */
-  static bool useModernRuntimeScheduler();
-
-  /**
-   * Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).
-   */
-  static bool enableMicrotasks();
-
-  /**
    * When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.
    */
   static bool batchRenderingUpdatesInEventLoop();
 
   /**
-   * Uses new, deduplicated logic for constructing Android Spannables from text fragments
+   * Enables the use of a background executor to compute layout and commit updates on Fabric (this system is deprecated and should not be used).
    */
-  static bool enableSpannableBuildingUnification();
+  static bool enableBackgroundExecutor();
 
   /**
    * When enabled, Fabric will use customDrawOrder in ReactViewGroup (similar to old architecture).
@@ -74,6 +59,16 @@ class ReactNativeFeatureFlags {
   static bool enableFixForClippedSubviewsCrash();
 
   /**
+   * Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).
+   */
+  static bool enableMicrotasks();
+
+  /**
+   * Uses new, deduplicated logic for constructing Android Spannables from text fragments
+   */
+  static bool enableSpannableBuildingUnification();
+
+  /**
    * Flag determining if the C++ implementation of InspectorPackagerConnection should be used instead of the per-platform one. This flag is global and should not be changed across React Host lifetimes.
    */
   static bool inspectorEnableCxxInspectorPackagerConnection();
@@ -82,6 +77,11 @@ class ReactNativeFeatureFlags {
    * Flag determining if the modern CDP backend should be enabled. This flag is global and should not be changed across React Host lifetimes.
    */
   static bool inspectorEnableModernCDPRegistry();
+
+  /**
+   * When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.
+   */
+  static bool useModernRuntimeScheduler();
 
   /**
    * Overrides the feature flags with the ones provided by the given provider

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<82f226df2b3824d03b755a042b20bec5>>
+ * @generated SignedSource<<59573653a5f37505d9a52ac76a9dbcff>>
  */
 
 /**
@@ -25,24 +25,12 @@ bool ReactNativeFeatureFlags::commonTestFlag() {
   return getAccessor().commonTestFlag();
 }
 
-bool ReactNativeFeatureFlags::enableBackgroundExecutor() {
-  return getAccessor().enableBackgroundExecutor();
-}
-
-bool ReactNativeFeatureFlags::useModernRuntimeScheduler() {
-  return getAccessor().useModernRuntimeScheduler();
-}
-
-bool ReactNativeFeatureFlags::enableMicrotasks() {
-  return getAccessor().enableMicrotasks();
-}
-
 bool ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop() {
   return getAccessor().batchRenderingUpdatesInEventLoop();
 }
 
-bool ReactNativeFeatureFlags::enableSpannableBuildingUnification() {
-  return getAccessor().enableSpannableBuildingUnification();
+bool ReactNativeFeatureFlags::enableBackgroundExecutor() {
+  return getAccessor().enableBackgroundExecutor();
 }
 
 bool ReactNativeFeatureFlags::enableCustomDrawOrderFabric() {
@@ -53,12 +41,24 @@ bool ReactNativeFeatureFlags::enableFixForClippedSubviewsCrash() {
   return getAccessor().enableFixForClippedSubviewsCrash();
 }
 
+bool ReactNativeFeatureFlags::enableMicrotasks() {
+  return getAccessor().enableMicrotasks();
+}
+
+bool ReactNativeFeatureFlags::enableSpannableBuildingUnification() {
+  return getAccessor().enableSpannableBuildingUnification();
+}
+
 bool ReactNativeFeatureFlags::inspectorEnableCxxInspectorPackagerConnection() {
   return getAccessor().inspectorEnableCxxInspectorPackagerConnection();
 }
 
 bool ReactNativeFeatureFlags::inspectorEnableModernCDPRegistry() {
   return getAccessor().inspectorEnableModernCDPRegistry();
+}
+
+bool ReactNativeFeatureFlags::useModernRuntimeScheduler() {
+  return getAccessor().useModernRuntimeScheduler();
 }
 
 void ReactNativeFeatureFlags::override(

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a860f8ca5806886a2e7b0b9a508482a1>>
+ * @generated SignedSource<<514446a9fd1351df1f7f3b307de54b56>>
  */
 
 /**
@@ -33,19 +33,10 @@ class JReactNativeFeatureFlagsCxxInterop
   static bool commonTestFlag(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
-  static bool enableBackgroundExecutor(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-
-  static bool useModernRuntimeScheduler(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-
-  static bool enableMicrotasks(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-
   static bool batchRenderingUpdatesInEventLoop(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
-  static bool enableSpannableBuildingUnification(
+  static bool enableBackgroundExecutor(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enableCustomDrawOrderFabric(
@@ -54,10 +45,19 @@ class JReactNativeFeatureFlagsCxxInterop
   static bool enableFixForClippedSubviewsCrash(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
+  static bool enableMicrotasks(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool enableSpannableBuildingUnification(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
   static bool inspectorEnableCxxInspectorPackagerConnection(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool inspectorEnableModernCDPRegistry(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool useModernRuntimeScheduler(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static void override(

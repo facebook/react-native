@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<dfbe9bcab657e4c66dd104788639448d>>
+ * @generated SignedSource<<f9c16b18d93c786db2c5a90c0c4340f6>>
  */
 
 /**
@@ -30,23 +30,23 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun commonTestFlag(): Boolean
 
-  @DoNotStrip @JvmStatic public external fun enableBackgroundExecutor(): Boolean
-
-  @DoNotStrip @JvmStatic public external fun useModernRuntimeScheduler(): Boolean
-
-  @DoNotStrip @JvmStatic public external fun enableMicrotasks(): Boolean
-
   @DoNotStrip @JvmStatic public external fun batchRenderingUpdatesInEventLoop(): Boolean
 
-  @DoNotStrip @JvmStatic public external fun enableSpannableBuildingUnification(): Boolean
+  @DoNotStrip @JvmStatic public external fun enableBackgroundExecutor(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableCustomDrawOrderFabric(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableFixForClippedSubviewsCrash(): Boolean
 
+  @DoNotStrip @JvmStatic public external fun enableMicrotasks(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun enableSpannableBuildingUnification(): Boolean
+
   @DoNotStrip @JvmStatic public external fun inspectorEnableCxxInspectorPackagerConnection(): Boolean
 
   @DoNotStrip @JvmStatic public external fun inspectorEnableModernCDPRegistry(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun useModernRuntimeScheduler(): Boolean
 
   @DoNotStrip @JvmStatic public external fun override(provider: Any)
 

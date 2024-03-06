@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<95487968b66d40e1ec53936b06084931>>
+ * @generated SignedSource<<2fa6a12c1d9b10483d8e2e23125d231e>>
  */
 
 /**
@@ -32,15 +32,15 @@ class ReactNativeFeatureFlagsAccessor {
   ReactNativeFeatureFlagsAccessor();
 
   bool commonTestFlag();
-  bool enableBackgroundExecutor();
-  bool useModernRuntimeScheduler();
-  bool enableMicrotasks();
   bool batchRenderingUpdatesInEventLoop();
-  bool enableSpannableBuildingUnification();
+  bool enableBackgroundExecutor();
   bool enableCustomDrawOrderFabric();
   bool enableFixForClippedSubviewsCrash();
+  bool enableMicrotasks();
+  bool enableSpannableBuildingUnification();
   bool inspectorEnableCxxInspectorPackagerConnection();
   bool inspectorEnableModernCDPRegistry();
+  bool useModernRuntimeScheduler();
 
   void override(std::unique_ptr<ReactNativeFeatureFlagsProvider> provider);
 
@@ -54,15 +54,15 @@ class ReactNativeFeatureFlagsAccessor {
   std::array<std::atomic<const char*>, 10> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
-  std::atomic<std::optional<bool>> enableBackgroundExecutor_;
-  std::atomic<std::optional<bool>> useModernRuntimeScheduler_;
-  std::atomic<std::optional<bool>> enableMicrotasks_;
   std::atomic<std::optional<bool>> batchRenderingUpdatesInEventLoop_;
-  std::atomic<std::optional<bool>> enableSpannableBuildingUnification_;
+  std::atomic<std::optional<bool>> enableBackgroundExecutor_;
   std::atomic<std::optional<bool>> enableCustomDrawOrderFabric_;
   std::atomic<std::optional<bool>> enableFixForClippedSubviewsCrash_;
+  std::atomic<std::optional<bool>> enableMicrotasks_;
+  std::atomic<std::optional<bool>> enableSpannableBuildingUnification_;
   std::atomic<std::optional<bool>> inspectorEnableCxxInspectorPackagerConnection_;
   std::atomic<std::optional<bool>> inspectorEnableModernCDPRegistry_;
+  std::atomic<std::optional<bool>> useModernRuntimeScheduler_;
 };
 
 } // namespace facebook::react

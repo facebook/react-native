@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4832483bb3648380f2bb9312311f579c>>
+ * @generated SignedSource<<927bc1410a5baadf3a4005e50067c4df>>
  */
 
 /**
@@ -31,23 +31,11 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool enableBackgroundExecutor() override {
-    return false;
-  }
-
-  bool useModernRuntimeScheduler() override {
-    return false;
-  }
-
-  bool enableMicrotasks() override {
-    return false;
-  }
-
   bool batchRenderingUpdatesInEventLoop() override {
     return false;
   }
 
-  bool enableSpannableBuildingUnification() override {
+  bool enableBackgroundExecutor() override {
     return false;
   }
 
@@ -59,11 +47,23 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool enableMicrotasks() override {
+    return false;
+  }
+
+  bool enableSpannableBuildingUnification() override {
+    return false;
+  }
+
   bool inspectorEnableCxxInspectorPackagerConnection() override {
     return false;
   }
 
   bool inspectorEnableModernCDPRegistry() override {
+    return false;
+  }
+
+  bool useModernRuntimeScheduler() override {
     return false;
   }
 };

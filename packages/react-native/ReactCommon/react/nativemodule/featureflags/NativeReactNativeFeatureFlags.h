@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<26be12cc19ed1a9cd2dbdab684594204>>
+ * @generated SignedSource<<c9ed3da29eba982bc9cbc122e077e04c>>
  */
 
 /**
@@ -38,23 +38,23 @@ class NativeReactNativeFeatureFlags
 
   bool commonTestFlag(jsi::Runtime& runtime);
 
-  bool enableBackgroundExecutor(jsi::Runtime& runtime);
-
-  bool useModernRuntimeScheduler(jsi::Runtime& runtime);
-
-  bool enableMicrotasks(jsi::Runtime& runtime);
-
   bool batchRenderingUpdatesInEventLoop(jsi::Runtime& runtime);
 
-  bool enableSpannableBuildingUnification(jsi::Runtime& runtime);
+  bool enableBackgroundExecutor(jsi::Runtime& runtime);
 
   bool enableCustomDrawOrderFabric(jsi::Runtime& runtime);
 
   bool enableFixForClippedSubviewsCrash(jsi::Runtime& runtime);
 
+  bool enableMicrotasks(jsi::Runtime& runtime);
+
+  bool enableSpannableBuildingUnification(jsi::Runtime& runtime);
+
   bool inspectorEnableCxxInspectorPackagerConnection(jsi::Runtime& runtime);
 
   bool inspectorEnableModernCDPRegistry(jsi::Runtime& runtime);
+
+  bool useModernRuntimeScheduler(jsi::Runtime& runtime);
 };
 
 } // namespace facebook::react
