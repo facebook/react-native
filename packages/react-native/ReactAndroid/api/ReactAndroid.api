@@ -196,6 +196,7 @@ public abstract interface class com/facebook/react/ReactHost {
 	public abstract fun getJsEngineResolutionAlgorithm ()Lcom/facebook/react/JSEngineResolutionAlgorithm;
 	public abstract fun getLifecycleState ()Lcom/facebook/react/common/LifecycleState;
 	public abstract fun getReactQueueConfiguration ()Lcom/facebook/react/bridge/queue/ReactQueueConfiguration;
+	public abstract fun onActivityResult (Landroid/app/Activity;IILandroid/content/Intent;)V
 	public abstract fun onBackPressed ()Z
 	public abstract fun onHostDestroy ()V
 	public abstract fun onHostDestroy (Landroid/app/Activity;)V
@@ -3644,6 +3645,7 @@ public class com/facebook/react/runtime/ReactHostImpl : com/facebook/react/React
 	public fun getLifecycleState ()Lcom/facebook/react/common/LifecycleState;
 	public fun getMemoryPressureRouter ()Lcom/facebook/react/MemoryPressureRouter;
 	public fun getReactQueueConfiguration ()Lcom/facebook/react/bridge/queue/ReactQueueConfiguration;
+	public fun onActivityResult (Landroid/app/Activity;IILandroid/content/Intent;)V
 	public fun onBackPressed ()Z
 	public fun onHostDestroy ()V
 	public fun onHostDestroy (Landroid/app/Activity;)V
