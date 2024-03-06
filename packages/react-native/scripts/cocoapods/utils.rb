@@ -90,7 +90,7 @@ class ReactNativePodsUtils
         installer.pods_project.targets.each do |target|
             if target.name == 'Flipper'
                 file_path = 'Pods/Flipper/xplat/Flipper/FlipperTransportTypes.h'
-                if !File.exist(file_path)
+                if !File.exist?(file_path)
                     return
                 end
 
