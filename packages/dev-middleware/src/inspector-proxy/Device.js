@@ -25,10 +25,10 @@ import type {
 
 import DeviceEventReporter from './DeviceEventReporter';
 import {
-  type DeviceMessageMiddleware,
-  type createDeviceMessageMiddleware,
-  createMiddlewareDebuggerInfo,
-} from './DeviceMessageMiddleware';
+  type CreateCustomMessageHandlerFn,
+  type CustomMessageHandler,
+  exposeDebuggerInfo,
+} from './CustomMessageHandler';
 import * as fs from 'fs';
 import fetch from 'node-fetch';
 import * as path from 'path';
@@ -103,12 +103,12 @@ export default class Device {
   #pagesPollingIntervalId: ReturnType<typeof setInterval>;
 
   // The device message middleware factory function allowing implementers to handle unsupported CDP messages.
-  #createMessageMiddleware: ?createDeviceMessageMiddleware;
+  #createCustomMessageHandler: ?CreateCustomMessageHandlerFn;
 
   // The device message middleware instances, per debugger, page, and device connection
-  #messageMiddlewares: WeakMap<
+  #customMessageHandlers: WeakMap<
     DebuggerInfo,
-    WeakMap<Page, DeviceMessageMiddleware>,
+    WeakMap<Page, CustomMessageHandler>,
   >;
 
   constructor(
@@ -118,7 +118,7 @@ export default class Device {
     socket: WS,
     projectRoot: string,
     eventReporter: ?EventReporter,
-    createMessageMiddleware: ?createDeviceMessageMiddleware,
+    createMessageMiddleware: ?CreateCustomMessageHandlerFn,
   ) {
     this.#id = id;
     this.#name = name;
@@ -133,8 +133,8 @@ export default class Device {
           appId: app,
         })
       : null;
-    this.#createMessageMiddleware = createMessageMiddleware;
-    this.#messageMiddlewares = new WeakMap();
+    this.#createCustomMessageHandler = createMessageMiddleware;
+    this.#customMessageHandlers = new WeakMap();
 
     // $FlowFixMe[incompatible-call]
     this.#deviceSocket.on('message', (message: string) => {
@@ -232,10 +232,10 @@ export default class Device {
 
     debug(`Got new debugger connection for page ${pageId} of ${this.#name}`);
 
-    if (page && this.#createMessageMiddleware) {
-      const middleware = this.#createMessageMiddleware({
+    if (page && this.#createCustomMessageHandler) {
+      const middleware = this.#createCustomMessageHandler({
         page,
-        debuggerInfo: createMiddlewareDebuggerInfo(debuggerInfo),
+        debuggerInfo: exposeDebuggerInfo(debuggerInfo),
         deviceInfo: {
           appId: this.#app,
           id: this.#id,
@@ -245,7 +245,7 @@ export default class Device {
       });
 
       if (middleware) {
-        this.#setMessageMiddleware(debuggerInfo, page, middleware);
+        this.#setCustomMessageHandler(debuggerInfo, page, middleware);
         debug('Created new message middleware for debugger connection');
       } else {
         debug(
@@ -272,9 +272,10 @@ export default class Device {
       let processedReq = debuggerRequest;
 
       if (
-        this.#getMessageMiddleware(debuggerInfo, page)?.handleDebuggerMessage(
-          debuggerRequest,
-        ) === true
+        this.#getCustomMessageHandler(
+          debuggerInfo,
+          page,
+        )?.handleDebuggerMessage(debuggerRequest) === true
       ) {
         return;
       }
@@ -306,7 +307,7 @@ export default class Device {
           pageId: this.#mapToDevicePageId(pageId),
         },
       });
-      this.#messageMiddlewares.delete(debuggerInfo);
+      this.#customMessageHandlers.delete(debuggerInfo);
       this.#debuggerConnection = null;
     });
 
@@ -343,7 +344,7 @@ export default class Device {
     if (oldDebugger) {
       oldDebugger.socket.removeAllListeners();
       this.#deviceSocket.close();
-      this.#messageMiddlewares.delete(oldDebugger);
+      this.#customMessageHandlers.delete(oldDebugger);
       newDevice.handleDebuggerConnection(
         oldDebugger.socket,
         oldDebugger.pageId,
@@ -423,7 +424,7 @@ export default class Device {
 
       // NOTE(bycedric): Notify the device message middleware of the disconnect event, without any further actions.
       // This can be used to clean up state in the device message middleware.
-      this.#getMessageMiddleware(
+      this.#getCustomMessageHandler(
         this.#debuggerConnection,
         page,
       )?.handleDeviceMessage(message);
@@ -470,7 +471,7 @@ export default class Device {
 
       const page: ?Page = pageId !== null ? this.#pages.get(pageId) : null;
       if (
-        this.#getMessageMiddleware(
+        this.#getCustomMessageHandler(
           this.#debuggerConnection,
           page,
         )?.handleDeviceMessage(parsedPayload) === true
@@ -864,24 +865,24 @@ export default class Device {
     }
   }
 
-  #getMessageMiddleware(
+  #getCustomMessageHandler(
     debuggerInfo: ?DebuggerInfo,
     page: ?Page,
-  ): ?DeviceMessageMiddleware {
+  ): ?CustomMessageHandler {
     return debuggerInfo && page
-      ? this.#messageMiddlewares.get(debuggerInfo)?.get(page)
+      ? this.#customMessageHandlers.get(debuggerInfo)?.get(page)
       : null;
   }
 
-  #setMessageMiddleware(
+  #setCustomMessageHandler(
     debuggerInfo: DebuggerInfo,
     page: Page,
-    middleware: DeviceMessageMiddleware,
+    middleware: CustomMessageHandler,
   ) {
-    if (!this.#messageMiddlewares.has(debuggerInfo)) {
-      this.#messageMiddlewares.set(debuggerInfo, new WeakMap());
+    if (!this.#customMessageHandlers.has(debuggerInfo)) {
+      this.#customMessageHandlers.set(debuggerInfo, new WeakMap());
     }
 
-    this.#messageMiddlewares.get(debuggerInfo)?.set(page, middleware);
+    this.#customMessageHandlers.get(debuggerInfo)?.set(page, middleware);
   }
 }

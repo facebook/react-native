@@ -33,11 +33,11 @@ describe('inspector proxy device message middleware', () => {
   });
 
   test('middleware is created with device, debugger, and page information', async () => {
-    const createMiddleware = jest.fn().mockImplementation(() => null);
+    const createCustomMessageHandler = jest.fn().mockImplementation(() => null);
     const {server} = await createServer({
       logger: undefined,
       projectRoot: '',
-      unstable_deviceMessageMiddleware: createMiddleware,
+      unstable_customInspectorMessageHandler: createCustomMessageHandler,
     });
 
     let device, debugger_;
@@ -50,7 +50,7 @@ describe('inspector proxy device message middleware', () => {
 
       // Ensure the middleware was created with the device information
       await until(() =>
-        expect(createMiddleware).toBeCalledWith(
+        expect(createCustomMessageHandler).toBeCalledWith(
           expect.objectContaining({
             page: expect.objectContaining({
               ...page,
@@ -81,7 +81,7 @@ describe('inspector proxy device message middleware', () => {
     const {server} = await createServer({
       logger: undefined,
       projectRoot: '',
-      unstable_deviceMessageMiddleware: () => ({
+      unstable_customInspectorMessageHandler: () => ({
         handleDeviceMessage,
         handleDebuggerMessage() {},
       }),
@@ -114,7 +114,7 @@ describe('inspector proxy device message middleware', () => {
     const {server} = await createServer({
       logger: undefined,
       projectRoot: '',
-      unstable_deviceMessageMiddleware: () => ({
+      unstable_customInspectorMessageHandler: () => ({
         handleDeviceMessage,
         handleDebuggerMessage() {},
       }),
@@ -148,7 +148,7 @@ describe('inspector proxy device message middleware', () => {
     const {server} = await createServer({
       logger: undefined,
       projectRoot: '',
-      unstable_deviceMessageMiddleware: () => ({
+      unstable_customInspectorMessageHandler: () => ({
         handleDeviceMessage,
         handleDebuggerMessage() {},
       }),
@@ -188,7 +188,7 @@ describe('inspector proxy device message middleware', () => {
     const {server} = await createServer({
       logger: undefined,
       projectRoot: '',
-      unstable_deviceMessageMiddleware: () => ({
+      unstable_customInspectorMessageHandler: () => ({
         handleDeviceMessage() {},
         handleDebuggerMessage,
       }),
@@ -225,7 +225,7 @@ describe('inspector proxy device message middleware', () => {
     const {server} = await createServer({
       logger: undefined,
       projectRoot: '',
-      unstable_deviceMessageMiddleware: () => ({
+      unstable_customInspectorMessageHandler: () => ({
         handleDeviceMessage() {},
         handleDebuggerMessage,
       }),

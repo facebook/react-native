@@ -9,7 +9,7 @@
  * @oncall react_native
  */
 
-import type {createDeviceMessageMiddleware} from './inspector-proxy/DeviceMessageMiddleware';
+import type {CreateCustomMessageHandlerFn} from './inspector-proxy/CustomMessageHandler';
 import type {BrowserLauncher} from './types/BrowserLauncher';
 import type {EventReporter} from './types/EventReporter';
 import type {Experiments, ExperimentsConfig} from './types/Experiments';
@@ -66,7 +66,7 @@ type Options = $ReadOnly<{
    *
    * This is an unstable API with no semver guarantees.
    */
-  unstable_customInspectorMessageHandler?: createDeviceMessageMiddleware,
+  unstable_customInspectorMessageHandler?: CreateCustomMessageHandlerFn,
 }>;
 
 type DevMiddlewareAPI = $ReadOnly<{
@@ -81,7 +81,7 @@ export default function createDevMiddleware({
   unstable_browserLauncher = DefaultBrowserLauncher,
   unstable_eventReporter,
   unstable_experiments: experimentConfig = {},
-  unstable_deviceMessageMiddleware,
+  unstable_customInspectorMessageHandler,
 }: Options): DevMiddlewareAPI {
   const experiments = getExperiments(experimentConfig);
 
@@ -90,7 +90,7 @@ export default function createDevMiddleware({
     serverBaseUrl,
     unstable_eventReporter,
     experiments,
-    unstable_deviceMessageMiddleware,
+    unstable_customInspectorMessageHandler,
   );
 
   const middleware = connect()

@@ -11,7 +11,7 @@
 
 import type {EventReporter} from '../types/EventReporter';
 import type {Experiments} from '../types/Experiments';
-import type {createDeviceMessageMiddleware} from './DeviceMessageMiddleware';
+import type {CreateCustomMessageHandlerFn} from './CustomMessageHandler';
 import type {
   JsonPagesListResponse,
   JsonVersionResponse,
@@ -60,21 +60,21 @@ export default class InspectorProxy implements InspectorProxyQueries {
   #experiments: Experiments;
 
   // Device message middleware allowing implementers to handle unsupported CDP messages.
-  #deviceMiddleware: ?createDeviceMessageMiddleware;
+  #customMessageHandler: ?CreateCustomMessageHandlerFn;
 
   constructor(
     projectRoot: string,
     serverBaseUrl: string,
     eventReporter: ?EventReporter,
     experiments: Experiments,
-    deviceMiddleware: ?createDeviceMessageMiddleware,
+    customMessageHandler: ?CreateCustomMessageHandlerFn,
   ) {
     this.#projectRoot = projectRoot;
     this.#serverBaseUrl = serverBaseUrl;
     this.#devices = new Map();
     this.#eventReporter = eventReporter;
     this.#experiments = experiments;
-    this.#deviceMiddleware = deviceMiddleware;
+    this.#customMessageHandler = customMessageHandler;
   }
 
   getPageDescriptions(): Array<PageDescription> {
@@ -210,7 +210,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
           socket,
           this.#projectRoot,
           this.#eventReporter,
-          this.#deviceMiddleware,
+          this.#customMessageHandler,
         );
 
         if (oldDevice) {

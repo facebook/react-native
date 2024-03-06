@@ -24,18 +24,22 @@ type ExposedDebuggerInfo = $ReadOnly<{
   userAgent: $ElementType<DebuggerInfo, 'userAgent'>,
 }>;
 
-export type CreateDeviceMessageMiddlewareFn = (connection: {
+export type CustomMessageHandlerConnection = $ReadOnly<{
   page: Page,
   deviceInfo: ExposedDeviceInfo,
   debuggerInfo: ExposedDebuggerInfo,
-}) => ?DeviceMessageMiddleware;
+}>;
+
+export type CreateCustomMessageHandlerFn = (
+  connection: CustomMessageHandlerConnection,
+) => ?CustomMessageHandler;
 
 /**
  * The device message middleware allows implementers to handle unsupported CDP messages.
  * It is instantiated per device and may contain state that is specific to that device.
  * The middleware can also mark messages from the device or debugger as handled, which stops propagating.
  */
-export interface DeviceMessageMiddleware {
+export interface CustomMessageHandler {
   /**
    * Handle a CDP message coming from the device.
    * This is invoked before the message is sent to the debugger.
@@ -51,7 +55,7 @@ export interface DeviceMessageMiddleware {
   handleDebuggerMessage(message: MessageToDevice): true | void;
 }
 
-export function createMiddlewareDebuggerInfo(
+export function exposeDebuggerInfo(
   debuggerInfo: DebuggerInfo,
 ): ExposedDebuggerInfo {
   return {
