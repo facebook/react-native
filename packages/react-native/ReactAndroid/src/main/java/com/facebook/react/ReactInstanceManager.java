@@ -998,6 +998,11 @@ public class ReactInstanceManager {
               if (names != null) {
                 uniqueNames.addAll(names);
               }
+            } else {
+              FLog.w(
+                  ReactConstants.TAG,
+                  "Package %s is not a ViewManagerOnDemandReactPackage, view managers will not be loaded",
+                  reactPackage.getClass().getSimpleName());
             }
             Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
           }

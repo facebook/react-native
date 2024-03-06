@@ -49,13 +49,18 @@ protected constructor(
           DefaultComponentsRegistry.register(componentFactory)
 
           val viewManagerRegistry =
-              ViewManagerRegistry(
-                  object : ViewManagerResolver {
-                    override fun getViewManager(viewManagerName: String) =
-                        reactInstanceManager.createViewManager(viewManagerName)
+              if (lazyViewManagersEnabled) {
+                ViewManagerRegistry(
+                    object : ViewManagerResolver {
+                      override fun getViewManager(viewManagerName: String) =
+                          reactInstanceManager.createViewManager(viewManagerName)
 
-                    override fun getViewManagerNames() = reactInstanceManager.viewManagerNames
-                  })
+                      override fun getViewManagerNames() = reactInstanceManager.viewManagerNames
+                    })
+              } else {
+                ViewManagerRegistry(
+                    reactInstanceManager.getOrCreateViewManagers(reactApplicationContext))
+              }
 
           FabricUIManagerProviderImpl(
                   componentFactory, ReactNativeConfig.DEFAULT_CONFIG, viewManagerRegistry)
