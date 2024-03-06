@@ -12,7 +12,6 @@
 
 #include <jsinspector-modern/InspectorInterfaces.h>
 #include <jsinspector-modern/InstanceAgent.h>
-#include <jsinspector-modern/Parsing.h>
 
 #include <functional>
 #include <string_view>

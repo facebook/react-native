@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include "CdpJson.h"
+
 #include <folly/dynamic.h>
 #include <folly/json.h>
 #include <jsinspector-modern/HostAgent.h>
@@ -98,33 +100,27 @@ void HostAgent::handleRequest(const cdp::PreparsedRequest& req) {
   }
 
   if (shouldSendOKResponse) {
-    folly::dynamic res = folly::dynamic::object("id", req.id)(
-        "result", folly::dynamic::object());
-    std::string json = folly::toJson(res);
-    frontendChannel_(json);
+    frontendChannel_(cdp::jsonResult(req.id));
     return;
   }
 
-  folly::dynamic res = folly::dynamic::object("id", req.id)(
-      "error",
-      folly::dynamic::object("code", -32601)(
-          "message", req.method + " not implemented yet"));
-  std::string json = folly::toJson(res);
-  frontendChannel_(json);
+  frontendChannel_(cdp::jsonError(
+      req.id,
+      cdp::ErrorCode::MethodNotFound,
+      req.method + " not implemented yet"));
 }
 
 void HostAgent::sendInfoLogEntry(std::string_view text) {
-  frontendChannel_(
-      folly::toJson(folly::dynamic::object("method", "Log.entryAdded")(
-          "params",
+  frontendChannel_(cdp::jsonNotification(
+      "Log.entryAdded",
+      folly::dynamic::object(
+          "entry",
           folly::dynamic::object(
-              "entry",
-              folly::dynamic::object(
-                  "timestamp",
-                  duration_cast<milliseconds>(
-                      system_clock::now().time_since_epoch())
-                      .count())("source", "other")(
-                  "level", "info")("text", text)))));
+              "timestamp",
+              duration_cast<milliseconds>(
+                  system_clock::now().time_since_epoch())
+                  .count())("source", "other")(
+              "level", "info")("text", text))));
 }
 
 void HostAgent::setCurrentInstanceAgent(
@@ -140,9 +136,7 @@ void HostAgent::setCurrentInstanceAgent(
 
     // Because we can only have a single instance, we can report all contexts
     // as cleared.
-    folly::dynamic contextsCleared =
-        folly::dynamic::object("method", "Runtime.executionContextsCleared");
-    frontendChannel_(folly::toJson(contextsCleared));
+    frontendChannel_(cdp::jsonNotification("Runtime.executionContextsCleared"));
   }
   if (instanceAgent_) {
     // TODO: Send Runtime.executionContextCreated here - at the moment we expect
