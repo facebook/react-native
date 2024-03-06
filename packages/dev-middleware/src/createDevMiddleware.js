@@ -66,7 +66,7 @@ type Options = $ReadOnly<{
    *
    * This is an unstable API with no semver guarantees.
    */
-  unstable_deviceMessageMiddleware?: createDeviceMessageMiddleware,
+  unstable_customInspectorMessageHandler?: createDeviceMessageMiddleware,
 }>;
 
 type DevMiddlewareAPI = $ReadOnly<{

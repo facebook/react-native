@@ -24,7 +24,7 @@ type ExposedDebuggerInfo = $ReadOnly<{
   userAgent: $ElementType<DebuggerInfo, 'userAgent'>,
 }>;
 
-export type createDeviceMessageMiddleware = (connection: {
+export type CreateDeviceMessageMiddlewareFn = (connection: {
   page: Page,
   deviceInfo: ExposedDeviceInfo,
   debuggerInfo: ExposedDebuggerInfo,
