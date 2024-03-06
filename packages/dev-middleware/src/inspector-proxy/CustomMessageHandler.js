@@ -8,20 +8,19 @@
  * @format
  */
 
-import type {DebuggerInfo} from './Device';
-import type {MessageFromDevice, MessageToDevice, Page} from './types';
-import type WS from 'ws';
+import type {CDPRequest, CDPResponse} from './cdp-types/messages';
+import type {Page} from './types';
 
 type ExposedDeviceInfo = $ReadOnly<{
   appId: string,
   id: string,
   name: string,
-  socket: WS,
+  sendMessage: (message: CDPRequest<> | CDPResponse<>) => void,
 }>;
 
 type ExposedDebuggerInfo = $ReadOnly<{
-  socket: $ElementType<DebuggerInfo, 'socket'>,
-  userAgent: $ElementType<DebuggerInfo, 'userAgent'>,
+  userAgent: string | null,
+  sendMessage: (message: CDPRequest<> | CDPResponse<>) => void,
 }>;
 
 export type CustomMessageHandlerConnection = $ReadOnly<{
@@ -45,21 +44,12 @@ export interface CustomMessageHandler {
    * This is invoked before the message is sent to the debugger.
    * When returning true, the message is considered handled and will not be sent to the debugger.
    */
-  handleDeviceMessage(message: MessageFromDevice): true | void;
+  handleDeviceMessage(message: CDPRequest<> | CDPResponse<>): true | void;
 
   /**
    * Handle a CDP message coming from the debugger.
    * This is invoked before the message is sent to the device.
    * When reeturning true, the message is considered handled and will not be sent to the device.
    */
-  handleDebuggerMessage(message: MessageToDevice): true | void;
-}
-
-export function exposeDebuggerInfo(
-  debuggerInfo: DebuggerInfo,
-): ExposedDebuggerInfo {
-  return {
-    socket: debuggerInfo.socket,
-    userAgent: debuggerInfo.userAgent,
-  };
+  handleDebuggerMessage(message: CDPRequest<> | CDPResponse<>): true | void;
 }

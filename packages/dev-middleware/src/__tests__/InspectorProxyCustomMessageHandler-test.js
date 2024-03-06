@@ -60,11 +60,11 @@ describe('inspector proxy device message middleware', () => {
               appId: expect.any(String),
               id: expect.any(String),
               name: expect.any(String),
-              socket: expect.anything(),
+              sendMessage: expect.any(Function),
             }),
             debuggerInfo: expect.objectContaining({
-              socket: expect.anything(),
               userAgent: null,
+              sendMessage: expect.any(Function),
             }),
           }),
         ),

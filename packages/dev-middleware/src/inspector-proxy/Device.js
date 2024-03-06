@@ -17,6 +17,10 @@ import type {
   CDPServerMessage,
 } from './cdp-types/messages';
 import type {
+  CreateCustomMessageHandlerFn,
+  CustomMessageHandler,
+} from './CustomMessageHandler';
+import type {
   MessageFromDevice,
   MessageToDevice,
   Page,
@@ -24,11 +28,6 @@ import type {
 } from './types';
 
 import DeviceEventReporter from './DeviceEventReporter';
-import {
-  type CreateCustomMessageHandlerFn,
-  type CustomMessageHandler,
-  exposeDebuggerInfo,
-} from './CustomMessageHandler';
 import * as fs from 'fs';
 import fetch from 'node-fetch';
 import * as path from 'path';
@@ -45,7 +44,7 @@ const EMULATOR_LOCALHOST_ADDRESSES: Array<string> = ['10.0.2.2', '10.0.3.2'];
 // more details.
 const FILE_PREFIX = 'file://';
 
-export type DebuggerInfo = {
+type DebuggerInfo = {
   // Debugger web socket connection
   socket: WS,
   // If we replaced address (like '10.0.2.2') to localhost we need to store original
@@ -235,12 +234,27 @@ export default class Device {
     if (page && this.#createCustomMessageHandler) {
       const middleware = this.#createCustomMessageHandler({
         page,
-        debuggerInfo: exposeDebuggerInfo(debuggerInfo),
+        debuggerInfo: {
+          userAgent: debuggerInfo.userAgent,
+          sendMessage: message => {
+            try {
+              const payload = JSON.stringify(message);
+              debug('(Debugger) <- (Proxy)    (Device): ' + payload);
+              this.#deviceSocket.send(payload);
+            } catch {}
+          },
+        },
         deviceInfo: {
           appId: this.#app,
           id: this.#id,
           name: this.#name,
-          socket: this.#deviceSocket,
+          sendMessage: message => {
+            try {
+              const payload = JSON.stringify(message);
+              debug('(Debugger) -> (Proxy)    (Device): ' + payload);
+              this.#deviceSocket.send(payload);
+            } catch {}
+          },
         },
       });
 
