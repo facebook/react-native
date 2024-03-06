@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fcbf05836bd9465c6a035669f6fc78f4>>
+ * @generated SignedSource<<ef52ae50a916af01ceaaaa6683f6ec5e>>
  * @flow strict-local
  */
 
@@ -33,6 +33,7 @@ export interface Spec extends TurboModule {
   +enableSpannableBuildingUnification?: () => boolean;
   +inspectorEnableCxxInspectorPackagerConnection?: () => boolean;
   +inspectorEnableModernCDPRegistry?: () => boolean;
+  +skipMountHookNotifications?: () => boolean;
   +useModernRuntimeScheduler?: () => boolean;
 }
 
