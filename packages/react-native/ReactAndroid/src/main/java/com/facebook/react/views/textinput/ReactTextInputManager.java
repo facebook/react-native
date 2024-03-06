@@ -368,7 +368,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       boolean isCurrentSelectionEmpty = view.getSelectionStart() == view.getSelectionEnd();
       int selectionStart = UNSET;
       int selectionEnd = UNSET;
-      if (isCurrentSelectionEmpty) {
+      if (isCurrentSelectionEmpty && !view.isFirstRender) {
         // if selection is not set by state, shift current selection to ensure constant gap to
         // text end
         int textLength = view.getText() == null ? 0 : view.getText().length();

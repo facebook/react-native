@@ -848,6 +848,17 @@ module.exports = ([
     },
   },
   {
+    title: 'Long text behavior',
+    render: function (): React.Node {
+      return (
+        <TextInput
+          style={styles.default}
+          defaultValue="It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout."
+        />
+      );
+    },
+  },
+  {
     name: 'maxLength',
     title: "Live Re-Write (<sp>  ->  '_') + maxLength",
     render: function (): React.Node {
