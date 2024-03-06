@@ -993,14 +993,25 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
     });
   });
 
-  describe('Handles component stack frames formatted as call stacks', () => {
+  describe('Handles component stack frames formatted as call stacks in Hermes', () => {
+    let originalHermesInternal;
+    beforeEach(() => {
+      originalHermesInternal = global.HermesInternal;
+      // $FlowFixMe[cannot-write] - Jest
+      global.HermesInternal = true;
+    });
+    afterEach(() => {
+      // $FlowFixMe[cannot-write] - Jest
+      global.HermesInternal = originalHermesInternal;
+    });
+
     // In new versions of React, the component stack frame format changed to match call stacks.
     it('detects a component stack in an interpolated warning', () => {
       expect(
         parseLogBoxLog([
           'Warning: Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?%s%s',
           '\n\nCheck the render method of `MyComponent`.',
-          '\n    at MyComponent (/path/to/filename.js:1:2)\n    at MyOtherComponent\n     at MyAppComponent (/path/to/app.js:100:20)',
+          '\n    at MyComponent (/path/to/filename.js:1:2)\n    at MyOtherComponent\n    at MyAppComponent (/path/to/app.js:100:20)',
         ]),
       ).toEqual({
         componentStack: [
@@ -1037,7 +1048,7 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
     it('detects a component stack in the first argument', () => {
       expect(
         parseLogBoxLog([
-          'Some kind of message\n    at MyComponent (/path/to/filename.js:1:2)\n    at MyOtherComponent\n     at MyAppComponent (/path/to/app.js:100:20)',
+          'Some kind of message\n    at MyComponent (/path/to/filename.js:1:2)\n    at MyOtherComponent\n    at MyAppComponent (/path/to/app.js:100:20)',
         ]),
       ).toEqual({
         componentStack: [
@@ -1068,7 +1079,7 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
       expect(
         parseLogBoxLog([
           'Some kind of message',
-          '\n    at MyComponent (/path/to/filename.js:1:2)\n    at MyOtherComponent\n     at MyAppComponent (/path/to/app.js:100:20)',
+          '\n    at MyComponent (/path/to/filename.js:1:2)\n    at MyOtherComponent\n    at MyAppComponent (/path/to/app.js:100:20)',
         ]),
       ).toEqual({
         componentStack: [
@@ -1101,7 +1112,7 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
           'Warning: Each child in a list should have a unique "key" prop.%s%s See https://fb.me/react-warning-keys for more information.%s',
           '\n\nCheck the render method of `MyOtherComponent`.',
           '',
-          '\n    at MyComponent (/path/to/filename.js:1:2)\n    at MyOtherComponent\n     at MyAppComponent (/path/to/app.js:100:20)',
+          '\n    at MyComponent (/path/to/filename.js:1:2)\n    at MyOtherComponent\n    at MyAppComponent (/path/to/app.js:100:20)',
         ]),
       ).toEqual({
         componentStack: [
@@ -1148,7 +1159,7 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
         originalMessage: '### Error',
         name: '',
         componentStack:
-          '\n    at MyComponent (/path/to/filename.js:1:2)\n    at MyOtherComponent\n     at MyAppComponent (/path/to/app.js:100:20)',
+          '\n    at MyComponent (/path/to/filename.js:1:2)\n    at MyOtherComponent\n    at MyAppComponent (/path/to/app.js:100:20)',
         stack: [
           {
             column: 1,

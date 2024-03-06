@@ -72,6 +72,7 @@ const RE_FRAME =
 // Capturing groups:
 // 1. count of skipped frames
 const RE_SKIPPED = /^ {4}... skipping (\d+) frames$/;
+const RE_COMPONENT_NO_STACK = /^ {4}at .*$/;
 
 function isInternalBytecodeSourceUrl(sourceUrl: string): boolean {
   // See https://github.com/facebook/hermes/blob/3332fa020cae0bab751f648db7c94e1d687eeec7/lib/VM/Runtime.cpp#L1100
@@ -130,6 +131,11 @@ module.exports = function parseHermesStack(stack: string): HermesParsedStack {
     const entry = parseLine(line);
     if (entry) {
       entries.push(entry);
+      continue;
+    }
+    if (RE_COMPONENT_NO_STACK.test(line)) {
+      // Skip component stacks without source location.
+      // TODO: This will not be displayed, not sure how to handle it.
       continue;
     }
     // No match - we're still in the message
