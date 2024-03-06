@@ -256,21 +256,9 @@ HermesExecutor::HermesExecutor(
       targetDelegate_{
           std::shared_ptr<HermesRuntime>(runtime_, &hermesRuntime)} {}
 
-std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate>
-HermesExecutor::createAgentDelegate(
-    jsinspector_modern::FrontendChannel frontendChannel,
-    jsinspector_modern::SessionState& sessionState,
-    std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate::ExportedState>
-        previouslyExportedState,
-    const jsinspector_modern::ExecutionContextDescription&
-        executionContextDescription,
-    RuntimeExecutor runtimeExecutor) {
-  return targetDelegate_.createAgentDelegate(
-      std::move(frontendChannel),
-      sessionState,
-      std::move(previouslyExportedState),
-      executionContextDescription,
-      std::move(runtimeExecutor));
+jsinspector_modern::RuntimeTargetDelegate&
+HermesExecutor::getRuntimeTargetDelegate() {
+  return targetDelegate_;
 }
 
 } // namespace facebook::react

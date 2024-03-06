@@ -103,8 +103,8 @@ ReactInstance::ReactInstance(
       // * On Android it's because we explicitly wait for the instance
       //   creation task to finish before starting the destruction.
       inspectorTarget_ = &hostTarget.registerInstance(*this);
-      runtimeInspectorTarget_ =
-          &inspectorTarget_->registerRuntime(*runtime_, runtimeExecutor);
+      runtimeInspectorTarget_ = &inspectorTarget_->registerRuntime(
+          runtime_->getRuntimeTargetDelegate(), runtimeExecutor);
       runtimeExecutorThatWaitsForInspectorSetup->flush();
     });
 

@@ -17,22 +17,11 @@ JsiIntegrationTestHermesEngineAdapter::JsiIntegrationTestHermesEngineAdapter(
     folly::Executor& jsExecutor)
     : runtime_{hermes::makeHermesRuntime()},
       jsExecutor_{jsExecutor},
-      targetDelegate_{runtime_} {}
+      runtimeTargetDelegate_{runtime_} {}
 
-std::unique_ptr<RuntimeAgentDelegate>
-JsiIntegrationTestHermesEngineAdapter::createAgentDelegate(
-    FrontendChannel frontendChannel,
-    SessionState& sessionState,
-    std::unique_ptr<RuntimeAgentDelegate::ExportedState>
-        previouslyExportedState,
-    const ExecutionContextDescription& executionContextDescription,
-    RuntimeExecutor runtimeExecutor) {
-  return targetDelegate_.createAgentDelegate(
-      std::move(frontendChannel),
-      sessionState,
-      std::move(previouslyExportedState),
-      executionContextDescription,
-      std::move(runtimeExecutor));
+RuntimeTargetDelegate&
+JsiIntegrationTestHermesEngineAdapter::getRuntimeTargetDelegate() {
+  return runtimeTargetDelegate_;
 }
 
 jsi::Runtime& JsiIntegrationTestHermesEngineAdapter::getRuntime()

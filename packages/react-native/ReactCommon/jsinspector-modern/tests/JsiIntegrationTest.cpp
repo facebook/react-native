@@ -55,7 +55,8 @@ class JsiIntegrationPortableTest : public Test, private HostTargetDelegate {
   JsiIntegrationPortableTest() : engineAdapter_{immediateExecutor_} {
     instance_ = &page_->registerInstance(instanceTargetDelegate_);
     runtimeTarget_ = &instance_->registerRuntime(
-        *engineAdapter_, engineAdapter_->getRuntimeExecutor());
+        engineAdapter_->getRuntimeTargetDelegate(),
+        engineAdapter_->getRuntimeExecutor());
   }
 
   ~JsiIntegrationPortableTest() override {
@@ -96,7 +97,8 @@ class JsiIntegrationPortableTest : public Test, private HostTargetDelegate {
     engineAdapter_.emplace(immediateExecutor_);
     instance_ = &page_->registerInstance(instanceTargetDelegate_);
     runtimeTarget_ = &instance_->registerRuntime(
-        *engineAdapter_, engineAdapter_->getRuntimeExecutor());
+        engineAdapter_->getRuntimeTargetDelegate(),
+        engineAdapter_->getRuntimeExecutor());
   }
 
   MockRemoteConnection& fromPage() {
