@@ -285,6 +285,7 @@ TYPED_TEST(JsiIntegrationPortableTest, AddBinding) {
                                  "id": 1,
                                  "method": "Runtime.enable"
                                })");
+  ASSERT_TRUE(executionContextInfo->has_value());
   auto executionContextId =
       executionContextInfo->value()["params"]["context"]["id"];
 
@@ -334,6 +335,7 @@ TYPED_TEST(JsiIntegrationPortableTest, AddedBindingSurvivesReload) {
                                  "id": 1,
                                  "method": "Runtime.enable"
                                })");
+  ASSERT_TRUE(executionContextInfo->has_value());
   auto executionContextId =
       executionContextInfo->value()["params"]["context"]["id"];
 
@@ -490,6 +492,7 @@ TYPED_TEST(JsiIntegrationHermesTest, EvaluateExpressionInExecutionContext) {
                                  "id": 1,
                                  "method": "Runtime.enable"
                                })");
+  ASSERT_TRUE(executionContextInfo->has_value());
   auto executionContextId =
       executionContextInfo->value()["params"]["context"]["id"].getInt();
 
@@ -568,6 +571,8 @@ TYPED_TEST(JsiIntegrationHermesTest, ResolveBreakpointAfterReload) {
     };
     //# sourceURL=breakpointTest.js
   )");
+  ASSERT_TRUE(breakpointInfo->has_value());
+  ASSERT_TRUE(scriptInfo->has_value());
   EXPECT_EQ(
       breakpointInfo->value()["params"]["location"]["scriptId"],
       scriptInfo->value()["params"]["scriptId"]);
