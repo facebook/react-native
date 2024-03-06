@@ -238,7 +238,7 @@ export default class Device {
               try {
                 const payload = JSON.stringify(message);
                 debug('(Debugger) <- (Proxy)    (Device): ' + payload);
-                this.#deviceSocket.send(payload);
+                socket.send(payload);
               } catch {}
             },
           },
