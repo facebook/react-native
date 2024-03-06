@@ -8,6 +8,12 @@
 #include "HermesRuntimeTargetDelegate.h"
 #include "HermesRuntimeAgentDelegate.h"
 
+#ifdef HERMES_ENABLE_DEBUGGER
+#include <hermes/cdp/CDPDebugAPI.h>
+
+using namespace facebook::hermes::cdp;
+#endif // HERMES_ENABLE_DEBUGGER
+
 #include <utility>
 
 using namespace facebook::hermes;
@@ -16,8 +22,18 @@ namespace facebook::react::jsinspector_modern {
 
 class HermesRuntimeTargetDelegate::Impl : public RuntimeTargetDelegate {
  public:
+#ifdef HERMES_ENABLE_DEBUGGER
+  explicit Impl(std::shared_ptr<HermesRuntime> hermesRuntime)
+      : runtime_(std::move(hermesRuntime)),
+        cdpDebugAPI_(CDPDebugAPI::create(*runtime_)) {}
+
+  CDPDebugAPI& getCDPDebugAPI() {
+    return *cdpDebugAPI_;
+  }
+#else
   explicit Impl(std::shared_ptr<HermesRuntime> hermesRuntime)
       : runtime_(std::move(hermesRuntime)) {}
+#endif
 
   // RuntimeTargetDelegate methods
 
@@ -39,6 +55,10 @@ class HermesRuntimeTargetDelegate::Impl : public RuntimeTargetDelegate {
 
  private:
   std::shared_ptr<HermesRuntime> runtime_;
+
+#ifdef HERMES_ENABLE_DEBUGGER
+  const std::unique_ptr<CDPDebugAPI> cdpDebugAPI_;
+#endif
 };
 
 HermesRuntimeTargetDelegate::HermesRuntimeTargetDelegate(
@@ -62,5 +82,11 @@ HermesRuntimeTargetDelegate::createAgentDelegate(
       executionContextDescription,
       std::move(runtimeExecutor));
 }
+
+#ifdef HERMES_ENABLE_DEBUGGER
+CDPDebugAPI& HermesRuntimeTargetDelegate::getCDPDebugAPI() {
+  return impl_->getCDPDebugAPI();
+}
+#endif
 
 } // namespace facebook::react::jsinspector_modern
