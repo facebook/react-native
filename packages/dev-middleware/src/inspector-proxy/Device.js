@@ -228,7 +228,7 @@ export default class Device {
 
     debug(`Got new debugger connection for page ${pageId} of ${this.#name}`);
 
-    if (page && this.#createCustomMessageHandler) {
+    if (page && this.#debuggerConnection && this.#createCustomMessageHandler) {
       this.#debuggerConnection.customHandler = this.#createCustomMessageHandler(
         {
           page,
