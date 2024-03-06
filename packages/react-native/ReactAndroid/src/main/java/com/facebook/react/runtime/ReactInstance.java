@@ -21,7 +21,6 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.JSBundleLoaderDelegate;
 import com.facebook.react.bridge.JavaScriptContextHolder;
-import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.NativeArray;
 import com.facebook.react.bridge.NativeMap;
 import com.facebook.react.bridge.NativeModule;
@@ -143,6 +142,7 @@ final class ReactInstance {
     if (useDevSupport) {
       devSupportManager.startInspector();
     }
+
     JSTimerExecutor jsTimerExecutor = createJSTimerExecutor();
     mJavaTimerManager =
         new JavaTimerManager(
@@ -150,24 +150,6 @@ final class ReactInstance {
             jsTimerExecutor,
             ReactChoreographer.getInstance(),
             devSupportManager);
-
-    mBridgelessReactContext.addLifecycleEventListener(
-        new LifecycleEventListener() {
-          @Override
-          public void onHostResume() {
-            mJavaTimerManager.onHostResume();
-          }
-
-          @Override
-          public void onHostPause() {
-            mJavaTimerManager.onHostPause();
-          }
-
-          @Override
-          public void onHostDestroy() {
-            mJavaTimerManager.onHostDestroy();
-          }
-        });
 
     JSRuntimeFactory jsRuntimeFactory = mDelegate.getJsRuntimeFactory();
     BindingsInstaller bindingsInstaller = mDelegate.getBindingsInstaller();
@@ -448,6 +430,7 @@ final class ReactInstance {
     mQueueConfiguration.destroy();
     mTurboModuleManager.invalidate();
     mFabricUIManager.invalidate();
+    mJavaTimerManager.onInstanceDestroy();
     mHybridData.resetNative();
     mComponentNameResolverManager = null;
     mUIConstantsProviderManager = null;
