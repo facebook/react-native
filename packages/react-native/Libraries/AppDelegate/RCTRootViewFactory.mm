@@ -131,6 +131,7 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
         initWithSurface:surface
         sizeMeasureMode:RCTSurfaceSizeMeasureModeWidthExact | RCTSurfaceSizeMeasureModeHeightExact];
 
+    surfaceHostingProxyRootView.backgroundColor = [UIColor systemBackgroundColor];
     return surfaceHostingProxyRootView;
   }
 
