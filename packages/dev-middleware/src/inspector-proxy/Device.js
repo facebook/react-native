@@ -436,13 +436,6 @@ export default class Device {
       // for unknown pages.
       const page: ?Page = this.#pages.get(pageId);
 
-      // NOTE(bycedric): Notify the device message middleware of the disconnect event, without any further actions.
-      // This can be used to clean up state in the device message middleware.
-      this.#getCustomMessageHandler(
-        this.#debuggerConnection,
-        page,
-      )?.handleDeviceMessage(message);
-
       if (page != null && this.#pageHasCapability(page, 'nativePageReloads')) {
         return;
       }

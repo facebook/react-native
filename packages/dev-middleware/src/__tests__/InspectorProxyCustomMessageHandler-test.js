@@ -109,40 +109,6 @@ describe('inspector proxy device message middleware', () => {
     }
   });
 
-  test('device disconnect is passed to message middleware', async () => {
-    const handleDeviceMessage = jest.fn();
-    const {server} = await createServer({
-      logger: undefined,
-      projectRoot: '',
-      unstable_customInspectorMessageHandler: () => ({
-        handleDeviceMessage,
-        handleDebuggerMessage() {},
-      }),
-    });
-
-    let device, debugger_;
-    try {
-      ({device, debugger_} = await createAndConnectTarget(
-        serverRefUrls(server),
-        autoCleanup.signal,
-        page,
-      ));
-
-      // Send a message from the device, and ensure the middleware received it
-      const message = {
-        event: 'disconnect',
-        payload: {pageId: page.id},
-      };
-      device.send(message);
-
-      await until(() => expect(handleDeviceMessage).toBeCalledWith(message));
-    } finally {
-      device?.close();
-      debugger_?.close();
-      await closeServer(server);
-    }
-  });
-
   test('device message stops propagating when handled by middleware', async () => {
     const handleDeviceMessage = jest.fn();
     const {server} = await createServer({
