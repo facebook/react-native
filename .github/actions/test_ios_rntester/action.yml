@@ -1,0 +1,163 @@
+name: test_ios_rntester
+description: Test iOS RNTester
+inputs:
+  jsengine:
+    description: Which JavaScript engine to use. Must be one of "Hermes", "JSC".
+    default: Hermes
+  use-frameworks:
+      description: The dependency building and linking strategy to use. Must be one of "StaticLibraries", "DynamicFrameworks"
+      default: StaticLibraries
+  architecture:
+    description: The React Native architecture to Test. RNTester has always Fabric enabled, but we want to run integration test with the old arch setup
+    default: NewArch
+  ruby-version:
+    description: The version of ruby that must be used
+    default: 2.6.10
+  run-unit-tests:
+    description: whether unit tests should run or not.
+    default: false
+  hermes-tarball-artifacts-dir:
+    description: The directory where the hermes tarball artifacts are stored
+    default: /tmp/hermes/hermes-runtime-darwin
+  flavor:
+    description: The flavor of the build. Must be one of "Debug", "Release".
+    default: Debug
+  hermes-version:
+    description: The version of hermes
+    required: true
+  react-native-version:
+    description: The version of react-native
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Setup xcode
+      uses: maxim-lobanov/setup-xcode@v1.6.0
+      with:
+        xcode-version: 14.3.1
+    - name: Use Node.js 18
+      uses: actions/setup-node@v4.0.0
+      with:
+        node-version: 18
+        cache: 'yarn'
+    - name: Run yarn
+      shell: bash
+      run: yarn install --non-interactive
+    - name: Cache setup
+      id: cache_setup
+      uses: ./.github/actions/cache_setup
+      with:
+        hermes-version: ${{ inputs.hermes-version }}
+        react-native-version: ${{ inputs.react-native-version }}
+    - name: Delete iOS Simulators
+      shell: bash
+      run: sudo rm -rf /Library/Developer/CoreSimulator/Profiles/Runtimes/ &
+    - name: Setup ruby
+      uses: ruby/setup-ruby@v1.170.0
+      with:
+        ruby-version: ${{ inputs.ruby-version }}
+    - name: Prepare IOS Tests
+      if: ${{ inputs.run-unit-tests == true }}
+      uses: ./.github/actions/prepare_ios_tests
+    - name: Set HERMES_ENGINE_TARBALL_PATH envvar if Hermes tarball is present
+      shell: bash
+      run: |
+        HERMES_TARBALL_ARTIFACTS_DIR=${{ inputs.hermes-tarball-artifacts-dir }}
+        if [ ! -d $HERMES_TARBALL_ARTIFACTS_DIR ]; then
+          echo "Hermes tarball artifacts dir not present ($HERMES_TARBALL_ARTIFACTS_DIR). Build Hermes from source."
+          exit 0
+        fi
+
+        if [ ! -d ~/react-native ]; then
+          echo "No React Native checkout found. Run `checkout` first."
+          exit 0
+        fi
+
+        TARBALL_FILENAME=$(node ./packages/react-native/scripts/hermes/get-tarball-name.js --buildType "${{ inputs.flavor }}")
+        TARBALL_PATH=$HERMES_TARBALL_ARTIFACTS_DIR/$TARBALL_FILENAME
+
+        echo "Looking for $TARBALL_FILENAME in $HERMES_TARBALL_ARTIFACTS_DIR"
+        echo "$TARBALL_PATH"
+
+        if [ ! -f $TARBALL_PATH ]; then
+          echo "Hermes tarball not present ($TARBALL_PATH). Build Hermes from source."
+          exit 0
+        fi
+
+        echo "Found Hermes tarball at $TARBALL_PATH"
+        echo "HERMES_ENGINE_TARBALL_PATH=$TARBALL_PATH" >> $GITHUB_ENV
+    - name: Print Hermes version
+      shell: bash
+      run: |
+        HERMES_TARBALL_ARTIFACTS_DIR=${{ inputs.hermes-tarball-artifacts-dir }}
+        TARBALL_FILENAME=$(node ./packages/react-native/scripts/hermes/get-tarball-name.js --buildType "${{ inputs.flavor }}")
+        TARBALL_PATH=$HERMES_TARBALL_ARTIFACTS_DIR/$TARBALL_FILENAME
+        if [[ -e $TARBALL_PATH ]]; then
+          tar -xf $TARBALL_PATH
+          echo 'print(HermesInternal?.getRuntimeProperties?.()["OSS Release Version"])' > test.js
+          ./destroot/bin/hermes test.js
+          rm test.js
+          rm -rf destroot
+        else
+          echo 'No Hermes tarball found.'
+        fi
+    - name: Setup xcode build cache
+      uses: ./.github/actions/setup_xcode_build_cache
+      with:
+        hermes-version: ${{ inputs.hermes-version }}
+    - name: Install CocoaPods dependencies
+      shell: bash
+      run: |
+        if [[ ${{ inputs.jsengine }} == "JSC" ]]; then
+          export USE_HERMES=0
+        fi
+
+        if [[ ${{ inputs.use-frameworks }} == "DynamicFrameworks" ]]; then
+          export USE_FRAMEWORKS=dynamic
+        fi
+
+        if [[ ${{ inputs.architecture }} == "NewArch" ]]; then
+          export RCT_NEW_ARCH_ENABLED=1
+        fi
+        
+        cd packages/rn-tester
+
+        bundle install
+        bundle exec pod install
+    - name: Build RNTester
+      if: ${{ inputs.run-unit-tests != true }}
+      shell: bash
+      run: |
+        xcodebuild build \
+          -workspace packages/rn-tester/RNTesterPods.xcworkspace \
+          -scheme RNTester \
+          -sdk iphonesimulator
+    - name: "Run Tests: iOS Unit and Integration Tests"
+      if: ${{ inputs.run-unit-tests == true }}
+      shell: bash
+      run: node ./scripts/circleci/run_with_retry.js 3 yarn test-ios
+    - name: Zip Derived data folder
+      if: ${{ inputs.run-unit-tests == true }}
+      shell: bash
+      run: |
+        echo "zipping tests results"
+        cd /Users/distiller/Library/Developer/Xcode
+        XCRESULT_PATH=$(find . -name '*.xcresult')
+        tar -zcvf xcresults.tar.gz $XCRESULT_PATH
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2.2.4
+      if: ${{ inputs.run-unit-tests == true }}
+      with:
+        name: xcresults
+        path: /Users/distiller/Library/Developer/Xcode/xcresults.tar.gz
+    - name: Report bundle size
+      if: ${{ inputs.run-unit-tests == true }}
+      uses: ./.github/actions/report_bundle_size
+      with:
+        platform: ios
+    - name: Store test results
+      if: ${{ inputs.run-unit-tests == true }}
+      uses: actions/upload-artifact@v2.2.4
+      with:
+        name: test-results
+        path: ./reports/junit
