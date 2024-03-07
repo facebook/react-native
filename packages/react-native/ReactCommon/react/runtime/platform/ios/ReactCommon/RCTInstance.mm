@@ -422,7 +422,6 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
         if (error) {
           // TODO(T91461138): Properly address bundle loading errors.
           RCTLogError(@"RCTInstance: Error while loading bundle: %@", error);
-          [strongSelf invalidate];
           return;
         }
         // DevSettings module is needed by _loadScriptFromSource's callback so prior initialization is required
