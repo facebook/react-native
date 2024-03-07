@@ -1,4 +1,4 @@
-name: check_if_apple_artifacts_are_there
+name: check_apple_artifacts_present
 description: "Check if the required artifacts already exist"
 inputs:
   flavor:
