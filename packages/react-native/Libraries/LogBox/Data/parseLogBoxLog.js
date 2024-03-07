@@ -18,11 +18,62 @@ import ansiRegex from 'ansi-regex';
 
 const ANSI_REGEX = ansiRegex().source;
 
-const BABEL_TRANSFORM_ERROR_FORMAT =
+const RE_TRANSFORM_ERROR = /^TransformError /;
+const RE_COMPONENT_STACK_LINE = /\n {4}(in|at) /;
+const RE_COMPONENT_STACK_LINE_GLOBAL = /\n {4}(in|at) /g;
+const RE_COMPONENT_STACK_LINE_OLD = / {4}in/;
+const RE_COMPONENT_STACK_LINE_NEW = / {4}at/;
+const RE_COMPONENT_STACK_LINE_STACK_FRAME = /@.*\n/;
+
+// "TransformError " (Optional) and either "SyntaxError: " or "ReferenceError: "
+// Capturing groups:
+// 1: error message
+// 2: file path
+// 3: line number
+// 4: column number
+// \n\n
+// 5: code frame
+const RE_BABEL_TRANSFORM_ERROR_FORMAT =
   /^(?:TransformError )?(?:SyntaxError: |ReferenceError: )(.*): (.*) \((\d+):(\d+)\)\n\n([\s\S]+)/;
 
+// Capturing groups:
+// 1: component name
+// "at"
+// 2: file path including extension
+// 3: line number
+const RE_COMPONENT_STACK_WITH_SOURCE =
+  /(.*) \(at (.*\.(?:js|jsx|ts|tsx)):([\d]+)\)/;
+
+// Capturing groups:
+// 1: component name
+// "at"
+// 2: parent component name
+const RE_COMPONENT_STACK_NO_SOURCE = /(.*) \(created by .*\)/;
+
+// Capturing groups:
+// - non-capturing "TransformError " (optional)
+// - non-capturing Error message
+// 1: file path
+// 2: file name
+// 3: error message
+// 4: code frame, which includes code snippet indicators or terminal escape sequences for formatting.
+const RE_BABEL_CODE_FRAME_ERROR_FORMAT =
+  // eslint-disable-next-line no-control-regex
+  /^(?:TransformError )?(?:.*):? (?:.*?)(\/.*): ([\s\S]+?)\n([ >]{2}[\d\s]+ \|[\s\S]+|\u{001b}[\s\S]+)/u;
+
+// Capturing groups:
+// - non-capturing "InternalError Metro has encountered an error:"
+// 1: error title
+// 2: error message
+// 3: file path
+// 4: line number
+// 5: column number
+// 6: code frame, which includes code snippet indicators or terminal escape sequences for formatting.
+const RE_METRO_ERROR_FORMAT =
+  /^(?:InternalError Metro has encountered an error:) (.*): (.*) \((\d+):(\d+)\)\n\n([\s\S]+)/u;
+
 // https://github.com/babel/babel/blob/33dbb85e9e9fe36915273080ecc42aee62ed0ade/packages/babel-code-frame/src/index.ts#L183-L184
-const BABEL_CODE_FRAME_MARKER_PATTERN = new RegExp(
+const RE_BABEL_CODE_FRAME_MARKER_PATTERN = new RegExp(
   [
     // Beginning of a line (per 'm' flag)
     '^',
@@ -41,13 +92,6 @@ const BABEL_CODE_FRAME_MARKER_PATTERN = new RegExp(
   ].join(''),
   'm',
 );
-
-const BABEL_CODE_FRAME_ERROR_FORMAT =
-  // eslint-disable-next-line no-control-regex
-  /^(?:TransformError )?(?:.*):? (?:.*?)(\/.*): ([\s\S]+?)\n([ >]{2}[\d\s]+ \|[\s\S]+|\u{001b}[\s\S]+)/u;
-
-const METRO_ERROR_FORMAT =
-  /^(?:InternalError Metro has encountered an error:) (.*): (.*) \((\d+):(\d+)\)\n\n([\s\S]+)/u;
 
 export type ExtendedExceptionData = ExceptionData & {
   isComponentError: boolean,
@@ -158,9 +202,12 @@ export function parseInterpolation(args: $ReadOnlyArray<mixed>): $ReadOnly<{|
 }
 
 function isComponentStack(consoleArgument: string) {
-  const isOldComponentStackFormat = / {4}in/.test(consoleArgument);
-  const isNewComponentStackFormat = / {4}at/.test(consoleArgument);
-  const isNewJSCComponentStackFormat = /@.*\n/.test(consoleArgument);
+  const isOldComponentStackFormat =
+    RE_COMPONENT_STACK_LINE_OLD.test(consoleArgument);
+  const isNewComponentStackFormat =
+    RE_COMPONENT_STACK_LINE_NEW.test(consoleArgument);
+  const isNewJSCComponentStackFormat =
+    RE_COMPONENT_STACK_LINE_STACK_FRAME.test(consoleArgument);
 
   return (
     isOldComponentStackFormat ||
@@ -187,12 +234,12 @@ export function parseComponentStack(message: string): ComponentStack {
   }
 
   return message
-    .split(/\n {4}in /g)
+    .split(RE_COMPONENT_STACK_LINE_GLOBAL)
     .map(s => {
       if (!s) {
         return null;
       }
-      const match = s.match(/(.*) \(at (.*\.(?:js|jsx|ts|tsx)):([\d]+)\)/);
+      const match = s.match(RE_COMPONENT_STACK_WITH_SOURCE);
       if (match) {
         let [content, fileName, row] = match.slice(1);
         return {
@@ -203,7 +250,7 @@ export function parseComponentStack(message: string): ComponentStack {
       }
 
       // In some cases, the component stack doesn't have a source.
-      const matchWithoutSource = s.match(/(.*) \(created by .*\)/);
+      const matchWithoutSource = s.match(RE_COMPONENT_STACK_NO_SOURCE);
       if (matchWithoutSource) {
         return {
           content: matchWithoutSource[1],
@@ -223,7 +270,7 @@ export function parseLogBoxException(
   const message =
     error.originalMessage != null ? error.originalMessage : 'Unknown';
 
-  const metroInternalError = message.match(METRO_ERROR_FORMAT);
+  const metroInternalError = message.match(RE_METRO_ERROR_FORMAT);
   if (metroInternalError) {
     const [content, fileName, row, column, codeFrame] =
       metroInternalError.slice(1);
@@ -251,7 +298,7 @@ export function parseLogBoxException(
     };
   }
 
-  const babelTransformError = message.match(BABEL_TRANSFORM_ERROR_FORMAT);
+  const babelTransformError = message.match(RE_BABEL_TRANSFORM_ERROR_FORMAT);
   if (babelTransformError) {
     // Transform errors are thrown from inside the Babel transformer.
     const [fileName, content, row, column, codeFrame] =
@@ -281,8 +328,8 @@ export function parseLogBoxException(
 
   // Perform a cheap match first before trying to parse the full message, which
   // can get expensive for arbitrary input.
-  if (BABEL_CODE_FRAME_MARKER_PATTERN.test(message)) {
-    const babelCodeFrameError = message.match(BABEL_CODE_FRAME_ERROR_FORMAT);
+  if (RE_BABEL_CODE_FRAME_MARKER_PATTERN.test(message)) {
+    const babelCodeFrameError = message.match(RE_BABEL_CODE_FRAME_ERROR_FORMAT);
 
     if (babelCodeFrameError) {
       // Codeframe errors are thrown from any use of buildCodeFrameError.
@@ -307,7 +354,7 @@ export function parseLogBoxException(
     }
   }
 
-  if (message.match(/^TransformError /)) {
+  if (message.match(RE_TRANSFORM_ERROR)) {
     return {
       level: 'syntax',
       stack: error.stack,
@@ -386,7 +433,7 @@ export function parseLogBoxLog(args: $ReadOnlyArray<mixed>): {|
     for (const arg of args) {
       if (typeof arg === 'string' && isComponentStack(arg)) {
         // Strip out any messages before the component stack.
-        let messageEndIndex = arg.search(/\n {4}(in|at) /);
+        let messageEndIndex = arg.search(RE_COMPONENT_STACK_LINE);
         if (messageEndIndex < 0) {
           // Handle JSC component stacks.
           messageEndIndex = arg.search(/\n/);
