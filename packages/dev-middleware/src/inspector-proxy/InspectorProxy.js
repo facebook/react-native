@@ -258,7 +258,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
         }
 
         device.handleDebuggerConnection(socket, pageId, {
-          userAgent: req.headers['user-agent'] ?? null,
+          userAgent: req.headers['user-agent'] ?? query.userAgent ?? null,
         });
       } catch (e) {
         console.error(e);
