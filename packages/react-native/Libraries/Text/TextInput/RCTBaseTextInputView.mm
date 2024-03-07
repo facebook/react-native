@@ -658,17 +658,60 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
                           }];
 }
 
+- (NSString *)returnKeyTypeToString:(UIReturnKeyType)returnKeyType {
+switch (returnKeyType) {
+    case UIReturnKeyDefault:
+        return @"Default";
+    case UIReturnKeyGo:
+        return @"Go";
+    case UIReturnKeyNext:
+        return @"Next";
+    case UIReturnKeySearch:
+        return @"Search";
+    case UIReturnKeySend:
+        return @"Send";
+    case UIReturnKeyYahoo:
+        return @"Yahoo";
+    case UIReturnKeyGoogle:
+        return @"Google";
+    case UIReturnKeyRoute:
+        return @"Route";
+    case UIReturnKeyJoin:
+        return @"Join";
+    case UIReturnKeyEmergencyCall:
+        return @"Emergency Call";
+    default:
+        return @"Done";
+  }
+ }
+
 - (void)setDefaultInputAccessoryView
 {
   UIView<RCTBackedTextInputViewProtocol> *textInputView = self.backedTextInputView;
   UIKeyboardType keyboardType = textInputView.keyboardType;
 
-  // These keyboard types (all are number pads) don't have a "Done" button by default,
+  // These keyboard types (all are number pads) don't have a Return Key button by default,
   // so we create an `inputAccessoryView` with this button for them.
+
+  NSArray<NSNumber *> *returnKeyTypes = @[
+        @(UIReturnKeyDone),
+        @(UIReturnKeyGo),
+        @(UIReturnKeyDefault),
+        @(UIReturnKeyNext),
+        @(UIReturnKeySearch),
+        @(UIReturnKeySend),
+        @(UIReturnKeyYahoo),
+        @(UIReturnKeyGoogle),
+        @(UIReturnKeyRoute),
+        @(UIReturnKeyJoin),
+        @(UIReturnKeyRoute),
+        @(UIReturnKeyEmergencyCall)
+  ];
+  BOOL containsKeyType = [returnKeyTypes containsObject:@(textInputView.returnKeyType)];
   BOOL shouldHaveInputAccessoryView =
       (keyboardType == UIKeyboardTypeNumberPad || keyboardType == UIKeyboardTypePhonePad ||
        keyboardType == UIKeyboardTypeDecimalPad || keyboardType == UIKeyboardTypeASCIICapableNumberPad) &&
-      textInputView.returnKeyType == UIReturnKeyDone;
+      containsKeyType;
 
   if (_hasInputAccessoryView == shouldHaveInputAccessoryView) {
     return;
@@ -677,14 +720,17 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
   _hasInputAccessoryView = shouldHaveInputAccessoryView;
 
   if (shouldHaveInputAccessoryView) {
+    NSString *buttonLabel = [self returnKeyTypeToString:textInputView.returnKeyType];
+
     UIToolbar *toolbarView = [UIToolbar new];
     [toolbarView sizeToFit];
     UIBarButtonItem *flexibleSpace =
         [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-    UIBarButtonItem *doneButton =
-        [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
-                                                      target:self
-                                                      action:@selector(handleInputAccessoryDoneButton)];
+    UIBarButtonItem *doneButton = 
+        [[UIBarButtonItem alloc] initWithTitle:buttonLabel 
+                                         style:UIBarButtonItemStylePlain 
+                                        target:self 
+                                        action:@selector(handleInputAccessoryDoneButton)];
     toolbarView.items = @[ flexibleSpace, doneButton ];
     textInputView.inputAccessoryView = toolbarView;
   } else {
