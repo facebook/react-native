@@ -465,8 +465,7 @@ function generateCode(outputPath, schemaInfo, includesGeneratedCode, platform) {
   const outputDir =
     reactNativeCoreLibraryOutputPath(libraryName, platform) ?? outputPath;
   fs.mkdirSync(outputDir, {recursive: true});
-  // TODO: Fix this. This will not work on Windows.
-  execSync(`cp -R ${tmpOutputDir}/* "${outputDir}"`);
+  fs.cpSync(tmpOutputDir, outputDir, {recursive: true});
   console.log(`[Codegen] Generated artifacts: ${outputDir}`);
 }
 
