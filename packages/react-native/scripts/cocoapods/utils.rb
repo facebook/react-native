@@ -86,6 +86,27 @@ class ReactNativePodsUtils
         end
     end
 
+    def self.fix_flipper_for_xcode_15_3(installer)
+        installer.pods_project.targets.each do |target|
+            if target.name == 'Flipper'
+                file_path = 'Pods/Flipper/xplat/Flipper/FlipperTransportTypes.h'
+                if !File.exist?(file_path)
+                    return
+                end
+
+                contents = File.read(file_path)
+                if contents.include?('#include <functional>')
+                    return
+                end
+                mod_content = contents.gsub("#pragma once", "#pragma once\n#include <functional>")
+                File.chmod(0755, file_path)
+                File.open(file_path, 'w') do |file|
+                    file.puts(mod_content)
+                end
+            end
+        end
+    end
+
     def self.set_use_hermes_build_setting(installer, hermes_enabled)
         Pod::UI.puts("Setting USE_HERMES build settings")
         projects = self.extract_projects(installer)
