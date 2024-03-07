@@ -97,7 +97,7 @@ jobs:
             /tmp/hermes/hermes/
           key: v5-hermes-${{ github.run_number }}-${{ steps.hermes-version.outputs.version }}
           enableCrossOsArchive: true
-      - name: Yarn- Install Dependencies
+      - name: Install dependencies
         if: ${{ ! contains(github.event.head_commit.message, 'Bump metro@') }}
         run: yarn install --non-interactive
       - name: Download Hermes tarball
