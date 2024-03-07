@@ -1287,6 +1287,54 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
       });
     });
 
+    it('detects a component stack for ts, tsx, jsx, and js files', () => {
+      expect(
+        parseLogBoxLog([
+          'Some kind of message\n    in MyTSComponent (at MyTSXComponent.ts:1)\n    in MyTSXComponent (at MyTSCComponent.tsx:1)\n    in MyJSXComponent (at MyJSXComponent.jsx:1)\n    in MyJSComponent (at MyJSComponent.js:1)',
+        ]),
+      ).toEqual({
+        componentStack: [
+          {
+            content: 'MyTSComponent',
+            fileName: 'MyTSXComponent.ts',
+            location: {
+              column: -1,
+              row: 1,
+            },
+          },
+          {
+            content: 'MyTSXComponent',
+            fileName: 'MyTSCComponent.tsx',
+            location: {
+              column: -1,
+              row: 1,
+            },
+          },
+          {
+            content: 'MyJSXComponent',
+            fileName: 'MyJSXComponent.jsx',
+            location: {
+              column: -1,
+              row: 1,
+            },
+          },
+          {
+            content: 'MyJSComponent',
+            fileName: 'MyJSComponent.js',
+            location: {
+              column: -1,
+              row: 1,
+            },
+          },
+        ],
+        category: 'Some kind of message',
+        message: {
+          content: 'Some kind of message',
+          substitutions: [],
+        },
+      });
+    });
+
     it('detects a component stack in the first argument (JSC)', () => {
       expect(
         parseLogBoxLog([
