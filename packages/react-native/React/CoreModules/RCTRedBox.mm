@@ -274,7 +274,13 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 
 - (void)reload
 {
-  [_actionDelegate reloadFromRedBoxController:self];
+  if (_actionDelegate != nil) {
+    [_actionDelegate reloadFromRedBoxController:self];
+  } else {
+    // In bridgeless mode `RCTRedBox` gets deallocated, we need to notify listeners anyway.
+    RCTTriggerReloadCommandListeners(@"Redbox");
+    [self dismiss];
+  }
 }
 
 - (void)showExtraDataViewController

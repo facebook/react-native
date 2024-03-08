@@ -28,6 +28,8 @@
 #import <React/RCTLogBox.h>
 #import <React/RCTModuleData.h>
 #import <React/RCTPerformanceLogger.h>
+#import <React/RCTRedBox.h>
+#import <React/RCTReloadCommand.h>
 #import <React/RCTSurfacePresenter.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
 #import <ReactCommon/RuntimeExecutor.h>
@@ -122,10 +124,17 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
           }];
     }
 
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(_notifyEventDispatcherObserversOfEvent_DEPRECATED:)
-                                                 name:@"RCTNotifyEventDispatcherObserversOfEvent_DEPRECATED"
-                                               object:nil];
+    NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];
+
+    [defaultCenter addObserver:self
+                      selector:@selector(_notifyEventDispatcherObserversOfEvent_DEPRECATED:)
+                          name:@"RCTNotifyEventDispatcherObserversOfEvent_DEPRECATED"
+                        object:nil];
+
+    [defaultCenter addObserver:self
+                      selector:@selector(didReceiveReloadCommand)
+                          name:RCTTriggerReloadCommandNotification
+                        object:nil];
 
     [self _start];
   }
@@ -389,6 +398,24 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   }
 }
 
+- (void)handleBundleLoadingError:(NSError *)error
+{
+  if (!_valid) {
+    return;
+  }
+
+  RCTRedBox *redBox = [_turboModuleManager moduleForName:"RedBox"];
+
+  RCTExecuteOnMainQueue(^{
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidFailToLoadNotification
+                                                        object:self
+                                                      userInfo:@{@"error" : error}];
+    [redBox showErrorMessage:[error localizedDescription]];
+
+    RCTFatal(error);
+  });
+}
+
 - (void)_loadJSBundle:(NSURL *)sourceURL
 {
 #if RCT_DEV_MENU && __has_include(<React/RCTDevLoadingViewProtocol.h>)
@@ -420,8 +447,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
         }
 
         if (error) {
-          // TODO(T91461138): Properly address bundle loading errors.
-          RCTLogError(@"RCTInstance: Error while loading bundle: %@", error);
+          [strongSelf handleBundleLoadingError:error];
           [strongSelf invalidate];
           return;
         }
@@ -488,6 +514,11 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
                      message:message
                  exceptionId:errorMap.getInt(JSErrorHandlerKey::kExceptionId)
                      isFatal:errorMap.getBool(JSErrorHandlerKey::kIsFatal)];
+}
+
+- (void)didReceiveReloadCommand
+{
+  [self _loadJSBundle:[_bridgeModuleDecorator.bundleManager bundleURL]];
 }
 
 @end
