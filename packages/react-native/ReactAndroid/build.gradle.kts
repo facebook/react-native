@@ -149,6 +149,14 @@ val preparePrefab by
                   "react_render_mapbuffer",
                   Pair("../ReactCommon/react/renderer/mapbuffer/", "react/renderer/mapbuffer/")),
               PrefabPreprocessingEntry(
+                  "react_render_textlayoutmanager",
+                  listOf(
+                      Pair(
+                          "../ReactCommon/react/renderer/textlayoutmanager/",
+                          "react/renderer/textlayoutmanager/"),
+                      Pair("../ReactCommon/react/renderer/textlayoutmanager/platform/android/", ""),
+                  )),
+              PrefabPreprocessingEntry(
                   "yoga",
                   listOf(
                       Pair("../ReactCommon/yoga/", ""),
@@ -556,6 +564,7 @@ android {
             "glog",
             "fabricjni",
             "react_render_mapbuffer",
+            "react_render_textlayoutmanager",
             "yoga",
             "folly_runtime",
             "react_nativemodule_core",
@@ -685,6 +694,9 @@ android {
     create("fabricjni") { headers = File(prefabHeadersDir, "fabricjni").absolutePath }
     create("react_render_mapbuffer") {
       headers = File(prefabHeadersDir, "react_render_mapbuffer").absolutePath
+    }
+    create("react_render_textlayoutmanager") {
+      headers = File(prefabHeadersDir, "react_render_textlayoutmanager").absolutePath
     }
     create("yoga") { headers = File(prefabHeadersDir, "yoga").absolutePath }
     create("folly_runtime") { headers = File(prefabHeadersDir, "folly_runtime").absolutePath }
