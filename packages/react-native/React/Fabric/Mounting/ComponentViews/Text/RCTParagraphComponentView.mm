@@ -35,6 +35,7 @@ using namespace facebook::react;
   ParagraphAttributes _paragraphAttributes;
   RCTParagraphComponentAccessibilityProvider *_accessibilityProvider;
   UILongPressGestureRecognizer *_longPressGestureRecognizer;
+  CAShapeLayer *_highlightLayer;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -132,7 +133,21 @@ using namespace facebook::react;
   [nativeTextLayoutManager drawAttributedString:_state->getData().attributedString
                             paragraphAttributes:_paragraphAttributes
                                           frame:frame
-                                    textStorage:unwrapManagedObject(nsTextStorage)];
+                                    textStorage:unwrapManagedObject(nsTextStorage)
+                              drawHighlightPath:^(UIBezierPath *highlightPath) {
+                                if (highlightPath) {
+                                  if (!self->_highlightLayer) {
+                                    self->_highlightLayer = [CAShapeLayer layer];
+                                    self->_highlightLayer.fillColor = [UIColor colorWithWhite:0 alpha:0.25].CGColor;
+                                    [self.layer addSublayer:self->_highlightLayer];
+                                  }
+                                  self->_highlightLayer.position = frame.origin;
+                                  self->_highlightLayer.path = highlightPath.CGPath;
+                                } else {
+                                  [self->_highlightLayer removeFromSuperlayer];
+                                  self->_highlightLayer = nil;
+                                }
+                              }];
 }
 
 #pragma mark - Accessibility
