@@ -96,7 +96,7 @@ public class ReactActivityDelegate {
     return mMainComponentName;
   }
 
-  protected void onCreate(Bundle savedInstanceState) {
+  public void onCreate(Bundle savedInstanceState) {
     String mainComponentName = getMainComponentName();
     final Bundle launchOptions = composeLaunchOptions();
     if (ReactFeatureFlags.enableBridgelessArchitecture) {
@@ -122,11 +122,11 @@ public class ReactActivityDelegate {
     getPlainActivity().setContentView(mReactDelegate.getReactRootView());
   }
 
-  protected void onPause() {
+  public void onPause() {
     mReactDelegate.onHostPause();
   }
 
-  protected void onResume() {
+  public void onResume() {
     mReactDelegate.onHostResume();
 
     if (mPermissionsCallback != null) {
@@ -135,7 +135,7 @@ public class ReactActivityDelegate {
     }
   }
 
-  protected void onDestroy() {
+  public void onDestroy() {
     mReactDelegate.onHostDestroy();
   }
 
@@ -220,14 +220,11 @@ public class ReactActivityDelegate {
   public void onRequestPermissionsResult(
       final int requestCode, final String[] permissions, final int[] grantResults) {
     mPermissionsCallback =
-        new Callback() {
-          @Override
-          public void invoke(Object... args) {
-            if (mPermissionListener != null
-                && mPermissionListener.onRequestPermissionsResult(
-                    requestCode, permissions, grantResults)) {
-              mPermissionListener = null;
-            }
+        args -> {
+          if (mPermissionListener != null
+              && mPermissionListener.onRequestPermissionsResult(
+                  requestCode, permissions, grantResults)) {
+            mPermissionListener = null;
           }
         };
   }
