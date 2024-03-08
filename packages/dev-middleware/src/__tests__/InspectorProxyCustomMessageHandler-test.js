@@ -56,13 +56,13 @@ describe('inspector proxy device message middleware', () => {
               ...page,
               capabilities: expect.any(Object),
             }),
-            deviceInfo: expect.objectContaining({
+            device: expect.objectContaining({
               appId: expect.any(String),
               id: expect.any(String),
               name: expect.any(String),
               sendMessage: expect.any(Function),
             }),
-            debuggerInfo: expect.objectContaining({
+            debugger: expect.objectContaining({
               userAgent: null,
               sendMessage: expect.any(Function),
             }),
@@ -102,10 +102,10 @@ describe('inspector proxy device message middleware', () => {
       await until(() =>
         expect(createCustomMessageHandler).toBeCalledWith(
           expect.objectContaining({
-            deviceInfo: expect.objectContaining({
+            device: expect.objectContaining({
               sendMessage: expect.any(Function),
             }),
-            debuggerInfo: expect.objectContaining({
+            debugger: expect.objectContaining({
               sendMessage: expect.any(Function),
             }),
           }),
@@ -113,7 +113,7 @@ describe('inspector proxy device message middleware', () => {
       );
 
       // Send a message to the device
-      createCustomMessageHandler.mock.calls[0][0].deviceInfo.sendMessage({
+      createCustomMessageHandler.mock.calls[0][0].device.sendMessage({
         id: 1,
       });
       // Ensure the device received the message
@@ -128,7 +128,7 @@ describe('inspector proxy device message middleware', () => {
       );
 
       // Send a message to the debugger
-      createCustomMessageHandler.mock.calls[0][0].debuggerInfo.sendMessage({
+      createCustomMessageHandler.mock.calls[0][0].debugger.sendMessage({
         id: 2,
       });
       // Ensure the debugger received the message

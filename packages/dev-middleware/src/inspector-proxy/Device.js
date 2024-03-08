@@ -482,7 +482,7 @@ export default class Device {
       const debuggerConnection = this.#debuggerConnection;
       if (debuggerConnection != null) {
         if (
-          debuggerConnection.customHandler?.handleDebuggerMessage(
+          debuggerConnection.customHandler?.handleDeviceMessage(
             parsedPayload,
           ) === true
         ) {
