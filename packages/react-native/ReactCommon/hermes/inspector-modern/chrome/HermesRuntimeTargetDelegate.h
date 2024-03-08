@@ -13,6 +13,10 @@
 #include <hermes/hermes.h>
 #include <jsinspector-modern/ReactCdp.h>
 
+#ifdef HERMES_ENABLE_DEBUGGER
+#include <hermes/cdp/CDPDebugAPI.h>
+#endif
+
 #include <memory>
 
 namespace facebook::react::jsinspector_modern {
@@ -42,7 +46,19 @@ class HermesRuntimeTargetDelegate : public RuntimeTargetDelegate {
       RuntimeExecutor runtimeExecutor) override;
 
  private:
+  // We use the private implementation idiom to ensure this class has the same
+  // layout regardless of whether HERMES_ENABLE_DEBUGGER is defined. The net
+  // effect is that callers can include HermesRuntimeTargetDelegate.h without
+  // setting HERMES_ENABLE_DEBUGGER one way or the other.
   class Impl;
+
+// Callers within this library may set HERMES_ENABLE_DEBUGGER to see this extra
+// API.
+#ifdef HERMES_ENABLE_DEBUGGER
+  friend class HermesRuntimeAgentDelegateNew;
+
+  hermes::cdp::CDPDebugAPI& getCDPDebugAPI();
+#endif
 
   std::unique_ptr<Impl> impl_;
 };
