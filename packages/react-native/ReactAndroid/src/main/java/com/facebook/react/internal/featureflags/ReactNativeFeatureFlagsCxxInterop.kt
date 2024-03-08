@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<cd7257d4b1414f7aacd02a79b9295a46>>
+ * @generated SignedSource<<9b38540981705aea015b0a5d0ac07c6e>>
  */
 
 /**
@@ -45,6 +45,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun enableSpannableBuildingUnification(): Boolean
 
   @DoNotStrip @JvmStatic public external fun inspectorEnableCxxInspectorPackagerConnection(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun inspectorEnableHermesCDPAgent(): Boolean
 
   @DoNotStrip @JvmStatic public external fun inspectorEnableModernCDPRegistry(): Boolean
 

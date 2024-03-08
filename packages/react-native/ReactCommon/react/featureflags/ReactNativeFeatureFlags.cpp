@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fd7ff07ffc0f5f7b2d553a6b5064a1c0>>
+ * @generated SignedSource<<d85ce9d83e0ea9aa93923e81e2ffaec0>>
  */
 
 /**
@@ -55,6 +55,10 @@ bool ReactNativeFeatureFlags::enableSpannableBuildingUnification() {
 
 bool ReactNativeFeatureFlags::inspectorEnableCxxInspectorPackagerConnection() {
   return getAccessor().inspectorEnableCxxInspectorPackagerConnection();
+}
+
+bool ReactNativeFeatureFlags::inspectorEnableHermesCDPAgent() {
+  return getAccessor().inspectorEnableHermesCDPAgent();
 }
 
 bool ReactNativeFeatureFlags::inspectorEnableModernCDPRegistry() {

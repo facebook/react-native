@@ -72,6 +72,11 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Flag determining if the C++ implementation of InspectorPackagerConnection should be used instead of the per-platform one. This flag is global and should not be changed across React Host lifetimes.',
     },
+    inspectorEnableHermesCDPAgent: {
+      defaultValue: false,
+      description:
+        'Flag determining if the new Hermes CDPAgent API should be enabled in the modern CDP backend. This flag is global and should not be changed across React Host lifetimes.',
+    },
     inspectorEnableModernCDPRegistry: {
       defaultValue: false,
       description:

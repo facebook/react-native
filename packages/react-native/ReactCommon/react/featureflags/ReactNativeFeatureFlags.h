@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<cbf10b0a7ed3d4892d53e5ae2319f4a8>>
+ * @generated SignedSource<<e4631762e5a422465444236542d9c3aa>>
  */
 
 /**
@@ -81,6 +81,11 @@ class ReactNativeFeatureFlags {
    * Flag determining if the C++ implementation of InspectorPackagerConnection should be used instead of the per-platform one. This flag is global and should not be changed across React Host lifetimes.
    */
   RN_EXPORT static bool inspectorEnableCxxInspectorPackagerConnection();
+
+  /**
+   * Flag determining if the new Hermes CDPAgent API should be enabled in the modern CDP backend. This flag is global and should not be changed across React Host lifetimes.
+   */
+  RN_EXPORT static bool inspectorEnableHermesCDPAgent();
 
   /**
    * Flag determining if the modern CDP backend should be enabled. This flag is global and should not be changed across React Host lifetimes.

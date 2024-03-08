@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8539cf7ba13ab52ca878efd2c4858d7a>>
+ * @generated SignedSource<<c646fd173ad74a352afdd8138f55729e>>
  */
 
 /**
@@ -29,6 +29,7 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
   private var enableMountHooksAndroidCache: Boolean? = null
   private var enableSpannableBuildingUnificationCache: Boolean? = null
   private var inspectorEnableCxxInspectorPackagerConnectionCache: Boolean? = null
+  private var inspectorEnableHermesCDPAgentCache: Boolean? = null
   private var inspectorEnableModernCDPRegistryCache: Boolean? = null
   private var skipMountHookNotificationsCache: Boolean? = null
   private var useModernRuntimeSchedulerCache: Boolean? = null
@@ -110,6 +111,15 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.inspectorEnableCxxInspectorPackagerConnection()
       inspectorEnableCxxInspectorPackagerConnectionCache = cached
+    }
+    return cached
+  }
+
+  override fun inspectorEnableHermesCDPAgent(): Boolean {
+    var cached = inspectorEnableHermesCDPAgentCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.inspectorEnableHermesCDPAgent()
+      inspectorEnableHermesCDPAgentCache = cached
     }
     return cached
   }

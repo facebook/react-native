@@ -5,8 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "HermesRuntimeTargetDelegate.h"
+#include <jsinspector-modern/InspectorFlags.h>
+#include <jsinspector-modern/RuntimeTarget.h>
+
 #include "HermesRuntimeAgentDelegate.h"
+#include "HermesRuntimeAgentDelegateNew.h"
+#include "HermesRuntimeTargetDelegate.h"
 
 #ifdef HERMES_ENABLE_DEBUGGER
 #include <hermes/cdp/CDPDebugAPI.h>
@@ -23,16 +27,21 @@ namespace facebook::react::jsinspector_modern {
 class HermesRuntimeTargetDelegate::Impl : public RuntimeTargetDelegate {
  public:
 #ifdef HERMES_ENABLE_DEBUGGER
-  explicit Impl(std::shared_ptr<HermesRuntime> hermesRuntime)
-      : runtime_(std::move(hermesRuntime)),
+  explicit Impl(
+      HermesRuntimeTargetDelegate& delegate,
+      std::shared_ptr<HermesRuntime> hermesRuntime)
+      : delegate_(delegate),
+        runtime_(std::move(hermesRuntime)),
         cdpDebugAPI_(CDPDebugAPI::create(*runtime_)) {}
 
   CDPDebugAPI& getCDPDebugAPI() {
     return *cdpDebugAPI_;
   }
 #else
-  explicit Impl(std::shared_ptr<HermesRuntime> hermesRuntime)
-      : runtime_(std::move(hermesRuntime)) {}
+  explicit Impl(
+      HermesRuntimeTargetDelegate& delegate,
+      std::shared_ptr<HermesRuntime> hermesRuntime)
+      : delegate_(delegate), runtime_(std::move(hermesRuntime)) {}
 #endif
 
   // RuntimeTargetDelegate methods
@@ -44,16 +53,29 @@ class HermesRuntimeTargetDelegate::Impl : public RuntimeTargetDelegate {
           previouslyExportedState,
       const ExecutionContextDescription& executionContextDescription,
       RuntimeExecutor runtimeExecutor) override {
-    return std::unique_ptr<RuntimeAgentDelegate>(new HermesRuntimeAgentDelegate(
-        frontendChannel,
-        sessionState,
-        std::move(previouslyExportedState),
-        executionContextDescription,
-        runtime_,
-        std::move(runtimeExecutor)));
+    auto& inspectorFlags = InspectorFlags::getInstance();
+
+    return inspectorFlags.getEnableHermesCDPAgent()
+        ? std::unique_ptr<RuntimeAgentDelegate>(
+              new HermesRuntimeAgentDelegateNew(
+                  frontendChannel,
+                  sessionState,
+                  std::move(previouslyExportedState),
+                  executionContextDescription,
+                  *runtime_,
+                  delegate_,
+                  std::move(runtimeExecutor)))
+        : std::unique_ptr<RuntimeAgentDelegate>(new HermesRuntimeAgentDelegate(
+              frontendChannel,
+              sessionState,
+              std::move(previouslyExportedState),
+              executionContextDescription,
+              runtime_,
+              std::move(runtimeExecutor)));
   }
 
  private:
+  HermesRuntimeTargetDelegate& delegate_;
   std::shared_ptr<HermesRuntime> runtime_;
 
 #ifdef HERMES_ENABLE_DEBUGGER
@@ -63,7 +85,7 @@ class HermesRuntimeTargetDelegate::Impl : public RuntimeTargetDelegate {
 
 HermesRuntimeTargetDelegate::HermesRuntimeTargetDelegate(
     std::shared_ptr<HermesRuntime> hermesRuntime)
-    : impl_(std::make_unique<Impl>(std::move(hermesRuntime))) {}
+    : impl_(std::make_unique<Impl>(*this, std::move(hermesRuntime))) {}
 
 HermesRuntimeTargetDelegate::~HermesRuntimeTargetDelegate() = default;
 

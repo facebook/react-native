@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a3cb24f7faddd86beb617c8314c1bfed>>
+ * @generated SignedSource<<62ec63a2aebd866803cde1c1ca7d44c6>>
  */
 
 /**
@@ -81,6 +81,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun inspectorEnableCxxInspectorPackagerConnection(): Boolean = accessor.inspectorEnableCxxInspectorPackagerConnection()
+
+  /**
+   * Flag determining if the new Hermes CDPAgent API should be enabled in the modern CDP backend. This flag is global and should not be changed across React Host lifetimes.
+   */
+  @JvmStatic
+  public fun inspectorEnableHermesCDPAgent(): Boolean = accessor.inspectorEnableHermesCDPAgent()
 
   /**
    * Flag determining if the modern CDP backend should be enabled. This flag is global and should not be changed across React Host lifetimes.

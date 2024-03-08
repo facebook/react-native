@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5d1eca67ace8cccc336a6c6f65b40c99>>
+ * @generated SignedSource<<66678139be02293ff532e8e125ccc608>>
  * @flow strict-local
  */
 
@@ -49,6 +49,7 @@ export type ReactNativeFeatureFlags = {
   enableMountHooksAndroid: Getter<boolean>,
   enableSpannableBuildingUnification: Getter<boolean>,
   inspectorEnableCxxInspectorPackagerConnection: Getter<boolean>,
+  inspectorEnableHermesCDPAgent: Getter<boolean>,
   inspectorEnableModernCDPRegistry: Getter<boolean>,
   skipMountHookNotifications: Getter<boolean>,
   useModernRuntimeScheduler: Getter<boolean>,
@@ -130,6 +131,10 @@ export const enableSpannableBuildingUnification: Getter<boolean> = createNativeF
  * Flag determining if the C++ implementation of InspectorPackagerConnection should be used instead of the per-platform one. This flag is global and should not be changed across React Host lifetimes.
  */
 export const inspectorEnableCxxInspectorPackagerConnection: Getter<boolean> = createNativeFlagGetter('inspectorEnableCxxInspectorPackagerConnection', false);
+/**
+ * Flag determining if the new Hermes CDPAgent API should be enabled in the modern CDP backend. This flag is global and should not be changed across React Host lifetimes.
+ */
+export const inspectorEnableHermesCDPAgent: Getter<boolean> = createNativeFlagGetter('inspectorEnableHermesCDPAgent', false);
 /**
  * Flag determining if the modern CDP backend should be enabled. This flag is global and should not be changed across React Host lifetimes.
  */
