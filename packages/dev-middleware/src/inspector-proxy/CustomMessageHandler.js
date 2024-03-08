@@ -10,22 +10,22 @@
 
 import type {JSONSerializable, Page} from './types';
 
-type ExposedDeviceInfo = $ReadOnly<{
+type ExposedDevice = $ReadOnly<{
   appId: string,
   id: string,
   name: string,
   sendMessage: (message: JSONSerializable) => void,
 }>;
 
-type ExposedDebuggerInfo = $ReadOnly<{
+type ExposedDebugger = $ReadOnly<{
   userAgent: string | null,
   sendMessage: (message: JSONSerializable) => void,
 }>;
 
 export type CustomMessageHandlerConnection = $ReadOnly<{
   page: Page,
-  deviceInfo: ExposedDeviceInfo,
-  debuggerInfo: ExposedDebuggerInfo,
+  device: ExposedDevice,
+  debugger: ExposedDebugger,
 }>;
 
 export type CreateCustomMessageHandlerFn = (

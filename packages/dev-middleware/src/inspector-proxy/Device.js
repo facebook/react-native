@@ -232,7 +232,7 @@ export default class Device {
       this.#debuggerConnection.customHandler = this.#createCustomMessageHandler(
         {
           page,
-          debuggerInfo: {
+          debugger: {
             userAgent: debuggerInfo.userAgent,
             sendMessage: message => {
               try {
@@ -242,7 +242,7 @@ export default class Device {
               } catch {}
             },
           },
-          deviceInfo: {
+          device: {
             appId: this.#app,
             id: this.#id,
             name: this.#name,
