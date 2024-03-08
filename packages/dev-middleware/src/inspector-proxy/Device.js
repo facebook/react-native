@@ -477,20 +477,21 @@ export default class Device {
         });
       }
 
-      if (
-        this.#debuggerConnection?.customHandler?.handleDeviceMessage(
-          parsedPayload,
-        ) === true
-      ) {
-        return;
-      }
+      const debuggerConnection = this.#debuggerConnection;
+      if (debuggerConnection != null) {
+        if (
+          debuggerConnection.customHandler?.handleDebuggerMessage(
+            parsedPayload,
+          ) === true
+        ) {
+          return;
+        }
 
-      if (this.#debuggerConnection != null) {
         // Wrapping just to make flow happy :)
         // $FlowFixMe[unused-promise]
         this.#processMessageFromDeviceLegacy(
           parsedPayload,
-          this.#debuggerConnection,
+          debuggerConnection,
           pageId,
         ).then(() => {
           const messageToSend = JSON.stringify(parsedPayload);
