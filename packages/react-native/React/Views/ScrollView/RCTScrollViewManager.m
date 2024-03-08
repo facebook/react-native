@@ -12,9 +12,10 @@
 #import "RCTShadowView.h"
 #import "RCTUIManager.h"
 
-#if TARGET_OS_IOS // [macOS] [visionOS]
+#if !TARGET_OS_OSX // [macOS]
 @implementation RCTConvert (UIScrollView)
 
+#if TARGET_OS_IOS // [visionOS]
 RCT_ENUM_CONVERTER(
     UIScrollViewKeyboardDismissMode,
     (@{
@@ -26,6 +27,7 @@ RCT_ENUM_CONVERTER(
     }),
     UIScrollViewKeyboardDismissModeNone,
     integerValue)
+#endif // [visionOS]
 
 RCT_ENUM_CONVERTER(
     UIScrollViewIndicatorStyle,
@@ -49,7 +51,7 @@ RCT_ENUM_CONVERTER(
     integerValue)
 
 @end
-#endif // [macOS] [visionOS]
+#endif // [macOS]
 
 @implementation RCTScrollViewManager
 
