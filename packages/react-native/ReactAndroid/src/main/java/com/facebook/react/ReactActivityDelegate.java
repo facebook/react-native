@@ -31,16 +31,9 @@ public class ReactActivityDelegate {
 
   private @Nullable PermissionListener mPermissionListener;
   private @Nullable Callback mPermissionsCallback;
-  private ReactDelegate mReactDelegate;
+  private @Nullable ReactDelegate mReactDelegate;
 
-  @Deprecated
   public ReactActivityDelegate(@Nullable Activity activity, @Nullable String mainComponentName) {
-    mActivity = activity;
-    mMainComponentName = mainComponentName;
-  }
-
-  public ReactActivityDelegate(
-      @Nullable ReactActivity activity, @Nullable String mainComponentName) {
     mActivity = activity;
     mMainComponentName = mainComponentName;
   }
@@ -56,21 +49,11 @@ public class ReactActivityDelegate {
   }
 
   protected @Nullable Bundle composeLaunchOptions() {
-    Bundle composedLaunchOptions = getLaunchOptions();
-    if (isFabricEnabled()) {
-      if (composedLaunchOptions == null) {
-        composedLaunchOptions = new Bundle();
-      }
-    }
-    return composedLaunchOptions;
+    return getLaunchOptions();
   }
 
   protected ReactRootView createRootView() {
-    return new ReactRootView(getContext());
-  }
-
-  protected ReactRootView createRootView(Bundle initialProps) {
-    return new ReactRootView(getContext());
+    return Assertions.assertNotNull(mReactDelegate).createRootView();
   }
 
   /**
@@ -108,7 +91,7 @@ public class ReactActivityDelegate {
               getPlainActivity(), getReactNativeHost(), mainComponentName, launchOptions) {
             @Override
             protected ReactRootView createRootView() {
-              return ReactActivityDelegate.this.createRootView(launchOptions);
+              return ReactActivityDelegate.this.createRootView();
             }
           };
     }

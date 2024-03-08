@@ -452,7 +452,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   /**
    * Schedule rendering of the react component rendered by the JS application from the given JS
    * module (@{param moduleName}) using provided {@param reactInstanceManager} to attach to the JS
-   * context of that manager. Extra parameter {@param launchOptions} can be used to pass initial
+   * context of that manager. Extra parameter {@param initialProperties} can be used to pass initial
    * properties for the react component.
    */
   @ThreadConfined(UI)
