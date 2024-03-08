@@ -87,18 +87,21 @@ describe('public API', () => {
           return;
         }
 
+        let success = false;
         try {
           expect(await translateFlowToExportedAPI(source)).toMatchSnapshot();
 
-          if (FILES_WITH_KNOWN_ERRORS.has(file)) {
+          success = true;
+        } catch (e) {
+          if (!FILES_WITH_KNOWN_ERRORS.has(file)) {
+            console.error('Unable to parse file:', file, '\n' + e);
+          }
+        } finally {
+          if (success && FILES_WITH_KNOWN_ERRORS.has(file)) {
             console.error(
               'Expected parse error, please remove file exclude from FILES_WITH_KNOWN_ERRORS:',
               file,
             );
-          }
-        } catch (e) {
-          if (!FILES_WITH_KNOWN_ERRORS.has(file)) {
-            console.error('Unable to parse file:', file, '\n' + e);
           }
         }
       } else {
