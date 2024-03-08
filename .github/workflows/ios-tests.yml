@@ -36,7 +36,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: packages/rn-tester/Pods
-          key: v1-${{ runner.os }}-RNTesterPods-${{ hashFiles('packages/rn-tester/Podfile.lock') }}-${{ hashFiles('packages/rn-tester/Podfile') }}-${{ hashFiles('tmp/hermes/hermesversion') }}
+          key: v2-${{ runner.os }}-RNTesterPods-${{ hashFiles('packages/rn-tester/Podfile.lock') }}-${{ hashFiles('packages/rn-tester/Podfile') }}-${{ hashFiles('tmp/hermes/hermesversion') }}
       - name: Pod Install
         run: |
           cd packages/rn-tester
