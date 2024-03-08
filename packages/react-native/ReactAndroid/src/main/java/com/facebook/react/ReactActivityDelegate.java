@@ -31,6 +31,7 @@ public class ReactActivityDelegate {
 
   private @Nullable PermissionListener mPermissionListener;
   private @Nullable Callback mPermissionsCallback;
+  private @Nullable ReactHost mReactHost;
   private ReactDelegate mReactDelegate;
 
   @Deprecated
@@ -100,8 +101,9 @@ public class ReactActivityDelegate {
     String mainComponentName = getMainComponentName();
     final Bundle launchOptions = composeLaunchOptions();
     if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      mReactHost = getReactHost();
       mReactDelegate =
-          new ReactDelegate(getPlainActivity(), getReactHost(), mainComponentName, launchOptions);
+          new ReactDelegate(getPlainActivity(), mReactHost, mainComponentName, launchOptions);
     } else {
       mReactDelegate =
           new ReactDelegate(
