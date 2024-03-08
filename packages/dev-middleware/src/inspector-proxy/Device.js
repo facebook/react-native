@@ -55,6 +55,11 @@ type DebuggerInfo = {
   userAgent: string | null,
 };
 
+type DebuggerConnection = {
+  ...DebuggerInfo,
+  customHandler: ?CustomMessageHandler,
+};
+
 const REACT_NATIVE_RELOADABLE_PAGE_ID = '-1';
 
 /**
@@ -78,10 +83,7 @@ export default class Device {
   #pages: $ReadOnlyMap<string, Page>;
 
   // Stores information about currently connected debugger (if any).
-  #debuggerConnection: ?{
-    ...DebuggerInfo,
-    customHandler: ?CustomMessageHandler,
-  } = null;
+  #debuggerConnection: ?DebuggerConnection = null;
 
   // Last known Page ID of the React Native page.
   // This is used by debugger connections that don't have PageID specified
@@ -574,7 +576,7 @@ export default class Device {
   // Allows to make changes in incoming message from device.
   async #processMessageFromDeviceLegacy(
     payload: CDPServerMessage,
-    debuggerInfo: {...DebuggerInfo, ...},
+    debuggerInfo: DebuggerConnection,
     pageId: ?string,
   ) {
     // TODO(moti): Handle null case explicitly, or ideally associate a copy
@@ -691,7 +693,7 @@ export default class Device {
    */
   #interceptClientMessageForSourceFetching(
     req: CDPClientMessage,
-    debuggerInfo: {...DebuggerInfo, ...},
+    debuggerInfo: DebuggerConnection,
     socket: WS,
   ): CDPClientMessage | null {
     switch (req.method) {
@@ -708,7 +710,7 @@ export default class Device {
 
   #processDebuggerSetBreakpointByUrl(
     req: CDPRequest<'Debugger.setBreakpointByUrl'>,
-    debuggerInfo: {...DebuggerInfo, ...},
+    debuggerInfo: DebuggerConnection,
   ): CDPRequest<'Debugger.setBreakpointByUrl'> {
     // If we replaced Android emulator's address to localhost we need to change it back.
     if (debuggerInfo.originalSourceURLAddress != null) {
