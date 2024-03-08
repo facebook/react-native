@@ -40,7 +40,6 @@ TurboModule::TurboModule(
     : name_(std::move(name)), jsInvoker_(std::move(jsInvoker)) {}
 
 void TurboModule::emitDeviceEvent(
-    jsi::Runtime& runtime,
     const std::string& eventName,
     ArgFactory argFactory) {
   jsInvoker_->invokeAsync([eventName, argFactory](jsi::Runtime& rt) {

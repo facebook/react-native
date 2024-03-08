@@ -106,9 +106,17 @@ class JSI_EXPORT TurboModule : public facebook::jsi::HostObject {
    *  });
    */
   void emitDeviceEvent(
-      jsi::Runtime& runtime,
       const std::string& eventName,
       ArgFactory argFactory = nullptr);
+
+  // Backwards compatibility version
+  void emitDeviceEvent(
+      jsi::Runtime& /*runtime*/,
+
+      const std::string& eventName,
+      ArgFactory argFactory = nullptr) {
+    emitDeviceEvent(eventName, std::move(argFactory));
+  }
 
   virtual jsi::Value create(
       jsi::Runtime& runtime,
