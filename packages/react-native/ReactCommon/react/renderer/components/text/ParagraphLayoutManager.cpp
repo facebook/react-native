@@ -32,12 +32,14 @@ TextMeasurement ParagraphLayoutManager::measure(
 
     return cachedTextMeasurement_;
   } else {
+    hostTextStorage_ = textLayoutManager_->getHostTextStorage(
+        attributedString, paragraphAttributes, layoutConstraints);
     return textLayoutManager_->measure(
         AttributedStringBox(attributedString),
         paragraphAttributes,
         layoutContext,
         layoutConstraints,
-        nullptr);
+        hostTextStorage_);
   }
 }
 
