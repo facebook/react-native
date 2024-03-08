@@ -17,55 +17,51 @@ InspectorFlags& InspectorFlags::getInstance() {
   return instance;
 }
 
-InspectorFlags::InspectorFlags()
-    : enableModernCDPRegistry_(
-          ReactNativeFeatureFlags::inspectorEnableModernCDPRegistry()),
-      enableCxxInspectorPackagerConnection_(
-          ReactNativeFeatureFlags::
-              inspectorEnableCxxInspectorPackagerConnection()),
-      enableHermesCDPAgent_(
-          ReactNativeFeatureFlags::inspectorEnableHermesCDPAgent()) {}
-
 bool InspectorFlags::getEnableModernCDPRegistry() const {
-  assertFlagsMatchUpstream();
-  return enableModernCDPRegistry_;
+  return loadFlagsAndAssertUnchanged().enableModernCDPRegistry;
 }
 
 bool InspectorFlags::getEnableCxxInspectorPackagerConnection() const {
-  assertFlagsMatchUpstream();
-  return enableCxxInspectorPackagerConnection_ ||
+  auto& values = loadFlagsAndAssertUnchanged();
+
+  return values.enableCxxInspectorPackagerConnection ||
       // If we are using the modern CDP registry, then we must also use the C++
       // InspectorPackagerConnection implementation.
-      enableModernCDPRegistry_;
+      values.enableModernCDPRegistry;
 }
 
 bool InspectorFlags::getEnableHermesCDPAgent() const {
-  assertFlagsMatchUpstream();
-  return enableHermesCDPAgent_;
+  return loadFlagsAndAssertUnchanged().enableHermesCDPAgent;
 }
 
 void InspectorFlags::dangerouslyResetFlags() {
   *this = InspectorFlags{};
 }
 
-void InspectorFlags::assertFlagsMatchUpstream() const {
-  if (inconsistentFlagsStateLogged_) {
-    return;
+const InspectorFlags::Values& InspectorFlags::loadFlagsAndAssertUnchanged()
+    const {
+  InspectorFlags::Values newValues = {
+      .enableCxxInspectorPackagerConnection = ReactNativeFeatureFlags::
+          inspectorEnableCxxInspectorPackagerConnection(),
+      .enableHermesCDPAgent =
+          ReactNativeFeatureFlags::inspectorEnableHermesCDPAgent(),
+      .enableModernCDPRegistry =
+          ReactNativeFeatureFlags::inspectorEnableModernCDPRegistry(),
+  };
+
+  if (cachedValues_.has_value() && !inconsistentFlagsStateLogged_) {
+    if (cachedValues_ != newValues) {
+      LOG(ERROR)
+          << "[InspectorFlags] Error: One or more ReactNativeFeatureFlags values "
+          << "have changed during the global app lifetime. This may lead to "
+          << "inconsistent inspector behaviour. Please quit and restart the app.";
+      inconsistentFlagsStateLogged_ = true;
+    }
   }
 
-  if (enableModernCDPRegistry_ !=
-          ReactNativeFeatureFlags::inspectorEnableModernCDPRegistry() ||
-      enableCxxInspectorPackagerConnection_ !=
-          ReactNativeFeatureFlags::
-              inspectorEnableCxxInspectorPackagerConnection() ||
-      ReactNativeFeatureFlags::inspectorEnableHermesCDPAgent() !=
-          enableHermesCDPAgent_) {
-    LOG(ERROR)
-        << "[InspectorFlags] Error: One or more ReactNativeFeatureFlags values "
-        << "have changed during the global app lifetime. This may lead to "
-        << "inconsistent inspector behaviour. Please quit and restart the app.";
-    inconsistentFlagsStateLogged_ = true;
-  }
+  cachedValues_ = newValues;
+
+  return cachedValues_.value();
 }
 
 } // namespace facebook::react::jsinspector_modern
