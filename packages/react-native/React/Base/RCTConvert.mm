@@ -511,6 +511,17 @@ RCT_ENUM_CONVERTER(
     unsignedIntegerValue)
 
 RCT_ENUM_CONVERTER(
+    UIModalPresentationStyle,
+    (@{
+      @"fullScreen" : @(UIModalPresentationFullScreen),
+      @"pageSheet" : @(UIModalPresentationPageSheet),
+      @"formSheet" : @(UIModalPresentationFormSheet),
+      @"overFullScreen" : @(UIModalPresentationOverFullScreen),
+    }),
+    UIModalPresentationFullScreen,
+    integerValue)
+
+RCT_ENUM_CONVERTER(
     UIViewContentMode,
     (@{
       @"scale-to-fill" : @(UIViewContentModeScaleToFill),
