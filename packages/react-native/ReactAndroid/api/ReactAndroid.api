@@ -121,15 +121,15 @@ public class com/facebook/react/ReactActivityDelegate {
 	public fun onActivityResult (IILandroid/content/Intent;)V
 	public fun onBackPressed ()Z
 	public fun onConfigurationChanged (Landroid/content/res/Configuration;)V
-	protected fun onCreate (Landroid/os/Bundle;)V
-	protected fun onDestroy ()V
+	public fun onCreate (Landroid/os/Bundle;)V
+	public fun onDestroy ()V
 	public fun onKeyDown (ILandroid/view/KeyEvent;)Z
 	public fun onKeyLongPress (ILandroid/view/KeyEvent;)Z
 	public fun onKeyUp (ILandroid/view/KeyEvent;)Z
 	public fun onNewIntent (Landroid/content/Intent;)Z
-	protected fun onPause ()V
+	public fun onPause ()V
 	public fun onRequestPermissionsResult (I[Ljava/lang/String;[I)V
-	protected fun onResume ()V
+	public fun onResume ()V
 	public fun onWindowFocusChanged (Z)V
 	public fun requestPermissions ([Ljava/lang/String;ILcom/facebook/react/modules/core/PermissionListener;)V
 }
