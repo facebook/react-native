@@ -43,7 +43,8 @@ using RCTTextLayoutFragmentEnumerationBlock =
 - (void)drawAttributedString:(facebook::react::AttributedString)attributedString
          paragraphAttributes:(facebook::react::ParagraphAttributes)paragraphAttributes
                        frame:(CGRect)frame
-                 textStorage:(NSTextStorage *_Nullable)textStorage;
+                 textStorage:(NSTextStorage *_Nullable)textStorage
+           drawHighlightPath:(void (^_Nullable)(UIBezierPath *highlightPath))block;
 
 - (facebook::react::LinesMeasurements)getLinesForAttributedString:(facebook::react::AttributedString)attributedString
                                               paragraphAttributes:
