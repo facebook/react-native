@@ -74,40 +74,56 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
       // every animation frame. When using the native driver, this callback is
       // called when the animation completes.
       onUpdateRef.current = () => {
+        if (node.__isNative || process.env.NODE_ENV === 'test') {
+          // Check 1: either tests are running or this is a native driven animation.
+          // In native driven animations, this callback is only called once the animation completes.
+          // Call `scheduleUpdate` to synchronise Fiber and Shadow tree.
+          return scheduleUpdate();
+        }
+
         if (
-          process.env.NODE_ENV === 'test' ||
           typeof instance !== 'object' ||
-          typeof instance?.setNativeProps !== 'function' ||
-          (isFabricInstance(instance) && !useNativePropsInFabric)
+          typeof instance?.setNativeProps !== 'function'
         ) {
-          // Schedule an update for this component to update `reducedProps`,
-          // but do not compute it immediately. If a parent also updated, we
-          // need to merge those new props in before updating.
-          scheduleUpdate();
-        } else if (!node.__isNative) {
+          // Check 2: the instance does not support setNativeProps. Call `scheduleUpdate`.
+          return scheduleUpdate();
+        }
+
+        if (!isFabricInstance(instance)) {
+          // Check 3: this is a paper instance, call setNativeProps.
           // $FlowIgnore[not-a-function] - Assume it's still a function.
           // $FlowFixMe[incompatible-use]
-          instance.setNativeProps(node.__getAnimatedValue());
-          if (isFabricInstance(instance)) {
-            // Keeping state of Fiber tree and Shadow tree in sync.
-            //
-            // This is done by calling `scheduleUpdate` which will trigger a commit.
-            // However, React commit is not fast enough to drive animations.
-            // This is where setNativeProps comes in handy but the state between
-            // Fiber tree and Shadow tree needs to be kept in sync.
-            // The goal is to call `scheduleUpdate` as little as possible to maintain
-            // performance but frequently enough to keep state in sync.
-            // Debounce is set to 48ms, which is 3 * the duration of a frame.
-            // 3 frames was the highest value where flickering state was not observed.
-            if (timerRef.current != null) {
-              clearTimeout(timerRef.current);
-            }
-            timerRef.current = setTimeout(() => {
-              timerRef.current = null;
-              scheduleUpdate();
-            }, 48);
-          }
+          return instance.setNativeProps(node.__getAnimatedValue());
         }
+
+        if (!useNativePropsInFabric) {
+          // Check 4: setNativeProps are disabled.
+          return scheduleUpdate();
+        }
+
+        // This is a Fabric instance and setNativeProps are supported.
+
+        // $FlowIgnore[not-a-function] - Assume it's still a function.
+        // $FlowFixMe[incompatible-use]
+        instance.setNativeProps(node.__getAnimatedValue());
+
+        // Keeping state of Fiber tree and Shadow tree in sync.
+        //
+        // This is done by calling `scheduleUpdate` which will trigger a commit.
+        // However, React commit is not fast enough to drive animations.
+        // This is where setNativeProps comes in handy but the state between
+        // Fiber tree and Shadow tree needs to be kept in sync.
+        // The goal is to call `scheduleUpdate` as little as possible to maintain
+        // performance but frequently enough to keep state in sync.
+        // Debounce is set to 48ms, which is 3 * the duration of a frame.
+        // 3 frames was the highest value where flickering state was not observed.
+        if (timerRef.current != null) {
+          clearTimeout(timerRef.current);
+        }
+        timerRef.current = setTimeout(() => {
+          timerRef.current = null;
+          scheduleUpdate();
+        }, 48);
       };
 
       const target = getEventTarget(instance);
