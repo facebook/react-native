@@ -21,44 +21,13 @@ namespace facebook::react::jsinspector_modern {
 
 using namespace ::testing;
 
-class ReactInstanceIntegrationTestFeatureFlagsProvider
-    : public ReactNativeFeatureFlagsDefaults {
- private:
-  FeatureFlags flags_;
-
- public:
-  explicit ReactInstanceIntegrationTestFeatureFlagsProvider(
-      FeatureFlags featureFlags)
-      : flags_(featureFlags) {}
-
-  bool inspectorEnableModernCDPRegistry() override {
-    return flags_.enableModernCDPRegistry;
-  }
-  bool inspectorEnableCxxInspectorPackagerConnection() override {
-    return flags_.enableCxxInspectorPackagerConnection;
-  }
-};
-
 ReactInstanceIntegrationTest::ReactInstanceIntegrationTest()
     : runtime(nullptr),
       instance(nullptr),
       messageQueueThread(std::make_shared<MockMessageQueueThread>()),
-      errorHandler(std::make_shared<ErrorUtils>()),
-      featureFlags(std::make_unique<FeatureFlags>()) {}
+      errorHandler(std::make_shared<ErrorUtils>()) {}
 
 void ReactInstanceIntegrationTest::SetUp() {
-  ReactNativeFeatureFlags::override(
-      std::make_unique<ReactInstanceIntegrationTestFeatureFlagsProvider>(
-          *featureFlags));
-  // Reset InspectorFlags to overridden upstream values before creating objects
-  // that may access them.
-  InspectorFlags::getInstance().dangerouslyResetFlags();
-
-  // Double check that a flag matches our overrides.
-  ASSERT_EQ(
-      InspectorFlags::getInstance().getEnableModernCDPRegistry(),
-      featureFlags->enableModernCDPRegistry);
-
   auto mockRegistry = std::make_unique<MockTimerRegistry>();
   auto timerManager =
       std::make_shared<react::TimerManager>(std::move(mockRegistry));
@@ -83,7 +52,7 @@ void ReactInstanceIntegrationTest::SetUp() {
 
   std::shared_ptr<HostTarget> hostTargetIfModernCDP = nullptr;
 
-  if (featureFlags->enableModernCDPRegistry) {
+  if (InspectorFlags::getInstance().getEnableModernCDPRegistry()) {
     VoidExecutor inspectorExecutor = [this](auto callback) {
       immediateExecutor_.add(callback);
     };
@@ -143,7 +112,8 @@ void ReactInstanceIntegrationTest::TearDown() {
   // Destroy the local connection.
   clientToVM_.reset();
 
-  if (pageId_.has_value() && featureFlags->enableModernCDPRegistry) {
+  if (pageId_.has_value() &&
+      InspectorFlags::getInstance().getEnableModernCDPRegistry()) {
     // Under modern CDP, clean up the page we added in SetUp and destroy
     // resources owned by HostTarget.
     getInspectorInstance().removePage(pageId_.value());
@@ -229,7 +199,7 @@ TEST_P(ReactInstanceIntegrationTestWithFlags, ConsoleLog) {
   // modern registry, and the runtime does not yet fire these events. When the
   // implementation is more complete we should be able to remove this
   // condition.
-  if (!featureFlags->enableModernCDPRegistry) {
+  if (!InspectorFlags::getInstance().getEnableModernCDPRegistry()) {
     EXPECT_CALL(
         getRemoteConnection(),
         onMessage(JsonParsed(AllOf(
@@ -247,13 +217,13 @@ INSTANTIATE_TEST_SUITE_P(
     ReactInstanceVaryingInspectorFlags,
     ReactInstanceIntegrationTestWithFlags,
     ::testing::Values(
-        FeatureFlags{
+        InspectorFlagOverrides{
             .enableCxxInspectorPackagerConnection = true,
             .enableModernCDPRegistry = true},
-        FeatureFlags{
+        InspectorFlagOverrides{
             .enableCxxInspectorPackagerConnection = false,
             .enableModernCDPRegistry = false},
-        FeatureFlags{
+        InspectorFlagOverrides{
             .enableCxxInspectorPackagerConnection = true,
             .enableModernCDPRegistry = false}));
 
