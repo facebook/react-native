@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include "../utils/InspectorFlagOverridesGuard.h"
+
 #include <jsinspector-modern/RuntimeTarget.h>
 
 #include <folly/executors/QueuedImmediateExecutor.h>
@@ -25,6 +27,8 @@ namespace facebook::react::jsinspector_modern {
 class JsiIntegrationTestHermesEngineAdapter : public RuntimeTargetDelegate {
  public:
   explicit JsiIntegrationTestHermesEngineAdapter(folly::Executor& jsExecutor);
+
+  static InspectorFlagOverrides getInspectorFlagOverrides() noexcept;
 
   virtual std::unique_ptr<RuntimeAgentDelegate> createAgentDelegate(
       FrontendChannel frontendChannel,

@@ -30,6 +30,10 @@ class ReactNativeFeatureFlagsOverrides
     return overrides_.enableCxxInspectorPackagerConnection;
   }
 
+  bool inspectorEnableHermesCDPAgent() override {
+    return overrides_.enableHermesCDPAgent;
+  }
+
   bool inspectorEnableModernCDPRegistry() override {
     return overrides_.enableModernCDPRegistry;
   }

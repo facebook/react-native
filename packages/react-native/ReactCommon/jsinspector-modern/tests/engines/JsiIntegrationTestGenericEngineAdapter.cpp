@@ -20,6 +20,11 @@ JsiIntegrationTestGenericEngineAdapter::JsiIntegrationTestGenericEngineAdapter(
     folly::Executor& jsExecutor)
     : runtime_{hermes::makeHermesRuntime()}, jsExecutor_{jsExecutor} {}
 
+InspectorFlagOverrides
+JsiIntegrationTestGenericEngineAdapter::getInspectorFlagOverrides() noexcept {
+  return {.enableModernCDPRegistry = true};
+}
+
 std::unique_ptr<RuntimeAgentDelegate>
 JsiIntegrationTestGenericEngineAdapter::createAgentDelegate(
     FrontendChannel frontendChannel,

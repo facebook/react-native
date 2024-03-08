@@ -5,9 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <folly/executors/QueuedImmediateExecutor.h>
-
 #include "JsiIntegrationTestHermesEngineAdapter.h"
+#include "../utils/InspectorFlagOverridesGuard.h"
+
+#include <folly/executors/QueuedImmediateExecutor.h>
 
 using facebook::hermes::makeHermesRuntime;
 
@@ -18,6 +19,11 @@ JsiIntegrationTestHermesEngineAdapter::JsiIntegrationTestHermesEngineAdapter(
     : runtime_{hermes::makeHermesRuntime()},
       jsExecutor_{jsExecutor},
       targetDelegate_{runtime_} {}
+
+InspectorFlagOverrides
+JsiIntegrationTestHermesEngineAdapter::getInspectorFlagOverrides() noexcept {
+  return {.enableModernCDPRegistry = true};
+}
 
 std::unique_ptr<RuntimeAgentDelegate>
 JsiIntegrationTestHermesEngineAdapter::createAgentDelegate(
