@@ -32,7 +32,8 @@ import com.facebook.react.turbomodule.core.interfaces.NativeMethodCallInvokerHol
 
 @DoNotStrip
 @DeprecatedInNewArchitecture
-public class BridgelessCatalystInstance : CatalystInstance {
+public class BridgelessCatalystInstance(private val reactHost: ReactHostImpl) : CatalystInstance {
+
   override fun handleMemoryPressure(level: Int) {
     throw UnsupportedOperationException("Unimplemented method 'handleMemoryPressure'")
   }
@@ -161,8 +162,8 @@ public class BridgelessCatalystInstance : CatalystInstance {
     throw UnsupportedOperationException("Unimplemented method 'addJSIModules'")
   }
 
-  override fun getJSCallInvokerHolder(): CallInvokerHolder {
-    throw UnsupportedOperationException("Unimplemented method 'getJSCallInvokerHolder'")
+  override fun getJSCallInvokerHolder(): CallInvokerHolder? {
+    return reactHost.getJSCallInvokerHolder()
   }
 
   override fun getNativeMethodCallInvokerHolder(): NativeMethodCallInvokerHolder {
