@@ -93,15 +93,10 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
     RCTEnableTurboModuleInterop(YES);
     RCTEnableTurboModuleInteropBridgeProxy(YES);
 
-    [self createReactHost];
+    _reactHost = [self createReactHost];
     [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
-    RCTFabricSurface *surface = [_reactHost createSurfaceWithModuleName:self.moduleName initialProperties:initProps];
 
-    RCTSurfaceHostingProxyRootView *surfaceHostingProxyRootView = [[RCTSurfaceHostingProxyRootView alloc]
-        initWithSurface:surface
-        sizeMeasureMode:RCTSurfaceSizeMeasureModeWidthExact | RCTSurfaceSizeMeasureModeHeightExact];
-
-    rootView = (RCTRootView *)surfaceHostingProxyRootView;
+    rootView = [self createSurfaceViewWithReactHost:_reactHost moduleName:self.moduleName initProps:initProps];
     rootView.backgroundColor = [UIColor systemBackgroundColor];
   } else {
     if (!self.bridge) {
@@ -290,20 +285,32 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 
 #pragma mark - New Arch Utilities
 
-- (void)createReactHost
+- (UIView *)createSurfaceViewWithReactHost:(RCTHost *)reactHost
+                                moduleName:(NSString *)moduleName
+                                 initProps:(NSDictionary *)initProps
+{
+  RCTFabricSurface *surface = [reactHost createSurfaceWithModuleName:moduleName initialProperties:initProps];
+  RCTSurfaceHostingProxyRootView *surfaceHostingProxyRootView = [[RCTSurfaceHostingProxyRootView alloc]
+      initWithSurface:surface
+      sizeMeasureMode:RCTSurfaceSizeMeasureModeWidthExact | RCTSurfaceSizeMeasureModeHeightExact];
+  return surfaceHostingProxyRootView;
+}
+
+- (RCTHost *)createReactHost
 {
   __weak __typeof(self) weakSelf = self;
-  _reactHost = [[RCTHost alloc] initWithBundleURL:[self bundleURL]
-                                     hostDelegate:nil
-                       turboModuleManagerDelegate:self
-                                 jsEngineProvider:^std::shared_ptr<facebook::react::JSRuntimeFactory>() {
-                                   return [weakSelf createJSRuntimeFactory];
-                                 }];
-  [_reactHost setBundleURLProvider:^NSURL *() {
+  RCTHost *reactHost = [[RCTHost alloc] initWithBundleURL:[self bundleURL]
+                                             hostDelegate:nil
+                               turboModuleManagerDelegate:self
+                                         jsEngineProvider:^std::shared_ptr<facebook::react::JSRuntimeFactory>() {
+                                           return [weakSelf createJSRuntimeFactory];
+                                         }];
+  [reactHost setBundleURLProvider:^NSURL *() {
     return [weakSelf bundleURL];
   }];
-  [_reactHost setContextContainerHandler:self];
-  [_reactHost start];
+  [reactHost setContextContainerHandler:self];
+  [reactHost start];
+  return reactHost;
 }
 
 - (std::shared_ptr<facebook::react::JSRuntimeFactory>)createJSRuntimeFactory
