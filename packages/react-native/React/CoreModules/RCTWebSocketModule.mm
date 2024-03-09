@@ -54,8 +54,8 @@ RCT_EXPORT_MODULE()
 
 - (void)flush
 {
-  for (RCTSRWebSocket *socket in _sockets.allValues) {
-    [socket flush];
+  for (SRWebSocket *socket in _sockets.allValues) {
+    [socket close];
   }
 }
 
