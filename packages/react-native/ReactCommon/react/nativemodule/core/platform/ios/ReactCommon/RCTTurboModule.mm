@@ -6,15 +6,6 @@
  */
 
 #import "RCTTurboModule.h"
-#import "RCTUtils.h"
-
-#include <glog/logging.h>
-#import <objc/message.h>
-#import <objc/runtime.h>
-#import <atomic>
-#import <iostream>
-#import <sstream>
-#import <vector>
 
 #import <React/RCTBridgeModule.h>
 #import <React/RCTConvert.h>
