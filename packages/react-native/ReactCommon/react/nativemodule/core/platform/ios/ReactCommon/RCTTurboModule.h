@@ -142,7 +142,7 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
       const char *methodName,
       NSInvocation *inv,
       NSMutableArray *retainedObjectsForInvocation,
-      RCTPromiseRejectBlock reject);
+      _Nullable RCTPromiseRejectBlock reject);
   void performVoidMethodInvocation(
       jsi::Runtime &runtime,
       const char *methodName,

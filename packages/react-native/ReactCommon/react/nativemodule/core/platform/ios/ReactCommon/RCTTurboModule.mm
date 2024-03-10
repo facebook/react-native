@@ -341,20 +341,24 @@ jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string met
 
 static NSError * maybeCatchException(
     BOOL shoudCatch,
-    NSDictionary *causeUserInfo,
-    NSError *overrideWithError)
+    id causeOrError)
 {
-  if (shoudCatch) {
-    if (overrideWithError) {
-      return overrideWithError;
-    } else {
-      return [[NSError alloc] initWithDomain:RCTErrorDomain code:-1 userInfo:causeUserInfo];
+    if (!shoudCatch) {
+        // Crash on native layer there is no promise in JS to reject.
+        // We executed JSFunction returning void asynchrounously.
+        throw;
     }
-  } else {
-    // Crash on native layer there is no promise in JS to reject.
-    // We executed JSFunction returning void asynchrounously.
-    throw;
-  }
+
+    if ([causeOrError isKindOfClass:[NSError class]]) {
+        return causeOrError;
+    }
+
+    if ([causeOrError isKindOfClass:[NSDictionary class]]) {
+      return [[NSError alloc] initWithDomain:RCTErrorDomain code:-1 userInfo:causeOrError];
+    }
+    
+    // This should never happen, to avoid consequent errors, we wrapp the unknown value in NSError.
+    return [[NSError alloc] initWithDomain:RCTErrorDomain code:-1 userInfo:@{ @"unknown": causeOrError }];
 }
 
 /**
@@ -372,7 +376,7 @@ id ObjCTurboModule::performMethodInvocation(
     const char *methodName,
     NSInvocation *inv,
     NSMutableArray *retainedObjectsForInvocation,
-    RCTPromiseRejectBlock reject)
+    _Nullable RCTPromiseRejectBlock reject)
 {
   __block id result;
   __weak id<RCTBridgeModule> weakModule = instance_;
@@ -404,33 +408,32 @@ id ObjCTurboModule::performMethodInvocation(
                        NSLocalizedDescriptionKey: exception.reason,
                        @"stackSymbols": exception.callStackSymbols,
                        @"stackReturnAddresses": exception.callStackReturnAddresses,
-                     }, nil);
+                     });
        } @catch (NSError *error) {
-         caughtException = maybeCatchException(shouldCatchException, nil, error);
+         caughtException = maybeCatchException(shouldCatchException, error);
        } @catch (NSString *errorMessage) {
          caughtException = maybeCatchException(shouldCatchException, @{
                       NSLocalizedDescriptionKey: errorMessage,
-                     }, nil);
+                     });
        } @catch (id e) {
          caughtException = maybeCatchException(shouldCatchException, @{
                       NSLocalizedDescriptionKey: @"Unknown Objective-C Object thrown.",
-                     }, nil);
-       } @finally {
-         [retainedObjectsForInvocation removeAllObjects];
+                     });
        }
     } catch (const std::exception &exception) {
       caughtException = maybeCatchException(shouldCatchException, @{
                     NSLocalizedDescriptionKey: [NSString stringWithUTF8String:exception.what()],
-                  }, nil);
+                  });
     } catch (const std::string &errorMessage) {
       caughtException = maybeCatchException(shouldCatchException, @{
                     NSLocalizedDescriptionKey: [NSString stringWithUTF8String:errorMessage.c_str()],
-                  }, nil);
+                  });
     } catch (...) {
       caughtException = maybeCatchException(shouldCatchException, @{
                     NSLocalizedDescriptionKey: @"Unknown C++ exception thrown.",
-                  }, nil);
+                  });
     }
+    [retainedObjectsForInvocation removeAllObjects];
 
     if (caughtException) {
       if (isSync) {
