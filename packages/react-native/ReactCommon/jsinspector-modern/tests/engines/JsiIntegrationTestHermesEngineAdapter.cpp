@@ -7,8 +7,6 @@
 
 #include <folly/executors/QueuedImmediateExecutor.h>
 
-#include <hermes/inspector-modern/chrome/HermesRuntimeAgentDelegate.h>
-
 #include "JsiIntegrationTestHermesEngineAdapter.h"
 
 using facebook::hermes::makeHermesRuntime;
@@ -17,7 +15,9 @@ namespace facebook::react::jsinspector_modern {
 
 JsiIntegrationTestHermesEngineAdapter::JsiIntegrationTestHermesEngineAdapter(
     folly::Executor& jsExecutor)
-    : runtime_{hermes::makeHermesRuntime()}, jsExecutor_{jsExecutor} {}
+    : runtime_{hermes::makeHermesRuntime()},
+      jsExecutor_{jsExecutor},
+      targetDelegate_{runtime_} {}
 
 std::unique_ptr<RuntimeAgentDelegate>
 JsiIntegrationTestHermesEngineAdapter::createAgentDelegate(
@@ -25,15 +25,14 @@ JsiIntegrationTestHermesEngineAdapter::createAgentDelegate(
     SessionState& sessionState,
     std::unique_ptr<RuntimeAgentDelegate::ExportedState>
         previouslyExportedState,
-    const ExecutionContextDescription& executionContextDescription) {
-  return std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate>(
-      new HermesRuntimeAgentDelegate(
-          frontendChannel,
-          sessionState,
-          std::move(previouslyExportedState),
-          executionContextDescription,
-          runtime_,
-          getRuntimeExecutor()));
+    const ExecutionContextDescription& executionContextDescription,
+    RuntimeExecutor runtimeExecutor) {
+  return targetDelegate_.createAgentDelegate(
+      std::move(frontendChannel),
+      sessionState,
+      std::move(previouslyExportedState),
+      executionContextDescription,
+      std::move(runtimeExecutor));
 }
 
 jsi::Runtime& JsiIntegrationTestHermesEngineAdapter::getRuntime()

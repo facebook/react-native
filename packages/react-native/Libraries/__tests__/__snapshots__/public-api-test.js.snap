@@ -6192,9 +6192,6 @@ exports[`public API should not change unintentionally Libraries/Pressability/Pre
   onPressMove?: ?(event: PressEvent) => mixed,
   onPressOut?: ?(event: PressEvent) => mixed,
   blockNativeResponder?: ?boolean,
-  onLongPressShouldCancelPress_DEPRECATED?: ?() => boolean,
-  onResponderTerminationRequest_DEPRECATED?: ?() => boolean,
-  onStartShouldSetResponder_DEPRECATED?: ?() => boolean,
 |}>;
 export type EventHandlers = $ReadOnly<{|
   onBlur: (event: BlurEvent) => void,
@@ -6269,7 +6266,6 @@ declare export default class Pressability {
     |}>
   ): boolean;
   _handleLongPress(event: PressEvent): void;
-  _shouldLongPressCancelPress(): boolean;
   _cancelHoverInDelayTimeout(): void;
   _cancelHoverOutDelayTimeout(): void;
   _cancelLongPressDelayTimeout(): void;

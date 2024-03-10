@@ -56,6 +56,7 @@ Pod::Spec.new do |s|
   s.dependency "fmt", "9.1.0"
   s.dependency "React-Core"
   s.dependency "React-debug"
+  s.dependency "React-featureflags"
   s.dependency "React-utils"
   s.dependency "React-runtimescheduler"
   s.dependency "React-cxxreact"

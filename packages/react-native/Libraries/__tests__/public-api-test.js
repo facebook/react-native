@@ -36,7 +36,6 @@ const FILES_WITH_KNOWN_ERRORS = new Set([
   'Libraries/Components/RefreshControl/RefreshControl.js',
   'Libraries/Components/ScrollView/ScrollView.js',
   'Libraries/Components/StatusBar/StatusBar.js',
-  'Libraries/Components/TextInput/InputAccessoryView.js',
   'Libraries/Components/StaticRenderer.js',
   'Libraries/Components/Touchable/TouchableNativeFeedback.js',
   'Libraries/Components/Touchable/TouchableWithoutFeedback.js',
@@ -88,18 +87,21 @@ describe('public API', () => {
           return;
         }
 
+        let success = false;
         try {
           expect(await translateFlowToExportedAPI(source)).toMatchSnapshot();
 
-          if (FILES_WITH_KNOWN_ERRORS.has(file)) {
+          success = true;
+        } catch (e) {
+          if (!FILES_WITH_KNOWN_ERRORS.has(file)) {
+            console.error('Unable to parse file:', file, '\n' + e);
+          }
+        } finally {
+          if (success && FILES_WITH_KNOWN_ERRORS.has(file)) {
             console.error(
               'Expected parse error, please remove file exclude from FILES_WITH_KNOWN_ERRORS:',
               file,
             );
-          }
-        } catch (e) {
-          if (!FILES_WITH_KNOWN_ERRORS.has(file)) {
-            console.error('Unable to parse file:', file, '\n' + e);
           }
         }
       } else {

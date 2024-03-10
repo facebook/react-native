@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<82f226df2b3824d03b755a042b20bec5>>
+ * @generated SignedSource<<d85ce9d83e0ea9aa93923e81e2ffaec0>>
  */
 
 /**
@@ -25,24 +25,12 @@ bool ReactNativeFeatureFlags::commonTestFlag() {
   return getAccessor().commonTestFlag();
 }
 
-bool ReactNativeFeatureFlags::enableBackgroundExecutor() {
-  return getAccessor().enableBackgroundExecutor();
-}
-
-bool ReactNativeFeatureFlags::useModernRuntimeScheduler() {
-  return getAccessor().useModernRuntimeScheduler();
-}
-
-bool ReactNativeFeatureFlags::enableMicrotasks() {
-  return getAccessor().enableMicrotasks();
-}
-
 bool ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop() {
   return getAccessor().batchRenderingUpdatesInEventLoop();
 }
 
-bool ReactNativeFeatureFlags::enableSpannableBuildingUnification() {
-  return getAccessor().enableSpannableBuildingUnification();
+bool ReactNativeFeatureFlags::enableBackgroundExecutor() {
+  return getAccessor().enableBackgroundExecutor();
 }
 
 bool ReactNativeFeatureFlags::enableCustomDrawOrderFabric() {
@@ -53,12 +41,36 @@ bool ReactNativeFeatureFlags::enableFixForClippedSubviewsCrash() {
   return getAccessor().enableFixForClippedSubviewsCrash();
 }
 
+bool ReactNativeFeatureFlags::enableMicrotasks() {
+  return getAccessor().enableMicrotasks();
+}
+
+bool ReactNativeFeatureFlags::enableMountHooksAndroid() {
+  return getAccessor().enableMountHooksAndroid();
+}
+
+bool ReactNativeFeatureFlags::enableSpannableBuildingUnification() {
+  return getAccessor().enableSpannableBuildingUnification();
+}
+
 bool ReactNativeFeatureFlags::inspectorEnableCxxInspectorPackagerConnection() {
   return getAccessor().inspectorEnableCxxInspectorPackagerConnection();
 }
 
+bool ReactNativeFeatureFlags::inspectorEnableHermesCDPAgent() {
+  return getAccessor().inspectorEnableHermesCDPAgent();
+}
+
 bool ReactNativeFeatureFlags::inspectorEnableModernCDPRegistry() {
   return getAccessor().inspectorEnableModernCDPRegistry();
+}
+
+bool ReactNativeFeatureFlags::skipMountHookNotifications() {
+  return getAccessor().skipMountHookNotifications();
+}
+
+bool ReactNativeFeatureFlags::useModernRuntimeScheduler() {
+  return getAccessor().useModernRuntimeScheduler();
 }
 
 void ReactNativeFeatureFlags::override(

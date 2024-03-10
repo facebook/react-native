@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<cc8e437bf2f486949f256a19d3d73a1e>>
+ * @generated SignedSource<<e59e70d753403b168558b0d2b9513b5c>>
  */
 
 /**
@@ -25,21 +25,27 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun commonTestFlag(): Boolean = false
 
-  override fun enableBackgroundExecutor(): Boolean = false
-
-  override fun useModernRuntimeScheduler(): Boolean = false
-
-  override fun enableMicrotasks(): Boolean = false
-
   override fun batchRenderingUpdatesInEventLoop(): Boolean = false
 
-  override fun enableSpannableBuildingUnification(): Boolean = false
+  override fun enableBackgroundExecutor(): Boolean = false
 
   override fun enableCustomDrawOrderFabric(): Boolean = false
 
   override fun enableFixForClippedSubviewsCrash(): Boolean = false
 
+  override fun enableMicrotasks(): Boolean = false
+
+  override fun enableMountHooksAndroid(): Boolean = false
+
+  override fun enableSpannableBuildingUnification(): Boolean = false
+
   override fun inspectorEnableCxxInspectorPackagerConnection(): Boolean = false
 
+  override fun inspectorEnableHermesCDPAgent(): Boolean = false
+
   override fun inspectorEnableModernCDPRegistry(): Boolean = false
+
+  override fun skipMountHookNotifications(): Boolean = false
+
+  override fun useModernRuntimeScheduler(): Boolean = false
 }

@@ -896,6 +896,7 @@ static void RCTUpdateShadowPathForView(RCTView *view)
 
 static void RCTUpdateHoverStyleForView(RCTView *view)
 {
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 170000 /* __IPHONE_17_0 */
   if (@available(iOS 17.0, *)) {
     UIHoverStyle *hoverStyle = nil;
     if ([view cursor] == RCTCursorPointer) {
@@ -917,6 +918,7 @@ static void RCTUpdateHoverStyleForView(RCTView *view)
     }
     [view setHoverStyle:hoverStyle];
   }
+#endif
 }
 
 - (void)updateClippingForLayer:(CALayer *)layer

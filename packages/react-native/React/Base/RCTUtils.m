@@ -569,6 +569,10 @@ UIWindow *__nullable RCTKeyWindow(void)
     }
     UIWindowScene *windowScene = (UIWindowScene *)scene;
 
+    if (@available(iOS 15.0, *)) {
+      return windowScene.keyWindow;
+    }
+
     for (UIWindow *window in windowScene.windows) {
       if (window.isKeyWindow) {
         return window;

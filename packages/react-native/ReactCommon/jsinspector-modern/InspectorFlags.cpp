@@ -22,7 +22,9 @@ InspectorFlags::InspectorFlags()
           ReactNativeFeatureFlags::inspectorEnableModernCDPRegistry()),
       enableCxxInspectorPackagerConnection_(
           ReactNativeFeatureFlags::
-              inspectorEnableCxxInspectorPackagerConnection()) {}
+              inspectorEnableCxxInspectorPackagerConnection()),
+      enableHermesCDPAgent_(
+          ReactNativeFeatureFlags::inspectorEnableHermesCDPAgent()) {}
 
 bool InspectorFlags::getEnableModernCDPRegistry() const {
   assertFlagsMatchUpstream();
@@ -35,6 +37,11 @@ bool InspectorFlags::getEnableCxxInspectorPackagerConnection() const {
       // If we are using the modern CDP registry, then we must also use the C++
       // InspectorPackagerConnection implementation.
       enableModernCDPRegistry_;
+}
+
+bool InspectorFlags::getEnableHermesCDPAgent() const {
+  assertFlagsMatchUpstream();
+  return enableHermesCDPAgent_;
 }
 
 void InspectorFlags::dangerouslyResetFlags() {
@@ -50,7 +57,9 @@ void InspectorFlags::assertFlagsMatchUpstream() const {
           ReactNativeFeatureFlags::inspectorEnableModernCDPRegistry() ||
       enableCxxInspectorPackagerConnection_ !=
           ReactNativeFeatureFlags::
-              inspectorEnableCxxInspectorPackagerConnection()) {
+              inspectorEnableCxxInspectorPackagerConnection() ||
+      ReactNativeFeatureFlags::inspectorEnableHermesCDPAgent() !=
+          enableHermesCDPAgent_) {
     LOG(ERROR)
         << "[InspectorFlags] Error: One or more ReactNativeFeatureFlags values "
         << "have changed during the global app lifetime. This may lead to "

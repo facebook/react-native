@@ -6,6 +6,7 @@
  */
 
 #include <jsinspector-modern/InstanceAgent.h>
+#include "CdpJson.h"
 #include "RuntimeTarget.h"
 
 namespace facebook::react::jsinspector_modern {
@@ -49,9 +50,8 @@ void InstanceAgent::setCurrentRuntime(RuntimeTarget* runtimeTarget) {
     if (previousContext.uniqueId.has_value()) {
       params["executionContextUniqueId"] = *previousContext.uniqueId;
     }
-    folly::dynamic contextDestroyed = folly::dynamic::object(
-        "method", "Runtime.executionContextDestroyed")("params", params);
-    frontendChannel_(folly::toJson(contextDestroyed));
+    frontendChannel_(
+        cdp::jsonNotification("Runtime.executionContextDestroyed", params));
   }
   maybeSendExecutionContextCreatedNotification();
 }
@@ -66,9 +66,8 @@ void InstanceAgent::maybeSendExecutionContextCreatedNotification() {
     if (newContext.uniqueId.has_value()) {
       params["uniqueId"] = *newContext.uniqueId;
     }
-    folly::dynamic contextCreated = folly::dynamic::object(
-        "method", "Runtime.executionContextCreated")("params", params);
-    frontendChannel_(folly::toJson(contextCreated));
+    frontendChannel_(
+        cdp::jsonNotification("Runtime.executionContextCreated", params));
   }
 }
 

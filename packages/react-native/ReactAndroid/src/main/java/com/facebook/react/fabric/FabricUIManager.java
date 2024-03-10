@@ -65,6 +65,7 @@ import com.facebook.react.fabric.mounting.mountitems.DispatchCommandMountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItemFactory;
 import com.facebook.react.interfaces.fabric.SurfaceHandler;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.internal.interop.InteropEventEmitter;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
@@ -91,7 +92,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * We instruct ProGuard not to strip out any fields or methods, because many of these methods are
@@ -173,7 +173,8 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @NonNull
   private final CopyOnWriteArrayList<UIManagerListener> mListeners = new CopyOnWriteArrayList<>();
 
-  @NonNull private final AtomicBoolean mMountNotificationScheduled = new AtomicBoolean(false);
+  private boolean mMountNotificationScheduled = false;
+  private final List<Integer> mMountedSurfaceIds = new ArrayList<>();
 
   @ThreadConfined(UI)
   @NonNull
@@ -1203,6 +1204,8 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   }
 
   private class MountItemDispatchListener implements MountItemDispatcher.ItemDispatchListener {
+    @UiThread
+    @ThreadConfined(UI)
     @Override
     public void willMountItems(@Nullable List<MountItem> mountItems) {
       for (UIManagerListener listener : mListeners) {
@@ -1210,18 +1213,28 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       }
     }
 
+    @UiThread
+    @ThreadConfined(UI)
     @Override
     public void didMountItems(@Nullable List<MountItem> mountItems) {
       for (UIManagerListener listener : mListeners) {
         listener.didMountItems(FabricUIManager.this);
       }
 
-      if (!ReactFeatureFlags.enableMountHooks) {
+      if (!ReactNativeFeatureFlags.enableMountHooksAndroid()
+          || mountItems == null
+          || mountItems.isEmpty()) {
         return;
       }
 
-      boolean mountNotificationScheduled = mMountNotificationScheduled.getAndSet(true);
-      if (!mountNotificationScheduled) {
+      // Collect surface IDs for all the mount items
+      for (MountItem mountItem : mountItems) {
+        if (mountItem != null && !mMountedSurfaceIds.contains(mountItem.getSurfaceId())) {
+          mMountedSurfaceIds.add(mountItem.getSurfaceId());
+        }
+      }
+
+      if (!mMountNotificationScheduled && !mMountedSurfaceIds.isEmpty()) {
         // Notify mount when the effects are visible and prevent mount hooks to
         // delay paint.
         UiThreadUtil.getUiThreadHandler()
@@ -1229,28 +1242,19 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
                 new Runnable() {
                   @Override
                   public void run() {
-                    mMountNotificationScheduled.set(false);
-
-                    if (mDestroyed) {
-                      return;
-                    }
+                    mMountNotificationScheduled = false;
 
                     final @Nullable Binding binding = mBinding;
-                    if (mountItems == null || binding == null) {
+                    if (binding == null || mDestroyed) {
+                      mMountedSurfaceIds.clear();
                       return;
                     }
 
-                    // Collect surface IDs for all the mount items
-                    List<Integer> surfaceIds = new ArrayList<>();
-                    for (MountItem mountItem : mountItems) {
-                      if (mountItem != null && !surfaceIds.contains(mountItem.getSurfaceId())) {
-                        surfaceIds.add(mountItem.getSurfaceId());
-                      }
-                    }
-
-                    for (int surfaceId : surfaceIds) {
+                    for (int surfaceId : mMountedSurfaceIds) {
                       binding.reportMount(surfaceId);
                     }
+
+                    mMountedSurfaceIds.clear();
                   }
                 });
       }

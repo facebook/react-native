@@ -8,6 +8,7 @@
 #pragma once
 
 #include <hermes/hermes.h>
+#include <hermes/inspector-modern/chrome/HermesRuntimeTargetDelegate.h>
 #include <jsireact/JSIExecutor.h>
 #include <utility>
 
@@ -61,13 +62,13 @@ class HermesExecutor : public JSIExecutor {
       std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate::ExportedState>
           previouslyExportedState,
       const jsinspector_modern::ExecutionContextDescription&
-          executionContextDescription) override;
+          executionContextDescription,
+      RuntimeExecutor runtimeExecutor) override;
 
  private:
   JSIScopedTimeoutInvoker timeoutInvoker_;
-  std::shared_ptr<MessageQueueThread> jsQueue_;
   std::shared_ptr<jsi::Runtime> runtime_;
-  hermes::HermesRuntime& hermesRuntime_;
+  jsinspector_modern::HermesRuntimeTargetDelegate targetDelegate_;
 };
 
 } // namespace facebook::react

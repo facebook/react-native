@@ -116,6 +116,7 @@ workflows:
             parameters:
               flavor: ["Debug", "Release"]
       - build_npm_package:
+          name: build_nightly_npm_package
           release_type: "nightly"
           requires:
             - build_android

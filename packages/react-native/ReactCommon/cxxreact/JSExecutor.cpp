@@ -41,8 +41,10 @@ JSExecutor::createAgentDelegate(
     jsinspector_modern::SessionState& sessionState,
     std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate::ExportedState>,
     const jsinspector_modern::ExecutionContextDescription&
-        executionContextDescription) {
+        executionContextDescription,
+    RuntimeExecutor runtimeExecutor) {
   (void)executionContextDescription;
+  (void)runtimeExecutor;
   return std::make_unique<jsinspector_modern::FallbackRuntimeAgentDelegate>(
       std::move(frontendChannel), sessionState, getDescription());
 }

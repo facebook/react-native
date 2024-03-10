@@ -7,13 +7,12 @@
 
 #import "RCTAppDelegate.h"
 #import <React/RCTColorSpaceUtils.h>
-#import <React/RCTCxxBridgeDelegate.h>
 #import <React/RCTLog.h>
 #import <React/RCTRootView.h>
 #import <React/RCTSurfacePresenterBridgeAdapter.h>
 #import <React/RCTUtils.h>
+#import <objc/runtime.h>
 #import <react/renderer/graphics/ColorComponents.h>
-#import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import "RCTAppDelegate+Protected.h"
 #import "RCTAppSetupUtils.h"
 
@@ -22,26 +21,14 @@
 #else
 #import <React/CoreModulesPlugins.h>
 #endif
-#import <React/RCTBundleURLProvider.h>
 #import <React/RCTComponentViewFactory.h>
 #import <React/RCTComponentViewProtocol.h>
-#import <React/RCTFabricSurface.h>
-#import <React/RCTSurfaceHostingProxyRootView.h>
-#import <React/RCTSurfacePresenter.h>
-#import <ReactCommon/RCTContextContainerHandling.h>
 #if USE_HERMES
 #import <ReactCommon/RCTHermesInstance.h>
 #else
 #import <ReactCommon/RCTJscInstance.h>
 #endif
-#import <ReactCommon/RCTHost+Internal.h>
-#import <ReactCommon/RCTHost.h>
-#import <ReactCommon/RCTTurboModuleManager.h>
-#import <react/config/ReactNativeConfig.h>
 #import <react/nativemodule/featureflags/NativeReactNativeFeatureFlags.h>
-#import <react/renderer/runtimescheduler/RuntimeScheduler.h>
-#import <react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h>
-#import <react/runtime/JSRuntimeFactory.h>
 
 @interface RCTAppDelegate () <RCTComponentViewFactoryComponentProvider>
 @end

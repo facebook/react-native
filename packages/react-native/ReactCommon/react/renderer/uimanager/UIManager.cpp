@@ -9,6 +9,7 @@
 
 #include <cxxreact/JSExecutor.h>
 #include <react/debug/react_native_assert.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/core/DynamicPropsUtilities.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/ShadowNodeFragment.h>
@@ -717,6 +718,14 @@ void UIManager::reportMount(SurfaceId surfaceId) const {
   SystraceSection s("UIManager::reportMount");
 
   auto time = JSExecutor::performanceNow();
+
+  // We are testing the impact of enabling mount hooks on Android and we're
+  // seeing some crashes that we didn't see on iOS. We'll run a test to enable
+  // the mount reporting pipeline excluding the logic below, to see if that
+  // logic is what's causing the issues. See T179749070.
+  if (ReactNativeFeatureFlags::skipMountHookNotifications()) {
+    return;
+  }
 
   auto rootShadowNode = RootShadowNode::Shared{};
   shadowTreeRegistry_.visit(surfaceId, [&](const ShadowTree& shadowTree) {

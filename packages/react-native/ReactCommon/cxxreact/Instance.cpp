@@ -279,14 +279,13 @@ void Instance::JSCallInvoker::setNativeToJsBridgeAndFlushCalls(
   }
 }
 
-void Instance::JSCallInvoker::invokeSync(std::function<void()>&& work) {
+void Instance::JSCallInvoker::invokeSync(CallFunc&& /*work*/) {
   // TODO: Replace JS Callinvoker with RuntimeExecutor.
   throw std::runtime_error(
       "Synchronous native -> JS calls are currently not supported.");
 }
 
-void Instance::JSCallInvoker::invokeAsync(
-    std::function<void()>&& work) noexcept {
+void Instance::JSCallInvoker::invokeAsync(CallFunc&& work) noexcept {
   std::scoped_lock guard(m_mutex);
 
   /**
@@ -311,12 +310,12 @@ void Instance::JSCallInvoker::invokeAsync(
   scheduleAsync(std::move(work));
 }
 
-void Instance::JSCallInvoker::scheduleAsync(
-    std::function<void()>&& work) noexcept {
+void Instance::JSCallInvoker::scheduleAsync(CallFunc&& work) noexcept {
   if (auto strongNativeToJsBridge = m_nativeToJsBridge.lock()) {
     strongNativeToJsBridge->runOnExecutorQueue(
         [work = std::move(work)](JSExecutor* executor) {
-          work();
+          auto* runtime = (jsi::Runtime*)executor->getJavaScriptContext();
+          work(*runtime);
           executor->flush();
         });
   }

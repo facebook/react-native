@@ -150,7 +150,8 @@ class RN_EXPORT JSExecutor : public jsinspector_modern::RuntimeTargetDelegate {
       std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate::ExportedState>
           previouslyExportedState,
       const jsinspector_modern::ExecutionContextDescription&
-          executionContextDescription) override;
+          executionContextDescription,
+      RuntimeExecutor runtimeExecutor) override;
 };
 
 } // namespace facebook::react

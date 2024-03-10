@@ -6,11 +6,11 @@
  */
 
 #include "HostTarget.h"
+#include "CdpJson.h"
 #include "HostAgent.h"
 #include "InspectorInterfaces.h"
 #include "InspectorUtilities.h"
 #include "InstanceTarget.h"
-#include "Parsing.h"
 #include "SessionState.h"
 
 #include <folly/dynamic.h>
@@ -53,14 +53,12 @@ class HostTargetSession {
     try {
       request = cdp::preparse(message);
     } catch (const cdp::ParseError& e) {
-      frontendChannel_(folly::toJson(folly::dynamic::object("id", nullptr)(
-          "error",
-          folly::dynamic::object("code", -32700)("message", e.what()))));
+      frontendChannel_(
+          cdp::jsonError(std::nullopt, cdp::ErrorCode::ParseError, e.what()));
       return;
     } catch (const cdp::TypeError& e) {
-      frontendChannel_(folly::toJson(folly::dynamic::object("id", nullptr)(
-          "error",
-          folly::dynamic::object("code", -32600)("message", e.what()))));
+      frontendChannel_(cdp::jsonError(
+          std::nullopt, cdp::ErrorCode::InvalidRequest, e.what()));
       return;
     }
 
@@ -69,9 +67,8 @@ class HostTargetSession {
     try {
       hostAgent_.handleRequest(request);
     } catch (const cdp::TypeError& e) {
-      frontendChannel_(folly::toJson(folly::dynamic::object("id", request.id)(
-          "error",
-          folly::dynamic::object("code", -32600)("message", e.what()))));
+      frontendChannel_(
+          cdp::jsonError(request.id, cdp::ErrorCode::InvalidRequest, e.what()));
       return;
     }
   }

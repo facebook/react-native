@@ -46,7 +46,8 @@ std::shared_ptr<RuntimeAgent> RuntimeTarget::createAgent(
           channel,
           sessionState,
           std::move(runtimeAgentState.delegateState),
-          executionContextDescription_));
+          executionContextDescription_,
+          jsExecutor_));
   agents_.insert(runtimeAgent);
   return runtimeAgent;
 }

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f40d52242f2c758ed616f1e5d8c3a082>>
+ * @generated SignedSource<<c867f3ceebcfbe24329a195ebf7a52cd>>
  */
 
 /**
@@ -45,33 +45,15 @@ class ReactNativeFeatureFlagsProviderHolder
     return method(javaProvider_);
   }
 
-  bool enableBackgroundExecutor() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableBackgroundExecutor");
-    return method(javaProvider_);
-  }
-
-  bool useModernRuntimeScheduler() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useModernRuntimeScheduler");
-    return method(javaProvider_);
-  }
-
-  bool enableMicrotasks() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableMicrotasks");
-    return method(javaProvider_);
-  }
-
   bool batchRenderingUpdatesInEventLoop() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("batchRenderingUpdatesInEventLoop");
     return method(javaProvider_);
   }
 
-  bool enableSpannableBuildingUnification() override {
+  bool enableBackgroundExecutor() override {
     static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableSpannableBuildingUnification");
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableBackgroundExecutor");
     return method(javaProvider_);
   }
 
@@ -87,15 +69,51 @@ class ReactNativeFeatureFlagsProviderHolder
     return method(javaProvider_);
   }
 
+  bool enableMicrotasks() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableMicrotasks");
+    return method(javaProvider_);
+  }
+
+  bool enableMountHooksAndroid() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableMountHooksAndroid");
+    return method(javaProvider_);
+  }
+
+  bool enableSpannableBuildingUnification() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableSpannableBuildingUnification");
+    return method(javaProvider_);
+  }
+
   bool inspectorEnableCxxInspectorPackagerConnection() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("inspectorEnableCxxInspectorPackagerConnection");
     return method(javaProvider_);
   }
 
+  bool inspectorEnableHermesCDPAgent() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("inspectorEnableHermesCDPAgent");
+    return method(javaProvider_);
+  }
+
   bool inspectorEnableModernCDPRegistry() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("inspectorEnableModernCDPRegistry");
+    return method(javaProvider_);
+  }
+
+  bool skipMountHookNotifications() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("skipMountHookNotifications");
+    return method(javaProvider_);
+  }
+
+  bool useModernRuntimeScheduler() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useModernRuntimeScheduler");
     return method(javaProvider_);
   }
 
@@ -108,29 +126,14 @@ bool JReactNativeFeatureFlagsCxxInterop::commonTestFlag(
   return ReactNativeFeatureFlags::commonTestFlag();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::enableBackgroundExecutor(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::enableBackgroundExecutor();
-}
-
-bool JReactNativeFeatureFlagsCxxInterop::useModernRuntimeScheduler(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::useModernRuntimeScheduler();
-}
-
-bool JReactNativeFeatureFlagsCxxInterop::enableMicrotasks(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::enableMicrotasks();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::batchRenderingUpdatesInEventLoop(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::enableSpannableBuildingUnification(
+bool JReactNativeFeatureFlagsCxxInterop::enableBackgroundExecutor(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::enableSpannableBuildingUnification();
+  return ReactNativeFeatureFlags::enableBackgroundExecutor();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::enableCustomDrawOrderFabric(
@@ -143,14 +146,44 @@ bool JReactNativeFeatureFlagsCxxInterop::enableFixForClippedSubviewsCrash(
   return ReactNativeFeatureFlags::enableFixForClippedSubviewsCrash();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableMicrotasks(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableMicrotasks();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::enableMountHooksAndroid(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableMountHooksAndroid();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::enableSpannableBuildingUnification(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableSpannableBuildingUnification();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::inspectorEnableCxxInspectorPackagerConnection(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::inspectorEnableCxxInspectorPackagerConnection();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::inspectorEnableHermesCDPAgent(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::inspectorEnableHermesCDPAgent();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::inspectorEnableModernCDPRegistry(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::inspectorEnableModernCDPRegistry();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::skipMountHookNotifications(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::skipMountHookNotifications();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::useModernRuntimeScheduler(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::useModernRuntimeScheduler();
 }
 
 void JReactNativeFeatureFlagsCxxInterop::override(
@@ -174,20 +207,11 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "commonTestFlag",
         JReactNativeFeatureFlagsCxxInterop::commonTestFlag),
       makeNativeMethod(
-        "enableBackgroundExecutor",
-        JReactNativeFeatureFlagsCxxInterop::enableBackgroundExecutor),
-      makeNativeMethod(
-        "useModernRuntimeScheduler",
-        JReactNativeFeatureFlagsCxxInterop::useModernRuntimeScheduler),
-      makeNativeMethod(
-        "enableMicrotasks",
-        JReactNativeFeatureFlagsCxxInterop::enableMicrotasks),
-      makeNativeMethod(
         "batchRenderingUpdatesInEventLoop",
         JReactNativeFeatureFlagsCxxInterop::batchRenderingUpdatesInEventLoop),
       makeNativeMethod(
-        "enableSpannableBuildingUnification",
-        JReactNativeFeatureFlagsCxxInterop::enableSpannableBuildingUnification),
+        "enableBackgroundExecutor",
+        JReactNativeFeatureFlagsCxxInterop::enableBackgroundExecutor),
       makeNativeMethod(
         "enableCustomDrawOrderFabric",
         JReactNativeFeatureFlagsCxxInterop::enableCustomDrawOrderFabric),
@@ -195,11 +219,29 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "enableFixForClippedSubviewsCrash",
         JReactNativeFeatureFlagsCxxInterop::enableFixForClippedSubviewsCrash),
       makeNativeMethod(
+        "enableMicrotasks",
+        JReactNativeFeatureFlagsCxxInterop::enableMicrotasks),
+      makeNativeMethod(
+        "enableMountHooksAndroid",
+        JReactNativeFeatureFlagsCxxInterop::enableMountHooksAndroid),
+      makeNativeMethod(
+        "enableSpannableBuildingUnification",
+        JReactNativeFeatureFlagsCxxInterop::enableSpannableBuildingUnification),
+      makeNativeMethod(
         "inspectorEnableCxxInspectorPackagerConnection",
         JReactNativeFeatureFlagsCxxInterop::inspectorEnableCxxInspectorPackagerConnection),
       makeNativeMethod(
+        "inspectorEnableHermesCDPAgent",
+        JReactNativeFeatureFlagsCxxInterop::inspectorEnableHermesCDPAgent),
+      makeNativeMethod(
         "inspectorEnableModernCDPRegistry",
         JReactNativeFeatureFlagsCxxInterop::inspectorEnableModernCDPRegistry),
+      makeNativeMethod(
+        "skipMountHookNotifications",
+        JReactNativeFeatureFlagsCxxInterop::skipMountHookNotifications),
+      makeNativeMethod(
+        "useModernRuntimeScheduler",
+        JReactNativeFeatureFlagsCxxInterop::useModernRuntimeScheduler),
   });
 }
 
