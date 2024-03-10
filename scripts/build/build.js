@@ -9,25 +9,24 @@
  * @oncall react_native
  */
 
-const babel = require('@babel/core');
-const {parseArgs} = require('@pkgjs/parseargs');
-const chalk = require('chalk');
-const translate = require('flow-api-translator');
-const glob = require('glob');
-const micromatch = require('micromatch');
-const {promises: fs} = require('fs');
-const path = require('path');
-const prettier = require('prettier');
-const ts = require('typescript');
+const {PACKAGES_DIR} = require('../consts');
 const {
   buildConfig,
   getBabelConfig,
   getBuildOptions,
   getTypeScriptCompilerOptions,
 } = require('./config');
+const babel = require('@babel/core');
+const {parseArgs} = require('@pkgjs/parseargs');
+const chalk = require('chalk');
+const translate = require('flow-api-translator');
+const {promises: fs} = require('fs');
+const glob = require('glob');
+const micromatch = require('micromatch');
+const path = require('path');
+const prettier = require('prettier');
+const ts = require('typescript');
 
-const REPO_ROOT = path.resolve(__dirname, '../..');
-const PACKAGES_DIR /*: string */ = path.join(REPO_ROOT, 'packages');
 const SRC_DIR = 'src';
 const BUILD_DIR = 'dist';
 const JS_FILES_PATTERN = '**/*.js';
@@ -185,10 +184,7 @@ async function rewritePackageExports(packageName /*: string */) {
 
   pkg.exports = rewriteExportsField(pkg.exports);
 
-  await fs.writeFile(
-    packageJsonPath,
-    prettier.format(JSON.stringify(pkg), {parser: 'json'}),
-  );
+  await fs.writeFile(packageJsonPath, JSON.stringify(pkg, null, 2) + '\n');
 }
 
 /*::

@@ -82,19 +82,32 @@ inline yoga::FloatOptional yogaOptionalFloatFromFloat(Float value) {
 }
 
 inline std::optional<Float> optionalFloatFromYogaValue(
-    const YGValue value,
+    const yoga::Style::Length& length,
     std::optional<Float> base = {}) {
-  switch (value.unit) {
-    case YGUnitUndefined:
+  switch (length.unit()) {
+    case yoga::Unit::Undefined:
       return {};
-    case YGUnitPoint:
-      return floatFromYogaFloat(value.value);
-    case YGUnitPercent:
+    case yoga::Unit::Point:
+      return floatFromYogaOptionalFloat(length.value());
+    case yoga::Unit::Percent:
       return base.has_value()
-          ? std::optional<Float>(base.value() * floatFromYogaFloat(value.value))
+          ? std::optional<Float>(
+                base.value() * floatFromYogaOptionalFloat(length.value()))
           : std::optional<Float>();
-    case YGUnitAuto:
+    case yoga::Unit::Auto:
       return {};
+  }
+}
+
+static inline PositionType positionTypeFromYogaPositionType(
+    yoga::PositionType positionType) {
+  switch (positionType) {
+    case yoga::PositionType::Static:
+      return PositionType::Static;
+    case yoga::PositionType::Relative:
+      return PositionType::Relative;
+    case yoga::PositionType::Absolute:
+      return PositionType::Absolute;
   }
 }
 
@@ -125,9 +138,12 @@ inline LayoutMetrics layoutMetricsFromYogaNode(yoga::Node& yogaNode) {
       layoutMetrics.borderWidth.bottom +
           floatFromYogaFloat(YGNodeLayoutGetPadding(&yogaNode, YGEdgeBottom))};
 
-  layoutMetrics.displayType =
-      yogaNode.getStyle().display() == yoga::Display::None ? DisplayType::None
-                                                           : DisplayType::Flex;
+  layoutMetrics.displayType = yogaNode.style().display() == yoga::Display::None
+      ? DisplayType::None
+      : DisplayType::Flex;
+
+  layoutMetrics.positionType =
+      positionTypeFromYogaPositionType(yogaNode.style().positionType());
 
   layoutMetrics.layoutDirection =
       YGNodeLayoutGetDirection(&yogaNode) == YGDirectionRTL
@@ -395,42 +411,42 @@ inline void fromRawValue(
 inline void fromRawValue(
     const PropsParserContext& context,
     const RawValue& value,
-    yoga::Style::ValueRepr& result) {
+    yoga::Style::Length& result) {
   if (value.hasType<Float>()) {
-    result = yoga::CompactValue::ofMaybe<YGUnitPoint>((float)value);
+    result = yoga::value::points((float)value);
     return;
   } else if (value.hasType<std::string>()) {
     const auto stringValue = (std::string)value;
     if (stringValue == "auto") {
-      result = YGValueAuto;
+      result = yoga::value::ofAuto();
       return;
     } else {
       if (stringValue.back() == '%') {
         auto tryValue = folly::tryTo<float>(
             std::string_view(stringValue).substr(0, stringValue.length() - 1));
         if (tryValue.hasValue()) {
-          result = YGValue{tryValue.value(), YGUnitPercent};
+          result = yoga::value::percent(tryValue.value());
           return;
         }
       } else {
         auto tryValue = folly::tryTo<float>(stringValue);
         if (tryValue.hasValue()) {
-          result = YGValue{tryValue.value(), YGUnitPoint};
+          result = yoga::value::points(tryValue.value());
           return;
         }
       }
     }
   }
-  result = YGValueUndefined;
+  result = yoga::value::undefined();
 }
 
 inline void fromRawValue(
     const PropsParserContext& context,
     const RawValue& value,
     YGValue& result) {
-  yoga::Style::ValueRepr ygValue{};
-  fromRawValue(context, value, ygValue);
-  result = ygValue;
+  yoga::Style::Length length{};
+  fromRawValue(context, value, length);
+  result = (YGValue)length;
 }
 
 inline void fromRawValue(
@@ -690,6 +706,28 @@ inline void fromRawValue(
 }
 
 inline void fromRawValue(
+    const PropsParserContext& context,
+    const RawValue& value,
+    Cursor& result) {
+  result = Cursor::Auto;
+  react_native_expect(value.hasType<std::string>());
+  if (!value.hasType<std::string>()) {
+    return;
+  }
+  auto stringValue = (std::string)value;
+  if (stringValue == "auto") {
+    result = Cursor::Auto;
+    return;
+  }
+  if (stringValue == "pointer") {
+    result = Cursor::Pointer;
+    return;
+  }
+  LOG(ERROR) << "Could not parse Cursor:" << stringValue;
+  react_native_expect(false);
+}
+
+inline void fromRawValue(
     const PropsParserContext& /*context*/,
     const RawValue& value,
     LayoutConformance& result) {
@@ -757,15 +795,15 @@ inline std::string toString(const yoga::Display& value) {
   return YGDisplayToString(yoga::unscopedEnum(value));
 }
 
-inline std::string toString(const YGValue& value) {
-  switch (value.unit) {
-    case YGUnitUndefined:
+inline std::string toString(const yoga::Style::Length& length) {
+  switch (length.unit()) {
+    case yoga::Unit::Undefined:
       return "undefined";
-    case YGUnitPoint:
-      return folly::to<std::string>(value.value);
-    case YGUnitPercent:
-      return folly::to<std::string>(value.value) + "%";
-    case YGUnitAuto:
+    case yoga::Unit::Point:
+      return std::to_string(length.value().unwrap());
+    case yoga::Unit::Percent:
+      return std::to_string(length.value().unwrap()) + "%";
+    case yoga::Unit::Auto:
       return "auto";
   }
 }
@@ -775,41 +813,7 @@ inline std::string toString(const yoga::FloatOptional& value) {
     return "undefined";
   }
 
-  return folly::to<std::string>(floatFromYogaFloat(value.unwrap()));
-}
-
-inline std::string toString(const yoga::Style::Dimensions& value) {
-  return "{" + toString(value[0]) + ", " + toString(value[1]) + "}";
-}
-
-inline std::string toString(const yoga::Style::Edges& value) {
-  static std::array<std::string, 9> names = {
-      {"left",
-       "top",
-       "right",
-       "bottom",
-       "start",
-       "end",
-       "horizontal",
-       "vertical",
-       "all"}};
-
-  auto result = std::string{};
-  auto separator = std::string{", "};
-
-  for (size_t i = 0; i < names.size(); i++) {
-    YGValue v = value[i];
-    if (v.unit == YGUnitUndefined) {
-      continue;
-    }
-    result += names[i] + ": " + toString(v) + separator;
-  }
-
-  if (!result.empty()) {
-    result.erase(result.length() - separator.length());
-  }
-
-  return "{" + result + "}";
+  return std::to_string(value.unwrap());
 }
 
 inline std::string toString(const LayoutConformance& value) {

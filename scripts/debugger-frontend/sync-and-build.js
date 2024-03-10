@@ -9,13 +9,14 @@
  * @oncall react_native
  */
 
+const {PACKAGES_DIR} = require('../consts');
 const {parseArgs} = require('@pkgjs/parseargs');
 // $FlowFixMe[untyped-import]: TODO type ansi-styles
 const ansiStyles = require('ansi-styles');
 const chalk = require('chalk');
 const {execSync, spawnSync} = require('child_process');
 const {promises: fs} = require('fs');
-const {tmpdir, hostname, userInfo} = require('os');
+const {hostname, tmpdir, userInfo} = require('os');
 const path = require('path');
 // $FlowFixMe[untyped-import]: TODO type rimraf
 const rimraf = require('rimraf');
@@ -26,9 +27,6 @@ const supportsColor = require('supports-color');
 
 const DEVTOOLS_FRONTEND_REPO_URL =
   'https://github.com/facebookexperimental/rn-chrome-devtools-frontend';
-
-const REPO_ROOT = path.resolve(__dirname, '../..');
-const PACKAGES_DIR /*: string */ = path.join(REPO_ROOT, 'packages');
 
 const config = {
   allowPositionals: true,

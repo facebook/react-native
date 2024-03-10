@@ -49,8 +49,9 @@ const buildConfig /*: BuildConfig */ = {
       target: 'node',
       emitTypeScriptDefs: true,
     },
-    'react-native-codegen': {
+    'metro-config': {
       target: 'node',
+      emitTypeScriptDefs: true,
     },
   },
 };

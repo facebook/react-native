@@ -10,26 +10,24 @@
 
 'use strict';
 
-const React = require('react');
-
-const {
-  Button,
-  InputAccessoryView,
-  Text,
-  TextInput,
-  View,
-  StyleSheet,
-  Switch,
-  Alert,
-} = require('react-native');
-import type {KeyboardType} from 'react-native/Libraries/Components/TextInput/TextInput';
-
-const TextInputSharedExamples = require('./TextInputSharedExamples.js');
-
 import type {
   RNTesterModule,
   RNTesterModuleExample,
 } from '../../types/RNTesterTypes';
+import type {KeyboardType} from 'react-native/Libraries/Components/TextInput/TextInput';
+
+const TextInputSharedExamples = require('./TextInputSharedExamples.js');
+const React = require('react');
+const {
+  Alert,
+  Button,
+  InputAccessoryView,
+  StyleSheet,
+  Switch,
+  Text,
+  TextInput,
+  View,
+} = require('react-native');
 
 class WithLabel extends React.Component<$FlowFixMeProps> {
   render(): React.Node {
@@ -325,7 +323,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const examples: Array<RNTesterModuleExample> = [
+const textInputExamples: Array<RNTesterModuleExample> = [
   ...TextInputSharedExamples,
   {
     title: 'Live Re-Write (ひ -> 日)',
@@ -946,5 +944,5 @@ module.exports = ({
   documentationURL: 'https://reactnative.dev/docs/textinput',
   category: 'Basic',
   description: 'Single and multi-line text inputs.',
-  examples,
+  examples: textInputExamples,
 }: RNTesterModule);

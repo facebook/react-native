@@ -12,7 +12,7 @@
 
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 
-import ReactNativeFeatureFlags from '../../ReactNative/ReactNativeFeatureFlags';
+import * as ReactNativeFeatureFlags from '../../../src/private/featureflags/ReactNativeFeatureFlags';
 import flattenStyle from '../../StyleSheet/flattenStyle';
 import Platform from '../../Utilities/Platform';
 import NativeAnimatedHelper from '../NativeAnimatedHelper';
@@ -30,7 +30,7 @@ function createAnimatedStyle(
   const animatedStyles: any = {};
   for (const key in style) {
     const value = style[key];
-    if (key === 'transform') {
+    if (value != null && key === 'transform') {
       animatedStyles[key] =
         ReactNativeFeatureFlags.shouldUseAnimatedObjectForTransform()
           ? new AnimatedObject(value)

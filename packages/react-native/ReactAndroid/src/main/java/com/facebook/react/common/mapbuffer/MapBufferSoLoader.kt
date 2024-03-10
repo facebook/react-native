@@ -9,14 +9,16 @@ package com.facebook.react.common.mapbuffer
 
 import com.facebook.react.bridge.ReactMarker
 import com.facebook.react.bridge.ReactMarkerConstants
+import com.facebook.react.common.annotations.StableReactNativeAPI
 import com.facebook.soloader.SoLoader
 import com.facebook.systrace.Systrace
 
-object MapBufferSoLoader {
+@StableReactNativeAPI
+public object MapBufferSoLoader {
   @Volatile private var didInit = false
 
   @JvmStatic
-  fun staticInit() {
+  public fun staticInit() {
     if (didInit) {
       return
     }

@@ -88,7 +88,7 @@ void NativeMutationObserver::connect(
 
   notifyMutationObservers_ = std::move(notifyMutationObservers);
 
-  auto onMutationsCallback = [&](std::vector<const MutationRecord>& records) {
+  auto onMutationsCallback = [&](std::vector<MutationRecord>& records) {
     return onMutations(records);
   };
 
@@ -125,8 +125,7 @@ NativeMutationObserver::getPublicInstancesFromShadowNodes(
   return publicInstances;
 }
 
-void NativeMutationObserver::onMutations(
-    std::vector<const MutationRecord>& records) {
+void NativeMutationObserver::onMutations(std::vector<MutationRecord>& records) {
   SystraceSection s("NativeMutationObserver::onMutations");
 
   for (const auto& record : records) {

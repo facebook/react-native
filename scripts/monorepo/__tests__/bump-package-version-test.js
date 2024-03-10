@@ -7,17 +7,14 @@
  * @format
  */
 
-const path = require('path');
-const {writeFileSync} = require('fs');
-
 const bumpPackageVersion = require('../bump-all-updated-packages/bump-package-version');
+const {writeFileSync} = require('fs');
+const path = require('path');
 
 jest.mock('fs', () => ({
   writeFileSync: jest.fn(),
   readFileSync: jest.fn(() => '{}'),
 }));
-
-jest.mock('../for-each-package', () => callback => {});
 
 describe('bumpPackageVersionTest', () => {
   it('updates patch version of the package', () => {

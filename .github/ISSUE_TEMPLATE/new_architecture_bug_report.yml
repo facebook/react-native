@@ -1,29 +1,81 @@
 name: 💫 New Architecture - Bug Report
 description: Report a reproducible bug or a build issue when using the New Architecture (Fabric & TurboModules) in React Native.
 labels: ["Needs: Triage :mag:", "Type: New Architecture"]
+
 body:
   - type: markdown
     attributes:
+      value: "## New Architecture Related Bugs"
+  - type: markdown
+    attributes:
       value: |
-        Please provide all the information requested. Issues that do not follow this format are going to be closed.
-        This issue report is reserved to bug & build issues for users on the New Architecture. If you're not using
-        the New Architecture, please don't open issues on this category.
+        Thank you for taking the time to report an issue for [the New Architecture of React Native](https://reactnative.dev/docs/the-new-architecture/landing-page),
+        your contribution will help make the framework better for everyone.
+
+        If you're **NOT** using the New Architecture, please use this [other bug type](https://github.com/facebook/react-native/issues/new?template=bug_report.yml).
+        Do not attempt to open a bug in this category if you're not using the New Architecture as your bug will be closed.
+
+        Make sure that your issue:
+        * Have a **valid reproducer** (either a [Expo Snack](https://snack.expo.dev/) or a [empty project from template](https://github.com/react-native-community/reproducer-react-native).
+        * Is tested against the [**latest stable**](https://github.com/facebook/react-native/releases/) of React Native.
+
+        Due to the extreme number of bugs we receive, we will be looking **ONLY** into issues with a reproducer, and on [supported versions](https://github.com/reactwg/react-native-releases#which-versions-are-currently-supported) of React Native.
   - type: textarea
     id: description
     attributes:
       label: Description
-      description: |
-        Please provide a clear and concise description of what the bug or issue is. Include screenshots if needed.
-        Please make sure you check the New Architecture documentation first, as your issue might
-        already be answered there - https://reactnative.dev/docs/next/new-architecture-intro
+      description: A clear and concise description of what the bug is.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: The list of steps that reproduce the issue.
+      placeholder: |
+        1. Install the application with `yarn android`
+        2. Click on the button on the Home
+        3. Notice the crash
     validations:
       required: true
   - type: input
     id: version
     attributes:
       label: React Native Version
-      description: What is the latest version of react-native that this issue reproduces on? Please test against the latest stable version, and list only the highest version you tested. Bug reports against older versions are more likely to stall.
-      placeholder: ex. 0.71.0
+      description: The version of react-native that this issue reproduces on. Bear in mind that only issues on [supported versions](https://github.com/reactwg/react-native-releases#which-versions-are-currently-supported) will be looked into.
+      placeholder: "0.73.0"
+    validations:
+      required: true
+  - type: dropdown
+    id: platforms
+    attributes:
+      label: Affected Platforms
+      description: Please select which platform you're developing to, and which OS you're using for building.
+      multiple: true
+      options:
+        - Runtime - Android
+        - Runtime - iOS
+        - Runtime - Web
+        - Runtime - Desktop
+        - Build - MacOS
+        - Build - Windows
+        - Build - Linux
+        - Other (please specify)
+    validations:
+      required: true
+  - type: dropdown
+    id: areas
+    attributes:
+      label: Areas
+      description: Which areas of the New Architecture are affected by this bug report?
+      multiple: true
+      options:
+        - Fabric - The New Renderer
+        - TurboModule - The New Native Module System
+        - JSI - Javascript Interface
+        - Bridgeless - The New Initialization Flow
+        - Codegen
+        - Other (please specify)
     validations:
       required: true
   - type: textarea
@@ -31,23 +83,53 @@ body:
     attributes:
       label: Output of `npx react-native info`
       description: Run `npx react-native info` in your terminal, copy and paste the results here.
+      placeholder: |
+        Paste the output of `npx react-native info` here. The output looks like:
+        ...
+        System:
+          OS: macOS 14.1.1
+          CPU: (10) arm64 Apple M1 Max
+          Memory: 417.81 MB / 64.00 GB
+          Shell:
+            version: "5.9"
+            path: /bin/zsh
+        Binaries:
+          Node: ...
+            version: 18.14.0
+        ...
+      render: text
     validations:
       required: true
   - type: textarea
-    id: reproduction
+    id: stacktrace
     attributes:
-      label: Steps to reproduce
-      description: Provide a detailed list of steps that reproduce the issue.
+      label: Stacktrace or Logs
+      description: Please provide a stacktrace or a log of your crash or failure
+      render: text
+      placeholder: |
+        Paste your stacktraces and logs here. They might look like:
+
+        java.lang.UnsatisfiedLinkError: couldn't find DSO to load: libfabricjni.so caused by: com.facebook.react.fabric.StateWrapperImpl result: 0
+            at com.facebook.soloader.SoLoader.g(Unknown Source:341)
+            at com.facebook.soloader.SoLoader.t(Unknown Source:124)
+            at com.facebook.soloader.SoLoader.s(Unknown Source:2)
+            at com.facebook.soloader.SoLoader.q(Unknown Source:42)
+            at com.facebook.soloader.SoLoader.p(Unknown Source:1)
+            ...
+    validations:
+      required: true
+  - type: input
+    id: reproducer
+    attributes:
+      label: Reproducer
+      description: A link to a Expo Snack or a public repository that reproduces this bug, using [this template](https://github.com/react-native-community/reproducer-react-native). Reproducers are **mandatory**.
+      placeholder: "https://github.com/<myuser>/<myreproducer>"
     validations:
       required: true
   - type: textarea
     id: extra
     attributes:
-      label: Snack, code example, screenshot, or link to a repository
+      label: Screenshots and Videos
       description: |
-        Please provide a Snack (https://snack.expo.dev/), a link to a repository on GitHub, or provide a minimal code example that reproduces the problem.
-        You may provide a screenshot of the application if you think it is relevant to your bug report.
-        Here are some tips for providing a minimal example: https://stackoverflow.com/help/mcve
-        Please note that a reproducer is **mandatory**. Issues without reproducer are more likely to stall and will be closed.
-    validations:
-      required: true
+        Please provide screenshot or a video of your bug if relevant.
+        Issues with videos and screenshots are more likely to **get prioritized**.

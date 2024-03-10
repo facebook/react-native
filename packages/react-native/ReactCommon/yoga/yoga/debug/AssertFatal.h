@@ -8,10 +8,11 @@
 #pragma once
 
 #include <yoga/Yoga.h>
-#include <yoga/config/Config.h>
-#include <yoga/node/Node.h>
 
 namespace facebook::yoga {
+
+class Node;
+class Config;
 
 [[noreturn]] void fatalWithMessage(const char* message);
 

@@ -27,7 +27,7 @@ import com.facebook.react.runtime.hermes.HermesInstance
  * [ReactHost] is an interface responsible of handling the lifecycle of a React Native app when
  * running in bridgeless mode.
  */
-object DefaultReactHost {
+public object DefaultReactHost {
   private var reactHost: ReactHost? = null
 
   /**
@@ -44,7 +44,7 @@ object DefaultReactHost {
    */
   @OptIn(UnstableReactNativeAPI::class)
   @JvmStatic
-  fun getDefaultReactHost(
+  public fun getDefaultReactHost(
       context: Context,
       packageList: List<ReactPackage>,
       jsMainModulePath: String = "index",
@@ -54,13 +54,13 @@ object DefaultReactHost {
     if (reactHost == null) {
       val jsBundleLoader =
           JSBundleLoader.createAssetLoader(context, "assets://$jsBundleAssetPath", true)
-      val jsEngineInstance = if (isHermesEnabled) HermesInstance() else JSCInstance()
+      val jsRuntimeFactory = if (isHermesEnabled) HermesInstance() else JSCInstance()
       val defaultReactHostDelegate =
           DefaultReactHostDelegate(
               jsMainModulePath = jsMainModulePath,
               jsBundleLoader = jsBundleLoader,
               reactPackages = packageList,
-              jsEngineInstance = jsEngineInstance,
+              jsRuntimeFactory = jsRuntimeFactory,
               turboModuleManagerDelegateBuilder = DefaultTurboModuleManagerDelegate.Builder())
       val reactJsExceptionHandler = ReactJsExceptionHandler { _ -> }
       val componentFactory = ComponentFactory()
@@ -97,7 +97,7 @@ object DefaultReactHost {
    * @param reactNativeHost the [ReactNativeHost] to use for creating the [ReactHost]
    */
   @JvmStatic
-  fun getDefaultReactHost(
+  public fun getDefaultReactHost(
       context: Context,
       reactNativeHost: ReactNativeHost,
   ): ReactHost {

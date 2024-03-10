@@ -9,12 +9,17 @@ package com.facebook.react.runtime;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Bundle;
 import android.view.View;
+import com.facebook.debug.holder.PrinterHolder;
+import com.facebook.debug.tags.ReactDebugOverlayTags;
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.JavaJSExecutor;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.devsupport.DevSupportManagerBase;
 import com.facebook.react.devsupport.HMRClient;
 import com.facebook.react.devsupport.ReactInstanceDevHelper;
@@ -92,8 +97,17 @@ class BridgelessDevSupportManager extends DevSupportManagerBase {
 
   @Override
   public void handleReloadJS() {
+    UiThreadUtil.assertOnUiThread();
+
+    // dismiss redbox if exists
     hideRedboxDialog();
     mReactHost.reload("BridgelessDevSupportManager.handleReloadJS()");
+
+    PrinterHolder.getPrinter()
+        .logMessage(ReactDebugOverlayTags.RN_CORE, "RNCore: load from Server");
+    String bundleURL =
+        getDevServerHelper().getDevServerBundleURL(Assertions.assertNotNull(getJSAppBundleName()));
+    reloadJSFromServer(bundleURL);
   }
 
   private static ReactInstanceDevHelper createInstanceDevHelper(final ReactHostImpl reactHost) {
@@ -105,7 +119,7 @@ class BridgelessDevSupportManager extends DevSupportManagerBase {
 
       @Override
       public void onJSBundleLoadedFromServer() {
-        throw new IllegalStateException("Not implemented for bridgeless mode");
+        // Not implemented
       }
 
       @Override
@@ -135,8 +149,7 @@ class BridgelessDevSupportManager extends DevSupportManagerBase {
         Activity currentActivity = getCurrentActivity();
         if (currentActivity != null && !reactHost.isSurfaceWithModuleNameAttached(appKey)) {
           ReactSurfaceImpl reactSurface =
-              ReactSurfaceImpl.createWithView(currentActivity, appKey, null);
-
+              ReactSurfaceImpl.createWithView(currentActivity, appKey, new Bundle());
           reactSurface.attach(reactHost);
           reactSurface.start();
 

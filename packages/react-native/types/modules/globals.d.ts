@@ -132,6 +132,10 @@ declare interface Headers {
   get(name: string): string | null;
   has(name: string): boolean;
   set(name: string, value: string): void;
+  entries(): IterableIterator<[string, string]>;
+  keys(): IterableIterator<string>;
+  values(): IterableIterator<string>;
+  [Symbol.iterator](): IterableIterator<[string, string]>;
 }
 
 declare var Headers: {
@@ -460,6 +464,7 @@ interface WebSocket extends EventTarget {
   readonly readyState: number;
   send(data: string | ArrayBuffer | ArrayBufferView | Blob): void;
   close(code?: number, reason?: string): void;
+  ping(): void;
   onopen: (() => void) | null;
   onmessage: ((event: WebSocketMessageEvent) => void) | null;
   onerror: ((event: WebSocketErrorEvent) => void) | null;

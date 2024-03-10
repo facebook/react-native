@@ -15,6 +15,7 @@
 #include <ReactCommon/CallInvoker.h>
 #include <ReactCommon/RuntimeExecutor.h>
 #include <cxxreact/JSExecutor.h>
+#include <jsinspector-modern/ReactCdp.h>
 
 namespace folly {
 struct dynamic;
@@ -105,6 +106,8 @@ class NativeToJsBridge {
    */
   std::shared_ptr<NativeMethodCallInvoker> getDecoratedNativeMethodCallInvoker(
       std::shared_ptr<NativeMethodCallInvoker> nativeInvoker) const;
+
+  jsinspector_modern::RuntimeTargetDelegate& getInspectorTargetDelegate();
 
  private:
   // This is used to avoid a race condition where a proxyCallback gets queued

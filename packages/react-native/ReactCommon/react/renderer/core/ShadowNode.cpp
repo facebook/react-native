@@ -42,7 +42,9 @@ Props::Shared ShadowNode::propsForClonedShadowNode(
   if (!hasBeenMounted && sourceNodeHasRawProps && props) {
     auto& castedProps = const_cast<Props&>(*props);
     castedProps.rawProps = mergeDynamicProps(
-        sourceShadowNode.getProps()->rawProps, props->rawProps);
+        sourceShadowNode.getProps()->rawProps,
+        props->rawProps,
+        NullValueStrategy::Override);
     return props;
   }
 #endif
@@ -243,7 +245,7 @@ void ShadowNode::replaceChild(
   auto& children = const_cast<ShadowNode::ListOfShared&>(*children_);
   auto size = children.size();
 
-  if (suggestedIndex != -1 && suggestedIndex < size) {
+  if (suggestedIndex != -1 && static_cast<size_t>(suggestedIndex) < size) {
     // If provided `suggestedIndex` is accurate,
     // replacing in place using the index.
     if (children.at(suggestedIndex).get() == &oldChild) {

@@ -1,15 +1,14 @@
 {
   "name": "@react-native/codegen",
-  "version": "0.74.0",
+  "version": "0.75.0-main",
   "description": "Code generation tools for React Native",
   "license": "MIT",
-  "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/react-native-codegen#readme",
-  "bugs": "https://github.com/facebook/react-native/issues",
   "repository": {
     "type": "git",
     "url": "https://github.com/facebook/react-native.git",
     "directory": "packages/react-native-codegen"
   },
+  "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/react-native-codegen#readme",
   "keywords": [
     "code",
     "generation",
@@ -17,30 +16,25 @@
     "tools",
     "react-native"
   ],
-  "exports": {
-    "./cli/combine/combine-js-to-schema-cli": "./src/cli/combine/combine-js-to-schema-cli.js",
-    "./cli/combine/combine-js-to-schema-cli.js": "./src/cli/combine/combine-js-to-schema-cli.js",
-    "./cli/generators/generate-all": "./src/cli/generators/generate-all.js",
-    "./cli/generators/generate-all.js": "./src/cli/generators/generate-all.js",
-    "./generators/RNCodegen": "./src/generators/RNCodegen.js",
-    "./generators/RNCodegen.js": "./src/generators/RNCodegen.js",
-    "./parsers/flow/parser": "./src/parsers/flow/parser.js",
-    "./parsers/flow/parser.js": "./src/parsers/flow/parser.js",
-    "./parsers/typescript/parser": "./src/parsers/typescript/parser.js",
-    "./parsers/typescript/parser.js": "./src/parsers/typescript/parser.js",
-    "./lib/*": "./src/*.js",
-    "./lib/*.js": "./src/*.js",
-    "./src/*": "./src/*.js",
-    "./src/*.js": "./src/*.js",
-    "./package.json": "./package.json"
+  "bugs": "https://github.com/facebook/react-native/issues",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "yarn clean && node scripts/build.js --verbose",
+    "clean": "rimraf lib",
+    "prepare": "yarn run build"
   },
   "files": [
-    "dist"
+    "lib"
   ],
   "dependencies": {
     "@babel/parser": "^7.20.0",
-    "flow-parser": "^0.206.0",
+    "glob": "^7.1.1",
+    "hermes-parser": "0.20.1",
+    "invariant": "^2.2.4",
     "jscodeshift": "^0.14.0",
+    "mkdirp": "^0.5.1",
     "nullthrows": "^1.1.1"
   },
   "devDependencies": {
@@ -55,17 +49,13 @@
     "@babel/plugin-transform-flow-strip-types": "^7.20.0",
     "@babel/preset-env": "^7.20.0",
     "chalk": "^4.0.0",
-    "glob": "^7.1.1",
-    "invariant": "^2.2.4",
+    "hermes-estree": "0.20.1",
     "micromatch": "^4.0.4",
-    "mkdirp": "^0.5.1",
     "prettier": "2.8.8",
-    "rimraf": "^3.0.2"
+    "rimraf": "^3.0.2",
+    "yargs": "^17.6.2"
   },
   "peerDependencies": {
     "@babel/preset-env": "^7.1.6"
-  },
-  "engines": {
-    "node": ">=18"
   }
 }

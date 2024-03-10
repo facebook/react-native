@@ -11,6 +11,7 @@ import android.view.MotionEvent;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pools;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.SoftAssertions;
 
@@ -22,6 +23,7 @@ import com.facebook.react.bridge.SoftAssertions;
  * and coalescing key. See {@link TouchEventCoalescingKeyHelper} for more information about how
  * these coalescing keys are determined.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class TouchEvent extends Event<TouchEvent> {
   private static final String TAG = TouchEvent.class.getSimpleName();
 
@@ -189,6 +191,9 @@ public class TouchEvent extends Event<TouchEvent> {
   @Override
   public void dispatchModern(RCTModernEventEmitter rctEventEmitter) {
     if (verifyMotionEvent()) {
+      // TouchesHelper.sendTouchEvent can be inlined here post Fabric rollout
+      // For now, we go via the event emitter, which will decide whether the legacy or modern
+      // event path is required
       rctEventEmitter.receiveTouches(this);
     }
   }

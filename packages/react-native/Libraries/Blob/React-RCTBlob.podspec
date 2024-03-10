@@ -16,21 +16,17 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1 -Wno-comma -Wno-shorten-64-to-32'
-folly_version = '2023.08.07.00'
+folly_config = get_folly_config()
+folly_compiler_flags = folly_config[:compiler_flags]
+folly_version = folly_config[:version]
 
 header_search_paths = [
   "\"$(PODS_ROOT)/RCT-Folly\"",
-  "\"${PODS_ROOT}/Headers/Public/React-Codegen/react/renderer/components\"",
-  "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Codegen/React_Codegen.framework/Headers\""
+  "\"$(PODS_ROOT)/boost\"",
+  "\"$(PODS_ROOT)/DoubleConversion\"",
+  "\"$(PODS_ROOT)/fmt/include\"",
+  "\"${PODS_ROOT}/Headers/Public/ReactCodegen/react/renderer/components\"",
 ]
-
-if ENV["USE_FRAMEWORKS"]
-  header_search_paths = header_search_paths.concat([
-    "\"$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\"",
-    "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-NativeModulesApple/React_NativeModulesApple.framework/Headers\""
-  ])
-end
 
 Pod::Spec.new do |s|
   s.name                   = "React-RCTBlob"
@@ -51,13 +47,18 @@ Pod::Spec.new do |s|
                                "HEADER_SEARCH_PATHS" => header_search_paths.join(' ')
                              }
 
+  s.dependency "DoubleConversion"
+  s.dependency "fmt", "9.1.0"
   s.dependency "RCT-Folly", folly_version
-  s.dependency "React-Codegen", version
-  s.dependency "ReactCommon/turbomodule/core", version
-  s.dependency "React-jsi", version
-  s.dependency "React-Core/RCTBlobHeaders", version
-  s.dependency "React-Core/RCTWebSocket", version
-  s.dependency "React-RCTNetwork", version
+  s.dependency "React-jsi"
+  s.dependency "React-Core/RCTBlobHeaders"
+  s.dependency "React-Core/RCTWebSocket"
+  s.dependency "React-RCTNetwork"
+
+  add_dependency(s, "ReactCodegen")
+  add_dependency(s, "React-NativeModulesApple")
+  add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
+  add_dependency(s, "ReactCommon", :subspec => "turbomodule/core", :additional_framework_paths => ["react/nativemodule/core"])
 
   if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
     s.dependency "hermes-engine"

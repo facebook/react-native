@@ -22,8 +22,6 @@ import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Point;
-import android.os.Handler;
-import android.os.Looper;
 import android.os.SystemClock;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
@@ -57,6 +55,8 @@ import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.events.FabricEventEmitter;
+import com.facebook.react.fabric.internal.interop.InteropUIBlockListener;
+import com.facebook.react.fabric.interop.UIBlock;
 import com.facebook.react.fabric.mounting.MountItemDispatcher;
 import com.facebook.react.fabric.mounting.MountingManager;
 import com.facebook.react.fabric.mounting.SurfaceMountingManager;
@@ -65,6 +65,7 @@ import com.facebook.react.fabric.mounting.mountitems.DispatchCommandMountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItemFactory;
 import com.facebook.react.interfaces.fabric.SurfaceHandler;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.internal.interop.InteropEventEmitter;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
@@ -81,7 +82,6 @@ import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.uimanager.events.BatchEventDispatchedListener;
 import com.facebook.react.uimanager.events.EventCategoryDef;
 import com.facebook.react.uimanager.events.EventDispatcher;
-import com.facebook.react.uimanager.events.EventDispatcherImpl;
 import com.facebook.react.uimanager.events.FabricEventDispatcher;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.facebook.react.views.text.TextLayoutManager;
@@ -92,7 +92,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * We instruct ProGuard not to strip out any fields or methods, because many of these methods are
@@ -174,8 +173,8 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @NonNull
   private final CopyOnWriteArrayList<UIManagerListener> mListeners = new CopyOnWriteArrayList<>();
 
-  @NonNull private final AtomicBoolean mMountNotificationScheduled = new AtomicBoolean(false);
-  @NonNull private final Handler mMainThreadHandler = new Handler(Looper.getMainLooper());
+  private boolean mMountNotificationScheduled = false;
+  private final List<Integer> mMountedSurfaceIds = new ArrayList<>();
 
   @ThreadConfined(UI)
   @NonNull
@@ -211,6 +210,10 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
         }
       };
 
+  // Interop UIManagerListener used to support addUIBlock and prependUIBlock.
+  // It's initialized only when addUIBlock or prependUIBlock is called the first time.
+  @Nullable private InteropUIBlockListener mInteropUIBlockListener;
+
   public FabricUIManager(
       @NonNull ReactApplicationContext reactContext,
       @NonNull ViewManagerRegistry viewManagerRegistry,
@@ -220,11 +223,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     mMountingManager = new MountingManager(viewManagerRegistry, mMountItemExecutor);
     mMountItemDispatcher =
         new MountItemDispatcher(mMountingManager, new MountItemDispatchListener());
-    if (ReactFeatureFlags.enableFabricSharedEventPipeline) {
-      mEventDispatcher = new FabricEventDispatcher(reactContext);
-    } else {
-      mEventDispatcher = new EventDispatcherImpl(reactContext);
-    }
+    mEventDispatcher = new FabricEventDispatcher(reactContext);
     mBatchEventDispatchedListener = batchEventDispatchedListener;
     mReactApplicationContext.addLifecycleEventListener(this);
 
@@ -402,12 +401,11 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     }
   }
 
-  // This is called on the JS thread (see CatalystInstanceImpl).
   @Override
   @AnyThread
   @ThreadConfined(ANY)
   public void invalidate() {
-    FLog.i(TAG, "FabricUIManager.onCatalystInstanceDestroy");
+    FLog.i(TAG, "FabricUIManager.invalidate");
 
     if (mDevToolsReactPerfLogger != null) {
       mDevToolsReactPerfLogger.removeDevToolsReactPerfLoggerListener(FABRIC_PERF_LOGGER);
@@ -451,6 +449,37 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     if (!ReactFeatureFlags.enableBridgelessArchitecture) {
       mEventDispatcher.onCatalystInstanceDestroyed();
     }
+  }
+
+  /**
+   * Method added to Fabric for backward compatibility reasons, as users on Paper could call
+   * [addUiBlock] and [prependUiBlock] on UIManagerModule.
+   */
+  public void addUIBlock(UIBlock block) {
+    if (ReactFeatureFlags.unstable_useFabricInterop) {
+      InteropUIBlockListener listener = getInteropUIBlockListener();
+      listener.addUIBlock(block);
+    }
+  }
+
+  /**
+   * Method added to Fabric for backward compatibility reasons, as users on Paper could call
+   * [addUiBlock] and [prependUiBlock] on UIManagerModule.
+   */
+  public void prependUIBlock(UIBlock block) {
+    if (ReactFeatureFlags.unstable_useFabricInterop) {
+      InteropUIBlockListener listener = getInteropUIBlockListener();
+      listener.prependUIBlock(block);
+    }
+  }
+
+  @NonNull
+  private InteropUIBlockListener getInteropUIBlockListener() {
+    if (mInteropUIBlockListener == null) {
+      mInteropUIBlockListener = new InteropUIBlockListener();
+      addUIManagerEventListener(mInteropUIBlockListener);
+    }
+    return mInteropUIBlockListener;
   }
 
   @SuppressWarnings("unused")
@@ -619,10 +648,12 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     return true;
   }
 
+  @Override
   public void addUIManagerEventListener(UIManagerListener listener) {
     mListeners.add(listener);
   }
 
+  @Override
   public void removeUIManagerEventListener(UIManagerListener listener) {
     mListeners.remove(listener);
   }
@@ -680,12 +711,11 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
             return View.NO_ID;
           }
 
+          @NonNull
           @Override
           public String toString() {
             String propsString =
-                IS_DEVELOPMENT_ENVIRONMENT
-                    ? (props != null ? props.toHashMap().toString() : "<null>")
-                    : "<hidden>";
+                IS_DEVELOPMENT_ENVIRONMENT ? props.toHashMap().toString() : "<hidden>";
             return String.format("SYNC UPDATE PROPS [%d]: %s", reactTag, propsString);
           }
         };
@@ -731,7 +761,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
             rootTag,
             reactTag,
             componentName,
-            props,
+            (ReadableMap) props,
             (StateWrapper) stateWrapper,
             (EventEmitterWrapper) eventEmitterWrapper,
             isLayoutable));
@@ -1122,6 +1152,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
             return View.NO_ID;
           }
 
+          @NonNull
           @Override
           public String toString() {
             return "CLEAR_JS_RESPONDER";
@@ -1173,6 +1204,8 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   }
 
   private class MountItemDispatchListener implements MountItemDispatcher.ItemDispatchListener {
+    @UiThread
+    @ThreadConfined(UI)
     @Override
     public void willMountItems(@Nullable List<MountItem> mountItems) {
       for (UIManagerListener listener : mListeners) {
@@ -1180,44 +1213,50 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       }
     }
 
+    @UiThread
+    @ThreadConfined(UI)
     @Override
     public void didMountItems(@Nullable List<MountItem> mountItems) {
       for (UIManagerListener listener : mListeners) {
         listener.didMountItems(FabricUIManager.this);
       }
 
-      if (!ReactFeatureFlags.enableMountHooks) {
+      if (!ReactNativeFeatureFlags.enableMountHooksAndroid()
+          || mountItems == null
+          || mountItems.isEmpty()) {
         return;
       }
 
-      boolean mountNotificationScheduled = mMountNotificationScheduled.getAndSet(true);
-      if (!mountNotificationScheduled) {
+      // Collect surface IDs for all the mount items
+      for (MountItem mountItem : mountItems) {
+        if (mountItem != null && !mMountedSurfaceIds.contains(mountItem.getSurfaceId())) {
+          mMountedSurfaceIds.add(mountItem.getSurfaceId());
+        }
+      }
+
+      if (!mMountNotificationScheduled && !mMountedSurfaceIds.isEmpty()) {
         // Notify mount when the effects are visible and prevent mount hooks to
         // delay paint.
-        mMainThreadHandler.postAtFrontOfQueue(
-            new Runnable() {
-              @Override
-              public void run() {
-                mMountNotificationScheduled.set(false);
+        UiThreadUtil.getUiThreadHandler()
+            .postAtFrontOfQueue(
+                new Runnable() {
+                  @Override
+                  public void run() {
+                    mMountNotificationScheduled = false;
 
-                final @Nullable Binding binding = mBinding;
-                if (mountItems == null || binding == null) {
-                  return;
-                }
+                    final @Nullable Binding binding = mBinding;
+                    if (binding == null || mDestroyed) {
+                      mMountedSurfaceIds.clear();
+                      return;
+                    }
 
-                // Collect surface IDs for all the mount items
-                List<Integer> surfaceIds = new ArrayList();
-                for (MountItem mountItem : mountItems) {
-                  if (mountItem != null && !surfaceIds.contains(mountItem.getSurfaceId())) {
-                    surfaceIds.add(mountItem.getSurfaceId());
+                    for (int surfaceId : mMountedSurfaceIds) {
+                      binding.reportMount(surfaceId);
+                    }
+
+                    mMountedSurfaceIds.clear();
                   }
-                }
-
-                for (int surfaceId : surfaceIds) {
-                  binding.reportMount(surfaceId);
-                }
-              }
-            });
+                });
       }
     }
 

@@ -12,10 +12,12 @@ import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 import static java.lang.annotation.RetentionPolicy.SOURCE;
 
 import androidx.annotation.IntDef;
+import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
 import java.lang.annotation.Retention;
 
 @Retention(SOURCE)
 @IntDef({DEFAULT, FABRIC})
+@DeprecatedInNewArchitecture
 public @interface UIManagerType {
   int DEFAULT = 1;
   int FABRIC = 2;

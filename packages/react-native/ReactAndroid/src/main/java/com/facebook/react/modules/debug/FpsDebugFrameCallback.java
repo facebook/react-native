@@ -75,8 +75,7 @@ public class FpsDebugFrameCallback implements Choreographer.FrameCallback {
 
   public FpsDebugFrameCallback(ReactContext reactContext) {
     mReactContext = reactContext;
-    mUIManagerModule =
-        Assertions.assertNotNull(reactContext.getNativeModule(UIManagerModule.class));
+    mUIManagerModule = reactContext.getNativeModule(UIManagerModule.class);
     mDidJSUpdateUiDuringFrameDetector = new DidJSUpdateUiDuringFrameDetector();
   }
 
@@ -125,10 +124,16 @@ public class FpsDebugFrameCallback implements Choreographer.FrameCallback {
   }
 
   public void start(double targetFps) {
-    mReactContext
-        .getCatalystInstance()
-        .addBridgeIdleDebugListener(mDidJSUpdateUiDuringFrameDetector);
-    mUIManagerModule.setViewHierarchyUpdateDebugListener(mDidJSUpdateUiDuringFrameDetector);
+    // T172641976: re-think if we need to implement addBridgeIdleDebugListener and
+    // removeBridgeIdleDebugListener for Bridgeless
+    if (!mReactContext.isBridgeless()) {
+      mReactContext
+          .getCatalystInstance()
+          .addBridgeIdleDebugListener(mDidJSUpdateUiDuringFrameDetector);
+    }
+    if (mUIManagerModule != null) {
+      mUIManagerModule.setViewHierarchyUpdateDebugListener(mDidJSUpdateUiDuringFrameDetector);
+    }
     mTargetFps = targetFps;
     UiThreadUtil.runOnUiThread(
         () -> {
@@ -144,10 +149,14 @@ public class FpsDebugFrameCallback implements Choreographer.FrameCallback {
   }
 
   public void stop() {
-    mReactContext
-        .getCatalystInstance()
-        .removeBridgeIdleDebugListener(mDidJSUpdateUiDuringFrameDetector);
-    mUIManagerModule.setViewHierarchyUpdateDebugListener(null);
+    if (!mReactContext.isBridgeless()) {
+      mReactContext
+          .getCatalystInstance()
+          .removeBridgeIdleDebugListener(mDidJSUpdateUiDuringFrameDetector);
+    }
+    if (mUIManagerModule != null) {
+      mUIManagerModule.setViewHierarchyUpdateDebugListener(null);
+    }
     UiThreadUtil.runOnUiThread(
         () -> {
           mChoreographer = Choreographer.getInstance();

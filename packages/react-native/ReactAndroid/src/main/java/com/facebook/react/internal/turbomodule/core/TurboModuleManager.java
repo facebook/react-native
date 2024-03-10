@@ -15,15 +15,16 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.CxxModuleWrapper;
-import com.facebook.react.bridge.JSIModule;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.RuntimeExecutor;
-import com.facebook.react.internal.turbomodule.core.interfaces.CallInvokerHolder;
-import com.facebook.react.internal.turbomodule.core.interfaces.NativeMethodCallInvokerHolder;
-import com.facebook.react.internal.turbomodule.core.interfaces.TurboModule;
 import com.facebook.react.internal.turbomodule.core.interfaces.TurboModuleRegistry;
+import com.facebook.react.turbomodule.core.CallInvokerHolderImpl;
+import com.facebook.react.turbomodule.core.NativeMethodCallInvokerHolderImpl;
+import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder;
+import com.facebook.react.turbomodule.core.interfaces.NativeMethodCallInvokerHolder;
+import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -35,7 +36,7 @@ import java.util.Map;
  * has a C++ counterpart This class installs the JSI bindings. It also implements the method to get
  * a Java module, that the C++ counterpart calls.
  */
-public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
+public class TurboModuleManager implements TurboModuleRegistry {
   private final List<String> mEagerInitModuleNames;
   private final ModuleProvider mTurboModuleProvider;
   private final ModuleProvider mLegacyModuleProvider;
@@ -423,9 +424,6 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
 
   private native void installJSIBindings(
       boolean shouldCreateLegacyModules, boolean enableSyncVoidMethods);
-
-  @Override
-  public void initialize() {}
 
   @Override
   public void invalidate() {

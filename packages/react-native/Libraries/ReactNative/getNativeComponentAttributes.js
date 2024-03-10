@@ -20,6 +20,7 @@ const pointsDiffer = require('../Utilities/differ/pointsDiffer');
 const sizesDiffer = require('../Utilities/differ/sizesDiffer');
 const UIManager = require('./UIManager');
 const invariant = require('invariant');
+const nullthrows = require('nullthrows');
 
 function getNativeComponentAttributes(uiViewClassName: string): any {
   const viewConfig = UIManager.getViewManagerConfig(uiViewClassName);
@@ -76,8 +77,8 @@ function getNativeComponentAttributes(uiViewClassName: string): any {
           ? true
           : {process}
         : process == null
-        ? {diff}
-        : {diff, process};
+          ? {diff}
+          : {diff, process};
   }
 
   // Unfortunately, the current setup declares style properties as top-level
@@ -105,7 +106,10 @@ function attachDefaultEventTypes(viewConfig: any) {
   const constants = UIManager.getConstants();
   if (constants.ViewManagerNames || constants.LazyViewManagersEnabled) {
     // Lazy view managers enabled.
-    viewConfig = merge(viewConfig, UIManager.getDefaultEventTypes());
+    viewConfig = merge(
+      viewConfig,
+      nullthrows(UIManager.getDefaultEventTypes)(),
+    );
   } else {
     viewConfig.bubblingEventTypes = merge(
       viewConfig.bubblingEventTypes,

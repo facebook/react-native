@@ -11,13 +11,13 @@
 'use strict';
 
 import type {
-  EventTypeShape,
-  NamedShape,
   CommandTypeAnnotation,
-  PropTypeAnnotation,
+  EventTypeShape,
   ExtendsPropsShape,
-  SchemaType,
+  NamedShape,
   OptionsShape,
+  PropTypeAnnotation,
+  SchemaType,
 } from '../CodegenSchema.js';
 
 export type ComponentSchemaBuilderConfig = $ReadOnly<{

@@ -107,17 +107,14 @@ public class DevServerHelper {
   private final String mPackageName;
 
   private @Nullable JSPackagerClient mPackagerClient;
-  private @Nullable InspectorPackagerConnection mInspectorPackagerConnection;
-  private final InspectorPackagerConnection.BundleStatusProvider mBundlerStatusProvider;
+  private @Nullable IInspectorPackagerConnection mInspectorPackagerConnection;
 
   public DevServerHelper(
       DeveloperSettings developerSettings,
       String packageName,
-      InspectorPackagerConnection.BundleStatusProvider bundleStatusProvider,
       PackagerConnectionSettings packagerConnectionSettings) {
     mSettings = developerSettings;
     mPackagerConnectionSettings = packagerConnectionSettings;
-    mBundlerStatusProvider = bundleStatusProvider;
     mClient =
         new OkHttpClient.Builder()
             .connectTimeout(HTTP_CONNECT_TIMEOUT_MS, TimeUnit.MILLISECONDS)
@@ -213,9 +210,13 @@ public class DevServerHelper {
     new AsyncTask<Void, Void, Void>() {
       @Override
       protected Void doInBackground(Void... params) {
-        mInspectorPackagerConnection =
-            new InspectorPackagerConnection(
-                getInspectorDeviceUrl(), mPackageName, mBundlerStatusProvider);
+        if (InspectorFlags.getEnableCxxInspectorPackagerConnection()) {
+          mInspectorPackagerConnection =
+              new CxxInspectorPackagerConnection(getInspectorDeviceUrl(), mPackageName);
+        } else {
+          mInspectorPackagerConnection =
+              new InspectorPackagerConnection(getInspectorDeviceUrl(), mPackageName);
+        }
         mInspectorPackagerConnection.connect();
         return null;
       }
@@ -311,7 +312,7 @@ public class DevServerHelper {
     return String.format(
         Locale.US,
         "http://%s/inspector/device?name=%s&app=%s&device=%s",
-        mPackagerConnectionSettings.getInspectorServerHost(),
+        mPackagerConnectionSettings.getDebugServerHost(),
         Uri.encode(AndroidInfoHelpers.getFriendlyDeviceName()),
         Uri.encode(mPackageName),
         Uri.encode(getInspectorDeviceId()));
@@ -490,7 +491,7 @@ public class DevServerHelper {
         String.format(
             Locale.US,
             "http://%s/open-debugger?appId=%s&device=%s",
-            mPackagerConnectionSettings.getInspectorServerHost(),
+            mPackagerConnectionSettings.getDebugServerHost(),
             Uri.encode(mPackageName),
             Uri.encode(getInspectorDeviceId()));
     Request request =

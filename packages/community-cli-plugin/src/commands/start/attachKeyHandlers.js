@@ -11,11 +11,11 @@
 
 import type {Config} from '@react-native-community/cli-types';
 
+import {KeyPressHandler} from '../../utils/KeyPressHandler';
 import {logger} from '@react-native-community/cli-tools';
 import chalk from 'chalk';
 import execa from 'execa';
 import fetch from 'node-fetch';
-import {KeyPressHandler} from '../../utils/KeyPressHandler';
 
 const CTRL_C = '\u0003';
 const CTRL_D = '\u0004';
@@ -46,12 +46,12 @@ export default function attachKeyHandlers({
   const onPress = async (key: string) => {
     switch (key) {
       case 'r':
-        messageSocket.broadcast('reload', null);
         logger.info('Reloading connected app(s)...');
+        messageSocket.broadcast('reload', null);
         break;
       case 'd':
-        messageSocket.broadcast('devMenu', null);
         logger.info('Opening Dev Menu...');
+        messageSocket.broadcast('devMenu', null);
         break;
       case 'i':
         logger.info('Opening app on iOS...');

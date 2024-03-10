@@ -20,9 +20,11 @@ import type {
 } from '../StyleSheet/StyleSheet';
 import type {ResolvedAssetSource} from './AssetSourceResolver';
 import type {ImageProps} from './ImageProps';
+import type {ElementRef} from 'react';
 
 import * as NativeComponentRegistry from '../NativeComponent/NativeComponentRegistry';
 import {ConditionallyIgnoredEventHandlers} from '../NativeComponent/ViewConfigIgnore';
+import codegenNativeCommands from '../Utilities/codegenNativeCommands';
 import Platform from '../Utilities/Platform';
 
 type Props = $ReadOnly<{
@@ -43,6 +45,17 @@ type Props = $ReadOnly<{
   defaultSrc?: ?string,
   loadingIndicatorSrc?: ?string,
 }>;
+
+interface NativeCommands {
+  +setIsVisible_EXPERIMENTAL: (
+    viewRef: ElementRef<HostComponent<mixed>>,
+    isVisible: boolean,
+  ) => void;
+}
+
+export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
+  supportedCommands: ['setIsVisible_EXPERIMENTAL'],
+});
 
 export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
   Platform.OS === 'android'
@@ -77,6 +90,11 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
           borderTopLeftRadius: true,
           resizeMethod: true,
           src: true,
+          // NOTE: New Architecture expects this to be called `source`,
+          // regardless of the platform, therefore propagate it as well.
+          // For the backwards compatibility reasons, we keep both `src`
+          // and `source`, which will be identical at this stage.
+          source: true,
           borderRadius: true,
           headers: true,
           shouldNotifyLoadEvents: true,

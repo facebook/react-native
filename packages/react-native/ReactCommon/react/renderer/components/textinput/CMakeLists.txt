@@ -12,15 +12,14 @@ add_compile_options(
         -std=c++20
         -Wall
         -Wpedantic
-        -Wno-gnu-zero-variadic-macro-arguments
         -DLOG_TAG=\"Fabric\")
 
-file(GLOB rrc_textinput_SRC CONFIGURE_DEPENDS androidtextinput/react/renderer/components/androidtextinput/*.cpp)
-add_library(rrc_textinput SHARED ${rrc_textinput_SRC})
+file(GLOB rrc_textinput_SRC CONFIGURE_DEPENDS platform/android/react/renderer/components/androidtextinput/*.cpp)
+add_library(rrc_textinput STATIC ${rrc_textinput_SRC})
 
 target_include_directories(rrc_textinput
         PUBLIC
-          ${CMAKE_CURRENT_SOURCE_DIR}/androidtextinput/
+          ${CMAKE_CURRENT_SOURCE_DIR}/platform/android/
 )
 
 target_link_libraries(rrc_textinput

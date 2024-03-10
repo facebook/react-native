@@ -39,9 +39,11 @@ final class AndroidExecutors {
   private static final AndroidExecutors INSTANCE = new AndroidExecutors();
 
   @NonNull private final Executor uiThread;
+  @NonNull private final Executor uiThreadConditionalSync;
 
   private AndroidExecutors() {
     uiThread = new UIThreadExecutor();
+    uiThreadConditionalSync = new UIThreadConditionalSyncExecutor();
   }
 
   /**
@@ -122,16 +124,52 @@ final class AndroidExecutors {
     }
   }
 
-  /** An {@link java.util.concurrent.Executor} that executes tasks on the UI thread. */
+  /**
+   * An {@link java.util.concurrent.Executor} that schedules tasks to run asynchronously on the UI
+   * thread.
+   */
   public static @NonNull Executor uiThread() {
     return INSTANCE.uiThread;
   }
 
-  /** An {@link java.util.concurrent.Executor} that runs tasks on the UI thread. */
+  /**
+   * An {@link java.util.concurrent.Executor} that runs tasks on the UI thread (immediately if
+   * already on that thread).
+   */
+  public static @NonNull Executor uiThreadConditionalSync() {
+    return INSTANCE.uiThreadConditionalSync;
+  }
+
+  /**
+   * An {@link java.util.concurrent.Executor} that schedules tasks to run asynchronously on the UI
+   * thread.
+   */
   private static class UIThreadExecutor implements Executor {
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
+
     @Override
     public void execute(@NonNull Runnable command) {
-      new Handler(Looper.getMainLooper()).post(command);
+      // Otherwise, post it on the main thread handler
+      mHandler.post(command);
+    }
+  }
+
+  /**
+   * An {@link java.util.concurrent.Executor} that runs tasks on the UI thread (immediately if
+   * already on that thread).
+   */
+  private static class UIThreadConditionalSyncExecutor implements Executor {
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
+
+    @Override
+    public void execute(@NonNull Runnable command) {
+      if (Looper.myLooper() == mHandler.getLooper()) {
+        // If we're already on the main thread, execute the command immediately
+        command.run();
+      } else {
+        // Otherwise, post it on the main thread handler
+        mHandler.post(command);
+      }
     }
   }
 }

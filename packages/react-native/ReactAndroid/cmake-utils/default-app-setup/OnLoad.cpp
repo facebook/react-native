@@ -33,6 +33,13 @@
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <rncli.h>
 
+#ifdef REACT_NATIVE_APP_CODEGEN_HEADER
+#include REACT_NATIVE_APP_CODEGEN_HEADER
+#endif
+#ifdef REACT_NATIVE_APP_COMPONENT_DESCRIPTORS_HEADER
+#include REACT_NATIVE_APP_COMPONENT_DESCRIPTORS_HEADER
+#endif
+
 namespace facebook::react {
 
 void registerComponents(
@@ -41,17 +48,30 @@ void registerComponents(
   // components coming from your App or from 3rd party libraries here.
   //
   // providerRegistry->add(concreteComponentDescriptorProvider<
-  //        AocViewerComponentDescriptor>());
+  //        MyComponentDescriptor>());
 
-  // By default we just use the components autolinked by RN CLI
+  // We link app local components if available
+#ifdef REACT_NATIVE_APP_COMPONENT_REGISTRATION
+  REACT_NATIVE_APP_COMPONENT_REGISTRATION(registry);
+#endif
+
+  // And we fallback to the components autolinked by RN CLI
   rncli_registerProviders(registry);
 }
 
 std::shared_ptr<TurboModule> cxxModuleProvider(
     const std::string& name,
     const std::shared_ptr<CallInvoker>& jsInvoker) {
-  // Not implemented yet: provide pure-C++ NativeModules here.
-  return nullptr;
+  // Here you can provide your CXX Turbo Modules coming from
+  // either your application or from external libraries. The approach to follow
+  // is similar to the following (for a module called `NativeCxxModuleExample`):
+  //
+  // if (name == NativeCxxModuleExample::kModuleName) {
+  //   return std::make_shared<NativeCxxModuleExample>(jsInvoker);
+  // }
+
+  // And we fallback to the CXX module providers autolinked by RN CLI
+  return rncli_cxxModuleProvider(name, jsInvoker);
 }
 
 std::shared_ptr<TurboModule> javaModuleProvider(
@@ -61,13 +81,21 @@ std::shared_ptr<TurboModule> javaModuleProvider(
   // either your application or from external libraries. The approach to follow
   // is similar to the following (for a library called `samplelibrary`):
   //
-  // auto module = samplelibrary_ModuleProvider(moduleName, params);
+  // auto module = samplelibrary_ModuleProvider(name, params);
   // if (module != nullptr) {
   //    return module;
   // }
-  // return rncore_ModuleProvider(moduleName, params);
+  // return rncore_ModuleProvider(name, params);
 
-  // By default we just use the module providers autolinked by RN CLI
+  // We link app local modules if available
+#ifdef REACT_NATIVE_APP_MODULE_PROVIDER
+  auto module = REACT_NATIVE_APP_MODULE_PROVIDER(name, params);
+  if (module != nullptr) {
+    return module;
+  }
+#endif
+
+  // And we fallback to the module providers autolinked by RN CLI
   return rncli_ModuleProvider(name, params);
 }
 

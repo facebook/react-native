@@ -10,9 +10,11 @@ package com.facebook.react.views.imagehelper;
 import androidx.annotation.Nullable;
 import com.facebook.imagepipeline.core.ImagePipeline;
 import com.facebook.imagepipeline.core.ImagePipelineFactory;
+import com.facebook.infer.annotation.Nullsafe;
 import java.util.List;
 
 /** Helper class for dealing with multisource images. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class MultiSourceHelper {
 
   public static class MultiSourceResult {

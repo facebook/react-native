@@ -8,10 +8,12 @@
  * @format
  */
 
+import {RNTesterThemeContext} from '../../../components/RNTesterTheme';
+import VCOverlay from './VCOverlayExample';
+import VCTracker from './VCTrackerExample';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
 import {useContext, useEffect} from 'react';
-import {RNTesterThemeContext} from '../../../components/RNTesterTheme';
 import {
   ActivityIndicator,
   ScrollView,
@@ -19,9 +21,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import ReactNativeElement from 'react-native/Libraries/DOM/Nodes/ReactNativeElement';
-import VCTracker from './VCTrackerExample';
-import VCOverlay from './VCOverlayExample';
+import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 
 export const name = 'Visual Completion Example';
 export const title = name;
@@ -64,8 +64,8 @@ function VisualCompletionExampleScreen(props: {
       style={styles.root}
       ref={node => {
         if (node != null) {
-          // $FlowExpectedError[incompatible-cast]
-          const element = (node: ReactNativeElement);
+          // $FlowExpectedError[incompatible-type]
+          const element: ReactNativeElement = node;
           props.vcTracker.addMutationRoot(element);
         }
       }}>

@@ -6,6 +6,7 @@
  */
 
 #include "YGJNIVanilla.h"
+#include <bit>
 #include <cstring>
 #include <iostream>
 #include <memory>
@@ -15,9 +16,6 @@
 #include "YogaJniException.h"
 #include "common.h"
 #include "jni.h"
-
-#include <yoga/Yoga-internal.h>
-#include <yoga/bits/BitCast.h>
 
 using namespace facebook;
 using namespace facebook::yoga;
@@ -56,7 +54,9 @@ static void jni_YGConfigSetExperimentalFeatureEnabledJNI(
     jboolean enabled) {
   const YGConfigRef config = _jlong2YGConfigRef(nativePointer);
   YGConfigSetExperimentalFeatureEnabled(
-      config, static_cast<YGExperimentalFeature>(feature), enabled);
+      config,
+      static_cast<YGExperimentalFeature>(feature),
+      static_cast<bool>(enabled));
 }
 
 static void jni_YGConfigSetUseWebDefaultsJNI(
@@ -65,16 +65,7 @@ static void jni_YGConfigSetUseWebDefaultsJNI(
     jlong nativePointer,
     jboolean useWebDefaults) {
   const YGConfigRef config = _jlong2YGConfigRef(nativePointer);
-  YGConfigSetUseWebDefaults(config, useWebDefaults);
-}
-
-static void jni_YGConfigSetPrintTreeFlagJNI(
-    JNIEnv* /*env*/,
-    jobject /*obj*/,
-    jlong nativePointer,
-    jboolean enable) {
-  const YGConfigRef config = _jlong2YGConfigRef(nativePointer);
-  YGConfigSetPrintTreeFlag(config, enable);
+  YGConfigSetUseWebDefaults(config, static_cast<bool>(useWebDefaults));
 }
 
 static void jni_YGConfigSetPointScaleFactorJNI(
@@ -172,7 +163,7 @@ static void jni_YGConfigSetLoggerJNI(
   auto context =
       reinterpret_cast<ScopedGlobalRef<jobject>*>(YGConfigGetContext(config));
 
-  if (logger) {
+  if (logger != nullptr) {
     if (context == nullptr) {
       context = new ScopedGlobalRef<jobject>();
       YGConfigSetContext(config, context);
@@ -190,12 +181,12 @@ static void jni_YGConfigSetLoggerJNI(
 }
 
 static void
-jni_YGNodeDeallocateJNI(JNIEnv* /*env*/, jobject /*obj*/, jlong nativePointer) {
+jni_YGNodeFinalizeJNI(JNIEnv* /*env*/, jobject /*obj*/, jlong nativePointer) {
   if (nativePointer == 0) {
     return;
   }
   const YGNodeRef node = _jlong2YGNodeRef(nativePointer);
-  YGNodeDeallocate(node);
+  YGNodeFinalize(node);
 }
 
 static void
@@ -236,14 +227,15 @@ static void jni_YGNodeSetIsReferenceBaselineJNI(
     jlong nativePointer,
     jboolean isReferenceBaseline) {
   YGNodeSetIsReferenceBaseline(
-      _jlong2YGNodeRef(nativePointer), isReferenceBaseline);
+      _jlong2YGNodeRef(nativePointer), static_cast<bool>(isReferenceBaseline));
 }
 
 static jboolean jni_YGNodeIsReferenceBaselineJNI(
     JNIEnv* /*env*/,
     jobject /*obj*/,
     jlong nativePointer) {
-  return YGNodeIsReferenceBaseline(_jlong2YGNodeRef(nativePointer));
+  return static_cast<jboolean>(
+      YGNodeIsReferenceBaseline(_jlong2YGNodeRef(nativePointer)));
 }
 
 static void jni_YGNodeRemoveAllChildrenJNI(
@@ -351,7 +343,7 @@ static void jni_YGNodeCalculateLayoutJNI(
   try {
     PtrJNodeMapVanilla* layoutContext = nullptr;
     auto map = PtrJNodeMapVanilla{};
-    if (nativePointers) {
+    if (nativePointers != nullptr) {
       map = PtrJNodeMapVanilla{nativePointers, javaNodes};
       layoutContext = &map;
     }
@@ -367,7 +359,7 @@ static void jni_YGNodeCalculateLayoutJNI(
     YGTransferLayoutOutputsRecursive(env, obj, root);
   } catch (const YogaJniException& jniException) {
     ScopedLocalRef<jthrowable> throwable = jniException.getThrowable();
-    if (throwable.get()) {
+    if (throwable.get() != nullptr) {
       env->Throw(throwable.get());
     }
   } catch (const std::logic_error& ex) {
@@ -383,13 +375,6 @@ static void jni_YGNodeCalculateLayoutJNI(
 static void
 jni_YGNodeMarkDirtyJNI(JNIEnv* /*env*/, jobject /*obj*/, jlong nativePointer) {
   YGNodeMarkDirty(_jlong2YGNodeRef(nativePointer));
-}
-
-static void jni_YGNodeMarkDirtyAndPropagateToDescendantsJNI(
-    JNIEnv* /*env*/,
-    jobject /*obj*/,
-    jlong nativePointer) {
-  YGNodeMarkDirtyAndPropagateToDescendants(_jlong2YGNodeRef(nativePointer));
 }
 
 static jboolean
@@ -644,9 +629,8 @@ static YGSize YGJNIMeasureFunc(
 
     uint32_t wBits = 0xFFFFFFFF & (measureResult >> 32);
     uint32_t hBits = 0xFFFFFFFF & measureResult;
-
-    const float measuredWidth = yoga::bit_cast<float>(wBits);
-    const float measuredHeight = yoga::bit_cast<float>(hBits);
+    auto measuredWidth = std::bit_cast<float>(wBits);
+    auto measuredHeight = std::bit_cast<float>(hBits);
 
     return YGSize{measuredWidth, measuredHeight};
   } else {
@@ -664,7 +648,7 @@ static void jni_YGNodeSetHasMeasureFuncJNI(
     jboolean hasMeasureFunc) {
   YGNodeSetMeasureFunc(
       _jlong2YGNodeRef(nativePointer),
-      hasMeasureFunc ? YGJNIMeasureFunc : nullptr);
+      static_cast<bool>(hasMeasureFunc) ? YGJNIMeasureFunc : nullptr);
 }
 
 static float YGJNIBaselineFunc(YGNodeConstRef node, float width, float height) {
@@ -688,19 +672,17 @@ static void jni_YGNodeSetHasBaselineFuncJNI(
     jboolean hasBaselineFunc) {
   YGNodeSetBaselineFunc(
       _jlong2YGNodeRef(nativePointer),
-      hasBaselineFunc ? YGJNIBaselineFunc : nullptr);
+      static_cast<bool>(hasBaselineFunc) ? YGJNIBaselineFunc : nullptr);
 }
 
-static void
-jni_YGNodePrintJNI(JNIEnv* /*env*/, jobject /*obj*/, jlong nativePointer) {
-#ifdef DEBUG
-  const YGNodeRef node = _jlong2YGNodeRef(nativePointer);
-  YGNodePrint(
-      node,
-      (YGPrintOptions)(YGPrintOptionsStyle | YGPrintOptionsLayout | YGPrintOptionsChildren));
-#else
-  (void)nativePointer;
-#endif
+static void jni_YGNodeSetAlwaysFormsContainingBlockJNI(
+    JNIEnv* /*env*/,
+    jobject /*obj*/,
+    jlong nativePointer,
+    jboolean alwaysFormsContainingBlock) {
+  YGNodeSetAlwaysFormsContainingBlock(
+      _jlong2YGNodeRef(nativePointer),
+      static_cast<bool>(alwaysFormsContainingBlock));
 }
 
 static jlong
@@ -745,9 +727,6 @@ static JNINativeMethod methods[] = {
     {"jni_YGConfigSetUseWebDefaultsJNI",
      "(JZ)V",
      (void*)jni_YGConfigSetUseWebDefaultsJNI},
-    {"jni_YGConfigSetPrintTreeFlagJNI",
-     "(JZ)V",
-     (void*)jni_YGConfigSetPrintTreeFlagJNI},
     {"jni_YGConfigSetPointScaleFactorJNI",
      "(JF)V",
      (void*)jni_YGConfigSetPointScaleFactorJNI},
@@ -758,7 +737,7 @@ static JNINativeMethod methods[] = {
      (void*)jni_YGConfigSetLoggerJNI},
     {"jni_YGNodeNewJNI", "()J", (void*)jni_YGNodeNewJNI},
     {"jni_YGNodeNewWithConfigJNI", "(J)J", (void*)jni_YGNodeNewWithConfigJNI},
-    {"jni_YGNodeDeallocateJNI", "(J)V", (void*)jni_YGNodeDeallocateJNI},
+    {"jni_YGNodeFinalizeJNI", "(J)V", (void*)jni_YGNodeFinalizeJNI},
     {"jni_YGNodeResetJNI", "(J)V", (void*)jni_YGNodeResetJNI},
     {"jni_YGNodeInsertChildJNI", "(JJI)V", (void*)jni_YGNodeInsertChildJNI},
     {"jni_YGNodeSwapChildJNI", "(JJI)V", (void*)jni_YGNodeSwapChildJNI},
@@ -776,9 +755,6 @@ static JNINativeMethod methods[] = {
      "(JFF[J[Lcom/facebook/yoga/YogaNodeJNIBase;)V",
      (void*)jni_YGNodeCalculateLayoutJNI},
     {"jni_YGNodeMarkDirtyJNI", "(J)V", (void*)jni_YGNodeMarkDirtyJNI},
-    {"jni_YGNodeMarkDirtyAndPropagateToDescendantsJNI",
-     "(J)V",
-     (void*)jni_YGNodeMarkDirtyAndPropagateToDescendantsJNI},
     {"jni_YGNodeIsDirtyJNI", "(J)Z", (void*)jni_YGNodeIsDirtyJNI},
     {"jni_YGNodeCopyStyleJNI", "(JJ)V", (void*)jni_YGNodeCopyStyleJNI},
     {"jni_YGNodeStyleGetDirectionJNI",
@@ -971,7 +947,9 @@ static JNINativeMethod methods[] = {
     {"jni_YGNodeSetHasBaselineFuncJNI",
      "(JZ)V",
      (void*)jni_YGNodeSetHasBaselineFuncJNI},
-    {"jni_YGNodePrintJNI", "(J)V", (void*)jni_YGNodePrintJNI},
+    {"jni_YGNodeSetAlwaysFormsContainingBlockJNI",
+     "(JZ)V",
+     (void*)jni_YGNodeSetAlwaysFormsContainingBlockJNI},
     {"jni_YGNodeCloneJNI", "(J)J", (void*)jni_YGNodeCloneJNI},
 };
 

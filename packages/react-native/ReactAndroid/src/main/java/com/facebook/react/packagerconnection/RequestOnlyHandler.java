@@ -9,7 +9,9 @@ package com.facebook.react.packagerconnection;
 
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Nullsafe;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public abstract class RequestOnlyHandler implements RequestHandler {
   private static final String TAG = JSPackagerClient.class.getSimpleName();
 

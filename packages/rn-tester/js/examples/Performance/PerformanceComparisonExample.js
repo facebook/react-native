@@ -11,12 +11,13 @@
 
 'use strict';
 
-import * as React from 'react';
-import {StyleSheet, View, Text} from 'react-native';
-import RNTesterPage from '../../components/RNTesterPage';
-import RNTesterButton from '../../components/RNTesterButton';
-import * as performanceComparisonExamples from './performanceComparisonExamples';
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+
+import RNTesterButton from '../../components/RNTesterButton';
+import RNTesterPage from '../../components/RNTesterPage';
+import * as performanceComparisonExamples from './performanceComparisonExamples';
+import * as React from 'react';
+import {StyleSheet, Text, View} from 'react-native';
 
 const {useState, useCallback, useMemo} = React;
 const SHOW_NOTHING = 'SHOW_NOTHING';
@@ -83,8 +84,8 @@ function PerfExampleWrapper(props: {
           {loadExample === SHOW_BAD_EXAMPLE
             ? badExampleContents
             : loadExample === SHOW_GOOD_EXAMPLE
-            ? goodExampleContents
-            : null}
+              ? goodExampleContents
+              : null}
         </View>
       </View>
     </RNTesterPage>

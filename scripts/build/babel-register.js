@@ -9,9 +9,9 @@
  * @oncall react_native
  */
 
-const path = require('path');
 const {PACKAGES_DIR} = require('./build');
 const {buildConfig, getBabelConfig} = require('./config');
+const path = require('path');
 
 let isRegisteredForMonorepo = false;
 
@@ -50,7 +50,7 @@ function registerPackage(packageName /*: string */) {
   const registerConfig = {
     ...getBabelConfig(packageName),
     root: packageDir,
-    ignore: [/\/node_modules\//],
+    ignore: [/[/\\]node_modules[/\\]/],
   };
 
   require('@babel/register')(registerConfig);

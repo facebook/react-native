@@ -72,12 +72,12 @@ public class ReactDelegate {
       @Nullable String appKey,
       @Nullable Bundle launchOptions,
       boolean fabricEnabled) {
+    mFabricEnabled = fabricEnabled;
     mActivity = activity;
     mMainComponentName = appKey;
     mLaunchOptions = composeLaunchOptions(launchOptions);
     mDoubleTapReloadRecognizer = new DoubleTapReloadRecognizer();
     mReactNativeHost = reactNativeHost;
-    mFabricEnabled = fabricEnabled;
   }
 
   public void onHostResume() {
@@ -139,8 +139,7 @@ public class ReactDelegate {
   public void onActivityResult(
       int requestCode, int resultCode, Intent data, boolean shouldForwardToReactInstance) {
     if (ReactFeatureFlags.enableBridgelessArchitecture) {
-      // TODO T156475655: Implement onActivityResult for Bridgeless
-      return;
+      mReactHost.onActivityResult(mActivity, requestCode, resultCode, data);
     } else {
       if (getReactNativeHost().hasInstance() && shouldForwardToReactInstance) {
         getReactNativeHost()
@@ -240,7 +239,6 @@ public class ReactDelegate {
       if (composedLaunchOptions == null) {
         composedLaunchOptions = new Bundle();
       }
-      composedLaunchOptions.putBoolean("concurrentRoot", true);
     }
     return composedLaunchOptions;
   }

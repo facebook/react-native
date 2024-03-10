@@ -39,7 +39,7 @@ class DialogModuleTest {
       private set
 
     override fun invoke(vararg args: Any?) {
-      this.calls++
+      calls++
       this.args = args
     }
   }

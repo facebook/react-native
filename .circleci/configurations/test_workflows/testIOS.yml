@@ -3,7 +3,6 @@
       and:
         - equal: [ false, << pipeline.parameters.run_release_workflow >> ]
         - equal: [ false, << pipeline.parameters.run_nightly_workflow >> ]
-        - equal: [ false, << pipeline.parameters.run_prealpha_workflow >> ]
     jobs:
       - prepare_package_for_release:
           name: prepare_package_for_release
@@ -54,51 +53,36 @@
           flavor: "Debug"
           executor: reactnativeios-lts
       - test_ios_template:
+          architecture: "OldArch"
           requires:
             - build_npm_package
           matrix:
             parameters:
-              architecture: ["NewArch", "OldArch"]
               flavor: ["Debug", "Release"]
               jsengine: ["Hermes", "JSC"]
               use_frameworks: ["StaticLibraries", "DynamicFrameworks"]
             exclude:
              # Tested with Ruby 3.2.0, let's not double test this
-              - architecture: "NewArch"
-                flavor: "Debug"
+              - flavor: "Debug"
                 jsengine: "Hermes"
                 use_frameworks: "StaticLibraries"
       - test_ios_rntester:
           requires:
             - build_hermes_macos
-          name: "Test RNTester with Ruby 3.2.0"
+          name: "RNTester on Ruby 3.2.0"
           ruby_version: "3.2.0"
-          architecture: "NewArch"
           executor: reactnativeios-lts
       - test_ios_rntester:
+          name: "RNTester with Dynamic Frameworks"
+          use_frameworks: "DynamicFrameworks"
           requires:
             - build_hermes_macos
           matrix:
             parameters:
-              architecture: ["NewArch", "OldArch"]
               jsengine: ["Hermes", "JSC"]
-              use_frameworks: ["StaticLibraries", "DynamicFrameworks"]
-            exclude:
-              # Tested by test_ios-Hermes
-              - architecture: "OldArch"
-                jsengine: "Hermes"
-                use_frameworks: "StaticLibraries"
-              # Tested by test_ios-JSC
-              - architecture: "OldArch"
-                jsengine: "JSC"
-                use_frameworks: "StaticLibraries"
-              # Tested with Ruby 3.2.0, let's not double test this
-              - architecture: "NewArch"
-                jsengine: "Hermes"
-                use_frameworks: "StaticLibraries"
       - test_ios_rntester:
+          name: "RNTester Integration Tests"
           run_unit_tests: true
-          architecture: "OldArch"
           use_frameworks: "StaticLibraries"
           ruby_version: "2.6.10"
           requires:
@@ -106,3 +90,4 @@
           matrix:
             parameters:
               jsengine: ["Hermes", "JSC"]
+              architecture: ["NewArch", "OldArch"]

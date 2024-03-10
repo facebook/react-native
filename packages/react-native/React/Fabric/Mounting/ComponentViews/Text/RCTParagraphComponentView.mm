@@ -24,18 +24,24 @@
 
 using namespace facebook::react;
 
+@interface RCTParagraphComponentView () <UIEditMenuInteractionDelegate>
+
+@property (nonatomic, nullable) UIEditMenuInteraction *editMenuInteraction API_AVAILABLE(ios(16.0));
+
+@end
+
 @implementation RCTParagraphComponentView {
   ParagraphShadowNode::ConcreteState::Shared _state;
   ParagraphAttributes _paragraphAttributes;
   RCTParagraphComponentAccessibilityProvider *_accessibilityProvider;
   UILongPressGestureRecognizer *_longPressGestureRecognizer;
+  CAShapeLayer *_highlightLayer;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-    static const auto defaultProps = std::make_shared<const ParagraphProps>();
-    _props = defaultProps;
+    _props = ParagraphShadowNode::defaultSharedProps();
 
     self.opaque = NO;
     self.contentMode = UIViewContentModeRedraw;
@@ -127,7 +133,21 @@ using namespace facebook::react;
   [nativeTextLayoutManager drawAttributedString:_state->getData().attributedString
                             paragraphAttributes:_paragraphAttributes
                                           frame:frame
-                                    textStorage:unwrapManagedObject(nsTextStorage)];
+                                    textStorage:unwrapManagedObject(nsTextStorage)
+                              drawHighlightPath:^(UIBezierPath *highlightPath) {
+                                if (highlightPath) {
+                                  if (!self->_highlightLayer) {
+                                    self->_highlightLayer = [CAShapeLayer layer];
+                                    self->_highlightLayer.fillColor = [UIColor colorWithWhite:0 alpha:0.25].CGColor;
+                                    [self.layer addSublayer:self->_highlightLayer];
+                                  }
+                                  self->_highlightLayer.position = frame.origin;
+                                  self->_highlightLayer.path = highlightPath.CGPath;
+                                } else {
+                                  [self->_highlightLayer removeFromSuperlayer];
+                                  self->_highlightLayer = nil;
+                                }
+                              }];
 }
 
 #pragma mark - Accessibility
@@ -211,32 +231,41 @@ using namespace facebook::react;
 {
   _longPressGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self
                                                                               action:@selector(handleLongPress:)];
+
+  if (@available(iOS 16.0, *)) {
+    _editMenuInteraction = [[UIEditMenuInteraction alloc] initWithDelegate:self];
+    [self addInteraction:_editMenuInteraction];
+  }
   [self addGestureRecognizer:_longPressGestureRecognizer];
 }
 
 - (void)disableContextMenu
 {
   [self removeGestureRecognizer:_longPressGestureRecognizer];
+  if (@available(iOS 16.0, *)) {
+    [self removeInteraction:_editMenuInteraction];
+    _editMenuInteraction = nil;
+  }
   _longPressGestureRecognizer = nil;
 }
 
 - (void)handleLongPress:(UILongPressGestureRecognizer *)gesture
 {
-  // TODO: Adopt showMenuFromRect (necessary for UIKitForMac)
-#if !TARGET_OS_UIKITFORMAC
-  UIMenuController *menuController = [UIMenuController sharedMenuController];
+  if (@available(iOS 16.0, macCatalyst 16.0, *)) {
+    CGPoint location = [gesture locationInView:self];
+    UIEditMenuConfiguration *config = [UIEditMenuConfiguration configurationWithIdentifier:nil sourcePoint:location];
+    if (_editMenuInteraction) {
+      [_editMenuInteraction presentEditMenuWithConfiguration:config];
+    }
+  } else {
+    UIMenuController *menuController = [UIMenuController sharedMenuController];
 
-  if (menuController.isMenuVisible) {
-    return;
+    if (menuController.isMenuVisible) {
+      return;
+    }
+
+    [menuController showMenuFromView:self rect:self.bounds];
   }
-
-  if (!self.isFirstResponder) {
-    [self becomeFirstResponder];
-  }
-
-  [menuController setTargetRect:self.bounds inView:self];
-  [menuController setMenuVisible:YES animated:YES];
-#endif
 }
 
 - (BOOL)canBecomeFirstResponder

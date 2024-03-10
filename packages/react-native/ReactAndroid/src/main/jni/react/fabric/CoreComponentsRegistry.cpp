@@ -66,7 +66,7 @@ CoreComponentsRegistry::sharedProviderRegistry() {
     providerRegistry->add(concreteComponentDescriptorProvider<
                           AndroidDrawerLayoutComponentDescriptor>());
     providerRegistry->add(concreteComponentDescriptorProvider<
-                          TraceUpdateOverlayComponentDescriptor>());
+                          DebuggingOverlayComponentDescriptor>());
 
     return providerRegistry;
   }();
@@ -85,14 +85,16 @@ CoreComponentsRegistry::initHybrid(
       [](const EventDispatcher::Weak& eventDispatcher,
          const ContextContainer::Shared& contextContainer)
       -> ComponentDescriptorRegistry::Shared {
+    ComponentDescriptorParameters params{
+        .eventDispatcher = eventDispatcher,
+        .contextContainer = contextContainer,
+        .flavor = nullptr};
+
     auto registry = CoreComponentsRegistry::sharedProviderRegistry()
-                        ->createComponentDescriptorRegistry(
-                            {eventDispatcher, contextContainer});
+                        ->createComponentDescriptorRegistry(params);
     auto& mutableRegistry = const_cast<ComponentDescriptorRegistry&>(*registry);
     mutableRegistry.setFallbackComponentDescriptor(
-        std::make_shared<UnimplementedNativeViewComponentDescriptor>(
-            ComponentDescriptorParameters{
-                eventDispatcher, contextContainer, nullptr}));
+        std::make_shared<UnimplementedNativeViewComponentDescriptor>(params));
 
     return registry;
   };

@@ -291,8 +291,8 @@ ShadowTree::ShadowTree(
       layoutConstraints,
       layoutContext);
 
-  const auto fragment = ShadowNodeFamilyFragment{surfaceId, surfaceId, nullptr};
-  auto family = globalRootComponentDescriptor->createFamily(fragment);
+  auto family = globalRootComponentDescriptor->createFamily(
+      {surfaceId, surfaceId, nullptr});
 
   auto rootShadowNode = std::static_pointer_cast<const RootShadowNode>(
       globalRootComponentDescriptor->createShadowNode(
@@ -427,7 +427,7 @@ CommitStatus ShadowTree::tryCommit(
   telemetry.setAsThreadLocal();
   newRootShadowNode->layoutIfNeeded(&affectedLayoutableNodes);
   telemetry.unsetAsThreadLocal();
-  telemetry.didLayout(affectedLayoutableNodes.size());
+  telemetry.didLayout(static_cast<int>(affectedLayoutableNodes.size()));
 
   {
     // Updating `currentRevision_` in unique manner if it hasn't changed.

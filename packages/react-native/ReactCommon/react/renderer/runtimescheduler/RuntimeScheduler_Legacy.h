@@ -110,6 +110,9 @@ class RuntimeScheduler_Legacy final : public RuntimeSchedulerBase {
    */
   void callExpiredTasks(jsi::Runtime& runtime) override;
 
+  void scheduleRenderingUpdate(
+      RuntimeSchedulerRenderingUpdate&& renderingUpdate) override;
+
  private:
   std::priority_queue<
       std::shared_ptr<Task>,

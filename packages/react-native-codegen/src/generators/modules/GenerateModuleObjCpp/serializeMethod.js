@@ -11,23 +11,23 @@
 'use strict';
 
 import type {
-  Nullable,
   NamedShape,
   NativeModuleParamTypeAnnotation,
-  NativeModuleReturnTypeAnnotation,
   NativeModulePropertyShape,
+  NativeModuleReturnTypeAnnotation,
+  Nullable,
 } from '../../../CodegenSchema';
-
 import type {AliasResolver} from '../Utils';
 import type {StructCollector} from './StructCollector';
 
-const invariant = require('invariant');
-const {getNamespacedStructName} = require('./Utils');
-const {capitalize} = require('../../Utils');
 const {
-  wrapNullable,
   unwrapNullable,
+  wrapNullable,
 } = require('../../../parsers/parsers-commons');
+const {wrapOptional} = require('../../TypeUtils/Objective-C');
+const {capitalize} = require('../../Utils');
+const {getNamespacedStructName} = require('./Utils');
+const invariant = require('invariant');
 
 const ProtocolMethodTemplate = ({
   returnObjCType,
@@ -189,11 +189,7 @@ function getParamObjCType(
 ): $ReadOnly<{objCType: string, isStruct: boolean}> {
   const {name: paramName, typeAnnotation: nullableTypeAnnotation} = param;
   const [typeAnnotation, nullable] = unwrapNullable(nullableTypeAnnotation);
-  const notRequired = param.optional || nullable;
-
-  function wrapIntoNullableIfNeeded(generatedType: string) {
-    return nullable ? `${generatedType} _Nullable` : generatedType;
-  }
+  const isRequired = !param.optional && !nullable;
 
   const isStruct = (objCType: string) => ({
     isStruct: true,
@@ -221,7 +217,7 @@ function getParamObjCType(
        *   type Animal = {};
        *   Array<Animal> => NSArray<JS::NativeSampleTurboModule::Animal *>, etc.
        */
-      return notStruct(wrapIntoNullableIfNeeded('NSArray *'));
+      return notStruct(wrapOptional('NSArray *', !nullable));
     }
   }
 
@@ -252,7 +248,7 @@ function getParamObjCType(
     case 'ReservedTypeAnnotation':
       switch (structTypeAnnotation.name) {
         case 'RootTag':
-          return notStruct(notRequired ? 'NSNumber *' : 'double');
+          return notStruct(isRequired ? 'double' : 'NSNumber *');
         default:
           (structTypeAnnotation.name: empty);
           throw new Error(
@@ -260,30 +256,30 @@ function getParamObjCType(
           );
       }
     case 'StringTypeAnnotation':
-      return notStruct(wrapIntoNullableIfNeeded('NSString *'));
+      return notStruct(wrapOptional('NSString *', !nullable));
     case 'NumberTypeAnnotation':
-      return notStruct(notRequired ? 'NSNumber *' : 'double');
+      return notStruct(isRequired ? 'double' : 'NSNumber *');
     case 'FloatTypeAnnotation':
-      return notStruct(notRequired ? 'NSNumber *' : 'double');
+      return notStruct(isRequired ? 'float' : 'NSNumber *');
     case 'DoubleTypeAnnotation':
-      return notStruct(notRequired ? 'NSNumber *' : 'double');
+      return notStruct(isRequired ? 'double' : 'NSNumber *');
     case 'Int32TypeAnnotation':
-      return notStruct(notRequired ? 'NSNumber *' : 'double');
+      return notStruct(isRequired ? 'NSInteger' : 'NSNumber *');
     case 'BooleanTypeAnnotation':
-      return notStruct(notRequired ? 'NSNumber *' : 'BOOL');
+      return notStruct(isRequired ? 'BOOL' : 'NSNumber *');
     case 'EnumDeclaration':
       switch (typeAnnotation.memberType) {
         case 'NumberTypeAnnotation':
-          return notStruct(notRequired ? 'NSNumber *' : 'double');
+          return notStruct(isRequired ? 'double' : 'NSNumber *');
         case 'StringTypeAnnotation':
-          return notStruct(wrapIntoNullableIfNeeded('NSString *'));
+          return notStruct(wrapOptional('NSString *', !nullable));
         default:
           throw new Error(
             `Unsupported enum type for param "${paramName}" in ${methodName}. Found: ${typeAnnotation.type}`,
           );
       }
     case 'GenericObjectTypeAnnotation':
-      return notStruct(wrapIntoNullableIfNeeded('NSDictionary *'));
+      return notStruct(wrapOptional('NSDictionary *', !nullable));
     default:
       (structTypeAnnotation.type: empty);
       throw new Error(
@@ -297,10 +293,7 @@ function getReturnObjCType(
   nullableTypeAnnotation: Nullable<NativeModuleReturnTypeAnnotation>,
 ): string {
   const [typeAnnotation, nullable] = unwrapNullable(nullableTypeAnnotation);
-
-  function wrapIntoNullableIfNeeded(generatedType: string) {
-    return nullable ? `${generatedType} _Nullable` : generatedType;
-  }
+  const isRequired = !nullable;
 
   switch (typeAnnotation.type) {
     case 'VoidTypeAnnotation':
@@ -308,24 +301,25 @@ function getReturnObjCType(
     case 'PromiseTypeAnnotation':
       return 'void';
     case 'ObjectTypeAnnotation':
-      return wrapIntoNullableIfNeeded('NSDictionary *');
+      return wrapOptional('NSDictionary *', isRequired);
     case 'TypeAliasTypeAnnotation':
-      return wrapIntoNullableIfNeeded('NSDictionary *');
+      return wrapOptional('NSDictionary *', isRequired);
     case 'ArrayTypeAnnotation':
       if (typeAnnotation.elementType == null) {
-        return wrapIntoNullableIfNeeded('NSArray<id<NSObject>> *');
+        return wrapOptional('NSArray<id<NSObject>> *', isRequired);
       }
 
-      return wrapIntoNullableIfNeeded(
+      return wrapOptional(
         `NSArray<${getReturnObjCType(
           methodName,
           typeAnnotation.elementType,
         )}> *`,
+        isRequired,
       );
     case 'ReservedTypeAnnotation':
       switch (typeAnnotation.name) {
         case 'RootTag':
-          return wrapIntoNullableIfNeeded('NSNumber *');
+          return wrapOptional('NSNumber *', isRequired);
         default:
           (typeAnnotation.name: empty);
           throw new Error(
@@ -335,23 +329,23 @@ function getReturnObjCType(
     case 'StringTypeAnnotation':
       // TODO: Can NSString * returns not be _Nullable?
       // In the legacy codegen, we don't surround NSSTring * with _Nullable
-      return wrapIntoNullableIfNeeded('NSString *');
+      return wrapOptional('NSString *', isRequired);
     case 'NumberTypeAnnotation':
-      return wrapIntoNullableIfNeeded('NSNumber *');
+      return wrapOptional('NSNumber *', isRequired);
     case 'FloatTypeAnnotation':
-      return wrapIntoNullableIfNeeded('NSNumber *');
+      return wrapOptional('NSNumber *', isRequired);
     case 'DoubleTypeAnnotation':
-      return wrapIntoNullableIfNeeded('NSNumber *');
+      return wrapOptional('NSNumber *', isRequired);
     case 'Int32TypeAnnotation':
-      return wrapIntoNullableIfNeeded('NSNumber *');
+      return wrapOptional('NSNumber *', isRequired);
     case 'BooleanTypeAnnotation':
-      return wrapIntoNullableIfNeeded('NSNumber *');
+      return wrapOptional('NSNumber *', isRequired);
     case 'EnumDeclaration':
       switch (typeAnnotation.memberType) {
         case 'NumberTypeAnnotation':
-          return wrapIntoNullableIfNeeded('NSNumber *');
+          return wrapOptional('NSNumber *', isRequired);
         case 'StringTypeAnnotation':
-          return wrapIntoNullableIfNeeded('NSString *');
+          return wrapOptional('NSString *', isRequired);
         default:
           throw new Error(
             `Unsupported enum return type for ${methodName}. Found: ${typeAnnotation.type}`,
@@ -360,20 +354,20 @@ function getReturnObjCType(
     case 'UnionTypeAnnotation':
       switch (typeAnnotation.memberType) {
         case 'NumberTypeAnnotation':
-          return wrapIntoNullableIfNeeded('NSNumber *');
+          return wrapOptional('NSNumber *', isRequired);
         case 'ObjectTypeAnnotation':
-          return wrapIntoNullableIfNeeded('NSDictionary *');
+          return wrapOptional('NSDictionary *', isRequired);
         case 'StringTypeAnnotation':
           // TODO: Can NSString * returns not be _Nullable?
           // In the legacy codegen, we don't surround NSSTring * with _Nullable
-          return wrapIntoNullableIfNeeded('NSString *');
+          return wrapOptional('NSString *', isRequired);
         default:
           throw new Error(
             `Unsupported union return type for ${methodName}, found: ${typeAnnotation.memberType}"`,
           );
       }
     case 'GenericObjectTypeAnnotation':
-      return wrapIntoNullableIfNeeded('NSDictionary *');
+      return wrapOptional('NSDictionary *', isRequired);
     default:
       (typeAnnotation.type: 'MixedTypeAnnotation');
       throw new Error(

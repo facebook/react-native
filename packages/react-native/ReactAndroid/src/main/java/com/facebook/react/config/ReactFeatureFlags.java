@@ -7,7 +7,9 @@
 
 package com.facebook.react.config;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.proguard.annotations.DoNotStripAny;
+import com.facebook.react.common.build.ReactBuildConfig;
 
 /**
  * Hi there, traveller! This configuration class is not meant to be used by end-users of RN. It
@@ -16,12 +18,14 @@ import com.facebook.proguard.annotations.DoNotStripAny;
  *
  * <p>These values are safe defaults and should not require manual changes.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
+@Deprecated(since = "Use com.facebook.react.internal.featureflags.ReactNativeFeatureFlags instead.")
 @DoNotStripAny
 public class ReactFeatureFlags {
   /**
    * Should this application use TurboModules? If yes, then any module that inherits {@link
-   * com.facebook.react.internal.turbomodule.core.interfaces.TurboModule} will NOT be passed in to
-   * C++ CatalystInstanceImpl
+   * com.facebook.react.turbomodule.core.interfaces.TurboModule} will NOT be passed in to C++
+   * CatalystInstanceImpl
    */
   public static volatile boolean useTurboModules = false;
 
@@ -71,7 +75,7 @@ public class ReactFeatureFlags {
   public static volatile boolean enableBridgelessArchitectureSoftExceptions = false;
 
   /** Does the bridgeless architecture use the new create/reload/destroy routines */
-  public static volatile boolean enableBridgelessArchitectureNewCreateReloadDestroy = false;
+  public static volatile boolean enableBridgelessArchitectureNewCreateReloadDestroy = true;
 
   /** This feature flag enables logs for Fabric */
   public static boolean enableFabricLogs = false;
@@ -105,47 +109,8 @@ public class ReactFeatureFlags {
    */
   public static boolean enableRemoveDeleteTreeInstruction = false;
 
-  /**
-   * Allow closing the small gap that appears between paths when drawing a rounded View with a
-   * border.
-   */
-  public static boolean enableCloseVisibleGapBetweenPaths = true;
-
-  /**
-   * Allow fix in layout animation to drop delete...create mutations which could cause missing view
-   * state in Fabric SurfaceMountingManager.
-   */
-  public static boolean reduceDeleteCreateMutationLayoutAnimation = true;
-
-  /**
-   * Allow fix to drop delete...create mutations which could cause missing view state in Fabric
-   * SurfaceMountingManager.
-   */
-  public static boolean reduceDeleteCreateMutation = false;
-
-  /** Report mount operations from the host platform to notify mount hooks. */
-  public static boolean enableMountHooks = false;
-
-  /** Fixes a leak in SurfaceMountingManager.mTagSetForStoppedSurface */
-  public static boolean fixStoppedSurfaceTagSetLeak = true;
-
-  /** Disable the background executor for layout in Fabric */
-  public static boolean enableBackgroundExecutor = false;
-
   /** Use native view configs in bridgeless mode. */
   public static boolean useNativeViewConfigsInBridgelessMode = false;
-
-  /** Only swap left and right on Android in RTL scripts. */
-  public static boolean doNotSwapLeftAndRightOnAndroidInLTR = false;
-
-  /** Clean yoga node when <Text /> does not change. */
-  public static boolean enableCleanParagraphYogaNode = false;
-
-  /** Default state updates and events to async batched priority. */
-  public static boolean enableDefaultAsyncBatchedPriority = false;
-
-  /** Utilize shared Event C++ pipeline with fabric's renderer */
-  public static boolean enableFabricSharedEventPipeline = true;
 
   /** When enabled, Fabric will avoid cloning notes to perform state progression. */
   public static boolean enableClonelessStateProgression = false;
@@ -153,12 +118,23 @@ public class ReactFeatureFlags {
   /** When enabled, rawProps in Props will not include Yoga specific props. */
   public static boolean excludeYogaFromRawProps = false;
 
-  /** Enables Stable API for TurboModule (removal of ReactModule, ReactModuleInfoProvider). */
-  public static boolean enableTurboModuleStableAPI = false;
+  /**
+   * Enables storing js caller stack when creating promise in native module. This is useful in case
+   * of Promise rejection and tracing the cause.
+   */
+  public static boolean traceTurboModulePromiseRejections = ReactBuildConfig.DEBUG;
 
   /**
-   * When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with
-   * priorities from any thread.
+   * Enables auto rejecting promises from Turbo Modules method calls. If native error occurs Promise
+   * in JS will be rejected (The JS error will include native stack)
    */
-  public static boolean useModernRuntimeScheduler = false;
+  public static boolean rejectTurboModulePromiseOnNativeError = true;
+
+  /*
+   * When the app is completely migrated to Fabric, set this flag to true to
+   * disable parts of Paper infrastructure that are not needed anymore but consume
+   * memory and CPU. Specifically, UIViewOperationQueue and EventDispatcherImpl will no
+   * longer work as they won't subscribe to ReactChoreographer for updates.
+   */
+  public static boolean enableFabricRendererExclusively = false;
 }

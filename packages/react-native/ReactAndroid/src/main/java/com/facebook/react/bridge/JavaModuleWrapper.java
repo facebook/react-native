@@ -15,7 +15,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
 import androidx.annotation.Nullable;
 import com.facebook.proguard.annotations.DoNotStrip;
-import com.facebook.react.internal.turbomodule.core.interfaces.TurboModule;
+import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
 import java.lang.reflect.Method;
@@ -30,6 +30,13 @@ import java.util.Map;
  */
 @DoNotStrip
 class JavaModuleWrapper {
+
+  interface NativeMethod {
+    void invoke(JSInstance jsInstance, ReadableArray parameters);
+
+    String getType();
+  }
+
   @DoNotStrip
   public static class MethodDescriptor {
     @DoNotStrip Method method;
@@ -40,7 +47,7 @@ class JavaModuleWrapper {
 
   private final JSInstance mJSInstance;
   private final ModuleHolder mModuleHolder;
-  private final ArrayList<NativeModule.NativeMethod> mMethods;
+  private final ArrayList<NativeMethod> mMethods;
   private final ArrayList<MethodDescriptor> mDescs;
 
   public JavaModuleWrapper(JSInstance jsInstance, ModuleHolder moduleHolder) {

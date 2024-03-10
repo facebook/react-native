@@ -9,9 +9,9 @@
 
 'use strict';
 
-const yargs = require('yargs');
-const fs = require('fs');
 const {execSync} = require('child_process');
+const fs = require('fs');
+const yargs = require('yargs');
 
 const LAST_BUILD_FILENAME = '.last_build_configuration';
 
@@ -53,7 +53,7 @@ function shouldReplaceHermesConfiguration(configuration) {
 }
 
 function replaceHermesConfiguration(configuration, version, podsRoot) {
-  const tarballURLPath = `${podsRoot}/hermes-engine-artifacts/hermes-ios-${version}-${configuration}.tar.gz`;
+  const tarballURLPath = `${podsRoot}/hermes-engine-artifacts/hermes-ios-${version.toLowerCase()}-${configuration.toLowerCase()}.tar.gz`;
 
   const finalLocation = 'hermes-engine';
   console.log('Preparing the final location');

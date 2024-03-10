@@ -25,7 +25,6 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.TextWatcher;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
@@ -70,10 +69,10 @@ import com.facebook.react.views.text.ReactTextUpdate;
 import com.facebook.react.views.text.ReactTextViewManagerCallback;
 import com.facebook.react.views.text.ReactTypefaceUtils;
 import com.facebook.react.views.text.TextAttributeProps;
-import com.facebook.react.views.text.TextInlineImageSpan;
 import com.facebook.react.views.text.TextLayoutManager;
 import com.facebook.react.views.text.TextLayoutManagerMapBuffer;
 import com.facebook.react.views.text.TextTransform;
+import com.facebook.react.views.text.internal.span.TextInlineImageSpan;
 import com.facebook.yoga.YogaConstants;
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -168,14 +167,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   private static final String KEYBOARD_TYPE_URI = "url";
   private static final InputFilter[] EMPTY_FILTERS = new InputFilter[0];
   private static final int UNSET = -1;
-  private static final String[] DRAWABLE_FIELDS = {
-    "mCursorDrawable", "mSelectHandleLeft", "mSelectHandleRight", "mSelectHandleCenter"
+  private static final String[] DRAWABLE_HANDLE_RESOURCES = {
+    "mTextSelectHandleLeftRes", "mTextSelectHandleRightRes", "mTextSelectHandleRes"
   };
-  private static final String[] DRAWABLE_RESOURCES = {
-    "mCursorDrawableRes",
-    "mTextSelectHandleLeftRes",
-    "mTextSelectHandleRightRes",
-    "mTextSelectHandleRes"
+  private static final String[] DRAWABLE_HANDLE_FIELDS = {
+    "mSelectHandleLeft", "mSelectHandleRight", "mSelectHandleCenter"
   };
 
   protected @Nullable ReactTextViewManagerCallback mReactTextViewManagerCallback;
@@ -386,6 +382,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     }
   }
 
+  @ReactProp(name = ViewProps.LINE_HEIGHT, defaultFloat = ViewDefaults.LINE_HEIGHT)
+  public void setLineHeight(ReactEditText view, int lineHeight) {
+    view.setLineHeight(lineHeight);
+  }
+
   @ReactProp(name = ViewProps.FONT_SIZE, defaultFloat = ViewDefaults.FONT_SIZE_SP)
   public void setFontSize(ReactEditText view, float fontSize) {
     view.setFontSize(fontSize);
@@ -524,20 +525,78 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     } else {
       view.setHighlightColor(color);
     }
+  }
 
-    setCursorColor(view, color);
+  @ReactProp(name = "selectionHandleColor", customType = "Color")
+  public void setSelectionHandleColor(ReactEditText view, @Nullable Integer color) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      Drawable drawableCenter = view.getTextSelectHandle().mutate();
+      Drawable drawableLeft = view.getTextSelectHandleLeft().mutate();
+      Drawable drawableRight = view.getTextSelectHandleRight().mutate();
+      if (color != null) {
+        BlendModeColorFilter filter = new BlendModeColorFilter(color, BlendMode.SRC_IN);
+        drawableCenter.setColorFilter(filter);
+        drawableLeft.setColorFilter(filter);
+        drawableRight.setColorFilter(filter);
+      } else {
+        drawableCenter.clearColorFilter();
+        drawableLeft.clearColorFilter();
+        drawableRight.clearColorFilter();
+      }
+      view.setTextSelectHandle(drawableCenter);
+      view.setTextSelectHandleLeft(drawableLeft);
+      view.setTextSelectHandleRight(drawableRight);
+      return;
+    }
+
+    // Based on https://github.com/facebook/react-native/pull/31007
+    if (Build.VERSION.SDK_INT == Build.VERSION_CODES.P) {
+      return;
+    }
+
+    // The following code uses reflection to change handles color on Android 8.1 and below.
+    for (int i = 0; i < DRAWABLE_HANDLE_RESOURCES.length; i++) {
+      try {
+        Field drawableResourceField =
+            view.getClass().getDeclaredField(DRAWABLE_HANDLE_RESOURCES[i]);
+        drawableResourceField.setAccessible(true);
+        int resourceId = drawableResourceField.getInt(view);
+
+        // The view has no handle drawable.
+        if (resourceId == 0) {
+          return;
+        }
+
+        Drawable drawable = ContextCompat.getDrawable(view.getContext(), resourceId).mutate();
+        if (color != null) {
+          drawable.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+        } else {
+          drawable.clearColorFilter();
+        }
+
+        Field editorField = TextView.class.getDeclaredField("mEditor");
+        editorField.setAccessible(true);
+        Object editor = editorField.get(view);
+
+        Field cursorDrawableField = editor.getClass().getDeclaredField(DRAWABLE_HANDLE_FIELDS[i]);
+        cursorDrawableField.setAccessible(true);
+        cursorDrawableField.set(editor, drawable);
+      } catch (NoSuchFieldException ex) {
+      } catch (IllegalAccessException ex) {
+      }
+    }
   }
 
   @ReactProp(name = "cursorColor", customType = "Color")
   public void setCursorColor(ReactEditText view, @Nullable Integer color) {
-    if (color == null) {
-      return;
-    }
-
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
       Drawable cursorDrawable = view.getTextCursorDrawable();
       if (cursorDrawable != null) {
-        cursorDrawable.setColorFilter(new BlendModeColorFilter(color, BlendMode.SRC_IN));
+        if (color != null) {
+          cursorDrawable.setColorFilter(new BlendModeColorFilter(color, BlendMode.SRC_IN));
+        } else {
+          cursorDrawable.clearColorFilter();
+        }
         view.setTextCursorDrawable(cursorDrawable);
       }
       return;
@@ -552,39 +611,35 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
     // The evil code that follows uses reflection to achieve this on Android 8.1 and below.
     // Based on https://tinyurl.com/3vff8lyu https://tinyurl.com/vehggzs9
-    for (int i = 0; i < DRAWABLE_RESOURCES.length; i++) {
-      try {
-        Field drawableResourceField = TextView.class.getDeclaredField(DRAWABLE_RESOURCES[i]);
-        drawableResourceField.setAccessible(true);
-        int resourceId = drawableResourceField.getInt(view);
+    try {
+      Field drawableCursorField = view.getClass().getDeclaredField("mCursorDrawableRes");
+      drawableCursorField.setAccessible(true);
+      int resourceId = drawableCursorField.getInt(view);
 
-        // The view has no cursor drawable.
-        if (resourceId == 0) {
-          return;
-        }
-
-        Drawable drawable = ContextCompat.getDrawable(view.getContext(), resourceId);
-
-        Drawable drawableCopy = drawable.mutate();
-        drawableCopy.setColorFilter(color, PorterDuff.Mode.SRC_IN);
-
-        Field editorField = TextView.class.getDeclaredField("mEditor");
-        editorField.setAccessible(true);
-        Object editor = editorField.get(view);
-
-        Field cursorDrawableField = editor.getClass().getDeclaredField(DRAWABLE_FIELDS[i]);
-        cursorDrawableField.setAccessible(true);
-        if (DRAWABLE_RESOURCES[i] == "mCursorDrawableRes") {
-          Drawable[] drawables = {drawableCopy, drawableCopy};
-          cursorDrawableField.set(editor, drawables);
-        } else {
-          cursorDrawableField.set(editor, drawableCopy);
-        }
-      } catch (NoSuchFieldException ex) {
-        // Ignore errors to avoid crashing if these private fields don't exist on modified
-        // or future android versions.
-      } catch (IllegalAccessException ex) {
+      // The view has no cursor drawable.
+      if (resourceId == 0) {
+        return;
       }
+
+      Drawable drawable = ContextCompat.getDrawable(view.getContext(), resourceId).mutate();
+      if (color != null) {
+        drawable.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+      } else {
+        drawable.clearColorFilter();
+      }
+
+      Field editorField = TextView.class.getDeclaredField("mEditor");
+      editorField.setAccessible(true);
+      Object editor = editorField.get(view);
+
+      Field cursorDrawableField = editor.getClass().getDeclaredField("mCursorDrawable");
+      cursorDrawableField.setAccessible(true);
+      Drawable[] drawables = {drawable, drawable};
+      cursorDrawableField.set(editor, drawables);
+    } catch (NoSuchFieldException ex) {
+      // Ignore errors to avoid crashing if these private fields don't exist on modified
+      // or future android versions.
+    } catch (IllegalAccessException ex) {
     }
   }
 
@@ -747,9 +802,9 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     if (maxLength == null) {
       if (currentFilters.length > 0) {
         LinkedList<InputFilter> list = new LinkedList<>();
-        for (int i = 0; i < currentFilters.length; i++) {
-          if (!(currentFilters[i] instanceof InputFilter.LengthFilter)) {
-            list.add(currentFilters[i]);
+        for (InputFilter currentFilter : currentFilters) {
+          if (!(currentFilter instanceof InputFilter.LengthFilter)) {
+            list.add(currentFilter);
           }
         }
         if (!list.isEmpty()) {
@@ -838,14 +893,19 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     } else if (autoCapitalize.getType() == ReadableType.String) {
       final String autoCapitalizeStr = autoCapitalize.asString();
 
-      if (autoCapitalizeStr.equals("none")) {
-        autoCapitalizeValue = 0;
-      } else if (autoCapitalizeStr.equals("characters")) {
-        autoCapitalizeValue = InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS;
-      } else if (autoCapitalizeStr.equals("words")) {
-        autoCapitalizeValue = InputType.TYPE_TEXT_FLAG_CAP_WORDS;
-      } else if (autoCapitalizeStr.equals("sentences")) {
-        autoCapitalizeValue = InputType.TYPE_TEXT_FLAG_CAP_SENTENCES;
+      switch (autoCapitalizeStr) {
+        case "none":
+          autoCapitalizeValue = 0;
+          break;
+        case "characters":
+          autoCapitalizeValue = InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS;
+          break;
+        case "words":
+          autoCapitalizeValue = InputType.TYPE_TEXT_FLAG_CAP_WORDS;
+          break;
+        case "sentences":
+          autoCapitalizeValue = InputType.TYPE_TEXT_FLAG_CAP_SENTENCES;
+          break;
       }
     }
 
@@ -1016,7 +1076,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     private final ReactEditText mEditText;
     private final EventDispatcher mEventDispatcher;
     private final int mSurfaceId;
-    private String mPreviousText;
+    @Nullable private String mPreviousText;
 
     public ReactTextInputTextWatcher(
         final ReactContext reactContext, final ReactEditText editText) {
@@ -1085,73 +1145,67 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     editText.setEventDispatcher(getEventDispatcher(reactContext, editText));
     editText.addTextChangedListener(new ReactTextInputTextWatcher(reactContext, editText));
     editText.setOnFocusChangeListener(
-        new View.OnFocusChangeListener() {
-          public void onFocusChange(View v, boolean hasFocus) {
-            int surfaceId = reactContext.getSurfaceId();
-            EventDispatcher eventDispatcher = getEventDispatcher(reactContext, editText);
-            if (hasFocus) {
-              eventDispatcher.dispatchEvent(
-                  new ReactTextInputFocusEvent(surfaceId, editText.getId()));
-            } else {
-              eventDispatcher.dispatchEvent(
-                  new ReactTextInputBlurEvent(surfaceId, editText.getId()));
+        (v, hasFocus) -> {
+          int surfaceId = reactContext.getSurfaceId();
+          EventDispatcher eventDispatcher = getEventDispatcher(reactContext, editText);
+          if (hasFocus) {
+            eventDispatcher.dispatchEvent(
+                new ReactTextInputFocusEvent(surfaceId, editText.getId()));
+          } else {
+            eventDispatcher.dispatchEvent(new ReactTextInputBlurEvent(surfaceId, editText.getId()));
 
-              eventDispatcher.dispatchEvent(
-                  new ReactTextInputEndEditingEvent(
-                      surfaceId, editText.getId(), editText.getText().toString()));
-            }
+            eventDispatcher.dispatchEvent(
+                new ReactTextInputEndEditingEvent(
+                    surfaceId, editText.getId(), editText.getText().toString()));
           }
         });
 
     editText.setOnEditorActionListener(
-        new TextView.OnEditorActionListener() {
-          @Override
-          public boolean onEditorAction(TextView v, int actionId, KeyEvent keyEvent) {
-            if ((actionId & EditorInfo.IME_MASK_ACTION) != 0 || actionId == EditorInfo.IME_NULL) {
-              boolean isMultiline = editText.isMultiline();
+        (v, actionId, keyEvent) -> {
+          if ((actionId & EditorInfo.IME_MASK_ACTION) != 0 || actionId == EditorInfo.IME_NULL) {
+            boolean isMultiline = editText.isMultiline();
 
-              boolean shouldSubmit = editText.shouldSubmitOnReturn();
-              boolean shouldBlur = editText.shouldBlurOnReturn();
+            boolean shouldSubmit = editText.shouldSubmitOnReturn();
+            boolean shouldBlur = editText.shouldBlurOnReturn();
 
-              // Motivation:
-              // * shouldSubmit => Clear focus; prevent default behavior (return true);
-              // * shouldBlur => Submit; prevent default behavior (return true);
-              // * !shouldBlur && !shouldSubmit && isMultiline => Perform default behavior (return
-              // false);
-              // * !shouldBlur && !shouldSubmit && !isMultiline => Prevent default behavior (return
-              // true);
-              if (shouldSubmit) {
-                EventDispatcher eventDispatcher = getEventDispatcher(reactContext, editText);
-                eventDispatcher.dispatchEvent(
-                    new ReactTextInputSubmitEditingEvent(
-                        reactContext.getSurfaceId(),
-                        editText.getId(),
-                        editText.getText().toString()));
-              }
-
-              if (shouldBlur) {
-                editText.clearFocus();
-              }
-
-              // Prevent default behavior except when we want it to insert a newline.
-              if (shouldBlur || shouldSubmit || !isMultiline) {
-                return true;
-              }
-
-              // If we've reached this point, it means that the TextInput has 'submitBehavior' set
-              // nullish and 'multiline' set to true. But it's still possible to get IME_ACTION_NEXT
-              // and IME_ACTION_PREVIOUS here in case if 'disableFullscreenUI' is false and Android
-              // decides to render this EditText in the full screen mode (when a phone has the
-              // landscape orientation for example). The full screen EditText also renders an action
-              // button specified by the 'returnKeyType' prop. We have to prevent Android from
-              // requesting focus from the next/previous focusable view since it must only be
-              // controlled from JS.
-              return actionId == EditorInfo.IME_ACTION_NEXT
-                  || actionId == EditorInfo.IME_ACTION_PREVIOUS;
+            // Motivation:
+            // * shouldSubmit => Clear focus; prevent default behavior (return true);
+            // * shouldBlur => Submit; prevent default behavior (return true);
+            // * !shouldBlur && !shouldSubmit && isMultiline => Perform default behavior (return
+            // false);
+            // * !shouldBlur && !shouldSubmit && !isMultiline => Prevent default behavior (return
+            // true);
+            if (shouldSubmit) {
+              EventDispatcher eventDispatcher = getEventDispatcher(reactContext, editText);
+              eventDispatcher.dispatchEvent(
+                  new ReactTextInputSubmitEditingEvent(
+                      reactContext.getSurfaceId(),
+                      editText.getId(),
+                      editText.getText().toString()));
             }
 
-            return true;
+            if (shouldBlur) {
+              editText.clearFocus();
+            }
+
+            // Prevent default behavior except when we want it to insert a newline.
+            if (shouldBlur || shouldSubmit || !isMultiline) {
+              return true;
+            }
+
+            // If we've reached this point, it means that the TextInput has 'submitBehavior' set
+            // nullish and 'multiline' set to true. But it's still possible to get IME_ACTION_NEXT
+            // and IME_ACTION_PREVIOUS here in case if 'disableFullscreenUI' is false and Android
+            // decides to render this EditText in the full screen mode (when a phone has the
+            // landscape orientation for example). The full screen EditText also renders an action
+            // button specified by the 'returnKeyType' prop. We have to prevent Android from
+            // requesting focus from the next/previous focusable view since it must only be
+            // controlled from JS.
+            return actionId == EditorInfo.IME_ACTION_NEXT
+                || actionId == EditorInfo.IME_ACTION_PREVIOUS;
           }
+
+          return true;
         });
   }
 
@@ -1244,7 +1298,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     private final ReactEditText mReactEditText;
     private final EventDispatcher mEventDispatcher;
     private final int mSurfaceId;
-    private int mPreviousHoriz;
+    private int mPreviousHorizontal;
     private int mPreviousVert;
 
     public ReactScrollWatcher(ReactEditText editText) {
@@ -1256,7 +1310,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
     @Override
     public void onScrollChanged(int horiz, int vert, int oldHoriz, int oldVert) {
-      if (mPreviousHoriz != horiz || mPreviousVert != vert) {
+      if (mPreviousHorizontal != horiz || mPreviousVert != vert) {
         ScrollEvent event =
             ScrollEvent.obtain(
                 mSurfaceId,
@@ -1273,14 +1327,14 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
         mEventDispatcher.dispatchEvent(event);
 
-        mPreviousHoriz = horiz;
+        mPreviousHorizontal = horiz;
         mPreviousVert = vert;
       }
     }
   }
 
   @Override
-  public @Nullable Map getExportedViewConstants() {
+  public @Nullable Map<String, Object> getExportedViewConstants() {
     return MapBuilder.of(
         "AutoCapitalizationType",
         MapBuilder.of(
@@ -1352,7 +1406,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         TextAttributeProps.getJustificationMode(props, currentJustificationMode));
   }
 
-  public Object getReactTextUpdate(ReactEditText view, ReactStylesDiffMap props, MapBuffer state) {
+  public @Nullable Object getReactTextUpdate(
+      ReactEditText view, ReactStylesDiffMap props, MapBuffer state) {
     // If native wants to update the state wrapper but the state data hasn't actually
     // changed, the MapBuffer may be empty
     if (state.getCount() == 0) {
@@ -1361,10 +1416,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
     MapBuffer attributedString = state.getMapBuffer(TX_STATE_KEY_ATTRIBUTED_STRING);
     MapBuffer paragraphAttributes = state.getMapBuffer(TX_STATE_KEY_PARAGRAPH_ATTRIBUTES);
-    if (attributedString == null || paragraphAttributes == null) {
-      throw new IllegalArgumentException(
-          "Invalid TextInput State (MapBuffer) was received as a parameters");
-    }
 
     Spannable spanned =
         TextLayoutManagerMapBuffer.getOrCreateSpannableForText(

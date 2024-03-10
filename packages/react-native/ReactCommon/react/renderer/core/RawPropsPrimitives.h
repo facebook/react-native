@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include <folly/Hash.h>
 #include <limits>
 
 namespace facebook::react {

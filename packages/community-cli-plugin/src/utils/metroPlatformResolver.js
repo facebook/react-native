@@ -25,9 +25,12 @@ import type {CustomResolver} from 'metro-resolver';
  *    macos: 'react-native-macos'
  * }
  */
-export function reactNativePlatformResolver(platformImplementations: {
-  [platform: string]: string,
-}): CustomResolver {
+export function reactNativePlatformResolver(
+  platformImplementations: {
+    [platform: string]: string,
+  },
+  customResolver: ?CustomResolver,
+): CustomResolver {
   return (context, moduleName, platform) => {
     let modifiedModuleName = moduleName;
     if (platform != null && platformImplementations[platform]) {
@@ -38,6 +41,9 @@ export function reactNativePlatformResolver(platformImplementations: {
           platformImplementations[platform]
         }/${modifiedModuleName.slice('react-native/'.length)}`;
       }
+    }
+    if (customResolver) {
+      return customResolver(context, modifiedModuleName, platform);
     }
     return context.resolveRequest(context, modifiedModuleName, platform);
   };

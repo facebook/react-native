@@ -7,12 +7,11 @@
 
 #include "HermesExecutorFactory.h"
 
-#include <thread>
-
 #include <cxxreact/MessageQueueThread.h>
 #include <cxxreact/SystraceSection.h>
 #include <hermes/hermes.h>
 #include <jsi/decorator.h>
+#include <jsinspector-modern/InspectorFlags.h>
 
 #include <hermes/inspector-modern/chrome/Registration.h>
 #include <hermes/inspector/RuntimeAdapter.h>
@@ -153,6 +152,8 @@ class DecoratedRuntime : public jsi::WithRuntimeDecorator<ReentrancyCheck> {
       debugToken_ = facebook::hermes::inspector_modern::chrome::enableDebugging(
           std::move(adapter), debuggerName);
     }
+#else
+    (void)jsQueue;
 #endif // HERMES_ENABLE_DEBUGGER
   }
 
@@ -200,11 +201,14 @@ std::unique_ptr<JSExecutor> HermesExecutorFactory::createJSExecutor(
   }
 
   HermesRuntime& hermesRuntimeRef = *hermesRuntime;
+  auto& inspectorFlags = jsinspector_modern::InspectorFlags::getInstance();
+  bool enableDebugger =
+      !inspectorFlags.getEnableModernCDPRegistry() && enableDebugger_;
   auto decoratedRuntime = std::make_shared<DecoratedRuntime>(
       std::move(hermesRuntime),
       hermesRuntimeRef,
       jsQueue,
-      enableDebugger_,
+      enableDebugger,
       debuggerName_);
 
   // So what do we have now?
@@ -226,7 +230,12 @@ std::unique_ptr<JSExecutor> HermesExecutorFactory::createJSExecutor(
   errorPrototype.setProperty(*decoratedRuntime, "jsEngine", "hermes");
 
   return std::make_unique<HermesExecutor>(
-      decoratedRuntime, delegate, jsQueue, timeoutInvoker_, runtimeInstaller_);
+      decoratedRuntime,
+      delegate,
+      jsQueue,
+      timeoutInvoker_,
+      runtimeInstaller_,
+      hermesRuntimeRef);
 }
 
 ::hermes::vm::RuntimeConfig HermesExecutorFactory::defaultRuntimeConfig() {
@@ -240,7 +249,28 @@ HermesExecutor::HermesExecutor(
     std::shared_ptr<ExecutorDelegate> delegate,
     std::shared_ptr<MessageQueueThread> jsQueue,
     const JSIScopedTimeoutInvoker& timeoutInvoker,
-    RuntimeInstaller runtimeInstaller)
-    : JSIExecutor(runtime, delegate, timeoutInvoker, runtimeInstaller) {}
+    RuntimeInstaller runtimeInstaller,
+    HermesRuntime& hermesRuntime)
+    : JSIExecutor(runtime, delegate, timeoutInvoker, runtimeInstaller),
+      runtime_(runtime),
+      targetDelegate_{
+          std::shared_ptr<HermesRuntime>(runtime_, &hermesRuntime)} {}
+
+std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate>
+HermesExecutor::createAgentDelegate(
+    jsinspector_modern::FrontendChannel frontendChannel,
+    jsinspector_modern::SessionState& sessionState,
+    std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate::ExportedState>
+        previouslyExportedState,
+    const jsinspector_modern::ExecutionContextDescription&
+        executionContextDescription,
+    RuntimeExecutor runtimeExecutor) {
+  return targetDelegate_.createAgentDelegate(
+      std::move(frontendChannel),
+      sessionState,
+      std::move(previouslyExportedState),
+      executionContextDescription,
+      std::move(runtimeExecutor));
+}
 
 } // namespace facebook::react

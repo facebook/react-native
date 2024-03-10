@@ -8,13 +8,15 @@
 package com.facebook.react.internal.turbomodule.core;
 
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.NativeModule;
-import com.facebook.react.internal.turbomodule.core.interfaces.TurboModule;
+import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import java.util.ArrayList;
 import java.util.List;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public abstract class TurboModuleManagerDelegate {
   @DoNotStrip
   @SuppressWarnings("unused")
@@ -29,6 +31,11 @@ public abstract class TurboModuleManagerDelegate {
   protected TurboModuleManagerDelegate() {
     maybeLoadOtherSoLibraries();
     mHybridData = initHybrid();
+  }
+
+  protected TurboModuleManagerDelegate(HybridData hybridData) {
+    maybeLoadOtherSoLibraries();
+    mHybridData = hybridData;
   }
 
   /**
@@ -75,5 +82,7 @@ public abstract class TurboModuleManagerDelegate {
     return false;
   }
 
+  // TODO(T171231381): Consider removing this method: could we just use the static initializer
+  // of derived classes instead?
   protected synchronized void maybeLoadOtherSoLibraries() {}
 }

@@ -20,24 +20,12 @@ bool configUpdateInvalidatesLayout(
       oldConfig.useWebDefaults() != newConfig.useWebDefaults();
 }
 
-Config::Config(YGLogger logger) : cloneNodeCallback_{nullptr} {
-  setLogger(logger);
-}
-
 void Config::setUseWebDefaults(bool useWebDefaults) {
   useWebDefaults_ = useWebDefaults;
 }
 
 bool Config::useWebDefaults() const {
   return useWebDefaults_;
-}
-
-void Config::setShouldPrintTree(bool printTree) {
-  printTree_ = printTree;
-}
-
-bool Config::shouldPrintTree() const {
-  return printTree_;
 }
 
 void Config::setExperimentalFeatureEnabled(

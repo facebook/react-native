@@ -8,10 +8,10 @@
  * @oncall react_native
  */
 
-const path = require('path');
 const fs = require('fs');
-const os = require('os');
 const {sync: makeDirSync} = require('make-dir');
+const os = require('os');
+const path = require('path');
 
 const packageJson = JSON.parse(
   fs.readFileSync(require.resolve('../package.json'), 'utf8'),

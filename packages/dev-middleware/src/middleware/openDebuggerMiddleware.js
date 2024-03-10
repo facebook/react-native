@@ -9,16 +9,16 @@
  * @oncall react_native
  */
 
-import type {NextHandleFunction} from 'connect';
-import type {IncomingMessage, ServerResponse} from 'http';
 import type {InspectorProxyQueries} from '../inspector-proxy/InspectorProxy';
 import type {BrowserLauncher, LaunchedBrowser} from '../types/BrowserLauncher';
 import type {EventReporter} from '../types/EventReporter';
 import type {Experiments} from '../types/Experiments';
 import type {Logger} from '../types/Logger';
+import type {NextHandleFunction} from 'connect';
+import type {IncomingMessage, ServerResponse} from 'http';
 
-import url from 'url';
 import getDevToolsFrontendUrl from '../utils/getDevToolsFrontendUrl';
+import url from 'url';
 
 const debuggerInstances = new Map<string, ?LaunchedBrowser>();
 
@@ -62,8 +62,10 @@ export default function openDebuggerMiddleware({
       const targets = inspectorProxy.getPageDescriptions().filter(
         // Only use targets with better reloading support
         app =>
-          app.title === 'React Native Experimental (Improved Chrome Reloads)',
+          app.title === 'React Native Experimental (Improved Chrome Reloads)' ||
+          app.reactNative.capabilities?.nativePageReloads === true,
       );
+
       let target;
 
       const launchType: 'launch' | 'redirect' =
@@ -117,6 +119,7 @@ export default function openDebuggerMiddleware({
               frontendInstanceId,
               await browserLauncher.launchDebuggerAppWindow(
                 getDevToolsFrontendUrl(
+                  experiments,
                   target.webSocketDebuggerUrl,
                   serverBaseUrl,
                 ),
@@ -127,9 +130,10 @@ export default function openDebuggerMiddleware({
           case 'redirect':
             res.writeHead(302, {
               Location: getDevToolsFrontendUrl(
+                experiments,
                 target.webSocketDebuggerUrl,
-                // Use a relative URL.
-                '',
+                serverBaseUrl,
+                {relative: true},
               ),
             });
             res.end();

@@ -32,6 +32,7 @@ import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.touch.OnInterceptTouchEventListener;
 import com.facebook.react.touch.ReactHitSlopView;
@@ -496,7 +497,11 @@ public class ReactViewGroup extends ViewGroup
     if (getId() == NO_ID) {
       return false;
     }
-    return ViewUtil.getUIManagerType(getId()) == UIManagerType.FABRIC;
+    if (ViewUtil.getUIManagerType(getId()) != UIManagerType.FABRIC) {
+      return false;
+    }
+
+    return !ReactNativeFeatureFlags.enableCustomDrawOrderFabric();
   }
 
   private void handleAddView(View view) {
@@ -632,8 +637,11 @@ public class ReactViewGroup extends ViewGroup
     return mAllChildrenCount;
   }
 
-  /*package*/ View getChildAtWithSubviewClippingEnabled(int index) {
-    return Assertions.assertNotNull(mAllChildren)[index];
+  /*package*/ @Nullable
+  View getChildAtWithSubviewClippingEnabled(int index) {
+    return index >= 0 && index < mAllChildrenCount
+        ? Assertions.assertNotNull(mAllChildren)[index]
+        : null;
   }
 
   /*package*/ void addViewWithSubviewClippingEnabled(View child, int index) {
@@ -681,7 +689,9 @@ public class ReactViewGroup extends ViewGroup
     }
   }
 
-  /*package*/ void removeViewWithSubviewClippingEnabled(View view) {
+  // TODO: make this method package only once we remove Android's mounting layer retry mechanism.
+  @VisibleForTesting
+  public void removeViewWithSubviewClippingEnabled(View view) {
     UiThreadUtil.assertOnUiThread();
 
     Assertions.assertCondition(mRemoveClippedSubviews);
@@ -749,7 +759,6 @@ public class ReactViewGroup extends ViewGroup
     }
   }
 
-  // This method also sets the child's mParent to null
   private void removeFromArray(int index) {
     final View[] children = Assertions.assertNotNull(mAllChildren);
     final int count = mAllChildrenCount;

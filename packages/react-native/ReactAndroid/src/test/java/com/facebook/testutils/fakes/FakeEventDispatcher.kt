@@ -6,6 +6,7 @@
  */
 
 @file:Suppress("DEPRECATION") // Suppressing as RCTEventEmitter is part of the API
+
 package com.facebook.testutils.fakes
 
 import com.facebook.react.uimanager.events.BatchEventDispatchedListener
@@ -27,21 +28,21 @@ class FakeEventDispatcher : EventDispatcher {
     recordedDispatchedEvents.add(event)
   }
 
-  override fun dispatchAllEvents() {}
+  override fun dispatchAllEvents() = Unit
 
-  override fun addListener(listener: EventDispatcherListener) {}
+  override fun addListener(listener: EventDispatcherListener) = Unit
 
-  override fun removeListener(listener: EventDispatcherListener) {}
+  override fun removeListener(listener: EventDispatcherListener) = Unit
 
-  override fun addBatchEventDispatchedListener(listener: BatchEventDispatchedListener) {}
+  override fun addBatchEventDispatchedListener(listener: BatchEventDispatchedListener) = Unit
 
-  override fun removeBatchEventDispatchedListener(listener: BatchEventDispatchedListener) {}
+  override fun removeBatchEventDispatchedListener(listener: BatchEventDispatchedListener) = Unit
 
-  override fun registerEventEmitter(uiManagerType: Int, eventEmitter: RCTEventEmitter) {}
+  override fun registerEventEmitter(uiManagerType: Int, eventEmitter: RCTEventEmitter) = Unit
 
-  override fun registerEventEmitter(uiManagerType: Int, eventEmitter: RCTModernEventEmitter) {}
+  override fun registerEventEmitter(uiManagerType: Int, eventEmitter: RCTModernEventEmitter) = Unit
 
-  override fun unregisterEventEmitter(uiManagerType: Int) {}
+  override fun unregisterEventEmitter(uiManagerType: Int) = Unit
 
-  override fun onCatalystInstanceDestroyed() {}
+  override fun onCatalystInstanceDestroyed() = Unit
 }

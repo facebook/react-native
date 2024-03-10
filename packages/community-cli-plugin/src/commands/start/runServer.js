@@ -14,21 +14,20 @@ import type {Reporter} from 'metro/src/lib/reporting';
 import type {TerminalReportableEvent} from 'metro/src/lib/TerminalReporter';
 import typeof TerminalReporter from 'metro/src/lib/TerminalReporter';
 
-import chalk from 'chalk';
-import Metro from 'metro';
-import {Terminal} from 'metro-core';
-import path from 'path';
-import url from 'url';
-import {createDevMiddleware} from '@react-native/dev-middleware';
+import isDevServerRunning from '../../utils/isDevServerRunning';
+import loadMetroConfig from '../../utils/loadMetroConfig';
+import attachKeyHandlers from './attachKeyHandlers';
 import {
   createDevServerMiddleware,
   indexPageMiddleware,
 } from '@react-native-community/cli-server-api';
 import {logger, version} from '@react-native-community/cli-tools';
-
-import isDevServerRunning from '../../utils/isDevServerRunning';
-import loadMetroConfig from '../../utils/loadMetroConfig';
-import attachKeyHandlers from './attachKeyHandlers';
+import {createDevMiddleware} from '@react-native/dev-middleware';
+import chalk from 'chalk';
+import Metro from 'metro';
+import {Terminal} from 'metro-core';
+import path from 'path';
+import url from 'url';
 
 export type StartCommandArgs = {
   assetPlugins?: string[],

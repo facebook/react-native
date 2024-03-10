@@ -7,13 +7,13 @@
 
 package com.facebook.react.runtime;
 
+import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.TurboReactPackage;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.devsupport.LogBoxModule;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
-import com.facebook.react.internal.turbomodule.core.interfaces.TurboModule;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.module.annotations.ReactModuleList;
 import com.facebook.react.module.model.ReactModuleInfo;
@@ -51,7 +51,7 @@ class CoreReactPackage extends TurboReactPackage {
   }
 
   @Override
-  public NativeModule getModule(String name, ReactApplicationContext reactContext) {
+  public @Nullable NativeModule getModule(String name, ReactApplicationContext reactContext) {
     switch (name) {
       case AndroidInfoModule.NAME:
         return new AndroidInfoModule(reactContext);
@@ -68,8 +68,7 @@ class CoreReactPackage extends TurboReactPackage {
       case ExceptionsManagerModule.NAME:
         return new ExceptionsManagerModule(mDevSupportManager);
       default:
-        throw new IllegalArgumentException(
-            "In BridgelessReactPackage, could not find Native module for " + name);
+        return null;
     }
   }
 
@@ -103,7 +102,7 @@ class CoreReactPackage extends TurboReactPackage {
                   reactModule.canOverrideExistingModule(),
                   reactModule.needsEagerInit(),
                   reactModule.isCxxModule(),
-                  TurboModule.class.isAssignableFrom(moduleClass)));
+                  ReactModuleInfo.classIsTurboModule(moduleClass)));
         }
       }
       return () -> reactModuleInfoMap;

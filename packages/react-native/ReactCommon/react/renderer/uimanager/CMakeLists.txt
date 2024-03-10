@@ -12,11 +12,10 @@ add_compile_options(
         -std=c++20
         -Wall
         -Wpedantic
-        -Wno-gnu-zero-variadic-macro-arguments
         -DLOG_TAG=\"Fabric\")
 
 file(GLOB react_render_uimanager_SRC CONFIGURE_DEPENDS *.cpp)
-add_library(react_render_uimanager SHARED ${react_render_uimanager_SRC})
+add_library(react_render_uimanager STATIC ${react_render_uimanager_SRC})
 
 target_include_directories(react_render_uimanager PUBLIC ${REACT_COMMON_DIR})
 
@@ -25,6 +24,7 @@ target_link_libraries(react_render_uimanager
         folly_runtime
         jsi
         react_debug
+        react_featureflags
         react_render_componentregistry
         react_render_core
         react_render_debug

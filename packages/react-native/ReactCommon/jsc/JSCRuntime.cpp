@@ -13,8 +13,8 @@
 #include <atomic>
 #include <condition_variable>
 #include <cstdlib>
+#include <deque>
 #include <mutex>
-#include <queue>
 #include <sstream>
 #include <thread>
 
@@ -51,6 +51,12 @@ class JSCRuntime : public jsi::Runtime {
       const std::shared_ptr<const jsi::Buffer>& buffer,
       const std::string& sourceURL) override;
 
+  // If we use this interface to implement microtasks in the host we need to
+  // polyfill `Promise` to use these methods, because JSC doesn't currently
+  // support providing a custom queue for its built-in implementation.
+  // Not doing this would result in a non-compliant behavior, as microtasks
+  // wouldn't execute in the order in which they were queued.
+  void queueMicrotask(const jsi::Function& callback) override;
   bool drainMicrotasks(int maxMicrotasksHint = -1) override;
 
   jsi::Object global() override;
@@ -233,6 +239,7 @@ class JSCRuntime : public jsi::Runtime {
   bool strictEquals(const jsi::String& a, const jsi::String& b) const override;
   bool strictEquals(const jsi::Object& a, const jsi::Object& b) const override;
   bool instanceOf(const jsi::Object& o, const jsi::Function& f) override;
+  void setExternalMemoryPressure(const jsi::Object&, size_t) override;
 
  private:
   // Basically convenience casts
@@ -240,10 +247,7 @@ class JSCRuntime : public jsi::Runtime {
   static JSStringRef stringRef(const jsi::String& str);
   static JSStringRef stringRef(const jsi::PropNameID& sym);
   static JSObjectRef objectRef(const jsi::Object& obj);
-
-#ifdef RN_FABRIC_ENABLED
   static JSObjectRef objectRef(const jsi::WeakObject& obj);
-#endif
 
   // Factory methods for creating String/Object
   jsi::Symbol createSymbol(JSValueRef symbolRef) const;
@@ -267,6 +271,7 @@ class JSCRuntime : public jsi::Runtime {
   std::atomic<bool> ctxInvalid_;
   std::string desc_;
   JSValueRef nativeStateSymbol_ = nullptr;
+  std::deque<jsi::Function> microtaskQueue_;
 #ifndef NDEBUG
   mutable std::atomic<intptr_t> objectCounter_;
   mutable std::atomic<intptr_t> symbolCounter_;
@@ -380,6 +385,10 @@ JSCRuntime::JSCRuntime(JSGlobalContextRef ctx)
 }
 
 JSCRuntime::~JSCRuntime() {
+  // We need to clear the microtask queue to remove all references to the
+  // callbacks, so objectCounter_ would be 0 below.
+  microtaskQueue_.clear();
+
   // On shutting down and cleaning up: when JSC is actually torn down,
   // it calls JSC::Heap::lastChanceToFinalize internally which
   // finalizes anything left over.  But at this point,
@@ -436,7 +445,23 @@ jsi::Value JSCRuntime::evaluateJavaScript(
   return createValue(res);
 }
 
-bool JSCRuntime::drainMicrotasks(int maxMicrotasksHint) {
+void JSCRuntime::queueMicrotask(const jsi::Function& callback) {
+  microtaskQueue_.emplace_back(callback.getFunction(*this));
+}
+
+bool JSCRuntime::drainMicrotasks(int /*maxMicrotasksHint*/) {
+  // Note that new jobs can be enqueued during the draining.
+  while (!microtaskQueue_.empty()) {
+    jsi::Function callback = std::move(microtaskQueue_.front());
+
+    // We need to pop before calling the callback because that might throw.
+    // When that happens, the host will call `drainMicrotasks` again to execute
+    // the remaining microtasks, and this one shouldn't run again.
+    microtaskQueue_.pop_front();
+
+    callback.call(*this);
+  }
+
   return true;
 }
 
@@ -1065,23 +1090,15 @@ jsi::Array JSCRuntime::getPropertyNames(const jsi::Object& obj) {
 }
 
 jsi::WeakObject JSCRuntime::createWeakObject(const jsi::Object& obj) {
-#ifdef RN_FABRIC_ENABLED
   // TODO: revisit this implementation
   JSObjectRef objRef = objectRef(obj);
   return make<jsi::WeakObject>(makeObjectValue(objRef));
-#else
-  throw std::logic_error("Not implemented");
-#endif
 }
 
 jsi::Value JSCRuntime::lockWeakObject(const jsi::WeakObject& obj) {
-#ifdef RN_FABRIC_ENABLED
   // TODO: revisit this implementation
   JSObjectRef objRef = objectRef(obj);
   return jsi::Value(createObject(objRef));
-#else
-  throw std::logic_error("Not implemented");
-#endif
 }
 
 jsi::Array JSCRuntime::createArray(size_t length) {
@@ -1403,6 +1420,8 @@ bool JSCRuntime::instanceOf(const jsi::Object& o, const jsi::Function& f) {
   return res;
 }
 
+void JSCRuntime::setExternalMemoryPressure(const jsi::Object&, size_t) {}
+
 jsi::Runtime::PointerValue* JSCRuntime::makeSymbolValue(
     JSValueRef symbolRef) const {
 #ifndef NDEBUG
@@ -1527,12 +1546,10 @@ JSObjectRef JSCRuntime::objectRef(const jsi::Object& obj) {
   return static_cast<const JSCObjectValue*>(getPointerValue(obj))->obj_;
 }
 
-#ifdef RN_FABRIC_ENABLED
 JSObjectRef JSCRuntime::objectRef(const jsi::WeakObject& obj) {
   // TODO: revisit this implementation
   return static_cast<const JSCObjectValue*>(getPointerValue(obj))->obj_;
 }
-#endif
 
 void JSCRuntime::checkException(JSValueRef exc) {
   if (JSC_UNLIKELY(exc)) {

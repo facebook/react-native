@@ -11,33 +11,31 @@
 'use strict';
 
 import type {PressEvent} from 'react-native/Libraries/Types/CoreEventTypes';
-
-const React = require('react');
-const {
-  ImageBackground,
-  AccessibilityInfo,
-  TextInput,
-  Button,
-  Image,
-  Text,
-  View,
-  TouchableOpacity,
-  TouchableNativeFeedback,
-  TouchableWithoutFeedback,
-  Alert,
-  StyleSheet,
-  Platform,
-  Switch,
-  ScrollView,
-} = require('react-native');
 import type {EventSubscription} from 'react-native/Libraries/vendor/emitter/EventEmitter';
 
 const RNTesterBlock = require('../../components/RNTesterBlock');
-
 const checkImageSource = require('./check.png');
-const uncheckImageSource = require('./uncheck.png');
 const mixedCheckboxImageSource = require('./mixed.png');
+const uncheckImageSource = require('./uncheck.png');
+const React = require('react');
 const {createRef} = require('react');
+const {
+  AccessibilityInfo,
+  Alert,
+  Button,
+  Image,
+  ImageBackground,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Switch,
+  Text,
+  TextInput,
+  TouchableNativeFeedback,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
+} = require('react-native');
 
 const styles = StyleSheet.create({
   sectionContainer: {
@@ -647,8 +645,8 @@ class NestedCheckBox extends React.Component<
         checkbox2 && this.state.checkbox3
           ? true
           : checkbox2 || this.state.checkbox3
-          ? 'mixed'
-          : false,
+            ? 'mixed'
+            : false,
     });
   };
 
@@ -661,8 +659,8 @@ class NestedCheckBox extends React.Component<
         this.state.checkbox2 && checkbox3
           ? true
           : this.state.checkbox2 || checkbox3
-          ? 'mixed'
-          : false,
+            ? 'mixed'
+            : false,
     });
   };
 
@@ -682,8 +680,8 @@ class NestedCheckBox extends React.Component<
               this.state.checkbox1 === 'mixed'
                 ? mixedCheckboxImageSource
                 : this.state.checkbox1
-                ? checkImageSource
-                : uncheckImageSource
+                  ? checkImageSource
+                  : uncheckImageSource
             }
           />
           <Text>Meat</Text>

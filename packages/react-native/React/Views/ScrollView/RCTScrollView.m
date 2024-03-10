@@ -568,6 +568,10 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(
 
 - (void)scrollToOffset:(CGPoint)offset animated:(BOOL)animated
 {
+  if ([self reactLayoutDirection] == UIUserInterfaceLayoutDirectionRightToLeft) {
+    offset.x = _scrollView.contentSize.width - _scrollView.frame.size.width - offset.x;
+  }
+
   if (!CGPointEqualToPoint(_scrollView.contentOffset, offset)) {
     CGRect maxRect = CGRectMake(
         fmin(-_scrollView.contentInset.left, 0),
@@ -674,8 +678,7 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
    * We limit the delta to 17ms so that small throttles intended to enable 60fps updates will not
    * inadvertently filter out any scroll events.
    */
-  if (_allowNextScrollNoMatterWhat ||
-      (_scrollEventThrottle > 0 && _scrollEventThrottle < MAX(0.017, now - _lastScrollDispatchTime))) {
+  if (_allowNextScrollNoMatterWhat || (_scrollEventThrottle < MAX(0.017, now - _lastScrollDispatchTime))) {
     RCT_SEND_SCROLL_EVENT(onScroll, nil);
     // Update dispatch time
     _lastScrollDispatchTime = now;
@@ -936,19 +939,19 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
     BOOL horz = [self isHorizontal:self->_scrollView];
     NSUInteger minIdx = [self->_maintainVisibleContentPosition[@"minIndexForVisible"] integerValue];
     for (NSUInteger ii = minIdx; ii < self->_contentView.subviews.count; ++ii) {
-      // Find the first entirely visible view. This must be done after we update the content offset
+      // Find the first partially or fully visible view. This must be done after we update the content offset
       // or it will tend to grab rows that were made visible by the shift in position
       UIView *subview = self->_contentView.subviews[ii];
       BOOL hasNewView = NO;
       if (horz) {
         CGFloat leftInset = self.inverted ? self->_scrollView.contentInset.right : self->_scrollView.contentInset.left;
         CGFloat x = self->_scrollView.contentOffset.x + leftInset;
-        hasNewView = subview.frame.origin.x > x;
+        hasNewView = subview.frame.origin.x + subview.frame.size.width > x;
       } else {
         CGFloat bottomInset =
             self.inverted ? self->_scrollView.contentInset.top : self->_scrollView.contentInset.bottom;
         CGFloat y = self->_scrollView.contentOffset.y + bottomInset;
-        hasNewView = subview.frame.origin.y > y;
+        hasNewView = subview.frame.origin.y + subview.frame.size.height > y;
       }
       if (hasNewView || ii == self->_contentView.subviews.count - 1) {
         self->_prevFirstVisibleFrame = subview.frame;
@@ -972,7 +975,7 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
             CGPointMake(self->_scrollView.contentOffset.x + deltaX, self->_scrollView.contentOffset.y);
         if (autoscrollThreshold != nil) {
           // If the offset WAS within the threshold of the start, animate to the start.
-          if (x - deltaX <= [autoscrollThreshold integerValue]) {
+          if (x <= [autoscrollThreshold integerValue]) {
             [self scrollToOffset:CGPointMake(-leftInset, self->_scrollView.contentOffset.y) animated:YES];
           }
         }
@@ -988,7 +991,7 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
             CGPointMake(self->_scrollView.contentOffset.x, self->_scrollView.contentOffset.y + deltaY);
         if (autoscrollThreshold != nil) {
           // If the offset WAS within the threshold of the start, animate to the start.
-          if (y - deltaY <= [autoscrollThreshold integerValue]) {
+          if (y <= [autoscrollThreshold integerValue]) {
             [self scrollToOffset:CGPointMake(self->_scrollView.contentOffset.x, -bottomInset) animated:YES];
           }
         }

@@ -8,6 +8,7 @@
 package com.facebook.react.uimanager.events;
 
 import android.view.Choreographer;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.UiThreadUtil;
@@ -20,6 +21,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * A singleton class that overrides {@link EventDispatcher} with no-op methods, to be used by
  * callers that expect an EventDispatcher when the instance doesn't exist.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class FabricEventDispatcher implements EventDispatcher, LifecycleEventListener {
   private final ReactEventEmitter mReactEventEmitter;
   private final ReactApplicationContext mReactContext;
@@ -38,10 +40,10 @@ public class FabricEventDispatcher implements EventDispatcher, LifecycleEventLis
 
   @Override
   public void dispatchEvent(Event event) {
-    event.dispatchModern(mReactEventEmitter);
     for (EventDispatcherListener listener : mListeners) {
       listener.onEventDispatch(event);
     }
+    event.dispatchModern(mReactEventEmitter);
 
     event.dispose();
     maybePostFrameCallbackFromNonUI();

@@ -3,7 +3,6 @@
       and:
           - equal: [ false, << pipeline.parameters.run_release_workflow >> ]
           - equal: [ false, << pipeline.parameters.run_nightly_workflow >> ]
-          - equal: [ false, << pipeline.parameters.run_prealpha_workflow >> ]
     jobs:
       - prepare_package_for_release:
           name: prepare_package_for_release
@@ -55,4 +54,3 @@
               architecture: ["NewArch", "OldArch"]
               jsengine: ["Hermes", "JSC"]
               flavor: ["Debug", "Release"]
-      - test_windows

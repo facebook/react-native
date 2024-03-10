@@ -12,6 +12,7 @@ import com.facebook.react.bridge.JSBundleLoader
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.defaults.DefaultReactHostDelegate
 import com.facebook.react.runtime.hermes.HermesInstance
+import com.facebook.testutils.fakes.FakeReactNativeConfig
 import com.facebook.testutils.shadows.ShadowSoLoader
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -34,14 +35,16 @@ class ReactHostDelegateTest {
     val jsBundleLoader: JSBundleLoader = Mockito.mock(JSBundleLoader::class.java)
     val turboModuleManagerDelegateBuilderMock: ReactPackageTurboModuleManagerDelegate.Builder =
         Mockito.mock(ReactPackageTurboModuleManagerDelegate.Builder::class.java)
-    val hermesInstance: JSEngineInstance = Mockito.mock(HermesInstance::class.java)
+    val hermesInstance: JSRuntimeFactory = Mockito.mock(HermesInstance::class.java)
     val jsMainModulePathMocked = "mockedJSMainModulePath"
+    val reactNativeConfig = FakeReactNativeConfig()
     val delegate =
         DefaultReactHostDelegate(
             jsMainModulePath = jsMainModulePathMocked,
             jsBundleLoader = jsBundleLoader,
-            jsEngineInstance = hermesInstance,
-            turboModuleManagerDelegateBuilder = turboModuleManagerDelegateBuilderMock)
+            jsRuntimeFactory = hermesInstance,
+            turboModuleManagerDelegateBuilder = turboModuleManagerDelegateBuilderMock,
+            reactNativeConfig = reactNativeConfig)
 
     assertThat(delegate.jsMainModulePath).isEqualTo(jsMainModulePathMocked)
   }

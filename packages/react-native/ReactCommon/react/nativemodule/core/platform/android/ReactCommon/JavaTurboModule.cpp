@@ -6,9 +6,9 @@
  */
 
 #include <memory>
-#include <sstream>
 #include <string>
 
+#include <cxxreact/SystraceSection.h>
 #include <fbjni/fbjni.h>
 #include <glog/logging.h>
 #include <jsi/jsi.h>
@@ -57,6 +57,28 @@ JavaTurboModule::~JavaTurboModule() {
 }
 
 namespace {
+
+constexpr auto kReactFeatureFlagsJavaDescriptor =
+    "com/facebook/react/config/ReactFeatureFlags";
+
+bool getFeatureFlagBoolValue(const char* name) {
+  static const auto reactFeatureFlagsClass =
+      facebook::jni::findClassStatic(kReactFeatureFlagsJavaDescriptor);
+  const auto field = reactFeatureFlagsClass->getStaticField<jboolean>(name);
+  return reactFeatureFlagsClass->getStaticFieldValue(field);
+}
+
+bool traceTurboModulePromiseRejections() {
+  static bool traceRejections =
+      getFeatureFlagBoolValue("traceTurboModulePromiseRejections");
+  return traceRejections;
+}
+
+bool rejectTurboModulePromiseOnNativeError() {
+  static bool rejectOnError =
+      getFeatureFlagBoolValue("rejectTurboModulePromiseOnNativeError");
+  return rejectOnError;
+}
 
 struct JNIArgs {
   JNIArgs(size_t count) : args_(count) {}
@@ -228,13 +250,15 @@ JNIArgs convertJSIArgsToJNIArgs(
     size_t count,
     const std::shared_ptr<CallInvoker>& jsInvoker,
     TurboModuleMethodValueKind valueKind) {
-  unsigned int expectedArgumentCount = valueKind == PromiseKind
+  size_t expectedArgumentCount = valueKind == PromiseKind
       ? methodArgTypes.size() - 1
       : methodArgTypes.size();
 
   if (expectedArgumentCount != count) {
     throw JavaTurboModuleInvalidArgumentCountException(
-        methodName, count, expectedArgumentCount);
+        methodName,
+        static_cast<int>(count),
+        static_cast<int>(expectedArgumentCount));
   }
 
   JNIArgs jniArgs(valueKind == PromiseKind ? count + 1 : count);
@@ -396,7 +420,7 @@ jsi::Value createJSRuntimeError(
  */
 jsi::JSError convertThrowableToJSError(
     jsi::Runtime& runtime,
-    jni::local_ref<jni::JThrowable> throwable) {
+    jni::alias_ref<jni::JThrowable> throwable) {
   auto stackTrace = throwable->getStackTrace();
 
   jsi::Array stackElements(runtime, stackTrace->size());
@@ -422,6 +446,22 @@ jsi::JSError convertThrowableToJSError(
       createJSRuntimeError(runtime, "Exception in HostFunction: " + message);
   error.asObject(runtime).setProperty(runtime, "cause", std::move(cause));
   return {runtime, std::move(error)};
+}
+
+void rejectWithException(
+    AsyncCallback<>& reject,
+    std::exception_ptr exception,
+    std::optional<std::string>& jsInvocationStack) {
+  auto throwable = jni::getJavaExceptionForCppException(exception);
+  reject.call([jsInvocationStack, throwable = jni::make_global(throwable)](
+                  jsi::Runtime& rt, jsi::Function& jsFunction) {
+    auto jsError = convertThrowableToJSError(rt, throwable);
+    if (jsInvocationStack.has_value()) {
+      jsError.value().asObject(rt).setProperty(
+          rt, "stack", jsInvocationStack.value());
+    }
+    jsFunction.call(rt, jsError.value());
+  });
 }
 
 } // namespace
@@ -467,7 +507,8 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
    * GlobalReferences. The LocalReferences are then promptly deleted
    * after the conversion.
    */
-  unsigned int actualArgCount = valueKind == VoidKind ? 0 : argCount;
+  unsigned int actualArgCount =
+      valueKind == VoidKind ? 0 : static_cast<unsigned int>(argCount);
   unsigned int estimatedLocalRefCount =
       actualArgCount + maxReturnObjects + buffer;
 
@@ -739,6 +780,15 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
            moduleNameStr = name_,
            methodNameStr,
            id = getUniqueId()]() mutable {
+            SystraceSection s(
+                "JavaTurboModuleAsyncMethodInvocation",
+                "module",
+                moduleNameStr,
+                "method",
+                methodNameStr,
+                "returnType",
+                "void");
+
             auto instance = instance_.lockLocal();
             if (!instance) {
               return;
@@ -774,6 +824,10 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
       jsi::Function Promise =
           runtime.global().getPropertyAsFunction(runtime, "Promise");
 
+      // The callback is used for auto rejecting if error is caught from method
+      // invocation
+      std::optional<AsyncCallback<>> nativeRejectCallback;
+
       // The promise constructor runs its arg immediately, so this is safe
       jobject javaPromise;
       jsi::Value jsPromise = Promise.callAsConstructor(
@@ -788,6 +842,13 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
                   size_t argCount) {
                 if (argCount != 2) {
                   throw jsi::JSError(runtime, "Incorrect number of arguments");
+                }
+
+                if (rejectTurboModulePromiseOnNativeError()) {
+                  nativeRejectCallback = AsyncCallback(
+                      runtime,
+                      args[1].getObject(runtime).getFunction(runtime),
+                      jsInvoker_);
                 }
 
                 auto resolve = createJavaCallback(
@@ -808,20 +869,40 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
       env->DeleteLocalRef(javaPromise);
       jargs[argCount].l = globalPromise;
 
+      // JS Stack at the time when the promise is created.
+      std::optional<std::string> jsInvocationStack;
+      if (traceTurboModulePromiseRejections()) {
+        jsInvocationStack = createJSRuntimeError(runtime, "")
+                                .asObject(runtime)
+                                .getProperty(runtime, "stack")
+                                .toString(runtime)
+                                .utf8(runtime);
+      }
+
       const char* moduleName = name_.c_str();
       const char* methodName = methodNameStr.c_str();
       TMPL::asyncMethodCallArgConversionEnd(moduleName, methodName);
-
       TMPL::asyncMethodCallDispatch(moduleName, methodName);
       nativeMethodCallInvoker_->invokeAsync(
           methodName,
           [jargs,
+           rejectCallback = std::move(nativeRejectCallback),
+           jsInvocationStack = std::move(jsInvocationStack),
            globalRefs,
            methodID,
            instance_ = jni::make_weak(instance_),
            moduleNameStr = name_,
            methodNameStr,
            id = getUniqueId()]() mutable {
+            SystraceSection s(
+                "JavaTurboModuleAsyncMethodInvocation",
+                "module",
+                moduleNameStr,
+                "method",
+                methodNameStr,
+                "returnType",
+                "promise");
+
             auto instance = instance_.lockLocal();
             if (!instance) {
               return;
@@ -838,7 +919,14 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
               FACEBOOK_JNI_THROW_PENDING_EXCEPTION();
             } catch (...) {
               TMPL::asyncMethodCallExecutionFail(moduleName, methodName, id);
-              throw;
+              if (rejectTurboModulePromiseOnNativeError() && rejectCallback) {
+                auto exception = std::current_exception();
+                rejectWithException(
+                    *rejectCallback, exception, jsInvocationStack);
+                rejectCallback = std::nullopt;
+              } else {
+                throw;
+              }
             }
 
             for (auto globalRef : globalRefs) {

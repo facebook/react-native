@@ -32,10 +32,10 @@
 
 'use strict';
 
-const wd = require('wd');
-const path = require('path');
 const fs = require('fs');
+const path = require('path');
 const pd = require('pretty-data2').pd;
+const wd = require('wd');
 
 // value in ms to print out screen contents, set this value in CI to debug if tests are failing
 const appiumDebugInterval = process.env.APPIUM_DEBUG_INTERVAL;

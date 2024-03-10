@@ -60,12 +60,6 @@ typedef NS_ENUM(unsigned int, meta_prop_t) {
 
 // YogaNode API
 
-static void RCTPrint(YGNodeConstRef node)
-{
-  RCTShadowView *shadowView = (__bridge RCTShadowView *)YGNodeGetContext(node);
-  printf("%s(%lld), ", shadowView.viewName.UTF8String, (long long)shadowView.reactTag.integerValue);
-}
-
 #define RCT_SET_YGVALUE(ygvalue, setter, ...)      \
   switch (ygvalue.unit) {                          \
     case YGUnitAuto:                               \
@@ -203,7 +197,6 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
 
     _yogaNode = YGNodeNewWithConfig([[self class] yogaConfig]);
     YGNodeSetContext(_yogaNode, (__bridge void *)self);
-    YGNodeSetPrintFunc(_yogaNode, RCTPrint);
   }
   return self;
 }
@@ -365,6 +358,13 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
   YGNodeRemoveChild(constraintYogaNode, clonedYogaNode);
   YGNodeFree(constraintYogaNode);
   YGNodeFree(clonedYogaNode);
+
+  // `setOwner()` for children unlinked by `YGNodeFree()`
+  int childCount = YGNodeGetChildCount(self.yogaNode);
+  for (int i = 0; i < childCount; i++) {
+    YGNodeRef child = YGNodeGetChild(self.yogaNode, i);
+    YGNodeSwapChild(self.yogaNode, child, i);
+  }
 
   return measuredSize;
 }

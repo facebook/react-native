@@ -11,10 +11,10 @@
 import type {PlatformTestComponentBaseProps} from '../PlatformTest/RNTesterPlatformTestTypes';
 import type {PointerEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 
-import {useTestEventHandler} from './PointerEventSupport';
 import RNTesterPlatformTest from '../PlatformTest/RNTesterPlatformTest';
+import {useTestEventHandler} from './PointerEventSupport';
 import * as React from 'react';
-import {useRef, useCallback, useMemo} from 'react';
+import {useCallback, useMemo, useRef} from 'react';
 import {StyleSheet, View} from 'react-native';
 
 const styles = StyleSheet.create({

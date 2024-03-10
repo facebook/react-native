@@ -11,11 +11,11 @@
 'use strict';
 
 import type {
-  NamedShape,
+  CommandParamTypeAnnotation,
   CommandTypeAnnotation,
   ComponentShape,
+  NamedShape,
   SchemaType,
-  CommandParamTypeAnnotation,
 } from '../../CodegenSchema';
 
 type FilesOutput = Map<string, string>;
@@ -171,6 +171,8 @@ function getObjCParamType(param: Param): string {
       return 'NSInteger';
     case 'StringTypeAnnotation':
       return 'NSString *';
+    case 'ArrayTypeAnnotation':
+      return 'const NSArray *';
     default:
       (typeAnnotation.type: empty);
       throw new Error('Received invalid param type annotation');
@@ -199,6 +201,8 @@ function getObjCExpectedKindParamType(param: Param): string {
       return '[NSNumber class]';
     case 'StringTypeAnnotation':
       return '[NSString class]';
+    case 'ArrayTypeAnnotation':
+      return '[NSArray class]';
     default:
       (typeAnnotation.type: empty);
       throw new Error('Received invalid param type annotation');
@@ -227,6 +231,8 @@ function getReadableExpectedKindParamType(param: Param): string {
       return 'number';
     case 'StringTypeAnnotation':
       return 'string';
+    case 'ArrayTypeAnnotation':
+      return 'array';
     default:
       (typeAnnotation.type: empty);
       throw new Error('Received invalid param type annotation');
@@ -258,6 +264,8 @@ function getObjCRightHandAssignmentParamType(
       return `[(NSNumber *)arg${index} intValue]`;
     case 'StringTypeAnnotation':
       return `(NSString *)arg${index}`;
+    case 'ArrayTypeAnnotation':
+      return `(NSArray *)arg${index}`;
     default:
       (typeAnnotation.type: empty);
       throw new Error('Received invalid param type annotation');
@@ -372,6 +380,7 @@ module.exports = {
     schema: SchemaType,
     packageName?: string,
     assumeNonnull: boolean = false,
+    headerPrefix?: string,
   ): FilesOutput {
     const fileName = 'RCTComponentViewHelpers.h';
 

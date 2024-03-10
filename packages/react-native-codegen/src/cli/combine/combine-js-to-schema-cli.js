@@ -4,17 +4,36 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  * @oncall react_native
  */
 
-/*::
-export type * from './combine-js-to-schema-cli.flow';
-*/
+'use strict';
 
-if (!process.env.BUILD_EXCLUDE_BABEL_REGISTER && !process.env.BUCK_BUILD_ID) {
-  require('../../../../../scripts/build/babel-register').registerForMonorepo();
-}
+const {
+  combineSchemasInFileListAndWriteToFile,
+} = require('./combine-js-to-schema');
+const yargs = require('yargs');
 
-module.exports = require('./combine-js-to-schema-cli.flow');
+const argv = yargs
+  .option('p', {
+    alias: 'platform',
+  })
+  .option('e', {
+    alias: 'exclude',
+  })
+  .parseSync();
+
+const [outfile, ...fileList] = argv._;
+const platform: ?string = argv.platform;
+const exclude: string = argv.exclude;
+const excludeRegExp: ?RegExp =
+  exclude != null && exclude !== '' ? new RegExp(exclude) : null;
+
+combineSchemasInFileListAndWriteToFile(
+  fileList,
+  platform != null ? platform.toLowerCase() : platform,
+  outfile,
+  excludeRegExp,
+);

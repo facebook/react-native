@@ -25,7 +25,7 @@
 
 #if RCT_DEV_MENU
 
-@class RCTRedBoxWindow;
+@class RCTRedBoxController;
 
 @interface UIButton (RCTRedBox)
 
@@ -62,120 +62,136 @@
 
 @end
 
-@protocol RCTRedBoxWindowActionDelegate <NSObject>
+@protocol RCTRedBoxControllerActionDelegate <NSObject>
 
-- (void)redBoxWindow:(RCTRedBoxWindow *)redBoxWindow openStackFrameInEditor:(RCTJSStackFrame *)stackFrame;
-- (void)reloadFromRedBoxWindow:(RCTRedBoxWindow *)redBoxWindow;
+- (void)redBoxController:(RCTRedBoxController *)redBoxController openStackFrameInEditor:(RCTJSStackFrame *)stackFrame;
+- (void)reloadFromRedBoxController:(RCTRedBoxController *)redBoxController;
 - (void)loadExtraDataViewController;
 
 @end
 
-@interface RCTRedBoxWindow : NSObject <UITableViewDelegate, UITableViewDataSource>
-@property (nonatomic, strong) UIViewController *rootViewController;
-@property (nonatomic, weak) id<RCTRedBoxWindowActionDelegate> actionDelegate;
+@interface RCTRedBoxController : UIViewController <UITableViewDelegate, UITableViewDataSource>
+@property (nonatomic, weak) id<RCTRedBoxControllerActionDelegate> actionDelegate;
 @end
 
-@implementation RCTRedBoxWindow {
+@implementation RCTRedBoxController {
   UITableView *_stackTraceTableView;
   NSString *_lastErrorMessage;
   NSArray<RCTJSStackFrame *> *_lastStackTrace;
+  NSArray<NSString *> *_customButtonTitles;
+  NSArray<RCTRedBoxButtonPressHandler> *_customButtonHandlers;
   int _lastErrorCookie;
 }
 
-- (instancetype)initWithFrame:(CGRect)frame
-           customButtonTitles:(NSArray<NSString *> *)customButtonTitles
-         customButtonHandlers:(NSArray<RCTRedBoxButtonPressHandler> *)customButtonHandlers
+- (instancetype)initWithCustomButtonTitles:(NSArray<NSString *> *)customButtonTitles
+                      customButtonHandlers:(NSArray<RCTRedBoxButtonPressHandler> *)customButtonHandlers
 {
   if (self = [super init]) {
     _lastErrorCookie = -1;
+    _customButtonTitles = customButtonTitles;
+    _customButtonHandlers = customButtonHandlers;
+  }
 
-    _rootViewController = [UIViewController new];
-    UIView *rootView = _rootViewController.view;
-    rootView.frame = frame;
-    rootView.backgroundColor = [UIColor blackColor];
+  return self;
+}
 
-    const CGFloat buttonHeight = 60;
+- (void)viewDidLoad
+{
+  self.view.backgroundColor = [UIColor blackColor];
 
-    CGRect detailsFrame = rootView.bounds;
-    detailsFrame.size.height -= buttonHeight + (double)[self bottomSafeViewHeight];
+  const CGFloat buttonHeight = 60;
 
-    _stackTraceTableView = [[UITableView alloc] initWithFrame:detailsFrame style:UITableViewStylePlain];
-    _stackTraceTableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    _stackTraceTableView.delegate = self;
-    _stackTraceTableView.dataSource = self;
-    _stackTraceTableView.backgroundColor = [UIColor clearColor];
-    _stackTraceTableView.separatorColor = [UIColor colorWithWhite:1 alpha:0.3];
-    _stackTraceTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    _stackTraceTableView.indicatorStyle = UIScrollViewIndicatorStyleWhite;
-    [rootView addSubview:_stackTraceTableView];
+  CGRect detailsFrame = self.view.bounds;
+  detailsFrame.size.height -= buttonHeight + (double)[self bottomSafeViewHeight];
+
+  _stackTraceTableView = [[UITableView alloc] initWithFrame:detailsFrame style:UITableViewStylePlain];
+  _stackTraceTableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+  _stackTraceTableView.delegate = self;
+  _stackTraceTableView.dataSource = self;
+  _stackTraceTableView.backgroundColor = [UIColor clearColor];
+  _stackTraceTableView.separatorColor = [UIColor colorWithWhite:1 alpha:0.3];
+  _stackTraceTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+  _stackTraceTableView.indicatorStyle = UIScrollViewIndicatorStyleWhite;
+  [self.view addSubview:_stackTraceTableView];
 
 #if TARGET_OS_SIMULATOR || TARGET_OS_MACCATALYST
-    NSString *reloadText = @"Reload\n(\u2318R)";
-    NSString *dismissText = @"Dismiss\n(ESC)";
-    NSString *copyText = @"Copy\n(\u2325\u2318C)";
-    NSString *extraText = @"Extra Info\n(\u2318E)";
+  NSString *reloadText = @"Reload\n(\u2318R)";
+  NSString *dismissText = @"Dismiss\n(ESC)";
+  NSString *copyText = @"Copy\n(\u2325\u2318C)";
+  NSString *extraText = @"Extra Info\n(\u2318E)";
 #else
-    NSString *reloadText = @"Reload JS";
-    NSString *dismissText = @"Dismiss";
-    NSString *copyText = @"Copy";
-    NSString *extraText = @"Extra Info";
+  NSString *reloadText = @"Reload JS";
+  NSString *dismissText = @"Dismiss";
+  NSString *copyText = @"Copy";
+  NSString *extraText = @"Extra Info";
 #endif
 
-    UIButton *dismissButton = [self redBoxButton:dismissText
-                         accessibilityIdentifier:@"redbox-dismiss"
-                                        selector:@selector(dismiss)
-                                           block:nil];
-    UIButton *reloadButton = [self redBoxButton:reloadText
-                        accessibilityIdentifier:@"redbox-reload"
-                                       selector:@selector(reload)
-                                          block:nil];
-    UIButton *copyButton = [self redBoxButton:copyText
-                      accessibilityIdentifier:@"redbox-copy"
-                                     selector:@selector(copyStack)
-                                        block:nil];
-    UIButton *extraButton = [self redBoxButton:extraText
-                       accessibilityIdentifier:@"redbox-extra"
-                                      selector:@selector(showExtraDataViewController)
+  UIButton *dismissButton = [self redBoxButton:dismissText
+                       accessibilityIdentifier:@"redbox-dismiss"
+                                      selector:@selector(dismiss)
                                          block:nil];
+  UIButton *reloadButton = [self redBoxButton:reloadText
+                      accessibilityIdentifier:@"redbox-reload"
+                                     selector:@selector(reload)
+                                        block:nil];
+  UIButton *copyButton = [self redBoxButton:copyText
+                    accessibilityIdentifier:@"redbox-copy"
+                                   selector:@selector(copyStack)
+                                      block:nil];
+  UIButton *extraButton = [self redBoxButton:extraText
+                     accessibilityIdentifier:@"redbox-extra"
+                                    selector:@selector(showExtraDataViewController)
+                                       block:nil];
 
-    CGFloat buttonWidth = frame.size.width / (CGFloat)(4 + [customButtonTitles count]);
-    CGFloat bottomButtonHeight = frame.size.height - buttonHeight - (CGFloat)[self bottomSafeViewHeight];
-    dismissButton.frame = CGRectMake(0, bottomButtonHeight, buttonWidth, buttonHeight);
-    reloadButton.frame = CGRectMake(buttonWidth, bottomButtonHeight, buttonWidth, buttonHeight);
-    copyButton.frame = CGRectMake(buttonWidth * 2, bottomButtonHeight, buttonWidth, buttonHeight);
-    extraButton.frame = CGRectMake(buttonWidth * 3, bottomButtonHeight, buttonWidth, buttonHeight);
+  [NSLayoutConstraint activateConstraints:@[
+    [dismissButton.heightAnchor constraintEqualToConstant:buttonHeight],
+    [reloadButton.heightAnchor constraintEqualToConstant:buttonHeight],
+    [copyButton.heightAnchor constraintEqualToConstant:buttonHeight],
+    [extraButton.heightAnchor constraintEqualToConstant:buttonHeight]
+  ]];
 
-    [rootView addSubview:dismissButton];
-    [rootView addSubview:reloadButton];
-    [rootView addSubview:copyButton];
-    [rootView addSubview:extraButton];
+  UIStackView *buttonStackView = [[UIStackView alloc] init];
+  buttonStackView.translatesAutoresizingMaskIntoConstraints = NO;
+  buttonStackView.axis = UILayoutConstraintAxisHorizontal;
+  buttonStackView.distribution = UIStackViewDistributionFillEqually;
+  buttonStackView.alignment = UIStackViewAlignmentTop;
+  buttonStackView.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
 
-    for (NSUInteger i = 0; i < [customButtonTitles count]; i++) {
-      UIButton *button = [self redBoxButton:customButtonTitles[i]
-                    accessibilityIdentifier:@""
-                                   selector:nil
-                                      block:customButtonHandlers[i]];
-      button.frame = CGRectMake(buttonWidth * (double)(4 + i), bottomButtonHeight, buttonWidth, buttonHeight);
-      [rootView addSubview:button];
-    }
+  [buttonStackView addArrangedSubview:dismissButton];
+  [buttonStackView addArrangedSubview:reloadButton];
+  [buttonStackView addArrangedSubview:copyButton];
+  [buttonStackView addArrangedSubview:extraButton];
 
-    UIView *topBorder =
-        [[UIView alloc] initWithFrame:CGRectMake(0, bottomButtonHeight + 1, rootView.frame.size.width, 1)];
-    topBorder.backgroundColor = [UIColor colorWithRed:0.70 green:0.70 blue:0.70 alpha:1.0];
+  [self.view addSubview:buttonStackView];
 
-    [rootView addSubview:topBorder];
+  [NSLayoutConstraint activateConstraints:@[
+    [buttonStackView.heightAnchor constraintEqualToConstant:buttonHeight + [self bottomSafeViewHeight]],
+    [buttonStackView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
+    [buttonStackView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
+    [buttonStackView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor]
+  ]];
 
-    UIView *bottomSafeView = [UIView new];
-    bottomSafeView.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
-    bottomSafeView.frame = CGRectMake(
-        0,
-        frame.size.height - (CGFloat)[self bottomSafeViewHeight],
-        frame.size.width,
-        (CGFloat)[self bottomSafeViewHeight]);
-
-    [rootView addSubview:bottomSafeView];
+  for (NSUInteger i = 0; i < [_customButtonTitles count]; i++) {
+    UIButton *button = [self redBoxButton:_customButtonTitles[i]
+                  accessibilityIdentifier:@""
+                                 selector:nil
+                                    block:_customButtonHandlers[i]];
+    [button.heightAnchor constraintEqualToConstant:buttonHeight].active = YES;
+    [buttonStackView addArrangedSubview:button];
   }
-  return self;
+
+  UIView *topBorder = [[UIView alloc] init];
+  topBorder.translatesAutoresizingMaskIntoConstraints = NO;
+  topBorder.backgroundColor = [UIColor colorWithRed:0.70 green:0.70 blue:0.70 alpha:1.0];
+  [topBorder.heightAnchor constraintEqualToConstant:1].active = YES;
+
+  [self.view addSubview:topBorder];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [topBorder.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
+    [topBorder.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
+    [topBorder.bottomAnchor constraintEqualToAnchor:buttonStackView.topAnchor],
+  ]];
 }
 
 - (UIButton *)redBoxButton:(NSString *)title
@@ -226,7 +242,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   // Remove ANSI color codes from the message
   NSString *messageWithoutAnsi = [self stripAnsi:message];
 
-  BOOL isRootViewControllerPresented = self.rootViewController.presentingViewController != nil;
+  BOOL isRootViewControllerPresented = self.presentingViewController != nil;
   // Show if this is a new message, or if we're updating the previous message
   BOOL isNew = !isRootViewControllerPresented && !isUpdate;
   BOOL isUpdateForSameMessage = !isNew &&
@@ -246,19 +262,25 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
       [_stackTraceTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]
                                   atScrollPosition:UITableViewScrollPositionTop
                                           animated:NO];
-      [RCTKeyWindow().rootViewController presentViewController:self.rootViewController animated:YES completion:nil];
+      [RCTKeyWindow().rootViewController presentViewController:self animated:YES completion:nil];
     }
   }
 }
 
 - (void)dismiss
 {
-  [self.rootViewController dismissViewControllerAnimated:YES completion:nil];
+  [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)reload
 {
-  [_actionDelegate reloadFromRedBoxWindow:self];
+  if (_actionDelegate != nil) {
+    [_actionDelegate reloadFromRedBoxController:self];
+  } else {
+    // In bridgeless mode `RCTRedBox` gets deallocated, we need to notify listeners anyway.
+    RCTTriggerReloadCommandListeners(@"Redbox");
+    [self dismiss];
+  }
 }
 
 - (void)showExtraDataViewController
@@ -396,7 +418,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   if (indexPath.section == 1) {
     NSUInteger row = indexPath.row;
     RCTJSStackFrame *stackFrame = _lastStackTrace[row];
-    [_actionDelegate redBoxWindow:self openStackFrameInEditor:stackFrame];
+    [_actionDelegate redBoxController:self openStackFrameInEditor:stackFrame];
   }
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
@@ -438,13 +460,13 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 
 @interface RCTRedBox () <
     RCTInvalidating,
-    RCTRedBoxWindowActionDelegate,
+    RCTRedBoxControllerActionDelegate,
     RCTRedBoxExtraDataActionDelegate,
     NativeRedBoxSpec>
 @end
 
 @implementation RCTRedBox {
-  RCTRedBoxWindow *_window;
+  RCTRedBoxController *_controller;
   NSMutableArray<id<RCTErrorCustomizer>> *_errorCustomizers;
   RCTRedBoxExtraDataViewController *_extraDataViewController;
   NSMutableArray<NSString *> *_customButtonTitles;
@@ -592,20 +614,18 @@ RCT_EXPORT_MODULE()
     [[self->_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"collectRedBoxExtraData"
                                                                                 body:nil];
 #pragma clang diagnostic pop
-
-    if (!self->_window) {
-      self->_window = [[RCTRedBoxWindow alloc] initWithFrame:[UIScreen mainScreen].bounds
-                                          customButtonTitles:self->_customButtonTitles
-                                        customButtonHandlers:self->_customButtonHandlers];
-      self->_window.actionDelegate = self;
+    if (!self->_controller) {
+      self->_controller = [[RCTRedBoxController alloc] initWithCustomButtonTitles:self->_customButtonTitles
+                                                             customButtonHandlers:self->_customButtonHandlers];
+      self->_controller.actionDelegate = self;
     }
 
     RCTErrorInfo *errorInfo = [[RCTErrorInfo alloc] initWithErrorMessage:message stack:stack];
     errorInfo = [self _customizeError:errorInfo];
-    [self->_window showErrorMessage:errorInfo.errorMessage
-                          withStack:errorInfo.stack
-                           isUpdate:isUpdate
-                        errorCookie:errorCookie];
+    [self->_controller showErrorMessage:errorInfo.errorMessage
+                              withStack:errorInfo.stack
+                               isUpdate:isUpdate
+                            errorCookie:errorCookie];
   });
 }
 
@@ -613,10 +633,8 @@ RCT_EXPORT_MODULE()
 {
   dispatch_async(dispatch_get_main_queue(), ^{
     // Make sure the CMD+E shortcut doesn't call this twice
-    if (self->_extraDataViewController != nil && ![self->_window.rootViewController presentedViewController]) {
-      [self->_window.rootViewController presentViewController:self->_extraDataViewController
-                                                     animated:YES
-                                                   completion:nil];
+    if (self->_extraDataViewController != nil && ![self->_controller presentedViewController]) {
+      [self->_controller presentViewController:self->_extraDataViewController animated:YES completion:nil];
     }
   });
 }
@@ -629,7 +647,7 @@ RCT_EXPORT_METHOD(setExtraData : (NSDictionary *)extraData forIdentifier : (NSSt
 RCT_EXPORT_METHOD(dismiss)
 {
   dispatch_async(dispatch_get_main_queue(), ^{
-    [self->_window dismiss];
+    [self->_controller dismiss];
   });
 }
 
@@ -638,7 +656,8 @@ RCT_EXPORT_METHOD(dismiss)
   [self dismiss];
 }
 
-- (void)redBoxWindow:(__unused RCTRedBoxWindow *)redBoxWindow openStackFrameInEditor:(RCTJSStackFrame *)stackFrame
+- (void)redBoxController:(__unused RCTRedBoxController *)redBoxController
+    openStackFrameInEditor:(RCTJSStackFrame *)stackFrame
 {
   NSURL *const bundleURL = _overrideBundleURL ?: _bundleManager.bundleURL;
   if (![bundleURL.scheme hasPrefix:@"http"]) {
@@ -661,10 +680,10 @@ RCT_EXPORT_METHOD(dismiss)
 - (void)reload
 {
   // Window is not used and can be nil
-  [self reloadFromRedBoxWindow:nil];
+  [self reloadFromRedBoxController:nil];
 }
 
-- (void)reloadFromRedBoxWindow:(__unused RCTRedBoxWindow *)redBoxWindow
+- (void)reloadFromRedBoxController:(__unused RCTRedBoxController *)redBoxController
 {
   if (_overrideReloadAction) {
     _overrideReloadAction();

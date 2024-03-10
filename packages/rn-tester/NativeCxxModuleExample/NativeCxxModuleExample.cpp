@@ -20,6 +20,18 @@ void NativeCxxModuleExample::getValueWithCallback(
   callback({"value from callback!"});
 }
 
+std::function<void()> NativeCxxModuleExample::setValueCallbackWithSubscription(
+    jsi::Runtime& rt,
+    AsyncCallback<std::string> callback) {
+  valueCallback_ = std::make_optional(callback);
+  return [&]() {
+    if (valueCallback_.has_value()) {
+      valueCallback_.value()({"value from callback on clean up!"});
+      valueCallback_ = std::nullopt;
+    }
+  };
+}
+
 std::vector<std::optional<ObjectStruct>> NativeCxxModuleExample::getArray(
     jsi::Runtime& rt,
     std::vector<std::optional<ObjectStruct>> arg) {
@@ -51,6 +63,22 @@ std::string NativeCxxModuleExample::consumeCustomHostObject(
     std::shared_ptr<CustomHostObject> arg) {
   auto value = arg->getValue();
   return value->a_ + std::to_string(value->b_);
+}
+
+BinaryTreeNode NativeCxxModuleExample::getBinaryTreeNode(
+    jsi::Runtime& rt,
+    BinaryTreeNode arg) {
+  return arg;
+}
+
+GraphNode NativeCxxModuleExample::getGraphNode(
+    jsi::Runtime& rt,
+    GraphNode arg) {
+  if (arg.neighbors) {
+    arg.neighbors->emplace_back(GraphNode{.label = "top"});
+    arg.neighbors->emplace_back(GraphNode{.label = "down"});
+  }
+  return arg;
 }
 
 NativeCxxModuleExampleCxxEnumFloat NativeCxxModuleExample::getNumEnum(
@@ -141,13 +169,21 @@ void NativeCxxModuleExample::voidFunc(jsi::Runtime& rt) {
   // Nothing to do
 }
 
+void NativeCxxModuleExample::setMenu(jsi::Runtime& rt, MenuItem menuItem) {
+  menuItem.onPress("value", true);
+  if (menuItem.items) {
+    for (auto subMenuItem : *menuItem.items) {
+      subMenuItem.onPress("another value", false);
+    }
+  }
+}
+
 void NativeCxxModuleExample::emitCustomDeviceEvent(
     jsi::Runtime& rt,
     jsi::String eventName) {
   // Test emitting device events (RCTDeviceEventEmitter.emit) from C++
   // TurboModule with arbitrary arguments
   emitDeviceEvent(
-      rt,
       eventName.utf8(rt).c_str(),
       [](jsi::Runtime& rt, std::vector<jsi::Value>& args) {
         args.emplace_back(jsi::Value(true));

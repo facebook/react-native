@@ -22,14 +22,9 @@
 namespace facebook::react {
 
 class YogaLayoutableShadowNode : public LayoutableShadowNode {
-  using CompactValue = facebook::yoga::CompactValue;
-
  public:
   using Shared = std::shared_ptr<const YogaLayoutableShadowNode>;
   using ListOfShared = std::vector<Shared>;
-
-  static ShadowNodeTraits BaseTraits();
-  static ShadowNodeTraits::Trait IdentifierTrait();
 
 #pragma mark - Constructors
 
@@ -89,6 +84,8 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
   void layout(LayoutContext layoutContext) override;
 
   Rect getContentBounds() const;
+
+  static void filterRawProps(RawProps& rawProps);
 
  protected:
   /*
@@ -192,16 +189,14 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
    * - border(Left|Right)Width → border(Start|End)Width
    * - border(Left|Right)Color → border(Start|End)Color
    */
-  static void swapLeftAndRightInViewProps(
-      const YogaLayoutableShadowNode& shadowNode);
+  void swapLeftAndRightInViewProps();
   /*
    * In yoga node passed as argument, reassigns following values
    * - (left|right) → (start|end)
    * - margin(Left|Right) → margin(Start|End)
    * - padding(Left|Right) → padding(Start|End)
    */
-  static void swapLeftAndRightInYogaStyleProps(
-      const YogaLayoutableShadowNode& shadowNode);
+  void swapLeftAndRightInYogaStyleProps();
 
   /*
    * Combine a base yoga::Style with aliased properties which should be

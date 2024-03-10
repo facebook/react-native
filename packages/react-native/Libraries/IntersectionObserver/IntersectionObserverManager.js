@@ -18,13 +18,16 @@
  * the notifications together.
  */
 
-import type ReactNativeElement from '../DOM/Nodes/ReactNativeElement';
+import type ReactNativeElement from '../../src/private/webapis/dom/nodes/ReactNativeElement';
 import type IntersectionObserver, {
   IntersectionObserverCallback,
 } from './IntersectionObserver';
 import type IntersectionObserverEntry from './IntersectionObserverEntry';
 
-import {getShadowNode} from '../DOM/Nodes/ReadOnlyNode';
+import {
+  getInstanceHandle,
+  getShadowNode,
+} from '../../src/private/webapis/dom/nodes/ReadOnlyNode';
 import * as Systrace from '../Performance/Systrace';
 import warnOnce from '../Utilities/warnOnce';
 import {createIntersectionObserverEntry} from './IntersectionObserverEntry';
@@ -39,6 +42,45 @@ const registeredIntersectionObservers: Map<
   IntersectionObserverId,
   {observer: IntersectionObserver, callback: IntersectionObserverCallback},
 > = new Map();
+
+// We need to keep the mapping from instance handles to targets because when
+// targets are detached (their components are unmounted), React resets the
+// instance handle to prevent memory leaks and it cuts the connection between
+// the instance handle and the target.
+const instanceHandleToTargetMap: WeakMap<interface {}, ReactNativeElement> =
+  new WeakMap();
+
+function getTargetFromInstanceHandle(
+  instanceHandle: mixed,
+): ?ReactNativeElement {
+  // $FlowExpectedError[incompatible-type] instanceHandle is typed as mixed but we know it's an object and we need it to be to use it as a key in a WeakMap.
+  const key: interface {} = instanceHandle;
+  return instanceHandleToTargetMap.get(key);
+}
+
+function setTargetForInstanceHandle(
+  instanceHandle: mixed,
+  target: ReactNativeElement,
+): void {
+  // $FlowExpectedError[incompatible-type] instanceHandle is typed as mixed but we know it's an object and we need it to be to use it as a key in a WeakMap.
+  const key: interface {} = instanceHandle;
+  instanceHandleToTargetMap.set(key, target);
+}
+
+function unsetTargetForInstanceHandle(instanceHandle: mixed): void {
+  // $FlowExpectedError[incompatible-type] instanceHandle is typed as mixed but we know it's an object and we need it to be to use it as a key in a WeakMap.
+  const key: interface {} = instanceHandle;
+  instanceHandleToTargetMap.delete(key);
+}
+
+// The mapping between ReactNativeElement and their corresponding shadow node
+// also needs to be kept here because React removes the link when unmounting.
+// We also keep the instance handle so we don't have to retrieve it again
+// from the target to unobserve.
+const targetToShadowNodeAndInstanceHandleMap: WeakMap<
+  ReactNativeElement,
+  [ReturnType<typeof getShadowNode>, mixed],
+> = new WeakMap();
 
 /**
  * Registers the given intersection observer and returns a unique ID for it,
@@ -109,6 +151,25 @@ export function observe({
     return;
   }
 
+  const instanceHandle = getInstanceHandle(target);
+  if (instanceHandle == null) {
+    console.error(
+      'IntersectionObserverManager: could not find reference to instance handle from target',
+    );
+    return;
+  }
+
+  // Store the mapping between the instance handle and the target so we can
+  // access it even after the instance handle has been unmounted.
+  setTargetForInstanceHandle(instanceHandle, target);
+
+  // Same for the mapping between the target and its shadow node
+  // and instance handle.
+  targetToShadowNodeAndInstanceHandleMap.set(target, [
+    targetShadowNode,
+    instanceHandle,
+  ]);
+
   if (!isConnected) {
     NativeIntersectionObserver.connect(notifyIntersectionObservers);
     isConnected = true;
@@ -140,18 +201,26 @@ export function unobserve(
     return;
   }
 
-  const targetShadowNode = getShadowNode(target);
-  if (targetShadowNode == null) {
+  const targetShadowNodeAndInstanceHandle =
+    targetToShadowNodeAndInstanceHandleMap.get(target);
+  if (targetShadowNodeAndInstanceHandle == null) {
     console.error(
-      'IntersectionObserverManager: could not find reference to host node from target',
+      'IntersectionObserverManager: could not find registration data for target',
     );
     return;
   }
+
+  const [targetShadowNode, instanceHandle] = targetShadowNodeAndInstanceHandle;
 
   NativeIntersectionObserver.unobserve(
     intersectionObserverId,
     targetShadowNode,
   );
+
+  // We can guarantee we won't receive any more entries for this target,
+  // so we don't need to keep the mappings anymore.
+  unsetTargetForInstanceHandle(instanceHandle);
+  targetToShadowNodeAndInstanceHandleMap.delete(target);
 }
 
 /**
@@ -188,7 +257,16 @@ function doNotifyIntersectionObservers(): void {
       list = [];
       entriesByObserver.set(nativeEntry.intersectionObserverId, list);
     }
-    list.push(createIntersectionObserverEntry(nativeEntry));
+
+    const target = getTargetFromInstanceHandle(
+      nativeEntry.targetInstanceHandle,
+    );
+    if (target == null) {
+      console.warn('Could not find target to create IntersectionObserverEntry');
+      continue;
+    }
+
+    list.push(createIntersectionObserverEntry(nativeEntry, target));
   }
 
   for (const [

@@ -22,20 +22,15 @@ enum class Gutter : uint8_t {
 };
 
 template <>
-constexpr inline int32_t ordinalCount<Gutter>() {
+constexpr int32_t ordinalCount<Gutter>() {
   return 3;
-} 
+}
 
-template <>
-constexpr inline int32_t bitCount<Gutter>() {
-  return 2;
-} 
-
-constexpr inline Gutter scopedEnum(YGGutter unscoped) {
+constexpr Gutter scopedEnum(YGGutter unscoped) {
   return static_cast<Gutter>(unscoped);
 }
 
-constexpr inline YGGutter unscopedEnum(Gutter scoped) {
+constexpr YGGutter unscopedEnum(Gutter scoped) {
   return static_cast<YGGutter>(scoped);
 }
 

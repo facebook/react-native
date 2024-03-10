@@ -7,9 +7,9 @@
 
 #import "RCTTextLayoutManager.h"
 
-#import "NSTextStorage+FontScaling.h"
 #import "RCTAttributedTextUtils.h"
 
+#import <React/NSTextStorage+FontScaling.h>
 #import <React/RCTUtils.h>
 #import <react/utils/ManagedObjectWrapper.h>
 #import <react/utils/SimpleThreadSafeCache.h>
@@ -76,6 +76,7 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
          paragraphAttributes:(ParagraphAttributes)paragraphAttributes
                        frame:(CGRect)frame
                  textStorage:(NSTextStorage *_Nullable)textStorage
+           drawHighlightPath:(void (^_Nullable)(UIBezierPath *highlightPath))block
 {
   BOOL createdStorageForFrame = NO;
 
@@ -118,6 +119,38 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
 #if TARGET_OS_MACCATALYST
   CGContextRestoreGState(context);
 #endif
+
+  if (block != nil) {
+    __block UIBezierPath *highlightPath = nil;
+    NSRange characterRange = [layoutManager characterRangeForGlyphRange:glyphRange actualGlyphRange:NULL];
+
+    [textStorage
+        enumerateAttribute:RCTAttributedStringIsHighlightedAttributeName
+                   inRange:characterRange
+                   options:0
+                usingBlock:^(NSNumber *value, NSRange range, __unused BOOL *stop) {
+                  if (!value.boolValue) {
+                    return;
+                  }
+
+                  [layoutManager
+                      enumerateEnclosingRectsForGlyphRange:range
+                                  withinSelectedGlyphRange:range
+                                           inTextContainer:textContainer
+                                                usingBlock:^(CGRect enclosingRect, __unused BOOL *anotherStop) {
+                                                  UIBezierPath *path = [UIBezierPath
+                                                      bezierPathWithRoundedRect:CGRectInset(enclosingRect, -2, -2)
+                                                                   cornerRadius:2];
+                                                  if (highlightPath) {
+                                                    [highlightPath appendPath:path];
+                                                  } else {
+                                                    highlightPath = path;
+                                                  }
+                                                }];
+                }];
+
+    block(highlightPath);
+  }
 }
 
 - (LinesMeasurements)getLinesForAttributedString:(AttributedString)attributedString

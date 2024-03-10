@@ -8,14 +8,31 @@
 #pragma once
 
 #include <yoga/Yoga.h>
+#include <yoga/algorithm/FlexDirection.h>
+#include <yoga/event/event.h>
 #include <yoga/node/Node.h>
 
 namespace facebook::yoga {
 
 void calculateLayout(
-    yoga::Node* const node,
-    const float ownerWidth,
-    const float ownerHeight,
-    const Direction ownerDirection);
+    yoga::Node* node,
+    float ownerWidth,
+    float ownerHeight,
+    Direction ownerDirection);
+
+bool calculateLayoutInternal(
+    yoga::Node* node,
+    float availableWidth,
+    float availableHeight,
+    Direction ownerDirection,
+    SizingMode widthSizingMode,
+    SizingMode heightSizingMode,
+    float ownerWidth,
+    float ownerHeight,
+    bool performLayout,
+    LayoutPassReason reason,
+    LayoutData& layoutMarkerData,
+    uint32_t depth,
+    uint32_t generationCount);
 
 } // namespace facebook::yoga

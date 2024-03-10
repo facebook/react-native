@@ -12,9 +12,9 @@
 
 import type {SchemaType} from '../../CodegenSchema';
 
-type FilesOutput = Map<string, string>;
-
 const {getModules} = require('./Utils');
+
+type FilesOutput = Map<string, string>;
 
 const ModuleClassDeclarationTemplate = ({
   hasteModuleName,
@@ -49,16 +49,14 @@ const HeaderFileTemplate = ({
 #include <ReactCommon/TurboModule.h>
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 ${modules}
 
 JSI_EXPORT
 std::shared_ptr<TurboModule> ${libraryName}_ModuleProvider(const std::string &moduleName, const JavaTurboModule::InitParams &params);
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 `;
 };
 
@@ -93,10 +91,13 @@ target_link_libraries(
   ${libraryName !== 'rncore' ? 'react_codegen_rncore' : ''}
   react_debug
   react_nativemodule_core
+  react_render_componentregistry
   react_render_core
   react_render_debug
   react_render_graphics
   react_render_imagemanager
+  react_render_mapbuffer
+  react_utils
   rrc_image
   rrc_view
   turbomodulejsijni
@@ -121,6 +122,7 @@ module.exports = {
     schema: SchemaType,
     packageName?: string,
     assumeNonnull: boolean = false,
+    headerPrefix?: string,
   ): FilesOutput {
     const nativeModules = getModules(schema);
     const modules = Object.keys(nativeModules)

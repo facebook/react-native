@@ -8,18 +8,19 @@
  * @format
  */
 
-import * as React from 'react';
-const RNTesterBlock = require('./RNTesterBlock');
-const RNTesterExampleFilter = require('./RNTesterExampleFilter');
-import RNTPressableRow from './RNTPressableRow';
-import {RNTesterThemeContext, type RNTesterTheme} from './RNTesterTheme';
-import {View, Text, StyleSheet, Platform} from 'react-native';
-import RNTTestDetails from './RNTTestDetails';
-
 import type {
   RNTesterModule,
   RNTesterModuleExample,
 } from '../types/RNTesterTypes';
+
+import {type RNTesterTheme, RNTesterThemeContext} from './RNTesterTheme';
+import RNTPressableRow from './RNTPressableRow';
+import RNTTestDetails from './RNTTestDetails';
+import * as React from 'react';
+import {Platform, StyleSheet, Text, View} from 'react-native';
+
+const RNTesterBlock = require('./RNTesterBlock');
+const RNTesterExampleFilter = require('./RNTesterExampleFilter');
 
 type Props = {
   module: RNTesterModule,
@@ -84,7 +85,7 @@ export default function RNTesterModuleContainer(props: Props): React.Node {
     },
   ];
 
-  return module.showIndividualExamples === true && example != null ? (
+  return example != null ? (
     <>
       <RNTTestDetails
         title={example.title}
@@ -92,7 +93,7 @@ export default function RNTesterModuleContainer(props: Props): React.Node {
         expect={example.expect}
         theme={theme}
       />
-      <View style={styles.examplesContainer}>
+      <View style={styles.examplesContainer} testID="example-container">
         <example.render />
       </View>
     </>
@@ -138,7 +139,9 @@ function Header(props: {
               : props.theme.BackgroundColor,
         },
       ]}>
-      <Text style={styles.headerDescription}>{props.description}</Text>
+      <Text style={[styles.headerDescription, {color: props.theme.LabelColor}]}>
+        {props.description}
+      </Text>
     </View>
   );
 }

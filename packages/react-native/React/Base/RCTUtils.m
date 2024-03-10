@@ -33,6 +33,20 @@ NSString *__nullable RCTHomePathForURL(NSURL *__nullable URL);
 // Determines if a given image URL refers to a image in Home directory (~)
 BOOL RCTIsHomeAssetURL(NSURL *__nullable imageURL);
 
+// Whether the New Architecture is enabled or not
+static BOOL _newArchEnabled = false;
+BOOL RCTIsNewArchEnabled(void)
+{
+  return _newArchEnabled;
+}
+void RCTSetNewArchEnabled(BOOL enabled)
+{
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    _newArchEnabled = enabled;
+  });
+}
+
 static NSString *__nullable _RCTJSONStringifyNoRetry(id __nullable jsonObject, NSError **error)
 {
   if (!jsonObject) {
@@ -302,14 +316,14 @@ static CGFloat screenScale;
 void RCTComputeScreenScale(void)
 {
   dispatch_once(&onceTokenScreenScale, ^{
-    screenScale = [UIScreen mainScreen].scale;
+    screenScale = [UITraitCollection currentTraitCollection].displayScale;
   });
 }
 
 CGFloat RCTScreenScale(void)
 {
   RCTUnsafeExecuteOnMainQueueOnceSync(&onceTokenScreenScale, ^{
-    screenScale = [UIScreen mainScreen].scale;
+    screenScale = [UITraitCollection currentTraitCollection].displayScale;
   });
 
   return screenScale;
@@ -548,13 +562,30 @@ UIWindow *__nullable RCTKeyWindow(void)
     return nil;
   }
 
-  // TODO: replace with a more robust solution
-  for (UIWindow *window in RCTSharedApplication().windows) {
-    if (window.keyWindow) {
-      return window;
+  for (UIScene *scene in RCTSharedApplication().connectedScenes) {
+    if (scene.activationState != UISceneActivationStateForegroundActive ||
+        ![scene isKindOfClass:[UIWindowScene class]]) {
+      continue;
+    }
+    UIWindowScene *windowScene = (UIWindowScene *)scene;
+
+    if (@available(iOS 15.0, *)) {
+      return windowScene.keyWindow;
+    }
+
+    for (UIWindow *window in windowScene.windows) {
+      if (window.isKeyWindow) {
+        return window;
+      }
     }
   }
+
   return nil;
+}
+
+UIStatusBarManager *__nullable RCTUIStatusBarManager(void)
+{
+  return RCTKeyWindow().windowScene.statusBarManager;
 }
 
 UIViewController *__nullable RCTPresentedViewController(void)
@@ -578,12 +609,10 @@ BOOL RCTForceTouchAvailable(void)
   static BOOL forceSupported;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    forceSupported =
-        [UITraitCollection class] && [UITraitCollection instancesRespondToSelector:@selector(forceTouchCapability)];
+    forceSupported = [UITraitCollection currentTraitCollection].forceTouchCapability == UIForceTouchCapabilityAvailable;
   });
 
-  return forceSupported &&
-      (RCTKeyWindow() ?: [UIView new]).traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable;
+  return forceSupported;
 }
 
 NSError *RCTErrorWithMessage(NSString *message)

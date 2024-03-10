@@ -86,6 +86,7 @@ function configure_apple_framework {
       -DHERMES_ENABLE_TEST_SUITE:BOOLEAN=false \
       -DHERMES_ENABLE_BITCODE:BOOLEAN=false \
       -DHERMES_BUILD_APPLE_FRAMEWORK:BOOLEAN=true \
+      -DHERMES_BUILD_SHARED_JSI:BOOLEAN=false \
       -DHERMES_BUILD_APPLE_DSYM:BOOLEAN=true \
       -DIMPORT_HERMESC:PATH="$IMPORT_HERMESC_PATH" \
       -DJSI_DIR="$JSI_PATH" \
@@ -134,6 +135,9 @@ function build_apple_framework {
     mkdir -p destroot/include/hermes
     cp API/hermes/*.h destroot/include/hermes
 
+    mkdir -p destroot/include/hermes/cdp
+    cp API/hermes/cdp/*.h destroot/include/hermes/cdp
+
     mkdir -p destroot/include/hermes/inspector
     cp API/hermes/inspector/*.h destroot/include/hermes/inspector
 
@@ -160,6 +164,9 @@ function prepare_dest_root_for_ci {
 
   mkdir -p destroot/include/hermes
   cp API/hermes/*.h destroot/include/hermes
+
+  mkdir -p destroot/include/hermes/cdp
+  cp API/hermes/cdp/*.h destroot/include/hermes/cdp
 
   mkdir -p destroot/include/hermes/inspector
   cp API/hermes/inspector/*.h destroot/include/hermes/inspector

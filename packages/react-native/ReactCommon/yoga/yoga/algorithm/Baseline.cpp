@@ -38,7 +38,7 @@ float calculateBaseline(const yoga::Node* node) {
     if (child->getLineIndex() > 0) {
       break;
     }
-    if (child->getStyle().positionType() == PositionType::Absolute) {
+    if (child->style().positionType() == PositionType::Absolute) {
       continue;
     }
     if (resolveChildAlignment(node, child) == Align::Baseline ||
@@ -57,21 +57,21 @@ float calculateBaseline(const yoga::Node* node) {
   }
 
   const float baseline = calculateBaseline(baselineChild);
-  return baseline + baselineChild->getLayout().position[YGEdgeTop];
+  return baseline + baselineChild->getLayout().position(PhysicalEdge::Top);
 }
 
 bool isBaselineLayout(const yoga::Node* node) {
-  if (isColumn(node->getStyle().flexDirection())) {
+  if (isColumn(node->style().flexDirection())) {
     return false;
   }
-  if (node->getStyle().alignItems() == Align::Baseline) {
+  if (node->style().alignItems() == Align::Baseline) {
     return true;
   }
   const auto childCount = node->getChildCount();
   for (size_t i = 0; i < childCount; i++) {
     auto child = node->getChild(i);
-    if (child->getStyle().positionType() != PositionType::Absolute &&
-        child->getStyle().alignSelf() == Align::Baseline) {
+    if (child->style().positionType() != PositionType::Absolute &&
+        child->style().alignSelf() == Align::Baseline) {
       return true;
     }
   }

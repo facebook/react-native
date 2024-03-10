@@ -202,7 +202,7 @@ TEST(FindNodeAtPointTest, overlappingViewsWithZIndex) {
           auto sharedProps = std::make_shared<ViewShadowNodeProps>();
           sharedProps->zIndex = 1;
           auto &yogaStyle = sharedProps->yogaStyle;
-          yogaStyle.positionType() = yoga::PositionType::Absolute;
+          yogaStyle.setPositionType(yoga::PositionType::Absolute);
           return sharedProps;
         })
         .finalize([](ViewShadowNode &shadowNode){

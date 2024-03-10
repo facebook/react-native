@@ -10,8 +10,8 @@
 
 'use strict';
 
-const path = require('path');
 const withBabelRegister = require('./with-babel-register');
+const path = require('path');
 
 // We use the prepack hook before publishing package to set this value to true
 const PACKAGE_USAGE = false;
@@ -43,7 +43,7 @@ function requireModuleParser() {
       };
 
       withBabelRegister(config, () => {
-        RNModuleParser = require('@react-native/codegen/src/parsers/flow/modules/index');
+        RNModuleParser = require('@react-native/codegen/src/parsers/flow/modules');
         RNParserUtils = require('@react-native/codegen/src/parsers/utils');
         RNFlowParser = require('@react-native/codegen/src/parsers/flow/parser');
         RNParserCommons = require('@react-native/codegen/src/parsers/parsers-commons');
@@ -56,7 +56,7 @@ function requireModuleParser() {
       };
 
       withBabelRegister(config, () => {
-        RNModuleParser = require('@react-native/codegen/lib/parsers/flow/modules/index');
+        RNModuleParser = require('@react-native/codegen/lib/parsers/flow/modules');
         RNParserUtils = require('@react-native/codegen/lib/parsers/utils');
         RNFlowParser = require('@react-native/codegen/lib/parsers/flow/parser');
         RNParserCommons = require('@react-native/codegen/lib/parsers/parsers-commons');
@@ -154,7 +154,7 @@ function rule(context) {
       const [parsingErrors, tryParse] = createParserErrorCapturer();
 
       const sourceCode = context.getSourceCode().getText();
-      const ast = parser.getAst(sourceCode);
+      const ast = parser.getAst(sourceCode, filename);
 
       tryParse(() => {
         buildModuleSchema(

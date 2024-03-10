@@ -7,6 +7,9 @@
 
 package com.facebook.react.uimanager;
 
+import com.facebook.infer.annotation.Nullsafe;
+
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ReactInvalidPropertyException extends RuntimeException {
 
   public ReactInvalidPropertyException(String property, String value, String expectedValues) {

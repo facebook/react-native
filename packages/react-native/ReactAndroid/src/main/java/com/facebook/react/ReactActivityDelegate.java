@@ -34,12 +34,13 @@ public class ReactActivityDelegate {
   private ReactDelegate mReactDelegate;
 
   @Deprecated
-  public ReactActivityDelegate(Activity activity, @Nullable String mainComponentName) {
+  public ReactActivityDelegate(@Nullable Activity activity, @Nullable String mainComponentName) {
     mActivity = activity;
     mMainComponentName = mainComponentName;
   }
 
-  public ReactActivityDelegate(ReactActivity activity, @Nullable String mainComponentName) {
+  public ReactActivityDelegate(
+      @Nullable ReactActivity activity, @Nullable String mainComponentName) {
     mActivity = activity;
     mMainComponentName = mainComponentName;
   }
@@ -60,7 +61,6 @@ public class ReactActivityDelegate {
       if (composedLaunchOptions == null) {
         composedLaunchOptions = new Bundle();
       }
-      composedLaunchOptions.putBoolean("concurrentRoot", true);
     }
     return composedLaunchOptions;
   }
@@ -96,7 +96,7 @@ public class ReactActivityDelegate {
     return mMainComponentName;
   }
 
-  protected void onCreate(Bundle savedInstanceState) {
+  public void onCreate(Bundle savedInstanceState) {
     String mainComponentName = getMainComponentName();
     final Bundle launchOptions = composeLaunchOptions();
     if (ReactFeatureFlags.enableBridgelessArchitecture) {
@@ -122,11 +122,11 @@ public class ReactActivityDelegate {
     getPlainActivity().setContentView(mReactDelegate.getReactRootView());
   }
 
-  protected void onPause() {
+  public void onPause() {
     mReactDelegate.onHostPause();
   }
 
-  protected void onResume() {
+  public void onResume() {
     mReactDelegate.onHostResume();
 
     if (mPermissionsCallback != null) {
@@ -135,7 +135,7 @@ public class ReactActivityDelegate {
     }
   }
 
-  protected void onDestroy() {
+  public void onDestroy() {
     mReactDelegate.onHostDestroy();
   }
 
@@ -144,7 +144,9 @@ public class ReactActivityDelegate {
   }
 
   public boolean onKeyDown(int keyCode, KeyEvent event) {
-    if (!ReactFeatureFlags.enableBridgelessArchitecture) {
+    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      // TODO T156475655: support onKeyDown
+    } else {
       if (getReactNativeHost().hasInstance()
           && getReactNativeHost().getUseDeveloperSupport()
           && keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD) {
@@ -160,7 +162,9 @@ public class ReactActivityDelegate {
   }
 
   public boolean onKeyLongPress(int keyCode, KeyEvent event) {
-    if (!ReactFeatureFlags.enableBridgelessArchitecture) {
+    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      // TODO T156475655: support onKeyLongPress
+    } else {
       if (getReactNativeHost().hasInstance()
           && getReactNativeHost().getUseDeveloperSupport()
           && keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD) {
@@ -176,7 +180,9 @@ public class ReactActivityDelegate {
   }
 
   public boolean onNewIntent(Intent intent) {
-    if (!ReactFeatureFlags.enableBridgelessArchitecture) {
+    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      // TODO T156475655: support onNewIntent
+    } else {
       if (getReactNativeHost().hasInstance()) {
         getReactNativeHost().getReactInstanceManager().onNewIntent(intent);
         return true;
@@ -186,7 +192,9 @@ public class ReactActivityDelegate {
   }
 
   public void onWindowFocusChanged(boolean hasFocus) {
-    if (!ReactFeatureFlags.enableBridgelessArchitecture) {
+    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      // TODO T156475655: support onWindowFocusChanged
+    } else {
       if (getReactNativeHost().hasInstance()) {
         getReactNativeHost().getReactInstanceManager().onWindowFocusChange(hasFocus);
       }
@@ -194,7 +202,9 @@ public class ReactActivityDelegate {
   }
 
   public void onConfigurationChanged(Configuration newConfig) {
-    if (!ReactFeatureFlags.enableBridgelessArchitecture) {
+    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      // TODO T156475655: support onConfigurationChanged
+    } else {
       if (getReactNativeHost().hasInstance()) {
         getReactInstanceManager().onConfigurationChanged(getContext(), newConfig);
       }
@@ -210,14 +220,11 @@ public class ReactActivityDelegate {
   public void onRequestPermissionsResult(
       final int requestCode, final String[] permissions, final int[] grantResults) {
     mPermissionsCallback =
-        new Callback() {
-          @Override
-          public void invoke(Object... args) {
-            if (mPermissionListener != null
-                && mPermissionListener.onRequestPermissionsResult(
-                    requestCode, permissions, grantResults)) {
-              mPermissionListener = null;
-            }
+        args -> {
+          if (mPermissionListener != null
+              && mPermissionListener.onRequestPermissionsResult(
+                  requestCode, permissions, grantResults)) {
+            mPermissionListener = null;
           }
         };
   }
@@ -237,6 +244,6 @@ public class ReactActivityDelegate {
    * @return true if Fabric is enabled for this Activity, false otherwise.
    */
   protected boolean isFabricEnabled() {
-    return false;
+    return ReactFeatureFlags.enableFabricRenderer;
   }
 }

@@ -123,51 +123,53 @@ class GenerateCodegenSchemaTaskTest {
 
   @Test
   @WithOs(OS.LINUX)
-  fun getCodegenCombineCommand_returnsCorrectCommand() {
+  fun setupCommandLine_willSetupCorrectly() {
+    val codegenDir = tempFolder.newFolder("codegen")
     val jsRootDir = tempFolder.newFolder("js")
     val outputDir = tempFolder.newFolder("output")
 
     val task =
         createTestTask<GenerateCodegenSchemaTask> {
+          it.codegenDir.set(codegenDir)
           it.jsRootDir.set(jsRootDir)
           it.generatedSrcDir.set(outputDir)
           it.nodeExecutableAndArgs.set(listOf("node", "--verbose"))
         }
 
-    val codegenCombineScriptPath =
-        "/Users/test/project/node_modules/@react-native/codegen/dist/cli/combine/combine-js-to-schema-cli.js"
-    val codegenCombineCommand = task.getCodegenCombineCommand(codegenCombineScriptPath)
+    task.setupCommandLine()
 
     assertEquals(
         listOf(
             "node",
             "--verbose",
-            codegenCombineScriptPath,
+            File(codegenDir, "lib/cli/combine/combine-js-to-schema-cli.js").toString(),
             "--platform",
             "android",
+            "--exclude",
+            "NativeSampleTurboModule",
             File(outputDir, "schema.json").toString(),
             jsRootDir.toString(),
         ),
-        codegenCombineCommand)
+        task.commandLine.toMutableList())
   }
 
   @Test
   @WithOs(OS.WIN)
-  fun getCodegenCombineCommand_onWindows_returnsCorrectCommand() {
+  fun setupCommandLine_onWindows_willSetupCorrectly() {
+    val codegenDir = tempFolder.newFolder("codegen")
     val jsRootDir = tempFolder.newFolder("js")
     val outputDir = tempFolder.newFolder("output")
 
     val project = createProject()
     val task =
         createTestTask<GenerateCodegenSchemaTask>(project) {
+          it.codegenDir.set(codegenDir)
           it.jsRootDir.set(jsRootDir)
           it.generatedSrcDir.set(outputDir)
           it.nodeExecutableAndArgs.set(listOf("node", "--verbose"))
         }
 
-    val codegenCombineScriptPath =
-        "C:\\Users\\test\\projects\\node_modules\\@react-native\\codegen\\dist\\cli\\combine\\combine-js-to-schema-cli.js"
-    val codegenCombineCommand = task.getCodegenCombineCommand(codegenCombineScriptPath)
+    task.setupCommandLine()
 
     assertEquals(
         listOf(
@@ -175,12 +177,16 @@ class GenerateCodegenSchemaTaskTest {
             "/c",
             "node",
             "--verbose",
-            codegenCombineScriptPath,
+            File(codegenDir, "lib/cli/combine/combine-js-to-schema-cli.js")
+                .relativeTo(project.projectDir)
+                .path,
             "--platform",
             "android",
+            "--exclude",
+            "NativeSampleTurboModule",
             File(outputDir, "schema.json").relativeTo(project.projectDir).path,
             jsRootDir.relativeTo(project.projectDir).path,
         ),
-        codegenCombineCommand)
+        task.commandLine.toMutableList())
   }
 }
