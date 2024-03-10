@@ -411,7 +411,9 @@ class CustomView extends React.Component {
   }
 }
 
-class Welcome extends React.Component<ElementProps<View> & {color: string}> {
+class Welcome extends React.Component<
+  ElementProps<View> & {color: string; bgColor?: null | undefined | string}
+> {
   rootViewRef = React.useRef<View>(null);
   customViewRef = React.useRef<CustomView>(null);
 
@@ -436,12 +438,18 @@ class Welcome extends React.Component<ElementProps<View> & {color: string}> {
   }
 
   render() {
-    const {color, ...props} = this.props;
+    const {color, bgColor, ...props} = this.props;
     return (
       <View
         {...props}
         ref={this.rootViewRef}
-        style={[[styles.container], undefined, null, false]}>
+        style={[
+          [styles.container],
+          undefined,
+          null,
+          false,
+          bgColor && {backgroundColor: bgColor},
+        ]}>
         <Text style={styles.welcome}>Welcome to React Native</Text>
         <Text style={styles.instructions}>
           To get started, edit index.ios.js
