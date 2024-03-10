@@ -6,7 +6,6 @@
  */
 
 #import "RCTTurboModule.h"
-#import "RCTBlockGuard.h"
 #import "RCTUtils.h"
 
 #include <glog/logging.h>
@@ -232,29 +231,18 @@ static jsi::JSError convertNSDictionaryToJSError(jsi::Runtime &runtime, NSDictio
 }
 
 /**
- * Creates JSErrorValue with given stack trace.
- */
-static jsi::Value createRejectJSErrorValue(jsi::Runtime &runtime, NSDictionary *reason, const std::optional<std::string> &jsInvocationStack)
-{
-  jsi::Value error = createJSRuntimeError(runtime, "Exception in HostFunction: " + (reason[@"message"] ? std::string([reason[@"message"] UTF8String]) : "<unknown>"));
-  error.asObject(runtime).setProperty(runtime, "cause", convertNSDictionaryToJSIObject(runtime, reason));
-
-  if (jsInvocationStack.has_value()) {
-    error.asObject(runtime).setProperty(runtime, "stack", *jsInvocationStack);
-  }
-
-  return error;
-}
-
-/**
  * Creates JS error value with current JS runtime and error details.
  */
-static jsi::Value convertJSErrorDetailsToJSRuntimeError(jsi::Runtime &runtime, NSDictionary *jsErrorDetails)
+static jsi::Value convertJSErrorDetailsToJSRuntimeError(jsi::Runtime &runtime, NSDictionary *jsErrorDetails, const std::optional<std::string> &jsInvocationStack)
 {
   NSString *message = jsErrorDetails[@"message"];
 
   auto jsError = createJSRuntimeError(runtime, [message UTF8String]);
   jsError.asObject(runtime).setProperty(runtime, "cause", convertObjCObjectToJSIValue(runtime, jsErrorDetails));
+    
+  if (jsInvocationStack.has_value()) {
+    jsError.asObject(runtime).setProperty(runtime, "stack", *jsInvocationStack);
+  }
 
   return jsError;
 }
@@ -278,8 +266,6 @@ jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string met
     .asString(runtime)
     .utf8(runtime);
   }
-
-  std::string moduleName = name_;
 
   // Note: the passed invoke() block is not retained by default, so let's retain it here to help keep it longer.
   // Otherwise, there's a risk of it getting released before the promise function below executes.
@@ -340,8 +326,8 @@ jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string met
               }
 
               NSDictionary *jsErrorDetails = RCTJSErrorFromCodeMessageAndNSError(code, message, error);
-              reject->call([jsErrorDetails](jsi::Runtime &rt, jsi::Function &jsFunction) {
-                jsFunction.call(rt, convertJSErrorDetailsToJSRuntimeError(rt, jsErrorDetails));
+                reject->call([jsErrorDetails, jsInvocationStack](jsi::Runtime &rt, jsi::Function &jsFunction) {
+                jsFunction.call(rt, convertJSErrorDetailsToJSRuntimeError(rt, jsErrorDetails, jsInvocationStack));
               });
               resolveWasCalled = NO;
               resolve = std::nullopt;
@@ -844,9 +830,9 @@ jsi::Value ObjCTurboModule::invokeObjCMethod(
             [inv setArgument:(void *)&rejectCopy atIndex:count + 3];
             [retainedObjectsForInvocation addObject:resolveCopy];
             [retainedObjectsForInvocation addObject:rejectCopy];
-            RCTPromiseRejectBlock internalReject = nil;
+            RCTPromiseRejectBlock rejectOnNativeError = nil;
             if (RCTRejectTurboModulePromiseOnNativeError()) {
-              internalReject = rejectCopy;
+              rejectOnNativeError = rejectCopy;
             };
             // The return type becomes void in the ObjC side.
             performMethodInvocation(runtime,
@@ -854,7 +840,7 @@ jsi::Value ObjCTurboModule::invokeObjCMethod(
                                     methodName,
                                     inv,
                                     retainedObjectsForInvocation,
-                                    internalReject);
+                                    rejectOnNativeError);
           });
       break;
     }
