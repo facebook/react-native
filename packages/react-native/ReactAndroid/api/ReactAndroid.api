@@ -108,7 +108,6 @@ public class com/facebook/react/ReactActivityDelegate {
 	public fun <init> (Lcom/facebook/react/ReactActivity;Ljava/lang/String;)V
 	protected fun composeLaunchOptions ()Landroid/os/Bundle;
 	protected fun createRootView ()Lcom/facebook/react/ReactRootView;
-	protected fun createRootView (Landroid/os/Bundle;)Lcom/facebook/react/ReactRootView;
 	protected fun getContext ()Landroid/content/Context;
 	protected fun getLaunchOptions ()Landroid/os/Bundle;
 	public fun getMainComponentName ()Ljava/lang/String;
@@ -1954,8 +1953,6 @@ public class com/facebook/react/defaults/DefaultReactActivityDelegate : com/face
 	public fun <init> (Lcom/facebook/react/ReactActivity;Ljava/lang/String;Z)V
 	public synthetic fun <init> (Lcom/facebook/react/ReactActivity;Ljava/lang/String;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun <init> (Lcom/facebook/react/ReactActivity;Ljava/lang/String;ZZ)V
-	protected fun createRootView ()Lcom/facebook/react/ReactRootView;
-	protected fun createRootView (Landroid/os/Bundle;)Lcom/facebook/react/ReactRootView;
 	protected fun isFabricEnabled ()Z
 }
 

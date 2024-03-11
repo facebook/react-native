@@ -11,7 +11,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.config.ReactFeatureFlags;
@@ -75,7 +74,7 @@ public class ReactDelegate {
     mFabricEnabled = fabricEnabled;
     mActivity = activity;
     mMainComponentName = appKey;
-    mLaunchOptions = composeLaunchOptions(launchOptions);
+    mLaunchOptions = launchOptions;
     mDoubleTapReloadRecognizer = new DoubleTapReloadRecognizer();
     mReactNativeHost = reactNativeHost;
   }
@@ -181,6 +180,7 @@ public class ReactDelegate {
     }
   }
 
+  // Not used in bridgeless
   protected ReactRootView createRootView() {
     ReactRootView reactRootView = new ReactRootView(mActivity);
     reactRootView.setIsFabric(isFabricEnabled());
@@ -232,14 +232,5 @@ public class ReactDelegate {
    */
   protected boolean isFabricEnabled() {
     return mFabricEnabled;
-  }
-
-  private @NonNull Bundle composeLaunchOptions(Bundle composedLaunchOptions) {
-    if (isFabricEnabled()) {
-      if (composedLaunchOptions == null) {
-        composedLaunchOptions = new Bundle();
-      }
-    }
-    return composedLaunchOptions;
   }
 }
