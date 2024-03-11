@@ -532,6 +532,23 @@
 
 - Bump activesupport to minimum 6.1.7.5 CVE-2023-38037. ([07a159f279](https://github.com/facebook/react-native/commit/07a159f279cdcbed29c9c437dec1c0b8ac2d852f) by [@lunaleaps](https://github.com/lunaleaps))
 
+## v0.73.6
+
+### Breaking
+
+#### iOS specific
+
+- Rename `BUILD_FROM_SOURCE` to `RCT_BUILD_HERMES_FROM_SOURCE` ([51b80477c7](https://github.com/facebook/react-native/commit/51b80477c7836058fb29ef92c1a1908e3c8dba58) by [@cipolleschi](https://github.com/cipolleschi))
+
+### Fixed
+
+- Fix component stacks for tsx, ts, and jsx files ([28f604a97d](https://github.com/facebook/react-native/commit/28f604a97dc57afa631a24052ae6660c13c2c761) by [@lunaleaps](https://github.com/lunaleaps))
+
+#### iOS specific
+
+- Prevent unwanted border animation([d979491](https://github.com/facebook/react-native/commit/d9794916b0549330513fe530abf090fa48b8a776) by [@sammy-SC](https://github.com/sammy-SC))
+- Fix flipper for Xcode 15.3 ([9d22a7fd0e](https://github.com/facebook/react-native/commit/9d22a7fd0e82d6c2660217c1fb3c004ab30d6844) by [@cipolleschi](https://github.com/cipolleschi))
+
 ## v0.73.5
 
 ### Security
