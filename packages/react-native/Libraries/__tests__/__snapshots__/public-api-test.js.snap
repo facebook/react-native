@@ -5280,6 +5280,7 @@ export type LogBoxLogData = $ReadOnly<{|
   message: Message,
   stack: Stack,
   category: string,
+  componentStackType?: ComponentStackType,
   componentStack: ComponentStack,
   codeFrame?: ?CodeFrame,
   isComponentError: boolean,
@@ -5290,6 +5291,7 @@ declare class LogBoxLog {
   type: ?string;
   category: Category;
   componentStack: ComponentStack;
+  componentStackType: ComponentStackType;
   stack: Stack;
   count: number;
   level: LogLevel;
@@ -5301,15 +5303,31 @@ declare class LogBoxLog {
     | $ReadOnly<{| error: null, stack: null, status: \\"PENDING\\" |}>
     | $ReadOnly<{| error: null, stack: Stack, status: \\"COMPLETE\\" |}>
     | $ReadOnly<{| error: Error, stack: null, status: \\"FAILED\\" |}>;
+  symbolicatedComponentStack:
+    | $ReadOnly<{| error: null, componentStack: null, status: \\"NONE\\" |}>
+    | $ReadOnly<{| error: null, componentStack: null, status: \\"PENDING\\" |}>
+    | $ReadOnly<{|
+        error: null,
+        componentStack: ComponentStack,
+        status: \\"COMPLETE\\",
+      |}>
+    | $ReadOnly<{| error: Error, componentStack: null, status: \\"FAILED\\" |}>;
   constructor(data: LogBoxLogData): void;
   incrementCount(): void;
   getAvailableStack(): Stack;
+  getAvailableComponentStack(): ComponentStack;
   retrySymbolicate(callback?: (status: SymbolicationStatus) => void): void;
   symbolicate(callback?: (status: SymbolicationStatus) => void): void;
   handleSymbolicate(callback?: (status: SymbolicationStatus) => void): void;
   updateStatus(
     error: ?Error,
     stack: ?Stack,
+    codeFrame: ?CodeFrame,
+    callback?: (status: SymbolicationStatus) => void
+  ): void;
+  updateComponentStackStatus(
+    error: ?Error,
+    componentStack: ?ComponentStack,
     codeFrame: ?CodeFrame,
     callback?: (status: SymbolicationStatus) => void
   ): void;
@@ -5354,18 +5372,23 @@ export type Message = $ReadOnly<{|
   >,
 |}>;
 export type ComponentStack = $ReadOnlyArray<CodeFrame>;
+export type ComponentStackType = \\"legacy\\" | \\"stack\\";
 declare export function parseInterpolation(
   args: $ReadOnlyArray<mixed>
 ): $ReadOnly<{|
   category: Category,
   message: Message,
 |}>;
-declare export function parseComponentStack(message: string): ComponentStack;
+declare export function parseComponentStack(message: string): {
+  type: ComponentStackType,
+  stack: ComponentStack,
+};
 declare export function parseLogBoxException(
   error: ExtendedExceptionData
 ): LogBoxLogData;
 declare export function parseLogBoxLog(args: $ReadOnlyArray<mixed>): {|
   componentStack: ComponentStack,
+  componentStackType: ComponentStackType,
   category: Category,
   message: Message,
 |};
