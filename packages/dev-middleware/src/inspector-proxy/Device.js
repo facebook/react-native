@@ -758,10 +758,6 @@ export default class Device {
   // Fetch text, raising an exception if the text could not be fetched,
   // or is too large.
   async #fetchText(url: URL): Promise<string> {
-    if (!['localhost', '127.0.0.1'].includes(url.hostname)) {
-      throw new Error('remote fetches not permitted');
-    }
-
     // $FlowFixMe[incompatible-call] Suppress arvr node-fetch flow error
     const response = await fetch(url);
     if (!response.ok) {
