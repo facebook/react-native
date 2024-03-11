@@ -1090,6 +1090,25 @@ public class ReactScrollView extends ScrollView
     setPendingContentOffsets(x, y);
   }
 
+  /**
+   * Scrolls to a new position preserving any momentum scrolling animation.
+   */
+  public void scrollToPreservingMomentum(int x, int y) {
+    float velocity = 0;
+    float direction = 0;
+    if (mScroller != null && !mScroller.isFinished()) {
+      velocity = mScroller.getCurrVelocity();
+      direction = Math.signum(mOnScrollDispatchHelper.getYFlingVelocity());
+      mScroller.abortAnimation();
+    }
+
+    scrollTo(x, y);
+
+    if (mScroller != null && velocity != 0) {
+      fling((int)(direction * velocity));
+    }
+  }
+
   private boolean isContentReady() {
     View child = getContentView();
     return child != null && child.getWidth() != 0 && child.getHeight() != 0;
