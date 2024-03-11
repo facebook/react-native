@@ -22,6 +22,7 @@
 #include "UniquePtrFactory.h"
 #include "engines/JsiIntegrationTestGenericEngineAdapter.h"
 #include "engines/JsiIntegrationTestHermesEngineAdapter.h"
+#include "engines/JsiIntegrationTestHermesWithCDPAgentEngineAdapter.h"
 
 using namespace ::testing;
 using folly::sformat;
@@ -52,7 +53,9 @@ class JsiIntegrationPortableTest : public Test, private HostTargetDelegate {
   folly::QueuedImmediateExecutor immediateExecutor_;
 
  protected:
-  JsiIntegrationPortableTest() : engineAdapter_{immediateExecutor_} {
+  JsiIntegrationPortableTest()
+      : inspectorFlagsGuard_{EngineAdapter::getInspectorFlagOverrides()},
+        engineAdapter_{immediateExecutor_} {
     instance_ = &page_->registerInstance(instanceTargetDelegate_);
     runtimeTarget_ = &instance_->registerRuntime(
         engineAdapter_->getRuntimeTargetDelegate(),
@@ -136,6 +139,7 @@ class JsiIntegrationPortableTest : public Test, private HostTargetDelegate {
   InstanceTarget* instance_{};
   RuntimeTarget* runtimeTarget_{};
 
+  InspectorFlagOverridesGuard inspectorFlagsGuard_;
   MockInstanceTargetDelegate instanceTargetDelegate_;
   std::optional<EngineAdapter> engineAdapter_;
 
@@ -168,9 +172,14 @@ class JsiIntegrationPortableTest : public Test, private HostTargetDelegate {
  */
 using AllEngines = Types<
     JsiIntegrationTestHermesEngineAdapter,
+    JsiIntegrationTestHermesWithCDPAgentEngineAdapter,
     JsiIntegrationTestGenericEngineAdapter>;
 
-using AllHermesVariants = Types<JsiIntegrationTestHermesEngineAdapter>;
+using AllHermesVariants = Types<
+    JsiIntegrationTestHermesEngineAdapter,
+    JsiIntegrationTestHermesWithCDPAgentEngineAdapter>;
+
+using LegacyHermesVariants = Types<JsiIntegrationTestHermesEngineAdapter>;
 
 TYPED_TEST_SUITE(JsiIntegrationPortableTest, AllEngines);
 
@@ -178,7 +187,12 @@ template <typename EngineAdapter>
 using JsiIntegrationHermesTest = JsiIntegrationPortableTest<EngineAdapter>;
 TYPED_TEST_SUITE(JsiIntegrationHermesTest, AllHermesVariants);
 
-////////////////////////////////////////////////////////////////////////////////
+template <typename EngineAdapter>
+using JsiIntegrationHermesLegacyTest =
+    JsiIntegrationPortableTest<EngineAdapter>;
+TYPED_TEST_SUITE(JsiIntegrationHermesLegacyTest, LegacyHermesVariants);
+
+#pragma region JsiIntegrationPortableTest
 
 TYPED_TEST(JsiIntegrationPortableTest, ConnectWithoutCrashing) {
   this->connect();
@@ -458,7 +472,8 @@ TYPED_TEST(JsiIntegrationPortableTest, ExceptionDuringAddBindingIsIgnored) {
   EXPECT_TRUE(this->eval("globalThis.foo === 42").getBool());
 }
 
-////////////////////////////////////////////////////////////////////////////////
+#pragma endregion
+#pragma region JsiIntegrationHermesTest
 
 TYPED_TEST(JsiIntegrationHermesTest, EvaluateExpression) {
   this->connect();
@@ -479,7 +494,11 @@ TYPED_TEST(JsiIntegrationHermesTest, EvaluateExpression) {
                                })");
 }
 
-TYPED_TEST(JsiIntegrationHermesTest, EvaluateExpressionInExecutionContext) {
+// TODO(T181299386): Restore stale execution context validation under
+// HermesRuntimeAgentDelegateNew
+TYPED_TEST(
+    JsiIntegrationHermesLegacyTest,
+    EvaluateExpressionInExecutionContext) {
   this->connect();
 
   InSequence s;
@@ -538,7 +557,9 @@ TYPED_TEST(JsiIntegrationHermesTest, EvaluateExpressionInExecutionContext) {
       std::to_string(executionContextId)));
 }
 
-TYPED_TEST(JsiIntegrationHermesTest, ResolveBreakpointAfterReload) {
+// TODO(T178858701): Restore breakpoint reload persistence under
+// HermesRuntimeAgentDelegateNew
+TYPED_TEST(JsiIntegrationHermesLegacyTest, ResolveBreakpointAfterReload) {
   this->connect();
 
   InSequence s;
@@ -579,5 +600,7 @@ TYPED_TEST(JsiIntegrationHermesTest, ResolveBreakpointAfterReload) {
       breakpointInfo->value()["params"]["location"]["scriptId"],
       scriptInfo->value()["params"]["scriptId"]);
 }
+
+#pragma endregion
 
 } // namespace facebook::react::jsinspector_modern

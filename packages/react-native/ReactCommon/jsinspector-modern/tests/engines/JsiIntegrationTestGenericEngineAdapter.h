@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include "../utils/InspectorFlagOverridesGuard.h"
+
 #include <jsinspector-modern/FallbackRuntimeTargetDelegate.h>
 #include <jsinspector-modern/RuntimeTarget.h>
 
@@ -25,6 +27,8 @@ namespace facebook::react::jsinspector_modern {
 class JsiIntegrationTestGenericEngineAdapter {
  public:
   explicit JsiIntegrationTestGenericEngineAdapter(folly::Executor& jsExecutor);
+
+  static InspectorFlagOverrides getInspectorFlagOverrides() noexcept;
 
   RuntimeTargetDelegate& getRuntimeTargetDelegate();
 

@@ -21,6 +21,11 @@ JsiIntegrationTestGenericEngineAdapter::JsiIntegrationTestGenericEngineAdapter(
       runtimeTargetDelegate_{
           "Generic engine (" + runtime_->description() + ")"} {}
 
+/* static */ InspectorFlagOverrides
+JsiIntegrationTestGenericEngineAdapter::getInspectorFlagOverrides() noexcept {
+  return {.enableModernCDPRegistry = true};
+}
+
 RuntimeTargetDelegate&
 JsiIntegrationTestGenericEngineAdapter::getRuntimeTargetDelegate() {
   return runtimeTargetDelegate_;
