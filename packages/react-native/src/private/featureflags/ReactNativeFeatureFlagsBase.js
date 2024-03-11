@@ -29,7 +29,6 @@ function createGetter<T: boolean | number | string>(
 
   return () => {
     if (cachedValue == null) {
-      accessedFeatureFlags.add(configName);
       cachedValue = customValueGetter() ?? defaultValue;
     }
     return cachedValue;
@@ -44,7 +43,10 @@ export function createJavaScriptFlagGetter<
 ): Getter<ReturnType<ReactNativeFeatureFlagsJsOnly[K]>> {
   return createGetter(
     configName,
-    () => overrides?.[configName]?.(),
+    () => {
+      accessedFeatureFlags.add(configName);
+      return overrides?.[configName]?.();
+    },
     defaultValue,
   );
 }
