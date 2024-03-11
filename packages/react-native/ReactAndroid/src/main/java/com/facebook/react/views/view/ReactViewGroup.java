@@ -518,11 +518,10 @@ public class ReactViewGroup extends ViewGroup
   private void handleRemoveView(View view) {
     UiThreadUtil.assertOnUiThread();
 
-    if (indexOfChild(view) == -1){
-      return;
-    }
-
     if (!customDrawOrderDisabled()) {
+      if (indexOfChild(view) == -1){
+        return;
+      }
       getDrawingOrderHelper().handleRemoveView(view);
       setChildrenDrawingOrderEnabled(getDrawingOrderHelper().shouldEnableCustomDrawingOrder());
     } else {
