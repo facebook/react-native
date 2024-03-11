@@ -1,5 +1,36 @@
 # Changelog
 
+## v0.74.0-rc.3
+
+### Added
+
+- Add inspector proxy `nativeNetworkInspection` target capability flag ([f3ce7cd76e](https://github.com/facebook/react-native/commit/f3ce7cd76ee4f1772e2623c87b21bbbcb1edbc27) by [@byCedric](https://github.com/byCedric))
+
+#### iOS specific
+
+- Implement cursor style prop ([73664f576a](https://github.com/facebook/react-native/commit/73664f576aaa472d5c8fb2a02e0ddd017bbb2ea4) by [@Saadnajmi](https://github.com/Saadnajmi))
+
+### Changed
+
+#### Android specific
+
+- Expose `react_render_textlayoutmanager` via prefab. ([642b4e5c2c](https://github.com/facebook/react-native/commit/642b4e5c2c80b6f46429b41f36489eb81ac8a06e) by [@tomekzaw](https://github.com/tomekzaw))
+- Expose `rrc_text` via prefab. ([1c69100a2b](https://github.com/facebook/react-native/commit/1c69100a2b822309c210733a33a57ebb560a1c71) by [@tomekzaw](https://github.com/tomekzaw))
+- Expose `rrc_textinput` via prefab. ([adc9e5b0fa](https://github.com/facebook/react-native/commit/adc9e5b0faaf8c997fe0d09aecd56747026f8b01) by [@tomekzaw](https://github.com/tomekzaw))
+
+### Fixed
+
+- Support .tsx, .ts, and .jsx in component stacks ([adaf5eba3e](https://github.com/facebook/react-native/commit/adaf5eba3e8381d0b499257ab04d30d6f3fb4c93) by [@rickhanlonii](https://github.com/rickhanlonii))
+
+#### Android specific
+
+- Fix registration of ViewManagers in new renderer when not using lazyViewManagers. ([fb9872d4fe](https://github.com/facebook/react-native/commit/fb9872d4fe07ac7028ce536200632b3543d5e8a9) by [@javache](https://github.com/javache))
+- NullPointerException is no longer ignored in MessageQueueThreadHandler ([5f45700bd0](https://github.com/facebook/react-native/commit/5f45700bd06fb253650c8653b511b084b99eeb7f) by [@javache](https://github.com/javache))
+
+#### iOS specific
+
+- RCTRedBox not appearing in Bridgeless when metro is not running ([4adef35e97](https://github.com/facebook/react-native/commit/4adef35e97f31db466e536aa21d5eeec6ee34fc6) by [@okwasniewski](https://github.com/okwasniewski))
+
 ## v0.74.0-rc.2
 
 ### Changed
