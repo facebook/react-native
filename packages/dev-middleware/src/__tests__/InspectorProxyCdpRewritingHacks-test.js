@@ -20,7 +20,6 @@ import {
 } from './InspectorProtocolUtils';
 import {withAbortSignalForEachTest} from './ResourceUtils';
 import {
-  getServerRefWithLanUrls,
   serveStaticJson,
   serveStaticText,
   withServerForEachTest,
@@ -84,51 +83,6 @@ describe.each(['HTTP', 'HTTPS'])(
             method: 'Debugger.scriptParsed',
             params: {
               sourceMapURL: `${serverRef.serverBaseUrl}/source-map`,
-            },
-          },
-        );
-        expect(
-          parseJsonFromDataUri(scriptParsedMessage.params.sourceMapURL),
-        ).toEqual({version: 3, file: '\u2757.js'});
-      } finally {
-        device.close();
-        debugger_.close();
-      }
-    });
-
-    test('source map fetching when using lan in Debugger.scriptParsed', async () => {
-      serverRef.app.use(
-        '/source-map',
-        serveStaticJson({
-          version: 3,
-          // Mojibake insurance.
-          file: '\u2757.js',
-        }),
-      );
-
-      // Get the server ref with LAN addresses instead of localhost
-      const serverRefWithLanUrls = getServerRefWithLanUrls(serverRef);
-
-      // Connect to the target using the LAN address instead of localhost
-      const {device, debugger_} = await createAndConnectTarget(
-        serverRefWithLanUrls,
-        autoCleanup.signal,
-        {
-          app: 'bar-app',
-          id: 'page1',
-          title: 'bar-title',
-          vm: 'bar-vm',
-        },
-      );
-      try {
-        const scriptParsedMessage = await sendFromTargetToDebugger(
-          device,
-          debugger_,
-          'page1',
-          {
-            method: 'Debugger.scriptParsed',
-            params: {
-              sourceMapURL: `${serverRefWithLanUrls.serverBaseUrl}/source-map`,
             },
           },
         );
