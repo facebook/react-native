@@ -42,7 +42,7 @@ class LongLivedObject {
  */
 class LongLivedObjectCollection {
  public:
-  static LongLivedObjectCollection& get();
+  static LongLivedObjectCollection& get(jsi::Runtime& runtime);
 
   LongLivedObjectCollection() = default;
   LongLivedObjectCollection(const LongLivedObjectCollection&) = delete;

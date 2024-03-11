@@ -36,7 +36,7 @@ class AsyncPromise {
 
     auto promiseHolder =
         std::make_shared<PromiseHolder>(rt, promise.asObject(rt));
-    LongLivedObjectCollection::get().add(promiseHolder);
+    LongLivedObjectCollection::get(rt).add(promiseHolder);
 
     // The shared state can retain the promise holder weakly now.
     state_->promiseHolder = promiseHolder;
