@@ -40,12 +40,12 @@ class ReactNativeFeatureFlagsOverrides
 
 InspectorFlagOverridesGuard::InspectorFlagOverridesGuard(
     const InspectorFlagOverrides& overrides) {
+  InspectorFlags::getInstance().dangerouslyResetFlags();
   ReactNativeFeatureFlags::override(
       std::make_unique<ReactNativeFeatureFlagsOverrides>(overrides));
 }
 
 InspectorFlagOverridesGuard::~InspectorFlagOverridesGuard() {
-  InspectorFlags::getInstance().dangerouslyResetFlags();
   ReactNativeFeatureFlags::dangerouslyReset();
 }
 
