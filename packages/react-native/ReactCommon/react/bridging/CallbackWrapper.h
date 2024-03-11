@@ -24,12 +24,11 @@ class CallbackWrapper : public LongLivedObject {
       jsi::Function&& callback,
       jsi::Runtime& runtime,
       std::shared_ptr<CallInvoker> jsInvoker)
-      : callback_(std::move(callback)),
-        runtime_(runtime),
+      : LongLivedObject(runtime),
+        callback_(std::move(callback)),
         jsInvoker_(std::move(jsInvoker)) {}
 
   jsi::Function callback_;
-  jsi::Runtime& runtime_;
   std::shared_ptr<CallInvoker> jsInvoker_;
 
  public:
