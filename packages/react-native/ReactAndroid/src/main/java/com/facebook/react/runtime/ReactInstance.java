@@ -461,7 +461,7 @@ final class ReactInstance {
 
   private native void loadJSBundleFromAssets(AssetManager assetManager, String assetURL);
 
-  private native CallInvokerHolderImpl getJSCallInvokerHolder();
+  /* package */ native CallInvokerHolderImpl getJSCallInvokerHolder();
 
   private native NativeMethodCallInvokerHolderImpl getNativeMethodCallInvokerHolder();
 

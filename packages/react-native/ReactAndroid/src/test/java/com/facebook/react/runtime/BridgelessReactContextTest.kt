@@ -55,9 +55,11 @@ class BridgelessReactContextTest {
     Assertions.assertThat(bridgelessReactContext.getFabricUIManager()).isEqualTo(fabricUiManager)
   }
 
-  @Test(expected = UnsupportedOperationException::class)
-  fun getCatalystInstance_throwsException() {
-    // Disable this test for now due to mocking FabricUIManager fails
-    bridgelessReactContext.catalystInstance
+  @Test
+  fun getCatalystInstanceTest() {
+    val bridgelessCatalystInstance = BridgelessCatalystInstance(reactHost)
+    doReturn(bridgelessCatalystInstance).`when`(bridgelessReactContext).getCatalystInstance()
+    Assertions.assertThat(bridgelessReactContext.getCatalystInstance())
+        .isEqualTo(bridgelessCatalystInstance)
   }
 }
