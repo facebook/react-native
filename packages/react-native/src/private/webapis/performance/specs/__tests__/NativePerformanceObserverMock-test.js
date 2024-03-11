@@ -9,7 +9,7 @@
  */
 
 import NativePerformanceObserverMock from '../__mocks__/NativePerformanceObserver';
-import {RawPerformanceEntryTypeValues} from '../RawPerformanceEntry';
+import {RawPerformanceEntryTypeValues} from '../../RawPerformanceEntry';
 
 describe('NativePerformanceObserver', () => {
   it('correctly starts and stops listening to entries in a nominal scenario', async () => {

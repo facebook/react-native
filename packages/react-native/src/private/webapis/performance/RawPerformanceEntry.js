@@ -8,11 +8,11 @@
  * @flow strict
  */
 
+import type {PerformanceEntryType} from './PerformanceEntry';
 import type {
   RawPerformanceEntry,
   RawPerformanceEntryType,
-} from './NativePerformanceObserver';
-import type {PerformanceEntryType} from './PerformanceEntry';
+} from './specs/NativePerformanceObserver';
 
 import {PerformanceEntry} from './PerformanceEntry';
 import PerformanceEventTiming from './PerformanceEventTiming';

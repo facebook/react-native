@@ -11,7 +11,6 @@
 import type {HighResTimeStamp, PerformanceEntryType} from './PerformanceEntry';
 
 import warnOnce from '../../../../Libraries/Utilities/warnOnce';
-import NativePerformanceObserver from './NativePerformanceObserver';
 import {PerformanceEntry} from './PerformanceEntry';
 import PerformanceEventTiming from './PerformanceEventTiming';
 import {
@@ -19,6 +18,7 @@ import {
   rawToPerformanceEntry,
   rawToPerformanceEntryType,
 } from './RawPerformanceEntry';
+import NativePerformanceObserver from './specs/NativePerformanceObserver';
 
 export type PerformanceEntryList = $ReadOnlyArray<PerformanceEntry>;
 

@@ -13,7 +13,7 @@ import type {
   ReactNativeFeatureFlagsJsOnlyOverrides,
 } from './ReactNativeFeatureFlags';
 
-import NativeReactNativeFeatureFlags from './NativeReactNativeFeatureFlags';
+import NativeReactNativeFeatureFlags from './specs/NativeReactNativeFeatureFlags';
 
 const accessedFeatureFlags: Set<string> = new Set();
 let overrides: ?ReactNativeFeatureFlagsJsOnlyOverrides;
