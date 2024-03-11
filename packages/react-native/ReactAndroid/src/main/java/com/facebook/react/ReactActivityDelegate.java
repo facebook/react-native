@@ -63,8 +63,13 @@ public class ReactActivityDelegate {
     return getLaunchOptions();
   }
 
+  /**
+   * Override to customize ReactRootView creation.
+   *
+   * <p>Not used on bridgeless
+   */
   protected ReactRootView createRootView() {
-    return Assertions.assertNotNull(mReactDelegate).createRootView();
+    return null;
   }
 
   /**
@@ -102,7 +107,11 @@ public class ReactActivityDelegate {
               getPlainActivity(), getReactNativeHost(), mainComponentName, launchOptions) {
             @Override
             protected ReactRootView createRootView() {
-              return ReactActivityDelegate.this.createRootView();
+              ReactRootView rootView = ReactActivityDelegate.this.createRootView();
+              if (rootView == null) {
+                rootView = super.createRootView();
+              }
+              return rootView;
             }
           };
     }
