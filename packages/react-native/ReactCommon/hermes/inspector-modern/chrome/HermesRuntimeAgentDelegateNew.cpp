@@ -5,18 +5,16 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#ifdef HERMES_ENABLE_DEBUGGER
+
 #include "HermesRuntimeAgentDelegateNew.h"
 
 // If HERMES_ENABLE_DEBUGGER isn't defined, we can't access any Hermes
 // CDP headers or types.
 
-#ifdef HERMES_ENABLE_DEBUGGER
 #include <hermes/AsyncDebuggerAPI.h>
 #include <hermes/cdp/CDPAgent.h>
 #include <hermes/inspector/RuntimeAdapter.h>
-#else // HERMES_ENABLE_DEBUGGER
-#include <jsinspector-modern/FallbackRuntimeAgentDelegate.h>
-#endif // HERMES_ENABLE_DEBUGGER
 
 #include <hermes/hermes.h>
 #include <jsinspector-modern/ReactCdp.h>
@@ -24,8 +22,6 @@
 using namespace facebook::hermes;
 
 namespace facebook::react::jsinspector_modern {
-
-#ifdef HERMES_ENABLE_DEBUGGER
 
 class HermesRuntimeAgentDelegateNew::Impl final : public RuntimeAgentDelegate {
  public:
@@ -81,31 +77,6 @@ class HermesRuntimeAgentDelegateNew::Impl final : public RuntimeAgentDelegate {
   std::unique_ptr<hermes::cdp::CDPAgent> hermes_;
 };
 
-#else // !HERMES_ENABLE_DEBUGGER
-
-/**
- * A stub for HermesRuntimeAgentDelegateNew when Hermes is compiled without
- * debugging support.
- */
-class HermesRuntimeAgentDelegateNew::Impl final
-    : public FallbackRuntimeAgentDelegate {
- public:
-  Impl(
-      FrontendChannel frontendChannel,
-      SessionState& sessionState,
-      std::unique_ptr<RuntimeAgentDelegate::ExportedState>,
-      const ExecutionContextDescription&,
-      HermesRuntime& runtime,
-      HermesRuntimeTargetDelegate& runtimeTargetDelegate,
-      RuntimeExecutor)
-      : FallbackRuntimeAgentDelegate(
-            std::move(frontendChannel),
-            sessionState,
-            runtime.description()) {}
-};
-
-#endif // HERMES_ENABLE_DEBUGGER
-
 HermesRuntimeAgentDelegateNew::HermesRuntimeAgentDelegateNew(
     FrontendChannel frontendChannel,
     SessionState& sessionState,
@@ -130,3 +101,5 @@ bool HermesRuntimeAgentDelegateNew::handleRequest(
 }
 
 } // namespace facebook::react::jsinspector_modern
+
+#endif // HERMES_ENABLE_DEBUGGER

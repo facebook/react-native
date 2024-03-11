@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <jsinspector-modern/FallbackRuntimeAgentDelegate.h>
-
 #include <folly/executors/QueuedImmediateExecutor.h>
 #include <hermes/hermes.h>
 

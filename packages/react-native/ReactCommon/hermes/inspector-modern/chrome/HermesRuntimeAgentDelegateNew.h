@@ -7,6 +7,8 @@
 
 #pragma once
 
+#ifdef HERMES_ENABLE_DEBUGGER
+
 #include "HermesRuntimeTargetDelegate.h"
 
 #include <ReactCommon/RuntimeExecutor.h>
@@ -65,11 +67,14 @@ class HermesRuntimeAgentDelegateNew : public RuntimeAgentDelegate {
   bool handleRequest(const cdp::PreparsedRequest& req) override;
 
  private:
-  // We use the private implementation idiom to keep HERMES_ENABLE_DEBUGGER
-  // checks out of the header.
   class Impl;
 
   const std::unique_ptr<Impl> impl_;
 };
 
 } // namespace facebook::react::jsinspector_modern
+
+#else
+#error \
+    "HERMES_ENABLE_DEBUGGER must be enabled to use HermesRuntimeAgentDelegateNew."
+#endif // HERMES_ENABLE_DEBUGGER

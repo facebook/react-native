@@ -5,20 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#ifdef HERMES_ENABLE_DEBUGGER
+
 #include "HermesRuntimeAgentDelegate.h"
 
-// If HERMES_ENABLE_DEBUGGER isn't defined, we can't access any Hermes
-// CDPHandler headers or types.
-
-#ifdef HERMES_ENABLE_DEBUGGER
 #include <hermes/inspector/RuntimeAdapter.h>
 #include <hermes/inspector/chrome/CDPHandler.h>
-#else // HERMES_ENABLE_DEBUGGER
-// TODO(moti): FallbackRuntimeAgentDelegate should be private. We should fall
-// back at the *TargetDelegate* level, in HermesRuntimeTargetDelegate, rather
-// than within HermesRuntimeAgentDelegate.
-#include <jsinspector-modern/FallbackRuntimeAgentDelegate.h>
-#endif // HERMES_ENABLE_DEBUGGER
 
 #include <hermes/hermes.h>
 #include <jsinspector-modern/ReactCdp.h>
@@ -26,8 +18,6 @@
 using namespace facebook::hermes;
 
 namespace facebook::react::jsinspector_modern {
-
-#ifdef HERMES_ENABLE_DEBUGGER
 
 namespace {
 
@@ -178,30 +168,6 @@ class HermesRuntimeAgentDelegate::Impl final : public RuntimeAgentDelegate {
   std::shared_ptr<HermesCDPHandler> hermes_;
 };
 
-#else // !HERMES_ENABLE_DEBUGGER
-
-/**
- * A stub for HermesRuntimeAgentDelegate when Hermes is compiled without
- * debugging support.
- */
-class HermesRuntimeAgentDelegate::Impl final
-    : public FallbackRuntimeAgentDelegate {
- public:
-  Impl(
-      FrontendChannel frontendChannel,
-      SessionState& sessionState,
-      std::unique_ptr<RuntimeAgentDelegate::ExportedState>,
-      const ExecutionContextDescription&,
-      std::shared_ptr<hermes::HermesRuntime> runtime,
-      RuntimeExecutor)
-      : FallbackRuntimeAgentDelegate(
-            std::move(frontendChannel),
-            sessionState,
-            runtime->description()) {}
-};
-
-#endif // HERMES_ENABLE_DEBUGGER
-
 HermesRuntimeAgentDelegate::HermesRuntimeAgentDelegate(
     FrontendChannel frontendChannel,
     SessionState& sessionState,
@@ -229,3 +195,5 @@ HermesRuntimeAgentDelegate::getExportedState() {
 }
 
 } // namespace facebook::react::jsinspector_modern
+
+#endif // HERMES_ENABLE_DEBUGGER
