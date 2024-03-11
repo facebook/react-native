@@ -644,6 +644,20 @@
 - Fix race condition between A11yManager and UIManager ([f39f34ed82](https://github.com/facebook/react-native/commit/f39f34ed82997d0595522a285c3cb8693594e718) by [@cipolleschi](https://github.com/cipolleschi))
 - Fix symbol not found _jump_fcontext with use_frameworks ([a2771ce58a](https://github.com/facebook/react-native/commit/a2771ce58ac221d1ac0de265c1ce571212fbcf83) by [@cipolleschi](https://github.com/cipolleschi))
 
+## v0.72.12
+
+### Changed
+
+- Rename BUILD_FROM_SOURCE to RCT_BUILD_HERMES_FROM_SOURCE ([a215805eb7](https://github.com/facebook/react-native/commit/a215805eb73f687116af4aa74461ff4e17b05f42) by [@cipolleschi](https://github.com/cipolleschi))
+
+#### iOS specific
+
+- [0.72] Fix flipper for Xcode 15.3 ([a316e0154e](https://github.com/facebook/react-native/commit/a316e0154ee8d1dd809be47694abb62d245bff0b) by [@cipolleschi](https://github.com/cipolleschi))
+
+### Fixed
+
+- Fix flags for new arch ([0724c2769a](https://github.com/facebook/react-native/commit/0724c2769a3dea8f7886c8c541ffb49ae5c045dc) by [@cipolleschi](https://github.com/cipolleschi))
+
 ## v0.72.11
 
 ### Changed
