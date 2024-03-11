@@ -38,7 +38,7 @@ class CallbackWrapper : public LongLivedObject {
       std::shared_ptr<CallInvoker> jsInvoker) {
     auto wrapper = std::shared_ptr<CallbackWrapper>(new CallbackWrapper(
         std::move(callback), runtime, std::move(jsInvoker)));
-    LongLivedObjectCollection::get().add(wrapper);
+    LongLivedObjectCollection::get(runtime).add(wrapper);
     return wrapper;
   }
 
