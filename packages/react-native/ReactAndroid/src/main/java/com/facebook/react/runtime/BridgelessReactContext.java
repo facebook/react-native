@@ -8,6 +8,7 @@
 package com.facebook.react.runtime;
 
 import android.content.Context;
+import android.util.Log;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
@@ -18,8 +19,6 @@ import com.facebook.react.bridge.JavaScriptModuleRegistry;
 import com.facebook.react.bridge.NativeArray;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactNoCrashBridgeNotAllowedSoftException;
-import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.RuntimeExecutor;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.WritableNativeArray;
@@ -84,11 +83,10 @@ class BridgelessReactContext extends ReactApplicationContext implements EventDis
 
   @Override
   public CatalystInstance getCatalystInstance() {
-    ReactSoftExceptionLogger.logSoftExceptionVerbose(
+    Log.w(
         TAG,
-        new ReactNoCrashBridgeNotAllowedSoftException(
-            "getCatalystInstance() cannot be called when the bridge is disabled"));
-    throw new UnsupportedOperationException("There is no Catalyst instance in bridgeless mode.");
+        "[WARNING] Bridgeless doesn't support CatalystInstance. Accessing an API that's not part of the new architecture is not encouraged usage.");
+    return new BridgelessCatalystInstance(mReactHost);
   }
 
   @Override

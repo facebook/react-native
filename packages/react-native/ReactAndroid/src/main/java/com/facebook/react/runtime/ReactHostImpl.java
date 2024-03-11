@@ -60,6 +60,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.runtime.internal.bolts.Continuation;
 import com.facebook.react.runtime.internal.bolts.Task;
 import com.facebook.react.runtime.internal.bolts.TaskCompletionSource;
+import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.BlackHoleEventDispatcher;
 import com.facebook.react.uimanager.events.EventDispatcher;
@@ -598,6 +599,20 @@ public class ReactHostImpl implements ReactHost {
     ReactSoftExceptionLogger.logSoftException(
         TAG,
         new ReactNoCrashSoftException("Tried to get runtime executor while instance is not ready"));
+    return null;
+  }
+
+  /* package */
+  @Nullable
+  CallInvokerHolder getJSCallInvokerHolder() {
+    final ReactInstance reactInstance = mReactInstanceTaskRef.get().getResult();
+    if (reactInstance != null) {
+      return reactInstance.getJSCallInvokerHolder();
+    }
+    ReactSoftExceptionLogger.logSoftException(
+        TAG,
+        new ReactNoCrashSoftException(
+            "Tried to get JSCallInvokerHolder while instance is not ready"));
     return null;
   }
 
