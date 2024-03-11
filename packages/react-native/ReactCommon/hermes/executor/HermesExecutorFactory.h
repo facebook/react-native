@@ -55,15 +55,8 @@ class HermesExecutor : public JSIExecutor {
       RuntimeInstaller runtimeInstaller,
       hermes::HermesRuntime& hermesRuntime);
 
-  virtual std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate>
-  createAgentDelegate(
-      jsinspector_modern::FrontendChannel frontendChannel,
-      jsinspector_modern::SessionState& sessionState,
-      std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate::ExportedState>
-          previouslyExportedState,
-      const jsinspector_modern::ExecutionContextDescription&
-          executionContextDescription,
-      RuntimeExecutor runtimeExecutor) override;
+  jsinspector_modern::RuntimeTargetDelegate& getRuntimeTargetDelegate()
+      override;
 
  private:
   JSIScopedTimeoutInvoker timeoutInvoker_;
