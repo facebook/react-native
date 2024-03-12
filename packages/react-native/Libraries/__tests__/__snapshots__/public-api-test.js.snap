@@ -810,13 +810,7 @@ exports[`public API should not change unintentionally Libraries/Animated/compone
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/createAnimatedComponent.js 1`] = `
-"export type AnimatedProps<Props: { ... }> = $ObjMap<
-  Props &
-    $ReadOnly<{
-      passthroughAnimatedPropExplicitValues?: React.ElementConfig<typeof View>,
-    }>,
-  () => any,
->;
+"export type AnimatedProps<Props: { ... }> = $ObjMap<Props, () => any>;
 export type AnimatedComponentType<
   Props: { ... },
   +Instance = mixed,
