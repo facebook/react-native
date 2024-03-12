@@ -650,6 +650,23 @@ public class ReactHostImpl implements ReactHost {
             "Tried to access onActivityResult while context is not ready"));
   }
 
+  /* To be called when focus has changed for the hosting window. */
+  @ThreadConfined(UI)
+  @Override
+  public void onWindowFocusChange(boolean hasFocus) {
+    final String method = "onWindowFocusChange(hasFocus = \"" + hasFocus + "\")";
+    log(method);
+
+    ReactContext currentContext = getCurrentReactContext();
+    if (currentContext != null) {
+      currentContext.onWindowFocusChange(hasFocus);
+    }
+    ReactSoftExceptionLogger.logSoftException(
+        TAG,
+        new ReactNoCrashSoftException(
+            "Tried to access onWindowFocusChange while context is not ready"));
+  }
+
   @Nullable
   JavaScriptContextHolder getJavaScriptContextHolder() {
     final ReactInstance reactInstance = mReactInstanceTaskRef.get().getResult();

@@ -195,13 +195,7 @@ public class ReactActivityDelegate {
   }
 
   public void onWindowFocusChanged(boolean hasFocus) {
-    if (ReactFeatureFlags.enableBridgelessArchitecture) {
-      // TODO T156475655: support onWindowFocusChanged
-    } else {
-      if (getReactNativeHost().hasInstance()) {
-        getReactNativeHost().getReactInstanceManager().onWindowFocusChange(hasFocus);
-      }
-    }
+    mReactDelegate.onWindowFocusChanged(hasFocus);
   }
 
   public void onConfigurationChanged(Configuration newConfig) {

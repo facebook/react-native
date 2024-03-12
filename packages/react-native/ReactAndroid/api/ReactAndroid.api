@@ -153,6 +153,7 @@ public class com/facebook/react/ReactDelegate {
 	public fun onHostDestroy ()V
 	public fun onHostPause ()V
 	public fun onHostResume ()V
+	public fun onWindowFocusChanged (Z)V
 	public fun shouldShowDevMenuOrReload (ILandroid/view/KeyEvent;)Z
 }
 
@@ -203,6 +204,7 @@ public abstract interface class com/facebook/react/ReactHost {
 	public abstract fun onHostPause (Landroid/app/Activity;)V
 	public abstract fun onHostResume (Landroid/app/Activity;)V
 	public abstract fun onHostResume (Landroid/app/Activity;Lcom/facebook/react/modules/core/DefaultHardwareBackBtnHandler;)V
+	public abstract fun onWindowFocusChange (Z)V
 	public abstract fun reload (Ljava/lang/String;)Lcom/facebook/react/interfaces/TaskInterface;
 	public abstract fun removeBeforeDestroyListener (Lkotlin/jvm/functions/Function0;)V
 	public abstract fun setJsEngineResolutionAlgorithm (Lcom/facebook/react/JSEngineResolutionAlgorithm;)V
@@ -3641,6 +3643,7 @@ public class com/facebook/react/runtime/ReactHostImpl : com/facebook/react/React
 	public fun onHostPause (Landroid/app/Activity;)V
 	public fun onHostResume (Landroid/app/Activity;)V
 	public fun onHostResume (Landroid/app/Activity;Lcom/facebook/react/modules/core/DefaultHardwareBackBtnHandler;)V
+	public fun onWindowFocusChange (Z)V
 	public fun reload (Ljava/lang/String;)Lcom/facebook/react/interfaces/TaskInterface;
 	public fun removeBeforeDestroyListener (Lkotlin/jvm/functions/Function0;)V
 	public fun removeReactInstanceEventListener (Lcom/facebook/react/ReactInstanceEventListener;)V

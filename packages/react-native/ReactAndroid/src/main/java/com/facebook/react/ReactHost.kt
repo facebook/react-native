@@ -120,6 +120,9 @@ public interface ReactHost {
       data: Intent?,
   )
 
+  /* To be called when focus has changed for the hosting window. */
+  public fun onWindowFocusChange(hasFocus: Boolean)
+
   public fun addBeforeDestroyListener(onBeforeDestroy: () -> Unit)
 
   public fun removeBeforeDestroyListener(onBeforeDestroy: () -> Unit)
