@@ -48,7 +48,7 @@ export interface CustomMessageHandler {
   /**
    * Handle a CDP message coming from the debugger.
    * This is invoked before the message is sent to the device.
-   * When reeturning true, the message is considered handled and will not be sent to the device.
+   * When returning true, the message is considered handled and will not be sent to the device.
    */
   handleDebuggerMessage(message: JSONSerializable): true | void;
 }
