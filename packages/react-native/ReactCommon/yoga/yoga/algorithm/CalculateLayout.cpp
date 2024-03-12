@@ -2040,26 +2040,7 @@ static void calculateLayoutImpl(
   }
 
   if (performLayout) {
-    // STEP 10: SIZING AND POSITIONING ABSOLUTE CHILDREN
-    // Let the containing block layout its absolute descendants. By definition
-    // the containing block will not be static unless we are at the root.
-    if (node->style().positionType() != PositionType::Static ||
-        node->alwaysFormsContainingBlock() || depth == 1) {
-      layoutAbsoluteDescendants(
-          node,
-          node,
-          isMainAxisRow ? sizingModeMainDim : sizingModeCrossDim,
-          direction,
-          layoutMarkerData,
-          depth,
-          generationCount,
-          0.0f,
-          0.0f,
-          availableInnerWidth,
-          availableInnerHeight);
-    }
-
-    // STEP 11: SETTING TRAILING POSITIONS FOR CHILDREN
+    // STEP 10: SETTING TRAILING POSITIONS FOR CHILDREN
     const bool needsMainTrailingPos = needsTrailingPosition(mainAxis);
     const bool needsCrossTrailingPos = needsTrailingPosition(crossAxis);
 
@@ -2081,6 +2062,24 @@ static void calculateLayoutImpl(
           setChildTrailingPosition(node, child, crossAxis);
         }
       }
+    }
+
+    // STEP 11: SIZING AND POSITIONING ABSOLUTE CHILDREN
+    // Let the containing block layout its absolute descendants.
+    if (node->style().positionType() != PositionType::Static ||
+        node->alwaysFormsContainingBlock() || depth == 1) {
+      layoutAbsoluteDescendants(
+          node,
+          node,
+          isMainAxisRow ? sizingModeMainDim : sizingModeCrossDim,
+          direction,
+          layoutMarkerData,
+          depth,
+          generationCount,
+          0.0f,
+          0.0f,
+          availableInnerWidth,
+          availableInnerHeight);
     }
   }
 }
