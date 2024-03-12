@@ -13,7 +13,7 @@ import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import RNTesterButton from '../../components/RNTesterButton';
 import * as React from 'react';
 import {Animated, Text, View, StyleSheet} from 'react-native';
-import {AnimatedNumeric} from 'react-native/Libraries/Animated/AnimatedImplementation';
+import type {AnimatedNumeric} from 'react-native/Libraries/Animated/AnimatedImplementation';
 export default ({
   title: 'Combine Example',
   name: 'Combine View',
