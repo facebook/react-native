@@ -24,6 +24,25 @@ using namespace facebook::hermes;
 namespace facebook::react::jsinspector_modern {
 
 class HermesRuntimeAgentDelegateNew::Impl final : public RuntimeAgentDelegate {
+  using HermesState = hermes::cdp::State;
+
+  struct HermesStateWrapper : public ExportedState {
+    explicit HermesStateWrapper(HermesState state) : state_(std::move(state)) {}
+
+    static HermesState unwrapDestructively(ExportedState* wrapper) {
+      if (!wrapper) {
+        return {};
+      }
+      if (auto* typedWrapper = dynamic_cast<HermesStateWrapper*>(wrapper)) {
+        return std::move(typedWrapper->state_);
+      }
+      return {};
+    }
+
+   private:
+    HermesState state_;
+  };
+
  public:
   Impl(
       FrontendChannel frontendChannel,
@@ -44,24 +63,15 @@ class HermesRuntimeAgentDelegateNew::Impl final : public RuntimeAgentDelegate {
               runtimeExecutor(
                   [&runtime, fn = std::move(fn)](auto&) { fn(runtime); });
             },
-            std::move(frontendChannel))) {
-    // TODO(T178858701): Pass previouslyExportedState to CDPAgent
-    (void)previouslyExportedState;
-  }
+            std::move(frontendChannel),
+            HermesStateWrapper::unwrapDestructively(
+                previouslyExportedState.get()))) {}
 
-  /**
-   * Handle a CDP request. The response will be sent over the provided
-   * \c FrontendChannel synchronously or asynchronously.
-   * \param req The parsed request.
-   * \returns true if this agent has responded, or will respond asynchronously,
-   * to the request (with either a success or error message). False if the
-   * agent expects another agent to respond to the request instead.
-   */
   bool handleRequest(const cdp::PreparsedRequest& req) override {
     // TODO: Change to string::starts_with when we're on C++20.
     if (req.method.rfind("Log.", 0) == 0) {
-      // Since we know Hermes doesn't do anything useful with Log messages, but
-      // our containing PageAgent will, just bail out early.
+      // Since we know Hermes doesn't do anything useful with Log messages,
+      // but our containing HostAgent will, bail out early.
       // TODO: We need a way to negotiate this more dynamically with Hermes
       // through the API.
       return false;
@@ -71,6 +81,10 @@ class HermesRuntimeAgentDelegateNew::Impl final : public RuntimeAgentDelegate {
     // Let the call know that this request is handled (i.e. it is Hermes's
     // responsibility to respond with either success or an error).
     return true;
+  }
+
+  std::unique_ptr<ExportedState> getExportedState() override {
+    return std::make_unique<HermesStateWrapper>(hermes_->getState());
   }
 
  private:
@@ -98,6 +112,11 @@ HermesRuntimeAgentDelegateNew::HermesRuntimeAgentDelegateNew(
 bool HermesRuntimeAgentDelegateNew::handleRequest(
     const cdp::PreparsedRequest& req) {
   return impl_->handleRequest(req);
+}
+
+std::unique_ptr<RuntimeAgentDelegate::ExportedState>
+HermesRuntimeAgentDelegateNew::getExportedState() {
+  return impl_->getExportedState();
 }
 
 } // namespace facebook::react::jsinspector_modern

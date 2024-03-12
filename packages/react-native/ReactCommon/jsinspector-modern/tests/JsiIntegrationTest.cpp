@@ -559,16 +559,23 @@ TYPED_TEST(JsiIntegrationHermesTest, EvaluateExpressionInExecutionContext) {
       std::to_string(executionContextId)));
 }
 
-// TODO(T178858701): Restore breakpoint reload persistence under
-// HermesRuntimeAgentDelegateNew
-TYPED_TEST(JsiIntegrationHermesLegacyTest, ResolveBreakpointAfterReload) {
+TYPED_TEST(JsiIntegrationHermesTest, ResolveBreakpointAfterReload) {
   this->connect();
 
   InSequence s;
 
-  this->expectMessageFromPage(JsonParsed(AtJsonPtr("/id", 1)));
+  this->expectMessageFromPage(JsonEq(R"({
+                                         "id": 1,
+                                         "result": {}
+                                       })"));
   this->toPage_->sendMessage(R"({
                                  "id": 1,
+                                 "method": "Debugger.enable"
+                               })");
+
+  this->expectMessageFromPage(JsonParsed(AtJsonPtr("/id", 2)));
+  this->toPage_->sendMessage(R"({
+                                 "id": 2,
                                  "method": "Debugger.setBreakpointByUrl",
                                  "params": {"lineNumber": 2, "url": "breakpointTest.js"}
                                })");
@@ -576,11 +583,11 @@ TYPED_TEST(JsiIntegrationHermesLegacyTest, ResolveBreakpointAfterReload) {
   this->reload();
 
   this->expectMessageFromPage(JsonEq(R"({
-                                         "id": 2,
+                                         "id": 3,
                                          "result": {}
                                        })"));
   this->toPage_->sendMessage(R"({
-                                 "id": 2,
+                                 "id": 3,
                                  "method": "Debugger.enable"
                                })");
 
