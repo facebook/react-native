@@ -22,4 +22,5 @@ target_link_libraries(react_newarchdefaults
         react_codegen_rncore
         react_cxxreactpackage
         react_nativemodule_featureflags
+        react_nativemodule_microtasks
         jsi)
