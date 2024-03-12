@@ -13,9 +13,13 @@
 #include <hermes/inspector/chrome/CDPHandler.h>
 
 #include <hermes/hermes.h>
+#include <jsinspector-modern/CdpJson.h>
 #include <jsinspector-modern/ReactCdp.h>
 
+#include <chrono>
+
 using namespace facebook::hermes;
+using namespace std::chrono;
 
 namespace facebook::react::jsinspector_modern {
 
@@ -124,11 +128,15 @@ class HermesRuntimeAgentDelegate::Impl final : public RuntimeAgentDelegate {
                 .origin = executionContextDescription.origin,
                 .name = executionContextDescription.name,
                 .auxData = std::nullopt,
-                .shouldSendNotifications = false})) {
+                .shouldSendNotifications = false})),
+        frontendChannel_(std::move(frontendChannel)) {
+    if (sessionState.isLogDomainEnabled) {
+      sendHermesIntegrationDescription();
+    }
     hermes_->registerCallbacks(
         /* msgCallback */
         [frontendChannel =
-             std::move(frontendChannel)](const std::string& messageFromHermes) {
+             frontendChannel_](const std::string& messageFromHermes) {
           frontendChannel(messageFromHermes);
           ;
         },
@@ -145,6 +153,13 @@ class HermesRuntimeAgentDelegate::Impl final : public RuntimeAgentDelegate {
    * agent expects another agent to respond to the request instead.
    */
   bool handleRequest(const cdp::PreparsedRequest& req) override {
+    if (req.method == "Log.enable") {
+      sendHermesIntegrationDescription();
+
+      // The parent Agent should send a response.
+      return false;
+    }
+
     // TODO: Change to string::starts_with when we're on C++20.
     if (req.method.rfind("Log.", 0) == 0) {
       // Since we know Hermes doesn't do anything useful with Log messages, but
@@ -165,7 +180,37 @@ class HermesRuntimeAgentDelegate::Impl final : public RuntimeAgentDelegate {
   }
 
  private:
+  /**
+   * Send a user-facing message describing the current Hermes integration. You
+   * must ensure that the frontend has enabled Log notifications (using
+   * Log.enable) prior to calling this function.
+   */
+  void sendHermesIntegrationDescription() {
+    sendInfoLogEntry("Hermes integration: CDPHandler");
+  }
+
+  /**
+   * Send a simple Log.entryAdded notification with the given
+   * \param text. You must ensure that the frontend has enabled Log
+   * notifications (using Log.enable) prior to calling this function. In Chrome
+   * DevTools, the message will appear in the Console tab along with regular
+   * console messages.
+   */
+  void sendInfoLogEntry(std::string_view text) {
+    frontendChannel_(cdp::jsonNotification(
+        "Log.entryAdded",
+        folly::dynamic::object(
+            "entry",
+            folly::dynamic::object(
+                "timestamp",
+                duration_cast<milliseconds>(
+                    system_clock::now().time_since_epoch())
+                    .count())("source", "other")(
+                "level", "info")("text", text))));
+  }
+
   std::shared_ptr<HermesCDPHandler> hermes_;
+  FrontendChannel frontendChannel_;
 };
 
 HermesRuntimeAgentDelegate::HermesRuntimeAgentDelegate(
