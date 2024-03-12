@@ -16,6 +16,9 @@ LongLivedObjectCollection& LongLivedObjectCollection::get(
     jsi::Runtime& runtime) {
   static std::unordered_map<void*, std::shared_ptr<LongLivedObjectCollection>>
       instances;
+  static std::mutex instancesMutex;
+
+  std::scoped_lock lock(instancesMutex);
   void* key = static_cast<void*>(&runtime);
   auto entry = instances.find(key);
   if (entry == instances.end()) {
