@@ -6,7 +6,6 @@
  */
 
 #import "RCTInstance.h"
-#import <React/RCTBridgeProxy.h>
 
 #import <memory>
 
@@ -16,6 +15,8 @@
 #import <React/RCTBridge.h>
 #import <React/RCTBridgeModule.h>
 #import <React/RCTBridgeModuleDecorator.h>
+#import <React/RCTBridgeProxy+Cxx.h>
+#import <React/RCTBridgeProxy.h>
 #import <React/RCTComponentViewFactory.h>
 #import <React/RCTConstants.h>
 #import <React/RCTCxxUtils.h>
@@ -256,6 +257,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   RuntimeExecutor bufferedRuntimeExecutor = _reactInstance->getBufferedRuntimeExecutor();
   timerManager->setRuntimeExecutor(bufferedRuntimeExecutor);
 
+  auto jsCallInvoker = make_shared<BridgelessJSCallInvoker>(bufferedRuntimeExecutor);
   RCTBridgeProxy *bridgeProxy =
       [[RCTBridgeProxy alloc] initWithViewRegistry:_bridgeModuleDecorator.viewRegistry_DEPRECATED
           moduleRegistry:_bridgeModuleDecorator.moduleRegistry
@@ -274,14 +276,14 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
             }
           }
           runtime:_reactInstance->getJavaScriptContext()];
+  bridgeProxy.jsCallInvoker = jsCallInvoker;
   [RCTBridge setCurrentBridge:(RCTBridge *)bridgeProxy];
 
   // Set up TurboModules
-  _turboModuleManager = [[RCTTurboModuleManager alloc]
-        initWithBridgeProxy:bridgeProxy
-      bridgeModuleDecorator:_bridgeModuleDecorator
-                   delegate:self
-                  jsInvoker:std::make_shared<BridgelessJSCallInvoker>(bufferedRuntimeExecutor)];
+  _turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridgeProxy:bridgeProxy
+                                                     bridgeModuleDecorator:_bridgeModuleDecorator
+                                                                  delegate:self
+                                                                 jsInvoker:jsCallInvoker];
   _turboModuleManager.runtimeHandler = self;
 
 #if RCT_DEV
