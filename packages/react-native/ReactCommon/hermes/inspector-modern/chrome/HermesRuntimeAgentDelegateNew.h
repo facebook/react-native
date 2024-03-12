@@ -66,6 +66,9 @@ class HermesRuntimeAgentDelegateNew : public RuntimeAgentDelegate {
    */
   bool handleRequest(const cdp::PreparsedRequest& req) override;
 
+  std::unique_ptr<RuntimeAgentDelegate::ExportedState> getExportedState()
+      override;
+
  private:
   class Impl;
 
