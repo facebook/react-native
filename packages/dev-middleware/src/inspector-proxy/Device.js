@@ -17,6 +17,10 @@ import type {
   CDPServerMessage,
 } from './cdp-types/messages';
 import type {
+  CreateCustomMessageHandlerFn,
+  CustomMessageHandler,
+} from './CustomMessageHandler';
+import type {
   MessageFromDevice,
   MessageToDevice,
   Page,
@@ -51,6 +55,11 @@ type DebuggerInfo = {
   userAgent: string | null,
 };
 
+type DebuggerConnection = {
+  ...DebuggerInfo,
+  customHandler: ?CustomMessageHandler,
+};
+
 const REACT_NATIVE_RELOADABLE_PAGE_ID = '-1';
 
 /**
@@ -74,7 +83,7 @@ export default class Device {
   #pages: $ReadOnlyMap<string, Page>;
 
   // Stores information about currently connected debugger (if any).
-  #debuggerConnection: ?DebuggerInfo = null;
+  #debuggerConnection: ?DebuggerConnection = null;
 
   // Last known Page ID of the React Native page.
   // This is used by debugger connections that don't have PageID specified
@@ -97,6 +106,9 @@ export default class Device {
 
   #pagesPollingIntervalId: ReturnType<typeof setInterval>;
 
+  // The device message middleware factory function allowing implementers to handle unsupported CDP messages.
+  #createCustomMessageHandler: ?CreateCustomMessageHandlerFn;
+
   constructor(
     id: string,
     name: string,
@@ -104,6 +116,7 @@ export default class Device {
     socket: WS,
     projectRoot: string,
     eventReporter: ?EventReporter,
+    createMessageMiddleware: ?CreateCustomMessageHandlerFn,
   ) {
     this.#id = id;
     this.#name = name;
@@ -118,6 +131,7 @@ export default class Device {
           appId: app,
         })
       : null;
+    this.#createCustomMessageHandler = createMessageMiddleware;
 
     // $FlowFixMe[incompatible-call]
     this.#deviceSocket.on('message', (message: string) => {
@@ -205,6 +219,7 @@ export default class Device {
       prependedFilePrefix: false,
       pageId,
       userAgent: metadata.userAgent,
+      customHandler: null,
     };
 
     // TODO(moti): Handle null case explicitly, e.g. refuse to connect to
@@ -214,6 +229,50 @@ export default class Device {
     this.#debuggerConnection = debuggerInfo;
 
     debug(`Got new debugger connection for page ${pageId} of ${this.#name}`);
+
+    if (page && this.#debuggerConnection && this.#createCustomMessageHandler) {
+      this.#debuggerConnection.customHandler = this.#createCustomMessageHandler(
+        {
+          page,
+          debugger: {
+            userAgent: debuggerInfo.userAgent,
+            sendMessage: message => {
+              try {
+                const payload = JSON.stringify(message);
+                debug('(Debugger) <- (Proxy)    (Device): ' + payload);
+                socket.send(payload);
+              } catch {}
+            },
+          },
+          device: {
+            appId: this.#app,
+            id: this.#id,
+            name: this.#name,
+            sendMessage: message => {
+              try {
+                const payload = JSON.stringify({
+                  event: 'wrappedEvent',
+                  payload: {
+                    pageId: this.#mapToDevicePageId(pageId),
+                    wrappedEvent: JSON.stringify(message),
+                  },
+                });
+                debug('(Debugger) -> (Proxy)    (Device): ' + payload);
+                this.#deviceSocket.send(payload);
+              } catch {}
+            },
+          },
+        },
+      );
+
+      if (this.#debuggerConnection.customHandler) {
+        debug('Created new custom message handler for debugger connection');
+      } else {
+        debug(
+          'Skipping new custom message handler for debugger connection, factory function returned null',
+        );
+      }
+    }
 
     this.#sendMessageToDevice({
       event: 'connect',
@@ -231,6 +290,15 @@ export default class Device {
         frontendUserAgent: metadata.userAgent,
       });
       let processedReq = debuggerRequest;
+
+      if (
+        this.#debuggerConnection?.customHandler?.handleDebuggerMessage(
+          debuggerRequest,
+        ) === true
+      ) {
+        return;
+      }
+
       if (!page || !this.#pageHasCapability(page, 'nativeSourceCodeFetching')) {
         processedReq = this.#interceptClientMessageForSourceFetching(
           debuggerRequest,
@@ -411,12 +479,21 @@ export default class Device {
         });
       }
 
-      if (this.#debuggerConnection != null) {
+      const debuggerConnection = this.#debuggerConnection;
+      if (debuggerConnection != null) {
+        if (
+          debuggerConnection.customHandler?.handleDeviceMessage(
+            parsedPayload,
+          ) === true
+        ) {
+          return;
+        }
+
         // Wrapping just to make flow happy :)
         // $FlowFixMe[unused-promise]
         this.#processMessageFromDeviceLegacy(
           parsedPayload,
-          this.#debuggerConnection,
+          debuggerConnection,
           pageId,
         ).then(() => {
           const messageToSend = JSON.stringify(parsedPayload);
@@ -499,7 +576,7 @@ export default class Device {
   // Allows to make changes in incoming message from device.
   async #processMessageFromDeviceLegacy(
     payload: CDPServerMessage,
-    debuggerInfo: DebuggerInfo,
+    debuggerInfo: DebuggerConnection,
     pageId: ?string,
   ) {
     // TODO(moti): Handle null case explicitly, or ideally associate a copy
@@ -616,7 +693,7 @@ export default class Device {
    */
   #interceptClientMessageForSourceFetching(
     req: CDPClientMessage,
-    debuggerInfo: DebuggerInfo,
+    debuggerInfo: DebuggerConnection,
     socket: WS,
   ): CDPClientMessage | null {
     switch (req.method) {
@@ -633,7 +710,7 @@ export default class Device {
 
   #processDebuggerSetBreakpointByUrl(
     req: CDPRequest<'Debugger.setBreakpointByUrl'>,
-    debuggerInfo: DebuggerInfo,
+    debuggerInfo: DebuggerConnection,
   ): CDPRequest<'Debugger.setBreakpointByUrl'> {
     // If we replaced Android emulator's address to localhost we need to change it back.
     if (debuggerInfo.originalSourceURLAddress != null) {
