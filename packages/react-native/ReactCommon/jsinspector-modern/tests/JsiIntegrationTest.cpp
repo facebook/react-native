@@ -494,11 +494,7 @@ TYPED_TEST(JsiIntegrationHermesTest, EvaluateExpression) {
                                })");
 }
 
-// TODO(T181299386): Restore stale execution context validation under
-// HermesRuntimeAgentDelegateNew
-TYPED_TEST(
-    JsiIntegrationHermesLegacyTest,
-    EvaluateExpressionInExecutionContext) {
+TYPED_TEST(JsiIntegrationHermesTest, EvaluateExpressionInExecutionContext) {
   this->connect();
 
   InSequence s;
@@ -546,8 +542,14 @@ TYPED_TEST(
   this->reload();
 
   // Now the old execution context is stale.
-  this->expectMessageFromPage(
-      JsonParsed(AllOf(AtJsonPtr("/id", 3), AtJsonPtr("/error/code", -32000))));
+  this->expectMessageFromPage(JsonParsed(AllOf(
+      AtJsonPtr("/id", 3),
+      AtJsonPtr(
+          "/error/code",
+          // HermesRuntimeAgentDelegateNew responds more correctly with -32600
+          // (invalid request), old responds -32000 (server error). Accept
+          // either.
+          AnyOf(-32600, -32000)))));
   this->toPage_->sendMessage(sformat(
       R"({{
         "id": 3,
