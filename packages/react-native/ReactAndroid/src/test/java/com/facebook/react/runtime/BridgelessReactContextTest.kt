@@ -57,9 +57,7 @@ class BridgelessReactContextTest {
 
   @Test
   fun getCatalystInstanceTest() {
-    val bridgelessCatalystInstance = BridgelessCatalystInstance(reactHost)
-    doReturn(bridgelessCatalystInstance).`when`(bridgelessReactContext).getCatalystInstance()
     Assertions.assertThat(bridgelessReactContext.getCatalystInstance())
-        .isEqualTo(bridgelessCatalystInstance)
+        .isInstanceOf(BridgelessCatalystInstance::class.java)
   }
 }
