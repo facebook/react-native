@@ -16,6 +16,8 @@ import static java.lang.Boolean.TRUE;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
+import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -665,6 +667,36 @@ public class ReactHostImpl implements ReactHost {
         TAG,
         new ReactNoCrashSoftException(
             "Tried to access onWindowFocusChange while context is not ready"));
+  }
+
+  /* This method will give JS the opportunity to receive intents via Linking.
+   *
+   * @param intent The incoming intent
+   */
+  @ThreadConfined(UI)
+  @Override
+  public void onNewIntent(Intent intent) {
+    log("onNewIntent()");
+
+    ReactContext currentContext = getCurrentReactContext();
+    if (currentContext != null) {
+      String action = intent.getAction();
+      Uri uri = intent.getData();
+
+      if (uri != null
+          && (Intent.ACTION_VIEW.equals(action)
+              || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action))) {
+        DeviceEventManagerModule deviceEventManagerModule =
+            currentContext.getNativeModule(DeviceEventManagerModule.class);
+        if (deviceEventManagerModule != null) {
+          deviceEventManagerModule.emitNewIntentReceived(uri);
+        }
+      }
+      currentContext.onNewIntent(getCurrentActivity(), intent);
+    }
+    ReactSoftExceptionLogger.logSoftException(
+        TAG,
+        new ReactNoCrashSoftException("Tried to access onNewIntent while context is not ready"));
   }
 
   @Nullable
