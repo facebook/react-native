@@ -29,6 +29,7 @@
 #import <ReactCommon/RCTJscInstance.h>
 #endif
 #import <react/nativemodule/featureflags/NativeReactNativeFeatureFlags.h>
+#import <react/nativemodule/microtasks/NativeMicrotasks.h>
 
 @interface RCTAppDelegate () <RCTComponentViewFactoryComponentProvider>
 @end
@@ -208,6 +209,10 @@
 {
   if (name == facebook::react::NativeReactNativeFeatureFlags::kModuleName) {
     return std::make_shared<facebook::react::NativeReactNativeFeatureFlags>(jsInvoker);
+  }
+
+  if (name == facebook::react::NativeMicrotasks::kModuleName) {
+    return std::make_shared<facebook::react::NativeMicrotasks>(jsInvoker);
   }
 
   return nullptr;

@@ -126,6 +126,7 @@ def use_react_native! (
   pod 'React-utils', :path => "#{prefix}/ReactCommon/react/utils"
   pod 'React-featureflags', :path => "#{prefix}/ReactCommon/react/featureflags"
   pod 'React-featureflagsnativemodule', :path => "#{prefix}/ReactCommon/react/nativemodule/featureflags"
+  pod 'React-microtasksnativemodule', :path => "#{prefix}/ReactCommon/react/nativemodule/microtasks"
   pod 'React-Mapbuffer', :path => "#{prefix}/ReactCommon"
   pod 'React-jserrorhandler', :path => "#{prefix}/ReactCommon/jserrorhandler"
   pod 'React-nativeconfig', :path => "#{prefix}/ReactCommon"
