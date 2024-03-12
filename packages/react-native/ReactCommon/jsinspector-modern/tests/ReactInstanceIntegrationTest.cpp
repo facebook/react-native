@@ -17,9 +17,11 @@
 #include <react/featureflags/ReactNativeFeatureFlagsDefaults.h>
 #include <react/runtime/hermes/HermesInstance.h>
 
+using namespace ::testing;
+
 namespace facebook::react::jsinspector_modern {
 
-using namespace ::testing;
+#pragma region ReactInstanceIntegrationTest
 
 ReactInstanceIntegrationTest::ReactInstanceIntegrationTest()
     : runtime(nullptr),
@@ -179,6 +181,8 @@ bool ReactInstanceIntegrationTest::verbose(bool isVerbose) {
   return previous;
 }
 
+#pragma endregion
+
 TEST_F(ReactInstanceIntegrationTest, RuntimeEvalTest) {
   auto val = run("1 + 2");
   EXPECT_EQ(val.asNumber(), 3);
@@ -218,13 +222,20 @@ INSTANTIATE_TEST_SUITE_P(
     ReactInstanceIntegrationTestWithFlags,
     ::testing::Values(
         InspectorFlagOverrides{
-            .enableCxxInspectorPackagerConnection = true,
-            .enableModernCDPRegistry = true},
-        InspectorFlagOverrides{
             .enableCxxInspectorPackagerConnection = false,
+            .enableHermesCDPAgent = false,
             .enableModernCDPRegistry = false},
         InspectorFlagOverrides{
             .enableCxxInspectorPackagerConnection = true,
-            .enableModernCDPRegistry = false}));
+            .enableHermesCDPAgent = false,
+            .enableModernCDPRegistry = false},
+        InspectorFlagOverrides{
+            .enableCxxInspectorPackagerConnection = true,
+            .enableHermesCDPAgent = false,
+            .enableModernCDPRegistry = true},
+        InspectorFlagOverrides{
+            .enableCxxInspectorPackagerConnection = false,
+            .enableHermesCDPAgent = true,
+            .enableModernCDPRegistry = true}));
 
 } // namespace facebook::react::jsinspector_modern

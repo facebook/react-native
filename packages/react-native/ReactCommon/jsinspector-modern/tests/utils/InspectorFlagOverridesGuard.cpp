@@ -27,15 +27,19 @@ class ReactNativeFeatureFlagsOverrides
       : overrides_(overrides) {}
 
   bool inspectorEnableCxxInspectorPackagerConnection() override {
-    return overrides_.enableCxxInspectorPackagerConnection;
+    return overrides_.enableCxxInspectorPackagerConnection.value_or(
+        ReactNativeFeatureFlagsDefaults::
+            inspectorEnableCxxInspectorPackagerConnection());
   }
 
   bool inspectorEnableHermesCDPAgent() override {
-    return overrides_.enableHermesCDPAgent;
+    return overrides_.enableHermesCDPAgent.value_or(
+        ReactNativeFeatureFlagsDefaults::inspectorEnableHermesCDPAgent());
   }
 
   bool inspectorEnableModernCDPRegistry() override {
-    return overrides_.enableModernCDPRegistry;
+    return overrides_.enableModernCDPRegistry.value_or(
+        ReactNativeFeatureFlagsDefaults::inspectorEnableModernCDPRegistry());
   }
 
  private:
