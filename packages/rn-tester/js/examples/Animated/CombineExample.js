@@ -23,7 +23,6 @@ export default ({
 }: RNTesterModuleExample);
 
 const CombineExample = () => {
-  const [opacity, setOpacity] = React.useState(0.5);
   const a = new Animated.Value(0.4);
   const b = new Animated.Value(0.5);
   const add = Animated.add(a, b);
@@ -32,18 +31,24 @@ const CombineExample = () => {
   const divide = Animated.divide(b, a);
   const mod = Animated.modulo(b, 0.4);
 
+  const [animation, setAnimation] = React.useState(add);
+
   return (
     <View>
-      <Animated.View style={[styles.content, {opacity: opacity}]}>
+      <Animated.View style={[styles.content, {opacity: animation}]}>
         <Text>Change Opacity</Text>
       </Animated.View>
-      <RNTesterButton onPress={() => setOpacity(add)}>Add</RNTesterButton>
-      <RNTesterButton onPress={() => setOpacity(subtract)}>
+      <RNTesterButton onPress={() => setAnimation(add)}>Add</RNTesterButton>
+      <RNTesterButton onPress={() => setAnimation(subtract)}>
         Subtract
       </RNTesterButton>
-      <RNTesterButton onPress={() => setOpacity(mult)}>Multiply</RNTesterButton>
-      <RNTesterButton onPress={() => setOpacity(divide)}>Divide</RNTesterButton>
-      <RNTesterButton onPress={() => setOpacity(mod)}>Modulo</RNTesterButton>
+      <RNTesterButton onPress={() => setAnimation(mult)}>
+        Multiply
+      </RNTesterButton>
+      <RNTesterButton onPress={() => setAnimation(divide)}>
+        Divide
+      </RNTesterButton>
+      <RNTesterButton onPress={() => setAnimation(mod)}>Modulo</RNTesterButton>
     </View>
   );
 };
