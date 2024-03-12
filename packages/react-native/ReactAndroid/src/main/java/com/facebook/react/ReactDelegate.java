@@ -148,6 +148,16 @@ public class ReactDelegate {
     }
   }
 
+  public void onWindowFocusChanged(boolean hasFocus) {
+    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      mReactHost.onWindowFocusChange(hasFocus);
+    } else {
+      if (getReactNativeHost().hasInstance()) {
+        getReactNativeHost().getReactInstanceManager().onWindowFocusChange(hasFocus);
+      }
+    }
+  }
+
   public void loadApp() {
     loadApp(mMainComponentName);
   }
