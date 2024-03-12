@@ -26,9 +26,9 @@ export default function (definitions: FeatureFlagDefinitions): string {
 
 ${DO_NOT_MODIFY_COMMENT}
 
-import type {TurboModule} from '../../../Libraries/TurboModule/RCTExport';
+import type {TurboModule} from '../../../../Libraries/TurboModule/RCTExport';
 
-import * as TurboModuleRegistry from '../../../Libraries/TurboModule/TurboModuleRegistry';
+import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
 ${Object.entries(definitions.common)
