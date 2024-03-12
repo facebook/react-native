@@ -656,6 +656,8 @@
 
 ### Fixed
 
+- Fix component stacks for tsx, ts, and jsx files ([dd311c9782](https://github.com/facebook/react-native/commit/dd311c9782c9f4d0f9d98423de2ae71227a24a7d) by [@rickhanlonii](https://github.com/rickhanlonii))
+
 - Fix flags for new arch ([0724c2769a](https://github.com/facebook/react-native/commit/0724c2769a3dea8f7886c8c541ffb49ae5c045dc) by [@cipolleschi](https://github.com/cipolleschi))
 
 ## v0.72.11
