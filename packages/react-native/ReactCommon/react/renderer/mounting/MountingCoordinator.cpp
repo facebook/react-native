@@ -106,6 +106,8 @@ std::optional<MountingTransaction> MountingCoordinator::pullTransaction()
       mountingOverrideDelegate->shouldOverridePullTransaction();
 
   if (shouldOverridePullTransaction) {
+    SystraceSection section2("MountingCoordinator::overridePullTransaction");
+
     auto mutations = ShadowViewMutation::List{};
     auto telemetry = TransactionTelemetry{};
 
@@ -128,6 +130,9 @@ std::optional<MountingTransaction> MountingCoordinator::pullTransaction()
 
 #ifdef RN_SHADOW_TREE_INTROSPECTION
   if (transaction.has_value()) {
+    SystraceSection section2(
+        "MountingCoordinator::verifyMutationsForDebugging");
+
     // We have something to validate.
     auto mutations = transaction->getMutations();
 
