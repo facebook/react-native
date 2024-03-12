@@ -42,6 +42,15 @@ class TextLayoutManager {
       LayoutConstraints layoutConstraints,
       std::shared_ptr<void>) const;
 
+  /**
+   * Measures an AttributedString on the platform, as identified by some
+   * opaque cache ID.
+   */
+  virtual TextMeasurement measureCachedSpannableById(
+      int64_t cacheId,
+      const ParagraphAttributes& paragraphAttributes,
+      LayoutConstraints layoutConstraints) const;
+
   /*
    * Measures lines of `attributedString` using native text rendering
    * infrastructure.
