@@ -9,11 +9,11 @@
  */
 
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+import type {Numeric} from 'react-native/Libraries/Animated/AnimatedImplementation';
 
 import RNTesterButton from '../../components/RNTesterButton';
 import * as React from 'react';
 import {Animated, Text, View, StyleSheet} from 'react-native';
-import type {AnimatedNumeric} from 'react-native/Libraries/Animated/AnimatedImplementation';
 export default ({
   title: 'Combine Example',
   name: 'Combine View',
@@ -31,7 +31,7 @@ const CombineExample = () => {
   const divide = Animated.divide(b, a);
   const mod = Animated.modulo(b, 0.4);
 
-  const [animation, setAnimation] = React.useState<AnimatedNumeric>(add);
+  const [animation, setAnimation] = React.useState<Numeric>(add);
 
   return (
     <View>
