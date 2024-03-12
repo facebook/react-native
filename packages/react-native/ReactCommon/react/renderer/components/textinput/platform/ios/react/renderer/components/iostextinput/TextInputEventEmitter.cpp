@@ -91,12 +91,6 @@ void TextInputEventEmitter::onChange(
   dispatchTextInputEvent("change", textInputMetrics);
 }
 
-void TextInputEventEmitter::onChangeSync(
-    const TextInputMetrics& textInputMetrics) const {
-  dispatchTextInputEvent(
-      "changeSync", textInputMetrics, EventPriority::SynchronousBatched);
-}
-
 void TextInputEventEmitter::onContentSizeChange(
     const TextInputMetrics& textInputMetrics) const {
   dispatchTextInputContentSizeChangeEvent(
@@ -126,16 +120,6 @@ void TextInputEventEmitter::onKeyPress(
         return keyPressMetricsPayload(runtime, keyPressMetrics);
       },
       EventPriority::AsynchronousBatched);
-}
-
-void TextInputEventEmitter::onKeyPressSync(
-    const KeyPressMetrics& keyPressMetrics) const {
-  dispatchEvent(
-      "keyPressSync",
-      [keyPressMetrics](jsi::Runtime& runtime) {
-        return keyPressMetricsPayload(runtime, keyPressMetrics);
-      },
-      EventPriority::SynchronousBatched);
 }
 
 void TextInputEventEmitter::onScroll(
