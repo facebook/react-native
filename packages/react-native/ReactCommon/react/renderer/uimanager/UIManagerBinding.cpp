@@ -158,7 +158,9 @@ void UIManagerBinding::dispatchEventToJS(
     : jsi::Value::null();
 
   if (instanceHandle.isNull()) {
-    LOG(WARNING) << "instanceHandle is null, event will be dropped";
+    // Do not log all missing instanceHandles to avoid log spam
+    LOG_EVERY_N(INFO, 10) << "instanceHandle is null, event of type " << type
+                          << " will be dropped";
   }
 
   currentEventPriority_ = priority;
