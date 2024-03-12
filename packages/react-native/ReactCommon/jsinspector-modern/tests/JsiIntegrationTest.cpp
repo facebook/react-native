@@ -557,9 +557,7 @@ TYPED_TEST(
       std::to_string(executionContextId)));
 }
 
-// TODO(T178858701): Restore breakpoint reload persistence under
-// HermesRuntimeAgentDelegateNew
-TYPED_TEST(JsiIntegrationHermesLegacyTest, ResolveBreakpointAfterReload) {
+TYPED_TEST(JsiIntegrationHermesTest, ResolveBreakpointAfterReload) {
   this->connect();
 
   InSequence s;
