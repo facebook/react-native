@@ -114,12 +114,9 @@ void TextInputEventEmitter::onSubmitEditing(
 
 void TextInputEventEmitter::onKeyPress(
     const KeyPressMetrics& keyPressMetrics) const {
-  dispatchEvent(
-      "keyPress",
-      [keyPressMetrics](jsi::Runtime& runtime) {
-        return keyPressMetricsPayload(runtime, keyPressMetrics);
-      },
-      EventPriority::AsynchronousBatched);
+  dispatchEvent("keyPress", [keyPressMetrics](jsi::Runtime& runtime) {
+    return keyPressMetricsPayload(runtime, keyPressMetrics);
+  });
 }
 
 void TextInputEventEmitter::onScroll(
@@ -129,26 +126,18 @@ void TextInputEventEmitter::onScroll(
 
 void TextInputEventEmitter::dispatchTextInputEvent(
     const std::string& name,
-    const TextInputMetrics& textInputMetrics,
-    EventPriority priority) const {
-  dispatchEvent(
-      name,
-      [textInputMetrics](jsi::Runtime& runtime) {
-        return textInputMetricsPayload(runtime, textInputMetrics);
-      },
-      priority);
+    const TextInputMetrics& textInputMetrics) const {
+  dispatchEvent(name, [textInputMetrics](jsi::Runtime& runtime) {
+    return textInputMetricsPayload(runtime, textInputMetrics);
+  });
 }
 
 void TextInputEventEmitter::dispatchTextInputContentSizeChangeEvent(
     const std::string& name,
-    const TextInputMetrics& textInputMetrics,
-    EventPriority priority) const {
-  dispatchEvent(
-      name,
-      [textInputMetrics](jsi::Runtime& runtime) {
-        return textInputMetricsContentSizePayload(runtime, textInputMetrics);
-      },
-      priority);
+    const TextInputMetrics& textInputMetrics) const {
+  dispatchEvent(name, [textInputMetrics](jsi::Runtime& runtime) {
+    return textInputMetricsContentSizePayload(runtime, textInputMetrics);
+  });
 }
 
 } // namespace facebook::react

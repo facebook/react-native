@@ -38,8 +38,7 @@ class ScrollViewEventEmitter : public ViewEventEmitter {
  private:
   void dispatchScrollViewEvent(
       std::string name,
-      const ScrollViewMetrics& scrollViewMetrics,
-      EventPriority priority = EventPriority::AsynchronousBatched) const;
+      const ScrollViewMetrics& scrollViewMetrics) const;
 };
 
 } // namespace facebook::react

@@ -23,7 +23,6 @@ void EventEmitterWrapper::dispatchEvent(
     eventEmitter->dispatchEvent(
         eventName,
         payload ? payload->consume() : folly::dynamic::object(),
-        EventPriority::AsynchronousBatched,
         static_cast<RawEvent::Category>(category));
   }
 }
