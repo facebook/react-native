@@ -341,11 +341,7 @@ using namespace facebook::react;
       keyPressMetrics.eventCount = _mostRecentEventCount;
 
       const auto &textInputEventEmitter = static_cast<const TextInputEventEmitter &>(*_eventEmitter);
-      if (props.onKeyPressSync) {
-        textInputEventEmitter.onKeyPressSync(keyPressMetrics);
-      } else {
-        textInputEventEmitter.onKeyPress(keyPressMetrics);
-      }
+      textInputEventEmitter.onKeyPress(keyPressMetrics);
     }
   }
 
@@ -391,12 +387,7 @@ using namespace facebook::react;
 
   if (_eventEmitter) {
     const auto &textInputEventEmitter = static_cast<const TextInputEventEmitter &>(*_eventEmitter);
-    const auto &props = static_cast<const TextInputProps &>(*_props);
-    if (props.onChangeSync) {
-      textInputEventEmitter.onChangeSync([self _textInputMetrics]);
-    } else {
-      textInputEventEmitter.onChange([self _textInputMetrics]);
-    }
+    textInputEventEmitter.onChange([self _textInputMetrics]);
   }
 }
 
