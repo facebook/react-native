@@ -15,7 +15,7 @@ import type {
   Spec as NativePerformanceObserver,
 } from '../NativePerformanceObserver';
 
-import {RawPerformanceEntryTypeValues} from '../RawPerformanceEntry';
+import {RawPerformanceEntryTypeValues} from '../../RawPerformanceEntry';
 
 const reportingType: Set<RawPerformanceEntryType> = new Set();
 const isAlwaysLogged: Set<RawPerformanceEntryType> = new Set();

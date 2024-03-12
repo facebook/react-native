@@ -16,8 +16,6 @@ import type {PerformanceEntryList} from './PerformanceObserver';
 import warnOnce from '../../../../Libraries/Utilities/warnOnce';
 import EventCounts from './EventCounts';
 import MemoryInfo from './MemoryInfo';
-import NativePerformance from './NativePerformance';
-import NativePerformanceObserver from './NativePerformanceObserver';
 import {ALWAYS_LOGGED_ENTRY_TYPES, PerformanceEntry} from './PerformanceEntry';
 import {warnNoNativePerformanceObserver} from './PerformanceObserver';
 import {
@@ -26,6 +24,8 @@ import {
 } from './RawPerformanceEntry';
 import {RawPerformanceEntryTypeValues} from './RawPerformanceEntry';
 import ReactNativeStartupTiming from './ReactNativeStartupTiming';
+import NativePerformance from './specs/NativePerformance';
+import NativePerformanceObserver from './specs/NativePerformanceObserver';
 
 type DetailType = mixed;
 

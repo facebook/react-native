@@ -14,8 +14,8 @@ import type {
   Spec as NativePerformance,
 } from '../NativePerformance';
 
+import {RawPerformanceEntryTypeValues} from '../../RawPerformanceEntry';
 import NativePerformanceObserver from '../NativePerformanceObserver';
-import {RawPerformanceEntryTypeValues} from '../RawPerformanceEntry';
 
 const marks: Map<string, number> = new Map();
 

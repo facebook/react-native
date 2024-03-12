@@ -27,7 +27,7 @@ describe('ReactNativeFeatureFlags', () => {
   });
 
   it('should provide default values for common flags and log an error if the method in the native module is NOT available', () => {
-    jest.doMock('../NativeReactNativeFeatureFlags', () => ({
+    jest.doMock('../specs/NativeReactNativeFeatureFlags', () => ({
       __esModule: true,
       default: {},
     }));
@@ -44,7 +44,7 @@ describe('ReactNativeFeatureFlags', () => {
   it('should access and cache common flags from the native module if it is available', () => {
     const commonTestFlagFn = jest.fn(() => true);
 
-    jest.doMock('../NativeReactNativeFeatureFlags', () => ({
+    jest.doMock('../specs/NativeReactNativeFeatureFlags', () => ({
       __esModule: true,
       default: {
         commonTestFlag: commonTestFlagFn,
