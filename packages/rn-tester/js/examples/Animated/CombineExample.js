@@ -13,12 +13,12 @@ import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import RNTesterButton from '../../components/RNTesterButton';
 import * as React from 'react';
 import {Animated, Text, View, StyleSheet} from 'react-native';
-import type {
-  AnimatedAddition,
-  AnimatedSubtraction,
-  AnimatedMultiplication,
-  AnimatedDivision,
-  AnimatedModulo,
+import {
+  add,
+  subtract,
+  divide,
+  multiply,
+  modulo,
 } from 'react-native/Libraries/Animated/AnimatedImplementation';
 export default ({
   title: 'Combine Example',
@@ -31,18 +31,14 @@ export default ({
 const CombineExample = () => {
   const a = new Animated.Value(0.4);
   const b = new Animated.Value(0.5);
-  const add = Animated.add(a, b);
-  const subtract = Animated.subtract(b, a);
-  const mult = Animated.multiply(a, b);
-  const divide = Animated.divide(b, a);
+  const addition = Animated.add(a, b);
+  const subtraction = Animated.subtract(b, a);
+  const multiplication = Animated.multiply(a, b);
+  const division = Animated.divide(b, a);
   const mod = Animated.modulo(b, 0.4);
 
   const [animation, setAnimation] = React.useState<
-    | AnimatedAddition
-    | AnimatedSubtraction
-    | AnimatedMultiplication
-    | AnimatedDivision
-    | AnimatedModulo,
+    add | subtract | multiply | divide | modulo,
   >(add);
 
   return (
@@ -50,14 +46,16 @@ const CombineExample = () => {
       <Animated.View style={[styles.content, {opacity: animation}]}>
         <Text>Change Opacity</Text>
       </Animated.View>
-      <RNTesterButton onPress={() => setAnimation(add)}>Add</RNTesterButton>
-      <RNTesterButton onPress={() => setAnimation(subtract)}>
+      <RNTesterButton onPress={() => setAnimation(addition)}>
+        Add
+      </RNTesterButton>
+      <RNTesterButton onPress={() => setAnimation(subtraction)}>
         Subtract
       </RNTesterButton>
-      <RNTesterButton onPress={() => setAnimation(mult)}>
+      <RNTesterButton onPress={() => setAnimation(multiplication)}>
         Multiply
       </RNTesterButton>
-      <RNTesterButton onPress={() => setAnimation(divide)}>
+      <RNTesterButton onPress={() => setAnimation(division)}>
         Divide
       </RNTesterButton>
       <RNTesterButton onPress={() => setAnimation(mod)}>Modulo</RNTesterButton>
