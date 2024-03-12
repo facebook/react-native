@@ -74,34 +74,45 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
       // every animation frame. When using the native driver, this callback is
       // called when the animation completes.
       onUpdateRef.current = () => {
-        if (node.__isNative || process.env.NODE_ENV === 'test') {
-          // Check 1: either tests are running or this is a native driven animation.
-          // In native driven animations, this callback is only called once the animation completes.
-          // Call `scheduleUpdate` to synchronise Fiber and Shadow tree.
+        if (process.env.NODE_ENV === 'test') {
+          // Check 1: this is a test.
+          // call `scheduleUpdate` to bypass use of setNativeProps.
           return scheduleUpdate();
+        }
+
+        const isFabricNode = isFabricInstance(instance);
+        if (node.__isNative) {
+          // Check 2: this is an animation driven by native.
+          // In native driven animations, this callback is only called once the animation completes.
+          if (isFabricNode) {
+            // Call `scheduleUpdate` to synchronise Fiber and Shadow tree.
+            // Must not be called in Paper.
+            scheduleUpdate();
+          }
+          return;
         }
 
         if (
           typeof instance !== 'object' ||
           typeof instance?.setNativeProps !== 'function'
         ) {
-          // Check 2: the instance does not support setNativeProps. Call `scheduleUpdate`.
+          // Check 3: the instance does not support setNativeProps. Call `scheduleUpdate`.
           return scheduleUpdate();
         }
 
-        if (!isFabricInstance(instance)) {
-          // Check 3: this is a paper instance, call setNativeProps.
+        if (!isFabricNode) {
+          // Check 4: this is a paper instance, call setNativeProps.
           // $FlowIgnore[not-a-function] - Assume it's still a function.
           // $FlowFixMe[incompatible-use]
           return instance.setNativeProps(node.__getAnimatedValue());
         }
 
         if (!useNativePropsInFabric) {
-          // Check 4: setNativeProps are disabled.
+          // Check 5: setNativeProps are disabled.
           return scheduleUpdate();
         }
 
-        // This is a Fabric instance and setNativeProps are supported.
+        // This is a Fabric instance and setNativeProps is supported.
 
         // $FlowIgnore[not-a-function] - Assume it's still a function.
         // $FlowFixMe[incompatible-use]
