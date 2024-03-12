@@ -96,8 +96,7 @@ class ShadowNodeFamily final {
   /*
    * Dispatches a state update with given priority.
    */
-  void dispatchRawState(StateUpdate&& stateUpdate, EventPriority priority)
-      const;
+  void dispatchRawState(StateUpdate&& stateUpdate) const;
 
   /*
    * Holds currently applied native props. `nullptr` if setNativeProps API is

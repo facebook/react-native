@@ -49,13 +49,11 @@ class TextInputEventEmitter : public ViewEventEmitter {
  private:
   void dispatchTextInputEvent(
       const std::string& name,
-      const TextInputMetrics& textInputMetrics,
-      EventPriority priority = EventPriority::AsynchronousBatched) const;
+      const TextInputMetrics& textInputMetrics) const;
 
   void dispatchTextInputContentSizeChangeEvent(
       const std::string& name,
-      const TextInputMetrics& textInputMetrics,
-      EventPriority priority = EventPriority::AsynchronousBatched) const;
+      const TextInputMetrics& textInputMetrics) const;
 };
 
 } // namespace facebook::react
