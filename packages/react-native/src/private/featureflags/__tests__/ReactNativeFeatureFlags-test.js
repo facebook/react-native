@@ -84,18 +84,32 @@ describe('ReactNativeFeatureFlags', () => {
     expect(jsOnlyTestFlagFn).toHaveBeenCalledTimes(1);
   });
 
-  it('should throw an error if any of the flags has been accessed before overridding', () => {
+  it('should throw an error if any of the JS flags has been accessed before overridding', () => {
     const ReactNativeFeatureFlags = require('../ReactNativeFeatureFlags');
 
-    ReactNativeFeatureFlags.commonTestFlag();
+    ReactNativeFeatureFlags.jsOnlyTestFlag();
 
     expect(() =>
       ReactNativeFeatureFlags.override({
         jsOnlyTestFlag: () => true,
       }),
     ).toThrow(
-      'Feature flags were accessed before being overridden: commonTestFlag',
+      'Feature flags were accessed before being overridden: jsOnlyTestFlag',
     );
+  });
+
+  it('should NOT throw an error if any of the common flags has been accessed before overridding', () => {
+    const ReactNativeFeatureFlags = require('../ReactNativeFeatureFlags');
+
+    ReactNativeFeatureFlags.commonTestFlag();
+
+    expect(() => {
+      ReactNativeFeatureFlags.override({
+        jsOnlyTestFlag: () => true,
+      });
+    }).not.toThrow();
+
+    expect(ReactNativeFeatureFlags.jsOnlyTestFlag()).toBe(true);
   });
 
   it('should throw an error when trying to set overrides twice', () => {
