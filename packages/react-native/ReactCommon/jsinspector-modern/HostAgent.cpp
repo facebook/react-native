@@ -76,6 +76,16 @@ void HostAgent::handleRequest(const cdp::PreparsedRequest& req) {
 
     shouldSendOKResponse = true;
     isFinishedHandlingRequest = false;
+  } else if (req.method == "Debugger.enable") {
+    sessionState_.isDebuggerDomainEnabled = true;
+
+    shouldSendOKResponse = true;
+    isFinishedHandlingRequest = false;
+  } else if (req.method == "Debugger.disable") {
+    sessionState_.isDebuggerDomainEnabled = false;
+
+    shouldSendOKResponse = true;
+    isFinishedHandlingRequest = false;
   }
   // Methods other than domain enables/disables: handle anything we know how
   // to handle, and delegate to the InstanceAgent otherwise.
