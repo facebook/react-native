@@ -20,6 +20,7 @@ namespace facebook::react::jsinspector_modern {
 struct SessionState {
  public:
   // TODO: Generalise this to arbitrary domains
+  bool isDebuggerDomainEnabled{false};
   bool isLogDomainEnabled{false};
   bool isRuntimeDomainEnabled{false};
 

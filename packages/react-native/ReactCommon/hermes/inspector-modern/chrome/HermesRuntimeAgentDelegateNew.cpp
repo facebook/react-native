@@ -74,6 +74,12 @@ class HermesRuntimeAgentDelegateNew::Impl final : public RuntimeAgentDelegate {
     if (sessionState.isLogDomainEnabled) {
       sendHermesIntegrationDescription();
     }
+    if (sessionState.isRuntimeDomainEnabled) {
+      hermes_->enableRuntimeDomain();
+    }
+    if (sessionState.isDebuggerDomainEnabled) {
+      hermes_->enableDebuggerDomain();
+    }
   }
 
   bool handleRequest(const cdp::PreparsedRequest& req) override {
