@@ -63,7 +63,8 @@ std::shared_ptr<TurboModule> ${libraryName}_ModuleProvider(const std::string &mo
 // Note: this CMakeLists.txt template includes dependencies for both NativeModule and components.
 const CMakeListsTemplate = ({
   libraryName,
-}: $ReadOnly<{libraryName: string}>) => {
+  targetName,
+}: $ReadOnly<{libraryName: string, targetName: string}>) => {
   return `# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
@@ -75,20 +76,20 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 file(GLOB react_codegen_SRCS CONFIGURE_DEPENDS *.cpp react/renderer/components/${libraryName}/*.cpp)
 
 add_library(
-  react_codegen_${libraryName}
+  react_codegen_${targetName}
   SHARED
   \${react_codegen_SRCS}
 )
 
-target_include_directories(react_codegen_${libraryName} PUBLIC . react/renderer/components/${libraryName})
+target_include_directories(react_codegen_${targetName} PUBLIC . react/renderer/components/${libraryName})
 
 target_link_libraries(
-  react_codegen_${libraryName}
+  react_codegen_${targetName}
   fbjni
   folly_runtime
   glog
   jsi
-  ${libraryName !== 'rncore' ? 'react_codegen_rncore' : ''}
+  ${targetName !== 'rncore' ? 'react_codegen_rncore' : ''}
   react_debug
   react_nativemodule_core
   react_render_componentregistry
@@ -105,7 +106,7 @@ target_link_libraries(
 )
 
 target_compile_options(
-  react_codegen_${libraryName}
+  react_codegen_${targetName}
   PRIVATE
   -DLOG_TAG=\\"ReactNative\\"
   -fexceptions
@@ -142,9 +143,12 @@ module.exports = {
       modules: modules,
       libraryName: libraryName.replace(/-/g, '_'),
     });
+    // Use rncore as target name for backwards compat
+    const targetName =
+      libraryName === 'FBReactNativeComponentSpec' ? 'rncore' : libraryName;
     return new Map([
       [`jni/${fileName}`, replacedTemplate],
-      ['jni/CMakeLists.txt', CMakeListsTemplate({libraryName: libraryName})],
+      ['jni/CMakeLists.txt', CMakeListsTemplate({libraryName, targetName})],
     ]);
   },
 };

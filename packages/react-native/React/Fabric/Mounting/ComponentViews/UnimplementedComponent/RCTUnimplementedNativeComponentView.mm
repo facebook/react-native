@@ -7,9 +7,9 @@
 
 #import "RCTUnimplementedNativeComponentView.h"
 
-#import <react/renderer/components/rncore/ComponentDescriptors.h>
-#import <react/renderer/components/rncore/EventEmitters.h>
-#import <react/renderer/components/rncore/Props.h>
+#import <react/renderer/components/FBReactNativeComponentSpec/ComponentDescriptors.h>
+#import <react/renderer/components/FBReactNativeComponentSpec/EventEmitters.h>
+#import <react/renderer/components/FBReactNativeComponentSpec/Props.h>
 
 using namespace facebook::react;
 

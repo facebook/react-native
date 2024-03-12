@@ -8,7 +8,7 @@
 #pragma once
 
 #include <folly/dynamic.h>
-#include <react/renderer/components/rncore/Props.h>
+#include <react/renderer/components/FBReactNativeComponentSpec/Props.h>
 #include <react/renderer/core/propsConversions.h>
 
 namespace facebook::react {

@@ -7,9 +7,9 @@
 
 #import "RCTUnimplementedViewComponentView.h"
 
-#import <react/renderer/components/rncore/ComponentDescriptors.h>
-#import <react/renderer/components/rncore/EventEmitters.h>
-#import <react/renderer/components/rncore/Props.h>
+#import <react/renderer/components/FBReactNativeComponentSpec/ComponentDescriptors.h>
+#import <react/renderer/components/FBReactNativeComponentSpec/EventEmitters.h>
+#import <react/renderer/components/FBReactNativeComponentSpec/Props.h>
 
 #import <react/renderer/components/unimplementedview/UnimplementedViewComponentDescriptor.h>
 #import <react/renderer/components/unimplementedview/UnimplementedViewShadowNode.h>

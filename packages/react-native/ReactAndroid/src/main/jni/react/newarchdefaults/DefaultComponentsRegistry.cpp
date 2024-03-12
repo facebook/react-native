@@ -11,7 +11,7 @@
 #include <fbjni/fbjni.h>
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
-#include <react/renderer/components/rncore/ComponentDescriptors.h>
+#include <react/renderer/components/FBReactNativeComponentSpec/ComponentDescriptors.h>
 
 namespace facebook::react {
 
