@@ -8,6 +8,7 @@
 package com.facebook.react.modules.timing
 
 import android.content.Context
+import android.os.Looper
 import android.view.Choreographer.FrameCallback
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.CatalystInstance
@@ -44,6 +45,7 @@ import org.mockito.Mockito.`when` as whenever
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.Shadows.shadowOf
 
 @RunWith(RobolectricTestRunner::class)
 class TimingModuleTest {
@@ -138,6 +140,8 @@ class TimingModuleTest {
   }
 
   private fun stepChoreographerFrame() {
+    shadowOf(Looper.getMainLooper()).idle()
+
     val callback = postFrameCallbackHandler.getAndResetFrameCallback()
     val idleCallback = idlePostFrameCallbackHandler.getAndResetFrameCallback()
     currentTimeNs += FRAME_TIME_NS
