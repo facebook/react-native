@@ -12,7 +12,6 @@
 
 #include "BatchedEventQueue.h"
 #include "RawEvent.h"
-#include "UnbatchedEventQueue.h"
 
 namespace facebook::react {
 
