@@ -1390,6 +1390,13 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
    * calculated against outdated scroll offsets.
    */
   private void recreateFlingAnimation(int scrollX, int maxX) {
+    // If we have any pending custom flings (e.g. from animated `scrollTo`, or flinging to a snap
+    // point), cancel them.
+    // TODO: Can we be more graceful (like OverScroller flings)?
+    if (getFlingAnimator().isRunning()) {
+      getFlingAnimator().cancel();
+    }
+
     if (mScroller != null && !mScroller.isFinished()) {
       // Calculate the velocity and position of the fling animation at the time of this layout
       // event, which may be later than the last ScrollView tick. These values are not commited to
@@ -1419,8 +1426,8 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   }
 
   private void adjustPositionForContentChangeRTL(int left, int right, int oldLeft, int oldRight) {
-    // If we have any pending custon flings (e.g. from aninmated `scrollTo`, or flinging to a snap
-    // point), finish them, commiting the final `scrollX`.
+    // If we have any pending custom flings (e.g. from animated `scrollTo`, or flinging to a snap
+    // point), finish them, committing the final `scrollX`.
     // TODO: Can we be more graceful (like OverScroller flings)?
     if (getFlingAnimator().isRunning()) {
       getFlingAnimator().end();

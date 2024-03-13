@@ -1096,6 +1096,13 @@ public class ReactScrollView extends ScrollView
    * calculated against outdated scroll offsets.
    */
   private void recreateFlingAnimation(int scrollY) {
+    // If we have any pending custom flings (e.g. from animated `scrollTo`, or flinging to a snap
+    // point), cancel them.
+    // TODO: Can we be more graceful (like OverScroller flings)?
+    if (getFlingAnimator().isRunning()) {
+      getFlingAnimator().cancel();
+    }
+
     if (mScroller != null && !mScroller.isFinished()) {
       // Calculate the velocity and position of the fling animation at the time of this layout
       // event, which may be later than the last ScrollView tick. These values are not committed to
