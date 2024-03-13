@@ -179,6 +179,8 @@ using AllHermesVariants = Types<
     JsiIntegrationTestHermesEngineAdapter,
     JsiIntegrationTestHermesWithCDPAgentEngineAdapter>;
 
+using ModernHermesVariants =
+    Types<JsiIntegrationTestHermesWithCDPAgentEngineAdapter>;
 using LegacyHermesVariants = Types<JsiIntegrationTestHermesEngineAdapter>;
 
 TYPED_TEST_SUITE(JsiIntegrationPortableTest, AllEngines);
@@ -192,7 +194,12 @@ using JsiIntegrationHermesLegacyTest =
     JsiIntegrationPortableTest<EngineAdapter>;
 TYPED_TEST_SUITE(JsiIntegrationHermesLegacyTest, LegacyHermesVariants);
 
-#pragma region JsiIntegrationPortableTest
+template <typename EngineAdapter>
+using JsiIntegrationHermesModernTest =
+    JsiIntegrationPortableTest<EngineAdapter>;
+TYPED_TEST_SUITE(JsiIntegrationHermesModernTest, ModernHermesVariants);
+
+#pragma region AllEngines
 
 TYPED_TEST(JsiIntegrationPortableTest, ConnectWithoutCrashing) {
   this->connect();
@@ -472,8 +479,8 @@ TYPED_TEST(JsiIntegrationPortableTest, ExceptionDuringAddBindingIsIgnored) {
   EXPECT_TRUE(this->eval("globalThis.foo === 42").getBool());
 }
 
-#pragma endregion
-#pragma region JsiIntegrationHermesTest
+#pragma endregion // AllEngines
+#pragma region AllHermesVariants
 
 TYPED_TEST(JsiIntegrationHermesTest, EvaluateExpression) {
   this->connect();
@@ -559,7 +566,10 @@ TYPED_TEST(JsiIntegrationHermesTest, EvaluateExpressionInExecutionContext) {
       std::to_string(executionContextId)));
 }
 
-TYPED_TEST(JsiIntegrationHermesTest, ResolveBreakpointAfterReload) {
+#pragma endregion // AllHermesVariants
+#pragma region ModernHermesVariants
+
+TYPED_TEST(JsiIntegrationHermesModernTest, ResolveBreakpointAfterReload) {
   this->connect();
 
   InSequence s;
@@ -610,6 +620,6 @@ TYPED_TEST(JsiIntegrationHermesTest, ResolveBreakpointAfterReload) {
       scriptInfo->value()["params"]["scriptId"]);
 }
 
-#pragma endregion
+#pragma endregion // ModernHermesVariants
 
 } // namespace facebook::react::jsinspector_modern
