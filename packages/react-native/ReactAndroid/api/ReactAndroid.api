@@ -6278,7 +6278,7 @@ public class com/facebook/react/views/scroll/ReactHorizontalScrollView : android
 	public fun addFocusables (Ljava/util/ArrayList;II)V
 	public fun arrowScroll (I)Z
 	public fun canScrollHorizontally (I)Z
-	public fun dispatchGenericPointerEvent (Landroid/view/MotionEvent;)Z
+	public fun dispatchGenericMotionEvent (Landroid/view/MotionEvent;)Z
 	public fun draw (Landroid/graphics/Canvas;)V
 	public fun executeKeyEvent (Landroid/view/KeyEvent;)Z
 	public fun flashScrollIndicators ()V
@@ -6404,7 +6404,7 @@ public class com/facebook/react/views/scroll/ReactScrollView : android/widget/Sc
 	public fun <init> (Landroid/content/Context;)V
 	public fun <init> (Landroid/content/Context;Lcom/facebook/react/views/scroll/FpsListener;)V
 	public fun abortAnimation ()V
-	public fun dispatchGenericPointerEvent (Landroid/view/MotionEvent;)Z
+	public fun dispatchGenericMotionEvent (Landroid/view/MotionEvent;)Z
 	public fun draw (Landroid/graphics/Canvas;)V
 	public fun executeKeyEvent (Landroid/view/KeyEvent;)Z
 	public fun flashScrollIndicators ()V
@@ -7567,7 +7567,7 @@ public class com/facebook/react/views/view/ReactViewGroup : android/view/ViewGro
 	public fun addView (Landroid/view/View;ILandroid/view/ViewGroup$LayoutParams;)V
 	protected fun addViewInLayout (Landroid/view/View;ILandroid/view/ViewGroup$LayoutParams;Z)Z
 	protected fun dispatchDraw (Landroid/graphics/Canvas;)V
-	public fun dispatchGenericPointerEvent (Landroid/view/MotionEvent;)Z
+	public fun dispatchGenericMotionEvent (Landroid/view/MotionEvent;)Z
 	public fun dispatchProvideStructure (Landroid/view/ViewStructure;)V
 	protected fun dispatchSetPressed (Z)V
 	protected fun drawChild (Landroid/graphics/Canvas;Landroid/view/View;J)Z
