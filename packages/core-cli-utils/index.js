@@ -9,10 +9,13 @@
  * @oncall react_native
  */
 
+import {tasks as android} from './private/android.js';
 import {tasks as apple} from './private/apple.js';
 import {tasks as clean} from './private/clean.js';
 
+/* eslint sort-keys : "error" */
 export default {
-  clean,
+  android,
   apple,
+  clean,
 };
