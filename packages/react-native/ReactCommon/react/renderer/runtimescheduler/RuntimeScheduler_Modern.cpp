@@ -74,10 +74,6 @@ bool RuntimeScheduler_Modern::getShouldYield() const noexcept {
       (!taskQueue_.empty() && taskQueue_.top() != currentTask_);
 }
 
-bool RuntimeScheduler_Modern::getIsSynchronous() const noexcept {
-  return isSynchronous_;
-}
-
 void RuntimeScheduler_Modern::cancelTask(Task& task) noexcept {
   task.callback.reset();
 }
@@ -105,8 +101,6 @@ void RuntimeScheduler_Modern::executeNowOnTheSameThread(
 
         syncTaskRequests_--;
 
-        isSynchronous_ = true;
-
         auto currentTime = now_();
         auto priority = SchedulerPriority::ImmediatePriority;
         auto expirationTime =
@@ -115,8 +109,6 @@ void RuntimeScheduler_Modern::executeNowOnTheSameThread(
             priority, std::move(callback), expirationTime);
 
         executeTask(runtime, task, currentTime);
-
-        isSynchronous_ = false;
       });
 
   bool shouldScheduleWorkLoop = false;

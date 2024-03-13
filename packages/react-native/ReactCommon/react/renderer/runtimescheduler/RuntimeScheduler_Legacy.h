@@ -78,14 +78,6 @@ class RuntimeScheduler_Legacy final : public RuntimeSchedulerBase {
   bool getShouldYield() const noexcept override;
 
   /*
-   * Return value informs if the current task is executed inside synchronous
-   * block.
-   *
-   * Can be called from any thread.
-   */
-  bool getIsSynchronous() const noexcept override;
-
-  /*
    * Returns value of currently executed task. Designed to be called from React.
    *
    * Thread synchronization must be enforced externally.

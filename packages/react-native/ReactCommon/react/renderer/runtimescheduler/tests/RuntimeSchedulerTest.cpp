@@ -777,11 +777,9 @@ TEST_P(RuntimeSchedulerTest, basicSameThreadExecution) {
   bool didRunSynchronousTask = false;
   std::thread t1([this, &didRunSynchronousTask]() {
     runtimeScheduler_->executeNowOnTheSameThread(
-        [this, &didRunSynchronousTask](jsi::Runtime& /*rt*/) {
-          EXPECT_TRUE(runtimeScheduler_->getIsSynchronous());
+        [&didRunSynchronousTask](jsi::Runtime& /*rt*/) {
           didRunSynchronousTask = true;
         });
-    EXPECT_FALSE(runtimeScheduler_->getIsSynchronous());
   });
 
   auto hasTask = stubQueue_->waitForTask();
