@@ -17,10 +17,7 @@ add_compile_options(
 file(GLOB rrc_textinput_SRC CONFIGURE_DEPENDS platform/android/react/renderer/components/androidtextinput/*.cpp)
 add_library(rrc_textinput STATIC ${rrc_textinput_SRC})
 
-target_include_directories(rrc_textinput
-        PUBLIC
-          ${CMAKE_CURRENT_SOURCE_DIR}/platform/android/
-)
+target_include_directories(rrc_textinput PUBLIC . ${CMAKE_CURRENT_SOURCE_DIR}/platform/android/)
 
 target_link_libraries(rrc_textinput
         glog
