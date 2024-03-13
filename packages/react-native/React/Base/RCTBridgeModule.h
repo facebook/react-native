@@ -244,7 +244,7 @@ RCT_EXTERN_C_END
  */
 #define RCT_REMAP_METHOD(js_name, method)       \
   _RCT_EXTERN_REMAP_METHOD(js_name, method, NO) \
-  -(void)method RCT_DYNAMIC;
+  -(void)method RCT_DYNAMIC
 
 /**
  * Similar to RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD but lets you set
@@ -256,7 +256,7 @@ RCT_EXTERN_C_END
  */
 #define RCT_REMAP_BLOCKING_SYNCHRONOUS_METHOD(js_name, returnType, method) \
   _RCT_EXTERN_REMAP_METHOD(js_name, method, YES)                           \
-  -(returnType)method RCT_DYNAMIC;
+  -(returnType)method RCT_DYNAMIC
 
 /**
  * Use this macro in a private Objective-C implementation file to automatically
