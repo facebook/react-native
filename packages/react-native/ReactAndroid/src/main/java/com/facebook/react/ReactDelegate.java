@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.devsupport.DoubleTapReloadRecognizer;
+import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.interfaces.fabric.ReactSurface;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 
@@ -218,22 +219,28 @@ public class ReactDelegate {
    *     application.
    */
   public boolean shouldShowDevMenuOrReload(int keyCode, KeyEvent event) {
-    if (ReactFeatureFlags.enableBridgelessArchitecture) {
-      // TODO T156475655: Implement shouldShowDevMenuOrReload for Bridgeless
-      return false;
+    DevSupportManager devSupportManager = null;
+    if (ReactFeatureFlags.enableBridgelessArchitecture
+        && mReactHost != null
+        && mReactHost.getDevSupportManager() != null) {
+      devSupportManager = mReactHost.getDevSupportManager();
     } else if (getReactNativeHost().hasInstance()
         && getReactNativeHost().getUseDeveloperSupport()) {
-      if (keyCode == KeyEvent.KEYCODE_MENU) {
-        getReactNativeHost().getReactInstanceManager().showDevOptionsDialog();
-        return true;
-      }
-      boolean didDoubleTapR =
-          Assertions.assertNotNull(mDoubleTapReloadRecognizer)
-              .didDoubleTapR(keyCode, mActivity.getCurrentFocus());
-      if (didDoubleTapR) {
-        getReactNativeHost().getReactInstanceManager().getDevSupportManager().handleReloadJS();
-        return true;
-      }
+      devSupportManager = getReactNativeHost().getReactInstanceManager().getDevSupportManager();
+    } else {
+      return false;
+    }
+
+    if (keyCode == KeyEvent.KEYCODE_MENU) {
+      devSupportManager.showDevOptionsDialog();
+      return true;
+    }
+    boolean didDoubleTapR =
+        Assertions.assertNotNull(mDoubleTapReloadRecognizer)
+            .didDoubleTapR(keyCode, mActivity.getCurrentFocus());
+    if (didDoubleTapR) {
+      devSupportManager.handleReloadJS();
+      return true;
     }
     return false;
   }
