@@ -135,6 +135,19 @@ public class ReactDelegate {
     return false;
   }
 
+  public boolean onNewIntent(Intent intent) {
+    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      mReactHost.onNewIntent(intent);
+      return true;
+    } else {
+      if (getReactNativeHost().hasInstance()) {
+        getReactNativeHost().getReactInstanceManager().onNewIntent(intent);
+        return true;
+      }
+    }
+    return false;
+  }
+
   public void onActivityResult(
       int requestCode, int resultCode, Intent data, boolean shouldForwardToReactInstance) {
     if (ReactFeatureFlags.enableBridgelessArchitecture) {
