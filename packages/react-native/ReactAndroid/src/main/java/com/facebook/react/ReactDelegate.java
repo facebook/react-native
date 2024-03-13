@@ -9,6 +9,7 @@ package com.facebook.react;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import androidx.annotation.Nullable;
@@ -168,6 +169,17 @@ public class ReactDelegate {
     } else {
       if (getReactNativeHost().hasInstance()) {
         getReactNativeHost().getReactInstanceManager().onWindowFocusChange(hasFocus);
+      }
+    }
+  }
+
+  public void onConfigurationChanged(Configuration newConfig) {
+    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      mReactHost.onConfigurationChanged(Assertions.assertNotNull(mActivity));
+    } else {
+      if (getReactNativeHost().hasInstance()) {
+        getReactInstanceManager()
+            .onConfigurationChanged(Assertions.assertNotNull(mActivity), newConfig);
       }
     }
   }

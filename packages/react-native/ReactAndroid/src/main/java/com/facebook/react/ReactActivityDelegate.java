@@ -191,13 +191,7 @@ public class ReactActivityDelegate {
   }
 
   public void onConfigurationChanged(Configuration newConfig) {
-    if (ReactFeatureFlags.enableBridgelessArchitecture) {
-      // TODO T156475655: support onConfigurationChanged
-    } else {
-      if (getReactNativeHost().hasInstance()) {
-        getReactInstanceManager().onConfigurationChanged(getContext(), newConfig);
-      }
-    }
+    mReactDelegate.onConfigurationChanged(newConfig);
   }
 
   public void requestPermissions(

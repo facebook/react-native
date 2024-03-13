@@ -58,6 +58,7 @@ import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.interfaces.TaskInterface;
 import com.facebook.react.interfaces.exceptionmanager.ReactJsExceptionHandler;
 import com.facebook.react.interfaces.fabric.ReactSurface;
+import com.facebook.react.modules.appearance.AppearanceModule;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.runtime.internal.bolts.Continuation;
@@ -697,6 +698,20 @@ public class ReactHostImpl implements ReactHost {
     ReactSoftExceptionLogger.logSoftException(
         TAG,
         new ReactNoCrashSoftException("Tried to access onNewIntent while context is not ready"));
+  }
+
+  @ThreadConfined(UI)
+  @Override
+  public void onConfigurationChanged(Context updatedContext) {
+    ReactContext currentReactContext = getCurrentReactContext();
+    if (currentReactContext != null) {
+      AppearanceModule appearanceModule =
+          currentReactContext.getNativeModule(AppearanceModule.class);
+
+      if (appearanceModule != null) {
+        appearanceModule.onConfigurationChanged(updatedContext);
+      }
+    }
   }
 
   @Nullable
