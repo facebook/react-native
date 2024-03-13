@@ -10,7 +10,7 @@
     "directory": "packages/core-cli-utils"
   },
   "exports": {
-    ".": "./index.js",
+    ".": "./src/index.js",
     "./package.json": "./package.json"
   },
   "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/core-cli-utils#readme",
