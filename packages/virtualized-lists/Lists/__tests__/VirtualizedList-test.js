@@ -11,6 +11,7 @@
 'use strict';
 
 import VirtualizedList from '../VirtualizedList';
+import {format} from 'node:util';
 import React from 'react';
 import ReactTestRenderer from 'react-test-renderer';
 
@@ -71,11 +72,12 @@ describe('VirtualizedList', () => {
   it('throws if no renderItem or ListItemComponent', () => {
     // Silence the React error boundary warning; we expect an uncaught error.
     const consoleError = console.error;
-    jest.spyOn(console, 'error').mockImplementation(message => {
-      if (message.startsWith('The above error occurred in the ')) {
+    jest.spyOn(console, 'error').mockImplementation((...args) => {
+      const message = format(...args);
+      if (message.includes('The above error occurred in the ')) {
         return;
       }
-      consoleError(message);
+      consoleError(...args);
     });
 
     const componentFactory = () =>

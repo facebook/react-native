@@ -23,6 +23,7 @@ jest
   // findNodeHandle is imported from RendererProxy so mock that whole module.
   .setMock('../../ReactNative/RendererProxy', {findNodeHandle: () => 1});
 
+import {format} from 'node:util';
 import * as React from 'react';
 import TestRenderer from 'react-test-renderer';
 
@@ -295,11 +296,13 @@ describe('Native Animated', () => {
         useNativeDriver: true,
       });
 
+      const consoleError = console.error;
       jest.spyOn(console, 'error').mockImplementationOnce((...args) => {
-        if (args[0].startsWith('The above error occurred in the')) {
+        const message = format(args);
+        if (message.includes('The above error occurred in the')) {
           return;
         }
-        console.errorDebug(...args);
+        consoleError(...args);
       });
 
       expect(() => {
