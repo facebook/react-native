@@ -139,6 +139,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
                 : ViewCompat.LAYOUT_DIRECTION_LTR);
 
     setOnHierarchyChangeListener(this);
+    setClipChildren(false);
   }
 
   public boolean getScrollEnabled() {
