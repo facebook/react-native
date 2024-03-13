@@ -176,13 +176,7 @@ public class ReactActivityDelegate {
   }
 
   public boolean onNewIntent(Intent intent) {
-    if (!ReactFeatureFlags.enableBridgelessArchitecture) {
-      if (getReactNativeHost().hasInstance()) {
-        getReactNativeHost().getReactInstanceManager().onNewIntent(intent);
-        return true;
-      }
-    }
-    return false;
+    return mReactDelegate.onNewIntent(intent);
   }
 
   public void onWindowFocusChanged(boolean hasFocus) {
