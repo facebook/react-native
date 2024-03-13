@@ -1327,19 +1327,8 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
    * Scrolls to a new position preserving any momentum scrolling animation.
    */
   public void scrollToPreservingMomentum(int x, int y) {
-    float velocity = 0;
-    float direction = 0;
-    if (mScroller != null && !mScroller.isFinished()) {
-      velocity = mScroller.getCurrVelocity();
-      direction = Math.signum(mOnScrollDispatchHelper.getXFlingVelocity());
-      mScroller.abortAnimation();
-    }
-
     scrollTo(x, y);
-
-    if (mScroller != null && velocity != 0) {
-      fling((int)(direction * velocity));
-    }
+    recreateFlingAnimation(x, Integer.MAX_VALUE);
   }
 
   private boolean isContentReady() {
@@ -1395,24 +1384,14 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     }
   }
 
-  private void adjustPositionForContentChangeRTL(int left, int right, int oldLeft, int oldRight) {
-    // If we have any pending custon flings (e.g. from aninmated `scrollTo`, or flinging to a snap
-    // point), finish them, commiting the final `scrollX`.
-    // TODO: Can we be more graceful (like OverScroller flings)?
-    if (getFlingAnimator().isRunning()) {
-      getFlingAnimator().end();
-    }
-
-    int distanceToRightEdge = oldRight - getScrollX();
-    int newWidth = right - left;
-    int scrollX = newWidth - distanceToRightEdge;
-    scrollTo(scrollX, getScrollY());
-
-    // If we are in the middle of a fling animation from the user removing their finger
-    // (OverScroller is in `FLING_MODE`), we must cancel and recreate the existing fling animation
-    // since it was calculated against outdated scroll offsets.
+  /**
+   * If we are in the middle of a fling animation from the user removing their finger
+   * (OverScroller is in `FLING_MODE`), recreate the existing fling animation since it was
+   * calculated against outdated scroll offsets.
+   */
+  private void recreateFlingAnimation(int scrollX, int maxX) {
     if (mScroller != null && !mScroller.isFinished()) {
-      // Calculate the veliocity and position of the fling animation at the time of this layout
+      // Calculate the velocity and position of the fling animation at the time of this layout
       // event, which may be later than the last ScrollView tick. These values are not commited to
       // the underlying ScrollView, which will recalculate positions on its next tick.
       int scrollerXBeforeTick = mScroller.getCurrX();
@@ -1432,11 +1411,27 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
         float flingVelocityX = mScroller.getCurrVelocity() * direction;
 
         mScroller.fling(
-            scrollX, getScrollY(), (int) flingVelocityX, 0, 0, newWidth - getWidth(), 0, 0);
+          scrollX, getScrollY(), (int) flingVelocityX, 0, 0, maxX, 0, 0);
       } else {
         scrollTo(scrollX + (mScroller.getCurrX() - scrollerXBeforeTick), getScrollY());
       }
     }
+  }
+
+  private void adjustPositionForContentChangeRTL(int left, int right, int oldLeft, int oldRight) {
+    // If we have any pending custon flings (e.g. from aninmated `scrollTo`, or flinging to a snap
+    // point), finish them, commiting the final `scrollX`.
+    // TODO: Can we be more graceful (like OverScroller flings)?
+    if (getFlingAnimator().isRunning()) {
+      getFlingAnimator().end();
+    }
+
+    int distanceToRightEdge = oldRight - getScrollX();
+    int newWidth = right - left;
+    int scrollX = newWidth - distanceToRightEdge;
+    scrollTo(scrollX, getScrollY());
+
+    recreateFlingAnimation(scrollX, newWidth - getWidth());
   }
 
   @Nullable

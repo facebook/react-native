@@ -1091,22 +1091,45 @@ public class ReactScrollView extends ScrollView
   }
 
   /**
+   * If we are in the middle of a fling animation from the user removing their finger
+   * (OverScroller is in `FLING_MODE`), recreate the existing fling animation since it was
+   * calculated against outdated scroll offsets.
+   */
+  private void recreateFlingAnimation(int scrollY) {
+    if (mScroller != null && !mScroller.isFinished()) {
+      // Calculate the velocity and position of the fling animation at the time of this layout
+      // event, which may be later than the last ScrollView tick. These values are not committed to
+      // the underlying ScrollView, which will recalculate positions on its next tick.
+      int scrollerYBeforeTick = mScroller.getCurrY();
+      boolean hasMoreTicks = mScroller.computeScrollOffset();
+
+      // Stop the existing animation at the current state of the scroller. We will then recreate
+      // it starting at the adjusted y offset.
+      mScroller.forceFinished(true);
+
+      if (hasMoreTicks) {
+        // OverScroller.getCurrVelocity() returns an absolute value of the velocity a current fling
+        // animation (only FLING_MODE animations). We derive direction along the Y axis from the
+        // start and end of the, animation assuming ScrollView never fires horizontal fling
+        // animations.
+        // TODO: This does not fully handle overscroll.
+        float direction = Math.signum(mScroller.getFinalY() - mScroller.getStartY());
+        float flingVelocityY = mScroller.getCurrVelocity() * direction;
+
+        mScroller.fling(
+          getScrollX(), scrollY, 0, (int) flingVelocityY, 0, 0, 0, Integer.MAX_VALUE);
+      } else {
+        scrollTo(getScrollX(), scrollY + (mScroller.getCurrX() - scrollerYBeforeTick));
+      }
+    }
+  }
+
+  /**
    * Scrolls to a new position preserving any momentum scrolling animation.
    */
   public void scrollToPreservingMomentum(int x, int y) {
-    float velocity = 0;
-    float direction = 0;
-    if (mScroller != null && !mScroller.isFinished()) {
-      velocity = mScroller.getCurrVelocity();
-      direction = Math.signum(mOnScrollDispatchHelper.getYFlingVelocity());
-      mScroller.abortAnimation();
-    }
-
     scrollTo(x, y);
-
-    if (mScroller != null && velocity != 0) {
-      fling((int)(direction * velocity));
-    }
+    recreateFlingAnimation(y);
   }
 
   private boolean isContentReady() {
