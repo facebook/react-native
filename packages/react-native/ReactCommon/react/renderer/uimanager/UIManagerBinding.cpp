@@ -500,18 +500,7 @@ jsi::Value UIManagerBinding::get(
               RuntimeSchedulerBinding::getBinding(runtime);
           auto surfaceId = surfaceIdFromValue(runtime, arguments[0]);
 
-          if (!uiManager->backgroundExecutor_ ||
-              (runtimeSchedulerBinding &&
-               runtimeSchedulerBinding->getIsSynchronous())) {
-            auto shadowNodeList =
-                shadowNodeListFromValue(runtime, arguments[1]);
-            uiManager->completeSurface(
-                surfaceId,
-                shadowNodeList,
-                {.enableStateReconciliation = true,
-                 .mountSynchronously = false,
-                 .shouldYield = nullptr});
-          } else {
+          if (uiManager->backgroundExecutor_) {
             auto weakShadowNodeList =
                 weakShadowNodeListFromValue(runtime, arguments[1]);
             static std::atomic_uint_fast8_t completeRootEventCounter{0};
@@ -542,6 +531,15 @@ jsi::Value UIManagerBinding::get(
                          /* .shouldYield = */ shouldYield});
                   }
                 });
+          } else {
+            auto shadowNodeList =
+                shadowNodeListFromValue(runtime, arguments[1]);
+            uiManager->completeSurface(
+                surfaceId,
+                shadowNodeList,
+                {.enableStateReconciliation = true,
+                 .mountSynchronously = false,
+                 .shouldYield = nullptr});
           }
 
           return jsi::Value::undefined();

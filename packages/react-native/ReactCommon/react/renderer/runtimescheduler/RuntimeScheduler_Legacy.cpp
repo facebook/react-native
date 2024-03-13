@@ -79,10 +79,6 @@ bool RuntimeScheduler_Legacy::getShouldYield() const noexcept {
   return runtimeAccessRequests_ > 0;
 }
 
-bool RuntimeScheduler_Legacy::getIsSynchronous() const noexcept {
-  return isSynchronous_;
-}
-
 void RuntimeScheduler_Legacy::cancelTask(Task& task) noexcept {
   task.callback.reset();
 }
@@ -108,9 +104,7 @@ void RuntimeScheduler_Legacy::executeNowOnTheSameThread(
             "RuntimeScheduler::executeNowOnTheSameThread callback");
 
         runtimeAccessRequests_ -= 1;
-        isSynchronous_ = true;
         callback(runtime);
-        isSynchronous_ = false;
       });
 
   // Resume work loop if needed. In synchronous mode
