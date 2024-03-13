@@ -131,7 +131,11 @@ void ReactInstanceIntegrationTest::initializeRuntime(std::string_view script) {
   react::ReactInstance::JSRuntimeFlags flags{
       .isProfiling = false,
   };
-  instance->initializeRuntime(flags, [](jsi::Runtime&) {});
+  instance->initializeRuntime(flags, [](jsi::Runtime& rt) {
+    // NOTE: RN's console polyfill (included in prelude.js.h) depends on the
+    // native logging hook being installed, even if it's a noop.
+    facebook::react::bindNativeLogger(rt, [](auto, auto) {});
+  });
 
   messageQueueThread->tick();
 
@@ -199,11 +203,10 @@ TEST_P(ReactInstanceIntegrationTestWithFlags, ConsoleLog) {
 
   InSequence s;
 
-  // Hermes console.* interception is currently explicitly disabled under the
-  // modern registry, and the runtime does not yet fire these events. When the
-  // implementation is more complete we should be able to remove this
-  // condition.
-  if (!InspectorFlags::getInstance().getEnableModernCDPRegistry()) {
+  // Hermes console.* interception is explicitly disabled under CDPHandler,
+  // but Hermes CDPAgent and the legacy RN backend should both work.
+  if (!InspectorFlags::getInstance().getEnableModernCDPRegistry() ||
+      InspectorFlags::getInstance().getEnableHermesCDPAgent()) {
     EXPECT_CALL(
         getRemoteConnection(),
         onMessage(JsonParsed(AllOf(
