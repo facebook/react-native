@@ -184,6 +184,19 @@ public class ReactDelegate {
     }
   }
 
+  public boolean onKeyDown(int keyCode, KeyEvent event) {
+    if (keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD
+        && ((ReactFeatureFlags.enableBridgelessArchitecture
+                && mReactHost != null
+                && mReactHost.getDevSupportManager() != null)
+            || (getReactNativeHost().hasInstance()
+                && getReactNativeHost().getUseDeveloperSupport()))) {
+      event.startTracking();
+      return true;
+    }
+    return false;
+  }
+
   public void loadApp() {
     loadApp(mMainComponentName);
   }
