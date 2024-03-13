@@ -136,6 +136,11 @@ class MockRuntimeTargetDelegate : public RuntimeTargetDelegate {
        const ExecutionContextDescription&,
        RuntimeExecutor),
       (override));
+  MOCK_METHOD(
+      void,
+      addConsoleMessage,
+      (jsi::Runtime & runtime, ConsoleMessage message),
+      (override));
 };
 
 class MockRuntimeAgentDelegate : public RuntimeAgentDelegate {

@@ -73,6 +73,65 @@ class HermesRuntimeTargetDelegate::Impl final : public RuntimeTargetDelegate {
               std::move(runtimeExecutor)));
   }
 
+  void addConsoleMessage(jsi::Runtime& /*unused*/, ConsoleMessage message)
+      override {
+    using HermesConsoleMessage = facebook::hermes::cdp::ConsoleMessage;
+    using HermesConsoleAPIType = facebook::hermes::cdp::ConsoleAPIType;
+
+    HermesConsoleAPIType type{};
+    switch (message.type) {
+      case ConsoleAPIType::kLog:
+        type = HermesConsoleAPIType::kLog;
+        break;
+      case ConsoleAPIType::kDebug:
+        type = HermesConsoleAPIType::kDebug;
+        break;
+      case ConsoleAPIType::kInfo:
+        type = HermesConsoleAPIType::kInfo;
+        break;
+      case ConsoleAPIType::kError:
+        type = HermesConsoleAPIType::kError;
+        break;
+      case ConsoleAPIType::kWarning:
+        type = HermesConsoleAPIType::kWarning;
+        break;
+      case ConsoleAPIType::kDir:
+        type = HermesConsoleAPIType::kDir;
+        break;
+      case ConsoleAPIType::kDirXML:
+        type = HermesConsoleAPIType::kDirXML;
+        break;
+      case ConsoleAPIType::kTable:
+        type = HermesConsoleAPIType::kTable;
+        break;
+      case ConsoleAPIType::kTrace:
+        type = HermesConsoleAPIType::kTrace;
+        break;
+      case ConsoleAPIType::kStartGroup:
+        type = HermesConsoleAPIType::kStartGroup;
+        break;
+      case ConsoleAPIType::kStartGroupCollapsed:
+        type = HermesConsoleAPIType::kStartGroupCollapsed;
+        break;
+      case ConsoleAPIType::kEndGroup:
+        type = HermesConsoleAPIType::kEndGroup;
+        break;
+      case ConsoleAPIType::kClear:
+        type = HermesConsoleAPIType::kClear;
+        break;
+      case ConsoleAPIType::kAssert:
+        type = HermesConsoleAPIType::kAssert;
+        break;
+      case ConsoleAPIType::kTimeEnd:
+        type = HermesConsoleAPIType::kTimeEnd;
+        break;
+      default:
+        throw std::logic_error{"Unknown console message type"};
+    }
+    cdpDebugAPI_->addConsoleMessage(
+        HermesConsoleMessage{message.timestamp, type, std::move(message.args)});
+  }
+
  private:
   HermesRuntimeTargetDelegate& delegate_;
   std::shared_ptr<HermesRuntime> runtime_;
@@ -116,6 +175,12 @@ HermesRuntimeTargetDelegate::createAgentDelegate(
       std::move(previouslyExportedState),
       executionContextDescription,
       std::move(runtimeExecutor));
+}
+
+void HermesRuntimeTargetDelegate::addConsoleMessage(
+    jsi::Runtime& runtime,
+    ConsoleMessage message) {
+  impl_->addConsoleMessage(runtime, std::move(message));
 }
 
 #ifdef HERMES_ENABLE_DEBUGGER
