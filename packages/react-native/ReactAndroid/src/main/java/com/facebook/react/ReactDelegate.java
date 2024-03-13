@@ -138,7 +138,7 @@ public class ReactDelegate {
   }
 
   public boolean onNewIntent(Intent intent) {
-    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+    if (ReactFeatureFlags.enableBridgelessArchitecture && mReactHost != null) {
       mReactHost.onNewIntent(intent);
       return true;
     } else {
@@ -152,7 +152,7 @@ public class ReactDelegate {
 
   public void onActivityResult(
       int requestCode, int resultCode, Intent data, boolean shouldForwardToReactInstance) {
-    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+    if (ReactFeatureFlags.enableBridgelessArchitecture && mReactHost != null) {
       mReactHost.onActivityResult(mActivity, requestCode, resultCode, data);
     } else {
       if (getReactNativeHost().hasInstance() && shouldForwardToReactInstance) {
@@ -164,7 +164,7 @@ public class ReactDelegate {
   }
 
   public void onWindowFocusChanged(boolean hasFocus) {
-    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+    if (ReactFeatureFlags.enableBridgelessArchitecture && mReactHost != null) {
       mReactHost.onWindowFocusChange(hasFocus);
     } else {
       if (getReactNativeHost().hasInstance()) {
@@ -174,7 +174,7 @@ public class ReactDelegate {
   }
 
   public void onConfigurationChanged(Configuration newConfig) {
-    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+    if (ReactFeatureFlags.enableBridgelessArchitecture && mReactHost != null) {
       mReactHost.onConfigurationChanged(Assertions.assertNotNull(mActivity));
     } else {
       if (getReactNativeHost().hasInstance()) {
