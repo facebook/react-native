@@ -133,7 +133,7 @@ class RNTesterApplication : Application(), ReactApplication {
     super.onCreate()
     SoLoader.init(this, /* native exopackage */ false)
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
-      load()
+      load(bridgelessEnabled = false)
     }
   }
 }

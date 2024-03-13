@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<66678139be02293ff532e8e125ccc608>>
+ * @generated SignedSource<<fa6a02162b349234f40ba9d36b1f955f>>
  * @flow strict-local
  */
 
@@ -134,11 +134,11 @@ export const inspectorEnableCxxInspectorPackagerConnection: Getter<boolean> = cr
 /**
  * Flag determining if the new Hermes CDPAgent API should be enabled in the modern CDP backend. This flag is global and should not be changed across React Host lifetimes.
  */
-export const inspectorEnableHermesCDPAgent: Getter<boolean> = createNativeFlagGetter('inspectorEnableHermesCDPAgent', false);
+export const inspectorEnableHermesCDPAgent: Getter<boolean> = createNativeFlagGetter('inspectorEnableHermesCDPAgent', true);
 /**
  * Flag determining if the modern CDP backend should be enabled. This flag is global and should not be changed across React Host lifetimes.
  */
-export const inspectorEnableModernCDPRegistry: Getter<boolean> = createNativeFlagGetter('inspectorEnableModernCDPRegistry', false);
+export const inspectorEnableModernCDPRegistry: Getter<boolean> = createNativeFlagGetter('inspectorEnableModernCDPRegistry', true);
 /**
  * This is a temporary flag to disable part of the mount hooks pipeline to investigate a crash.
  */
