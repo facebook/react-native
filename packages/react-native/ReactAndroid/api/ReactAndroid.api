@@ -150,6 +150,7 @@ public class com/facebook/react/ReactDelegate {
 	public fun loadApp (Ljava/lang/String;)V
 	public fun onActivityResult (IILandroid/content/Intent;Z)V
 	public fun onBackPressed ()Z
+	public fun onConfigurationChanged (Landroid/content/res/Configuration;)V
 	public fun onHostDestroy ()V
 	public fun onHostPause ()V
 	public fun onHostResume ()V
@@ -199,6 +200,7 @@ public abstract interface class com/facebook/react/ReactHost {
 	public abstract fun getReactQueueConfiguration ()Lcom/facebook/react/bridge/queue/ReactQueueConfiguration;
 	public abstract fun onActivityResult (Landroid/app/Activity;IILandroid/content/Intent;)V
 	public abstract fun onBackPressed ()Z
+	public abstract fun onConfigurationChanged (Landroid/content/Context;)V
 	public abstract fun onHostDestroy ()V
 	public abstract fun onHostDestroy (Landroid/app/Activity;)V
 	public abstract fun onHostPause ()V
@@ -3639,6 +3641,7 @@ public class com/facebook/react/runtime/ReactHostImpl : com/facebook/react/React
 	public fun getReactQueueConfiguration ()Lcom/facebook/react/bridge/queue/ReactQueueConfiguration;
 	public fun onActivityResult (Landroid/app/Activity;IILandroid/content/Intent;)V
 	public fun onBackPressed ()Z
+	public fun onConfigurationChanged (Landroid/content/Context;)V
 	public fun onHostDestroy ()V
 	public fun onHostDestroy (Landroid/app/Activity;)V
 	public fun onHostPause ()V
