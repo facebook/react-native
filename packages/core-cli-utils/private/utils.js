@@ -11,6 +11,7 @@
 
 import type {Task} from './types';
 
+import execa from 'execa';
 import os from 'os';
 
 export function task(label: string, action: Task['action']): Task {
@@ -22,3 +23,28 @@ export function task(label: string, action: Task['action']): Task {
 
 export const isWindows = os.platform() === 'win32';
 export const isMacOS = os.platform() === 'darwin';
+
+type PathCheckResult = {
+  found: boolean,
+  dep: string,
+  description: string,
+};
+
+export function isOnPath(dep: string, description: string): PathCheckResult {
+  const result = execa.sync(isWindows ? 'where' : 'which', [dep]);
+  return {
+    dep,
+    description,
+    found: result.exitCode === 0,
+  };
+}
+
+export function assertDependencies(
+  ...deps: $ReadOnlyArray<ReturnType<typeof isOnPath>>
+) {
+  for (const {found, dep, description} of deps) {
+    if (!found) {
+      throw new Error(`"${dep}" not found, ${description}`);
+    }
+  }
+}

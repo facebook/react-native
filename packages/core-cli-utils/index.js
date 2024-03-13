@@ -9,8 +9,10 @@
  * @oncall react_native
  */
 
+import {tasks as apple} from './private/apple.js';
 import {tasks as clean} from './private/clean.js';
 
 export default {
   clean,
+  apple,
 };
