@@ -21,8 +21,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class RCTMountingManager;
-
 /**
  * Exactly same semantic as `facebook::react::SchedulerDelegate`.
  */
