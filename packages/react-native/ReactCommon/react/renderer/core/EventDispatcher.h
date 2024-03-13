@@ -12,7 +12,6 @@
 #include <react/renderer/core/EventListener.h>
 #include <react/renderer/core/EventQueueProcessor.h>
 #include <react/renderer/core/StateUpdate.h>
-#include <react/renderer/core/UnbatchedEventQueue.h>
 
 namespace facebook::react {
 
