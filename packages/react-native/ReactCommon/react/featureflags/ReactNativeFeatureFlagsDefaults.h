@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c63cd0b38dfa9c4d6843a4b879f8f4df>>
+ * @generated SignedSource<<c1c58e483f6f6f0a16d615f7c2168b4b>>
  */
 
 /**
@@ -64,11 +64,11 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool inspectorEnableHermesCDPAgent() override {
-    return false;
+    return true;
   }
 
   bool inspectorEnableModernCDPRegistry() override {
-    return false;
+    return true;
   }
 
   bool skipMountHookNotifications() override {
