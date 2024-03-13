@@ -184,11 +184,7 @@ public class ReactActivityDelegate {
   }
 
   public void onConfigurationChanged(Configuration newConfig) {
-    if (!ReactFeatureFlags.enableBridgelessArchitecture) {
-      if (getReactNativeHost().hasInstance()) {
-        getReactInstanceManager().onConfigurationChanged(getContext(), newConfig);
-      }
-    }
+    mReactDelegate.onConfigurationChanged(newConfig);
   }
 
   public void requestPermissions(
