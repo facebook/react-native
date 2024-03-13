@@ -1105,6 +1105,7 @@ function InternalTextInput(props: Props): React.Node {
     selection: ?Selection,
     mostRecentEventCount: number,
   |}>({selection, mostRecentEventCount});
+  const prevSecureTextEntry = useRef<?boolean>(false);
 
   const lastNativeSelection = lastNativeSelectionState.selection;
 
@@ -1186,6 +1187,28 @@ function InternalTextInput(props: Props): React.Node {
       };
     }
   }, [inputRef]);
+
+  useLayoutEffect(() => {
+    if (
+      inputRef.current != null &&
+      prevSecureTextEntry.current !== props.secureTextEntry
+    ) {
+      viewCommands.setTextAndSelection(
+        inputRef.current,
+        mostRecentEventCount,
+        lastNativeText,
+        lastNativeSelection?.start ?? -1,
+        lastNativeSelection?.end ?? -1,
+      );
+      prevSecureTextEntry.current = props.secureTextEntry;
+    }
+  }, [
+    props.secureTextEntry,
+    viewCommands,
+    lastNativeSelection,
+    lastNativeText,
+    mostRecentEventCount,
+  ]);
 
   const setLocalRef = useCallback(
     (instance: TextInputInstance | null) => {
