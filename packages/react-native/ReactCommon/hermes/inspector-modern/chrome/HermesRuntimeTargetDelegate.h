@@ -45,6 +45,9 @@ class HermesRuntimeTargetDelegate : public RuntimeTargetDelegate {
           executionContextDescription,
       RuntimeExecutor runtimeExecutor) override;
 
+  void addConsoleMessage(jsi::Runtime& runtime, ConsoleMessage message)
+      override;
+
  private:
   // We use the private implementation idiom to ensure this class has the same
   // layout regardless of whether HERMES_ENABLE_DEBUGGER is defined. The net

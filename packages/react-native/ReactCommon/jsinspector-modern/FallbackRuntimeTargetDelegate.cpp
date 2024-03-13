@@ -26,4 +26,10 @@ FallbackRuntimeTargetDelegate::createAgentDelegate(
       std::move(channel), sessionState, engineDescription_);
 }
 
+void FallbackRuntimeTargetDelegate::addConsoleMessage(
+    jsi::Runtime& /*unused*/,
+    ConsoleMessage /*unused*/) {
+  // TODO: Best-effort printing (without RemoteObjects)
+}
+
 } // namespace facebook::react::jsinspector_modern
