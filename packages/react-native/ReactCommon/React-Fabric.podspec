@@ -201,7 +201,8 @@ Pod::Spec.new do |s|
     ss.subspec "textinput" do |sss|
       sss.dependency             folly_dep_name, folly_version
       sss.compiler_flags       = folly_compiler_flags
-      sss.source_files         = "react/renderer/components/textinput/platform/ios/**/*.{m,mm,cpp,h}"
+      sss.source_files         = "react/renderer/components/textinput/**/*.{m,mm,cpp,h}"
+      sss.exclude_files        = "react/renderer/components/textinput/platform/android"
       sss.header_dir           = "react/renderer/components/iostextinput"
 
     end
