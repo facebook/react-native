@@ -34,75 +34,8 @@ RuntimeTarget::RuntimeTarget(
       jsExecutor_(jsExecutor) {}
 
 void RuntimeTarget::installGlobals() {
+  // NOTE: RuntimeTarget::installConsoleHandler is in RuntimeTargetConsole.cpp
   installConsoleHandler();
-}
-
-void RuntimeTarget::installConsoleHandler() {
-  jsExecutor_([selfWeak = weak_from_this(),
-               selfExecutor = executorFromThis()](jsi::Runtime& runtime) {
-    // TODO(moti): Switch from implementing __inspectorLog to directly
-    // installing a `console` object.
-    runtime.global().setProperty(
-        runtime,
-        "__inspectorLog",
-        jsi::Function::createFromHostFunction(
-            runtime,
-            jsi::PropNameID::forAscii(runtime, "__inspectorLog"),
-            4,
-            [selfWeak, selfExecutor](
-                jsi::Runtime& rt,
-                const jsi::Value& /*thisVal*/,
-                const jsi::Value* args,
-                size_t count) {
-              if (count < 4) {
-                throw jsi::JSError(
-                    rt,
-                    "__inspectorLog requires at least 4 arguments: logLevel, str, args, framesToSkip");
-              }
-              std::chrono::time_point<std::chrono::system_clock> timestamp =
-                  std::chrono::system_clock::now();
-              std::string level = args[0].asString(rt).utf8(rt);
-              ConsoleAPIType type = ConsoleAPIType::kLog;
-              if (level == "debug") {
-                type = ConsoleAPIType::kDebug;
-              } else if (level == "log") {
-                type = ConsoleAPIType::kLog;
-              } else if (level == "warning") {
-                type = ConsoleAPIType::kWarning;
-              } else if (level == "error") {
-                type = ConsoleAPIType::kError;
-              }
-              // NOTE: args[1] is the processed string message - ignore it.
-              jsi::Array argsArray = args[2].asObject(rt).asArray(rt);
-              std::vector<jsi::Value> argsVec;
-              for (size_t i = 0, length = argsArray.length(rt); i != length;
-                   ++i) {
-                argsVec.emplace_back(argsArray.getValueAtIndex(rt, i));
-              }
-              // TODO(moti): Handle framesToSkip in some way. Note that the
-              // runtime doesn't even capture a stack trace at the moment.
-              ConsoleMessage consoleMessage{
-                  std::chrono::duration_cast<
-                      std::chrono::duration<double, std::milli>>(
-                      timestamp.time_since_epoch())
-                      .count(),
-                  type,
-                  std::move(argsVec)};
-              if (auto self = selfWeak.lock()) {
-                // Q: Why is it safe to use self->delegate_ here?
-                // A: Because the caller of InspectorTarget::registerRuntime
-                // is explicitly required to guarantee that the delegate not
-                // only outlives the target, but also outlives all JS code
-                // execution that occurs on the JS thread.
-                self->delegate_.addConsoleMessage(
-                    rt, std::move(consoleMessage));
-                // To ensure we never destroy `self` on the JS thread, send
-                // our shared_ptr back to the inspector thread.
-                selfExecutor([self = std::move(self)](auto&) { (void)self; });
-              }
-              return jsi::Value::undefined();
-            }));
-  });
 }
 
 std::shared_ptr<RuntimeAgent> RuntimeTarget::createAgent(

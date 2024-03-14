@@ -125,6 +125,9 @@ class HermesRuntimeTargetDelegate::Impl final : public RuntimeTargetDelegate {
       case ConsoleAPIType::kTimeEnd:
         type = HermesConsoleAPIType::kTimeEnd;
         break;
+      case ConsoleAPIType::kCount:
+        type = HermesConsoleAPIType::kCount;
+        break;
       default:
         throw std::logic_error{"Unknown console message type"};
     }
