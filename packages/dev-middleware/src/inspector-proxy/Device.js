@@ -11,14 +11,20 @@
 
 import type {EventReporter} from '../types/EventReporter';
 import type {
-  DebuggerRequest,
-  ErrorResponse,
-  GetScriptSourceRequest,
-  GetScriptSourceResponse,
+  CDPClientMessage,
+  CDPRequest,
+  CDPResponse,
+  CDPServerMessage,
+} from './cdp-types/messages';
+import type {
+  CreateCustomMessageHandlerFn,
+  CustomMessageHandler,
+} from './CustomMessageHandler';
+import type {
   MessageFromDevice,
   MessageToDevice,
   Page,
-  SetBreakpointByUrlRequest,
+  TargetCapabilityFlags,
 } from './types';
 
 import DeviceEventReporter from './DeviceEventReporter';
@@ -49,6 +55,11 @@ type DebuggerInfo = {
   userAgent: string | null,
 };
 
+type DebuggerConnection = {
+  ...DebuggerInfo,
+  customHandler: ?CustomMessageHandler,
+};
+
 const REACT_NATIVE_RELOADABLE_PAGE_ID = '-1';
 
 /**
@@ -72,7 +83,7 @@ export default class Device {
   #pages: $ReadOnlyMap<string, Page>;
 
   // Stores information about currently connected debugger (if any).
-  #debuggerConnection: ?DebuggerInfo = null;
+  #debuggerConnection: ?DebuggerConnection = null;
 
   // Last known Page ID of the React Native page.
   // This is used by debugger connections that don't have PageID specified
@@ -80,7 +91,7 @@ export default class Device {
   #lastConnectedLegacyReactNativePage: ?Page = null;
 
   // Whether we are in the middle of a reload in the REACT_NATIVE_RELOADABLE_PAGE.
-  #isReloading: boolean = false;
+  #isLegacyPageReloading: boolean = false;
 
   // The previous "GetPages" message, for deduplication in debug logs.
   #lastGetPagesMessage: string = '';
@@ -95,6 +106,9 @@ export default class Device {
 
   #pagesPollingIntervalId: ReturnType<typeof setInterval>;
 
+  // The device message middleware factory function allowing implementers to handle unsupported CDP messages.
+  #createCustomMessageHandler: ?CreateCustomMessageHandlerFn;
+
   constructor(
     id: string,
     name: string,
@@ -102,6 +116,7 @@ export default class Device {
     socket: WS,
     projectRoot: string,
     eventReporter: ?EventReporter,
+    createMessageMiddleware: ?CreateCustomMessageHandlerFn,
   ) {
     this.#id = id;
     this.#name = name;
@@ -116,6 +131,7 @@ export default class Device {
           appId: app,
         })
       : null;
+    this.#createCustomMessageHandler = createMessageMiddleware;
 
     // $FlowFixMe[incompatible-call]
     this.#deviceSocket.on('message', (message: string) => {
@@ -165,7 +181,7 @@ export default class Device {
         title: 'React Native Experimental (Improved Chrome Reloads)',
         vm: "don't use",
         app: this.#app,
-        type: 'Legacy',
+        capabilities: {},
       };
       return [...this.#pages.values(), reactNativeReloadablePage];
     } else {
@@ -203,6 +219,7 @@ export default class Device {
       prependedFilePrefix: false,
       pageId,
       userAgent: metadata.userAgent,
+      customHandler: null,
     };
 
     // TODO(moti): Handle null case explicitly, e.g. refuse to connect to
@@ -212,6 +229,50 @@ export default class Device {
     this.#debuggerConnection = debuggerInfo;
 
     debug(`Got new debugger connection for page ${pageId} of ${this.#name}`);
+
+    if (page && this.#debuggerConnection && this.#createCustomMessageHandler) {
+      this.#debuggerConnection.customHandler = this.#createCustomMessageHandler(
+        {
+          page,
+          debugger: {
+            userAgent: debuggerInfo.userAgent,
+            sendMessage: message => {
+              try {
+                const payload = JSON.stringify(message);
+                debug('(Debugger) <- (Proxy)    (Device): ' + payload);
+                socket.send(payload);
+              } catch {}
+            },
+          },
+          device: {
+            appId: this.#app,
+            id: this.#id,
+            name: this.#name,
+            sendMessage: message => {
+              try {
+                const payload = JSON.stringify({
+                  event: 'wrappedEvent',
+                  payload: {
+                    pageId: this.#mapToDevicePageId(pageId),
+                    wrappedEvent: JSON.stringify(message),
+                  },
+                });
+                debug('(Debugger) -> (Proxy)    (Device): ' + payload);
+                this.#deviceSocket.send(payload);
+              } catch {}
+            },
+          },
+        },
+      );
+
+      if (this.#debuggerConnection.customHandler) {
+        debug('Created new custom message handler for debugger connection');
+      } else {
+        debug(
+          'Skipping new custom message handler for debugger connection, factory function returned null',
+        );
+      }
+    }
 
     this.#sendMessageToDevice({
       event: 'connect',
@@ -229,8 +290,17 @@ export default class Device {
         frontendUserAgent: metadata.userAgent,
       });
       let processedReq = debuggerRequest;
-      if (!page || page.type === 'Legacy') {
-        processedReq = this.#interceptMessageFromDebuggerLegacy(
+
+      if (
+        this.#debuggerConnection?.customHandler?.handleDebuggerMessage(
+          debuggerRequest,
+        ) === true
+      ) {
+        return;
+      }
+
+      if (!page || !this.#pageHasCapability(page, 'nativeSourceCodeFetching')) {
+        processedReq = this.#interceptClientMessageForSourceFetching(
           debuggerRequest,
           debuggerInfo,
           socket,
@@ -302,6 +372,13 @@ export default class Device {
     }
   }
 
+  /**
+   * Returns `true` if a page supports the given target capability flag.
+   */
+  #pageHasCapability(page: Page, flag: $Keys<TargetCapabilityFlags>): boolean {
+    return page.capabilities[flag] === true;
+  }
+
   // Handles messages received from device:
   // 1. For getPages responses updates local #pages list.
   // 2. All other messages are forwarded to debugger as wrappedEvent.
@@ -312,11 +389,11 @@ export default class Device {
   #handleMessageFromDevice(message: MessageFromDevice) {
     if (message.event === 'getPages') {
       this.#pages = new Map(
-        message.payload.map(({type, ...page}) => [
+        message.payload.map(({capabilities, ...page}) => [
           page.id,
           {
             ...page,
-            type: type ?? 'Legacy',
+            capabilities: capabilities ?? {},
           },
         ]),
       );
@@ -343,7 +420,11 @@ export default class Device {
       // TODO(hypuk): It is better for VM to send update event when new page is
       // created instead of manually checking this on every getPages result.
       for (const page of this.#pages.values()) {
-        if (page.type === 'Legacy' && page.title.indexOf('React') >= 0) {
+        if (this.#pageHasCapability(page, 'nativePageReloads')) {
+          continue;
+        }
+
+        if (page.title.includes('React')) {
           if (page.id !== this.#lastConnectedLegacyReactNativePage?.id) {
             this.#newLegacyReactNativePage(page);
             break;
@@ -357,14 +438,18 @@ export default class Device {
       // TODO(moti): Handle null case explicitly, e.g. swallow disconnect events
       // for unknown pages.
       const page: ?Page = this.#pages.get(pageId);
+
+      if (page != null && this.#pageHasCapability(page, 'nativePageReloads')) {
+        return;
+      }
+
       const debuggerSocket = this.#debuggerConnection
         ? this.#debuggerConnection.socket
         : null;
       if (debuggerSocket && debuggerSocket.readyState === WS.OPEN) {
         if (
           this.#debuggerConnection != null &&
-          this.#debuggerConnection.pageId !== REACT_NATIVE_RELOADABLE_PAGE_ID &&
-          (!page || page.type === 'Legacy')
+          this.#debuggerConnection.pageId !== REACT_NATIVE_RELOADABLE_PAGE_ID
         ) {
           debug(`Legacy page ${pageId} is reloading.`);
           debuggerSocket.send(JSON.stringify({method: 'reload'}));
@@ -387,10 +472,6 @@ export default class Device {
 
       const parsedPayload = JSON.parse(message.payload.wrappedEvent);
       const pageId = this.#debuggerConnection?.pageId ?? null;
-      // TODO(moti): Handle null case explicitly, or ideally associate a copy
-      // of the page metadata object with the connection so this can never be
-      // null.
-      const page: ?Page = pageId != null ? this.#pages.get(pageId) : null;
       if ('id' in parsedPayload) {
         this.#deviceEventReporter?.logResponse(parsedPayload, 'device', {
           pageId,
@@ -398,12 +479,22 @@ export default class Device {
         });
       }
 
-      if (this.#debuggerConnection && (!page || page.type === 'Legacy')) {
+      const debuggerConnection = this.#debuggerConnection;
+      if (debuggerConnection != null) {
+        if (
+          debuggerConnection.customHandler?.handleDeviceMessage(
+            parsedPayload,
+          ) === true
+        ) {
+          return;
+        }
+
         // Wrapping just to make flow happy :)
         // $FlowFixMe[unused-promise]
         this.#processMessageFromDeviceLegacy(
           parsedPayload,
-          this.#debuggerConnection,
+          debuggerConnection,
+          pageId,
         ).then(() => {
           const messageToSend = JSON.stringify(parsedPayload);
           debuggerSocket.send(messageToSend);
@@ -439,7 +530,7 @@ export default class Device {
     }
     const oldPageId = this.#lastConnectedLegacyReactNativePage?.id;
     this.#lastConnectedLegacyReactNativePage = page;
-    this.#isReloading = true;
+    this.#isLegacyPageReloading = true;
 
     // We already had a debugger connected to React Native page and a
     // new one appeared - in this case we need to emulate execution context
@@ -484,16 +575,27 @@ export default class Device {
 
   // Allows to make changes in incoming message from device.
   async #processMessageFromDeviceLegacy(
-    payload: {method: string, params: {sourceMapURL: string, url: string}},
-    debuggerInfo: DebuggerInfo,
+    payload: CDPServerMessage,
+    debuggerInfo: DebuggerConnection,
+    pageId: ?string,
   ) {
+    // TODO(moti): Handle null case explicitly, or ideally associate a copy
+    // of the page metadata object with the connection so this can never be
+    // null.
+    const page: ?Page = pageId != null ? this.#pages.get(pageId) : null;
+
     // Replace Android addresses for scriptParsed event.
-    if (payload.method === 'Debugger.scriptParsed') {
-      const params = payload.params || {};
+    if (
+      (!page || !this.#pageHasCapability(page, 'nativeSourceCodeFetching')) &&
+      payload.method === 'Debugger.scriptParsed' &&
+      payload.params != null
+    ) {
+      const params = payload.params;
       if ('sourceMapURL' in params) {
         for (let i = 0; i < EMULATOR_LOCALHOST_ADDRESSES.length; ++i) {
           const address = EMULATOR_LOCALHOST_ADDRESSES[i];
-          if (params.sourceMapURL.indexOf(address) >= 0) {
+          if (params.sourceMapURL.includes(address)) {
+            // $FlowFixMe[cannot-write]
             payload.params.sourceMapURL = params.sourceMapURL.replace(
               address,
               'localhost',
@@ -511,6 +613,7 @@ export default class Device {
           // message to the debug client.
           try {
             const sourceMap = await this.#fetchText(sourceMapURL);
+            // $FlowFixMe[cannot-write]
             payload.params.sourceMapURL =
               'data:application/json;charset=utf-8;base64,' +
               new Buffer(sourceMap).toString('base64');
@@ -525,6 +628,7 @@ export default class Device {
         for (let i = 0; i < EMULATOR_LOCALHOST_ADDRESSES.length; ++i) {
           const address = EMULATOR_LOCALHOST_ADDRESSES[i];
           if (params.url.indexOf(address) >= 0) {
+            // $FlowFixMe[cannot-write]
             payload.params.url = params.url.replace(address, 'localhost');
             debuggerInfo.originalSourceURLAddress = address;
           }
@@ -535,6 +639,7 @@ export default class Device {
         // Chrome to not download source maps. In this case we want to prepend script ID
         // with 'file://' prefix.
         if (payload.params.url.match(/^[0-9a-z]+$/)) {
+          // $FlowFixMe[cannot-write]
           payload.params.url = FILE_PREFIX + payload.params.url;
           debuggerInfo.prependedFilePrefix = true;
         }
@@ -548,7 +653,7 @@ export default class Device {
 
     if (
       payload.method === 'Runtime.executionContextCreated' &&
-      this.#isReloading
+      this.#isLegacyPageReloading
     ) {
       // The new context is ready. First notify Chrome that we've reloaded so
       // it'll resend its breakpoints. If we do this earlier, we may not be
@@ -577,31 +682,36 @@ export default class Device {
         },
       });
 
-      this.#isReloading = false;
+      this.#isLegacyPageReloading = false;
     }
   }
 
-  // Allows to make changes in incoming messages from debugger. Returns a boolean
-  // indicating whether the message has been handled locally (i.e. does not need
-  // to be forwarded to the target).
-  #interceptMessageFromDebuggerLegacy(
-    req: DebuggerRequest,
-    debuggerInfo: DebuggerInfo,
+  /**
+   * Intercept an incoming message from a connected debugger. Returns either an
+   * original/replacement CDP message object, or `null` (will forward nothing
+   * to the target).
+   */
+  #interceptClientMessageForSourceFetching(
+    req: CDPClientMessage,
+    debuggerInfo: DebuggerConnection,
     socket: WS,
-  ): ?DebuggerRequest {
-    if (req.method === 'Debugger.setBreakpointByUrl') {
-      return this.#processDebuggerSetBreakpointByUrl(req, debuggerInfo);
-    } else if (req.method === 'Debugger.getScriptSource') {
-      this.#processDebuggerGetScriptSource(req, socket);
-      return null;
+  ): CDPClientMessage | null {
+    switch (req.method) {
+      case 'Debugger.setBreakpointByUrl':
+        return this.#processDebuggerSetBreakpointByUrl(req, debuggerInfo);
+      case 'Debugger.getScriptSource':
+        // Sends response to debugger via side-effect
+        this.#processDebuggerGetScriptSource(req, socket);
+        return null;
+      default:
+        return req;
     }
-    return req;
   }
 
   #processDebuggerSetBreakpointByUrl(
-    req: SetBreakpointByUrlRequest,
-    debuggerInfo: DebuggerInfo,
-  ): SetBreakpointByUrlRequest {
+    req: CDPRequest<'Debugger.setBreakpointByUrl'>,
+    debuggerInfo: DebuggerConnection,
+  ): CDPRequest<'Debugger.setBreakpointByUrl'> {
     // If we replaced Android emulator's address to localhost we need to change it back.
     if (debuggerInfo.originalSourceURLAddress != null) {
       const processedReq = {...req, params: {...req.params}};
@@ -635,10 +745,16 @@ export default class Device {
     return req;
   }
 
-  #processDebuggerGetScriptSource(req: GetScriptSourceRequest, socket: WS) {
+  #processDebuggerGetScriptSource(
+    req: CDPRequest<'Debugger.getScriptSource'>,
+    socket: WS,
+  ): void {
     const sendSuccessResponse = (scriptSource: string) => {
-      const result: GetScriptSourceResponse = {scriptSource};
-      const response = {id: req.id, result};
+      const result = {scriptSource};
+      const response: CDPResponse<'Debugger.getScriptSource'> = {
+        id: req.id,
+        result,
+      };
       socket.send(JSON.stringify(response));
       this.#deviceEventReporter?.logResponse(response, 'proxy', {
         pageId: this.#debuggerConnection?.pageId ?? null,
@@ -647,7 +763,7 @@ export default class Device {
     };
     const sendErrorResponse = (error: string) => {
       // Tell the client that the request failed
-      const result: ErrorResponse = {error: {message: error}};
+      const result = {error: {message: error}};
       const response = {id: req.id, result};
       socket.send(JSON.stringify(response));
 
@@ -719,10 +835,6 @@ export default class Device {
   // Fetch text, raising an exception if the text could not be fetched,
   // or is too large.
   async #fetchText(url: URL): Promise<string> {
-    if (!['localhost', '127.0.0.1'].includes(url.hostname)) {
-      throw new Error('remote fetches not permitted');
-    }
-
     // $FlowFixMe[incompatible-call] Suppress arvr node-fetch flow error
     const response = await fetch(url);
     if (!response.ok) {

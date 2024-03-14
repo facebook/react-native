@@ -411,7 +411,9 @@ class CustomView extends React.Component {
   }
 }
 
-class Welcome extends React.Component<ElementProps<View> & {color: string}> {
+class Welcome extends React.Component<
+  ElementProps<View> & {color: string; bgColor?: null | undefined | string}
+> {
   rootViewRef = React.useRef<View>(null);
   customViewRef = React.useRef<CustomView>(null);
 
@@ -436,12 +438,18 @@ class Welcome extends React.Component<ElementProps<View> & {color: string}> {
   }
 
   render() {
-    const {color, ...props} = this.props;
+    const {color, bgColor, ...props} = this.props;
     return (
       <View
         {...props}
         ref={this.rootViewRef}
-        style={[[styles.container], undefined, null, false]}>
+        style={[
+          [styles.container],
+          undefined,
+          null,
+          false,
+          bgColor && {backgroundColor: bgColor},
+        ]}>
         <Text style={styles.welcome}>Welcome to React Native</Text>
         <Text style={styles.instructions}>
           To get started, edit index.ios.js
@@ -1267,11 +1275,17 @@ export class ImageTest extends React.Component {
         }
       });
 
+    const promise1: Promise<any> = Image.getSize(uri).then(({width, height}) =>
+      console.log(width, height),
+    );
     Image.getSize(uri, (width, height) => console.log(width, height));
     Image.getSize(
       uri,
       (width, height) => console.log(width, height),
       error => console.error(error),
+    );
+    const promise2: Promise<any> = Image.getSizeWithHeaders(uri, headers).then(
+      ({width, height}) => console.log(width, height),
     );
     Image.getSizeWithHeaders(uri, headers, (width, height) =>
       console.log(width, height),

@@ -252,7 +252,7 @@ exports.documentationURL = 'https://reactnative.dev/docs/scrollview';
 exports.category = 'Basic';
 exports.description =
   'Component that enables scrolling through child components';
-const examples = ([
+const examples: Array<RNTesterModuleExample> = [
   {
     name: 'scrollTo',
     title: '<ScrollView>\n',
@@ -425,7 +425,7 @@ const examples = ([
       return <AppendingList />;
     },
   },
-]: Array<RNTesterModuleExample>);
+];
 
 if (Platform.OS === 'ios') {
   examples.push({

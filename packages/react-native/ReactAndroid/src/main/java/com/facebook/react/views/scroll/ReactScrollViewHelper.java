@@ -17,6 +17,7 @@ import android.widget.OverScroller;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
@@ -33,6 +34,7 @@ import java.util.Set;
 import java.util.WeakHashMap;
 
 /** Helper class that deals with emitting Scroll Events. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ReactScrollViewHelper {
   private static String TAG = ReactHorizontalScrollView.class.getSimpleName();
   private static boolean DEBUG_MODE = false && ReactBuildConfig.DEBUG;

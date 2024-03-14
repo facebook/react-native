@@ -243,10 +243,6 @@ class FakeYogaNode : YogaNode() {
 
   override fun getData(): Any? = null
 
-  override fun print() {
-    // no-op
-  }
-
   override fun cloneWithoutChildren(): YogaNode = FakeYogaNode()
 
   override fun cloneWithChildren(): YogaNode = FakeYogaNode()

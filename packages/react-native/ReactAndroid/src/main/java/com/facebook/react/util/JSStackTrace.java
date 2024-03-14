@@ -7,12 +7,14 @@
 
 package com.facebook.react.util;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableType;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class JSStackTrace {
 
   public static final String LINE_NUMBER_KEY = "lineNumber";

@@ -14,6 +14,8 @@ import VirtualizedList from '../VirtualizedList';
 import React from 'react';
 import ReactTestRenderer from 'react-test-renderer';
 
+jest.useFakeTimers();
+
 describe('VirtualizedList', () => {
   it('renders simple list', () => {
     const component = ReactTestRenderer.create(

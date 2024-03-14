@@ -63,7 +63,7 @@ export default function openDebuggerMiddleware({
         // Only use targets with better reloading support
         app =>
           app.title === 'React Native Experimental (Improved Chrome Reloads)' ||
-          app.reactNative.type === 'Modern',
+          app.reactNative.capabilities?.nativePageReloads === true,
       );
 
       let target;
@@ -132,8 +132,8 @@ export default function openDebuggerMiddleware({
               Location: getDevToolsFrontendUrl(
                 experiments,
                 target.webSocketDebuggerUrl,
-                // Use a relative URL.
-                '',
+                serverBaseUrl,
+                {relative: true},
               ),
             });
             res.end();

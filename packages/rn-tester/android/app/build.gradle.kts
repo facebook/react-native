@@ -151,6 +151,7 @@ android {
 dependencies {
   // Build React Native from source
   implementation(project(":packages:react-native:ReactAndroid"))
+  implementation(project(":packages:react-native-popup-menu-android:android"))
 
   // Consume Hermes as built from source only for the Hermes variant.
   "hermesImplementation"(project(":packages:react-native:ReactAndroid:hermes-engine"))

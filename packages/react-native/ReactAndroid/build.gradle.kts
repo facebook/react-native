@@ -126,6 +126,16 @@ val preparePrefab by
                       Pair("../ReactCommon/react/renderer/components/view/platform/android/", ""),
                   )),
               PrefabPreprocessingEntry(
+                  "rrc_text",
+                  Pair(
+                      "../ReactCommon/react/renderer/components/text/",
+                      "react/renderer/components/text/")),
+              PrefabPreprocessingEntry(
+                  "rrc_textinput",
+                  Pair(
+                      "../ReactCommon/react/renderer/components/textinput/",
+                      "react/renderer/components/androidtextinput/")),
+              PrefabPreprocessingEntry(
                   "rrc_legacyviewmanagerinterop",
                   Pair(
                       "../ReactCommon/react/renderer/components/legacyviewmanagerinterop/",
@@ -138,6 +148,14 @@ val preparePrefab by
               PrefabPreprocessingEntry(
                   "react_render_mapbuffer",
                   Pair("../ReactCommon/react/renderer/mapbuffer/", "react/renderer/mapbuffer/")),
+              PrefabPreprocessingEntry(
+                  "react_render_textlayoutmanager",
+                  listOf(
+                      Pair(
+                          "../ReactCommon/react/renderer/textlayoutmanager/",
+                          "react/renderer/textlayoutmanager/"),
+                      Pair("../ReactCommon/react/renderer/textlayoutmanager/platform/android/", ""),
+                  )),
               PrefabPreprocessingEntry(
                   "yoga",
                   listOf(
@@ -159,7 +177,6 @@ val preparePrefab by
                       Pair(File(buildDir, "third-party-ndk/fmt/include/").absolutePath, ""),
                       Pair(File(buildDir, "third-party-ndk/folly/").absolutePath, ""),
                       Pair(File(buildDir, "third-party-ndk/glog/exported/").absolutePath, ""),
-                      Pair("../ReactCommon/butter/", "butter/"),
                       Pair("../ReactCommon/callinvoker/", ""),
                       Pair("../ReactCommon/cxxreact/", "cxxreact/"),
                       Pair("../ReactCommon/react/bridging/", "react/bridging/"),
@@ -470,6 +487,8 @@ android {
   }
   if (rootProject.hasProperty("ndkVersion") && rootProject.properties["ndkVersion"] != null) {
     ndkVersion = rootProject.properties["ndkVersion"].toString()
+  } else {
+    ndkVersion = libs.versions.ndkVersion.get()
   }
 
   compileOptions {
@@ -524,6 +543,7 @@ android {
             "react_render_debug",
             "turbomodulejsijni",
             "runtimeexecutor",
+            "react_featureflagsjni",
             "react_codegen_rncore",
             "react_debug",
             "react_featureflags",
@@ -537,12 +557,14 @@ android {
             "rrc_image",
             "rrc_root",
             "rrc_view",
+            "rrc_text",
+            "rrc_textinput",
             "rrc_legacyviewmanagerinterop",
             "jsi",
             "glog",
             "fabricjni",
-            "featureflagsjni",
             "react_render_mapbuffer",
+            "react_render_textlayoutmanager",
             "yoga",
             "folly_runtime",
             "react_nativemodule_core",
@@ -662,6 +684,8 @@ android {
     create("rrc_image") { headers = File(prefabHeadersDir, "rrc_image").absolutePath }
     create("rrc_root") { headers = File(prefabHeadersDir, "rrc_root").absolutePath }
     create("rrc_view") { headers = File(prefabHeadersDir, "rrc_view").absolutePath }
+    create("rrc_text") { headers = File(prefabHeadersDir, "rrc_text").absolutePath }
+    create("rrc_textinput") { headers = File(prefabHeadersDir, "rrc_textinput").absolutePath }
     create("rrc_legacyviewmanagerinterop") {
       headers = File(prefabHeadersDir, "rrc_legacyviewmanagerinterop").absolutePath
     }
@@ -670,6 +694,9 @@ android {
     create("fabricjni") { headers = File(prefabHeadersDir, "fabricjni").absolutePath }
     create("react_render_mapbuffer") {
       headers = File(prefabHeadersDir, "react_render_mapbuffer").absolutePath
+    }
+    create("react_render_textlayoutmanager") {
+      headers = File(prefabHeadersDir, "react_render_textlayoutmanager").absolutePath
     }
     create("yoga") { headers = File(prefabHeadersDir, "yoga").absolutePath }
     create("folly_runtime") { headers = File(prefabHeadersDir, "folly_runtime").absolutePath }

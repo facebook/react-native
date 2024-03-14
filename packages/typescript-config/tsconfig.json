@@ -36,5 +36,8 @@
       "skipLibCheck": true,
       // Causes issues with package.json "exports"
       "forceConsistentCasingInFileNames": false
-    }
+    },
+    "exclude": [
+      "**/Pods/**"
+    ]
   }

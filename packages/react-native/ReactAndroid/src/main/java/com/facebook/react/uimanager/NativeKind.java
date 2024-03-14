@@ -7,10 +7,13 @@
 
 package com.facebook.react.uimanager;
 
+import com.facebook.infer.annotation.Nullsafe;
+
 // Common conditionals:
 //   - `kind == PARENT` checks whether the node can host children in the native tree.
 //   - `kind != NONE` checks whether the node appears in the native tree.
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public enum NativeKind {
   // Node is in the native hierarchy and the HierarchyOptimizer should assume it can host children
   // (e.g. because it's a ViewGroup). Note that it's okay if the node doesn't support children. When

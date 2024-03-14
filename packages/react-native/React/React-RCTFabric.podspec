@@ -30,7 +30,7 @@ header_search_paths = [
   "\"$(PODS_ROOT)/RCT-Folly\"",
   "\"$(PODS_ROOT)/Headers/Private/React-Core\"",
   "\"$(PODS_ROOT)/Headers/Private/Yoga\"",
-  "\"$(PODS_ROOT)/Headers/Public/React-Codegen\"",
+  "\"$(PODS_ROOT)/Headers/Public/ReactCodegen\"",
 ]
 
 if ENV['USE_FRAMEWORKS']
@@ -83,10 +83,12 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-nativeconfig")
   add_dependency(s, "React-graphics", :additional_framework_paths => ["react/renderer/graphics/platform/ios"])
   add_dependency(s, "React-ImageManager")
+  add_dependency(s, "React-featureflags")
   add_dependency(s, "React-debug")
   add_dependency(s, "React-utils")
   add_dependency(s, "React-rendererdebug")
   add_dependency(s, "React-runtimescheduler")
+  add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
 
   if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
     s.dependency "hermes-engine"

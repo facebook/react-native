@@ -53,6 +53,10 @@ internal class MyNativeViewManager :
     view.removeOverlays()
   }
 
+  override fun fireLagacyStyleEvent(view: MyNativeView) {
+    view.emitLegacyStyleEvent()
+  }
+
   @ReactProp(name = ViewProps.OPACITY, defaultFloat = 1f)
   override fun setOpacity(view: MyNativeView, opacity: Float) {
     super.setOpacity(view, opacity)

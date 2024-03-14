@@ -31,7 +31,7 @@ import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.build.ReactBuildConfig;
-import com.facebook.react.config.ReactFeatureFlags;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.Role;
@@ -118,7 +118,7 @@ public class TextLayoutManager {
       ReadableArray fragments,
       SpannableStringBuilder sb,
       List<SetSpanOperation> ops) {
-    if (ReactFeatureFlags.enableSpannableBuildingUnification) {
+    if (ReactNativeFeatureFlags.enableSpannableBuildingUnification()) {
       buildSpannableFromFragmentsUnified(context, fragments, sb, ops);
     } else {
       buildSpannableFromFragmentsDuplicated(context, fragments, sb, ops);

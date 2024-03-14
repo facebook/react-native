@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.yoga.YogaMeasureFunction;
@@ -26,6 +27,7 @@ import java.util.Set;
  * android.R.attr.progressBarStyle} for possible styles. ReactProgressBarViewManager manages how
  * this style is applied to the ProgressBar.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ProgressBarShadowNode extends LayoutShadowNode implements YogaMeasureFunction {
 
   private String mStyle = ReactProgressBarViewManager.DEFAULT_STYLE;

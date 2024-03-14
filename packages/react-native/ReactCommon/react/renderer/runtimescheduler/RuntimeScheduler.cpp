@@ -58,10 +58,6 @@ bool RuntimeScheduler::getShouldYield() const noexcept {
   return runtimeSchedulerImpl_->getShouldYield();
 }
 
-bool RuntimeScheduler::getIsSynchronous() const noexcept {
-  return runtimeSchedulerImpl_->getIsSynchronous();
-}
-
 void RuntimeScheduler::cancelTask(Task& task) noexcept {
   return runtimeSchedulerImpl_->cancelTask(task);
 }

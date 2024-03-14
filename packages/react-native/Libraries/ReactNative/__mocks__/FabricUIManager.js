@@ -24,6 +24,8 @@ import type {
   Spec as FabricUIManager,
 } from '../FabricUIManager';
 
+import {createRootTag} from '../RootTag.js';
+
 export type NodeMock = {
   children: NodeSet,
   instanceHandle: InternalInstanceHandle,
@@ -160,6 +162,7 @@ function hasDisplayNone(node: Node): boolean {
 }
 
 interface IFabricUIManagerMock extends FabricUIManager {
+  getRoot(rootTag: RootTag | number): NodeSet;
   __getInstanceHandleFromNode(node: Node): InternalInstanceHandle;
   __addCommitHook(commitHook: UIManagerCommitHook): void;
   __removeCommitHook(commitHook: UIManagerCommitHook): void;
@@ -637,6 +640,15 @@ const FabricUIManagerMock: IFabricUIManagerMock = {
     ensureHostNode(node);
     return 'RN:' + fromNode(node).viewName;
   }),
+
+  getRoot(containerTag: RootTag | number): NodeSet {
+    const tag = createRootTag(containerTag);
+    const root = roots.get(tag);
+    if (!root) {
+      throw new Error('No root found for containerTag ' + Number(tag));
+    }
+    return root;
+  },
 
   __getInstanceHandleFromNode(node: Node): InternalInstanceHandle {
     return fromNode(node).instanceHandle;

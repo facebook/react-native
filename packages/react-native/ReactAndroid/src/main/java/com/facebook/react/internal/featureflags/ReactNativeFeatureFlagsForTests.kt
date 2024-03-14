@@ -7,8 +7,8 @@
 
 package com.facebook.react.internal.featureflags
 
-object ReactNativeFeatureFlagsForTests {
-  fun setUp() {
-    ReactNativeFeatureFlags.setAccessorProvider({ ReactNativeFeatureFlagsLocalAccessor() })
+public object ReactNativeFeatureFlagsForTests {
+  public fun setUp() {
+    ReactNativeFeatureFlags.setAccessorProvider { ReactNativeFeatureFlagsLocalAccessor() }
   }
 }

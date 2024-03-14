@@ -12,7 +12,6 @@
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/components/view/PointerEvent.h>
 #include <react/renderer/core/LayoutableShadowNode.h>
-#include <react/renderer/core/TraitCast.h>
 #include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
 #include <react/renderer/uimanager/primitives.h>
@@ -159,7 +158,9 @@ void UIManagerBinding::dispatchEventToJS(
     : jsi::Value::null();
 
   if (instanceHandle.isNull()) {
-    LOG(WARNING) << "instanceHandle is null, event will be dropped";
+    // Do not log all missing instanceHandles to avoid log spam
+    LOG_EVERY_N(INFO, 10) << "instanceHandle is null, event of type " << type
+                          << " will be dropped";
   }
 
   currentEventPriority_ = priority;
@@ -499,18 +500,7 @@ jsi::Value UIManagerBinding::get(
               RuntimeSchedulerBinding::getBinding(runtime);
           auto surfaceId = surfaceIdFromValue(runtime, arguments[0]);
 
-          if (!uiManager->backgroundExecutor_ ||
-              (runtimeSchedulerBinding &&
-               runtimeSchedulerBinding->getIsSynchronous())) {
-            auto shadowNodeList =
-                shadowNodeListFromValue(runtime, arguments[1]);
-            uiManager->completeSurface(
-                surfaceId,
-                shadowNodeList,
-                {.enableStateReconciliation = true,
-                 .mountSynchronously = false,
-                 .shouldYield = nullptr});
-          } else {
+          if (uiManager->backgroundExecutor_) {
             auto weakShadowNodeList =
                 weakShadowNodeListFromValue(runtime, arguments[1]);
             static std::atomic_uint_fast8_t completeRootEventCounter{0};
@@ -541,6 +531,15 @@ jsi::Value UIManagerBinding::get(
                          /* .shouldYield = */ shouldYield});
                   }
                 });
+          } else {
+            auto shadowNodeList =
+                shadowNodeListFromValue(runtime, arguments[1]);
+            uiManager->completeSurface(
+                surfaceId,
+                shadowNodeList,
+                {.enableStateReconciliation = true,
+                 .mountSynchronously = false,
+                 .shouldYield = nullptr});
           }
 
           return jsi::Value::undefined();
@@ -706,7 +705,7 @@ jsi::Value UIManagerBinding::get(
           auto newestCloneOfShadowNode =
               uiManager->getNewestCloneOfShadowNode(*shadowNode);
 
-          auto layoutableShadowNode = traitCast<LayoutableShadowNode const*>(
+          auto layoutableShadowNode = dynamic_cast<const LayoutableShadowNode*>(
               newestCloneOfShadowNode.get());
           Point originRelativeToParent = layoutableShadowNode != nullptr
               ? layoutableShadowNode->getLayoutMetrics().frame.origin
@@ -1221,7 +1220,7 @@ jsi::Value UIManagerBinding::get(
             return jsi::Value::undefined();
           }
 
-          auto layoutableShadowNode = traitCast<LayoutableShadowNode const*>(
+          auto layoutableShadowNode = dynamic_cast<LayoutableShadowNode const*>(
               newestCloneOfShadowNode.get());
           // This should never happen
           if (layoutableShadowNode == nullptr) {
@@ -1292,7 +1291,7 @@ jsi::Value UIManagerBinding::get(
           }
 
           auto layoutableShadowNode =
-              traitCast<YogaLayoutableShadowNode const*>(
+              dynamic_cast<YogaLayoutableShadowNode const*>(
                   newestCloneOfShadowNode.get());
           // This should never happen
           if (layoutableShadowNode == nullptr) {

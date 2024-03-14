@@ -22,6 +22,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.FABRIC_UPDATE_UI_MA
 import static com.facebook.react.bridge.ReactMarkerConstants.FABRIC_UPDATE_UI_MAIN_THREAD_START;
 
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class DevToolsReactPerfLogger implements ReactMarker.FabricMarkerListener {
 
   private final Map<Integer, FabricCommitPoint> mFabricCommitMarkers = new HashMap<>();

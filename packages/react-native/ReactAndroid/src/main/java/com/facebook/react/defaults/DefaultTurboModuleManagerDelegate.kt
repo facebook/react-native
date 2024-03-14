@@ -23,29 +23,29 @@ import com.facebook.react.runtime.cxxreactpackage.CxxReactPackage
  * is hosted inside the React Native framework
  */
 @OptIn(UnstableReactNativeAPI::class)
-class DefaultTurboModuleManagerDelegate
+public class DefaultTurboModuleManagerDelegate
 private constructor(
     context: ReactApplicationContext,
     packages: List<ReactPackage>,
     cxxReactPackages: List<CxxReactPackage>,
 ) : ReactPackageTurboModuleManagerDelegate(context, packages, initHybrid(cxxReactPackages)) {
 
-  override fun initHybrid(): HybridData? {
+  override fun initHybrid(): HybridData {
     throw UnsupportedOperationException(
         "DefaultTurboModuleManagerDelegate.initHybrid() must never be called!")
   }
 
-  class Builder : ReactPackageTurboModuleManagerDelegate.Builder() {
+  public class Builder : ReactPackageTurboModuleManagerDelegate.Builder() {
     private var cxxReactPackageProviders:
         MutableList<((context: ReactApplicationContext) -> CxxReactPackage)> =
         mutableListOf()
 
-    fun addCxxReactPackage(provider: () -> CxxReactPackage): Builder {
-      cxxReactPackageProviders.add({ _ -> provider() })
+    public fun addCxxReactPackage(provider: () -> CxxReactPackage): Builder {
+      cxxReactPackageProviders.add { _ -> provider() }
       return this
     }
 
-    fun addCxxReactPackage(
+    public fun addCxxReactPackage(
         provider: (context: ReactApplicationContext) -> CxxReactPackage
     ): Builder {
       cxxReactPackageProviders.add(provider)
@@ -65,13 +65,13 @@ private constructor(
     }
   }
 
-  companion object {
+  private companion object {
     init {
       DefaultSoLoader.maybeLoadSoLibrary()
     }
 
     @DoNotStrip
     @JvmStatic
-    external fun initHybrid(cxxReactPackages: List<CxxReactPackage>): HybridData?
+    external fun initHybrid(cxxReactPackages: List<CxxReactPackage>): HybridData
   }
 }

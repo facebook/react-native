@@ -33,4 +33,5 @@ target_link_libraries(hermes_inspector_modern
         fb
         glog
         hermes-engine::libhermes
-        jsi)
+        jsi
+        runtimeexecutor)

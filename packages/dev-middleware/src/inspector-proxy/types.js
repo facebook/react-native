@@ -9,6 +9,36 @@
  * @oncall react_native
  */
 
+/**
+ * A capability flag disables a specific feature/hack in the InspectorProxy
+ * layer by indicating that the target supports one or more modern CDP features.
+ */
+export type TargetCapabilityFlags = $ReadOnly<{
+  /**
+   * The target supports a stable page representation across reloads.
+   *
+   * In the proxy, this disables legacy page reload emulation and the
+   * additional '(Experimental)' target in `/json/list`.
+   *
+   * In the launch flow, this allows targets to be matched directly by `appId`.
+   */
+  nativePageReloads?: boolean,
+
+  /**
+   * The target supports fetching source code and source maps.
+   *
+   * In the proxy, this disables source fetching emulation and host rewrites.
+   */
+  nativeSourceCodeFetching?: boolean,
+
+  /**
+   * The target supports native network inspection.
+   *
+   * In the proxy, this disables intercepting and storing network requests.
+   */
+  nativeNetworkInspection?: boolean,
+}>;
+
 // Page information received from the device. New page is created for
 // each new instance of VM and can appear when user reloads React Native
 // application.
@@ -18,7 +48,7 @@ export type PageFromDevice = $ReadOnly<{
   title: string,
   vm: string,
   app: string,
-  type?: 'Legacy' | 'Modern',
+  capabilities?: TargetCapabilityFlags,
 }>;
 
 export type Page = Required<PageFromDevice>;
@@ -82,7 +112,7 @@ export type PageDescription = $ReadOnly<{
   // Metadata specific to React Native
   reactNative: $ReadOnly<{
     logicalDeviceId: string,
-    type: $NonMaybeType<Page['type']>,
+    capabilities: Page['capabilities'],
   }>,
 }>;
 
@@ -94,49 +124,6 @@ export type JsonVersionResponse = $ReadOnly<{
   Browser: string,
   'Protocol-Version': string,
 }>;
-
-/**
- * Types were exported from https://github.com/ChromeDevTools/devtools-protocol/blob/master/types/protocol.d.ts
- */
-
-export type SetBreakpointByUrlRequest = $ReadOnly<{
-  id: number,
-  method: 'Debugger.setBreakpointByUrl',
-  params: $ReadOnly<{
-    lineNumber: number,
-    url?: string,
-    urlRegex?: string,
-    scriptHash?: string,
-    columnNumber?: number,
-    condition?: string,
-  }>,
-}>;
-
-export type GetScriptSourceRequest = $ReadOnly<{
-  id: number,
-  method: 'Debugger.getScriptSource',
-  params: {
-    scriptId: string,
-  },
-}>;
-
-export type GetScriptSourceResponse = $ReadOnly<{
-  scriptSource: string,
-  /**
-   * Wasm bytecode.
-   */
-  bytecode?: string,
-}>;
-
-export type ErrorResponse = $ReadOnly<{
-  error: $ReadOnly<{
-    message: string,
-  }>,
-}>;
-
-export type DebuggerRequest =
-  | SetBreakpointByUrlRequest
-  | GetScriptSourceRequest;
 
 export type JSONSerializable =
   | boolean

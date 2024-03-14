@@ -9,10 +9,10 @@
 
 #include <cxxreact/JSExecutor.h>
 #include <react/debug/react_native_assert.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/core/DynamicPropsUtilities.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/ShadowNodeFragment.h>
-#include <react/renderer/core/TraitCast.h>
 #include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/uimanager/SurfaceRegistryBinding.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
@@ -130,7 +130,9 @@ std::shared_ptr<ShadowNode> UIManager::cloneNode(
       // was previously in `nativeProps_DEPRECATED`.
       family.nativeProps_DEPRECATED =
           std::make_unique<folly::dynamic>(mergeDynamicProps(
-              *family.nativeProps_DEPRECATED, (folly::dynamic)rawProps));
+              *family.nativeProps_DEPRECATED,
+              (folly::dynamic)rawProps,
+              NullValueStrategy::Ignore));
 
       props = componentDescriptor.cloneProps(
           propsParserContext,
@@ -322,7 +324,7 @@ ShadowNode::Shared UIManager::getNewestPositionedAncestorOfShadowNode(
 
   for (auto it = ancestors.rbegin(); it != ancestors.rend(); it++) {
     const auto layoutableAncestorShadowNode =
-        traitCast<const LayoutableShadowNode*>(&(it->first.get()));
+        dynamic_cast<const LayoutableShadowNode*>(&(it->first.get()));
     if (layoutableAncestorShadowNode == nullptr) {
       return nullptr;
     }
@@ -439,7 +441,7 @@ LayoutMetrics UIManager::getRelativeLayoutMetrics(
   }
 
   auto layoutableAncestorShadowNode =
-      traitCast<const LayoutableShadowNode*>(ancestorShadowNode);
+      dynamic_cast<const LayoutableShadowNode*>(ancestorShadowNode);
 
   if (layoutableAncestorShadowNode == nullptr) {
     return EmptyLayoutMetrics;
@@ -514,7 +516,9 @@ void UIManager::setNativeProps_DEPRECATED(
     // previously in `nativeProps_DEPRECATED`.
     family.nativeProps_DEPRECATED =
         std::make_unique<folly::dynamic>(mergeDynamicProps(
-            *family.nativeProps_DEPRECATED, (folly::dynamic)rawProps));
+            *family.nativeProps_DEPRECATED,
+            (folly::dynamic)rawProps,
+            NullValueStrategy::Override));
   } else {
     family.nativeProps_DEPRECATED =
         std::make_unique<folly::dynamic>((folly::dynamic)rawProps);
@@ -714,6 +718,14 @@ void UIManager::reportMount(SurfaceId surfaceId) const {
   SystraceSection s("UIManager::reportMount");
 
   auto time = JSExecutor::performanceNow();
+
+  // We are testing the impact of enabling mount hooks on Android and we're
+  // seeing some crashes that we didn't see on iOS. We'll run a test to enable
+  // the mount reporting pipeline excluding the logic below, to see if that
+  // logic is what's causing the issues. See T179749070.
+  if (ReactNativeFeatureFlags::skipMountHookNotifications()) {
+    return;
+  }
 
   auto rootShadowNode = RootShadowNode::Shared{};
   shadowTreeRegistry_.visit(surfaceId, [&](const ShadowTree& shadowTree) {

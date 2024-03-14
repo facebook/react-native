@@ -29,6 +29,8 @@ public interface ReadableMap {
 
   int getInt(@NonNull String name);
 
+  long getLong(@NonNull String name);
+
   @Nullable
   String getString(@NonNull String name);
 

@@ -10,6 +10,7 @@ package com.facebook.react.devsupport;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
 import com.facebook.react.packagerconnection.PackagerConnectionSettings;
@@ -19,6 +20,7 @@ import com.facebook.react.packagerconnection.PackagerConnectionSettings;
  * {@link com.facebook.react.devsupport}. For accessing some of the settings by external modules
  * this class implements an external interface {@link DeveloperSettings}.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class DevInternalSettings
     implements DeveloperSettings, SharedPreferences.OnSharedPreferenceChangeListener {
 

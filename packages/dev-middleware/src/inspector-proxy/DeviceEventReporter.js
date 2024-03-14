@@ -9,6 +9,7 @@
  */
 
 import type {EventReporter} from '../types/EventReporter';
+import type {CDPResponse} from './cdp-types/messages';
 
 import TTLCache from '@isaacs/ttlcache';
 
@@ -69,11 +70,7 @@ class DeviceEventReporter {
   }
 
   logResponse(
-    res: $ReadOnly<{
-      id: number,
-      error?: {message: string, data?: mixed},
-      ...
-    }>,
+    res: CDPResponse<>,
     origin: 'device' | 'proxy',
     metadata: $ReadOnly<{
       pageId: string | null,

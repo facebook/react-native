@@ -30,7 +30,6 @@ class RuntimeSchedulerBase {
       RawCallback&& callback) noexcept = 0;
   virtual void cancelTask(Task& task) noexcept = 0;
   virtual bool getShouldYield() const noexcept = 0;
-  virtual bool getIsSynchronous() const noexcept = 0;
   virtual SchedulerPriority getCurrentPriorityLevel() const noexcept = 0;
   virtual RuntimeSchedulerTimePoint now() const noexcept = 0;
   virtual void callExpiredTasks(jsi::Runtime& runtime) = 0;
@@ -99,14 +98,6 @@ class RuntimeScheduler final : RuntimeSchedulerBase {
    * Can be called from any thread.
    */
   bool getShouldYield() const noexcept override;
-
-  /*
-   * Return value informs if the current task is executed inside synchronous
-   * block.
-   *
-   * Can be called from any thread.
-   */
-  bool getIsSynchronous() const noexcept override;
 
   /*
    * Returns value of currently executed task. Designed to be called from React.

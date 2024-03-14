@@ -18,20 +18,19 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.assets.ReactFontManager;
 import com.facebook.react.views.text.ReactTypefaceUtils;
 
+/**
+ * A {@link MetricAffectingSpan} that allows to change the style of the displayed font.
+ * CustomStyleSpan will try to load the fontFamily with the right style and weight from the assets.
+ * The custom fonts will have to be located in the res/assets folder of the application. The
+ * supported custom fonts extensions are .ttf and .otf. For each font family the bold, italic and
+ * bold_italic variants are supported. Given a "family" font family the files in the assets/fonts
+ * folder need to be family.ttf(.otf) family_bold.ttf(.otf) family_italic.ttf(.otf) and
+ * family_bold_italic.ttf(.otf). If the right font is not found in the assets folder CustomStyleSpan
+ * will fallback on the most appropriate default typeface depending on the style. Fonts are
+ * retrieved and cached using the {@link ReactFontManager}
+ */
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
-
-  /**
-   * A {@link MetricAffectingSpan} that allows to change the style of the displayed font.
-   * CustomStyleSpan will try to load the fontFamily with the right style and weight from the
-   * assets. The custom fonts will have to be located in the res/assets folder of the application.
-   * The supported custom fonts extensions are .ttf and .otf. For each font family the bold, italic
-   * and bold_italic variants are supported. Given a "family" font family the files in the
-   * assets/fonts folder need to be family.ttf(.otf) family_bold.ttf(.otf) family_italic.ttf(.otf)
-   * and family_bold_italic.ttf(.otf). If the right font is not found in the assets folder
-   * CustomStyleSpan will fallback on the most appropriate default typeface depending on the style.
-   * Fonts are retrieved and cached using the {@link ReactFontManager}
-   */
   private final AssetManager mAssetManager;
 
   private final int mStyle;

@@ -26,6 +26,16 @@ function generateSupportedApplePlatformsMacro(
     return fileTemplate;
   }
 
+  // According to Podspec Syntax Reference, when `platform` or `deployment_target` is not specified, it defaults to all platforms.
+  // https://guides.cocoapods.org/syntax/podspec.html#platform
+  const everyPlatformIsUnsupported = Object.keys(supportedPlatformsMap).every(
+    platform => supportedPlatformsMap[platform] === false,
+  );
+
+  if (everyPlatformIsUnsupported) {
+    return fileTemplate;
+  }
+
   const compilerMacroString = Object.keys(supportedPlatformsMap)
     .reduce((acc: string[], platform) => {
       if (!supportedPlatformsMap[platform]) {

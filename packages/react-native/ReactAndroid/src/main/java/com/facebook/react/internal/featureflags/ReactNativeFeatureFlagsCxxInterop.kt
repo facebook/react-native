@@ -4,14 +4,14 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<19d0606854e3e34efe67acf9dc1d26b4>>
+ * @generated SignedSource<<9b38540981705aea015b0a5d0ac07c6e>>
  */
 
 /**
  * IMPORTANT: Do NOT modify this file directly.
  *
  * To change the definition of the flags, edit
- *   packages/react-native/scripts/featureflags/ReactNativeFeatureFlags.json.
+ *   packages/react-native/scripts/featureflags/ReactNativeFeatureFlags.config.js.
  *
  * To regenerate this code, run the following script from the repo root:
  *   yarn featureflags-update
@@ -23,20 +23,38 @@ import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.soloader.SoLoader
 
 @DoNotStrip
-object ReactNativeFeatureFlagsCxxInterop {
+public object ReactNativeFeatureFlagsCxxInterop {
   init {
-    SoLoader.loadLibrary("reactfeatureflagsjni")
+    SoLoader.loadLibrary("react_featureflagsjni")
   }
 
-  @DoNotStrip @JvmStatic external fun commonTestFlag(): Boolean
+  @DoNotStrip @JvmStatic public external fun commonTestFlag(): Boolean
 
-  @DoNotStrip @JvmStatic external fun useModernRuntimeScheduler(): Boolean
+  @DoNotStrip @JvmStatic public external fun batchRenderingUpdatesInEventLoop(): Boolean
 
-  @DoNotStrip @JvmStatic external fun enableMicrotasks(): Boolean
+  @DoNotStrip @JvmStatic public external fun enableBackgroundExecutor(): Boolean
 
-  @DoNotStrip @JvmStatic external fun batchRenderingUpdatesInEventLoop(): Boolean
+  @DoNotStrip @JvmStatic public external fun enableCustomDrawOrderFabric(): Boolean
 
-  @DoNotStrip @JvmStatic external fun override(provider: Any)
+  @DoNotStrip @JvmStatic public external fun enableFixForClippedSubviewsCrash(): Boolean
 
-  @DoNotStrip @JvmStatic external fun dangerouslyReset()
+  @DoNotStrip @JvmStatic public external fun enableMicrotasks(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun enableMountHooksAndroid(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun enableSpannableBuildingUnification(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun inspectorEnableCxxInspectorPackagerConnection(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun inspectorEnableHermesCDPAgent(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun inspectorEnableModernCDPRegistry(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun skipMountHookNotifications(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun useModernRuntimeScheduler(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun override(provider: Any)
+
+  @DoNotStrip @JvmStatic public external fun dangerouslyReset()
 }

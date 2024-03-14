@@ -27,6 +27,8 @@ export type DimensionValue =
 type AnimatableNumericValue = number | Animated.AnimatedNode;
 type AnimatableStringValue = string | Animated.AnimatedNode;
 
+export type CursorValue = 'auto' | 'pointer';
+
 /**
  * Flex Prop Types
  * @see https://reactnative.dev/docs/flexbox
@@ -155,11 +157,11 @@ interface ScaleYTransform {
 }
 
 interface TranslateXTransform {
-  translateX: AnimatableNumericValue;
+  translateX: AnimatableNumericValue | `${number}%`;
 }
 
 interface TranslateYTransform {
-  translateY: AnimatableNumericValue;
+  translateY: AnimatableNumericValue | `${number}%`;
 }
 
 interface SkewXTransform {
@@ -274,6 +276,7 @@ export interface ViewStyle extends FlexStyle, ShadowStyleIOS, TransformsStyle {
    * Controls whether the View can be the target of touch events.
    */
   pointerEvents?: 'box-none' | 'none' | 'box-only' | 'auto' | undefined;
+  cursor?: CursorValue | undefined;
 }
 
 export type FontVariant =
@@ -281,7 +284,6 @@ export type FontVariant =
   | 'oldstyle-nums'
   | 'lining-nums'
   | 'tabular-nums'
-  | 'proportional-nums'
   | 'common-ligatures'
   | 'no-common-ligatures'
   | 'discretionary-ligatures'
@@ -289,7 +291,28 @@ export type FontVariant =
   | 'historical-ligatures'
   | 'no-historical-ligatures'
   | 'contextual'
-  | 'no-contextual';
+  | 'no-contextual'
+  | 'proportional-nums'
+  | 'stylistic-one'
+  | 'stylistic-two'
+  | 'stylistic-three'
+  | 'stylistic-four'
+  | 'stylistic-five'
+  | 'stylistic-six'
+  | 'stylistic-seven'
+  | 'stylistic-eight'
+  | 'stylistic-nine'
+  | 'stylistic-ten'
+  | 'stylistic-eleven'
+  | 'stylistic-twelve'
+  | 'stylistic-thirteen'
+  | 'stylistic-fourteen'
+  | 'stylistic-fifteen'
+  | 'stylistic-sixteen'
+  | 'stylistic-seventeen'
+  | 'stylistic-eighteen'
+  | 'stylistic-nineteen'
+  | 'stylistic-twenty';
 export interface TextStyleIOS extends ViewStyle {
   fontVariant?: FontVariant[] | undefined;
   textDecorationColor?: ColorValue | undefined;
@@ -326,6 +349,25 @@ export interface TextStyle extends TextStyleIOS, TextStyleAndroid, ViewStyle {
     | '700'
     | '800'
     | '900'
+    | 100
+    | 200
+    | 300
+    | 400
+    | 500
+    | 600
+    | 700
+    | 800
+    | 900
+    | 'ultralight'
+    | 'thin'
+    | 'light'
+    | 'medium'
+    | 'regular'
+    | 'semibold'
+    | 'condensedBold'
+    | 'condensed'
+    | 'heavy'
+    | 'black'
     | undefined;
   letterSpacing?: number | undefined;
   lineHeight?: number | undefined;
@@ -364,4 +406,5 @@ export interface ImageStyle extends FlexStyle, ShadowStyleIOS, TransformsStyle {
   tintColor?: ColorValue | undefined;
   opacity?: AnimatableNumericValue | undefined;
   objectFit?: 'cover' | 'contain' | 'fill' | 'scale-down' | undefined;
+  cursor?: CursorValue | undefined;
 }

@@ -8,12 +8,14 @@
 package com.facebook.react.uimanager;
 
 import android.graphics.Color;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableType;
 import java.util.Arrays;
 import java.util.HashSet;
 
 /** Keys for props that need to be shared across multiple classes. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ViewProps {
 
   public static final String VIEW_CLASS_NAME = "RCTView";

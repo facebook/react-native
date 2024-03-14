@@ -31,8 +31,12 @@ public class ReactActivityDelegate {
 
   private @Nullable PermissionListener mPermissionListener;
   private @Nullable Callback mPermissionsCallback;
-  private ReactDelegate mReactDelegate;
+  private @Nullable ReactDelegate mReactDelegate;
 
+  /**
+   * Prefer using ReactActivity when possible, as it hooks up all Activity lifecycle methods by
+   * default. It also implements DefaultHardwareBackBtnHandler, which ReactDelegate requires.
+   */
   @Deprecated
   public ReactActivityDelegate(@Nullable Activity activity, @Nullable String mainComponentName) {
     mActivity = activity;
@@ -56,22 +60,16 @@ public class ReactActivityDelegate {
   }
 
   protected @Nullable Bundle composeLaunchOptions() {
-    Bundle composedLaunchOptions = getLaunchOptions();
-    if (isFabricEnabled()) {
-      if (composedLaunchOptions == null) {
-        composedLaunchOptions = new Bundle();
-      }
-      composedLaunchOptions.putBoolean("concurrentRoot", true);
-    }
-    return composedLaunchOptions;
+    return getLaunchOptions();
   }
 
+  /**
+   * Override to customize ReactRootView creation.
+   *
+   * <p>Not used on bridgeless
+   */
   protected ReactRootView createRootView() {
-    return new ReactRootView(getContext());
-  }
-
-  protected ReactRootView createRootView(Bundle initialProps) {
-    return new ReactRootView(getContext());
+    return null;
   }
 
   /**
@@ -97,7 +95,7 @@ public class ReactActivityDelegate {
     return mMainComponentName;
   }
 
-  protected void onCreate(Bundle savedInstanceState) {
+  public void onCreate(Bundle savedInstanceState) {
     String mainComponentName = getMainComponentName();
     final Bundle launchOptions = composeLaunchOptions();
     if (ReactFeatureFlags.enableBridgelessArchitecture) {
@@ -109,7 +107,11 @@ public class ReactActivityDelegate {
               getPlainActivity(), getReactNativeHost(), mainComponentName, launchOptions) {
             @Override
             protected ReactRootView createRootView() {
-              return ReactActivityDelegate.this.createRootView(launchOptions);
+              ReactRootView rootView = ReactActivityDelegate.this.createRootView();
+              if (rootView == null) {
+                rootView = super.createRootView();
+              }
+              return rootView;
             }
           };
     }
@@ -127,11 +129,11 @@ public class ReactActivityDelegate {
     mReactDelegate.onUserLeaveHint();
   }
 
-  protected void onPause() {
+  public void onPause() {
     mReactDelegate.onHostPause();
   }
 
-  protected void onResume() {
+  public void onResume() {
     mReactDelegate.onHostResume();
 
     if (mPermissionsCallback != null) {
@@ -140,7 +142,7 @@ public class ReactActivityDelegate {
     }
   }
 
-  protected void onDestroy() {
+  public void onDestroy() {
     mReactDelegate.onHostDestroy();
   }
 
@@ -149,7 +151,9 @@ public class ReactActivityDelegate {
   }
 
   public boolean onKeyDown(int keyCode, KeyEvent event) {
-    if (!ReactFeatureFlags.enableBridgelessArchitecture) {
+    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      // TODO T156475655: support onKeyDown
+    } else {
       if (getReactNativeHost().hasInstance()
           && getReactNativeHost().getUseDeveloperSupport()
           && keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD) {
@@ -165,7 +169,9 @@ public class ReactActivityDelegate {
   }
 
   public boolean onKeyLongPress(int keyCode, KeyEvent event) {
-    if (!ReactFeatureFlags.enableBridgelessArchitecture) {
+    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      // TODO T156475655: support onKeyLongPress
+    } else {
       if (getReactNativeHost().hasInstance()
           && getReactNativeHost().getUseDeveloperSupport()
           && keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD) {
@@ -181,25 +187,17 @@ public class ReactActivityDelegate {
   }
 
   public boolean onNewIntent(Intent intent) {
-    if (!ReactFeatureFlags.enableBridgelessArchitecture) {
-      if (getReactNativeHost().hasInstance()) {
-        getReactNativeHost().getReactInstanceManager().onNewIntent(intent);
-        return true;
-      }
-    }
-    return false;
+    return mReactDelegate.onNewIntent(intent);
   }
 
   public void onWindowFocusChanged(boolean hasFocus) {
-    if (!ReactFeatureFlags.enableBridgelessArchitecture) {
-      if (getReactNativeHost().hasInstance()) {
-        getReactNativeHost().getReactInstanceManager().onWindowFocusChange(hasFocus);
-      }
-    }
+    mReactDelegate.onWindowFocusChanged(hasFocus);
   }
 
   public void onConfigurationChanged(Configuration newConfig) {
-    if (!ReactFeatureFlags.enableBridgelessArchitecture) {
+    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      // TODO T156475655: support onConfigurationChanged
+    } else {
       if (getReactNativeHost().hasInstance()) {
         getReactInstanceManager().onConfigurationChanged(getContext(), newConfig);
       }
@@ -215,14 +213,11 @@ public class ReactActivityDelegate {
   public void onRequestPermissionsResult(
       final int requestCode, final String[] permissions, final int[] grantResults) {
     mPermissionsCallback =
-        new Callback() {
-          @Override
-          public void invoke(Object... args) {
-            if (mPermissionListener != null
-                && mPermissionListener.onRequestPermissionsResult(
-                    requestCode, permissions, grantResults)) {
-              mPermissionListener = null;
-            }
+        args -> {
+          if (mPermissionListener != null
+              && mPermissionListener.onRequestPermissionsResult(
+                  requestCode, permissions, grantResults)) {
+            mPermissionListener = null;
           }
         };
   }

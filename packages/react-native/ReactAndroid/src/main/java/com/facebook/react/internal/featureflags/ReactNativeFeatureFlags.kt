@@ -4,14 +4,14 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<52367278b4d0fdf7f436bd8c511d4ffe>>
+ * @generated SignedSource<<62ec63a2aebd866803cde1c1ca7d44c6>>
  */
 
 /**
  * IMPORTANT: Do NOT modify this file directly.
  *
  * To change the definition of the flags, edit
- *   packages/react-native/scripts/featureflags/ReactNativeFeatureFlags.json.
+ *   packages/react-native/scripts/featureflags/ReactNativeFeatureFlags.config.js.
  *
  * To regenerate this code, run the following script from the repo root:
  *   yarn featureflags-update
@@ -24,29 +24,87 @@ package com.facebook.react.internal.featureflags
  *
  * All the methods are thread-safe if you handle `override` correctly.
  */
-object ReactNativeFeatureFlags {
+public object ReactNativeFeatureFlags {
   private var accessorProvider: () -> ReactNativeFeatureFlagsAccessor = { ReactNativeFeatureFlagsCxxAccessor() }
   private var accessor: ReactNativeFeatureFlagsAccessor = accessorProvider()
 
   /**
    * Common flag for testing. Do NOT modify.
    */
-  fun commonTestFlag() = accessor.commonTestFlag()
-
-  /**
-   * When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.
-   */
-  fun useModernRuntimeScheduler() = accessor.useModernRuntimeScheduler()
-
-  /**
-   * Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).
-   */
-  fun enableMicrotasks() = accessor.enableMicrotasks()
+  @JvmStatic
+  public fun commonTestFlag(): Boolean = accessor.commonTestFlag()
 
   /**
    * When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.
    */
-  fun batchRenderingUpdatesInEventLoop() = accessor.batchRenderingUpdatesInEventLoop()
+  @JvmStatic
+  public fun batchRenderingUpdatesInEventLoop(): Boolean = accessor.batchRenderingUpdatesInEventLoop()
+
+  /**
+   * Enables the use of a background executor to compute layout and commit updates on Fabric (this system is deprecated and should not be used).
+   */
+  @JvmStatic
+  public fun enableBackgroundExecutor(): Boolean = accessor.enableBackgroundExecutor()
+
+  /**
+   * When enabled, Fabric will use customDrawOrder in ReactViewGroup (similar to old architecture).
+   */
+  @JvmStatic
+  public fun enableCustomDrawOrderFabric(): Boolean = accessor.enableCustomDrawOrderFabric()
+
+  /**
+   * Attempt at fixing a crash related to subview clipping on Android. This is a kill switch for the fix
+   */
+  @JvmStatic
+  public fun enableFixForClippedSubviewsCrash(): Boolean = accessor.enableFixForClippedSubviewsCrash()
+
+  /**
+   * Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).
+   */
+  @JvmStatic
+  public fun enableMicrotasks(): Boolean = accessor.enableMicrotasks()
+
+  /**
+   * Enables the notification of mount operations to mount hooks on Android.
+   */
+  @JvmStatic
+  public fun enableMountHooksAndroid(): Boolean = accessor.enableMountHooksAndroid()
+
+  /**
+   * Uses new, deduplicated logic for constructing Android Spannables from text fragments
+   */
+  @JvmStatic
+  public fun enableSpannableBuildingUnification(): Boolean = accessor.enableSpannableBuildingUnification()
+
+  /**
+   * Flag determining if the C++ implementation of InspectorPackagerConnection should be used instead of the per-platform one. This flag is global and should not be changed across React Host lifetimes.
+   */
+  @JvmStatic
+  public fun inspectorEnableCxxInspectorPackagerConnection(): Boolean = accessor.inspectorEnableCxxInspectorPackagerConnection()
+
+  /**
+   * Flag determining if the new Hermes CDPAgent API should be enabled in the modern CDP backend. This flag is global and should not be changed across React Host lifetimes.
+   */
+  @JvmStatic
+  public fun inspectorEnableHermesCDPAgent(): Boolean = accessor.inspectorEnableHermesCDPAgent()
+
+  /**
+   * Flag determining if the modern CDP backend should be enabled. This flag is global and should not be changed across React Host lifetimes.
+   */
+  @JvmStatic
+  public fun inspectorEnableModernCDPRegistry(): Boolean = accessor.inspectorEnableModernCDPRegistry()
+
+  /**
+   * This is a temporary flag to disable part of the mount hooks pipeline to investigate a crash.
+   */
+  @JvmStatic
+  public fun skipMountHookNotifications(): Boolean = accessor.skipMountHookNotifications()
+
+  /**
+   * When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.
+   */
+  @JvmStatic
+  public fun useModernRuntimeScheduler(): Boolean = accessor.useModernRuntimeScheduler()
 
   /**
    * Overrides the feature flags with the ones provided by the given provider
@@ -62,7 +120,8 @@ object ReactNativeFeatureFlags {
    * })
    * ```
    */
-  fun override(provider: ReactNativeFeatureFlagsProvider) = accessor.override(provider)
+  @JvmStatic
+  public fun override(provider: ReactNativeFeatureFlagsProvider): Unit = accessor.override(provider)
 
   /**
    * Removes the overridden feature flags and makes the API return default
@@ -73,7 +132,8 @@ object ReactNativeFeatureFlags {
    * call `dangerouslyReset` after destroying the runtime and `override`
    * again before initializing the new one.
    */
-  fun dangerouslyReset() {
+  @JvmStatic
+  public fun dangerouslyReset() {
     // This is necessary when the accessor interops with C++ and we need to
     // remove the overrides set there.
     accessor.dangerouslyReset()

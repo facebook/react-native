@@ -29,15 +29,9 @@ class CoreFeatures {
   // updates for all changes in scroll position.
   static bool enableGranularScrollViewStateUpdatesIOS;
 
-  // Report mount operations from the host platform to notify mount hooks.
-  static bool enableMountHooks;
-
   // When enabled, the renderer would only fail commits when they propagate
   // state and the last commit that updated state changed before committing.
   static bool enableGranularShadowTreeStateReconciliation;
-
-  // Default state updates and events to async batched priority.
-  static bool enableDefaultAsyncBatchedPriority;
 
   // When enabled, Fabric will avoid cloning notes to perform state progression.
   static bool enableClonelessStateProgression;

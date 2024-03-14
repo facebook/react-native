@@ -11,7 +11,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.config.ReactFeatureFlags;
@@ -75,7 +74,7 @@ public class ReactDelegate {
     mFabricEnabled = fabricEnabled;
     mActivity = activity;
     mMainComponentName = appKey;
-    mLaunchOptions = composeLaunchOptions(launchOptions);
+    mLaunchOptions = launchOptions;
     mDoubleTapReloadRecognizer = new DoubleTapReloadRecognizer();
     mReactNativeHost = reactNativeHost;
   }
@@ -146,16 +145,38 @@ public class ReactDelegate {
     return false;
   }
 
+  public boolean onNewIntent(Intent intent) {
+    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      mReactHost.onNewIntent(intent);
+      return true;
+    } else {
+      if (getReactNativeHost().hasInstance()) {
+        getReactNativeHost().getReactInstanceManager().onNewIntent(intent);
+        return true;
+      }
+    }
+    return false;
+  }
+
   public void onActivityResult(
       int requestCode, int resultCode, Intent data, boolean shouldForwardToReactInstance) {
     if (ReactFeatureFlags.enableBridgelessArchitecture) {
-      // TODO T156475655: Implement onActivityResult for Bridgeless
-      return;
+      mReactHost.onActivityResult(mActivity, requestCode, resultCode, data);
     } else {
       if (getReactNativeHost().hasInstance() && shouldForwardToReactInstance) {
         getReactNativeHost()
             .getReactInstanceManager()
             .onActivityResult(mActivity, requestCode, resultCode, data);
+      }
+    }
+  }
+
+  public void onWindowFocusChanged(boolean hasFocus) {
+    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      mReactHost.onWindowFocusChange(hasFocus);
+    } else {
+      if (getReactNativeHost().hasInstance()) {
+        getReactNativeHost().getReactInstanceManager().onWindowFocusChange(hasFocus);
       }
     }
   }
@@ -192,6 +213,7 @@ public class ReactDelegate {
     }
   }
 
+  // Not used in bridgeless
   protected ReactRootView createRootView() {
     ReactRootView reactRootView = new ReactRootView(mActivity);
     reactRootView.setIsFabric(isFabricEnabled());
@@ -243,15 +265,5 @@ public class ReactDelegate {
    */
   protected boolean isFabricEnabled() {
     return mFabricEnabled;
-  }
-
-  private @NonNull Bundle composeLaunchOptions(Bundle composedLaunchOptions) {
-    if (isFabricEnabled()) {
-      if (composedLaunchOptions == null) {
-        composedLaunchOptions = new Bundle();
-      }
-      composedLaunchOptions.putBoolean("concurrentRoot", true);
-    }
-    return composedLaunchOptions;
   }
 }

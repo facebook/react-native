@@ -136,6 +136,7 @@ declare interface $npm$shelljs$Result {
     ((rest: void) => $npm$shelljs$String);
 }
 
+// $FlowFixMe[unsupported-syntax]
 declare module 'shelljs' {
   declare export type ShellArray<T> = $npm$shelljs$Array<T>;
   declare export type ShellAsync = $npm$shelljs$Async;

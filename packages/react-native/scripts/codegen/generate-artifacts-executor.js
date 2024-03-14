@@ -34,18 +34,19 @@ const REACT_NATIVE_REPOSITORY_ROOT = path.join(
 );
 const REACT_NATIVE_PACKAGE_ROOT_FOLDER = path.join(__dirname, '..', '..');
 const CODEGEN_REPO_PATH = `${REACT_NATIVE_REPOSITORY_ROOT}/packages/react-native-codegen`;
+const RNCORE_CONFIGS = {
+  ios: path.join(REACT_NATIVE_PACKAGE_ROOT_FOLDER, 'ReactCommon'),
+  android: path.join(
+    REACT_NATIVE_PACKAGE_ROOT_FOLDER,
+    'ReactAndroid',
+    'build',
+    'generated',
+    'source',
+    'codegen',
+  ),
+};
 const CORE_LIBRARIES_WITH_OUTPUT_FOLDER = {
-  rncore: {
-    ios: path.join(REACT_NATIVE_PACKAGE_ROOT_FOLDER, 'ReactCommon'),
-    android: path.join(
-      REACT_NATIVE_PACKAGE_ROOT_FOLDER,
-      'ReactAndroid',
-      'build',
-      'generated',
-      'source',
-      'codegen',
-    ),
-  },
+  rncore: RNCORE_CONFIGS,
   FBReactNativeSpec: {
     ios: null,
     android: path.join(
@@ -59,6 +60,22 @@ const CORE_LIBRARIES_WITH_OUTPUT_FOLDER = {
   },
 };
 const REACT_NATIVE = 'react-native';
+
+const MODULES_PROTOCOLS_H_TEMPLATE_PATH = path.join(
+  REACT_NATIVE_PACKAGE_ROOT_FOLDER,
+  'scripts',
+  'codegen',
+  'templates',
+  'RCTModulesConformingToProtocolsProviderH.template',
+);
+
+const MODULES_PROTOCOLS_MM_TEMPLATE_PATH = path.join(
+  REACT_NATIVE_PACKAGE_ROOT_FOLDER,
+  'scripts',
+  'codegen',
+  'templates',
+  'RCTModulesConformingToProtocolsProviderMM.template',
+);
 
 // HELPERS
 
@@ -193,11 +210,17 @@ function extractSupportedApplePlatforms(dependency, dependencyPath) {
     {},
   );
 
-  console.log(
-    `[Codegen] Supported Apple platforms: ${Object.keys(supportedPlatformsMap)
-      .filter(key => supportedPlatformsMap[key])
-      .join(', ')} for ${dependency}`,
+  const supportedPlatformsList = Object.keys(supportedPlatformsMap).filter(
+    key => supportedPlatformsMap[key],
   );
+
+  if (supportedPlatformsList.length > 0) {
+    console.log(
+      `[Codegen] Supported Apple platforms: ${supportedPlatformsList.join(
+        ', ',
+      )} for ${dependency}`,
+    );
+  }
 
   return supportedPlatformsMap;
 }
@@ -224,6 +247,44 @@ function findExternalLibraries(pkgJson) {
     } catch (e) {
       return [];
     }
+  });
+}
+
+function findLibrariesFromReactNativeConfig(projectRoot) {
+  const rnConfigFileName = 'react-native.config.js';
+
+  console.log(
+    `\n\n[Codegen] >>>>> Searching for codegen-enabled libraries in ${rnConfigFileName}`,
+  );
+
+  const rnConfigFilePath = path.resolve(projectRoot, rnConfigFileName);
+
+  if (!fs.existsSync(rnConfigFilePath)) {
+    return [];
+  }
+  const rnConfig = require(rnConfigFilePath);
+
+  if (rnConfig.dependencies == null) {
+    return [];
+  }
+  return Object.keys(rnConfig.dependencies).flatMap(name => {
+    const dependencyConfig = rnConfig.dependencies[name];
+
+    if (!dependencyConfig.root) {
+      return [];
+    }
+    const codegenConfigFileDir = path.resolve(
+      projectRoot,
+      dependencyConfig.root,
+    );
+    let configFile;
+    try {
+      configFile = readPkgJsonInDirectory(codegenConfigFileDir);
+    } catch {
+      return [];
+    }
+
+    return extractLibrariesFromJSON(configFile, codegenConfigFileDir);
   });
 }
 
@@ -354,20 +415,47 @@ function generateSchemaInfo(library, platform) {
   };
 }
 
-function generateCode(outputPath, schemaInfo, includesGeneratedCode, platform) {
-  const tmpDir = fs.mkdtempSync(
-    path.join(os.tmpdir(), schemaInfo.library.config.name),
+function shouldSkipGenerationForRncore(schemaInfo, platform) {
+  if (platform !== 'ios' || schemaInfo.library.config.name !== 'rncore') {
+    return false;
+  }
+  const rncoreOutputPath = path.join(
+    RNCORE_CONFIGS.ios,
+    'react',
+    'renderer',
+    'components',
+    'rncore',
   );
+  const rncoreAbsolutePath = path.resolve(rncoreOutputPath);
+  return (
+    rncoreAbsolutePath.includes('node_modules') &&
+    fs.existsSync(rncoreAbsolutePath) &&
+    fs.readdirSync(rncoreAbsolutePath).length > 0
+  );
+}
+
+function generateCode(outputPath, schemaInfo, includesGeneratedCode, platform) {
+  if (shouldSkipGenerationForRncore(schemaInfo, platform)) {
+    console.log(
+      '[Codegen - rncore] Skipping iOS code generation for rncore as it has been generated already.',
+    );
+    return;
+  }
+
+  const libraryName = schemaInfo.library.config.name;
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), libraryName));
   const tmpOutputDir = path.join(tmpDir, 'out');
   fs.mkdirSync(tmpOutputDir, {recursive: true});
 
-  console.log(`[Codegen] Generating Native Code for ${platform}`);
+  console.log(
+    `[Codegen] Generating Native Code for ${libraryName} - ${platform}`,
+  );
   const useLocalIncludePaths = includesGeneratedCode;
   generateSpecsCLIExecutor.generateSpecFromInMemorySchema(
     platform,
     schemaInfo.schema,
     tmpOutputDir,
-    schemaInfo.library.config.name,
+    libraryName,
     'com.facebook.fbreact.specs',
     schemaInfo.library.config.type,
     useLocalIncludePaths,
@@ -375,13 +463,9 @@ function generateCode(outputPath, schemaInfo, includesGeneratedCode, platform) {
 
   // Finally, copy artifacts to the final output directory.
   const outputDir =
-    reactNativeCoreLibraryOutputPath(
-      schemaInfo.library.config.name,
-      platform,
-    ) ?? outputPath;
+    reactNativeCoreLibraryOutputPath(libraryName, platform) ?? outputPath;
   fs.mkdirSync(outputDir, {recursive: true});
-  // TODO: Fix this. This will not work on Windows.
-  execSync(`cp -R ${tmpOutputDir}/* "${outputDir}"`);
+  fs.cpSync(tmpOutputDir, outputDir, {recursive: true});
   console.log(`[Codegen] Generated artifacts: ${outputDir}`);
 }
 
@@ -447,8 +531,58 @@ function findCodegenEnabledLibraries(pkgJson, projectRoot) {
   if (pkgJsonIncludesGeneratedCode(pkgJson)) {
     return projectLibraries;
   } else {
-    return [...projectLibraries, ...findExternalLibraries(pkgJson)];
+    return [
+      ...projectLibraries,
+      ...findExternalLibraries(pkgJson),
+      ...findLibrariesFromReactNativeConfig(projectRoot),
+    ];
   }
+}
+
+function generateCustomURLHandlers(libraries, outputDir) {
+  const customImageURLLoaderClasses = libraries
+    .flatMap(
+      library =>
+        library?.config?.ios?.modulesConformingToProtocol?.RCTImageURLLoader,
+    )
+    .filter(Boolean)
+    .map(className => `@"${className}"`)
+    .join(',\n\t\t');
+
+  const customImageDataDecoderClasses = libraries
+    .flatMap(
+      library =>
+        library?.config?.ios?.modulesConformingToProtocol?.RCTImageDataDecoder,
+    )
+    .filter(Boolean)
+    .map(className => `@"${className}"`)
+    .join(',\n\t\t');
+
+  const customURLHandlerClasses = libraries
+    .flatMap(
+      library =>
+        library?.config?.ios?.modulesConformingToProtocol?.RCTURLRequestHandler,
+    )
+    .filter(Boolean)
+    .map(className => `@"${className}"`)
+    .join(',\n\t\t');
+
+  const template = fs.readFileSync(MODULES_PROTOCOLS_MM_TEMPLATE_PATH, 'utf8');
+  const finalMMFile = template
+    .replace(/{imageURLLoaderClassNames}/, customImageURLLoaderClasses)
+    .replace(/{imageDataDecoderClassNames}/, customImageDataDecoderClasses)
+    .replace(/{requestHandlersClassNames}/, customURLHandlerClasses);
+
+  fs.writeFileSync(
+    path.join(outputDir, 'RCTModulesConformingToProtocolsProvider.mm'),
+    finalMMFile,
+  );
+
+  const templateH = fs.readFileSync(MODULES_PROTOCOLS_H_TEMPLATE_PATH, 'utf8');
+  fs.writeFileSync(
+    path.join(outputDir, 'RCTModulesConformingToProtocolsProvider.h'),
+    templateH,
+  );
 }
 
 // It removes all the empty files and empty folders
@@ -482,6 +616,22 @@ function cleanupEmptyFilesAndFolders(filepath) {
     fs.rmdirSync(filepath);
     return;
   }
+}
+
+function generateRNCoreComponentsIOS(projectRoot /*: string */) /*: void*/ {
+  const ios = 'ios';
+  buildCodegenIfNeeded();
+  const pkgJson = readPkgJsonInDirectory(projectRoot);
+  const rncoreLib = findProjectRootLibraries(pkgJson, projectRoot).filter(
+    library => library.config.name === 'rncore',
+  )[0];
+  if (!rncoreLib) {
+    throw new Error(
+      "[Codegen] Can't find rncore library. Failed to generate rncore artifacts",
+    );
+  }
+  const rncoreSchemaInfo = generateSchemaInfo(rncoreLib, ios);
+  generateCode('', rncoreSchemaInfo, false, ios);
 }
 
 // Execute
@@ -562,7 +712,9 @@ function execute(projectRoot, targetPlatform, baseOutputPath) {
         );
 
         createComponentProvider(schemas, supportedApplePlatforms);
+        generateCustomURLHandlers(libraries, outputPath);
       }
+
       cleanupEmptyFilesAndFolders(outputPath);
     }
   } catch (err) {
@@ -575,7 +727,8 @@ function execute(projectRoot, targetPlatform, baseOutputPath) {
 }
 
 module.exports = {
-  execute: execute,
+  execute,
+  generateRNCoreComponentsIOS,
   // exported for testing purposes only:
   _extractLibrariesFromJSON: extractLibrariesFromJSON,
   _cleanupEmptyFilesAndFolders: cleanupEmptyFilesAndFolders,

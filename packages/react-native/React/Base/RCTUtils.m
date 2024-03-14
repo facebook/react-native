@@ -569,6 +569,10 @@ UIWindow *__nullable RCTKeyWindow(void)
     }
     UIWindowScene *windowScene = (UIWindowScene *)scene;
 
+    if (@available(iOS 15.0, *)) {
+      return windowScene.keyWindow;
+    }
+
     for (UIWindow *window in windowScene.windows) {
       if (window.isKeyWindow) {
         return window;
@@ -577,6 +581,11 @@ UIWindow *__nullable RCTKeyWindow(void)
   }
 
   return nil;
+}
+
+UIStatusBarManager *__nullable RCTUIStatusBarManager(void)
+{
+  return RCTKeyWindow().windowScene.statusBarManager;
 }
 
 UIViewController *__nullable RCTPresentedViewController(void)

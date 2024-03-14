@@ -125,9 +125,8 @@ export default class ReadOnlyNode {
       return null;
     }
 
-    const parentInstanceHandle = nullthrows(getFabricUIManager()).getParentNode(
-      shadowNode,
-    );
+    const parentInstanceHandle =
+      nullthrows(getFabricUIManager()).getParentNode(shadowNode);
 
     if (parentInstanceHandle == null) {
       return null;
@@ -323,9 +322,8 @@ export function getChildNodes(
     return [];
   }
 
-  const childNodeInstanceHandles = nullthrows(
-    getFabricUIManager(),
-  ).getChildNodes(shadowNode);
+  const childNodeInstanceHandles =
+    nullthrows(getFabricUIManager()).getChildNodes(shadowNode);
   return childNodeInstanceHandles
     .map(instanceHandle =>
       getPublicInstanceFromInternalInstanceHandle(instanceHandle),

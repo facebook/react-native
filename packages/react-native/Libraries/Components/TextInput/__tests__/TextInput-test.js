@@ -1,14 +1,3 @@
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * @flow-strict
- * @format
- * @oncall react_native
- */
-
 const ReactNative = require('../../../ReactNative/RendererProxy');
 const {
   enter,
@@ -51,7 +40,7 @@ describe('TextInput tests', () => {
     input = renderTree.root.findByType(TextInput);
   });
   it('has expected instance functions', () => {
-    expect(inputRef.current.isFocused).toBeInstanceOf(Function); // Would have prevented S168585
+    expect(inputRef.current.isFocused).toBeInstanceOf(Function);  // Would have prevented S168585
     expect(inputRef.current.clear).toBeInstanceOf(Function);
     expect(inputRef.current.focus).toBeInstanceOf(jest.fn().constructor);
     expect(inputRef.current.blur).toBeInstanceOf(jest.fn().constructor);
@@ -89,7 +78,6 @@ describe('TextInput tests', () => {
 
   it('focus() should not do anything if the TextInput is not editable', () => {
     const textInputRef = createTextInput({editable: false});
-    // currentProps is the property actually containing props at runtime
     textInputRef.current.currentProps = textInputRef.current.props;
     expect(textInputRef.current.isFocused()).toBe(false);
 
@@ -183,7 +171,6 @@ describe('TextInput tests', () => {
         mostRecentEventCount={0}
         onBlur={[Function]}
         onChange={[Function]}
-        onChangeSync={null}
         onClick={[Function]}
         onFocus={[Function]}
         onResponderGrant={[Function]}
@@ -229,7 +216,6 @@ describe('TextInput', () => {
         mostRecentEventCount={0}
         onBlur={[Function]}
         onChange={[Function]}
-        onChangeSync={null}
         onClick={[Function]}
         onFocus={[Function]}
         onResponderGrant={[Function]}
@@ -275,7 +261,6 @@ describe('TextInput compat with web', () => {
         nativeID="id"
         onBlur={[Function]}
         onChange={[Function]}
-        onChangeSync={null}
         onClick={[Function]}
         onFocus={[Function]}
         onResponderGrant={[Function]}
@@ -407,7 +392,6 @@ describe('TextInput compat with web', () => {
         mostRecentEventCount={0}
         onBlur={[Function]}
         onChange={[Function]}
-        onChangeSync={null}
         onClick={[Function]}
         onFocus={[Function]}
         onResponderGrant={[Function]}
@@ -450,7 +434,6 @@ describe('TextInput compat with web', () => {
         mostRecentEventCount={0}
         onBlur={[Function]}
         onChange={[Function]}
-        onChangeSync={null}
         onClick={[Function]}
         onFocus={[Function]}
         onResponderGrant={[Function]}

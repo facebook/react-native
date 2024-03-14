@@ -274,9 +274,12 @@ YG_EXPORT void YGNodeSetAlwaysFormsContainingBlock(
     bool alwaysFormsContainingBlock);
 
 /**
- * Print a node to log output.
+ * Whether the node will always form a containing block for any descendant. This
+ * can happen in situation where the client implements something like a
+ * transform that can affect containing blocks but is not handled by Yoga
+ * directly.
  */
-YG_EXPORT void YGNodePrint(YGNodeConstRef node, YGPrintOptions options);
+YG_EXPORT bool YGNodeGetAlwaysFormsContainingBlock(YGNodeConstRef node);
 
 /**
  * @deprecated

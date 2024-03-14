@@ -16,14 +16,14 @@ import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboMod
 export interface Spec extends TurboModule {
   +getConstants: () => Object;
   +createView: (
-    reactTag: ?number,
+    reactTag: number,
     viewName: string,
     rootTag: RootTag,
     props: Object,
   ) => void;
   +updateView: (reactTag: number, viewName: string, props: Object) => void;
   +findSubviewIn: (
-    reactTag: ?number,
+    reactTag: number,
     point: Array<number>,
     callback: (
       nativeViewTag: number,
@@ -34,8 +34,8 @@ export interface Spec extends TurboModule {
     ) => void,
   ) => void;
   +dispatchViewManagerCommand: (
-    reactTag: ?number,
-    commandID: number,
+    reactTag: number,
+    commandID: number, // number || string
     commandArgs: ?Array<any>,
   ) => void;
   +measure: (
@@ -54,8 +54,8 @@ export interface Spec extends TurboModule {
     callback: (x: number, y: number, width: number, height: number) => void,
   ) => void;
   +viewIsDescendantOf: (
-    reactTag: ?number,
-    ancestorReactTag: ?number,
+    reactTag: number,
+    ancestorReactTag: number,
     callback: (result: Array<boolean>) => void,
   ) => void;
   +measureLayout: (
@@ -79,16 +79,16 @@ export interface Spec extends TurboModule {
       height: number,
     ) => void,
   ) => void;
-  +setJSResponder: (reactTag: ?number, blockNativeResponder: boolean) => void;
+  +setJSResponder: (reactTag: number, blockNativeResponder: boolean) => void;
   +clearJSResponder: () => void;
   +configureNextLayoutAnimation: (
     config: Object,
     callback: () => void, // check what is returned here
     errorCallback: (error: Object) => void,
   ) => void;
-  +setChildren: (containerTag: ?number, reactTags: Array<number>) => void;
+  +setChildren: (containerTag: number, reactTags: Array<number>) => void;
   +manageChildren: (
-    containerTag: ?number,
+    containerTag: number,
     moveFromIndices: Array<number>,
     moveToIndices: Array<number>,
     addChildReactTags: Array<number>,
@@ -100,9 +100,9 @@ export interface Spec extends TurboModule {
   +getConstantsForViewManager?: (viewManagerName: string) => ?Object;
   +getDefaultEventTypes?: () => Array<string>;
   +setLayoutAnimationEnabledExperimental?: (enabled: boolean) => void;
-  +sendAccessibilityEvent?: (reactTag: ?number, eventType: number) => void;
+  +sendAccessibilityEvent?: (reactTag: number, eventType: number) => void;
   +showPopupMenu?: (
-    reactTag: ?number,
+    reactTag: number,
     items: Array<string>,
     error: (error: Object) => void,
     success: (event: string, selected?: number) => void,
@@ -111,8 +111,8 @@ export interface Spec extends TurboModule {
 
   // ios only
   +lazilyLoadView?: (name: string) => Object; // revisit return
-  +focus?: (reactTag: ?number) => void;
-  +blur?: (reactTag: ?number) => void;
+  +focus?: (reactTag: number) => void;
+  +blur?: (reactTag: number) => void;
 }
 
 export default (TurboModuleRegistry.getEnforcing<Spec>('UIManager'): Spec);

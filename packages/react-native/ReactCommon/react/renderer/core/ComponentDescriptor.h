@@ -15,7 +15,6 @@
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/core/State.h>
 #include <react/renderer/core/StateData.h>
-#include <react/renderer/graphics/Float.h>
 #include <react/utils/ContextContainer.h>
 
 namespace facebook::react {

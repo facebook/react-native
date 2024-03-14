@@ -64,8 +64,8 @@ function VisualCompletionExampleScreen(props: {
       style={styles.root}
       ref={node => {
         if (node != null) {
-          // $FlowExpectedError[incompatible-cast]
-          const element = (node: ReactNativeElement);
+          // $FlowExpectedError[incompatible-type]
+          const element: ReactNativeElement = node;
           props.vcTracker.addMutationRoot(element);
         }
       }}>

@@ -18,12 +18,17 @@ import typeof TextInlineImageNativeComponent from './TextInlineImageNativeCompon
 import * as React from 'react';
 
 type ImageComponentStaticsIOS = $ReadOnly<{
-  getSize: (
+  getSize(uri: string): Promise<{width: number, height: number}>,
+  getSize(
     uri: string,
     success: (width: number, height: number) => void,
     failure?: (error: mixed) => void,
-  ) => void,
+  ): void,
 
+  getSizeWithHeaders(
+    uri: string,
+    headers: {[string]: string, ...},
+  ): Promise<{width: number, height: number}>,
   getSizeWithHeaders(
     uri: string,
     headers: {[string]: string, ...},

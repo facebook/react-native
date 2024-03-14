@@ -9,9 +9,11 @@ package com.facebook.react.fabric.mounting.mountitems;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.fabric.mounting.MountingManager;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 final class DispatchStringCommandMountItem extends DispatchCommandMountItem {
 
   private final int mSurfaceId;

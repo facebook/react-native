@@ -119,6 +119,9 @@ export default function MyNativeView(props: {}): React.Node {
           console.log(event.nativeEvent.latLons);
           console.log(event.nativeEvent.multiArrays);
         }}
+        onLegacyStyleEvent={event => {
+          console.log(event.nativeEvent.string);
+        }}
       />
       <Text style={{color: 'red'}}>Legacy View</Text>
       <RNTMyLegacyNativeView
@@ -218,7 +221,15 @@ export default function MyNativeView(props: {}): React.Node {
           }
         }}
       />
-
+      <Button
+        title="Fire Legacy Style Event"
+        onPress={() => {
+          RNTMyNativeViewCommands.fireLagacyStyleEvent(
+            // $FlowFixMe[incompatible-call]
+            ref.current,
+          );
+        }}
+      />
       <Text style={{color: 'green', textAlign: 'center'}}>
         &gt; Interop Layer Measurements &lt;
       </Text>

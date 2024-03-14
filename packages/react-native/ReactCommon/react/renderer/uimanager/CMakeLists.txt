@@ -12,6 +12,7 @@ add_compile_options(
         -std=c++20
         -Wall
         -Wpedantic
+        -Wno-unused-local-typedef
         -DLOG_TAG=\"Fabric\")
 
 file(GLOB react_render_uimanager_SRC CONFIGURE_DEPENDS *.cpp)
@@ -24,6 +25,7 @@ target_link_libraries(react_render_uimanager
         folly_runtime
         jsi
         react_debug
+        react_featureflags
         react_render_componentregistry
         react_render_core
         react_render_debug

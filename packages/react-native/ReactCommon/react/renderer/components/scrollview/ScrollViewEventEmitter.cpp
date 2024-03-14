@@ -94,14 +94,10 @@ void ScrollViewEventEmitter::onMomentumScrollEnd(
 
 void ScrollViewEventEmitter::dispatchScrollViewEvent(
     std::string name,
-    const ScrollViewMetrics& scrollViewMetrics,
-    EventPriority priority) const {
-  dispatchEvent(
-      std::move(name),
-      [scrollViewMetrics](jsi::Runtime& runtime) {
-        return scrollViewMetricsPayload(runtime, scrollViewMetrics);
-      },
-      priority);
+    const ScrollViewMetrics& scrollViewMetrics) const {
+  dispatchEvent(std::move(name), [scrollViewMetrics](jsi::Runtime& runtime) {
+    return scrollViewMetricsPayload(runtime, scrollViewMetrics);
+  });
 }
 
 } // namespace facebook::react

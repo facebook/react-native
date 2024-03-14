@@ -101,6 +101,8 @@ add_react_common_subdir(react/utils)
 add_react_common_subdir(react/bridging)
 add_react_common_subdir(react/renderer/mapbuffer)
 add_react_common_subdir(react/nativemodule/core)
+add_react_common_subdir(react/nativemodule/featureflags)
+add_react_common_subdir(react/nativemodule/microtasks)
 add_react_common_subdir(jserrorhandler)
 add_react_common_subdir(react/runtime)
 add_react_common_subdir(react/runtime/hermes)
@@ -154,7 +156,6 @@ add_executable(reactnative_unittest
   ${REACT_COMMON_DIR}/react/renderer/core/tests/PrimitivesTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/core/tests/RawPropsTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/core/tests/ShadowNodeFamilyTest.cpp
-  ${REACT_COMMON_DIR}/react/renderer/core/tests/traitCastTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/debug/tests/DebugStringConvertibleTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/element/tests/ElementTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/graphics/tests/GraphicsTest.cpp

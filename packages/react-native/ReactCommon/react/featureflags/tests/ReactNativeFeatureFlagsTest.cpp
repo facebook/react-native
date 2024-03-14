@@ -28,6 +28,10 @@ class ReactNativeFeatureFlagsTest : public testing::Test {
   void SetUp() override {
     overrideAccessCount = 0;
   }
+
+  void TearDown() override {
+    ReactNativeFeatureFlags::dangerouslyReset();
+  }
 };
 
 TEST_F(ReactNativeFeatureFlagsTest, providesDefaults) {
@@ -57,6 +61,25 @@ TEST_F(ReactNativeFeatureFlagsTest, preventsOverridingAfterAccess) {
 
   // Overrides shouldn't be applied after they've been accessed
   EXPECT_EQ(ReactNativeFeatureFlags::commonTestFlag(), false);
+}
+
+TEST_F(ReactNativeFeatureFlagsTest, preventsOverridingAfterOverride) {
+  ReactNativeFeatureFlags::override(
+      std::make_unique<ReactNativeFeatureFlagsTestOverrides>());
+
+  EXPECT_EQ(ReactNativeFeatureFlags::commonTestFlag(), true);
+
+  try {
+    ReactNativeFeatureFlags::override(
+        std::make_unique<ReactNativeFeatureFlagsTestOverrides>());
+    FAIL()
+        << "Expected ReactNativeFeatureFlags::override() to throw an exception";
+  } catch (const std::runtime_error& e) {
+    EXPECT_STREQ("Feature flags cannot be overridden more than once", e.what());
+  }
+
+  // Original overrides should still work
+  EXPECT_EQ(ReactNativeFeatureFlags::commonTestFlag(), true);
 }
 
 TEST_F(ReactNativeFeatureFlagsTest, cachesValuesFromOverride) {

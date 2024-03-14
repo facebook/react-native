@@ -32,13 +32,10 @@ bool configUpdateInvalidatesLayout(
 
 class YG_EXPORT Config : public ::YGConfig {
  public:
-  Config(YGLogger logger);
+  explicit Config(YGLogger logger) : logger_{logger} {}
 
   void setUseWebDefaults(bool useWebDefaults);
   bool useWebDefaults() const;
-
-  void setShouldPrintTree(bool printTree);
-  bool shouldPrintTree() const;
 
   void setExperimentalFeatureEnabled(ExperimentalFeature feature, bool enabled);
   bool isExperimentalFeatureEnabled(ExperimentalFeature feature) const;
@@ -70,11 +67,10 @@ class YG_EXPORT Config : public ::YGConfig {
   static const Config& getDefault();
 
  private:
-  YGCloneNodeFunc cloneNodeCallback_;
-  YGLogger logger_;
+  YGCloneNodeFunc cloneNodeCallback_{nullptr};
+  YGLogger logger_{};
 
   bool useWebDefaults_ : 1 = false;
-  bool printTree_ : 1 = false;
 
   ExperimentalFeatureSet experimentalFeatures_{};
   Errata errata_ = Errata::None;

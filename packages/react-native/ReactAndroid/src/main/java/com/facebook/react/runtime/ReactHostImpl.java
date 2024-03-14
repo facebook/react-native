@@ -15,6 +15,9 @@ import static java.lang.Boolean.TRUE;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -29,6 +32,7 @@ import com.facebook.react.ReactHost;
 import com.facebook.react.ReactInstanceEventListener;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.JSBundleLoader;
+import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.MemoryPressureListener;
 import com.facebook.react.bridge.NativeArray;
 import com.facebook.react.bridge.NativeModule;
@@ -38,6 +42,7 @@ import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.bridge.ReactNoCrashBridgeNotAllowedSoftException;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
+import com.facebook.react.bridge.RuntimeExecutor;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.queue.QueueThreadExceptionHandler;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
@@ -46,6 +51,7 @@ import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.devsupport.DevSupportManagerBase;
 import com.facebook.react.devsupport.DisabledDevSupportManager;
+import com.facebook.react.devsupport.InspectorFlags;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.fabric.ComponentFactory;
 import com.facebook.react.fabric.FabricUIManager;
@@ -57,6 +63,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.runtime.internal.bolts.Continuation;
 import com.facebook.react.runtime.internal.bolts.Task;
 import com.facebook.react.runtime.internal.bolts.TaskCompletionSource;
+import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.BlackHoleEventDispatcher;
 import com.facebook.react.uimanager.events.EventDispatcher;
@@ -132,6 +139,8 @@ public class ReactHostImpl implements ReactHost {
 
   private final Set<Function0<Unit>> mBeforeDestroyListeners =
       Collections.synchronizedSet(new HashSet<>());
+
+  private @Nullable ReactHostInspectorTarget mReactHostInspectorTarget;
 
   public ReactHostImpl(
       Context context,
@@ -554,7 +563,8 @@ public class ReactHostImpl implements ReactHost {
     return reactInstance.getEventDispatcher();
   }
 
-  /* package */ @Nullable
+  /* package */
+  @Nullable
   FabricUIManager getUIManager() {
     final ReactInstance reactInstance = mReactInstanceTaskRef.get().getResult();
     if (reactInstance == null) {
@@ -579,7 +589,8 @@ public class ReactHostImpl implements ReactHost {
     return new ArrayList<>();
   }
 
-  /* package */ @Nullable
+  /* package */
+  @Nullable
   <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface) {
     if (nativeModuleInterface == UIManagerModule.class) {
       ReactSoftExceptionLogger.logSoftExceptionVerbose(
@@ -591,6 +602,120 @@ public class ReactHostImpl implements ReactHost {
     final ReactInstance reactInstance = mReactInstanceTaskRef.get().getResult();
     if (reactInstance != null) {
       return reactInstance.getNativeModule(nativeModuleInterface);
+    }
+    return null;
+  }
+
+  /* package */
+  @Nullable
+  RuntimeExecutor getRuntimeExecutor() {
+    final ReactInstance reactInstance = mReactInstanceTaskRef.get().getResult();
+    if (reactInstance != null) {
+      return reactInstance.getBufferedRuntimeExecutor();
+    }
+    ReactSoftExceptionLogger.logSoftException(
+        TAG,
+        new ReactNoCrashSoftException("Tried to get runtime executor while instance is not ready"));
+    return null;
+  }
+
+  /* package */
+  @Nullable
+  CallInvokerHolder getJSCallInvokerHolder() {
+    final ReactInstance reactInstance = mReactInstanceTaskRef.get().getResult();
+    if (reactInstance != null) {
+      return reactInstance.getJSCallInvokerHolder();
+    }
+    ReactSoftExceptionLogger.logSoftException(
+        TAG,
+        new ReactNoCrashSoftException(
+            "Tried to get JSCallInvokerHolder while instance is not ready"));
+    return null;
+  }
+
+  /**
+   * To be called when the host activity receives an activity result.
+   *
+   * @param activity The host activity
+   */
+  @ThreadConfined(UI)
+  @Override
+  public void onActivityResult(
+      Activity activity, int requestCode, int resultCode, @Nullable Intent data) {
+    final String method =
+        "onActivityResult(activity = \""
+            + activity
+            + "\", requestCode = \""
+            + requestCode
+            + "\", resultCode = \""
+            + resultCode
+            + "\", data = \""
+            + data
+            + "\")";
+    log(method);
+
+    ReactContext currentContext = getCurrentReactContext();
+    if (currentContext != null) {
+      currentContext.onActivityResult(activity, requestCode, resultCode, data);
+    }
+    ReactSoftExceptionLogger.logSoftException(
+        TAG,
+        new ReactNoCrashSoftException(
+            "Tried to access onActivityResult while context is not ready"));
+  }
+
+  /* To be called when focus has changed for the hosting window. */
+  @ThreadConfined(UI)
+  @Override
+  public void onWindowFocusChange(boolean hasFocus) {
+    final String method = "onWindowFocusChange(hasFocus = \"" + hasFocus + "\")";
+    log(method);
+
+    ReactContext currentContext = getCurrentReactContext();
+    if (currentContext != null) {
+      currentContext.onWindowFocusChange(hasFocus);
+    }
+    ReactSoftExceptionLogger.logSoftException(
+        TAG,
+        new ReactNoCrashSoftException(
+            "Tried to access onWindowFocusChange while context is not ready"));
+  }
+
+  /* This method will give JS the opportunity to receive intents via Linking.
+   *
+   * @param intent The incoming intent
+   */
+  @ThreadConfined(UI)
+  @Override
+  public void onNewIntent(Intent intent) {
+    log("onNewIntent()");
+
+    ReactContext currentContext = getCurrentReactContext();
+    if (currentContext != null) {
+      String action = intent.getAction();
+      Uri uri = intent.getData();
+
+      if (uri != null
+          && (Intent.ACTION_VIEW.equals(action)
+              || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action))) {
+        DeviceEventManagerModule deviceEventManagerModule =
+            currentContext.getNativeModule(DeviceEventManagerModule.class);
+        if (deviceEventManagerModule != null) {
+          deviceEventManagerModule.emitNewIntentReceived(uri);
+        }
+      }
+      currentContext.onNewIntent(getCurrentActivity(), intent);
+    }
+    ReactSoftExceptionLogger.logSoftException(
+        TAG,
+        new ReactNoCrashSoftException("Tried to access onNewIntent while context is not ready"));
+  }
+
+  @Nullable
+  JavaScriptContextHolder getJavaScriptContextHolder() {
+    final ReactInstance reactInstance = mReactInstanceTaskRef.get().getResult();
+    if (reactInstance != null) {
+      return reactInstance.getJavaScriptContextHolder();
     }
     return null;
   }
@@ -745,6 +870,7 @@ public class ReactHostImpl implements ReactHost {
   @ThreadConfined(UI)
   private void moveToHostDestroy(@Nullable ReactContext currentContext) {
     mReactLifecycleStateManager.moveToOnHostDestroy(currentContext);
+    destroyReactHostInspectorTarget();
     setCurrentActivity(null);
   }
 
@@ -898,7 +1024,8 @@ public class ReactHostImpl implements ReactHost {
                             devSupportManager,
                             mQueueThreadExceptionHandler,
                             mReactJsExceptionHandler,
-                            mUseDevSupport);
+                            mUseDevSupport,
+                            getOrCreateReactHostInspectorTarget());
 
                     if (ReactFeatureFlags
                         .unstable_bridgelessArchitectureMemoryPressureHackyBoltsFix) {
@@ -1183,6 +1310,10 @@ public class ReactHostImpl implements ReactHost {
                     final ReactInstance reactInstance =
                         reactInstanceTaskUnwrapper.unwrap(task, "1: Starting reload");
 
+                    if (reactInstance != null) {
+                      reactInstance.unregisterFromInspector();
+                    }
+
                     final ReactContext reactContext = mBridgelessReactContextRef.getNullable();
                     if (reactContext == null) {
                       raiseSoftException(method, "ReactContext is null. Reload reason: " + reason);
@@ -1356,6 +1487,10 @@ public class ReactHostImpl implements ReactHost {
                     final ReactInstance reactInstance =
                         reactInstanceTaskUnwrapper.unwrap(task, "1: Starting destroy");
 
+                    if (reactInstance != null) {
+                      reactInstance.unregisterFromInspector();
+                    }
+
                     // Step 1: Destroy DevSupportManager
                     if (mUseDevSupport) {
                       log(method, "DevSupportManager cleanup");
@@ -1502,5 +1637,20 @@ public class ReactHostImpl implements ReactHost {
   public void setJsEngineResolutionAlgorithm(
       @Nullable JSEngineResolutionAlgorithm jsEngineResolutionAlgorithm) {
     mJSEngineResolutionAlgorithm = jsEngineResolutionAlgorithm;
+  }
+
+  private @Nullable ReactHostInspectorTarget getOrCreateReactHostInspectorTarget() {
+    if (mReactHostInspectorTarget == null && InspectorFlags.getEnableModernCDPRegistry()) {
+      mReactHostInspectorTarget = new ReactHostInspectorTarget(this);
+    }
+
+    return mReactHostInspectorTarget;
+  }
+
+  private void destroyReactHostInspectorTarget() {
+    if (mReactHostInspectorTarget != null) {
+      mReactHostInspectorTarget.close();
+      mReactHostInspectorTarget = null;
+    }
   }
 }

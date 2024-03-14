@@ -10,6 +10,7 @@ package com.facebook.react.uimanager.layoutanimation;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
+import com.facebook.infer.annotation.Nullsafe;
 
 /**
  * Animation responsible for updating size and position of a view. We can't use scaling as view
@@ -17,7 +18,8 @@ import android.view.animation.Transformation;
  * passes occurring on every frame. What we might want to try to do instead is use a combined
  * ScaleAnimation and TranslateAnimation.
  */
-/* package */ class PositionAndSizeAnimation extends Animation implements LayoutHandlingAnimation {
+/* package */ @Nullsafe(Nullsafe.Mode.LOCAL)
+class PositionAndSizeAnimation extends Animation implements LayoutHandlingAnimation {
 
   private final View mView;
   private float mStartX, mStartY, mDeltaX, mDeltaY;

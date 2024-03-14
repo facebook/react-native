@@ -118,6 +118,17 @@ static void sendEventToAllConnections(NSString *event)
   }
 }
 
++ (BOOL)isPackagerDisconnected
+{
+  for (NSString *socketId in socketConnections) {
+    if ([socketConnections[socketId] isConnected]) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 + (void)openDebugger:(NSURL *)bundleURL withErrorMessage:(NSString *)errorMessage
 {
   NSString *appId = [[[NSBundle mainBundle] bundleIdentifier]

@@ -10,6 +10,7 @@
 #include <ReactCommon/RuntimeExecutor.h>
 #include <cxxreact/MessageQueueThread.h>
 #include <jsi/jsi.h>
+#include <jsinspector-modern/ReactCdp.h>
 
 namespace facebook::react {
 
@@ -21,6 +22,21 @@ class JSRuntime {
   virtual jsi::Runtime& getRuntime() noexcept = 0;
 
   virtual ~JSRuntime() = default;
+
+  /**
+   * Get a reference to the \c RuntimeTargetDelegate owned (or implemented) by
+   * this JSRuntime. This reference must remain valid for the duration of the
+   * JSRuntime's lifetime.
+   */
+  virtual jsinspector_modern::RuntimeTargetDelegate& getRuntimeTargetDelegate();
+
+ private:
+  /**
+   * Initialized by \c getRuntimeTargetDelegate if not overridden, and then
+   * never changes.
+   */
+  std::optional<jsinspector_modern::FallbackRuntimeTargetDelegate>
+      runtimeTargetDelegate_;
 };
 
 /**

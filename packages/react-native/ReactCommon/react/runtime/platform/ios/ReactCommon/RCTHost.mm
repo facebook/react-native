@@ -28,9 +28,9 @@ RCT_MOCK_DEF(RCTHost, _RCTLogNativeInternal);
 
 using namespace facebook::react;
 
-class RCTHostPageTargetDelegate : public facebook::react::jsinspector_modern::PageTargetDelegate {
+class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::HostTargetDelegate {
  public:
-  RCTHostPageTargetDelegate(RCTHost *host) : host_(host) {}
+  RCTHostHostTargetDelegate(RCTHost *host) : host_(host) {}
 
   void onReload(const PageReloadRequest &request) override
   {
@@ -67,8 +67,8 @@ class RCTHostPageTargetDelegate : public facebook::react::jsinspector_modern::Pa
 
   RCTModuleRegistry *_moduleRegistry;
 
-  std::unique_ptr<RCTHostPageTargetDelegate> _inspectorPageDelegate;
-  std::unique_ptr<jsinspector_modern::PageTarget> _inspectorTarget;
+  std::unique_ptr<RCTHostHostTargetDelegate> _inspectorHostDelegate;
+  std::shared_ptr<jsinspector_modern::HostTarget> _inspectorTarget;
   std::optional<int> _inspectorPageId;
 }
 
@@ -157,7 +157,7 @@ class RCTHostPageTargetDelegate : public facebook::react::jsinspector_modern::Pa
       RCTRegisterReloadCommandListener(self);
     });
 
-    _inspectorPageDelegate = std::make_unique<RCTHostPageTargetDelegate>(self);
+    _inspectorHostDelegate = std::make_unique<RCTHostHostTargetDelegate>(self);
   }
   return self;
 }
@@ -168,7 +168,12 @@ class RCTHostPageTargetDelegate : public facebook::react::jsinspector_modern::Pa
 {
   auto &inspectorFlags = jsinspector_modern::InspectorFlags::getInstance();
   if (inspectorFlags.getEnableModernCDPRegistry() && !_inspectorPageId.has_value()) {
-    _inspectorTarget = std::make_unique<jsinspector_modern::PageTarget>(*_inspectorPageDelegate);
+    _inspectorTarget =
+        facebook::react::jsinspector_modern::HostTarget::create(*_inspectorHostDelegate, [](auto callback) {
+          RCTExecuteOnMainQueue(^{
+            callback();
+          });
+        });
     __weak RCTHost *weakSelf = self;
     _inspectorPageId = facebook::react::jsinspector_modern::getInspectorInstance().addPage(
         "React Native Bridgeless (Experimental)",
@@ -186,7 +191,7 @@ class RCTHostPageTargetDelegate : public facebook::react::jsinspector_modern::Pa
                   .integrationName = "iOS Bridgeless (RCTHost)",
               });
         },
-        facebook::react::jsinspector_modern::InspectorPageType::Modern);
+        {.nativePageReloads = true});
   }
   if (_instance) {
     RCTLogWarn(
@@ -198,7 +203,8 @@ class RCTHostPageTargetDelegate : public facebook::react::jsinspector_modern::Pa
                                       bundleManager:_bundleManager
                          turboModuleManagerDelegate:_turboModuleManagerDelegate
                                 onInitialBundleLoad:_onInitialBundleLoad
-                                     moduleRegistry:_moduleRegistry];
+                                     moduleRegistry:_moduleRegistry
+                              parentInspectorTarget:_inspectorTarget.get()];
   [_hostDelegate hostDidStart:self];
 }
 
@@ -206,7 +212,7 @@ class RCTHostPageTargetDelegate : public facebook::react::jsinspector_modern::Pa
                                              mode:(DisplayMode)displayMode
                                 initialProperties:(NSDictionary *)properties
 {
-  RCTFabricSurface *surface = [[RCTFabricSurface alloc] initWithSurfacePresenter:[self getSurfacePresenter]
+  RCTFabricSurface *surface = [[RCTFabricSurface alloc] initWithSurfacePresenter:self.surfacePresenter
                                                                       moduleName:moduleName
                                                                initialProperties:properties];
   surface.surfaceHandler.setDisplayMode(displayMode);
@@ -229,14 +235,26 @@ class RCTHostPageTargetDelegate : public facebook::react::jsinspector_modern::Pa
   return [self createSurfaceWithModuleName:moduleName mode:DisplayMode::Visible initialProperties:properties];
 }
 
-- (RCTModuleRegistry *)getModuleRegistry
+- (RCTModuleRegistry *)moduleRegistry
 {
   return _moduleRegistry;
 }
 
-- (RCTSurfacePresenter *)getSurfacePresenter
+// Deprecated
+- (RCTModuleRegistry *)getModuleRegistry
+{
+  return self.moduleRegistry;
+}
+
+- (RCTSurfacePresenter *)surfacePresenter
 {
   return [_instance surfacePresenter];
+}
+
+// Deprecated
+- (RCTSurfacePresenter *)getSurfacePresenter
+{
+  return self.surfacePresenter;
 }
 
 - (void)callFunctionOnJSModule:(NSString *)moduleName method:(NSString *)method args:(NSArray *)args
@@ -265,22 +283,23 @@ class RCTHostPageTargetDelegate : public facebook::react::jsinspector_modern::Pa
                                       bundleManager:_bundleManager
                          turboModuleManagerDelegate:_turboModuleManagerDelegate
                                 onInitialBundleLoad:_onInitialBundleLoad
-                                     moduleRegistry:_moduleRegistry];
+                                     moduleRegistry:_moduleRegistry
+                              parentInspectorTarget:_inspectorTarget.get()];
   [_hostDelegate hostDidStart:self];
 
   for (RCTFabricSurface *surface in [self _getAttachedSurfaces]) {
-    [surface resetWithSurfacePresenter:[self getSurfacePresenter]];
+    [surface resetWithSurfacePresenter:self.surfacePresenter];
   }
 }
 
 - (void)dealloc
 {
+  [_instance invalidate];
   if (_inspectorPageId.has_value()) {
     facebook::react::jsinspector_modern::getInspectorInstance().removePage(*_inspectorPageId);
     _inspectorPageId.reset();
     _inspectorTarget.reset();
   }
-  [_instance invalidate];
 }
 
 #pragma mark - RCTInstanceDelegate

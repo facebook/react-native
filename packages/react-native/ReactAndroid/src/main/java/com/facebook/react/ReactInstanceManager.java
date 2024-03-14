@@ -340,9 +340,7 @@ public class ReactInstanceManager {
           ReactRootView rootView = new ReactRootView(currentActivity);
           boolean isFabric = ReactFeatureFlags.enableFabricRenderer;
           rootView.setIsFabric(isFabric);
-          Bundle launchOptions = new Bundle();
-          launchOptions.putBoolean("concurrentRoot", isFabric);
-          rootView.startReactApplication(ReactInstanceManager.this, appKey, launchOptions);
+          rootView.startReactApplication(ReactInstanceManager.this, appKey, new Bundle());
           return rootView;
         }
 
@@ -1032,6 +1030,11 @@ public class ReactInstanceManager {
               if (names != null) {
                 uniqueNames.addAll(names);
               }
+            } else {
+              FLog.w(
+                  ReactConstants.TAG,
+                  "Package %s is not a ViewManagerOnDemandReactPackage, view managers will not be loaded",
+                  reactPackage.getClass().getSimpleName());
             }
             Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
           }

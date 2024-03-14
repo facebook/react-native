@@ -124,6 +124,13 @@ using namespace facebook::react;
   [_view removeOverlays];
 }
 
+- (void)fireLagacyStyleEvent
+{
+  RNTMyNativeViewEventEmitter::OnLegacyStyleEvent value = {"Legacy Style Event Fired."};
+
+  std::static_pointer_cast<const RNTMyNativeViewEventEmitter>(_eventEmitter)->onLegacyStyleEvent(value);
+}
+
 @end
 
 Class<RCTComponentViewProtocol> RNTMyNativeViewCls(void)

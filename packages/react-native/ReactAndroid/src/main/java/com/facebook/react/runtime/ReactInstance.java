@@ -20,7 +20,7 @@ import com.facebook.react.ViewManagerOnDemandReactPackage;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.JSBundleLoaderDelegate;
-import com.facebook.react.bridge.LifecycleEventListener;
+import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.NativeArray;
 import com.facebook.react.bridge.NativeMap;
 import com.facebook.react.bridge.NativeModule;
@@ -95,6 +95,8 @@ final class ReactInstance {
   private final JavaTimerManager mJavaTimerManager;
   private final BridgelessViewManagerResolver mViewManagerResolver;
 
+  private JavaScriptContextHolder mJavaScriptContextHolder;
+
   @DoNotStrip @Nullable private ComponentNameResolverManager mComponentNameResolverManager;
   @DoNotStrip @Nullable private UIConstantsProviderManager mUIConstantsProviderManager;
 
@@ -111,7 +113,8 @@ final class ReactInstance {
       DevSupportManager devSupportManager,
       QueueThreadExceptionHandler exceptionHandler,
       ReactJsExceptionHandler reactExceptionManager,
-      boolean useDevSupport) {
+      boolean useDevSupport,
+      @Nullable ReactHostInspectorTarget reactHostInspectorTarget) {
     mBridgelessReactContext = bridgelessReactContext;
     mDelegate = delegate;
 
@@ -139,6 +142,7 @@ final class ReactInstance {
     if (useDevSupport) {
       devSupportManager.startInspector();
     }
+
     JSTimerExecutor jsTimerExecutor = createJSTimerExecutor();
     mJavaTimerManager =
         new JavaTimerManager(
@@ -146,24 +150,6 @@ final class ReactInstance {
             jsTimerExecutor,
             ReactChoreographer.getInstance(),
             devSupportManager);
-
-    mBridgelessReactContext.addLifecycleEventListener(
-        new LifecycleEventListener() {
-          @Override
-          public void onHostResume() {
-            mJavaTimerManager.onHostResume();
-          }
-
-          @Override
-          public void onHostPause() {
-            mJavaTimerManager.onHostPause();
-          }
-
-          @Override
-          public void onHostDestroy() {
-            mJavaTimerManager.onHostDestroy();
-          }
-        });
 
     JSRuntimeFactory jsRuntimeFactory = mDelegate.getJsRuntimeFactory();
     BindingsInstaller bindingsInstaller = mDelegate.getBindingsInstaller();
@@ -179,7 +165,10 @@ final class ReactInstance {
             jsTimerExecutor,
             reactExceptionManager,
             bindingsInstaller,
-            isProfiling);
+            isProfiling,
+            reactHostInspectorTarget);
+
+    mJavaScriptContextHolder = new JavaScriptContextHolder(getJavaScriptContext());
 
     // Set up TurboModules
     Systrace.beginSection(
@@ -430,6 +419,10 @@ final class ReactInstance {
     mFabricUIManager.stopSurface(surface.getSurfaceHandler());
   }
 
+  /* package */ JavaScriptContextHolder getJavaScriptContextHolder() {
+    return mJavaScriptContextHolder;
+  }
+
   /* --- Lifecycle methods --- */
   @ThreadConfined("ReactHost")
   /* package */ void destroy() {
@@ -437,9 +430,11 @@ final class ReactInstance {
     mQueueConfiguration.destroy();
     mTurboModuleManager.invalidate();
     mFabricUIManager.invalidate();
+    mJavaTimerManager.onInstanceDestroy();
     mHybridData.resetNative();
     mComponentNameResolverManager = null;
     mUIConstantsProviderManager = null;
+    mJavaScriptContextHolder.clear();
   }
 
   /* --- Native methods --- */
@@ -453,7 +448,8 @@ final class ReactInstance {
       JSTimerExecutor jsTimerExecutor,
       ReactJsExceptionHandler jReactExceptionsManager,
       @Nullable BindingsInstaller jBindingsInstaller,
-      boolean isProfiling);
+      boolean isProfiling,
+      @Nullable ReactHostInspectorTarget reactHostInspectorTarget);
 
   @DoNotStrip
   private static native JSTimerExecutor createJSTimerExecutor();
@@ -465,15 +461,17 @@ final class ReactInstance {
 
   private native void loadJSBundleFromAssets(AssetManager assetManager, String assetURL);
 
-  private native CallInvokerHolderImpl getJSCallInvokerHolder();
+  /* package */ native CallInvokerHolderImpl getJSCallInvokerHolder();
 
   private native NativeMethodCallInvokerHolderImpl getNativeMethodCallInvokerHolder();
 
   private native RuntimeExecutor getUnbufferedRuntimeExecutor();
 
-  private native RuntimeExecutor getBufferedRuntimeExecutor();
+  /* package */ native RuntimeExecutor getBufferedRuntimeExecutor();
 
   private native RuntimeScheduler getRuntimeScheduler();
+
+  private native long getJavaScriptContext();
 
   /* package */ native void callFunctionOnModule(
       String moduleName, String methodName, NativeArray args);
@@ -481,6 +479,9 @@ final class ReactInstance {
   private native void registerSegmentNative(int segmentId, String segmentPath);
 
   private native void handleMemoryPressureJs(int pressureLevel);
+
+  @ThreadConfined(ThreadConfined.UI)
+  /* package */ native void unregisterFromInspector();
 
   public void handleMemoryPressure(int level) {
     try {

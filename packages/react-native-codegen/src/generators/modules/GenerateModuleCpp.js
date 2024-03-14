@@ -122,7 +122,6 @@ function serializeArg(
   const {typeAnnotation: nullableTypeAnnotation, optional} = arg;
   const [typeAnnotation, nullable] =
     unwrapNullable<NativeModuleParamTypeAnnotation>(nullableTypeAnnotation);
-  const isRequired = !optional && !nullable;
 
   let realTypeAnnotation = typeAnnotation;
   if (realTypeAnnotation.type === 'TypeAliasTypeAnnotation') {
@@ -132,22 +131,28 @@ function serializeArg(
   function wrap(callback: (val: string) => string) {
     const val = `args[${index}]`;
     const expression = callback(val);
-    if (isRequired) {
-      return expression;
-    } else {
-      let condition = `${val}.isNull() || ${val}.isUndefined()`;
-      if (optional) {
-        condition = `count <= ${index} || ${condition}`;
-      }
-      return `${condition} ? std::nullopt : std::make_optional(${expression})`;
+
+    // param?: T
+    if (optional && !nullable) {
+      // throw new Error('are we hitting this case? ' + moduleName);
+      return `count <= ${index} || ${val}.isUndefined() ? std::nullopt : std::make_optional(${expression})`;
     }
+
+    // param: ?T
+    // param?: ?T
+    if (nullable || optional) {
+      return `count <= ${index} || ${val}.isNull() || ${val}.isUndefined() ? std::nullopt : std::make_optional(${expression})`;
+    }
+
+    // param: T
+    return `count <= ${index} ? throw jsi::JSError(rt, "Expected argument in position ${index} to be passed") : ${expression}`;
   }
 
   switch (realTypeAnnotation.type) {
     case 'ReservedTypeAnnotation':
       switch (realTypeAnnotation.name) {
         case 'RootTag':
-          return wrap(val => `${val}.getNumber()`);
+          return wrap(val => `${val}.asNumber()`);
         default:
           (realTypeAnnotation.name: empty);
           throw new Error(

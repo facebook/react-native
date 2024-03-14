@@ -7,7 +7,10 @@
 
 package com.facebook.react.views.scroll;
 
+import com.facebook.infer.annotation.Nullsafe;
+
 /** Scroll event types that JS module RCTEventEmitter can understand */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public enum ScrollEventType {
   BEGIN_DRAG,
   END_DRAG,

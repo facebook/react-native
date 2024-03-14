@@ -10,7 +10,6 @@
 #include <react/renderer/core/BatchedEventQueue.h>
 #include <react/renderer/core/EventBeat.h>
 #include <react/renderer/core/EventListener.h>
-#include <react/renderer/core/EventPriority.h>
 #include <react/renderer/core/EventQueueProcessor.h>
 #include <react/renderer/core/StateUpdate.h>
 #include <react/renderer/core/UnbatchedEventQueue.h>
@@ -37,7 +36,7 @@ class EventDispatcher {
   /*
    * Dispatches a raw event with given priority using event-delivery pipe.
    */
-  void dispatchEvent(RawEvent&& rawEvent, EventPriority priority) const;
+  void dispatchEvent(RawEvent&& rawEvent) const;
 
   /*
    * Dispatches a raw event with asynchronous batched priority. Before the
@@ -49,8 +48,7 @@ class EventDispatcher {
   /*
    * Dispatches a state update with given priority.
    */
-  void dispatchStateUpdate(StateUpdate&& stateUpdate, EventPriority priority)
-      const;
+  void dispatchStateUpdate(StateUpdate&& stateUpdate) const;
 
 #pragma mark - Event listeners
   /*
@@ -65,11 +63,6 @@ class EventDispatcher {
       const std::shared_ptr<const EventListener>& listener) const;
 
  private:
-  const EventQueue& getEventQueue(EventPriority priority) const;
-
-  std::unique_ptr<UnbatchedEventQueue> synchronousUnbatchedQueue_;
-  std::unique_ptr<BatchedEventQueue> synchronousBatchedQueue_;
-  std::unique_ptr<UnbatchedEventQueue> asynchronousUnbatchedQueue_;
   std::unique_ptr<BatchedEventQueue> asynchronousBatchedQueue_;
 
   mutable EventListenerContainer eventListeners_;
