@@ -147,17 +147,7 @@ public class ReactActivityDelegate {
   }
 
   public boolean onKeyDown(int keyCode, KeyEvent event) {
-    if (ReactFeatureFlags.enableBridgelessArchitecture) {
-      // TODO T156475655: support onKeyDown
-    } else {
-      if (getReactNativeHost().hasInstance()
-          && getReactNativeHost().getUseDeveloperSupport()
-          && keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD) {
-        event.startTracking();
-        return true;
-      }
-    }
-    return false;
+    return mReactDelegate.onKeyDown(keyCode, event);
   }
 
   public boolean onKeyUp(int keyCode, KeyEvent event) {
