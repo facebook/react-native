@@ -66,11 +66,6 @@ public class ReactFeatureFlags {
    */
   public static boolean enableBridgelessArchitecture = false;
 
-  /**
-   * Does the bridgeless architecture log soft exceptions. Could be useful for tracking down issues.
-   */
-  public static volatile boolean enableBridgelessArchitectureSoftExceptions = false;
-
   /** Does the bridgeless architecture use the new create/reload/destroy routines */
   public static volatile boolean enableBridgelessArchitectureNewCreateReloadDestroy = true;
 

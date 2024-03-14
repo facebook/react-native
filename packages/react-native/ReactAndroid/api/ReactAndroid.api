@@ -1909,7 +1909,6 @@ public class com/facebook/react/config/ReactFeatureFlags {
 	public static field dispatchPointerEvents Z
 	public static field enableBridgelessArchitecture Z
 	public static field enableBridgelessArchitectureNewCreateReloadDestroy Z
-	public static field enableBridgelessArchitectureSoftExceptions Z
 	public static field enableClonelessStateProgression Z
 	public static field enableCppPropsIteratorSetter Z
 	public static field enableEagerRootViewAttachment Z
