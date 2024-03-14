@@ -114,7 +114,6 @@ jest
   }))
   .mock('../Libraries/Image/Image', () => {
     const Image = mockComponent('../Libraries/Image/Image');
-    Image.prefetchWithMetadata = jest.fn();
     Image.queryCache = jest.fn();
 
     return Image;
@@ -261,6 +260,7 @@ jest
         Promise.resolve({height: 222, width: 333}),
       ),
       prefetchImage: jest.fn(),
+      prefetchImageWithMetadata: jest.fn(),
     },
     ImageViewManager: {
       getSize: jest.fn((uri, success) =>
