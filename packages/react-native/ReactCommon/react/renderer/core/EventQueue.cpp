@@ -75,6 +75,10 @@ void EventQueue::enqueueStateUpdate(StateUpdate&& stateUpdate) const {
   onEnqueue();
 }
 
+void EventQueue::onEnqueue() const {
+  eventBeat_->request();
+}
+
 void EventQueue::onBeat(jsi::Runtime& runtime) const {
   flushStateUpdates();
   flushEvents(runtime);

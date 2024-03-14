@@ -28,7 +28,6 @@ class EventQueue {
   EventQueue(
       EventQueueProcessor eventProcessor,
       std::unique_ptr<EventBeat> eventBeat);
-  virtual ~EventQueue() = default;
 
   /*
    * Enqueues and (probably later) dispatch a given event.
@@ -55,7 +54,7 @@ class EventQueue {
    * Override in subclasses to trigger beat `request` and/or beat `induce`.
    * Default implementation does nothing.
    */
-  virtual void onEnqueue() const = 0;
+  void onEnqueue() const;
   void onBeat(jsi::Runtime& runtime) const;
 
   void flushEvents(jsi::Runtime& runtime) const;

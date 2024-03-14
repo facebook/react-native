@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include <react/renderer/core/BatchedEventQueue.h>
 #include <react/renderer/core/EventBeat.h>
 #include <react/renderer/core/EventListener.h>
+#include <react/renderer/core/EventQueue.h>
 #include <react/renderer/core/EventQueueProcessor.h>
 #include <react/renderer/core/StateUpdate.h>
 
@@ -62,7 +62,7 @@ class EventDispatcher {
       const std::shared_ptr<const EventListener>& listener) const;
 
  private:
-  std::unique_ptr<BatchedEventQueue> asynchronousBatchedQueue_;
+  EventQueue eventQueue_;
 
   mutable EventListenerContainer eventListeners_;
 };
