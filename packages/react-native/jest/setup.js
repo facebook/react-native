@@ -114,7 +114,6 @@ jest
   }))
   .mock('../Libraries/Image/Image', () => {
     const Image = mockComponent('../Libraries/Image/Image');
-    Image.queryCache = jest.fn();
 
     return Image;
   })
@@ -261,6 +260,7 @@ jest
       ),
       prefetchImage: jest.fn(),
       prefetchImageWithMetadata: jest.fn(),
+      queryCache: jest.fn(),
     },
     ImageViewManager: {
       getSize: jest.fn((uri, success) =>

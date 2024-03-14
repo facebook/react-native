@@ -337,4 +337,14 @@ describe('<Image />', () => {
       'foo-bar.jpg',
     );
   });
+
+  it('should call native queryCache method when JS queryCache method is called', async () => {
+    await Image.queryCache(['foo-bar.jpg']);
+    expect(NativeImageLoaderIOS.queryCache).toHaveBeenCalledWith([
+      'foo-bar.jpg',
+    ]);
+    expect(NativeImageLoaderIOS.queryCache).toHaveBeenCalledWith([
+      'foo-bar.jpg',
+    ]);
+  });
 });
