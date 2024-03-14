@@ -7083,6 +7083,7 @@ public class com/facebook/react/views/text/TextAttributeProps : com/facebook/rea
 	public static final field TA_KEY_TEXT_SHADOW_OFFSET_DY S
 	public static final field TA_KEY_TEXT_SHADOW_RADIUS S
 	public static final field TA_KEY_TEXT_TRANSFORM S
+	public static final field UNSET I
 	protected field mAccessibilityRole Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$AccessibilityRole;
 	protected field mAllowFontScaling Z
 	protected field mBackgroundColor I
