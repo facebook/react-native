@@ -610,16 +610,7 @@ public class ReactInstanceManager {
       Assertions.assertCondition(mCurrentActivity != null);
     }
 
-    if (mCurrentActivity != null) {
-      Assertions.assertCondition(
-        activity == mCurrentActivity,
-        "Called onUserLeaveHint on an activity that is not the current activity, this is incorrect! "
-          + "Current activity: "
-          + mCurrentActivity.getClass().getSimpleName()
-          + " "
-          + "Leaving activity: "
-          + activity.getClass().getSimpleName());
-
+    if (mCurrentActivity != null && activity == mCurrentActivity) {
       UiThreadUtil.assertOnUiThread();
 
       ReactContext currentContext = getCurrentReactContext();
