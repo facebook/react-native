@@ -13,6 +13,8 @@
 
 import type {ElementRef} from 'react';
 
+import NativeImageLoaderAndroid from '../NativeImageLoaderAndroid';
+import NativeImageLoaderIOS from '../NativeImageLoaderIOS';
 import {act, create} from 'react-test-renderer';
 
 const render = require('../../../jest/renderer');
@@ -314,5 +316,14 @@ describe('<Image />', () => {
     );
 
     expect(mockOnGetSizeSuccess).toHaveBeenCalledWith(333, 222);
+  });
+  it('should call native prefetch methods when calling JS prefetch methods', async () => {
+    await Image.prefetch('foo-bar.jpg');
+    expect(NativeImageLoaderIOS.prefetchImage).toHaveBeenCalledWith(
+      'foo-bar.jpg',
+    );
+    expect(NativeImageLoaderAndroid.prefetchImage).toHaveBeenCalledWith(
+      'foo-bar.jpg',
+    );
   });
 });
