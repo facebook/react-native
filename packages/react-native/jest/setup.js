@@ -112,11 +112,9 @@ jest
       Constants: {},
     },
   }))
-  .mock('../Libraries/Image/Image', () => {
-    const Image = mockComponent('../Libraries/Image/Image');
-
-    return Image;
-  })
+  .mock('../Libraries/Image/Image', () =>
+    mockComponent('../Libraries/Image/Image'),
+  )
   .mock('../Libraries/Text/Text', () =>
     mockComponent('../Libraries/Text/Text', MockNativeMethods),
   )
