@@ -168,12 +168,9 @@ void TextInputEventEmitter::onKeyPress(
 
 void TextInputEventEmitter::onScroll(
     const TextInputMetrics& textInputMetrics) const {
-  dispatchEvent(
-      "scroll",
-      [textInputMetrics](jsi::Runtime& runtime) {
-        return textInputMetricsScrollPayload(runtime, textInputMetrics);
-      },
-      EventPriority::AsynchronousBatched);
+  dispatchEvent("scroll", [textInputMetrics](jsi::Runtime& runtime) {
+    return textInputMetricsScrollPayload(runtime, textInputMetrics);
+  });
 }
 
 void TextInputEventEmitter::dispatchTextInputEvent(
