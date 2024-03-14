@@ -203,7 +203,7 @@ Pod::Spec.new do |s|
       sss.compiler_flags       = folly_compiler_flags
       sss.source_files         = "react/renderer/components/textinput/**/*.{m,mm,cpp,h}"
       sss.exclude_files        = "react/renderer/components/textinput/platform/android"
-      sss.header_dir           = "react/renderer/components/iostextinput"
+      sss.header_dir           = "react/renderer/components/textinput"
 
     end
 
