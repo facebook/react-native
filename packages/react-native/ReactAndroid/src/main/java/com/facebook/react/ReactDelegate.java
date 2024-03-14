@@ -84,6 +84,7 @@ public class ReactDelegate {
   public void onHostResume() {
     if (ReactFeatureFlags.enableBridgelessArchitecture) {
       if (mActivity instanceof DefaultHardwareBackBtnHandler) {
+        assert mReactHost != null : "Tried to access onHostResume while ReactHost is null";
         mReactHost.onHostResume(mActivity, (DefaultHardwareBackBtnHandler) mActivity);
       }
     } else {
@@ -102,6 +103,7 @@ public class ReactDelegate {
 
   public void onHostPause() {
     if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      assert mReactHost != null : "Tried to access onHostPause while ReactHost is null";
       mReactHost.onHostPause(mActivity);
     } else {
       if (getReactNativeHost().hasInstance()) {
@@ -112,6 +114,7 @@ public class ReactDelegate {
 
   public void onHostDestroy() {
     if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      assert mReactHost != null : "Tried to access onHostDestroy while ReactHost is null";
       mReactHost.onHostDestroy(mActivity);
     } else {
       if (mReactRootView != null) {
@@ -126,6 +129,7 @@ public class ReactDelegate {
 
   public boolean onBackPressed() {
     if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      assert mReactHost != null : "Tried to access onBackPressed while ReactHost is null";
       mReactHost.onBackPressed();
       return true;
     } else {
@@ -139,6 +143,7 @@ public class ReactDelegate {
 
   public boolean onNewIntent(Intent intent) {
     if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      assert mReactHost != null : "Tried to access onNewIntent while ReactHost is null";
       mReactHost.onNewIntent(intent);
       return true;
     } else {
@@ -153,6 +158,7 @@ public class ReactDelegate {
   public void onActivityResult(
       int requestCode, int resultCode, Intent data, boolean shouldForwardToReactInstance) {
     if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      assert mReactHost != null : "Tried to access onActivityResult while ReactHost is null";
       mReactHost.onActivityResult(mActivity, requestCode, resultCode, data);
     } else {
       if (getReactNativeHost().hasInstance() && shouldForwardToReactInstance) {
@@ -165,6 +171,7 @@ public class ReactDelegate {
 
   public void onWindowFocusChanged(boolean hasFocus) {
     if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      assert mReactHost != null : "Tried to access onWindowFocusChanged while ReactHost is null";
       mReactHost.onWindowFocusChange(hasFocus);
     } else {
       if (getReactNativeHost().hasInstance()) {
@@ -175,6 +182,7 @@ public class ReactDelegate {
 
   public void onConfigurationChanged(Configuration newConfig) {
     if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      assert mReactHost != null : "Tried to access onConfigurationChanged while ReactHost is null";
       mReactHost.onConfigurationChanged(Assertions.assertNotNull(mActivity));
     } else {
       if (getReactNativeHost().hasInstance()) {
