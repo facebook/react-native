@@ -61,7 +61,9 @@ class HermesExecutor : public JSIExecutor {
  private:
   JSIScopedTimeoutInvoker timeoutInvoker_;
   std::shared_ptr<jsi::Runtime> runtime_;
-  jsinspector_modern::HermesRuntimeTargetDelegate targetDelegate_;
+  std::shared_ptr<hermes::HermesRuntime> hermesRuntime_;
+  std::optional<jsinspector_modern::HermesRuntimeTargetDelegate>
+      targetDelegate_;
 };
 
 } // namespace facebook::react

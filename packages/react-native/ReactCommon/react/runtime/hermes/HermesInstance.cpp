@@ -95,7 +95,7 @@ class DecoratedRuntime : public jsi::RuntimeDecorator<jsi::Runtime> {
 class HermesJSRuntime : public JSRuntime {
  public:
   HermesJSRuntime(std::unique_ptr<HermesRuntime> runtime)
-      : runtime_(std::move(runtime)), targetDelegate_{runtime_} {}
+      : runtime_(std::move(runtime)) {}
 
   jsi::Runtime& getRuntime() noexcept override {
     return *runtime_;
@@ -103,12 +103,16 @@ class HermesJSRuntime : public JSRuntime {
 
   jsinspector_modern::RuntimeTargetDelegate& getRuntimeTargetDelegate()
       override {
-    return targetDelegate_;
+    if (!targetDelegate_) {
+      targetDelegate_.emplace(runtime_);
+    }
+    return *targetDelegate_;
   }
 
  private:
   std::shared_ptr<HermesRuntime> runtime_;
-  jsinspector_modern::HermesRuntimeTargetDelegate targetDelegate_;
+  std::optional<jsinspector_modern::HermesRuntimeTargetDelegate>
+      targetDelegate_;
 };
 
 std::unique_ptr<JSRuntime> HermesInstance::createJSRuntime(
