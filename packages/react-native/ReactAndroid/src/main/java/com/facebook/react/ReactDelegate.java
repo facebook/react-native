@@ -197,6 +197,23 @@ public class ReactDelegate {
     return false;
   }
 
+  public boolean onKeyLongPress(int keyCode) {
+    if (keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD) {
+      if (ReactFeatureFlags.enableBridgelessArchitecture
+          && mReactHost != null
+          && mReactHost.getDevSupportManager() != null) {
+        mReactHost.getDevSupportManager().showDevOptionsDialog();
+        return true;
+      } else {
+        if (getReactNativeHost().hasInstance() && getReactNativeHost().getUseDeveloperSupport()) {
+          getReactNativeHost().getReactInstanceManager().showDevOptionsDialog();
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
   public void loadApp() {
     loadApp(mMainComponentName);
   }
