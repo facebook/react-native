@@ -66,9 +66,6 @@ public class ReactFeatureFlags {
    */
   public static boolean enableBridgelessArchitecture = false;
 
-  /** Server-side gating for a hacky fix to an ANR in the bridgeless core, related to Bolts task. */
-  public static boolean unstable_bridgelessArchitectureMemoryPressureHackyBoltsFix = false;
-
   /**
    * Does the bridgeless architecture log soft exceptions. Could be useful for tracking down issues.
    */
