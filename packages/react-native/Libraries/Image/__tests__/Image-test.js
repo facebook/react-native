@@ -296,4 +296,15 @@ describe('<Image />', () => {
     const resolvedSource = Image.resolveAssetSource({uri: 'foo-bar.jpg'});
     expect(resolvedSource).toEqual({uri: 'foo-bar.jpg'});
   });
+
+  it('should compute image size even when Image module is mocked', async () => {
+    const mockOnGetSizeSuccess = jest.fn((width, height) => undefined);
+    const mockSuccessCallback = (width: number, height: number) =>
+      mockOnGetSizeSuccess(width, height);
+
+    await Image.getSize('foo-bar.jpg', mockSuccessCallback);
+    await jest.runAllTicks();
+
+    expect(mockOnGetSizeSuccess).toHaveBeenCalledWith(320, 240);
+  });
 });

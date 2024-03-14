@@ -114,7 +114,6 @@ jest
   }))
   .mock('../Libraries/Image/Image', () => {
     const Image = mockComponent('../Libraries/Image/Image');
-    Image.getSize = jest.fn();
     Image.getSizeWithHeaders = jest.fn();
     Image.prefetch = jest.fn();
     Image.prefetchWithMetadata = jest.fn();
