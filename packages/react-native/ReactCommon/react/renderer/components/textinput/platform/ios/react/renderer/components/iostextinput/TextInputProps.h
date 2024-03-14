@@ -9,9 +9,9 @@
 
 #include <react/renderer/attributedstring/ParagraphAttributes.h>
 #include <react/renderer/attributedstring/TextAttributes.h>
-#include <react/renderer/components/iostextinput/BaseTextInputProps.h>
 #include <react/renderer/components/iostextinput/conversions.h>
 #include <react/renderer/components/iostextinput/primitives.h>
+#include <react/renderer/components/textinput/BaseTextInputProps.h>
 #include <react/renderer/core/Props.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
