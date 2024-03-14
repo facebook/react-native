@@ -10,7 +10,7 @@
 #include <react/renderer/core/StateUpdate.h>
 #include "EventLogger.h"
 
-#include "BatchedEventQueue.h"
+#include "EventQueue.h"
 #include "RawEvent.h"
 
 namespace facebook::react {
@@ -20,9 +20,8 @@ EventDispatcher::EventDispatcher(
     const EventBeat::Factory& synchonousEventBeatFactory,
     const EventBeat::Factory& asynchronousEventBeatFactory,
     const EventBeat::SharedOwnerBox& ownerBox)
-    : asynchronousBatchedQueue_(std::make_unique<BatchedEventQueue>(
-          eventProcessor,
-          asynchronousEventBeatFactory(ownerBox))) {}
+    : eventQueue_(
+          EventQueue(eventProcessor, asynchronousEventBeatFactory(ownerBox))) {}
 
 void EventDispatcher::dispatchEvent(RawEvent&& rawEvent) const {
   // Allows the event listener to interrupt default event dispatch
@@ -34,11 +33,11 @@ void EventDispatcher::dispatchEvent(RawEvent&& rawEvent) const {
   if (eventLogger != nullptr) {
     rawEvent.loggingTag = eventLogger->onEventStart(rawEvent.type);
   }
-  asynchronousBatchedQueue_->enqueueEvent(std::move(rawEvent));
+  eventQueue_.enqueueEvent(std::move(rawEvent));
 }
 
 void EventDispatcher::dispatchStateUpdate(StateUpdate&& stateUpdate) const {
-  asynchronousBatchedQueue_->enqueueStateUpdate(std::move(stateUpdate));
+  eventQueue_.enqueueStateUpdate(std::move(stateUpdate));
 }
 
 void EventDispatcher::dispatchUniqueEvent(RawEvent&& rawEvent) const {
@@ -46,7 +45,7 @@ void EventDispatcher::dispatchUniqueEvent(RawEvent&& rawEvent) const {
   if (eventListeners_.willDispatchEvent(rawEvent)) {
     return;
   }
-  asynchronousBatchedQueue_->enqueueUniqueEvent(std::move(rawEvent));
+  eventQueue_.enqueueUniqueEvent(std::move(rawEvent));
 }
 
 void EventDispatcher::addListener(
