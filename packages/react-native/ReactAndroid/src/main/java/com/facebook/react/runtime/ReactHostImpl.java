@@ -48,7 +48,6 @@ import com.facebook.react.bridge.queue.QueueThreadExceptionHandler;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.build.ReactBuildConfig;
-import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.devsupport.DevSupportManagerBase;
 import com.facebook.react.devsupport.DisabledDevSupportManager;
 import com.facebook.react.devsupport.InspectorFlags;
@@ -879,16 +878,14 @@ public class ReactHostImpl implements ReactHost {
 
   private void raiseSoftException(String method, String message, @Nullable Throwable throwable) {
     log(method, message);
-    if (ReactFeatureFlags.enableBridgelessArchitectureSoftExceptions) {
-      if (throwable != null) {
-        ReactSoftExceptionLogger.logSoftException(
-            TAG, new ReactNoCrashSoftException(method + ": " + message, throwable));
-        return;
-      }
-
+    if (throwable != null) {
       ReactSoftExceptionLogger.logSoftException(
-          TAG, new ReactNoCrashSoftException(method + ": " + message));
+          TAG, new ReactNoCrashSoftException(method + ": " + message, throwable));
+      return;
     }
+
+    ReactSoftExceptionLogger.logSoftException(
+        TAG, new ReactNoCrashSoftException(method + ": " + message));
   }
 
   private Task<Boolean> callWithExistingReactInstance(
