@@ -1,6 +1,3 @@
-# :warning: Make sure you are targeting microsoft/react-native-macos for your PR :warning:
-(then delete these lines)
-
 <!-- Thanks for submitting a pull request! We appreciate you spending the time to work on these changes. Please provide enough information so that others can review your pull request. The four fields below are mandatory. -->
 
 <!-- This fork of react-native provides React Native for macOS for the community.  It also contains some changes that are required for usage internal to Microsoft.  We are working on reducing the diff between Facebook's public version of react-native and our microsoft/react-native-macos fork.  Long term, we want this fork to only contain macOS concerns and have the other iOS and Android concerns contributed upstream.
@@ -20,18 +17,6 @@ If you are making a new change then one of the following should be done:
 ## Summary:
 
 <!-- Explain the **motivation** for making this change. What existing problem does the pull request solve? -->
-
-## Changelog:
-
-<!-- Help reviewers and the release process by writing your own changelog entry.
-
-Pick one each for the category and type tags:
-
-[ANDROID|GENERAL|IOS|INTERNAL] [BREAKING|ADDED|CHANGED|DEPRECATED|REMOVED|FIXED|SECURITY] - Message
-
-For more details, see:
-https://reactnative.dev/contributing/changelogs-in-pull-requests
--->
 
 ## Test Plan:
 
