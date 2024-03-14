@@ -291,4 +291,9 @@ describe('<Image />', () => {
     expect(secondInstance).toBe(null);
     expect(imageInstancesFromCallback.size).toBe(0);
   });
+
+  it('should resolve asset source even when Image module is mocked', async () => {
+    const resolvedSource = Image.resolveAssetSource({uri: 'foo-bar.jpg'});
+    expect(resolvedSource).toEqual({uri: 'foo-bar.jpg'});
+  });
 });

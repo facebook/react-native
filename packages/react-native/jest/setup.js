@@ -119,7 +119,6 @@ jest
     Image.prefetch = jest.fn();
     Image.prefetchWithMetadata = jest.fn();
     Image.queryCache = jest.fn();
-    Image.resolveAssetSource = jest.fn();
 
     return Image;
   })
