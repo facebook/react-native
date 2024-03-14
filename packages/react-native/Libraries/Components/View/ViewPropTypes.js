@@ -525,6 +525,18 @@ export type ViewProps = $ReadOnly<{|
   'aria-valuetext'?: ?AccessibilityValue['text'],
 
   /**
+   * Indicates to accessibility services that the UI Component contains a certain number of items in a list or tree.
+   */
+  accessibilitySetSize?: ?number,
+
+  /**
+   * alias for accessibilitySetSize
+   * It represents the number of items in a list or tree.
+   */
+
+  'aria-setsize'?: ?number,
+
+  /**
    * Provides an array of custom actions available for accessibility.
    *
    */

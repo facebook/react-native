@@ -3701,6 +3701,8 @@ export type ViewProps = $ReadOnly<{|
   \\"aria-valuemin\\"?: ?AccessibilityValue[\\"min\\"],
   \\"aria-valuenow\\"?: ?AccessibilityValue[\\"now\\"],
   \\"aria-valuetext\\"?: ?AccessibilityValue[\\"text\\"],
+  accessibilitySetSize?: ?number,
+  \\"aria-setsize\\"?: ?number,
   accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
   \\"aria-busy\\"?: ?boolean,
   \\"aria-checked\\"?: ?boolean | \\"mixed\\",
