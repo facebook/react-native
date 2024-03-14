@@ -62,6 +62,8 @@ public class TextAttributeProps implements EffectiveTextAttributeProvider {
   public static final short TA_KEY_ROLE = 26;
   public static final short TA_KEY_TEXT_TRANSFORM = 27;
 
+  public static final int UNSET = -1;
+
   private static final String PROP_SHADOW_OFFSET = "textShadowOffset";
   private static final String PROP_SHADOW_OFFSET_WIDTH = "width";
   private static final String PROP_SHADOW_OFFSET_HEIGHT = "height";
