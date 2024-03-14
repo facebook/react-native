@@ -125,7 +125,7 @@ public class ReactActivityDelegate {
     getPlainActivity().setContentView(mReactDelegate.getReactRootView());
   }
 
-  protected void onUserLeaveHint() {
+  public void onUserLeaveHint() {
     mReactDelegate.onUserLeaveHint();
   }
 
