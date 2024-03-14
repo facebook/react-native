@@ -48,6 +48,9 @@ public interface ReactHost {
   /** [JSEngineResolutionAlgorithm] used by this host. */
   public var jsEngineResolutionAlgorithm: JSEngineResolutionAlgorithm?
 
+  /** Routes memory pressure events to interested components */
+  public val memoryPressureRouter: MemoryPressureRouter
+
   /** To be called when back button is pressed */
   public fun onBackPressed(): Boolean
 

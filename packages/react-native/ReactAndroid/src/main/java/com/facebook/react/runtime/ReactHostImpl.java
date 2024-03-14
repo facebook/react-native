@@ -135,7 +135,7 @@ public class ReactHostImpl implements ReactHost {
       new ReactLifecycleStateManager(mBridgelessReactStateTracker);
   private final int mId = mCounter.getAndIncrement();
   private @Nullable JSEngineResolutionAlgorithm mJSEngineResolutionAlgorithm = null;
-  private MemoryPressureListener mMemoryPressureListener;
+  private @Nullable MemoryPressureListener mMemoryPressureListener;
   private @Nullable DefaultHardwareBackBtnHandler mDefaultHardwareBackBtnHandler;
 
   private final Set<Function0<Unit>> mBeforeDestroyListeners =
@@ -178,11 +178,6 @@ public class ReactHostImpl implements ReactHost {
     mReactJsExceptionHandler = reactJsExceptionHandler;
     mQueueThreadExceptionHandler = ReactHostImpl.this::handleHostException;
     mMemoryPressureRouter = new MemoryPressureRouter(context);
-    mMemoryPressureListener =
-        level ->
-            callWithExistingReactInstance(
-                "handleMemoryPressure(" + level + ")",
-                reactInstance -> reactInstance.handleMemoryPressure(level));
     mAllowPackagerServerAccess = allowPackagerServerAccess;
     if (DEV) {
       mDevSupportManager =
@@ -386,6 +381,7 @@ public class ReactHostImpl implements ReactHost {
     return surface;
   }
 
+  @Override
   public MemoryPressureRouter getMemoryPressureRouter() {
     return mMemoryPressureRouter;
   }
@@ -1030,11 +1026,10 @@ public class ReactHostImpl implements ReactHost {
                             mUseDevSupport,
                             getOrCreateReactHostInspectorTarget());
 
-                    if (ReactFeatureFlags
-                        .unstable_bridgelessArchitectureMemoryPressureHackyBoltsFix) {
-                      mMemoryPressureListener = createMemoryPressureListener(instance);
-                    }
-                    mMemoryPressureRouter.addMemoryPressureListener(mMemoryPressureListener);
+                    MemoryPressureListener memoryPressureListener =
+                        createMemoryPressureListener(instance);
+                    mMemoryPressureListener = memoryPressureListener;
+                    mMemoryPressureRouter.addMemoryPressureListener(memoryPressureListener);
 
                     log(method, "Loading JS Bundle");
                     instance.loadJSBundle(bundleLoader);
@@ -1366,8 +1361,10 @@ public class ReactHostImpl implements ReactHost {
                   task -> {
                     reactInstanceTaskUnwrapper.unwrap(task, "4: Destroying ReactContext");
 
-                    log(method, "Removing memory pressure listener");
-                    mMemoryPressureRouter.removeMemoryPressureListener(mMemoryPressureListener);
+                    if (mMemoryPressureListener != null) {
+                      log(method, "Removing memory pressure listener");
+                      mMemoryPressureRouter.removeMemoryPressureListener(mMemoryPressureListener);
+                    }
 
                     final ReactContext reactContext = mBridgelessReactContextRef.getNullable();
                     if (reactContext != null) {
