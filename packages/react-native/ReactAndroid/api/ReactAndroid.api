@@ -155,6 +155,7 @@ public class com/facebook/react/ReactDelegate {
 	public fun onHostPause ()V
 	public fun onHostResume ()V
 	public fun onKeyDown (ILandroid/view/KeyEvent;)Z
+	public fun onKeyLongPress (I)Z
 	public fun onNewIntent (Landroid/content/Intent;)Z
 	public fun onWindowFocusChanged (Z)V
 	public fun shouldShowDevMenuOrReload (ILandroid/view/KeyEvent;)Z
