@@ -36,6 +36,56 @@ static jsi::Value textInputMetricsPayload(
   return payload;
 };
 
+static jsi::Value textInputMetricsScrollPayload(
+    jsi::Runtime& runtime,
+    const TextInputMetrics& textInputMetrics) {
+  auto payload = jsi::Object(runtime);
+
+  {
+    auto contentOffset = jsi::Object(runtime);
+    contentOffset.setProperty(runtime, "x", textInputMetrics.contentOffset.x);
+    contentOffset.setProperty(runtime, "y", textInputMetrics.contentOffset.y);
+    payload.setProperty(runtime, "contentOffset", contentOffset);
+  }
+
+  {
+    auto contentInset = jsi::Object(runtime);
+    contentInset.setProperty(runtime, "top", textInputMetrics.contentInset.top);
+    contentInset.setProperty(
+        runtime, "left", textInputMetrics.contentInset.left);
+    contentInset.setProperty(
+        runtime, "bottom", textInputMetrics.contentInset.bottom);
+    contentInset.setProperty(
+        runtime, "right", textInputMetrics.contentInset.right);
+    payload.setProperty(runtime, "contentInset", contentInset);
+  }
+
+  {
+    auto contentSize = jsi::Object(runtime);
+    contentSize.setProperty(
+        runtime, "width", textInputMetrics.contentSize.width);
+    contentSize.setProperty(
+        runtime, "height", textInputMetrics.contentSize.height);
+    payload.setProperty(runtime, "contentSize", contentSize);
+  }
+
+  {
+    auto layoutMeasurement = jsi::Object(runtime);
+    layoutMeasurement.setProperty(
+        runtime, "width", textInputMetrics.layoutMeasurement.width);
+    layoutMeasurement.setProperty(
+        runtime, "height", textInputMetrics.layoutMeasurement.height);
+    payload.setProperty(runtime, "layoutMeasurement", layoutMeasurement);
+  }
+
+  payload.setProperty(
+      runtime,
+      "zoomScale",
+      textInputMetrics.zoomScale ? textInputMetrics.zoomScale : 1);
+
+  return payload;
+};
+
 static jsi::Value textInputMetricsContentSizePayload(
     jsi::Runtime& runtime,
     const TextInputMetrics& textInputMetrics) {
@@ -140,7 +190,9 @@ void TextInputEventEmitter::onKeyPressSync(
 
 void TextInputEventEmitter::onScroll(
     const TextInputMetrics& textInputMetrics) const {
-  dispatchTextInputEvent("scroll", textInputMetrics);
+  dispatchEvent("scroll", [textInputMetrics](jsi::Runtime& runtime) {
+    return textInputMetricsScrollPayload(runtime, textInputMetrics);
+  });
 }
 
 void TextInputEventEmitter::dispatchTextInputEvent(
