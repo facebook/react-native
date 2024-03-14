@@ -114,7 +114,6 @@ jest
   }))
   .mock('../Libraries/Image/Image', () => {
     const Image = mockComponent('../Libraries/Image/Image');
-    Image.getSizeWithHeaders = jest.fn();
     Image.prefetch = jest.fn();
     Image.prefetchWithMetadata = jest.fn();
     Image.queryCache = jest.fn();
@@ -259,6 +258,9 @@ jest
     },
     ImageLoader: {
       getSize: jest.fn(url => Promise.resolve([320, 240])),
+      getSizeWithHeaders: jest.fn((url, headers) =>
+        Promise.resolve({height: 222, width: 333}),
+      ),
       prefetchImage: jest.fn(),
     },
     ImageViewManager: {

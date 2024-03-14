@@ -306,5 +306,13 @@ describe('<Image />', () => {
     await jest.runAllTicks();
 
     expect(mockOnGetSizeSuccess).toHaveBeenCalledWith(320, 240);
+
+    await Image.getSizeWithHeaders(
+      'foo-bar.jpg',
+      {header: 'foo'},
+      mockSuccessCallback,
+    );
+
+    expect(mockOnGetSizeSuccess).toHaveBeenCalledWith(333, 222);
   });
 });
