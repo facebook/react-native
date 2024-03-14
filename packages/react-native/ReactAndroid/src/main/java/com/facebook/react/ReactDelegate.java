@@ -82,20 +82,17 @@ public class ReactDelegate {
   }
 
   public void onHostResume() {
+    if (!(mActivity instanceof DefaultHardwareBackBtnHandler)) {
+      throw new ClassCastException(
+          "Host Activity does not implement DefaultHardwareBackBtnHandler");
+    }
     if (ReactFeatureFlags.enableBridgelessArchitecture) {
-      if (mActivity instanceof DefaultHardwareBackBtnHandler) {
-        mReactHost.onHostResume(mActivity, (DefaultHardwareBackBtnHandler) mActivity);
-      }
+      mReactHost.onHostResume(mActivity, (DefaultHardwareBackBtnHandler) mActivity);
     } else {
       if (getReactNativeHost().hasInstance()) {
-        if (mActivity instanceof DefaultHardwareBackBtnHandler) {
-          getReactNativeHost()
-              .getReactInstanceManager()
-              .onHostResume(mActivity, (DefaultHardwareBackBtnHandler) mActivity);
-        } else {
-          throw new ClassCastException(
-              "Host Activity does not implement DefaultHardwareBackBtnHandler");
-        }
+        getReactNativeHost()
+            .getReactInstanceManager()
+            .onHostResume(mActivity, (DefaultHardwareBackBtnHandler) mActivity);
       }
     }
   }
