@@ -152,15 +152,7 @@ public class ReactActivityDelegate {
   }
 
   public boolean onKeyLongPress(int keyCode, KeyEvent event) {
-    if (!ReactFeatureFlags.enableBridgelessArchitecture) {
-      if (getReactNativeHost().hasInstance()
-          && getReactNativeHost().getUseDeveloperSupport()
-          && keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD) {
-        getReactNativeHost().getReactInstanceManager().showDevOptionsDialog();
-        return true;
-      }
-    }
-    return false;
+    return mReactDelegate.onKeyLongPress(keyCode);
   }
 
   public boolean onBackPressed() {
