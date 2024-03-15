@@ -348,6 +348,54 @@ inline Value Function::callAsConstructor(Runtime& runtime, Args&&... args)
       runtime, {detail::toValue(runtime, std::forward<Args>(args))...});
 }
 
+#ifdef JSI_FUNCTION_HAS_SPAN_APIS
+
+template <typename Fn>
+/* static */ inline Function Function::createFromHostFunction(
+    Runtime& runtime,
+    const jsi::PropNameID& name,
+    unsigned int paramCount,
+    Fn func) requires CallableAsHostFunction<Fn> ||
+    CallableAsHostFunctionWithSpan<Fn> {
+  HostFunctionType hostFunc;
+  if constexpr (CallableAsHostFunction<Fn>) {
+    hostFunc = std::move(func);
+  } else {
+    hostFunc = [func = std::move(func)](
+                   Runtime& rt,
+                   const Value& thisVal,
+                   const Value* args,
+                   size_t count) mutable -> Value {
+      return func(rt, thisVal, {args, count});
+    };
+  }
+  return createFromHostFunction(runtime, name, paramCount, hostFunc);
+}
+
+template <typename Span>
+inline Value Function::call(Runtime& runtime, Span&& args)
+    const requires std::convertible_to<Span, std::span<const Value>> {
+  auto argsSpan = std::span<const Value>(std::forward<Span>(args));
+  return call(runtime, argsSpan.data(), argsSpan.size());
+}
+
+template <typename Span>
+inline Value
+Function::callWithThis(Runtime& runtime, const Object& jsThis, Span&& args)
+    const requires std::convertible_to<Span, std::span<const Value>> {
+  auto argsSpan = std::span<const Value>(std::forward<Span>(args));
+  return callWithThis(runtime, jsThis, argsSpan.data(), argsSpan.size());
+}
+
+template <typename Span>
+inline Value Function::callAsConstructor(Runtime& runtime, Span&& args)
+    const requires std::convertible_to<Span, std::span<const Value>> {
+  auto argsSpan = std::span<const Value>(std::forward<Span>(args));
+  return callAsConstructor(runtime, argsSpan.data(), argsSpan.size());
+}
+
+#endif // JSI_FUNCTION_HAS_SPAN_APIS
+
 String BigInt::toString(Runtime& runtime, int radix) const {
   return runtime.bigintToString(*this, radix);
 }
