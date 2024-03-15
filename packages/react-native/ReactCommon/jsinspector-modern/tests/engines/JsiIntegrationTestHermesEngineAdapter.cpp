@@ -6,23 +6,24 @@
  */
 
 #include "JsiIntegrationTestHermesEngineAdapter.h"
-#include "../utils/InspectorFlagOverridesGuard.h"
-
-#include <folly/executors/QueuedImmediateExecutor.h>
-
-using facebook::hermes::makeHermesRuntime;
 
 namespace facebook::react::jsinspector_modern {
 
 JsiIntegrationTestHermesEngineAdapter::JsiIntegrationTestHermesEngineAdapter(
     folly::Executor& jsExecutor)
-    : runtime_{hermes::makeHermesRuntime()},
+    : runtime_{hermes::makeHermesRuntime(
+          ::hermes::vm::RuntimeConfig::Builder()
+              .withCompilationMode(
+                  ::hermes::vm::CompilationMode::ForceLazyCompilation)
+              .build())},
       jsExecutor_{jsExecutor},
       runtimeTargetDelegate_{runtime_} {}
 
 /* static */ InspectorFlagOverrides
 JsiIntegrationTestHermesEngineAdapter::getInspectorFlagOverrides() noexcept {
-  return {.enableModernCDPRegistry = true};
+  return {
+      .enableModernCDPRegistry = true,
+  };
 }
 
 RuntimeTargetDelegate&

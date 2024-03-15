@@ -10,7 +10,6 @@
 #include "JsiIntegrationTest.h"
 #include "engines/JsiIntegrationTestGenericEngineAdapter.h"
 #include "engines/JsiIntegrationTestHermesEngineAdapter.h"
-#include "engines/JsiIntegrationTestHermesWithCDPAgentEngineAdapter.h"
 
 using namespace ::testing;
 using folly::sformat;
@@ -28,32 +27,15 @@ namespace facebook::react::jsinspector_modern {
  */
 using AllEngines = Types<
     JsiIntegrationTestHermesEngineAdapter,
-    JsiIntegrationTestHermesWithCDPAgentEngineAdapter,
     JsiIntegrationTestGenericEngineAdapter>;
 
-using AllHermesVariants = Types<
-    JsiIntegrationTestHermesEngineAdapter,
-    JsiIntegrationTestHermesWithCDPAgentEngineAdapter>;
-
-using ModernHermesVariants =
-    Types<JsiIntegrationTestHermesWithCDPAgentEngineAdapter>;
-using LegacyHermesVariants = Types<JsiIntegrationTestHermesEngineAdapter>;
+using AllHermesVariants = Types<JsiIntegrationTestHermesEngineAdapter>;
 
 TYPED_TEST_SUITE(JsiIntegrationPortableTest, AllEngines);
 
 template <typename EngineAdapter>
 using JsiIntegrationHermesTest = JsiIntegrationPortableTest<EngineAdapter>;
 TYPED_TEST_SUITE(JsiIntegrationHermesTest, AllHermesVariants);
-
-template <typename EngineAdapter>
-using JsiIntegrationHermesLegacyTest =
-    JsiIntegrationPortableTest<EngineAdapter>;
-TYPED_TEST_SUITE(JsiIntegrationHermesLegacyTest, LegacyHermesVariants);
-
-template <typename EngineAdapter>
-using JsiIntegrationHermesModernTest =
-    JsiIntegrationPortableTest<EngineAdapter>;
-TYPED_TEST_SUITE(JsiIntegrationHermesModernTest, ModernHermesVariants);
 
 #pragma region AllEngines
 
@@ -405,14 +387,8 @@ TYPED_TEST(JsiIntegrationHermesTest, EvaluateExpressionInExecutionContext) {
   this->reload();
 
   // Now the old execution context is stale.
-  this->expectMessageFromPage(JsonParsed(AllOf(
-      AtJsonPtr("/id", 3),
-      AtJsonPtr(
-          "/error/code",
-          // HermesRuntimeAgentDelegateNew responds more correctly with -32600
-          // (invalid request), old responds -32000 (server error). Accept
-          // either.
-          AnyOf(-32600, -32000)))));
+  this->expectMessageFromPage(
+      JsonParsed(AllOf(AtJsonPtr("/id", 3), AtJsonPtr("/error/code", -32600))));
   this->toPage_->sendMessage(sformat(
       R"({{
         "id": 3,
@@ -422,10 +398,7 @@ TYPED_TEST(JsiIntegrationHermesTest, EvaluateExpressionInExecutionContext) {
       std::to_string(executionContextId)));
 }
 
-#pragma endregion // AllHermesVariants
-#pragma region ModernHermesVariants
-
-TYPED_TEST(JsiIntegrationHermesModernTest, ResolveBreakpointAfterReload) {
+TYPED_TEST(JsiIntegrationHermesTest, ResolveBreakpointAfterReload) {
   this->connect();
 
   InSequence s;
@@ -467,7 +440,7 @@ TYPED_TEST(JsiIntegrationHermesModernTest, ResolveBreakpointAfterReload) {
       scriptInfo->value()["params"]["scriptId"]);
 }
 
-TYPED_TEST(JsiIntegrationHermesModernTest, CDPAgentReentrancyRegressionTest) {
+TYPED_TEST(JsiIntegrationHermesTest, CDPAgentReentrancyRegressionTest) {
   this->connect();
 
   // TODO(moti): Add an InSequence guard here once Hermes processes the messages
@@ -527,7 +500,7 @@ TYPED_TEST(JsiIntegrationHermesModernTest, CDPAgentReentrancyRegressionTest) {
   });
 }
 
-TYPED_TEST(JsiIntegrationHermesModernTest, ScriptParsedExactlyOnce) {
+TYPED_TEST(JsiIntegrationHermesTest, ScriptParsedExactlyOnce) {
   // Regression test for T182003727 (multiple scriptParsed events for a single
   // script under Hermes lazy compilation).
 
@@ -555,6 +528,6 @@ TYPED_TEST(JsiIntegrationHermesModernTest, ScriptParsedExactlyOnce) {
                                })");
 }
 
-#pragma endregion // ModernHermesVariants
+#pragma endregion // AllHermesVariants
 
 } // namespace facebook::react::jsinspector_modern

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<940e03ab78a13e5486802c13861be739>>
+ * @generated SignedSource<<6c1e6b6a51cd6fdddae40d3b61ae2b36>>
  */
 
 /**
@@ -191,24 +191,6 @@ bool ReactNativeFeatureFlagsAccessor::inspectorEnableCxxInspectorPackagerConnect
   return flagValue.value();
 }
 
-bool ReactNativeFeatureFlagsAccessor::inspectorEnableHermesCDPAgent() {
-  auto flagValue = inspectorEnableHermesCDPAgent_.load();
-
-  if (!flagValue.has_value()) {
-    // This block is not exclusive but it is not necessary.
-    // If multiple threads try to initialize the feature flag, we would only
-    // be accessing the provider multiple times but the end state of this
-    // instance and the returned flag value would be the same.
-
-    markFlagAsAccessed(9, "inspectorEnableHermesCDPAgent");
-
-    flagValue = currentProvider_->inspectorEnableHermesCDPAgent();
-    inspectorEnableHermesCDPAgent_ = flagValue;
-  }
-
-  return flagValue.value();
-}
-
 bool ReactNativeFeatureFlagsAccessor::inspectorEnableModernCDPRegistry() {
   auto flagValue = inspectorEnableModernCDPRegistry_.load();
 
@@ -218,7 +200,7 @@ bool ReactNativeFeatureFlagsAccessor::inspectorEnableModernCDPRegistry() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(10, "inspectorEnableModernCDPRegistry");
+    markFlagAsAccessed(9, "inspectorEnableModernCDPRegistry");
 
     flagValue = currentProvider_->inspectorEnableModernCDPRegistry();
     inspectorEnableModernCDPRegistry_ = flagValue;
@@ -236,7 +218,7 @@ bool ReactNativeFeatureFlagsAccessor::skipMountHookNotifications() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(11, "skipMountHookNotifications");
+    markFlagAsAccessed(10, "skipMountHookNotifications");
 
     flagValue = currentProvider_->skipMountHookNotifications();
     skipMountHookNotifications_ = flagValue;
@@ -254,7 +236,7 @@ bool ReactNativeFeatureFlagsAccessor::useModernRuntimeScheduler() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(12, "useModernRuntimeScheduler");
+    markFlagAsAccessed(11, "useModernRuntimeScheduler");
 
     flagValue = currentProvider_->useModernRuntimeScheduler();
     useModernRuntimeScheduler_ = flagValue;
