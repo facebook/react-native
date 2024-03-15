@@ -8,12 +8,6 @@ If you are making a new change then one of the following should be done:
 **Note:** Ideally you would wait for Facebook feedback before submitting to Microsoft, since we want to ensure that this fork doesn't deviate from upstream.
 -->
 
-#### Please select one of the following
-- [ ] I am removing an existing difference between facebook/react-native and microsoft/react-native-macos :thumbsup:
-- [ ] I am cherry-picking a change from Facebook's react-native into microsoft/react-native-macos :thumbsup:
-- [ ] I am making a fix / change for the macOS implementation of react-native
-- [ ] I am making a change required for Microsoft usage of react-native
-
 ## Summary:
 
 <!-- Explain the **motivation** for making this change. What existing problem does the pull request solve? -->
