@@ -20,8 +20,7 @@ class PerformanceEntryReporter;
 
 #pragma mark - implementation
 
-class NativePerformance : public NativePerformanceCxxSpec<NativePerformance>,
-                          std::enable_shared_from_this<NativePerformance> {
+class NativePerformance : public NativePerformanceCxxSpec<NativePerformance> {
  public:
   NativePerformance(std::shared_ptr<CallInvoker> jsInvoker);
 

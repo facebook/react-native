@@ -56,8 +56,7 @@ struct Bridging<NativeIntersectionObserverEntry>
           NativeIntersectionObserverEntry> {};
 
 class NativeIntersectionObserver
-    : public NativeIntersectionObserverCxxSpec<NativeIntersectionObserver>,
-      std::enable_shared_from_this<NativeIntersectionObserver> {
+    : public NativeIntersectionObserverCxxSpec<NativeIntersectionObserver> {
  public:
   NativeIntersectionObserver(std::shared_ptr<CallInvoker> jsInvoker);
 
