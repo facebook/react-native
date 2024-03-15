@@ -20,7 +20,6 @@ struct InspectorFlagOverrides {
   // NOTE: Keep these entries in sync with ReactNativeFeatureFlagsOverrides in
   // the implementation file.
   std::optional<bool> enableCxxInspectorPackagerConnection;
-  std::optional<bool> enableHermesCDPAgent;
   std::optional<bool> enableModernCDPRegistry;
 };
 

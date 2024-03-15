@@ -203,16 +203,11 @@ TEST_P(ReactInstanceIntegrationTestWithFlags, ConsoleLog) {
 
   InSequence s;
 
-  // Hermes console.* interception is explicitly disabled under CDPHandler,
-  // but Hermes CDPAgent and the legacy RN backend should both work.
-  if (!InspectorFlags::getInstance().getEnableModernCDPRegistry() ||
-      InspectorFlags::getInstance().getEnableHermesCDPAgent()) {
-    EXPECT_CALL(
-        getRemoteConnection(),
-        onMessage(JsonParsed(AllOf(
-            AtJsonPtr("/params/args/0/value", Eq("Hello, World!")),
-            AtJsonPtr("/method", Eq("Runtime.consoleAPICalled"))))));
-  }
+  EXPECT_CALL(
+      getRemoteConnection(),
+      onMessage(JsonParsed(AllOf(
+          AtJsonPtr("/params/args/0/value", Eq("Hello, World!")),
+          AtJsonPtr("/method", Eq("Runtime.consoleAPICalled"))))));
 
   EXPECT_CALL(getRemoteConnection(), onDisconnect());
 
@@ -226,19 +221,12 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(
         InspectorFlagOverrides{
             .enableCxxInspectorPackagerConnection = false,
-            .enableHermesCDPAgent = false,
             .enableModernCDPRegistry = false},
         InspectorFlagOverrides{
             .enableCxxInspectorPackagerConnection = true,
-            .enableHermesCDPAgent = false,
             .enableModernCDPRegistry = false},
         InspectorFlagOverrides{
             .enableCxxInspectorPackagerConnection = true,
-            .enableHermesCDPAgent = false,
-            .enableModernCDPRegistry = true},
-        InspectorFlagOverrides{
-            .enableCxxInspectorPackagerConnection = false,
-            .enableHermesCDPAgent = true,
             .enableModernCDPRegistry = true}));
 
 } // namespace facebook::react::jsinspector_modern

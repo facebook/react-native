@@ -31,11 +31,6 @@ class InspectorFlags {
   bool getEnableCxxInspectorPackagerConnection() const;
 
   /**
-   * Flag determining if the new Hermes CDPAgent API should be enabled.
-   */
-  bool getEnableHermesCDPAgent() const;
-
-  /**
    * Reset flags to their upstream values. The caller must ensure any resources
    * that have read previous flag values have been cleaned up.
    */
@@ -44,7 +39,6 @@ class InspectorFlags {
  private:
   struct Values {
     bool enableCxxInspectorPackagerConnection;
-    bool enableHermesCDPAgent;
     bool enableModernCDPRegistry;
     bool operator==(const Values&) const = default;
   };

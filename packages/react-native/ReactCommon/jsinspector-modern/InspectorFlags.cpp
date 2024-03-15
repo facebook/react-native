@@ -30,10 +30,6 @@ bool InspectorFlags::getEnableCxxInspectorPackagerConnection() const {
       values.enableModernCDPRegistry;
 }
 
-bool InspectorFlags::getEnableHermesCDPAgent() const {
-  return loadFlagsAndAssertUnchanged().enableHermesCDPAgent;
-}
-
 void InspectorFlags::dangerouslyResetFlags() {
   *this = InspectorFlags{};
 }
@@ -43,8 +39,6 @@ const InspectorFlags::Values& InspectorFlags::loadFlagsAndAssertUnchanged()
   InspectorFlags::Values newValues = {
       .enableCxxInspectorPackagerConnection = ReactNativeFeatureFlags::
           inspectorEnableCxxInspectorPackagerConnection(),
-      .enableHermesCDPAgent =
-          ReactNativeFeatureFlags::inspectorEnableHermesCDPAgent(),
       .enableModernCDPRegistry =
           ReactNativeFeatureFlags::inspectorEnableModernCDPRegistry(),
   };

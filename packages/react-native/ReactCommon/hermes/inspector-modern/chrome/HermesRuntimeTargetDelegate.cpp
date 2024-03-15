@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <jsinspector-modern/InspectorFlags.h>
 #include <jsinspector-modern/RuntimeTarget.h>
 
 #include "HermesRuntimeTargetDelegate.h"
@@ -14,7 +13,6 @@
 // CDPHandler headers or types.
 #ifdef HERMES_ENABLE_DEBUGGER
 #include "HermesRuntimeAgentDelegate.h"
-#include "HermesRuntimeAgentDelegateNew.h"
 
 #include <hermes/cdp/CDPDebugAPI.h>
 
@@ -52,25 +50,14 @@ class HermesRuntimeTargetDelegate::Impl final : public RuntimeTargetDelegate {
           previouslyExportedState,
       const ExecutionContextDescription& executionContextDescription,
       RuntimeExecutor runtimeExecutor) override {
-    auto& inspectorFlags = InspectorFlags::getInstance();
-
-    return inspectorFlags.getEnableHermesCDPAgent()
-        ? std::unique_ptr<RuntimeAgentDelegate>(
-              new HermesRuntimeAgentDelegateNew(
-                  frontendChannel,
-                  sessionState,
-                  std::move(previouslyExportedState),
-                  executionContextDescription,
-                  *runtime_,
-                  delegate_,
-                  std::move(runtimeExecutor)))
-        : std::unique_ptr<RuntimeAgentDelegate>(new HermesRuntimeAgentDelegate(
-              frontendChannel,
-              sessionState,
-              std::move(previouslyExportedState),
-              executionContextDescription,
-              runtime_,
-              std::move(runtimeExecutor)));
+    return std::unique_ptr<RuntimeAgentDelegate>(new HermesRuntimeAgentDelegate(
+        frontendChannel,
+        sessionState,
+        std::move(previouslyExportedState),
+        executionContextDescription,
+        *runtime_,
+        delegate_,
+        std::move(runtimeExecutor)));
   }
 
   void addConsoleMessage(jsi::Runtime& /*unused*/, ConsoleMessage message)

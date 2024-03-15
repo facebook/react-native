@@ -32,11 +32,6 @@ class ReactNativeFeatureFlagsOverrides
             inspectorEnableCxxInspectorPackagerConnection());
   }
 
-  bool inspectorEnableHermesCDPAgent() override {
-    return overrides_.enableHermesCDPAgent.value_or(
-        ReactNativeFeatureFlagsDefaults::inspectorEnableHermesCDPAgent());
-  }
-
   bool inspectorEnableModernCDPRegistry() override {
     return overrides_.enableModernCDPRegistry.value_or(
         ReactNativeFeatureFlagsDefaults::inspectorEnableModernCDPRegistry());

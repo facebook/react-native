@@ -21,8 +21,8 @@
 namespace facebook::react::jsinspector_modern {
 
 /**
- * An engine adapter for JsiIntegrationTest that uses Hermes (and Hermes's
- * CDP support).
+ * An engine adapter for JsiIntegrationTest that uses Hermes (and Hermes'
+ * modern CDPAgent API).
  */
 class JsiIntegrationTestHermesEngineAdapter {
  public:

@@ -58,7 +58,7 @@ class HermesRuntimeTargetDelegate : public RuntimeTargetDelegate {
 // Callers within this library may set HERMES_ENABLE_DEBUGGER to see this extra
 // API.
 #ifdef HERMES_ENABLE_DEBUGGER
-  friend class HermesRuntimeAgentDelegateNew;
+  friend class HermesRuntimeAgentDelegate;
 
   hermes::cdp::CDPDebugAPI& getCDPDebugAPI();
 #endif
