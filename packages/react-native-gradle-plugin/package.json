@@ -5,7 +5,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/facebook/react-native.git",
+    "url": "git+https://github.com/facebook/react-native.git",
     "directory": "packages/react-native-gradle-plugin"
   },
   "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/react-native-gradle-plugin#readme",
