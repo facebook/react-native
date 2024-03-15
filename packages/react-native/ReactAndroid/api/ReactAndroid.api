@@ -6319,6 +6319,7 @@ public class com/facebook/react/views/scroll/ReactHorizontalScrollView : android
 	public fun reactSmoothScrollTo (II)V
 	public fun requestChildFocus (Landroid/view/View;Landroid/view/View;)V
 	public fun scrollTo (II)V
+	public fun scrollToPreservingMomentum (II)V
 	public fun setBackgroundColor (I)V
 	public fun setBorderColor (IFF)V
 	public fun setBorderRadius (F)V
@@ -6443,6 +6444,7 @@ public class com/facebook/react/views/scroll/ReactScrollView : android/widget/Sc
 	public fun reactSmoothScrollTo (II)V
 	public fun requestChildFocus (Landroid/view/View;Landroid/view/View;)V
 	public fun scrollTo (II)V
+	public fun scrollToPreservingMomentum (II)V
 	public fun setBackgroundColor (I)V
 	public fun setBorderColor (IFF)V
 	public fun setBorderRadius (F)V
@@ -6551,6 +6553,7 @@ public abstract interface class com/facebook/react/views/scroll/ReactScrollViewH
 
 public abstract interface class com/facebook/react/views/scroll/ReactScrollViewHelper$HasSmoothScroll {
 	public abstract fun reactSmoothScrollTo (II)V
+	public abstract fun scrollToPreservingMomentum (II)V
 }
 
 public abstract interface class com/facebook/react/views/scroll/ReactScrollViewHelper$HasStateWrapper {

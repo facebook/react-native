@@ -118,7 +118,7 @@ class MaintainVisibleScrollPositionHelper<ScrollViewT extends ViewGroup & HasSmo
       int deltaX = newFrame.left - mPrevFirstVisibleFrame.left;
       if (deltaX != 0) {
         int scrollX = mScrollView.getScrollX();
-        mScrollView.scrollTo(scrollX + deltaX, mScrollView.getScrollY());
+        mScrollView.scrollToPreservingMomentum(scrollX + deltaX, mScrollView.getScrollY());
         mPrevFirstVisibleFrame = newFrame;
         if (mConfig.autoScrollToTopThreshold != null
             && scrollX <= mConfig.autoScrollToTopThreshold) {
@@ -129,7 +129,7 @@ class MaintainVisibleScrollPositionHelper<ScrollViewT extends ViewGroup & HasSmo
       int deltaY = newFrame.top - mPrevFirstVisibleFrame.top;
       if (deltaY != 0) {
         int scrollY = mScrollView.getScrollY();
-        mScrollView.scrollTo(mScrollView.getScrollX(), scrollY + deltaY);
+        mScrollView.scrollToPreservingMomentum(mScrollView.getScrollX(), scrollY + deltaY);
         mPrevFirstVisibleFrame = newFrame;
         if (mConfig.autoScrollToTopThreshold != null
             && scrollY <= mConfig.autoScrollToTopThreshold) {
