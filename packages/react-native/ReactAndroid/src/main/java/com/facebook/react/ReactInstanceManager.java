@@ -584,6 +584,29 @@ public class ReactInstanceManager {
   }
 
   /**
+   * This method should be called from {@link Activity#onUserLeaveHint()}. It notifies all listening
+   * modules that the user is about to leave the activity. The passed Activity is has to be the
+   * current Activity.
+   *
+   * @param activity the activity being backgrounded as a result of user action
+   */
+  @ThreadConfined(UI)
+  public void onUserLeaveHint(@Nullable Activity activity) {
+    if (mRequireActivity) {
+      Assertions.assertCondition(mCurrentActivity != null);
+    }
+
+    if (mCurrentActivity != null && activity == mCurrentActivity) {
+      UiThreadUtil.assertOnUiThread();
+
+      ReactContext currentContext = getCurrentReactContext();
+      if (currentContext != null) {
+        currentContext.onUserLeaveHint(activity);
+      }
+    }
+  }
+
+  /**
    * Call this from {@link Activity#onPause()}. This notifies any listening modules so they can do
    * any necessary cleanup. The passed Activity is the current Activity being paused. This will
    * always be the foreground activity that would be returned by {@link
