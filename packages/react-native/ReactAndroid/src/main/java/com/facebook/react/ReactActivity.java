@@ -106,12 +106,6 @@ public abstract class ReactActivity extends AppCompatActivity
   }
 
   @Override
-  public void onUserLeaveHint() {
-    super.onUserLeaveHint();
-    mDelegate.onUserLeaveHint();
-  }
-
-  @Override
   public void requestPermissions(
       String[] permissions, int requestCode, PermissionListener listener) {
     mDelegate.requestPermissions(permissions, requestCode, listener);
