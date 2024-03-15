@@ -12,7 +12,13 @@ namespace facebook::react::jsinspector_modern {
 JsiIntegrationTestHermesWithCDPAgentEngineAdapter::
     JsiIntegrationTestHermesWithCDPAgentEngineAdapter(
         folly::Executor& jsExecutor)
-    : JsiIntegrationTestHermesEngineAdapter(jsExecutor) {}
+    : runtime_{hermes::makeHermesRuntime(
+          ::hermes::vm::RuntimeConfig::Builder()
+              .withCompilationMode(
+                  ::hermes::vm::CompilationMode::ForceLazyCompilation)
+              .build())},
+      jsExecutor_{jsExecutor},
+      runtimeTargetDelegate_{runtime_} {}
 
 /* static */ InspectorFlagOverrides
 JsiIntegrationTestHermesWithCDPAgentEngineAdapter::
@@ -20,6 +26,31 @@ JsiIntegrationTestHermesWithCDPAgentEngineAdapter::
   return {
       .enableHermesCDPAgent = true,
       .enableModernCDPRegistry = true,
+  };
+}
+
+RuntimeTargetDelegate&
+JsiIntegrationTestHermesWithCDPAgentEngineAdapter::getRuntimeTargetDelegate() {
+  return runtimeTargetDelegate_;
+}
+
+jsi::Runtime& JsiIntegrationTestHermesWithCDPAgentEngineAdapter::getRuntime()
+    const noexcept {
+  return *runtime_;
+}
+
+RuntimeExecutor
+JsiIntegrationTestHermesWithCDPAgentEngineAdapter::getRuntimeExecutor()
+    const noexcept {
+  auto& jsExecutor = jsExecutor_;
+  return [runtimeWeak = std::weak_ptr(runtime_), &jsExecutor](auto fn) {
+    jsExecutor.add([runtimeWeak, fn]() {
+      auto runtime = runtimeWeak.lock();
+      if (!runtime) {
+        return;
+      }
+      fn(*runtime);
+    });
   };
 }
 

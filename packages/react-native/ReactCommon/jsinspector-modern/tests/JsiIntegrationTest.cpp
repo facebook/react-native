@@ -592,15 +592,6 @@ TYPED_TEST(JsiIntegrationHermesModernTest, ResolveBreakpointAfterReload) {
 
   this->reload();
 
-  this->expectMessageFromPage(JsonEq(R"({
-                                         "id": 3,
-                                         "result": {}
-                                       })"));
-  this->toPage_->sendMessage(R"({
-                                 "id": 3,
-                                 "method": "Debugger.enable"
-                               })");
-
   auto scriptInfo = this->expectMessageFromPage(JsonParsed(AllOf(
       AtJsonPtr("/method", "Debugger.scriptParsed"),
       AtJsonPtr("/params/url", "breakpointTest.js"))));
@@ -678,6 +669,34 @@ TYPED_TEST(JsiIntegrationHermesModernTest, CDPAgentReentrancyRegressionTest) {
                                             }
                                           })"));
   });
+}
+
+TYPED_TEST(JsiIntegrationHermesModernTest, ScriptParsedExactlyOnce) {
+  // Regression test for T182003727 (multiple scriptParsed events for a single
+  // script under Hermes lazy compilation).
+
+  this->connect();
+
+  InSequence s;
+
+  this->eval(R"(
+    // NOTE: Triggers lazy compilation in Hermes when running with
+    // CompilationMode::ForceLazyCompilation.
+    (function foo(){var x = 2;})()
+    //# sourceURL=script.js
+  )");
+
+  this->expectMessageFromPage(JsonParsed(AllOf(
+      AtJsonPtr("/method", "Debugger.scriptParsed"),
+      AtJsonPtr("/params/url", "script.js"))));
+  this->expectMessageFromPage(JsonEq(R"({
+                                         "id": 1,
+                                         "result": {}
+                                       })"));
+  this->toPage_->sendMessage(R"({
+                                 "id": 1,
+                                 "method": "Debugger.enable"
+                               })");
 }
 
 #pragma endregion // ModernHermesVariants
