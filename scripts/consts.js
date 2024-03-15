@@ -36,9 +36,19 @@ const REACT_NATIVE_PACKAGE_DIR /*: string */ = path.join(
   'react-native',
 );
 
+/**
+ * The absolute path to the rn-tester package.
+ */
+const RN_TESTER_DIR /*: string */ = path.join(
+  REPO_ROOT,
+  'packages',
+  'rn-tester',
+);
+
 module.exports = {
   PACKAGES_DIR,
   REACT_NATIVE_PACKAGE_DIR,
   REPO_ROOT,
+  RN_TESTER_DIR,
   SCRIPTS_DIR,
 };
