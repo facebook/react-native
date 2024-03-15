@@ -12,6 +12,8 @@
 #import <React/RCTSurfacePresenterBridgeAdapter.h>
 #import <React/RCTUtils.h>
 #import <objc/runtime.h>
+#import <react/featureflags/ReactNativeFeatureFlags.h>
+#import <react/featureflags/ReactNativeFeatureFlagsDefaults.h>
 #import <react/renderer/graphics/ColorComponents.h>
 #import "RCTAppDelegate+Protected.h"
 #import "RCTAppSetupUtils.h"
@@ -38,6 +40,8 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+  [self _setUpFeatureFlags];
+
   RCTSetNewArchEnabled([self newArchEnabled]);
   [RCTColorSpaceUtils applyDefaultColorSpace:self.defaultColorSpace];
   RCTAppSetupPrepareApp(application, self.turboModuleEnabled);
@@ -257,6 +261,31 @@
   };
 
   return [[RCTRootViewFactory alloc] initWithConfiguration:configuration andTurboModuleManagerDelegate:self];
+}
+
+#pragma mark - Feature Flags
+
+class RCTAppDelegateBridgelessFeatureFlags : public facebook::react::ReactNativeFeatureFlagsDefaults {
+ public:
+  bool useModernRuntimeScheduler() override
+  {
+    return true;
+  }
+  bool enableMicrotasks() override
+  {
+    return true;
+  }
+  bool batchRenderingUpdatesInEventLoop() override
+  {
+    return true;
+  }
+};
+
+- (void)_setUpFeatureFlags
+{
+  if ([self bridgelessEnabled]) {
+    facebook::react::ReactNativeFeatureFlags::override(std::make_unique<RCTAppDelegateBridgelessFeatureFlags>());
+  }
 }
 
 @end
