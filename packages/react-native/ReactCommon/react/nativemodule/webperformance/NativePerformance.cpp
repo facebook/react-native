@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include <cxxreact/JSExecutor.h>
 #include <cxxreact/ReactMarker.h>
 #include <jsi/instrumentation.h>
 #include "NativePerformance.h"
@@ -24,6 +25,10 @@ namespace facebook::react {
 
 NativePerformance::NativePerformance(std::shared_ptr<CallInvoker> jsInvoker)
     : NativePerformanceCxxSpec(std::move(jsInvoker)) {}
+
+double NativePerformance::now(jsi::Runtime& /*rt*/) {
+  return JSExecutor::performanceNow();
+}
 
 void NativePerformance::mark(
     jsi::Runtime& rt,

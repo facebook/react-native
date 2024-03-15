@@ -17,6 +17,7 @@ export type NativeMemoryInfo = {[key: string]: ?number};
 export type ReactNativeStartupTiming = {[key: string]: ?number};
 
 export interface Spec extends TurboModule {
+  +now?: () => number;
   +mark: (name: string, startTime: number) => void;
   +measure: (
     name: string,
