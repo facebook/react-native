@@ -17,8 +17,7 @@
 
 namespace facebook::react {
 
-class NativeMicrotasks : public NativeMicrotasksCxxSpec<NativeMicrotasks>,
-                         std::enable_shared_from_this<NativeMicrotasks> {
+class NativeMicrotasks : public NativeMicrotasksCxxSpec<NativeMicrotasks> {
  public:
   NativeMicrotasks(std::shared_ptr<CallInvoker> jsInvoker);
 

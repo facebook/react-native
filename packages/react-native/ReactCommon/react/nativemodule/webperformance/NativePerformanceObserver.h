@@ -48,8 +48,7 @@ struct Bridging<GetPendingEntriesResult>
 #pragma mark - implementation
 
 class NativePerformanceObserver
-    : public NativePerformanceObserverCxxSpec<NativePerformanceObserver>,
-      std::enable_shared_from_this<NativePerformanceObserver> {
+    : public NativePerformanceObserverCxxSpec<NativePerformanceObserver> {
  public:
   NativePerformanceObserver(std::shared_ptr<CallInvoker> jsInvoker);
   ~NativePerformanceObserver();

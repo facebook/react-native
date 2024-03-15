@@ -46,8 +46,7 @@ struct Bridging<NativeMutationRecord>
           NativeMutationRecord> {};
 
 class NativeMutationObserver
-    : public NativeMutationObserverCxxSpec<NativeMutationObserver>,
-      std::enable_shared_from_this<NativeMutationObserver> {
+    : public NativeMutationObserverCxxSpec<NativeMutationObserver> {
  public:
   NativeMutationObserver(std::shared_ptr<CallInvoker> jsInvoker);
 
