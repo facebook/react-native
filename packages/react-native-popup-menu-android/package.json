@@ -21,8 +21,14 @@
     "@react-native/codegen": "0.75.0-main"
   },
   "peerDependencies": {
+    "@types/react": "^18.0.0",
     "react": "*",
     "react-native": "*"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
   },
   "dependencies": {
     "nullthrows": "^1.1.1"
