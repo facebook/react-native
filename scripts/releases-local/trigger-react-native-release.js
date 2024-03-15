@@ -49,6 +49,16 @@ let argv = yargs
     describe: 'Version you aim to release, ex. 0.67.0-rc.1, 0.66.3',
     required: true,
   })
+  .option('dry-run', {
+    type: 'boolean',
+    default: false,
+  })
+  // TODO(T182533699): Remove arg once new workflow is default
+  .option('use-new-workflow', {
+    describe: 'When set, triggers the experimental unified release workflow.',
+    type: 'boolean',
+    default: false,
+  })
   .check(() => {
     const branch = exitIfNotOnGit(
       () => getBranchName(),
@@ -78,7 +88,6 @@ const buildExecutor =
     if (packageManifest.private) {
       return;
     }
-
     if (
       detectPackageUnreleasedChanges(
         packageRelativePathFromRoot,
@@ -117,6 +126,36 @@ async function exitIfUnreleasedPackages() {
   }
 }
 
+/**
+ * Get the next version that all workspace packages will be set to.
+ *
+ * This approach is specific to the 0.74 release. For 0.75, the `--to-version`
+ * value will be used instead, setting all packages to a single version.
+ */
+async function getNextMonorepoPackagesVersion() /*: Promise<string | null> */ {
+  // Based on @react-native/dev-middleware@0.74.5
+  const _0_74_MIN_PATCH = 6;
+
+  const packages = await getPackages({
+    includeReactNative: false,
+  });
+
+  let patchVersion = _0_74_MIN_PATCH;
+
+  for (const pkg of Object.values(packages)) {
+    const {version} = pkg.packageJson;
+
+    if (!version.startsWith('0.74.') || version.endsWith('-main')) {
+      return null;
+    }
+
+    const {minor} = parseVersion(version, 'release');
+    patchVersion = Math.max(patchVersion, parseInt(minor, 10) + 1);
+  }
+
+  return '0.74.' + patchVersion;
+}
+
 function triggerReleaseWorkflow(options /*: $FlowFixMe */) {
   return new Promise((resolve, reject) => {
     request(options, function (error, response, body) {
@@ -145,11 +184,16 @@ async function main() {
     exit(1);
   }
 
+  // $FlowFixMe[prop-missing]
+  const useNewWorkflow: boolean = argv.useNewWorkflow;
+
   // now check for unreleased packages
-  try {
-    await exitIfUnreleasedPackages();
-  } catch (error) {
-    exit(1);
+  if (!useNewWorkflow) {
+    try {
+      await exitIfUnreleasedPackages();
+    } catch (error) {
+      exit(1);
+    }
   }
 
   // $FlowFixMe[prop-missing]
@@ -194,11 +238,39 @@ async function main() {
     return;
   }
 
-  const parameters = {
-    release_version: version,
-    release_latest: latest,
-    run_release_workflow: true,
-  };
+  let nextMonorepoPackagesVersion;
+
+  if (useNewWorkflow) {
+    nextMonorepoPackagesVersion = await getNextMonorepoPackagesVersion();
+
+    if (nextMonorepoPackagesVersion == null) {
+      // TODO(T182538198): Once this warning is hit, we can remove the
+      // `release_monorepo_packages_version` logic from here and the CI jobs,
+      // see other TODOs.
+      console.warn(
+        'Warning: No longer on the 0.74-stable branch, meaning we will ' +
+          'write all package versions identically. Please double-check the ' +
+          'generated diff to see if this is correct.',
+      );
+      nextMonorepoPackagesVersion = version;
+    }
+  }
+
+  const parameters = useNewWorkflow
+    ? {
+        release_version: version,
+        release_latest: latest,
+        run_release_workflow: true,
+      }
+    : {
+        run_new_release_workflow: true,
+        release_version: version,
+        release_tag: npmTag,
+        // NOTE: Necessary for 0.74, should be dropped for 0.75+
+        release_monorepo_packages_version: nextMonorepoPackagesVersion,
+        // $FlowFixMe[prop-missing]
+        release_dry_run: argv.dryRun,
+      };
 
   const options = {
     method: 'POST',
