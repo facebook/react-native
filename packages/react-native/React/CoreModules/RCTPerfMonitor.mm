@@ -298,11 +298,7 @@ RCT_EXPORT_MODULE()
 
   [self updateStats];
 
-  UIWindow *window = [self getUIWindowFromScene];
-
-  if (!window) {
-    window = RCTSharedApplication().delegate.window;
-  }
+  UIWindow *window = RCTKeyWindow();
 
   [window addSubview:self.container];
 
@@ -493,21 +489,6 @@ RCT_EXPORT_MODULE()
     i += 2;
   }
   _perfLoggerMarks = [data copy];
-}
-
-- (UIWindow *)getUIWindowFromScene
-{
-  for (UIScene *scene in RCTSharedApplication().connectedScenes) {
-    // In app supports CarPlay, the active scene may be a CPTemplateApplicationScene instance, we should check the class.
-    if (scene.activationState == UISceneActivationStateForegroundActive && [scene isKindOfClass:[UIWindowScene class]]) {
-      if (@available(iOS 15.0, *)) {
-        return ((UIWindowScene *)scene).keyWindow;
-      } else {
-        return ((UIWindowScene *)scene).windows.firstObject;
-      }
-    }
-  }
-  return nil;
 }
 
 #pragma mark - UITableViewDataSource
