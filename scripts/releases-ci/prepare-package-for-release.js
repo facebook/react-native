@@ -11,12 +11,14 @@
 
 'use strict';
 
+const {RN_TESTER_DIR} = require('../consts');
 const {setReactNativeVersion} = require('../releases/set-rn-version');
 const {failIfTagExists} = require('../releases/utils/release-utils');
 const {
   isReleaseBranch,
   parseVersion,
 } = require('../releases/utils/version-utils');
+const {execSync} = require('child_process');
 const {echo, exec, exit} = require('shelljs');
 const yargs = require('yargs');
 
@@ -95,11 +97,21 @@ async function main() {
   }
 
   // Release builds should commit the version bumps, and create tags.
-  echo('Updating RNTester Podfile.lock...');
-  if (exec('source scripts/update_podfile_lock.sh && update_pods').code) {
-    echo('Failed to update RNTester Podfile.lock.');
-    echo('Fix the issue, revert and try again.');
-    exit(1);
+  try {
+    console.log('Updating RNTester Podfile.lock');
+    execSync(
+      `
+        bundle install;
+        bundle exec pod install;
+      `,
+      {cwd: RN_TESTER_DIR, stdio: 'inherit'},
+    );
+  } catch (e) {
+    console.error('Failed to update RNTester Podfile.lock.');
+    console.error('Fix the issue, revert and try again.');
+
+    process.exitCode = 1;
+    return;
   }
 
   echo(`Local checkout has been prepared for release version ${version}.`);
