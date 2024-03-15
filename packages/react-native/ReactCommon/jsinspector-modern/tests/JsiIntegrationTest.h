@@ -50,11 +50,17 @@ class JsiIntegrationPortableTest : public ::testing::Test,
  protected:
   JsiIntegrationPortableTest()
       : inspectorFlagsGuard_{EngineAdapter::getInspectorFlagOverrides()},
-        engineAdapter_{immediateExecutor_} {
+        engineAdapter_{immediateExecutor_} {}
+
+  void SetUp() override {
+    // NOTE: Using SetUp() so we can call virtual methods like
+    // setupRuntimeBeforeRegistration().
     instance_ = &page_->registerInstance(instanceTargetDelegate_);
+    setupRuntimeBeforeRegistration(engineAdapter_->getRuntime());
     runtimeTarget_ = &instance_->registerRuntime(
         engineAdapter_->getRuntimeTargetDelegate(),
         engineAdapter_->getRuntimeExecutor());
+    loadMainBundle();
   }
 
   ~JsiIntegrationPortableTest() override {
@@ -69,6 +75,19 @@ class JsiIntegrationPortableTest : public ::testing::Test,
       instance_ = nullptr;
     }
   }
+
+  /**
+   * Noop in JsiIntegrationPortableTest, but can be overridden by derived
+   * fixture classes to load some code at startup and after each reload.
+   */
+  virtual void loadMainBundle() {}
+
+  /**
+   * Noop in JsiIntegrationPortableTest, but can be overridden by derived
+   * fixture classes to set up the runtime before registering it with the
+   * CDP backend.
+   */
+  virtual void setupRuntimeBeforeRegistration(jsi::Runtime& /*runtime*/) {}
 
   void connect() {
     ASSERT_FALSE(toPage_) << "Can only connect once in a JSI integration test.";
@@ -94,9 +113,11 @@ class JsiIntegrationPortableTest : public ::testing::Test,
     // Recreate the engine (e.g. to wipe any state in the inner jsi::Runtime)
     engineAdapter_.emplace(immediateExecutor_);
     instance_ = &page_->registerInstance(instanceTargetDelegate_);
+    setupRuntimeBeforeRegistration(engineAdapter_->getRuntime());
     runtimeTarget_ = &instance_->registerRuntime(
         engineAdapter_->getRuntimeTargetDelegate(),
         engineAdapter_->getRuntimeExecutor());
+    loadMainBundle();
   }
 
   MockRemoteConnection& fromPage() {
