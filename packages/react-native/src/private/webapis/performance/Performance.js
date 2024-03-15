@@ -39,9 +39,8 @@ declare var global: {
   +nativePerformanceNow?: ?() => number,
 };
 
-const getCurrentTimeStamp: () => HighResTimeStamp = global.nativePerformanceNow
-  ? global.nativePerformanceNow
-  : () => Date.now();
+const getCurrentTimeStamp: () => HighResTimeStamp =
+  NativePerformance?.now ?? global.nativePerformanceNow ?? (() => Date.now());
 
 // We want some of the performance entry types to be always logged,
 // even if they are not currently observed - this is either to be able to
