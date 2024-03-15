@@ -17,7 +17,7 @@ parameters:
     type: boolean
 
   release_version:
-    default: "9999"
+    default: ""
     type: string
 
   run_nightly_workflow:
