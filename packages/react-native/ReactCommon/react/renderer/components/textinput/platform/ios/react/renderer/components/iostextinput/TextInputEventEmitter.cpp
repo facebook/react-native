@@ -11,7 +11,7 @@ namespace facebook::react {
 
 static jsi::Value textInputMetricsPayload(
     jsi::Runtime& runtime,
-    const TextInputMetrics& textInputMetrics) {
+    const TextInputEventEmitter::Metrics& textInputMetrics) {
   auto payload = jsi::Object(runtime);
 
   payload.setProperty(
@@ -38,7 +38,7 @@ static jsi::Value textInputMetricsPayload(
 
 static jsi::Value textInputMetricsScrollPayload(
     jsi::Runtime& runtime,
-    const TextInputMetrics& textInputMetrics) {
+    const TextInputEventEmitter::Metrics& textInputMetrics) {
   auto payload = jsi::Object(runtime);
 
   {
@@ -88,7 +88,7 @@ static jsi::Value textInputMetricsScrollPayload(
 
 static jsi::Value textInputMetricsContentSizePayload(
     jsi::Runtime& runtime,
-    const TextInputMetrics& textInputMetrics) {
+    const TextInputEventEmitter::Metrics& textInputMetrics) {
   auto payload = jsi::Object(runtime);
 
   {
@@ -105,7 +105,7 @@ static jsi::Value textInputMetricsContentSizePayload(
 
 static jsi::Value keyPressMetricsPayload(
     jsi::Runtime& runtime,
-    const KeyPressMetrics& keyPressMetrics) {
+    const TextInputEventEmitter::KeyPressMetrics& keyPressMetrics) {
   auto payload = jsi::Object(runtime);
   payload.setProperty(runtime, "eventCount", keyPressMetrics.eventCount);
 
@@ -126,39 +126,36 @@ static jsi::Value keyPressMetricsPayload(
   return payload;
 };
 
-void TextInputEventEmitter::onFocus(
-    const TextInputMetrics& textInputMetrics) const {
+void TextInputEventEmitter::onFocus(const Metrics& textInputMetrics) const {
   dispatchTextInputEvent("focus", textInputMetrics);
 }
 
-void TextInputEventEmitter::onBlur(
-    const TextInputMetrics& textInputMetrics) const {
+void TextInputEventEmitter::onBlur(const Metrics& textInputMetrics) const {
   dispatchTextInputEvent("blur", textInputMetrics);
 }
 
-void TextInputEventEmitter::onChange(
-    const TextInputMetrics& textInputMetrics) const {
+void TextInputEventEmitter::onChange(const Metrics& textInputMetrics) const {
   dispatchTextInputEvent("change", textInputMetrics);
 }
 
 void TextInputEventEmitter::onContentSizeChange(
-    const TextInputMetrics& textInputMetrics) const {
+    const Metrics& textInputMetrics) const {
   dispatchTextInputContentSizeChangeEvent(
       "contentSizeChange", textInputMetrics);
 }
 
 void TextInputEventEmitter::onSelectionChange(
-    const TextInputMetrics& textInputMetrics) const {
+    const Metrics& textInputMetrics) const {
   dispatchTextInputEvent("selectionChange", textInputMetrics);
 }
 
 void TextInputEventEmitter::onEndEditing(
-    const TextInputMetrics& textInputMetrics) const {
+    const Metrics& textInputMetrics) const {
   dispatchTextInputEvent("endEditing", textInputMetrics);
 }
 
 void TextInputEventEmitter::onSubmitEditing(
-    const TextInputMetrics& textInputMetrics) const {
+    const Metrics& textInputMetrics) const {
   dispatchTextInputEvent("submitEditing", textInputMetrics);
 }
 
@@ -169,8 +166,7 @@ void TextInputEventEmitter::onKeyPress(
   });
 }
 
-void TextInputEventEmitter::onScroll(
-    const TextInputMetrics& textInputMetrics) const {
+void TextInputEventEmitter::onScroll(const Metrics& textInputMetrics) const {
   dispatchEvent("scroll", [textInputMetrics](jsi::Runtime& runtime) {
     return textInputMetricsScrollPayload(runtime, textInputMetrics);
   });
@@ -178,7 +174,7 @@ void TextInputEventEmitter::onScroll(
 
 void TextInputEventEmitter::dispatchTextInputEvent(
     const std::string& name,
-    const TextInputMetrics& textInputMetrics) const {
+    const Metrics& textInputMetrics) const {
   dispatchEvent(name, [textInputMetrics](jsi::Runtime& runtime) {
     return textInputMetricsPayload(runtime, textInputMetrics);
   });
@@ -186,7 +182,7 @@ void TextInputEventEmitter::dispatchTextInputEvent(
 
 void TextInputEventEmitter::dispatchTextInputContentSizeChangeEvent(
     const std::string& name,
-    const TextInputMetrics& textInputMetrics) const {
+    const Metrics& textInputMetrics) const {
   dispatchEvent(name, [textInputMetrics](jsi::Runtime& runtime) {
     return textInputMetricsContentSizePayload(runtime, textInputMetrics);
   });
