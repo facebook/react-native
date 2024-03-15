@@ -7,7 +7,7 @@
 
 #include "JsiIntegrationTest.h"
 
-#include "engines/JsiIntegrationTestHermesWithCDPAgentEngineAdapter.h"
+#include "engines/JsiIntegrationTestHermesEngineAdapter.h"
 #include "prelude.js.h"
 
 #include <utility>
@@ -44,9 +44,9 @@ struct Params {
 /**
  * A test fixture for the Console API.
  */
-class ConsoleApiTest : public JsiIntegrationPortableTest<
-                           JsiIntegrationTestHermesWithCDPAgentEngineAdapter>,
-                       public WithParamInterface<Params> {
+class ConsoleApiTest
+    : public JsiIntegrationPortableTest<JsiIntegrationTestHermesEngineAdapter>,
+      public WithParamInterface<Params> {
   struct ExpectedConsoleApiCall {
     std::string type;
     std::string argsJson;
