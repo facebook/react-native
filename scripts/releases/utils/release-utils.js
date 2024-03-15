@@ -23,7 +23,7 @@ type BuildType = 'dry-run' | 'release' | 'nightly' | 'prealpha';
 function generateAndroidArtifacts(releaseVersion /*: string */) {
   // -------- Generating Android Artifacts
   echo('Generating Android artifacts inside /tmp/maven-local');
-  if (exec('./gradlew publishAllToMavenTempLocal').code) {
+  if (exec('./gradlew publishAllToMavenTempLocal --info --stacktrace').code) {
     echo('Could not generate artifacts');
     exit(1);
   }
