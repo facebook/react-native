@@ -45,10 +45,6 @@ std::string componentNameByReactViewName(std::string viewName) {
     return "ScrollView";
   }
 
-  if (viewName == "RKShimmeringView") {
-    return "ShimmeringView";
-  }
-
   if (viewName == "RefreshControl") {
     return "PullToRefreshView";
   }
