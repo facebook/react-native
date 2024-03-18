@@ -10,10 +10,10 @@
 #import <React/RCTBridge+Private.h>
 #import <React/RCTModalManager.h>
 #import <React/UIView+React.h>
-#import <react/renderer/components/FBReactNativeComponentSpec/EventEmitters.h>
-#import <react/renderer/components/FBReactNativeComponentSpec/Props.h>
 #import <react/renderer/components/modal/ModalHostViewComponentDescriptor.h>
 #import <react/renderer/components/modal/ModalHostViewState.h>
+#import <react/renderer/components/rncore/EventEmitters.h>
+#import <react/renderer/components/rncore/Props.h>
 
 #import "RCTConversions.h"
 

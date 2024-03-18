@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <react/renderer/components/FBReactNativeComponentSpec/EventEmitters.h>
-#include <react/renderer/components/FBReactNativeComponentSpec/Props.h>
+#include <react/renderer/components/rncore/EventEmitters.h>
+#include <react/renderer/components/rncore/Props.h>
 #include <react/renderer/components/safeareaview/SafeAreaViewState.h>
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 

@@ -9,7 +9,6 @@
 
 #include <fbjni/fbjni.h>
 #include <react/jni/ReadableNativeMap.h>
-#include <react/renderer/components/progressbar/conversions.h>
 #include <react/renderer/core/conversions.h>
 
 using namespace facebook::jni;

@@ -769,7 +769,9 @@ dependencies {
 }
 
 react {
-  libraryName = "FBReactNativeComponentSpec"
+  // TODO: The library name is chosen for parity with Fabric components & iOS
+  // This should be changed to a more generic name, e.g. `ReactCoreSpec`.
+  libraryName = "rncore"
   jsRootDir = file("../src")
 }
 

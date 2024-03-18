@@ -46,6 +46,7 @@ const RNCORE_CONFIGS = {
   ),
 };
 const CORE_LIBRARIES_WITH_OUTPUT_FOLDER = {
+  rncore: RNCORE_CONFIGS,
   FBReactNativeSpec: {
     ios: null,
     android: path.join(
@@ -57,7 +58,6 @@ const CORE_LIBRARIES_WITH_OUTPUT_FOLDER = {
       'codegen',
     ),
   },
-  FBReactNativeComponentSpec: RNCORE_CONFIGS,
 };
 const REACT_NATIVE = 'react-native';
 
@@ -415,7 +415,7 @@ function generateSchemaInfo(library, platform) {
   };
 }
 
-function shouldSkipGenerationForCoreComponentSpec(schemaInfo, platform) {
+function shouldSkipGenerationForRncore(schemaInfo, platform) {
   if (platform !== 'ios' || schemaInfo.library.config.name !== 'rncore') {
     return false;
   }
@@ -424,7 +424,7 @@ function shouldSkipGenerationForCoreComponentSpec(schemaInfo, platform) {
     'react',
     'renderer',
     'components',
-    'FBReactNativeComponentSpec',
+    'rncore',
   );
   const rncoreAbsolutePath = path.resolve(rncoreOutputPath);
   return (
@@ -435,9 +435,9 @@ function shouldSkipGenerationForCoreComponentSpec(schemaInfo, platform) {
 }
 
 function generateCode(outputPath, schemaInfo, includesGeneratedCode, platform) {
-  if (shouldSkipGenerationForCoreComponentSpec(schemaInfo, platform)) {
+  if (shouldSkipGenerationForRncore(schemaInfo, platform)) {
     console.log(
-      '[Codegen - rncore] Skipping iOS code generation for FBReactNativeComponentSpec as it has been generated already.',
+      '[Codegen - rncore] Skipping iOS code generation for rncore as it has been generated already.',
     );
     return;
   }

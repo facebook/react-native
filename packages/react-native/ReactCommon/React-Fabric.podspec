@@ -156,11 +156,11 @@ Pod::Spec.new do |s|
       sss.header_dir           = "react/renderer/components/modal"
     end
 
-    ss.subspec "FBReactNativeComponentSpec" do |sss|
+    ss.subspec "rncore" do |sss|
       sss.dependency             folly_dep_name, folly_version
       sss.compiler_flags       = folly_compiler_flags
-      sss.source_files         = "react/renderer/components/FBReactNativeComponentSpec/**/*.{m,mm,cpp,h}"
-      sss.header_dir           = "react/renderer/components/FBReactNativeComponentSpec"
+      sss.source_files         = "react/renderer/components/rncore/**/*.{m,mm,cpp,h}"
+      sss.header_dir           = "react/renderer/components/rncore"
     end
 
     ss.subspec "root" do |sss|
@@ -304,13 +304,13 @@ Pod::Spec.new do |s|
 
   s.script_phases = [
     {
-      :name => '[RN] Check FBReactNativeComponentSpec codegen',
+      :name => '[RN]Check rncore',
       :execution_position => :before_compile,
       :script => <<-EOS
 echo "Checking whether Codegen has run..."
-codegen_path="$REACT_NATIVE_PATH/ReactCommon/react/renderer/components/FBReactNativeComponentSpec"
+rncorePath="$REACT_NATIVE_PATH/ReactCommon/react/renderer/components/rncore"
 
-if [[ ! -d "$codegen_path" ]]; then
+if [[ ! -d "$rncorePath" ]]; then
   echo 'error: Codegen did not run properly in your project. Please reinstall cocoapods with `bundle exec pod install`.'
   exit 1
 fi
