@@ -98,8 +98,32 @@ class TextAttributes : public DebugStringConvertible {
 #if RN_DEBUG_STRING_CONVERTIBLE
   SharedDebugStringConvertibleList getDebugProps() const override;
 #endif
-};
 
+#pragma mark - Utilities
+
+  template <typename T>
+  static bool isUndefined(const T& attr);
+
+  template <typename T>
+  static bool isUndefined(const std::optional<T>& attr) {
+    return !attr.has_value();
+  }
+
+  template <>
+  bool isUndefined<SharedColor>(const SharedColor& attr) {
+    return !attr;
+  }
+
+  template <>
+  bool isUndefined<Float>(const Float& attr) {
+    return std::isnan(attr);
+  }
+
+  template <>
+  bool isUndefined<std::string>(const std::string& attr) {
+    return attr.empty();
+  }
+};
 } // namespace facebook::react
 
 namespace std {
