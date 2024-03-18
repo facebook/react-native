@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4c5446d5b72429d090e17523f2d544a7>>
+ * @generated SignedSource<<d13ffc557c3874e9bdd78558cd309829>>
  */
 
 /**
@@ -41,7 +41,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableSpannableBuildingUnification();
   bool inspectorEnableCxxInspectorPackagerConnection();
   bool inspectorEnableModernCDPRegistry();
-  bool skipMountHookNotifications();
   bool useModernRuntimeScheduler();
 
   void override(std::unique_ptr<ReactNativeFeatureFlagsProvider> provider);
@@ -53,7 +52,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 12> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 11> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> batchRenderingUpdatesInEventLoop_;
@@ -65,7 +64,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableSpannableBuildingUnification_;
   std::atomic<std::optional<bool>> inspectorEnableCxxInspectorPackagerConnection_;
   std::atomic<std::optional<bool>> inspectorEnableModernCDPRegistry_;
-  std::atomic<std::optional<bool>> skipMountHookNotifications_;
   std::atomic<std::optional<bool>> useModernRuntimeScheduler_;
 };
 

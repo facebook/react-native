@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e8550b0c2494b223b82e6fab0a827d53>>
+ * @generated SignedSource<<919eb0f27540e5dd7a1e028663c23264>>
  */
 
 /**
@@ -34,7 +34,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var enableSpannableBuildingUnificationCache: Boolean? = null
   private var inspectorEnableCxxInspectorPackagerConnectionCache: Boolean? = null
   private var inspectorEnableModernCDPRegistryCache: Boolean? = null
-  private var skipMountHookNotificationsCache: Boolean? = null
   private var useModernRuntimeSchedulerCache: Boolean? = null
 
   override fun commonTestFlag(): Boolean {
@@ -133,16 +132,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.inspectorEnableModernCDPRegistry()
       accessedFeatureFlags.add("inspectorEnableModernCDPRegistry")
       inspectorEnableModernCDPRegistryCache = cached
-    }
-    return cached
-  }
-
-  override fun skipMountHookNotifications(): Boolean {
-    var cached = skipMountHookNotificationsCache
-    if (cached == null) {
-      cached = currentProvider.skipMountHookNotifications()
-      accessedFeatureFlags.add("skipMountHookNotifications")
-      skipMountHookNotificationsCache = cached
     }
     return cached
   }
