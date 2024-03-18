@@ -185,7 +185,7 @@ async function main() {
   }
 
   // $FlowFixMe[prop-missing]
-  const useNewWorkflow: boolean = argv.useNewWorkflow;
+  const useNewWorkflow /*: boolean */ = argv.useNewWorkflow;
 
   // now check for unreleased packages
   if (!useNewWorkflow) {
