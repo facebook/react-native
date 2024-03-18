@@ -9,8 +9,8 @@
 
 #include "AndroidSwitchMeasurementsManager.h"
 
-#include <react/renderer/components/rncore/EventEmitters.h>
-#include <react/renderer/components/rncore/Props.h>
+#include <react/renderer/components/FBReactNativeComponentSpec/EventEmitters.h>
+#include <react/renderer/components/FBReactNativeComponentSpec/Props.h>
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 
 namespace facebook::react {

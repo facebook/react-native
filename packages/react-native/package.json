@@ -145,7 +145,7 @@
         "jsSrcsDir": "src"
       },
       {
-        "name": "rncore",
+        "name": "FBReactNativeComponentSpec",
         "type": "components",
         "ios": {},
         "android": {},
