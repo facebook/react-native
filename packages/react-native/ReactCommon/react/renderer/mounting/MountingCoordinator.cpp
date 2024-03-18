@@ -68,10 +68,12 @@ bool MountingCoordinator::waitForTransaction(
 
 void MountingCoordinator::updateBaseRevision(
     const ShadowTreeRevision& baseRevision) const {
+  std::scoped_lock lock(mutex_);
   baseRevision_ = baseRevision;
 }
 
 void MountingCoordinator::resetLatestRevision() const {
+  std::scoped_lock lock(mutex_);
   lastRevision_.reset();
 }
 
@@ -184,6 +186,7 @@ std::optional<MountingTransaction> MountingCoordinator::pullTransaction()
 }
 
 bool MountingCoordinator::hasPendingTransactions() const {
+  std::scoped_lock lock(mutex_);
   return lastRevision_.has_value();
 }
 
@@ -191,7 +194,8 @@ const TelemetryController& MountingCoordinator::getTelemetryController() const {
   return telemetryController_;
 }
 
-const ShadowTreeRevision& MountingCoordinator::getBaseRevision() const {
+ShadowTreeRevision MountingCoordinator::getBaseRevision() const {
+  std::scoped_lock lock(mutex_);
   return baseRevision_;
 }
 
