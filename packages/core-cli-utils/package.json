@@ -13,6 +13,7 @@
     ".": "./src/index.js",
     "./package.json": "./package.json"
   },
+  "types": "./dist/index.d.ts",
   "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/core-cli-utils#readme",
   "keywords": [
     "cli-utils",
