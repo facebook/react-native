@@ -9,7 +9,7 @@
  * @oncall react_native
  */
 
-declare module 'chromium-edge-launcher' {
+declare module '@rnx-kit/chromium-edge-launcher' {
   import typeof fs from 'fs';
   import typeof childProcess from 'child_process';
   import type {ChildProcess} from 'child_process';

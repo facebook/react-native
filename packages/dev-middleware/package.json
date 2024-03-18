@@ -24,8 +24,8 @@
   "dependencies": {
     "@isaacs/ttlcache": "^1.4.1",
     "@react-native/debugger-frontend": "0.75.0-main",
+    "@rnx-kit/chromium-edge-launcher": "^1.0.0",
     "chrome-launcher": "^0.15.2",
-    "chromium-edge-launcher": "^0.2.0",
     "connect": "^3.6.5",
     "debug": "^2.2.0",
     "node-fetch": "^2.2.0",
