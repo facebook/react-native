@@ -5,7 +5,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/facebook/react-native.git",
+    "url": "git+https://github.com/facebook/react-native.git",
     "directory": "packages/react-native"
   },
   "homepage": "https://reactnative.dev/",
@@ -23,7 +23,9 @@
   "engines": {
     "node": ">=18"
   },
-  "bin": "./cli.js",
+  "bin": {
+    "react-native": "cli.js"
+  },
   "types": "types",
   "jest-junit": {
     "outputDirectory": "reports/junit",
