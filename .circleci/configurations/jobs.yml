@@ -1107,6 +1107,71 @@ jobs:
 
             node ./scripts/releases-ci/prepare-package-for-release.js -v "$VERSION" -l << parameters.latest >> --dry-run << parameters.dryrun >>
 
+  # Experimental unified release workflow
+  # Replaces `prepare_package_for_release`
+  #
+  # Writes a new commit and tag(s), which will trigger the `publish_release`
+  # and `publish_bumped_packages` workflows.
+  prepare_release_new:
+    parameters:
+      version:
+        type: string
+      # TODO(T182538198): Required for 0.74.x, where workspace packages are out
+      # of sync with react-native. This will be removed for 0.75+.
+      monorepo_packages_version:
+        type: string
+      tag:
+        type: string
+      dry_run:
+        type: boolean
+        default: false
+    executor: reactnativeios
+    steps:
+      - checkout_code_with_cache
+      - run_yarn
+      - add_ssh_keys:
+          fingerprints:
+            - "1f:c7:61:c4:e2:ff:77:e3:cc:ca:a7:34:c2:79:e3:3c"
+      - brew_install:
+          package: cmake
+      - run:
+          name: Versioning workspace packages
+          command: |
+            node scripts/releases/set-version "<< parameters.monorepo_packages_version >>" --skip-react-native-version
+      - run:
+          name: Versioning react-native package
+          command: |
+            node scripts/releases/set-rn-version.js -v "<< parameters.version >>" --build-type "release"
+      - run:
+          name: Updating RNTester Podfile.lock
+          command: |
+            cd packages/rn-tester/
+            bundle install
+            bundle exec pod install
+      - run:
+          name: Creating release commit
+          command: |
+            git commit -a -m "Release << parameters.version >>\n\n#publish-packages-to-npm&<< parameters.tag >>"
+            git tag -a "v<< parameters.version >>" -m "v<< parameters.version >>"
+            git show HEAD
+      - when:
+          condition:
+            equal: ["latest", << parameters.tag >>]
+          steps:
+            - run:
+                name: Updating "latest" tag
+                command: |
+                  git tag -d "latest"
+                  git push origin :latest
+                  git tag -a "latest" -m "latest"
+      - unless:
+          condition: << parameters.dry_run >>
+          steps:
+            run:
+              name: Pushing release commit
+              command: |
+                git push origin $CIRCLE_BRANCH --follow-tags
+
   build_npm_package:
     parameters:
       release_type:
