@@ -1143,17 +1143,11 @@ jobs:
           command: |
             node scripts/releases/set-rn-version.js -v "<< parameters.version >>" --build-type "release"
       - run:
-          name: Updating RNTester Podfile.lock
-          command: |
-            cd packages/rn-tester/
-            bundle install
-            bundle exec pod install
-      - run:
           name: Creating release commit
           command: |
-            git commit -a -m "Release << parameters.version >>\n\n#publish-packages-to-npm&<< parameters.tag >>"
+            git commit -a -m "Release << parameters.version >>" -m "#publish-packages-to-npm&<< parameters.tag >>"
             git tag -a "v<< parameters.version >>" -m "v<< parameters.version >>"
-            git show HEAD
+            GIT_PAGER=cat git show HEAD
       - when:
           condition:
             equal: ["latest", << parameters.tag >>]
