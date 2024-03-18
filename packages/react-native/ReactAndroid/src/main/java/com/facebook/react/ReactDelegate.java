@@ -81,6 +81,20 @@ public class ReactDelegate {
     mReactNativeHost = reactNativeHost;
   }
 
+  @Nullable
+  private DevSupportManager getDevSupportManager() {
+    if (ReactFeatureFlags.enableBridgelessArchitecture
+        && mReactHost != null
+        && mReactHost.getDevSupportManager() != null) {
+      return mReactHost.getDevSupportManager();
+    } else if (getReactNativeHost().hasInstance()
+        && getReactNativeHost().getUseDeveloperSupport()) {
+      return getReactNativeHost().getReactInstanceManager().getDevSupportManager();
+    } else {
+      return null;
+    }
+  }
+
   public void onHostResume() {
     if (!(mActivity instanceof DefaultHardwareBackBtnHandler)) {
       throw new ClassCastException(
@@ -258,15 +272,8 @@ public class ReactDelegate {
    *     application.
    */
   public boolean shouldShowDevMenuOrReload(int keyCode, KeyEvent event) {
-    DevSupportManager devSupportManager = null;
-    if (ReactFeatureFlags.enableBridgelessArchitecture
-        && mReactHost != null
-        && mReactHost.getDevSupportManager() != null) {
-      devSupportManager = mReactHost.getDevSupportManager();
-    } else if (getReactNativeHost().hasInstance()
-        && getReactNativeHost().getUseDeveloperSupport()) {
-      devSupportManager = getReactNativeHost().getReactInstanceManager().getDevSupportManager();
-    } else {
+    DevSupportManager devSupportManager = getDevSupportManager();
+    if (devSupportManager == null) {
       return false;
     }
 
