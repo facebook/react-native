@@ -1145,9 +1145,9 @@ jobs:
       - run:
           name: Creating release commit
           command: |
-            git commit -a -m "Release << parameters.version >>\n\n#publish-packages-to-npm&<< parameters.tag >>"
+            git commit -a -m "Release << parameters.version >>" -m "#publish-packages-to-npm&<< parameters.tag >>"
             git tag -a "v<< parameters.version >>" -m "v<< parameters.version >>"
-            git show HEAD
+            env GIT_PAGER=cat git show HEAD
       - when:
           condition:
             equal: ["latest", << parameters.tag >>]
