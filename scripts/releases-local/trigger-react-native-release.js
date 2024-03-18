@@ -133,8 +133,8 @@ async function exitIfUnreleasedPackages() {
  * value will be used instead, setting all packages to a single version.
  */
 async function getNextMonorepoPackagesVersion() /*: Promise<string | null> */ {
-  // Based on @react-native/dev-middleware@0.74.5
-  const _0_74_MIN_PATCH = 6;
+  // Based on last publish before this strategy
+  const _0_74_MIN_PATCH = 75;
 
   const packages = await getPackages({
     includeReactNative: false,
@@ -149,8 +149,8 @@ async function getNextMonorepoPackagesVersion() /*: Promise<string | null> */ {
       return null;
     }
 
-    const {minor} = parseVersion(version, 'release');
-    patchVersion = Math.max(patchVersion, parseInt(minor, 10) + 1);
+    const {patch} = parseVersion(version, 'release');
+    patchVersion = Math.max(patchVersion, parseInt(patch, 10) + 1);
   }
 
   return '0.74.' + patchVersion;
@@ -185,7 +185,7 @@ async function main() {
   }
 
   // $FlowFixMe[prop-missing]
-  const useNewWorkflow: boolean = argv.useNewWorkflow;
+  const useNewWorkflow /*: boolean */ = argv.useNewWorkflow;
 
   // now check for unreleased packages
   if (!useNewWorkflow) {
@@ -258,11 +258,6 @@ async function main() {
 
   const parameters = useNewWorkflow
     ? {
-        release_version: version,
-        release_latest: latest,
-        run_release_workflow: true,
-      }
-    : {
         run_new_release_workflow: true,
         release_version: version,
         release_tag: npmTag,
@@ -270,6 +265,11 @@ async function main() {
         release_monorepo_packages_version: nextMonorepoPackagesVersion,
         // $FlowFixMe[prop-missing]
         release_dry_run: argv.dryRun,
+      }
+    : {
+        release_version: version,
+        release_latest: latest,
+        run_release_workflow: true,
       };
 
   const options = {
