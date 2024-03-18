@@ -13,6 +13,7 @@
 @protocol RCTComponentViewFactoryComponentProvider;
 @protocol RCTTurboModuleManagerDelegate;
 @class RCTBridge;
+@class RCTHost;
 @class RCTRootView;
 @class RCTSurfacePresenterBridgeAdapter;
 
@@ -97,6 +98,7 @@ typedef RCTBridge *_Nonnull (
 @interface RCTRootViewFactory : NSObject
 
 @property (nonatomic, strong, nullable) RCTBridge *bridge;
+@property (nonatomic, strong, nullable) RCTHost *reactHost;
 @property (nonatomic, strong, nullable) RCTSurfacePresenterBridgeAdapter *bridgeAdapter;
 
 - (instancetype)initWithConfiguration:(RCTRootViewFactoryConfiguration *)configuration
