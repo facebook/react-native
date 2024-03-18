@@ -258,11 +258,6 @@ async function main() {
 
   const parameters = useNewWorkflow
     ? {
-        release_version: version,
-        release_latest: latest,
-        run_release_workflow: true,
-      }
-    : {
         run_new_release_workflow: true,
         release_version: version,
         release_tag: npmTag,
@@ -270,6 +265,11 @@ async function main() {
         release_monorepo_packages_version: nextMonorepoPackagesVersion,
         // $FlowFixMe[prop-missing]
         release_dry_run: argv.dryRun,
+      }
+    : {
+        release_version: version,
+        release_latest: latest,
+        run_release_workflow: true,
       };
 
   const options = {
