@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4f7daa629ad90a9ab2fdc99e7c51e355>>
+ * @generated SignedSource<<27923a2dbf1dcbad238a4d06ebb54fb5>>
  */
 
 /**
@@ -85,11 +85,6 @@ bool NativeReactNativeFeatureFlags::inspectorEnableCxxInspectorPackagerConnectio
 bool NativeReactNativeFeatureFlags::inspectorEnableModernCDPRegistry(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::inspectorEnableModernCDPRegistry();
-}
-
-bool NativeReactNativeFeatureFlags::skipMountHookNotifications(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::skipMountHookNotifications();
 }
 
 bool NativeReactNativeFeatureFlags::useModernRuntimeScheduler(
