@@ -8,6 +8,7 @@
 package com.facebook.react.views.textinput;
 
 import static com.facebook.react.uimanager.UIManagerHelper.getReactContext;
+import static com.facebook.react.config.ReactFeatureFlags.enableComposingSpanRestorationOnSameLength;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -48,6 +49,7 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.build.ReactBuildConfig;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate;
 import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -682,6 +684,8 @@ public class ReactEditText extends AppCompatEditText {
       // try to update state if the wrapper is available. Temporarily disable
       // to prevent an infinite loop.
       getText().replace(0, length(), spannableStringBuilder);
+
+      attachCompositeSpansToTextFrom(spannableStringBuilder);
     }
     mDisableTextDiffing = false;
 
@@ -694,13 +698,19 @@ public class ReactEditText extends AppCompatEditText {
   }
 
   /**
-   * Remove and/or add {@link Spanned.SPAN_EXCLUSIVE_EXCLUSIVE} spans, since they should only exist
-   * as long as the text they cover is the same. All other spans will remain the same, since they
-   * will adapt to the new text, hence why {@link SpannableStringBuilder#replace} never removes
+   * Remove and/or add {@link Spanned#SPAN_EXCLUSIVE_EXCLUSIVE} spans, since they should only exist
+   * as long as the text they cover is the same unless they are {@link Spanned#SPAN_COMPOSING}.
+   * All other spans will remain the same, since they will adapt to the new text, hence why {@link SpannableStringBuilder#replace} never removes
    * them.
+   * When {@link ReactFeatureFlags#enableComposingSpanRestorationOnSameLength} is enabled,
+   * keep copy of {@link Spanned#SPAN_COMPOSING} Spans in {@param spannableStringBuilder}, because they are important for
+   * keyboard suggestions. Without keeping these Spans, suggestions default to be put after the current selection position,
+   * possibly resulting in letter duplication (ex. Samsung Keyboard).
    */
   private void manageSpans(SpannableStringBuilder spannableStringBuilder) {
     Object[] spans = getText().getSpans(0, length(), Object.class);
+    boolean shouldKeepComposingSpans = enableComposingSpanRestorationOnSameLength
+      && length() == spannableStringBuilder.length();
     for (int spanIdx = 0; spanIdx < spans.length; spanIdx++) {
       Object span = spans[spanIdx];
       int spanFlags = getText().getSpanFlags(span);
@@ -719,6 +729,15 @@ public class ReactEditText extends AppCompatEditText {
 
       final int spanStart = getText().getSpanStart(span);
       final int spanEnd = getText().getSpanEnd(span);
+
+      if (shouldKeepComposingSpans) {
+        // We keep a copy of Composing spans
+        boolean isComposing = (spanFlags & Spanned.SPAN_COMPOSING) == Spanned.SPAN_COMPOSING;
+        if (isComposing) {
+          spannableStringBuilder.setSpan(span, spanStart, spanEnd, spanFlags);
+          continue;
+        }
+      }
 
       // Make sure the span is removed from existing text, otherwise the spans we set will be
       // ignored or it will cover text that has changed.
@@ -844,6 +863,39 @@ public class ReactEditText extends AppCompatEditText {
     float lineHeight = mTextAttributes.getEffectiveLineHeight();
     if (!Float.isNaN(lineHeight)) {
       workingText.setSpan(new CustomLineHeightSpan(lineHeight), 0, workingText.length(), spanFlags);
+    }
+  }
+
+  /**
+   * When {@link ReactFeatureFlags#enableComposingSpanRestorationOnSameLength} is enabled, this
+   * function attaches the {@link Spanned#SPAN_COMPOSING} from {@param spannableStringBuilder} to
+   * {@link ReactEditText#getText} if they are the same length.
+   *
+   * See {@link ReactEditText#manageSpans} for more details.
+   * Also this <a href="https://github.com/facebook/react-native/issues/11068">GitHub issue</a>
+   */
+  private void attachCompositeSpansToTextFrom(SpannableStringBuilder spannableStringBuilder) {
+    if (!enableComposingSpanRestorationOnSameLength) {
+      return;
+    }
+
+    Editable text = getText();
+    if (text == null || text.length() != spannableStringBuilder.length()) {
+      return;
+    }
+    Object[] spans = spannableStringBuilder.getSpans(0, length(), Object.class);
+    for (Object span : spans) {
+      int spanFlags = spannableStringBuilder.getSpanFlags(span);
+      boolean isComposing = (spanFlags & Spanned.SPAN_COMPOSING) == Spanned.SPAN_COMPOSING;
+
+      if (!isComposing) {
+        continue;
+      }
+
+      final int spanStart = spannableStringBuilder.getSpanStart(span);
+      final int spanEnd = spannableStringBuilder.getSpanEnd(span);
+
+      text.setSpan(span, spanStart, spanEnd, spanFlags);
     }
   }
 

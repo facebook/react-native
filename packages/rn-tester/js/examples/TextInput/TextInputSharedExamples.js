@@ -135,6 +135,30 @@ class RewriteExample extends React.Component<$FlowFixMeProps, any> {
   }
 }
 
+class RewriteToLowerCaseExample extends React.Component<$FlowFixMeProps, any> {
+  constructor(props: any | void) {
+    super(props);
+    this.state = {text: ''};
+  }
+  render(): React.Node {
+    return (
+      <View style={styles.rewriteContainer}>
+        <TextInput
+          testID="rewrite_to_lowercase_input"
+          autoCorrect={false}
+          multiline={false}
+          onChangeText={text => {
+            text = text.toLowerCase();
+            this.setState({text});
+          }}
+          style={styles.default}
+          value={this.state.text}
+        />
+      </View>
+    );
+  }
+}
+
 class RewriteExampleInvalidCharacters extends React.Component<
   $FlowFixMeProps,
   any,
@@ -852,6 +876,13 @@ module.exports = ([
     title: "Live Re-Write (<sp>  ->  '_') + maxLength",
     render: function (): React.Node {
       return <RewriteExample />;
+    },
+  },
+  {
+    name: 'lowerCase',
+    title: 'Live Re-Write to LowerCase',
+    render: function (): React.Node {
+      return <RewriteToLowerCaseExample />;
     },
   },
   {

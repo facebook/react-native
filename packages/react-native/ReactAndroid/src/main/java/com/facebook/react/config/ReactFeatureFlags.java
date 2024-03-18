@@ -116,6 +116,9 @@ public class ReactFeatureFlags {
    */
   public static boolean traceTurboModulePromiseRejections = ReactBuildConfig.DEBUG;
 
+  /** Enable keeping Composing Spans on Text input change if the new text has the same length. */
+  public static boolean enableComposingSpanRestorationOnSameLength = true;
+
   /**
    * Enables auto rejecting promises from Turbo Modules method calls. If native error occurs Promise
    * in JS will be rejected (The JS error will include native stack)
