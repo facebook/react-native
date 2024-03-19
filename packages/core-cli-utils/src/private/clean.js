@@ -20,19 +20,18 @@ import path from 'path';
 
 type CleanTasks = {
   android: (androidSrcDir: ?string) => Task[],
+  cocoapods?: (projectRootDir: string) => Task[],
   metro: () => Task[],
   npm: (projectRootDir: string, verifyCache?: boolean) => Task[],
-  bun: (projectRootDir: string) => Task[],
   watchman: (projectRootDir: string) => Task[],
   yarn: (projectRootDir: string) => Task[],
-  cocoapods?: (projectRootDir: string) => Task[],
 };
 
 const rmrf = (pathname: string) => {
   if (!existsSync(pathname)) {
     return;
   }
-  rm(pathname, {maxRetries: 3, recursive: true, force: true});
+  rm(pathname, {force: true, maxRetries: 3, recursive: true});
 };
 
 /**
@@ -129,15 +128,6 @@ export const tasks: CleanTasks = {
     }
     return _tasks;
   },
-
-  /**
-   * Cleans up the Bun cache.
-   */
-  bun: (projectRootDir: string) => [
-    task('🧹 Clean Bun cache', (opts?: ExecaOptions) =>
-      execa('bun', ['pm', 'cache', 'rm'], {cwd: projectRootDir, ...opts}),
-    ),
-  ],
 
   /**
    * Stops Watchman and clears its cache
