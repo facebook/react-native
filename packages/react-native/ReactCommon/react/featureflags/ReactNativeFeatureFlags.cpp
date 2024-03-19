@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<cc7c7aa6ac71f94f8dd8fc8cc0c18308>>
+ * @generated SignedSource<<02d03a5ee403405971857d531e62d267>>
  */
 
 /**
@@ -35,6 +35,10 @@ bool ReactNativeFeatureFlags::enableBackgroundExecutor() {
 
 bool ReactNativeFeatureFlags::enableCustomDrawOrderFabric() {
   return getAccessor().enableCustomDrawOrderFabric();
+}
+
+bool ReactNativeFeatureFlags::enableES6Proxy() {
+  return getAccessor().enableES6Proxy();
 }
 
 bool ReactNativeFeatureFlags::enableFixForClippedSubviewsCrash() {

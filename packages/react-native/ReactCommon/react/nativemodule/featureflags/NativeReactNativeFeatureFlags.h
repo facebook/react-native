@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<53251a11631eccf1fcc334b14f9ca4c6>>
+ * @generated SignedSource<<33b6bef1a60fad50357f0dc5509b968e>>
  */
 
 /**
@@ -42,6 +42,8 @@ class NativeReactNativeFeatureFlags
   bool enableBackgroundExecutor(jsi::Runtime& runtime);
 
   bool enableCustomDrawOrderFabric(jsi::Runtime& runtime);
+
+  bool enableES6Proxy(jsi::Runtime& runtime);
 
   bool enableFixForClippedSubviewsCrash(jsi::Runtime& runtime);
 

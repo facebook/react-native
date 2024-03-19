@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7ae379135157666d9646f1d8eeec9989>>
+ * @generated SignedSource<<a4e40fb967b9e5790a6af010aae0b7a0>>
  */
 
 /**
@@ -24,6 +24,7 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
   private var batchRenderingUpdatesInEventLoopCache: Boolean? = null
   private var enableBackgroundExecutorCache: Boolean? = null
   private var enableCustomDrawOrderFabricCache: Boolean? = null
+  private var enableES6ProxyCache: Boolean? = null
   private var enableFixForClippedSubviewsCrashCache: Boolean? = null
   private var enableMicrotasksCache: Boolean? = null
   private var enableMountHooksAndroidCache: Boolean? = null
@@ -64,6 +65,15 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableCustomDrawOrderFabric()
       enableCustomDrawOrderFabricCache = cached
+    }
+    return cached
+  }
+
+  override fun enableES6Proxy(): Boolean {
+    var cached = enableES6ProxyCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableES6Proxy()
+      enableES6ProxyCache = cached
     }
     return cached
   }

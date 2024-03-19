@@ -47,6 +47,10 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'When enabled, Fabric will use customDrawOrder in ReactViewGroup (similar to old architecture).',
     },
+    enableES6Proxy: {
+      defaultValue: true,
+      description: 'Enables the use of ES6Proxy if the JS engine supports it.',
+    },
     enableFixForClippedSubviewsCrash: {
       defaultValue: false,
       description:

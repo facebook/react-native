@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d104b9219b7658544101bbd175f8fa7d>>
+ * @generated SignedSource<<2cab47d160da3000591d9725f34a1595>>
  */
 
 /**
@@ -56,6 +56,11 @@ class ReactNativeFeatureFlags {
    * When enabled, Fabric will use customDrawOrder in ReactViewGroup (similar to old architecture).
    */
   RN_EXPORT static bool enableCustomDrawOrderFabric();
+
+  /**
+   * Enables the use of ES6Proxy if the JS engine supports it.
+   */
+  RN_EXPORT static bool enableES6Proxy();
 
   /**
    * Attempt at fixing a crash related to subview clipping on Android. This is a kill switch for the fix
