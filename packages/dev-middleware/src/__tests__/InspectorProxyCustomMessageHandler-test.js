@@ -9,9 +9,13 @@
  * @oncall react_native
  */
 
+import {fetchJson} from './FetchUtils';
+import {createDebuggerMock} from './InspectorDebuggerUtils';
+import {createDeviceMock} from './InspectorDeviceUtils';
 import {createAndConnectTarget} from './InspectorProtocolUtils';
 import {withAbortSignalForEachTest} from './ResourceUtils';
 import {baseUrlForServer, createServer} from './ServerUtils';
+import invariant from 'invariant';
 import until from 'wait-for-expect';
 
 // WebSocket is unreliable when using fake timers.
@@ -24,8 +28,7 @@ describe('inspector proxy device message middleware', () => {
   const page = {
     id: 'page1',
     app: 'bar-app',
-    // NOTE: 'React' is a magic string used to detect React Native pages.
-    title: 'React Native (mock)',
+    title: 'bar-title',
     vm: 'bar-vm',
   };
 
@@ -77,28 +80,35 @@ describe('inspector proxy device message middleware', () => {
     }
   });
 
-  test('middleware is created with device, debugger, and page information for reloadable page', async () => {
+  test('middleware is created with device, debugger, and page information for synthetic reloadable page', async () => {
     const createCustomMessageHandler = jest.fn().mockImplementation(() => null);
     const {server} = await createServer({
       logger: undefined,
       projectRoot: '',
       unstable_customInspectorMessageHandler: createCustomMessageHandler,
     });
+    const {serverBaseUrl, serverBaseWsUrl} = serverRefUrls(server);
 
     let device, debugger_;
     try {
       device = await createDeviceMock(
-        `${serverRef.serverBaseWsUrl}/inspector/device?device=device1&name=foo&app=bar`,
+        `${serverBaseWsUrl}/inspector/device?device=device1&name=foo&app=bar`,
         autoCleanup.signal,
       );
-      // Mock the device to return the normal page
-      device.getPages.mockImplementation(() => [page]);
+      // Mock the device to return a normal React (Native) page
+      device.getPages.mockImplementation(() => [
+        {
+          ...page,
+          // NOTE: 'React' is a magic string used to detect React Native pages.
+          title: 'React Native (mock)',
+        },
+      ]);
 
       // Retrieve the full page list from device
       let pageList;
       await until(async () => {
         pageList = (await fetchJson(
-          `${serverRef.serverBaseUrl}/json`,
+          `${serverBaseUrl}/json`,
           // $FlowIgnore[unclear-type]
         ): any);
         expect(pageList.length).toBeGreaterThan(0);
@@ -111,7 +121,6 @@ describe('inspector proxy device message middleware', () => {
           // NOTE: Magic string used for the synthetic page that has a stable ID
           title === 'React Native Experimental (Improved Chrome Reloads)',
       );
-
       expect(syntheticPage).not.toBeUndefined();
 
       // Connect the debugger to this synthetic page
@@ -125,7 +134,10 @@ describe('inspector proxy device message middleware', () => {
         expect(createCustomMessageHandler).toBeCalledWith(
           expect.objectContaining({
             page: expect.objectContaining({
-              ...reloadablePage,
+              id: expect.any(String),
+              title: syntheticPage.title,
+              vm: syntheticPage.vm,
+              app: expect.any(String),
               capabilities: expect.any(Object),
             }),
             device: expect.objectContaining({
