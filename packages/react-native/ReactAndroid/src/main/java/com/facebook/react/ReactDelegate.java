@@ -229,6 +229,13 @@ public class ReactDelegate {
     return false;
   }
 
+  public void reload() {
+    DevSupportManager devSupportManager = getDevSupportManager();
+    if (devSupportManager != null) {
+      devSupportManager.handleReloadJS();
+    }
+  }
+
   public void loadApp() {
     loadApp(mMainComponentName);
   }
