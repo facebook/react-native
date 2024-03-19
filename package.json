@@ -14,7 +14,6 @@
     "android": "cd packages/rn-tester && npm run android",
     "build-android": "./gradlew :packages:react-native:ReactAndroid:build",
     "build": "node ./scripts/build/build.js",
-    "bump-all-updated-packages": "node ./scripts/monorepo/bump-all-updated-packages",
     "clang-format": "clang-format -i --glob=*/**/*.{h,cpp,m,mm}",
     "clean": "node ./scripts/build/clean.js",
     "flow-check": "flow check",
