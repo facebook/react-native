@@ -23,15 +23,18 @@ const viewManagerConfigs: {[string]: any | null} = {};
 
 const triedLoadingConfig = new Set<string>();
 
-let NativeUIManagerConstants = {};
-let isNativeUIManagerConstantsSet = false;
-function getConstants(): Object {
-  if (!isNativeUIManagerConstantsSet) {
-    NativeUIManagerConstants = NativeUIManager.getConstants();
-    isNativeUIManagerConstantsSet = true;
-  }
-  return NativeUIManagerConstants;
-}
+const getConstants = (function () {
+  let result = {};
+  let wasCalledOnce = false;
+
+  return (): Object => {
+    if (!wasCalledOnce) {
+      result = NativeUIManager.getConstants();
+      wasCalledOnce = true;
+    }
+    return result;
+  };
+})();
 
 function getViewManagerConfig(viewManagerName: string): any {
   if (
