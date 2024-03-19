@@ -6,7 +6,6 @@
 #  when:
 #    and:
 #      - equal: [ false, << pipeline.parameters.run_release_workflow >> ]
-#      - equal: [ false, << pipeline.parameters.run_new_release_workflow >> ]
 #      - equal: [ false, << pipeline.parameters.run_nightly_workflow >> ]
 #
 #  It's setup this way so we can trigger a release via a POST
@@ -16,22 +15,12 @@
 workflows:
   version: 2
 
-  # This workflow should only be triggered by release script
-  package_release:
+  # Release workflow, triggered by `yarn trigger-react-native-release`
+  create_release:
     when: << pipeline.parameters.run_release_workflow >>
     jobs:
-      # This job will push a tag that will trigger the publish_release workflow
-      - prepare_package_for_release:
-          name: prepare_package_for_release
-          version: << pipeline.parameters.release_version >>
-          latest : << pipeline.parameters.release_latest >>
-
-  # Experimental unified release workflow
-  create_release_new:
-    when: << pipeline.parameters.run_new_release_workflow >>
-    jobs:
-      - prepare_release_new:
-          name: prepare_release_new
+      - prepare_release:
+          name: prepare_release
           version: << pipeline.parameters.release_version >>
           monorepo_packages_version: << pipeline.parameters.release_monorepo_packages_version >>
           tag: << pipeline.parameters.release_tag >>
@@ -91,7 +80,6 @@ workflows:
     when:
       and:
         - equal: [ false, << pipeline.parameters.run_release_workflow >> ]
-        - equal: [ false, << pipeline.parameters.run_new_release_workflow >> ]
         - equal: [ false, << pipeline.parameters.run_nightly_workflow >> ]
     jobs:
       # Run lints on every commit
@@ -141,7 +129,6 @@ workflows:
     when:
       and:
         - equal: [ false, << pipeline.parameters.run_release_workflow >> ]
-        - equal: [ false, << pipeline.parameters.run_new_release_workflow >> ]
         - equal: [ false, << pipeline.parameters.run_nightly_workflow >> ]
     jobs:
       - find_and_publish_bumped_packages:
