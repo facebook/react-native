@@ -158,6 +158,7 @@ public class com/facebook/react/ReactDelegate {
 	public fun onKeyLongPress (I)Z
 	public fun onNewIntent (Landroid/content/Intent;)Z
 	public fun onWindowFocusChanged (Z)V
+	public fun reload ()V
 	public fun shouldShowDevMenuOrReload (ILandroid/view/KeyEvent;)Z
 }
 
