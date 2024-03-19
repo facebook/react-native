@@ -24,7 +24,8 @@ describe('inspector proxy device message middleware', () => {
   const page = {
     id: 'page1',
     app: 'bar-app',
-    title: 'bar-title',
+    // NOTE: 'React' is a magic string used to detect React Native pages.
+    title: 'React Native (mock)',
     vm: 'bar-vm',
   };
 
@@ -84,21 +85,40 @@ describe('inspector proxy device message middleware', () => {
       unstable_customInspectorMessageHandler: createCustomMessageHandler,
     });
 
-    const reloadablePage = {
-      id: REACT_NATIVE_RELOADABLE_PAGE_ID,
-      // NOTE: Magic string used for the synthetic page that has a stable ID
-      title: 'React Native Experimental (Improved Chrome Reloads)',
-      vm: "don't use",
-      app: 'bar-app',
-    };
-
     let device, debugger_;
     try {
-      ({device, debugger_} = await createAndConnectTarget(
-        serverRefUrls(server),
+      device = await createDeviceMock(
+        `${serverRef.serverBaseWsUrl}/inspector/device?device=device1&name=foo&app=bar`,
         autoCleanup.signal,
-        reloadablePage,
-      ));
+      );
+      // Mock the device to return the normal page
+      device.getPages.mockImplementation(() => [page]);
+
+      // Retrieve the full page list from device
+      let pageList;
+      await until(async () => {
+        pageList = (await fetchJson(
+          `${serverRef.serverBaseUrl}/json`,
+          // $FlowIgnore[unclear-type]
+        ): any);
+        expect(pageList.length).toBeGreaterThan(0);
+      });
+      invariant(pageList != null, '');
+
+      // Find the synthetic page
+      const syntheticPage = pageList.find(
+        ({title}) =>
+          // NOTE: Magic string used for the synthetic page that has a stable ID
+          title === 'React Native Experimental (Improved Chrome Reloads)',
+      );
+
+      expect(syntheticPage).not.toBeUndefined();
+
+      // Connect the debugger to this synthetic page
+      debugger_ = await createDebuggerMock(
+        syntheticPage.webSocketDebuggerUrl,
+        autoCleanup.signal,
+      );
 
       // Ensure the middleware was created with the device information
       await until(() =>
