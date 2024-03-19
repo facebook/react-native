@@ -18,4 +18,12 @@ public interface ReactApplication {
    */
   public val reactHost: ReactHost?
     get() = null
+
+  /**
+   * Get the default [ReactDelegate] for this app. This method will be used by the backwards
+   * compatibility layer as a delegate for selecting the appropriate ReactHost or ReactNativeHost
+   * instance based on the architecture in use.
+   */
+  public val reactDelegate: ReactDelegate?
+    get() = null
 }
