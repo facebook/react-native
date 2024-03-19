@@ -83,7 +83,6 @@ Scheduler::Scheduler(
   // container (inside the optional).
   eventDispatcher_->emplace(
       EventQueueProcessor(eventPipe, eventPipeConclusion, statePipe),
-      schedulerToolbox.synchronousEventBeatFactory,
       schedulerToolbox.asynchronousEventBeatFactory,
       eventOwnerBox);
 

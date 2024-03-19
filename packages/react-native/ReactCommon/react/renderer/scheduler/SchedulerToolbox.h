@@ -59,7 +59,6 @@ struct SchedulerToolbox final {
    * purpose background queue.
    */
   EventBeat::Factory asynchronousEventBeatFactory;
-  EventBeat::Factory synchronousEventBeatFactory;
 
   /*
    * General-purpose executor that is used to dispatch work on some utility
