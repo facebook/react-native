@@ -234,6 +234,9 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
   if (oldScrollViewProps.indicatorStyle != newScrollViewProps.indicatorStyle) {
     _scrollView.indicatorStyle = RCTUIScrollViewIndicatorStyleFromProps(newScrollViewProps);
   }
+  
+  _endDraggingSensitivityMultiplier = newScrollViewProps.endDraggingSensitivityMultiplier;
+  _endDraggingSensitivityVelocityMultiplier = newScrollViewProps.endDraggingSensitivityVelocityMultiplier;
 
   _endDraggingSensitivityMultiplier = newScrollViewProps.endDraggingSensitivityMultiplier;
   _endDraggingSensitivityVelocityMultiplier = newScrollViewProps.endDraggingSensitivityVelocityMultiplier;
