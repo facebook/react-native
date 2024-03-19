@@ -67,7 +67,6 @@ class EventQueue {
   mutable std::vector<RawEvent> eventQueue_;
   mutable std::vector<StateUpdate> stateUpdateQueue_;
   mutable std::mutex queueMutex_;
-  mutable bool hasContinuousEventStarted_{false};
 };
 
 } // namespace facebook::react
