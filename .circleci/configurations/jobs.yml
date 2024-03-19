@@ -1076,43 +1076,10 @@ jobs:
   # -------------------------
   #      JOBS: Releases
   # -------------------------
-  prepare_package_for_release:
-    parameters:
-      version:
-        type: string
-      latest:
-        type: boolean
-        default: false
-      dryrun:
-        type: boolean
-        default: false
-    executor: reactnativeios
-    steps:
-      - checkout_code_with_cache
-      - run_yarn
-      - add_ssh_keys:
-          fingerprints:
-            - "1f:c7:61:c4:e2:ff:77:e3:cc:ca:a7:34:c2:79:e3:3c"
-      - brew_install:
-          package: cmake
-      - run:
-          name: "Set new react-native version and commit changes"
-          command: |
-            VERSION=<< parameters.version >>
 
-            if [[ -z "$VERSION" ]]; then
-              VERSION=$(grep '"version"' package.json | cut -d '"' -f 4 | head -1)
-              echo "Using the version from the package.json: $VERSION"
-            fi
-
-            node ./scripts/releases-ci/prepare-package-for-release.js -v "$VERSION" -l << parameters.latest >> --dry-run << parameters.dryrun >>
-
-  # Experimental unified release workflow
-  # Replaces `prepare_package_for_release`
-  #
   # Writes a new commit and tag(s), which will trigger the `publish_release`
   # and `publish_bumped_packages` workflows.
-  prepare_release_new:
+  prepare_release:
     parameters:
       version:
         type: string

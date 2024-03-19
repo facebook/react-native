@@ -12,16 +12,7 @@ parameters:
     default: false
     type: boolean
 
-  # Experimental unified release workflow
-  run_new_release_workflow:
-    default: false
-    type: boolean
-
   run_nightly_workflow:
-    default: false
-    type: boolean
-
-  release_latest:
     default: false
     type: boolean
 
