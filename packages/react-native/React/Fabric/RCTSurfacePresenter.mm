@@ -292,11 +292,6 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
   toolbox.runtimeExecutor = runtimeExecutor;
   toolbox.bridgelessBindingsExecutor = _bridgelessBindingsExecutor;
 
-  toolbox.mainRunLoopObserverFactory = [](RunLoopObserver::Activity activities,
-                                          const RunLoopObserver::WeakOwner &owner) {
-    return std::make_unique<MainRunLoopObserver>(activities, owner);
-  };
-
   if (ReactNativeFeatureFlags::enableBackgroundExecutor()) {
     toolbox.backgroundExecutor = RCTGetBackgroundExecutor();
   }
