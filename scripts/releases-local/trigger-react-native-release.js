@@ -11,8 +11,6 @@
 
 'use strict';
 
-const {REPO_ROOT} = require('../consts');
-const detectPackageUnreleasedChanges = require('../monorepo/bump-all-updated-packages/bump-utils.js');
 const checkForGitChanges = require('../monorepo/check-for-git-changes');
 const {failIfTagExists} = require('../releases/utils/release-utils');
 const {
@@ -23,7 +21,6 @@ const {exitIfNotOnGit, getBranchName} = require('../scm-utils');
 const {getPackages} = require('../utils/monorepo');
 const chalk = require('chalk');
 const inquirer = require('inquirer');
-const path = require('path');
 const request = require('request');
 const {echo, exit} = require('shelljs');
 const yargs = require('yargs');
@@ -53,12 +50,6 @@ let argv = yargs
     type: 'boolean',
     default: false,
   })
-  // TODO(T182533699): Remove arg once new workflow is default
-  .option('use-new-workflow', {
-    describe: 'When set, triggers the experimental unified release workflow.',
-    type: 'boolean',
-    default: false,
-  })
   .check(() => {
     const branch = exitIfNotOnGit(
       () => getBranchName(),
@@ -74,55 +65,6 @@ function exitIfNotOnReleaseBranch(branch /*: string */) {
       'This script must be run in a react-native git repository checkout and on a release branch',
     );
     exit(1);
-  }
-}
-
-const buildExecutor =
-  (
-    packageAbsolutePath /*: string */,
-    packageRelativePathFromRoot /*: string */,
-    packageManifest /*: $FlowFixMe */,
-  ) =>
-  async () => {
-    const {name: packageName} = packageManifest;
-    if (packageManifest.private) {
-      return;
-    }
-    if (
-      detectPackageUnreleasedChanges(
-        packageRelativePathFromRoot,
-        packageName,
-        REPO_ROOT,
-      )
-    ) {
-      // if I enter here, I want to throw an error upward
-      throw new Error(
-        `Package ${packageName} has unreleased changes. Please release it first.`,
-      );
-    }
-  };
-
-async function exitIfUnreleasedPackages() {
-  // use the other script to verify that there's no packages in the monorepo
-  // that have changes that haven't been released
-
-  const packages = await getPackages({
-    includeReactNative: false,
-    includePrivate: true,
-  });
-
-  for (const pkg of Object.values(packages)) {
-    const executor = buildExecutor(
-      pkg.path,
-      path.relative(REPO_ROOT, pkg.path),
-      pkg.packageJson,
-    );
-
-    await executor().catch(error => {
-      echo(chalk.red(error));
-      // need to throw upward
-      throw error;
-    });
   }
 }
 
@@ -185,18 +127,6 @@ async function main() {
   }
 
   // $FlowFixMe[prop-missing]
-  const useNewWorkflow /*: boolean */ = argv.useNewWorkflow;
-
-  // now check for unreleased packages
-  if (!useNewWorkflow) {
-    try {
-      await exitIfUnreleasedPackages();
-    } catch (error) {
-      exit(1);
-    }
-  }
-
-  // $FlowFixMe[prop-missing]
   const token = argv.token;
   // $FlowFixMe[prop-missing]
   const releaseVersion = argv.toVersion;
@@ -238,39 +168,29 @@ async function main() {
     return;
   }
 
-  let nextMonorepoPackagesVersion;
+  let nextMonorepoPackagesVersion = await getNextMonorepoPackagesVersion();
 
-  if (useNewWorkflow) {
-    nextMonorepoPackagesVersion = await getNextMonorepoPackagesVersion();
-
-    if (nextMonorepoPackagesVersion == null) {
-      // TODO(T182538198): Once this warning is hit, we can remove the
-      // `release_monorepo_packages_version` logic from here and the CI jobs,
-      // see other TODOs.
-      console.warn(
-        'Warning: No longer on the 0.74-stable branch, meaning we will ' +
-          'write all package versions identically. Please double-check the ' +
-          'generated diff to see if this is correct.',
-      );
-      nextMonorepoPackagesVersion = version;
-    }
+  if (nextMonorepoPackagesVersion == null) {
+    // TODO(T182538198): Once this warning is hit, we can remove the
+    // `release_monorepo_packages_version` logic from here and the CI jobs,
+    // see other TODOs.
+    console.warn(
+      'Warning: No longer on the 0.74-stable branch, meaning we will ' +
+        'write all package versions identically. Please double-check the ' +
+        'generated diff to see if this is correct.',
+    );
+    nextMonorepoPackagesVersion = version;
   }
 
-  const parameters = useNewWorkflow
-    ? {
-        run_new_release_workflow: true,
-        release_version: version,
-        release_tag: npmTag,
-        // NOTE: Necessary for 0.74, should be dropped for 0.75+
-        release_monorepo_packages_version: nextMonorepoPackagesVersion,
-        // $FlowFixMe[prop-missing]
-        release_dry_run: argv.dryRun,
-      }
-    : {
-        release_version: version,
-        release_latest: latest,
-        run_release_workflow: true,
-      };
+  const parameters = {
+    run_release_workflow: true,
+    release_version: version,
+    release_tag: npmTag,
+    // NOTE: Necessary for 0.74, should be dropped for 0.75+
+    release_monorepo_packages_version: nextMonorepoPackagesVersion,
+    // $FlowFixMe[prop-missing]
+    release_dry_run: argv.dryRun,
+  };
 
   const options = {
     method: 'POST',
