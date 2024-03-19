@@ -76,6 +76,58 @@ describe('inspector proxy device message middleware', () => {
     }
   });
 
+  test('middleware is created with device, debugger, and page information for reloadable page', async () => {
+    const createCustomMessageHandler = jest.fn().mockImplementation(() => null);
+    const {server} = await createServer({
+      logger: undefined,
+      projectRoot: '',
+      unstable_customInspectorMessageHandler: createCustomMessageHandler,
+    });
+
+    const reloadablePage = {
+      id: REACT_NATIVE_RELOADABLE_PAGE_ID,
+      // NOTE: Magic string used for the synthetic page that has a stable ID
+      title: 'React Native Experimental (Improved Chrome Reloads)',
+      vm: "don't use",
+      app: 'bar-app',
+    };
+
+    let device, debugger_;
+    try {
+      ({device, debugger_} = await createAndConnectTarget(
+        serverRefUrls(server),
+        autoCleanup.signal,
+        reloadablePage,
+      ));
+
+      // Ensure the middleware was created with the device information
+      await until(() =>
+        expect(createCustomMessageHandler).toBeCalledWith(
+          expect.objectContaining({
+            page: expect.objectContaining({
+              ...reloadablePage,
+              capabilities: expect.any(Object),
+            }),
+            device: expect.objectContaining({
+              appId: expect.any(String),
+              id: expect.any(String),
+              name: expect.any(String),
+              sendMessage: expect.any(Function),
+            }),
+            debugger: expect.objectContaining({
+              userAgent: null,
+              sendMessage: expect.any(Function),
+            }),
+          }),
+        ),
+      );
+    } finally {
+      device?.close();
+      debugger_?.close();
+      await closeServer(server);
+    }
+  });
+
   test('send message functions are passing messages to sockets', async () => {
     const handleDebuggerMessage = jest.fn();
     const handleDeviceMessage = jest.fn();
