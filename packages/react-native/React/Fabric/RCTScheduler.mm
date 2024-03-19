@@ -16,6 +16,7 @@
 
 #import <React/RCTFollyConvert.h>
 
+#import "PlatformRunLoopObserver.h"
 #import "RCTConversions.h"
 
 using namespace facebook::react;
@@ -115,8 +116,10 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
       _layoutAnimationDelegateProxy = std::make_shared<LayoutAnimationDelegateProxy>((__bridge void *)self);
       _animationDriver = std::make_shared<LayoutAnimationDriver>(
           toolbox.runtimeExecutor, toolbox.contextContainer, _layoutAnimationDelegateProxy.get());
-      _uiRunLoopObserver =
-          toolbox.mainRunLoopObserverFactory(RunLoopObserver::Activity::BeforeWaiting, _layoutAnimationDelegateProxy);
+
+      _uiRunLoopObserver = std::make_unique<MainRunLoopObserver>(
+          RunLoopObserver::Activity::BeforeWaiting, _layoutAnimationDelegateProxy);
+
       _uiRunLoopObserver->setDelegate(_layoutAnimationDelegateProxy.get());
     }
 
