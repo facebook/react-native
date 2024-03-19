@@ -19,28 +19,31 @@ const defineLazyObjectProperty = require('../Utilities/defineLazyObjectProperty'
 const Platform = require('../Utilities/Platform');
 const UIManagerProperties = require('./UIManagerProperties');
 
-const viewManagerConfigs: {[string]: any | null} = {};
+const viewConfigCache: {[string]: any | null} = {};
 
 const triedLoadingConfig = new Set<string>();
 
-let NativeUIManagerConstants = {};
-let isNativeUIManagerConstantsSet = false;
-function getConstants(): Object {
-  if (!isNativeUIManagerConstantsSet) {
-    NativeUIManagerConstants = NativeUIManager.getConstants();
-    isNativeUIManagerConstantsSet = true;
-  }
-  return NativeUIManagerConstants;
-}
+const getUIManagerConstantsCache = (function () {
+  let result = {};
+  let wasCalledOnce = false;
+
+  return (): Object => {
+    if (!wasCalledOnce) {
+      result = NativeUIManager.getConstants();
+      wasCalledOnce = true;
+    }
+    return result;
+  };
+})();
 
 function getViewManagerConfig(viewManagerName: string): any {
   if (
-    viewManagerConfigs[viewManagerName] === undefined &&
+    viewConfigCache[viewManagerName] === undefined &&
     global.nativeCallSyncHook && // If we're in the Chrome Debugger, let's not even try calling the sync method
     NativeUIManager.getConstantsForViewManager
   ) {
     try {
-      viewManagerConfigs[viewManagerName] =
+      viewConfigCache[viewManagerName] =
         NativeUIManager.getConstantsForViewManager(viewManagerName);
     } catch (e) {
       console.error(
@@ -49,11 +52,11 @@ function getViewManagerConfig(viewManagerName: string): any {
           "') threw an exception.",
         e,
       );
-      viewManagerConfigs[viewManagerName] = null;
+      viewConfigCache[viewManagerName] = null;
     }
   }
 
-  const config = viewManagerConfigs[viewManagerName];
+  const config = viewConfigCache[viewManagerName];
   if (config) {
     return config;
   }
@@ -71,12 +74,15 @@ function getViewManagerConfig(viewManagerName: string): any {
     const result = nullthrows(NativeUIManager.lazilyLoadView)(viewManagerName);
     triedLoadingConfig.add(viewManagerName);
     if (result != null && result.viewConfig != null) {
-      getConstants()[viewManagerName] = result.viewConfig;
-      lazifyViewManagerConfig(viewManagerName);
+      getUIManagerConstantsCache()[viewManagerName] = result.viewConfig;
+      viewConfigCache[viewManagerName] = lazifyViewManagerConfig(
+        viewManagerName,
+        result.viewConfig,
+      );
     }
   }
 
-  return viewManagerConfigs[viewManagerName];
+  return viewConfigCache[viewManagerName];
 }
 
 // $FlowFixMe[cannot-spread-interface]
@@ -88,7 +94,7 @@ const UIManagerJS: UIManagerJSInterface = {
     rootTag: RootTag,
     props: Object,
   ): void {
-    if (Platform.OS === 'ios' && viewManagerConfigs[viewName] === undefined) {
+    if (Platform.OS === 'ios' && viewConfigCache[viewName] === undefined) {
       // This is necessary to force the initialization of native viewManager
       // classes in iOS when using static ViewConfigs
       getViewManagerConfig(viewName);
@@ -97,7 +103,7 @@ const UIManagerJS: UIManagerJSInterface = {
     NativeUIManager.createView(reactTag, viewName, rootTag, props);
   },
   getConstants(): Object {
-    return getConstants();
+    return getUIManagerConstantsCache();
   },
   getViewManagerConfig(viewManagerName: string): any {
     return getViewManagerConfig(viewManagerName);
@@ -114,39 +120,45 @@ const UIManagerJS: UIManagerJSInterface = {
 // $FlowFixMe[prop-missing]
 NativeUIManager.getViewManagerConfig = UIManagerJS.getViewManagerConfig;
 
-function lazifyViewManagerConfig(viewName: string) {
-  const viewConfig = getConstants()[viewName];
-  viewManagerConfigs[viewName] = viewConfig;
+function lazifyViewManagerConfig(viewName: string, viewConfig: Object): Object {
   if (viewConfig.Manager) {
     defineLazyObjectProperty(viewConfig, 'Constants', {
-      get: () => {
-        const viewManager = NativeModules[viewConfig.Manager];
-        const constants: {[string]: mixed} = {};
-        viewManager &&
-          Object.keys(viewManager).forEach(key => {
-            const value = viewManager[key];
-            if (typeof value !== 'function') {
-              constants[key] = value;
-            }
-          });
-        return constants;
-      },
+      get: getConstantsFromViewManager,
     });
     defineLazyObjectProperty(viewConfig, 'Commands', {
-      get: () => {
-        const viewManager = NativeModules[viewConfig.Manager];
-        const commands: {[string]: number} = {};
-        let index = 0;
-        viewManager &&
-          Object.keys(viewManager).forEach(key => {
-            const value = viewManager[key];
-            if (typeof value === 'function') {
-              commands[key] = index++;
-            }
-          });
-        return commands;
-      },
+      get: mapViewManagerMethodsToIndex,
     });
+  }
+
+  return viewConfig;
+
+  function getConstantsFromViewManager() {
+    const viewManager = NativeModules[viewConfig.Manager];
+    const constants: {[string]: mixed} = {};
+    if (viewManager) {
+      Object.keys(viewManager).forEach(key => {
+        const value = viewManager[key];
+        if (typeof value !== 'function') {
+          constants[key] = value;
+        }
+      });
+    }
+    return constants;
+  }
+
+  function mapViewManagerMethodsToIndex() {
+    const viewManager = NativeModules[viewConfig.Manager];
+    const commands: {[string]: number} = {};
+    let index = 0;
+    if (viewManager) {
+      Object.keys(viewManager).forEach(key => {
+        const value = viewManager[key];
+        if (typeof value === 'function') {
+          commands[key] = index++;
+        }
+      });
+    }
+    return commands;
   }
 }
 
@@ -156,10 +168,12 @@ function lazifyViewManagerConfig(viewName: string) {
  * namespace instead of UIManager, unlike Android.
  */
 if (Platform.OS === 'ios') {
-  Object.keys(getConstants()).forEach(viewName => {
-    lazifyViewManagerConfig(viewName);
-  });
-} else if (getConstants().ViewManagerNames) {
+  Object.entries(getUIManagerConstantsCache()).forEach(
+    ([viewName, viewConfig]) => {
+      viewConfigCache[viewName] = lazifyViewManagerConfig(viewName, viewConfig);
+    },
+  );
+} else if (getUIManagerConstantsCache().ViewManagerNames) {
   NativeUIManager.getConstants().ViewManagerNames.forEach(viewManagerName => {
     defineLazyObjectProperty(NativeUIManager, viewManagerName, {
       get: () =>
@@ -169,10 +183,11 @@ if (Platform.OS === 'ios') {
 }
 
 if (!global.nativeCallSyncHook) {
-  Object.keys(getConstants()).forEach(viewManagerName => {
+  Object.keys(getUIManagerConstantsCache()).forEach(viewManagerName => {
     if (!UIManagerProperties.includes(viewManagerName)) {
-      if (!viewManagerConfigs[viewManagerName]) {
-        viewManagerConfigs[viewManagerName] = getConstants()[viewManagerName];
+      if (!viewConfigCache[viewManagerName]) {
+        viewConfigCache[viewManagerName] =
+          getUIManagerConstantsCache()[viewManagerName];
       }
       defineLazyObjectProperty(NativeUIManager, viewManagerName, {
         get: () => {
