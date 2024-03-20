@@ -71,7 +71,11 @@ class HostAgent final {
    * Runtime.consoleAPICalled is that the latter requires an execution context
    * ID, which does not exist at the Host level.
    */
-  void sendInfoLogEntry(std::string_view text);
+  void sendInfoLogEntry(
+      std::string_view text,
+      std::initializer_list<std::string_view> args = {});
+
+  void sendFuseboxNotice();
 
   FrontendChannel frontendChannel_;
   HostTargetController& targetController_;
