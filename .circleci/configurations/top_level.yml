@@ -74,7 +74,7 @@ references:
     gems_cache_key: &gems_cache_key v1-gems-{{ checksum "Gemfile.lock" }}
     gradle_cache_key: &gradle_cache_key v3-gradle-{{ .Environment.CIRCLE_JOB }}-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}-{{ checksum "packages/react-native/ReactAndroid/gradle.properties" }}
     yarn_cache_key: &yarn_cache_key v6-yarn-cache-{{ .Environment.CIRCLE_JOB }}
-    rbenv_cache_key: &rbenv_cache_key v1-rbenv-{{ checksum "/tmp/required_ruby" }}
+    rbenv_cache_key: &rbenv_cache_key v2-rbenv-{{ checksum "/tmp/required_ruby" }}
     hermes_workspace_cache_key: &hermes_workspace_cache_key v5-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
     hermes_workspace_debug_cache_key: &hermes_workspace_debug_cache_key v2-hermes-{{ .Environment.CIRCLE_JOB }}-debug-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}-{{ checksum "packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh" }}
     hermes_workspace_release_cache_key: &hermes_workspace_release_cache_key v2-hermes-{{ .Environment.CIRCLE_JOB }}-release-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}-{{ checksum "packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh" }}
@@ -95,8 +95,8 @@ references:
     rntester_podfile_lock_cache_key: &rntester_podfile_lock_cache_key v10-podfilelock-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile" }}-{{ checksum "/tmp/week_year" }}-{{ checksum "/tmp/hermes/hermesversion" }}
 
     # Cocoapods - Template
-    template_cocoapods_cache_key: &template_cocoapods_cache_key v6-cocoapods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/iOSTemplateProject/ios/Podfile.lock" }}-{{ checksum "/tmp/iOSTemplateProject/ios/Podfile" }}-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "packages/rn-tester/Podfile.lock" }}
-    template_podfile_lock_cache_key: &template_podfile_lock_cache_key v6-podfilelock-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/iOSTemplateProject/ios/Podfile" }}-{{ checksum "/tmp/week_year" }}-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "packages/rn-tester/Podfile.lock" }}
+    template_cocoapods_cache_key: &template_cocoapods_cache_key v7-cocoapods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/iOSTemplateProject/ios/Podfile.lock" }}-{{ checksum "/tmp/iOSTemplateProject/ios/Podfile" }}-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "packages/rn-tester/Podfile.lock" }}
+    template_podfile_lock_cache_key: &template_podfile_lock_cache_key v7-podfilelock-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/iOSTemplateProject/ios/Podfile" }}-{{ checksum "/tmp/week_year" }}-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "packages/rn-tester/Podfile.lock" }}
 
   cache_paths:
     hermes_workspace_macos_cache_paths: &hermes_workspace_macos_cache_paths

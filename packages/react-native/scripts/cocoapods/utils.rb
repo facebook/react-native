@@ -407,19 +407,39 @@ class ReactNativePodsUtils
     def self.is_using_xcode15_0(xcodebuild_manager: Xcodebuild)
         xcodebuild_version = xcodebuild_manager.version
 
+        if version = self.parse_xcode_version(xcodebuild_version)
+            return version["major"] == 15 && version["minor"] == 0
+        end
+
+        return false
+    end
+
+    def self.parse_xcode_version(version_string)
         # The output of xcodebuild -version is something like
         # Xcode 15.0
         # or
         # Xcode 14.3.1
         # We want to capture the version digits
-        regex = /(\d+)\.(\d+)(?:\.(\d+))?/
-        if match_data = xcodebuild_version.match(regex)
-            major = match_data[1].to_i
-            minor = match_data[2].to_i
-            return major == 15 && minor == 0
+        match = version_string.match(/(\d+)\.(\d+)(?:\.(\d+))?/)
+        return nil if match.nil?
+
+        return {"str" => match[0], "major" => match[1].to_i, "minor" => match[2].to_i};
+    end
+
+    def self.check_minimum_required_xcode(xcodebuild_manager: Xcodebuild)
+        version = self.parse_xcode_version(xcodebuild_manager.version)
+        if (version.nil? || !Gem::Version::correct?(version["str"]))
+            Pod::UI.warn "Unexpected XCode version string '#{xcodebuild_manager.version}'"
+            return
         end
 
-        return false
+        current = version["str"]
+        min_required = Helpers::Constants.min_xcode_version_supported
+
+        if Gem::Version::new(current) < Gem::Version::new(min_required)
+            Pod::UI.puts "React Native requires XCode >= #{min_required}. Found #{current}.".red
+            raise "Please upgrade XCode"
+        end
     end
 
     def self.add_compiler_flag_to_project(installer, flag, configuration: nil)
