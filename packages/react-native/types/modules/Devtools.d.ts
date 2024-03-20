@@ -15,11 +15,7 @@ declare module 'react-native/Libraries/Core/Devtools/parseErrorStack' {
     column: number | null;
   };
 
-  export interface ExtendedError extends Error {
-    framesToPop?: number | undefined;
-  }
-
-  export default function parseErrorStack(error: ExtendedError): StackFrame[];
+  export default function parseErrorStack(stack: string): StackFrame[];
 }
 
 declare module 'react-native/Libraries/Core/Devtools/symbolicateStackTrace' {
