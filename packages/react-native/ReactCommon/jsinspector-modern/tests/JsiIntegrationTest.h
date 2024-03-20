@@ -95,6 +95,15 @@ class JsiIntegrationPortableTest : public ::testing::Test,
         remoteConnections_.make_unique(),
         {.integrationName = "JsiIntegrationTest"});
 
+    using namespace ::testing;
+    // Default to ignoring console messages originating inside the backend.
+    EXPECT_CALL(
+        fromPage(),
+        onMessage(JsonParsed(AllOf(
+            AtJsonPtr("/method", "Runtime.consoleAPICalled"),
+            AtJsonPtr("/params/context", "main#InstanceAgent")))))
+        .Times(AnyNumber());
+
     // We'll always get an onDisconnect call when we tear
     // down the test. Expect it in order to satisfy the strict mock.
     EXPECT_CALL(*remoteConnections_[0], onDisconnect());
