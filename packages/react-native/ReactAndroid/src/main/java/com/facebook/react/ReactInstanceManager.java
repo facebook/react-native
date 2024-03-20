@@ -606,10 +606,6 @@ public class ReactInstanceManager {
    */
   @ThreadConfined(UI)
   public void onUserLeaveHint(@Nullable Activity activity) {
-    if (mRequireActivity) {
-      Assertions.assertCondition(mCurrentActivity != null);
-    }
-
     if (mCurrentActivity != null && activity == mCurrentActivity) {
       UiThreadUtil.assertOnUiThread();
 
