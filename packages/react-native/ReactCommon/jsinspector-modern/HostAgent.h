@@ -77,6 +77,11 @@ class HostAgent final {
 
   void sendFuseboxNotice();
 
+  /**
+   * Send a console message to the frontend, or buffer it to be sent later.
+   */
+  void sendConsoleMessage(SimpleConsoleMessage message);
+
   FrontendChannel frontendChannel_;
   HostTargetController& targetController_;
   const HostTarget::SessionMetadata sessionMetadata_;

@@ -107,6 +107,14 @@ void ReactInstanceIntegrationTest::SetUp() {
       inspector.connect(pageId_.value(), mockRemoteConnections_.make_unique());
 
   ASSERT_NE(clientToVM_, nullptr);
+
+  // Default to ignoring console messages originating inside the backend.
+  EXPECT_CALL(
+      getRemoteConnection(),
+      onMessage(JsonParsed(AllOf(
+          AtJsonPtr("/method", "Runtime.consoleAPICalled"),
+          AtJsonPtr("/params/context", "main#InstanceAgent")))))
+      .Times(AnyNumber());
 }
 
 void ReactInstanceIntegrationTest::TearDown() {

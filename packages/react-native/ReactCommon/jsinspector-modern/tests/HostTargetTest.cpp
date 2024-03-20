@@ -470,6 +470,14 @@ TEST_F(HostTargetProtocolTest, InstanceWithNullRuntimeAgentDelegate) {
 }
 
 TEST_F(HostTargetProtocolTest, RuntimeAgentDelegateHasAccessToSessionState) {
+  // Ignore console messages originating inside the backend.
+  EXPECT_CALL(
+      fromPage(),
+      onMessage(JsonParsed(AllOf(
+          AtJsonPtr("/method", "Runtime.consoleAPICalled"),
+          AtJsonPtr("/params/context", "main#InstanceAgent")))))
+      .Times(AnyNumber());
+
   InSequence s;
 
   // Send Runtime.enable before registering the Instance (which in turns creates

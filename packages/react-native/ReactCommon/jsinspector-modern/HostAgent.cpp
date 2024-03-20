@@ -176,4 +176,13 @@ void HostAgent::setCurrentInstanceAgent(
   }
 }
 
+void HostAgent::sendConsoleMessage(SimpleConsoleMessage message) {
+  if (instanceAgent_) {
+    instanceAgent_->sendConsoleMessage(std::move(message));
+  } else {
+    // Will be sent by the InstanceAgent eventually.
+    sessionState_.pendingSimpleConsoleMessages.emplace_back(std::move(message));
+  }
+}
+
 } // namespace facebook::react::jsinspector_modern
