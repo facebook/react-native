@@ -8,7 +8,7 @@
           name: "prepare_release (dry run test)"
           version: "0.0.0"
           monorepo_packages_version: "0.0.0"
-          tag: latest
+          tag: test
           dry_run: true
       - prepare_hermes_workspace
       - build_android:
