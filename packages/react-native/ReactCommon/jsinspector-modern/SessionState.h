@@ -36,6 +36,8 @@ struct SessionState {
   std::unordered_map<std::string, ExecutionContextSelectorSet>
       subscribedBindings;
 
+  bool isFuseboxClientDetected{false};
+
   /**
    * Stores the state object exported from the last main RuntimeAgent, if any,
    * before it was destroyed.

@@ -155,8 +155,7 @@ TEST_F(HostTargetProtocolTest, InjectLogsToIdentifyBackend) {
       onMessage(JsonParsed(AllOf(
           AtJsonPtr("/method", "Log.entryAdded"),
           AtJsonPtr("/params/entry", Not(IsEmpty()))))))
-      .Times(2)
-      .RetiresOnSaturation();
+      .Times(AtLeast(1));
   EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
                                                "id": 1,
                                                "result": {}
