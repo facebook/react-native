@@ -6605,24 +6605,11 @@ export interface Spec {
     locationY: number,
     callback: (instanceHandle: ?InternalInstanceHandle) => void
   ) => void;
-  +getParentNode: (node: Node) => ?InternalInstanceHandle;
-  +getChildNodes: (node: Node) => $ReadOnlyArray<InternalInstanceHandle>;
-  +isConnected: (node: Node) => boolean;
   +compareDocumentPosition: (node: Node, otherNode: Node) => number;
-  +getTextContent: (node: Node) => string;
   +getBoundingClientRect: (
     node: Node,
     includeTransform: boolean
   ) => ?[number, number, number, number];
-  +getOffset: (node: Node) => ?[InternalInstanceHandle, number, number];
-  +getScrollPosition: (node: Node) => ?[number, number];
-  +getScrollSize: (node: Node) => ?[number, number];
-  +getInnerSize: (node: Node) => ?[number, number];
-  +getBorderSize: (node: Node) => ?[number, number, number, number];
-  +getTagName: (node: Node) => string;
-  +hasPointerCapture: (node: Node, pointerId: number) => boolean;
-  +setPointerCapture: (node: Node, pointerId: number) => void;
-  +releasePointerCapture: (node: Node, pointerId: number) => void;
 }
 declare export function getFabricUIManager(): ?Spec;
 "

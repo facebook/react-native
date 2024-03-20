@@ -12,10 +12,9 @@
 
 import type ReadOnlyElement from './ReadOnlyElement';
 
-import {getFabricUIManager} from '../../../../../Libraries/ReactNative/FabricUIManager';
 import ReadOnlyNode, {getShadowNode} from './ReadOnlyNode';
+import NativeDOM from './specs/NativeDOM';
 import {getElementSibling} from './utilities/Traversal';
-import nullthrows from 'nullthrows';
 
 export default class ReadOnlyCharacterData extends ReadOnlyNode {
   get nextElementSibling(): ReadOnlyElement | null {
@@ -30,7 +29,7 @@ export default class ReadOnlyCharacterData extends ReadOnlyNode {
     const shadowNode = getShadowNode(this);
 
     if (shadowNode != null) {
-      return nullthrows(getFabricUIManager()).getTextContent(shadowNode);
+      return NativeDOM.getTextContent(shadowNode);
     }
 
     return '';

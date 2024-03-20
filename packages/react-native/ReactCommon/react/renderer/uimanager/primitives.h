@@ -167,7 +167,7 @@ inline static folly::dynamic commandArgsFromValue(
   return jsi::dynamicFromValue(runtime, value);
 }
 
-inline static jsi::Value getArrayOfInstanceHandlesFromShadowNodes(
+inline static std::vector<jsi::Value> getArrayOfInstanceHandlesFromShadowNodes(
     const ShadowNode::ListOfShared& nodes,
     jsi::Runtime& runtime) {
   // JSI doesn't support adding elements to an array after creation,
@@ -182,11 +182,7 @@ inline static jsi::Value getArrayOfInstanceHandlesFromShadowNodes(
     }
   }
 
-  auto result = jsi::Array(runtime, nonNullInstanceHandles.size());
-  for (size_t i = 0; i < nonNullInstanceHandles.size(); i++) {
-    result.setValueAtIndex(runtime, i, nonNullInstanceHandles[i]);
-  }
-  return result;
+  return nonNullInstanceHandles;
 }
 
 inline static void getTextContentInShadowNode(
