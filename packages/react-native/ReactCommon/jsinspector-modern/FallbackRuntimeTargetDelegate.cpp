@@ -32,4 +32,8 @@ void FallbackRuntimeTargetDelegate::addConsoleMessage(
   // TODO: Best-effort printing (without RemoteObjects)
 }
 
+bool FallbackRuntimeTargetDelegate::supportsConsole() const {
+  return false;
+}
+
 } // namespace facebook::react::jsinspector_modern

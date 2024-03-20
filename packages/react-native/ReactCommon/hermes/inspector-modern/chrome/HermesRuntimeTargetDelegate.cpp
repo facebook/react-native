@@ -122,6 +122,10 @@ class HermesRuntimeTargetDelegate::Impl final : public RuntimeTargetDelegate {
         HermesConsoleMessage{message.timestamp, type, std::move(message.args)});
   }
 
+  bool supportsConsole() const override {
+    return true;
+  }
+
  private:
   HermesRuntimeTargetDelegate& delegate_;
   std::shared_ptr<HermesRuntime> runtime_;
@@ -171,6 +175,10 @@ void HermesRuntimeTargetDelegate::addConsoleMessage(
     jsi::Runtime& runtime,
     ConsoleMessage message) {
   impl_->addConsoleMessage(runtime, std::move(message));
+}
+
+bool HermesRuntimeTargetDelegate::supportsConsole() const {
+  return impl_->supportsConsole();
 }
 
 #ifdef HERMES_ENABLE_DEBUGGER
