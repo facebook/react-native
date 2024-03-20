@@ -23,15 +23,17 @@ declare module 'react-native/Libraries/Core/Devtools/symbolicateStackTrace' {
 
   export type SymbolicatedStack = {
     stack: StackFrame[];
-    codeFrame?: CodeFrame;
+    codeFrame?: CodeFrame | undefined;
   };
 
   export type CodeFrame = {
     content: string;
-    location?: {
-      row: number;
-      column: number;
-    },
+    location?:
+      | {
+          row: number;
+          column: number;
+        }
+      | undefined;
     fileName: string;
   };
 
