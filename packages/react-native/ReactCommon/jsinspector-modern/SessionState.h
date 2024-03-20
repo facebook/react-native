@@ -36,8 +36,6 @@ struct SessionState {
   std::unordered_map<std::string, ExecutionContextSelectorSet>
       subscribedBindings;
 
-  bool isFuseboxClientDetected{false};
-
   /**
    * Messages logged through the HostAgent::sendConsoleMessage and
    * InstanceAgent::sendConsoleMessage utilities that have not yet been sent to

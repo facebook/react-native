@@ -62,6 +62,8 @@ class HostAgent final {
   void setCurrentInstanceAgent(std::shared_ptr<InstanceAgent> agent);
 
  private:
+  enum class FuseboxClientType { Unknown, Fusebox, NonFusebox };
+
   /**
    * Send a simple Log.entryAdded notification with the given
    * \param text. You must ensure that the frontend has enabled Log
@@ -76,6 +78,7 @@ class HostAgent final {
       std::initializer_list<std::string_view> args = {});
 
   void sendFuseboxNotice();
+  void sendNonFuseboxNotice();
 
   /**
    * Send a console message to the frontend, or buffer it to be sent later.
@@ -86,6 +89,7 @@ class HostAgent final {
   HostTargetController& targetController_;
   const HostTarget::SessionMetadata sessionMetadata_;
   std::shared_ptr<InstanceAgent> instanceAgent_;
+  FuseboxClientType fuseboxClientType_{FuseboxClientType::Unknown};
 
   /**
    * A shared reference to the session's state. This is only safe to access
