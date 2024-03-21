@@ -152,6 +152,8 @@ typedef BOOL (^RCTBridgeDidNotFindModuleBlock)(RCTBridge *bridge, NSString *modu
 - (instancetype)initWithConfiguration:(RCTRootViewFactoryConfiguration *)configuration
         andTurboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate;
 
+- (instancetype)initWithConfiguration:(RCTRootViewFactoryConfiguration *)configuration;
+
 /**
  * This method can be used to create new RCTRootViews on demand.
  *
