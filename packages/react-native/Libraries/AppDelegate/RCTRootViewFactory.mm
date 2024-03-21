@@ -263,11 +263,28 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
   return [self bundleURL];
 }
 
-- (BOOL)bridge:(RCTBridge *)bridge didNotFindModule:(NSString *)moduleName {
+- (BOOL)bridge:(RCTBridge *)bridge didNotFindModule:(NSString *)moduleName
+{
   if (_configuration.bridgeDidNotFindModule != nil) {
     return _configuration.bridgeDidNotFindModule(bridge, moduleName);
   }
   return NO;
+}
+
+- (void)loadSourceForBridge:(RCTBridge *)bridge withBlock:(RCTSourceLoadBlock)loadCallback
+{
+  if (_configuration.loadSourceForBridgeBlock != nil) {
+    _configuration.loadSourceForBridgeBlock(bridge, loadCallback);
+  }
+}
+
+- (void)loadSourceForBridge:(RCTBridge *)bridge 
+                 onProgress:(RCTSourceLoadProgressBlock)onProgress
+                 onComplete:(RCTSourceLoadBlock)loadCallback
+{
+  if (_configuration.loadSourceForBridgeProgressBlock != nil) {
+    _configuration.loadSourceForBridgeProgressBlock(bridge, onProgress, loadCallback);
+  }
 }
 
 - (NSURL *)bundleURL
