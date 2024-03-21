@@ -58,6 +58,20 @@ class EventEmitter {
   const SharedEventTarget& getEventTarget() const;
 
   /*
+   * Experimental API that will change in the future.
+   */
+  template <typename Lambda>
+  void experimental_flushSync(Lambda syncFunc) const {
+    auto eventDispatcher = eventDispatcher_.lock();
+    if (!eventDispatcher) {
+      return;
+    }
+
+    syncFunc();
+    eventDispatcher->experimental_flushSync();
+  }
+
+  /*
    * Initiates an event delivery process.
    * Is used by particular subclasses only.
    */

@@ -84,7 +84,8 @@ Scheduler::Scheduler(
   eventDispatcher_->emplace(
       EventQueueProcessor(eventPipe, eventPipeConclusion, statePipe),
       schedulerToolbox.asynchronousEventBeatFactory,
-      eventOwnerBox);
+      eventOwnerBox,
+      *runtimeScheduler);
 
   // Casting to `std::shared_ptr<EventDispatcher const>`.
   auto eventDispatcher =
