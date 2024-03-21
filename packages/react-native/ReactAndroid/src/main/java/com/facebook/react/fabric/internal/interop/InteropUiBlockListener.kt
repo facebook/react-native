@@ -37,6 +37,9 @@ internal class InteropUIBlockListener : UIManagerListener {
   }
 
   override fun willMountItems(uiManager: UIManager) {
+    if (beforeUIBlocks.isEmpty()) {
+      return
+    }
     beforeUIBlocks.forEach {
       if (uiManager is UIBlockViewResolver) {
         it.execute(uiManager)
@@ -46,6 +49,9 @@ internal class InteropUIBlockListener : UIManagerListener {
   }
 
   override fun didMountItems(uiManager: UIManager) {
+    if (afterUIBlocks.isEmpty()) {
+      return
+    }
     afterUIBlocks.forEach {
       if (uiManager is UIBlockViewResolver) {
         it.execute(uiManager)
@@ -54,9 +60,9 @@ internal class InteropUIBlockListener : UIManagerListener {
     afterUIBlocks.clear()
   }
 
-  override fun willDispatchViewUpdates(uiManager: UIManager) = Unit
+  override fun didDispatchMountItems(uiManager: UIManager) = didMountItems(uiManager)
 
-  override fun didDispatchMountItems(uiManager: UIManager) = Unit
+  override fun willDispatchViewUpdates(uiManager: UIManager) = willMountItems(uiManager)
 
   override fun didScheduleMountItems(uiManager: UIManager) = Unit
 }
