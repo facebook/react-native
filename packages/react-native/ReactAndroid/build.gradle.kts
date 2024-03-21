@@ -141,9 +141,7 @@ val preparePrefab by
                       Pair(
                           "../ReactCommon/react/renderer/components/textinput/",
                           "react/renderer/components/textinput/"),
-                      Pair(
-                          "../ReactCommon/react/renderer/components/textinput/platform/android/react/renderer/components/androidtextinput",
-                          "react/renderer/components/textinput/"),
+                      Pair("../ReactCommon/react/renderer/components/textinput/platform/android/", ""),
                   )),
               PrefabPreprocessingEntry(
                   "rrc_legacyviewmanagerinterop",
