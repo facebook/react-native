@@ -57,6 +57,7 @@ import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.events.FabricEventEmitter;
 import com.facebook.react.fabric.internal.interop.InteropUIBlockListener;
 import com.facebook.react.fabric.interop.UIBlock;
+import com.facebook.react.fabric.interop.UIBlockViewResolver;
 import com.facebook.react.fabric.mounting.MountItemDispatcher;
 import com.facebook.react.fabric.mounting.MountingManager;
 import com.facebook.react.fabric.mounting.SurfaceMountingManager;
@@ -99,7 +100,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 @SuppressLint("MissingNativeLoadLibrary")
 @DoNotStripAny
-public class FabricUIManager implements UIManager, LifecycleEventListener {
+public class FabricUIManager implements UIManager, LifecycleEventListener, UIBlockViewResolver {
   public static final String TAG = FabricUIManager.class.getSimpleName();
 
   // The IS_DEVELOPMENT_ENVIRONMENT variable is used to log extra data when running fabric in a

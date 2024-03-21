@@ -2541,7 +2541,7 @@ public class com/facebook/react/fabric/FabricSoLoader {
 	public static fun staticInit ()V
 }
 
-public class com/facebook/react/fabric/FabricUIManager : com/facebook/react/bridge/LifecycleEventListener, com/facebook/react/bridge/UIManager {
+public class com/facebook/react/fabric/FabricUIManager : com/facebook/react/bridge/LifecycleEventListener, com/facebook/react/bridge/UIManager, com/facebook/react/fabric/interop/UIBlockViewResolver {
 	public static final field ENABLE_FABRIC_LOGS Z
 	public static final field ENABLE_FABRIC_PERF_LOGS Z
 	public static final field IS_DEVELOPMENT_ENVIRONMENT Z
