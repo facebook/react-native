@@ -80,6 +80,8 @@ def use_react_native! (
   ENV['APP_PATH'] = app_path
   ENV['REACT_NATIVE_PATH'] = path
 
+  ReactNativePodsUtils.check_minimum_required_xcode()
+
   # Current target definition is provided by Cocoapods and it refers to the target
   # that has invoked the `use_react_native!` function.
   ReactNativePodsUtils.detect_use_frameworks(current_target_definition)
