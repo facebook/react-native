@@ -39,6 +39,16 @@ struct SessionState {
   bool isFuseboxClientDetected{false};
 
   /**
+   * Messages logged through the HostAgent::sendConsoleMessage and
+   * InstanceAgent::sendConsoleMessage utilities that have not yet been sent to
+   * the frontend.
+   * \note This is unrelated to RuntimeTarget's user-facing console API
+   * implementation, which depends on access to JSI and support from the
+   * RuntimeTargetDelegate.
+   */
+  std::vector<SimpleConsoleMessage> pendingSimpleConsoleMessages;
+
+  /**
    * Stores the state object exported from the last main RuntimeAgent, if any,
    * before it was destroyed.
    */
