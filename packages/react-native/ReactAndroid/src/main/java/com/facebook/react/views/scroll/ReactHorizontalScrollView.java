@@ -807,7 +807,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
       // more information.
 
       if (!mScroller.isFinished() && mScroller.getCurrX() != mScroller.getFinalX()) {
-        int scrollRange = computeHorizontalScrollRange() - getWidth();
+        int scrollRange = Math.max(computeHorizontalScrollRange() - getWidth(), 0);
         if (scrollX >= scrollRange) {
           mScroller.abortAnimation();
           scrollX = scrollRange;
