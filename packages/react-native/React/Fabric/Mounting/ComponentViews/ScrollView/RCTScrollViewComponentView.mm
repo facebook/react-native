@@ -458,18 +458,33 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
-  if (!_isUserTriggeredScrolling || CoreFeatures::enableGranularScrollViewStateUpdatesIOS) {
-    [self _updateStateWithContentOffset];
-  }
+  const auto &props = static_cast<const ScrollViewProps &>(*_props);
+  auto scrollMetrics = [self _scrollViewMetrics];
 
-  NSTimeInterval now = CACurrentMediaTime();
-  if ((_lastScrollEventDispatchTime == 0) || (now - _lastScrollEventDispatchTime > _scrollEventThrottle)) {
-    _lastScrollEventDispatchTime = now;
+  if (props.enableSyncOnScroll) {
     if (_eventEmitter) {
-      static_cast<const ScrollViewEventEmitter &>(*_eventEmitter).onScroll([self _scrollViewMetrics]);
+      auto const &eventEmitter = static_cast<ScrollViewEventEmitter const &>(*_eventEmitter);
+      // TODO: temporary API to unblock testing of synchronous rendering.
+      eventEmitter.experimental_flushSync([&eventEmitter, &scrollMetrics, &self]() {
+        [self _updateStateWithContentOffset];
+        // TODO: temporary API to unblock testing of synchronous rendering.
+        eventEmitter.experimental_onDiscreteScroll(scrollMetrics);
+      });
+    }
+  } else {
+    if (!_isUserTriggeredScrolling || CoreFeatures::enableGranularScrollViewStateUpdatesIOS) {
+      [self _updateStateWithContentOffset];
     }
 
-    RCTSendScrollEventForNativeAnimations_DEPRECATED(scrollView, self.tag);
+    NSTimeInterval now = CACurrentMediaTime();
+    if ((_lastScrollEventDispatchTime == 0) || (now - _lastScrollEventDispatchTime > _scrollEventThrottle)) {
+      _lastScrollEventDispatchTime = now;
+      if (_eventEmitter) {
+        static_cast<const ScrollViewEventEmitter &>(*_eventEmitter).onScroll(scrollMetrics);
+      }
+
+      RCTSendScrollEventForNativeAnimations_DEPRECATED(scrollView, self.tag);
+    }
   }
 
   [self _remountChildrenIfNeeded];

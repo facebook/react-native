@@ -64,6 +64,16 @@ void ScrollViewEventEmitter::onScroll(
   });
 }
 
+void ScrollViewEventEmitter::experimental_onDiscreteScroll(
+    const ScrollViewMetrics& scrollViewMetrics) const {
+  dispatchEvent(
+      "scroll",
+      [scrollViewMetrics](jsi::Runtime& runtime) {
+        return scrollViewMetricsPayload(runtime, scrollViewMetrics);
+      },
+      RawEvent::Category::Discrete);
+}
+
 void ScrollViewEventEmitter::onScrollToTop(
     const ScrollViewMetrics& scrollViewMetrics) const {
   dispatchUniqueEvent(

@@ -33,6 +33,7 @@ import StyleSheet from '../../StyleSheet/StyleSheet';
 import Dimensions from '../../Utilities/Dimensions';
 import dismissKeyboard from '../../Utilities/dismissKeyboard';
 import Platform from '../../Utilities/Platform';
+import EventEmitter from '../../vendor/emitter/EventEmitter';
 import Keyboard from '../Keyboard/Keyboard';
 import TextInputState from '../TextInput/TextInputState';
 import View from '../View/View';
@@ -173,6 +174,10 @@ type PublicScrollViewInstance = $ReadOnly<{|
 |}>;
 
 type InnerViewInstance = React.ElementRef<typeof View>;
+
+class OnScrollEventEmitter extends EventEmitter<{
+  onScroll: [{x: number, y: number}],
+}> {}
 
 type IOSProps = $ReadOnly<{|
   /**
@@ -676,6 +681,7 @@ export type Props = $ReadOnly<{|
 
 type State = {|
   layoutHeight: ?number,
+  enableSyncOnScroll: boolean,
 |};
 
 const IS_ANIMATING_TOUCH_START_THRESHOLD_MS = 16;
@@ -758,9 +764,11 @@ class ScrollView extends React.Component<Props, State> {
   _subscriptionKeyboardWillHide: ?EventSubscription = null;
   _subscriptionKeyboardDidShow: ?EventSubscription = null;
   _subscriptionKeyboardDidHide: ?EventSubscription = null;
+  _onScrollEventEmitter: OnScrollEventEmitter = new OnScrollEventEmitter();
 
   state: State = {
     layoutHeight: null,
+    enableSyncOnScroll: false,
   };
 
   componentDidMount() {
@@ -829,6 +837,8 @@ class ScrollView extends React.Component<Props, State> {
     if (this._scrollAnimatedValueAttachment) {
       this._scrollAnimatedValueAttachment.detach();
     }
+
+    this._onScrollEventEmitter.removeAllListeners();
   }
 
   /**
@@ -946,6 +956,18 @@ class ScrollView extends React.Component<Props, State> {
       return;
     }
     Commands.flashScrollIndicators(this._scrollView.nativeInstance);
+  };
+
+  /**
+   * @deprecated
+   */
+  _subscribeToOnScroll: (
+    callback: ({x: number, y: number}) => void,
+  ) => EventSubscription = callback => {
+    this.setState({
+      enableSyncOnScroll: true,
+    });
+    return this._onScrollEventEmitter.addListener('onScroll', callback);
   };
 
   /**
@@ -1154,6 +1176,11 @@ class ScrollView extends React.Component<Props, State> {
   _handleScroll = (e: ScrollEvent) => {
     this._observedScrollSinceBecomingResponder = true;
     this.props.onScroll && this.props.onScroll(e);
+
+    this._onScrollEventEmitter.emit('onScroll', {
+      x: e.nativeEvent.contentOffset.x,
+      y: e.nativeEvent.contentOffset.y,
+    });
   };
 
   _handleLayout = (e: LayoutEvent) => {
@@ -1202,6 +1229,7 @@ class ScrollView extends React.Component<Props, State> {
           scrollToEnd: this.scrollToEnd,
           flashScrollIndicators: this.flashScrollIndicators,
           scrollResponderZoomTo: this.scrollResponderZoomTo,
+          experimental_subscribeToOnScroll: this._subscribeToOnScroll,
           scrollResponderScrollNativeHandleToKeyboard:
             this.scrollResponderScrollNativeHandleToKeyboard,
         },
@@ -1778,6 +1806,7 @@ class ScrollView extends React.Component<Props, State> {
       onScroll: this._handleScroll,
       endDraggingSensitivityMultiplier:
         experimental_endDraggingSensitivityMultiplier,
+      enableSyncOnScroll: this.state.enableSyncOnScroll,
       scrollEventThrottle: hasStickyHeaders
         ? 1
         : this.props.scrollEventThrottle,

@@ -133,6 +133,7 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
           contentInsetAdjustmentBehavior: true,
           decelerationRate: true,
           endDraggingSensitivityMultiplier: true,
+          enableSyncOnScroll: true, // iOS-Fabric only.
           directionalLockEnabled: true,
           disableIntervalMomentum: true,
           indicatorStyle: true,
