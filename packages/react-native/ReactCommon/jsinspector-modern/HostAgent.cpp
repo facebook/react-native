@@ -45,7 +45,7 @@ void HostAgent::handleRequest(const cdp::PreparsedRequest& req) {
   if (req.method == "Log.enable") {
     sessionState_.isLogDomainEnabled = true;
 
-    if (sessionState_.isFuseboxClientDetected) {
+    if (fuseboxClientType_ == FuseboxClientType::Fusebox) {
       sendFuseboxNotice();
     }
 
@@ -65,6 +65,14 @@ void HostAgent::handleRequest(const cdp::PreparsedRequest& req) {
     isFinishedHandlingRequest = false;
   } else if (req.method == "Runtime.enable") {
     sessionState_.isRuntimeDomainEnabled = true;
+
+    if (fuseboxClientType_ == FuseboxClientType::Unknown) {
+      // Since we know the Fusebox frontend sends
+      // FuseboxClient.setClientMetadata before enabling the Runtime domain, we
+      // can conclude that we're dealing with some other client.
+      fuseboxClientType_ = FuseboxClientType::NonFusebox;
+      sendNonFuseboxNotice();
+    }
 
     shouldSendOKResponse = true;
     isFinishedHandlingRequest = false;
@@ -100,7 +108,7 @@ void HostAgent::handleRequest(const cdp::PreparsedRequest& req) {
     shouldSendOKResponse = true;
     isFinishedHandlingRequest = true;
   } else if (req.method == "FuseboxClient.setClientMetadata") {
-    sessionState_.isFuseboxClientDetected = true;
+    fuseboxClientType_ = FuseboxClientType::Fusebox;
 
     if (sessionState_.isLogDomainEnabled) {
       sendFuseboxNotice();
@@ -134,6 +142,18 @@ void HostAgent::sendFuseboxNotice() {
 
   sendInfoLogEntry(
       kFuseboxNotice, {"font-family: sans-serif;", "font-family: monospace;"});
+}
+
+void HostAgent::sendNonFuseboxNotice() {
+  static constexpr auto kNonFuseboxNotice =
+      ANSI_COLOR_BG_YELLOW ANSI_WEIGHT_BOLD
+      "NOTE: " ANSI_WEIGHT_RESET
+      "You are using an unsupported debugging client. "
+      "Use the Dev Menu in your app (or type `j` in the Metro terminal) to open the latest, supported React Native debugger."sv;
+
+  std::vector<std::string> args;
+  args.emplace_back(kNonFuseboxNotice);
+  sendConsoleMessage({ConsoleAPIType::kInfo, args});
 }
 
 void HostAgent::sendInfoLogEntry(
