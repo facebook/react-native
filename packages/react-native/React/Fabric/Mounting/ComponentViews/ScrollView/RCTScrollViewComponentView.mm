@@ -386,14 +386,15 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
   return NO;
 }
 
-- (ScrollViewMetrics)_scrollViewMetrics
+- (ScrollViewEventEmitter::Metrics)_scrollViewMetrics
 {
-  ScrollViewMetrics metrics;
-  metrics.contentSize = RCTSizeFromCGSize(_scrollView.contentSize);
-  metrics.contentOffset = RCTPointFromCGPoint(_scrollView.contentOffset);
-  metrics.contentInset = RCTEdgeInsetsFromUIEdgeInsets(_scrollView.contentInset);
-  metrics.containerSize = RCTSizeFromCGSize(_scrollView.bounds.size);
-  metrics.zoomScale = _scrollView.zoomScale;
+  auto metrics = ScrollViewEventEmitter::Metrics{
+      .contentSize = RCTSizeFromCGSize(_scrollView.contentSize),
+      .contentOffset = RCTPointFromCGPoint(_scrollView.contentOffset),
+      .contentInset = RCTEdgeInsetsFromUIEdgeInsets(_scrollView.contentInset),
+      .containerSize = RCTSizeFromCGSize(_scrollView.bounds.size),
+      .zoomScale = _scrollView.zoomScale,
+  };
 
   if (_layoutMetrics.layoutDirection == LayoutDirection::RightToLeft) {
     metrics.contentOffset.x = metrics.contentSize.width - metrics.containerSize.width - metrics.contentOffset.x;

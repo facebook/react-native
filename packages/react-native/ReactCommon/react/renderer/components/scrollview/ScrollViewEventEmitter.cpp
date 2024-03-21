@@ -11,7 +11,7 @@ namespace facebook::react {
 
 static jsi::Value scrollViewMetricsPayload(
     jsi::Runtime& runtime,
-    const ScrollViewMetrics& scrollViewMetrics) {
+    const ScrollViewEventEmitter::Metrics& scrollViewMetrics) {
   auto payload = jsi::Object(runtime);
 
   {
@@ -57,15 +57,14 @@ static jsi::Value scrollViewMetricsPayload(
   return payload;
 }
 
-void ScrollViewEventEmitter::onScroll(
-    const ScrollViewMetrics& scrollViewMetrics) const {
+void ScrollViewEventEmitter::onScroll(const Metrics& scrollViewMetrics) const {
   dispatchUniqueEvent("scroll", [scrollViewMetrics](jsi::Runtime& runtime) {
     return scrollViewMetricsPayload(runtime, scrollViewMetrics);
   });
 }
 
 void ScrollViewEventEmitter::onScrollToTop(
-    const ScrollViewMetrics& scrollViewMetrics) const {
+    const Metrics& scrollViewMetrics) const {
   dispatchUniqueEvent(
       "scrollToTop", [scrollViewMetrics](jsi::Runtime& runtime) {
         return scrollViewMetricsPayload(runtime, scrollViewMetrics);
@@ -73,28 +72,28 @@ void ScrollViewEventEmitter::onScrollToTop(
 }
 
 void ScrollViewEventEmitter::onScrollBeginDrag(
-    const ScrollViewMetrics& scrollViewMetrics) const {
+    const Metrics& scrollViewMetrics) const {
   dispatchScrollViewEvent("scrollBeginDrag", scrollViewMetrics);
 }
 
 void ScrollViewEventEmitter::onScrollEndDrag(
-    const ScrollViewMetrics& scrollViewMetrics) const {
+    const Metrics& scrollViewMetrics) const {
   dispatchScrollViewEvent("scrollEndDrag", scrollViewMetrics);
 }
 
 void ScrollViewEventEmitter::onMomentumScrollBegin(
-    const ScrollViewMetrics& scrollViewMetrics) const {
+    const Metrics& scrollViewMetrics) const {
   dispatchScrollViewEvent("momentumScrollBegin", scrollViewMetrics);
 }
 
 void ScrollViewEventEmitter::onMomentumScrollEnd(
-    const ScrollViewMetrics& scrollViewMetrics) const {
+    const Metrics& scrollViewMetrics) const {
   dispatchScrollViewEvent("momentumScrollEnd", scrollViewMetrics);
 }
 
 void ScrollViewEventEmitter::dispatchScrollViewEvent(
     std::string name,
-    const ScrollViewMetrics& scrollViewMetrics) const {
+    const Metrics& scrollViewMetrics) const {
   dispatchEvent(std::move(name), [scrollViewMetrics](jsi::Runtime& runtime) {
     return scrollViewMetricsPayload(runtime, scrollViewMetrics);
   });
