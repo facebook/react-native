@@ -96,7 +96,7 @@
     "featureflags-update": "node ./scripts/featureflags/index.js"
   },
   "peerDependencies": {
-    "@types/react": "^18.0.0",
+    "@types/react": "^18.2.6",
     "react": "18.2.0"
   },
   "peerDependenciesMeta": {
