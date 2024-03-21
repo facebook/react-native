@@ -48,7 +48,7 @@ typedef RCTBridge *_Nonnull (
  * pointing to a path inside the app resources, e.g. `file://.../main.jsbundle`.
  *
  */
-- (instancetype)initWithBundleURL:(NSURL *)bundleURL
+- (instancetype)initWithBundleURL:(NSURL * _Nullable)bundleURL
                    newArchEnabled:(BOOL)newArchEnabled
                turboModuleEnabled:(BOOL)turboModuleEnabled
                 bridgelessEnabled:(BOOL)bridgelessEnabled;
@@ -101,6 +101,8 @@ typedef RCTBridge *_Nonnull (
 
 - (instancetype)initWithConfiguration:(RCTRootViewFactoryConfiguration *)configuration
         andTurboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate;
+
+- (instancetype)initWithConfiguration:(RCTRootViewFactoryConfiguration *)configuration;
 
 /**
  * This method can be used to create new RCTRootViews on demand.
