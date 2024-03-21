@@ -15,7 +15,9 @@ import {tasks as clean} from './private/clean.js';
 
 /* eslint sort-keys : "error" */
 export default {
-  android,
-  apple,
-  clean,
+  android: typeof android,
+  apple: typeof apple,
+  clean: typeof clean,
 };
+
+export type {Task} from './private/types';

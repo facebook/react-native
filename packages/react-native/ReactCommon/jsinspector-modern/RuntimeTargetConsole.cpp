@@ -102,8 +102,10 @@ double getTimestampMs() {
 } // namespace
 
 void RuntimeTarget::installConsoleHandler() {
+  auto delegateSupportsConsole = delegate_.supportsConsole();
   jsExecutor_([selfWeak = weak_from_this(),
-               selfExecutor = executorFromThis()](jsi::Runtime& runtime) {
+               selfExecutor = executorFromThis(),
+               delegateSupportsConsole](jsi::Runtime& runtime) {
     jsi::Value consolePrototype = jsi::Value::null();
     auto originalConsoleVal = runtime.global().getProperty(runtime, "console");
     std::shared_ptr<jsi::Object> originalConsole;
@@ -441,6 +443,13 @@ void RuntimeTarget::installConsoleHandler() {
     }
 
     runtime.global().setProperty(runtime, "console", console);
+    if (delegateSupportsConsole) {
+      // NOTE: If the delegate doesn't report console support, we'll still
+      // install the console handler for consistency of the runtime environment,
+      // but not claim that it has full console support.
+      runtime.global().setProperty(
+          runtime, "__FUSEBOX_HAS_FULL_CONSOLE_SUPPORT__", true);
+    }
   });
 }
 

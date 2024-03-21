@@ -34,6 +34,8 @@ class FallbackRuntimeTargetDelegate : public RuntimeTargetDelegate {
   void addConsoleMessage(jsi::Runtime& runtime, ConsoleMessage message)
       override;
 
+  bool supportsConsole() const override;
+
  private:
   std::string engineDescription_;
 };

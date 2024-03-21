@@ -317,6 +317,21 @@ TYPED_TEST(JsiIntegrationPortableTest, ExceptionDuringAddBindingIsIgnored) {
   EXPECT_TRUE(this->eval("globalThis.foo === 42").getBool());
 }
 
+TYPED_TEST(JsiIntegrationPortableTest, FuseboxSetClientMetadata) {
+  this->connect();
+
+  this->expectMessageFromPage(JsonEq(R"({
+                                          "id": 1,
+                                          "result": {}
+                                        })"));
+
+  this->toPage_->sendMessage(R"({
+                                 "id": 1,
+                                 "method": "FuseboxClient.setClientMetadata",
+                                 "params": {}
+                               })");
+}
+
 #pragma endregion // AllEngines
 #pragma region AllHermesVariants
 

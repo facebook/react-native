@@ -42,7 +42,6 @@ class ScrollViewProps final : public ViewProps {
   bool automaticallyAdjustsScrollIndicatorInsets{true};
   Float decelerationRate{0.998f};
   Float endDraggingSensitivityMultiplier{1};
-  Float endDraggingSensitivityVelocityMultiplier{0};
   bool directionalLockEnabled{};
   ScrollViewIndicatorStyle indicatorStyle{};
   ScrollViewKeyboardDismissMode keyboardDismissMode{};

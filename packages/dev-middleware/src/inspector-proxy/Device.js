@@ -176,14 +176,7 @@ export default class Device {
 
   getPagesList(): $ReadOnlyArray<Page> {
     if (this.#lastConnectedLegacyReactNativePage) {
-      const reactNativeReloadablePage = {
-        id: REACT_NATIVE_RELOADABLE_PAGE_ID,
-        title: 'React Native Experimental (Improved Chrome Reloads)',
-        vm: "don't use",
-        app: this.#app,
-        capabilities: {},
-      };
-      return [...this.#pages.values(), reactNativeReloadablePage];
+      return [...this.#pages.values(), this.#createSyntheticPage()];
     } else {
       return [...this.#pages.values()];
     }
@@ -224,7 +217,10 @@ export default class Device {
 
     // TODO(moti): Handle null case explicitly, e.g. refuse to connect to
     // unknown pages.
-    const page: ?Page = this.#pages.get(pageId);
+    const page: ?Page =
+      pageId === REACT_NATIVE_RELOADABLE_PAGE_ID
+        ? this.#createSyntheticPage()
+        : this.#pages.get(pageId);
 
     this.#debuggerConnection = debuggerInfo;
 
@@ -377,6 +373,19 @@ export default class Device {
    */
   #pageHasCapability(page: Page, flag: $Keys<TargetCapabilityFlags>): boolean {
     return page.capabilities[flag] === true;
+  }
+
+  /**
+   * Returns the synthetic "React Native Experimental (Improved Chrome Reloads)" page.
+   */
+  #createSyntheticPage(): Page {
+    return {
+      id: REACT_NATIVE_RELOADABLE_PAGE_ID,
+      title: 'React Native Experimental (Improved Chrome Reloads)',
+      vm: "don't use",
+      app: this.#app,
+      capabilities: {},
+    };
   }
 
   // Handles messages received from device:

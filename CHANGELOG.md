@@ -1,5 +1,38 @@
 # Changelog
 
+## v0.74.0-rc.4
+
+### Breaking
+
+#### Android specific
+
+- Implement `getJSCallInvokerHolder()` for Bridgeless Catalyst Instance ([c6076bca97](https://github.com/facebook/react-native/commit/c6076bca974b74b8456806cd06e0c1c63c58aaf9))
+
+### Added
+
+- Add inspector proxy device message middleware API ([3f41fb5d5b](https://github.com/facebook/react-native/commit/3f41fb5d5b5dfd6d69b00e104f9eb05b98671fa6) by [@byCedric](https://github.com/byCedric))
+- Fallback to query parameter based `user-agent` when header is unset ([c62be78d99](https://github.com/facebook/react-native/commit/c62be78d99939e33b5b2bc3cee5be2a030f0640b) by [@byCedric](https://github.com/byCedric))
+
+#### iOS specific
+
+- Allow the activityIndicator to be controlled from JS in bridgeless mode ([9aeb9f2f94](https://github.com/facebook/react-native/commit/9aeb9f2f94536155c2f1e1c815e0b5fa18a2b9f3) by [@cipolleschi](https://github.com/cipolleschi))
+
+### Changed
+
+- Update `@react-native-community/cli` to 13.6.2 ([bc745cb6ff](https://github.com/facebook/react-native/commit/bc745cb6ffc8dbce6fb97eb5a94f156a2f71a6a0) by [@szymonrybczak](https://github.com/szymonrybczak))
+
+### Fixed
+
+- Add missing `registerCallableModule` TypeScript definitions ([6bc95b2074](https://github.com/facebook/react-native/commit/6bc95b2074a794607a34eae201f07dae110c2832) by [@Kudo](https://github.com/Kudo))
+- Allow Inspector proxy to inline source maps on LAN connections ([3dee6d31b9](https://github.com/facebook/react-native/commit/3dee6d31b9059e319bf4849797e3ed21c298be70) by [@byCedric](https://github.com/byCedric))
+- Fix Bridgeless React Context test in OSS ([bdca260679](https://github.com/facebook/react-native/commit/bdca2606797f50f9ccb064bc7b25cd849ffe5e6c))
+- Fix bug where absolute nodes were not insetted correctly in certain cases ([3341ab7cc0](https://github.com/facebook/react-native/commit/3341ab7cc0ba7a8460069cd39ff3060154d96e1a) by [@joevilches](https://github.com/joevilches))
+
+#### Android specific
+
+- Properly handle RR and CMD+M in Bridgeless Mode ([e9f66d9c0c](https://github.com/facebook/react-native/commit/e9f66d9c0c5308a75a3c7a0c34d748cdb2cd833f) by [@cortinico](https://github.com/cortinico))
+- Bring back the UNSET constant to TextAttributeProps. ([9700540bec](https://github.com/facebook/react-native/commit/9700540bec67d221f72fd1d17e918538ffca7a8a) by [@dmytrorykun](https://github.com/dmytrorykun))
+
 ## v0.74.0-rc.3
 
 ### Added

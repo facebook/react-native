@@ -91,6 +91,7 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-utils")
   add_dependency(s, "React-debug")
   add_dependency(s, "React-rendererdebug")
+  add_dependency(s, "React-featureflags")
 
   if use_hermes
     s.dependency "React-hermes"

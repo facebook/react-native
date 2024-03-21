@@ -37,10 +37,19 @@ void InspectorFlags::dangerouslyResetFlags() {
 const InspectorFlags::Values& InspectorFlags::loadFlagsAndAssertUnchanged()
     const {
   InspectorFlags::Values newValues = {
-      .enableCxxInspectorPackagerConnection = ReactNativeFeatureFlags::
-          inspectorEnableCxxInspectorPackagerConnection(),
+      .enableCxxInspectorPackagerConnection =
+#ifdef REACT_NATIVE_FORCE_ENABLE_FUSEBOX
+          true,
+#else
+          ReactNativeFeatureFlags::
+              inspectorEnableCxxInspectorPackagerConnection(),
+#endif
       .enableModernCDPRegistry =
+#ifdef REACT_NATIVE_FORCE_ENABLE_FUSEBOX
+          true,
+#else
           ReactNativeFeatureFlags::inspectorEnableModernCDPRegistry(),
+#endif
   };
 
   if (cachedValues_.has_value() && !inconsistentFlagsStateLogged_) {

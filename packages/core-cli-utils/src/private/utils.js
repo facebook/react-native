@@ -16,8 +16,8 @@ import os from 'os';
 
 export function task(label: string, action: Task['action']): Task {
   return {
-    label,
     action,
+    label,
   };
 }
 

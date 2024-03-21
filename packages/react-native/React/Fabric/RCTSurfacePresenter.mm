@@ -33,7 +33,6 @@
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import <react/renderer/scheduler/AsynchronousEventBeat.h>
 #import <react/renderer/scheduler/SchedulerToolbox.h>
-#import <react/renderer/scheduler/SynchronousEventBeat.h>
 #import <react/utils/ContextContainer.h>
 #import <react/utils/CoreFeatures.h>
 #import <react/utils/ManagedObjectWrapper.h>
@@ -293,21 +292,9 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
   toolbox.runtimeExecutor = runtimeExecutor;
   toolbox.bridgelessBindingsExecutor = _bridgelessBindingsExecutor;
 
-  toolbox.mainRunLoopObserverFactory = [](RunLoopObserver::Activity activities,
-                                          const RunLoopObserver::WeakOwner &owner) {
-    return std::make_unique<MainRunLoopObserver>(activities, owner);
-  };
-
   if (ReactNativeFeatureFlags::enableBackgroundExecutor()) {
     toolbox.backgroundExecutor = RCTGetBackgroundExecutor();
   }
-
-  toolbox.synchronousEventBeatFactory =
-      [runtimeExecutor, runtimeScheduler = runtimeScheduler](const EventBeat::SharedOwnerBox &ownerBox) {
-        auto runLoopObserver =
-            std::make_unique<MainRunLoopObserver const>(RunLoopObserver::Activity::BeforeWaiting, ownerBox->owner);
-        return std::make_unique<SynchronousEventBeat>(std::move(runLoopObserver), runtimeExecutor, runtimeScheduler);
-      };
 
   toolbox.asynchronousEventBeatFactory =
       [runtimeExecutor](const EventBeat::SharedOwnerBox &ownerBox) -> std::unique_ptr<EventBeat> {

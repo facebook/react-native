@@ -6,13 +6,14 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/facebook/react-native.git",
+    "url": "git+https://github.com/facebook/react-native.git",
     "directory": "packages/core-cli-utils"
   },
   "exports": {
     ".": "./src/index.js",
     "./package.json": "./package.json"
   },
+  "types": "./dist/index.d.ts",
   "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/core-cli-utils#readme",
   "keywords": [
     "cli-utils",

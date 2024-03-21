@@ -107,7 +107,6 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
   __weak UIView *_firstVisibleView;
 
   CGFloat _endDraggingSensitivityMultiplier;
-  CGFloat _endDraggingSensitivityVelocityMultiplier;
 }
 
 + (RCTScrollViewComponentView *_Nullable)findScrollViewComponentViewForView:(UIView *)view
@@ -137,7 +136,6 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
     [self.scrollViewDelegateSplitter addDelegate:self];
 
     _scrollEventThrottle = 0;
-    _endDraggingSensitivityVelocityMultiplier = 0;
     _endDraggingSensitivityMultiplier = 1;
   }
 
@@ -236,7 +234,6 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
   }
 
   _endDraggingSensitivityMultiplier = newScrollViewProps.endDraggingSensitivityMultiplier;
-  _endDraggingSensitivityVelocityMultiplier = newScrollViewProps.endDraggingSensitivityVelocityMultiplier;
 
   if (oldScrollViewProps.scrollEventThrottle != newScrollViewProps.scrollEventThrottle) {
     // Zero means "send value only once per significant logical event".
@@ -389,14 +386,15 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
   return NO;
 }
 
-- (ScrollViewMetrics)_scrollViewMetrics
+- (ScrollViewEventEmitter::Metrics)_scrollViewMetrics
 {
-  ScrollViewMetrics metrics;
-  metrics.contentSize = RCTSizeFromCGSize(_scrollView.contentSize);
-  metrics.contentOffset = RCTPointFromCGPoint(_scrollView.contentOffset);
-  metrics.contentInset = RCTEdgeInsetsFromUIEdgeInsets(_scrollView.contentInset);
-  metrics.containerSize = RCTSizeFromCGSize(_scrollView.bounds.size);
-  metrics.zoomScale = _scrollView.zoomScale;
+  auto metrics = ScrollViewEventEmitter::Metrics{
+      .contentSize = RCTSizeFromCGSize(_scrollView.contentSize),
+      .contentOffset = RCTPointFromCGPoint(_scrollView.contentOffset),
+      .contentInset = RCTEdgeInsetsFromUIEdgeInsets(_scrollView.contentInset),
+      .containerSize = RCTSizeFromCGSize(_scrollView.bounds.size),
+      .zoomScale = _scrollView.zoomScale,
+  };
 
   if (_layoutMetrics.layoutDirection == LayoutDirection::RightToLeft) {
     metrics.contentOffset.x = metrics.contentSize.width - metrics.containerSize.width - metrics.contentOffset.x;
@@ -444,12 +442,10 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
                      withVelocity:(CGPoint)velocity
               targetContentOffset:(inout CGPoint *)targetContentOffset
 {
-  if (fabs(_endDraggingSensitivityMultiplier - 1) > 0.0001f ||
-      fabs(_endDraggingSensitivityVelocityMultiplier) > 0.0001f) {
+  if (fabs(_endDraggingSensitivityMultiplier - 1) > 0.0001f) {
     if (targetContentOffset->y > 0) {
       const CGFloat travel = targetContentOffset->y - scrollView.contentOffset.y;
-      targetContentOffset->y = scrollView.contentOffset.y + travel * _endDraggingSensitivityMultiplier +
-          velocity.y * _endDraggingSensitivityVelocityMultiplier;
+      targetContentOffset->y = scrollView.contentOffset.y + travel * _endDraggingSensitivityMultiplier;
     }
   }
 }

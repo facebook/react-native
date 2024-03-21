@@ -17,7 +17,6 @@ namespace facebook::react {
 
 EventDispatcher::EventDispatcher(
     const EventQueueProcessor& eventProcessor,
-    const EventBeat::Factory& synchonousEventBeatFactory,
     const EventBeat::Factory& asynchronousEventBeatFactory,
     const EventBeat::SharedOwnerBox& ownerBox)
     : eventQueue_(

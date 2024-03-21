@@ -31,6 +31,7 @@ import {
   getPublicInstanceFromInternalInstanceHandle,
   getShadowNode,
 } from './ReadOnlyNode';
+import NativeDOM from './specs/NativeDOM';
 import nullthrows from 'nullthrows';
 
 const noop = () => {};
@@ -67,7 +68,7 @@ export default class ReactNativeElement
     const node = getShadowNode(this);
 
     if (node != null) {
-      const offset = nullthrows(getFabricUIManager()).getOffset(node);
+      const offset = NativeDOM.getOffset(node);
       if (offset != null) {
         return Math.round(offset[2]);
       }
@@ -80,7 +81,7 @@ export default class ReactNativeElement
     const node = getShadowNode(this);
 
     if (node != null) {
-      const offset = nullthrows(getFabricUIManager()).getOffset(node);
+      const offset = NativeDOM.getOffset(node);
       // For children of the root node we currently return offset data
       // but a `null` parent because the root node is not accessible
       // in JavaScript yet.
@@ -102,7 +103,7 @@ export default class ReactNativeElement
     const node = getShadowNode(this);
 
     if (node != null) {
-      const offset = nullthrows(getFabricUIManager()).getOffset(node);
+      const offset = NativeDOM.getOffset(node);
       if (offset != null) {
         return Math.round(offset[1]);
       }

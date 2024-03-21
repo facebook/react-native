@@ -35,9 +35,10 @@ namespace facebook::yoga::vanillajni {
  *
  * This class is very explicit in its behavior, and it does not allow to perform
  * unexpected conversions or unexpected ownership transfer. In practice, this
- * class acts as a unique pointer where the underying JNI reference can have one
- * and just one owner. Transferring ownership is allowed but it is an explicit
- * operation (implemented via move semantics and also via explicitly API calls).
+ * class acts as a unique pointer where the underlying JNI reference can have
+ * one and just one owner. Transferring ownership is allowed but it is an
+ * explicit operation (implemented via move semantics and also via explicitly
+ * API calls).
  *
  * As with standard JNI local references it is not a valid operation to keep a
  * reference around between different native method calls.

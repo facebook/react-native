@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<cbf10b0a7ed3d4892d53e5ae2319f4a8>>
+ * @generated SignedSource<<d104b9219b7658544101bbd175f8fa7d>>
  */
 
 /**
@@ -86,11 +86,6 @@ class ReactNativeFeatureFlags {
    * Flag determining if the modern CDP backend should be enabled. This flag is global and should not be changed across React Host lifetimes.
    */
   RN_EXPORT static bool inspectorEnableModernCDPRegistry();
-
-  /**
-   * This is a temporary flag to disable part of the mount hooks pipeline to investigate a crash.
-   */
-  RN_EXPORT static bool skipMountHookNotifications();
 
   /**
    * When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.

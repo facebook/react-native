@@ -67,6 +67,12 @@ class RuntimeTargetDelegate {
   virtual void addConsoleMessage(
       jsi::Runtime& runtime,
       ConsoleMessage message) = 0;
+
+  /**
+   * \returns true if the runtime supports reporting console API calls over CDP.
+   * \c addConsoleMessage MAY be called even if this method returns false.
+   */
+  virtual bool supportsConsole() const = 0;
 };
 
 /**

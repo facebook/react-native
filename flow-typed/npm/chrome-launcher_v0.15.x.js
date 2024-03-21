@@ -44,6 +44,9 @@ declare module 'chrome-launcher' {
   declare class Launcher {
     getChromePath(): string;
     launch(options: Options): Promise<LaunchedChrome>;
+    Launcher: {
+      defaultFlags(): Array<string>,
+    };
   }
 
   declare module.exports: Launcher;

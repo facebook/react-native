@@ -10,7 +10,7 @@
   "bugs": "https://github.com/facebook/react-native/issues",
   "repository": {
     "type": "git",
-    "url": "https://github.com/facebook/react-native.git",
+    "url": "git+https://github.com/facebook/react-native.git",
     "directory": "packages/community-cli-plugin"
   },
   "license": "MIT",

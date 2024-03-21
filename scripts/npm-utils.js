@@ -149,35 +149,6 @@ function publishPackage(
   return exec(`npm publish${tagsFlag}${otpFlag}${accessFlag}`, options);
 }
 
-function diffPackages(
-  packageSpecA /*: string */,
-  packageSpecB /*: string */,
-  options /*:  ExecOptsSync */,
-) /*: string */ {
-  const result = exec(
-    `npm diff --diff=${packageSpecA} --diff=${packageSpecB} --diff-name-only`,
-    options,
-  );
-
-  if (result.code !== 0) {
-    throw new Error(
-      `Failed to diff ${packageSpecA} and ${packageSpecB}\n${result.stderr}`,
-    );
-  }
-
-  return result.stdout;
-}
-
-function pack(packagePath /*: string */) {
-  const result = exec('npm pack', {
-    cwd: packagePath,
-  });
-
-  if (result.code !== 0) {
-    throw new Error(result.stderr);
-  }
-}
-
 /**
  * `package` is an object form of package.json
  * `dependencies` is a map of dependency to version string
@@ -280,9 +251,6 @@ function getVersionsBySpec(
 module.exports = {
   applyPackageVersions,
   getNpmInfo,
-  getPackageVersionStrByTag,
   getVersionsBySpec,
   publishPackage,
-  diffPackages,
-  pack,
 };

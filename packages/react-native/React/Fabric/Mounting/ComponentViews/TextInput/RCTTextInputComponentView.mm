@@ -336,12 +336,11 @@ using namespace facebook::react;
 
   if (!_backedTextInputView.textWasPasted) {
     if (_eventEmitter) {
-      KeyPressMetrics keyPressMetrics;
-      keyPressMetrics.text = RCTStringFromNSString(text);
-      keyPressMetrics.eventCount = _mostRecentEventCount;
-
       const auto &textInputEventEmitter = static_cast<const TextInputEventEmitter &>(*_eventEmitter);
-      textInputEventEmitter.onKeyPress(keyPressMetrics);
+      textInputEventEmitter.onKeyPress({
+          .text = RCTStringFromNSString(text),
+          .eventCount = static_cast<int>(_mostRecentEventCount),
+      });
     }
   }
 
@@ -515,29 +514,18 @@ using namespace facebook::react;
 
 #pragma mark - Other
 
-- (TextInputMetrics)_textInputMetrics
+- (TextInputEventEmitter::Metrics)_textInputMetrics
 {
-  TextInputMetrics metrics;
-  metrics.text = RCTStringFromNSString(_backedTextInputView.attributedText.string);
-  metrics.selectionRange = [self _selectionRange];
-  metrics.eventCount = _mostRecentEventCount;
-
-  CGPoint contentOffset = _backedTextInputView.contentOffset;
-  metrics.contentOffset = {contentOffset.x, contentOffset.y};
-
-  UIEdgeInsets contentInset = _backedTextInputView.contentInset;
-  metrics.contentInset = {contentInset.left, contentInset.top, contentInset.right, contentInset.bottom};
-
-  CGSize contentSize = _backedTextInputView.contentSize;
-  metrics.contentSize = {contentSize.width, contentSize.height};
-
-  CGSize layoutMeasurement = _backedTextInputView.bounds.size;
-  metrics.layoutMeasurement = {layoutMeasurement.width, layoutMeasurement.height};
-
-  CGFloat zoomScale = _backedTextInputView.zoomScale;
-  metrics.zoomScale = zoomScale;
-
-  return metrics;
+  return {
+      .text = RCTStringFromNSString(_backedTextInputView.attributedText.string),
+      .selectionRange = [self _selectionRange],
+      .eventCount = static_cast<int>(_mostRecentEventCount),
+      .contentOffset = RCTPointFromCGPoint(_backedTextInputView.contentOffset),
+      .contentInset = RCTEdgeInsetsFromUIEdgeInsets(_backedTextInputView.contentInset),
+      .contentSize = RCTSizeFromCGSize(_backedTextInputView.contentSize),
+      .layoutMeasurement = RCTSizeFromCGSize(_backedTextInputView.bounds.size),
+      .zoomScale = _backedTextInputView.zoomScale,
+  };
 }
 
 - (void)_updateState

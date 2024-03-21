@@ -10,7 +10,6 @@
 const {
   applyPackageVersions,
   getNpmInfo,
-  getPackageVersionStrByTag,
   getVersionsBySpec,
   publishPackage,
 } = require('../npm-utils');
@@ -70,26 +69,6 @@ describe('npm-utils', () => {
           'my-dependency-a': 'should-be-untouched',
         },
       });
-    });
-  });
-
-  describe('getPackageVersionStrByTag', () => {
-    it('should return package version string', () => {
-      execMock.mockImplementationOnce(() => ({code: 0, stdout: '0.34.2 \n'}));
-      const versionStr = getPackageVersionStrByTag('my-package', 'next');
-      expect(versionStr).toBe('0.34.2');
-    });
-    it('should throw error when invalid result', () => {
-      execMock.mockImplementationOnce(() => ({
-        code: 1,
-        stderr: 'Some error message',
-      }));
-
-      expect(() => {
-        getPackageVersionStrByTag('my-package', 'next');
-      }).toThrow(
-        "Failed to run 'npm view my-package@next version'\nSome error message",
-      );
     });
   });
 

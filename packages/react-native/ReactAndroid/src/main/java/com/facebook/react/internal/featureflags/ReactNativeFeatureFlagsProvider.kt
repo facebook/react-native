@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<268a87860fea5f281567d2142f90b0d4>>
+ * @generated SignedSource<<ddbe652a9094bd6af4bdb741fc17ea7c>>
  */
 
 /**
@@ -42,8 +42,6 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun inspectorEnableCxxInspectorPackagerConnection(): Boolean
 
   @DoNotStrip public fun inspectorEnableModernCDPRegistry(): Boolean
-
-  @DoNotStrip public fun skipMountHookNotifications(): Boolean
 
   @DoNotStrip public fun useModernRuntimeScheduler(): Boolean
 }
