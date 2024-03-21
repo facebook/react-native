@@ -87,6 +87,10 @@ public class ReactActivityDelegate {
     return ((ReactApplication) getPlainActivity().getApplication()).getReactHost();
   }
 
+  protected @Nullable ReactDelegate getReactDelegate() {
+    return mReactDelegate;
+  }
+
   public ReactInstanceManager getReactInstanceManager() {
     return mReactDelegate.getReactInstanceManager();
   }
