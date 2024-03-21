@@ -16,6 +16,7 @@
 namespace facebook::react {
 
 struct RawEvent;
+class RuntimeScheduler;
 
 /*
  * Represents event-delivery infrastructure.
@@ -29,12 +30,18 @@ class EventDispatcher {
   EventDispatcher(
       const EventQueueProcessor& eventProcessor,
       const EventBeat::Factory& asynchronousEventBeatFactory,
-      const EventBeat::SharedOwnerBox& ownerBox);
+      const EventBeat::SharedOwnerBox& ownerBox,
+      RuntimeScheduler& runtimeScheduler);
 
   /*
    * Dispatches a raw event with given priority using event-delivery pipe.
    */
   void dispatchEvent(RawEvent&& rawEvent) const;
+
+  /*
+   * Experimental API exposed to support EventEmitter::experimental_flushSync.
+   */
+  void experimental_flushSync() const;
 
   /*
    * Dispatches a raw event with asynchronous batched priority. Before the
