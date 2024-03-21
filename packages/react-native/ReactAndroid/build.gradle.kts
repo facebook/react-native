@@ -127,14 +127,24 @@ val preparePrefab by
                   )),
               PrefabPreprocessingEntry(
                   "rrc_text",
-                  Pair(
-                      "../ReactCommon/react/renderer/components/text/",
-                      "react/renderer/components/text/")),
+                  listOf(
+                      Pair(
+                          "../ReactCommon/react/renderer/components/text/",
+                          "react/renderer/components/text/"),
+                      Pair(
+                          "../ReactCommon/react/renderer/attributedstring",
+                          "react/renderer/attributedstring"),
+                  )),
               PrefabPreprocessingEntry(
                   "rrc_textinput",
-                  Pair(
-                      "../ReactCommon/react/renderer/components/textinput/",
-                      "react/renderer/components/androidtextinput/")),
+                  listOf(
+                      Pair(
+                          "../ReactCommon/react/renderer/components/textinput/",
+                          "react/renderer/components/textinput/"),
+                      Pair(
+                          "../ReactCommon/react/renderer/components/textinput/platform/android/",
+                          ""),
+                  )),
               PrefabPreprocessingEntry(
                   "rrc_legacyviewmanagerinterop",
                   Pair(
