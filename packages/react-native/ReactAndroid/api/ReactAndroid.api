@@ -83,6 +83,7 @@ public abstract class com/facebook/react/ReactActivity : androidx/appcompat/app/
 	protected fun <init> ()V
 	protected fun createReactActivityDelegate ()Lcom/facebook/react/ReactActivityDelegate;
 	protected fun getMainComponentName ()Ljava/lang/String;
+	public fun getReactDelegate ()V
 	protected final fun getReactInstanceManager ()Lcom/facebook/react/ReactInstanceManager;
 	protected final fun getReactNativeHost ()Lcom/facebook/react/ReactNativeHost;
 	public fun invokeDefaultOnBackPressed ()V
@@ -113,6 +114,7 @@ public class com/facebook/react/ReactActivityDelegate {
 	protected fun getLaunchOptions ()Landroid/os/Bundle;
 	public fun getMainComponentName ()Ljava/lang/String;
 	protected fun getPlainActivity ()Landroid/app/Activity;
+	protected fun getReactDelegate ()Lcom/facebook/react/ReactDelegate;
 	public fun getReactHost ()Lcom/facebook/react/ReactHost;
 	public fun getReactInstanceManager ()Lcom/facebook/react/ReactInstanceManager;
 	protected fun getReactNativeHost ()Lcom/facebook/react/ReactNativeHost;
