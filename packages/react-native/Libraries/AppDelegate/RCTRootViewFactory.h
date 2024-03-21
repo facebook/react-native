@@ -23,6 +23,10 @@ typedef UIView *_Nonnull (
     ^RCTCreateRootViewWithBridgeBlock)(RCTBridge *bridge, NSString *moduleName, NSDictionary *initProps);
 typedef RCTBridge *_Nonnull (
     ^RCTCreateBridgeWithDelegateBlock)(id<RCTBridgeDelegate> delegate, NSDictionary *launchOptions);
+typedef NSURL *_Nullable (^RCTSourceURLForBridgeBlock)(RCTBridge *bridge);
+typedef NSArray<id<RCTBridgeModule>> *_Nonnull (^RCTExtraModulesForBridgeBlock)(RCTBridge *bridge);
+typedef NSDictionary<NSString *, Class> *_Nonnull (^RCTExtraLazyModuleClassesForBridge)(RCTBridge *bridge);
+typedef BOOL (^RCTBridgeDidNotFindModuleBlock)(RCTBridge *bridge, NSString *moduleName);
 
 #pragma mark - RCTRootViewFactory Configuration
 @interface RCTRootViewFactoryConfiguration : NSObject
@@ -80,6 +84,44 @@ typedef RCTBridge *_Nonnull (
  * @returns: a newly created instance of RCTBridge.
  */
 @property (nonatomic, nullable) RCTCreateBridgeWithDelegateBlock createBridgeWithDelegate;
+
+/**
+ * Block that returns the location of the JavaScript source file. When running from the packager
+ * this should be an absolute URL, e.g. `http://localhost:8081/index.ios.bundle`.
+ * When running from a locally bundled JS file, this should be a `file://` url
+ * pointing to a path inside the app resources, e.g. `file://.../main.jsbundle`.
+ */
+@property (nonatomic, nullable) RCTSourceURLForBridgeBlock sourceURLForBridge;
+
+/**
+ * The bridge initializes any registered RCTBridgeModules automatically, however
+ * if you wish to instantiate your own module instances, you can return them
+ * from this block.
+ *
+ * Note: You should always return a new instance for each call, rather than
+ * returning the same instance each time the bridge is reloaded. Module instances
+ * should not be shared between bridges, and this may cause unexpected behavior.
+ *
+ * It is also possible to override standard modules with your own implementations
+ * by returning a class with the same `moduleName` from this method, but this is
+ * not recommended in most cases - if the module methods and behavior do not
+ * match exactly, it may lead to bugs or crashes.
+ */
+@property (nonatomic, nullable) RCTExtraModulesForBridgeBlock extraModulesForBridge;
+
+/**
+ * Retrieve the list of lazy-native-modules names for the given bridge.
+ */
+@property (nonatomic, nullable) RCTExtraLazyModuleClassesForBridge extraLazyModuleClassesForBridge;
+
+/**
+ * The bridge will call this block when a module been called from JS
+ * cannot be found among registered modules.
+ * It should return YES if the module with name 'moduleName' was registered
+ * in the implementation, and the system must attempt to look for it again among registered.
+ * If the module was not registered, return NO to prevent further searches.
+ */
+@property (nonatomic, nullable) RCTBridgeDidNotFindModuleBlock bridgeDidNotFindModule;
 
 @end
 

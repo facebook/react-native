@@ -260,6 +260,25 @@
     return [weakSelf createBridgeWithDelegate:delegate launchOptions:launchOptions];
   };
 
+  configuration.sourceURLForBridge = ^NSURL *_Nullable(RCTBridge *_Nonnull bridge)
+  {
+    return [weakSelf sourceURLForBridge:bridge];
+  };
+
+  configuration.extraModulesForBridge = ^NSArray<id<RCTBridgeModule>> *_Nonnull(RCTBridge *_Nonnull bridge)
+  {
+    return [weakSelf extraModulesForBridge:bridge];
+  };
+
+  configuration.extraLazyModuleClassesForBridge = ^NSDictionary<NSString *, Class> *_Nonnull(RCTBridge *_Nonnull bridge)
+  {
+    return [weakSelf extraLazyModuleClassesForBridge:bridge];
+  };
+
+  configuration.bridgeDidNotFindModule = ^BOOL(RCTBridge *_Nonnull bridge, NSString *_Nonnull moduleName) {
+    return [weakSelf bridge:bridge didNotFindModule:moduleName];
+  };
+
   return [[RCTRootViewFactory alloc] initWithConfiguration:configuration andTurboModuleManagerDelegate:self];
 }
 
