@@ -18,9 +18,12 @@ namespace facebook::react {
 EventDispatcher::EventDispatcher(
     const EventQueueProcessor& eventProcessor,
     const EventBeat::Factory& asynchronousEventBeatFactory,
-    const EventBeat::SharedOwnerBox& ownerBox)
-    : eventQueue_(
-          EventQueue(eventProcessor, asynchronousEventBeatFactory(ownerBox))) {}
+    const EventBeat::SharedOwnerBox& ownerBox,
+    RuntimeScheduler& runtimeScheduler)
+    : eventQueue_(EventQueue(
+          eventProcessor,
+          asynchronousEventBeatFactory(ownerBox),
+          runtimeScheduler)) {}
 
 void EventDispatcher::dispatchEvent(RawEvent&& rawEvent) const {
   // Allows the event listener to interrupt default event dispatch
@@ -33,6 +36,10 @@ void EventDispatcher::dispatchEvent(RawEvent&& rawEvent) const {
     rawEvent.loggingTag = eventLogger->onEventStart(rawEvent.type);
   }
   eventQueue_.enqueueEvent(std::move(rawEvent));
+}
+
+void EventDispatcher::experimental_flushSync() const {
+  eventQueue_.experimental_flushSync();
 }
 
 void EventDispatcher::dispatchStateUpdate(StateUpdate&& stateUpdate) const {
