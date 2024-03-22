@@ -336,7 +336,9 @@ public class DevServerHelper {
         callback, outputFile, bundleURL, bundleInfo, requestBuilder);
   }
 
-  /** @return the host to use when connecting to the bundle server from the host itself. */
+  /**
+   * @return the host to use when connecting to the bundle server from the host itself.
+   */
   private String getHostForJSProxy() {
     // Use custom port if configured. Note that host stays "localhost".
     String host = Assertions.assertNotNull(mPackagerConnectionSettings.getDebugServerHost());
@@ -348,12 +350,16 @@ public class DevServerHelper {
     }
   }
 
-  /** @return whether we should enable dev mode when requesting JS bundles. */
+  /**
+   * @return whether we should enable dev mode when requesting JS bundles.
+   */
   private boolean getDevMode() {
     return mSettings.isJSDevModeEnabled();
   }
 
-  /** @return whether we should request minified JS bundles. */
+  /**
+   * @return whether we should request minified JS bundles.
+   */
   private boolean getJSMinifyMode() {
     return mSettings.isJSMinifyEnabled();
   }

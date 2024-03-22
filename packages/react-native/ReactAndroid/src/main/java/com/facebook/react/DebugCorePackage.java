@@ -91,7 +91,9 @@ class DebugCorePackage extends TurboReactPackage implements ViewManagerOnDemandR
     map.put(name, ModuleSpec.viewManagerSpec(provider));
   }
 
-  /** @return a map of view managers that should be registered with {@link UIManagerModule} */
+  /**
+   * @return a map of view managers that should be registered with {@link UIManagerModule}
+   */
   private Map<String, ModuleSpec> getViewManagersMap() {
     if (mViewManagers == null) {
       Map<String, ModuleSpec> viewManagers = new HashMap<>();

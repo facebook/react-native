@@ -227,7 +227,8 @@ class TurboModuleInteropUtils {
           throw new ParsingException(
               moduleName,
               methodName,
-              "Unable to parse JavaScript arg count. Promises must be used as last parameter only.");
+              "Unable to parse JavaScript arg count. Promises must be used as last parameter"
+                  + " only.");
         }
 
         return paramClasses.length - 1;

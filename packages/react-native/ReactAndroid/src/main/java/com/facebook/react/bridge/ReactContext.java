@@ -200,7 +200,9 @@ public class ReactContext extends ContextWrapper {
     return mCatalystInstance.getNativeModules();
   }
 
-  /** @return the instance of the specified module interface associated with this ReactContext. */
+  /**
+   * @return the instance of the specified module interface associated with this ReactContext.
+   */
   @Nullable
   public <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface) {
     if (mCatalystInstance == null) {
@@ -253,7 +255,9 @@ public class ReactContext extends ContextWrapper {
     return hasActiveReactInstance();
   }
 
-  /** @return true if there is an non-null, alive react native instance */
+  /**
+   * @return true if there is an non-null, alive react native instance
+   */
   public boolean hasActiveReactInstance() {
     return mCatalystInstance != null && !mCatalystInstance.isDestroyed();
   }
@@ -447,7 +451,8 @@ public class ReactContext extends ContextWrapper {
     /** TODO(T85807990): Fail fast if the ReactContext isn't initialized */
     if (!mIsInitialized) {
       throw new IllegalStateException(
-          "Tried to call assertOnNativeModulesQueueThread(message) on an uninitialized ReactContext");
+          "Tried to call assertOnNativeModulesQueueThread(message) on an uninitialized"
+              + " ReactContext");
     }
     Assertions.assertNotNull(mNativeModulesMessageQueueThread).assertIsOnThread(message);
   }
@@ -558,7 +563,9 @@ public class ReactContext extends ContextWrapper {
     return mCurrentActivity.get();
   }
 
-  /** @deprecated DO NOT USE, this method will be removed in the near future. */
+  /**
+   * @deprecated DO NOT USE, this method will be removed in the near future.
+   */
   @Deprecated
   public boolean isBridgeless() {
     return false;
@@ -579,7 +586,8 @@ public class ReactContext extends ContextWrapper {
 
   @DeprecatedInNewArchitecture(
       message =
-          "This method will be deprecated later as part of Stable APIs with bridge removal and not encouraged usage.")
+          "This method will be deprecated later as part of Stable APIs with bridge removal and not"
+              + " encouraged usage.")
   /**
    * Get the UIManager for Fabric from the CatalystInstance.
    *

@@ -69,7 +69,9 @@ public class ReactModuleInfo {
     return mNeedsEagerInit;
   }
 
-  /** @deprecated this is hardcoded to return true, regardless if the module has constants or not */
+  /**
+   * @deprecated this is hardcoded to return true, regardless if the module has constants or not
+   */
   @Deprecated
   public boolean hasConstants() {
     return true;

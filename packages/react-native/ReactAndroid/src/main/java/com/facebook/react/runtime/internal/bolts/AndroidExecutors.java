@@ -54,6 +54,7 @@ final class AndroidExecutors {
    * <p>https://github.com/android/platform_frameworks_base/commit/719c44e03b97e850a46136ba336d729f5fbd1f47
    */
   private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
+
   /* package */ static final int CORE_POOL_SIZE = CPU_COUNT + 1;
   /* package */ static final int MAX_POOL_SIZE = CPU_COUNT * 2 + 1;
   /* package */ static final long KEEP_ALIVE_TIME = 1L;

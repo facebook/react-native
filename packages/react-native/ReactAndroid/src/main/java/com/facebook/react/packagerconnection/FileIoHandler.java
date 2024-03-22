@@ -53,7 +53,8 @@ public class FileIoHandler implements Runnable {
     public void close() throws IOException {
       mStream.close();
     }
-  };
+  }
+  ;
 
   private int mNextHandle;
   private final Handler mHandler;

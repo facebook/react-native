@@ -19,7 +19,9 @@ public interface IViewGroupManager<T extends View> extends IViewManagerWithChild
   /** Adds a child view into the parent at the index specified as a parameter */
   void addView(T parent, View child, int index);
 
-  /** @return child of the parent view at the index specified as a parameter. */
+  /**
+   * @return child of the parent view at the index specified as a parameter.
+   */
   @Nullable
   View getChildAt(T parent, int index);
 

@@ -677,8 +677,8 @@ public class ReactViewGroup extends ViewGroup
                 ReactSoftExceptionLogger.logSoftException(
                     TAG,
                     new ReactNoCrashSoftException(
-                        "Child view has been added to Parent view in which it is clipped and not visible."
-                            + " This is not legal for this particular child view. Child: ["
+                        "Child view has been added to Parent view in which it is clipped and not"
+                            + " visible. This is not legal for this particular child view. Child: ["
                             + child.getId()
                             + "] "
                             + child.toString()

@@ -103,7 +103,9 @@ class AggregateException extends Exception {
     }
   }
 
-  /** @deprecated Please use {@link #getInnerThrowables()} instead. */
+  /**
+   * @deprecated Please use {@link #getInnerThrowables()} instead.
+   */
   @Deprecated
   public @NonNull List<Exception> getErrors() {
     List<Exception> errors = new ArrayList<Exception>();
@@ -121,7 +123,9 @@ class AggregateException extends Exception {
     return errors;
   }
 
-  /** @deprecated Please use {@link #getInnerThrowables()} instead. */
+  /**
+   * @deprecated Please use {@link #getInnerThrowables()} instead.
+   */
   @Deprecated
   public @NonNull Throwable[] getCauses() {
     return innerThrowables.toArray(new Throwable[innerThrowables.size()]);

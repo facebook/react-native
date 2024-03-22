@@ -11,6 +11,7 @@ package com.facebook.react.devsupport.interfaces;
 public interface DevSplitBundleCallback {
   /** Called when the split JS bundle has been downloaded and evaluated. */
   void onSuccess();
+
   /** Called when the split JS bundle failed to load. */
   void onError(String url, Throwable cause);
 }

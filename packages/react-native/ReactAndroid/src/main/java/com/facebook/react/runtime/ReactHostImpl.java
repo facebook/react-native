@@ -498,7 +498,8 @@ public class ReactHostImpl implements ReactHost {
               if (mReloadTask != null) {
                 log(
                     method,
-                    "Reloading React Native. Waiting for reload to finish before destroying React Native.");
+                    "Reloading React Native. Waiting for reload to finish before destroying React"
+                        + " Native.");
                 return mReloadTask.continueWithTask(
                     task -> getOrCreateDestroyTask(reason, ex), mBGExecutor);
               }
@@ -592,7 +593,8 @@ public class ReactHostImpl implements ReactHost {
       ReactSoftExceptionLogger.logSoftExceptionVerbose(
           TAG,
           new ReactNoCrashBridgeNotAllowedSoftException(
-              "getNativeModule(UIManagerModule.class) cannot be called when the bridge is disabled"));
+              "getNativeModule(UIManagerModule.class) cannot be called when the bridge is"
+                  + " disabled"));
     }
 
     final ReactInstance reactInstance = mReactInstanceTaskRef.get().getResult();

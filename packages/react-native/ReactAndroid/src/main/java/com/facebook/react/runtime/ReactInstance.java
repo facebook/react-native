@@ -490,7 +490,8 @@ final class ReactInstance {
       ReactSoftExceptionLogger.logSoftException(
           TAG,
           new ReactNoCrashSoftException(
-              "Native method handleMemoryPressureJs is called earlier than librninstance.so got ready."));
+              "Native method handleMemoryPressureJs is called earlier than librninstance.so got"
+                  + " ready."));
     }
   }
 
@@ -501,7 +502,9 @@ final class ReactInstance {
     return mFabricUIManager.getEventDispatcher();
   }
 
-  /** @return The {@link FabricUIManager} if it's been initialized. */
+  /**
+   * @return The {@link FabricUIManager} if it's been initialized.
+   */
   /* package */ FabricUIManager getUIManager() {
     return mFabricUIManager;
   }

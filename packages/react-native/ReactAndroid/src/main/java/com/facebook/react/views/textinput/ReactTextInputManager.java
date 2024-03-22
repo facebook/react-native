@@ -664,7 +664,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         new View.OnLongClickListener() {
           public boolean onLongClick(View v) {
             return _contextMenuHidden;
-          };
+          }
+          ;
         });
   }
 

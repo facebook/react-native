@@ -1020,7 +1020,8 @@ public class ReactInstanceManager {
             } else {
               FLog.w(
                   ReactConstants.TAG,
-                  "Package %s is not a ViewManagerOnDemandReactPackage, view managers will not be loaded",
+                  "Package %s is not a ViewManagerOnDemandReactPackage, view managers will not be"
+                      + " loaded",
                   reactPackage.getClass().getSimpleName());
             }
             Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
@@ -1046,7 +1047,9 @@ public class ReactInstanceManager {
     mReactInstanceEventListeners.remove(listener);
   }
 
-  /** @return current ReactApplicationContext */
+  /**
+   * @return current ReactApplicationContext
+   */
   @VisibleForTesting
   public @Nullable ReactContext getCurrentReactContext() {
     synchronized (mReactContextLock) {
@@ -1355,7 +1358,9 @@ public class ReactInstanceManager {
     mDevSupportManager.onReactInstanceDestroyed(reactContext);
   }
 
-  /** @return instance of {@link ReactContext} configured a {@link CatalystInstance} set */
+  /**
+   * @return instance of {@link ReactContext} configured a {@link CatalystInstance} set
+   */
   private ReactApplicationContext createReactContext(
       JavaScriptExecutor jsExecutor, JSBundleLoader jsBundleLoader) {
     FLog.d(ReactConstants.TAG, "ReactInstanceManager.createReactContext()");

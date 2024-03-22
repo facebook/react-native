@@ -416,7 +416,8 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
 
   public void setStateWrapper(StateWrapper stateWrapper) {
     mHostView.setStateWrapper(stateWrapper);
-  };
+  }
+  ;
 
   public void updateState(final int width, final int height) {
     mHostView.updateState(width, height);
