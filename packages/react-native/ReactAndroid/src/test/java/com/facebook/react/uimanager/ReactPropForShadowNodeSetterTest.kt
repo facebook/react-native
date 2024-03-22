@@ -7,8 +7,8 @@
 
 package com.facebook.react.uimanager
 
+import com.facebook.react.bridge.BridgeReactContext
 import com.facebook.react.bridge.JavaOnlyMap
-import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.uimanager.annotations.ReactProp
@@ -65,7 +65,7 @@ class ReactPropForShadowNodeSetterTest {
 
     init {
       setViewClassName("ShadowViewUnderTest")
-      val context = ReactApplicationContext(RuntimeEnvironment.getApplication())
+      val context = BridgeReactContext(RuntimeEnvironment.getApplication())
       setThemedContext(ThemedReactContext(context, context, null, -1))
     }
 
