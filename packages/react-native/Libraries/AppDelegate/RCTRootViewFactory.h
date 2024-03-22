@@ -27,6 +27,11 @@ typedef NSURL *_Nullable (^RCTSourceURLForBridgeBlock)(RCTBridge *bridge);
 typedef NSArray<id<RCTBridgeModule>> *_Nonnull (^RCTExtraModulesForBridgeBlock)(RCTBridge *bridge);
 typedef NSDictionary<NSString *, Class> *_Nonnull (^RCTExtraLazyModuleClassesForBridge)(RCTBridge *bridge);
 typedef BOOL (^RCTBridgeDidNotFindModuleBlock)(RCTBridge *bridge, NSString *moduleName);
+typedef void (^RCTLoadSourceForBridgeBlock)(RCTBridge *bridge, RCTSourceLoadBlock loadCallback);
+typedef void (^RCTLoadSourceForBridgeProgressBlock)(
+    RCTBridge *bridge,
+    RCTSourceLoadProgressBlock onProgress,
+    RCTSourceLoadBlock loadCallback);
 
 #pragma mark - RCTRootViewFactory Configuration
 @interface RCTRootViewFactoryConfiguration : NSObject
@@ -84,7 +89,6 @@ typedef BOOL (^RCTBridgeDidNotFindModuleBlock)(RCTBridge *bridge, NSString *modu
  * @returns: a newly created instance of RCTBridge.
  */
 @property (nonatomic, nullable) RCTCreateBridgeWithDelegateBlock createBridgeWithDelegate;
-
 /**
  * Block that returns the location of the JavaScript source file. When running from the packager
  * this should be an absolute URL, e.g. `http://localhost:8081/index.ios.bundle`.
@@ -122,6 +126,19 @@ typedef BOOL (^RCTBridgeDidNotFindModuleBlock)(RCTBridge *bridge, NSString *modu
  * If the module was not registered, return NO to prevent further searches.
  */
 @property (nonatomic, nullable) RCTBridgeDidNotFindModuleBlock bridgeDidNotFindModule;
+
+/**
+ * The bridge will automatically attempt to load the JS source code from the
+ * location specified by the `sourceURLForBridge:` method, however, if you want
+ * to handle loading the JS yourself, you can do so by implementing this method.
+ */
+@property (nonatomic, nullable) RCTLoadSourceForBridgeProgressBlock loadSourceForBridgeProgressBlock;
+
+/**
+ * Similar to loadSourceForBridge:onProgress:onComplete: but without progress
+ * reporting.
+ */
+@property (nonatomic, nullable) RCTLoadSourceForBridgeBlock loadSourceForBridgeBlock;
 
 @end
 
