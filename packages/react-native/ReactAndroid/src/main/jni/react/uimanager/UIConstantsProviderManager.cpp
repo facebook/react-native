@@ -20,15 +20,13 @@ namespace facebook::react {
 using namespace facebook::jni;
 
 UIConstantsProviderManager::UIConstantsProviderManager(
-    jni::alias_ref<UIConstantsProviderManager::javaobject> jThis,
     RuntimeExecutor runtimeExecutor,
     jni::alias_ref<DefaultEventTypesProvider::javaobject>
         defaultExportableEventTypesProvider,
     jni::alias_ref<ConstantsForViewManagerProvider::javaobject>
         constantsForViewManagerProvider,
     jni::alias_ref<ConstantsProvider::javaobject> constantsProvider)
-    : javaPart_(jni::make_global(jThis)),
-      runtimeExecutor_(runtimeExecutor),
+    : runtimeExecutor_(runtimeExecutor),
       defaultExportableEventTypesProvider_(
           jni::make_global(defaultExportableEventTypesProvider)),
       constantsForViewManagerProvider_(
@@ -37,7 +35,7 @@ UIConstantsProviderManager::UIConstantsProviderManager(
 
 jni::local_ref<UIConstantsProviderManager::jhybriddata>
 UIConstantsProviderManager::initHybrid(
-    jni::alias_ref<jhybridobject> jThis,
+    jni::alias_ref<jhybridobject> /* unused */,
     jni::alias_ref<JRuntimeExecutor::javaobject> runtimeExecutor,
     jni::alias_ref<DefaultEventTypesProvider::javaobject>
         defaultExportableEventTypesProvider,
@@ -45,7 +43,6 @@ UIConstantsProviderManager::initHybrid(
         constantsForViewManagerProvider,
     jni::alias_ref<ConstantsProvider::javaobject> constantsProvider) {
   return makeCxxInstance(
-      jThis,
       runtimeExecutor->cthis()->get(),
       defaultExportableEventTypesProvider,
       constantsForViewManagerProvider,
