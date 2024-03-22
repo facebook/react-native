@@ -54,6 +54,7 @@ abstract class PreparePrefabHeadersTask : DefaultTask() {
           it.include("boost/detail/workaround.hpp")
           it.include("boost/operators.hpp")
           it.include("boost/preprocessor/**/*.hpp")
+          // Headers needed for exposing rrc_text and rrc_textinput
           it.include("boost/container_hash/**/*.hpp")
           it.include("boost/detail/**/*.hpp")
           it.include("boost/intrusive/**/*.hpp")
