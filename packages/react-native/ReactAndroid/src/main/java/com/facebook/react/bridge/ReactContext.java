@@ -37,7 +37,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
  * Abstract ContextWrapper for Android application or activity {@link Context} and {@link
  * CatalystInstance}
  */
-public class ReactContext extends ContextWrapper {
+public abstract class ReactContext extends ContextWrapper {
 
   @DoNotStrip
   public interface RCTDeviceEventEmitter extends JavaScriptModule {
