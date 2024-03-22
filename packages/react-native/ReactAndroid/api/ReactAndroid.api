@@ -1073,6 +1073,7 @@ public class com/facebook/react/bridge/ReactBridge {
 public class com/facebook/react/bridge/ReactContext : android/content/ContextWrapper {
 	protected field mInteropModuleRegistry Lcom/facebook/react/bridge/interop/InteropModuleRegistry;
 	public fun <init> (Landroid/content/Context;)V
+	public fun <init> (Lcom/facebook/react/bridge/ReactContext;Landroid/content/Context;)V
 	public fun addActivityEventListener (Lcom/facebook/react/bridge/ActivityEventListener;)V
 	public fun addLifecycleEventListener (Lcom/facebook/react/bridge/LifecycleEventListener;)V
 	public fun addWindowFocusChangeListener (Lcom/facebook/react/bridge/WindowFocusChangeListener;)V
@@ -4813,16 +4814,10 @@ public class com/facebook/react/uimanager/ThemedReactContext : com/facebook/reac
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Landroid/content/Context;)V
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Landroid/content/Context;Ljava/lang/String;)V
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Landroid/content/Context;Ljava/lang/String;I)V
-	public fun addLifecycleEventListener (Lcom/facebook/react/bridge/LifecycleEventListener;)V
-	public fun getCurrentActivity ()Landroid/app/Activity;
-	public fun getFabricUIManager ()Lcom/facebook/react/bridge/UIManager;
 	public fun getModuleName ()Ljava/lang/String;
 	public fun getReactApplicationContext ()Lcom/facebook/react/bridge/ReactApplicationContext;
 	public fun getSurfaceID ()Ljava/lang/String;
 	public fun getSurfaceId ()I
-	public fun hasCurrentActivity ()Z
-	public fun isBridgeless ()Z
-	public fun removeLifecycleEventListener (Lcom/facebook/react/bridge/LifecycleEventListener;)V
 }
 
 public class com/facebook/react/uimanager/TouchTargetHelper {
