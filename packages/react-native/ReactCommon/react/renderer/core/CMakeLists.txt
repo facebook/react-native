@@ -28,5 +28,6 @@ target_link_libraries(react_render_core
         react_render_debug
         react_render_graphics
         react_render_mapbuffer
+        react_render_runtimescheduler
         react_utils
         runtimeexecutor)
