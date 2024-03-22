@@ -52,7 +52,7 @@ import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl;
 import com.facebook.react.turbomodule.core.NativeMethodCallInvokerHolderImpl;
 import com.facebook.react.uimanager.ComponentNameResolver;
-import com.facebook.react.uimanager.ComponentNameResolverManager;
+import com.facebook.react.uimanager.ComponentNameResolverBinding;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.UIConstantsProviderManager;
@@ -97,7 +97,6 @@ final class ReactInstance {
 
   private JavaScriptContextHolder mJavaScriptContextHolder;
 
-  @DoNotStrip @Nullable private ComponentNameResolverManager mComponentNameResolverManager;
   @DoNotStrip @Nullable private UIConstantsProviderManager mUIConstantsProviderManager;
 
   static {
@@ -212,19 +211,18 @@ final class ReactInstance {
         new BridgelessViewManagerResolver(mReactPackages, mBridgelessReactContext);
 
     // Initialize function for JS's UIManager.hasViewManagerConfig()
-    mComponentNameResolverManager =
-        new ComponentNameResolverManager(
-            // Use unbuffered RuntimeExecutor to install binding
-            unbufferedRuntimeExecutor,
-            (ComponentNameResolver)
-                () -> {
-                  Collection<String> viewManagerNames = mViewManagerResolver.getViewManagerNames();
-                  if (viewManagerNames.size() < 1) {
-                    FLog.e(TAG, "No ViewManager names found");
-                    return new String[0];
-                  }
-                  return viewManagerNames.toArray(new String[0]);
-                });
+    ComponentNameResolverBinding.install(
+        // Use unbuffered RuntimeExecutor to install binding
+        unbufferedRuntimeExecutor,
+        (ComponentNameResolver)
+            () -> {
+              Collection<String> viewManagerNames = mViewManagerResolver.getViewManagerNames();
+              if (viewManagerNames.size() < 1) {
+                FLog.e(TAG, "No ViewManager names found");
+                return new String[0];
+              }
+              return viewManagerNames.toArray(new String[0]);
+            });
 
     // Initialize function for JS's UIManager.getViewManagerConfig()
     // It should come after getTurboModuleManagerDelegate as it relies on react packages being
@@ -432,7 +430,6 @@ final class ReactInstance {
     mFabricUIManager.invalidate();
     mJavaTimerManager.onInstanceDestroy();
     mHybridData.resetNative();
-    mComponentNameResolverManager = null;
     mUIConstantsProviderManager = null;
     mJavaScriptContextHolder.clear();
   }
