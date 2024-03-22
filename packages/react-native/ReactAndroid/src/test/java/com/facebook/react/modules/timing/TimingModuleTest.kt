@@ -11,10 +11,10 @@ import android.content.Context
 import android.os.Looper
 import android.view.Choreographer.FrameCallback
 import com.facebook.react.bridge.Arguments
+import com.facebook.react.bridge.BridgeReactContext
 import com.facebook.react.bridge.CatalystInstance
 import com.facebook.react.bridge.JavaOnlyArray
 import com.facebook.react.bridge.JavaOnlyMap
-import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.common.SystemClock
 import com.facebook.react.devsupport.interfaces.DevSupportManager
@@ -53,7 +53,7 @@ class TimingModuleTest {
     const val FRAME_TIME_NS = 17 * 1000 * 1000
   }
 
-  private lateinit var reactContext: ReactApplicationContext
+  private lateinit var reactContext: BridgeReactContext
   private lateinit var headlessContext: HeadlessJsTaskContext
   private lateinit var timingModule: TimingModule
   private lateinit var reactChoreographerMock: ReactChoreographer
@@ -94,7 +94,7 @@ class TimingModuleTest {
         .thenAnswer { reactChoreographerMock }
 
     val reactInstance = mock(CatalystInstance::class.java)
-    reactContext = spy(ReactApplicationContext(mock(Context::class.java)))
+    reactContext = spy(BridgeReactContext(mock(Context::class.java)))
     doReturn(reactInstance).`when`(reactContext).catalystInstance
     doReturn(true).`when`(reactContext).hasActiveReactInstance()
 

@@ -111,16 +111,6 @@ public class ReactDelegate {
     }
   }
 
-  public void onUserLeaveHint() {
-    if (ReactFeatureFlags.enableBridgelessArchitecture) {
-      mReactHost.onHostLeaveHint(mActivity);
-    } else {
-      if (getReactNativeHost().hasInstance()) {
-        getReactNativeHost().getReactInstanceManager().onUserLeaveHint(mActivity);
-      }
-    }
-  }
-
   public void onHostPause() {
     if (ReactFeatureFlags.enableBridgelessArchitecture) {
       mReactHost.onHostPause(mActivity);

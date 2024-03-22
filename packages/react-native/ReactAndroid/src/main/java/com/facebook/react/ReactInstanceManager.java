@@ -51,6 +51,7 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.BridgeReactContext;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.CatalystInstanceImpl;
 import com.facebook.react.bridge.JSBundleLoader;
@@ -581,25 +582,6 @@ public class ReactInstanceManager {
     }
 
     moveToBeforeResumeLifecycleState();
-  }
-
-  /**
-   * This method should be called from {@link Activity#onUserLeaveHint()}. It notifies all listening
-   * modules that the user is about to leave the activity. The passed Activity is has to be the
-   * current Activity.
-   *
-   * @param activity the activity being backgrounded as a result of user action
-   */
-  @ThreadConfined(UI)
-  public void onUserLeaveHint(@Nullable Activity activity) {
-    if (mCurrentActivity != null && activity == mCurrentActivity) {
-      UiThreadUtil.assertOnUiThread();
-
-      ReactContext currentContext = getCurrentReactContext();
-      if (currentContext != null) {
-        currentContext.onUserLeaveHint(activity);
-      }
-    }
   }
 
   /**
@@ -1360,7 +1342,7 @@ public class ReactInstanceManager {
       JavaScriptExecutor jsExecutor, JSBundleLoader jsBundleLoader) {
     FLog.d(ReactConstants.TAG, "ReactInstanceManager.createReactContext()");
     ReactMarker.logMarker(CREATE_REACT_CONTEXT_START, jsExecutor.getName());
-    final ReactApplicationContext reactContext = new ReactApplicationContext(mApplicationContext);
+    final BridgeReactContext reactContext = new BridgeReactContext(mApplicationContext);
 
     JSExceptionHandler exceptionHandler =
         mJSExceptionHandler != null ? mJSExceptionHandler : mDevSupportManager;

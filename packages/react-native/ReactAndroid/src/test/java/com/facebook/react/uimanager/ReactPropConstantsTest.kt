@@ -8,7 +8,7 @@
 package com.facebook.react.uimanager
 
 import android.view.View
-import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.bridge.BridgeReactContext
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.common.MapBuilder
@@ -84,7 +84,7 @@ class ReactPropConstantsTest {
   @Test
   fun testNativePropsIncludeCorrectTypes() {
     val viewManagers = listOf<ViewManager<*, *>>(ViewManagerUnderTest())
-    val reactContext = ReactApplicationContext(RuntimeEnvironment.getApplication())
+    val reactContext = BridgeReactContext(RuntimeEnvironment.getApplication())
     val uiManagerModule = UIManagerModule(reactContext, viewManagers, 0)
     val constants: Map<*, *> =
         valueAtPath(uiManagerModule.constants as Map<*, *>, "SomeView", "NativeProps")

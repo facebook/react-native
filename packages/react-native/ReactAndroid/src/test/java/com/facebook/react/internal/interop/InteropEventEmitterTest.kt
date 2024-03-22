@@ -9,9 +9,9 @@
 
 package com.facebook.react.internal.interop
 
+import com.facebook.react.bridge.BridgeReactContext
 import com.facebook.react.bridge.JavaOnlyArray
 import com.facebook.react.bridge.JavaOnlyMap
-import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContext
 import com.facebook.testutils.fakes.FakeEventDispatcher
 import org.junit.Assert.assertEquals
@@ -29,7 +29,7 @@ class InteropEventEmitterTest {
 
   @Before
   fun setup() {
-    reactContext = ReactApplicationContext(RuntimeEnvironment.getApplication())
+    reactContext = BridgeReactContext(RuntimeEnvironment.getApplication())
     eventDispatcher = FakeEventDispatcher()
   }
 
