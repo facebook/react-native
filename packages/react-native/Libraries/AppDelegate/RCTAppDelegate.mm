@@ -265,19 +265,42 @@
     return [weakSelf sourceURLForBridge:bridge];
   };
 
-  configuration.extraModulesForBridge = ^NSArray<id<RCTBridgeModule>> *_Nonnull(RCTBridge *_Nonnull bridge)
-  {
-    return [weakSelf extraModulesForBridge:bridge];
-  };
+  if ([self respondsToSelector:@selector(extraModulesForBridge:)]) {
+    configuration.extraModulesForBridge = ^NSArray<id<RCTBridgeModule>> *_Nonnull(RCTBridge *_Nonnull bridge)
+    {
+      return [weakSelf extraModulesForBridge:bridge];
+    };
+  }
 
-  configuration.extraLazyModuleClassesForBridge = ^NSDictionary<NSString *, Class> *_Nonnull(RCTBridge *_Nonnull bridge)
-  {
-    return [weakSelf extraLazyModuleClassesForBridge:bridge];
-  };
+  if ([self respondsToSelector:@selector(extraLazyModuleClassesForBridge:)]) {
+    configuration.extraLazyModuleClassesForBridge =
+        ^NSDictionary<NSString *, Class> *_Nonnull(RCTBridge *_Nonnull bridge)
+    {
+      return [weakSelf extraLazyModuleClassesForBridge:bridge];
+    };
+  }
 
-  configuration.bridgeDidNotFindModule = ^BOOL(RCTBridge *_Nonnull bridge, NSString *_Nonnull moduleName) {
-    return [weakSelf bridge:bridge didNotFindModule:moduleName];
-  };
+  if ([self respondsToSelector:@selector(bridge:didNotFindModule:)]) {
+    configuration.bridgeDidNotFindModule = ^BOOL(RCTBridge *_Nonnull bridge, NSString *_Nonnull moduleName) {
+      return [weakSelf bridge:bridge didNotFindModule:moduleName];
+    };
+  }
+
+  if ([self respondsToSelector:@selector(loadSourceForBridge:withBlock:)]) {
+    configuration.loadSourceForBridgeBlock =
+        ^void(RCTBridge *_Nonnull bridge, RCTSourceLoadBlock _Nonnull loadCallback) {
+          [weakSelf loadSourceForBridge:bridge withBlock:loadCallback];
+        };
+  }
+
+  if ([self respondsToSelector:@selector(loadSourceForBridge:onProgress:onComplete:)]) {
+    configuration.loadSourceForBridgeProgressBlock =
+        ^(RCTBridge *_Nonnull bridge,
+          RCTSourceLoadProgressBlock _Nonnull onProgress,
+          RCTSourceLoadBlock _Nonnull loadCallback) {
+          [weakSelf loadSourceForBridge:bridge onProgress:onProgress onComplete:loadCallback];
+        };
+  }
 
   return [[RCTRootViewFactory alloc] initWithConfiguration:configuration andTurboModuleManagerDelegate:self];
 }
