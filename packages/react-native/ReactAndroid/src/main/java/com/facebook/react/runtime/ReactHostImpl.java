@@ -292,18 +292,6 @@ public class ReactHostImpl implements ReactHost {
 
   @ThreadConfined(UI)
   @Override
-  public void onHostLeaveHint(final @Nullable Activity activity) {
-    final String method = "onUserLeaveHint(activity)";
-    log(method);
-
-    ReactContext currentContext = getCurrentReactContext();
-    if (currentContext != null) {
-      currentContext.onUserLeaveHint(activity);
-    }
-  }
-
-  @ThreadConfined(UI)
-  @Override
   public void onHostPause(final @Nullable Activity activity) {
     final String method = "onHostPause(activity)";
     log(method);
