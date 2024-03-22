@@ -147,7 +147,7 @@ typedef BOOL css_backface_visibility_t;
 + (RCTTextDecorationLineType)RCTTextDecorationLineType:(id)json;
 
 #if TARGET_OS_OSX // [macOS
-+ (NSString *)accessibilityRoleFromTraits:(id)json;
++ (NSString *)accessibilityRoleFromTraits:(id)json useAriaMappings:(BOOL) useAriaMappings;
 
 + (NSArray<RCTHandledKey *> *)RCTHandledKeyArray:(id)json;
 #endif // macOS]

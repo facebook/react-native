@@ -415,11 +415,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
 
   // TODO: This logic makes VoiceOver describe some AccessibilityRole which do not have a backing UIAccessibilityTrait.
   // It does not run on Fabric.
-#if !TARGET_OS_OSX // [macOS]
   NSString *role = self.role ?: self.accessibilityRole;
-#else // [macOS renamed prop so it doesn't conflict with -[NSAccessibility accessibilityRole].
-  NSString *role = self.role ?: self.accessibilityRoleInternal;
-#endif
   NSString *roleDescription = role ? rolesAndStatesDescription[role] : nil;
   if (roleDescription) {
     [valueComponents addObject:roleDescription];

@@ -1474,6 +1474,104 @@ RCT_ENUM_CONVERTER(
     integerValue)
 
 #if TARGET_OS_OSX // [macOS
+// This is for the role prop & has slightly different mappings than the
+// old accessibilityRole prop for back compatability. `role` matches ARIA Core
+// AAM spec and takes precedence. See https://www.w3.org/TR/core-aam-1.1/
++ (NSString*) accessibilityRoleFromAriaRole:(NSString*)ariaRole
+{
+  // rowgroup is explicitly not mapped
+  if ([ariaRole isEqualToString:@"rowgroup"]) {
+      return nil;
+  }
+  static NSDictionary<NSString *, NSAccessibilityRole> * ariaRoleToNSAccessibilityRole;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    ariaRoleToNSAccessibilityRole = @{
+      @"alert": NSAccessibilityGroupRole,
+      @"alertdialog": NSAccessibilityGroupRole,
+      @"application": NSAccessibilityGroupRole,
+      @"article": NSAccessibilityGroupRole,
+      @"banner": NSAccessibilityGroupRole,
+      @"button": NSAccessibilityButtonRole,
+      @"cell": NSAccessibilityCellRole,
+      @"checkbox": NSAccessibilityCheckBoxRole,
+      @"columnheader": NSAccessibilityCellRole,
+      @"combobox": NSAccessibilityComboBoxRole,
+      @"complementary": NSAccessibilityGroupRole,
+      @"contentinfo": NSAccessibilityGroupRole,
+      @"definition": NSAccessibilityGroupRole,
+      @"dialog": NSAccessibilityGroupRole,
+      @"directory": NSAccessibilityListRole,
+      @"document": NSAccessibilityGroupRole,
+      @"feed": NSAccessibilityGroupRole,
+      @"figure": NSAccessibilityGroupRole,
+      @"form": NSAccessibilityGroupRole,
+      @"grid": NSAccessibilityTableRole,
+      @"gridcell": NSAccessibilityCellRole,
+      @"group": NSAccessibilityGroupRole,
+      @"heading": NSAccessibilityStaticTextRole,
+      @"image": NSAccessibilityImageRole,
+      @"img": NSAccessibilityImageRole,
+      @"link": NSAccessibilityLinkRole,
+      @"list": NSAccessibilityListRole,
+      @"listbox": NSAccessibilityListRole,
+      @"listitem": NSAccessibilityGroupRole,
+      @"log": NSAccessibilityGroupRole,
+      @"main": NSAccessibilityGroupRole,
+      @"marquee": NSAccessibilityGroupRole,
+      @"math": NSAccessibilityGroupRole,
+      @"menu": NSAccessibilityMenuRole,
+      @"menubar": NSAccessibilityMenuBarRole,
+      @"menuitem": NSAccessibilityMenuItemRole,
+      @"menuitemcheckbox": NSAccessibilityMenuItemRole,
+      @"menuitemradio": NSAccessibilityMenuItemRole,
+      @"meter": NSAccessibilityLevelIndicatorRole,
+      @"navigation": NSAccessibilityGroupRole,
+      @"none": NSAccessibilityGroupRole,
+      @"note": NSAccessibilityGroupRole,
+      @"option": NSAccessibilityStaticTextRole,
+      @"presentation": NSAccessibilityGroupRole,
+      @"progressbar": NSAccessibilityProgressIndicatorRole,
+      @"radio": NSAccessibilityRadioButtonRole,
+      @"radiogroup": NSAccessibilityRadioGroupRole,
+      @"region": NSAccessibilityGroupRole,
+      @"row": NSAccessibilityRowRole,
+      @"rowheader": NSAccessibilityCellRole,
+      @"scrollbar": NSAccessibilityScrollBarRole,
+      @"search": NSAccessibilityGroupRole,
+      @"searchbox": NSAccessibilityTextFieldRole,
+      @"separator": NSAccessibilitySplitterRole,
+      @"slider": NSAccessibilitySliderRole,
+      @"spinbutton": NSAccessibilityIncrementorRole,
+      @"status": NSAccessibilityGroupRole,
+      @"switch": NSAccessibilityCheckBoxRole,
+      @"tab": NSAccessibilityRadioButtonRole,
+      @"table": NSAccessibilityTableRole,
+      @"tablist": NSAccessibilityTabGroupRole,
+      @"tabpanel": NSAccessibilityGroupRole,
+      @"term": NSAccessibilityGroupRole,
+      @"textbox": NSAccessibilityTextFieldRole,
+      @"timer": NSAccessibilityGroupRole,
+      @"toolbar": NSAccessibilityToolbarRole,
+      @"tooltip": NSAccessibilityGroupRole,
+      @"tree": NSAccessibilityOutlineRole,
+      @"treegrid": NSAccessibilityTableRole,
+      @"treeitem": NSAccessibilityRowRole,
+    };
+  });
+  NSAccessibilityRole nsRole = [ariaRoleToNSAccessibilityRole valueForKey: ariaRole];
+  if (nsRole == nil) {
+    // Fall back to legacy mappings if an aria mapping is not found. This would
+    // include macOS specific roles like disclosure and legacy accessibilityTrait
+    // based mappings like adjustable
+    nsRole = [RCTConvert accessibilityRoleFromTrait:ariaRole];
+  }
+  return nsRole;
+}
+
+// This function is for accessibilityRole & has slightly different mappings 
+// than the new role prop for back compatability. role matches ARIA spec and
+// takes precedence.
 + (NSString*)accessibilityRoleFromTrait:(NSString*)trait
 {
   static NSDictionary<NSString *, NSString *> *traitOrRoleToAccessibilityRole;
@@ -1525,13 +1623,13 @@ RCT_ENUM_CONVERTER(
   return role;
 }
 
-+ (NSString *)accessibilityRoleFromTraits:(id)json
++ (NSString *)accessibilityRoleFromTraits:(id)json useAriaMappings:(BOOL)useAriaMappings
 {
   if ([json isKindOfClass:[NSString class]]) {
-    return [RCTConvert accessibilityRoleFromTrait:json];
+    return useAriaMappings ? [RCTConvert accessibilityRoleFromAriaRole:json] : [RCTConvert accessibilityRoleFromTrait:json];
   } else if ([json isKindOfClass:[NSArray class]]) {
     for (NSString *trait in json) {
-      NSString *accessibilityRole = [RCTConvert accessibilityRoleFromTrait:trait];
+      NSString *accessibilityRole = useAriaMappings ? [RCTConvert accessibilityRoleFromAriaRole:json] : [RCTConvert accessibilityRoleFromTrait:trait];
       if (![accessibilityRole isEqualToString:NSAccessibilityUnknownRole]) {
         return accessibilityRole;
       }
