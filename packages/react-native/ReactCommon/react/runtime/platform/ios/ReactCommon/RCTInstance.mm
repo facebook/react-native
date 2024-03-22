@@ -170,6 +170,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
     self->_jsRuntimeFactory = nullptr;
     self->_appTMMDelegate = nil;
     self->_delegate = nil;
+    [self->_displayLink invalidate];
     self->_displayLink = nil;
 
     self->_turboModuleManager = nil;
