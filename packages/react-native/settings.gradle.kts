@@ -29,3 +29,8 @@ include(":packages:react-native:ReactAndroid:hermes-engine")
 
 project(":packages:react-native:ReactAndroid:hermes-engine").projectDir =
     file("ReactAndroid/hermes-engine/")
+
+include(":packages:react-native:ReactAndroid:hermes-engine:cmakedownloader")
+
+project(":packages:react-native:ReactAndroid:hermes-engine:cmakedownloader").projectDir =
+    file("ReactAndroid/hermes-engine/cmake-downloader/")
