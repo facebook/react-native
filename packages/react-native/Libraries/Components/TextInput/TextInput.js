@@ -39,7 +39,14 @@ type TextInputInstance = React.ElementRef<HostComponent<mixed>> & {
   +clear: () => void,
   +isFocused: () => boolean,
   +getNativeRef: () => ?React.ElementRef<HostComponent<mixed>>,
-  +setSelection: (start: number, end: number) => void,
+  +setSelection: (
+    start: number,
+    end: number,
+    cursorPosition: {
+      start: {x: number, y: number},
+      end: {x: number, y: number},
+    },
+  ) => void,
 };
 
 let AndroidTextInput;
@@ -79,6 +86,16 @@ export type TextInputEvent = SyntheticEvent<
     range: $ReadOnly<{|
       start: number,
       end: number,
+      cursorPosition: $ReadOnly<{|
+        start: $ReadOnly<{|
+          x: number,
+          y: number,
+        |}>,
+        end: $ReadOnly<{|
+          x: number,
+          y: number,
+        |}>,
+      |}>,
     |}>,
     target: number,
     text: string,
@@ -107,6 +124,16 @@ export type FocusEvent = TargetEvent;
 type Selection = $ReadOnly<{|
   start: number,
   end: number,
+  cursorPosition: $ReadOnly<{|
+    start: $ReadOnly<{|
+      x: number,
+      y: number,
+    |}>,
+    end: $ReadOnly<{|
+      x: number,
+      y: number,
+    |}>,
+  |}>,
 |}>;
 
 export type SelectionChangeEvent = SyntheticEvent<
@@ -793,7 +820,7 @@ export type Props = $ReadOnly<{|
   /**
    * Callback that is called when the text input selection is changed.
    * This will be called with
-   * `{ nativeEvent: { selection: { start, end } } }`.
+   * `{ nativeEvent: { selection: { start, end, cursorPosition: {start: {x, y}, end: {x, y}}} } }`.
    */
   onSelectionChange?: ?(e: SelectionChangeEvent) => mixed,
 
@@ -870,10 +897,21 @@ export type Props = $ReadOnly<{|
   /**
    * The start and end of the text input's selection. Set start and end to
    * the same value to position the cursor.
+   * cursorPosition specify the location of the cursor
    */
   selection?: ?$ReadOnly<{|
     start: number,
     end?: ?number,
+    cursorPosition: $ReadOnly<{|
+      start: $ReadOnly<{|
+        x: number,
+        y: number,
+      |}>,
+      end: $ReadOnly<{|
+        x: number,
+        y: number,
+      |}>,
+    |}>,
   |}>,
 
   /**
@@ -1096,6 +1134,16 @@ function InternalTextInput(props: Props): React.Node {
       : {
           start: propsSelection.start,
           end: propsSelection.end ?? propsSelection.start,
+          cursorPosition: {
+            start: {
+              x: propsSelection?.cursorPosition?.start?.x ?? 0,
+              y: propsSelection?.cursorPosition?.start?.y ?? 0,
+            },
+            end: {
+              x: propsSelection?.cursorPosition?.end?.x ?? 0,
+              y: propsSelection?.cursorPosition?.end?.y ?? 0,
+            },
+          },
         };
 
   const [mostRecentEventCount, setMostRecentEventCount] = useState<number>(0);
