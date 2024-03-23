@@ -85,7 +85,8 @@ class BridgelessReactContext extends ReactApplicationContext implements EventDis
   public CatalystInstance getCatalystInstance() {
     Log.w(
         TAG,
-        "[WARNING] Bridgeless doesn't support CatalystInstance. Accessing an API that's not part of the new architecture is not encouraged usage.");
+        "[WARNING] Bridgeless doesn't support CatalystInstance. Accessing an API that's not part of"
+            + " the new architecture is not encouraged usage.");
     return new BridgelessCatalystInstance(mReactHost);
   }
 
@@ -151,6 +152,7 @@ class BridgelessReactContext extends ReactApplicationContext implements EventDis
   public @Nullable <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface) {
     return mReactHost.getNativeModule(nativeModuleInterface);
   }
+
   /**
    * @return the RuntimeExecutor, a thread-safe handler for accessing the runtime. If the runtime is
    *     not initialized yet, it will return null.

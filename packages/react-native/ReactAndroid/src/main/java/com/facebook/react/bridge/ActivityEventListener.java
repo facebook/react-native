@@ -24,5 +24,6 @@ public interface ActivityEventListener {
   void onNewIntent(Intent intent);
 
   /** Called when host activity receives an {@link Activity#onUserLeaveHint()} call. */
-  default void onUserLeaveHint(Activity activity) {};
+  default void onUserLeaveHint(Activity activity) {}
+  ;
 }

@@ -273,10 +273,12 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
     public ReactPackageTurboModuleManagerDelegate build() {
       Assertions.assertNotNull(
           mContext,
-          "The ReactApplicationContext must be provided to create ReactPackageTurboModuleManagerDelegate");
+          "The ReactApplicationContext must be provided to create"
+              + " ReactPackageTurboModuleManagerDelegate");
       Assertions.assertNotNull(
           mPackages,
-          "A set of ReactPackages must be provided to create ReactPackageTurboModuleManagerDelegate");
+          "A set of ReactPackages must be provided to create"
+              + " ReactPackageTurboModuleManagerDelegate");
       return build(mContext, mPackages);
     }
   }

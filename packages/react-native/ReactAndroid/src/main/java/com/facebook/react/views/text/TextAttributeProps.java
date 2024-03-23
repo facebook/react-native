@@ -111,6 +111,7 @@ public class TextAttributeProps implements EffectiveTextAttributeProvider {
 
   protected int mFontStyle = ReactConstants.UNSET;
   protected int mFontWeight = ReactConstants.UNSET;
+
   /**
    * NB: If a font family is used that does not have a style in a certain Android version (ie.
    * monospace bold pre Android 5.0), that style (ie. bold) will not be inherited by nested Text
@@ -134,7 +135,9 @@ public class TextAttributeProps implements EffectiveTextAttributeProvider {
    */
   protected @Nullable String mFontFamily = null;
 
-  /** @see android.graphics.Paint#setFontFeatureSettings */
+  /**
+   * @see android.graphics.Paint#setFontFeatureSettings
+   */
   protected @Nullable String mFontFeatureSettings = null;
 
   protected boolean mContainsImages = false;

@@ -21,38 +21,49 @@ public class Spacing {
 
   /** Spacing type that represents the left direction. E.g. {@code marginLeft}. */
   public static final int LEFT = 0;
+
   /** Spacing type that represents the top direction. E.g. {@code marginTop}. */
   public static final int TOP = 1;
+
   /** Spacing type that represents the right direction. E.g. {@code marginRight}. */
   public static final int RIGHT = 2;
+
   /** Spacing type that represents the bottom direction. E.g. {@code marginBottom}. */
   public static final int BOTTOM = 3;
+
   /**
    * Spacing type that represents start direction e.g. left in left-to-right, right in
    * right-to-left.
    */
   public static final int START = 4;
+
   /**
    * Spacing type that represents end direction e.g. right in left-to-right, left in right-to-left.
    */
   public static final int END = 5;
+
   /**
    * Spacing type that represents horizontal direction (left and right). E.g. {@code
    * marginHorizontal}.
    */
   public static final int HORIZONTAL = 6;
+
   /**
    * Spacing type that represents vertical direction (top and bottom). E.g. {@code marginVertical}.
    */
   public static final int VERTICAL = 7;
+
   /**
    * Spacing type that represents all directions (left, top, right, bottom). E.g. {@code margin}.
    */
   public static final int ALL = 8;
+
   /** Spacing type that represents block directions (top, bottom). E.g. {@code marginBlock}. */
   public static final int BLOCK = 9;
+
   /** Spacing type that represents the block end direction (bottom). E.g. {@code marginBlockEnd}. */
   public static final int BLOCK_END = 10;
+
   /**
    * Spacing type that represents the block start direction (top). E.g. {@code marginBlockStart}.
    */

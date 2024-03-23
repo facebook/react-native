@@ -23,12 +23,17 @@ import org.json.JSONObject;
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class DebugServerException extends RuntimeException {
   private static final String GENERIC_ERROR_MESSAGE =
-      "\n\nTry the following to fix the issue:\n"
+      "\n\n"
+          + "Try the following to fix the issue:\n"
           + "\u2022 Ensure that Metro is running\n"
-          + "\u2022 Ensure that your device/emulator is connected to your machine and has USB debugging enabled - run 'adb devices' to see a list of connected devices\n"
+          + "\u2022 Ensure that your device/emulator is connected to your machine and has USB"
+          + " debugging enabled - run 'adb devices' to see a list of connected devices\n"
           + "\u2022 Ensure Airplane Mode is disabled\n"
-          + "\u2022 If you're on a physical device connected to the same machine, run 'adb reverse tcp:<PORT> tcp:<PORT>' to forward requests from your device\n"
-          + "\u2022 If your device is on the same Wi-Fi network, set 'Debug server host & port for device' in 'Dev settings' to your machine's IP address and the port of the local dev server - e.g. 10.0.1.1:<PORT>\n\n";
+          + "\u2022 If you're on a physical device connected to the same machine, run 'adb reverse"
+          + " tcp:<PORT> tcp:<PORT>' to forward requests from your device\n"
+          + "\u2022 If your device is on the same Wi-Fi network, set 'Debug server host & port for"
+          + " device' in 'Dev settings' to your machine's IP address and the port of the local dev"
+          + " server - e.g. 10.0.1.1:<PORT>\n\n";
 
   public static DebugServerException makeGeneric(
       @NonNull String url, @NonNull String reason, Throwable t) {

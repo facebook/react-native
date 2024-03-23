@@ -46,6 +46,7 @@ public interface CatalystInstance
 
   @DoNotStrip
   void callFunction(String module, String method, NativeArray arguments);
+
   /**
    * Destroys this catalyst instance, waiting for any other threads in ReactQueueConfiguration
    * (besides the UI thread) to finish running. Must be called from the UI thread so that we can
@@ -73,7 +74,9 @@ public interface CatalystInstance
 
   @Deprecated(
       since =
-          "getJSIModule(JSIModuleType moduleType) is deprecated and will be deleted in the future. Please use ReactInstanceEventListener to subscribe for react instance events instead.")
+          "getJSIModule(JSIModuleType moduleType) is deprecated and will be deleted in the future."
+              + " Please use ReactInstanceEventListener to subscribe for react instance events"
+              + " instead.")
   JSIModule getJSIModule(JSIModuleType moduleType);
 
   Collection<NativeModule> getNativeModules();
@@ -136,21 +139,26 @@ public interface CatalystInstance
 
   @Deprecated(
       since =
-          "setTurboModuleManager(JSIModule getter) is deprecated and will be deleted in the future. Please use setTurboModuleRegistry(TurboModuleRegistry turboModuleRegistry)instead.")
+          "setTurboModuleManager(JSIModule getter) is deprecated and will be deleted in the future."
+              + " Please use setTurboModuleRegistry(TurboModuleRegistry"
+              + " turboModuleRegistry)instead.")
   void setTurboModuleManager(JSIModule getter);
 
   @DeprecatedInNewArchitecture(
       message =
-          "This method will be deprecated later as part of Stable APIs with bridge removal and not encouraged usage.")
+          "This method will be deprecated later as part of Stable APIs with bridge removal and not"
+              + " encouraged usage.")
   void setTurboModuleRegistry(TurboModuleRegistry turboModuleRegistry);
 
   @DeprecatedInNewArchitecture(
       message =
-          "This method will be deprecated later as part of Stable APIs with bridge removal and not encouraged usage.")
+          "This method will be deprecated later as part of Stable APIs with bridge removal and not"
+              + " encouraged usage.")
   void setFabricUIManager(UIManager fabricUIManager);
 
   @DeprecatedInNewArchitecture(
       message =
-          "This method will be deprecated later as part of Stable APIs with bridge removal and not encouraged usage.")
+          "This method will be deprecated later as part of Stable APIs with bridge removal and not"
+              + " encouraged usage.")
   UIManager getFabricUIManager();
 }

@@ -126,7 +126,8 @@ public class MountItemDispatcher {
             new ReactNoCrashSoftException(
                 "Re-dispatched "
                     + mReDispatchCounter
-                    + " times. This indicates setState (?) is likely being called too many times during mounting."));
+                    + " times. This indicates setState (?) is likely being called too many times"
+                    + " during mounting."));
       }
 
       mReDispatchCounter++;

@@ -208,13 +208,15 @@ public class SurfaceMountingManager {
           } else if (rootView.getId() != View.NO_ID) {
             FLog.e(
                 TAG,
-                "Trying to add RootTag to RootView that already has a tag: existing tag: [%d] new tag: [%d]",
+                "Trying to add RootTag to RootView that already has a tag: existing tag: [%d] new"
+                    + " tag: [%d]",
                 rootView.getId(),
                 mSurfaceId);
             throw new IllegalViewOperationException(
-                "Trying to add a root view with an explicit id already set. React Native uses "
-                    + "the id field to track react tags and will overwrite this field. If that is fine, "
-                    + "explicitly overwrite the id field to View.NO_ID before calling addRootView.");
+                "Trying to add a root view with an explicit id already set. React Native uses the"
+                    + " id field to track react tags and will overwrite this field. If that is"
+                    + " fine, explicitly overwrite the id field to View.NO_ID before calling"
+                    + " addRootView.");
           }
           rootView.setId(mSurfaceId);
 
@@ -450,7 +452,8 @@ public class SurfaceMountingManager {
       ReactSoftExceptionLogger.logSoftException(
           TAG,
           new IllegalViewOperationException(
-              "removeViewAt tried to remove a React View that was actually reused. This indicates a bug in the Differ (specifically instruction ordering). ["
+              "removeViewAt tried to remove a React View that was actually reused. This indicates a"
+                  + " bug in the Differ (specifically instruction ordering). ["
                   + tag
                   + "]"));
       return;
@@ -1421,7 +1424,8 @@ public class SurfaceMountingManager {
             ReactSoftExceptionLogger.logSoftException(
                 TAG,
                 new IllegalViewOperationException(
-                    "RemoveDeleteTree recursively tried to remove a React View that was actually reused. This indicates a bug in the Differ. ["
+                    "RemoveDeleteTree recursively tried to remove a React View that was actually"
+                        + " reused. This indicates a bug in the Differ. ["
                         + reactTag
                         + "]"));
             continue;

@@ -176,8 +176,8 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
         } else {
           FLog.w(
               TAG,
-              "Failed to cast mScroller field in HorizontalScrollView (probably due to OEM changes to AOSP)! "
-                  + "This app will exhibit the bounce-back scrolling bug :(");
+              "Failed to cast mScroller field in HorizontalScrollView (probably due to OEM changes"
+                  + " to AOSP)! This app will exhibit the bounce-back scrolling bug :(");
           scroller = null;
         }
       } catch (IllegalAccessException e) {

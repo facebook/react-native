@@ -49,7 +49,9 @@ public class CancellationTokenSource implements Closeable {
     }
   }
 
-  /** @return the token that can be passed to asynchronous method to control cancellation. */
+  /**
+   * @return the token that can be passed to asynchronous method to control cancellation.
+   */
   public @NonNull CancellationToken getToken() {
     synchronized (lock) {
       throwIfClosed();
