@@ -6,33 +6,24 @@
  *
  * @flow strict
  * @format
+ * @oncall react_native
  */
 
-'use strict';
+// Compatibility module for tools which don't support the "exports" field:
+// - Flow (type exports)
+// - Metro (runtime exports)
 
-export type PackagerAsset = {
-  +__packager_asset: boolean,
-  +fileSystemLocation: string,
-  +httpServerLocation: string,
-  +width: ?number,
-  +height: ?number,
-  +scales: Array<number>,
-  +hash: string,
-  +name: string,
-  +type: string,
-  ...
-};
+/*::
+export * from './src/registry.flow';
+*/
 
-const assets: Array<PackagerAsset> = [];
-
-function registerAsset(asset: PackagerAsset): number {
-  // `push` returns new array length, so the first asset will
-  // get id 1 (not 0) to make the value truthy
-  return assets.push(asset);
+try {
+  // $FlowIgnore[cannot-resolve-module]
+  // $FlowIgnore[invalid-export]
+  // $FlowIgnore[module-type-conflict]
+  module.exports = require('./dist/registry.flow');
+} catch (e) {
+  // $FlowIgnore[invalid-export]
+  // $FlowIgnore[module-type-conflict]
+  module.exports = require('./src/registry');
 }
-
-function getAssetByID(assetId: number): PackagerAsset {
-  return assets[assetId - 1];
-}
-
-module.exports = {registerAsset, getAssetByID};
