@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<393c6cf93399cfe0b0533927877531d5>>
+ * @generated SignedSource<<85e74dc58bf5f5400e7b0d6b518dcaf1>>
  */
 
 /**
@@ -60,6 +60,12 @@ class ReactNativeFeatureFlagsProviderHolder
   bool enableCustomDrawOrderFabric() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableCustomDrawOrderFabric");
+    return method(javaProvider_);
+  }
+
+  bool enableES6Proxy() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableES6Proxy");
     return method(javaProvider_);
   }
 
@@ -129,6 +135,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableCustomDrawOrderFabric(
   return ReactNativeFeatureFlags::enableCustomDrawOrderFabric();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableES6Proxy(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableES6Proxy();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableFixForClippedSubviewsCrash(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableFixForClippedSubviewsCrash();
@@ -193,6 +204,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableCustomDrawOrderFabric",
         JReactNativeFeatureFlagsCxxInterop::enableCustomDrawOrderFabric),
+      makeNativeMethod(
+        "enableES6Proxy",
+        JReactNativeFeatureFlagsCxxInterop::enableES6Proxy),
       makeNativeMethod(
         "enableFixForClippedSubviewsCrash",
         JReactNativeFeatureFlagsCxxInterop::enableFixForClippedSubviewsCrash),

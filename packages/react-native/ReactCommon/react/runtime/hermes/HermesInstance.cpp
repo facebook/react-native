@@ -137,7 +137,7 @@ std::unique_ptr<JSRuntime> HermesInstance::createJSRuntime(
                             .withAllocInYoung(false)
                             .withRevertToYGAtTTI(true)
                             .build())
-          .withES6Proxy(false)
+          .withES6Proxy(ReactNativeFeatureFlags::enableES6Proxy())
           .withEnableSampleProfiling(true)
           .withMicrotaskQueue(ReactNativeFeatureFlags::enableMicrotasks())
           .withVMExperimentFlags(vmExperimentFlags);

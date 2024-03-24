@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bdd9f28c6de15e64ce03c505a3f4f34b>>
+ * @generated SignedSource<<9ecee4d37cb8d2e767c0ab880155c43b>>
  */
 
 /**
@@ -51,6 +51,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableCustomDrawOrderFabric(): Boolean = accessor.enableCustomDrawOrderFabric()
+
+  /**
+   * Enables the use of ES6Proxy if the JS engine supports it.
+   */
+  @JvmStatic
+  public fun enableES6Proxy(): Boolean = accessor.enableES6Proxy()
 
   /**
    * Attempt at fixing a crash related to subview clipping on Android. This is a kill switch for the fix

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<aade6c478e09fb1f92319c3f46adaf13>>
+ * @generated SignedSource<<40079700685d7903997e1338f7de8534>>
  * @flow strict-local
  */
 
@@ -44,6 +44,7 @@ export type ReactNativeFeatureFlags = {
   batchRenderingUpdatesInEventLoop: Getter<boolean>,
   enableBackgroundExecutor: Getter<boolean>,
   enableCustomDrawOrderFabric: Getter<boolean>,
+  enableES6Proxy: Getter<boolean>,
   enableFixForClippedSubviewsCrash: Getter<boolean>,
   enableMicrotasks: Getter<boolean>,
   enableMountHooksAndroid: Getter<boolean>,
@@ -109,6 +110,10 @@ export const enableBackgroundExecutor: Getter<boolean> = createNativeFlagGetter(
  * When enabled, Fabric will use customDrawOrder in ReactViewGroup (similar to old architecture).
  */
 export const enableCustomDrawOrderFabric: Getter<boolean> = createNativeFlagGetter('enableCustomDrawOrderFabric', false);
+/**
+ * Enables the use of ES6Proxy if the JS engine supports it.
+ */
+export const enableES6Proxy: Getter<boolean> = createNativeFlagGetter('enableES6Proxy', true);
 /**
  * Attempt at fixing a crash related to subview clipping on Android. This is a kill switch for the fix
  */

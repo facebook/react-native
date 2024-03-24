@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d0985b19d61af8bdf47c322b7a59e203>>
+ * @generated SignedSource<<bfa1106d845c1ca19601a42fcb68d338>>
  */
 
 /**
@@ -30,6 +30,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableBackgroundExecutor(): Boolean = false
 
   override fun enableCustomDrawOrderFabric(): Boolean = false
+
+  override fun enableES6Proxy(): Boolean = true
 
   override fun enableFixForClippedSubviewsCrash(): Boolean = false
 
