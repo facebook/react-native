@@ -564,6 +564,7 @@ android {
             "react_render_animations",
             "react_render_core",
             "react_render_consistency",
+            "react_render_dom",
             "react_render_graphics",
             "rrc_image",
             "rrc_root",

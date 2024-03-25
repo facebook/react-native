@@ -6,10 +6,11 @@
  */
 
 #include "NativeDOM.h"
+#include <react/renderer/components/root/RootShadowNode.h>
+#include <react/renderer/dom/DOM.h>
 #include <react/renderer/uimanager/PointerEventsProcessor.h>
 #include <react/renderer/uimanager/UIManager.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
-#include <react/renderer/uimanager/primitives.h>
 #include <optional>
 
 #ifdef RN_DISABLE_OSS_PLUGIN_HEADER
@@ -22,15 +23,39 @@ std::shared_ptr<facebook::react::TurboModule> NativeDOMModuleProvider(
 }
 
 namespace {
-facebook::react::UIManager& getUIManagerFromRuntime(
-    facebook::jsi::Runtime& runtime) {
-  return facebook::react::UIManagerBinding::getBinding(runtime)->getUIManager();
+using namespace facebook::react;
+
+RootShadowNode::Shared getCurrentShadowTreeRevision(
+    facebook::jsi::Runtime& runtime,
+    SurfaceId surfaceId) {
+  auto& uiManager =
+      facebook::react::UIManagerBinding::getBinding(runtime)->getUIManager();
+  auto shadowTreeRevisionProvider = uiManager.getShadowTreeRevisionProvider();
+  return shadowTreeRevisionProvider->getCurrentRevision(surfaceId);
 }
 
 facebook::react::PointerEventsProcessor& getPointerEventsProcessorFromRuntime(
     facebook::jsi::Runtime& runtime) {
   return facebook::react::UIManagerBinding::getBinding(runtime)
       ->getPointerEventsProcessor();
+}
+
+std::vector<facebook::jsi::Value> getArrayOfInstanceHandlesFromShadowNodes(
+    const ShadowNode::ListOfShared& nodes,
+    facebook::jsi::Runtime& runtime) {
+  // JSI doesn't support adding elements to an array after creation,
+  // so we need to accumulate the values in a vector and then create
+  // the array when we know the size.
+  std::vector<facebook::jsi::Value> nonNullInstanceHandles;
+  nonNullInstanceHandles.reserve(nodes.size());
+  for (const auto& shadowNode : nodes) {
+    auto instanceHandle = (*shadowNode).getInstanceHandle(runtime);
+    if (!instanceHandle.isNull()) {
+      nonNullInstanceHandles.push_back(std::move(instanceHandle));
+    }
+  }
+
+  return nonNullInstanceHandles;
 }
 } // namespace
 
@@ -43,41 +68,49 @@ std::optional<jsi::Value> NativeDOM::getParentNode(
     jsi::Runtime& rt,
     jsi::Value shadowNodeValue) {
   auto shadowNode = shadowNodeFromValue(rt, shadowNodeValue);
-  auto parentShadowNode =
-      getUIManagerFromRuntime(rt).getNewestParentOfShadowNode(*shadowNode);
-
-  // shadowNode is a RootShadowNode
-  if (!parentShadowNode) {
+  auto currentRevision =
+      getCurrentShadowTreeRevision(rt, shadowNode->getSurfaceId());
+  if (currentRevision == nullptr) {
     return std::nullopt;
   }
 
-  return (*parentShadowNode).getInstanceHandle(rt);
+  auto parentShadowNode = dom::getParentNode(currentRevision, *shadowNode);
+  if (parentShadowNode == nullptr) {
+    return std::nullopt;
+  }
+
+  return parentShadowNode->getInstanceHandle(rt);
 }
 
 std::optional<std::vector<jsi::Value>> NativeDOM::getChildNodes(
     jsi::Runtime& rt,
     jsi::Value shadowNodeValue) {
   auto shadowNode = shadowNodeFromValue(rt, shadowNodeValue);
-
-  auto newestCloneOfShadowNode =
-      getUIManagerFromRuntime(rt).getNewestCloneOfShadowNode(*shadowNode);
-
-  // There's no version of this node in the current shadow tree
-  if (newestCloneOfShadowNode == nullptr) {
+  auto currentRevision =
+      getCurrentShadowTreeRevision(rt, shadowNode->getSurfaceId());
+  if (currentRevision == nullptr) {
     return std::nullopt;
   }
 
-  auto childShadowNodes = newestCloneOfShadowNode->getChildren();
-  return getArrayOfInstanceHandlesFromShadowNodes(childShadowNodes, rt);
+  auto childNodes = dom::getChildNodes(currentRevision, *shadowNode);
+
+  // There's no version of this node in the current shadow tree
+  if (!childNodes) {
+    return std::nullopt;
+  }
+
+  return getArrayOfInstanceHandlesFromShadowNodes(childNodes.value(), rt);
 }
 
 bool NativeDOM::isConnected(jsi::Runtime& rt, jsi::Value shadowNodeValue) {
   auto shadowNode = shadowNodeFromValue(rt, shadowNodeValue);
+  auto currentRevision =
+      getCurrentShadowTreeRevision(rt, shadowNode->getSurfaceId());
+  if (currentRevision == nullptr) {
+    return false;
+  }
 
-  auto newestCloneOfShadowNode =
-      getUIManagerFromRuntime(rt).getNewestCloneOfShadowNode(*shadowNode);
-
-  return newestCloneOfShadowNode != nullptr;
+  return dom::isConnected(currentRevision, *shadowNode);
 }
 
 double NativeDOM::compareDocumentPosition(
@@ -86,23 +119,27 @@ double NativeDOM::compareDocumentPosition(
     jsi::Value otherShadowNodeValue) {
   auto shadowNode = shadowNodeFromValue(rt, shadowNodeValue);
   auto otherShadowNode = shadowNodeFromValue(rt, otherShadowNodeValue);
+  auto currentRevision =
+      getCurrentShadowTreeRevision(rt, shadowNode->getSurfaceId());
+  if (otherShadowNode == nullptr || currentRevision == nullptr) {
+    return 0;
+  }
 
-  auto documentPosition = getUIManagerFromRuntime(rt).compareDocumentPosition(
-      *shadowNode, *otherShadowNode);
-
-  return documentPosition;
+  return dom::compareDocumentPosition(
+      currentRevision, *shadowNode, *otherShadowNode);
 }
 
 std::string NativeDOM::getTextContent(
     jsi::Runtime& rt,
     jsi::Value shadowNodeValue) {
   auto shadowNode = shadowNodeFromValue(rt, shadowNodeValue);
+  auto currentRevision =
+      getCurrentShadowTreeRevision(rt, shadowNode->getSurfaceId());
+  if (currentRevision == nullptr) {
+    return "";
+  }
 
-  auto textContent =
-      getUIManagerFromRuntime(rt).getTextContentInNewestCloneOfShadowNode(
-          *shadowNode);
-
-  return textContent;
+  return dom::getTextContent(currentRevision, *shadowNode);
 }
 
 std::optional<std::tuple<
@@ -114,19 +151,15 @@ NativeDOM::getBoundingClientRect(
     jsi::Runtime& rt,
     jsi::Value shadowNodeValue,
     bool includeTransform) {
-  auto layoutMetrics = getUIManagerFromRuntime(rt).getRelativeLayoutMetrics(
-      *shadowNodeFromValue(rt, shadowNodeValue),
-      nullptr,
-      {/* .includeTransform = */ includeTransform,
-       /* .includeViewportOffset = */ true});
-
-  if (layoutMetrics == EmptyLayoutMetrics) {
+  auto shadowNode = shadowNodeFromValue(rt, shadowNodeValue);
+  auto currentRevision =
+      getCurrentShadowTreeRevision(rt, shadowNode->getSurfaceId());
+  if (currentRevision == nullptr) {
     return std::nullopt;
   }
 
-  auto frame = layoutMetrics.frame;
-  return std::tuple{
-      frame.origin.x, frame.origin.y, frame.size.width, frame.size.height};
+  return dom::getBoundingClientRect(
+      currentRevision, *shadowNode, includeTransform);
 }
 
 std::optional<std::tuple<
@@ -134,151 +167,61 @@ std::optional<std::tuple<
     /* top: */ double,
     /* left: */ double>>
 NativeDOM::getOffset(jsi::Runtime& rt, jsi::Value shadowNodeValue) {
-  auto& uiManager = getUIManagerFromRuntime(rt);
   auto shadowNode = shadowNodeFromValue(rt, shadowNodeValue);
-
-  auto newestCloneOfShadowNode =
-      uiManager.getNewestCloneOfShadowNode(*shadowNode);
-  auto newestPositionedAncestorOfShadowNode =
-      uiManager.getNewestPositionedAncestorOfShadowNode(*shadowNode);
-  // The node is no longer part of an active shadow tree, or it is the
-  // root node
-  if (newestCloneOfShadowNode == nullptr ||
-      newestPositionedAncestorOfShadowNode == nullptr) {
+  auto currentRevision =
+      getCurrentShadowTreeRevision(rt, shadowNode->getSurfaceId());
+  if (currentRevision == nullptr) {
     return std::nullopt;
   }
 
-  // If the node is not displayed (itself or any of its ancestors has
-  // "display: none"), this returns an empty layout metrics object.
-  auto shadowNodeLayoutMetricsRelativeToRoot =
-      uiManager.getRelativeLayoutMetrics(
-          *shadowNode, nullptr, {/* .includeTransform = */ false});
-  if (shadowNodeLayoutMetricsRelativeToRoot == EmptyLayoutMetrics) {
+  auto offset = dom::getOffset(currentRevision, *shadowNode);
+
+  if (!offset) {
     return std::nullopt;
   }
 
-  auto positionedAncestorLayoutMetricsRelativeToRoot =
-      uiManager.getRelativeLayoutMetrics(
-          *newestPositionedAncestorOfShadowNode,
-          nullptr,
-          {/* .includeTransform = */ false});
-  if (positionedAncestorLayoutMetricsRelativeToRoot == EmptyLayoutMetrics) {
-    return std::nullopt;
-  }
-
-  auto shadowNodeOriginRelativeToRoot =
-      shadowNodeLayoutMetricsRelativeToRoot.frame.origin;
-  auto positionedAncestorOriginRelativeToRoot =
-      positionedAncestorLayoutMetricsRelativeToRoot.frame.origin;
-
-  // On the Web, offsets are computed from the inner border of the
-  // parent.
-  auto offsetTop = shadowNodeOriginRelativeToRoot.y -
-      positionedAncestorOriginRelativeToRoot.y -
-      positionedAncestorLayoutMetricsRelativeToRoot.borderWidth.top;
-  auto offsetLeft = shadowNodeOriginRelativeToRoot.x -
-      positionedAncestorOriginRelativeToRoot.x -
-      positionedAncestorLayoutMetricsRelativeToRoot.borderWidth.left;
+  auto& offsetValue = offset.value();
 
   return std::tuple{
-      (*newestPositionedAncestorOfShadowNode).getInstanceHandle(rt),
-      offsetTop,
-      offsetLeft};
+      std::get<0>(offsetValue)->getInstanceHandle(rt),
+      std::get<1>(offsetValue),
+      std::get<2>(offsetValue)};
 }
 
 std::optional<std::tuple</* scrollLeft: */ double, /* scrollTop: */ double>>
 NativeDOM::getScrollPosition(jsi::Runtime& rt, jsi::Value shadowNodeValue) {
-  auto& uiManager = getUIManagerFromRuntime(rt);
   auto shadowNode = shadowNodeFromValue(rt, shadowNodeValue);
-
-  auto newestCloneOfShadowNode =
-      uiManager.getNewestCloneOfShadowNode(*shadowNode);
-  // The node is no longer part of an active shadow tree, or it is the
-  // root node
-  if (newestCloneOfShadowNode == nullptr) {
+  auto currentRevision =
+      getCurrentShadowTreeRevision(rt, shadowNode->getSurfaceId());
+  if (currentRevision == nullptr) {
     return std::nullopt;
   }
 
-  // If the node is not displayed (itself or any of its ancestors has
-  // "display: none"), this returns an empty layout metrics object.
-  auto layoutMetrics = uiManager.getRelativeLayoutMetrics(
-      *shadowNode, nullptr, {/* .includeTransform = */ true});
-
-  if (layoutMetrics == EmptyLayoutMetrics) {
-    return std::nullopt;
-  }
-
-  auto layoutableShadowNode =
-      dynamic_cast<LayoutableShadowNode const*>(newestCloneOfShadowNode.get());
-  // This should never happen
-  if (layoutableShadowNode == nullptr) {
-    return std::nullopt;
-  }
-
-  auto scrollPosition = layoutableShadowNode->getContentOriginOffset();
-
-  return std::tuple{
-      scrollPosition.x == 0 ? 0 : -scrollPosition.x,
-      scrollPosition.y == 0 ? 0 : -scrollPosition.y};
+  return dom::getScrollPosition(currentRevision, *shadowNode);
 }
 
 std::optional<std::tuple</* scrollWidth: */ int, /* scrollHeight */ int>>
 NativeDOM::getScrollSize(jsi::Runtime& rt, jsi::Value shadowNodeValue) {
-  auto& uiManager = getUIManagerFromRuntime(rt);
   auto shadowNode = shadowNodeFromValue(rt, shadowNodeValue);
-
-  auto newestCloneOfShadowNode =
-      uiManager.getNewestCloneOfShadowNode(*shadowNode);
-  // The node is no longer part of an active shadow tree, or it is the
-  // root node
-  if (newestCloneOfShadowNode == nullptr) {
+  auto currentRevision =
+      getCurrentShadowTreeRevision(rt, shadowNode->getSurfaceId());
+  if (currentRevision == nullptr) {
     return std::nullopt;
   }
 
-  // If the node is not displayed (itself or any of its ancestors has
-  // "display: none"), this returns an empty layout metrics object.
-  auto layoutMetrics = uiManager.getRelativeLayoutMetrics(
-      *shadowNode, nullptr, {/* .includeTransform = */ false});
-
-  if (layoutMetrics == EmptyLayoutMetrics ||
-      layoutMetrics.displayType == DisplayType::Inline) {
-    return std::nullopt;
-  }
-
-  auto layoutableShadowNode = dynamic_cast<YogaLayoutableShadowNode const*>(
-      newestCloneOfShadowNode.get());
-  // This should never happen
-  if (layoutableShadowNode == nullptr) {
-    return std::nullopt;
-  }
-
-  Size scrollSize = getScrollableContentBounds(
-                        layoutableShadowNode->getContentBounds(), layoutMetrics)
-                        .size;
-
-  return std::tuple{
-      std::round(scrollSize.width), std::round(scrollSize.height)};
+  return dom::getScrollSize(currentRevision, *shadowNode);
 }
 
 std::optional<std::tuple</* width: */ int, /* height: */ int>>
 NativeDOM::getInnerSize(jsi::Runtime& rt, jsi::Value shadowNodeValue) {
   auto shadowNode = shadowNodeFromValue(rt, shadowNodeValue);
-
-  // If the node is not displayed (itself or any of its ancestors has
-  // "display: none"), this returns an empty layout metrics object.
-  auto layoutMetrics = getUIManagerFromRuntime(rt).getRelativeLayoutMetrics(
-      *shadowNode, nullptr, {/* .includeTransform = */ false});
-
-  if (layoutMetrics == EmptyLayoutMetrics ||
-      layoutMetrics.displayType == DisplayType::Inline) {
+  auto currentRevision =
+      getCurrentShadowTreeRevision(rt, shadowNode->getSurfaceId());
+  if (currentRevision == nullptr) {
     return std::nullopt;
   }
 
-  auto paddingFrame = layoutMetrics.getPaddingFrame();
-
-  return std::tuple{
-      std::round(paddingFrame.size.width),
-      std::round(paddingFrame.size.height)};
+  return dom::getInnerSize(currentRevision, *shadowNode);
 }
 
 std::optional<std::tuple<
@@ -288,43 +231,20 @@ std::optional<std::tuple<
     /* leftWidth: */ int>>
 NativeDOM::getBorderSize(jsi::Runtime& rt, jsi::Value shadowNodeValue) {
   auto shadowNode = shadowNodeFromValue(rt, shadowNodeValue);
-
-  // If the node is not displayed (itself or any of its ancestors has
-  // "display: none"), this returns an empty layout metrics object.
-  auto layoutMetrics = getUIManagerFromRuntime(rt).getRelativeLayoutMetrics(
-      *shadowNode, nullptr, {/* .includeTransform = */ false});
-
-  if (layoutMetrics == EmptyLayoutMetrics ||
-      layoutMetrics.displayType == DisplayType::Inline) {
+  auto currentRevision =
+      getCurrentShadowTreeRevision(rt, shadowNode->getSurfaceId());
+  if (currentRevision == nullptr) {
     return std::nullopt;
   }
 
-  return std::tuple{
-      std::round(layoutMetrics.borderWidth.top),
-      std::round(layoutMetrics.borderWidth.right),
-      std::round(layoutMetrics.borderWidth.bottom),
-      std::round(layoutMetrics.borderWidth.left)};
+  return dom::getBorderSize(currentRevision, *shadowNode);
 }
 
 std::string NativeDOM::getTagName(
     jsi::Runtime& rt,
     jsi::Value shadowNodeValue) {
   auto shadowNode = shadowNodeFromValue(rt, shadowNodeValue);
-
-  std::string canonicalComponentName = shadowNode->getComponentName();
-
-  // FIXME(T162807327): Remove Android-specific prefixes and unify
-  // shadow node implementations
-  if (canonicalComponentName == "AndroidTextInput") {
-    canonicalComponentName = "TextInput";
-  } else if (canonicalComponentName == "AndroidSwitch") {
-    canonicalComponentName = "Switch";
-  }
-
-  // Prefix with RN:
-  canonicalComponentName.insert(0, "RN:");
-
-  return canonicalComponentName;
+  return dom::getTagName(*shadowNode);
 }
 
 bool NativeDOM::hasPointerCapture(
