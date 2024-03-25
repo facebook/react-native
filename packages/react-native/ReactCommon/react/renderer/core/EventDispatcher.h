@@ -11,6 +11,7 @@
 #include <react/renderer/core/EventListener.h>
 #include <react/renderer/core/EventQueue.h>
 #include <react/renderer/core/EventQueueProcessor.h>
+#include <react/renderer/core/StatePipe.h>
 #include <react/renderer/core/StateUpdate.h>
 
 namespace facebook::react {
@@ -31,7 +32,8 @@ class EventDispatcher {
       const EventQueueProcessor& eventProcessor,
       const EventBeat::Factory& asynchronousEventBeatFactory,
       const EventBeat::SharedOwnerBox& ownerBox,
-      RuntimeScheduler& runtimeScheduler);
+      RuntimeScheduler& runtimeScheduler,
+      StatePipe statePipe);
 
   /*
    * Dispatches a raw event with given priority using event-delivery pipe.
@@ -69,6 +71,7 @@ class EventDispatcher {
 
  private:
   EventQueue eventQueue_;
+  const StatePipe statePipe_;
 
   mutable EventListenerContainer eventListeners_;
 };
