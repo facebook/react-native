@@ -240,52 +240,9 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
   contextContainer->insert("ReactNativeConfig", _reactNativeConfig);
 }
 
-- (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
-{
-  if (_configuration.extraModulesForBridge != nil) {
-    return _configuration.extraModulesForBridge(bridge);
-  }
-  return nil;
-}
-
-- (NSDictionary<NSString *, Class> *)extraLazyModuleClassesForBridge:(RCTBridge *)bridge
-{
-  if (_configuration.extraLazyModuleClassesForBridge != nil) {
-    return _configuration.extraLazyModuleClassesForBridge(bridge);
-  }
-  return nil;
-}
-
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
 {
-  if (_configuration.sourceURLForBridge != nil) {
-    return _configuration.sourceURLForBridge(bridge);
-  }
   return [self bundleURL];
-}
-
-- (BOOL)bridge:(RCTBridge *)bridge didNotFindModule:(NSString *)moduleName
-{
-  if (_configuration.bridgeDidNotFindModule != nil) {
-    return _configuration.bridgeDidNotFindModule(bridge, moduleName);
-  }
-  return NO;
-}
-
-- (void)loadSourceForBridge:(RCTBridge *)bridge withBlock:(RCTSourceLoadBlock)loadCallback
-{
-  if (_configuration.loadSourceForBridgeBlock != nil) {
-    _configuration.loadSourceForBridgeBlock(bridge, loadCallback);
-  }
-}
-
-- (void)loadSourceForBridge:(RCTBridge *)bridge
-                 onProgress:(RCTSourceLoadProgressBlock)onProgress
-                 onComplete:(RCTSourceLoadBlock)loadCallback
-{
-  if (_configuration.loadSourceForBridgeProgressBlock != nil) {
-    _configuration.loadSourceForBridgeProgressBlock(bridge, onProgress, loadCallback);
-  }
 }
 
 - (NSURL *)bundleURL
