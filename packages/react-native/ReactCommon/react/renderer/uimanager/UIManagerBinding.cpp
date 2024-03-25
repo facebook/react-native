@@ -654,28 +654,38 @@ jsi::Value UIManagerBinding::get(
             size_t count) {
           validateArgumentCount(runtime, methodName, paramCount, count);
 
-          auto layoutMetrics = uiManager->getRelativeLayoutMetrics(
-              *shadowNodeFromValue(runtime, arguments[0]),
-              shadowNodeFromValue(runtime, arguments[1]).get(),
-              {/* .includeTransform = */ false});
+          auto shadowNode = shadowNodeFromValue(runtime, arguments[0]);
+          auto relativeToShadowNode =
+              shadowNodeFromValue(runtime, arguments[1]);
+          auto onFailFunction =
+              arguments[2].getObject(runtime).getFunction(runtime);
+          auto onSuccessFunction =
+              arguments[3].getObject(runtime).getFunction(runtime);
 
-          if (layoutMetrics == EmptyLayoutMetrics) {
-            auto onFailFunction =
-                arguments[2].getObject(runtime).getFunction(runtime);
+          auto currentRevision =
+              uiManager->getShadowTreeRevisionProvider()->getCurrentRevision(
+                  shadowNode->getSurfaceId());
+          if (currentRevision == nullptr) {
             onFailFunction.call(runtime);
             return jsi::Value::undefined();
           }
 
-          auto onSuccessFunction =
-              arguments[3].getObject(runtime).getFunction(runtime);
-          auto frame = layoutMetrics.frame;
+          auto result = dom::measureLayout(
+              currentRevision, *shadowNode, *relativeToShadowNode);
+
+          if (!result) {
+            onFailFunction.call(runtime);
+            return jsi::Value::undefined();
+          }
+
+          auto [x, y, width, height] = result.value();
 
           onSuccessFunction.call(
               runtime,
-              {jsi::Value{runtime, (double)frame.origin.x},
-               jsi::Value{runtime, (double)frame.origin.y},
-               jsi::Value{runtime, (double)frame.size.width},
-               jsi::Value{runtime, (double)frame.size.height}});
+              {jsi::Value{runtime, x},
+               jsi::Value{runtime, y},
+               jsi::Value{runtime, width},
+               jsi::Value{runtime, height}});
           return jsi::Value::undefined();
         });
   }
@@ -694,33 +704,34 @@ jsi::Value UIManagerBinding::get(
           validateArgumentCount(runtime, methodName, paramCount, count);
 
           auto shadowNode = shadowNodeFromValue(runtime, arguments[0]);
-          auto layoutMetrics = uiManager->getRelativeLayoutMetrics(
-              *shadowNode, nullptr, {/* .includeTransform = */ true});
-          auto onSuccessFunction =
+          auto callbackFunction =
               arguments[1].getObject(runtime).getFunction(runtime);
 
-          if (layoutMetrics == EmptyLayoutMetrics) {
-            onSuccessFunction.call(runtime, {0, 0, 0, 0, 0, 0});
+          auto currentRevision =
+              uiManager->getShadowTreeRevisionProvider()->getCurrentRevision(
+                  shadowNode->getSurfaceId());
+          if (currentRevision == nullptr) {
+            callbackFunction.call(runtime, {0, 0, 0, 0, 0, 0});
             return jsi::Value::undefined();
           }
-          auto newestCloneOfShadowNode =
-              uiManager->getNewestCloneOfShadowNode(*shadowNode);
 
-          auto layoutableShadowNode = dynamic_cast<const LayoutableShadowNode*>(
-              newestCloneOfShadowNode.get());
-          Point originRelativeToParent = layoutableShadowNode != nullptr
-              ? layoutableShadowNode->getLayoutMetrics().frame.origin
-              : Point();
+          auto result = dom::measure(currentRevision, *shadowNode);
 
-          auto frame = layoutMetrics.frame;
-          onSuccessFunction.call(
+          if (!result) {
+            callbackFunction.call(runtime, {0, 0, 0, 0, 0, 0});
+            return jsi::Value::undefined();
+          }
+
+          auto [x, y, width, height, pageX, pageY] = result.value();
+
+          callbackFunction.call(
               runtime,
-              {jsi::Value{runtime, (double)originRelativeToParent.x},
-               jsi::Value{runtime, (double)originRelativeToParent.y},
-               jsi::Value{runtime, (double)frame.size.width},
-               jsi::Value{runtime, (double)frame.size.height},
-               jsi::Value{runtime, (double)frame.origin.x},
-               jsi::Value{runtime, (double)frame.origin.y}});
+              {jsi::Value{runtime, x},
+               jsi::Value{runtime, y},
+               jsi::Value{runtime, width},
+               jsi::Value{runtime, height},
+               jsi::Value{runtime, pageX},
+               jsi::Value{runtime, pageY}});
           return jsi::Value::undefined();
         });
   }
@@ -738,27 +749,33 @@ jsi::Value UIManagerBinding::get(
             size_t count) {
           validateArgumentCount(runtime, methodName, paramCount, count);
 
-          auto layoutMetrics = uiManager->getRelativeLayoutMetrics(
-              *shadowNodeFromValue(runtime, arguments[0]),
-              nullptr,
-              {/* .includeTransform = */ true,
-               /* .includeViewportOffset = */ true});
-
-          auto onSuccessFunction =
+          auto shadowNode = shadowNodeFromValue(runtime, arguments[0]);
+          auto callbackFunction =
               arguments[1].getObject(runtime).getFunction(runtime);
 
-          if (layoutMetrics == EmptyLayoutMetrics) {
-            onSuccessFunction.call(runtime, {0, 0, 0, 0});
+          auto currentRevision =
+              uiManager->getShadowTreeRevisionProvider()->getCurrentRevision(
+                  shadowNode->getSurfaceId());
+
+          if (currentRevision == nullptr) {
+            callbackFunction.call(runtime, {0, 0, 0, 0, 0, 0});
             return jsi::Value::undefined();
           }
 
-          auto frame = layoutMetrics.frame;
-          onSuccessFunction.call(
+          auto result = dom::measureInWindow(currentRevision, *shadowNode);
+          if (!result) {
+            callbackFunction.call(runtime, {0, 0, 0, 0, 0, 0});
+            return jsi::Value::undefined();
+          }
+
+          auto [x, y, width, height] = result.value();
+
+          callbackFunction.call(
               runtime,
-              {jsi::Value{runtime, (double)frame.origin.x},
-               jsi::Value{runtime, (double)frame.origin.y},
-               jsi::Value{runtime, (double)frame.size.width},
-               jsi::Value{runtime, (double)frame.size.height}});
+              {jsi::Value{runtime, x},
+               jsi::Value{runtime, y},
+               jsi::Value{runtime, width},
+               jsi::Value{runtime, height}});
           return jsi::Value::undefined();
         });
   }

@@ -486,4 +486,118 @@ std::string getTagName(const ShadowNode& shadowNode) {
   return canonicalComponentName;
 }
 
+std::optional<std::tuple<
+    /* x: */ double,
+    /* y: */ double,
+    /* width: */ double,
+    /* height: */ double,
+    /* pageX: */ double,
+    /* pageY: */ double>>
+measure(
+    const RootShadowNode::Shared& currentRevision,
+    const ShadowNode& shadowNode) {
+  auto shadowNodeInCurrentRevision =
+      getShadowNodeInRevision(currentRevision, shadowNode);
+  if (shadowNodeInCurrentRevision == nullptr) {
+    return std::nullopt;
+  }
+
+  auto layoutMetrics = getRelativeLayoutMetrics(
+      *currentRevision,
+      *shadowNodeInCurrentRevision,
+      {.includeTransform = true, .includeViewportOffset = false});
+
+  if (layoutMetrics == EmptyLayoutMetrics) {
+    return std::nullopt;
+  }
+
+  auto layoutableShadowNode = dynamic_cast<const LayoutableShadowNode*>(
+      shadowNodeInCurrentRevision.get());
+  Point originRelativeToParent = layoutableShadowNode != nullptr
+      ? layoutableShadowNode->getLayoutMetrics().frame.origin
+      : Point();
+
+  auto frame = layoutMetrics.frame;
+
+  return std::tuple{
+      (double)originRelativeToParent.x,
+      (double)originRelativeToParent.y,
+      (double)frame.size.width,
+      (double)frame.size.height,
+      (double)frame.origin.x,
+      (double)frame.origin.y};
+}
+
+std::optional<std::tuple<
+    /* x: */ double,
+    /* y: */ double,
+    /* width: */ double,
+    /* height: */ double>>
+measureInWindow(
+    const RootShadowNode::Shared& currentRevision,
+    const ShadowNode& shadowNode) {
+  auto shadowNodeInCurrentRevision =
+      getShadowNodeInRevision(currentRevision, shadowNode);
+  if (shadowNodeInCurrentRevision == nullptr) {
+    return std::nullopt;
+  }
+
+  auto layoutMetrics = getRelativeLayoutMetrics(
+      *currentRevision,
+      *shadowNodeInCurrentRevision,
+      {.includeTransform = true, .includeViewportOffset = true});
+
+  if (layoutMetrics == EmptyLayoutMetrics) {
+    return std::nullopt;
+  }
+
+  auto frame = layoutMetrics.frame;
+  return std::tuple{
+      (double)frame.origin.x,
+      (double)frame.origin.y,
+      (double)frame.size.width,
+      (double)frame.size.height,
+  };
+}
+
+std::optional<std::tuple<
+    /* x: */ double,
+    /* y: */ double,
+    /* width: */ double,
+    /* height: */ double>>
+measureLayout(
+    const RootShadowNode::Shared& currentRevision,
+    const ShadowNode& shadowNode,
+    const ShadowNode& relativeToShadowNode) {
+  auto shadowNodeInCurrentRevision =
+      getShadowNodeInRevision(currentRevision, shadowNode);
+  if (shadowNodeInCurrentRevision == nullptr) {
+    return std::nullopt;
+  }
+
+  auto relativeToShadowNodeInCurrentRevision =
+      getShadowNodeInRevision(currentRevision, relativeToShadowNode);
+  if (relativeToShadowNodeInCurrentRevision == nullptr) {
+    return std::nullopt;
+  }
+
+  auto layoutMetrics = getRelativeLayoutMetrics(
+      *relativeToShadowNodeInCurrentRevision,
+      *shadowNodeInCurrentRevision,
+      {.includeTransform = false});
+
+  if (layoutMetrics == EmptyLayoutMetrics) {
+    return std::nullopt;
+  }
+
+  auto frame = layoutMetrics.frame;
+
+  return std::tuple{
+      (double)frame.origin.x,
+      (double)frame.origin.y,
+      (double)frame.size.width,
+      (double)frame.size.height,
+  };
+}
+
 } // namespace facebook::react::dom
