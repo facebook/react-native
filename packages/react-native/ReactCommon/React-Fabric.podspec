@@ -213,7 +213,7 @@ Pod::Spec.new do |s|
       sss.header_dir           = "react/renderer/components/textinput"
 
     end
-    
+
     ss.subspec "unimplementedview" do |sss|
       sss.dependency             folly_dep_name, folly_version
       sss.compiler_flags       = folly_compiler_flags
@@ -277,10 +277,17 @@ Pod::Spec.new do |s|
   end
 
   s.subspec "uimanager" do |ss|
+    ss.subspec "consistency" do |sss|
+      sss.dependency             folly_dep_name, folly_version
+      sss.compiler_flags       = folly_compiler_flags
+      sss.source_files         = "react/renderer/uimanager/consistency/*.{m,mm,cpp,h}"
+      sss.header_dir           = "react/renderer/uimanager/consistency"
+    end
+
     ss.dependency             folly_dep_name, folly_version
+    ss.dependency             "React-rendererconsistency"
     ss.compiler_flags       = folly_compiler_flags
-    ss.source_files         = "react/renderer/uimanager/**/*.{m,mm,cpp,h}"
-    ss.exclude_files        = "react/renderer/uimanager/tests"
+    ss.source_files         = "react/renderer/uimanager/*.{m,mm,cpp,h}"
     ss.header_dir           = "react/renderer/uimanager"
   end
 

@@ -8,6 +8,7 @@
 #pragma once
 
 #include <ReactCommon/RuntimeExecutor.h>
+#include <react/renderer/consistency/ShadowTreeRevisionConsistencyManager.h>
 #include <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerClock.h>
 #include <react/renderer/runtimescheduler/Task.h>
@@ -105,6 +106,10 @@ class RuntimeScheduler_Legacy final : public RuntimeSchedulerBase {
   void scheduleRenderingUpdate(
       RuntimeSchedulerRenderingUpdate&& renderingUpdate) override;
 
+  void setShadowTreeRevisionConsistencyManager(
+      ShadowTreeRevisionConsistencyManager*
+          shadowTreeRevisionConsistencyManager) override;
+
  private:
   std::priority_queue<
       std::shared_ptr<Task>,
@@ -151,6 +156,9 @@ class RuntimeScheduler_Legacy final : public RuntimeSchedulerBase {
    * This flag is set while performing work, to prevent re-entrancy.
    */
   std::atomic_bool isPerformingWork_{false};
+
+  ShadowTreeRevisionConsistencyManager* shadowTreeRevisionConsistencyManager_{
+      nullptr};
 };
 
 } // namespace facebook::react
