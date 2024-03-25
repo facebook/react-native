@@ -13,6 +13,7 @@
 #include <react/renderer/components/view/PointerEvent.h>
 #include <react/renderer/core/LayoutableShadowNode.h>
 #include <react/renderer/debug/SystraceSection.h>
+#include <react/renderer/dom/DOM.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
 #include <react/renderer/uimanager/primitives.h>
 
@@ -868,25 +869,32 @@ jsi::Value UIManagerBinding::get(
             size_t count) -> jsi::Value {
           validateArgumentCount(runtime, methodName, paramCount, count);
 
+          auto shadowNode = shadowNodeFromValue(runtime, arguments[0]);
           bool includeTransform = arguments[1].getBool();
 
-          auto layoutMetrics = uiManager->getRelativeLayoutMetrics(
-              *shadowNodeFromValue(runtime, arguments[0]),
-              nullptr,
-              {/* .includeTransform = */ includeTransform,
-               /* .includeViewportOffset = */ true});
+          auto currentRevision =
+              uiManager->getShadowTreeRevisionProvider()->getCurrentRevision(
+                  shadowNode->getSurfaceId());
 
-          if (layoutMetrics == EmptyLayoutMetrics) {
+          if (currentRevision == nullptr) {
             return jsi::Value::undefined();
           }
 
-          auto frame = layoutMetrics.frame;
+          auto result = dom::getBoundingClientRect(
+              currentRevision, *shadowNode, includeTransform);
+
+          if (!result) {
+            return jsi::Value::undefined();
+          }
+
+          auto [x, y, width, height] = result.value();
+
           return jsi::Array::createWithElements(
               runtime,
-              jsi::Value{runtime, (double)frame.origin.x},
-              jsi::Value{runtime, (double)frame.origin.y},
-              jsi::Value{runtime, (double)frame.size.width},
-              jsi::Value{runtime, (double)frame.size.height});
+              jsi::Value{runtime, x},
+              jsi::Value{runtime, y},
+              jsi::Value{runtime, width},
+              jsi::Value{runtime, height});
         });
   }
 
@@ -909,10 +917,18 @@ jsi::Value UIManagerBinding::get(
           auto shadowNode = shadowNodeFromValue(runtime, arguments[0]);
           auto otherShadowNode = shadowNodeFromValue(runtime, arguments[1]);
 
-          auto documentPosition =
-              uiManager->compareDocumentPosition(*shadowNode, *otherShadowNode);
+          auto currentRevision =
+              uiManager->getShadowTreeRevisionProvider()->getCurrentRevision(
+                  shadowNode->getSurfaceId());
 
-          return jsi::Value(documentPosition);
+          double documentPosition = 0;
+
+          if (currentRevision != nullptr) {
+            documentPosition = (double)dom::compareDocumentPosition(
+                currentRevision, *shadowNode, *otherShadowNode);
+          }
+
+          return {documentPosition};
         });
   }
 
