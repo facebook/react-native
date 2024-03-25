@@ -98,7 +98,13 @@
     "featureflags-update": "node ./scripts/featureflags/index.js"
   },
   "peerDependencies": {
+    "@types/react": "^18.2.6",
     "react": "18.2.0"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
   },
   "dependencies": {
     "@jest/create-cache-key-function": "^29.6.3",
