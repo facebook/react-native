@@ -286,9 +286,22 @@ Pod::Spec.new do |s|
 
     ss.dependency             folly_dep_name, folly_version
     ss.dependency             "React-rendererconsistency"
+    ss.dependency             "React-Fabric/dom"
     ss.compiler_flags       = folly_compiler_flags
     ss.source_files         = "react/renderer/uimanager/*.{m,mm,cpp,h}"
     ss.header_dir           = "react/renderer/uimanager"
+  end
+
+  s.subspec "dom" do |ss|
+    ss.dependency             folly_dep_name, folly_version
+    ss.dependency             "React-Fabric/components/root"
+    ss.dependency             "React-Fabric/components/text"
+    ss.dependency             "React-Fabric/core"
+    ss.dependency             "React-graphics"
+    ss.compiler_flags       = folly_compiler_flags
+    ss.source_files         = "react/renderer/dom/**/*.{m,mm,cpp,h}"
+    ss.exclude_files        = "react/renderer/dom/tests"
+    ss.header_dir           = "react/renderer/dom"
   end
 
   s.subspec "telemetry" do |ss|
