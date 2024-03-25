@@ -14,3 +14,10 @@ yarn add @react-native/gradle-plugin
 
 [version-badge]: https://img.shields.io/npm/v/@react-native/gradle-plugin?style=flat-square
 [package]: https://www.npmjs.com/package/@react-native/gradle-plugin
+
+## Testing
+
+To run the tests in this package, run the following commands from the React Native root folder:
+
+1. `yarn` to install the dependencies. You just need to run this once
+2. `yarn jest packages/react-native-gradle-plugin`.

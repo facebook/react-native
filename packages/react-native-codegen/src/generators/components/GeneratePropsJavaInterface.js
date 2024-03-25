@@ -10,18 +10,18 @@
 
 'use strict';
 import type {CommandParamTypeAnnotation} from '../../CodegenSchema';
-
 import type {
-  NamedShape,
   CommandTypeAnnotation,
   ComponentShape,
+  NamedShape,
   PropTypeAnnotation,
   SchemaType,
 } from '../../CodegenSchema';
+
 const {
   getImports,
-  toSafeJavaString,
   getInterfaceJavaClassName,
+  toSafeJavaString,
 } = require('./JavaHelpers');
 
 // File path -> contents
@@ -106,6 +106,9 @@ function getJavaValueForProp(
         case 'EdgeInsetsPrimitive':
           addNullable(imports);
           return '@Nullable ReadableMap value';
+        case 'DimensionPrimitive':
+          addNullable(imports);
+          return '@Nullable YogaValue value';
         default:
           (typeAnnotation.name: empty);
           throw new Error('Received unknown ReservedPropTypeAnnotation');
@@ -124,6 +127,8 @@ function getJavaValueForProp(
     case 'Int32EnumTypeAnnotation':
       addNullable(imports);
       return '@Nullable Integer value';
+    case 'MixedTypeAnnotation':
+      return 'Dynamic value';
     default:
       (typeAnnotation: empty);
       throw new Error('Received invalid typeAnnotation');
@@ -166,6 +171,8 @@ function getCommandArgJavaType(param: NamedShape<CommandParamTypeAnnotation>) {
       return 'int';
     case 'StringTypeAnnotation':
       return 'String';
+    case 'ArrayTypeAnnotation':
+      return 'ReadableArray';
     default:
       (typeAnnotation.type: empty);
       throw new Error('Receieved invalid typeAnnotation');
@@ -230,6 +237,7 @@ module.exports = {
     schema: SchemaType,
     packageName?: string,
     assumeNonnull: boolean = false,
+    headerPrefix?: string,
   ): FilesOutput {
     // TODO: This doesn't support custom package name yet.
     const normalizedPackageName = 'com.facebook.react.viewmanagers';

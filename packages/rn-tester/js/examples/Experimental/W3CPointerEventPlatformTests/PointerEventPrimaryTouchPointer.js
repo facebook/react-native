@@ -5,16 +5,16 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 import type {PlatformTestComponentBaseProps} from '../PlatformTest/RNTesterPlatformTestTypes';
 import type {PointerEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 
-import {useTestEventHandler} from './PointerEventSupport';
 import RNTesterPlatformTest from '../PlatformTest/RNTesterPlatformTest';
+import {useTestEventHandler} from './PointerEventSupport';
 import * as React from 'react';
-import {useRef, useCallback, useMemo} from 'react';
+import {useCallback, useMemo, useRef} from 'react';
 import {StyleSheet, View} from 'react-native';
 
 const styles = StyleSheet.create({
@@ -62,23 +62,28 @@ function PointerEventPrimaryTouchPointerTestCase(
         expectedOrder[Object.keys(detected_events).length];
       detected_events[pointerEventIdentifier] = true;
 
-      harness.test(({assert_equals}) => {
-        assert_equals(
-          boxLabel,
-          expectedBoxLabel,
-          'event should be coming from the correct box',
-        );
-        assert_equals(
-          eventType,
-          expectedEventType.toLowerCase(),
-          'event should have the right type',
-        );
-        assert_equals(
-          isPrimary,
-          expectedIsPrimary,
-          'event should be correctly primary',
-        );
-      }, `${expectedBoxLabel} box's ${expectedEventType} should${!expectedIsPrimary ? ' not' : ''} be marked as the primary pointer`);
+      harness.test(
+        ({assert_equals}) => {
+          assert_equals(
+            boxLabel,
+            expectedBoxLabel,
+            'event should be coming from the correct box',
+          );
+          assert_equals(
+            eventType,
+            expectedEventType.toLowerCase(),
+            'event should have the right type',
+          );
+          assert_equals(
+            isPrimary,
+            expectedIsPrimary,
+            'event should be correctly primary',
+          );
+        },
+        `${expectedBoxLabel} box's ${expectedEventType} should${
+          !expectedIsPrimary ? ' not' : ''
+        } be marked as the primary pointer`,
+      );
     },
     [harness],
   );

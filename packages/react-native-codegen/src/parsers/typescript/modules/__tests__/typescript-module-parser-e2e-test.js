@@ -9,21 +9,23 @@
  */
 
 import type {
-  NativeModuleReturnTypeAnnotation,
   NativeModuleBaseTypeAnnotation,
-  NativeModuleSchema,
   NativeModuleParamTypeAnnotation,
+  NativeModuleReturnTypeAnnotation,
+  NativeModuleSchema,
 } from '../../../../CodegenSchema';
 
-const {parseString} = require('../../index.js');
-const {unwrapNullable} = require('../../../parsers-commons');
 const {
+  MissingTypeParameterGenericParserError,
+  UnnamedFunctionParamParserError,
   UnsupportedGenericParserError,
   UnsupportedTypeAnnotationParserError,
-  UnnamedFunctionParamParserError,
-  MissingTypeParameterGenericParserError,
 } = require('../../../errors');
+const {unwrapNullable} = require('../../../parsers-commons');
+const {TypeScriptParser} = require('../../parser');
 const invariant = require('invariant');
+
+const typescriptParser = new TypeScriptParser();
 
 type PrimitiveTypeAnnotationType =
   | 'StringTypeAnnotation'
@@ -57,7 +59,7 @@ type AnimalPointer = Animal;
 `;
 
 function expectAnimalTypeAliasToExist(module: NativeModuleSchema) {
-  const animalAlias = module.aliases.Animal;
+  const animalAlias = module.aliasMap.Animal;
 
   expect(animalAlias).not.toBe(null);
   invariant(animalAlias != null, '');
@@ -1228,7 +1230,7 @@ describe('TypeScript Module Parser', () => {
 });
 
 function parseModule(source: string) {
-  const schema = parseString(source, `${MODULE_NAME}.ts`);
+  const schema = typescriptParser.parseString(source, `${MODULE_NAME}.ts`);
   const module = schema.modules.NativeFoo;
   invariant(
     module.type === 'NativeModule',

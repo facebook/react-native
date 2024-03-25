@@ -84,6 +84,57 @@ const EVENT_DEFINITION = `
   object_readonly_optional_both?: ?$ReadOnly<{
     int32_optional_both?: ?Int32,
   }>,
+
+  boolean_array_required: $ReadOnlyArray<boolean>,
+  boolean_array_optional_key?: boolean[],
+  boolean_array_optional_value: ?$ReadOnlyArray<boolean>,
+  boolean_array_optional_both?: ?boolean[],
+
+  string_array_required: $ReadOnlyArray<string>,
+  string_array_optional_key?: string[],
+  string_array_optional_value: ?$ReadOnlyArray<string>,
+  string_array_optional_both?: ?string[],
+
+  double_array_required: $ReadOnlyArray<Double>,
+  double_array_optional_key?: Double[],
+  double_array_optional_value: ?$ReadOnlyArray<Double>,
+  double_array_optional_both?: ?Double[],
+
+  float_array_required: $ReadOnlyArray<Float>,
+  float_array_optional_key?: Float[],
+  float_array_optional_value: ?$ReadOnlyArray<Float>,
+  float_array_optional_both?: ?Float[],
+
+  int32_array_required: $ReadOnlyArray<Int32>,
+  int32_array_optional_key?: Int32[],
+  int32_array_optional_value: ?$ReadOnlyArray<Int32>,
+  int32_array_optional_both?: ?Int32[],
+
+  enum_array_required: $ReadOnlyArray<('small' | 'large')>,
+  enum_array_optional_key?: ('small' | 'large')[],
+  enum_array_optional_value: ?$ReadOnlyArray<('small' | 'large')>,
+  enum_array_optional_both?: ?('small' | 'large')[],
+
+  object_array_required: $ReadOnlyArray<{
+    boolean_required: boolean,
+  }>,
+
+  object_array_optional_key?: {
+    string_optional_key?: string,
+  }[],
+
+  object_array_optional_value: ?$ReadOnlyArray<{
+    float_optional_value: ?Float,
+  }>,
+
+  object_array_optional_both?: ?{
+    int32_optional_both?: ?Int32,
+  }[],
+
+  int32_array_array_required: $ReadOnlyArray<$ReadOnlyArray<Int32>>,
+  int32_array_array_optional_key?: Int32[][],
+  int32_array_array_optional_value: ?$ReadOnlyArray<$ReadOnlyArray<Int32>>,
+  int32_array_array_optional_both?: ?Int32[][],
 `;
 
 const ONE_OF_EACH_PROP_EVENT_DEFAULT_AND_OPTIONS = `
@@ -209,9 +260,9 @@ const ALL_PROP_TYPES_NO_EVENTS = `
 
 const codegenNativeComponent = require('codegenNativeComponent');
 
-import type {Int32, Double, Float, WithDefault} from 'CodegenTypes';
+import type {Int32, Double, Float, WithDefault, UnsafeMixed} from 'CodegenTypes';
 import type {ImageSource} from 'ImageSource';
-import type {ColorValue, ColorArrayValue, PointValue, EdgeInsetsValue} from 'StyleSheetTypes';
+import type {ColorValue, ColorArrayValue, PointValue, EdgeInsetsValue, DimensionValue} from 'StyleSheetTypes';
 import type {ViewProps} from 'ViewPropTypes';
 import type {HostComponent} from 'react-native';
 
@@ -311,6 +362,16 @@ type ModuleProps = $ReadOnly<{|
   insets_optional_key?: EdgeInsetsValue,
   insets_optional_value: ?EdgeInsetsValue,
   insets_optional_both?: ?EdgeInsetsValue,
+
+  // DimensionValue props
+  dimension_required: DimensionValue,
+  dimension_optional_key?: DimensionValue,
+  dimension_optional_value: ?DimensionValue,
+  dimension_optional_both?: ?DimensionValue,
+
+  // Mixed props
+  mixed_required: UnsafeMixed,
+  mixed_optional_key?: UnsafeMixed,
 |}>;
 
 export default (codegenNativeComponent<ModuleProps, Options>(
@@ -335,7 +396,7 @@ const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {Int32, Double, Float, WithDefault} from 'CodegenTypes';
 import type {ImageSource} from 'ImageSource';
-import type {ColorValue, PointValue, ProcessColorValue, EdgeInsetsValue} from 'StyleSheetTypes';
+import type {ColorValue, PointValue, ProcessColorValue, EdgeInsetsValue, DimensionValue} from 'StyleSheetTypes';
 import type {ViewProps} from 'ViewPropTypes';
 import type {HostComponent} from 'react-native';
 
@@ -409,6 +470,12 @@ type ModuleProps = $ReadOnly<{|
   array_insets_optional_key?: $ReadOnlyArray<EdgeInsetsValue>,
   array_insets_optional_value: ?$ReadOnlyArray<EdgeInsetsValue>,
   array_insets_optional_both?: ?$ReadOnlyArray<EdgeInsetsValue>,
+
+  // DimensionValue props
+  array_dimension_required: $ReadOnlyArray<DimensionValue>,
+  array_dimension_optional_key?: $ReadOnlyArray<DimensionValue>,
+  array_dimension_optional_value: ?$ReadOnlyArray<DimensionValue>,
+  array_dimension_optional_both?: ?$ReadOnlyArray<DimensionValue>,
 
   // Object props
   array_object_required: $ReadOnlyArray<$ReadOnly<{| prop: string |}>>,
@@ -550,6 +617,12 @@ type ModuleProps = $ReadOnly<{|
   insets_optional_key: $ReadOnly<{|prop?: EdgeInsetsValue|}>,
   insets_optional_value: $ReadOnly<{|prop: ?EdgeInsetsValue|}>,
   insets_optional_both: $ReadOnly<{|prop?: ?EdgeInsetsValue|}>,
+
+  // DimensionValue props
+  dimension_required: $ReadOnly<{|prop: DimensionValue|}>,
+  dimension_optional_key: $ReadOnly<{|prop?: DimensionValue|}>,
+  dimension_optional_value: $ReadOnly<{|prop: ?DimensionValue|}>,
+  dimension_optional_both: $ReadOnly<{|prop?: ?DimensionValue|}>,
 
   // Nested object props
   object_required: $ReadOnly<{|prop: $ReadOnly<{nestedProp: string}>|}>,
@@ -928,10 +1001,16 @@ export type ScrollTo = (
 
 interface NativeCommands {
   +scrollTo: ScrollTo;
+  +addOverlays: (
+    viewRef: React.ElementRef<NativeType>,
+    overlayColorsReadOnly: $ReadOnlyArray<string>,
+    overlayColorsArray: Array<string>,
+    overlayColorsArrayAnnotation: string[],
+  ) => void;
 }
 
 export const Commands = codegenNativeCommands<NativeCommands>({
-  supportedCommands: ['scrollTo'],
+  supportedCommands: ['scrollTo', 'addOverlays'],
 });
 
 export default (codegenNativeComponent<ModuleProps>(

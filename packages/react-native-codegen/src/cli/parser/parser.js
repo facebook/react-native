@@ -10,9 +10,9 @@
 
 'use strict';
 
-const path = require('path');
 const {FlowParser} = require('../../parsers/flow/parser');
 const {TypeScriptParser} = require('../../parsers/typescript/parser');
+const path = require('path');
 
 const flowParser = new FlowParser();
 const typescriptParser = new TypeScriptParser();

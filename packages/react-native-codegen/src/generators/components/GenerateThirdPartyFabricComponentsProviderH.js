@@ -12,6 +12,10 @@
 
 import type {SchemaType} from '../../CodegenSchema';
 
+const {
+  generateSupportedApplePlatformsMacro,
+} = require('./ComponentsProviderUtils');
+
 // File path -> contents
 type FilesOutput = Map<string, string>;
 
@@ -35,8 +39,13 @@ extern "C" {
 #endif
 
 Class<RCTComponentViewProtocol> RCTThirdPartyFabricComponentsProvider(const char *name);
+#if RCT_NEW_ARCH_ENABLED
+#ifndef RCT_DYNAMIC_FRAMEWORKS
 
 ${lookupFuncs}
+
+#endif
+#endif
 
 #ifdef __cplusplus
 }
@@ -58,13 +67,18 @@ Class<RCTComponentViewProtocol> ${className}Cls(void) __attribute__((used)); // 
 `.trim();
 
 module.exports = {
-  generate(schemas: {[string]: SchemaType}): FilesOutput {
+  generate(
+    schemas: {[string]: SchemaType},
+    supportedApplePlatforms?: {[string]: {[string]: boolean}},
+  ): FilesOutput {
     const fileName = 'RCTThirdPartyFabricComponentsProvider.h';
 
     const lookupFuncs = Object.keys(schemas)
       .map(libraryName => {
         const schema = schemas[libraryName];
-        return Object.keys(schema.modules)
+        const librarySupportedApplePlatforms =
+          supportedApplePlatforms?.[libraryName];
+        const generatedLookup = Object.keys(schema.modules)
           .map(moduleName => {
             const module = schema.modules[moduleName];
             if (module.type !== 'Component') {
@@ -95,6 +109,11 @@ module.exports = {
           })
           .filter(Boolean)
           .join('\n');
+
+        return generateSupportedApplePlatformsMacro(
+          generatedLookup,
+          librarySupportedApplePlatforms,
+        );
       })
       .join('\n');
 

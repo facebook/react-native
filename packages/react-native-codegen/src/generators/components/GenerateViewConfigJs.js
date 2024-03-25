@@ -60,6 +60,7 @@ function getReactDiffProcessValue(typeAnnotation: PropTypeAnnotation) {
     case 'ObjectTypeAnnotation':
     case 'StringEnumTypeAnnotation':
     case 'Int32EnumTypeAnnotation':
+    case 'MixedTypeAnnotation':
       return j.literal(true);
     case 'ReservedPropTypeAnnotation':
       switch (typeAnnotation.name) {
@@ -77,6 +78,8 @@ function getReactDiffProcessValue(typeAnnotation: PropTypeAnnotation) {
         case 'EdgeInsetsPrimitive':
           return j.template
             .expression`{ diff: require('react-native/Libraries/Utilities/differ/insetsDiffer') }`;
+        case 'DimensionPrimitive':
+          return j.literal(true);
         default:
           (typeAnnotation.name: empty);
           throw new Error(
@@ -90,8 +93,9 @@ function getReactDiffProcessValue(typeAnnotation: PropTypeAnnotation) {
             return j.template
               .expression`{ process: require('react-native/Libraries/StyleSheet/processColorArray') }`;
           case 'ImageSourcePrimitive':
-            return j.literal(true);
           case 'PointPrimitive':
+          case 'EdgeInsetsPrimitive':
+          case 'DimensionPrimitive':
             return j.literal(true);
           default:
             throw new Error(
@@ -193,7 +197,7 @@ function generateBubblingEventInfo(
 ) {
   return j.property(
     'init',
-    j.identifier(nameOveride || normalizeInputEventName(event.name)),
+    j.identifier(normalizeInputEventName(nameOveride || event.name)),
     j.objectExpression([
       j.property(
         'init',
@@ -217,7 +221,7 @@ function generateDirectEventInfo(
 ) {
   return j.property(
     'init',
-    j.identifier(nameOveride || normalizeInputEventName(event.name)),
+    j.identifier(normalizeInputEventName(nameOveride || event.name)),
     j.objectExpression([
       j.property(
         'init',

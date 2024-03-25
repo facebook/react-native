@@ -8,9 +8,10 @@
  * @flow strict-local
  */
 
-import type {ViewProps} from '../../../../../Libraries/Components/View/ViewPropTypes';
-import codegenNativeComponent from '../../../../../Libraries/Utilities/codegenNativeComponent';
-import type {HostComponent} from '../../../../../Libraries/Renderer/shims/ReactNativeTypes';
+import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
+import type {HostComponent} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
+
+import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,

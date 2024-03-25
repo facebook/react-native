@@ -11,15 +11,13 @@
 'use strict';
 
 const React = require('react');
-const {Text, View, Alert} = require('react-native');
-
-const RNTesterBlock = require('../../components/RNTesterBlock');
+const {Alert, Text, View} = require('react-native');
 
 type Props = $ReadOnly<{||}>;
 class AccessibilityIOSExample extends React.Component<Props> {
   render(): React.Node {
     return (
-      <RNTesterBlock title="Accessibility iOS APIs">
+      <>
         <View
           onAccessibilityAction={event => {
             if (event.nativeEvent.actionName === 'activate') {
@@ -58,7 +56,7 @@ class AccessibilityIOSExample extends React.Component<Props> {
         <View accessible={true} accessibilityLanguage="it-IT">
           <Text>This view's language should be `it-IT`</Text>
         </View>
-      </RNTesterBlock>
+      </>
     );
   }
 }

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- See fburl.com/140690840 for information about i18n on Android -->
+<!-- @generated -->
+<!-- FB Locale: cs_CZ -->
+<resources exclude-from-buck-resource-map="true">
+    <string name="link_description" gender="unknown">Odkaz</string>
+    <string name="image_description" gender="unknown">Obrázek</string>
+    <string name="imagebutton_description" gender="unknown">Tlačítko, obrázek</string>
+    <string name="header_description" gender="unknown">Nadpis</string>
+    <string name="alert_description" gender="unknown">Výstraha</string>
+    <string name="combobox_description" gender="unknown">Kombinované pole</string>
+    <string name="menu_description" gender="unknown">Nabídka</string>
+    <string name="menubar_description" gender="unknown">Panel nabídky</string>
+    <string name="menuitem_description" gender="unknown">Položka nabídky</string>
+    <string name="progressbar_description" gender="unknown">Ukazatel postupu</string>
+    <string name="radiogroup_description" gender="unknown">Skupina přepínačů</string>
+    <string name="scrollbar_description" gender="unknown">Posuvník</string>
+    <string name="spinbutton_description" gender="unknown">Číselník</string>
+    <string name="rn_tab_description" gender="unknown">Karta</string>
+    <string name="tablist_description" gender="unknown">Seznam karet</string>
+    <string name="timer_description" gender="unknown">Časovač</string>
+    <string name="toolbar_description" gender="unknown">Panel nástrojů</string>
+    <string name="summary_description" gender="unknown">Přehled</string>
+    <string name="state_busy_description" gender="unknown">zaneprázdněno</string>
+    <string name="state_expanded_description" gender="unknown">rozbaleno</string>
+    <string name="state_collapsed_description" gender="unknown">sbaleno</string>
+    <string name="state_unselected_description" gender="unknown">nevybráno</string>
+    <string name="state_on_description" gender="unknown">zap</string>
+    <string name="state_off_description" gender="unknown">vyp</string>
+    <string name="state_mixed_description" gender="unknown">oboje</string>
+</resources>

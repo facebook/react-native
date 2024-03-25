@@ -1,11 +1,21 @@
 {
   "name": "@react-native/bots",
-  "version": "0.0.0",
+  "description": "React Native Bots",
+  "version": "0.75.0-main",
   "private": true,
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/facebook/react-native.git",
+    "directory": "packages/react-native-bots"
+  },
+  "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/react-native-bots#readme",
+  "engines": {
+    "node": ">=18"
+  },
   "devDependencies": {
-    "@seadub/danger-plugin-eslint": "^3.0.2",
+    "@rnx-kit/rn-changelog-generator": "^0.4.0",
     "danger": "^11.2.1",
-    "eslint": "^8.19.0",
     "lodash.includes": "^4.3.0",
     "minimatch": "^3.0.4"
   },

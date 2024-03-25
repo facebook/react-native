@@ -10,6 +10,7 @@
 
 'use strict';
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+
 import BaseFlatListExample, {ITEM_HEIGHT} from './BaseFlatListExample';
 import * as React from 'react';
 import {FlatList} from 'react-native';
@@ -48,7 +49,7 @@ export default ({
   name: 'onStartReached',
   description:
     'Scroll to start of list or tap Test button to see `onStartReached` triggered.',
-  render: function (): React.Element<typeof FlatList_onStartReached> {
+  render: function () {
     return <FlatList_onStartReached />;
   },
 }: RNTesterModuleExample);

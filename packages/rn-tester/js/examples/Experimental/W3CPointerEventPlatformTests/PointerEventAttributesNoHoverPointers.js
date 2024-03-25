@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 import type {PlatformTestComponentBaseProps} from '../PlatformTest/RNTesterPlatformTestTypes';
@@ -66,13 +66,16 @@ function PointerEventAttributesNoHoverPointersTestCase(
         testNamePrefix + ' ' + expectedPointerType + ' ' + expectedEventType;
 
       detected_pointertypes[event.nativeEvent.pointerType] = true;
-      harness.test(({assert_equals}) => {
-        assert_equals(
-          eventType,
-          expectedEventType,
-          'Event.type should be ' + expectedEventType,
-        );
-      }, pointerTestName + "'s type should be " + expectedEventType);
+      harness.test(
+        ({assert_equals}) => {
+          assert_equals(
+            eventType,
+            expectedEventType,
+            'Event.type should be ' + expectedEventType,
+          );
+        },
+        pointerTestName + "'s type should be " + expectedEventType,
+      );
 
       // Test button and buttons
       harness.test(({assert_equals}) => {

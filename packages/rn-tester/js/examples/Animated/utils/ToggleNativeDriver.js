@@ -8,8 +8,8 @@
  * @format
  */
 
-import {View, Text, StyleSheet, Switch} from 'react-native';
 import * as React from 'react';
+import {StyleSheet, Switch, Text, View} from 'react-native';
 
 type ViewStyleProp = $ElementType<React.ElementConfig<typeof View>, 'style'>;
 

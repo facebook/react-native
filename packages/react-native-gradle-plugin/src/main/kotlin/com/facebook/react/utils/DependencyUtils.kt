@@ -7,6 +7,11 @@
 
 package com.facebook.react.utils
 
+import com.facebook.react.utils.PropertyUtils.DEFAULT_INTERNAL_PUBLISHING_GROUP
+import com.facebook.react.utils.PropertyUtils.INTERNAL_PUBLISHING_GROUP
+import com.facebook.react.utils.PropertyUtils.INTERNAL_REACT_NATIVE_MAVEN_LOCAL_REPO
+import com.facebook.react.utils.PropertyUtils.INTERNAL_USE_HERMES_NIGHTLY
+import com.facebook.react.utils.PropertyUtils.INTERNAL_VERSION_NAME
 import java.io.File
 import java.net.URI
 import java.util.*
@@ -22,13 +27,22 @@ internal object DependencyUtils {
   fun configureRepositories(project: Project, reactNativeDir: File) {
     project.rootProject.allprojects { eachProject ->
       with(eachProject) {
-        if (hasProperty("REACT_NATIVE_MAVEN_LOCAL_REPO")) {
-          val mavenLocalRepoPath = property("REACT_NATIVE_MAVEN_LOCAL_REPO") as String
+        if (hasProperty(INTERNAL_REACT_NATIVE_MAVEN_LOCAL_REPO)) {
+          val mavenLocalRepoPath = property(INTERNAL_REACT_NATIVE_MAVEN_LOCAL_REPO) as String
           mavenRepoFromURI(File(mavenLocalRepoPath).toURI())
         }
         // We add the snapshot for users on nightlies.
         mavenRepoFromUrl("https://oss.sonatype.org/content/repositories/snapshots/")
-        repositories.mavenCentral()
+        repositories.mavenCentral { repo ->
+          // We don't want to fetch JSC from Maven Central as there are older versions there.
+          repo.content { it.excludeModule("org.webkit", "android-jsc") }
+
+          // If the user provided a react.internal.mavenLocalRepo, do not attempt to load
+          // anything from Maven Central that is react related.
+          if (hasProperty(INTERNAL_REACT_NATIVE_MAVEN_LOCAL_REPO)) {
+            repo.content { it.excludeGroup("com.facebook.react") }
+          }
+        }
         // Android JSC is installed from npm
         mavenRepoFromURI(File(reactNativeDir, "../jsc-android/dist").toURI())
         repositories.google()
@@ -43,7 +57,11 @@ internal object DependencyUtils {
    * - Forcing the react-android/hermes-android version to the one specified in the package.json
    * - Substituting `react-native` with `react-android` and `hermes-engine` with `hermes-android`.
    */
-  fun configureDependencies(project: Project, versionString: String) {
+  fun configureDependencies(
+      project: Project,
+      versionString: String,
+      groupString: String = DEFAULT_INTERNAL_PUBLISHING_GROUP
+  ) {
     if (versionString.isBlank()) return
     project.rootProject.allprojects { eachProject ->
       eachProject.configurations.all { configuration ->
@@ -52,33 +70,68 @@ internal object DependencyUtils {
         // This allows users to import libraries that are still using
         // implementation("com.facebook.react:react-native:+") and resolve the right dependency.
         configuration.resolutionStrategy.dependencySubstitution {
-          it.substitute(it.module("com.facebook.react:react-native"))
-              .using(it.module("com.facebook.react:react-android:${versionString}"))
-              .because(
-                  "The react-native artifact was deprecated in favor of react-android due to https://github.com/facebook/react-native/issues/35210.")
-          it.substitute(it.module("com.facebook.react:hermes-engine"))
-              .using(it.module("com.facebook.react:hermes-android:${versionString}"))
-              .because(
-                  "The hermes-engine artifact was deprecated in favor of hermes-android due to https://github.com/facebook/react-native/issues/35210.")
+          getDependencySubstitutions(versionString, groupString).forEach { (module, dest, reason) ->
+            it.substitute(it.module(module)).using(it.module(dest)).because(reason)
+          }
         }
         configuration.resolutionStrategy.force(
-            "com.facebook.react:react-android:${versionString}",
-            "com.facebook.react:hermes-android:${versionString}",
+            "${groupString}:react-android:${versionString}",
         )
+        if (!(eachProject.findProperty(INTERNAL_USE_HERMES_NIGHTLY) as? String).toBoolean()) {
+          // Contributors only: The hermes-engine version is forced only if the user has
+          // not opted into using nightlies for local development.
+          configuration.resolutionStrategy.force("${groupString}:hermes-android:${versionString}")
+        }
       }
     }
   }
 
-  fun readVersionString(propertiesFile: File): String {
+  internal fun getDependencySubstitutions(
+      versionString: String,
+      groupString: String = DEFAULT_INTERNAL_PUBLISHING_GROUP
+  ): List<Triple<String, String, String>> {
+    val dependencySubstitution = mutableListOf<Triple<String, String, String>>()
+    dependencySubstitution.add(
+        Triple(
+            "com.facebook.react:react-native",
+            "${groupString}:react-android:${versionString}",
+            "The react-native artifact was deprecated in favor of react-android due to https://github.com/facebook/react-native/issues/35210."))
+    dependencySubstitution.add(
+        Triple(
+            "com.facebook.react:hermes-engine",
+            "${groupString}:hermes-android:${versionString}",
+            "The hermes-engine artifact was deprecated in favor of hermes-android due to https://github.com/facebook/react-native/issues/35210."))
+    if (groupString != DEFAULT_INTERNAL_PUBLISHING_GROUP) {
+      dependencySubstitution.add(
+          Triple(
+              "com.facebook.react:react-android",
+              "${groupString}:react-android:${versionString}",
+              "The react-android dependency was modified to use the correct Maven group."))
+      dependencySubstitution.add(
+          Triple(
+              "com.facebook.react:hermes-android",
+              "${groupString}:hermes-android:${versionString}",
+              "The hermes-android dependency was modified to use the correct Maven group."))
+    }
+    return dependencySubstitution
+  }
+
+  fun readVersionAndGroupStrings(propertiesFile: File): Pair<String, String> {
     val reactAndroidProperties = Properties()
     propertiesFile.inputStream().use { reactAndroidProperties.load(it) }
-    val versionString = reactAndroidProperties["VERSION_NAME"] as? String ?: ""
+    val versionStringFromFile = (reactAndroidProperties[INTERNAL_VERSION_NAME] as? String).orEmpty()
     // If on a nightly, we need to fetch the -SNAPSHOT artifact from Sonatype.
-    return if (versionString.startsWith("0.0.0")) {
-      "$versionString-SNAPSHOT"
-    } else {
-      versionString
-    }
+    val versionString =
+        if (versionStringFromFile.startsWith("0.0.0") || "-nightly-" in versionStringFromFile) {
+          "$versionStringFromFile-SNAPSHOT"
+        } else {
+          versionStringFromFile
+        }
+    // Returns Maven group for repos using different group for Maven artifacts
+    val groupString =
+        reactAndroidProperties[INTERNAL_PUBLISHING_GROUP] as? String
+            ?: DEFAULT_INTERNAL_PUBLISHING_GROUP
+    return Pair(versionString, groupString)
   }
 
   fun Project.mavenRepoFromUrl(url: String): MavenArtifactRepository =

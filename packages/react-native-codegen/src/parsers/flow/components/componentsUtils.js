@@ -10,31 +10,20 @@
 
 'use strict';
 
-import type {ASTNode} from '../utils';
-import type {NamedShape} from '../../../CodegenSchema.js';
+import type {BuildSchemaFN, Parser} from '../../parser';
+import type {ASTNode, PropAST, TypeDeclarationMap} from '../../utils';
+
+const {verifyPropNotAlreadyDefined} = require('../../parsers-commons');
 const {getValueFromTypes} = require('../utils.js');
-import type {TypeDeclarationMap} from '../../utils';
 
-function getProperties(
-  typeName: string,
-  types: TypeDeclarationMap,
-): $FlowFixMe {
-  const typeAlias = types[typeName];
-  try {
-    return typeAlias.right.typeParameters.params[0].properties;
-  } catch (e) {
-    throw new Error(
-      `Failed to find type definition for "${typeName}", please check that you have a valid codegen flow file`,
-    );
-  }
-}
-
+// $FlowFixMe[unsupported-variance-annotation]
 function getTypeAnnotationForArray<+T>(
   name: string,
   typeAnnotation: $FlowFixMe,
   defaultValue: $FlowFixMe | null,
   types: TypeDeclarationMap,
-  buildSchema: (property: PropAST, types: TypeDeclarationMap) => ?NamedShape<T>,
+  parser: Parser,
+  buildSchema: BuildSchemaFN<T>,
 ): $FlowFixMe {
   const extractedTypeAnnotation = getValueFromTypes(typeAnnotation, types);
   if (extractedTypeAnnotation.type === 'NullableTypeAnnotation') {
@@ -45,7 +34,7 @@ function getTypeAnnotationForArray<+T>(
 
   if (
     extractedTypeAnnotation.type === 'GenericTypeAnnotation' &&
-    extractedTypeAnnotation.id.name === 'WithDefault'
+    parser.getTypeAnnotationName(extractedTypeAnnotation) === 'WithDefault'
   ) {
     throw new Error(
       'Nested defaults such as "$ReadOnlyArray<WithDefault<boolean, false>>" are not supported, please declare defaults at the top level of value definitions as in "WithDefault<$ReadOnlyArray<boolean>, false>"',
@@ -62,8 +51,9 @@ function getTypeAnnotationForArray<+T>(
         properties: flattenProperties(
           objectType.typeParameters.params[0].properties,
           types,
+          parser,
         )
-          .map(prop => buildSchema(prop, types))
+          .map(prop => buildSchema(prop, types, parser))
           .filter(Boolean),
       };
     }
@@ -83,8 +73,9 @@ function getTypeAnnotationForArray<+T>(
           properties: flattenProperties(
             nestedObjectType.typeParameters.params[0].properties,
             types,
+            parser,
           )
-            .map(prop => buildSchema(prop, types))
+            .map(prop => buildSchema(prop, types, parser))
             .filter(Boolean),
         },
       };
@@ -93,7 +84,7 @@ function getTypeAnnotationForArray<+T>(
 
   const type =
     extractedTypeAnnotation.type === 'GenericTypeAnnotation'
-      ? extractedTypeAnnotation.id.name
+      ? parser.getTypeAnnotationName(extractedTypeAnnotation)
       : extractedTypeAnnotation.type;
 
   switch (type) {
@@ -122,6 +113,11 @@ function getTypeAnnotationForArray<+T>(
       return {
         type: 'ReservedPropTypeAnnotation',
         name: 'EdgeInsetsPrimitive',
+      };
+    case 'DimensionValue':
+      return {
+        type: 'ReservedPropTypeAnnotation',
+        name: 'DimensionPrimitive',
       };
     case 'Stringish':
       return {
@@ -176,7 +172,6 @@ function getTypeAnnotationForArray<+T>(
         );
       }
     default:
-      (type: empty);
       throw new Error(`Unknown property type for "${name}": ${type}`);
   }
 }
@@ -184,6 +179,7 @@ function getTypeAnnotationForArray<+T>(
 function flattenProperties(
   typeDefinition: $ReadOnlyArray<PropAST>,
   types: TypeDeclarationMap,
+  parser: Parser,
 ): $ReadOnlyArray<PropAST> {
   return typeDefinition
     .map(property => {
@@ -191,8 +187,9 @@ function flattenProperties(
         return property;
       } else if (property.type === 'ObjectTypeSpreadProperty') {
         return flattenProperties(
-          getProperties(property.argument.id.name, types),
+          parser.getProperties(property.argument.id.name, types),
           types,
+          parser,
         );
       }
     })
@@ -211,30 +208,21 @@ function flattenProperties(
     .filter(Boolean);
 }
 
-function verifyPropNotAlreadyDefined(
-  props: $ReadOnlyArray<PropAST>,
-  needleProp: PropAST,
-) {
-  const propName = needleProp.key.name;
-  const foundProp = props.some(prop => prop.key.name === propName);
-  if (foundProp) {
-    throw new Error(`A prop was already defined with the name ${propName}`);
-  }
-}
-
+// $FlowFixMe[unsupported-variance-annotation]
 function getTypeAnnotation<+T>(
   name: string,
   annotation: $FlowFixMe | ASTNode,
   defaultValue: $FlowFixMe | null,
   withNullDefault: boolean,
   types: TypeDeclarationMap,
-  buildSchema: (property: PropAST, types: TypeDeclarationMap) => ?NamedShape<T>,
+  parser: Parser,
+  buildSchema: BuildSchemaFN<T>,
 ): $FlowFixMe {
   const typeAnnotation = getValueFromTypes(annotation, types);
 
   if (
     typeAnnotation.type === 'GenericTypeAnnotation' &&
-    typeAnnotation.id.name === '$ReadOnlyArray'
+    parser.getTypeAnnotationName(typeAnnotation) === '$ReadOnlyArray'
   ) {
     return {
       type: 'ArrayTypeAnnotation',
@@ -243,6 +231,7 @@ function getTypeAnnotation<+T>(
         typeAnnotation.typeParameters.params[0],
         defaultValue,
         types,
+        parser,
         buildSchema,
       ),
     };
@@ -250,22 +239,23 @@ function getTypeAnnotation<+T>(
 
   if (
     typeAnnotation.type === 'GenericTypeAnnotation' &&
-    typeAnnotation.id.name === '$ReadOnly'
+    parser.getTypeAnnotationName(typeAnnotation) === '$ReadOnly'
   ) {
     return {
       type: 'ObjectTypeAnnotation',
       properties: flattenProperties(
         typeAnnotation.typeParameters.params[0].properties,
         types,
+        parser,
       )
-        .map(prop => buildSchema(prop, types))
+        .map(prop => buildSchema(prop, types, parser))
         .filter(Boolean),
     };
   }
 
   const type =
     typeAnnotation.type === 'GenericTypeAnnotation'
-      ? typeAnnotation.id.name
+      ? parser.getTypeAnnotationName(typeAnnotation)
       : typeAnnotation.type;
 
   switch (type) {
@@ -302,6 +292,11 @@ function getTypeAnnotation<+T>(
       return {
         type: 'ReservedPropTypeAnnotation',
         name: 'EdgeInsetsPrimitive',
+      };
+    case 'DimensionValue':
+      return {
+        type: 'ReservedPropTypeAnnotation',
+        name: 'DimensionPrimitive',
       };
     case 'Int32':
       return {
@@ -381,8 +376,11 @@ function getTypeAnnotation<+T>(
       throw new Error(
         `Cannot use "${type}" type annotation for "${name}": must use a specific numeric type like Int32, Double, or Float`,
       );
+    case 'UnsafeMixed':
+      return {
+        type: 'MixedTypeAnnotation',
+      };
     default:
-      (type: empty);
       throw new Error(
         `Unknown property type for "${name}": "${type}" in the State`,
       );
@@ -485,11 +483,7 @@ function getSchemaInfo(
   };
 }
 
-// $FlowFixMe[unclear-type] there's no flowtype for ASTs
-type PropAST = Object;
-
 module.exports = {
-  getProperties,
   getSchemaInfo,
   getTypeAnnotation,
   flattenProperties,

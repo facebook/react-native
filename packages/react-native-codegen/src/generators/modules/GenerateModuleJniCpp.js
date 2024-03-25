@@ -11,18 +11,18 @@
 'use strict';
 
 import type {
-  Nullable,
   NamedShape,
-  SchemaType,
+  NativeModuleFunctionTypeAnnotation,
+  NativeModuleParamTypeAnnotation,
   NativeModulePropertyShape,
   NativeModuleReturnTypeAnnotation,
-  NativeModuleParamTypeAnnotation,
-  NativeModuleFunctionTypeAnnotation,
+  Nullable,
+  SchemaType,
 } from '../../CodegenSchema';
-
 import type {AliasResolver} from './Utils';
-const {createAliasResolver, getModules} = require('./Utils');
+
 const {unwrapNullable} = require('../../parsers/parsers-commons');
+const {createAliasResolver, getModules} = require('./Utils');
 
 type FilesOutput = Map<string, string>;
 
@@ -108,8 +108,7 @@ const FileTemplate = ({
 
 #include ${include}
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 ${modules}
 
@@ -118,8 +117,7 @@ ${moduleLookups.map(ModuleLookupTemplate).join('\n')}
   return nullptr;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 `;
 };
 
@@ -193,7 +191,7 @@ function translateReturnTypeToKind(
     case 'ArrayTypeAnnotation':
       return 'ArrayKind';
     default:
-      (realTypeAnnotation.type: 'EnumDeclaration' | 'MixedTypeAnnotation');
+      (realTypeAnnotation.type: 'MixedTypeAnnotation');
       throw new Error(
         `Unknown prop type for returning value, found: ${realTypeAnnotation.type}"`,
       );
@@ -272,7 +270,7 @@ function translateParamTypeToJniType(
     case 'FunctionTypeAnnotation':
       return 'Lcom/facebook/react/bridge/Callback;';
     default:
-      (realTypeAnnotation.type: 'EnumDeclaration' | 'MixedTypeAnnotation');
+      (realTypeAnnotation.type: 'MixedTypeAnnotation');
       throw new Error(
         `Unknown prop type for method arg, found: ${realTypeAnnotation.type}"`,
       );
@@ -336,9 +334,9 @@ function translateReturnTypeToJniType(
     case 'DoubleTypeAnnotation':
       return nullable ? 'Ljava/lang/Double;' : 'D';
     case 'FloatTypeAnnotation':
-      return nullable ? 'Ljava/lang/Double;' : 'D';
+      return nullable ? 'Ljava/lang/Float;' : 'F';
     case 'Int32TypeAnnotation':
-      return nullable ? 'Ljava/lang/Double;' : 'D';
+      return nullable ? 'Ljava/lang/Integer;' : 'I';
     case 'PromiseTypeAnnotation':
       return 'Lcom/facebook/react/bridge/Promise;';
     case 'GenericObjectTypeAnnotation':
@@ -348,7 +346,7 @@ function translateReturnTypeToJniType(
     case 'ArrayTypeAnnotation':
       return 'Lcom/facebook/react/bridge/WritableArray;';
     default:
-      (realTypeAnnotation.type: 'EnumDeclaration' | 'MixedTypeAnnotation');
+      (realTypeAnnotation.type: 'MixedTypeAnnotation');
       throw new Error(
         `Unknown prop type for method return type, found: ${realTypeAnnotation.type}"`,
       );
@@ -424,6 +422,7 @@ module.exports = {
     schema: SchemaType,
     packageName?: string,
     assumeNonnull: boolean = false,
+    headerPrefix?: string,
   ): FilesOutput {
     const nativeModules = getModules(schema);
 
@@ -438,10 +437,10 @@ module.exports = {
       .sort()
       .map(hasteModuleName => {
         const {
-          aliases,
+          aliasMap,
           spec: {properties},
         } = nativeModules[hasteModuleName];
-        const resolveAlias = createAliasResolver(aliases);
+        const resolveAlias = createAliasResolver(aliasMap);
 
         const translatedMethods = properties
           .map(property =>

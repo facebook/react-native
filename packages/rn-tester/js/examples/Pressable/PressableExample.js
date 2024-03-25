@@ -48,7 +48,9 @@ function ContentPress() {
             setTimesPressed(current => current + 1);
           }}>
           {({pressed}) => (
-            <Text style={styles.text}>{pressed ? 'Pressed!' : 'Press Me'}</Text>
+            <Text testID="one_press_me_button" style={styles.text}>
+              {pressed ? 'Pressed!' : 'Press Me'}
+            </Text>
           )}
         </Pressable>
       </View>
@@ -242,8 +244,8 @@ function PressableNativeMethods() {
           {status == null
             ? 'Missing Ref!'
             : status === true
-            ? 'Native Methods Exist'
-            : 'Native Methods Missing!'}
+              ? 'Native Methods Exist'
+              : 'Native Methods Missing!'}
         </Text>
       </View>
     </>

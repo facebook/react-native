@@ -8,9 +8,10 @@
  * @flow strict-local
  */
 
-import type {Node} from 'React';
-import {Button} from 'react-native';
+import type {Node} from 'react';
+
 import React from 'react';
+import {Button} from 'react-native';
 
 exports.displayName = (undefined: ?string);
 exports.framework = 'React';

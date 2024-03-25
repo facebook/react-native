@@ -9,20 +9,27 @@
 
 'use strict';
 
-let flowParser, typeScriptParser, RNCodegen;
+let FlowParser, TypeScriptParser, RNCodegen;
 
 const {basename} = require('path');
 
 try {
-  flowParser = require('@react-native/codegen/src/parsers/flow');
-  typeScriptParser = require('@react-native/codegen/src/parsers/typescript');
+  FlowParser =
+    require('@react-native/codegen/src/parsers/flow/parser').FlowParser;
+  TypeScriptParser =
+    require('@react-native/codegen/src/parsers/typescript/parser').TypeScriptParser;
   RNCodegen = require('@react-native/codegen/src/generators/RNCodegen');
 } catch (e) {
   // Fallback to lib when source doesn't exit (e.g. when installed as a dev dependency)
-  flowParser = require('@react-native/codegen/lib/parsers/flow');
-  typeScriptParser = require('@react-native/codegen/lib/parsers/typescript');
+  FlowParser =
+    require('@react-native/codegen/lib/parsers/flow/parser').FlowParser;
+  TypeScriptParser =
+    require('@react-native/codegen/lib/parsers/typescript/parser').TypeScriptParser;
   RNCodegen = require('@react-native/codegen/lib/generators/RNCodegen');
 }
+
+const flowParser = new FlowParser();
+const typeScriptParser = new TypeScriptParser();
 
 function parseFile(filename, code) {
   if (filename.endsWith('js')) {
@@ -69,7 +76,16 @@ function isCodegenDeclaration(declaration) {
   ) {
     return true;
   } else if (
-    declaration.type === 'TypeCastExpression' &&
+    (declaration.type === 'TypeCastExpression' ||
+      declaration.type === 'AsExpression') &&
+    declaration.expression &&
+    declaration.expression.callee &&
+    declaration.expression.callee.name &&
+    declaration.expression.callee.name === 'codegenNativeComponent'
+  ) {
+    return true;
+  } else if (
+    declaration.type === 'TSAsExpression' &&
     declaration.expression &&
     declaration.expression.callee &&
     declaration.expression.callee.name &&

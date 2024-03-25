@@ -11,8 +11,8 @@
 
 'use strict';
 
-const rnCodegen = require('../RNCodegen.js');
 const fixture = require('../__test_fixtures__/fixtures.js');
+const rnCodegen = require('../RNCodegen.js');
 const packageName = 'na';
 
 describe('RNCodegen.generate', () => {
@@ -46,6 +46,7 @@ describe('RNCodegen.generate', () => {
           'EventEmitters.h': componentsOutputDir,
           'EventEmitters.cpp': componentsOutputDir,
           'ComponentDescriptors.h': componentsOutputDir,
+          'ComponentDescriptors.cpp': componentsOutputDir,
         };
 
         let receivedDir = path.dirname(location);

@@ -239,6 +239,50 @@ export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
 
 `;
 
+const NATIVE_MODULE_WITH_INTERSECTION_TYPES = `
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ */
+
+
+import type {TurboModule} from '../RCTExport';
+import * as TurboModuleRegistry from '../TurboModuleRegistry';
+
+type Bar  = {
+  z: number
+};
+
+type Base1 = {
+  bar1: Bar,
+}
+
+type Base2 = {
+  bar2: Bar,
+}
+
+type Base3 = Base2 & {
+  bar3: Bar,
+}
+
+type Foo = Base1 & Base3 & {
+  bar4: Bar,
+};
+
+export interface Spec extends TurboModule {
+  // Exported methods.
+  foo1: (x: Foo) => Foo;
+  foo2: (x: Foo) => void;
+}
+
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+
+`;
+
 const NATIVE_MODULE_WITH_FLOAT_AND_INT32 = `
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -297,6 +341,60 @@ import type {UnsafeObject} from 'react-native/Libraries/Types/CodegenTypes';
 
 export interface Spec extends TurboModule {
   readonly getUnsafeObject: (o: UnsafeObject) => UnsafeObject;
+}
+
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+`;
+
+const NATIVE_MODULE_WITH_PARTIALS = `
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ */
+
+import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
+import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
+
+export type SomeObj = {
+  a: string,
+  b?: boolean,
+};
+
+export interface Spec extends TurboModule {
+  getSomeObj: () => SomeObj;
+  getPartialSomeObj: () => Partial<SomeObj>;
+  getSomeObjFromPartialSomeObj: (value: Partial<SomeObj>) => SomeObj;
+}
+
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+`;
+
+const NATIVE_MODULE_WITH_PARTIALS_COMPLEX = `
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ */
+
+import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
+import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
+
+export type SomeObj = {
+  a: string,
+  b?: boolean,
+};
+
+export type PartialSomeObj = Partial<SomeObj>;
+
+export interface Spec extends TurboModule {
+  getPartialPartial: (value1: Partial<SomeObj>, value2: PartialSomeObj) => SomeObj;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
@@ -727,10 +825,23 @@ export type ChooseFloat = 1.44 | 2.88 | 5.76;
 export type ChooseObject = {} | {low: string};
 export type ChooseString = 'One' | 'Two' | 'Three';
 
+export type BinaryTreeNode = {
+  left?: BinaryTreeNode,
+  value: number,
+  right?: BinaryTreeNode,
+};
+
+export type GraphNode = {
+  label: string,
+  neighbors?: Array<GraphNode>,
+};
+
 export interface Spec extends TurboModule {
   readonly getCallback: () => () => void;
   readonly getMixed: (arg: unknown) => unknown;
   readonly getEnums: (quality: Quality, resolution?: Resolution, floppy: Floppy, stringOptions: StringOptions) => string;
+  readonly getBinaryTreeNode: (arg: BinaryTreeNode) => BinaryTreeNode;
+  readonly getGraphNode: (arg: GraphNode) => GraphNode;
   readonly getMap: (arg: {[a: string]: number | null;}) => {[b: string]: number | null;};
   readonly getAnotherMap: (arg: {[key: string]: string}) => {[key: string]: string};
   readonly getUnion: (chooseInt: ChooseInt, chooseFloat: ChooseFloat, chooseObject: ChooseObject, chooseString: ChooseString) => ChooseObject;
@@ -749,11 +860,14 @@ module.exports = {
   NATIVE_MODULE_WITH_ALIASES,
   NATIVE_MODULE_WITH_NESTED_ALIASES,
   NATIVE_MODULE_WITH_NESTED_INTERFACES,
+  NATIVE_MODULE_WITH_INTERSECTION_TYPES,
   NATIVE_MODULE_WITH_PROMISE,
   NATIVE_MODULE_WITH_COMPLEX_OBJECTS,
   NATIVE_MODULE_WITH_COMPLEX_OBJECTS_WITH_NULLABLE_KEY,
   NATIVE_MODULE_WITH_SIMPLE_OBJECT,
   NATIVE_MODULE_WITH_UNSAFE_OBJECT,
+  NATIVE_MODULE_WITH_PARTIALS,
+  NATIVE_MODULE_WITH_PARTIALS_COMPLEX,
   NATIVE_MODULE_WITH_ROOT_TAG,
   NATIVE_MODULE_WITH_NULLABLE_PARAM,
   NATIVE_MODULE_WITH_BASIC_ARRAY,

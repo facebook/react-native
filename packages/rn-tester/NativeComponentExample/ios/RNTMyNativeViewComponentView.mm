@@ -6,6 +6,7 @@
  */
 
 #import "RNTMyNativeViewComponentView.h"
+#import "UIView+ColorOverlays.h"
 
 #import <react/renderer/components/AppSpecs/ComponentDescriptors.h>
 #import <react/renderer/components/AppSpecs/EventEmitters.h>
@@ -28,6 +29,14 @@ using namespace facebook::react;
   return concreteComponentDescriptorProvider<RNTMyNativeViewComponentDescriptor>();
 }
 
+// Load is not invoked if it is not defined, therefore, we must ask to update this.
+// See the Apple documentation: https://developer.apple.com/documentation/objectivec/nsobject/1418815-load?language=objc
+// "[...] but only if the newly loaded class or category implements a method that can respond."
++ (void)load
+{
+  [super load];
+}
+
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
@@ -43,21 +52,46 @@ using namespace facebook::react;
   return self;
 }
 
-- (UIColor *)UIColorFromHexString:(const std::string)hexString
+- (void)updateProps:(const Props::Shared &)props oldProps:(const Props::Shared &)oldProps
 {
-  unsigned rgbValue = 0;
-  NSString *colorString = [NSString stringWithCString:hexString.c_str() encoding:[NSString defaultCStringEncoding]];
-  NSScanner *scanner = [NSScanner scannerWithString:colorString];
-  [scanner setScanLocation:1]; // bypass '#' character
-  [scanner scanHexInt:&rgbValue];
-  return [UIColor colorWithRed:((rgbValue & 0xFF0000) >> 16) / 255.0
-                         green:((rgbValue & 0xFF00) >> 8) / 255.0
-                          blue:(rgbValue & 0xFF) / 255.0
-                         alpha:1.0];
-}
+  const auto &oldViewProps = *std::static_pointer_cast<const RNTMyNativeViewProps>(_props);
+  const auto &newViewProps = *std::static_pointer_cast<const RNTMyNativeViewProps>(props);
 
-- (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
-{
+  if (oldViewProps.values != newViewProps.values) {
+    if (_eventEmitter) {
+      std::vector<int> newVector = {};
+      std::vector<bool> newBoolVector = {};
+      std::vector<Float> newFloatVector = {};
+      std::vector<double> newDoubleVector = {};
+      std::vector<RNTMyNativeViewEventEmitter::OnIntArrayChangedYesNos> newYesNoVector = {};
+      std::vector<std::string> newStringVector = {};
+      std::vector<RNTMyNativeViewEventEmitter::OnIntArrayChangedLatLons> newLatLonVector = {};
+      std::vector<std::vector<int>> newIntVectorVector = {};
+      for (auto val : newViewProps.values) {
+        newVector.push_back(val * 2);
+        newBoolVector.push_back(val % 2 ? true : false);
+        newFloatVector.push_back(val * 3.14);
+        newDoubleVector.push_back(val / 3.14);
+        newYesNoVector.push_back(
+            val % 2 ? RNTMyNativeViewEventEmitter::OnIntArrayChangedYesNos::Yep
+                    : RNTMyNativeViewEventEmitter::OnIntArrayChangedYesNos::Nope);
+        newStringVector.push_back(std::to_string(val));
+        newLatLonVector.push_back({-1.0 * val, 2.0 * val});
+        newIntVectorVector.push_back({val, val, val});
+      }
+      RNTMyNativeViewEventEmitter::OnIntArrayChanged value = {
+          newVector,
+          newBoolVector,
+          newFloatVector,
+          newDoubleVector,
+          newYesNoVector,
+          newStringVector,
+          newLatLonVector,
+          newIntVectorVector};
+      std::static_pointer_cast<const RNTMyNativeViewEventEmitter>(_eventEmitter)->onIntArrayChanged(value);
+    }
+  }
+
   [super updateProps:props oldProps:oldProps];
 }
 
@@ -77,9 +111,26 @@ using namespace facebook::react;
 
 - (void)callNativeMethodToChangeBackgroundColor:(NSString *)colorString
 {
-  UIColor *color = [self UIColorFromHexString:std::string([colorString UTF8String])];
-  _view.backgroundColor = color;
+  [_view setBackgroundColorWithColorString:colorString];
 }
+
+- (void)callNativeMethodToAddOverlays:(const NSArray *)overlayColors
+{
+  [_view addColorOverlays:overlayColors];
+}
+
+- (void)callNativeMethodToRemoveOverlays
+{
+  [_view removeOverlays];
+}
+
+- (void)fireLagacyStyleEvent
+{
+  RNTMyNativeViewEventEmitter::OnLegacyStyleEvent value = {"Legacy Style Event Fired."};
+
+  std::static_pointer_cast<const RNTMyNativeViewEventEmitter>(_eventEmitter)->onLegacyStyleEvent(value);
+}
+
 @end
 
 Class<RCTComponentViewProtocol> RNTMyNativeViewCls(void)

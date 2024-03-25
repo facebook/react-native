@@ -10,8 +10,9 @@
 
 'use strict';
 
-const React = require('react');
+import RNTOption from '../../components/RNTOption';
 
+const React = require('react');
 const {
   Alert,
   Linking,
@@ -20,7 +21,6 @@ const {
   TouchableHighlight,
   View,
 } = require('react-native');
-import RNTOption from '../../components/RNTOption';
 
 const BINARY_TYPES = {
   String,
@@ -71,6 +71,7 @@ class XHRExampleBinaryUpload extends React.Component<{...}, $FlowFixMeState> {
     }
     const url = xhr.responseText.slice(index).split('\n')[0];
     console.log('Upload successful: ' + url);
+    // $FlowFixMe[unused-promise]
     Linking.openURL(url);
   }
 

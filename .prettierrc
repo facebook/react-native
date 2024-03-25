@@ -4,5 +4,17 @@
   "bracketSpacing": false,
   "requirePragma": true,
   "singleQuote": true,
-  "trailingComma": "all"
+  "trailingComma": "all",
+  "endOfLine": "lf",
+  "overrides": [
+    {
+      "files": [
+        "*.js",
+        "*.js.flow"
+      ],
+      "options": {
+        "parser": "hermes"
+      }
+    }
+  ]
 }

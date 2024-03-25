@@ -10,27 +10,24 @@
 
 'use strict';
 import type {ComponentShape} from '../../CodegenSchema';
-
-const {
-  getNativeTypeFromAnnotation,
-  getLocalImports,
-} = require('./ComponentsGeneratorUtils.js');
-
-const {
-  convertDefaultTypeToString,
-  getEnumMaskName,
-  getEnumName,
-  toSafeCppString,
-  generateStructName,
-  toIntEnumValueName,
-} = require('./CppHelpers.js');
-
 import type {
   ExtendsPropsShape,
   NamedShape,
   PropTypeAnnotation,
   SchemaType,
 } from '../../CodegenSchema';
+
+const {getEnumName, toSafeCppString} = require('../Utils');
+const {
+  getLocalImports,
+  getNativeTypeFromAnnotation,
+} = require('./ComponentsGeneratorUtils.js');
+const {
+  convertDefaultTypeToString,
+  generateStructName,
+  getEnumMaskName,
+  toIntEnumValueName,
+} = require('./CppHelpers.js');
 
 // File path -> contents
 type FilesOutput = Map<string, string>;
@@ -55,13 +52,11 @@ const FileTemplate = ({
 
 ${imports}
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 ${componentClasses}
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 `;
 
 const ClassTemplate = ({
@@ -80,7 +75,7 @@ const ClassTemplate = ({
   `
 ${enums}
 ${structs}
-class JSI_EXPORT ${className} final${extendClasses} {
+class ${className} final${extendClasses} {
  public:
   ${className}() = default;
   ${className}(const PropsParserContext& context, const ${className} &sourceProps, const RawProps &rawProps);
@@ -161,7 +156,7 @@ const StructTemplate = ({
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ${structName} &result) {
-  auto map = (butter::map<std::string, RawValue>)value;
+  auto map = (std::unordered_map<std::string, RawValue>)value;
 
   ${fromCases}
 }
@@ -478,7 +473,6 @@ function getExtendsImports(
   const imports: Set<string> = new Set();
 
   imports.add('#include <react/renderer/core/PropsParserContext.h>');
-  imports.add('#include <jsi/jsi.h>');
 
   extendsProps.forEach(extendProps => {
     switch (extendProps.type) {
@@ -667,8 +661,6 @@ function generateStruct(
         return;
       case 'Int32EnumTypeAnnotation':
         return;
-      case 'DoubleTypeAnnotation':
-        return;
       case 'ObjectTypeAnnotation':
         const props = property.typeAnnotation.properties;
         if (props == null) {
@@ -677,6 +669,8 @@ function generateStruct(
           );
         }
         generateStruct(structs, componentName, nameParts.concat([name]), props);
+        return;
+      case 'MixedTypeAnnotation':
         return;
       default:
         (property.typeAnnotation.type: empty);
@@ -712,6 +706,7 @@ module.exports = {
     schema: SchemaType,
     packageName?: string,
     assumeNonnull: boolean = false,
+    headerPrefix?: string,
   ): FilesOutput {
     const fileName = 'Props.h';
 

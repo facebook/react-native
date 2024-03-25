@@ -5,18 +5,19 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
 
-const React = require('react');
-
-const {Text, TextInput, View, StyleSheet, Switch} = require('react-native');
+import type {
+  RNTesterModule,
+  RNTesterModuleExample,
+} from '../../types/RNTesterTypes';
 
 const TextInputSharedExamples = require('./TextInputSharedExamples.js');
-
-import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+const React = require('react');
+const {StyleSheet, Switch, Text, TextInput, View} = require('react-native');
 
 class ToggleDefaultPaddingExample extends React.Component<
   $FlowFixMeProps,
@@ -151,11 +152,7 @@ const styles = StyleSheet.create({
   },
 });
 
-exports.title = 'TextInput';
-exports.documentationURL = 'https://reactnative.dev/docs/textinput';
-exports.category = 'Basic';
-exports.description = 'Single and multi-line text inputs.';
-exports.examples = ([
+const examples: Array<RNTesterModuleExample> = [
   ...TextInputSharedExamples,
   {
     title: 'Colors and text inputs',
@@ -199,8 +196,18 @@ exports.examples = ([
             </Text>
           </TextInput>
           <TextInput
-            defaultValue="Highlight Color is red"
+            defaultValue="Selection Color is red"
             selectionColor={'red'}
+            style={styles.singleLine}
+          />
+          <TextInput
+            defaultValue="Selection handles are red"
+            selectionHandleColor={'red'}
+            style={styles.singleLine}
+          />
+          <TextInput
+            defaultValue="Cursor Color is red"
+            cursorColor={'red'}
             style={styles.singleLine}
           />
         </View>
@@ -473,7 +480,7 @@ exports.examples = ([
         'next',
       ];
       const returnKeyLabels = ['Compile', 'React Native'];
-      const examples = returnKeyTypes.map(type => {
+      const returnKeyExamples = returnKeyTypes.map(type => {
         return (
           <TextInput
             key={type}
@@ -495,7 +502,7 @@ exports.examples = ([
       });
       return (
         <View>
-          {examples}
+          {returnKeyExamples}
           {types}
         </View>
       );
@@ -531,4 +538,13 @@ exports.examples = ([
       return <ToggleDefaultPaddingExample />;
     },
   },
-]: Array<RNTesterModuleExample>);
+];
+
+module.exports = ({
+  displayName: (undefined: ?string),
+  title: 'TextInput',
+  documentationURL: 'https://reactnative.dev/docs/textinput',
+  category: 'Basic',
+  description: 'Single and multi-line text inputs.',
+  examples,
+}: RNTesterModule);

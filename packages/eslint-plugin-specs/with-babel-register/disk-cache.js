@@ -8,10 +8,10 @@
  * @oncall react_native
  */
 
-const path = require('path');
 const fs = require('fs');
-const os = require('os');
 const {sync: makeDirSync} = require('make-dir');
+const os = require('os');
+const path = require('path');
 
 const packageJson = JSON.parse(
   fs.readFileSync(require.resolve('../package.json'), 'utf8'),
@@ -61,9 +61,6 @@ function save() {
     fs.writeFileSync(FILENAME, serialised);
   } catch (e) {
     switch (e.code) {
-      // workaround https://github.com/nodejs/node/issues/31481
-      // todo: remove the ENOENT error check when we drop node.js 13 support
-      case 'ENOENT':
       case 'EACCES':
       case 'EPERM':
         console.warn(

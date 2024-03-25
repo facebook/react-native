@@ -10,8 +10,8 @@
 
 'use strict';
 
-const path = require('path');
 const withBabelRegister = require('./with-babel-register');
+const path = require('path');
 
 // We use the prepack hook before publishing package to set this value to true
 const PACKAGE_USAGE = false;
@@ -24,9 +24,17 @@ const ERRORS = {
 let RNModuleParser;
 let RNParserUtils;
 let RNFlowParser;
+let RNParserCommons;
+let RNFlowParserUtils;
 
 function requireModuleParser() {
-  if (RNModuleParser == null || RNParserUtils == null || RNFlowParser == null) {
+  if (
+    RNModuleParser == null ||
+    RNParserUtils == null ||
+    RNFlowParser == null ||
+    RNParserCommons == null ||
+    RNFlowParserUtils == null
+  ) {
     // If using this externally, we leverage @react-native/codegen as published form
     if (!PACKAGE_USAGE) {
       const config = {
@@ -38,6 +46,8 @@ function requireModuleParser() {
         RNModuleParser = require('@react-native/codegen/src/parsers/flow/modules');
         RNParserUtils = require('@react-native/codegen/src/parsers/utils');
         RNFlowParser = require('@react-native/codegen/src/parsers/flow/parser');
+        RNParserCommons = require('@react-native/codegen/src/parsers/parsers-commons');
+        RNFlowParserUtils = require('@react-native/codegen/src/parsers/flow/utils');
       });
     } else {
       const config = {
@@ -47,16 +57,19 @@ function requireModuleParser() {
 
       withBabelRegister(config, () => {
         RNModuleParser = require('@react-native/codegen/lib/parsers/flow/modules');
-        RNParserUtils = require('@react-native/codegen/lib/parsers/flow/utils');
+        RNParserUtils = require('@react-native/codegen/lib/parsers/utils');
         RNFlowParser = require('@react-native/codegen/lib/parsers/flow/parser');
+        RNParserCommons = require('@react-native/codegen/lib/parsers/parsers-commons');
+        RNFlowParserUtils = require('@react-native/codegen/lib/parsers/flow/utils');
       });
     }
   }
 
   return {
-    buildModuleSchema: RNModuleParser.buildModuleSchema,
+    buildModuleSchema: RNParserCommons.buildModuleSchema,
     createParserErrorCapturer: RNParserUtils.createParserErrorCapturer,
     parser: new RNFlowParser.FlowParser(),
+    translateTypeAnnotation: RNModuleParser.flowTranslateTypeAnnotation,
   };
 }
 
@@ -131,16 +144,26 @@ function rule(context) {
         });
       }
 
-      const {buildModuleSchema, createParserErrorCapturer, parser} =
-        requireModuleParser();
+      const {
+        buildModuleSchema,
+        createParserErrorCapturer,
+        parser,
+        translateTypeAnnotation,
+      } = requireModuleParser();
 
       const [parsingErrors, tryParse] = createParserErrorCapturer();
 
       const sourceCode = context.getSourceCode().getText();
-      const ast = parser.getAst(sourceCode);
+      const ast = parser.getAst(sourceCode, filename);
 
       tryParse(() => {
-        buildModuleSchema(hasteModuleName, ast, tryParse, parser);
+        buildModuleSchema(
+          hasteModuleName,
+          ast,
+          tryParse,
+          parser,
+          translateTypeAnnotation,
+        );
       });
 
       parsingErrors.forEach(error => {

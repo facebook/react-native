@@ -8,6 +8,7 @@
 package com.facebook.react.tasks
 
 import com.facebook.react.utils.JsonUtils
+import com.facebook.react.utils.Os.cliPath
 import com.facebook.react.utils.windowsAwareCommandLine
 import org.gradle.api.file.Directory
 import org.gradle.api.file.DirectoryProperty
@@ -52,7 +53,7 @@ abstract class GenerateCodegenArtifactsTask : Exec() {
   internal fun resolveTaskParameters(): Pair<String, String> {
     val parsedPackageJson =
         if (packageJsonFile.isPresent && packageJsonFile.get().asFile.exists()) {
-          JsonUtils.fromCodegenJson(packageJsonFile.get().asFile)
+          JsonUtils.fromPackageJson(packageJsonFile.get().asFile)
         } else {
           null
         }
@@ -63,16 +64,17 @@ abstract class GenerateCodegenArtifactsTask : Exec() {
   }
 
   internal fun setupCommandLine(libraryName: String, codegenJavaPackageName: String) {
+    val workingDir = project.projectDir
     commandLine(
         windowsAwareCommandLine(
             *nodeExecutableAndArgs.get().toTypedArray(),
-            reactNativeDir.file("scripts/generate-specs-cli.js").get().asFile.absolutePath,
+            reactNativeDir.file("scripts/generate-specs-cli.js").get().asFile.cliPath(workingDir),
             "--platform",
             "android",
             "--schemaPath",
-            generatedSchemaFile.get().asFile.absolutePath,
+            generatedSchemaFile.get().asFile.cliPath(workingDir),
             "--outputDir",
-            generatedSrcDir.get().asFile.absolutePath,
+            generatedSrcDir.get().asFile.cliPath(workingDir),
             "--libraryName",
             libraryName,
             "--javaPackageName",

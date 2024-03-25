@@ -9,9 +9,9 @@
  */
 
 'use strict';
-import type {ViewToken} from '../../../../../Libraries/Lists/ViewabilityHelper';
-import type {RenderItemProps} from '../../../../../Libraries/Lists/VirtualizedListProps';
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+import type {ViewToken} from 'react-native/Libraries/Lists/ViewabilityHelper';
+import type {RenderItemProps} from 'react-native/Libraries/Lists/VirtualizedList';
 
 import RNTesterPage from '../../components/RNTesterPage';
 import * as React from 'react';
@@ -97,7 +97,7 @@ function NestedListExample(): React.Node {
   );
 
   return (
-    <RNTesterPage noSpacer={true} noScroll={true}>
+    <RNTesterPage noScroll={true}>
       <Text style={styles.debugText}>
         <Text style={styles.debugTextHeader}>Outer Viewable:{'\n'}</Text>
         {outerItems

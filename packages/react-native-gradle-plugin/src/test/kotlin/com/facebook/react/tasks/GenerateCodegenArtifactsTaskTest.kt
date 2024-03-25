@@ -7,9 +7,8 @@
 
 package com.facebook.react.tasks
 
-import com.facebook.react.tests.OS
-import com.facebook.react.tests.OsRule
-import com.facebook.react.tests.WithOs
+import com.facebook.react.tests.*
+import com.facebook.react.tests.createProject
 import com.facebook.react.tests.createTestTask
 import java.io.File
 import org.junit.Assert.assertEquals
@@ -26,7 +25,6 @@ class GenerateCodegenArtifactsTaskTest {
 
   @Test
   fun generateCodegenSchema_inputFiles_areSetCorrectly() {
-    val codegenDir = tempFolder.newFolder("codegen")
     val outputDir = tempFolder.newFolder("output")
 
     val task = createTestTask<GenerateCodegenArtifactsTask> { it.generatedSrcDir.set(outputDir) }
@@ -98,6 +96,44 @@ class GenerateCodegenArtifactsTaskTest {
   }
 
   @Test
+  @WithOs(OS.WIN)
+  fun setupCommandLine_onWindows_willSetupCorrectly() {
+    val reactNativeDir = tempFolder.newFolder("node_modules/react-native/")
+    val outputDir = tempFolder.newFolder("output")
+
+    val project = createProject()
+    val task =
+        createTestTask<GenerateCodegenArtifactsTask>(project) {
+          it.reactNativeDir.set(reactNativeDir)
+          it.generatedSrcDir.set(outputDir)
+          it.nodeExecutableAndArgs.set(listOf("--verbose"))
+        }
+
+    task.setupCommandLine("example-test", "com.example.test")
+
+    assertEquals(
+        listOf(
+            "cmd",
+            "/c",
+            "--verbose",
+            File(reactNativeDir, "scripts/generate-specs-cli.js")
+                .relativeTo(project.projectDir)
+                .path,
+            "--platform",
+            "android",
+            "--schemaPath",
+            File(outputDir, "schema.json").relativeTo(project.projectDir).path,
+            "--outputDir",
+            outputDir.relativeTo(project.projectDir).path,
+            "--libraryName",
+            "example-test",
+            "--javaPackageName",
+            "com.example.test",
+        ),
+        task.commandLine.toMutableList())
+  }
+
+  @Test
   fun resolveTaskParameters_withConfigInPackageJson_usesIt() {
     val packageJsonFile =
         tempFolder.newFile("package.json").apply {
@@ -105,7 +141,7 @@ class GenerateCodegenArtifactsTaskTest {
           writeText(
               """
         {
-            "name": "@a/libray",
+            "name": "@a/library",
             "codegenConfig": {
                 "name": "an-awesome-library",
                 "android": {
@@ -138,7 +174,7 @@ class GenerateCodegenArtifactsTaskTest {
           writeText(
               """
         {
-            "name": "@a/libray",
+            "name": "@a/library",
             "codegenConfig": {
             }
         }

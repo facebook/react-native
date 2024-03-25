@@ -9,9 +9,15 @@
 
 'use strict';
 
+/* eslint-disable lint/sort-imports */
+// The 'danger' package seems to have some side effects that make it unsafe
+// to reorder.
+
 const {danger, fail, /*message,*/ warn} = require('danger');
 const includes = require('lodash.includes');
-const eslint = require('@seadub/danger-plugin-eslint');
+const fetch = require('node-fetch');
+const {validate: validateChangelog} =
+  require('@rnx-kit/rn-changelog-generator').default;
 
 const isFromPhabricator =
   danger.github.pr.body &&
@@ -57,35 +63,22 @@ if (!includesTestPlan && !isFromPhabricator) {
   warn(`${title} - <i>${idea}</i>`);
 }
 
-// Regex looks for given categories, types, a file/framework/component, and a message - broken into 4 capture groups
-const changelogRegex =
-  /\[\s?(ANDROID|GENERAL|IOS|INTERNAL)\s?\]\s?\[\s?(BREAKING|ADDED|CHANGED|DEPRECATED|REMOVED|FIXED|SECURITY)\s?\]\s*?-?\s*?(.*)/gi;
-const internalChangelogRegex = /\[\s?(INTERNAL)\s?\].*/gi;
-const includesChangelog =
-  danger.github.pr.body &&
-  (danger.github.pr.body.toLowerCase().includes('## changelog') ||
-    danger.github.pr.body.toLowerCase().includes('release notes') ||
-    // PR exports from Phabricator have a `Changelog:` entry for the changelog.
-    danger.github.pr.body.toLowerCase().includes('changelog:'));
-const correctlyFormattedChangelog = changelogRegex.test(danger.github.pr.body);
-const containsInternalChangelog = internalChangelogRegex.test(
-  danger.github.pr.body,
-);
-
-// Provides advice if a changelog is missing
-const changelogInstructions =
-  'A changelog entry has the following format: `[CATEGORY] [TYPE] - Message`.\n\n<details>CATEGORY may be:\n\n- General\n- iOS\n- Android\n- JavaScript\n- Internal (for changes that do not need to be called out in the release notes)\n\nTYPE may be:\n\n- Added, for new features.\n- Changed, for changes in existing functionality.\n- Deprecated, for soon-to-be removed features.\n- Removed, for now removed features.\n- Fixed, for any bug fixes.\n- Security, in case of vulnerabilities.\n\nMESSAGE may answer "what and why" on a feature level.   Use this to briefly tell React Native users about notable changes.</details>';
-if (!includesChangelog) {
-  const title = ':clipboard: Missing Changelog';
-  const idea =
-    'Can you add a Changelog? ' +
-    'To do so, add a "## Changelog" section to your PR description. ' +
-    changelogInstructions;
-  fail(`${title} - <i>${idea}</i>`);
-} else if (!correctlyFormattedChangelog && !containsInternalChangelog) {
-  const title = ':clipboard: Verify Changelog Format';
-  const idea = changelogInstructions;
-  fail(`${title} - <i>${idea}</i>`);
+// Check if there is a changelog and validate it
+if (!isFromPhabricator) {
+  const status = validateChangelog(danger.github.pr.body);
+  const changelogInstructions =
+    'See <a target="_blank" href="https://reactnative.dev/contributing/changelogs-in-pull-requests">Changelog format</a>';
+  if (status === 'missing') {
+    // Provides advice if a changelog is missing
+    const title = ':clipboard: Missing Changelog';
+    const idea =
+      'Please add a Changelog to your PR description. ' + changelogInstructions;
+    fail(`${title} - <i>${idea}</i>`);
+  } else if (status === 'invalid') {
+    const title = ':clipboard: Verify Changelog Format';
+    const idea = changelogInstructions;
+    fail(`${title} - <i>${idea}</i>`);
+  }
 }
 
 // Warns if the PR is opened against stable, as commits need to be cherry picked and tagged by a release maintainer.
@@ -109,6 +102,83 @@ if (isMergeRefStable) {
   });
 }
 
-// Ensures that eslint is run from root folder and that it can find .eslintrc
-process.chdir('../../');
-eslint.default();
+// Wait for statuses and post a message if there are failures.
+async function handleStatuses() {
+  const regex = /Test Suites: \d+ failed/;
+  let startChecking = Date.now();
+  let done = false;
+  while (!done) {
+    let now = Date.now();
+    if (now - startChecking > 90 * 60 * 1000) {
+      warn(
+        "One hour and a half have passed and the E2E jobs haven't finished yet.",
+      );
+      done = true;
+      continue;
+    }
+
+    const githubBaseURL = `https://api.github.com/repos/${danger.github.pr.base.repo.owner.login}/${danger.github.pr.base.repo.name}`;
+    const statusesURL = `${githubBaseURL}/commits/${danger.github.pr.head.sha}/statuses?per_page=100`;
+
+    const response = await fetch(statusesURL, {
+      headers: {
+        Accept: 'application/vnd.github+json',
+        'X-GitHub-Api-Version': '2022-11-28',
+        Authorization: `Bearer ${process.env.DANGER_GITHUB_API_TOKEN}`,
+      },
+    });
+
+    const data = await response.json();
+    const e2e_jobs = data.filter(job => {
+      return (
+        job.context === 'ci/circleci: test_e2e_ios'
+        // test_e2e_android does not currently tun
+        // || job.context === 'ci/circleci: test_e2e_android'
+      );
+    });
+    if (e2e_jobs.length <= 0) {
+      console.log('No e2e jobs found yet, retrying in 5 minutes.');
+      await new Promise(resolve => setTimeout(resolve, 5 * 60 * 1000));
+      continue;
+    }
+
+    const jobFinished = e2e_jobs.every(job => job.state !== 'pending');
+    if (!jobFinished) {
+      console.log("E2E jobs haven't finished yet, retrying in 5 minutes.");
+      await new Promise(resolve => setTimeout(resolve, 5 * 60 * 1000));
+      continue;
+    }
+
+    e2e_jobs.forEach(async job => {
+      const url = job.target_url;
+      const components = url.split('/');
+      const jobId = components[components.length - 1];
+      const jobUrl = `https://circleci.com/api/v2/project/gh/facebook/react-native/${jobId}`;
+      const artifactUrl = `${jobUrl}/artifacts`;
+      const artifactResponse = await fetch(artifactUrl);
+      const artifactData = await artifactResponse.json();
+      const testLogs = artifactData.items.filter(
+        item => item.path === 'tmp/test_log',
+      );
+      if (testLogs.length !== 1) {
+        warn(
+          `Can't find the E2E test log for ${job.context}. <a href=${jobUrl}>Job link</a>`,
+        );
+        return;
+      }
+
+      const logUrl = testLogs[0].url;
+      const logResponseText = await fetch(logUrl);
+      const logText = await logResponseText.text();
+
+      if (regex.test(logText)) {
+        warn(
+          `E2E tests for ${job.context} failed with errors. See the <a href="${logUrl}">logs for details<a/>`,
+        );
+      }
+    });
+    done = true;
+  }
+}
+
+// handleStatuses();

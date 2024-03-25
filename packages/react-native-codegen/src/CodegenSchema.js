@@ -53,6 +53,13 @@ export type VoidTypeAnnotation = $ReadOnly<{
 export type ObjectTypeAnnotation<+T> = $ReadOnly<{
   type: 'ObjectTypeAnnotation',
   properties: $ReadOnlyArray<NamedShape<T>>,
+
+  // metadata for objects that generated from interfaces
+  baseTypes?: $ReadOnlyArray<string>,
+}>;
+
+export type MixedTypeAnnotation = $ReadOnly<{
+  type: 'MixedTypeAnnotation',
 }>;
 
 type FunctionTypeAnnotation<+P, +R> = $ReadOnly<{
@@ -119,8 +126,34 @@ export type EventTypeAnnotation =
   | DoubleTypeAnnotation
   | FloatTypeAnnotation
   | Int32TypeAnnotation
+  | MixedTypeAnnotation
   | StringEnumTypeAnnotation
-  | ObjectTypeAnnotation<EventTypeAnnotation>;
+  | ObjectTypeAnnotation<EventTypeAnnotation>
+  | $ReadOnly<{
+      type: 'ArrayTypeAnnotation',
+      elementType: EventTypeAnnotation,
+    }>;
+
+export type ArrayTypeAnnotation = $ReadOnly<{
+  type: 'ArrayTypeAnnotation',
+  elementType:
+    | BooleanTypeAnnotation
+    | StringTypeAnnotation
+    | DoubleTypeAnnotation
+    | FloatTypeAnnotation
+    | Int32TypeAnnotation
+    | $ReadOnly<{
+        type: 'StringEnumTypeAnnotation',
+        default: string,
+        options: $ReadOnlyArray<string>,
+      }>
+    | ObjectTypeAnnotation<PropTypeAnnotation>
+    | ReservedPropTypeAnnotation
+    | $ReadOnly<{
+        type: 'ArrayTypeAnnotation',
+        elementType: ObjectTypeAnnotation<PropTypeAnnotation>,
+      }>,
+}>;
 
 export type PropTypeAnnotation =
   | $ReadOnly<{
@@ -155,26 +188,8 @@ export type PropTypeAnnotation =
     }>
   | ReservedPropTypeAnnotation
   | ObjectTypeAnnotation<PropTypeAnnotation>
-  | $ReadOnly<{
-      type: 'ArrayTypeAnnotation',
-      elementType:
-        | BooleanTypeAnnotation
-        | StringTypeAnnotation
-        | DoubleTypeAnnotation
-        | FloatTypeAnnotation
-        | Int32TypeAnnotation
-        | $ReadOnly<{
-            type: 'StringEnumTypeAnnotation',
-            default: string,
-            options: $ReadOnlyArray<string>,
-          }>
-        | ObjectTypeAnnotation<PropTypeAnnotation>
-        | ReservedPropTypeAnnotation
-        | $ReadOnly<{
-            type: 'ArrayTypeAnnotation',
-            elementType: ObjectTypeAnnotation<PropTypeAnnotation>,
-          }>,
-    }>;
+  | ArrayTypeAnnotation
+  | MixedTypeAnnotation;
 
 export type ReservedPropTypeAnnotation = $ReadOnly<{
   type: 'ReservedPropTypeAnnotation',
@@ -183,7 +198,8 @@ export type ReservedPropTypeAnnotation = $ReadOnly<{
     | 'ImageSourcePrimitive'
     | 'PointPrimitive'
     | 'EdgeInsetsPrimitive'
-    | 'ImageRequestPrimitive',
+    | 'ImageRequestPrimitive'
+    | 'DimensionPrimitive',
 }>;
 
 export type CommandTypeAnnotation = FunctionTypeAnnotation<
@@ -197,7 +213,8 @@ export type CommandParamTypeAnnotation =
   | Int32TypeAnnotation
   | DoubleTypeAnnotation
   | FloatTypeAnnotation
-  | StringTypeAnnotation;
+  | StringTypeAnnotation
+  | ArrayTypeAnnotation;
 
 export type ReservedTypeAnnotation = $ReadOnly<{
   type: 'ReservedTypeAnnotation',
@@ -218,7 +235,8 @@ export type NullableTypeAnnotation<+T: NativeModuleTypeAnnotation> = $ReadOnly<{
 
 export type NativeModuleSchema = $ReadOnly<{
   type: 'NativeModule',
-  aliases: NativeModuleAliasMap,
+  aliasMap: NativeModuleAliasMap,
+  enumMap: NativeModuleEnumMap,
   spec: NativeModuleSpec,
   moduleName: string,
   // Use for modules that are not used on other platforms.
@@ -234,6 +252,10 @@ type NativeModuleSpec = $ReadOnly<{
 export type NativeModulePropertyShape = NamedShape<
   Nullable<NativeModuleFunctionTypeAnnotation>,
 >;
+
+export type NativeModuleEnumMap = $ReadOnly<{
+  [enumName: string]: NativeModuleEnumDeclarationWithMembers,
+}>;
 
 export type NativeModuleAliasMap = $ReadOnly<{
   [aliasName: string]: NativeModuleObjectTypeAnnotation,
@@ -283,13 +305,37 @@ export type NativeModuleBooleanTypeAnnotation = $ReadOnly<{
   type: 'BooleanTypeAnnotation',
 }>;
 
+export type NativeModuleEnumMembers = $ReadOnlyArray<
+  $ReadOnly<{
+    name: string,
+    value: string,
+  }>,
+>;
+
+export type NativeModuleEnumMemberType =
+  | 'NumberTypeAnnotation'
+  | 'StringTypeAnnotation';
+
 export type NativeModuleEnumDeclaration = $ReadOnly<{
+  name: string,
   type: 'EnumDeclaration',
-  memberType: 'NumberTypeAnnotation' | 'StringTypeAnnotation',
+  memberType: NativeModuleEnumMemberType,
 }>;
+
+export type NativeModuleEnumDeclarationWithMembers = {
+  name: string,
+  type: 'EnumDeclarationWithMembers',
+  memberType: NativeModuleEnumMemberType,
+  members: NativeModuleEnumMembers,
+};
 
 export type NativeModuleGenericObjectTypeAnnotation = $ReadOnly<{
   type: 'GenericObjectTypeAnnotation',
+
+  // a dictionary type is codegen as "Object"
+  // but we know all its members are in the same type
+  // when it happens, the following field is non-null
+  dictionaryValueType?: Nullable<NativeModuleTypeAnnotation>,
 }>;
 
 export type NativeModuleTypeAliasTypeAnnotation = $ReadOnly<{

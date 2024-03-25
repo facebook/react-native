@@ -1,0 +1,140 @@
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include "EventQueue.h"
+
+#include <react/renderer/runtimescheduler/RuntimeScheduler.h>
+#include "EventEmitter.h"
+#include "ShadowNodeFamily.h"
+
+namespace facebook::react {
+
+EventQueue::EventQueue(
+    EventQueueProcessor eventProcessor,
+    std::unique_ptr<EventBeat> eventBeat,
+    RuntimeScheduler& runtimeScheduler)
+    : eventProcessor_(std::move(eventProcessor)),
+      eventBeat_(std::move(eventBeat)),
+      runtimeScheduler_(&runtimeScheduler) {
+  eventBeat_->setBeatCallback(
+      [this](jsi::Runtime& runtime) { onBeat(runtime); });
+}
+
+void EventQueue::enqueueEvent(RawEvent&& rawEvent) const {
+  {
+    std::scoped_lock lock(queueMutex_);
+    eventQueue_.push_back(std::move(rawEvent));
+  }
+
+  onEnqueue();
+}
+
+void EventQueue::enqueueUniqueEvent(RawEvent&& rawEvent) const {
+  {
+    std::scoped_lock lock(queueMutex_);
+
+    auto repeatedEvent = eventQueue_.rend();
+
+    for (auto it = eventQueue_.rbegin(); it != eventQueue_.rend(); ++it) {
+      if (it->type == rawEvent.type &&
+          it->eventTarget == rawEvent.eventTarget) {
+        repeatedEvent = it;
+        break;
+      } else if (it->eventTarget == rawEvent.eventTarget) {
+        // It is necessary to maintain order of different event types
+        // for the same target. If the same target has event types A1, B1
+        // in the event queue and event A2 occurs. A1 has to stay in the
+        // queue.
+        break;
+      }
+    }
+
+    if (repeatedEvent == eventQueue_.rend()) {
+      eventQueue_.push_back(std::move(rawEvent));
+    } else {
+      *repeatedEvent = std::move(rawEvent);
+    }
+  }
+
+  onEnqueue();
+}
+
+void EventQueue::enqueueStateUpdate(StateUpdate&& stateUpdate) const {
+  {
+    std::scoped_lock lock(queueMutex_);
+    if (!stateUpdateQueue_.empty()) {
+      const auto position = stateUpdateQueue_.back();
+      if (stateUpdate.family == position.family) {
+        stateUpdateQueue_.pop_back();
+      }
+    }
+    stateUpdateQueue_.push_back(std::move(stateUpdate));
+  }
+
+  onEnqueue();
+}
+
+void EventQueue::onEnqueue() const {
+  if (synchronousAccessRequested_) {
+    // Sync flush has been scheduled, no need to request access to the runtime.
+    return;
+  }
+  eventBeat_->request();
+}
+
+void EventQueue::experimental_flushSync() const {
+  synchronousAccessRequested_ = true;
+  runtimeScheduler_->executeNowOnTheSameThread([this](jsi::Runtime& runtime) {
+    synchronousAccessRequested_ = false;
+    onBeat(runtime);
+  });
+}
+
+void EventQueue::onBeat(jsi::Runtime& runtime) const {
+  if (synchronousAccessRequested_) {
+    // Sync flush has been scheduled, let's yield to it.
+    return;
+  }
+  flushStateUpdates();
+  flushEvents(runtime);
+}
+
+void EventQueue::flushEvents(jsi::Runtime& runtime) const {
+  std::vector<RawEvent> queue;
+
+  {
+    std::scoped_lock lock(queueMutex_);
+
+    if (eventQueue_.empty()) {
+      return;
+    }
+
+    queue = std::move(eventQueue_);
+    eventQueue_.clear();
+  }
+
+  eventProcessor_.flushEvents(runtime, std::move(queue));
+}
+
+void EventQueue::flushStateUpdates() const {
+  std::vector<StateUpdate> stateUpdateQueue;
+
+  {
+    std::scoped_lock lock(queueMutex_);
+
+    if (stateUpdateQueue_.empty()) {
+      return;
+    }
+
+    stateUpdateQueue = std::move(stateUpdateQueue_);
+    stateUpdateQueue_.clear();
+  }
+
+  eventProcessor_.flushStateUpdates(std::move(stateUpdateQueue));
+}
+
+} // namespace facebook::react

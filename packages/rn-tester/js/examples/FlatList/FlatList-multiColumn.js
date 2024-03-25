@@ -10,12 +10,9 @@
 
 'use strict';
 
-import type {RenderItemProps} from 'react-native/Libraries/Lists/VirtualizedList';
+import type {Item} from '../../components/ListExampleShared';
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
-const RNTesterPage = require('../../components/RNTesterPage');
-const React = require('react');
-
-const infoLog = require('react-native/Libraries/Utilities/infoLog');
+import type {RenderItemProps} from 'react-native/Libraries/Lists/VirtualizedList';
 
 const {
   FooterComponent,
@@ -23,14 +20,15 @@ const {
   ItemComponent,
   PlainInput,
   SeparatorComponent,
-  genItemData,
+  genNewerItems,
   getItemLayout,
   pressItem,
   renderSmallSwitchOption,
 } = require('../../components/ListExampleShared');
-const {FlatList, StyleSheet, Text, View, Alert} = require('react-native');
-
-import type {Item} from '../../components/ListExampleShared';
+const RNTesterPage = require('../../components/RNTesterPage');
+const React = require('react');
+const {Alert, FlatList, StyleSheet, Text, View} = require('react-native');
+const infoLog = require('react-native/Libraries/Utilities/infoLog');
 
 class MultiColumnExample extends React.PureComponent<
   $FlowFixMeProps,
@@ -46,7 +44,7 @@ class MultiColumnExample extends React.PureComponent<
         numColumns: number,
         virtualized: boolean,
       |} = {
-    data: genItemData(1000),
+    data: genNewerItems(1000),
     filterText: '',
     fixedHeight: true,
     logViewable: false,
@@ -73,7 +71,6 @@ class MultiColumnExample extends React.PureComponent<
     return (
       <RNTesterPage
         title={this.props.navigator ? null : '<FlatList> - MultiColumn'}
-        noSpacer={true}
         noScroll={true}>
         <View style={styles.searchRow}>
           <View style={styles.row}>

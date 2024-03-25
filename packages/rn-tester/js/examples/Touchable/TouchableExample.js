@@ -8,22 +8,21 @@
  * @flow
  */
 
-const React = require('react');
+import {useEffect, useRef, useState} from 'react';
 
+const React = require('react');
 const {
   Animated,
   Image,
+  Platform,
   StyleSheet,
   Text,
   TouchableHighlight,
-  TouchableOpacity,
-  Platform,
   TouchableNativeFeedback,
+  TouchableOpacity,
   TouchableWithoutFeedback,
   View,
 } = require('react-native');
-
-import {useEffect, useRef, useState} from 'react';
 
 const forceTouchAvailable =
   (Platform.OS === 'ios' && Platform.constants.forceTouchAvailable) || false;
@@ -322,8 +321,8 @@ function TouchableNativeMethodChecker<
         {status == null
           ? 'Missing Ref!'
           : status === true
-          ? 'Native Methods Exist'
-          : 'Native Methods Missing!'}
+            ? 'Native Methods Exist'
+            : 'Native Methods Missing!'}
       </Text>
     </View>
   );

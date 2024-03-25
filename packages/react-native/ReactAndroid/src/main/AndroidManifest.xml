@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:versionCode="1"
+    >
+
+  <!-- This is necessary to inform the linter about our min API version. The linter walk the tree
+   up from the file to lint until it find an AndroidManifest with a minSdkVersion. This is then used
+   as the min SDK to lint the file.-->
+  <uses-sdk
+      android:minSdkVersion="23"
+      android:targetSdkVersion="34"
+      />
+
+</manifest>

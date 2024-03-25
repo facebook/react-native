@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- See fburl.com/140690840 for information about i18n on Android -->
+<!-- @generated -->
+<!-- FB Locale: et_EE -->
+<resources exclude-from-buck-resource-map="true">
+    <string name="image_description" gender="unknown">Pilt</string>
+    <string name="imagebutton_description" gender="unknown">Nupp, pilt</string>
+    <string name="header_description" gender="unknown">Pealkiri</string>
+    <string name="alert_description" gender="unknown">Hoiatus</string>
+    <string name="combobox_description" gender="unknown">Liitboks</string>
+    <string name="menu_description" gender="unknown">Menüü</string>
+    <string name="menubar_description" gender="unknown">Menüüriba</string>
+    <string name="menuitem_description" gender="unknown">Menüü-üksus</string>
+    <string name="progressbar_description" gender="unknown">Edenemisriba</string>
+    <string name="radiogroup_description" gender="unknown">Raadionuppude grupp</string>
+    <string name="scrollbar_description" gender="unknown">Kerimisriba</string>
+    <string name="spinbutton_description" gender="unknown">Pööramisnupp</string>
+    <string name="rn_tab_description" gender="unknown">Vahekaart</string>
+    <string name="tablist_description" gender="unknown">Vahekaartide loend</string>
+    <string name="timer_description" gender="unknown">Taimer</string>
+    <string name="toolbar_description" gender="unknown">Tööriistariba</string>
+    <string name="summary_description" gender="unknown">Kokkuvõte</string>
+    <string name="state_busy_description" gender="unknown">hõivatud</string>
+    <string name="state_expanded_description" gender="unknown">laiendatud</string>
+    <string name="state_collapsed_description" gender="unknown">ahendatud</string>
+    <string name="state_unselected_description" gender="unknown">valimata</string>
+    <string name="state_on_description" gender="unknown">sees</string>
+    <string name="state_off_description" gender="unknown">väljas</string>
+    <string name="state_mixed_description" gender="unknown">miksitud</string>
+</resources>

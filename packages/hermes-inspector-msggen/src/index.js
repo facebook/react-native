@@ -8,23 +8,19 @@
  * @format
  */
 
-import fs from 'fs';
-
-import yargs from 'yargs';
-
 import {Command} from './Command';
 import {Event} from './Event';
 import {Graph} from './Graph';
-import {Property} from './Property';
-import {PropsType, Type} from './Type';
-
 import {HeaderWriter} from './HeaderWriter';
 import {ImplementationWriter} from './ImplementationWriter';
-
-// $FlowFixMe[cannot-resolve-module] : this isn't a module, just a JSON file.
-const standard = require('devtools-protocol/json/js_protocol.json');
+import {Property} from './Property';
+import {PropsType, Type} from './Type';
+import fs from 'fs';
+import yargs from 'yargs';
 
 const custom = require('../src/custom.json');
+// $FlowFixMe[cannot-resolve-module] : this isn't a module, just a JSON file.
+const standard = require('devtools-protocol/json/js_protocol.json');
 
 type Descriptor = {|
   types: Array<Type>,
@@ -53,7 +49,12 @@ function parseDomains(
     const domain = obj.domain;
 
     for (const typeObj of obj.types || []) {
-      const type = Type.create(domain, typeObj, ignoreExperimental);
+      const type = Type.create(
+        domain,
+        typeObj,
+        ignoreExperimental,
+        includeExperimental,
+      );
       if (type) {
         desc.types.push(type);
       }
@@ -65,6 +66,7 @@ function parseDomains(
         commandObj,
         !includeExperimental.has(`${domain}.${commandObj.name}`) &&
           ignoreExperimental,
+        includeExperimental,
       );
       if (command) {
         desc.commands.push(command);
@@ -72,7 +74,12 @@ function parseDomains(
     }
 
     for (const eventObj of obj.events || []) {
-      const event = Event.create(domain, eventObj, ignoreExperimental);
+      const event = Event.create(
+        domain,
+        eventObj,
+        ignoreExperimental,
+        includeExperimental,
+      );
       if (event) {
         desc.events.push(event);
       }
@@ -161,7 +168,8 @@ function filterReachableFromRoots(
   graph: Graph,
   roots: Array<string>,
 ): Descriptor {
-  const topoSortedIds = graph.traverse(roots);
+  const traversal = graph.traverse(roots);
+  const topoSortedIds = traversal.nodes;
 
   // Types can include other types by value, so they need to be topologically
   // sorted in the header.
@@ -175,6 +183,29 @@ function filterReachableFromRoots(
     const type = typeMap.get(id);
     if (type) {
       types.push(type);
+    }
+  }
+
+  const cycles: Set<string> = new Set();
+  for (const cycle of traversal.cycles) {
+    const from = typeMap.get(cycle.from);
+    const to = typeMap.get(cycle.to);
+    if (from && to) {
+      cycles.add(from.id + ' > ' + to.id);
+    }
+  }
+
+  for (const type of types) {
+    if (type instanceof PropsType) {
+      for (const prop of type.properties) {
+        const ref = (prop: Object).$ref;
+        if (ref) {
+          const cycleKey = `${type.id} > ${ref}`;
+          if (cycles.has(cycleKey)) {
+            (prop: Object).cyclical = true;
+          }
+        }
+      }
     }
   }
 
@@ -248,4 +279,5 @@ async function main(): Promise<void> {
   iw.write();
 }
 
+// $FlowFixMe[unused-promise]
 main();

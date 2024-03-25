@@ -8,9 +8,9 @@
  * @flow strict-local
  */
 
-import {Button, Text, StyleSheet, View} from 'react-native';
 import * as React from 'react';
 import {useState} from 'react';
+import {Button, StyleSheet, Text, View} from 'react-native';
 
 export default function TextAdjustsDynamicLayoutExample(props: {}): React.Node {
   const [height, setHeight] = useState(20);

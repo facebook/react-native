@@ -11,6 +11,7 @@
 'use strict';
 
 import type {Pojo, PojoProperty, PojoTypeAnnotation} from './PojoCollector';
+
 const {capitalize} = require('../../Utils');
 
 type ImportCollector = ($import: string) => void;
@@ -23,6 +24,8 @@ function toJavaType(
   const importReadableMap = () =>
     addImport('com.facebook.react.bridge.ReadableMap');
   const importArrayList = () => addImport('java.util.ArrayList');
+  const importYogaValue = () => addImport('com.facebook.yoga.YogaValue');
+  const importDynamic = () => addImport('com.facebook.react.bridge.Dynamic');
   switch (typeAnnotation.type) {
     /**
      * Primitives
@@ -98,6 +101,12 @@ function toJavaType(
           importNullable();
           importReadableMap();
           return '@Nullable ReadableMap';
+
+        case 'DimensionPrimitive':
+          importNullable();
+          importYogaValue();
+          return '@Nullable YogaValue';
+
         default:
           (typeAnnotation.name: empty);
           throw new Error(
@@ -182,6 +191,11 @@ function toJavaType(
               case 'EdgeInsetsPrimitive':
                 importReadableMap();
                 return 'ReadableMap';
+
+              case 'DimensionPrimitive':
+                importYogaValue();
+                return 'YogaValue';
+
               default:
                 (elementType.name: empty);
                 throw new Error(
@@ -208,6 +222,11 @@ function toJavaType(
 
       importArrayList();
       return `ArrayList<${elementTypeString}>`;
+    }
+
+    case 'MixedTypeAnnotation': {
+      importDynamic();
+      return 'Dynamic';
     }
 
     default: {

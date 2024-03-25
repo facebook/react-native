@@ -1,7 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`processAspectRatio should not accept invalid formats 1`] = `"aspectRatio must either be a number, a ratio or \`auto\`. You passed: 0a"`;
-
-exports[`processAspectRatio should not accept invalid formats 2`] = `"aspectRatio must either be a number, a ratio or \`auto\`. You passed: 1 / 1 1"`;
-
-exports[`processAspectRatio should not accept invalid formats 3`] = `"aspectRatio must either be a number, a ratio or \`auto\`. You passed: auto 1/1"`;

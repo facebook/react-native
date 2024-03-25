@@ -9,43 +9,15 @@
  */
 
 'use strict';
-import type {ASTNode} from '../utils';
-import type {NamedShape} from '../../../CodegenSchema.js';
+
+import type {BuildSchemaFN, Parser} from '../../parser';
+import type {ASTNode, PropAST, TypeDeclarationMap} from '../../utils';
+
+const {verifyPropNotAlreadyDefined} = require('../../parsers-commons');
 const {
-  parseTopLevelType,
   flattenIntersectionType,
+  parseTopLevelType,
 } = require('../parseTopLevelType');
-import type {TypeDeclarationMap} from '../../utils';
-
-function getProperties(
-  typeName: string,
-  types: TypeDeclarationMap,
-): $FlowFixMe {
-  const alias = types[typeName];
-  if (!alias) {
-    throw new Error(
-      `Failed to find definition for "${typeName}", please check that you have a valid codegen typescript file`,
-    );
-  }
-  const aliasKind =
-    alias.type === 'TSInterfaceDeclaration' ? 'interface' : 'type';
-
-  try {
-    if (aliasKind === 'interface') {
-      return [...(alias.extends ?? []), ...alias.body.body];
-    }
-
-    return (
-      alias.typeAnnotation.members ||
-      alias.typeAnnotation.typeParameters.params[0].members ||
-      alias.typeAnnotation.typeParameters.params
-    );
-  } catch (e) {
-    throw new Error(
-      `Failed to find ${aliasKind} definition for "${typeName}", please check that you have a valid codegen typescript file`,
-    );
-  }
-}
 
 function getUnionOfLiterals(
   name: string,
@@ -111,7 +83,8 @@ function detectArrayType<T>(
   typeAnnotation: $FlowFixMe | ASTNode,
   defaultValue: $FlowFixMe | void,
   types: TypeDeclarationMap,
-  buildSchema: (property: PropAST, types: TypeDeclarationMap) => ?NamedShape<T>,
+  parser: Parser,
+  buildSchema: BuildSchemaFN<T>,
 ): $FlowFixMe {
   // Covers: readonly T[]
   if (
@@ -126,6 +99,7 @@ function detectArrayType<T>(
         typeAnnotation.typeAnnotation.elementType,
         defaultValue,
         types,
+        parser,
         buildSchema,
       ),
     };
@@ -140,6 +114,7 @@ function detectArrayType<T>(
         typeAnnotation.elementType,
         defaultValue,
         types,
+        parser,
         buildSchema,
       ),
     };
@@ -148,8 +123,8 @@ function detectArrayType<T>(
   // Covers: Array<T> and ReadonlyArray<T>
   if (
     typeAnnotation.type === 'TSTypeReference' &&
-    (typeAnnotation.typeName.name === 'ReadonlyArray' ||
-      typeAnnotation.typeName.name === 'Array')
+    (parser.getTypeAnnotationName(typeAnnotation) === 'ReadonlyArray' ||
+      parser.getTypeAnnotationName(typeAnnotation) === 'Array')
   ) {
     return {
       type: 'ArrayTypeAnnotation',
@@ -158,6 +133,7 @@ function detectArrayType<T>(
         typeAnnotation.typeParameters.params[0],
         defaultValue,
         types,
+        parser,
         buildSchema,
       ),
     };
@@ -169,17 +145,46 @@ function detectArrayType<T>(
 function buildObjectType<T>(
   rawProperties: Array<$FlowFixMe>,
   types: TypeDeclarationMap,
-  buildSchema: (property: PropAST, types: TypeDeclarationMap) => ?NamedShape<T>,
+  parser: Parser,
+  buildSchema: BuildSchemaFN<T>,
 ): $FlowFixMe {
-  const flattenedProperties = flattenProperties(rawProperties, types);
+  const flattenedProperties = flattenProperties(rawProperties, types, parser);
   const properties = flattenedProperties
-    .map(prop => buildSchema(prop, types))
+    .map(prop => buildSchema(prop, types, parser))
     .filter(Boolean);
 
   return {
     type: 'ObjectTypeAnnotation',
     properties,
   };
+}
+
+function getPrimitiveTypeAnnotation(type: string): $FlowFixMe {
+  switch (type) {
+    case 'Int32':
+      return {
+        type: 'Int32TypeAnnotation',
+      };
+    case 'Double':
+      return {
+        type: 'DoubleTypeAnnotation',
+      };
+    case 'Float':
+      return {
+        type: 'FloatTypeAnnotation',
+      };
+    case 'TSBooleanKeyword':
+      return {
+        type: 'BooleanTypeAnnotation',
+      };
+    case 'Stringish':
+    case 'TSStringKeyword':
+      return {
+        type: 'StringTypeAnnotation',
+      };
+    default:
+      throw new Error(`Unknown primitive type "${type}"`);
+  }
 }
 
 function getCommonTypeAnnotation<T>(
@@ -189,17 +194,24 @@ function getCommonTypeAnnotation<T>(
   typeAnnotation: $FlowFixMe,
   defaultValue: $FlowFixMe | void,
   types: TypeDeclarationMap,
-  buildSchema: (property: PropAST, types: TypeDeclarationMap) => ?NamedShape<T>,
+  parser: Parser,
+  buildSchema: BuildSchemaFN<T>,
 ): $FlowFixMe {
   switch (type) {
     case 'TSTypeLiteral':
-      return buildObjectType(typeAnnotation.members, types, buildSchema);
+      return buildObjectType(
+        typeAnnotation.members,
+        types,
+        parser,
+        buildSchema,
+      );
     case 'TSInterfaceDeclaration':
-      return buildObjectType([typeAnnotation], types, buildSchema);
+      return buildObjectType([typeAnnotation], types, parser, buildSchema);
     case 'TSIntersectionType':
       return buildObjectType(
         flattenIntersectionType(typeAnnotation, types),
         types,
+        parser,
         buildSchema,
       );
     case 'ImageSource':
@@ -228,6 +240,11 @@ function getCommonTypeAnnotation<T>(
         type: 'ReservedPropTypeAnnotation',
         name: 'EdgeInsetsPrimitive',
       };
+    case 'DimensionValue':
+      return {
+        type: 'ReservedPropTypeAnnotation',
+        name: 'DimensionPrimitive',
+      };
     case 'TSUnionType':
       return getUnionOfLiterals(
         name,
@@ -237,25 +254,15 @@ function getCommonTypeAnnotation<T>(
         types,
       );
     case 'Int32':
-      return {
-        type: 'Int32TypeAnnotation',
-      };
     case 'Double':
-      return {
-        type: 'DoubleTypeAnnotation',
-      };
     case 'Float':
-      return {
-        type: 'FloatTypeAnnotation',
-      };
     case 'TSBooleanKeyword':
-      return {
-        type: 'BooleanTypeAnnotation',
-      };
     case 'Stringish':
     case 'TSStringKeyword':
+      return getPrimitiveTypeAnnotation(type);
+    case 'UnsafeMixed':
       return {
-        type: 'StringTypeAnnotation',
+        type: 'MixedTypeAnnotation',
       };
     default:
       return undefined;
@@ -267,7 +274,8 @@ function getTypeAnnotationForArray<T>(
   typeAnnotation: $FlowFixMe,
   defaultValue: $FlowFixMe | void,
   types: TypeDeclarationMap,
-  buildSchema: (property: PropAST, types: TypeDeclarationMap) => ?NamedShape<T>,
+  parser: Parser,
+  buildSchema: BuildSchemaFN<T>,
 ): $FlowFixMe {
   // unpack WithDefault, (T) or T|U
   const topLevelType = parseTopLevelType(typeAnnotation, types);
@@ -288,6 +296,7 @@ function getTypeAnnotationForArray<T>(
     extractedTypeAnnotation,
     defaultValue,
     types,
+    parser,
     buildSchema,
   );
   if (arrayType) {
@@ -313,6 +322,7 @@ function getTypeAnnotationForArray<T>(
     extractedTypeAnnotation,
     defaultValue,
     types,
+    parser,
     buildSchema,
   );
   if (common) {
@@ -361,8 +371,10 @@ function getTypeAnnotation<T>(
   name: string,
   annotation: $FlowFixMe | ASTNode,
   defaultValue: $FlowFixMe | void,
+  withNullDefault: boolean, // Just to make `getTypeAnnotation` signature match with the one from Flow
   types: TypeDeclarationMap,
-  buildSchema: (property: PropAST, types: TypeDeclarationMap) => ?NamedShape<T>,
+  parser: Parser,
+  buildSchema: BuildSchemaFN<T>,
 ): $FlowFixMe {
   // unpack WithDefault, (T) or T|U
   const topLevelType = parseTopLevelType(annotation, types);
@@ -372,6 +384,7 @@ function getTypeAnnotation<T>(
     typeAnnotation,
     defaultValue,
     types,
+    parser,
     buildSchema,
   );
   if (arrayType) {
@@ -381,7 +394,7 @@ function getTypeAnnotation<T>(
   const type =
     typeAnnotation.type === 'TSTypeReference' ||
     typeAnnotation.type === 'TSTypeAliasDeclaration'
-      ? typeAnnotation.typeName.name
+      ? parser.getTypeAnnotationName(typeAnnotation)
       : typeAnnotation.type;
 
   const common = getCommonTypeAnnotation(
@@ -391,6 +404,7 @@ function getTypeAnnotation<T>(
     typeAnnotation,
     defaultValue,
     types,
+    parser,
     buildSchema,
   );
   if (common) {
@@ -411,8 +425,11 @@ function getTypeAnnotation<T>(
       throw new Error(
         `Cannot use "${type}" type annotation for "${name}": must use a specific numeric type like Int32, Double, or Float`,
       );
+    case 'TSFunctionType':
+      throw new Error(
+        `Cannot use "${type}" type annotation for "${name}": must use a specific function type like BubblingEventHandler, or DirectEventHandler`,
+      );
     default:
-      (type: empty);
       throw new Error(`Unknown prop type for "${name}": "${type}"`);
   }
 }
@@ -422,6 +439,7 @@ type SchemaInfo = {
   optional: boolean,
   typeAnnotation: $FlowFixMe,
   defaultValue: $FlowFixMe,
+  withNullDefault: boolean, // Just to make `getTypeAnnotation` signature match with the one from Flow
 };
 
 function getSchemaInfo(
@@ -447,26 +465,14 @@ function getSchemaInfo(
     optional: property.optional || topLevelType.optional,
     typeAnnotation: topLevelType.type,
     defaultValue: topLevelType.defaultValue,
+    withNullDefault: false, // Just to make `getTypeAnnotation` signature match with the one from Flow
   };
-}
-
-// $FlowFixMe[unclear-type] TODO(T108222691): Use flow-types for @babel/parser
-type PropAST = Object;
-
-function verifyPropNotAlreadyDefined(
-  props: $ReadOnlyArray<PropAST>,
-  needleProp: PropAST,
-) {
-  const propName = needleProp.key.name;
-  const foundProp = props.some(prop => prop.key.name === propName);
-  if (foundProp) {
-    throw new Error(`A prop was already defined with the name ${propName}`);
-  }
 }
 
 function flattenProperties(
   typeDefinition: $ReadOnlyArray<PropAST>,
   types: TypeDeclarationMap,
+  parser: Parser,
 ): $ReadOnlyArray<PropAST> {
   return typeDefinition
     .map(property => {
@@ -474,23 +480,29 @@ function flattenProperties(
         return property;
       } else if (property.type === 'TSTypeReference') {
         return flattenProperties(
-          getProperties(property.typeName.name, types),
+          parser.getProperties(property.typeName.name, types),
           types,
+          parser,
         );
       } else if (
         property.type === 'TSExpressionWithTypeArguments' ||
         property.type === 'TSInterfaceHeritage'
       ) {
         return flattenProperties(
-          getProperties(property.expression.name, types),
+          parser.getProperties(property.expression.name, types),
           types,
+          parser,
         );
       } else if (property.type === 'TSTypeLiteral') {
-        return flattenProperties(property.members, types);
+        return flattenProperties(property.members, types, parser);
       } else if (property.type === 'TSInterfaceDeclaration') {
-        return flattenProperties(getProperties(property.id.name, types), types);
+        return flattenProperties(
+          parser.getProperties(property.id.name, types),
+          types,
+          parser,
+        );
       } else if (property.type === 'TSIntersectionType') {
-        return flattenProperties(property.types, types);
+        return flattenProperties(property.types, types, parser);
       } else {
         throw new Error(
           `${property.type} is not a supported object literal type.`,
@@ -514,8 +526,8 @@ function flattenProperties(
 }
 
 module.exports = {
-  getProperties,
   getSchemaInfo,
   getTypeAnnotation,
+  getPrimitiveTypeAnnotation,
   flattenProperties,
 };

@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
 export default {
   title: 'SectionList With Separators',
   name: 'SectionList-withSeparators',
-  render: function (): React.Element<typeof SectionList_withSeparators> {
+  render: function (): React.MixedElement {
     return <SectionList_withSeparators />;
   },
 };

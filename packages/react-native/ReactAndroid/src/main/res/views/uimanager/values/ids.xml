@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- tag is used to store the testID tag -->
+  <item type="id" name="react_test_id"/>
+
+  <!-- tag is used to store the nativeID tag -->
+  <item type="id" name="view_tag_native_id"/>
+
+  <!-- tag is used to store the nativeID tag -->
+  <item type="id" name="view_tag_instance_handle"/>
+
+  <!-- tag is used to store accessibilityHint tag-->
+  <item type="id" name="accessibility_hint"/>
+
+  <!-- tag is used to store accessibilityRole tag-->
+  <item type="id" name="accessibility_role"/>
+
+  <!-- tag is used to store accessibilityCollection -->
+  <item type="id" name="accessibility_collection"/>
+
+  <!-- tag is used to store accessibilityCollectionItem -->
+  <item type="id" name="accessibility_collection_item"/>
+
+  <!-- tag is used to store accessibilityState -->
+  <item type="id" name="accessibility_state"/>
+
+  <!--tag is used to store accessibilityStateExpanded -->
+  <item type="id" name="accessibility_state_expanded"/>
+
+  <!--tag is used to store accessibilityLabel tag-->
+  <item type="id" name="accessibility_label"/>
+
+  <!-- tag is used to store accessibilityActions tag-->
+  <item type="id" name="accessibility_actions"/>
+
+  <!-- tag is used to store accessibilityValue tag -->
+  <item type="id" name="accessibility_value"/>
+
+  <!-- tag is used to store accessibilityLinks tag -->
+  <item type="id" name="accessibility_links"/>
+
+  <!-- tag is used to store accessibilityLabelledBy tag -->
+  <item type="id" name="labelled_by"/>
+
+  <!-- tag is used store bitset of pointer events observed -->
+  <item type="id" name="pointer_events"/>
+
+  <!-- tag is used store raw transform style on the view -->
+  <item type="id" name="transform"/>
+
+  <!-- tag is used store raw transform origin style on the view -->
+  <item type="id" name="transform_origin"/>
+
+  <!-- tag is used to store role tag-->
+  <item type="id" name="role"/>
+
+  <!-- tag is used to invalidate transform style in view manager -->
+  <item type="id" name="invalidate_transform"/>
+</resources>

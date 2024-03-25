@@ -129,9 +129,9 @@ abstract class ReactExtension @Inject constructor(project: Project) {
   /**
    * The root directory for all JS files for the app.
    *
-   * Default: [root] (i.e. ${rootProject.dir}/../)
+   * Default: the parent folder of the `/android` folder.
    */
-  val jsRootDir: DirectoryProperty = objects.directoryProperty().convention(root.get())
+  val jsRootDir: DirectoryProperty = objects.directoryProperty()
 
   /**
    * The library name that will be used for the codegen artifacts.

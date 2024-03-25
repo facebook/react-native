@@ -8,7 +8,8 @@
  * @flow
  */
 
-import {RNTesterEmptyBookmarksState} from './components/RNTesterEmptyBookmarksState';
+import type {RNTesterModuleInfo} from './types/RNTesterTypes';
+
 import RNTesterModuleContainer from './components/RNTesterModuleContainer';
 import RNTesterModuleList from './components/RNTesterModuleList';
 import RNTesterNavBar, {navBarHeight} from './components/RNTesterNavbar';
@@ -21,15 +22,28 @@ import {
 } from './utils/RNTesterNavigationReducer';
 import {
   Screens,
-  getExamplesListWithBookmarksAndRecentlyUsed,
+  getExamplesListWithRecentlyUsed,
   initialNavigationState,
 } from './utils/testerStateUtils';
 import * as React from 'react';
-import {BackHandler, StyleSheet, View, useColorScheme} from 'react-native';
+import {
+  BackHandler,
+  Linking,
+  StyleSheet,
+  View,
+  useColorScheme,
+} from 'react-native';
 
 // RNTester App currently uses in memory storage for storing navigation state
 
-const RNTesterApp = (): React.Node => {
+const RNTesterApp = ({
+  testList,
+}: {
+  testList?: {
+    components?: Array<RNTesterModuleInfo>,
+    apis?: Array<RNTesterModuleInfo>,
+  },
+}): React.Node => {
   const [state, dispatch] = React.useReducer(
     RNTesterNavigationReducer,
     initialNavigationState,
@@ -41,14 +55,12 @@ const RNTesterApp = (): React.Node => {
     activeModuleTitle,
     activeModuleExampleKey,
     screen,
-    bookmarks,
     recentlyUsed,
   } = state;
 
   const examplesList = React.useMemo(
-    () =>
-      getExamplesListWithBookmarksAndRecentlyUsed({bookmarks, recentlyUsed}),
-    [bookmarks, recentlyUsed],
+    () => getExamplesListWithRecentlyUsed({recentlyUsed, testList}),
+    [recentlyUsed, testList],
   );
 
   const handleBackPress = React.useCallback(() => {
@@ -97,16 +109,6 @@ const RNTesterApp = (): React.Node => {
     [dispatch],
   );
 
-  const toggleBookmark = React.useCallback(
-    ({exampleType, key}: any) => {
-      dispatch({
-        type: RNTesterNavigationActionsType.BOOKMARK_PRESS,
-        data: {exampleType, key},
-      });
-    },
-    [dispatch],
-  );
-
   const handleNavBarPress = React.useCallback(
     (args: {screen: string}) => {
       dispatch({
@@ -116,6 +118,88 @@ const RNTesterApp = (): React.Node => {
     },
     [dispatch],
   );
+
+  // Setup Linking event subscription
+  const handleOpenUrlRequest = React.useCallback(
+    ({url}: {url: string, ...}) => {
+      // Supported URL pattern(s):
+      // *  rntester://example/<moduleKey>
+      // *  rntester://example/<moduleKey>/<exampleKey>
+      const match =
+        /^rntester:\/\/example\/([a-zA-Z0-9_-]+)(?:\/([a-zA-Z0-9_-]+))?$/.exec(
+          url,
+        );
+      if (!match) {
+        console.warn(
+          `handleOpenUrlRequest: Received unsupported URL: '${url}'`,
+        );
+        return;
+      }
+
+      const rawModuleKey = match[1];
+      const exampleKey = match[2];
+
+      // For tooling compatibility, allow all these variants for each module key:
+      const validModuleKeys = [
+        rawModuleKey,
+        `${rawModuleKey}Index`,
+        `${rawModuleKey}Example`,
+      ].filter(k => RNTesterList.Modules[k] != null);
+      if (validModuleKeys.length !== 1) {
+        if (validModuleKeys.length === 0) {
+          console.error(
+            `handleOpenUrlRequest: Unable to find requested module with key: '${rawModuleKey}'`,
+          );
+        } else {
+          console.error(
+            `handleOpenUrlRequest: Found multiple matching module with key: '${rawModuleKey}', unable to resolve`,
+          );
+        }
+        return;
+      }
+
+      const resolvedModuleKey = validModuleKeys[0];
+      const exampleModule = RNTesterList.Modules[resolvedModuleKey];
+
+      if (exampleKey != null) {
+        const validExampleKeys = exampleModule.examples.filter(
+          e => e.name === exampleKey,
+        );
+        if (validExampleKeys.length !== 1) {
+          if (validExampleKeys.length === 0) {
+            console.error(
+              `handleOpenUrlRequest: Unable to find requested example with key: '${exampleKey}' within module: '${resolvedModuleKey}'`,
+            );
+          } else {
+            console.error(
+              `handleOpenUrlRequest: Found multiple matching example with key: '${exampleKey}' within module: '${resolvedModuleKey}', unable to resolve`,
+            );
+          }
+          return;
+        }
+      }
+
+      console.log(
+        `handleOpenUrlRequest: Opening module: '${resolvedModuleKey}', example: '${
+          exampleKey || 'null'
+        }'`,
+      );
+
+      dispatch({
+        type: RNTesterNavigationActionsType.EXAMPLE_OPEN_URL_REQUEST,
+        data: {
+          key: resolvedModuleKey,
+          title: exampleModule.title || resolvedModuleKey,
+          exampleKey,
+        },
+      });
+    },
+    [dispatch],
+  );
+  React.useEffect(() => {
+    const subscription = Linking.addEventListener('url', handleOpenUrlRequest);
+    return () => subscription.remove();
+  }, [handleOpenUrlRequest]);
 
   const theme = colorScheme === 'dark' ? themes.dark : themes.light;
 
@@ -133,17 +217,11 @@ const RNTesterApp = (): React.Node => {
     activeModuleTitle != null
       ? activeModuleTitle
       : screen === Screens.COMPONENTS
-      ? 'Components'
-      : screen === Screens.APIS
-      ? 'APIs'
-      : 'Bookmarks';
+        ? 'Components'
+        : 'APIs';
 
   const activeExampleList =
-    screen === Screens.COMPONENTS
-      ? examplesList.components
-      : screen === Screens.APIS
-      ? examplesList.apis
-      : examplesList.bookmarks;
+    screen === Screens.COMPONENTS ? examplesList.components : examplesList.apis;
 
   return (
     <RNTesterThemeContext.Provider value={theme}>
@@ -163,13 +241,9 @@ const RNTesterApp = (): React.Node => {
             example={activeModuleExample}
             onExampleCardPress={handleModuleExampleCardPress}
           />
-        ) : screen === Screens.BOOKMARKS &&
-          examplesList.bookmarks.length === 0 ? (
-          <RNTesterEmptyBookmarksState />
         ) : (
           <RNTesterModuleList
             sections={activeExampleList}
-            toggleBookmark={toggleBookmark}
             handleModuleCardPress={handleModuleCardPress}
           />
         )}

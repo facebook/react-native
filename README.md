@@ -50,7 +50,7 @@ React Native brings [**React**'s][r] declarative UI framework to iOS and Android
 
 React Native is developed and supported by many companies and individual core contributors. Find out more in our [ecosystem overview][e].
 
-[r]: https://reactjs.org/
+[r]: https://react.dev/
 [p]: https://reactnative.dev/docs/out-of-tree-platforms
 [e]: https://github.com/facebook/react-native/blob/HEAD/ECOSYSTEM.md
 
@@ -67,7 +67,7 @@ React Native is developed and supported by many companies and individual core co
 
 ## 📋 Requirements
 
-React Native apps may target iOS 12.4 and Android 5.0 (API 21) or newer. You may use Windows, macOS, or Linux as your development operating system, though building and running iOS apps is limited to macOS. Tools like [Expo](https://expo.dev) can be used to work around this.
+React Native apps may target iOS 13.4 and Android 6.0 (API 23) or newer. You may use Windows, macOS, or Linux as your development operating system, though building and running iOS apps is limited to macOS. Tools like [Expo](https://expo.dev) can be used to work around this.
 
 ## 🎉 Building your first React Native app
 
@@ -90,7 +90,7 @@ The React Native documentation discusses components, APIs, and topics that are s
 The source for the React Native documentation and website is hosted on a separate repo, [**@facebook/react-native-website**][repo-website].
 
 [docs]: https://reactnative.dev/docs/getting-started
-[r-docs]: https://reactjs.org/docs/getting-started.html
+[r-docs]: https://react.dev/learn
 [repo-website]: https://github.com/facebook/react-native-website
 
 ## 🚀 Upgrading
@@ -143,5 +143,5 @@ React Native is MIT licensed, as found in the [LICENSE][l] file.
 
 React Native documentation is Creative Commons licensed, as found in the [LICENSE-docs][ld] file.
 
-[l]: https://github.com/facebook/react-native/blob/HEAD/LICENSE
-[ld]: https://github.com/facebook/react-native/blob/HEAD/LICENSE-docs
+[l]: https://github.com/facebook/react-native/blob/main/LICENSE
+[ld]: https://github.com/facebook/react-native/blob/main/LICENSE-docs

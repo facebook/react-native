@@ -11,22 +11,21 @@
 'use strict';
 
 import type {NamedShape, PropTypeAnnotation} from '../../CodegenSchema';
-
 import type {
-  StringTypeAnnotation,
-  ReservedPropTypeAnnotation,
-  ObjectTypeAnnotation,
-  Int32TypeAnnotation,
-  FloatTypeAnnotation,
-  DoubleTypeAnnotation,
   BooleanTypeAnnotation,
+  DoubleTypeAnnotation,
+  FloatTypeAnnotation,
+  Int32TypeAnnotation,
+  ObjectTypeAnnotation,
+  ReservedPropTypeAnnotation,
+  StringTypeAnnotation,
 } from '../../CodegenSchema';
 
+const {getEnumName} = require('../Utils');
 const {
+  generateStructName,
   getCppTypeForAnnotation,
   getEnumMaskName,
-  getEnumName,
-  generateStructName,
   getImports,
 } = require('./CppHelpers.js');
 
@@ -78,6 +77,8 @@ function getNativeTypeFromAnnotation(
           return 'Point';
         case 'EdgeInsetsPrimitive':
           return 'EdgeInsets';
+        case 'DimensionPrimitive':
+          return 'YGValue';
         default:
           (typeAnnotation.name: empty);
           throw new Error('Received unknown ReservedPropTypeAnnotation');
@@ -119,6 +120,8 @@ function getNativeTypeFromAnnotation(
       return getEnumName(componentName, prop.name);
     case 'Int32EnumTypeAnnotation':
       return getEnumName(componentName, prop.name);
+    case 'MixedTypeAnnotation':
+      return 'folly::dynamic';
     default:
       (typeAnnotation: empty);
       throw new Error(
@@ -221,7 +224,8 @@ function getLocalImports(
       | 'EdgeInsetsPrimitive'
       | 'ImageSourcePrimitive'
       | 'PointPrimitive'
-      | 'ImageRequestPrimitive',
+      | 'ImageRequestPrimitive'
+      | 'DimensionPrimitive',
   ) {
     switch (name) {
       case 'ColorPrimitive':
@@ -238,6 +242,9 @@ function getLocalImports(
         return;
       case 'EdgeInsetsPrimitive':
         imports.add('#include <react/renderer/graphics/RectangleEdges.h>');
+        return;
+      case 'DimensionPrimitive':
+        imports.add('#include <yoga/Yoga.h>');
         return;
       default:
         (name: empty);
@@ -270,8 +277,11 @@ function getLocalImports(
       typeAnnotation.type === 'ArrayTypeAnnotation' &&
       typeAnnotation.elementType.type === 'ObjectTypeAnnotation'
     ) {
+      imports.add('#include <react/renderer/core/propsConversions.h>');
       const objectProps = typeAnnotation.elementType.properties;
+      // $FlowFixMe[incompatible-call] the type is guaranteed to be ObjectTypeAnnotation<PropTypeAnnotation>
       const objectImports = getImports(objectProps);
+      // $FlowFixMe[incompatible-call] the type is guaranteed to be ObjectTypeAnnotation<PropTypeAnnotation>
       const localImports = getLocalImports(objectProps);
       // $FlowFixMe[method-unbinding] added when improving typing for this parameters
       objectImports.forEach(imports.add, imports);
