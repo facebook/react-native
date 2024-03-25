@@ -27,7 +27,13 @@
     "react-test-renderer": "18.2.0"
   },
   "peerDependencies": {
+    "@types/react": "^18.2.6",
     "react": "*",
     "react-native": "*"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
   }
 }
