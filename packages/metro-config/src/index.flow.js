@@ -56,6 +56,12 @@ export function getDefaultConfig(projectRoot: string): ConfigT {
       ],
       // $FlowFixMe[untyped-import]
       getPolyfills: () => require('@react-native/js-polyfills')(),
+      isThirdPartyModule({path: modulePath}: $ReadOnly<{path: string, ...}>) {
+        return (
+          INTERNAL_CALLSITES_REGEX.test(modulePath) ||
+          /(?:^|[/\\])node_modules[/\\]/.test(modulePath)
+        );
+      },
     },
     server: {
       port: Number(process.env.RCT_METRO_PORT) || 8081,
