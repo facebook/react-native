@@ -8,6 +8,7 @@
 #pragma once
 
 #include <ReactCommon/RuntimeExecutor.h>
+#include <react/renderer/consistency/ShadowTreeRevisionConsistencyManager.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerClock.h>
 #include <react/renderer/runtimescheduler/Task.h>
 
@@ -35,6 +36,8 @@ class RuntimeSchedulerBase {
   virtual void callExpiredTasks(jsi::Runtime& runtime) = 0;
   virtual void scheduleRenderingUpdate(
       RuntimeSchedulerRenderingUpdate&& renderingUpdate) = 0;
+  virtual void setShadowTreeRevisionConsistencyManager(
+      ShadowTreeRevisionConsistencyManager* provider) = 0;
 };
 
 // This is a proxy for RuntimeScheduler implementation, which will be selected
@@ -126,6 +129,10 @@ class RuntimeScheduler final : RuntimeSchedulerBase {
 
   void scheduleRenderingUpdate(
       RuntimeSchedulerRenderingUpdate&& renderingUpdate) override;
+
+  void setShadowTreeRevisionConsistencyManager(
+      ShadowTreeRevisionConsistencyManager*
+          shadowTreeRevisionConsistencyManager) override;
 
  private:
   // Actual implementation, stored as a unique pointer to simplify memory

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d104b9219b7658544101bbd175f8fa7d>>
+ * @generated SignedSource<<e94d55bad5f8bf6cf933ddc50e3b4886>>
  */
 
 /**
@@ -76,6 +76,11 @@ class ReactNativeFeatureFlags {
    * Uses new, deduplicated logic for constructing Android Spannables from text fragments
    */
   RN_EXPORT static bool enableSpannableBuildingUnification();
+
+  /**
+   * Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).
+   */
+  RN_EXPORT static bool enableUIConsistency();
 
   /**
    * Flag determining if the C++ implementation of InspectorPackagerConnection should be used instead of the per-platform one. This flag is global and should not be changed across React Host lifetimes.

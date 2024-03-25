@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d13ffc557c3874e9bdd78558cd309829>>
+ * @generated SignedSource<<a8e0d8c5bc041f814bffb1701a124646>>
  */
 
 /**
@@ -39,6 +39,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableMicrotasks();
   bool enableMountHooksAndroid();
   bool enableSpannableBuildingUnification();
+  bool enableUIConsistency();
   bool inspectorEnableCxxInspectorPackagerConnection();
   bool inspectorEnableModernCDPRegistry();
   bool useModernRuntimeScheduler();
@@ -52,7 +53,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 11> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 12> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> batchRenderingUpdatesInEventLoop_;
@@ -62,6 +63,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableMicrotasks_;
   std::atomic<std::optional<bool>> enableMountHooksAndroid_;
   std::atomic<std::optional<bool>> enableSpannableBuildingUnification_;
+  std::atomic<std::optional<bool>> enableUIConsistency_;
   std::atomic<std::optional<bool>> inspectorEnableCxxInspectorPackagerConnection_;
   std::atomic<std::optional<bool>> inspectorEnableModernCDPRegistry_;
   std::atomic<std::optional<bool>> useModernRuntimeScheduler_;

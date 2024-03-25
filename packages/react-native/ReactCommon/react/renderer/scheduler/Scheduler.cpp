@@ -11,6 +11,7 @@
 #include <jsi/jsi.h>
 
 #include <react/debug/react_native_assert.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
 #include <react/renderer/core/EventQueueProcessor.h>
 #include <react/renderer/core/LayoutContext.h>
@@ -53,6 +54,11 @@ Scheduler::Scheduler(
   auto runtimeScheduler = weakRuntimeScheduler.has_value()
       ? weakRuntimeScheduler.value().lock()
       : nullptr;
+
+  if (runtimeScheduler && ReactNativeFeatureFlags::enableUIConsistency()) {
+    runtimeScheduler->setShadowTreeRevisionConsistencyManager(
+        uiManager->getShadowTreeRevisionConsistencyManager());
+  }
 
   auto eventPipe = [uiManager, runtimeScheduler = runtimeScheduler.get()](
                        jsi::Runtime& runtime,

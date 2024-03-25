@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<393c6cf93399cfe0b0533927877531d5>>
+ * @generated SignedSource<<e6f57d186226377e4558f633433aa1fc>>
  */
 
 /**
@@ -87,6 +87,12 @@ class ReactNativeFeatureFlagsProviderHolder
     return method(javaProvider_);
   }
 
+  bool enableUIConsistency() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableUIConsistency");
+    return method(javaProvider_);
+  }
+
   bool inspectorEnableCxxInspectorPackagerConnection() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("inspectorEnableCxxInspectorPackagerConnection");
@@ -149,6 +155,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableSpannableBuildingUnification(
   return ReactNativeFeatureFlags::enableSpannableBuildingUnification();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableUIConsistency(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableUIConsistency();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::inspectorEnableCxxInspectorPackagerConnection(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::inspectorEnableCxxInspectorPackagerConnection();
@@ -205,6 +216,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableSpannableBuildingUnification",
         JReactNativeFeatureFlagsCxxInterop::enableSpannableBuildingUnification),
+      makeNativeMethod(
+        "enableUIConsistency",
+        JReactNativeFeatureFlagsCxxInterop::enableUIConsistency),
       makeNativeMethod(
         "inspectorEnableCxxInspectorPackagerConnection",
         JReactNativeFeatureFlagsCxxInterop::inspectorEnableCxxInspectorPackagerConnection),
