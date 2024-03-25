@@ -83,6 +83,14 @@ typedef struct {
  */
 - (void)reactSetFrame:(CGRect)frame;
 
+
+#if TARGET_OS_OSX // [macOS
+/**
+ * Used by macOS to propagate transform changes internally.
+ */
+- (void)updateReactTransformInternal:(CATransform3D)transform;
+#endif // macOS]
+
 /**
  * This method finds and returns the containing view controller for the view.
  */

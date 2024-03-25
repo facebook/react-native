@@ -1318,6 +1318,14 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
   [self updateClippingForLayer:layer];
 }
 
+#if TARGET_OS_OSX // [macOS
+- (void)updateReactTransformInternal:(CATransform3D)transform
+{
+  [self setTransform3D:transform];
+  [self setNeedsDisplay];
+}
+#endif // macOS]
+
 static BOOL RCTLayerHasShadow(CALayer *layer)
 {
   return layer.shadowOpacity * CGColorGetAlpha(layer.shadowColor) > 0;
