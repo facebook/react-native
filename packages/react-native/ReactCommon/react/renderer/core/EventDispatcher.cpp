@@ -7,6 +7,7 @@
 
 #include "EventDispatcher.h"
 #include <cxxreact/JSExecutor.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/core/StateUpdate.h>
 #include "EventLogger.h"
 
@@ -19,11 +20,13 @@ EventDispatcher::EventDispatcher(
     const EventQueueProcessor& eventProcessor,
     const EventBeat::Factory& asynchronousEventBeatFactory,
     const EventBeat::SharedOwnerBox& ownerBox,
-    RuntimeScheduler& runtimeScheduler)
+    RuntimeScheduler& runtimeScheduler,
+    StatePipe statePipe)
     : eventQueue_(EventQueue(
           eventProcessor,
           asynchronousEventBeatFactory(ownerBox),
-          runtimeScheduler)) {}
+          runtimeScheduler)),
+      statePipe_(std::move(statePipe)) {}
 
 void EventDispatcher::dispatchEvent(RawEvent&& rawEvent) const {
   // Allows the event listener to interrupt default event dispatch
@@ -43,7 +46,11 @@ void EventDispatcher::experimental_flushSync() const {
 }
 
 void EventDispatcher::dispatchStateUpdate(StateUpdate&& stateUpdate) const {
-  eventQueue_.enqueueStateUpdate(std::move(stateUpdate));
+  if (ReactNativeFeatureFlags::enableSynchronousStateUpdates()) {
+    statePipe_(stateUpdate);
+  } else {
+    eventQueue_.enqueueStateUpdate(std::move(stateUpdate));
+  }
 }
 
 void EventDispatcher::dispatchUniqueEvent(RawEvent&& rawEvent) const {
