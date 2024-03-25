@@ -84,4 +84,36 @@ getBorderSize(
 
 std::string getTagName(const ShadowNode& shadowNode);
 
+// Non-standard methods from React Native
+
+std::optional<std::tuple<
+    /* x: */ double,
+    /* y: */ double,
+    /* width: */ double,
+    /* height: */ double,
+    /* pageX: */ double,
+    /* pageY: */ double>>
+measure(
+    const RootShadowNode::Shared& currentRevision,
+    const ShadowNode& shadowNode);
+
+std::optional<std::tuple<
+    /* x: */ double,
+    /* y: */ double,
+    /* width: */ double,
+    /* height: */ double>>
+measureInWindow(
+    const RootShadowNode::Shared& currentRevision,
+    const ShadowNode& shadowNode);
+
+std::optional<std::tuple<
+    /* x: */ double,
+    /* y: */ double,
+    /* width: */ double,
+    /* height: */ double>>
+measureLayout(
+    const RootShadowNode::Shared& currentRevision,
+    const ShadowNode& shadowNode,
+    const ShadowNode& relativeToShadowNode);
+
 } // namespace facebook::react::dom
