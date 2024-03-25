@@ -91,6 +91,8 @@ static UIActivityIndicatorViewStyle convertActivityIndicatorViewStyle(const Acti
   [super updateProps:props oldProps:oldProps];
 }
 
+RCTComponentViewShouldBeRecycled(true);
+
 @end
 
 Class<RCTComponentViewProtocol> RCTActivityIndicatorViewCls(void)

@@ -145,6 +145,8 @@ static UIView<RCTBackedTextInputViewProtocol> *_Nullable RCTFindTextInputWithNat
   _textInput = nil;
 }
 
+RCTComponentViewShouldBeRecycled(true);
+
 @end
 
 Class<RCTComponentViewProtocol> RCTInputAccessoryCls(void)

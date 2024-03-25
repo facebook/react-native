@@ -92,6 +92,8 @@ using namespace facebook::react;
   _state.reset();
 }
 
+RCTComponentViewShouldBeRecycled(true);
+
 @end
 
 Class<RCTComponentViewProtocol> RCTSafeAreaViewCls(void)
