@@ -336,19 +336,6 @@ public class ReactContext extends ContextWrapper {
   }
 
   @ThreadConfined(UI)
-  public void onUserLeaveHint(@Nullable Activity activity) {
-    ReactMarker.logMarker(ReactMarkerConstants.ON_USER_LEAVE_HINT_START);
-    for (ActivityEventListener listener : mActivityEventListeners) {
-      try {
-        listener.onUserLeaveHint(activity);
-      } catch (RuntimeException e) {
-        handleException(e);
-      }
-    }
-    ReactMarker.logMarker(ReactMarkerConstants.ON_USER_LEAVE_HINT_END);
-  }
-
-  @ThreadConfined(UI)
   public void onNewIntent(@Nullable Activity activity, Intent intent) {
     UiThreadUtil.assertOnUiThread();
     mCurrentActivity = new WeakReference(activity);
