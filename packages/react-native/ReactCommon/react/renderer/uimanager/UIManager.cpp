@@ -29,6 +29,15 @@ constexpr int DOCUMENT_POSITION_PRECEDING = 2;
 constexpr int DOCUMENT_POSITION_FOLLOWING = 4;
 constexpr int DOCUMENT_POSITION_CONTAINS = 8;
 constexpr int DOCUMENT_POSITION_CONTAINED_BY = 16;
+
+std::unique_ptr<facebook::react::LeakChecker> constructLeakCheckerIfNeeded(
+    const facebook::react::RuntimeExecutor& runtimeExecutor) {
+#ifdef REACT_NATIVE_DEBUG
+  return std::make_unique<facebook::react::LeakChecker>(runtimeExecutor);
+#else
+  return {};
+#endif
+}
 } // namespace
 
 namespace facebook::react {
@@ -39,23 +48,25 @@ namespace facebook::react {
 // isHostObject method)
 ShadowNodeListWrapper::~ShadowNodeListWrapper() = default;
 
-static std::unique_ptr<LeakChecker> constructLeakCheckerIfNeeded(
-    const RuntimeExecutor& runtimeExecutor) {
-#ifdef REACT_NATIVE_DEBUG
-  return std::make_unique<LeakChecker>(runtimeExecutor);
-#else
-  return {};
-#endif
-}
-
 UIManager::UIManager(
     const RuntimeExecutor& runtimeExecutor,
     BackgroundExecutor backgroundExecutor,
     ContextContainer::Shared contextContainer)
     : runtimeExecutor_(runtimeExecutor),
+      shadowTreeRegistry_(),
       backgroundExecutor_(std::move(backgroundExecutor)),
       contextContainer_(std::move(contextContainer)),
-      leakChecker_(constructLeakCheckerIfNeeded(runtimeExecutor)) {}
+      leakChecker_(constructLeakCheckerIfNeeded(runtimeExecutor)),
+      lazyShadowTreeRevisionConsistencyManager_(
+          ReactNativeFeatureFlags::enableUIConsistency()
+              ? std::make_unique<LazyShadowTreeRevisionConsistencyManager>(
+                    shadowTreeRegistry_)
+              : nullptr),
+      latestShadowTreeRevisionProvider_(
+          ReactNativeFeatureFlags::enableUIConsistency()
+              ? nullptr
+              : std::make_unique<LatestShadowTreeRevisionProvider>(
+                    shadowTreeRegistry_)) {}
 
 UIManager::~UIManager() {
   LOG(WARNING) << "UIManager::~UIManager() was called (address: " << this
@@ -166,11 +177,11 @@ void UIManager::appendChild(
 void UIManager::completeSurface(
     SurfaceId surfaceId,
     const ShadowNode::UnsharedListOfShared& rootChildren,
-    ShadowTree::CommitOptions commitOptions) const {
+    ShadowTree::CommitOptions commitOptions) {
   SystraceSection s("UIManager::completeSurface", "surfaceId", surfaceId);
 
   shadowTreeRegistry_.visit(surfaceId, [&](const ShadowTree& shadowTree) {
-    shadowTree.commit(
+    auto result = shadowTree.commit(
         [&](RootShadowNode const& oldRootShadowNode) {
           return std::make_shared<RootShadowNode>(
               oldRootShadowNode,
@@ -180,6 +191,14 @@ void UIManager::completeSurface(
               });
         },
         commitOptions);
+
+    if (result == ShadowTree::CommitStatus::Succeeded &&
+        lazyShadowTreeRevisionConsistencyManager_ != nullptr) {
+      // It's safe to update the visible revision of the shadow tree immediately
+      // after we commit a specific one.
+      lazyShadowTreeRevisionConsistencyManager_->updateCurrentRevision(
+          surfaceId, shadowTree.getCurrentRevision().rootShadowNode);
+    }
   });
 }
 
@@ -406,6 +425,24 @@ int UIManager::compareDocumentPosition(
   }
 
   return DOCUMENT_POSITION_FOLLOWING;
+}
+
+ShadowTreeRevisionConsistencyManager*
+UIManager::getShadowTreeRevisionConsistencyManager() {
+  return lazyShadowTreeRevisionConsistencyManager_.get();
+}
+
+ShadowTreeRevisionProvider* UIManager::getShadowTreeRevisionProvider() {
+  if (lazyShadowTreeRevisionConsistencyManager_ != nullptr) {
+    return lazyShadowTreeRevisionConsistencyManager_.get();
+  } else if (latestShadowTreeRevisionProvider_ != nullptr) {
+    return latestShadowTreeRevisionProvider_.get();
+  }
+
+  LOG(ERROR) << "Unexpected state found in UIManager where both "
+             << "lazyShadowTreeRevisionConsistencyManager_ and "
+             << "latestShadowTreeRevisionProvider_ were null";
+  return nullptr;
 }
 
 ShadowNode::Shared UIManager::findNodeAtPoint(

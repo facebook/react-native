@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f7d54fe8d458d80359a8d6e0e5816b1b>>
+ * @generated SignedSource<<2ff39fd4c8330ddca994fc40cdeaaf4c>>
  */
 
 /**
@@ -173,6 +173,24 @@ bool ReactNativeFeatureFlagsAccessor::enableSpannableBuildingUnification() {
   return flagValue.value();
 }
 
+bool ReactNativeFeatureFlagsAccessor::enableUIConsistency() {
+  auto flagValue = enableUIConsistency_.load();
+
+  if (!flagValue.has_value()) {
+    // This block is not exclusive but it is not necessary.
+    // If multiple threads try to initialize the feature flag, we would only
+    // be accessing the provider multiple times but the end state of this
+    // instance and the returned flag value would be the same.
+
+    markFlagAsAccessed(8, "enableUIConsistency");
+
+    flagValue = currentProvider_->enableUIConsistency();
+    enableUIConsistency_ = flagValue;
+  }
+
+  return flagValue.value();
+}
+
 bool ReactNativeFeatureFlagsAccessor::inspectorEnableCxxInspectorPackagerConnection() {
   auto flagValue = inspectorEnableCxxInspectorPackagerConnection_.load();
 
@@ -182,7 +200,7 @@ bool ReactNativeFeatureFlagsAccessor::inspectorEnableCxxInspectorPackagerConnect
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(8, "inspectorEnableCxxInspectorPackagerConnection");
+    markFlagAsAccessed(9, "inspectorEnableCxxInspectorPackagerConnection");
 
     flagValue = currentProvider_->inspectorEnableCxxInspectorPackagerConnection();
     inspectorEnableCxxInspectorPackagerConnection_ = flagValue;
@@ -200,7 +218,7 @@ bool ReactNativeFeatureFlagsAccessor::inspectorEnableModernCDPRegistry() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(9, "inspectorEnableModernCDPRegistry");
+    markFlagAsAccessed(10, "inspectorEnableModernCDPRegistry");
 
     flagValue = currentProvider_->inspectorEnableModernCDPRegistry();
     inspectorEnableModernCDPRegistry_ = flagValue;
@@ -218,7 +236,7 @@ bool ReactNativeFeatureFlagsAccessor::useModernRuntimeScheduler() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(10, "useModernRuntimeScheduler");
+    markFlagAsAccessed(11, "useModernRuntimeScheduler");
 
     flagValue = currentProvider_->useModernRuntimeScheduler();
     useModernRuntimeScheduler_ = flagValue;
