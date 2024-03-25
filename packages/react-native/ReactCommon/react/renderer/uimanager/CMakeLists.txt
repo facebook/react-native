@@ -27,6 +27,8 @@ target_link_libraries(react_render_uimanager
         react_debug
         react_featureflags
         react_render_componentregistry
+        react_render_consistency
+        react_render_uimanager_consistency
         react_render_core
         react_render_debug
         react_render_graphics

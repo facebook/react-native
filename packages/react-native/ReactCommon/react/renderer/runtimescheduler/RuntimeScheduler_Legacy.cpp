@@ -8,6 +8,7 @@
 #include "RuntimeScheduler_Legacy.h"
 #include "SchedulerPriorityUtils.h"
 
+#include <react/renderer/consistency/ScopedShadowTreeRevisionLock.h>
 #include <react/renderer/debug/SystraceSection.h>
 #include <utility>
 #include "ErrorUtils.h"
@@ -30,7 +31,11 @@ void RuntimeScheduler_Legacy::scheduleWork(RawCallback&& callback) noexcept {
       [this, callback = std::move(callback)](jsi::Runtime& runtime) {
         SystraceSection s2("RuntimeScheduler::scheduleWork callback");
         runtimeAccessRequests_ -= 1;
-        callback(runtime);
+        {
+          ScopedShadowTreeRevisionLock revisionLock(
+              shadowTreeRevisionConsistencyManager_);
+          callback(runtime);
+        }
         startWorkLoop(runtime);
       });
 }
@@ -104,7 +109,11 @@ void RuntimeScheduler_Legacy::executeNowOnTheSameThread(
             "RuntimeScheduler::executeNowOnTheSameThread callback");
 
         runtimeAccessRequests_ -= 1;
-        callback(runtime);
+        {
+          ScopedShadowTreeRevisionLock revisionLock(
+              shadowTreeRevisionConsistencyManager_);
+          callback(runtime);
+        }
       });
 
   // Resume work loop if needed. In synchronous mode
@@ -143,6 +152,12 @@ void RuntimeScheduler_Legacy::scheduleRenderingUpdate(
   if (renderingUpdate != nullptr) {
     renderingUpdate();
   }
+}
+
+void RuntimeScheduler_Legacy::setShadowTreeRevisionConsistencyManager(
+    ShadowTreeRevisionConsistencyManager*
+        shadowTreeRevisionConsistencyManager) {
+  shadowTreeRevisionConsistencyManager_ = shadowTreeRevisionConsistencyManager;
 }
 
 #pragma mark - Private
@@ -195,13 +210,19 @@ void RuntimeScheduler_Legacy::executeTask(
       didUserCallbackTimeout);
 
   currentPriority_ = task->priority;
-  auto result = task->execute(runtime, didUserCallbackTimeout);
 
-  if (result.isObject() && result.getObject(runtime).isFunction(runtime)) {
-    task->callback = result.getObject(runtime).getFunction(runtime);
-  } else {
-    if (taskQueue_.top() == task) {
-      taskQueue_.pop();
+  {
+    ScopedShadowTreeRevisionLock revisionLock(
+        shadowTreeRevisionConsistencyManager_);
+
+    auto result = task->execute(runtime, didUserCallbackTimeout);
+
+    if (result.isObject() && result.getObject(runtime).isFunction(runtime)) {
+      task->callback = result.getObject(runtime).getFunction(runtime);
+    } else {
+      if (taskQueue_.top() == task) {
+        taskQueue_.pop();
+      }
     }
   }
 }

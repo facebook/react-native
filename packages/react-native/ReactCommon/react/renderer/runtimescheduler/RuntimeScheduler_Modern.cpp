@@ -10,6 +10,7 @@
 
 #include <cxxreact/ErrorUtils.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
+#include <react/renderer/consistency/ScopedShadowTreeRevisionLock.h>
 #include <react/renderer/debug/SystraceSection.h>
 #include <react/utils/OnScopeExit.h>
 #include <utility>
@@ -153,6 +154,12 @@ void RuntimeScheduler_Modern::scheduleRenderingUpdate(
   }
 }
 
+void RuntimeScheduler_Modern::setShadowTreeRevisionConsistencyManager(
+    ShadowTreeRevisionConsistencyManager*
+        shadowTreeRevisionConsistencyManager) {
+  shadowTreeRevisionConsistencyManager_ = shadowTreeRevisionConsistencyManager;
+}
+
 #pragma mark - Private
 
 void RuntimeScheduler_Modern::scheduleTask(std::shared_ptr<Task> task) {
@@ -253,16 +260,21 @@ void RuntimeScheduler_Modern::executeTask(
   currentTask_ = task;
   currentPriority_ = task->priority;
 
-  executeMacrotask(runtime, task, didUserCallbackTimeout);
+  {
+    ScopedShadowTreeRevisionLock revisionLock(
+        shadowTreeRevisionConsistencyManager_);
 
-  if (ReactNativeFeatureFlags::enableMicrotasks()) {
-    // "Perform a microtask checkpoint" step.
-    performMicrotaskCheckpoint(runtime);
-  }
+    executeMacrotask(runtime, task, didUserCallbackTimeout);
 
-  if (ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop()) {
-    // "Update the rendering" step.
-    updateRendering();
+    if (ReactNativeFeatureFlags::enableMicrotasks()) {
+      // "Perform a microtask checkpoint" step.
+      performMicrotaskCheckpoint(runtime);
+    }
+
+    if (ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop()) {
+      // "Update the rendering" step.
+      updateRendering();
+    }
   }
 }
 

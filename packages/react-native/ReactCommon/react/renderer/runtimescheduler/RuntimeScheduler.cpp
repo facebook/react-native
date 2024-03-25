@@ -84,4 +84,11 @@ void RuntimeScheduler::scheduleRenderingUpdate(
       std::move(renderingUpdate));
 }
 
+void RuntimeScheduler::setShadowTreeRevisionConsistencyManager(
+    ShadowTreeRevisionConsistencyManager*
+        shadowTreeRevisionConsistencyManager) {
+  return runtimeSchedulerImpl_->setShadowTreeRevisionConsistencyManager(
+      shadowTreeRevisionConsistencyManager);
+}
+
 } // namespace facebook::react

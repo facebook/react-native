@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bdd9f28c6de15e64ce03c505a3f4f34b>>
+ * @generated SignedSource<<20c445fde7a1c2607b58b7797346431f>>
  */
 
 /**
@@ -75,6 +75,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableSpannableBuildingUnification(): Boolean = accessor.enableSpannableBuildingUnification()
+
+  /**
+   * Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).
+   */
+  @JvmStatic
+  public fun enableUIConsistency(): Boolean = accessor.enableUIConsistency()
 
   /**
    * Flag determining if the C++ implementation of InspectorPackagerConnection should be used instead of the per-platform one. This flag is global and should not be changed across React Host lifetimes.

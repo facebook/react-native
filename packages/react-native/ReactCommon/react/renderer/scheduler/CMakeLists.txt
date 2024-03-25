@@ -25,6 +25,7 @@ target_link_libraries(react_render_scheduler
         jsi
         react_config
         react_debug
+        react_featureflags
         react_render_componentregistry
         react_render_core
         react_render_debug
