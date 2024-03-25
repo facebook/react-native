@@ -27,6 +27,7 @@ const INTERNAL_CALLSITES_REGEX = new RegExp(
     '/Libraries/YellowBox/.+\\.js$',
     '/metro-runtime/.+\\.js$',
     '/node_modules/@babel/runtime/.+\\.js$',
+    '/node_modules/@react-native/js-polyfills/.+\\.js$',
     '/node_modules/event-target-shim/.+\\.js$',
     '/node_modules/invariant/.+\\.js$',
     '/node_modules/react-devtools-core/.+\\.js$',
