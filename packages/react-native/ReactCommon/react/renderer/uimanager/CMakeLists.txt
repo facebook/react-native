@@ -31,6 +31,7 @@ target_link_libraries(react_render_uimanager
         react_render_uimanager_consistency
         react_render_core
         react_render_debug
+        react_render_dom
         react_render_graphics
         react_render_leakchecker
         react_render_runtimescheduler
