@@ -33,6 +33,7 @@ import StyleSheet from '../../StyleSheet/StyleSheet';
 import Dimensions from '../../Utilities/Dimensions';
 import dismissKeyboard from '../../Utilities/dismissKeyboard';
 import Platform from '../../Utilities/Platform';
+import EventEmitter from '../../vendor/emitter/EventEmitter';
 import Keyboard from '../Keyboard/Keyboard';
 import TextInputState from '../TextInput/TextInputState';
 import View from '../View/View';
@@ -676,6 +677,9 @@ export type Props = $ReadOnly<{|
 
 type State = {|
   layoutHeight: ?number,
+  onScrollEmitter: ?EventEmitter<{
+    scroll: [{x: number, y: number}],
+  }>,
 |};
 
 const IS_ANIMATING_TOUCH_START_THRESHOLD_MS = 16;
@@ -761,6 +765,7 @@ class ScrollView extends React.Component<Props, State> {
 
   state: State = {
     layoutHeight: null,
+    onScrollEmitter: null,
   };
 
   componentDidMount() {
@@ -829,6 +834,8 @@ class ScrollView extends React.Component<Props, State> {
     if (this._scrollAnimatedValueAttachment) {
       this._scrollAnimatedValueAttachment.detach();
     }
+
+    this.state.onScrollEmitter?.removeAllListeners();
   }
 
   /**
@@ -946,6 +953,40 @@ class ScrollView extends React.Component<Props, State> {
       return;
     }
     Commands.flashScrollIndicators(this._scrollView.nativeInstance);
+  };
+
+  _subscribeToOnScroll: (
+    callback: ({x: number, y: number}) => void,
+  ) => EventSubscription = callback => {
+    // An undefined value means the listener has not been added, yet.
+    // A null value means the listener has been removed.
+    let subscription: ?EventSubscription;
+
+    this.setState(
+      ({onScrollEmitter}) => ({
+        onScrollEmitter: onScrollEmitter ?? new EventEmitter(),
+      }),
+      () => {
+        // If `subscription` is null, that means it was removed before we got
+        // here so do nothing.
+        if (subscription !== null) {
+          subscription = nullthrows(this.state.onScrollEmitter).addListener(
+            'scroll',
+            callback,
+          );
+        }
+      },
+    );
+
+    return {
+      remove() {
+        // If `subscription` was created before this invocation, remove it.
+        subscription?.remove();
+        // Record this invocation by setting `subscription` to null, in case it
+        // ends up being created after this invocation.
+        subscription = null;
+      },
+    };
   };
 
   /**
@@ -1154,6 +1195,11 @@ class ScrollView extends React.Component<Props, State> {
   _handleScroll = (e: ScrollEvent) => {
     this._observedScrollSinceBecomingResponder = true;
     this.props.onScroll && this.props.onScroll(e);
+
+    this.state.onScrollEmitter?.emit('scroll', {
+      x: e.nativeEvent.contentOffset.x,
+      y: e.nativeEvent.contentOffset.y,
+    });
   };
 
   _handleLayout = (e: LayoutEvent) => {
@@ -1202,6 +1248,8 @@ class ScrollView extends React.Component<Props, State> {
           scrollToEnd: this.scrollToEnd,
           flashScrollIndicators: this.flashScrollIndicators,
           scrollResponderZoomTo: this.scrollResponderZoomTo,
+          // TODO: Replace unstable_subscribeToOnScroll once scrollView.addEventListener('scroll', (e: ScrollEvent) => {}, {passive: false});
+          unstable_subscribeToOnScroll: this._subscribeToOnScroll,
           scrollResponderScrollNativeHandleToKeyboard:
             this.scrollResponderScrollNativeHandleToKeyboard,
         },
@@ -1778,6 +1826,7 @@ class ScrollView extends React.Component<Props, State> {
       onScroll: this._handleScroll,
       endDraggingSensitivityMultiplier:
         experimental_endDraggingSensitivityMultiplier,
+      enableSyncOnScroll: this.state.onScrollEmitter ? true : undefined,
       scrollEventThrottle: hasStickyHeaders
         ? 1
         : this.props.scrollEventThrottle,
