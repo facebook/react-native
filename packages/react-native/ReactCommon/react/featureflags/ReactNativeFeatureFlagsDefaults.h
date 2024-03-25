@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1450d89abc68821fb348574016874719>>
+ * @generated SignedSource<<9fd009411ce19224a3102d2713b0b042>>
  */
 
 /**
@@ -56,6 +56,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableSpannableBuildingUnification() override {
+    return false;
+  }
+
+  bool enableSynchronousStateUpdates() override {
     return false;
   }
 

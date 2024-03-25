@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8908de9b9d0186f1916d8b55d5854cb2>>
+ * @generated SignedSource<<c087df804587a9a02a0547684d0e9c92>>
  */
 
 /**
@@ -32,6 +32,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var enableMicrotasksCache: Boolean? = null
   private var enableMountHooksAndroidCache: Boolean? = null
   private var enableSpannableBuildingUnificationCache: Boolean? = null
+  private var enableSynchronousStateUpdatesCache: Boolean? = null
   private var enableUIConsistencyCache: Boolean? = null
   private var inspectorEnableCxxInspectorPackagerConnectionCache: Boolean? = null
   private var inspectorEnableModernCDPRegistryCache: Boolean? = null
@@ -113,6 +114,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.enableSpannableBuildingUnification()
       accessedFeatureFlags.add("enableSpannableBuildingUnification")
       enableSpannableBuildingUnificationCache = cached
+    }
+    return cached
+  }
+
+  override fun enableSynchronousStateUpdates(): Boolean {
+    var cached = enableSynchronousStateUpdatesCache
+    if (cached == null) {
+      cached = currentProvider.enableSynchronousStateUpdates()
+      accessedFeatureFlags.add("enableSynchronousStateUpdates")
+      enableSynchronousStateUpdatesCache = cached
     }
     return cached
   }

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7e09a7ad1d178850bdcf73da3eb5623b>>
+ * @generated SignedSource<<08ed8c4c27411ba5a04acb314eb36b63>>
  */
 
 /**
@@ -75,6 +75,11 @@ bool NativeReactNativeFeatureFlags::enableMountHooksAndroid(
 bool NativeReactNativeFeatureFlags::enableSpannableBuildingUnification(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableSpannableBuildingUnification();
+}
+
+bool NativeReactNativeFeatureFlags::enableSynchronousStateUpdates(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableSynchronousStateUpdates();
 }
 
 bool NativeReactNativeFeatureFlags::enableUIConsistency(

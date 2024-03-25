@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e94d55bad5f8bf6cf933ddc50e3b4886>>
+ * @generated SignedSource<<bab6aad25607059d465d6c80711a4adf>>
  */
 
 /**
@@ -76,6 +76,11 @@ class ReactNativeFeatureFlags {
    * Uses new, deduplicated logic for constructing Android Spannables from text fragments
    */
   RN_EXPORT static bool enableSpannableBuildingUnification();
+
+  /**
+   * Dispatches state updates synchronously in Fabric (e.g.: updates the scroll position in the shadow tree synchronously from the main thread).
+   */
+  RN_EXPORT static bool enableSynchronousStateUpdates();
 
   /**
    * Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).
