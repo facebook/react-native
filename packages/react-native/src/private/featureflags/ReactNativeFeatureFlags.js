@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<aade6c478e09fb1f92319c3f46adaf13>>
+ * @generated SignedSource<<c653f884a1ebb7556d0f59a4fdcf2fed>>
  * @flow strict-local
  */
 
@@ -48,6 +48,7 @@ export type ReactNativeFeatureFlags = {
   enableMicrotasks: Getter<boolean>,
   enableMountHooksAndroid: Getter<boolean>,
   enableSpannableBuildingUnification: Getter<boolean>,
+  enableUIConsistency: Getter<boolean>,
   inspectorEnableCxxInspectorPackagerConnection: Getter<boolean>,
   inspectorEnableModernCDPRegistry: Getter<boolean>,
   useModernRuntimeScheduler: Getter<boolean>,
@@ -125,6 +126,10 @@ export const enableMountHooksAndroid: Getter<boolean> = createNativeFlagGetter('
  * Uses new, deduplicated logic for constructing Android Spannables from text fragments
  */
 export const enableSpannableBuildingUnification: Getter<boolean> = createNativeFlagGetter('enableSpannableBuildingUnification', false);
+/**
+ * Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).
+ */
+export const enableUIConsistency: Getter<boolean> = createNativeFlagGetter('enableUIConsistency', false);
 /**
  * Flag determining if the C++ implementation of InspectorPackagerConnection should be used instead of the per-platform one. This flag is global and should not be changed across React Host lifetimes.
  */

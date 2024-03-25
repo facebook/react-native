@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ddbe652a9094bd6af4bdb741fc17ea7c>>
+ * @generated SignedSource<<7555a704535615fcea44c1261095419a>>
  */
 
 /**
@@ -38,6 +38,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun enableMountHooksAndroid(): Boolean
 
   @DoNotStrip public fun enableSpannableBuildingUnification(): Boolean
+
+  @DoNotStrip public fun enableUIConsistency(): Boolean
 
   @DoNotStrip public fun inspectorEnableCxxInspectorPackagerConnection(): Boolean
 

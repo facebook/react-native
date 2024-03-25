@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<53251a11631eccf1fcc334b14f9ca4c6>>
+ * @generated SignedSource<<a356c9a406454c7591fbfe23edeeaee6>>
  */
 
 /**
@@ -50,6 +50,8 @@ class NativeReactNativeFeatureFlags
   bool enableMountHooksAndroid(jsi::Runtime& runtime);
 
   bool enableSpannableBuildingUnification(jsi::Runtime& runtime);
+
+  bool enableUIConsistency(jsi::Runtime& runtime);
 
   bool inspectorEnableCxxInspectorPackagerConnection(jsi::Runtime& runtime);
 
