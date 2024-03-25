@@ -5,11 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <string>
-
-#include <fbjni/fbjni.h>
-#include <jsi/jsi.h>
-
 #include "ComponentNameResolverManager.h"
 
 #include <react/renderer/componentregistry/native/NativeComponentRegistryBinding.h>
@@ -18,12 +13,13 @@ namespace facebook::react {
 
 using namespace facebook::jni;
 
+constexpr static auto ComponentNameResolverJavaDescriptor =
+    "com/facebook/react/uimanager/ComponentNameResolver";
+
 ComponentNameResolverManager::ComponentNameResolverManager(
-    jni::alias_ref<ComponentNameResolverManager::javaobject> jThis,
     RuntimeExecutor runtimeExecutor,
     jni::alias_ref<jobject> componentNameResolver)
-    : javaPart_(jni::make_global(jThis)),
-      runtimeExecutor_(runtimeExecutor),
+    : runtimeExecutor_(std::move(runtimeExecutor)),
       componentNameResolver_(jni::make_global(componentNameResolver)) {}
 
 jni::local_ref<ComponentNameResolverManager::jhybriddata>
@@ -32,7 +28,7 @@ ComponentNameResolverManager::initHybrid(
     jni::alias_ref<JRuntimeExecutor::javaobject> runtimeExecutor,
     jni::alias_ref<jobject> componentNameResolver) {
   return makeCxxInstance(
-      jThis, runtimeExecutor->cthis()->get(), componentNameResolver);
+      runtimeExecutor->cthis()->get(), componentNameResolver);
 }
 
 void ComponentNameResolverManager::registerNatives() {
@@ -45,28 +41,23 @@ void ComponentNameResolverManager::registerNatives() {
 }
 
 void ComponentNameResolverManager::installJSIBindings() {
-  runtimeExecutor_([thizz = this](jsi::Runtime& runtime) {
-    auto viewManagerProvider = [thizz](const std::string& name) -> bool {
-      if (thizz->componentNames_.size() == 0) {
+  runtimeExecutor_([this](jsi::Runtime& runtime) {
+    auto viewManagerProvider = [this](const std::string& name) -> bool {
+      if (componentNames_.size() == 0) {
         static auto getComponentNames =
-            jni::findClassStatic(ComponentNameResolverManager::
-                                     ComponentNameResolverJavaDescriptor)
+            jni::findClassStatic(ComponentNameResolverJavaDescriptor)
                 ->getMethod<jni::alias_ref<jtypeArray<jstring>>()>(
                     "getComponentNames");
 
-        auto componentNamesJArray =
-            getComponentNames(thizz->componentNameResolver_.get());
+        auto componentNamesJArray = getComponentNames(componentNameResolver_);
         auto len = componentNamesJArray->size();
         for (size_t i = 0; i < len; i++) {
           jni::local_ref<jstring> elem = (*componentNamesJArray)[i];
-          auto componentName = elem->toStdString();
-          thizz->componentNames_.insert(componentName);
+          componentNames_.insert(elem->toStdString());
         }
       }
-
-      return thizz->componentNames_.find(name) != thizz->componentNames_.end();
+      return componentNames_.find(name) != componentNames_.end();
     };
-
     bindHasComponentProvider(runtime, std::move(viewManagerProvider));
   });
 }
