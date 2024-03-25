@@ -16,6 +16,7 @@ import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.common.ViewUtil;
 
@@ -76,7 +77,8 @@ class ReactEventEmitter implements RCTModernEventEmitter {
 
     int reactTag = touches.getMap(0).getInt(TARGET_KEY);
     @UIManagerType int uiManagerType = ViewUtil.getUIManagerType(reactTag);
-    if (uiManagerType == UIManagerType.DEFAULT && getDefaultEventEmitter() != null) {
+    if ((uiManagerType == UIManagerType.DEFAULT || ReactFeatureFlags.unstable_useFabricInterop)
+        && getDefaultEventEmitter() != null) {
       mDefaultEventEmitter.receiveTouches(eventName, touches, changedIndices);
     }
   }
@@ -88,7 +90,9 @@ class ReactEventEmitter implements RCTModernEventEmitter {
     int uiManagerType = ViewUtil.getUIManagerType(event.getViewTag(), event.getSurfaceId());
     if (uiManagerType == UIManagerType.FABRIC && mFabricEventEmitter != null) {
       TouchesHelper.sendTouchEvent(mFabricEventEmitter, event);
-    } else if (uiManagerType == UIManagerType.DEFAULT && getDefaultEventEmitter() != null) {
+    } else if ((uiManagerType == UIManagerType.DEFAULT
+            || ReactFeatureFlags.unstable_useFabricInterop)
+        && getDefaultEventEmitter() != null) {
       TouchesHelper.sendTouchesLegacy(mDefaultEventEmitter, event);
     } else {
       ReactSoftExceptionLogger.logSoftException(
@@ -142,7 +146,11 @@ class ReactEventEmitter implements RCTModernEventEmitter {
           customCoalesceKey,
           event,
           category);
-    } else if (uiManagerType == UIManagerType.DEFAULT && getDefaultEventEmitter() != null) {
+    } else if ((uiManagerType == UIManagerType.DEFAULT
+            || ReactFeatureFlags.unstable_useFabricInterop)
+        && getDefaultEventEmitter() != null) {
+      // If you're on Paper or using Fabric Interop, we dispatch the event via the default event
+      // emitter
       mDefaultEventEmitter.receiveEvent(targetReactTag, eventName, event);
     } else {
       ReactSoftExceptionLogger.logSoftException(
