@@ -76,6 +76,11 @@ export default class Device {
   // Package name of the app.
   #app: string;
 
+  // Sequences async processing of messages from device to preserve order. Only
+  // necessary while we need to accommodate #processMessageFromDeviceLegacy's
+  // async fetch.
+  #messageFromDeviceQueue: Promise<void> = Promise.resolve();
+
   // Stores socket connection between Inspector Proxy and device.
   #deviceSocket: WS;
 
@@ -135,20 +140,24 @@ export default class Device {
 
     // $FlowFixMe[incompatible-call]
     this.#deviceSocket.on('message', (message: string) => {
-      const parsedMessage = JSON.parse(message);
-      if (parsedMessage.event === 'getPages') {
-        // There's a 'getPages' message every second, so only show them if they change
-        if (message !== this.#lastGetPagesMessage) {
-          debug(
-            '(Debugger)    (Proxy) <- (Device), getPages ping has changed: ' +
-              message,
-          );
-          this.#lastGetPagesMessage = message;
-        }
-      } else {
-        debug('(Debugger)    (Proxy) <- (Device): ' + message);
-      }
-      this.#handleMessageFromDevice(parsedMessage);
+      this.#messageFromDeviceQueue = this.#messageFromDeviceQueue.then(
+        async () => {
+          const parsedMessage = JSON.parse(message);
+          if (parsedMessage.event === 'getPages') {
+            // There's a 'getPages' message every second, so only show them if they change
+            if (message !== this.#lastGetPagesMessage) {
+              debug(
+                '(Debugger)    (Proxy) <- (Device), getPages ping has changed: ' +
+                  message,
+              );
+              this.#lastGetPagesMessage = message;
+            }
+          } else {
+            debug('(Debugger)    (Proxy) <- (Device): ' + message);
+          }
+          await this.#handleMessageFromDevice(parsedMessage);
+        },
+      );
     });
     // Sends 'getPages' request to device every PAGES_POLLING_INTERVAL milliseconds.
     this.#pagesPollingIntervalId = setInterval(
@@ -395,7 +404,7 @@ export default class Device {
   // In the future more logic will be added to this method for modifying
   // some of the messages (like updating messages with source maps and file
   // locations).
-  #handleMessageFromDevice(message: MessageFromDevice) {
+  async #handleMessageFromDevice(message: MessageFromDevice) {
     if (message.event === 'getPages') {
       this.#pages = new Map(
         message.payload.map(({capabilities, ...page}) => [
@@ -498,16 +507,13 @@ export default class Device {
           return;
         }
 
-        // Wrapping just to make flow happy :)
-        // $FlowFixMe[unused-promise]
-        this.#processMessageFromDeviceLegacy(
+        await this.#processMessageFromDeviceLegacy(
           parsedPayload,
           debuggerConnection,
           pageId,
-        ).then(() => {
-          const messageToSend = JSON.stringify(parsedPayload);
-          debuggerSocket.send(messageToSend);
-        });
+        );
+        const messageToSend = JSON.stringify(parsedPayload);
+        debuggerSocket.send(messageToSend);
       } else {
         debuggerSocket.send(message.payload.wrappedEvent);
       }
