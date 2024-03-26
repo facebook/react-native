@@ -115,7 +115,7 @@ class FlatListExample extends React.PureComponent<Props, State> {
   };
 
   _onChangeScrollOffset = (text: mixed) => {
-    this._listRef.scrollToOffset({offset: Number(text), animated: false});
+    this._listRef?.scrollToOffset({offset: Number(text), animated: false});
   };
 
   // $FlowFixMe[missing-local-annot]
