@@ -24,6 +24,9 @@ constexpr int DEFAULT_MAX_SIZE = 1024;
  *   the consumer effectively clears the buffer
  * - Even after the entries are consumed, all of the non-overwritten entries
  *   can still be independently retrieved an arbitrary amount of times
+ *
+ * Note that the space for maxSize elements is reserved on construction. This
+ * ensures that pointers to elements remain stable across add() operations.
  */
 template <class T>
 class BoundedConsumableBuffer {
@@ -44,7 +47,9 @@ class BoundedConsumableBuffer {
     DROP = 2,
   };
 
-  BoundedConsumableBuffer(int maxSize = DEFAULT_MAX_SIZE) : maxSize_(maxSize) {}
+  BoundedConsumableBuffer(int maxSize = DEFAULT_MAX_SIZE) : maxSize_(maxSize) {
+    entries_.reserve(maxSize_);
+  }
 
   /**
    * Adds (pushes) element into the buffer. Returns the result/status of the
@@ -122,6 +127,8 @@ class BoundedConsumableBuffer {
     std::vector<T> entries;
     int numToConsume = 0;
     int i;
+
+    entries.reserve(maxSize_);
     for (i = 0; i < numToConsume_; i++) {
       if (!predicate(entries_[pos])) {
         entries.push_back(entries_[pos]);

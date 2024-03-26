@@ -170,21 +170,24 @@ void PerformanceEntryReporter::clearEntries(
     if (!entryName.empty()) {
       if (buffer.hasNameLookup) {
         std::lock_guard lock2(nameLookupMutex_);
-        RawPerformanceEntry entry{
-            std::string(entryName),
-            static_cast<int>(entryType),
-            0.0,
-            0.0,
-            std::nullopt,
-            std::nullopt,
-            std::nullopt};
-        buffer.nameLookup.erase(&entry);
+        buffer.nameLookup.clear();
       }
 
       std::lock_guard lock(entriesMutex_);
       buffer.entries.clear([entryName](const RawPerformanceEntry& entry) {
         return entry.name == entryName;
       });
+
+      if (buffer.hasNameLookup) {
+        std::lock_guard lock2(nameLookupMutex_);
+        // BoundedConsumableBuffer::clear() invalidates existing references; we
+        // need to rebuild the lookup table. If there are multiple entries with
+        // the same name, make sure the last one gets inserted.
+        for (int i = static_cast<int>(buffer.entries.size()) - 1; i >= 0; i--) {
+          const auto& entry = buffer.entries[i];
+          buffer.nameLookup.insert(&entry);
+        }
+      }
     } else {
       {
         std::lock_guard lock(entriesMutex_);
