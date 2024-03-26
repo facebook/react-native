@@ -23,11 +23,9 @@ class NativeDOM : public NativeDOMCxxSpec<NativeDOM> {
  public:
   NativeDOM(std::shared_ptr<CallInvoker> jsInvoker);
 
-  std::optional<jsi::Value> getParentNode(
-      jsi::Runtime& rt,
-      jsi::Value shadowNodeValue);
+  jsi::Value getParentNode(jsi::Runtime& rt, jsi::Value shadowNodeValue);
 
-  std::optional<std::vector<jsi::Value>> getChildNodes(
+  std::vector<jsi::Value> getChildNodes(
       jsi::Runtime& rt,
       jsi::Value shadowNodeValue);
 
@@ -40,38 +38,39 @@ class NativeDOM : public NativeDOMCxxSpec<NativeDOM> {
 
   std::string getTextContent(jsi::Runtime& rt, jsi::Value shadowNodeValue);
 
-  std::optional<std::tuple<
+  std::tuple<
       /* x: */ double,
       /* y: */ double,
       /* width: */ double,
-      /* height: */ double>>
+      /* height: */ double>
   getBoundingClientRect(
       jsi::Runtime& rt,
       jsi::Value shadowNodeValue,
       bool includeTransform);
 
-  std::optional<std::tuple<
+  std::tuple<
       /* offsetParent: */ jsi::Value,
       /* top: */ double,
-      /* left: */ double>>
+      /* left: */ double>
   getOffset(jsi::Runtime& rt, jsi::Value shadowNodeValue);
 
-  std::optional<std::tuple</* scrollLeft: */ double, /* scrollTop: */ double>>
+  std::tuple</* scrollLeft: */ double, /* scrollTop: */ double>
   getScrollPosition(jsi::Runtime& rt, jsi::Value shadowNodeValue);
 
-  std::optional<std::tuple</* scrollWidth: */ int, /* scrollHeight */ int>>
-  getScrollSize(jsi::Runtime& rt, jsi::Value shadowNodeValue);
-
-  std::optional<std::tuple</* width: */ int, /* height: */ int>> getInnerSize(
+  std::tuple</* scrollWidth: */ int, /* scrollHeight */ int> getScrollSize(
       jsi::Runtime& rt,
       jsi::Value shadowNodeValue);
 
-  std::optional<std::tuple<
+  std::tuple</* width: */ int, /* height: */ int> getInnerSize(
+      jsi::Runtime& rt,
+      jsi::Value shadowNodeValue);
+
+  std::tuple<
       /* topWidth: */ int,
       /* rightWidth: */ int,
       /* bottomWidth: */ int,
-      /* leftWidth: */ int>>
-  getBorderSize(jsi::Runtime& rt, jsi::Value shadowNodeValue);
+      /* leftWidth: */ int>
+  getBorderWidth(jsi::Runtime& rt, jsi::Value shadowNodeValue);
 
   std::string getTagName(jsi::Runtime& rt, jsi::Value shadowNodeValue);
 

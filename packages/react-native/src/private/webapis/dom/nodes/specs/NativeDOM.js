@@ -20,11 +20,11 @@ import nullthrows from 'nullthrows';
 export interface Spec extends TurboModule {
   +getParentNode: (
     shadowNode: mixed /* ShadowNode */,
-  ) => ?mixed /* ?InstanceHandle */;
+  ) => mixed /* ?InstanceHandle */;
 
   +getChildNodes: (
     shadowNode: mixed /* ShadowNode */,
-  ) => ?$ReadOnlyArray<mixed> /* ?$ReadOnlyArray<InstanceHandle> */;
+  ) => $ReadOnlyArray<mixed> /* $ReadOnlyArray<InstanceHandle> */;
 
   +isConnected: (shadowNode: mixed /* ShadowNode */) => boolean;
 
@@ -38,27 +38,27 @@ export interface Spec extends TurboModule {
   +getBoundingClientRect: (
     shadowNode: mixed /* ShadowNode */,
     includeTransform: boolean,
-  ) => ?$ReadOnlyArray<number> /* ?[x: number, y: number, width: number, height: number] */;
+  ) => $ReadOnlyArray<number> /* [x: number, y: number, width: number, height: number] */;
 
   +getOffset: (
     shadowNode: mixed /* ShadowNode */,
-  ) => ?$ReadOnlyArray<mixed> /* ?[offsetParent: InstanceHandle, top: number, left: number] */;
+  ) => $ReadOnlyArray<mixed> /* [offsetParent: ?InstanceHandle, top: number, left: number] */;
 
   +getScrollPosition: (
     shadowNode: mixed /* ShadowNode */,
-  ) => ?$ReadOnlyArray<number> /* ?[scrollLeft: number, scrollTop: number] */;
+  ) => $ReadOnlyArray<number> /* [scrollLeft: number, scrollTop: number] */;
 
   +getScrollSize: (
     shadowNode: mixed /* ShadowNode */,
-  ) => ?$ReadOnlyArray<number> /* ?[scrollWidth: number, scrollHeight: number] */;
+  ) => $ReadOnlyArray<number> /* [scrollWidth: number, scrollHeight: number] */;
 
   +getInnerSize: (
     shadowNode: mixed /* ShadowNode */,
-  ) => ?$ReadOnlyArray<number> /* ?[width: number, height: number] */;
+  ) => $ReadOnlyArray<number> /* [width: number, height: number] */;
 
-  +getBorderSize: (
+  +getBorderWidth: (
     shadowNode: mixed /* ShadowNode */,
-  ) => ?$ReadOnlyArray<number> /* ?[topWidth: number, rightWidth: number, bottomWidth: number, leftWidth: number] */;
+  ) => $ReadOnlyArray<number> /* [topWidth: number, rightWidth: number, bottomWidth: number, leftWidth: number] */;
 
   +getTagName: (shadowNode: mixed /* ShadowNode */) => string;
 
@@ -101,7 +101,7 @@ export interface RefinedSpec {
    * of an active shadow tree, it returns an array of instance handles of its
    * children. Otherwise, it returns an empty array.
    */
-  +getChildNodes: (shadowNode: ShadowNode) => ?$ReadOnlyArray<InstanceHandle>;
+  +getChildNodes: (shadowNode: ShadowNode) => $ReadOnlyArray<InstanceHandle>;
 
   /**
    * This is a React Native implementation of `Node.prototype.isConnected`
@@ -153,7 +153,7 @@ export interface RefinedSpec {
   +getBoundingClientRect: (
     shadowNode: ShadowNode,
     includeTransform: boolean,
-  ) => ?$ReadOnly<
+  ) => $ReadOnly<
     [
       /* x: */ number,
       /* y: */ number,
@@ -178,8 +178,12 @@ export interface RefinedSpec {
    */
   +getOffset: (
     shadowNode: ShadowNode,
-  ) => ?$ReadOnly<
-    [/* offsetParent: */ InstanceHandle, /* top: */ number, /* left: */ number],
+  ) => $ReadOnly<
+    [
+      /* offsetParent: */ ?InstanceHandle,
+      /* top: */ number,
+      /* left: */ number,
+    ],
   >;
 
   /**
@@ -195,7 +199,7 @@ export interface RefinedSpec {
    */
   +getScrollPosition: (
     shadowNode: ShadowNode,
-  ) => ?$ReadOnly<[/* scrollLeft: */ number, /* scrollTop: */ number]>;
+  ) => $ReadOnly<[/* scrollLeft: */ number, /* scrollTop: */ number]>;
 
   /**
    *
@@ -211,7 +215,7 @@ export interface RefinedSpec {
    */
   +getScrollSize: (
     shadowNode: ShadowNode,
-  ) => ?$ReadOnly<[/* scrollWidth: */ number, /* scrollHeight: */ number]>;
+  ) => $ReadOnly<[/* scrollWidth: */ number, /* scrollHeight: */ number]>;
 
   /**
    * This is a method to access the inner size of a shadow node, to implement
@@ -227,7 +231,7 @@ export interface RefinedSpec {
    */
   +getInnerSize: (
     shadowNode: ShadowNode,
-  ) => ?$ReadOnly<[/* width: */ number, /* height: */ number]>;
+  ) => $ReadOnly<[/* width: */ number, /* height: */ number]>;
 
   /**
    * This is a method to access the border size of a shadow node, to implement
@@ -241,9 +245,9 @@ export interface RefinedSpec {
    * it has an inline display, it returns `undefined`. Otherwise, it returns its
    * border size.
    */
-  +getBorderSize: (
+  +getBorderWidth: (
     shadowNode: ShadowNode,
-  ) => ?$ReadOnly<
+  ) => $ReadOnly<
     [
       /* topWidth: */ number,
       /* rightWidth: */ number,
@@ -281,7 +285,7 @@ const NativeDOM: RefinedSpec = {
     // $FlowExpectedError[incompatible-cast]
     return (nullthrows(RawNativeDOM).getChildNodes(
       shadowNode,
-    ): ?$ReadOnlyArray<InstanceHandle>);
+    ): $ReadOnlyArray<InstanceHandle>);
   },
 
   isConnected(shadowNode) {
@@ -304,7 +308,7 @@ const NativeDOM: RefinedSpec = {
     return (nullthrows(RawNativeDOM).getBoundingClientRect(
       shadowNode,
       includeTransform,
-    ): ?$ReadOnly<
+    ): $ReadOnly<
       [
         /* x: */ number,
         /* y: */ number,
@@ -316,9 +320,9 @@ const NativeDOM: RefinedSpec = {
 
   getOffset(shadowNode) {
     // $FlowExpectedError[incompatible-cast]
-    return (nullthrows(RawNativeDOM).getOffset(shadowNode): ?$ReadOnly<
+    return (nullthrows(RawNativeDOM).getOffset(shadowNode): $ReadOnly<
       [
-        /* offsetParent: */ InstanceHandle,
+        /* offsetParent: */ ?InstanceHandle,
         /* top: */ number,
         /* left: */ number,
       ],
@@ -327,28 +331,28 @@ const NativeDOM: RefinedSpec = {
 
   getScrollPosition(shadowNode) {
     // $FlowExpectedError[incompatible-cast]
-    return (nullthrows(RawNativeDOM).getScrollPosition(shadowNode): ?$ReadOnly<
+    return (nullthrows(RawNativeDOM).getScrollPosition(shadowNode): $ReadOnly<
       [/* scrollLeft: */ number, /* scrollTop: */ number],
     >);
   },
 
   getScrollSize(shadowNode) {
     // $FlowExpectedError[incompatible-cast]
-    return (nullthrows(RawNativeDOM).getScrollSize(shadowNode): ?$ReadOnly<
+    return (nullthrows(RawNativeDOM).getScrollSize(shadowNode): $ReadOnly<
       [/* scrollWidth: */ number, /* scrollHeight: */ number],
     >);
   },
 
   getInnerSize(shadowNode) {
     // $FlowExpectedError[incompatible-cast]
-    return (nullthrows(RawNativeDOM).getInnerSize(shadowNode): ?$ReadOnly<
+    return (nullthrows(RawNativeDOM).getInnerSize(shadowNode): $ReadOnly<
       [/* width: */ number, /* height: */ number],
     >);
   },
 
-  getBorderSize(shadowNode) {
+  getBorderWidth(shadowNode) {
     // $FlowExpectedError[incompatible-cast]
-    return (nullthrows(RawNativeDOM).getBorderSize(shadowNode): ?$ReadOnly<
+    return (nullthrows(RawNativeDOM).getBorderWidth(shadowNode): $ReadOnly<
       [
         /* topWidth: */ number,
         /* rightWidth: */ number,

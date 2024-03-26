@@ -11,6 +11,7 @@
 #include <react/renderer/graphics/Point.h>
 #include <react/renderer/graphics/Rect.h>
 #include <react/renderer/graphics/Size.h>
+#include <cmath>
 
 namespace {
 
@@ -170,13 +171,13 @@ ShadowNode::Shared getParentNode(
   return getParentShadowNodeInRevision(currentRevision, shadowNode);
 }
 
-std::optional<std::vector<ShadowNode::Shared>> getChildNodes(
+std::vector<ShadowNode::Shared> getChildNodes(
     const RootShadowNode::Shared& currentRevision,
     const ShadowNode& shadowNode) {
   auto shadowNodeInCurrentRevision =
       getShadowNodeInRevision(currentRevision, shadowNode);
   if (shadowNodeInCurrentRevision == nullptr) {
-    return std::nullopt;
+    return {};
   }
 
   return shadowNodeInCurrentRevision->getChildren();
@@ -251,20 +252,14 @@ std::string getTextContent(
   return result;
 }
 
-std::optional<std::tuple<
-    /* x: */ double,
-    /* y: */ double,
-    /* width: */ double,
-    /* height: */
-    double>>
-getBoundingClientRect(
+DOMRect getBoundingClientRect(
     const RootShadowNode::Shared& currentRevision,
     const ShadowNode& shadowNode,
     bool includeTransform) {
   auto shadowNodeInCurrentRevision =
       getShadowNodeInRevision(currentRevision, shadowNode);
   if (shadowNodeInCurrentRevision == nullptr) {
-    return std::nullopt;
+    return DOMRect{};
   }
 
   auto layoutMetrics = getRelativeLayoutMetrics(
@@ -273,20 +268,18 @@ getBoundingClientRect(
       {.includeTransform = includeTransform, .includeViewportOffset = true});
 
   if (layoutMetrics == EmptyLayoutMetrics) {
-    return std::nullopt;
+    return DOMRect{};
   }
 
   auto frame = layoutMetrics.frame;
-  return std::tuple{
-      frame.origin.x, frame.origin.y, frame.size.width, frame.size.height};
+  return DOMRect{
+      .x = frame.origin.x,
+      .y = frame.origin.y,
+      .width = frame.size.width,
+      .height = frame.size.height};
 }
 
-std::optional<std::tuple<
-    /* offsetParent: */ ShadowNode::Shared,
-    /* top: */ double,
-    /* left: */
-    double>>
-getOffset(
+DOMOffset getOffset(
     const RootShadowNode::Shared& currentRevision,
     const ShadowNode& shadowNode) {
   auto shadowNodeInCurrentRevision =
@@ -298,7 +291,7 @@ getOffset(
   // root node
   if (shadowNodeInCurrentRevision == nullptr ||
       positionedAncestorOfShadowNodeInCurrentRevision == nullptr) {
-    return std::nullopt;
+    return DOMOffset{};
   }
 
   // If the node is not displayed (itself or any of its ancestors has
@@ -306,7 +299,7 @@ getOffset(
   auto shadowNodeLayoutMetricsRelativeToRoot = getRelativeLayoutMetrics(
       *currentRevision, shadowNode, {.includeTransform = false});
   if (shadowNodeLayoutMetricsRelativeToRoot == EmptyLayoutMetrics) {
-    return std::nullopt;
+    return DOMOffset{};
   }
 
   auto positionedAncestorLayoutMetricsRelativeToRoot = getRelativeLayoutMetrics(
@@ -314,7 +307,7 @@ getOffset(
       *positionedAncestorOfShadowNodeInCurrentRevision,
       {.includeTransform = false});
   if (positionedAncestorLayoutMetricsRelativeToRoot == EmptyLayoutMetrics) {
-    return std::nullopt;
+    return DOMOffset{};
   }
 
   auto shadowNodeOriginRelativeToRoot =
@@ -331,18 +324,19 @@ getOffset(
       positionedAncestorOriginRelativeToRoot.x -
       positionedAncestorLayoutMetricsRelativeToRoot.borderWidth.left;
 
-  return std::tuple{
-      positionedAncestorOfShadowNodeInCurrentRevision, offsetTop, offsetLeft};
+  return DOMOffset{
+      .offsetParent = positionedAncestorOfShadowNodeInCurrentRevision,
+      .top = offsetTop,
+      .left = offsetLeft};
 }
 
-std::optional<std::tuple</* scrollLeft: */ double, /* scrollTop: */ double>>
-getScrollPosition(
+DOMPoint getScrollPosition(
     const RootShadowNode::Shared& currentRevision,
     const ShadowNode& shadowNode) {
   auto shadowNodeInCurrentRevision =
       getShadowNodeInRevision(currentRevision, shadowNode);
   if (shadowNodeInCurrentRevision == nullptr) {
-    return std::nullopt;
+    return DOMPoint{};
   }
 
   // If the node is not displayed (itself or any of its ancestors has
@@ -353,31 +347,30 @@ getScrollPosition(
       {.includeTransform = true});
 
   if (layoutMetrics == EmptyLayoutMetrics) {
-    return std::nullopt;
+    return DOMPoint{};
   }
 
   auto layoutableShadowNode = dynamic_cast<LayoutableShadowNode const*>(
       shadowNodeInCurrentRevision.get());
   // This should never happen
   if (layoutableShadowNode == nullptr) {
-    return std::nullopt;
+    return DOMPoint{};
   }
 
   auto scrollPosition = layoutableShadowNode->getContentOriginOffset();
 
-  return std::tuple{
-      scrollPosition.x == 0 ? 0 : -scrollPosition.x,
-      scrollPosition.y == 0 ? 0 : -scrollPosition.y};
+  return DOMPoint{
+      .x = scrollPosition.x == 0 ? 0 : -scrollPosition.x,
+      .y = scrollPosition.y == 0 ? 0 : -scrollPosition.y};
 }
 
-std::optional<std::tuple</* scrollWidth: */ int, /* scrollHeight */ int>>
-getScrollSize(
+DOMSizeRounded getScrollSize(
     const RootShadowNode::Shared& currentRevision,
     const ShadowNode& shadowNode) {
   auto shadowNodeInCurrentRevision =
       getShadowNodeInRevision(currentRevision, shadowNode);
   if (shadowNodeInCurrentRevision == nullptr) {
-    return std::nullopt;
+    return DOMSizeRounded{};
   }
 
   // If the node is not displayed (itself or any of its ancestors has
@@ -389,31 +382,32 @@ getScrollSize(
 
   if (layoutMetrics == EmptyLayoutMetrics ||
       layoutMetrics.displayType == DisplayType::Inline) {
-    return std::nullopt;
+    return DOMSizeRounded{};
   }
 
   auto layoutableShadowNode = dynamic_cast<YogaLayoutableShadowNode const*>(
       shadowNodeInCurrentRevision.get());
   // This should never happen
   if (layoutableShadowNode == nullptr) {
-    return std::nullopt;
+    return DOMSizeRounded{};
   }
 
   Size scrollSize = getScrollableContentBounds(
                         layoutableShadowNode->getContentBounds(), layoutMetrics)
                         .size;
 
-  return std::tuple{
-      std::round(scrollSize.width), std::round(scrollSize.height)};
+  return DOMSizeRounded{
+      .width = static_cast<int>(std::round(scrollSize.width)),
+      .height = static_cast<int>(std::round(scrollSize.height))};
 }
 
-std::optional<std::tuple</* width: */ int, /* height: */ int>> getInnerSize(
+DOMSizeRounded getInnerSize(
     const RootShadowNode::Shared& currentRevision,
     const ShadowNode& shadowNode) {
   auto shadowNodeInCurrentRevision =
       getShadowNodeInRevision(currentRevision, shadowNode);
   if (shadowNodeInCurrentRevision == nullptr) {
-    return std::nullopt;
+    return DOMSizeRounded{};
   }
 
   // If the node is not displayed (itself or any of its ancestors has
@@ -425,29 +419,23 @@ std::optional<std::tuple</* width: */ int, /* height: */ int>> getInnerSize(
 
   if (layoutMetrics == EmptyLayoutMetrics ||
       layoutMetrics.displayType == DisplayType::Inline) {
-    return std::nullopt;
+    return DOMSizeRounded{};
   }
 
   auto paddingFrame = layoutMetrics.getPaddingFrame();
 
-  return std::tuple{
-      std::round(paddingFrame.size.width),
-      std::round(paddingFrame.size.height)};
+  return DOMSizeRounded{
+      .width = static_cast<int>(std::round(paddingFrame.size.width)),
+      .height = static_cast<int>(std::round(paddingFrame.size.height))};
 }
 
-std::optional<std::tuple<
-    /* topWidth: */ int,
-    /* rightWidth: */ int,
-    /* bottomWidth: */ int,
-    /* leftWidth: */
-    int>>
-getBorderSize(
+DOMBorderWidthRounded getBorderWidth(
     const RootShadowNode::Shared& currentRevision,
     const ShadowNode& shadowNode) {
   auto shadowNodeInCurrentRevision =
       getShadowNodeInRevision(currentRevision, shadowNode);
   if (shadowNodeInCurrentRevision == nullptr) {
-    return std::nullopt;
+    return DOMBorderWidthRounded{};
   }
 
   // If the node is not displayed (itself or any of its ancestors has
@@ -459,14 +447,14 @@ getBorderSize(
 
   if (layoutMetrics == EmptyLayoutMetrics ||
       layoutMetrics.displayType == DisplayType::Inline) {
-    return std::nullopt;
+    return DOMBorderWidthRounded{};
   }
 
-  return std::tuple{
-      std::round(layoutMetrics.borderWidth.top),
-      std::round(layoutMetrics.borderWidth.right),
-      std::round(layoutMetrics.borderWidth.bottom),
-      std::round(layoutMetrics.borderWidth.left)};
+  return DOMBorderWidthRounded{
+      .top = static_cast<int>(std::round(layoutMetrics.borderWidth.top)),
+      .right = static_cast<int>(std::round(layoutMetrics.borderWidth.right)),
+      .bottom = static_cast<int>(std::round(layoutMetrics.borderWidth.bottom)),
+      .left = static_cast<int>(std::round(layoutMetrics.borderWidth.left))};
 }
 
 std::string getTagName(const ShadowNode& shadowNode) {
@@ -486,20 +474,13 @@ std::string getTagName(const ShadowNode& shadowNode) {
   return canonicalComponentName;
 }
 
-std::optional<std::tuple<
-    /* x: */ double,
-    /* y: */ double,
-    /* width: */ double,
-    /* height: */ double,
-    /* pageX: */ double,
-    /* pageY: */ double>>
-measure(
+RNMeasureRect measure(
     const RootShadowNode::Shared& currentRevision,
     const ShadowNode& shadowNode) {
   auto shadowNodeInCurrentRevision =
       getShadowNodeInRevision(currentRevision, shadowNode);
   if (shadowNodeInCurrentRevision == nullptr) {
-    return std::nullopt;
+    return RNMeasureRect{};
   }
 
   auto layoutMetrics = getRelativeLayoutMetrics(
@@ -508,7 +489,7 @@ measure(
       {.includeTransform = true, .includeViewportOffset = false});
 
   if (layoutMetrics == EmptyLayoutMetrics) {
-    return std::nullopt;
+    return RNMeasureRect{};
   }
 
   auto layoutableShadowNode = dynamic_cast<const LayoutableShadowNode*>(
@@ -519,27 +500,22 @@ measure(
 
   auto frame = layoutMetrics.frame;
 
-  return std::tuple{
-      (double)originRelativeToParent.x,
-      (double)originRelativeToParent.y,
-      (double)frame.size.width,
-      (double)frame.size.height,
-      (double)frame.origin.x,
-      (double)frame.origin.y};
+  return RNMeasureRect{
+      .x = originRelativeToParent.x,
+      .y = originRelativeToParent.y,
+      .width = frame.size.width,
+      .height = frame.size.height,
+      .pageX = frame.origin.x,
+      .pageY = frame.origin.y};
 }
 
-std::optional<std::tuple<
-    /* x: */ double,
-    /* y: */ double,
-    /* width: */ double,
-    /* height: */ double>>
-measureInWindow(
+DOMRect measureInWindow(
     const RootShadowNode::Shared& currentRevision,
     const ShadowNode& shadowNode) {
   auto shadowNodeInCurrentRevision =
       getShadowNodeInRevision(currentRevision, shadowNode);
   if (shadowNodeInCurrentRevision == nullptr) {
-    return std::nullopt;
+    return DOMRect{};
   }
 
   auto layoutMetrics = getRelativeLayoutMetrics(
@@ -548,24 +524,19 @@ measureInWindow(
       {.includeTransform = true, .includeViewportOffset = true});
 
   if (layoutMetrics == EmptyLayoutMetrics) {
-    return std::nullopt;
+    return DOMRect{};
   }
 
   auto frame = layoutMetrics.frame;
-  return std::tuple{
-      (double)frame.origin.x,
-      (double)frame.origin.y,
-      (double)frame.size.width,
-      (double)frame.size.height,
+  return DOMRect{
+      .x = frame.origin.x,
+      .y = frame.origin.y,
+      .width = frame.size.width,
+      .height = frame.size.height,
   };
 }
 
-std::optional<std::tuple<
-    /* x: */ double,
-    /* y: */ double,
-    /* width: */ double,
-    /* height: */ double>>
-measureLayout(
+std::optional<DOMRect> measureLayout(
     const RootShadowNode::Shared& currentRevision,
     const ShadowNode& shadowNode,
     const ShadowNode& relativeToShadowNode) {
@@ -592,11 +563,11 @@ measureLayout(
 
   auto frame = layoutMetrics.frame;
 
-  return std::tuple{
-      (double)frame.origin.x,
-      (double)frame.origin.y,
-      (double)frame.size.width,
-      (double)frame.size.height,
+  return DOMRect{
+      .x = frame.origin.x,
+      .y = frame.origin.y,
+      .width = frame.size.width,
+      .height = frame.size.height,
   };
 }
 

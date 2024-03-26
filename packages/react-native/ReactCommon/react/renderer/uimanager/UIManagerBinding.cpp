@@ -670,22 +670,22 @@ jsi::Value UIManagerBinding::get(
             return jsi::Value::undefined();
           }
 
-          auto result = dom::measureLayout(
+          auto maybeRect = dom::measureLayout(
               currentRevision, *shadowNode, *relativeToShadowNode);
 
-          if (!result) {
+          if (!maybeRect) {
             onFailFunction.call(runtime);
             return jsi::Value::undefined();
           }
 
-          auto [x, y, width, height] = result.value();
+          auto rect = maybeRect.value();
 
           onSuccessFunction.call(
               runtime,
-              {jsi::Value{runtime, x},
-               jsi::Value{runtime, y},
-               jsi::Value{runtime, width},
-               jsi::Value{runtime, height}});
+              {jsi::Value{runtime, rect.x},
+               jsi::Value{runtime, rect.y},
+               jsi::Value{runtime, rect.width},
+               jsi::Value{runtime, rect.height}});
           return jsi::Value::undefined();
         });
   }
@@ -715,23 +715,16 @@ jsi::Value UIManagerBinding::get(
             return jsi::Value::undefined();
           }
 
-          auto result = dom::measure(currentRevision, *shadowNode);
-
-          if (!result) {
-            callbackFunction.call(runtime, {0, 0, 0, 0, 0, 0});
-            return jsi::Value::undefined();
-          }
-
-          auto [x, y, width, height, pageX, pageY] = result.value();
+          auto measureRect = dom::measure(currentRevision, *shadowNode);
 
           callbackFunction.call(
               runtime,
-              {jsi::Value{runtime, x},
-               jsi::Value{runtime, y},
-               jsi::Value{runtime, width},
-               jsi::Value{runtime, height},
-               jsi::Value{runtime, pageX},
-               jsi::Value{runtime, pageY}});
+              {jsi::Value{runtime, measureRect.x},
+               jsi::Value{runtime, measureRect.y},
+               jsi::Value{runtime, measureRect.width},
+               jsi::Value{runtime, measureRect.height},
+               jsi::Value{runtime, measureRect.pageX},
+               jsi::Value{runtime, measureRect.pageY}});
           return jsi::Value::undefined();
         });
   }
@@ -758,24 +751,17 @@ jsi::Value UIManagerBinding::get(
                   shadowNode->getSurfaceId());
 
           if (currentRevision == nullptr) {
-            callbackFunction.call(runtime, {0, 0, 0, 0, 0, 0});
+            callbackFunction.call(runtime, {0, 0, 0, 0});
             return jsi::Value::undefined();
           }
 
-          auto result = dom::measureInWindow(currentRevision, *shadowNode);
-          if (!result) {
-            callbackFunction.call(runtime, {0, 0, 0, 0, 0, 0});
-            return jsi::Value::undefined();
-          }
-
-          auto [x, y, width, height] = result.value();
-
+          auto rect = dom::measureInWindow(currentRevision, *shadowNode);
           callbackFunction.call(
               runtime,
-              {jsi::Value{runtime, x},
-               jsi::Value{runtime, y},
-               jsi::Value{runtime, width},
-               jsi::Value{runtime, height}});
+              {jsi::Value{runtime, rect.x},
+               jsi::Value{runtime, rect.y},
+               jsi::Value{runtime, rect.width},
+               jsi::Value{runtime, rect.height}});
           return jsi::Value::undefined();
         });
   }
@@ -897,21 +883,15 @@ jsi::Value UIManagerBinding::get(
             return jsi::Value::undefined();
           }
 
-          auto result = dom::getBoundingClientRect(
+          auto domRect = dom::getBoundingClientRect(
               currentRevision, *shadowNode, includeTransform);
-
-          if (!result) {
-            return jsi::Value::undefined();
-          }
-
-          auto [x, y, width, height] = result.value();
 
           return jsi::Array::createWithElements(
               runtime,
-              jsi::Value{runtime, x},
-              jsi::Value{runtime, y},
-              jsi::Value{runtime, width},
-              jsi::Value{runtime, height});
+              jsi::Value{runtime, domRect.x},
+              jsi::Value{runtime, domRect.y},
+              jsi::Value{runtime, domRect.width},
+              jsi::Value{runtime, domRect.height});
         });
   }
 

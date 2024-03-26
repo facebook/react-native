@@ -10,18 +10,56 @@
 #include <react/renderer/components/root/RootShadowNode.h>
 #include <react/renderer/core/ShadowNode.h>
 #include <cstdint>
-#include <optional>
 #include <string>
 #include <tuple>
 #include <vector>
 
 namespace facebook::react::dom {
 
+struct DOMRect {
+  double x = 0;
+  double y = 0;
+  double width = 0;
+  double height = 0;
+};
+
+struct RNMeasureRect {
+  double x = 0;
+  double y = 0;
+  double width = 0;
+  double height = 0;
+  double pageX = 0;
+  double pageY = 0;
+};
+
+struct DOMOffset {
+  ShadowNode::Shared offsetParent = nullptr;
+  double top = 0;
+  double left = 0;
+};
+
+struct DOMPoint {
+  double x = 0;
+  double y = 0;
+};
+
+struct DOMSizeRounded {
+  int width = 0;
+  int height = 0;
+};
+
+struct DOMBorderWidthRounded {
+  int top = 0;
+  int right = 0;
+  int bottom = 0;
+  int left = 0;
+};
+
 ShadowNode::Shared getParentNode(
     const RootShadowNode::Shared& currentRevision,
     const ShadowNode& shadowNode);
 
-std::optional<std::vector<ShadowNode::Shared>> getChildNodes(
+std::vector<ShadowNode::Shared> getChildNodes(
     const RootShadowNode::Shared& currentRevision,
     const ShadowNode& shadowNode);
 
@@ -38,47 +76,28 @@ std::string getTextContent(
     const RootShadowNode::Shared& currentRevision,
     const ShadowNode& shadowNode);
 
-std::optional<std::tuple<
-    /* x: */ double,
-    /* y: */ double,
-    /* width: */ double,
-    /* height: */
-    double>>
-getBoundingClientRect(
+DOMRect getBoundingClientRect(
     const RootShadowNode::Shared& currentRevision,
     const ShadowNode& shadowNode,
     bool includeTransform);
 
-std::optional<std::tuple<
-    /* offsetParent: */ ShadowNode::Shared,
-    /* top: */ double,
-    /* left: */
-    double>>
-getOffset(
+DOMOffset getOffset(
     const RootShadowNode::Shared& currentRevision,
     const ShadowNode& shadowNode);
 
-std::optional<std::tuple</* scrollLeft: */ double, /* scrollTop: */ double>>
-getScrollPosition(
+DOMPoint getScrollPosition(
     const RootShadowNode::Shared& currentRevision,
     const ShadowNode& shadowNode);
 
-std::optional<std::tuple</* scrollWidth: */ int, /* scrollHeight */ int>>
-getScrollSize(
+DOMSizeRounded getScrollSize(
     const RootShadowNode::Shared& currentRevision,
     const ShadowNode& shadowNode);
 
-std::optional<std::tuple</* width: */ int, /* height: */ int>> getInnerSize(
+DOMSizeRounded getInnerSize(
     const RootShadowNode::Shared& currentRevision,
     const ShadowNode& shadowNode);
 
-std::optional<std::tuple<
-    /* topWidth: */ int,
-    /* rightWidth: */ int,
-    /* bottomWidth: */ int,
-    /* leftWidth: */
-    int>>
-getBorderSize(
+DOMBorderWidthRounded getBorderWidth(
     const RootShadowNode::Shared& currentRevision,
     const ShadowNode& shadowNode);
 
@@ -86,32 +105,17 @@ std::string getTagName(const ShadowNode& shadowNode);
 
 // Non-standard methods from React Native
 
-std::optional<std::tuple<
-    /* x: */ double,
-    /* y: */ double,
-    /* width: */ double,
-    /* height: */ double,
-    /* pageX: */ double,
-    /* pageY: */ double>>
-measure(
+RNMeasureRect measure(
     const RootShadowNode::Shared& currentRevision,
     const ShadowNode& shadowNode);
 
-std::optional<std::tuple<
-    /* x: */ double,
-    /* y: */ double,
-    /* width: */ double,
-    /* height: */ double>>
-measureInWindow(
+DOMRect measureInWindow(
     const RootShadowNode::Shared& currentRevision,
     const ShadowNode& shadowNode);
 
-std::optional<std::tuple<
-    /* x: */ double,
-    /* y: */ double,
-    /* width: */ double,
-    /* height: */ double>>
-measureLayout(
+// This method returns an optional to signal to go through the error callback
+// instead of going through the success callback with an empty DOMRect.
+std::optional<DOMRect> measureLayout(
     const RootShadowNode::Shared& currentRevision,
     const ShadowNode& shadowNode,
     const ShadowNode& relativeToShadowNode);
