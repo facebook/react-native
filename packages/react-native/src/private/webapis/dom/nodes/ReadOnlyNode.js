@@ -318,13 +318,6 @@ export function getChildNodes(
   }
 
   const childNodeInstanceHandles = NativeDOM.getChildNodes(shadowNode);
-  if (
-    childNodeInstanceHandles == null ||
-    childNodeInstanceHandles.length === 0
-  ) {
-    return [];
-  }
-
   return childNodeInstanceHandles
     .map(instanceHandle =>
       getPublicInstanceFromInternalInstanceHandle(instanceHandle),

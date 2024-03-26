@@ -36,9 +36,7 @@ export default class ReadOnlyElement extends ReadOnlyNode {
 
     if (node != null) {
       const innerSize = NativeDOM.getInnerSize(node);
-      if (innerSize != null) {
-        return innerSize[1];
-      }
+      return innerSize[1];
     }
 
     return 0;
@@ -48,10 +46,8 @@ export default class ReadOnlyElement extends ReadOnlyNode {
     const node = getShadowNode(this);
 
     if (node != null) {
-      const borderSize = NativeDOM.getBorderSize(node);
-      if (borderSize != null) {
-        return borderSize[3];
-      }
+      const borderSize = NativeDOM.getBorderWidth(node);
+      return borderSize[3];
     }
 
     return 0;
@@ -61,10 +57,8 @@ export default class ReadOnlyElement extends ReadOnlyNode {
     const node = getShadowNode(this);
 
     if (node != null) {
-      const borderSize = NativeDOM.getBorderSize(node);
-      if (borderSize != null) {
-        return borderSize[0];
-      }
+      const borderSize = NativeDOM.getBorderWidth(node);
+      return borderSize[0];
     }
 
     return 0;
@@ -75,9 +69,7 @@ export default class ReadOnlyElement extends ReadOnlyNode {
 
     if (node != null) {
       const innerSize = NativeDOM.getInnerSize(node);
-      if (innerSize != null) {
-        return innerSize[0];
-      }
+      return innerSize[0];
     }
 
     return 0;
@@ -138,9 +130,7 @@ export default class ReadOnlyElement extends ReadOnlyNode {
 
     if (node != null) {
       const scrollSize = NativeDOM.getScrollSize(node);
-      if (scrollSize != null) {
-        return scrollSize[1];
-      }
+      return scrollSize[1];
     }
 
     return 0;
@@ -151,9 +141,7 @@ export default class ReadOnlyElement extends ReadOnlyNode {
 
     if (node != null) {
       const scrollPosition = NativeDOM.getScrollPosition(node);
-      if (scrollPosition != null) {
-        return scrollPosition[0];
-      }
+      return scrollPosition[0];
     }
 
     return 0;
@@ -164,9 +152,7 @@ export default class ReadOnlyElement extends ReadOnlyNode {
 
     if (node != null) {
       const scrollPosition = NativeDOM.getScrollPosition(node);
-      if (scrollPosition != null) {
-        return scrollPosition[1];
-      }
+      return scrollPosition[1];
     }
 
     return 0;
@@ -177,9 +163,7 @@ export default class ReadOnlyElement extends ReadOnlyNode {
 
     if (node != null) {
       const scrollSize = NativeDOM.getScrollSize(node);
-      if (scrollSize != null) {
-        return scrollSize[0];
-      }
+      return scrollSize[0];
     }
 
     return 0;
@@ -255,10 +239,7 @@ export function getBoundingClientRect(
 
   if (shadowNode != null) {
     const rect = NativeDOM.getBoundingClientRect(shadowNode, includeTransform);
-
-    if (rect) {
-      return new DOMRect(rect[0], rect[1], rect[2], rect[3]);
-    }
+    return new DOMRect(rect[0], rect[1], rect[2], rect[3]);
   }
 
   // Empty rect if any of the above failed
