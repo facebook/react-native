@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.BlendMode;
 import android.graphics.BlendModeColorFilter;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -34,6 +35,7 @@ import androidx.autofill.HintConstants;
 import androidx.core.content.ContextCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.R;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
@@ -589,6 +591,27 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
   @ReactProp(name = "cursorColor", customType = "Color")
   public void setCursorColor(ReactEditText view, @Nullable Integer color) {
+    view.setTag(R.id.cursor_color, color);
+    updateCursorDrawable(view);
+  }
+
+  private void updateCursorDrawable(ReactEditText view) {
+    if (view.getStagedInputType() == InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
+        && shouldHideCursorForEmailTextInput()) {
+      return;
+    }
+
+    @Nullable Boolean caretHiddenTag = (Boolean) view.getTag(R.id.caret_hidden);
+    boolean caretHidden = caretHiddenTag != null && caretHiddenTag;
+    view.setCursorVisible(!caretHidden);
+
+    @Nullable
+    Integer cursorColor =
+        caretHidden ? Color.TRANSPARENT : (Integer) view.getTag(R.id.cursor_color);
+    setCursorDrawableColor(view, cursorColor);
+  }
+
+  private void setCursorDrawableColor(ReactEditText view, @Nullable Integer color) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
       Drawable cursorDrawable = view.getTextCursorDrawable();
       if (cursorDrawable != null) {
@@ -650,11 +673,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
   @ReactProp(name = "caretHidden", defaultBoolean = false)
   public void setCaretHidden(ReactEditText view, boolean caretHidden) {
-    if (view.getStagedInputType() == InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
-        && shouldHideCursorForEmailTextInput()) {
-      return;
-    }
-    view.setCursorVisible(!caretHidden);
+    view.setTag(R.id.caret_hidden, caretHidden);
+    updateCursorDrawable(view);
   }
 
   @ReactProp(name = "contextMenuHidden", defaultBoolean = false)
