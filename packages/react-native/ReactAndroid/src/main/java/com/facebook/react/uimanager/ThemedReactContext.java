@@ -7,13 +7,10 @@
 
 package com.facebook.react.uimanager;
 
-import android.app.Activity;
 import android.content.Context;
 import androidx.annotation.Nullable;
-import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.UIManager;
 
 /**
  * Wraps {@link ReactContext} with the base {@link Context} passed into the constructor. It provides
@@ -45,34 +42,10 @@ public class ThemedReactContext extends ReactContext {
       Context base,
       @Nullable String moduleName,
       int surfaceId) {
-    super(base);
-    if (reactApplicationContext.hasCatalystInstance()) {
-      initializeWithInstance(reactApplicationContext.getCatalystInstance());
-    }
-    initializeInteropModules(reactApplicationContext);
+    super(reactApplicationContext, base);
     mReactApplicationContext = reactApplicationContext;
     mModuleName = moduleName;
     mSurfaceId = surfaceId;
-  }
-
-  @Override
-  public void addLifecycleEventListener(LifecycleEventListener listener) {
-    mReactApplicationContext.addLifecycleEventListener(listener);
-  }
-
-  @Override
-  public void removeLifecycleEventListener(LifecycleEventListener listener) {
-    mReactApplicationContext.removeLifecycleEventListener(listener);
-  }
-
-  @Override
-  public boolean hasCurrentActivity() {
-    return mReactApplicationContext.hasCurrentActivity();
-  }
-
-  @Override
-  public @Nullable Activity getCurrentActivity() {
-    return mReactApplicationContext.getCurrentActivity();
   }
 
   /**
@@ -101,18 +74,5 @@ public class ThemedReactContext extends ReactContext {
 
   public ReactApplicationContext getReactApplicationContext() {
     return mReactApplicationContext;
-  }
-
-  @Override
-  public boolean isBridgeless() {
-    return mReactApplicationContext.isBridgeless();
-  }
-
-  @Override
-  public UIManager getFabricUIManager() {
-    if (isBridgeless()) {
-      return mReactApplicationContext.getFabricUIManager();
-    }
-    return super.getFabricUIManager();
   }
 }
