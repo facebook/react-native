@@ -56,4 +56,11 @@
 
   <!-- tag is used to invalidate transform style in view manager -->
   <item type="id" name="invalidate_transform"/>
+
+  <!-- tag is used to store cursor color-->
+  <item type="id" name="cursor_color"/>
+
+  <!-- tag is used to store whether caret is hidden-->
+  <item type="id" name="caret_hidden"/>
+
 </resources>
