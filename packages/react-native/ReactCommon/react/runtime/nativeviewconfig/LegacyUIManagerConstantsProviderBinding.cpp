@@ -12,7 +12,7 @@ namespace facebook::react::LegacyUIManagerConstantsProviderBinding {
 void install(
     jsi::Runtime& runtime,
     const std::string& name,
-    std::function<jsi::Value()>&& provider) {
+    std::function<jsi::Value(jsi::Runtime&)>&& provider) {
   auto methodName = "RN$LegacyInterop_UIManager_" + name;
   auto hostFunction = [provider = std::move(provider)](
                           jsi::Runtime& runtime,
@@ -22,7 +22,7 @@ void install(
     if (count != 0) {
       throw new jsi::JSError(runtime, "0 arguments expected.");
     }
-    return provider();
+    return provider(runtime);
   };
 
   auto jsiFunction = jsi::Function::createFromHostFunction(
@@ -34,7 +34,7 @@ void install(
 void install(
     jsi::Runtime& runtime,
     const std::string& name,
-    std::function<jsi::Value(std::string)>&& provider) {
+    std::function<jsi::Value(jsi::Runtime&, const std::string&)>&& provider) {
   auto methodName = "RN$LegacyInterop_UIManager_" + name;
   auto hostFunction = [provider = std::move(provider)](
                           jsi::Runtime& runtime,
@@ -49,7 +49,7 @@ void install(
       throw new jsi::JSError(runtime, "First argument must be string.");
     }
 
-    return provider(args[0].asString(runtime).utf8(runtime));
+    return provider(runtime, args[0].asString(runtime).utf8(runtime));
   };
 
   auto jsiFunction = jsi::Function::createFromHostFunction(

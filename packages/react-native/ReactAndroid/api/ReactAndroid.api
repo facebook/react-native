@@ -4841,19 +4841,20 @@ public abstract interface class com/facebook/react/uimanager/UIBlock {
 	public abstract fun execute (Lcom/facebook/react/uimanager/NativeViewHierarchyManager;)V
 }
 
-public class com/facebook/react/uimanager/UIConstantsProviderManager {
-	public fun <init> (Lcom/facebook/react/bridge/RuntimeExecutor;Lcom/facebook/react/uimanager/UIConstantsProviderManager$DefaultEventTypesProvider;Lcom/facebook/react/uimanager/UIConstantsProviderManager$ConstantsForViewManagerProvider;Lcom/facebook/react/uimanager/UIConstantsProviderManager$ConstantsProvider;)V
+public final class com/facebook/react/uimanager/UIConstantsProviderBinding {
+	public static final field INSTANCE Lcom/facebook/react/uimanager/UIConstantsProviderBinding;
+	public static final fun install (Lcom/facebook/react/bridge/RuntimeExecutor;Lcom/facebook/react/uimanager/UIConstantsProviderBinding$DefaultEventTypesProvider;Lcom/facebook/react/uimanager/UIConstantsProviderBinding$ConstantsForViewManagerProvider;Lcom/facebook/react/uimanager/UIConstantsProviderBinding$ConstantsProvider;)V
 }
 
-public abstract interface class com/facebook/react/uimanager/UIConstantsProviderManager$ConstantsForViewManagerProvider {
+public abstract interface class com/facebook/react/uimanager/UIConstantsProviderBinding$ConstantsForViewManagerProvider {
 	public abstract fun getConstantsForViewManager (Ljava/lang/String;)Lcom/facebook/react/bridge/NativeMap;
 }
 
-public abstract interface class com/facebook/react/uimanager/UIConstantsProviderManager$ConstantsProvider {
+public abstract interface class com/facebook/react/uimanager/UIConstantsProviderBinding$ConstantsProvider {
 	public abstract fun getConstants ()Lcom/facebook/react/bridge/NativeMap;
 }
 
-public abstract interface class com/facebook/react/uimanager/UIConstantsProviderManager$DefaultEventTypesProvider {
+public abstract interface class com/facebook/react/uimanager/UIConstantsProviderBinding$DefaultEventTypesProvider {
 	public abstract fun getDefaultEventTypes ()Lcom/facebook/react/bridge/NativeMap;
 }
 
