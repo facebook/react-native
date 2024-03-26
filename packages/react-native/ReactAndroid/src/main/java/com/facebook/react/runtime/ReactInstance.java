@@ -55,7 +55,7 @@ import com.facebook.react.uimanager.ComponentNameResolver;
 import com.facebook.react.uimanager.ComponentNameResolverBinding;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.IllegalViewOperationException;
-import com.facebook.react.uimanager.UIConstantsProviderManager;
+import com.facebook.react.uimanager.UIConstantsProviderBinding;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.UIManagerModuleConstantsHelper;
 import com.facebook.react.uimanager.ViewManager;
@@ -96,8 +96,6 @@ final class ReactInstance {
   private final BridgelessViewManagerResolver mViewManagerResolver;
 
   private JavaScriptContextHolder mJavaScriptContextHolder;
-
-  @DoNotStrip @Nullable private UIConstantsProviderManager mUIConstantsProviderManager;
 
   static {
     loadLibraryIfNeeded();
@@ -231,46 +229,43 @@ final class ReactInstance {
     if (ReactFeatureFlags.useNativeViewConfigsInBridgelessMode) {
       Map<String, Object> customDirectEvents = new HashMap<>();
 
-      mUIConstantsProviderManager =
-          new UIConstantsProviderManager(
-              // Use unbuffered RuntimeExecutor to install binding
-              unbufferedRuntimeExecutor,
-              // Here we are construncting the return value for UIManager.getConstants call.
-              // The old architectre relied on the constatnts struct to contain:
-              // 1. Eagerly loaded view configs for all native components.
-              // 2. genericBubblingEventTypes.
-              // 3. genericDirectEventTypes.
-              // We want to match this beahavior.
-              () -> {
-                return (NativeMap)
-                    Arguments.makeNativeMap(
-                        UIManagerModuleConstantsHelper.getDefaultExportableEventTypes());
-              },
-              (String viewManagerName) -> {
-                ViewManager viewManager = mViewManagerResolver.getViewManager(viewManagerName);
-                if (viewManager == null) {
-                  return null;
-                }
-                return (NativeMap)
-                    UIManagerModule.getConstantsForViewManager(viewManager, customDirectEvents);
-              },
-              () -> {
-                List<ViewManager> viewManagers =
-                    new ArrayList<ViewManager>(
-                        mViewManagerResolver.getEagerViewManagerMap().values());
+      UIConstantsProviderBinding.install(
+          // Use unbuffered RuntimeExecutor to install binding
+          unbufferedRuntimeExecutor,
+          // Here we are construncting the return value for UIManager.getConstants call.
+          // The old architectre relied on the constatnts struct to contain:
+          // 1. Eagerly loaded view configs for all native components.
+          // 2. genericBubblingEventTypes.
+          // 3. genericDirectEventTypes.
+          // We want to match this beahavior.
+          () -> {
+            return (NativeMap)
+                Arguments.makeNativeMap(
+                    UIManagerModuleConstantsHelper.getDefaultExportableEventTypes());
+          },
+          (String viewManagerName) -> {
+            ViewManager viewManager = mViewManagerResolver.getViewManager(viewManagerName);
+            if (viewManager == null) {
+              return null;
+            }
+            return (NativeMap)
+                UIManagerModule.getConstantsForViewManager(viewManager, customDirectEvents);
+          },
+          () -> {
+            List<ViewManager> viewManagers =
+                new ArrayList<>(mViewManagerResolver.getEagerViewManagerMap().values());
 
-                Map<String, Object> constants =
-                    UIManagerModule.createConstants(viewManagers, null, customDirectEvents);
+            Map<String, Object> constants =
+                UIManagerModule.createConstants(viewManagers, null, customDirectEvents);
 
-                Collection<String> lazyViewManagers =
-                    mViewManagerResolver.getLazyViewManagerNames();
-                if (lazyViewManagers.size() > 0) {
-                  constants.put("ViewManagerNames", new ArrayList<>(lazyViewManagers));
-                  constants.put("LazyViewManagersEnabled", true);
-                }
+            Collection<String> lazyViewManagers = mViewManagerResolver.getLazyViewManagerNames();
+            if (lazyViewManagers.size() > 0) {
+              constants.put("ViewManagerNames", new ArrayList<>(lazyViewManagers));
+              constants.put("LazyViewManagersEnabled", true);
+            }
 
-                return Arguments.makeNativeMap(constants);
-              });
+            return Arguments.makeNativeMap(constants);
+          });
     }
 
     EventBeatManager eventBeatManager = new EventBeatManager();
@@ -430,7 +425,6 @@ final class ReactInstance {
     mFabricUIManager.invalidate();
     mJavaTimerManager.onInstanceDestroy();
     mHybridData.resetNative();
-    mUIConstantsProviderManager = null;
     mJavaScriptContextHolder.clear();
   }
 
