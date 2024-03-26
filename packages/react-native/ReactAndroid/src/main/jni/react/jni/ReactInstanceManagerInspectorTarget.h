@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 #include <jsinspector-modern/HostTarget.h>
 #include <react/jni/JExecutor.h>
 
