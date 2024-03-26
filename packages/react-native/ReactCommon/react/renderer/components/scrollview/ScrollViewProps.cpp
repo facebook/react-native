@@ -225,6 +225,23 @@ ScrollViewProps::ScrollViewProps(
                     "showsVerticalScrollIndicator",
                     sourceProps.showsVerticalScrollIndicator,
                     true)),
+      persistentScrollbar(
+          CoreFeatures::enablePropIteratorSetter
+              ? sourceProps.persistentScrollbar
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "persistentScrollbar",
+                    sourceProps.persistentScrollbar,
+                    true)),
+      horizontal(
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.horizontal
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "horizontal",
+                                                       sourceProps.horizontal,
+                                                       true)),
       scrollEventThrottle(
           CoreFeatures::enablePropIteratorSetter
               ? sourceProps.scrollEventThrottle
@@ -383,7 +400,8 @@ void ScrollViewProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(pinchGestureEnabled);
     RAW_SET_PROP_SWITCH_CASE_BASIC(scrollsToTop);
     RAW_SET_PROP_SWITCH_CASE_BASIC(showsHorizontalScrollIndicator);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(showsVerticalScrollIndicator);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(persistentScrollbar);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(horizontal);
     RAW_SET_PROP_SWITCH_CASE_BASIC(scrollEventThrottle);
     RAW_SET_PROP_SWITCH_CASE_BASIC(zoomScale);
     RAW_SET_PROP_SWITCH_CASE_BASIC(contentInset);
@@ -489,6 +507,12 @@ SharedDebugStringConvertibleList ScrollViewProps::getDebugProps() const {
               "showsVerticalScrollIndicator",
               showsVerticalScrollIndicator,
               defaultScrollViewProps.showsVerticalScrollIndicator),
+          debugStringConvertibleItem(
+              "persistentScrollbar",
+              persistentScrollbar,
+              defaultScrollViewProps.persistentScrollbar),
+          debugStringConvertibleItem(
+              "horizontal", horizontal, defaultScrollViewProps.horizontal),
           debugStringConvertibleItem(
               "scrollEventThrottle",
               scrollEventThrottle,

@@ -72,6 +72,7 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
             process: require('../../StyleSheet/processColor').default,
           },
           persistentScrollbar: true,
+          horizontal: true,
           endFillColor: {
             process: require('../../StyleSheet/processColor').default,
           },
