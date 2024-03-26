@@ -3974,8 +3974,9 @@ public abstract interface class com/facebook/react/uimanager/ComponentNameResolv
 	public abstract fun getComponentNames ()[Ljava/lang/String;
 }
 
-public class com/facebook/react/uimanager/ComponentNameResolverManager {
-	public fun <init> (Lcom/facebook/react/bridge/RuntimeExecutor;Ljava/lang/Object;)V
+public final class com/facebook/react/uimanager/ComponentNameResolverBinding {
+	public static final field INSTANCE Lcom/facebook/react/uimanager/ComponentNameResolverBinding;
+	public static final fun install (Lcom/facebook/react/bridge/RuntimeExecutor;Ljava/lang/Object;)V
 }
 
 public class com/facebook/react/uimanager/DisplayMetricsHolder {
