@@ -1,5 +1,45 @@
 # Changelog
 
+## v0.74.0-rc.5
+
+### Breaking
+
+#### Android specific
+
+- Implement onKeyLongPress in Bridgeless ([f345fcf3e8](https://github.com/facebook/react-native/commit/f345fcf3e8331b76a72989645bd60b82ba9aa19a))
+- Implement `onKeyDown` in Bridgeless ([b14f7d58e3](https://github.com/facebook/react-native/commit/b14f7d58e3537b9bfa2638d1d71ec3dc908f4b8d))
+- Implement onConfigurationChanged in Bridgeless ([b2e1db0fbf](https://github.com/facebook/react-native/commit/b2e1db0fbf845c48878c4a0ea9cb5755a85a6f0e))
+- Implement `onNewIntent` in Bridgeless ([5d711f83b5](https://github.com/facebook/react-native/commit/5d711f83b5f1e8053b5b19d0a864a1d8fc27a235))
+- Implement onWindowFocusChange in Bridgeless ([7b40c8ee5f](https://github.com/facebook/react-native/commit/7b40c8ee5fc4073cdf83060cf81e16fa282899ee))
+
+### Added
+
+#### Android specific
+
+- Expose ReactDelegate in ReactActivity ([62ebe557b8](https://github.com/facebook/react-native/commit/62ebe557b8efbfb025f6187ef08a9c2223f4f3c3))
+- Support reload() in ReactDelegate ([d97741af60](https://github.com/facebook/react-native/commit/d97741af60e3af598d71894800d928b61c5782b4))
+- Implement multiple view manager lookup for the interop layer ([15a5638c62](https://github.com/facebook/react-native/commit/15a5638c621cbec4a9fcb5ae94938120cdc32fae) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+#### Android specific
+
+- Copy boost headers needed by `rrc_text` and `rrc_textinput` ([ad9f0b0ab8](https://github.com/facebook/react-native/commit/ad9f0b0ab88218beb214859e0d85d50f9caa7bb5) by [@j-piasecki](https://github.com/j-piasecki))
+
+#### iOS specific
+
+- Warn users during "pod install" if XCode is too old ([1021448d7c](https://github.com/facebook/react-native/commit/1021448d7cf462d5280ce82f484f029fd29e40a6) by [@NickGerleman](https://github.com/NickGerleman))
+
+### Fixed
+
+- Create custom message handler for synthetic page ([652c74104a](https://github.com/facebook/react-native/commit/652c74104af9844bf88dff8eb96d02b4e172720c) by [@byCedric](https://github.com/byCedric))
+
+#### Android specific
+
+- Fix InteropUIBlockListener to support react-native-view-shot on Bridgeless ([24a3dade29](https://github.com/facebook/react-native/commit/24a3dade2993df8e4cc3ee7d5f8bea412f73c202) by [@cortinico](https://github.com/cortinico))
+- Fix Android HorizontalScrollView fling when content length less than ScrollView length ([7d180d7127](https://github.com/facebook/react-native/commit/7d180d7127e30cfdf2213e088b79e11b55866816) by [@NickGerleman](https://github.com/NickGerleman))
+- Fixed prefab header paths for `rrc_text` and `rrc_textinput` ([623bbe6bd6](https://github.com/facebook/react-native/commit/623bbe6bd628bd8b9305f6b7e4469fdd382fb700) by [@j-piasecki](https://github.com/j-piasecki))
+- Fix build from source for hermes-engine
+ ([a1171f79f8](https://github.com/facebook/react-native/commit/a1171f79f81cd924237570a456974b17c67c3ade) by [@cortinico](https://github.com/cortinico))
+
 ## v0.74.0-rc.4
 
 ### Breaking
