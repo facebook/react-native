@@ -128,6 +128,11 @@ type NativeProps = $ReadOnly<{|
   onOrientationChange?: ?DirectEventHandler<OrientationChangeEvent>,
 
   /**
+   * Allows the modal to be dismissed by an interactive gesture
+   */
+  interactiveDismissal?: WithDefault<boolean, false>,
+
+  /**
    * The `identifier` is the unique number for identifying Modal components.
    */
   identifier?: WithDefault<Int32, 0>,
