@@ -114,7 +114,7 @@ class FlatListExample extends React.PureComponent<Props, State> {
     this._listRef?.scrollToIndex({viewPosition: 0.5, index: Number(text)});
   };
 
-  _onChangeScrollOffset = text => {
+  _onChangeScrollOffset = (text: mixed) => {
     this._listRef.scrollToOffset({offset: Number(text), animated: false});
   };
 
