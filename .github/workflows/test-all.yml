@@ -6,6 +6,7 @@ on:
     push:
       tags:
         - 'v*'
+    # nightly build @ 2:15 AM UTC
     schedule:
       - cron: '15 2 * * *'
 
@@ -42,11 +43,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.1
-      - name: Use Node.js 18
-        uses: actions/setup-node@v4.0.0
-        with:
-          node-version: 18
-          cache: 'yarn'
+      - name: Setup node.js
+        uses: ./github/actions/setup-node
       - name: Setup hermes version
         id: hermes-version
         run: |
@@ -75,10 +73,9 @@ jobs:
           path: |
             /tmp/hermes/download/
             /tmp/hermes/hermes/
-          key: v5-hermes-${{ github.run_number }}-${{ steps.hermes-version.outputs.version }}
+          key: v1-hermes-${{ steps.hermes-version.outputs.version }}-${{ github.run_number }}
           enableCrossOsArchive: true
       - name: Yarn- Install Dependencies
-        if: ${{ ! contains(github.event.head_commit.message, 'Bump metro@') }}
         run: yarn install --non-interactive
       - name: Download Hermes tarball
         run: |
@@ -100,19 +97,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.1
-      - name: Use Node.js 18
-        uses: actions/setup-node@v4.0.0
-        with:
-          node-version: 18
-          cache: 'yarn'
+      - name: Setup node.js
+        uses: ./github/actions/setup-node
       - name: Install dependencies
         run: yarn install --non-interactive
       - name: Set React Native Version
         run: node ./scripts/releases/set-rn-version.js --build-type ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
       - name: Setup gradle
-        uses: gradle/actions/setup-gradle@v3
-        with:
-          gradle-version: 8.6
+        uses: ./github/actions/setup-gradle
       - name: Build and publish all the Android Artifacts to /tmp/maven-local
         run: |
           if [[ "${{ needs.set_release_type.outputs.RELEASE_TYPE }}" == "dry-run" ]]; then
@@ -157,11 +149,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.1
-      - name: Use Node.js 18
-        uses: actions/setup-node@v4.0.0
-        with:
-          node-version: 18
-          cache: 'yarn'
+      - name: Setup node.js
+        uses: ./github/actions/setup-node
       - name: Install dependencies
         run: yarn install --non-interactive
       - name: Set React Native Version
@@ -187,11 +176,13 @@ jobs:
       - name: Build & Test React Native using Gradle
         run: ./gradlew build -PenableWarningsAsErrors=true
       - name: Upload test results
+        if: ${{ always() }}
         uses: actions/upload-artifact@v4.3.0
         with:
           name: android-test-results
           path: packages/react-native-gradle-plugin/build/test-results
       - name: Upload android package
+        if: ${{ always() }}
         uses: actions/upload-artifact@v4.3.0
         with:
           name: rntester-apk
