@@ -532,6 +532,10 @@ public abstract class com/facebook/react/bridge/BaseJavaModule : com/facebook/re
 	public fun invalidate ()V
 }
 
+public final class com/facebook/react/bridge/BridgeReactContext : com/facebook/react/bridge/ReactApplicationContext {
+	public fun <init> (Landroid/content/Context;)V
+}
+
 public abstract interface class com/facebook/react/bridge/Callback {
 	public abstract fun invoke ([Ljava/lang/Object;)V
 }
