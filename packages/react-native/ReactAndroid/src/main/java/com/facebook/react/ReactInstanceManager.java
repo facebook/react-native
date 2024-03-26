@@ -64,6 +64,7 @@ import com.facebook.react.bridge.ProxyJavaScriptExecutor;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactCxxErrorHandler;
+import com.facebook.react.bridge.ReactInstanceManagerInspectorTarget;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
@@ -80,6 +81,7 @@ import com.facebook.react.common.annotations.StableReactNativeAPI;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.devsupport.DevSupportManagerFactory;
+import com.facebook.react.devsupport.InspectorFlags;
 import com.facebook.react.devsupport.ReactInstanceDevHelper;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevLoadingViewManager;
@@ -173,6 +175,7 @@ public class ReactInstanceManager {
   private final Context mApplicationContext;
   private @Nullable @ThreadConfined(UI) DefaultHardwareBackBtnHandler mDefaultBackButtonImpl;
   private @Nullable Activity mCurrentActivity;
+  private @Nullable ReactInstanceManagerInspectorTarget mInspectorTarget;
   private final Collection<com.facebook.react.ReactInstanceEventListener>
       mReactInstanceEventListeners =
           Collections.synchronizedList(
@@ -689,6 +692,7 @@ public class ReactInstanceManager {
   @Deprecated
   public void onHostDestroy() {
     UiThreadUtil.assertOnUiThread();
+    destroyInspectorTarget();
 
     if (mUseDeveloperSupport) {
       mDevSupportManager.setDevSupportEnabled(false);
@@ -737,6 +741,7 @@ public class ReactInstanceManager {
     }
 
     mHasStartedDestroying = true;
+    destroyInspectorTarget();
 
     if (mUseDeveloperSupport) {
       mDevSupportManager.setDevSupportEnabled(false);
@@ -1354,6 +1359,8 @@ public class ReactInstanceManager {
 
     NativeModuleRegistry nativeModuleRegistry = processPackages(reactContext, mPackages);
 
+    getOrCreateInspectorTarget();
+
     CatalystInstanceImpl.Builder catalystInstanceBuilder =
         new CatalystInstanceImpl.Builder()
             .setReactQueueConfigurationSpec(ReactQueueConfigurationSpec.createDefault())
@@ -1475,5 +1482,28 @@ public class ReactInstanceManager {
       ((ReactPackageLogger) reactPackage).endProcessPackage();
     }
     SystraceMessage.endSection(TRACE_TAG_REACT_JAVA_BRIDGE).flush();
+  }
+
+  private @Nullable ReactInstanceManagerInspectorTarget getOrCreateInspectorTarget() {
+    if (mInspectorTarget == null && InspectorFlags.getEnableModernCDPRegistry()) {
+
+      mInspectorTarget =
+          new ReactInstanceManagerInspectorTarget(
+              new ReactInstanceManagerInspectorTarget.TargetDelegate() {
+                @Override
+                public void onReload() {
+                  UiThreadUtil.runOnUiThread(() -> mDevSupportManager.handleReloadJS());
+                }
+              });
+    }
+
+    return mInspectorTarget;
+  }
+
+  private void destroyInspectorTarget() {
+    if (mInspectorTarget != null) {
+      mInspectorTarget.close();
+      mInspectorTarget = null;
+    }
   }
 }

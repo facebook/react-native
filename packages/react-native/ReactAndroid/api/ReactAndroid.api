@@ -1152,6 +1152,15 @@ public class com/facebook/react/bridge/ReactIgnorableMountingException : java/la
 	public static fun isIgnorable (Ljava/lang/Throwable;)Z
 }
 
+public class com/facebook/react/bridge/ReactInstanceManagerInspectorTarget : java/lang/AutoCloseable {
+	public fun <init> (Lcom/facebook/react/bridge/ReactInstanceManagerInspectorTarget$TargetDelegate;)V
+	public fun close ()V
+}
+
+public abstract interface class com/facebook/react/bridge/ReactInstanceManagerInspectorTarget$TargetDelegate {
+	public abstract fun onReload ()V
+}
+
 public class com/facebook/react/bridge/ReactMarker {
 	public fun <init> ()V
 	public static fun addFabricListener (Lcom/facebook/react/bridge/ReactMarker$FabricMarkerListener;)V
