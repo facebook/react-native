@@ -184,7 +184,7 @@ id convertJSIValueToObjCObject(jsi::Runtime &runtime, const jsi::Value &value, s
     return convertJSIObjectToNSDictionary(runtime, o, jsInvoker);
   }
 
-  throw std::runtime_error("Unsupported jsi::jsi::Value kind");
+  throw std::runtime_error("Unsupported jsi::Value kind");
 }
 
 static jsi::Value createJSRuntimeError(jsi::Runtime &runtime, const std::string &message)
