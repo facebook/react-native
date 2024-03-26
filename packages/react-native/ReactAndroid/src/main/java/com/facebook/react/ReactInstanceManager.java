@@ -51,6 +51,7 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.BridgeReactContext;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.CatalystInstanceImpl;
 import com.facebook.react.bridge.JSBundleLoader;
@@ -1351,7 +1352,7 @@ public class ReactInstanceManager {
       JavaScriptExecutor jsExecutor, JSBundleLoader jsBundleLoader) {
     FLog.d(ReactConstants.TAG, "ReactInstanceManager.createReactContext()");
     ReactMarker.logMarker(CREATE_REACT_CONTEXT_START, jsExecutor.getName());
-    final ReactApplicationContext reactContext = new ReactApplicationContext(mApplicationContext);
+    final BridgeReactContext reactContext = new BridgeReactContext(mApplicationContext);
 
     JSExceptionHandler exceptionHandler =
         mJSExceptionHandler != null ? mJSExceptionHandler : mDevSupportManager;
