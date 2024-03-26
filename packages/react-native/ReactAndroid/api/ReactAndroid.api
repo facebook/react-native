@@ -4892,6 +4892,7 @@ public class com/facebook/react/uimanager/UIImplementation {
 	public fun dispatchViewUpdates (I)V
 	public fun findSubviewIn (IFFLcom/facebook/react/bridge/Callback;)V
 	public fun getProfiledBatchPerfCounters ()Ljava/util/Map;
+	public fun getRootViewNum ()I
 	protected fun handleCreateView (Lcom/facebook/react/uimanager/ReactShadowNode;ILcom/facebook/react/uimanager/ReactStylesDiffMap;)V
 	protected fun handleUpdateView (Lcom/facebook/react/uimanager/ReactShadowNode;Ljava/lang/String;Lcom/facebook/react/uimanager/ReactStylesDiffMap;)V
 	public fun manageChildren (ILcom/facebook/react/bridge/ReadableArray;Lcom/facebook/react/bridge/ReadableArray;Lcom/facebook/react/bridge/ReadableArray;Lcom/facebook/react/bridge/ReadableArray;Lcom/facebook/react/bridge/ReadableArray;)V
