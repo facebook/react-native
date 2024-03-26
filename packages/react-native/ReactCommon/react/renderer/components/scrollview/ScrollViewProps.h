@@ -56,6 +56,8 @@ class ScrollViewProps final : public ViewProps {
   bool scrollsToTop{true};
   bool showsHorizontalScrollIndicator{true};
   bool showsVerticalScrollIndicator{true};
+  bool persistentScrollbar{false};
+  bool horizontal{false};
   Float scrollEventThrottle{};
   Float zoomScale{1.0f};
   EdgeInsets contentInset{};
