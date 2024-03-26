@@ -75,7 +75,7 @@ class UIConstantsProviderManager
       "Lcom/facebook/react/uimanager/UIConstantsProviderManager;";
 
   static facebook::jni::local_ref<jhybriddata> initHybrid(
-      facebook::jni::alias_ref<jhybridobject> jThis,
+      facebook::jni::alias_ref<jhybridobject> /* unused */,
       facebook::jni::alias_ref<JRuntimeExecutor::javaobject> runtimeExecutor,
       facebook::jni::alias_ref<DefaultEventTypesProvider::javaobject>
           defaultExportableEventTypesProvider,
@@ -88,7 +88,6 @@ class UIConstantsProviderManager
 
  private:
   friend HybridBase;
-  facebook::jni::global_ref<UIConstantsProviderManager::javaobject> javaPart_;
   RuntimeExecutor runtimeExecutor_;
 
   facebook::jni::global_ref<DefaultEventTypesProvider::javaobject>
@@ -100,7 +99,6 @@ class UIConstantsProviderManager
   void installJSIBindings();
 
   explicit UIConstantsProviderManager(
-      facebook::jni::alias_ref<UIConstantsProviderManager::jhybridobject> jThis,
       RuntimeExecutor runtimeExecutor,
       facebook::jni::alias_ref<DefaultEventTypesProvider::javaobject>
           defaultExportableEventTypesProvider,
