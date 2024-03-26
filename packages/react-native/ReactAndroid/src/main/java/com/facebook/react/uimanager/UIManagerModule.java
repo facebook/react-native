@@ -719,7 +719,12 @@ public class UIManagerModule extends ReactContextBaseJavaModule
       listener.willDispatchViewUpdates(this);
     }
     try {
-      mUIImplementation.dispatchViewUpdates(batchId);
+      // If there are no RootViews registered, there will be no View updates to dispatch.
+      // This is a hack to prevent this from being called when Fabric is used everywhere.
+      // This should no longer be necessary in Bridgeless Mode.
+      if (mUIImplementation.getRootViewNum() > 0) {
+        mUIImplementation.dispatchViewUpdates(batchId);
+      }
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     }
