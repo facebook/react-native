@@ -1056,7 +1056,7 @@ public class com/facebook/react/bridge/ProxyJavaScriptExecutor$Factory : com/fac
 	public fun stopSamplingProfiler (Ljava/lang/String;)V
 }
 
-public class com/facebook/react/bridge/ReactApplicationContext : com/facebook/react/bridge/ReactContext {
+public abstract class com/facebook/react/bridge/ReactApplicationContext : com/facebook/react/bridge/ReactContext {
 	public fun <init> (Landroid/content/Context;)V
 }
 
@@ -1068,7 +1068,7 @@ public class com/facebook/react/bridge/ReactBridge {
 	public static fun staticInit ()V
 }
 
-public class com/facebook/react/bridge/ReactContext : android/content/ContextWrapper {
+public abstract class com/facebook/react/bridge/ReactContext : android/content/ContextWrapper {
 	protected field mInteropModuleRegistry Lcom/facebook/react/bridge/interop/InteropModuleRegistry;
 	public fun <init> (Landroid/content/Context;)V
 	public fun addActivityEventListener (Lcom/facebook/react/bridge/ActivityEventListener;)V
