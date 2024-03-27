@@ -13,11 +13,11 @@ import com.facebook.soloader.SoLoader
 import kotlin.jvm.JvmStatic
 
 @DoNotStripAny
-public object ComponentNameResolverBinding {
+internal object ComponentNameResolverBinding {
   init {
     SoLoader.loadLibrary("uimanagerjni")
   }
 
   @JvmStatic
-  public external fun install(runtimeExecutor: RuntimeExecutor, componentNameResolver: Object)
+  public external fun install(runtimeExecutor: RuntimeExecutor, componentNameResolver: Any)
 }

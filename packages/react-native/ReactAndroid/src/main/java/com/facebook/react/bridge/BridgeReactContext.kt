@@ -17,4 +17,4 @@ import com.facebook.react.common.annotations.DeprecatedInNewArchitecture
  * BridgeReactContext.
  */
 @DeprecatedInNewArchitecture
-class BridgeReactContext(base: Context) : ReactApplicationContext(base) {}
+internal class BridgeReactContext(base: Context) : ReactApplicationContext(base) {}
