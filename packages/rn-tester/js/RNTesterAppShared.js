@@ -36,6 +36,11 @@ import {
 
 // RNTester App currently uses in memory storage for storing navigation state
 
+// TEST error!
+let obj = {};
+// $FlowFixMe
+obj.test123();
+
 const RNTesterApp = ({
   testList,
 }: {
