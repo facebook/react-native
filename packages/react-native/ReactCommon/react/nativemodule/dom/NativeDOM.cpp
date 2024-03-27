@@ -21,10 +21,11 @@ std::shared_ptr<facebook::react::TurboModule> NativeDOMModuleProvider(
   return std::make_shared<facebook::react::NativeDOM>(std::move(jsInvoker));
 }
 
-namespace {
-using namespace facebook::react;
+namespace facebook::react {
 
-RootShadowNode::Shared getCurrentShadowTreeRevision(
+#pragma mark - Private helpers
+
+static RootShadowNode::Shared getCurrentShadowTreeRevision(
     facebook::jsi::Runtime& runtime,
     SurfaceId surfaceId) {
   auto& uiManager =
@@ -33,13 +34,14 @@ RootShadowNode::Shared getCurrentShadowTreeRevision(
   return shadowTreeRevisionProvider->getCurrentRevision(surfaceId);
 }
 
-facebook::react::PointerEventsProcessor& getPointerEventsProcessorFromRuntime(
-    facebook::jsi::Runtime& runtime) {
+static facebook::react::PointerEventsProcessor&
+getPointerEventsProcessorFromRuntime(facebook::jsi::Runtime& runtime) {
   return facebook::react::UIManagerBinding::getBinding(runtime)
       ->getPointerEventsProcessor();
 }
 
-std::vector<facebook::jsi::Value> getArrayOfInstanceHandlesFromShadowNodes(
+static std::vector<facebook::jsi::Value>
+getArrayOfInstanceHandlesFromShadowNodes(
     const ShadowNode::ListOfShared& nodes,
     facebook::jsi::Runtime& runtime) {
   // JSI doesn't support adding elements to an array after creation,
@@ -56,9 +58,8 @@ std::vector<facebook::jsi::Value> getArrayOfInstanceHandlesFromShadowNodes(
 
   return nonNullInstanceHandles;
 }
-} // namespace
 
-namespace facebook::react {
+#pragma mark - NativeDOM
 
 NativeDOM::NativeDOM(std::shared_ptr<CallInvoker> jsInvoker)
     : NativeDOMCxxSpec(std::move(jsInvoker)) {}
@@ -244,6 +245,8 @@ std::string NativeDOM::getTagName(
   return dom::getTagName(*shadowNode);
 }
 
+#pragma mark - Pointer events
+
 bool NativeDOM::hasPointerCapture(
     jsi::Runtime& rt,
     jsi::Value shadowNodeValue,
@@ -267,6 +270,87 @@ void NativeDOM::releasePointerCapture(
     double pointerId) {
   getPointerEventsProcessorFromRuntime(rt).releasePointerCapture(
       pointerId, shadowNodeFromValue(rt, shadowNodeValue).get());
+}
+
+#pragma mark - Legacy RN layout APIs
+
+void NativeDOM::measure(
+    jsi::Runtime& rt,
+    jsi::Value shadowNodeValue,
+    jsi::Function callback) {
+  auto shadowNode = shadowNodeFromValue(rt, shadowNodeValue);
+  auto currentRevision =
+      getCurrentShadowTreeRevision(rt, shadowNode->getSurfaceId());
+  if (currentRevision == nullptr) {
+    callback.call(rt, {0, 0, 0, 0, 0, 0});
+    return;
+  }
+
+  auto measureRect = dom::measure(currentRevision, *shadowNode);
+
+  callback.call(
+      rt,
+      {jsi::Value{rt, measureRect.x},
+       jsi::Value{rt, measureRect.y},
+       jsi::Value{rt, measureRect.width},
+       jsi::Value{rt, measureRect.height},
+       jsi::Value{rt, measureRect.pageX},
+       jsi::Value{rt, measureRect.pageY}});
+}
+
+void NativeDOM::measureInWindow(
+    jsi::Runtime& rt,
+    jsi::Value shadowNodeValue,
+    jsi::Function callback) {
+  auto shadowNode = shadowNodeFromValue(rt, shadowNodeValue);
+  auto currentRevision =
+      getCurrentShadowTreeRevision(rt, shadowNode->getSurfaceId());
+  if (currentRevision == nullptr) {
+    callback.call(rt, {0, 0, 0, 0});
+    return;
+  }
+
+  auto rect = dom::measureInWindow(currentRevision, *shadowNode);
+  callback.call(
+      rt,
+      {jsi::Value{rt, rect.x},
+       jsi::Value{rt, rect.y},
+       jsi::Value{rt, rect.width},
+       jsi::Value{rt, rect.height}});
+}
+
+void NativeDOM::measureLayout(
+    jsi::Runtime& rt,
+    jsi::Value shadowNodeValue,
+    jsi::Value relativeToShadowNodeValue,
+    jsi::Function onFail,
+    jsi::Function onSuccess) {
+  auto shadowNode = shadowNodeFromValue(rt, shadowNodeValue);
+  auto relativeToShadowNode =
+      shadowNodeFromValue(rt, relativeToShadowNodeValue);
+  auto currentRevision =
+      getCurrentShadowTreeRevision(rt, shadowNode->getSurfaceId());
+  if (currentRevision == nullptr) {
+    onFail.call(rt);
+    return;
+  }
+
+  auto maybeRect =
+      dom::measureLayout(currentRevision, *shadowNode, *relativeToShadowNode);
+
+  if (!maybeRect) {
+    onFail.call(rt);
+    return;
+  }
+
+  auto rect = maybeRect.value();
+
+  onSuccess.call(
+      rt,
+      {jsi::Value{rt, rect.x},
+       jsi::Value{rt, rect.y},
+       jsi::Value{rt, rect.width},
+       jsi::Value{rt, rect.height}});
 }
 
 } // namespace facebook::react
