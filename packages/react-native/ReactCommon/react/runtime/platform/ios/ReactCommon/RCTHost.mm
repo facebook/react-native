@@ -107,7 +107,7 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
     };
 
     auto bundleURLSetter = ^(NSURL *bundleURL_) {
-      [weakSelf _setBundleURL:bundleURL];
+      [weakSelf _setBundleURL:bundleURL_];
     };
 
     auto defaultBundleURLGetter = ^NSURL *()
