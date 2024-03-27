@@ -269,4 +269,83 @@ void NativeDOM::releasePointerCapture(
       pointerId, shadowNodeFromValue(rt, shadowNodeValue).get());
 }
 
+void NativeDOM::measure(
+    jsi::Runtime& rt,
+    jsi::Value shadowNodeValue,
+    jsi::Function callback) {
+  auto shadowNode = shadowNodeFromValue(rt, shadowNodeValue);
+  auto currentRevision =
+      getCurrentShadowTreeRevision(rt, shadowNode->getSurfaceId());
+  if (currentRevision == nullptr) {
+    callback.call(rt, {0, 0, 0, 0, 0, 0});
+    return;
+  }
+
+  auto measureRect = dom::measure(currentRevision, *shadowNode);
+
+  callback.call(
+      rt,
+      {jsi::Value{rt, measureRect.x},
+       jsi::Value{rt, measureRect.y},
+       jsi::Value{rt, measureRect.width},
+       jsi::Value{rt, measureRect.height},
+       jsi::Value{rt, measureRect.pageX},
+       jsi::Value{rt, measureRect.pageY}});
+}
+
+void NativeDOM::measureInWindow(
+    jsi::Runtime& rt,
+    jsi::Value shadowNodeValue,
+    jsi::Function callback) {
+  auto shadowNode = shadowNodeFromValue(rt, shadowNodeValue);
+  auto currentRevision =
+      getCurrentShadowTreeRevision(rt, shadowNode->getSurfaceId());
+  if (currentRevision == nullptr) {
+    callback.call(rt, {0, 0, 0, 0});
+    return;
+  }
+
+  auto rect = dom::measureInWindow(currentRevision, *shadowNode);
+  callback.call(
+      rt,
+      {jsi::Value{rt, rect.x},
+       jsi::Value{rt, rect.y},
+       jsi::Value{rt, rect.width},
+       jsi::Value{rt, rect.height}});
+}
+
+void NativeDOM::measureLayout(
+    jsi::Runtime& rt,
+    jsi::Value shadowNodeValue,
+    jsi::Value relativeToShadowNodeValue,
+    jsi::Function onFail,
+    jsi::Function onSuccess) {
+  auto shadowNode = shadowNodeFromValue(rt, shadowNodeValue);
+  auto relativeToShadowNode =
+      shadowNodeFromValue(rt, relativeToShadowNodeValue);
+  auto currentRevision =
+      getCurrentShadowTreeRevision(rt, shadowNode->getSurfaceId());
+  if (currentRevision == nullptr) {
+    onFail.call(rt);
+    return;
+  }
+
+  auto maybeRect =
+      dom::measureLayout(currentRevision, *shadowNode, *relativeToShadowNode);
+
+  if (!maybeRect) {
+    onFail.call(rt);
+    return;
+  }
+
+  auto rect = maybeRect.value();
+
+  onSuccess.call(
+      rt,
+      {jsi::Value{rt, rect.x},
+       jsi::Value{rt, rect.y},
+       jsi::Value{rt, rect.width},
+       jsi::Value{rt, rect.height}});
+}
+
 } // namespace facebook::react

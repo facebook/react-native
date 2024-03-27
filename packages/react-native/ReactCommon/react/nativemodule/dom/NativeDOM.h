@@ -88,6 +88,23 @@ class NativeDOM : public NativeDOMCxxSpec<NativeDOM> {
       jsi::Runtime& rt,
       jsi::Value shadowNodeValue,
       double pointerId);
+
+  // Legacy layout APIs
+
+  void
+  measure(jsi::Runtime& rt, jsi::Value shadowNodeValue, jsi::Function callback);
+
+  void measureInWindow(
+      jsi::Runtime& rt,
+      jsi::Value shadowNodeValue,
+      jsi::Function callback);
+
+  void measureLayout(
+      jsi::Runtime& rt,
+      jsi::Value shadowNodeValue,
+      jsi::Value relativeToShadowNodeValue,
+      jsi::Function onFail,
+      jsi::Function onSuccess);
 };
 
 } // namespace facebook::react

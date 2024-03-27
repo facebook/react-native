@@ -13,6 +13,11 @@ import type {
   InternalInstanceHandle,
   Node,
 } from '../../../../../../../Libraries/Renderer/shims/ReactNativeTypes';
+import type {
+  MeasureInWindowOnSuccessCallback,
+  MeasureLayoutOnSuccessCallback,
+  MeasureOnSuccessCallback,
+} from '../NativeDOM';
 import typeof NativeDOM from '../NativeDOM';
 
 import {
@@ -371,6 +376,38 @@ const NativeDOMMock: NativeDOM = {
     ensureHostNode(node);
     return 'RN:' + fromNode(node).viewName;
   }),
+
+  /**
+   * Legacy layout APIs
+   */
+
+  measure: jest.fn((node: Node, callback: MeasureOnSuccessCallback): void => {
+    ensureHostNode(node);
+
+    callback(10, 10, 100, 100, 0, 0);
+  }),
+
+  measureInWindow: jest.fn(
+    (node: Node, callback: MeasureInWindowOnSuccessCallback): void => {
+      ensureHostNode(node);
+
+      callback(10, 10, 100, 100);
+    },
+  ),
+
+  measureLayout: jest.fn(
+    (
+      node: Node,
+      relativeNode: Node,
+      onFail: () => void,
+      onSuccess: MeasureLayoutOnSuccessCallback,
+    ): void => {
+      ensureHostNode(node);
+      ensureHostNode(relativeNode);
+
+      onSuccess(1, 1, 100, 100);
+    },
+  ),
 };
 
 export default NativeDOMMock;

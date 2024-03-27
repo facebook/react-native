@@ -17,6 +17,29 @@ import type {TurboModule} from '../../../../../../Libraries/TurboModule/RCTExpor
 import * as TurboModuleRegistry from '../../../../../../Libraries/TurboModule/TurboModuleRegistry';
 import nullthrows from 'nullthrows';
 
+export type MeasureInWindowOnSuccessCallback = (
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+) => void;
+
+export type MeasureOnSuccessCallback = (
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  pageX: number,
+  pageY: number,
+) => void;
+
+export type MeasureLayoutOnSuccessCallback = (
+  left: number,
+  top: number,
+  width: number,
+  height: number,
+) => void;
+
 export interface Spec extends TurboModule {
   +getParentNode: (
     shadowNode: mixed /* ShadowNode */,
@@ -75,6 +98,24 @@ export interface Spec extends TurboModule {
   +releasePointerCapture: (
     shadowNode: mixed /* ShadowNode */,
     pointerId: number,
+  ) => void;
+
+  /**
+   * Legacy layout APIs
+   */
+
+  +measure: (shadowNode: mixed, callback: MeasureOnSuccessCallback) => void;
+
+  +measureInWindow: (
+    shadowNode: mixed,
+    callback: MeasureInWindowOnSuccessCallback,
+  ) => void;
+
+  +measureLayout: (
+    shadowNode: mixed,
+    relativeNode: mixed,
+    onFail: () => void,
+    onSuccess: MeasureLayoutOnSuccessCallback,
   ) => void;
 }
 
@@ -271,6 +312,27 @@ export interface RefinedSpec {
   +setPointerCapture: (shadowNode: ShadowNode, pointerId: number) => void;
 
   +releasePointerCapture: (shadowNode: ShadowNode, pointerId: number) => void;
+
+  /**
+   * Legacy layout APIs
+   */
+
+  +measure: (
+    shadowNode: ShadowNode,
+    callback: MeasureOnSuccessCallback,
+  ) => void;
+
+  +measureInWindow: (
+    shadowNode: ShadowNode,
+    callback: MeasureInWindowOnSuccessCallback,
+  ) => void;
+
+  +measureLayout: (
+    shadowNode: ShadowNode,
+    relativeNode: ShadowNode,
+    onFail: () => void,
+    onSuccess: MeasureLayoutOnSuccessCallback,
+  ) => void;
 }
 
 const NativeDOM: RefinedSpec = {
@@ -378,6 +440,27 @@ const NativeDOM: RefinedSpec = {
     return nullthrows(RawNativeDOM).releasePointerCapture(
       shadowNode,
       pointerId,
+    );
+  },
+
+  /**
+   * Legacy layout APIs
+   */
+
+  measure(shadowNode, callback) {
+    return nullthrows(RawNativeDOM).measure(shadowNode, callback);
+  },
+
+  measureInWindow(shadowNode, callback) {
+    return nullthrows(RawNativeDOM).measureInWindow(shadowNode, callback);
+  },
+
+  measureLayout(shadowNode, relativeNode, onFail, onSuccess) {
+    return nullthrows(RawNativeDOM).measureLayout(
+      shadowNode,
+      relativeNode,
+      onFail,
+      onSuccess,
     );
   },
 };
