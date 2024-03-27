@@ -265,6 +265,28 @@ class AutogrowingTextInputExample extends React.Component<
   }
 }
 
+class RewriteDoubleSpaceExample extends React.Component<$FlowFixMeProps, any> {
+  constructor(props: any | void) {
+    super(props);
+    this.state = {text: ''};
+  }
+  render(): React.Node {
+    return (
+      <View style={styles.rewriteContainer}>
+        <TextInput
+          testID="rewrite_double_space"
+          multiline={false}
+          onChangeText={text => {
+            this.setState({text});
+          }}
+          style={styles.default}
+          value={this.state.text}
+        />
+      </View>
+    );
+  }
+}
+
 const styles = StyleSheet.create({
   default: {
     borderWidth: StyleSheet.hairlineWidth,
@@ -325,6 +347,12 @@ const styles = StyleSheet.create({
 
 const textInputExamples: Array<RNTesterModuleExample> = [
   ...TextInputSharedExamples,
+  {
+    title: 'Live Re-Write (double space to period)',
+    render: function (): React.Node {
+      return <RewriteDoubleSpaceExample />;
+    },
+  },
   {
     title: 'Live Re-Write (ひ -> 日)',
     render: function (): React.Node {
