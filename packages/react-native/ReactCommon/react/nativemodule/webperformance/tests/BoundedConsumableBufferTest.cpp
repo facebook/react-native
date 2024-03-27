@@ -171,6 +171,24 @@ TEST(BoundedConsumableBuffer, CanClearByPredicate) {
   ASSERT_EQ(std::vector<int>({2, 3, 4}), buffer.getEntries());
 }
 
+TEST(BoundedConsumableBuffer, CanClearBeforeReachingMaxSize) {
+  BoundedConsumableBuffer<int> buffer(5);
+
+  buffer.add(1);
+  buffer.add(2);
+  buffer.consume();
+  buffer.add(3);
+
+  buffer.clear([](const int&) { return false; }); // no-op clear
+  ASSERT_EQ(std::vector<int>({1, 2, 3}), buffer.getEntries());
+
+  buffer.add(4);
+  buffer.add(5);
+
+  ASSERT_EQ(std::vector<int>({3, 4, 5}), buffer.consume());
+  ASSERT_EQ(std::vector<int>({1, 2, 3, 4, 5}), buffer.getEntries());
+}
+
 TEST(BoundedConsumableBuffer, CanGetByPredicate) {
   BoundedConsumableBuffer<int> buffer(5);
 

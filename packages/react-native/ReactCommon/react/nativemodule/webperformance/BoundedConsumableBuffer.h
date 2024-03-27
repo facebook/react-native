@@ -123,32 +123,27 @@ class BoundedConsumableBuffer {
    * Clears buffer entries by predicate
    */
   void clear(std::function<bool(const T&)> predicate) {
-    int pos = cursorStart_;
     std::vector<T> entries;
     int numToConsume = 0;
-    int i;
 
     entries.reserve(maxSize_);
-    for (i = 0; i < numToConsume_; i++) {
-      if (!predicate(entries_[pos])) {
-        entries.push_back(entries_[pos]);
+    for (size_t i = 0; i < entries_.size(); i++) {
+      T& el = entries_[(i + position_) % entries_.size()];
+      if (predicate(el)) {
+        continue;
+      }
+
+      entries.push_back(std::move(el));
+      if (i + numToConsume_ >= entries_.size()) { // el is unconsumed
         numToConsume++;
       }
-      pos = (pos + 1) % entries_.size();
-    }
-    cursorEnd_ = entries.size();
-
-    for (; i < entries_.size(); i++) {
-      if (!predicate(entries_[pos])) {
-        entries.push_back(entries_[pos]);
-      }
-      pos = (pos + 1) % entries_.size();
     }
 
     numToConsume_ = numToConsume;
-    cursorStart_ = 0;
-    cursorEnd_ = numToConsume_;
-    position_ = numToConsume_;
+    cursorEnd_ = entries.size() % maxSize_;
+    cursorStart_ = (cursorEnd_ - numToConsume_ + maxSize_) % maxSize_;
+    position_ = 0;
+
     entries.swap(entries_);
   }
 
