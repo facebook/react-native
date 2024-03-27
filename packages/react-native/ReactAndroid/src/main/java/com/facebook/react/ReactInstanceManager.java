@@ -1360,15 +1360,14 @@ public class ReactInstanceManager {
 
     NativeModuleRegistry nativeModuleRegistry = processPackages(reactContext, mPackages);
 
-    getOrCreateInspectorTarget();
-
     CatalystInstanceImpl.Builder catalystInstanceBuilder =
         new CatalystInstanceImpl.Builder()
             .setReactQueueConfigurationSpec(ReactQueueConfigurationSpec.createDefault())
             .setJSExecutor(jsExecutor)
             .setRegistry(nativeModuleRegistry)
             .setJSBundleLoader(jsBundleLoader)
-            .setJSExceptionHandler(exceptionHandler);
+            .setJSExceptionHandler(exceptionHandler)
+            .setInspectorTarget(getOrCreateInspectorTarget());
 
     ReactMarker.logMarker(CREATE_CATALYST_INSTANCE_START);
     // CREATE_CATALYST_INSTANCE_END is in JSCExecutor.cpp
