@@ -54,6 +54,8 @@ class BaseTextInputProps : public ViewProps, public BaseTextProps {
 
   int maxLength{};
 
+  bool showSoftInputOnFocus{false};
+
   /*
    * "Private" (only used by TextInput.js) props
    */

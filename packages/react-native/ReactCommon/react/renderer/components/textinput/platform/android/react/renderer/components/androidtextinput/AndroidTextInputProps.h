@@ -83,7 +83,6 @@ class AndroidTextInputProps final : public BaseTextInputProps {
   std::string inlineImageLeft{};
   int inlineImagePadding{0};
   std::string importantForAutofill{};
-  bool showSoftInputOnFocus{false};
   std::string autoCapitalize{};
   bool autoCorrect{false};
   bool allowFontScaling{false};

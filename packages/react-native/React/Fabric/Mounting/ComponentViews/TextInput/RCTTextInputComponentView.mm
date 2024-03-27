@@ -114,6 +114,10 @@ using namespace facebook::react;
     [self _setMultiline:newTextInputProps.traits.multiline];
   }
 
+  if (newTextInputProps.traits.showSoftInputOnFocus != oldTextInputProps.traits.showSoftInputOnFocus) {
+    [self _setShowSoftInputOnFocus:newTextInputProps.traits.showSoftInputOnFocus];
+  }
+
   if (newTextInputProps.traits.autocapitalizationType != oldTextInputProps.traits.autocapitalizationType) {
     _backedTextInputView.autocapitalizationType =
         RCTUITextAutocapitalizationTypeFromAutocapitalizationType(newTextInputProps.traits.autocapitalizationType);
@@ -596,6 +600,26 @@ using namespace facebook::react;
   RCTCopyBackedTextInput(_backedTextInputView, backedTextInputView);
   _backedTextInputView = backedTextInputView;
   [self addSubview:_backedTextInputView];
+
+  auto const &currentTextInputProps = *std::static_pointer_cast<TextInputProps const>(_props);
+  [self _setShowSoftInputOnFocus:currentTextInputProps.traits.showSoftInputOnFocus];
+}
+
+- (void)_setShowSoftInputOnFocus:(BOOL)showSoftInputOnFocus
+{
+  if (showSoftInputOnFocus) {
+    // Resets to default keyboard.
+    _backedTextInputView.inputView = nil;
+
+    // Without the call to reloadInputViews, the keyboard will not change until the textInput field (the first
+    // responder) loses and regains focus.
+    if (_backedTextInputView.isFirstResponder) {
+      [_backedTextInputView reloadInputViews];
+    }
+  } else {
+    // Hides keyboard, but keeps blinking cursor.
+    _backedTextInputView.inputView = [UIView new];
+  }
 }
 
 - (BOOL)_textOf:(NSAttributedString *)newText equals:(NSAttributedString *)oldText

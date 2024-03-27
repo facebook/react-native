@@ -84,6 +84,12 @@ BaseTextInputProps::BaseTextInputProps(
           "maxLength",
           sourceProps.maxLength,
           {})),
+      showSoftInputOnFocus(convertRawProp(
+          context,
+          rawProps,
+          "showSoftInputOnFocus",
+          sourceProps.showSoftInputOnFocus,
+          {})),
       text(convertRawProp(context, rawProps, "text", sourceProps.text, {})),
       mostRecentEventCount(convertRawProp(
           context,
@@ -173,6 +179,7 @@ void BaseTextInputProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(cursorColor);
     RAW_SET_PROP_SWITCH_CASE_BASIC(text);
     RAW_SET_PROP_SWITCH_CASE_BASIC(mostRecentEventCount);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(showSoftInputOnFocus);
   }
 }
 
