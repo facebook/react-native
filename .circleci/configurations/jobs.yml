@@ -786,6 +786,8 @@ jobs:
       - HERMES_WS_DIR: *hermes_workspace_root
       - HERMES_TARBALL_ARTIFACTS_DIR: *hermes_tarball_artifacts_dir
       - HERMES_OSXBIN_ARTIFACTS_DIR: *hermes_osxbin_artifacts_dir
+      - IOS_DEPLOYMENT_TARGET: 13.4
+      - MAC_DEPLOYMENT_TARGET: 10.13
     steps:
       - *attach_hermes_workspace
       - stop_job_if_apple_artifacts_are_there:
@@ -858,6 +860,8 @@ jobs:
     environment:
       - HERMES_WS_DIR: *hermes_workspace_root
       - HERMES_TARBALL_ARTIFACTS_DIR: *hermes_tarball_artifacts_dir
+      - IOS_DEPLOYMENT_TARGET: 13.4
+      - MAC_DEPLOYMENT_TARGET: 10.13
     steps:
       - *attach_hermes_workspace
       # Try to store the artifacts if they are already in the workspace
