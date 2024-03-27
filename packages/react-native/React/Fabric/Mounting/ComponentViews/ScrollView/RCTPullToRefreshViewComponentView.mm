@@ -7,10 +7,10 @@
 
 #import "RCTPullToRefreshViewComponentView.h"
 
-#import <react/renderer/components/rncore/ComponentDescriptors.h>
-#import <react/renderer/components/rncore/EventEmitters.h>
-#import <react/renderer/components/rncore/Props.h>
-#import <react/renderer/components/rncore/RCTComponentViewHelpers.h>
+#import <react/renderer/components/FBReactNativeSpec/ComponentDescriptors.h>
+#import <react/renderer/components/FBReactNativeSpec/EventEmitters.h>
+#import <react/renderer/components/FBReactNativeSpec/Props.h>
+#import <react/renderer/components/FBReactNativeSpec/RCTComponentViewHelpers.h>
 
 #import <React/RCTConversions.h>
 #import <React/RCTRefreshableProtocol.h>
