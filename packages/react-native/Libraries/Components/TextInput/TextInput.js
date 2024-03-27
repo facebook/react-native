@@ -1154,7 +1154,7 @@ function InternalTextInput(props: Props): React.Node {
       viewCommands.setTextAndSelection(
         inputRef.current,
         mostRecentEventCount,
-        text,
+        typeof props.value === 'string' ? text : null,
         selection?.start ?? -1,
         selection?.end ?? -1,
       );
