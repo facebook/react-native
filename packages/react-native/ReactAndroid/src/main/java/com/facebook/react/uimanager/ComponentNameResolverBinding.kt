@@ -19,5 +19,5 @@ public object ComponentNameResolverBinding {
   }
 
   @JvmStatic
-  public external fun install(runtimeExecutor: RuntimeExecutor, componentNameResolver: Object)
+  public external fun install(runtimeExecutor: RuntimeExecutor, componentNameResolver: Any)
 }
