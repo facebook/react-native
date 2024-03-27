@@ -67,6 +67,10 @@ inline ColorComponents colorComponentsFromHostPlatformColor(Color color) {
   return color.getColorComponents();
 }
 
+inline bool hasPlatformColor(Color color) {
+  return false;
+}
+
 } // namespace facebook::react
 
 template <>
