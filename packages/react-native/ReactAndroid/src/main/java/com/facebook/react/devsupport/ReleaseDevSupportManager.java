@@ -31,11 +31,11 @@ import java.io.File;
  * A dummy implementation of {@link DevSupportManager} to be used in production mode where
  * development features aren't needed.
  */
-public class DisabledDevSupportManager implements DevSupportManager {
+public class ReleaseDevSupportManager implements DevSupportManager {
 
   private final DefaultJSExceptionHandler mDefaultJSExceptionHandler;
 
-  public DisabledDevSupportManager() {
+  public ReleaseDevSupportManager() {
     mDefaultJSExceptionHandler = new DefaultJSExceptionHandler();
   }
 

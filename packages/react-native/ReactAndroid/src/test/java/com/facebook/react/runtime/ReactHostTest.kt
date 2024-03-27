@@ -15,7 +15,7 @@ import com.facebook.react.bridge.MemoryPressureListener
 import com.facebook.react.bridge.UIManager
 import com.facebook.react.common.LifecycleState
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
-import com.facebook.react.devsupport.DisabledDevSupportManager
+import com.facebook.react.devsupport.ReleaseDevSupportManager
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback
 import com.facebook.react.fabric.ComponentFactory
 import com.facebook.react.interfaces.TaskInterface
@@ -121,13 +121,13 @@ class ReactHostTest {
   @Test
   fun testGetDevSupportManager() {
     // BridgelessDevSupportManager is created only for debug
-    // we check if it was instantiated or if DisabledDevSupportManager was created (for release).
+    // we check if it was instantiated or if ReleaseDevSupportManager was created (for release).
     if (mockedDevSupportManagerCtor.constructed().isNotEmpty()) {
       val devSupportManager = mockedDevSupportManagerCtor.constructed().first()
       Assertions.assertThat(reactHost.devSupportManager).isEqualTo(devSupportManager)
     } else {
       Assertions.assertThat(reactHost.devSupportManager)
-          .isInstanceOf(DisabledDevSupportManager::class.java)
+          .isInstanceOf(ReleaseDevSupportManager::class.java)
     }
   }
 
