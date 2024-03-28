@@ -631,7 +631,7 @@ export default class Device {
             // $FlowFixMe[cannot-write]
             payload.params.sourceMapURL =
               'data:application/json;charset=utf-8;base64,' +
-              new Buffer(sourceMap).toString('base64');
+              Buffer.from(sourceMap).toString('base64');
           } catch (exception) {
             this.#sendErrorToDebugger(
               `Failed to fetch source map ${params.sourceMapURL}: ${exception.message}`,
