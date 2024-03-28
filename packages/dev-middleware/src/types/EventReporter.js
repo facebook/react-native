@@ -68,6 +68,15 @@ export type ReportableEvent =
             | 'UNMATCHED_REQUEST_ID'
             | 'PROTOCOL_ERROR',
           >,
+    }
+  | {
+      type: 'proxy_error',
+      status: 'error',
+      messageOrigin: 'debugger' | 'device',
+      message: string,
+      error: string,
+      errorStack: string,
+      ...DebuggerSessionIDs,
     };
 
 /**

@@ -184,6 +184,25 @@ class DeviceEventReporter {
     this.#pendingCommands.clear();
   }
 
+  logProxyMessageHandlingError(
+    messageOrigin: 'device' | 'debugger',
+    error: Error,
+    message: string,
+  ): void {
+    this.#eventReporter.logEvent({
+      type: 'proxy_error',
+      status: 'error',
+      messageOrigin,
+      message,
+      error: error.message,
+      errorStack: error.stack,
+      appId: this.#metadata.appId,
+      deviceId: this.#metadata.deviceId,
+      deviceName: this.#metadata.deviceName,
+      pageId: null,
+    });
+  }
+
   #logExpiredCommand(pendingCommand: PendingCommand): void {
     this.#eventReporter.logEvent({
       type: 'debugger_command',
