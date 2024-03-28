@@ -6,6 +6,7 @@
  */
 
 #pragma once
+#include <react/renderer/core/RawValue.h>
 
 namespace facebook::react {
 
@@ -28,5 +29,7 @@ struct ValueUnit {
   bool operator!=(const ValueUnit& other) const {
     return !(*this == other);
   }
+
+  static ValueUnit getValueUnitFromRawValue(const RawValue& value);
 };
 } // namespace facebook::react

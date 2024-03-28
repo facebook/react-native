@@ -139,6 +139,10 @@ function Flip() {
   );
 }
 
+function TranslatePercentage() {
+  return <View style={styles.translatePercentageView} />;
+}
+
 const styles = StyleSheet.create({
   container: {
     height: 500,
@@ -277,6 +281,12 @@ const styles = StyleSheet.create({
     height: 100,
     transformOrigin: 'top left',
   },
+  translatePercentageView: {
+    transform: 'translate(50%)',
+    padding: 50,
+    alignSelf: 'flex-start',
+    backgroundColor: 'lightblue',
+  },
 });
 
 exports.title = 'Transforms';
@@ -394,6 +404,13 @@ exports.examples = [
     description: "transformOrigin: 'top left'",
     render(): Node {
       return <TransformOriginExample />;
+    },
+  },
+  {
+    title: 'Translate Percentage',
+    description: "transform: 'translate(50%)'",
+    render(): Node {
+      return <TranslatePercentage />;
     },
   },
 ];

@@ -1113,12 +1113,15 @@ ShadowView LayoutAnimationKeyFrameManager::createInterpolatedShadowView(
   // Animate opacity or scale/transform
   PropsParserContext propsParserContext{
       finalView.surfaceId, *contextContainer_};
+  auto finalViewSize = Size{finalView.layoutMetrics.frame.size.width, finalView.layoutMetrics.frame.size.height};
   mutatedShadowView.props = interpolateProps(
       componentDescriptor,
       propsParserContext,
       progress,
       startingView.props,
-      finalView.props);
+      finalView.props,
+      finalViewSize
+      );
 
   react_native_assert(mutatedShadowView.props != nullptr);
   if (mutatedShadowView.props == nullptr) {
@@ -1627,7 +1630,8 @@ Props::Shared LayoutAnimationKeyFrameManager::interpolateProps(
     const PropsParserContext& context,
     Float animationProgress,
     const Props::Shared& props,
-    const Props::Shared& newProps) const {
+    const Props::Shared& newProps,
+    const Size& size) const {
 #ifdef ANDROID
   // On Android only, the merged props should have the same RawProps as the
   // final props struct
@@ -1640,11 +1644,11 @@ Props::Shared LayoutAnimationKeyFrameManager::interpolateProps(
   Props::Shared interpolatedPropsShared =
       componentDescriptor.cloneProps(context, newProps, {});
 #endif
-
+      
   if (componentDescriptor.getTraits().check(
           ShadowNodeTraits::Trait::ViewKind)) {
     interpolateViewProps(
-        animationProgress, props, newProps, interpolatedPropsShared);
+        animationProgress, props, newProps, interpolatedPropsShared, size);
   }
 
   return interpolatedPropsShared;
