@@ -140,8 +140,8 @@ export default class Device {
 
     // $FlowFixMe[incompatible-call]
     this.#deviceSocket.on('message', (message: string) => {
-      this.#messageFromDeviceQueue = this.#messageFromDeviceQueue.then(
-        async () => {
+      this.#messageFromDeviceQueue = this.#messageFromDeviceQueue
+        .then(async () => {
           const parsedMessage = JSON.parse(message);
           if (parsedMessage.event === 'getPages') {
             // There's a 'getPages' message every second, so only show them if they change
@@ -156,8 +156,17 @@ export default class Device {
             debug('(Debugger)    (Proxy) <- (Device): ' + message);
           }
           await this.#handleMessageFromDevice(parsedMessage);
-        },
-      );
+        })
+        .catch(error => {
+          try {
+            this.#deviceEventReporter?.logProxyMessageHandlingError(
+              'device',
+              error,
+              message,
+            );
+          } catch {}
+          debug('%o handling device message: %s', error, message);
+        });
     });
     // Sends 'getPages' request to device every PAGES_POLLING_INTERVAL milliseconds.
     this.#pagesPollingIntervalId = setInterval(
