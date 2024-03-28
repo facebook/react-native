@@ -8,7 +8,7 @@
 #include "TurboModuleBinding.h"
 
 #include <cxxreact/SystraceSection.h>
-#include <react/utils/jsi.h>
+#include <react/utils/jsi-utils.h>
 #include <stdexcept>
 #include <string>
 
