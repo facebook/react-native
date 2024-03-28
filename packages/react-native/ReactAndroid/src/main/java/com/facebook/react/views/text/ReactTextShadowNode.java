@@ -135,13 +135,17 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
           if (widthMode == YogaMeasureMode.EXACTLY) {
             layoutWidth = width;
           } else {
-            for (int lineIndex = 0; lineIndex < lineCount; lineIndex++) {
-              boolean endsWithNewLine =
-                  text.length() > 0 && text.charAt(layout.getLineEnd(lineIndex) - 1) == '\n';
-              float lineWidth =
-                  endsWithNewLine ? layout.getLineMax(lineIndex) : layout.getLineWidth(lineIndex);
-              if (lineWidth > layoutWidth) {
-                layoutWidth = lineWidth;
+            if (mNumberOfLines == 1) {
+              layoutWidth = (int) layout.getEllipsizedWidth();
+            } else {
+              for (int lineIndex = 0; lineIndex < lineCount; lineIndex++) {
+                boolean endsWithNewLine =
+                    text.length() > 0 && text.charAt(layout.getLineEnd(lineIndex) - 1) == '\n';
+                float lineWidth =
+                    endsWithNewLine ? layout.getLineMax(lineIndex) : layout.getLineWidth(lineIndex);
+                if (lineWidth > layoutWidth) {
+                  layoutWidth = lineWidth;
+                }
               }
             }
             if (widthMode == YogaMeasureMode.AT_MOST && layoutWidth > width) {
