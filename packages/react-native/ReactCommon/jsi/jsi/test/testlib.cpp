@@ -12,11 +12,16 @@
 #include <jsi/jsi.h>
 
 #include <stdlib.h>
+#include <array>
 #include <chrono>
 #include <functional>
 #include <thread>
 #include <unordered_map>
 #include <unordered_set>
+
+#if __has_include(<span>)
+#include <span>
+#endif
 
 using namespace facebook::jsi;
 
@@ -1575,6 +1580,103 @@ TEST_P(JSITest, UTF8ExceptionTest) {
     EXPECT_NE(e.getMessage().find(utf8), std::string::npos);
   }
 }
+
+#ifdef __cpp_lib_span
+TEST_P(JSITest, SpanAPITest) {
+  // Test that we can create a host function that accepts args as a std::span.
+  auto one = std::make_shared<int>(1);
+  Function plusOne = Function::createFromHostFunction(
+      rt,
+      PropNameID::forAscii(rt, "plusOne"),
+      2,
+      [one, savedRt = &rt](
+          Runtime& rt, const Value& thisVal, std::span<const Value> args) {
+        EXPECT_EQ(savedRt, &rt);
+        // We don't know if we're in strict mode or not, so it's either global
+        // or undefined.
+        EXPECT_TRUE(
+            Value::strictEquals(rt, thisVal, rt.global()) ||
+            thisVal.isUndefined());
+        EXPECT_EQ(args.size(), 2);
+        return *one + args[0].getNumber() + args[1].getNumber();
+      });
+
+  EXPECT_EQ(plusOne.call(rt, 1, 2).getNumber(), 4);
+  EXPECT_TRUE(checkValue(plusOne.call(rt, 3, 5), "9"));
+
+  // Test that we can call functions with a std::span of args.
+
+  // Spans come in different varieties: static/dynamic extents,
+  // const/non-const, and can also be implicitly constructed from other range
+  // types. To ensure that our slightly-involved templated API works as
+  // intended, we test all of these cases explicitly.
+
+  std::array<Value, 3> argsArray{1, 2, 3};
+  std::vector<Value> argsVec;
+  argsVec.emplace_back(1);
+  argsVec.emplace_back(2);
+  argsVec.emplace_back(3);
+  std::span<Value, 3> argsSpanStatic(argsArray);
+  std::span<const Value, 3> argsConstSpanStatic(argsArray);
+  std::span<Value> argsSpanDynamic(argsVec);
+  std::span<const Value> argsConstSpanDynamic(argsVec);
+
+  EXPECT_TRUE(
+      function("function(a, b, c) { return a + b + c; }")
+          .call(rt, argsSpanStatic)
+          .getNumber() == 6);
+  EXPECT_TRUE(
+      function("function(a, b, c) { return a + b + c; }")
+          .call(rt, argsConstSpanStatic)
+          .getNumber() == 6);
+  EXPECT_TRUE(
+      function("function(a, b, c) { return a + b + c; }")
+          .call(rt, argsSpanDynamic)
+          .getNumber() == 6);
+  EXPECT_TRUE(
+      function("function(a, b, c) { return a + b + c; }")
+          .call(rt, argsConstSpanDynamic)
+          .getNumber() == 6);
+  EXPECT_TRUE(
+      function("function(a, b, c) { return a + b + c; }")
+          .call(rt, argsArray)
+          .getNumber() == 6);
+  EXPECT_TRUE(
+      function("function(a, b, c) { return a + b + c; }")
+          .call(rt, argsVec)
+          .getNumber() == 6);
+
+  Function ctor = function(
+      "function (a, b, c) {"
+      "  this.value = a + b + c;"
+      "}");
+
+  auto checkObj = [&](const Object& obj) {
+    EXPECT_TRUE(obj.hasProperty(rt, "value"));
+    EXPECT_TRUE(obj.getProperty(rt, "value").getNumber() == 6);
+  };
+  checkObj(ctor.callAsConstructor(rt, argsSpanStatic).getObject(rt));
+  checkObj(ctor.callAsConstructor(rt, argsConstSpanStatic).getObject(rt));
+  checkObj(ctor.callAsConstructor(rt, argsSpanDynamic).getObject(rt));
+  checkObj(ctor.callAsConstructor(rt, argsConstSpanDynamic).getObject(rt));
+  checkObj(ctor.callAsConstructor(rt, argsArray).getObject(rt));
+  checkObj(ctor.callAsConstructor(rt, argsVec).getObject(rt));
+
+  auto obj = ctor.callAsConstructor(rt, argsArray).getObject(rt);
+  Function checkPropertyFunction =
+      function("function(a, b, c) { return this.value === a + b + c; }");
+  EXPECT_TRUE(
+      checkPropertyFunction.callWithThis(rt, obj, argsSpanStatic).getBool());
+  EXPECT_TRUE(checkPropertyFunction.callWithThis(rt, obj, argsConstSpanStatic)
+                  .getBool());
+  EXPECT_TRUE(
+      checkPropertyFunction.callWithThis(rt, obj, argsSpanDynamic).getBool());
+  EXPECT_TRUE(checkPropertyFunction.callWithThis(rt, obj, argsConstSpanDynamic)
+                  .getBool());
+  EXPECT_TRUE(checkPropertyFunction.callWithThis(rt, obj, argsArray).getBool());
+  EXPECT_TRUE(checkPropertyFunction.callWithThis(rt, obj, argsVec).getBool());
+}
+#endif
 
 INSTANTIATE_TEST_CASE_P(
     Runtimes,
