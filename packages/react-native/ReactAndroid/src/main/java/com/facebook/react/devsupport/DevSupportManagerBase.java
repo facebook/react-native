@@ -384,12 +384,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
       if (!isConnected) {
         disabledItemKeys.add(debuggerItemString);
       }
-      options.put(
-          debuggerItemString,
-          () ->
-              mDevServerHelper.openDebugger(
-                  mCurrentContext,
-                  mApplicationContext.getString(R.string.catalyst_open_debugger_error)));
+      options.put(debuggerItemString, () -> openDebugger());
     }
 
     options.put(
@@ -1162,5 +1157,11 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
     } else {
       context.registerReceiver(receiver, filter);
     }
+  }
+
+  @Override
+  public void openDebugger() {
+    mDevServerHelper.openDebugger(
+        mCurrentContext, mApplicationContext.getString(R.string.catalyst_open_debugger_error));
   }
 }

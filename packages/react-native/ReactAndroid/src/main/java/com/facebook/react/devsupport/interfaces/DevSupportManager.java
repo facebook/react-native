@@ -128,4 +128,7 @@ public interface DevSupportManager extends JSExceptionHandler {
    */
   @Nullable
   SurfaceDelegate createSurfaceDelegate(String moduleName);
+
+  /** Attempt to open the JS debugger on the host machine. */
+  void openDebugger();
 }

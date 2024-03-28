@@ -204,4 +204,7 @@ public class DisabledDevSupportManager implements DevSupportManager {
   public @Nullable SurfaceDelegate createSurfaceDelegate(String moduleName) {
     return null;
   }
+
+  @Override
+  public void openDebugger() {}
 }
