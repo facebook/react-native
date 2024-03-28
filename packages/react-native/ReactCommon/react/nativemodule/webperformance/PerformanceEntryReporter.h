@@ -59,15 +59,15 @@ struct PerformanceEntryBuffer {
 };
 
 enum class PerformanceEntryType {
-  UNDEFINED = 0,
+  // We need to preserve these values for backwards compatibility.
   MARK = 1,
   MEASURE = 2,
   EVENT = 3,
-  _COUNT = 4,
+  _NEXT = 4,
 };
 
 constexpr size_t NUM_PERFORMANCE_ENTRY_TYPES =
-    (size_t)PerformanceEntryType::_COUNT;
+    (size_t)PerformanceEntryType::_NEXT - 1; // Valid types start from 1.
 
 class PerformanceEntryReporter : public EventLogger, public UIManagerMountHook {
  public:
@@ -94,12 +94,12 @@ class PerformanceEntryReporter : public EventLogger, public UIManagerMountHook {
   void logEntry(const RawPerformanceEntry& entry);
 
   PerformanceEntryBuffer& getBuffer(PerformanceEntryType entryType) {
-    return buffers_[static_cast<int>(entryType)];
+    return buffers_[static_cast<int>(entryType) - 1];
   }
 
   const PerformanceEntryBuffer& getBuffer(
       PerformanceEntryType entryType) const {
-    return buffers_[static_cast<int>(entryType)];
+    return buffers_[static_cast<int>(entryType) - 1];
   }
 
   bool isReporting(PerformanceEntryType entryType) const {
@@ -127,11 +127,11 @@ class PerformanceEntryReporter : public EventLogger, public UIManagerMountHook {
       const std::optional<std::string>& endMark = std::nullopt);
 
   void clearEntries(
-      PerformanceEntryType entryType = PerformanceEntryType::UNDEFINED,
+      std::optional<PerformanceEntryType> entryType = std::nullopt,
       std::string_view entryName = {});
 
   std::vector<RawPerformanceEntry> getEntries(
-      PerformanceEntryType entryType = PerformanceEntryType::UNDEFINED,
+      std::optional<PerformanceEntryType> entryType = std::nullopt,
       std::string_view entryName = {}) const;
 
   void logEventEntry(

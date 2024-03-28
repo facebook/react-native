@@ -265,8 +265,7 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestGetEntries) {
   const auto marks = reporter.getEntries(PerformanceEntryType::MARK);
 
   const auto measures = reporter.getEntries(PerformanceEntryType::MEASURE);
-  const auto common_name =
-      reporter.getEntries(PerformanceEntryType::UNDEFINED, "common_name");
+  const auto common_name = reporter.getEntries(std::nullopt, "common_name");
 
   reporter.getEntries();
   const auto all = reporter.getEntries();
@@ -304,7 +303,7 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestClearEntries) {
   reporter.measure("measure3", 0.0, 0.0, 5.0, "mark1");
   reporter.measure("measure4", 1.5, 0.0, std::nullopt, std::nullopt, "mark2");
 
-  reporter.clearEntries(PerformanceEntryType::UNDEFINED, "common_name");
+  reporter.clearEntries(std::nullopt, "common_name");
   auto e1 = reporter.getEntries();
 
   ASSERT_EQ(6, e1.size());
