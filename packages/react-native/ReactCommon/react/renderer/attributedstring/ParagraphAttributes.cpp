@@ -29,8 +29,7 @@ bool ParagraphAttributes::operator==(const ParagraphAttributes& rhs) const {
              rhs.adjustsFontSizeToFit,
              rhs.includeFontPadding,
              rhs.android_hyphenationFrequency) &&
-      floatEquality(minimumFontSize, rhs.minimumFontSize) &&
-      floatEquality(maximumFontSize, rhs.maximumFontSize);
+      floatEquality(minimumFontScale, rhs.minimumFontScale);
 }
 
 bool ParagraphAttributes::operator!=(const ParagraphAttributes& rhs) const {
@@ -46,8 +45,7 @@ SharedDebugStringConvertibleList ParagraphAttributes::getDebugProps() const {
       debugStringConvertibleItem("ellipsizeMode", ellipsizeMode),
       debugStringConvertibleItem("textBreakStrategy", textBreakStrategy),
       debugStringConvertibleItem("adjustsFontSizeToFit", adjustsFontSizeToFit),
-      debugStringConvertibleItem("minimumFontSize", minimumFontSize),
-      debugStringConvertibleItem("maximumFontSize", maximumFontSize),
+      debugStringConvertibleItem("minimumFontScale", minimumFontScale),
       debugStringConvertibleItem("includeFontPadding", includeFontPadding),
       debugStringConvertibleItem(
           "android_hyphenationFrequency", android_hyphenationFrequency)};

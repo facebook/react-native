@@ -716,18 +716,12 @@ inline ParagraphAttributes convertRawProp(
       "adjustsFontSizeToFit",
       sourceParagraphAttributes.adjustsFontSizeToFit,
       defaultParagraphAttributes.adjustsFontSizeToFit);
-  paragraphAttributes.minimumFontSize = convertRawProp(
+  paragraphAttributes.minimumFontScale = convertRawProp(
       context,
       rawProps,
-      "minimumFontSize",
-      sourceParagraphAttributes.minimumFontSize,
-      defaultParagraphAttributes.minimumFontSize);
-  paragraphAttributes.maximumFontSize = convertRawProp(
-      context,
-      rawProps,
-      "maximumFontSize",
-      sourceParagraphAttributes.maximumFontSize,
-      defaultParagraphAttributes.maximumFontSize);
+      "minimumFontScale",
+      sourceParagraphAttributes.minimumFontScale,
+      defaultParagraphAttributes.minimumFontScale);
   paragraphAttributes.includeFontPadding = convertRawProp(
       context,
       rawProps,

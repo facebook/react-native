@@ -210,11 +210,27 @@ class AdjustingFontSize extends React.Component<
           style={{fontSize: 36, marginVertical: 6}}>
           Truncated text is baaaaad.
         </Text>
+
         <Text
           numberOfLines={1}
           adjustsFontSizeToFit={true}
           style={{fontSize: 40, marginVertical: 6}}>
           Shrinking to fit available space is much better!
+        </Text>
+
+        <Text
+          numberOfLines={1}
+          adjustsFontSizeToFit={true}
+          style={{fontSize: 16, marginVertical: 6}}>
+          It doesn't grow
+        </Text>
+
+        <Text
+          numberOfLines={1}
+          adjustsFontSizeToFit={true}
+          minimumFontScale={0.5}
+          style={{fontSize: 40, marginVertical: 6}}>
+          Can limit how small the text becomes with minimumFontScale
         </Text>
 
         <Text
