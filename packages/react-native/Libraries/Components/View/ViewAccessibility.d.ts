@@ -43,6 +43,12 @@ export interface AccessibilityProps
    */
   accessibilityRole?: AccessibilityRole | undefined;
   /**
+   * Represents the number of items in a list or tree, for example. If you have three children, you might choose to set this to 3.
+   */
+  accessibilitySetSize?: number | undefined;
+
+  'aria-setsize'?: number | undefined;
+  /**
    * Accessibility State tells a person using either VoiceOver on iOS or TalkBack on Android the state of the element currently focused on.
    */
   accessibilityState?: AccessibilityState | undefined;
