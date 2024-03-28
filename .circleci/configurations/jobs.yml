@@ -786,8 +786,6 @@ jobs:
       - HERMES_WS_DIR: *hermes_workspace_root
       - HERMES_TARBALL_ARTIFACTS_DIR: *hermes_tarball_artifacts_dir
       - HERMES_OSXBIN_ARTIFACTS_DIR: *hermes_osxbin_artifacts_dir
-      - IOS_DEPLOYMENT_TARGET: 13.4
-      - MAC_DEPLOYMENT_TARGET: 10.13
     steps:
       - *attach_hermes_workspace
       - stop_job_if_apple_artifacts_are_there:
@@ -817,10 +815,14 @@ jobs:
 
             if [[ "$SLICE" == "macosx" ]]; then
               echo "[HERMES] Building Hermes for MacOS"
+              export MAC_DEPLOYMENT_TARGET=10.13
               BUILD_TYPE="<< parameters.flavor >>" ./utils/build-mac-framework.sh
+              unset MAC_DEPLOYMENT_TARGET
             else
               echo "[HERMES] Building Hermes for iOS: $SLICE"
+              export IOS_DEPLOYMENT_TARGET=13.4
               BUILD_TYPE="<< parameters.flavor >>" ./utils/build-ios-framework.sh "$SLICE"
+              unset IOS_DEPLOYMENT_TARGET
             fi
 
             echo "Moving from build_$SLICE to $FINAL_PATH"
@@ -860,8 +862,6 @@ jobs:
     environment:
       - HERMES_WS_DIR: *hermes_workspace_root
       - HERMES_TARBALL_ARTIFACTS_DIR: *hermes_tarball_artifacts_dir
-      - IOS_DEPLOYMENT_TARGET: 13.4
-      - MAC_DEPLOYMENT_TARGET: 10.13
     steps:
       - *attach_hermes_workspace
       # Try to store the artifacts if they are already in the workspace
@@ -902,7 +902,9 @@ jobs:
           command: |
             cd ./packages/react-native/sdks/hermes || exit 1
             echo "[HERMES] Creating the universal framework"
+            export IOS_DEPLOYMENT_TARGET=13.4
             ./utils/build-ios-framework.sh build_framework
+            unset IOS_DEPLOYMENT_TARGET
       - run:
           name: Package the Hermes Apple frameworks
           command: |
