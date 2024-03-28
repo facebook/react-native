@@ -27,8 +27,8 @@
     [NSLayoutConstraint activateConstraints:@[
       [_safeAreaContainer.bottomAnchor constraintEqualToAnchor:self.safeAreaLayoutGuide.bottomAnchor],
       [_safeAreaContainer.topAnchor constraintEqualToAnchor:self.safeAreaLayoutGuide.topAnchor],
-      [_safeAreaContainer.leadingAnchor constraintEqualToAnchor:self.safeAreaLayoutGuide.leadingAnchor],
-      [_safeAreaContainer.trailingAnchor constraintEqualToAnchor:self.safeAreaLayoutGuide.trailingAnchor]
+      [_safeAreaContainer.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
+      [_safeAreaContainer.trailingAnchor constraintEqualToAnchor:self.trailingAnchor]
     ]];
   }
   return self;

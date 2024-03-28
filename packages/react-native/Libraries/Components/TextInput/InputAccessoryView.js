@@ -13,6 +13,8 @@ import StyleSheet, {
   type ViewStyleProp,
 } from '../../StyleSheet/StyleSheet';
 import Platform from '../../Utilities/Platform';
+import useWindowDimensions from '../../Utilities/useWindowDimensions';
+import View from '../View/View';
 import RCTInputAccessoryViewNativeComponent from './RCTInputAccessoryViewNativeComponent';
 import * as React from 'react';
 
@@ -71,7 +73,13 @@ import * as React from 'react';
  * This component can also be used to create sticky text inputs (text inputs
  * which are anchored to the top of the keyboard). To do this, wrap a
  * TextInput with the InputAccessoryView component, and don't set a nativeID.
- * For an example, look at InputAccessoryViewExample.js in RNTester.
+ *
+ * The `InputAccessoryView` component does not implement horizontal safe area internally.
+ * If you're developing a component that requires adherence to safe area boundaries,
+ * consider wrapping your `InputAccessoryView` content in a `SafeAreaView`. This ensures your content
+ * displays correctly within the safe area.
+ *
+ * For a practical example of both cases, check `InputAccessoryViewExample.js` in RNTester.
  */
 
 type Props = $ReadOnly<{|
@@ -86,6 +94,8 @@ type Props = $ReadOnly<{|
 |}>;
 
 const InputAccessoryView: React.AbstractComponent<Props> = (props: Props) => {
+  const {width} = useWindowDimensions();
+
   if (Platform.OS === 'ios') {
     if (React.Children.count(props.children) === 0) {
       return null;
@@ -96,7 +106,7 @@ const InputAccessoryView: React.AbstractComponent<Props> = (props: Props) => {
         style={[props.style, styles.container]}
         nativeID={props.nativeID}
         backgroundColor={props.backgroundColor}>
-        {props.children}
+        <View style={{width}}>{props.children}</View>
       </RCTInputAccessoryViewNativeComponent>
     );
   } else {

@@ -15,6 +15,7 @@ const {
   Alert,
   Button,
   InputAccessoryView,
+  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -40,22 +41,24 @@ class TextInputBar extends React.PureComponent<TextInputProps, TextInputState> {
 
   render(): React.Node {
     return (
-      <View style={styles.textInputContainer}>
-        <TextInput
-          style={styles.textInput}
-          onChangeText={text => {
-            this.setState({text});
-          }}
-          value={this.state.text}
-          placeholder={'Type a message...'}
-        />
-        <Button
-          onPress={() => {
-            Alert.alert('You tapped the button!');
-          }}
-          title="Send"
-        />
-      </View>
+      <SafeAreaView style={{flex: 1}}>
+        <View style={styles.textInputContainer}>
+          <TextInput
+            style={styles.textInput}
+            onChangeText={text => {
+              this.setState({text});
+            }}
+            value={this.state.text}
+            placeholder={'Type a message...'}
+          />
+          <Button
+            onPress={() => {
+              Alert.alert('You tapped the button!');
+            }}
+            title="Send"
+          />
+        </View>
+      </SafeAreaView>
     );
   }
 }

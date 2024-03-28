@@ -12,7 +12,15 @@ exports[`<InputAccessoryView /> should render as <RCTInputAccessoryView> when mo
     ]
   }
 >
-  <View />
+  <View
+    style={
+      Object {
+        "width": 750,
+      }
+    }
+  >
+    <View />
+  </View>
 </RCTInputAccessoryView>
 `;
 
@@ -28,7 +36,15 @@ exports[`<InputAccessoryView /> should render as <RCTInputAccessoryView> when no
     ]
   }
 >
-  <View />
+  <View
+    style={
+      Object {
+        "width": 750,
+      }
+    }
+  >
+    <View />
+  </View>
 </RCTInputAccessoryView>
 `;
 
