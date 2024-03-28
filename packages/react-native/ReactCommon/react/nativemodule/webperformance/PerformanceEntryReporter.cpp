@@ -113,6 +113,8 @@ void PerformanceEntryReporter::logEntry(const RawPerformanceEntry& entry) {
   }
 
   if (buffer.hasNameLookup) {
+    // If we need to remove an entry because the buffer is null,
+    // we also need to remove it from the name lookup.
     auto overwriteCandidate = buffer.entries.getNextOverwriteCandidate();
     if (overwriteCandidate != nullptr) {
       std::lock_guard lock2(nameLookupMutex_);
@@ -134,7 +136,12 @@ void PerformanceEntryReporter::logEntry(const RawPerformanceEntry& entry) {
 
   if (buffer.hasNameLookup) {
     std::lock_guard lock2(nameLookupMutex_);
-    buffer.nameLookup.insert(&buffer.entries.back());
+    auto currentEntry = &buffer.entries.back();
+    auto it = buffer.nameLookup.find(currentEntry);
+    if (it != buffer.nameLookup.end()) {
+      buffer.nameLookup.erase(it);
+    }
+    buffer.nameLookup.insert(currentEntry);
   }
 
   if (buffer.entries.getNumToConsume() == 1) {
