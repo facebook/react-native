@@ -10,7 +10,6 @@
 #include <FBReactNativeSpec/FBReactNativeSpecJSI.h>
 #include <react/renderer/observers/intersection/IntersectionObserverManager.h>
 #include <optional>
-#include <string>
 #include <tuple>
 #include <vector>
 
