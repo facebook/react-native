@@ -32,7 +32,7 @@ export interface ImageURISource {
    * `headers` is an object representing the HTTP headers to send along with the
    * request for a remote image.
    */
-  headers?: {[key: string]: string} | undefined;
+  headers?: Headers | {[key: string]: string} | undefined;
   /**
    * `cache` determines how the requests handles potentially cached
    * responses.

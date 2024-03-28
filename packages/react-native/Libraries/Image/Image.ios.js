@@ -52,11 +52,16 @@ function getSize(
 
 function getSizeWithHeaders(
   uri: string,
-  headers: {[string]: string, ...},
+  headers: {[string]: string, ...} | Headers,
   success?: (width: number, height: number) => void,
   failure?: (error: mixed) => void,
 ): void | Promise<ImageSize> {
-  const promise = NativeImageLoaderIOS.getSizeWithHeaders(uri, headers);
+  const promise = NativeImageLoaderIOS.getSizeWithHeaders(
+    uri,
+    headers instanceof Headers
+      ? Object.fromEntries(headers.entries())
+      : headers,
+  );
   if (typeof success !== 'function') {
     return promise;
   }

@@ -67,11 +67,16 @@ function getSize(
  */
 function getSizeWithHeaders(
   url: string,
-  headers: {[string]: string, ...},
+  headers: {[string]: string, ...} | Headers,
   success?: (width: number, height: number) => void,
   failure?: (error: mixed) => void,
 ): void | Promise<ImageSize> {
-  const promise = NativeImageLoaderAndroid.getSizeWithHeaders(url, headers);
+  const promise = NativeImageLoaderAndroid.getSizeWithHeaders(
+    url,
+    headers instanceof Headers
+      ? Object.fromEntries(headers.entries())
+      : headers,
+  );
   if (typeof success !== 'function') {
     return promise;
   }
