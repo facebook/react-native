@@ -49,6 +49,10 @@ class SurfaceManager final {
       const LayoutConstraints& layoutConstraints,
       const LayoutContext& layoutContext) const noexcept;
 
+  LayoutContext getLayoutContext(SurfaceId surfaceId) const noexcept;
+
+  LayoutConstraints getLayoutConstraints(SurfaceId surfaceId) const noexcept;
+
   MountingCoordinator::Shared findMountingCoordinator(
       SurfaceId surfaceId) const noexcept;
 

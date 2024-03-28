@@ -84,6 +84,24 @@ void SurfaceManager::constraintSurfaceLayout(
   });
 }
 
+LayoutContext SurfaceManager::getLayoutContext(
+    SurfaceId surfaceId) const noexcept {
+  auto layoutContext = LayoutContext{};
+  visit(surfaceId, [&layoutContext](const SurfaceHandler& surfaceHandler) {
+    layoutContext = surfaceHandler.getLayoutContext();
+  });
+  return layoutContext;
+}
+
+LayoutConstraints SurfaceManager::getLayoutConstraints(
+    SurfaceId surfaceId) const noexcept {
+  auto layoutConstraints = LayoutConstraints{};
+  visit(surfaceId, [&layoutConstraints](const SurfaceHandler& surfaceHandler) {
+    layoutConstraints = surfaceHandler.getLayoutConstraints();
+  });
+  return layoutConstraints;
+}
+
 void SurfaceManager::visit(
     SurfaceId surfaceId,
     const std::function<void(SurfaceHandler const& surfaceHandler)>& callback)
