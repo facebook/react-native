@@ -129,6 +129,7 @@ public class ReactEditText extends AppCompatEditText {
 
   private static final KeyListener sKeyListener = QwertyKeyListener.getInstanceForFullKeyboard();
   private @Nullable EventDispatcher mEventDispatcher;
+  public boolean isFirstRender = true;
 
   public ReactEditText(Context context) {
     super(context);
@@ -677,6 +678,9 @@ public class ReactEditText extends AppCompatEditText {
     // text so, we have to set text to null, which will clear the currently composing text.
     if (reactTextUpdate.getText().length() == 0) {
       setText(null);
+         } else if (isFirstRender && !hasFocus()) {
+      setText(spannableStringBuilder);
+      isFirstRender = false;
     } else {
       // When we update text, we trigger onChangeText code that will
       // try to update state if the wrapper is available. Temporarily disable
