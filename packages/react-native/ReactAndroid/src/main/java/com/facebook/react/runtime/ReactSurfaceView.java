@@ -190,6 +190,11 @@ public class ReactSurfaceView extends ReactRootView {
   }
 
   @Override
+  public String getJSModuleName() {
+    return mSurface.getModuleName();
+  }
+
+  @Override
   protected void dispatchJSTouchEvent(MotionEvent event) {
     if (mJSTouchDispatcher == null) {
       FLog.w(TAG, "Unable to dispatch touch events to JS before the dispatcher is available");
