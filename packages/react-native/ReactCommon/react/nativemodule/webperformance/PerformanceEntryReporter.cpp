@@ -105,7 +105,7 @@ void PerformanceEntryReporter::logEntry(const RawPerformanceEntry& entry) {
 
   std::lock_guard lock(entriesMutex_);
 
-  auto& buffer = buffers_[entry.entryType];
+  auto& buffer = getBuffer(entryType);
 
   if (entry.duration < buffer.durationThreshold) {
     // The entries duration is lower than the desired reporting threshold, skip
@@ -113,6 +113,8 @@ void PerformanceEntryReporter::logEntry(const RawPerformanceEntry& entry) {
   }
 
   if (buffer.hasNameLookup) {
+    // If we need to remove an entry because the buffer is null,
+    // we also need to remove it from the name lookup.
     auto overwriteCandidate = buffer.entries.getNextOverwriteCandidate();
     if (overwriteCandidate != nullptr) {
       std::lock_guard lock2(nameLookupMutex_);
@@ -134,7 +136,12 @@ void PerformanceEntryReporter::logEntry(const RawPerformanceEntry& entry) {
 
   if (buffer.hasNameLookup) {
     std::lock_guard lock2(nameLookupMutex_);
-    buffer.nameLookup.insert(&buffer.entries.back());
+    auto currentEntry = &buffer.entries.back();
+    auto it = buffer.nameLookup.find(currentEntry);
+    if (it != buffer.nameLookup.end()) {
+      buffer.nameLookup.erase(it);
+    }
+    buffer.nameLookup.insert(currentEntry);
   }
 
   if (buffer.entries.getNumToConsume() == 1) {
@@ -148,25 +155,21 @@ void PerformanceEntryReporter::mark(
     const std::string& name,
     const std::optional<double>& startTime) {
   logEntry(RawPerformanceEntry{
-      name,
-      static_cast<int>(PerformanceEntryType::MARK),
-      startTime ? *startTime : getCurrentTimeStamp(),
-      0.0,
-      std::nullopt,
-      std::nullopt,
-      std::nullopt});
+      .name = name,
+      .entryType = static_cast<int>(PerformanceEntryType::MARK),
+      .startTime = startTime ? *startTime : getCurrentTimeStamp()});
 }
 
 void PerformanceEntryReporter::clearEntries(
-    PerformanceEntryType entryType,
+    std::optional<PerformanceEntryType> entryType,
     std::string_view entryName) {
-  if (entryType == PerformanceEntryType::UNDEFINED) {
+  if (!entryType) {
     // Clear all entry types
     for (int i = 1; i < NUM_PERFORMANCE_ENTRY_TYPES; i++) {
       clearEntries(static_cast<PerformanceEntryType>(i), entryName);
     }
   } else {
-    auto& buffer = getBuffer(entryType);
+    auto& buffer = getBuffer(*entryType);
     if (!entryName.empty()) {
       if (buffer.hasNameLookup) {
         std::lock_guard lock2(nameLookupMutex_);
@@ -205,29 +208,29 @@ void PerformanceEntryReporter::getEntries(
     PerformanceEntryType entryType,
     std::string_view entryName,
     std::vector<RawPerformanceEntry>& res) const {
-  if (entryType == PerformanceEntryType::UNDEFINED) {
+  std::lock_guard lock(entriesMutex_);
+  const auto& entries = getBuffer(entryType).entries;
+  if (entryName.empty()) {
+    entries.getEntries(res);
+  } else {
+    entries.getEntries(res, [entryName](const RawPerformanceEntry& entry) {
+      return entry.name == entryName;
+    });
+  }
+}
+
+std::vector<RawPerformanceEntry> PerformanceEntryReporter::getEntries(
+    std::optional<PerformanceEntryType> entryType,
+    std::string_view entryName) const {
+  std::vector<RawPerformanceEntry> res;
+  if (!entryType) {
     // Collect all entry types
     for (int i = 1; i < NUM_PERFORMANCE_ENTRY_TYPES; i++) {
       getEntries(static_cast<PerformanceEntryType>(i), entryName, res);
     }
   } else {
-    std::lock_guard lock(entriesMutex_);
-    const auto& entries = getBuffer(entryType).entries;
-    if (entryName.empty()) {
-      entries.getEntries(res);
-    } else {
-      entries.getEntries(res, [entryName](const RawPerformanceEntry& entry) {
-        return entry.name == entryName;
-      });
-    }
+    getEntries(*entryType, entryName, res);
   }
-}
-
-std::vector<RawPerformanceEntry> PerformanceEntryReporter::getEntries(
-    PerformanceEntryType entryType,
-    std::string_view entryName) const {
-  std::vector<RawPerformanceEntry> res;
-  getEntries(entryType, entryName, res);
   return res;
 }
 
@@ -250,25 +253,17 @@ void PerformanceEntryReporter::measure(
   double durationVal = duration ? *duration : endTimeVal - startTimeVal;
 
   logEntry(
-      {name,
-       static_cast<int>(PerformanceEntryType::MEASURE),
-       startTimeVal,
-       durationVal,
-       std::nullopt,
-       std::nullopt,
-       std::nullopt});
+      {.name = name,
+       .entryType = static_cast<int>(PerformanceEntryType::MEASURE),
+       .startTime = startTimeVal,
+       .duration = durationVal});
 }
 
 double PerformanceEntryReporter::getMarkTime(
     const std::string& markName) const {
   RawPerformanceEntry mark{
-      markName,
-      static_cast<int>(PerformanceEntryType::MARK),
-      0.0,
-      0.0,
-      std::nullopt,
-      std::nullopt,
-      std::nullopt};
+      .name = markName,
+      .entryType = static_cast<int>(PerformanceEntryType::MARK)};
 
   std::lock_guard lock(nameLookupMutex_);
   const auto& marksBuffer = getBuffer(PerformanceEntryType::MARK);
@@ -288,13 +283,13 @@ void PerformanceEntryReporter::logEventEntry(
     double processingEnd,
     uint32_t interactionId) {
   logEntry(
-      {std::move(name),
-       static_cast<int>(PerformanceEntryType::EVENT),
-       startTime,
-       duration,
-       processingStart,
-       processingEnd,
-       interactionId});
+      {.name = std::move(name),
+       .entryType = static_cast<int>(PerformanceEntryType::EVENT),
+       .startTime = startTime,
+       .duration = duration,
+       .processingStart = processingStart,
+       .processingEnd = processingEnd,
+       .interactionId = interactionId});
 }
 
 void PerformanceEntryReporter::scheduleFlushBuffer() {
