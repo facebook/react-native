@@ -49,7 +49,7 @@ const ActionSheetIOS = {
       +anchor?: ?number,
       +tintColor?: ColorValue | ProcessedColorValue,
       +cancelButtonTintColor?: ColorValue | ProcessedColorValue,
-      +userInterfaceStyle?: string,
+      +userInterfaceStyle?: 'light' | 'dark',
       +disabledButtonIndices?: Array<number>,
     |},
     callback: (buttonIndex: number) => void,
