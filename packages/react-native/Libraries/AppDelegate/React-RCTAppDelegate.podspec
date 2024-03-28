@@ -77,6 +77,7 @@ Pod::Spec.new do |s|
   s.dependency "React-CoreModules"
   s.dependency "React-nativeconfig"
   s.dependency "ReactCodegen"
+  s.dependency "React-domnativemodule"
   s.dependency "React-featureflagsnativemodule"
   s.dependency "React-microtasksnativemodule"
 

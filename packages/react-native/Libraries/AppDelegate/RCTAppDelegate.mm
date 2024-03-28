@@ -30,6 +30,7 @@
 #else
 #import <ReactCommon/RCTJscInstance.h>
 #endif
+#import <react/nativemodule/dom/NativeDOM.h>
 #import <react/nativemodule/featureflags/NativeReactNativeFeatureFlags.h>
 #import <react/nativemodule/microtasks/NativeMicrotasks.h>
 
@@ -217,6 +218,10 @@
 
   if (name == facebook::react::NativeMicrotasks::kModuleName) {
     return std::make_shared<facebook::react::NativeMicrotasks>(jsInvoker);
+  }
+
+  if (name == facebook::react::NativeDOM::kModuleName) {
+    return std::make_shared<facebook::react::NativeDOM>(jsInvoker);
   }
 
   return nullptr;
