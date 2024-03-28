@@ -16,9 +16,12 @@ import type ReactNativeStartupTiming from 'react-native/src/private/webapis/perf
 import RNTesterPage from '../../components/RNTesterPage';
 import {RNTesterThemeContext} from '../../components/RNTesterTheme';
 import * as React from 'react';
-import {useContext} from 'react';
+import {useContext, useEffect} from 'react';
 import {Button, StyleSheet, Text, View} from 'react-native';
 import Performance from 'react-native/src/private/webapis/performance/Performance';
+import PerformanceObserver, {
+  type PerformanceEntry,
+} from 'react-native/src/private/webapis/performance/PerformanceObserver';
 
 const {useState, useCallback} = React;
 const performance = new Performance();
@@ -107,6 +110,55 @@ function StartupTimingExample(): React.Node {
   );
 }
 
+function PerformanceObserverUserTimingExample(): React.Node {
+  const theme = useContext(RNTesterThemeContext);
+
+  const [entries, setEntries] = useState<$ReadOnlyArray<PerformanceEntry>>([]);
+
+  useEffect(() => {
+    const observer = new PerformanceObserver(list => {
+      setEntries(list.getEntries());
+    });
+
+    observer.observe({entryTypes: ['mark', 'measure']});
+
+    return () => observer.disconnect();
+  }, []);
+
+  const onPress = useCallback(() => {
+    performance.mark('mark1');
+    performance.mark('mark2');
+    performance.measure('measure1', 'mark1', 'mark2');
+  }, []);
+
+  return (
+    <RNTesterPage
+      noScroll={true}
+      title="PerformanceObserver (marks and measures)">
+      <View style={styles.container}>
+        <Button
+          onPress={onPress}
+          title="Click to log some marks and measures"
+        />
+        <View>
+          {entries.map((entry, index) =>
+            entry.entryType === 'mark' ? (
+              <Text style={{color: theme.LabelColor}} key={index}>
+                Mark {entry.name}: {entry.startTime}
+              </Text>
+            ) : (
+              <Text style={{color: theme.LabelColor}} key={index}>
+                Measure {entry.name}: {entry.startTime} -{' '}
+                {entry.startTime + entry.duration} ({entry.duration}ms)
+              </Text>
+            ),
+          )}
+        </View>
+      </View>
+    </RNTesterPage>
+  );
+}
+
 const styles = StyleSheet.create({
   container: {
     padding: 10,
@@ -127,6 +179,12 @@ exports.examples = [
     title: 'performance.reactNativeStartupTiming',
     render: function (): React.Element<typeof StartupTimingExample> {
       return <StartupTimingExample />;
+    },
+  },
+  {
+    title: 'PerformanceObserver (marks and measures)',
+    render: function (): React.Element<typeof StartupTimingExample> {
+      return <PerformanceObserverUserTimingExample />;
     },
   },
 ];
