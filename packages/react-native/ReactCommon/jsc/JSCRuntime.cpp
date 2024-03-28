@@ -298,8 +298,13 @@ class JSCRuntime : public jsi::Runtime {
     }                          \
   } while (0)
 
-#if defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED)
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 160400
+#define _JSC_HAS_INSPECTABLE
+#endif
+#endif
+#if defined(__MAC_OS_X_VERSION_MAX_ALLOWED)
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 130300
 #define _JSC_HAS_INSPECTABLE
 #endif
 #endif
