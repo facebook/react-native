@@ -201,6 +201,11 @@
   [super setSelectedTextRange:selectedTextRange];
 }
 
+- (void)scrollRangeToVisible:(NSRange)range
+{
+  // Singleline TextInput does not require scrolling after calling setSelectedTextRange (PR 38679).
+}
+
 - (void)paste:(id)sender
 {
   _textWasPasted = YES;
