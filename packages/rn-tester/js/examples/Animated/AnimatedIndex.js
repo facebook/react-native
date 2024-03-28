@@ -21,6 +21,7 @@ import MovingBoxExample from './MovingBoxExample';
 import RotatingImagesExample from './RotatingImagesExample';
 import TransformBounceExample from './TransformBounceExample';
 import TransformStylesExample from './TransformStylesExample';
+import CombineExample from './CombineExample';
 
 export default ({
   framework: 'React',
@@ -43,5 +44,6 @@ export default ({
     TransformBounceExample,
     LoopingExample,
     ContinuousInteractionsExample,
+    CombineExample,
   ],
 }: RNTesterModule);
