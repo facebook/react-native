@@ -763,6 +763,15 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   return RCTRecursiveAccessibilityLabel(self);
 }
 
+- (BOOL)isAccessibilityElement
+{
+  if (self.contentView != nil) {
+    return self.contentView.isAccessibilityElement;
+  }
+
+  return [super isAccessibilityElement];
+}
+
 - (NSString *)accessibilityValue
 {
   const auto &props = static_cast<const ViewProps &>(*_props);
