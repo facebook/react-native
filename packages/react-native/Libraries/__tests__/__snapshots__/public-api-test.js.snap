@@ -1677,7 +1677,13 @@ exports[`public API should not change unintentionally Libraries/Components/Butto
   accessibilityHint?: ?string,
   accessibilityLanguage?: ?Stringish,
 |}>;
-declare const Button: React.AbstractComponent<ButtonProps>;
+declare const Touchable:
+  | typeof TouchableNativeFeedback
+  | typeof TouchableOpacity;
+declare const Button: React.AbstractComponent<
+  ButtonProps,
+  React.ElementRef<typeof Touchable>,
+>;
 declare export default typeof Button;
 "
 `;
