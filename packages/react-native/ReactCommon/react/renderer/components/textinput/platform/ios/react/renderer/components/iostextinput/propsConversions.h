@@ -75,6 +75,18 @@ static TextInputTraits convertRawProp(
       "caretHidden",
       sourceTraits.caretHidden,
       defaultTraits.caretHidden);
+  traits.caretYOffset = convertRawProp(
+    context,
+    rawProps,
+    "caretYOffset",
+    sourceTraits.caretYOffset,
+    defaultTraits.caretYOffset);
+  traits.caretHeight= convertRawProp(
+    context,
+    rawProps,
+    "caretHeight",
+    sourceTraits.caretHeight,
+    defaultTraits.caretHeight);
   traits.clearButtonMode = convertRawProp(
       context,
       rawProps,

@@ -365,6 +365,20 @@ type IOSProps = $ReadOnly<{|
    * @platform ios
    */
   smartInsertDelete?: ?boolean,
+
+  /**
+   * Allows to adjust caret height.
+   * The default value is 0, which means the height of the caret will be calculated automatically
+   * @platform ios
+   */
+  caretYOffset?: ?number,
+
+  /**
+   * Allows to adjust caret position relative to the Y axis
+   * The default value is 0.
+   * @platform ios
+   */
+  caretHeight?: ?number,
 |}>;
 
 type AndroidProps = $ReadOnly<{|
