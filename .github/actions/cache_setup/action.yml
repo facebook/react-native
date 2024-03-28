@@ -1,0 +1,88 @@
+name: cache_setup
+description: "Cache setup"
+inputs:
+  hermes-version:
+    description: "Hermes version"
+    required: true
+  react-native-version:
+    description: "React Native version"
+    required: true
+outputs:
+  cache-hit-hermes-tarball-release:
+    description: "Whether the hermes tarball release cache was hit"
+    value: ${{ steps.cache_hermes_tarball_release.outputs.cache-hit }}
+  cache-hit-hermes-tarball-debug:
+    description: "Whether the hermes tarball debug cache was hit"
+    value: ${{ steps.cache_hermes_tarball_debug.outputs.cache-hit }}
+  cache-hit-macos-bin-release:
+    description: "Whether the macos bin release cache was hit"
+    value: ${{ steps.cache_macos_bin_release.outputs.cache-hit }}
+  cache-hit-macos-bin-debug:
+    description: "Whether the macos bin debug cache was hit"
+    value: ${{ steps.cache_macos_bin_debug.outputs.cache-hit }}
+  cache-hit-dsym-release:
+    description: "Whether the dsym release cache was hit"
+    value: ${{ steps.cache_dsym_release.outputs.cache-hit }}
+  cache-hit-dsym-debug:
+    description: "Whether the dsym debug cache was hit"
+    value: ${{ steps.cache_dsym_debug.outputs.cache-hit }}
+runs:
+  using: composite
+  steps:
+    - name: Cache hermes tarball release
+      id: cache_hermes_tarball_release
+      uses: actions/cache@v4.0.0
+      with:
+        path: /tmp/hermes/hermes-runtime-darwin/hermes-ios-Release.tar.gz
+        key: v4-hermes-tarball-release-${{ inputs.hermes-version }}-${{ inputs.react-native-version }}-${{ hashfiles('packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh') }}
+        enableCrossOsArchive: true
+    - name: Cache hermes tarball debug
+      id: cache_hermes_tarball_debug
+      uses: actions/cache@v4.0.0
+      with:
+        path: /tmp/hermes/hermes-runtime-darwin/hermes-ios-Debug.tar.gz
+        key: v4-hermes-tarball-debug-${{ inputs.hermes-version }}-${{ inputs.react-native-version }}-${{ hashfiles('packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh') }}
+        enableCrossOsArchive: true
+    - name: Cache macos bin release
+      id: cache_macos_bin_release
+      uses: actions/cache@v4.0.0
+      with:
+        path: /tmp/hermes/osx-bin/Release
+        key: v2-hermes-release-macosx-${{ inputs.hermes-version }}-${{ inputs.react-native-version }}
+        enableCrossOsArchive: true
+    - name: Cache macos bin debug
+      id: cache_macos_bin_debug
+      uses: actions/cache@v4.0.0
+      with:
+        path: /tmp/hermes/osx-bin/Debug
+        key: v2-hermes-debug-macosx-${{ inputs.hermes-version }}-${{ inputs.react-native-version }}
+        enableCrossOsArchive: true
+    - name: Cache dsym release
+      id: cache_dsym_release
+      uses: actions/cache@v4.0.0
+      with:
+        path: /tmp/hermes/dSYM/Release
+        key: v2-hermes-release-dsym-${{ inputs.hermes-version }}-${{ inputs.react-native-version }}
+        enableCrossOsArchive: true
+    - name: Cache dsym debug
+      id: cache_dsym_debug
+      uses: actions/cache@v4.0.0
+      with:
+        path: /tmp/hermes/dSYM/Debug
+        key: v2-hermes-debug-dsym-${{ inputs.hermes-version }}-${{ inputs.react-native-version }}
+        enableCrossOsArchive: true
+    - name: HermesC Apple
+      id: hermesc_apple
+      uses: actions/cache@v4.0.0
+      with:
+        path: /tmp/hermes/hermesc-apple
+        key: v2-hermesc-apple-${{ inputs.hermes-version }}-${{ inputs.react-native-version }}
+        enableCrossOsArchive: true
+    - name: Cache hermes workspace
+      uses: actions/cache@v4.0.0
+      with:
+        path: |
+          /tmp/hermes/download/
+          /tmp/hermes/hermes/
+        key: v5-hermes-${{ github.run_number }}-${{ inputs.hermes-version }}
+        enableCrossOsArchive: true

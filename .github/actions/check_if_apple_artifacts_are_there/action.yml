@@ -1,0 +1,56 @@
+name: check_apple_artifacts_present
+description: "Check if the required artifacts already exist"
+inputs:
+  flavor:
+    description: "Flavor to check"
+    required: true
+    default: All
+outputs:
+  artifacts_present:
+    description: "Whether the artifacts are present or not"
+    value: ${{ steps.check_if_files_exist.outputs.ARTIFACTS_PRESENT }}
+runs:
+  using: composite
+  steps:
+    - name: Export files to be checked
+      if: ${{ inputs.flavor == 'All' }}
+      run: |
+        echo "/tmp/hermes/Release_tarball_present" > /tmp/hermes_files
+        echo "/tmp/hermes/Debug_tarball_present" >> /tmp/hermes_files
+        echo "/tmp/hermes/Release_osx_bin" >> /tmp/hermes_files
+        echo "/tmp/hermes/Debug_osx_bin" >> /tmp/hermes_files
+        echo "/tmp/hermes/Release_dSYM" >> /tmp/hermes_files
+        echo "/tmp/hermes/Debug_dSYM" >> /tmp/hermes_files
+      shell: bash
+    - name: Export files to be checked
+      if: ${{ inputs.flavor != 'All' }}
+      run: |
+        echo "/tmp/hermes/<< parameters.flavor >>_tarball_present" > /tmp/hermes_files
+        echo "/tmp/hermes/<< parameters.flavor >>_osx_bin" >> /tmp/hermes_files
+        echo "/tmp/hermes/<< parameters.flavor >>_dSYM" >> /tmp/hermes_files
+      shell: bash
+    - name: Check if files exist
+      id: check_if_files_exist
+      run: |
+        files=($(cat /tmp/hermes_files))
+        # Initialize a flag indicating all files exist
+
+        all_files_exist=true
+
+        for file in "${files[@]}"; do
+            if [[ ! -f "$file" ]]; then
+                all_files_exist=false
+                echo "$file does not exist."
+            else
+                echo "$file exist."
+            fi
+        done
+
+        if [[  "$all_files_exist" == true ]]; then
+          echo "Tarball, osx-bin and dSYM are present. Halting this job"
+          #circleci-agent step halt
+          echo "ARTIFACTS_PRESENT=true" >> $GITHUB_ENV
+        else
+          echo "ARTIFACTS_PRESENT=false" >> $GITHUB_ENV
+        fi
+      shell: bash
