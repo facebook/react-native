@@ -16,7 +16,17 @@
     "support"
   ],
   "bugs": "https://github.com/facebook/react-native/issues",
-  "engines": {
-    "node": ">=18"
-  }
+  "exports": {
+    "./path-support": "./src/path-support.js",
+    "./path-support.js": "./src/path-support.js",
+    "./registry": "./src/registry.js",
+    "./registry.js": "./src/registry.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "path-support.js",
+    "registry.js",
+    "src"
+  ]
 }

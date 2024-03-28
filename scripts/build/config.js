@@ -43,6 +43,10 @@ export type BuildConfig = $ReadOnly<{
 const buildConfig /*: BuildConfig */ = {
   /* eslint sort-keys: "error" */
   packages: {
+    assets: {
+      target: 'node',
+      emitTypeScriptDefs: true,
+    },
     'community-cli-plugin': {
       target: 'node',
     },
