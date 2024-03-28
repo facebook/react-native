@@ -6,6 +6,7 @@
  */
 
 #include "NativeMutationObserver.h"
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
@@ -53,8 +54,8 @@ void NativeMutationObserver::unobserve(
 
 void NativeMutationObserver::connect(
     jsi::Runtime& runtime,
-    AsyncCallback<> notifyMutationObservers,
-    jsi::Function getPublicInstanceFromInstanceHandle) {
+    jsi::Function notifyMutationObservers,
+    SyncCallback<jsi::Value(jsi::Value)> getPublicInstanceFromInstanceHandle) {
   auto& uiManager = getUIManagerFromRuntime(runtime);
 
   // MutationObserver is not compatible with background executor.
@@ -68,25 +69,10 @@ void NativeMutationObserver::connect(
         "MutationObserver: could not start observation because MutationObserver is incompatible with UIManager using background executor.");
   }
 
-  getPublicInstanceFromInstanceHandle_ =
-      jsi::Value(runtime, getPublicInstanceFromInstanceHandle);
-
-  // This should always be called from the JS thread, as it's unsafe to call
-  // into JS otherwise (via `getPublicInstanceFromInstanceHandle`).
-  getPublicInstanceFromShadowNode_ = [&](const ShadowNode& shadowNode) {
-    auto instanceHandle = shadowNode.getInstanceHandle(runtime);
-    if (!instanceHandle.isObject() ||
-        !getPublicInstanceFromInstanceHandle_.isObject() ||
-        !getPublicInstanceFromInstanceHandle_.asObject(runtime).isFunction(
-            runtime)) {
-      return jsi::Value::null();
-    }
-    return getPublicInstanceFromInstanceHandle_.asObject(runtime)
-        .asFunction(runtime)
-        .call(runtime, instanceHandle);
-  };
-
-  notifyMutationObservers_ = std::move(notifyMutationObservers);
+  runtime_ = &runtime;
+  notifyMutationObservers_.emplace(std::move(notifyMutationObservers));
+  getPublicInstanceFromInstanceHandle_.emplace(
+      std::move(getPublicInstanceFromInstanceHandle));
 
   auto onMutationsCallback = [&](std::vector<MutationRecord>& records) {
     return onMutations(records);
@@ -98,9 +84,9 @@ void NativeMutationObserver::connect(
 void NativeMutationObserver::disconnect(jsi::Runtime& runtime) {
   auto& uiManager = getUIManagerFromRuntime(runtime);
   mutationObserverManager_.disconnect(uiManager);
-  getPublicInstanceFromInstanceHandle_ = jsi::Value::undefined();
-  getPublicInstanceFromShadowNode_ = nullptr;
-  notifyMutationObservers_ = nullptr;
+  runtime_ = nullptr;
+  notifyMutationObservers_.reset();
+  getPublicInstanceFromInstanceHandle_.reset();
 }
 
 std::vector<NativeMutationRecord> NativeMutationObserver::takeRecords(
@@ -112,6 +98,16 @@ std::vector<NativeMutationRecord> NativeMutationObserver::takeRecords(
   return records;
 }
 
+jsi::Value NativeMutationObserver::getPublicInstanceFromShadowNode(
+    const ShadowNode& shadowNode) const {
+  auto instanceHandle = shadowNode.getInstanceHandle(*runtime_);
+  if (!instanceHandle.isObject()) {
+    return jsi::Value::null();
+  }
+  return getPublicInstanceFromInstanceHandle_.value().call(
+      std::move(instanceHandle));
+}
+
 std::vector<jsi::Value>
 NativeMutationObserver::getPublicInstancesFromShadowNodes(
     const std::vector<ShadowNode::Shared>& shadowNodes) const {
@@ -119,7 +115,7 @@ NativeMutationObserver::getPublicInstancesFromShadowNodes(
   publicInstances.reserve(shadowNodes.size());
 
   for (const auto& shadowNode : shadowNodes) {
-    publicInstances.push_back(getPublicInstanceFromShadowNode_(*shadowNode));
+    publicInstances.push_back(getPublicInstanceFromShadowNode(*shadowNode));
   }
 
   return publicInstances;
@@ -133,7 +129,7 @@ void NativeMutationObserver::onMutations(std::vector<MutationRecord>& records) {
         record.mutationObserverId,
         // FIXME(T157129303) Instead of assuming we can call into JS from here,
         // we should use an API that explicitly indicates it.
-        getPublicInstanceFromShadowNode_(*record.targetShadowNode),
+        getPublicInstanceFromShadowNode(*record.targetShadowNode),
         getPublicInstancesFromShadowNodes(record.addedShadowNodes),
         getPublicInstancesFromShadowNodes(record.removedShadowNodes)});
   }
@@ -157,7 +153,17 @@ void NativeMutationObserver::notifyMutationObserversIfNecessary() {
 
   if (dispatchNotification) {
     SystraceSection s("NativeMutationObserver::notifyObservers");
-    notifyMutationObservers_();
+    if (ReactNativeFeatureFlags::enableMicrotasks()) {
+      runtime_->queueMicrotask(notifyMutationObservers_.value());
+    } else {
+      jsInvoker_->invokeAsync([&](jsi::Runtime& runtime) {
+        // It's possible that the last observer was disconnected before we could
+        // dispatch this notification.
+        if (notifyMutationObservers_) {
+          notifyMutationObservers_.value().call(runtime);
+        }
+      });
+    }
   }
 }
 
