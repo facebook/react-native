@@ -18,7 +18,6 @@ import {PerformanceEntry} from './PerformanceEntry';
 import PerformanceEventTiming from './PerformanceEventTiming';
 
 export const RawPerformanceEntryTypeValues = {
-  UNDEFINED: 0,
   MARK: 1,
   MEASURE: 2,
   EVENT: 3,
@@ -56,10 +55,6 @@ export function rawToPerformanceEntryType(
       return 'measure';
     case RawPerformanceEntryTypeValues.EVENT:
       return 'event';
-    case RawPerformanceEntryTypeValues.UNDEFINED:
-      throw new TypeError(
-        "rawToPerformanceEntryType: UNDEFINED can't be cast to PerformanceEntryType",
-      );
     default:
       throw new TypeError(
         `rawToPerformanceEntryType: unexpected performance entry type received: ${type}`,
