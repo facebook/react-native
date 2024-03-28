@@ -7,6 +7,8 @@
 
 package com.facebook.react.uimanager;
 
+import android.graphics.Matrix;
+
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -45,6 +47,23 @@ public class TransformHelper {
     return inRadians ? value : MatrixMathHelper.degreesToRadians(value);
   }
 
+  private static double convertToDegrees(ReadableMap transformMap, String key) {
+    double value;
+    boolean inRadians = true;
+    if (transformMap.getType(key) == ReadableType.String) {
+      String stringValue = transformMap.getString(key);
+      if (stringValue.endsWith("deg")) {
+        inRadians = false;
+      }
+      if (stringValue.endsWith("rad") || stringValue.endsWith("deg")) {
+        stringValue = stringValue.substring(0, stringValue.length() - 3);
+      }
+      value = Float.parseFloat(stringValue);
+    } else {
+      value = transformMap.getDouble(key);
+    }
+    return inRadians ? MatrixMathHelper.radiansToDegrees(value) : value;
+  }
   public static void processTransform(ReadableArray transforms, double[] result) {
     processTransform(transforms, result, 0, 0, null);
   }
@@ -130,6 +149,76 @@ public class TransformHelper {
     }
   }
 
+  public static Matrix tryProcessTransformBySkiaMatrix(ReadableArray transforms,
+                                                       float viewWidth,
+                                                       float viewHeight,
+                                                       ReadableArray transformOrigin) {
+    if (transforms.size() == 16 && transforms.getType(0) == ReadableType.Number) {
+      return null;
+    } else {
+      // Check for unsupported types.
+      for (int transformIdx = 0, size = transforms.size(); transformIdx < size; transformIdx++) {
+        ReadableMap transform = transforms.getMap(transformIdx);
+        String transformType = transform.keySetIterator().nextKey();
+
+        if ("matrix".equals(transformType) || "perspective".equals(transformType)
+          || "rotateX".equals(transformType) || "rotateY".equals(transformType)) {
+          return null;
+        } else if ("translate".equals(transformType)) {
+          ReadableArray value = transform.getArray(transformType);
+          if (value.size() > 2 && value.getDouble(2) != 0d) {
+            return null;
+          }
+        }
+      }
+
+      Matrix matrix = new Matrix();
+      float[] offsets = getTranslateForTransformOrigin(viewWidth, viewHeight, transformOrigin);
+      float originX = viewWidth / 2, originY = viewHeight / 2;
+      if (offsets == null) {
+        offsets = new float[]{0,0};
+      }
+      matrix.postTranslate(offsets[0], offsets[1]);
+      for (int transformIdx = 0, size = transforms.size(); transformIdx < size; transformIdx++) {
+        ReadableMap transform = transforms.getMap(transformIdx);
+        String transformType = transform.keySetIterator().nextKey();
+
+        if ("rotate".equals(transformType) || "rotateZ".equals(transformType)) {
+          matrix.postRotate((float) convertToDegrees(transform, transformType), originX, originY);
+        } else if ("scale".equals(transformType)) {
+          float scale = (float) transform.getDouble(transformType);
+          matrix.postScale(scale, scale, originX, originY);
+        } else if ("scaleX".equals(transformType)) {
+          matrix.postScale((float) transform.getDouble(transformType), 1, originX, originY);
+        } else if ("scaleY".equals(transformType)) {
+          matrix.postScale(1, (float) transform.getDouble(transformType), originX, originY);
+        } else if ("translate".equals(transformType)) {
+          ReadableArray value = transform.getArray(transformType);
+          double x = value.getDouble(0);
+          double y = value.getDouble(1);
+          originX += x;
+          originY += y;
+          matrix.postTranslate(PixelUtil.toPixelFromDIP((float) x),
+            PixelUtil.toPixelFromDIP((float) y));
+        } else if ("translateX".equals(transformType)) {
+          double x = transform.getDouble(transformType);
+          originX += x;
+          matrix.postTranslate(PixelUtil.toPixelFromDIP(x), 0);
+        } else if ("translateY".equals(transformType)) {
+          double y = transform.getDouble(transformType);
+          originY += y;
+          matrix.postTranslate(0, PixelUtil.toPixelFromDIP(y));
+        } else if ("skewX".equals(transformType)) {
+          matrix.postSkew((float) convertToRadians(transform, transformType), 0, originX, originY);
+        } else if ("skewY".equals(transformType)) {
+          matrix.postSkew(0, (float) convertToRadians(transform, transformType), originX, originY);
+        }
+      }
+      matrix.postTranslate(-offsets[0], -offsets[1]);
+      return matrix;
+    }
+  }
+
   private static float[] getTranslateForTransformOrigin(
       float viewWidth, float viewHeight, ReadableArray transformOrigin) {
     if (transformOrigin == null || (viewHeight == 0 && viewWidth == 0)) {
@@ -163,4 +252,5 @@ public class TransformHelper {
 
     return new float[] {newTranslateX, newTranslateY, newTranslateZ};
   }
+
 }
