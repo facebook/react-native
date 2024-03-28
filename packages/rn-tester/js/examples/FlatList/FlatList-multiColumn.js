@@ -27,7 +27,14 @@ const {
 } = require('../../components/ListExampleShared');
 const RNTesterPage = require('../../components/RNTesterPage');
 const React = require('react');
-const {Alert, FlatList, StyleSheet, Text, View} = require('react-native');
+const {
+  Alert,
+  FlatList,
+  StyleSheet,
+  Text,
+  View,
+  Pressable,
+} = require('react-native');
 const infoLog = require('react-native/Libraries/Utilities/infoLog');
 
 class MultiColumnExample extends React.PureComponent<
@@ -62,6 +69,24 @@ class MultiColumnExample extends React.PureComponent<
 
   _setBooleanValue: string => boolean => void = key => value =>
     this.setState({[key]: value});
+
+  _removeThirdItem = () => {
+    let clonedData = [...this.state.data];
+    clonedData.splice(3, 1);
+    this.setState(state => ({
+      ...state,
+      data: clonedData,
+    }));
+  };
+
+  _removeFifthItem = () => {
+    let clonedData = [...this.state.data];
+    clonedData.splice(5, 1);
+    this.setState(state => ({
+      ...state,
+      data: clonedData,
+    }));
+  };
 
   render(): React.Node {
     const filterRegex = new RegExp(String(this.state.filterText), 'i');
@@ -102,6 +127,14 @@ class MultiColumnExample extends React.PureComponent<
               this.state.logViewable,
               this._setBooleanValue('logViewable'),
             )}
+          </View>
+          <View style={styles.row}>
+            <Pressable onPress={this._removeThirdItem} style={styles.button}>
+              <Text>Remove item #3</Text>
+            </Pressable>
+            <Pressable onPress={this._removeFifthItem} style={styles.button}>
+              <Text>Remove item #5</Text>
+            </Pressable>
           </View>
         </View>
         <SeparatorComponent />
@@ -203,6 +236,11 @@ const styles = StyleSheet.create({
   },
   searchRow: {
     padding: 10,
+  },
+  button: {
+    backgroundColor: 'lightblue',
+    padding: 10,
+    margin: 10,
   },
 });
 
