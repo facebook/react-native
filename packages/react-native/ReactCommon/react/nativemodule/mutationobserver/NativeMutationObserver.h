@@ -10,7 +10,6 @@
 #include <FBReactNativeSpec/FBReactNativeSpecJSI.h>
 #include <react/renderer/observers/mutation/MutationObserverManager.h>
 #include <react/renderer/uimanager/UIManager.h>
-#include <functional>
 #include <vector>
 
 namespace facebook::react {
@@ -60,8 +59,8 @@ class NativeMutationObserver
 
   void connect(
       jsi::Runtime& runtime,
-      AsyncCallback<> notifyMutationObservers,
-      jsi::Function getPublicInstanceFromInstanceHandle);
+      jsi::Function notifyMutationObservers,
+      SyncCallback<jsi::Value(jsi::Value)> getPublicInstanceFromInstanceHandle);
 
   void disconnect(jsi::Runtime& runtime);
 
@@ -72,17 +71,22 @@ class NativeMutationObserver
 
   std::vector<NativeMutationRecord> pendingRecords_;
 
-  // This is passed to `connect` so we can retain references to public instances
-  // when mutation occur, before React cleans up unmounted instances.
-  jsi::Value getPublicInstanceFromInstanceHandle_ = jsi::Value::undefined();
-  std::function<jsi::Value(const ShadowNode&)> getPublicInstanceFromShadowNode_;
+  // We need to keep a reference to the JS runtime so we can schedule the
+  // notifications as microtasks when mutations occur. This is safe because
+  // mutations will only happen when executing JavaScript and because this
+  // native module will never survive the runtime.
+  jsi::Runtime* runtime_{};
 
   bool notifiedMutationObservers_{};
-  std::function<void()> notifyMutationObservers_;
+  std::optional<jsi::Function> notifyMutationObservers_;
+  std::optional<SyncCallback<jsi::Value(jsi::Value)>>
+      getPublicInstanceFromInstanceHandle_;
 
   void onMutations(std::vector<MutationRecord>& records);
   void notifyMutationObserversIfNecessary();
 
+  jsi::Value getPublicInstanceFromShadowNode(
+      const ShadowNode& shadowNode) const;
   std::vector<jsi::Value> getPublicInstancesFromShadowNodes(
       const std::vector<ShadowNode::Shared>& shadowNodes) const;
 };
