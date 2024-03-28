@@ -37,6 +37,13 @@ export type TargetCapabilityFlags = $ReadOnly<{
    * In the proxy, this disables intercepting and storing network requests.
    */
   nativeNetworkInspection?: boolean,
+
+  /**
+   * The target supports the modern `rn_fusebox.html` entry point.
+   *
+   * In the launch flow, this controls the Chrome DevTools entrypoint that is used.
+   */
+  prefersFuseboxFrontend?: boolean,
 }>;
 
 // Page information received from the device. New page is created for

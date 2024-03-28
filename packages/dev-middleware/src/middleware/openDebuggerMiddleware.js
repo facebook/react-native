@@ -107,6 +107,9 @@ export default function openDebuggerMiddleware({
         return;
       }
 
+      const useFuseboxEntryPoint =
+        target.reactNative.capabilities?.prefersFuseboxFrontend;
+
       try {
         switch (launchType) {
           case 'launch':
@@ -122,6 +125,7 @@ export default function openDebuggerMiddleware({
                   experiments,
                   target.webSocketDebuggerUrl,
                   serverBaseUrl,
+                  {useFuseboxEntryPoint},
                 ),
               ),
             );
@@ -133,7 +137,7 @@ export default function openDebuggerMiddleware({
                 experiments,
                 target.webSocketDebuggerUrl,
                 serverBaseUrl,
-                {relative: true},
+                {relative: true, useFuseboxEntryPoint},
               ),
             });
             res.end();
