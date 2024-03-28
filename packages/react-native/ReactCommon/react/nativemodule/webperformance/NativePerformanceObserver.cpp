@@ -123,8 +123,8 @@ std::vector<RawPerformanceEntry> NativePerformanceObserver::getEntries(
     std::optional<int32_t> entryType,
     std::optional<std::string> entryName) {
   return PerformanceEntryReporter::getInstance().getEntries(
-      entryType ? static_cast<PerformanceEntryType>(*entryType)
-                : PerformanceEntryType::UNDEFINED,
+      entryType ? std::optional{static_cast<PerformanceEntryType>(*entryType)}
+                : std::nullopt,
       entryName ? entryName->c_str() : nullptr);
 }
 

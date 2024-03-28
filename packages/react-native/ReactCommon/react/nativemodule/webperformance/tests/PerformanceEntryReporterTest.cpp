@@ -94,35 +94,29 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestReportMarks) {
   reporter.mark("mark0", 0.0);
   reporter.mark("mark1", 1.0);
   reporter.mark("mark2", 2.0);
+  // Report mark0 again
+  reporter.mark("mark0", 3.0);
 
   auto res = reporter.popPendingEntries();
   const auto& entries = res.entries;
 
   ASSERT_EQ(0, res.droppedEntriesCount);
-  ASSERT_EQ(3, entries.size());
+  ASSERT_EQ(4, entries.size());
 
   const std::vector<RawPerformanceEntry> expected = {
-      {"mark0",
-       static_cast<int>(PerformanceEntryType::MARK),
-       0.0,
-       0.0,
-       std::nullopt,
-       std::nullopt,
-       std::nullopt},
-      {"mark1",
-       static_cast<int>(PerformanceEntryType::MARK),
-       1.0,
-       0.0,
-       std::nullopt,
-       std::nullopt,
-       std::nullopt},
-      {"mark2",
-       static_cast<int>(PerformanceEntryType::MARK),
-       2.0,
-       0.0,
-       std::nullopt,
-       std::nullopt,
-       std::nullopt}};
+      {.name = "mark0",
+       .entryType = static_cast<int>(PerformanceEntryType::MARK),
+       .startTime = 0.0},
+      {.name = "mark1",
+       .entryType = static_cast<int>(PerformanceEntryType::MARK),
+       .startTime = 1.0},
+      {.name = "mark2",
+       .entryType = static_cast<int>(PerformanceEntryType::MARK),
+       .startTime = 2.0},
+      {.name = "mark0",
+       .entryType = static_cast<int>(PerformanceEntryType::MARK),
+       .startTime = 3.0},
+  };
 
   ASSERT_EQ(expected, entries);
 }
@@ -152,6 +146,9 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestReportMeasures) {
   reporter.mark("mark3", 2.0);
   reporter.measure("measure6", 2.0, 2.0);
   reporter.mark("mark4", 2.0);
+  reporter.mark("mark4", 3.0);
+  // Uses the last reported time for mark4
+  reporter.measure("measure7", 0.0, 0.0, std::nullopt, "mark1", "mark4");
 
   auto res = reporter.popPendingEntries();
   const auto& entries = res.entries;
@@ -159,91 +156,56 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestReportMeasures) {
   ASSERT_EQ(0, res.droppedEntriesCount);
 
   const std::vector<RawPerformanceEntry> expected = {
-      {"mark0",
-       static_cast<int>(PerformanceEntryType::MARK),
-       0.0,
-       0.0,
-       std::nullopt,
-       std::nullopt,
-       std::nullopt},
-      {"measure0",
-       static_cast<int>(PerformanceEntryType::MEASURE),
-       0.0,
-       2.0,
-       std::nullopt,
-       std::nullopt,
-       std::nullopt},
-      {"measure1",
-       static_cast<int>(PerformanceEntryType::MEASURE),
-       0.0,
-       4.0,
-       std::nullopt,
-       std::nullopt,
-       std::nullopt},
-      {"mark1",
-       static_cast<int>(PerformanceEntryType::MARK),
-       1.0,
-       0.0,
-       std::nullopt,
-       std::nullopt,
-       std::nullopt},
-      {"measure2",
-       static_cast<int>(PerformanceEntryType::MEASURE),
-       1.0,
-       1.0,
-       std::nullopt,
-       std::nullopt,
-       std::nullopt},
-      {"measure3",
-       static_cast<int>(PerformanceEntryType::MEASURE),
-       1.0,
-       5.0,
-       std::nullopt,
-       std::nullopt,
-       std::nullopt},
-      {"measure4",
-       static_cast<int>(PerformanceEntryType::MEASURE),
-       1.5,
-       0.5,
-       std::nullopt,
-       std::nullopt,
-       std::nullopt},
-      {"mark2",
-       static_cast<int>(PerformanceEntryType::MARK),
-       2.0,
-       0.0,
-       std::nullopt,
-       std::nullopt,
-       std::nullopt},
-      {"mark3",
-       static_cast<int>(PerformanceEntryType::MARK),
-       2.0,
-       0.0,
-       std::nullopt,
-       std::nullopt,
-       std::nullopt},
-      {"mark4",
-       static_cast<int>(PerformanceEntryType::MARK),
-       2.0,
-       0.0,
-       std::nullopt,
-       std::nullopt,
-       std::nullopt},
-      {"measure6",
-       static_cast<int>(PerformanceEntryType::MEASURE),
-       2.0,
-       0.0,
-       std::nullopt,
-       std::nullopt,
-       std::nullopt},
-      {"measure5",
-       static_cast<int>(PerformanceEntryType::MEASURE),
-       2.0,
-       1.5,
-       std::nullopt,
-       std::nullopt,
-       std::nullopt},
-  };
+      {.name = "mark0",
+       .entryType = static_cast<int>(PerformanceEntryType::MARK),
+       .startTime = 0.0},
+      {.name = "measure0",
+       .entryType = static_cast<int>(PerformanceEntryType::MEASURE),
+       .startTime = 0.0,
+       .duration = 2.0},
+      {.name = "measure1",
+       .entryType = static_cast<int>(PerformanceEntryType::MEASURE),
+       .startTime = 0.0,
+       .duration = 4.0},
+      {.name = "mark1",
+       .entryType = static_cast<int>(PerformanceEntryType::MARK),
+       .startTime = 1.0},
+      {.name = "measure2",
+       .entryType = static_cast<int>(PerformanceEntryType::MEASURE),
+       .startTime = 1.0,
+       .duration = 1.0},
+      {.name = "measure7",
+       .entryType = static_cast<int>(PerformanceEntryType::MEASURE),
+       .startTime = 1.0,
+       .duration = 2.0},
+      {.name = "measure3",
+       .entryType = static_cast<int>(PerformanceEntryType::MEASURE),
+       .startTime = 1.0,
+       .duration = 5.0},
+      {.name = "measure4",
+       .entryType = static_cast<int>(PerformanceEntryType::MEASURE),
+       .startTime = 1.5,
+       .duration = 0.5},
+      {.name = "mark2",
+       .entryType = static_cast<int>(PerformanceEntryType::MARK),
+       .startTime = 2.0},
+      {.name = "mark3",
+       .entryType = static_cast<int>(PerformanceEntryType::MARK),
+       .startTime = 2.0},
+      {.name = "mark4",
+       .entryType = static_cast<int>(PerformanceEntryType::MARK),
+       .startTime = 2.0},
+      {.name = "measure6",
+       .entryType = static_cast<int>(PerformanceEntryType::MEASURE),
+       .startTime = 2.0,
+       .duration = 0.0},
+      {.name = "measure5",
+       .entryType = static_cast<int>(PerformanceEntryType::MEASURE),
+       .startTime = 2.0,
+       .duration = 1.5},
+      {.name = "mark4",
+       .entryType = static_cast<int>(PerformanceEntryType::MARK),
+       .startTime = 3.0}};
 
   ASSERT_EQ(expected, entries);
 }
@@ -303,8 +265,7 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestGetEntries) {
   const auto marks = reporter.getEntries(PerformanceEntryType::MARK);
 
   const auto measures = reporter.getEntries(PerformanceEntryType::MEASURE);
-  const auto common_name =
-      reporter.getEntries(PerformanceEntryType::UNDEFINED, "common_name");
+  const auto common_name = reporter.getEntries(std::nullopt, "common_name");
 
   reporter.getEntries();
   const auto all = reporter.getEntries();
@@ -342,7 +303,7 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestClearEntries) {
   reporter.measure("measure3", 0.0, 0.0, 5.0, "mark1");
   reporter.measure("measure4", 1.5, 0.0, std::nullopt, std::nullopt, "mark2");
 
-  reporter.clearEntries(PerformanceEntryType::UNDEFINED, "common_name");
+  reporter.clearEntries(std::nullopt, "common_name");
   auto e1 = reporter.getEntries();
 
   ASSERT_EQ(6, e1.size());

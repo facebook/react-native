@@ -21,14 +21,15 @@ class PerformanceEntryReporter;
 using RawPerformanceEntryType = int32_t;
 
 using RawPerformanceEntry = NativePerformanceObserverCxxRawPerformanceEntry<
-    std::string,
-    RawPerformanceEntryType,
-    double,
-    double,
+    /* name */ std::string,
+    /* type */ RawPerformanceEntryType,
+    /* startTime */ double,
+    /* duration */ double,
+
     // For "event" entries only:
-    std::optional<double>,
-    std::optional<double>,
-    std::optional<uint32_t>>;
+    /* processingStart */ std::optional<double>,
+    /* processingEnd */ std::optional<double>,
+    /* interactionId */ std::optional<uint32_t>>;
 
 template <>
 struct Bridging<RawPerformanceEntry>
