@@ -813,6 +813,7 @@ jobs:
               exit 0
             fi
 
+            export RELEASE_VERSION=$(cat /tmp/react-native-version)
             if [[ "$SLICE" == "macosx" ]]; then
               echo "[HERMES] Building Hermes for MacOS"
               export MAC_DEPLOYMENT_TARGET=10.13
@@ -824,6 +825,7 @@ jobs:
               BUILD_TYPE="<< parameters.flavor >>" ./utils/build-ios-framework.sh "$SLICE"
               unset IOS_DEPLOYMENT_TARGET
             fi
+            unset RELEASE_VERSION
 
             echo "Moving from build_$SLICE to $FINAL_PATH"
             mv build_"$SLICE" "$FINAL_PATH"
@@ -903,7 +905,9 @@ jobs:
             cd ./packages/react-native/sdks/hermes || exit 1
             echo "[HERMES] Creating the universal framework"
             export IOS_DEPLOYMENT_TARGET=13.4
+            export RELEASE_VERSION=$(cat /tmp/react-native-version)
             ./utils/build-ios-framework.sh build_framework
+            unset RELEASE_VERSION
             unset IOS_DEPLOYMENT_TARGET
       - run:
           name: Package the Hermes Apple frameworks
