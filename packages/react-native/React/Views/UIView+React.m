@@ -12,6 +12,7 @@
 #import "RCTAssert.h"
 #import "RCTLog.h"
 #import "RCTShadowView.h"
+#import "RCTConvert+Transform.h"
 
 @implementation UIView (React)
 
@@ -205,22 +206,23 @@
   self.bounds = bounds;
 
   id transformOrigin = objc_getAssociatedObject(self, @selector(reactTransformOrigin));
-  if (transformOrigin) {
+  id transform = objc_getAssociatedObject(self, @selector(reactTransform));
+  if (transformOrigin || transform) {
     updateTransform(self);
   }
 }
 
 #pragma mark - Transforms
 
-- (CATransform3D)reactTransform
+- (NSArray*)reactTransform
 {
   id obj = objc_getAssociatedObject(self, _cmd);
-  return obj != nil ? [obj CATransform3DValue] : CATransform3DIdentity;
+  return obj;
 }
 
-- (void)setReactTransform:(CATransform3D)reactTransform
+- (void)setReactTransform:(NSArray*)reactTransform
 {
-  objc_setAssociatedObject(self, @selector(reactTransform), @(reactTransform), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+  objc_setAssociatedObject(self, @selector(reactTransform), reactTransform, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
   updateTransform(self);
 }
 
@@ -245,10 +247,14 @@
 
 static void updateTransform(UIView *view)
 {
-  CATransform3D transform;
+  CGSize size = view.bounds.size;
+  if (CGSizeEqualToSize(CGSizeZero, size)) {
+    return;
+  };
+
+  CATransform3D transform = [RCTConvert CATransform3D: view.reactTransform withWidth: size.width height:size.height];
   id rawTansformOrigin = objc_getAssociatedObject(view, @selector(reactTransformOrigin));
   if (rawTansformOrigin) {
-    CGSize size = view.bounds.size;
     CGFloat anchorPointX = 0;
     CGFloat anchorPointY = 0;
     CGFloat anchorPointZ = 0;
@@ -267,11 +273,9 @@ static void updateTransform(UIView *view)
     }
     anchorPointZ = transformOrigin.z;
     transform = CATransform3DConcat(
-        view.reactTransform, CATransform3DMakeTranslation(anchorPointX, anchorPointY, anchorPointZ));
+        transform, CATransform3DMakeTranslation(anchorPointX, anchorPointY, anchorPointZ));
     transform =
         CATransform3DConcat(CATransform3DMakeTranslation(-anchorPointX, -anchorPointY, -anchorPointZ), transform);
-  } else {
-    transform = view.reactTransform;
   }
 
   view.layer.transform = transform;
