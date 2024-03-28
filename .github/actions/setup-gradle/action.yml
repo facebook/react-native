@@ -1,0 +1,14 @@
+name: Setup gradle
+description: 'Set up your GitHub Actions workflow with a specific version of gradle'
+inputs:
+  gradle-version:
+    description: 'The node.js version to use'
+    required: false
+    default: '8.6'
+runs:
+  using: "composite"
+  steps:
+    - name: Setup gradle
+      uses: gradle/actions/setup-gradle@v3
+      with:
+        gradle-version: ${{ inputs.gradle-version }}
