@@ -848,6 +848,17 @@ module.exports = ([
     },
   },
   {
+    title: 'Long text behavior',
+    render: function (): React.Node {
+      return (
+        <TextInput
+          style={styles.default}
+          defaultValue="I wanted to send a shorter text, but my keyboard started a protest for word count equality!"
+        />
+      );
+    },
+  },
+  {
     name: 'maxLength',
     title: "Live Re-Write (<sp>  ->  '_') + maxLength",
     render: function (): React.Node {
