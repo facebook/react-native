@@ -2143,52 +2143,6 @@ public abstract interface class com/facebook/react/devsupport/DevSupportManagerF
 	public abstract fun create (Landroid/content/Context;Lcom/facebook/react/devsupport/ReactInstanceDevHelper;Ljava/lang/String;ZLcom/facebook/react/devsupport/interfaces/RedBoxHandler;Lcom/facebook/react/devsupport/interfaces/DevBundleDownloadListener;ILjava/util/Map;Lcom/facebook/react/common/SurfaceDelegateFactory;Lcom/facebook/react/devsupport/interfaces/DevLoadingViewManager;)Lcom/facebook/react/devsupport/interfaces/DevSupportManager;
 }
 
-public class com/facebook/react/devsupport/DisabledDevSupportManager : com/facebook/react/devsupport/interfaces/DevSupportManager {
-	public fun <init> ()V
-	public fun addCustomDevOption (Ljava/lang/String;Lcom/facebook/react/devsupport/interfaces/DevOptionHandler;)V
-	public fun createRootView (Ljava/lang/String;)Landroid/view/View;
-	public fun createSurfaceDelegate (Ljava/lang/String;)Lcom/facebook/react/common/SurfaceDelegate;
-	public fun destroyRootView (Landroid/view/View;)V
-	public fun downloadBundleResourceFromUrlSync (Ljava/lang/String;Ljava/io/File;)Ljava/io/File;
-	public fun getCurrentActivity ()Landroid/app/Activity;
-	public fun getDevSettings ()Lcom/facebook/react/modules/debug/interfaces/DeveloperSettings;
-	public fun getDevSupportEnabled ()Z
-	public fun getDownloadedJSBundleFile ()Ljava/lang/String;
-	public fun getJSBundleURLForRemoteDebugging ()Ljava/lang/String;
-	public fun getLastErrorCookie ()I
-	public fun getLastErrorStack ()[Lcom/facebook/react/devsupport/interfaces/StackFrame;
-	public fun getLastErrorTitle ()Ljava/lang/String;
-	public fun getLastErrorType ()Lcom/facebook/react/devsupport/interfaces/ErrorType;
-	public fun getRedBoxHandler ()Lcom/facebook/react/devsupport/interfaces/RedBoxHandler;
-	public fun getSourceMapUrl ()Ljava/lang/String;
-	public fun getSourceUrl ()Ljava/lang/String;
-	public fun handleException (Ljava/lang/Exception;)V
-	public fun handleReloadJS ()V
-	public fun hasUpToDateJSBundleInCache ()Z
-	public fun hideRedboxDialog ()V
-	public fun isPackagerRunning (Lcom/facebook/react/devsupport/interfaces/PackagerStatusCallback;)V
-	public fun loadSplitBundleFromServer (Ljava/lang/String;Lcom/facebook/react/devsupport/interfaces/DevSplitBundleCallback;)V
-	public fun onNewReactContextCreated (Lcom/facebook/react/bridge/ReactContext;)V
-	public fun onReactInstanceDestroyed (Lcom/facebook/react/bridge/ReactContext;)V
-	public fun processErrorCustomizers (Landroid/util/Pair;)Landroid/util/Pair;
-	public fun registerErrorCustomizer (Lcom/facebook/react/devsupport/interfaces/ErrorCustomizer;)V
-	public fun reloadJSFromServer (Ljava/lang/String;)V
-	public fun reloadJSFromServer (Ljava/lang/String;Lcom/facebook/react/devsupport/interfaces/BundleLoadCallback;)V
-	public fun reloadSettings ()V
-	public fun setDevSupportEnabled (Z)V
-	public fun setFpsDebugEnabled (Z)V
-	public fun setHotModuleReplacementEnabled (Z)V
-	public fun setPackagerLocationCustomizer (Lcom/facebook/react/devsupport/interfaces/DevSupportManager$PackagerLocationCustomizer;)V
-	public fun setRemoteJSDebugEnabled (Z)V
-	public fun showDevOptionsDialog ()V
-	public fun showNewJSError (Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;I)V
-	public fun showNewJavaError (Ljava/lang/String;Ljava/lang/Throwable;)V
-	public fun startInspector ()V
-	public fun stopInspector ()V
-	public fun toggleElementInspector ()V
-	public fun updateJSError (Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;I)V
-}
-
 public class com/facebook/react/devsupport/DoubleTapReloadRecognizer {
 	public fun <init> ()V
 	public fun didDoubleTapR (ILandroid/view/View;)Z
@@ -2263,7 +2217,7 @@ public class com/facebook/react/devsupport/PackagerStatusCheck {
 	public fun run (Ljava/lang/String;Lcom/facebook/react/devsupport/interfaces/PackagerStatusCallback;)V
 }
 
-public final class com/facebook/react/devsupport/PerftestDevSupportManager : com/facebook/react/devsupport/DisabledDevSupportManager {
+public final class com/facebook/react/devsupport/PerftestDevSupportManager : com/facebook/react/devsupport/ReleaseDevSupportManager {
 	public fun <init> (Landroid/content/Context;)V
 	public fun getDevSettings ()Lcom/facebook/react/devsupport/DevInternalSettings;
 	public synthetic fun getDevSettings ()Lcom/facebook/react/modules/debug/interfaces/DeveloperSettings;
@@ -2290,6 +2244,52 @@ public class com/facebook/react/devsupport/RedBoxContentView : android/widget/Li
 	public fun setDevSupportManager (Lcom/facebook/react/devsupport/interfaces/DevSupportManager;)Lcom/facebook/react/devsupport/RedBoxContentView;
 	public fun setExceptionDetails (Ljava/lang/String;[Lcom/facebook/react/devsupport/interfaces/StackFrame;)V
 	public fun setRedBoxHandler (Lcom/facebook/react/devsupport/interfaces/RedBoxHandler;)Lcom/facebook/react/devsupport/RedBoxContentView;
+}
+
+public class com/facebook/react/devsupport/ReleaseDevSupportManager : com/facebook/react/devsupport/interfaces/DevSupportManager {
+	public fun <init> ()V
+	public fun addCustomDevOption (Ljava/lang/String;Lcom/facebook/react/devsupport/interfaces/DevOptionHandler;)V
+	public fun createRootView (Ljava/lang/String;)Landroid/view/View;
+	public fun createSurfaceDelegate (Ljava/lang/String;)Lcom/facebook/react/common/SurfaceDelegate;
+	public fun destroyRootView (Landroid/view/View;)V
+	public fun downloadBundleResourceFromUrlSync (Ljava/lang/String;Ljava/io/File;)Ljava/io/File;
+	public fun getCurrentActivity ()Landroid/app/Activity;
+	public fun getDevSettings ()Lcom/facebook/react/modules/debug/interfaces/DeveloperSettings;
+	public fun getDevSupportEnabled ()Z
+	public fun getDownloadedJSBundleFile ()Ljava/lang/String;
+	public fun getJSBundleURLForRemoteDebugging ()Ljava/lang/String;
+	public fun getLastErrorCookie ()I
+	public fun getLastErrorStack ()[Lcom/facebook/react/devsupport/interfaces/StackFrame;
+	public fun getLastErrorTitle ()Ljava/lang/String;
+	public fun getLastErrorType ()Lcom/facebook/react/devsupport/interfaces/ErrorType;
+	public fun getRedBoxHandler ()Lcom/facebook/react/devsupport/interfaces/RedBoxHandler;
+	public fun getSourceMapUrl ()Ljava/lang/String;
+	public fun getSourceUrl ()Ljava/lang/String;
+	public fun handleException (Ljava/lang/Exception;)V
+	public fun handleReloadJS ()V
+	public fun hasUpToDateJSBundleInCache ()Z
+	public fun hideRedboxDialog ()V
+	public fun isPackagerRunning (Lcom/facebook/react/devsupport/interfaces/PackagerStatusCallback;)V
+	public fun loadSplitBundleFromServer (Ljava/lang/String;Lcom/facebook/react/devsupport/interfaces/DevSplitBundleCallback;)V
+	public fun onNewReactContextCreated (Lcom/facebook/react/bridge/ReactContext;)V
+	public fun onReactInstanceDestroyed (Lcom/facebook/react/bridge/ReactContext;)V
+	public fun processErrorCustomizers (Landroid/util/Pair;)Landroid/util/Pair;
+	public fun registerErrorCustomizer (Lcom/facebook/react/devsupport/interfaces/ErrorCustomizer;)V
+	public fun reloadJSFromServer (Ljava/lang/String;)V
+	public fun reloadJSFromServer (Ljava/lang/String;Lcom/facebook/react/devsupport/interfaces/BundleLoadCallback;)V
+	public fun reloadSettings ()V
+	public fun setDevSupportEnabled (Z)V
+	public fun setFpsDebugEnabled (Z)V
+	public fun setHotModuleReplacementEnabled (Z)V
+	public fun setPackagerLocationCustomizer (Lcom/facebook/react/devsupport/interfaces/DevSupportManager$PackagerLocationCustomizer;)V
+	public fun setRemoteJSDebugEnabled (Z)V
+	public fun showDevOptionsDialog ()V
+	public fun showNewJSError (Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;I)V
+	public fun showNewJavaError (Ljava/lang/String;Ljava/lang/Throwable;)V
+	public fun startInspector ()V
+	public fun stopInspector ()V
+	public fun toggleElementInspector ()V
+	public fun updateJSError (Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;I)V
 }
 
 public class com/facebook/react/devsupport/StackTraceHelper {

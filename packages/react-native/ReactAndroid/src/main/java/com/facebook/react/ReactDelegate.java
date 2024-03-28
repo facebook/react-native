@@ -15,8 +15,8 @@ import android.view.KeyEvent;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.config.ReactFeatureFlags;
-import com.facebook.react.devsupport.DisabledDevSupportManager;
 import com.facebook.react.devsupport.DoubleTapReloadRecognizer;
+import com.facebook.react.devsupport.ReleaseDevSupportManager;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.interfaces.fabric.ReactSurface;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
@@ -230,7 +230,7 @@ public class ReactDelegate {
     DevSupportManager devSupportManager = getDevSupportManager();
     if (devSupportManager != null) {
       // With Bridgeless enabled, reload in RELEASE mode
-      if (devSupportManager instanceof DisabledDevSupportManager
+      if (devSupportManager instanceof ReleaseDevSupportManager
           && ReactFeatureFlags.enableBridgelessArchitecture
           && mReactHost != null) {
         // Do not reload the bundle from JS as there is no bundler running in release mode.

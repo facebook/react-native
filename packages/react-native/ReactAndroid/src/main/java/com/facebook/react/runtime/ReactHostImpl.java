@@ -49,8 +49,8 @@ import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.devsupport.DevSupportManagerBase;
-import com.facebook.react.devsupport.DisabledDevSupportManager;
 import com.facebook.react.devsupport.InspectorFlags;
+import com.facebook.react.devsupport.ReleaseDevSupportManager;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.fabric.ComponentFactory;
 import com.facebook.react.fabric.FabricUIManager;
@@ -183,7 +183,7 @@ public class ReactHostImpl implements ReactHost {
           new BridgelessDevSupportManager(
               ReactHostImpl.this, mContext, mReactHostDelegate.getJsMainModulePath());
     } else {
-      mDevSupportManager = new DisabledDevSupportManager();
+      mDevSupportManager = new ReleaseDevSupportManager();
     }
     mUseDevSupport = useDevSupport;
   }
