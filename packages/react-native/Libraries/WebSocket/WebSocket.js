@@ -146,6 +146,10 @@ class WebSocket extends (EventTarget(...WEBSOCKET_EVENTS): any) {
     this._socketId = nextWebSocketId++;
     this._registerEvents();
     NativeWebSocketModule.connect(url, protocols, {headers}, this._socketId);
+
+    if (BlobManager.isAvailable) {
+      this.binaryType = 'blob';
+    }
   }
 
   get binaryType(): ?BinaryType {
