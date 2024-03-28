@@ -9,7 +9,6 @@
 #include <react/renderer/components/root/RootShadowNode.h>
 #include <react/renderer/dom/DOM.h>
 #include <react/renderer/uimanager/PointerEventsProcessor.h>
-#include <react/renderer/uimanager/UIManager.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
 
 #ifdef RN_DISABLE_OSS_PLUGIN_HEADER
