@@ -336,6 +336,7 @@ describe('TextInput compat with web', () => {
 
     expect(instance.toJSON()).toMatchInlineSnapshot(`
       <RCTSinglelineTextInputView
+        accessibilityLabel="label"
         accessibilityState={
           Object {
             "busy": true,
@@ -363,7 +364,6 @@ describe('TextInput compat with web', () => {
         aria-hidden={true}
         aria-invalid={true}
         aria-keyshortcuts="Cmd+S"
-        aria-label="label"
         aria-labelledby="labelledby"
         aria-level={3}
         aria-live="polite"
