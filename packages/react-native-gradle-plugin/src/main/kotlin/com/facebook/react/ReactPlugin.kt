@@ -38,7 +38,8 @@ import org.gradle.internal.jvm.Jvm
 class ReactPlugin : Plugin<Project> {
   override fun apply(project: Project) {
     checkJvmVersion(project)
-    val extension = project.extensions.create("react", ReactExtension::class.java, project)
+    val extension = project.extensions.findByType(ReactExtension::class.java)
+           ?: project.extensions.create("react", ReactExtension::class.java, project)
     checkIfNewArchFlagIsSet(project, extension)
 
     // We register a private extension on the rootProject so that project wide configs
