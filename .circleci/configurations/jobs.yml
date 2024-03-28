@@ -786,8 +786,6 @@ jobs:
       - HERMES_WS_DIR: *hermes_workspace_root
       - HERMES_TARBALL_ARTIFACTS_DIR: *hermes_tarball_artifacts_dir
       - HERMES_OSXBIN_ARTIFACTS_DIR: *hermes_osxbin_artifacts_dir
-      - IOS_DEPLOYMENT_TARGET: 13.4
-      - MAC_DEPLOYMENT_TARGET: 10.13
     steps:
       - *attach_hermes_workspace
       - stop_job_if_apple_artifacts_are_there:
@@ -808,6 +806,7 @@ jobs:
             SLICE=<< parameters.slice >>
             FLAVOR=<< parameters.flavor >>
             FINAL_PATH=build_"$SLICE"_"$FLAVOR"
+            # RELEASE_VERSION=
             echo "Final path for this slice is: $FINAL_PATH"
 
             if [[ -d "$FINAL_PATH" ]]; then
@@ -817,10 +816,14 @@ jobs:
 
             if [[ "$SLICE" == "macosx" ]]; then
               echo "[HERMES] Building Hermes for MacOS"
+              export MAC_DEPLOYMENT_TARGET=10.13
               BUILD_TYPE="<< parameters.flavor >>" ./utils/build-mac-framework.sh
+              unset MAC_DEPLOYMENT_TARGET
             else
               echo "[HERMES] Building Hermes for iOS: $SLICE"
+              export IOS_DEPLOYMENT_TARGET=13.4
               BUILD_TYPE="<< parameters.flavor >>" ./utils/build-ios-framework.sh "$SLICE"
+              unset IOS_DEPLOYMENT_TARGET
             fi
 
             echo "Moving from build_$SLICE to $FINAL_PATH"
