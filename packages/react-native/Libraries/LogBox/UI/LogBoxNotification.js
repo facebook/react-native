@@ -32,6 +32,8 @@ type Props = $ReadOnly<{
 function LogBoxLogNotification(props: Props): React.Node {
   const {totalLogCount, level, log} = props;
 
+  const testID = `log-box-notification-wrapper-${level}`;
+
   // Eagerly symbolicate so the stack is available when pressing to inspect.
   React.useEffect(() => {
     LogBoxData.symbolicateLogLazy(log);
@@ -42,6 +44,7 @@ function LogBoxLogNotification(props: Props): React.Node {
       <LogBoxButton
         onPress={props.onPressOpen}
         style={toastStyles.press}
+        testID={testID}
         backgroundColor={{
           default: LogBoxStyle.getBackgroundColor(1),
           pressed: LogBoxStyle.getBackgroundColor(0.9),
