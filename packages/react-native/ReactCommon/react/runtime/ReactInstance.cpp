@@ -20,7 +20,7 @@
 #include <jsireact/JSIExecutor.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
-#include <react/utils/jsi.h>
+#include <react/utils/jsi-utils.h>
 #include <iostream>
 #include <memory>
 #include <tuple>

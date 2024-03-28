@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "jsi.h"
+#include "jsi-utils.h"
 
 namespace facebook::react {
 
