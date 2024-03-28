@@ -14,7 +14,9 @@ import type MemoryInfo from 'react-native/src/private/webapis/performance/Memory
 import type ReactNativeStartupTiming from 'react-native/src/private/webapis/performance/ReactNativeStartupTiming';
 
 import RNTesterPage from '../../components/RNTesterPage';
+import {RNTesterThemeContext} from '../../components/RNTesterTheme';
 import * as React from 'react';
+import {useContext} from 'react';
 import {Button, StyleSheet, Text, View} from 'react-native';
 import Performance from 'react-native/src/private/webapis/performance/Performance';
 
@@ -22,6 +24,8 @@ const {useState, useCallback} = React;
 const performance = new Performance();
 
 function MemoryExample(): React.Node {
+  const theme = useContext(RNTesterThemeContext);
+
   // Memory API testing
   const [memoryInfo, setMemoryInfo] = useState<?MemoryInfo>(null);
   const onGetMemoryInfo = useCallback(() => {
@@ -34,13 +38,13 @@ function MemoryExample(): React.Node {
       <View style={styles.container}>
         <Button onPress={onGetMemoryInfo} title="Click to update memory info" />
         <View>
-          <Text>
+          <Text style={{color: theme.LabelColor}}>
             {`jsHeapSizeLimit: ${String(memoryInfo?.jsHeapSizeLimit)} bytes`}
           </Text>
-          <Text>
+          <Text style={{color: theme.LabelColor}}>
             {`totalJSHeapSize: ${String(memoryInfo?.totalJSHeapSize)} bytes`}
           </Text>
-          <Text>
+          <Text style={{color: theme.LabelColor}}>
             {`usedJSHeapSize: ${String(memoryInfo?.usedJSHeapSize)} bytes`}
           </Text>
         </View>
@@ -50,6 +54,8 @@ function MemoryExample(): React.Node {
 }
 
 function StartupTimingExample(): React.Node {
+  const theme = useContext(RNTesterThemeContext);
+
   // React Startup Timing API testing
   const [startUpTiming, setStartUpTiming] =
     useState<?ReactNativeStartupTiming>(null);
@@ -66,22 +72,35 @@ function StartupTimingExample(): React.Node {
           title="Click to update React startup timing"
         />
         <View>
-          <Text>{`startTime: ${String(startUpTiming?.startTime)} ms`}</Text>
-          <Text>{`initializeRuntimeStart: ${String(
+          <Text
+            style={{
+              color: theme.LabelColor,
+            }}>{`startTime: ${String(startUpTiming?.startTime)} ms`}</Text>
+          <Text
+            style={{
+              color: theme.LabelColor,
+            }}>{`initializeRuntimeStart: ${String(
             startUpTiming?.initializeRuntimeStart,
           )} ms`}</Text>
-          <Text>
+          <Text style={{color: theme.LabelColor}}>
             {`executeJavaScriptBundleEntryPointStart: ${String(
               startUpTiming?.executeJavaScriptBundleEntryPointStart,
             )} ms`}
           </Text>
-          <Text>{`executeJavaScriptBundleEntryPointEnd: ${String(
+          <Text
+            style={{
+              color: theme.LabelColor,
+            }}>{`executeJavaScriptBundleEntryPointEnd: ${String(
             startUpTiming?.executeJavaScriptBundleEntryPointEnd,
           )} ms`}</Text>
-          <Text>{`initializeRuntimeEnd: ${String(
+          <Text
+            style={{color: theme.LabelColor}}>{`initializeRuntimeEnd: ${String(
             startUpTiming?.initializeRuntimeEnd,
           )} ms`}</Text>
-          <Text>{`endTime: ${String(startUpTiming?.endTime)} ms`}</Text>
+          <Text
+            style={{
+              color: theme.LabelColor,
+            }}>{`endTime: ${String(startUpTiming?.endTime)} ms`}</Text>
         </View>
       </View>
     </RNTesterPage>
