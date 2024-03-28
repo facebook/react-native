@@ -19,7 +19,7 @@ inline void fromRawValue(
     const PropsParserContext& context,
     const RawValue& value,
     ScrollViewSnapToAlignment& result) {
-  auto string = (std::string)value;
+  auto string = std::string_view{(std::string)value};
   if (string == "start") {
     result = ScrollViewSnapToAlignment::Start;
     return;
@@ -39,7 +39,7 @@ inline void fromRawValue(
     const PropsParserContext& context,
     const RawValue& value,
     ScrollViewIndicatorStyle& result) {
-  auto string = (std::string)value;
+  auto string = std::string_view{(std::string)value};
   if (string == "default") {
     result = ScrollViewIndicatorStyle::Default;
     return;
@@ -59,7 +59,7 @@ inline void fromRawValue(
     const PropsParserContext& context,
     const RawValue& value,
     ScrollViewKeyboardDismissMode& result) {
-  auto string = (std::string)value;
+  auto string = std::string_view{(std::string)value};
   if (string == "none") {
     result = ScrollViewKeyboardDismissMode::None;
     return;
@@ -79,7 +79,7 @@ inline void fromRawValue(
     const PropsParserContext& context,
     const RawValue& value,
     ContentInsetAdjustmentBehavior& result) {
-  auto string = (std::string)value;
+  auto string = std::string_view{(std::string)value};
   if (string == "never") {
     result = ContentInsetAdjustmentBehavior::Never;
     return;

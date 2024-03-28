@@ -73,7 +73,7 @@ inline void fromRawValue(
     DynamicTypeRamp& result) {
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
-    auto string = (std::string)value;
+    auto string = std::string_view{(std::string)value};
     if (string == "caption2") {
       result = DynamicTypeRamp::Caption2;
     } else if (string == "caption1") {
@@ -137,7 +137,7 @@ inline void fromRawValue(
     EllipsizeMode& result) {
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
-    auto string = (std::string)value;
+    auto string = std::string_view{(std::string)value};
     if (string == "clip") {
       result = EllipsizeMode::Clip;
     } else if (string == "head") {
@@ -183,7 +183,7 @@ inline void fromRawValue(
     TextBreakStrategy& result) {
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
-    auto string = (std::string)value;
+    auto string = std::string_view{(std::string)value};
     if (string == "simple") {
       result = TextBreakStrategy::Simple;
     } else if (string == "highQuality") {
@@ -210,7 +210,7 @@ inline void fromRawValue(
     FontWeight& result) {
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
-    auto string = (std::string)value;
+    auto string = std::string_view{(std::string)value};
     if (string == "normal") {
       result = FontWeight::Regular;
     } else if (string == "regular") {
@@ -259,7 +259,7 @@ inline void fromRawValue(
     FontStyle& result) {
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
-    auto string = (std::string)value;
+    auto string = std::string_view{(std::string)value};
     if (string == "normal") {
       result = FontStyle::Normal;
     } else if (string == "italic") {
@@ -360,7 +360,7 @@ inline void fromRawValue(
     TextTransform& result) {
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
-    auto string = (std::string)value;
+    auto string = std::string_view{(std::string)value};
     if (string == "none") {
       result = TextTransform::None;
     } else if (string == "uppercase") {
@@ -412,7 +412,7 @@ inline void fromRawValue(
     TextAlignment& result) {
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
-    auto string = (std::string)value;
+    auto string = std::string_view{(std::string)value};
     if (string == "auto") {
       result = TextAlignment::Natural;
     } else if (string == "left") {
@@ -462,7 +462,7 @@ inline void fromRawValue(
     WritingDirection& result) {
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
-    auto string = (std::string)value;
+    auto string = std::string_view{(std::string)value};
     if (string == "natural" || string == "auto") {
       result = WritingDirection::Natural;
     } else if (string == "ltr") {
@@ -504,7 +504,7 @@ inline void fromRawValue(
     LineBreakStrategy& result) {
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
-    auto string = (std::string)value;
+    auto string = std::string_view{(std::string)value};
     if (string == "none") {
       result = LineBreakStrategy::None;
     } else if (string == "push-out") {
@@ -550,7 +550,7 @@ inline void fromRawValue(
     TextDecorationLineType& result) {
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
-    auto string = (std::string)value;
+    auto string = std::string_view{(std::string)value};
     if (string == "none") {
       result = TextDecorationLineType::None;
     } else if (string == "underline") {
@@ -602,7 +602,7 @@ inline void fromRawValue(
     TextDecorationStyle& result) {
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
-    auto string = (std::string)value;
+    auto string = std::string_view{(std::string)value};
     if (string == "solid") {
       result = TextDecorationStyle::Solid;
     } else if (string == "double") {
@@ -664,7 +664,7 @@ inline void fromRawValue(
     HyphenationFrequency& result) {
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
-    auto string = (std::string)value;
+    auto string = std::string_view{(std::string)value};
     if (string == "none") {
       result = HyphenationFrequency::None;
     } else if (string == "normal") {

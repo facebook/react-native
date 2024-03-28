@@ -17,7 +17,7 @@ inline void fromRawValue(
     const PropsParserContext& context,
     const RawValue& value,
     AutocapitalizationType& result) {
-  auto string = (std::string)value;
+  auto string = std::string_view{(std::string)value};
   if (string == "none") {
     result = AutocapitalizationType::None;
     return;
@@ -41,7 +41,7 @@ inline void fromRawValue(
     const PropsParserContext& context,
     const RawValue& value,
     KeyboardAppearance& result) {
-  auto string = (std::string)value;
+  auto string = std::string_view{(std::string)value};
   if (string == "default") {
     result = KeyboardAppearance::Default;
     return;
@@ -61,7 +61,7 @@ inline void fromRawValue(
     const PropsParserContext& context,
     const RawValue& value,
     ReturnKeyType& result) {
-  auto string = (std::string)value;
+  auto string = std::string_view{(std::string)value};
   if (string == "default") {
     result = ReturnKeyType::Default;
     return;
@@ -129,7 +129,7 @@ inline void fromRawValue(
     const PropsParserContext& context,
     const RawValue& value,
     SubmitBehavior& result) {
-  auto string = (std::string)value;
+  auto string = std::string_view{(std::string)value};
   if (string == "newline") {
     result = SubmitBehavior::Newline;
     return;
@@ -149,7 +149,7 @@ inline void fromRawValue(
     const PropsParserContext& context,
     const RawValue& value,
     TextInputAccessoryVisibilityMode& result) {
-  auto string = (std::string)value;
+  auto string = std::string_view{(std::string)value};
   if (string == "never") {
     result = TextInputAccessoryVisibilityMode::Never;
     return;
@@ -173,7 +173,7 @@ inline void fromRawValue(
     const PropsParserContext& context,
     const RawValue& value,
     KeyboardType& result) {
-  auto string = (std::string)value;
+  auto string = std::string_view{(std::string)value};
   if (string == "default") {
     result = KeyboardType::Default;
     return;

@@ -101,7 +101,7 @@ const EnumTemplate = ({
 enum class ${enumName} { ${values} };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ${enumName} &result) {
-  auto string = (std::string)value;
+  auto string = std::string_view{(std::string)value};
   ${fromCases}
   abort();
 }

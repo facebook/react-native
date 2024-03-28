@@ -105,7 +105,7 @@ inline void fromRawValue(
     return;
   }
 
-  auto stringValue = (std::string)value;
+  auto stringValue = std::string_view{(std::string)value};
   if (stringValue == "cover") {
     result = ImageResizeMode::Cover;
   } else if (stringValue == "contain") {

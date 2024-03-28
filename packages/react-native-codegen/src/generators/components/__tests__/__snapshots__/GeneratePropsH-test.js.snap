@@ -1071,7 +1071,7 @@ namespace facebook::react {
 enum class ObjectPropsStringEnumProp { Option1 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsStringEnumProp &result) {
-  auto string = (std::string)value;
+  auto string = std::string_view{(std::string)value};
   if (string == \\"option1\\") { result = ObjectPropsStringEnumProp::Option1; return; }
   abort();
 }
@@ -1352,7 +1352,7 @@ namespace facebook::react {
 enum class StringEnumPropsNativeComponentAlignment { Top, Center, BottomRight };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, StringEnumPropsNativeComponentAlignment &result) {
-  auto string = (std::string)value;
+  auto string = std::string_view{(std::string)value};
   if (string == \\"top\\") { result = StringEnumPropsNativeComponentAlignment::Top; return; }
   if (string == \\"center\\") { result = StringEnumPropsNativeComponentAlignment::Center; return; }
   if (string == \\"bottom-right\\") { result = StringEnumPropsNativeComponentAlignment::BottomRight; return; }
