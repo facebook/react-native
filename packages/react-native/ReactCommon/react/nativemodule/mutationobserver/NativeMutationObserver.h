@@ -10,8 +10,7 @@
 #include <FBReactNativeSpec/FBReactNativeSpecJSI.h>
 #include <react/renderer/observers/mutation/MutationObserverManager.h>
 #include <react/renderer/uimanager/UIManager.h>
-#include <optional>
-#include <string>
+#include <functional>
 #include <vector>
 
 namespace facebook::react {
