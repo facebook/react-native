@@ -87,3 +87,19 @@ export function getEnforcing<T: TurboModule>(name: string): T {
   invariant(module != null, message);
   return module;
 }
+
+interface ModuleHolder<T> {
+  module: T | null
+}
+
+export function getLazy<T: TurboModule>(name: string): ?T {
+  const proxy = new Proxy<ModuleHolder<T>>({ module: null }, {
+    get: (target, property) => {
+      if (target.module == null) {
+        target.module = get(name)
+      }
+      return target.module[property]
+    }
+  })
+  return proxy as T
+}
