@@ -20,6 +20,7 @@ export default function getDevToolsFrontendUrl(
   devServerUrl: string,
   options?: $ReadOnly<{
     relative?: boolean,
+    launchId?: string,
   }>,
 ): string {
   const wsParam = getWsParam({
@@ -37,6 +38,9 @@ export default function getDevToolsFrontendUrl(
   ]);
   if (experiments.enableNetworkInspector) {
     searchParams.append('unstable_enableNetworkPanel', 'true');
+  }
+  if (options?.launchId != null && options.launchId !== '') {
+    searchParams.append('launchId', options.launchId);
   }
 
   return appUrl + '?' + searchParams.toString();
