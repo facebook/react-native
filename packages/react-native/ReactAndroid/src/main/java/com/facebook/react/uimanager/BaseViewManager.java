@@ -30,6 +30,7 @@ import com.facebook.react.uimanager.ReactAccessibilityDelegate.Role;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.PointerEventHelper;
 import com.facebook.react.uimanager.util.ReactFindViewUtil;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,6 +43,7 @@ import java.util.Map;
 public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode>
     extends ViewManager<T, C> implements BaseViewManagerInterface<T>, View.OnLayoutChangeListener {
 
+  private static final String TAG = "BaseViewManager";
   private static final int PERSPECTIVE_ARRAY_INVERTED_CAMERA_DISTANCE_INDEX = 2;
   private static final float CAMERA_DISTANCE_NORMALIZATION_MULTIPLIER = (float) Math.sqrt(5);
 
@@ -164,12 +166,24 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   }
 
   @Override
-  @ReactProp(
-      name = ViewProps.BACKGROUND_COLOR,
-      defaultInt = Color.TRANSPARENT,
-      customType = "Color")
   public void setBackgroundColor(@NonNull T view, int backgroundColor) {
     view.setBackgroundColor(backgroundColor);
+  }
+
+  @ReactProp(
+    name = ViewProps.BACKGROUND_COLOR,
+    defaultInt = Color.TRANSPARENT,
+    customType = "Color")
+  public void setBackgroundColor(@NonNull T view, long backgroundColor) {
+    try {
+      Method setBackgroundColorMethod = view.getClass().getMethod("setBackgroundColor", long.class);
+      setBackgroundColorMethod.invoke(view, backgroundColor);
+    } catch (NoSuchMethodException e) {
+      FLog.e(TAG, "setBackgroundColor(long) method not found in view class", e);
+      view.setBackgroundColor(Color.toArgb(backgroundColor));
+    } catch (Exception e) {
+      FLog.e(TAG, "Failed to invoke setBackgroundColor(long)", e);
+    }
   }
 
   @Override
@@ -204,11 +218,18 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   }
 
   @Override
-  @ReactProp(name = ViewProps.SHADOW_COLOR, defaultInt = Color.BLACK, customType = "Color")
   public void setShadowColor(@NonNull T view, int shadowColor) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
       view.setOutlineAmbientShadowColor(shadowColor);
       view.setOutlineSpotShadowColor(shadowColor);
+    }
+  }
+
+  @ReactProp(name = ViewProps.SHADOW_COLOR, defaultInt = Color.BLACK, customType = "Color")
+  public void setShadowColor(@NonNull T view, long shadowColor) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+      view.setOutlineAmbientShadowColor(Color.toArgb(shadowColor));
+      view.setOutlineSpotShadowColor(Color.toArgb(shadowColor));
     }
   }
 
