@@ -17,7 +17,7 @@ import com.facebook.react.module.model.ReactModuleInfoProvider
 import com.facebook.react.uimanager.ViewManager
 
 @ReactModuleList(nativeModules = arrayOf())
-class PopupMenuPackage() : BaseReactPackage(), ViewManagerOnDemandReactPackage {
+public class PopupMenuPackage() : BaseReactPackage(), ViewManagerOnDemandReactPackage {
   private var viewManagersMap: Map<String, ModuleSpec>? = null
 
   override fun getModule(name: String, context: ReactApplicationContext): NativeModule? {
