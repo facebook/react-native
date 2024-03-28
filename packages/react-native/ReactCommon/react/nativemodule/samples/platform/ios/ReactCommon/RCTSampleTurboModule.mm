@@ -148,7 +148,7 @@ RCT_EXPORT_METHOD(getValueWithPromise
 
 RCT_EXPORT_METHOD(voidFuncThrows)
 {
-  NSException *myException = [NSException exceptionWithName:@"Excepption"
+  NSException *myException = [NSException exceptionWithName:@"Exception"
                                                      reason:@"Intentional exception from ObjC voidFuncThrows"
                                                    userInfo:nil];
   @throw myException;
@@ -156,7 +156,7 @@ RCT_EXPORT_METHOD(voidFuncThrows)
 
 RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSDictionary *, getObjectThrows : (NSDictionary *)arg)
 {
-  NSException *myException = [NSException exceptionWithName:@"Excepption"
+  NSException *myException = [NSException exceptionWithName:@"Exception"
                                                      reason:@"Intentional exception from ObjC getObjectThrows"
                                                    userInfo:nil];
   @throw myException;
@@ -167,10 +167,15 @@ RCT_EXPORT_METHOD(promiseThrows
                   : (RCTPromiseResolveBlock)resolve reject
                   : (RCTPromiseRejectBlock)reject)
 {
-  NSException *myException = [NSException exceptionWithName:@"Excepption"
+  NSException *myException = [NSException exceptionWithName:@"Exception"
                                                      reason:@"Intentional exception from ObjC promiseThrows"
                                                    userInfo:nil];
   @throw myException;
+}
+
+RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSDictionary *, getObjectCppThrows : (NSDictionary *)arg)
+{
+  throw std::runtime_error("Intentional error from Cpp getObjectCppThrows");
 }
 
 RCT_EXPORT_METHOD(voidFuncAssert)

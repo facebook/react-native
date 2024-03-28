@@ -38,6 +38,7 @@
 - (void)voidFuncAssert;
 - (NSDictionary *)getObjectAssert:(NSDictionary *)arg;
 - (void)promiseAssert:(BOOL)error resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject;
+- (NSDictionary *)getObjectCppThrows:(NSDictionary *)arg;
 - (NSDictionary *)constantsToExport;
 - (NSDictionary *)getConstants;
 

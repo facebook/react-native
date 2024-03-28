@@ -46,6 +46,7 @@ export interface Spec extends TurboModule {
   +voidFuncAssert?: () => void;
   +getObjectAssert?: (arg: Object) => Object;
   +promiseAssert?: () => Promise<void>;
+  +getObjectCppThrows?: (arg: Object) => Object;
 }
 
 export default (TurboModuleRegistry.getEnforcing<Spec>(

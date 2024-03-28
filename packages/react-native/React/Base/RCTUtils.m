@@ -497,13 +497,13 @@ NSDictionary<NSString *, id> *RCTJSErrorFromNSError(NSError *error)
 
 // TODO: Can we just replace RCTMakeError with this function instead?
 NSDictionary<NSString *, id>
-    *RCTJSErrorFromCodeMessageAndNSError(NSString *code, NSString *message, NSError *__nullable error)
+    *RCTJSErrorFromCodeMessageAndNSError(NSString *__nullable code, NSString *__nullable message, NSError *__nullable error)
 {
   NSString *errorMessage;
   NSArray<NSString *> *stackTrace = [NSThread callStackSymbols];
   NSMutableDictionary *userInfo;
   NSMutableDictionary<NSString *, id> *errorInfo = [NSMutableDictionary dictionaryWithObject:stackTrace
-                                                                                      forKey:@"nativeStackIOS"];
+                                                                                      forKey:@"stackSymbols"];
 
   if (error) {
     errorMessage = error.localizedDescription ?: @"Unknown error from a native module";

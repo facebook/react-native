@@ -81,6 +81,14 @@ void RCTSetTurboModuleInteropBridgeProxyLogLevel(RCTBridgeProxyLoggingLevel logL
 BOOL RCTTurboModuleInteropForAllTurboModulesEnabled(void);
 void RCTEnableTurboModuleInteropForAllTurboModules(BOOL enabled);
 
+// Trace Rejected Promises of Turbo Modules (store callers' js stack)
+RCT_EXTERN BOOL RCTTraceTurboModulePromiseRejections(void);
+RCT_EXTERN void RCTEnableTraceTurboModulePromiseRejections(BOOL enabled);
+
+// Reject JS Promise on native throw in TM method call
+RCT_EXTERN BOOL RCTRejectTurboModulePromiseOnNativeError(void);
+RCT_EXTERN void RCTEnableRejectTurboModulePromiseOnNativeError(BOOL enabled);
+
 typedef enum {
   kRCTGlobalScope,
   kRCTGlobalScopeUsingRetainJSCallback,

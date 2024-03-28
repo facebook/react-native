@@ -102,6 +102,28 @@ void RCTEnableTurboModule(BOOL enabled)
   turboModuleEnabled = enabled;
 }
 
+static BOOL traceTurboModulePromiseRejections = NO;
+BOOL RCTTraceTurboModulePromiseRejections(void)
+{
+  return traceTurboModulePromiseRejections;
+}
+
+void RCTEnableTraceTurboModulePromiseRejections(BOOL enabled)
+{
+  traceTurboModulePromiseRejections = enabled;
+}
+
+static BOOL rejectTurboModulePromiseOnNativeError = YES;
+BOOL RCTRejectTurboModulePromiseOnNativeError(void)
+{
+  return rejectTurboModulePromiseOnNativeError;
+}
+
+void RCTEnableRejectTurboModulePromiseOnNativeError(BOOL enabled)
+{
+  rejectTurboModulePromiseOnNativeError = enabled;
+}
+
 static BOOL turboModuleInteropEnabled = NO;
 BOOL RCTTurboModuleInteropEnabled(void)
 {

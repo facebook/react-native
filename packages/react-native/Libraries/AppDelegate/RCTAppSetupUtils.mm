@@ -39,6 +39,16 @@ void RCTAppSetupPrepareApp(UIApplication *application, BOOL turboModuleEnabled)
 {
   RCTEnableTurboModule(turboModuleEnabled);
 
+#ifndef RCT_TRACE_PROMISE_REJECTION_ENABLED
+#if DEBUG
+#define RCT_TRACE_PROMISE_REJECTION_ENABLED 1
+#endif
+#endif
+
+#if RCT_TRACE_PROMISE_REJECTION_ENABLED
+  RCTEnableTraceTurboModulePromiseRejections(YES);
+#endif
+
 #if DEBUG
   // Disable idle timer in dev builds to avoid putting application in background and complicating
   // Metro reconnection logic. Users only need this when running the application using our CLI tooling.

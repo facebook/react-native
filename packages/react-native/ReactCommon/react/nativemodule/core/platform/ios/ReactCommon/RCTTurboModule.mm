@@ -208,18 +208,32 @@ static jsi::JSError convertNSExceptionToJSError(jsi::Runtime &runtime, NSExcepti
 
   jsi::Value error = createJSRuntimeError(runtime, "Exception in HostFunction: " + reason);
   error.asObject(runtime).setProperty(runtime, "cause", std::move(cause));
-  return {runtime, std::move(error)};
+  return jsi::JSError(runtime, std::move(error));
+}
+
+/**
+ * Creates JSError with current JS runtime and NSDictionary data as cause.
+ */
+static jsi::JSError convertNSDictionaryToJSError(jsi::Runtime &runtime, NSDictionary *cause)
+{
+  jsi::Value error = createJSRuntimeError(runtime, "Exception in HostFunction: " + (cause[@"message"] ? std::string([cause[@"message"] UTF8String]) : "<unknown>"));
+  error.asObject(runtime).setProperty(runtime, "cause", convertNSDictionaryToJSIObject(runtime, cause));
+  return jsi::JSError(runtime, std::move(error));
 }
 
 /**
  * Creates JS error value with current JS runtime and error details.
  */
-static jsi::Value convertJSErrorDetailsToJSRuntimeError(jsi::Runtime &runtime, NSDictionary *jsErrorDetails)
+static jsi::Value convertJSErrorDetailsToJSRuntimeError(jsi::Runtime &runtime, NSDictionary *jsErrorDetails, const std::optional<std::string> &jsInvocationStack)
 {
   NSString *message = jsErrorDetails[@"message"];
 
   auto jsError = createJSRuntimeError(runtime, [message UTF8String]);
   jsError.asObject(runtime).setProperty(runtime, "cause", convertObjCObjectToJSIValue(runtime, jsErrorDetails));
+    
+  if (jsInvocationStack.has_value()) {
+    jsError.asObject(runtime).setProperty(runtime, "stack", *jsInvocationStack);
+  }
 
   return jsError;
 }
@@ -234,6 +248,16 @@ jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string met
 
   jsi::Function Promise = runtime.global().getPropertyAsFunction(runtime, "Promise");
 
+  // JS Stack at the time when the promise is created.
+  std::optional<std::string> jsInvocationStack;
+  if (RCTTraceTurboModulePromiseRejections()) {
+   jsInvocationStack = createJSRuntimeError(runtime, "")
+    .asObject(runtime)
+    .getProperty(runtime, "stack")
+    .asString(runtime)
+    .utf8(runtime);
+  }
+
   // Note: the passed invoke() block is not retained by default, so let's retain it here to help keep it longer.
   // Otherwise, there's a risk of it getting released before the promise function below executes.
   PromiseInvocationBlock invokeCopy = [invoke copy];
@@ -243,7 +267,7 @@ jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string met
           runtime,
           jsi::PropNameID::forAscii(runtime, "fn"),
           2,
-          [invokeCopy, jsInvoker = jsInvoker_, moduleName = name_, methodName](
+          [invokeCopy, jsInvoker = jsInvoker_, moduleName = name_, methodName, jsInvocationStack = std::move(jsInvocationStack)](
               jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) {
             std::string moduleMethod = moduleName + "." + methodName + "()";
 
@@ -293,8 +317,8 @@ jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string met
               }
 
               NSDictionary *jsErrorDetails = RCTJSErrorFromCodeMessageAndNSError(code, message, error);
-              reject->call([jsErrorDetails](jsi::Runtime &rt, jsi::Function &jsFunction) {
-                jsFunction.call(rt, convertJSErrorDetailsToJSRuntimeError(rt, jsErrorDetails));
+                reject->call([jsErrorDetails, jsInvocationStack](jsi::Runtime &rt, jsi::Function &jsFunction) {
+                jsFunction.call(rt, convertJSErrorDetailsToJSRuntimeError(rt, jsErrorDetails, jsInvocationStack));
               });
               resolveWasCalled = NO;
               resolve = std::nullopt;
@@ -304,6 +328,28 @@ jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string met
             invokeCopy(resolveBlock, rejectBlock);
             return jsi::Value::undefined();
           }));
+}
+
+static NSError * maybeCatchException(
+    BOOL shoudCatch,
+    id causeOrError)
+{
+    if (!shoudCatch) {
+        // Crash on native layer there is no promise in JS to reject.
+        // We executed JSFunction returning void asynchrounously.
+        throw;
+    }
+
+    if ([causeOrError isKindOfClass:[NSError class]]) {
+        return causeOrError;
+    }
+
+    if ([causeOrError isKindOfClass:[NSDictionary class]]) {
+      return [[NSError alloc] initWithDomain:RCTErrorDomain code:-1 userInfo:causeOrError];
+    }
+    
+    // This should never happen, to avoid consequent errors, we wrapp the unknown value in NSError.
+    return [[NSError alloc] initWithDomain:RCTErrorDomain code:-1 userInfo:@{ @"unknown": causeOrError }];
 }
 
 /**
@@ -320,7 +366,8 @@ id ObjCTurboModule::performMethodInvocation(
     bool isSync,
     const char *methodName,
     NSInvocation *inv,
-    NSMutableArray *retainedObjectsForInvocation)
+    NSMutableArray *retainedObjectsForInvocation,
+    _Nullable RCTPromiseRejectBlock reject)
 {
   __block id result;
   __weak id<RCTBridgeModule> weakModule = instance_;
@@ -340,12 +387,51 @@ id ObjCTurboModule::performMethodInvocation(
       TurboModulePerfLogger::asyncMethodCallExecutionStart(moduleName, methodNameStr.c_str(), asyncCallCounter);
     }
 
-    @try {
-      [inv invokeWithTarget:strongModule];
-    } @catch (NSException *exception) {
-      throw convertNSExceptionToJSError(runtime, exception);
-    } @finally {
-      [retainedObjectsForInvocation removeAllObjects];
+    NSError *caughtException = nil;
+    BOOL shouldCatchException = isSync || reject;
+    try {
+      @try {
+        [inv invokeWithTarget:strongModule];
+       } @catch (NSException *exception) {
+         caughtException = maybeCatchException(
+                     shouldCatchException, @{
+                       @"name": exception.name,
+                       NSLocalizedDescriptionKey: exception.reason,
+                       @"stackSymbols": exception.callStackSymbols,
+                       @"stackReturnAddresses": exception.callStackReturnAddresses,
+                     });
+       } @catch (NSError *error) {
+         caughtException = maybeCatchException(shouldCatchException, error);
+       } @catch (NSString *errorMessage) {
+         caughtException = maybeCatchException(shouldCatchException, @{
+                      NSLocalizedDescriptionKey: errorMessage,
+                     });
+       } @catch (id e) {
+         caughtException = maybeCatchException(shouldCatchException, @{
+                      NSLocalizedDescriptionKey: @"Unknown Objective-C Object thrown.",
+                     });
+       }
+    } catch (const std::exception &exception) {
+      caughtException = maybeCatchException(shouldCatchException, @{
+                    NSLocalizedDescriptionKey: [NSString stringWithUTF8String:exception.what()],
+                  });
+    } catch (const std::string &errorMessage) {
+      caughtException = maybeCatchException(shouldCatchException, @{
+                    NSLocalizedDescriptionKey: [NSString stringWithUTF8String:errorMessage.c_str()],
+                  });
+    } catch (...) {
+      caughtException = maybeCatchException(shouldCatchException, @{
+                    NSLocalizedDescriptionKey: @"Unknown C++ exception thrown.",
+                  });
+    }
+    [retainedObjectsForInvocation removeAllObjects];
+
+    if (caughtException) {
+      if (isSync) {
+        throw convertNSDictionaryToJSError(runtime, RCTJSErrorFromCodeMessageAndNSError(nil, nil, caughtException));
+      } else {
+        reject(nil, nil, caughtException);
+      }
     }
 
     if (!isSync) {
@@ -738,8 +824,17 @@ jsi::Value ObjCTurboModule::invokeObjCMethod(
             [inv setArgument:(void *)&rejectCopy atIndex:count + 3];
             [retainedObjectsForInvocation addObject:resolveCopy];
             [retainedObjectsForInvocation addObject:rejectCopy];
+            RCTPromiseRejectBlock rejectOnNativeError = nil;
+            if (RCTRejectTurboModulePromiseOnNativeError()) {
+              rejectOnNativeError = rejectCopy;
+            };
             // The return type becomes void in the ObjC side.
-            performMethodInvocation(runtime, isSyncInvocation, methodName, inv, retainedObjectsForInvocation);
+            performMethodInvocation(runtime,
+                                    isMethodSync(VoidKind),
+                                    methodName,
+                                    inv,
+                                    retainedObjectsForInvocation,
+                                    rejectOnNativeError);
           });
       break;
     }
@@ -760,7 +855,7 @@ jsi::Value ObjCTurboModule::invokeObjCMethod(
     case ObjectKind:
     case ArrayKind:
     case FunctionKind: {
-      id result = performMethodInvocation(runtime, true, methodName, inv, retainedObjectsForInvocation);
+      id result = performMethodInvocation(runtime, true, methodName, inv, retainedObjectsForInvocation, nil);
       TurboModulePerfLogger::syncMethodCallReturnConversionStart(moduleName, methodName);
       returnValue = convertReturnIdToJSIValue(runtime, methodName, returnType, result);
       TurboModulePerfLogger::syncMethodCallReturnConversionEnd(moduleName, methodName);

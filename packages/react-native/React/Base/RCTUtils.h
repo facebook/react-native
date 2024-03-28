@@ -77,7 +77,7 @@ RCT_EXTERN NSDictionary<NSString *, id> *
 RCTMakeAndLogError(NSString *message, id __nullable toStringify, NSDictionary<NSString *, id> *__nullable extraData);
 RCT_EXTERN NSDictionary<NSString *, id> *RCTJSErrorFromNSError(NSError *error);
 RCT_EXTERN NSDictionary<NSString *, id>
-    *RCTJSErrorFromCodeMessageAndNSError(NSString *code, NSString *message, NSError *__nullable error);
+    *RCTJSErrorFromCodeMessageAndNSError(NSString *__nullable code, NSString *__nullable message, NSError *__nullable error);
 
 // The default error code to use as the `code` property for callback error objects
 RCT_EXTERN NSString *const RCTErrorUnspecified;

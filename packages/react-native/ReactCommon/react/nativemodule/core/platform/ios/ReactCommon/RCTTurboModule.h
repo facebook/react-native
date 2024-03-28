@@ -141,7 +141,8 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
       bool isSync,
       const char *methodName,
       NSInvocation *inv,
-      NSMutableArray *retainedObjectsForInvocation);
+      NSMutableArray *retainedObjectsForInvocation,
+      _Nullable RCTPromiseRejectBlock reject);
   void performVoidMethodInvocation(
       jsi::Runtime &runtime,
       const char *methodName,
