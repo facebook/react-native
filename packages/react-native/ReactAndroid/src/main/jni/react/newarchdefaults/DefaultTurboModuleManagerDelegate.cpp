@@ -9,9 +9,9 @@
 
 #include <algorithm>
 
+#include <FBReactNativeSpec.h>
 #include <react/nativemodule/featureflags/NativeReactNativeFeatureFlags.h>
 #include <react/nativemodule/microtasks/NativeMicrotasks.h>
-#include <rncore.h>
 
 namespace facebook::react {
 
@@ -95,7 +95,7 @@ std::shared_ptr<TurboModule> DefaultTurboModuleManagerDelegate::getTurboModule(
       return resolvedModule;
     }
   }
-  return rncore_ModuleProvider(name, params);
+  return FBReactNativeSpec_ModuleProvider(name, params);
 }
 
 } // namespace facebook::react
