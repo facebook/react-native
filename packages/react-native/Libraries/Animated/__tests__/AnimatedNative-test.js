@@ -25,7 +25,7 @@ jest
 
 import {format} from 'node:util';
 import * as React from 'react';
-import TestRenderer from 'react-test-renderer';
+import {act, create} from 'react-test-renderer';
 
 const Animated = require('../Animated').default;
 const NativeAnimatedHelper = require('../NativeAnimatedHelper').default;
@@ -67,7 +67,7 @@ describe('Native Animated', () => {
         useNativeDriver: true,
       }).start();
 
-      TestRenderer.create(<Animated.View ref={ref} style={{opacity}} />);
+      create(<Animated.View ref={ref} style={{opacity}} />);
 
       expect(ref.current).not.toBeNull();
       jest.spyOn(ref.current, 'setNativeProps');
@@ -86,7 +86,7 @@ describe('Native Animated', () => {
       opacity.setOffset(10);
       opacity.__makeNative();
 
-      TestRenderer.create(<Animated.View style={{opacity}} />);
+      create(<Animated.View style={{opacity}} />);
 
       expect(NativeAnimatedModule.createAnimatedNode).toBeCalledWith(
         expect.any(Number),
@@ -103,7 +103,7 @@ describe('Native Animated', () => {
       const opacity = new Animated.Value(0);
       opacity.__makeNative();
 
-      TestRenderer.create(<Animated.View style={{opacity}} />);
+      create(<Animated.View style={{opacity}} />);
 
       expect(NativeAnimatedModule.createAnimatedNode).toBeCalledWith(
         expect.any(Number),
@@ -123,7 +123,7 @@ describe('Native Animated', () => {
 
       opacity.__makeNative();
 
-      const root = TestRenderer.create(<Animated.View style={{opacity}} />);
+      const root = create(<Animated.View style={{opacity}} />);
       const tag = opacity.__getNativeTag();
 
       root.unmount();
@@ -145,7 +145,7 @@ describe('Native Animated', () => {
       opacity.setOffset(0.5);
       opacity.__makeNative();
 
-      const root = TestRenderer.create(<Animated.View style={{opacity}} />);
+      const root = create(<Animated.View style={{opacity}} />);
       const tag = opacity.__getNativeTag();
 
       root.unmount();
@@ -161,7 +161,7 @@ describe('Native Animated', () => {
       const opacity = new Animated.Value(0);
       opacity.__makeNative();
 
-      TestRenderer.create(<Animated.View style={{opacity}} />);
+      create(<Animated.View style={{opacity}} />);
 
       expect(NativeAnimatedModule.createAnimatedNode).toBeCalledWith(
         expect.any(Number),
@@ -250,7 +250,7 @@ describe('Native Animated', () => {
         useNativeDriver: true,
       });
 
-      const root = TestRenderer.create(<Animated.View onTouchMove={event} />);
+      const root = create(<Animated.View onTouchMove={event} />);
       expect(NativeAnimatedModule.addAnimatedEventToView).toBeCalledWith(
         expect.any(Number),
         'onTouchMove',
@@ -278,7 +278,7 @@ describe('Native Animated', () => {
         useNativeDriver: true,
       });
 
-      TestRenderer.create(<Animated.View onTouchMove={event} />);
+      create(<Animated.View onTouchMove={event} />);
       ['x', 'y'].forEach((key, idx) =>
         expect(
           NativeAnimatedModule.addAnimatedEventToView,
@@ -289,7 +289,7 @@ describe('Native Animated', () => {
       );
     });
 
-    it('should throw on invalid event path', () => {
+    it('should throw on invalid event path', async () => {
       const value = new Animated.Value(0);
       value.__makeNative();
       const event = Animated.event([{notNativeEvent: {foo: value}}], {
@@ -305,9 +305,11 @@ describe('Native Animated', () => {
         consoleError(...args);
       });
 
-      expect(() => {
-        TestRenderer.create(<Animated.View onTouchMove={event} />);
-      }).toThrowError(/nativeEvent/);
+      await expect(async () => {
+        await act(() => {
+          create(<Animated.View onTouchMove={event} />);
+        });
+      }).rejects.toThrowError(/nativeEvent/);
       expect(NativeAnimatedModule.addAnimatedEventToView).not.toBeCalled();
 
       console.error.mockRestore();
@@ -331,7 +333,7 @@ describe('Native Animated', () => {
   describe('Animated Graph', () => {
     it('creates and detaches nodes', () => {
       const opacity = new Animated.Value(0);
-      const root = TestRenderer.create(<Animated.View style={{opacity}} />);
+      const root = create(<Animated.View style={{opacity}} />);
 
       Animated.timing(opacity, {
         toValue: 10,
@@ -371,7 +373,7 @@ describe('Native Animated', () => {
 
     it('sends a valid description for value, style and props nodes', () => {
       const opacity = new Animated.Value(0);
-      TestRenderer.create(<Animated.View style={{opacity}} />);
+      create(<Animated.View style={{opacity}} />);
 
       Animated.timing(opacity, {
         toValue: 10,
@@ -399,9 +401,7 @@ describe('Native Animated', () => {
       first.__makeNative();
       second.__makeNative();
 
-      TestRenderer.create(
-        <Animated.View style={{opacity: Animated.add(first, second)}} />,
-      );
+      create(<Animated.View style={{opacity: Animated.add(first, second)}} />);
 
       expect(NativeAnimatedModule.createAnimatedNode).toBeCalledWith(
         expect.any(Number),
@@ -443,7 +443,7 @@ describe('Native Animated', () => {
       first.__makeNative();
       second.__makeNative();
 
-      TestRenderer.create(
+      create(
         <Animated.View style={{opacity: Animated.subtract(first, second)}} />,
       );
 
@@ -487,7 +487,7 @@ describe('Native Animated', () => {
       first.__makeNative();
       second.__makeNative();
 
-      TestRenderer.create(
+      create(
         <Animated.View style={{opacity: Animated.multiply(first, second)}} />,
       );
 
@@ -531,7 +531,7 @@ describe('Native Animated', () => {
       first.__makeNative();
       second.__makeNative();
 
-      TestRenderer.create(
+      create(
         <Animated.View style={{opacity: Animated.divide(first, second)}} />,
       );
 
@@ -573,9 +573,7 @@ describe('Native Animated', () => {
       const value = new Animated.Value(4);
       value.__makeNative();
 
-      TestRenderer.create(
-        <Animated.View style={{opacity: Animated.modulo(value, 4)}} />,
-      );
+      create(<Animated.View style={{opacity: Animated.modulo(value, 4)}} />);
 
       expect(NativeAnimatedModule.createAnimatedNode).toBeCalledWith(
         expect.any(Number),
@@ -607,7 +605,7 @@ describe('Native Animated', () => {
       const value = new Animated.Value(10);
       value.__makeNative();
 
-      TestRenderer.create(
+      create(
         <Animated.View
           style={{
             opacity: value.interpolate({
@@ -651,9 +649,7 @@ describe('Native Animated', () => {
       const translateX = new Animated.Value(0);
       translateX.__makeNative();
 
-      TestRenderer.create(
-        <Animated.View style={{transform: [{translateX}, {scale: 2}]}} />,
-      );
+      create(<Animated.View style={{transform: [{translateX}, {scale: 2}]}} />);
 
       expect(NativeAnimatedModule.createAnimatedNode).toBeCalledWith(
         expect.any(Number),
@@ -678,7 +674,7 @@ describe('Native Animated', () => {
     it('sends create operations before connect operations for multiple animated style props', () => {
       const opacity = new Animated.Value(0);
       const borderRadius = new Animated.Value(0);
-      TestRenderer.create(<Animated.View style={{borderRadius, opacity}} />);
+      create(<Animated.View style={{borderRadius, opacity}} />);
 
       Animated.timing(opacity, {
         toValue: 10,
@@ -772,7 +768,7 @@ describe('Native Animated', () => {
     it('sends create operations before connect operations for multiple animated transform props', () => {
       const translateX = new Animated.Value(0);
       const translateY = new Animated.Value(0);
-      TestRenderer.create(
+      create(
         <Animated.View
           style={{
             transform: [{translateX: translateX}, {translateY: translateY}],
@@ -894,7 +890,7 @@ describe('Native Animated', () => {
     it('sends create operations before connect operations for multiple animated props', () => {
       const propA = new Animated.Value(0);
       const propB = new Animated.Value(0);
-      TestRenderer.create(<Animated.View propA={propA} propB={propB} />);
+      create(<Animated.View propA={propA} propB={propB} />);
 
       Animated.timing(propA, {
         toValue: 10,
@@ -967,7 +963,7 @@ describe('Native Animated', () => {
       const value = new Animated.Value(2);
       value.__makeNative();
 
-      TestRenderer.create(
+      create(
         <Animated.View style={{opacity: Animated.diffClamp(value, 0, 20)}} />,
       );
 
@@ -1000,7 +996,7 @@ describe('Native Animated', () => {
     it("doesn't call into native API if useNativeDriver is set to false", () => {
       const opacity = new Animated.Value(0);
 
-      const root = TestRenderer.create(<Animated.View style={{opacity}} />);
+      const root = create(<Animated.View style={{opacity}} />);
 
       Animated.timing(opacity, {
         toValue: 10,
@@ -1017,7 +1013,7 @@ describe('Native Animated', () => {
       const opacity = new Animated.Value(0);
       const ref = React.createRef(null);
 
-      TestRenderer.create(<Animated.View ref={ref} style={{opacity}} />);
+      create(<Animated.View ref={ref} style={{opacity}} />);
 
       // Necessary to simulate the native animation.
       expect(ref.current).not.toBeNull();
@@ -1046,7 +1042,7 @@ describe('Native Animated', () => {
     it('fails for unsupported styles', () => {
       const left = new Animated.Value(0);
 
-      TestRenderer.create(<Animated.View style={{left}} />);
+      create(<Animated.View style={{left}} />);
 
       const animation = Animated.timing(left, {
         toValue: 10,
@@ -1061,7 +1057,7 @@ describe('Native Animated', () => {
       const opacity = new Animated.Value(0);
       opacity.__makeNative();
 
-      TestRenderer.create(
+      create(
         <Animated.View
           removeClippedSubviews={true}
           style={{left: 10, opacity, top: 20}}
@@ -1269,7 +1265,7 @@ describe('Native Animated', () => {
       const opacity = new Animated.Value(0);
       opacity.__makeNative();
 
-      const root = TestRenderer.create(<Animated.View style={{opacity}} />);
+      const root = create(<Animated.View style={{opacity}} />);
       expect(NativeAnimatedModule.restoreDefaultValues).not.toHaveBeenCalled();
 
       root.update(<Animated.View style={{opacity}} />);
