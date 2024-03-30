@@ -217,8 +217,8 @@ const RNTesterApp = ({
     activeModuleTitle != null
       ? activeModuleTitle
       : screen === Screens.COMPONENTS
-      ? 'Components'
-      : 'APIs';
+        ? 'Components'
+        : 'APIs';
 
   const activeExampleList =
     screen === Screens.COMPONENTS ? examplesList.components : examplesList.apis;

@@ -13,13 +13,13 @@
 jest.useFakeTimers({legacyFakeTimers: true});
 
 import type {PressEvent} from '../../Types/CoreEventTypes';
+import type {PressabilityConfig} from '../Pressability';
 
 const UIManager = require('../../ReactNative/UIManager');
 const Platform = require('../../Utilities/Platform');
 const HoverState = require('../HoverState');
 const Pressability = require('../Pressability').default;
 const invariant = require('invariant');
-const nullthrows = require('nullthrows');
 
 const isWindows = process.platform === 'win32';
 const itif = (condition: boolean) => {
@@ -36,9 +36,7 @@ function getMock<TArguments: $ReadOnlyArray<mixed>, TReturn>(
   return (fn: $FlowFixMe);
 }
 
-/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
- * LTI update could not be added via codemod */
-const createMockPressability = overrides => {
+const createMockPressability = (overrides: ?Partial<PressabilityConfig>) => {
   const config = {
     cancelable: null,
     disabled: null,
@@ -57,9 +55,6 @@ const createMockPressability = overrides => {
     onPress: jest.fn(),
     onPressIn: jest.fn(),
     onPressOut: jest.fn(),
-    onLongPressShouldCancelPress_DEPRECATED: jest.fn(),
-    onResponderTerminationRequest_DEPRECATED: jest.fn(() => true),
-    onStartShouldSetResponder_DEPRECATED: jest.fn(() => true),
     ...overrides,
   };
   const touchable = new Pressability(config);
@@ -514,7 +509,11 @@ describe('Pressability', () => {
 
   describe('onPress', () => {
     it('is called even when `measure` does not finish', () => {
-      const {config, handlers} = createMockPressability();
+      // Disable onLongPress. Since we run all timers, we otherwise end up
+      // interpreting these events as a long press.
+      const {config, handlers} = createMockPressability({
+        onLongPress: undefined,
+      });
 
       handlers.onStartShouldSetResponder();
       handlers.onResponderGrant(createMockPressEvent('onResponderGrant'));
@@ -875,31 +874,6 @@ describe('Pressability', () => {
         jest.runOnlyPendingTimers();
         expect(config.onPressOut).toBeCalled();
       });
-    });
-  });
-
-  describe('onStartShouldSetResponder', () => {
-    it('if omitted the responder is set by default', () => {
-      const {handlers} = createMockPressability({
-        onStartShouldSetResponder_DEPRECATED: null,
-      });
-
-      expect(handlers.onStartShouldSetResponder()).toBe(true);
-    });
-
-    it('if supplied it is called', () => {
-      const {config, handlers} = createMockPressability();
-      const onStartShouldSetResponder_DEPRECATED = nullthrows(
-        config.onStartShouldSetResponder_DEPRECATED,
-      );
-
-      // $FlowFixMe[prop-missing]
-      onStartShouldSetResponder_DEPRECATED.mockReturnValue(false);
-      expect(handlers.onStartShouldSetResponder()).toBe(false);
-
-      // $FlowFixMe[prop-missing]
-      onStartShouldSetResponder_DEPRECATED.mockReturnValue(true);
-      expect(handlers.onStartShouldSetResponder()).toBe(true);
     });
   });
 });

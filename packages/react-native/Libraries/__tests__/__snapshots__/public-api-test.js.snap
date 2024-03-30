@@ -810,13 +810,7 @@ exports[`public API should not change unintentionally Libraries/Animated/compone
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/createAnimatedComponent.js 1`] = `
-"export type AnimatedProps<Props: { ... }> = $ObjMap<
-  Props &
-    $ReadOnly<{
-      passthroughAnimatedPropExplicitValues?: React.ElementConfig<typeof View>,
-    }>,
-  () => any,
->;
+"export type AnimatedProps<Props: { ... }> = $ObjMap<Props, () => any>;
 export type AnimatedComponentType<
   Props: { ... },
   +Instance = mixed,
@@ -1683,7 +1677,13 @@ exports[`public API should not change unintentionally Libraries/Components/Butto
   accessibilityHint?: ?string,
   accessibilityLanguage?: ?Stringish,
 |}>;
-declare const Button: React.AbstractComponent<ButtonProps>;
+declare const Touchable:
+  | typeof TouchableNativeFeedback
+  | typeof TouchableOpacity;
+declare const Button: React.AbstractComponent<
+  ButtonProps,
+  React.ElementRef<typeof Touchable>,
+>;
 declare export default typeof Button;
 "
 `;
@@ -3041,14 +3041,11 @@ export type Props = $ReadOnly<{|
   multiline?: ?boolean,
   onBlur?: ?(e: BlurEvent) => mixed,
   onChange?: ?(e: ChangeEvent) => mixed,
-  unstable_onChangeSync?: ?(e: ChangeEvent) => mixed,
   onChangeText?: ?(text: string) => mixed,
-  unstable_onChangeTextSync?: ?(text: string) => mixed,
   onContentSizeChange?: ?(e: ContentSizeChangeEvent) => mixed,
   onEndEditing?: ?(e: EditingEvent) => mixed,
   onFocus?: ?(e: FocusEvent) => mixed,
   onKeyPress?: ?(e: KeyPressEvent) => mixed,
-  unstable_onKeyPressSync?: ?(e: KeyPressEvent) => mixed,
   onPress?: ?(event: PressEvent) => mixed,
   onPressIn?: ?(event: PressEvent) => mixed,
   onPressOut?: ?(event: PressEvent) => mixed,
@@ -3370,6 +3367,60 @@ declare const Touchable: React.AbstractComponent<
   React.ElementRef<typeof Animated.View>,
 >;
 declare module.exports: Touchable;
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/Components/Touchable/TouchableWithoutFeedback.js 1`] = `
+"type Props = $ReadOnly<{|
+  accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
+  accessibilityElementsHidden?: ?boolean,
+  accessibilityHint?: ?Stringish,
+  accessibilityLanguage?: ?Stringish,
+  accessibilityIgnoresInvertColors?: ?boolean,
+  accessibilityLabel?: ?Stringish,
+  accessibilityLiveRegion?: ?(\\"none\\" | \\"polite\\" | \\"assertive\\"),
+  accessibilityRole?: ?AccessibilityRole,
+  accessibilityState?: ?AccessibilityState,
+  accessibilityValue?: ?AccessibilityValue,
+  \\"aria-valuemax\\"?: AccessibilityValue[\\"max\\"],
+  \\"aria-valuemin\\"?: AccessibilityValue[\\"min\\"],
+  \\"aria-valuenow\\"?: AccessibilityValue[\\"now\\"],
+  \\"aria-valuetext\\"?: AccessibilityValue[\\"text\\"],
+  accessibilityViewIsModal?: ?boolean,
+  \\"aria-modal\\"?: ?boolean,
+  accessible?: ?boolean,
+  \\"aria-busy\\"?: ?boolean,
+  \\"aria-checked\\"?: ?boolean | \\"mixed\\",
+  \\"aria-disabled\\"?: ?boolean,
+  \\"aria-expanded\\"?: ?boolean,
+  \\"aria-selected\\"?: ?boolean,
+  \\"aria-hidden\\"?: ?boolean,
+  \\"aria-live\\"?: ?(\\"polite\\" | \\"assertive\\" | \\"off\\"),
+  \\"aria-label\\"?: ?Stringish,
+  children?: ?React.Node,
+  delayLongPress?: ?number,
+  delayPressIn?: ?number,
+  delayPressOut?: ?number,
+  disabled?: ?boolean,
+  focusable?: ?boolean,
+  hitSlop?: ?EdgeInsetsOrSizeProp,
+  id?: string,
+  importantForAccessibility?: ?(\\"auto\\" | \\"yes\\" | \\"no\\" | \\"no-hide-descendants\\"),
+  nativeID?: ?string,
+  onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
+  onBlur?: ?(event: BlurEvent) => mixed,
+  onFocus?: ?(event: FocusEvent) => mixed,
+  onLayout?: ?(event: LayoutEvent) => mixed,
+  onLongPress?: ?(event: PressEvent) => mixed,
+  onPress?: ?(event: PressEvent) => mixed,
+  onPressIn?: ?(event: PressEvent) => mixed,
+  onPressOut?: ?(event: PressEvent) => mixed,
+  pressRetentionOffset?: ?EdgeInsetsOrSizeProp,
+  rejectResponderTermination?: ?boolean,
+  testID?: ?string,
+  touchSoundDisabled?: ?boolean,
+|}>;
+declare module.exports: (props: Props) => React.Node;
 "
 `;
 
@@ -4484,11 +4535,16 @@ exports[`public API should not change unintentionally Libraries/Image/ImageSourc
 
 exports[`public API should not change unintentionally Libraries/Image/ImageTypes.flow.js 1`] = `
 "type ImageComponentStaticsIOS = $ReadOnly<{
-  getSize: (
+  getSize(uri: string): Promise<{ width: number, height: number }>,
+  getSize(
     uri: string,
     success: (width: number, height: number) => void,
     failure?: (error: mixed) => void
-  ) => void,
+  ): void,
+  getSizeWithHeaders(
+    uri: string,
+    headers: { [string]: string, ... }
+  ): Promise<{ width: number, height: number }>,
   getSizeWithHeaders(
     uri: string,
     headers: { [string]: string, ... },
@@ -5275,6 +5331,7 @@ export type LogBoxLogData = $ReadOnly<{|
   message: Message,
   stack: Stack,
   category: string,
+  componentStackType?: ComponentStackType,
   componentStack: ComponentStack,
   codeFrame?: ?CodeFrame,
   isComponentError: boolean,
@@ -5285,6 +5342,7 @@ declare class LogBoxLog {
   type: ?string;
   category: Category;
   componentStack: ComponentStack;
+  componentStackType: ComponentStackType;
   stack: Stack;
   count: number;
   level: LogLevel;
@@ -5296,15 +5354,31 @@ declare class LogBoxLog {
     | $ReadOnly<{| error: null, stack: null, status: \\"PENDING\\" |}>
     | $ReadOnly<{| error: null, stack: Stack, status: \\"COMPLETE\\" |}>
     | $ReadOnly<{| error: Error, stack: null, status: \\"FAILED\\" |}>;
+  symbolicatedComponentStack:
+    | $ReadOnly<{| error: null, componentStack: null, status: \\"NONE\\" |}>
+    | $ReadOnly<{| error: null, componentStack: null, status: \\"PENDING\\" |}>
+    | $ReadOnly<{|
+        error: null,
+        componentStack: ComponentStack,
+        status: \\"COMPLETE\\",
+      |}>
+    | $ReadOnly<{| error: Error, componentStack: null, status: \\"FAILED\\" |}>;
   constructor(data: LogBoxLogData): void;
   incrementCount(): void;
   getAvailableStack(): Stack;
+  getAvailableComponentStack(): ComponentStack;
   retrySymbolicate(callback?: (status: SymbolicationStatus) => void): void;
   symbolicate(callback?: (status: SymbolicationStatus) => void): void;
   handleSymbolicate(callback?: (status: SymbolicationStatus) => void): void;
   updateStatus(
     error: ?Error,
     stack: ?Stack,
+    codeFrame: ?CodeFrame,
+    callback?: (status: SymbolicationStatus) => void
+  ): void;
+  updateComponentStackStatus(
+    error: ?Error,
+    componentStack: ?ComponentStack,
     codeFrame: ?CodeFrame,
     callback?: (status: SymbolicationStatus) => void
   ): void;
@@ -5349,18 +5423,23 @@ export type Message = $ReadOnly<{|
   >,
 |}>;
 export type ComponentStack = $ReadOnlyArray<CodeFrame>;
+export type ComponentStackType = \\"legacy\\" | \\"stack\\";
 declare export function parseInterpolation(
   args: $ReadOnlyArray<mixed>
 ): $ReadOnly<{|
   category: Category,
   message: Message,
 |}>;
-declare export function parseComponentStack(message: string): ComponentStack;
+declare export function parseComponentStack(message: string): {
+  type: ComponentStackType,
+  stack: ComponentStack,
+};
 declare export function parseLogBoxException(
   error: ExtendedExceptionData
 ): LogBoxLogData;
 declare export function parseLogBoxLog(args: $ReadOnlyArray<mixed>): {|
   componentStack: ComponentStack,
+  componentStackType: ComponentStackType,
   category: Category,
   message: Message,
 |};
@@ -6187,9 +6266,6 @@ exports[`public API should not change unintentionally Libraries/Pressability/Pre
   onPressMove?: ?(event: PressEvent) => mixed,
   onPressOut?: ?(event: PressEvent) => mixed,
   blockNativeResponder?: ?boolean,
-  onLongPressShouldCancelPress_DEPRECATED?: ?() => boolean,
-  onResponderTerminationRequest_DEPRECATED?: ?() => boolean,
-  onStartShouldSetResponder_DEPRECATED?: ?() => boolean,
 |}>;
 export type EventHandlers = $ReadOnly<{|
   onBlur: (event: BlurEvent) => void,
@@ -6264,7 +6340,6 @@ declare export default class Pressability {
     |}>
   ): boolean;
   _handleLongPress(event: PressEvent): void;
-  _shouldLongPressCancelPress(): boolean;
   _cancelHoverInDelayTimeout(): void;
   _cancelHoverOutDelayTimeout(): void;
   _cancelLongPressDelayTimeout(): void;
@@ -6590,24 +6665,11 @@ export interface Spec {
     locationY: number,
     callback: (instanceHandle: ?InternalInstanceHandle) => void
   ) => void;
-  +getParentNode: (node: Node) => ?InternalInstanceHandle;
-  +getChildNodes: (node: Node) => $ReadOnlyArray<InternalInstanceHandle>;
-  +isConnected: (node: Node) => boolean;
   +compareDocumentPosition: (node: Node, otherNode: Node) => number;
-  +getTextContent: (node: Node) => string;
   +getBoundingClientRect: (
     node: Node,
     includeTransform: boolean
   ) => ?[number, number, number, number];
-  +getOffset: (node: Node) => ?[InternalInstanceHandle, number, number];
-  +getScrollPosition: (node: Node) => ?[number, number];
-  +getScrollSize: (node: Node) => ?[number, number];
-  +getInnerSize: (node: Node) => ?[number, number];
-  +getBorderSize: (node: Node) => ?[number, number, number, number];
-  +getTagName: (node: Node) => string;
-  +hasPointerCapture: (node: Node, pointerId: number) => boolean;
-  +setPointerCapture: (node: Node, pointerId: number) => void;
-  +releasePointerCapture: (node: Node, pointerId: number) => void;
 }
 declare export function getFabricUIManager(): ?Spec;
 "
@@ -7423,6 +7485,7 @@ export type EdgeInsetsValue = {
 };
 export type DimensionValue = number | string | \\"auto\\" | AnimatedNode | null;
 export type AnimatableNumericValue = number | AnimatedNode;
+export type CursorValue = \\"auto\\" | \\"pointer\\";
 type ____LayoutStyle_Internal = $ReadOnly<{
   display?: \\"none\\" | \\"flex\\",
   width?: DimensionValue,
@@ -7573,6 +7636,7 @@ export type ____ViewStyle_InternalCore = $ReadOnly<{
   opacity?: AnimatableNumericValue,
   elevation?: number,
   pointerEvents?: \\"auto\\" | \\"none\\" | \\"box-none\\" | \\"box-only\\",
+  cursor?: CursorValue,
 }>;
 export type ____ViewStyle_Internal = $ReadOnly<{
   ...____ViewStyle_InternalCore,
@@ -7745,8 +7809,8 @@ export type ____FlattenStyleProp_Internal<
 > = TStyleProp extends null | void | false | \\"\\"
   ? empty
   : TStyleProp extends $ReadOnlyArray<infer V>
-  ? ____FlattenStyleProp_Internal<V>
-  : TStyleProp;
+    ? ____FlattenStyleProp_Internal<V>
+    : TStyleProp;
 "
 `;
 
@@ -8400,6 +8464,7 @@ export type HMRClientNativeInterface = {|
     isEnabled: boolean,
     scheme?: string
   ): void,
+  unstable_notifyFuseboxConsoleEnabled(): void,
 |};
 declare const HMRClient: HMRClientNativeInterface;
 declare module.exports: HMRClient;

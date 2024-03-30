@@ -53,7 +53,9 @@ public class PixelUtil {
     return value / DisplayMetricsHolder.getWindowDisplayMetrics().density;
   }
 
-  /** @return {@link float} that represents the density of the display metrics for device screen. */
+  /**
+   * @return {@link float} that represents the density of the display metrics for device screen.
+   */
   public static float getDisplayMetricDensity() {
     return DisplayMetricsHolder.getWindowDisplayMetrics().density;
   }

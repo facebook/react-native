@@ -52,6 +52,10 @@ typedef std::shared_ptr<facebook::react::JSRuntimeFactory> (^RCTHostJSEngineProv
 
 @property (nonatomic, weak, nullable) id<RCTHostRuntimeDelegate> runtimeDelegate;
 
+@property (nonatomic, readonly) RCTSurfacePresenter *surfacePresenter;
+
+@property (nonatomic, readonly) RCTModuleRegistry *moduleRegistry;
+
 - (void)start;
 
 - (void)callFunctionOnJSModule:(NSString *)moduleName method:(NSString *)method args:(NSArray *)args;
@@ -64,11 +68,11 @@ typedef std::shared_ptr<facebook::react::JSRuntimeFactory> (^RCTHostJSEngineProv
 
 - (RCTFabricSurface *)createSurfaceWithModuleName:(NSString *)moduleName initialProperties:(NSDictionary *)properties;
 
-- (RCTSurfacePresenter *)getSurfacePresenter;
+- (RCTSurfacePresenter *)getSurfacePresenter __attribute__((deprecated("Use `surfacePresenter` property instead.")));
 
 // Native module API
 
-- (RCTModuleRegistry *)getModuleRegistry;
+- (RCTModuleRegistry *)getModuleRegistry __attribute__((deprecated("Use `moduleRegistry` property instead.")));
 
 @end
 

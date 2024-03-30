@@ -685,25 +685,33 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
     return mYogaNode.getLayoutHeight();
   }
 
-  /** @return the x position of the corresponding view on the screen, rounded to pixels */
+  /**
+   * @return the x position of the corresponding view on the screen, rounded to pixels
+   */
   @Override
   public int getScreenX() {
     return mScreenX;
   }
 
-  /** @return the y position of the corresponding view on the screen, rounded to pixels */
+  /**
+   * @return the y position of the corresponding view on the screen, rounded to pixels
+   */
   @Override
   public int getScreenY() {
     return mScreenY;
   }
 
-  /** @return width corrected for rounding to pixels. */
+  /**
+   * @return width corrected for rounding to pixels.
+   */
   @Override
   public int getScreenWidth() {
     return mScreenWidth;
   }
 
-  /** @return height corrected for rounding to pixels. */
+  /**
+   * @return height corrected for rounding to pixels.
+   */
   @Override
   public int getScreenHeight() {
     return mScreenHeight;

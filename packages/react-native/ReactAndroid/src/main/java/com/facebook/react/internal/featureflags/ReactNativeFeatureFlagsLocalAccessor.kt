@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<63356ad414e641eae11ca07b1a876fd3>>
+ * @generated SignedSource<<c087df804587a9a02a0547684d0e9c92>>
  */
 
 /**
@@ -25,15 +25,18 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private val accessedFeatureFlags = mutableSetOf<String>()
 
   private var commonTestFlagCache: Boolean? = null
-  private var enableBackgroundExecutorCache: Boolean? = null
-  private var useModernRuntimeSchedulerCache: Boolean? = null
-  private var enableMicrotasksCache: Boolean? = null
   private var batchRenderingUpdatesInEventLoopCache: Boolean? = null
-  private var enableSpannableBuildingUnificationCache: Boolean? = null
+  private var enableBackgroundExecutorCache: Boolean? = null
   private var enableCustomDrawOrderFabricCache: Boolean? = null
   private var enableFixForClippedSubviewsCrashCache: Boolean? = null
+  private var enableMicrotasksCache: Boolean? = null
+  private var enableMountHooksAndroidCache: Boolean? = null
+  private var enableSpannableBuildingUnificationCache: Boolean? = null
+  private var enableSynchronousStateUpdatesCache: Boolean? = null
+  private var enableUIConsistencyCache: Boolean? = null
   private var inspectorEnableCxxInspectorPackagerConnectionCache: Boolean? = null
   private var inspectorEnableModernCDPRegistryCache: Boolean? = null
+  private var useModernRuntimeSchedulerCache: Boolean? = null
 
   override fun commonTestFlag(): Boolean {
     var cached = commonTestFlagCache
@@ -41,36 +44,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.commonTestFlag()
       accessedFeatureFlags.add("commonTestFlag")
       commonTestFlagCache = cached
-    }
-    return cached
-  }
-
-  override fun enableBackgroundExecutor(): Boolean {
-    var cached = enableBackgroundExecutorCache
-    if (cached == null) {
-      cached = currentProvider.enableBackgroundExecutor()
-      accessedFeatureFlags.add("enableBackgroundExecutor")
-      enableBackgroundExecutorCache = cached
-    }
-    return cached
-  }
-
-  override fun useModernRuntimeScheduler(): Boolean {
-    var cached = useModernRuntimeSchedulerCache
-    if (cached == null) {
-      cached = currentProvider.useModernRuntimeScheduler()
-      accessedFeatureFlags.add("useModernRuntimeScheduler")
-      useModernRuntimeSchedulerCache = cached
-    }
-    return cached
-  }
-
-  override fun enableMicrotasks(): Boolean {
-    var cached = enableMicrotasksCache
-    if (cached == null) {
-      cached = currentProvider.enableMicrotasks()
-      accessedFeatureFlags.add("enableMicrotasks")
-      enableMicrotasksCache = cached
     }
     return cached
   }
@@ -85,12 +58,12 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
     return cached
   }
 
-  override fun enableSpannableBuildingUnification(): Boolean {
-    var cached = enableSpannableBuildingUnificationCache
+  override fun enableBackgroundExecutor(): Boolean {
+    var cached = enableBackgroundExecutorCache
     if (cached == null) {
-      cached = currentProvider.enableSpannableBuildingUnification()
-      accessedFeatureFlags.add("enableSpannableBuildingUnification")
-      enableSpannableBuildingUnificationCache = cached
+      cached = currentProvider.enableBackgroundExecutor()
+      accessedFeatureFlags.add("enableBackgroundExecutor")
+      enableBackgroundExecutorCache = cached
     }
     return cached
   }
@@ -115,6 +88,56 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
     return cached
   }
 
+  override fun enableMicrotasks(): Boolean {
+    var cached = enableMicrotasksCache
+    if (cached == null) {
+      cached = currentProvider.enableMicrotasks()
+      accessedFeatureFlags.add("enableMicrotasks")
+      enableMicrotasksCache = cached
+    }
+    return cached
+  }
+
+  override fun enableMountHooksAndroid(): Boolean {
+    var cached = enableMountHooksAndroidCache
+    if (cached == null) {
+      cached = currentProvider.enableMountHooksAndroid()
+      accessedFeatureFlags.add("enableMountHooksAndroid")
+      enableMountHooksAndroidCache = cached
+    }
+    return cached
+  }
+
+  override fun enableSpannableBuildingUnification(): Boolean {
+    var cached = enableSpannableBuildingUnificationCache
+    if (cached == null) {
+      cached = currentProvider.enableSpannableBuildingUnification()
+      accessedFeatureFlags.add("enableSpannableBuildingUnification")
+      enableSpannableBuildingUnificationCache = cached
+    }
+    return cached
+  }
+
+  override fun enableSynchronousStateUpdates(): Boolean {
+    var cached = enableSynchronousStateUpdatesCache
+    if (cached == null) {
+      cached = currentProvider.enableSynchronousStateUpdates()
+      accessedFeatureFlags.add("enableSynchronousStateUpdates")
+      enableSynchronousStateUpdatesCache = cached
+    }
+    return cached
+  }
+
+  override fun enableUIConsistency(): Boolean {
+    var cached = enableUIConsistencyCache
+    if (cached == null) {
+      cached = currentProvider.enableUIConsistency()
+      accessedFeatureFlags.add("enableUIConsistency")
+      enableUIConsistencyCache = cached
+    }
+    return cached
+  }
+
   override fun inspectorEnableCxxInspectorPackagerConnection(): Boolean {
     var cached = inspectorEnableCxxInspectorPackagerConnectionCache
     if (cached == null) {
@@ -131,6 +154,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.inspectorEnableModernCDPRegistry()
       accessedFeatureFlags.add("inspectorEnableModernCDPRegistry")
       inspectorEnableModernCDPRegistryCache = cached
+    }
+    return cached
+  }
+
+  override fun useModernRuntimeScheduler(): Boolean {
+    var cached = useModernRuntimeSchedulerCache
+    if (cached == null) {
+      cached = currentProvider.useModernRuntimeScheduler()
+      accessedFeatureFlags.add("useModernRuntimeScheduler")
+      useModernRuntimeSchedulerCache = cached
     }
     return cached
   }

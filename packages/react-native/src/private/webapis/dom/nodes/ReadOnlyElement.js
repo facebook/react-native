@@ -12,7 +12,6 @@
 
 import type HTMLCollection from '../oldstylecollections/HTMLCollection';
 
-import {getFabricUIManager} from '../../../../../Libraries/ReactNative/FabricUIManager';
 import DOMRect from '../geometry/DOMRect';
 import {createHTMLCollection} from '../oldstylecollections/HTMLCollection';
 import ReadOnlyNode, {
@@ -20,8 +19,8 @@ import ReadOnlyNode, {
   getInstanceHandle,
   getShadowNode,
 } from './ReadOnlyNode';
+import NativeDOM from './specs/NativeDOM';
 import {getElementSibling} from './utilities/Traversal';
-import nullthrows from 'nullthrows';
 
 export default class ReadOnlyElement extends ReadOnlyNode {
   get childElementCount(): number {
@@ -36,10 +35,8 @@ export default class ReadOnlyElement extends ReadOnlyNode {
     const node = getShadowNode(this);
 
     if (node != null) {
-      const innerSize = nullthrows(getFabricUIManager()).getInnerSize(node);
-      if (innerSize != null) {
-        return innerSize[1];
-      }
+      const innerSize = NativeDOM.getInnerSize(node);
+      return innerSize[1];
     }
 
     return 0;
@@ -49,10 +46,8 @@ export default class ReadOnlyElement extends ReadOnlyNode {
     const node = getShadowNode(this);
 
     if (node != null) {
-      const borderSize = nullthrows(getFabricUIManager()).getBorderSize(node);
-      if (borderSize != null) {
-        return borderSize[3];
-      }
+      const borderSize = NativeDOM.getBorderWidth(node);
+      return borderSize[3];
     }
 
     return 0;
@@ -62,10 +57,8 @@ export default class ReadOnlyElement extends ReadOnlyNode {
     const node = getShadowNode(this);
 
     if (node != null) {
-      const borderSize = nullthrows(getFabricUIManager()).getBorderSize(node);
-      if (borderSize != null) {
-        return borderSize[0];
-      }
+      const borderSize = NativeDOM.getBorderWidth(node);
+      return borderSize[0];
     }
 
     return 0;
@@ -75,10 +68,8 @@ export default class ReadOnlyElement extends ReadOnlyNode {
     const node = getShadowNode(this);
 
     if (node != null) {
-      const innerSize = nullthrows(getFabricUIManager()).getInnerSize(node);
-      if (innerSize != null) {
-        return innerSize[0];
-      }
+      const innerSize = NativeDOM.getInnerSize(node);
+      return innerSize[0];
     }
 
     return 0;
@@ -138,10 +129,8 @@ export default class ReadOnlyElement extends ReadOnlyNode {
     const node = getShadowNode(this);
 
     if (node != null) {
-      const scrollSize = nullthrows(getFabricUIManager()).getScrollSize(node);
-      if (scrollSize != null) {
-        return scrollSize[1];
-      }
+      const scrollSize = NativeDOM.getScrollSize(node);
+      return scrollSize[1];
     }
 
     return 0;
@@ -151,12 +140,8 @@ export default class ReadOnlyElement extends ReadOnlyNode {
     const node = getShadowNode(this);
 
     if (node != null) {
-      const scrollPosition = nullthrows(getFabricUIManager()).getScrollPosition(
-        node,
-      );
-      if (scrollPosition != null) {
-        return scrollPosition[0];
-      }
+      const scrollPosition = NativeDOM.getScrollPosition(node);
+      return scrollPosition[0];
     }
 
     return 0;
@@ -166,12 +151,8 @@ export default class ReadOnlyElement extends ReadOnlyNode {
     const node = getShadowNode(this);
 
     if (node != null) {
-      const scrollPosition = nullthrows(getFabricUIManager()).getScrollPosition(
-        node,
-      );
-      if (scrollPosition != null) {
-        return scrollPosition[1];
-      }
+      const scrollPosition = NativeDOM.getScrollPosition(node);
+      return scrollPosition[1];
     }
 
     return 0;
@@ -181,10 +162,8 @@ export default class ReadOnlyElement extends ReadOnlyNode {
     const node = getShadowNode(this);
 
     if (node != null) {
-      const scrollSize = nullthrows(getFabricUIManager()).getScrollSize(node);
-      if (scrollSize != null) {
-        return scrollSize[0];
-      }
+      const scrollSize = NativeDOM.getScrollSize(node);
+      return scrollSize[0];
     }
 
     return 0;
@@ -194,7 +173,7 @@ export default class ReadOnlyElement extends ReadOnlyNode {
     const node = getShadowNode(this);
 
     if (node != null) {
-      return nullthrows(getFabricUIManager()).getTagName(node);
+      return NativeDOM.getTagName(node);
     }
 
     return '';
@@ -204,7 +183,7 @@ export default class ReadOnlyElement extends ReadOnlyNode {
     const shadowNode = getShadowNode(this);
 
     if (shadowNode != null) {
-      return nullthrows(getFabricUIManager()).getTextContent(shadowNode);
+      return NativeDOM.getTextContent(shadowNode);
     }
 
     return '';
@@ -220,10 +199,7 @@ export default class ReadOnlyElement extends ReadOnlyNode {
   hasPointerCapture(pointerId: number): boolean {
     const node = getShadowNode(this);
     if (node != null) {
-      return nullthrows(getFabricUIManager()).hasPointerCapture(
-        node,
-        pointerId,
-      );
+      return NativeDOM.hasPointerCapture(node, pointerId);
     }
     return false;
   }
@@ -231,14 +207,14 @@ export default class ReadOnlyElement extends ReadOnlyNode {
   setPointerCapture(pointerId: number): void {
     const node = getShadowNode(this);
     if (node != null) {
-      nullthrows(getFabricUIManager()).setPointerCapture(node, pointerId);
+      NativeDOM.setPointerCapture(node, pointerId);
     }
   }
 
   releasePointerCapture(pointerId: number): void {
     const node = getShadowNode(this);
     if (node != null) {
-      nullthrows(getFabricUIManager()).releasePointerCapture(node, pointerId);
+      NativeDOM.releasePointerCapture(node, pointerId);
     }
   }
 }
@@ -262,14 +238,8 @@ export function getBoundingClientRect(
   const shadowNode = getShadowNode(node);
 
   if (shadowNode != null) {
-    const rect = nullthrows(getFabricUIManager()).getBoundingClientRect(
-      shadowNode,
-      includeTransform,
-    );
-
-    if (rect) {
-      return new DOMRect(rect[0], rect[1], rect[2], rect[3]);
-    }
+    const rect = NativeDOM.getBoundingClientRect(shadowNode, includeTransform);
+    return new DOMRect(rect[0], rect[1], rect[2], rect[3]);
   }
 
   // Empty rect if any of the above failed

@@ -61,6 +61,14 @@ int32_t MapBuffer::getInt(Key key) const {
       bytes_.data() + valueOffset(bucketIndex));
 }
 
+int64_t MapBuffer::getLong(Key key) const {
+  auto bucketIndex = getKeyBucket(key);
+  react_native_assert(bucketIndex != -1 && "Key not found in MapBuffer");
+
+  return *reinterpret_cast<const int64_t*>(
+      bytes_.data() + valueOffset(bucketIndex));
+}
+
 bool MapBuffer::getBool(Key key) const {
   return getInt(key) != 0;
 }

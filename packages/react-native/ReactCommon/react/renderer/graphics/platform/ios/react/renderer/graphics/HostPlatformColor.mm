@@ -87,6 +87,12 @@ int32_t ColorFromUIColor(const std::shared_ptr<void> &uiColor)
 
 UIColor *_Nullable UIColorFromComponentsColor(const facebook::react::ColorComponents &components)
 {
+  if (components.colorSpace == ColorSpace::DisplayP3) {
+    return [UIColor colorWithDisplayP3Red:components.red
+                                    green:components.green
+                                     blue:components.blue
+                                    alpha:components.alpha];
+  }
   return [UIColor colorWithRed:components.red green:components.green blue:components.blue alpha:components.alpha];
 }
 } // anonymous namespace

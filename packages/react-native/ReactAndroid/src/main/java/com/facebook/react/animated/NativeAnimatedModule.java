@@ -441,7 +441,8 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
       ReactSoftExceptionLogger.logSoftException(
           NAME,
           new RuntimeException(
-              "initializeLifecycleEventListenersForViewTag could not get NativeAnimatedNodesManager"));
+              "initializeLifecycleEventListenersForViewTag could not get"
+                  + " NativeAnimatedNodesManager"));
     }
 
     // Subscribe to UIManager (Fabric or non-Fabric) lifecycle events if we haven't yet

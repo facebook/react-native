@@ -14,7 +14,6 @@ import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.devsupport.LogBoxModule;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
-import com.facebook.react.internal.turbomodule.core.interfaces.TurboModule;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.module.annotations.ReactModuleList;
 import com.facebook.react.module.model.ReactModuleInfo;
@@ -103,7 +102,7 @@ class CoreReactPackage extends TurboReactPackage {
                   reactModule.canOverrideExistingModule(),
                   reactModule.needsEagerInit(),
                   reactModule.isCxxModule(),
-                  TurboModule.class.isAssignableFrom(moduleClass)));
+                  ReactModuleInfo.classIsTurboModule(moduleClass)));
         }
       }
       return () -> reactModuleInfoMap;

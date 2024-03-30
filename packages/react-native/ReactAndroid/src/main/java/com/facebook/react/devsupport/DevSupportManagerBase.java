@@ -190,7 +190,8 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
             ? devLoadingViewManager
             : new DefaultDevLoadingViewImplementation(reactInstanceDevHelper);
     mSurfaceDelegateFactory = surfaceDelegateFactory;
-  };
+  }
+  ;
 
   protected abstract String getUniqueTag();
 

@@ -21,6 +21,8 @@ public interface WritableMap extends ReadableMap {
 
   void putInt(@NonNull String key, int value);
 
+  void putLong(@NonNull String key, long value);
+
   void putString(@NonNull String key, @Nullable String value);
 
   void putArray(@NonNull String key, @Nullable ReadableArray value);

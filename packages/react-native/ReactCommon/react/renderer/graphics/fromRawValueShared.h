@@ -44,6 +44,24 @@ inline void fromRawValueShared(
 
     result = colorFromComponents(colorComponents);
   } else {
+    if (value.hasType<std::unordered_map<std::string, RawValue>>()) {
+      const auto& items = (std::unordered_map<std::string, RawValue>)value;
+      if (items.find("space") != items.end()) {
+        colorComponents.red = (float)items.at("r");
+        colorComponents.green = (float)items.at("g");
+        colorComponents.blue = (float)items.at("b");
+        colorComponents.alpha = (float)items.at("a");
+        colorComponents.colorSpace = getDefaultColorSpace();
+        std::string space = (std::string)items.at("space");
+        if (space == "display-p3") {
+          colorComponents.colorSpace = ColorSpace::DisplayP3;
+        } else if (space == "srgb") {
+          colorComponents.colorSpace = ColorSpace::sRGB;
+        }
+        result = colorFromComponents(colorComponents);
+        return;
+      }
+    }
     result = parsePlatformColor(contextContainer, surfaceId, value);
   }
 }

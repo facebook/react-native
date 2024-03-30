@@ -111,11 +111,13 @@ class RNTesterApplication : Application(), ReactApplication {
               override fun createViewManager(
                   reactContext: ReactApplicationContext,
                   viewManagerName: String
-              ): ViewManager<*, out ReactShadowNode<*>> =
+              ): ViewManager<*, out ReactShadowNode<*>>? =
                   if (viewManagerName == "RNTMyNativeView") {
                     MyNativeViewManager()
-                  } else {
+                  } else if (viewManagerName == "RNTMyLegacyNativeView") {
                     MyLegacyViewManager(reactContext)
+                  } else {
+                    null
                   }
             })
       }

@@ -77,8 +77,8 @@ function getNativeComponentAttributes(uiViewClassName: string): any {
           ? true
           : {process}
         : process == null
-        ? {diff}
-        : {diff, process};
+          ? {diff}
+          : {diff, process};
   }
 
   // Unfortunately, the current setup declares style properties as top-level

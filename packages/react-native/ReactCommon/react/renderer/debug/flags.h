@@ -26,13 +26,11 @@
 // Enables some Shadow Tree introspection features (maintains a StubViewTree,
 // and logs prev/next tree and mutations if there are any discrepancies). If you
 // define this, also define `RN_DEBUG_STRING_CONVERTIBLE`.
-#if (defined(REACT_NATIVE_DEBUG) && defined(WITH_FBSYSTRACE))
-#define RN_SHADOW_TREE_INTROSPECTION 1
-#endif
+// #define RN_SHADOW_TREE_INTROSPECTION 1
 
 // This enables certain object-to-string debug conversions to be compiled.
-// Enable if `RN_SHADOW_TREE_INTROSPECTION` is enabled.
-#ifdef RN_SHADOW_TREE_INTROSPECTION
+// Enable if `REACT_NATIVE_DEBUG` is enabled.
+#ifdef REACT_NATIVE_DEBUG
 #define RN_DEBUG_STRING_CONVERTIBLE 1
 #else
 #define RN_DEBUG_STRING_CONVERTIBLE 0

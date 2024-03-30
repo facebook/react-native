@@ -31,12 +31,13 @@ class HostTargetTest : public Test {
 
  protected:
   HostTargetTest() {
-    EXPECT_CALL(runtimeTargetDelegate_, createAgentDelegate(_, _, _, _))
+    EXPECT_CALL(runtimeTargetDelegate_, createAgentDelegate(_, _, _, _, _))
         .WillRepeatedly(runtimeAgentDelegates_.lazily_make_unique<
                         FrontendChannel,
                         SessionState&,
                         std::unique_ptr<RuntimeAgentDelegate::ExportedState>,
-                        const ExecutionContextDescription&>());
+                        const ExecutionContextDescription&,
+                        RuntimeExecutor>());
   }
 
   void connect() {
@@ -154,8 +155,7 @@ TEST_F(HostTargetProtocolTest, InjectLogsToIdentifyBackend) {
       onMessage(JsonParsed(AllOf(
           AtJsonPtr("/method", "Log.entryAdded"),
           AtJsonPtr("/params/entry", Not(IsEmpty()))))))
-      .Times(2)
-      .RetiresOnSaturation();
+      .Times(AtLeast(1));
   EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
                                                "id": 1,
                                                "result": {}
@@ -445,7 +445,7 @@ TEST_F(HostTargetProtocolTest, MessageRoutingWhileNoRuntimeAgentDelegate) {
 TEST_F(HostTargetProtocolTest, InstanceWithNullRuntimeAgentDelegate) {
   InSequence s;
 
-  EXPECT_CALL(runtimeTargetDelegate_, createAgentDelegate(_, _, _, _))
+  EXPECT_CALL(runtimeTargetDelegate_, createAgentDelegate(_, _, _, _, _))
       .WillRepeatedly(ReturnNull());
 
   auto& instanceTarget = page_->registerInstance(instanceTargetDelegate_);
@@ -470,6 +470,14 @@ TEST_F(HostTargetProtocolTest, InstanceWithNullRuntimeAgentDelegate) {
 }
 
 TEST_F(HostTargetProtocolTest, RuntimeAgentDelegateHasAccessToSessionState) {
+  // Ignore console messages originating inside the backend.
+  EXPECT_CALL(
+      fromPage(),
+      onMessage(JsonParsed(AllOf(
+          AtJsonPtr("/method", "Runtime.consoleAPICalled"),
+          AtJsonPtr("/params/context", "main#InstanceAgent")))))
+      .Times(AnyNumber());
+
   InSequence s;
 
   // Send Runtime.enable before registering the Instance (which in turns creates

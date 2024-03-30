@@ -5,8 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#if defined(__cplusplus)
+
 #import <ReactCommon/RCTTurboModuleManager.h>
 #import "RCTAppDelegate.h"
 
 @interface RCTAppDelegate () <RCTTurboModuleManagerDelegate>
 @end
+
+#endif

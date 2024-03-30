@@ -603,10 +603,9 @@ public class NativeViewHierarchyManager {
           TAG,
           "Trying to add a root view with an explicit id ("
               + view.getId()
-              + ") already "
-              + "set. React Native uses the id field to track react tags and will overwrite this field. "
-              + "If that is fine, explicitly overwrite the id field to View.NO_ID before calling "
-              + "addRootView.");
+              + ") already set. React Native uses the id field to track react tags and will"
+              + " overwrite this field. If that is fine, explicitly overwrite the id field to"
+              + " View.NO_ID before calling addRootView.");
     }
 
     mTagsToViews.put(tag, view);

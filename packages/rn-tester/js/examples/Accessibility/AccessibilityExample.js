@@ -645,8 +645,8 @@ class NestedCheckBox extends React.Component<
         checkbox2 && this.state.checkbox3
           ? true
           : checkbox2 || this.state.checkbox3
-          ? 'mixed'
-          : false,
+            ? 'mixed'
+            : false,
     });
   };
 
@@ -659,8 +659,8 @@ class NestedCheckBox extends React.Component<
         this.state.checkbox2 && checkbox3
           ? true
           : this.state.checkbox2 || checkbox3
-          ? 'mixed'
-          : false,
+            ? 'mixed'
+            : false,
     });
   };
 
@@ -680,8 +680,8 @@ class NestedCheckBox extends React.Component<
               this.state.checkbox1 === 'mixed'
                 ? mixedCheckboxImageSource
                 : this.state.checkbox1
-                ? checkImageSource
-                : uncheckImageSource
+                  ? checkImageSource
+                  : uncheckImageSource
             }
           />
           <Text>Meat</Text>

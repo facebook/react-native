@@ -6,6 +6,7 @@
  */
 
 #include "CatalystInstanceImpl.h"
+#include "ReactInstanceManagerInspectorTarget.h"
 
 #include <fstream>
 #include <memory>
@@ -125,6 +126,9 @@ void CatalystInstanceImpl::registerNatives() {
           "getRuntimeExecutor", CatalystInstanceImpl::getRuntimeExecutor),
       makeNativeMethod(
           "getRuntimeScheduler", CatalystInstanceImpl::getRuntimeScheduler),
+      makeNativeMethod(
+          "unregisterFromInspector",
+          CatalystInstanceImpl::unregisterFromInspector),
   });
 }
 
@@ -157,7 +161,9 @@ void CatalystInstanceImpl::initializeBridge(
     jni::alias_ref<jni::JCollection<JavaModuleWrapper::javaobject>::javaobject>
         javaModules,
     jni::alias_ref<jni::JCollection<ModuleHolder::javaobject>::javaobject>
-        cxxModules) {
+        cxxModules,
+    jni::alias_ref<ReactInstanceManagerInspectorTarget::javaobject>
+        inspectorTarget) {
   set_react_native_logfunc(&log);
 
   // TODO mhorowitz: how to assert here?
@@ -193,7 +199,10 @@ void CatalystInstanceImpl::initializeBridge(
       std::make_unique<InstanceCallbackImpl>(callback),
       jseh->getExecutorFactory(),
       std::make_unique<JMessageQueueThread>(jsQueue),
-      moduleRegistry_);
+      moduleRegistry_,
+      inspectorTarget != nullptr
+          ? inspectorTarget->cthis()->getInspectorTarget()
+          : nullptr);
 }
 
 void CatalystInstanceImpl::extendNativeModules(
@@ -404,6 +413,10 @@ CatalystInstanceImpl::getRuntimeScheduler() {
   }
 
   return runtimeScheduler_;
+}
+
+void CatalystInstanceImpl::unregisterFromInspector() {
+  instance_->unregisterFromInspector();
 }
 
 } // namespace facebook::react

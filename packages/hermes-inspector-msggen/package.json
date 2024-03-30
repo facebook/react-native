@@ -1,16 +1,16 @@
 {
   "name": "@react-native/hermes-inspector-msggen",
-  "version": "0.72.0",
+  "version": "0.75.0-main",
   "private": true,
   "description": "Hermes Inspector Message Generator for React Native",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/facebook/react-native.git",
+    "url": "git+https://github.com/facebook/react-native.git",
     "directory": "packages/hermes-inspector-msggen"
   },
   "bin": {
-    "msggen": "./bin/index.js"
+    "msggen": "bin/index.js"
   },
   "engines": {
     "node": ">=18"

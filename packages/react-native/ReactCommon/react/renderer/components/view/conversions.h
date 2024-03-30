@@ -14,6 +14,7 @@
 #include <react/renderer/components/view/primitives.h>
 #include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/core/RawProps.h>
 #include <react/renderer/graphics/Transform.h>
 #include <react/renderer/graphics/ValueUnit.h>
 #include <stdlib.h>
@@ -702,6 +703,28 @@ inline void fromRawValue(
     return;
   }
   LOG(ERROR) << "Could not parse BorderStyle:" << stringValue;
+  react_native_expect(false);
+}
+
+inline void fromRawValue(
+    const PropsParserContext& context,
+    const RawValue& value,
+    Cursor& result) {
+  result = Cursor::Auto;
+  react_native_expect(value.hasType<std::string>());
+  if (!value.hasType<std::string>()) {
+    return;
+  }
+  auto stringValue = (std::string)value;
+  if (stringValue == "auto") {
+    result = Cursor::Auto;
+    return;
+  }
+  if (stringValue == "pointer") {
+    result = Cursor::Pointer;
+    return;
+  }
+  LOG(ERROR) << "Could not parse Cursor:" << stringValue;
   react_native_expect(false);
 }
 

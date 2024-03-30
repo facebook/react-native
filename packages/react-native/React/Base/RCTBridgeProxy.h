@@ -15,6 +15,7 @@
 @class RCTViewRegistry;
 
 @interface RCTBridgeProxy : NSProxy
+
 - (instancetype)initWithViewRegistry:(RCTViewRegistry *)viewRegistry
                       moduleRegistry:(RCTModuleRegistry *)moduleRegistry
                        bundleManager:(RCTBundleManager *)bundleManager
@@ -34,4 +35,5 @@
  */
 - (id)moduleForClass:(Class)moduleClass;
 - (id)moduleForName:(NSString *)moduleName lazilyLoadIfNecessary:(BOOL)lazilyLoad;
+
 @end

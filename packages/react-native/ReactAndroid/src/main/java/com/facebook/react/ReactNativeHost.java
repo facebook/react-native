@@ -30,7 +30,8 @@ import java.util.List;
  */
 @DeprecatedInNewArchitecture(
     message =
-        "This class will be replaced by com.facebook.react.ReactHost in the new architecture of React Native.")
+        "This class will be replaced by com.facebook.react.ReactHost in the new architecture of"
+            + " React Native.")
 public abstract class ReactNativeHost {
 
   private final Application mApplication;

@@ -7,6 +7,8 @@
 
 package com.facebook.react.module.model;
 
+import com.facebook.react.turbomodule.core.interfaces.TurboModule;
+
 /**
  * Data holder class holding native module specifications. {@link ReactModuleSpecProcessor} creates
  * these so Java modules don't have to be instantiated at React Native start up.
@@ -67,7 +69,9 @@ public class ReactModuleInfo {
     return mNeedsEagerInit;
   }
 
-  /** @deprecated this is hardcoded to return true, regardless if the module has constants or not */
+  /**
+   * @deprecated this is hardcoded to return true, regardless if the module has constants or not
+   */
   @Deprecated
   public boolean hasConstants() {
     return true;
@@ -79,5 +83,13 @@ public class ReactModuleInfo {
 
   public boolean isTurboModule() {
     return mIsTurboModule;
+  }
+
+  /**
+   * Checks if the passed class is a TurboModule. Useful to populate the parameter [isTurboModule]
+   * in the constructor of ReactModuleInfo.
+   */
+  public static boolean classIsTurboModule(Class<?> clazz) {
+    return TurboModule.class.isAssignableFrom(clazz);
   }
 }

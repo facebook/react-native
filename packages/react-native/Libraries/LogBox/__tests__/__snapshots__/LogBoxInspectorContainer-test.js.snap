@@ -27,6 +27,7 @@ exports[`LogBoxNotificationContainer should render both an error and warning not
           "category": "Some kind of message",
           "codeFrame": undefined,
           "componentStack": Array [],
+          "componentStackType": "legacy",
           "count": 1,
           "extraData": undefined,
           "isComponentError": false,
@@ -39,6 +40,11 @@ exports[`LogBoxNotificationContainer should render both an error and warning not
           "symbolicated": Object {
             "error": null,
             "stack": null,
+            "status": "NONE",
+          },
+          "symbolicatedComponentStack": Object {
+            "componentStack": null,
+            "error": null,
             "status": "NONE",
           },
           "type": undefined,
@@ -65,6 +71,7 @@ exports[`LogBoxNotificationContainer should render both an error and warning not
           "category": "Some kind of message (latest)",
           "codeFrame": undefined,
           "componentStack": Array [],
+          "componentStackType": "legacy",
           "count": 1,
           "extraData": undefined,
           "isComponentError": false,
@@ -77,6 +84,11 @@ exports[`LogBoxNotificationContainer should render both an error and warning not
           "symbolicated": Object {
             "error": null,
             "stack": null,
+            "status": "NONE",
+          },
+          "symbolicatedComponentStack": Object {
+            "componentStack": null,
+            "error": null,
             "status": "NONE",
           },
           "type": undefined,
@@ -125,6 +137,7 @@ exports[`LogBoxNotificationContainer should render the latest error notification
           "category": "Some kind of message (latest)",
           "codeFrame": undefined,
           "componentStack": Array [],
+          "componentStackType": "legacy",
           "count": 1,
           "extraData": undefined,
           "isComponentError": false,
@@ -137,6 +150,11 @@ exports[`LogBoxNotificationContainer should render the latest error notification
           "symbolicated": Object {
             "error": null,
             "stack": null,
+            "status": "NONE",
+          },
+          "symbolicatedComponentStack": Object {
+            "componentStack": null,
+            "error": null,
             "status": "NONE",
           },
           "type": undefined,
@@ -177,6 +195,7 @@ exports[`LogBoxNotificationContainer should render the latest warning notificati
           "category": "Some kind of message (latest)",
           "codeFrame": undefined,
           "componentStack": Array [],
+          "componentStackType": "legacy",
           "count": 1,
           "extraData": undefined,
           "isComponentError": false,
@@ -189,6 +208,11 @@ exports[`LogBoxNotificationContainer should render the latest warning notificati
           "symbolicated": Object {
             "error": null,
             "stack": null,
+            "status": "NONE",
+          },
+          "symbolicatedComponentStack": Object {
+            "componentStack": null,
+            "error": null,
             "status": "NONE",
           },
           "type": undefined,

@@ -20,6 +20,7 @@ namespace facebook::react::jsinspector_modern {
 struct SessionState {
  public:
   // TODO: Generalise this to arbitrary domains
+  bool isDebuggerDomainEnabled{false};
   bool isLogDomainEnabled{false};
   bool isRuntimeDomainEnabled{false};
 
@@ -34,6 +35,16 @@ struct SessionState {
    */
   std::unordered_map<std::string, ExecutionContextSelectorSet>
       subscribedBindings;
+
+  /**
+   * Messages logged through the HostAgent::sendConsoleMessage and
+   * InstanceAgent::sendConsoleMessage utilities that have not yet been sent to
+   * the frontend.
+   * \note This is unrelated to RuntimeTarget's user-facing console API
+   * implementation, which depends on access to JSI and support from the
+   * RuntimeTargetDelegate.
+   */
+  std::vector<SimpleConsoleMessage> pendingSimpleConsoleMessages;
 
   /**
    * Stores the state object exported from the last main RuntimeAgent, if any,

@@ -25,8 +25,10 @@ target_link_libraries(react_render_core
         logger
         react_config
         react_debug
+        react_featureflags
         react_render_debug
         react_render_graphics
         react_render_mapbuffer
+        react_render_runtimescheduler
         react_utils
         runtimeexecutor)

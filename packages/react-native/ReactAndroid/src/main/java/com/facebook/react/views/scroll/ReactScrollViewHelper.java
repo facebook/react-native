@@ -597,5 +597,7 @@ public class ReactScrollViewHelper {
 
   public interface HasSmoothScroll {
     void reactSmoothScrollTo(int x, int y);
+
+    void scrollToPreservingMomentum(int x, int y);
   }
 }

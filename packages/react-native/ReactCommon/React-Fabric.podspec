@@ -56,6 +56,7 @@ Pod::Spec.new do |s|
   s.dependency "fmt", "9.1.0"
   s.dependency "React-Core"
   s.dependency "React-debug"
+  s.dependency "React-featureflags"
   s.dependency "React-utils"
   s.dependency "React-runtimescheduler"
   s.dependency "React-cxxreact"
@@ -197,11 +198,19 @@ Pod::Spec.new do |s|
 
     end
 
-    ss.subspec "textinput" do |sss|
+    ss.subspec "iostextinput" do |sss|
       sss.dependency             folly_dep_name, folly_version
       sss.compiler_flags       = folly_compiler_flags
       sss.source_files         = "react/renderer/components/textinput/platform/ios/**/*.{m,mm,cpp,h}"
       sss.header_dir           = "react/renderer/components/iostextinput"
+
+    end
+
+    ss.subspec "textinput" do |sss|
+      sss.dependency             folly_dep_name, folly_version
+      sss.compiler_flags       = folly_compiler_flags
+      sss.source_files         = "react/renderer/components/textinput/*.{m,mm,cpp,h}"
+      sss.header_dir           = "react/renderer/components/textinput"
 
     end
 
@@ -268,11 +277,31 @@ Pod::Spec.new do |s|
   end
 
   s.subspec "uimanager" do |ss|
+    ss.subspec "consistency" do |sss|
+      sss.dependency             folly_dep_name, folly_version
+      sss.compiler_flags       = folly_compiler_flags
+      sss.source_files         = "react/renderer/uimanager/consistency/*.{m,mm,cpp,h}"
+      sss.header_dir           = "react/renderer/uimanager/consistency"
+    end
+
     ss.dependency             folly_dep_name, folly_version
+    ss.dependency             "React-rendererconsistency"
+    ss.dependency             "React-Fabric/dom"
     ss.compiler_flags       = folly_compiler_flags
-    ss.source_files         = "react/renderer/uimanager/**/*.{m,mm,cpp,h}"
-    ss.exclude_files        = "react/renderer/uimanager/tests"
+    ss.source_files         = "react/renderer/uimanager/*.{m,mm,cpp,h}"
     ss.header_dir           = "react/renderer/uimanager"
+  end
+
+  s.subspec "dom" do |ss|
+    ss.dependency             folly_dep_name, folly_version
+    ss.dependency             "React-Fabric/components/root"
+    ss.dependency             "React-Fabric/components/text"
+    ss.dependency             "React-Fabric/core"
+    ss.dependency             "React-graphics"
+    ss.compiler_flags       = folly_compiler_flags
+    ss.source_files         = "react/renderer/dom/**/*.{m,mm,cpp,h}"
+    ss.exclude_files        = "react/renderer/dom/tests"
+    ss.header_dir           = "react/renderer/dom"
   end
 
   s.subspec "telemetry" do |ss|

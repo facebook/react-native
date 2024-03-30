@@ -28,7 +28,8 @@ import com.facebook.react.bridge.WritableMap;
 @Nullsafe(Nullsafe.Mode.LOCAL)
 @Deprecated(
     since =
-        "Deprecated class since v0.73.0, please use com.facebook.react.uimanager.StateWrapper instead.",
+        "Deprecated class since v0.73.0, please use com.facebook.react.uimanager.StateWrapper"
+            + " instead.",
     forRemoval = true)
 public class FabricViewStateManager {
   private static final String TAG = "FabricViewStateManager";

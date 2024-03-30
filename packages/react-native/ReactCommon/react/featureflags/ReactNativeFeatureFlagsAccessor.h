@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<95487968b66d40e1ec53936b06084931>>
+ * @generated SignedSource<<a508f23dce88a9c186d6bd84e65b3af7>>
  */
 
 /**
@@ -32,15 +32,18 @@ class ReactNativeFeatureFlagsAccessor {
   ReactNativeFeatureFlagsAccessor();
 
   bool commonTestFlag();
-  bool enableBackgroundExecutor();
-  bool useModernRuntimeScheduler();
-  bool enableMicrotasks();
   bool batchRenderingUpdatesInEventLoop();
-  bool enableSpannableBuildingUnification();
+  bool enableBackgroundExecutor();
   bool enableCustomDrawOrderFabric();
   bool enableFixForClippedSubviewsCrash();
+  bool enableMicrotasks();
+  bool enableMountHooksAndroid();
+  bool enableSpannableBuildingUnification();
+  bool enableSynchronousStateUpdates();
+  bool enableUIConsistency();
   bool inspectorEnableCxxInspectorPackagerConnection();
   bool inspectorEnableModernCDPRegistry();
+  bool useModernRuntimeScheduler();
 
   void override(std::unique_ptr<ReactNativeFeatureFlagsProvider> provider);
 
@@ -51,18 +54,21 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 10> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 13> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
-  std::atomic<std::optional<bool>> enableBackgroundExecutor_;
-  std::atomic<std::optional<bool>> useModernRuntimeScheduler_;
-  std::atomic<std::optional<bool>> enableMicrotasks_;
   std::atomic<std::optional<bool>> batchRenderingUpdatesInEventLoop_;
-  std::atomic<std::optional<bool>> enableSpannableBuildingUnification_;
+  std::atomic<std::optional<bool>> enableBackgroundExecutor_;
   std::atomic<std::optional<bool>> enableCustomDrawOrderFabric_;
   std::atomic<std::optional<bool>> enableFixForClippedSubviewsCrash_;
+  std::atomic<std::optional<bool>> enableMicrotasks_;
+  std::atomic<std::optional<bool>> enableMountHooksAndroid_;
+  std::atomic<std::optional<bool>> enableSpannableBuildingUnification_;
+  std::atomic<std::optional<bool>> enableSynchronousStateUpdates_;
+  std::atomic<std::optional<bool>> enableUIConsistency_;
   std::atomic<std::optional<bool>> inspectorEnableCxxInspectorPackagerConnection_;
   std::atomic<std::optional<bool>> inspectorEnableModernCDPRegistry_;
+  std::atomic<std::optional<bool>> useModernRuntimeScheduler_;
 };
 
 } // namespace facebook::react
