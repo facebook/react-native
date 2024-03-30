@@ -203,12 +203,14 @@
   }
 
   self.center = position;
-  self.bounds = bounds;
-
-  id transformOrigin = objc_getAssociatedObject(self, @selector(reactTransformOrigin));
-  id transform = objc_getAssociatedObject(self, @selector(reactTransform));
-  if (transformOrigin || transform) {
-    updateTransform(self);
+  
+  if (!CGRectEqualToRect(self.bounds, bounds)) {
+    self.bounds = bounds;
+    id transformOrigin = objc_getAssociatedObject(self, @selector(reactTransformOrigin));
+    id transform = objc_getAssociatedObject(self, @selector(reactTransform));
+    if (transform || transformOrigin) {
+      updateTransform(self);
+    }
   }
 }
 
