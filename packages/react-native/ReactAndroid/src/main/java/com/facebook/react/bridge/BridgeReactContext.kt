@@ -8,13 +8,194 @@
 package com.facebook.react.bridge
 
 import android.content.Context
+import com.facebook.common.logging.FLog
+import com.facebook.react.bridge.queue.ReactQueueConfiguration
+import com.facebook.react.common.ReactConstants
 import com.facebook.react.common.annotations.DeprecatedInNewArchitecture
+import com.facebook.react.common.annotations.FrameworkAPI
+import com.facebook.react.common.annotations.UnstableReactNativeAPI
 
 /**
  * This is the bridge-specific concrete subclass of ReactContext. ReactContext has many methods that
- * delegate to the react instance. This subclass will implement those methods, by delegating to the
+ * delegate to the react instance. This subclass implements those methods, by delegating to the
  * CatalystInstance. If you need to create a ReactContext within an "bridge context", please create
  * BridgeReactContext.
  */
 @DeprecatedInNewArchitecture
-public class BridgeReactContext(base: Context) : ReactApplicationContext(base) {}
+public class BridgeReactContext(base: Context) : ReactApplicationContext(base) {
+  @Volatile private var destroyed = false
+  private var catalystInstance: CatalystInstance? = null
+
+  public fun initializeWithInstance(otherCatalystInstance: CatalystInstance?): Unit {
+    if (otherCatalystInstance == null) {
+      throw IllegalArgumentException("CatalystInstance cannot be null.")
+    }
+    if (catalystInstance != null) {
+      throw IllegalStateException("ReactContext has been already initialized")
+    }
+    if (destroyed) {
+      ReactSoftExceptionLogger.logSoftException(
+          TAG, IllegalStateException("Cannot initialize ReactContext after it has been destroyed."))
+    }
+
+    catalystInstance = otherCatalystInstance
+
+    val queueConfig: ReactQueueConfiguration = otherCatalystInstance.reactQueueConfiguration
+    initializeMessageQueueThreads(queueConfig)
+    initializeInteropModules()
+  }
+
+  public override fun <T : JavaScriptModule?> getJSModule(jsInterface: Class<T>?): T? {
+    val instance =
+        catalystInstance
+            ?: throw IllegalStateException(
+                if (destroyed) LATE_JS_ACCESS_EXCEPTION_MESSAGE
+                else EARLY_JS_ACCESS_EXCEPTION_MESSAGE)
+
+    val interopModuleRegistry = mInteropModuleRegistry
+    if (interopModuleRegistry != null &&
+        interopModuleRegistry.shouldReturnInteropModule(jsInterface)) {
+      return interopModuleRegistry.getInteropModule(jsInterface)
+    }
+
+    return instance.getJSModule(jsInterface)
+  }
+
+  public override fun <T : NativeModule?> hasNativeModule(
+      nativeModuleInterface: Class<T>?
+  ): Boolean {
+    val instance =
+        catalystInstance
+            ?: throw IllegalStateException(
+                if (destroyed) LATE_NATIVE_MODULE_EXCEPTION_MESSAGE
+                else EARLY_NATIVE_MODULE_EXCEPTION_MESSAGE)
+    return instance.hasNativeModule(nativeModuleInterface)
+  }
+
+  public override fun getNativeModules(): MutableCollection<NativeModule> {
+    val instance =
+        catalystInstance
+            ?: throw IllegalStateException(
+                if (destroyed) LATE_NATIVE_MODULE_EXCEPTION_MESSAGE
+                else EARLY_NATIVE_MODULE_EXCEPTION_MESSAGE)
+    return instance.nativeModules
+  }
+
+  public override fun <T : NativeModule?> getNativeModule(nativeModuleInterface: Class<T>?): T? {
+    val instance =
+        catalystInstance
+            ?: throw IllegalStateException(
+                if (destroyed) LATE_NATIVE_MODULE_EXCEPTION_MESSAGE
+                else EARLY_NATIVE_MODULE_EXCEPTION_MESSAGE)
+    return instance.getNativeModule(nativeModuleInterface)
+  }
+
+  @FrameworkAPI
+  @UnstableReactNativeAPI
+  public override fun getRuntimeExecutor(): RuntimeExecutor? {
+    val instance =
+        catalystInstance
+            ?: throw IllegalStateException(
+                if (destroyed) LATE_RUNTIME_EXECUTOR_ACCESS_EXCEPTION_MESSAGE
+                else EARLY_RUNTIME_EXECUTOR_ACCESS_EXCEPTION_MESSAGE)
+
+    return instance.getRuntimeExecutor()
+  }
+
+  public override fun getCatalystInstance(): CatalystInstance {
+    return catalystInstance!!
+  }
+
+  @Deprecated(
+      "This API is unsupported in the New Architecture.", ReplaceWith("hasActiveReactInstance()"))
+  public override fun hasActiveCatalystInstance(): Boolean {
+    return hasActiveReactInstance()
+  }
+
+  public override fun hasActiveReactInstance(): Boolean {
+    val instance = catalystInstance
+    return instance != null && !instance.isDestroyed
+  }
+
+  public override fun hasCatalystInstance(): Boolean {
+    return catalystInstance != null
+  }
+
+  public override fun destroy(): Unit {
+    UiThreadUtil.assertOnUiThread()
+
+    destroyed = true
+    catalystInstance?.destroy()
+  }
+
+  public override fun handleException(e: Exception?): Unit {
+    val jsExceptionHandler: JSExceptionHandler? = jsExceptionHandler
+
+    if (hasActiveReactInstance() && jsExceptionHandler != null) {
+      jsExceptionHandler.handleException(e)
+    } else {
+      FLog.e(
+          ReactConstants.TAG,
+          "Unable to handle Exception - catalystInstanceVariableExists: " +
+              (catalystInstance != null) +
+              " - isCatalystInstanceAlive: " +
+              hasActiveReactInstance() +
+              " - hasExceptionHandler: " +
+              (jsExceptionHandler != null),
+          e)
+      throw IllegalStateException(e)
+    }
+  }
+
+  public override fun isBridgeless(): Boolean {
+    return false
+  }
+
+  public override fun getJavaScriptContextHolder(): JavaScriptContextHolder? {
+    return catalystInstance?.javaScriptContextHolder
+  }
+
+  public override fun getFabricUIManager(): UIManager? {
+    val instance =
+        catalystInstance
+            ?: throw IllegalStateException(
+                if (destroyed) LATE_FABRIC_UI_MANAGER_ACCESS_EXCEPTION_MESSAGE
+                else EARLY_FABRIC_UI_MANAGER_ACCESS_EXCEPTION_MESSAGE)
+
+    return instance.fabricUIManager ?: instance.getJSIModule(JSIModuleType.UIManager) as? UIManager
+  }
+
+  public override fun getSourceURL(): String? {
+    return catalystInstance?.sourceURL
+  }
+
+  public override fun registerSegment(segmentId: Int, path: String?, callback: Callback?): Unit {
+    catalystInstance!!.registerSegment(segmentId, path)
+    callback!!.invoke()
+  }
+
+  private companion object {
+    private const val TAG = "BridgeReactContext"
+
+    private const val EARLY_JS_ACCESS_EXCEPTION_MESSAGE =
+        ("Tried to access a JS module before the React instance was fully set up. Calls to " +
+            "ReactContext#getJSModule should only happen once initialize() has been called on your " +
+            "native module.")
+    private const val LATE_JS_ACCESS_EXCEPTION_MESSAGE =
+        "Tried to access a JS module after the React instance was destroyed."
+    private const val EARLY_NATIVE_MODULE_EXCEPTION_MESSAGE =
+        "Trying to call native module before CatalystInstance has been set!"
+    private const val LATE_NATIVE_MODULE_EXCEPTION_MESSAGE =
+        "Trying to call native module after CatalystInstance has been destroyed!"
+
+    private const val EARLY_RUNTIME_EXECUTOR_ACCESS_EXCEPTION_MESSAGE =
+        "Tried to access a RuntimeExecutor before CatalystInstance has been set!"
+    private const val LATE_RUNTIME_EXECUTOR_ACCESS_EXCEPTION_MESSAGE =
+        "Tried to access a RuntimeExecutor after CatalystInstance has been destroyed!"
+
+    private const val LATE_FABRIC_UI_MANAGER_ACCESS_EXCEPTION_MESSAGE =
+        "Tried to access a FabricUIManager after CatalystInstance has been destroyed!"
+    private const val EARLY_FABRIC_UI_MANAGER_ACCESS_EXCEPTION_MESSAGE =
+        "Tried to access a FabricUIManager after CatalystInstance before it has been set!"
+  }
+}
