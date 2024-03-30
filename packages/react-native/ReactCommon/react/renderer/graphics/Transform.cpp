@@ -252,13 +252,16 @@ Transform Transform::Interpolate(
              : Transform::DefaultTransformOperation(type));
     react_native_assert(type == lhsOp.type);
     react_native_assert(type == rhsOp.type);
+    react_native_assert(lhsOp.x.unit == rhsOp.x.unit);
+    react_native_assert(lhsOp.y.unit == rhsOp.y.unit);
+    react_native_assert(lhsOp.z.unit == rhsOp.z.unit);
 
     result = result *
         Transform::FromTransformOperation(TransformOperation{
             type,
-            ValueUnit(lhsOp.x.value + (rhsOp.x.value - lhsOp.x.value) * animationProgress, UnitType::Point),
-            ValueUnit(lhsOp.y.value + (rhsOp.y.value - lhsOp.y.value) * animationProgress, UnitType::Point),
-            ValueUnit(lhsOp.z.value + (rhsOp.z.value - lhsOp.z.value) * animationProgress, UnitType::Point)}, size);
+            ValueUnit(lhsOp.x.value + (rhsOp.x.value - lhsOp.x.value) * animationProgress, lhsOp.x.unit),
+            ValueUnit(lhsOp.y.value + (rhsOp.y.value - lhsOp.y.value) * animationProgress, lhsOp.y.unit),
+            ValueUnit(lhsOp.z.value + (rhsOp.z.value - lhsOp.z.value) * animationProgress, lhsOp.z.unit)}, size);
   }
 
   return result;
