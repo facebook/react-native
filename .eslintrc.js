@@ -113,6 +113,7 @@ module.exports = {
       files: ['**/*.d.ts'],
       plugins: ['redundant-undefined'],
       rules: {
+        'no-dupe-class-members': 'off',
         'redundant-undefined/redundant-undefined': [
           'error',
           {followExactOptionalPropertyTypes: true},

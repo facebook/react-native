@@ -100,7 +100,9 @@ public class MatrixMathHelper {
     out[15] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33;
   }
 
-  /** @param transformMatrix 16-element array of numbers representing 4x4 transform matrix */
+  /**
+   * @param transformMatrix 16-element array of numbers representing 4x4 transform matrix
+   */
   public static void decomposeMatrix(double[] transformMatrix, MatrixDecompositionContext ctx) {
     Assertions.assertCondition(transformMatrix.length == 16);
 

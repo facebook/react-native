@@ -79,7 +79,7 @@ class MountingCoordinator final {
 
   const TelemetryController& getTelemetryController() const;
 
-  const ShadowTreeRevision& getBaseRevision() const;
+  ShadowTreeRevision getBaseRevision() const;
 
   /*
    * Methods from this section are meant to be used by
@@ -112,6 +112,8 @@ class MountingCoordinator final {
  private:
   const SurfaceId surfaceId_;
 
+  // Protects access to `baseRevision_`, `lastRevision_` and
+  // `mountingOverrideDelegate_`.
   mutable std::mutex mutex_;
   mutable ShadowTreeRevision baseRevision_;
   mutable std::optional<ShadowTreeRevision> lastRevision_{};

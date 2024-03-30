@@ -7,6 +7,7 @@
 
 package com.facebook.react
 
+import com.facebook.react.bridge.BridgeReactContext
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.uimanager.ViewManager
@@ -33,7 +34,7 @@ class CompositeReactPackageTest {
     packageNo1 = mock(ReactPackage::class.java)
     packageNo2 = mock(ReactPackage::class.java)
     packageNo3 = mock(ReactPackage::class.java)
-    reactContext = ReactApplicationContext(RuntimeEnvironment.getApplication())
+    reactContext = BridgeReactContext(RuntimeEnvironment.getApplication())
   }
 
   @Test

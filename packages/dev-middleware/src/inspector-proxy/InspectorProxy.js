@@ -11,6 +11,7 @@
 
 import type {EventReporter} from '../types/EventReporter';
 import type {Experiments} from '../types/Experiments';
+import type {CreateCustomMessageHandlerFn} from './CustomMessageHandler';
 import type {
   JsonPagesListResponse,
   JsonVersionResponse,
@@ -58,17 +59,22 @@ export default class InspectorProxy implements InspectorProxyQueries {
 
   #experiments: Experiments;
 
+  // custom message handler factory allowing implementers to handle unsupported CDP messages.
+  #customMessageHandler: ?CreateCustomMessageHandlerFn;
+
   constructor(
     projectRoot: string,
     serverBaseUrl: string,
     eventReporter: ?EventReporter,
     experiments: Experiments,
+    customMessageHandler: ?CreateCustomMessageHandlerFn,
   ) {
     this.#projectRoot = projectRoot;
     this.#serverBaseUrl = serverBaseUrl;
     this.#devices = new Map();
     this.#eventReporter = eventReporter;
     this.#experiments = experiments;
+    this.#customMessageHandler = customMessageHandler;
   }
 
   getPageDescriptions(): Array<PageDescription> {
@@ -167,6 +173,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
     response.writeHead(200, {
       'Content-Type': 'application/json; charset=UTF-8',
       'Cache-Control': 'no-cache',
+      'Content-Length': Buffer.byteLength(data).toString(),
       Connection: 'close',
     });
     response.end(data);
@@ -203,6 +210,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
           socket,
           this.#projectRoot,
           this.#eventReporter,
+          this.#customMessageHandler,
         );
 
         if (oldDevice) {
@@ -257,7 +265,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
         }
 
         device.handleDebuggerConnection(socket, pageId, {
-          userAgent: req.headers['user-agent'] ?? null,
+          userAgent: req.headers['user-agent'] ?? query.userAgent ?? null,
         });
       } catch (e) {
         console.error(e);

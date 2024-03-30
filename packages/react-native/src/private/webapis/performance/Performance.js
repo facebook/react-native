@@ -12,13 +12,15 @@
 
 import type {HighResTimeStamp, PerformanceEntryType} from './PerformanceEntry';
 import type {PerformanceEntryList} from './PerformanceObserver';
+import type {
+  PerformanceMarkOptions,
+  PerformanceMeasureOptions,
+} from './UserTiming';
 
 import warnOnce from '../../../../Libraries/Utilities/warnOnce';
 import EventCounts from './EventCounts';
 import MemoryInfo from './MemoryInfo';
-import NativePerformance from './NativePerformance';
-import NativePerformanceObserver from './NativePerformanceObserver';
-import {ALWAYS_LOGGED_ENTRY_TYPES, PerformanceEntry} from './PerformanceEntry';
+import {ALWAYS_LOGGED_ENTRY_TYPES} from './PerformanceEntry';
 import {warnNoNativePerformanceObserver} from './PerformanceObserver';
 import {
   performanceEntryTypeToRaw,
@@ -26,22 +28,17 @@ import {
 } from './RawPerformanceEntry';
 import {RawPerformanceEntryTypeValues} from './RawPerformanceEntry';
 import ReactNativeStartupTiming from './ReactNativeStartupTiming';
-
-type DetailType = mixed;
-
-export type PerformanceMarkOptions = {
-  detail?: DetailType,
-  startTime?: HighResTimeStamp,
-};
+import NativePerformance from './specs/NativePerformance';
+import NativePerformanceObserver from './specs/NativePerformanceObserver';
+import {PerformanceMark, PerformanceMeasure} from './UserTiming';
 
 declare var global: {
   // This value is defined directly via JSI, if available.
   +nativePerformanceNow?: ?() => number,
 };
 
-const getCurrentTimeStamp: () => HighResTimeStamp = global.nativePerformanceNow
-  ? global.nativePerformanceNow
-  : () => Date.now();
+const getCurrentTimeStamp: () => HighResTimeStamp =
+  NativePerformance?.now ?? global.nativePerformanceNow ?? (() => Date.now());
 
 // We want some of the performance entry types to be always logged,
 // even if they are not currently observed - this is either to be able to
@@ -52,49 +49,6 @@ if (NativePerformanceObserver?.setIsBuffered) {
     ALWAYS_LOGGED_ENTRY_TYPES.map(performanceEntryTypeToRaw),
     true,
   );
-}
-
-export class PerformanceMark extends PerformanceEntry {
-  detail: DetailType;
-
-  constructor(markName: string, markOptions?: PerformanceMarkOptions) {
-    super({
-      name: markName,
-      entryType: 'mark',
-      startTime: markOptions?.startTime ?? getCurrentTimeStamp(),
-      duration: 0,
-    });
-
-    if (markOptions) {
-      this.detail = markOptions.detail;
-    }
-  }
-}
-
-export type TimeStampOrName = HighResTimeStamp | string;
-
-export type PerformanceMeasureOptions = {
-  detail?: DetailType,
-  start?: TimeStampOrName,
-  end?: TimeStampOrName,
-  duration?: HighResTimeStamp,
-};
-
-export class PerformanceMeasure extends PerformanceEntry {
-  detail: DetailType;
-
-  constructor(measureName: string, measureOptions?: PerformanceMeasureOptions) {
-    super({
-      name: measureName,
-      entryType: 'measure',
-      startTime: 0,
-      duration: measureOptions?.duration ?? 0,
-    });
-
-    if (measureOptions) {
-      this.detail = measureOptions.detail;
-    }
-  }
 }
 
 function warnNoNativePerformance() {

@@ -12,11 +12,16 @@
 
 #include <folly/json.h>
 #include <glog/logging.h>
+#include <jsinspector-modern/InspectorFlags.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
+#include <react/featureflags/ReactNativeFeatureFlagsDefaults.h>
 #include <react/runtime/hermes/HermesInstance.h>
+
+using namespace ::testing;
 
 namespace facebook::react::jsinspector_modern {
 
-using namespace ::testing;
+#pragma region ReactInstanceIntegrationTest
 
 ReactInstanceIntegrationTest::ReactInstanceIntegrationTest()
     : runtime(nullptr),
@@ -47,11 +52,24 @@ void ReactInstanceIntegrationTest::SetUp() {
       "ErrorUtils",
       jsi::Object::createFromHostObject(*jsiRuntime, errorHandler));
 
+  std::shared_ptr<HostTarget> hostTargetIfModernCDP = nullptr;
+
+  if (InspectorFlags::getInstance().getEnableModernCDPRegistry()) {
+    VoidExecutor inspectorExecutor = [this](auto callback) {
+      immediateExecutor_.add(callback);
+    };
+    MockHostTargetDelegate hostTargetDelegate;
+    hostTargetIfModernCDP =
+        HostTarget::create(hostTargetDelegate, inspectorExecutor);
+  }
+
   instance = std::make_unique<react::ReactInstance>(
       std::move(runtime_),
       messageQueueThread,
       timerManager,
-      std::move(jsErrorHandlingFunc));
+      std::move(jsErrorHandlingFunc),
+      hostTargetIfModernCDP == nullptr ? nullptr : hostTargetIfModernCDP.get());
+
   timerManager->setRuntimeExecutor(instance->getBufferedRuntimeExecutor());
 
   // JS Environment:
@@ -59,33 +77,79 @@ void ReactInstanceIntegrationTest::SetUp() {
 
   // Inspector:
   auto& inspector = getInspectorInstance();
-  auto pages = inspector.getPages();
 
-  // We should now have at least a single page once the above runtime has been
-  // initialized.
-  assert(pages.size() > 0);
-  size_t pageId = pages.back().id;
+  if (hostTargetIfModernCDP != nullptr) {
+    // Under modern CDP, the React host is responsible for adding itself as
+    // the root target on startup.
+    pageId_ = inspector.addPage(
+        "mock-title",
+        "mock-vm",
+        [hostTargetIfModernCDP](std::unique_ptr<IRemoteConnection> remote)
+            -> std::unique_ptr<ILocalConnection> {
+          auto localConnection = hostTargetIfModernCDP->connect(
+              std::move(remote),
+              {
+                  .integrationName = "ReactInstanceIntegrationTest",
+              });
+          return localConnection;
+        },
+        // TODO: Allow customisation of InspectorTargetCapabilities
+        {});
+  } else {
+    // Under legacy CDP, Hermes' DecoratedRuntime adds its page automatically
+    // within ConnectionDemux.enableDebugging.
+    auto pages = inspector.getPages();
+    ASSERT_GT(pages.size(), 0);
+    pageId_ = pages.back().id;
+  }
 
-  clientToVM_ = inspector.connect(pageId, mockRemoteConnections_.make_unique());
+  clientToVM_ =
+      inspector.connect(pageId_.value(), mockRemoteConnections_.make_unique());
+
+  ASSERT_NE(clientToVM_, nullptr);
+
+  // Default to ignoring console messages originating inside the backend.
+  EXPECT_CALL(
+      getRemoteConnection(),
+      onMessage(JsonParsed(AllOf(
+          AtJsonPtr("/method", "Runtime.consoleAPICalled"),
+          AtJsonPtr("/params/context", "main#InstanceAgent")))))
+      .Times(AnyNumber());
 }
 
 void ReactInstanceIntegrationTest::TearDown() {
   clientToVM_->disconnect();
+  // Destroy the local connection.
+  clientToVM_.reset();
+
+  if (pageId_.has_value() &&
+      InspectorFlags::getInstance().getEnableModernCDPRegistry()) {
+    // Under modern CDP, clean up the page we added in SetUp and destroy
+    // resources owned by HostTarget.
+    getInspectorInstance().removePage(pageId_.value());
+  }
+  pageId_.reset();
+
+  // Expect the remote connection to have been destroyed.
+  EXPECT_EQ(mockRemoteConnections_[0], nullptr);
+  ReactNativeFeatureFlags::dangerouslyReset();
 }
 
 void ReactInstanceIntegrationTest::initializeRuntime(std::string_view script) {
   react::ReactInstance::JSRuntimeFlags flags{
       .isProfiling = false,
   };
-  instance->initializeRuntime(flags, [](jsi::Runtime&) {});
+  instance->initializeRuntime(flags, [](jsi::Runtime& rt) {
+    // NOTE: RN's console polyfill (included in prelude.js.h) depends on the
+    // native logging hook being installed, even if it's a noop.
+    facebook::react::bindNativeLogger(rt, [](auto, auto) {});
+  });
 
   messageQueueThread->tick();
 
   std::string init(script);
   // JS calls no longer buffered after calling loadScript
   instance->loadScript(std::make_unique<react::JSBigStdString>(init), "");
-
-  messageQueueThread->flush();
 }
 
 void ReactInstanceIntegrationTest::send(
@@ -129,17 +193,23 @@ bool ReactInstanceIntegrationTest::verbose(bool isVerbose) {
   return previous;
 }
 
+#pragma endregion
+
 TEST_F(ReactInstanceIntegrationTest, RuntimeEvalTest) {
   auto val = run("1 + 2");
   EXPECT_EQ(val.asNumber(), 3);
 }
 
-TEST_F(ReactInstanceIntegrationTest, ConsoleLogTest) {
-  InSequence s;
+TEST_P(ReactInstanceIntegrationTestWithFlags, ConsoleLog) {
+  EXPECT_CALL(
+      getRemoteConnection(),
+      onMessage(JsonParsed(
+          AtJsonPtr("/method", Eq("Runtime.executionContextCreated")))));
 
-  EXPECT_CALL(getRemoteConnection(), onMessage(_))
-      .Times(2)
-      .RetiresOnSaturation();
+  EXPECT_CALL(
+      getRemoteConnection(), onMessage(JsonParsed(AtJsonPtr("/id", Eq(1)))));
+
+  InSequence s;
 
   EXPECT_CALL(
       getRemoteConnection(),
@@ -152,5 +222,19 @@ TEST_F(ReactInstanceIntegrationTest, ConsoleLogTest) {
   send("Runtime.enable");
   run("console.log('Hello, World!');");
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    ReactInstanceVaryingInspectorFlags,
+    ReactInstanceIntegrationTestWithFlags,
+    ::testing::Values(
+        InspectorFlagOverrides{
+            .enableCxxInspectorPackagerConnection = false,
+            .enableModernCDPRegistry = false},
+        InspectorFlagOverrides{
+            .enableCxxInspectorPackagerConnection = true,
+            .enableModernCDPRegistry = false},
+        InspectorFlagOverrides{
+            .enableCxxInspectorPackagerConnection = true,
+            .enableModernCDPRegistry = true}));
 
 } // namespace facebook::react::jsinspector_modern

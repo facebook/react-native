@@ -9,7 +9,9 @@ package com.facebook.react.bridge;
 
 import com.facebook.proguard.annotations.DoNotStrip;
 
-/** @deprecated Use {@link TurboModule} to identify generated specs */
+/**
+ * @deprecated Use {@link TurboModule} to identify generated specs
+ */
 @DoNotStrip
 @Deprecated
 public interface ReactModuleWithSpec {}

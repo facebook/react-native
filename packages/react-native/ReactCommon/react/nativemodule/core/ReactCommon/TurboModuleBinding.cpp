@@ -8,7 +8,7 @@
 #include "TurboModuleBinding.h"
 
 #include <cxxreact/SystraceSection.h>
-#include <react/utils/jsi.h>
+#include <react/utils/jsi-utils.h>
 #include <stdexcept>
 #include <string>
 
@@ -67,9 +67,11 @@ class BridgelessNativeModuleProxy : public jsi::HostObject {
  */
 
 TurboModuleBinding::TurboModuleBinding(
+    jsi::Runtime& runtime,
     TurboModuleProviderFunctionType&& moduleProvider,
     std::shared_ptr<LongLivedObjectCollection> longLivedObjectCollection)
-    : moduleProvider_(std::move(moduleProvider)),
+    : runtime_(runtime),
+      moduleProvider_(std::move(moduleProvider)),
       longLivedObjectCollection_(std::move(longLivedObjectCollection)) {}
 
 void TurboModuleBinding::install(
@@ -85,7 +87,7 @@ void TurboModuleBinding::install(
           jsi::PropNameID::forAscii(runtime, "__turboModuleProxy"),
           1,
           [binding = TurboModuleBinding(
-               std::move(moduleProvider), longLivedObjectCollection)](
+               runtime, std::move(moduleProvider), longLivedObjectCollection)](
               jsi::Runtime& rt,
               const jsi::Value& thisVal,
               const jsi::Value* args,
@@ -102,7 +104,9 @@ void TurboModuleBinding::install(
     bool rnTurboInterop = legacyModuleProvider != nullptr;
     auto turboModuleBinding = legacyModuleProvider
         ? std::make_unique<TurboModuleBinding>(
-              std::move(legacyModuleProvider), longLivedObjectCollection)
+              runtime,
+              std::move(legacyModuleProvider),
+              longLivedObjectCollection)
         : nullptr;
     auto nativeModuleProxy = std::make_shared<BridgelessNativeModuleProxy>(
         std::move(turboModuleBinding));
@@ -119,7 +123,7 @@ TurboModuleBinding::~TurboModuleBinding() {
   if (longLivedObjectCollection_) {
     longLivedObjectCollection_->clear();
   } else {
-    LongLivedObjectCollection::get().clear();
+    LongLivedObjectCollection::get(runtime_).clear();
   }
 }
 

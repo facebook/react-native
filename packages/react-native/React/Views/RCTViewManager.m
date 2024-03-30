@@ -13,6 +13,7 @@
 #import "RCTBridge.h"
 #import "RCTConvert+Transform.h"
 #import "RCTConvert.h"
+#import "RCTCursor.h"
 #import "RCTLog.h"
 #import "RCTShadowView.h"
 #import "RCTUIManager.h"
@@ -195,6 +196,7 @@ RCT_REMAP_VIEW_PROPERTY(testID, reactAccessibilityElement.accessibilityIdentifie
 
 RCT_EXPORT_VIEW_PROPERTY(backgroundColor, UIColor)
 RCT_REMAP_VIEW_PROPERTY(backfaceVisibility, layer.doubleSided, css_backface_visibility_t)
+RCT_EXPORT_VIEW_PROPERTY(cursor, RCTCursor)
 RCT_REMAP_VIEW_PROPERTY(opacity, alpha, CGFloat)
 RCT_REMAP_VIEW_PROPERTY(shadowColor, layer.shadowColor, CGColor)
 RCT_REMAP_VIEW_PROPERTY(shadowOffset, layer.shadowOffset, CGSize)

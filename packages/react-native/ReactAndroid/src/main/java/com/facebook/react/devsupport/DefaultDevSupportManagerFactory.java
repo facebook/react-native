@@ -23,7 +23,7 @@ import java.util.Map;
  * A simple factory that creates instances of {@link DevSupportManager} implementations. Uses
  * reflection to create BridgeDevSupportManager if it exists. This allows ProGuard to strip that
  * class and its dependencies in release builds. If the class isn't found, {@link
- * DisabledDevSupportManager} is returned instead.
+ * ReleaseDevSupportManager} is returned instead.
  */
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class DefaultDevSupportManagerFactory implements DevSupportManagerFactory {
@@ -31,7 +31,9 @@ public class DefaultDevSupportManagerFactory implements DevSupportManagerFactory
   private static final String DEVSUPPORT_IMPL_PACKAGE = "com.facebook.react.devsupport";
   private static final String DEVSUPPORT_IMPL_CLASS = "BridgeDevSupportManager";
 
-  /** @deprecated in favor of the customisable create for DevSupportManagerFactory */
+  /**
+   * @deprecated in favor of the customisable create for DevSupportManagerFactory
+   */
   @Deprecated
   public DevSupportManager create(
       Context applicationContext,
@@ -66,7 +68,7 @@ public class DefaultDevSupportManagerFactory implements DevSupportManagerFactory
       @Nullable SurfaceDelegateFactory surfaceDelegateFactory,
       @Nullable DevLoadingViewManager devLoadingViewManager) {
     if (!enableOnCreate) {
-      return new DisabledDevSupportManager();
+      return new ReleaseDevSupportManager();
     }
     // Developer support is enabled, we now must choose whether to return a DevSupportManager,
     // or a more lean profiling-only PerftestDevSupportManager. We make the choice by first

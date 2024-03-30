@@ -42,10 +42,6 @@ class JMessageQueueThread : public MessageQueueThread {
    */
   void quitSynchronous() override;
 
-  JavaMessageQueueThread::javaobject jobj() {
-    return m_jobj.get();
-  }
-
  private:
   jni::global_ref<JavaMessageQueueThread::javaobject> m_jobj;
 };

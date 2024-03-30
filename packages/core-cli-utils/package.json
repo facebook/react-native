@@ -1,0 +1,31 @@
+{
+  "name": "@react-native/core-cli-utils",
+  "version": "0.75.0-main",
+  "description": "React Native CLI library for Frameworks to build on",
+  "main": "index.js",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/facebook/react-native.git",
+    "directory": "packages/core-cli-utils"
+  },
+  "exports": {
+    ".": "./src/index.js",
+    "./package.json": "./package.json"
+  },
+  "types": "./dist/index.d.ts",
+  "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/core-cli-utils#readme",
+  "keywords": [
+    "cli-utils",
+    "react-native"
+  ],
+  "bugs": "https://github.com/facebook/react-native/issues",
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {},
+  "devDependencies": {}
+}

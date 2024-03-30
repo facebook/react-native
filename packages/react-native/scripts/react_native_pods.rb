@@ -80,6 +80,8 @@ def use_react_native! (
   ENV['APP_PATH'] = app_path
   ENV['REACT_NATIVE_PATH'] = path
 
+  ReactNativePodsUtils.check_minimum_required_xcode()
+
   # Current target definition is provided by Cocoapods and it refers to the target
   # that has invoked the `use_react_native!` function.
   ReactNativePodsUtils.detect_use_frameworks(current_target_definition)
@@ -126,6 +128,8 @@ def use_react_native! (
   pod 'React-utils', :path => "#{prefix}/ReactCommon/react/utils"
   pod 'React-featureflags', :path => "#{prefix}/ReactCommon/react/featureflags"
   pod 'React-featureflagsnativemodule', :path => "#{prefix}/ReactCommon/react/nativemodule/featureflags"
+  pod 'React-microtasksnativemodule', :path => "#{prefix}/ReactCommon/react/nativemodule/microtasks"
+  pod 'React-domnativemodule', :path => "#{prefix}/ReactCommon/react/nativemodule/dom"
   pod 'React-Mapbuffer', :path => "#{prefix}/ReactCommon"
   pod 'React-jserrorhandler', :path => "#{prefix}/ReactCommon/jserrorhandler"
   pod 'React-nativeconfig', :path => "#{prefix}/ReactCommon"
@@ -144,6 +148,7 @@ def use_react_native! (
   pod 'React-runtimeexecutor', :path => "#{prefix}/ReactCommon/runtimeexecutor"
   pod 'React-runtimescheduler', :path => "#{prefix}/ReactCommon/react/renderer/runtimescheduler"
   pod 'React-rendererdebug', :path => "#{prefix}/ReactCommon/react/renderer/debug"
+  pod 'React-rendererconsistency', :path => "#{prefix}/ReactCommon/react/renderer/consistency"
   pod 'React-perflogger', :path => "#{prefix}/ReactCommon/reactperflogger"
   pod 'React-logger', :path => "#{prefix}/ReactCommon/logger"
   pod 'ReactCommon/turbomodule/core', :path => "#{prefix}/ReactCommon", :modular_headers => true

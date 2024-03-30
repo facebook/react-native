@@ -66,14 +66,6 @@ public class ReactFeatureFlags {
    */
   public static boolean enableBridgelessArchitecture = false;
 
-  /** Server-side gating for a hacky fix to an ANR in the bridgeless core, related to Bolts task. */
-  public static boolean unstable_bridgelessArchitectureMemoryPressureHackyBoltsFix = false;
-
-  /**
-   * Does the bridgeless architecture log soft exceptions. Could be useful for tracking down issues.
-   */
-  public static volatile boolean enableBridgelessArchitectureSoftExceptions = false;
-
   /** Does the bridgeless architecture use the new create/reload/destroy routines */
   public static volatile boolean enableBridgelessArchitectureNewCreateReloadDestroy = true;
 
@@ -108,9 +100,6 @@ public class ReactFeatureFlags {
    * Allow Differentiator.cpp and FabricMountingManager.cpp to generate a RemoveDeleteTree mega-op.
    */
   public static boolean enableRemoveDeleteTreeInstruction = false;
-
-  /** Report mount operations from the host platform to notify mount hooks. */
-  public static boolean enableMountHooks = false;
 
   /** Use native view configs in bridgeless mode. */
   public static boolean useNativeViewConfigsInBridgelessMode = false;

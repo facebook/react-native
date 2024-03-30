@@ -81,6 +81,8 @@ try {
     throw Error(exitCode);
   }
 
+  // TODO: Improve handling of `exec` (e.g. check `signal`). Also, why use `shelljs`?
+
   describe('Test: Jest');
   if (
     exec(

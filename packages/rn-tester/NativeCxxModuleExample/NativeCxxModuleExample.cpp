@@ -184,7 +184,6 @@ void NativeCxxModuleExample::emitCustomDeviceEvent(
   // Test emitting device events (RCTDeviceEventEmitter.emit) from C++
   // TurboModule with arbitrary arguments
   emitDeviceEvent(
-      rt,
       eventName.utf8(rt).c_str(),
       [](jsi::Runtime& rt, std::vector<jsi::Value>& args) {
         args.emplace_back(jsi::Value(true));

@@ -34,7 +34,8 @@ public class ModuleSpec {
           TAG,
           "Could not find @ReactModule annotation on "
               + type.getName()
-              + ". So creating the module eagerly to get the name. Consider adding an annotation to make this Lazy");
+              + ". So creating the module eagerly to get the name. Consider adding an annotation to"
+              + " make this Lazy");
       NativeModule nativeModule = provider.get();
       return new ModuleSpec(provider, nativeModule.getName());
     } else {

@@ -553,6 +553,7 @@ if (global.nativeLoggingHook) {
   }
 
   global.console = {
+    ...(originalConsole ?? {}),
     error: getNativeLogFunction(LOG_LEVELS.error),
     info: getNativeLogFunction(LOG_LEVELS.info),
     log: getNativeLogFunction(LOG_LEVELS.info),
@@ -577,7 +578,10 @@ if (global.nativeLoggingHook) {
   if (__DEV__ && originalConsole) {
     Object.keys(console).forEach(methodName => {
       const reactNativeMethod = console[methodName];
-      if (originalConsole[methodName]) {
+      if (
+        originalConsole[methodName] &&
+        reactNativeMethod !== originalConsole[methodName]
+      ) {
         console[methodName] = function () {
           originalConsole[methodName](...arguments);
           reactNativeMethod.apply(console, arguments);

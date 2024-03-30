@@ -386,15 +386,6 @@ void Binding::installFabricUIManager(
     }
   }
 
-  // TODO: T31905686 Create synchronous Event Beat
-  EventBeat::Factory synchronousBeatFactory =
-      [eventBeatManager, runtimeExecutor, globalJavaUiManager](
-          const EventBeat::SharedOwnerBox& ownerBox)
-      -> std::unique_ptr<EventBeat> {
-    return std::make_unique<AsyncEventBeat>(
-        ownerBox, eventBeatManager, runtimeExecutor, globalJavaUiManager);
-  };
-
   EventBeat::Factory asynchronousBeatFactory =
       [eventBeatManager, runtimeExecutor, globalJavaUiManager](
           const EventBeat::SharedOwnerBox& ownerBox)
@@ -433,7 +424,6 @@ void Binding::installFabricUIManager(
   toolbox.bridgelessBindingsExecutor = std::nullopt;
   toolbox.runtimeExecutor = runtimeExecutor;
 
-  toolbox.synchronousEventBeatFactory = synchronousBeatFactory;
   toolbox.asynchronousEventBeatFactory = asynchronousBeatFactory;
 
   if (ReactNativeFeatureFlags::enableBackgroundExecutor()) {

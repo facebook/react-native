@@ -18,6 +18,7 @@ import type {NextHandleFunction} from 'connect';
 import type {IncomingMessage, ServerResponse} from 'http';
 
 import getDevToolsFrontendUrl from '../utils/getDevToolsFrontendUrl';
+import crypto from 'crypto';
 import url from 'url';
 
 const debuggerInstances = new Map<string, ?LaunchedBrowser>();
@@ -107,6 +108,8 @@ export default function openDebuggerMiddleware({
         return;
       }
 
+      const launchId = crypto.randomUUID();
+
       try {
         switch (launchType) {
           case 'launch':
@@ -122,6 +125,7 @@ export default function openDebuggerMiddleware({
                   experiments,
                   target.webSocketDebuggerUrl,
                   serverBaseUrl,
+                  {launchId},
                 ),
               ),
             );
@@ -132,8 +136,8 @@ export default function openDebuggerMiddleware({
               Location: getDevToolsFrontendUrl(
                 experiments,
                 target.webSocketDebuggerUrl,
-                // Use a relative URL.
-                '',
+                serverBaseUrl,
+                {relative: true, launchId},
               ),
             });
             res.end();

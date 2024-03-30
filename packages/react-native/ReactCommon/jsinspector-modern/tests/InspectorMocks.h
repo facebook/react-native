@@ -133,8 +133,15 @@ class MockRuntimeTargetDelegate : public RuntimeTargetDelegate {
        SessionState& sessionState,
        std::unique_ptr<RuntimeAgentDelegate::ExportedState>
            previouslyExportedState,
-       const ExecutionContextDescription&),
+       const ExecutionContextDescription&,
+       RuntimeExecutor),
       (override));
+  MOCK_METHOD(
+      void,
+      addConsoleMessage,
+      (jsi::Runtime & runtime, ConsoleMessage message),
+      (override));
+  MOCK_METHOD(bool, supportsConsole, (), (override, const));
 };
 
 class MockRuntimeAgentDelegate : public RuntimeAgentDelegate {
@@ -143,10 +150,11 @@ class MockRuntimeAgentDelegate : public RuntimeAgentDelegate {
       FrontendChannel frontendChannel,
       SessionState& sessionState,
       std::unique_ptr<RuntimeAgentDelegate::ExportedState>,
-      const ExecutionContextDescription& executionContextDescription)
+      ExecutionContextDescription executionContextDescription,
+      const RuntimeExecutor& /*runtimeExecutor*/)
       : frontendChannel(std::move(frontendChannel)),
         sessionState(sessionState),
-        executionContextDescription(executionContextDescription) {}
+        executionContextDescription(std::move(executionContextDescription)) {}
 
   // RuntimeAgentDelegate methods
   MOCK_METHOD(

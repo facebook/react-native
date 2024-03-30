@@ -6,10 +6,13 @@
  */
 
 #import "RCTBridgeProxy.h"
+#import "RCTBridgeProxy+Cxx.h"
+
 #import <React/RCTBridge+Private.h>
 #import <React/RCTBridge.h>
 #import <React/RCTLog.h>
 #import <React/RCTUIManager.h>
+#import <ReactCommon/CallInvoker.h>
 #import <jsi/jsi.h>
 
 using namespace facebook;
@@ -19,6 +22,12 @@ using namespace facebook;
 
 - (NSMethodSignature *)methodSignatureForSelector:(SEL)sel;
 - (void)forwardInvocation:(NSInvocation *)invocation;
+@end
+
+@interface RCTBridgeProxy ()
+
+@property (nonatomic, readwrite) std::shared_ptr<facebook::react::CallInvoker> jsCallInvoker;
+
 @end
 
 @implementation RCTBridgeProxy {
@@ -82,6 +91,12 @@ using namespace facebook;
 {
   [self logWarning:@"Please migrate to C++ TurboModule or RuntimeExecutor." cmd:_cmd];
   return _runtime;
+}
+
+- (std::shared_ptr<facebook::react::CallInvoker>)jsCallInvoker
+{
+  [self logWarning:@"Please migrate to RuntimeExecutor" cmd:_cmd];
+  return _jsCallInvoker;
 }
 
 /**

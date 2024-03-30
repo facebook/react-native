@@ -118,9 +118,6 @@ const Text: React.AbstractComponent<
               setHighlighted(false);
               onPressOut?.(event);
             },
-            onResponderTerminationRequest_DEPRECATED:
-              onResponderTerminationRequest,
-            onStartShouldSetResponder_DEPRECATED: onStartShouldSetResponder,
           }
         : null,
     [
@@ -131,8 +128,6 @@ const Text: React.AbstractComponent<
       onPress,
       onPressIn,
       onPressOut,
-      onResponderTerminationRequest,
-      onStartShouldSetResponder,
       suppressHighlighting,
     ],
   );
@@ -169,8 +164,13 @@ const Text: React.AbstractComponent<
             },
             onClick: eventHandlers.onClick,
             onResponderTerminationRequest:
-              eventHandlers.onResponderTerminationRequest,
-            onStartShouldSetResponder: eventHandlers.onStartShouldSetResponder,
+              onResponderTerminationRequest != null
+                ? onResponderTerminationRequest
+                : eventHandlers.onResponderTerminationRequest,
+            onStartShouldSetResponder:
+              onStartShouldSetResponder != null
+                ? onStartShouldSetResponder
+                : eventHandlers.onStartShouldSetResponder,
           },
     [
       eventHandlers,
@@ -178,6 +178,8 @@ const Text: React.AbstractComponent<
       onResponderMove,
       onResponderRelease,
       onResponderTerminate,
+      onResponderTerminationRequest,
+      onStartShouldSetResponder,
     ],
   );
 

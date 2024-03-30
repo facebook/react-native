@@ -14,7 +14,7 @@ import type {SyntheticEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 
 import PopupMenuAndroidNativeComponent, {
   Commands,
-} from './PopupMenuAndroidNativeComponent';
+} from './PopupMenuAndroidNativeComponent.android';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
 import {useCallback, useImperativeHandle, useRef} from 'react';

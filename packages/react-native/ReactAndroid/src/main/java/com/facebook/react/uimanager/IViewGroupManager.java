@@ -8,6 +8,7 @@
 package com.facebook.react.uimanager;
 
 import android.view.View;
+import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.UiThreadUtil;
 
@@ -18,7 +19,10 @@ public interface IViewGroupManager<T extends View> extends IViewManagerWithChild
   /** Adds a child view into the parent at the index specified as a parameter */
   void addView(T parent, View child, int index);
 
-  /** @return child of the parent view at the index specified as a parameter. */
+  /**
+   * @return child of the parent view at the index specified as a parameter.
+   */
+  @Nullable
   View getChildAt(T parent, int index);
 
   /** Removes View from the parent View at the index specified as a parameter. */

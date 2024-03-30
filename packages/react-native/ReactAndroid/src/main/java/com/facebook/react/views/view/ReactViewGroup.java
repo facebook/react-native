@@ -284,13 +284,13 @@ public class ReactViewGroup extends ViewGroup
   }
 
   @Override
-  public boolean dispatchGenericPointerEvent(MotionEvent ev) {
-    // We do not dispatch the pointer event if its children are not supposed to receive it
+  public boolean dispatchGenericMotionEvent(MotionEvent ev) {
+    // We do not dispatch the motion event if its children are not supposed to receive it
     if (!PointerEvents.canChildrenBeTouchTarget(mPointerEvents)) {
       return false;
     }
 
-    return super.dispatchGenericPointerEvent(ev);
+    return super.dispatchGenericMotionEvent(ev);
   }
 
   /**
@@ -519,6 +519,9 @@ public class ReactViewGroup extends ViewGroup
     UiThreadUtil.assertOnUiThread();
 
     if (!customDrawOrderDisabled()) {
+      if (indexOfChild(view) == -1) {
+        return;
+      }
       getDrawingOrderHelper().handleRemoveView(view);
       setChildrenDrawingOrderEnabled(getDrawingOrderHelper().shouldEnableCustomDrawingOrder());
     } else {
@@ -637,8 +640,11 @@ public class ReactViewGroup extends ViewGroup
     return mAllChildrenCount;
   }
 
-  /*package*/ View getChildAtWithSubviewClippingEnabled(int index) {
-    return Assertions.assertNotNull(mAllChildren)[index];
+  /*package*/ @Nullable
+  View getChildAtWithSubviewClippingEnabled(int index) {
+    return index >= 0 && index < mAllChildrenCount
+        ? Assertions.assertNotNull(mAllChildren)[index]
+        : null;
   }
 
   /*package*/ void addViewWithSubviewClippingEnabled(View child, int index) {
@@ -671,8 +677,8 @@ public class ReactViewGroup extends ViewGroup
                 ReactSoftExceptionLogger.logSoftException(
                     TAG,
                     new ReactNoCrashSoftException(
-                        "Child view has been added to Parent view in which it is clipped and not visible."
-                            + " This is not legal for this particular child view. Child: ["
+                        "Child view has been added to Parent view in which it is clipped and not"
+                            + " visible. This is not legal for this particular child view. Child: ["
                             + child.getId()
                             + "] "
                             + child.toString()

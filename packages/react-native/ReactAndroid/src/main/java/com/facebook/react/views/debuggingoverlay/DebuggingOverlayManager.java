@@ -52,7 +52,8 @@ public class DebuggingOverlayManager extends SimpleViewManager<DebuggingOverlay>
               ReactSoftExceptionLogger.logSoftException(
                   REACT_CLASS,
                   new ReactNoCrashSoftException(
-                      "Unexpected payload for highlighting trace updates: rectangle field is null"));
+                      "Unexpected payload for highlighting trace updates: rectangle field is"
+                          + " null"));
 
               successfullyParsedPayload = false;
               break;
@@ -79,7 +80,8 @@ public class DebuggingOverlayManager extends SimpleViewManager<DebuggingOverlay>
               ReactSoftExceptionLogger.logSoftException(
                   REACT_CLASS,
                   new ReactNoCrashSoftException(
-                      "Unexpected payload for highlighting trace updates: rectangle field should have x, y, width, height fields"));
+                      "Unexpected payload for highlighting trace updates: rectangle field should"
+                          + " have x, y, width, height fields"));
 
               successfullyParsedPayload = false;
               break;
@@ -123,7 +125,8 @@ public class DebuggingOverlayManager extends SimpleViewManager<DebuggingOverlay>
               ReactSoftExceptionLogger.logSoftException(
                   REACT_CLASS,
                   new ReactNoCrashSoftException(
-                      "Unexpected payload for highlighting elements: every element should have x, y, width, height fields"));
+                      "Unexpected payload for highlighting elements: every element should have x,"
+                          + " y, width, height fields"));
 
               successfullyParsedPayload = false;
               break;

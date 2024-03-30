@@ -19,25 +19,33 @@ import com.facebook.react.uimanager.StateWrapper;
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class MountItemFactory {
 
-  /** @return a {@link DispatchCommandMountItem} for commands identified by an int */
+  /**
+   * @return a {@link DispatchCommandMountItem} for commands identified by an int
+   */
   public static DispatchCommandMountItem createDispatchCommandMountItem(
       int surfaceId, int reactTag, int commandId, @Nullable ReadableArray commandArgs) {
     return new DispatchIntCommandMountItem(surfaceId, reactTag, commandId, commandArgs);
   }
 
-  /** @return a {@link DispatchCommandMountItem} for commands identified by a String */
+  /**
+   * @return a {@link DispatchCommandMountItem} for commands identified by a String
+   */
   public static DispatchCommandMountItem createDispatchCommandMountItem(
       int surfaceId, int reactTag, @NonNull String commandId, @Nullable ReadableArray commandArgs) {
     return new DispatchStringCommandMountItem(surfaceId, reactTag, commandId, commandArgs);
   }
 
-  /** @return a {@link MountItem} that will control the execution of an AccessibilityEvent */
+  /**
+   * @return a {@link MountItem} that will control the execution of an AccessibilityEvent
+   */
   public static MountItem createSendAccessibilityEventMountItem(
       int surfaceId, int reactTag, int eventType) {
     return new SendAccessibilityEventMountItem(surfaceId, reactTag, eventType);
   }
 
-  /** @return a {@link MountItem} that will be used to preallocate views */
+  /**
+   * @return a {@link MountItem} that will be used to preallocate views
+   */
   public static MountItem createPreAllocateViewMountItem(
       int surfaceId,
       int reactTag,
@@ -49,6 +57,7 @@ public class MountItemFactory {
     return new PreAllocateViewMountItem(
         surfaceId, reactTag, component, props, stateWrapper, eventEmitterWrapper, isLayoutable);
   }
+
   /**
    * @return a {@link MountItem} that will be read and execute a collection of MountItems serialized
    *     in the int[] and Object[] received by parameter

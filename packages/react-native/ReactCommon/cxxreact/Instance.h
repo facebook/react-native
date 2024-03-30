@@ -164,15 +164,15 @@ class RN_EXPORT Instance : private jsinspector_modern::InstanceTargetDelegate {
     std::weak_ptr<NativeToJsBridge> m_nativeToJsBridge;
     std::mutex m_mutex;
     bool m_shouldBuffer = true;
-    std::list<std::function<void()>> m_workBuffer;
+    std::list<CallFunc> m_workBuffer;
 
-    void scheduleAsync(std::function<void()>&& work) noexcept;
+    void scheduleAsync(CallFunc&& work) noexcept;
 
    public:
     void setNativeToJsBridgeAndFlushCalls(
         std::weak_ptr<NativeToJsBridge> nativeToJsBridge);
-    void invokeAsync(std::function<void()>&& work) noexcept override;
-    void invokeSync(std::function<void()>&& work) override;
+    void invokeAsync(CallFunc&& work) noexcept override;
+    void invokeSync(CallFunc&& work) override;
   };
 
   std::shared_ptr<JSCallInvoker> jsCallInvoker_ =

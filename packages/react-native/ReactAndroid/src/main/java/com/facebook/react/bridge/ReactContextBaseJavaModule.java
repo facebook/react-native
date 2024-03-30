@@ -16,7 +16,8 @@ import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
  */
 @DeprecatedInNewArchitecture(
     message =
-        "ReactContextBaseJavaModule will be deprecated in new Architecture of React Native, use BaseJavaModule instead")
+        "ReactContextBaseJavaModule will be deprecated in new Architecture of React Native, use"
+            + " BaseJavaModule instead")
 public abstract class ReactContextBaseJavaModule extends BaseJavaModule {
 
   public ReactContextBaseJavaModule() {

@@ -7,20 +7,32 @@
 
 #pragma once
 
-#include <folly/json.h>
-#include <gtest/gtest.h>
-#include <jsinspector-modern/InspectorInterfaces.h>
-#include <memory>
-
 #include "InspectorMocks.h"
 #include "ReactNativeMocks.h"
 #include "UniquePtrFactory.h"
+#include "utils/InspectorFlagOverridesGuard.h"
+
+#include <folly/executors/QueuedImmediateExecutor.h>
+#include <folly/json.h>
+#include <gtest/gtest.h>
+#include <jsinspector-modern/InspectorInterfaces.h>
+
+#include <cassert>
+#include <memory>
 
 namespace facebook::react::jsinspector_modern {
 
-class ReactInstanceIntegrationTest : public ::testing::Test {
+using namespace ::testing;
+
+struct FeatureFlags {
+  const bool enableCxxInspectorPackagerConnection = true;
+  const bool enableModernCDPRegistry = true;
+};
+
+class ReactInstanceIntegrationTest : public Test {
  protected:
   ReactInstanceIntegrationTest();
+
   void SetUp() override;
   void TearDown() override;
 
@@ -38,7 +50,10 @@ class ReactInstanceIntegrationTest : public ::testing::Test {
   std::shared_ptr<ErrorUtils> errorHandler;
 
   MockRemoteConnection& getRemoteConnection() {
-    return *mockRemoteConnections_[0];
+    EXPECT_EQ(mockRemoteConnections_.objectsVended(), 1);
+    auto rawPtr = mockRemoteConnections_[0];
+    assert(rawPtr);
+    return *rawPtr;
   }
 
  private:
@@ -46,8 +61,19 @@ class ReactInstanceIntegrationTest : public ::testing::Test {
 
   size_t id_ = 1;
   bool verbose_ = false;
+  std::optional<int> pageId_;
   UniquePtrFactory<MockRemoteConnection> mockRemoteConnections_;
   std::unique_ptr<ILocalConnection> clientToVM_;
+  folly::QueuedImmediateExecutor immediateExecutor_;
 };
 
+class ReactInstanceIntegrationTestWithFlags
+    : public ReactInstanceIntegrationTest,
+      public ::testing::WithParamInterface<InspectorFlagOverrides> {
+ protected:
+  ReactInstanceIntegrationTestWithFlags() : inspectorFlagsGuard_(GetParam()) {}
+
+ private:
+  InspectorFlagOverridesGuard inspectorFlagsGuard_;
+};
 } // namespace facebook::react::jsinspector_modern

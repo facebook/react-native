@@ -20,6 +20,8 @@ public interface WritableArray extends ReadableArray {
 
   void pushInt(int value);
 
+  void pushLong(long value);
+
   void pushString(@Nullable String value);
 
   void pushArray(@Nullable ReadableArray array);

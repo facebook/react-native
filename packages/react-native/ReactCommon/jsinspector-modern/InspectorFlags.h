@@ -30,17 +30,28 @@ class InspectorFlags {
    */
   bool getEnableCxxInspectorPackagerConnection() const;
 
+  /**
+   * Reset flags to their upstream values. The caller must ensure any resources
+   * that have read previous flag values have been cleaned up.
+   */
+  void dangerouslyResetFlags();
+
  private:
-  InspectorFlags();
+  struct Values {
+    bool enableCxxInspectorPackagerConnection;
+    bool enableModernCDPRegistry;
+    bool operator==(const Values&) const = default;
+  };
+
+  InspectorFlags() = default;
   InspectorFlags(const InspectorFlags&) = delete;
-  InspectorFlags& operator=(const InspectorFlags&) = delete;
+  InspectorFlags& operator=(const InspectorFlags&) = default;
   ~InspectorFlags() = default;
 
-  const bool enableModernCDPRegistry_;
-  const bool enableCxxInspectorPackagerConnection_;
+  mutable std::optional<Values> cachedValues_;
+  mutable bool inconsistentFlagsStateLogged_{false};
 
-  mutable bool inconsistentFlagsStateLogged_;
-  void assertFlagsMatchUpstream() const;
+  const Values& loadFlagsAndAssertUnchanged() const;
 };
 
 } // namespace facebook::react::jsinspector_modern

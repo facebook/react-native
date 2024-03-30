@@ -11,12 +11,15 @@
 'use strict';
 
 import VirtualizedList from '../VirtualizedList';
-import React from 'react';
-import ReactTestRenderer from 'react-test-renderer';
+import {format} from 'node:util';
+import * as React from 'react';
+import {act, create} from 'react-test-renderer';
+
+jest.useFakeTimers();
 
 describe('VirtualizedList', () => {
   it('renders simple list', () => {
-    const component = ReactTestRenderer.create(
+    const component = create(
       <VirtualizedList
         data={[{key: 'i1'}, {key: 'i2'}, {key: 'i3'}]}
         renderItem={({item}) => <item value={item.key} />}
@@ -31,7 +34,7 @@ describe('VirtualizedList', () => {
     function ListItemComponent({item}) {
       return <item value={item.key} />;
     }
-    const component = ReactTestRenderer.create(
+    const component = create(
       <VirtualizedList
         data={[{key: 'i1'}, {key: 'i2'}, {key: 'i3'}]}
         ListItemComponent={ListItemComponent}
@@ -47,7 +50,7 @@ describe('VirtualizedList', () => {
     function ListItemComponent({item}) {
       return <item value={item.key} testID={`${item.key}-ListItemComponent`} />;
     }
-    const component = ReactTestRenderer.create(
+    const component = create(
       <VirtualizedList
         data={[{key: 'i1'}]}
         ListItemComponent={ListItemComponent}
@@ -66,25 +69,28 @@ describe('VirtualizedList', () => {
     console.warn.mockRestore();
   });
 
-  it('throws if no renderItem or ListItemComponent', () => {
+  it('throws if no renderItem or ListItemComponent', async () => {
     // Silence the React error boundary warning; we expect an uncaught error.
     const consoleError = console.error;
-    jest.spyOn(console, 'error').mockImplementation(message => {
-      if (message.startsWith('The above error occurred in the ')) {
+    jest.spyOn(console, 'error').mockImplementation((...args) => {
+      const message = format(...args);
+      if (message.includes('The above error occurred in the ')) {
         return;
       }
-      consoleError(message);
+      consoleError(...args);
     });
 
-    const componentFactory = () =>
-      ReactTestRenderer.create(
-        <VirtualizedList
-          data={[{key: 'i1'}, {key: 'i2'}, {key: 'i3'}]}
-          getItem={(data, index) => data[index]}
-          getItemCount={data => data.length}
-        />,
-      );
-    expect(componentFactory).toThrow(
+    await expect(async () => {
+      await act(() => {
+        create(
+          <VirtualizedList
+            data={[{key: 'i1'}, {key: 'i2'}, {key: 'i3'}]}
+            getItem={(data, index) => data[index]}
+            getItemCount={data => data.length}
+          />,
+        );
+      });
+    }).rejects.toThrow(
       'VirtualizedList: Either ListItemComponent or renderItem props are required but none were found.',
     );
 
@@ -92,7 +98,7 @@ describe('VirtualizedList', () => {
   });
 
   it('renders empty list', () => {
-    const component = ReactTestRenderer.create(
+    const component = create(
       <VirtualizedList
         data={[]}
         renderItem={({item}) => <item value={item.key} />}
@@ -104,7 +110,7 @@ describe('VirtualizedList', () => {
   });
 
   it('renders empty list after batch', () => {
-    const component = ReactTestRenderer.create(
+    const component = create(
       <VirtualizedList
         data={[]}
         renderItem={({item}) => <item value={item.key} />}
@@ -113,7 +119,7 @@ describe('VirtualizedList', () => {
       />,
     );
 
-    ReactTestRenderer.act(() => {
+    act(() => {
       simulateLayout(component, {
         viewport: {width: 10, height: 50},
         content: {width: 10, height: 200},
@@ -126,7 +132,7 @@ describe('VirtualizedList', () => {
   });
 
   it('renders null list', () => {
-    const component = ReactTestRenderer.create(
+    const component = create(
       <VirtualizedList
         data={undefined}
         renderItem={({item}) => <item value={item.key} />}
@@ -139,7 +145,7 @@ describe('VirtualizedList', () => {
 
   it('scrollToEnd works with null list', () => {
     const listRef = React.createRef(null);
-    ReactTestRenderer.create(
+    create(
       <VirtualizedList
         data={undefined}
         renderItem={({item}) => <item value={item.key} />}
@@ -152,7 +158,7 @@ describe('VirtualizedList', () => {
   });
 
   it('renders empty list with empty component', () => {
-    const component = ReactTestRenderer.create(
+    const component = create(
       <VirtualizedList
         data={[]}
         ListEmptyComponent={() => <empty />}
@@ -167,7 +173,7 @@ describe('VirtualizedList', () => {
   });
 
   it('renders list with empty component', () => {
-    const component = ReactTestRenderer.create(
+    const component = create(
       <VirtualizedList
         data={[{key: 'hello'}]}
         ListEmptyComponent={() => <empty />}
@@ -180,7 +186,7 @@ describe('VirtualizedList', () => {
   });
 
   it('renders all the bells and whistles', () => {
-    const component = ReactTestRenderer.create(
+    const component = create(
       <VirtualizedList
         ItemSeparatorComponent={() => <separator />}
         ListEmptyComponent={() => <empty />}
@@ -201,7 +207,7 @@ describe('VirtualizedList', () => {
   });
 
   it('test getItem functionality where data is not an Array', () => {
-    const component = ReactTestRenderer.create(
+    const component = create(
       <VirtualizedList
         data={new Map([['id_0', {key: 'item_0'}]])}
         getItem={(data, index) => data.get('id_' + index)}
@@ -214,7 +220,7 @@ describe('VirtualizedList', () => {
 
   it('handles separators correctly', () => {
     const infos = [];
-    const component = ReactTestRenderer.create(
+    const component = create(
       <VirtualizedList
         ItemSeparatorComponent={props => <separator {...props} />}
         data={[{key: 'i0'}, {key: 'i1'}, {key: 'i2'}]}
@@ -235,7 +241,7 @@ describe('VirtualizedList', () => {
   });
 
   it('handles nested lists', () => {
-    const component = ReactTestRenderer.create(
+    const component = create(
       <VirtualizedList
         data={[{key: 'outer0'}, {key: 'outer1'}]}
         renderItem={outerInfo => (
@@ -266,8 +272,8 @@ describe('VirtualizedList', () => {
 
     let component;
 
-    ReactTestRenderer.act(() => {
-      component = ReactTestRenderer.create(
+    act(() => {
+      component = create(
         <VirtualizedList
           {...baseItemProps([])}
           ListEmptyComponent={ListEmptyComponent}
@@ -275,7 +281,7 @@ describe('VirtualizedList', () => {
       );
     });
 
-    ReactTestRenderer.act(() => {
+    act(() => {
       component.update(
         <VirtualizedList
           {...baseItemProps(generateItems(5))}
@@ -309,7 +315,7 @@ describe('VirtualizedList', () => {
       onViewableItemsChanged,
     };
 
-    const component = ReactTestRenderer.create(<VirtualizedList {...props} />);
+    const component = create(<VirtualizedList {...props} />);
 
     const instance = component.getInstance();
 
@@ -347,7 +353,7 @@ describe('VirtualizedList', () => {
   it('getScrollRef for case where it returns a ScrollView', () => {
     const listRef = React.createRef(null);
 
-    ReactTestRenderer.create(
+    create(
       <VirtualizedList
         data={[{key: 'i1'}, {key: 'i2'}, {key: 'i3'}]}
         renderItem={({item}) => <item value={item.key} />}
@@ -367,7 +373,7 @@ describe('VirtualizedList', () => {
   it('getScrollRef for case where it returns a View', () => {
     const listRef = React.createRef(null);
 
-    ReactTestRenderer.create(
+    create(
       <VirtualizedList
         data={[{key: 'outer0'}, {key: 'outer1'}]}
         renderItem={outerInfo => (
@@ -421,7 +427,7 @@ describe('VirtualizedList', () => {
       initialScrollIndex: data.length - 1,
     };
 
-    const component = ReactTestRenderer.create(<VirtualizedList {...props} />);
+    const component = create(<VirtualizedList {...props} />);
 
     const instance = component.getInstance();
 
@@ -484,7 +490,7 @@ describe('VirtualizedList', () => {
       onStartReached,
     };
 
-    const component = ReactTestRenderer.create(<VirtualizedList {...props} />);
+    const component = create(<VirtualizedList {...props} />);
 
     const instance = component.getInstance();
 
@@ -518,7 +524,7 @@ describe('VirtualizedList', () => {
       onEndReached,
     };
 
-    const component = ReactTestRenderer.create(<VirtualizedList {...props} />);
+    const component = create(<VirtualizedList {...props} />);
 
     const instance = component.getInstance();
 
@@ -581,7 +587,7 @@ describe('VirtualizedList', () => {
       onEndReached,
     };
 
-    const component = ReactTestRenderer.create(<VirtualizedList {...props} />);
+    const component = create(<VirtualizedList {...props} />);
 
     const instance = component.getInstance();
 
@@ -613,7 +619,7 @@ describe('VirtualizedList', () => {
   });
 
   it('throws if using scrollToIndex with index less than 0', () => {
-    const component = ReactTestRenderer.create(
+    const component = create(
       <VirtualizedList
         data={[{key: 'i1'}, {key: 'i2'}, {key: 'i3'}]}
         renderItem={({item}) => <item value={item.key} />}
@@ -629,7 +635,7 @@ describe('VirtualizedList', () => {
   });
 
   it('throws if using scrollToIndex when item length is less than 1', () => {
-    const component = ReactTestRenderer.create(
+    const component = create(
       <VirtualizedList
         data={[]}
         renderItem={({item}) => <item value={item.key} />}
@@ -645,7 +651,7 @@ describe('VirtualizedList', () => {
   });
 
   it('throws if using scrollToIndex when requested index is bigger than or equal to item length', () => {
-    const component = ReactTestRenderer.create(
+    const component = create(
       <VirtualizedList
         data={[{key: 'i1'}, {key: 'i2'}, {key: 'i3'}]}
         renderItem={({item}) => <item value={item.key} />}
@@ -664,7 +670,7 @@ describe('VirtualizedList', () => {
     const items = generateItemsStickyEveryN(10, 3);
     const ITEM_HEIGHT = 10;
 
-    const component = ReactTestRenderer.create(
+    const component = create(
       <VirtualizedList
         initialNumToRender={10}
         {...baseItemProps(items)}
@@ -682,7 +688,7 @@ describe('VirtualizedList', () => {
     const items = generateItemsStickyEveryN(10, 3);
     const ITEM_HEIGHT = 10;
 
-    const component = ReactTestRenderer.create(
+    const component = create(
       <VirtualizedList
         ListHeaderComponent={() => React.createElement('Header')}
         initialNumToRender={10}
@@ -702,7 +708,7 @@ describe('VirtualizedList', () => {
 
     const ITEM_HEIGHT = 10;
 
-    const component = ReactTestRenderer.create(
+    const component = create(
       <VirtualizedList
         initialNumToRender={5}
         {...baseItemProps(items)}
@@ -721,8 +727,8 @@ describe('VirtualizedList', () => {
     const ITEM_HEIGHT = 10;
 
     let component;
-    ReactTestRenderer.act(() => {
-      component = ReactTestRenderer.create(
+    act(() => {
+      component = create(
         <VirtualizedList
           initialNumToRender={1}
           windowSize={1}
@@ -732,7 +738,7 @@ describe('VirtualizedList', () => {
       );
     });
 
-    ReactTestRenderer.act(() => {
+    act(() => {
       simulateLayout(component, {
         viewport: {width: 10, height: 50},
         content: {width: 10, height: 100},
@@ -751,8 +757,8 @@ describe('VirtualizedList', () => {
     const ITEM_HEIGHT = 10;
 
     let component;
-    ReactTestRenderer.act(() => {
-      component = ReactTestRenderer.create(
+    act(() => {
+      component = create(
         <VirtualizedList
           initialNumToRender={1}
           windowSize={1}
@@ -762,7 +768,7 @@ describe('VirtualizedList', () => {
       );
     });
 
-    ReactTestRenderer.act(() => {
+    act(() => {
       simulateLayout(component, {
         viewport: {width: 10, height: 50},
         content: {width: 10, height: 200},
@@ -770,7 +776,7 @@ describe('VirtualizedList', () => {
       performAllBatches();
     });
 
-    ReactTestRenderer.act(() => {
+    act(() => {
       simulateScroll(component, {x: 0, y: 150});
       performAllBatches();
     });
@@ -790,8 +796,8 @@ it('unmounts sticky headers moved below viewport', () => {
   const ITEM_HEIGHT = 10;
 
   let component;
-  ReactTestRenderer.act(() => {
-    component = ReactTestRenderer.create(
+  act(() => {
+    component = create(
       <VirtualizedList
         initialNumToRender={1}
         windowSize={1}
@@ -801,7 +807,7 @@ it('unmounts sticky headers moved below viewport', () => {
     );
   });
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 50},
       content: {width: 10, height: 200},
@@ -809,12 +815,12 @@ it('unmounts sticky headers moved below viewport', () => {
     performAllBatches();
   });
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     simulateScroll(component, {x: 0, y: 150});
     performAllBatches();
   });
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     simulateScroll(component, {x: 0, y: 0});
     performAllBatches();
   });
@@ -831,7 +837,7 @@ it('gracefully handles negative initialScrollIndex', () => {
 
   const mockWarn = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-  const component = ReactTestRenderer.create(
+  const component = create(
     <VirtualizedList
       initialScrollIndex={-1}
       initialNumToRender={4}
@@ -842,7 +848,7 @@ it('gracefully handles negative initialScrollIndex', () => {
 
   expect(mockWarn).toHaveBeenCalledTimes(1);
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 50},
       content: {width: 10, height: 100},
@@ -863,7 +869,7 @@ it('gracefully handles too large initialScrollIndex', () => {
 
   const mockWarn = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-  const component = ReactTestRenderer.create(
+  const component = create(
     <VirtualizedList
       ref={listRef}
       initialScrollIndex={15}
@@ -876,7 +882,7 @@ it('gracefully handles too large initialScrollIndex', () => {
   expect(mockWarn).toHaveBeenCalledTimes(1);
   listRef.current.scrollToEnd = jest.fn();
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 50},
       content: {width: 10, height: 100},
@@ -896,7 +902,7 @@ it('renders offset cells in initial render when initialScrollIndex set', () => {
   const items = generateItems(10);
   const ITEM_HEIGHT = 10;
 
-  const component = ReactTestRenderer.create(
+  const component = create(
     <VirtualizedList
       initialScrollIndex={4}
       initialNumToRender={4}
@@ -915,7 +921,7 @@ it('scrolls after content sizing with integer initialScrollIndex', () => {
 
   const listRef = React.createRef(null);
 
-  const component = ReactTestRenderer.create(
+  const component = create(
     <VirtualizedList
       initialScrollIndex={1}
       initialNumToRender={4}
@@ -927,7 +933,7 @@ it('scrolls after content sizing with integer initialScrollIndex', () => {
 
   const {scrollTo} = listRef.current.getScrollRef();
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 50},
       content: {width: 10, height: 200},
@@ -944,7 +950,7 @@ it('scrolls after content sizing with near-zero initialScrollIndex', () => {
 
   const listRef = React.createRef(null);
 
-  const component = ReactTestRenderer.create(
+  const component = create(
     <VirtualizedList
       initialScrollIndex={0.0001}
       initialNumToRender={4}
@@ -956,7 +962,7 @@ it('scrolls after content sizing with near-zero initialScrollIndex', () => {
 
   const {scrollTo} = listRef.current.getScrollRef();
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 50},
       content: {width: 10, height: 200},
@@ -973,7 +979,7 @@ it('scrolls after content sizing with near-end initialScrollIndex', () => {
 
   const listRef = React.createRef(null);
 
-  const component = ReactTestRenderer.create(
+  const component = create(
     <VirtualizedList
       initialScrollIndex={9.9999}
       initialNumToRender={4}
@@ -985,7 +991,7 @@ it('scrolls after content sizing with near-end initialScrollIndex', () => {
 
   const {scrollTo} = listRef.current.getScrollRef();
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 50},
       content: {width: 10, height: 200},
@@ -1007,7 +1013,7 @@ it('scrolls after content sizing with fractional initialScrollIndex (getItemLayo
 
   const listRef = React.createRef(null);
 
-  const component = ReactTestRenderer.create(
+  const component = create(
     <VirtualizedList
       initialScrollIndex={1.5}
       initialNumToRender={4}
@@ -1019,7 +1025,7 @@ it('scrolls after content sizing with fractional initialScrollIndex (getItemLayo
 
   const {scrollTo} = listRef.current.getScrollRef();
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 50},
       content: {width: 10, height: 200},
@@ -1034,7 +1040,7 @@ it('scrolls after content sizing with fractional initialScrollIndex (cached layo
   const items = generateItems(10);
   const listRef = React.createRef(null);
 
-  const component = ReactTestRenderer.create(
+  const component = create(
     <VirtualizedList
       initialScrollIndex={1.5}
       initialNumToRender={4}
@@ -1045,7 +1051,7 @@ it('scrolls after content sizing with fractional initialScrollIndex (cached layo
 
   const {scrollTo} = listRef.current.getScrollRef();
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     let y = 0;
     for (let i = 0; i < 10; ++i) {
       const height = i + 1;
@@ -1072,7 +1078,7 @@ it('scrolls after content sizing with fractional initialScrollIndex (layout esti
   const items = generateItems(10);
   const listRef = React.createRef(null);
 
-  const component = ReactTestRenderer.create(
+  const component = create(
     <VirtualizedList
       initialScrollIndex={1.5}
       initialNumToRender={4}
@@ -1083,7 +1089,7 @@ it('scrolls after content sizing with fractional initialScrollIndex (layout esti
 
   const {scrollTo} = listRef.current.getScrollRef();
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     let y = 0;
     for (let i = 5; i < 10; ++i) {
       const height = i + 1;
@@ -1110,7 +1116,7 @@ it('initially renders nothing when initialNumToRender is 0', () => {
   const items = generateItems(10);
   const ITEM_HEIGHT = 10;
 
-  const component = ReactTestRenderer.create(
+  const component = create(
     <VirtualizedList
       initialNumToRender={0}
       {...baseItemProps(items)}
@@ -1127,7 +1133,7 @@ it('does not over-render when there is less than initialNumToRender cells', () =
   const items = generateItems(10);
   const ITEM_HEIGHT = 10;
 
-  const component = ReactTestRenderer.create(
+  const component = create(
     <VirtualizedList
       initialScrollIndex={4}
       initialNumToRender={20}
@@ -1146,8 +1152,8 @@ it('retains intitial render if initialScrollIndex == 0', () => {
   const ITEM_HEIGHT = 10;
 
   let component;
-  ReactTestRenderer.act(() => {
-    component = ReactTestRenderer.create(
+  act(() => {
+    component = create(
       <VirtualizedList
         initialNumToRender={5}
         initialScrollIndex={0}
@@ -1158,7 +1164,7 @@ it('retains intitial render if initialScrollIndex == 0', () => {
     );
   });
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 50},
       content: {width: 10, height: 200},
@@ -1166,7 +1172,7 @@ it('retains intitial render if initialScrollIndex == 0', () => {
     performAllBatches();
   });
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     simulateScroll(component, {x: 0, y: 150});
     performAllBatches();
   });
@@ -1182,8 +1188,8 @@ it('discards intitial render if initialScrollIndex != 0', () => {
   const ITEM_HEIGHT = 10;
 
   let component;
-  ReactTestRenderer.act(() => {
-    component = ReactTestRenderer.create(
+  act(() => {
+    component = create(
       <VirtualizedList
         initialScrollIndex={5}
         initialNumToRender={5}
@@ -1194,7 +1200,7 @@ it('discards intitial render if initialScrollIndex != 0', () => {
     );
   });
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 50},
       content: {width: 10, height: 200},
@@ -1202,7 +1208,7 @@ it('discards intitial render if initialScrollIndex != 0', () => {
     performAllBatches();
   });
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     simulateScroll(component, {x: 0, y: 150});
     performAllBatches();
   });
@@ -1222,8 +1228,8 @@ it('expands render area by maxToRenderPerBatch on tick', () => {
   };
 
   let component;
-  ReactTestRenderer.act(() => {
-    component = ReactTestRenderer.create(
+  act(() => {
+    component = create(
       <VirtualizedList
         {...baseItemProps(items)}
         {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
@@ -1232,7 +1238,7 @@ it('expands render area by maxToRenderPerBatch on tick', () => {
     );
   });
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 50},
       content: {width: 10, height: 200},
@@ -1254,8 +1260,8 @@ it('does not adjust render area until content area layed out', () => {
 
   let component;
 
-  ReactTestRenderer.act(() => {
-    component = ReactTestRenderer.create(
+  act(() => {
+    component = create(
       <VirtualizedList
         initialNumToRender={5}
         windowSize={10}
@@ -1265,7 +1271,7 @@ it('does not adjust render area until content area layed out', () => {
     );
   });
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     simulateViewportLayout(component, {width: 10, height: 50});
     performAllBatches();
   });
@@ -1282,8 +1288,8 @@ it('does not move render area when initialScrollIndex is > 0 and offset not yet 
 
   let component;
 
-  ReactTestRenderer.act(() => {
-    component = ReactTestRenderer.create(
+  act(() => {
+    component = create(
       <VirtualizedList
         initialNumToRender={5}
         initialScrollIndex={1}
@@ -1294,7 +1300,7 @@ it('does not move render area when initialScrollIndex is > 0 and offset not yet 
     );
   });
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 50},
       content: {width: 10, height: 100},
@@ -1314,8 +1320,8 @@ it('clamps render area when items removed for initialScrollIndex > 0 and scrolle
 
   let component;
 
-  ReactTestRenderer.act(() => {
-    component = ReactTestRenderer.create(
+  act(() => {
+    component = create(
       <VirtualizedList
         initialNumToRender={5}
         initialScrollIndex={14}
@@ -1326,7 +1332,7 @@ it('clamps render area when items removed for initialScrollIndex > 0 and scrolle
     );
   });
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     component.update(
       <VirtualizedList
         initialNumToRender={5}
@@ -1338,7 +1344,7 @@ it('clamps render area when items removed for initialScrollIndex > 0 and scrolle
     );
   });
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 50},
       content: {width: 10, height: 100},
@@ -1355,8 +1361,8 @@ it('adjusts render area with non-zero initialScrollIndex', () => {
   const ITEM_HEIGHT = 10;
 
   let component;
-  ReactTestRenderer.act(() => {
-    component = ReactTestRenderer.create(
+  act(() => {
+    component = create(
       <VirtualizedList
         initialNumToRender={5}
         initialScrollIndex={1}
@@ -1368,14 +1374,16 @@ it('adjusts render area with non-zero initialScrollIndex', () => {
     );
   });
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 50},
       content: {width: 10, height: 200},
     });
     simulateScroll(component, {x: 0, y: 10}); // simulate scroll offset for initialScrollIndex
 
-    performAllBatches();
+    // TODO: Rewrite test to tolerate subtle timing changes.
+    performNextBatch();
+    performNextBatch();
   });
 
   // We should expand the render area after receiving a message indcating we
@@ -1388,8 +1396,8 @@ it('renders new items when data is updated with non-zero initialScrollIndex', ()
   const ITEM_HEIGHT = 10;
 
   let component;
-  ReactTestRenderer.act(() => {
-    component = ReactTestRenderer.create(
+  act(() => {
+    component = create(
       <VirtualizedList
         initialNumToRender={5}
         initialScrollIndex={1}
@@ -1401,7 +1409,7 @@ it('renders new items when data is updated with non-zero initialScrollIndex', ()
     );
   });
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 20},
       content: {width: 10, height: 20},
@@ -1411,7 +1419,7 @@ it('renders new items when data is updated with non-zero initialScrollIndex', ()
 
   const newItems = generateItems(4);
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     component.update(
       <VirtualizedList
         initialNumToRender={5}
@@ -1424,7 +1432,7 @@ it('renders new items when data is updated with non-zero initialScrollIndex', ()
     );
   });
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     performAllBatches();
   });
 
@@ -1436,7 +1444,7 @@ it('renders initialNumToRender cells when virtualization disabled', () => {
   const items = generateItems(10);
   const ITEM_HEIGHT = 10;
 
-  const component = ReactTestRenderer.create(
+  const component = create(
     <VirtualizedList
       initialNumToRender={5}
       initialScrollIndex={1}
@@ -1456,8 +1464,8 @@ it('renders no spacers up to initialScrollIndex on first render when virtualizat
   const ITEM_HEIGHT = 10;
 
   let component;
-  ReactTestRenderer.act(() => {
-    component = ReactTestRenderer.create(
+  act(() => {
+    component = create(
       <VirtualizedList
         initialNumToRender={2}
         initialScrollIndex={4}
@@ -1480,8 +1488,8 @@ it('expands first in viewport to render up to maxToRenderPerBatch on initial ren
   const ITEM_HEIGHT = 10;
 
   let component;
-  ReactTestRenderer.act(() => {
-    component = ReactTestRenderer.create(
+  act(() => {
+    component = create(
       <VirtualizedList
         initialNumToRender={2}
         initialScrollIndex={4}
@@ -1503,8 +1511,8 @@ it('renders items before initialScrollIndex on first batch tick when virtualizat
   const ITEM_HEIGHT = 10;
 
   let component;
-  ReactTestRenderer.act(() => {
-    component = ReactTestRenderer.create(
+  act(() => {
+    component = create(
       <VirtualizedList
         initialNumToRender={1}
         initialScrollIndex={5}
@@ -1516,7 +1524,7 @@ it('renders items before initialScrollIndex on first batch tick when virtualizat
     );
   });
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 50},
       content: {width: 10, height: 100},
@@ -1537,8 +1545,8 @@ it('eventually renders all items when virtualization disabled', () => {
   const ITEM_HEIGHT = 10;
 
   let component;
-  ReactTestRenderer.act(() => {
-    component = ReactTestRenderer.create(
+  act(() => {
+    component = create(
       <VirtualizedList
         initialNumToRender={5}
         initialScrollIndex={1}
@@ -1551,7 +1559,7 @@ it('eventually renders all items when virtualization disabled', () => {
     );
   });
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 50},
       content: {width: 10, height: 100},
@@ -1569,8 +1577,8 @@ it('retains initial render region when an item is appended', () => {
   const ITEM_HEIGHT = 10;
 
   let component;
-  ReactTestRenderer.act(() => {
-    component = ReactTestRenderer.create(
+  act(() => {
+    component = create(
       <VirtualizedList
         initialNumToRender={3}
         {...baseItemProps(items)}
@@ -1579,7 +1587,7 @@ it('retains initial render region when an item is appended', () => {
     );
   });
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     component.update(
       <VirtualizedList
         initialNumToRender={3}
@@ -1601,8 +1609,8 @@ it('retains batch render region when an item is appended', () => {
   const ITEM_HEIGHT = 10;
 
   let component;
-  ReactTestRenderer.act(() => {
-    component = ReactTestRenderer.create(
+  act(() => {
+    component = create(
       <VirtualizedList
         initialNumToRender={1}
         maxToRenderPerBatch={1}
@@ -1612,7 +1620,7 @@ it('retains batch render region when an item is appended', () => {
     );
   });
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 50},
       content: {width: 10, height: 100},
@@ -1622,7 +1630,7 @@ it('retains batch render region when an item is appended', () => {
 
   jest.runAllTimers();
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     component.update(
       <VirtualizedList
         initialNumToRender={1}
@@ -1646,8 +1654,8 @@ it('constrains batch render region when an item is removed', () => {
   const ITEM_HEIGHT = 10;
 
   let component;
-  ReactTestRenderer.act(() => {
-    component = ReactTestRenderer.create(
+  act(() => {
+    component = create(
       <VirtualizedList
         initialNumToRender={1}
         maxToRenderPerBatch={1}
@@ -1657,7 +1665,7 @@ it('constrains batch render region when an item is removed', () => {
     );
   });
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 50},
       content: {width: 10, height: 100},
@@ -1665,7 +1673,7 @@ it('constrains batch render region when an item is removed', () => {
     performAllBatches();
   });
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     component.update(
       <VirtualizedList
         initialNumToRender={1}
@@ -1686,7 +1694,7 @@ it('constrains batch render region when an item is removed', () => {
 it('renders a zero-height tail spacer on initial render if getItemLayout not defined', () => {
   const items = generateItems(10);
 
-  const component = ReactTestRenderer.create(
+  const component = create(
     <VirtualizedList initialNumToRender={3} {...baseItemProps(items)} />,
   );
 
@@ -1700,8 +1708,8 @@ it('renders zero-height tail spacer on batch render if cells not yet measured an
   const items = generateItems(10);
 
   let component;
-  ReactTestRenderer.act(() => {
-    component = ReactTestRenderer.create(
+  act(() => {
+    component = create(
       <VirtualizedList
         initialNumToRender={3}
         maxToRenderPerBatch={1}
@@ -1711,7 +1719,7 @@ it('renders zero-height tail spacer on batch render if cells not yet measured an
     );
   });
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 50},
       content: {width: 10, height: 200},
@@ -1729,8 +1737,8 @@ it('renders tail spacer up to last measured index if getItemLayout not defined',
   const items = generateItems(10);
 
   let component;
-  ReactTestRenderer.act(() => {
-    component = ReactTestRenderer.create(
+  act(() => {
+    component = create(
       <VirtualizedList
         initialNumToRender={3}
         maxToRenderPerBatch={1}
@@ -1740,7 +1748,7 @@ it('renders tail spacer up to last measured index if getItemLayout not defined',
     );
   });
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     const LAST_MEASURED_CELL = 6;
     for (let i = 0; i <= LAST_MEASURED_CELL; ++i) {
       simulateCellLayout(component, items, i, {
@@ -1769,8 +1777,8 @@ it('renders tail spacer up to last measured with irregular layout when getItemLa
   const items = generateItems(10);
 
   let component;
-  ReactTestRenderer.act(() => {
-    component = ReactTestRenderer.create(
+  act(() => {
+    component = create(
       <VirtualizedList
         initialNumToRender={3}
         maxToRenderPerBatch={1}
@@ -1780,7 +1788,7 @@ it('renders tail spacer up to last measured with irregular layout when getItemLa
     );
   });
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     const LAST_MEASURED_CELL = 6;
 
     let currentY = 0;
@@ -1812,8 +1820,8 @@ it('renders full tail spacer if all cells measured', () => {
   const items = generateItems(10);
 
   let component;
-  ReactTestRenderer.act(() => {
-    component = ReactTestRenderer.create(
+  act(() => {
+    component = create(
       <VirtualizedList
         initialNumToRender={3}
         maxToRenderPerBatch={1}
@@ -1823,7 +1831,7 @@ it('renders full tail spacer if all cells measured', () => {
     );
   });
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     const LAST_MEASURED_CELL = 9;
     for (let i = 0; i <= LAST_MEASURED_CELL; ++i) {
       simulateCellLayout(component, items, i, {
@@ -1851,8 +1859,8 @@ it('renders windowSize derived region at top', () => {
   const ITEM_HEIGHT = 10;
 
   let component;
-  ReactTestRenderer.act(() => {
-    component = ReactTestRenderer.create(
+  act(() => {
+    component = create(
       <VirtualizedList
         initialNumToRender={1}
         maxToRenderPerBatch={1}
@@ -1863,7 +1871,7 @@ it('renders windowSize derived region at top', () => {
     );
   });
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 20},
       content: {width: 10, height: 100},
@@ -1884,8 +1892,8 @@ it('renders windowSize derived region in middle', () => {
   const ITEM_HEIGHT = 10;
 
   let component;
-  ReactTestRenderer.act(() => {
-    component = ReactTestRenderer.create(
+  act(() => {
+    component = create(
       <VirtualizedList
         initialNumToRender={1}
         maxToRenderPerBatch={1}
@@ -1896,7 +1904,7 @@ it('renders windowSize derived region in middle', () => {
     );
   });
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 20},
       content: {width: 10, height: 100},
@@ -1904,7 +1912,7 @@ it('renders windowSize derived region in middle', () => {
     performAllBatches();
   });
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     simulateScroll(component, {x: 0, y: 50});
     performAllBatches();
   });
@@ -1923,8 +1931,8 @@ it('renders windowSize derived region at bottom', () => {
   const ITEM_HEIGHT = 10;
 
   let component;
-  ReactTestRenderer.act(() => {
-    component = ReactTestRenderer.create(
+  act(() => {
+    component = create(
       <VirtualizedList
         initialNumToRender={1}
         maxToRenderPerBatch={1}
@@ -1935,14 +1943,14 @@ it('renders windowSize derived region at bottom', () => {
     );
   });
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 20},
       content: {width: 10, height: 100},
     });
     performAllBatches();
   });
-  ReactTestRenderer.act(() => {
+  act(() => {
     simulateScroll(component, {x: 0, y: 80});
     performAllBatches();
   });
@@ -1959,7 +1967,7 @@ it('renders windowSize derived region at bottom', () => {
 it('calls _onCellLayout properly', () => {
   const items = [{key: 'i1'}, {key: 'i2'}, {key: 'i3'}];
   const mock = jest.fn();
-  const component = ReactTestRenderer.create(
+  const component = create(
     <VirtualizedList
       data={items}
       renderItem={({item}) => <item value={item.key} />}
@@ -1991,8 +1999,8 @@ it('keeps viewport below last focused rendered', () => {
   const ITEM_HEIGHT = 10;
 
   let component;
-  ReactTestRenderer.act(() => {
-    component = ReactTestRenderer.create(
+  act(() => {
+    component = create(
       <VirtualizedList
         initialNumToRender={1}
         windowSize={1}
@@ -2002,7 +2010,7 @@ it('keeps viewport below last focused rendered', () => {
     );
   });
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 50},
       content: {width: 10, height: 200},
@@ -2011,11 +2019,11 @@ it('keeps viewport below last focused rendered', () => {
     performAllBatches();
   });
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     component.getInstance()._onCellFocusCapture(3);
   });
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     simulateScroll(component, {x: 0, y: 150});
     performAllBatches();
   });
@@ -2029,8 +2037,8 @@ it('virtualizes away last focused item if focus changes to a new cell', () => {
   const ITEM_HEIGHT = 10;
 
   let component;
-  ReactTestRenderer.act(() => {
-    component = ReactTestRenderer.create(
+  act(() => {
+    component = create(
       <VirtualizedList
         initialNumToRender={1}
         windowSize={1}
@@ -2040,7 +2048,7 @@ it('virtualizes away last focused item if focus changes to a new cell', () => {
     );
   });
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 50},
       content: {width: 10, height: 200},
@@ -2049,16 +2057,16 @@ it('virtualizes away last focused item if focus changes to a new cell', () => {
     performAllBatches();
   });
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     component.getInstance()._onCellFocusCapture(3);
   });
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     simulateScroll(component, {x: 0, y: 150});
     performAllBatches();
   });
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     component.getInstance()._onCellFocusCapture(17);
   });
 
@@ -2072,8 +2080,8 @@ it('keeps viewport above last focused rendered', () => {
   const ITEM_HEIGHT = 10;
 
   let component;
-  ReactTestRenderer.act(() => {
-    component = ReactTestRenderer.create(
+  act(() => {
+    component = create(
       <VirtualizedList
         initialNumToRender={1}
         windowSize={1}
@@ -2083,7 +2091,7 @@ it('keeps viewport above last focused rendered', () => {
     );
   });
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 50},
       content: {width: 10, height: 200},
@@ -2092,20 +2100,20 @@ it('keeps viewport above last focused rendered', () => {
     performAllBatches();
   });
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     component.getInstance()._onCellFocusCapture(3);
   });
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     simulateScroll(component, {x: 0, y: 150});
     performAllBatches();
   });
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     component.getInstance()._onCellFocusCapture(17);
   });
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     simulateScroll(component, {x: 0, y: 0});
     performAllBatches();
   });
@@ -2119,8 +2127,8 @@ it('virtualizes away last focused index if item removed', () => {
   const ITEM_HEIGHT = 10;
 
   let component;
-  ReactTestRenderer.act(() => {
-    component = ReactTestRenderer.create(
+  act(() => {
+    component = create(
       <VirtualizedList
         initialNumToRender={1}
         windowSize={1}
@@ -2130,7 +2138,7 @@ it('virtualizes away last focused index if item removed', () => {
     );
   });
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 50},
       content: {width: 10, height: 200},
@@ -2139,17 +2147,17 @@ it('virtualizes away last focused index if item removed', () => {
     performAllBatches();
   });
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     component.getInstance()._onCellFocusCapture(3);
   });
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     simulateScroll(component, {x: 0, y: 150});
     performAllBatches();
   });
 
   const itemsWithoutFocused = [...items.slice(0, 3), ...items.slice(4)];
-  ReactTestRenderer.act(() => {
+  act(() => {
     component.update(
       <VirtualizedList
         initialNumToRender={1}
@@ -2169,8 +2177,8 @@ it('handles maintainVisibleContentPosition', () => {
   const ITEM_HEIGHT = 10;
 
   let component;
-  ReactTestRenderer.act(() => {
-    component = ReactTestRenderer.create(
+  act(() => {
+    component = create(
       <VirtualizedList
         initialNumToRender={1}
         windowSize={1}
@@ -2181,7 +2189,7 @@ it('handles maintainVisibleContentPosition', () => {
     );
   });
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 50},
       content: {width: 10, height: items.length * ITEM_HEIGHT},
@@ -2195,7 +2203,7 @@ it('handles maintainVisibleContentPosition', () => {
 
   // Add new items at the start of the list to trigger the maintainVisibleContentPosition adjustment.
   const newItems = [...generateItems(10, items.length), ...items];
-  ReactTestRenderer.act(() => {
+  act(() => {
     component.update(
       <VirtualizedList
         initialNumToRender={1}
@@ -2211,7 +2219,7 @@ it('handles maintainVisibleContentPosition', () => {
   expect(component).toMatchSnapshot();
 
   // Simulate scroll adjustment from native maintainVisibleContentPosition.
-  ReactTestRenderer.act(() => {
+  act(() => {
     simulateContentLayout(component, {
       width: 10,
       height: newItems.length * ITEM_HEIGHT,
@@ -2230,8 +2238,8 @@ it('handles maintainVisibleContentPosition when anchor moves before minIndexForV
 
   // Render a list with `minIndexForVisible: 1`
   let component;
-  ReactTestRenderer.act(() => {
-    component = ReactTestRenderer.create(
+  act(() => {
+    component = create(
       <VirtualizedList
         initialNumToRender={1}
         windowSize={1}
@@ -2242,7 +2250,7 @@ it('handles maintainVisibleContentPosition when anchor moves before minIndexForV
     );
   });
 
-  ReactTestRenderer.act(() => {
+  act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 50},
       content: {width: 10, height: items.length * ITEM_HEIGHT},
@@ -2256,7 +2264,7 @@ it('handles maintainVisibleContentPosition when anchor moves before minIndexForV
   // Remove the first item to shift the previous anchor to be before
   // `minIndexForVisible`.
   const [, ...restItems] = items;
-  ReactTestRenderer.act(() => {
+  act(() => {
     component.update(
       <VirtualizedList
         initialNumToRender={1}

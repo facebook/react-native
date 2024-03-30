@@ -26,7 +26,6 @@ struct Promise : public LongLivedObject {
   void resolve(const jsi::Value& result);
   void reject(const std::string& error);
 
-  jsi::Runtime& runtime_;
   jsi::Function resolve_;
   jsi::Function reject_;
 };

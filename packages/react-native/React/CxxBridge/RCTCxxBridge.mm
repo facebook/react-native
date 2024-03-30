@@ -9,6 +9,7 @@
 #include <future>
 
 #import <React/RCTAssert.h>
+#import <React/RCTBridge+Inspector.h>
 #import <React/RCTBridge+Private.h>
 #import <React/RCTBridge.h>
 #import <React/RCTBridgeMethod.h>
@@ -1566,7 +1567,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithBundleURL
   return _reactInstance->getJavaScriptContext();
 }
 
-- (void)invokeAsync:(std::function<void()> &&)func
+- (void)invokeAsync:(CallFunc &&)func
 {
   __block auto retainedFunc = std::move(func);
   __weak __typeof(self) weakSelf = self;

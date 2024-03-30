@@ -36,8 +36,7 @@ AndroidTextInputProps::AndroidTextInputProps(
     const PropsParserContext &context,
     const AndroidTextInputProps &sourceProps,
     const RawProps &rawProps)
-    : ViewProps(context, sourceProps, rawProps),
-      BaseTextProps(context, sourceProps, rawProps),
+    : BaseTextInputProps(context, sourceProps, rawProps),
       autoComplete(CoreFeatures::enablePropIteratorSetter? sourceProps.autoComplete : convertRawProp(
           context,
           rawProps,
@@ -59,10 +58,6 @@ AndroidTextInputProps::AndroidTextInputProps(
       textBreakStrategy(CoreFeatures::enablePropIteratorSetter? sourceProps.textBreakStrategy : convertRawProp(context, rawProps,
           "textBreakStrategy",
           sourceProps.textBreakStrategy,
-          {})),
-      underlineColorAndroid(CoreFeatures::enablePropIteratorSetter? sourceProps.underlineColorAndroid : convertRawProp(context, rawProps,
-          "underlineColorAndroid",
-          sourceProps.underlineColorAndroid,
           {})),
       inlineImageLeft(CoreFeatures::enablePropIteratorSetter? sourceProps.inlineImageLeft : convertRawProp(context, rawProps,
           "inlineImageLeft",
@@ -88,10 +83,6 @@ AndroidTextInputProps::AndroidTextInputProps(
           "autoCorrect",
           sourceProps.autoCorrect,
           {false})),
-      autoFocus(CoreFeatures::enablePropIteratorSetter? sourceProps.autoFocus : convertRawProp(context, rawProps,
-          "autoFocus",
-          sourceProps.autoFocus,
-          {false})),
       allowFontScaling(CoreFeatures::enablePropIteratorSetter? sourceProps.allowFontScaling : convertRawProp(context, rawProps,
           "allowFontScaling",
           sourceProps.allowFontScaling,
@@ -110,35 +101,15 @@ AndroidTextInputProps::AndroidTextInputProps(
           "returnKeyType",
           sourceProps.returnKeyType,
           {})),
-      maxLength(CoreFeatures::enablePropIteratorSetter? sourceProps.maxLength :
-          convertRawProp(context, rawProps, "maxLength", sourceProps.maxLength, {0})),
       multiline(CoreFeatures::enablePropIteratorSetter? sourceProps.multiline : convertRawProp(context, rawProps,
           "multiline",
           sourceProps.multiline,
           {false})),
-      placeholder(CoreFeatures::enablePropIteratorSetter? sourceProps.placeholder :
-          convertRawProp(context, rawProps, "placeholder", sourceProps.placeholder, {})),
-      placeholderTextColor(CoreFeatures::enablePropIteratorSetter? sourceProps.placeholderTextColor : convertRawProp(context, rawProps,
-          "placeholderTextColor",
-          sourceProps.placeholderTextColor,
-          {})),
       secureTextEntry(CoreFeatures::enablePropIteratorSetter? sourceProps.secureTextEntry : convertRawProp(context, rawProps,
           "secureTextEntry",
           sourceProps.secureTextEntry,
           {false})),
-      selectionColor(CoreFeatures::enablePropIteratorSetter? sourceProps.selectionColor : convertRawProp(context, rawProps,
-          "selectionColor",
-          sourceProps.selectionColor,
-          {})),
-      selectionHandleColor(CoreFeatures::enablePropIteratorSetter? sourceProps.selectionHandleColor : convertRawProp(context, rawProps,
-          "selectionHandleColor",
-          sourceProps.selectionHandleColor,
-          {})),
       value(CoreFeatures::enablePropIteratorSetter? sourceProps.value : convertRawProp(context, rawProps, "value", sourceProps.value, {})),
-      defaultValue(CoreFeatures::enablePropIteratorSetter? sourceProps.defaultValue : convertRawProp(context, rawProps,
-          "defaultValue",
-          sourceProps.defaultValue,
-          {})),
       selectTextOnFocus(CoreFeatures::enablePropIteratorSetter? sourceProps.selectTextOnFocus : convertRawProp(context, rawProps,
           "selectTextOnFocus",
           sourceProps.selectTextOnFocus,
@@ -202,15 +173,6 @@ AndroidTextInputProps::AndroidTextInputProps(
           "textAlignVertical",
           sourceProps.textAlignVertical,
           {})),
-      cursorColor(CoreFeatures::enablePropIteratorSetter? sourceProps.cursorColor :
-          convertRawProp(context, rawProps, "cursorColor", sourceProps.cursorColor, {})),
-      mostRecentEventCount(CoreFeatures::enablePropIteratorSetter? sourceProps.mostRecentEventCount : convertRawProp(context, rawProps,
-          "mostRecentEventCount",
-          sourceProps.mostRecentEventCount,
-          {0})),
-      text(CoreFeatures::enablePropIteratorSetter? sourceProps.text : convertRawProp(context, rawProps, "text", sourceProps.text, {})),
-      paragraphAttributes(CoreFeatures::enablePropIteratorSetter? sourceProps.paragraphAttributes :
-          convertRawProp(context, rawProps, sourceProps.paragraphAttributes, {})),
       // See AndroidTextInputComponentDescriptor for usage
       // TODO T63008435: can these, and this feature, be removed entirely?
       hasPadding(CoreFeatures::enablePropIteratorSetter? sourceProps.hasPadding : hasValue(rawProps, sourceProps.hasPadding, "padding")),
@@ -252,63 +214,9 @@ void AndroidTextInputProps::setProp(
   // All Props structs setProp methods must always, unconditionally,
   // call all super::setProp methods, since multiple structs may
   // reuse the same values.
-  ViewProps::setProp(context, hash, propName, value);
-  BaseTextProps::setProp(context, hash, propName, value);
+  BaseTextInputProps::setProp(context, hash, propName, value);
 
   static auto defaults = AndroidTextInputProps{};
-
-  // ParagraphAttributes has its own switch statement - to keep all
-  // of these fields together, and because there are some collisions between
-  // propnames parsed here and outside of ParagraphAttributes. For example,
-  // textBreakStrategy is duplicated.
-  // This code is also duplicated in ParagraphProps.
-  static auto paDefaults = ParagraphAttributes{};
-  switch (hash) {
-    REBUILD_FIELD_SWITCH_CASE(
-        paDefaults,
-        value,
-        paragraphAttributes,
-        maximumNumberOfLines,
-        "numberOfLines");
-    REBUILD_FIELD_SWITCH_CASE(
-        paDefaults, value, paragraphAttributes, ellipsizeMode, "ellipsizeMode");
-    REBUILD_FIELD_SWITCH_CASE(
-        paDefaults,
-        value,
-        paragraphAttributes,
-        textBreakStrategy,
-        "textBreakStrategy");
-    REBUILD_FIELD_SWITCH_CASE(
-        paDefaults,
-        value,
-        paragraphAttributes,
-        adjustsFontSizeToFit,
-        "adjustsFontSizeToFit");
-    REBUILD_FIELD_SWITCH_CASE(
-        paDefaults,
-        value,
-        paragraphAttributes,
-        minimumFontSize,
-        "minimumFontSize");
-    REBUILD_FIELD_SWITCH_CASE(
-        paDefaults,
-        value,
-        paragraphAttributes,
-        maximumFontSize,
-        "maximumFontSize");
-    REBUILD_FIELD_SWITCH_CASE(
-        paDefaults,
-        value,
-        paragraphAttributes,
-        includeFontPadding,
-        "includeFontPadding");
-    REBUILD_FIELD_SWITCH_CASE(
-        paDefaults,
-        value,
-        paragraphAttributes,
-        android_hyphenationFrequency,
-        "android_hyphenationFrequency");
-  }
 
   switch (hash) {
     RAW_SET_PROP_SWITCH_CASE_BASIC(autoComplete);
@@ -316,27 +224,19 @@ void AndroidTextInputProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(numberOfLines);
     RAW_SET_PROP_SWITCH_CASE_BASIC(disableFullscreenUI);
     RAW_SET_PROP_SWITCH_CASE_BASIC(textBreakStrategy);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(underlineColorAndroid);
     RAW_SET_PROP_SWITCH_CASE_BASIC(inlineImageLeft);
     RAW_SET_PROP_SWITCH_CASE_BASIC(inlineImagePadding);
     RAW_SET_PROP_SWITCH_CASE_BASIC(importantForAutofill);
     RAW_SET_PROP_SWITCH_CASE_BASIC(showSoftInputOnFocus);
     RAW_SET_PROP_SWITCH_CASE_BASIC(autoCapitalize);
     RAW_SET_PROP_SWITCH_CASE_BASIC(autoCorrect);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(autoFocus);
     RAW_SET_PROP_SWITCH_CASE_BASIC(allowFontScaling);
     RAW_SET_PROP_SWITCH_CASE_BASIC(maxFontSizeMultiplier);
     RAW_SET_PROP_SWITCH_CASE_BASIC(editable);
     RAW_SET_PROP_SWITCH_CASE_BASIC(keyboardType);
     RAW_SET_PROP_SWITCH_CASE_BASIC(returnKeyType);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(maxLength);
     RAW_SET_PROP_SWITCH_CASE_BASIC(multiline);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(placeholder);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(placeholderTextColor);
     RAW_SET_PROP_SWITCH_CASE_BASIC(secureTextEntry);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(selectionColor);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(selectionHandleColor);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(defaultValue);
     RAW_SET_PROP_SWITCH_CASE_BASIC(selectTextOnFocus);
     RAW_SET_PROP_SWITCH_CASE_BASIC(submitBehavior);
     RAW_SET_PROP_SWITCH_CASE_BASIC(caretHidden);
@@ -356,9 +256,6 @@ void AndroidTextInputProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(fontWeight);
     RAW_SET_PROP_SWITCH_CASE_BASIC(fontFamily);
     RAW_SET_PROP_SWITCH_CASE_BASIC(textAlignVertical);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(cursorColor);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(mostRecentEventCount);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(text);
 
     case CONSTEXPR_RAW_PROPS_KEY_HASH("value"): {
       fromRawValue(context, value, this->value, {});
