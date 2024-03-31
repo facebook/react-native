@@ -1687,7 +1687,7 @@ public abstract interface class com/facebook/react/common/HasJavascriptException
 public class com/facebook/react/common/JavascriptException : java/lang/RuntimeException, com/facebook/react/common/HasJavascriptExceptionMetadata {
 	public fun <init> (Ljava/lang/String;)V
 	public fun getExtraDataAsJson ()Ljava/lang/String;
-	public fun setExtraDataAsJson (Ljava/lang/String;)Lcom/facebook/react/common/JavascriptException;
+	public final fun setExtraDataAsJson (Ljava/lang/String;)Lcom/facebook/react/common/JavascriptException;
 }
 
 public final class com/facebook/react/common/LifecycleState : java/lang/Enum {
@@ -1771,11 +1771,11 @@ public abstract interface class com/facebook/react/common/SurfaceDelegateFactory
 	public abstract fun createSurfaceDelegate (Ljava/lang/String;)Lcom/facebook/react/common/SurfaceDelegate;
 }
 
-public class com/facebook/react/common/SystemClock {
-	public fun <init> ()V
-	public static fun currentTimeMillis ()J
-	public static fun nanoTime ()J
-	public static fun uptimeMillis ()J
+public final class com/facebook/react/common/SystemClock {
+	public static final field INSTANCE Lcom/facebook/react/common/SystemClock;
+	public static final fun currentTimeMillis ()J
+	public static final fun nanoTime ()J
+	public static final fun uptimeMillis ()J
 }
 
 public abstract interface annotation class com/facebook/react/common/annotations/DeprecatedInNewArchitecture : java/lang/annotation/Annotation {
