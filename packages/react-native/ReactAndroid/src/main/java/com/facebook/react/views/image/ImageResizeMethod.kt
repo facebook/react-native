@@ -5,12 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.views.image;
+package com.facebook.react.views.image
 
-import com.facebook.infer.annotation.Nullsafe;
-
-@Nullsafe(Nullsafe.Mode.LOCAL)
-public enum ImageResizeMethod {
+public enum class ImageResizeMethod {
   AUTO,
   RESIZE,
   SCALE

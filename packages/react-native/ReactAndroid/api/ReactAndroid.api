@@ -5991,12 +5991,12 @@ public final class com/facebook/react/views/image/ImageResizeMethod : java/lang/
 	public static fun values ()[Lcom/facebook/react/views/image/ImageResizeMethod;
 }
 
-public class com/facebook/react/views/image/ImageResizeMode {
-	public fun <init> ()V
-	public static fun defaultTileMode ()Landroid/graphics/Shader$TileMode;
-	public static fun defaultValue ()Lcom/facebook/drawee/drawable/ScalingUtils$ScaleType;
-	public static fun toScaleType (Ljava/lang/String;)Lcom/facebook/drawee/drawable/ScalingUtils$ScaleType;
-	public static fun toTileMode (Ljava/lang/String;)Landroid/graphics/Shader$TileMode;
+public final class com/facebook/react/views/image/ImageResizeMode {
+	public static final field INSTANCE Lcom/facebook/react/views/image/ImageResizeMode;
+	public static final fun defaultTileMode ()Landroid/graphics/Shader$TileMode;
+	public static final fun defaultValue ()Lcom/facebook/drawee/drawable/ScalingUtils$ScaleType;
+	public static final fun toScaleType (Ljava/lang/String;)Lcom/facebook/drawee/drawable/ScalingUtils$ScaleType;
+	public static final fun toTileMode (Ljava/lang/String;)Landroid/graphics/Shader$TileMode;
 }
 
 public class com/facebook/react/views/image/MultiPostprocessor : com/facebook/imagepipeline/request/Postprocessor {
