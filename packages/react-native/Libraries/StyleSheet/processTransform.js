@@ -68,7 +68,7 @@ const _getKeyAndValueFromCSSTransform: (
     | $TEMPORARY$string<'translateX'>
     | $TEMPORARY$string<'translateY'>,
   args: string,
-) => {key: string, value?: number[] | number | string} = (key, args) => {
+) => {key: string, value?: number[] | string[] | number | string} = (key, args) => {
   const argsWithUnitsRegex = new RegExp(/([+-]?\d+(\.\d+)?)([a-zA-Z]+|%)?/g);
 
   switch (key) {
