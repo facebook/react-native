@@ -68,7 +68,7 @@ const _getKeyAndValueFromCSSTransform: (
     | $TEMPORARY$string<'translateX'>
     | $TEMPORARY$string<'translateY'>,
   args: string,
-) => {key: string, value?: number[] | string[] | number | string} = (
+) => {key: string, value?: Array<string | number> | number | string} = (
   key,
   args,
 ) => {
