@@ -25,6 +25,7 @@ import com.facebook.react.bridge.interop.InteropModuleRegistry;
 import com.facebook.react.bridge.queue.MessageQueueThread;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.LifecycleState;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
 import com.facebook.react.common.annotations.FrameworkAPI;
 import com.facebook.react.common.annotations.UnstableReactNativeAPI;
@@ -44,6 +45,16 @@ public abstract class ReactContext extends ContextWrapper {
   }
 
   private static final String TAG = "ReactContext";
+  private static final String EARLY_JS_ACCESS_EXCEPTION_MESSAGE =
+      "Tried to access a JS module before the React instance was fully set up. Calls to "
+          + "ReactContext#getJSModule should only happen once initialize() has been called on your "
+          + "native module.";
+  private static final String LATE_JS_ACCESS_EXCEPTION_MESSAGE =
+      "Tried to access a JS module after the React instance was destroyed.";
+  private static final String EARLY_NATIVE_MODULE_EXCEPTION_MESSAGE =
+      "Trying to call native module before CatalystInstance has been set!";
+  private static final String LATE_NATIVE_MODULE_EXCEPTION_MESSAGE =
+      "Trying to call native module after CatalystInstance has been destroyed!";
 
   private final CopyOnWriteArraySet<LifecycleEventListener> mLifecycleEventListeners =
       new CopyOnWriteArraySet<>();
@@ -54,8 +65,9 @@ public abstract class ReactContext extends ContextWrapper {
 
   private LifecycleState mLifecycleState = LifecycleState.BEFORE_CREATE;
 
+  private volatile boolean mDestroyed = false;
+  private @Nullable CatalystInstance mCatalystInstance;
   private @Nullable LayoutInflater mInflater;
-  private @Nullable ReactQueueConfiguration mQueueConfig;
   private @Nullable MessageQueueThread mUiMessageQueueThread;
   private @Nullable MessageQueueThread mNativeModulesMessageQueueThread;
   private @Nullable MessageQueueThread mJSMessageQueueThread;
@@ -70,9 +82,25 @@ public abstract class ReactContext extends ContextWrapper {
     super(base);
   }
 
-  protected void initializeFromOther(ReactContext other) {
-    initializeMessageQueueThreads(other.mQueueConfig);
-    mInteropModuleRegistry = other.mInteropModuleRegistry;
+  /** Set and initialize CatalystInstance for this Context. This should be called exactly once. */
+  public void initializeWithInstance(CatalystInstance catalystInstance) {
+    if (catalystInstance == null) {
+      throw new IllegalArgumentException("CatalystInstance cannot be null.");
+    }
+    if (mCatalystInstance != null) {
+      throw new IllegalStateException("ReactContext has been already initialized");
+    }
+    if (mDestroyed) {
+      ReactSoftExceptionLogger.logSoftException(
+          TAG,
+          new IllegalStateException("Cannot initialize ReactContext after it has been destroyed."));
+    }
+
+    mCatalystInstance = catalystInstance;
+
+    ReactQueueConfiguration queueConfig = catalystInstance.getReactQueueConfiguration();
+    initializeMessageQueueThreads(queueConfig);
+    initializeInteropModules();
   }
 
   /** Initialize message queue threads using a ReactQueueConfiguration. */
@@ -83,7 +111,6 @@ public abstract class ReactContext extends ContextWrapper {
         || mJSMessageQueueThread != null) {
       throw new IllegalStateException("Message queue threads already initialized");
     }
-    mQueueConfig = queueConfig;
     mUiMessageQueueThread = queueConfig.getUIQueueThread();
     mNativeModulesMessageQueueThread = queueConfig.getNativeModulesQueueThread();
     mJSMessageQueueThread = queueConfig.getJSQueueThread();
@@ -105,6 +132,10 @@ public abstract class ReactContext extends ContextWrapper {
     mInteropModuleRegistry = new InteropModuleRegistry();
   }
 
+  protected void initializeInteropModules(ReactContext reactContext) {
+    mInteropModuleRegistry = reactContext.mInteropModuleRegistry;
+  }
+
   public void resetPerfStats() {
     if (mNativeModulesMessageQueueThread != null) {
       mNativeModulesMessageQueueThread.resetPerfStats();
@@ -116,6 +147,11 @@ public abstract class ReactContext extends ContextWrapper {
 
   public void setJSExceptionHandler(@Nullable JSExceptionHandler jSExceptionHandler) {
     mJSExceptionHandler = jSExceptionHandler;
+  }
+
+  private void raiseCatalystInstanceMissingException() {
+    throw new IllegalStateException(
+        mDestroyed ? LATE_NATIVE_MODULE_EXCEPTION_MESSAGE : EARLY_NATIVE_MODULE_EXCEPTION_MESSAGE);
   }
 
   // We override the following method so that views inflated with the inflater obtained from this
@@ -136,17 +172,44 @@ public abstract class ReactContext extends ContextWrapper {
   /**
    * @return handle to the specified JS module for the CatalystInstance associated with this Context
    */
-  public abstract <T extends JavaScriptModule> T getJSModule(Class<T> jsInterface);
+  public <T extends JavaScriptModule> T getJSModule(Class<T> jsInterface) {
+    if (mCatalystInstance == null) {
+      if (mDestroyed) {
+        throw new IllegalStateException(LATE_JS_ACCESS_EXCEPTION_MESSAGE);
+      }
+      throw new IllegalStateException(EARLY_JS_ACCESS_EXCEPTION_MESSAGE);
+    }
+    if (mInteropModuleRegistry != null
+        && mInteropModuleRegistry.shouldReturnInteropModule(jsInterface)) {
+      return mInteropModuleRegistry.getInteropModule(jsInterface);
+    }
+    return mCatalystInstance.getJSModule(jsInterface);
+  }
 
-  public abstract <T extends NativeModule> boolean hasNativeModule(Class<T> nativeModuleInterface);
+  public <T extends NativeModule> boolean hasNativeModule(Class<T> nativeModuleInterface) {
+    if (mCatalystInstance == null) {
+      raiseCatalystInstanceMissingException();
+    }
+    return mCatalystInstance.hasNativeModule(nativeModuleInterface);
+  }
 
-  public abstract Collection<NativeModule> getNativeModules();
+  public Collection<NativeModule> getNativeModules() {
+    if (mCatalystInstance == null) {
+      raiseCatalystInstanceMissingException();
+    }
+    return mCatalystInstance.getNativeModules();
+  }
 
   /**
    * @return the instance of the specified module interface associated with this ReactContext.
    */
   @Nullable
-  public abstract <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface);
+  public <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface) {
+    if (mCatalystInstance == null) {
+      raiseCatalystInstanceMissingException();
+    }
+    return mCatalystInstance.getNativeModule(nativeModuleInterface);
+  }
 
   /**
    * @return the RuntimeExecutor, a thread-safe handler for accessing the runtime.
@@ -155,7 +218,12 @@ public abstract class ReactContext extends ContextWrapper {
   @Nullable
   @FrameworkAPI
   @UnstableReactNativeAPI
-  public abstract RuntimeExecutor getRuntimeExecutor();
+  public RuntimeExecutor getRuntimeExecutor() {
+    if (mCatalystInstance == null) {
+      raiseCatalystInstanceMissingException();
+    }
+    return mCatalystInstance.getRuntimeExecutor();
+  }
 
   /**
    * Calls RCTDeviceEventEmitter.emit to JavaScript, with given event name and an optional list of
@@ -172,7 +240,9 @@ public abstract class ReactContext extends ContextWrapper {
     emitDeviceEvent(eventName, null);
   }
 
-  public abstract CatalystInstance getCatalystInstance();
+  public CatalystInstance getCatalystInstance() {
+    return Assertions.assertNotNull(mCatalystInstance);
+  }
 
   /**
    * This API has been deprecated due to naming consideration, please use hasActiveReactInstance()
@@ -181,14 +251,20 @@ public abstract class ReactContext extends ContextWrapper {
    * @return
    */
   @Deprecated
-  public abstract boolean hasActiveCatalystInstance();
+  public boolean hasActiveCatalystInstance() {
+    return hasActiveReactInstance();
+  }
 
   /**
    * @return true if there is an non-null, alive react native instance
    */
-  public abstract boolean hasActiveReactInstance();
+  public boolean hasActiveReactInstance() {
+    return mCatalystInstance != null && !mCatalystInstance.isDestroyed();
+  }
 
-  public abstract boolean hasCatalystInstance();
+  public boolean hasCatalystInstance() {
+    return mCatalystInstance != null;
+  }
 
   public LifecycleState getLifecycleState() {
     return mLifecycleState;
@@ -304,7 +380,14 @@ public abstract class ReactContext extends ContextWrapper {
 
   /** Destroy this instance, making it unusable. */
   @ThreadConfined(UI)
-  public abstract void destroy();
+  public void destroy() {
+    UiThreadUtil.assertOnUiThread();
+
+    mDestroyed = true;
+    if (mCatalystInstance != null) {
+      mCatalystInstance.destroy();
+    }
+  }
 
   /** Should be called by the hosting Fragment in {@link Fragment#onActivityResult} */
   public void onActivityResult(
@@ -397,7 +480,27 @@ public abstract class ReactContext extends ContextWrapper {
    * Passes the given exception to the current {@link JSExceptionHandler} if one exists, rethrowing
    * otherwise.
    */
-  public abstract void handleException(Exception e);
+  public void handleException(Exception e) {
+    boolean catalystInstanceVariableExists = mCatalystInstance != null;
+    boolean isCatalystInstanceAlive =
+        catalystInstanceVariableExists && !mCatalystInstance.isDestroyed();
+    boolean hasExceptionHandler = mJSExceptionHandler != null;
+
+    if (isCatalystInstanceAlive && hasExceptionHandler) {
+      mJSExceptionHandler.handleException(e);
+    } else {
+      FLog.e(
+          ReactConstants.TAG,
+          "Unable to handle Exception - catalystInstanceVariableExists: "
+              + catalystInstanceVariableExists
+              + " - isCatalystInstanceAlive: "
+              + isCatalystInstanceAlive
+              + " - hasExceptionHandler: "
+              + hasExceptionHandler,
+          e);
+      throw new IllegalStateException(e);
+    }
+  }
 
   public class ExceptionHandlerWrapper implements JSExceptionHandler {
     @Override
@@ -451,7 +554,9 @@ public abstract class ReactContext extends ContextWrapper {
    * @deprecated DO NOT USE, this method will be removed in the near future.
    */
   @Deprecated
-  public abstract boolean isBridgeless();
+  public boolean isBridgeless() {
+    return false;
+  }
 
   /**
    * Get the C pointer (as a long) to the JavaScriptCore context associated with this instance. Use
@@ -459,7 +564,12 @@ public abstract class ReactContext extends ContextWrapper {
    * JavaScriptContextHolder jsContext = reactContext.getJavaScriptContextHolder()
    * synchronized(jsContext) { nativeThingNeedingJsContext(jsContext.get()); }
    */
-  public abstract @Nullable JavaScriptContextHolder getJavaScriptContextHolder();
+  public @Nullable JavaScriptContextHolder getJavaScriptContextHolder() {
+    if (mCatalystInstance != null) {
+      return mCatalystInstance.getJavaScriptContextHolder();
+    }
+    return null;
+  }
 
   @DeprecatedInNewArchitecture(
       message =
@@ -470,7 +580,12 @@ public abstract class ReactContext extends ContextWrapper {
    *
    * @return The UIManager when CatalystInstance is active.
    */
-  public abstract @Nullable UIManager getFabricUIManager();
+  public @Nullable UIManager getFabricUIManager() {
+    UIManager uiManager = mCatalystInstance.getFabricUIManager();
+    return uiManager != null
+        ? uiManager
+        : (UIManager) mCatalystInstance.getJSIModule(JSIModuleType.UIManager);
+  }
 
   /**
    * Get the sourceURL for the JS bundle from the CatalystInstance. This method is needed for
@@ -478,13 +593,18 @@ public abstract class ReactContext extends ContextWrapper {
    *
    * @return The JS bundle URL set when the bundle was loaded
    */
-  public abstract @Nullable String getSourceURL();
+  public @Nullable String getSourceURL() {
+    return mCatalystInstance == null ? null : mCatalystInstance.getSourceURL();
+  }
 
   /**
    * Register a JS segment after loading it from cache or server, make sure mCatalystInstance is
    * properly initialised and not null before calling.
    */
-  public abstract void registerSegment(int segmentId, String path, Callback callback);
+  public void registerSegment(int segmentId, String path, Callback callback) {
+    Assertions.assertNotNull(mCatalystInstance).registerSegment(segmentId, path);
+    Assertions.assertNotNull(callback).invoke();
+  }
 
   /**
    * Register a {@link JavaScriptModule} within the Interop Layer so that can be consumed whenever

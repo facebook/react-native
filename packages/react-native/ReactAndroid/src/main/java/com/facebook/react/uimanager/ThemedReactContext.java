@@ -7,20 +7,13 @@
 
 package com.facebook.react.uimanager;
 
+import android.app.Activity;
 import android.content.Context;
 import androidx.annotation.Nullable;
-import com.facebook.react.bridge.Callback;
-import com.facebook.react.bridge.CatalystInstance;
-import com.facebook.react.bridge.JavaScriptContextHolder;
-import com.facebook.react.bridge.JavaScriptModule;
-import com.facebook.react.bridge.NativeModule;
+import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.RuntimeExecutor;
 import com.facebook.react.bridge.UIManager;
-import com.facebook.react.common.annotations.FrameworkAPI;
-import com.facebook.react.common.annotations.UnstableReactNativeAPI;
-import java.util.Collection;
 
 /**
  * Wraps {@link ReactContext} with the base {@link Context} passed into the constructor. It provides
@@ -53,67 +46,33 @@ public class ThemedReactContext extends ReactContext {
       @Nullable String moduleName,
       int surfaceId) {
     super(base);
-    if (reactApplicationContext.hasActiveReactInstance()) {
-      initializeFromOther(reactApplicationContext);
+    if (reactApplicationContext.hasCatalystInstance()) {
+      initializeWithInstance(reactApplicationContext.getCatalystInstance());
     }
+    initializeInteropModules(reactApplicationContext);
     mReactApplicationContext = reactApplicationContext;
     mModuleName = moduleName;
     mSurfaceId = surfaceId;
   }
 
   @Override
-  public <T extends JavaScriptModule> T getJSModule(Class<T> jsInterface) {
-    return mReactApplicationContext.getJSModule(jsInterface);
+  public void addLifecycleEventListener(LifecycleEventListener listener) {
+    mReactApplicationContext.addLifecycleEventListener(listener);
   }
 
   @Override
-  public <T extends NativeModule> boolean hasNativeModule(Class<T> nativeModuleInterface) {
-    return mReactApplicationContext.hasNativeModule(nativeModuleInterface);
+  public void removeLifecycleEventListener(LifecycleEventListener listener) {
+    mReactApplicationContext.removeLifecycleEventListener(listener);
   }
 
   @Override
-  public Collection<NativeModule> getNativeModules() {
-    return mReactApplicationContext.getNativeModules();
-  }
-
-  @Nullable
-  @Override
-  public <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface) {
-    return mReactApplicationContext.getNativeModule(nativeModuleInterface);
-  }
-
-  @Nullable
-  @Override
-  @FrameworkAPI
-  @UnstableReactNativeAPI
-  public RuntimeExecutor getRuntimeExecutor() {
-    return mReactApplicationContext.getRuntimeExecutor();
+  public boolean hasCurrentActivity() {
+    return mReactApplicationContext.hasCurrentActivity();
   }
 
   @Override
-  public CatalystInstance getCatalystInstance() {
-    return mReactApplicationContext.getCatalystInstance();
-  }
-
-  @Deprecated
-  @Override
-  public boolean hasActiveCatalystInstance() {
-    return mReactApplicationContext.hasActiveCatalystInstance();
-  }
-
-  @Override
-  public boolean hasActiveReactInstance() {
-    return mReactApplicationContext.hasActiveCatalystInstance();
-  }
-
-  @Override
-  public boolean hasCatalystInstance() {
-    return mReactApplicationContext.hasCatalystInstance();
-  }
-
-  @Override
-  public void destroy() {
-    mReactApplicationContext.destroy();
+  public @Nullable Activity getCurrentActivity() {
+    return mReactApplicationContext.getCurrentActivity();
   }
 
   /**
@@ -145,35 +104,15 @@ public class ThemedReactContext extends ReactContext {
   }
 
   @Override
-  public void handleException(Exception e) {
-    mReactApplicationContext.handleException(e);
-  }
-
-  @Deprecated
-  @Override
   public boolean isBridgeless() {
     return mReactApplicationContext.isBridgeless();
   }
 
-  @Nullable
-  @Override
-  public JavaScriptContextHolder getJavaScriptContextHolder() {
-    return mReactApplicationContext.getJavaScriptContextHolder();
-  }
-
   @Override
   public UIManager getFabricUIManager() {
-    return mReactApplicationContext.getFabricUIManager();
-  }
-
-  @Nullable
-  @Override
-  public String getSourceURL() {
-    return mReactApplicationContext.getSourceURL();
-  }
-
-  @Override
-  public void registerSegment(int segmentId, String path, Callback callback) {
-    mReactApplicationContext.registerSegment(segmentId, path, callback);
+    if (isBridgeless()) {
+      return mReactApplicationContext.getFabricUIManager();
+    }
+    return super.getFabricUIManager();
   }
 }
