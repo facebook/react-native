@@ -5442,6 +5442,17 @@ public final class com/facebook/react/uimanager/drawable/CSSBackgroundDrawable$B
 	public static fun values ()[Lcom/facebook/react/uimanager/drawable/CSSBackgroundDrawable$BorderRadiusLocation;
 }
 
+public final class com/facebook/react/uimanager/drawable/CompositeBackgroundDrawable : android/graphics/drawable/LayerDrawable {
+	public fun <init> (Landroid/graphics/drawable/Drawable;Lcom/facebook/react/uimanager/drawable/CSSBackgroundDrawable;Ljava/util/List;)V
+	public final fun getCssBackground ()Lcom/facebook/react/uimanager/drawable/CSSBackgroundDrawable;
+	public final fun getDecorations ()Ljava/util/List;
+	public final fun getViewBackground ()Landroid/graphics/drawable/Drawable;
+}
+
+public abstract class com/facebook/react/uimanager/drawable/DecorationDrawable : android/graphics/drawable/Drawable {
+	public fun <init> ()V
+}
+
 public abstract interface class com/facebook/react/uimanager/events/BatchEventDispatchedListener {
 	public abstract fun onBatchEventDispatched ()V
 }
@@ -7653,7 +7664,6 @@ public class com/facebook/react/views/view/ReactViewGroup : android/view/ViewGro
 	public fun setOverflow (Ljava/lang/String;)V
 	public fun setOverflowInset (IIII)V
 	public fun setRemoveClippedSubviews (Z)V
-	public fun setTranslucentBackgroundDrawable (Landroid/graphics/drawable/Drawable;)V
 	public fun updateClippingRect ()V
 	public fun updateDrawingOrder ()V
 }
