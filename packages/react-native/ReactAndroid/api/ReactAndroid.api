@@ -2212,12 +2212,16 @@ public abstract interface class com/facebook/react/devsupport/JSDebuggerWebSocke
 	public abstract fun onSuccess (Ljava/lang/String;)V
 }
 
-public class com/facebook/react/devsupport/LogBoxModule : com/facebook/fbreact/specs/NativeLogBoxSpec {
+public final class com/facebook/react/devsupport/LogBoxModule : com/facebook/fbreact/specs/NativeLogBoxSpec {
+	public static final field Companion Lcom/facebook/react/devsupport/LogBoxModule$Companion;
 	public static final field NAME Ljava/lang/String;
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Lcom/facebook/react/devsupport/interfaces/DevSupportManager;)V
 	public fun hide ()V
 	public fun invalidate ()V
 	public fun show ()V
+}
+
+public final class com/facebook/react/devsupport/LogBoxModule$Companion {
 }
 
 public class com/facebook/react/devsupport/PackagerStatusCheck {
