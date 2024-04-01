@@ -56,6 +56,11 @@ async function getLatestVersion(registryHost = DEFAULT_REGISTRY_HOST) {
   });
 }
 
+function parseVersion(version) {
+  const [major, minor = 0, patch = 0] = version.split('-')[0].split('.');
+  return major * 1000000 + minor * 1000 + patch;
+}
+
 /**
  * Warn when users are using `npx react-native init`, to raise awareness of the changes from RFC 0759.
  *
@@ -129,7 +134,7 @@ async function main() {
   if (isNpxRuntime && !process.env.SKIP && currentVersion !== HEAD) {
     try {
       const latest = await getLatestVersion();
-      if (latest !== currentVersion) {
+      if (parseVersion(latest) > parseVersion(currentVersion)) {
         const msg = `
   ${chalk.bold.yellow('WARNING:')} You should run ${chalk.white.bold(
     'npx react-native@latest',
