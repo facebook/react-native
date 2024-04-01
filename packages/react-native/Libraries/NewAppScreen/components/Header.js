@@ -15,7 +15,7 @@ import StyleSheet from '../../StyleSheet/StyleSheet';
 import Text from '../../Text/Text';
 import useColorScheme from '../../Utilities/useColorScheme';
 import Colors from './Colors';
-import HermesBadge from './HermesBadge';
+import NewArchitectureBadge from './NewArchitectureBadge';
 import React from 'react';
 
 const Header = (): Node => {
@@ -32,7 +32,7 @@ const Header = (): Node => {
         },
       ]}
       imageStyle={styles.logo}>
-      <HermesBadge />
+      <NewArchitectureBadge />
       <Text
         style={[
           styles.text,
