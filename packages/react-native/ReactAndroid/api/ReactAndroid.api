@@ -4025,9 +4025,9 @@ public abstract interface class com/facebook/react/uimanager/FabricViewStateMana
 	public abstract fun getStateUpdate ()Lcom/facebook/react/bridge/WritableMap;
 }
 
-public class com/facebook/react/uimanager/FloatUtil {
-	public fun <init> ()V
-	public static fun floatsEqual (FF)Z
+public final class com/facebook/react/uimanager/FloatUtil {
+	public static final field INSTANCE Lcom/facebook/react/uimanager/FloatUtil;
+	public static final fun floatsEqual (FF)Z
 }
 
 public abstract class com/facebook/react/uimanager/GuardedFrameCallback : android/view/Choreographer$FrameCallback {
@@ -4213,15 +4213,16 @@ public class com/facebook/react/uimanager/OnLayoutEvent : com/facebook/react/uim
 	public fun onDispose ()V
 }
 
-public class com/facebook/react/uimanager/PixelUtil {
-	public fun <init> ()V
-	public static fun getDisplayMetricDensity ()F
-	public static fun toDIPFromPixel (F)F
-	public static fun toPixelFromDIP (D)F
-	public static fun toPixelFromDIP (F)F
-	public static fun toPixelFromSP (D)F
-	public static fun toPixelFromSP (F)F
-	public static fun toPixelFromSP (FF)F
+public final class com/facebook/react/uimanager/PixelUtil {
+	public static final field INSTANCE Lcom/facebook/react/uimanager/PixelUtil;
+	public static final fun getDisplayMetricDensity ()F
+	public static final fun toDIPFromPixel (F)F
+	public static final fun toPixelFromDIP (D)F
+	public static final fun toPixelFromDIP (F)F
+	public static final fun toPixelFromSP (D)F
+	public static final fun toPixelFromSP (F)F
+	public static final fun toPixelFromSP (FF)F
+	public static synthetic fun toPixelFromSP$default (FFILjava/lang/Object;)F
 }
 
 public final class com/facebook/react/uimanager/PointerEvents : java/lang/Enum {
@@ -4776,10 +4777,10 @@ public class com/facebook/react/uimanager/RootViewManager$$PropsSetter : com/fac
 	public synthetic fun setProperty (Lcom/facebook/react/uimanager/ViewManager;Landroid/view/View;Ljava/lang/String;Ljava/lang/Object;)V
 }
 
-public class com/facebook/react/uimanager/RootViewUtil {
-	public fun <init> ()V
-	public static fun getRootView (Landroid/view/View;)Lcom/facebook/react/uimanager/RootView;
-	public static fun getViewportOffset (Landroid/view/View;)Landroid/graphics/Point;
+public final class com/facebook/react/uimanager/RootViewUtil {
+	public static final field INSTANCE Lcom/facebook/react/uimanager/RootViewUtil;
+	public static final fun getRootView (Landroid/view/View;)Lcom/facebook/react/uimanager/RootView;
+	public static final fun getViewportOffset (Landroid/view/View;)Landroid/graphics/Point;
 }
 
 public abstract class com/facebook/react/uimanager/SimpleViewManager : com/facebook/react/uimanager/BaseViewManager {
