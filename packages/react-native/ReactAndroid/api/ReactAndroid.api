@@ -2421,7 +2421,8 @@ public abstract interface class com/facebook/react/devsupport/interfaces/ErrorCu
 public final class com/facebook/react/devsupport/interfaces/ErrorType : java/lang/Enum {
 	public static final field JS Lcom/facebook/react/devsupport/interfaces/ErrorType;
 	public static final field NATIVE Lcom/facebook/react/devsupport/interfaces/ErrorType;
-	public fun getName ()Ljava/lang/String;
+	public final fun getDisplayName ()Ljava/lang/String;
+	public fun toString ()Ljava/lang/String;
 	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/devsupport/interfaces/ErrorType;
 	public static fun values ()[Lcom/facebook/react/devsupport/interfaces/ErrorType;
 }
