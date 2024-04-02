@@ -5,14 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.common;
+package com.facebook.react.common
 
-import com.facebook.infer.annotation.Nullsafe;
+public object ReactConstants {
 
-@Nullsafe(Nullsafe.Mode.LOCAL)
-public class ReactConstants {
-
-  public static final String TAG = "ReactNative";
+  public const val TAG: String = "ReactNative"
 
   /**
    * Some types have built-in support for representing a "missing" or "unset" value, for example NaN
@@ -20,5 +17,5 @@ public class ReactConstants {
    * have such a special value. When an integer represent an inherently non-negative value, we use a
    * special negative value to mark it as "unset".
    */
-  public static final int UNSET = -1;
+  public const val UNSET: Int = -1
 }
