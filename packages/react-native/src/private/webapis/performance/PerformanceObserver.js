@@ -22,6 +22,8 @@ import NativePerformanceObserver from './specs/NativePerformanceObserver';
 
 export type PerformanceEntryList = $ReadOnlyArray<PerformanceEntry>;
 
+export {PerformanceEntry} from './PerformanceEntry';
+
 export class PerformanceObserverEntryList {
   _entries: PerformanceEntryList;
 
