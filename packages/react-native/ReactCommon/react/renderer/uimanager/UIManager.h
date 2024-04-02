@@ -218,6 +218,10 @@ class UIManager final : public ShadowTreeDelegate {
       const jsi::Value& successCallback,
       const jsi::Value& failureCallback) const;
 
+  ShadowNode::Shared getShadowNodeInSubtree(
+      const ShadowNode& shadowNode,
+      const ShadowNode::Shared& ancestorShadowNode) const;
+
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   UIManagerDelegate* delegate_{};
   UIManagerAnimationDelegate* animationDelegate_{nullptr};

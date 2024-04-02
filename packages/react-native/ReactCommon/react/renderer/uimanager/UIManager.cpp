@@ -268,7 +268,12 @@ ShadowNode::Shared UIManager::getNewestCloneOfShadowNode(
       shadowNode.getSurfaceId(), [&](const ShadowTree& shadowTree) {
         ancestorShadowNode = shadowTree.getCurrentRevision().rootShadowNode;
       });
+  return getShadowNodeInSubtree(shadowNode, ancestorShadowNode);
+}
 
+ShadowNode::Shared UIManager::getShadowNodeInSubtree(
+    const ShadowNode& shadowNode,
+    const ShadowNode::Shared& ancestorShadowNode) const {
   if (!ancestorShadowNode) {
     return nullptr;
   }
@@ -427,6 +432,8 @@ void UIManager::setNativeProps_DEPRECATED(
       family.getSurfaceId(), [&](const ShadowTree& shadowTree) {
         // The lambda passed to `commit` may be executed multiple times.
         // We need to create fresh copy of the `RawProps` object each time.
+        auto ancestorShadowNode =
+            shadowTree.getCurrentRevision().rootShadowNode;
         shadowTree.commit(
             [&](RootShadowNode const& oldRootShadowNode) {
               auto rootNode = oldRootShadowNode.cloneTree(
@@ -438,7 +445,8 @@ void UIManager::setNativeProps_DEPRECATED(
                         family.getSurfaceId(), *contextContainer_.get()};
                     auto props = componentDescriptor.cloneProps(
                         propsParserContext,
-                        getNewestCloneOfShadowNode(*shadowNode)->getProps(),
+                        getShadowNodeInSubtree(*shadowNode, ancestorShadowNode)
+                            ->getProps(),
                         RawProps(rawProps));
 
                     return oldShadowNode.clone({/* .props = */ props});
