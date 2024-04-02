@@ -5,19 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.uimanager.layoutanimation;
-
-import com.facebook.infer.annotation.Nullsafe;
+package com.facebook.react.uimanager.layoutanimation
 
 /**
  * Class responsible for handling layout view deletion animation, applied to view whenever a valid
  * config was supplied for the layout animation of DELETE type.
  */
-/* package */ @Nullsafe(Nullsafe.Mode.LOCAL)
-class LayoutDeleteAnimation extends BaseLayoutAnimation {
+internal class LayoutDeleteAnimation : BaseLayoutAnimation() {
 
-  @Override
-  boolean isReverse() {
-    return true;
-  }
+  override fun isReverse(): Boolean = true
 }
