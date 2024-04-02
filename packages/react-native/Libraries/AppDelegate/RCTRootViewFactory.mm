@@ -273,22 +273,6 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
   return NO;
 }
 
-- (void)loadSourceForBridge:(RCTBridge *)bridge withBlock:(RCTSourceLoadBlock)loadCallback
-{
-  if (_configuration.loadSourceForBridgeBlock != nil) {
-    _configuration.loadSourceForBridgeBlock(bridge, loadCallback);
-  }
-}
-
-- (void)loadSourceForBridge:(RCTBridge *)bridge
-                 onProgress:(RCTSourceLoadProgressBlock)onProgress
-                 onComplete:(RCTSourceLoadBlock)loadCallback
-{
-  if (_configuration.loadSourceForBridgeProgressBlock != nil) {
-    _configuration.loadSourceForBridgeProgressBlock(bridge, onProgress, loadCallback);
-  }
-}
-
 - (NSURL *)bundleURL
 {
   return self->_configuration.bundleURL;

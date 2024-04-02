@@ -291,22 +291,6 @@
     };
   }
 
-  if ([self respondsToSelector:@selector(loadSourceForBridge:withBlock:)]) {
-    configuration.loadSourceForBridgeBlock =
-        ^void(RCTBridge *_Nonnull bridge, RCTSourceLoadBlock _Nonnull loadCallback) {
-          [weakSelf loadSourceForBridge:bridge withBlock:loadCallback];
-        };
-  }
-
-  if ([self respondsToSelector:@selector(loadSourceForBridge:onProgress:onComplete:)]) {
-    configuration.loadSourceForBridgeProgressBlock =
-        ^(RCTBridge *_Nonnull bridge,
-          RCTSourceLoadProgressBlock _Nonnull onProgress,
-          RCTSourceLoadBlock _Nonnull loadCallback) {
-          [weakSelf loadSourceForBridge:bridge onProgress:onProgress onComplete:loadCallback];
-        };
-  }
-
   return [[RCTRootViewFactory alloc] initWithConfiguration:configuration andTurboModuleManagerDelegate:self];
 }
 
