@@ -4421,7 +4421,7 @@ public abstract interface class com/facebook/react/uimanager/ReactCompoundViewGr
 	public abstract fun interceptsTouchEvent (FF)Z
 }
 
-public class com/facebook/react/uimanager/ReactInvalidPropertyException : java/lang/RuntimeException {
+public final class com/facebook/react/uimanager/ReactInvalidPropertyException : java/lang/RuntimeException {
 	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
 }
 
