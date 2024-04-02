@@ -3649,9 +3649,12 @@ public class com/facebook/react/runtime/CoreReactPackage$$ReactModuleInfoProvide
 	public fun getReactModuleInfos ()Ljava/util/Map;
 }
 
-public class com/facebook/react/runtime/JSCInstance : com/facebook/react/runtime/JSRuntimeFactory {
+public final class com/facebook/react/runtime/JSCInstance : com/facebook/react/runtime/JSRuntimeFactory {
+	public static final field Companion Lcom/facebook/react/runtime/JSCInstance$Companion;
 	public fun <init> ()V
-	protected static fun initHybrid ()Lcom/facebook/jni/HybridData;
+}
+
+public final class com/facebook/react/runtime/JSCInstance$Companion {
 }
 
 public abstract class com/facebook/react/runtime/JSRuntimeFactory {
