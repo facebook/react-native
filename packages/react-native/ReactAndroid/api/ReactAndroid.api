@@ -1746,9 +1746,9 @@ public abstract interface class com/facebook/react/common/ShakeDetector$ShakeLis
 	public abstract fun onShake ()V
 }
 
-public class com/facebook/react/common/SingleThreadAsserter {
+public final class com/facebook/react/common/SingleThreadAsserter {
 	public fun <init> ()V
-	public fun assertNow ()V
+	public final fun assertNow ()V
 }
 
 public final class com/facebook/react/common/StandardCharsets {
