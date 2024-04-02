@@ -14,6 +14,7 @@ import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.JSBundleLoader
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
+import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.fabric.ComponentFactory
 import com.facebook.react.interfaces.exceptionmanager.ReactJsExceptionHandler
 import com.facebook.react.runtime.JSCInstance
@@ -49,7 +50,8 @@ public object DefaultReactHost {
       packageList: List<ReactPackage>,
       jsMainModulePath: String = "index",
       jsBundleAssetPath: String = "index",
-      isHermesEnabled: Boolean = true
+      isHermesEnabled: Boolean = true,
+      useDevSupport: Boolean = ReactBuildConfig.DEBUG,
   ): ReactHost {
     if (reactHost == null) {
       val jsBundleLoader =
@@ -62,6 +64,7 @@ public object DefaultReactHost {
               reactPackages = packageList,
               jsRuntimeFactory = jsRuntimeFactory,
               turboModuleManagerDelegateBuilder = DefaultTurboModuleManagerDelegate.Builder())
+      // TODO: T180971255 Improve default exception handler
       val reactJsExceptionHandler = ReactJsExceptionHandler { _ -> }
       val componentFactory = ComponentFactory()
       DefaultComponentsRegistry.register(componentFactory)
@@ -71,9 +74,10 @@ public object DefaultReactHost {
                   context,
                   defaultReactHostDelegate,
                   componentFactory,
-                  true,
+                  true /* allowPackagerServerAccess */,
                   reactJsExceptionHandler,
-                  true)
+                  useDevSupport,
+              )
               .apply {
                 jsEngineResolutionAlgorithm =
                     if (isHermesEnabled) {
