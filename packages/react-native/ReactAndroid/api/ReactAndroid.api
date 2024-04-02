@@ -5071,11 +5071,11 @@ public class com/facebook/react/uimanager/ViewAtIndex {
 	public fun toString ()Ljava/lang/String;
 }
 
-public class com/facebook/react/uimanager/ViewDefaults {
+public final class com/facebook/react/uimanager/ViewDefaults {
 	public static final field FONT_SIZE_SP F
+	public static final field INSTANCE Lcom/facebook/react/uimanager/ViewDefaults;
 	public static final field LINE_HEIGHT I
 	public static final field NUMBER_OF_LINES I
-	public fun <init> ()V
 }
 
 public class com/facebook/react/uimanager/ViewGroupDrawingOrderHelper {
