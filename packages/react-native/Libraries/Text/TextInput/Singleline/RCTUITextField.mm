@@ -142,6 +142,16 @@
   return [super canPerformAction:action withSender:sender];
 }
 
+- (void)buildMenuWithBuilder:(id<UIMenuBuilder>)builder
+{
+  if (_contextMenuHidden) {
+    if (@available(iOS 17.0, *)) {
+      [builder removeMenuForIdentifier:UIMenuAutoFill];
+    }
+  }
+  [super buildMenuWithBuilder:builder];
+}
+
 #pragma mark - Dictation
 
 - (void)dictationRecordingDidEnd
