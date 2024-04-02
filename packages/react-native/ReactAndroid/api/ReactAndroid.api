@@ -2164,9 +2164,10 @@ public abstract interface class com/facebook/react/devsupport/HMRClient : com/fa
 	public abstract fun setup (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IZ)V
 }
 
-public class com/facebook/react/devsupport/InspectorFlags {
-	public static fun getEnableCxxInspectorPackagerConnection ()Z
-	public static fun getEnableModernCDPRegistry ()Z
+public final class com/facebook/react/devsupport/InspectorFlags {
+	public static final field INSTANCE Lcom/facebook/react/devsupport/InspectorFlags;
+	public static final fun getEnableCxxInspectorPackagerConnection ()Z
+	public static final fun getEnableModernCDPRegistry ()Z
 }
 
 public class com/facebook/react/devsupport/InspectorPackagerConnection : com/facebook/react/devsupport/IInspectorPackagerConnection {
