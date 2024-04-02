@@ -14,7 +14,7 @@ import com.facebook.soloader.annotation.SoLoaderLibrary
 
 @SoLoaderLibrary("jscinstance")
 public class JSCInstance constructor() : JSRuntimeFactory(initHybrid()) {
-  public companion object {
+  private companion object {
     init {
       SoLoader.loadLibrary("jscinstance")
     }
