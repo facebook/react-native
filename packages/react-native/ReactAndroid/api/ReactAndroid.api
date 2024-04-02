@@ -4456,9 +4456,9 @@ public abstract interface class com/facebook/react/uimanager/ReactRoot {
 	public abstract fun setShouldLogContentAppeared (Z)V
 }
 
-public class com/facebook/react/uimanager/ReactRootViewTagGenerator {
-	public fun <init> ()V
-	public static fun getNextRootViewTag ()I
+public final class com/facebook/react/uimanager/ReactRootViewTagGenerator {
+	public static final field INSTANCE Lcom/facebook/react/uimanager/ReactRootViewTagGenerator;
+	public static final fun getNextRootViewTag ()I
 }
 
 public abstract interface class com/facebook/react/uimanager/ReactShadowNode {
