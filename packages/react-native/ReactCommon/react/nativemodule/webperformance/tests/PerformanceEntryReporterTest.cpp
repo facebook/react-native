@@ -94,12 +94,14 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestReportMarks) {
   reporter.mark("mark0", 0.0);
   reporter.mark("mark1", 1.0);
   reporter.mark("mark2", 2.0);
+  // Report mark0 again
+  reporter.mark("mark0", 3.0);
 
   auto res = reporter.popPendingEntries();
   const auto& entries = res.entries;
 
   ASSERT_EQ(0, res.droppedEntriesCount);
-  ASSERT_EQ(3, entries.size());
+  ASSERT_EQ(4, entries.size());
 
   const std::vector<RawPerformanceEntry> expected = {
       {"mark0",
@@ -122,7 +124,15 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestReportMarks) {
        0.0,
        std::nullopt,
        std::nullopt,
-       std::nullopt}};
+       std::nullopt},
+      {"mark0",
+       static_cast<int>(PerformanceEntryType::MARK),
+       3.0,
+       0.0,
+       std::nullopt,
+       std::nullopt,
+       std::nullopt},
+  };
 
   ASSERT_EQ(expected, entries);
 }
@@ -152,6 +162,9 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestReportMeasures) {
   reporter.mark("mark3", 2.0);
   reporter.measure("measure6", 2.0, 2.0);
   reporter.mark("mark4", 2.0);
+  reporter.mark("mark4", 3.0);
+  // Uses the last reported time for mark4
+  reporter.measure("measure7", 0.0, 0.0, std::nullopt, "mark1", "mark4");
 
   auto res = reporter.popPendingEntries();
   const auto& entries = res.entries;
@@ -191,6 +204,13 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestReportMeasures) {
        static_cast<int>(PerformanceEntryType::MEASURE),
        1.0,
        1.0,
+       std::nullopt,
+       std::nullopt,
+       std::nullopt},
+      {"measure7",
+       static_cast<int>(PerformanceEntryType::MEASURE),
+       1.0,
+       2.0,
        std::nullopt,
        std::nullopt,
        std::nullopt},
@@ -243,7 +263,13 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestReportMeasures) {
        std::nullopt,
        std::nullopt,
        std::nullopt},
-  };
+      {"mark4",
+       static_cast<int>(PerformanceEntryType::MARK),
+       3.0,
+       0.0,
+       std::nullopt,
+       std::nullopt,
+       std::nullopt}};
 
   ASSERT_EQ(expected, entries);
 }
