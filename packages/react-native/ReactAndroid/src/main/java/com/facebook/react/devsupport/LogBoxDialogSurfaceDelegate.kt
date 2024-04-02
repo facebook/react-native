@@ -64,7 +64,7 @@ internal class LogBoxDialogSurfaceDelegate(private val devSupportManager: DevSup
     if (!isShowing) {
       return
     }
-    (reactRootView?.parent as ViewGroup)?.removeView(reactRootView)
+    (reactRootView?.parent as ViewGroup?)?.removeView(reactRootView)
     dialog?.dismiss()
     dialog = null
   }
