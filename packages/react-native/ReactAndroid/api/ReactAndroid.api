@@ -1727,10 +1727,10 @@ public final class com/facebook/react/common/MapBuilder$Builder {
 	public fun put (Ljava/lang/Object;Ljava/lang/Object;)Lcom/facebook/react/common/MapBuilder$Builder;
 }
 
-public class com/facebook/react/common/ReactConstants {
+public final class com/facebook/react/common/ReactConstants {
+	public static final field INSTANCE Lcom/facebook/react/common/ReactConstants;
 	public static final field TAG Ljava/lang/String;
 	public static final field UNSET I
-	public fun <init> ()V
 }
 
 public class com/facebook/react/common/ShakeDetector : android/hardware/SensorEventListener {
