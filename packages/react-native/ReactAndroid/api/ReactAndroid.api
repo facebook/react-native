@@ -3823,14 +3823,15 @@ public class com/facebook/react/runtime/internal/bolts/TaskCompletionSource {
 	public fun trySetResult (Ljava/lang/Object;)Z
 }
 
-public class com/facebook/react/shell/MainPackageConfig {
-	public fun getFrescoConfig ()Lcom/facebook/imagepipeline/core/ImagePipelineConfig;
+public final class com/facebook/react/shell/MainPackageConfig {
+	public synthetic fun <init> (Lcom/facebook/react/shell/MainPackageConfig$Builder;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getFrescoConfig ()Lcom/facebook/imagepipeline/core/ImagePipelineConfig;
 }
 
-public class com/facebook/react/shell/MainPackageConfig$Builder {
+public final class com/facebook/react/shell/MainPackageConfig$Builder {
 	public fun <init> ()V
-	public fun build ()Lcom/facebook/react/shell/MainPackageConfig;
-	public fun setFrescoConfig (Lcom/facebook/imagepipeline/core/ImagePipelineConfig;)Lcom/facebook/react/shell/MainPackageConfig$Builder;
+	public final fun build ()Lcom/facebook/react/shell/MainPackageConfig;
+	public final fun setFrescoConfig (Lcom/facebook/imagepipeline/core/ImagePipelineConfig;)Lcom/facebook/react/shell/MainPackageConfig$Builder;
 }
 
 public class com/facebook/react/shell/MainReactPackage : com/facebook/react/TurboReactPackage, com/facebook/react/ViewManagerOnDemandReactPackage {
