@@ -21,6 +21,8 @@ export default function getDevToolsFrontendUrl(
   options?: $ReadOnly<{
     relative?: boolean,
     launchId?: string,
+    /** Whether to use the modern `rn_fusebox.html` entry point. */
+    useFuseboxEntryPoint?: boolean,
   }>,
 ): string {
   const wsParam = getWsParam({
@@ -30,7 +32,10 @@ export default function getDevToolsFrontendUrl(
 
   const appUrl =
     (options?.relative === true ? '' : devServerUrl) +
-    '/debugger-frontend/rn_inspector.html';
+    '/debugger-frontend/' +
+    (options?.useFuseboxEntryPoint === true
+      ? 'rn_fusebox.html'
+      : 'rn_inspector.html');
 
   const searchParams = new URLSearchParams([
     [wsParam.key, wsParam.value],
