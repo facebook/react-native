@@ -105,7 +105,7 @@ void PerformanceEntryReporter::logEntry(const RawPerformanceEntry& entry) {
 
   std::lock_guard lock(entriesMutex_);
 
-  auto& buffer = buffers_[entry.entryType];
+  auto& buffer = getBuffer(entryType);
 
   if (entry.duration < buffer.durationThreshold) {
     // The entries duration is lower than the desired reporting threshold, skip
@@ -161,15 +161,15 @@ void PerformanceEntryReporter::mark(
 }
 
 void PerformanceEntryReporter::clearEntries(
-    PerformanceEntryType entryType,
+    std::optional<PerformanceEntryType> entryType,
     std::string_view entryName) {
-  if (entryType == PerformanceEntryType::UNDEFINED) {
+  if (!entryType) {
     // Clear all entry types
     for (int i = 1; i < NUM_PERFORMANCE_ENTRY_TYPES; i++) {
       clearEntries(static_cast<PerformanceEntryType>(i), entryName);
     }
   } else {
-    auto& buffer = getBuffer(entryType);
+    auto& buffer = getBuffer(*entryType);
     if (!entryName.empty()) {
       if (buffer.hasNameLookup) {
         std::lock_guard lock2(nameLookupMutex_);
@@ -208,29 +208,29 @@ void PerformanceEntryReporter::getEntries(
     PerformanceEntryType entryType,
     std::string_view entryName,
     std::vector<RawPerformanceEntry>& res) const {
-  if (entryType == PerformanceEntryType::UNDEFINED) {
+  std::lock_guard lock(entriesMutex_);
+  const auto& entries = getBuffer(entryType).entries;
+  if (entryName.empty()) {
+    entries.getEntries(res);
+  } else {
+    entries.getEntries(res, [entryName](const RawPerformanceEntry& entry) {
+      return entry.name == entryName;
+    });
+  }
+}
+
+std::vector<RawPerformanceEntry> PerformanceEntryReporter::getEntries(
+    std::optional<PerformanceEntryType> entryType,
+    std::string_view entryName) const {
+  std::vector<RawPerformanceEntry> res;
+  if (!entryType) {
     // Collect all entry types
     for (int i = 1; i < NUM_PERFORMANCE_ENTRY_TYPES; i++) {
       getEntries(static_cast<PerformanceEntryType>(i), entryName, res);
     }
   } else {
-    std::lock_guard lock(entriesMutex_);
-    const auto& entries = getBuffer(entryType).entries;
-    if (entryName.empty()) {
-      entries.getEntries(res);
-    } else {
-      entries.getEntries(res, [entryName](const RawPerformanceEntry& entry) {
-        return entry.name == entryName;
-      });
-    }
+    getEntries(*entryType, entryName, res);
   }
-}
-
-std::vector<RawPerformanceEntry> PerformanceEntryReporter::getEntries(
-    PerformanceEntryType entryType,
-    std::string_view entryName) const {
-  std::vector<RawPerformanceEntry> res;
-  getEntries(entryType, entryName, res);
   return res;
 }
 
