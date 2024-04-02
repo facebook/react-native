@@ -16,8 +16,10 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-gnu-zero-variadic-macro-arguments'
-folly_version = '2023.08.07.00'
+folly_config = get_folly_config()
+folly_compiler_flags = folly_config[:compiler_flags]
+folly_version = folly_config[:version]
+
 folly_dep_name = 'RCT-Folly/Fabric'
 boost_compiler_flags = '-Wno-documentation'
 react_native_path = ".."
@@ -54,6 +56,7 @@ Pod::Spec.new do |s|
   s.dependency "fmt", "9.1.0"
   s.dependency "React-Core"
   s.dependency "React-debug"
+  s.dependency "React-featureflags"
   s.dependency "React-utils"
   s.dependency "React-runtimescheduler"
   s.dependency "React-cxxreact"
@@ -195,11 +198,19 @@ Pod::Spec.new do |s|
 
     end
 
-    ss.subspec "textinput" do |sss|
+    ss.subspec "iostextinput" do |sss|
       sss.dependency             folly_dep_name, folly_version
       sss.compiler_flags       = folly_compiler_flags
       sss.source_files         = "react/renderer/components/textinput/platform/ios/**/*.{m,mm,cpp,h}"
       sss.header_dir           = "react/renderer/components/iostextinput"
+
+    end
+
+    ss.subspec "textinput" do |sss|
+      sss.dependency             folly_dep_name, folly_version
+      sss.compiler_flags       = folly_compiler_flags
+      sss.source_files         = "react/renderer/components/textinput/*.{m,mm,cpp,h}"
+      sss.header_dir           = "react/renderer/components/textinput"
 
     end
 
@@ -266,11 +277,31 @@ Pod::Spec.new do |s|
   end
 
   s.subspec "uimanager" do |ss|
+    ss.subspec "consistency" do |sss|
+      sss.dependency             folly_dep_name, folly_version
+      sss.compiler_flags       = folly_compiler_flags
+      sss.source_files         = "react/renderer/uimanager/consistency/*.{m,mm,cpp,h}"
+      sss.header_dir           = "react/renderer/uimanager/consistency"
+    end
+
     ss.dependency             folly_dep_name, folly_version
+    ss.dependency             "React-rendererconsistency"
+    ss.dependency             "React-Fabric/dom"
     ss.compiler_flags       = folly_compiler_flags
-    ss.source_files         = "react/renderer/uimanager/**/*.{m,mm,cpp,h}"
-    ss.exclude_files        = "react/renderer/uimanager/tests"
+    ss.source_files         = "react/renderer/uimanager/*.{m,mm,cpp,h}"
     ss.header_dir           = "react/renderer/uimanager"
+  end
+
+  s.subspec "dom" do |ss|
+    ss.dependency             folly_dep_name, folly_version
+    ss.dependency             "React-Fabric/components/root"
+    ss.dependency             "React-Fabric/components/text"
+    ss.dependency             "React-Fabric/core"
+    ss.dependency             "React-graphics"
+    ss.compiler_flags       = folly_compiler_flags
+    ss.source_files         = "react/renderer/dom/**/*.{m,mm,cpp,h}"
+    ss.exclude_files        = "react/renderer/dom/tests"
+    ss.header_dir           = "react/renderer/dom"
   end
 
   s.subspec "telemetry" do |ss|
@@ -290,4 +321,20 @@ Pod::Spec.new do |s|
     ss.header_dir           = "react/renderer/leakchecker"
     ss.pod_target_xcconfig  = { "GCC_WARN_PEDANTIC" => "YES" }
   end
+
+  s.script_phases = [
+    {
+      :name => '[RN]Check rncore',
+      :execution_position => :before_compile,
+      :script => <<-EOS
+echo "Checking whether Codegen has run..."
+rncorePath="$REACT_NATIVE_PATH/ReactCommon/react/renderer/components/rncore"
+
+if [[ ! -d "$rncorePath" ]]; then
+  echo 'error: Codegen did not run properly in your project. Please reinstall cocoapods with `bundle exec pod install`.'
+  exit 1
+fi
+      EOS
+    }
+  ]
 end

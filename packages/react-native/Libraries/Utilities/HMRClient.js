@@ -26,6 +26,7 @@ let hmrUnavailableReason: string | null = null;
 let currentCompileErrorMessage: string | null = null;
 let didConnect: boolean = false;
 let pendingLogs: Array<[LogLevel, $ReadOnlyArray<mixed>]> = [];
+let pendingFuseboxConsoleNotification = false;
 
 type LogLevel =
   | 'trace'
@@ -51,6 +52,7 @@ export type HMRClientNativeInterface = {|
     isEnabled: boolean,
     scheme?: string,
   ): void,
+  unstable_notifyFuseboxConsoleEnabled(): void,
 |};
 
 /**
@@ -138,6 +140,29 @@ const HMRClient: HMRClientNativeInterface = {
       // If sending logs causes any failures we want to silently ignore them
       // to ensure we do not cause infinite-logging loops.
     }
+  },
+
+  unstable_notifyFuseboxConsoleEnabled() {
+    if (!hmrClient) {
+      pendingFuseboxConsoleNotification = true;
+      return;
+    }
+    hmrClient.send(
+      JSON.stringify({
+        type: 'log',
+        level: 'info',
+        data: [
+          '\n' +
+            '\x1b[7m' +
+            ' \x1b[1mJavaScript logs have moved!\x1b[22m They will now appear in the debugger console. ' +
+            'Tip: Type \x1b[1mj\x1b[22m in the terminal to open the debugger (requires Google Chrome ' +
+            'or Microsoft Edge).' +
+            '\x1b[27m' +
+            '\n',
+        ],
+      }),
+    );
+    pendingFuseboxConsoleNotification = false;
   },
 
   // Called once by the bridge on startup, even if Fast Refresh is off.
@@ -316,6 +341,9 @@ function flushEarlyLogs(client: MetroHMRClient) {
     pendingLogs.forEach(([level, data]) => {
       HMRClient.log(level, data);
     });
+    if (pendingFuseboxConsoleNotification) {
+      HMRClient.unstable_notifyFuseboxConsoleEnabled();
+    }
   } finally {
     pendingLogs.length = 0;
   }

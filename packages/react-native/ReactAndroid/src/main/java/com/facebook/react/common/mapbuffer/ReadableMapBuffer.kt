@@ -25,7 +25,7 @@ import javax.annotation.concurrent.NotThreadSafe
 @StableReactNativeAPI
 @NotThreadSafe
 @DoNotStrip
-class ReadableMapBuffer : MapBuffer {
+public class ReadableMapBuffer : MapBuffer {
 
   // Hybrid data must be kept in the `mHybridData` field for fbjni to work
   @field:DoNotStrip private val mHybridData: HybridData?
@@ -33,18 +33,18 @@ class ReadableMapBuffer : MapBuffer {
   // Byte data of the mapBuffer
   private val buffer: ByteBuffer
   // Amount of items serialized on the ByteBuffer
-  override var count = 0
+  override var count: Int = 0
     private set
 
   @DoNotStrip
   private constructor(hybridData: HybridData) {
-    this.mHybridData = hybridData
-    this.buffer = importByteBuffer()
+    mHybridData = hybridData
+    buffer = importByteBuffer()
     readHeader()
   }
 
   private constructor(buffer: ByteBuffer) {
-    this.mHybridData = null
+    mHybridData = null
     this.buffer = buffer
     readHeader()
   }
@@ -115,6 +115,10 @@ class ReadableMapBuffer : MapBuffer {
     return buffer.getInt(bufferPosition)
   }
 
+  private fun readLongValue(bufferPosition: Int): Long {
+    return buffer.getLong(bufferPosition)
+  }
+
   private fun readBooleanValue(bufferPosition: Int): Boolean {
     return readIntValue(bufferPosition) == 1
   }
@@ -180,6 +184,9 @@ class ReadableMapBuffer : MapBuffer {
   override fun getInt(key: Int): Int =
       readIntValue(getTypedValueOffsetForKey(key, MapBuffer.DataType.INT))
 
+  override fun getLong(key: Int): Long =
+      readLongValue(getTypedValueOffsetForKey(key, MapBuffer.DataType.LONG))
+
   override fun getDouble(key: Int): Double =
       readDoubleValue(getTypedValueOffsetForKey(key, MapBuffer.DataType.DOUBLE))
 
@@ -223,6 +230,7 @@ class ReadableMapBuffer : MapBuffer {
       when (entry.type) {
         MapBuffer.DataType.BOOL -> builder.append(entry.booleanValue)
         MapBuffer.DataType.INT -> builder.append(entry.intValue)
+        MapBuffer.DataType.LONG -> builder.append(entry.longValue)
         MapBuffer.DataType.DOUBLE -> builder.append(entry.doubleValue)
         MapBuffer.DataType.STRING -> builder.append(entry.stringValue)
         MapBuffer.DataType.MAP -> builder.append(entry.mapBufferValue.toString())
@@ -280,6 +288,12 @@ class ReadableMapBuffer : MapBuffer {
         return readIntValue(bucketOffset + VALUE_OFFSET)
       }
 
+    override val longValue: Long
+      get() {
+        assertType(MapBuffer.DataType.LONG)
+        return readLongValue(bucketOffset + VALUE_OFFSET)
+      }
+
     override val booleanValue: Boolean
       get() {
         assertType(MapBuffer.DataType.BOOL)
@@ -299,7 +313,7 @@ class ReadableMapBuffer : MapBuffer {
       }
   }
 
-  companion object {
+  public companion object {
     // Value used to verify if the data is serialized with LittleEndian order.
     private const val ALIGNMENT = 0xFE
 

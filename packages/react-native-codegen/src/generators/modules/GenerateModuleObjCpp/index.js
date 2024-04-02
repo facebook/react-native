@@ -118,6 +118,7 @@ module.exports = {
     schema: SchemaType,
     packageName?: string,
     assumeNonnull: boolean,
+    headerPrefix?: string,
   ): FilesOutput {
     const nativeModules = getModules(schema);
 

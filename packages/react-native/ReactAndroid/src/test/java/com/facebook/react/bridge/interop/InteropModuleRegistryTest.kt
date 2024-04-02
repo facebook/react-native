@@ -7,8 +7,10 @@
 
 @file:Suppress(
     "DEPRECATION") // Suppressing as we want to test specifically with RCTEventEmitter here
+
 package com.facebook.react.bridge.interop
 
+import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.config.ReactFeatureFlags
 import com.facebook.react.modules.core.JSTimers
 import com.facebook.react.uimanager.events.RCTEventEmitter
@@ -18,6 +20,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
+@OptIn(UnstableReactNativeAPI::class)
 class InteropModuleRegistryTest {
 
   lateinit var underTest: InteropModuleRegistry

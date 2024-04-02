@@ -127,6 +127,15 @@ function getImports(
     }
   });
 
+  component.commands.forEach(command => {
+    command.typeAnnotation.params.forEach(param => {
+      const cmdParamType = param.typeAnnotation.type;
+      if (cmdParamType === 'ArrayTypeAnnotation') {
+        imports.add('import com.facebook.react.bridge.ReadableArray;');
+      }
+    });
+  });
+
   return imports;
 }
 

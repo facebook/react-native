@@ -9,11 +9,17 @@
 
 namespace facebook::react {
 
+enum class ColorSpace { sRGB, DisplayP3 };
+
+ColorSpace getDefaultColorSpace();
+void setDefaultColorSpace(ColorSpace newColorSpace);
+
 struct ColorComponents {
   float red{0};
   float green{0};
   float blue{0};
   float alpha{0};
+  ColorSpace colorSpace{getDefaultColorSpace()};
 };
 
 } // namespace facebook::react

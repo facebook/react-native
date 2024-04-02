@@ -28,9 +28,7 @@ class ReactActivityDelegateTest {
             get() = composeLaunchOptions()
         }
 
-    assertNotNull(delegate.inspectLaunchOptions)
-    assertTrue(delegate.inspectLaunchOptions!!.containsKey("concurrentRoot"))
-    assertTrue(delegate.inspectLaunchOptions!!.getBoolean("concurrentRoot"))
+    assertNull(delegate.inspectLaunchOptions)
   }
 
   @Test
@@ -60,9 +58,7 @@ class ReactActivityDelegateTest {
         }
 
     assertNotNull(delegate.inspectLaunchOptions)
-    assertTrue(delegate.inspectLaunchOptions!!.containsKey("concurrentRoot"))
-    assertTrue(delegate.inspectLaunchOptions!!.getBoolean("concurrentRoot"))
-    assertTrue(delegate.inspectLaunchOptions!!.containsKey("test-property"))
-    assertEquals("test-value", delegate.inspectLaunchOptions!!.getString("test-property"))
+    assertTrue(delegate.inspectLaunchOptions?.containsKey("test-property") ?: false)
+    assertEquals("test-value", delegate.inspectLaunchOptions?.getString("test-property"))
   }
 }

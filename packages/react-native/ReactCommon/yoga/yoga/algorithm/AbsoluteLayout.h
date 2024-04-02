@@ -13,16 +13,16 @@
 namespace facebook::yoga {
 
 void layoutAbsoluteChild(
-    const yoga::Node* const containingNode,
-    const yoga::Node* const node,
-    yoga::Node* const child,
-    const float containingBlockWidth,
-    const float containingBlockHeight,
-    const SizingMode widthMode,
-    const Direction direction,
+    const yoga::Node* containingNode,
+    const yoga::Node* node,
+    yoga::Node* child,
+    float containingBlockWidth,
+    float containingBlockHeight,
+    SizingMode widthMode,
+    Direction direction,
     LayoutData& layoutMarkerData,
-    const uint32_t depth,
-    const uint32_t generationCount);
+    uint32_t depth,
+    uint32_t generationCount);
 
 void layoutAbsoluteDescendants(
     yoga::Node* containingNode,
@@ -33,6 +33,8 @@ void layoutAbsoluteDescendants(
     uint32_t currentDepth,
     uint32_t generationCount,
     float currentNodeMainOffsetFromContainingBlock,
-    float currentNodeCrossOffsetFromContainingBlock);
+    float currentNodeCrossOffsetFromContainingBlock,
+    float containingNodeAvailableInnerWidth,
+    float containingNodeAvailableInnerHeight);
 
 } // namespace facebook::yoga

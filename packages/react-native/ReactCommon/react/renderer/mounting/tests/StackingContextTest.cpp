@@ -262,6 +262,7 @@ TEST_F(StackingContextTest, mostPropsDoNotForceViewsToMaterialize) {
   mutateViewShadowNodeProps_(nodeBA_, [](ViewProps& props) {
     auto& yogaStyle = props.yogaStyle;
     props.zIndex = 42;
+    yogaStyle.setPositionType(yoga::PositionType::Static);
     yogaStyle.setMargin(yoga::Edge::All, yoga::value::points(42));
     props.shadowColor = clearColor();
     props.shadowOpacity = 0.42;
@@ -270,14 +271,15 @@ TEST_F(StackingContextTest, mostPropsDoNotForceViewsToMaterialize) {
   mutateViewShadowNodeProps_(nodeBBA_, [](ViewProps& props) {
     auto& yogaStyle = props.yogaStyle;
     yogaStyle.setPositionType(yoga::PositionType::Relative);
-
     props.borderRadii.all = 42;
     props.borderColors.all = blackColor();
   });
 
   mutateViewShadowNodeProps_(nodeBD_, [](ViewProps& props) {
+    auto& yogaStyle = props.yogaStyle;
     props.onLayout = true;
     props.hitSlop = EdgeInsets{42, 42, 42, 42};
+    yogaStyle.setPositionType(yoga::PositionType::Static);
   });
 
   testViewTree_([](const StubViewTree& viewTree) {

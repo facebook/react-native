@@ -10,6 +10,7 @@
 #import <objc/runtime.h>
 
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
+#import <React/RCTBridge+Inspector.h>
 #import <React/RCTBridge+Private.h>
 #import <React/RCTBridgeModule.h>
 #import <React/RCTConstants.h>
@@ -199,7 +200,7 @@ RCT_EXPORT_MODULE()
 #if RCT_DEV_MENU
     devMenuToken = [[RCTPackagerConnection sharedPackagerConnection]
         addNotificationHandler:^(id params) {
-          [self.bridge.devMenu show];
+          [[self.moduleRegistry moduleForName:"DevMenu"] show];
         }
                          queue:dispatch_get_main_queue()
                      forMethod:@"devMenu"];

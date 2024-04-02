@@ -1,11 +1,11 @@
 {
   "name": "@react-native/virtualized-lists",
-  "version": "0.74.0",
+  "version": "0.75.0-main",
   "description": "Virtualized lists for React Native.",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/facebook/react-native.git",
+    "url": "git+https://github.com/facebook/react-native.git",
     "directory": "packages/virtualized-lists"
   },
   "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/virtualized-lists#readme",
@@ -27,6 +27,13 @@
     "react-test-renderer": "18.2.0"
   },
   "peerDependencies": {
+    "@types/react": "^18.2.6",
+    "react": "*",
     "react-native": "*"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
   }
 }

@@ -37,6 +37,8 @@ export type EdgeInsetsValue = {
 export type DimensionValue = number | string | 'auto' | AnimatedNode | null;
 export type AnimatableNumericValue = number | AnimatedNode;
 
+export type CursorValue = 'auto' | 'pointer';
+
 /**
  * React Native's layout system is based on Flexbox and is powered both
  * on iOS and Android by an open source project called `Yoga`:
@@ -469,22 +471,23 @@ type ____LayoutStyle_Internal = $ReadOnly<{
   borderTopWidth?: number,
 
   /** `position` in React Native is similar to regular CSS, but
-   *  everything is set to `relative` by default, so `absolute`
-   *  positioning is always just relative to the parent.
+   *  everything is set to `relative` by default.
    *
    *  If you want to position a child using specific numbers of logical
    *  pixels relative to its parent, set the child to have `absolute`
    *  position.
    *
    *  If you want to position a child relative to something
-   *  that is not its parent, just don't use styles for that. Use the
-   *  component tree.
+   *  that is not its parent, set the child to have `absolute` position and the
+   *  nodes between to have `static` position.
+   *
+   *  Note that `static` is only available on the new renderer.
    *
    *  See https://github.com/facebook/yoga
    *  for more details on how `position` differs between React Native
    *  and CSS.
    */
-  position?: 'absolute' | 'relative',
+  position?: 'absolute' | 'relative' | 'static',
 
   /** `flexDirection` controls which directions children of a container go.
    *  `row` goes left to right, `column` goes top to bottom, and you may
@@ -728,6 +731,7 @@ export type ____ViewStyle_InternalCore = $ReadOnly<{
   opacity?: AnimatableNumericValue,
   elevation?: number,
   pointerEvents?: 'auto' | 'none' | 'box-none' | 'box-only',
+  cursor?: CursorValue,
 }>;
 
 export type ____ViewStyle_Internal = $ReadOnly<{
@@ -912,7 +916,10 @@ export type ____Styles_Internal = {
   ...
 };
 
-export type ____FlattenStyleProp_Internal<+TStyleProp> = $Call<
-  <T>(GenericStyleProp<T>) => T,
-  TStyleProp,
->;
+export type ____FlattenStyleProp_Internal<
+  +TStyleProp: GenericStyleProp<mixed>,
+> = TStyleProp extends null | void | false | ''
+  ? empty
+  : TStyleProp extends $ReadOnlyArray<infer V>
+    ? ____FlattenStyleProp_Internal<V>
+    : TStyleProp;

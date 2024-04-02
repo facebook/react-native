@@ -9,46 +9,14 @@
 #include "SchedulerPriorityUtils.h"
 
 #include <cxxreact/ErrorUtils.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
+#include <react/renderer/consistency/ScopedShadowTreeRevisionLock.h>
 #include <react/renderer/debug/SystraceSection.h>
-#include <react/utils/CoreFeatures.h>
+#include <react/utils/OnScopeExit.h>
 #include <utility>
 #include "ErrorUtils.h"
 
 namespace facebook::react {
-
-namespace {
-/**
- * This is partially equivalent to the "Perform a microtask checkpoint" step in
- * the Web event loop. See
- * https://html.spec.whatwg.org/multipage/webappapis.html#perform-a-microtask-checkpoint.
- *
- * Iterates on \c drainMicrotasks until it completes or hits the retries bound.
- */
-void executeMicrotasks(jsi::Runtime& runtime) {
-  SystraceSection s("RuntimeScheduler::executeMicrotasks");
-
-  uint8_t retries = 0;
-  // A heuristic number to guard infinite or absurd numbers of retries.
-  const static unsigned int kRetriesBound = 255;
-
-  while (retries < kRetriesBound) {
-    try {
-      // The default behavior of \c drainMicrotasks is unbounded execution.
-      // We may want to make it bounded in the future.
-      if (runtime.drainMicrotasks()) {
-        break;
-      }
-    } catch (jsi::JSError& error) {
-      handleJSError(runtime, error, true);
-    }
-    retries++;
-  }
-
-  if (retries == kRetriesBound) {
-    throw std::runtime_error("Hits microtasks retries bound.");
-  }
-}
-} // namespace
 
 #pragma mark - Public
 
@@ -107,10 +75,6 @@ bool RuntimeScheduler_Modern::getShouldYield() const noexcept {
       (!taskQueue_.empty() && taskQueue_.top() != currentTask_);
 }
 
-bool RuntimeScheduler_Modern::getIsSynchronous() const noexcept {
-  return isSynchronous_;
-}
-
 void RuntimeScheduler_Modern::cancelTask(Task& task) noexcept {
   task.callback.reset();
 }
@@ -138,8 +102,6 @@ void RuntimeScheduler_Modern::executeNowOnTheSameThread(
 
         syncTaskRequests_--;
 
-        isSynchronous_ = true;
-
         auto currentTime = now_();
         auto priority = SchedulerPriority::ImmediatePriority;
         auto expirationTime =
@@ -148,8 +110,6 @@ void RuntimeScheduler_Modern::executeNowOnTheSameThread(
             priority, std::move(callback), expirationTime);
 
         executeTask(runtime, task, currentTime);
-
-        isSynchronous_ = false;
       });
 
   bool shouldScheduleWorkLoop = false;
@@ -173,7 +133,7 @@ void RuntimeScheduler_Modern::executeNowOnTheSameThread(
 
 void RuntimeScheduler_Modern::callExpiredTasks(jsi::Runtime& runtime) {
   // If we have first-class support for microtasks, this a no-op.
-  if (CoreFeatures::enableMicrotasks) {
+  if (ReactNativeFeatureFlags::enableMicrotasks()) {
     return;
   }
 
@@ -185,13 +145,19 @@ void RuntimeScheduler_Modern::scheduleRenderingUpdate(
     RuntimeSchedulerRenderingUpdate&& renderingUpdate) {
   SystraceSection s("RuntimeScheduler::scheduleRenderingUpdate");
 
-  if (CoreFeatures::blockPaintForUseLayoutEffect) {
+  if (ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop()) {
     pendingRenderingUpdates_.push(renderingUpdate);
   } else {
     if (renderingUpdate != nullptr) {
       renderingUpdate();
     }
   }
+}
+
+void RuntimeScheduler_Modern::setShadowTreeRevisionConsistencyManager(
+    ShadowTreeRevisionConsistencyManager*
+        shadowTreeRevisionConsistencyManager) {
+  shadowTreeRevisionConsistencyManager_ = shadowTreeRevisionConsistencyManager;
 }
 
 #pragma mark - Private
@@ -294,16 +260,21 @@ void RuntimeScheduler_Modern::executeTask(
   currentTask_ = task;
   currentPriority_ = task->priority;
 
-  executeMacrotask(runtime, task, didUserCallbackTimeout);
+  {
+    ScopedShadowTreeRevisionLock revisionLock(
+        shadowTreeRevisionConsistencyManager_);
 
-  if (CoreFeatures::enableMicrotasks) {
-    // "Perform a microtask checkpoint" step.
-    executeMicrotasks(runtime);
-  }
+    executeMacrotask(runtime, task, didUserCallbackTimeout);
 
-  if (CoreFeatures::blockPaintForUseLayoutEffect) {
-    // "Update the rendering" step.
-    updateRendering();
+    if (ReactNativeFeatureFlags::enableMicrotasks()) {
+      // "Perform a microtask checkpoint" step.
+      performMicrotaskCheckpoint(runtime);
+    }
+
+    if (ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop()) {
+      // "Update the rendering" step.
+      updateRendering();
+    }
   }
 }
 
@@ -336,6 +307,46 @@ void RuntimeScheduler_Modern::executeMacrotask(
     // If the task returned a continuation callback, we re-assign it to the task
     // and keep the task in the queue.
     task->callback = result.getObject(runtime).getFunction(runtime);
+  }
+}
+
+/**
+ * This is partially equivalent to the "Perform a microtask checkpoint" step in
+ * the Web event loop. See
+ * https://html.spec.whatwg.org/multipage/webappapis.html#perform-a-microtask-checkpoint.
+ *
+ * Iterates on \c drainMicrotasks until it completes or hits the retries bound.
+ */
+void RuntimeScheduler_Modern::performMicrotaskCheckpoint(
+    jsi::Runtime& runtime) {
+  SystraceSection s("RuntimeScheduler::performMicrotaskCheckpoint");
+
+  if (performingMicrotaskCheckpoint_) {
+    return;
+  }
+
+  performingMicrotaskCheckpoint_ = true;
+  OnScopeExit restoreFlag([&]() { performingMicrotaskCheckpoint_ = false; });
+
+  uint8_t retries = 0;
+  // A heuristic number to guard infinite or absurd numbers of retries.
+  const static unsigned int kRetriesBound = 255;
+
+  while (retries < kRetriesBound) {
+    try {
+      // The default behavior of \c drainMicrotasks is unbounded execution.
+      // We may want to make it bounded in the future.
+      if (runtime.drainMicrotasks()) {
+        break;
+      }
+    } catch (jsi::JSError& error) {
+      handleJSError(runtime, error, true);
+    }
+    retries++;
+  }
+
+  if (retries == kRetriesBound) {
+    throw std::runtime_error("Hits microtasks retries bound.");
   }
 }
 

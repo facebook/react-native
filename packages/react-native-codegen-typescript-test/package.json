@@ -1,12 +1,12 @@
 {
   "name": "@react-native/codegen-typescript-test",
-  "version": "0.0.1",
+  "version": "0.75.0-main",
   "private": true,
   "description": "TypeScript related unit test for @react-native/codegen",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/facebook/react-native.git",
+    "url": "git+https://github.com/facebook/react-native.git",
     "directory": "packages/react-native-codegen-typescript-test"
   },
   "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/react-native-typescript-test",
@@ -19,7 +19,7 @@
     "prepare": "yarn run build"
   },
   "dependencies": {
-    "@react-native/codegen": "*"
+    "@react-native/codegen": "0.75.0-main"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

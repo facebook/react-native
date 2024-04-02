@@ -19,6 +19,7 @@ TODO:
 import type {SchemaType} from '../CodegenSchema';
 
 const schemaValidator = require('../SchemaValidator.js');
+const generateComponentDescriptorCpp = require('./components/GenerateComponentDescriptorCpp.js');
 const generateComponentDescriptorH = require('./components/GenerateComponentDescriptorH.js');
 const generateComponentHObjCpp = require('./components/GenerateComponentHObjCpp.js');
 const generateEventEmitterCpp = require('./components/GenerateEventEmitterCpp.js');
@@ -46,6 +47,7 @@ const path = require('path');
 
 const ALL_GENERATORS = {
   generateComponentDescriptorH: generateComponentDescriptorH.generate,
+  generateComponentDescriptorCpp: generateComponentDescriptorCpp.generate,
   generateComponentHObjCpp: generateComponentHObjCpp.generate,
   generateEventEmitterCpp: generateEventEmitterCpp.generate,
   generateEventEmitterH: generateEventEmitterH.generate,
@@ -77,11 +79,13 @@ type LibraryOptions = $ReadOnly<{
   outputDirectory: string,
   packageName?: string, // Some platforms have a notion of package, which should be configurable.
   assumeNonnull: boolean,
+  useLocalIncludePaths?: boolean,
 }>;
 
 type SchemasOptions = $ReadOnly<{
   schemas: {[string]: SchemaType},
   outputDirectory: string,
+  supportedApplePlatforms?: {[string]: {[string]: boolean}},
 }>;
 
 type LibraryGenerators =
@@ -124,6 +128,7 @@ const LIBRARY_GENERATORS = {
   componentsAndroid: [
     // JNI/C++ files
     generateComponentDescriptorH.generate,
+    generateComponentDescriptorCpp.generate,
     generateEventEmitterCpp.generate,
     generateEventEmitterH.generate,
     generatePropsCpp.generate,
@@ -138,6 +143,7 @@ const LIBRARY_GENERATORS = {
   ],
   componentsIOS: [
     generateComponentDescriptorH.generate,
+    generateComponentDescriptorCpp.generate,
     generateEventEmitterCpp.generate,
     generateEventEmitterH.generate,
     generateComponentHObjCpp.generate,
@@ -232,16 +238,24 @@ module.exports = {
       outputDirectory,
       packageName,
       assumeNonnull,
+      useLocalIncludePaths,
     }: LibraryOptions,
     {generators, test}: LibraryConfig,
   ): boolean {
     schemaValidator.validate(schema);
 
+    const defaultHeaderPrefix = 'react/renderer/components';
+    const headerPrefix =
+      useLocalIncludePaths === true
+        ? ''
+        : `${defaultHeaderPrefix}/${libraryName}/`;
     function composePath(intermediate: string) {
       return path.join(outputDirectory, intermediate, libraryName);
     }
 
-    const componentIOSOutput = composePath('react/renderer/components/');
+    const componentIOSOutput = composePath(
+      useLocalIncludePaths === true ? '' : defaultHeaderPrefix,
+    );
     const modulesIOSOutput = composePath('./');
 
     const outputFoldersForGenerators = {
@@ -262,21 +276,25 @@ module.exports = {
 
     for (const name of generators) {
       for (const generator of LIBRARY_GENERATORS[name]) {
-        generator(libraryName, schema, packageName, assumeNonnull).forEach(
-          (contents: string, fileName: string) => {
-            generatedFiles.push({
-              name: fileName,
-              content: contents,
-              outputDir: outputFoldersForGenerators[name],
-            });
-          },
-        );
+        generator(
+          libraryName,
+          schema,
+          packageName,
+          assumeNonnull,
+          headerPrefix,
+        ).forEach((contents: string, fileName: string) => {
+          generatedFiles.push({
+            name: fileName,
+            content: contents,
+            outputDir: outputFoldersForGenerators[name],
+          });
+        });
       }
     }
     return checkOrWriteFiles(generatedFiles, test);
   },
   generateFromSchemas(
-    {schemas, outputDirectory}: SchemasOptions,
+    {schemas, outputDirectory, supportedApplePlatforms}: SchemasOptions,
     {generators, test}: SchemasConfig,
   ): boolean {
     Object.keys(schemas).forEach(libraryName =>
@@ -287,13 +305,15 @@ module.exports = {
 
     for (const name of generators) {
       for (const generator of SCHEMAS_GENERATORS[name]) {
-        generator(schemas).forEach((contents: string, fileName: string) => {
-          generatedFiles.push({
-            name: fileName,
-            content: contents,
-            outputDir: outputDirectory,
-          });
-        });
+        generator(schemas, supportedApplePlatforms).forEach(
+          (contents: string, fileName: string) => {
+            generatedFiles.push({
+              name: fileName,
+              content: contents,
+              outputDir: outputDirectory,
+            });
+          },
+        );
       }
     }
     return checkOrWriteFiles(generatedFiles, test);

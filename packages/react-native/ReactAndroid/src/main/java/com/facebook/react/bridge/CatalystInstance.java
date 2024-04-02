@@ -12,9 +12,9 @@ import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
 import com.facebook.react.common.annotations.VisibleForTesting;
-import com.facebook.react.internal.turbomodule.core.interfaces.CallInvokerHolder;
-import com.facebook.react.internal.turbomodule.core.interfaces.NativeMethodCallInvokerHolder;
 import com.facebook.react.internal.turbomodule.core.interfaces.TurboModuleRegistry;
+import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder;
+import com.facebook.react.turbomodule.core.interfaces.NativeMethodCallInvokerHolder;
 import java.util.Collection;
 import java.util.List;
 
@@ -46,6 +46,7 @@ public interface CatalystInstance
 
   @DoNotStrip
   void callFunction(String module, String method, NativeArray arguments);
+
   /**
    * Destroys this catalyst instance, waiting for any other threads in ReactQueueConfiguration
    * (besides the UI thread) to finish running. Must be called from the UI thread so that we can
@@ -71,6 +72,11 @@ public interface CatalystInstance
   @Nullable
   NativeModule getNativeModule(String moduleName);
 
+  @Deprecated(
+      since =
+          "getJSIModule(JSIModuleType moduleType) is deprecated and will be deleted in the future."
+              + " Please use ReactInstanceEventListener to subscribe for react instance events"
+              + " instead.")
   JSIModule getJSIModule(JSIModuleType moduleType);
 
   Collection<NativeModule> getNativeModules();
@@ -116,7 +122,8 @@ public interface CatalystInstance
 
   RuntimeScheduler getRuntimeScheduler();
 
-  void addJSIModules(List<JSIModuleSpec> jsiModules);
+  @Deprecated
+  <T extends JSIModule> void addJSIModules(List<JSIModuleSpec<T>> jsiModules);
 
   /**
    * Returns a hybrid object that contains a pointer to a JS CallInvoker, which is used to schedule
@@ -130,25 +137,28 @@ public interface CatalystInstance
    */
   NativeMethodCallInvokerHolder getNativeMethodCallInvokerHolder();
 
-  /**
-   * For the time being, we want code relying on the old infra to also work with TurboModules.
-   * Hence, we must provide the TurboModuleRegistry to CatalystInstance so that getNativeModule,
-   * hasNativeModule, and getNativeModules can also return TurboModules.
-   */
+  @Deprecated(
+      since =
+          "setTurboModuleManager(JSIModule getter) is deprecated and will be deleted in the future."
+              + " Please use setTurboModuleRegistry(TurboModuleRegistry"
+              + " turboModuleRegistry)instead.")
   void setTurboModuleManager(JSIModule getter);
 
   @DeprecatedInNewArchitecture(
       message =
-          "This method will be deprecated later as part of Stable APIs with bridge removal and not encouraged usage.")
+          "This method will be deprecated later as part of Stable APIs with bridge removal and not"
+              + " encouraged usage.")
   void setTurboModuleRegistry(TurboModuleRegistry turboModuleRegistry);
 
   @DeprecatedInNewArchitecture(
       message =
-          "This method will be deprecated later as part of Stable APIs with bridge removal and not encouraged usage.")
+          "This method will be deprecated later as part of Stable APIs with bridge removal and not"
+              + " encouraged usage.")
   void setFabricUIManager(UIManager fabricUIManager);
 
   @DeprecatedInNewArchitecture(
       message =
-          "This method will be deprecated later as part of Stable APIs with bridge removal and not encouraged usage.")
+          "This method will be deprecated later as part of Stable APIs with bridge removal and not"
+              + " encouraged usage.")
   UIManager getFabricUIManager();
 }

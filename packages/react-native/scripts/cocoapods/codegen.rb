@@ -3,6 +3,8 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+require_relative './helpers.rb'
+
 # It builds the codegen CLI if it is not present
 #
 # Parameters:
@@ -30,7 +32,7 @@ def run_codegen!(
   codegen_output_dir: 'build/generated/ios',
   config_key: 'codegenConfig',
   package_json_file: '~/app/package.json',
-  folly_version: '2023.08.07.00',
+  folly_version: Helpers::Constants.folly_config()[:version],
   codegen_utils: CodegenUtils.new()
   )
 

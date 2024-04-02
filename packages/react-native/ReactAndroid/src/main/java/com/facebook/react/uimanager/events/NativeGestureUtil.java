@@ -9,10 +9,12 @@ package com.facebook.react.uimanager.events;
 
 import android.view.MotionEvent;
 import android.view.View;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.RootViewUtil;
 
 /** Utilities for native Views that interpret native gestures (e.g. ScrollView, ViewPager, etc.). */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class NativeGestureUtil {
 
   /**
@@ -24,7 +26,10 @@ public class NativeGestureUtil {
    * @param event the MotionEvent that caused the gesture to be started
    */
   public static void notifyNativeGestureStarted(View view, MotionEvent event) {
-    RootViewUtil.getRootView(view).onChildStartedNativeGesture(view, event);
+    RootView rootView = RootViewUtil.getRootView(view);
+    if (rootView != null) {
+      rootView.onChildStartedNativeGesture(view, event);
+    }
   }
 
   /**

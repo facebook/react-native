@@ -15,7 +15,6 @@ import com.facebook.react.animated.NativeAnimatedModule;
 import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.internal.turbomodule.core.interfaces.TurboModule;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.module.annotations.ReactModuleList;
 import com.facebook.react.module.model.ReactModuleInfo;
@@ -191,7 +190,9 @@ public class MainReactPackage extends TurboReactPackage implements ViewManagerOn
     map.put(name, ModuleSpec.viewManagerSpec(provider));
   }
 
-  /** @return a map of view managers that should be registered with {@link UIManagerModule} */
+  /**
+   * @return a map of view managers that should be registered with {@link UIManagerModule}
+   */
   @SuppressLint("VisibleForTests")
   public Map<String, ModuleSpec> getViewManagersMap() {
     if (mViewManagers == null) {
@@ -297,17 +298,19 @@ public class MainReactPackage extends TurboReactPackage implements ViewManagerOn
                   reactModule.canOverrideExistingModule(),
                   reactModule.needsEagerInit(),
                   reactModule.isCxxModule(),
-                  TurboModule.class.isAssignableFrom(moduleClass)));
+                  ReactModuleInfo.classIsTurboModule(moduleClass)));
         }
       }
       return () -> reactModuleInfoMap;
     } catch (InstantiationException e) {
       throw new RuntimeException(
-          "No ReactModuleInfoProvider for com.facebook.react.shell.MainReactPackage$$ReactModuleInfoProvider",
+          "No ReactModuleInfoProvider for"
+              + " com.facebook.react.shell.MainReactPackage$$ReactModuleInfoProvider",
           e);
     } catch (IllegalAccessException e) {
       throw new RuntimeException(
-          "No ReactModuleInfoProvider for com.facebook.react.shell.MainReactPackage$$ReactModuleInfoProvider",
+          "No ReactModuleInfoProvider for"
+              + " com.facebook.react.shell.MainReactPackage$$ReactModuleInfoProvider",
           e);
     }
   }

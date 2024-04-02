@@ -56,7 +56,7 @@ YG_EXPORT void YGNodeFreeRecursive(YGNodeRef node);
 /**
  * Frees the Yoga node without disconnecting it from its owner or children.
  * Allows garbage collecting Yoga nodes in parallel when the entire tree is
- * unrechable.
+ * unreachable.
  */
 YG_EXPORT void YGNodeFinalize(YGNodeRef node);
 
@@ -186,7 +186,7 @@ typedef struct YGSize {
 } YGSize;
 
 /**
- * Returns the computed dimensions of the node, following the contraints of
+ * Returns the computed dimensions of the node, following the constraints of
  * `widthMode` and `heightMode`:
  *
  * YGMeasureModeUndefined: The parent has not imposed any constraint on the
@@ -199,7 +199,7 @@ typedef struct YGSize {
  * child. The child is going to be given those bounds regardless of how big it
  * wants to be.
  *
- * @returns the size of the leaf node, measured under the given contraints.
+ * @returns the size of the leaf node, measured under the given constraints.
  */
 typedef YGSize (*YGMeasureFunc)(
     YGNodeConstRef node,
@@ -221,7 +221,7 @@ YG_EXPORT void YGNodeSetMeasureFunc(YGNodeRef node, YGMeasureFunc measureFunc);
 YG_EXPORT bool YGNodeHasMeasureFunc(YGNodeConstRef node);
 
 /**
- * @returns a defined offet to baseline (ascent).
+ * @returns a defined offset to baseline (ascent).
  */
 typedef float (*YGBaselineFunc)(YGNodeConstRef node, float width, float height);
 
@@ -262,18 +262,24 @@ YG_EXPORT void YGNodeSetNodeType(YGNodeRef node, YGNodeType nodeType);
  */
 YG_EXPORT YGNodeType YGNodeGetNodeType(YGNodeConstRef node);
 
-typedef void (*YGPrintFunc)(YGNodeConstRef node);
+/**
+ * Make it so that this node will always form a containing block for any
+ * descendant nodes. This is useful for when a node has a property outside of
+ * of Yoga that will form a containing block. For example, transforms or some of
+ * the others listed in
+ * https://developer.mozilla.org/en-US/docs/Web/CSS/Containing_block
+ */
+YG_EXPORT void YGNodeSetAlwaysFormsContainingBlock(
+    YGNodeRef node,
+    bool alwaysFormsContainingBlock);
 
 /**
- * Set a function to be called when configured to print nodes during layout for
- * debugging.
+ * Whether the node will always form a containing block for any descendant. This
+ * can happen in situation where the client implements something like a
+ * transform that can affect containing blocks but is not handled by Yoga
+ * directly.
  */
-YG_EXPORT void YGNodeSetPrintFunc(YGNodeRef node, YGPrintFunc printFunc);
-
-/**
- * Print a node to log output.
- */
-YG_EXPORT void YGNodePrint(YGNodeConstRef node, YGPrintOptions options);
+YG_EXPORT bool YGNodeGetAlwaysFormsContainingBlock(YGNodeConstRef node);
 
 /**
  * @deprecated

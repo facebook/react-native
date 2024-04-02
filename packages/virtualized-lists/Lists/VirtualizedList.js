@@ -90,19 +90,6 @@ type State = {
   pendingScrollUpdateCount: number,
 };
 
-function findLastWhere<T>(
-  arr: $ReadOnlyArray<T>,
-  predicate: (element: T) => boolean,
-): T | null {
-  for (let i = arr.length - 1; i >= 0; i--) {
-    if (predicate(arr[i])) {
-      return arr[i];
-    }
-  }
-
-  return null;
-}
-
 function getScrollingThreshold(threshold: number, visibleLength: number) {
   return (threshold * visibleLength) / 2;
 }
@@ -987,7 +974,8 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       const spacerKey = this._getSpacerKey(!horizontal);
 
       const renderRegions = this.state.renderMask.enumerateRegions();
-      const lastSpacer = findLastWhere(renderRegions, r => r.isSpacer);
+      const lastRegion = renderRegions[renderRegions.length - 1];
+      const lastSpacer = lastRegion?.isSpacer ? lastRegion : null;
 
       for (const section of renderRegions) {
         if (section.isSpacer) {
@@ -1147,7 +1135,6 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
               this.context == null &&
               this.props.scrollEnabled !== false
             ) {
-              // TODO (T46547044): use React.warn once 16.9 is sync'd: https://github.com/facebook/react/pull/15170
               console.error(
                 'VirtualizedLists should never be nested inside plain ScrollViews with the same ' +
                   'orientation because it can break windowing and other functionality - use another ' +
@@ -1561,7 +1548,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     // Next check if the user just scrolled within the start threshold
     // and call onStartReached only once for a given content length,
     // and only if onEndReached is not being executed
-    else if (
+    if (
       onStartReached != null &&
       this.state.cellsAroundViewport.first === 0 &&
       isWithinStartThreshold &&
@@ -1573,13 +1560,11 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
 
     // If the user scrolls away from the start or end and back again,
     // cause onStartReached or onEndReached to be triggered again
-    else {
-      this._sentStartForContentLength = isWithinStartThreshold
-        ? this._sentStartForContentLength
-        : 0;
-      this._sentEndForContentLength = isWithinEndThreshold
-        ? this._sentEndForContentLength
-        : 0;
+    if (!isWithinStartThreshold) {
+      this._sentStartForContentLength = 0;
+    }
+    if (!isWithinEndThreshold) {
+      this._sentEndForContentLength = 0;
     }
   }
 

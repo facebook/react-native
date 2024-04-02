@@ -13,6 +13,7 @@ using namespace facebook::react;
 namespace facebook::react {
 
 constexpr uint32_t INT_SIZE = sizeof(uint32_t);
+constexpr uint32_t LONG_SIZE = sizeof(uint64_t);
 constexpr uint32_t DOUBLE_SIZE = sizeof(double);
 constexpr uint32_t MAX_BUCKET_VALUE_SIZE = sizeof(uint64_t);
 
@@ -76,6 +77,14 @@ void MapBufferBuilder::putInt(MapBuffer::Key key, int32_t value) {
       INT_SIZE);
 }
 
+void MapBufferBuilder::putLong(MapBuffer::Key key, int64_t value) {
+  storeKeyValue(
+      key,
+      MapBuffer::DataType::Long,
+      reinterpret_cast<const uint8_t*>(&value),
+      LONG_SIZE);
+}
+
 void MapBufferBuilder::putString(MapBuffer::Key key, const std::string& value) {
   auto strSize = value.size();
   const char* strData = value.data();
@@ -116,18 +125,18 @@ void MapBufferBuilder::putMapBuffer(MapBuffer::Key key, const MapBuffer& map) {
 void MapBufferBuilder::putMapBufferList(
     MapBuffer::Key key,
     const std::vector<MapBuffer>& mapBufferList) {
-  int32_t offset = dynamicData_.size();
+  auto offset = static_cast<int32_t>(dynamicData_.size());
   int32_t dataSize = 0;
   for (const MapBuffer& mapBuffer : mapBufferList) {
-    dataSize = dataSize + INT_SIZE + mapBuffer.size();
+    dataSize = dataSize + INT_SIZE + static_cast<int32_t>(mapBuffer.size());
   }
 
   dynamicData_.resize(offset + INT_SIZE, 0);
   memcpy(dynamicData_.data() + offset, &dataSize, INT_SIZE);
 
   for (const MapBuffer& mapBuffer : mapBufferList) {
-    int32_t mapBufferSize = mapBuffer.size();
-    int32_t dynamicDataSize = dynamicData_.size();
+    auto mapBufferSize = static_cast<int32_t>(mapBuffer.size());
+    auto dynamicDataSize = static_cast<int32_t>(dynamicData_.size());
     dynamicData_.resize(dynamicDataSize + INT_SIZE + mapBufferSize, 0);
     // format [length of buffer (int)] + [bytes of MapBuffer]
     memcpy(dynamicData_.data() + dynamicDataSize, &mapBufferSize, INT_SIZE);

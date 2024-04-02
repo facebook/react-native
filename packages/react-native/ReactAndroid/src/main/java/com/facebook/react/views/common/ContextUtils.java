@@ -10,10 +10,12 @@ package com.facebook.react.views.common;
 import android.content.Context;
 import android.content.ContextWrapper;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 
 /**
  * Class containing static methods involving manipulations of Contexts and their related subclasses.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ContextUtils {
 
   /**

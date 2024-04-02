@@ -20,17 +20,7 @@
 - (UIWindow *)alertWindow
 {
   if (_alertWindow == nil) {
-    _alertWindow = [self getUIWindowFromScene];
-
-    if (_alertWindow == nil) {
-      UIWindow *keyWindow = RCTSharedApplication().keyWindow;
-      if (keyWindow) {
-        _alertWindow = [[UIWindow alloc] initWithFrame:keyWindow.bounds];
-      } else {
-        // keyWindow is nil, so we cannot create and initialize _alertWindow
-        NSLog(@"Unable to create alert window: keyWindow is nil");
-      }
-    }
+    _alertWindow = [[UIWindow alloc] initWithWindowScene:RCTKeyWindow().windowScene];
 
     if (_alertWindow) {
       _alertWindow.rootViewController = [UIViewController new];
@@ -45,9 +35,8 @@
 {
   UIUserInterfaceStyle style = self.overrideUserInterfaceStyle;
   if (style == UIUserInterfaceStyleUnspecified) {
-    style = RCTSharedApplication().delegate.window.overrideUserInterfaceStyle
-        ? RCTSharedApplication().delegate.window.overrideUserInterfaceStyle
-        : UIUserInterfaceStyleUnspecified;
+    UIUserInterfaceStyle overriddenStyle = RCTKeyWindow().overrideUserInterfaceStyle;
+    style = overriddenStyle ? overriddenStyle : UIUserInterfaceStyleUnspecified;
   }
 
   self.overrideUserInterfaceStyle = style;
@@ -63,18 +52,6 @@
   _alertWindow.windowScene = nil;
 
   _alertWindow = nil;
-}
-
-- (UIWindow *)getUIWindowFromScene
-{
-  for (UIScene *scene in RCTSharedApplication().connectedScenes) {
-    if (scene.activationState == UISceneActivationStateForegroundActive &&
-        [scene isKindOfClass:[UIWindowScene class]]) {
-      return [[UIWindow alloc] initWithWindowScene:(UIWindowScene *)scene];
-    }
-  }
-
-  return nil;
 }
 
 @end

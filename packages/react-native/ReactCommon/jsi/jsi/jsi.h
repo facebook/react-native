@@ -209,6 +209,13 @@ class JSI_EXPORT Runtime {
   virtual Value evaluatePreparedJavaScript(
       const std::shared_ptr<const PreparedJavaScript>& js) = 0;
 
+  /// Queues a microtask in the JavaScript VM internal Microtask (a.k.a. Job in
+  /// ECMA262) queue, to be executed when the host drains microtasks in
+  /// its event loop implementation.
+  ///
+  /// \param callback a function to be executed as a microtask.
+  virtual void queueMicrotask(const jsi::Function& callback) = 0;
+
   /// Drain the JavaScript VM internal Microtask (a.k.a. Job in ECMA262) queue.
   ///
   /// \param maxMicrotasksHint a hint to tell an implementation that it should

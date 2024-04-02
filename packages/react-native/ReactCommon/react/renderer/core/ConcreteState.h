@@ -12,7 +12,6 @@
 
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/core/State.h>
-#include <react/utils/CoreFeatures.h>
 
 namespace facebook::react {
 
@@ -59,20 +58,10 @@ class ConcreteState : public State {
    * function for cases where a new value of data does not depend on an old
    * value.
    */
-  void updateState(Data&& newData, EventPriority priority) const {
-    updateState(
-        [data{std::move(newData)}](const Data& oldData) -> SharedData {
-          return std::make_shared<Data const>(data);
-        },
-        priority);
-  }
-
   void updateState(Data&& newData) const {
-    updateState(
-        std::move(newData),
-        CoreFeatures::enableDefaultAsyncBatchedPriority
-            ? EventPriority::AsynchronousBatched
-            : EventPriority::AsynchronousUnbatched);
+    updateState([data{std::move(newData)}](const Data& oldData) -> SharedData {
+      return std::make_shared<Data const>(data);
+    });
   }
 
   /*
@@ -84,8 +73,7 @@ class ConcreteState : public State {
    * return `nullptr`.
    */
   void updateState(
-      std::function<StateData::Shared(const Data& oldData)> callback,
-      EventPriority priority = EventPriority::AsynchronousBatched) const {
+      std::function<StateData::Shared(const Data& oldData)> callback) const {
     auto family = family_.lock();
 
     if (!family) {
@@ -100,7 +88,7 @@ class ConcreteState : public State {
           return callback(*static_cast<Data const*>(oldData.get()));
         }};
 
-    family->dispatchRawState(std::move(stateUpdate), priority);
+    family->dispatchRawState(std::move(stateUpdate));
   }
 
 #ifdef ANDROID

@@ -70,7 +70,7 @@ NSString *RCTColorSchemePreference(UITraitCollection *traitCollection)
 - (instancetype)init
 {
   if ((self = [super init])) {
-    UITraitCollection *traitCollection = RCTSharedApplication().delegate.window.traitCollection;
+    UITraitCollection *traitCollection = RCTKeyWindow().traitCollection;
     _currentColorScheme = RCTColorSchemePreference(traitCollection);
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(appearanceChanged:)
@@ -131,14 +131,6 @@ RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString *, getColorScheme)
 - (NSArray<NSString *> *)supportedEvents
 {
   return @[ @"appearanceChanged" ];
-}
-
-- (void)startObserving
-{
-}
-
-- (void)stopObserving
-{
 }
 
 - (void)invalidate

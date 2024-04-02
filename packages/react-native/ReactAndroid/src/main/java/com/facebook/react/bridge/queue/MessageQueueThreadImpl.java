@@ -187,7 +187,9 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
     }
   }
 
-  /** @return a MessageQueueThreadImpl corresponding to Android's main UI thread. */
+  /**
+   * @return a MessageQueueThreadImpl corresponding to Android's main UI thread.
+   */
   private static MessageQueueThreadImpl createForMainThread(
       String name, QueueThreadExceptionHandler exceptionHandler) {
     final MessageQueueThreadImpl mqt =

@@ -35,6 +35,7 @@ using namespace facebook::react;
   ParagraphAttributes _paragraphAttributes;
   RCTParagraphComponentAccessibilityProvider *_accessibilityProvider;
   UILongPressGestureRecognizer *_longPressGestureRecognizer;
+  CAShapeLayer *_highlightLayer;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -132,7 +133,21 @@ using namespace facebook::react;
   [nativeTextLayoutManager drawAttributedString:_state->getData().attributedString
                             paragraphAttributes:_paragraphAttributes
                                           frame:frame
-                                    textStorage:unwrapManagedObject(nsTextStorage)];
+                                    textStorage:unwrapManagedObject(nsTextStorage)
+                              drawHighlightPath:^(UIBezierPath *highlightPath) {
+                                if (highlightPath) {
+                                  if (!self->_highlightLayer) {
+                                    self->_highlightLayer = [CAShapeLayer layer];
+                                    self->_highlightLayer.fillColor = [UIColor colorWithWhite:0 alpha:0.25].CGColor;
+                                    [self.layer addSublayer:self->_highlightLayer];
+                                  }
+                                  self->_highlightLayer.position = frame.origin;
+                                  self->_highlightLayer.path = highlightPath.CGPath;
+                                } else {
+                                  [self->_highlightLayer removeFromSuperlayer];
+                                  self->_highlightLayer = nil;
+                                }
+                              }];
 }
 
 #pragma mark - Accessibility
@@ -236,29 +251,21 @@ using namespace facebook::react;
 
 - (void)handleLongPress:(UILongPressGestureRecognizer *)gesture
 {
-#if !TARGET_OS_UIKITFORMAC
-  if (@available(iOS 16.0, *)) {
+  if (@available(iOS 16.0, macCatalyst 16.0, *)) {
     CGPoint location = [gesture locationInView:self];
     UIEditMenuConfiguration *config = [UIEditMenuConfiguration configurationWithIdentifier:nil sourcePoint:location];
     if (_editMenuInteraction) {
       [_editMenuInteraction presentEditMenuWithConfiguration:config];
     }
-    return;
-  }
-  // TODO: Adopt showMenuFromRect (necessary for UIKitForMac)
-  UIMenuController *menuController = [UIMenuController sharedMenuController];
+  } else {
+    UIMenuController *menuController = [UIMenuController sharedMenuController];
 
-  if (menuController.isMenuVisible) {
-    return;
-  }
+    if (menuController.isMenuVisible) {
+      return;
+    }
 
-  if (!self.isFirstResponder) {
-    [self becomeFirstResponder];
+    [menuController showMenuFromView:self rect:self.bounds];
   }
-
-  [menuController setTargetRect:self.bounds inView:self];
-  [menuController setMenuVisible:YES animated:YES];
-#endif
 }
 
 - (BOOL)canBecomeFirstResponder

@@ -165,7 +165,10 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
     // To animate dismissal of view controller, snapshot of
     // view hierarchy needs to be added to the UIViewController.
     UIView *snapshot = _modalContentsSnapshot;
-    [self.viewController.view addSubview:snapshot];
+
+    if (_shouldPresent) {
+      [self.viewController.view addSubview:snapshot];
+    }
 
     [self dismissViewController:self.viewController
                        animated:_shouldAnimatePresentation
@@ -194,7 +197,7 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
 - (void)mountingTransactionWillMount:(const MountingTransaction &)transaction
                 withSurfaceTelemetry:(const facebook::react::SurfaceTelemetry &)surfaceTelemetry
 {
-  _modalContentsSnapshot = [self.viewController.view snapshotViewAfterScreenUpdates:NO];
+  _modalContentsSnapshot = [self.viewController.view snapshotViewAfterScreenUpdates:YES];
 }
 
 #pragma mark - UIView methods

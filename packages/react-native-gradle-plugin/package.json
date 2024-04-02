@@ -1,11 +1,11 @@
 {
   "name": "@react-native/gradle-plugin",
-  "version": "0.74.0",
+  "version": "0.75.0-main",
   "description": "Gradle Plugin for React Native",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/facebook/react-native.git",
+    "url": "git+https://github.com/facebook/react-native.git",
     "directory": "packages/react-native-gradle-plugin"
   },
   "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/react-native-gradle-plugin#readme",
@@ -31,7 +31,5 @@
     "gradlew.bat",
     "src/main",
     "README.md"
-  ],
-  "dependencies": {},
-  "devDependencies": {}
+  ]
 }

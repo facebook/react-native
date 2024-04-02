@@ -10,7 +10,6 @@ package com.facebook.react;
 import android.app.Application;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.bridge.JSIModulePackage;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
@@ -31,7 +30,8 @@ import java.util.List;
  */
 @DeprecatedInNewArchitecture(
     message =
-        "This class will be replaced by com.facebook.react.ReactHost in the new architecture of React Native.")
+        "This class will be replaced by com.facebook.react.ReactHost in the new architecture of"
+            + " React Native.")
 public abstract class ReactNativeHost {
 
   private final Application mApplication;
@@ -85,7 +85,6 @@ public abstract class ReactNativeHost {
             .setLazyViewManagersEnabled(getLazyViewManagersEnabled())
             .setRedBoxHandler(getRedBoxHandler())
             .setJavaScriptExecutorFactory(getJavaScriptExecutorFactory())
-            .setJSIModulesPackage(getJSIModulePackage())
             .setUIManagerProvider(getUIManagerProvider())
             .setInitialLifecycleState(LifecycleState.BEFORE_CREATE)
             .setReactPackageTurboModuleManagerDelegateBuilder(
@@ -127,12 +126,8 @@ public abstract class ReactNativeHost {
     return mApplication;
   }
 
-  protected @Nullable JSIModulePackage getJSIModulePackage() {
-    return null;
-  }
-
   protected @Nullable UIManagerProvider getUIManagerProvider() {
-    return null;
+    return reactApplicationContext -> null;
   }
 
   /** Returns whether or not to treat it as normal if Activity is null. */

@@ -40,6 +40,6 @@ internal object Os {
       if (isWindows()) {
         this.relativeTo(base).path
       } else {
-        this.absolutePath
+        absolutePath
       }
 }

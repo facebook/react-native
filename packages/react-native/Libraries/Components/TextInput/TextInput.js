@@ -742,31 +742,10 @@ export type Props = $ReadOnly<{|
   onChange?: ?(e: ChangeEvent) => mixed,
 
   /**
-   * DANGER: this API is not stable and will change in the future.
-   *
-   * Callback will be called on the main thread and may result in dropped frames.
-   * Callback that is called when the text input's text changes.
-   *
-   * @platform ios
-   */
-  unstable_onChangeSync?: ?(e: ChangeEvent) => mixed,
-
-  /**
    * Callback that is called when the text input's text changes.
    * Changed text is passed as an argument to the callback handler.
    */
   onChangeText?: ?(text: string) => mixed,
-
-  /**
-   * DANGER: this API is not stable and will change in the future.
-   *
-   * Callback will be called on the main thread and may result in dropped frames.
-   * Callback that is called when the text input's text changes.
-   * Changed text is passed as an argument to the callback handler.
-   *
-   * @platform ios
-   */
-  unstable_onChangeTextSync?: ?(text: string) => mixed,
 
   /**
    * Callback that is called when the text input's content size changes.
@@ -795,21 +774,6 @@ export type Props = $ReadOnly<{|
    * Fires before `onChange` callbacks.
    */
   onKeyPress?: ?(e: KeyPressEvent) => mixed,
-
-  /**
-   * DANGER: this API is not stable and will change in the future.
-   *
-   * Callback will be called on the main thread and may result in dropped frames.
-   *
-   * Callback that is called when a key is pressed.
-   * This will be called with `{ nativeEvent: { key: keyValue } }`
-   * where `keyValue` is `'Enter'` or `'Backspace'` for respective keys and
-   * the typed-in character otherwise including `' '` for space.
-   * Fires before `onChange` callbacks.
-   *
-   * @platform ios
-   */
-  unstable_onKeyPressSync?: ?(e: KeyPressEvent) => mixed,
 
   /**
    * Called when a single tap gesture is detected.
@@ -1158,8 +1122,8 @@ function InternalTextInput(props: Props): React.Node {
     typeof props.value === 'string'
       ? props.value
       : typeof props.defaultValue === 'string'
-      ? props.defaultValue
-      : '';
+        ? props.defaultValue
+        : '';
 
   // This is necessary in case native updates the text and JS decides
   // that the update should be ignored and we should stick with the value
@@ -1308,26 +1272,6 @@ function InternalTextInput(props: Props): React.Node {
     setMostRecentEventCount(event.nativeEvent.eventCount);
   };
 
-  const _onChangeSync = (event: ChangeEvent) => {
-    const currentText = event.nativeEvent.text;
-    props.unstable_onChangeSync && props.unstable_onChangeSync(event);
-    props.unstable_onChangeTextSync &&
-      props.unstable_onChangeTextSync(currentText);
-
-    if (inputRef.current == null) {
-      // calling `props.onChange` or `props.onChangeText`
-      // may clean up the input itself. Exits here.
-      return;
-    }
-
-    setLastNativeText(currentText);
-    // This must happen last, after we call setLastNativeText.
-    // Different ordering can cause bugs when editing AndroidTextInputs
-    // with multiple Fragments.
-    // We must update this so that controlled input updates work.
-    setMostRecentEventCount(event.nativeEvent.eventCount);
-  };
-
   const _onSelectionChange = (event: SelectionChangeEvent) => {
     props.onSelectionChange && props.onSelectionChange(event);
 
@@ -1455,8 +1399,7 @@ function InternalTextInput(props: Props): React.Node {
     };
   }
 
-  // $FlowFixMe[underconstrained-implicit-instantiation]
-  let style = flattenStyle(props.style);
+  const style = flattenStyle<TextStyleProp>(props.style);
 
   if (Platform.OS === 'ios') {
     const RCTTextInputView =
@@ -1464,11 +1407,12 @@ function InternalTextInput(props: Props): React.Node {
         ? RCTMultilineTextInputView
         : RCTSinglelineTextInputView;
 
-    style = props.multiline === true ? [styles.multilineInput, style] : style;
-
-    const useOnChangeSync =
-      (props.unstable_onChangeSync || props.unstable_onChangeTextSync) &&
-      !(props.onChange || props.onChangeText);
+    const useMultilineDefaultStyle =
+      props.multiline === true &&
+      (style == null ||
+        (style.padding == null &&
+          style.paddingVertical == null &&
+          style.paddingTop == null));
 
     textInput = (
       <RCTTextInputView
@@ -1485,16 +1429,17 @@ function InternalTextInput(props: Props): React.Node {
         mostRecentEventCount={mostRecentEventCount}
         nativeID={id ?? props.nativeID}
         onBlur={_onBlur}
-        onKeyPressSync={props.unstable_onKeyPressSync}
         onChange={_onChange}
-        onChangeSync={useOnChangeSync === true ? _onChangeSync : null}
         onContentSizeChange={props.onContentSizeChange}
         onFocus={_onFocus}
         onScroll={_onScroll}
         onSelectionChange={_onSelectionChange}
         onSelectionChangeShouldSetResponder={emptyFunctionThatReturnsTrue}
         selection={selection}
-        style={style}
+        style={StyleSheet.compose(
+          useMultilineDefaultStyle ? styles.multilineDefault : null,
+          style,
+        )}
         text={text}
       />
     );
@@ -1729,12 +1674,12 @@ const ExportedForwardRef: React.AbstractComponent<
         textContentType != null
           ? textContentType
           : Platform.OS === 'ios' &&
-            autoComplete &&
-            autoComplete in autoCompleteWebToTextContentTypeMap
-          ? // $FlowFixMe[invalid-computed-prop]
-            // $FlowFixMe[prop-missing]
-            autoCompleteWebToTextContentTypeMap[autoComplete]
-          : textContentType
+              autoComplete &&
+              autoComplete in autoCompleteWebToTextContentTypeMap
+            ? // $FlowFixMe[invalid-computed-prop]
+              // $FlowFixMe[prop-missing]
+              autoCompleteWebToTextContentTypeMap[autoComplete]
+            : textContentType
       }
       {...restProps}
       forwardedRef={forwardedRef}
@@ -1744,13 +1689,6 @@ const ExportedForwardRef: React.AbstractComponent<
 });
 
 ExportedForwardRef.displayName = 'TextInput';
-
-/**
- * Switch to `deprecated-react-native-prop-types` for compatibility with future
- * releases. This is deprecated and will be removed in the future.
- */
-ExportedForwardRef.propTypes =
-  require('deprecated-react-native-prop-types').TextInputPropTypes;
 
 // $FlowFixMe[prop-missing]
 ExportedForwardRef.State = {
@@ -1771,7 +1709,7 @@ export type TextInputComponentStatics = $ReadOnly<{|
 |}>;
 
 const styles = StyleSheet.create({
-  multilineInput: {
+  multilineDefault: {
     // This default top inset makes RCTMultilineTextInputView seem as close as possible
     // to single-line RCTSinglelineTextInputView defaults, using the system defaults
     // of font size 17 and a height of 31 points.

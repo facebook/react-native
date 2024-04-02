@@ -42,6 +42,10 @@ public class Task<TResult> implements TaskInterface<TResult> {
   /** An {@link java.util.concurrent.Executor} that executes tasks on the UI thread. */
   public static final Executor UI_THREAD_EXECUTOR = AndroidExecutors.uiThread();
 
+  /** An {@link java.util.concurrent.Executor} that executes tasks on the UI thread. */
+  public static final Executor UI_THREAD_CONDITIONAL_SYNC_EXECUTOR =
+      AndroidExecutors.uiThreadConditionalSync();
+
   /**
    * Interface for handlers invoked when a failed {@code Task} is about to be finalized, but the
    * exception has not been consumed.
@@ -121,7 +125,9 @@ public class Task<TResult> implements TaskInterface<TResult> {
     }
   }
 
-  /** @return {@code true} if the task was cancelled, {@code false} otherwise. */
+  /**
+   * @return {@code true} if the task was cancelled, {@code false} otherwise.
+   */
   @Override
   public boolean isCancelled() {
     synchronized (lock) {
@@ -129,7 +135,9 @@ public class Task<TResult> implements TaskInterface<TResult> {
     }
   }
 
-  /** @return {@code true} if the task has an error, {@code false} otherwise. */
+  /**
+   * @return {@code true} if the task has an error, {@code false} otherwise.
+   */
   @Override
   public boolean isFaulted() {
     synchronized (lock) {
@@ -137,7 +145,9 @@ public class Task<TResult> implements TaskInterface<TResult> {
     }
   }
 
-  /** @return The result of the task, if set. {@code null} otherwise. */
+  /**
+   * @return The result of the task, if set. {@code null} otherwise.
+   */
   @Override
   public TResult getResult() {
     synchronized (lock) {
@@ -145,7 +155,9 @@ public class Task<TResult> implements TaskInterface<TResult> {
     }
   }
 
-  /** @return The error for the task, if set. {@code null} otherwise. */
+  /**
+   * @return The error for the task, if set. {@code null} otherwise.
+   */
   @Override
   public Exception getError() {
     synchronized (lock) {
@@ -647,7 +659,7 @@ public class Task<TResult> implements TaskInterface<TResult> {
     synchronized (lock) {
       completed = this.isCompleted();
       if (!completed) {
-        this.continuations.add(
+        continuations.add(
             new Continuation<TResult, Void>() {
               @Override
               public Void then(Task<TResult> task) {
@@ -704,7 +716,7 @@ public class Task<TResult> implements TaskInterface<TResult> {
     synchronized (lock) {
       completed = this.isCompleted();
       if (!completed) {
-        this.continuations.add(
+        continuations.add(
             new Continuation<TResult, Void>() {
               @Override
               public Void then(Task<TResult> task) {

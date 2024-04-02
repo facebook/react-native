@@ -29,6 +29,13 @@ TextMeasurement TextLayoutManager::measure(
   return TextMeasurement{{0, 0}, attachments};
 }
 
+TextMeasurement TextLayoutManager::measureCachedSpannableById(
+    int64_t /*cacheId*/,
+    const ParagraphAttributes& /*paragraphAttributes*/,
+    LayoutConstraints /*layoutConstraints*/) const {
+  return {};
+}
+
 LinesMeasurements TextLayoutManager::measureLines(
     AttributedString attributedString,
     ParagraphAttributes paragraphAttributes,

@@ -27,6 +27,7 @@ import type {
 import type {AliasResolver} from './Utils';
 
 const {unwrapNullable} = require('../../parsers/parsers-commons');
+const {wrapOptional} = require('../TypeUtils/Cxx');
 const {getEnumName, toSafeCppString} = require('../Utils');
 const {indent} = require('../Utils');
 const {
@@ -139,26 +140,21 @@ function translatePrimitiveJSTypeToCpp(
   const [typeAnnotation, nullable] = unwrapNullable<NativeModuleTypeAnnotation>(
     nullableTypeAnnotation,
   );
-  const isRequired = !optional && !nullable;
   const isRecursiveType = isDirectRecursiveMember(
     parentObjectAliasName,
     nullableTypeAnnotation,
   );
-
+  const isRequired = (!optional && !nullable) || isRecursiveType;
   let realTypeAnnotation = typeAnnotation;
   if (realTypeAnnotation.type === 'TypeAliasTypeAnnotation') {
     realTypeAnnotation = resolveAlias(realTypeAnnotation.name);
-  }
-
-  function wrap(type: string) {
-    return isRequired || isRecursiveType ? type : `std::optional<${type}>`;
   }
 
   switch (realTypeAnnotation.type) {
     case 'ReservedTypeAnnotation':
       switch (realTypeAnnotation.name) {
         case 'RootTag':
-          return wrap('double');
+          return wrapOptional('double', isRequired);
         default:
           (realTypeAnnotation.name: empty);
           throw new Error(createErrorMessage(realTypeAnnotation.name));
@@ -166,53 +162,49 @@ function translatePrimitiveJSTypeToCpp(
     case 'VoidTypeAnnotation':
       return 'void';
     case 'StringTypeAnnotation':
-      return wrap('jsi::String');
+      return wrapOptional('jsi::String', isRequired);
     case 'NumberTypeAnnotation':
-      return wrap('double');
+      return wrapOptional('double', isRequired);
     case 'DoubleTypeAnnotation':
-      return wrap('double');
+      return wrapOptional('double', isRequired);
     case 'FloatTypeAnnotation':
-      return wrap('double');
+      return wrapOptional('double', isRequired);
     case 'Int32TypeAnnotation':
-      return wrap('int');
+      return wrapOptional('int', isRequired);
     case 'BooleanTypeAnnotation':
-      return wrap('bool');
+      return wrapOptional('bool', isRequired);
     case 'EnumDeclaration':
       switch (realTypeAnnotation.memberType) {
         case 'NumberTypeAnnotation':
-          return getAreEnumMembersInteger(
-            enumMap[realTypeAnnotation.name].members,
-          )
-            ? wrap('int')
-            : wrap('double');
+          return wrapOptional('jsi::Value', isRequired);
         case 'StringTypeAnnotation':
-          return wrap('jsi::String');
+          return wrapOptional('jsi::String', isRequired);
         default:
           throw new Error(createErrorMessage(realTypeAnnotation.type));
       }
     case 'GenericObjectTypeAnnotation':
-      return wrap('jsi::Object');
+      return wrapOptional('jsi::Object', isRequired);
     case 'UnionTypeAnnotation':
       switch (typeAnnotation.memberType) {
         case 'NumberTypeAnnotation':
-          return wrap('double');
+          return wrapOptional('double', isRequired);
         case 'ObjectTypeAnnotation':
-          return wrap('jsi::Object');
+          return wrapOptional('jsi::Object', isRequired);
         case 'StringTypeAnnotation':
-          return wrap('jsi::String');
+          return wrapOptional('jsi::String', isRequired);
         default:
           throw new Error(createErrorMessage(realTypeAnnotation.type));
       }
     case 'ObjectTypeAnnotation':
-      return wrap('jsi::Object');
+      return wrapOptional('jsi::Object', isRequired);
     case 'ArrayTypeAnnotation':
-      return wrap('jsi::Array');
+      return wrapOptional('jsi::Array', isRequired);
     case 'FunctionTypeAnnotation':
-      return wrap('jsi::Function');
+      return wrapOptional('jsi::Function', isRequired);
     case 'PromiseTypeAnnotation':
-      return wrap('jsi::Value');
+      return wrapOptional('jsi::Value', isRequired);
     case 'MixedTypeAnnotation':
-      return wrap('jsi::Value');
+      return wrapOptional('jsi::Value', isRequired);
     default:
       (realTypeAnnotation.type: empty);
       throw new Error(createErrorMessage(realTypeAnnotation.type));
@@ -239,135 +231,53 @@ function createStructsString(
       enumMap,
     );
 
-  // TODO: T171006733 [Begin] Remove deprecated Cxx TMs structs after a new release.
-  return (
-    Object.keys(aliasMap)
-      .map(alias => {
-        const value = aliasMap[alias];
-        if (value.properties.length === 0) {
-          return '';
+  return Object.keys(aliasMap)
+    .map(alias => {
+      const value = aliasMap[alias];
+      if (value.properties.length === 0) {
+        return '';
+      }
+      const structName = `${moduleName}${alias}`;
+      const templateParameter = value.properties.filter(
+        v =>
+          !isDirectRecursiveMember(alias, v.typeAnnotation) &&
+          !isArrayRecursiveMember(alias, v.typeAnnotation),
+      );
+      const templateParameterWithTypename = templateParameter
+        .map((v, i) => `typename P${i}`)
+        .join(', ');
+      const templateParameterWithoutTypename = templateParameter
+        .map((v, i) => `P${i}`)
+        .join(', ');
+      let i = -1;
+      const templateMemberTypes = value.properties.map(v => {
+        if (isDirectRecursiveMember(alias, v.typeAnnotation)) {
+          return `std::unique_ptr<${structName}<${templateParameterWithoutTypename}>> ${v.name}`;
+        } else if (isArrayRecursiveMember(alias, v.typeAnnotation)) {
+          const [nullable] = unwrapNullable<NativeModuleTypeAnnotation>(
+            v.typeAnnotation,
+          );
+          return (
+            (nullable
+              ? `std::optional<std::vector<${structName}<${templateParameterWithoutTypename}>>>`
+              : `std::vector<${structName}<${templateParameterWithoutTypename}>>`) +
+            ` ${v.name}`
+          );
+        } else {
+          i++;
+          return `P${i} ${v.name}`;
         }
-        const structName = `${moduleName}Base${alias}`;
-        const structNameNew = `${moduleName}${alias}`;
-        const templateParameterWithTypename = value.properties
-          .map((v, i) => `typename P${i}`)
-          .join(', ');
-        const templateParameter = value.properties
-          .map((v, i) => 'P' + i)
-          .join(', ');
-        const debugParameterConversion = value.properties
-          .map(
-            (v, i) => `  static ${getCppType(alias, v)} ${
-              v.name
-            }ToJs(jsi::Runtime &rt, P${i} value) {
+      });
+      const debugParameterConversion = value.properties
+        .map(
+          v => `  static ${getCppType(alias, v)} ${
+            v.name
+          }ToJs(jsi::Runtime &rt, decltype(types.${v.name}) value) {
     return bridging::toJs(rt, value);
   }`,
-          )
-          .join('\n\n');
-        return `
-#pragma mark - ${structName}
-
-template <${templateParameterWithTypename}>
-struct [[deprecated("Use ${structNameNew} instead.")]] ${structName} {
-${value.properties.map((v, i) => '  P' + i + ' ' + v.name).join(';\n')};
-  bool operator==(const ${structName} &other) const {
-    return ${value.properties
-      .map(v => `${v.name} == other.${v.name}`)
-      .join(' && ')};
-  }
-};
-
-template <${templateParameterWithTypename}>
-struct [[deprecated("Use ${structNameNew}Bridging instead.")]] ${structName}Bridging {
-  static ${structName}<${templateParameter}> fromJs(
-      jsi::Runtime &rt,
-      const jsi::Object &value,
-      const std::shared_ptr<CallInvoker> &jsInvoker) {
-    ${structName}<${templateParameter}> result{
-${value.properties
-  .map(
-    (v, i) =>
-      `      bridging::fromJs<P${i}>(rt, value.getProperty(rt, "${v.name}"), jsInvoker)`,
-  )
-  .join(',\n')}};
-    return result;
-  }
-
-#ifdef DEBUG
-${debugParameterConversion}
-#endif
-
-  static jsi::Object toJs(
-      jsi::Runtime &rt,
-      const ${structName}<${templateParameter}> &value,
-      const std::shared_ptr<CallInvoker> &jsInvoker) {
-    auto result = facebook::jsi::Object(rt);
-${value.properties
-  .map((v, i) => {
-    if (v.optional) {
-      return `    if (value.${v.name}) {
-      result.setProperty(rt, "${v.name}", bridging::toJs(rt, value.${v.name}.value(), jsInvoker));
-    }`;
-    } else {
-      return `    result.setProperty(rt, "${v.name}", bridging::toJs(rt, value.${v.name}, jsInvoker));`;
-    }
-  })
-  .join('\n')}
-    return result;
-  }
-};
-
-`;
-      })
-      .join('\n') +
-    // TODO: T171006733 [End] Remove deprecated Cxx TMs structs after a new release.
-    Object.keys(aliasMap)
-      .map(alias => {
-        const value = aliasMap[alias];
-        if (value.properties.length === 0) {
-          return '';
-        }
-        const structName = `${moduleName}${alias}`;
-        const templateParameter = value.properties.filter(
-          v =>
-            !isDirectRecursiveMember(alias, v.typeAnnotation) &&
-            !isArrayRecursiveMember(alias, v.typeAnnotation),
-        );
-        const templateParameterWithTypename = templateParameter
-          .map((v, i) => `typename P${i}`)
-          .join(', ');
-        const templateParameterWithoutTypename = templateParameter
-          .map((v, i) => `P${i}`)
-          .join(', ');
-        let i = -1;
-        const templateMemberTypes = value.properties.map(v => {
-          if (isDirectRecursiveMember(alias, v.typeAnnotation)) {
-            return `std::unique_ptr<${structName}<${templateParameterWithoutTypename}>> ${v.name}`;
-          } else if (isArrayRecursiveMember(alias, v.typeAnnotation)) {
-            const [nullable] = unwrapNullable<NativeModuleTypeAnnotation>(
-              v.typeAnnotation,
-            );
-            return (
-              (nullable
-                ? `std::optional<std::vector<${structName}<${templateParameterWithoutTypename}>>>`
-                : `std::vector<${structName}<${templateParameterWithoutTypename}>>`) +
-              ` ${v.name}`
-            );
-          } else {
-            i++;
-            return `P${i} ${v.name}`;
-          }
-        });
-        const debugParameterConversion = value.properties
-          .map(
-            v => `  static ${getCppType(alias, v)} ${
-              v.name
-            }ToJs(jsi::Runtime &rt, decltype(types.${v.name}) value) {
-    return bridging::toJs(rt, value);
-  }`,
-          )
-          .join('\n\n');
-        return `
+        )
+        .join('\n\n');
+      return `
 #pragma mark - ${structName}
 
 template <${templateParameterWithTypename}>
@@ -430,9 +340,8 @@ ${value.properties
 };
 
 `;
-      })
-      .join('\n')
-  );
+    })
+    .join('\n');
 }
 
 type NativeEnumMemberValueType = 'std::string' | 'int32_t' | 'float';
@@ -466,7 +375,7 @@ const EnumTemplate = ({
   return `
 #pragma mark - ${enumName}
 
-enum ${enumName} { ${values} };
+enum class ${enumName} { ${values} };
 
 template <>
 struct Bridging<${enumName}> {
@@ -615,6 +524,7 @@ module.exports = {
     schema: SchemaType,
     packageName?: string,
     assumeNonnull: boolean = false,
+    headerPrefix?: string,
   ): FilesOutput {
     const nativeModules = getModules(schema);
 

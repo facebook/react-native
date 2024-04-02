@@ -51,12 +51,11 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.BridgeReactContext;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.CatalystInstanceImpl;
 import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.JSExceptionHandler;
-import com.facebook.react.bridge.JSIModulePackage;
-import com.facebook.react.bridge.JSIModuleType;
 import com.facebook.react.bridge.JavaJSExecutor;
 import com.facebook.react.bridge.JavaScriptExecutor;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
@@ -66,6 +65,7 @@ import com.facebook.react.bridge.ProxyJavaScriptExecutor;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactCxxErrorHandler;
+import com.facebook.react.bridge.ReactInstanceManagerInspectorTarget;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
@@ -82,6 +82,7 @@ import com.facebook.react.common.annotations.StableReactNativeAPI;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.devsupport.DevSupportManagerFactory;
+import com.facebook.react.devsupport.InspectorFlags;
 import com.facebook.react.devsupport.ReactInstanceDevHelper;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevLoadingViewManager;
@@ -175,6 +176,7 @@ public class ReactInstanceManager {
   private final Context mApplicationContext;
   private @Nullable @ThreadConfined(UI) DefaultHardwareBackBtnHandler mDefaultBackButtonImpl;
   private @Nullable Activity mCurrentActivity;
+  private @Nullable ReactInstanceManagerInspectorTarget mInspectorTarget;
   private final Collection<com.facebook.react.ReactInstanceEventListener>
       mReactInstanceEventListeners =
           Collections.synchronizedList(
@@ -186,7 +188,6 @@ public class ReactInstanceManager {
   private volatile Boolean mHasStartedDestroying = false;
   private final MemoryPressureRouter mMemoryPressureRouter;
   private final @Nullable JSExceptionHandler mJSExceptionHandler;
-  private final @Nullable JSIModulePackage mJSIModulePackage;
   private final @Nullable UIManagerProvider mUIManagerProvider;
   private final @Nullable ReactPackageTurboModuleManagerDelegate.Builder mTMMDelegateBuilder;
   private List<ViewManager> mViewManagers;
@@ -235,7 +236,6 @@ public class ReactInstanceManager {
       @Nullable DevBundleDownloadListener devBundleDownloadListener,
       int minNumShakes,
       int minTimeLeftInFrameForNonBatchedOperationMs,
-      @Nullable JSIModulePackage jsiModulePackage,
       @Nullable UIManagerProvider uIManagerProvider,
       @Nullable Map<String, RequestHandler> customPackagerCommandHandlers,
       @Nullable ReactPackageTurboModuleManagerDelegate.Builder tmmDelegateBuilder,
@@ -296,7 +296,6 @@ public class ReactInstanceManager {
       }
       mPackages.addAll(packages);
     }
-    mJSIModulePackage = jsiModulePackage;
     mUIManagerProvider = uIManagerProvider;
 
     // Instantiate ReactChoreographer in UI thread.
@@ -345,9 +344,7 @@ public class ReactInstanceManager {
           ReactRootView rootView = new ReactRootView(currentActivity);
           boolean isFabric = ReactFeatureFlags.enableFabricRenderer;
           rootView.setIsFabric(isFabric);
-          Bundle launchOptions = new Bundle();
-          launchOptions.putBoolean("concurrentRoot", isFabric);
-          rootView.startReactApplication(ReactInstanceManager.this, appKey, launchOptions);
+          rootView.startReactApplication(ReactInstanceManager.this, appKey, new Bundle());
           return rootView;
         }
 
@@ -696,6 +693,7 @@ public class ReactInstanceManager {
   @Deprecated
   public void onHostDestroy() {
     UiThreadUtil.assertOnUiThread();
+    destroyInspectorTarget();
 
     if (mUseDeveloperSupport) {
       mDevSupportManager.setDevSupportEnabled(false);
@@ -744,6 +742,7 @@ public class ReactInstanceManager {
     }
 
     mHasStartedDestroying = true;
+    destroyInspectorTarget();
 
     if (mUseDeveloperSupport) {
       mDevSupportManager.setDevSupportEnabled(false);
@@ -1005,6 +1004,12 @@ public class ReactInstanceManager {
               if (names != null) {
                 uniqueNames.addAll(names);
               }
+            } else {
+              FLog.w(
+                  ReactConstants.TAG,
+                  "Package %s is not a ViewManagerOnDemandReactPackage, view managers will not be"
+                      + " loaded",
+                  reactPackage.getClass().getSimpleName());
             }
             Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
           }
@@ -1029,7 +1034,9 @@ public class ReactInstanceManager {
     mReactInstanceEventListeners.remove(listener);
   }
 
-  /** @return current ReactApplicationContext */
+  /**
+   * @return current ReactApplicationContext
+   */
   @VisibleForTesting
   public @Nullable ReactContext getCurrentReactContext() {
     synchronized (mReactContextLock) {
@@ -1338,12 +1345,14 @@ public class ReactInstanceManager {
     mDevSupportManager.onReactInstanceDestroyed(reactContext);
   }
 
-  /** @return instance of {@link ReactContext} configured a {@link CatalystInstance} set */
+  /**
+   * @return instance of {@link ReactContext} configured a {@link CatalystInstance} set
+   */
   private ReactApplicationContext createReactContext(
       JavaScriptExecutor jsExecutor, JSBundleLoader jsBundleLoader) {
     FLog.d(ReactConstants.TAG, "ReactInstanceManager.createReactContext()");
     ReactMarker.logMarker(CREATE_REACT_CONTEXT_START, jsExecutor.getName());
-    final ReactApplicationContext reactContext = new ReactApplicationContext(mApplicationContext);
+    final BridgeReactContext reactContext = new BridgeReactContext(mApplicationContext);
 
     JSExceptionHandler exceptionHandler =
         mJSExceptionHandler != null ? mJSExceptionHandler : mDevSupportManager;
@@ -1357,7 +1366,8 @@ public class ReactInstanceManager {
             .setJSExecutor(jsExecutor)
             .setRegistry(nativeModuleRegistry)
             .setJSBundleLoader(jsBundleLoader)
-            .setJSExceptionHandler(exceptionHandler);
+            .setJSExceptionHandler(exceptionHandler)
+            .setInspectorTarget(getOrCreateInspectorTarget());
 
     ReactMarker.logMarker(CREATE_CATALYST_INSTANCE_START);
     // CREATE_CATALYST_INSTANCE_END is in JSCExecutor.cpp
@@ -1401,18 +1411,14 @@ public class ReactInstanceManager {
       }
     }
 
-    if (mJSIModulePackage != null) {
-      catalystInstance.addJSIModules(
-          mJSIModulePackage.getJSIModules(
-              reactContext, catalystInstance.getJavaScriptContextHolder()));
-    }
-    if (ReactFeatureFlags.enableFabricRenderer) {
-      if (mUIManagerProvider != null) {
-        UIManager uiManager = mUIManagerProvider.createUIManager(reactContext);
+    if (mUIManagerProvider != null) {
+      UIManager uiManager = mUIManagerProvider.createUIManager(reactContext);
+      if (uiManager != null) {
+        catalystInstance.setFabricUIManager(uiManager);
+
+        // Initialize the UIManager
         uiManager.initialize();
         catalystInstance.setFabricUIManager(uiManager);
-      } else {
-        catalystInstance.getJSIModule(JSIModuleType.UIManager);
       }
     }
     if (mBridgeIdleDebugListener != null) {
@@ -1476,5 +1482,28 @@ public class ReactInstanceManager {
       ((ReactPackageLogger) reactPackage).endProcessPackage();
     }
     SystraceMessage.endSection(TRACE_TAG_REACT_JAVA_BRIDGE).flush();
+  }
+
+  private @Nullable ReactInstanceManagerInspectorTarget getOrCreateInspectorTarget() {
+    if (mInspectorTarget == null && InspectorFlags.getEnableModernCDPRegistry()) {
+
+      mInspectorTarget =
+          new ReactInstanceManagerInspectorTarget(
+              new ReactInstanceManagerInspectorTarget.TargetDelegate() {
+                @Override
+                public void onReload() {
+                  UiThreadUtil.runOnUiThread(() -> mDevSupportManager.handleReloadJS());
+                }
+              });
+    }
+
+    return mInspectorTarget;
+  }
+
+  private void destroyInspectorTarget() {
+    if (mInspectorTarget != null) {
+      mInspectorTarget.close();
+      mInspectorTarget = null;
+    }
   }
 }

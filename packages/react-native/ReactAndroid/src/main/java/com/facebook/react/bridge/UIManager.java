@@ -15,7 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import com.facebook.infer.annotation.ThreadConfined;
 
-public interface UIManager extends JSIModule, PerformanceCounter {
+public interface UIManager extends PerformanceCounter {
 
   /** Registers a new root view. @Deprecated call startSurface instead */
   @UiThread
@@ -74,7 +74,9 @@ public interface UIManager extends JSIModule, PerformanceCounter {
    */
   void dispatchCommand(int reactTag, String commandId, @Nullable ReadableArray commandArgs);
 
-  /** @return the {@link EventDispatcher} object that is used by this class. */
+  /**
+   * @return the {@link EventDispatcher} object that is used by this class.
+   */
   <T> T getEventDispatcher();
 
   /**
@@ -151,4 +153,10 @@ public interface UIManager extends JSIModule, PerformanceCounter {
   @Deprecated
   @Nullable
   String resolveCustomDirectEventName(@Nullable String eventName);
+
+  /** This method is called after {@link ReactApplicationContext} has been created. */
+  void initialize();
+
+  /** Called before React Native instance is destroyed. */
+  void invalidate();
 }

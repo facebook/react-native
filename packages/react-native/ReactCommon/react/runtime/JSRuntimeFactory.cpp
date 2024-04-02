@@ -8,6 +8,7 @@
 #include "JSRuntimeFactory.h"
 
 namespace facebook::react {
+
 jsi::Runtime& JSIRuntimeHolder::getRuntime() noexcept {
   return *runtime_;
 }
@@ -16,4 +17,13 @@ JSIRuntimeHolder::JSIRuntimeHolder(std::unique_ptr<jsi::Runtime> runtime)
     : runtime_(std::move(runtime)) {
   assert(runtime_ != nullptr);
 }
+
+jsinspector_modern::RuntimeTargetDelegate&
+JSRuntime::getRuntimeTargetDelegate() {
+  if (!runtimeTargetDelegate_) {
+    runtimeTargetDelegate_.emplace(getRuntime().description());
+  }
+  return *runtimeTargetDelegate_;
+}
+
 } // namespace facebook::react

@@ -22,6 +22,12 @@ enum class DisplayType {
   Inline = 2,
 };
 
+enum class PositionType {
+  Static = 0,
+  Relative = 1,
+  Absolute = 2,
+};
+
 /*
  * User interface layout direction.
  */
@@ -32,20 +38,3 @@ enum class LayoutDirection {
 };
 
 } // namespace facebook::react
-
-namespace std {
-template <>
-struct hash<facebook::react::LayoutDirection> {
-  size_t operator()(const facebook::react::LayoutDirection& v) const {
-    return hash<int>()(static_cast<int>(v));
-  }
-};
-
-template <>
-struct hash<facebook::react::DisplayType> {
-  size_t operator()(const facebook::react::DisplayType& v) const {
-    return hash<int>()(static_cast<int>(v));
-  }
-};
-
-} // namespace std

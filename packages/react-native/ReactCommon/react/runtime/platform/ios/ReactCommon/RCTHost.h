@@ -35,18 +35,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-/**
- * This is a private protocol used to configure internal behavior of the runtime.
- * DO NOT USE THIS OUTSIDE OF THE REACT NATIVE CODEBASE.
- */
-@protocol RCTHostDelegateInternal <NSObject>
-
-// TODO(T166383606): Remove this method when we remove the legacy runtime scheduler or we have access to
-// ReactNativeConfig before we initialize it.
-- (BOOL)useModernRuntimeScheduler:(RCTHost *)host;
-
-@end
-
 @protocol RCTHostRuntimeDelegate <NSObject>
 
 - (void)host:(RCTHost *)host didInitializeRuntime:(facebook::jsi::Runtime &)runtime;
@@ -64,6 +52,10 @@ typedef std::shared_ptr<facebook::react::JSRuntimeFactory> (^RCTHostJSEngineProv
 
 @property (nonatomic, weak, nullable) id<RCTHostRuntimeDelegate> runtimeDelegate;
 
+@property (nonatomic, readonly) RCTSurfacePresenter *surfacePresenter;
+
+@property (nonatomic, readonly) RCTModuleRegistry *moduleRegistry;
+
 - (void)start;
 
 - (void)callFunctionOnJSModule:(NSString *)moduleName method:(NSString *)method args:(NSArray *)args;
@@ -76,11 +68,11 @@ typedef std::shared_ptr<facebook::react::JSRuntimeFactory> (^RCTHostJSEngineProv
 
 - (RCTFabricSurface *)createSurfaceWithModuleName:(NSString *)moduleName initialProperties:(NSDictionary *)properties;
 
-- (RCTSurfacePresenter *)getSurfacePresenter;
+- (RCTSurfacePresenter *)getSurfacePresenter __attribute__((deprecated("Use `surfacePresenter` property instead.")));
 
 // Native module API
 
-- (RCTModuleRegistry *)getModuleRegistry;
+- (RCTModuleRegistry *)getModuleRegistry __attribute__((deprecated("Use `moduleRegistry` property instead.")));
 
 @end
 

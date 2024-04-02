@@ -24,6 +24,7 @@
   UIView *_Nullable _activityIndicatorView;
   UIView *_Nullable _surfaceView;
   RCTSurfaceStage _stage;
+  BOOL _autoHideDisabled;
 }
 
 RCT_NOT_IMPLEMENTED(-(instancetype)init)
@@ -36,6 +37,7 @@ RCT_NOT_IMPLEMENTED(-(nullable instancetype)initWithCoder : (NSCoder *)coder)
   if (self = [super initWithFrame:CGRectZero]) {
     _surface = surface;
     _sizeMeasureMode = sizeMeasureMode;
+    _autoHideDisabled = NO;
 
     _surface.delegate = self;
     _stage = surface.stage;
@@ -124,6 +126,10 @@ RCT_NOT_IMPLEMENTED(-(nullable instancetype)initWithCoder : (NSCoder *)coder)
   _sizeMeasureMode = sizeMeasureMode;
   [self _invalidateLayout];
 }
+- (void)disableActivityIndicatorAutoHide:(BOOL)disabled
+{
+  _autoHideDisabled = disabled;
+}
 
 #pragma mark - isActivityIndicatorViewVisible
 
@@ -162,7 +168,16 @@ RCT_NOT_IMPLEMENTED(-(nullable instancetype)initWithCoder : (NSCoder *)coder)
     _surfaceView = _surface.view;
     _surfaceView.frame = self.bounds;
     _surfaceView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    [self addSubview:_surfaceView];
+    if (_activityIndicatorView && _autoHideDisabled) {
+      // The activity indicator is still showing and the surface is set to
+      // prevent the auto hide. This means that the application will take care of
+      // hiding it when it's ready.
+      // Let's add the surfaceView below the activity indicator so it's ready once
+      // the activity indicator is hidden.
+      [self insertSubview:_surfaceView belowSubview:_activityIndicatorView];
+    } else {
+      [self addSubview:_surfaceView];
+    }
   } else {
     [_surfaceView removeFromSuperview];
     _surfaceView = nil;
@@ -204,7 +219,7 @@ RCT_NOT_IMPLEMENTED(-(nullable instancetype)initWithCoder : (NSCoder *)coder)
 - (void)_updateViews
 {
   self.isSurfaceViewVisible = RCTSurfaceStageIsRunning(_stage);
-  self.isActivityIndicatorViewVisible = RCTSurfaceStageIsPreparing(_stage);
+  self.isActivityIndicatorViewVisible = _autoHideDisabled || RCTSurfaceStageIsPreparing(_stage);
 }
 
 - (void)didMoveToWindow

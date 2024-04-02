@@ -15,11 +15,11 @@ import type {
 } from '../Types/ReactDevToolsTypes';
 import type {Props} from './AppContainer';
 
-import TraceUpdateOverlay from '../Components/TraceUpdateOverlay/TraceUpdateOverlay';
 import ReactNativeStyleAttributes from '../Components/View/ReactNativeStyleAttributes';
 import View from '../Components/View/View';
+import DebuggingOverlay from '../Debugging/DebuggingOverlay';
+import useSubscribeToDebuggingOverlayRegistry from '../Debugging/useSubscribeToDebuggingOverlayRegistry';
 import RCTDeviceEventEmitter from '../EventEmitter/RCTDeviceEventEmitter';
-import ReactDevToolsOverlay from '../Inspector/ReactDevToolsOverlay';
 import LogBoxNotificationContainer from '../LogBox/LogBoxNotificationContainer';
 import StyleSheet from '../StyleSheet/StyleSheet';
 import {RootTagContext, createRootTag} from './RootTag';
@@ -40,7 +40,7 @@ if (reactDevToolsHook) {
 }
 
 type InspectorDeferredProps = {
-  inspectedViewRef: React.RefObject<React.ElementRef<typeof View> | null>,
+  inspectedViewRef: InspectedViewRef,
   onInspectedViewRerenderRequest: () => void,
   reactDevToolsAgent?: ReactDevToolsAgent,
 };
@@ -63,6 +63,26 @@ const InspectorDeferred = ({
   );
 };
 
+type ReactDevToolsOverlayDeferredProps = {
+  inspectedViewRef: InspectedViewRef,
+  reactDevToolsAgent: ReactDevToolsAgent,
+};
+
+const ReactDevToolsOverlayDeferred = ({
+  inspectedViewRef,
+  reactDevToolsAgent,
+}: ReactDevToolsOverlayDeferredProps) => {
+  const ReactDevToolsOverlay =
+    require('../Inspector/ReactDevToolsOverlay').default;
+
+  return (
+    <ReactDevToolsOverlay
+      inspectedViewRef={inspectedViewRef}
+      reactDevToolsAgent={reactDevToolsAgent}
+    />
+  );
+};
+
 const AppContainer = ({
   children,
   fabric,
@@ -73,7 +93,14 @@ const AppContainer = ({
   showArchitectureIndicator,
   WrapperComponent,
 }: Props): React.Node => {
-  const innerViewRef = React.useRef<React.ElementRef<typeof View> | null>(null);
+  const appContainerRootViewRef: AppContainerRootViewRef = React.useRef(null);
+  const innerViewRef: InspectedViewRef = React.useRef(null);
+  const debuggingOverlayRef: DebuggingOverlayRef = React.useRef(null);
+
+  useSubscribeToDebuggingOverlayRegistry(
+    appContainerRootViewRef,
+    debuggingOverlayRef,
+  );
 
   const [key, setKey] = useState(0);
   const [shouldRenderInspector, setShouldRenderInspector] = useState(false);
@@ -138,14 +165,16 @@ const AppContainer = ({
 
   return (
     <RootTagContext.Provider value={createRootTag(rootTag)}>
-      <View style={styles.container} pointerEvents="box-none">
+      <View
+        ref={appContainerRootViewRef}
+        style={styles.container}
+        pointerEvents="box-none">
         {innerView}
 
+        <DebuggingOverlay ref={debuggingOverlayRef} />
+
         {reactDevToolsAgent != null && (
-          <TraceUpdateOverlay reactDevToolsAgent={reactDevToolsAgent} />
-        )}
-        {reactDevToolsAgent != null && (
-          <ReactDevToolsOverlay
+          <ReactDevToolsOverlayDeferred
             inspectedViewRef={innerViewRef}
             reactDevToolsAgent={reactDevToolsAgent}
           />
@@ -168,5 +197,15 @@ const AppContainer = ({
 const styles = StyleSheet.create({
   container: {flex: 1},
 });
+
+export type AppContainerRootViewRef = React.RefObject<React.ElementRef<
+  typeof View,
+> | null>;
+export type InspectedViewRef = React.RefObject<React.ElementRef<
+  typeof View,
+> | null>;
+export type DebuggingOverlayRef = React.RefObject<React.ElementRef<
+  typeof DebuggingOverlay,
+> | null>;
 
 export default AppContainer;

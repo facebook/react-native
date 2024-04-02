@@ -13,6 +13,8 @@
 
 import type {ElementRef} from 'react';
 
+import NativeImageLoaderAndroid from '../NativeImageLoaderAndroid';
+import NativeImageLoaderIOS from '../NativeImageLoaderIOS';
 import {act, create} from 'react-test-renderer';
 
 const render = require('../../../jest/renderer');
@@ -290,5 +292,63 @@ describe('<Image />', () => {
     expect(firstInstance).toBe(null);
     expect(secondInstance).toBe(null);
     expect(imageInstancesFromCallback.size).toBe(0);
+  });
+
+  it('should resolve asset source even when Image module is mocked', async () => {
+    jest.mock('../Image');
+    const resolvedSource = Image.resolveAssetSource({uri: 'foo-bar.jpg'});
+    expect(resolvedSource).toEqual({uri: 'foo-bar.jpg'});
+  });
+
+  it('should compute image size even when Image module is mocked', async () => {
+    jest.mock('../Image');
+    const mockOnGetSizeSuccess = jest.fn((width, height) => undefined);
+    const mockSuccessCallback = (width: number, height: number) =>
+      mockOnGetSizeSuccess(width, height);
+
+    await Image.getSize('foo-bar.jpg', mockSuccessCallback);
+    await jest.runAllTicks();
+
+    expect(mockOnGetSizeSuccess).toHaveBeenCalledWith(320, 240);
+
+    await Image.getSizeWithHeaders(
+      'foo-bar.jpg',
+      {header: 'foo'},
+      mockSuccessCallback,
+    );
+
+    expect(mockOnGetSizeSuccess).toHaveBeenCalledWith(333, 222);
+  });
+
+  it('should call native prefetch methods when calling JS prefetch methods', async () => {
+    jest.mock('../Image');
+    await Image.prefetch('foo-bar.jpg');
+    expect(NativeImageLoaderIOS.prefetchImage).toHaveBeenCalledWith(
+      'foo-bar.jpg',
+    );
+    expect(NativeImageLoaderAndroid.prefetchImage).toHaveBeenCalledWith(
+      'foo-bar.jpg',
+    );
+
+    await Image.prefetchWithMetadata('foo-bar.jpg', 'foo-queryRootName');
+    expect(NativeImageLoaderIOS.prefetchImageWithMetadata).toHaveBeenCalledWith(
+      'foo-bar.jpg',
+      'foo-queryRootName',
+      0,
+    );
+    expect(NativeImageLoaderAndroid.prefetchImage).toHaveBeenCalledWith(
+      'foo-bar.jpg',
+    );
+  });
+
+  it('should call native queryCache method when JS queryCache method is called', async () => {
+    jest.mock('../Image');
+    await Image.queryCache(['foo-bar.jpg']);
+    expect(NativeImageLoaderIOS.queryCache).toHaveBeenCalledWith([
+      'foo-bar.jpg',
+    ]);
+    expect(NativeImageLoaderIOS.queryCache).toHaveBeenCalledWith([
+      'foo-bar.jpg',
+    ]);
   });
 });

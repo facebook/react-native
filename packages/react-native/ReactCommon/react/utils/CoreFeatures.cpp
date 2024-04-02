@@ -10,19 +10,11 @@
 namespace facebook::react {
 
 bool CoreFeatures::enablePropIteratorSetter = false;
-bool CoreFeatures::blockPaintForUseLayoutEffect = false;
 bool CoreFeatures::cacheLastTextMeasurement = false;
-bool CoreFeatures::cancelImageDownloadsOnRecycle = false;
 bool CoreFeatures::enableGranularScrollViewStateUpdatesIOS = false;
-bool CoreFeatures::enableMountHooks = false;
-bool CoreFeatures::doNotSwapLeftAndRightOnAndroidInLTR = false;
-bool CoreFeatures::enableCleanParagraphYogaNode = false;
 bool CoreFeatures::enableGranularShadowTreeStateReconciliation = false;
-bool CoreFeatures::enableDefaultAsyncBatchedPriority = false;
 bool CoreFeatures::enableClonelessStateProgression = false;
 bool CoreFeatures::excludeYogaFromRawProps = false;
-bool CoreFeatures::enableMicrotasks = false;
 bool CoreFeatures::enableReportEventPaintTime = false;
-bool CoreFeatures::positionRelativeDefault = false;
 
 } // namespace facebook::react

@@ -16,18 +16,26 @@
 
 namespace facebook::react {
 
+static bool hasPrefix(const std::string& str, const std::string& prefix) {
+  return str.compare(0, prefix.length(), prefix) == 0;
+}
+
 // TODO(T29874519): Get rid of "top" prefix once and for all.
 /*
- * Capitalizes the first letter of the event type and adds "top" prefix if
- * necessary (e.g. "layout" becames "topLayout").
+ * Replaces "on" with "top" if present. Or capitalizes the first letter and adds
+ * "top" prefix. E.g. "eventName" becomes "topEventName", "onEventName" also
+ * becomes "topEventName".
  */
 static std::string normalizeEventType(std::string type) {
   auto prefixedType = std::move(type);
-  if (prefixedType.find("top", 0) != 0) {
-    prefixedType.insert(0, "top");
-    prefixedType[3] = static_cast<char>(toupper(prefixedType[3]));
+  if (facebook::react::hasPrefix(prefixedType, "top")) {
+    return prefixedType;
   }
-  return prefixedType;
+  if (facebook::react::hasPrefix(prefixedType, "on")) {
+    return "top" + prefixedType.substr(2);
+  }
+  prefixedType[0] = static_cast<char>(toupper(prefixedType[0]));
+  return "top" + prefixedType;
 }
 
 std::mutex& EventEmitter::DispatchMutex() {
@@ -50,14 +58,12 @@ EventEmitter::EventEmitter(
 void EventEmitter::dispatchEvent(
     std::string type,
     const folly::dynamic& payload,
-    EventPriority priority,
     RawEvent::Category category) const {
   dispatchEvent(
       std::move(type),
       [payload](jsi::Runtime& runtime) {
         return valueFromDynamic(runtime, payload);
       },
-      priority,
       category);
 }
 
@@ -72,19 +78,16 @@ void EventEmitter::dispatchUniqueEvent(
 void EventEmitter::dispatchEvent(
     std::string type,
     const ValueFactory& payloadFactory,
-    EventPriority priority,
     RawEvent::Category category) const {
   dispatchEvent(
       std::move(type),
       std::make_shared<ValueFactoryEventPayload>(payloadFactory),
-      priority,
       category);
 }
 
 void EventEmitter::dispatchEvent(
     std::string type,
     SharedEventPayload payload,
-    EventPriority priority,
     RawEvent::Category category) const {
   SystraceSection s("EventEmitter::dispatchEvent", "type", type);
 
@@ -93,13 +96,11 @@ void EventEmitter::dispatchEvent(
     return;
   }
 
-  eventDispatcher->dispatchEvent(
-      RawEvent(
-          normalizeEventType(std::move(type)),
-          std::move(payload),
-          eventTarget_,
-          category),
-      priority);
+  eventDispatcher->dispatchEvent(RawEvent(
+      normalizeEventType(std::move(type)),
+      std::move(payload),
+      eventTarget_,
+      category));
 }
 
 void EventEmitter::dispatchUniqueEvent(

@@ -326,14 +326,14 @@ NativeToJsBridge::getDecoratedNativeMethodCallInvoker(
 
     void invokeAsync(
         const std::string& methodName,
-        std::function<void()>&& func) noexcept override {
+        NativeMethodCallFunc&& func) noexcept override {
       if (auto strongJsToNativeBridge = m_jsToNativeBridge.lock()) {
         strongJsToNativeBridge->recordTurboModuleAsyncMethodCall();
       }
       m_nativeInvoker->invokeAsync(methodName, std::move(func));
     }
 
-    void invokeSync(const std::string& methodName, std::function<void()>&& func)
+    void invokeSync(const std::string& methodName, NativeMethodCallFunc&& func)
         override {
       m_nativeInvoker->invokeSync(methodName, std::move(func));
     }
@@ -341,6 +341,11 @@ NativeToJsBridge::getDecoratedNativeMethodCallInvoker(
 
   return std::make_shared<NativeMethodCallInvokerImpl>(
       m_delegate, std::move(nativeMethodCallInvoker));
+}
+
+jsinspector_modern::RuntimeTargetDelegate&
+NativeToJsBridge::getInspectorTargetDelegate() {
+  return m_executor->getRuntimeTargetDelegate();
 }
 
 } // namespace facebook::react

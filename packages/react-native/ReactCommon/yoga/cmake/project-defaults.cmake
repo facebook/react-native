@@ -33,9 +33,7 @@ add_compile_options(
     -fexceptions
     # Enable warnings and warnings as errors
     -Wall
-    -Wextra
     -Werror
-    -Wconversion
     # Disable RTTI
     $<$<COMPILE_LANGUAGE:CXX>:-fno-rtti>
     # Use -O2 (prioritize speed)

@@ -18,6 +18,7 @@ import type {NextHandleFunction} from 'connect';
 import type {IncomingMessage, ServerResponse} from 'http';
 
 import getDevToolsFrontendUrl from '../utils/getDevToolsFrontendUrl';
+import crypto from 'crypto';
 import url from 'url';
 
 const debuggerInstances = new Map<string, ?LaunchedBrowser>();
@@ -62,7 +63,8 @@ export default function openDebuggerMiddleware({
       const targets = inspectorProxy.getPageDescriptions().filter(
         // Only use targets with better reloading support
         app =>
-          app.title === 'React Native Experimental (Improved Chrome Reloads)',
+          app.title === 'React Native Experimental (Improved Chrome Reloads)' ||
+          app.reactNative.capabilities?.nativePageReloads === true,
       );
 
       let target;
@@ -106,6 +108,8 @@ export default function openDebuggerMiddleware({
         return;
       }
 
+      const launchId = crypto.randomUUID();
+
       try {
         switch (launchType) {
           case 'launch':
@@ -121,6 +125,7 @@ export default function openDebuggerMiddleware({
                   experiments,
                   target.webSocketDebuggerUrl,
                   serverBaseUrl,
+                  {launchId},
                 ),
               ),
             );
@@ -131,8 +136,8 @@ export default function openDebuggerMiddleware({
               Location: getDevToolsFrontendUrl(
                 experiments,
                 target.webSocketDebuggerUrl,
-                // Use a relative URL.
-                '',
+                serverBaseUrl,
+                {relative: true, launchId},
               ),
             });
             res.end();

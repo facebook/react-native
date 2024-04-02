@@ -8,49 +8,16 @@
 package com.facebook.react.modules.core;
 
 import com.facebook.fbreact.specs.NativeTimingSpec;
-import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.jstasks.HeadlessJsTaskContext;
-import com.facebook.react.jstasks.HeadlessJsTaskEventListener;
 import com.facebook.react.module.annotations.ReactModule;
 
 /** Native module for JS timer execution. Timers fire on frame boundaries. */
 @ReactModule(name = NativeTimingSpec.NAME)
-public final class TimingModule extends NativeTimingSpec
-    implements LifecycleEventListener, HeadlessJsTaskEventListener {
-
-  public class BridgeTimerExecutor implements JavaScriptTimerExecutor {
-    @Override
-    public void callTimers(WritableArray timerIDs) {
-      ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
-
-      if (reactApplicationContext != null) {
-        reactApplicationContext.getJSModule(JSTimers.class).callTimers(timerIDs);
-      }
-    }
-
-    @Override
-    public void callIdleCallbacks(double frameTime) {
-      ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
-
-      if (reactApplicationContext != null) {
-        reactApplicationContext.getJSModule(JSTimers.class).callIdleCallbacks(frameTime);
-      }
-    }
-
-    @Override
-    public void emitTimeDriftWarning(String warningMessage) {
-      ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
-
-      if (reactApplicationContext != null) {
-        reactApplicationContext.getJSModule(JSTimers.class).emitTimeDriftWarning(warningMessage);
-      }
-    }
-  }
-
+public final class TimingModule extends NativeTimingSpec implements JavaScriptTimerExecutor {
   private final JavaTimerManager mJavaTimerManager;
 
   public TimingModule(ReactApplicationContext reactContext, DevSupportManager devSupportManager) {
@@ -58,18 +25,14 @@ public final class TimingModule extends NativeTimingSpec
 
     mJavaTimerManager =
         new JavaTimerManager(
-            reactContext,
-            new BridgeTimerExecutor(),
-            ReactChoreographer.getInstance(),
-            devSupportManager);
+            reactContext, this, ReactChoreographer.getInstance(), devSupportManager);
   }
 
   @Override
   public void initialize() {
-    getReactApplicationContext().addLifecycleEventListener(this);
     HeadlessJsTaskContext headlessJsTaskContext =
         HeadlessJsTaskContext.getInstance(getReactApplicationContext());
-    headlessJsTaskContext.addTaskEventListener(this);
+    headlessJsTaskContext.addTaskEventListener(mJavaTimerManager);
   }
 
   @Override
@@ -97,28 +60,30 @@ public final class TimingModule extends NativeTimingSpec
   }
 
   @Override
-  public void onHostResume() {
-    mJavaTimerManager.onHostResume();
+  public void callTimers(WritableArray timerIDs) {
+    ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
+
+    if (reactApplicationContext != null) {
+      reactApplicationContext.getJSModule(JSTimers.class).callTimers(timerIDs);
+    }
   }
 
   @Override
-  public void onHostPause() {
-    mJavaTimerManager.onHostPause();
+  public void callIdleCallbacks(double frameTime) {
+    ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
+
+    if (reactApplicationContext != null) {
+      reactApplicationContext.getJSModule(JSTimers.class).callIdleCallbacks(frameTime);
+    }
   }
 
   @Override
-  public void onHostDestroy() {
-    mJavaTimerManager.onHostDestroy();
-  }
+  public void emitTimeDriftWarning(String warningMessage) {
+    ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
 
-  @Override
-  public void onHeadlessJsTaskStart(int taskId) {
-    mJavaTimerManager.onHeadlessJsTaskStart(taskId);
-  }
-
-  @Override
-  public void onHeadlessJsTaskFinish(int taskId) {
-    mJavaTimerManager.onHeadlessJsTaskFinish(taskId);
+    if (reactApplicationContext != null) {
+      reactApplicationContext.getJSModule(JSTimers.class).emitTimeDriftWarning(warningMessage);
+    }
   }
 
   @Override
@@ -127,9 +92,9 @@ public final class TimingModule extends NativeTimingSpec
 
     HeadlessJsTaskContext headlessJsTaskContext =
         HeadlessJsTaskContext.getInstance(reactApplicationContext);
-    headlessJsTaskContext.removeTaskEventListener(this);
+    headlessJsTaskContext.removeTaskEventListener(mJavaTimerManager);
+
     mJavaTimerManager.onInstanceDestroy();
-    reactApplicationContext.removeLifecycleEventListener(this);
   }
 
   @VisibleForTesting

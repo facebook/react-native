@@ -37,7 +37,8 @@ JReactInstance::JReactInstance(
     jni::alias_ref<JReactExceptionManager::javaobject> jReactExceptionManager,
     jni::alias_ref<JBindingsInstaller::javaobject> jBindingsInstaller,
     bool isProfiling,
-    bool useModernRuntimeScheduler) noexcept {
+    jni::alias_ref<JReactHostInspectorTarget::javaobject>
+        jReactHostInspectorTarget) noexcept {
   // TODO(janzer): Lazily create runtime
   auto sharedJSMessageQueueThread =
       std::make_shared<JMessageQueueThread>(jsMessageQueueThread);
@@ -66,7 +67,9 @@ JReactInstance::JReactInstance(
       sharedJSMessageQueueThread,
       timerManager,
       std::move(jsErrorHandlingFunc),
-      useModernRuntimeScheduler);
+      jReactHostInspectorTarget
+          ? jReactHostInspectorTarget->cthis()->getInspectorTarget()
+          : nullptr);
 
   auto bufferedRuntimeExecutor = instance_->getBufferedRuntimeExecutor();
   timerManager->setRuntimeExecutor(bufferedRuntimeExecutor);
@@ -118,7 +121,8 @@ jni::local_ref<JReactInstance::jhybriddata> JReactInstance::initHybrid(
     jni::alias_ref<JReactExceptionManager::javaobject> jReactExceptionManager,
     jni::alias_ref<JBindingsInstaller::javaobject> jBindingsInstaller,
     bool isProfiling,
-    bool useModernRuntimeScheduler) {
+    jni::alias_ref<JReactHostInspectorTarget::javaobject>
+        jReactHostInspectorTarget) {
   return makeCxxInstance(
       jsRuntimeFactory,
       jsMessageQueueThread,
@@ -128,7 +132,7 @@ jni::local_ref<JReactInstance::jhybriddata> JReactInstance::initHybrid(
       jReactExceptionManager,
       jBindingsInstaller,
       isProfiling,
-      useModernRuntimeScheduler);
+      jReactHostInspectorTarget);
 }
 
 void JReactInstance::loadJSBundleFromAssets(
@@ -205,6 +209,14 @@ void JReactInstance::handleMemoryPressureJs(jint level) {
   instance_->handleMemoryPressureJs(level);
 }
 
+jlong JReactInstance::getJavaScriptContext() {
+  return (jlong)(intptr_t)instance_->getJavaScriptContext();
+}
+
+void JReactInstance::unregisterFromInspector() {
+  instance_->unregisterFromInspector();
+}
+
 void JReactInstance::registerNatives() {
   registerHybrid({
       makeNativeMethod("initHybrid", JReactInstance::initHybrid),
@@ -229,12 +241,14 @@ void JReactInstance::registerNatives() {
           JReactInstance::getBufferedRuntimeExecutor),
       makeNativeMethod(
           "getRuntimeScheduler", JReactInstance::getRuntimeScheduler),
-
       makeNativeMethod(
           "registerSegmentNative", JReactInstance::registerSegment),
       makeNativeMethod(
           "handleMemoryPressureJs", JReactInstance::handleMemoryPressureJs),
+      makeNativeMethod(
+          "getJavaScriptContext", JReactInstance::getJavaScriptContext),
+      makeNativeMethod(
+          "unregisterFromInspector", JReactInstance::unregisterFromInspector),
   });
 }
-
 } // namespace facebook::react

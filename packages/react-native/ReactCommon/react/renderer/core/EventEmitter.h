@@ -13,7 +13,6 @@
 #include <folly/dynamic.h>
 #include <react/renderer/core/EventDispatcher.h>
 #include <react/renderer/core/EventPayload.h>
-#include <react/renderer/core/EventPriority.h>
 #include <react/renderer/core/EventTarget.h>
 #include <react/renderer/core/ReactPrimitives.h>
 #include <react/renderer/core/ValueFactoryEventPayload.h>
@@ -59,6 +58,20 @@ class EventEmitter {
   const SharedEventTarget& getEventTarget() const;
 
   /*
+   * Experimental API that will change in the future.
+   */
+  template <typename Lambda>
+  void experimental_flushSync(Lambda syncFunc) const {
+    auto eventDispatcher = eventDispatcher_.lock();
+    if (!eventDispatcher) {
+      return;
+    }
+
+    syncFunc();
+    eventDispatcher->experimental_flushSync();
+  }
+
+  /*
    * Initiates an event delivery process.
    * Is used by particular subclasses only.
    */
@@ -66,19 +79,16 @@ class EventEmitter {
       std::string type,
       const ValueFactory& payloadFactory =
           EventEmitter::defaultPayloadFactory(),
-      EventPriority priority = EventPriority::AsynchronousBatched,
       RawEvent::Category category = RawEvent::Category::Unspecified) const;
 
   void dispatchEvent(
       std::string type,
       const folly::dynamic& payload,
-      EventPriority priority = EventPriority::AsynchronousBatched,
       RawEvent::Category category = RawEvent::Category::Unspecified) const;
 
   void dispatchEvent(
       std::string type,
       SharedEventPayload payload,
-      EventPriority priority = EventPriority::AsynchronousBatched,
       RawEvent::Category category = RawEvent::Category::Unspecified) const;
 
   void dispatchUniqueEvent(std::string type, const folly::dynamic& payload)

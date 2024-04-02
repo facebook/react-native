@@ -26,8 +26,8 @@ class JSIModuleRegistry {
     return Assertions.assertNotNull(jsiModuleHolder.getJSIModule());
   }
 
-  public void registerModules(List<JSIModuleSpec> jsiModules) {
-    for (JSIModuleSpec spec : jsiModules) {
+  public <T extends JSIModule> void registerModules(List<JSIModuleSpec<T>> jsiModules) {
+    for (JSIModuleSpec<T> spec : jsiModules) {
       mModules.put(spec.getJSIModuleType(), new JSIModuleHolder(spec));
     }
   }

@@ -8,12 +8,14 @@
 package com.facebook.react.views.view;
 
 import android.graphics.PixelFormat;
+import com.facebook.infer.annotation.Nullsafe;
 
 /**
  * Simple utility class for manipulating colors, based on Fresco's DrawableUtils
  * (https://github.com/facebook/fresco). For a small helper like this, copying is simpler than
  * adding a dependency on com.facebook.fresco.drawee.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ColorUtil {
 
   /**

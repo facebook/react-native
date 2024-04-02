@@ -9,6 +9,8 @@
  * @oncall react_native
  */
 
+import type {TargetCapabilityFlags} from '../inspector-proxy/types';
+
 import {allowSelfSignedCertsInNodeFetch} from './FetchUtils';
 import {
   createAndConnectTarget,
@@ -40,8 +42,7 @@ beforeAll(() => {
   jest.resetModules();
 });
 
-// TODO T169943794
-xdescribe.each(['HTTP', 'HTTPS'])(
+describe.each(['HTTP', 'HTTPS'])(
   'inspector proxy CDP rewriting hacks over %s',
   protocol => {
     const serverRef = withServerForEachTest({
@@ -88,6 +89,52 @@ xdescribe.each(['HTTP', 'HTTPS'])(
         expect(
           parseJsonFromDataUri(scriptParsedMessage.params.sourceMapURL),
         ).toEqual({version: 3, file: '\u2757.js'});
+      } finally {
+        device.close();
+        debugger_.close();
+      }
+    });
+
+    test('async source map fetching does not reorder events', async () => {
+      serverRef.app.use(
+        '/source-map',
+        serveStaticJson({
+          version: 3,
+          // Mojibake insurance.
+          file: '\u2757.js',
+        }),
+      );
+      const {device, debugger_} = await createAndConnectTarget(
+        serverRef,
+        autoCleanup.signal,
+        {
+          app: 'bar-app',
+          id: 'page1',
+          title: 'bar-title',
+          vm: 'bar-vm',
+        },
+      );
+      try {
+        await Promise.all([
+          sendFromTargetToDebugger(device, debugger_, 'page1', {
+            method: 'Debugger.scriptParsed',
+            params: {
+              sourceMapURL: `${serverRef.serverBaseUrl}/source-map`,
+            },
+          }),
+          sendFromTargetToDebugger(device, debugger_, 'page1', {
+            method: 'Debugger.aSubsequentEvent',
+          }),
+        ]);
+        expect(debugger_.handle).toHaveBeenNthCalledWith(1, {
+          method: 'Debugger.scriptParsed',
+          params: {
+            sourceMapURL: expect.stringMatching(/^data:/),
+          },
+        });
+        expect(debugger_.handle).toHaveBeenNthCalledWith(2, {
+          method: 'Debugger.aSubsequentEvent',
+        });
       } finally {
         device.close();
         debugger_.close();
@@ -472,6 +519,72 @@ xdescribe.each(['HTTP', 'HTTPS'])(
           }
         },
       );
+    });
+
+    describe("disabled when target has 'nativeSourceCodeFetching' capability flag", () => {
+      const pageDescription = {
+        app: 'bar-app',
+        id: 'page1',
+        title: 'bar-title',
+        capabilities: {
+          nativeSourceCodeFetching: true,
+        },
+        vm: 'bar-vm',
+      };
+
+      describe('Debugger.scriptParsed', () => {
+        test('should forward event directly to client (does not rewrite sourceMapURL host)', async () => {
+          const {device, debugger_} = await createAndConnectTarget(
+            serverRef,
+            autoCleanup.signal,
+            pageDescription,
+          );
+          try {
+            const message = {
+              method: 'Debugger.scriptParsed',
+              params: {
+                sourceMapURL: `${protocol.toLowerCase()}://10.0.2.2:${
+                  serverRef.port
+                }/source-map`,
+              },
+            };
+            await sendFromTargetToDebugger(device, debugger_, 'page1', message);
+
+            expect(debugger_.handle).toBeCalledWith(message);
+          } finally {
+            device.close();
+            debugger_.close();
+          }
+        });
+      });
+
+      describe('Debugger.getScriptSource', () => {
+        test('should forward request directly to device (does not read source from disk in proxy)', async () => {
+          const {device, debugger_} = await createAndConnectTarget(
+            serverRef,
+            autoCleanup.signal,
+            pageDescription,
+          );
+          try {
+            const message = {
+              id: 1,
+              method: 'Debugger.getScriptSource',
+              params: {
+                scriptId: 'script1',
+              },
+            };
+            await sendFromDebuggerToTarget(debugger_, device, 'page1', message);
+
+            expect(device.wrappedEventParsed).toBeCalledWith({
+              pageId: 'page1',
+              wrappedEvent: message,
+            });
+          } finally {
+            device.close();
+            debugger_.close();
+          }
+        });
+      });
     });
   },
 );

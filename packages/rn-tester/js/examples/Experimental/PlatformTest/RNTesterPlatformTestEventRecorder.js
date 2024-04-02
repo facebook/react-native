@@ -107,8 +107,9 @@ class RNTesterPlatformTestEventRecorder {
   ): $ReadOnly<{[targetName: string]: ViewProps}> {
     // Yes this method exists as a class's prototype method but it will still only be used
     // in functional components
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    return useMemo(() => {
+    // prettier-ignore
+    // $FlowFixMe[react-rule-hook]
+    return useMemo(() => { // eslint-disable-line react-hooks/rules-of-hooks
       const result: {[targetName: string]: ViewProps} = {};
       for (const targetName of targetNames) {
         const recordedEventHandler =

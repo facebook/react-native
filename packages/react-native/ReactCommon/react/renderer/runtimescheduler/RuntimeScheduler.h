@@ -8,6 +8,7 @@
 #pragma once
 
 #include <ReactCommon/RuntimeExecutor.h>
+#include <react/renderer/consistency/ShadowTreeRevisionConsistencyManager.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerClock.h>
 #include <react/renderer/runtimescheduler/Task.h>
 
@@ -30,12 +31,13 @@ class RuntimeSchedulerBase {
       RawCallback&& callback) noexcept = 0;
   virtual void cancelTask(Task& task) noexcept = 0;
   virtual bool getShouldYield() const noexcept = 0;
-  virtual bool getIsSynchronous() const noexcept = 0;
   virtual SchedulerPriority getCurrentPriorityLevel() const noexcept = 0;
   virtual RuntimeSchedulerTimePoint now() const noexcept = 0;
   virtual void callExpiredTasks(jsi::Runtime& runtime) = 0;
   virtual void scheduleRenderingUpdate(
       RuntimeSchedulerRenderingUpdate&& renderingUpdate) = 0;
+  virtual void setShadowTreeRevisionConsistencyManager(
+      ShadowTreeRevisionConsistencyManager* provider) = 0;
 };
 
 // This is a proxy for RuntimeScheduler implementation, which will be selected
@@ -44,7 +46,6 @@ class RuntimeScheduler final : RuntimeSchedulerBase {
  public:
   explicit RuntimeScheduler(
       RuntimeExecutor runtimeExecutor,
-      bool useModernRuntimeScheduler = false,
       std::function<RuntimeSchedulerTimePoint()> now =
           RuntimeSchedulerClock::now);
 
@@ -102,14 +103,6 @@ class RuntimeScheduler final : RuntimeSchedulerBase {
   bool getShouldYield() const noexcept override;
 
   /*
-   * Return value informs if the current task is executed inside synchronous
-   * block.
-   *
-   * Can be called from any thread.
-   */
-  bool getIsSynchronous() const noexcept override;
-
-  /*
    * Returns value of currently executed task. Designed to be called from React.
    *
    * Thread synchronization must be enforced externally.
@@ -136,6 +129,10 @@ class RuntimeScheduler final : RuntimeSchedulerBase {
 
   void scheduleRenderingUpdate(
       RuntimeSchedulerRenderingUpdate&& renderingUpdate) override;
+
+  void setShadowTreeRevisionConsistencyManager(
+      ShadowTreeRevisionConsistencyManager*
+          shadowTreeRevisionConsistencyManager) override;
 
  private:
   // Actual implementation, stored as a unique pointer to simplify memory

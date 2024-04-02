@@ -149,6 +149,5 @@ const topics = {
   'react-native-cli': labelCli,
   'react-native upgrade': labelCli,
   'react-native link': labelCli,
-  'local-cli': labelCli,
   regression: labelRegression,
 };

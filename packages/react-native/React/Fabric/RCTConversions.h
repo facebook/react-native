@@ -11,6 +11,7 @@
 #import <react/renderer/components/view/primitives.h>
 #import <react/renderer/core/LayoutPrimitives.h>
 #import <react/renderer/graphics/Color.h>
+#import <react/renderer/graphics/RCTPlatformColorUtils.h>
 #import <react/renderer/graphics/Transform.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -36,24 +37,7 @@ inline std::string RCTStringFromNSString(NSString *string)
 
 inline UIColor *_Nullable RCTUIColorFromSharedColor(const facebook::react::SharedColor &sharedColor)
 {
-  if (!sharedColor) {
-    return nil;
-  }
-
-  if (*facebook::react::clearColor() == *sharedColor) {
-    return [UIColor clearColor];
-  }
-
-  if (*facebook::react::blackColor() == *sharedColor) {
-    return [UIColor blackColor];
-  }
-
-  if (*facebook::react::whiteColor() == *sharedColor) {
-    return [UIColor whiteColor];
-  }
-
-  auto components = facebook::react::colorComponentsFromColor(sharedColor);
-  return [UIColor colorWithRed:components.red green:components.green blue:components.blue alpha:components.alpha];
+  return RCTPlatformColorFromColor(*sharedColor);
 }
 
 inline CF_RETURNS_RETAINED CGColorRef _Nullable RCTCreateCGColorRefFromSharedColor(

@@ -7,10 +7,12 @@
 
 package com.facebook.react.uimanager;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.common.ClearableSynchronizedPool;
 import com.facebook.yoga.YogaNode;
 
 /** Static holder for a recycling pool of YogaNodes. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class YogaNodePool {
 
   private static final Object sInitLock = new Object();

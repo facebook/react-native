@@ -80,7 +80,7 @@ local_ref<JArrayClass<jstring>> ReadableNativeMap::importKeys() {
 local_ref<JArrayClass<jobject>> ReadableNativeMap::importValues() {
   throwIfConsumed();
 
-  jint size = keys_.value().size();
+  auto size = static_cast<jint>(keys_.value().size());
   auto jarray = JArrayClass<jobject>::newArray(size);
   for (jint ii = 0; ii < size; ii++) {
     const std::string& key = (*keys_)[ii].getString();
@@ -92,7 +92,7 @@ local_ref<JArrayClass<jobject>> ReadableNativeMap::importValues() {
 local_ref<JArrayClass<jobject>> ReadableNativeMap::importTypes() {
   throwIfConsumed();
 
-  jint size = keys_.value().size();
+  auto size = static_cast<jint>(keys_.value().size());
   auto jarray = JArrayClass<jobject>::newArray(size);
   for (jint ii = 0; ii < size; ii++) {
     const std::string& key = (*keys_)[ii].getString();

@@ -28,6 +28,7 @@ import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.OverScroller;
 import android.widget.ScrollView;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 import com.facebook.common.logging.FLog;
@@ -130,6 +131,7 @@ public class ReactScrollView extends ScrollView
     mScroller = getOverScrollerFromParent();
     setOnHierarchyChangeListener(this);
     setScrollBarStyle(SCROLLBARS_OUTSIDE_OVERLAY);
+    setClipChildren(false);
 
     ViewCompat.setAccessibilityDelegate(this, new ReactScrollViewAccessibilityDelegate());
   }
@@ -356,7 +358,7 @@ public class ReactScrollView extends ScrollView
   }
 
   /** Returns whether the given descendent is partially scrolled in view */
-  public boolean isPartiallyScrolledInView(View descendent) {
+  boolean isPartiallyScrolledInView(View descendent) {
     int scrollDelta = getScrollDelta(descendent);
     descendent.getDrawingRect(mTempRect);
     return scrollDelta != 0 && Math.abs(scrollDelta) < mTempRect.width();
@@ -462,13 +464,13 @@ public class ReactScrollView extends ScrollView
   }
 
   @Override
-  public boolean dispatchGenericPointerEvent(MotionEvent ev) {
-    // We do not dispatch the pointer event if its children are not supposed to receive it
+  public boolean dispatchGenericMotionEvent(MotionEvent ev) {
+    // We do not dispatch the motion event if its children are not supposed to receive it
     if (!PointerEvents.canChildrenBeTouchTarget(mPointerEvents)) {
       return false;
     }
 
-    return super.dispatchGenericPointerEvent(ev);
+    return super.dispatchGenericMotionEvent(ev);
   }
 
   @Override
@@ -505,7 +507,7 @@ public class ReactScrollView extends ScrollView
     Assertions.assertNotNull(mClippingRect);
 
     ReactClippingViewGroupHelper.calculateClippingRect(this, mClippingRect);
-    View contentView = getChildAt(0);
+    View contentView = getContentView();
     if (contentView instanceof ReactClippingViewGroup) {
       ((ReactClippingViewGroup) contentView).updateClippingRect();
     }
@@ -619,20 +621,16 @@ public class ReactScrollView extends ScrollView
   @Override
   public void draw(Canvas canvas) {
     if (mEndFillColor != Color.TRANSPARENT) {
-      final View content = getChildAt(0);
-      if (mEndBackground != null && content != null && content.getBottom() < getHeight()) {
-        mEndBackground.setBounds(0, content.getBottom(), getWidth(), getHeight());
+      final View contentView = getContentView();
+      if (mEndBackground != null && contentView != null && contentView.getBottom() < getHeight()) {
+        mEndBackground.setBounds(0, contentView.getBottom(), getWidth(), getHeight());
         mEndBackground.draw(canvas);
       }
     }
     getDrawingRect(mRect);
 
-    switch (mOverflow) {
-      case ViewProps.VISIBLE:
-        break;
-      default:
-        canvas.clipRect(mRect);
-        break;
+    if (!ViewProps.VISIBLE.equals(mOverflow)) {
+      canvas.clipRect(mRect);
     }
 
     super.draw(canvas);
@@ -1043,8 +1041,10 @@ public class ReactScrollView extends ScrollView
 
   @Override
   public void onChildViewRemoved(View parent, View child) {
-    mContentView.removeOnLayoutChangeListener(this);
-    mContentView = null;
+    if (mContentView != null) {
+      mContentView.removeOnLayoutChangeListener(this);
+      mContentView = null;
+    }
   }
 
   public void setContentOffset(ReadableMap value) {
@@ -1089,6 +1089,53 @@ public class ReactScrollView extends ScrollView
     super.scrollTo(x, y);
     ReactScrollViewHelper.updateFabricScrollState(this);
     setPendingContentOffsets(x, y);
+  }
+
+  /**
+   * If we are in the middle of a fling animation from the user removing their finger (OverScroller
+   * is in `FLING_MODE`), recreate the existing fling animation since it was calculated against
+   * outdated scroll offsets.
+   */
+  private void recreateFlingAnimation(int scrollY) {
+    // If we have any pending custom flings (e.g. from animated `scrollTo`, or flinging to a snap
+    // point), cancel them.
+    // TODO: Can we be more graceful (like OverScroller flings)?
+    if (getFlingAnimator().isRunning()) {
+      getFlingAnimator().cancel();
+    }
+
+    if (mScroller != null && !mScroller.isFinished()) {
+      // Calculate the velocity and position of the fling animation at the time of this layout
+      // event, which may be later than the last ScrollView tick. These values are not committed to
+      // the underlying ScrollView, which will recalculate positions on its next tick.
+      int scrollerYBeforeTick = mScroller.getCurrY();
+      boolean hasMoreTicks = mScroller.computeScrollOffset();
+
+      // Stop the existing animation at the current state of the scroller. We will then recreate
+      // it starting at the adjusted y offset.
+      mScroller.forceFinished(true);
+
+      if (hasMoreTicks) {
+        // OverScroller.getCurrVelocity() returns an absolute value of the velocity a current fling
+        // animation (only FLING_MODE animations). We derive direction along the Y axis from the
+        // start and end of the, animation assuming ScrollView never fires horizontal fling
+        // animations.
+        // TODO: This does not fully handle overscroll.
+        float direction = Math.signum(mScroller.getFinalY() - mScroller.getStartY());
+        float flingVelocityY = mScroller.getCurrVelocity() * direction;
+
+        mScroller.fling(getScrollX(), scrollY, 0, (int) flingVelocityY, 0, 0, 0, Integer.MAX_VALUE);
+      } else {
+        scrollTo(getScrollX(), scrollY + (mScroller.getCurrX() - scrollerYBeforeTick));
+      }
+    }
+  }
+
+  /** Scrolls to a new position preserving any momentum scrolling animation. */
+  @Override
+  public void scrollToPreservingMomentum(int x, int y) {
+    scrollTo(x, y);
+    recreateFlingAnimation(y);
   }
 
   private boolean isContentReady() {
@@ -1189,7 +1236,8 @@ public class ReactScrollView extends ScrollView
 
     Assertions.assertCondition(
         count <= 1,
-        "React Native ScrollView should not have more than one child, it should have exactly 1 child; a content View");
+        "React Native ScrollView should not have more than one child, it should have exactly 1"
+            + " child; a content View");
 
     if (count > 0) {
       for (int i = 0; i < count; i++) {
@@ -1236,6 +1284,7 @@ public class ReactScrollView extends ScrollView
     DEFAULT_FLING_ANIMATOR.start();
   }
 
+  @NonNull
   @Override
   public ValueAnimator getFlingAnimator() {
     return DEFAULT_FLING_ANIMATOR;

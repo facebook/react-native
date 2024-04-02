@@ -255,7 +255,6 @@ module.exports = {
     // These rules are purely matters of style and are quite subjective.
 
     'key-spacing': 0,
-    'keyword-spacing': 1, // enforce spacing before and after keywords
     'jsx-quotes': [1, 'prefer-double'], // enforces the usage of double quotes for all JSX attribute values which doesn’t contain a double quote
     'comma-spacing': 0,
     'no-multi-spaces': 0,

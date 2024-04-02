@@ -27,6 +27,8 @@ import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
+import com.facebook.react.common.annotations.FrameworkAPI;
+import com.facebook.react.common.annotations.UnstableReactNativeAPI;
 import java.lang.ref.WeakReference;
 import java.util.Collection;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -35,7 +37,8 @@ import java.util.concurrent.CopyOnWriteArraySet;
  * Abstract ContextWrapper for Android application or activity {@link Context} and {@link
  * CatalystInstance}
  */
-public class ReactContext extends ContextWrapper {
+public abstract class ReactContext extends ContextWrapper {
+
   @DoNotStrip
   public interface RCTDeviceEventEmitter extends JavaScriptModule {
     void emit(@NonNull String eventName, @Nullable Object data);
@@ -197,13 +200,29 @@ public class ReactContext extends ContextWrapper {
     return mCatalystInstance.getNativeModules();
   }
 
-  /** @return the instance of the specified module interface associated with this ReactContext. */
+  /**
+   * @return the instance of the specified module interface associated with this ReactContext.
+   */
   @Nullable
   public <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface) {
     if (mCatalystInstance == null) {
       raiseCatalystInstanceMissingException();
     }
     return mCatalystInstance.getNativeModule(nativeModuleInterface);
+  }
+
+  /**
+   * @return the RuntimeExecutor, a thread-safe handler for accessing the runtime.
+   * @experimental
+   */
+  @Nullable
+  @FrameworkAPI
+  @UnstableReactNativeAPI
+  public RuntimeExecutor getRuntimeExecutor() {
+    if (mCatalystInstance == null) {
+      raiseCatalystInstanceMissingException();
+    }
+    return mCatalystInstance.getRuntimeExecutor();
   }
 
   /**
@@ -236,7 +255,9 @@ public class ReactContext extends ContextWrapper {
     return hasActiveReactInstance();
   }
 
-  /** @return true if there is an non-null, alive react native instance */
+  /**
+   * @return true if there is an non-null, alive react native instance
+   */
   public boolean hasActiveReactInstance() {
     return mCatalystInstance != null && !mCatalystInstance.isDestroyed();
   }
@@ -417,7 +438,8 @@ public class ReactContext extends ContextWrapper {
     /** TODO(T85807990): Fail fast if the ReactContext isn't initialized */
     if (!mIsInitialized) {
       throw new IllegalStateException(
-          "Tried to call assertOnNativeModulesQueueThread(message) on an uninitialized ReactContext");
+          "Tried to call assertOnNativeModulesQueueThread(message) on an uninitialized"
+              + " ReactContext");
     }
     Assertions.assertNotNull(mNativeModulesMessageQueueThread).assertIsOnThread(message);
   }
@@ -528,7 +550,9 @@ public class ReactContext extends ContextWrapper {
     return mCurrentActivity.get();
   }
 
-  /** @deprecated DO NOT USE, this method will be removed in the near future. */
+  /**
+   * @deprecated DO NOT USE, this method will be removed in the near future.
+   */
   @Deprecated
   public boolean isBridgeless() {
     return false;
@@ -547,17 +571,10 @@ public class ReactContext extends ContextWrapper {
     return null;
   }
 
-  public @Nullable JSIModule getJSIModule(JSIModuleType moduleType) {
-    if (!hasActiveReactInstance()) {
-      throw new IllegalStateException(
-          "Unable to retrieve a JSIModule if CatalystInstance is not active.");
-    }
-    return mCatalystInstance.getJSIModule(moduleType);
-  }
-
   @DeprecatedInNewArchitecture(
       message =
-          "This method will be deprecated later as part of Stable APIs with bridge removal and not encouraged usage.")
+          "This method will be deprecated later as part of Stable APIs with bridge removal and not"
+              + " encouraged usage.")
   /**
    * Get the UIManager for Fabric from the CatalystInstance.
    *

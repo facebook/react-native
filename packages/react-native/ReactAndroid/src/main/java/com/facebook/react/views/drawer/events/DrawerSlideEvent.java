@@ -7,12 +7,14 @@
 
 package com.facebook.react.views.drawer.events;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.events.Event;
 
 /** Event emitted by a DrawerLayout as it is being moved open/closed. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class DrawerSlideEvent extends Event<DrawerSlideEvent> {
 
   public static final String EVENT_NAME = "topDrawerSlide";

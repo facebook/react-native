@@ -9,6 +9,7 @@
  * @oncall react_native
  */
 
+const {PACKAGES_DIR} = require('../consts');
 const {
   buildConfig,
   getBabelConfig,
@@ -26,8 +27,6 @@ const path = require('path');
 const prettier = require('prettier');
 const ts = require('typescript');
 
-const REPO_ROOT = path.resolve(__dirname, '../..');
-const PACKAGES_DIR /*: string */ = path.join(REPO_ROOT, 'packages');
 const SRC_DIR = 'src';
 const BUILD_DIR = 'dist';
 const JS_FILES_PATTERN = '**/*.js';
@@ -185,10 +184,7 @@ async function rewritePackageExports(packageName /*: string */) {
 
   pkg.exports = rewriteExportsField(pkg.exports);
 
-  await fs.writeFile(
-    packageJsonPath,
-    prettier.format(JSON.stringify(pkg), {parser: 'json'}),
-  );
+  await fs.writeFile(packageJsonPath, JSON.stringify(pkg, null, 2) + '\n');
 }
 
 /*::

@@ -52,9 +52,18 @@ class BaseViewProps : public YogaStylableProps, public AccessibilityProps {
   Float shadowOpacity{};
   Float shadowRadius{3};
 
+  Cursor cursor{};
+
   // Transform
   Transform transform{};
-  TransformOrigin transformOrigin{};
+  TransformOrigin transformOrigin{
+      {
+          ValueUnit{50.0f, UnitType::Percent},
+          ValueUnit{50.0f, UnitType::Percent},
+      },
+      0.0f,
+
+  };
   BackfaceVisibility backfaceVisibility{};
   bool shouldRasterize{};
   std::optional<int> zIndex{};

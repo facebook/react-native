@@ -7,12 +7,14 @@
 
 package com.facebook.react.common;
 
+import com.facebook.infer.annotation.Nullsafe;
 import java.nio.charset.Charset;
 
 /**
  * Not all versions of Android SDK have this class in nio package. This is the reason to have it
  * around.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @Deprecated(
     since = "Deprecated class since v0.73.0, please use java.nio.charset.StandardCharsets instead.",
     forRemoval = true)
@@ -28,6 +30,7 @@ public final class StandardCharsets {
 
   /** Sixteen-bit UCS Transformation Format, big-endian byte order */
   public static final Charset UTF_16BE = Charset.forName("UTF-16BE");
+
   /** Sixteen-bit UCS Transformation Format, little-endian byte order */
   public static final Charset UTF_16LE = Charset.forName("UTF-16LE");
 }

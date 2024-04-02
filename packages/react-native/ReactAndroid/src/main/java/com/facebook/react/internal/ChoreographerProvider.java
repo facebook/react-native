@@ -17,6 +17,7 @@ public interface ChoreographerProvider {
 
     /** Posts a frame callback to run on the next frame. */
     void postFrameCallback(android.view.Choreographer.FrameCallback callback);
+
     /** Removes a previously posted frame callback. */
     void removeFrameCallback(android.view.Choreographer.FrameCallback callback);
   }

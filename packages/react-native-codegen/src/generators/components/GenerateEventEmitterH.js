@@ -311,6 +311,7 @@ module.exports = {
     schema: SchemaType,
     packageName?: string,
     assumeNonnull: boolean = false,
+    headerPrefix?: string,
   ): FilesOutput {
     const moduleComponents: ComponentCollection = Object.keys(schema.modules)
       .map(moduleName => {

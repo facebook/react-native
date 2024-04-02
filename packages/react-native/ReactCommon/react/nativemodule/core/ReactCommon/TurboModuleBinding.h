@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include <ReactCommon/LongLivedObject.h>
 #include <ReactCommon/TurboModule.h>
 #include <jsi/jsi.h>
 
@@ -28,9 +29,15 @@ class TurboModuleBinding {
   static void install(
       jsi::Runtime& runtime,
       TurboModuleProviderFunctionType&& moduleProvider,
-      TurboModuleProviderFunctionType&& legacyModuleProvider = nullptr);
+      TurboModuleProviderFunctionType&& legacyModuleProvider = nullptr,
+      std::shared_ptr<LongLivedObjectCollection> longLivedObjectCollection =
+          nullptr);
 
-  TurboModuleBinding(TurboModuleProviderFunctionType&& moduleProvider);
+  TurboModuleBinding(
+      jsi::Runtime& runtime,
+      TurboModuleProviderFunctionType&& moduleProvider,
+      std::shared_ptr<LongLivedObjectCollection> longLivedObjectCollection);
+
   virtual ~TurboModuleBinding();
 
  private:
@@ -43,7 +50,9 @@ class TurboModuleBinding {
   jsi::Value getModule(jsi::Runtime& runtime, const std::string& moduleName)
       const;
 
+  jsi::Runtime& runtime_;
   TurboModuleProviderFunctionType moduleProvider_;
+  std::shared_ptr<LongLivedObjectCollection> longLivedObjectCollection_;
 };
 
 } // namespace facebook::react

@@ -1,12 +1,12 @@
 {
   "name": "@react-native/tester",
-  "version": "0.0.1",
+  "version": "0.75.0-main",
   "private": true,
   "description": "React Native tester app.",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/facebook/react-native.git",
+    "url": "git+https://github.com/facebook/react-native.git",
     "directory": "packages/rn-tester"
   },
   "engines": {
@@ -25,7 +25,8 @@
   "dependencies": {
     "flow-enums-runtime": "^0.0.6",
     "invariant": "^2.2.4",
-    "nullthrows": "^1.1.1"
+    "nullthrows": "^1.1.1",
+    "@react-native/popup-menu-android": "0.75.0-main"
   },
   "peerDependencies": {
     "react": "18.2.0",

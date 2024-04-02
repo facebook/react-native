@@ -158,6 +158,13 @@ TEST_F(BridgingTest, arrayTest) {
 
   EXPECT_EQ(
       vec, bridging::fromJs<std::vector<std::string>>(rt, array, invoker));
+  auto arr = bridging::fromJs<std::array<std::string, 2>>(rt, array, invoker);
+  EXPECT_EQ(vec[0], arr[0]);
+  EXPECT_EQ(vec[1], arr[1]);
+  auto pair =
+      bridging::fromJs<std::pair<std::string, std::string>>(rt, array, invoker);
+  EXPECT_EQ(vec[0], pair.first);
+  EXPECT_EQ(vec[1], pair.second);
 
   EXPECT_EQ(vec.size(), bridging::toJs(rt, vec, invoker).size(rt));
   for (size_t i = 0; i < vec.size(); i++) {
@@ -172,11 +179,20 @@ TEST_F(BridgingTest, arrayTest) {
   EXPECT_EQ(2, bridging::toJs(rt, std::make_pair(1, "2"), invoker).size(rt));
   EXPECT_EQ(2, bridging::toJs(rt, std::make_tuple(1, "2"), invoker).size(rt));
   EXPECT_EQ(2, bridging::toJs(rt, std::array<int, 2>{1, 2}, invoker).size(rt));
+  EXPECT_EQ(
+      2,
+      bridging::toJs(rt, std::array<std::string, 2>{"1", "2"}, invoker)
+          .size(rt));
   EXPECT_EQ(2, bridging::toJs(rt, std::deque<int>{1, 2}, invoker).size(rt));
   EXPECT_EQ(2, bridging::toJs(rt, std::list<int>{1, 2}, invoker).size(rt));
   EXPECT_EQ(
       2,
       bridging::toJs(rt, std::initializer_list<int>{1, 2}, invoker).size(rt));
+
+  std::vector<std::array<std::string, 2>> headers{
+      {"foo", "bar"}, {"baz", "qux"}};
+  auto jsiHeaders = bridging::toJs(rt, headers, invoker);
+  EXPECT_EQ(headers.size(), jsiHeaders.size(rt));
 }
 
 TEST_F(BridgingTest, functionTest) {
@@ -300,7 +316,7 @@ TEST_F(BridgingTest, asyncCallbackInvalidation) {
       [](jsi::Runtime& rt, jsi::Function& f) { f.call(rt, "hello"); });
 
   // LongLivedObjectCollection goes away before callback is executed
-  LongLivedObjectCollection::get().clear();
+  LongLivedObjectCollection::get(rt).clear();
 
   flushQueue();
 
@@ -468,6 +484,12 @@ TEST_F(BridgingTest, supportTest) {
   EXPECT_TRUE((bridging::supportsFromJs<std::set<int>, jsi::Array&>));
   EXPECT_TRUE((bridging::supportsFromJs<std::vector<int>, jsi::Array>));
   EXPECT_TRUE((bridging::supportsFromJs<std::vector<int>, jsi::Array&>));
+  EXPECT_TRUE((
+      bridging::
+          supportsFromJs<std::vector<std::array<std::string, 2>>, jsi::Array>));
+  EXPECT_TRUE((bridging::supportsFromJs<
+               std::vector<std::array<std::string, 2>>,
+               jsi::Array&>));
   EXPECT_TRUE(
       (bridging::supportsFromJs<std::map<std::string, int>, jsi::Object>));
   EXPECT_TRUE(

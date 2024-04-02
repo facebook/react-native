@@ -504,6 +504,11 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
     YogaNative.jni_YGNodeSetHasMeasureFuncJNI(mNativePointer, measureFunction != null);
   }
 
+  @Override
+  public void setAlwaysFormsContainingBlock(boolean alwaysFormsContainingBlock) {
+    YogaNative.jni_YGNodeSetAlwaysFormsContainingBlockJNI(mNativePointer, alwaysFormsContainingBlock);
+  }
+
   // Implementation Note: Why this method needs to stay final
   //
   // We cache the jmethodid for this method in Yoga code. This means that even if a subclass
@@ -549,14 +554,6 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
   @Override
   public @Nullable Object getData() {
     return mData;
-  }
-
-  /**
-   * Use the set logger (defaults to adb log) to print out the styles, children, and computed layout
-   * of the tree rooted at this node.
-   */
-  public void print() {
-    YogaNative.jni_YGNodePrintJNI(mNativePointer);
   }
 
   /**

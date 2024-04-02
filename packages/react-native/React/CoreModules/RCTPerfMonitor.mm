@@ -60,13 +60,8 @@ static vm_size_t RCTGetResidentMemorySize(void)
   return memoryUsageInByte;
 }
 
-@interface RCTPerfMonitor : NSObject <
-                                RCTBridgeModule,
-                                RCTTurboModule,
-                                RCTInitializing,
-                                RCTInvalidating,
-                                UITableViewDataSource,
-                                UITableViewDelegate>
+@interface RCTPerfMonitor
+    : NSObject <RCTBridgeModule, RCTTurboModule, RCTInvalidating, UITableViewDataSource, UITableViewDelegate>
 
 #if __has_include(<React/RCTDevMenu.h>)
 @property (nonatomic, strong, readonly) RCTDevMenuItem *devMenuItem;
@@ -129,13 +124,6 @@ RCT_EXPORT_MODULE()
 - (dispatch_queue_t)methodQueue
 {
   return dispatch_get_main_queue();
-}
-
-- (void)initialize
-{
-#if __has_include(<React/RCTDevMenu.h>)
-  [(RCTDevMenu *)[_moduleRegistry moduleForName:"DevMenu"] addItem:self.devMenuItem];
-#endif
 }
 
 - (void)invalidate

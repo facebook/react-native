@@ -53,6 +53,10 @@ void RCTEnableTurboModuleInterop(BOOL enabled);
 BOOL RCTTurboModuleInteropBridgeProxyEnabled(void);
 void RCTEnableTurboModuleInteropBridgeProxy(BOOL enabled);
 
+// Turn on the fabric interop layer
+BOOL RCTFabricInteropLayerEnabled(void);
+void RCTEnableFabricInteropLayer(BOOL enabled);
+
 // Turn on TurboModule sync execution of void methods
 BOOL RCTTurboModuleSyncVoidMethodsEnabled(void);
 void RCTEnableTurboModuleSyncVoidMethods(BOOL enabled);

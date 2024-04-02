@@ -19,10 +19,6 @@ module.exports = {
   project: {
     ios: {
       sourceDir: '.',
-      unstable_reactLegacyComponentNames: [
-        'RNTMyLegacyNativeView',
-        'RNTMyNativeView',
-      ],
     },
     android: {
       sourceDir: '../../',
@@ -30,6 +26,7 @@ module.exports = {
       manifestPath:
         'packages/rn-tester/android/app/src/main/AndroidManifest.xml',
       packageName: 'com.facebook.react.uiapp',
+      watchModeCommandParams: ['--mode HermesDebug'],
     },
   },
 };

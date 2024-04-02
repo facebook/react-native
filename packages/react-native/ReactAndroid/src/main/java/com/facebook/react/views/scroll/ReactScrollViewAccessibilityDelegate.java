@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.R;
 import com.facebook.react.bridge.AssertionException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
@@ -19,6 +20,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class ReactScrollViewAccessibilityDelegate extends AccessibilityDelegateCompat {
   private final String TAG = ReactScrollViewAccessibilityDelegate.class.getSimpleName();
 
@@ -31,7 +33,8 @@ class ReactScrollViewAccessibilityDelegate extends AccessibilityDelegateCompat {
       ReactSoftExceptionLogger.logSoftException(
           TAG,
           new AssertionException(
-              "ReactScrollViewAccessibilityDelegate should only be used with ReactScrollView or ReactHorizontalScrollView, not with class: "
+              "ReactScrollViewAccessibilityDelegate should only be used with ReactScrollView or"
+                  + " ReactHorizontalScrollView, not with class: "
                   + host.getClass().getSimpleName()));
     }
   }
@@ -45,10 +48,12 @@ class ReactScrollViewAccessibilityDelegate extends AccessibilityDelegateCompat {
       ReactSoftExceptionLogger.logSoftException(
           TAG,
           new AssertionException(
-              "ReactScrollViewAccessibilityDelegate should only be used with ReactScrollView or ReactHorizontalScrollView, not with class: "
+              "ReactScrollViewAccessibilityDelegate should only be used with ReactScrollView or"
+                  + " ReactHorizontalScrollView, not with class: "
                   + host.getClass().getSimpleName()));
     }
-  };
+  }
+  ;
 
   private void onInitializeAccessibilityEventInternal(View view, AccessibilityEvent event) {
     final ReadableMap accessibilityCollection =
@@ -152,4 +157,5 @@ class ReactScrollViewAccessibilityDelegate extends AccessibilityDelegateCompat {
       info.setScrollable(scrollView.getScrollEnabled());
     }
   }
-};
+}
+;

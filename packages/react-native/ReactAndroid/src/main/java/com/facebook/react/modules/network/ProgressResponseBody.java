@@ -25,8 +25,8 @@ public class ProgressResponseBody extends ResponseBody {
   private long mTotalBytesRead;
 
   public ProgressResponseBody(ResponseBody responseBody, ProgressListener progressListener) {
-    this.mResponseBody = responseBody;
-    this.mProgressListener = progressListener;
+    mResponseBody = responseBody;
+    mProgressListener = progressListener;
     mTotalBytesRead = 0L;
   }
 

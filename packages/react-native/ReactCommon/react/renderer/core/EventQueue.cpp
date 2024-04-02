@@ -7,6 +7,7 @@
 
 #include "EventQueue.h"
 
+#include <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #include "EventEmitter.h"
 #include "ShadowNodeFamily.h"
 
@@ -14,9 +15,11 @@ namespace facebook::react {
 
 EventQueue::EventQueue(
     EventQueueProcessor eventProcessor,
-    std::unique_ptr<EventBeat> eventBeat)
+    std::unique_ptr<EventBeat> eventBeat,
+    RuntimeScheduler& runtimeScheduler)
     : eventProcessor_(std::move(eventProcessor)),
-      eventBeat_(std::move(eventBeat)) {
+      eventBeat_(std::move(eventBeat)),
+      runtimeScheduler_(&runtimeScheduler) {
   eventBeat_->setBeatCallback(
       [this](jsi::Runtime& runtime) { onBeat(runtime); });
 }
@@ -75,7 +78,27 @@ void EventQueue::enqueueStateUpdate(StateUpdate&& stateUpdate) const {
   onEnqueue();
 }
 
+void EventQueue::onEnqueue() const {
+  if (synchronousAccessRequested_) {
+    // Sync flush has been scheduled, no need to request access to the runtime.
+    return;
+  }
+  eventBeat_->request();
+}
+
+void EventQueue::experimental_flushSync() const {
+  synchronousAccessRequested_ = true;
+  runtimeScheduler_->executeNowOnTheSameThread([this](jsi::Runtime& runtime) {
+    synchronousAccessRequested_ = false;
+    onBeat(runtime);
+  });
+}
+
 void EventQueue::onBeat(jsi::Runtime& runtime) const {
+  if (synchronousAccessRequested_) {
+    // Sync flush has been scheduled, let's yield to it.
+    return;
+  }
   flushStateUpdates();
   flushEvents(runtime);
 }

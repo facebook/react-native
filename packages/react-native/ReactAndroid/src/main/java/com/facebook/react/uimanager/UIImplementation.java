@@ -177,7 +177,7 @@ public class UIImplementation {
    *
    * @return The num of root view
    */
-  private int getRootViewNum() {
+  public int getRootViewNum() {
     return mOperationsQueue.getNativeViewHierarchyManager().getRootViewNum();
   }
 
@@ -481,27 +481,6 @@ public class UIImplementation {
   }
 
   /**
-   * Method which takes a container tag and then releases all subviews for that container upon
-   * receipt. TODO: The method name is incorrect and will be renamed, #6033872
-   *
-   * @param containerTag the tag of the container for which the subviews must be removed
-   */
-  public void removeSubviewsFromContainerWithID(int containerTag) {
-    ReactShadowNode containerNode = mShadowNodeRegistry.getNode(containerTag);
-    if (containerNode == null) {
-      throw new IllegalViewOperationException(
-          "Trying to remove subviews of an unknown view tag: " + containerTag);
-    }
-
-    WritableArray indicesToRemove = Arguments.createArray();
-    for (int childIndex = 0; childIndex < containerNode.getChildCount(); childIndex++) {
-      indicesToRemove.pushInt(childIndex);
-    }
-
-    manageChildren(containerTag, null, null, null, null, indicesToRemove);
-  }
-
-  /**
    * Find the touch target child native view in the supplied root view hierarchy, given a react
    * target location.
    *
@@ -610,12 +589,6 @@ public class UIImplementation {
 
   /** Invoked at the end of the transaction to commit any updates to the node hierarchy. */
   public void dispatchViewUpdates(int batchId) {
-    if (getRootViewNum() <= 0) {
-      // If there are no RootViews registered, there will be no View updates to dispatch.
-      // This is a hack to prevent this from being called when Fabric is used everywhere.
-      // This should no longer be necessary in Bridgeless Mode.
-      return;
-    }
     SystraceMessage.beginSection(
             Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "UIImplementation.dispatchViewUpdates")
         .arg("batchId", batchId)
@@ -771,6 +744,10 @@ public class UIImplementation {
   /**
    * Show a PopupMenu.
    *
+   * <p>This is deprecated, please use the <PopupMenuAndroid /> component instead.
+   *
+   * <p>TODO(T175424986): Remove UIManager.showPopupMenu() in React Native v0.75.
+   *
    * @param reactTag the tag of the anchor view (the PopupMenu is displayed next to this view); this
    *     needs to be the tag of a native view (shadow views can not be anchors)
    * @param items the menu items as an array of strings
@@ -778,6 +755,7 @@ public class UIImplementation {
    * @param success will be called with the position of the selected item as the first argument, or
    *     no arguments if the menu is dismissed
    */
+  @Deprecated
   public void showPopupMenu(int reactTag, ReadableArray items, Callback error, Callback success) {
     boolean viewExists = checkOrAssertViewExists(reactTag, "showPopupMenu");
     if (!viewExists) {
@@ -787,6 +765,8 @@ public class UIImplementation {
     mOperationsQueue.enqueueShowPopupMenu(reactTag, items, error, success);
   }
 
+  /** TODO(T175424986): Remove UIManager.dismissPopupMenu() in React Native v0.75. */
+  @Deprecated
   public void dismissPopupMenu() {
     mOperationsQueue.enqueueDismissPopupMenu();
   }
