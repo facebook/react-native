@@ -155,13 +155,9 @@ void PerformanceEntryReporter::mark(
     const std::string& name,
     const std::optional<double>& startTime) {
   logEntry(RawPerformanceEntry{
-      name,
-      static_cast<int>(PerformanceEntryType::MARK),
-      startTime ? *startTime : getCurrentTimeStamp(),
-      0.0,
-      std::nullopt,
-      std::nullopt,
-      std::nullopt});
+      .name = name,
+      .entryType = static_cast<int>(PerformanceEntryType::MARK),
+      .startTime = startTime ? *startTime : getCurrentTimeStamp()});
 }
 
 void PerformanceEntryReporter::clearEntries(
@@ -257,25 +253,17 @@ void PerformanceEntryReporter::measure(
   double durationVal = duration ? *duration : endTimeVal - startTimeVal;
 
   logEntry(
-      {name,
-       static_cast<int>(PerformanceEntryType::MEASURE),
-       startTimeVal,
-       durationVal,
-       std::nullopt,
-       std::nullopt,
-       std::nullopt});
+      {.name = name,
+       .entryType = static_cast<int>(PerformanceEntryType::MEASURE),
+       .startTime = startTimeVal,
+       .duration = durationVal});
 }
 
 double PerformanceEntryReporter::getMarkTime(
     const std::string& markName) const {
   RawPerformanceEntry mark{
-      markName,
-      static_cast<int>(PerformanceEntryType::MARK),
-      0.0,
-      0.0,
-      std::nullopt,
-      std::nullopt,
-      std::nullopt};
+      .name = markName,
+      .entryType = static_cast<int>(PerformanceEntryType::MARK)};
 
   std::lock_guard lock(nameLookupMutex_);
   const auto& marksBuffer = getBuffer(PerformanceEntryType::MARK);
@@ -295,13 +283,13 @@ void PerformanceEntryReporter::logEventEntry(
     double processingEnd,
     uint32_t interactionId) {
   logEntry(
-      {std::move(name),
-       static_cast<int>(PerformanceEntryType::EVENT),
-       startTime,
-       duration,
-       processingStart,
-       processingEnd,
-       interactionId});
+      {.name = std::move(name),
+       .entryType = static_cast<int>(PerformanceEntryType::EVENT),
+       .startTime = startTime,
+       .duration = duration,
+       .processingStart = processingStart,
+       .processingEnd = processingEnd,
+       .interactionId = interactionId});
 }
 
 void PerformanceEntryReporter::scheduleFlushBuffer() {
