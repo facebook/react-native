@@ -7516,9 +7516,9 @@ public class com/facebook/react/views/view/ColorUtil {
 	public static fun normalize (DDDD)I
 }
 
-public class com/facebook/react/views/view/MeasureUtil {
-	public fun <init> ()V
-	public static fun getMeasureSpec (FLcom/facebook/yoga/YogaMeasureMode;)I
+public final class com/facebook/react/views/view/MeasureUtil {
+	public static final field INSTANCE Lcom/facebook/react/views/view/MeasureUtil;
+	public static final fun getMeasureSpec (FLcom/facebook/yoga/YogaMeasureMode;)I
 }
 
 public abstract class com/facebook/react/views/view/ReactClippingViewManager : com/facebook/react/uimanager/ViewGroupManager {
