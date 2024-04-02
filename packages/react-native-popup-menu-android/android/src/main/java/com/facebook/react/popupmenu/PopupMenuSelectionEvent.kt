@@ -5,6 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+// Deprecated usage inc imports of RCTEventEmitter
+@file:Suppress("DEPRECATION")
+
 package com.facebook.react.popupmenu
 
 import com.facebook.react.bridge.Arguments
