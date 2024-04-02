@@ -123,7 +123,7 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
     RCTEnableTurboModuleInterop(YES);
     RCTEnableTurboModuleInteropBridgeProxy(YES);
 
-    [self createReactHostIfNeeded];
+    [self createReactHostIfNeeded:launchOptions];
 
     RCTFabricSurface *surface = [_reactHost createSurfaceWithModuleName:moduleName initialProperties:initProps];
 
@@ -207,7 +207,7 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 
 #pragma mark - New Arch Utilities
 
-- (void)createReactHostIfNeeded
+- (void)createReactHostIfNeeded:(NSDictionary *)launchOptions
 {
   if (_reactHost) {
     return;
@@ -219,7 +219,8 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
                        turboModuleManagerDelegate:_turboModuleManagerDelegate
                                  jsEngineProvider:^std::shared_ptr<facebook::react::JSRuntimeFactory>() {
                                    return [weakSelf createJSRuntimeFactory];
-                                 }];
+                                 }
+                                    launchOptions:launchOptions];
   [_reactHost setBundleURLProvider:^NSURL *() {
     return [weakSelf bundleURL];
   }];

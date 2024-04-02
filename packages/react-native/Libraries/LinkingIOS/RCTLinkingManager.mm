@@ -8,6 +8,7 @@
 #import <React/RCTLinkingManager.h>
 
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
+#import <React/RCTBridge+Private.h>
 #import <React/RCTBridge.h>
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
@@ -153,12 +154,15 @@ RCT_EXPORT_METHOD(canOpenURL
 
 RCT_EXPORT_METHOD(getInitialURL : (RCTPromiseResolveBlock)resolve reject : (__unused RCTPromiseRejectBlock)reject)
 {
+  RCTBridge *bridge = self.bridge;
+  if (!bridge) {
+    bridge = [RCTBridge currentBridge];
+  }
   NSURL *initialURL = nil;
-  if (self.bridge.launchOptions[UIApplicationLaunchOptionsURLKey]) {
-    initialURL = self.bridge.launchOptions[UIApplicationLaunchOptionsURLKey];
+  if (bridge.launchOptions[UIApplicationLaunchOptionsURLKey]) {
+    initialURL = bridge.launchOptions[UIApplicationLaunchOptionsURLKey];
   } else {
-    NSDictionary *userActivityDictionary =
-        self.bridge.launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey];
+    NSDictionary *userActivityDictionary = bridge.launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey];
     if ([userActivityDictionary[UIApplicationLaunchOptionsUserActivityTypeKey] isEqual:NSUserActivityTypeBrowsingWeb]) {
       initialURL = ((NSUserActivity *)userActivityDictionary[@"UIApplicationLaunchOptionsUserActivityKey"]).webpageURL;
     }

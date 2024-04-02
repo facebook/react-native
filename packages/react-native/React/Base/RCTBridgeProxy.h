@@ -22,7 +22,8 @@
                    callableJSModules:(RCTCallableJSModules *)callableJSModules
                   dispatchToJSThread:(void (^)(dispatch_block_t))dispatchToJSThread
                registerSegmentWithId:(void (^)(NSNumber *, NSString *))registerSegmentWithId
-                             runtime:(void *)runtime NS_DESIGNATED_INITIALIZER;
+                             runtime:(void *)runtime
+                       launchOptions:(nullable NSDictionary *)launchOptions NS_DESIGNATED_INITIALIZER;
 
 - (NSMethodSignature *)methodSignatureForSelector:(SEL)sel;
 - (void)forwardInvocation:(NSInvocation *)invocation;

@@ -35,6 +35,7 @@ using namespace facebook;
   RCTModuleRegistry *_moduleRegistry;
   RCTBundleManager *_bundleManager;
   RCTCallableJSModules *_callableJSModules;
+  NSDictionary *_launchOptions;
   void (^_dispatchToJSThread)(dispatch_block_t);
   void (^_registerSegmentWithId)(NSNumber *, NSString *);
   void *_runtime;
@@ -47,6 +48,7 @@ using namespace facebook;
                   dispatchToJSThread:(void (^)(dispatch_block_t))dispatchToJSThread
                registerSegmentWithId:(void (^)(NSNumber *, NSString *))registerSegmentWithId
                              runtime:(void *)runtime
+                       launchOptions:(nullable NSDictionary *)launchOptions
 {
   self = [super self];
   if (self) {
@@ -57,6 +59,7 @@ using namespace facebook;
     _dispatchToJSThread = dispatchToJSThread;
     _registerSegmentWithId = registerSegmentWithId;
     _runtime = runtime;
+    _launchOptions = [launchOptions copy];
   }
   return self;
 }
@@ -191,8 +194,7 @@ using namespace facebook;
 
 - (NSDictionary *)launchOptions
 {
-  [self logError:@"This method is not supported. Returning nil." cmd:_cmd];
-  return nil;
+  return _launchOptions;
 }
 
 - (BOOL)loading
