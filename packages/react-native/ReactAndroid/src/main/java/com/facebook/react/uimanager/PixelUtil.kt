@@ -8,6 +8,7 @@
 package com.facebook.react.uimanager
 
 import android.util.TypedValue
+import kotlin.math.min
 
 /** Android dp to pixel manipulation */
 public object PixelUtil {
@@ -29,12 +30,13 @@ public object PixelUtil {
   @JvmStatic
   public fun toPixelFromSP(value: Float, maxFontScale: Float = Float.NaN): Float {
     val displayMetrics = DisplayMetricsHolder.getWindowDisplayMetrics()
-    var scaledDensity = displayMetrics.scaledDensity
-    val currentFontScale = scaledDensity / displayMetrics.density
-    if (maxFontScale >= 1 && maxFontScale < currentFontScale) {
-      scaledDensity = displayMetrics.density * maxFontScale
+    val scaledValue = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, value, displayMetrics)
+
+    if (maxFontScale >= 1) {
+      return min(scaledValue, value * displayMetrics.density * maxFontScale)
     }
-    return value * scaledDensity
+
+    return scaledValue
   }
 
   /** Convert from SP to PX */
