@@ -1745,7 +1745,28 @@ static void calculateLayoutImpl(
         paddingAndBorderAxisCross;
 
     const float remainingAlignContentDim = innerCrossDim - totalLineCrossDim;
-    switch (node->style().alignContent()) {
+
+    // Apply fallback alignments on overflow
+    // https://www.w3.org/TR/css-align-3/#distribution-values
+    const auto appliedAlignContent =
+        remainingAlignContentDim >= 0 ? node->style().alignContent() : [&]() {
+          switch (node->style().alignContent()) {
+            // Fallback to flex-start
+            case Align::SpaceBetween:
+            case Align::Stretch:
+              return Align::FlexStart;
+
+            // Fallback to safe center. TODO: This should be aligned to Start
+            // instead of FlexStart (for row-reverse containers)
+            case Align::SpaceAround:
+            case Align::SpaceEvenly:
+              return Align::FlexStart;
+            default:
+              return node->style().alignContent();
+          }
+        }();
+
+    switch (appliedAlignContent) {
       case Align::FlexEnd:
         currentLead += remainingAlignContentDim;
         break;
@@ -1753,33 +1774,21 @@ static void calculateLayoutImpl(
         currentLead += remainingAlignContentDim / 2;
         break;
       case Align::Stretch:
-        if (innerCrossDim > totalLineCrossDim) {
-          leadPerLine =
-              remainingAlignContentDim / static_cast<float>(lineCount);
-        }
+        leadPerLine = remainingAlignContentDim / static_cast<float>(lineCount);
         break;
       case Align::SpaceAround:
-        if (innerCrossDim > totalLineCrossDim) {
-          currentLead +=
-              remainingAlignContentDim / (2 * static_cast<float>(lineCount));
-          leadPerLine =
-              remainingAlignContentDim / static_cast<float>(lineCount);
-        } else {
-          currentLead += remainingAlignContentDim / 2;
-        }
+        currentLead +=
+            remainingAlignContentDim / (2 * static_cast<float>(lineCount));
+        leadPerLine = remainingAlignContentDim / static_cast<float>(lineCount);
         break;
       case Align::SpaceEvenly:
-        if (innerCrossDim > totalLineCrossDim) {
-          currentLead +=
-              remainingAlignContentDim / static_cast<float>(lineCount + 1);
-          leadPerLine =
-              remainingAlignContentDim / static_cast<float>(lineCount + 1);
-        } else {
-          currentLead += remainingAlignContentDim / 2;
-        }
+        currentLead +=
+            remainingAlignContentDim / static_cast<float>(lineCount + 1);
+        leadPerLine =
+            remainingAlignContentDim / static_cast<float>(lineCount + 1);
         break;
       case Align::SpaceBetween:
-        if (innerCrossDim > totalLineCrossDim && lineCount > 1) {
+        if (lineCount > 1) {
           leadPerLine =
               remainingAlignContentDim / static_cast<float>(lineCount - 1);
         }
