@@ -761,6 +761,7 @@ dependencies {
   api(libs.fresco.ui.common)
   api(libs.infer.annotation)
   api(libs.soloader)
+  api(libs.soloader.annotation)
   api(libs.yoga.proguard.annotations)
 
   api(libs.jsr305)
