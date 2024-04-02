@@ -4753,9 +4753,9 @@ public class com/facebook/react/uimanager/ReactStylesDiffMap {
 	public fun toString ()Ljava/lang/String;
 }
 
-public class com/facebook/react/uimanager/ReactYogaConfigProvider {
-	public fun <init> ()V
-	public static fun get ()Lcom/facebook/yoga/YogaConfig;
+public final class com/facebook/react/uimanager/ReactYogaConfigProvider {
+	public static final field INSTANCE Lcom/facebook/react/uimanager/ReactYogaConfigProvider;
+	public static final fun get ()Lcom/facebook/yoga/YogaConfig;
 }
 
 public abstract interface class com/facebook/react/uimanager/ReactZIndexedViewGroup {
