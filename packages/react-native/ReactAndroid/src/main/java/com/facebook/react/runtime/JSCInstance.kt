@@ -10,9 +10,7 @@ package com.facebook.react.runtime
 import com.facebook.jni.HybridData
 import com.facebook.jni.annotations.DoNotStrip
 import com.facebook.soloader.SoLoader
-import com.facebook.soloader.annotation.SoLoaderLibrary
 
-@SoLoaderLibrary("jscinstance")
 public class JSCInstance constructor() : JSRuntimeFactory(initHybrid()) {
   public companion object {
     init {
