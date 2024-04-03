@@ -5613,13 +5613,18 @@ public class com/facebook/react/uimanager/events/TouchEventCoalescingKeyHelper {
 
 public final class com/facebook/react/uimanager/events/TouchEventType : java/lang/Enum {
 	public static final field CANCEL Lcom/facebook/react/uimanager/events/TouchEventType;
+	public static final field Companion Lcom/facebook/react/uimanager/events/TouchEventType$Companion;
 	public static final field END Lcom/facebook/react/uimanager/events/TouchEventType;
 	public static final field MOVE Lcom/facebook/react/uimanager/events/TouchEventType;
 	public static final field START Lcom/facebook/react/uimanager/events/TouchEventType;
-	public static fun getJSEventName (Lcom/facebook/react/uimanager/events/TouchEventType;)Ljava/lang/String;
-	public fun getJsName ()Ljava/lang/String;
+	public static final fun getJSEventName (Lcom/facebook/react/uimanager/events/TouchEventType;)Ljava/lang/String;
+	public final fun getJsName ()Ljava/lang/String;
 	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/uimanager/events/TouchEventType;
 	public static fun values ()[Lcom/facebook/react/uimanager/events/TouchEventType;
+}
+
+public final class com/facebook/react/uimanager/events/TouchEventType$Companion {
+	public final fun getJSEventName (Lcom/facebook/react/uimanager/events/TouchEventType;)Ljava/lang/String;
 }
 
 public class com/facebook/react/uimanager/events/TouchesHelper {
