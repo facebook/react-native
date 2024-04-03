@@ -7,7 +7,10 @@
 
 package com.facebook.debug.holder;
 
+import com.facebook.infer.annotation.Nullsafe;
+
 /** Holder for debugging tool instance. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class PrinterHolder {
 
   private static Printer sPrinter = NoopPrinter.INSTANCE;

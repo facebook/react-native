@@ -8,8 +8,10 @@
 package com.facebook.debug.holder;
 
 import com.facebook.debug.debugoverlay.model.DebugOverlayTag;
+import com.facebook.infer.annotation.Nullsafe;
 
 /** No-op implementation of {@link Printer}. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class NoopPrinter implements Printer {
 
   public static final NoopPrinter INSTANCE = new NoopPrinter();
