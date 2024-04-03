@@ -436,7 +436,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
                   .integrationName = "iOS Bridge (RCTBridge)",
               });
         },
-        {.nativePageReloads = true});
+        {.nativePageReloads = true, .prefersFuseboxFrontend = true});
   }
 
   Class bridgeClass = self.bridgeClass;

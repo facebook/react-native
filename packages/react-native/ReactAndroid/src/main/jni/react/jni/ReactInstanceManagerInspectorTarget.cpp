@@ -50,7 +50,7 @@ ReactInstanceManagerInspectorTarget::ReactInstanceManagerInspectorTarget(
                       "Android Bridge (ReactInstanceManagerInspectorTarget)",
               });
         },
-        {.nativePageReloads = true});
+        {.nativePageReloads = true, .prefersFuseboxFrontend = true});
   }
 }
 

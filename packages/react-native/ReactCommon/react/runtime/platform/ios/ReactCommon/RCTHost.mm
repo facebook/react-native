@@ -191,7 +191,7 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
                   .integrationName = "iOS Bridgeless (RCTHost)",
               });
         },
-        {.nativePageReloads = true});
+        {.nativePageReloads = true, .prefersFuseboxFrontend = true});
   }
   if (_instance) {
     RCTLogWarn(

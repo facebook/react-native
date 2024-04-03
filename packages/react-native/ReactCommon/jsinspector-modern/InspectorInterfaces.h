@@ -34,8 +34,9 @@ class IDestructible {
 };
 
 struct InspectorTargetCapabilities {
-  const bool nativePageReloads = false;
-  const bool nativeSourceCodeFetching = false;
+  bool nativePageReloads = false;
+  bool nativeSourceCodeFetching = false;
+  bool prefersFuseboxFrontend = false;
 };
 
 const folly::dynamic targetCapabilitiesToDynamic(
