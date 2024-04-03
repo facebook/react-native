@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c087df804587a9a02a0547684d0e9c92>>
+ * @generated SignedSource<<4d92852851feacdbf9d4f3c4ead3124a>>
  */
 
 /**
@@ -37,6 +37,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var inspectorEnableCxxInspectorPackagerConnectionCache: Boolean? = null
   private var inspectorEnableModernCDPRegistryCache: Boolean? = null
   private var useModernRuntimeSchedulerCache: Boolean? = null
+  private var useNativeViewConfigsInBridgelessModeCache: Boolean? = null
 
   override fun commonTestFlag(): Boolean {
     var cached = commonTestFlagCache
@@ -164,6 +165,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.useModernRuntimeScheduler()
       accessedFeatureFlags.add("useModernRuntimeScheduler")
       useModernRuntimeSchedulerCache = cached
+    }
+    return cached
+  }
+
+  override fun useNativeViewConfigsInBridgelessMode(): Boolean {
+    var cached = useNativeViewConfigsInBridgelessModeCache
+    if (cached == null) {
+      cached = currentProvider.useNativeViewConfigsInBridgelessMode()
+      accessedFeatureFlags.add("useNativeViewConfigsInBridgelessMode")
+      useNativeViewConfigsInBridgelessModeCache = cached
     }
     return cached
   }

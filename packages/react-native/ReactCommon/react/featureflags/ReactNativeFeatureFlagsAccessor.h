@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a508f23dce88a9c186d6bd84e65b3af7>>
+ * @generated SignedSource<<d0ed3514b47846bb1ceb69aa6a3c94fe>>
  */
 
 /**
@@ -44,6 +44,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool inspectorEnableCxxInspectorPackagerConnection();
   bool inspectorEnableModernCDPRegistry();
   bool useModernRuntimeScheduler();
+  bool useNativeViewConfigsInBridgelessMode();
 
   void override(std::unique_ptr<ReactNativeFeatureFlagsProvider> provider);
 
@@ -54,7 +55,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 13> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 14> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> batchRenderingUpdatesInEventLoop_;
@@ -69,6 +70,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> inspectorEnableCxxInspectorPackagerConnection_;
   std::atomic<std::optional<bool>> inspectorEnableModernCDPRegistry_;
   std::atomic<std::optional<bool>> useModernRuntimeScheduler_;
+  std::atomic<std::optional<bool>> useNativeViewConfigsInBridgelessMode_;
 };
 
 } // namespace facebook::react

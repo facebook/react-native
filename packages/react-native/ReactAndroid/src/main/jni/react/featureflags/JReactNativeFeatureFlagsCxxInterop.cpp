@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<db9ab5f48de2fdbee406ddea10125feb>>
+ * @generated SignedSource<<a04c3da47e634d788d6edb24fac0bf02>>
  */
 
 /**
@@ -117,6 +117,12 @@ class ReactNativeFeatureFlagsProviderHolder
     return method(javaProvider_);
   }
 
+  bool useNativeViewConfigsInBridgelessMode() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useNativeViewConfigsInBridgelessMode");
+    return method(javaProvider_);
+  }
+
  private:
   jni::global_ref<jobject> javaProvider_;
 };
@@ -186,6 +192,11 @@ bool JReactNativeFeatureFlagsCxxInterop::useModernRuntimeScheduler(
   return ReactNativeFeatureFlags::useModernRuntimeScheduler();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::useNativeViewConfigsInBridgelessMode(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode();
+}
+
 void JReactNativeFeatureFlagsCxxInterop::override(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/,
     jni::alias_ref<jobject> provider) {
@@ -242,6 +253,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "useModernRuntimeScheduler",
         JReactNativeFeatureFlagsCxxInterop::useModernRuntimeScheduler),
+      makeNativeMethod(
+        "useNativeViewConfigsInBridgelessMode",
+        JReactNativeFeatureFlagsCxxInterop::useNativeViewConfigsInBridgelessMode),
   });
 }
 

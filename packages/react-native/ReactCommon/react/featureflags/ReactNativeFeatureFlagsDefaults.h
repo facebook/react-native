@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9fd009411ce19224a3102d2713b0b042>>
+ * @generated SignedSource<<82ad92aa5bd70e278b4c2aceb2cb4859>>
  */
 
 /**
@@ -76,6 +76,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool useModernRuntimeScheduler() override {
+    return false;
+  }
+
+  bool useNativeViewConfigsInBridgelessMode() override {
     return false;
   }
 };
