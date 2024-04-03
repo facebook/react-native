@@ -89,7 +89,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   private Integer mHeightMeasureSpec;
 
   public ReactShadowNodeImpl() {
-    mDefaultPadding = new Spacing(0);
+    mDefaultPadding = new Spacing(0f);
     if (!isVirtual()) {
       YogaNode node = YogaNodePool.get().acquire();
       mYogaNode = node == null ? YogaNodeFactory.create(sYogaConfig) : node;
