@@ -5,16 +5,14 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.views.common;
+package com.facebook.react.views.common
 
-import android.view.View;
-import androidx.annotation.Nullable;
-import com.facebook.infer.annotation.Nullsafe;
-import com.facebook.react.R;
+import android.view.View
+import androidx.annotation.Nullable
+import com.facebook.react.R
 
 /** Class containing static methods involving manipulations of Views */
-@Nullsafe(Nullsafe.Mode.LOCAL)
-public class ViewUtils {
+public object ViewUtils {
 
   /**
    * Returns value of testId for the given view, if present
@@ -22,15 +20,12 @@ public class ViewUtils {
    * @param view View to get the testId value for
    * @return the value of testId if defined for the view, otherwise null
    */
-  public static @Nullable String getTestId(@Nullable View view) {
+  @Nullable
+  public fun getTestId(view: View?): String? {
     if (view == null) {
-      return null;
+      return null
     }
-    Object tag = view.getTag(R.id.react_test_id);
-    if (tag instanceof String) {
-      return (String) tag;
-    } else {
-      return null;
-    }
+    val tag = view.getTag(R.id.react_test_id)
+    return (tag as? String)
   }
 }
