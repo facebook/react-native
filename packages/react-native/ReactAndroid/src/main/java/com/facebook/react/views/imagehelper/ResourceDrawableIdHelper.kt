@@ -37,13 +37,14 @@ public class ResourceDrawableIdHelper private constructor() {
     }
 
     synchronized(this) {
-      if (resourceDrawableIdMap.containsKey(normalizedName)) {
-        return resourceDrawableIdMap.get(normalizedName)!!
-      }
-      return context.resources.getIdentifier(normalizedName, "drawable", context.packageName).also {
-        resourceDrawableIdMap[normalizedName] = it
-      }
+      return resourceDrawableIdMap.get(normalizedName) ?: addDrawableId(context, normalizedName)
     }
+  }
+
+  private fun addDrawableId(context: Context, normalizedName: String): Int {
+    val newId = context.resources.getIdentifier(normalizedName, "drawable", context.packageName)
+    resourceDrawableIdMap[normalizedName] = newId
+    return newId
   }
 
   public fun getResourceDrawable(context: Context, name: String?): Drawable? {
