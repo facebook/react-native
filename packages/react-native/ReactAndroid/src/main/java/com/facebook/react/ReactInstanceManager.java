@@ -443,6 +443,13 @@ public class ReactInstanceManager {
         "recreateReactContextInBackground should only be called after the initial "
             + "createReactContextInBackground call.");
     recreateReactContextInBackgroundInner();
+
+    // If some JNI types (e.g. jni::HybridClass) are used in JSI (e.g. jsi::HostObject), they might
+    // not be immediately deleted on an app refresh as both Java and JavaScript are
+    // garbage-collected languages and the memory might float around for a while.
+    // For C++ developers, this will be hard to debug as destructors might be called at a later point,
+    // so in this case we trigger a Java GC to maybe eagerly collect such objects when the app reloads.
+    System.gc();
   }
 
   @ThreadConfined(UI)

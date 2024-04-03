@@ -108,9 +108,6 @@ class BridgelessDevSupportManager extends DevSupportManagerBase {
     String bundleURL =
         getDevServerHelper().getDevServerBundleURL(Assertions.assertNotNull(getJSAppBundleName()));
     reloadJSFromServer(bundleURL);
-
-    // maybe trigger garbage-collector
-    System.gc();
   }
 
   private static ReactInstanceDevHelper createInstanceDevHelper(final ReactHostImpl reactHost) {

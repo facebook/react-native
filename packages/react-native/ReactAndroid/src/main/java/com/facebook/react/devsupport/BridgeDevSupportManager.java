@@ -210,9 +210,6 @@ public final class BridgeDevSupportManager extends DevSupportManagerBase {
               .getDevServerBundleURL(Assertions.assertNotNull(getJSAppBundleName()));
       reloadJSFromServer(bundleURL);
     }
-
-    // maybe trigger garbage-collector
-    System.gc();
   }
 
   /** Starts of stops the sampling profiler */
