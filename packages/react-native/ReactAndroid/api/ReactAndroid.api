@@ -6129,12 +6129,17 @@ public class com/facebook/react/views/imagehelper/MultiSourceHelper$MultiSourceR
 	public fun getBestResultInCache ()Lcom/facebook/react/views/imagehelper/ImageSource;
 }
 
-public class com/facebook/react/views/imagehelper/ResourceDrawableIdHelper {
-	public fun clear ()V
-	public static fun getInstance ()Lcom/facebook/react/views/imagehelper/ResourceDrawableIdHelper;
-	public fun getResourceDrawable (Landroid/content/Context;Ljava/lang/String;)Landroid/graphics/drawable/Drawable;
-	public fun getResourceDrawableId (Landroid/content/Context;Ljava/lang/String;)I
-	public fun getResourceDrawableUri (Landroid/content/Context;Ljava/lang/String;)Landroid/net/Uri;
+public final class com/facebook/react/views/imagehelper/ResourceDrawableIdHelper {
+	public static final field Companion Lcom/facebook/react/views/imagehelper/ResourceDrawableIdHelper$Companion;
+	public final fun clear ()V
+	public static final fun getInstance ()Lcom/facebook/react/views/imagehelper/ResourceDrawableIdHelper;
+	public final fun getResourceDrawable (Landroid/content/Context;Ljava/lang/String;)Landroid/graphics/drawable/Drawable;
+	public final fun getResourceDrawableId (Landroid/content/Context;Ljava/lang/String;)I
+	public final fun getResourceDrawableUri (Landroid/content/Context;Ljava/lang/String;)Landroid/net/Uri;
+}
+
+public final class com/facebook/react/views/imagehelper/ResourceDrawableIdHelper$Companion {
+	public final fun getInstance ()Lcom/facebook/react/views/imagehelper/ResourceDrawableIdHelper;
 }
 
 public class com/facebook/react/views/modal/ModalHostShadowNode$$PropsSetter : com/facebook/react/uimanager/ViewManagerPropertyUpdater$ShadowNodeSetter {
