@@ -309,6 +309,9 @@ def react_native_post_install(
   ReactNativePodsUtils.apply_xcode_15_patch(installer)
   ReactNativePodsUtils.updateOSDeploymentTarget(installer)
   ReactNativePodsUtils.fix_flipper_for_xcode_15_3(installer)
+  ReactNativePodsUtils.set_dynamic_frameworks_flags(installer)
+  ReactNativePodsUtils.add_ndebug_flag_to_pods_in_release(installer)
+  ReactNativePodsUtils.add_privacy_manifest_if_needed(installer)
 
   NewArchitectureHelper.set_clang_cxx_language_standard_if_needed(installer)
   NewArchitectureHelper.modify_flags_for_new_architecture(installer, NewArchitectureHelper.new_arch_enabled)
