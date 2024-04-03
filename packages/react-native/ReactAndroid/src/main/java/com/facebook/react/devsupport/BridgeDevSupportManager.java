@@ -194,6 +194,9 @@ public final class BridgeDevSupportManager extends DevSupportManagerBase {
         ReactMarkerConstants.RELOAD,
         getDevSettings().getPackagerConnectionSettings().getDebugServerHost());
 
+    // maybe trigger garbage-collector
+    System.gc();
+
     // dismiss redbox if exists
     hideRedboxDialog();
 
