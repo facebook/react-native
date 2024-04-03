@@ -5,9 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.common;
-
-import com.facebook.infer.annotation.Nullsafe;
+package com.facebook.react.common
 
 /**
  * Lifecycle state for an Activity. The state right after pause and right before resume are the
@@ -23,8 +21,7 @@ import com.facebook.infer.annotation.Nullsafe;
  * <p>RESUMED is used when a ReactRootView is rendered on the screen and the user can interact with
  * it.
  */
-@Nullsafe(Nullsafe.Mode.LOCAL)
-public enum LifecycleState {
+public enum class LifecycleState {
   BEFORE_CREATE,
   BEFORE_RESUME,
   RESUMED,
