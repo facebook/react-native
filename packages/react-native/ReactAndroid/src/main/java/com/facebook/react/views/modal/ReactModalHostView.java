@@ -27,6 +27,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.R;
 import com.facebook.react.bridge.GuardedRunnable;
 import com.facebook.react.bridge.LifecycleEventListener;
@@ -48,6 +49,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.common.ContextUtils;
 import com.facebook.react.views.view.ReactViewGroup;
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * ReactModalHostView is a view that sits in the view hierarchy representing a Modal view.
@@ -64,6 +66,7 @@ import java.util.ArrayList;
  *       around addition and removal of views to the DialogRootViewGroup.
  * </ol>
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ReactModalHostView extends ViewGroup implements LifecycleEventListener {
 
   private static final String TAG = "ReactModalHost";
@@ -72,6 +75,7 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
   // An event is then passed to JS which can either close or not close the Modal by setting the
   // visible property
   public interface OnRequestCloseListener {
+
     void onRequestClose(DialogInterface dialog);
   }
 
@@ -79,7 +83,7 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
   private @Nullable Dialog mDialog;
   private boolean mTransparent;
   private boolean mStatusBarTranslucent;
-  private String mAnimationType;
+  private @Nullable String mAnimationType;
   private boolean mHardwareAccelerated;
   // Set this flag to true if changing a particular property on the view requires a new Dialog to
   // be created.  For instance, animation does since it affects Dialog creation through the theme
@@ -113,7 +117,7 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
   }
 
   @Override
-  public void addView(View child, int index) {
+  public void addView(@Nullable View child, int index) {
     UiThreadUtil.assertOnUiThread();
 
     mHostView.addView(child, index);
@@ -132,10 +136,12 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
   }
 
   @Override
-  public void removeView(View child) {
+  public void removeView(@Nullable View child) {
     UiThreadUtil.assertOnUiThread();
 
-    mHostView.removeView(child);
+    if (child != null) {
+      mHostView.removeView(child);
+    }
   }
 
   @Override
@@ -180,7 +186,9 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
       // We need to remove the mHostView from the parent
       // It is possible we are dismissing this dialog and reattaching the hostView to another
       ViewGroup parent = (ViewGroup) mHostView.getParent();
-      parent.removeViewAt(0);
+      if (parent != null) {
+        parent.removeViewAt(0);
+      }
     }
   }
 
@@ -255,12 +263,7 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     if (mDialog != null) {
       Context dialogContext = ContextUtils.findContextOfType(mDialog.getContext(), Activity.class);
       // TODO(T85755791): remove after investigation
-      FLog.e(
-          TAG,
-          "Updating existing dialog with context: "
-              + dialogContext
-              + "@"
-              + dialogContext.hashCode());
+      FLog.e(TAG, "Updating existing dialog with context: " + dialogContext);
 
       if (mPropertyRequiresNewDialog) {
         dismiss();
@@ -273,16 +276,15 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     // Reset the flag since we are going to create a new dialog
     mPropertyRequiresNewDialog = false;
     int theme = R.style.Theme_FullScreenDialog;
-    if (mAnimationType.equals("fade")) {
+    if (mAnimationType != null && mAnimationType.equals("fade")) {
       theme = R.style.Theme_FullScreenDialogAnimatedFade;
-    } else if (mAnimationType.equals("slide")) {
+    } else if (mAnimationType != null && mAnimationType.equals("slide")) {
       theme = R.style.Theme_FullScreenDialogAnimatedSlide;
     }
     Activity currentActivity = getCurrentActivity();
     Context context = currentActivity == null ? getContext() : currentActivity;
     mDialog = new Dialog(context, theme);
-    mDialog
-        .getWindow()
+    Objects.requireNonNull(mDialog.getWindow())
         .setFlags(
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
@@ -361,17 +363,20 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
 
     Activity currentActivity = getCurrentActivity();
 
-    Window window = mDialog.getWindow();
+    Window window = Assertions.assertNotNull(mDialog.getWindow());
     if (currentActivity == null || currentActivity.isFinishing() || !window.isActive()) {
       // If the activity has disappeared, then we shouldn't update the window associated to the
       // Dialog.
       return;
     }
-    int activityWindowFlags = currentActivity.getWindow().getAttributes().flags;
-    if ((activityWindowFlags & WindowManager.LayoutParams.FLAG_FULLSCREEN) != 0) {
-      window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-    } else {
-      window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+    Window activityWindow = currentActivity.getWindow();
+    if (activityWindow != null) {
+      int activityWindowFlags = activityWindow.getAttributes().flags;
+      if ((activityWindowFlags & WindowManager.LayoutParams.FLAG_FULLSCREEN) != 0) {
+        window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+      } else {
+        window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+      }
     }
 
     if (mTransparent) {
@@ -389,23 +394,24 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
       return;
     }
     Assertions.assertNotNull(mDialog, "mDialog must exist when we call updateSystemAppearance");
+    Window window = Assertions.assertNotNull(mDialog.getWindow(), "mDialog.getWindow() must exist");
     // Modeled after the version check in StatusBarModule.setStyle
     if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R) {
-      int activityAppearance =
-          currentActivity.getWindow().getInsetsController().getSystemBarsAppearance();
+      Window currentActivityWindow = Assertions.assertNotNull(currentActivity.getWindow());
+      WindowInsetsController insetsController =
+          Assertions.assertNotNull(currentActivityWindow.getInsetsController());
+      int activityAppearance = insetsController.getSystemBarsAppearance();
+
       int activityLightStatusBars =
           activityAppearance & WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS;
-      mDialog
-          .getWindow()
-          .getInsetsController()
+
+      Objects.requireNonNull(window.getInsetsController())
           .setSystemBarsAppearance(
               activityLightStatusBars, WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS);
     } else {
-      mDialog
-          .getWindow()
-          .getDecorView()
-          .setSystemUiVisibility(
-              currentActivity.getWindow().getDecorView().getSystemUiVisibility());
+      Window currentActivityWindow = Assertions.assertNotNull(currentActivity.getWindow());
+      View decorView = currentActivityWindow.getDecorView();
+      decorView.setSystemUiVisibility(decorView.getSystemUiVisibility());
     }
   }
 
@@ -417,7 +423,6 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
   public void setStateWrapper(StateWrapper stateWrapper) {
     mHostView.setStateWrapper(stateWrapper);
   }
-  ;
 
   public void updateState(final int width, final int height) {
     mHostView.updateState(width, height);
@@ -435,12 +440,13 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
    * UIManagerModule, and will then cause the children to layout as if they can fill the window.
    */
   static class DialogRootViewGroup extends ReactViewGroup implements RootView {
+
     private boolean hasAdjustedSize = false;
     private int viewWidth;
     private int viewHeight;
-    private EventDispatcher mEventDispatcher;
+    private @Nullable EventDispatcher mEventDispatcher;
 
-    private StateWrapper mStateWrapper = null;
+    private @Nullable StateWrapper mStateWrapper = null;
 
     private final JSTouchDispatcher mJSTouchDispatcher = new JSTouchDispatcher(this);
     @Nullable private JSPointerDispatcher mJSPointerDispatcher;
@@ -503,7 +509,7 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
 
       // Check incoming state values. If they're already the correct value, return early to prevent
       // infinite UpdateState/SetState loop.
-      ReadableMap currentState = mStateWrapper.getStateData();
+      ReadableMap currentState = mStateWrapper != null ? mStateWrapper.getStateData() : null;
       if (currentState != null) {
         float delta = (float) 0.9;
         float stateScreenHeight =
@@ -546,8 +552,10 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
-      mJSTouchDispatcher.handleTouchEvent(event, mEventDispatcher);
-      if (mJSPointerDispatcher != null) {
+      if (mEventDispatcher != null) {
+        mJSTouchDispatcher.handleTouchEvent(event, mEventDispatcher);
+      }
+      if (mJSPointerDispatcher != null && mEventDispatcher != null) {
         mJSPointerDispatcher.handleMotionEvent(event, mEventDispatcher, true);
       }
       return super.onInterceptTouchEvent(event);
@@ -555,8 +563,10 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-      mJSTouchDispatcher.handleTouchEvent(event, mEventDispatcher);
-      if (mJSPointerDispatcher != null) {
+      if (mEventDispatcher != null) {
+        mJSTouchDispatcher.handleTouchEvent(event, mEventDispatcher);
+      }
+      if (mJSPointerDispatcher != null && mEventDispatcher != null) {
         mJSPointerDispatcher.handleMotionEvent(event, mEventDispatcher, false);
       }
       super.onTouchEvent(event);
@@ -567,7 +577,7 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
 
     @Override
     public boolean onInterceptHoverEvent(MotionEvent event) {
-      if (mJSPointerDispatcher != null) {
+      if (mJSPointerDispatcher != null && mEventDispatcher != null) {
         mJSPointerDispatcher.handleMotionEvent(event, mEventDispatcher, true);
       }
       return super.onHoverEvent(event);
@@ -575,7 +585,7 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
 
     @Override
     public boolean onHoverEvent(MotionEvent event) {
-      if (mJSPointerDispatcher != null) {
+      if (mJSPointerDispatcher != null && mEventDispatcher != null) {
         mJSPointerDispatcher.handleMotionEvent(event, mEventDispatcher, false);
       }
       return super.onHoverEvent(event);
@@ -583,15 +593,19 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
 
     @Override
     public void onChildStartedNativeGesture(View childView, MotionEvent ev) {
-      mJSTouchDispatcher.onChildStartedNativeGesture(ev, mEventDispatcher);
-      if (mJSPointerDispatcher != null) {
+      if (mEventDispatcher != null) {
+        mJSTouchDispatcher.onChildStartedNativeGesture(ev, mEventDispatcher);
+      }
+      if (mJSPointerDispatcher != null && mEventDispatcher != null) {
         mJSPointerDispatcher.onChildStartedNativeGesture(childView, ev, mEventDispatcher);
       }
     }
 
     @Override
     public void onChildEndedNativeGesture(View childView, MotionEvent ev) {
-      mJSTouchDispatcher.onChildEndedNativeGesture(ev, mEventDispatcher);
+      if (mEventDispatcher != null) {
+        mJSTouchDispatcher.onChildEndedNativeGesture(ev, mEventDispatcher);
+      }
       if (mJSPointerDispatcher != null) {
         mJSPointerDispatcher.onChildEndedNativeGesture();
       }
