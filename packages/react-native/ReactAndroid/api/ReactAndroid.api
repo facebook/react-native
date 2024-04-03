@@ -5996,12 +5996,14 @@ public abstract interface class com/facebook/react/views/image/GlobalImageLoadLi
 	public abstract fun onLoadAttempt (Landroid/net/Uri;)V
 }
 
-public class com/facebook/react/views/image/ImageLoadEvent : com/facebook/react/uimanager/events/Event {
+public final class com/facebook/react/views/image/ImageLoadEvent : com/facebook/react/uimanager/events/Event {
+	public static final field Companion Lcom/facebook/react/views/image/ImageLoadEvent$Companion;
 	public static final field ON_ERROR I
 	public static final field ON_LOAD I
 	public static final field ON_LOAD_END I
 	public static final field ON_LOAD_START I
 	public static final field ON_PROGRESS I
+	public synthetic fun <init> (IIILjava/lang/String;Ljava/lang/String;IIIILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public static final fun createErrorEvent (IILjava/lang/Throwable;)Lcom/facebook/react/views/image/ImageLoadEvent;
 	public static final fun createErrorEvent (ILjava/lang/Throwable;)Lcom/facebook/react/views/image/ImageLoadEvent;
 	public static final fun createLoadEndEvent (I)Lcom/facebook/react/views/image/ImageLoadEvent;
@@ -6012,10 +6014,23 @@ public class com/facebook/react/views/image/ImageLoadEvent : com/facebook/react/
 	public static final fun createLoadStartEvent (II)Lcom/facebook/react/views/image/ImageLoadEvent;
 	public static final fun createProgressEvent (IILjava/lang/String;II)Lcom/facebook/react/views/image/ImageLoadEvent;
 	public static final fun createProgressEvent (ILjava/lang/String;II)Lcom/facebook/react/views/image/ImageLoadEvent;
-	public static fun eventNameForType (I)Ljava/lang/String;
+	public static final fun eventNameForType (I)Ljava/lang/String;
 	public fun getCoalescingKey ()S
-	protected fun getEventData ()Lcom/facebook/react/bridge/WritableMap;
 	public fun getEventName ()Ljava/lang/String;
+}
+
+public final class com/facebook/react/views/image/ImageLoadEvent$Companion {
+	public final fun createErrorEvent (IILjava/lang/Throwable;)Lcom/facebook/react/views/image/ImageLoadEvent;
+	public final fun createErrorEvent (ILjava/lang/Throwable;)Lcom/facebook/react/views/image/ImageLoadEvent;
+	public final fun createLoadEndEvent (I)Lcom/facebook/react/views/image/ImageLoadEvent;
+	public final fun createLoadEndEvent (II)Lcom/facebook/react/views/image/ImageLoadEvent;
+	public final fun createLoadEvent (IILjava/lang/String;II)Lcom/facebook/react/views/image/ImageLoadEvent;
+	public final fun createLoadEvent (ILjava/lang/String;II)Lcom/facebook/react/views/image/ImageLoadEvent;
+	public final fun createLoadStartEvent (I)Lcom/facebook/react/views/image/ImageLoadEvent;
+	public final fun createLoadStartEvent (II)Lcom/facebook/react/views/image/ImageLoadEvent;
+	public final fun createProgressEvent (IILjava/lang/String;II)Lcom/facebook/react/views/image/ImageLoadEvent;
+	public final fun createProgressEvent (ILjava/lang/String;II)Lcom/facebook/react/views/image/ImageLoadEvent;
+	public final fun eventNameForType (I)Ljava/lang/String;
 }
 
 public final class com/facebook/react/views/image/ImageResizeMethod : java/lang/Enum {
