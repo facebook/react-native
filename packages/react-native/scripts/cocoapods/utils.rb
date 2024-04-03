@@ -576,6 +576,44 @@ class ReactNativePodsUtils
         ReactNativePodsUtils.update_header_paths_if_depends_on(target_installation_result, "React-ImageManager", header_search_paths)
     end
 
+    def self.get_privacy_manifest_paths_from(user_project)
+        privacy_manifests = user_project
+            .files
+            .select { |p|
+                p.path&.end_with?('PrivacyInfo.xcprivacy')
+            }
+        return privacy_manifests
+    end
+
+    def self.add_privacy_manifest_if_needed(installer)
+        user_project = installer.aggregate_targets
+                    .map{ |t| t.user_project }
+                    .first
+        privacy_manifest = self.get_privacy_manifest_paths_from(user_project).first
+        if privacy_manifest.nil?
+            file_timestamp_reason = {
+                "NSPrivacyAccessedAPIType" => "NSPrivacyAccessedAPICategoryFileTimestamp",
+                "NSPrivacyAccessedAPITypeReasons" => ["C617.1"],
+            }
+            user_defaults_reason = {
+                "NSPrivacyAccessedAPIType" => "NSPrivacyAccessedAPICategoryUserDefaults",
+                "NSPrivacyAccessedAPITypeReasons" => ["CA92.1"],
+            }
+            boot_time_reason = {
+                "NSPrivacyAccessedAPIType" => "NSPrivacyAccessedAPICategorySystemBootTime",
+                "NSPrivacyAccessedAPITypeReasons" => ["35F9.1"],
+            }
+            privacy_manifest = {
+                "NSPrivacyCollectedDataTypes" => [],
+                "NSPrivacyTracking" => false,
+                "NSPrivacyAccessedAPITypes" => [file_timestamp_reason, user_defaults_reason, boot_time_reason]
+            }
+            path = File.join(user_project.path.parent, "PrivacyInfo.xcprivacy")
+            Xcodeproj::Plist.write_to_path(privacy_manifest, path)
+            Pod::UI.puts "Your app does not have a privacy manifest! A template has been generated containing Required Reasons API usage in the core React Native library. Please add the PrivacyInfo.xcprivacy file to your project and complete data use, tracking and any additional required reasons your app is using according to Apple's guidance: https://developer.apple.com/.../privacy_manifest_files. Then, you will need to manually add this file to your project in Xcode.".red
+        end
+    end
+
     def self.react_native_pods
         return [
             "DoubleConversion",
