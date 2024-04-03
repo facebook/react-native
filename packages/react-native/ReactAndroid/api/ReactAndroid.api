@@ -92,6 +92,7 @@ public abstract class com/facebook/react/ReactActivity : androidx/appcompat/app/
 	protected fun <init> ()V
 	protected fun createReactActivityDelegate ()Lcom/facebook/react/ReactActivityDelegate;
 	protected fun getMainComponentName ()Ljava/lang/String;
+	public fun getReactActivityDelegate ()Lcom/facebook/react/ReactActivityDelegate;
 	public fun getReactDelegate ()V
 	protected final fun getReactInstanceManager ()Lcom/facebook/react/ReactInstanceManager;
 	protected final fun getReactNativeHost ()Lcom/facebook/react/ReactNativeHost;
@@ -178,6 +179,7 @@ public class com/facebook/react/ReactFragment : androidx/fragment/app/Fragment, 
 	protected static final field ARG_FABRIC_ENABLED Ljava/lang/String;
 	protected static final field ARG_LAUNCH_OPTIONS Ljava/lang/String;
 	protected field mReactDelegate Lcom/facebook/react/ReactDelegate;
+	protected field shouldCallDelegateLifecycleEvents Z
 	public fun <init> ()V
 	public fun checkPermission (Ljava/lang/String;II)I
 	public fun checkSelfPermission (Ljava/lang/String;)I
