@@ -7,9 +7,9 @@
 
 package com.facebook.react.views.modal;
 
-import android.content.DialogInterface;
 import android.graphics.Point;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** View manager for {@link ReactModalHostView} components. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @ReactModule(name = ReactModalHostManager.REACT_CLASS)
 public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView>
     implements ModalHostViewManagerInterface<ReactModalHostView> {
@@ -121,21 +122,13 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView>
         UIManagerHelper.getEventDispatcherForReactTag(reactContext, view.getId());
     if (dispatcher != null) {
       view.setOnRequestCloseListener(
-          new ReactModalHostView.OnRequestCloseListener() {
-            @Override
-            public void onRequestClose(DialogInterface dialog) {
+          dialog ->
               dispatcher.dispatchEvent(
-                  new RequestCloseEvent(UIManagerHelper.getSurfaceId(reactContext), view.getId()));
-            }
-          });
+                  new RequestCloseEvent(UIManagerHelper.getSurfaceId(reactContext), view.getId())));
       view.setOnShowListener(
-          new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(DialogInterface dialog) {
+          dialog ->
               dispatcher.dispatchEvent(
-                  new ShowEvent(UIManagerHelper.getSurfaceId(reactContext), view.getId()));
-            }
-          });
+                  new ShowEvent(UIManagerHelper.getSurfaceId(reactContext), view.getId())));
       view.setEventDispatcher(dispatcher);
     }
   }
@@ -165,6 +158,7 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView>
   }
 
   @Override
+  @Nullable
   public Object updateState(
       ReactModalHostView view, ReactStylesDiffMap props, StateWrapper stateWrapper) {
     view.setStateWrapper(stateWrapper);
