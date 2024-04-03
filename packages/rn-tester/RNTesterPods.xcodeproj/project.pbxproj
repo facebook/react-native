@@ -226,7 +226,6 @@
 			children = (
 				0CC3BE1A25DDB68A0033CAEB /* RNTester.entitlements */,
 				F0D621C22BBB9E38005960AC /* PrivacyInfo.xcprivacy */,
-				AC474BFB29BBD4A1002BDAED /* RNTester.xctestplan */,
 				E771AEEA22B44E3100EA1189 /* Info.plist */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				5C60EB1B226440DB0018C04F /* AppDelegate.mm */,
