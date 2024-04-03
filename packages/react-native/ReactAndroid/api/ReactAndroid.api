@@ -3657,7 +3657,7 @@ public final class com/facebook/react/runtime/JSCInstance : com/facebook/react/r
 }
 
 public abstract class com/facebook/react/runtime/JSRuntimeFactory {
-	protected fun <init> (Lcom/facebook/jni/HybridData;)V
+	public fun <init> (Lcom/facebook/jni/HybridData;)V
 }
 
 public class com/facebook/react/runtime/ReactHostImpl : com/facebook/react/ReactHost {
