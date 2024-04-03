@@ -192,7 +192,7 @@ export function parseComponentStack(message: string): ComponentStack {
       if (!s) {
         return null;
       }
-      const match = s.match(/(.*) \(at (.*\.js):([\d]+)\)/);
+      const match = s.match(/(.*) \(at (.*\.(?:js|jsx|ts|tsx)):([\d]+)\)/);
       if (!match) {
         return null;
       }
