@@ -2488,7 +2488,7 @@ public class com/facebook/react/fabric/BindingImpl : com/facebook/react/fabric/B
 	public fun unregisterSurface (Lcom/facebook/react/fabric/SurfaceHandlerBinding;)V
 }
 
-public class com/facebook/react/fabric/ComponentFactory {
+public final class com/facebook/react/fabric/ComponentFactory {
 	public fun <init> ()V
 }
 
