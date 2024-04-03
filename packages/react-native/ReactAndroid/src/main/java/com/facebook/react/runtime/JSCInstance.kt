@@ -12,7 +12,7 @@ import com.facebook.jni.annotations.DoNotStrip
 import com.facebook.soloader.SoLoader
 
 public class JSCInstance constructor() : JSRuntimeFactory(initHybrid()) {
-  public companion object {
+  private companion object {
     init {
       SoLoader.loadLibrary("jscinstance")
     }
