@@ -7,6 +7,7 @@
 
 package com.facebook.hermes.unicode;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.proguard.annotations.DoNotStrip;
 import java.text.Collator;
 import java.text.DateFormat;
@@ -16,6 +17,7 @@ import java.util.Locale;
 // TODO: use com.facebook.common.locale.Locales.getApplicationLocale() as the current locale,
 // rather than the device locale. This is challenging because getApplicationLocale() is only
 // available via DI.
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @DoNotStrip
 public class AndroidUnicodeUtils {
   @DoNotStrip
