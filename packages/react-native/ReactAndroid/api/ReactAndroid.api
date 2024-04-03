@@ -5188,7 +5188,7 @@ public abstract interface class com/facebook/react/uimanager/ViewManagerResolver
 	public abstract fun getViewManagerNames ()Ljava/util/Collection;
 }
 
-public class com/facebook/react/uimanager/ViewProps {
+public final class com/facebook/react/uimanager/ViewProps {
 	public static final field ACCESSIBILITY_ACTIONS Ljava/lang/String;
 	public static final field ACCESSIBILITY_COLLECTION Ljava/lang/String;
 	public static final field ACCESSIBILITY_COLLECTION_ITEM Ljava/lang/String;
@@ -5265,6 +5265,7 @@ public class com/facebook/react/uimanager/ViewProps {
 	public static final field HIDDEN Ljava/lang/String;
 	public static final field IMPORTANT_FOR_ACCESSIBILITY Ljava/lang/String;
 	public static final field INCLUDE_FONT_PADDING Ljava/lang/String;
+	public static final field INSTANCE Lcom/facebook/react/uimanager/ViewProps;
 	public static final field IS_ATTACHMENT Ljava/lang/String;
 	public static final field JUSTIFY_CONTENT Ljava/lang/String;
 	public static final field LAYOUT_DIRECTION Ljava/lang/String;
@@ -5333,8 +5334,7 @@ public class com/facebook/react/uimanager/ViewProps {
 	public static final field VISIBLE Ljava/lang/String;
 	public static final field WIDTH Ljava/lang/String;
 	public static final field Z_INDEX Ljava/lang/String;
-	public fun <init> ()V
-	public static fun isLayoutOnly (Lcom/facebook/react/bridge/ReadableMap;Ljava/lang/String;)Z
+	public static final fun isLayoutOnly (Lcom/facebook/react/bridge/ReadableMap;Ljava/lang/String;)Z
 }
 
 public abstract interface annotation class com/facebook/react/uimanager/annotations/ReactProp : java/lang/annotation/Annotation {
