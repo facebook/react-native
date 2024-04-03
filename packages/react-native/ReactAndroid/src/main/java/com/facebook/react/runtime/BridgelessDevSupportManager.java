@@ -99,6 +99,9 @@ class BridgelessDevSupportManager extends DevSupportManagerBase {
   public void handleReloadJS() {
     UiThreadUtil.assertOnUiThread();
 
+    // maybe trigger garbage-collector
+    System.gc();
+
     // dismiss redbox if exists
     hideRedboxDialog();
     mReactHost.reload("BridgelessDevSupportManager.handleReloadJS()");
