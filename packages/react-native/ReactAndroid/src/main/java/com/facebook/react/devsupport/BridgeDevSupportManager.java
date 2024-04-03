@@ -194,9 +194,6 @@ public final class BridgeDevSupportManager extends DevSupportManagerBase {
         ReactMarkerConstants.RELOAD,
         getDevSettings().getPackagerConnectionSettings().getDebugServerHost());
 
-    // maybe trigger garbage-collector
-    System.gc();
-
     // dismiss redbox if exists
     hideRedboxDialog();
 
@@ -213,6 +210,9 @@ public final class BridgeDevSupportManager extends DevSupportManagerBase {
               .getDevServerBundleURL(Assertions.assertNotNull(getJSAppBundleName()));
       reloadJSFromServer(bundleURL);
     }
+
+    // maybe trigger garbage-collector
+    System.gc();
   }
 
   /** Starts of stops the sampling profiler */
