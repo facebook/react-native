@@ -6688,13 +6688,18 @@ public class com/facebook/react/views/scroll/ReactScrollViewManager$$PropsSetter
 	public fun setProperty (Lcom/facebook/react/views/scroll/ReactScrollViewManager;Lcom/facebook/react/views/scroll/ReactScrollView;Ljava/lang/String;Ljava/lang/Object;)V
 }
 
-public class com/facebook/react/views/scroll/ScrollEvent : com/facebook/react/uimanager/events/Event {
+public final class com/facebook/react/views/scroll/ScrollEvent : com/facebook/react/uimanager/events/Event {
+	public static final field Companion Lcom/facebook/react/views/scroll/ScrollEvent$Companion;
 	public fun canCoalesce ()Z
-	protected fun getEventData ()Lcom/facebook/react/bridge/WritableMap;
 	public fun getEventName ()Ljava/lang/String;
-	public static fun obtain (IILcom/facebook/react/views/scroll/ScrollEventType;FFFFIIII)Lcom/facebook/react/views/scroll/ScrollEvent;
-	public static fun obtain (ILcom/facebook/react/views/scroll/ScrollEventType;FFFFIIII)Lcom/facebook/react/views/scroll/ScrollEvent;
+	public static final fun obtain (IILcom/facebook/react/views/scroll/ScrollEventType;FFFFIIII)Lcom/facebook/react/views/scroll/ScrollEvent;
+	public static final fun obtain (ILcom/facebook/react/views/scroll/ScrollEventType;FFFFIIII)Lcom/facebook/react/views/scroll/ScrollEvent;
 	public fun onDispose ()V
+}
+
+public final class com/facebook/react/views/scroll/ScrollEvent$Companion {
+	public final fun obtain (IILcom/facebook/react/views/scroll/ScrollEventType;FFFFIIII)Lcom/facebook/react/views/scroll/ScrollEvent;
+	public final fun obtain (ILcom/facebook/react/views/scroll/ScrollEventType;FFFFIIII)Lcom/facebook/react/views/scroll/ScrollEvent;
 }
 
 public final class com/facebook/react/views/scroll/ScrollEventType : java/lang/Enum {
