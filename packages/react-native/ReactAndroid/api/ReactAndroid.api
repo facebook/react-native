@@ -6222,11 +6222,11 @@ public abstract interface class com/facebook/react/views/modal/ReactModalHostVie
 	public abstract fun onRequestClose (Landroid/content/DialogInterface;)V
 }
 
-public class com/facebook/react/views/progressbar/ProgressBarShadowNode : com/facebook/react/uimanager/LayoutShadowNode, com/facebook/yoga/YogaMeasureFunction {
+public final class com/facebook/react/views/progressbar/ProgressBarShadowNode : com/facebook/react/uimanager/LayoutShadowNode, com/facebook/yoga/YogaMeasureFunction {
 	public fun <init> ()V
-	public fun getStyle ()Ljava/lang/String;
+	public final fun getStyle ()Ljava/lang/String;
 	public fun measure (Lcom/facebook/yoga/YogaNode;FLcom/facebook/yoga/YogaMeasureMode;FLcom/facebook/yoga/YogaMeasureMode;)J
-	public fun setStyle (Ljava/lang/String;)V
+	public final fun setStyle (Ljava/lang/String;)V
 }
 
 public class com/facebook/react/views/progressbar/ProgressBarShadowNode$$PropsSetter : com/facebook/react/uimanager/ViewManagerPropertyUpdater$ShadowNodeSetter {
