@@ -4055,7 +4055,7 @@ public abstract interface class com/facebook/react/uimanager/IViewManagerWithChi
 public class com/facebook/react/uimanager/IllegalViewOperationException : com/facebook/react/bridge/JSApplicationCausedNativeException {
 	public fun <init> (Ljava/lang/String;)V
 	public fun <init> (Ljava/lang/String;Landroid/view/View;Ljava/lang/Throwable;)V
-	public fun getView ()Landroid/view/View;
+	public final fun getView ()Landroid/view/View;
 }
 
 public class com/facebook/react/uimanager/JSPointerDispatcher {
