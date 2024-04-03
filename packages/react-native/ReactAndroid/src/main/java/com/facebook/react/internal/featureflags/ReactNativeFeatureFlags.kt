@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e3cfdd93315067ed37e7cf93aa60af74>>
+ * @generated SignedSource<<074ec00cfb1585c529df9391492c21e4>>
  */
 
 /**
@@ -105,6 +105,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun useModernRuntimeScheduler(): Boolean = accessor.useModernRuntimeScheduler()
+
+  /**
+   * When enabled, the native view configs are used in bridgeless mode.
+   */
+  @JvmStatic
+  public fun useNativeViewConfigsInBridgelessMode(): Boolean = accessor.useNativeViewConfigsInBridgelessMode()
 
   /**
    * Overrides the feature flags with the ones provided by the given provider

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bab6aad25607059d465d6c80711a4adf>>
+ * @generated SignedSource<<730c667fb34f911b92318c26cfa32cf5>>
  */
 
 /**
@@ -101,6 +101,11 @@ class ReactNativeFeatureFlags {
    * When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.
    */
   RN_EXPORT static bool useModernRuntimeScheduler();
+
+  /**
+   * When enabled, the native view configs are used in bridgeless mode.
+   */
+  RN_EXPORT static bool useNativeViewConfigsInBridgelessMode();
 
   /**
    * Overrides the feature flags with the ones provided by the given provider

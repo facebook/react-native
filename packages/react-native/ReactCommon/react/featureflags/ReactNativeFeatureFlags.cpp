@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<56f79a4cb62a993f9c3a8ea01eed2ab6>>
+ * @generated SignedSource<<05aace8ad7171ff940f014643e050ff0>>
  */
 
 /**
@@ -71,6 +71,10 @@ bool ReactNativeFeatureFlags::inspectorEnableModernCDPRegistry() {
 
 bool ReactNativeFeatureFlags::useModernRuntimeScheduler() {
   return getAccessor().useModernRuntimeScheduler();
+}
+
+bool ReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode() {
+  return getAccessor().useNativeViewConfigsInBridgelessMode();
 }
 
 void ReactNativeFeatureFlags::override(

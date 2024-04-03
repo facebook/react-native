@@ -92,6 +92,11 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.',
     },
+    useNativeViewConfigsInBridgelessMode: {
+      defaultValue: false,
+      description:
+        'When enabled, the native view configs are used in bridgeless mode.',
+    },
   },
 
   jsOnly: {

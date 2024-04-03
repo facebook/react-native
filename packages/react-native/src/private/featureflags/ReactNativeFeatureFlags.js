@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<366b36d877532c93aa6e5a97b85edd06>>
+ * @generated SignedSource<<1d670e4e74d58e40c3e5c9dba2ceb560>>
  * @flow strict-local
  */
 
@@ -53,6 +53,7 @@ export type ReactNativeFeatureFlags = {
   inspectorEnableCxxInspectorPackagerConnection: Getter<boolean>,
   inspectorEnableModernCDPRegistry: Getter<boolean>,
   useModernRuntimeScheduler: Getter<boolean>,
+  useNativeViewConfigsInBridgelessMode: Getter<boolean>,
 }
 
 /**
@@ -147,6 +148,10 @@ export const inspectorEnableModernCDPRegistry: Getter<boolean> = createNativeFla
  * When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.
  */
 export const useModernRuntimeScheduler: Getter<boolean> = createNativeFlagGetter('useModernRuntimeScheduler', false);
+/**
+ * When enabled, the native view configs are used in bridgeless mode.
+ */
+export const useNativeViewConfigsInBridgelessMode: Getter<boolean> = createNativeFlagGetter('useNativeViewConfigsInBridgelessMode', false);
 
 /**
  * Overrides the feature flags with the provided methods.
