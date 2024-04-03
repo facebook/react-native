@@ -674,7 +674,7 @@ static Class getFallbackClassFromName(const char *name)
        */
       if (_bridge) {
         [(id)module setValue:_bridge forKey:@"bridge"];
-      } else if (_bridgeProxy && [self _isLegacyModuleClass:[module class]]) {
+      } else if (_bridgeProxy) {
         [(id)module setValue:_bridgeProxy forKey:@"bridge"];
       }
     } @catch (NSException *exception) {
