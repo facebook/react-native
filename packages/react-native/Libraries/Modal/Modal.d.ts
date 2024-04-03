@@ -82,6 +82,11 @@ export interface ModalPropsIOS {
   onOrientationChange?:
     | ((event: NativeSyntheticEvent<any>) => void)
     | undefined;
+
+  /**
+   * Allows the modal to be dismissed by an interactive gesture
+   */
+  interactiveDismissal?: boolean | undefined;
 }
 
 export interface ModalPropsAndroid {

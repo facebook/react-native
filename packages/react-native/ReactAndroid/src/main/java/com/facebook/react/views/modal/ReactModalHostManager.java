@@ -152,6 +152,12 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView>
   }
 
   @Override
+  @ReactProp(name = "interactiveDismissal")
+  public void setInteractiveDismissal(ReactModalHostView view, boolean interactiveDismissal) {
+    // iOS only
+  }
+
+  @Override
   protected void onAfterUpdateTransaction(ReactModalHostView view) {
     super.onAfterUpdateTransaction(view);
     view.showOrUpdate();

@@ -39,6 +39,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
     containerView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     _modalViewController.view = containerView;
     _touchHandler = [[RCTTouchHandler alloc] initWithBridge:bridge];
+    _interactiveDismissal = NO;
     _isPresented = NO;
 
     __weak typeof(self) weakSelf = self;
@@ -63,10 +64,22 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
   _onRequestClose = onRequestClose;
 }
 
+- (BOOL)presentationControllerShouldDismiss:(UIPresentationController *)presentationController
+{
+  return _interactiveDismissal;
+}
+
 - (void)presentationControllerDidAttemptToDismiss:(UIPresentationController *)controller
 {
   if (_onRequestClose != nil) {
     _onRequestClose(nil);
+  }
+}
+
+- (void)presentationControllerDidDismiss:(UIPresentationController *)presentationController
+{
+  if (_onDismiss) {
+    _onDismiss(nil);
   }
 }
 
@@ -173,6 +186,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
     RCTAssert(self.reactViewController, @"Can't present modal view controller without a presenting view controller");
 
     _modalViewController.supportedInterfaceOrientations = [self supportedOrientationsMask];
+    _modalViewController.modalInPresentation = !self.interactiveDismissal;
 
     if ([self.animationType isEqualToString:@"fade"]) {
       _modalViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;

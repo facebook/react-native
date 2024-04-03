@@ -5,13 +5,15 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#import <UIKit/UIKit.h>
+
 #import <React/RCTMountingTransactionObserving.h>
 #import <React/RCTViewComponentView.h>
 
 /**
  * UIView class for root <ModalHostView> component.
  */
-@interface RCTModalHostViewComponentView : RCTViewComponentView <RCTMountingTransactionObserving>
+@interface RCTModalHostViewComponentView : RCTViewComponentView <RCTMountingTransactionObserving, UIAdaptivePresentationControllerDelegate>
 
 /**
  * Subclasses may override this method and present the modal on different view controller.

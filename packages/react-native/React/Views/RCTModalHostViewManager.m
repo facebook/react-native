@@ -114,13 +114,11 @@ RCT_EXPORT_VIEW_PROPERTY(statusBarTranslucent, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(hardwareAccelerated, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(animated, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(onShow, RCTDirectEventBlock)
-RCT_EXPORT_VIEW_PROPERTY(identifier, NSNumber)
+RCT_EXPORT_VIEW_PROPERTY(interactiveDismissal, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(onDismiss, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(supportedOrientations, NSArray)
 RCT_EXPORT_VIEW_PROPERTY(onOrientationChange, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(visible, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(onRequestClose, RCTDirectEventBlock)
-
-// Fabric only
-RCT_EXPORT_VIEW_PROPERTY(onDismiss, RCTDirectEventBlock)
 
 @end

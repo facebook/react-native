@@ -52,6 +52,7 @@ function ModalPresentation() {
     transparent: false,
     hardwareAccelerated: false,
     statusBarTranslucent: false,
+    interactiveDismissal: false,
     presentationStyle: Platform.select({
       ios: 'fullScreen',
       default: undefined,
@@ -74,6 +75,16 @@ function ModalPresentation() {
    * LTI update could not be added via codemod */
   const onOrientationChange = event =>
     setCurrentOrientation(event.nativeEvent.orientation);
+
+  const onDismissInternal = () => {
+    if (props.interactiveDismissal === true) {
+      setProps(prev => ({...prev, visible: false}));
+    }
+
+    if (props.onDismiss) {
+      props.onDismiss();
+    }
+  };
 
   const controls = (
     <>
@@ -146,6 +157,26 @@ function ModalPresentation() {
           </Text>
         ) : null}
       </View>
+      {Platform.OS === 'ios' && (
+        <View style={styles.block}>
+          <View style={styles.rowWithSpaceBetween}>
+            <Text style={styles.title}>Interactive Dismissal</Text>
+            <Switch
+              value={props.interactiveDismissal}
+              onValueChange={enabled =>
+                setProps(prev => ({...prev, interactiveDismissal: enabled}))
+              }
+            />
+          </View>
+          {!['pageSheet', 'formSheet'].includes(presentationStyle) ||
+          props.animationType !== 'slide' ? (
+            <Text style={styles.warning}>
+              Modal can only be dismissed interactively whilst using 'pageSheet'
+              or 'formSheet' Presentation Style, and 'slide' Animation Type
+            </Text>
+          ) : null}
+        </View>
+      )}
       <View style={styles.block}>
         <Text style={styles.title}>Supported Orientation ⚫️</Text>
         <View style={styles.row}>
@@ -223,7 +254,8 @@ function ModalPresentation() {
       <Modal
         {...props}
         onRequestClose={onRequestClose}
-        onOrientationChange={onOrientationChange}>
+        onOrientationChange={onOrientationChange}
+        onDismiss={onDismissInternal}>
         <View style={styles.modalContainer}>
           <View style={styles.modalInnerContainer}>
             <Text testID="modal_animationType_text">

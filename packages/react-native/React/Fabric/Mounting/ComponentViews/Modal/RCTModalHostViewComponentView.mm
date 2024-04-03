@@ -103,6 +103,7 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
   ModalHostViewShadowNode::ConcreteState::Shared _state;
   BOOL _shouldAnimatePresentation;
   BOOL _shouldPresent;
+  BOOL _interactiveDismissal;
   BOOL _isPresented;
   UIView *_modalContentsSnapshot;
 }
@@ -113,6 +114,7 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
     _props = ModalHostViewShadowNode::defaultSharedProps();
     _shouldAnimatePresentation = YES;
 
+    _interactiveDismissal = NO;
     _isPresented = NO;
   }
 
@@ -148,7 +150,10 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
 {
   BOOL shouldBePresented = !_isPresented && _shouldPresent && self.window;
   if (shouldBePresented) {
+    _viewController.modalInPresentation = !self->_interactiveDismissal;
+    _viewController.presentationController.delegate = self;
     _isPresented = YES;
+
     [self presentViewController:self.viewController
                        animated:_shouldAnimatePresentation
                      completion:^{
@@ -190,6 +195,16 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
 
   assert(std::dynamic_pointer_cast<const ModalHostViewEventEmitter>(_eventEmitter));
   return std::static_pointer_cast<const ModalHostViewEventEmitter>(_eventEmitter);
+}
+
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (void)presentationControllerDidDismiss:(UIPresentationController *)presentationController
+{
+  auto eventEmitter = [self modalEventEmitter];
+  if (eventEmitter) {
+    eventEmitter->onDismiss(ModalHostViewEventEmitter::OnDismiss{});
+  }
 }
 
 #pragma mark - RCTMountingTransactionObserving
@@ -243,6 +258,7 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
   _viewController = nil;
   _isPresented = NO;
   _shouldPresent = NO;
+  _interactiveDismissal = NO;
 }
 
 - (void)updateProps:(const Props::Shared &)props oldProps:(const Props::Shared &)oldProps
@@ -259,6 +275,7 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
 
   self.viewController.modalPresentationStyle = presentationConfiguration(newProps);
 
+  _interactiveDismissal = newProps.interactiveDismissal;
   _shouldPresent = newProps.visible;
   [self ensurePresentedOnlyIfNeeded];
 

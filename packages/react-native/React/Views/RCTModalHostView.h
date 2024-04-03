@@ -25,6 +25,9 @@
 @property (nonatomic, copy) RCTDirectEventBlock onShow;
 @property (nonatomic, assign) BOOL visible;
 
+// iOS only
+@property (nonatomic, assign) BOOL interactiveDismissal;
+
 // Android only
 @property (nonatomic, assign) BOOL statusBarTranslucent;
 @property (nonatomic, assign) BOOL hardwareAccelerated;
