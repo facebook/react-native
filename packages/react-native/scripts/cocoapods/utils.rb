@@ -189,7 +189,7 @@ class ReactNativePodsUtils
         installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
             if pod_name.to_s == target_pod_name
                 target_installation_result.native_target.build_configurations.each do |config|
-                        if configuration == nil || (configuration != nil && configuration == config.name)
+                        if configuration == nil || (configuration != nil && config.name.include?(configuration))
                             config.build_settings[settings_name] ||= '$(inherited) '
                             config.build_settings[settings_name] << settings_value
                         end
