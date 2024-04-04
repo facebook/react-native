@@ -5,7 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.internal;
+package com.facebook.react.internal
+
+import android.view.Choreographer.FrameCallback
 
 public interface ChoreographerProvider {
   /**
@@ -13,13 +15,12 @@ public interface ChoreographerProvider {
    * android.view.Choreographer or a mock one for testing purposes, or override built-in
    * android.view.Choreographer's behaviors.
    */
-  interface Choreographer {
-
+  public interface Choreographer {
     /** Posts a frame callback to run on the next frame. */
-    void postFrameCallback(android.view.Choreographer.FrameCallback callback);
+    public fun postFrameCallback(callback: FrameCallback)
 
     /** Removes a previously posted frame callback. */
-    void removeFrameCallback(android.view.Choreographer.FrameCallback callback);
+    public fun removeFrameCallback(callback: FrameCallback)
   }
 
   /**
@@ -27,5 +28,5 @@ public interface ChoreographerProvider {
    *
    * @return An instance of Choreographer.
    */
-  Choreographer getChoreographer();
+  public fun getChoreographer(): Choreographer
 }
