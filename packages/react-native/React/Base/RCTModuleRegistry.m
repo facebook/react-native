@@ -64,4 +64,9 @@
   return NO;
 }
 
+- (id)moduleForClass:(Class)moduleClass
+{
+  return [self moduleForName:RCTBridgeModuleNameForClass(moduleClass).UTF8String];
+}
+
 @end
