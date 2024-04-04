@@ -1936,9 +1936,8 @@ public final class com/facebook/react/common/mapbuffer/WritableMapBuffer : com/f
 	public final fun put (IZ)Lcom/facebook/react/common/mapbuffer/WritableMapBuffer;
 }
 
-public final class com/facebook/react/common/network/OkHttpCallUtil {
-	public static final field INSTANCE Lcom/facebook/react/common/network/OkHttpCallUtil;
-	public static final fun cancelTag (Lokhttp3/OkHttpClient;Ljava/lang/Object;)V
+public class com/facebook/react/common/network/OkHttpCallUtil {
+	public static fun cancelTag (Lokhttp3/OkHttpClient;Ljava/lang/Object;)V
 }
 
 public class com/facebook/react/config/ReactFeatureFlags {
