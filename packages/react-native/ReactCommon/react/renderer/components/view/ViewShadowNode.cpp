@@ -79,8 +79,6 @@ void ViewShadowNode::initialize() noexcept {
   } else {
     traits_.unset(ShadowNodeTraits::Trait::FormsStackingContext);
   }
-
-  traits_.set(HostPlatformViewTraitsInitializer::extraTraits());
 }
 
 } // namespace facebook::react
