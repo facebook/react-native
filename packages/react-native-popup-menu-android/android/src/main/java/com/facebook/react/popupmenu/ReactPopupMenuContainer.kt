@@ -43,6 +43,14 @@ public class ReactPopupMenuContainer(context: Context) : FrameLayout(context) {
         }
         true
       }
+      popupMenu.setOnDismissListener {
+        val reactContext = context as ReactContext
+        val eventDispatcher = UIManagerHelper.getEventDispatcherForReactTag(reactContext, id)
+        if (eventDispatcher != null) {
+          val surfaceId = UIManagerHelper.getSurfaceId(reactContext)
+          eventDispatcher.dispatchEvent(PopupMenuDismissEvent(surfaceId, id))
+        }
+      }
       popupMenu.show()
     }
   }

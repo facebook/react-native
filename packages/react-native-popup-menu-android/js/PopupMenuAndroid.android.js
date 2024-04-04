@@ -25,6 +25,8 @@ type PopupMenuSelectionEvent = SyntheticEvent<
   }>,
 >;
 
+type PopupMenuDismissEvent = SyntheticEvent<$ReadOnly<{}>>;
+
 export type PopupMenuAndroidInstance = {
   +show: () => void,
 };
@@ -32,6 +34,7 @@ export type PopupMenuAndroidInstance = {
 type Props = {
   menuItems: $ReadOnlyArray<string>,
   onSelectionChange: number => void,
+  onPopupDismiss?: () => void,
   children: React.Node,
   instanceRef: RefObject<?PopupMenuAndroidInstance>,
 };
@@ -39,6 +42,7 @@ type Props = {
 export default function PopupMenuAndroid({
   menuItems,
   onSelectionChange,
+  onPopupDismiss,
   children,
   instanceRef,
 }: Props): React.Node {
@@ -48,6 +52,12 @@ export default function PopupMenuAndroid({
       onSelectionChange(event.nativeEvent.item);
     },
     [onSelectionChange],
+  );
+  const _onPopupDismiss = useCallback(
+    (event: PopupMenuDismissEvent) => {
+      onPopupDismiss?.();
+    },
+    [onPopupDismiss],
   );
 
   useImperativeHandle(instanceRef, ItemViewabilityInstance => {
@@ -62,6 +72,7 @@ export default function PopupMenuAndroid({
     <PopupMenuAndroidNativeComponent
       ref={nativeRef}
       onSelectionChange={_onSelectionChange}
+      onPopupDismiss={_onPopupDismiss}
       menuItems={menuItems}>
       {children}
     </PopupMenuAndroidNativeComponent>
