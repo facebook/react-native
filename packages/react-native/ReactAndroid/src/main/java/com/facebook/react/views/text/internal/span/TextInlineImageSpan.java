@@ -13,8 +13,10 @@ import android.text.style.ReplacementSpan;
 import android.view.View;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 
 /** Base class for inline image spans. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public abstract class TextInlineImageSpan extends ReplacementSpan implements ReactSpan {
 
   /**

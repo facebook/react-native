@@ -9,6 +9,7 @@ package com.facebook.react.views.text.internal.span;
 
 import android.text.TextPaint;
 import android.text.style.MetricAffectingSpan;
+import com.facebook.infer.annotation.Nullsafe;
 
 /**
  * A {@link MetricAffectingSpan} that allows to set the letter spacing on the selected text span.
@@ -16,6 +17,7 @@ import android.text.style.MetricAffectingSpan;
  * <p>The letter spacing is specified in pixels, which are converted to ems at paint time; this span
  * must therefore be applied after any spans affecting font size.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class CustomLetterSpacingSpan extends MetricAffectingSpan implements ReactSpan {
 
   private final float mLetterSpacing;

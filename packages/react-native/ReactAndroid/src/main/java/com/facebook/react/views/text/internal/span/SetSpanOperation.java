@@ -11,7 +11,9 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Nullsafe;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class SetSpanOperation {
   private static final String TAG = "SetSpanOperation";
   static final int SPAN_MAX_PRIORITY = Spanned.SPAN_PRIORITY >> Spanned.SPAN_PRIORITY_SHIFT;

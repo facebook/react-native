@@ -9,7 +9,9 @@ package com.facebook.react.views.text.internal.span;
 
 import android.text.TextPaint;
 import android.text.style.CharacterStyle;
+import com.facebook.infer.annotation.Nullsafe;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ShadowStyleSpan extends CharacterStyle implements ReactSpan {
   private final float mDx, mDy, mRadius;
   private final int mColor;

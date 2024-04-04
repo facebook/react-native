@@ -10,11 +10,13 @@ package com.facebook.react.views.text.internal.span;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.text.style.ReplacementSpan;
+import com.facebook.infer.annotation.Nullsafe;
 
 /**
  * TextInlineViewPlaceholderSpan is a span for inlined views that are inside <Text/>. It computes
  * its size based on the input size. It contains no draw logic, just positioning logic.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class TextInlineViewPlaceholderSpan extends ReplacementSpan implements ReactSpan {
   private int mReactTag;
   private int mWidth;

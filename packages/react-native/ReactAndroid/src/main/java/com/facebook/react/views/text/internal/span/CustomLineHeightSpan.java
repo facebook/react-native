@@ -9,11 +9,13 @@ package com.facebook.react.views.text.internal.span;
 
 import android.graphics.Paint;
 import android.text.style.LineHeightSpan;
+import com.facebook.infer.annotation.Nullsafe;
 
 /**
  * We use a custom {@link LineHeightSpan}, because `lineSpacingExtra` is broken. Details here:
  * https://github.com/facebook/react-native/issues/7546
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class CustomLineHeightSpan implements LineHeightSpan, ReactSpan {
   private final int mHeight;
 

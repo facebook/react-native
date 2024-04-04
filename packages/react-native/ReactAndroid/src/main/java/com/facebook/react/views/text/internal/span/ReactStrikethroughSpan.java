@@ -8,8 +8,10 @@
 package com.facebook.react.views.text.internal.span;
 
 import android.text.style.StrikethroughSpan;
+import com.facebook.infer.annotation.Nullsafe;
 
 /*
  * Wraps {@link StrikethroughSpan} as a {@link ReactSpan}.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ReactStrikethroughSpan extends StrikethroughSpan implements ReactSpan {}

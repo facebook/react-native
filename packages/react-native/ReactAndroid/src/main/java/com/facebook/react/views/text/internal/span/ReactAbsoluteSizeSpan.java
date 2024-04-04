@@ -8,10 +8,12 @@
 package com.facebook.react.views.text.internal.span;
 
 import android.text.style.AbsoluteSizeSpan;
+import com.facebook.infer.annotation.Nullsafe;
 
 /*
  * Wraps {@link AbsoluteSizeSpan} as a {@link ReactSpan}.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ReactAbsoluteSizeSpan extends AbsoluteSizeSpan implements ReactSpan {
   public ReactAbsoluteSizeSpan(int size) {
     super(size);
