@@ -5872,12 +5872,12 @@ public class com/facebook/react/views/common/ViewUtils {
 	public static fun getTestId (Landroid/view/View;)Ljava/lang/String;
 }
 
-public class com/facebook/react/views/debuggingoverlay/DebuggingOverlay : android/view/View {
+public final class com/facebook/react/views/debuggingoverlay/DebuggingOverlay : android/view/View {
 	public fun <init> (Landroid/content/Context;)V
-	public fun clearElementsHighlights ()V
+	public final fun clearElementsHighlights ()V
 	public fun onDraw (Landroid/graphics/Canvas;)V
-	public fun setHighlightedElementsRectangles (Ljava/util/List;)V
-	public fun setTraceUpdates (Ljava/util/List;)V
+	public final fun setHighlightedElementsRectangles (Ljava/util/List;)V
+	public final fun setTraceUpdates (Ljava/util/List;)V
 }
 
 public class com/facebook/react/views/debuggingoverlay/DebuggingOverlayManager : com/facebook/react/uimanager/SimpleViewManager {
