@@ -7560,9 +7560,9 @@ public abstract interface class com/facebook/react/views/textinput/ScrollWatcher
 	public abstract fun onScrollChanged (IIII)V
 }
 
-public class com/facebook/react/views/unimplementedview/ReactUnimplementedView : android/widget/LinearLayout {
+public final class com/facebook/react/views/unimplementedview/ReactUnimplementedView : android/widget/LinearLayout {
 	public fun <init> (Landroid/content/Context;)V
-	public fun setName (Ljava/lang/String;)V
+	public final fun setName (Ljava/lang/String;)V
 }
 
 public class com/facebook/react/views/unimplementedview/ReactUnimplementedViewManager : com/facebook/react/uimanager/ViewGroupManager {
