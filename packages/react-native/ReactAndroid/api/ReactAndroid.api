@@ -2161,9 +2161,9 @@ public abstract interface class com/facebook/react/devsupport/DevSupportManagerF
 	public abstract fun create (Landroid/content/Context;Lcom/facebook/react/devsupport/ReactInstanceDevHelper;Ljava/lang/String;ZLcom/facebook/react/devsupport/interfaces/RedBoxHandler;Lcom/facebook/react/devsupport/interfaces/DevBundleDownloadListener;ILjava/util/Map;Lcom/facebook/react/common/SurfaceDelegateFactory;Lcom/facebook/react/devsupport/interfaces/DevLoadingViewManager;)Lcom/facebook/react/devsupport/interfaces/DevSupportManager;
 }
 
-public class com/facebook/react/devsupport/DoubleTapReloadRecognizer {
+public final class com/facebook/react/devsupport/DoubleTapReloadRecognizer {
 	public fun <init> ()V
-	public fun didDoubleTapR (ILandroid/view/View;)Z
+	public final fun didDoubleTapR (ILandroid/view/View;)Z
 }
 
 public abstract interface class com/facebook/react/devsupport/HMRClient : com/facebook/react/bridge/JavaScriptModule {
