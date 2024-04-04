@@ -98,6 +98,9 @@ RCT_EXPORT_MODULE()
 
 - (void)invalidate
 {
+  if (_invalidated) {
+    return;
+  }
   _invalidated = YES;
   [self _cleanupObservers];
 }
@@ -118,10 +121,7 @@ RCT_EXPORT_MODULE()
 
   [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTWindowFrameDidChangeNotification object:nil];
 
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(invalidate)
-                                               name:RCTBridgeWillInvalidateModulesNotification
-                                             object:nil];
+  [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTBridgeWillInvalidateModulesNotification object:nil];
 }
 
 static BOOL RCTIsIPhoneNotched()
