@@ -27,7 +27,7 @@ import org.robolectric.RuntimeEnvironment
 @RunWith(RobolectricTestRunner::class)
 class SimpleViewPropertyTest {
 
-  private class ConcreteViewManager : SimpleViewManager<View?>() {
+  private class ConcreteViewManager : SimpleViewManager<View>() {
     @Suppress("UNUSED_PARAMETER")
     @ReactProp(name = "foo")
     fun setFoo(view: View, foo: Boolean) = Unit
