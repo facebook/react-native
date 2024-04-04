@@ -491,7 +491,7 @@ public class DevServerHelper {
   }
 
   /** Attempt to open the JS debugger on the host machine (on-device CDP debugging). */
-  public void openDebugger(final ReactContext context, final String errorMessage) {
+  public void openDebugger(@Nullable final ReactContext context, final String errorMessage) {
     // TODO(huntie): Requests to dev server should not assume 'http' URL scheme
     String requestUrl =
         String.format(
