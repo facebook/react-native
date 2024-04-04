@@ -5877,9 +5877,9 @@ public final class com/facebook/react/views/common/ContextUtils {
 	public static final fun findContextOfType (Landroid/content/Context;Ljava/lang/Class;)Ljava/lang/Object;
 }
 
-public class com/facebook/react/views/common/ViewUtils {
-	public fun <init> ()V
-	public static fun getTestId (Landroid/view/View;)Ljava/lang/String;
+public final class com/facebook/react/views/common/ViewUtils {
+	public static final field INSTANCE Lcom/facebook/react/views/common/ViewUtils;
+	public static final fun getTestId (Landroid/view/View;)Ljava/lang/String;
 }
 
 public final class com/facebook/react/views/debuggingoverlay/DebuggingOverlay : android/view/View {
