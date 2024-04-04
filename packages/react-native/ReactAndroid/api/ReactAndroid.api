@@ -5984,12 +5984,15 @@ public class com/facebook/react/views/drawer/events/DrawerClosedEvent : com/face
 	public fun getEventName ()Ljava/lang/String;
 }
 
-public class com/facebook/react/views/drawer/events/DrawerOpenedEvent : com/facebook/react/uimanager/events/Event {
+public final class com/facebook/react/views/drawer/events/DrawerOpenedEvent : com/facebook/react/uimanager/events/Event {
+	public static final field Companion Lcom/facebook/react/views/drawer/events/DrawerOpenedEvent$Companion;
 	public static final field EVENT_NAME Ljava/lang/String;
 	public fun <init> (I)V
 	public fun <init> (II)V
-	protected fun getEventData ()Lcom/facebook/react/bridge/WritableMap;
 	public fun getEventName ()Ljava/lang/String;
+}
+
+public final class com/facebook/react/views/drawer/events/DrawerOpenedEvent$Companion {
 }
 
 public class com/facebook/react/views/drawer/events/DrawerSlideEvent : com/facebook/react/uimanager/events/Event {
