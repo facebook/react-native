@@ -1680,6 +1680,16 @@ static UIView *_jsResponder;
   return self;
 }
 
+- (NSUInteger)count
+{
+  return self->_registry.count;
+}
+
+- (NSEnumerator *)keyEnumerator
+{
+  return self->_registry.keyEnumerator;
+}
+
 - (id)objectForKey:(id)key
 {
   if (![key isKindOfClass:[NSNumber class]]) {
