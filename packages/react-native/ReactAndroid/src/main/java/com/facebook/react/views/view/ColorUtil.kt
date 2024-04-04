@@ -5,18 +5,17 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.views.view;
+package com.facebook.react.views.view
 
-import android.graphics.PixelFormat;
-import com.facebook.infer.annotation.Nullsafe;
+import android.graphics.PixelFormat
+import kotlin.math.roundToInt
 
 /**
  * Simple utility class for manipulating colors, based on Fresco's DrawableUtils
  * (https://github.com/facebook/fresco). For a small helper like this, copying is simpler than
  * adding a dependency on com.facebook.fresco.drawee.
  */
-@Nullsafe(Nullsafe.Mode.LOCAL)
-public class ColorUtil {
+public object ColorUtil {
 
   /**
    * Multiplies the color with the given alpha.
@@ -25,17 +24,18 @@ public class ColorUtil {
    * @param alpha value between 0 and 255
    * @return multiplied color
    */
-  public static int multiplyColorAlpha(int color, int alpha) {
+  @JvmStatic
+  public fun multiplyColorAlpha(color: Int, alpha: Int): Int {
     if (alpha == 255) {
-      return color;
+      return color
+    } else if (alpha == 0) {
+      return color and 0x00FFFFFF
     }
-    if (alpha == 0) {
-      return color & 0x00FFFFFF;
-    }
-    alpha = alpha + (alpha >> 7); // make it 0..256
-    int colorAlpha = color >>> 24;
-    int multipliedAlpha = colorAlpha * alpha >> 8;
-    return (multipliedAlpha << 24) | (color & 0x00FFFFFF);
+
+    val scaledAlpha = alpha + (alpha shr 7) // make it 0..256
+    val colorAlpha = color ushr 24
+    val multipliedAlpha = (colorAlpha * scaledAlpha) shr 8
+    return (multipliedAlpha shl 24) or (color and 0x00FFFFFF)
   }
 
   /**
@@ -44,14 +44,13 @@ public class ColorUtil {
    * @param color color to get opacity from
    * @return opacity expressed by one of PixelFormat constants
    */
-  public static int getOpacityFromColor(int color) {
-    int colorAlpha = color >>> 24;
-    if (colorAlpha == 255) {
-      return PixelFormat.OPAQUE;
-    } else if (colorAlpha == 0) {
-      return PixelFormat.TRANSPARENT;
-    } else {
-      return PixelFormat.TRANSLUCENT;
+  @JvmStatic
+  public fun getOpacityFromColor(color: Int): Int {
+    val colorAlpha = color ushr 24
+    return when (colorAlpha) {
+      255 -> PixelFormat.OPAQUE
+      0 -> PixelFormat.TRANSPARENT
+      else -> PixelFormat.TRANSLUCENT
     }
   }
 
@@ -65,11 +64,10 @@ public class ColorUtil {
    * @param a alpha channel value, [0, 1]
    * @return integer representation of the color as 0xAARRGGBB
    */
-  public static int normalize(double r, double g, double b, double a) {
-    return (clamp255(a * 255) << 24) | (clamp255(r) << 16) | (clamp255(g) << 8) | clamp255(b);
+  @JvmStatic
+  public fun normalize(r: Double, g: Double, b: Double, a: Double): Int {
+    return (clamp255(a * 255) shl 24) or (clamp255(r) shl 16) or (clamp255(g) shl 8) or clamp255(b)
   }
 
-  private static int clamp255(double value) {
-    return Math.max(0, Math.min(255, (int) Math.round(value)));
-  }
+  private fun clamp255(value: Double): Int = maxOf(0, minOf(255, value.roundToInt()))
 }
