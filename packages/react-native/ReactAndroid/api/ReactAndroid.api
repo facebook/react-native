@@ -6334,7 +6334,8 @@ public class com/facebook/react/views/scroll/ReactHorizontalScrollContainerView 
 	public fun setRemoveClippedSubviews (Z)V
 }
 
-public class com/facebook/react/views/scroll/ReactHorizontalScrollContainerViewManager : com/facebook/react/views/view/ReactClippingViewManager {
+public final class com/facebook/react/views/scroll/ReactHorizontalScrollContainerViewManager : com/facebook/react/views/view/ReactClippingViewManager {
+	public static final field Companion Lcom/facebook/react/views/scroll/ReactHorizontalScrollContainerViewManager$Companion;
 	public static final field REACT_CLASS Ljava/lang/String;
 	public fun <init> ()V
 	public synthetic fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Landroid/view/View;
@@ -6347,6 +6348,9 @@ public class com/facebook/react/views/scroll/ReactHorizontalScrollContainerViewM
 	public fun getProperties (Ljava/util/Map;)V
 	public synthetic fun setProperty (Lcom/facebook/react/uimanager/ViewManager;Landroid/view/View;Ljava/lang/String;Ljava/lang/Object;)V
 	public fun setProperty (Lcom/facebook/react/views/scroll/ReactHorizontalScrollContainerViewManager;Lcom/facebook/react/views/scroll/ReactHorizontalScrollContainerView;Ljava/lang/String;Ljava/lang/Object;)V
+}
+
+public final class com/facebook/react/views/scroll/ReactHorizontalScrollContainerViewManager$Companion {
 }
 
 public class com/facebook/react/views/scroll/ReactHorizontalScrollView : android/widget/HorizontalScrollView, android/view/View$OnLayoutChangeListener, android/view/ViewGroup$OnHierarchyChangeListener, com/facebook/react/uimanager/ReactClippingViewGroup, com/facebook/react/uimanager/ReactOverflowViewWithInset, com/facebook/react/views/scroll/ReactScrollViewHelper$HasFlingAnimator, com/facebook/react/views/scroll/ReactScrollViewHelper$HasScrollEventThrottle, com/facebook/react/views/scroll/ReactScrollViewHelper$HasScrollState, com/facebook/react/views/scroll/ReactScrollViewHelper$HasSmoothScroll, com/facebook/react/views/scroll/ReactScrollViewHelper$HasStateWrapper {
