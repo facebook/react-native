@@ -7,8 +7,11 @@
 
 package com.facebook.react.views.text.internal.span;
 
+import com.facebook.infer.annotation.Nullsafe;
+
 /*
  * Enables us to distinguish between spans that were added by React Native and spans that were
  * added by something else. All spans that React Native adds should implement this interface.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public interface ReactSpan {}

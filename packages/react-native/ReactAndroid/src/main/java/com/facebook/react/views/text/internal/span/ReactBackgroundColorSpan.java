@@ -8,10 +8,12 @@
 package com.facebook.react.views.text.internal.span;
 
 import android.text.style.BackgroundColorSpan;
+import com.facebook.infer.annotation.Nullsafe;
 
 /*
  * Wraps {@link BackgroundColorSpan} as a {@link ReactSpan}.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ReactBackgroundColorSpan extends BackgroundColorSpan implements ReactSpan {
   public ReactBackgroundColorSpan(int color) {
     super(color);

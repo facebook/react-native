@@ -11,6 +11,7 @@ import android.text.TextPaint;
 import android.text.style.ClickableSpan;
 import android.view.View;
 import androidx.annotation.NonNull;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.events.EventDispatcher;
@@ -38,6 +39,7 @@ import com.facebook.react.views.view.ViewGroupClickEvent;
  * accessible (TalkBack announces that the text has links available, and the links are exposed in
  * the context menu).
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ReactClickableSpan extends ClickableSpan implements ReactSpan {
 
   private final int mReactTag;
