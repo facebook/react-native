@@ -6010,13 +6010,16 @@ public final class com/facebook/react/views/drawer/events/DrawerSlideEvent : com
 public final class com/facebook/react/views/drawer/events/DrawerSlideEvent$Companion {
 }
 
-public class com/facebook/react/views/drawer/events/DrawerStateChangedEvent : com/facebook/react/uimanager/events/Event {
+public final class com/facebook/react/views/drawer/events/DrawerStateChangedEvent : com/facebook/react/uimanager/events/Event {
+	public static final field Companion Lcom/facebook/react/views/drawer/events/DrawerStateChangedEvent$Companion;
 	public static final field EVENT_NAME Ljava/lang/String;
 	public fun <init> (II)V
 	public fun <init> (III)V
-	public fun getDrawerState ()I
-	protected fun getEventData ()Lcom/facebook/react/bridge/WritableMap;
+	public final fun getDrawerState ()I
 	public fun getEventName ()Ljava/lang/String;
+}
+
+public final class com/facebook/react/views/drawer/events/DrawerStateChangedEvent$Companion {
 }
 
 public abstract interface class com/facebook/react/views/image/GlobalImageLoadListener {
