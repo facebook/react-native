@@ -1760,6 +1760,7 @@ public final class com/facebook/react/common/SingleThreadAsserter {
 }
 
 public final class com/facebook/react/common/StandardCharsets {
+	public static final field INSTANCE Lcom/facebook/react/common/StandardCharsets;
 	public static final field UTF_16 Ljava/nio/charset/Charset;
 	public static final field UTF_16BE Ljava/nio/charset/Charset;
 	public static final field UTF_16LE Ljava/nio/charset/Charset;
