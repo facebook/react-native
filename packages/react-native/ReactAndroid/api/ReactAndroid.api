@@ -4151,8 +4151,8 @@ public class com/facebook/react/uimanager/MatrixMathHelper$MatrixDecompositionCo
 	public fun reset ()V
 }
 
-public class com/facebook/react/uimanager/MeasureSpecAssertions {
-	public fun <init> ()V
+public final class com/facebook/react/uimanager/MeasureSpecAssertions {
+	public static final field INSTANCE Lcom/facebook/react/uimanager/MeasureSpecAssertions;
 	public static final fun assertExplicitMeasureSpec (II)V
 }
 
