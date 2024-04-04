@@ -107,7 +107,7 @@ typedef RCTBridge *_Nonnull (
  *
  * @parameter: moduleName  - the name of the app, used by Metro to resolve the module.
  * @parameter: initialProperties  -  a set of initial properties.
- * @parameter: moduleName  - a dictionary with a set of options.
+ * @parameter: launchOptions  - a dictionary with a set of options.
  */
 - (UIView *_Nonnull)viewWithModuleName:(NSString *)moduleName
                      initialProperties:(NSDictionary *__nullable)initialProperties
