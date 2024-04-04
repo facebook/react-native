@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5b42b33319369b7936662a2608794ba5>>
+ * @generated SignedSource<<c91ec1127cfd0ad95c861008be5711bf>>
  */
 
 /**
@@ -258,6 +258,24 @@ bool ReactNativeFeatureFlagsAccessor::useModernRuntimeScheduler() {
 
     flagValue = currentProvider_->useModernRuntimeScheduler();
     useModernRuntimeScheduler_ = flagValue;
+  }
+
+  return flagValue.value();
+}
+
+bool ReactNativeFeatureFlagsAccessor::useNativeViewConfigsInBridgelessMode() {
+  auto flagValue = useNativeViewConfigsInBridgelessMode_.load();
+
+  if (!flagValue.has_value()) {
+    // This block is not exclusive but it is not necessary.
+    // If multiple threads try to initialize the feature flag, we would only
+    // be accessing the provider multiple times but the end state of this
+    // instance and the returned flag value would be the same.
+
+    markFlagAsAccessed(13, "useNativeViewConfigsInBridgelessMode");
+
+    flagValue = currentProvider_->useNativeViewConfigsInBridgelessMode();
+    useNativeViewConfigsInBridgelessMode_ = flagValue;
   }
 
   return flagValue.value();
