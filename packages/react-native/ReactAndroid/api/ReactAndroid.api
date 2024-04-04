@@ -5880,7 +5880,8 @@ public final class com/facebook/react/views/debuggingoverlay/DebuggingOverlay : 
 	public final fun setTraceUpdates (Ljava/util/List;)V
 }
 
-public class com/facebook/react/views/debuggingoverlay/DebuggingOverlayManager : com/facebook/react/uimanager/SimpleViewManager {
+public final class com/facebook/react/views/debuggingoverlay/DebuggingOverlayManager : com/facebook/react/uimanager/SimpleViewManager {
+	public static final field Companion Lcom/facebook/react/views/debuggingoverlay/DebuggingOverlayManager$Companion;
 	public static final field REACT_CLASS Ljava/lang/String;
 	public fun <init> ()V
 	public synthetic fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Landroid/view/View;
@@ -5895,6 +5896,9 @@ public class com/facebook/react/views/debuggingoverlay/DebuggingOverlayManager$$
 	public fun getProperties (Ljava/util/Map;)V
 	public synthetic fun setProperty (Lcom/facebook/react/uimanager/ViewManager;Landroid/view/View;Ljava/lang/String;Ljava/lang/Object;)V
 	public fun setProperty (Lcom/facebook/react/views/debuggingoverlay/DebuggingOverlayManager;Lcom/facebook/react/views/debuggingoverlay/DebuggingOverlay;Ljava/lang/String;Ljava/lang/Object;)V
+}
+
+public final class com/facebook/react/views/debuggingoverlay/DebuggingOverlayManager$Companion {
 }
 
 public final class com/facebook/react/views/debuggingoverlay/TraceUpdate {
