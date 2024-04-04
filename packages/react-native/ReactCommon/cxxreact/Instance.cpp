@@ -71,9 +71,14 @@ void Instance::initializeBridge(
       std::condition_variable inspectorInitializedCv;
       bool inspectorInitialized = false;
 
-      // Schedule work on the inspector thread. inspectorExecutor is guaranteed
-      // to execute this callback, so we can safely run this logic
-      // synchronously and reference parentInspectorTarget_.
+      // Schedule work on the inspector thread. NOTE: We expect this callback
+      // to always execute, given the invariant that `initializeBridge` (this
+      // method) completes before `unregisterFromInspector` is called.
+      // - On iOS, instance creation and invalidation both run on the main
+      //   queue (`RCTCxxBridge::start,invalidate` use `RCTAssertMainQueue`).
+      // - On Android, `ReactContext` must be initialized with a constructed
+      //   `CatalystInstance` (in which `Instance::initializeBridge` has
+      //   completed) before `destroy` can be called.
       inspectorExecutor([this,
                          &inspectorInitialized,
                          &inspectorInitializedMutex,
@@ -81,10 +86,10 @@ void Instance::initializeBridge(
                             jsinspector_modern::HostTarget& hostTarget) {
         // NOTE: By passing *this, we strongly assume the Instance will still
         // be alive by the time this executes.
-        // - On iOS, instance creation is done syncrhonously
-        //   (RCTCxxBridge#_initializeBridgeLocked).
+        // - On iOS, instance creation is done synchronously
+        //   (`RCTCxxBridge::_initializeBridgeLocked`).
         // - On Android, we explicitly wait for instance creation before
-        //   destruction (ReactInstanceManager#mReactContextLock).
+        //   destruction (`ReactInstanceManager::mReactContextLock`).
         inspectorTarget_ = &hostTarget.registerInstance(*this);
         RuntimeExecutor runtimeExecutorIfJsi = getRuntimeExecutor();
         runtimeInspectorTarget_ = &inspectorTarget_->registerRuntime(

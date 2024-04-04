@@ -136,7 +136,7 @@ class RN_EXPORT Instance : private jsinspector_modern::InstanceTargetDelegate {
 
   /**
    * Unregisters the instance from the inspector. This method must be called
-   * on the main (non-JS) thread.
+   * on the main (non-JS) thread, AFTER \c initializeBridge has completed.
    */
   void unregisterFromInspector();
 
