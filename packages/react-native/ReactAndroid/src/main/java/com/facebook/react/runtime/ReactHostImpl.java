@@ -641,6 +641,7 @@ public class ReactHostImpl implements ReactHost {
     ReactContext currentContext = getCurrentReactContext();
     if (currentContext != null) {
       currentContext.onActivityResult(activity, requestCode, resultCode, data);
+      return;
     }
     ReactSoftExceptionLogger.logSoftException(
         TAG,
@@ -658,6 +659,7 @@ public class ReactHostImpl implements ReactHost {
     ReactContext currentContext = getCurrentReactContext();
     if (currentContext != null) {
       currentContext.onWindowFocusChange(hasFocus);
+      return;
     }
     ReactSoftExceptionLogger.logSoftException(
         TAG,
@@ -689,6 +691,7 @@ public class ReactHostImpl implements ReactHost {
         }
       }
       currentContext.onNewIntent(getCurrentActivity(), intent);
+      return;
     }
     ReactSoftExceptionLogger.logSoftException(
         TAG,
