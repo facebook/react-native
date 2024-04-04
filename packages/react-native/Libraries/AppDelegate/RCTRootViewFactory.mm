@@ -113,12 +113,9 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
              initialProperties:(NSDictionary *)initialProperties
                  launchOptions:(NSDictionary *)launchOptions
 {
-  NSDictionary *initProps = updateInitialProps(initialProperties, self->_configuration.fabricEnabled);
+  NSDictionary *initProps = updateInitialProps(initialProperties, _configuration.fabricEnabled);
 
-  if (self->_configuration.bridgelessEnabled) {
-    // Enable native view config interop only if both bridgeless mode and Fabric is enabled.
-    RCTSetUseNativeViewConfigsInBridgelessMode(self->_configuration.fabricEnabled);
-
+  if (_configuration.bridgelessEnabled) {
     // Enable TurboModule interop by default in Bridgeless mode
     RCTEnableTurboModuleInterop(YES);
     RCTEnableTurboModuleInteropBridgeProxy(YES);
@@ -138,8 +135,8 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
   [self createBridgeIfNeeded:launchOptions];
   [self createBridgeAdapterIfNeeded];
 
-  if (self->_configuration.createRootViewWithBridge != nil) {
-    return self->_configuration.createRootViewWithBridge(self.bridge, moduleName, initProps);
+  if (_configuration.createRootViewWithBridge != nil) {
+    return _configuration.createRootViewWithBridge(self.bridge, moduleName, initProps);
   }
 
   return [self createRootViewWithBridge:self.bridge moduleName:moduleName initProps:initProps];
