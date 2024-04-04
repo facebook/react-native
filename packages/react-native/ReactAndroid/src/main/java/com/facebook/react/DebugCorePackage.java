@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.common.ClassFinder;
 import com.facebook.react.devsupport.JSCHeapCapture;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.module.annotations.ReactModuleList;
@@ -53,30 +54,15 @@ public class DebugCorePackage extends TurboReactPackage implements ViewManagerOn
 
   @Override
   public ReactModuleInfoProvider getReactModuleInfoProvider() {
+    if (!ClassFinder.canLoadClassesFromAnnotationProcessors()) {
+      return fallbackForMissingClass();
+    }
     try {
       Class<?> reactModuleInfoProviderClass =
-          Class.forName("com.facebook.react.DebugCorePackage$$ReactModuleInfoProvider");
+          ClassFinder.findClass("com.facebook.react.DebugCorePackage$$ReactModuleInfoProvider");
       return (ReactModuleInfoProvider) reactModuleInfoProviderClass.newInstance();
     } catch (ClassNotFoundException e) {
-      // In OSS case, the annotation processor does not run. We fall back on creating this by hand
-      Class<? extends NativeModule>[] moduleList = new Class[] {JSCHeapCapture.class};
-
-      final Map<String, ReactModuleInfo> reactModuleInfoMap = new HashMap<>();
-      for (Class<? extends NativeModule> moduleClass : moduleList) {
-        ReactModule reactModule = moduleClass.getAnnotation(ReactModule.class);
-
-        reactModuleInfoMap.put(
-            reactModule.name(),
-            new ReactModuleInfo(
-                reactModule.name(),
-                moduleClass.getName(),
-                reactModule.canOverrideExistingModule(),
-                reactModule.needsEagerInit(),
-                reactModule.isCxxModule(),
-                ReactModuleInfo.classIsTurboModule(moduleClass)));
-      }
-
-      return () -> reactModuleInfoMap;
+      return fallbackForMissingClass();
     } catch (InstantiationException e) {
       throw new RuntimeException(
           "No ReactModuleInfoProvider for DebugCorePackage$$ReactModuleInfoProvider", e);
@@ -84,6 +70,28 @@ public class DebugCorePackage extends TurboReactPackage implements ViewManagerOn
       throw new RuntimeException(
           "No ReactModuleInfoProvider for DebugCorePackage$$ReactModuleInfoProvider", e);
     }
+  }
+
+  private ReactModuleInfoProvider fallbackForMissingClass() {
+    // In OSS case, the annotation processor does not run. We fall back on creating this by hand
+    Class<? extends NativeModule>[] moduleList = new Class[] {JSCHeapCapture.class};
+
+    final Map<String, ReactModuleInfo> reactModuleInfoMap = new HashMap<>();
+    for (Class<? extends NativeModule> moduleClass : moduleList) {
+      ReactModule reactModule = moduleClass.getAnnotation(ReactModule.class);
+
+      reactModuleInfoMap.put(
+          reactModule.name(),
+          new ReactModuleInfo(
+              reactModule.name(),
+              moduleClass.getName(),
+              reactModule.canOverrideExistingModule(),
+              reactModule.needsEagerInit(),
+              reactModule.isCxxModule(),
+              ReactModuleInfo.classIsTurboModule(moduleClass)));
+    }
+
+    return () -> reactModuleInfoMap;
   }
 
   private static void appendMap(

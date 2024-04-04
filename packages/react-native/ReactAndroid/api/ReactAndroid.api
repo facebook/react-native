@@ -1666,6 +1666,12 @@ public class com/facebook/react/bridge/queue/ReactQueueConfigurationSpec$Builder
 	public fun setNativeModulesQueueThreadSpec (Lcom/facebook/react/bridge/queue/MessageQueueThreadSpec;)Lcom/facebook/react/bridge/queue/ReactQueueConfigurationSpec$Builder;
 }
 
+public final class com/facebook/react/common/ClassFinder {
+	public static final field INSTANCE Lcom/facebook/react/common/ClassFinder;
+	public static final fun canLoadClassesFromAnnotationProcessors ()Z
+	public static final fun findClass (Ljava/lang/String;)Ljava/lang/Class;
+}
+
 public class com/facebook/react/common/ClearableSynchronizedPool : androidx/core/util/Pools$Pool {
 	public fun <init> (I)V
 	public fun acquire ()Ljava/lang/Object;
