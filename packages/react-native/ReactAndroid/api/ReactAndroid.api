@@ -2702,10 +2702,18 @@ public class com/facebook/react/fabric/events/FabricEventEmitter : com/facebook/
 }
 
 public abstract interface class com/facebook/react/fabric/mounting/LayoutMetricsConversions {
+	public static final field Companion Lcom/facebook/react/fabric/mounting/LayoutMetricsConversions$Companion;
 	public static fun getMaxSize (I)F
 	public static fun getMinSize (I)F
 	public static fun getYogaMeasureMode (FF)Lcom/facebook/yoga/YogaMeasureMode;
 	public static fun getYogaSize (FF)F
+}
+
+public final class com/facebook/react/fabric/mounting/LayoutMetricsConversions$Companion {
+	public final fun getMaxSize (I)F
+	public final fun getMinSize (I)F
+	public final fun getYogaMeasureMode (FF)Lcom/facebook/yoga/YogaMeasureMode;
+	public final fun getYogaSize (FF)F
 }
 
 public class com/facebook/react/fabric/mounting/MountItemDispatcher {
