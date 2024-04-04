@@ -4049,7 +4049,7 @@ public final class com/facebook/react/uimanager/FloatUtil {
 
 public abstract class com/facebook/react/uimanager/GuardedFrameCallback : android/view/Choreographer$FrameCallback {
 	protected fun <init> (Lcom/facebook/react/bridge/ReactContext;)V
-	public final fun doFrame (J)V
+	public fun doFrame (J)V
 	protected abstract fun doFrameGuarded (J)V
 }
 
