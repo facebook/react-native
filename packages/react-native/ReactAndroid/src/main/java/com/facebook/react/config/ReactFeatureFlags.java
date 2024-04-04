@@ -101,9 +101,6 @@ public class ReactFeatureFlags {
    */
   public static boolean enableRemoveDeleteTreeInstruction = false;
 
-  /** Use native view configs in bridgeless mode. */
-  public static boolean useNativeViewConfigsInBridgelessMode = false;
-
   /** When enabled, Fabric will avoid cloning notes to perform state progression. */
   public static boolean enableClonelessStateProgression = false;
 
