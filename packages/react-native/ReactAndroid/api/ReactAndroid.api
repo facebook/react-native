@@ -5899,9 +5899,9 @@ public class com/facebook/react/views/debuggingoverlay/DebuggingOverlayManager$$
 
 public final class com/facebook/react/views/debuggingoverlay/TraceUpdate {
 	public fun <init> (ILandroid/graphics/RectF;I)V
-	public fun getColor ()I
-	public fun getId ()I
-	public fun getRectangle ()Landroid/graphics/RectF;
+	public final fun getColor ()I
+	public final fun getId ()I
+	public final fun getRectangle ()Landroid/graphics/RectF;
 }
 
 public class com/facebook/react/views/drawer/ReactDrawerLayoutManager : com/facebook/react/uimanager/ViewGroupManager, com/facebook/react/viewmanagers/AndroidDrawerLayoutManagerInterface {
