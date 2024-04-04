@@ -6741,13 +6741,18 @@ public final class com/facebook/react/views/scroll/ScrollEvent$Companion {
 
 public final class com/facebook/react/views/scroll/ScrollEventType : java/lang/Enum {
 	public static final field BEGIN_DRAG Lcom/facebook/react/views/scroll/ScrollEventType;
+	public static final field Companion Lcom/facebook/react/views/scroll/ScrollEventType$Companion;
 	public static final field END_DRAG Lcom/facebook/react/views/scroll/ScrollEventType;
 	public static final field MOMENTUM_BEGIN Lcom/facebook/react/views/scroll/ScrollEventType;
 	public static final field MOMENTUM_END Lcom/facebook/react/views/scroll/ScrollEventType;
 	public static final field SCROLL Lcom/facebook/react/views/scroll/ScrollEventType;
-	public static fun getJSEventName (Lcom/facebook/react/views/scroll/ScrollEventType;)Ljava/lang/String;
+	public static final fun getJSEventName (Lcom/facebook/react/views/scroll/ScrollEventType;)Ljava/lang/String;
 	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/views/scroll/ScrollEventType;
 	public static fun values ()[Lcom/facebook/react/views/scroll/ScrollEventType;
+}
+
+public final class com/facebook/react/views/scroll/ScrollEventType$Companion {
+	public final fun getJSEventName (Lcom/facebook/react/views/scroll/ScrollEventType;)Ljava/lang/String;
 }
 
 public class com/facebook/react/views/swiperefresh/ReactSwipeRefreshLayout : androidx/swiperefreshlayout/widget/SwipeRefreshLayout {
