@@ -2499,8 +2499,14 @@ public final class com/facebook/react/fabric/ComponentFactory {
 	public fun <init> ()V
 }
 
-public class com/facebook/react/fabric/CoreComponentsRegistry {
-	public static fun register (Lcom/facebook/react/fabric/ComponentFactory;)Lcom/facebook/react/fabric/CoreComponentsRegistry;
+public final class com/facebook/react/fabric/CoreComponentsRegistry {
+	public static final field Companion Lcom/facebook/react/fabric/CoreComponentsRegistry$Companion;
+	public synthetic fun <init> (Lcom/facebook/react/fabric/ComponentFactory;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public static final fun register (Lcom/facebook/react/fabric/ComponentFactory;)Lcom/facebook/react/fabric/CoreComponentsRegistry;
+}
+
+public final class com/facebook/react/fabric/CoreComponentsRegistry$Companion {
+	public final fun register (Lcom/facebook/react/fabric/ComponentFactory;)Lcom/facebook/react/fabric/CoreComponentsRegistry;
 }
 
 public class com/facebook/react/fabric/DevToolsReactPerfLogger : com/facebook/react/bridge/ReactMarker$FabricMarkerListener {
