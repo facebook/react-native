@@ -298,6 +298,7 @@
 
 class RCTAppDelegateBridgelessFeatureFlags : public facebook::react::ReactNativeFeatureFlagsDefaults {
  public:
+  RCTAppDelegateBridgelessFeatureFlags(bool fabricEnabled) : _fabricEnabled(fabricEnabled) {}
   bool useModernRuntimeScheduler() override
   {
     return true;
@@ -310,12 +311,20 @@ class RCTAppDelegateBridgelessFeatureFlags : public facebook::react::ReactNative
   {
     return true;
   }
+  bool useNativeViewConfigsInBridgelessMode() override
+  {
+    return _fabricEnabled;
+  }
+
+ private:
+  bool _fabricEnabled;
 };
 
 - (void)_setUpFeatureFlags
 {
   if ([self bridgelessEnabled]) {
-    facebook::react::ReactNativeFeatureFlags::override(std::make_unique<RCTAppDelegateBridgelessFeatureFlags>());
+    facebook::react::ReactNativeFeatureFlags::override(
+        std::make_unique<RCTAppDelegateBridgelessFeatureFlags>(self.fabricEnabled));
   }
 }
 
