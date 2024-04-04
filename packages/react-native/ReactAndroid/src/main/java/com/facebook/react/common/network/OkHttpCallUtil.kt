@@ -16,13 +16,13 @@ public object OkHttpCallUtil {
 
   @JvmStatic
   public fun cancelTag(client: OkHttpClient, tag: Any) {
-    for (call in client.dispatcher().queuedCalls()) {
+    for (call in client.dispatcher.queuedCalls()) {
       if (tag == call.request().tag()) {
         call.cancel()
         return
       }
     }
-    for (call in client.dispatcher().runningCalls()) {
+    for (call in client.dispatcher.runningCalls()) {
       if (tag == call.request().tag()) {
         call.cancel()
         return
