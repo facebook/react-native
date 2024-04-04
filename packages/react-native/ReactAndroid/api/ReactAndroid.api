@@ -2636,7 +2636,7 @@ public class com/facebook/react/fabric/FabricUIManagerProviderImpl : com/faceboo
 public abstract class com/facebook/react/fabric/GuardedFrameCallback : android/view/Choreographer$FrameCallback {
 	protected fun <init> (Lcom/facebook/react/bridge/JSExceptionHandler;)V
 	protected fun <init> (Lcom/facebook/react/bridge/ReactContext;)V
-	public final fun doFrame (J)V
+	public fun doFrame (J)V
 	protected abstract fun doFrameGuarded (J)V
 }
 
