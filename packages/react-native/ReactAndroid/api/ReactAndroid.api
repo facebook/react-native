@@ -4773,11 +4773,11 @@ public abstract interface class com/facebook/react/uimanager/RootView {
 	public abstract fun onChildStartedNativeGesture (Landroid/view/View;Landroid/view/MotionEvent;)V
 }
 
-public class com/facebook/react/uimanager/RootViewManager : com/facebook/react/uimanager/ViewGroupManager {
+public final class com/facebook/react/uimanager/RootViewManager : com/facebook/react/uimanager/ViewGroupManager {
+	public static final field Companion Lcom/facebook/react/uimanager/RootViewManager$Companion;
 	public static final field REACT_CLASS Ljava/lang/String;
 	public fun <init> ()V
-	protected synthetic fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Landroid/view/View;
-	protected fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Landroid/view/ViewGroup;
+	public synthetic fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Landroid/view/View;
 	public fun getName ()Ljava/lang/String;
 }
 
@@ -4786,6 +4786,9 @@ public class com/facebook/react/uimanager/RootViewManager$$PropsSetter : com/fac
 	public fun getProperties (Ljava/util/Map;)V
 	public fun setProperty (Lcom/facebook/react/uimanager/RootViewManager;Landroid/view/ViewGroup;Ljava/lang/String;Ljava/lang/Object;)V
 	public synthetic fun setProperty (Lcom/facebook/react/uimanager/ViewManager;Landroid/view/View;Ljava/lang/String;Ljava/lang/Object;)V
+}
+
+public final class com/facebook/react/uimanager/RootViewManager$Companion {
 }
 
 public final class com/facebook/react/uimanager/RootViewUtil {
