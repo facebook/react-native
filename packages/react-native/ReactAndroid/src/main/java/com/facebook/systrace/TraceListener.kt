@@ -5,10 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.systrace;
+package com.facebook.systrace
 
 public interface TraceListener {
-  void onTraceStarted();
 
-  void onTraceStopped();
+  public fun onTraceStarted()
+
+  public fun onTraceStopped()
 }
