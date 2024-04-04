@@ -2570,9 +2570,9 @@ public class com/facebook/react/fabric/FabricComponents {
 	public static fun getFabricComponentName (Ljava/lang/String;)Ljava/lang/String;
 }
 
-public class com/facebook/react/fabric/FabricSoLoader {
-	public fun <init> ()V
-	public static fun staticInit ()V
+public final class com/facebook/react/fabric/FabricSoLoader {
+	public static final field INSTANCE Lcom/facebook/react/fabric/FabricSoLoader;
+	public static final fun staticInit ()V
 }
 
 public class com/facebook/react/fabric/FabricUIManager : com/facebook/react/bridge/LifecycleEventListener, com/facebook/react/bridge/UIManager, com/facebook/react/fabric/interop/UIBlockViewResolver {
