@@ -5393,12 +5393,12 @@ public abstract interface annotation class com/facebook/react/uimanager/common/U
 	public static final field FABRIC I
 }
 
-public class com/facebook/react/uimanager/common/ViewUtil {
+public final class com/facebook/react/uimanager/common/ViewUtil {
+	public static final field INSTANCE Lcom/facebook/react/uimanager/common/ViewUtil;
 	public static final field NO_SURFACE_ID I
-	public fun <init> ()V
-	public static fun getUIManagerType (I)I
-	public static fun getUIManagerType (II)I
-	public static fun isRootTag (I)Z
+	public static final fun getUIManagerType (I)I
+	public static final fun getUIManagerType (II)I
+	public static final fun isRootTag (I)Z
 }
 
 public abstract interface class com/facebook/react/uimanager/debug/NotThreadSafeViewHierarchyUpdateDebugListener {
