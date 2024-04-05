@@ -20,7 +20,12 @@ import {
   View,
 } from 'react-native';
 import NativeSampleTurboModule from 'react-native/Libraries/TurboModule/samples/NativeSampleTurboModule';
-import {EnumInt} from 'react-native/Libraries/TurboModule/samples/NativeSampleTurboModule';
+import {
+  IntEnum,
+  NoneEnum,
+  StrEnum,
+  DecimalEnum,
+} from 'react-native/Libraries/TurboModule/samples/NativeSampleTurboModule';
 
 type State = {|
   testResults: {
@@ -61,10 +66,10 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
     getConstants: () => NativeSampleTurboModule.getConstants(),
     voidFunc: () => NativeSampleTurboModule.voidFunc(),
     getBool: () => NativeSampleTurboModule.getBool(true),
-    getEnum: () =>
-      NativeSampleTurboModule.getEnum
-        ? NativeSampleTurboModule.getEnum(EnumInt.A)
-        : null,
+    getIntEnum: () => NativeSampleTurboModule.getIntEnum?.(IntEnum.A),
+    getStrEnum: () => NativeSampleTurboModule.getStrEnum?.(StrEnum.SB),
+    getDecimalEnum: () =>
+      NativeSampleTurboModule.getDecimalEnum?.(DecimalEnum.FA),
     getNumber: () => NativeSampleTurboModule.getNumber(99.95),
     getString: () => NativeSampleTurboModule.getString('Hello'),
     getArray: () =>

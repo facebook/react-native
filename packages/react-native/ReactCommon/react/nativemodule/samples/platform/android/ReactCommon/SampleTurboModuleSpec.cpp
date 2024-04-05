@@ -36,7 +36,7 @@ __hostFunction_NativeSampleTurboModuleSpecJSI_getBool(
 }
 
 static facebook::jsi::Value
-__hostFunction_NativeSampleTurboModuleSpecJSI_getEnum(
+__hostFunction_NativeSampleTurboModuleSpecJSI_getIntEnum(
     facebook::jsi::Runtime& rt,
     TurboModule& turboModule,
     const facebook::jsi::Value* args,
@@ -44,7 +44,44 @@ __hostFunction_NativeSampleTurboModuleSpecJSI_getEnum(
   static jmethodID cachedMethodId = nullptr;
   return static_cast<JavaTurboModule&>(turboModule)
       .invokeJavaMethod(
-          rt, NumberKind, "getEnum", "(D)D", args, count, cachedMethodId);
+          rt, NumberKind, "getIntEnum", "(I)I", args, count, cachedMethodId);
+}
+
+static facebook::jsi::Value
+__hostFunction_NativeSampleTurboModuleSpecJSI_getStrEnum(
+    facebook::jsi::Runtime& rt,
+    TurboModule& turboModule,
+    const facebook::jsi::Value* args,
+    size_t count) {
+  static jmethodID cachedMethodId = nullptr;
+  return static_cast<JavaTurboModule&>(turboModule)
+      .invokeJavaMethod(
+          rt,
+          StringKind,
+          "getStrEnum",
+          "(Ljava/lang/String;)Ljava/lang/String;",
+          args,
+          count,
+          cachedMethodId);
+}
+
+static facebook::jsi::Value
+__hostFunction_NativeSampleTurboModuleSpecJSI_getDecimalEnum(
+    facebook::jsi::Runtime& rt,
+    TurboModule& turboModule,
+    const facebook::jsi::Value* args,
+    size_t count) {
+  static jmethodID cachedMethodId = nullptr;
+
+  return static_cast<JavaTurboModule&>(turboModule)
+      .invokeJavaMethod(
+          rt,
+          NumberKind,
+          "getDecimalEnum",
+          "(D)I",
+          args,
+          count,
+          cachedMethodId);
 }
 
 static facebook::jsi::Value
@@ -302,8 +339,14 @@ NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(
   methodMap_["getBool"] =
       MethodMetadata{1, __hostFunction_NativeSampleTurboModuleSpecJSI_getBool};
 
-  methodMap_["getEnum"] =
-      MethodMetadata{1, __hostFunction_NativeSampleTurboModuleSpecJSI_getEnum};
+  methodMap_["getIntEnum"] = MethodMetadata{
+      1, __hostFunction_NativeSampleTurboModuleSpecJSI_getIntEnum};
+
+  methodMap_["getStrEnum"] = MethodMetadata{
+      1, __hostFunction_NativeSampleTurboModuleSpecJSI_getStrEnum};
+
+  methodMap_["getDecimalEnum"] = MethodMetadata{
+      1, __hostFunction_NativeSampleTurboModuleSpecJSI_getDecimalEnum};
 
   methodMap_["getNumber"] = MethodMetadata{
       1, __hostFunction_NativeSampleTurboModuleSpecJSI_getNumber};

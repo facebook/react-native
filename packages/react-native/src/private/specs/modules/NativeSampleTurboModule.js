@@ -16,9 +16,24 @@ import type {UnsafeObject} from '../../../../Libraries/Types/CodegenTypes';
 
 import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboModuleRegistry';
 
-export enum EnumInt {
+export enum IntEnum {
   A = 23,
   B = 42,
+}
+
+export enum DecimalEnum {
+  FA = 1.23456789e-6,
+  FB = 4.56,
+}
+
+export enum NoneEnum {
+  NA,
+  NB,
+}
+
+export enum StrEnum {
+  SA = 's---a',
+  SB = 's---b',
 }
 
 export interface Spec extends TurboModule {
@@ -30,7 +45,9 @@ export interface Spec extends TurboModule {
   |};
   +voidFunc: () => void;
   +getBool: (arg: boolean) => boolean;
-  +getEnum?: (arg: EnumInt) => EnumInt;
+  +getIntEnum?: (arg: IntEnum) => IntEnum;
+  +getDecimalEnum: (arg: DecimalEnum) => IntEnum;
+  +getStrEnum: (arg: StrEnum) => NoneEnum;
   +getNumber: (arg: number) => number;
   +getString: (arg: string) => string;
   +getArray: (arg: Array<any>) => Array<any>;

@@ -20,6 +20,7 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
+import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
@@ -30,6 +31,116 @@ public abstract class NativeSampleTurboModuleSpec extends ReactContextBaseJavaMo
     implements TurboModule {
   public NativeSampleTurboModuleSpec(ReactApplicationContext reactContext) {
     super(reactContext);
+  }
+
+  public enum SampleTurboModuleIntEnum {
+    A(23),
+    B(42);
+
+    static @Nullable SampleTurboModuleIntEnum fromRawValue(int rawValue) {
+      switch (String.valueOf(rawValue)) {
+        case "23":
+          return A;
+        case "42":
+          return B;
+        default:
+          return null;
+      }
+    }
+
+    private final int rawValue;
+
+    SampleTurboModuleIntEnum(int rawValue) {
+      this.rawValue = rawValue;
+    }
+
+    public int getRawValue() {
+      return rawValue;
+    }
+  }
+
+  public enum SampleTurboModuleDecimalEnum {
+    FA(1.23456789e-6),
+    FB(4.56);
+
+    static @Nullable SampleTurboModuleDecimalEnum fromRawValue(double rawValue) {
+      NumberFormat formatter = NumberFormat.getInstance();
+      formatter.setGroupingUsed(false);
+      formatter.setMaximumFractionDigits(Integer.MAX_VALUE);
+      formatter.setMaximumIntegerDigits(Integer.MAX_VALUE);
+      String strRawValue = formatter.format(rawValue);
+
+      switch (strRawValue) {
+        case "0.00000123456789":
+          return FA;
+        case "4.56":
+          return FB;
+        default:
+          return null;
+      }
+    }
+
+    private final double rawValue;
+
+    SampleTurboModuleDecimalEnum(double rawValue) {
+      this.rawValue = rawValue;
+    }
+
+    public double getRawValue() {
+      return rawValue;
+    }
+  }
+
+  public enum SampleTurboModuleNoneEnum {
+    NA("NA"),
+    NB("NB");
+
+    static @Nullable SampleTurboModuleNoneEnum fromRawValue(String rawValue) {
+      switch (rawValue) {
+        case "NA":
+          return NA;
+        case "NB":
+          return NB;
+        default:
+          return null;
+      }
+    }
+
+    private final String rawValue;
+
+    SampleTurboModuleNoneEnum(String rawValue) {
+      this.rawValue = rawValue;
+    }
+
+    public String getRawValue() {
+      return rawValue;
+    }
+  }
+
+  public enum SampleTurboModuleStrEnum {
+    SA("s---a"),
+    SB("s---b");
+
+    static @Nullable SampleTurboModuleStrEnum fromRawValue(String rawValue) {
+      switch (rawValue) {
+        case "s---a":
+          return SA;
+        case "s---b":
+          return SB;
+        default:
+          return null;
+      }
+    }
+
+    private final String rawValue;
+
+    SampleTurboModuleStrEnum(String rawValue) {
+      this.rawValue = rawValue;
+    }
+
+    public String getRawValue() {
+      return rawValue;
+    }
   }
 
   @ReactMethod(isBlockingSynchronousMethod = true)
@@ -66,7 +177,13 @@ public abstract class NativeSampleTurboModuleSpec extends ReactContextBaseJavaMo
   public abstract boolean getBool(boolean arg);
 
   @ReactMethod(isBlockingSynchronousMethod = true)
-  public abstract double getEnum(double arg);
+  public abstract int getIntEnum(int intEnum);
+
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  public abstract String getStrEnum(String strEnum);
+
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  public abstract int getDecimalEnum(double doubleEnum);
 
   @ReactMethod()
   public abstract void voidFuncThrows();

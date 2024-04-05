@@ -51,9 +51,46 @@ public class SampleTurboModule extends NativeSampleTurboModuleSpec {
   @DoNotStrip
   @SuppressWarnings("unused")
   @Override
-  public double getEnum(double arg) {
-    log("getEnum", arg, arg);
-    return arg;
+  public int getIntEnum(int intEnum) {
+    SampleTurboModuleIntEnum inputEnum = SampleTurboModuleIntEnum.fromRawValue(intEnum);
+    String inputDisplay = inputEnum.name() + " : " + inputEnum.getRawValue();
+
+    SampleTurboModuleIntEnum outputEnum = inputEnum;
+    String outputDisplay = outputEnum.name() + " : " + outputEnum.getRawValue();
+
+    log("getIntEnum", inputDisplay, outputDisplay);
+
+    return outputEnum.getRawValue();
+  }
+
+  @DoNotStrip
+  @SuppressWarnings("unused")
+  @Override
+  public String getStrEnum(String strEnum) {
+    SampleTurboModuleStrEnum inputEnum = SampleTurboModuleStrEnum.fromRawValue(strEnum);
+    String inputDisplay = inputEnum.name() + " : " + inputEnum.getRawValue();
+
+    SampleTurboModuleNoneEnum outputEnum = SampleTurboModuleNoneEnum.NB;
+    String outputDisplay = outputEnum.name() + " : " + outputEnum.getRawValue();
+
+    log("getStrEnum", inputDisplay, outputDisplay);
+
+    return outputEnum.getRawValue();
+  }
+
+  @DoNotStrip
+  @SuppressWarnings("unused")
+  @Override
+  public int getDecimalEnum(double doubleEnum) {
+    SampleTurboModuleDecimalEnum inputEnum = SampleTurboModuleDecimalEnum.fromRawValue(doubleEnum);
+    String inputDisplay = inputEnum.name() + " : " + inputEnum.getRawValue();
+
+    SampleTurboModuleIntEnum outputEnum = SampleTurboModuleIntEnum.B;
+    String outputDisplay = outputEnum.name() + " : " + outputEnum.getRawValue();
+
+    log("getDecimalEnum", inputDisplay, outputDisplay);
+
+    return outputEnum.getRawValue();
   }
 
   @Override
