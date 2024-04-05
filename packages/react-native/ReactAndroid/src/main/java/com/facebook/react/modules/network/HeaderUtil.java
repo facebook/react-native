@@ -7,12 +7,15 @@
 
 package com.facebook.react.modules.network;
 
+import com.facebook.infer.annotation.Nullsafe;
+
 /**
  * The class purpose is to weaken too strict OkHttp restriction on http headers. See:
  * https://github.com/square/okhttp/issues/2016 Auth headers might have an Authentication
  * information. It is better to get 401 from the server in this case, rather than non descriptive
  * error as 401 could be handled to invalidate the wrong token in the client code.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class HeaderUtil {
 
   public static String stripHeaderName(String name) {
