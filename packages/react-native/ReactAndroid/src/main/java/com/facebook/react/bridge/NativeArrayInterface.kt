@@ -5,9 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.bridge;
+package com.facebook.react.bridge
 
 public interface NativeArrayInterface {
-  @Override
-  String toString();
+  override fun toString(): String
 }
