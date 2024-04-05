@@ -291,3 +291,75 @@ export type MouseEvent = SyntheticEvent<
     timestamp: number,
   |}>,
 >;
+
+export type SubmitKeyEvent = $ReadOnly<{|
+  key: string,
+  altKey?: ?boolean,
+  ctrlKey?: ?boolean,
+  metaKey?: ?boolean,
+  shiftKey?: ?boolean,
+  functionKey?: ?boolean,
+|}>;
+
+export type SettingChangeEvent = SyntheticEvent<
+  $ReadOnly<{|
+    enabled: boolean,
+  |}>,
+>;
+
+export type PasteType = 'fileUrl' | 'image' | 'string';
+export type PastedTypesType = PasteType | $ReadOnlyArray<PasteType>;
+
+export type HandledKeyboardEvent = $ReadOnly<{|
+  altKey?: ?boolean,
+  ctrlKey?: ?boolean,
+  metaKey?: ?boolean,
+  shiftKey?: ?boolean,
+  code: string,
+  handledEventPhase?: number,
+|}>;
+
+export type DraggedType = 'fileUrl';
+
+export type DragEvent = SyntheticEvent<
+  $ReadOnly<{|
+    clientX: number,
+    clientY: number,
+    screenX: number,
+    screenY: number,
+    altKey: boolean,
+    ctrlKey: boolean,
+    shiftKey: boolean,
+    metaKey: boolean,
+  |}>,
+>;
+
+export type PasteEvent = SyntheticEvent<
+  $ReadOnly<{|
+    dataTransfer: {|
+      files: $ReadOnlyArray<{|
+        height: number,
+        size: number,
+        type: string,
+        uri: string,
+        width: number,
+      |}>,
+      items: $ReadOnlyArray<{|
+        kind: string,
+        type: string,
+      |}>,
+      types: $ReadOnlyArray<string>,
+    |},
+  |}>,
+>;
+
+export type KeyEvent = SyntheticEvent<
+  $ReadOnly<{
+    altKey: boolean,
+    ctrlKey: boolean,
+    metaKey: boolean,
+    shiftKey: boolean,
+    key: string,
+    code: string,
+  }>,
+>;
