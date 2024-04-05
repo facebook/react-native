@@ -5,17 +5,14 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.uimanager.events;
+package com.facebook.react.uimanager.events
 
-import android.view.MotionEvent;
-import android.view.View;
-import com.facebook.infer.annotation.Nullsafe;
-import com.facebook.react.uimanager.RootView;
-import com.facebook.react.uimanager.RootViewUtil;
+import android.view.MotionEvent
+import android.view.View
+import com.facebook.react.uimanager.RootViewUtil
 
 /** Utilities for native Views that interpret native gestures (e.g. ScrollView, ViewPager, etc.). */
-@Nullsafe(Nullsafe.Mode.LOCAL)
-public class NativeGestureUtil {
+public object NativeGestureUtil {
 
   /**
    * Helper method that should be called when a native view starts a native gesture (e.g. a native
@@ -25,11 +22,10 @@ public class NativeGestureUtil {
    * @param view the View starting the native gesture
    * @param event the MotionEvent that caused the gesture to be started
    */
-  public static void notifyNativeGestureStarted(View view, MotionEvent event) {
-    RootView rootView = RootViewUtil.getRootView(view);
-    if (rootView != null) {
-      rootView.onChildStartedNativeGesture(view, event);
-    }
+  @JvmStatic
+  public fun notifyNativeGestureStarted(view: View, event: MotionEvent) {
+    val rootView = RootViewUtil.getRootView(view)
+    rootView?.onChildStartedNativeGesture(view, event)
   }
 
   /**
@@ -40,10 +36,9 @@ public class NativeGestureUtil {
    * @param view the View ending the native gesture
    * @param event the MotionEvent that caused the gesture to be ended
    */
-  public static void notifyNativeGestureEnded(View view, MotionEvent event) {
-    RootView rootView = RootViewUtil.getRootView(view);
-    if (rootView != null) {
-      rootView.onChildEndedNativeGesture(view, event);
-    }
+  @JvmStatic
+  public fun notifyNativeGestureEnded(view: View, event: MotionEvent) {
+    val rootView = RootViewUtil.getRootView(view)
+    rootView?.onChildEndedNativeGesture(view, event)
   }
 }
