@@ -5,13 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.bridge;
+package com.facebook.react.bridge
 
-import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.proguard.annotations.DoNotStrip
 
 /** Interface to the JavaScript Systrace Module */
 @DoNotStrip
-public interface Systrace extends JavaScriptModule {
-  @DoNotStrip
-  void setEnabled(boolean enabled);
+public interface Systrace : JavaScriptModule {
+  @DoNotStrip public fun setEnabled(enabled: Boolean)
 }
