@@ -64,6 +64,10 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
               name: 'POINT_TWO',
               value: '0.2',
             },
+            {
+              name: 'SCIENTIFIC_NOTATION',
+              value: '1.23456789e-6',
+            },
           ],
         },
         StringEnum: {
