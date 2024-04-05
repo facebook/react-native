@@ -5,15 +5,14 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.bridge;
+package com.facebook.react.bridge
 
-import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.proguard.annotations.DoNotStrip
 
-/** Interface of a iterator for a {@link NativeMap}'s key set. */
+/** Interface of a iterator for a [NativeMap]'s key set. */
 @DoNotStrip
 public interface ReadableMapKeySetIterator {
+  public fun hasNextKey(): Boolean
 
-  boolean hasNextKey();
-
-  String nextKey();
+  public fun nextKey(): String
 }
