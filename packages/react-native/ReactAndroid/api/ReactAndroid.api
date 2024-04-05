@@ -3230,7 +3230,7 @@ public class com/facebook/react/modules/devloading/DevLoadingModule : com/facebo
 	public fun showMessage (Ljava/lang/String;Ljava/lang/Double;Ljava/lang/Double;)V
 }
 
-public class com/facebook/react/modules/devtoolssettings/DevToolsSettingsManagerModule : com/facebook/fbreact/specs/NativeDevToolsSettingsManagerSpec {
+public final class com/facebook/react/modules/devtoolssettings/DevToolsSettingsManagerModule : com/facebook/fbreact/specs/NativeDevToolsSettingsManagerSpec {
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
 	public fun getConsolePatchSettings ()Ljava/lang/String;
 	public fun getProfilingSettings ()Ljava/lang/String;
