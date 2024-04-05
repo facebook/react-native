@@ -73,16 +73,16 @@ class CompositeReactPackageTest {
     // Given
     val composite = CompositeReactPackage(packageNo1, packageNo2)
     val moduleNo1 = mock(NativeModule::class.java)
-    whenever(moduleNo1.name).thenReturn("ModuleNo1")
+    whenever(moduleNo1.getName()).thenReturn("ModuleNo1")
 
     // module2 and module3 will share same name, composite should return only the latter one
     val sameModuleName = "SameModuleName"
     val moduleNo2 = mock(NativeModule::class.java)
-    whenever(moduleNo2.name).thenReturn(sameModuleName)
+    whenever(moduleNo2.getName()).thenReturn(sameModuleName)
     val moduleNo3 = mock(NativeModule::class.java)
-    whenever(moduleNo3.name).thenReturn(sameModuleName)
+    whenever(moduleNo3.getName()).thenReturn(sameModuleName)
     val moduleNo4 = mock(NativeModule::class.java)
-    whenever(moduleNo4.name).thenReturn("ModuleNo4")
+    whenever(moduleNo4.getName()).thenReturn("ModuleNo4")
     whenever(packageNo1.createNativeModules(reactContext)).thenReturn(listOf(moduleNo1, moduleNo2))
     whenever(packageNo2.createNativeModules(reactContext)).thenReturn(listOf(moduleNo3, moduleNo4))
 
@@ -104,17 +104,17 @@ class CompositeReactPackageTest {
     // Given
     val composite = CompositeReactPackage(packageNo1, packageNo2)
     val managerNo1 = mock(ViewManager::class.java)
-    whenever(managerNo1.name).thenReturn("ManagerNo1")
+    whenever(managerNo1.getName()).thenReturn("ManagerNo1")
 
     // managerNo2 and managerNo3 will share same name, composite should return only the latter
     // one
     val sameModuleName = "SameModuleName"
     val managerNo2 = mock(ViewManager::class.java)
-    whenever(managerNo2.name).thenReturn(sameModuleName)
+    whenever(managerNo2.getName()).thenReturn(sameModuleName)
     val managerNo3 = mock(ViewManager::class.java)
-    whenever(managerNo3.name).thenReturn(sameModuleName)
+    whenever(managerNo3.getName()).thenReturn(sameModuleName)
     val managerNo4 = mock(ViewManager::class.java)
-    whenever(managerNo4.name).thenReturn("ManagerNo4")
+    whenever(managerNo4.getName()).thenReturn("ManagerNo4")
     whenever(packageNo1.createViewManagers(reactContext)).thenReturn(listOf(managerNo1, managerNo2))
     whenever(packageNo2.createViewManagers(reactContext)).thenReturn(listOf(managerNo3, managerNo4))
 
