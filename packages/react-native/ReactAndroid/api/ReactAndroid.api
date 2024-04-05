@@ -1512,7 +1512,7 @@ public class com/facebook/react/bridge/UiThreadUtil {
 	public static fun runOnUiThread (Ljava/lang/Runnable;J)Z
 }
 
-public class com/facebook/react/bridge/UnexpectedNativeTypeException : java/lang/RuntimeException {
+public final class com/facebook/react/bridge/UnexpectedNativeTypeException : java/lang/RuntimeException {
 	public fun <init> (Ljava/lang/String;)V
 }
 
