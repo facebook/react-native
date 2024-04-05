@@ -486,6 +486,20 @@ function generateEnumStaticConstructor({
   enumName: string,
   imports: Set<string>,
 }) {
+  if (nativeEnumMemberType === 'double') {
+    const ifCases = members
+      .map(
+        member => `if (rawValue == ${member.value}) {
+        return ${member.name};
+      }`,
+      )
+      .join(' else ');
+
+    return `${ifCases} else {
+        return null;
+      }`;
+  }
+
   const switchCases = members
     .map(member => {
       const caseValue =
@@ -520,10 +534,6 @@ function generateEnum(
       : getAreEnumMembersInteger(members)
       ? 'int'
       : 'double';
-
-  if (nativeEnumMemberType !== 'String' && nativeEnumMemberType !== 'int') {
-    return '';
-  }
 
   const values = members
     .map(member => {

@@ -379,6 +379,37 @@ public abstract class NativeSampleTurboModuleSpec extends ReactContextBaseJavaMo
     }
   }
 
+  public enum SampleTurboModuleFloatEnum {
+    POINT_ZERO(0.0),
+    POINT_ONE(0.1),
+    POINT_TWO(0.2),
+    SCIENTIFIC_NOTATION(1.23456789e-6);
+
+    static @Nullable SampleTurboModuleFloatEnum fromRawValue(double rawValue) {
+      if (rawValue == 0.0) {
+        return POINT_ZERO;
+      } else if (rawValue == 0.1) {
+        return POINT_ONE;
+      } else if (rawValue == 0.2) {
+        return POINT_TWO;
+      } else if (rawValue == 1.23456789e-6) {
+        return SCIENTIFIC_NOTATION;
+      } else {
+        return null;
+      }
+    }
+
+    private final double rawValue;
+
+    SampleTurboModuleFloatEnum(double rawValue) {
+      this.rawValue = rawValue;
+    }
+
+    public double getRawValue() {
+      return rawValue;
+    }
+  }
+
   public enum SampleTurboModuleStringEnum {
     HELLO(\\"hello\\"),
     GoodBye(\\"goodbye\\");
