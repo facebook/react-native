@@ -488,13 +488,15 @@ function generateEnumStaticConstructor({
 }) {
   const switchCases = members
     .map(member => {
-      return `case "${member.value}":
+      const caseValue =
+        nativeEnumMemberType === 'String' ? `"${member.value}"` : member.value;
+
+      return `case ${caseValue}:
           return ${member.name};`;
     })
     .join('\n        ');
 
-  return `
-      switch (rawValue) {
+  return `switch (rawValue) {
         ${switchCases}
         default:
           return null;
@@ -519,7 +521,7 @@ function generateEnum(
       ? 'int'
       : 'double';
 
-  if (nativeEnumMemberType !== 'String') {
+  if (nativeEnumMemberType !== 'String' && nativeEnumMemberType !== 'int') {
     return '';
   }
 
