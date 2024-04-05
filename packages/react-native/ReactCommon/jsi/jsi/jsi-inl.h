@@ -250,13 +250,38 @@ inline Value Array::getValueAtIndex(Runtime& runtime, size_t i) const {
   return runtime.getValueAtIndex(*this, i);
 }
 
-inline Function Function::createFromHostFunction(
+template <typename Fn>
+/* static */ inline Function Function::createFromHostFunction(
     Runtime& runtime,
     const jsi::PropNameID& name,
     unsigned int paramCount,
-    jsi::HostFunctionType func) {
+    Fn func) {
+  HostFunctionType hostFunc;
+  if constexpr (CallableAsHostFunction<Fn>) {
+    hostFunc = std::move(func);
+#ifdef __cpp_lib_span
+  } else if constexpr (CallableAsHostFunctionWithSpan<Fn>) {
+    hostFunc = [func = std::move(func)](
+                   Runtime& rt,
+                   const Value& thisVal,
+                   const Value* args,
+                   size_t count) mutable -> Value {
+      return func(rt, thisVal, {args, count});
+    };
+#endif // __cpp_lib_span
+  } else {
+    static_assert(
+        // can't use 'false' -- expression has to depend on a template parameter
+        !sizeof(Fn*),
+#ifdef __cpp_lib_span
+        "Host function type must satisfy CallableAsHostFunction or CallableAsHostFunctionWithSpan"
+#else
+        "Host function type must satisfy CallableAsHostFunction"
+#endif // __cpp_lib_span
+    );
+  }
   return runtime.createFunctionFromHostFunction(
-      name, paramCount, std::move(func));
+      name, paramCount, std::move(hostFunc));
 }
 
 inline Value Function::call(Runtime& runtime, const Value* args, size_t count)
@@ -347,6 +372,35 @@ inline Value Function::callAsConstructor(Runtime& runtime, Args&&... args)
   return callAsConstructor(
       runtime, {detail::toValue(runtime, std::forward<Args>(args))...});
 }
+
+#ifdef __cpp_lib_span
+
+template <typename Span>
+inline std::
+    enable_if_t<std::is_convertible_v<Span, std::span<const Value>>, Value>
+    Function::call(Runtime& runtime, Span&& args) const {
+  auto argsSpan = std::span<const Value>(std::forward<Span>(args));
+  return call(runtime, argsSpan.data(), argsSpan.size());
+}
+
+template <typename Span>
+inline std::
+    enable_if_t<std::is_convertible_v<Span, std::span<const Value>>, Value>
+    Function::callWithThis(Runtime& runtime, const Object& jsThis, Span&& args)
+        const {
+  auto argsSpan = std::span<const Value>(std::forward<Span>(args));
+  return callWithThis(runtime, jsThis, argsSpan.data(), argsSpan.size());
+}
+
+template <typename Span>
+inline std::
+    enable_if_t<std::is_convertible_v<Span, std::span<const Value>>, Value>
+    Function::callAsConstructor(Runtime& runtime, Span&& args) const {
+  auto argsSpan = std::span<const Value>(std::forward<Span>(args));
+  return callAsConstructor(runtime, argsSpan.data(), argsSpan.size());
+}
+
+#endif // __cpp_lib_span
 
 String BigInt::toString(Runtime& runtime, int radix) const {
   return runtime.bigintToString(*this, radix);

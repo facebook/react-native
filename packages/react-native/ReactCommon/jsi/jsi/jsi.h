@@ -13,7 +13,13 @@
 #include <functional>
 #include <memory>
 #include <string>
+#include <type_traits>
 #include <vector>
+#include <version>
+
+#if __has_include(<span>)
+#include <span>
+#endif
 
 #ifndef JSI_EXPORT
 #ifdef _MSC_VER
@@ -110,6 +116,46 @@ class JSError;
 /// or set to the global object.
 using HostFunctionType = std::function<
     Value(Runtime& rt, const Value& thisVal, const Value* args, size_t count)>;
+
+/// A function for which this is true can be registered as a function
+/// callable from JavaScript using Function::createFromHostFunction().
+/// When the function is called, args will point to the arguments, and
+/// count will indicate how many arguments are passed.  The function
+/// can return a Value to the caller, or throw an exception.  If a C++
+/// exception is thrown, a JS Error will be created and thrown into
+/// JS; if the C++ exception extends std::exception, the Error's
+/// message will be whatever what() returns. Note that it is undefined whether
+/// HostFunctions may or may not be called in strict mode; that is `thisVal`
+/// can be any value - it will not necessarily be coerced to an object or
+/// or set to the global object.
+template <typename Fn>
+inline constexpr bool CallableAsHostFunction = std::is_invocable_r_v<
+    Value /*return value*/,
+    Fn,
+    Runtime& /*rt*/,
+    const Value& /*thisVal*/,
+    const Value* /*args*/,
+    size_t /*count*/>;
+
+#ifdef __cpp_lib_span
+/// A function for which this is true can be registered as a function
+/// callable from JavaScript using Function::createFromHostFunction().
+/// When the function is called, args will point to the arguments. The function
+/// can return a Value to the caller, or throw an exception.  If a C++
+/// exception is thrown, a JS Error will be created and thrown into
+/// JS; if the C++ exception extends std::exception, the Error's
+/// message will be whatever what() returns. Note that it is undefined whether
+/// HostFunctions may or may not be called in strict mode; that is `thisVal`
+/// can be any value - it will not necessarily be coerced to an object or
+/// or set to the global object.
+template <typename Fn>
+inline constexpr bool CallableAsHostFunctionWithSpan = std::is_invocable_r_v<
+    Value /*return value*/,
+    Fn,
+    Runtime& /*rt*/,
+    const Value& /*thisVal*/,
+    std::span<const Value> /*args*/>;
+#endif // __cpp_lib_span
 
 /// An object which implements this interface can be registered as an
 /// Object with the JS runtime.
@@ -1000,11 +1046,14 @@ class JSI_EXPORT Function : public Object {
   /// \param name the name property for the function.
   /// \param paramCount the length property for the function, which
   /// may not be the number of arguments the function is passed.
-  static Function createFromHostFunction(
+  /// \param func must satisfy the CallableAsHostFunction trait, or
+  /// (where supported) the CallableAsHostFunctionWithSpan trait.
+  template <typename Fn>
+  static inline Function createFromHostFunction(
       Runtime& runtime,
       const jsi::PropNameID& name,
       unsigned int paramCount,
-      jsi::HostFunctionType func);
+      Fn func);
 
   /// Calls the function with \c count \c args.  The \c this value of the JS
   /// function will not be set by the C++ caller, similar to calling
@@ -1088,6 +1137,44 @@ class JSI_EXPORT Function : public Object {
     assert(isHostFunction(runtime));
     return runtime.getHostFunction(*this);
   }
+
+#ifdef __cpp_lib_span
+  // The std::span overloads of call[...] below are templated to prevent
+  // ambiguity with the variadic (Args...) overloads that attempt to convert
+  // each argument to a Value. They accept anything that can be implicitly
+  // converted to std::span<const Value>, including:
+  // - span<Value>
+  // - span<const Value>
+  // - span<Value, N> where N is a static extent
+  // - span<const Value, N> where N is a static extent
+  // - array<Value, N>, vector<Value> etc
+
+  /// Calls the function with a \c std::span of Value arguments.  The \c this
+  /// value of the JS function will not be set by the C++ caller, similar to
+  /// calling Function.prototype.apply(undefined, args) in JS.
+  /// \b Note: as with Function.prototype.apply, \c this may not always be
+  /// \c undefined in the function itself.  If the function is non-strict,
+  /// \c this will be set to the global object.
+  template <typename Span>
+  inline std::
+      enable_if_t<std::is_convertible_v<Span, std::span<const Value>>, Value>
+      call(Runtime& runtime, Span&& args) const;
+
+  /// Calls the function with a \c std::span of Value arguments and \c jsThis
+  /// passed as the \c this value.
+  template <typename Span>
+  inline std::
+      enable_if_t<std::is_convertible_v<Span, std::span<const Value>>, Value>
+      callWithThis(Runtime& runtime, const Object& jsThis, Span&& args) const;
+
+  /// Same as above `callAsConstructor`, except use a std::span to
+  /// supply the arguments.
+  template <typename Span>
+  inline std::
+      enable_if_t<std::is_convertible_v<Span, std::span<const Value>>, Value>
+      callAsConstructor(Runtime& runtime, Span&& args) const;
+
+#endif // __cpp_lib_span
 
  private:
   friend class Object;
