@@ -4253,12 +4253,19 @@ public final class com/facebook/react/uimanager/PointerEvents : java/lang/Enum {
 	public static final field AUTO Lcom/facebook/react/uimanager/PointerEvents;
 	public static final field BOX_NONE Lcom/facebook/react/uimanager/PointerEvents;
 	public static final field BOX_ONLY Lcom/facebook/react/uimanager/PointerEvents;
+	public static final field Companion Lcom/facebook/react/uimanager/PointerEvents$Companion;
 	public static final field NONE Lcom/facebook/react/uimanager/PointerEvents;
-	public static fun canBeTouchTarget (Lcom/facebook/react/uimanager/PointerEvents;)Z
-	public static fun canChildrenBeTouchTarget (Lcom/facebook/react/uimanager/PointerEvents;)Z
-	public static fun parsePointerEvents (Ljava/lang/String;)Lcom/facebook/react/uimanager/PointerEvents;
+	public static final fun canBeTouchTarget (Lcom/facebook/react/uimanager/PointerEvents;)Z
+	public static final fun canChildrenBeTouchTarget (Lcom/facebook/react/uimanager/PointerEvents;)Z
+	public static final fun parsePointerEvents (Ljava/lang/String;)Lcom/facebook/react/uimanager/PointerEvents;
 	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/uimanager/PointerEvents;
 	public static fun values ()[Lcom/facebook/react/uimanager/PointerEvents;
+}
+
+public final class com/facebook/react/uimanager/PointerEvents$Companion {
+	public final fun canBeTouchTarget (Lcom/facebook/react/uimanager/PointerEvents;)Z
+	public final fun canChildrenBeTouchTarget (Lcom/facebook/react/uimanager/PointerEvents;)Z
+	public final fun parsePointerEvents (Ljava/lang/String;)Lcom/facebook/react/uimanager/PointerEvents;
 }
 
 public class com/facebook/react/uimanager/ReactAccessibilityDelegate : androidx/customview/widget/ExploreByTouchHelper {
