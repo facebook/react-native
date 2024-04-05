@@ -13,8 +13,8 @@
 #import <React/RCTBackedTextInputDelegateAdapter.h>
 #import <React/RCTTextAttributes.h>
 
-//the UITextSelectionRect subclass needs to be created because the original version is not writable
-@interface CustomTextSelectionRect : UITextSelectionRect
+// subclass needs to be created as UITextSelectionRect is an abstract base class
+@interface RCTTextSelectionRect : UITextSelectionRect
 
 @property (nonatomic, assign) CGRect rect;
 @property (nonatomic, assign) NSWritingDirection writingDirection;
@@ -24,7 +24,7 @@
 
 @end
 
-@implementation CustomTextSelectionRect {
+@implementation RCTTextSelectionRect {
     CGRect _customRect;
     NSWritingDirection _customWritingDirection;
     BOOL _customContainsStart;
@@ -351,13 +351,13 @@ static UIColor *defaultPlaceholderColor(void)
   return originalRect;
 }
 
-- (NSArray *)selectionRectsForRange:(UITextRange *)range {
+- (NSArray<UITextSelectionRect *> *)selectionRectsForRange:(UITextRange *)range {
     NSArray *superRects = [super selectionRectsForRange:range];
     if(_caretYOffset != 0 && _caretHeight != 0) {
         NSMutableArray *customTextSelectionRects = [NSMutableArray array];
 
         for (UITextSelectionRect *rect in superRects) {
-            CustomTextSelectionRect *customTextRect = [[CustomTextSelectionRect alloc] init];
+            RCTTextSelectionRect *customTextRect = [[RCTTextSelectionRect alloc] init];
 
             customTextRect.rect = CGRectMake(rect.rect.origin.x, rect.rect.origin.y + _caretYOffset, rect.rect.size.width, _caretHeight);
             customTextRect.writingDirection = rect.writingDirection;
