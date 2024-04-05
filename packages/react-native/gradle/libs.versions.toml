@@ -29,7 +29,7 @@ nexus-publish = "1.3.0"
 okhttp = "4.9.2"
 okio = "2.9.0"
 robolectric = "4.9.2"
-soloader = "0.10.5"
+soloader = "0.11.0"
 xstream = "1.4.20"
 yoga-proguard-annotations = "1.19.0"
 # Native Dependencies
