@@ -24,6 +24,8 @@ target_link_libraries(react_render_uimanager
         glog
         folly_runtime
         jsi
+        react_config
+        react_cxxreact
         react_debug
         react_featureflags
         react_render_componentregistry
@@ -36,8 +38,6 @@ target_link_libraries(react_render_uimanager
         react_render_leakchecker
         react_render_runtimescheduler
         react_render_mounting
-        react_config
-        reactnative
         rrc_root
         rrc_view
         runtimeexecutor
