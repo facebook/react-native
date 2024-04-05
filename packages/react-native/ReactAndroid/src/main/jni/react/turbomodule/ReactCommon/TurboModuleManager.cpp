@@ -17,12 +17,20 @@
 #include <ReactCommon/TurboCxxModule.h>
 #include <ReactCommon/TurboModuleBinding.h>
 #include <ReactCommon/TurboModulePerfLogger.h>
+#include <glog/logging.h>
 
 #include "TurboModuleManager.h"
 
 namespace facebook::react {
 
 namespace {
+
+static void logFoundModule(const std::string& moduleName) {
+  static int count = 0;
+  count++;
+  LOG(INFO) << "RAMAN: found module " << std::to_string(count) << ") "
+            << moduleName << std::endl;
+}
 
 class JMethodDescriptor : public jni::JavaClass<JMethodDescriptor> {
  public:
@@ -163,6 +171,7 @@ TurboModuleProviderFunctionType TurboModuleManager::createTurboModuleProvider(
 
     auto cxxModule = delegate->cthis()->getTurboModule(name, jsCallInvoker);
     if (cxxModule) {
+      logFoundModule(name);
       turboModuleCache->insert({name, cxxModule});
       return cxxModule;
     }
@@ -172,6 +181,7 @@ TurboModuleProviderFunctionType TurboModuleManager::createTurboModuleProvider(
     if (it != cxxTurboModuleMapProvider.end()) {
       auto turboModule = it->second(jsCallInvoker);
       turboModuleCache->insert({name, turboModule});
+      logFoundModule(name);
       return turboModule;
     }
 
@@ -189,6 +199,7 @@ TurboModuleProviderFunctionType TurboModuleManager::createTurboModuleProvider(
       turboModuleCache->insert({name, turboModule});
 
       TurboModulePerfLogger::moduleJSRequireEndingEnd(moduleName);
+      logFoundModule(name);
       return turboModule;
     }
 
@@ -210,6 +221,7 @@ TurboModuleProviderFunctionType TurboModuleManager::createTurboModuleProvider(
       auto turboModule = delegate->cthis()->getTurboModule(name, params);
       turboModuleCache->insert({name, turboModule});
       TurboModulePerfLogger::moduleJSRequireEndingEnd(moduleName);
+      logFoundModule(name);
       return turboModule;
     }
 
