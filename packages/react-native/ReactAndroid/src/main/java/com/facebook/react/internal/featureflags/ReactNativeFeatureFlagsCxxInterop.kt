@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<490e64811f966f5e8399ed835db6b846>>
+ * @generated SignedSource<<04eded3bccdd225870f64bdc02cd44bd>>
  */
 
 /**
@@ -51,6 +51,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun inspectorEnableCxxInspectorPackagerConnection(): Boolean
 
   @DoNotStrip @JvmStatic public external fun inspectorEnableModernCDPRegistry(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun preventDoubleTextMeasure(): Boolean
 
   @DoNotStrip @JvmStatic public external fun useModernRuntimeScheduler(): Boolean
 

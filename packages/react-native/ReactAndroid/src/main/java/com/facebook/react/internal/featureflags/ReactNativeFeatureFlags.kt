@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<074ec00cfb1585c529df9391492c21e4>>
+ * @generated SignedSource<<8d924fc70cae7c3e392d76bd83ffeb19>>
  */
 
 /**
@@ -99,6 +99,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun inspectorEnableModernCDPRegistry(): Boolean = accessor.inspectorEnableModernCDPRegistry()
+
+  /**
+   * When enabled, ParagraphShadowNode will no longer call measure twice.
+   */
+  @JvmStatic
+  public fun preventDoubleTextMeasure(): Boolean = accessor.preventDoubleTextMeasure()
 
   /**
    * When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.

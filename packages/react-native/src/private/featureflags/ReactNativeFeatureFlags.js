@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1d670e4e74d58e40c3e5c9dba2ceb560>>
+ * @generated SignedSource<<75e537b11711f897eeaf532ca66e892f>>
  * @flow strict-local
  */
 
@@ -52,6 +52,7 @@ export type ReactNativeFeatureFlags = {
   enableUIConsistency: Getter<boolean>,
   inspectorEnableCxxInspectorPackagerConnection: Getter<boolean>,
   inspectorEnableModernCDPRegistry: Getter<boolean>,
+  preventDoubleTextMeasure: Getter<boolean>,
   useModernRuntimeScheduler: Getter<boolean>,
   useNativeViewConfigsInBridgelessMode: Getter<boolean>,
 }
@@ -144,6 +145,10 @@ export const inspectorEnableCxxInspectorPackagerConnection: Getter<boolean> = cr
  * Flag determining if the modern CDP backend should be enabled. This flag is global and should not be changed across React Host lifetimes.
  */
 export const inspectorEnableModernCDPRegistry: Getter<boolean> = createNativeFlagGetter('inspectorEnableModernCDPRegistry', false);
+/**
+ * When enabled, ParagraphShadowNode will no longer call measure twice.
+ */
+export const preventDoubleTextMeasure: Getter<boolean> = createNativeFlagGetter('preventDoubleTextMeasure', false);
 /**
  * When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.
  */

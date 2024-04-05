@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<05aace8ad7171ff940f014643e050ff0>>
+ * @generated SignedSource<<bc6f08d47657a6fe8c8ff0a497f29734>>
  */
 
 /**
@@ -67,6 +67,10 @@ bool ReactNativeFeatureFlags::inspectorEnableCxxInspectorPackagerConnection() {
 
 bool ReactNativeFeatureFlags::inspectorEnableModernCDPRegistry() {
   return getAccessor().inspectorEnableModernCDPRegistry();
+}
+
+bool ReactNativeFeatureFlags::preventDoubleTextMeasure() {
+  return getAccessor().preventDoubleTextMeasure();
 }
 
 bool ReactNativeFeatureFlags::useModernRuntimeScheduler() {

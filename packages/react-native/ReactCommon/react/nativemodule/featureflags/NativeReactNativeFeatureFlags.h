@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<deb1d977999fc23ef8f72630001808b2>>
+ * @generated SignedSource<<7ec4df497605a0eecd1e401838e673ad>>
  */
 
 /**
@@ -58,6 +58,8 @@ class NativeReactNativeFeatureFlags
   bool inspectorEnableCxxInspectorPackagerConnection(jsi::Runtime& runtime);
 
   bool inspectorEnableModernCDPRegistry(jsi::Runtime& runtime);
+
+  bool preventDoubleTextMeasure(jsi::Runtime& runtime);
 
   bool useModernRuntimeScheduler(jsi::Runtime& runtime);
 
