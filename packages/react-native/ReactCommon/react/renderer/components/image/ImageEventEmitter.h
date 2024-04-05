@@ -8,6 +8,7 @@
 #pragma once
 
 #include <react/renderer/components/view/ViewEventEmitter.h>
+#include <react/renderer/imagemanager/primitives.h>
 
 namespace facebook::react {
 
@@ -16,10 +17,10 @@ class ImageEventEmitter : public ViewEventEmitter {
   using ViewEventEmitter::ViewEventEmitter;
 
   void onLoadStart() const;
-  void onLoad() const;
+  void onLoad(const ImageSource &source) const;
   void onLoadEnd() const;
-  void onProgress(double) const;
-  void onError() const;
+  void onProgress(double, int64_t, int64_t) const;
+  void onError(const ImageErrorInfo &error) const;
   void onPartialLoad() const;
 };
 
