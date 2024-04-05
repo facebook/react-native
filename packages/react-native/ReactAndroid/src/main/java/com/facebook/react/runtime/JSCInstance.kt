@@ -9,14 +9,16 @@ package com.facebook.react.runtime
 
 import com.facebook.jni.HybridData
 import com.facebook.jni.annotations.DoNotStrip
+import com.facebook.jni.annotations.DoNotStripAny
 import com.facebook.soloader.SoLoader
 
-public class JSCInstance constructor() : JSRuntimeFactory(initHybrid()) {
+@DoNotStripAny
+public class JSCInstance : JSRuntimeFactory(initHybrid()) {
   private companion object {
     init {
       SoLoader.loadLibrary("jscinstance")
     }
 
-    @DoNotStrip protected external fun initHybrid(): HybridData
+    @DoNotStrip @JvmStatic private external fun initHybrid(): HybridData
   }
 }
