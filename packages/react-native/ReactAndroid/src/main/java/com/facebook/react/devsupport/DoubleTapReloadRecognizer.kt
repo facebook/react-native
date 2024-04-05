@@ -20,7 +20,7 @@ import android.widget.EditText
 public class DoubleTapReloadRecognizer {
   private var doRefresh = false
 
-  public fun didDoubleTapR(keyCode: Int, view: View): Boolean {
+  public fun didDoubleTapR(keyCode: Int, view: View?): Boolean {
     if (keyCode == KeyEvent.KEYCODE_R && view !is EditText) {
       if (doRefresh) {
         doRefresh = false
