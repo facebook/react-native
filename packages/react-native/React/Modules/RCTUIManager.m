@@ -9,7 +9,6 @@
 
 #import <AVFoundation/AVFoundation.h>
 #import <React/RCTSurfacePresenterStub.h>
-#import <react/featureflags/ReactNativeFeatureFlags.h>
 
 #import "RCTAssert.h"
 #import "RCTBridge+Private.h"
@@ -1151,10 +1150,10 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand
     return;
   }
 
-  __weak __typeof(self) weakSelf = self;
+  __weak typeof(self) weakSelf = self;
 
   void (^mountingBlock)(void) = ^{
-    __typeof(self) strongSelf = weakSelf;
+    typeof(self) strongSelf = weakSelf;
 
     @try {
       for (RCTViewManagerUIBlock block in previousPendingUIBlocks) {
@@ -1453,7 +1452,7 @@ NSMutableDictionary<NSString *, id> *RCTModuleConstantsForDestructuredComponent(
   // lazifyViewManagerConfig function in JS. This fuction uses NativeModules global object that is not available in the
   // New Architecture. To make native view configs work in the New Architecture we will populate these properties in
   // native.
-  if (facebook::react::ReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode()) {
+  if (RCTGetUseNativeViewConfigsInBridgelessMode()) {
     moduleConstants[@"Commands"] = viewConfig[@"Commands"];
     moduleConstants[@"Constants"] = viewConfig[@"Constants"];
   }
