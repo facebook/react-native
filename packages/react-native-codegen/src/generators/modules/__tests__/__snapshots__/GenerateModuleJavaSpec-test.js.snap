@@ -339,6 +339,7 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
+import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
@@ -377,6 +378,44 @@ public abstract class NativeSampleTurboModuleSpec extends ReactContextBaseJavaMo
     }
 
     public int getRawValue() {
+      return rawValue;
+    }
+  }
+
+  public enum SampleTurboModuleFloatEnum {
+    POINT_ZERO(0.0),
+    POINT_ONE(0.1),
+    POINT_TWO(0.2),
+    SCIENTIFIC_NOTATION(1232456e-9);
+
+    static @Nullable SampleTurboModuleFloatEnum fromRawValue(double rawValue) {
+      NumberFormat formatter = NumberFormat.getInstance();
+      formatter.setGroupingUsed(false);
+      formatter.setMaximumFractionDigits(Integer.MAX_VALUE);
+      formatter.setMaximumIntegerDigits(Integer.MAX_VALUE);
+      String strRawValue = formatter.format(rawValue);
+
+      switch (strRawValue) {
+        case \\"0\\":
+          return POINT_ZERO;
+        case \\"0.1\\":
+          return POINT_ONE;
+        case \\"0.2\\":
+          return POINT_TWO;
+        case \\"0.001232456\\":
+          return SCIENTIFIC_NOTATION;
+        default:
+          return null;
+      }
+    }
+
+    private final double rawValue;
+
+    SampleTurboModuleFloatEnum(double rawValue) {
+      this.rawValue = rawValue;
+    }
+
+    public double getRawValue() {
       return rawValue;
     }
   }

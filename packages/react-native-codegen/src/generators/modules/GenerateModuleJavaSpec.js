@@ -505,10 +505,23 @@ const generateEnumStaticConstructor = ({
     })
     .join('\n        ');
 
-  const formatter =
-    nativeEnumMemberType === 'String'
-      ? 'String strRawValue = rawValue;'
-      : 'String strRawValue = String.valueOf(rawValue);';
+  const formatter = (() => {
+    if (nativeEnumMemberType === 'String') {
+      return 'String strRawValue = rawValue;';
+    }
+
+    if (nativeEnumMemberType === 'int') {
+      return 'String strRawValue = String.valueOf(rawValue);';
+    }
+
+    imports.add('java.text.NumberFormat');
+
+    return `NumberFormat formatter = NumberFormat.getInstance();
+      formatter.setGroupingUsed(false);
+      formatter.setMaximumFractionDigits(Integer.MAX_VALUE);
+      formatter.setMaximumIntegerDigits(Integer.MAX_VALUE);
+      String strRawValue = formatter.format(rawValue);`;
+  })();
 
   return `${formatter}
 
@@ -536,10 +549,6 @@ function generateEnum(
       : getAreEnumMembersInteger(members)
       ? 'int'
       : 'double';
-
-  if (nativeEnumMemberType !== 'String' && nativeEnumMemberType !== 'int') {
-    return '';
-  }
 
   const values = members
     .map(member => {
