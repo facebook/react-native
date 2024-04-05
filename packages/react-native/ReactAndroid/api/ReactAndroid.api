@@ -5522,10 +5522,10 @@ public class com/facebook/react/uimanager/events/FabricEventDispatcher : com/fac
 	public fun unregisterEventEmitter (I)V
 }
 
-public class com/facebook/react/uimanager/events/NativeGestureUtil {
-	public fun <init> ()V
-	public static fun notifyNativeGestureEnded (Landroid/view/View;Landroid/view/MotionEvent;)V
-	public static fun notifyNativeGestureStarted (Landroid/view/View;Landroid/view/MotionEvent;)V
+public final class com/facebook/react/uimanager/events/NativeGestureUtil {
+	public static final field INSTANCE Lcom/facebook/react/uimanager/events/NativeGestureUtil;
+	public static final fun notifyNativeGestureEnded (Landroid/view/View;Landroid/view/MotionEvent;)V
+	public static final fun notifyNativeGestureStarted (Landroid/view/View;Landroid/view/MotionEvent;)V
 }
 
 public class com/facebook/react/uimanager/events/PointerEvent : com/facebook/react/uimanager/events/Event {
