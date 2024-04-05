@@ -6255,32 +6255,52 @@ public class com/facebook/react/views/modal/ReactModalHostManager$$PropsSetter :
 	public fun setProperty (Lcom/facebook/react/views/modal/ReactModalHostManager;Lcom/facebook/react/views/modal/ReactModalHostView;Ljava/lang/String;Ljava/lang/Object;)V
 }
 
-public class com/facebook/react/views/modal/ReactModalHostView : android/view/ViewGroup, com/facebook/react/bridge/LifecycleEventListener {
+public final class com/facebook/react/views/modal/ReactModalHostView : android/view/ViewGroup, com/facebook/react/bridge/LifecycleEventListener {
 	public fun <init> (Lcom/facebook/react/uimanager/ThemedReactContext;)V
 	public fun addChildrenForAccessibility (Ljava/util/ArrayList;)V
 	public fun addView (Landroid/view/View;I)V
 	public fun dispatchPopulateAccessibilityEvent (Landroid/view/accessibility/AccessibilityEvent;)Z
 	public fun dispatchProvideStructure (Landroid/view/ViewStructure;)V
+	public final fun getAnimationType ()Ljava/lang/String;
 	public fun getChildAt (I)Landroid/view/View;
 	public fun getChildCount ()I
-	public fun getStateWrapper ()Lcom/facebook/react/uimanager/StateWrapper;
-	protected fun onDetachedFromWindow ()V
-	public fun onDropInstance ()V
+	public final fun getEventDispatcher ()Lcom/facebook/react/uimanager/events/EventDispatcher;
+	public final fun getHardwareAccelerated ()Z
+	public final fun getOnRequestCloseListener ()Lcom/facebook/react/views/modal/ReactModalHostView$OnRequestCloseListener;
+	public final fun getOnShowListener ()Landroid/content/DialogInterface$OnShowListener;
+	public final fun getStateWrapper ()Lcom/facebook/react/uimanager/StateWrapper;
+	public final fun getStatusBarTranslucent ()Z
+	public final fun getTransparent ()Z
+	public final fun onDropInstance ()V
 	public fun onHostDestroy ()V
 	public fun onHostPause ()V
 	public fun onHostResume ()V
-	protected fun onLayout (ZIIII)V
 	public fun removeView (Landroid/view/View;)V
 	public fun removeViewAt (I)V
-	protected fun setAnimationType (Ljava/lang/String;)V
-	protected fun setHardwareAccelerated (Z)V
-	protected fun setOnRequestCloseListener (Lcom/facebook/react/views/modal/ReactModalHostView$OnRequestCloseListener;)V
-	protected fun setOnShowListener (Landroid/content/DialogInterface$OnShowListener;)V
-	public fun setStateWrapper (Lcom/facebook/react/uimanager/StateWrapper;)V
-	protected fun setStatusBarTranslucent (Z)V
-	protected fun setTransparent (Z)V
-	protected fun showOrUpdate ()V
-	public fun updateState (II)V
+	public final fun setAnimationType (Ljava/lang/String;)V
+	public final fun setEventDispatcher (Lcom/facebook/react/uimanager/events/EventDispatcher;)V
+	public final fun setHardwareAccelerated (Z)V
+	public final fun setOnRequestCloseListener (Lcom/facebook/react/views/modal/ReactModalHostView$OnRequestCloseListener;)V
+	public final fun setOnShowListener (Landroid/content/DialogInterface$OnShowListener;)V
+	public final fun setStateWrapper (Lcom/facebook/react/uimanager/StateWrapper;)V
+	public final fun setStatusBarTranslucent (Z)V
+	public final fun setTransparent (Z)V
+	public final fun showOrUpdate ()V
+	public final fun updateState (II)V
+}
+
+public final class com/facebook/react/views/modal/ReactModalHostView$DialogRootViewGroup : com/facebook/react/views/view/ReactViewGroup, com/facebook/react/uimanager/RootView {
+	public fun <init> (Lcom/facebook/react/views/modal/ReactModalHostView;Landroid/content/Context;)V
+	public fun addView (Landroid/view/View;ILandroid/view/ViewGroup$LayoutParams;)V
+	public fun handleException (Ljava/lang/Throwable;)V
+	public fun onChildEndedNativeGesture (Landroid/view/View;Landroid/view/MotionEvent;)V
+	public fun onChildStartedNativeGesture (Landroid/view/View;Landroid/view/MotionEvent;)V
+	public fun onHoverEvent (Landroid/view/MotionEvent;)Z
+	public fun onInterceptHoverEvent (Landroid/view/MotionEvent;)Z
+	public fun onInterceptTouchEvent (Landroid/view/MotionEvent;)Z
+	public fun onTouchEvent (Landroid/view/MotionEvent;)Z
+	public fun requestDisallowInterceptTouchEvent (Z)V
+	public final fun updateState (II)V
 }
 
 public abstract interface class com/facebook/react/views/modal/ReactModalHostView$OnRequestCloseListener {
