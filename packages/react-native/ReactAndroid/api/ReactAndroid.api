@@ -3616,7 +3616,7 @@ public abstract interface class com/facebook/react/packagerconnection/Responder 
 public abstract class com/facebook/react/perflogger/NativeModulePerfLogger {
 	protected fun <init> ()V
 	protected abstract fun initHybrid ()Lcom/facebook/jni/HybridData;
-	protected fun maybeLoadOtherSoLibraries ()V
+	protected final fun maybeLoadOtherSoLibraries ()V
 	public abstract fun moduleCreateCacheHit (Ljava/lang/String;I)V
 	public abstract fun moduleCreateConstructEnd (Ljava/lang/String;I)V
 	public abstract fun moduleCreateConstructStart (Ljava/lang/String;I)V
