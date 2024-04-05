@@ -204,6 +204,7 @@ add_executable(reactnative_unittest
   hermes-engine::libhermes
   hermes_inspector_modern
   jsi
+  react_cxxreact
   react_codegen_rncore
   react_debug
   react_render_animations
@@ -217,7 +218,6 @@ add_executable(reactnative_unittest
   react_render_textlayoutmanager
   react_render_uimanager
   react_utils
-  reactnative
   rrc_modal
   rrc_scrollview
   rrc_text
