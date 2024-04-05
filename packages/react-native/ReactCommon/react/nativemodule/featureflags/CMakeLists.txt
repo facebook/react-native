@@ -20,6 +20,7 @@ add_library(react_nativemodule_featureflags SHARED ${react_nativemodule_featuref
 target_include_directories(react_nativemodule_featureflags PUBLIC ${REACT_COMMON_DIR})
 
 target_link_libraries(react_nativemodule_featureflags
-        react_featureflags
         react_codegen_rncore
-        reactnative)
+        react_cxxreact
+        react_featureflags
+)

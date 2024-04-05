@@ -21,4 +21,5 @@ target_include_directories(react_nativemodule_microtasks PUBLIC ${REACT_COMMON_D
 
 target_link_libraries(react_nativemodule_microtasks
         react_codegen_rncore
-        reactnative)
+        react_cxxreact
+)

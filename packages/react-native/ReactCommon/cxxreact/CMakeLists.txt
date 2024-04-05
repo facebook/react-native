@@ -13,12 +13,12 @@ add_compile_options(
         -Wno-unused-lambda-capture
         -DLOG_TAG=\"ReactNative\")
 
-file(GLOB reactnative_SRC CONFIGURE_DEPENDS *.cpp)
-add_library(reactnative STATIC ${reactnative_SRC})
+file(GLOB react_cxxreact_SRC CONFIGURE_DEPENDS *.cpp)
+add_library(react_cxxreact STATIC ${react_cxxreact_SRC})
 
-target_include_directories(reactnative PUBLIC ${REACT_COMMON_DIR})
+target_include_directories(react_cxxreact PUBLIC ${REACT_COMMON_DIR})
 
-target_link_libraries(reactnative
+target_link_libraries(react_cxxreact
         boost
         callinvoker
         folly_runtime
