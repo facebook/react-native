@@ -488,13 +488,31 @@ const generateEnumStaticConstructor = ({
 }) => {
   const switchCases = members
     .map(member => {
-      return `case "${member.value}":
+      if (nativeEnumMemberType === 'String') {
+        return `case "${member.value}":
+          return ${member.name};`;
+      }
+
+      const numericStrMemberValue = Number(member.value).toLocaleString(
+        'en-US',
+        {
+          useGrouping: false,
+          maximumFractionDigits: 20, // max possible
+        },
+      );
+      return `case "${numericStrMemberValue}":
           return ${member.name};`;
     })
     .join('\n        ');
 
-  return `
-      switch (rawValue) {
+  const formatter =
+    nativeEnumMemberType === 'String'
+      ? 'String strRawValue = rawValue;'
+      : 'String strRawValue = String.valueOf(rawValue);';
+
+  return `${formatter}
+
+      switch (strRawValue) {
         ${switchCases}
         default:
           return null;
@@ -519,7 +537,7 @@ function generateEnum(
       ? 'int'
       : 'double';
 
-  if (nativeEnumMemberType !== 'String') {
+  if (nativeEnumMemberType !== 'String' && nativeEnumMemberType !== 'int') {
     return '';
   }
 
