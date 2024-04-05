@@ -5,13 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.bridge;
+package com.facebook.react.bridge
 
-import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.proguard.annotations.DoNotStrip
 
-/** Defines the type of an object stored in a {@link ReadableArray} or {@link ReadableMap}. */
+/** Defines the type of an object stored in a [ReadableArray] or [ReadableMap]. */
 @DoNotStrip
-public enum ReadableType {
+public enum class ReadableType {
   Null,
   Boolean,
   Number,
