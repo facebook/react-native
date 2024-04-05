@@ -38,7 +38,6 @@
 #import <cxxreact/ReactMarker.h>
 #import <jsinspector-modern/ReactCdp.h>
 #import <jsireact/JSIExecutor.h>
-#import <react/featureflags/ReactNativeFeatureFlags.h>
 #import <react/runtime/BridgelessJSCallInvoker.h>
 #import <react/utils/ContextContainer.h>
 #import <react/utils/ManagedObjectWrapper.h>
@@ -350,7 +349,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
     });
     RCTInstallNativeComponentRegistryBinding(runtime);
 
-    if (ReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode()) {
+    if (RCTGetUseNativeViewConfigsInBridgelessMode()) {
       installLegacyUIManagerConstantsProviderBinding(runtime);
     }
 
