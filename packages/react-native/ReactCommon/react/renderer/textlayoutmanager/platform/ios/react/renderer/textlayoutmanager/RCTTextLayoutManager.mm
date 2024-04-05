@@ -37,7 +37,6 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
 - (TextMeasurement)measureNSAttributedString:(NSAttributedString *)attributedString
                          paragraphAttributes:(ParagraphAttributes)paragraphAttributes
                            layoutConstraints:(LayoutConstraints)layoutConstraints
-                                 textStorage:(NSTextStorage *_Nullable)textStorage
 {
   if (attributedString.length == 0) {
     // This is not really an optimization because that should be checked much earlier on the call stack.
@@ -48,11 +47,9 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
 
   CGSize maximumSize = CGSize{layoutConstraints.maximumSize.width, CGFLOAT_MAX};
 
-  if (!textStorage) {
-    textStorage = [self _textStorageForNSAttributesString:attributedString
-                                      paragraphAttributes:paragraphAttributes
-                                                     size:maximumSize];
-  }
+  NSTextStorage *textStorage = [self _textStorageAndLayoutManagerWithAttributesString:attributedString
+                                                                  paragraphAttributes:paragraphAttributes
+                                                                                 size:maximumSize];
 
   return [self _measureTextStorage:textStorage];
 }
@@ -60,51 +57,23 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
 - (TextMeasurement)measureAttributedString:(AttributedString)attributedString
                        paragraphAttributes:(ParagraphAttributes)paragraphAttributes
                          layoutConstraints:(LayoutConstraints)layoutConstraints
-                               textStorage:(NSTextStorage *_Nullable)textStorage
 {
-  if (textStorage) {
-    return [self _measureTextStorage:textStorage];
-  } else {
-    return [self measureNSAttributedString:[self _nsAttributedStringFromAttributedString:attributedString]
-                       paragraphAttributes:paragraphAttributes
-                         layoutConstraints:layoutConstraints
-                               textStorage:nil];
-  }
+  return [self measureNSAttributedString:[self _nsAttributedStringFromAttributedString:attributedString]
+                     paragraphAttributes:paragraphAttributes
+                       layoutConstraints:layoutConstraints];
 }
 
 - (void)drawAttributedString:(AttributedString)attributedString
          paragraphAttributes:(ParagraphAttributes)paragraphAttributes
                        frame:(CGRect)frame
-                 textStorage:(NSTextStorage *_Nullable)textStorage
            drawHighlightPath:(void (^_Nullable)(UIBezierPath *highlightPath))block
 {
-  BOOL createdStorageForFrame = NO;
-
-  if (!textStorage) {
-    textStorage = [self textStorageForAttributesString:attributedString
+  NSTextStorage *textStorage = [self
+      _textStorageAndLayoutManagerWithAttributesString:[self _nsAttributedStringFromAttributedString:attributedString]
                                    paragraphAttributes:paragraphAttributes
                                                   size:frame.size];
-    createdStorageForFrame = YES;
-  }
-
   NSLayoutManager *layoutManager = textStorage.layoutManagers.firstObject;
   NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
-  CGPoint origin = frame.origin;
-
-  if (!createdStorageForFrame) {
-    CGRect rect = [layoutManager usedRectForTextContainer:textContainer];
-    static auto threshold = 1.0 / RCTScreenScale() + 0.01; // Size of a pixel plus some small threshold.
-
-    // `rect`'s width is stored in double precesion.
-    // `frame`'s width is also in double precesion but was stored as float in Yoga previously, precesion was lost.
-    if (std::abs(RCTCeilPixelValue(rect.size.width) - frame.size.width) < threshold) {
-      // `textStorage` passed to this method was used to calculate size of frame. If that's the case, it's
-      // width is the same as frame's width. Origin must be adjusted, otherwise glyhps will be painted in wrong
-      // place.
-      // We could create new `NSTextStorage` for the specific frame, but that is expensive.
-      origin.x -= RCTCeilPixelValue(rect.origin.x);
-    }
-  }
 
 #if TARGET_OS_MACCATALYST
   CGContextRef context = UIGraphicsGetCurrentContext();
@@ -113,8 +82,8 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
 #endif
 
   NSRange glyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
-  [layoutManager drawBackgroundForGlyphRange:glyphRange atPoint:origin];
-  [layoutManager drawGlyphsForGlyphRange:glyphRange atPoint:origin];
+  [layoutManager drawBackgroundForGlyphRange:glyphRange atPoint:frame.origin];
+  [layoutManager drawGlyphsForGlyphRange:glyphRange atPoint:frame.origin];
 
 #if TARGET_OS_MACCATALYST
   CGContextRestoreGState(context);
@@ -153,13 +122,14 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
   }
 }
 
-- (LinesMeasurements)getLinesForAttributedString:(AttributedString)attributedString
-                             paragraphAttributes:(ParagraphAttributes)paragraphAttributes
+- (LinesMeasurements)getLinesForAttributedString:(facebook::react::AttributedString)attributedString
+                             paragraphAttributes:(facebook::react::ParagraphAttributes)paragraphAttributes
                                             size:(CGSize)size
 {
-  NSTextStorage *textStorage = [self textStorageForAttributesString:attributedString
-                                                paragraphAttributes:paragraphAttributes
-                                                               size:size];
+  NSTextStorage *textStorage = [self
+      _textStorageAndLayoutManagerWithAttributesString:[self _nsAttributedStringFromAttributedString:attributedString]
+                                   paragraphAttributes:paragraphAttributes
+                                                  size:size];
   NSLayoutManager *layoutManager = textStorage.layoutManagers.firstObject;
   NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
 
@@ -197,13 +167,33 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
   return paragraphLines;
 }
 
-- (NSTextStorage *)textStorageForAttributesString:(AttributedString)attributedString
-                              paragraphAttributes:(ParagraphAttributes)paragraphAttributes
-                                             size:(CGSize)size
+- (NSTextStorage *)_textStorageAndLayoutManagerWithAttributesString:(NSAttributedString *)attributedString
+                                                paragraphAttributes:(ParagraphAttributes)paragraphAttributes
+                                                               size:(CGSize)size
 {
-  return [self _textStorageForNSAttributesString:[self _nsAttributedStringFromAttributedString:attributedString]
-                             paragraphAttributes:paragraphAttributes
-                                            size:size];
+  NSTextContainer *textContainer = [[NSTextContainer alloc] initWithSize:size];
+
+  textContainer.lineFragmentPadding = 0.0; // Note, the default value is 5.
+  textContainer.lineBreakMode = paragraphAttributes.maximumNumberOfLines > 0
+      ? RCTNSLineBreakModeFromEllipsizeMode(paragraphAttributes.ellipsizeMode)
+      : NSLineBreakByClipping;
+  textContainer.maximumNumberOfLines = paragraphAttributes.maximumNumberOfLines;
+
+  NSLayoutManager *layoutManager = [NSLayoutManager new];
+  layoutManager.usesFontLeading = NO;
+  [layoutManager addTextContainer:textContainer];
+
+  NSTextStorage *textStorage = [[NSTextStorage alloc] initWithAttributedString:attributedString];
+
+  [textStorage addLayoutManager:layoutManager];
+
+  if (paragraphAttributes.adjustsFontSizeToFit) {
+    CGFloat minimumFontSize = !isnan(paragraphAttributes.minimumFontSize) ? paragraphAttributes.minimumFontSize : 4.0;
+    CGFloat maximumFontSize = !isnan(paragraphAttributes.maximumFontSize) ? paragraphAttributes.maximumFontSize : 96.0;
+    [textStorage scaleFontSizeToFitSize:size minimumFontSize:minimumFontSize maximumFontSize:maximumFontSize];
+  }
+
+  return textStorage;
 }
 
 - (SharedEventEmitter)getEventEmitterWithAttributeString:(AttributedString)attributedString
@@ -211,9 +201,10 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
                                                    frame:(CGRect)frame
                                                  atPoint:(CGPoint)point
 {
-  NSTextStorage *textStorage = [self textStorageForAttributesString:attributedString
-                                                paragraphAttributes:paragraphAttributes
-                                                               size:frame.size];
+  NSTextStorage *textStorage = [self
+      _textStorageAndLayoutManagerWithAttributesString:[self _nsAttributedStringFromAttributedString:attributedString]
+                                   paragraphAttributes:paragraphAttributes
+                                                  size:frame.size];
   NSLayoutManager *layoutManager = textStorage.layoutManagers.firstObject;
   NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
 
@@ -242,9 +233,10 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
                               frame:(CGRect)frame
                          usingBlock:(RCTTextLayoutFragmentEnumerationBlock)block
 {
-  NSTextStorage *textStorage = [self textStorageForAttributesString:attributedString
-                                                paragraphAttributes:paragraphAttributes
-                                                               size:frame.size];
+  NSTextStorage *textStorage = [self
+      _textStorageAndLayoutManagerWithAttributesString:[self _nsAttributedStringFromAttributedString:attributedString]
+                                   paragraphAttributes:paragraphAttributes
+                                                  size:frame.size];
 
   NSLayoutManager *layoutManager = textStorage.layoutManagers.firstObject;
   NSTextContainer *textContainer = layoutManager.textContainers.firstObject;

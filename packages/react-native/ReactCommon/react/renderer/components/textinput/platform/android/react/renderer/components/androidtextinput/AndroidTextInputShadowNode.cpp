@@ -191,8 +191,7 @@ Size AndroidTextInputShadowNode::measureContent(
           AttributedStringBox{attributedString},
           getConcreteProps().paragraphAttributes,
           textLayoutContext,
-          layoutConstraints,
-          nullptr)
+          layoutConstraints)
       .size;
 }
 

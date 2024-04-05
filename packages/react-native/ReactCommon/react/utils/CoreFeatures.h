@@ -19,12 +19,6 @@ class CoreFeatures {
   // Specifies whether the iterator-style prop parsing is enabled.
   static bool enablePropIteratorSetter;
 
-  // Yoga might measure multiple times the same Text with the same constraints
-  // This flag enables a caching mechanism to avoid subsequents measurements
-  // of the same Text with the same constrainst.
-  // On iOS, we also cache NSTextStorage.
-  static bool cacheLastTextMeasurement;
-
   // When enabled, RCTScrollViewComponentView will trigger ShadowTree state
   // updates for all changes in scroll position.
   static bool enableGranularScrollViewStateUpdatesIOS;
