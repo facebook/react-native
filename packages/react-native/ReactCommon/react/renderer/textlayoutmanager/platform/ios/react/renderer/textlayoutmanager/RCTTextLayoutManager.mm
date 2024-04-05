@@ -54,7 +54,7 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
   return [self _measureTextStorage:textStorage];
 }
 
-- (TextMeasurement)measureAttributedString:(AttributedString)attributedString
+- (TextMeasurement)measureAttributedString:(const AttributedString &)attributedString
                        paragraphAttributes:(ParagraphAttributes)paragraphAttributes
                          layoutConstraints:(LayoutConstraints)layoutConstraints
 {
@@ -63,7 +63,7 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
                        layoutConstraints:layoutConstraints];
 }
 
-- (void)drawAttributedString:(AttributedString)attributedString
+- (void)drawAttributedString:(const AttributedString &)attributedString
          paragraphAttributes:(ParagraphAttributes)paragraphAttributes
                        frame:(CGRect)frame
            drawHighlightPath:(void (^_Nullable)(UIBezierPath *highlightPath))block
@@ -196,7 +196,7 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
   return textStorage;
 }
 
-- (SharedEventEmitter)getEventEmitterWithAttributeString:(AttributedString)attributedString
+- (SharedEventEmitter)getEventEmitterWithAttributeString:(const AttributedString &)attributedString
                                      paragraphAttributes:(ParagraphAttributes)paragraphAttributes
                                                    frame:(CGRect)frame
                                                  atPoint:(CGPoint)point
@@ -227,7 +227,7 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
   return nil;
 }
 
-- (void)getRectWithAttributedString:(AttributedString)attributedString
+- (void)getRectWithAttributedString:(const AttributedString &)attributedString
                 paragraphAttributes:(ParagraphAttributes)paragraphAttributes
                  enumerateAttribute:(NSString *)enumerateAttribute
                               frame:(CGRect)frame
@@ -298,9 +298,9 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
   return textStorage;
 }
 
-- (NSAttributedString *)_nsAttributedStringFromAttributedString:(AttributedString)attributedString
+- (NSAttributedString *)_nsAttributedStringFromAttributedString:(const AttributedString &)attributedString
 {
-  auto sharedNSAttributedString = _cache.get(attributedString, [](AttributedString attributedString) {
+  auto sharedNSAttributedString = _cache.get(attributedString, [](const AttributedString &attributedString) {
     return wrapManagedObject(RCTNSAttributedStringFromAttributedString(attributedString));
   });
 

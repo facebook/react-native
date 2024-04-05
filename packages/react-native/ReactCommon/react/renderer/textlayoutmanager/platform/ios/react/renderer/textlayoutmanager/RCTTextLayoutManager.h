@@ -26,7 +26,7 @@ using RCTTextLayoutFragmentEnumerationBlock =
  */
 @interface RCTTextLayoutManager : NSObject
 
-- (facebook::react::TextMeasurement)measureAttributedString:(facebook::react::AttributedString)attributedString
+- (facebook::react::TextMeasurement)measureAttributedString:(const facebook::react::AttributedString &)attributedString
                                         paragraphAttributes:(facebook::react::ParagraphAttributes)paragraphAttributes
                                           layoutConstraints:(facebook::react::LayoutConstraints)layoutConstraints;
 
@@ -34,7 +34,7 @@ using RCTTextLayoutFragmentEnumerationBlock =
                                           paragraphAttributes:(facebook::react::ParagraphAttributes)paragraphAttributes
                                             layoutConstraints:(facebook::react::LayoutConstraints)layoutConstraints;
 
-- (void)drawAttributedString:(facebook::react::AttributedString)attributedString
+- (void)drawAttributedString:(const facebook::react::AttributedString &)attributedString
          paragraphAttributes:(facebook::react::ParagraphAttributes)paragraphAttributes
                        frame:(CGRect)frame
            drawHighlightPath:(void (^_Nullable)(UIBezierPath *highlightPath))block;
@@ -45,12 +45,12 @@ using RCTTextLayoutFragmentEnumerationBlock =
                                                              size:(CGSize)size;
 
 - (facebook::react::SharedEventEmitter)
-    getEventEmitterWithAttributeString:(facebook::react::AttributedString)attributedString
+    getEventEmitterWithAttributeString:(const facebook::react::AttributedString &)attributedString
                    paragraphAttributes:(facebook::react::ParagraphAttributes)paragraphAttributes
                                  frame:(CGRect)frame
                                atPoint:(CGPoint)point;
 
-- (void)getRectWithAttributedString:(facebook::react::AttributedString)attributedString
+- (void)getRectWithAttributedString:(const facebook::react::AttributedString &)attributedString
                 paragraphAttributes:(facebook::react::ParagraphAttributes)paragraphAttributes
                  enumerateAttribute:(NSString *)enumerateAttribute
                               frame:(CGRect)frame

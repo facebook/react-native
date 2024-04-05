@@ -75,12 +75,12 @@ class TextLayoutManager {
 
  private:
   TextMeasurement doMeasure(
-      AttributedString attributedString,
+      const AttributedString& attributedString,
       const ParagraphAttributes& paragraphAttributes,
       LayoutConstraints layoutConstraints) const;
 
   TextMeasurement doMeasureMapBuffer(
-      AttributedString attributedString,
+      const AttributedString& attributedString,
       const ParagraphAttributes& paragraphAttributes,
       LayoutConstraints layoutConstraints) const;
 

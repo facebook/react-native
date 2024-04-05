@@ -157,8 +157,7 @@ Size measureAndroidComponentMapBuffer(
 
 TextLayoutManager::TextLayoutManager(
     const ContextContainer::Shared& contextContainer)
-    : contextContainer_(contextContainer),
-      measureCache_(kSimpleThreadSafeCacheSizeCap) {}
+    : contextContainer_(contextContainer), measureCache_() {}
 
 void* TextLayoutManager::getNativeTextLayoutManager() const {
   return self_;
@@ -270,7 +269,7 @@ LinesMeasurements TextLayoutManager::measureLines(
 }
 
 TextMeasurement TextLayoutManager::doMeasure(
-    AttributedString attributedString,
+    const AttributedString& attributedString,
     const ParagraphAttributes& paragraphAttributes,
     LayoutConstraints layoutConstraints) const {
   layoutConstraints.maximumSize.height = std::numeric_limits<Float>::infinity();
@@ -329,7 +328,7 @@ TextMeasurement TextLayoutManager::doMeasure(
 }
 
 TextMeasurement TextLayoutManager::doMeasureMapBuffer(
-    AttributedString attributedString,
+    const AttributedString& attributedString,
     const ParagraphAttributes& paragraphAttributes,
     LayoutConstraints layoutConstraints) const {
   layoutConstraints.maximumSize.height = std::numeric_limits<Float>::infinity();

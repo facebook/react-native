@@ -18,12 +18,13 @@ namespace facebook::react {
 
 /*
  * Simple thread-safe LRU cache.
+ *
+ * Only result of hashing KeyT is stored. KeyT is not stored.
  */
 template <typename KeyT, typename ValueT, int maxSize>
 class SimpleThreadSafeCache {
  public:
   SimpleThreadSafeCache() : map_{maxSize} {}
-  SimpleThreadSafeCache(unsigned long size) : map_{size} {}
 
   /*
    * Returns a value from the map with a given key.
@@ -34,10 +35,11 @@ class SimpleThreadSafeCache {
   ValueT get(const KeyT& key, std::function<ValueT(const KeyT& key)> generator)
       const {
     std::lock_guard<std::mutex> lock(mutex_);
-    auto iterator = map_.find(key);
+    auto hash = std::hash<KeyT>{}(key);
+    auto iterator = map_.find(hash);
     if (iterator == map_.end()) {
       auto value = generator(key);
-      map_.set(key, value);
+      map_.set(hash, value);
       return value;
     }
 
@@ -51,7 +53,7 @@ class SimpleThreadSafeCache {
    */
   std::optional<ValueT> get(const KeyT& key) const {
     std::lock_guard<std::mutex> lock(mutex_);
-    auto iterator = map_.find(key);
+    auto iterator = map_.find(std::hash<KeyT>{}(key));
     if (iterator == map_.end()) {
       return {};
     }
@@ -69,7 +71,7 @@ class SimpleThreadSafeCache {
   }
 
  private:
-  mutable folly::EvictingCacheMap<KeyT, ValueT> map_;
+  mutable folly::EvictingCacheMap<size_t, ValueT> map_;
   mutable std::mutex mutex_;
 };
 

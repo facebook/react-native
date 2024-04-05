@@ -59,11 +59,10 @@ class TextMeasurement final {
 // The Key type that is used for Text Measure Cache.
 // The equivalence and hashing operations of this are defined to respect the
 // nature of text measuring.
-class TextMeasureCacheKey final {
- public:
-  AttributedString attributedString{};
-  ParagraphAttributes paragraphAttributes{};
-  LayoutConstraints layoutConstraints{};
+struct TextMeasureCacheKey {
+  const AttributedString& attributedString;
+  const ParagraphAttributes& paragraphAttributes;
+  const LayoutConstraints& layoutConstraints;
 };
 
 /*
