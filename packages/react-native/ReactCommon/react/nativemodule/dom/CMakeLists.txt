@@ -21,7 +21,8 @@ target_include_directories(react_nativemodule_dom PUBLIC ${REACT_COMMON_DIR})
 
 target_link_libraries(react_nativemodule_dom
         rrc_root
+        react_codegen_rncore
+        react_cxxreact
         react_render_dom
         react_render_uimanager
-        react_codegen_rncore
-        reactnative)
+)
