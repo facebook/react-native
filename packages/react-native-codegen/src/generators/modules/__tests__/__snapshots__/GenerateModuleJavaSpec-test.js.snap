@@ -353,6 +353,33 @@ public abstract class NativeSampleTurboModuleSpec extends ReactContextBaseJavaMo
     super(reactContext);
   }
 
+  public enum SampleTurboModuleStringEnum {
+    HELLO(\\"hello\\"),
+    GoodBye(\\"goodbye\\");
+
+    static @Nullable SampleTurboModuleStringEnum fromRawValue(String rawValue) {
+      
+      switch (rawValue) {
+        case \\"hello\\":
+          return HELLO;
+        case \\"goodbye\\":
+          return GoodBye;
+        default:
+          return null;
+      }
+    }
+
+    private final String rawValue;
+
+    SampleTurboModuleStringEnum(String rawValue) {
+      this.rawValue = rawValue;
+    }
+
+    public String getRawValue() {
+      return rawValue;
+    }
+  }
+
   @Override
   public @Nonnull String getName() {
     return NAME;
