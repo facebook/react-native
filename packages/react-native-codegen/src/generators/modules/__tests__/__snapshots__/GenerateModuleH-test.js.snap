@@ -1809,7 +1809,7 @@ struct Bridging<SampleTurboModuleNumEnum> {
 
 #pragma mark - SampleTurboModuleFloatEnum
 
-enum class SampleTurboModuleFloatEnum { POINT_ZERO, POINT_ONE, POINT_TWO };
+enum class SampleTurboModuleFloatEnum { POINT_ZERO, POINT_ONE, POINT_TWO, SCIENTIFIC_NOTATION };
 
 template <>
 struct Bridging<SampleTurboModuleFloatEnum> {
@@ -1821,6 +1821,8 @@ struct Bridging<SampleTurboModuleFloatEnum> {
       return SampleTurboModuleFloatEnum::POINT_ONE;
     } else if (value == 0.2f) {
       return SampleTurboModuleFloatEnum::POINT_TWO;
+    } else if (value == 1.23456789e-6f) {
+      return SampleTurboModuleFloatEnum::SCIENTIFIC_NOTATION;
     } else {
       throw jsi::JSError(rt, \\"No appropriate enum member found for value\\");
     }
@@ -1833,6 +1835,8 @@ struct Bridging<SampleTurboModuleFloatEnum> {
       return bridging::toJs(rt, 0.1f);
     } else if (value == SampleTurboModuleFloatEnum::POINT_TWO) {
       return bridging::toJs(rt, 0.2f);
+    } else if (value == SampleTurboModuleFloatEnum::SCIENTIFIC_NOTATION) {
+      return bridging::toJs(rt, 1.23456789e-6f);
     } else {
       throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
     }
