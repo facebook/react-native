@@ -2899,7 +2899,7 @@ public abstract interface class com/facebook/react/jstasks/HeadlessJsTaskRetryPo
 	public abstract fun update ()Lcom/facebook/react/jstasks/HeadlessJsTaskRetryPolicy;
 }
 
-public class com/facebook/react/jstasks/LinearCountingRetryPolicy : com/facebook/react/jstasks/HeadlessJsTaskRetryPolicy {
+public final class com/facebook/react/jstasks/LinearCountingRetryPolicy : com/facebook/react/jstasks/HeadlessJsTaskRetryPolicy {
 	public fun <init> (II)V
 	public fun canRetry ()Z
 	public fun copy ()Lcom/facebook/react/jstasks/HeadlessJsTaskRetryPolicy;
