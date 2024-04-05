@@ -3471,7 +3471,7 @@ public class com/facebook/react/modules/share/ShareModule : com/facebook/fbreact
 	public fun share (Lcom/facebook/react/bridge/ReadableMap;Ljava/lang/String;Lcom/facebook/react/bridge/Promise;)V
 }
 
-public class com/facebook/react/modules/sound/SoundManagerModule : com/facebook/fbreact/specs/NativeSoundManagerSpec {
+public final class com/facebook/react/modules/sound/SoundManagerModule : com/facebook/fbreact/specs/NativeSoundManagerSpec {
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
 	public fun playTouchSound ()V
 }
