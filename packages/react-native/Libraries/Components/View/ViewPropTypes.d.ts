@@ -16,48 +16,6 @@ import {LayoutChangeEvent, PointerEvents} from '../../Types/CoreEventTypes';
 import {Touchable} from '../Touchable/Touchable';
 import {AccessibilityProps} from './ViewAccessibility';
 
-export type TVParallaxProperties = {
-  /**
-   * If true, parallax effects are enabled.  Defaults to true.
-   */
-  enabled?: boolean | undefined;
-
-  /**
-   * Defaults to 2.0.
-   */
-  shiftDistanceX?: number | undefined;
-
-  /**
-   * Defaults to 2.0.
-   */
-  shiftDistanceY?: number | undefined;
-
-  /**
-   * Defaults to 0.05.
-   */
-  tiltAngle?: number | undefined;
-
-  /**
-   * Defaults to 1.0
-   */
-  magnification?: number | undefined;
-
-  /**
-   * Defaults to 1.0
-   */
-  pressMagnification?: number | undefined;
-
-  /**
-   * Defaults to 0.3
-   */
-  pressDuration?: number | undefined;
-
-  /**
-   * Defaults to 0.3
-   */
-  pressDelay?: number | undefined;
-};
-
 export interface TVViewPropsIOS {
   /**
    * *(Apple TV only)* When set to true, this view will be focusable
@@ -73,13 +31,6 @@ export interface TVViewPropsIOS {
    * @platform ios
    */
   hasTVPreferredFocus?: boolean | undefined;
-
-  /**
-   * *(Apple TV only)* Object with properties to control Apple TV parallax effects.
-   *
-   * @platform ios
-   */
-  tvParallaxProperties?: TVParallaxProperties | undefined;
 
   /**
    * *(Apple TV only)* May be used to change the appearance of the Apple TV parallax effect when this view goes in or out of focus.  Defaults to 2.0.

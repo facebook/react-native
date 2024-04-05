@@ -484,6 +484,31 @@ function TouchableTest() {
   }
 }
 
+export class TouchableOpacityTest extends React.Component {
+  render() {
+    return (
+      <>
+        <TouchableOpacity focusable={false} />
+        <TouchableOpacity rejectResponderTermination={true} />
+        <TouchableOpacity
+          role="button"
+          accessibilityRole="button"
+          accessibilityLabelledBy="my-label-text"
+          aria-labelledby="my-label-text"
+        />
+        <TouchableOpacity
+          // @ts-expect-error - expected boolean value
+          focusable={1}
+        />
+        <TouchableOpacity
+          // @ts-expect-error - expected boolean value
+          rejectResponderTermination={'not-bool'}
+        />
+      </>
+    );
+  }
+}
+
 // TouchableNativeFeedbackTest
 export class TouchableNativeFeedbackTest extends React.Component {
   onPressButton = (e: GestureResponderEvent) => {
@@ -500,6 +525,16 @@ export class TouchableNativeFeedbackTest extends React.Component {
             <Text style={{margin: 30}}>Button</Text>
           </View>
         </TouchableNativeFeedback>
+        <TouchableWithoutFeedback focusable={false}>
+          <View style={{width: 150, height: 100, backgroundColor: 'red'}}>
+            <Text style={{margin: 30}}>Button</Text>
+          </View>
+        </TouchableWithoutFeedback>
+        <TouchableWithoutFeedback rejectResponderTermination={true}>
+          <View style={{width: 150, height: 100, backgroundColor: 'red'}}>
+            <Text style={{margin: 30}}>Button</Text>
+          </View>
+        </TouchableWithoutFeedback>
         <TouchableNativeFeedback
           background={TouchableNativeFeedback.Ripple('red', true)}>
           <View style={{width: 150, height: 100, backgroundColor: 'red'}}>
