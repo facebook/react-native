@@ -3519,7 +3519,7 @@ public class com/facebook/react/modules/toast/ToastModule : com/facebook/fbreact
 	public fun showWithGravityAndOffset (Ljava/lang/String;DDDD)V
 }
 
-public class com/facebook/react/modules/vibration/VibrationModule : com/facebook/fbreact/specs/NativeVibrationSpec {
+public final class com/facebook/react/modules/vibration/VibrationModule : com/facebook/fbreact/specs/NativeVibrationSpec {
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
 	public fun cancel ()V
 	public fun vibrate (D)V
