@@ -9,19 +9,28 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 add_compile_options(-fexceptions -frtti -std=c++20 -Wall -DLOG_TAG=\"ReactNative\")
 
 file(GLOB uimanagerjni_SRC CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
-add_library(uimanagerjni SHARED ${uimanagerjni_SRC})
+add_library(uimanagerjni
+        SHARED
+            ${uimanagerjni_SRC}
+            $<TARGET_OBJECTS:react_render_graphics>
+            $<TARGET_OBJECTS:rrc_legacyviewmanagerinterop>
+            $<TARGET_OBJECTS:rrc_view>
+)
 
 target_include_directories(uimanagerjni PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_link_libraries(uimanagerjni
+        bridgelessnativeviewconfig
+        callinvokerholder
         fb
         fbjni
         folly_runtime
         glog
         glog_init
-        bridgelessnativeviewconfig
+        jsi
+        log
+        react_render_componentregistry
+        reactnativejni
         rrc_native
         yoga
-        callinvokerholder
-        reactnativejni
-        react_render_componentregistry)
+)

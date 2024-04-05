@@ -19,7 +19,7 @@ file(GLOB react_render_imagemanager_SRC CONFIGURE_DEPENDS
         platform/cxx/react/renderer/imagemanager/*.cpp)
 
 add_library(react_render_imagemanager
-        SHARED
+        OBJECT
         ${react_render_imagemanager_SRC})
 
 target_include_directories(react_render_imagemanager
