@@ -373,7 +373,7 @@ public class ReactModalHostView(context: ThemedReactContext) :
   // This listener is called when the user presses KeyEvent.KEYCODE_BACK
   // An event is then passed to JS which can either close or not close the Modal by setting the
   // visible property
-  public interface OnRequestCloseListener {
+  public fun interface OnRequestCloseListener {
     public fun onRequestClose(dialog: DialogInterface?)
   }
 
