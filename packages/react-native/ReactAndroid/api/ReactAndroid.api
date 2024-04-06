@@ -7810,11 +7810,10 @@ public class com/facebook/react/views/view/ReactViewManager$$PropsSetter : com/f
 	public fun setProperty (Lcom/facebook/react/views/view/ReactViewManager;Lcom/facebook/react/views/view/ReactViewGroup;Ljava/lang/String;Ljava/lang/Object;)V
 }
 
-public class com/facebook/react/views/view/ViewGroupClickEvent : com/facebook/react/uimanager/events/Event {
+public final class com/facebook/react/views/view/ViewGroupClickEvent : com/facebook/react/uimanager/events/Event {
 	public fun <init> (I)V
 	public fun <init> (II)V
 	public fun canCoalesce ()Z
-	protected fun getEventData ()Lcom/facebook/react/bridge/WritableMap;
 	public fun getEventName ()Ljava/lang/String;
 }
 
