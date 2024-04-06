@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<deb1d977999fc23ef8f72630001808b2>>
+ * @generated SignedSource<<0dcfc928ff0eca1cb37766170d9b4379>>
  */
 
 /**
@@ -40,6 +40,8 @@ class NativeReactNativeFeatureFlags
   bool batchRenderingUpdatesInEventLoop(jsi::Runtime& runtime);
 
   bool enableBackgroundExecutor(jsi::Runtime& runtime);
+
+  bool enableCleanTextInputYogaNode(jsi::Runtime& runtime);
 
   bool enableCustomDrawOrderFabric(jsi::Runtime& runtime);
 

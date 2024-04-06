@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4d92852851feacdbf9d4f3c4ead3124a>>
+ * @generated SignedSource<<dc699311bdbebb8db4ee313611d192b5>>
  */
 
 /**
@@ -27,6 +27,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var commonTestFlagCache: Boolean? = null
   private var batchRenderingUpdatesInEventLoopCache: Boolean? = null
   private var enableBackgroundExecutorCache: Boolean? = null
+  private var enableCleanTextInputYogaNodeCache: Boolean? = null
   private var enableCustomDrawOrderFabricCache: Boolean? = null
   private var enableFixForClippedSubviewsCrashCache: Boolean? = null
   private var enableMicrotasksCache: Boolean? = null
@@ -65,6 +66,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.enableBackgroundExecutor()
       accessedFeatureFlags.add("enableBackgroundExecutor")
       enableBackgroundExecutorCache = cached
+    }
+    return cached
+  }
+
+  override fun enableCleanTextInputYogaNode(): Boolean {
+    var cached = enableCleanTextInputYogaNodeCache
+    if (cached == null) {
+      cached = currentProvider.enableCleanTextInputYogaNode()
+      accessedFeatureFlags.add("enableCleanTextInputYogaNode")
+      enableCleanTextInputYogaNodeCache = cached
     }
     return cached
   }

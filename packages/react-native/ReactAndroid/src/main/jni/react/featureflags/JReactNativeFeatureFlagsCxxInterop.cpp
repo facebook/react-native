@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a04c3da47e634d788d6edb24fac0bf02>>
+ * @generated SignedSource<<ade99ab28f82affa77445231caed9e9d>>
  */
 
 /**
@@ -54,6 +54,12 @@ class ReactNativeFeatureFlagsProviderHolder
   bool enableBackgroundExecutor() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableBackgroundExecutor");
+    return method(javaProvider_);
+  }
+
+  bool enableCleanTextInputYogaNode() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableCleanTextInputYogaNode");
     return method(javaProvider_);
   }
 
@@ -142,6 +148,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableBackgroundExecutor(
   return ReactNativeFeatureFlags::enableBackgroundExecutor();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableCleanTextInputYogaNode(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableCleanTextInputYogaNode();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableCustomDrawOrderFabric(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableCustomDrawOrderFabric();
@@ -223,6 +234,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableBackgroundExecutor",
         JReactNativeFeatureFlagsCxxInterop::enableBackgroundExecutor),
+      makeNativeMethod(
+        "enableCleanTextInputYogaNode",
+        JReactNativeFeatureFlagsCxxInterop::enableCleanTextInputYogaNode),
       makeNativeMethod(
         "enableCustomDrawOrderFabric",
         JReactNativeFeatureFlagsCxxInterop::enableCustomDrawOrderFabric),

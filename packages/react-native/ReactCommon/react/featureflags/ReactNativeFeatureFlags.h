@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<730c667fb34f911b92318c26cfa32cf5>>
+ * @generated SignedSource<<881b149aca14f4f73e45e02089787a88>>
  */
 
 /**
@@ -51,6 +51,11 @@ class ReactNativeFeatureFlags {
    * Enables the use of a background executor to compute layout and commit updates on Fabric (this system is deprecated and should not be used).
    */
   RN_EXPORT static bool enableBackgroundExecutor();
+
+  /**
+   * Clean yoga node when <TextInput /> does not change.
+   */
+  RN_EXPORT static bool enableCleanTextInputYogaNode();
 
   /**
    * When enabled, Fabric will use customDrawOrder in ReactViewGroup (similar to old architecture).

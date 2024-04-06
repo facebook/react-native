@@ -42,6 +42,10 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Enables the use of a background executor to compute layout and commit updates on Fabric (this system is deprecated and should not be used).',
     },
+    enableCleanTextInputYogaNode: {
+      defaultValue: false,
+      description: 'Clean yoga node when <TextInput /> does not change.',
+    },
     enableCustomDrawOrderFabric: {
       defaultValue: false,
       description:
