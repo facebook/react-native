@@ -37,6 +37,10 @@ class AndroidTextInputShadowNode final : public ConcreteViewShadowNode<
 
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 
+  AndroidTextInputShadowNode(
+      const ShadowNode& sourceShadowNode,
+      const ShadowNodeFragment& fragment);
+
   void setContextContainer(ContextContainer* contextContainer);
 
   /*

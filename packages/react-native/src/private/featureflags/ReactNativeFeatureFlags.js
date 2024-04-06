@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1d670e4e74d58e40c3e5c9dba2ceb560>>
+ * @generated SignedSource<<ee6090277aad4b98818b1a3ecb913a23>>
  * @flow strict-local
  */
 
@@ -43,6 +43,7 @@ export type ReactNativeFeatureFlags = {
   commonTestFlag: Getter<boolean>,
   batchRenderingUpdatesInEventLoop: Getter<boolean>,
   enableBackgroundExecutor: Getter<boolean>,
+  enableCleanTextInputYogaNode: Getter<boolean>,
   enableCustomDrawOrderFabric: Getter<boolean>,
   enableFixForClippedSubviewsCrash: Getter<boolean>,
   enableMicrotasks: Getter<boolean>,
@@ -108,6 +109,10 @@ export const batchRenderingUpdatesInEventLoop: Getter<boolean> = createNativeFla
  * Enables the use of a background executor to compute layout and commit updates on Fabric (this system is deprecated and should not be used).
  */
 export const enableBackgroundExecutor: Getter<boolean> = createNativeFlagGetter('enableBackgroundExecutor', false);
+/**
+ * Clean yoga node when <TextInput /> does not change.
+ */
+export const enableCleanTextInputYogaNode: Getter<boolean> = createNativeFlagGetter('enableCleanTextInputYogaNode', false);
 /**
  * When enabled, Fabric will use customDrawOrder in ReactViewGroup (similar to old architecture).
  */
