@@ -134,11 +134,10 @@ jobs:
       - setup_ruby:
           ruby_version: << parameters.ruby_version >>
       - run:
-          name: Install appium
-          command: npm install appium@2.0.0 -g
-      - run:
-          name: Install appium drivers
-          command: appium driver install xcuitest@5.6.0
+          name: Copy packages
+          command: |
+            cd packages/rn-tester-e2e/scripts
+            copy-packages.sh
       - run:
           name: Boot iOS Simulator
           command: source scripts/.tests.env && xcrun simctl boot "$IOS_DEVICE" || true
@@ -196,11 +195,10 @@ jobs:
           restore-gradle-cache-prefix: v1a
           post-emulator-launch-assemble-command: ""
       - run:
-          name: Install appium
-          command: npm install appium@2.0.0 -g
-      - run:
-          name: Install appium drivers
-          command: appium driver install uiautomator2@2.29.0
+          name: Copy packages
+          command: |
+            cd packages/rn-tester-e2e/scripts
+            copy-packages.sh
       - run:
           name: Start Metro
           command: |

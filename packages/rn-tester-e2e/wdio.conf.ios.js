@@ -25,7 +25,7 @@ exports.config = {
       'appium:automationName': 'XCUITest',
       'appium:app': path.join(process.cwd(), '/apps/rn-tester.app'),
       'appium:newCommandTimeout': 120,
-      'appium:fullReset': false,
+      'appium:fullReset': false
     },
   ],
   logLevel: 'debug',
@@ -38,6 +38,7 @@ exports.config = {
     [
       'appium',
       {
+        address: '127.0.0.1',
         port: 4723,
         logPath: './reports',
       },
