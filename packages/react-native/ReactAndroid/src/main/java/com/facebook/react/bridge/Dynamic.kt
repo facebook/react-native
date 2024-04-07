@@ -5,28 +5,28 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.bridge;
+package com.facebook.react.bridge
 
 /**
  * Type representing a piece of data with unknown runtime type. Useful for allowing javascript to
  * pass one of multiple types down to the native layer.
  */
 public interface Dynamic {
-  boolean isNull();
+  public fun asArray(): ReadableArray
 
-  boolean asBoolean();
+  public fun asBoolean(): Boolean
 
-  double asDouble();
+  public fun asDouble(): Double
 
-  int asInt();
+  public fun asInt(): Int
 
-  String asString();
+  public fun asMap(): ReadableMap
 
-  ReadableArray asArray();
+  public fun asString(): String
 
-  ReadableMap asMap();
+  public fun getType(): ReadableType
 
-  ReadableType getType();
+  public fun isNull(): Boolean
 
-  void recycle();
+  public fun recycle(): Unit
 }
