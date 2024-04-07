@@ -33,7 +33,7 @@ Pod::Spec.new do |spec|
   spec.pod_target_xcconfig = {
     "USE_HEADERMAP" => "NO",
     "HEADER_SEARCH_PATHS" => "$(PODS_TARGET_SRCROOT)/src",
-    "DEFINES_MODULE" => should_define_modules # When the workaround is removed, set this var to "YES"
+    "DEFINES_MODULE" => "YES"
   }
 
   # Pinning to the same version as React.podspec.
