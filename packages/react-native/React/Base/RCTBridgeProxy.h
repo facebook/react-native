@@ -9,6 +9,8 @@
 
 #import "RCTBridgeModule.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @class RCTBundleManager;
 @class RCTCallableJSModules;
 @class RCTModuleRegistry;
@@ -22,7 +24,8 @@
                    callableJSModules:(RCTCallableJSModules *)callableJSModules
                   dispatchToJSThread:(void (^)(dispatch_block_t))dispatchToJSThread
                registerSegmentWithId:(void (^)(NSNumber *, NSString *))registerSegmentWithId
-                             runtime:(void *)runtime NS_DESIGNATED_INITIALIZER;
+                             runtime:(void *)runtime
+                       launchOptions:(nullable NSDictionary *)launchOptions NS_DESIGNATED_INITIALIZER;
 
 - (NSMethodSignature *)methodSignatureForSelector:(SEL)sel;
 - (void)forwardInvocation:(NSInvocation *)invocation;
@@ -37,3 +40,5 @@
 - (id)moduleForName:(NSString *)moduleName lazilyLoadIfNecessary:(BOOL)lazilyLoad;
 
 @end
+
+NS_ASSUME_NONNULL_END

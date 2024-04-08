@@ -48,7 +48,8 @@ typedef std::shared_ptr<facebook::react::JSRuntimeFactory> (^RCTHostJSEngineProv
 - (instancetype)initWithBundleURL:(NSURL *)bundleURL
                      hostDelegate:(id<RCTHostDelegate>)hostDelegate
        turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
-                 jsEngineProvider:(RCTHostJSEngineProvider)jsEngineProvider NS_DESIGNATED_INITIALIZER;
+                 jsEngineProvider:(RCTHostJSEngineProvider)jsEngineProvider
+                    launchOptions:(nullable NSDictionary *)launchOptions NS_DESIGNATED_INITIALIZER;
 
 @property (nonatomic, weak, nullable) id<RCTHostRuntimeDelegate> runtimeDelegate;
 
