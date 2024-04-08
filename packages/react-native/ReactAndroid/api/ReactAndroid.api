@@ -3041,7 +3041,7 @@ public class com/facebook/react/modules/camera/ImageStoreManager : com/facebook/
 	public fun getBase64ForTag (Ljava/lang/String;Lcom/facebook/react/bridge/Callback;Lcom/facebook/react/bridge/Callback;)V
 }
 
-public class com/facebook/react/modules/clipboard/ClipboardModule : com/facebook/fbreact/specs/NativeClipboardSpec {
+public final class com/facebook/react/modules/clipboard/ClipboardModule : com/facebook/fbreact/specs/NativeClipboardSpec {
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
 	public fun getString (Lcom/facebook/react/bridge/Promise;)V
 	public fun setString (Ljava/lang/String;)V
