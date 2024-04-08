@@ -36,7 +36,8 @@ ReactInstance::ReactInstance(
     : runtime_(std::move(runtime)),
       jsMessageQueueThread_(jsMessageQueueThread),
       timerManager_(std::move(timerManager)),
-      jsErrorHandler_(std::move(jsErrorHandlingFunc)),
+      jsErrorHandler_(
+          std::make_shared<JsErrorHandler>(std::move(jsErrorHandlingFunc))),
       hasFatalJsError_(std::make_shared<bool>(false)),
       parentInspectorTarget_(parentInspectorTarget) {
   RuntimeExecutor runtimeExecutor = [weakRuntime = std::weak_ptr(runtime_),
@@ -224,7 +225,7 @@ void ReactInstance::loadScript(
         } catch (jsi::JSError& error) {
           // Handle uncaught JS errors during loading JS bundle
           *hasFatalJsError_ = true;
-          this->jsErrorHandler_.handleJsError(error, true);
+          jsErrorHandler_->handleJsError(error, true);
         }
       });
 }
