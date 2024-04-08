@@ -5,9 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.bridge;
+package com.facebook.react.bridge
 
-public enum MemoryPressure {
+public enum class MemoryPressure {
   UI_HIDDEN,
   MODERATE,
   CRITICAL

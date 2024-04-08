@@ -5,11 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.bridge;
+package com.facebook.react.bridge
 
 /** Listener interface for memory pressure events. */
 public interface MemoryPressureListener {
-
   /** Called when the system generates a memory warning. */
-  void handleMemoryPressure(int level);
+  public fun handleMemoryPressure(level: Int)
 }
