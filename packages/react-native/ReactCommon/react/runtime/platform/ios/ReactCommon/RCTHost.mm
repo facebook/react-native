@@ -58,6 +58,8 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
   RCTHostBundleURLProvider _bundleURLProvider;
   RCTHostJSEngineProvider _jsEngineProvider;
 
+  NSDictionary *_launchOptions;
+
   // All the surfaces that need to be started after main bundle execution
   NSMutableArray<RCTFabricSurface *> *_surfaceStartBuffer;
   std::mutex _surfaceStartBufferMutex;
@@ -85,6 +87,7 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
                      hostDelegate:(id<RCTHostDelegate>)hostDelegate
        turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
                  jsEngineProvider:(RCTHostJSEngineProvider)jsEngineProvider
+                    launchOptions:(nullable NSDictionary *)launchOptions
 {
   if (self = [super init]) {
     _hostDelegate = hostDelegate;
@@ -93,6 +96,7 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
     _bundleManager = [RCTBundleManager new];
     _moduleRegistry = [RCTModuleRegistry new];
     _jsEngineProvider = [jsEngineProvider copy];
+    _launchOptions = [launchOptions copy];
 
     __weak RCTHost *weakSelf = self;
 
@@ -204,7 +208,8 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
                          turboModuleManagerDelegate:_turboModuleManagerDelegate
                                 onInitialBundleLoad:_onInitialBundleLoad
                                      moduleRegistry:_moduleRegistry
-                              parentInspectorTarget:_inspectorTarget.get()];
+                              parentInspectorTarget:_inspectorTarget.get()
+                                      launchOptions:_launchOptions];
   [_hostDelegate hostDidStart:self];
 }
 
@@ -284,7 +289,8 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
                          turboModuleManagerDelegate:_turboModuleManagerDelegate
                                 onInitialBundleLoad:_onInitialBundleLoad
                                      moduleRegistry:_moduleRegistry
-                              parentInspectorTarget:_inspectorTarget.get()];
+                              parentInspectorTarget:_inspectorTarget.get()
+                                      launchOptions:_launchOptions];
   [_hostDelegate hostDidStart:self];
 
   for (RCTFabricSurface *surface in [self _getAttachedSurfaces]) {
