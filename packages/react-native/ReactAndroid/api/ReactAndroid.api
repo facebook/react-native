@@ -3631,7 +3631,7 @@ public abstract interface class com/facebook/react/packagerconnection/Responder 
 	public abstract fun respond (Ljava/lang/Object;)V
 }
 
-public abstract class com/facebook/react/perflogger/NativeModulePerfLogger {
+public abstract class com/facebook/react/reactperflogger/NativeModulePerfLogger {
 	protected fun <init> ()V
 	protected abstract fun initHybrid ()Lcom/facebook/jni/HybridData;
 	protected final fun maybeLoadOtherSoLibraries ()V

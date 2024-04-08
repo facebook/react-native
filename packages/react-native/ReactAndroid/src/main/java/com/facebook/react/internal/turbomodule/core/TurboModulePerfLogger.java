@@ -9,7 +9,7 @@ package com.facebook.react.internal.turbomodule.core;
 
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.proguard.annotations.DoNotStrip;
-import com.facebook.react.perflogger.NativeModulePerfLogger;
+import com.facebook.react.reactperflogger.NativeModulePerfLogger;
 import javax.annotation.Nullable;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
