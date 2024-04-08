@@ -137,6 +137,7 @@ jobs:
           name: Copy packages
           command: |
             cd packages/rn-tester-e2e/scripts
+            chmod +x copy-packages.sh
             copy-packages.sh
       - run:
           name: Boot iOS Simulator
@@ -198,6 +199,7 @@ jobs:
           name: Copy packages
           command: |
             cd packages/rn-tester-e2e/scripts
+            chmod +x copy-packages.sh
             copy-packages.sh
       - run:
           name: Start Metro
