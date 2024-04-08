@@ -7,9 +7,6 @@
 
 package com.facebook.react.uimanager.common
 
-import com.facebook.react.uimanager.common.UIManagerType.DEFAULT
-import com.facebook.react.uimanager.common.UIManagerType.FABRIC
-
 public object ViewUtil {
 
   public const val NO_SURFACE_ID: Int = -1
@@ -17,22 +14,22 @@ public object ViewUtil {
    * Counter for uniquely identifying views. - % 2 === 0 means it is a Fabric tag. See
    * https://github.com/facebook/react/pull/12587
    *
-   * @param viewTag [int] tag of the view this is event is dispatched to
+   * @param viewTag tag of the view this is event is dispatched to
    */
   @JvmStatic
   @UIManagerType
   public fun getUIManagerType(viewTag: Int): Int =
       if (viewTag % 2 == 0) {
-        FABRIC
+        UIManagerType.FABRIC
       } else {
-        DEFAULT
+        UIManagerType.DEFAULT
       }
 
   /**
    * Version of getUIManagerType that uses both surfaceId and viewTag heuristics
    *
-   * @param viewTag [int] tag of the view this is event is dispatched to
-   * @param surfaceId [int] ID of the corresponding surface
+   * @param viewTag tag of the view this is event is dispatched to
+   * @param surfaceId ID of the corresponding surface
    */
   @JvmStatic
   @UIManagerType
@@ -47,18 +44,19 @@ public object ViewUtil {
     // non-Fabric UIManager, and we cannot use the ViewTag for inference since it's not controlled
     // by RN and is essentially a random number.
     // At some point it would be great to pass the SurfaceContext here instead.
-    @UIManagerType val uiManagerType = if (surfaceId == -1) DEFAULT else FABRIC
-    if (uiManagerType == DEFAULT && !isRootTag(viewTag)) {
+    @UIManagerType
+    val uiManagerType = if (surfaceId == -1) UIManagerType.DEFAULT else UIManagerType.FABRIC
+    if (uiManagerType == UIManagerType.DEFAULT && !isRootTag(viewTag)) {
       // TODO (T123064648): Some events for Fabric still didn't have the surfaceId set, so if it's
       // not a React RootView, double check if the tag belongs to Fabric.
       if (viewTag % 2 == 0) {
-        return FABRIC
+        return UIManagerType.FABRIC
       }
     }
     return uiManagerType
   }
   /**
-   * @param viewTag [int] react tag
+   * @param viewTag react tag
    * @return if the react tag received by parameter is a RootTag or not.
    */
   @JvmStatic public fun isRootTag(viewTag: Int): Boolean = viewTag % 10 == 1

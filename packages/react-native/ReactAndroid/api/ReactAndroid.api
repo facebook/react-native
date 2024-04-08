@@ -5410,6 +5410,12 @@ public abstract interface annotation class com/facebook/react/uimanager/annotati
 }
 
 public abstract interface annotation class com/facebook/react/uimanager/common/UIManagerType : java/lang/annotation/Annotation {
+	public static final field Companion Lcom/facebook/react/uimanager/common/UIManagerType$Companion;
+	public static final field DEFAULT I
+	public static final field FABRIC I
+}
+
+public final class com/facebook/react/uimanager/common/UIManagerType$Companion {
 	public static final field DEFAULT I
 	public static final field FABRIC I
 }
