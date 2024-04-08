@@ -51,7 +51,7 @@ JReactInstance::JReactInstance(
   jsTimerExecutor->cthis()->setTimerManager(timerManager);
 
   jReactExceptionManager_ = jni::make_global(jReactExceptionManager);
-  auto jsErrorHandlingFunc =
+  auto onJsError =
       [weakJReactExceptionManager = jni::make_weak(jReactExceptionManager)](
           const JsErrorHandler::ParsedError& error) mutable noexcept {
         if (auto jReactExceptionManager =
@@ -66,7 +66,7 @@ JReactInstance::JReactInstance(
       jsRuntimeFactory->cthis()->createJSRuntime(sharedJSMessageQueueThread),
       sharedJSMessageQueueThread,
       timerManager,
-      std::move(jsErrorHandlingFunc),
+      std::move(onJsError),
       jReactHostInspectorTarget
           ? jReactHostInspectorTarget->cthis()->getInspectorTarget()
           : nullptr);

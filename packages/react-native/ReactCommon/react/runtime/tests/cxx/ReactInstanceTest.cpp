@@ -123,15 +123,15 @@ class ReactInstanceTest : public ::testing::Test {
     auto mockRegistry = std::make_unique<MockTimerRegistry>();
     mockRegistry_ = mockRegistry.get();
     timerManager_ = std::make_shared<TimerManager>(std::move(mockRegistry));
-    auto jsErrorHandlingFunc =
-        [](const JsErrorHandler::ParsedError& errorMap) noexcept {
-          // Do nothing
-        };
+    auto onJsError = [](const JsErrorHandler::ParsedError& errorMap) noexcept {
+      // Do nothing
+    };
+
     instance_ = std::make_unique<ReactInstance>(
         std::move(runtime),
         messageQueueThread_,
         timerManager_,
-        std::move(jsErrorHandlingFunc));
+        std::move(onJsError));
     timerManager_->setRuntimeExecutor(instance_->getBufferedRuntimeExecutor());
 
     // Install a C++ error handler
