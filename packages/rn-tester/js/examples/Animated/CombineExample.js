@@ -13,7 +13,7 @@ import type {Numeric} from 'react-native/Libraries/Animated/AnimatedImplementati
 
 import RNTesterButton from '../../components/RNTesterButton';
 import * as React from 'react';
-import {Animated, Text, View, StyleSheet} from 'react-native';
+import {Animated, Text, View, StyleSheet, TextInput} from 'react-native';
 export default ({
   title: 'Combine Example',
   name: 'Combine View',
@@ -23,18 +23,34 @@ export default ({
 }: RNTesterModuleExample);
 
 const CombineExample = () => {
-  const a = new Animated.Value(0.4);
-  const b = new Animated.Value(0.5);
+  const [aValue, setAValue] = React.useState('0.4');
+  const [bValue, setBValue] = React.useState('0.5');
+  const a = new Animated.Value(parseFloat(aValue));
+  const b = new Animated.Value(parseFloat(bValue));
   const add = Animated.add(a, b);
   const subtract = Animated.subtract(b, a);
   const mult = Animated.multiply(a, b);
-  const divide = Animated.divide(b, a);
-  const mod = Animated.modulo(b, 0.4);
-
+  const divide =
+    parseFloat(aValue) !== 0 ? Animated.divide(b, a) : new Animated.Value(1);
+  const mod = Animated.modulo(a, parseFloat(bValue));
   const [animation, setAnimation] = React.useState<Numeric>(add);
 
   return (
     <View>
+      <TextInput
+        style={styles.input}
+        value={aValue}
+        onChangeText={text => setAValue(text)}
+        placeholder="Enter value for a"
+        keyboardType="numeric"
+      />
+      <TextInput
+        style={styles.input}
+        value={bValue}
+        onChangeText={text => setBValue(text)}
+        placeholder="Enter value for b"
+        keyboardType="numeric"
+      />
       <Animated.View style={[styles.content, {opacity: animation}]}>
         <Text>Change Opacity</Text>
       </Animated.View>
@@ -62,5 +78,13 @@ const styles = StyleSheet.create({
     margin: 20,
     borderRadius: 10,
     alignItems: 'center',
+  },
+  input: {
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    paddingLeft: 10,
+    margin: 10,
+    borderRadius: 5,
   },
 });
