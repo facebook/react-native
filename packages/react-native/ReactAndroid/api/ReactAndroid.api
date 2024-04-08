@@ -3047,10 +3047,9 @@ public class com/facebook/react/modules/clipboard/ClipboardModule : com/facebook
 	public fun setString (Ljava/lang/String;)V
 }
 
-public class com/facebook/react/modules/common/ModuleDataCleaner {
-	public fun <init> ()V
-	public static fun cleanDataFromModules (Lcom/facebook/react/bridge/CatalystInstance;)V
-	public static fun cleanDataFromModules (Lcom/facebook/react/bridge/ReactContext;)V
+public final class com/facebook/react/modules/common/ModuleDataCleaner {
+	public static final field INSTANCE Lcom/facebook/react/modules/common/ModuleDataCleaner;
+	public static final fun cleanDataFromModules (Lcom/facebook/react/bridge/ReactContext;)V
 }
 
 public abstract interface class com/facebook/react/modules/common/ModuleDataCleaner$Cleanable {
