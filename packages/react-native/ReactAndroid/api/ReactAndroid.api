@@ -3237,10 +3237,15 @@ public class com/facebook/react/modules/deviceinfo/DeviceInfoModule : com/facebo
 	public fun onHostResume ()V
 }
 
-public class com/facebook/react/modules/devloading/DevLoadingModule : com/facebook/fbreact/specs/NativeDevLoadingViewSpec {
+public final class com/facebook/react/modules/devloading/DevLoadingModule : com/facebook/fbreact/specs/NativeDevLoadingViewSpec {
+	public static final field Companion Lcom/facebook/react/modules/devloading/DevLoadingModule$Companion;
+	public static final field NAME Ljava/lang/String;
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
 	public fun hide ()V
 	public fun showMessage (Ljava/lang/String;Ljava/lang/Double;Ljava/lang/Double;)V
+}
+
+public final class com/facebook/react/modules/devloading/DevLoadingModule$Companion {
 }
 
 public final class com/facebook/react/modules/devtoolssettings/DevToolsSettingsManagerModule : com/facebook/fbreact/specs/NativeDevToolsSettingsManagerSpec {
