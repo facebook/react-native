@@ -6199,15 +6199,16 @@ public class com/facebook/react/views/imagehelper/ImageSource {
 	public fun isResource ()Z
 }
 
-public class com/facebook/react/views/imagehelper/MultiSourceHelper {
-	public fun <init> ()V
-	public static fun getBestSourceForSize (IILjava/util/List;)Lcom/facebook/react/views/imagehelper/MultiSourceHelper$MultiSourceResult;
-	public static fun getBestSourceForSize (IILjava/util/List;D)Lcom/facebook/react/views/imagehelper/MultiSourceHelper$MultiSourceResult;
+public final class com/facebook/react/views/imagehelper/MultiSourceHelper {
+	public static final field INSTANCE Lcom/facebook/react/views/imagehelper/MultiSourceHelper;
+	public static final fun getBestSourceForSize (IILjava/util/List;)Lcom/facebook/react/views/imagehelper/MultiSourceHelper$MultiSourceResult;
+	public static final fun getBestSourceForSize (IILjava/util/List;D)Lcom/facebook/react/views/imagehelper/MultiSourceHelper$MultiSourceResult;
 }
 
-public class com/facebook/react/views/imagehelper/MultiSourceHelper$MultiSourceResult {
-	public fun getBestResult ()Lcom/facebook/react/views/imagehelper/ImageSource;
-	public fun getBestResultInCache ()Lcom/facebook/react/views/imagehelper/ImageSource;
+public final class com/facebook/react/views/imagehelper/MultiSourceHelper$MultiSourceResult {
+	public final field bestResult Lcom/facebook/react/views/imagehelper/ImageSource;
+	public final field bestResultInCache Lcom/facebook/react/views/imagehelper/ImageSource;
+	public fun <init> (Lcom/facebook/react/views/imagehelper/ImageSource;Lcom/facebook/react/views/imagehelper/ImageSource;)V
 }
 
 public final class com/facebook/react/views/imagehelper/ResourceDrawableIdHelper {
