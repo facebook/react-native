@@ -163,6 +163,8 @@ RuntimeExecutor ReactInstance::getBufferedRuntimeExecutor() noexcept {
   };
 }
 
+// TODO(T184010230): Should the RuntimeScheduler returned from this method be
+// buffered?
 std::shared_ptr<RuntimeScheduler>
 ReactInstance::getRuntimeScheduler() noexcept {
   return runtimeScheduler_;
