@@ -303,7 +303,13 @@ public class DevServerHelper {
     // [Source: Android docs]
     String androidId = Settings.Secure.ANDROID_ID;
 
-    String rawDeviceId = String.format(Locale.US, "android-%s-%s", packageName, androidId);
+    String rawDeviceId =
+        String.format(
+            Locale.US,
+            "android-%s-%s-%s",
+            packageName,
+            androidId,
+            InspectorFlags.getEnableModernCDPRegistry() ? "fusebox" : "legacy");
 
     return getSHA256(rawDeviceId);
   }
