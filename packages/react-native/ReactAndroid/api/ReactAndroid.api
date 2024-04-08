@@ -2830,6 +2830,20 @@ public abstract interface class com/facebook/react/interfaces/TaskInterface {
 	public abstract fun waitForCompletion (JLjava/util/concurrent/TimeUnit;)Z
 }
 
+public abstract interface class com/facebook/react/interfaces/exceptionmanager/ReactJsExceptionHandler$ParsedError {
+	public abstract fun getExceptionId ()I
+	public abstract fun getFrames ()Ljava/util/List;
+	public abstract fun getMessage ()Ljava/lang/String;
+	public abstract fun isFatal ()Z
+}
+
+public abstract interface class com/facebook/react/interfaces/exceptionmanager/ReactJsExceptionHandler$ParsedError$StackFrame {
+	public abstract fun getColumnNumber ()I
+	public abstract fun getFileName ()Ljava/lang/String;
+	public abstract fun getLineNumber ()I
+	public abstract fun getMethodName ()Ljava/lang/String;
+}
+
 public abstract interface class com/facebook/react/interfaces/fabric/ReactSurface {
 	public abstract fun clear ()V
 	public abstract fun detach ()V

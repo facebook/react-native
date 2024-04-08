@@ -34,7 +34,7 @@ class ReactInstance final : private jsinspector_modern::InstanceTargetDelegate {
       std::unique_ptr<JSRuntime> runtime,
       std::shared_ptr<MessageQueueThread> jsMessageQueueThread,
       std::shared_ptr<TimerManager> timerManager,
-      JsErrorHandler::JsErrorHandlingFunc JsErrorHandlingFunc,
+      JsErrorHandler::JsErrorHandlingFunc jsErrorHandlingFunc,
       jsinspector_modern::HostTarget* parentInspectorTarget = nullptr);
 
   RuntimeExecutor getUnbufferedRuntimeExecutor() noexcept;
