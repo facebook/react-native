@@ -8,26 +8,28 @@
 #pragma once
 
 #include <jsi/jsi.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
 
 namespace facebook::react {
 
-enum JSErrorHandlerKey : uint16_t {
-  kFrameFileName = 0,
-  kFrameMethodName = 1,
-  kFrameLineNumber = 2,
-  kFrameColumnNumber = 3,
-  kAllStackFrames = 4,
-  kErrorMessage = 5,
-  kExceptionId = 6,
-  kIsFatal = 7
-};
-
 class JsErrorHandler {
  public:
-  using JsErrorHandlingFunc = std::function<void(MapBuffer errorMap)>;
+  struct ParsedError {
+    struct StackFrame {
+      std::string fileName;
+      std::string methodName;
+      int lineNumber;
+      int columnNumber;
+    };
 
-  JsErrorHandler(JsErrorHandlingFunc jsErrorHandlingFunc);
+    std::vector<StackFrame> frames;
+    std::string message;
+    int exceptionId;
+    bool isFatal;
+  };
+
+  using JsErrorHandlingFunc = std::function<void(const ParsedError& error)>;
+
+  explicit JsErrorHandler(JsErrorHandlingFunc jsErrorHandlingFunc);
   ~JsErrorHandler();
 
   void handleJsError(const jsi::JSError& error, bool isFatal);

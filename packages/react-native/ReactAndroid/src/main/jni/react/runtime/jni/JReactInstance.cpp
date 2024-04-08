@@ -21,7 +21,6 @@
 #include <react/common/mapbuffer/JReadableMapBuffer.h>
 #include <react/jni/JRuntimeExecutor.h>
 #include <react/jni/JSLogging.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
 #include <react/runtime/BridgelessJSCallInvoker.h>
 #include <react/runtime/BridgelessNativeMethodCallInvoker.h>
 #include "JavaTimerRegistry.h"
@@ -52,13 +51,14 @@ JReactInstance::JReactInstance(
   jsTimerExecutor->cthis()->setTimerManager(timerManager);
 
   jReactExceptionManager_ = jni::make_global(jReactExceptionManager);
-  auto jsErrorHandlingFunc = [this](MapBuffer errorMap) noexcept {
-    if (jReactExceptionManager_ != nullptr) {
-      auto jErrorMap =
-          JReadableMapBuffer::createWithContents(std::move(errorMap));
-      jReactExceptionManager_->reportJsException(jErrorMap.get());
-    }
-  };
+  auto jsErrorHandlingFunc =
+      [weakJReactExceptionManager = jni::make_weak(jReactExceptionManager)](
+          const JsErrorHandler::ParsedError& error) mutable noexcept {
+        if (auto jReactExceptionManager =
+                weakJReactExceptionManager.lockLocal()) {
+          jReactExceptionManager->reportJsException(error);
+        }
+      };
 
   jBindingsInstaller_ = jni::make_global(jBindingsInstaller);
 

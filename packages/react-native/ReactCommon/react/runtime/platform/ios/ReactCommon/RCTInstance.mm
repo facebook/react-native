@@ -245,7 +245,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   objCTimerRegistryRawPtr->setTimerManager(timerManager);
 
   __weak __typeof(self) weakSelf = self;
-  auto jsErrorHandlingFunc = [=](MapBuffer errorMap) { [weakSelf _handleJSErrorMap:std::move(errorMap)]; };
+  auto jsErrorHandlingFunc = [=](const JsErrorHandler::ParsedError &error) { [weakSelf _handleJSError:error]; };
 
   // Create the React Instance
   _reactInstance = std::make_unique<ReactInstance>(
@@ -496,28 +496,23 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   }
 }
 
-- (void)_handleJSErrorMap:(facebook::react::MapBuffer)errorMap
+- (void)_handleJSError:(const JsErrorHandler::ParsedError &)error
 {
-  NSString *message = [NSString stringWithCString:errorMap.getString(JSErrorHandlerKey::kErrorMessage).c_str()
-                                         encoding:[NSString defaultCStringEncoding]];
-  std::vector<facebook::react::MapBuffer> frames = errorMap.getMapBufferList(JSErrorHandlerKey::kAllStackFrames);
+  NSString *message = [NSString stringWithCString:error.message.c_str() encoding:[NSString defaultCStringEncoding]];
   NSMutableArray<NSDictionary<NSString *, id> *> *stack = [NSMutableArray new];
-  for (const facebook::react::MapBuffer &mapBuffer : frames) {
-    NSDictionary *frame = @{
-      @"file" : [NSString stringWithCString:mapBuffer.getString(JSErrorHandlerKey::kFrameFileName).c_str()
-                                   encoding:[NSString defaultCStringEncoding]],
-      @"methodName" : [NSString stringWithCString:mapBuffer.getString(JSErrorHandlerKey::kFrameMethodName).c_str()
-                                         encoding:[NSString defaultCStringEncoding]],
-      @"lineNumber" : [NSNumber numberWithInt:mapBuffer.getInt(JSErrorHandlerKey::kFrameLineNumber)],
-      @"column" : [NSNumber numberWithInt:mapBuffer.getInt(JSErrorHandlerKey::kFrameColumnNumber)],
-    };
-    [stack addObject:frame];
+  for (const JsErrorHandler::ParsedError::StackFrame &frame : error.frames) {
+    [stack addObject:@{
+      @"file" : [NSString stringWithCString:frame.fileName.c_str() encoding:[NSString defaultCStringEncoding]],
+      @"methodName" : [NSString stringWithCString:frame.methodName.c_str() encoding:[NSString defaultCStringEncoding]],
+      @"lineNumber" : [NSNumber numberWithInt:frame.lineNumber],
+      @"column" : [NSNumber numberWithInt:frame.columnNumber],
+    }];
   }
   [_delegate instance:self
       didReceiveJSErrorStack:stack
                      message:message
-                 exceptionId:errorMap.getInt(JSErrorHandlerKey::kExceptionId)
-                     isFatal:errorMap.getBool(JSErrorHandlerKey::kIsFatal)];
+                 exceptionId:error.exceptionId
+                     isFatal:error.isFatal];
 }
 
 - (void)didReceiveReloadCommand

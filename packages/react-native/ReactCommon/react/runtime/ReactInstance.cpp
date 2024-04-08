@@ -23,7 +23,6 @@
 #include <react/utils/jsi-utils.h>
 #include <iostream>
 #include <memory>
-#include <tuple>
 #include <utility>
 
 namespace facebook::react {
@@ -37,7 +36,7 @@ ReactInstance::ReactInstance(
     : runtime_(std::move(runtime)),
       jsMessageQueueThread_(jsMessageQueueThread),
       timerManager_(std::move(timerManager)),
-      jsErrorHandler_(jsErrorHandlingFunc),
+      jsErrorHandler_(std::move(jsErrorHandlingFunc)),
       hasFatalJsError_(std::make_shared<bool>(false)),
       parentInspectorTarget_(parentInspectorTarget) {
   RuntimeExecutor runtimeExecutor = [weakRuntime = std::weak_ptr(runtime_),
