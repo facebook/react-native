@@ -16,7 +16,7 @@ public object PixelUtil {
   @JvmStatic
   public fun toPixelFromDIP(value: Float): Float {
     return TypedValue.applyDimension(
-        TypedValue.COMPLEX_UNIT_DIP, value, DisplayMetricsHolder.getWindowDisplayMetrics())
+        TypedValue.COMPLEX_UNIT_DIP, value, DisplayMetricsHolder.windowDisplayMetrics)
   }
 
   /** Convert from DIP to PX */
@@ -29,11 +29,11 @@ public object PixelUtil {
   @JvmOverloads
   @JvmStatic
   public fun toPixelFromSP(value: Float, maxFontScale: Float = Float.NaN): Float {
-    val displayMetrics = DisplayMetricsHolder.getWindowDisplayMetrics()
+    val displayMetrics = DisplayMetricsHolder.windowDisplayMetrics
     val scaledValue = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, value, displayMetrics)
 
     if (maxFontScale >= 1) {
-      return min(scaledValue, value * displayMetrics.density * maxFontScale)
+      return min(scaledValue, value * displayMetrics!!.density * maxFontScale)
     }
 
     return scaledValue
@@ -48,11 +48,10 @@ public object PixelUtil {
   /** Convert from PX to DP */
   @JvmStatic
   public fun toDIPFromPixel(value: Float): Float {
-    return value / DisplayMetricsHolder.getWindowDisplayMetrics().density
+    return value / DisplayMetricsHolder.windowDisplayMetrics!!.density
   }
 
   /** @return [float] that represents the density of the display metrics for device screen. */
   @JvmStatic
-  public fun getDisplayMetricDensity(): Float =
-      DisplayMetricsHolder.getWindowDisplayMetrics().density
+  public fun getDisplayMetricDensity(): Float = DisplayMetricsHolder.windowDisplayMetrics!!.density
 }
