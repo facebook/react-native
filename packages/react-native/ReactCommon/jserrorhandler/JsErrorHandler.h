@@ -33,9 +33,11 @@ class JsErrorHandler {
   ~JsErrorHandler();
 
   void handleJsError(const jsi::JSError& error, bool isFatal);
+  bool hasHandledFatalError();
 
  private:
   JsErrorHandlingFunc _jsErrorHandlingFunc;
+  bool _hasHandledFatalError;
 };
 
 } // namespace facebook::react

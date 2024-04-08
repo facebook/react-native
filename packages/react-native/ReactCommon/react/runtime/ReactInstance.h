@@ -82,9 +82,6 @@ class ReactInstance final : private jsinspector_modern::InstanceTargetDelegate {
   std::shared_ptr<RuntimeScheduler> runtimeScheduler_;
   std::shared_ptr<JsErrorHandler> jsErrorHandler_;
 
-  // Whether there are errors caught during bundle loading
-  std::shared_ptr<bool> hasFatalJsError_;
-
   jsinspector_modern::InstanceTarget* inspectorTarget_{nullptr};
   jsinspector_modern::RuntimeTarget* runtimeInspectorTarget_{nullptr};
   jsinspector_modern::HostTarget* parentInspectorTarget_{nullptr};
