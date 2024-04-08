@@ -5,22 +5,21 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.util;
+package com.facebook.react.util
 
-import com.facebook.react.bridge.JavaScriptModule;
+import com.facebook.react.bridge.JavaScriptModule
 
 /**
  * JS module interface for RCTLog
  *
- * <p>The RCTLog module allows for showing native logs in JavaScript.
+ * The RCTLog module allows for showing native logs in JavaScript.
  */
-public interface RCTLog extends JavaScriptModule {
-
+public interface RCTLog : JavaScriptModule {
   /**
    * Send a log to JavaScript.
    *
    * @param level The level of the log.
    * @param message The message to log.
    */
-  void logIfNoNativeHook(String level, String message);
+  public fun logIfNoNativeHook(level: String?, message: String?)
 }
