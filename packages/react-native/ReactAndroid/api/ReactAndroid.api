@@ -7638,11 +7638,11 @@ public class com/facebook/react/views/unimplementedview/ReactUnimplementedViewMa
 	public fun setProperty (Lcom/facebook/react/views/unimplementedview/ReactUnimplementedViewManager;Lcom/facebook/react/views/unimplementedview/ReactUnimplementedView;Ljava/lang/String;Ljava/lang/Object;)V
 }
 
-public class com/facebook/react/views/view/ColorUtil {
-	public fun <init> ()V
-	public static fun getOpacityFromColor (I)I
-	public static fun multiplyColorAlpha (II)I
-	public static fun normalize (DDDD)I
+public final class com/facebook/react/views/view/ColorUtil {
+	public static final field INSTANCE Lcom/facebook/react/views/view/ColorUtil;
+	public static final fun getOpacityFromColor (I)I
+	public static final fun multiplyColorAlpha (II)I
+	public static final fun normalize (DDDD)I
 }
 
 public final class com/facebook/react/views/view/MeasureUtil {
