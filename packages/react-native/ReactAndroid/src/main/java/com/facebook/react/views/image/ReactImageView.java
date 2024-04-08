@@ -578,8 +578,8 @@ public class ReactImageView extends GenericDraweeView {
     } else if (hasMultipleSources()) {
       MultiSourceResult multiSource =
           MultiSourceHelper.getBestSourceForSize(getWidth(), getHeight(), mSources);
-      mImageSource = multiSource.getBestResult();
-      mCachedImageSource = multiSource.getBestResultInCache();
+      mImageSource = multiSource.bestResult;
+      mCachedImageSource = multiSource.bestResultInCache;
       return;
     }
 
