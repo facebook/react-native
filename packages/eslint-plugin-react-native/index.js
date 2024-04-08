@@ -7,6 +7,9 @@
  * @format
  */
 
-exports.rules = {
-  'platform-colors': require('./platform-colors'),
+
+module.exports = {
+  rules: {
+    'platform-colors': require('./platform-colors'),
+  }
 };
