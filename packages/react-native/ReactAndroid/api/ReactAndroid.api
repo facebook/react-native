@@ -6648,8 +6648,9 @@ public class com/facebook/react/views/scroll/ReactScrollViewCommandHelper$Scroll
 	public final field mAnimated Z
 }
 
-public class com/facebook/react/views/scroll/ReactScrollViewHelper {
+public final class com/facebook/react/views/scroll/ReactScrollViewHelper {
 	public static final field AUTO Ljava/lang/String;
+	public static final field INSTANCE Lcom/facebook/react/views/scroll/ReactScrollViewHelper;
 	public static final field MOMENTUM_DELAY J
 	public static final field OVER_SCROLL_ALWAYS Ljava/lang/String;
 	public static final field OVER_SCROLL_NEVER Ljava/lang/String;
@@ -6657,26 +6658,25 @@ public class com/facebook/react/views/scroll/ReactScrollViewHelper {
 	public static final field SNAP_ALIGNMENT_DISABLED I
 	public static final field SNAP_ALIGNMENT_END I
 	public static final field SNAP_ALIGNMENT_START I
-	public fun <init> ()V
-	public static fun addScrollListener (Lcom/facebook/react/views/scroll/ReactScrollViewHelper$ScrollListener;)V
-	public static fun emitLayoutEvent (Landroid/view/ViewGroup;)V
-	public static fun emitScrollBeginDragEvent (Landroid/view/ViewGroup;)V
-	public static fun emitScrollEndDragEvent (Landroid/view/ViewGroup;FF)V
-	public static fun emitScrollEvent (Landroid/view/ViewGroup;FF)V
-	public static fun emitScrollMomentumBeginEvent (Landroid/view/ViewGroup;II)V
-	public static fun emitScrollMomentumEndEvent (Landroid/view/ViewGroup;)V
-	public static fun forceUpdateState (Landroid/view/ViewGroup;)V
-	public static fun getDefaultScrollAnimationDuration (Landroid/content/Context;)I
-	public static fun getNextFlingStartValue (Landroid/view/ViewGroup;III)I
-	public static fun parseOverScrollMode (Ljava/lang/String;)I
-	public static fun parseSnapToAlignment (Ljava/lang/String;)I
-	public static fun predictFinalScrollPosition (Landroid/view/ViewGroup;IIII)Landroid/graphics/Point;
-	public static fun registerFlingAnimator (Landroid/view/ViewGroup;)V
-	public static fun removeScrollListener (Lcom/facebook/react/views/scroll/ReactScrollViewHelper$ScrollListener;)V
-	public static fun smoothScrollTo (Landroid/view/ViewGroup;II)V
-	public static fun updateFabricScrollState (Landroid/view/ViewGroup;)V
-	public static fun updateFabricScrollState (Landroid/view/ViewGroup;II)V
-	public static fun updateStateOnScrollChanged (Landroid/view/ViewGroup;FF)V
+	public static final fun addScrollListener (Lcom/facebook/react/views/scroll/ReactScrollViewHelper$ScrollListener;)V
+	public static final fun emitLayoutEvent (Landroid/view/ViewGroup;)V
+	public static final fun emitScrollBeginDragEvent (Landroid/view/ViewGroup;)V
+	public static final fun emitScrollEndDragEvent (Landroid/view/ViewGroup;FF)V
+	public static final fun emitScrollEvent (Landroid/view/ViewGroup;FF)V
+	public static final fun emitScrollMomentumBeginEvent (Landroid/view/ViewGroup;II)V
+	public static final fun emitScrollMomentumEndEvent (Landroid/view/ViewGroup;)V
+	public static final fun forceUpdateState (Landroid/view/ViewGroup;)V
+	public static final fun getDefaultScrollAnimationDuration (Landroid/content/Context;)I
+	public static final fun getNextFlingStartValue (Landroid/view/ViewGroup;III)I
+	public static final fun parseOverScrollMode (Ljava/lang/String;)I
+	public static final fun parseSnapToAlignment (Ljava/lang/String;)I
+	public static final fun predictFinalScrollPosition (Landroid/view/ViewGroup;IIII)Landroid/graphics/Point;
+	public final fun registerFlingAnimator (Landroid/view/ViewGroup;)V
+	public static final fun removeScrollListener (Lcom/facebook/react/views/scroll/ReactScrollViewHelper$ScrollListener;)V
+	public static final fun smoothScrollTo (Landroid/view/ViewGroup;II)V
+	public static final fun updateFabricScrollState (Landroid/view/ViewGroup;)V
+	public final fun updateFabricScrollState (Landroid/view/ViewGroup;II)V
+	public static final fun updateStateOnScrollChanged (Landroid/view/ViewGroup;FF)V
 }
 
 public abstract interface class com/facebook/react/views/scroll/ReactScrollViewHelper$HasFlingAnimator {
@@ -6705,21 +6705,21 @@ public abstract interface class com/facebook/react/views/scroll/ReactScrollViewH
 	public abstract fun getStateWrapper ()Lcom/facebook/react/uimanager/StateWrapper;
 }
 
-public class com/facebook/react/views/scroll/ReactScrollViewHelper$ReactScrollViewScrollState {
+public final class com/facebook/react/views/scroll/ReactScrollViewHelper$ReactScrollViewScrollState {
 	public fun <init> (I)V
-	public fun getDecelerationRate ()F
-	public fun getFinalAnimatedPositionScroll ()Landroid/graphics/Point;
-	public fun getIsCanceled ()Z
-	public fun getIsFinished ()Z
-	public fun getLastStateUpdateScroll ()Landroid/graphics/Point;
-	public fun getLayoutDirection ()I
-	public fun getScrollAwayPaddingTop ()I
-	public fun setDecelerationRate (F)Lcom/facebook/react/views/scroll/ReactScrollViewHelper$ReactScrollViewScrollState;
-	public fun setFinalAnimatedPositionScroll (II)Lcom/facebook/react/views/scroll/ReactScrollViewHelper$ReactScrollViewScrollState;
-	public fun setIsCanceled (Z)Lcom/facebook/react/views/scroll/ReactScrollViewHelper$ReactScrollViewScrollState;
-	public fun setIsFinished (Z)Lcom/facebook/react/views/scroll/ReactScrollViewHelper$ReactScrollViewScrollState;
-	public fun setLastStateUpdateScroll (II)Lcom/facebook/react/views/scroll/ReactScrollViewHelper$ReactScrollViewScrollState;
-	public fun setScrollAwayPaddingTop (I)Lcom/facebook/react/views/scroll/ReactScrollViewHelper$ReactScrollViewScrollState;
+	public final fun getDecelerationRate ()F
+	public final fun getFinalAnimatedPositionScroll ()Landroid/graphics/Point;
+	public final fun getLastStateUpdateScroll ()Landroid/graphics/Point;
+	public final fun getLayoutDirection ()I
+	public final fun getScrollAwayPaddingTop ()I
+	public final fun isCanceled ()Z
+	public final fun isFinished ()Z
+	public final fun setCanceled (Z)V
+	public final fun setDecelerationRate (F)V
+	public final fun setFinalAnimatedPositionScroll (II)Lcom/facebook/react/views/scroll/ReactScrollViewHelper$ReactScrollViewScrollState;
+	public final fun setFinished (Z)V
+	public final fun setLastStateUpdateScroll (II)Lcom/facebook/react/views/scroll/ReactScrollViewHelper$ReactScrollViewScrollState;
+	public final fun setScrollAwayPaddingTop (I)V
 }
 
 public abstract interface class com/facebook/react/views/scroll/ReactScrollViewHelper$ScrollListener {
