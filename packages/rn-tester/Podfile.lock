@@ -1,5 +1,5 @@
 PODS:
-  - boost (1.83.0)
+  - boost (1.84.0)
   - DoubleConversion (1.1.6)
   - FBLazyVector (1000.0.0)
   - fmt (9.1.0)
@@ -1655,7 +1655,7 @@ EXTERNAL SOURCES:
     :path: "../react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  boost: d3f49c53809116a5d38da093a8aa78bf551aed09
+  boost: b6c2ab552684b545148f00ac9e0bb243cc0a43f5
   DoubleConversion: 76ab83afb40bddeeee456813d9c04f67f78771b5
   FBLazyVector: f4492a543c5a8fa1502d3a5867e3f7252497cfe8
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
