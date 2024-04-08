@@ -3906,7 +3906,7 @@ public abstract interface class com/facebook/react/touch/ReactInterceptingViewGr
 public final class com/facebook/react/turbomodule/core/CallInvokerHolderImpl : com/facebook/react/turbomodule/core/interfaces/CallInvokerHolder {
 }
 
-public class com/facebook/react/turbomodule/core/NativeMethodCallInvokerHolderImpl : com/facebook/react/turbomodule/core/interfaces/NativeMethodCallInvokerHolder {
+public final class com/facebook/react/turbomodule/core/NativeMethodCallInvokerHolderImpl : com/facebook/react/turbomodule/core/interfaces/NativeMethodCallInvokerHolder {
 }
 
 public abstract interface class com/facebook/react/turbomodule/core/interfaces/CallInvokerHolder {
