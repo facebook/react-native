@@ -26,7 +26,6 @@ import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
 import android.widget.FrameLayout
 import androidx.annotation.UiThread
-import com.facebook.common.logging.FLog
 import com.facebook.react.R
 import com.facebook.react.bridge.GuardedRunnable
 import com.facebook.react.bridge.LifecycleEventListener
@@ -211,18 +210,11 @@ public class ReactModalHostView(context: ThemedReactContext) :
 
     // If the existing Dialog is currently up, we may need to redraw it or we may be able to update
     // the property without having to recreate the dialog
-    dialog?.let { nonNullDialog ->
-      val dialogContext: Context? =
-          ContextUtils.findContextOfType(nonNullDialog.context, Activity::class.java)
-      // TODO(T85755791): remove after investigation
-      FLog.e(TAG, "Updating existing dialog with context: $dialogContext")
-
-      if (propertyRequiresNewDialog) {
-        dismiss()
-      } else {
-        updateProperties()
-        return
-      }
+    if (propertyRequiresNewDialog) {
+      dismiss()
+    } else {
+      updateProperties()
+      return
     }
 
     // Reset the flag since we are going to create a new dialog
@@ -235,16 +227,12 @@ public class ReactModalHostView(context: ThemedReactContext) :
         }
 
     val currentActivity = getCurrentActivity()
-    val context = currentActivity ?: context
-    val newDialog = Dialog(context, theme)
+    val newDialog = Dialog(currentActivity ?: context, theme)
     dialog = newDialog
     Objects.requireNonNull<Window>(newDialog.window)
         .setFlags(
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
-
-    // TODO(T85755791): remove after investigation
-    FLog.e(TAG, "Creating new dialog from context: " + context + "@" + context.hashCode())
 
     newDialog.setContentView(contentView)
     updateProperties()
@@ -269,7 +257,8 @@ public class ReactModalHostView(context: ThemedReactContext) :
                 // We redirect the rest of the key events to the current activity, since the
                 // activity expects to receive those events and react to them, ie. in the case of
                 // the dev menu
-                val innerCurrentActivity = (context as ReactContext).currentActivity
+                val innerCurrentActivity =
+                    (this@ReactModalHostView.context as ReactContext).currentActivity
                 if (innerCurrentActivity != null) {
                   return innerCurrentActivity.onKeyUp(keyCode, event)
                 }
