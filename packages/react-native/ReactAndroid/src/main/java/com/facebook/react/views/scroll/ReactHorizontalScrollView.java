@@ -96,7 +96,6 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   private boolean mSendMomentumEvents;
   private @Nullable FpsListener mFpsListener = null;
   private @Nullable String mScrollPerfTag;
-  private @Nullable Drawable mEndBackground;
   private long mEndFillColor = Color.pack(Color.TRANSPARENT);
   private boolean mDisableIntervalMomentum = false;
   private int mSnapInterval = 0;
@@ -784,7 +783,6 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   public void setEndFillColor(long color) {
     if (color != mEndFillColor) {
       mEndFillColor = color;
-      mEndBackground = new ColorDrawable(mEndFillColor);
     }
   }
 
@@ -856,7 +854,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
 
   @Override
   public void draw(Canvas canvas) {
-    if (mEndFillColor != Color.TRANSPARENT) {
+    if (mEndFillColor != Color.pack(Color.TRANSPARENT)) {
       final View content = getContentView();
       if (content != null && content.getRight() < getWidth()) {
         Paint paint = new Paint();

@@ -97,7 +97,6 @@ public class ReactScrollView extends ScrollView
   private boolean mSendMomentumEvents;
   private @Nullable FpsListener mFpsListener = null;
   private @Nullable String mScrollPerfTag;
-  private @Nullable Drawable mEndBackground;
   private long mEndFillColor = Color.pack(Color.TRANSPARENT);
   private boolean mDisableIntervalMomentum = false;
   private int mSnapInterval = 0;
@@ -621,7 +620,7 @@ public class ReactScrollView extends ScrollView
 
   @Override
   public void draw(Canvas canvas) {
-    if (mEndFillColor != Color.TRANSPARENT) {
+    if (mEndFillColor != Color.pack(Color.TRANSPARENT)) {
       final View contentView = getContentView();
       if (contentView != null && contentView.getBottom() < getHeight()) {
         Paint paint = new Paint();
@@ -1008,7 +1007,6 @@ public class ReactScrollView extends ScrollView
   public void setEndFillColor(long color) {
     if (color != mEndFillColor) {
       mEndFillColor = color;
-      mEndBackground = new ColorDrawable(mEndFillColor);
     }
   }
 
