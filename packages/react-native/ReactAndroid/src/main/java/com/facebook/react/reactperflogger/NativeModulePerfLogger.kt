@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.perflogger
+package com.facebook.react.reactperflogger
 
 import com.facebook.jni.HybridData
 import com.facebook.soloader.SoLoader
