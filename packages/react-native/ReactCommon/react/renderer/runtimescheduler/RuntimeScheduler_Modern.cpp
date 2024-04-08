@@ -14,7 +14,6 @@
 #include <react/renderer/debug/SystraceSection.h>
 #include <react/utils/OnScopeExit.h>
 #include <utility>
-#include "ErrorUtils.h"
 
 namespace facebook::react {
 
@@ -211,7 +210,7 @@ void RuntimeScheduler_Modern::startWorkLoop(
       executeTask(runtime, topPriorityTask, currentTime);
     }
   } catch (jsi::JSError& error) {
-    handleFatalError(runtime, error);
+    handleJSError(runtime, error, true);
   }
 
   currentPriority_ = previousPriority;
