@@ -138,7 +138,7 @@ jobs:
           command: |
             cd packages/rn-tester-e2e/scripts
             chmod +x copy-packages.sh
-            copy-packages.sh
+            ./copy-packages.sh
       - run:
           name: Boot iOS Simulator
           command: source scripts/.tests.env && xcrun simctl boot "$IOS_DEVICE" || true
@@ -200,7 +200,7 @@ jobs:
           command: |
             cd packages/rn-tester-e2e/scripts
             chmod +x copy-packages.sh
-            copy-packages.sh
+            ./copy-packages.sh
       - run:
           name: Start Metro
           command: |
