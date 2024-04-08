@@ -41,7 +41,7 @@ ReactInstance::ReactInstance(
   RuntimeExecutor runtimeExecutor = [weakRuntime = std::weak_ptr(runtime_),
                                      weakTimerManager =
                                          std::weak_ptr(timerManager_),
-                                     weakJsMessageQueueThread =
+                                     weakJsThread =
                                          std::weak_ptr(jsMessageQueueThread_),
                                      weakJsErrorHander = std::weak_ptr(
                                          jsErrorHandler_)](auto callback) {
@@ -57,26 +57,28 @@ ReactInstance::ReactInstance(
       return;
     }
 
-    if (std::shared_ptr<MessageQueueThread> sharedJsMessageQueueThread =
-            weakJsMessageQueueThread.lock()) {
-      sharedJsMessageQueueThread->runOnQueue(
+    if (auto jsThread = weakJsThread.lock()) {
+      jsThread->runOnQueue(
           [weakRuntime, weakTimerManager, callback = std::move(callback)]() {
-            if (auto strongRuntime = weakRuntime.lock()) {
-              jsi::Runtime& jsiRuntime = strongRuntime->getRuntime();
-              SystraceSection s("ReactInstance::_runtimeExecutor[Callback]");
-              try {
-                callback(jsiRuntime);
+            auto runtime = weakRuntime.lock();
+            if (!runtime) {
+              return;
+            }
 
-                // If we have first-class support for microtasks,
-                // they would've been called as part of the previous callback.
-                if (!ReactNativeFeatureFlags::enableMicrotasks()) {
-                  if (auto strongTimerManager = weakTimerManager.lock()) {
-                    strongTimerManager->callReactNativeMicrotasks(jsiRuntime);
-                  }
+            jsi::Runtime& jsiRuntime = runtime->getRuntime();
+            SystraceSection s("ReactInstance::_runtimeExecutor[Callback]");
+            try {
+              callback(jsiRuntime);
+
+              // If we have first-class support for microtasks,
+              // they would've been called as part of the previous callback.
+              if (!ReactNativeFeatureFlags::enableMicrotasks()) {
+                if (auto timerManager = weakTimerManager.lock()) {
+                  timerManager->callReactNativeMicrotasks(jsiRuntime);
                 }
-              } catch (jsi::JSError& originalError) {
-                handleJSError(jsiRuntime, originalError, true);
               }
+            } catch (jsi::JSError& originalError) {
+              handleJSError(jsiRuntime, originalError, true);
             }
           });
     }
@@ -118,14 +120,11 @@ ReactInstance::ReactInstance(
 
   runtimeScheduler_ = std::make_shared<RuntimeScheduler>(runtimeExecutor);
 
-  auto pipedRuntimeExecutor =
+  bufferedRuntimeExecutor_ = std::make_shared<BufferedRuntimeExecutor>(
       [runtimeScheduler = runtimeScheduler_.get()](
           std::function<void(jsi::Runtime & runtime)>&& callback) {
         runtimeScheduler->scheduleWork(std::move(callback));
-      };
-
-  bufferedRuntimeExecutor_ =
-      std::make_shared<BufferedRuntimeExecutor>(pipedRuntimeExecutor);
+      });
 }
 
 void ReactInstance::unregisterFromInspector() {
