@@ -8,7 +8,7 @@
 #pragma once
 
 #include <FBReactNativeSpec/FBReactNativeSpecJSI.h>
-#include <react/nativemodule/webperformance/PerformanceEntryReporter.h>
+#include <react/performance/timeline/PerformanceEntryReporter.h>
 #include <functional>
 #include <optional>
 #include <string>

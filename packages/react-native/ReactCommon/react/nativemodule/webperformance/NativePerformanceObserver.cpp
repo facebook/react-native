@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "NativePerformanceObserver.h"
-#include "PerformanceEntryReporter.h"
 
+#include <react/performance/timeline/PerformanceEntryReporter.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
 #include <react/utils/CoreFeatures.h>
 
@@ -80,7 +80,14 @@ NativePerformanceObserver::popPendingEntries(jsi::Runtime& /*rt*/) {
 void NativePerformanceObserver::setOnPerformanceEntryCallback(
     jsi::Runtime& /*rt*/,
     std::optional<AsyncCallback<>> callback) {
-  PerformanceEntryReporter::getInstance().setReportingCallback(callback);
+  if (callback) {
+    PerformanceEntryReporter::getInstance().setReportingCallback(
+        [callback = std::move(callback)]() {
+          callback->callWithPriority(SchedulerPriority::IdlePriority);
+        });
+  } else {
+    PerformanceEntryReporter::getInstance().setReportingCallback(nullptr);
+  }
 }
 
 void NativePerformanceObserver::logRawEntry(
