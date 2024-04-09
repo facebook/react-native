@@ -9,7 +9,7 @@
 
 #import <React/RCTViewComponentView.h>
 
-#import <react/renderer/components/rncore/RCTComponentViewHelpers.h>
+#import <react/renderer/components/FBReactNativeSpec/RCTComponentViewHelpers.h>
 
 @interface RCTDebuggingOverlayComponentView : RCTViewComponentView <RCTDebuggingOverlayViewProtocol>
 

@@ -528,11 +528,11 @@ PODS:
     - React-Core
     - React-cxxreact
     - React-debug
+    - React-Fabric/components/FBReactNativeSpec (= 1000.0.0)
     - React-Fabric/components/inputaccessory (= 1000.0.0)
     - React-Fabric/components/iostextinput (= 1000.0.0)
     - React-Fabric/components/legacyviewmanagerinterop (= 1000.0.0)
     - React-Fabric/components/modal (= 1000.0.0)
-    - React-Fabric/components/rncore (= 1000.0.0)
     - React-Fabric/components/root (= 1000.0.0)
     - React-Fabric/components/safeareaview (= 1000.0.0)
     - React-Fabric/components/scrollview (= 1000.0.0)
@@ -540,6 +540,26 @@ PODS:
     - React-Fabric/components/textinput (= 1000.0.0)
     - React-Fabric/components/unimplementedview (= 1000.0.0)
     - React-Fabric/components/view (= 1000.0.0)
+    - React-featureflags
+    - React-graphics
+    - React-jsi
+    - React-jsiexecutor
+    - React-logger
+    - React-rendererdebug
+    - React-runtimescheduler
+    - React-utils
+    - ReactCommon/turbomodule/core
+  - React-Fabric/components/FBReactNativeSpec (1000.0.0):
+    - DoubleConversion
+    - fmt (= 9.1.0)
+    - glog
+    - hermes-engine
+    - RCT-Folly/Fabric (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-cxxreact
+    - React-debug
     - React-featureflags
     - React-graphics
     - React-jsi
@@ -610,26 +630,6 @@ PODS:
     - React-utils
     - ReactCommon/turbomodule/core
   - React-Fabric/components/modal (1000.0.0):
-    - DoubleConversion
-    - fmt (= 9.1.0)
-    - glog
-    - hermes-engine
-    - RCT-Folly/Fabric (= 2024.01.01.00)
-    - RCTRequired
-    - RCTTypeSafety
-    - React-Core
-    - React-cxxreact
-    - React-debug
-    - React-featureflags
-    - React-graphics
-    - React-jsi
-    - React-jsiexecutor
-    - React-logger
-    - React-rendererdebug
-    - React-runtimescheduler
-    - React-utils
-    - ReactCommon/turbomodule/core
-  - React-Fabric/components/rncore (1000.0.0):
     - DoubleConversion
     - fmt (= 9.1.0)
     - glog
@@ -1660,7 +1660,7 @@ SPEC CHECKSUMS:
   FBLazyVector: f4492a543c5a8fa1502d3a5867e3f7252497cfe8
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
   glog: c5d68082e772fa1c511173d6b30a9de2c05a69a2
-  hermes-engine: 221c62bc31d84593845e639e3288c6f64abc75ac
+  hermes-engine: 5b94fb45e6d9786e0c57b116e815a9c0e6d47f59
   MyNativeView: 1314dd52cc27c4a26957a5185aae6ecac6e4e2ff
   NativeCxxModuleExample: 65632ba6e8c216048f7af7d3c7bb1431d22bc2d0
   OCMock: 9491e4bec59e0b267d52a9184ff5605995e74be8
@@ -1675,7 +1675,7 @@ SPEC CHECKSUMS:
   React-cxxreact: 73a61f1e212fa084d3ae19a4ee4e3531aff646a9
   React-debug: 296b501a90c41f83961f58c6d96a01330d499da5
   React-domnativemodule: d38559c0807e0694565b806f347a465a2486a30e
-  React-Fabric: 1ea5efc1cd04fd179021a481a82773bb6574f46a
+  React-Fabric: 7d229abbab5c2adc238c196c2155c8de84e54ea3
   React-FabricImage: da62cc5089fe6bdaa6ec0ab6ccca75c7d679065d
   React-featureflags: 23f83a12963770bf3cff300e8990678192436b36
   React-featureflagsnativemodule: 7f69e5d1ddaf2dacd69ba0d75faf396c5f148508
@@ -1689,7 +1689,7 @@ SPEC CHECKSUMS:
   React-jsitracing: dd08057dd5b74119cb406beb42028da85ed5b8a5
   React-logger: 8486d7a1d32b972414b1d34a93470ee2562c6ee2
   React-Mapbuffer: fd0d0306c1c4326be5f18a61e978d32a66b20a85
-  React-microtasksnativemodule: 0f4976afa97a9e6cac7e8ec7bf15b856c690c4d9
+  React-microtasksnativemodule: f4d71bde5f51a1a17bd3438caefedacdbee0f95e
   React-nativeconfig: 40a2c848083ef4065c163c854e1c82b5f9e9db84
   React-NativeModulesApple: 48f0205edc54b8a1c24328f2deeb74b4f1570418
   React-perflogger: 70d009f755dd10002183454cdf5ad9b22de4a1d7
@@ -1720,7 +1720,7 @@ SPEC CHECKSUMS:
   ReactCommon-Samples: e2bf03c8237c461fa36bda8e4638368fa82b633c
   ScreenshotManager: 16fcf9cbbee5b261ac46641a0f502fc1cb73a089
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
-  Yoga: f58ba5e0ac1e7eb3ef4caedcf80c5aa39985b039
+  Yoga: 6699d976569a643bf13b139446612adfa2ce7ac6
 
 PODFILE CHECKSUM: 60b84dd598fc04e9ed84dbc82e2cb3b99b1d7adf
 

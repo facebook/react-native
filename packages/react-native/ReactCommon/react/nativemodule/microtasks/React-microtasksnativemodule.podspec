@@ -45,4 +45,6 @@ Pod::Spec.new do |s|
   install_modules_dependencies(s)
 
   s.dependency "ReactCommon/turbomodule/core"
+
+  add_dependency(s, "ReactCodegen", :additional_framework_paths => ["build/generated/ios"])
 end

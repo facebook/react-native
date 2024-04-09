@@ -34,21 +34,9 @@ const REACT_NATIVE_REPOSITORY_ROOT = path.join(
 );
 const REACT_NATIVE_PACKAGE_ROOT_FOLDER = path.join(__dirname, '..', '..');
 const CODEGEN_REPO_PATH = `${REACT_NATIVE_REPOSITORY_ROOT}/packages/react-native-codegen`;
-const RNCORE_CONFIGS = {
-  ios: path.join(REACT_NATIVE_PACKAGE_ROOT_FOLDER, 'ReactCommon'),
-  android: path.join(
-    REACT_NATIVE_PACKAGE_ROOT_FOLDER,
-    'ReactAndroid',
-    'build',
-    'generated',
-    'source',
-    'codegen',
-  ),
-};
 const CORE_LIBRARIES_WITH_OUTPUT_FOLDER = {
-  rncore: RNCORE_CONFIGS,
   FBReactNativeSpec: {
-    ios: null,
+    ios: path.join(REACT_NATIVE_PACKAGE_ROOT_FOLDER, 'ReactCommon'),
     android: path.join(
       REACT_NATIVE_PACKAGE_ROOT_FOLDER,
       'ReactAndroid',
@@ -96,9 +84,6 @@ function readPkgJsonInDirectory(dir) {
 }
 
 function printDeprecationWarningIfNeeded(dependency) {
-  if (dependency === REACT_NATIVE) {
-    return;
-  }
   console.log(`[Codegen] CodegenConfig Deprecated Setup for ${dependency}.
     The configuration file still contains the codegen in the libraries array.
     If possible, replace it with a single object.
@@ -415,33 +400,7 @@ function generateSchemaInfo(library, platform) {
   };
 }
 
-function shouldSkipGenerationForRncore(schemaInfo, platform) {
-  if (platform !== 'ios' || schemaInfo.library.config.name !== 'rncore') {
-    return false;
-  }
-  const rncoreOutputPath = path.join(
-    RNCORE_CONFIGS.ios,
-    'react',
-    'renderer',
-    'components',
-    'rncore',
-  );
-  const rncoreAbsolutePath = path.resolve(rncoreOutputPath);
-  return (
-    rncoreAbsolutePath.includes('node_modules') &&
-    fs.existsSync(rncoreAbsolutePath) &&
-    fs.readdirSync(rncoreAbsolutePath).length > 0
-  );
-}
-
 function generateCode(outputPath, schemaInfo, includesGeneratedCode, platform) {
-  if (shouldSkipGenerationForRncore(schemaInfo, platform)) {
-    console.log(
-      '[Codegen - rncore] Skipping iOS code generation for rncore as it has been generated already.',
-    );
-    return;
-  }
-
   const libraryName = schemaInfo.library.config.name;
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), libraryName));
   const tmpOutputDir = path.join(tmpDir, 'out');
@@ -462,11 +421,9 @@ function generateCode(outputPath, schemaInfo, includesGeneratedCode, platform) {
   );
 
   // Finally, copy artifacts to the final output directory.
-  const outputDir =
-    reactNativeCoreLibraryOutputPath(libraryName, platform) ?? outputPath;
-  fs.mkdirSync(outputDir, {recursive: true});
-  fs.cpSync(tmpOutputDir, outputDir, {recursive: true});
-  console.log(`[Codegen] Generated artifacts: ${outputDir}`);
+  fs.mkdirSync(outputPath, {recursive: true});
+  fs.cpSync(tmpOutputDir, outputPath, {recursive: true});
+  console.log(`[Codegen] Generated artifacts: ${outputPath}`);
 }
 
 function generateSchemaInfos(libraries) {
@@ -619,19 +576,23 @@ function cleanupEmptyFilesAndFolders(filepath) {
 }
 
 function generateRNCoreComponentsIOS(projectRoot /*: string */) /*: void*/ {
-  const ios = 'ios';
+  const platform = 'ios';
   buildCodegenIfNeeded();
   const pkgJson = readPkgJsonInDirectory(projectRoot);
-  const rncoreLib = findProjectRootLibraries(pkgJson, projectRoot).filter(
-    library => library.config.name === 'rncore',
+  const coreSpec = findProjectRootLibraries(pkgJson, projectRoot).filter(
+    library => library.config.name === 'FBReactNativeSpec',
   )[0];
-  if (!rncoreLib) {
+  if (!coreSpec) {
     throw new Error(
-      "[Codegen] Can't find rncore library. Failed to generate rncore artifacts",
+      "[Codegen] Can't find FBReactNativeSpec library, failed to generate artifacts",
     );
   }
-  const rncoreSchemaInfo = generateSchemaInfo(rncoreLib, ios);
-  generateCode('', rncoreSchemaInfo, false, ios);
+  const outputPath = reactNativeCoreLibraryOutputPath(
+    'FBReactNativeSpec',
+    platform,
+  );
+  const coreSchemaInfo = generateSchemaInfo(coreSpec, ios);
+  generateCode(outputPath, coreSchemaInfo, false, platform);
 }
 
 // Execute
@@ -689,6 +650,7 @@ function execute(projectRoot, targetPlatform, baseOutputPath) {
         pkgJson,
         platform,
       );
+      mkdirp.sync(outputPath);
 
       const schemaInfos = generateSchemaInfos(libraries);
       generateNativeCode(

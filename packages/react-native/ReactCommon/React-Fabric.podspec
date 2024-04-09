@@ -95,6 +95,7 @@ Pod::Spec.new do |s|
       "\"$(PODS_TARGET_SRCROOT)\"",
       "\"$(PODS_ROOT)/DoubleConversion\"",
       "\"$(PODS_ROOT)/fmt/include\"",
+      "\"$(PODS_ROOT)/Headers/Public/ReactCodegen\""
     ]
 
     if ENV['USE_FRAMEWORKS']
@@ -130,7 +131,6 @@ Pod::Spec.new do |s|
   end
 
   s.subspec "components" do |ss|
-
     ss.subspec "inputaccessory" do |sss|
       sss.dependency             folly_dep_name, folly_version
       sss.compiler_flags       = folly_compiler_flags
@@ -156,11 +156,11 @@ Pod::Spec.new do |s|
       sss.header_dir           = "react/renderer/components/modal"
     end
 
-    ss.subspec "rncore" do |sss|
+    ss.subspec "FBReactNativeSpec" do |sss|
       sss.dependency             folly_dep_name, folly_version
       sss.compiler_flags       = folly_compiler_flags
-      sss.source_files         = "react/renderer/components/rncore/**/*.{m,mm,cpp,h}"
-      sss.header_dir           = "react/renderer/components/rncore"
+      sss.source_files         = "react/renderer/components/FBReactNativeSpec/**/*.{m,mm,cpp,h}"
+      sss.header_dir           = "react/renderer/components/FBReactNativeSpec"
     end
 
     ss.subspec "root" do |sss|
@@ -177,7 +177,6 @@ Pod::Spec.new do |s|
       sss.source_files         = "react/renderer/components/safeareaview/**/*.{m,mm,cpp,h}"
       sss.exclude_files        = "react/renderer/components/safeareaview/tests"
       sss.header_dir           = "react/renderer/components/safeareaview"
-
     end
 
     ss.subspec "scrollview" do |sss|
@@ -186,7 +185,6 @@ Pod::Spec.new do |s|
       sss.source_files         = "react/renderer/components/scrollview/**/*.{m,mm,cpp,h}"
       sss.exclude_files        = "react/renderer/components/scrollview/tests"
       sss.header_dir           = "react/renderer/components/scrollview"
-
     end
 
     ss.subspec "text" do |sss|
@@ -195,7 +193,6 @@ Pod::Spec.new do |s|
       sss.source_files         = "react/renderer/components/text/**/*.{m,mm,cpp,h}"
       sss.exclude_files        = "react/renderer/components/text/tests"
       sss.header_dir           = "react/renderer/components/text"
-
     end
 
     ss.subspec "iostextinput" do |sss|
@@ -203,7 +200,6 @@ Pod::Spec.new do |s|
       sss.compiler_flags       = folly_compiler_flags
       sss.source_files         = "react/renderer/components/textinput/platform/ios/**/*.{m,mm,cpp,h}"
       sss.header_dir           = "react/renderer/components/iostextinput"
-
     end
 
     ss.subspec "textinput" do |sss|
@@ -211,7 +207,6 @@ Pod::Spec.new do |s|
       sss.compiler_flags       = folly_compiler_flags
       sss.source_files         = "react/renderer/components/textinput/*.{m,mm,cpp,h}"
       sss.header_dir           = "react/renderer/components/textinput"
-
     end
 
     ss.subspec "unimplementedview" do |sss|
@@ -220,7 +215,6 @@ Pod::Spec.new do |s|
       sss.source_files         = "react/renderer/components/unimplementedview/**/*.{m,mm,cpp,h}"
       sss.exclude_files        = "react/renderer/components/unimplementedview/tests"
       sss.header_dir           = "react/renderer/components/unimplementedview"
-
     end
 
     ss.subspec "view" do |sss|
@@ -310,7 +304,6 @@ Pod::Spec.new do |s|
     ss.source_files         = "react/renderer/telemetry/**/*.{m,mm,cpp,h}"
     ss.exclude_files        = "react/renderer/telemetry/tests"
     ss.header_dir           = "react/renderer/telemetry"
-
   end
 
   s.subspec "leakchecker" do |ss|
@@ -321,20 +314,4 @@ Pod::Spec.new do |s|
     ss.header_dir           = "react/renderer/leakchecker"
     ss.pod_target_xcconfig  = { "GCC_WARN_PEDANTIC" => "YES" }
   end
-
-  s.script_phases = [
-    {
-      :name => '[RN]Check rncore',
-      :execution_position => :before_compile,
-      :script => <<-EOS
-echo "Checking whether Codegen has run..."
-rncorePath="$REACT_NATIVE_PATH/ReactCommon/react/renderer/components/rncore"
-
-if [[ ! -d "$rncorePath" ]]; then
-  echo 'error: Codegen did not run properly in your project. Please reinstall cocoapods with `bundle exec pod install`.'
-  exit 1
-fi
-      EOS
-    }
-  ]
 end

@@ -147,21 +147,8 @@
     "yargs": "^17.6.2"
   },
   "codegenConfig": {
-    "libraries": [
-      {
-        "name": "FBReactNativeSpec",
-        "type": "modules",
-        "ios": {},
-        "android": {},
-        "jsSrcsDir": "src"
-      },
-      {
-        "name": "rncore",
-        "type": "components",
-        "ios": {},
-        "android": {},
-        "jsSrcsDir": "src"
-      }
-    ]
+    "name": "FBReactNativeSpec",
+    "type": "all",
+    "jsSrcsDir": "src"
   }
 }
