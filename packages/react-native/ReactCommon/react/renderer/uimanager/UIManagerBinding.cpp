@@ -196,7 +196,6 @@ jsi::Value UIManagerBinding::get(
     jsi::Runtime& runtime,
     const jsi::PropNameID& name) {
   auto methodName = name.utf8(runtime);
-  SystraceSection s("UIManagerBinding::get", "name", methodName);
 
   // Convert shared_ptr<UIManager> to a raw ptr
   // Why? Because:
