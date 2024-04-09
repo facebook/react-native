@@ -1466,11 +1466,11 @@ public class com/facebook/react/bridge/RuntimeScheduler {
 	public fun <init> (Lcom/facebook/jni/HybridData;)V
 }
 
-public class com/facebook/react/bridge/SoftAssertions {
-	public fun <init> ()V
-	public static fun assertCondition (ZLjava/lang/String;)V
-	public static fun assertNotNull (Ljava/lang/Object;)Ljava/lang/Object;
-	public static fun assertUnreachable (Ljava/lang/String;)V
+public final class com/facebook/react/bridge/SoftAssertions {
+	public static final field INSTANCE Lcom/facebook/react/bridge/SoftAssertions;
+	public static final fun assertCondition (ZLjava/lang/String;)V
+	public static final fun assertNotNull (Ljava/lang/Object;)Ljava/lang/Object;
+	public static final fun assertUnreachable (Ljava/lang/String;)V
 }
 
 public abstract interface class com/facebook/react/bridge/Systrace : com/facebook/react/bridge/JavaScriptModule {
