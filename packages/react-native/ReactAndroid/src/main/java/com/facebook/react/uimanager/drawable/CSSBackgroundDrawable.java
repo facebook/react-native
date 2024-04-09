@@ -28,7 +28,9 @@ import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.FloatUtil;
 import com.facebook.react.uimanager.Spacing;
-import java.util.Arrays;
+import com.facebook.react.uimanager.style.BorderRadiusProp;
+import com.facebook.react.uimanager.style.BorderRadiusStyle;
+import com.facebook.react.uimanager.style.ComputedBorderRadius;
 import java.util.Locale;
 
 /**
@@ -99,7 +101,6 @@ public class CSSBackgroundDrawable extends Drawable {
   private @Nullable PointF mInnerBottomRightCorner;
   private @Nullable PointF mInnerBottomLeftCorner;
   private boolean mNeedUpdatePathForBorderRadius = false;
-  private float mBorderRadius = Float.NaN;
 
   /* Used by all types of background and for drawing borders */
   private final Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -112,24 +113,9 @@ public class CSSBackgroundDrawable extends Drawable {
   // the paths, overlapping them and closing the visible gap.
   private final float mGapBetweenPaths = 0.8f;
 
-  private @Nullable float[] mBorderCornerRadii;
+  private BorderRadiusStyle mBorderRadius = new BorderRadiusStyle();
   private final Context mContext;
   private int mLayoutDirection;
-
-  public enum BorderRadiusLocation {
-    TOP_LEFT,
-    TOP_RIGHT,
-    BOTTOM_RIGHT,
-    BOTTOM_LEFT,
-    TOP_START,
-    TOP_END,
-    BOTTOM_START,
-    BOTTOM_END,
-    END_END,
-    END_START,
-    START_END,
-    START_START
-  }
 
   public CSSBackgroundDrawable(Context context) {
     mContext = context;
@@ -146,19 +132,7 @@ public class CSSBackgroundDrawable extends Drawable {
   }
 
   public boolean hasRoundedBorders() {
-    if (!Float.isNaN(mBorderRadius) && mBorderRadius > 0) {
-      return true;
-    }
-
-    if (mBorderCornerRadii != null) {
-      for (final float borderRadii : mBorderCornerRadii) {
-        if (!Float.isNaN(borderRadii) && borderRadii > 0) {
-          return true;
-        }
-      }
-    }
-
-    return false;
+    return mBorderRadius.hasRoundedBorders();
   }
 
   @Override
@@ -193,7 +167,7 @@ public class CSSBackgroundDrawable extends Drawable {
   /* Android's elevation implementation requires this to be implemented to know where to draw the shadow. */
   @Override
   public void getOutline(Outline outline) {
-    if ((!Float.isNaN(mBorderRadius) && mBorderRadius > 0) || mBorderCornerRadii != null) {
+    if (hasRoundedBorders()) {
       updatePath();
 
       outline.setConvexPath(mPathForBorderRadiusOutline);
@@ -260,48 +234,36 @@ public class CSSBackgroundDrawable extends Drawable {
     }
   }
 
+  /**
+   * @deprecated Use {@link #setBorderRadius(BorderRadiusProp, Float)} instead.
+   */
   public void setRadius(float radius) {
-    if (!FloatUtil.floatsEqual(mBorderRadius, radius)) {
-      mBorderRadius = radius;
-      mNeedUpdatePathForBorderRadius = true;
-      invalidateSelf();
-    }
+    @Nullable Float boxedRadius = Float.isNaN(radius) ? null : Float.valueOf(radius);
+    setBorderRadius(BorderRadiusProp.BORDER_RADIUS, boxedRadius);
   }
 
+  /**
+   * @deprecated Use {@link #setBorderRadius(BorderRadiusProp, Float)} instead.
+   */
   public void setRadius(float radius, int position) {
-    if (mBorderCornerRadii == null) {
-      mBorderCornerRadii = new float[12];
-      Arrays.fill(mBorderCornerRadii, Float.NaN);
-    }
+    @Nullable Float boxedRadius = Float.isNaN(radius) ? null : Float.valueOf(radius);
+    setBorderRadius(BorderRadiusProp.values()[position], boxedRadius);
+  }
 
-    if (!FloatUtil.floatsEqual(mBorderCornerRadii[position], radius)) {
-      mBorderCornerRadii[position] = radius;
+  public void setBorderRadius(BorderRadiusProp property, @Nullable Float radius) {
+    if (!FloatUtil.floatsEqual(mBorderRadius.getUniform(), radius)) {
+      mBorderRadius.set(property, radius);
       mNeedUpdatePathForBorderRadius = true;
       invalidateSelf();
     }
   }
 
-  public float getFullBorderRadius() {
-    return Float.isNaN(mBorderRadius) ? 0 : mBorderRadius;
+  public void setBorderRadius(BorderRadiusStyle radius) {
+    mBorderRadius = radius;
   }
 
-  public float getBorderRadius(final BorderRadiusLocation location) {
-    return getBorderRadiusOrDefaultTo(Float.NaN, location);
-  }
-
-  public float getBorderRadiusOrDefaultTo(
-      final float defaultValue, final BorderRadiusLocation location) {
-    if (mBorderCornerRadii == null) {
-      return defaultValue;
-    }
-
-    final float radius = mBorderCornerRadii[location.ordinal()];
-
-    if (Float.isNaN(radius)) {
-      return defaultValue;
-    }
-
-    return radius;
+  public BorderRadiusStyle getBorderRadius() {
+    return mBorderRadius;
   }
 
   public void setColor(int color) {
@@ -606,95 +568,11 @@ public class CSSBackgroundDrawable extends Drawable {
     mTempRectForCenterDrawPath.left += borderWidth.left * 0.5f;
     mTempRectForCenterDrawPath.right -= borderWidth.right * 0.5f;
 
-    final float borderRadius = getFullBorderRadius();
-    float topLeftRadius = getBorderRadiusOrDefaultTo(borderRadius, BorderRadiusLocation.TOP_LEFT);
-    float topRightRadius = getBorderRadiusOrDefaultTo(borderRadius, BorderRadiusLocation.TOP_RIGHT);
-    float bottomLeftRadius =
-        getBorderRadiusOrDefaultTo(borderRadius, BorderRadiusLocation.BOTTOM_LEFT);
-    float bottomRightRadius =
-        getBorderRadiusOrDefaultTo(borderRadius, BorderRadiusLocation.BOTTOM_RIGHT);
-
-    final boolean isRTL = getResolvedLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
-    float topStartRadius = getBorderRadius(BorderRadiusLocation.TOP_START);
-    float topEndRadius = getBorderRadius(BorderRadiusLocation.TOP_END);
-    float bottomStartRadius = getBorderRadius(BorderRadiusLocation.BOTTOM_START);
-    float bottomEndRadius = getBorderRadius(BorderRadiusLocation.BOTTOM_END);
-
-    float endEndRadius = getBorderRadius(BorderRadiusLocation.END_END);
-    float endStartRadius = getBorderRadius(BorderRadiusLocation.END_START);
-    float startEndRadius = getBorderRadius(BorderRadiusLocation.START_END);
-    float startStartRadius = getBorderRadius(BorderRadiusLocation.START_START);
-
-    if (I18nUtil.getInstance().doLeftAndRightSwapInRTL(mContext)) {
-      if (Float.isNaN(topStartRadius)) {
-        topStartRadius = topLeftRadius;
-      }
-
-      if (Float.isNaN(topEndRadius)) {
-        topEndRadius = topRightRadius;
-      }
-
-      if (Float.isNaN(bottomStartRadius)) {
-        bottomStartRadius = bottomLeftRadius;
-      }
-
-      if (Float.isNaN(bottomEndRadius)) {
-        bottomEndRadius = bottomRightRadius;
-      }
-
-      final float logicalTopStartRadius =
-          Float.isNaN(topStartRadius) ? startStartRadius : topStartRadius;
-      final float logicalTopEndRadius = Float.isNaN(topEndRadius) ? startEndRadius : topEndRadius;
-      final float logicalBottomStartRadius =
-          Float.isNaN(bottomStartRadius) ? endStartRadius : bottomStartRadius;
-      final float logicalBottomEndRadius =
-          Float.isNaN(bottomEndRadius) ? endEndRadius : bottomEndRadius;
-
-      final float directionAwareTopLeftRadius = isRTL ? logicalTopEndRadius : logicalTopStartRadius;
-      final float directionAwareTopRightRadius =
-          isRTL ? logicalTopStartRadius : logicalTopEndRadius;
-      final float directionAwareBottomLeftRadius =
-          isRTL ? logicalBottomEndRadius : logicalBottomStartRadius;
-      final float directionAwareBottomRightRadius =
-          isRTL ? logicalBottomStartRadius : logicalBottomEndRadius;
-
-      topLeftRadius = directionAwareTopLeftRadius;
-      topRightRadius = directionAwareTopRightRadius;
-      bottomLeftRadius = directionAwareBottomLeftRadius;
-      bottomRightRadius = directionAwareBottomRightRadius;
-    } else {
-      final float logicalTopStartRadius =
-          Float.isNaN(topStartRadius) ? startStartRadius : topStartRadius;
-      final float logicalTopEndRadius = Float.isNaN(topEndRadius) ? startEndRadius : topEndRadius;
-      final float logicalBottomStartRadius =
-          Float.isNaN(bottomStartRadius) ? endStartRadius : bottomStartRadius;
-      final float logicalBottomEndRadius =
-          Float.isNaN(bottomEndRadius) ? endEndRadius : bottomEndRadius;
-
-      final float directionAwareTopLeftRadius = isRTL ? logicalTopEndRadius : logicalTopStartRadius;
-      final float directionAwareTopRightRadius =
-          isRTL ? logicalTopStartRadius : logicalTopEndRadius;
-      final float directionAwareBottomLeftRadius =
-          isRTL ? logicalBottomEndRadius : logicalBottomStartRadius;
-      final float directionAwareBottomRightRadius =
-          isRTL ? logicalBottomStartRadius : logicalBottomEndRadius;
-
-      if (!Float.isNaN(directionAwareTopLeftRadius)) {
-        topLeftRadius = directionAwareTopLeftRadius;
-      }
-
-      if (!Float.isNaN(directionAwareTopRightRadius)) {
-        topRightRadius = directionAwareTopRightRadius;
-      }
-
-      if (!Float.isNaN(directionAwareBottomLeftRadius)) {
-        bottomLeftRadius = directionAwareBottomLeftRadius;
-      }
-
-      if (!Float.isNaN(directionAwareBottomRightRadius)) {
-        bottomRightRadius = directionAwareBottomRightRadius;
-      }
-    }
+    ComputedBorderRadius radius = mBorderRadius.resolve(mLayoutDirection, mContext);
+    float topLeftRadius = radius.getTopLeft();
+    float topRightRadius = radius.getTopRight();
+    float bottomLeftRadius = radius.getBottomLeft();
+    float bottomRightRadius = radius.getBottomRight();
 
     final float innerTopLeftRadiusX = Math.max(topLeftRadius - borderWidth.left, 0);
     final float innerTopLeftRadiusY = Math.max(topLeftRadius - borderWidth.top, 0);
