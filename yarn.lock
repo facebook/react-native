@@ -2416,6 +2416,18 @@
     fast-glob "^3.3.2"
     joi "^17.2.1"
 
+"@react-native-community/cli-config@^13.6.4":
+  version "13.6.4"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-config/-/cli-config-13.6.4.tgz#3004c7bca55cb384b3a99c38c1a48dad24533237"
+  integrity sha512-GGK415WoTx1R9FXtfb/cTnan9JIWwSm+a5UCuFd6+suzS0oIt1Md1vCzjNh6W1CK3b43rZC2e+3ZU7Ljd7YtyQ==
+  dependencies:
+    "@react-native-community/cli-tools" "13.6.4"
+    chalk "^4.1.2"
+    cosmiconfig "^5.1.0"
+    deepmerge "^4.3.0"
+    fast-glob "^3.3.2"
+    joi "^17.2.1"
+
 "@react-native-community/cli-debugger-ui@14.0.0-alpha.2":
   version "14.0.0-alpha.2"
   resolved "https://registry.yarnpkg.com/@react-native-community/cli-debugger-ui/-/cli-debugger-ui-14.0.0-alpha.2.tgz#484847fb01eef67ea2c26cd35a88342112c15ff9"
@@ -2469,6 +2481,18 @@
     fast-xml-parser "^4.0.12"
     ora "^5.4.1"
 
+"@react-native-community/cli-platform-apple@^13.6.4":
+  version "13.6.4"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-apple/-/cli-platform-apple-13.6.4.tgz#4912eaf519800a957745192718822b94655c8119"
+  integrity sha512-TLBiotdIz0veLbmvNQIdUv9fkBx7m34ANGYqr5nH7TFxdmey+Z+omoBqG/HGpvyR7d0AY+kZzzV4k+HkYHM/aQ==
+  dependencies:
+    "@react-native-community/cli-tools" "13.6.4"
+    chalk "^4.1.2"
+    execa "^5.0.0"
+    fast-glob "^3.3.2"
+    fast-xml-parser "^4.0.12"
+    ora "^5.4.1"
+
 "@react-native-community/cli-platform-ios@14.0.0-alpha.2":
   version "14.0.0-alpha.2"
   resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-ios/-/cli-platform-ios-14.0.0-alpha.2.tgz#6651691421d57d4230ee8d0dcd309af94a8303a7"
@@ -2491,6 +2515,23 @@
     serve-static "^1.13.1"
     ws "^7.5.1"
 
+"@react-native-community/cli-tools@13.6.4", "@react-native-community/cli-tools@^13.6.4":
+  version "13.6.4"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-tools/-/cli-tools-13.6.4.tgz#ab396604b6dcf215790807fe89656e779b11f0ec"
+  integrity sha512-N4oHLLbeTdg8opqJozjClmuTfazo1Mt+oxU7mr7m45VCsFgBqTF70Uwad289TM/3l44PP679NRMAHVYqpIRYtQ==
+  dependencies:
+    appdirsjs "^1.2.4"
+    chalk "^4.1.2"
+    execa "^5.0.0"
+    find-up "^5.0.0"
+    mime "^2.4.1"
+    node-fetch "^2.6.0"
+    open "^6.2.0"
+    ora "^5.4.1"
+    semver "^7.5.2"
+    shell-quote "^1.7.3"
+    sudo-prompt "^9.0.0"
+
 "@react-native-community/cli-tools@14.0.0-alpha.2":
   version "14.0.0-alpha.2"
   resolved "https://registry.yarnpkg.com/@react-native-community/cli-tools/-/cli-tools-14.0.0-alpha.2.tgz#fa898083fa48449d9a2a08624fa2d71057a37d2e"
@@ -2512,6 +2553,13 @@
   version "14.0.0-alpha.2"
   resolved "https://registry.yarnpkg.com/@react-native-community/cli-types/-/cli-types-14.0.0-alpha.2.tgz#6ebb5d088350901ed6d9870ab9b1e75dd7609ca9"
   integrity sha512-aG6HvmhnmMU5kNnSxLtajX8b75hE2Y0bzJLhVX6eqR+nUhqCcwKvGxiHSIU93K3aPRnp1sXMo8owaBVBDESGYQ==
+  dependencies:
+    joi "^17.2.1"
+
+"@react-native-community/cli-types@^13.6.4":
+  version "13.6.4"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-types/-/cli-types-13.6.4.tgz#e499a3691ee597aa4b93196ff182a4782fae7afb"
+  integrity sha512-NxGCNs4eYtVC8x0wj0jJ/MZLRy8C+B9l8lY8kShuAcvWTv5JXRqmXjg8uK1aA+xikPh0maq4cc/zLw1roroY/A==
   dependencies:
     joi "^17.2.1"
 
@@ -2658,6 +2706,19 @@
   resolved "https://registry.yarnpkg.com/@types/color-name/-/color-name-1.1.1.tgz#1c1261bbeaa10a8055bbc5d8ab84b7b2afc846a0"
   integrity sha512-rr+OQyAjxze7GgWrSaJwydHStIhHq2lvY3BOC2Mj7KnzI7XK0Uw1TOOdI9lDoajEbSWLiYgoo4f1R51erQfhPQ==
 
+"@types/envinfo@^7.8.3":
+  version "7.8.3"
+  resolved "https://registry.yarnpkg.com/@types/envinfo/-/envinfo-7.8.3.tgz#6fccc3425e300ee377aad15423e555dc6fc12fa1"
+  integrity sha512-qzV1XMjmzgmndci6L5HlzExf4w9A5jQPNpW/t4sSljErKbS8y6231ToHO9ir2Xjf+2zG1C540+Wmh0zpUsGu0A==
+
+"@types/fs-extra@^11.0.4":
+  version "11.0.4"
+  resolved "https://registry.yarnpkg.com/@types/fs-extra/-/fs-extra-11.0.4.tgz#e16a863bb8843fba8c5004362b5a73e17becca45"
+  integrity sha512-yTbItCNreRooED33qjunPthRcSjERP1r4MqCZc7wv0u2sUkzTFp45tgUfS5+r7FrZPdmCCNflLhVSP/o+SemsQ==
+  dependencies:
+    "@types/jsonfile" "*"
+    "@types/node" "*"
+
 "@types/glob@^8.1.0":
   version "8.1.0"
   resolved "https://registry.yarnpkg.com/@types/glob/-/glob-8.1.0.tgz#b63e70155391b0584dce44e7ea25190bbc38f2fc"
@@ -2722,6 +2783,13 @@
   version "7.0.12"
   resolved "https://registry.yarnpkg.com/@types/json-schema/-/json-schema-7.0.12.tgz#d70faba7039d5fca54c83c7dbab41051d2b6f6cb"
   integrity sha512-Hr5Jfhc9eYOQNPYO5WLDq/n4jqijdHNlDXjuAQkkt+mWdQR+XJToOHrsD4cPaMXpn6KO7y2+wM8AZEs8VpBLVA==
+
+"@types/jsonfile@*":
+  version "6.1.4"
+  resolved "https://registry.yarnpkg.com/@types/jsonfile/-/jsonfile-6.1.4.tgz#614afec1a1164e7d670b4a7ad64df3e7beb7b702"
+  integrity sha512-D5qGUYwjvnNNextdU59/+fI+spnwtTFmyQP0h+PfIOSkNfpU6AOICUOkm4i0OnSk+NyjdPJrxCDro0sJsWlRpQ==
+  dependencies:
+    "@types/node" "*"
 
 "@types/keyv@^3.1.4":
   version "3.1.4"
@@ -3998,6 +4066,11 @@ command-exists@^1.2.8:
   resolved "https://registry.yarnpkg.com/command-exists/-/command-exists-1.2.8.tgz#715acefdd1223b9c9b37110a149c6392c2852291"
   integrity sha512-PM54PkseWbiiD/mMsbvW351/u+dafwTJ0ye2qB60G1aGQP9j3xK2gmMDc+R34L3nDtx4qMCitXT75mkbkGJDLw==
 
+commander@^12.0.0:
+  version "12.0.0"
+  resolved "https://registry.yarnpkg.com/commander/-/commander-12.0.0.tgz#b929db6df8546080adfd004ab215ed48cf6f2592"
+  integrity sha512-MwVNWlYjDTtOjX5PiD7o5pK0UrFU/OYgcJfjjK4RaHZETNtjJqrZa9Y9ds88+A+f+d5lv+561eZ+yCKoS3gbAA==
+
 commander@^2.12.1, commander@^2.18.0, commander@^2.20.0:
   version "2.20.3"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.20.3.tgz#fd485e84c03eb4881c20722ba48035e8531aeb33"
@@ -5203,6 +5276,15 @@ fs-extra@^11.1.1:
   version "11.1.1"
   resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-11.1.1.tgz#da69f7c39f3b002378b0954bb6ae7efdc0876e2d"
   integrity sha512-MGIE4HOvQCeUCzmlHs0vXpih4ysz4wg9qiSAu6cd42lVwPbTM1TjV7RusoyQqMmk/95gdQZX72u+YW+c3eEpFQ==
+  dependencies:
+    graceful-fs "^4.2.0"
+    jsonfile "^6.0.1"
+    universalify "^2.0.0"
+
+fs-extra@^11.2.0:
+  version "11.2.0"
+  resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-11.2.0.tgz#e70e17dfad64232287d01929399e0ea7c86b0e5b"
+  integrity sha512-PmDi3uwK5nFuXh7XDTlVnS17xJS7vW36is2+w3xcv8SVxiB4NyATf4ctkVY5bkSjX0Y4nbvZCq1/EjtEyr9ktw==
   dependencies:
     graceful-fs "^4.2.0"
     jsonfile "^6.0.1"
@@ -9578,6 +9660,11 @@ yaml@^2.2.1:
   version "2.3.1"
   resolved "https://registry.yarnpkg.com/yaml/-/yaml-2.3.1.tgz#02fe0975d23cd441242aa7204e09fc28ac2ac33b"
   integrity sha512-2eHWfjaoXgTBC2jNM1LRef62VQa0umtvRiDSk6HSzW7RvS5YtkabJrwYLLEKWBc8a5U2PTSCs+dJjUTJdlHsWQ==
+
+yaml@^2.4.1:
+  version "2.4.1"
+  resolved "https://registry.yarnpkg.com/yaml/-/yaml-2.4.1.tgz#2e57e0b5e995292c25c75d2658f0664765210eed"
+  integrity sha512-pIXzoImaqmfOrL7teGUBt/T7ZDnyeGBWyXQBvOVhLkWLN37GXv8NMLK406UY6dS51JfcQHsmcW5cJ441bHg6Lg==
 
 yargs-parser@^18.1.2:
   version "18.1.3"
