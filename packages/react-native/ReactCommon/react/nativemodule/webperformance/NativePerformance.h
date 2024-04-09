@@ -11,14 +11,7 @@
 #include <memory>
 #include <string>
 
-#include "NativePerformanceObserver.h"
-
 namespace facebook::react {
-class PerformanceEntryReporter;
-
-#pragma mark - Structs
-
-#pragma mark - implementation
 
 class NativePerformance : public NativePerformanceCxxSpec<NativePerformance> {
  public:
@@ -54,8 +47,6 @@ class NativePerformance : public NativePerformanceCxxSpec<NativePerformance> {
   // tracking.
   std::unordered_map<std::string, double> getReactNativeStartupTiming(
       jsi::Runtime& rt);
-
- private:
 };
 
 } // namespace facebook::react

@@ -30,8 +30,8 @@ PerformanceEntryReporter::PerformanceEntryReporter() {
 }
 
 void PerformanceEntryReporter::setReportingCallback(
-    std::optional<AsyncCallback<>> callback) {
-  callback_ = callback;
+    std::function<void()> callback) {
+  callback_ = std::move(callback);
 }
 
 DOMHighResTimeStamp PerformanceEntryReporter::getCurrentTimeStamp() const {
@@ -295,7 +295,7 @@ void PerformanceEntryReporter::logEventEntry(
 
 void PerformanceEntryReporter::scheduleFlushBuffer() {
   if (callback_) {
-    callback_->callWithPriority(SchedulerPriority::IdlePriority);
+    callback_();
   }
 }
 
