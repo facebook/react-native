@@ -248,13 +248,18 @@
 
 - (RCTRootViewFactory *)createRCTRootViewFactory
 {
-  RCTRootViewFactoryConfiguration *configuration =
-      [[RCTRootViewFactoryConfiguration alloc] initWithBundleURL:self.bundleURL
-                                                  newArchEnabled:self.fabricEnabled
-                                              turboModuleEnabled:self.turboModuleEnabled
-                                               bridgelessEnabled:self.bridgelessEnabled];
-
   __weak __typeof(self) weakSelf = self;
+  RCTBundleURLBlock bundleUrlBlock = ^{
+    RCTAppDelegate *strongSelf = weakSelf;
+    return strongSelf.bundleURL;
+  };
+
+  RCTRootViewFactoryConfiguration *configuration =
+      [[RCTRootViewFactoryConfiguration alloc] initWithBundleURLBlock:bundleUrlBlock
+                                                       newArchEnabled:self.fabricEnabled
+                                                   turboModuleEnabled:self.turboModuleEnabled
+                                                    bridgelessEnabled:self.bridgelessEnabled];
+
   configuration.createRootViewWithBridge = ^UIView *(RCTBridge *bridge, NSString *moduleName, NSDictionary *initProps)
   {
     return [weakSelf createRootViewWithBridge:bridge moduleName:moduleName initProps:initProps];

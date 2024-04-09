@@ -79,15 +79,31 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
   _RCTInitializeJSThreadConstantInternal();
 }
 
-/**
- Host initialization should not be resource intensive. A host may be created before any intention of using React Native
- has been expressed.
- */
 - (instancetype)initWithBundleURL:(NSURL *)bundleURL
                      hostDelegate:(id<RCTHostDelegate>)hostDelegate
        turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
                  jsEngineProvider:(RCTHostJSEngineProvider)jsEngineProvider
                     launchOptions:(nullable NSDictionary *)launchOptions
+{
+  return [self
+       initWithBundleURLProvider:^{
+         return bundleURL;
+       }
+                    hostDelegate:hostDelegate
+      turboModuleManagerDelegate:turboModuleManagerDelegate
+                jsEngineProvider:jsEngineProvider
+                   launchOptions:launchOptions];
+}
+
+/**
+ Host initialization should not be resource intensive. A host may be created before any intention of using React Native
+ has been expressed.
+ */
+- (instancetype)initWithBundleURLProvider:(RCTHostBundleURLProvider)provider
+                             hostDelegate:(id<RCTHostDelegate>)hostDelegate
+               turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
+                         jsEngineProvider:(RCTHostJSEngineProvider)jsEngineProvider
+                            launchOptions:(nullable NSDictionary *)launchOptions
 {
   if (self = [super init]) {
     _hostDelegate = hostDelegate;
@@ -99,7 +115,6 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
     _launchOptions = [launchOptions copy];
 
     __weak RCTHost *weakSelf = self;
-
     auto bundleURLGetter = ^NSURL *()
     {
       RCTHost *strongSelf = weakSelf;
@@ -124,7 +139,6 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
       return strongSelf->_bundleURLProvider();
     };
 
-    [self _setBundleURL:bundleURL];
     [_bundleManager setBridgelessBundleURLGetter:bundleURLGetter
                                        andSetter:bundleURLSetter
                                 andDefaultGetter:defaultBundleURLGetter];
@@ -170,6 +184,9 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
 
 - (void)start
 {
+  if (_bundleURLProvider) {
+    [self _setBundleURL:_bundleURLProvider()];
+  }
   auto &inspectorFlags = jsinspector_modern::InspectorFlags::getInstance();
   if (inspectorFlags.getEnableModernCDPRegistry() && !_inspectorPageId.has_value()) {
     _inspectorTarget =

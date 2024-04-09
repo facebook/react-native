@@ -21,6 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol RCTTurboModuleManagerDelegate;
 
+typedef NSURL *_Nullable (^RCTHostBundleURLProvider)(void);
+
 // Runtime API
 
 @protocol RCTHostDelegate <NSObject>
@@ -45,11 +47,17 @@ typedef std::shared_ptr<facebook::react::JSRuntimeFactory> (^RCTHostJSEngineProv
 
 @interface RCTHost : NSObject
 
+- (instancetype)initWithBundleURLProvider:(RCTHostBundleURLProvider)provider
+                             hostDelegate:(id<RCTHostDelegate>)hostDelegate
+               turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
+                         jsEngineProvider:(RCTHostJSEngineProvider)jsEngineProvider
+                            launchOptions:(nullable NSDictionary *)launchOptions NS_DESIGNATED_INITIALIZER;
+
 - (instancetype)initWithBundleURL:(NSURL *)bundleURL
                      hostDelegate:(id<RCTHostDelegate>)hostDelegate
        turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
                  jsEngineProvider:(RCTHostJSEngineProvider)jsEngineProvider
-                    launchOptions:(nullable NSDictionary *)launchOptions NS_DESIGNATED_INITIALIZER;
+                    launchOptions:(nullable NSDictionary *)launchOptions __deprecated;
 
 @property (nonatomic, weak, nullable) id<RCTHostRuntimeDelegate> runtimeDelegate;
 
