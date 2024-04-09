@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f1a871bce940e7558363902e56a1ed5e>>
+ * @generated SignedSource<<520ae882fb57dec58ededd47411c0b1d>>
  */
 
 /**
@@ -39,10 +39,6 @@ bool ReactNativeFeatureFlags::enableCleanTextInputYogaNode() {
 
 bool ReactNativeFeatureFlags::enableCustomDrawOrderFabric() {
   return getAccessor().enableCustomDrawOrderFabric();
-}
-
-bool ReactNativeFeatureFlags::enableFixForClippedSubviewsCrash() {
-  return getAccessor().enableFixForClippedSubviewsCrash();
 }
 
 bool ReactNativeFeatureFlags::enableMicrotasks() {

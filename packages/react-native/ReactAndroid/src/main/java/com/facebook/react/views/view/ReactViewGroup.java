@@ -692,9 +692,7 @@ public class ReactViewGroup extends ViewGroup
     }
   }
 
-  // TODO: make this method package only once we remove Android's mounting layer retry mechanism.
-  @VisibleForTesting
-  public void removeViewWithSubviewClippingEnabled(View view) {
+  /*package*/ void removeViewWithSubviewClippingEnabled(View view) {
     UiThreadUtil.assertOnUiThread();
 
     Assertions.assertCondition(mRemoveClippedSubviews);

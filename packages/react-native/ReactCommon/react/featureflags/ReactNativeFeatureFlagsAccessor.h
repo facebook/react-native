@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<48b454c264577c4e85eb6b9b46d5d2c5>>
+ * @generated SignedSource<<00e1c8f5c451c9744257e0b3fc566949>>
  */
 
 /**
@@ -36,7 +36,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableBackgroundExecutor();
   bool enableCleanTextInputYogaNode();
   bool enableCustomDrawOrderFabric();
-  bool enableFixForClippedSubviewsCrash();
   bool enableMicrotasks();
   bool enableMountHooksAndroid();
   bool enableSpannableBuildingUnification();
@@ -56,14 +55,13 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 15> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 14> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> batchRenderingUpdatesInEventLoop_;
   std::atomic<std::optional<bool>> enableBackgroundExecutor_;
   std::atomic<std::optional<bool>> enableCleanTextInputYogaNode_;
   std::atomic<std::optional<bool>> enableCustomDrawOrderFabric_;
-  std::atomic<std::optional<bool>> enableFixForClippedSubviewsCrash_;
   std::atomic<std::optional<bool>> enableMicrotasks_;
   std::atomic<std::optional<bool>> enableMountHooksAndroid_;
   std::atomic<std::optional<bool>> enableSpannableBuildingUnification_;

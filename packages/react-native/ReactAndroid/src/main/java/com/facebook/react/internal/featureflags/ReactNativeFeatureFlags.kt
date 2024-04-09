@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<cc44495e0b264e2d56e155a164a774e7>>
+ * @generated SignedSource<<4c0ede4fa927bc8361d0355bc7cddb10>>
  */
 
 /**
@@ -57,12 +57,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableCustomDrawOrderFabric(): Boolean = accessor.enableCustomDrawOrderFabric()
-
-  /**
-   * Attempt at fixing a crash related to subview clipping on Android. This is a kill switch for the fix
-   */
-  @JvmStatic
-  public fun enableFixForClippedSubviewsCrash(): Boolean = accessor.enableFixForClippedSubviewsCrash()
 
   /**
    * Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).

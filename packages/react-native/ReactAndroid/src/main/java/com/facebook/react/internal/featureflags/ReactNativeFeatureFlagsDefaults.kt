@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<cc645d933e253361d5933f56501a35e9>>
+ * @generated SignedSource<<299901489d5059ed7124f6738be0e48d>>
  */
 
 /**
@@ -32,8 +32,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableCleanTextInputYogaNode(): Boolean = false
 
   override fun enableCustomDrawOrderFabric(): Boolean = false
-
-  override fun enableFixForClippedSubviewsCrash(): Boolean = false
 
   override fun enableMicrotasks(): Boolean = false
 

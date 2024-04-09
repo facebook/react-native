@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6b07d06ca1f100cca35e2b8b108f1993>>
+ * @generated SignedSource<<57c83d1855f16d4c3ffdd5cb98d57571>>
  */
 
 /**
@@ -44,10 +44,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableCustomDrawOrderFabric() override {
-    return false;
-  }
-
-  bool enableFixForClippedSubviewsCrash() override {
     return false;
   }
 

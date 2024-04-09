@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ade99ab28f82affa77445231caed9e9d>>
+ * @generated SignedSource<<0756d56ae2ce45f020ac9a87e9a3d1c3>>
  */
 
 /**
@@ -66,12 +66,6 @@ class ReactNativeFeatureFlagsProviderHolder
   bool enableCustomDrawOrderFabric() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableCustomDrawOrderFabric");
-    return method(javaProvider_);
-  }
-
-  bool enableFixForClippedSubviewsCrash() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableFixForClippedSubviewsCrash");
     return method(javaProvider_);
   }
 
@@ -158,11 +152,6 @@ bool JReactNativeFeatureFlagsCxxInterop::enableCustomDrawOrderFabric(
   return ReactNativeFeatureFlags::enableCustomDrawOrderFabric();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::enableFixForClippedSubviewsCrash(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::enableFixForClippedSubviewsCrash();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::enableMicrotasks(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableMicrotasks();
@@ -240,9 +229,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableCustomDrawOrderFabric",
         JReactNativeFeatureFlagsCxxInterop::enableCustomDrawOrderFabric),
-      makeNativeMethod(
-        "enableFixForClippedSubviewsCrash",
-        JReactNativeFeatureFlagsCxxInterop::enableFixForClippedSubviewsCrash),
       makeNativeMethod(
         "enableMicrotasks",
         JReactNativeFeatureFlagsCxxInterop::enableMicrotasks),
