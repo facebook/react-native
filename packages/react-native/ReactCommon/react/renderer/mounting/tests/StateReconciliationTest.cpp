@@ -72,31 +72,28 @@ class StateReconciliationTest : public ::testing::TestWithParam<bool> {
 };
 
 TEST_P(StateReconciliationTest, testStateReconciliation) {
-  auto shadowNodeA = std::shared_ptr<RootShadowNode>{};
-  auto shadowNodeAA = std::shared_ptr<ViewShadowNode>{};
-  auto shadowNodeAB = std::shared_ptr<ScrollViewShadowNode>{};
+  auto scrollViewInitialShadowNode = std::shared_ptr<ScrollViewShadowNode>{};
 
   // clang-format off
   auto element =
       Element<RootShadowNode>()
-        .reference(shadowNodeA)
         .children({
-          Element<ViewShadowNode>()
-            .reference(shadowNodeAA),
+          Element<ViewShadowNode>(),
           Element<ScrollViewShadowNode>()
-            .reference(shadowNodeAB)
+            .reference(scrollViewInitialShadowNode)
         });
   // clang-format on
 
   ContextContainer contextContainer{};
 
-  auto shadowNode = builder_.build(element);
+  auto initialRootShadowNode = builder_.build(element);
 
-  auto rootShadowNodeState1 = shadowNode->ShadowNode::clone({});
+  auto rootShadowNodeState1 = initialRootShadowNode->ShadowNode::clone({});
 
-  auto& scrollViewComponentDescriptor = shadowNodeAB->getComponentDescriptor();
-  auto& family = shadowNodeAB->getFamily();
-  auto state1 = shadowNodeAB->getState();
+  auto& scrollViewComponentDescriptor =
+      scrollViewInitialShadowNode->getComponentDescriptor();
+  auto& scrollViewfamily = scrollViewInitialShadowNode->getFamily();
+  auto initialScrollViewState = scrollViewInitialShadowNode->getState();
   auto shadowTreeDelegate = DummyShadowTreeDelegate{};
   ShadowTree shadowTree{
       SurfaceId{11},
@@ -109,59 +106,58 @@ TEST_P(StateReconciliationTest, testStateReconciliation) {
       [&](const RootShadowNode& /*oldRootShadowNode*/) {
         return std::static_pointer_cast<RootShadowNode>(rootShadowNodeState1);
       },
-      {true});
-
-  EXPECT_EQ(state1->getMostRecentState(), state1);
+      {.enableStateReconciliation = true});
 
   EXPECT_EQ(
-      findDescendantNode(*rootShadowNodeState1, family)->getState(), state1);
+      initialScrollViewState->getMostRecentState(), initialScrollViewState);
+
+  EXPECT_EQ(
+      findDescendantNode(*rootShadowNodeState1, scrollViewfamily)->getState(),
+      initialScrollViewState);
 
   auto state2 = scrollViewComponentDescriptor.createState(
-      family, std::make_shared<const ScrollViewState>());
+      scrollViewfamily, std::make_shared<const ScrollViewState>());
 
-  auto rootShadowNodeState2 =
-      shadowNode->cloneTree(family, [&](const ShadowNode& oldShadowNode) {
-        return oldShadowNode.clone(
-            {ShadowNodeFragment::propsPlaceholder(),
-             ShadowNodeFragment::childrenPlaceholder(),
-             state2});
+  auto rootShadowNodeState2 = initialRootShadowNode->cloneTree(
+      scrollViewfamily, [&](const ShadowNode& oldShadowNode) {
+        return oldShadowNode.clone({.state = state2});
       });
 
   EXPECT_EQ(
-      findDescendantNode(*rootShadowNodeState2, family)->getState(), state2);
+      findDescendantNode(*rootShadowNodeState2, scrollViewfamily)->getState(),
+      state2);
 
   shadowTree.commit(
       [&](const RootShadowNode& /*oldRootShadowNode*/) {
         return std::static_pointer_cast<RootShadowNode>(rootShadowNodeState2);
       },
-      {true});
+      {.enableStateReconciliation = false});
 
-  EXPECT_EQ(state1->getMostRecentState(), state2);
+  EXPECT_EQ(initialScrollViewState->getMostRecentState(), state2);
   EXPECT_EQ(state2->getMostRecentState(), state2);
 
   auto state3 = scrollViewComponentDescriptor.createState(
-      family, std::make_shared<const ScrollViewState>());
+      scrollViewfamily, std::make_shared<const ScrollViewState>());
 
   auto rootShadowNodeState3 = rootShadowNodeState2->cloneTree(
-      family, [&](const ShadowNode& oldShadowNode) {
-        return oldShadowNode.clone(
-            {ShadowNodeFragment::propsPlaceholder(),
-             ShadowNodeFragment::childrenPlaceholder(),
-             state3});
+      scrollViewfamily, [&](const ShadowNode& oldShadowNode) {
+        return oldShadowNode.clone({.state = state3});
       });
 
   EXPECT_EQ(
-      findDescendantNode(*rootShadowNodeState3, family)->getState(), state3);
+      findDescendantNode(*rootShadowNodeState3, scrollViewfamily)->getState(),
+      state3);
 
   shadowTree.commit(
       [&](const RootShadowNode& /*oldRootShadowNode*/) {
         return std::static_pointer_cast<RootShadowNode>(rootShadowNodeState3);
       },
-      {true});
+      {.enableStateReconciliation = false});
 
-  EXPECT_EQ(findDescendantNode(shadowTree, family)->getState(), state3);
+  EXPECT_EQ(
+      findDescendantNode(shadowTree, scrollViewfamily)->getState(), state3);
 
-  EXPECT_EQ(state1->getMostRecentState(), state3);
+  EXPECT_EQ(initialScrollViewState->getMostRecentState(), state3);
   EXPECT_EQ(state2->getMostRecentState(), state3);
   EXPECT_EQ(state3->getMostRecentState(), state3);
 
@@ -172,7 +168,7 @@ TEST_P(StateReconciliationTest, testStateReconciliation) {
       [&](const RootShadowNode& /*oldRootShadowNode*/) {
         return std::static_pointer_cast<RootShadowNode>(rootShadowNodeState2);
       },
-      {true});
+      {.enableStateReconciliation = true});
 
   // Warning:
   // there is important semantic difference with the approach. With the old
@@ -181,26 +177,24 @@ TEST_P(StateReconciliationTest, testStateReconciliation) {
   // algorithm does not support that, because it can't mutate such a node in
   // place.
   if (!GetParam()) {
-    EXPECT_EQ(findDescendantNode(shadowTree, family)->getState(), state3);
+    EXPECT_EQ(
+        findDescendantNode(shadowTree, scrollViewfamily)->getState(), state3);
   } else {
-    EXPECT_EQ(findDescendantNode(shadowTree, family)->getState(), state2);
+    EXPECT_EQ(
+        findDescendantNode(shadowTree, scrollViewfamily)->getState(), state2);
   }
 }
 
 TEST_P(StateReconciliationTest, testCloneslessStateReconciliationDoesntClone) {
-  auto shadowNodeA = std::shared_ptr<RootShadowNode>{};
-  auto shadowNodeAA = std::shared_ptr<ViewShadowNode>{};
-  auto shadowNodeAB = std::shared_ptr<ScrollViewShadowNode>{};
+  auto scrollViewInitialShadowNode = std::shared_ptr<ScrollViewShadowNode>{};
 
   // clang-format off
   auto element =
       Element<RootShadowNode>()
-        .reference(shadowNodeA)
         .children({
-          Element<ViewShadowNode>()
-            .reference(shadowNodeAA),
+          Element<ViewShadowNode>(),
           Element<ScrollViewShadowNode>()
-            .reference(shadowNodeAB)
+            .reference(scrollViewInitialShadowNode)
         });
   // clang-format on
 
@@ -208,9 +202,10 @@ TEST_P(StateReconciliationTest, testCloneslessStateReconciliationDoesntClone) {
 
   auto rootShadowNode1 = builder_.build(element);
 
-  auto& scrollViewComponentDescriptor = shadowNodeAB->getComponentDescriptor();
-  auto& family = shadowNodeAB->getFamily();
-  auto state1 = shadowNodeAB->getState();
+  auto& scrollViewComponentDescriptor =
+      scrollViewInitialShadowNode->getComponentDescriptor();
+  auto& scrollViewfamily = scrollViewInitialShadowNode->getFamily();
+  auto initialScrollViewState = scrollViewInitialShadowNode->getState();
   auto shadowTreeDelegate = DummyShadowTreeDelegate{};
   ShadowTree shadowTree{
       SurfaceId{11},
@@ -223,52 +218,52 @@ TEST_P(StateReconciliationTest, testCloneslessStateReconciliationDoesntClone) {
       [&](const RootShadowNode& /*oldRootShadowNode*/) {
         return std::static_pointer_cast<RootShadowNode>(rootShadowNode1);
       },
-      {true});
+      {.enableStateReconciliation = true});
 
-  EXPECT_EQ(state1->getMostRecentState(), state1);
+  EXPECT_EQ(
+      initialScrollViewState->getMostRecentState(), initialScrollViewState);
 
-  EXPECT_EQ(findDescendantNode(*rootShadowNode1, family)->getState(), state1);
+  EXPECT_EQ(
+      findDescendantNode(*rootShadowNode1, scrollViewfamily)->getState(),
+      initialScrollViewState);
 
   auto state2 = scrollViewComponentDescriptor.createState(
-      family, std::make_shared<const ScrollViewState>());
+      scrollViewfamily, std::make_shared<const ScrollViewState>());
 
-  auto rootShadowNode2 =
-      rootShadowNode1->cloneTree(family, [&](const ShadowNode& oldShadowNode) {
-        return oldShadowNode.clone(
-            {ShadowNodeFragment::propsPlaceholder(),
-             ShadowNodeFragment::childrenPlaceholder(),
-             state2});
+  auto rootShadowNode2 = rootShadowNode1->cloneTree(
+      scrollViewfamily, [&](const ShadowNode& oldShadowNode) {
+        return oldShadowNode.clone({.state = state2});
       });
 
-  EXPECT_EQ(findDescendantNode(*rootShadowNode2, family)->getState(), state2);
-  EXPECT_EQ(state1->getMostRecentState(), state1);
+  EXPECT_EQ(
+      findDescendantNode(*rootShadowNode2, scrollViewfamily)->getState(),
+      state2);
+  EXPECT_EQ(
+      initialScrollViewState->getMostRecentState(), initialScrollViewState);
 
   shadowTree.commit(
       [&](const RootShadowNode& /*oldRootShadowNode*/) {
         return std::static_pointer_cast<RootShadowNode>(rootShadowNode2);
       },
-      {true});
+      {.enableStateReconciliation = true});
 
-  EXPECT_EQ(state1->getMostRecentState(), state2);
+  EXPECT_EQ(initialScrollViewState->getMostRecentState(), state2);
   EXPECT_EQ(state2->getMostRecentState(), state2);
 
   ShadowNode::Unshared newlyClonedShadowNode;
 
-  auto rootShadowNodeClonedFromReact =
-      rootShadowNode2->cloneTree(family, [&](const ShadowNode& oldShadowNode) {
+  auto rootShadowNodeClonedFromReact = rootShadowNode2->cloneTree(
+      scrollViewfamily, [&](const ShadowNode& oldShadowNode) {
         newlyClonedShadowNode = oldShadowNode.clone({});
         return newlyClonedShadowNode;
       });
 
   auto state3 = scrollViewComponentDescriptor.createState(
-      family, std::make_shared<const ScrollViewState>());
+      scrollViewfamily, std::make_shared<const ScrollViewState>());
 
-  auto rootShadowNodeClonedFromStateUpdate =
-      rootShadowNode2->cloneTree(family, [&](const ShadowNode& oldShadowNode) {
-        return oldShadowNode.clone(
-            {ShadowNodeFragment::propsPlaceholder(),
-             ShadowNodeFragment::childrenPlaceholder(),
-             state3});
+  auto rootShadowNodeClonedFromStateUpdate = rootShadowNode2->cloneTree(
+      scrollViewfamily, [&](const ShadowNode& oldShadowNode) {
+        return oldShadowNode.clone({.state = state3});
       });
 
   shadowTree.commit(
@@ -276,16 +271,16 @@ TEST_P(StateReconciliationTest, testCloneslessStateReconciliationDoesntClone) {
         return std::static_pointer_cast<RootShadowNode>(
             rootShadowNodeClonedFromStateUpdate);
       },
-      {});
+      {.enableStateReconciliation = false});
 
   shadowTree.commit(
       [&](const RootShadowNode& /*oldRootShadowNode*/) {
         return std::static_pointer_cast<RootShadowNode>(
             rootShadowNodeClonedFromReact);
       },
-      {true});
+      {.enableStateReconciliation = true});
 
-  auto scrollViewShadowNode = findDescendantNode(shadowTree, family);
+  auto scrollViewShadowNode = findDescendantNode(shadowTree, scrollViewfamily);
 
   EXPECT_EQ(scrollViewShadowNode->getState(), state3);
 
@@ -295,6 +290,7 @@ TEST_P(StateReconciliationTest, testCloneslessStateReconciliationDoesntClone) {
     EXPECT_EQ(scrollViewShadowNode, newlyClonedShadowNode.get());
   }
 }
+
 INSTANTIATE_TEST_SUITE_P(
     StateReconciliationTestInstantiation,
     StateReconciliationTest,
