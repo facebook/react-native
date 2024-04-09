@@ -7632,13 +7632,13 @@ public final class com/facebook/react/views/unimplementedview/ReactUnimplemented
 	public final fun setName (Ljava/lang/String;)V
 }
 
-public class com/facebook/react/views/unimplementedview/ReactUnimplementedViewManager : com/facebook/react/uimanager/ViewGroupManager {
+public final class com/facebook/react/views/unimplementedview/ReactUnimplementedViewManager : com/facebook/react/uimanager/ViewGroupManager {
+	public static final field Companion Lcom/facebook/react/views/unimplementedview/ReactUnimplementedViewManager$Companion;
 	public static final field REACT_CLASS Ljava/lang/String;
 	public fun <init> ()V
-	protected synthetic fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Landroid/view/View;
-	protected fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Lcom/facebook/react/views/unimplementedview/ReactUnimplementedView;
+	public synthetic fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Landroid/view/View;
 	public fun getName ()Ljava/lang/String;
-	public fun setName (Lcom/facebook/react/views/unimplementedview/ReactUnimplementedView;Ljava/lang/String;)V
+	public final fun setName (Lcom/facebook/react/views/unimplementedview/ReactUnimplementedView;Ljava/lang/String;)V
 }
 
 public class com/facebook/react/views/unimplementedview/ReactUnimplementedViewManager$$PropsSetter : com/facebook/react/uimanager/ViewManagerPropertyUpdater$ViewManagerSetter {
@@ -7646,6 +7646,9 @@ public class com/facebook/react/views/unimplementedview/ReactUnimplementedViewMa
 	public fun getProperties (Ljava/util/Map;)V
 	public synthetic fun setProperty (Lcom/facebook/react/uimanager/ViewManager;Landroid/view/View;Ljava/lang/String;Ljava/lang/Object;)V
 	public fun setProperty (Lcom/facebook/react/views/unimplementedview/ReactUnimplementedViewManager;Lcom/facebook/react/views/unimplementedview/ReactUnimplementedView;Ljava/lang/String;Ljava/lang/Object;)V
+}
+
+public final class com/facebook/react/views/unimplementedview/ReactUnimplementedViewManager$Companion {
 }
 
 public final class com/facebook/react/views/view/ColorUtil {
