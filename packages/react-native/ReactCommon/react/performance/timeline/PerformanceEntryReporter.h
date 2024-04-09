@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include <react/bridging/Function.h>
 #include <react/renderer/core/EventLogger.h>
 #include <array>
 #include <functional>
@@ -85,9 +84,6 @@ constexpr size_t NUM_PERFORMANCE_ENTRY_TYPES =
 
 class PerformanceEntryReporter : public EventLogger, public UIManagerMountHook {
  public:
-  PerformanceEntryReporter(const PerformanceEntryReporter&) = delete;
-  void operator=(const PerformanceEntryReporter&) = delete;
-
   // NOTE: This class is not thread safe, make sure that the calls are made from
   // the same thread.
   // TODO: Consider passing it as a parameter to the corresponding modules at
@@ -99,7 +95,7 @@ class PerformanceEntryReporter : public EventLogger, public UIManagerMountHook {
     uint32_t droppedEntriesCount;
   };
 
-  void setReportingCallback(std::optional<AsyncCallback<>> callback);
+  void setReportingCallback(std::function<void()> callback);
   void startReporting(PerformanceEntryType entryType);
   void stopReporting(PerformanceEntryType entryType);
   void stopReporting();
@@ -174,11 +170,11 @@ class PerformanceEntryReporter : public EventLogger, public UIManagerMountHook {
   }
 
   void setTimeStampProvider(std::function<double()> provider) {
-    timeStampProvider_ = provider;
+    timeStampProvider_ = std::move(provider);
   }
 
  private:
-  std::optional<AsyncCallback<>> callback_;
+  std::function<void()> callback_;
 
   mutable std::mutex entriesMutex_;
   std::array<PerformanceEntryBuffer, NUM_PERFORMANCE_ENTRY_TYPES> buffers_;

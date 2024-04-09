@@ -10,8 +10,8 @@
 #include <cxxreact/JSExecutor.h>
 #include <cxxreact/ReactMarker.h>
 #include <jsi/instrumentation.h>
+#include <react/performance/timeline/PerformanceEntryReporter.h>
 #include "NativePerformance.h"
-#include "PerformanceEntryReporter.h"
 
 #include "Plugins.h"
 
