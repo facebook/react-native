@@ -80,7 +80,7 @@ class ReactInstance final : private jsinspector_modern::InstanceTargetDelegate {
   std::shared_ptr<TimerManager> timerManager_;
   std::unordered_map<std::string, std::shared_ptr<CallableModule>> modules_;
   std::shared_ptr<RuntimeScheduler> runtimeScheduler_;
-  JsErrorHandler jsErrorHandler_;
+  std::shared_ptr<JsErrorHandler> jsErrorHandler_;
 
   // Whether there are errors caught during bundle loading
   std::shared_ptr<bool> hasFatalJsError_;
