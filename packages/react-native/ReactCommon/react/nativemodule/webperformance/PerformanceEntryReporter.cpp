@@ -9,7 +9,6 @@
 #include <cxxreact/JSExecutor.h>
 #include <react/renderer/core/EventLogger.h>
 #include <react/utils/CoreFeatures.h>
-#include "NativePerformanceObserver.h"
 
 #include <functional>
 #include <unordered_map>
@@ -35,7 +34,7 @@ void PerformanceEntryReporter::setReportingCallback(
   callback_ = callback;
 }
 
-double PerformanceEntryReporter::getCurrentTimeStamp() const {
+DOMHighResTimeStamp PerformanceEntryReporter::getCurrentTimeStamp() const {
   return timeStampProvider_ != nullptr ? timeStampProvider_()
                                        : JSExecutor::performanceNow();
 }
@@ -55,7 +54,7 @@ void PerformanceEntryReporter::setAlwaysLogged(
 
 void PerformanceEntryReporter::setDurationThreshold(
     PerformanceEntryType entryType,
-    double durationThreshold) {
+    DOMHighResTimeStamp durationThreshold) {
   getBuffer(entryType).durationThreshold = durationThreshold;
 }
 
@@ -69,10 +68,12 @@ void PerformanceEntryReporter::stopReporting() {
   }
 }
 
-GetPendingEntriesResult PerformanceEntryReporter::popPendingEntries() {
+PerformanceEntryReporter::PopPendingEntriesResult
+PerformanceEntryReporter::popPendingEntries() {
   std::lock_guard lock(entriesMutex_);
-  GetPendingEntriesResult res = {
-      std::vector<RawPerformanceEntry>(), droppedEntryCount_};
+  PopPendingEntriesResult res = {
+      .entries = std::vector<PerformanceEntry>(),
+      .droppedEntriesCount = droppedEntriesCount_};
   for (auto& buffer : buffers_) {
     buffer.entries.consume(res.entries);
   }
@@ -81,7 +82,7 @@ GetPendingEntriesResult PerformanceEntryReporter::popPendingEntries() {
   std::stable_sort(
       res.entries.begin(),
       res.entries.end(),
-      [](const RawPerformanceEntry& lhs, const RawPerformanceEntry& rhs) {
+      [](const PerformanceEntry& lhs, const PerformanceEntry& rhs) {
         if (lhs.startTime != rhs.startTime) {
           return lhs.startTime < rhs.startTime;
         } else {
@@ -89,23 +90,22 @@ GetPendingEntriesResult PerformanceEntryReporter::popPendingEntries() {
         }
       });
 
-  droppedEntryCount_ = 0;
+  droppedEntriesCount_ = 0;
   return res;
 }
 
-void PerformanceEntryReporter::logEntry(const RawPerformanceEntry& entry) {
-  const auto entryType = static_cast<PerformanceEntryType>(entry.entryType);
-  if (entryType == PerformanceEntryType::EVENT) {
+void PerformanceEntryReporter::logEntry(const PerformanceEntry& entry) {
+  if (entry.entryType == PerformanceEntryType::EVENT) {
     eventCounts_[entry.name]++;
   }
 
-  if (!isReporting(entryType) && !isAlwaysLogged(entryType)) {
+  if (!isReporting(entry.entryType) && !isAlwaysLogged(entry.entryType)) {
     return;
   }
 
   std::lock_guard lock(entriesMutex_);
 
-  auto& buffer = getBuffer(entryType);
+  auto& buffer = getBuffer(entry.entryType);
 
   if (entry.duration < buffer.durationThreshold) {
     // The entries duration is lower than the desired reporting threshold, skip
@@ -127,11 +127,11 @@ void PerformanceEntryReporter::logEntry(const RawPerformanceEntry& entry) {
 
   auto pushResult = buffer.entries.add(std::move(entry));
   if (pushResult ==
-      BoundedConsumableBuffer<RawPerformanceEntry>::PushStatus::DROP) {
+      BoundedConsumableBuffer<PerformanceEntry>::PushStatus::DROP) {
     // Start dropping entries once reached maximum buffer size.
     // The number of dropped entries will be reported back to the corresponding
     // PerformanceObserver callback.
-    droppedEntryCount_ += 1;
+    droppedEntriesCount_ += 1;
   }
 
   if (buffer.hasNameLookup) {
@@ -153,10 +153,10 @@ void PerformanceEntryReporter::logEntry(const RawPerformanceEntry& entry) {
 
 void PerformanceEntryReporter::mark(
     const std::string& name,
-    const std::optional<double>& startTime) {
-  logEntry(RawPerformanceEntry{
+    const std::optional<DOMHighResTimeStamp>& startTime) {
+  logEntry(PerformanceEntry{
       .name = name,
-      .entryType = static_cast<int>(PerformanceEntryType::MARK),
+      .entryType = PerformanceEntryType::MARK,
       .startTime = startTime ? *startTime : getCurrentTimeStamp()});
 }
 
@@ -177,7 +177,7 @@ void PerformanceEntryReporter::clearEntries(
       }
 
       std::lock_guard lock(entriesMutex_);
-      buffer.entries.clear([entryName](const RawPerformanceEntry& entry) {
+      buffer.entries.clear([entryName](const PerformanceEntry& entry) {
         return entry.name == entryName;
       });
 
@@ -207,22 +207,22 @@ void PerformanceEntryReporter::clearEntries(
 void PerformanceEntryReporter::getEntries(
     PerformanceEntryType entryType,
     std::string_view entryName,
-    std::vector<RawPerformanceEntry>& res) const {
+    std::vector<PerformanceEntry>& res) const {
   std::lock_guard lock(entriesMutex_);
   const auto& entries = getBuffer(entryType).entries;
   if (entryName.empty()) {
     entries.getEntries(res);
   } else {
-    entries.getEntries(res, [entryName](const RawPerformanceEntry& entry) {
+    entries.getEntries(res, [entryName](const PerformanceEntry& entry) {
       return entry.name == entryName;
     });
   }
 }
 
-std::vector<RawPerformanceEntry> PerformanceEntryReporter::getEntries(
+std::vector<PerformanceEntry> PerformanceEntryReporter::getEntries(
     std::optional<PerformanceEntryType> entryType,
     std::string_view entryName) const {
-  std::vector<RawPerformanceEntry> res;
+  std::vector<PerformanceEntry> res;
   if (!entryType) {
     // Collect all entry types
     for (int i = 1; i < NUM_PERFORMANCE_ENTRY_TYPES; i++) {
@@ -236,13 +236,14 @@ std::vector<RawPerformanceEntry> PerformanceEntryReporter::getEntries(
 
 void PerformanceEntryReporter::measure(
     const std::string& name,
-    double startTime,
-    double endTime,
-    const std::optional<double>& duration,
+    DOMHighResTimeStamp startTime,
+    DOMHighResTimeStamp endTime,
+    const std::optional<DOMHighResTimeStamp>& duration,
     const std::optional<std::string>& startMark,
     const std::optional<std::string>& endMark) {
-  double startTimeVal = startMark ? getMarkTime(*startMark) : startTime;
-  double endTimeVal = endMark ? getMarkTime(*endMark) : endTime;
+  DOMHighResTimeStamp startTimeVal =
+      startMark ? getMarkTime(*startMark) : startTime;
+  DOMHighResTimeStamp endTimeVal = endMark ? getMarkTime(*endMark) : endTime;
 
   if (!endMark && endTime < startTimeVal) {
     // The end time is not specified, take the current time, according to the
@@ -250,20 +251,20 @@ void PerformanceEntryReporter::measure(
     endTimeVal = getCurrentTimeStamp();
   }
 
-  double durationVal = duration ? *duration : endTimeVal - startTimeVal;
+  DOMHighResTimeStamp durationVal =
+      duration ? *duration : endTimeVal - startTimeVal;
 
   logEntry(
       {.name = name,
-       .entryType = static_cast<int>(PerformanceEntryType::MEASURE),
+       .entryType = PerformanceEntryType::MEASURE,
        .startTime = startTimeVal,
        .duration = durationVal});
 }
 
-double PerformanceEntryReporter::getMarkTime(
+DOMHighResTimeStamp PerformanceEntryReporter::getMarkTime(
     const std::string& markName) const {
-  RawPerformanceEntry mark{
-      .name = markName,
-      .entryType = static_cast<int>(PerformanceEntryType::MARK)};
+  PerformanceEntry mark{
+      .name = markName, .entryType = PerformanceEntryType::MARK};
 
   std::lock_guard lock(nameLookupMutex_);
   const auto& marksBuffer = getBuffer(PerformanceEntryType::MARK);
@@ -277,14 +278,14 @@ double PerformanceEntryReporter::getMarkTime(
 
 void PerformanceEntryReporter::logEventEntry(
     std::string name,
-    double startTime,
-    double duration,
-    double processingStart,
-    double processingEnd,
+    DOMHighResTimeStamp startTime,
+    DOMHighResTimeStamp duration,
+    DOMHighResTimeStamp processingStart,
+    DOMHighResTimeStamp processingEnd,
     uint32_t interactionId) {
   logEntry(
       {.name = std::move(name),
-       .entryType = static_cast<int>(PerformanceEntryType::EVENT),
+       .entryType = PerformanceEntryType::EVENT,
        .startTime = startTime,
        .duration = duration,
        .processingStart = processingStart,

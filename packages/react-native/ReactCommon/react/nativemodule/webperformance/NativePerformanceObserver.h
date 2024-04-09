@@ -8,43 +8,40 @@
 #pragma once
 
 #include <FBReactNativeSpec/FBReactNativeSpecJSI.h>
+#include <react/nativemodule/webperformance/PerformanceEntryReporter.h>
 #include <functional>
 #include <optional>
 #include <string>
 #include <vector>
 
 namespace facebook::react {
-class PerformanceEntryReporter;
 
 #pragma mark - Structs
 
-using RawPerformanceEntryType = int32_t;
+template <>
+struct Bridging<PerformanceEntryType> {
+  static PerformanceEntryType fromJs(
+      jsi::Runtime& /*rt*/,
+      const jsi::Value& value) {
+    return static_cast<PerformanceEntryType>(value.asNumber());
+  }
 
-using RawPerformanceEntry = NativePerformanceObserverCxxRawPerformanceEntry<
-    /* name */ std::string,
-    /* type */ RawPerformanceEntryType,
-    /* startTime */ double,
-    /* duration */ double,
-
-    // For "event" entries only:
-    /* processingStart */ std::optional<double>,
-    /* processingEnd */ std::optional<double>,
-    /* interactionId */ std::optional<uint32_t>>;
+  static jsi::Value toJs(
+      jsi::Runtime& /*rt*/,
+      const PerformanceEntryType& value) {
+    return {static_cast<int>(value)};
+  }
+};
 
 template <>
-struct Bridging<RawPerformanceEntry>
+struct Bridging<PerformanceEntry>
     : NativePerformanceObserverCxxRawPerformanceEntryBridging<
-          RawPerformanceEntry> {};
-
-using GetPendingEntriesResult =
-    NativePerformanceObserverCxxGetPendingEntriesResult<
-        std::vector<RawPerformanceEntry>,
-        uint32_t>;
+          PerformanceEntry> {};
 
 template <>
-struct Bridging<GetPendingEntriesResult>
+struct Bridging<PerformanceEntryReporter::PopPendingEntriesResult>
     : NativePerformanceObserverCxxGetPendingEntriesResultBridging<
-          GetPendingEntriesResult> {};
+          PerformanceEntryReporter::PopPendingEntriesResult> {};
 
 #pragma mark - implementation
 
@@ -54,45 +51,44 @@ class NativePerformanceObserver
   NativePerformanceObserver(std::shared_ptr<CallInvoker> jsInvoker);
   ~NativePerformanceObserver();
 
-  void startReporting(jsi::Runtime& rt, int32_t entryType);
+  void startReporting(jsi::Runtime& rt, PerformanceEntryType entryType);
 
-  void stopReporting(jsi::Runtime& rt, int32_t entryType);
+  void stopReporting(jsi::Runtime& rt, PerformanceEntryType entryType);
 
   void setIsBuffered(
       jsi::Runtime& rt,
-      std::vector<int32_t> entryTypes,
+      const std::vector<PerformanceEntryType> entryTypes,
       bool isBuffered);
 
-  GetPendingEntriesResult popPendingEntries(jsi::Runtime& rt);
+  PerformanceEntryReporter::PopPendingEntriesResult popPendingEntries(
+      jsi::Runtime& rt);
 
   void setOnPerformanceEntryCallback(
       jsi::Runtime& rt,
       std::optional<AsyncCallback<>> callback);
 
-  void logRawEntry(jsi::Runtime& rt, RawPerformanceEntry entry);
+  void logRawEntry(jsi::Runtime& rt, const PerformanceEntry entry);
 
   std::vector<std::pair<std::string, uint32_t>> getEventCounts(
       jsi::Runtime& rt);
 
   void setDurationThreshold(
       jsi::Runtime& rt,
-      int32_t entryType,
-      double durationThreshold);
+      PerformanceEntryType entryType,
+      DOMHighResTimeStamp durationThreshold);
 
   void clearEntries(
       jsi::Runtime& rt,
-      int32_t entryType,
+      PerformanceEntryType entryType,
       std::optional<std::string> entryName);
 
-  std::vector<RawPerformanceEntry> getEntries(
+  std::vector<PerformanceEntry> getEntries(
       jsi::Runtime& rt,
-      std::optional<int32_t> entryType,
+      std::optional<PerformanceEntryType> entryType,
       std::optional<std::string> entryName);
 
-  std::vector<RawPerformanceEntryType> getSupportedPerformanceEntryTypes(
+  std::vector<PerformanceEntryType> getSupportedPerformanceEntryTypes(
       jsi::Runtime& rt);
-
- private:
 };
 
 } // namespace facebook::react
