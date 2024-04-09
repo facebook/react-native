@@ -10,6 +10,7 @@
 #import "RCTRootViewInternal.h"
 
 #import <objc/runtime.h>
+#import <react/renderer/core/ReactRootViewTagGenerator.h>
 
 #import "RCTAssert.h"
 #import "RCTBridge+Private.h"
@@ -30,16 +31,10 @@
 
 NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotification";
 
-@interface RCTUIManager (RCTRootView)
-
-- (NSNumber *)allocateRootTag;
-
-@end
-
 @implementation RCTRootView {
   RCTBridge *_bridge;
   NSString *_moduleName;
-  RCTRootContentView *_contentView;
+  UIView *_contentView;
   BOOL _passThroughTouches;
   CGSize _intrinsicContentSize;
 }
@@ -125,13 +120,13 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 
 - (BOOL)passThroughTouches
 {
-  return _contentView.passThroughTouches;
+  return static_cast<RCTRootContentView *>(_contentView).passThroughTouches;
 }
 
 - (void)setPassThroughTouches:(BOOL)passThroughTouches
 {
   _passThroughTouches = passThroughTouches;
-  _contentView.passThroughTouches = passThroughTouches;
+  static_cast<RCTRootContentView *>(_contentView).passThroughTouches = passThroughTouches;
 }
 
 #pragma mark - Layout
@@ -166,9 +161,9 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   }
   _minimumSize = minimumSize;
   __block NSNumber *tag = self.reactTag;
-  __weak typeof(self) weakSelf = self;
+  __weak __typeof(self) weakSelf = self;
   RCTExecuteOnUIManagerQueue(^{
-    __strong typeof(self) strongSelf = weakSelf;
+    __strong __typeof(self) strongSelf = weakSelf;
     if (strongSelf && strongSelf->_bridge.isValid) {
       RCTRootShadowView *shadowView = (RCTRootShadowView *)[strongSelf->_bridge.uiManager shadowViewForReactTag:tag];
       shadowView.minimumSize = minimumSize;
@@ -189,14 +184,14 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 - (void)setLoadingView:(UIView *)loadingView
 {
   _loadingView = loadingView;
-  if (!_contentView.contentHasAppeared) {
+  if (!static_cast<RCTRootContentView *>(_contentView).contentHasAppeared) {
     [self showLoadingView];
   }
 }
 
 - (void)showLoadingView
 {
-  if (_loadingView && !_contentView.contentHasAppeared) {
+  if (_loadingView && !static_cast<RCTRootContentView *>(_contentView).contentHasAppeared) {
     _loadingView.hidden = NO;
     [self addSubview:_loadingView];
   }
@@ -204,7 +199,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 
 - (void)hideLoadingView
 {
-  if (_loadingView.superview == self && _contentView.contentHasAppeared) {
+  if (_loadingView.superview == self && static_cast<RCTRootContentView *>(_contentView).contentHasAppeared) {
     if (_loadingViewFadeDuration > 0) {
       dispatch_after(
           dispatch_time(DISPATCH_TIME_NOW, (int64_t)(_loadingViewFadeDelay * NSEC_PER_SEC)),
@@ -232,13 +227,10 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   RCTAssertMainQueue();
   if (!super.reactTag) {
     /**
-     * Every root view that is created must have a unique react tag.
-     * Numbering of these tags goes from 1, 11, 21, 31, etc
-     *
      * NOTE: Since the bridge persists, the RootViews might be reused, so the
      * react tag must be re-assigned every time a new UIManager is created.
      */
-    self.reactTag = RCTAllocateRootViewTag();
+    self.reactTag = @(facebook::react::getNextRootViewTag());
   }
   return super.reactTag;
 }
@@ -257,7 +249,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   // Use the (batched) bridge that's sent in the notification payload, so the
   // RCTRootContentView is scoped to the right bridge
   RCTBridge *bridge = notification.userInfo[@"bridge"];
-  if (bridge != _contentView.bridge) {
+  if (bridge != static_cast<RCTRootContentView *>(_contentView).bridge) {
     [self bundleFinishedLoading:bridge];
   }
 }
@@ -276,7 +268,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
                                            sizeFlexibility:_sizeFlexibility];
   [self runApplication:bridge];
 
-  _contentView.passThroughTouches = _passThroughTouches;
+  static_cast<RCTRootContentView *>(_contentView).passThroughTouches = _passThroughTouches;
   [self insertSubview:_contentView atIndex:0];
 
   if (_sizeFlexibility == RCTRootViewSizeFlexibilityNone) {
@@ -304,7 +296,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 
   _sizeFlexibility = sizeFlexibility;
   [self setNeedsLayout];
-  _contentView.sizeFlexibility = _sizeFlexibility;
+  static_cast<RCTRootContentView *>(_contentView).sizeFlexibility = _sizeFlexibility;
 }
 
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
@@ -382,7 +374,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 
 - (void)dealloc
 {
-  [_contentView invalidate];
+  [static_cast<RCTRootContentView *>(_contentView) invalidate];
 }
 
 @end
@@ -398,7 +390,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 - (void)cancelTouches
 {
   RCTLogWarn(@"`-[RCTRootView cancelTouches]` is deprecated and will be deleted soon.");
-  [[_contentView touchHandler] cancel];
+  [[static_cast<RCTRootContentView *>(_contentView) touchHandler] cancel];
 }
 
 @end

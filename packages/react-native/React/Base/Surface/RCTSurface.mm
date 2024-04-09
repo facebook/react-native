@@ -8,9 +8,9 @@
 #import "RCTSurface.h"
 #import "RCTSurfaceView+Internal.h"
 
-#import <mutex>
-
+#import <react/renderer/core/ReactRootViewTagGenerator.h>
 #import <stdatomic.h>
+#import <mutex>
 
 #import "RCTAssert.h"
 #import "RCTBridge+Private.h"
@@ -73,7 +73,7 @@
     _batchedBridge = [_bridge batchedBridge] ?: _bridge;
     _moduleName = moduleName;
     _properties = [initialProperties copy];
-    _rootViewTag = RCTAllocateRootViewTag();
+    _rootViewTag = @(facebook::react::getNextRootViewTag());
 
     _rootShadowViewDidStartRenderingSemaphore = dispatch_semaphore_create(0);
     _rootShadowViewDidStartLayingOutSemaphore = dispatch_semaphore_create(0);
