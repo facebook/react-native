@@ -100,11 +100,17 @@ const onPerformanceEntry = () => {
       const durationThreshold = observerConfig.entryTypes.get(entry.entryType);
       return entry.duration >= (durationThreshold ?? 0);
     });
-    observerConfig.callback(
-      new PerformanceObserverEntryList(entriesForObserver),
-      observer,
-      droppedEntriesCount,
-    );
+    if (entriesForObserver.length !== 0) {
+      try {
+        observerConfig.callback(
+          new PerformanceObserverEntryList(entriesForObserver),
+          observer,
+          droppedEntriesCount,
+        );
+      } catch (error) {
+        console.error(error);
+      }
+    }
   }
 };
 
