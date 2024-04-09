@@ -23,7 +23,7 @@ import {
 import type {Element} from 'react';
 
 function LayoutSizeToPixel() {
-  const [layoutDPSize, setLayoutDPSize] = useState(null);
+  const [layoutDPSize, setLayoutDPSize] = useState<number>(0);
   const pixelSize = PixelRatio.getPixelSizeForLayoutSize(
     layoutDPSize ? layoutDPSize : 0,
   );
@@ -63,8 +63,7 @@ function RoundToNearestPixel() {
   );
 
   const handleDPInputChange = (changedText: string) => {
-    const layoutSize = parseInt(changedText, 10);
-    setLayoutDPSizeText(layoutSize);
+    setLayoutDPSizeText(changedText);
   };
 
   return (
