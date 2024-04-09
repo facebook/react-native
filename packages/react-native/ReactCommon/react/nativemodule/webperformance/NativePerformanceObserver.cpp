@@ -26,40 +26,22 @@ namespace facebook::react {
 
 NativePerformanceObserver::NativePerformanceObserver(
     std::shared_ptr<CallInvoker> jsInvoker)
-    : NativePerformanceObserverCxxSpec(std::move(jsInvoker)) {
-  setEventLogger(&PerformanceEntryReporter::getInstance());
-}
-
-NativePerformanceObserver::~NativePerformanceObserver() {
-  setEventLogger(nullptr);
-}
+    : NativePerformanceObserverCxxSpec(std::move(jsInvoker)) {}
 
 void NativePerformanceObserver::startReporting(
-    jsi::Runtime& rt,
+    jsi::Runtime& /*rt*/,
     PerformanceEntryType entryType) {
-  PerformanceEntryReporter& reporter = PerformanceEntryReporter::getInstance();
+  auto reporter = PerformanceEntryReporter::getInstance();
 
-  reporter.startReporting(entryType);
-
-  if (entryType == PerformanceEntryType::EVENT &&
-      CoreFeatures::enableReportEventPaintTime) {
-    UIManagerBinding::getBinding(rt)->getUIManager().registerMountHook(
-        reporter);
-  }
+  reporter->startReporting(entryType);
 }
 
 void NativePerformanceObserver::stopReporting(
-    jsi::Runtime& rt,
+    jsi::Runtime& /*rt*/,
     PerformanceEntryType entryType) {
-  PerformanceEntryReporter& reporter = PerformanceEntryReporter::getInstance();
+  auto reporter = PerformanceEntryReporter::getInstance();
 
-  reporter.stopReporting(entryType);
-
-  if (entryType == PerformanceEntryType::EVENT &&
-      CoreFeatures::enableReportEventPaintTime) {
-    UIManagerBinding::getBinding(rt)->getUIManager().unregisterMountHook(
-        reporter);
-  }
+  reporter->stopReporting(entryType);
 }
 
 void NativePerformanceObserver::setIsBuffered(
@@ -67,39 +49,39 @@ void NativePerformanceObserver::setIsBuffered(
     const std::vector<PerformanceEntryType> entryTypes,
     bool isBuffered) {
   for (const PerformanceEntryType entryType : entryTypes) {
-    PerformanceEntryReporter::getInstance().setAlwaysLogged(
+    PerformanceEntryReporter::getInstance()->setAlwaysLogged(
         entryType, isBuffered);
   }
 }
 
 PerformanceEntryReporter::PopPendingEntriesResult
 NativePerformanceObserver::popPendingEntries(jsi::Runtime& /*rt*/) {
-  return PerformanceEntryReporter::getInstance().popPendingEntries();
+  return PerformanceEntryReporter::getInstance()->popPendingEntries();
 }
 
 void NativePerformanceObserver::setOnPerformanceEntryCallback(
     jsi::Runtime& /*rt*/,
     std::optional<AsyncCallback<>> callback) {
   if (callback) {
-    PerformanceEntryReporter::getInstance().setReportingCallback(
+    PerformanceEntryReporter::getInstance()->setReportingCallback(
         [callback = std::move(callback)]() {
           callback->callWithPriority(SchedulerPriority::IdlePriority);
         });
   } else {
-    PerformanceEntryReporter::getInstance().setReportingCallback(nullptr);
+    PerformanceEntryReporter::getInstance()->setReportingCallback(nullptr);
   }
 }
 
 void NativePerformanceObserver::logRawEntry(
     jsi::Runtime& /*rt*/,
     const PerformanceEntry entry) {
-  PerformanceEntryReporter::getInstance().logEntry(entry);
+  PerformanceEntryReporter::getInstance()->logEntry(entry);
 }
 
 std::vector<std::pair<std::string, uint32_t>>
 NativePerformanceObserver::getEventCounts(jsi::Runtime& /*rt*/) {
   const auto& eventCounts =
-      PerformanceEntryReporter::getInstance().getEventCounts();
+      PerformanceEntryReporter::getInstance()->getEventCounts();
   return std::vector<std::pair<std::string, uint32_t>>(
       eventCounts.begin(), eventCounts.end());
 }
@@ -108,7 +90,7 @@ void NativePerformanceObserver::setDurationThreshold(
     jsi::Runtime& /*rt*/,
     PerformanceEntryType entryType,
     double durationThreshold) {
-  PerformanceEntryReporter::getInstance().setDurationThreshold(
+  PerformanceEntryReporter::getInstance()->setDurationThreshold(
       entryType, durationThreshold);
 }
 
@@ -116,7 +98,7 @@ void NativePerformanceObserver::clearEntries(
     jsi::Runtime& /*rt*/,
     PerformanceEntryType entryType,
     std::optional<std::string> entryName) {
-  PerformanceEntryReporter::getInstance().clearEntries(
+  PerformanceEntryReporter::getInstance()->clearEntries(
       entryType, entryName ? entryName->c_str() : std::string_view{});
 }
 
@@ -124,7 +106,7 @@ std::vector<PerformanceEntry> NativePerformanceObserver::getEntries(
     jsi::Runtime& /*rt*/,
     std::optional<PerformanceEntryType> entryType,
     std::optional<std::string> entryName) {
-  return PerformanceEntryReporter::getInstance().getEntries(
+  return PerformanceEntryReporter::getInstance()->getEntries(
       entryType, entryName ? entryName->c_str() : std::string_view{});
 }
 
