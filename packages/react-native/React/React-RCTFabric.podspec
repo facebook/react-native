@@ -86,6 +86,7 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-featureflags")
   add_dependency(s, "React-debug")
   add_dependency(s, "React-utils")
+  add_dependency(s, "React-performancetimeline")
   add_dependency(s, "React-rendererdebug")
   add_dependency(s, "React-rendererconsistency")
   add_dependency(s, "React-runtimescheduler")

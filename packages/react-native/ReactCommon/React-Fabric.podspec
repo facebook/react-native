@@ -249,11 +249,24 @@ Pod::Spec.new do |s|
     ss.header_dir           = "react/renderer/mounting"
   end
 
+  s.subspec "observers" do |ss|
+    ss.subspec "events" do |sss|
+      sss.dependency             folly_dep_name, folly_version
+      sss.compiler_flags       = folly_compiler_flags
+      sss.source_files         = "react/renderer/observers/events/**/*.{m,mm,cpp,h}"
+      sss.exclude_files        = "react/renderer/observers/events/tests"
+      sss.header_dir           = "react/renderer/observers/events"
+    end
+  end
+
   s.subspec "scheduler" do |ss|
     ss.dependency             folly_dep_name, folly_version
     ss.compiler_flags       = folly_compiler_flags
     ss.source_files         = "react/renderer/scheduler/**/*.{m,mm,cpp,h}"
     ss.header_dir           = "react/renderer/scheduler"
+
+    ss.dependency             "React-performancetimeline"
+    ss.dependency             "React-Fabric/observers/events"
   end
 
   s.subspec "templateprocessor" do |ss|
