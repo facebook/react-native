@@ -97,13 +97,11 @@ JsErrorHandler::JsErrorHandler(
 
 JsErrorHandler::~JsErrorHandler() {}
 
-void JsErrorHandler::handleJsError(const jsi::JSError& error, bool isFatal) {
+void JsErrorHandler::handleFatalError(const jsi::JSError& error) {
   // TODO: Current error parsing works and is stable. Can investigate using
   // REGEX_HERMES to get additional Hermes data, though it requires JS setup.
-  if (isFatal) {
-    _hasHandledFatalError = true;
-  }
-  ParsedError parsedError = parseErrorStack(error, isFatal, false);
+  _hasHandledFatalError = true;
+  ParsedError parsedError = parseErrorStack(error, true, false);
   _jsErrorHandlingFunc(parsedError);
 }
 

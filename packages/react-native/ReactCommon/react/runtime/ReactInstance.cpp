@@ -222,7 +222,7 @@ void ReactInstance::loadScript(
             strongBufferedRuntimeExecuter->flush();
           }
         } catch (jsi::JSError& error) {
-          jsErrorHandler_->handleJsError(error, true);
+          jsErrorHandler_->handleFatalError(error);
         }
       });
 }
