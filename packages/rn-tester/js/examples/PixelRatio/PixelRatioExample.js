@@ -28,7 +28,7 @@ function LayoutSizeToPixel() {
     layoutDPSize ? layoutDPSize : 0,
   );
 
-  const handleDPInputChange = changedText => {
+  const handleDPInputChange = (changedText: string) => {
     const layoutSize = parseInt(changedText, 10);
     setLayoutDPSize(layoutSize);
   };
