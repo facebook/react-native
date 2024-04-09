@@ -3755,10 +3755,8 @@ public class com/facebook/react/runtime/ReactSurfaceImpl : com/facebook/react/in
 	public fun updateInitProps (Landroid/os/Bundle;)V
 }
 
-public class com/facebook/react/runtime/ReactSurfaceView : com/facebook/react/ReactRootView {
+public final class com/facebook/react/runtime/ReactSurfaceView : com/facebook/react/ReactRootView {
 	public fun <init> (Landroid/content/Context;Lcom/facebook/react/runtime/ReactSurfaceImpl;)V
-	protected fun dispatchJSPointerEvent (Landroid/view/MotionEvent;Z)V
-	protected fun dispatchJSTouchEvent (Landroid/view/MotionEvent;)V
 	public fun getCurrentReactContext ()Lcom/facebook/react/bridge/ReactContext;
 	public fun getUIManagerType ()I
 	public fun handleException (Ljava/lang/Throwable;)V
@@ -3767,8 +3765,6 @@ public class com/facebook/react/runtime/ReactSurfaceView : com/facebook/react/Re
 	public fun isViewAttachedToReactInstance ()Z
 	public fun onChildEndedNativeGesture (Landroid/view/View;Landroid/view/MotionEvent;)V
 	public fun onChildStartedNativeGesture (Landroid/view/View;Landroid/view/MotionEvent;)V
-	protected fun onLayout (ZIIII)V
-	protected fun onMeasure (II)V
 	public fun requestDisallowInterceptTouchEvent (Z)V
 	public fun setIsFabric (Z)V
 }
