@@ -7,17 +7,16 @@
 
 #pragma once
 
-#include <react/renderer/core/EventLogger.h>
+#include "BoundedConsumableBuffer.h"
+
 #include <array>
 #include <functional>
+#include <memory>
 #include <mutex>
 #include <optional>
 #include <string_view>
 #include <unordered_map>
 #include <unordered_set>
-#include "BoundedConsumableBuffer.h"
-
-#include <react/renderer/uimanager/UIManagerMountHook.h>
 
 namespace facebook::react {
 
@@ -82,13 +81,15 @@ struct PerformanceEntryBuffer {
 constexpr size_t NUM_PERFORMANCE_ENTRY_TYPES =
     (size_t)PerformanceEntryType::_NEXT - 1; // Valid types start from 1.
 
-class PerformanceEntryReporter : public EventLogger, public UIManagerMountHook {
+class PerformanceEntryReporter {
  public:
+  PerformanceEntryReporter();
+
   // NOTE: This class is not thread safe, make sure that the calls are made from
   // the same thread.
   // TODO: Consider passing it as a parameter to the corresponding modules at
   // creation time instead of having the singleton.
-  static PerformanceEntryReporter& getInstance();
+  static std::shared_ptr<PerformanceEntryReporter> getInstance();
 
   struct PopPendingEntriesResult {
     std::vector<PerformanceEntry> entries;
@@ -157,17 +158,11 @@ class PerformanceEntryReporter : public EventLogger, public UIManagerMountHook {
       double processingEnd,
       uint32_t interactionId);
 
-  EventTag onEventStart(std::string_view name) override;
-  void onEventProcessingStart(EventTag tag) override;
-  void onEventProcessingEnd(EventTag tag) override;
-
-  void shadowTreeDidMount(
-      const RootShadowNode::Shared& rootShadowNode,
-      double mountTime) noexcept override;
-
   const std::unordered_map<std::string, uint32_t>& getEventCounts() const {
     return eventCounts_;
   }
+
+  DOMHighResTimeStamp getCurrentTimeStamp() const;
 
   void setTimeStampProvider(std::function<double()> provider) {
     timeStampProvider_ = std::move(provider);
@@ -182,31 +177,9 @@ class PerformanceEntryReporter : public EventLogger, public UIManagerMountHook {
 
   uint32_t droppedEntriesCount_{0};
 
-  struct EventEntry {
-    std::string_view name;
-    double startTime{0.0};
-    double processingStartTime{0.0};
-    double processingEndTime{0.0};
-
-    // TODO: Define the way to assign interaction IDs to the event chains
-    // (T141358175)
-    uint32_t interactionId{0};
-  };
-
-  // Registry to store the events that are currently ongoing.
-  // Note that we could probably use a more efficient container for that,
-  // but since we only report discrete events, the volume is normally low,
-  // so a hash map should be just fine.
-  std::unordered_map<EventTag, EventEntry> eventsInFlight_;
-  mutable std::mutex eventsInFlightMutex_;
-
   std::function<double()> timeStampProvider_ = nullptr;
 
   mutable std::mutex nameLookupMutex_;
-
-  static EventTag sCurrentEventTag_;
-
-  PerformanceEntryReporter();
 
   double getMarkTime(const std::string& markName) const;
   void scheduleFlushBuffer();
@@ -215,8 +188,6 @@ class PerformanceEntryReporter : public EventLogger, public UIManagerMountHook {
       PerformanceEntryType entryType,
       std::string_view entryName,
       std::vector<PerformanceEntry>& res) const;
-
-  double getCurrentTimeStamp() const;
 };
 
 } // namespace facebook::react

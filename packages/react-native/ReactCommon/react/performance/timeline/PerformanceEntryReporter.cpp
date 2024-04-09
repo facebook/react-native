@@ -6,20 +6,14 @@
  */
 
 #include "PerformanceEntryReporter.h"
+
 #include <cxxreact/JSExecutor.h>
-#include <react/renderer/core/EventLogger.h>
-#include <react/utils/CoreFeatures.h>
-
-#include <functional>
-#include <unordered_map>
-
-#include <glog/logging.h>
 
 namespace facebook::react {
-EventTag PerformanceEntryReporter::sCurrentEventTag_{0};
 
-PerformanceEntryReporter& PerformanceEntryReporter::getInstance() {
-  static PerformanceEntryReporter instance;
+std::shared_ptr<PerformanceEntryReporter>
+PerformanceEntryReporter::getInstance() {
+  static auto instance = std::make_shared<PerformanceEntryReporter>();
   return instance;
 }
 
@@ -296,173 +290,6 @@ void PerformanceEntryReporter::logEventEntry(
 void PerformanceEntryReporter::scheduleFlushBuffer() {
   if (callback_) {
     callback_();
-  }
-}
-
-struct StrKey {
-  uint32_t key;
-  StrKey(std::string_view s) : key(std::hash<std::string_view>{}(s)) {}
-
-  bool operator==(const StrKey& rhs) const {
-    return key == rhs.key;
-  }
-};
-
-struct StrKeyHash {
-  constexpr size_t operator()(const StrKey& strKey) const {
-    return static_cast<size_t>(strKey.key);
-  }
-};
-
-// Supported events for reporting, see
-// https://www.w3.org/TR/event-timing/#sec-events-exposed
-// Not all of these are currently supported by RN, but we map them anyway for
-// future-proofing.
-using SupportedEventTypeRegistry =
-    std::unordered_map<StrKey, std::string_view, StrKeyHash>;
-
-static const SupportedEventTypeRegistry& getSupportedEvents() {
-  static SupportedEventTypeRegistry SUPPORTED_EVENTS = {
-      {StrKey("topAuxClick"), "auxclick"},
-      {StrKey("topClick"), "click"},
-      {StrKey("topContextMenu"), "contextmenu"},
-      {StrKey("topDblClick"), "dblclick"},
-      {StrKey("topMouseDown"), "mousedown"},
-      {StrKey("topMouseEnter"), "mouseenter"},
-      {StrKey("topMouseLeave"), "mouseleave"},
-      {StrKey("topMouseOut"), "mouseout"},
-      {StrKey("topMouseOver"), "mouseover"},
-      {StrKey("topMouseUp"), "mouseup"},
-      {StrKey("topPointerOver"), "pointerover"},
-      {StrKey("topPointerEnter"), "pointerenter"},
-      {StrKey("topPointerDown"), "pointerdown"},
-      {StrKey("topPointerUp"), "pointerup"},
-      {StrKey("topPointerCancel"), "pointercancel"},
-      {StrKey("topPointerOut"), "pointerout"},
-      {StrKey("topPointerLeave"), "pointerleave"},
-      {StrKey("topGotPointerCapture"), "gotpointercapture"},
-      {StrKey("topLostPointerCapture"), "lostpointercapture"},
-      {StrKey("topTouchStart"), "touchstart"},
-      {StrKey("topTouchEnd"), "touchend"},
-      {StrKey("topTouchCancel"), "touchcancel"},
-      {StrKey("topKeyDown"), "keydown"},
-      {StrKey("topKeyPress"), "keypress"},
-      {StrKey("topKeyUp"), "keyup"},
-      {StrKey("topBeforeInput"), "beforeinput"},
-      {StrKey("topInput"), "input"},
-      {StrKey("topCompositionStart"), "compositionstart"},
-      {StrKey("topCompositionUpdate"), "compositionupdate"},
-      {StrKey("topCompositionEnd"), "compositionend"},
-      {StrKey("topDragStart"), "dragstart"},
-      {StrKey("topDragEnd"), "dragend"},
-      {StrKey("topDragEnter"), "dragenter"},
-      {StrKey("topDragLeave"), "dragleave"},
-      {StrKey("topDragOver"), "dragover"},
-      {StrKey("topDrop"), "drop"},
-  };
-  return SUPPORTED_EVENTS;
-}
-
-EventTag PerformanceEntryReporter::onEventStart(std::string_view name) {
-  if (!isReporting(PerformanceEntryType::EVENT)) {
-    return 0;
-  }
-  const auto& supportedEvents = getSupportedEvents();
-  auto it = supportedEvents.find(name);
-  if (it == supportedEvents.end()) {
-    return 0;
-  }
-
-  auto reportedName = it->second;
-
-  sCurrentEventTag_++;
-  if (sCurrentEventTag_ == 0) {
-    // The tag wrapped around (which is highly unlikely, but still)
-    sCurrentEventTag_ = 1;
-  }
-
-  auto timeStamp = getCurrentTimeStamp();
-  {
-    std::lock_guard lock(eventsInFlightMutex_);
-    eventsInFlight_.emplace(std::make_pair(
-        sCurrentEventTag_, EventEntry{reportedName, timeStamp, 0.0}));
-  }
-  return sCurrentEventTag_;
-}
-
-void PerformanceEntryReporter::onEventProcessingStart(EventTag tag) {
-  if (!isReporting(PerformanceEntryType::EVENT) || tag == 0) {
-    return;
-  }
-  auto timeStamp = getCurrentTimeStamp();
-  {
-    std::lock_guard lock(eventsInFlightMutex_);
-    auto it = eventsInFlight_.find(tag);
-    if (it != eventsInFlight_.end()) {
-      it->second.processingStartTime = timeStamp;
-    }
-  }
-}
-
-void PerformanceEntryReporter::onEventProcessingEnd(EventTag tag) {
-  if (!isReporting(PerformanceEntryType::EVENT) || tag == 0) {
-    return;
-  }
-  auto timeStamp = getCurrentTimeStamp();
-  {
-    std::lock_guard lock(eventsInFlightMutex_);
-    auto it = eventsInFlight_.find(tag);
-    if (it == eventsInFlight_.end()) {
-      return;
-    }
-    auto& entry = it->second;
-    entry.processingEndTime = timeStamp;
-
-    if (CoreFeatures::enableReportEventPaintTime) {
-      // If reporting paint time, don't send the entry just yet and wait for the
-      // mount hook callback to be called
-      return;
-    }
-
-    const auto& name = entry.name;
-
-    logEventEntry(
-        std::string(name),
-        entry.startTime,
-        timeStamp - entry.startTime,
-        entry.processingStartTime,
-        entry.processingEndTime,
-        entry.interactionId);
-    eventsInFlight_.erase(it);
-  }
-}
-
-void PerformanceEntryReporter::shadowTreeDidMount(
-    const RootShadowNode::Shared& /*rootShadowNode*/,
-    double mountTime) noexcept {
-  if (!isReporting(PerformanceEntryType::EVENT) ||
-      !CoreFeatures::enableReportEventPaintTime) {
-    return;
-  }
-
-  std::lock_guard lock(eventsInFlightMutex_);
-  auto it = eventsInFlight_.begin();
-  while (it != eventsInFlight_.end()) {
-    const auto& entry = it->second;
-    if (entry.processingEndTime == 0.0 || entry.processingEndTime > mountTime) {
-      // This mount doesn't correspond to the event
-      ++it;
-      continue;
-    }
-
-    logEventEntry(
-        std::string(entry.name),
-        entry.startTime,
-        mountTime - entry.startTime,
-        entry.processingStartTime,
-        entry.processingEndTime,
-        entry.interactionId);
-    it = eventsInFlight_.erase(it);
   }
 }
 

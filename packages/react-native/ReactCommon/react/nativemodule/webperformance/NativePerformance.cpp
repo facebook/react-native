@@ -34,7 +34,7 @@ void NativePerformance::mark(
     jsi::Runtime& rt,
     std::string name,
     double startTime) {
-  PerformanceEntryReporter::getInstance().mark(name, startTime);
+  PerformanceEntryReporter::getInstance()->mark(name, startTime);
 }
 
 void NativePerformance::measure(
@@ -45,7 +45,7 @@ void NativePerformance::measure(
     std::optional<double> duration,
     std::optional<std::string> startMark,
     std::optional<std::string> endMark) {
-  PerformanceEntryReporter::getInstance().measure(
+  PerformanceEntryReporter::getInstance()->measure(
       name, startTime, endTime, duration, startMark, endMark);
 }
 

@@ -49,7 +49,6 @@ class NativePerformanceObserver
     : public NativePerformanceObserverCxxSpec<NativePerformanceObserver> {
  public:
   NativePerformanceObserver(std::shared_ptr<CallInvoker> jsInvoker);
-  ~NativePerformanceObserver();
 
   void startReporting(jsi::Runtime& rt, PerformanceEntryType entryType);
 

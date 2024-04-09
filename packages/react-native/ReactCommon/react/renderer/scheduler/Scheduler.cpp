@@ -43,6 +43,14 @@ Scheduler::Scheduler(
   // Creating a container for future `EventDispatcher` instance.
   eventDispatcher_ = std::make_shared<std::optional<const EventDispatcher>>();
 
+  // TODO(T182293888): remove singleton from PerformanceEntryReporter and move
+  // creation here.
+  auto performanceEntryReporter = PerformanceEntryReporter::getInstance();
+  performanceEntryReporter_ = performanceEntryReporter;
+
+  eventPerformanceLogger_ =
+      std::make_shared<EventPerformanceLogger>(performanceEntryReporter_);
+
   auto uiManager = std::make_shared<UIManager>(
       runtimeExecutor_, schedulerToolbox.backgroundExecutor, contextContainer_);
   auto eventOwnerBox = std::make_shared<EventBeat::OwnerBox>();
@@ -88,11 +96,13 @@ Scheduler::Scheduler(
   // Creating an `EventDispatcher` instance inside the already allocated
   // container (inside the optional).
   eventDispatcher_->emplace(
-      EventQueueProcessor(eventPipe, eventPipeConclusion, statePipe),
+      EventQueueProcessor(
+          eventPipe, eventPipeConclusion, statePipe, eventPerformanceLogger_),
       schedulerToolbox.asynchronousEventBeatFactory,
       eventOwnerBox,
       *runtimeScheduler,
-      statePipe);
+      statePipe,
+      eventPerformanceLogger_);
 
   // Casting to `std::shared_ptr<EventDispatcher const>`.
   auto eventDispatcher =
@@ -150,6 +160,10 @@ Scheduler::Scheduler(
 
   CoreFeatures::enableReportEventPaintTime = reactNativeConfig_->getBool(
       "rn_responsiveness_performance:enable_paint_time_reporting");
+
+  if (CoreFeatures::enableReportEventPaintTime) {
+    uiManager->registerMountHook(*eventPerformanceLogger_);
+  }
 }
 
 Scheduler::~Scheduler() {
