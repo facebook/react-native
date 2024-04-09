@@ -36,14 +36,12 @@ NativePerformanceObserver::~NativePerformanceObserver() {
 
 void NativePerformanceObserver::startReporting(
     jsi::Runtime& rt,
-    int32_t entryType) {
+    PerformanceEntryType entryType) {
   PerformanceEntryReporter& reporter = PerformanceEntryReporter::getInstance();
 
-  PerformanceEntryType entryTypeEnum =
-      static_cast<PerformanceEntryType>(entryType);
-  reporter.startReporting(entryTypeEnum);
+  reporter.startReporting(entryType);
 
-  if (entryTypeEnum == PerformanceEntryType::EVENT &&
+  if (entryType == PerformanceEntryType::EVENT &&
       CoreFeatures::enableReportEventPaintTime) {
     UIManagerBinding::getBinding(rt)->getUIManager().registerMountHook(
         reporter);
@@ -52,14 +50,12 @@ void NativePerformanceObserver::startReporting(
 
 void NativePerformanceObserver::stopReporting(
     jsi::Runtime& rt,
-    int32_t entryType) {
+    PerformanceEntryType entryType) {
   PerformanceEntryReporter& reporter = PerformanceEntryReporter::getInstance();
 
-  PerformanceEntryType entryTypeEnum =
-      static_cast<PerformanceEntryType>(entryType);
-  reporter.stopReporting(entryTypeEnum);
+  reporter.stopReporting(entryType);
 
-  if (entryTypeEnum == PerformanceEntryType::EVENT &&
+  if (entryType == PerformanceEntryType::EVENT &&
       CoreFeatures::enableReportEventPaintTime) {
     UIManagerBinding::getBinding(rt)->getUIManager().unregisterMountHook(
         reporter);
@@ -67,34 +63,34 @@ void NativePerformanceObserver::stopReporting(
 }
 
 void NativePerformanceObserver::setIsBuffered(
-    jsi::Runtime& rt,
-    std::vector<int32_t> entryTypes,
+    jsi::Runtime& /*rt*/,
+    const std::vector<PerformanceEntryType> entryTypes,
     bool isBuffered) {
-  for (const int32_t entryType : entryTypes) {
+  for (const PerformanceEntryType entryType : entryTypes) {
     PerformanceEntryReporter::getInstance().setAlwaysLogged(
-        static_cast<PerformanceEntryType>(entryType), isBuffered);
+        entryType, isBuffered);
   }
 }
 
-GetPendingEntriesResult NativePerformanceObserver::popPendingEntries(
-    jsi::Runtime& rt) {
+PerformanceEntryReporter::PopPendingEntriesResult
+NativePerformanceObserver::popPendingEntries(jsi::Runtime& /*rt*/) {
   return PerformanceEntryReporter::getInstance().popPendingEntries();
 }
 
 void NativePerformanceObserver::setOnPerformanceEntryCallback(
-    jsi::Runtime& rt,
+    jsi::Runtime& /*rt*/,
     std::optional<AsyncCallback<>> callback) {
   PerformanceEntryReporter::getInstance().setReportingCallback(callback);
 }
 
 void NativePerformanceObserver::logRawEntry(
-    jsi::Runtime& rt,
-    RawPerformanceEntry entry) {
+    jsi::Runtime& /*rt*/,
+    const PerformanceEntry entry) {
   PerformanceEntryReporter::getInstance().logEntry(entry);
 }
 
 std::vector<std::pair<std::string, uint32_t>>
-NativePerformanceObserver::getEventCounts(jsi::Runtime& rt) {
+NativePerformanceObserver::getEventCounts(jsi::Runtime& /*rt*/) {
   const auto& eventCounts =
       PerformanceEntryReporter::getInstance().getEventCounts();
   return std::vector<std::pair<std::string, uint32_t>>(
@@ -102,38 +98,36 @@ NativePerformanceObserver::getEventCounts(jsi::Runtime& rt) {
 }
 
 void NativePerformanceObserver::setDurationThreshold(
-    jsi::Runtime& rt,
-    int32_t entryType,
+    jsi::Runtime& /*rt*/,
+    PerformanceEntryType entryType,
     double durationThreshold) {
   PerformanceEntryReporter::getInstance().setDurationThreshold(
-      static_cast<PerformanceEntryType>(entryType), durationThreshold);
+      entryType, durationThreshold);
 }
 
 void NativePerformanceObserver::clearEntries(
-    jsi::Runtime& rt,
-    int32_t entryType,
+    jsi::Runtime& /*rt*/,
+    PerformanceEntryType entryType,
     std::optional<std::string> entryName) {
   PerformanceEntryReporter::getInstance().clearEntries(
-      static_cast<PerformanceEntryType>(entryType),
-      entryName ? entryName->c_str() : nullptr);
+      entryType, entryName ? entryName->c_str() : std::string_view{});
 }
 
-std::vector<RawPerformanceEntry> NativePerformanceObserver::getEntries(
-    jsi::Runtime& rt,
-    std::optional<int32_t> entryType,
+std::vector<PerformanceEntry> NativePerformanceObserver::getEntries(
+    jsi::Runtime& /*rt*/,
+    std::optional<PerformanceEntryType> entryType,
     std::optional<std::string> entryName) {
   return PerformanceEntryReporter::getInstance().getEntries(
-      entryType ? std::optional{static_cast<PerformanceEntryType>(*entryType)}
-                : std::nullopt,
-      entryName ? entryName->c_str() : nullptr);
+      entryType, entryName ? entryName->c_str() : std::string_view{});
 }
 
-std::vector<RawPerformanceEntryType>
-NativePerformanceObserver::getSupportedPerformanceEntryTypes(jsi::Runtime& rt) {
+std::vector<PerformanceEntryType>
+NativePerformanceObserver::getSupportedPerformanceEntryTypes(
+    jsi::Runtime& /*rt*/) {
   return {
-      static_cast<RawPerformanceEntryType>(PerformanceEntryType::MARK),
-      static_cast<RawPerformanceEntryType>(PerformanceEntryType::MEASURE),
-      static_cast<RawPerformanceEntryType>(PerformanceEntryType::EVENT),
+      PerformanceEntryType::MARK,
+      PerformanceEntryType::MEASURE,
+      PerformanceEntryType::EVENT,
   };
 }
 
