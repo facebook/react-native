@@ -12,23 +12,45 @@ import processColor from '../StyleSheet/processColor';
 import Appearance from './Appearance';
 import NativeDevLoadingView from './NativeDevLoadingView';
 
+const COLOR_SCHEME = {
+  dark: {
+    refresh: {
+      backgroundColor: '#2584e8',
+      textColor: '#ffffff',
+    },
+    load: {
+      backgroundColor: '#fafafa',
+      textColor: '#242526',
+    },
+  },
+  default: {
+    refresh: {
+      backgroundColor: '#2584e8',
+      textColor: '#ffffff',
+    },
+    load: {
+      backgroundColor: '#404040',
+      textColor: '#ffffff',
+    },
+  },
+};
+
 module.exports = {
   showMessage(message: string, type: 'load' | 'refresh') {
     if (NativeDevLoadingView) {
+      const colorScheme =
+        Appearance.getColorScheme() === 'dark'
+          ? COLOR_SCHEME.dark
+          : COLOR_SCHEME.default;
+
+      const colorSet = colorScheme[type];
+
       let backgroundColor;
       let textColor;
 
-      if (type === 'refresh') {
-        backgroundColor = processColor('#2584e8');
-        textColor = processColor('#ffffff');
-      } else if (type === 'load') {
-        if (Appearance.getColorScheme() === 'dark') {
-          backgroundColor = processColor('#fafafa');
-          textColor = processColor('#242526');
-        } else {
-          backgroundColor = processColor('#404040');
-          textColor = processColor('#ffffff');
-        }
+      if (colorSet) {
+        backgroundColor = processColor(colorSet.backgroundColor);
+        textColor = processColor(colorSet.textColor);
       }
 
       NativeDevLoadingView.showMessage(

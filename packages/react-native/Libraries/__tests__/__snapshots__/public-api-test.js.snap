@@ -8516,23 +8516,7 @@ export interface IPerformanceLogger {
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/Utilities/LoadingView.android.js 1`] = `
-"declare module.exports: {
-  showMessage(message: string, type: \\"load\\" | \\"refresh\\"): void,
-  hide(): void,
-};
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/Utilities/LoadingView.ios.js 1`] = `
-"declare module.exports: {
-  showMessage(message: string, type: \\"load\\" | \\"refresh\\"): void,
-  hide(): void,
-};
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/Utilities/LoadingView.js 1`] = `
+exports[`public API should not change unintentionally Libraries/Utilities/DevLoadingView.js 1`] = `
 "declare module.exports: {
   showMessage(message: string, type: \\"load\\" | \\"refresh\\"): void,
   hide(): void,
