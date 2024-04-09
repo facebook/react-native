@@ -5646,21 +5646,26 @@ public abstract interface class com/facebook/react/uimanager/events/RCTModernEve
 	public abstract fun receiveTouches (Lcom/facebook/react/uimanager/events/TouchEvent;)V
 }
 
-public class com/facebook/react/uimanager/events/TouchEvent : com/facebook/react/uimanager/events/Event {
+public final class com/facebook/react/uimanager/events/TouchEvent : com/facebook/react/uimanager/events/Event {
+	public static final field Companion Lcom/facebook/react/uimanager/events/TouchEvent$Companion;
 	public static final field UNSET J
 	public fun canCoalesce ()Z
 	public fun dispatch (Lcom/facebook/react/uimanager/events/RCTEventEmitter;)V
 	public fun dispatchModern (Lcom/facebook/react/uimanager/events/RCTModernEventEmitter;)V
 	public fun getCoalescingKey ()S
-	protected fun getEventCategory ()I
 	public fun getEventName ()Ljava/lang/String;
-	public fun getMotionEvent ()Landroid/view/MotionEvent;
-	public fun getTouchEventType ()Lcom/facebook/react/uimanager/events/TouchEventType;
-	public fun getViewX ()F
-	public fun getViewY ()F
-	public static fun obtain (IILcom/facebook/react/uimanager/events/TouchEventType;Landroid/view/MotionEvent;JFFLcom/facebook/react/uimanager/events/TouchEventCoalescingKeyHelper;)Lcom/facebook/react/uimanager/events/TouchEvent;
-	public static fun obtain (ILcom/facebook/react/uimanager/events/TouchEventType;Landroid/view/MotionEvent;JFFLcom/facebook/react/uimanager/events/TouchEventCoalescingKeyHelper;)Lcom/facebook/react/uimanager/events/TouchEvent;
+	public final fun getMotionEvent ()Landroid/view/MotionEvent;
+	public final fun getTouchEventType ()Lcom/facebook/react/uimanager/events/TouchEventType;
+	public final fun getViewX ()F
+	public final fun getViewY ()F
+	public static final fun obtain (IILcom/facebook/react/uimanager/events/TouchEventType;Landroid/view/MotionEvent;JFFLcom/facebook/react/uimanager/events/TouchEventCoalescingKeyHelper;)Lcom/facebook/react/uimanager/events/TouchEvent;
+	public static final fun obtain (ILcom/facebook/react/uimanager/events/TouchEventType;Landroid/view/MotionEvent;JFFLcom/facebook/react/uimanager/events/TouchEventCoalescingKeyHelper;)Lcom/facebook/react/uimanager/events/TouchEvent;
 	public fun onDispose ()V
+}
+
+public final class com/facebook/react/uimanager/events/TouchEvent$Companion {
+	public final fun obtain (IILcom/facebook/react/uimanager/events/TouchEventType;Landroid/view/MotionEvent;JFFLcom/facebook/react/uimanager/events/TouchEventCoalescingKeyHelper;)Lcom/facebook/react/uimanager/events/TouchEvent;
+	public final fun obtain (ILcom/facebook/react/uimanager/events/TouchEventType;Landroid/view/MotionEvent;JFFLcom/facebook/react/uimanager/events/TouchEventCoalescingKeyHelper;)Lcom/facebook/react/uimanager/events/TouchEvent;
 }
 
 public class com/facebook/react/uimanager/events/TouchEventCoalescingKeyHelper {
