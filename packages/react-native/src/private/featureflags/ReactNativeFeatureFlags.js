@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ee6090277aad4b98818b1a3ecb913a23>>
+ * @generated SignedSource<<9286e5fc6398d839d271af4f4a8ae94b>>
  * @flow strict-local
  */
 
@@ -45,7 +45,6 @@ export type ReactNativeFeatureFlags = {
   enableBackgroundExecutor: Getter<boolean>,
   enableCleanTextInputYogaNode: Getter<boolean>,
   enableCustomDrawOrderFabric: Getter<boolean>,
-  enableFixForClippedSubviewsCrash: Getter<boolean>,
   enableMicrotasks: Getter<boolean>,
   enableMountHooksAndroid: Getter<boolean>,
   enableSpannableBuildingUnification: Getter<boolean>,
@@ -117,10 +116,6 @@ export const enableCleanTextInputYogaNode: Getter<boolean> = createNativeFlagGet
  * When enabled, Fabric will use customDrawOrder in ReactViewGroup (similar to old architecture).
  */
 export const enableCustomDrawOrderFabric: Getter<boolean> = createNativeFlagGetter('enableCustomDrawOrderFabric', false);
-/**
- * Attempt at fixing a crash related to subview clipping on Android. This is a kill switch for the fix
- */
-export const enableFixForClippedSubviewsCrash: Getter<boolean> = createNativeFlagGetter('enableFixForClippedSubviewsCrash', false);
 /**
  * Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).
  */

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<881b149aca14f4f73e45e02089787a88>>
+ * @generated SignedSource<<e9fbc07cb8f1c50e015e34035d50b8d1>>
  */
 
 /**
@@ -61,11 +61,6 @@ class ReactNativeFeatureFlags {
    * When enabled, Fabric will use customDrawOrder in ReactViewGroup (similar to old architecture).
    */
   RN_EXPORT static bool enableCustomDrawOrderFabric();
-
-  /**
-   * Attempt at fixing a crash related to subview clipping on Android. This is a kill switch for the fix
-   */
-  RN_EXPORT static bool enableFixForClippedSubviewsCrash();
 
   /**
    * Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).

@@ -51,11 +51,6 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'When enabled, Fabric will use customDrawOrder in ReactViewGroup (similar to old architecture).',
     },
-    enableFixForClippedSubviewsCrash: {
-      defaultValue: false,
-      description:
-        'Attempt at fixing a crash related to subview clipping on Android. This is a kill switch for the fix',
-    },
     enableMicrotasks: {
       defaultValue: false,
       description:
