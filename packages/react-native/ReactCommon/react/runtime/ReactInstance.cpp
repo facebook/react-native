@@ -31,13 +31,12 @@ ReactInstance::ReactInstance(
     std::unique_ptr<JSRuntime> runtime,
     std::shared_ptr<MessageQueueThread> jsMessageQueueThread,
     std::shared_ptr<TimerManager> timerManager,
-    JsErrorHandler::JsErrorHandlingFunc jsErrorHandlingFunc,
+    JsErrorHandler::OnJsError onJsError,
     jsinspector_modern::HostTarget* parentInspectorTarget)
     : runtime_(std::move(runtime)),
       jsMessageQueueThread_(jsMessageQueueThread),
       timerManager_(std::move(timerManager)),
-      jsErrorHandler_(
-          std::make_shared<JsErrorHandler>(std::move(jsErrorHandlingFunc))),
+      jsErrorHandler_(std::make_shared<JsErrorHandler>(std::move(onJsError))),
       parentInspectorTarget_(parentInspectorTarget) {
   RuntimeExecutor runtimeExecutor = [weakRuntime = std::weak_ptr(runtime_),
                                      weakTimerManager =

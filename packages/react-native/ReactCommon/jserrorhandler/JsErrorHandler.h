@@ -27,16 +27,16 @@ class JsErrorHandler {
     bool isFatal;
   };
 
-  using JsErrorHandlingFunc = std::function<void(const ParsedError& error)>;
+  using OnJsError = std::function<void(const ParsedError& error)>;
 
-  explicit JsErrorHandler(JsErrorHandlingFunc jsErrorHandlingFunc);
+  explicit JsErrorHandler(OnJsError onJsError);
   ~JsErrorHandler();
 
   void handleFatalError(const jsi::JSError& error);
   bool hasHandledFatalError();
 
  private:
-  JsErrorHandlingFunc _jsErrorHandlingFunc;
+  OnJsError _onJsError;
   bool _hasHandledFatalError;
 };
 

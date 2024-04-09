@@ -88,9 +88,8 @@ parseErrorStack(const jsi::JSError& error, bool isFatal, bool isHermes) {
   };
 }
 
-JsErrorHandler::JsErrorHandler(
-    JsErrorHandler::JsErrorHandlingFunc jsErrorHandlingFunc)
-    : _jsErrorHandlingFunc(std::move(jsErrorHandlingFunc)),
+JsErrorHandler::JsErrorHandler(JsErrorHandler::OnJsError onJsError)
+    : _onJsError(std::move(onJsError)),
       _hasHandledFatalError(false){
 
       };
@@ -102,7 +101,7 @@ void JsErrorHandler::handleFatalError(const jsi::JSError& error) {
   // REGEX_HERMES to get additional Hermes data, though it requires JS setup.
   _hasHandledFatalError = true;
   ParsedError parsedError = parseErrorStack(error, true, false);
-  _jsErrorHandlingFunc(parsedError);
+  _onJsError(parsedError);
 }
 
 bool JsErrorHandler::hasHandledFatalError() {
