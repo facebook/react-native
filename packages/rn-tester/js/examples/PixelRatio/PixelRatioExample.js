@@ -62,8 +62,9 @@ function RoundToNearestPixel() {
     layoutDPSize ? layoutDPSize : 0,
   );
 
-  const handleDPInputChange = changedText => {
-    setLayoutDPSizeText(changedText);
+  const handleDPInputChange = (changedText: string) => {
+    const layoutSize = parseInt(changedText, 10);
+    setLayoutDPSizeText(layoutSize);
   };
 
   return (
@@ -88,7 +89,7 @@ function RoundToNearestPixel() {
 }
 
 function GetPixelRatio() {
-  const [pixelDensity, setPixelDensity] = useState(null);
+  const [pixelDensity, setPixelDensity] = useState(0);
 
   const getPixelDensityCallback = () => {
     setPixelDensity(PixelRatio.get());
@@ -110,7 +111,7 @@ function GetPixelRatio() {
 }
 
 function GetFontScale() {
-  const [fontScale, setFontScale] = useState(null);
+  const [fontScale, setFontScale] = useState(0);
 
   const getPixelDensityCallback = () => {
     setFontScale(PixelRatio.getFontScale());
