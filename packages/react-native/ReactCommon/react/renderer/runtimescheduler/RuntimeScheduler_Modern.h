@@ -139,7 +139,7 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
       TaskPriorityComparer>
       taskQueue_;
 
-  std::shared_ptr<Task> currentTask_;
+  Task* currentTask_{};
 
   /**
    * This protects the access to `taskQueue_` and `isWorkLoopScheduled_`.
@@ -168,12 +168,12 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
    */
   void executeTask(
       jsi::Runtime& runtime,
-      const std::shared_ptr<Task>& task,
+      Task& task,
       RuntimeSchedulerTimePoint currentTime);
 
   void executeMacrotask(
       jsi::Runtime& runtime,
-      std::shared_ptr<Task> task,
+      Task& task,
       bool didUserCallbackTimeout) const;
 
   void updateRendering();
