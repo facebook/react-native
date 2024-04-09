@@ -11,8 +11,11 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 
 /** Utility class that access default values from style */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public final class DefaultStyleValuesUtil {
 
   private DefaultStyleValuesUtil() {
@@ -25,6 +28,7 @@ public final class DefaultStyleValuesUtil {
    * @param context The Context
    * @return The ColorStateList for the hint text as defined in the style
    */
+  @Nullable
   public static ColorStateList getDefaultTextColorHint(Context context) {
     return getDefaultTextAttribute(context, android.R.attr.textColorHint);
   }
@@ -35,6 +39,7 @@ public final class DefaultStyleValuesUtil {
    * @param context The Context
    * @return The ColorStateList for the text as defined in the style
    */
+  @Nullable
   public static ColorStateList getDefaultTextColor(Context context) {
     return getDefaultTextAttribute(context, android.R.attr.textColor);
   }
@@ -46,9 +51,17 @@ public final class DefaultStyleValuesUtil {
    * @return The int for the highlight color as defined in the style
    */
   public static int getDefaultTextColorHighlight(Context context) {
-    return getDefaultTextAttribute(context, android.R.attr.textColorHighlight).getDefaultColor();
+    ColorStateList defaultTextAttribute =
+        getDefaultTextAttribute(context, android.R.attr.textColorHighlight);
+    if (defaultTextAttribute == null) {
+      // it would be rare that the highlight color is not defined in the theme,
+      // but if it is, return black
+      return 0;
+    }
+    return defaultTextAttribute.getDefaultColor();
   }
 
+  @Nullable
   private static ColorStateList getDefaultTextAttribute(Context context, int attribute) {
     Resources.Theme theme = context.getTheme();
     TypedArray textAppearances = null;
