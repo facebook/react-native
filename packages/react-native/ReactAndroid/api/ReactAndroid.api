@@ -5442,6 +5442,14 @@ public abstract interface class com/facebook/react/uimanager/debug/NotThreadSafe
 	public abstract fun onViewHierarchyUpdateFinished ()V
 }
 
+public final class com/facebook/react/uimanager/drawable/BoxShadowDrawable : android/graphics/drawable/Drawable {
+	public fun <init> (Landroid/content/Context;Lcom/facebook/react/uimanager/drawable/CSSBackgroundDrawable;IFFFF)V
+	public fun draw (Landroid/graphics/Canvas;)V
+	public fun getOpacity ()I
+	public fun setAlpha (I)V
+	public fun setColorFilter (Landroid/graphics/ColorFilter;)V
+}
+
 public class com/facebook/react/uimanager/drawable/CSSBackgroundDrawable : android/graphics/drawable/Drawable {
 	public fun <init> (Landroid/content/Context;)V
 	public fun borderBoxPath ()Landroid/graphics/Path;
