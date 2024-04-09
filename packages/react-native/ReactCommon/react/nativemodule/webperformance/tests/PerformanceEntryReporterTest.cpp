@@ -13,9 +13,19 @@
 
 namespace facebook::react {
 
-static std::ostream& operator<<(
+[[maybe_unused]] static bool operator==(
+    const PerformanceEntry& lhs,
+    const PerformanceEntry& rhs) {
+  return lhs.name == rhs.name && lhs.entryType == rhs.entryType &&
+      lhs.startTime == rhs.startTime && lhs.duration == rhs.duration &&
+      lhs.processingStart == rhs.processingStart &&
+      lhs.processingEnd == rhs.processingEnd &&
+      lhs.interactionId == rhs.interactionId;
+}
+
+[[maybe_unused]] static std::ostream& operator<<(
     std::ostream& os,
-    const RawPerformanceEntry& entry) {
+    const PerformanceEntry& entry) {
   static constexpr const char* entryTypeNames[] = {
       "UNDEFINED",
       "MARK",
@@ -23,7 +33,7 @@ static std::ostream& operator<<(
       "EVENT",
   };
   return os << "{ name: " << entry.name
-            << ", type: " << entryTypeNames[entry.entryType]
+            << ", type: " << entryTypeNames[static_cast<int>(entry.entryType)]
             << ", startTime: " << entry.startTime
             << ", duration: " << entry.duration << " }";
 }
@@ -103,18 +113,18 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestReportMarks) {
   ASSERT_EQ(0, res.droppedEntriesCount);
   ASSERT_EQ(4, entries.size());
 
-  const std::vector<RawPerformanceEntry> expected = {
+  const std::vector<PerformanceEntry> expected = {
       {.name = "mark0",
-       .entryType = static_cast<int>(PerformanceEntryType::MARK),
+       .entryType = PerformanceEntryType::MARK,
        .startTime = 0.0},
       {.name = "mark1",
-       .entryType = static_cast<int>(PerformanceEntryType::MARK),
+       .entryType = PerformanceEntryType::MARK,
        .startTime = 1.0},
       {.name = "mark2",
-       .entryType = static_cast<int>(PerformanceEntryType::MARK),
+       .entryType = PerformanceEntryType::MARK,
        .startTime = 2.0},
       {.name = "mark0",
-       .entryType = static_cast<int>(PerformanceEntryType::MARK),
+       .entryType = PerformanceEntryType::MARK,
        .startTime = 3.0},
   };
 
@@ -155,80 +165,80 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestReportMeasures) {
 
   ASSERT_EQ(0, res.droppedEntriesCount);
 
-  const std::vector<RawPerformanceEntry> expected = {
+  const std::vector<PerformanceEntry> expected = {
       {.name = "mark0",
-       .entryType = static_cast<int>(PerformanceEntryType::MARK),
+       .entryType = PerformanceEntryType::MARK,
        .startTime = 0.0},
       {.name = "measure0",
-       .entryType = static_cast<int>(PerformanceEntryType::MEASURE),
+       .entryType = PerformanceEntryType::MEASURE,
        .startTime = 0.0,
        .duration = 2.0},
       {.name = "measure1",
-       .entryType = static_cast<int>(PerformanceEntryType::MEASURE),
+       .entryType = PerformanceEntryType::MEASURE,
        .startTime = 0.0,
        .duration = 4.0},
       {.name = "mark1",
-       .entryType = static_cast<int>(PerformanceEntryType::MARK),
+       .entryType = PerformanceEntryType::MARK,
        .startTime = 1.0},
       {.name = "measure2",
-       .entryType = static_cast<int>(PerformanceEntryType::MEASURE),
+       .entryType = PerformanceEntryType::MEASURE,
        .startTime = 1.0,
        .duration = 1.0},
       {.name = "measure7",
-       .entryType = static_cast<int>(PerformanceEntryType::MEASURE),
+       .entryType = PerformanceEntryType::MEASURE,
        .startTime = 1.0,
        .duration = 2.0},
       {.name = "measure3",
-       .entryType = static_cast<int>(PerformanceEntryType::MEASURE),
+       .entryType = PerformanceEntryType::MEASURE,
        .startTime = 1.0,
        .duration = 5.0},
       {.name = "measure4",
-       .entryType = static_cast<int>(PerformanceEntryType::MEASURE),
+       .entryType = PerformanceEntryType::MEASURE,
        .startTime = 1.5,
        .duration = 0.5},
       {.name = "mark2",
-       .entryType = static_cast<int>(PerformanceEntryType::MARK),
+       .entryType = PerformanceEntryType::MARK,
        .startTime = 2.0},
       {.name = "mark3",
-       .entryType = static_cast<int>(PerformanceEntryType::MARK),
+       .entryType = PerformanceEntryType::MARK,
        .startTime = 2.0},
       {.name = "mark4",
-       .entryType = static_cast<int>(PerformanceEntryType::MARK),
+       .entryType = PerformanceEntryType::MARK,
        .startTime = 2.0},
       {.name = "measure6",
-       .entryType = static_cast<int>(PerformanceEntryType::MEASURE),
+       .entryType = PerformanceEntryType::MEASURE,
        .startTime = 2.0,
        .duration = 0.0},
       {.name = "measure5",
-       .entryType = static_cast<int>(PerformanceEntryType::MEASURE),
+       .entryType = PerformanceEntryType::MEASURE,
        .startTime = 2.0,
        .duration = 1.5},
       {.name = "mark4",
-       .entryType = static_cast<int>(PerformanceEntryType::MARK),
+       .entryType = PerformanceEntryType::MARK,
        .startTime = 3.0}};
 
   ASSERT_EQ(expected, entries);
 }
 
 static std::vector<std::string> getNames(
-    const std::vector<RawPerformanceEntry>& entries) {
+    const std::vector<PerformanceEntry>& entries) {
   std::vector<std::string> res;
   std::transform(
       entries.begin(),
       entries.end(),
       std::back_inserter(res),
-      [](const RawPerformanceEntry& e) { return e.name; });
+      [](const PerformanceEntry& e) { return e.name; });
   return res;
 }
 
-static std::vector<int32_t> getTypes(
-    const std::vector<RawPerformanceEntry>& entries) {
-  std::vector<int32_t> res;
+static std::vector<PerformanceEntryType> getTypes(
+    const std::vector<PerformanceEntry>& entries) {
+  std::vector<PerformanceEntryType> res;
   std::transform(
       entries.begin(),
       entries.end(),
       std::back_inserter(res),
-      [](const RawPerformanceEntry& e) { return e.entryType; });
+      [](const PerformanceEntry& e) { return e.entryType; });
   return res;
 }
 
@@ -270,10 +280,34 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestGetEntries) {
   reporter.getEntries();
   const auto all = reporter.getEntries();
 
-  ASSERT_EQ(std::vector<int32_t>({2, 2, 2, 2, 2}), getTypes(measures));
-  ASSERT_EQ(std::vector<int32_t>({1, 2}), getTypes(common_name));
-  ASSERT_EQ(std::vector<int32_t>({1, 1, 1, 2, 2, 2, 2, 2}), getTypes(all));
-  ASSERT_EQ(std::vector<int32_t>({1, 1, 1}), getTypes(marks));
+  ASSERT_EQ(
+      std::vector(
+          {PerformanceEntryType::MEASURE,
+           PerformanceEntryType::MEASURE,
+           PerformanceEntryType::MEASURE,
+           PerformanceEntryType::MEASURE,
+           PerformanceEntryType::MEASURE}),
+      getTypes(measures));
+  ASSERT_EQ(
+      std::vector({PerformanceEntryType::MARK, PerformanceEntryType::MEASURE}),
+      getTypes(common_name));
+  ASSERT_EQ(
+      std::vector(
+          {PerformanceEntryType::MARK,
+           PerformanceEntryType::MARK,
+           PerformanceEntryType::MARK,
+           PerformanceEntryType::MEASURE,
+           PerformanceEntryType::MEASURE,
+           PerformanceEntryType::MEASURE,
+           PerformanceEntryType::MEASURE,
+           PerformanceEntryType::MEASURE}),
+      getTypes(all));
+  ASSERT_EQ(
+      std::vector(
+          {PerformanceEntryType::MARK,
+           PerformanceEntryType::MARK,
+           PerformanceEntryType::MARK}),
+      getTypes(marks));
 
   ASSERT_EQ(
       std::vector<std::string>({"common_name", "mark1", "mark2"}),

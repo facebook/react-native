@@ -17,28 +17,50 @@
 #include <unordered_map>
 #include <unordered_set>
 #include "BoundedConsumableBuffer.h"
-#include "NativePerformanceObserver.h"
 
 #include <react/renderer/uimanager/UIManagerMountHook.h>
 
 namespace facebook::react {
 
+using DOMHighResTimeStamp = double;
+
+using PerformanceEntryInteractionId = uint32_t;
+
+enum class PerformanceEntryType {
+  // We need to preserve these values for backwards compatibility.
+  MARK = 1,
+  MEASURE = 2,
+  EVENT = 3,
+  _NEXT = 4,
+};
+
+struct PerformanceEntry {
+  std::string name;
+  PerformanceEntryType entryType;
+  DOMHighResTimeStamp startTime;
+  DOMHighResTimeStamp duration = 0;
+
+  // For "event" entries only:
+  std::optional<DOMHighResTimeStamp> processingStart;
+  std::optional<DOMHighResTimeStamp> processingEnd;
+  std::optional<PerformanceEntryInteractionId> interactionId;
+};
+
 struct PerformanceEntryHash {
-  size_t operator()(const RawPerformanceEntry* entry) const {
+  size_t operator()(const PerformanceEntry* entry) const {
     return std::hash<std::string>()(entry->name);
   }
 };
 
 struct PerformanceEntryEqual {
-  bool operator()(
-      const RawPerformanceEntry* lhs,
-      const RawPerformanceEntry* rhs) const {
+  bool operator()(const PerformanceEntry* lhs, const PerformanceEntry* rhs)
+      const {
     return lhs->name == rhs->name;
   }
 };
 
 using PerformanceEntryRegistryType = std::unordered_set<
-    const RawPerformanceEntry*,
+    const PerformanceEntry*,
     PerformanceEntryHash,
     PerformanceEntryEqual>;
 
@@ -50,20 +72,12 @@ constexpr double DEFAULT_DURATION_THRESHOLD = 0.0;
 constexpr size_t DEFAULT_MAX_BUFFER_SIZE = 1024;
 
 struct PerformanceEntryBuffer {
-  BoundedConsumableBuffer<RawPerformanceEntry> entries{DEFAULT_MAX_BUFFER_SIZE};
+  BoundedConsumableBuffer<PerformanceEntry> entries{DEFAULT_MAX_BUFFER_SIZE};
   bool isReporting{false};
   bool isAlwaysLogged{false};
   double durationThreshold{DEFAULT_DURATION_THRESHOLD};
   bool hasNameLookup{false};
   PerformanceEntryRegistryType nameLookup;
-};
-
-enum class PerformanceEntryType {
-  // We need to preserve these values for backwards compatibility.
-  MARK = 1,
-  MEASURE = 2,
-  EVENT = 3,
-  _NEXT = 4,
 };
 
 constexpr size_t NUM_PERFORMANCE_ENTRY_TYPES =
@@ -80,6 +94,11 @@ class PerformanceEntryReporter : public EventLogger, public UIManagerMountHook {
   // creation time instead of having the singleton.
   static PerformanceEntryReporter& getInstance();
 
+  struct PopPendingEntriesResult {
+    std::vector<PerformanceEntry> entries;
+    uint32_t droppedEntriesCount;
+  };
+
   void setReportingCallback(std::optional<AsyncCallback<>> callback);
   void startReporting(PerformanceEntryType entryType);
   void stopReporting(PerformanceEntryType entryType);
@@ -89,9 +108,9 @@ class PerformanceEntryReporter : public EventLogger, public UIManagerMountHook {
       PerformanceEntryType entryType,
       double durationThreshold);
 
-  GetPendingEntriesResult popPendingEntries();
+  PopPendingEntriesResult popPendingEntries();
 
-  void logEntry(const RawPerformanceEntry& entry);
+  void logEntry(const PerformanceEntry& entry);
 
   PerformanceEntryBuffer& getBuffer(PerformanceEntryType entryType) {
     return buffers_[static_cast<int>(entryType) - 1];
@@ -110,8 +129,8 @@ class PerformanceEntryReporter : public EventLogger, public UIManagerMountHook {
     return getBuffer(entryType).isAlwaysLogged;
   }
 
-  uint32_t getDroppedEntryCount() const {
-    return droppedEntryCount_;
+  uint32_t getDroppedEntriesCount() const {
+    return droppedEntriesCount_;
   }
 
   void mark(
@@ -130,7 +149,7 @@ class PerformanceEntryReporter : public EventLogger, public UIManagerMountHook {
       std::optional<PerformanceEntryType> entryType = std::nullopt,
       std::string_view entryName = {});
 
-  std::vector<RawPerformanceEntry> getEntries(
+  std::vector<PerformanceEntry> getEntries(
       std::optional<PerformanceEntryType> entryType = std::nullopt,
       std::string_view entryName = {}) const;
 
@@ -165,7 +184,7 @@ class PerformanceEntryReporter : public EventLogger, public UIManagerMountHook {
   std::array<PerformanceEntryBuffer, NUM_PERFORMANCE_ENTRY_TYPES> buffers_;
   std::unordered_map<std::string, uint32_t> eventCounts_;
 
-  uint32_t droppedEntryCount_{0};
+  uint32_t droppedEntriesCount_{0};
 
   struct EventEntry {
     std::string_view name;
@@ -199,7 +218,7 @@ class PerformanceEntryReporter : public EventLogger, public UIManagerMountHook {
   void getEntries(
       PerformanceEntryType entryType,
       std::string_view entryName,
-      std::vector<RawPerformanceEntry>& res) const;
+      std::vector<PerformanceEntry>& res) const;
 
   double getCurrentTimeStamp() const;
 };
