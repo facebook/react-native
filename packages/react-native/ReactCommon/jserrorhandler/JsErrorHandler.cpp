@@ -90,7 +90,8 @@ parseErrorStack(const jsi::JSError& error, bool isFatal, bool isHermes) {
 
 JsErrorHandler::JsErrorHandler(
     JsErrorHandler::JsErrorHandlingFunc jsErrorHandlingFunc)
-    : _jsErrorHandlingFunc(std::move(jsErrorHandlingFunc)){
+    : _jsErrorHandlingFunc(std::move(jsErrorHandlingFunc)),
+      _hasHandledFatalError(false){
 
       };
 
@@ -99,8 +100,15 @@ JsErrorHandler::~JsErrorHandler() {}
 void JsErrorHandler::handleJsError(const jsi::JSError& error, bool isFatal) {
   // TODO: Current error parsing works and is stable. Can investigate using
   // REGEX_HERMES to get additional Hermes data, though it requires JS setup.
+  if (isFatal) {
+    _hasHandledFatalError = true;
+  }
   ParsedError parsedError = parseErrorStack(error, isFatal, false);
   _jsErrorHandlingFunc(parsedError);
+}
+
+bool JsErrorHandler::hasHandledFatalError() {
+  return _hasHandledFatalError;
 }
 
 } // namespace facebook::react

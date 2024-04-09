@@ -38,24 +38,23 @@ ReactInstance::ReactInstance(
       timerManager_(std::move(timerManager)),
       jsErrorHandler_(
           std::make_shared<JsErrorHandler>(std::move(jsErrorHandlingFunc))),
-      hasFatalJsError_(std::make_shared<bool>(false)),
       parentInspectorTarget_(parentInspectorTarget) {
   RuntimeExecutor runtimeExecutor = [weakRuntime = std::weak_ptr(runtime_),
                                      weakTimerManager =
                                          std::weak_ptr(timerManager_),
                                      weakJsMessageQueueThread =
                                          std::weak_ptr(jsMessageQueueThread_),
-                                     weakHasFatalJsError = std::weak_ptr(
-                                         hasFatalJsError_)](auto callback) {
-    if (std::shared_ptr<bool> sharedHasFatalJsError =
-            weakHasFatalJsError.lock()) {
-      if (*sharedHasFatalJsError) {
-        LOG(INFO)
-            << "Calling into JS using runtimeExecutor but hasFatalJsError_ is true";
-        return;
-      }
+                                     weakJsErrorHander = std::weak_ptr(
+                                         jsErrorHandler_)](auto callback) {
+    auto jsErrorHandler = weakJsErrorHander.lock();
+    if (weakRuntime.expired() || !jsErrorHandler) {
+      return;
     }
-    if (weakRuntime.expired()) {
+
+    if (jsErrorHandler->hasHandledFatalError()) {
+      LOG(INFO)
+          << "RuntimeExecutor: Detected fatal js error. Dropping work on non-js thread."
+          << std::endl;
       return;
     }
 
@@ -223,8 +222,6 @@ void ReactInstance::loadScript(
             strongBufferedRuntimeExecuter->flush();
           }
         } catch (jsi::JSError& error) {
-          // Handle uncaught JS errors during loading JS bundle
-          *hasFatalJsError_ = true;
           jsErrorHandler_->handleJsError(error, true);
         }
       });
