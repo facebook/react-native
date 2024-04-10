@@ -41,9 +41,9 @@ import org.robolectric.RuntimeEnvironment
 @RunWith(RobolectricTestRunner::class)
 class ReactImagePropertyTest {
 
-  private var context: BridgeReactContext? = null
-  private var catalystInstanceMock: CatalystInstance? = null
-  private var themeContext: ThemedReactContext? = null
+  private lateinit var context: BridgeReactContext
+  private lateinit var catalystInstanceMock: CatalystInstance
+  private lateinit var themeContext: ThemedReactContext
   private lateinit var arguments: MockedStatic<Arguments>
   private lateinit var rnLog: MockedStatic<RNLog>
 
@@ -59,7 +59,7 @@ class ReactImagePropertyTest {
     SoLoader.setInTestMode()
     context = BridgeReactContext(RuntimeEnvironment.getApplication())
     catalystInstanceMock = createMockCatalystInstance()
-    context!!.initializeWithInstance(catalystInstanceMock)
+    context.initializeWithInstance(catalystInstanceMock)
     themeContext = ThemedReactContext(context, context, null, -1)
     Fresco.initialize(context)
     DisplayMetricsHolder.setWindowDisplayMetrics(DisplayMetrics())
