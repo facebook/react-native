@@ -83,6 +83,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   std::mutex _invalidationMutex;
   std::atomic<bool> _valid;
   RCTJSThreadManager *_jsThreadManager;
+  NSDictionary *_launchOptions;
 
   // APIs supporting interop with native modules and view managers
   RCTBridgeModuleDecorator *_bridgeModuleDecorator;
@@ -99,6 +100,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
              onInitialBundleLoad:(RCTInstanceInitialBundleLoadCompletionBlock)onInitialBundleLoad
                   moduleRegistry:(RCTModuleRegistry *)moduleRegistry
            parentInspectorTarget:(jsinspector_modern::PageTarget *)parentInspectorTarget
+                   launchOptions:(nullable NSDictionary *)launchOptions
 {
   if (self = [super init]) {
     _performanceLogger = [RCTPerformanceLogger new];
@@ -124,6 +126,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
             [weakSelf callFunctionOnJSModule:moduleName method:methodName args:args];
           }];
     }
+    _launchOptions = launchOptions;
 
     NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];
 
@@ -270,7 +273,8 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
               [strongSelf registerSegmentWithId:segmentId path:path];
             }
           }
-          runtime:_reactInstance->getJavaScriptContext()];
+          runtime:_reactInstance->getJavaScriptContext()
+          launchOptions:_launchOptions];
   bridgeProxy.jsCallInvoker = jsCallInvoker;
   [RCTBridge setCurrentBridge:(RCTBridge *)bridgeProxy];
 

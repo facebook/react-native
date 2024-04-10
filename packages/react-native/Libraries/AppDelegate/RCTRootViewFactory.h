@@ -23,6 +23,11 @@ typedef UIView *_Nonnull (
     ^RCTCreateRootViewWithBridgeBlock)(RCTBridge *bridge, NSString *moduleName, NSDictionary *initProps);
 typedef RCTBridge *_Nonnull (
     ^RCTCreateBridgeWithDelegateBlock)(id<RCTBridgeDelegate> delegate, NSDictionary *launchOptions);
+typedef NSURL *_Nullable (^RCTSourceURLForBridgeBlock)(RCTBridge *bridge);
+typedef NSURL *_Nullable (^RCTBundleURLBlock)(void);
+typedef NSArray<id<RCTBridgeModule>> *_Nonnull (^RCTExtraModulesForBridgeBlock)(RCTBridge *bridge);
+typedef NSDictionary<NSString *, Class> *_Nonnull (^RCTExtraLazyModuleClassesForBridge)(RCTBridge *bridge);
+typedef BOOL (^RCTBridgeDidNotFindModuleBlock)(RCTBridge *bridge, NSString *moduleName);
 
 #pragma mark - RCTRootViewFactory Configuration
 @interface RCTRootViewFactoryConfiguration : NSObject
@@ -37,7 +42,7 @@ typedef RCTBridge *_Nonnull (
 @property (nonatomic, assign, readonly) BOOL turboModuleEnabled;
 
 /// Return the bundle URL for the main bundle.
-@property (nonatomic) NSURL *bundleURL;
+@property (nonatomic, nonnull) RCTBundleURLBlock bundleURLBlock;
 
 /**
  * Use this method to initialize a new instance of `RCTRootViewFactoryConfiguration` by passing a `bundleURL`
@@ -48,10 +53,15 @@ typedef RCTBridge *_Nonnull (
  * pointing to a path inside the app resources, e.g. `file://.../main.jsbundle`.
  *
  */
+- (instancetype)initWithBundleURLBlock:(RCTBundleURLBlock)bundleURLBlock
+                        newArchEnabled:(BOOL)newArchEnabled
+                    turboModuleEnabled:(BOOL)turboModuleEnabled
+                     bridgelessEnabled:(BOOL)bridgelessEnabled NS_DESIGNATED_INITIALIZER;
+
 - (instancetype)initWithBundleURL:(NSURL *)bundleURL
                    newArchEnabled:(BOOL)newArchEnabled
                turboModuleEnabled:(BOOL)turboModuleEnabled
-                bridgelessEnabled:(BOOL)bridgelessEnabled;
+                bridgelessEnabled:(BOOL)bridgelessEnabled __deprecated;
 
 /**
  * Block that allows to override logic of creating root view instance.
