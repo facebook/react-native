@@ -2965,15 +2965,21 @@ public class com/facebook/react/modules/accessibilityinfo/AccessibilityInfoModul
 	public fun setAccessibilityFocus (D)V
 }
 
-public class com/facebook/react/modules/appearance/AppearanceModule : com/facebook/fbreact/specs/NativeAppearanceSpec {
+public final class com/facebook/react/modules/appearance/AppearanceModule : com/facebook/fbreact/specs/NativeAppearanceSpec {
+	public static final field Companion Lcom/facebook/react/modules/appearance/AppearanceModule$Companion;
+	public static final field NAME Ljava/lang/String;
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Lcom/facebook/react/modules/appearance/AppearanceModule$OverrideColorScheme;)V
+	public synthetic fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Lcom/facebook/react/modules/appearance/AppearanceModule$OverrideColorScheme;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun addListener (Ljava/lang/String;)V
-	public fun emitAppearanceChanged (Ljava/lang/String;)V
+	public final fun emitAppearanceChanged (Ljava/lang/String;)V
 	public fun getColorScheme ()Ljava/lang/String;
-	public fun onConfigurationChanged (Landroid/content/Context;)V
+	public final fun onConfigurationChanged (Landroid/content/Context;)V
 	public fun removeListeners (D)V
 	public fun setColorScheme (Ljava/lang/String;)V
+}
+
+public final class com/facebook/react/modules/appearance/AppearanceModule$Companion {
 }
 
 public abstract interface class com/facebook/react/modules/appearance/AppearanceModule$OverrideColorScheme {
