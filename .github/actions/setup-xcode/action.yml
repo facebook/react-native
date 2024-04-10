@@ -1,0 +1,14 @@
+name: Setup xcode
+description: 'Set up your GitHub Actions workflow with a specific version of xcode'
+inputs:
+  xcode-version:
+    description: 'The xcode version to use'
+    required: false
+    default: '14.3.1'
+runs:
+  using: "composite"
+  steps:
+    - name: Setup xcode
+      uses: maxim-lobanov/setup-xcode@v1.6.0
+      with:
+        xcode-version: ${{ inputs.xcode-version }}
