@@ -485,9 +485,26 @@ function TouchableTest() {
 }
 
 export class TouchableOpacityTest extends React.Component {
+  buttonRef = React.createRef<React.ElementRef<typeof TouchableOpacity>>();
+
   render() {
     return (
       <>
+        <TouchableOpacity ref={this.buttonRef} />
+        <TouchableOpacity
+          ref={ref => {
+            ref?.focus();
+            ref?.blur();
+            ref?.measure(
+              (x, y, width, height, pageX, pageY): number =>
+                x + y + width + height + pageX + pageY,
+            );
+            ref?.measureInWindow(
+              (x, y, width, height): number => x + y + width + height,
+            );
+            ref?.setNativeProps({focusable: false});
+          }}
+        />
         <TouchableOpacity focusable={false} />
         <TouchableOpacity rejectResponderTermination={true} />
         <TouchableOpacity
