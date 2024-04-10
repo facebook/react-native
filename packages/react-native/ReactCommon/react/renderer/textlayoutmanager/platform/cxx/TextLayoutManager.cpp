@@ -17,8 +17,7 @@ TextMeasurement TextLayoutManager::measure(
     AttributedStringBox attributedStringBox,
     ParagraphAttributes paragraphAttributes,
     const TextLayoutContext& /*layoutContext*/,
-    LayoutConstraints layoutConstraints,
-    std::shared_ptr<void>) const {
+    LayoutConstraints layoutConstraints) const {
   TextMeasurement::Attachments attachments;
   for (const auto& fragment : attributedStringBox.getValue().getFragments()) {
     if (fragment.isAttachment()) {
@@ -42,12 +41,5 @@ LinesMeasurements TextLayoutManager::measureLines(
     Size size) const {
   return {};
 };
-
-std::shared_ptr<void> TextLayoutManager::getHostTextStorage(
-    AttributedString attributedString,
-    ParagraphAttributes paragraphAttributes,
-    LayoutConstraints layoutConstraints) const {
-  return nullptr;
-}
 
 } // namespace facebook::react

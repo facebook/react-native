@@ -10,7 +10,6 @@
 namespace facebook::react {
 
 bool CoreFeatures::enablePropIteratorSetter = false;
-bool CoreFeatures::cacheLastTextMeasurement = false;
 bool CoreFeatures::enableGranularScrollViewStateUpdatesIOS = false;
 bool CoreFeatures::enableGranularShadowTreeStateReconciliation = false;
 bool CoreFeatures::enableClonelessStateProgression = false;

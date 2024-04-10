@@ -39,8 +39,7 @@ class TextLayoutManager {
       AttributedStringBox attributedStringBox,
       ParagraphAttributes paragraphAttributes,
       const TextLayoutContext& layoutContext,
-      LayoutConstraints layoutConstraints,
-      std::shared_ptr<void>) const;
+      LayoutConstraints layoutConstraints) const;
 
   /**
    * Measures an AttributedString on the platform, as identified by some
@@ -65,11 +64,6 @@ class TextLayoutManager {
    * Is used on a native views layer to delegate text rendering to the manager.
    */
   void* getNativeTextLayoutManager() const;
-
-  virtual std::shared_ptr<void> getHostTextStorage(
-      AttributedString attributedStringBox,
-      ParagraphAttributes paragraphAttributes,
-      LayoutConstraints layoutConstraints) const;
 };
 
 } // namespace facebook::react
