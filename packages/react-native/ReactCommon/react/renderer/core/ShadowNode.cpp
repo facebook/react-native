@@ -304,7 +304,8 @@ const ShadowNodeFamily& ShadowNode::getFamily() const {
 ShadowNode::Unshared ShadowNode::cloneTree(
     const ShadowNodeFamily& shadowNodeFamily,
     const std::function<ShadowNode::Unshared(ShadowNode const& oldShadowNode)>&
-        callback) const {
+        callback,
+    ShadowNodeTraits traits) const {
   auto ancestors = shadowNodeFamily.getAncestors(*this);
 
   if (ancestors.empty()) {
@@ -332,7 +333,8 @@ ShadowNode::Unshared ShadowNode::cloneTree(
     children[childIndex] = childNode;
 
     childNode = parentNode.clone(
-        {.children = std::make_shared<ShadowNode::ListOfShared>(children)});
+        {.children = std::make_shared<ShadowNode::ListOfShared>(children),
+         .traits = traits});
   }
 
   return std::const_pointer_cast<ShadowNode>(childNode);

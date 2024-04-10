@@ -281,3 +281,33 @@ TEST_F(ShadowNodeTest, handleState) {
       { secondNode->setStateData(TestState()); },
       "Attempt to mutate a sealed object.");
 }
+
+TEST_F(ShadowNodeTest, testCloneTree) {
+  auto& family = nodeABA_->getFamily();
+  auto newTraits = ShadowNodeTraits();
+  newTraits.set(ShadowNodeTraits::Trait::Reserved);
+  auto rootNode = nodeA_->cloneTree(
+      family,
+      [newTraits](ShadowNode const& oldShadowNode) {
+        return oldShadowNode.clone({.traits = newTraits});
+      },
+      newTraits);
+
+  EXPECT_TRUE(rootNode->getTraits().check(ShadowNodeTraits::Trait::Reserved));
+
+  EXPECT_FALSE(rootNode->getChildren()[0]->getTraits().check(
+      ShadowNodeTraits::Trait::Reserved));
+
+  auto const& firstLevelChild = *rootNode->getChildren()[1];
+
+  EXPECT_TRUE(
+      firstLevelChild.getTraits().check(ShadowNodeTraits::Trait::Reserved));
+
+  EXPECT_FALSE(firstLevelChild.getChildren()[1]->getTraits().check(
+      ShadowNodeTraits::Trait::Reserved));
+
+  auto const& secondLevelchild = *firstLevelChild.getChildren()[0];
+
+  EXPECT_TRUE(
+      secondLevelchild.getTraits().check(ShadowNodeTraits::Trait::Reserved));
+}
