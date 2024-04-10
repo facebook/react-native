@@ -83,6 +83,21 @@ class RCTHostPageTargetDelegate : public facebook::react::jsinspector_modern::Pa
                      hostDelegate:(id<RCTHostDelegate>)hostDelegate
        turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
                  jsEngineProvider:(RCTHostJSEngineProvider)jsEngineProvider
+{
+  return [self
+       initWithBundleURLProvider:^{
+         return bundleURL;
+       }
+                    hostDelegate:hostDelegate
+      turboModuleManagerDelegate:turboModuleManagerDelegate
+                jsEngineProvider:jsEngineProvider
+                   launchOptions:@{}];
+}
+
+- (instancetype)initWithBundleURL:(NSURL *)bundleURL
+                     hostDelegate:(id<RCTHostDelegate>)hostDelegate
+       turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
+                 jsEngineProvider:(RCTHostJSEngineProvider)jsEngineProvider
                     launchOptions:(nullable NSDictionary *)launchOptions
 {
   return [self

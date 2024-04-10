@@ -62,8 +62,16 @@ typedef void (^_Null_unspecified RCTInstanceInitialBundleLoadCompletionBlock)();
       turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
              onInitialBundleLoad:(RCTInstanceInitialBundleLoadCompletionBlock)onInitialBundleLoad
                   moduleRegistry:(RCTModuleRegistry *)moduleRegistry
+           parentInspectorTarget:(facebook::react::jsinspector_modern::PageTarget *)parentInspectorTarget __deprecated;
+
+- (instancetype)initWithDelegate:(id<RCTInstanceDelegate>)delegate
+                jsRuntimeFactory:(std::shared_ptr<facebook::react::JSRuntimeFactory>)jsRuntimeFactory
+                   bundleManager:(RCTBundleManager *)bundleManager
+      turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
+             onInitialBundleLoad:(RCTInstanceInitialBundleLoadCompletionBlock)onInitialBundleLoad
+                  moduleRegistry:(RCTModuleRegistry *)moduleRegistry
            parentInspectorTarget:(facebook::react::jsinspector_modern::PageTarget *)parentInspectorTarget
-                   launchOptions:(nullable NSDictionary *)launchOptions;
+                   launchOptions:(nullable NSDictionary *)launchOptions NS_DESIGNATED_INITIALIZER;
 
 - (void)callFunctionOnJSModule:(NSString *)moduleName method:(NSString *)method args:(NSArray *)args;
 

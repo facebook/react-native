@@ -96,6 +96,24 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 - (instancetype)initWithDelegate:(id<RCTInstanceDelegate>)delegate
                 jsRuntimeFactory:(std::shared_ptr<facebook::react::JSRuntimeFactory>)jsRuntimeFactory
                    bundleManager:(RCTBundleManager *)bundleManager
+      turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
+             onInitialBundleLoad:(RCTInstanceInitialBundleLoadCompletionBlock)onInitialBundleLoad
+                  moduleRegistry:(RCTModuleRegistry *)moduleRegistry
+           parentInspectorTarget:(facebook::react::jsinspector_modern::PageTarget *)parentInspectorTarget
+{
+  return [self initWithDelegate:delegate
+               jsRuntimeFactory:jsRuntimeFactory
+                  bundleManager:bundleManager
+     turboModuleManagerDelegate:turboModuleManagerDelegate
+            onInitialBundleLoad:onInitialBundleLoad
+                 moduleRegistry:moduleRegistry
+          parentInspectorTarget:parentInspectorTarget
+                  launchOptions:@{}];
+}
+
+- (instancetype)initWithDelegate:(id<RCTInstanceDelegate>)delegate
+                jsRuntimeFactory:(std::shared_ptr<facebook::react::JSRuntimeFactory>)jsRuntimeFactory
+                   bundleManager:(RCTBundleManager *)bundleManager
       turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)tmmDelegate
              onInitialBundleLoad:(RCTInstanceInitialBundleLoadCompletionBlock)onInitialBundleLoad
                   moduleRegistry:(RCTModuleRegistry *)moduleRegistry

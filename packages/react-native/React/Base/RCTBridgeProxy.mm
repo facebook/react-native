@@ -48,6 +48,24 @@ using namespace facebook;
                   dispatchToJSThread:(void (^)(dispatch_block_t))dispatchToJSThread
                registerSegmentWithId:(void (^)(NSNumber *, NSString *))registerSegmentWithId
                              runtime:(void *)runtime
+{
+  return [self initWithViewRegistry:viewRegistry 
+                     moduleRegistry:moduleRegistry
+                      bundleManager:bundleManager
+                  callableJSModules:callableJSModules
+                 dispatchToJSThread:dispatchToJSThread
+              registerSegmentWithId:registerSegmentWithId
+                            runtime:runtime
+                      launchOptions:@{}];
+}
+
+- (instancetype)initWithViewRegistry:(RCTViewRegistry *)viewRegistry
+                      moduleRegistry:(RCTModuleRegistry *)moduleRegistry
+                       bundleManager:(RCTBundleManager *)bundleManager
+                   callableJSModules:(RCTCallableJSModules *)callableJSModules
+                  dispatchToJSThread:(void (^)(dispatch_block_t))dispatchToJSThread
+               registerSegmentWithId:(void (^)(NSNumber *, NSString *))registerSegmentWithId
+                             runtime:(void *)runtime
                        launchOptions:(nullable NSDictionary *)launchOptions
 {
   self = [super self];

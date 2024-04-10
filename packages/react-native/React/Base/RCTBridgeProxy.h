@@ -24,6 +24,14 @@ NS_ASSUME_NONNULL_BEGIN
                    callableJSModules:(RCTCallableJSModules *)callableJSModules
                   dispatchToJSThread:(void (^)(dispatch_block_t))dispatchToJSThread
                registerSegmentWithId:(void (^)(NSNumber *, NSString *))registerSegmentWithId
+                             runtime:(void *)runtime __deprecated;
+
+- (instancetype)initWithViewRegistry:(RCTViewRegistry *)viewRegistry
+                      moduleRegistry:(RCTModuleRegistry *)moduleRegistry
+                       bundleManager:(RCTBundleManager *)bundleManager
+                   callableJSModules:(RCTCallableJSModules *)callableJSModules
+                  dispatchToJSThread:(void (^)(dispatch_block_t))dispatchToJSThread
+               registerSegmentWithId:(void (^)(NSNumber *, NSString *))registerSegmentWithId
                              runtime:(void *)runtime
                        launchOptions:(nullable NSDictionary *)launchOptions NS_DESIGNATED_INITIALIZER;
 
