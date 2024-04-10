@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1c5e5d965ec746a3d06748ef922b8460>>
+ * @generated SignedSource<<46793ec55ed15661090a9b9998806bcc>>
  */
 
 /**
@@ -34,6 +34,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var enableSpannableBuildingUnificationCache: Boolean? = null
   private var enableSynchronousStateUpdatesCache: Boolean? = null
   private var enableUIConsistencyCache: Boolean? = null
+  private var forceBatchingMountItemsOnAndroidCache: Boolean? = null
   private var inspectorEnableCxxInspectorPackagerConnectionCache: Boolean? = null
   private var inspectorEnableModernCDPRegistryCache: Boolean? = null
   private var useModernRuntimeSchedulerCache: Boolean? = null
@@ -135,6 +136,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.enableUIConsistency()
       accessedFeatureFlags.add("enableUIConsistency")
       enableUIConsistencyCache = cached
+    }
+    return cached
+  }
+
+  override fun forceBatchingMountItemsOnAndroid(): Boolean {
+    var cached = forceBatchingMountItemsOnAndroidCache
+    if (cached == null) {
+      cached = currentProvider.forceBatchingMountItemsOnAndroid()
+      accessedFeatureFlags.add("forceBatchingMountItemsOnAndroid")
+      forceBatchingMountItemsOnAndroidCache = cached
     }
     return cached
   }

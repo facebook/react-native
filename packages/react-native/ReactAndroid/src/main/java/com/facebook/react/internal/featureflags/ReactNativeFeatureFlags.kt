@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4c0ede4fa927bc8361d0355bc7cddb10>>
+ * @generated SignedSource<<a9793334f77cea07b88a74103da09f72>>
  */
 
 /**
@@ -87,6 +87,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableUIConsistency(): Boolean = accessor.enableUIConsistency()
+
+  /**
+   * Forces the mounting layer on Android to always batch mount items instead of dispatching them immediately. This might fix some crashes related to synchronous state updates, where some views dispatch state updates during mount.
+   */
+  @JvmStatic
+  public fun forceBatchingMountItemsOnAndroid(): Boolean = accessor.forceBatchingMountItemsOnAndroid()
 
   /**
    * Flag determining if the C++ implementation of InspectorPackagerConnection should be used instead of the per-platform one. This flag is global and should not be changed across React Host lifetimes.

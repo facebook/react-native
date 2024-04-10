@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9286e5fc6398d839d271af4f4a8ae94b>>
+ * @generated SignedSource<<45969617730126d45f35820ee3bd5853>>
  * @flow strict-local
  */
 
@@ -50,6 +50,7 @@ export type ReactNativeFeatureFlags = {
   enableSpannableBuildingUnification: Getter<boolean>,
   enableSynchronousStateUpdates: Getter<boolean>,
   enableUIConsistency: Getter<boolean>,
+  forceBatchingMountItemsOnAndroid: Getter<boolean>,
   inspectorEnableCxxInspectorPackagerConnection: Getter<boolean>,
   inspectorEnableModernCDPRegistry: Getter<boolean>,
   useModernRuntimeScheduler: Getter<boolean>,
@@ -136,6 +137,10 @@ export const enableSynchronousStateUpdates: Getter<boolean> = createNativeFlagGe
  * Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).
  */
 export const enableUIConsistency: Getter<boolean> = createNativeFlagGetter('enableUIConsistency', false);
+/**
+ * Forces the mounting layer on Android to always batch mount items instead of dispatching them immediately. This might fix some crashes related to synchronous state updates, where some views dispatch state updates during mount.
+ */
+export const forceBatchingMountItemsOnAndroid: Getter<boolean> = createNativeFlagGetter('forceBatchingMountItemsOnAndroid', false);
 /**
  * Flag determining if the C++ implementation of InspectorPackagerConnection should be used instead of the per-platform one. This flag is global and should not be changed across React Host lifetimes.
  */

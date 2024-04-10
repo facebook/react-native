@@ -24,6 +24,7 @@ import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.fabric.mounting.mountitems.DispatchCommandMountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.systrace.Systrace;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -100,6 +101,10 @@ public class MountItemDispatcher {
     // to execute anything out-of-order.
     if (mInDispatch) {
       return;
+    }
+
+    if (ReactNativeFeatureFlags.forceBatchingMountItemsOnAndroid()) {
+      mInDispatch = true;
     }
 
     final boolean didDispatchItems;
