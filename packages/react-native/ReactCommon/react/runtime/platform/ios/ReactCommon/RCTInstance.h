@@ -62,7 +62,7 @@ typedef void (^_Null_unspecified RCTInstanceInitialBundleLoadCompletionBlock)();
       turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
              onInitialBundleLoad:(RCTInstanceInitialBundleLoadCompletionBlock)onInitialBundleLoad
                   moduleRegistry:(RCTModuleRegistry *)moduleRegistry
-           parentInspectorTarget:(facebook::react::jsinspector_modern::HostTarget *)parentInspectorTarget
+           parentInspectorTarget:(facebook::react::jsinspector_modern::PageTarget *)parentInspectorTarget
                    launchOptions:(nullable NSDictionary *)launchOptions;
 
 - (void)callFunctionOnJSModule:(NSString *)moduleName method:(NSString *)method args:(NSArray *)args;

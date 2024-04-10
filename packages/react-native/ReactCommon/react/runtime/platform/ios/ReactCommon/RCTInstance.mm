@@ -99,7 +99,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
       turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)tmmDelegate
              onInitialBundleLoad:(RCTInstanceInitialBundleLoadCompletionBlock)onInitialBundleLoad
                   moduleRegistry:(RCTModuleRegistry *)moduleRegistry
-           parentInspectorTarget:(jsinspector_modern::HostTarget *)parentInspectorTarget
+           parentInspectorTarget:(jsinspector_modern::PageTarget *)parentInspectorTarget
                    launchOptions:(nullable NSDictionary *)launchOptions
 {
   if (self = [super init]) {

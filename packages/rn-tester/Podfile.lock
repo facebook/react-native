@@ -1471,8 +1471,8 @@ SPEC CHECKSUMS:
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
   glog: c5d68082e772fa1c511173d6b30a9de2c05a69a2
   hermes-engine: 329a5f9984fcdd5833687126d6d2ee599c7b4562
-  MyNativeView: 1c6f91bacf66b31176f93e8f6d3acd8aac85b738
-  NativeCxxModuleExample: 246d5cf81c2985f75b5b88287b7f326aa6c66c61
+  MyNativeView: 8d6a7de42fd5bd8d836fd54b8e77c6683a2d9797
+  NativeCxxModuleExample: ace397f25f6843101b3b97199618f40aac22d303
   OCMock: 9491e4bec59e0b267d52a9184ff5605995e74be8
   RCT-Folly: 045d6ecaa59d826c5736dfba0b2f4083ff8d79df
   RCTDeprecation: 39acbda851b0a91447103ea93b04d4971d08fe86
@@ -1503,9 +1503,9 @@ SPEC CHECKSUMS:
   React-perflogger: 35f93d7a0a660f567fccff3d68e64aa4f1e19d85
   React-RCTActionSheet: 424a463c0fe7adc93a6946106b1a298b8fd9fbc3
   React-RCTAnimation: 2eaca2c5690a060124467b8acb6f2900fa0ad55b
-  React-RCTAppDelegate: 4b01124d9afc41206fe182ace545f5d754035cc2
+  React-RCTAppDelegate: a504842acc714b288d942fb15ec65b5177805852
   React-RCTBlob: 4934c2a388f1dba72c70785e52cf840277f34203
-  React-RCTFabric: 8b75a6b2b4b4a97ea931f0d843fe2d11a024c797
+  React-RCTFabric: 24c9fee67f0c35b1bce030f2c1b68498dc63cacb
   React-RCTImage: 3078443a042e9066b44d64c3e0acf4d27c47ecb4
   React-RCTLinking: e5d477e2ff1b920af9100330d5f0742f94d824f2
   React-RCTNetwork: 1c11155b02e6a598d6eb4bcf015ab493aa049fb7
@@ -1524,7 +1524,7 @@ SPEC CHECKSUMS:
   React-utils: bdc9a6686acc6743d18f3669286557a1691520ec
   ReactCommon: f2711a51ca03845c6ae972a2946b5dc6d6519fbb
   ReactCommon-Samples: af97ea26f13cc89dc6d431251e41b7b23183e78d
-  ScreenshotManager: 0b70e4d6b9e4873e9775cccc88d18192d5fd5b70
+  ScreenshotManager: c25f349d42abbf5988c33a16153eef00edf069b0
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
   Yoga: bdab5272d93dd19c07694aaf9d8b9e0e112380d8
 
