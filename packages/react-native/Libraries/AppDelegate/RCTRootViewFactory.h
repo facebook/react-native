@@ -170,6 +170,10 @@ typedef BOOL (^RCTBridgeDidNotFindModuleBlock)(RCTBridge *bridge, NSString *modu
 
 - (UIView *_Nonnull)viewWithModuleName:(NSString *)moduleName;
 
+#pragma mark - RCTRootViewFactory Helpers
+
+- (RCTHost *)createReactHost;
+
 @end
 
 NS_ASSUME_NONNULL_END
