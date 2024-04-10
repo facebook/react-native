@@ -212,6 +212,21 @@ TEST_F(ShadowNodeTest, handleCloneFunction) {
   EXPECT_EQ(nodeAB_->getProps(), nodeABClone->getProps());
 }
 
+TEST_F(ShadowNodeTest, handleCloningWithTraits) {
+  auto clonedWithoutTraits = nodeAB_->clone({});
+
+  EXPECT_FALSE(clonedWithoutTraits->getTraits().check(
+      ShadowNodeTraits::Trait::Reserved));
+
+  auto newTraits = ShadowNodeTraits();
+  newTraits.set(ShadowNodeTraits::Trait::Reserved);
+
+  auto clonedWithTraits = clonedWithoutTraits->clone({.traits = newTraits});
+
+  EXPECT_TRUE(
+      clonedWithTraits->getTraits().check(ShadowNodeTraits::Trait::Reserved));
+}
+
 TEST_F(ShadowNodeTest, handleState) {
   auto family = componentDescriptor_.createFamily(ShadowNodeFamilyFragment{
       /* .tag = */ 9,
