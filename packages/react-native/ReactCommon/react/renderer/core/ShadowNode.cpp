@@ -287,7 +287,11 @@ void ShadowNode::setMounted(bool mounted) const {
   family_->eventEmitter_->setEnabled(mounted);
 }
 
-void ShadowNode::progressStateIfNecessary() {
+bool ShadowNode::getHasBeenMounted() const {
+  return hasBeenMounted_;
+}
+
+bool ShadowNode::progressStateIfNecessary() {
   if (!hasBeenMounted_ && state_) {
     ensureUnsealed();
     auto mostRecentState = family_->getMostRecentStateIfObsolete(*state_);
@@ -297,8 +301,10 @@ void ShadowNode::progressStateIfNecessary() {
       // Must call ComponentDescriptor::adopt to trigger any side effect
       // state may have. E.g. adjusting padding.
       componentDescriptor.adopt(*this);
+      return true;
     }
   }
+  return false;
 }
 
 const ShadowNodeFamily& ShadowNode::getFamily() const {

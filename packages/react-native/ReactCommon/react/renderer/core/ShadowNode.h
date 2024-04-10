@@ -172,13 +172,21 @@ class ShadowNode : public Sealable,
   void setMounted(bool mounted) const;
 
   /*
+   * Returns true if the shadow node has been marked as mounted before by
+   * calling `setMounted`.
+   */
+  bool getHasBeenMounted() const;
+
+  /*
    * Applies the most recent state to the ShadowNode if following conditions are
    * met:
    * - ShadowNode has a state.
    * - ShadowNode has not been mounted before.
    * - ShadowNode's current state is obsolete.
+   *
+   * Returns true if the state was applied, false otherwise.
    */
-  void progressStateIfNecessary();
+  bool progressStateIfNecessary();
 
 #pragma mark - DebugStringConvertible
 
