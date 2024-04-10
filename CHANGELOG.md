@@ -1,5 +1,28 @@
 # Changelog
 
+## v0.74.0-rc.8
+
+### Added
+
+#### iOS specific
+
+-  Add privacy manifest to hello world template ([520d120375](https://github.com/facebook/react-native/commit/520d120375c6b24bc161adea4f48d76537a34abc) by [@philIip](https://github.com/philIip))
+
+### Fixed
+
+#### Android specific
+
+- Fix bridge mode by constructing ReactDelegate correctly ([a25004c86c](https://github.com/facebook/react-native/commit/a25004c86c9fe5b74a54ba913c2ce94f9b1b9b31) by [@cortinico](https://github.com/cortinico))
+- Fixed possible deadlock in dispatchViewUpdates ([b2ca41eef5](https://github.com/facebook/react-native/commit/b2ca41eef59b17d212b35baa4a28c4b27a465b5c) by [@EvertEt](https://github.com/EvertEt))
+
+#### iOS specific
+
+- Make sure that the New Architecture listens to orientation change events. ([49b0d26d45](https://github.com/facebook/react-native/commit/49b0d26d45096227767bca90a528d5bb031d80e7) by [@cipolleschi](https://github.com/cipolleschi))
+- Avoid to show Metro Loading banner twice. ([64ed8200f7](https://github.com/facebook/react-native/commit/64ed8200f739b0e8289ec7336557fa3d5d381b97) by [@cipolleschi](https://github.com/cipolleschi))
+- Support launchOptions in bridgeless mode. ([cb2d93ea50](https://github.com/facebook/react-native/commit/cb2d93ea50e62024d5238cccfc7242f7fd75d3b2) by [@cipolleschi](https://github.com/cipolleschi))
+- Let RCTHost be initialized with a function to provide the `bundleURL` so that it can connect to metro on Reload when the url changes.
+ ([90296be1d4](https://github.com/facebook/react-native/commit/90296be1d4fab09a52e02dd09f34f819136d0a07) by [@cipolleschi](https://github.com/cipolleschi))
+
 ## v0.74.0-rc.7
 
 ### Fixed
