@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<00e1c8f5c451c9744257e0b3fc566949>>
+ * @generated SignedSource<<fe45466cd2b60fe856aa811ccc2365bd>>
  */
 
 /**
@@ -41,6 +41,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableSpannableBuildingUnification();
   bool enableSynchronousStateUpdates();
   bool enableUIConsistency();
+  bool forceBatchingMountItemsOnAndroid();
   bool inspectorEnableCxxInspectorPackagerConnection();
   bool inspectorEnableModernCDPRegistry();
   bool useModernRuntimeScheduler();
@@ -55,7 +56,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 14> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 15> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> batchRenderingUpdatesInEventLoop_;
@@ -67,6 +68,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableSpannableBuildingUnification_;
   std::atomic<std::optional<bool>> enableSynchronousStateUpdates_;
   std::atomic<std::optional<bool>> enableUIConsistency_;
+  std::atomic<std::optional<bool>> forceBatchingMountItemsOnAndroid_;
   std::atomic<std::optional<bool>> inspectorEnableCxxInspectorPackagerConnection_;
   std::atomic<std::optional<bool>> inspectorEnableModernCDPRegistry_;
   std::atomic<std::optional<bool>> useModernRuntimeScheduler_;

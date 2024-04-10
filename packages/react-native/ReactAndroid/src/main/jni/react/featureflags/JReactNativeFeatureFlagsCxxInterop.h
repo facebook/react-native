@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1ae5c51e5b1c1725565e57a02d19c3a7>>
+ * @generated SignedSource<<7237412cb02dad9468f144a050bd78e3>>
  */
 
 /**
@@ -58,6 +58,9 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enableUIConsistency(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool forceBatchingMountItemsOnAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool inspectorEnableCxxInspectorPackagerConnection(

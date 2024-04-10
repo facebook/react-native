@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<520ae882fb57dec58ededd47411c0b1d>>
+ * @generated SignedSource<<e589683db0f9a9fbf812fefd4a1c3f96>>
  */
 
 /**
@@ -59,6 +59,10 @@ bool ReactNativeFeatureFlags::enableSynchronousStateUpdates() {
 
 bool ReactNativeFeatureFlags::enableUIConsistency() {
   return getAccessor().enableUIConsistency();
+}
+
+bool ReactNativeFeatureFlags::forceBatchingMountItemsOnAndroid() {
+  return getAccessor().forceBatchingMountItemsOnAndroid();
 }
 
 bool ReactNativeFeatureFlags::inspectorEnableCxxInspectorPackagerConnection() {

@@ -76,6 +76,11 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).',
     },
+    forceBatchingMountItemsOnAndroid: {
+      defaultValue: false,
+      description:
+        'Forces the mounting layer on Android to always batch mount items instead of dispatching them immediately. This might fix some crashes related to synchronous state updates, where some views dispatch state updates during mount.',
+    },
     inspectorEnableCxxInspectorPackagerConnection: {
       defaultValue: false,
       description:
