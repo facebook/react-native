@@ -172,7 +172,7 @@ typedef BOOL (^RCTBridgeDidNotFindModuleBlock)(RCTBridge *bridge, NSString *modu
 
 #pragma mark - RCTRootViewFactory Helpers
 
-- (RCTHost *)createReactHost:(NSDictionary *)launchOptions;
+- (RCTHost *)createReactHost:(NSDictionary *__nullable)launchOptions;
 
 @end
 
