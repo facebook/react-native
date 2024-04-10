@@ -30,7 +30,7 @@ ParagraphShadowNode::ParagraphShadowNode(
     const ShadowNodeFragment& fragment)
     : ConcreteViewShadowNode(sourceShadowNode, fragment) {
   auto& sourceParagraphShadowNode =
-      dynamic_cast<const ParagraphShadowNode&>(sourceShadowNode);
+      static_cast<const ParagraphShadowNode&>(sourceShadowNode);
   if (!fragment.children && !fragment.props &&
       sourceParagraphShadowNode.getIsLayoutClean()) {
     // This ParagraphShadowNode was cloned but did not change
@@ -185,9 +185,7 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
 
   if (getConcreteProps().onTextLayout) {
     auto linesMeasurements = textLayoutManager_->measureLines(
-        content.attributedString,
-        content.paragraphAttributes,
-        measurement.size);
+        content.attributedString, content.paragraphAttributes, availableSize);
     getConcreteEventEmitter().onTextLayout(linesMeasurements);
   }
 
