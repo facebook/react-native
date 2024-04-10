@@ -225,10 +225,10 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
   if (self.reactHost) {
     return;
   }
-  self.reactHost = [self createReactHost];
+  self.reactHost = [self createReactHost:launchOptions];
 }
 
-- (RCTHost *)createReactHost
+- (RCTHost *)createReactHost:(NSDictionary *)launchOptions
 {
   __weak __typeof(self) weakSelf = self;
   RCTHost *reactHost = [[RCTHost alloc] initWithBundleURLProvider:self->_configuration.bundleURLBlock
