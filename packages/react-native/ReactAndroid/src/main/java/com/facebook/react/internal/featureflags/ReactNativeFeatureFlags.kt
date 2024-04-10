@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4c0ede4fa927bc8361d0355bc7cddb10>>
+ * @generated SignedSource<<e36a47c909c1a4bd823992586481d6f6>>
  */
 
 /**
@@ -111,6 +111,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun useNativeViewConfigsInBridgelessMode(): Boolean = accessor.useNativeViewConfigsInBridgelessMode()
+
+  /**
+   * When enabled, it uses optimised state reconciliation algorithm.
+   */
+  @JvmStatic
+  public fun useStateAlignmentMechanism(): Boolean = accessor.useStateAlignmentMechanism()
 
   /**
    * Overrides the feature flags with the ones provided by the given provider

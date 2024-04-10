@@ -8,6 +8,7 @@
 #include "ShadowTree.h"
 
 #include <react/debug/react_native_assert.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/components/root/RootComponentDescriptor.h>
 #include <react/renderer/components/view/ViewShadowNode.h>
 #include <react/renderer/core/LayoutContext.h>
@@ -453,7 +454,7 @@ CommitStatus ShadowTree::tryCommit(
   }
 
   if (commitOptions.enableStateReconciliation) {
-    if (CoreFeatures::enableClonelessStateProgression) {
+    if (ReactNativeFeatureFlags::useStateAlignmentMechanism()) {
       progressStateIfNecessary(*newRootShadowNode, *oldRootShadowNode);
     } else {
       auto updatedNewRootShadowNode =
