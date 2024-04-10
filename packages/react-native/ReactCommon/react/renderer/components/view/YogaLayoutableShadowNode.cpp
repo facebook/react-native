@@ -216,7 +216,7 @@ void YogaLayoutableShadowNode::adoptYogaChild(size_t index) {
     auto clonedChildNode = childNode.clone({});
 
     // Replace the child node with a newly cloned one in the children list.
-    replaceChild(childNode, clonedChildNode, static_cast<int32_t>(index));
+    replaceChild(childNode, clonedChildNode, index);
   }
 
   ensureYogaChildrenLookFine();
@@ -260,7 +260,7 @@ void YogaLayoutableShadowNode::appendChild(
 void YogaLayoutableShadowNode::replaceChild(
     const ShadowNode& oldChild,
     const ShadowNode::Shared& newChild,
-    int32_t suggestedIndex) {
+    size_t suggestedIndex) {
   LayoutableShadowNode::replaceChild(oldChild, newChild, suggestedIndex);
 
   ensureUnsealed();
@@ -277,7 +277,7 @@ void YogaLayoutableShadowNode::replaceChild(
   }
 
   bool suggestedIndexAccurate = suggestedIndex >= 0 &&
-      suggestedIndex < static_cast<int32_t>(yogaLayoutableChildren_.size()) &&
+      suggestedIndex < yogaLayoutableChildren_.size() &&
       yogaLayoutableChildren_[suggestedIndex].get() == layoutableOldChild;
 
   auto oldChildIter = suggestedIndexAccurate
@@ -288,8 +288,7 @@ void YogaLayoutableShadowNode::replaceChild(
             [&](const YogaLayoutableShadowNode::Shared& layoutableChild) {
               return layoutableChild.get() == layoutableOldChild;
             });
-  auto oldChildIndex =
-      static_cast<int32_t>(oldChildIter - yogaLayoutableChildren_.begin());
+  auto oldChildIndex = oldChildIter - yogaLayoutableChildren_.begin();
 
   if (oldChildIter == yogaLayoutableChildren_.end()) {
     // oldChild does not exist as part of our node
@@ -520,8 +519,7 @@ YogaLayoutableShadowNode& YogaLayoutableShadowNode::cloneChildInPlace(
        ShadowNodeFragment::childrenPlaceholder(),
        childNode.getState()});
 
-  replaceChild(
-      childNode, clonedChildNode, static_cast<int32_t>(layoutableChildIndex));
+  replaceChild(childNode, clonedChildNode, layoutableChildIndex);
   return static_cast<YogaLayoutableShadowNode&>(*clonedChildNode);
 }
 
