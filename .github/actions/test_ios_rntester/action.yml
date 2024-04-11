@@ -44,9 +44,6 @@ runs:
       with:
         hermes-version: ${{ inputs.hermes-version }}
         react-native-version: ${{ inputs.react-native-version }}
-    - name: Delete iOS Simulators
-      shell: bash
-      run: sudo rm -rf /Library/Developer/CoreSimulator/Profiles/Runtimes/ &
     - name: Setup ruby
       uses: ruby/setup-ruby@v1.170.0
       with:
