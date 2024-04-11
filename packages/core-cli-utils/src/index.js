@@ -12,12 +12,17 @@
 import {tasks as android} from './private/android.js';
 import {tasks as apple} from './private/apple.js';
 import {tasks as clean} from './private/clean.js';
+import * as version from './public/version.js';
 
 /* eslint sort-keys : "error" */
 export default {
+  // Platforms
   android: typeof android,
   apple: typeof apple,
   clean: typeof clean,
+
+  // Meta
+  version: typeof version,
 };
 
 export type {Task} from './private/types';
