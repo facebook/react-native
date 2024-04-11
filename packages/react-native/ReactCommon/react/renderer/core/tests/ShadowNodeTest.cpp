@@ -216,15 +216,20 @@ TEST_F(ShadowNodeTest, handleCloningWithTraits) {
   auto clonedWithoutTraits = nodeAB_->clone({});
 
   EXPECT_FALSE(clonedWithoutTraits->getTraits().check(
-      ShadowNodeTraits::Trait::Reserved));
+      ShadowNodeTraits::Trait::ClonedByNativeStateUpdate));
 
   auto newTraits = ShadowNodeTraits();
-  newTraits.set(ShadowNodeTraits::Trait::Reserved);
+  newTraits.set(ShadowNodeTraits::Trait::ClonedByNativeStateUpdate);
 
   auto clonedWithTraits = clonedWithoutTraits->clone({.traits = newTraits});
 
-  EXPECT_TRUE(
-      clonedWithTraits->getTraits().check(ShadowNodeTraits::Trait::Reserved));
+  EXPECT_TRUE(clonedWithTraits->getTraits().check(
+      ShadowNodeTraits::Trait::ClonedByNativeStateUpdate));
+
+  auto clonedAgain = clonedWithTraits->clone({});
+
+  EXPECT_FALSE(clonedAgain->getTraits().check(
+      ShadowNodeTraits::Trait::ClonedByNativeStateUpdate));
 }
 
 TEST_F(ShadowNodeTest, handleState) {
@@ -285,7 +290,7 @@ TEST_F(ShadowNodeTest, handleState) {
 TEST_F(ShadowNodeTest, testCloneTree) {
   auto& family = nodeABA_->getFamily();
   auto newTraits = ShadowNodeTraits();
-  newTraits.set(ShadowNodeTraits::Trait::Reserved);
+  newTraits.set(ShadowNodeTraits::Trait::ClonedByNativeStateUpdate);
   auto rootNode = nodeA_->cloneTree(
       family,
       [newTraits](ShadowNode const& oldShadowNode) {
@@ -293,21 +298,22 @@ TEST_F(ShadowNodeTest, testCloneTree) {
       },
       newTraits);
 
-  EXPECT_TRUE(rootNode->getTraits().check(ShadowNodeTraits::Trait::Reserved));
+  EXPECT_TRUE(rootNode->getTraits().check(
+      ShadowNodeTraits::Trait::ClonedByNativeStateUpdate));
 
   EXPECT_FALSE(rootNode->getChildren()[0]->getTraits().check(
-      ShadowNodeTraits::Trait::Reserved));
+      ShadowNodeTraits::Trait::ClonedByNativeStateUpdate));
 
   auto const& firstLevelChild = *rootNode->getChildren()[1];
 
-  EXPECT_TRUE(
-      firstLevelChild.getTraits().check(ShadowNodeTraits::Trait::Reserved));
+  EXPECT_TRUE(firstLevelChild.getTraits().check(
+      ShadowNodeTraits::Trait::ClonedByNativeStateUpdate));
 
   EXPECT_FALSE(firstLevelChild.getChildren()[1]->getTraits().check(
-      ShadowNodeTraits::Trait::Reserved));
+      ShadowNodeTraits::Trait::ClonedByNativeStateUpdate));
 
   auto const& secondLevelchild = *firstLevelChild.getChildren()[0];
 
-  EXPECT_TRUE(
-      secondLevelchild.getTraits().check(ShadowNodeTraits::Trait::Reserved));
+  EXPECT_TRUE(secondLevelchild.getTraits().check(
+      ShadowNodeTraits::Trait::ClonedByNativeStateUpdate));
 }

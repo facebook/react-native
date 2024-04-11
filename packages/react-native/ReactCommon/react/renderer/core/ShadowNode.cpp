@@ -107,6 +107,9 @@ ShadowNode::ShadowNode(
   react_native_assert(props_);
   react_native_assert(children_);
 
+  // State could have been progressed above by checking
+  // `sourceShadowNode.getMostRecentState()`.
+  traits_.unset(ShadowNodeTraits::Trait::ClonedByNativeStateUpdate);
   traits_.set(ShadowNodeTraits::Trait::ChildrenAreShared);
   traits_.set(fragment.traits.get());
 
