@@ -110,8 +110,7 @@ Content ParagraphShadowNode::getContentWithMeasuredAttachments(
 void ParagraphShadowNode::setTextLayoutManager(
     std::shared_ptr<const TextLayoutManager> textLayoutManager) {
   ensureUnsealed();
-  getStateData().paragraphLayoutManager.setTextLayoutManager(
-      std::move(textLayoutManager));
+  textLayoutManager_ = std::move(textLayoutManager);
 }
 
 void ParagraphShadowNode::updateStateIfNeeded(const Content& content) {
@@ -119,7 +118,7 @@ void ParagraphShadowNode::updateStateIfNeeded(const Content& content) {
 
   auto& state = getStateData();
 
-  react_native_assert(state.paragraphLayoutManager.getTextLayoutManager());
+  react_native_assert(textLayoutManager_);
 
   if (state.attributedString == content.attributedString) {
     return;
@@ -128,7 +127,7 @@ void ParagraphShadowNode::updateStateIfNeeded(const Content& content) {
   setStateData(ParagraphState{
       content.attributedString,
       content.paragraphAttributes,
-      state.paragraphLayoutManager});
+      textLayoutManager_});
 }
 
 #pragma mark - LayoutableShadowNode
@@ -154,10 +153,9 @@ Size ParagraphShadowNode::measureContent(
 
   TextLayoutContext textLayoutContext{};
   textLayoutContext.pointScaleFactor = layoutContext.pointScaleFactor;
-  return getStateData()
-      .paragraphLayoutManager
-      .measure(
-          attributedString,
+  return textLayoutManager_
+      ->measure(
+          AttributedStringBox{attributedString},
           content.paragraphAttributes,
           textLayoutContext,
           layoutConstraints)
@@ -179,14 +177,14 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
 
   TextLayoutContext textLayoutContext{};
   textLayoutContext.pointScaleFactor = layoutContext.pointScaleFactor;
-  auto measurement = getStateData().paragraphLayoutManager.measure(
-      content.attributedString,
+  auto measurement = textLayoutManager_->measure(
+      AttributedStringBox{content.attributedString},
       content.paragraphAttributes,
       textLayoutContext,
       layoutConstraints);
 
   if (getConcreteProps().onTextLayout) {
-    auto linesMeasurements = getStateData().paragraphLayoutManager.measureLines(
+    auto linesMeasurements = textLayoutManager_->measureLines(
         content.attributedString,
         content.paragraphAttributes,
         measurement.size);
