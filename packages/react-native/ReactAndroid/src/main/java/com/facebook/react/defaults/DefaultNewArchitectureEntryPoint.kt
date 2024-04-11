@@ -9,6 +9,7 @@
 
 package com.facebook.react.defaults
 
+import com.facebook.react.DefaultSoLoader
 import com.facebook.react.common.annotations.VisibleForTesting
 import com.facebook.react.config.ReactFeatureFlags
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags

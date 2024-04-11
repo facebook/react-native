@@ -19,7 +19,7 @@ class DefaultComponentsRegistry
     : public facebook::jni::HybridClass<DefaultComponentsRegistry> {
  public:
   constexpr static auto kJavaDescriptor =
-      "Lcom/facebook/react/defaults/DefaultComponentsRegistry;";
+      "Lcom/facebook/react/DefaultComponentsRegistry;";
 
   static void registerNatives();
 

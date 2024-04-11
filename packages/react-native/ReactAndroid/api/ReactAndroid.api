@@ -43,6 +43,37 @@ public class com/facebook/react/DebugCorePackage$$ReactModuleInfoProvider : com/
 	public fun getReactModuleInfos ()Ljava/util/Map;
 }
 
+public final class com/facebook/react/DefaultComponentsRegistry {
+	public static final field Companion Lcom/facebook/react/DefaultComponentsRegistry$Companion;
+	public synthetic fun <init> (Lcom/facebook/react/fabric/ComponentFactory;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public static final fun register (Lcom/facebook/react/fabric/ComponentFactory;)Lcom/facebook/react/DefaultComponentsRegistry;
+}
+
+public final class com/facebook/react/DefaultComponentsRegistry$Companion {
+	public final fun register (Lcom/facebook/react/fabric/ComponentFactory;)Lcom/facebook/react/DefaultComponentsRegistry;
+}
+
+public final class com/facebook/react/DefaultSoLoader {
+	public static final field Companion Lcom/facebook/react/DefaultSoLoader$Companion;
+	public fun <init> ()V
+	public static final fun maybeLoadSoLibrary ()V
+}
+
+public final class com/facebook/react/DefaultSoLoader$Companion {
+	public final fun maybeLoadSoLibrary ()V
+}
+
+public final class com/facebook/react/DefaultTurboModuleManagerDelegate : com/facebook/react/ReactPackageTurboModuleManagerDelegate {
+	public synthetic fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Ljava/util/List;Ljava/util/List;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public final class com/facebook/react/DefaultTurboModuleManagerDelegate$Builder : com/facebook/react/ReactPackageTurboModuleManagerDelegate$Builder {
+	public fun <init> ()V
+	public final fun addCxxReactPackage (Lkotlin/jvm/functions/Function0;)Lcom/facebook/react/DefaultTurboModuleManagerDelegate$Builder;
+	public final fun addCxxReactPackage (Lkotlin/jvm/functions/Function1;)Lcom/facebook/react/DefaultTurboModuleManagerDelegate$Builder;
+	public synthetic fun build (Lcom/facebook/react/bridge/ReactApplicationContext;Ljava/util/List;)Lcom/facebook/react/ReactPackageTurboModuleManagerDelegate;
+}
+
 public abstract class com/facebook/react/HeadlessJsTaskService : android/app/Service, com/facebook/react/jstasks/HeadlessJsTaskEventListener {
 	public fun <init> ()V
 	public static fun acquireWakeLockNow (Landroid/content/Context;)V
@@ -1967,16 +1998,6 @@ public class com/facebook/react/config/ReactFeatureFlags {
 	public fun <init> ()V
 }
 
-public final class com/facebook/react/defaults/DefaultComponentsRegistry {
-	public static final field Companion Lcom/facebook/react/defaults/DefaultComponentsRegistry$Companion;
-	public synthetic fun <init> (Lcom/facebook/react/fabric/ComponentFactory;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public static final fun register (Lcom/facebook/react/fabric/ComponentFactory;)Lcom/facebook/react/defaults/DefaultComponentsRegistry;
-}
-
-public final class com/facebook/react/defaults/DefaultComponentsRegistry$Companion {
-	public final fun register (Lcom/facebook/react/fabric/ComponentFactory;)Lcom/facebook/react/defaults/DefaultComponentsRegistry;
-}
-
 public final class com/facebook/react/defaults/DefaultNewArchitectureEntryPoint {
 	public static final field INSTANCE Lcom/facebook/react/defaults/DefaultNewArchitectureEntryPoint;
 	public static final fun getBridgelessEnabled ()Z
@@ -2012,18 +2033,6 @@ public abstract class com/facebook/react/defaults/DefaultReactNativeHost : com/f
 	protected fun isHermesEnabled ()Ljava/lang/Boolean;
 	protected fun isNewArchEnabled ()Z
 	public final fun toReactHost (Landroid/content/Context;)Lcom/facebook/react/ReactHost;
-}
-
-public final class com/facebook/react/defaults/DefaultTurboModuleManagerDelegate : com/facebook/react/ReactPackageTurboModuleManagerDelegate {
-	public synthetic fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Ljava/util/List;Ljava/util/List;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public static final fun initHybrid (Ljava/util/List;)Lcom/facebook/jni/HybridData;
-}
-
-public final class com/facebook/react/defaults/DefaultTurboModuleManagerDelegate$Builder : com/facebook/react/ReactPackageTurboModuleManagerDelegate$Builder {
-	public fun <init> ()V
-	public final fun addCxxReactPackage (Lkotlin/jvm/functions/Function0;)Lcom/facebook/react/defaults/DefaultTurboModuleManagerDelegate$Builder;
-	public final fun addCxxReactPackage (Lkotlin/jvm/functions/Function1;)Lcom/facebook/react/defaults/DefaultTurboModuleManagerDelegate$Builder;
-	public synthetic fun build (Lcom/facebook/react/bridge/ReactApplicationContext;Ljava/util/List;)Lcom/facebook/react/ReactPackageTurboModuleManagerDelegate;
 }
 
 public final class com/facebook/react/devsupport/BridgeDevSupportManager : com/facebook/react/devsupport/DevSupportManagerBase {

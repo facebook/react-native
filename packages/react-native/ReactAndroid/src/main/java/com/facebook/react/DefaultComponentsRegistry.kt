@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.defaults
+package com.facebook.react
 
 import com.facebook.jni.HybridData
 import com.facebook.proguard.annotations.DoNotStrip

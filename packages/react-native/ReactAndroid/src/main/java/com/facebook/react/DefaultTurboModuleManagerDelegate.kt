@@ -5,12 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.defaults
+package com.facebook.react
 
 import com.facebook.jni.HybridData
 import com.facebook.proguard.annotations.DoNotStrip
-import com.facebook.react.ReactPackage
-import com.facebook.react.ReactPackageTurboModuleManagerDelegate
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.runtime.cxxreactpackage.CxxReactPackage
@@ -72,6 +70,6 @@ private constructor(
 
     @DoNotStrip
     @JvmStatic
-    external fun initHybrid(cxxReactPackages: List<CxxReactPackage>): HybridData
+    private external fun initHybrid(cxxReactPackages: List<CxxReactPackage>): HybridData
   }
 }

@@ -9,6 +9,8 @@ package com.facebook.react.defaults
 
 import android.app.Application
 import android.content.Context
+import com.facebook.react.DefaultComponentsRegistry
+import com.facebook.react.DefaultTurboModuleManagerDelegate
 import com.facebook.react.JSEngineResolutionAlgorithm
 import com.facebook.react.ReactHost
 import com.facebook.react.ReactNativeHost

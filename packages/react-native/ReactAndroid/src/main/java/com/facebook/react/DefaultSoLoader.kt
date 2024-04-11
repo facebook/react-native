@@ -5,15 +5,15 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.defaults
+package com.facebook.react
 
 import com.facebook.soloader.SoLoader
 
-internal class DefaultSoLoader {
-  companion object {
+public class DefaultSoLoader {
+  public companion object {
     @Synchronized
     @JvmStatic
-    fun maybeLoadSoLibrary() {
+    public fun maybeLoadSoLibrary() {
       SoLoader.loadLibrary("react_newarchdefaults")
       try {
         SoLoader.loadLibrary("appmodules")
