@@ -106,6 +106,7 @@ import {
   TextStyle,
   TouchableNativeFeedback,
   TouchableOpacity,
+  TouchableHighlight,
   TouchableWithoutFeedback,
   UIManager,
   View,
@@ -481,6 +482,32 @@ function TouchableTest() {
     return Touchable.renderDebugView({
       color: 'red',
     });
+  }
+}
+
+export class TouchableHighlightTest extends React.Component {
+  buttonRef = React.createRef<React.ElementRef<typeof TouchableHighlight>>();
+
+  render() {
+    return (
+      <>
+        <TouchableHighlight ref={this.buttonRef} />
+        <TouchableHighlight
+          ref={ref => {
+            ref?.focus();
+            ref?.blur();
+            ref?.measure(
+              (x, y, width, height, pageX, pageY): number =>
+                x + y + width + height + pageX + pageY,
+            );
+            ref?.measureInWindow(
+              (x, y, width, height): number => x + y + width + height,
+            );
+            ref?.setNativeProps({focusable: false});
+          }}
+        />
+      </>
+    );
   }
 }
 
