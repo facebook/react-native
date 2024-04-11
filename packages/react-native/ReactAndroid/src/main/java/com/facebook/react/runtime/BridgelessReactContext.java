@@ -90,10 +90,24 @@ class BridgelessReactContext extends ReactApplicationContext implements EventDis
     return new BridgelessCatalystInstance(mReactHost);
   }
 
+  @Deprecated
+  @Override
+  public boolean hasActiveCatalystInstance() {
+    return hasActiveReactInstance();
+  }
+
   @Override
   public boolean hasActiveReactInstance() {
     return mReactHost.isInstanceInitialized();
   }
+
+  @Override
+  public boolean hasCatalystInstance() {
+    return false;
+  }
+
+  @Override
+  public void destroy() {}
 
   DevSupportManager getDevSupportManager() {
     return mReactHost.getDevSupportManager();
