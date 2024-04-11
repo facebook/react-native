@@ -240,7 +240,7 @@ void ShadowNode::appendChild(const ShadowNode::Shared& child) {
 void ShadowNode::replaceChild(
     const ShadowNode& oldChild,
     const ShadowNode::Shared& newChild,
-    int32_t suggestedIndex) {
+    size_t suggestedIndex) {
   ensureUnsealed();
 
   cloneChildrenIfShared();
@@ -249,7 +249,8 @@ void ShadowNode::replaceChild(
   auto& children = const_cast<ShadowNode::ListOfShared&>(*children_);
   auto size = children.size();
 
-  if (suggestedIndex != -1 && static_cast<size_t>(suggestedIndex) < size) {
+  if (suggestedIndex != std::numeric_limits<size_t>::max() &&
+      suggestedIndex < size) {
     // If provided `suggestedIndex` is accurate,
     // replacing in place using the index.
     if (children.at(suggestedIndex).get() == &oldChild) {
