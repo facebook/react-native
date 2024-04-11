@@ -369,7 +369,7 @@ jobs:
           ruby-version: "3.2.0"
           hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
-  test_ios_rntester1:
+  test_ios_rntester_dynamic_frameworks:
     runs-on: macos-13
     needs: [build_apple_slices_hermes, prepare_hermes_workspace, build_hermes_macos]
     env:
@@ -390,7 +390,7 @@ jobs:
           use-frameworks: DynamicFrameworks
           hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
-  test_ios_rntester2:
+  test_ios_rntester:
     runs-on: macos-13
     needs: [build_apple_slices_hermes, prepare_hermes_workspace, build_hermes_macos]
     env:
