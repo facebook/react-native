@@ -77,6 +77,7 @@ ShadowNode::ShadowNode(
   react_native_assert(children_);
 
   traits_.set(ShadowNodeTraits::Trait::ChildrenAreShared);
+  traits_.set(fragment.traits.get());
 
   for (const auto& child : *children_) {
     child->family_->setParent(family_);
@@ -107,6 +108,7 @@ ShadowNode::ShadowNode(
   react_native_assert(children_);
 
   traits_.set(ShadowNodeTraits::Trait::ChildrenAreShared);
+  traits_.set(fragment.traits.get());
 
   if (fragment.children) {
     for (const auto& child : *children_) {
@@ -128,11 +130,10 @@ ShadowNode::Unshared ShadowNode::clone(
           propsParserContext, props_, RawProps(*family.nativeProps_DEPRECATED));
       auto clonedNode = componentDescriptor.cloneShadowNode(
           *this,
-          {
-              props,
-              fragment.children,
-              fragment.state,
-          });
+          {.props = props,
+           .children = fragment.children,
+           .state = fragment.state,
+           .traits = fragment.traits});
       return clonedNode;
     } else {
       // TODO: We might need to merge fragment.priops with
@@ -330,10 +331,8 @@ ShadowNode::Unshared ShadowNode::cloneTree(
         ShadowNode::sameFamily(*children.at(childIndex), *childNode));
     children[childIndex] = childNode;
 
-    childNode = parentNode.clone({
-        ShadowNodeFragment::propsPlaceholder(),
-        std::make_shared<ShadowNode::ListOfShared>(children),
-    });
+    childNode = parentNode.clone(
+        {.children = std::make_shared<ShadowNode::ListOfShared>(children)});
   }
 
   return std::const_pointer_cast<ShadowNode>(childNode);
