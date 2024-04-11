@@ -72,10 +72,6 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
       yogaNode_(&initializeYogaConfig(yogaConfig_)) {
   yogaNode_.setContext(this);
 
-  // Newly created node must be `dirty` just because it is new.
-  // This is not a default for `yoga::Node`.
-  yogaNode_.setDirty(true);
-
   if (getTraits().check(ShadowNodeTraits::Trait::MeasurableYogaNode)) {
     react_native_assert(
         getTraits().check(ShadowNodeTraits::Trait::LeafYogaNode));
