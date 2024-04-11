@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <limits>
 #include <memory>
 #include <string>
 #include <type_traits>
@@ -161,7 +162,7 @@ class ShadowNode : public Sealable,
   virtual void replaceChild(
       const ShadowNode& oldChild,
       const Shared& newChild,
-      int32_t suggestedIndex = -1);
+      size_t suggestedIndex = std::numeric_limits<size_t>::max());
 
   /*
    * Performs all side effects associated with mounting/unmounting in one place.
