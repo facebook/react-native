@@ -71,6 +71,7 @@ struct ShadowViewNodePair final {
   bool flattened{false};
   bool isConcreteView{true};
   Point contextOrigin{0, 0};
+  Tag unflattenedParentTag{-1};
 
   size_t mountIndex{0};
 

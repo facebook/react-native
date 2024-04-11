@@ -57,6 +57,7 @@ struct ShadowViewMutation final {
       ShadowView parentShadowView,
       ShadowView childShadowView,
       int index,
+      Tag unflattenedParentTag = -1,
       bool isRedundantOperation = false);
 
   /*
@@ -96,6 +97,7 @@ struct ShadowViewMutation final {
   ShadowView oldChildShadowView = {};
   ShadowView newChildShadowView = {};
   int index = -1;
+  Tag unflattenedParentTag = -1;
 
   // RemoveDeleteTree causes many Remove/Delete operations to be redundant.
   // However, we must internally produce all of them for any consumers that
@@ -117,7 +119,8 @@ struct ShadowViewMutation final {
       ShadowView oldChildShadowView,
       ShadowView newChildShadowView,
       int index,
-      bool isRedundantOperation = false);
+      bool isRedundantOperation = false,
+      Tag unflattenedParentTag = -1);
 };
 
 using ShadowViewMutationList = std::vector<ShadowViewMutation>;

@@ -57,6 +57,7 @@ ShadowViewMutation ShadowViewMutation::RemoveMutation(
     ShadowView parentShadowView,
     ShadowView childShadowView,
     int index,
+    Tag unflattenedParentTag,
     bool isRedundantOperation) {
   return {
       /* .type = */ Remove,
@@ -65,6 +66,7 @@ ShadowViewMutation ShadowViewMutation::RemoveMutation(
       /* .newChildShadowView = */ {},
       /* .index = */ index,
       /* .isRedundantOperation */ isRedundantOperation,
+      /* .parentTag */ unflattenedParentTag
   };
 }
 
@@ -116,12 +118,14 @@ ShadowViewMutation::ShadowViewMutation(
     ShadowView oldChildShadowView,
     ShadowView newChildShadowView,
     int index,
-    bool isRedundantOperation)
+    bool isRedundantOperation,
+    Tag unflattenedParentTag)
     : type(type),
       parentShadowView(std::move(parentShadowView)),
       oldChildShadowView(std::move(oldChildShadowView)),
       newChildShadowView(std::move(newChildShadowView)),
       index(index),
+      unflattenedParentTag(unflattenedParentTag),
       isRedundantOperation(isRedundantOperation) {}
 
 #if RN_DEBUG_STRING_CONVERTIBLE

@@ -213,7 +213,8 @@ static void sliceChildShadowNodeViewPairsRecursivelyV2(
     size_t& startOfStaticIndex,
     ViewNodePairScope& scope,
     Point layoutOffset,
-    const ShadowNode& shadowNode) {
+    const ShadowNode& shadowNode,
+    Tag unflattenedParentTag) {
   for (const auto& sharedChildShadowNode : shadowNode.getChildren()) {
     auto& childShadowNode = *sharedChildShadowNode;
 
@@ -242,12 +243,16 @@ static void sliceChildShadowNodeViewPairsRecursivelyV2(
     if (areChildrenFlattened) {
       storedOrigin = origin;
     }
+    if (shadowNodeIsConcrete(shadowNode)){
+      unflattenedParentTag = shadowNode.getTag();
+    }
     scope.push_back(
         {shadowView,
          &childShadowNode,
          areChildrenFlattened,
          isConcreteView,
-         storedOrigin});
+         storedOrigin, 
+         unflattenedParentTag});
 
     if (shadowView.layoutMetrics.positionType == PositionType::Static) {
       auto it = pairList.begin();
@@ -256,14 +261,14 @@ static void sliceChildShadowNodeViewPairsRecursivelyV2(
       startOfStaticIndex++;
       if (areChildrenFlattened) {
         sliceChildShadowNodeViewPairsRecursivelyV2(
-            pairList, startOfStaticIndex, scope, origin, childShadowNode);
+            pairList, startOfStaticIndex, scope, origin, childShadowNode, unflattenedParentTag);
       }
     } else {
       pairList.push_back(&scope.back());
       if (areChildrenFlattened) {
         size_t pairListSize = pairList.size();
         sliceChildShadowNodeViewPairsRecursivelyV2(
-            pairList, pairListSize, scope, origin, childShadowNode);
+            pairList, pairListSize, scope, origin, childShadowNode, unflattenedParentTag);
       }
     }
   }
@@ -285,7 +290,7 @@ ShadowViewNodePair::NonOwningList sliceChildShadowNodeViewPairsV2(
 
   size_t startOfStaticIndex = 0;
   sliceChildShadowNodeViewPairsRecursivelyV2(
-      pairList, startOfStaticIndex, scope, layoutOffset, shadowNode);
+      pairList, startOfStaticIndex, scope, layoutOffset, shadowNode, shadowNode.getTag());
 
   // Sorting pairs based on `orderIndex` if needed.
   reorderInPlaceIfNeeded(pairList);
@@ -547,7 +552,8 @@ static void updateMatchedPair(
             ShadowViewMutation::RemoveMutation(
                 parentShadowView,
                 oldPair.shadowView,
-                static_cast<int>(oldPair.mountIndex)));
+                static_cast<int>(oldPair.mountIndex),
+                oldPair.unflattenedParentTag));
       }
       mutationContainer.deleteMutations.push_back(
           ShadowViewMutation::DeleteMutation(oldPair.shadowView));
@@ -560,7 +566,8 @@ static void updateMatchedPair(
           ShadowViewMutation::RemoveMutation(
               parentShadowView,
               newPair.shadowView,
-              static_cast<int>(oldPair.mountIndex)));
+              static_cast<int>(oldPair.mountIndex),
+              newPair.unflattenedParentTag));
     }
 
     // Even if node's children are flattened, it might still be a
@@ -764,13 +771,15 @@ static void calculateShadowViewMutationsFlattener(
               ShadowViewMutation::RemoveMutation(
                   node.shadowView,
                   treeChildPair.otherTreePair->shadowView,
-                  static_cast<int>(treeChildPair.mountIndex)));
+                  static_cast<int>(treeChildPair.mountIndex),
+                  treeChildPair.otherTreePair->unflattenedParentTag));
         } else {
           mutationContainer.removeMutations.push_back(
               ShadowViewMutation::RemoveMutation(
                   node.shadowView,
                   treeChildPair.shadowView,
-                  static_cast<int>(treeChildPair.mountIndex)));
+                  static_cast<int>(treeChildPair.mountIndex),
+                  treeChildPair.unflattenedParentTag));
         }
       } else {
         // treeChildParent represents the "new" version of the node, so
@@ -1190,6 +1199,7 @@ static void calculateShadowViewMutationsV2(
               parentShadowView,
               oldChildPair.shadowView,
               static_cast<int>(oldChildPair.mountIndex),
+              oldChildPair.unflattenedParentTag,
               isRecursionRedundant ||
                   ShadowViewMutation::
                       PlatformSupportsRemoveDeleteTreeInstruction));
@@ -1388,7 +1398,8 @@ static void calculateShadowViewMutationsV2(
                 ShadowViewMutation::RemoveMutation(
                     parentShadowView,
                     otherTreeView,
-                    static_cast<int>(oldChildPair.mountIndex)));
+                    static_cast<int>(oldChildPair.mountIndex),
+                    oldChildPair.unflattenedParentTag));
             continue;
           }
 
@@ -1396,7 +1407,8 @@ static void calculateShadowViewMutationsV2(
               ShadowViewMutation::RemoveMutation(
                   parentShadowView,
                   oldChildPair.shadowView,
-                  static_cast<int>(oldChildPair.mountIndex)));
+                  static_cast<int>(oldChildPair.mountIndex),
+                  oldChildPair.unflattenedParentTag));
 
           deletionCandidatePairs.insert(
               {oldChildPair.shadowView.tag, &oldChildPair});
