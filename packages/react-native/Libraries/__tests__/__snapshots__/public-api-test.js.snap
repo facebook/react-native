@@ -810,7 +810,13 @@ exports[`public API should not change unintentionally Libraries/Animated/compone
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/createAnimatedComponent.js 1`] = `
-"export type AnimatedProps<Props: { ... }> = $ObjMap<Props, () => any>;
+"export type AnimatedProps<Props: { ... }> = $ObjMap<
+  Props &
+    $ReadOnly<{
+      passthroughAnimatedPropExplicitValues?: React.ElementConfig<typeof View>,
+    }>,
+  () => any,
+>;
 export type AnimatedComponentType<
   Props: { ... },
   +Instance = mixed,
@@ -8399,6 +8405,14 @@ exports[`public API should not change unintentionally Libraries/Utilities/DebugE
 "
 `;
 
+exports[`public API should not change unintentionally Libraries/Utilities/DevLoadingView.js 1`] = `
+"declare module.exports: {
+  showMessage(message: string, type: \\"load\\" | \\"refresh\\"): void,
+  hide(): void,
+};
+"
+`;
+
 exports[`public API should not change unintentionally Libraries/Utilities/DevSettings.js 1`] = `
 "declare let DevSettings: {
   addMenuItem(title: string, handler: () => mixed): void,
@@ -8513,14 +8527,6 @@ export interface IPerformanceLogger {
   startTimespan(key: string, timestamp?: number, extras?: Extras): void;
   stopTimespan(key: string, timestamp?: number, extras?: Extras): void;
 }
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/Utilities/DevLoadingView.js 1`] = `
-"declare module.exports: {
-  showMessage(message: string, type: \\"load\\" | \\"refresh\\"): void,
-  hide(): void,
-};
 "
 `;
 
