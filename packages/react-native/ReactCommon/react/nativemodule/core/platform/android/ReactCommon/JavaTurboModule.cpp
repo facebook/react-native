@@ -86,6 +86,45 @@ struct JNIArgs {
   std::vector<jobject> globalRefs_;
 };
 
+jsi::Value createJSRuntimeError(
+    jsi::Runtime& runtime,
+    const std::string& message) {
+  return runtime.global()
+      .getPropertyAsFunction(runtime, "Error")
+      .call(runtime, message);
+}
+
+auto getNativeModuleRejectionError(jsi::Runtime& rt, folly::dynamic args) {
+  if (args.size() == 1) {
+    const auto& val = args[0];
+    auto value = jsi::valueFromDynamic(rt, val);
+    if (value.isObject()) {
+      const jsi::Object& valueAsObject = value.asObject(rt);
+      auto nativeStackAndroid =
+          valueAsObject.getProperty(rt, "nativeStackAndroid");
+      auto code =
+          valueAsObject.getProperty(rt, "code");
+      auto messageProperty =
+          valueAsObject.getProperty(rt, "message");
+
+      bool isNativeModuleRejection = nativeStackAndroid.isObject() &&
+          code.isString() && messageProperty.isString();
+
+      if (isNativeModuleRejection) {
+        auto jsError = createJSRuntimeError(rt, messageProperty.asString(rt).utf8(rt));
+
+        auto propertyNames = valueAsObject.getPropertyNames(rt);
+        for (size_t i = 0; i < propertyNames.size(rt); ++i) {
+          auto propertyName = propertyNames.getValueAtIndex(rt, i).asString(rt);
+          jsError.asObject(rt).setProperty(rt, propertyName, valueAsObject.getProperty(rt, propertyName));
+        }
+        return jsError;
+      }
+    }
+  }
+  return jsi::Value::undefined();
+}
+
 auto createJavaCallback(
     jsi::Runtime& rt,
     jsi::Function&& function,
@@ -101,12 +140,17 @@ auto createJavaCallback(
 
         callback->call([args = std::move(args)](
                            jsi::Runtime& rt, jsi::Function& jsFunction) {
-          std::vector<jsi::Value> jsArgs;
-          jsArgs.reserve(args.size());
-          for (const auto& val : args) {
-            jsArgs.emplace_back(jsi::valueFromDynamic(rt, val));
+          auto maybeError = getNativeModuleRejectionError(rt, args);
+          if (maybeError.isUndefined()) {
+            std::vector<jsi::Value> jsArgs;
+            jsArgs.reserve(args.size());
+            for (const auto& val : args) {
+              jsArgs.emplace_back(jsi::valueFromDynamic(rt, val));
+            }
+            jsFunction.call(rt, (const jsi::Value*)jsArgs.data(), jsArgs.size());
+          } else {
+            jsFunction.call(rt, maybeError);
           }
-          jsFunction.call(rt, (const jsi::Value*)jsArgs.data(), jsArgs.size());
         });
         callback = std::nullopt;
       });
@@ -407,13 +451,6 @@ jsi::Value convertFromJMapToValue(JNIEnv* env, jsi::Runtime& rt, jobject arg) {
   return jsi::valueFromDynamic(rt, result->cthis()->consume());
 }
 
-jsi::Value createJSRuntimeError(
-    jsi::Runtime& runtime,
-    const std::string& message) {
-  return runtime.global()
-      .getPropertyAsFunction(runtime, "Error")
-      .call(runtime, message);
-}
 
 /**
  * Creates JSError with current JS runtime stack and Throwable stack trace.
