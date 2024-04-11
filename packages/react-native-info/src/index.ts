@@ -14,10 +14,12 @@ import {program} from 'commander';
 import info from './info';
 import {CliOptions} from './types';
 
+const {version} = require('../package.json');
+
 program
   .name('react-native-info')
   .description('Get relevant version info about OS, toolchain and libraries')
-  .version(require('../package.json').version)
+  .version(version)
   .option('--json', 'Output in JSON format')
   .parse(process.argv);
 

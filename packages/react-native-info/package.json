@@ -4,9 +4,6 @@
   "main": "build/index.js",
   "license": "MIT",
   "private": true,
-  "publishConfig": {
-    "access": "public"
-  },
   "types": "build/index.d.ts",
   "files": [
     "build",

@@ -1,13 +1,17 @@
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @oncall react_native
+ */
+
 import envinfo from 'envinfo';
 import {platform} from 'os';
 import {EnvironmentInfo} from './types';
 
-/**
- * Returns information about the running system.
- * If `json === true`, or no options are passed,
- * the return type will be an `EnvironmentInfo`.
- * If set to `false`, it will be a `string`.
- */
 export async function getEnvironmentInfoAsString(): Promise<string> {
   return getEnvironmentInfo(false);
 }
