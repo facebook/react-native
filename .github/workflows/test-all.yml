@@ -349,7 +349,7 @@ jobs:
 
           mkdir -p "$DEST_DIR"
           mv "hermes.framework.dSYM" "$DEST_DIR"
-      - name: Upload hermes dSYM acrifacts
+      - name: Upload hermes dSYM artifacts
         uses: actions/upload-artifact@v4.3.1
         with:
           name: hermes-dSYM-${{ matrix.flavor }}
