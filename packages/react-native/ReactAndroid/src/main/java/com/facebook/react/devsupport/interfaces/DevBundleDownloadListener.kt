@@ -5,14 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.devsupport.interfaces;
-
-import androidx.annotation.Nullable;
+package com.facebook.react.devsupport.interfaces
 
 public interface DevBundleDownloadListener {
-  void onSuccess();
+  public fun onSuccess()
 
-  void onProgress(@Nullable String status, @Nullable Integer done, @Nullable Integer total);
+  public fun onProgress(status: String?, done: Int?, total: Int?)
 
-  void onFailure(Exception cause);
+  public fun onFailure(cause: Exception?)
 }

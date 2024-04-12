@@ -5,13 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.devsupport.interfaces;
+package com.facebook.react.devsupport.interfaces
 
 /** Callback class for loading split JS bundles from Metro in development. */
 public interface DevSplitBundleCallback {
   /** Called when the split JS bundle has been downloaded and evaluated. */
-  void onSuccess();
-
+  public fun onSuccess()
   /** Called when the split JS bundle failed to load. */
-  void onError(String url, Throwable cause);
+  public fun onError(url: String?, cause: Throwable?)
 }
