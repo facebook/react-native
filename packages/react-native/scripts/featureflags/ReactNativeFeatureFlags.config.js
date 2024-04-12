@@ -101,6 +101,11 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'When enabled, the native view configs are used in bridgeless mode.',
     },
+    useStateAlignmentMechanism: {
+      defaultValue: false,
+      description:
+        'When enabled, it uses optimised state reconciliation algorithm.',
+    },
   },
 
   jsOnly: {

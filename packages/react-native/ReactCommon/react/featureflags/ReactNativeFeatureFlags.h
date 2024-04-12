@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<38881afec04f45eff46edd99ce9443da>>
+ * @generated SignedSource<<8804fc52ad516ba82c0db6fcdea5f110>>
  */
 
 /**
@@ -111,6 +111,11 @@ class ReactNativeFeatureFlags {
    * When enabled, the native view configs are used in bridgeless mode.
    */
   RN_EXPORT static bool useNativeViewConfigsInBridgelessMode();
+
+  /**
+   * When enabled, it uses optimised state reconciliation algorithm.
+   */
+  RN_EXPORT static bool useStateAlignmentMechanism();
 
   /**
    * Overrides the feature flags with the ones provided by the given provider

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<72058f22fd21f03e66136929306d5974>>
+ * @generated SignedSource<<008818e7f2d8b9e295704cccc33758e7>>
  */
 
 /**
@@ -84,6 +84,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool useNativeViewConfigsInBridgelessMode() override {
+    return false;
+  }
+
+  bool useStateAlignmentMechanism() override {
     return false;
   }
 };

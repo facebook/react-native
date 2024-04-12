@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e589683db0f9a9fbf812fefd4a1c3f96>>
+ * @generated SignedSource<<ddb65722ccc0d584d105b07a621e6871>>
  */
 
 /**
@@ -79,6 +79,10 @@ bool ReactNativeFeatureFlags::useModernRuntimeScheduler() {
 
 bool ReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode() {
   return getAccessor().useNativeViewConfigsInBridgelessMode();
+}
+
+bool ReactNativeFeatureFlags::useStateAlignmentMechanism() {
+  return getAccessor().useStateAlignmentMechanism();
 }
 
 void ReactNativeFeatureFlags::override(

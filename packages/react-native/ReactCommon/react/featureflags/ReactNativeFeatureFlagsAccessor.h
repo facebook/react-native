@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fe45466cd2b60fe856aa811ccc2365bd>>
+ * @generated SignedSource<<de8d2a8416c3ad914df01b765c8df907>>
  */
 
 /**
@@ -46,6 +46,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool inspectorEnableModernCDPRegistry();
   bool useModernRuntimeScheduler();
   bool useNativeViewConfigsInBridgelessMode();
+  bool useStateAlignmentMechanism();
 
   void override(std::unique_ptr<ReactNativeFeatureFlagsProvider> provider);
 
@@ -56,7 +57,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 15> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 16> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> batchRenderingUpdatesInEventLoop_;
@@ -73,6 +74,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> inspectorEnableModernCDPRegistry_;
   std::atomic<std::optional<bool>> useModernRuntimeScheduler_;
   std::atomic<std::optional<bool>> useNativeViewConfigsInBridgelessMode_;
+  std::atomic<std::optional<bool>> useStateAlignmentMechanism_;
 };
 
 } // namespace facebook::react

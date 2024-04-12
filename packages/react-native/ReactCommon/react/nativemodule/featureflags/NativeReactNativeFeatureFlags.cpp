@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<55ee96b1902071c987c70b5f07f670e4>>
+ * @generated SignedSource<<1abf19f9d1352105511e86c0f217de7a>>
  */
 
 /**
@@ -110,6 +110,11 @@ bool NativeReactNativeFeatureFlags::useModernRuntimeScheduler(
 bool NativeReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode();
+}
+
+bool NativeReactNativeFeatureFlags::useStateAlignmentMechanism(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::useStateAlignmentMechanism();
 }
 
 } // namespace facebook::react

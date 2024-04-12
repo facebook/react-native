@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<21980ab4688bc93c5573012a228e3997>>
+ * @generated SignedSource<<9f5c5313e139b450449e2716735c26e7>>
  */
 
 /**
@@ -294,6 +294,24 @@ bool ReactNativeFeatureFlagsAccessor::useNativeViewConfigsInBridgelessMode() {
 
     flagValue = currentProvider_->useNativeViewConfigsInBridgelessMode();
     useNativeViewConfigsInBridgelessMode_ = flagValue;
+  }
+
+  return flagValue.value();
+}
+
+bool ReactNativeFeatureFlagsAccessor::useStateAlignmentMechanism() {
+  auto flagValue = useStateAlignmentMechanism_.load();
+
+  if (!flagValue.has_value()) {
+    // This block is not exclusive but it is not necessary.
+    // If multiple threads try to initialize the feature flag, we would only
+    // be accessing the provider multiple times but the end state of this
+    // instance and the returned flag value would be the same.
+
+    markFlagAsAccessed(15, "useStateAlignmentMechanism");
+
+    flagValue = currentProvider_->useStateAlignmentMechanism();
+    useStateAlignmentMechanism_ = flagValue;
   }
 
   return flagValue.value();

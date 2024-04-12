@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3a7d633de9e6fd6862864c202d56523a>>
+ * @generated SignedSource<<82163a04d1e3cb54d6c5125173ab807f>>
  */
 
 /**
@@ -129,6 +129,12 @@ class ReactNativeFeatureFlagsProviderHolder
     return method(javaProvider_);
   }
 
+  bool useStateAlignmentMechanism() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useStateAlignmentMechanism");
+    return method(javaProvider_);
+  }
+
  private:
   jni::global_ref<jobject> javaProvider_;
 };
@@ -208,6 +214,11 @@ bool JReactNativeFeatureFlagsCxxInterop::useNativeViewConfigsInBridgelessMode(
   return ReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::useStateAlignmentMechanism(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::useStateAlignmentMechanism();
+}
+
 void JReactNativeFeatureFlagsCxxInterop::override(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/,
     jni::alias_ref<jobject> provider) {
@@ -270,6 +281,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "useNativeViewConfigsInBridgelessMode",
         JReactNativeFeatureFlagsCxxInterop::useNativeViewConfigsInBridgelessMode),
+      makeNativeMethod(
+        "useStateAlignmentMechanism",
+        JReactNativeFeatureFlagsCxxInterop::useStateAlignmentMechanism),
   });
 }
 

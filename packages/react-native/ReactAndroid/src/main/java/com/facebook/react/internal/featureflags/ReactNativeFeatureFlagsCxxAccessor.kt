@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<51d66e841a09638375b1849043c9886a>>
+ * @generated SignedSource<<eb3ae68166b3ec7f797a0db4b2ec1f5b>>
  */
 
 /**
@@ -35,6 +35,7 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
   private var inspectorEnableModernCDPRegistryCache: Boolean? = null
   private var useModernRuntimeSchedulerCache: Boolean? = null
   private var useNativeViewConfigsInBridgelessModeCache: Boolean? = null
+  private var useStateAlignmentMechanismCache: Boolean? = null
 
   override fun commonTestFlag(): Boolean {
     var cached = commonTestFlagCache
@@ -167,6 +168,15 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.useNativeViewConfigsInBridgelessMode()
       useNativeViewConfigsInBridgelessModeCache = cached
+    }
+    return cached
+  }
+
+  override fun useStateAlignmentMechanism(): Boolean {
+    var cached = useStateAlignmentMechanismCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.useStateAlignmentMechanism()
+      useStateAlignmentMechanismCache = cached
     }
     return cached
   }

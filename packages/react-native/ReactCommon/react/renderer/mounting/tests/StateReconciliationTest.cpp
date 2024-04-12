@@ -9,6 +9,8 @@
 
 #include <gtest/gtest.h>
 
+#include <react/featureflags/ReactNativeFeatureFlags.h>
+#include <react/featureflags/ReactNativeFeatureFlagsDefaults.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/components/view/ViewComponentDescriptor.h>
 #include <react/renderer/core/PropsParserContext.h>
@@ -21,6 +23,20 @@
 #include <react/renderer/element/testUtils.h>
 
 using namespace facebook::react;
+
+class StateReconciliationTestFeatureFlags
+    : public ReactNativeFeatureFlagsDefaults {
+ public:
+  explicit StateReconciliationTestFeatureFlags(bool useStateAlignmentMechanism)
+      : useStateAlignmentMechanism_(useStateAlignmentMechanism) {}
+
+  bool useStateAlignmentMechanism() override {
+    return useStateAlignmentMechanism_;
+  }
+
+ private:
+  bool useStateAlignmentMechanism_;
+};
 
 class DummyShadowTreeDelegate : public ShadowTreeDelegate {
  public:
@@ -64,8 +80,15 @@ const ShadowNode* findDescendantNode(
 
 class StateReconciliationTest : public ::testing::TestWithParam<bool> {
  public:
-  StateReconciliationTest() : builder_(simpleComponentBuilder()) {
-    CoreFeatures::enableClonelessStateProgression = GetParam();
+  StateReconciliationTest() : builder_(simpleComponentBuilder()) {}
+
+  void SetUp() override {
+    ReactNativeFeatureFlags::override(
+        std::make_unique<StateReconciliationTestFeatureFlags>(GetParam()));
+  }
+
+  void TearDown() override {
+    ReactNativeFeatureFlags::dangerouslyReset();
   }
 
   ComponentBuilder builder_;

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<45969617730126d45f35820ee3bd5853>>
+ * @generated SignedSource<<39fd96ed670e0acae857e7fce3377452>>
  * @flow strict-local
  */
 
@@ -55,6 +55,7 @@ export type ReactNativeFeatureFlags = {
   inspectorEnableModernCDPRegistry: Getter<boolean>,
   useModernRuntimeScheduler: Getter<boolean>,
   useNativeViewConfigsInBridgelessMode: Getter<boolean>,
+  useStateAlignmentMechanism: Getter<boolean>,
 }
 
 /**
@@ -157,6 +158,10 @@ export const useModernRuntimeScheduler: Getter<boolean> = createNativeFlagGetter
  * When enabled, the native view configs are used in bridgeless mode.
  */
 export const useNativeViewConfigsInBridgelessMode: Getter<boolean> = createNativeFlagGetter('useNativeViewConfigsInBridgelessMode', false);
+/**
+ * When enabled, it uses optimised state reconciliation algorithm.
+ */
+export const useStateAlignmentMechanism: Getter<boolean> = createNativeFlagGetter('useStateAlignmentMechanism', false);
 
 /**
  * Overrides the feature flags with the provided methods.

@@ -264,10 +264,6 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     CoreFeatures::enableGranularScrollViewStateUpdatesIOS = true;
   }
 
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_cloneless_state_progression")) {
-    CoreFeatures::enableClonelessStateProgression = true;
-  }
-
   auto componentRegistryFactory =
       [factory = wrapManagedObject(_mountingManager.componentViewRegistry.componentViewFactory)](
           const EventDispatcher::Weak &eventDispatcher, const ContextContainer::Shared &contextContainer) {

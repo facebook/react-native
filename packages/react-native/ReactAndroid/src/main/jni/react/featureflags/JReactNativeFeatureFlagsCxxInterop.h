@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7237412cb02dad9468f144a050bd78e3>>
+ * @generated SignedSource<<48e337d37416ab988ea747050bf207f3>>
  */
 
 /**
@@ -73,6 +73,9 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool useNativeViewConfigsInBridgelessMode(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool useStateAlignmentMechanism(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static void override(
