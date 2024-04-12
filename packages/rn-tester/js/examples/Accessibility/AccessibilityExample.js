@@ -1784,6 +1784,23 @@ function AccessibilityExpandedExample(): React.Node {
   );
 }
 
+function AccessibilityTextInputWithArialabelledByAttributeExample(): React.Node {
+  const theme = React.useContext(RNTesterThemeContext);
+  return (
+    <View>
+      <Text
+        nativeID="testAriaLabelledBy"
+        style={{color: theme.SecondaryLabelColor}}>
+        Phone Number
+      </Text>
+      <TextInput
+        aria-labelledby={'testAriaLabelledBy'}
+        style={styles.default}
+      />
+    </View>
+  );
+}
+
 exports.title = 'Accessibility';
 exports.documentationURL = 'https://reactnative.dev/docs/accessibilityinfo';
 exports.description = 'Examples of using Accessibility APIs.';
@@ -1876,25 +1893,11 @@ exports.examples = [
     },
   },
   {
-    title: 'TextInput with aria-labelledby attribute"',
-    render(): React.Element<typeof View> {
-      return (
-        <RNTesterThemeContext.Consumer>
-          {theme => (
-            <View>
-              <Text
-                nativeID="testAriaLabelledBy"
-                style={{color: theme.SecondaryLabelColor}}>
-                Phone Number
-              </Text>
-              <TextInput
-                aria-labelledby={'testAriaLabelledBy'}
-                style={styles.default}
-              />
-            </View>
-          )}
-        </RNTesterThemeContext.Consumer>
-      );
+    title: 'TextInput with aria-labelledby attribute',
+    render(): React.Element<
+      typeof AccessibilityTextInputWithArialabelledByAttributeExample,
+    > {
+      return <AccessibilityTextInputWithArialabelledByAttributeExample />;
     },
   },
 ];
