@@ -64,18 +64,18 @@
 
 #### Android specific
 
-- Implement onKeyLongPress in Bridgeless ([f345fcf3e8](https://github.com/facebook/react-native/commit/f345fcf3e8331b76a72989645bd60b82ba9aa19a))
-- Implement `onKeyDown` in Bridgeless ([b14f7d58e3](https://github.com/facebook/react-native/commit/b14f7d58e3537b9bfa2638d1d71ec3dc908f4b8d))
-- Implement onConfigurationChanged in Bridgeless ([b2e1db0fbf](https://github.com/facebook/react-native/commit/b2e1db0fbf845c48878c4a0ea9cb5755a85a6f0e))
-- Implement `onNewIntent` in Bridgeless ([5d711f83b5](https://github.com/facebook/react-native/commit/5d711f83b5f1e8053b5b19d0a864a1d8fc27a235))
-- Implement onWindowFocusChange in Bridgeless ([7b40c8ee5f](https://github.com/facebook/react-native/commit/7b40c8ee5fc4073cdf83060cf81e16fa282899ee))
+- Implement `onKeyLongPress` in Bridgeless ([f345fcf3e8](https://github.com/facebook/react-native/commit/f345fcf3e8331b76a72989645bd60b82ba9aa19a) by [@arushikesarwani94](https://github.com/arushikesarwani94))
+- Implement `onKeyDown` in Bridgeless ([b14f7d58e3](https://github.com/facebook/react-native/commit/b14f7d58e3537b9bfa2638d1d71ec3dc908f4b8d) by [@arushikesarwani94](https://github.com/arushikesarwani94))
+- Implement `onConfigurationChanged` in Bridgeless ([b2e1db0fbf](https://github.com/facebook/react-native/commit/b2e1db0fbf845c48878c4a0ea9cb5755a85a6f0e) by [@arushikesarwani94](https://github.com/arushikesarwani94))
+- Implement `onNewIntent` in Bridgeless ([5d711f83b5](https://github.com/facebook/react-native/commit/5d711f83b5f1e8053b5b19d0a864a1d8fc27a235) by [@arushikesarwani94](https://github.com/arushikesarwani94))
+- Implement `onWindowFocusChange` in Bridgeless ([7b40c8ee5f](https://github.com/facebook/react-native/commit/7b40c8ee5fc4073cdf83060cf81e16fa282899ee) by [@arushikesarwani94](https://github.com/arushikesarwani94))
 
 ### Added
 
 #### Android specific
 
-- Expose ReactDelegate in ReactActivity ([62ebe557b8](https://github.com/facebook/react-native/commit/62ebe557b8efbfb025f6187ef08a9c2223f4f3c3))
-- Support reload() in ReactDelegate ([d97741af60](https://github.com/facebook/react-native/commit/d97741af60e3af598d71894800d928b61c5782b4))
+- Expose ReactDelegate in ReactActivity ([62ebe557b8](https://github.com/facebook/react-native/commit/62ebe557b8efbfb025f6187ef08a9c2223f4f3c3) by [@arushikesarwani94](https://github.com/arushikesarwani94))
+- Support reload() in ReactDelegate ([d97741af60](https://github.com/facebook/react-native/commit/d97741af60e3af598d71894800d928b61c5782b4) by [@arushikesarwani94](https://github.com/arushikesarwani94))
 - Implement multiple view manager lookup for the interop layer ([15a5638c62](https://github.com/facebook/react-native/commit/15a5638c621cbec4a9fcb5ae94938120cdc32fae) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 #### Android specific
@@ -104,7 +104,7 @@
 
 #### Android specific
 
-- Implement `getJSCallInvokerHolder()` for Bridgeless Catalyst Instance ([c6076bca97](https://github.com/facebook/react-native/commit/c6076bca974b74b8456806cd06e0c1c63c58aaf9))
+- Implement `getJSCallInvokerHolder()` for Bridgeless Catalyst Instance ([c6076bca97](https://github.com/facebook/react-native/commit/c6076bca974b74b8456806cd06e0c1c63c58aaf9) by [@arushikesarwani94](https://github.com/arushikesarwani94))
 
 ### Added
 
@@ -123,7 +123,7 @@
 
 - Add missing `registerCallableModule` TypeScript definitions ([6bc95b2074](https://github.com/facebook/react-native/commit/6bc95b2074a794607a34eae201f07dae110c2832) by [@Kudo](https://github.com/Kudo))
 - Allow Inspector proxy to inline source maps on LAN connections ([3dee6d31b9](https://github.com/facebook/react-native/commit/3dee6d31b9059e319bf4849797e3ed21c298be70) by [@byCedric](https://github.com/byCedric))
-- Fix Bridgeless React Context test in OSS ([bdca260679](https://github.com/facebook/react-native/commit/bdca2606797f50f9ccb064bc7b25cd849ffe5e6c))
+- Fix Bridgeless React Context test in OSS ([bdca260679](https://github.com/facebook/react-native/commit/bdca2606797f50f9ccb064bc7b25cd849ffe5e6c) by [@arushikesarwani94](https://github.com/arushikesarwani94))
 - Fix bug where absolute nodes were not insetted correctly in certain cases ([3341ab7cc0](https://github.com/facebook/react-native/commit/3341ab7cc0ba7a8460069cd39ff3060154d96e1a) by [@joevilches](https://github.com/joevilches))
 
 #### Android specific
