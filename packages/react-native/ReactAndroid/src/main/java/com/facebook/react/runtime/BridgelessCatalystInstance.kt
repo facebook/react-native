@@ -149,8 +149,8 @@ public class BridgelessCatalystInstance(private val reactHost: ReactHostImpl) : 
     throw UnsupportedOperationException("Unimplemented method 'getJavaScriptContextHolder'")
   }
 
-  override fun getRuntimeExecutor(): RuntimeExecutor {
-    throw UnsupportedOperationException("Unimplemented method 'getRuntimeExecutor'")
+  override fun getRuntimeExecutor(): RuntimeExecutor? {
+    return reactHost.getRuntimeExecutor()
   }
 
   override fun getRuntimeScheduler(): RuntimeScheduler {
