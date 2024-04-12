@@ -5,8 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.devsupport.interfaces;
+package com.facebook.react.devsupport.interfaces
 
-public interface BundleLoadCallback {
-  void onSuccess();
+public fun interface BundleLoadCallback {
+  public fun onSuccess()
 }

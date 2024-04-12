@@ -5,8 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.devsupport.interfaces;
+package com.facebook.react.devsupport.interfaces
 
-public interface PackagerStatusCallback {
-  void onPackagerStatusFetched(boolean packagerIsRunning);
+public fun interface PackagerStatusCallback {
+  public fun onPackagerStatusFetched(packagerIsRunning: Boolean)
 }
