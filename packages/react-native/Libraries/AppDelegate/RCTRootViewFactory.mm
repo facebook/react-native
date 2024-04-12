@@ -113,6 +113,11 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
   return self;
 }
 
+- (instancetype)initWithConfiguration:(RCTRootViewFactoryConfiguration *)configuration
+{
+  return [self initWithConfiguration:configuration andTurboModuleManagerDelegate:nil];
+}
+
 - (UIView *)viewWithModuleName:(NSString *)moduleName initialProperties:(NSDictionary *)initialProperties
 {
   return [self viewWithModuleName:moduleName initialProperties:initialProperties launchOptions:nil];
