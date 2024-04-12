@@ -543,25 +543,8 @@ public abstract class com/facebook/react/bridge/BaseJavaModule : com/facebook/re
 	public fun invalidate ()V
 }
 
-public class com/facebook/react/bridge/BridgeReactContext : com/facebook/react/bridge/ReactApplicationContext {
+public final class com/facebook/react/bridge/BridgeReactContext : com/facebook/react/bridge/ReactApplicationContext {
 	public fun <init> (Landroid/content/Context;)V
-	public fun destroy ()V
-	public fun getCatalystInstance ()Lcom/facebook/react/bridge/CatalystInstance;
-	public fun getFabricUIManager ()Lcom/facebook/react/bridge/UIManager;
-	public fun getJSModule (Ljava/lang/Class;)Lcom/facebook/react/bridge/JavaScriptModule;
-	public fun getJavaScriptContextHolder ()Lcom/facebook/react/bridge/JavaScriptContextHolder;
-	public fun getNativeModule (Ljava/lang/Class;)Lcom/facebook/react/bridge/NativeModule;
-	public fun getNativeModules ()Ljava/util/Collection;
-	public fun getRuntimeExecutor ()Lcom/facebook/react/bridge/RuntimeExecutor;
-	public fun getSourceURL ()Ljava/lang/String;
-	public fun handleException (Ljava/lang/Exception;)V
-	public fun hasActiveCatalystInstance ()Z
-	public fun hasActiveReactInstance ()Z
-	public fun hasCatalystInstance ()Z
-	public fun hasNativeModule (Ljava/lang/Class;)Z
-	public fun initializeWithInstance (Lcom/facebook/react/bridge/CatalystInstance;)V
-	public fun isBridgeless ()Z
-	public fun registerSegment (ILjava/lang/String;Lcom/facebook/react/bridge/Callback;)V
 }
 
 public abstract interface class com/facebook/react/bridge/Callback {
@@ -1107,35 +1090,36 @@ public abstract class com/facebook/react/bridge/ReactContext : android/content/C
 	public fun assertOnNativeModulesQueueThread ()V
 	public fun assertOnNativeModulesQueueThread (Ljava/lang/String;)V
 	public fun assertOnUiQueueThread ()V
-	public abstract fun destroy ()V
+	public fun destroy ()V
 	public fun emitDeviceEvent (Ljava/lang/String;)V
 	public fun emitDeviceEvent (Ljava/lang/String;Ljava/lang/Object;)V
-	public abstract fun getCatalystInstance ()Lcom/facebook/react/bridge/CatalystInstance;
+	public fun getCatalystInstance ()Lcom/facebook/react/bridge/CatalystInstance;
 	public fun getCurrentActivity ()Landroid/app/Activity;
 	public fun getExceptionHandler ()Lcom/facebook/react/bridge/JSExceptionHandler;
-	public abstract fun getFabricUIManager ()Lcom/facebook/react/bridge/UIManager;
+	public fun getFabricUIManager ()Lcom/facebook/react/bridge/UIManager;
 	public fun getJSExceptionHandler ()Lcom/facebook/react/bridge/JSExceptionHandler;
 	public fun getJSMessageQueueThread ()Lcom/facebook/react/bridge/queue/MessageQueueThread;
-	public abstract fun getJSModule (Ljava/lang/Class;)Lcom/facebook/react/bridge/JavaScriptModule;
-	public abstract fun getJavaScriptContextHolder ()Lcom/facebook/react/bridge/JavaScriptContextHolder;
+	public fun getJSModule (Ljava/lang/Class;)Lcom/facebook/react/bridge/JavaScriptModule;
+	public fun getJavaScriptContextHolder ()Lcom/facebook/react/bridge/JavaScriptContextHolder;
 	public fun getLifecycleState ()Lcom/facebook/react/common/LifecycleState;
-	public abstract fun getNativeModule (Ljava/lang/Class;)Lcom/facebook/react/bridge/NativeModule;
-	public abstract fun getNativeModules ()Ljava/util/Collection;
+	public fun getNativeModule (Ljava/lang/Class;)Lcom/facebook/react/bridge/NativeModule;
+	public fun getNativeModules ()Ljava/util/Collection;
 	public fun getNativeModulesMessageQueueThread ()Lcom/facebook/react/bridge/queue/MessageQueueThread;
-	public abstract fun getSourceURL ()Ljava/lang/String;
+	public fun getSourceURL ()Ljava/lang/String;
 	public fun getSystemService (Ljava/lang/String;)Ljava/lang/Object;
 	public fun getUiMessageQueueThread ()Lcom/facebook/react/bridge/queue/MessageQueueThread;
-	public abstract fun handleException (Ljava/lang/Exception;)V
-	public abstract fun hasActiveCatalystInstance ()Z
-	public abstract fun hasActiveReactInstance ()Z
-	public abstract fun hasCatalystInstance ()Z
+	public fun handleException (Ljava/lang/Exception;)V
+	public fun hasActiveCatalystInstance ()Z
+	public fun hasActiveReactInstance ()Z
+	public fun hasCatalystInstance ()Z
 	public fun hasCurrentActivity ()Z
-	public abstract fun hasNativeModule (Ljava/lang/Class;)Z
-	protected fun initializeFromOther (Lcom/facebook/react/bridge/ReactContext;)V
+	public fun hasNativeModule (Ljava/lang/Class;)Z
 	protected fun initializeInteropModules ()V
+	protected fun initializeInteropModules (Lcom/facebook/react/bridge/ReactContext;)V
 	public fun initializeMessageQueueThreads (Lcom/facebook/react/bridge/queue/ReactQueueConfiguration;)V
+	public fun initializeWithInstance (Lcom/facebook/react/bridge/CatalystInstance;)V
 	public fun internal_registerInteropModule (Ljava/lang/Class;Ljava/lang/Object;)V
-	public abstract fun isBridgeless ()Z
+	public fun isBridgeless ()Z
 	public fun isOnJSQueueThread ()Z
 	public fun isOnNativeModulesQueueThread ()Z
 	public fun isOnUiQueueThread ()Z
@@ -1145,7 +1129,7 @@ public abstract class com/facebook/react/bridge/ReactContext : android/content/C
 	public fun onHostResume (Landroid/app/Activity;)V
 	public fun onNewIntent (Landroid/app/Activity;Landroid/content/Intent;)V
 	public fun onWindowFocusChange (Z)V
-	public abstract fun registerSegment (ILjava/lang/String;Lcom/facebook/react/bridge/Callback;)V
+	public fun registerSegment (ILjava/lang/String;Lcom/facebook/react/bridge/Callback;)V
 	public fun removeActivityEventListener (Lcom/facebook/react/bridge/ActivityEventListener;)V
 	public fun removeLifecycleEventListener (Lcom/facebook/react/bridge/LifecycleEventListener;)V
 	public fun removeWindowFocusChangeListener (Lcom/facebook/react/bridge/WindowFocusChangeListener;)V
@@ -4909,25 +4893,16 @@ public class com/facebook/react/uimanager/ThemedReactContext : com/facebook/reac
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Landroid/content/Context;)V
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Landroid/content/Context;Ljava/lang/String;)V
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Landroid/content/Context;Ljava/lang/String;I)V
-	public fun destroy ()V
-	public fun getCatalystInstance ()Lcom/facebook/react/bridge/CatalystInstance;
+	public fun addLifecycleEventListener (Lcom/facebook/react/bridge/LifecycleEventListener;)V
+	public fun getCurrentActivity ()Landroid/app/Activity;
 	public fun getFabricUIManager ()Lcom/facebook/react/bridge/UIManager;
-	public fun getJSModule (Ljava/lang/Class;)Lcom/facebook/react/bridge/JavaScriptModule;
-	public fun getJavaScriptContextHolder ()Lcom/facebook/react/bridge/JavaScriptContextHolder;
 	public fun getModuleName ()Ljava/lang/String;
-	public fun getNativeModule (Ljava/lang/Class;)Lcom/facebook/react/bridge/NativeModule;
-	public fun getNativeModules ()Ljava/util/Collection;
 	public fun getReactApplicationContext ()Lcom/facebook/react/bridge/ReactApplicationContext;
-	public fun getSourceURL ()Ljava/lang/String;
 	public fun getSurfaceID ()Ljava/lang/String;
 	public fun getSurfaceId ()I
-	public fun handleException (Ljava/lang/Exception;)V
-	public fun hasActiveCatalystInstance ()Z
-	public fun hasActiveReactInstance ()Z
-	public fun hasCatalystInstance ()Z
-	public fun hasNativeModule (Ljava/lang/Class;)Z
+	public fun hasCurrentActivity ()Z
 	public fun isBridgeless ()Z
-	public fun registerSegment (ILjava/lang/String;Lcom/facebook/react/bridge/Callback;)V
+	public fun removeLifecycleEventListener (Lcom/facebook/react/bridge/LifecycleEventListener;)V
 }
 
 public class com/facebook/react/uimanager/TouchTargetHelper {
