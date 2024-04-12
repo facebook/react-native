@@ -8,6 +8,7 @@
 package com.facebook.react.views.text;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.Layout;
@@ -44,6 +45,8 @@ import com.facebook.react.views.text.internal.span.ReactTagSpan;
 import com.facebook.react.views.text.internal.span.TextInlineImageSpan;
 import com.facebook.react.views.text.internal.span.TextInlineViewPlaceholderSpan;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
+import com.facebook.yoga.YogaMeasureMode;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -353,6 +356,29 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
         uiManager.receiveEvent(reactTag, "topInlineViewLayout", event);
       }
     }
+  }
+
+  @Override
+  protected void onDraw(Canvas canvas) {
+    if (this.mAdjustsFontSizeToFit && this.getSpanned() != null) {
+      // TODO: don't do this every frame
+      TextLayoutManagerMapBuffer.adjustSpannableFontToFit(
+        this.getSpanned(),
+        this.getWidth(),
+        YogaMeasureMode.EXACTLY,
+        this.getHeight(),
+        YogaMeasureMode.EXACTLY,
+        Double.NaN, // TODO
+        Double.NaN, // TODO
+        this.mNumberOfLines,
+        this.getIncludeFontPadding(),
+        this.getBreakStrategy(),
+        this.getHyphenationFrequency()
+      );
+      this.setText(this.getSpanned());
+    }
+
+    super.onDraw(canvas);
   }
 
   public void setText(ReactTextUpdate update) {

@@ -81,6 +81,8 @@ public class TextLayoutManagerMapBuffer {
   public static final short PA_KEY_ADJUST_FONT_SIZE_TO_FIT = 3;
   public static final short PA_KEY_INCLUDE_FONT_PADDING = 4;
   public static final short PA_KEY_HYPHENATION_FREQUENCY = 5;
+  public static final short PA_KEY_MINIMUM_FONT_SIZE = 6;
+  public static final short PA_KEY_MAXIMUM_FONT_SIZE = 7;
 
   private static final boolean ENABLE_MEASURE_LOGGING = ReactBuildConfig.DEBUG && false;
 
@@ -97,6 +99,8 @@ public class TextLayoutManagerMapBuffer {
   private static final String INLINE_VIEW_PLACEHOLDER = "0";
 
   private static final boolean DEFAULT_INCLUDE_FONT_PADDING = true;
+
+  private static final boolean DEFAULT_ADJUST_FONT_SIZE_TO_FIT = false;
 
   private static final Object sCacheLock = new Object();
 
@@ -378,6 +382,56 @@ public class TextLayoutManagerMapBuffer {
     return layout;
   }
 
+  public static void adjustSpannableFontToFit(
+    Spannable text,
+    float width,
+    YogaMeasureMode widthYogaMeasureMode,
+    float height,
+    YogaMeasureMode heightYogaMeasureMode,
+    double minimumFontSizeAttr,
+    double maximumFontSizeAttr,
+    int maximumNumberOfLines,
+    boolean includeFontPadding,
+    int textBreakStrategy,
+    int hyphenationFrequency) {
+    BoringLayout.Metrics boring = BoringLayout.isBoring(text, sTextPaintInstance);
+    Layout layout = createLayout(text, boring, width, widthYogaMeasureMode, includeFontPadding, textBreakStrategy, hyphenationFrequency);
+
+    Object[] spans =
+      text.getSpans(0, text.length(), Object.class);
+    for (Object span : spans) {
+      Log.w("RCT", span.toString());
+    }
+
+    // TODO: also grow size?
+    int initialFontSize = (int) (Double.isNaN(maximumFontSizeAttr) ? PixelUtil.toPixelFromDIP(96) : maximumFontSizeAttr);
+    int currentFontSize = (int) (Double.isNaN(maximumFontSizeAttr) ? PixelUtil.toPixelFromDIP(96) : maximumFontSizeAttr);
+    // Minimum font size is 4pts to match the iOS implementation.
+    int minimumFontSize = (int) (Double.isNaN(maximumFontSizeAttr) ? PixelUtil.toPixelFromDIP(4) : maximumFontSizeAttr);
+    while (currentFontSize > minimumFontSize
+      && (maximumNumberOfLines != ReactConstants.UNSET && layout.getLineCount() > maximumNumberOfLines
+      || heightYogaMeasureMode != YogaMeasureMode.UNDEFINED && layout.getHeight() > height)) {
+      // TODO: We could probably use a smarter algorithm here. This will require 0(n)
+      // measurements
+      // based on the number of points the font size needs to be reduced by.
+      currentFontSize -= Math.max(1, (int) PixelUtil.toPixelFromDIP(1));
+
+      float ratio = (float) currentFontSize / (float) initialFontSize;
+      ReactAbsoluteSizeSpan[] sizeSpans =
+        text.getSpans(0, text.length(), ReactAbsoluteSizeSpan.class);
+      for (ReactAbsoluteSizeSpan span : sizeSpans) {
+        text.setSpan(
+          new ReactAbsoluteSizeSpan(
+            (int) Math.max((span.getSize() * ratio), minimumFontSize)),
+          text.getSpanStart(span),
+          text.getSpanEnd(span),
+          text.getSpanFlags(span));
+        text.removeSpan(span);
+      }
+      layout = createLayout(text, boring, width, widthYogaMeasureMode, includeFontPadding, textBreakStrategy, hyphenationFrequency);
+    }
+  }
+
   public static long measureText(
       Context context,
       MapBuffer attributedString,
@@ -407,6 +461,37 @@ public class TextLayoutManagerMapBuffer {
     int hyphenationFrequency =
         TextAttributeProps.getHyphenationFrequency(
             paragraphAttributes.getString(PA_KEY_HYPHENATION_FREQUENCY));
+    boolean adjustFontSizeToFit =
+      paragraphAttributes.contains(PA_KEY_ADJUST_FONT_SIZE_TO_FIT)
+        ? paragraphAttributes.getBoolean(PA_KEY_ADJUST_FONT_SIZE_TO_FIT)
+        : DEFAULT_ADJUST_FONT_SIZE_TO_FIT;
+    int maximumNumberOfLines =
+      paragraphAttributes.contains(PA_KEY_MAX_NUMBER_OF_LINES)
+        ? paragraphAttributes.getInt(PA_KEY_MAX_NUMBER_OF_LINES)
+        : ReactConstants.UNSET;
+
+    if (adjustFontSizeToFit) {
+      double minimumFontSize = paragraphAttributes.contains(PA_KEY_MINIMUM_FONT_SIZE)
+        ? paragraphAttributes.getDouble(PA_KEY_MINIMUM_FONT_SIZE)
+        : Double.NaN;
+      double maximumFontSize = paragraphAttributes.contains(PA_KEY_MINIMUM_FONT_SIZE)
+        ? paragraphAttributes.getDouble(PA_KEY_MINIMUM_FONT_SIZE)
+        : Double.NaN;
+
+      adjustSpannableFontToFit(
+        text,
+        width,
+        widthYogaMeasureMode,
+        height,
+        heightYogaMeasureMode,
+        minimumFontSize,
+        maximumFontSize,
+        maximumNumberOfLines,
+        includeFontPadding,
+        textBreakStrategy,
+        hyphenationFrequency
+      );
+    }
 
     BoringLayout.Metrics boring = BoringLayout.isBoring(text, sTextPaintInstance);
     Layout layout =
@@ -418,11 +503,6 @@ public class TextLayoutManagerMapBuffer {
             includeFontPadding,
             textBreakStrategy,
             hyphenationFrequency);
-
-    int maximumNumberOfLines =
-        paragraphAttributes.contains(PA_KEY_MAX_NUMBER_OF_LINES)
-            ? paragraphAttributes.getInt(PA_KEY_MAX_NUMBER_OF_LINES)
-            : ReactConstants.UNSET;
 
     int calculatedLineCount =
         maximumNumberOfLines == ReactConstants.UNSET || maximumNumberOfLines == 0
@@ -589,6 +669,8 @@ public class TextLayoutManagerMapBuffer {
     int hyphenationFrequency =
         TextAttributeProps.getTextBreakStrategy(
             paragraphAttributes.getString(PA_KEY_HYPHENATION_FREQUENCY));
+
+    // TODO: adjustFontSizeToFit
 
     Layout layout =
         createLayout(
