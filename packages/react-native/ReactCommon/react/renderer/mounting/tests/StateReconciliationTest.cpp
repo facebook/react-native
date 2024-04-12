@@ -201,13 +201,11 @@ TEST_P(StateReconciliationTest, testStateReconciliation) {
       },
       {.enableStateReconciliation = true});
 
-  if (!GetParam()) {
-    EXPECT_EQ(
-        findDescendantNode(shadowTree, scrollViewFamily)
-            ->getState()
-            ->getRevision(),
-        state3->getRevision());
-  }
+  EXPECT_EQ(
+      findDescendantNode(shadowTree, scrollViewFamily)
+          ->getState()
+          ->getRevision(),
+      state3->getRevision());
 }
 
 TEST_P(StateReconciliationTest, testCloneslessStateReconciliationDoesntClone) {
@@ -672,10 +670,7 @@ TEST_P(StateReconciliationTest, testScrollViewWithComplexChildrenReorder) {
   EXPECT_NE(findDescendantNode(shadowTree, childA->getFamily()), nullptr);
   EXPECT_NE(findDescendantNode(shadowTree, childB->getFamily()), nullptr);
 
-  if (!GetParam()) {
-    EXPECT_EQ(
-        findDescendantNode(shadowTree, childAFamily)->getState(), newState);
-  }
+  EXPECT_EQ(findDescendantNode(shadowTree, childAFamily)->getState(), newState);
 }
 
 TEST_P(StateReconciliationTest, testScrollViewWithChildrenReorder) {
