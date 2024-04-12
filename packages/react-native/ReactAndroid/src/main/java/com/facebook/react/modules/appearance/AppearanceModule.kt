@@ -27,7 +27,7 @@ constructor(
   private var colorScheme = colorSchemeForCurrentConfiguration(reactContext)
 
   /** Optional override to the current color scheme */
-  public interface OverrideColorScheme {
+  public fun interface OverrideColorScheme {
     /**
      * Color scheme will use the return value instead of the current system configuration. Available
      * scheme: {light, dark}
