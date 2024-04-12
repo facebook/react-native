@@ -5,17 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.devsupport.interfaces;
-
-import androidx.annotation.Nullable;
+package com.facebook.react.devsupport.interfaces
 
 /** Interface to display loading messages on top of the screen. */
 public interface DevLoadingViewManager {
+  public fun showMessage(message: String)
 
-  void showMessage(final String message);
+  public fun updateProgress(status: String?, done: Int?, total: Int?)
 
-  void updateProgress(
-      final @Nullable String status, final @Nullable Integer done, final @Nullable Integer total);
-
-  void hide();
+  public fun hide()
 }
