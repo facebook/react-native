@@ -248,7 +248,9 @@ const PromptOptions = () => {
   return (
     <View>
       <Text style={styles.promptValue}>
-        <Text style={[{color: theme.SecondaryLabelColor}, styles.bold]}>Prompt value:</Text>
+        <Text style={[{color: theme.SecondaryLabelColor}, styles.bold]}>
+          Prompt value:
+        </Text>
         {JSON.stringify(promptValue, null, 2)}
       </Text>
 
