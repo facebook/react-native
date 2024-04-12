@@ -575,15 +575,14 @@ void ShadowTree::emitLayoutEvents(
 
   for (const auto* layoutableNode : affectedLayoutableNodes) {
     // Only instances of `ViewShadowNode` (and subclasses) are supported.
-    const auto& viewShadowNode =
-        static_cast<const ViewShadowNode&>(*layoutableNode);
-    const auto& viewEventEmitter =
-        static_cast<const ViewEventEmitter&>(*viewShadowNode.getEventEmitter());
+
+    const auto& viewEventEmitter = static_cast<const BaseViewEventEmitter&>(
+        *layoutableNode->getEventEmitter());
 
     // Checking if the `onLayout` event was requested for the particular Shadow
     // Node.
     const auto& viewProps =
-        static_cast<const ViewProps&>(*viewShadowNode.getProps());
+        static_cast<const BaseViewProps&>(*layoutableNode->getProps());
     if (!viewProps.onLayout) {
       continue;
     }
