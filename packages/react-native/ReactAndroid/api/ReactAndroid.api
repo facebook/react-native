@@ -4081,6 +4081,7 @@ public abstract interface class com/facebook/react/uimanager/FabricViewStateMana
 public final class com/facebook/react/uimanager/FloatUtil {
 	public static final field INSTANCE Lcom/facebook/react/uimanager/FloatUtil;
 	public static final fun floatsEqual (FF)Z
+	public static final fun floatsEqual (Ljava/lang/Float;Ljava/lang/Float;)Z
 }
 
 public abstract class com/facebook/react/uimanager/GuardedFrameCallback : android/view/Choreographer$FrameCallback {
@@ -5454,11 +5455,9 @@ public class com/facebook/react/uimanager/drawable/CSSBackgroundDrawable : andro
 	public fun draw (Landroid/graphics/Canvas;)V
 	public fun getAlpha ()I
 	public fun getBorderColor (I)I
-	public fun getBorderRadius (Lcom/facebook/react/uimanager/drawable/CSSBackgroundDrawable$BorderRadiusLocation;)F
-	public fun getBorderRadiusOrDefaultTo (FLcom/facebook/react/uimanager/drawable/CSSBackgroundDrawable$BorderRadiusLocation;)F
+	public fun getBorderRadius ()Lcom/facebook/react/uimanager/style/BorderRadiusStyle;
 	public fun getBorderWidthOrDefaultTo (FI)F
 	public fun getDirectionAwareBorderInsets ()Landroid/graphics/RectF;
-	public fun getFullBorderRadius ()F
 	public fun getFullBorderWidth ()F
 	public fun getOpacity ()I
 	public fun getOutline (Landroid/graphics/Outline;)V
@@ -5469,6 +5468,8 @@ public class com/facebook/react/uimanager/drawable/CSSBackgroundDrawable : andro
 	public fun paddingBoxPath ()Landroid/graphics/Path;
 	public fun setAlpha (I)V
 	public fun setBorderColor (IFF)V
+	public fun setBorderRadius (Lcom/facebook/react/uimanager/style/BorderRadiusProp;Ljava/lang/Float;)V
+	public fun setBorderRadius (Lcom/facebook/react/uimanager/style/BorderRadiusStyle;)V
 	public fun setBorderStyle (Ljava/lang/String;)V
 	public fun setBorderWidth (IF)V
 	public fun setColor (I)V
@@ -5476,23 +5477,6 @@ public class com/facebook/react/uimanager/drawable/CSSBackgroundDrawable : andro
 	public fun setRadius (F)V
 	public fun setRadius (FI)V
 	public fun setResolvedLayoutDirection (I)Z
-}
-
-public final class com/facebook/react/uimanager/drawable/CSSBackgroundDrawable$BorderRadiusLocation : java/lang/Enum {
-	public static final field BOTTOM_END Lcom/facebook/react/uimanager/drawable/CSSBackgroundDrawable$BorderRadiusLocation;
-	public static final field BOTTOM_LEFT Lcom/facebook/react/uimanager/drawable/CSSBackgroundDrawable$BorderRadiusLocation;
-	public static final field BOTTOM_RIGHT Lcom/facebook/react/uimanager/drawable/CSSBackgroundDrawable$BorderRadiusLocation;
-	public static final field BOTTOM_START Lcom/facebook/react/uimanager/drawable/CSSBackgroundDrawable$BorderRadiusLocation;
-	public static final field END_END Lcom/facebook/react/uimanager/drawable/CSSBackgroundDrawable$BorderRadiusLocation;
-	public static final field END_START Lcom/facebook/react/uimanager/drawable/CSSBackgroundDrawable$BorderRadiusLocation;
-	public static final field START_END Lcom/facebook/react/uimanager/drawable/CSSBackgroundDrawable$BorderRadiusLocation;
-	public static final field START_START Lcom/facebook/react/uimanager/drawable/CSSBackgroundDrawable$BorderRadiusLocation;
-	public static final field TOP_END Lcom/facebook/react/uimanager/drawable/CSSBackgroundDrawable$BorderRadiusLocation;
-	public static final field TOP_LEFT Lcom/facebook/react/uimanager/drawable/CSSBackgroundDrawable$BorderRadiusLocation;
-	public static final field TOP_RIGHT Lcom/facebook/react/uimanager/drawable/CSSBackgroundDrawable$BorderRadiusLocation;
-	public static final field TOP_START Lcom/facebook/react/uimanager/drawable/CSSBackgroundDrawable$BorderRadiusLocation;
-	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/uimanager/drawable/CSSBackgroundDrawable$BorderRadiusLocation;
-	public static fun values ()[Lcom/facebook/react/uimanager/drawable/CSSBackgroundDrawable$BorderRadiusLocation;
 }
 
 public abstract interface class com/facebook/react/uimanager/events/BatchEventDispatchedListener {
@@ -5782,6 +5766,97 @@ public class com/facebook/react/uimanager/layoutanimation/LayoutAnimationControl
 
 public abstract interface class com/facebook/react/uimanager/layoutanimation/LayoutAnimationListener {
 	public abstract fun onAnimationEnd ()V
+}
+
+public final class com/facebook/react/uimanager/style/BorderRadiusProp : java/lang/Enum {
+	public static final field BORDER_BOTTOM_END_RADIUS Lcom/facebook/react/uimanager/style/BorderRadiusProp;
+	public static final field BORDER_BOTTOM_LEFT_RADIUS Lcom/facebook/react/uimanager/style/BorderRadiusProp;
+	public static final field BORDER_BOTTOM_RIGHT_RADIUS Lcom/facebook/react/uimanager/style/BorderRadiusProp;
+	public static final field BORDER_BOTTOM_START_RADIUS Lcom/facebook/react/uimanager/style/BorderRadiusProp;
+	public static final field BORDER_END_END_RADIUS Lcom/facebook/react/uimanager/style/BorderRadiusProp;
+	public static final field BORDER_END_START_RADIUS Lcom/facebook/react/uimanager/style/BorderRadiusProp;
+	public static final field BORDER_RADIUS Lcom/facebook/react/uimanager/style/BorderRadiusProp;
+	public static final field BORDER_START_END_RADIUS Lcom/facebook/react/uimanager/style/BorderRadiusProp;
+	public static final field BORDER_START_START_RADIUS Lcom/facebook/react/uimanager/style/BorderRadiusProp;
+	public static final field BORDER_TOP_END_RADIUS Lcom/facebook/react/uimanager/style/BorderRadiusProp;
+	public static final field BORDER_TOP_LEFT_RADIUS Lcom/facebook/react/uimanager/style/BorderRadiusProp;
+	public static final field BORDER_TOP_RIGHT_RADIUS Lcom/facebook/react/uimanager/style/BorderRadiusProp;
+	public static final field BORDER_TOP_START_RADIUS Lcom/facebook/react/uimanager/style/BorderRadiusProp;
+	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/uimanager/style/BorderRadiusProp;
+	public static fun values ()[Lcom/facebook/react/uimanager/style/BorderRadiusProp;
+}
+
+public final class com/facebook/react/uimanager/style/BorderRadiusStyle {
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;)V
+	public synthetic fun <init> (Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ljava/util/List;)V
+	public final fun component1 ()Ljava/lang/Float;
+	public final fun component10 ()Ljava/lang/Float;
+	public final fun component11 ()Ljava/lang/Float;
+	public final fun component12 ()Ljava/lang/Float;
+	public final fun component13 ()Ljava/lang/Float;
+	public final fun component2 ()Ljava/lang/Float;
+	public final fun component3 ()Ljava/lang/Float;
+	public final fun component4 ()Ljava/lang/Float;
+	public final fun component5 ()Ljava/lang/Float;
+	public final fun component6 ()Ljava/lang/Float;
+	public final fun component7 ()Ljava/lang/Float;
+	public final fun component8 ()Ljava/lang/Float;
+	public final fun component9 ()Ljava/lang/Float;
+	public final fun copy (Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;)Lcom/facebook/react/uimanager/style/BorderRadiusStyle;
+	public static synthetic fun copy$default (Lcom/facebook/react/uimanager/style/BorderRadiusStyle;Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;ILjava/lang/Object;)Lcom/facebook/react/uimanager/style/BorderRadiusStyle;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun get (Lcom/facebook/react/uimanager/style/BorderRadiusProp;)Ljava/lang/Float;
+	public final fun getBottomEnd ()Ljava/lang/Float;
+	public final fun getBottomLeft ()Ljava/lang/Float;
+	public final fun getBottomRight ()Ljava/lang/Float;
+	public final fun getBottomStart ()Ljava/lang/Float;
+	public final fun getEndEnd ()Ljava/lang/Float;
+	public final fun getEndStart ()Ljava/lang/Float;
+	public final fun getStartEnd ()Ljava/lang/Float;
+	public final fun getStartStart ()Ljava/lang/Float;
+	public final fun getTopEnd ()Ljava/lang/Float;
+	public final fun getTopLeft ()Ljava/lang/Float;
+	public final fun getTopRight ()Ljava/lang/Float;
+	public final fun getTopStart ()Ljava/lang/Float;
+	public final fun getUniform ()Ljava/lang/Float;
+	public final fun hasRoundedBorders ()Z
+	public fun hashCode ()I
+	public final fun resolve (ILandroid/content/Context;)Lcom/facebook/react/uimanager/style/ComputedBorderRadius;
+	public final fun set (Lcom/facebook/react/uimanager/style/BorderRadiusProp;Ljava/lang/Float;)V
+	public final fun setBottomEnd (Ljava/lang/Float;)V
+	public final fun setBottomLeft (Ljava/lang/Float;)V
+	public final fun setBottomRight (Ljava/lang/Float;)V
+	public final fun setBottomStart (Ljava/lang/Float;)V
+	public final fun setEndEnd (Ljava/lang/Float;)V
+	public final fun setEndStart (Ljava/lang/Float;)V
+	public final fun setStartEnd (Ljava/lang/Float;)V
+	public final fun setStartStart (Ljava/lang/Float;)V
+	public final fun setTopEnd (Ljava/lang/Float;)V
+	public final fun setTopLeft (Ljava/lang/Float;)V
+	public final fun setTopRight (Ljava/lang/Float;)V
+	public final fun setTopStart (Ljava/lang/Float;)V
+	public final fun setUniform (Ljava/lang/Float;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/facebook/react/uimanager/style/ComputedBorderRadius {
+	public fun <init> (FFFF)V
+	public final fun component1 ()F
+	public final fun component2 ()F
+	public final fun component3 ()F
+	public final fun component4 ()F
+	public final fun copy (FFFF)Lcom/facebook/react/uimanager/style/ComputedBorderRadius;
+	public static synthetic fun copy$default (Lcom/facebook/react/uimanager/style/ComputedBorderRadius;FFFFILjava/lang/Object;)Lcom/facebook/react/uimanager/style/ComputedBorderRadius;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getBottomLeft ()F
+	public final fun getBottomRight ()F
+	public final fun getTopLeft ()F
+	public final fun getTopRight ()F
+	public final fun hasRoundedBorders ()Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
 }
 
 public class com/facebook/react/uimanager/util/ReactFindViewUtil {
@@ -7807,6 +7882,7 @@ public class com/facebook/react/views/view/ReactViewGroup : android/view/ViewGro
 	public fun setBorderColor (IFF)V
 	public fun setBorderRadius (F)V
 	public fun setBorderRadius (FI)V
+	public fun setBorderRadius (Lcom/facebook/react/uimanager/style/BorderRadiusProp;Ljava/lang/Float;)V
 	public fun setBorderStyle (Ljava/lang/String;)V
 	public fun setBorderWidth (IF)V
 	public fun setHitSlopRect (Landroid/graphics/Rect;)V
