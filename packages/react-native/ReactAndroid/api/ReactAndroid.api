@@ -5448,6 +5448,53 @@ public abstract interface class com/facebook/react/uimanager/debug/NotThreadSafe
 	public abstract fun onViewHierarchyUpdateFinished ()V
 }
 
+public class com/facebook/react/uimanager/drawable/CSSBackgroundDrawable : android/graphics/drawable/Drawable {
+	public fun <init> (Landroid/content/Context;)V
+	public fun borderBoxPath ()Landroid/graphics/Path;
+	public fun draw (Landroid/graphics/Canvas;)V
+	public fun getAlpha ()I
+	public fun getBorderColor (I)I
+	public fun getBorderRadius (Lcom/facebook/react/uimanager/drawable/CSSBackgroundDrawable$BorderRadiusLocation;)F
+	public fun getBorderRadiusOrDefaultTo (FLcom/facebook/react/uimanager/drawable/CSSBackgroundDrawable$BorderRadiusLocation;)F
+	public fun getBorderWidthOrDefaultTo (FI)F
+	public fun getDirectionAwareBorderInsets ()Landroid/graphics/RectF;
+	public fun getFullBorderRadius ()F
+	public fun getFullBorderWidth ()F
+	public fun getOpacity ()I
+	public fun getOutline (Landroid/graphics/Outline;)V
+	public fun getResolvedLayoutDirection ()I
+	public fun hasRoundedBorders ()Z
+	protected fun onBoundsChange (Landroid/graphics/Rect;)V
+	public fun onResolvedLayoutDirectionChanged (I)Z
+	public fun paddingBoxPath ()Landroid/graphics/Path;
+	public fun setAlpha (I)V
+	public fun setBorderColor (IFF)V
+	public fun setBorderStyle (Ljava/lang/String;)V
+	public fun setBorderWidth (IF)V
+	public fun setColor (I)V
+	public fun setColorFilter (Landroid/graphics/ColorFilter;)V
+	public fun setRadius (F)V
+	public fun setRadius (FI)V
+	public fun setResolvedLayoutDirection (I)Z
+}
+
+public final class com/facebook/react/uimanager/drawable/CSSBackgroundDrawable$BorderRadiusLocation : java/lang/Enum {
+	public static final field BOTTOM_END Lcom/facebook/react/uimanager/drawable/CSSBackgroundDrawable$BorderRadiusLocation;
+	public static final field BOTTOM_LEFT Lcom/facebook/react/uimanager/drawable/CSSBackgroundDrawable$BorderRadiusLocation;
+	public static final field BOTTOM_RIGHT Lcom/facebook/react/uimanager/drawable/CSSBackgroundDrawable$BorderRadiusLocation;
+	public static final field BOTTOM_START Lcom/facebook/react/uimanager/drawable/CSSBackgroundDrawable$BorderRadiusLocation;
+	public static final field END_END Lcom/facebook/react/uimanager/drawable/CSSBackgroundDrawable$BorderRadiusLocation;
+	public static final field END_START Lcom/facebook/react/uimanager/drawable/CSSBackgroundDrawable$BorderRadiusLocation;
+	public static final field START_END Lcom/facebook/react/uimanager/drawable/CSSBackgroundDrawable$BorderRadiusLocation;
+	public static final field START_START Lcom/facebook/react/uimanager/drawable/CSSBackgroundDrawable$BorderRadiusLocation;
+	public static final field TOP_END Lcom/facebook/react/uimanager/drawable/CSSBackgroundDrawable$BorderRadiusLocation;
+	public static final field TOP_LEFT Lcom/facebook/react/uimanager/drawable/CSSBackgroundDrawable$BorderRadiusLocation;
+	public static final field TOP_RIGHT Lcom/facebook/react/uimanager/drawable/CSSBackgroundDrawable$BorderRadiusLocation;
+	public static final field TOP_START Lcom/facebook/react/uimanager/drawable/CSSBackgroundDrawable$BorderRadiusLocation;
+	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/uimanager/drawable/CSSBackgroundDrawable$BorderRadiusLocation;
+	public static fun values ()[Lcom/facebook/react/uimanager/drawable/CSSBackgroundDrawable$BorderRadiusLocation;
+}
+
 public abstract interface class com/facebook/react/uimanager/events/BatchEventDispatchedListener {
 	public abstract fun onBatchEventDispatched ()V
 }
@@ -7672,8 +7719,6 @@ public final class com/facebook/react/views/unimplementedview/ReactUnimplemented
 
 public final class com/facebook/react/views/view/ColorUtil {
 	public static final field INSTANCE Lcom/facebook/react/views/view/ColorUtil;
-	public static final fun getOpacityFromColor (I)I
-	public static final fun multiplyColorAlpha (II)I
 	public static final fun normalize (DDDD)I
 }
 
@@ -7706,49 +7751,8 @@ public class com/facebook/react/views/view/ReactDrawableHelper {
 	public static fun createDrawableFromJSDescription (Landroid/content/Context;Lcom/facebook/react/bridge/ReadableMap;)Landroid/graphics/drawable/Drawable;
 }
 
-public class com/facebook/react/views/view/ReactViewBackgroundDrawable : android/graphics/drawable/Drawable {
+public class com/facebook/react/views/view/ReactViewBackgroundDrawable : com/facebook/react/uimanager/drawable/CSSBackgroundDrawable {
 	public fun <init> (Landroid/content/Context;)V
-	public fun draw (Landroid/graphics/Canvas;)V
-	public fun getAlpha ()I
-	public fun getBorderColor (I)I
-	public fun getBorderRadius (Lcom/facebook/react/views/view/ReactViewBackgroundDrawable$BorderRadiusLocation;)F
-	public fun getBorderRadiusOrDefaultTo (FLcom/facebook/react/views/view/ReactViewBackgroundDrawable$BorderRadiusLocation;)F
-	public fun getBorderWidthOrDefaultTo (FI)F
-	public fun getDirectionAwareBorderInsets ()Landroid/graphics/RectF;
-	public fun getFullBorderRadius ()F
-	public fun getFullBorderWidth ()F
-	public fun getOpacity ()I
-	public fun getOutline (Landroid/graphics/Outline;)V
-	public fun getResolvedLayoutDirection ()I
-	public fun hasRoundedBorders ()Z
-	protected fun onBoundsChange (Landroid/graphics/Rect;)V
-	public fun onResolvedLayoutDirectionChanged (I)Z
-	public fun setAlpha (I)V
-	public fun setBorderColor (IFF)V
-	public fun setBorderStyle (Ljava/lang/String;)V
-	public fun setBorderWidth (IF)V
-	public fun setColor (I)V
-	public fun setColorFilter (Landroid/graphics/ColorFilter;)V
-	public fun setRadius (F)V
-	public fun setRadius (FI)V
-	public fun setResolvedLayoutDirection (I)Z
-}
-
-public final class com/facebook/react/views/view/ReactViewBackgroundDrawable$BorderRadiusLocation : java/lang/Enum {
-	public static final field BOTTOM_END Lcom/facebook/react/views/view/ReactViewBackgroundDrawable$BorderRadiusLocation;
-	public static final field BOTTOM_LEFT Lcom/facebook/react/views/view/ReactViewBackgroundDrawable$BorderRadiusLocation;
-	public static final field BOTTOM_RIGHT Lcom/facebook/react/views/view/ReactViewBackgroundDrawable$BorderRadiusLocation;
-	public static final field BOTTOM_START Lcom/facebook/react/views/view/ReactViewBackgroundDrawable$BorderRadiusLocation;
-	public static final field END_END Lcom/facebook/react/views/view/ReactViewBackgroundDrawable$BorderRadiusLocation;
-	public static final field END_START Lcom/facebook/react/views/view/ReactViewBackgroundDrawable$BorderRadiusLocation;
-	public static final field START_END Lcom/facebook/react/views/view/ReactViewBackgroundDrawable$BorderRadiusLocation;
-	public static final field START_START Lcom/facebook/react/views/view/ReactViewBackgroundDrawable$BorderRadiusLocation;
-	public static final field TOP_END Lcom/facebook/react/views/view/ReactViewBackgroundDrawable$BorderRadiusLocation;
-	public static final field TOP_LEFT Lcom/facebook/react/views/view/ReactViewBackgroundDrawable$BorderRadiusLocation;
-	public static final field TOP_RIGHT Lcom/facebook/react/views/view/ReactViewBackgroundDrawable$BorderRadiusLocation;
-	public static final field TOP_START Lcom/facebook/react/views/view/ReactViewBackgroundDrawable$BorderRadiusLocation;
-	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/views/view/ReactViewBackgroundDrawable$BorderRadiusLocation;
-	public static fun values ()[Lcom/facebook/react/views/view/ReactViewBackgroundDrawable$BorderRadiusLocation;
 }
 
 public class com/facebook/react/views/view/ReactViewBackgroundManager {
