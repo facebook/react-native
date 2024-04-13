@@ -5219,10 +5219,10 @@ flow-api-translator@0.20.1:
     hermes-parser "0.20.1"
     hermes-transform "0.20.1"
 
-flow-bin@^0.232.0:
-  version "0.232.0"
-  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.232.0.tgz#80587406cbb3a74577151ad27c6058b2a468c215"
-  integrity sha512-7uOycTN+Ys2nYRJRig5S2yN41ZokW7bC4K1GC4nCDa/3FAZLP5/mQbee6UjxFBP9MC4yUYi17bdFTFzCH8bHeg==
+flow-bin@^0.233.0:
+  version "0.233.0"
+  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.233.0.tgz#e31951c81d3ec590e1cbfd96e540f6dd2459554c"
+  integrity sha512-BInTgW8v6xdWzVcItgKKUYCacheMw78Xrrn0Ziii5lN+vf/RKmvVX9mFHuOSN1zawZuq7GpqmT6oIS/oQuOAQg==
 
 flow-enums-runtime@^0.0.6:
   version "0.0.6"
