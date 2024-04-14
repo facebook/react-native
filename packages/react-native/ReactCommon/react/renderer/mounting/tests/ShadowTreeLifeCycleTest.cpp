@@ -160,8 +160,7 @@ static void testShadowNodeTreeLifeCycle(
                    << getDebugDescription(
                           rebuiltViewTree.getRootStubView(), {});
 
-        LOG(ERROR) << "Mutations:"
-                   << "\n"
+        LOG(ERROR) << "Mutations:" << "\n"
                    << getDebugDescription(mutations, {});
 #endif
 
@@ -312,8 +311,7 @@ static void testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
                    << getDebugDescription(
                           rebuiltViewTree.getRootStubView(), {});
 
-        LOG(ERROR) << "Mutations:"
-                   << "\n"
+        LOG(ERROR) << "Mutations:" << "\n"
                    << getDebugDescription(mutations, {});
 #endif
 

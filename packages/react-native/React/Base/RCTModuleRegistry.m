@@ -36,7 +36,7 @@
 
   RCTBridge *bridge = _bridge;
   if (bridge) {
-    module = [bridge moduleForName:[NSString stringWithUTF8String:moduleName] lazilyLoadIfNecessary:lazilyLoad];
+    module = [bridge moduleForName: [NSString stringWithUTF8String:moduleName] lazilyLoadIfNecessary:lazilyLoad];
   }
 
   id<RCTTurboModuleRegistry> turboModuleRegistry = _turboModuleRegistry;

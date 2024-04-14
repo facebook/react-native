@@ -115,8 +115,7 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
     _launchOptions = [launchOptions copy];
 
     __weak RCTHost *weakSelf = self;
-    auto bundleURLGetter = ^NSURL *()
-    {
+    auto bundleURLGetter = ^NSURL *() {
       RCTHost *strongSelf = weakSelf;
       if (!strongSelf) {
         return nil;
@@ -129,8 +128,7 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
       [weakSelf _setBundleURL:bundleURL_];
     };
 
-    auto defaultBundleURLGetter = ^NSURL *()
-    {
+    auto defaultBundleURLGetter = ^NSURL *() {
       RCTHost *strongSelf = weakSelf;
       if (!strongSelf || !strongSelf->_bundleURLProvider) {
         return nil;

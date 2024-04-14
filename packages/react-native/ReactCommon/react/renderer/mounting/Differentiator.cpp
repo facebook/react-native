@@ -1087,8 +1087,8 @@ static void calculateShadowViewMutationsV2(
       DEBUG_LOGS({
         LOG(ERROR) << "Differ Branch 1.1: Tags Different: ["
                    << oldChildPair.shadowView.tag << "] ["
-                   << newChildPair.shadowView.tag << "]"
-                   << " with parent: [" << parentShadowView.tag << "]";
+                   << newChildPair.shadowView.tag << "]" << " with parent: ["
+                   << parentShadowView.tag << "]";
       });
 
       // Totally different nodes, updating is impossible.
@@ -1152,8 +1152,8 @@ static void calculateShadowViewMutationsV2(
 
       DEBUG_LOGS({
         LOG(ERROR) << "Differ Branch 2: Deleting Tag/Tree: ["
-                   << oldChildPair.shadowView.tag << "]"
-                   << " with parent: [" << parentShadowView.tag << "]";
+                   << oldChildPair.shadowView.tag << "]" << " with parent: ["
+                   << parentShadowView.tag << "]";
       });
 
       if (!oldChildPair.isConcreteView) {
@@ -1214,8 +1214,8 @@ static void calculateShadowViewMutationsV2(
 
       DEBUG_LOGS({
         LOG(ERROR) << "Differ Branch 3: Creating Tag/Tree: ["
-                   << newChildPair.shadowView.tag << "]"
-                   << " with parent: [" << parentShadowView.tag << "]";
+                   << newChildPair.shadowView.tag << "]" << " with parent: ["
+                   << parentShadowView.tag << "]";
       });
 
       if (!newChildPair.isConcreteView) {

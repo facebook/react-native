@@ -49,7 +49,7 @@ class DummyShadowTreeDelegate : public ShadowTreeDelegate {
 
   void shadowTreeDidFinishTransaction(
       MountingCoordinator::Shared mountingCoordinator,
-      bool mountSynchronously) const override{};
+      bool mountSynchronously) const override {};
 };
 
 namespace {

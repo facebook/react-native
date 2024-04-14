@@ -191,8 +191,8 @@ void HostAgent::sendInfoLogEntry(
               "timestamp",
               duration_cast<milliseconds>(
                   system_clock::now().time_since_epoch())
-                  .count())("source", "other")(
-              "level", "info")("text", text)("args", std::move(argsArray)))));
+                  .count())("source", "other")("level", "info")("text", text)(
+              "args", std::move(argsArray)))));
 }
 
 void HostAgent::setCurrentInstanceAgent(

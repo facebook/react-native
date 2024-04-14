@@ -40,8 +40,8 @@ std::string jsonError(
   }
   return folly::toJson(
       (id ? folly::dynamic::object("id", *id)
-          : folly::dynamic::object(
-                "id", nullptr))("error", std::move(dynamicError)));
+          : folly::dynamic::object("id", nullptr))(
+          "error", std::move(dynamicError)));
 }
 
 std::string jsonResult(RequestId id, const folly::dynamic& result) {

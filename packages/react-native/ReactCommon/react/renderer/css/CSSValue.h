@@ -120,7 +120,8 @@ class CSSValueVariant {
  public:
   using Keyword = typename PackedKeywordSet<AllowedTypesT...>::Type;
 
-  constexpr CSSValueVariant() requires(canRepresent<CSSWideKeyword>())
+  constexpr CSSValueVariant()
+    requires(canRepresent<CSSWideKeyword>())
       : CSSValueVariant(CSSValueType::CSSWideKeyword, CSSWideKeyword::Unset) {}
 
   static constexpr CSSValueVariant cssWideKeyword(CSSWideKeyword keyword) {
@@ -129,30 +130,33 @@ class CSSValueVariant {
   }
 
   template <CSSKeywordSet KeywordT>
-  static constexpr CSSValueVariant keyword(KeywordT keyword) requires(
-      canRepresent<KeywordT>()) {
+  static constexpr CSSValueVariant keyword(KeywordT keyword)
+    requires(canRepresent<KeywordT>())
+  {
     return CSSValueVariant(CSSValueType::Keyword, KeywordT{keyword});
   }
 
-  static constexpr CSSValueVariant length(
-      float value,
-      CSSLengthUnit unit) requires(canRepresent<CSSLength>()) {
+  static constexpr CSSValueVariant length(float value, CSSLengthUnit unit)
+    requires(canRepresent<CSSLength>())
+  {
     return CSSValueVariant(CSSValueType::Length, CSSLength{value, unit});
   }
 
-  static constexpr CSSValueVariant number(float value) requires(
-      canRepresent<CSSNumber>()) {
+  static constexpr CSSValueVariant number(float value)
+    requires(canRepresent<CSSNumber>())
+  {
     return CSSValueVariant(CSSValueType::Number, CSSNumber{value});
   }
 
-  static constexpr CSSValueVariant percentage(float value) requires(
-      canRepresent<CSSPercentage>()) {
+  static constexpr CSSValueVariant percentage(float value)
+    requires(canRepresent<CSSPercentage>())
+  {
     return CSSValueVariant(CSSValueType::Percentage, CSSPercentage{value});
   }
 
-  static constexpr CSSValueVariant ratio(
-      float numerator,
-      float denominator) requires(canRepresent<CSSRatio>()) {
+  static constexpr CSSValueVariant ratio(float numerator, float denominator)
+    requires(canRepresent<CSSRatio>())
+  {
     return CSSValueVariant(
         CSSValueType::Ratio, CSSRatio{numerator, denominator});
   }
@@ -162,33 +166,44 @@ class CSSValueVariant {
   }
 
   constexpr CSSWideKeyword getCSSWideKeyword() const
-      requires(canRepresent<CSSWideKeyword>()) {
+    requires(canRepresent<CSSWideKeyword>())
+  {
     return getIf<CSSValueType::CSSWideKeyword, CSSWideKeyword>();
   }
 
   constexpr Keyword getKeyword() const
-      requires(hasKeywordSet<AllowedTypesT...>()) {
+    requires(hasKeywordSet<AllowedTypesT...>())
+  {
     return getIf<CSSValueType::Keyword, Keyword>();
   }
 
-  constexpr CSSLength getLength() const requires(canRepresent<CSSLength>()) {
+  constexpr CSSLength getLength() const
+    requires(canRepresent<CSSLength>())
+  {
     return getIf<CSSValueType::Length, CSSLength>();
   }
 
-  constexpr CSSNumber getNumber() const requires(canRepresent<CSSNumber>()) {
+  constexpr CSSNumber getNumber() const
+    requires(canRepresent<CSSNumber>())
+  {
     return getIf<CSSValueType::Number, CSSNumber>();
   }
 
   constexpr CSSPercentage getPercentage() const
-      requires(canRepresent<CSSPercentage>()) {
+    requires(canRepresent<CSSPercentage>())
+  {
     return getIf<CSSValueType::Percentage, CSSPercentage>();
   }
 
-  constexpr CSSRatio getRatio() const requires(canRepresent<CSSRatio>()) {
+  constexpr CSSRatio getRatio() const
+    requires(canRepresent<CSSRatio>())
+  {
     return getIf<CSSValueType::Ratio, CSSRatio>();
   }
 
-  constexpr operator bool() const requires(canRepresent<CSSWideKeyword>()) {
+  constexpr operator bool() const
+    requires(canRepresent<CSSWideKeyword>())
+  {
     return type() != CSSValueType::CSSWideKeyword ||
         getCSSWideKeyword() != CSSWideKeyword::Unset;
   }

@@ -494,7 +494,7 @@ class JSI_EXPORT PropNameID : public Pointer {
 
   // Creates a vector of given PropNameIDs.
   template <size_t N>
-  static std::vector<PropNameID> names(PropNameID(&&propertyNames)[N]);
+  static std::vector<PropNameID> names(PropNameID (&&propertyNames)[N]);
 
   /// Copies the data in a PropNameID as utf8 into a C++ string.
   std::string utf8(Runtime& runtime) const {

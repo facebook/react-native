@@ -165,7 +165,7 @@ bool isTurboModuleInstance(id module)
 {
   return isTurboModuleClass([module class]);
 }
-}
+} // namespace
 
 // Fallback lookup since RCT class prefix is sometimes stripped in the existing NativeModule system.
 // This will be removed in the future.
@@ -578,9 +578,8 @@ typedef struct {
         if (!strongSelf) {
           return;
         }
-        module = [strongSelf _createAndSetUpObjCModule:moduleClass
-                                            moduleName:moduleName
-                                              moduleId:moduleHolder->getModuleId()];
+        module = [strongSelf _createAndSetUpObjCModule:moduleClass moduleName:moduleName moduleId:moduleHolder
+                      ->getModuleId()];
       };
 
       if ([self _requiresMainQueueSetup:moduleClass]) {

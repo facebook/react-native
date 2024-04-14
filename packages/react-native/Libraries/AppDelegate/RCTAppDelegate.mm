@@ -260,13 +260,11 @@
                                                    turboModuleEnabled:self.turboModuleEnabled
                                                     bridgelessEnabled:self.bridgelessEnabled];
 
-  configuration.createRootViewWithBridge = ^UIView *(RCTBridge *bridge, NSString *moduleName, NSDictionary *initProps)
-  {
+  configuration.createRootViewWithBridge = ^UIView *(RCTBridge *bridge, NSString *moduleName, NSDictionary *initProps) {
     return [weakSelf createRootViewWithBridge:bridge moduleName:moduleName initProps:initProps];
   };
 
-  configuration.createBridgeWithDelegate = ^RCTBridge *(id<RCTBridgeDelegate> delegate, NSDictionary *launchOptions)
-  {
+  configuration.createBridgeWithDelegate = ^RCTBridge *(id<RCTBridgeDelegate> delegate, NSDictionary *launchOptions) {
     return [weakSelf createBridgeWithDelegate:delegate launchOptions:launchOptions];
   };
 
