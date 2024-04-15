@@ -929,7 +929,8 @@ static void justifyMainAxis(
       node->style().computeFlexEndPaddingAndBorder(
           mainAxis, direction, ownerWidth);
 
-  const float gap = node->style().computeGapForAxis(mainAxis);
+  const float gap =
+      node->style().computeGapForAxis(mainAxis, availableInnerMainDim);
   // If we are using "at most" rules in the main axis, make sure that
   // remainingFreeSpace is 0 when min main dimension is not given
   if (sizingModeMainDim == SizingMode::FitContent &&
@@ -1380,7 +1381,8 @@ static void calculateLayoutImpl(
       generationCount);
 
   if (childCount > 1) {
-    totalMainDim += node->style().computeGapForAxis(mainAxis) *
+    totalMainDim +=
+        node->style().computeGapForAxis(mainAxis, availableInnerMainDim) *
         static_cast<float>(childCount - 1);
   }
 
@@ -1404,7 +1406,8 @@ static void calculateLayoutImpl(
   // Accumulated cross dimensions of all lines so far.
   float totalLineCrossDim = 0;
 
-  const float crossAxisGap = node->style().computeGapForAxis(crossAxis);
+  const float crossAxisGap =
+      node->style().computeGapForAxis(crossAxis, availableInnerCrossDim);
 
   // Max main dimension of all the lines.
   float maxLineMainDim = 0;
