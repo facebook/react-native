@@ -110,7 +110,7 @@ public class TextLayoutManagerMapBuffer {
   private static final LruCache<ReadableMapBuffer, Spannable> sSpannableCache =
       new LruCache<>(spannableCacheSize);
 
-  public static void setCachedSpannabledForTag(int reactTag, @NonNull Spannable sp) {
+  public static void setCachedSpannableForTag(int reactTag, @NonNull Spannable sp) {
     if (ENABLE_MEASURE_LOGGING) {
       FLog.e(TAG, "Set cached spannable for tag[" + reactTag + "]: " + sp.toString());
     }

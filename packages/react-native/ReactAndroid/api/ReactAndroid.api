@@ -7372,7 +7372,7 @@ public class com/facebook/react/views/text/TextLayoutManager {
 	public static fun isRTL (Lcom/facebook/react/bridge/ReadableMap;)Z
 	public static fun measureLines (Landroid/content/Context;Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/ReadableMap;F)Lcom/facebook/react/bridge/WritableArray;
 	public static fun measureText (Landroid/content/Context;Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/ReadableMap;FLcom/facebook/yoga/YogaMeasureMode;FLcom/facebook/yoga/YogaMeasureMode;Lcom/facebook/react/views/text/ReactTextViewManagerCallback;[F)J
-	public static fun setCachedSpannabledForTag (ILandroid/text/Spannable;)V
+	public static fun setCachedSpannableForTag (ILandroid/text/Spannable;)V
 }
 
 public class com/facebook/react/views/text/TextLayoutManagerMapBuffer {
@@ -7398,7 +7398,7 @@ public class com/facebook/react/views/text/TextLayoutManagerMapBuffer {
 	public static fun isRTL (Lcom/facebook/react/common/mapbuffer/MapBuffer;)Z
 	public static fun measureLines (Landroid/content/Context;Lcom/facebook/react/common/mapbuffer/MapBuffer;Lcom/facebook/react/common/mapbuffer/MapBuffer;F)Lcom/facebook/react/bridge/WritableArray;
 	public static fun measureText (Landroid/content/Context;Lcom/facebook/react/common/mapbuffer/MapBuffer;Lcom/facebook/react/common/mapbuffer/MapBuffer;FLcom/facebook/yoga/YogaMeasureMode;FLcom/facebook/yoga/YogaMeasureMode;Lcom/facebook/react/views/text/ReactTextViewManagerCallback;[F)J
-	public static fun setCachedSpannabledForTag (ILandroid/text/Spannable;)V
+	public static fun setCachedSpannableForTag (ILandroid/text/Spannable;)V
 }
 
 public final class com/facebook/react/views/text/TextTransform : java/lang/Enum {
