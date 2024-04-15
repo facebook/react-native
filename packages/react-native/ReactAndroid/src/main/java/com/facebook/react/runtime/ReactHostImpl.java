@@ -469,7 +469,11 @@ public class ReactHostImpl implements ReactHost {
 
   @DoNotStrip
   private void setPausedInDebuggerMessage(@Nullable String message) {
-    // TODO(moti): Implement this
+    if (message == null) {
+      mDevSupportManager.hidePausedInDebuggerOverlay();
+    } else {
+      mDevSupportManager.showPausedInDebuggerOverlay(message);
+    }
   }
 
   /**
