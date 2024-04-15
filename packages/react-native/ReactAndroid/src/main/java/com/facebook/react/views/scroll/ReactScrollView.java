@@ -28,6 +28,7 @@ import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.OverScroller;
 import android.widget.ScrollView;
+import androidx.core.widget.NestedScrollView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
@@ -62,7 +63,7 @@ import java.util.List;
  * <p>ReactScrollView only supports vertical scrolling. For horizontal scrolling, use {@link
  * ReactHorizontalScrollView}.
  */
-public class ReactScrollView extends ScrollView
+public class ReactScrollView extends NestedScrollView
     implements ReactClippingViewGroup,
         ViewGroup.OnHierarchyChangeListener,
         View.OnLayoutChangeListener,
@@ -156,7 +157,7 @@ public class ReactScrollView extends ScrollView
     if (!sTriedToGetScrollerField) {
       sTriedToGetScrollerField = true;
       try {
-        sScrollerField = ScrollView.class.getDeclaredField("mScroller");
+        sScrollerField = NestedScrollView.class.getDeclaredField("mScroller");
         sScrollerField.setAccessible(true);
       } catch (NoSuchFieldException e) {
         FLog.w(
@@ -317,7 +318,7 @@ public class ReactScrollView extends ScrollView
   }
 
   @Override
-  protected void onAttachedToWindow() {
+  public void onAttachedToWindow() {
     super.onAttachedToWindow();
     if (mRemoveClippedSubviews) {
       updateClippingRect();
