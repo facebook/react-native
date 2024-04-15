@@ -23,6 +23,7 @@
 #import "RCTJSThread.h"
 #import "RCTLog.h"
 #import "RCTModuleData.h"
+#import "RCTPausedInDebuggerOverlayController.h"
 #import "RCTPerformanceLogger.h"
 #import "RCTProfile.h"
 #import "RCTReloadCommand.h"
@@ -191,7 +192,10 @@ void RCTUIManagerSetDispatchAccessibilityManagerInitOntoMain(BOOL enabled)
 
 class RCTBridgeHostTargetDelegate : public facebook::react::jsinspector_modern::HostTargetDelegate {
  public:
-  RCTBridgeHostTargetDelegate(RCTBridge *bridge) : bridge_(bridge) {}
+  RCTBridgeHostTargetDelegate(RCTBridge *bridge)
+      : bridge_(bridge), pauseOverlayController_([[RCTPausedInDebuggerOverlayController alloc] init])
+  {
+  }
 
   void onReload(const PageReloadRequest &request) override
   {
@@ -199,13 +203,43 @@ class RCTBridgeHostTargetDelegate : public facebook::react::jsinspector_modern::
     [bridge_ reload];
   }
 
-  void onSetPausedInDebuggerMessage(const OverlaySetPausedInDebuggerMessageRequest &) override
+  void onSetPausedInDebuggerMessage(const OverlaySetPausedInDebuggerMessageRequest &request) override
   {
-    // TODO(moti): Implement this
+    RCTAssertMainQueue();
+    if (!request.message.has_value()) {
+      [pauseOverlayController_ hide];
+    } else {
+      __weak RCTBridge *bridgeWeak = bridge_;
+      [pauseOverlayController_ showWithMessage:@(request.message.value().c_str())
+          onResume:^{
+            RCTAssertMainQueue();
+            RCTBridge *bridgeStrong = bridgeWeak;
+            if (!bridgeStrong) {
+              return;
+            }
+            if (!bridgeStrong.inspectorTarget) {
+              return;
+            }
+            bridgeStrong.inspectorTarget->sendCommand(facebook::react::jsinspector_modern::HostCommand::DebuggerResume);
+          }
+          onStepOver:^{
+            RCTAssertMainQueue();
+            RCTBridge *bridgeStrong = bridgeWeak;
+            if (!bridgeStrong) {
+              return;
+            }
+            if (!bridgeStrong.inspectorTarget) {
+              return;
+            }
+            bridgeStrong.inspectorTarget->sendCommand(
+                facebook::react::jsinspector_modern::HostCommand::DebuggerStepOver);
+          }];
+    }
   }
 
  private:
   __weak RCTBridge *bridge_;
+  RCTPausedInDebuggerOverlayController *pauseOverlayController_;
 };
 
 @interface RCTBridge () <RCTReloadListener>
