@@ -77,8 +77,8 @@
 
   // For the "Step Over" button, you can use the "Forward" bar button item icon
   UIButton *stepOverButton = [UIButton buttonWithType:UIButtonTypeCustom];
-  [stepOverButton setImage:[UIImage systemImageNamed:@"hand.point.up.left.and.text.fill"]
-                  forState:UIControlStateNormal];
+  // @nocommit should we use a more unique name instead of ic_step_over?
+  [stepOverButton setImage:[UIImage imageNamed:@"ic_step_over"] forState:UIControlStateNormal];
   [stepOverButton addTarget:self action:@selector(stepOverButtonTapped) forControlEvents:UIControlEventTouchUpInside];
   [NSLayoutConstraint activateConstraints:@[
     [stepOverButton.widthAnchor constraintEqualToConstant:48],

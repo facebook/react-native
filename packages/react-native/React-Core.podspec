@@ -104,6 +104,7 @@ Pod::Spec.new do |s|
     ss.dependency "React-Core/Default", version
     ss.dependency "React-Core/RCTWebSocket", version
     ss.private_header_files = "React/Inspector/RCTCxx*.h"
+    ss.resource_bundle = { "RCTDevSupportAssets" => ["React/DevSupport/Assets.xcassets"] }
   end
 
   s.subspec "RCTWebSocket" do |ss|
