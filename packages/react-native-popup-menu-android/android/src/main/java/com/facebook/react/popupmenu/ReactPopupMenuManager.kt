@@ -62,10 +62,10 @@ public class ReactPopupMenuManager :
         MapBuilder.builder<String, Any>()
             .put(
                 PopupMenuSelectionEvent.EVENT_NAME,
-                mapOf("topPopupMenuSelectionChange" to "onPopupMenuSelectionChange"))
+                mapOf("registrationName" to "onPopupMenuSelectionChange"))
             .put(
                 PopupMenuDismissEvent.EVENT_NAME,
-                mapOf("topPopupMenuDismiss" to "onPopupMenuDismiss"))
+                mapOf("registrationName" to "onPopupMenuDismiss"))
             .build()
   }
 }

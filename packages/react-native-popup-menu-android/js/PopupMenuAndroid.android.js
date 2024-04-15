@@ -71,8 +71,8 @@ export default function PopupMenuAndroid({
   return (
     <PopupMenuAndroidNativeComponent
       ref={nativeRef}
-      onSelectionChange={_onSelectionChange}
-      onPopupDismiss={_onPopupDismiss}
+      onPopupMenuSelectionChange={_onSelectionChange}
+      onPopupMenuDismiss={_onPopupDismiss}
       menuItems={menuItems}>
       {children}
     </PopupMenuAndroidNativeComponent>
