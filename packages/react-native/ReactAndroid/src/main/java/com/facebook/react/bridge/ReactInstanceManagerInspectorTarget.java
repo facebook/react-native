@@ -40,6 +40,10 @@ public class ReactInstanceManagerInspectorTarget implements AutoCloseable {
 
   private native HybridData initHybrid(Executor executor, TargetDelegate delegate);
 
+  public native void sendDebuggerResumeCommand();
+
+  public native void sendDebuggerStepOverCommand();
+
   public void close() {
     mHybridData.resetNative();
   }

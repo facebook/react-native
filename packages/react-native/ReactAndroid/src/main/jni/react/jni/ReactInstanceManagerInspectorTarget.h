@@ -44,6 +44,9 @@ class ReactInstanceManagerInspectorTarget
           ReactInstanceManagerInspectorTarget::TargetDelegate::javaobject>
           delegate);
 
+  void sendDebuggerResumeCommand();
+  void sendDebuggerStepOverCommand();
+
   static void registerNatives();
 
   jsinspector_modern::HostTarget* getInspectorTarget();
