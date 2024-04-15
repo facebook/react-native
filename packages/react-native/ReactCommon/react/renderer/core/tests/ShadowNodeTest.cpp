@@ -269,7 +269,7 @@ TEST_F(ShadowNodeTest, handleState) {
       traits);
 
   TestShadowNode::ConcreteState::Shared _state =
-      std::static_pointer_cast<TestShadowNode::ConcreteState const>(
+      std::static_pointer_cast<const TestShadowNode::ConcreteState>(
           initialState);
   _state->updateState(TestState());
 
@@ -293,7 +293,7 @@ TEST_F(ShadowNodeTest, testCloneTree) {
   newTraits.set(ShadowNodeTraits::Trait::ClonedByNativeStateUpdate);
   auto rootNode = nodeA_->cloneTree(
       family,
-      [newTraits](ShadowNode const& oldShadowNode) {
+      [newTraits](const ShadowNode& oldShadowNode) {
         return oldShadowNode.clone({.traits = newTraits});
       },
       newTraits);
@@ -304,7 +304,7 @@ TEST_F(ShadowNodeTest, testCloneTree) {
   EXPECT_FALSE(rootNode->getChildren()[0]->getTraits().check(
       ShadowNodeTraits::Trait::ClonedByNativeStateUpdate));
 
-  auto const& firstLevelChild = *rootNode->getChildren()[1];
+  const auto& firstLevelChild = *rootNode->getChildren()[1];
 
   EXPECT_TRUE(firstLevelChild.getTraits().check(
       ShadowNodeTraits::Trait::ClonedByNativeStateUpdate));
@@ -312,7 +312,7 @@ TEST_F(ShadowNodeTest, testCloneTree) {
   EXPECT_FALSE(firstLevelChild.getChildren()[1]->getTraits().check(
       ShadowNodeTraits::Trait::ClonedByNativeStateUpdate));
 
-  auto const& secondLevelchild = *firstLevelChild.getChildren()[0];
+  const auto& secondLevelchild = *firstLevelChild.getChildren()[0];
 
   EXPECT_TRUE(secondLevelchild.getTraits().check(
       ShadowNodeTraits::Trait::ClonedByNativeStateUpdate));

@@ -110,8 +110,8 @@ T convertRawProp(
     const PropsParserContext& context,
     const RawProps& rawProps,
     const char* name,
-    T const& sourceValue,
-    U const& defaultValue,
+    const T& sourceValue,
+    const U& defaultValue,
     const char* namePrefix = nullptr,
     const char* nameSuffix = nullptr) {
   const auto* rawValue = rawProps.at(name, namePrefix, nameSuffix);

@@ -313,7 +313,7 @@ const ShadowNodeFamily& ShadowNode::getFamily() const {
 
 ShadowNode::Unshared ShadowNode::cloneTree(
     const ShadowNodeFamily& shadowNodeFamily,
-    const std::function<ShadowNode::Unshared(ShadowNode const& oldShadowNode)>&
+    const std::function<ShadowNode::Unshared(const ShadowNode& oldShadowNode)>&
         callback,
     ShadowNodeTraits traits) const {
   auto ancestors = shadowNodeFamily.getAncestors(*this);

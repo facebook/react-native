@@ -101,7 +101,7 @@ class ShadowNode : public Sealable,
    */
   Unshared cloneTree(
       const ShadowNodeFamily& shadowNodeFamily,
-      const std::function<Unshared(ShadowNode const& oldShadowNode)>& callback,
+      const std::function<Unshared(const ShadowNode& oldShadowNode)>& callback,
       ShadowNodeTraits traits = {}) const;
 
 #pragma mark - Getters

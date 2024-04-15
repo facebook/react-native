@@ -164,7 +164,7 @@ class StackingContextTest : public ::testing::Test {
   }
 
   void testViewTree_(
-      const std::function<void(StubViewTree const& viewTree)>& callback) {
+      const std::function<void(const StubViewTree& viewTree)>& callback) {
     rootShadowNode_->layoutIfNeeded();
 
     callback(buildStubViewTreeUsingDifferentiator(*rootShadowNode_));

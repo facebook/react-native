@@ -182,7 +182,7 @@ void StubViewTree::mutate(const ShadowViewMutationList& mutations) {
           STUB_VIEW_LOG({
             std::string strChildList = "";
             int i = 0;
-            for (auto const& child : parentStubView->children) {
+            for (const auto& child : parentStubView->children) {
               strChildList.append(std::to_string(i));
               strChildList.append(":");
               strChildList.append(std::to_string(child->tag));

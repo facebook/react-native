@@ -121,7 +121,7 @@ static void progressStateIfNecessary(
       continue;
     }
 
-    auto const& baseChildNode = *(*baseChildNodeIterator);
+    const auto& baseChildNode = *(*baseChildNodeIterator);
 
     if (!baseChildNode.getTraits().check(
             ShadowNodeTraits::Trait::ClonedByNativeStateUpdate)) {
@@ -176,7 +176,7 @@ static ShadowNode::Unshared progressState(const ShadowNode& shadowNode) {
 
   return shadowNode.clone({
       ShadowNodeFragment::propsPlaceholder(),
-      areChildrenChanged ? std::make_shared<ShadowNode::ListOfShared const>(
+      areChildrenChanged ? std::make_shared<const ShadowNode::ListOfShared>(
                                std::move(newChildren))
                          : ShadowNodeFragment::childrenPlaceholder(),
       isStateChanged ? newState : ShadowNodeFragment::statePlaceholder(),
@@ -263,7 +263,7 @@ static ShadowNode::Unshared progressState(
 
   return shadowNode.clone({
       ShadowNodeFragment::propsPlaceholder(),
-      areChildrenChanged ? std::make_shared<ShadowNode::ListOfShared const>(
+      areChildrenChanged ? std::make_shared<const ShadowNode::ListOfShared>(
                                std::move(newChildren))
                          : ShadowNodeFragment::childrenPlaceholder(),
       isStateChanged ? newState : ShadowNodeFragment::statePlaceholder(),

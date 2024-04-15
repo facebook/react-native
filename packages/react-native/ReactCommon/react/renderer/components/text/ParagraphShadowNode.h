@@ -97,7 +97,7 @@ class ParagraphShadowNode final : public ConcreteViewShadowNode<
    */
   void updateStateIfNeeded(const Content& content);
 
-  std::shared_ptr<TextLayoutManager const> textLayoutManager_;
+  std::shared_ptr<const TextLayoutManager> textLayoutManager_;
 
   /*
    * Cached content of the subtree started from the node.
