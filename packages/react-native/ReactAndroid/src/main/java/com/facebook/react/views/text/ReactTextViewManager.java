@@ -177,9 +177,7 @@ public class ReactTextViewManager
     view.setSpanned(spanned);
 
     float minimumFontSize = (float) paragraphAttributes.getDouble(TextLayoutManagerMapBuffer.PA_KEY_MINIMUM_FONT_SIZE);
-    float maximumFontSize = (float) paragraphAttributes.getDouble(TextLayoutManagerMapBuffer.PA_KEY_MAXIMUM_FONT_SIZE);
     view.setMinimumFontSize(minimumFontSize);
-    view.setMaximumFontSize(maximumFontSize);
 
     int textBreakStrategy =
         TextAttributeProps.getTextBreakStrategy(

@@ -389,7 +389,6 @@ public class TextLayoutManagerMapBuffer {
     float height,
     YogaMeasureMode heightYogaMeasureMode,
     double minimumFontSizeAttr,
-    double maximumFontSizeAttr,
     int maximumNumberOfLines,
     boolean includeFontPadding,
     int textBreakStrategy,
@@ -475,9 +474,6 @@ public class TextLayoutManagerMapBuffer {
       double minimumFontSize = paragraphAttributes.contains(PA_KEY_MINIMUM_FONT_SIZE)
         ? paragraphAttributes.getDouble(PA_KEY_MINIMUM_FONT_SIZE)
         : Double.NaN;
-      double maximumFontSize = paragraphAttributes.contains(PA_KEY_MAXIMUM_FONT_SIZE)
-        ? paragraphAttributes.getDouble(PA_KEY_MAXIMUM_FONT_SIZE)
-        : Double.NaN;
 
       adjustSpannableFontToFit(
         text,
@@ -486,7 +482,6 @@ public class TextLayoutManagerMapBuffer {
         height,
         heightYogaMeasureMode,
         minimumFontSize,
-        maximumFontSize,
         maximumNumberOfLines,
         includeFontPadding,
         textBreakStrategy,

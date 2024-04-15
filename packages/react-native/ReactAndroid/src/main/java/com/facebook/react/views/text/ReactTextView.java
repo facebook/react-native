@@ -65,7 +65,6 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   private boolean mAdjustsFontSizeToFit;
   private float mFontSize;
   private float mMinimumFontSize;
-  private float mMaximumFontSize;
   private float mLetterSpacing;
   private int mLinkifyMaskType;
   private boolean mNotifyOnInlineViewLayout;
@@ -102,7 +101,6 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     mEllipsizeLocation = TextUtils.TruncateAt.END;
     mFontSize = Float.NaN;
     mMinimumFontSize = Float.NaN;
-    mMaximumFontSize = Float.NaN;
     mLetterSpacing = 0.f;
 
     mSpanned = null;
@@ -375,7 +373,6 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
         this.getHeight(),
         YogaMeasureMode.EXACTLY,
         mMinimumFontSize,
-        mMaximumFontSize,
         this.mNumberOfLines,
         this.getIncludeFontPadding(),
         this.getBreakStrategy(),
@@ -624,10 +621,6 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
   public void setMinimumFontSize(float minimumFontSize) {
     mMinimumFontSize = minimumFontSize;
-  }
-
-  public void setMaximumFontSize(float maximumFontSize) {
-    mMaximumFontSize = maximumFontSize;
   }
 
   public void setLetterSpacing(float letterSpacing) {
