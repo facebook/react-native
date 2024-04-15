@@ -1494,6 +1494,11 @@ public class ReactInstanceManager {
                 public void onReload() {
                   UiThreadUtil.runOnUiThread(() -> mDevSupportManager.handleReloadJS());
                 }
+
+                @Override
+                public void onSetPausedInDebuggerMessage(@Nullable String message) {
+                  // TODO(moti): Implement this
+                }
               });
     }
 

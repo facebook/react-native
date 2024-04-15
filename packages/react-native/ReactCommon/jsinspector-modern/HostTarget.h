@@ -67,6 +67,21 @@ class HostTargetDelegate {
     }
   };
 
+  struct OverlaySetPausedInDebuggerMessageRequest {
+    /**
+     * The message to display in the overlay. If nullopt, hide the overlay.
+     */
+    std::optional<std::string> message;
+
+    /**
+     * Equality operator, useful for unit tests
+     */
+    inline bool operator==(
+        const OverlaySetPausedInDebuggerMessageRequest& rhs) const {
+      return message == rhs.message;
+    }
+  };
+
   virtual ~HostTargetDelegate();
 
   /**
@@ -75,6 +90,19 @@ class HostTargetDelegate {
    * ILocalConnection::sendMessage was called).
    */
   virtual void onReload(const PageReloadRequest& request) = 0;
+
+  /**
+   * Called when the debugger requests that the "paused in debugger" overlay be
+   * shown or hidden. If the message is nullopt, hide the overlay, otherwise
+   * show it with the given message. This is called on the inspector thread.
+   *
+   * If this method is called with a non-null message, it's guaranteed to
+   * eventually be called again with a null message. In all other respects,
+   * the timing and payload of these messages are fully controlled by the
+   * client.
+   */
+  virtual void onSetPausedInDebuggerMessage(
+      const OverlaySetPausedInDebuggerMessageRequest& request) = 0;
 };
 
 /**

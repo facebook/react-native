@@ -46,6 +46,13 @@ class HostAgent final {
       HostTarget::SessionMetadata sessionMetadata,
       SessionState& sessionState);
 
+  HostAgent(const HostAgent&) = delete;
+  HostAgent(HostAgent&&) = delete;
+  HostAgent& operator=(const HostAgent&) = delete;
+  HostAgent& operator=(HostAgent&&) = delete;
+
+  ~HostAgent();
+
   /**
    * Handle a CDP request. The response will be sent over the provided
    * \c FrontendChannel synchronously or asynchronously.
@@ -90,6 +97,7 @@ class HostAgent final {
   const HostTarget::SessionMetadata sessionMetadata_;
   std::shared_ptr<InstanceAgent> instanceAgent_;
   FuseboxClientType fuseboxClientType_{FuseboxClientType::Unknown};
+  bool isPausedInDebuggerOverlayVisible_{false};
 
   /**
    * A shared reference to the session's state. This is only safe to access
