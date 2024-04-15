@@ -70,6 +70,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   private int mLinkifyMaskType;
   private boolean mNotifyOnInlineViewLayout;
   private boolean mTextIsSelectable;
+  private boolean mShouldAdjustSpannableFontSize;
 
   private ReactViewBackgroundManager mReactBackgroundManager;
   private Spannable mSpanned;
@@ -97,6 +98,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     mLinkifyMaskType = 0;
     mNotifyOnInlineViewLayout = false;
     mTextIsSelectable = false;
+    mShouldAdjustSpannableFontSize = false;
     mEllipsizeLocation = TextUtils.TruncateAt.END;
     mFontSize = Float.NaN;
     mMinimumFontSize = Float.NaN;
@@ -363,10 +365,9 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   }
 
   @Override
-  public void layout(int l, int t, int r, int b) {
-    super.layout(l, t, r, b);
-
-    if (this.mAdjustsFontSizeToFit && this.getSpanned() != null) {
+  protected void onDraw(Canvas canvas) {
+    if (this.mAdjustsFontSizeToFit && this.getSpanned() != null && mShouldAdjustSpannableFontSize) {
+      mShouldAdjustSpannableFontSize = false;
       TextLayoutManagerMapBuffer.adjustSpannableFontToFit(
         this.getSpanned(),
         this.getWidth(),
@@ -382,6 +383,8 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
       );
       this.setText(this.getSpanned());
     }
+
+    super.onDraw(canvas);
   }
 
   public void setText(ReactTextUpdate update) {
@@ -685,6 +688,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
   public void setSpanned(Spannable spanned) {
     mSpanned = spanned;
+    mShouldAdjustSpannableFontSize = true;
   }
 
   public Spannable getSpanned() {
