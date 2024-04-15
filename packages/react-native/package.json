@@ -135,7 +135,7 @@
     "nullthrows": "^1.1.1",
     "pretty-format": "^26.5.2",
     "promise": "^8.3.0",
-    "react-devtools-core": "^5.0.2",
+    "react-devtools-core": "5.1.0",
     "react-refresh": "^0.14.0",
     "react-shallow-renderer": "^16.15.0",
     "regenerator-runtime": "^0.13.2",
