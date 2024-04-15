@@ -150,31 +150,25 @@ Transform Transform::Rotate(Float x, Float y, Float z) {
 Transform Transform::FromTransformOperation(
     TransformOperation transformOperation, const Size& size) {
   if (transformOperation.type == TransformOperationType::Perspective) {
-    return Transform::Perspective(transformOperation.x.value);
+    return Transform::Perspective(transformOperation.x.resolve(0));
   }
   if (transformOperation.type == TransformOperationType::Scale) {
     return Transform::Scale(
-        transformOperation.x.value, transformOperation.y.value, transformOperation.z.value);
+        transformOperation.x.resolve(0), transformOperation.y.resolve(0), transformOperation.z.resolve(0));
   }
   if (transformOperation.type == TransformOperationType::Translate) {
-    auto translateX = transformOperation.x.value;
-    auto translateY = transformOperation.y.value;
-    if (transformOperation.x.unit == UnitType::Percent) {
-      translateX = translateX * size.width / 100.0;
-    }
-    if (transformOperation.y.unit == UnitType::Percent) {
-      translateY = translateY * size.height / 100.0;
-    }
-
+    auto translateX = transformOperation.x.resolve(size.width);
+    auto translateY = transformOperation.y.resolve(size.height);
+    
     return Transform::Translate(
-        translateX, translateY, transformOperation.z.value);
+        translateX, translateY, transformOperation.z.resolve(0));
   }
   if (transformOperation.type == TransformOperationType::Skew) {
-    return Transform::Skew(transformOperation.x.value, transformOperation.y.value);
+    return Transform::Skew(transformOperation.x.resolve(0), transformOperation.y.resolve(0));
   }
   if (transformOperation.type == TransformOperationType::Rotate) {
     return Transform::Rotate(
-        transformOperation.x.value, transformOperation.y.value, transformOperation.z.value);
+        transformOperation.x.resolve(0), transformOperation.y.resolve(0), transformOperation.z.resolve(0));
   }
 
   // Identity or Arbitrary
@@ -252,16 +246,16 @@ Transform Transform::Interpolate(
              : Transform::DefaultTransformOperation(type));
     react_native_assert(type == lhsOp.type);
     react_native_assert(type == rhsOp.type);
-    react_native_assert(lhsOp.x.unit == rhsOp.x.unit);
-    react_native_assert(lhsOp.y.unit == rhsOp.y.unit);
-    react_native_assert(lhsOp.z.unit == rhsOp.z.unit);
 
     result = result *
         Transform::FromTransformOperation(TransformOperation{
             type,
-            ValueUnit(lhsOp.x.value + (rhsOp.x.value - lhsOp.x.value) * animationProgress, lhsOp.x.unit),
-            ValueUnit(lhsOp.y.value + (rhsOp.y.value - lhsOp.y.value) * animationProgress, lhsOp.y.unit),
-            ValueUnit(lhsOp.z.value + (rhsOp.z.value - lhsOp.z.value) * animationProgress, lhsOp.z.unit)}, size);
+            ValueUnit(lhsOp.x.resolve(size.width) + (rhsOp.x.resolve(size.width) - lhsOp.x.resolve(size.width)) 
+              * animationProgress, UnitType::Point),
+            ValueUnit(lhsOp.y.resolve(size.height) + (rhsOp.y.resolve(size.height) - lhsOp.y.resolve(size.width)) 
+              * animationProgress, UnitType::Point),
+            ValueUnit(lhsOp.z.resolve(0) + (rhsOp.z.resolve(0) - lhsOp.z.resolve(0)) 
+              * animationProgress, UnitType::Point)}, size);
   }
 
   return result;
