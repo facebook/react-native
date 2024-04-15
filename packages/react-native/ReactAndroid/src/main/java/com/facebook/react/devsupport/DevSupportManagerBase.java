@@ -1164,4 +1164,34 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
     mDevServerHelper.openDebugger(
         mCurrentContext, mApplicationContext.getString(R.string.catalyst_open_debugger_error));
   }
+
+  private @Nullable AlertDialog mPausedInDebuggerDialog;
+
+  @Override
+  public void showPausedInDebuggerOverlay(String message) {
+    UiThreadUtil.runOnUiThread(
+        () -> {
+          if (mPausedInDebuggerDialog != null) {
+            mPausedInDebuggerDialog.dismiss();
+          }
+          Activity context = mReactInstanceDevHelper.getCurrentActivity();
+          if (context == null || context.isFinishing()) {
+            return;
+          }
+          mPausedInDebuggerDialog =
+              new AlertDialog.Builder(context).setMessage(message).setCancelable(false).create();
+          mPausedInDebuggerDialog.show();
+        });
+  }
+
+  @Override
+  public void hidePausedInDebuggerOverlay() {
+    UiThreadUtil.runOnUiThread(
+        () -> {
+          if (mPausedInDebuggerDialog != null) {
+            mPausedInDebuggerDialog.dismiss();
+            mPausedInDebuggerDialog = null;
+          }
+        });
+  }
 }
