@@ -63,9 +63,27 @@ JReactHostInspectorTarget::initHybrid(
   return makeCxxInstance(reactHostImpl, executor);
 }
 
+void JReactHostInspectorTarget::sendDebuggerResumeCommand() {
+  if (inspectorTarget_) {
+    inspectorTarget_->sendCommand(HostCommand::DebuggerResume);
+  }
+}
+
+void JReactHostInspectorTarget::sendDebuggerStepOverCommand() {
+  if (inspectorTarget_) {
+    inspectorTarget_->sendCommand(HostCommand::DebuggerStepOver);
+  }
+}
+
 void JReactHostInspectorTarget::registerNatives() {
   registerHybrid({
       makeNativeMethod("initHybrid", JReactHostInspectorTarget::initHybrid),
+      makeNativeMethod(
+          "sendDebuggerResumeCommand",
+          JReactHostInspectorTarget::sendDebuggerResumeCommand),
+      makeNativeMethod(
+          "sendDebuggerStepOverCommand",
+          JReactHostInspectorTarget::sendDebuggerStepOverCommand),
   });
 }
 
