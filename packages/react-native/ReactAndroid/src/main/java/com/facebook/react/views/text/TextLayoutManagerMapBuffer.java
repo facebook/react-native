@@ -397,16 +397,17 @@ public class TextLayoutManagerMapBuffer {
     BoringLayout.Metrics boring = BoringLayout.isBoring(text, sTextPaintInstance);
     Layout layout = createLayout(text, boring, width, widthYogaMeasureMode, includeFontPadding, textBreakStrategy, hyphenationFrequency);
 
-    // Find the largest font size used in the spannable to use as a starting point.
     // Minimum font size is 4pts to match the iOS implementation.
-    int currentFontSize = (int) (Double.isNaN(minimumFontSizeAttr) ? PixelUtil.toPixelFromDIP(4) : minimumFontSizeAttr);
+    int minimumFontSize = (int) (Double.isNaN(minimumFontSizeAttr) ? PixelUtil.toPixelFromDIP(4) : minimumFontSizeAttr);
+
+    // Find the largest font size used in the spannable to use as a starting point.
+    int currentFontSize = minimumFontSize;
     ReactAbsoluteSizeSpan[] spans = text.getSpans(0, text.length(), ReactAbsoluteSizeSpan.class);
     for (ReactAbsoluteSizeSpan span : spans) {
       currentFontSize = Math.max(currentFontSize, span.getSize());
     }
 
     int initialFontSize = currentFontSize;
-    int minimumFontSize = (int) (Double.isNaN(minimumFontSizeAttr) ? PixelUtil.toPixelFromDIP(4) : minimumFontSizeAttr);
     while (currentFontSize > minimumFontSize
       && (maximumNumberOfLines != ReactConstants.UNSET && layout.getLineCount() > maximumNumberOfLines
       || heightYogaMeasureMode != YogaMeasureMode.UNDEFINED && layout.getHeight() > height)) {
