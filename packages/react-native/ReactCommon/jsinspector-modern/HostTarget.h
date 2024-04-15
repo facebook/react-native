@@ -8,11 +8,11 @@
 #pragma once
 
 #include "ExecutionContextManager.h"
+#include "HostCommand.h"
+#include "InspectorInterfaces.h"
+#include "InstanceTarget.h"
 #include "ScopedExecutor.h"
 #include "WeakList.h"
-
-#include <jsinspector-modern/InspectorInterfaces.h>
-#include <jsinspector-modern/InstanceTarget.h>
 
 #include <optional>
 #include <string>
@@ -33,6 +33,7 @@ namespace facebook::react::jsinspector_modern {
 
 class HostTargetSession;
 class HostAgent;
+class HostCommandSender;
 class HostTarget;
 
 /**
@@ -202,6 +203,12 @@ class JSINSPECTOR_EXPORT HostTarget
    */
   void unregisterInstance(InstanceTarget& instance);
 
+  /**
+   * Sends an imperative command to the HostTarget. May be called from any
+   * thread.
+   */
+  void sendCommand(HostCommand command);
+
  private:
   /**
    * Constructs a new HostTarget.
@@ -220,6 +227,7 @@ class JSINSPECTOR_EXPORT HostTarget
   // briefly outliving the HostTarget, which it generally shouldn't).
   std::shared_ptr<ExecutionContextManager> executionContextManager_;
   std::shared_ptr<InstanceTarget> currentInstance_{nullptr};
+  std::unique_ptr<HostCommandSender> commandSender_;
 
   inline HostTargetDelegate& getDelegate() {
     return delegate_;
