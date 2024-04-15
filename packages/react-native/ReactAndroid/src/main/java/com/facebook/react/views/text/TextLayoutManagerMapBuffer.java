@@ -650,7 +650,8 @@ public class TextLayoutManagerMapBuffer {
       @NonNull Context context,
       MapBuffer attributedString,
       MapBuffer paragraphAttributes,
-      float width) {
+      float width,
+      float height) {
 
     Spannable text = getOrCreateSpannableForText(context, attributedString, null);
     BoringLayout.Metrics boring = BoringLayout.isBoring(text, sTextPaintInstance);
@@ -665,8 +666,34 @@ public class TextLayoutManagerMapBuffer {
     int hyphenationFrequency =
         TextAttributeProps.getTextBreakStrategy(
             paragraphAttributes.getString(PA_KEY_HYPHENATION_FREQUENCY));
+    boolean adjustFontSizeToFit =
+        paragraphAttributes.contains(PA_KEY_ADJUST_FONT_SIZE_TO_FIT)
+            ? paragraphAttributes.getBoolean(PA_KEY_ADJUST_FONT_SIZE_TO_FIT)
+            : DEFAULT_ADJUST_FONT_SIZE_TO_FIT;
+    int maximumNumberOfLines =
+        paragraphAttributes.contains(PA_KEY_MAX_NUMBER_OF_LINES)
+            ? paragraphAttributes.getInt(PA_KEY_MAX_NUMBER_OF_LINES)
+            : ReactConstants.UNSET;
 
-    // TODO: adjustFontSizeToFit
+
+    if (adjustFontSizeToFit) {
+        double minimumFontSize = paragraphAttributes.contains(PA_KEY_MINIMUM_FONT_SIZE)
+            ? paragraphAttributes.getDouble(PA_KEY_MINIMUM_FONT_SIZE)
+            : Double.NaN;
+
+      adjustSpannableFontToFit(
+          text,
+          width,
+          YogaMeasureMode.EXACTLY,
+          height,
+          YogaMeasureMode.UNDEFINED,
+          minimumFontSize,
+          maximumNumberOfLines,
+          includeFontPadding,
+          textBreakStrategy,
+          hyphenationFrequency
+      );
+    }
 
     Layout layout =
         createLayout(
