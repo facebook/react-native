@@ -592,6 +592,16 @@ public class ReactHostImpl implements ReactHost {
 
   /* package */
   @Nullable
+  NativeModule getNativeModule(String nativeModuleName) {
+    final ReactInstance reactInstance = mReactInstanceTaskRef.get().getResult();
+    if (reactInstance != null) {
+      return reactInstance.getNativeModule(nativeModuleName);
+    }
+    return null;
+  }
+
+  /* package */
+  @Nullable
   RuntimeExecutor getRuntimeExecutor() {
     final ReactInstance reactInstance = mReactInstanceTaskRef.get().getResult();
     if (reactInstance != null) {

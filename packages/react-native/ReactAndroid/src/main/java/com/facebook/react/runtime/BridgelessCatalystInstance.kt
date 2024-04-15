@@ -92,25 +92,20 @@ public class BridgelessCatalystInstance(private val reactHost: ReactHostImpl) : 
     throw UnsupportedOperationException("Unimplemented method 'initialize'")
   }
 
-  override fun getReactQueueConfiguration(): ReactQueueConfiguration {
-    throw UnsupportedOperationException("Unimplemented method 'getReactQueueConfiguration'")
-  }
+  override fun getReactQueueConfiguration(): ReactQueueConfiguration =
+      reactHost.reactQueueConfiguration!!
 
-  override fun <T : JavaScriptModule> getJSModule(jsInterface: Class<T>): T {
-    throw UnsupportedOperationException("Unimplemented method 'getJSModule'")
-  }
+  override fun <T : JavaScriptModule> getJSModule(jsInterface: Class<T>): T =
+      reactHost.currentReactContext?.getJSModule(jsInterface)!!
 
-  override fun <T : NativeModule> hasNativeModule(nativeModuleInterface: Class<T>): Boolean {
-    throw UnsupportedOperationException("Unimplemented method 'hasNativeModule'")
-  }
+  override fun <T : NativeModule> hasNativeModule(nativeModuleInterface: Class<T>): Boolean =
+      reactHost.hasNativeModule(nativeModuleInterface)
 
-  override fun <T : NativeModule> getNativeModule(nativeModuleInterface: Class<T>): T? {
-    throw UnsupportedOperationException("Unimplemented method 'getNativeModule'")
-  }
+  override fun <T : NativeModule> getNativeModule(nativeModuleInterface: Class<T>): T? =
+      reactHost.getNativeModule(nativeModuleInterface)
 
-  override fun getNativeModule(moduleName: String): NativeModule? {
-    throw UnsupportedOperationException("Unimplemented method 'getNativeModule'")
-  }
+  override fun getNativeModule(moduleName: String): NativeModule? =
+      reactHost.getNativeModule(moduleName)
 
   @Deprecated(
       message =
@@ -119,9 +114,7 @@ public class BridgelessCatalystInstance(private val reactHost: ReactHostImpl) : 
     throw UnsupportedOperationException("Unimplemented method 'getJSIModule'")
   }
 
-  override fun getNativeModules(): Collection<NativeModule> {
-    throw UnsupportedOperationException("Unimplemented method 'getNativeModules'")
-  }
+  override fun getNativeModules(): Collection<NativeModule> = reactHost.getNativeModules()
 
   override fun extendNativeModules(modules: NativeModuleRegistry) {
     throw UnsupportedOperationException("Unimplemented method 'extendNativeModules'")
