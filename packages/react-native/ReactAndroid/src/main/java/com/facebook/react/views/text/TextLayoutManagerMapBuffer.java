@@ -475,8 +475,8 @@ public class TextLayoutManagerMapBuffer {
       double minimumFontSize = paragraphAttributes.contains(PA_KEY_MINIMUM_FONT_SIZE)
         ? paragraphAttributes.getDouble(PA_KEY_MINIMUM_FONT_SIZE)
         : Double.NaN;
-      double maximumFontSize = paragraphAttributes.contains(PA_KEY_MINIMUM_FONT_SIZE)
-        ? paragraphAttributes.getDouble(PA_KEY_MINIMUM_FONT_SIZE)
+      double maximumFontSize = paragraphAttributes.contains(PA_KEY_MAXIMUM_FONT_SIZE)
+        ? paragraphAttributes.getDouble(PA_KEY_MAXIMUM_FONT_SIZE)
         : Double.NaN;
 
       adjustSpannableFontToFit(
