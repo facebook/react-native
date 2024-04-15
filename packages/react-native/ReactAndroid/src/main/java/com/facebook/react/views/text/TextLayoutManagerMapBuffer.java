@@ -408,9 +408,11 @@ public class TextLayoutManagerMapBuffer {
     }
 
     int initialFontSize = currentFontSize;
-    while (currentFontSize > minimumFontSize
-      && (maximumNumberOfLines != ReactConstants.UNSET && layout.getLineCount() > maximumNumberOfLines
-      || heightYogaMeasureMode != YogaMeasureMode.UNDEFINED && layout.getHeight() > height)) {
+        while (currentFontSize > minimumFontSize
+        && ((maximumNumberOfLines != ReactConstants.UNSET
+                && layout.getLineCount() > maximumNumberOfLines)
+            || (heightYogaMeasureMode != YogaMeasureMode.UNDEFINED
+                && layout.getHeight() > height))) {
       // TODO: We could probably use a smarter algorithm here. This will require 0(n)
       // measurements based on the number of points the font size needs to be reduced by.
       currentFontSize -= Math.max(1, (int) PixelUtil.toPixelFromDIP(1));
