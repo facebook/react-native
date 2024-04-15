@@ -397,23 +397,21 @@ public class TextLayoutManagerMapBuffer {
     BoringLayout.Metrics boring = BoringLayout.isBoring(text, sTextPaintInstance);
     Layout layout = createLayout(text, boring, width, widthYogaMeasureMode, includeFontPadding, textBreakStrategy, hyphenationFrequency);
 
-    Object[] spans =
-      text.getSpans(0, text.length(), Object.class);
-    for (Object span : spans) {
-      Log.w("RCT", span.toString());
+    // Find the largest font size used in the spannable to use as a starting point.
+    // Minimum font size is 4pts to match the iOS implementation.
+    int currentFontSize = (int) (Double.isNaN(minimumFontSizeAttr) ? PixelUtil.toPixelFromDIP(4) : minimumFontSizeAttr);
+    ReactAbsoluteSizeSpan[] spans = text.getSpans(0, text.length(), ReactAbsoluteSizeSpan.class);
+    for (ReactAbsoluteSizeSpan span : spans) {
+      currentFontSize = Math.max(currentFontSize, span.getSize());
     }
 
-    // TODO: also grow size?
-    int initialFontSize = (int) (Double.isNaN(maximumFontSizeAttr) ? PixelUtil.toPixelFromDIP(96) : maximumFontSizeAttr);
-    int currentFontSize = (int) (Double.isNaN(maximumFontSizeAttr) ? PixelUtil.toPixelFromDIP(96) : maximumFontSizeAttr);
-    // Minimum font size is 4pts to match the iOS implementation.
-    int minimumFontSize = (int) (Double.isNaN(maximumFontSizeAttr) ? PixelUtil.toPixelFromDIP(4) : maximumFontSizeAttr);
+    int initialFontSize = currentFontSize;
+    int minimumFontSize = (int) (Double.isNaN(minimumFontSizeAttr) ? PixelUtil.toPixelFromDIP(4) : minimumFontSizeAttr);
     while (currentFontSize > minimumFontSize
       && (maximumNumberOfLines != ReactConstants.UNSET && layout.getLineCount() > maximumNumberOfLines
       || heightYogaMeasureMode != YogaMeasureMode.UNDEFINED && layout.getHeight() > height)) {
       // TODO: We could probably use a smarter algorithm here. This will require 0(n)
-      // measurements
-      // based on the number of points the font size needs to be reduced by.
+      // measurements based on the number of points the font size needs to be reduced by.
       currentFontSize -= Math.max(1, (int) PixelUtil.toPixelFromDIP(1));
 
       float ratio = (float) currentFontSize / (float) initialFontSize;

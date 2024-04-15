@@ -64,6 +64,8 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   private TextUtils.TruncateAt mEllipsizeLocation;
   private boolean mAdjustsFontSizeToFit;
   private float mFontSize;
+  private float mMinimumFontSize;
+  private float mMaximumFontSize;
   private float mLetterSpacing;
   private int mLinkifyMaskType;
   private boolean mNotifyOnInlineViewLayout;
@@ -97,6 +99,8 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     mTextIsSelectable = false;
     mEllipsizeLocation = TextUtils.TruncateAt.END;
     mFontSize = Float.NaN;
+    mMinimumFontSize = Float.NaN;
+    mMaximumFontSize = Float.NaN;
     mLetterSpacing = 0.f;
 
     mSpanned = null;
@@ -359,17 +363,18 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   }
 
   @Override
-  protected void onDraw(Canvas canvas) {
+  public void layout(int l, int t, int r, int b) {
+    super.layout(l, t, r, b);
+
     if (this.mAdjustsFontSizeToFit && this.getSpanned() != null) {
-      // TODO: don't do this every frame
       TextLayoutManagerMapBuffer.adjustSpannableFontToFit(
         this.getSpanned(),
         this.getWidth(),
         YogaMeasureMode.EXACTLY,
         this.getHeight(),
         YogaMeasureMode.EXACTLY,
-        Double.NaN, // TODO
-        Double.NaN, // TODO
+        mMinimumFontSize,
+        mMaximumFontSize,
         this.mNumberOfLines,
         this.getIncludeFontPadding(),
         this.getBreakStrategy(),
@@ -377,8 +382,6 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
       );
       this.setText(this.getSpanned());
     }
-
-    super.onDraw(canvas);
   }
 
   public void setText(ReactTextUpdate update) {
@@ -614,6 +617,14 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
             : (float) Math.ceil(PixelUtil.toPixelFromDIP(fontSize));
 
     applyTextAttributes();
+  }
+
+  public void setMinimumFontSize(float minimumFontSize) {
+    mMinimumFontSize = minimumFontSize;
+  }
+
+  public void setMaximumFontSize(float maximumFontSize) {
+    mMaximumFontSize = maximumFontSize;
   }
 
   public void setLetterSpacing(float letterSpacing) {
