@@ -42,13 +42,21 @@ class HostTargetTest : public Test {
 
   void connect() {
     ASSERT_FALSE(toPage_) << "Can only connect once in a HostTargetTest.";
-    toPage_ = page_->connect(
+    auto conn = makeConnection();
+    toPage_ = std::move(conn.first);
+  }
+
+  std::pair<std::unique_ptr<ILocalConnection>, MockRemoteConnection&>
+  makeConnection() {
+    size_t connectionIndex = remoteConnections_.objectsVended();
+    auto toPage = page_->connect(
         remoteConnections_.make_unique(),
         {.integrationName = "HostTargetTest"});
 
     // We'll always get an onDisconnect call when we tear
     // down the test. Expect it in order to satisfy the strict mock.
-    EXPECT_CALL(*remoteConnections_[0], onDisconnect());
+    EXPECT_CALL(*remoteConnections_[connectionIndex], onDisconnect());
+    return {std::move(toPage), *remoteConnections_[connectionIndex]};
   }
 
   MockHostTargetDelegate hostTargetDelegate_;
@@ -204,6 +212,108 @@ TEST_F(HostTargetProtocolTest, PageReloadMethod) {
                              "scriptToEvaluateOnLoad": "alert('hello');"
                            }
                          })");
+}
+
+TEST_F(HostTargetProtocolTest, OverlaySetPausedInDebuggerMessageMethod) {
+  InSequence s;
+
+  EXPECT_CALL(
+      hostTargetDelegate_,
+      onSetPausedInDebuggerMessage(
+          Eq(HostTargetDelegate::OverlaySetPausedInDebuggerMessageRequest{
+              .message = std::nullopt})))
+      .RetiresOnSaturation();
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+                                               "id": 1,
+                                               "result": {}
+                                             })")))
+      .RetiresOnSaturation();
+  toPage_->sendMessage(R"({
+                           "id": 1,
+                           "method": "Overlay.setPausedInDebuggerMessage"
+                         })");
+
+  EXPECT_CALL(
+      hostTargetDelegate_,
+      onSetPausedInDebuggerMessage(
+          Eq(HostTargetDelegate::OverlaySetPausedInDebuggerMessageRequest{
+              .message = "Paused in debugger"})))
+      .RetiresOnSaturation();
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+                                               "id": 2,
+                                               "result": {}
+                                             })")))
+      .RetiresOnSaturation();
+  toPage_->sendMessage(R"({
+                           "id": 2,
+                           "method": "Overlay.setPausedInDebuggerMessage",
+                           "params": {
+                             "message": "Paused in debugger"
+                           }
+                         })");
+
+  // A cleanup message is sent automatically when we destroy the session.
+  EXPECT_CALL(
+      hostTargetDelegate_,
+      onSetPausedInDebuggerMessage(
+          Eq(HostTargetDelegate::OverlaySetPausedInDebuggerMessageRequest{
+              .message = std::nullopt})))
+      .RetiresOnSaturation();
+}
+
+TEST_F(HostTargetProtocolTest, OverlaySetPausedInDebuggerMultipleClients) {
+  auto [toPage2, fromPage2] = makeConnection();
+
+  InSequence s;
+
+  EXPECT_CALL(
+      hostTargetDelegate_,
+      onSetPausedInDebuggerMessage(
+          Eq(HostTargetDelegate::OverlaySetPausedInDebuggerMessageRequest{
+              .message = "Paused in debugger - client 1"})))
+      .RetiresOnSaturation();
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+                                               "id": 1,
+                                               "result": {}
+                                             })")))
+      .RetiresOnSaturation();
+  toPage_->sendMessage(R"({
+                           "id": 1,
+                           "method": "Overlay.setPausedInDebuggerMessage",
+                           "params": {
+                             "message": "Paused in debugger - client 1"
+                           }
+                         })");
+
+  EXPECT_CALL(
+      hostTargetDelegate_,
+      onSetPausedInDebuggerMessage(
+          Eq(HostTargetDelegate::OverlaySetPausedInDebuggerMessageRequest{
+              .message = "Paused in debugger - client 2"})))
+      .RetiresOnSaturation();
+  EXPECT_CALL(fromPage2, onMessage(JsonEq(R"({
+                                               "id": 1,
+                                               "result": {}
+                                             })")))
+      .RetiresOnSaturation();
+  toPage2->sendMessage(R"({
+                           "id": 1,
+                           "method": "Overlay.setPausedInDebuggerMessage",
+                           "params": {
+                             "message": "Paused in debugger - client 2"
+                           }
+                         })");
+
+  toPage2.reset();
+
+  // The cleanup message is sent exactly once.
+  EXPECT_CALL(
+      hostTargetDelegate_,
+      onSetPausedInDebuggerMessage(
+          Eq(HostTargetDelegate::OverlaySetPausedInDebuggerMessageRequest{
+              .message = std::nullopt})))
+      .Times(1)
+      .RetiresOnSaturation();
 }
 
 TEST_F(HostTargetProtocolTest, RegisterUnregisterInstanceWithoutEvents) {

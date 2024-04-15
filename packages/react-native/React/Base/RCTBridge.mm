@@ -199,6 +199,11 @@ class RCTBridgeHostTargetDelegate : public facebook::react::jsinspector_modern::
     [bridge_ reload];
   }
 
+  void onSetPausedInDebuggerMessage(const OverlaySetPausedInDebuggerMessageRequest &) override
+  {
+    // TODO(moti): Implement this
+  }
+
  private:
   __weak RCTBridge *bridge_;
 };

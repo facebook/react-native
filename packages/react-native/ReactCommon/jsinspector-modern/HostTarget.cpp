@@ -162,4 +162,16 @@ bool HostTargetController::hasInstance() const {
   return target_.hasInstance();
 }
 
+void HostTargetController::incrementPauseOverlayCounter() {
+  ++pauseOverlayCounter_;
+}
+
+bool HostTargetController::decrementPauseOverlayCounter() {
+  assert(pauseOverlayCounter_ > 0 && "Pause overlay counter underflow");
+  if (--pauseOverlayCounter_ == 0) {
+    return false;
+  }
+  return true;
+}
+
 } // namespace facebook::react::jsinspector_modern
