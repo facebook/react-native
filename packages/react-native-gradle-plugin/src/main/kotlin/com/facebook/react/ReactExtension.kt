@@ -85,11 +85,10 @@ abstract class ReactExtension @Inject constructor(project: Project) {
       objects.listProperty(String::class.java).convention(emptyList())
 
   /**
-   * Allows to specify the debuggable variants (by default just 'debug'). Variants in this list
-   * will:
-   * - Not be bundled (the bundle file will not be created and won't be copied over).
-   * - Have the Hermes Debug flags set. That's useful if you have another variant (say `canary`)
-   *   where you want dev mode to be enabled. Default: ['debug']
+   * Allows to specify the debuggable variants (by default just 'debug'). Variants in this list will
+   * not be bundled (the bundle file will not be created and won't be copied over).
+   *
+   * Default: ['debug']
    */
   val debuggableVariants: ListProperty<String> =
       objects.listProperty(String::class.java).convention(listOf("debug"))
