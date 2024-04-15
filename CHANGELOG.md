@@ -1,5 +1,24 @@
 # Changelog
 
+## v0.74.0-rc.9
+
+### Added
+
+- Implement `getJavaScriptContextHolder()` for Bridgeless Catalyst Instance ([b72f5e9982](https://github.com/facebook/react-native/commit/b72f5e9982525712f0fd845979ce7142c5de3098) by [@arushikesarwani94](https://github.com/arushikesarwani94))
+- Implement `getRuntimeExecutor()` for Bridgeless Catalyst Instance ([6a5aaad9e0](https://github.com/facebook/react-native/commit/6a5aaad9e0a7dfe001e75054f0d1b1731aa9e19e) by [@arushikesarwani94](https://github.com/arushikesarwani94))
+
+#### iOS specific
+
+- Add privacy manifest to pod install ([d39712f54a](https://github.com/facebook/react-native/commit/d39712f54a95e6dcdf1d2f80d9581211ab03c157) by [@philIip](https://github.com/philIip))
+
+### Fixed
+
+#### iOS specific
+
+- Fix RNTester project and remove CCACHE from project when disabled ([2b18fdf806](https://github.com/facebook/react-native/commit/2b18fdf8063b423a0fb5762f2c6044244b4c35e6) by [@cipolleschi](https://github.com/cipolleschi))
+- Make sure that the Open Debugger appears in bridgeless mode ([18916f391a](https://github.com/facebook/react-native/commit/18916f391a63f8eb454d007f97be4dcdd8ae5ef4) by [@cipolleschi](https://github.com/cipolleschi))
+- Change bridgeless check in dev menu ([776f90024f](https://github.com/facebook/react-native/commit/776f90024f9879b804b9de781acef7ac24d2e4f0) by [@zhongwuzw](https://github.com/zhongwuzw))
+
 ## v0.74.0-rc.8
 
 ### Added
