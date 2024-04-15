@@ -42,7 +42,7 @@ public class ReactDelegate {
 
   @Nullable private ReactSurface mReactSurface;
 
-  private boolean mFabricEnabled = false;
+  private boolean mFabricEnabled = ReactFeatureFlags.enableFabricRenderer;
 
   /**
    * Do not use this constructor as it's not accounting for New Architecture at all. You should
