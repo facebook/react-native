@@ -40,7 +40,7 @@ class ShadowTreeEdge final {
 
 static bool traverseShadowTree(
     const ShadowNode::Shared& parentShadowNode,
-    const std::function<void(ShadowTreeEdge const& edge, bool& stop)>&
+    const std::function<void(const ShadowTreeEdge& edge, bool& stop)>&
         callback) {
   auto index = int{0};
   for (const auto& childNode : parentShadowNode->getChildren()) {
@@ -115,7 +115,7 @@ static inline ShadowNode::Unshared messWithChildren(
   entropy.shuffle(children);
   return shadowNode.clone(
       {ShadowNodeFragment::propsPlaceholder(),
-       std::make_shared<ShadowNode::ListOfShared const>(children)});
+       std::make_shared<const ShadowNode::ListOfShared>(children)});
 }
 
 static inline ShadowNode::Unshared messWithLayoutableOnlyFlag(

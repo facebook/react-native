@@ -216,7 +216,7 @@ using namespace facebook::react;
 
 - (void)updateState:(const State::Shared &)state oldState:(const State::Shared &)oldState
 {
-  _state = std::static_pointer_cast<TextInputShadowNode::ConcreteState const>(state);
+  _state = std::static_pointer_cast<const TextInputShadowNode::ConcreteState>(state);
 
   if (!_state) {
     assert(false && "State is `null` for <TextInput> component.");

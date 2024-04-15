@@ -52,13 +52,13 @@ class ParagraphState final {
    * This is not on every platform. This is not used on Android, but is
    * used on the iOS mounting layer.
    */
-  std::weak_ptr<TextLayoutManager const> layoutManager;
+  std::weak_ptr<const TextLayoutManager> layoutManager;
 
 #ifdef ANDROID
   ParagraphState(
-      AttributedString const& attributedString,
-      ParagraphAttributes const& paragraphAttributes,
-      std::weak_ptr<const TextLayoutManager> const& layoutManager)
+      const AttributedString& attributedString,
+      const ParagraphAttributes& paragraphAttributes,
+      const std::weak_ptr<const TextLayoutManager>& layoutManager)
       : attributedString(attributedString),
         paragraphAttributes(paragraphAttributes),
         layoutManager(layoutManager) {}

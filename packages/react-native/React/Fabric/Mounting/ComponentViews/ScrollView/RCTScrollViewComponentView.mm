@@ -308,8 +308,8 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
 
 - (void)updateState:(const State::Shared &)state oldState:(const State::Shared &)oldState
 {
-  assert(std::dynamic_pointer_cast<ScrollViewShadowNode::ConcreteState const>(state));
-  _state = std::static_pointer_cast<ScrollViewShadowNode::ConcreteState const>(state);
+  assert(std::dynamic_pointer_cast<const ScrollViewShadowNode::ConcreteState>(state));
+  _state = std::static_pointer_cast<const ScrollViewShadowNode::ConcreteState>(state);
   auto &data = _state->getData();
 
   auto contentOffset = RCTCGPointFromPoint(data.contentOffset);
@@ -412,7 +412,7 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
   _state->updateState([contentOffset](const ScrollViewShadowNode::ConcreteState::Data &data) {
     auto newData = data;
     newData.contentOffset = contentOffset;
-    return std::make_shared<ScrollViewShadowNode::ConcreteState::Data const>(newData);
+    return std::make_shared<const ScrollViewShadowNode::ConcreteState::Data>(newData);
   });
 }
 

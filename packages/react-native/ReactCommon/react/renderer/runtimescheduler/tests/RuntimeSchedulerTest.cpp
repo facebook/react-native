@@ -364,8 +364,8 @@ TEST_P(RuntimeSchedulerTest, continuationTask) {
         jsi::PropNameID::forUtf8(*runtime_, ""),
         1,
         [&](jsi::Runtime& /*runtime*/,
-            jsi::Value const& /*unused*/,
-            jsi::Value const* /*arguments*/,
+            const jsi::Value& /*unused*/,
+            const jsi::Value* /*arguments*/,
             size_t /*unused*/) noexcept -> jsi::Value {
           didContinuationTask = true;
           return jsi::Value::undefined();

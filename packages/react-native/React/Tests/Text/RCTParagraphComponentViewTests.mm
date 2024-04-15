@@ -316,7 +316,7 @@ static ParagraphShadowNode::ConcreteState::Shared stateWithShadowNode(
     std::shared_ptr<ParagraphShadowNode> paragraphShadowNode)
 {
   auto sharedState =
-      std::static_pointer_cast<ParagraphShadowNode::ConcreteState const>(paragraphShadowNode->getState());
+      std::static_pointer_cast<const ParagraphShadowNode::ConcreteState>(paragraphShadowNode->getState());
   return sharedState;
 }
 

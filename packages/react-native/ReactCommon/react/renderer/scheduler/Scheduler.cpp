@@ -75,7 +75,7 @@ Scheduler::Scheduler(
                        ReactEventPriority priority,
                        const EventPayload& payload) {
     uiManager->visitBinding(
-        [&](UIManagerBinding const& uiManagerBinding) {
+        [&](const UIManagerBinding& uiManagerBinding) {
           uiManagerBinding.dispatchEvent(
               runtime, eventTarget, type, priority, payload);
         },
