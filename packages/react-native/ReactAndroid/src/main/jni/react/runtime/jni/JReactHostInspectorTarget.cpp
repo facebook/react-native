@@ -73,6 +73,11 @@ void JReactHostInspectorTarget::onReload(const PageReloadRequest& request) {
   javaReactHostImpl_->reload("CDP Page.reload");
 }
 
+void JReactHostInspectorTarget::onSetPausedInDebuggerMessage(
+    const OverlaySetPausedInDebuggerMessageRequest& request) {
+  javaReactHostImpl_->setPausedInDebuggerMessage(request.message);
+}
+
 HostTarget* JReactHostInspectorTarget::getInspectorTarget() {
   return inspectorTarget_ ? inspectorTarget_.get() : nullptr;
 }

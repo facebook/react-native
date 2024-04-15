@@ -206,6 +206,53 @@ TEST_F(HostTargetProtocolTest, PageReloadMethod) {
                          })");
 }
 
+TEST_F(HostTargetProtocolTest, OverlaySetPausedInDebuggerMessageMethod) {
+  InSequence s;
+
+  EXPECT_CALL(
+      hostTargetDelegate_,
+      onSetPausedInDebuggerMessage(
+          Eq(HostTargetDelegate::OverlaySetPausedInDebuggerMessageRequest{
+              .message = std::nullopt})))
+      .RetiresOnSaturation();
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+                                               "id": 1,
+                                               "result": {}
+                                             })")))
+      .RetiresOnSaturation();
+  toPage_->sendMessage(R"({
+                           "id": 1,
+                           "method": "Overlay.setPausedInDebuggerMessage"
+                         })");
+
+  EXPECT_CALL(
+      hostTargetDelegate_,
+      onSetPausedInDebuggerMessage(
+          Eq(HostTargetDelegate::OverlaySetPausedInDebuggerMessageRequest{
+              .message = "Paused in debugger"})))
+      .RetiresOnSaturation();
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+                                               "id": 2,
+                                               "result": {}
+                                             })")))
+      .RetiresOnSaturation();
+  toPage_->sendMessage(R"({
+                           "id": 2,
+                           "method": "Overlay.setPausedInDebuggerMessage",
+                           "params": {
+                             "message": "Paused in debugger"
+                           }
+                         })");
+
+  // A cleanup message is sent automatically when we destroy the session.
+  EXPECT_CALL(
+      hostTargetDelegate_,
+      onSetPausedInDebuggerMessage(
+          Eq(HostTargetDelegate::OverlaySetPausedInDebuggerMessageRequest{
+              .message = std::nullopt})))
+      .RetiresOnSaturation();
+}
+
 TEST_F(HostTargetProtocolTest, RegisterUnregisterInstanceWithoutEvents) {
   auto& instanceTarget = page_->registerInstance(instanceTargetDelegate_);
 
