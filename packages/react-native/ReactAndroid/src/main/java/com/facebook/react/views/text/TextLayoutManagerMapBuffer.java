@@ -462,31 +462,30 @@ public class TextLayoutManagerMapBuffer {
         TextAttributeProps.getHyphenationFrequency(
             paragraphAttributes.getString(PA_KEY_HYPHENATION_FREQUENCY));
     boolean adjustFontSizeToFit =
-      paragraphAttributes.contains(PA_KEY_ADJUST_FONT_SIZE_TO_FIT)
-        ? paragraphAttributes.getBoolean(PA_KEY_ADJUST_FONT_SIZE_TO_FIT)
-        : DEFAULT_ADJUST_FONT_SIZE_TO_FIT;
+        paragraphAttributes.contains(PA_KEY_ADJUST_FONT_SIZE_TO_FIT)
+            ? paragraphAttributes.getBoolean(PA_KEY_ADJUST_FONT_SIZE_TO_FIT)
+            : DEFAULT_ADJUST_FONT_SIZE_TO_FIT;
     int maximumNumberOfLines =
-      paragraphAttributes.contains(PA_KEY_MAX_NUMBER_OF_LINES)
-        ? paragraphAttributes.getInt(PA_KEY_MAX_NUMBER_OF_LINES)
-        : ReactConstants.UNSET;
+        paragraphAttributes.contains(PA_KEY_MAX_NUMBER_OF_LINES)
+            ? paragraphAttributes.getInt(PA_KEY_MAX_NUMBER_OF_LINES)
+            : ReactConstants.UNSET;
 
     if (adjustFontSizeToFit) {
-      double minimumFontSize = paragraphAttributes.contains(PA_KEY_MINIMUM_FONT_SIZE)
-        ? paragraphAttributes.getDouble(PA_KEY_MINIMUM_FONT_SIZE)
-        : Double.NaN;
+        double minimumFontSize = paragraphAttributes.contains(PA_KEY_MINIMUM_FONT_SIZE)
+            ? paragraphAttributes.getDouble(PA_KEY_MINIMUM_FONT_SIZE)
+            : Double.NaN;
 
       adjustSpannableFontToFit(
-        text,
-        width,
-        widthYogaMeasureMode,
-        height,
-        heightYogaMeasureMode,
-        minimumFontSize,
-        maximumNumberOfLines,
-        includeFontPadding,
-        textBreakStrategy,
-        hyphenationFrequency
-      );
+          text,
+          width,
+          widthYogaMeasureMode,
+          height,
+          heightYogaMeasureMode,
+          minimumFontSize,
+          maximumNumberOfLines,
+          includeFontPadding,
+          textBreakStrategy,
+          hyphenationFrequency);
     }
 
     BoringLayout.Metrics boring = BoringLayout.isBoring(text, sTextPaintInstance);
