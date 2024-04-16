@@ -34,7 +34,7 @@ export type PopupMenuAndroidInstance = {
 type Props = {
   menuItems: $ReadOnlyArray<string>,
   onSelectionChange: number => void,
-  onPopupDismiss?: () => void,
+  onDismiss?: () => void,
   children: React.Node,
   instanceRef: RefObject<?PopupMenuAndroidInstance>,
 };
@@ -42,7 +42,7 @@ type Props = {
 export default function PopupMenuAndroid({
   menuItems,
   onSelectionChange,
-  onPopupDismiss,
+  onDismiss,
   children,
   instanceRef,
 }: Props): React.Node {
@@ -53,11 +53,11 @@ export default function PopupMenuAndroid({
     },
     [onSelectionChange],
   );
-  const _onPopupDismiss = useCallback(
+  const _onDismiss = useCallback(
     (event: PopupMenuDismissEvent) => {
-      onPopupDismiss?.();
+      onDismiss?.();
     },
-    [onPopupDismiss],
+    [onDismiss],
   );
 
   useImperativeHandle(instanceRef, ItemViewabilityInstance => {
@@ -72,7 +72,7 @@ export default function PopupMenuAndroid({
     <PopupMenuAndroidNativeComponent
       ref={nativeRef}
       onPopupMenuSelectionChange={_onSelectionChange}
-      onPopupMenuDismiss={_onPopupDismiss}
+      onPopupMenuDismiss={_onDismiss}
       menuItems={menuItems}>
       {children}
     </PopupMenuAndroidNativeComponent>

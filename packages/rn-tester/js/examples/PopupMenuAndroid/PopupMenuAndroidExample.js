@@ -37,7 +37,7 @@ const PopupMenu = () => {
         instanceRef={popupRef}
         menuItems={items.map(({label}) => label)}
         onSelectionChange={selection => items[selection].onPress()}
-        onPopupDismiss={() => console.warn('Popup was dismissed!')}>
+        onDismiss={() => console.warn('Popup was dismissed!')}>
         <Button
           title="Show PopupMenu!"
           onPress={() => {
