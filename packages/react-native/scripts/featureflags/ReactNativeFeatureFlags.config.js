@@ -91,6 +91,11 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Flag determining if the modern CDP backend should be enabled. This flag is global and should not be changed across React Host lifetimes.',
     },
+    preventDoubleTextMeasure: {
+      defaultValue: false,
+      description:
+        'When enabled, ParagraphShadowNode will no longer call measure twice.',
+    },
     useModernRuntimeScheduler: {
       defaultValue: false,
       description:

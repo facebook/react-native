@@ -10,6 +10,7 @@
 #include <cmath>
 
 #include <react/debug/react_native_assert.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/attributedstring/AttributedStringBox.h>
 #include <react/renderer/components/view/ViewShadowNode.h>
 #include <react/renderer/components/view/conversions.h>
@@ -166,10 +167,10 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
   ensureUnsealed();
 
   auto layoutMetrics = getLayoutMetrics();
-  auto availableSize = layoutMetrics.getContentFrame().size;
+  auto size = layoutMetrics.getContentFrame().size;
 
-  auto layoutConstraints = LayoutConstraints{
-      availableSize, availableSize, layoutMetrics.layoutDirection};
+  auto layoutConstraints =
+      LayoutConstraints{size, size, layoutMetrics.layoutDirection};
   auto content =
       getContentWithMeasuredAttachments(layoutContext, layoutConstraints);
 
@@ -177,21 +178,34 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
 
   TextLayoutContext textLayoutContext{};
   textLayoutContext.pointScaleFactor = layoutContext.pointScaleFactor;
-  auto measurement = textLayoutManager_->measure(
-      AttributedStringBox{content.attributedString},
-      content.paragraphAttributes,
-      textLayoutContext,
-      layoutConstraints);
+  auto measurement = TextMeasurement{};
+
+  if (!ReactNativeFeatureFlags::preventDoubleTextMeasure()) {
+    measurement = textLayoutManager_->measure(
+        AttributedStringBox{content.attributedString},
+        content.paragraphAttributes,
+        textLayoutContext,
+        layoutConstraints);
+  }
 
   if (getConcreteProps().onTextLayout) {
     auto linesMeasurements = textLayoutManager_->measureLines(
-        content.attributedString, content.paragraphAttributes, availableSize);
+        content.attributedString, content.paragraphAttributes, size);
     getConcreteEventEmitter().onTextLayout(linesMeasurements);
   }
 
   if (content.attachments.empty()) {
     // No attachments to layout.
     return;
+  }
+
+  if (ReactNativeFeatureFlags::preventDoubleTextMeasure()) {
+    // Only measure if attachments are not empty.
+    measurement = textLayoutManager_->measure(
+        AttributedStringBox{content.attributedString},
+        content.paragraphAttributes,
+        textLayoutContext,
+        layoutConstraints);
   }
 
   //  Iterating on attachments, we clone shadow nodes and moving

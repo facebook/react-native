@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<de8d2a8416c3ad914df01b765c8df907>>
+ * @generated SignedSource<<2ac50c51832dfbcebfc8875c02738727>>
  */
 
 /**
@@ -44,6 +44,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool forceBatchingMountItemsOnAndroid();
   bool inspectorEnableCxxInspectorPackagerConnection();
   bool inspectorEnableModernCDPRegistry();
+  bool preventDoubleTextMeasure();
   bool useModernRuntimeScheduler();
   bool useNativeViewConfigsInBridgelessMode();
   bool useStateAlignmentMechanism();
@@ -57,7 +58,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 16> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 17> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> batchRenderingUpdatesInEventLoop_;
@@ -72,6 +73,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> forceBatchingMountItemsOnAndroid_;
   std::atomic<std::optional<bool>> inspectorEnableCxxInspectorPackagerConnection_;
   std::atomic<std::optional<bool>> inspectorEnableModernCDPRegistry_;
+  std::atomic<std::optional<bool>> preventDoubleTextMeasure_;
   std::atomic<std::optional<bool>> useModernRuntimeScheduler_;
   std::atomic<std::optional<bool>> useNativeViewConfigsInBridgelessMode_;
   std::atomic<std::optional<bool>> useStateAlignmentMechanism_;

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8804fc52ad516ba82c0db6fcdea5f110>>
+ * @generated SignedSource<<d6a33b997461fd186c58a956f6854aca>>
  */
 
 /**
@@ -101,6 +101,11 @@ class ReactNativeFeatureFlags {
    * Flag determining if the modern CDP backend should be enabled. This flag is global and should not be changed across React Host lifetimes.
    */
   RN_EXPORT static bool inspectorEnableModernCDPRegistry();
+
+  /**
+   * When enabled, ParagraphShadowNode will no longer call measure twice.
+   */
+  RN_EXPORT static bool preventDoubleTextMeasure();
 
   /**
    * When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.
