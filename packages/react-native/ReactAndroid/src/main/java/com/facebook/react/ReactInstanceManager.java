@@ -193,6 +193,8 @@ public class ReactInstanceManager {
   private List<ViewManager> mViewManagers;
   private boolean mUseFallbackBundle = true;
 
+  private boolean mKeepFabricUIManagerOnDestroy;
+
   private class ReactContextInitParams {
     private final JavaScriptExecutorFactory mJsExecutorFactory;
     private final JSBundleLoader mJsBundleLoader;
@@ -241,7 +243,8 @@ public class ReactInstanceManager {
       @Nullable ReactPackageTurboModuleManagerDelegate.Builder tmmDelegateBuilder,
       @Nullable SurfaceDelegateFactory surfaceDelegateFactory,
       @Nullable DevLoadingViewManager devLoadingViewManager,
-      @Nullable ChoreographerProvider choreographerProvider) {
+      @Nullable ChoreographerProvider choreographerProvider,
+      boolean keepFabricUIManagerOnDestroy) {
     FLog.d(TAG, "ReactInstanceManager.ctor()");
     initializeSoLoaderIfNecessary(applicationContext);
 
@@ -277,6 +280,7 @@ public class ReactInstanceManager {
     mMemoryPressureRouter = new MemoryPressureRouter(applicationContext);
     mJSExceptionHandler = jSExceptionHandler;
     mTMMDelegateBuilder = tmmDelegateBuilder;
+    mKeepFabricUIManagerOnDestroy = keepFabricUIManagerOnDestroy;
     synchronized (mPackages) {
       PrinterHolder.getPrinter()
           .logMessage(ReactDebugOverlayTags.RN_CORE, "RNCore: Use Split Packages");
@@ -1367,7 +1371,8 @@ public class ReactInstanceManager {
             .setRegistry(nativeModuleRegistry)
             .setJSBundleLoader(jsBundleLoader)
             .setJSExceptionHandler(exceptionHandler)
-            .setInspectorTarget(getOrCreateInspectorTarget());
+            .setInspectorTarget(getOrCreateInspectorTarget())
+            .setKeepFabricUIManagerOnDestroy(mKeepFabricUIManagerOnDestroy);
 
     ReactMarker.logMarker(CREATE_CATALYST_INSTANCE_START);
     // CREATE_CATALYST_INSTANCE_END is in JSCExecutor.cpp

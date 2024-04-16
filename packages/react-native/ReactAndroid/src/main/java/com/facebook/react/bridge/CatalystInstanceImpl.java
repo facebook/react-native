@@ -45,6 +45,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @DoNotStrip
 public class CatalystInstanceImpl implements CatalystInstance {
+
   static {
     ReactBridge.staticInit();
   }
@@ -114,13 +115,16 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   public native NativeMethodCallInvokerHolderImpl getNativeMethodCallInvokerHolder();
 
+  private boolean mKeepFabricUIManagerOnDestroy;
+
   private CatalystInstanceImpl(
       final ReactQueueConfigurationSpec reactQueueConfigurationSpec,
       final JavaScriptExecutor jsExecutor,
       final NativeModuleRegistry nativeModuleRegistry,
       final JSBundleLoader jsBundleLoader,
       JSExceptionHandler jSExceptionHandler,
-      @Nullable ReactInstanceManagerInspectorTarget inspectorTarget) {
+      @Nullable ReactInstanceManagerInspectorTarget inspectorTarget,
+      boolean keepFabricUIManagerOnDestroy) {
     FLog.d(ReactConstants.TAG, "Initializing React Xplat Bridge.");
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "createCatalystInstanceImpl");
 
@@ -136,6 +140,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
     mJSExceptionHandler = jSExceptionHandler;
     mNativeModulesQueueThread = mReactQueueConfiguration.getNativeModulesQueueThread();
     mTraceListener = new JSProfilerTraceListener(this);
+    mKeepFabricUIManagerOnDestroy = keepFabricUIManagerOnDestroy;
     Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
 
     FLog.d(ReactConstants.TAG, "Initializing React Xplat Bridge before initializeBridge");
@@ -157,6 +162,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   @DoNotStripAny
   private static class InstanceCallback {
+
     // We do this so the callback doesn't keep the CatalystInstanceImpl alive.
     // In this case, the callback is held in C++ code, so the GC can't see it
     // and determine there's an inaccessible cycle.
@@ -342,6 +348,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
   @Override
   @ThreadConfined(UI)
   public void destroy() {
+    mDestroyed = true;
     FLog.d(ReactConstants.TAG, "CatalystInstanceImpl.destroy() start");
     UiThreadUtil.assertOnUiThread();
     if (mDestroyed) {
@@ -358,7 +365,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
         () -> {
           mNativeModuleRegistry.notifyJSInstanceDestroy();
           mJSIModuleRegistry.notifyJSInstanceDestroy();
-          if (mFabricUIManager != null) {
+          if (mFabricUIManager != null && !mKeepFabricUIManagerOnDestroy) {
             mFabricUIManager.invalidate();
           }
           boolean wasIdle = (mPendingJSCalls.getAndSet(0) == 0);
@@ -619,6 +626,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
   }
 
   private class NativeExceptionHandler implements QueueThreadExceptionHandler {
+
     @Override
     public void handleException(Exception e) {
       // Any Exception caught here is because of something in JS. Even if it's a bug in the
@@ -629,6 +637,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
   }
 
   private static class JSProfilerTraceListener implements TraceListener {
+
     // We do this so the callback doesn't keep the CatalystInstanceImpl alive.
     // In this case, Systrace will keep the registered listener around forever
     // if the CatalystInstanceImpl is not explicitly destroyed. These instances
@@ -663,6 +672,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
     private @Nullable JavaScriptExecutor mJSExecutor;
     private @Nullable JSExceptionHandler mJSExceptionHandler;
     private @Nullable ReactInstanceManagerInspectorTarget mInspectorTarget;
+    private boolean mKeepFabricUIManagerOnDestroy;
 
     public Builder setReactQueueConfigurationSpec(
         ReactQueueConfigurationSpec ReactQueueConfigurationSpec) {
@@ -696,6 +706,11 @@ public class CatalystInstanceImpl implements CatalystInstance {
       return this;
     }
 
+    public Builder setKeepFabricUIManagerOnDestroy(boolean keepFabricUIManagerOnDestroy) {
+      mKeepFabricUIManagerOnDestroy = keepFabricUIManagerOnDestroy;
+      return this;
+    }
+
     public CatalystInstanceImpl build() {
       return new CatalystInstanceImpl(
           Assertions.assertNotNull(mReactQueueConfigurationSpec),
@@ -703,7 +718,8 @@ public class CatalystInstanceImpl implements CatalystInstance {
           Assertions.assertNotNull(mRegistry),
           Assertions.assertNotNull(mJSBundleLoader),
           Assertions.assertNotNull(mJSExceptionHandler),
-          mInspectorTarget);
+          mInspectorTarget,
+          mKeepFabricUIManagerOnDestroy);
     }
   }
 }

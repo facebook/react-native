@@ -75,6 +75,8 @@ public class ReactInstanceManagerBuilder {
   private @Nullable JSEngineResolutionAlgorithm mJSEngineResolutionAlgorithm = null;
   private @Nullable ChoreographerProvider mChoreographerProvider = null;
 
+  private boolean mKeepFabricUIManagerOnDestroy;
+
   /* package protected */ ReactInstanceManagerBuilder() {}
 
   /** Factory for desired implementation of JavaScriptExecutor. */
@@ -295,6 +297,16 @@ public class ReactInstanceManagerBuilder {
   }
 
   /**
+   * When set to true, the FabricUIManager will not be invalidated when the ReactInstanceManager is
+   * destroyed
+   */
+  public ReactInstanceManagerBuilder setKeepFabricUIManagerOnDestroy(
+      boolean keepFabricUIManagerOnDestroy) {
+    mKeepFabricUIManagerOnDestroy = keepFabricUIManagerOnDestroy;
+    return this;
+  }
+
+  /**
    * Instantiates a new {@link ReactInstanceManager}. Before calling {@code build}, the following
    * must be called:
    *
@@ -358,7 +370,8 @@ public class ReactInstanceManagerBuilder {
         mTMMDelegateBuilder,
         mSurfaceDelegateFactory,
         mDevLoadingViewManager,
-        mChoreographerProvider);
+        mChoreographerProvider,
+        mKeepFabricUIManagerOnDestroy);
   }
 
   private JavaScriptExecutorFactory getDefaultJSExecutorFactory(

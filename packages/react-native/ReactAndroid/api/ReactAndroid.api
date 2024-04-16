@@ -294,6 +294,7 @@ public class com/facebook/react/ReactInstanceManagerBuilder {
 	public fun setJSExceptionHandler (Lcom/facebook/react/bridge/JSExceptionHandler;)Lcom/facebook/react/ReactInstanceManagerBuilder;
 	public fun setJSMainModulePath (Ljava/lang/String;)Lcom/facebook/react/ReactInstanceManagerBuilder;
 	public fun setJavaScriptExecutorFactory (Lcom/facebook/react/bridge/JavaScriptExecutorFactory;)Lcom/facebook/react/ReactInstanceManagerBuilder;
+	public fun setKeepFabricUIManagerOnDestroy (Z)Lcom/facebook/react/ReactInstanceManagerBuilder;
 	public fun setLazyViewManagersEnabled (Z)Lcom/facebook/react/ReactInstanceManagerBuilder;
 	public fun setMinNumShakes (I)Lcom/facebook/react/ReactInstanceManagerBuilder;
 	public fun setMinTimeLeftInFrameForNonBatchedOperationMs (I)Lcom/facebook/react/ReactInstanceManagerBuilder;
@@ -310,6 +311,7 @@ public abstract class com/facebook/react/ReactNativeHost {
 	public fun clear ()V
 	protected fun createReactInstanceManager ()Lcom/facebook/react/ReactInstanceManager;
 	protected final fun getApplication ()Landroid/app/Application;
+	protected fun getBaseReactInstanceManagerBuilder ()Lcom/facebook/react/ReactInstanceManagerBuilder;
 	protected fun getBundleAssetName ()Ljava/lang/String;
 	protected fun getChoreographerProvider ()Lcom/facebook/react/internal/ChoreographerProvider;
 	protected fun getDevLoadingViewManager ()Lcom/facebook/react/devsupport/interfaces/DevLoadingViewManager;
@@ -634,6 +636,7 @@ public class com/facebook/react/bridge/CatalystInstanceImpl$Builder {
 	public fun setJSBundleLoader (Lcom/facebook/react/bridge/JSBundleLoader;)Lcom/facebook/react/bridge/CatalystInstanceImpl$Builder;
 	public fun setJSExceptionHandler (Lcom/facebook/react/bridge/JSExceptionHandler;)Lcom/facebook/react/bridge/CatalystInstanceImpl$Builder;
 	public fun setJSExecutor (Lcom/facebook/react/bridge/JavaScriptExecutor;)Lcom/facebook/react/bridge/CatalystInstanceImpl$Builder;
+	public fun setKeepFabricUIManagerOnDestroy (Z)Lcom/facebook/react/bridge/CatalystInstanceImpl$Builder;
 	public fun setReactQueueConfigurationSpec (Lcom/facebook/react/bridge/queue/ReactQueueConfigurationSpec;)Lcom/facebook/react/bridge/CatalystInstanceImpl$Builder;
 	public fun setRegistry (Lcom/facebook/react/bridge/NativeModuleRegistry;)Lcom/facebook/react/bridge/CatalystInstanceImpl$Builder;
 }
