@@ -11,6 +11,9 @@
 'use strict';
 
 if (__DEV__) {
+  // Register dispatcher on global, which can be used later by Chrome DevTools frontend
+  require('../../src/private/fusebox/setUpFuseboxReactDevToolsDispatcher');
+
   let isWebSocketOpen = false;
   let ws = null;
 
