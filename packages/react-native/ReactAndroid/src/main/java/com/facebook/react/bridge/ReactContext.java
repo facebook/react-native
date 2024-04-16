@@ -262,7 +262,17 @@ public abstract class ReactContext extends ContextWrapper {
     return mCatalystInstance != null && !mCatalystInstance.isDestroyed();
   }
 
+  /**
+   * This API has been deprecated due to naming consideration, please use hasReactInstance() instead
+   *
+   * @return
+   */
+  @Deprecated
   public boolean hasCatalystInstance() {
+    return mCatalystInstance != null;
+  }
+
+  public boolean hasReactInstance() {
     return mCatalystInstance != null;
   }
 

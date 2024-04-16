@@ -95,6 +95,11 @@ class BridgelessReactContext extends ReactApplicationContext implements EventDis
     return mReactHost.isInstanceInitialized();
   }
 
+  @Override
+  public boolean hasReactInstance() {
+    return mReactHost.isInstanceInitialized();
+  }
+
   DevSupportManager getDevSupportManager() {
     return mReactHost.getDevSupportManager();
   }
