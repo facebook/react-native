@@ -1794,6 +1794,7 @@ type Props = $ReadOnly<{|
   accessibilityLiveRegion?: ?(\\"none\\" | \\"polite\\" | \\"assertive\\"),
   accessibilityRole?: ?AccessibilityRole,
   accessibilityState?: ?AccessibilityState,
+  accessibilitySplitFocus?: ?boolean,
   accessibilityValue?: ?AccessibilityValue,
   \\"aria-valuemax\\"?: AccessibilityValue[\\"max\\"],
   \\"aria-valuemin\\"?: AccessibilityValue[\\"min\\"],
@@ -3386,6 +3387,7 @@ exports[`public API should not change unintentionally Libraries/Components/Touch
   accessibilityLabel?: ?Stringish,
   accessibilityLiveRegion?: ?(\\"none\\" | \\"polite\\" | \\"assertive\\"),
   accessibilityRole?: ?AccessibilityRole,
+   accessibilitySplitFocus?: ?boolean,
   accessibilityState?: ?AccessibilityState,
   accessibilityValue?: ?AccessibilityValue,
   \\"aria-valuemax\\"?: AccessibilityValue[\\"max\\"],
@@ -3742,6 +3744,7 @@ type IOSViewProps = $ReadOnly<{|
   accessibilityViewIsModal?: ?boolean,
   \\"aria-modal\\"?: ?boolean,
   accessibilityElementsHidden?: ?boolean,
+  accessibilitySplitFocus?: ?boolean,
   accessibilityLanguage?: ?Stringish,
   shouldRasterizeIOS?: ?boolean,
 |}>;

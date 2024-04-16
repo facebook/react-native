@@ -60,6 +60,7 @@ exports[`TouchableWithoutFeedback with disabled state should be disabled when di
   onResponderTerminate={[Function]}
   onResponderTerminationRequest={[Function]}
   onStartShouldSetResponder={[Function]}
+  accessibilitySplitFocus={false}
 />
 `;
 
@@ -98,6 +99,7 @@ exports[`TouchableWithoutFeedback with disabled state should keep accessibilityS
   onResponderTerminate={[Function]}
   onResponderTerminationRequest={[Function]}
   onStartShouldSetResponder={[Function]}
+  
 />
 `;
 
