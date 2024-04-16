@@ -1114,6 +1114,7 @@ public abstract class com/facebook/react/bridge/ReactContext : android/content/C
 	public fun hasCatalystInstance ()Z
 	public fun hasCurrentActivity ()Z
 	public fun hasNativeModule (Ljava/lang/Class;)Z
+	public fun hasReactInstance ()Z
 	protected fun initializeInteropModules ()V
 	protected fun initializeInteropModules (Lcom/facebook/react/bridge/ReactContext;)V
 	public fun initializeMessageQueueThreads (Lcom/facebook/react/bridge/queue/ReactQueueConfiguration;)V
