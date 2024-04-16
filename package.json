@@ -2,14 +2,7 @@
   "name": "@react-native/monorepo",
   "private": true,
   "version": "1000.0.0",
-  "description": "A framework for building native apps using React",
   "license": "MIT",
-  "repository": "github:facebook/react-native",
-  "types": "types",
-  "jest-junit": {
-    "outputDirectory": "reports/junit",
-    "outputName": "js-test-results.xml"
-  },
   "scripts": {
     "android": "cd packages/rn-tester && npm run android",
     "build-android": "./gradlew :packages:react-native:ReactAndroid:build",
@@ -45,9 +38,6 @@
     "packages/*",
     "tools/*"
   ],
-  "peerDependencies": {
-    "react": "18.2.0"
-  },
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "@babel/eslint-parser": "^7.20.0",
