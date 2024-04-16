@@ -16,6 +16,7 @@
 #import <React/RCTJSThread.h>
 #import <React/RCTLog.h>
 #import <React/RCTMockDef.h>
+#import <React/RCTPausedInDebuggerOverlayController.h>
 #import <React/RCTPerformanceLogger.h>
 #import <React/RCTReloadCommand.h>
 #import <jsinspector-modern/InspectorFlags.h>
@@ -28,9 +29,16 @@ RCT_MOCK_DEF(RCTHost, _RCTLogNativeInternal);
 
 using namespace facebook::react;
 
+@interface RCTHost () <RCTReloadListener, RCTInstanceDelegate>
+@property (nonatomic, readonly) jsinspector_modern::HostTarget *inspectorTarget;
+@end
+
 class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::HostTargetDelegate {
  public:
-  RCTHostHostTargetDelegate(RCTHost *host) : host_(host) {}
+  RCTHostHostTargetDelegate(RCTHost *host)
+      : host_(host), pauseOverlayController_([[RCTPausedInDebuggerOverlayController alloc] init])
+  {
+  }
 
   void onReload(const PageReloadRequest &request) override
   {
@@ -38,17 +46,43 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
     [static_cast<id<RCTReloadListener>>(host_) didReceiveReloadCommand];
   }
 
-  void onSetPausedInDebuggerMessage(const OverlaySetPausedInDebuggerMessageRequest &) override
+  void onSetPausedInDebuggerMessage(const OverlaySetPausedInDebuggerMessageRequest &request) override
   {
-    // TODO(moti): Implement this
+    RCTAssertMainQueue();
+    if (!request.message.has_value()) {
+      [pauseOverlayController_ hide];
+    } else {
+      __weak RCTHost *hostWeak = host_;
+      [pauseOverlayController_ showWithMessage:@(request.message.value().c_str())
+          onResume:^{
+            RCTAssertMainQueue();
+            RCTHost *hostStrong = hostWeak;
+            if (!hostStrong) {
+              return;
+            }
+            if (!hostStrong.inspectorTarget) {
+              return;
+            }
+            hostStrong.inspectorTarget->sendCommand(jsinspector_modern::HostCommand::DebuggerResume);
+          }
+          onStepOver:^{
+            RCTAssertMainQueue();
+            RCTHost *hostStrong = hostWeak;
+            if (!hostStrong) {
+              return;
+            }
+            if (!hostStrong.inspectorTarget) {
+              return;
+            }
+            hostStrong.inspectorTarget->sendCommand(jsinspector_modern::HostCommand::DebuggerStepOver);
+          }];
+    }
   }
 
  private:
   __weak RCTHost *host_;
+  RCTPausedInDebuggerOverlayController *pauseOverlayController_;
 };
-
-@interface RCTHost () <RCTReloadListener, RCTInstanceDelegate>
-@end
 
 @implementation RCTHost {
   RCTInstance *_instance;
@@ -410,6 +444,11 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
 
   // Update the global bundle URLq
   RCTReloadCommandSetBundleURL(_bundleURL);
+}
+
+- (jsinspector_modern::HostTarget *)inspectorTarget
+{
+  return _inspectorTarget.get();
 }
 
 @end
