@@ -1,0 +1,77 @@
+#!/usr/bin/env ruby
+
+# httpclient shell command.
+#
+# Usage: 1) % httpclient get https://www.google.co.jp/ q=ruby
+# Usage: 2) % httpclient
+#
+# For 1) it issues a GET request to the given URI and shows the wiredump and
+# the parsed result.  For 2) it invokes irb shell with the binding that has a
+# HTTPClient as 'self'.  You can call HTTPClient instance methods like;
+# > get "https://www.google.co.jp/", :q => :ruby
+require 'httpclient'
+
+method = ARGV.shift
+if method == 'version'
+  puts HTTPClient::VERSION
+  exit
+end
+
+url = ARGV.shift
+if method && url
+  client = HTTPClient.new
+  client.strict_response_size_check = true
+  if method == 'download'
+    print client.get_content(url)
+  else
+    client.debug_dev = STDERR
+    $DEBUG = true
+    require 'pp'
+    pp client.send(method, url, *ARGV)
+  end
+  exit
+end
+
+require 'irb'
+require 'irb/completion'
+
+class Runner
+  def initialize
+    @httpclient = HTTPClient.new
+    @httpclient.strict_response_size_check = true
+  end
+
+  def method_missing(msg, *a, &b)
+    debug, $DEBUG = $DEBUG, true
+    begin
+      @httpclient.send(msg, *a, &b)
+    ensure
+      $DEBUG = debug
+    end
+  end
+
+  def run
+    IRB.setup(nil)
+    ws = IRB::WorkSpace.new(binding)
+    irb = IRB::Irb.new(ws)
+    IRB.conf[:MAIN_CONTEXT] = irb.context
+
+    trap("SIGINT") do
+      irb.signal_handle
+    end
+
+    begin
+      catch(:IRB_EXIT) do
+        irb.eval_input
+      end
+    ensure
+      IRB.irb_at_exit
+    end
+  end
+
+  def to_s
+    'HTTPClient'
+  end
+end
+
+Runner.new.run

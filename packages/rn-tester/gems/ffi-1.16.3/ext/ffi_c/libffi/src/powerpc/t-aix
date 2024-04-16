@@ -1,0 +1,5 @@
+# This file is needed by GCC in order to correctly build AIX FAT
+# library for libffi.
+# However, it has no sense to include this code here, as it depends
+# on GCC multilib architecture.
+# Thus, this file is a simple stub replaced in GCC repository.

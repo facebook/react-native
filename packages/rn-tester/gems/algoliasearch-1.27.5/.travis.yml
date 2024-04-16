@@ -1,0 +1,33 @@
+language: ruby
+
+branches:
+  only:
+    - master
+
+rvm:
+- 1.9.3
+- 2.0
+- 2.1
+- 2.2
+- 2.3
+- 2.4
+- 2.5
+- jruby
+- rbx-3
+
+matrix:
+  allow_failures:
+    - rvm: rbx-3
+    - rvm: jruby
+  include:
+    - rvm: 1.8.7
+      dist: precise
+
+
+cache: bundler
+
+before_script:
+  - wget https://alg.li/algolia-keys && chmod +x algolia-keys
+
+script:
+ - if [ "$TRAVIS_PULL_REQUEST" != "false" ] && [[ ! "$TRAVIS_PULL_REQUEST_SLUG" =~ ^algolia\/ ]]; then eval $(./algolia-keys export) && bundle exec rspec --tag ~maintainers_only; else bundle exec rspec; fi

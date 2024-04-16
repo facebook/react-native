@@ -1,0 +1,24 @@
+# Sets Travis to run the Ruby specs on OS X machines to be as close as possible
+# to the user environment.
+#
+language: objective-c
+addons:
+ code_climate:
+   repo_token: 2926ae7ea0b2a6ced8b0d67efa235769ab85de1d9c9f6702f40d80bacec3c9c4
+
+env:
+  - RVM_RUBY_VERSION=system
+  # - RVM_RUBY_VERSION=1.8.7-p358
+
+before_install:
+  - export LANG=en_US.UTF-8
+  - curl http://curl.haxx.se/ca/cacert.pem -o /usr/local/share/cacert.pem
+  - source ~/.rvm/scripts/rvm
+  - if [[ $RVM_RUBY_VERSION != 'system' ]]; then rvm install $RVM_RUBY_VERSION; fi
+  - rvm use $RVM_RUBY_VERSION
+  - if [[ $RVM_RUBY_VERSION == 'system' ]]; then sudo gem install bundler --no-ri --no-rdoc; else gem install bundler --no-ri --no-rdoc; fi
+
+install:
+  - sudo bundle install --without=documentation
+
+script: bundle exec rake spec

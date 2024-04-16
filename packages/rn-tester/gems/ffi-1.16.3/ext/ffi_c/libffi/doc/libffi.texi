@@ -1,0 +1,1046 @@
+\input texinfo   @c -*-texinfo-*-
+@c %**start of header
+@setfilename libffi.info
+@include version.texi
+@settitle libffi: the portable foreign function interface library
+@setchapternewpage off
+@c %**end of header
+
+@c Merge the standard indexes into a single one.
+@syncodeindex fn cp
+@syncodeindex vr cp
+@syncodeindex ky cp
+@syncodeindex pg cp
+@syncodeindex tp cp
+
+@copying
+
+This manual is for libffi, a portable foreign function interface
+library.
+
+Copyright @copyright{} 2008--2019, 2021, 2022 Anthony Green and Red Hat, Inc.
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+``Software''), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED ``AS IS'', WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+@end copying
+
+@dircategory Development
+@direntry
+* libffi: (libffi).             Portable foreign function interface library.
+@end direntry
+
+@titlepage
+@title libffi: a foreign function interface library
+@subtitle For Version @value{VERSION} of libffi
+@author Anthony Green
+@page
+@vskip 0pt plus 1filll
+@insertcopying
+@end titlepage
+
+
+@ifnottex
+@node Top
+@top libffi
+
+@insertcopying
+
+@menu
+* Introduction::                What is libffi?
+* Using libffi::                How to use libffi.
+* Memory Usage::                Where memory for closures comes from.
+* Missing Features::            Things libffi can't do.
+* Index::                       Index.
+@end menu
+
+@end ifnottex
+
+
+@node Introduction
+@chapter What is libffi?
+
+Compilers for high level languages generate code that follow certain
+conventions.  These conventions are necessary, in part, for separate
+compilation to work.  One such convention is the @dfn{calling
+convention}.  The calling convention is a set of assumptions made by
+the compiler about where function arguments will be found on entry to
+a function.  A calling convention also specifies where the return
+value for a function is found.  The calling convention is also
+sometimes called the @dfn{ABI} or @dfn{Application Binary Interface}.
+@cindex calling convention
+@cindex ABI
+@cindex Application Binary Interface
+
+Some programs may not know at the time of compilation what arguments
+are to be passed to a function.  For instance, an interpreter may be
+told at run-time about the number and types of arguments used to call
+a given function.  @code{libffi} can be used in such programs to
+provide a bridge from the interpreter program to compiled code.
+
+The @code{libffi} library provides a portable, high level programming
+interface to various calling conventions.  This allows a programmer to
+call any function specified by a call interface description at run
+time.
+
+@acronym{FFI} stands for Foreign Function Interface.  A foreign
+function interface is the popular name for the interface that allows
+code written in one language to call code written in another language.
+The @code{libffi} library really only provides the lowest, machine
+dependent layer of a fully featured foreign function interface.  A
+layer must exist above @code{libffi} that handles type conversions for
+values passed between the two languages.
+@cindex FFI
+@cindex Foreign Function Interface
+
+
+@node Using libffi
+@chapter Using libffi
+
+@menu
+* The Basics::                  The basic libffi API.
+* Simple Example::              A simple example.
+* Types::                       libffi type descriptions.
+* Multiple ABIs::               Different passing styles on one platform.
+* The Closure API::             Writing a generic function.
+* Closure Example::             A closure example.
+* Thread Safety::               Thread safety.
+@end menu
+
+
+@node The Basics
+@section The Basics
+
+@code{libffi} assumes that you have a pointer to the function you wish
+to call and that you know the number and types of arguments to pass
+it, as well as the return type of the function.
+
+The first thing you must do is create an @code{ffi_cif} object that
+matches the signature of the function you wish to call.  This is a
+separate step because it is common to make multiple calls using a
+single @code{ffi_cif}.  The @dfn{cif} in @code{ffi_cif} stands for
+Call InterFace.  To prepare a call interface object, use the function
+@code{ffi_prep_cif}.
+@cindex cif
+
+@findex ffi_prep_cif
+@defun ffi_status ffi_prep_cif (ffi_cif *@var{cif}, ffi_abi @var{abi}, unsigned int @var{nargs}, ffi_type *@var{rtype}, ffi_type **@var{argtypes})
+This initializes @var{cif} according to the given parameters.
+
+@var{abi} is the ABI to use; normally @code{FFI_DEFAULT_ABI} is what
+you want.  @ref{Multiple ABIs} for more information.
+
+@var{nargs} is the number of arguments that this function accepts.
+
+@var{rtype} is a pointer to an @code{ffi_type} structure that
+describes the return type of the function.  @xref{Types}.
+
+@var{argtypes} is a vector of @code{ffi_type} pointers.
+@var{argtypes} must have @var{nargs} elements.  If @var{nargs} is 0,
+this argument is ignored.
+
+@code{ffi_prep_cif} returns a @code{libffi} status code, of type
+@code{ffi_status}.  This will be either @code{FFI_OK} if everything
+worked properly; @code{FFI_BAD_TYPEDEF} if one of the @code{ffi_type}
+objects is incorrect; or @code{FFI_BAD_ABI} if the @var{abi} parameter
+is invalid.
+@end defun
+
+If the function being called is variadic (varargs) then
+@code{ffi_prep_cif_var} must be used instead of @code{ffi_prep_cif}.
+
+@findex ffi_prep_cif_var
+@defun ffi_status ffi_prep_cif_var (ffi_cif *@var{cif}, ffi_abi @var{abi}, unsigned int @var{nfixedargs}, unsigned int @var{ntotalargs}, ffi_type *@var{rtype}, ffi_type **@var{argtypes})
+This initializes @var{cif} according to the given parameters for
+a call to a variadic function.  In general its operation is the
+same as for @code{ffi_prep_cif} except that:
+
+@var{nfixedargs} is the number of fixed arguments, prior to any
+variadic arguments.  It must be greater than zero.
+
+@var{ntotalargs} the total number of arguments, including variadic
+and fixed arguments.  @var{argtypes} must have this many elements.
+
+@code{ffi_prep_cif_var} will return @code{FFI_BAD_ARGTYPE} if any of
+the variable argument types are @code{ffi_type_float} (promote to
+@code{ffi_type_double} first), or any integer type small than an int
+(promote to an int-sized type first).
+
+Note that, different cif's must be prepped for calls to the same
+function when different numbers of arguments are passed.
+
+Also note that a call to @code{ffi_prep_cif_var} with
+@var{nfixedargs}=@var{nototalargs} is NOT equivalent to a call to
+@code{ffi_prep_cif}.
+
+@end defun
+
+Note that the resulting @code{ffi_cif} holds pointers to all the
+@code{ffi_type} objects that were used during initialization.  You
+must ensure that these type objects have a lifetime at least as long
+as that of the @code{ffi_cif}.
+
+To call a function using an initialized @code{ffi_cif}, use the
+@code{ffi_call} function:
+
+@findex ffi_call
+@defun void ffi_call (ffi_cif *@var{cif}, void *@var{fn}, void *@var{rvalue}, void **@var{avalues})
+This calls the function @var{fn} according to the description given in
+@var{cif}.  @var{cif} must have already been prepared using
+@code{ffi_prep_cif}.
+
+@var{rvalue} is a pointer to a chunk of memory that will hold the
+result of the function call.  This must be large enough to hold the
+result, no smaller than the system register size (generally 32 or 64
+bits), and must be suitably aligned; it is the caller's responsibility
+to ensure this.  If @var{cif} declares that the function returns
+@code{void} (using @code{ffi_type_void}), then @var{rvalue} is
+ignored.
+
+In most situations, @code{libffi} will handle promotion according to
+the ABI.  However, for historical reasons, there is a special case
+with return values that must be handled by your code.  In particular,
+for integral (not @code{struct}) types that are narrower than the
+system register size, the return value will be widened by
+@code{libffi}.  @code{libffi} provides a type, @code{ffi_arg}, that
+can be used as the return type.  For example, if the CIF was defined
+with a return type of @code{char}, @code{libffi} will try to store a
+full @code{ffi_arg} into the return value.
+
+@var{avalues} is a vector of @code{void *} pointers that point to the
+memory locations holding the argument values for a call.  If @var{cif}
+declares that the function has no arguments (i.e., @var{nargs} was 0),
+then @var{avalues} is ignored.
+
+Note that while the return value must be register-sized, arguments
+should exactly match their declared type.  For example, if an argument
+is a @code{short}, then the entry in @var{avalues} should point to an
+object declared as @code{short}; but if the return type is
+@code{short}, then @var{rvalue} should point to an object declared as
+a larger type -- usually @code{ffi_arg}.
+@end defun
+
+
+@node Simple Example
+@section Simple Example
+
+Here is a trivial example that calls @code{puts} a few times.
+
+@example
+#include <stdio.h>
+#include <ffi.h>
+
+int main()
+@{
+  ffi_cif cif;
+  ffi_type *args[1];
+  void *values[1];
+  char *s;
+  ffi_arg rc;
+
+  /* Initialize the argument info vectors */
+  args[0] = &ffi_type_pointer;
+  values[0] = &s;
+
+  /* Initialize the cif */
+  if (ffi_prep_cif(&cif, FFI_DEFAULT_ABI, 1,
+		       &ffi_type_sint, args) == FFI_OK)
+    @{
+      s = "Hello World!";
+      ffi_call(&cif, puts, &rc, values);
+      /* rc now holds the result of the call to puts */
+
+      /* values holds a pointer to the function's arg, so to
+         call puts() again all we need to do is change the
+         value of s */
+      s = "This is cool!";
+      ffi_call(&cif, puts, &rc, values);
+    @}
+
+  return 0;
+@}
+@end example
+
+
+@node Types
+@section Types
+
+@menu
+* Primitive Types::             Built-in types.
+* Structures::                  Structure types.
+* Size and Alignment::          Size and alignment of types.
+* Arrays Unions Enums::         Arrays, unions, and enumerations.
+* Type Example::                Structure type example.
+* Complex::                     Complex types.
+* Complex Type Example::        Complex type example.
+@end menu
+
+@node Primitive Types
+@subsection Primitive Types
+
+@code{Libffi} provides a number of built-in type descriptors that can
+be used to describe argument and return types:
+
+@table @code
+@item ffi_type_void
+@tindex ffi_type_void
+The type @code{void}.  This cannot be used for argument types, only
+for return values.
+
+@item ffi_type_uint8
+@tindex ffi_type_uint8
+An unsigned, 8-bit integer type.
+
+@item ffi_type_sint8
+@tindex ffi_type_sint8
+A signed, 8-bit integer type.
+
+@item ffi_type_uint16
+@tindex ffi_type_uint16
+An unsigned, 16-bit integer type.
+
+@item ffi_type_sint16
+@tindex ffi_type_sint16
+A signed, 16-bit integer type.
+
+@item ffi_type_uint32
+@tindex ffi_type_uint32
+An unsigned, 32-bit integer type.
+
+@item ffi_type_sint32
+@tindex ffi_type_sint32
+A signed, 32-bit integer type.
+
+@item ffi_type_uint64
+@tindex ffi_type_uint64
+An unsigned, 64-bit integer type.
+
+@item ffi_type_sint64
+@tindex ffi_type_sint64
+A signed, 64-bit integer type.
+
+@item ffi_type_float
+@tindex ffi_type_float
+The C @code{float} type.
+
+@item ffi_type_double
+@tindex ffi_type_double
+The C @code{double} type.
+
+@item ffi_type_uchar
+@tindex ffi_type_uchar
+The C @code{unsigned char} type.
+
+@item ffi_type_schar
+@tindex ffi_type_schar
+The C @code{signed char} type.  (Note that there is not an exact
+equivalent to the C @code{char} type in @code{libffi}; ordinarily you
+should either use @code{ffi_type_schar} or @code{ffi_type_uchar}
+depending on whether @code{char} is signed.)
+
+@item ffi_type_ushort
+@tindex ffi_type_ushort
+The C @code{unsigned short} type.
+
+@item ffi_type_sshort
+@tindex ffi_type_sshort
+The C @code{short} type.
+
+@item ffi_type_uint
+@tindex ffi_type_uint
+The C @code{unsigned int} type.
+
+@item ffi_type_sint
+@tindex ffi_type_sint
+The C @code{int} type.
+
+@item ffi_type_ulong
+@tindex ffi_type_ulong
+The C @code{unsigned long} type.
+
+@item ffi_type_slong
+@tindex ffi_type_slong
+The C @code{long} type.
+
+@item ffi_type_longdouble
+@tindex ffi_type_longdouble
+On platforms that have a C @code{long double} type, this is defined.
+On other platforms, it is not.
+
+@item ffi_type_pointer
+@tindex ffi_type_pointer
+A generic @code{void *} pointer.  You should use this for all
+pointers, regardless of their real type.
+
+@item ffi_type_complex_float
+@tindex ffi_type_complex_float
+The C @code{_Complex float} type.
+
+@item ffi_type_complex_double
+@tindex ffi_type_complex_double
+The C @code{_Complex double} type.
+
+@item ffi_type_complex_longdouble
+@tindex ffi_type_complex_longdouble
+The C @code{_Complex long double} type.
+On platforms that have a C @code{long double} type, this is defined.
+On other platforms, it is not.
+@end table
+
+Each of these is of type @code{ffi_type}, so you must take the address
+when passing to @code{ffi_prep_cif}.
+
+
+@node Structures
+@subsection Structures
+
+@code{libffi} is perfectly happy passing structures back and forth.
+You must first describe the structure to @code{libffi} by creating a
+new @code{ffi_type} object for it.
+
+@tindex ffi_type
+@deftp {Data type} ffi_type
+The @code{ffi_type} has the following members:
+@table @code
+@item size_t size
+This is set by @code{libffi}; you should initialize it to zero.
+
+@item unsigned short alignment
+This is set by @code{libffi}; you should initialize it to zero.
+
+@item unsigned short type
+For a structure, this should be set to @code{FFI_TYPE_STRUCT}.
+
+@item ffi_type **elements
+This is a @samp{NULL}-terminated array of pointers to @code{ffi_type}
+objects.  There is one element per field of the struct.
+
+Note that @code{libffi} has no special support for bit-fields.  You
+must manage these manually.
+@end table
+@end deftp
+
+The @code{size} and @code{alignment} fields will be filled in by
+@code{ffi_prep_cif} or @code{ffi_prep_cif_var}, as needed.
+
+@node Size and Alignment
+@subsection Size and Alignment
+
+@code{libffi} will set the @code{size} and @code{alignment} fields of
+an @code{ffi_type} object for you.  It does so using its knowledge of
+the ABI.
+
+You might expect that you can simply read these fields for a type that
+has been laid out by @code{libffi}.  However, there are some caveats.
+
+@itemize @bullet
+@item
+The size or alignment of some of the built-in types may vary depending
+on the chosen ABI.
+
+@item
+The size and alignment of a new structure type will not be set by
+@code{libffi} until it has been passed to @code{ffi_prep_cif} or
+@code{ffi_get_struct_offsets}.
+
+@item
+A structure type cannot be shared across ABIs.  Instead each ABI needs
+its own copy of the structure type.
+@end itemize
+
+So, before examining these fields, it is safest to pass the
+@code{ffi_type} object to @code{ffi_prep_cif} or
+@code{ffi_get_struct_offsets} first.  This function will do all the
+needed setup.
+
+@example
+ffi_type *desired_type;
+ffi_abi desired_abi;
+@dots{}
+ffi_cif cif;
+if (ffi_prep_cif (&cif, desired_abi, 0, desired_type, NULL) == FFI_OK)
+  @{
+    size_t size = desired_type->size;
+    unsigned short alignment = desired_type->alignment;
+  @}
+@end example
+
+@code{libffi} also provides a way to get the offsets of the members of
+a structure.
+
+@findex ffi_get_struct_offsets
+@defun ffi_status ffi_get_struct_offsets (ffi_abi abi, ffi_type *struct_type, size_t *offsets)
+Compute the offset of each element of the given structure type.
+@var{abi} is the ABI to use; this is needed because in some cases the
+layout depends on the ABI.
+
+@var{offsets} is an out parameter.  The caller is responsible for
+providing enough space for all the results to be written -- one
+element per element type in @var{struct_type}.  If @var{offsets} is
+@code{NULL}, then the type will be laid out but not otherwise
+modified.  This can be useful for accessing the type's size or layout,
+as mentioned above.
+
+This function returns @code{FFI_OK} on success; @code{FFI_BAD_ABI} if
+@var{abi} is invalid; or @code{FFI_BAD_TYPEDEF} if @var{struct_type}
+is invalid in some way.  Note that only @code{FFI_STRUCT} types are
+valid here.
+@end defun
+
+@node Arrays Unions Enums
+@subsection Arrays, Unions, and Enumerations
+
+@subsubsection Arrays
+
+@code{libffi} does not have direct support for arrays or unions.
+However, they can be emulated using structures.
+
+To emulate an array, simply create an @code{ffi_type} using
+@code{FFI_TYPE_STRUCT} with as many members as there are elements in
+the array.
+
+@example
+ffi_type array_type;
+ffi_type **elements
+int i;
+
+elements = malloc ((n + 1) * sizeof (ffi_type *));
+for (i = 0; i < n; ++i)
+  elements[i] = array_element_type;
+elements[n] = NULL;
+
+array_type.size = array_type.alignment = 0;
+array_type.type = FFI_TYPE_STRUCT;
+array_type.elements = elements;
+@end example
+
+Note that arrays cannot be passed or returned by value in C --
+structure types created like this should only be used to refer to
+members of real @code{FFI_TYPE_STRUCT} objects.
+
+However, a phony array type like this will not cause any errors from
+@code{libffi} if you use it as an argument or return type.  This may
+be confusing.
+
+@subsubsection Unions
+
+A union can also be emulated using @code{FFI_TYPE_STRUCT}.  In this
+case, however, you must make sure that the size and alignment match
+the real requirements of the union.
+
+One simple way to do this is to ensue that each element type is laid
+out.  Then, give the new structure type a single element; the size of
+the largest element; and the largest alignment seen as well.
+
+This example uses the @code{ffi_prep_cif} trick to ensure that each
+element type is laid out.
+
+@example
+ffi_abi desired_abi;
+ffi_type union_type;
+ffi_type **union_elements;
+
+int i;
+ffi_type element_types[2];
+
+element_types[1] = NULL;
+
+union_type.size = union_type.alignment = 0;
+union_type.type = FFI_TYPE_STRUCT;
+union_type.elements = element_types;
+
+for (i = 0; union_elements[i]; ++i)
+  @{
+    ffi_cif cif;
+    if (ffi_prep_cif (&cif, desired_abi, 0, union_elements[i], NULL) == FFI_OK)
+      @{
+        if (union_elements[i]->size > union_type.size)
+          @{
+            union_type.size = union_elements[i];
+            size = union_elements[i]->size;
+          @}
+        if (union_elements[i]->alignment > union_type.alignment)
+          union_type.alignment = union_elements[i]->alignment;
+      @}
+  @}
+@end example
+
+@subsubsection Enumerations
+
+@code{libffi} does not have any special support for C @code{enum}s.
+Although any given @code{enum} is implemented using a specific
+underlying integral type, exactly which type will be used cannot be
+determined by @code{libffi} -- it may depend on the values in the
+enumeration or on compiler flags such as @option{-fshort-enums}.
+@xref{Structures unions enumerations and bit-fields implementation, , , gcc},
+for more information about how GCC handles enumerations.
+
+@node Type Example
+@subsection Type Example
+
+The following example initializes a @code{ffi_type} object
+representing the @code{tm} struct from Linux's @file{time.h}.
+
+Here is how the struct is defined:
+
+@example
+struct tm @{
+    int tm_sec;
+    int tm_min;
+    int tm_hour;
+    int tm_mday;
+    int tm_mon;
+    int tm_year;
+    int tm_wday;
+    int tm_yday;
+    int tm_isdst;
+    /* Those are for future use. */
+    long int __tm_gmtoff__;
+    __const char *__tm_zone__;
+@};
+@end example
+
+Here is the corresponding code to describe this struct to
+@code{libffi}:
+
+@example
+    @{
+      ffi_type tm_type;
+      ffi_type *tm_type_elements[12];
+      int i;
+
+      tm_type.size = tm_type.alignment = 0;
+      tm_type.type = FFI_TYPE_STRUCT;
+      tm_type.elements = &tm_type_elements;
+
+      for (i = 0; i < 9; i++)
+          tm_type_elements[i] = &ffi_type_sint;
+
+      tm_type_elements[9] = &ffi_type_slong;
+      tm_type_elements[10] = &ffi_type_pointer;
+      tm_type_elements[11] = NULL;
+
+      /* tm_type can now be used to represent tm argument types and
+	 return types for ffi_prep_cif() */
+    @}
+@end example
+
+@node Complex
+@subsection Complex Types
+
+@code{libffi} supports the complex types defined by the C99
+standard (@code{_Complex float}, @code{_Complex double} and
+@code{_Complex long double} with the built-in type descriptors
+@code{ffi_type_complex_float}, @code{ffi_type_complex_double} and
+@code{ffi_type_complex_longdouble}.
+
+Custom complex types like @code{_Complex int} can also be used.
+An @code{ffi_type} object has to be defined to describe the
+complex type to @code{libffi}.
+
+@tindex ffi_type
+@deftp {Data type} ffi_type
+@table @code
+@item size_t size
+This must be manually set to the size of the complex type.
+
+@item unsigned short alignment
+This must be manually set to the alignment of the complex type.
+
+@item unsigned short type
+For a complex type, this must be set to @code{FFI_TYPE_COMPLEX}.
+
+@item ffi_type **elements
+
+This is a @samp{NULL}-terminated array of pointers to
+@code{ffi_type} objects.  The first element is set to the
+@code{ffi_type} of the complex's base type.  The second element
+must be set to @code{NULL}.
+@end table
+@end deftp
+
+The section @ref{Complex Type Example} shows a way to determine
+the @code{size} and @code{alignment} members in a platform
+independent way.
+
+For platforms that have no complex support in @code{libffi} yet,
+the functions @code{ffi_prep_cif} and @code{ffi_prep_args} abort
+the program if they encounter a complex type.
+
+@node Complex Type Example
+@subsection Complex Type Example
+
+This example demonstrates how to use complex types:
+
+@example
+#include <stdio.h>
+#include <ffi.h>
+#include <complex.h>
+
+void complex_fn(_Complex float cf,
+                _Complex double cd,
+                _Complex long double cld)
+@{
+  printf("cf=%f+%fi\ncd=%f+%fi\ncld=%f+%fi\n",
+         (float)creal (cf), (float)cimag (cf),
+         (float)creal (cd), (float)cimag (cd),
+         (float)creal (cld), (float)cimag (cld));
+@}
+
+int main()
+@{
+  ffi_cif cif;
+  ffi_type *args[3];
+  void *values[3];
+  _Complex float cf;
+  _Complex double cd;
+  _Complex long double cld;
+
+  /* Initialize the argument info vectors */
+  args[0] = &ffi_type_complex_float;
+  args[1] = &ffi_type_complex_double;
+  args[2] = &ffi_type_complex_longdouble;
+  values[0] = &cf;
+  values[1] = &cd;
+  values[2] = &cld;
+
+  /* Initialize the cif */
+  if (ffi_prep_cif(&cif, FFI_DEFAULT_ABI, 3,
+                   &ffi_type_void, args) == FFI_OK)
+    @{
+      cf = 1.0 + 20.0 * I;
+      cd = 300.0 + 4000.0 * I;
+      cld = 50000.0 + 600000.0 * I;
+      /* Call the function */
+      ffi_call(&cif, (void (*)(void))complex_fn, 0, values);
+    @}
+
+  return 0;
+@}
+@end example
+
+This is an example for defining a custom complex type descriptor
+for compilers that support them:
+
+@example
+/*
+ * This macro can be used to define new complex type descriptors
+ * in a platform independent way.
+ *
+ * name: Name of the new descriptor is ffi_type_complex_<name>.
+ * type: The C base type of the complex type.
+ */
+#define FFI_COMPLEX_TYPEDEF(name, type, ffitype)             \
+  static ffi_type *ffi_elements_complex_##name [2] = @{      \
+    (ffi_type *)(&ffitype), NULL                             \
+  @};                                                        \
+  struct struct_align_complex_##name @{                      \
+    char c;                                                  \
+    _Complex type x;                                         \
+  @};                                                        \
+  ffi_type ffi_type_complex_##name = @{                      \
+    sizeof(_Complex type),                                   \
+    offsetof(struct struct_align_complex_##name, x),         \
+    FFI_TYPE_COMPLEX,                                        \
+    (ffi_type **)ffi_elements_complex_##name                 \
+  @}
+
+/* Define new complex type descriptors using the macro: */
+/* ffi_type_complex_sint */
+FFI_COMPLEX_TYPEDEF(sint, int, ffi_type_sint);
+/* ffi_type_complex_uchar */
+FFI_COMPLEX_TYPEDEF(uchar, unsigned char, ffi_type_uint8);
+@end example
+
+The new type descriptors can then be used like one of the built-in
+type descriptors in the previous example.
+
+@node Multiple ABIs
+@section Multiple ABIs
+
+A given platform may provide multiple different ABIs at once.  For
+instance, the x86 platform has both @samp{stdcall} and @samp{fastcall}
+functions.
+
+@code{libffi} provides some support for this.  However, this is
+necessarily platform-specific.
+
+@c FIXME: document the platforms
+
+@node The Closure API
+@section The Closure API
+
+@code{libffi} also provides a way to write a generic function -- a
+function that can accept and decode any combination of arguments.
+This can be useful when writing an interpreter, or to provide wrappers
+for arbitrary functions.
+
+This facility is called the @dfn{closure API}.  Closures are not
+supported on all platforms; you can check the @code{FFI_CLOSURES}
+define to determine whether they are supported on the current
+platform.
+@cindex closures
+@cindex closure API
+@findex FFI_CLOSURES
+
+Because closures work by assembling a tiny function at runtime, they
+require special allocation on platforms that have a non-executable
+heap.  Memory management for closures is handled by a pair of
+functions:
+
+@findex ffi_closure_alloc
+@defun void *ffi_closure_alloc (size_t @var{size}, void **@var{code})
+Allocate a chunk of memory holding @var{size} bytes.  This returns a
+pointer to the writable address, and sets *@var{code} to the
+corresponding executable address.
+
+@var{size} should be sufficient to hold a @code{ffi_closure} object.
+@end defun
+
+@findex ffi_closure_free
+@defun void ffi_closure_free (void *@var{writable})
+Free memory allocated using @code{ffi_closure_alloc}.  The argument is
+the writable address that was returned.
+@end defun
+
+Once you have allocated the memory for a closure, you must construct a
+@code{ffi_cif} describing the function call.  Finally you can prepare
+the closure function:
+
+@findex ffi_prep_closure_loc
+@defun ffi_status ffi_prep_closure_loc (ffi_closure *@var{closure}, ffi_cif *@var{cif}, void (*@var{fun}) (ffi_cif *@var{cif}, void *@var{ret}, void **@var{args}, void *@var{user_data}), void *@var{user_data}, void *@var{codeloc})
+Prepare a closure function.  The arguments to
+@code{ffi_prep_closure_loc} are:
+
+@table @var
+@item closure
+The address of a @code{ffi_closure} object; this is the writable
+address returned by @code{ffi_closure_alloc}.
+
+@item cif
+The @code{ffi_cif} describing the function parameters.  Note that this
+object, and the types to which it refers, must be kept alive until the
+closure itself is freed.
+
+@item user_data
+An arbitrary datum that is passed, uninterpreted, to your closure
+function.
+
+@item codeloc
+The executable address returned by @code{ffi_closure_alloc}.
+
+@item fun
+The function which will be called when the closure is invoked.  It is
+called with the arguments:
+
+@table @var
+@item cif
+The @code{ffi_cif} passed to @code{ffi_prep_closure_loc}.
+
+@item ret
+A pointer to the memory used for the function's return value.
+
+If the function is declared as returning @code{void}, then this value
+is garbage and should not be used.
+
+Otherwise, @var{fun} must fill the object to which this points,
+following the same special promotion behavior as @code{ffi_call}.
+That is, in most cases, @var{ret} points to an object of exactly the
+size of the type specified when @var{cif} was constructed.  However,
+integral types narrower than the system register size are widened.  In
+these cases your program may assume that @var{ret} points to an
+@code{ffi_arg} object.
+
+@item args
+A vector of pointers to memory holding the arguments to the function.
+
+@item user_data
+The same @var{user_data} that was passed to
+@code{ffi_prep_closure_loc}.
+@end table
+@end table
+
+@code{ffi_prep_closure_loc} will return @code{FFI_OK} if everything
+went ok, and one of the other @code{ffi_status} values on error.
+
+After calling @code{ffi_prep_closure_loc}, you can cast @var{codeloc}
+to the appropriate pointer-to-function type.
+@end defun
+
+You may see old code referring to @code{ffi_prep_closure}.  This
+function is deprecated, as it cannot handle the need for separate
+writable and executable addresses.
+
+@node Closure Example
+@section Closure Example
+
+A trivial example that creates a new @code{puts} by binding
+@code{fputs} with @code{stdout}.
+
+@example
+#include <stdio.h>
+#include <ffi.h>
+
+/* Acts like puts with the file given at time of enclosure. */
+void puts_binding(ffi_cif *cif, void *ret, void* args[],
+                  void *stream)
+@{
+  *(ffi_arg *)ret = fputs(*(char **)args[0], (FILE *)stream);
+@}
+
+typedef int (*puts_t)(char *);
+
+int main()
+@{
+  ffi_cif cif;
+  ffi_type *args[1];
+  ffi_closure *closure;
+
+  void *bound_puts;
+  int rc;
+
+  /* Allocate closure and bound_puts */
+  closure = ffi_closure_alloc(sizeof(ffi_closure), &bound_puts);
+
+  if (closure)
+    @{
+      /* Initialize the argument info vectors */
+      args[0] = &ffi_type_pointer;
+
+      /* Initialize the cif */
+      if (ffi_prep_cif(&cif, FFI_DEFAULT_ABI, 1,
+                       &ffi_type_sint, args) == FFI_OK)
+        @{
+          /* Initialize the closure, setting stream to stdout */
+          if (ffi_prep_closure_loc(closure, &cif, puts_binding,
+                                   stdout, bound_puts) == FFI_OK)
+            @{
+              rc = ((puts_t)bound_puts)("Hello World!");
+              /* rc now holds the result of the call to fputs */
+            @}
+        @}
+    @}
+
+  /* Deallocate both closure, and bound_puts */
+  ffi_closure_free(closure);
+
+  return 0;
+@}
+
+@end example
+
+@node Thread Safety
+@section Thread Safety
+
+@code{libffi} is not completely thread-safe.  However, many parts are,
+and if you follow some simple rules, you can use it safely in a
+multi-threaded program.
+
+@itemize @bullet
+@item
+@code{ffi_prep_cif} may modify the @code{ffi_type} objects passed to
+it.  It is best to ensure that only a single thread prepares a given
+@code{ffi_cif} at a time.
+
+@item
+On some platforms, @code{ffi_prep_cif} may modify the size and
+alignment of some types, depending on the chosen ABI.  On these
+platforms, if you switch between ABIs, you must ensure that there is
+only one call to @code{ffi_prep_cif} at a time.
+
+Currently the only affected platform is PowerPC and the only affected
+type is @code{long double}.
+@end itemize
+
+@node Memory Usage
+@chapter Memory Usage
+
+Note that memory allocated by @code{ffi_closure_alloc} and freed by
+@code{ffi_closure_free} does not come from the same general pool of
+memory that @code{malloc} and @code{free} use.  To accomodate security
+settings, @code{libffi} may aquire memory, for example, by mapping
+temporary files into multiple places in the address space (once to
+write out the closure, a second to execute it).  The search follows
+this list, using the first that works:
+
+@itemize @bullet
+
+@item
+A anonymous mapping (i.e. not file-backed)
+
+@item
+@code{memfd_create()}, if the kernel supports it.
+
+@item
+A file created in the directory referenced by the environment variable
+@code{LIBFFI_TMPDIR}.
+
+@item
+Likewise for the environment variable @code{TMPDIR}.
+
+@item
+A file created in @code{/tmp}.
+
+@item
+A file created in @code{/var/tmp}.
+
+@item
+A file created in @code{/dev/shm}.
+
+@item
+A file created in the user's home directory (@code{$HOME}).
+
+@item
+A file created in any directory listed in @code{/etc/mtab}.
+
+@item
+A file created in any directory listed in @code{/proc/mounts}.
+
+@end itemize
+
+If security settings prohibit using any of these for closures,
+@code{ffi_closure_alloc} will fail.
+
+@node Missing Features
+@chapter Missing Features
+
+@code{libffi} is missing a few features.  We welcome patches to add
+support for these.
+
+@itemize @bullet
+@item
+Variadic closures.
+
+@item
+There is no support for bit fields in structures.
+
+@item
+The ``raw'' API is undocumented.
+@c anything else?
+
+@item
+The Go API is undocumented.
+@end itemize
+
+@node Index
+@unnumbered Index
+
+@printindex cp
+
+@bye

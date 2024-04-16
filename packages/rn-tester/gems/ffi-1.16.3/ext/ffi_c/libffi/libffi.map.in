@@ -1,0 +1,76 @@
+#define LIBFFI_ASM
+#define LIBFFI_H
+#include <fficonfig.h>
+#include <ffitarget.h>
+
+/* These version numbers correspond to the libtool-version abi numbers,
+   not to the libffi release numbers.  */
+
+LIBFFI_BASE_8.0 {
+  global:
+	/* Exported data variables.  */
+	ffi_type_void;
+	ffi_type_uint8;
+	ffi_type_sint8;
+	ffi_type_uint16;
+	ffi_type_sint16;
+	ffi_type_uint32;
+	ffi_type_sint32;
+	ffi_type_uint64;
+	ffi_type_sint64;
+	ffi_type_float;
+	ffi_type_double;
+	ffi_type_longdouble;
+	ffi_type_pointer;
+
+	/* Exported functions.  */
+	ffi_call;
+	ffi_prep_cif;
+	ffi_prep_cif_var;
+
+	ffi_raw_call;
+	ffi_ptrarray_to_raw;
+	ffi_raw_to_ptrarray;
+	ffi_raw_size;
+
+	ffi_java_raw_call;
+	ffi_java_ptrarray_to_raw;
+	ffi_java_raw_to_ptrarray;
+	ffi_java_raw_size;
+
+	ffi_get_struct_offsets;
+  local:
+	*;
+};
+
+#ifdef FFI_TARGET_HAS_COMPLEX_TYPE
+LIBFFI_COMPLEX_8.0 {
+  global:
+	/* Exported data variables.  */
+	ffi_type_complex_float;
+	ffi_type_complex_double;
+	ffi_type_complex_longdouble;
+} LIBFFI_BASE_8.0;
+#endif
+
+#if FFI_CLOSURES
+LIBFFI_CLOSURE_8.0 {
+  global:
+	ffi_closure_alloc;
+	ffi_closure_free;
+	ffi_prep_closure;
+	ffi_prep_closure_loc;
+	ffi_prep_raw_closure;
+	ffi_prep_raw_closure_loc;
+	ffi_prep_java_raw_closure;
+	ffi_prep_java_raw_closure_loc;
+} LIBFFI_BASE_8.0;
+#endif
+
+#if FFI_GO_CLOSURES
+LIBFFI_GO_CLOSURE_8.0 {
+  global:
+	ffi_call_go;
+	ffi_prep_go_closure;
+} LIBFFI_CLOSURE_8.0;
+#endif

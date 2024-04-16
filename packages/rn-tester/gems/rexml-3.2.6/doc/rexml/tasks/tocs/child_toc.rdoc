@@ -1,0 +1,12 @@
+Tasks on this page:
+
+- {Relationships}[#label-Relationships]
+  - {Task: Set the Parent}[#label-Task-3A+Set+the+Parent]
+  - {Task: Insert Previous Sibling}[#label-Task-3A+Insert+Previous+Sibling]
+  - {Task: Insert Next Sibling}[#label-Task-3A+Insert+Next+Sibling]
+- {Removal or Replacement}[#label-Removal+or+Replacement]
+  - {Task: Remove Child from Parent}[#label-Task-3A+Remove+Child+from+Parent]
+  - {Task: Replace Child}[#label-Task-3A+Replace+Child]
+- {Document}[#label-Document]
+  - {Task: Get the Document}[#label-Task-3A+Get+the+Document]
+

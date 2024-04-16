@@ -1,0 +1,29 @@
+# This file is used to maintain libtool version info for libffi.  See
+# the libtool manual to understand the meaning of the fields.  This is
+# a separate file so that version updates don't involve re-running
+# automake.
+#
+# Here are a set of rules to help you update your library version
+# information:
+#
+# 1. Start with version information of `0:0:0' for each libtool library.
+#
+# 2. Update the version information only immediately before a public
+#    release of your software. More frequent updates are unnecessary,
+#    and only guarantee that the current interface number gets larger
+#    faster.
+#
+# 3. If the library source code has changed at all since the last
+#    update, then increment revision (`c:r:a' becomes `c:r+1:a').
+#
+# 4. If any interfaces have been added, removed, or changed since the
+#    last update, increment current, and set revision to 0.
+#
+# 5. If any interfaces have been added since the last public release,
+#    then increment age.
+#
+# 6. If any interfaces have been removed since the last public
+#    release, then set age to 0.
+#
+# CURRENT:REVISION:AGE
+9:2:1

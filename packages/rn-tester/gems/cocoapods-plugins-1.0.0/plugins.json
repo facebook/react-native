@@ -1,0 +1,245 @@
+{
+  "plugins": [
+    {
+      "gem": "cocoapods-appledoc",
+      "name": "AppleDoc",
+      "author": "Kyle Fuller",
+      "social_media_url": "http://twitter.com/kylefuller",
+      "url": "https://github.com/CocoaPods/cocoapods-appledoc",
+      "description": "Generates docset and documentation for a pod."
+    },
+    {
+      "gem": "cocoapods-deploy",
+      "name": "Deploy",
+      "author": "James Campbell",
+      "social_media_url": "https://twitter.com/jcampbell_05",
+      "url": "https://github.com/jcampbell05/cocoapods-deploy",
+      "description": "Deploys dependencies for a CocoaPods project without needing to clone the repo (Similar to Bundler's `--deployment`)."
+    },
+    {
+      "gem": "cocoapods-rome",
+      "name": "Rome",
+      "author": "Boris Bügling",
+      "social_media_url": "https://twitter.com/neonichu",
+      "url": "https://github.com/neonichu/rome",
+      "description": "Rome makes it easy to build a list of frameworks for consumption outside of Xcode, e.g. for a Swift script."
+    },
+    {
+      "gem": "cocoapods-deintegrate",
+      "name": "Deintegrate",
+      "author": "Kyle Fuller",
+      "social_media_url": "http://twitter.com/kylefuller",
+      "url": "https://github.com/kylef/cocoapods-deintegrate",
+      "description": "Deintegrates a project from CocoaPods."
+    },
+    {
+      "gem": "cocoapods-dependencies",
+      "name": "Pod Dependencies",
+      "author": "Samuel E. Giddins",
+      "social_media_url": "http://twitter.com/segiddins",
+      "url": "https://github.com/segiddins/cocoapods-dependencies",
+      "description": "Shows a project's CocoaPod dependency graph."
+    },
+    {
+      "gem": "cocoapods-browser",
+      "name": "Pod browser",
+      "author": "Toshihiro Morimoto",
+      "social_media_url": "http://twitter.com/dealforest",
+      "url": "https://github.com/dealforest/cocoapods-browser",
+      "description": "Open a pod's homepage in the browser."
+    },
+    {
+      "gem": "cocoapods-check_latest",
+      "name": "Check Latest",
+      "author": "Yuji Nakayama",
+      "social_media_url": "http://twitter.com/nkym37",
+      "url": "https://github.com/yujinakayama/cocoapods-check_latest",
+      "description": "Checks if the latest version of a pod is up to date."
+    },
+    {
+      "gem": "cocoapods-docs",
+      "name": "Pod docs",
+      "author": "CocoaPods Dev Team",
+      "social_media_url": "http://twitter.com/CocoaPods",
+      "url": "https://github.com/CocoaPods/cocoapods-docs",
+      "description": "Convenient access to the documentation of a Pod via cocoadocs.org."
+    },
+    {
+      "gem": "cocoapods-docstats",
+      "name": "docstats",
+      "author": "Boris Bügling",
+      "social_media_url": "http://twitter.com/NeoNacho",
+      "url": "https://github.com/neonichu/cocoapods-docstats",
+      "description": "Showing documentation metrics of Pods."
+    },
+    {
+      "gem": "cocoapods-open",
+      "name": "open",
+      "author": "Les Hill",
+      "social_media_url": "http://twitter.com/leshill",
+      "url": "https://github.com/leshill/open_pod_bay",
+      "description": "Open a pod’s workspace."
+    },
+    {
+      "gem": "cocoapods-podfile_info",
+      "name": "Pod info",
+      "author": "CocoaPods Dev Team",
+      "social_media_url": "http://twitter.com/CocoaPods",
+      "url": "https://github.com/cocoapods/cocoapods-podfile_info",
+      "description": "Shows information on installed Pods."
+    },
+    {
+      "gem": "cocoapods-repo-svn",
+      "name": "repo-svn",
+      "author": "Dusty Clarkda",
+      "social_media_url": "http://twitter.com/_clarkda",
+      "url": "https://github.com/clarkda/cocoapods-repo-svn",
+      "description": "Adds subversion support to manage spec-repositories."
+    },
+    {
+      "gem": "cocoapods-repo-hg",
+      "name": "repo-hg",
+      "author": "Dusty Clarkda",
+      "social_media_url": "http://twitter.com/_clarkda",
+      "url": "https://github.com/clarkda/cocoapods-repo-hg",
+      "description": "Adds mercurial support to manage spec-repositories."
+    },
+    {
+      "gem": "cocoapods-try",
+      "name": "Pod try",
+      "author": "CocoaPods Dev Team",
+      "social_media_url": "http://twitter.com/CocoaPods",
+      "url": "https://github.com/CocoaPods/cocoapods-try",
+      "description": "Quickly try the demo project of a Pod."
+    },
+    {
+      "gem": "cocoapods-watch",
+      "name": "Pod watch",
+      "author": "Marin Usalj",
+      "url": "https://github.com/supermarin/cocoapods-watch",
+      "description": "Watch for Podfile changes and run pod install."
+    },
+    {
+      "gem": "cocoapods-roulette",
+      "name": "Pods Roulette",
+      "author": "Heiko Behrens, Marcel Jackwerth",
+      "url": "https://github.com/sirlantis/cocoapods-roulette",
+      "description": "Builds an empty project with three random pods."
+    },
+    {
+      "gem": "cocoapods-sorted-search",
+      "name": "Sorted Search",
+      "author": "Denys Telezhkin",
+      "url": "https://github.com/DenHeadless/cocoapods-sorted-search",
+      "description": "Adds a sort subcommand for pod search to sort search results by amount of stars, forks, or github activity."
+    },
+    {
+      "gem": "cocoapods-release",
+      "name": "Release",
+      "author": "Oliver Letterer",
+      "social_media_url": "https://twitter.com/oletterer",
+      "url": "https://github.com/Sparrow-Labs/cocoapods-release",
+      "description": "Tags and releases pods for you."
+    },
+    {
+      "gem": "cocoapods-clean",
+      "name": "cocoapods clean",
+      "author": "Luca Querella",
+      "url": "https://github.com/BendingSpoons/cocoapods-clean",
+      "description": "Remove Podfile.lock, Pods/ and *.xcworkspace."
+    },
+    {
+      "gem": "cocoapods-keys",
+      "name": "CocoaPods Keys",
+      "author": "Orta Therox, Samuel E. Giddins",
+      "url": "https://github.com/orta/cocoapods-keys",
+      "description": "Store sensitive data in your Mac's keychain, that will be installed into your app's source code via the Pods library."
+    },
+    {
+      "gem": "cocoapods-packager",
+      "name": "CocoaPods Packager",
+      "author": "Kyle Fuller, Boris Bügling",
+      "url": "https://github.com/CocoaPods/cocoapods-packager",
+      "description": "Generate a framework or static library from a podspec."
+    },
+    {
+      "gem": "cocoapods-links",
+      "name": "CocoaPods Links",
+      "author": "Mike Owens",
+      "social_media_url": "https://twitter.com/mikejowens",
+      "url": "https://github.com/mowens/cocoapods-links",
+      "description": "A CocoaPods plugin to manage local development pods"
+    },
+    {
+      "gem": "cocoapods-prune-localizations",
+      "name": "CocoaPods Prune Localizations",
+      "author": "Diego Torres",
+      "social_media_url": "https://twitter.com/dtorres",
+      "url": "https://github.com/dtorres/cocoapods-prune-localizations",
+      "description": "Upon running pod install, this plugin will remove unused localizations by your project"
+    },
+    {
+      "gem": "cocoapods-readonly",
+      "name": "CocoaPods Readonly",
+      "author": "Mason Glidden",
+      "url": "https://github.com/Yelp/cocoapods-readonly",
+      "description": "Developers switching from submodules are used to modifying library source files from within Xcode. This locks those files as needed so Xcode warns you when attempting to edit them."
+    },
+    {
+      "gem": "cocoapods-thumbs",
+      "name": "CocoaPods Thumbs",
+      "author": "Pablo Bendersky",
+      "url": "https://github.com/quadion/cocoapods-thumbs",
+      "description": "Use cocoapods-thumbs to check upvotes or downvotes of Podspecs from your peers based on past experiences."
+    },
+    {
+      "gem": "cocoapods-blacklist",
+      "name": "CocoaPods Blacklist",
+      "author": "David Grandinetti",
+      "url": "https://github.com/yahoo/cocoapods-blacklist",
+      "description": "Check if a project is using a banned version of a pod. Handy for security audits."
+    },
+    {
+      "gem": "cocoapods-superdeintegrate",
+      "name": "CocoaPods Superdeintegrate",
+      "author": "Ash Furrow",
+      "url": "https://github.com/ashfurrow/cocoapods-superdeintegrate",
+      "description": "Deletes the CocoaPods cache, your derived data folder, and makes sure that your Pods directory is gone."
+    },
+    {
+      "gem": "cocoapods-archive",
+      "name": "CocoaPods Archive",
+      "author": "fjbelchi, alexito4",
+      "url": "https://github.com/fjbelchi/cocoapods-archive",
+      "description": "cocoapods-archive plugin that archive your project"
+    },
+    {
+      "gem": "cocoapods-check",
+      "name": "CocoaPods Check",
+      "author": "Matt Di Iorio",
+      "url": "https://github.com/square/cocoapods-check",
+      "description": "Displays differences between locked and installed Pods"
+    },
+    {
+      "gem": "cocoapods-acknowledgements",
+      "name": "CocoaPods Acknowledgements",
+      "author": "Fabio Pelosin, Orta Therox, Marcelo Fabri",
+      "url": "https://github.com/CocoaPods/cocoapods-acknowledgements",
+      "description": "CocoaPods plugin that generates an acknowledgements plist to make it easy to create tools to use in apps."
+    },
+    {
+      "gem": "cocoapods-generator",
+      "name": "CocoaPods Generator",
+      "author": "从权",
+      "url": "https://github.com/zhzhy/cocoapods-generator",
+      "description": "Add files to empty target from *.podspec, such as souce files, libraries, frameworks, resources and so on."
+    },
+    {
+      "gem": "cocoapods-debug",
+      "name": "CocoaPods Debug",
+      "author": "Samuel Giddins",
+      "url": "https://github.com/segiddins/cocoapods-debug",
+      "description": "A simple plugin to ease debugging CocoaPods."
+    }
+  ]
+}

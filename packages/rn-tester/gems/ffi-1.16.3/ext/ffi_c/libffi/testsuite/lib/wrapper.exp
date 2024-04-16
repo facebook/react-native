@@ -1,0 +1,45 @@
+#   Copyright (C) 2004, 2007 Free Software Foundation, Inc.
+
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with GCC; see the file COPYING3.  If not see
+# <http://www.gnu.org/licenses/>.
+
+# This file contains GCC-specifics for status wrappers for test programs.
+
+# ${tool}_maybe_build_wrapper -- Build wrapper object if the target
+# needs it.  FILENAME is the path to the wrapper file.  If there are
+# additional arguments, they are command-line options to provide to
+# the compiler when compiling FILENAME.
+
+proc ${tool}_maybe_build_wrapper { filename args } {
+    global gluefile wrap_flags
+
+    if { [target_info needs_status_wrapper] != "" \
+ 	 && [target_info needs_status_wrapper] != "0" \
+	 && ![info exists gluefile] } {
+	set saved_wrap_compile_flags [target_info wrap_compile_flags]
+	set flags [join $args " "]
+	# The wrapper code may contain code that gcc objects on.  This
+	# became true for dejagnu-1.4.4.  The set of warnings and code
+	# that gcc objects on may change, so just make sure -w is always
+	# passed to turn off all warnings.
+	set_currtarget_info wrap_compile_flags \
+	    "$saved_wrap_compile_flags -w $flags"
+	set result [build_wrapper $filename]
+	set_currtarget_info wrap_compile_flags "$saved_wrap_compile_flags"
+	if { $result != "" } {
+	    set gluefile [lindex $result 0]
+	    set wrap_flags [lindex $result 1]
+	}
+    }
+}

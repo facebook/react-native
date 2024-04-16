@@ -1,0 +1,45 @@
+name: ci
+
+on:
+  pull_request:
+
+  push:
+    branches:
+      - master
+      - '*-stable'
+
+jobs:
+  ci:
+    name: Ruby ${{ matrix.ruby.name }}
+
+    runs-on: ubuntu-20.04
+
+    strategy:
+      fail-fast: false
+
+      matrix:
+        ruby:
+          - { name: "2.3", value: 2.3.8 }
+          - { name: "2.4", value: 2.4.10 }
+          - { name: "2.5", value: 2.5.9 }
+          - { name: "2.6", value: 2.6.9 }
+          - { name: "2.7", value: 2.7.5 }
+          - { name: "3.0", value: 3.0.3 }
+          - { name: "3.1", value: 3.1.0 }
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby.value }}
+          bundler-cache: true
+
+      - name: Run Test
+        run: bundle exec rake spec
+
+      - name: Test & publish code coverage
+        uses: paambaati/codeclimate-action@v3.0.0
+        env:
+          CC_TEST_REPORTER_ID: 46c8b29dd6711f35704e7c5a541486cbbf2cff8b2df8ce755bfc09917d3c1cbb

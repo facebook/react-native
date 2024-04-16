@@ -1,0 +1,337 @@
+# configure.host
+#
+# This shell script handles all host based configuration for libffi.
+#
+
+# THIS TABLE IS SORTED.  KEEP IT THAT WAY.
+# Most of the time we can define all the variables all at once...
+case "${host}" in
+  aarch64*-*-cygwin* | aarch64*-*-msys* | aarch64*-*-mingw* | aarch64*-*-win* )
+	TARGET=ARM_WIN64; TARGETDIR=aarch64
+	if test "${ax_cv_c_compiler_vendor}" = "microsoft"; then
+	  MSVC=1
+	fi
+	;;
+
+  aarch64*-*-*)
+	TARGET=AARCH64; TARGETDIR=aarch64
+	SOURCES="ffi.c sysv.S"
+	;;
+
+  alpha*-*-*)
+	TARGET=ALPHA; TARGETDIR=alpha;
+	# Support 128-bit long double, changeable via command-line switch.
+	HAVE_LONG_DOUBLE='defined(__LONG_DOUBLE_128__)'
+	SOURCES="ffi.c osf.S"
+	;;
+
+  arc*-*-*)
+	TARGET=ARC; TARGETDIR=arc
+	SOURCES="ffi.c arcompact.S"
+	;;
+
+  arm*-*-cygwin* | arm*-*-msys* | arm*-*-mingw* | arm*-*-win* )
+	TARGET=ARM_WIN32; TARGETDIR=arm
+	if test "${ax_cv_c_compiler_vendor}" = "microsoft"; then
+	  MSVC=1
+	fi
+	;;
+
+  arm*-*-*)
+	TARGET=ARM; TARGETDIR=arm
+	SOURCES="ffi.c sysv.S"
+	;;
+
+  avr32*-*-*)
+	TARGET=AVR32; TARGETDIR=avr32
+	SOURCES="ffi.c sysv.S"
+	;;
+
+  bfin*)
+	TARGET=BFIN; TARGETDIR=bfin
+	SOURCES="ffi.c sysv.S"
+	;;
+
+  cris-*-*)
+	TARGET=LIBFFI_CRIS; TARGETDIR=cris
+	SOURCES="ffi.c sysv.S"
+	;;
+
+  csky-*-*)
+        TARGET=CSKY; TARGETDIR=csky
+        SOURCES="ffi.c sysv.S"
+        ;;
+
+  frv-*-*)
+	TARGET=FRV; TARGETDIR=frv
+	SOURCES="ffi.c eabi.S"
+	;;
+
+  hppa*-*-linux* | parisc*-*-linux* | hppa*-*-openbsd*)
+	TARGET=PA_LINUX; TARGETDIR=pa
+	SOURCES="ffi.c linux.S"
+	;;
+  hppa*64-*-hpux*)
+	TARGET=PA64_HPUX; TARGETDIR=pa
+	SOURCES="ffi64.c hpux64.S"
+	;;
+  hppa*-*-hpux*)
+	TARGET=PA_HPUX; TARGETDIR=pa
+	SOURCES="ffi.c hpux32.S"
+	;;
+
+  i?86-*-freebsd* | i?86-*-openbsd*)
+	TARGET=X86_FREEBSD; TARGETDIR=x86
+	;;
+
+  i?86-*-cygwin* | i?86-*-msys* | i?86-*-mingw* | i?86-*-win* | i?86-*-os2* | i?86-*-interix* \
+  | x86_64-*-cygwin* | x86_64-*-msys* | x86_64-*-mingw* | x86_64-*-win* )
+	TARGETDIR=x86
+	if test $ac_cv_sizeof_size_t = 4; then
+	  TARGET=X86_WIN32
+	else
+	  TARGET=X86_WIN64
+	fi
+	if test "${ax_cv_c_compiler_vendor}" = "microsoft"; then
+	  MSVC=1
+	fi
+	# All mingw/cygwin/win32 builds require -no-undefined for sharedlib.
+	# We must also check with_cross_host to decide if this is a native
+	# or cross-build and select where to install dlls appropriately.
+	if test -n "$with_cross_host" &&
+	   test x"$with_cross_host" != x"no"; then
+	  AM_LTLDFLAGS='-no-undefined -bindir "$(toolexeclibdir)"';
+	else
+	  AM_LTLDFLAGS='-no-undefined -bindir "$(bindir)"';
+	fi
+	;;
+
+  i?86-*-darwin* | x86_64-*-darwin* | i?86-*-ios | x86_64-*-ios)
+	TARGETDIR=x86
+	if test $ac_cv_sizeof_size_t = 4; then
+	  TARGET=X86_DARWIN
+	else
+	  TARGET=X86_64
+	fi
+	;;
+
+  i?86-*-* | x86_64-*-* | amd64-*)
+	TARGETDIR=x86
+	if test $ac_cv_sizeof_size_t = 4; then
+	  echo 'int foo (void) { return __x86_64__; }' > conftest.c
+	  if $CC $CFLAGS -Werror -S conftest.c -o conftest.s > /dev/null 2>&1; then
+	    TARGET_X32=yes
+	    TARGET=X86_64
+	  else
+	    TARGET=X86;
+	  fi
+	  rm -f conftest.*
+	else
+	  TARGET=X86_64;
+	fi
+	;;
+
+  ia64*-*-*)
+	TARGET=IA64; TARGETDIR=ia64
+	SOURCES="ffi.c unix.S"
+	;;
+
+  kvx-*-*)
+	TARGET=KVX; TARGETDIR=kvx
+	SOURCES="ffi.c sysv.S"
+	;;
+
+  loongarch64-*-*)
+	TARGET=LOONGARCH64; TARGETDIR=loongarch64
+	SOURCES="ffi.c sysv.S"
+	;;
+
+  m32r*-*-*)
+	TARGET=M32R; TARGETDIR=m32r
+	SOURCES="ffi.c sysv.S"
+	;;
+
+  m68k-*-*)
+	TARGET=M68K; TARGETDIR=m68k
+	SOURCES="ffi.c sysv.S"
+	;;
+
+  m88k-*-*)
+	TARGET=M88K; TARGETDIR=m88k
+	SOURCES="ffi.c obsd.S"
+	;;
+
+  microblaze*-*-*)
+	TARGET=MICROBLAZE; TARGETDIR=microblaze
+	SOURCES="ffi.c sysv.S"
+	;;
+
+  moxie-*-*)
+	TARGET=MOXIE; TARGETDIR=moxie
+	SOURCES="ffi.c eabi.S"
+	;;
+
+  metag-*-*)
+	TARGET=METAG; TARGETDIR=metag
+	SOURCES="ffi.c sysv.S"
+	;;
+
+  mips-sgi-irix5.* | mips-sgi-irix6.* | mips*-*-rtems*)
+	TARGET=MIPS; TARGETDIR=mips
+	;;
+  mips*-*linux* | mips*-*-openbsd* | mips*-*-freebsd*)
+	# Support 128-bit long double for NewABI.
+	HAVE_LONG_DOUBLE='defined(__mips64)'
+	TARGET=MIPS; TARGETDIR=mips
+	;;
+
+  nios2*-linux*)
+	TARGET=NIOS2; TARGETDIR=nios2
+	SOURCES="ffi.c sysv.S"
+	;;
+
+  or1k*-*-*)
+	TARGET=OR1K; TARGETDIR=or1k
+	SOURCES="ffi.c sysv.S"
+	;;
+
+  powerpc*-*-linux* | powerpc-*-sysv*)
+	TARGET=POWERPC; TARGETDIR=powerpc
+	HAVE_LONG_DOUBLE_VARIANT=1
+	;;
+  powerpc-*-amigaos*)
+	TARGET=POWERPC; TARGETDIR=powerpc
+	;;
+  powerpc-*-eabi*)
+	TARGET=POWERPC; TARGETDIR=powerpc
+	;;
+  powerpc-*-beos*)
+	TARGET=POWERPC; TARGETDIR=powerpc
+	;;
+  powerpc-*-darwin* | powerpc64-*-darwin*)
+	TARGET=POWERPC_DARWIN; TARGETDIR=powerpc
+	;;
+  powerpc-*-aix* | rs6000-*-aix*)
+	TARGET=POWERPC_AIX; TARGETDIR=powerpc
+	# Create AIX-style "FAT" libraries.
+	tmake_file="t-aix"
+	;;
+  powerpc-*-freebsd* | powerpc-*-openbsd* | powerpc-*-netbsd*)
+	TARGET=POWERPC_FREEBSD; TARGETDIR=powerpc
+	HAVE_LONG_DOUBLE_VARIANT=1
+	;;
+  powerpcspe-*-freebsd*)
+	TARGET=POWERPC_FREEBSD; TARGETDIR=powerpc
+	CFLAGS="$CFLAGS -D__NO_FPRS__"
+	;;
+  powerpc64-*-freebsd* | powerpc64le-*-freebsd*)
+	TARGET=POWERPC; TARGETDIR=powerpc
+	;;
+  powerpc*-*-rtems*)
+	TARGET=POWERPC; TARGETDIR=powerpc
+	;;
+
+  riscv*-*)
+	TARGET=RISCV; TARGETDIR=riscv
+	SOURCES="ffi.c sysv.S"
+	;;
+
+  s390-*-* | s390x-*-*)
+	TARGET=S390; TARGETDIR=s390
+	SOURCES="ffi.c sysv.S"
+	;;
+
+  sh-*-* | sh[34]*-*-*)
+	TARGET=SH; TARGETDIR=sh
+	SOURCES="ffi.c sysv.S"
+	;;
+  sh64-*-* | sh5*-*-*)
+	TARGET=SH64; TARGETDIR=sh64
+	SOURCES="ffi.c sysv.S"
+	;;
+
+  sparc*-*-*)
+	TARGET=SPARC; TARGETDIR=sparc
+	SOURCES="ffi.c ffi64.c v8.S v9.S"
+	;;
+
+  tile*-*)
+        TARGET=TILE; TARGETDIR=tile
+	SOURCES="ffi.c tile.S"
+        ;;
+
+  vax-*-*)
+	TARGET=VAX; TARGETDIR=vax
+	SOURCES="ffi.c elfbsd.S"
+	;;
+
+  wasm32-*-*)
+	TARGET=wasm32; TARGETDIR=wasm32
+	SOURCES="ffi.c"
+	;;
+
+  xtensa*-*)
+	TARGET=XTENSA; TARGETDIR=xtensa
+	SOURCES="ffi.c sysv.S"
+	;;
+esac
+
+# ... but some of the cases above share configury.
+case "${TARGET}" in
+  ARM_WIN32)
+	if test "$MSVC" = 1; then
+		SOURCES="ffi.c sysv_msvc_arm32.S"
+	else
+		SOURCES="ffi.c sysv.S"
+	fi
+	;;
+  ARM_WIN64)
+	if test "$MSVC" = 1; then
+		SOURCES="ffi.c win64_armasm.S"
+	else
+		SOURCES="ffi.c sysv.S"
+	fi
+	;;
+  MIPS)
+	SOURCES="ffi.c o32.S n32.S"
+	;;
+  POWERPC)
+	SOURCES="ffi.c ffi_sysv.c ffi_linux64.c sysv.S ppc_closure.S"
+	SOURCES="${SOURCES} linux64.S linux64_closure.S"
+	;;
+  POWERPC_AIX)
+	SOURCES="ffi_darwin.c aix.S aix_closure.S"
+	;;
+  POWERPC_DARWIN)
+	SOURCES="ffi_darwin.c darwin.S darwin_closure.S"
+	;;
+  POWERPC_FREEBSD)
+	SOURCES="ffi.c ffi_sysv.c sysv.S ppc_closure.S"
+	;;
+  X86 | X86_DARWIN | X86_FREEBSD | X86_WIN32)
+	if test "$MSVC" = 1; then
+		SOURCES="ffi.c sysv_intel.S"
+	else
+		SOURCES="ffi.c sysv.S"
+	fi
+	;;
+  X86_64)
+	if test x"$TARGET_X32" = xyes; then
+		SOURCES="ffi64.c unix64.S"
+	else
+		SOURCES="ffi64.c unix64.S ffiw64.c win64.S"
+	fi
+	;;
+  X86_WIN64)
+	if test "$MSVC" = 1; then
+		SOURCES="ffiw64.c win64_intel.S"
+	else
+		SOURCES="ffiw64.c win64.S"
+	fi
+	;;
+esac
+
+# If we failed to configure SOURCES, we can't do anything.
+if test -z "${SOURCES}"; then
+  UNSUPPORTED=1
+fi

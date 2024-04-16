@@ -435,6 +435,15 @@ type IOSViewProps = $ReadOnly<{|
   accessibilityElementsHidden?: ?boolean,
 
   /**
+   * A value indicating whether the focus of a group of nested accessibility elements
+   * can be captured separately from their parent element.
+   *
+   * @platform ios
+   *
+   */
+  accessibilitySplitFocus?: ?boolean,
+
+  /**
    * Indicates to the accessibility services that the UI component is in
    * a specific language. The provided string should be formatted following
    * the BCP 47 specification (https://www.rfc-editor.org/info/bcp47).

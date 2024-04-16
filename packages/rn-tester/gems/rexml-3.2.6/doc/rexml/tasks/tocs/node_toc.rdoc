@@ -1,0 +1,16 @@
+Tasks on this page:
+
+- {Siblings}[#label-Siblings]
+  - {Task: Find Previous Sibling}[#label-Task-3A+Find+Previous+Sibling]
+  - {Task: Find Next Sibling}[#label-Task-3A+Find+Next+Sibling]
+- {Position}[#label-Position]
+  - {Task: Find Own Index Among Siblings}[#label-Task-3A+Find+Own+Index+Among+Siblings]
+- {Recursive Traversal}[#label-Recursive+Traversal]
+  - {Task: Traverse Each Recursively}[#label-Task-3A+Traverse+Each+Recursively]
+- {Recursive Search}[#label-Recursive+Search]
+  - {Task: Traverse Each Recursively}[#label-Task-3A+Traverse+Each+Recursively]
+- {Representation}[#label-Representation]
+  - {Task: Represent a String}[#label-Task-3A+Represent+a+String]
+- {Parent?}[#label-Parent-3F]
+  - {Task: Determine Whether the Node is a Parent}[#label-Task-3A+Determine+Whether+the+Node+is+a+Parent]
+

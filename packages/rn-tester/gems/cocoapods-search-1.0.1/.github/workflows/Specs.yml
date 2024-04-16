@@ -1,0 +1,42 @@
+name: Specs
+
+jobs:
+  specs:
+    strategy:
+      matrix:
+        os: [ubuntu-16.04]
+        ruby: [2.6, 2.7, 3.0]
+
+    name: ${{ matrix.os }} / Ruby ${{ matrix.ruby }}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout git
+        uses: actions/checkout@v1
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        if: ${{ matrix.ruby != 'system' }}
+        with:
+          ruby-version: ${{ matrix.ruby }}
+
+      - name: Update git submodules
+        run: git submodule update --init --recursive
+
+      - name: Run bundle install
+        run: |
+          gem install bundler -v "~> 1.17"
+          bundle install --jobs 4 --retry 3 --without debugging documentation
+
+      - name: Run Specs
+        run: bundle exec rake specs
+
+on:
+  push:
+    branches:
+      - "master"
+      - "*-stable"
+  pull_request:
+    branches:
+      - master
+      - "*-stable"
+

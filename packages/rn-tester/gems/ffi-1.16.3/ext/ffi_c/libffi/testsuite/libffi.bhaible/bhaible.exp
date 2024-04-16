@@ -1,0 +1,63 @@
+# Copyright (C) 2003, 2006, 2009, 2010, 2014, 2018 Free Software Foundation, Inc.
+
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; see the file COPYING3.  If not see
+# <http://www.gnu.org/licenses/>.
+
+dg-init
+libffi-init
+
+global srcdir subdir
+global compiler_vendor
+
+# The conversion of this testsuite into a dejagnu compatible testsuite
+# was done in a pretty lazy fashion, and requires the use of compiler
+# flags to disable warnings for now.
+if { [string match $compiler_vendor "gnu"] } {
+    set warning_options "-Wno-unused-variable -Wno-unused-parameter -Wno-unused-but-set-variable -Wno-uninitialized";
+}
+if { [string match $compiler_vendor "microsoft"] } {
+    # -wd4996  suggest use of vsprintf_s instead of vsprintf
+    # -wd4116  unnamed type definition
+    # -wd4101  unreferenced local variable
+    # -wd4244  warning about implicit double to float conversion
+    set warning_options "-wd4996 -wd4116 -wd4101 -wd4244";
+}
+if { ![string match $compiler_vendor "microsoft"] && ![string match $compiler_vendor "gnu"] } {
+    set warning_options "-Wno-unused-variable -Wno-unused-parameter -Wno-uninitialized";
+}
+
+
+set tlist [lsort [glob -nocomplain -- $srcdir/$subdir/test-call.c]]
+
+for {set i 1} {$i < 82} {incr i} {
+    run-many-tests $tlist [format "-DDGTEST=%d %s" $i $warning_options]
+}
+
+set tlist [lsort [glob -nocomplain -- $srcdir/$subdir/test-callback.c]]
+
+for {set i 1} {$i < 81} {incr i} {
+    if { [libffi_feature_test "#if FFI_CLOSURES"] } {
+        run-many-tests $tlist [format "-DDGTEST=%d %s" $i $warning_options]
+    } else {
+        foreach test $tlist {
+            unsupported [format "%s -DDGTEST=%d %s" $test $i $warning_options]
+        }
+    }
+}
+
+dg-finish
+
+# Local Variables:
+# tcl-indent-level:4
+# End:

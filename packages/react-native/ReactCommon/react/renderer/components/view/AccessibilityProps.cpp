@@ -126,6 +126,12 @@ AccessibilityProps::AccessibilityProps(
                     "accessibilityIgnoresInvertColors",
                     sourceProps.accessibilityIgnoresInvertColors,
                     false)),
+accessibilitySplitFocus(convertRawProp(
+         context,
+         rawProps,
+         "accessibilitySplitFocus",
+         sourceProps.accessibilitySplitFocus,
+         false)),
       onAccessibilityTap(
           CoreFeatures::enablePropIteratorSetter
               ? sourceProps.onAccessibilityTap

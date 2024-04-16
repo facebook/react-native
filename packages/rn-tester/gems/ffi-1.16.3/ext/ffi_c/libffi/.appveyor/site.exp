@@ -1,0 +1,16 @@
+# Copyright (C) 2021  Anthony Green
+
+lappend boards_dir $::env(SITEDIR)
+
+verbose "Global Config File: target_triplet is $target_triplet" 1
+global target_list
+
+case "$target_triplet" in {
+    { "aarch*cygwin*" } {
+	set target_list "unix-noexec"
+    }
+    { "arm*cygwin*" } {
+	set target_list "unix-noexec"
+    }
+}
+

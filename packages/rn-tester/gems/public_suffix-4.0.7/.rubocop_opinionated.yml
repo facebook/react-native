@@ -1,0 +1,163 @@
+AllCops:
+  Exclude:
+    # Exclude .gemspec files because they are generally auto-generated
+    - '*.gemspec'
+    # Exclude vendored folders
+    - 'tmp/**/*'
+    - 'vendor/**/*'
+  NewCops: enable
+
+# [codesmell]
+Layout/LineLength:
+  Enabled: false
+  Exclude:
+    - 'spec/**/*_spec.rb'
+    - 'test/**/*_test.rb'
+  Max: 100
+
+Lint/ConstantDefinitionInBlock:
+  Exclude:
+    - 'Rakefile'
+    - 'spec/**/*'
+    - 'test/**/*'
+
+# [codesmell]
+Metrics/AbcSize:
+  Enabled: false
+  Exclude:
+    - 'spec/**/*_spec.rb'
+    - 'test/**/*_test.rb'
+
+# [codesmell]
+Metrics/BlockLength:
+  Enabled: false
+
+# [codesmell]
+Metrics/CyclomaticComplexity:
+  Enabled: false
+  Exclude:
+    - 'spec/**/*_spec.rb'
+    - 'test/**/*_test.rb'
+
+# [codesmell]
+Metrics/ClassLength:
+  Enabled: false
+  Exclude:
+    - 'spec/**/*_spec.rb'
+    - 'test/**/*_test.rb'
+
+# [codesmell]
+Metrics/MethodLength:
+  Enabled: false
+  Exclude:
+    - 'spec/**/*_spec.rb'
+    - 'test/**/*_test.rb'
+  Max: 10
+
+# [codesmell]
+Metrics/ModuleLength:
+  Enabled: false
+  Exclude:
+    - 'spec/**/*_spec.rb'
+    - 'test/**/*_test.rb'
+
+# [codesmell]
+Metrics/ParameterLists:
+  Enabled: false
+  Max: 5
+
+# [codesmell]
+Metrics/PerceivedComplexity:
+  Enabled: false
+
+# Do not use "and" or "or" in conditionals, but for readability we can use it
+# to chain executions. Just beware of operator order.
+Style/AndOr:
+  EnforcedStyle: conditionals
+
+Style/Documentation:
+  Exclude:
+    - 'spec/**/*'
+    - 'test/**/*'
+
+# Double empty lines are useful to separate conceptually different methods
+# in the same class or module.
+Layout/EmptyLines:
+  Enabled: false
+
+# In most cases, a space is nice. Sometimes, it's not.
+# Just be consistent with the rest of the surrounding code.
+Layout/EmptyLinesAroundClassBody:
+  Enabled: false
+
+# In most cases, a space is nice. Sometimes, it's not.
+# Just be consistent with the rest of the surrounding code.
+Layout/EmptyLinesAroundModuleBody:
+  Enabled: false
+
+# This is quite buggy, as it doesn't recognize double lines.
+# Double empty lines are useful to separate conceptually different methods
+# in the same class or module.
+Layout/EmptyLineBetweenDefs:
+  Enabled: false
+
+# I personally don't care about the format style.
+# In most cases I like to use %, but not at the point I want to enforce it
+# as a convention in the entire code.
+Style/FormatString:
+  Enabled: false
+
+# Annotated tokens (like %<foo>s) are a good thing, but in most cases we don't need them.
+# %s is a simpler and straightforward version that works in almost all cases. So don't complain.
+Style/FormatStringToken:
+  Enabled: false
+
+# unless is not always cool.
+Style/NegatedIf:
+  Enabled: false
+
+# For years, %w() has been the de-facto standard. A lot of libraries are using ().
+# Switching to [] would be a nightmare.
+Style/PercentLiteralDelimiters:
+  Enabled: false
+
+# There are cases were the inline rescue is ok. We can either downgrade the severity,
+# or rely on the developer judgement on a case-by-case basis.
+Style/RescueModifier:
+  Enabled: false
+
+Style/SymbolArray:
+  EnforcedStyle: brackets
+
+# Sorry, but using trailing spaces helps readability.
+#
+#   %w( foo bar )
+#
+# looks better to me than
+#
+#   %w( foo bar )
+#
+Layout/SpaceInsidePercentLiteralDelimiters:
+  Enabled: false
+
+# Hate It or Love It, I prefer double quotes as this is more consistent
+# with several other programming languages and the output of puts and inspect.
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
+# It's nice to be consistent. The trailing comma also allows easy reordering,
+# and doesn't cause a diff in Git when you add a line to the bottom.
+Style/TrailingCommaInArrayLiteral:
+  EnforcedStyleForMultiline: consistent_comma
+Style/TrailingCommaInHashLiteral:
+  EnforcedStyleForMultiline: consistent_comma
+
+Style/TrivialAccessors:
+  # IgnoreClassMethods because I want to be able to define class-level accessors
+  # that sets an instance variable on the metaclass, such as:
+  #
+  #    def self.default=(value)
+  #      @default = value
+  #    end
+  #
+  IgnoreClassMethods: true

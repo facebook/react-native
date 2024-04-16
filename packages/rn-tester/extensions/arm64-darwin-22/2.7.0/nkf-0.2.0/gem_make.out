@@ -1,0 +1,16 @@
+current directory: /Users/bikidas/react-native/packages/rn-tester/gems/nkf-0.2.0/ext/nkf
+/Users/bikidas/.rbenv/versions/2.7.5/bin/ruby -I /Users/bikidas/.rbenv/versions/2.7.5/lib/ruby/2.7.0 -r ./siteconf20240410-93610-eh5yet.rb extconf.rb
+creating Makefile
+
+current directory: /Users/bikidas/react-native/packages/rn-tester/gems/nkf-0.2.0/ext/nkf
+make "DESTDIR=" clean
+
+current directory: /Users/bikidas/react-native/packages/rn-tester/gems/nkf-0.2.0/ext/nkf
+make "DESTDIR="
+compiling nkf.c
+linking shared-object nkf.bundle
+ld: warning: -multiply_defined is obsolete
+
+current directory: /Users/bikidas/react-native/packages/rn-tester/gems/nkf-0.2.0/ext/nkf
+make "DESTDIR=" install
+/opt/homebrew/bin/ginstall -c -m 0755 nkf.bundle ./.gem.20240410-93610-rpiszn

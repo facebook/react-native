@@ -1,0 +1,93 @@
+0.11.0 10/29/15
+===============
+
+Respect NETRC environment variable
+Fix for JRuby PernGen Space
+
+0.10.3 02/24/15
+===============
+
+error when Dir.home is not readable
+
+0.10.2 12/17/14
+===============
+
+set file permissions in /data to be world readable after test runs
+
+0.10.1 12/14/14
+===============
+
+fix bug for `Dir.home` when can't find home
+
+0.10.0 12/10/14
+===============
+
+use `Dir.home` for finding home on Ruby 1.9+
+
+0.9.0 12/01/14
+==============
+
+use HOME or HOMEPATH/HOMEDRIVE to find home on windows
+
+0.8.0 10/16/14
+==============
+
+re-revert entry changes with minor bump
+
+0.7.9 10/16/14
+==============
+
+revert entry changes for a backwards-compatible version
+
+0.7.8 10/15/14
+==============
+
+add entry class to facilitate usage
+switch gem source to rubygems.org
+use guard, when available via guardfile
+add default/read-only behavior
+add allow_permissive_netrc_file option
+fix an undefined variable path
+fix Errno::EACCES error
+silence const warnings in test
+
+0.7.7 08/15/12
+==============
+
+add newline between entries if one is missing
+
+0.7.6 08/15/12
+==============
+
+more unified newline handling
+make entries with login/password parsable
+
+
+0.7.5 06/25/12
+==============
+
+* improved operating system detection
+
+0.7.4 06/04/12
+==============
+
+* add support for encrypted files pgp netrc files
+
+0.7.3 06/04/12
+==============
+
+* also skip permissions check on cygwin
+
+0.7.2 05/23/12
+=============
+
+* use length instead of count on Array, provides compatibility with 1.8.6
+
+
+0.7.1 03/13/12
+==============
+
+* add Gemfile to simplify development
+* add MIT license
+* fix test require path
+* fix unused variable assignment (caused warnings) in tests

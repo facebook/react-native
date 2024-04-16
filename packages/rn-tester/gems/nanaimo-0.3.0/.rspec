@@ -1,0 +1,2 @@
+--format documentation
+--color

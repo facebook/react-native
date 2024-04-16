@@ -1,0 +1,85 @@
+#!/usr/bin/env ruby
+
+# jsonclient shell command.
+#
+# Usage: 1) % jsonclient post https://www.example.com/ content.json
+# Usage: 2) % jsonclient
+#
+# For 1) it issues a GET request to the given URI and shows the wiredump and
+# the parsed result.  For 2) it invokes irb shell with the binding that has a
+# JSONClient as 'self'.  You can call JSONClient instance methods like;
+# > post "https://www.example.com/resource", {'hello' => 'world'}
+require 'jsonclient'
+ 
+method = ARGV.shift
+url = ARGV.shift
+body = []
+if ['post', 'put'].include?(method)
+  if ARGV.size == 1 && File.exist?(ARGV[0])
+    body << File.read(ARGV[0])
+  else
+    body << ARGF.read
+  end
+end
+if method && url
+  require 'pp'
+  client = JSONClient.new
+  client.debug_dev = STDERR if $DEBUG
+  res = client.send(method, url, *body)
+  STDERR.puts('RESPONSE HEADER: ')
+  PP.pp(res.headers, STDERR)
+  if res.ok?
+    begin
+      puts JSON.pretty_generate(res.content)
+    rescue JSON::GeneratorError
+      puts res.content
+    end
+    exit 0
+  else
+    STDERR.puts res.content
+    exit 1
+  end
+end
+
+require 'irb'
+require 'irb/completion'
+
+class Runner
+  def initialize
+    @httpclient = JSONClient.new
+  end
+
+  def method_missing(msg, *a, &b)
+    debug, $DEBUG = $DEBUG, true
+    begin
+      @httpclient.send(msg, *a, &b)
+    ensure
+      $DEBUG = debug
+    end
+  end
+
+  def run
+    IRB.setup(nil)
+    ws = IRB::WorkSpace.new(binding)
+    irb = IRB::Irb.new(ws)
+    IRB.conf[:MAIN_CONTEXT] = irb.context
+
+    trap("SIGINT") do
+      irb.signal_handle
+    end
+
+    begin
+      catch(:IRB_EXIT) do
+        irb.eval_input
+      end
+    ensure
+      IRB.irb_at_exit
+    end
+  end
+
+  def to_s
+    'JSONClient'
+  end
+end
+
+Runner.new.run

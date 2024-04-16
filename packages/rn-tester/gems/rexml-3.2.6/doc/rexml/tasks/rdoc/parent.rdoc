@@ -1,0 +1,267 @@
+== Class Parent
+
+Class Parent has methods from its superclasses and included modules;
+see:
+
+- {Tasks for Child}[child_rdoc.html].
+- {Tasks for Node}[node_rdoc.html].
+- {Module Enumerable}[https://docs.ruby-lang.org/en/master/Enumerable.html].
+
+:include: ../tocs/parent_toc.rdoc
+
+=== Queries
+
+==== Task: Get the Count of Children
+
+Use method {Parent#size}[../../../../REXML/Parent.html#method-i-size]
+(or its alias +length+) to get the count of the parent's children:
+
+  p = REXML::Parent.new
+  p.size # => 0
+  xml_string = '<root><a/><b/><c/></root>'
+  d = REXML::Document.new(xml_string)
+  d.root.size # => 3
+
+==== Task: Get the Child at a Given Index
+
+Use method {Parent#[]}[../../../../REXML/Parent.html#method-i-5B-5D]
+to get the child at a given index:
+
+  xml_string = '<root><a/><b/><c/></root>'
+  d = REXML::Document.new(xml_string)
+  d.root[1]  # => <b/>
+  d.root[-1] # => <c/>
+  d.root[50] # => nil
+
+==== Task: Get the Index of a Given Child
+
+Use method {Parent#index}[../../../../REXML/Parent.html#method-i-index]
+to get the index (0-based offset) of a child:
+
+  d = REXML::Document.new('<root></root>')
+  root = d.root
+  e0 = REXML::Element.new('foo')
+  e1 = REXML::Element.new('bar')
+  root.add(e0)  # => <foo/>
+  root.add(e1)  # => <bar/>
+  root.add(e0)  # => <foo/>
+  root.add(e1)  # => <bar/>
+  root.index(e0) # => 0
+  root.index(e1) # => 1
+
+==== Task: Get the Children
+
+Use method {Parent#children}[../../../../REXML/Parent.html#method-i-children]
+(or its alias +to_a+) to get the parent's children:
+
+  xml_string = '<root><a/><b/><c/></root>'
+  d = REXML::Document.new(xml_string)
+  d.root.children # => [<a/>, <b/>, <c/>]
+
+==== Task: Determine Whether the Node is a Parent
+
+Use method {Parent#parent?}[../../../../REXML/Parent.html#method-i-parent-3F]
+to determine whether the node is a parent;
+class Text derives from Node:
+
+  d = REXML::Document.new('<root><a/>text<b/>more<c/></root>')
+  t = d.root[1] # => "text"
+  t.parent?     # => false
+
+Class Parent also derives from Node, but overrides this method:
+
+  p = REXML::Parent.new
+  p.parent? # => true
+
+=== Additions
+
+==== Task: Add a Child at the Beginning
+
+Use method {Parent#unshift}[../../../../REXML/Parent.html#method-i-unshift]
+to add a child as at the beginning of the children:
+
+  xml_string = '<root><a/><b/><c/></root>'
+  d = REXML::Document.new(xml_string)
+  d.root.children # => [<a/>, <b/>, <c/>]
+  d.root.unshift REXML::Element.new('d')
+  d.root.children # => [<d/>, <a/>, <b/>, <c/>]
+
+==== Task: Add a Child at the End
+
+Use method {Parent#<<}[../../../../REXML/Parent.html#method-i-3C-3C]
+(or an alias +push+ or +add+) to add a child as at the end of the children:
+
+  xml_string = '<root><a/><b/><c/></root>'
+  d = REXML::Document.new(xml_string)
+  d.root.children # => [<a/>, <b/>, <c/>]
+  d.root << REXML::Element.new('d')
+  d.root.children # => [<a/>, <b/>, <c/>, <d/>]
+
+==== Task: Replace a Child with Another Child
+
+Use method {Parent#replace}[../../../../REXML/Parent.html#method-i-replace]
+
+  xml_string = '<root><a/><b/><c/></root>'
+  d = REXML::Document.new(xml_string)
+  d.root.children # => [<a/>, <b/>, <c/>]
+  b = d.root[1]   # => <b/>
+  d.replace_child(b, REXML::Element.new('d'))
+  d.root.children # => [<a/>, <c/>]
+
+==== Task: Replace Multiple Children with Another Child
+
+Use method {Parent#[]=}[../../../../REXML/Parent.html#method-i-parent-5B-5D-3D]
+to replace multiple consecutive children with another child:
+
+  xml_string = '<root><a/><b/><c/><d/></root>'
+  d = REXML::Document.new(xml_string)
+  d.root.children # => [<a/>, <b/>, <c/>, <d/>]
+  d.root[1, 2] = REXML::Element.new('x')
+  d.root.children # => [<a/>, <x/>, <d/>]
+  d.root[1, 5] = REXML::Element.new('x')
+  d.root.children # => [<a/>, <x/>] # BUG?
+
+==== Task: Insert Child Before a Given Child
+
+Use method {Parent#insert_before}[../../../../REXML/Parent.html#method-i-insert_before]
+to insert a child immediately before a given child:
+
+  xml_string = '<root><a/><b/><c/></root>'
+  d = REXML::Document.new(xml_string)
+  d.root.children # => [<a/>, <b/>, <c/>]
+  b = d.root[1]   # => <b/>
+  x = REXML::Element.new('x')
+  d.root.insert_before(b, x)
+  d.root.children # => [<a/>, <x/>, <b/>, <c/>]
+
+==== Task: Insert Child After a Given Child
+
+Use method {Parent#insert_after}[../../../../REXML/Parent.html#method-i-insert_after]
+to insert a child immediately after a given child:
+
+  xml_string = '<root><a/><b/><c/></root>'
+  d = REXML::Document.new(xml_string)
+  d.root.children # => [<a/>, <b/>, <c/>]
+  b = d.root[1]   # => <b/>
+  x = REXML::Element.new('x')
+  d.root.insert_after(b, x)
+  d.root.children # => [<a/>, <b/>, <x/>, <c/>]
+
+=== Deletions
+
+==== Task: Remove a Given Child
+
+Use method {Parent#delete}[../../../../REXML/Parent.html#method-i-delete]
+to remove all occurrences of a given child:
+
+  d = REXML::Document.new('<root></root>')
+  a = REXML::Element.new('a')
+  b = REXML::Element.new('b')
+  d.root.add(a)
+  d.root.add(b)
+  d.root.add(a)
+  d.root.add(b)
+  d.root.children # => [<a/>, <b/>, <a/>, <b/>]
+  d.root.delete(b)
+  d.root.children # => [<a/>, <a/>]
+
+==== Task: Remove the Child at a Specified Offset
+
+Use method {Parent#delete_at}[../../../../REXML/Parent.html#method-i-delete_at]
+to remove the child at a specified offset:
+
+  d = REXML::Document.new('<root></root>')
+  a = REXML::Element.new('a')
+  b = REXML::Element.new('b')
+  d.root.add(a)
+  d.root.add(b)
+  d.root.add(a)
+  d.root.add(b)
+  d.root.children # => [<a/>, <b/>, <a/>, <b/>]
+  d.root.delete_at(2)
+  d.root.children # => [<a/>, <b/>, <b/>]
+
+==== Task: Remove Children That Meet Specified Criteria
+
+Use method {Parent#delete_if}[../../../../REXML/Parent.html#method-i-delete_if]
+to remove children that meet criteria specified in the given block:
+
+  d = REXML::Document.new('<root></root>')
+  d.root.add(REXML::Element.new('x'))
+  d.root.add(REXML::Element.new('xx'))
+  d.root.add(REXML::Element.new('xxx'))
+  d.root.add(REXML::Element.new('xxxx'))
+  d.root.children # => [<x/>, <xx/>, <xxx/>, <xxxx/>]
+  d.root.delete_if {|child| child.name.size.odd? }
+  d.root.children # => [<xx/>, <xxxx/>]
+
+=== Iterations
+
+==== Task: Iterate Over Children
+
+Use method {Parent#each_child}[../../../../REXML/Parent.html#method-i-each_child]
+(or its alias +each+) to iterate over all children:
+
+  xml_string = '<root><a/><b/><c/></root>'
+  d = REXML::Document.new(xml_string)
+  d.root.children # => [<a/>, <b/>, <c/>]
+  d.root.each_child {|child| p child }
+
+Output:
+
+  <a/>
+  <b/>
+  <c/>
+
+==== Task: Iterate Over Child Indexes
+
+Use method {Parent#each_index}[../../../../REXML/Parent.html#method-i-each_index]
+to iterate over all child indexes:
+
+  xml_string = '<root><a/><b/><c/></root>'
+  d = REXML::Document.new(xml_string)
+  d.root.children # => [<a/>, <b/>, <c/>]
+  d.root.each_index {|child| p child }
+
+Output:
+
+  0
+  1
+  2
+
+=== Clones
+
+==== Task: Clone Deeply
+
+Use method {Parent#deep_clone}[../../../../REXML/Parent.html#method-i-deep_clone]
+to clone deeply; that is, to clone every nested node that is a Parent object:
+
+  xml_string = <<-EOT
+    <?xml version="1.0" encoding="UTF-8"?>
+    <bookstore>
+      <book category="cooking">
+        <title lang="en">Everyday Italian</title>
+        <author>Giada De Laurentiis</author>
+        <year>2005</year>
+        <price>30.00</price>
+      </book>
+      <book category="children">
+        <title lang="en">Harry Potter</title>
+        <author>J K. Rowling</author>
+        <year>2005</year>
+        <price>29.99</price>
+      </book>
+      <book category="web">
+        <title lang="en">Learning XML</title>
+        <author>Erik T. Ray</author>
+        <year>2003</year>
+        <price>39.95</price>
+      </book>
+    </bookstore>
+  EOT
+  d = REXML::Document.new(xml_string)
+  root = d.root
+  shallow = root.clone
+  deep = root.deep_clone
+  shallow.to_s.size # => 12
+  deep.to_s.size    # => 590

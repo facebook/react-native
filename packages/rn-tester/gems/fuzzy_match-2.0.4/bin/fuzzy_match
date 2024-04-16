@@ -1,0 +1,106 @@
+#!/usr/bin/env ruby
+
+if File.exist?('Gemfile')
+  require 'bundler/setup'
+end
+if ENV['PROFILE'] == 'true'
+  require 'perftools'
+end
+# PerfTools::CpuProfiler.start("profile_data") do
+require 'fuzzy_match'
+require 'fuzzy_match/version'
+
+require 'active_support/core_ext'
+require 'remote_table'
+require 'thor'
+require 'to_regexp'
+
+class FuzzyMatch
+  class Cli < ::Thor
+    desc :match, "Print out matches between A and B, where A is haystack and B is a bunch of needles."
+    method_option :csv, :default => false, :type => :boolean, :desc => "CSV output"
+    method_option :a_col, :default => 0, :type => :string, :desc => "Column name in A. Defaults to first column."
+    method_option :b_col, :default => 0, :type => :string, :desc => "Column name in B. Defaults to first column."
+    method_option :downcase, :default => true, :type => :boolean, :desc => "Whether to downcase everything (except regexes, where you have to do /foo/i)"
+    method_option :groupings, :default => nil, :type => :string, :desc => "Spreadsheet with groupings - no headers, multi-part groupings on the same row"
+    method_option :rules, :default => nil, :type => :string, :desc => "Spreadsheet with headers: stop_words, identities, find_options. Listing a find_option like must_match_grouping makes it true."
+    method_option :explain, :default => false, :type => :boolean
+    method_option :grep, :default => nil, :type => :string
+    method_option :limit, :default => 1.0/0, :type => :numeric
+    def match(a_url, b_url)
+      puts "Checking matches using fuzzy_match version #{FuzzyMatch::VERSION}..."
+      fz = mkfz a_url
+      b = load_b b_url
+      if ENV['PROFILE'] == 'true'
+        require 'perftools'
+        PerfTools::CpuProfiler.start("profile.bin") { report(fz, b) }
+        system "pprof.rb --text profile.bin"
+        `pprof.rb --gif profile.bin > profile.gif`
+      else
+        report fz, b
+      end
+    end
+
+    private
+    
+    def report(fz, b)
+      b.each do |b_val|
+        if options.explain
+          fz.explain 
+        else
+          a_val = fz.find b_val
+          if options.csv
+            # puts [ b_val.ljust(50), a_val ].join('-> ')
+            puts [ b_val, a_val ].to_csv
+          else
+            puts %{\nB: #{b_val}\nA: #{a_val}}
+          end
+        end
+      end
+    end
+
+    def load_b(b_url)
+      b_options = options.b_col.is_a?(String) ? { headers: :first_row } : { headers: false }
+      if options[:grep]
+        regexp = options[:grep].to_regexp(detect: true)
+        b_options[:select] = lambda { |row| regexp =~ row[options.b_col] }
+      end
+      b = RemoteTable.new(b_url, b_options).to_a
+      limit = [options.limit, b.length].min
+      b.first(limit).map do |row|
+        b_val = row[options.b_col]
+        b_val.downcase! if options.downcase
+        b_val
+      end
+    end
+
+    def mkfz(a_url)
+      a_options = options.a_col.is_a?(String) ? { headers: :first_row } : { headers: false }
+      a = RemoteTable.new(a_url, a_options).map { |row| row[options.a_col] }
+      a.map!(&:downcase) if options.downcase
+      FuzzyMatch.new a, fz_options
+    end
+
+    def fz_options
+      memo = {}
+      if options.groupings
+        memo[:groupings] = RemoteTable.new(options.groupings, :headers => false).map do |row|
+          row.to_a.select(&:present?).map { |v| v.to_regexp(detect: true) }
+        end
+      end
+      if options.rules
+        t = RemoteTable.new(options.rules, :headers => :first_row)
+        find_options = t.rows.map { |row| row['find_options'] }
+        memo.merge!(
+          identities: t.rows.map { |row| row['identities'] }.select(&:present?).map { |v| v.to_regexp(detect: true) },
+          stop_words: t.rows.map { |row| row['stop_words'] }.select(&:present?).map { |v| v.to_regexp(detect: true) },
+          must_match_grouping: find_options.include?('must_match_grouping'),
+          must_match_at_least_one_word: find_options.include?('must_match_at_least_one_word'),
+        )
+      end
+      memo
+    end
+  end
+end
+
+FuzzyMatch::Cli.start

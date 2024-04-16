@@ -1,0 +1,18 @@
+dist: trusty
+bundler_args: --without debugging documentation
+branches:
+  only:
+    - master
+
+language: ruby
+cache: bundler
+rvm:
+  # The latest ruby version
+  - 2.7.0
+  - 2.6.2
+  - 2.5.0
+  - 2.4.2
+  # OS X 10.9.5-10.10.0 (2.0.0-p481)
+  - 2.0.0-p481
+before_install:
+  - gem install bundler -v "~> 1.17"

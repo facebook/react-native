@@ -1,0 +1,78 @@
+This package contains a test suite for libffi.
+
+This test suite can be compiled with a C compiler. No need for 'expect'
+or some other package that is often not installed.
+
+The test suite consists of 81 C functions, each with a different signature.
+* test-call verifies that calling each function directly produces the same
+  results as calling the function indirectly through 'ffi_call'.
+* test-callback verifies that calling each function directly produces the same
+  results as calling a function that is a callback (object build by
+  'ffi_prep_closure_loc') and simulates the original function.
+
+Each direct or indirect invocation should produce one line of output to
+stdout. A correct output consists of paired lines, such as
+
+void f(void):
+void f(void):
+int f(void):->99
+int f(void):->99
+int f(int):(1)->2
+int f(int):(1)->2
+int f(2*int):(1,2)->3
+int f(2*int):(1,2)->3
+...
+
+The Makefile then creates two files:
+* failed-call, which consists of the non-paired lines of output of
+  'test-call',
+* failed-callback, which consists of the non-paired lines of output of
+  'test-callback'.
+
+The test suite passes if both failed-call and failed-callback come out
+as empty.
+
+
+How to use the test suite
+-------------------------
+
+1. Modify the Makefile's variables
+   prefix = the directory in which libffi was installed
+   CC = the C compiler, often with options such as "-m32" or "-m64"
+        that enforce a certain ABI,
+   CFLAGS = optimization options (need to change them only for non-GCC
+            compilers)
+2. Run "make". If it fails already in "test-call", run also
+   "make check-callback".
+3. If this failed, inspect the output files.
+
+
+How to interpret the results
+----------------------------
+
+The failed-call and failed-callback files consist of paired lines:
+The first line is the result of the direct invocation.
+The second line is the result of invocation through libffi.
+
+For example, this output
+
+uchar f(uchar,ushort,uint,ulong):(97,2,3,4)->255
+uchar f(uchar,ushort,uint,ulong):(97,2,3,4)->0
+
+indicates that the arguments were passed correctly, but the return
+value came out wrong.
+
+And this output
+
+float f(17*float,3*int,L):(0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,6,7,8,561,1105,1729,2465,2821,6601)->15319.1
+float f(17*float,3*int,L):(0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,-140443648,10,268042216,-72537980,-140443648,-140443648,-140443648,-140443648,-140443648)->-6.47158e+08
+
+indicates that integer arguments that come after 17 floating-point arguments
+were not passed correctly.
+
+
+Credits
+-------
+
+The test suite is based on the one of GNU libffcall-2.0.
+Authors: Bill Triggs, Bruno Haible

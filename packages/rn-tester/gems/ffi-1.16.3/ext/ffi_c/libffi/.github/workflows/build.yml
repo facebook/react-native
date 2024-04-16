@@ -1,0 +1,460 @@
+name: CI
+
+# Controls when the action will run.
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+
+  build-sim:
+    name: ${{ matrix.HOST }} ${{ matrix.CONFIGURE_OPTIONS }} ${{ matrix.MEVAL }} ${{ matrix.LIBFFI_TEST_OPTIMIZATION }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+       include:
+         - HOST: "x86_64-pc-linux-gnu"
+           MEVAL: "export CC=clang CXX=clang"
+         - HOST: "i386-pc-linux-gnu"
+           MEVAL: 'export CC="gcc -m32" CXX="g++ -m32"'
+         - HOST: "x86_64-pc-linux-gnu"
+           CONFIGURE_OPTIONS: "--disable-shared"
+         - HOST: "x86_64-pc-linux-gnu"
+           CONFIGURE_OPTIONS: "--enable-shared"
+         - HOST: "m68k-linux-gnu"
+           MEVAL: 'export CC="m68k-linux-gnu-gcc-8 -mcpu=547x" CXX="m68k-linux-gnu-g++-8 -mcpu=547x"'
+           CONFIGURE_OPTIONS: '--disable-shared'
+           QEMU_LD_PREFIX: '/usr/m68k-linux-gnu'
+           QEMU_CPU: 'cfv4e'
+         - HOST: "sh4-linux-gnu"
+           CONFIGURE_OPTIONS: "--disable-shared"
+           QEMU_LD_PREFIX: "/usr/sh4-linux-gnu"
+           QEMU_CPU: 'sh7785'
+         - HOST: "alpha-linux-gnu"
+           CONFIGURE_OPTIONS: "--disable-shared"
+           QEMU_LD_PREFIX: "/usr/alpha-linux-gnu"
+           QEMU_CPU: 'ev4-alpha-cpu'
+         - HOST: "arm32v7-linux-gnu"
+           LIBFFI_TEST_OPTIMIZATION: "-O0"
+           QEMU_CPU: 'any'
+         - HOST: "arm32v7-linux-gnu"
+           LIBFFI_TEST_OPTIMIZATION: "-O2"
+           QEMU_CPU: 'any'
+         - HOST: "arm32v7-linux-gnu"
+           LIBFFI_TEST_OPTIMIZATION: "-O2 -fomit-frame-pointer"
+           QEMU_CPU: 'any'
+         - HOST: "powerpc-eabisim"
+           RUNTESTFLAGS: "--target_board powerpc-eabisim"
+         - HOST: "or1k-elf"
+           RUNTESTFLAGS: "--target_board or1k-sim"
+         - HOST: "m32r-elf"
+           RUNTESTFLAGS: "--target_board m32r-sim"
+         - HOST: "bfin-elf"
+           RUNTESTFLAGS: "--target_board bfin-sim"
+         - MEVAL: "export PATH=/opt/moxielogic/bin:$PATH CC=moxie-elf-gcc CXX=moxie-elf-g++"
+           HOST: "moxie-elf"
+           LDFLAGS: "-Tsim.ld"
+           RUNTESTFLAGS: "--target_board moxie-sim"
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - env:
+          MEVAL: ${{ matrix.MEVAL }}
+          HOST: ${{ matrix.HOST }}
+          LDFLAGS: ${{ matrix.LDFLAGS }}
+          RUNTESTFLAGS: ${{ matrix.RUNTESTFLAGS }}
+          CONFIGURE_OPTIONS: ${{ matrix.CONFIGURE_OPTIONS }}
+          QEMU_LD_PREFIX: ${{ matrix.QEMU_LD_PREFIX }}
+          QEMU_CPU: ${{ matrix.QEMU_CPU }}
+        run: |
+          if test x"$MEVAL" != x; then eval ${MEVAL}; fi
+          ./.ci/install.sh
+          ./.ci/build.sh
+
+  build-cfarm:
+    name: ${{ matrix.CFARM_TRIPLE }} ${{ matrix.CFARM_CC }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+       include:
+         - CFARM_HOST: gcc117.fsffrance.org
+           CFARM_PORT: 22
+           CFARM_TRIPLE: aarch64-linux-gnu
+           CFARM_CC: "gcc"
+           CFARM_CXX: "g++"
+         - CFARM_HOST: gcc117.fsffrance.org
+           CFARM_PORT: 22
+           CFARM_TRIPLE: aarch64-linux-gnu
+           CFARM_CC: "/home/green/gcc12/bin/gcc"
+           CFARM_CXX: "/home/green/gcc12/bin/g++"
+         - CFARM_HOST: gcc117.fsffrance.org
+           CFARM_PORT: 22
+           CFARM_TRIPLE: aarch64-lto-linux-gnu
+           CFARM_CC: "gcc -flto"
+           CFARM_CXX: "g++ -flto"
+         - CFARM_HOST: gcc400.fsffrance.org
+           CFARM_PORT: 25465
+           CFARM_TRIPLE: loongarch64-linux-gnu
+           CFARM_CC: "gcc"
+           CFARM_CXX: "g++"
+         - CFARM_HOST: gcc230.fsffrance.org
+           CFARM_PORT: 22
+           CFARM_TRIPLE: mips-linux-gnu
+           CFARM_CC: "gcc"
+           CFARM_CXX: "g++"
+         - CFARM_HOST: gcc102.fsffrance.org
+           CFARM_PORT: 22
+           CFARM_TRIPLE: sparc64-linux-gnu
+           CFARM_CC: "gcc"
+           CFARM_CXX: "g++"
+         - CFARM_HOST: gcc102.fsffrance.org
+           CFARM_PORT: 22
+           CFARM_TRIPLE: sparc64-linux-gnu
+           CFARM_CC: "gcc -m32"
+           CFARM_CXX: "g++ -m32"
+         - CFARM_HOST: gcc91.fsffrance.org
+           CFARM_PORT: 22
+           CFARM_TRIPLE: riscv64-linux-gnu
+           CFARM_CC: "gcc"
+           CFARM_CXX: "g++"
+         - CFARM_HOST: gcc103.fsffrance.org
+           CFARM_PORT: 22
+           CFARM_TRIPLE: aarch64-m1-linux-gnu
+           CFARM_CC: "gcc"
+           CFARM_CXX: "g++"
+         - CFARM_HOST: gcc112.fsffrance.org
+           CFARM_PORT: 22
+           CFARM_TRIPLE: powerpc64le-linux-gnu
+           CFARM_CC: "gcc"
+           CFARM_CXX: "g++"
+         - CFARM_HOST: gcc111.fsffrance.org
+           CFARM_PORT: 22
+           CFARM_TRIPLE: powerpc-ibm-aix7.1.5.0
+           CFARM_CC: "gcc"
+           CFARM_CXX: "g++"
+
+    steps:
+
+      - uses: actions/checkout@v3
+
+      - name: Run autogen
+        run: |
+          wget --retry-connrefused --waitretry=1 --read-timeout=20 --timeout=15 -t 0 -qO - https://ftpmirror.gnu.org/autoconf/autoconf-2.71.tar.gz | tar -xvzf -
+          mkdir -p ~/i
+          (cd autoconf-2.71; ./configure --prefix=$HOME/i; make; make install)
+          rm -rf autoconf-2.71
+          PATH=$HOME/i/bin:$PATH ./autogen.sh
+          echo "${{ secrets.CFARM_KEY }}" > /tmp/cfk
+          chmod go-rw /tmp/cfk
+
+      - name: Generate build dir name
+        run: |
+          echo BUILD_DIR=t/$GITHUB_RUN_NUMBER-$RANDOM >> $GITHUB_ENV
+
+      - name: Check for host availability
+        id: check-host
+        run: |
+          set +e
+          ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 -o ConnectionAttempts=3 -i /tmp/cfk -p ${{ matrix.CFARM_PORT }} ${{ secrets.CFARM_USERNAME }}@${{ matrix.CFARM_HOST }} "mkdir -p ${{ env.BUILD_DIR }}"
+          if test $? -ne 0; then
+            echo "Remote host is unavailable."
+            echo "HOST_OK=NO" >> $GITHUB_OUTPUT
+          else
+            echo "Remote host is available."
+            echo "HOST_OK=YES" >> $GITHUB_OUTPUT
+          fi
+          set -e
+
+      - name: Show host availability
+        run: |
+          echo ${{ steps.check-host.outputs.HOST_OK }}
+
+      - name: Copy source to remote host
+        if: ${{ steps.check-host.outputs.HOST_OK == 'YES' }}
+        run: |
+          echo ${{ steps.check-host.outputs.HOST_OK }}
+          scp -o StrictHostKeyChecking=no -o ConnectTimeout=10 -o ConnectionAttempts=3 -i /tmp/cfk -P ${{ matrix.CFARM_PORT }} -r * ${{ secrets.CFARM_USERNAME }}@${{ matrix.CFARM_HOST }}:${{ env.BUILD_DIR }}
+
+      - name: Run configure and make
+        if: ${{ steps.check-host.outputs.HOST_OK == 'YES' }}
+        run: |
+          ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 -o ConnectionAttempts=3 -i /tmp/cfk -p ${{ matrix.CFARM_PORT }} ${{ secrets.CFARM_USERNAME }}@${{ matrix.CFARM_HOST }} "${{ matrix.CFARM_CC }} --version"
+          ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 -o ConnectionAttempts=3 -i /tmp/cfk -p ${{ matrix.CFARM_PORT }} ${{ secrets.CFARM_USERNAME }}@${{ matrix.CFARM_HOST }} "(cd ${{ env.BUILD_DIR }}; if test -f ~/.profile; then source ~/.profile; fi; CC='${{ matrix.CFARM_CC }}' CXX='${{ matrix.CFARM_CXX }}' ./configure --host=${{ matrix.CFARM_TRIPLE }}) || true; exit 0"
+          ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 -o ConnectionAttempts=3 -i /tmp/cfk -p ${{ matrix.CFARM_PORT }} ${{ secrets.CFARM_USERNAME }}@${{ matrix.CFARM_HOST }} "(cd ${{ env.BUILD_DIR }}; if test -f ~/.profile; then source ~/.profile; fi; make;) || true; exit 0"
+
+      - name: Run tests
+        if: ${{ steps.check-host.outputs.HOST_OK == 'YES' }}
+        run: |
+          ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 -o ConnectionAttempts=3 -i /tmp/cfk -p ${{ matrix.CFARM_PORT }} ${{ secrets.CFARM_USERNAME }}@${{ matrix.CFARM_HOST }} "(cd ${{ env.BUILD_DIR }}; if test -f ~/.profile; then source ~/.profile; fi; GCC_COLORS= make check & CHECKPID=\$!; while kill -0 \$CHECKPID 2>/dev/null; do echo 'Waiting for tests to finish'; sleep 5; done;)"
+
+      - name: Copy results and clean up
+        if: ${{ steps.check-host.outputs.HOST_OK == 'YES' }}
+        run: |
+          scp -o StrictHostKeyChecking=no -o ConnectTimeout=10 -o ConnectionAttempts=3 -i /tmp/cfk -P ${{ matrix.CFARM_PORT }} ${{ secrets.CFARM_USERNAME }}@${{ matrix.CFARM_HOST }}:${{ env.BUILD_DIR }}/*/testsuite/*.log .
+          ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 -o ConnectionAttempts=3 -i /tmp/cfk -p ${{ matrix.CFARM_PORT }} ${{ secrets.CFARM_USERNAME }}@${{ matrix.CFARM_HOST }} "rm -rf ${{ env.BUILD_DIR }}"
+
+      - name: Install rlgl and run
+        if: ${{ steps.check-host.outputs.HOST_OK == 'YES' }}
+        run: |
+          wget -qO - https://rl.gl/cli/rlgl-linux-amd64.tgz | \
+               tar --strip-components=2 -xvzf - ./rlgl/rlgl;
+          ./rlgl l --key=0LIBFFI-0LIBFFI-0LIBFFI-0LIBFFI https://rl.gl
+          ./rlgl e -l project=libffi -l sha=${GITHUB_SHA:0:7} -l CC='${{ matrix.CFARM_CC }}' -l build-host=${{ matrix.CFARM_TRIPLE }} --policy=https://github.com/libffi/rlgl-policy.git libffi.log
+          exit $?
+
+  build:
+    name: Cygwin ${{ matrix.arch }}
+    runs-on: windows-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - host: i686-pc-cygwin
+            arch: x86
+          - host: x86_64-pc-cygwin
+            arch: x64
+
+    steps:
+      - run: git config --global core.autocrlf input
+
+      - uses: actions/checkout@v3
+
+      - name: Set up Cygwin
+        uses: egor-tensin/setup-cygwin@v3
+        with:
+          platform: ${{ matrix.arch }}
+          packages: wget gcc-core make dejagnu automake autoconf libtool texinfo dos2unix unzip
+
+      - run: |
+          set -x
+          cd $(cygpath $RUNNER_WORKSPACE)/libffi
+          wget https://rl.gl/cli/rlgl-windows-amd64.zip
+          unzip rlgl-windows-amd64.zip
+          autoreconf -f -v -i
+          ./configure
+          make -j 4
+          TERM=none DEJAGNU=$(pwd)/.ci/site.exp BOARDSDIR=$(pwd)/.ci GCC_COLORS= make check || true
+          ./rlgl/rlgl.exe l --key=0LIBFFI-0LIBFFI-0LIBFFI-0LIBFFI https://rl.gl
+          ./rlgl/rlgl.exe e \
+                          -l project=libffi \
+                          -l sha=${GITHUB_SHA:0:7} \
+                          -l CC=gcc \
+                          -l host=${{ matrix.host }} \
+                          --policy=https://github.com/libffi/rlgl-policy.git $(find . -name libffi.log)
+        shell: C:\tools\cygwin\bin\bash.exe --login --norc -eo pipefail -o igncr '{0}'
+
+  build-msys2:
+
+    runs-on: windows-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - MSYSTEM: MINGW32
+            MSYS2_ARCH: i686
+          - MSYSTEM: MINGW64
+            MSYS2_ARCH: x86_64
+    name: ${{ matrix.MSYSTEM }}
+
+    steps:
+      - run: git config --global core.autocrlf input
+      - uses: actions/checkout@v3
+
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: ${{ matrix.MSYSTEM }}
+          update: true
+          install: >-
+            base-devel
+            autoconf-wrapper
+            autoconf
+            automake
+            libtool
+            make
+            dejagnu
+            mingw-w64-${{ matrix.MSYS2_ARCH }}-gcc
+            mingw-w64-${{ matrix.MSYS2_ARCH }}-gcc-libs
+            unzip
+
+      - run: |
+          set -x
+          cd $(cygpath $RUNNER_WORKSPACE)/libffi
+          wget https://rl.gl/cli/rlgl-windows-amd64.zip
+          unzip rlgl-windows-amd64.zip
+          autoreconf -f -v -i
+          CC=${{ matrix.MSYS2_ARCH }}-w64-mingw32-gcc CXX=${{ matrix.MSYS2_ARCH }}-w64-mingw32-g++ ./configure
+          make
+          TERM=none DEJAGNU=$(pwd)/.ci/site.exp BOARDSDIR=$(pwd)/.ci GCC_COLORS= make check || true
+          ./rlgl/rlgl.exe l --key=0LIBFFI-0LIBFFI-0LIBFFI-0LIBFFI https://rl.gl
+          ./rlgl/rlgl.exe e \
+                          -l project=libffi \
+                          -l sha=${GITHUB_SHA:0:7} \
+                          -l CC=${{ matrix.MSYS2_ARCH }}-w64-mingw32-gcc \
+                          -l host=x86_64-pc-cygwin \
+                          --policy=https://github.com/libffi/rlgl-policy.git $(find . -name libffi.log)
+        shell: msys2 {0}
+
+  build-msys2-clang:
+
+    runs-on: windows-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - MSYSTEM: MINGW32
+            MSYS2_ARCH: i686
+          - MSYSTEM: MINGW64
+            MSYS2_ARCH: x86_64
+    name: ${{ matrix.MSYSTEM }}
+
+    steps:
+      - run: git config --global core.autocrlf input
+      - uses: actions/checkout@v3
+
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: ${{ matrix.MSYSTEM }}
+          update: true
+          install: >-
+            base-devel
+            autoconf-wrapper
+            autoconf
+            automake
+            libtool
+            make
+            dejagnu
+            clang
+            mingw-w64-${{ matrix.MSYS2_ARCH }}-gcc
+            mingw-w64-${{ matrix.MSYS2_ARCH }}-gcc-libs
+            unzip
+
+      - run: |
+          set -x
+          cd $(cygpath $RUNNER_WORKSPACE)/libffi
+          wget https://rl.gl/cli/rlgl-windows-amd64.zip
+          unzip rlgl-windows-amd64.zip
+          autoreconf -f -v -i
+          CC=clang CXX=clang ./configure
+          make
+          TERM=none DEJAGNU=$(pwd)/.ci/site.exp BOARDSDIR=$(pwd)/.ci make check || true
+          ./rlgl/rlgl.exe l --key=0LIBFFI-0LIBFFI-0LIBFFI-0LIBFFI https://rl.gl
+          ./rlgl/rlgl.exe e \
+                          -l project=libffi \
+                          -l sha=${GITHUB_SHA:0:7} \
+                          -l CC=clang \
+                          -l host=x86_64-pc-cygwin \
+                          --policy=https://github.com/libffi/rlgl-policy.git $(find . -name libffi.log)
+        shell: msys2 {0}
+
+  build-macos:
+    runs-on: ${{ matrix.platform }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [macos-11, macos-12]
+        compilers: [CC=gcc CXX=g++, CC=clang CXX=clang]
+
+    name: ${{ matrix.platform }} ${{ matrix.compilers }}
+
+    steps:
+      - run: git config --global core.autocrlf input
+      - uses: actions/checkout@v3
+      - run: ./.ci/install.sh
+      - run: ${{ matrix.compilers }} ./.ci/build.sh
+
+  build-msvc:
+    name: Windows ${{ matrix.width }}-bit Visual C++
+    runs-on: windows-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - host: i686-pc-cygwin
+            width: 32
+            arch: x86
+            tools: amd64_x86
+          - host: x86_64-pc-cygwin
+            width: 64
+            arch: x64
+            tools: amd64
+
+    steps:
+      - run: git config --global core.autocrlf input
+      - uses: actions/checkout@v3
+      - uses: egor-tensin/setup-cygwin@v3
+        with:
+          platform: x64
+          packages: wget make dejagnu automake autoconf libtool texinfo unzip dos2unix
+      - uses: ilammy/msvc-dev-cmd@v1.12.0
+        with:
+          arch: ${{ matrix.tools }}
+
+      - name: Build and test
+        run: |
+          # export PATH=$PATH:"/cygdrive/c/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Tools/MSVC/14.16.27023/bin/HostX64/x64"
+          cd $(cygpath $RUNNER_WORKSPACE)/libffi
+          wget https://rl.gl/cli/rlgl-windows-amd64.zip
+          unzip rlgl-windows-amd64.zip
+          autoreconf -f -v -i
+          ./configure --host=${{ matrix.host }} CC="$(pwd)/msvcc.sh -m${{ matrix.width }}" CXX="$(pwd)/msvcc.sh -m${{ matrix.width }}" LD='link' CPP='cl -nologo -EP' CXXCPP='cl -nologo -EP' CPPFLAGS='-DFFI_BUILDING_DLL' AR='$(pwd)/.ci/ar-lib lib' NM='dumpbin -symbols' STRIP=':' $DEBUG_ARG $SHARED_ARG || cat */config.log
+          make
+          cp $(find . -name 'libffi-?.dll') ${{ matrix.host }}/testsuite/
+          TERM=none DEJAGNU=$(pwd)/.ci/site.exp BOARDSDIR=$(pwd)/.ci GCC_COLORS= make check || true
+          ./rlgl/rlgl.exe l --key=0LIBFFI-0LIBFFI-0LIBFFI-0LIBFFI https://rl.gl
+          ./rlgl/rlgl.exe e \
+                          -l project=libffi \
+                          -l sha=${GITHUB_SHA:0:7} \
+                          -l CC=msvcc.sh \
+                          -l host=${{ matrix.host }} \
+                          --policy=https://github.com/libffi/rlgl-policy.git $(find . -name libffi.log)
+        shell: C:\tools\cygwin\bin\bash.exe --login --norc -eo pipefail -o igncr '{0}'
+
+  build-android:
+    name: Android ${{ matrix.host }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        host: [armv7a-linux-androideabi, aarch64-linux-android, i686-linux-android, x86_64-linux-android]
+
+    steps:
+      - run: git config --global core.autocrlf input
+      - uses: actions/checkout@v3
+      - run: ./.ci/install.sh
+      - env:
+          HOST: ${{ matrix.HOST }}
+          ANDROID_API_LEVEL: 23
+          CONFIGURE_OPTIONS: "--disable-shared --disable-multi-os-directory" # fixes warning about unsupported -print-multi-os-directory with clang
+        run: |
+          # Relevant documentation:
+          # https://developer.android.com/ndk/guides/other_build_systems
+          # https://android.googlesource.com/platform/ndk/+/master/docs/BuildSystemMaintainers.md
+          export TOOLCHAIN="${ANDROID_NDK_ROOT}"/toolchains/llvm/prebuilt/linux-x86_64
+          export CC="${TOOLCHAIN}"/bin/${HOST}${ANDROID_API_LEVEL}-clang
+          export CXX="${TOOLCHAIN}"/bin/${HOST}${ANDROID_API_LEVEL}-clang++
+          export LD="${TOOLCHAIN}"/bin/ld.lld
+          export AR="${TOOLCHAIN}"/bin/llvm-ar
+          export AS="${CC}"
+          export RANLIB="${TOOLCHAIN}"/bin/llvm-ranlib
+          export STRIP="${TOOLCHAIN}"/bin/llvm-strip
+          export NM="${TOOLCHAIN}"/bin/llvm-nm
+          export OBJDUMP="${TOOLCHAIN}"/bin/llvm-objdump
+          ./.ci/build.sh

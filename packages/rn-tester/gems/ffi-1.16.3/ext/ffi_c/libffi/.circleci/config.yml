@@ -1,0 +1,156 @@
+version: 2.1
+
+defaults: &defaults
+  working_directory: ~/repo
+  docker:
+    # Built from:
+    # https://github.com/pyodide/pyodide/blob/2ab4b0ab6aefe99fd994bb4f9ab086e5c0aebb7b/Dockerfile
+    - image: pyodide/pyodide-env:20230126-chrome109-firefox109-py311
+
+jobs:
+  install-emsdk:
+    <<: *defaults
+    steps:
+      - checkout
+      - run:
+          name: install emsdk
+          command: |
+            git clone https://github.com/emscripten-core/emsdk.git --depth=1
+            cd emsdk
+            ./emsdk install 3.1.30
+            ./emsdk activate 3.1.30
+
+      - persist_to_workspace:
+          root: .
+          paths:
+            - emsdk
+
+  build:
+    parameters:
+      wasm-bigint:
+        description: Should we build with wasm-bigint?
+        type: string
+        default: ""
+    environment:
+      WASM_BIGINT: << parameters.wasm-bigint >>
+    <<: *defaults
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+
+      - run:
+          name: build
+          command: |
+            source ./emsdk/emsdk_env.sh
+            ./testsuite/emscripten/build.sh
+
+      - run:
+          name: build tests
+          command: |
+            source ./emsdk/emsdk_env.sh
+            cp -r testsuite/libffi.call testsuite/libffi.call.test
+            cp -r testsuite/libffi.closures testsuite/libffi.closures.test
+            ./testsuite/emscripten/build-tests.sh testsuite/libffi.call.test
+            ./testsuite/emscripten/build-tests.sh testsuite/libffi.closures.test
+
+      - persist_to_workspace:
+          root: .
+          paths:
+            - target
+            - testsuite
+
+  test:
+    parameters:
+      test-params:
+        description: The tests to run.
+        type: string
+    <<: *defaults
+    steps:
+      - checkout
+
+      - attach_workspace:
+          at: .
+
+      - run:
+          name: run tests
+          command: |
+            git reset --hard
+            cd testsuite/emscripten/
+            mkdir test-results
+            pytest \
+              --junitxml=test-results/junit.xml \
+               test_libffi.py \
+               << parameters.test-params >>
+      - store_test_results:
+          path: testsuite/emscripten/test-results
+
+  test-dejagnu:
+    parameters:
+      params:
+        description: Parameters to node-tests
+        type: string
+        default: ""
+
+    <<: *defaults
+    steps:
+      - checkout
+
+      - attach_workspace:
+          at: .
+
+      - run:
+          name: run tests
+          command: |
+            source ./emsdk/emsdk_env.sh
+            testsuite/emscripten/node-tests.sh << parameters.params >>
+
+workflows:
+  version: 2
+  build-and-test:
+    jobs:
+      - install-emsdk
+
+      - build:
+          name: build
+          requires:
+            - install-emsdk
+
+      - build:
+          name: build-bigint
+          wasm-bigint: "true"
+          requires:
+            - install-emsdk
+
+      - test:
+          name: test-firefox
+          test-params: -k firefox
+          requires:
+            - build
+      - test:
+          name: test-chrome
+          test-params: -k chrome
+          requires:
+            - build
+
+      - test:
+          name: test-firefox-bigint
+          test-params: -k firefox
+          requires:
+            - build-bigint
+
+      - test:
+          name: test-chrome-bigint
+          test-params: -k chrome
+          requires:
+            - build-bigint
+
+      - test-dejagnu:
+          name: test-dejagnu
+          requires:
+            - install-emsdk
+      - test-dejagnu:
+          name: test-dejagnu-bigint
+          params: --wasm-bigint
+          requires:
+            - install-emsdk

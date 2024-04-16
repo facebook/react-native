@@ -1,0 +1,106 @@
+#! /bin/sh
+
+# Script to translate LDFLAGS into a form suitable for use with libtool.
+
+# Copyright (C) 2005 Free Software Foundation, Inc.
+#
+# This file is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, 
+# MA 02110-1301, USA. 
+
+# Contributed by CodeSourcery, LLC.
+
+# This script is designed to be used from a Makefile that uses libtool
+# to build libraries as follows: 
+#
+#   LTLDFLAGS = $(shell libtool-ldflags $(LDFLAGS))
+#
+# Then, use (LTLDFLAGS) in place of $(LDFLAGS) in your link line.
+
+# The output of the script.  This string is built up as we process the
+# arguments.
+result=
+prev_arg=
+
+for arg
+do
+    case $arg in
+	-f*|--*)
+	    # Libtool does not ascribe any special meaning options
+	    # that begin with -f or with a double-dash.  So, it will
+	    # think these options are linker options, and prefix them
+	    # with "-Wl,".  Then, the compiler driver will ignore the
+	    # options.  So, we prefix these options with -Xcompiler to
+	    # make clear to libtool that they are in fact compiler
+	    # options.
+	    case $prev_arg in
+		-Xpreprocessor|-Xcompiler|-Xlinker)
+		    # This option is already prefixed; don't prefix it again.
+		    ;;
+		*)
+		    result="$result -Xcompiler"
+		    ;;
+	    esac
+	    ;;
+	*)
+	    # We do not want to add -Xcompiler to other options because
+	    # that would prevent libtool itself from recognizing them.
+	    ;;
+    esac
+    prev_arg=$arg
+
+    # If $(LDFLAGS) is (say):
+    #   a "b'c d" e
+    # then the user expects that:
+    #   $(LD) $(LDFLAGS)
+    # will pass three arguments to $(LD):
+    #   1) a
+    #   2) b'c d
+    #   3) e
+    # We must ensure, therefore, that the arguments are appropriately
+    # quoted so that using:
+    #   libtool --mode=link ... $(LTLDFLAGS)
+    # will result in the same number of arguments being passed to
+    # libtool.   In other words, when this script was invoked, the shell 
+    # removed one level of quoting, present in $(LDFLAGS); we have to put 
+    # it back.
+
+    # Quote any embedded single quotes.
+    case $arg in
+	*"'"*)
+	    # The following command creates the script:
+	    #   1s,^X,,;s|'|'"'"'|g
+	    # which removes a leading X, and then quotes and embedded single
+	    # quotes.
+	    sed_script="1s,^X,,;s|'|'\"'\"'|g"
+	    # Add a leading "X" so that if $arg starts with a dash,
+	    # the echo command will not try to interpret the argument
+	    # as a command-line option.
+	    arg="X$arg"
+	    # Generate the quoted string.
+	    quoted_arg=`echo "$arg" | sed -e "$sed_script"`
+	    ;;
+	*)
+	    quoted_arg=$arg
+	    ;;
+    esac
+    # Surround the entire argument with single quotes.
+    quoted_arg="'"$quoted_arg"'" 
+
+    # Add it to the string.
+    result="$result $quoted_arg"
+done
+
+# Output the string we have built up.
+echo "$result"

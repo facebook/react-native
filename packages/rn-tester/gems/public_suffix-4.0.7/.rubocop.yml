@@ -1,0 +1,36 @@
+inherit_from:
+  - .rubocop_opinionated.yml
+
+AllCops:
+  Exclude:
+    # Exclude .gemspec files because they are generally auto-generated
+    - '*.gemspec'
+    # Exclude vendored folders
+    - 'tmp/**/*'
+    - 'vendor/**/*'
+    # Exclude artifacts
+    - 'pkg/**/*'
+    # Other
+    - 'test/benchmarks/**/*'
+    - 'test/profilers/**/*'
+
+# I often use @_variable to avoid clashing.
+Naming/MemoizedInstanceVariableName:
+  Enabled: false
+
+Style/ClassAndModuleChildren:
+  Exclude:
+    - 'spec/**/*_spec.rb'
+    - 'test/**/*_test.rb'
+
+# Dear Rubocop, I don't want to use String#strip_heredoc
+Layout/HeredocIndentation:
+  Enabled: false
+
+Style/WordArray:
+  Enabled: false
+  MinSize: 3
+
+Style/SymbolArray:
+  Enabled: false
+  MinSize: 3

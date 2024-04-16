@@ -1,0 +1,87 @@
+== Class Child
+
+Class Child includes module Node;
+see {Tasks for Node}[node_rdoc.html].
+
+:include: ../tocs/child_toc.rdoc
+
+=== Relationships
+
+==== Task: Set the Parent
+
+Use method {Child#parent=}[../../../../REXML/Parent.html#method-i-parent-3D]
+to set the parent:
+
+  e0 = REXML::Element.new('foo')
+  e1 = REXML::Element.new('bar')
+  e1.parent # => nil
+  e1.parent = e0
+  e1.parent # => <foo/>
+
+==== Task: Insert Previous Sibling
+
+Use method {Child#previous_sibling=}[../../../../REXML/Parent.html#method-i-previous_sibling-3D]
+to insert a previous sibling:
+
+  xml_string = '<root><a/><c/></root>'
+  d = REXML::Document.new(xml_string)
+  d.root.to_a   # => [<a/>, <c/>]
+  c = d.root[1] # => <c/>
+  b = REXML::Element.new('b')
+  c.previous_sibling = b
+  d.root.to_a   # => [<a/>, <b/>, <c/>]
+
+==== Task: Insert Next Sibling
+
+Use method {Child#next_sibling=}[../../../../REXML/Parent.html#method-i-next-sibling-3D]
+to insert a previous sibling:
+
+  xml_string = '<root><a/><c/></root>'
+  d = REXML::Document.new(xml_string)
+  d.root.to_a   # => [<a/>, <c/>]
+  a = d.root[0] # => <a/>
+  b = REXML::Element.new('b')
+  a.next_sibling = b
+  d.root.to_a   # => [<a/>, <b/>, <c/>]
+
+=== Removal or Replacement
+
+==== Task: Remove Child from Parent
+
+Use method {Child#remove}[../../../../REXML/Parent.html#method-i-remove]
+to remove a child from its parent; returns the removed child:
+
+  xml_string = '<root><a/><b/><c/></root>'
+  d = REXML::Document.new(xml_string)
+  d.root.to_a   # => [<a/>, <b/>, <c/>]
+  b = d.root[1] # => <b/>
+  b.remove      # => <b/>
+  d.root.to_a   # => [<a/>, <c/>]
+
+==== Task: Replace Child
+
+Use method {Child#replace_with}[../../../../REXML/Parent.html#method-i-replace]
+to replace a child;
+returns the replaced child:
+
+  xml_string = '<root><a/><b/><c/></root>'
+  d = REXML::Document.new(xml_string)
+  d.root.to_a       # => [<a/>, <b/>, <c/>]
+  b = d.root[1]     # => <b/>
+  d = REXML::Element.new('d')
+  b.replace_with(d) # => <b/>
+  d.root.to_a       # => [<a/>, <d/>, <c/>]
+
+=== Document
+
+==== Task: Get the Document
+
+Use method {Child#document}[../../../../REXML/Parent.html#method-i-document]
+to get the document for the child:
+
+  xml_string = '<root><a/><b/><c/></root>'
+  d = REXML::Document.new(xml_string)
+  d.root.to_a     # => [<a/>, <b/>, <c/>]
+  b = d.root[1]   # => <b/>
+  b.document == d # => true
+  REXML::Child.new.document # => nil

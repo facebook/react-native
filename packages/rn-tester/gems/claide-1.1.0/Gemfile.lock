@@ -1,0 +1,79 @@
+PATH
+  remote: .
+  specs:
+    claide (1.1.0)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    ast (2.4.2)
+    bacon (1.2.0)
+    colored (1.2)
+    docile (1.1.5)
+    ffi (1.14.2)
+    jaro_winkler (1.5.4)
+    json (2.5.1)
+    kicker (3.0.0)
+      listen (~> 1.3.0)
+      notify (~> 0.5.2)
+    listen (1.3.1)
+      rb-fsevent (>= 0.9.3)
+      rb-inotify (>= 0.9)
+      rb-kqueue (>= 0.2)
+    metaclass (0.0.4)
+    mocha (1.1.0)
+      metaclass (~> 0.0.1)
+    mocha-on-bacon (0.2.2)
+      mocha (>= 0.13.0)
+    multi_json (1.10.1)
+    notify (0.5.2)
+    parallel (1.19.2)
+    parser (3.1.0.0)
+      ast (~> 2.4.1)
+    prettybacon (0.0.2)
+      bacon (~> 1.2)
+    rainbow (3.0.0)
+    rake (10.3.2)
+    rb-fsevent (0.9.4)
+    rb-inotify (0.9.5)
+      ffi (>= 0.5.0)
+    rb-kqueue (0.2.3)
+      ffi (>= 0.5.0)
+    rexml (3.2.5)
+    rubocop (0.81.0)
+      jaro_winkler (~> 1.5.1)
+      parallel (~> 1.10)
+      parser (>= 2.7.0.1)
+      rainbow (>= 2.2.2, < 4.0)
+      rexml
+      ruby-progressbar (~> 1.7)
+      unicode-display_width (>= 1.4.0, < 2.0)
+    rubocop-performance (1.5.2)
+      rubocop (>= 0.71.0)
+    ruby-progressbar (1.11.0)
+    simplecov (0.9.1)
+      docile (~> 1.1.0)
+      multi_json (~> 1.0)
+      simplecov-html (~> 0.8.0)
+    simplecov-html (0.8.0)
+    unicode-display_width (1.8.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  bacon
+  claide!
+  colored
+  json (< 3)
+  kicker
+  mocha-on-bacon
+  parallel (<= 1.19.2)
+  prettybacon
+  rake
+  rubocop (<= 0.81.0)
+  rubocop-performance (<= 1.5.2)
+  simplecov
+
+BUNDLED WITH
+   2.3.4

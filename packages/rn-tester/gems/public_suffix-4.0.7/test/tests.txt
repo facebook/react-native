@@ -1,0 +1,98 @@
+// Any copyright is dedicated to the Public Domain.
+// http://creativecommons.org/publicdomain/zero/1.0/
+
+// null input
+null, null
+// Mixed case
+'COM', null
+'example.COM', 'example.com'
+'WwW.example.COM', 'example.com'
+// Leading dot
+'.com', null
+'.example', null
+'.example.com', null
+'.example.example', null
+// Unlisted TLD
+'example', null
+'example.example', 'example.example'
+'b.example.example', 'example.example'
+'a.b.example.example', 'example.example'
+// Listed, but non-Internet, TLD
+//'local', null
+//'example.local', null
+//'b.example.local', null
+//'a.b.example.local', null
+// TLD with only 1 rule
+'biz', null
+'domain.biz', 'domain.biz'
+'b.domain.biz', 'domain.biz'
+'a.b.domain.biz', 'domain.biz'
+// TLD with some 2-level rules
+'com', null
+'example.com', 'example.com'
+'b.example.com', 'example.com'
+'a.b.example.com', 'example.com'
+'uk.com', null
+'example.uk.com', 'example.uk.com'
+'b.example.uk.com', 'example.uk.com'
+'a.b.example.uk.com', 'example.uk.com'
+'test.ac', 'test.ac'
+// TLD with only 1 (wildcard) rule
+'mm', null
+'c.mm', null
+'b.c.mm', 'b.c.mm'
+'a.b.c.mm', 'b.c.mm'
+// More complex TLD
+'jp', null
+'test.jp', 'test.jp'
+'www.test.jp', 'test.jp'
+'ac.jp', null
+'test.ac.jp', 'test.ac.jp'
+'www.test.ac.jp', 'test.ac.jp'
+'kyoto.jp', null
+'test.kyoto.jp', 'test.kyoto.jp'
+'ide.kyoto.jp', null
+'b.ide.kyoto.jp', 'b.ide.kyoto.jp'
+'a.b.ide.kyoto.jp', 'b.ide.kyoto.jp'
+'c.kobe.jp', null
+'b.c.kobe.jp', 'b.c.kobe.jp'
+'a.b.c.kobe.jp', 'b.c.kobe.jp'
+'city.kobe.jp', 'city.kobe.jp'
+'www.city.kobe.jp', 'city.kobe.jp'
+// TLD with a wildcard rule and exceptions
+'ck', null
+'test.ck', null
+'b.test.ck', 'b.test.ck'
+'a.b.test.ck', 'b.test.ck'
+'www.ck', 'www.ck'
+'www.www.ck', 'www.ck'
+// US K12
+'us', null
+'test.us', 'test.us'
+'www.test.us', 'test.us'
+'ak.us', null
+'test.ak.us', 'test.ak.us'
+'www.test.ak.us', 'test.ak.us'
+'k12.ak.us', null
+'test.k12.ak.us', 'test.k12.ak.us'
+'www.test.k12.ak.us', 'test.k12.ak.us'
+// IDN labels
+'食狮.com.cn', '食狮.com.cn'
+'食狮.公司.cn', '食狮.公司.cn'
+'www.食狮.公司.cn', '食狮.公司.cn'
+'shishi.公司.cn', 'shishi.公司.cn'
+'公司.cn', null
+'食狮.中国', '食狮.中国'
+'www.食狮.中国', '食狮.中国'
+'shishi.中国', 'shishi.中国'
+'中国', null
+// Same as above, but punycoded
+'xn--85x722f.com.cn', 'xn--85x722f.com.cn'
+'xn--85x722f.xn--55qx5d.cn', 'xn--85x722f.xn--55qx5d.cn'
+'www.xn--85x722f.xn--55qx5d.cn', 'xn--85x722f.xn--55qx5d.cn'
+'shishi.xn--55qx5d.cn', 'shishi.xn--55qx5d.cn'
+'xn--55qx5d.cn', null
+'xn--85x722f.xn--fiqs8s', 'xn--85x722f.xn--fiqs8s'
+'www.xn--85x722f.xn--fiqs8s', 'xn--85x722f.xn--fiqs8s'
+'shishi.xn--fiqs8s', 'shishi.xn--fiqs8s'
+'xn--fiqs8s', null

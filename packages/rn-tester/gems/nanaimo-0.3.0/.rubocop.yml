@@ -1,0 +1,14 @@
+inherit_from:
+  - .rubocop_todo.yml
+
+AllCops:
+  TargetRubyVersion: 2.1
+  Exclude:
+    - 'lib/nanaimo/unicode/**/*.rb'
+    - 'vendor/**/*'
+
+Lint/AssignmentInCondition:
+  Enabled: false
+
+Metrics:
+  Enabled: false

@@ -1,0 +1,97 @@
+== Module Node
+
+:include: ../tocs/node_toc.rdoc
+
+=== Siblings
+
+==== Task: Find Previous Sibling
+
+Use method
+{Node.previous_sibling_node}[../../../../REXML/Node.html#method-i-previous_sibling]
+to retrieve the previous sibling:
+
+  d = REXML::Document.new('<root><a/><b/><c/></root>')
+  b = d.root[1]           # => <b/>
+  b.previous_sibling_node # => <a/>
+
+==== Task: Find Next Sibling
+
+Use method
+{Node.next_sibling_node}[../../../../REXML/Node.html#method-i-next_sibling]
+to retrieve the next sibling:
+
+  d = REXML::Document.new('<root><a/><b/><c/></root>')
+  b = d.root[1]       # => <b/>
+  b.next_sibling_node # => <c/>
+
+=== Position
+
+==== Task: Find Own Index Among Siblings
+
+Use method
+{Node.index_in_parent}[../../../../REXML/Node.html#method-i-index_in_parent]
+to retrieve the 1-based index of this node among its siblings:
+
+  d = REXML::Document.new('<root><a/><b/><c/></root>')
+  b = d.root[1]     # => <b/>
+  b.index_in_parent # => 2
+
+=== Recursive Traversal
+
+==== Task: Traverse Each Recursively
+
+Use method
+{Node.each_recursive}[../../../../REXML/Node.html#method-i-each_recursive]
+to traverse a tree of nodes recursively:
+
+  xml_string = '<root><a><b><c></c></b><b><c></c></b></a></root>'
+  d = REXML::Document.new(xml_string)
+  d.root.each_recursive {|node| p node }
+
+Output:
+
+  <a> ... </>
+  <b> ... </>
+  <c/>
+  <b> ... </>
+  <c/>
+
+=== Recursive Search
+
+==== Task: Traverse Each Recursively
+
+Use method
+{Node.find_first_recursive}[../../../../REXML/Node.html#method-i-find_first_recursive]
+to search a tree of nodes recursively:
+
+  xml_string = '<root><a><b><c></c></b><b><c></c></b></a></root>'
+  d = REXML::Document.new(xml_string)
+  d.root.find_first_recursive {|node| node.name == 'c' } # => <c/>
+
+=== Representation
+
+==== Task: Represent a String
+
+Use method {Node.to_s}[../../../../REXML/Node.html#method-i-to_s]
+to represent the node as a string:
+
+  xml_string = '<root><a><b><c></c></b><b><c></c></b></a></root>'
+  d = REXML::Document.new(xml_string)
+  d.root.to_s # => "<root><a><b><c/></b><b><c/></b></a></root>"
+
+=== Parent?
+
+==== Task: Determine Whether the Node is a Parent
+
+Use method {Node.parent?}[../../../../REXML/Node.html#method-i-parent-3F]
+to determine whether the node is a parent;
+class Text derives from Node:
+
+  d = REXML::Document.new('<root><a/>text<b/>more<c/></root>')
+  t = d.root[1] # => "text"
+  t.parent?     # => false
+
+Class Parent also derives from Node, but overrides this method:
+
+  p = REXML::Parent.new
+  p.parent? # => true

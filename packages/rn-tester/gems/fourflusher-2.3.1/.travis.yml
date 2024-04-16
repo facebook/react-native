@@ -1,0 +1,8 @@
+language: ruby
+rvm: 
+    - 2.0.0-p648
+    - 2.5.1
+cache: bundler
+before_install: gem install bundler -v "~> 1.17"
+script:
+  - bundle exec rake

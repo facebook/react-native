@@ -138,6 +138,7 @@ typedef struct {
 @property (nonatomic, copy) NSString *accessibilityLanguage;
 @property (nonatomic) UIAccessibilityTraits accessibilityRoleTraits;
 @property (nonatomic) UIAccessibilityTraits roleTraits;
+@property (nonatomic, assign) BOOL accessibilitySplitFocus;
 
 /**
  * Used in debugging to get a description of the view hierarchy rooted at

@@ -1,0 +1,99 @@
+PATH
+  remote: .
+  specs:
+    algoliasearch (1.27.4)
+      httpclient (~> 2.8, >= 2.8.3)
+      json (>= 1.5.1)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    addressable (2.7.0)
+      public_suffix (>= 2.0.2, < 5.0)
+    backports (3.18.2)
+    connection_pool (2.2.3)
+    crack (0.4.3)
+      safe_yaml (~> 1.0.0)
+    diff-lcs (1.4.4)
+    docile (1.3.2)
+    ethon (0.12.0)
+      ffi (>= 1.3.0)
+    faraday (0.17.3)
+      multipart-post (>= 1.2, < 3)
+    faraday_middleware (0.14.0)
+      faraday (>= 0.7.4, < 1.0)
+    ffi (1.13.1)
+    gh (0.14.0)
+      addressable
+      backports
+      faraday (~> 0.8)
+      multi_json (~> 1.0)
+      net-http-persistent (>= 2.7)
+      net-http-pipeline
+    hashdiff (1.0.1)
+    highline (1.7.10)
+    httpclient (2.8.3)
+    json (2.3.1)
+    launchy (2.5.0)
+      addressable (~> 2.7)
+    multi_json (1.15.0)
+    multipart-post (2.1.1)
+    net-http-persistent (4.0.0)
+      connection_pool (~> 2.2)
+    net-http-pipeline (1.0.1)
+    public_suffix (4.0.6)
+    pusher-client (0.6.2)
+      json
+      websocket (~> 1.0)
+    rake (13.0.1)
+    rdoc (6.2.1)
+    rspec (3.9.0)
+      rspec-core (~> 3.9.0)
+      rspec-expectations (~> 3.9.0)
+      rspec-mocks (~> 3.9.0)
+    rspec-core (3.9.2)
+      rspec-support (~> 3.9.3)
+    rspec-expectations (3.9.2)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.9.0)
+    rspec-mocks (3.9.1)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.9.0)
+    rspec-support (3.9.3)
+    safe_yaml (1.0.5)
+    simplecov (0.19.0)
+      docile (~> 1.1)
+      simplecov-html (~> 0.11)
+    simplecov-html (0.12.2)
+    travis (1.8.13)
+      backports
+      faraday (~> 0.9)
+      faraday_middleware (~> 0.9, >= 0.9.1)
+      gh (~> 0.13)
+      highline (~> 1.6)
+      launchy (~> 2.1)
+      pusher-client (~> 0.4)
+      typhoeus (~> 0.6, >= 0.6.8)
+    typhoeus (0.8.0)
+      ethon (>= 0.8.0)
+    webmock (3.8.3)
+      addressable (>= 2.3.6)
+      crack (>= 0.3.2)
+      hashdiff (>= 0.4.0, < 2.0.0)
+    websocket (1.2.8)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  algoliasearch!
+  rake
+  rdoc
+  rspec (>= 2.5.0)
+  rubysl (~> 2.2)
+  simplecov
+  travis
+  webmock
+
+BUNDLED WITH
+   1.17.2

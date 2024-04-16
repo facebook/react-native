@@ -1,0 +1,168 @@
+#!/usr/bin/env ruby
+# encoding: utf-8
+
+# This bin wrapper runs the `pod` command in a OS X sandbox. The reason for this
+# is to ensure that people can’t use malicious code from pod specifications.
+#
+# It does this by creating a ‘seatbelt’ profile on the fly and executing the
+# given command through `/usr/bin/sandbox-exec`. This profile format is an
+# undocumented format, which uses TinyScheme to implement its DSL.
+#
+# Even though it uses a undocumented format, it’s actually very self-explanatory.
+# Because we use a whitelist approach, `(deny default)`, any action that is
+# denied is logged to `/var/log/system.log`. So tailing that should provide
+# enough information on steps that need to be take to get something to work.
+#
+# For more information see:
+#
+# * https://github.com/CocoaPods/CocoaPods/issues/939
+# * http://reverse.put.as/wp-content/uploads/2011/08/The-Apple-Sandbox-BHDC2011-Slides.pdf
+# * http://reverse.put.as/wp-content/uploads/2011/08/The-Apple-Sandbox-BHDC2011-Paper.pdf
+# * https://github.com/s7ephen/OSX-Sandbox--Seatbelt--Profiles
+# * `$ man sandbox-exec`
+# * `$ ls /usr/share/sandbox`
+
+if $0 == __FILE__
+  $:.unshift File.expand_path('../../lib', __FILE__)
+end
+
+require 'pathname'
+require 'cocoapods/config'
+require 'rbconfig'
+require 'erb'
+
+PROFILE_ERB_TEMPLATE = <<-EOS
+(version 1)
+(debug allow)
+
+(import "mDNSResponder.sb")
+
+(allow file-ioctl)
+(allow sysctl-read)
+(allow mach-lookup)
+(allow ipc-posix-shm)
+(allow process-fork)
+(allow system-socket)
+
+; TODO make this stricter if possible
+(allow network-outbound)
+
+(allow process-exec
+  (literal
+    "<%= pod_bin %>"
+    "<%= ruby_bin %>"
+  )
+  (regex
+<% prefixes.each do |prefix| %>
+    #"^<%= prefix %>/*"
+<% end %>
+  )
+)
+
+(allow file-read-metadata)
+(allow file-read*
+  ; This is currently only added because using `xcodebuild` to build a resource
+  ; bundle target starts a FSEvents stream on `/`. No idea why that would be
+  ; needed, but for now it doesn’t seem like a real problem.
+  (literal "/")
+  (regex
+    ; TODO see if we can restrict this more, but it's going to be hard
+    #"^/Users/[^.]+/*"
+    ;#"^/Users/[^.]+/.netrc"
+    ;#"^/Users/[^.]+/.gemrc"
+    ;#"^/Users/[^.]+/.gem/*"
+    ;#"^/Users/[^.]+/Library/.*"
+    #"^/Library/*"
+    #"^/System/Library/*"
+    #"^/usr/lib/*"
+    #"^/usr/share/*"
+    #"^/private/*"
+    #"^/dev/*"
+    #"^<%= ruby_prefix %>"
+    #"^<%= pod_prefix %>"
+    #"^<%= xcode_app_path %>"
+    #"^<%= Pod::Config.instance.repos_dir %>"
+<% prefixes.each do |prefix| %>
+    #"^<%= prefix %>/*"
+<% end %>
+  )
+)
+
+(allow file-write*
+  (literal
+    "/dev/dtracehelper"
+    "/dev/null"
+  )
+  (regex
+    #"^<%= Pod::Config.instance.project_root %>"
+    #"^<%= Pod::Config.instance.repos_dir %>"
+    #"^/Users/[^.]+/Library/Caches/CocoaPods/*"
+    #"^/dev/tty"
+    #"^/private/var"
+  )
+)
+
+(deny default)
+EOS
+
+class Profile
+  def pod_bin
+    File.expand_path('../pod', __FILE__)
+  end
+
+  def pod_prefix
+    File.expand_path('../..', pod_bin)
+  end
+
+  def ruby_bin
+    File.join(RbConfig::CONFIG['bindir'], RbConfig::CONFIG['ruby_install_name'])
+  end
+
+  def ruby_prefix
+    RbConfig::CONFIG['prefix']
+  end
+
+  def prefix_from_bin(bin_name)
+    unless (path = `which #{bin_name}`.strip).empty?
+      File.dirname(File.dirname(path))
+    end
+  end
+
+  def prefixes
+    prefixes = ['/bin', '/usr/bin', '/usr/libexec', xcode_app_path]
+    prefixes << `brew --prefix`.strip unless `which brew`.strip.empty?
+
+    # From asking people, it seems MacPorts does not have a `prefix` command, like
+    # Homebrew does, so make an educated guess:
+    if port_prefix = prefix_from_bin('port')
+      prefixes << port_prefix
+    end
+
+    if rbenv_prefix = prefix_from_bin('rbenv')
+      prefixes << rbenv_prefix
+    end
+
+    prefixes
+  end
+
+  def developer_prefix
+    `xcode-select --print-path`.strip
+  end
+
+  def xcode_app_path
+    File.expand_path('../..', developer_prefix)
+  end
+
+  # TODO: raise SAFE level (0) to 4 if possible.
+  def generate
+    ERB.new(PROFILE_ERB_TEMPLATE, 0, '>').result(binding)
+  end
+end
+
+# Ensure the `pod` bin doesn’t think it needs to use Bundler.
+ENV['COCOAPODS_NO_BUNDLER'] = '1'
+
+profile = Profile.new
+# puts profile.generate
+command = ['/usr/bin/sandbox-exec', '-p', profile.generate, profile.pod_bin, *ARGV]
+exec(*command)

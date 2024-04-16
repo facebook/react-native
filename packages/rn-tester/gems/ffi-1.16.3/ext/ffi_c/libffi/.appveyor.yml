@@ -1,0 +1,84 @@
+shallow_clone: true
+
+# We're currently only testing libffi built with Microsoft's
+# tools.
+# This matrix should be expanded to include at least:
+#  32- and 64-bit gcc/cygwin
+#  32- and 64-bit gcc/mingw
+#  32- and 64-bit clang/mingw
+#  and perhaps more.
+
+image: Visual Studio 2017
+platform:
+  - x64
+  - x86
+  - arm
+  - arm64
+
+configuration:
+  - Debug
+  - Release
+
+environment:
+  global:
+    CYG_ROOT: C:/cygwin64
+    CYG_CACHE: C:/cygwin64/var/cache/setup
+    CYG_MIRROR: http://mirrors.kernel.org/sourceware/cygwin/
+    VSVER: 15
+  matrix:
+    - SHARED_ARG: "--enable-shared --disable-static"
+    - SHARED_ARG: "--enable-static --disable-shared"
+
+install:
+  - ps: >-
+      If ($env:Platform -Match "x86") {
+          $env:VCVARS_PLATFORM="x86"
+          $env:BUILD="i686-pc-cygwin"
+          $env:HOST="i686-pc-cygwin"
+          $env:MSVCC="/cygdrive/c/projects/libffi/msvcc.sh"
+          $env:SRC_ARCHITECTURE="x86"
+        } ElseIf ($env:Platform -Match "arm64") {
+          $env:VCVARS_PLATFORM="x86_arm64"
+          $env:BUILD="i686-pc-cygwin"
+          $env:HOST="aarch64-w64-cygwin"
+          $env:MSVCC="/cygdrive/c/projects/libffi/msvcc.sh -marm64"
+          $env:SRC_ARCHITECTURE="aarch64"
+        } ElseIf ($env:Platform -Match "arm") {
+          $env:VCVARS_PLATFORM="x86_arm"
+          $env:BUILD="i686-pc-cygwin"
+          $env:HOST="arm-w32-cygwin"
+          $env:MSVCC="/cygdrive/c/projects/libffi/msvcc.sh -marm"
+          $env:SRC_ARCHITECTURE="arm"
+        } Else {
+          $env:VCVARS_PLATFORM="amd64"
+          $env:BUILD="x86_64-w64-cygwin"
+          $env:HOST="x86_64-w64-cygwin"
+          $env:MSVCC="/cygdrive/c/projects/libffi/msvcc.sh -m64"
+          $env:SRC_ARCHITECTURE="x86"
+      }
+      If ($env:Configuration -Match "Debug") {
+          $env:DEBUG_ARG="--enable-debug"
+        } Else {
+          $env:DEBUG_ARG="--disable-debug"
+      }
+  - 'appveyor DownloadFile https://cygwin.com/setup-x86_64.exe -FileName setup.exe'
+  - 'setup.exe -qgnNdO -R "%CYG_ROOT%" -s "%CYG_MIRROR%" -l "%CYG_CACHE%" -P dejagnu -P autoconf -P automake -P libtool'
+  - '%CYG_ROOT%/bin/bash -lc "cygcheck -dc cygwin"'
+  - echo call VsDevCmd to set VS150COMNTOOLS
+  - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat"
+  - ps: $env:VSCOMNTOOLS=(Get-Content ("env:VS" + "$env:VSVER" + "0COMNTOOLS"))
+  - echo "Using Visual Studio %VSVER%.0 at %VSCOMNTOOLS%"
+  - call "%VSCOMNTOOLS%..\..\vc\Auxiliary\Build\vcvarsall.bat" %VCVARS_PLATFORM%
+
+build_script:
+  - c:\cygwin64\bin\sh -lc "(cd $OLDPWD; ./autogen.sh)"
+  - c:\cygwin64\bin\sh -lc "(cd $OLDPWD; ./configure CC='%MSVCC%' CXX='%MSVCC%' LD='link' CPP='cl -nologo -EP' CXXCPP='cl -nologo -EP' CPPFLAGS='-DFFI_BUILDING_DLL' AR='/cygdrive/c/projects/libffi/.travis/ar-lib lib' NM='dumpbin -symbols' STRIP=':' --build=$BUILD --host=$HOST $DEBUG_ARG $SHARED_ARG)"
+  - c:\cygwin64\bin\sh -lc "(cd $OLDPWD; cp src/%SRC_ARCHITECTURE%/ffitarget.h include)"
+  - c:\cygwin64\bin\sh -lc "(cd $OLDPWD; make)"
+  - c:\cygwin64\bin\sh -lc "(cd $OLDPWD; cp $HOST/.libs/libffi.lib $HOST/testsuite/libffi-8.lib || true)"
+  - c:\cygwin64\bin\sh -lc "(cd $OLDPWD; cp `find . -name 'libffi-?.dll'` $HOST/testsuite/ || true)"
+  - c:\cygwin64\bin\sh -lc "(cd $OLDPWD; TERM=none make check RUNTESTFLAGS='-v -v -v -v --target '$HOST  DEJAGNU=$PWD/.appveyor/site.exp SITEDIR=$PWD/.appveyor)"
+
+
+on_finish:
+  - c:\cygwin64\bin\sh -lc "(cd $OLDPWD; cat `find ./ -name libffi.log`)"

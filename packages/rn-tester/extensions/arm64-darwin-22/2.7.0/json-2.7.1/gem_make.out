@@ -1,0 +1,13 @@
+current directory: /Users/bikidas/react-native/packages/rn-tester/gems/json-2.7.1/ext/json
+/Users/bikidas/.rbenv/versions/2.7.5/bin/ruby -I /Users/bikidas/.rbenv/versions/2.7.5/lib/ruby/2.7.0 -r ./siteconf20240410-93610-1krsh3l.rb extconf.rb
+creating Makefile
+
+current directory: /Users/bikidas/react-native/packages/rn-tester/gems/json-2.7.1/ext/json
+make "DESTDIR=" clean
+
+current directory: /Users/bikidas/react-native/packages/rn-tester/gems/json-2.7.1/ext/json
+make "DESTDIR="
+make: Nothing to be done for `all'.
+
+current directory: /Users/bikidas/react-native/packages/rn-tester/gems/json-2.7.1/ext/json
+make "DESTDIR=" install

@@ -1,0 +1,93 @@
+2.0.4 / 2013-09-19
+
+* Bug fixes
+
+  * Restore 1.8 compatibility per @zhaocai in #6
+
+2.0.3 / 2013-08-11
+
+* Enhancements
+
+  * If you pass a non-String to #find, the :read will be automatically applied
+
+2.0.2 / 2013-08-11
+
+* Enhancements
+
+  * You can pass identity rules as procs that take record1 and record2 in their original forms (note they should return nil if not sure)
+
+2.0.1 / 2013-06-06
+
+* Bug fixes
+
+  * Fix Ruby 1.8 compatibility - thanks @trishume @fuzzy76 ! https://github.com/seamusabshere/fuzzy_match/issues/5
+
+2.0.0 / 2013-05-22
+
+* Breaking changes
+
+  * normalizers removed - use groupings instead
+  * first_grouping_decides removed
+  * FuzzyMatch#free gone
+
+* Enhancements
+
+  * chained groupings!
+  * faster and simpler structure
+  * FuzzyMatch#find_with_score returns [record, dice_score, lev_score]
+
+1.5.0 / 2013-04-03
+
+* Breaking changes
+
+  * No longer automatically calls to_regexp on rules - you must pass Regexps to normalizers, groupings, etc.
+
+* Enhancements
+
+  * FuzzyMatch#find_best returns all top results with the same score - thanks @ihough !
+  * Doesn't require to_regexp gem for you - you can still use it if you want to convert strings into regexps safely, if you want, tho
+
+1.4.1 / 2013-01-17
+
+* Bug fixes
+
+  * Don't die when you're comparing a string of length 1 and another string of length less than three (thanks @ihough !)
+
+* Enhancements
+
+  * '2A' is allowed to match '2 A'... funky stuff with pair distance and short strings
+  * FuzzyMatch#find_all_with_score returns a sorted array of records with their scores - thanks @brycesenz! (https://github.com/seamusabshere/fuzzy_match/issues/3)
+
+1.4.0 / 2012-09-07
+
+* Breaking changes
+
+  * Option keys are no longer symbolized automatically - make sure you do that if there's any chance they'll be strings
+  * active_record_inline_schema is no longer a runtime dependency - add it to your Gemfile if you use FuzzyMatch::CachedResult
+
+* Enhancements
+
+  * Tiny bit better #explain(needle)
+  * Remove dependency on ActiveSupport
+
+1.3.3 / 2012-04-13
+
+* Enhancements
+
+  * Now you must require 'fuzzy_match/cached_result' if you want to use it.
+  * Use active_record_inline_schema to create the FuzzyMatch::CachedResult table
+  * Test against CohortAnalysis, the replacement for CohortScope
+  * Fix some other random deprecations (like set_primary_key)
+
+1.3.2 / 2012-02-24
+
+* Enhancements
+
+  * Start keeping a changelog!
+  * renamed blockings to groupings
+  * cleaned up tests
+
+* Bug fixes
+
+  * better handling for one-letter similiarities like 'X foo' vs 'X bar' which couldn't be detected by pair distance
+  * take deprecated option :tighteners as :normalizers

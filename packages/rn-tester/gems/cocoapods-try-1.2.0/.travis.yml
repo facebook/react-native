@@ -1,0 +1,34 @@
+# Sets Travis to run the Ruby specs on OS X machines to be as close as possible
+# to the user environment.
+#
+language: ruby
+
+dist: trusty
+
+branches:
+  only:
+    - master
+    - /.+-stable$/
+
+matrix:
+  include:
+    - rvm: 2.4.1
+
+rvm:
+  - 2.0.0-p647
+  - 2.3.4
+  - 2.4.1
+  - 2.6.2
+
+before_install:
+  # There is a bug in travis. When using system ruby, bundler is not
+  # installed and causes the default install action to fail.
+  - if [ "$TRAVIS_RUBY_VERSION" = "system" ]; then sudo gem install "bundler:~> 1.17"; else gem install "bundler:~> 1.17"; fi
+  # RubyGems 2.0.14 isn't a fun time on 2.0.0p648
+  - if [ "$TRAVIS_RUBY_VERSION" = "system" ]; then sudo gem update --system; fi
+
+install:
+  - bundle install --path .bundle
+  - bundle exec pod repo add-cdn trunk 'https://cdn.cocoapods.org'
+
+script: bundle exec rake spec

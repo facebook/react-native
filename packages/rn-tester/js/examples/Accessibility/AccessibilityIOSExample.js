@@ -11,7 +11,7 @@
 'use strict';
 
 const React = require('react');
-const {Alert, Text, View} = require('react-native');
+const {Alert, Text, View, StyleSheet} = require('react-native');
 
 type Props = $ReadOnly<{||}>;
 class AccessibilityIOSExample extends React.Component<Props> {
@@ -56,10 +56,41 @@ class AccessibilityIOSExample extends React.Component<Props> {
         <View accessible={true} accessibilityLanguage="it-IT">
           <Text>This view's language should be `it-IT`</Text>
         </View>
+        <View
+          style={styles.outerBlock}
+          accessible={true}
+          accessibilitySplitFocus={true}
+          accessibilityLabel={'Parent Element'}>
+          <Text>Accessibility split focus example</Text>
+          <View
+            style={styles.innerBlock}
+            accessible={true}
+            accessibilityLabel={'First Child Element'}
+          />
+          <View
+            style={styles.innerBlock}
+            accessible={true}
+            accessibilityLabel={'Second Child Element'}
+          />
+        </View>
       </>
     );
   }
 }
+
+const styles = StyleSheet.create({
+  outerBlock: {
+    marginVertical: 15,
+    paddingVertical: 15,
+    backgroundColor: 'blue',
+  },
+  innerBlock: {
+    marginVertical: 15,
+    marginHorizontal: 15,
+    height: 40,
+    backgroundColor: 'green',
+  },
+});
 
 exports.title = 'AccessibilityIOS';
 exports.description = 'iOS specific Accessibility APIs';

@@ -317,6 +317,7 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
         accessibilityLiveRegion: accessibilityLiveRegion,
         accessibilityElementsHidden:
           this.props['aria-hidden'] ?? this.props.accessibilityElementsHidden,
+        accessibilitySplitFocus: this.props.accessibilitySplitFocus,
         hasTVPreferredFocus: this.props.hasTVPreferredFocus,
         hitSlop: this.props.hitSlop,
         focusable:

@@ -1,0 +1,22 @@
+{
+	"plugins":[
+		{
+			"gem":"cocoapods-fake-fake-fake-1",
+		    "name":"CocoaPods Fake Gem",
+		    "url":"https://github.com/CocoaPods/cocoapods-fake-1",
+		    "description":"A Pod that should not exist and should only be found by full search"
+		},
+		{
+			"gem":"bacon",
+			"name":"Bacon",
+			"url":"https://github.com/chneukirchen/bacon",
+			"description":"A minimal RSpec clone."
+		},
+        {
+            "gem":"cocoapods-fake-fake-fake-2",
+            "name":"CocoaPods Searchable Fake Gem",
+            "url":"https://github.com/CocoaPods/cocoapods-fake-2",
+            "description":"A Pod that should not exist but should be found with search"
+        }
+	]
+}

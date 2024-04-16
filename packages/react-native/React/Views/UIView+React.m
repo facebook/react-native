@@ -467,6 +467,16 @@ static void updateTransform(UIView *view)
       self, @selector(roleTraits), [NSNumber numberWithUnsignedLongLong:roleTraits], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
+- (BOOL)accessibilitySplitFocus
+{
+  return [objc_getAssociatedObject(self, _cmd) boolValue];
+}
+
+- (void)setAccessibilitySplitFocus:(BOOL)accessibilitySplitFocus
+{
+  objc_setAssociatedObject(self, @selector(accessibilitySplitFocus), @(accessibilitySplitFocus), OBJC_ASSOCIATION_ASSIGN);
+}
+
 #pragma mark - Debug
 - (void)react_addRecursiveDescriptionToString:(NSMutableString *)string atLevel:(NSUInteger)level
 {

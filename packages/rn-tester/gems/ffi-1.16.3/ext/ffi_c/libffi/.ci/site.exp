@@ -1,0 +1,29 @@
+# Copyright (C) 2008, 2010, 2018, 2019, 2021  Anthony Green
+
+# Make sure we look in the right place for the board description files.
+if ![info exists boards_dir] {
+    set boards_dir {}
+}
+
+lappend boards_dir $::env(BOARDSDIR)
+
+verbose "Global Config File: target_triplet is $target_triplet" 2
+global target_list
+
+case "$target_triplet" in {
+    { "bfin-elf" } {
+	set target_list "bfin-sim"
+    }
+    { "m32r-elf" } {
+	set target_list "m32r-sim"
+    }
+    { "moxie-elf" } {
+	set target_list "moxie-sim"
+    }
+    { "or1k-elf" } {
+	set target_list "or1k-sim"
+    }
+    { "powerpc-eabisim" } {
+        set target_list "powerpc-eabisim"
+    }
+}

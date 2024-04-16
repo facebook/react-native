@@ -1,0 +1,1358 @@
+= \REXML Tutorial
+
+== Why \REXML?
+
+- Ruby's \REXML library is part of the Ruby distribution,
+  so using it requires no gem installations.
+- \REXML is fully maintained.
+- \REXML is mature, having been in use for long years.
+
+== To Include, or Not to Include?
+
+REXML is a module.
+To use it, you must require it:
+
+  require 'rexml' # => true
+
+If you do not also include it, you must fully qualify references to REXML:
+
+  REXML::Document # => REXML::Document
+
+If you also include the module, you may optionally omit <tt>REXML::</tt>:
+
+  include REXML
+  Document # => REXML::Document
+  REXML::Document # => REXML::Document
+
+== Preliminaries
+
+All examples here assume that the following code has been executed:
+
+  require 'rexml'
+  include REXML
+
+The source XML for many examples here is from file
+{books.xml}[https://www.w3schools.com/xml/books.xml] at w3schools.com.
+You may find it convenient to open that page in a new tab
+(Ctrl-click in some browsers).
+
+Note that your browser may display the XML with modified whitespace
+and without the XML declaration, which in this case is:
+
+  <?xml version="1.0" encoding="UTF-8"?>
+
+For convenience, we capture the XML into a string variable:
+
+  require 'open-uri'
+  source_string = URI.open('https://www.w3schools.com/xml/books.xml').read
+
+And into a file:
+
+  File.write('source_file.xml', source_string)
+
+Throughout these examples, variable +doc+ will hold only the document
+derived from these sources:
+
+  doc = Document.new(source_string)
+
+== Parsing \XML \Source
+
+=== Parsing a Document
+
+Use method REXML::Document::new to parse XML source.
+
+The source may be a string:
+
+  doc = Document.new(source_string)
+
+Or an \IO stream:
+
+  doc = File.open('source_file.xml', 'r') do |io|
+    Document.new(io)
+  end
+
+Method <tt>URI.open</tt> returns a StringIO object,
+so the source can be from a web page:
+
+  require 'open-uri'
+  io = URI.open("https://www.w3schools.com/xml/books.xml")
+  io.class # => StringIO
+  doc = Document.new(io)
+
+For any of these sources, the returned object is an REXML::Document:
+
+  doc       # => <UNDEFINED> ... </>
+  doc.class # => REXML::Document
+
+Note: <tt>'UNDEFINED'</tt> is the "name" displayed for a document,
+even though <tt>doc.name</tt> returns an empty string <tt>""</tt>.
+
+A parsed document may produce \REXML objects of many classes,
+but the two that are likely to be of greatest interest are
+REXML::Document and REXML::Element.
+These two classes are covered in great detail in this tutorial.
+
+=== Context (Parsing Options)
+
+The context for parsing a document is a hash that influences
+the way the XML is read and stored.
+
+The context entries are:
+
+- +:respect_whitespace+: controls treatment of whitespace.
+- +:compress_whitespace+: determines whether whitespace is compressed.
+- +:ignore_whitespace_nodes+: determines whether whitespace-only nodes are to be ignored.
+- +:raw+: controls treatment of special characters and entities.
+
+See {Element Context}[../context_rdoc.html].
+
+== Exploring the Document
+
+An REXML::Document object represents an XML document.
+
+The object inherits from its ancestor classes:
+
+- REXML::Child (includes module REXML::Node)
+  - REXML::Parent (includes module {Enumerable}[rdoc-ref:Enumerable]).
+    - REXML::Element (includes module REXML::Namespace).
+      - REXML::Document
+
+This section covers only those properties and methods that are unique to a document
+(that is, not inherited or included).
+
+=== Document Properties
+
+A document has several properties (other than its children);
+
+- Document type.
+- Node type.
+- Name.
+- Document.
+- XPath
+
+[Document Type]
+
+  A document may have a document type:
+
+    my_xml = '<!DOCTYPE foo>'
+    my_doc = Document.new(my_xml)
+    doc_type = my_doc.doctype
+    doc_type.class # => REXML::DocType
+    doc_type.to_s  # => "<!DOCTYPE foo>"
+
+[Node Type]
+
+  A document also has a node type (always +:document+):
+
+    doc.node_type # => :document
+
+[Name]
+
+  A document has a name (always an empty string):
+
+    doc.name # => ""
+
+[Document]
+
+  \Method REXML::Document#document returns +self+:
+
+    doc.document == doc # => true
+
+  An object of a different class (\REXML::Element or \REXML::Child)
+  may have a document, which is the document to which the object belongs;
+  if so, that document will be an \REXML::Document object.
+
+    doc.root.document.class # => REXML::Document
+
+[XPath]
+
+  \method REXML::Element#xpath returns the string xpath to the element,
+  relative to its most distant ancestor:
+
+    doc.root.class             # => REXML::Element
+    doc.root.xpath             # => "/bookstore"
+    doc.root.texts.first       # => "\n\n"
+    doc.root.texts.first.xpath # => "/bookstore/text()"
+
+  If there is no ancestor, returns the expanded name of the element:
+
+    Element.new('foo').xpath # => "foo"
+
+=== Document Children
+
+A document may have children of these types:
+
+- XML declaration.
+- Root element.
+- Text.
+- Processing instructions.
+- Comments.
+- CDATA.
+
+[XML Declaration]
+
+  A document may an XML declaration, which is stored as an REXML::XMLDecl object:
+
+    doc.xml_decl       # => <?xml ... ?>
+    doc.xml_decl.class # => REXML::XMLDecl
+
+    Document.new('').xml_decl # => <?xml ... ?>
+
+    my_xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>"'
+    my_doc = Document.new(my_xml)
+    xml_decl = my_doc.xml_decl
+    xml_decl.to_s  # => "<?xml version='1.0' encoding='UTF-8' standalone="yes"?>"
+
+  The version, encoding, and stand-alone values may be retrieved separately:
+
+    my_doc.version      # => "1.0"
+    my_doc.encoding     # => "UTF-8"
+    my_doc.stand_alone? # => "yes"
+
+[Root Element]
+
+  A document may have a single element child, called the _root_ _element_,
+  which is stored as an REXML::Element object;
+  it may be retrieved with method +root+:
+
+    doc.root           # => <bookstore> ... </>
+    doc.root.class     # => REXML::Element
+
+    Document.new('').root # => nil
+
+[Text]
+
+  A document may have text passages, each of which is stored
+  as an REXML::Text object:
+
+    doc.texts.each {|t| p [t.class, t] }
+
+  Output:
+
+    [REXML::Text, "\n"]
+
+[Processing Instructions]
+
+  A document may have processing instructions, which are stored
+  as REXML::Instruction objects:
+
+
+
+  Output:
+
+    [REXML::Instruction, <?p-i my-application ...?>]
+    [REXML::Instruction, <?p-i my-application ...?>]
+
+[Comments]
+
+  A document may have comments, which are stored
+  as REXML::Comment objects:
+
+    my_xml = <<-EOT
+      <!--foo-->
+      <!--bar-->
+    EOT
+    my_doc = Document.new(my_xml)
+    my_doc.comments.each {|c| p [c.class, c] }
+
+  Output:
+
+    [REXML::Comment, #<REXML::Comment: @parent=<UNDEFINED> ... </>, @string="foo">]
+    [REXML::Comment, #<REXML::Comment: @parent=<UNDEFINED> ... </>, @string="bar">]
+
+[CDATA]
+
+  A document may have CDATA entries, which are stored
+  as REXML::CData objects:
+
+    my_xml = <<-EOT
+      <![CDATA[foo]]>
+      <![CDATA[bar]]>
+    EOT
+    my_doc = Document.new(my_xml)
+    my_doc.cdatas.each {|cd| p [cd.class, cd] }
+
+  Output:
+
+    [REXML::CData, "foo"]
+    [REXML::CData, "bar"]
+
+The payload of a document is a tree of nodes, descending from the root element:
+
+  doc.root.children.each do |child|
+    p [child, child.class]
+  end
+
+Output:
+
+  [REXML::Text, "\n\n"]
+  [REXML::Element, <book category='cooking'> ... </>]
+  [REXML::Text, "\n\n"]
+  [REXML::Element, <book category='children'> ... </>]
+  [REXML::Text, "\n\n"]
+  [REXML::Element, <book category='web'> ... </>]
+  [REXML::Text, "\n\n"]
+  [REXML::Element, <book category='web' cover='paperback'> ... </>]
+  [REXML::Text, "\n\n"]
+
+== Exploring an Element
+
+An REXML::Element object represents an XML element.
+
+The object inherits from its ancestor classes:
+
+- REXML::Child (includes module REXML::Node)
+  - REXML::Parent (includes module {Enumerable}[rdoc-ref:Enumerable]).
+    - REXML::Element (includes module REXML::Namespace).
+
+This section covers methods:
+
+- Defined in REXML::Element itself.
+- Inherited from REXML::Parent and REXML::Child.
+- Included from REXML::Node.
+
+=== Inside the Element
+
+[Brief String Representation]
+
+  Use method REXML::Element#inspect to retrieve a brief string representation.
+
+    doc.root.inspect # => "<bookstore> ... </>"
+
+  The ellipsis (<tt>...</tt>) indicates that the element has children.
+  When there are no children, the ellipsis is omitted:
+
+    Element.new('foo').inspect # => "<foo/>"
+
+  If the element has attributes, those are also included:
+
+    doc.root.elements.first.inspect # => "<book category='cooking'> ... </>"
+
+[Extended String Representation]
+
+  Use inherited method REXML::Child.bytes to retrieve an extended
+  string representation.
+
+    doc.root.bytes # => "<bookstore>\n\n<book category='cooking'>\n  <title lang='en'>Everyday Italian</title>\n  <author>Giada De Laurentiis</author>\n  <year>2005</year>\n  <price>30.00</price>\n</book>\n\n<book category='children'>\n  <title lang='en'>Harry Potter</title>\n  <author>J K. Rowling</author>\n  <year>2005</year>\n  <price>29.99</price>\n</book>\n\n<book category='web'>\n  <title lang='en'>XQuery Kick Start</title>\n  <author>James McGovern</author>\n  <author>Per Bothner</author>\n  <author>Kurt Cagle</author>\n  <author>James Linn</author>\n  <author>Vaidyanathan Nagarajan</author>\n  <year>2003</year>\n  <price>49.99</price>\n</book>\n\n<book category='web' cover='paperback'>\n  <title lang='en'>Learning XML</title>\n  <author>Erik T. Ray</author>\n  <year>2003</year>\n  <price>39.95</price>\n</book>\n\n</bookstore>"
+
+[Node Type]
+
+  Use method REXML::Element#node_type to retrieve the node type (always +:element+):
+
+    doc.root.node_type # => :element
+
+[Raw Mode]
+
+  Use method REXML::Element#raw to retrieve whether (+true+ or +nil+)
+  raw mode is set.
+
+    doc.root.raw # => nil
+
+[Context]
+
+  Use method REXML::Element#context to retrieve the context hash
+  (see {Element Context}[../context_rdoc.html]):
+
+    doc.root.context # => {}
+
+=== Relationships
+
+An element may have:
+
+- Ancestors.
+- Siblings.
+- Children.
+
+==== Ancestors
+
+[Containing Document]
+
+  Use method REXML::Element#document to retrieve the containing document, if any:
+
+    ele = doc.root.elements.first   # => <book category='cooking'> ... </>
+    ele.document                    # => <UNDEFINED> ... </>
+    ele = Element.new('foo')        # => <foo/>
+    ele.document                    # => nil
+
+[Root Element]
+
+  Use method REXML::Element#root to retrieve the root element:
+
+    ele = doc.root.elements.first   # => <book category='cooking'> ... </>
+    ele.root                        # => <bookstore> ... </>
+    ele = Element.new('foo')        # => <foo/>
+    ele.root                        # => <foo/>
+
+[Root Node]
+
+  Use method REXML::Element#root_node to retrieve the most distant ancestor,
+  which is the containing document, if any, otherwise the root element:
+
+    ele = doc.root.elements.first   # => <book category='cooking'> ... </>
+    ele.root_node                   # => <UNDEFINED> ... </>
+    ele = Element.new('foo')        # => <foo/>
+    ele.root_node                   # => <foo/>
+
+[Parent]
+
+  Use inherited method REXML::Child#parent to retrieve the parent
+
+    ele = doc.root                # => <bookstore> ... </>
+    ele.parent                    # => <UNDEFINED> ... </>
+    ele = doc.root.elements.first # => <book category='cooking'> ... </>
+    ele.parent                    # => <bookstore> ... </>
+
+  Use included method REXML::Node#index_in_parent to retrieve the index
+  of the element among all of its parents children (not just the element children).
+  Note that while the index for <tt>doc.root.elements[n]</tt> is 1-based,
+  the returned index is 0-based.
+
+    doc.root.children # =>
+      # ["\n\n",
+      #  <book category='cooking'> ... </>,
+      #  "\n\n",
+      #  <book category='children'> ... </>,
+      #  "\n\n",
+      #  <book category='web'> ... </>,
+      #  "\n\n",
+      #  <book category='web' cover='paperback'> ... </>,
+      #  "\n\n"]
+    ele = doc.root.elements[1] # => <book category='cooking'> ... </>
+    ele.index_in_parent # => 2
+    ele = doc.root.elements[2]  # => <book category='children'> ... </>
+    ele.index_in_parent# => 4
+
+==== Siblings
+
+[Next Element]
+
+  Use method REXML::Element#next_element to retrieve the first following
+  sibling that is itself an element (+nil+ if there is none):
+
+    ele = doc.root.elements[1]
+    while ele do
+      p [ele.class, ele]
+      ele = ele.next_element
+    end
+    p ele
+
+  Output:
+
+    [REXML::Element, <book category='cooking'> ... </>]
+    [REXML::Element, <book category='children'> ... </>]
+    [REXML::Element, <book category='web'> ... </>]
+    [REXML::Element, <book category='web' cover='paperback'> ... </>]
+
+[Previous Element]
+
+  Use method REXML::Element#previous_element to retrieve the first preceding
+  sibling that is itself an element (+nil+ if there is none):
+
+    ele = doc.root.elements[4]
+    while ele do
+      p [ele.class, ele]
+      ele = ele.previous_element
+    end
+    p ele
+
+  Output:
+
+    [REXML::Element, <book category='web' cover='paperback'> ... </>]
+    [REXML::Element, <book category='web'> ... </>]
+    [REXML::Element, <book category='children'> ... </>]
+    [REXML::Element, <book category='cooking'> ... </>]
+
+[Next Node]
+
+  Use included method REXML::Node.next_sibling_node
+  (or its alias <tt>next_sibling</tt>) to retrieve the first following node
+  regardless of its class:
+
+    node = doc.root.children[0]
+    while node do
+      p [node.class, node]
+      node = node.next_sibling
+    end
+    p node
+
+  Output:
+
+    [REXML::Text, "\n\n"]
+    [REXML::Element, <book category='cooking'> ... </>]
+    [REXML::Text, "\n\n"]
+    [REXML::Element, <book category='children'> ... </>]
+    [REXML::Text, "\n\n"]
+    [REXML::Element, <book category='web'> ... </>]
+    [REXML::Text, "\n\n"]
+    [REXML::Element, <book category='web' cover='paperback'> ... </>]
+    [REXML::Text, "\n\n"]
+
+[Previous Node]
+
+  Use included method REXML::Node.previous_sibling_node
+  (or its alias <tt>previous_sibling</tt>) to retrieve the first preceding node
+  regardless of its class:
+
+    node = doc.root.children[-1]
+    while node do
+      p [node.class, node]
+      node = node.previous_sibling
+    end
+    p node
+
+  Output:
+
+    [REXML::Text, "\n\n"]
+    [REXML::Element, <book category='web' cover='paperback'> ... </>]
+    [REXML::Text, "\n\n"]
+    [REXML::Element, <book category='web'> ... </>]
+    [REXML::Text, "\n\n"]
+    [REXML::Element, <book category='children'> ... </>]
+    [REXML::Text, "\n\n"]
+    [REXML::Element, <book category='cooking'> ... </>]
+    [REXML::Text, "\n\n"]
+
+==== Children
+
+[Child Count]
+
+  Use inherited method REXML::Parent.size to retrieve the count
+  of nodes (of all types) in the element:
+
+    doc.root.size # => 9
+
+[Child Nodes]
+
+  Use inherited method REXML::Parent.children to retrieve an array
+  of the child nodes (of all types):
+
+    doc.root.children # =>
+                      # ["\n\n",
+                      #  <book category='cooking'> ... </>,
+                      #  "\n\n",
+                      #  <book category='children'> ... </>,
+                      #  "\n\n",
+                      #  <book category='web'> ... </>,
+                      #  "\n\n",
+                      #  <book category='web' cover='paperback'> ... </>,
+                      #  "\n\n"]
+
+[Child at Index]
+
+  Use method REXML::Element#[] to retrieve the child at a given numerical index,
+  or +nil+ if there is no such child:
+
+    doc.root[0]  # => "\n\n"
+    doc.root[1]  # => <book category='cooking'> ... </>
+    doc.root[7]  # => <book category='web' cover='paperback'> ... </>
+    doc.root[8]  # => "\n\n"
+
+    doc.root[-1] # => "\n\n"
+    doc.root[-2] # => <book category='web' cover='paperback'> ... </>
+
+    doc.root[50] # => nil
+
+[Index of Child]
+
+  Use method REXML::Parent#index to retrieve the zero-based child index
+  of the given object, or <tt>#size - 1</tt> if there is no such child:
+
+    ele = doc.root     # => <bookstore> ... </>
+    ele.index(ele[0])  # => 0
+    ele.index(ele[1])  # => 1
+    ele.index(ele[7])  # => 7
+    ele.index(ele[8])  # => 8
+
+    ele.index(ele[-1]) # => 8
+    ele.index(ele[-2]) # => 7
+
+    ele.index(ele[50]) # => 8
+
+[Element Children]
+
+  Use method REXML::Element#has_elements? to retrieve whether the element
+  has element children:
+
+    doc.root.has_elements?                  # => true
+    REXML::Element.new('foo').has_elements? # => false
+
+  Use method REXML::Element#elements to retrieve the REXML::Elements object
+  containing the element children:
+
+    eles = doc.root.elements
+    eles      # => #<REXML::Elements:0x000001ee2848e960 @element=<bookstore> ... </>>
+    eles.size # => 4
+    eles.each {|e| p [e.class], e }
+
+  Output:
+
+    [<book category='cooking'> ... </>,
+     <book category='children'> ... </>,
+     <book category='web'> ... </>,
+     <book category='web' cover='paperback'> ... </>
+    ]
+
+Note that while in this example, all the element children of the root element are
+elements of the same name, <tt>'book'</tt>, that is not true of all documents;
+a root element (or any other element) may have any mixture of child elements.
+
+[CDATA Children]
+
+  Use method REXML::Element#cdatas to retrieve a frozen array of CDATA children:
+
+    my_xml = <<-EOT
+      <root>
+        <![CDATA[foo]]>
+        <![CDATA[bar]]>
+      </root>
+    EOT
+    my_doc = REXML::Document.new(my_xml)
+    cdatas my_doc.root.cdatas
+    cdatas.frozen?              # => true
+    cdatas.map {|cd| cd.class } # => [REXML::CData, REXML::CData]
+
+[Comment Children]
+
+  Use method REXML::Element#comments to retrieve a frozen array of comment children:
+
+    my_xml = <<-EOT
+      <root>
+        <!--foo-->
+        <!--bar-->
+      </root>
+    EOT
+    my_doc = REXML::Document.new(my_xml)
+    comments = my_doc.root.comments
+    comments.frozen?            # => true
+    comments.map {|c| c.class } # => [REXML::Comment, REXML::Comment]
+    comments.map {|c| c.to_s }  # => ["foo", "bar"]
+
+[Processing Instruction Children]
+
+  Use method REXML::Element#instructions to retrieve a frozen array
+  of processing instruction children:
+
+    my_xml = <<-EOT
+      <root>
+        <?target0 foo?>
+        <?target1 bar?>
+      </root>
+    EOT
+    my_doc = REXML::Document.new(my_xml)
+    instrs = my_doc.root.instructions
+    instrs.frozen?            # => true
+    instrs.map {|i| i.class } # => [REXML::Instruction, REXML::Instruction]
+    instrs.map {|i| i.to_s }  # => ["<?target0 foo?>", "<?target1 bar?>"]
+
+[Text Children]
+
+  Use method REXML::Element#has_text? to retrieve whether the element
+  has text children:
+
+    doc.root.has_text?                  # => true
+    REXML::Element.new('foo').has_text? # => false
+
+  Use method REXML::Element#texts to retrieve a frozen array of text children:
+
+    my_xml = '<root><a/>text<b/>more<c/></root>'
+    my_doc = REXML::Document.new(my_xml)
+    texts = my_doc.root.texts
+    texts.frozen?            # => true
+    texts.map {|t| t.class } # => [REXML::Text, REXML::Text]
+    texts.map {|t| t.to_s }  # => ["text", "more"]
+
+[Parenthood]
+
+  Use inherited method REXML::Parent.parent? to retrieve whether the element is a parent;
+  always returns +true+; only REXML::Child#parent returns +false+.
+
+     doc.root.parent? # => true
+
+=== Element Attributes
+
+Use method REXML::Element#has_attributes? to return whether the element
+has attributes:
+
+  ele = doc.root           # => <bookstore> ... </>
+  ele.has_attributes?      # => false
+  ele = ele.elements.first # => <book category='cooking'> ... </>
+  ele.has_attributes?      # => true
+
+Use method REXML::Element#attributes to return the hash
+containing the attributes for the element.
+Each hash key is a string attribute name;
+each hash value is an REXML::Attribute object.
+
+  ele = doc.root                  # => <bookstore> ... </>
+  attrs = ele.attributes          # => {}
+
+  ele = ele.elements.first        # => <book category='cooking'> ... </>
+  attrs = ele.attributes          # => {"category"=>category='cooking'}
+  attrs.size                      # => 1
+  attr_name = attrs.keys.first    # => "category"
+  attr_name.class                 # => String
+  attr_value = attrs.values.first # => category='cooking'
+  attr_value.class                # => REXML::Attribute
+
+Use method REXML::Element#[] to retrieve the string value for a given attribute,
+which may be given as either a string or a symbol:
+
+  ele = doc.root.elements.first # => <book category='cooking'> ... </>
+  attr_value = ele['category']  # => "cooking"
+  attr_value.class              # => String
+  ele['nosuch']                  # => nil
+
+Use method REXML::Element#attribute to retrieve the value of a named attribute:
+
+  my_xml = "<root xmlns:a='a' a:x='a:x' x='x'/>"
+  my_doc = REXML::Document.new(my_xml)
+  my_doc.root.attribute("x")      # => x='x'
+  my_doc.root.attribute("x", "a") # => a:x='a:x'
+
+== Whitespace
+
+Use method REXML::Element#ignore_whitespace_nodes to determine whether
+whitespace nodes were ignored when the XML was parsed;
+returns +true+ if so, +nil+ otherwise.
+
+Use method REXML::Element#whitespace to determine whether whitespace
+is respected for the element; returns +true+ if so, +false+ otherwise.
+
+== Namespaces
+
+Use method REXML::Element#namespace to retrieve the string namespace URI
+for the element, which may derive from one of its ancestors:
+
+  xml_string = <<-EOT
+    <root>
+       <a xmlns='1' xmlns:y='2'>
+         <b/>
+         <c xmlns:z='3'/>
+       </a>
+    </root>
+  EOT
+  d = Document.new(xml_string)
+  b = d.elements['//b']
+  b.namespace      # => "1"
+  b.namespace('y') # => "2"
+  b.namespace('nosuch') # => nil
+
+Use method REXML::Element#namespaces to retrieve a hash of all defined namespaces
+in the element and its ancestors:
+
+  xml_string = <<-EOT
+    <root>
+       <a xmlns:x='1' xmlns:y='2'>
+         <b/>
+         <c xmlns:z='3'/>
+       </a>
+    </root>
+  EOT
+  d = Document.new(xml_string)
+  d.elements['//a'].namespaces # => {"x"=>"1", "y"=>"2"}
+  d.elements['//b'].namespaces # => {"x"=>"1", "y"=>"2"}
+  d.elements['//c'].namespaces # => {"x"=>"1", "y"=>"2", "z"=>"3"}
+
+Use method REXML::Element#prefixes to retrieve an array of the string prefixes (names)
+of all defined namespaces in the element and its ancestors:
+
+  xml_string = <<-EOT
+    <root>
+       <a xmlns:x='1' xmlns:y='2'>
+         <b/>
+         <c xmlns:z='3'/>
+       </a>
+    </root>
+  EOT
+  d = Document.new(xml_string, {compress_whitespace: :all})
+  d.elements['//a'].prefixes # => ["x", "y"]
+  d.elements['//b'].prefixes # => ["x", "y"]
+  d.elements['//c'].prefixes # => ["x", "y", "z"]
+
+== Traversing
+
+You can use certain methods to traverse children of the element.
+Each child that meets given criteria is yielded to the given block.
+
+[Traverse All Children]
+
+  Use inherited method REXML::Parent#each (or its alias #each_child) to traverse
+  all children of the element:
+
+    doc.root.each {|child| p [child.class, child] }
+
+  Output:
+
+    [REXML::Text, "\n\n"]
+    [REXML::Element, <book category='cooking'> ... </>]
+    [REXML::Text, "\n\n"]
+    [REXML::Element, <book category='children'> ... </>]
+    [REXML::Text, "\n\n"]
+    [REXML::Element, <book category='web'> ... </>]
+    [REXML::Text, "\n\n"]
+    [REXML::Element, <book category='web' cover='paperback'> ... </>]
+    [REXML::Text, "\n\n"]
+
+[Traverse Element Children]
+
+  Use method REXML::Element#each_element to traverse only the element children
+  of the element:
+
+    doc.root.each_element {|e| p [e.class, e] }
+
+  Output:
+
+    [REXML::Element, <book category='cooking'> ... </>]
+    [REXML::Element, <book category='children'> ... </>]
+    [REXML::Element, <book category='web'> ... </>]
+    [REXML::Element, <book category='web' cover='paperback'> ... </>]
+
+[Traverse Element Children with Attribute]
+
+  Use method REXML::Element#each_element_with_attribute with the single argument
+  +attr_name+ to traverse each element child that has the given attribute:
+
+    my_doc = Document.new '<a><b id="1"/><c id="2"/><d id="1"/><e/></a>'
+    my_doc.root.each_element_with_attribute('id') {|e| p [e.class, e] }
+
+  Output:
+
+    [REXML::Element, <b id='1'/>]
+    [REXML::Element, <c id='2'/>]
+    [REXML::Element, <d id='1'/>]
+
+  Use the same method with a second argument +value+ to traverse
+  each element child element that has the given attribute and value:
+
+    my_doc.root.each_element_with_attribute('id', '1') {|e| p [e.class, e] }
+
+  Output:
+
+    [REXML::Element, <b id='1'/>]
+    [REXML::Element, <d id='1'/>]
+
+  Use the same method with a third argument +max+ to traverse
+  no more than the given number of element children:
+
+    my_doc.root.each_element_with_attribute('id', '1', 1) {|e| p [e.class, e] }
+
+  Output:
+
+    [REXML::Element, <b id='1'/>]
+
+  Use the same method with a fourth argument +xpath+ to traverse
+  only those element children that match the given xpath:
+
+    my_doc.root.each_element_with_attribute('id', '1', 2, '//d') {|e| p [e.class, e] }
+
+  Output:
+
+    [REXML::Element, <d id='1'/>]
+
+[Traverse Element Children with Text]
+
+  Use method REXML::Element#each_element_with_text with no arguments
+  to traverse those element children that have text:
+
+    my_doc = Document.new '<a><b>b</b><c>b</c><d>d</d><e/></a>'
+    my_doc.root.each_element_with_text {|e| p [e.class, e] }
+
+  Output:
+
+    [REXML::Element, <b> ... </>]
+    [REXML::Element, <c> ... </>]
+    [REXML::Element, <d> ... </>]
+
+  Use the same method with the single argument +text+ to traverse
+  those element children that have exactly that text:
+
+    my_doc.root.each_element_with_text('b') {|e| p [e.class, e] }
+
+  Output:
+
+    [REXML::Element, <b> ... </>]
+    [REXML::Element, <c> ... </>]
+
+  Use the same method with additional second argument +max+ to traverse
+  no more than the given number of element children:
+
+    my_doc.root.each_element_with_text('b', 1) {|e| p [e.class, e] }
+
+  Output:
+
+    [REXML::Element, <b> ... </>]
+
+  Use the same method with additional third argument +xpath+ to traverse
+  only those element children that also match the given xpath:
+
+    my_doc.root.each_element_with_text('b', 2, '//c') {|e| p [e.class, e] }
+
+  Output:
+
+    [REXML::Element, <c> ... </>]
+
+[Traverse Element Children's Indexes]
+
+  Use inherited method REXML::Parent#each_index to traverse all children's indexes
+  (not just those of element children):
+
+    doc.root.each_index {|i| print i }
+
+  Output:
+
+    012345678
+
+[Traverse Children Recursively]
+
+  Use included method REXML::Node#each_recursive to traverse all children recursively:
+
+    doc.root.each_recursive {|child| p [child.class, child] }
+
+  Output:
+
+    [REXML::Element, <book category='cooking'> ... </>]
+    [REXML::Element, <title lang='en'> ... </>]
+    [REXML::Element, <author> ... </>]
+    [REXML::Element, <year> ... </>]
+    [REXML::Element, <price> ... </>]
+    [REXML::Element, <book category='children'> ... </>]
+    [REXML::Element, <title lang='en'> ... </>]
+    [REXML::Element, <author> ... </>]
+    [REXML::Element, <year> ... </>]
+    [REXML::Element, <price> ... </>]
+    [REXML::Element, <book category='web'> ... </>]
+    [REXML::Element, <title lang='en'> ... </>]
+    [REXML::Element, <author> ... </>]
+    [REXML::Element, <author> ... </>]
+    [REXML::Element, <author> ... </>]
+    [REXML::Element, <author> ... </>]
+    [REXML::Element, <author> ... </>]
+    [REXML::Element, <year> ... </>]
+    [REXML::Element, <price> ... </>]
+    [REXML::Element, <book category='web' cover='paperback'> ... </>]
+    [REXML::Element, <title lang='en'> ... </>]
+    [REXML::Element, <author> ... </>]
+    [REXML::Element, <year> ... </>]
+    [REXML::Element, <price> ... </>]
+
+== Searching
+
+You can use certain methods to search among the descendants of an element.
+
+Use method REXML::Element#get_elements to retrieve all element children of the element
+that match the given +xpath+:
+
+  xml_string = <<-EOT
+  <root>
+    <a level='1'>
+      <a level='2'/>
+    </a>
+  </root>
+  EOT
+  d = Document.new(xml_string)
+  d.root.get_elements('//a') # => [<a level='1'> ... </>, <a level='2'/>]
+
+Use method REXML::Element#get_text with no argument to retrieve the first text node
+in the first child:
+
+  my_doc = Document.new "<p>some text <b>this is bold!</b> more text</p>"
+  text_node = my_doc.root.get_text
+  text_node.class # => REXML::Text
+  text_node.to_s  # => "some text "
+
+Use the same method with argument +xpath+ to retrieve the first text node
+in the first child that matches the xpath:
+
+  my_doc.root.get_text(1) # => "this is bold!"
+
+Use method REXML::Element#text with no argument to retrieve the text
+from the first text node in the first child:
+
+  my_doc = Document.new "<p>some text <b>this is bold!</b> more text</p>"
+  text_node = my_doc.root.text
+  text_node.class # => String
+  text_node       # => "some text "
+
+Use the same method with argument +xpath+ to retrieve the text from the first text node
+in the first child that matches the xpath:
+
+  my_doc.root.text(1) # => "this is bold!"
+
+Use included method REXML::Node#find_first_recursive
+to retrieve the first descendant element
+for which the given block returns a truthy value, or +nil+ if none:
+
+  doc.root.find_first_recursive do |ele|
+    ele.name == 'price'
+  end # => <price> ... </>
+  doc.root.find_first_recursive do |ele|
+    ele.name == 'nosuch'
+  end # => nil
+
+== Editing
+
+=== Editing a Document
+
+[Creating a Document]
+
+  Create a new document with method REXML::Document::new:
+
+    doc = Document.new(source_string)
+    empty_doc = REXML::Document.new
+
+[Adding to the Document]
+
+  Add an XML declaration with method REXML::Document#add
+  and an argument of type REXML::XMLDecl:
+
+    my_doc = Document.new
+    my_doc.xml_decl.to_s # => ""
+    my_doc.add(XMLDecl.new('2.0'))
+    my_doc.xml_decl.to_s # => "<?xml version='2.0'?>"
+
+  Add a document type with method REXML::Document#add
+  and an argument of type REXML::DocType:
+
+    my_doc = Document.new
+    my_doc.doctype.to_s # => ""
+    my_doc.add(DocType.new('foo'))
+    my_doc.doctype.to_s # => "<!DOCTYPE foo>"
+
+  Add a node of any other REXML type with method REXML::Document#add and an argument
+  that is not of type REXML::XMLDecl or REXML::DocType:
+
+    my_doc = Document.new
+    my_doc.add(Element.new('foo'))
+    my_doc.to_s # => "<foo/>"
+
+  Add an existing element as the root element with method REXML::Document#add_element:
+
+    ele = Element.new('foo')
+    my_doc = Document.new
+    my_doc.add_element(ele)
+    my_doc.root # => <foo/>
+
+  Create and add an element as the root element with method REXML::Document#add_element:
+
+    my_doc = Document.new
+    my_doc.add_element('foo')
+    my_doc.root # => <foo/>
+
+=== Editing an Element
+
+==== Creating an Element
+
+Create a new element with method REXML::Element::new:
+
+  ele = Element.new('foo') # => <foo/>
+
+==== Setting Element Properties
+
+Set the context for an element with method REXML::Element#context=
+(see {Element Context}[../context_rdoc.html]):
+
+  ele.context # => nil
+  ele.context = {ignore_whitespace_nodes: :all}
+  ele.context # => {:ignore_whitespace_nodes=>:all}
+
+Set the parent for an element with inherited method REXML::Child#parent=
+
+  ele.parent # => nil
+  ele.parent = Element.new('bar')
+  ele.parent # => <bar/>
+
+Set the text for an element with method REXML::Element#text=:
+
+  ele.text # => nil
+  ele.text = 'bar'
+  ele.text # => "bar"
+
+==== Adding to an Element
+
+Add a node as the last child with inherited method REXML::Parent#add (or its alias #push):
+
+  ele = Element.new('foo') # => <foo/>
+  ele.push(Text.new('bar'))
+  ele.push(Element.new('baz'))
+  ele.children # => ["bar", <baz/>]
+
+Add a node as the first child with inherited method REXML::Parent#unshift:
+
+  ele = Element.new('foo') # => <foo/>
+  ele.unshift(Element.new('bar'))
+  ele.unshift(Text.new('baz'))
+  ele.children # => ["bar", <baz/>]
+
+Add an element as the last child with method REXML::Element#add_element:
+
+  ele = Element.new('foo') # => <foo/>
+  ele.add_element('bar')
+  ele.add_element(Element.new('baz'))
+  ele.children # => [<bar/>, <baz/>]
+
+Add a text node as the last child with method REXML::Element#add_text:
+
+  ele = Element.new('foo') # => <foo/>
+  ele.add_text('bar')
+  ele.add_text(Text.new('baz'))
+  ele.children # => ["bar", "baz"]
+
+Insert a node before a given node with method REXML::Parent#insert_before:
+
+  ele = Element.new('foo') # => <foo/>
+  ele.add_text('bar')
+  ele.add_text(Text.new('baz'))
+  ele.children    # => ["bar", "baz"]
+  target = ele[1] # => "baz"
+  ele.insert_before(target, Text.new('bat'))
+  ele.children    # => ["bar", "bat", "baz"]
+
+Insert a node after a given node with method REXML::Parent#insert_after:
+
+  ele = Element.new('foo') # => <foo/>
+  ele.add_text('bar')
+  ele.add_text(Text.new('baz'))
+  ele.children    # => ["bar", "baz"]
+  target = ele[0] # => "bar"
+  ele.insert_after(target, Text.new('bat'))
+  ele.children    # => ["bar", "bat", "baz"]
+
+Add an attribute with method REXML::Element#add_attribute:
+
+  ele = Element.new('foo') # => <foo/>
+  ele.add_attribute('bar', 'baz')
+  ele.add_attribute(Attribute.new('bat', 'bam'))
+  ele.attributes # => {"bar"=>bar='baz', "bat"=>bat='bam'}
+
+Add multiple attributes with method REXML::Element#add_attributes:
+
+  ele = Element.new('foo') # => <foo/>
+  ele.add_attributes({'bar' => 'baz', 'bat' => 'bam'})
+  ele.add_attributes([['ban', 'bap'], ['bah', 'bad']])
+  ele.attributes # => {"bar"=>bar='baz', "bat"=>bat='bam', "ban"=>ban='bap', "bah"=>bah='bad'}
+
+Add a namespace with method REXML::Element#add_namespace:
+
+  ele = Element.new('foo') # => <foo/>
+  ele.add_namespace('bar')
+  ele.add_namespace('baz', 'bat')
+  ele.namespaces # => {"xmlns"=>"bar", "baz"=>"bat"}
+
+==== Deleting from an Element
+
+Delete a specific child object with inherited method REXML::Parent#delete:
+
+  ele = Element.new('foo') # => <foo/>
+  ele.add_element('bar')
+  ele.add_text('baz')
+  ele.children             # => [<bar/>, "baz"]
+  target = ele[1]          # => "baz"
+  ele.delete(target)       # => "baz"
+  ele.children             # => [<bar/>]
+  target = ele[0]          # => <baz/>
+  ele.delete(target)       # => <baz/>
+  ele.children             # => []
+
+Delete a child at a specific index with inherited method REXML::Parent#delete_at:
+
+  ele = Element.new('foo') # => <foo/>
+  ele.add_element('bar')
+  ele.add_text('baz')
+  ele.children             # => [<bar/>, "baz"]
+  ele.delete_at(1)
+  ele.children             # => [<bar/>]
+  ele.delete_at(0)
+  ele.children             # => []
+
+Delete all children meeting a specified criterion with inherited method
+REXML::Parent#delete_if:
+
+  ele = Element.new('foo') # => <foo/>
+  ele.add_element('bar')
+  ele.add_text('baz')
+  ele.add_element('bat')
+  ele.add_text('bam')
+  ele.children             # => [<bar/>, "baz", <bat/>, "bam"]
+  ele.delete_if {|child| child.instance_of?(Text) }
+  ele.children # => [<bar/>, <bat/>]
+
+Delete an element at a specific 1-based index with method REXML::Element#delete_element:
+
+  ele = Element.new('foo') # => <foo/>
+  ele.add_element('bar')
+  ele.add_text('baz')
+  ele.add_element('bat')
+  ele.add_text('bam')
+  ele.children             # => [<bar/>, "baz", <bat/>, "bam"]
+  ele.delete_element(2)    # => <bat/>
+  ele.children             # => [<bar/>, "baz", "bam"]
+  ele.delete_element(1)    # => <bar/>
+  ele.children             # => ["baz", "bam"]
+
+Delete a specific element with the same method:
+
+  ele = Element.new('foo')   # => <foo/>
+  ele.add_element('bar')
+  ele.add_text('baz')
+  ele.add_element('bat')
+  ele.add_text('bam')
+  ele.children               # => [<bar/>, "baz", <bat/>, "bam"]
+  target = ele.elements[2]   # => <bat/>
+  ele.delete_element(target) # => <bat/>
+  ele.children               # => [<bar/>, "baz", "bam"]
+
+Delete an element matching an xpath using the same method:
+
+  ele = Element.new('foo')    # => <foo/>
+  ele.add_element('bar')
+  ele.add_text('baz')
+  ele.add_element('bat')
+  ele.add_text('bam')
+  ele.children                # => [<bar/>, "baz", <bat/>, "bam"]
+  ele.delete_element('./bat') # => <bat/>
+  ele.children                # => [<bar/>, "baz", "bam"]
+  ele.delete_element('./bar') # => <bar/>
+  ele.children                # => ["baz", "bam"]
+
+Delete an attribute by name with method REXML::Element#delete_attribute:
+
+  ele = Element.new('foo') # => <foo/>
+  ele.add_attributes({'bar' => 'baz', 'bam' => 'bat'})
+  ele.attributes           # => {"bar"=>bar='baz', "bam"=>bam='bat'}
+  ele.delete_attribute('bam')
+  ele.attributes           # => {"bar"=>bar='baz'}
+
+Delete a namespace with method REXML::Element#delete_namespace:
+
+  ele = Element.new('foo') # => <foo/>
+  ele.add_namespace('bar')
+  ele.add_namespace('baz', 'bat')
+  ele.namespaces           # => {"xmlns"=>"bar", "baz"=>"bat"}
+  ele.delete_namespace('xmlns')
+  ele.namespaces           # => {} # => {"baz"=>"bat"}
+  ele.delete_namespace('baz')
+  ele.namespaces # => {}   # => {}
+
+Remove an element from its parent with inherited method REXML::Child#remove:
+
+  ele = Element.new('foo')    # => <foo/>
+  parent = Element.new('bar') # => <bar/>
+  parent.add_element(ele)     # => <foo/>
+  parent.children.size        # => 1
+  ele.remove                  # => <foo/>
+  parent.children.size        # => 0
+
+==== Replacing Nodes
+
+Replace the node at a given 0-based index with inherited method REXML::Parent#[]=:
+
+  ele = Element.new('foo') # => <foo/>
+  ele.add_element('bar')
+  ele.add_text('baz')
+  ele.add_element('bat')
+  ele.add_text('bam')
+  ele.children             # => [<bar/>, "baz", <bat/>, "bam"]
+  ele[2] = Text.new('bad') # => "bad"
+  ele.children             # => [<bar/>, "baz", "bad", "bam"]
+
+Replace a given node with another node with inherited method REXML::Parent#replace_child:
+
+  ele = Element.new('foo') # => <foo/>
+  ele.add_element('bar')
+  ele.add_text('baz')
+  ele.add_element('bat')
+  ele.add_text('bam')
+  ele.children             # => [<bar/>, "baz", <bat/>, "bam"]
+  target = ele[2]          # => <bat/>
+  ele.replace_child(target, Text.new('bah'))
+  ele.children             # => [<bar/>, "baz", "bah", "bam"]
+
+Replace +self+ with a given node with inherited method REXML::Child#replace_with:
+
+  ele = Element.new('foo') # => <foo/>
+  ele.add_element('bar')
+  ele.add_text('baz')
+  ele.add_element('bat')
+  ele.add_text('bam')
+  ele.children             # => [<bar/>, "baz", <bat/>, "bam"]
+  target = ele[2]          # => <bat/>
+  target.replace_with(Text.new('bah'))
+  ele.children             # => [<bar/>, "baz", "bah", "bam"]
+
+=== Cloning
+
+Create a shallow clone of an element with method REXML::Element#clone.
+The clone contains the name and attributes, but not the parent or children:
+
+  ele = Element.new('foo')
+  ele.add_attributes({'bar' => 0, 'baz' => 1})
+  ele.clone # => <foo bar='0' baz='1'/>
+
+Create a shallow clone of a document with method REXML::Document#clone.
+The XML declaration is copied; the document type and root element are not cloned:
+
+  my_xml = '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE foo><root/>'
+  my_doc = Document.new(my_xml)
+  clone_doc = my_doc.clone
+
+  my_doc.xml_decl         # => <?xml ... ?>
+  clone_doc.xml_decl      # => <?xml ... ?>
+
+  my_doc.doctype.to_s     # => "<?xml version='1.0' encoding='UTF-8'?>"
+  clone_doc.doctype.to_s  # => ""
+
+  my_doc.root             # => <root/>
+  clone_doc.root          # => nil
+
+Create a deep clone of an element with inherited method REXML::Parent#deep_clone.
+All nodes and attributes are copied:
+
+  doc.to_s.size   # => 825
+  clone  = doc.deep_clone
+  clone.to_s.size # => 825
+
+== Writing the Document
+
+Write a document to an \IO stream (defaults to <tt>$stdout</tt>)
+with method REXML::Document#write:
+
+  doc.write
+
+Output:
+
+  <?xml version='1.0' encoding='UTF-8'?>
+  <bookstore>
+
+  <book category='cooking'>
+    <title lang='en'>Everyday Italian</title>
+    <author>Giada De Laurentiis</author>
+    <year>2005</year>
+    <price>30.00</price>
+  </book>
+
+  <book category='children'>
+    <title lang='en'>Harry Potter</title>
+    <author>J K. Rowling</author>
+    <year>2005</year>
+    <price>29.99</price>
+  </book>
+
+  <book category='web'>
+    <title lang='en'>XQuery Kick Start</title>
+    <author>James McGovern</author>
+    <author>Per Bothner</author>
+    <author>Kurt Cagle</author>
+    <author>James Linn</author>
+    <author>Vaidyanathan Nagarajan</author>
+    <year>2003</year>
+    <price>49.99</price>
+  </book>
+
+  <book category='web' cover='paperback'>
+    <title lang='en'>Learning XML</title>
+    <author>Erik T. Ray</author>
+    <year>2003</year>
+    <price>39.95</price>
+  </book>
+
+  </bookstore>

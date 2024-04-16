@@ -193,6 +193,7 @@ const validAttributesForNonEventProps = {
   accessibilityViewIsModal: true,
   accessibilityElementsHidden: true,
   accessibilityIgnoresInvertColors: true,
+  accessibilitySplitFocus: true,
   testID: true,
   backgroundColor: {process: require('../StyleSheet/processColor').default},
   backfaceVisibility: true,

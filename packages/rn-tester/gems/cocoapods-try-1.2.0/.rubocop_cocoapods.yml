@@ -1,0 +1,129 @@
+AllCops:
+  Include:
+    - ./Rakefile
+    - ./Gemfile
+    - ./*.gemspec
+  Exclude:
+    - ./spec/fixtures/**/*
+    - ./vendor/bundle/**/*
+
+# At the moment not ready to be used
+# https://github.com/bbatsov/rubocop/issues/947
+Style/Documentation:
+  Enabled: false
+
+#- CocoaPods -----------------------------------------------------------------#
+
+# We adopted raise instead of fail.
+Style/SignalException:
+  EnforcedStyle: only_raise
+
+# They are idiomatic
+Lint/AssignmentInCondition:
+  Enabled: false
+
+# Allow backticks
+Style/AsciiComments:
+  Enabled: false
+
+# Indentation clarifies logic branches in implementations
+Style/IfUnlessModifier:
+  Enabled: false
+
+# No enforced convention here.
+Style/SingleLineBlockParams:
+  Enabled: false
+
+# We only add the comment when needed.
+Style/Encoding:
+  Enabled: false
+
+# Having these make it easier to *not* forget to add one when adding a new
+# value and you can simply copy the previous line.
+Style/TrailingCommaInLiteral:
+  EnforcedStyleForMultiline: comma
+
+Layout/MultilineOperationIndentation:
+  EnforcedStyle: indented
+
+Style/PercentLiteralDelimiters:
+  PreferredDelimiters:
+    default: '()'
+    '%w': '()'
+
+# Clashes with CLAide Command#validate!
+Style/GuardClause:
+  Enabled: false
+
+# Not always desirable
+Style/Next:
+  Enabled: false
+
+# Arbitrary max lengths for classes simply do not work and enabling this will
+# lead to a never ending stream of annoyance and changes.
+Metrics/ClassLength:
+  Enabled: false
+
+# Arbitrary max lengths for modules simply do not work and enabling this will
+# lead to a never ending stream of annoyance and changes.
+Metrics/ModuleLength:
+  Enabled: false
+
+# Arbitrary max lengths for methods simply do not work and enabling this will
+# lead to a never ending stream of annoyance and changes.
+Metrics/MethodLength:
+  Enabled: false
+
+# No enforced convention here.
+Metrics/BlockNesting:
+  Enabled: false
+
+# It will be obvious which code is complex, Rubocop should only lint simple
+# rules for us.
+Metrics/AbcSize:
+  Enabled: false
+
+# It will be obvious which code is complex, Rubocop should only lint simple
+# rules for us.
+Metrics/CyclomaticComplexity:
+  Enabled: false
+
+Style/HashSyntax:
+  EnforcedStyle: hash_rockets
+
+Style/Lambda:
+  Enabled: true
+
+Layout/DotPosition:
+  EnforcedStyle: trailing
+
+Style/EachWithObject:
+  Enabled: true
+
+Performance/HashEachMethods:
+  Enabled: true
+
+#- CocoaPods specs -----------------------------------------------------------#
+
+# Allow for `should.match /regexp/`.
+Lint/AmbiguousRegexpLiteral:
+  Exclude:
+    - spec/**/*
+
+# Allow `object.should == object` syntax.
+Lint/Void:
+  Exclude:
+    - spec/**/*
+
+Style/ClassAndModuleChildren:
+  Exclude:
+    - spec/**/*
+
+Lint/UselessComparison:
+  Exclude:
+    - spec/**/*
+
+Metrics/BlockLength:
+  Exclude:
+    - spec/**/*
+

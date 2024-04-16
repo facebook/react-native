@@ -1,0 +1,58 @@
+# Copyright (C) 2010, 2019  Free Software Foundation, Inc.
+#
+# This file is part of DejaGnu.
+#
+# DejaGnu is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# DejaGnu is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with DejaGnu; if not, write to the Free Software Foundation,
+# Inc., 51 Franklin Street, Fifth Floor, MA 02110, USA.
+
+# This is a list of toolchains that are supported on this board.
+set_board_info target_install {powerpc-eabisim}
+
+# Load the generic configuration for this board. This will define a basic set
+# of routines needed by the tool to communicate with the board.
+load_generic_config "sim"
+
+# basic-sim.exp is a basic description for the standard Cygnus simulator.
+load_base_board_description "basic-sim"
+
+# "powerpc" is the name of the sim subdir in devo/sim.
+setup_sim powerpc
+
+# No multilib options needed by default.
+process_multilib_options ""
+
+# We only support newlib on this target. We assume that all multilib
+# options have been specified before we get here.
+
+set_board_info compiler  "[find_gcc]"
+set_board_info cflags    "[libgloss_include_flags] [newlib_include_flags]"
+set_board_info ldflags   "[libgloss_link_flags] [newlib_link_flags]"
+
+# Configuration settings for testsuites
+set_board_info noargs 1
+set_board_info gdb,nosignals 1
+set_board_info gdb,noresults 1
+set_board_info gdb,cannot_call_functions 1
+set_board_info gdb,skip_float_tests 1
+set_board_info gdb,can_reverse 1
+set_board_info gdb,use_precord 1
+
+# More time is needed
+set_board_info gcc,timeout 800
+set_board_info gdb,timeout 60
+
+# Used by a few gcc.c-torture testcases to delimit how large the stack can
+# be.
+set_board_info gcc,stack_size  5000
+

@@ -164,6 +164,7 @@ class AccessibilityAndroidExample extends React.Component<
             </Text>
           </View>
         </RNTesterBlock>
+
         <RNTesterBlock title="Links">
           <Text style={styles.paragraph}>
             In the following example, the words "test", "inline links", "another
@@ -234,6 +235,15 @@ class AccessibilityAndroidExample extends React.Component<
             </Text>
             This sentence has no links in it.
           </Text>
+          <View accessible={true} style={styles.outerBlock}>
+            <Text>Accessibility split focus example</Text>
+            <View style={styles.innerBlock} accessible={true}>
+              <Text>Hello 1</Text>
+            </View>
+            <View style={styles.innerBlock} accessible={true}>
+              <Text>Hello 2</Text>
+            </View>{' '}
+          </View>
         </RNTesterBlock>
       </RNTesterPage>
     );
@@ -269,6 +279,17 @@ const styles = StyleSheet.create({
   exampleTitle: {
     fontWeight: 'bold',
     fontSize: 20,
+  },
+  outerBlock: {
+    marginVertical: 15,
+    paddingVertical: 15,
+    backgroundColor: 'blue',
+  },
+  innerBlock: {
+    marginVertical: 15,
+    marginHorizontal: 15,
+    height: 40,
+    backgroundColor: 'green',
   },
 });
 

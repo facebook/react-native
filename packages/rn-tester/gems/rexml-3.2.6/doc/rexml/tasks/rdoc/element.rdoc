@@ -1,0 +1,602 @@
+== Class Element
+
+Class Element has methods from its superclasses and included modules;
+see:
+
+- {Tasks for Parent}[parent_rdoc.html].
+- {Tasks for Child}[child_rdoc.html].
+- {Tasks for Node}[node_rdoc.html].
+- {Module Enumerable}[https://docs.ruby-lang.org/en/master/Enumerable.html].
+
+:include: ../tocs/element_toc.rdoc
+
+=== New Element
+
+==== Task: Create a Default Element
+
+Use method
+{Element::new}[../../../../REXML/Element.html#method-c-new]
+with no arguments to create a default element:
+
+  e = REXML::Element.new
+  e.name    # => "UNDEFINED"
+  e.parent  # => nil
+  e.context # => nil
+
+==== Task: Create a Named Element
+
+Use method
+{Element::new}[../../../../REXML/Element.html#method-c-new]
+with a string name argument
+to create a named element:
+
+  e = REXML::Element.new('foo')
+  e.name    # => "foo"
+  e.parent  # => nil
+  e.context # => nil
+
+==== Task: Create an Element with Name and Parent
+
+Use method
+{Element::new}[../../../../REXML/Element.html#method-c-new]
+with name and parent arguments
+to create an element with name and parent:
+
+  p = REXML::Parent.new
+  e = REXML::Element.new('foo', p)
+  e.name    # => "foo"
+  e.parent  # => #<REXML::Parent @parent=nil, @children=[<foo/>]>
+  e.context # => nil
+
+==== Task: Create an Element with Name, Parent, and Context
+
+Use method
+{Element::new}[../../../../REXML/Element.html#method-c-new]
+with name, parent, and context arguments
+to create an element with name, parent, and context:
+
+  p = REXML::Parent.new
+  e = REXML::Element.new('foo', p, {compress_whitespace: :all})
+  e.name    # => "foo"
+  e.parent  # => #<REXML::Parent @parent=nil, @children=[<foo/>]>
+  e.context # => {:compress_whitespace=>:all}
+
+==== Task: Create a Shallow Clone
+
+Use method
+{Element#clone}[../../../../REXML/Element.html#method-i-clone]
+to create a shallow clone of an element,
+copying only the name, attributes, and context:
+
+  e0 = REXML::Element.new('foo', nil, {compress_whitespace: :all})
+  e0.add_attribute(REXML::Attribute.new('bar', 'baz'))
+  e0.context = {compress_whitespace: :all}
+  e1 = e0.clone # => <foo bar='baz'/>
+  e1.name # => "foo"
+  e1.context # => {:compress_whitespace=>:all}
+
+=== Attributes
+
+==== Task: Create and Add an Attribute
+
+Use method
+{Element#add_attribute}[../../../../REXML/Element.html#method-i-add_attribute]
+to create and add an attribute:
+
+  e = REXML::Element.new
+  e.add_attribute('attr', 'value') # => "value"
+  e['attr'] # => "value"
+  e.add_attribute('attr', 'VALUE') # => "VALUE"
+  e['attr'] # => "VALUE"
+
+==== Task: Add an Existing Attribute
+
+Use method
+{Element#add_attribute}[../../../../REXML/Element.html#method-i-add_attribute]
+to add an existing attribute:
+
+  e = REXML::Element.new
+  a = REXML::Attribute.new('attr', 'value')
+  e.add_attribute(a)
+  e['attr'] # => "value"
+  a = REXML::Attribute.new('attr', 'VALUE')
+  e.add_attribute(a)
+  e['attr'] # => "VALUE"
+
+==== Task: Add Multiple Attributes from a Hash
+
+Use method
+{Element#add_attributes}[../../../../REXML/Element.html#method-i-add_attributes]
+to add multiple attributes from a hash:
+
+  e = REXML::Element.new
+  h = {'foo' => 0, 'bar' => 1}
+  e.add_attributes(h)
+  e['foo'] # => "0"
+  e['bar'] # => "1"
+
+==== Task: Add Multiple Attributes from an Array
+
+Use method
+{Element#add_attributes}[../../../../REXML/Element.html#method-i-add_attributes]
+to add multiple attributes from an array:
+
+  e = REXML::Element.new
+  a = [['foo', 0], ['bar', 1]]
+  e.add_attributes(a)
+  e['foo'] # => "0"
+  e['bar'] # => "1"
+
+==== Task: Retrieve the Value for an Attribute Name
+
+Use method
+{Element#[]}[../../../../REXML/Element.html#method-i-5B-5D]
+to retrieve the value for an attribute name:
+
+  e = REXML::Element.new
+  e.add_attribute('attr', 'value') # => "value"
+  e['attr'] # => "value"
+
+==== Task: Retrieve the Attribute Value for a Name and Namespace
+
+Use method
+{Element#attribute}[../../../../REXML/Element.html#method-i-attribute]
+to retrieve the value for an attribute name:
+
+  xml_string = "<root xmlns:a='a' a:x='a:x' x='x'/>"
+  d = REXML::Document.new(xml_string)
+  e = d.root
+  e.attribute("x")      # => x='x'
+  e.attribute("x", "a") # => a:x='a:x'
+
+==== Task: Delete an Attribute
+
+Use method
+{Element#delete_attribute}[../../../../REXML/Element.html#method-i-delete_attribute]
+to remove an attribute:
+
+  e = REXML::Element.new('foo')
+  e.add_attribute('bar', 'baz')
+  e.delete_attribute('bar')
+  e.delete_attribute('bar')
+  e['bar'] # => nil
+
+==== Task: Determine Whether the Element Has Attributes
+
+Use method
+{Element#has_attributes?}[../../../../REXML/Element.html#method-i-has_attributes-3F]
+to determine whether the element has attributes:
+
+  e = REXML::Element.new('foo')
+  e.has_attributes? # => false
+  e.add_attribute('bar', 'baz')
+  e.has_attributes? # => true
+
+=== Children
+
+<em>Element Children</em>
+
+==== Task: Create and Add an Element
+
+Use method
+{Element#add_element}[../../../../REXML/Element.html#method-i-add_element]
+to create a new element and add it to this element:
+
+  e0 = REXML::Element.new('foo')
+  e0.add_element('bar')
+  e0.children # => [<bar/>]
+
+==== Task: Add an Existing Element
+
+Use method
+{Element#add_element}[../../../../REXML/Element.html#method-i-add_element]
+to add an element to this element:
+
+  e0 = REXML::Element.new('foo')
+  e1 = REXML::Element.new('bar')
+  e0.add_element(e1)
+  e0.children # => [<bar/>]
+
+==== Task: Create and Add an Element with Attributes
+
+Use method
+{Element#add_element}[../../../../REXML/Element.html#method-i-add_element]
+to create a new element with attributes, and add it to this element:
+
+  e0 = REXML::Element.new('foo')
+  e0.add_element('bar', {'name' => 'value'})
+  e0.children # => [<bar name='value'/>]
+
+==== Task: Add an Existing Element with Added Attributes
+
+Use method
+{Element#add_element}[../../../../REXML/Element.html#method-i-add_element]
+to add an element to this element:
+
+  e0 = REXML::Element.new('foo')
+  e1 = REXML::Element.new('bar')
+  e0.add_element(e1, {'name' => 'value'})
+  e0.children # => [<bar name='value'/>]
+
+==== Task: Delete a Specified Element
+
+Use method
+{Element#delete_element}[../../../../REXML/Element.html#method-i-delete_element]
+to remove a specified element from this element:
+
+  e0 = REXML::Element.new('foo')
+  e1 = REXML::Element.new('bar')
+  e0.add_element(e1)
+  e0.children # => [<bar/>]
+  e0.delete_element(e1)
+  e0.children # => []
+
+==== Task: Delete an Element by Index
+
+Use method
+{Element#delete_element}[../../../../REXML/Element.html#method-i-delete_element]
+to remove an element from this element by index:
+
+  e0 = REXML::Element.new('foo')
+  e1 = REXML::Element.new('bar')
+  e0.add_element(e1)
+  e0.children # => [<bar/>]
+  e0.delete_element(1)
+  e0.children # => []
+
+==== Task: Delete an Element by XPath
+
+Use method
+{Element#delete_element}[../../../../REXML/Element.html#method-i-delete_element]
+to remove an element from this element by XPath:
+
+  e0 = REXML::Element.new('foo')
+  e1 = REXML::Element.new('bar')
+  e0.add_element(e1)
+  e0.children # => [<bar/>]
+  e0.delete_element('//bar/')
+  e0.children # => []
+
+==== Task: Determine Whether Element Children
+
+Use method
+{Element#has_elements?}[../../../../REXML/Element.html#method-i-has_elements-3F]
+to determine whether the element has element children:
+
+  e0 = REXML::Element.new('foo')
+  e0.has_elements? # => false
+  e0.add_element(REXML::Element.new('bar'))
+  e0.has_elements? # => true
+
+==== Task: Get Element Descendants by XPath
+
+Use method
+{Element#get_elements}[../../../../REXML/Element.html#method-i-get_elements]
+to fetch all element descendant children by XPath:
+
+  xml_string = <<-EOT
+  <root>
+    <a level='1'>
+      <a level='2'/>
+    </a>
+  </root>
+  EOT
+  d = REXML::Document.new(xml_string)
+  d.root.get_elements('//a') # => [<a level='1'> ... </>, <a level='2'/>]
+
+==== Task: Get Next Element Sibling
+
+Use method
+{Element#next_element}[../../../../REXML/Element.html#method-i-next_element]
+to retrieve the next element sibling:
+
+  d = REXML::Document.new '<a><b/>text<c/></a>'
+  d.root.elements['b'].next_element #-> <c/>
+  d.root.elements['c'].next_element #-> nil
+
+==== Task: Get Previous Element Sibling
+
+Use method
+{Element#previous_element}[../../../../REXML/Element.html#method-i-previous_element]
+to retrieve the previous element sibling:
+
+  d = REXML::Document.new '<a><b/>text<c/></a>'
+  d.root.elements['c'].previous_element #-> <b/>
+  d.root.elements['b'].previous_element #-> nil
+
+<em>Text Children</em>
+
+==== Task: Add a Text Node
+
+Use method
+{Element#add_text}[../../../../REXML/Element.html#method-i-add_text]
+to add a text node to the element:
+
+  d = REXML::Document.new('<a>foo<b/>bar</a>')
+  e = d.root
+  e.add_text(REXML::Text.new('baz'))
+  e.to_a # => ["foo", <b/>, "bar", "baz"]
+  e.add_text(REXML::Text.new('baz'))
+  e.to_a # => ["foo", <b/>, "bar", "baz", "baz"]
+
+==== Task: Replace the First Text Node
+
+Use method
+{Element#text=}[../../../../REXML/Element.html#method-i-text-3D]
+to replace the first text node in the element:
+
+  d = REXML::Document.new('<root><a/>text<b/>more<c/></root>')
+  e = d.root
+  e.to_a # => [<a/>, "text", <b/>, "more", <c/>]
+  e.text = 'oops'
+  e.to_a # => [<a/>, "oops", <b/>, "more", <c/>]
+
+==== Task: Remove the First Text Node
+
+Use method
+{Element#text=}[../../../../REXML/Element.html#method-i-text-3D]
+to remove the first text node in the element:
+
+  d = REXML::Document.new('<root><a/>text<b/>more<c/></root>')
+  e = d.root
+  e.to_a # => [<a/>, "text", <b/>, "more", <c/>]
+  e.text = nil
+  e.to_a # => [<a/>, <b/>, "more", <c/>]
+
+==== Task: Retrieve the First Text Node
+
+Use method
+{Element#get_text}[../../../../REXML/Element.html#method-i-get_text]
+to retrieve the first text node in the element:
+
+  d = REXML::Document.new('<root><a/>text<b/>more<c/></root>')
+  e = d.root
+  e.to_a # => [<a/>, "text", <b/>, "more", <c/>]
+  e.get_text # => "text"
+
+==== Task: Retrieve a Specific Text Node
+
+Use method
+{Element#get_text}[../../../../REXML/Element.html#method-i-get_text]
+to retrieve the first text node in a specified element:
+
+  d = REXML::Document.new "<root>some text <b>this is bold!</b> more text</root>"
+  e = d.root
+  e.get_text('//root') # => "some text "
+  e.get_text('//b')    # => "this is bold!"
+
+==== Task: Determine Whether the Element has Text Nodes
+
+Use method
+{Element#has_text?}[../../../../REXML/Element.html#method-i-has_text-3F]
+to determine whether the element has text:
+
+  e = REXML::Element.new('foo')
+  e.has_text? # => false
+  e.add_text('bar')
+  e.has_text? # => true
+
+<em>Other Children</em>
+
+==== Task: Get the Child at a Given Index
+
+Use method
+{Element#[]}[../../../../REXML/Element.html#method-i-5B-5D]
+to retrieve the child at a given index:
+
+  d = REXML::Document.new '><root><a/>text<b/>more<c/></root>'
+  e = d.root
+  e[0] # => <a/>
+  e[1] # => "text"
+  e[2] # => <b/>
+
+==== Task: Get All CDATA Children
+
+Use method
+{Element#cdatas}[../../../../REXML/Element.html#method-i-cdatas]
+to retrieve all CDATA children:
+
+  xml_string = <<-EOT
+    <root>
+      <![CDATA[foo]]>
+      <![CDATA[bar]]>
+    </root>
+  EOT
+  d = REXML::Document.new(xml_string)
+  d.root.cdatas # => ["foo", "bar"]
+
+==== Task: Get All Comment Children
+
+Use method
+{Element#comments}[../../../../REXML/Element.html#method-i-comments]
+to retrieve all comment children:
+
+  xml_string = <<-EOT
+    <root>
+      <!--foo-->
+      <!--bar-->
+    </root>
+  EOT
+  d = REXML::Document.new(xml_string)
+  d.root.comments.map {|comment| comment.to_s } # => ["foo", "bar"]
+
+==== Task: Get All Processing Instruction Children
+
+Use method
+{Element#instructions}[../../../../REXML/Element.html#method-i-instructions]
+to retrieve all processing instruction children:
+
+  xml_string = <<-EOT
+    <root>
+      <?target0 foo?>
+      <?target1 bar?>
+    </root>
+  EOT
+  d = REXML::Document.new(xml_string)
+  instructions = d.root.instructions.map {|instruction| instruction.to_s }
+  instructions # => ["<?target0 foo?>", "<?target1 bar?>"]
+
+==== Task: Get All Text Children
+
+Use method
+{Element#texts}[../../../../REXML/Element.html#method-i-texts]
+to retrieve all text children:
+
+  xml_string = '<root><a/>text<b/>more<c/></root>'
+  d = REXML::Document.new(xml_string)
+  d.root.texts # => ["text", "more"]
+
+=== Namespaces
+
+==== Task: Add a Namespace
+
+Use method
+{Element#add_namespace}[../../../../REXML/Element.html#method-i-add_namespace]
+to add a namespace to the element:
+
+  e = REXML::Element.new('foo')
+  e.add_namespace('bar')
+  e.namespaces # => {"xmlns"=>"bar"}
+
+==== Task: Delete the Default Namespace
+
+Use method
+{Element#delete_namespace}[../../../../REXML/Element.html#method-i-delete_namespace]
+to remove the default namespace from the element:
+
+  d = REXML::Document.new "<a xmlns:foo='bar' xmlns='twiddle'/>"
+  d.to_s # => "<a xmlns:foo='bar' xmlns='twiddle'/>"
+  d.root.delete_namespace # => <a xmlns:foo='bar'/>
+  d.to_s # => "<a xmlns:foo='bar'/>"
+
+==== Task: Delete a Specific Namespace
+
+Use method
+{Element#delete_namespace}[../../../../REXML/Element.html#method-i-delete_namespace]
+to remove a specific namespace from the element:
+
+  d = REXML::Document.new "<a xmlns:foo='bar' xmlns='twiddle'/>"
+  d.to_s # => "<a xmlns:foo='bar' xmlns='twiddle'/>"
+  d.root.delete_namespace # => <a xmlns:foo='bar'/>
+  d.to_s # => "<a xmlns:foo='bar'/>"
+  d.root.delete_namespace('foo')
+  d.to_s # => "<a/>"
+
+==== Task: Get a Namespace URI
+
+Use method
+{Element#namespace}[../../../../REXML/Element.html#method-i-namespace]
+to retrieve a specific namespace URI for the element:
+
+  xml_string = <<-EOT
+    <root>
+       <a xmlns='1' xmlns:y='2'>
+         <b/>
+         <c xmlns:z='3'/>
+       </a>
+    </root>
+  EOT
+  d = REXML::Document.new(xml_string)
+  b = d.elements['//b']
+  b.namespace      # => "1"
+  b.namespace('y') # => "2"
+
+==== Task: Retrieve Namespaces
+
+Use method
+{Element#namespaces}[../../../../REXML/Element.html#method-i-namespaces]
+to retrieve all namespaces for the element:
+
+  xml_string = '<a xmlns="foo" xmlns:x="bar" xmlns:y="twee" z="glorp"/>'
+  d = REXML::Document.new(xml_string)
+  d.root.attributes.namespaces # => {"xmlns"=>"foo", "x"=>"bar", "y"=>"twee"}
+
+==== Task: Retrieve Namespace Prefixes
+
+Use method
+{Element#prefixes}[../../../../REXML/Element.html#method-i-prefixes]
+to retrieve all prefixes (namespace names) for the element:
+
+  xml_string = <<-EOT
+    <root>
+       <a xmlns:x='1' xmlns:y='2'>
+         <b/>
+         <c xmlns:z='3'/>
+       </a>
+    </root>
+  EOT
+  d = REXML::Document.new(xml_string, {compress_whitespace: :all})
+  d.elements['//a'].prefixes # => ["x", "y"]
+  d.elements['//b'].prefixes # => ["x", "y"]
+  d.elements['//c'].prefixes # => ["x", "y", "z"]
+
+=== Iteration
+
+==== Task: Iterate Over Elements
+
+Use method
+{Element#each_element}[../../../../REXML/Element.html#method-i-each_element]
+to iterate over element children:
+
+  d = REXML::Document.new '<a><b>b</b><c>b</c><d>d</d><e/></a>'
+  d.root.each_element {|e| p e }
+
+Output:
+
+  <b> ... </>
+  <c> ... </>
+  <d> ... </>
+  <e/>
+
+==== Task: Iterate Over Elements Having a Specified Attribute
+
+Use method
+{Element#each_element_with_attribute}[../../../../REXML/Element.html#method-i-each_element_with_attribute]
+to iterate over element children that have a specified attribute:
+
+  d = REXML::Document.new '<a><b id="1"/><c id="2"/><d id="1"/><e/></a>'
+  a = d.root
+  a.each_element_with_attribute('id') {|e| p e }
+
+Output:
+
+  <b id='1'/>
+  <c id='2'/>
+  <d id='1'/>
+
+==== Task: Iterate Over Elements Having a Specified Attribute and Value
+
+Use method
+{Element#each_element_with_attribute}[../../../../REXML/Element.html#method-i-each_element_with_attribute]
+to iterate over element children that have a specified attribute and value:
+
+  d = REXML::Document.new '<a><b id="1"/><c id="2"/><d id="1"/><e/></a>'
+  a = d.root
+  a.each_element_with_attribute('id', '1') {|e| p e }
+
+Output:
+
+  <b id='1'/>
+  <d id='1'/>
+
+==== Task: Iterate Over Elements Having Specified Text
+
+Use method
+{Element#each_element_with_text}[../../../../REXML/Element.html#method-i-each_element_with_text]
+to iterate over element children that have specified text:
+
+
+=== Context
+
+#whitespace
+#ignore_whitespace_nodes
+#raw
+
+=== Other Getters
+
+#document
+#root
+#root_node
+#node_type
+#xpath
+#inspect

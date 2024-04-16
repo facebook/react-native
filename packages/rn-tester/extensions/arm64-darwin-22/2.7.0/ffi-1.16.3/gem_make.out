@@ -1,0 +1,46 @@
+current directory: /Users/bikidas/react-native/packages/rn-tester/gems/ffi-1.16.3/ext/ffi_c
+/Users/bikidas/.rbenv/versions/2.7.5/bin/ruby -I /Users/bikidas/.rbenv/versions/2.7.5/lib/ruby/2.7.0 -r ./siteconf20240410-93610-o97epg.rb extconf.rb
+checking for ffi_prep_closure_loc() in -lffi... yes
+checking for ffi_prep_cif_var()... yes
+checking for ffi_raw_call()... yes
+checking for ffi_prep_raw_closure()... yes
+checking for rb_gc_mark_movable()... yes
+checking for whether -pthread is accepted as LDFLAGS... yes
+creating extconf.h
+creating Makefile
+
+current directory: /Users/bikidas/react-native/packages/rn-tester/gems/ffi-1.16.3/ext/ffi_c
+make "DESTDIR=" clean
+
+current directory: /Users/bikidas/react-native/packages/rn-tester/gems/ffi-1.16.3/ext/ffi_c
+make "DESTDIR="
+compiling AbstractMemory.c
+compiling ArrayType.c
+compiling Buffer.c
+compiling Call.c
+compiling ClosurePool.c
+compiling DynamicLibrary.c
+compiling Function.c
+compiling FunctionInfo.c
+compiling LastError.c
+compiling LongDouble.c
+compiling MappedType.c
+compiling MemoryPointer.c
+compiling MethodHandle.c
+compiling Platform.c
+compiling Pointer.c
+compiling Struct.c
+compiling StructByValue.c
+compiling StructLayout.c
+compiling Thread.c
+compiling Type.c
+compiling Types.c
+compiling Variadic.c
+compiling ffi.c
+linking shared-object ffi_c.bundle
+ld: warning: -multiply_defined is obsolete
+ld: warning: ignoring duplicate libraries: '-lffi'
+
+current directory: /Users/bikidas/react-native/packages/rn-tester/gems/ffi-1.16.3/ext/ffi_c
+make "DESTDIR=" install
+/opt/homebrew/bin/ginstall -c -m 0755 ffi_c.bundle ./.gem.20240410-93610-l8yija

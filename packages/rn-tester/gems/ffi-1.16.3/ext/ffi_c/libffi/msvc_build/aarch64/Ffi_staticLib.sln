@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28302.56
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Ffi_staticLib_arm64", "Ffi_staticLib.vcxproj", "{115502C0-BE05-4767-BF19-5C87D805FAD6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|ARM64 = Debug|ARM64
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|ARM64 = Release|ARM64
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{115502C0-BE05-4767-BF19-5C87D805FAD6}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{115502C0-BE05-4767-BF19-5C87D805FAD6}.Debug|ARM64.Build.0 = Debug|ARM64
+		{115502C0-BE05-4767-BF19-5C87D805FAD6}.Debug|x64.ActiveCfg = Debug|ARM64
+		{115502C0-BE05-4767-BF19-5C87D805FAD6}.Debug|x86.ActiveCfg = Debug|ARM64
+		{115502C0-BE05-4767-BF19-5C87D805FAD6}.Release|ARM64.ActiveCfg = Release|ARM64
+		{115502C0-BE05-4767-BF19-5C87D805FAD6}.Release|ARM64.Build.0 = Release|ARM64
+		{115502C0-BE05-4767-BF19-5C87D805FAD6}.Release|x64.ActiveCfg = Release|ARM64
+		{115502C0-BE05-4767-BF19-5C87D805FAD6}.Release|x86.ActiveCfg = Release|ARM64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {241C54C7-20DD-4897-9376-E6B6D1B43BD5}
+	EndGlobalSection
+EndGlobal

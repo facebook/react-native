@@ -1,0 +1,7 @@
+load_generic_config "remote"
+
+proc noexec_load { dest prog args } {
+  return "unsupported"  
+}
+
+set_board_info protocol "noexec"

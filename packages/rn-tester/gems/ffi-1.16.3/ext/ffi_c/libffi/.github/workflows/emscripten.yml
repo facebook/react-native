@@ -1,0 +1,171 @@
+name: CI emscripten
+
+# Controls when the action will run.
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+
+env:
+  PYODIDE_VERSION: 0.52.1
+  # PYTHON_VERSION and EMSCRIPTEN_VERSION are determined by PYODIDE_VERSION.
+  # The appropriate versions can be found in the Pyodide repodata.json
+  # "info" field, or in Makefile.envs:
+  # https://github.com/pyodide/pyodide/blob/main/Makefile.envs#L2
+  PYTHON_VERSION: 3.10.7
+  EMSCRIPTEN_VERSION: 3.1.27
+  EM_CACHE_FOLDER: emsdk-cache
+
+jobs:
+  setup-emsdk-cache:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Setup cache
+        id: cache-system-libraries
+        uses: actions/cache@v3
+        with:
+          path: ${{env.EM_CACHE_FOLDER}}
+          key: ${{env.EMSCRIPTEN_VERSION}}
+
+      - uses: mymindstorm/setup-emsdk@v12
+        with:
+          version: ${{ env.EMSCRIPTEN_VERSION }}
+          actions-cache-folder: ${{env.EM_CACHE_FOLDER}}
+
+  test-dejagnu:
+    strategy:
+      matrix:
+        bigint: ["--wasm-bigint", ""]
+    runs-on: ubuntu-22.04
+    needs: [setup-emsdk-cache]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: set up python
+        id: setup-python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Setup cache
+        id: cache-system-libraries
+        uses: actions/cache@v3
+        with:
+          path: ${{env.EM_CACHE_FOLDER}}
+          key: ${{env.EMSCRIPTEN_VERSION}}
+
+      - uses: mymindstorm/setup-emsdk@v12
+        with:
+          version: ${{ env.EMSCRIPTEN_VERSION }}
+          actions-cache-folder: ${{env.EM_CACHE_FOLDER}}
+
+      - name: Install dejagnu
+        shell: bash -l {0}
+        run: |
+          sudo apt install -y dejagnu
+
+      - name: run tests
+        run: |
+          testsuite/emscripten/node-tests.sh ${{ matrix.bigint }}
+
+      - name: Install rlgl and run
+        run: |
+          wget -qO - https://rl.gl/cli/rlgl-linux-amd64.tgz | \
+               tar --strip-components=2 -xvzf - ./rlgl/rlgl;
+          ./rlgl l --key=0LIBFFI-0LIBFFI-0LIBFFI-0LIBFFI https://rl.gl
+          ./rlgl e -l project=libffi -l sha=${GITHUB_SHA:0:7} -l CC='emcc' -l host=wasm32-unknown-linux --policy=https://github.com/libffi/rlgl-policy.git testsuite/libffi.log
+          exit $?
+
+  build:
+    strategy:
+      matrix:
+        bigint: ["--wasm-bigint", ""]
+    env:
+      WASM_BIGINT: ${{ matrix.bigint }}
+    runs-on: ubuntu-22.04
+    needs: [setup-emsdk-cache]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup cache
+        id: cache-system-libraries
+        uses: actions/cache@v3
+        with:
+          path: ${{env.EM_CACHE_FOLDER}}
+          key: ${{env.EMSCRIPTEN_VERSION}}
+
+      - uses: mymindstorm/setup-emsdk@v12
+        with:
+          version: ${{ env.EMSCRIPTEN_VERSION }}
+          actions-cache-folder: ${{env.EM_CACHE_FOLDER}}
+
+      - name: build
+        run: |
+          ./testsuite/emscripten/build.sh ${{ matrix.bigint }}
+
+      - name: build tests
+        run: |
+          cp -r testsuite/libffi.call testsuite/libffi.call.test
+          cp -r testsuite/libffi.closures testsuite/libffi.closures.test
+          ./testsuite/emscripten/build-tests.sh testsuite/libffi.call.test ${{ matrix.bigint }}
+          ./testsuite/emscripten/build-tests.sh testsuite/libffi.closures.test ${{ matrix.bigint }}
+
+      - name: Store artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: built-tests
+          path: |
+            ./testsuite/libffi.c*/
+
+  test:
+    strategy:
+      matrix:
+        bigint: ["--wasm-bigint", ""]
+        browser: ["firefox", "chrome"]
+    runs-on: ubuntu-22.04
+    needs: [build]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: built-tests
+          path: ./testsuite/
+
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          activate-environment: pyodide-env
+          python-version: ${{ env.PYTHON_VERSION }}
+          channels: conda-forge
+      - name: Install test dependencies
+        run: |
+          pip install pytest-pyodide==${{ env.PYODIDE_VERSION }}
+
+      - name:
+        run: |
+          cd testsuite/emscripten/
+          mkdir test-results
+          pytest \
+            --junitxml=test-results/junit.xml \
+              test_libffi.py \
+              -k ${{ matrix.browser }} \
+              -s
+
+      - name: Install rlgl and run
+        if: success() || failure()
+        run: |
+          wget -qO - https://rl.gl/cli/rlgl-linux-amd64.tgz | \
+               tar --strip-components=2 -xvzf - ./rlgl/rlgl;
+          ./rlgl l --key=0LIBFFI-0LIBFFI-0LIBFFI-0LIBFFI https://rl.gl
+          ./rlgl e -l project=libffi -l sha=${GITHUB_SHA:0:7} -l CC='emcc' -l host=${{ matrix.browser }} --policy=https://github.com/libffi/rlgl-policy.git testsuite/emscripten/test-results/junit.xml
+          exit $?

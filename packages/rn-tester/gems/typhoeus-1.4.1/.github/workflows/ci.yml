@@ -1,0 +1,30 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  build:
+    env:
+      BUNDLE_GEMFILE: Gemfile
+    runs-on: ${{ matrix.os }}-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu, macos]
+        ruby-version: ['2.5', '2.6', '2.7', '3.0', '3.1', truffleruby]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install libcurl header
+        run: |
+          if ${{ matrix.os == 'macos' }}
+          then
+            brew install curl
+          else
+            sudo apt update && sudo apt install -y --no-install-recommends libcurl4-openssl-dev
+          fi
+      - name: Set up Ruby ${{ matrix.ruby-version }}
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby-version }}
+          bundler-cache: true
+      - name: Run tests
+        run: |
+          bundle exec rake

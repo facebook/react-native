@@ -1,0 +1,1586 @@
+=== 5.22.2 / 2024-02-07
+
+* 1 bug fix:
+
+  * Third time's a charm? Remember: 'ensure' is almost always the
+    wrong way to go (for results... it's great for cleaning up).
+
+=== 5.22.1 / 2024-02-06
+
+* 1 bug fix:
+
+  * Don't exit non-zero if no tests ran and no filter (aka, the test file is empty).
+    (I'm starting to think the exit 1 thing for @tenderlove was a mistake...)
+
+=== 5.22.0 / 2024-02-05
+
+* 1 minor enhancement:
+
+  * Added "did you mean" output if your --name filter matches nothing. (tenderlove)
+
+* 2 bug fixes:
+
+  * Big cleanup of test filtering. Much prettier / more functional.
+  * Fix situation where Assertion#location can't find the location. (pftg)
+
+=== 5.21.2 / 2024-01-17
+
+* 1 bug fix:
+
+  * Fixed bug in Minitest::Compress#compress formatting w/ nested patterns. Now recurses properly.
+
+=== 5.21.1 / 2024-01-11
+
+* 1 bug fix:
+
+  * Rails' default backtrace filter can't currently work with caller_locations, so reverting back to caller.
+
+=== 5.21.0 / 2024-01-11
+
+* 10 minor enhancements:
+
+  * Add include_all kw arg to assert_respond_to and refute_respond_to.
+  * Added --quiet flag to skip ProgressReporter (prints the dots). Minor speedup.
+  * Added Minitest::Compress#compress and added it to UnexpectedError.
+  * Added ability to initialize BacktraceFilter w/ custom regexp.
+  * Filter failure backtraces using backtrace_filter before calculating location. (thomasmarshall)
+  * Make BacktraceFilter#filter compatible with locations (still compares strings).
+  * Optimized Assertion#location ~30%.
+  * Output relative paths for all failures/errors/backtraces.
+  * Refactored location information in assertions, now using locations.
+  * Removed thread and mutex_m dependencies. (hsbt, eregon)
+
+* 2 bug fixes:
+
+  * Drop undocumented bt arg in #skip. Dunno why that ever happened, prolly for testing?
+  * Fix mock to work with ruby debugger enabled. (keithlayne)
+
+=== 5.20.0 / 2023-09-06
+
+* 1 minor enhancement:
+
+  * Optionally allow autorun exit hook to remain active in forked child. (casperisfine)
+
+=== 5.19.0 / 2023-07-26
+
+* 2 minor enhancements:
+
+  * Add metadata lazy accessor to Runnable / Result. (matteeyah)
+  * Only load minitest/unit (aka ancient MiniTest compatibility layer) if \ENV[\"MT_COMPAT\"]
+
+* 1 bug fix:
+
+  * Minitest::TestTask enthusiastically added itself to default. (ParadoxV5)
+
+=== 5.18.1 / 2023-06-16
+
+* 3 bug fixes:
+
+  * Avoid extra string allocations when filtering tests. (tenderlove)
+  * Only mention deprecated \ENV[\'N\'] if it is an integer string.
+  * Push up test_order to Minitest::Runnable to fix minitest/hell. (koic)
+
+=== 5.18.0 / 2023-03-04
+
+* 2 major enhancements:
+
+  * Added assert_pattern & refute_pattern for pattern matching. (flavorjones)
+  * Added matching must_pattern_match & wont_pattern_match to minitest/spec.
+
+* 1 bug fix:
+
+  * Support the new message format of NameError in Ruby 3.3 (mame)
+
+=== 5.17.0 / 2022-12-31
+
+* 1 minor enhancement:
+
+  * Refactor setup hooks into a SETUP_METHODS constant. (MSP-Greg)
+
+* 3 bug fixes:
+
+  * Fix kwargs for Mock calls to delegator. (blowmage)
+  * Fix kwargs for expectations. (bobmazanec, blowmage)
+  * Remove check for .b method. (tenderlove)
+
+=== 5.16.3 / 2022-08-17
+
+* 2 bug fixes:
+
+  * Fixed exception sanitization by removing TypeError restriction on rescue.
+  * Use A instead of deprecated TESTOPTS in rake test:slow. (davidstosik)
+
+=== 5.16.2 / 2022-07-03
+
+* 4 bug fixes:
+
+  * Added MT_KWARGS_HACK kludge for stub to deal with ruby 2.7 kwargs nastiness. (tsugimoto)
+  * In #expect, pop Hash class from args if $MT_KWARGS_HACK. (casperisfine)
+  * In above scenario, set expected kwargs (as Objects) based on actual kwargs.
+  * Nuke ivars if exception fails to marshal twice (eg better_errors). (irphilli)
+
+=== 5.16.1 / 2022-06-20
+
+* 2 bug fixes:
+
+  * Apparently adding real kwarg support to mocks/stubs broke some code. Fixed.
+    * Use `MT_KWARGS_HACK=1` to activate the kludgy kwargs support w/ caveats.
+  * Clarified some doco wrt the block on #stub.
+
+=== 5.16.0 / 2022-06-14
+
+* 2 major enhancements:
+
+  * Added Minitest::TestTask.
+  * Dropping ruby 2.2 - 2.5. 2.6 is DTM soon too.
+
+* 11 minor enhancements:
+
+  * Added --show-skips option to show skips at end of run but not require --verbose. (MSP-Greg)
+  * Added Minitest.seed, the random seed used by the run.
+  * Calling `srand Minitest.seed` before all shuffles to ensure determinism.
+  * Extended #stub to handle kwargs for both block and call args. (SampsonCrowley)
+  * Extended Mock#__call to display kwargs.
+  * Extended Mock#expect to record kwargs.
+  * Extended Mock#method_missing to take kwargs & compare them against expected.
+  * Mock#method_missing displays better errors on arity mismatch.
+  * Removed minor optimization removing empty suites before run.
+  * Simplified test randomization (test order will change even with fixed seed).
+  * assert_match now returns the MatchData on success. (Nakilon)
+
+* 3 bug fixes:
+
+  * (Re)Fixed marshalling of exceptions, neutering them in 2 passes.
+  * Fixed more problems with rdoc.
+  * Had to patch up mock and stub to deal with <=2.7 kwargs oddities
+
+=== 5.15.0 / 2021-12-14
+
+* 1 major enhancement:
+
+  * assert_throws returns the value returned, if any. (volmer)
+
+* 3 minor enhancements:
+
+  * Added -S <CODES> option to skip reporting of certain types of output
+  * Enable Ruby deprecation warnings by default. (casperisfine)
+  * Use Etc.nprocessors by default in order to maximize cpu usage. (tonytonyjan)
+
+* 6 bug fixes:
+
+  * Close then unlink tempfiles on Windows. (nobu)
+  * Fixed #skip_until for windows paths. (MSP-Greg)
+  * Fixed a bunch of tests for jruby and windows. (MSP-Greg)
+  * Fixed marshalling of specs if they error. (tenderlove, jeremyevans, et al)
+  * Updated deprecation message for block expectations. (blowmage)
+  * Use Kernel.warn directly in expectations in case CUT defines their own warn. (firien)
+
+=== 5.14.4 / 2021-02-23
+
+* 1 bug fix:
+
+  * Fixed deprecation warning using stub with methods using keyword arguments. (Nakilon)
+
+=== 5.14.3 / 2021-01-05
+
+* 1 bug fix:
+
+  * Bumped require_ruby_version to < 4 (trunk = 3.1).
+
+=== 5.14.2 / 2020-08-31
+
+* 1 bug fix:
+
+  * Bumped ruby version to include 3.0 (trunk).
+
+=== 5.14.1 / 2020-05-15
+
+* 3 minor enhancements:
+
+  * Minitest.filter_backtrace returns original backtrace if filter comes back empty.
+  * Minitest::BacktraceFilter now returns entire backtrace if $MT_DEBUG set in env.
+  * Return true on a successful refute. (jusleg)
+
+* 1 bug fix:
+
+  * Fixed expectation doco to not use global expectations.
+
+=== 5.14.0 / 2020-01-11
+
+* 2 minor enhancements:
+
+  * Block-assertions (eg assert_output) now error if raised inside the block. (casperisfine)
+  * Changed assert_raises to only catch Assertion since that covers Skip and friends.
+
+* 3 bug fixes:
+
+  * Added example for value wrapper with block to Expectations module. (stomar)
+  * Fixed use of must/wont_be_within_delta on Expectation instance. (stomar)
+  * Renamed UnexpectedError#exception to #error to avoid problems with reraising. (casperisfine)
+
+=== 5.13.0 / 2019-10-29
+
+* 9 minor enhancements:
+
+  * Added Minitest::Guard#osx?
+  * Added examples to documentation for assert_raises. (lxxxvi)
+  * Added expectations #path_must_exist and #path_wont_exist. Not thrilled with the names.
+  * Added fail_after(year, month, day, msg) to allow time-bombing after a deadline.
+  * Added skip_until(year, month, day, msg) to allow deferring until a deadline.
+  * Deprecated Minitest::Guard#maglev?
+  * Deprecated Minitest::Guard#rubinius?
+  * Finally added assert_path_exists and refute_path_exists. (deivid-rodriguez)
+  * Refactored and pulled Assertions#things_to_diff out of #diff. (BurdetteLamar)
+
+* 3 bug fixes:
+
+  * Fix autorun bug that affects fork exit status in tests. (dylanahsmith/jhawthorn)
+  * Improved documentation for _/value/expect, especially for blocks. (svoop)
+  * Support new Proc#to_s format. (ko1)
+
+=== 5.12.2 / 2019-09-28
+
+* 1 bug fix:
+
+  * After chatting w/ @y-yagi and others, decided to lower support to include ruby 2.2.
+
+=== 5.12.1 / 2019-09-28
+
+* 1 minor enhancement:
+
+  * Added documentation for Reporter classes. (sshaw)
+
+* 3 bug fixes:
+
+  * Avoid using 'match?' to support older ruby versions. (y-yagi)
+  * Fixed broken link to reference on goodness-of-fit testing. (havenwood)
+  * Update requirements in readme and Rakefile/hoe spec.
+
+=== 5.12.0 / 2019-09-22
+
+* 8 minor enhancements:
+
+  * Added a descriptive error if assert_output or assert_raises called without a block. (okuramasafumi)
+  * Changed mu_pp_for_diff to make having both \n and \\n easier to debug.
+  * Deprecated $N for specifying number of parallel test runners. Use MT_CPU.
+  * Deprecated use of global expectations. To be removed from MT6.
+  * Extended Assertions#mu_pp to encoding validity output for strings to improve diffs.
+  * Extended Assertions#mu_pp to output encoding and validity if invalid to improve diffs.
+  * Extended Assertions#mu_pp_for_diff to make escaped newlines more obvious in diffs.
+  * Fail gracefully when expectation used outside of `it`.
+
+* 3 bug fixes:
+
+  * Check \option[:filter] klass before match. Fixes 2.6 warning. (y-yagi)
+  * Fixed Assertions#diff from recalculating if set to nil
+  * Fixed spec section of readme to not use deprecated global expectations. (CheezItMan)
+
+=== 5.11.3 / 2018-01-26
+
+* 1 bug fix:
+
+  * Pushed #error? up to Reportable module. (composerinteralia)
+
+=== 5.11.2 / 2018-01-25
+
+* 1 minor enhancement:
+
+  * Reversed Test < Result. Back to < Runnable and using Reportable for shared code.
+
+* 2 bug fixes:
+
+  * Fixed Result#location for instances of Test. (alexisbernard)
+  * Fixed deprecation message for Runnable#marshal_dump. (y-yagi)
+
+=== 5.11.1 / 2018-01-02
+
+* 1 bug fix:
+
+  * Fixed Result (a superclass of Test) overriding Runnable's name accessors. (y-yagi, MSP-Greg)
+
+=== 5.11.0 / 2018-01-01
+
+* 2 major enhancements:
+
+  * Added Minitest::Result and Minitest::Result.from(runnable).
+  * Changed Minitest::Test to subclass Result and refactored methods up.
+
+* 7 minor enhancements:
+
+  * Added --no-plugins and MT_NO_PLUGINS to bypass MT plugin autoloading. Helps with bad actors installed globally.
+  * Added bench_performance_{logarithmic,power} for spec-style benchmarks. (rickhull)
+  * Added deprecation warning for Runnable#marshal_dump.
+  * Minitest.run_one_method now checks for instance of Result, not exact same class.
+  * Minitest::Test.run returns a Result version of self, not self.
+  * ProgressReporter#prerecord now explicitly prints klass.name. Allows for fakers.
+
+* 4 bug fixes:
+
+  * Object.stub no longer calls the passed block if stubbed with a callable.
+  * Object.stub now passes blocks down to the callable result.
+  * Pushed Minitest::Test#time & #time_it up to Runnable.
+  * Test nil equality directly in assert_equal. Fixes #679. (voxik)
+
+=== 5.11.0b1 / 2017-12-20
+
+* 2 major enhancements:
+
+  * Added Minitest::Result and Minitest::Result.from(runnable).
+  * Changed Minitest::Test to subclass Result and refactored methods up.
+
+* 6 minor enhancements:
+
+  * Added --no-plugins and MT_NO_PLUGINS to bypass MT plugin autoloading. Helps with bad actors installed globally.
+  * Added bench_performance_{logarithmic,power} for spec-style benchmarks. (rickhull)
+  * Minitest.run_one_method now checks for instance of Result, not exact same class.
+  * Minitest::Test.run returns a Result version of self, not self.
+  * ProgressReporter#prerecord now explicitly prints klass.name. Allows for fakers.
+  * Removed Runnable.marshal_dump/load.
+
+* 4 bug fixes:
+
+  * Object.stub no longer calls the passed block if stubbed with a callable.
+  * Object.stub now passes blocks down to the callable result.
+  * Pushed Minitest::Test#time & #time_it up to Runnable.
+  * Test nil equality directly in assert_equal. Fixes #679. (voxik)
+
+=== 5.10.3 / 2017-07-21
+
+* 1 minor enhancement:
+
+  * Extended documentation for Mock#expect for multiple calls to mock object. (insti)
+
+* 2 bug fixes:
+
+  * Finished off missing doco.
+  * Fixed verbose output on parallelize_me! classes. (chanks)
+
+=== 5.10.2 / 2017-05-09
+
+* 1 minor enhancement:
+
+  * Added suggestion in minitest/hell to install minitest/proveit.
+
+* 7 bug fixes:
+
+  * Expand MT6 to Minitest 6. (xaviershay)
+  * Fixed location of assert_send deprecation. (rab)
+  * Fixed location of nil assert_equal deprecation to work with expectations. (jeremyevans)
+  * Fixed minitest/hell to use parallelize_me! (azul)
+  * Made deprecation use warn so -W0 will silence it.
+  * Workaround for rdoc nodoc generation bug that totally f'd up minitest doco. (Paxa)
+  * Write aggregated_results directly to the IO object to avoid mixed encoding errors. (tenderlove)
+
+=== 5.10.1 / 2016-12-01
+
+* 1 bug fix:
+
+  * Added a hack/kludge to deal with missing #prerecord on reporters that aren't properly subclassing AbstractReporter (I'm looking at you minitest-reporters)
+
+=== 5.10.0 / 2016-11-30
+
+* 1 major enhancement:
+
+  * Deprecated ruby 1.8, 1.9, possibly 2.0, assert_send, & old MiniTest namespace.
+
+* 3 minor enhancements:
+
+  * Warn if assert_equal expects a nil. This will fail in minitest 6+. (tenderlove)
+  * Added AbstractReporter#prerecord and extended ProgressReporter and CompositeReporter to use it.
+  * Minor optimization: remove runnables with no runnable methods before run.
+
+* 3 bug fixes:
+
+  * Fix assert_throw rescuing any NameError and ArgumentError. (waldyr)
+  * Clean up (most of the) last remaining vestiges of minitest/unit.
+  * 2.4: removed deprecation warnings when referring to Fixnum.
+
+=== 5.9.1 / 2016-09-25
+
+* 2 bug fixes:
+
+  * Re-release to refresh gem certificate signing. ugh.
+  * Fixed hoe/minitest to not augment load path if we're actually testing minitest.
+
+=== 5.9.0 / 2016-05-16
+
+* 8 minor enhancements:
+
+  * Added Minitest.info_signal accessors to customize signal for test run info. (nate)
+  * Added assert_mock to make it more clear that you're testing w/ them.
+  * Added negative filter by test name. (utilum)
+  * Added warning to README that 1.8 and 1.9 support will be dropped in minitest 6.
+  * Automatically activate minitest/hell if $MT_HELL is defined.
+  * Improved default error messages for assert and refute. (bhenderson)
+  * minitest/hell now tries to require minitest/proveit
+  * mu_pp for strings prints out non-standard encodings to improve assert_equal diffs.
+
+* 1 bug fix:
+
+  * Removed Interrupt from PASSTHROUGH_EXCEPTIONS (already handled). (waldyr)
+
+=== 5.8.5 / 2016-09-25
+
+* 2 bug fixes:
+
+  * Re-release to refresh gem certificate signing. ugh.
+  * Fixed hoe/minitest to not augment load path if we're actually testing minitest.
+
+=== 5.8.4 / 2016-01-21
+
+* 1 bug fix:
+
+  * Allow Minitest::Assertion to pass through assert_raises so inner failures are dealt with first.
+
+=== 5.8.3 / 2015-11-17
+
+* 1 minor enhancement:
+
+  * Added extra note about mocks and threads to readme. (zamith)
+
+* 1 bug fix:
+
+  * Fixed bug in Mock#verify. (pithub/zamith)
+
+=== 5.8.2 / 2015-10-26
+
+* 1 bug fix:
+
+  * Fixed using parallelize_me! and capture_io (or any locking io). (arlt/tenderlove)
+
+=== 5.8.1 / 2015-09-23
+
+* 1 minor enhancement:
+
+  * Refactor assert_raises to be cleaner and to pass SystemExit and SignalException. (bhenderson)
+
+=== 5.8.0 / 2015-08-06
+
+* 2 minor enhancements:
+
+  * Add optional delegation mechanism to extend object with a mock. (zamith)
+  * Return early if there are no filtered methods. (jeremyevans)
+
+* 1 bug fix:
+
+  * Don't extend io with pride if io is not a tty. (toy)
+
+=== 5.7.0 / 2015-05-27
+
+* 1 major enhancement:
+
+  * assert_raises now matches subclasses of the expected exception types. (jeremyevans)
+
+* 3 minor enhancements:
+
+  * Added :block type for minitest/spec's #infect_an_assertion. (jeremyevans)
+  * Inline verification error messages in minitest/mock for GC performance. (zamith)
+  * assert_raises defaults to RuntimeError if not specified. (jeremyevans)
+
+* 4 bug fixes:
+
+  * Added 'class' to minitest/mock's overridden_methods list. (zamith)
+  * Added file/line to infect_an_assertion's class_eval call. (jeremyevans)
+  * Cleared UnexpectedError's mesg w/ generic string.
+  * Fixed non-proc-oriented expectations when used on proc target. (jeremyevans)
+
+=== 5.6.1 / 2015-04-27
+
+* 2 bug fixes:
+
+  * Added Minitest.clock_time and switched all Time.now to it. (tenderlove)
+  * Moved Minitest::Expectations#_ into Minitest::Spec::DSL.
+
+=== 5.6.0 / 2015-04-13
+
+* 4 major enhancements:
+
+  * Added Minitest::Expectation value monad.
+  * Added Minitest::Expectations#_ that returns an Expectation. Aliased to value.
+  * All expectations are added to Minitest::Expectation.
+  * At some point, the methods on Object will be deprecated and then removed.
+
+* 4 minor enhancements:
+
+  * Added a note about bundle exec pitfall in ruby 2.2+. (searls)
+  * Lazily start the parallel executor. (tenderlove)
+  * Make mocks more debugger-friendly (edward)
+  * Print out the current test run on interrupt. (riffraff)
+
+* 3 bug fixes:
+
+  * Fix failing test under Windows. (kimhmadsen)
+  * Record mocked calls before they happen so mocks can raise exceptions easier (tho I'm not a fan). (corecode)
+  * Tried to clarify mocks vs stubs terminology better. (kkirsche)
+
+=== 5.5.1 / 2015-01-09
+
+* 1 bug fix:
+
+  * Fixed doco problems. (zzak)
+
+=== 5.5.0 / 2014-12-12 // mri 2.2.0 (as a real gem)
+
+* 1 minor enhancement:
+
+  * Allow seed to be given via ENV for rake test loader sadness: eg rake SEED=42.
+
+=== 5.4.3 / 2014-11-11
+
+* 2 bug fixes:
+
+  * Clarified requirements for ruby are now 1.8.7 or better.
+  * Force encode error output in case mal-encoded exception is raised. (jasonrclark)
+
+=== 5.4.2 / 2014-09-26
+
+* 2 minor enhancements:
+
+  * Extract teardown method list.
+  * Thanks to minitest-gcstats got a 5-10% speedup via reduced GC!
+
+=== 5.4.1 / 2014-08-28
+
+* 1 bug fix:
+
+  * Fixed specs hidden by nesting/ordering bug (blowmage/apotonick)
+
+=== 5.4.0 / 2014-07-07
+
+* 2 minor enhancements:
+
+  * Kernel#describe extended to splat additional_desc.
+  * Spec#spec_type extended to take a splat of additional items, passed to matcher procs.
+
+* 1 bug fix:
+
+  * minitest/spec should require minitest/test, not minitest/unit. (doudou)
+
+=== 5.3.5 / 2014-06-17
+
+* 1 minor enhancement:
+
+  * Spit and polish (mostly spit).
+
+=== 5.3.4 / 2014-05-15
+
+* 1 minor enhancement:
+
+  * Test classes are randomized before running. (judofyr)
+
+=== 5.3.3 / 2014-04-14
+
+* 1 bug fix:
+
+  * Fixed using expectations w/ DSL in Test class w/o describe. (blowmage+others)
+
+=== 5.3.2 / 2014-04-02
+
+* 1 bug fix:
+
+  * Fixed doco on Assertions.assertions. (xaviershay)
+
+=== 5.3.1 / 2014-03-14
+
+* 1 minor enhancement:
+
+  * Modified verbage on bad 'let' names to be more helpful. (Archytaus)
+
+* 1 bug fix:
+
+  * Fixed 2 cases still using MiniTest. (mikesea)
+
+=== 5.3.0 / 2014-02-25
+
+* 1 minor enhancement:
+
+  * Mocked methods can take a block to verify state. Seattle.rb 12 bday present from ernie! Thanks!!
+
+=== 5.2.3 / 2014-02-10
+
+* 1 bug fix:
+
+  * Fixed Spec#let check to allow overriding of other lets. (mvz)
+
+=== 5.2.2 / 2014-01-22
+
+* 1 minor enhancement:
+
+  * Spec#let raises ArgumentError if you override _any_ instance method (except subject). (rynr)
+
+* 1 bug fix:
+
+  * Fixed up benchmark spec doco and added a test to demonstrate. (bhenderson)
+
+=== 5.2.1 / 2014-01-07
+
+* 1 bug fix:
+
+  * Properly deal with horrible mix of runtime load errors + other at_exit handlers. (dougo/chqr)
+
+=== 5.2.0 / 2013-12-13
+
+* 1 minor enhancement:
+
+  * Change expectations to allow calling most on procs (but not calling the proc). (bhenderson+others)
+
+=== 5.1.0 / 2013-12-05
+
+* 1 minor enhancement:
+
+  * Use a Queue for scheduling parallel tests. (tenderlove)
+
+* 1 bug fix:
+
+  * Fixed misspelling in doco. (amatsuda)
+
+=== 5.0.8 / 2013-09-20
+
+* 1 bug fix:
+
+  * Fixed siginfo handler by rearranging reporters and fixing to_s. (tenderlove)
+
+=== 5.0.7 / 2013-09-05
+
+* 2 minor enhancements:
+
+  * Added clarification about the use of thread local variables in expectations. (jemc)
+  * Added extra message about skipped tests, if any. Disable globally with $MT_NO_SKIP_MSG.
+
+* 2 bug fixes:
+
+  * Only require minitest, not minitest/autorun in pride_plugin. (judofyr)
+  * Require rubygems in load_plugins in case you're not using minitest/autorun.
+
+=== 5.0.6 / 2013-06-28
+
+* 3 minor enhancements:
+
+  * Allow stub to pass args to blocks. (swindsor)
+  * Improved warning message about minitest/autorun to address 1.9's minitest/autorun.
+  * Made minitest/test require minitest as needed. For lib writers. (erikh)
+
+* 1 bug fix:
+
+  * Fixed missing require in minitest/test. (erikh)
+
+=== 4.7.5 / 2013-06-21 // mri 2.1.1
+
+* 2 bug fixes:
+
+  * Fix Spec#describe_stack to be thread local.
+  * Fix multithreaded test failures by defining Time local to mock test namespace
+
+=== 5.0.5 / 2013-06-20
+
+* 6 bug fixes:
+
+  * DOH! Fixed the rest of the new casing on Minitest. (splattael)
+  * Fixed typo on minitest/mock rdoc. (mrgilman/guiceolin)
+  * Make Spec::DSL.describe_stack thread local to avoid failing on my own tests.
+  * Make a fake Time.now local to the tests so they won't interfere with real reporter timings.
+  * Make everything mockable by wrapping all 'special' methods in a smarter wrapper. (bestie)
+  * Raise ArgumentError if let name starts with 'test'. (johnmaxwell)
+
+=== 5.0.4 / 2013-06-07
+
+* 5 minor enhancements:
+
+  * Added AbstractReporter, defining required Reporter API to quack properly.
+  * Added doco for writing reporters.
+  * Refactored Reporter into ProgressReporter and SummaryReporter. (idea: phiggins, code:me+scotch)
+  * Refactored SummaryReporter pushing up to StatisticsReporter. (phiggins)
+  * Removed Reporter#run_and_report... cleaner, but doesn't "fit" in the API.
+
+=== 5.0.3 / 2013-05-29
+
+* 4 minor enhancements:
+
+  * Added Runnable.with_info_handler and Runnable.on_signal.
+  * Moved io.sync restore to Reporter#run_and_report.
+  * Refactored inner loop of Reporter#report to #to_s. Callable for status updates.
+  * Restored MT4's mid-run report (^t). (tenderlove).
+
+=== 5.0.2 / 2013-05-20
+
+* 3 bug fixes:
+
+  * Gem.find_files is smarter than I remember... cause I wrote it that way. *sigh* I'm getting old.
+  * Pride wasn't doing puts through its #io. (tmiller/tenderlove)
+  * Replaced Runnable#dup and Test#dup with marshal_dump/load. Too many problems cropping up on untested rails code. (tenderlove/rubys)
+
+=== 5.0.1 / 2013-05-14
+
+* 2 bug fixes:
+
+  * Documented Assertions' need for @assertions to be defined by the includer.
+  * Only load one plugin version per name. Tries for latest.
+
+=== 5.0.0 / 2013-05-10
+
+Oh god... here we go...
+
+Minitest 5:
+
+* 4 deaths in the family:
+
+  * MiniTest.runner is dead. No more manager objects.
+  * MiniTest::Unit#record is dead. Use a Reporter instance instead.
+  * MiniTest::Unit._run_* is dead. Runnable things are responsible for their own runs.
+  * MiniTest::Unit.output is dead. No more centralized IO.
+
+* 12 major (oft incompatible) changes:
+
+  * Renamed MiniTest to Minitest. Your pinkies will thank me. (aliased to MiniTest)
+  * Removed MiniTest::Unit entirely. No more manager objects.
+  * Added Minitest::Runnable. Everything minitest can run subclasses this.
+  * Renamed MiniTest::Unit::TestCase to Minitest::Test (subclassing Runnable).
+  * Added Minitest::Benchmark.
+    * Your benchmarks need to move to their own subclass.
+    * Benchmarks using the spec DSL have to have "Bench" somewhere in their describe.
+  * MiniTest::Unit.after_tests moved to Minitest.after_run
+  * MiniTest::Unit.autorun is now Minitest.autorun. Just require minitest/autorun pls.
+  * Removed ParallelEach#grep since it isn't used anywhere.
+  * Renamed Runnable#__name__ to Runnable#name (but uses @NAME internally).
+  * Runnable#run needs to return self. Allows for swapping of results as needed.
+
+* 8 minor moves:
+
+  * Moved Assertions module to minitest/assertions.rb
+  * Moved Expectations module to minitest/expectations.rb
+  * Moved Test to minitest/test.rb
+  * Moved everything else in minitest/unit.rb to minitest.rb
+  * minitest/unit.rb is now just a small (user-test only) compatibility layer.
+  * Moved most of minitest/pride into minitest/pride_plugin.
+  * minitest/pride now just activates pride.
+  * Moved ParallelEach under Minitest.
+
+* 9 additions:
+
+  * Added a plugin system that can extend command-line options.
+  * Added Minitest.extensions.
+  * Added Minitest.reporter (only available during startup).
+  * Added Minitest.run(args). This is the very top of any Minitest run.
+  * Added Minitest::Reporter. Everything minitest can report goes through here.
+    * Minitest.reporter is a composite so you can add your own.
+  * Added Minitest::CompositeReporter. Much easier to extend with your own reporters.
+  * Added UnexpectedError, an Assertion subclass, to wrap up errors.
+  * Minitest::Test#run is now freakin' beautiful. 47 -> 17 loc
+
+* 11 other:
+
+  * Removed Object.infect_with_assertions (it was already dead code).
+  * Runnables are responsible for knowing their result_code (eg "." or "F").
+  * Minitest.autorun now returns boolean, not exit code.
+  * Added FAQ entry for extending via modules. (phiggins)
+  * Implement Runnable#dup to cleanse state back to test results. Helps with serialization. pair:tenderlove
+  * Moved ParallelEach under Minitest.
+  * Runnable#run needs to return self. Allows for swapping of results as needed.
+  * Minitest.init_plugins passes down options.
+  * Minitest.load_plugins only loads once.
+  * Fixed minitest/pride to work with rake test loader again. (tmiller)
+  * Added count/size to ParallelEach to fix use w/in stdlib's test/unit. :( (btaitelb)
+
+* 5 voodoo:
+
+  * Removed mutex from minitest.rb (phiggins)
+  * Removed mutex from test.rb (phiggins)
+  * Removed Minitest::Reporter.synchronize (phiggins)
+  * Removed Minitest::Test.synchronize (phiggins)
+  * Upon loading minitest/parallel_each, record, capture_io and capture_subprocess_io are doped with synchronization code. (phiggins)
+
+=== 4.7.4 / 2013-05-01
+
+This is probably the last release of the 4.x series. It will be merged
+to ruby and will be put into maintenance mode there.
+
+I'm not set in stone on this, but at this point further development of
+minitest (5+) will be gem-only. It is just too hard to work w/in
+ruby-core w/ test-unit compatibility holding minitest development
+back.
+
+* 2 minor enhancements:
+
+  * Added count/size to ParallelEach to fix use w/in stdlib's test/unit. :( (btaitelb)
+  * Allow disabling of info_signal handler in runner. (erikh)
+
+=== 4.7.3 / 2013-04-20
+
+* 1 bug fix:
+
+  * Reverted stubbing of module methods change. Stub the user, not the impl. (ab9/tyabe)
+
+=== 4.7.2 / 2013-04-18
+
+* 2 bug fixes:
+
+  * Fixed inconsistency in refute_in_delta/epsilon. I double negatived my logic. (nettsundere)
+  * Fixed stubbing of module methods (eg Kernel#sleep). (steveklabnik)
+
+=== 4.7.1 / 2013-04-09
+
+* 1 minor enhancement:
+
+  * Added FAQ section to README
+
+* 1 bug fix:
+
+  * Fixed bug where guard runs tests bypassing minitest/autorun and an ivar isn't set right. (darrencauthon)
+
+=== 4.7.0 / 2013-03-18
+
+* 1 major enhancement:
+
+  * Refactored MiniTest::Spec into MiniTest::Spec::DSL.
+
+* 1 bug fix:
+
+  * Removed $DEBUG handler that detected when test/unit and minitest were both loaded. (tenderlove)
+
+=== 4.6.2 / 2013-02-27
+
+* 1 minor enhancement:
+
+  * Change error output to match Class#method, making it easier to use -n filter.
+
+=== 4.6.1 / 2013-02-14
+
+* 1 bug fix:
+
+  * Fixed an option processing bug caused by test/unit's irresponsibly convoluted code. (floehopper)
+
+=== 4.6.0 / 2013-02-07
+
+* 3 major enhancements:
+
+  * Removed ::reset_setup_teardown_hooks
+  * Removed the long deprecated assert_block
+  * Removed the long deprecated lifecycle hooks: add_(setup|teardown)_hook
+
+* 1 minor enhancement:
+
+  * Allow filtering tests by suite name as well as test name. (lazyatom)
+
+* 2 bug fixes:
+
+  * Made hex handling (eg object_ids) in mu_pp_for_diff more specific. (maxim)
+  * nodoc top-level module. (zzak)
+
+=== 4.5.0 / 2013-01-22
+
+* 1 major enhancement:
+
+  * Rearranged minitest/unit.rb so NO parallelization code is loaded/used until you opt-in.
+
+* 4 minor enhancements:
+
+  * Added TestCase#skipped? for teardown guards
+  * Added maglev? guard
+  * Document that record can be sent twice if teardown fails or errors (randycoulman)
+  * Errors in teardown are now recorded. (randycoulman)
+
+* 3 bug fixes:
+
+  * Added hacks and skips to get clean test runs on maglev
+  * Modified float tests for maglev float output differences. Not sure this is right. Not sure I care.
+  * Test for existance of diff.exe instead of assuming they have devkit. (blowmage/Cumbayah)
+
+=== 4.4.0 / 2013-01-07
+
+* 3 minor enhancements:
+
+  * Added fit_logarithic and assert_performance_logarithmic. (ktheory)
+  * Merge processed options so others can mess with defaults. (tenderlove)
+  * TestCase#message can now take another proc to defer custom message cost. (ordinaryzelig/bhenderson)
+
+* 1 bug fix:
+
+  * TestCase#passed? now true if test is skipped. (qanhd)
+
+=== 4.3.3 / 2012-12-06
+
+* 1 bug fix:
+
+  * Updated information about stubbing. (daviddavis)
+
+=== 4.3.2 / 2012-11-27 // mri 2.0.0
+
+* 1 minor enhancement:
+
+  * Improved assert_equals error message to point you at #== of member objects. (kcurtin)
+
+=== 4.3.1 / 2012-11-23
+
+* 1 bug fix:
+
+  * Moved test_children to serial testcase to prevent random failures.
+
+=== 4.3.0 / 2012-11-17
+
+* 4 minor enhancements:
+
+  * Allow #autorun to run even if loaded with other test libs that call exit. (sunaku)
+  * Do not include Expectations in Object if $MT_NO_EXPECTATIONS is set (experimental?)
+  * Gave some much needed love to assert_raises.
+  * Mock#expect can take a block to custom-validate args. (gmoothart)
+
+=== 4.2.0 / 2012-11-02
+
+* 4 major enhancements:
+
+  * Added minitest/hell - run all your tests through the ringer!
+  * Added support for :parallel test_order to run test cases in parallel.
+  * Removed last_error and refactored runner code to be threadsafe.
+  * _run_suites now runs suites in parallel if they opt-in.
+
+* 4 minor enhancements:
+
+  * Added TestCase#synchronize
+  * Added TestCase.make_my_diffs_pretty!
+  * Added TestCase.parallelize_me!
+  * Lock on capture_io for thread safety (tenderlove)
+
+=== 4.1.0 / 2012-10-05
+
+* 2 minor enhancements:
+
+  * Added skip example to readme. (dissolved)
+  * Extracted backtrace filter to object. (tenderlove)
+
+* 1 bug fix:
+
+  * OMG I'm so dumb. Fixed access to deprecated hook class methods. I hate ruby modules. (route)
+
+=== 4.0.0 / 2012-09-28
+
+* 1 major enhancement:
+
+  * The names of a privately-used undocumented constants are Super Important™.
+
+* 1 minor enhancement:
+
+  * Support stubbing methods that would be handled via method_missing. (jhsu)
+
+* 3 bug fixes:
+
+  * Add include_private param to MiniTest::Mock#respond_to? (rf-)
+  * Fixed use of minitest/pride with --help. (zw963)
+  * Made 'No visible difference.' message more clear. (ckrailo)
+
+=== 3.5.0 / 2012-09-21
+
+* 1 minor enhancement:
+
+  * Added #capture_subprocess_io. (route)
+
+=== 3.4.0 / 2012-09-05
+
+* 2 minor enhancements:
+
+  * assert_output can now take regexps for expected values. (suggested by stomar)
+  * Clarified that ruby 1.9/2.0's phony gems cause serious confusion for rubygems.
+
+=== 3.3.0 / 2012-07-26
+
+* 1 major enhancement:
+
+  * Deprecated add_(setup|teardown)_hook in favor of (before|after)_(setup|teardown) [2013-01-01]
+
+* 4 minor enhancements:
+
+  * Refactored deprecated hook system into a module.
+  * Refactored lifecycle hooks into a module.
+  * Removed after_setup/before_teardown + run_X_hooks from Spec.
+  * Spec#before/after now do a simple define_method and call super. DUR.
+
+* 2 bug fixes:
+
+  * Fixed #passed? when used against a test that called flunk. (floehopper)
+  * Fixed rdoc bug preventing doco for some expectations. (stomar).
+
+=== 3.2.0 / 2012-06-26
+
+* 1 minor enhancement:
+
+  * Stubs now yield self. (peterhellberg)
+
+* 1 bug fix:
+
+  * Fixed verbose test that only fails when run in verbose mode. mmmm irony.
+
+=== 3.1.0 / 2012-06-13
+
+* 2 minor enhancements:
+
+  * Removed LONG deprecated Unit.out accessor
+  * Removed generated method name munging from minitest/spec. (ordinaryzelig/tenderlove)
+
+=== 3.0.1 / 2012-05-24
+
+* 1 bug fix:
+
+  * I'm a dumbass and refactored into Mock#call. Renamed to #__call so you can mock #call. (mschuerig)
+
+=== 3.0.0 / 2012-05-08
+
+* 3 major enhancements:
+
+  * Added Object#stub (in minitest/mock.rb).
+  * Mock#expect mocks are used in the order they're given.
+  * Mock#verify now strictly compares against expect calls.
+
+* 3 minor enhancements:
+
+  * Added caller to deprecation message.
+  * Mock error messages are much prettier.
+  * Removed String check for RHS of assert/refute_match. This lets #to_str work properly.
+
+* 1 bug fix:
+
+  * Support drive letter on Windows. Patch provided from MRI by Usaku NAKAMURA. (ayumin)
+
+=== 2.12.1 / 2012-04-10
+
+* 1 minor enhancement:
+
+  * Added ruby releases to History.txt to make it easier to see what you're missing
+
+* 1 bug fix:
+
+  * Rolled my own deprecate msg to allow MT to work with rubygems < 1.7
+
+=== 2.12.0 / 2012-04-03
+
+* 4 minor enhancements:
+
+  * ::it returns test method name (wojtekmach)
+  * Added #record method to runner so runner subclasses can cleanly gather data.
+  * Added Minitest alias for MiniTest because even I forget.
+  * Deprecated assert_block!! Yay!!!
+
+* 1 bug fix:
+
+  * Fixed warning in i_suck_and_my_tests_are_order_dependent! (phiggins)
+
+=== 2.11.4 / 2012-03-20
+
+* 2 minor enhancements:
+
+  * Updated known extensions
+  * You got your unicode in my tests! You got your tests in my unicode! (fl00r)
+
+* 1 bug fix:
+
+  * Fixed MiniTest::Mock example in the readme. (conradwt)
+
+=== 2.11.3 / 2012-02-29
+
+* 2 bug fixes:
+
+  * Clarified that assert_raises returns the exception for further testing
+  * Fixed assert_in_epsilon when both args are negative. (tamc)
+
+=== 2.11.2 / 2012-02-14
+
+* 1 minor enhancement:
+
+  * Display failures/errors on SIGINFO. (tenderlove)
+
+* 1 bug fix:
+
+  * Fixed MiniTest::Unit.after_tests for Ruby 1.9.3. (ysbaddaden)
+
+=== 2.11.1 / 2012-02-01
+
+* 3 bug fixes:
+
+  * Improved description for --name argument. (drd)
+  * Ensure Mock#expect's expected args is an Array. (mperham)
+  * Ensure Mock#verify verifies multiple expects of the same method. (chastell)
+
+=== 2.11.0 / 2012-01-25
+
+* 2 minor enhancements:
+
+  * Added before / after hooks for setup and teardown. (tenderlove)
+  * Pushed run_setup_hooks down to Spec. (tenderlove)
+
+=== 2.10.1 / 2012-01-17
+
+* 1 bug fix:
+
+  * Fixed stupid 1.9 path handling grumble grumble. (graaff)
+
+=== 2.10.0 / 2011-12-20
+
+* 3 minor enhancements:
+
+  * Added specs for must/wont be_empty/respond_to/be_kind_of and others.
+  * Added tests for assert/refute predicate.
+  * Split minitest/excludes.rb out to its own gem.
+
+* 1 bug fix:
+
+  * Fixed must_be_empty and wont_be_empty argument handling. (mrsimo)
+
+=== 2.9.1 / 2011-12-13
+
+* 4 minor enhancements:
+
+  * Added a ton of tests on spec error message output.
+  * Cleaned up consistency of msg handling on unary expectations.
+  * Improved error messages on assert/refute_in_delta.
+  * infect_an_assertion no longer checks arity and better handles args.
+
+* 1 bug fix:
+
+  * Fixed error message on specs when 2+ args and custom message provided. (chastell)
+
+=== 2.9.0 / 2011-12-07
+
+* 4 minor enhancements:
+
+  * Added TestCase.exclude and load_excludes for programmatic filtering of tests.
+  * Added guard methods so you can cleanly skip based on platform/impl
+  * Holy crap! 100% doco! `rdoc -C` ftw
+  * Switch assert_output to test stderr before stdout to possibly improve debugging
+
+=== 2.8.1 / 2011-11-17
+
+* 1 bug fix:
+
+  * Ugh. 1.9's test/unit violates my internals. Added const_missing.
+
+=== 2.8.0 / 2011-11-08
+
+* 2 minor enhancements:
+
+  * Add a  method so that code can be run around a particular test case (tenderlove)
+  * Turn off backtrace filtering if we're running inside a ruby checkout. (drbrain)
+
+* 2 bug fixes:
+
+  * Fixed 2 typos and 2 doc glitches. (splattael)
+  * Remove unused block arguments to avoid creating Proc objects. (k-tsj)
+
+=== 2.7.0 / 2011-10-25
+
+* 2 minor enhancements:
+
+  * Include failed values in the expected arg output in MockExpectationError. (nono)
+  * Make minitest/pride work with other 256 color capable terms. (sunaku)
+
+* 2 bug fixes:
+
+  * Clarified the documentation of minitest/benchmark (eregon)
+  * Fixed using expectations in regular unit tests. (sunaku)
+
+=== 2.6.2 / 2011-10-19
+
+* 1 minor enhancement:
+
+  * Added link to vim bundle. (sunaku)
+
+* 2 bug fixes:
+
+  * Force gem activation in hoe minitest plugin
+  * Support RUBY_VERSION='2.0.0' (nagachika)
+
+=== 2.6.1 / 2011-09-27
+
+* 2 bug fixes:
+
+  * Alias Spec.name from Spec.to_s so it works when @name is nil (nathany)
+  * Fixed assert and refute_operator where second object has a bad == method.
+
+=== 2.6.0 / 2011-09-13
+
+* 2 minor enhancements:
+
+  * Added specify alias for it and made desc optional.
+  * Spec#must_be and #wont_be can be used with predicates (metaskills)
+
+* 1 bug fix:
+
+  * Fixed Mock.respond_to?(var) to work with strings. (holli)
+
+=== 2.5.1 / 2011-08-27 // ruby 1.9.3: p0, p125, p34579
+
+* 2 minor enhancements:
+
+  * Added gem activation for minitest in minitest/autoload to help out 1.9 users
+  * Extended Spec.register_spec_type to allow for procs instead of just regexps.
+
+=== 2.5.0 / 2011-08-18
+
+* 4 minor enhancements:
+
+  * Added 2 more arguments against rspec: let & subject in 9 loc! (emmanuel/luis)
+  * Added TestCase.i_suck_and_my_tests_are_order_dependent!
+  * Extended describe to take an optional method name (2 line change!). (emmanuel)
+  * Refactored and extended minitest/pride to do full 256 color support. (lolcat)
+
+* 1 bug fix:
+
+  * Doc fixes. (chastell)
+
+=== 2.4.0 / 2011-08-09
+
+* 4 minor enhancements:
+
+  * Added simple examples for all expectations.
+  * Improved Mock error output when args mismatch.
+  * Moved all expectations from Object to MiniTest::Expectations.
+  * infect_with_assertions has been removed due to excessive clever
+
+* 4 bug fixes:
+
+  * Fix Assertions#mu_pp to deal with immutable encoded strings. (ferrous26)
+  * Fix minitest/pride for MacRuby (ferrous26)
+  * Made error output less fancy so it is more readable
+  * Mock shouldn't undef === and inspect. (dgraham)
+
+=== 2.3.1 / 2011-06-22
+
+* 1 bug fix:
+
+  * Fixed minitest hoe plugin to be a spermy dep and not depend on itself.
+
+=== 2.3.0 / 2011-06-15
+
+* 5 minor enhancements:
+
+  * Add setup and teardown hooks to MiniTest::TestCase. (phiggins)
+  * Added nicer error messages for MiniTest::Mock. (phiggins)
+  * Allow for less specific expected arguments in Mock. (bhenderson/phiggins)
+  * Made MiniTest::Mock a blank slate. (phiggins)
+  * Refactored minitest/spec to use the hooks instead of define_inheritable_method. (phiggins)
+
+* 2 bug fixes:
+
+  * Fixed TestCase's inherited hook. (dchelimsky/phiggins/jamis, the 'good' neighbor)
+  * MiniTest::Assertions#refute_empty should use mu_pp in the default message. (whatthejeff)
+
+=== 2.2.2 / 2011-06-01
+
+* 2 bug fixes:
+
+  * Got rid of the trailing period in message for assert_equal. (tenderlove)
+  * Windows needs more flushing. (Akio Tajima)
+
+=== 2.2.1 / 2011-05-31
+
+* 1 bug fix:
+
+  * My _ONE_ non-rubygems-using minitest user goes to Seattle.rb!
+
+=== 2.2.0 / 2011-05-29
+
+* 6 minor enhancements:
+
+  * assert_equal (and must_equal) now tries to diff output where it makes sense.
+    * Added Assertions#diff(exp, act) to be used by assert_equal.
+    * Added Assertions#mu_pp_for_diff
+    * Added Assertions.diff and diff=
+  * Moved minitest hoe-plugin from hoe-seattlerb. (erikh)
+  * Skipped tests only output details in verbose mode. (tenderlove+zenspider=xoxo)
+
+=== 2.1.0 / 2011-04-11
+
+* 5 minor enhancements:
+
+  * Added MiniTest::Spec.register_spec_type(matcher, klass) and spec_type(desc)
+  * Added ability for specs to share code via subclassing of Spec. (metaskills)
+  * Clarified (or tried to) bench_performance_linear's use of threshold.
+  * MiniTest::Unit.runner=(runner) provides an easy way of creating custom test runners for specialized needs. (justinweiss)
+  * Reverse order of inheritance in teardowns of specs. (deepfryed)
+
+* 3 bug fixes:
+
+  * FINALLY fixed problems of inheriting specs in describe/it/describe scenario. (MGPalmer)
+  * Fixed a new warning in 1.9.3.
+  * Fixed assert_block's message handling. (nobu)
+
+=== 2.0.2 / 2010-12-24
+
+* 1 minor enhancement:
+
+  * Completed doco on minitest/benchmark for specs.
+
+* 1 bug fix:
+
+  * Benchmarks in specs that didn't call bench_range would die. (zzak).
+
+=== 2.0.1 / 2010-12-15
+
+* 4 minor enhancements:
+
+  * Do not filter backtrace if $DEBUG
+  * Exit autorun via nested at_exit handler, in case other libs call exit
+  * Make options accesor lazy.
+  * Split printing of test name and its time. (nurse)
+
+* 1 bug fix:
+
+  * Fix bug when ^T is hit before runner start
+
+=== 2.0.0 / 2010-11-11
+
+* 3 major enhancements:
+
+  * Added minitest/benchmark! Assert your performance! YAY!
+  * Refactored runner to allow for more extensibility. See minitest/benchmark.
+  * This makes the runner backwards incompatible in some ways!
+
+* 9 minor enhancements:
+
+  * Added MiniTest::Unit.after_tests { ... }
+  * Improved output by adding test rates and a more sortable verbose format
+  * Improved readme based on feedback from others
+  * Added io method to TestCase. If used, it'll supplant '.EF' output.
+  * Refactored IO in MiniTest::Unit.
+  * Refactored _run_anything to _run_suite to make it easier to wrap (ngauthier)
+  * Spec class names are now the unmunged descriptions (btakita)
+  * YAY for not having redundant rdoc/readmes!
+  * Help output is now generated from the flags you passed straight up.
+
+* 4 bug fixes:
+
+  * Fixed scoping issue on minitest/mock (srbaker/prosperity)
+  * Fixed some of the assertion default messages
+  * Fixes autorun when on windows with ruby install on different drive (larsch)
+  * Fixed rdoc output bug in spec.rb
+
+=== 1.7.2 / 2010-09-23
+
+* 3 bug fixes:
+
+  * Fixed doco for expectations and Spec.
+  * Fixed test_capture_io on 1.9.3+ (sora_h)
+  * assert_raises now lets MiniTest::Skip through. (shyouhei)
+
+=== 1.7.1 / 2010-09-01
+
+* 1 bug fix:
+
+  * 1.9.2 fixes for spec tests
+
+=== 1.7.0 / 2010-07-15
+
+* 5 minor enhancements:
+
+  * Added assert_output (mapped to must_output).
+  * Added assert_silent (mapped to must_be_silent).
+  * Added examples to readme (Mike Dalessio)
+  * Added options output at the top of the run, for fatal run debugging (tenderlove)
+  * Spec's describe method returns created class
+
+=== 1.6.0 / 2010-03-27 // ruby 1.9.2-p290
+
+* 10 minor enhancements:
+
+  * Added --seed argument so you can reproduce a random order for debugging.
+  * Added documentation for assertions
+  * Added more rdoc and tons of :nodoc:
+  * Added output to give you all the options you need to reproduce that run.
+  * Added proper argument parsing to minitest.
+  * Added unique serial # to spec names so order can be preserved (needs tests). (phrogz)
+  * Empty 'it' fails with default msg. (phrogz)
+  * Remove previous method on expect to remove 1.9 warnings
+  * Spec#it is now order-proof wrt subclasses/nested describes.
+  * assert_same error message now reports in decimal, eg: oid=123. (mattkent)
+
+* 2 bug fixes:
+
+  * Fixed message on refute_same to be consistent with assert_same.
+  * Fixed method randomization to be stable for testing.
+
+=== 1.5.0 / 2010-01-06
+
+* 4 minor enhancements:
+
+  * Added ability to specify what assertions should have their args flipped.
+  * Don't flip arguments on *include and *respond_to assertions.
+  * Refactored Module.infect_an_assertion from Module.infect_with_assertions.
+  * before/after :all now bitches and acts like :each
+
+* 3 bug fixes:
+
+  * Nested describes now map to nested test classes to avoid namespace collision.
+  * Using undef_method instead of remove_method to clean out inherited specs.
+  * assert_raises was ignoring passed in message.
+
+=== 1.4.2 / 2009-06-25
+
+* 1 bug fix:
+
+  * Fixed info handler for systems that don't have siginfo.
+
+=== 1.4.1 / 2009-06-23
+
+* 1 major enhancement:
+
+  * Handle ^C and other fatal exceptions by failing
+
+* 1 minor enhancement:
+
+  * Added something to catch mixed use of test/unit and minitest if $DEBUG
+
+* 1 bug fix:
+
+  * Added SIGINFO handler for finding slow tests without verbose
+
+=== 1.4.0 / 2009-06-18
+
+* 5 minor enhancement:
+
+  * Added clarification doco.
+  * Added specs and mocks to autorun.
+  * Changed spec test class creation to be non-destructive.
+  * Updated rakefile for new hoe capabilities.
+  * describes are nestable (via subclass). before/after/def inherits, specs don't.
+
+* 3 bug fixes:
+
+  * Fixed location on must/wont.
+  * Switched to __name__ to avoid common ivar name.
+  * Fixed indentation in test file (1.9).
+
+=== 1.3.1 / 2009-01-20 // ruby 1.9.1-p431
+
+* 1 minor enhancement:
+
+  * Added miniunit/autorun.rb as replacement for test/unit.rb's autorun.
+
+* 16 bug fixes:
+
+  * 1.9 test fixes.
+  * Bug fixes from nobu and akira for really odd scenarios. They run ruby funny.
+  * Fixed (assert|refute)_match's argument order.
+  * Fixed LocalJumpError in autorun if exception thrown before at_exit.
+  * Fixed assert_in_delta (should be >=, not >).
+  * Fixed assert_raises to match Modules.
+  * Fixed capture_io to not dup IOs.
+  * Fixed indentation of capture_io for ruby 1.9 warning.
+  * Fixed location to deal better with custom assertions and load paths. (Yuki)
+  * Fixed order of (must|wont)_include in MiniTest::Spec.
+  * Fixed skip's backtrace.
+  * Got arg order wrong in *_match in tests, message wrong as a result.
+  * Made describe private. For some reason I thought that an attribute of Kernel.
+  * Removed disable_autorun method, added autorun.rb instead.
+  * assert_match escapes if passed string for pattern.
+  * instance_of? is different from ===, use instance_of.
+
+=== 1.3.0 / 2008-10-09
+
+* 2 major enhancements:
+
+  * renamed to minitest and pulled out test/unit compatibility.
+  * mini/test.rb is now minitest/unit.rb, everything else maps directly.
+
+* 12 minor enhancements:
+
+  * assert_match now checks that act can call =~ and converts exp to a
+    regexp only if needed.
+  * Added assert_send... seems useless to me tho.
+  * message now forces to string... ruby-core likes to pass classes and arrays :(
+  * Added -v handling and switched to @verbose from $DEBUG.
+  * Verbose output now includes test class name and adds a sortable running time!
+  * Switched message generation into procs for message deferment.
+  * Added skip and renamed fail to flunk.
+  * Improved output failure messages for assert_instance_of, assert_kind_of
+  * Improved output for assert_respond_to, assert_same.
+  * at_exit now exits false instead of errors+failures.
+  * Made the tests happier and more readable imhfo.
+  * Switched index(s) == 0 to rindex(s, 0) on nobu's suggestion. Faster.
+
+* 5 bug fixes:
+
+  * 1.9: Added encoding normalization in mu_pp.
+  * 1.9: Fixed backtrace filtering (BTs are expanded now)
+  * Added back exception_details to assert_raises. DOH.
+  * Fixed shadowed variable in mock.rb
+  * Fixed stupid muscle memory message bug in assert_send.
+
+=== 1.2.1 / 2008-06-10
+
+* 7 minor enhancements:
+
+  * Added deprecations everywhere in test/unit.
+  * Added test_order to TestCase. :random on mini, :sorted on test/unit (for now).
+  * Big cleanup in test/unit for rails. Thanks Jeremy Kemper!
+  * Minor readability cleanup.
+  * Pushed setup/run/teardown down to testcase allowing specialized testcases.
+  * Removed pp. Tests run 2x faster. :/
+  * Renamed deprecation methods and moved to test/unit/deprecate.rb.
+
+=== 1.2.0 / 2008-06-09
+
+* 2 major enhancements:
+
+  * Added Mini::Spec.
+  * Added Mini::Mock. Thanks Steven Baker!!
+
+* 23 minor enhancements:
+
+  * Added bin/use_miniunit to make it easy to test out miniunit.
+  * Added -n filtering, thanks to Phil Hagelberg!
+  * Added args argument to #run, takes ARGV from at_exit.
+  * Added test name output if $DEBUG.
+  * Added a refute (was deny) for every assert.
+  * Added capture_io and a bunch of nice assertions from zentest.
+  * Added deprecation mechanism for assert_no/not methods to test/unit/assertions.
+  * Added pp output when available.
+  * Added tests for all assertions. Pretty much maxed out coverage.
+  * Added tests to verify consistency and good naming.
+  * Aliased and deprecated all ugly assertions.
+  * Cleaned out test/unit. Moved autorun there.
+  * Code cleanup to make extensions easier. Thanks Chad!
+  * Got spec args reversed in all but a couple assertions. Much more readable.
+  * Improved error messages across the board. Adds your message to the default.
+  * Moved into Mini namespace, renamed to Mini::Test and Mini::Spec.
+  * Pulled the assertions into their own module...
+  * Removed as much code as I could while still maintaining full functionality.
+    * Moved filter_backtrace into MiniTest.
+    * Removed MiniTest::Unit::run. Unnecessary.
+    * Removed location_of_failure. Unnecessary.
+    * Rewrote test/unit's filter_backtrace. Flog from 37.0 to 18.1
+  * Removed assert_send. Google says it is never used.
+  * Renamed MiniTest::Unit.autotest to #run.
+  * Renamed deny to refute.
+  * Rewrote some ugly/confusing default assertion messages.
+  * assert_in_delta now defaults to 0.001 precision. Makes specs prettier.
+
+* 9 bug fixes:
+
+  * Fixed assert_raises to raise outside of the inner-begin/rescue.
+  * Fixed for ruby 1.9 and rubinius.
+  * No longer exits 0 if exception in code PRE-test run causes early exit.
+  * Removed implementors method list from mini/test.rb - too stale.
+  * assert_nothing_raised takes a class as an arg. wtf? STUPID
+  * ".EF" output is now unbuffered.
+  * Bunch of changes to get working with rails... UGH.
+    * Added stupid hacks to deal with rails not requiring their dependencies.
+    * Now bitch loudly if someone defines one of my classes instead of requiring.
+  * Fixed infect method to work better on 1.9.
+  * Fixed all shadowed variable warnings in 1.9.
+
+=== 1.1.0 / 2007-11-08
+
+* 4 major enhancements:
+
+  * Finished writing all missing assertions.
+  * Output matches original test/unit.
+  * Documented every method needed by language implementor.
+  * Fully switched over to self-testing setup.
+
+* 2 minor enhancements:
+
+  * Added deny (assert ! test), our favorite extension to test/unit.
+  * Added .autotest and fairly complete unit tests. (thanks Chad for help here)
+
+=== 1.0.0 / 2006-10-30
+
+* 1 major enhancement
+
+  * Birthday!
