@@ -38,6 +38,11 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
     [static_cast<id<RCTReloadListener>>(host_) didReceiveReloadCommand];
   }
 
+  void onSetPausedInDebuggerMessage(const OverlaySetPausedInDebuggerMessageRequest &) override
+  {
+    // TODO(moti): Implement this
+  }
+
  private:
   __weak RCTHost *host_;
 };

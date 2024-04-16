@@ -26,6 +26,7 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
+import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.JSEngineResolutionAlgorithm;
 import com.facebook.react.MemoryPressureRouter;
 import com.facebook.react.ReactHost;
@@ -464,6 +465,11 @@ public class ReactHostImpl implements ReactHost {
             },
             mBGExecutor)
         .continueWithTask(Task::getResult);
+  }
+
+  @DoNotStrip
+  private void setPausedInDebuggerMessage(@Nullable String message) {
+    // TODO(moti): Implement this
   }
 
   /**

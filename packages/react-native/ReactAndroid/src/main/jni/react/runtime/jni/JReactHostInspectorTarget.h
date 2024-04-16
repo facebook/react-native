@@ -29,6 +29,13 @@ struct JReactHostImpl : public jni::JavaClass<JReactHostImpl> {
             "reload");
     return method(self(), reason);
   }
+
+  void setPausedInDebuggerMessage(std::optional<std::string> message) {
+    static auto method =
+        javaClassStatic()->getMethod<void(jni::local_ref<jni::JString>)>(
+            "setPausedInDebuggerMessage");
+    method(self(), message ? jni::make_jstring(*message) : nullptr);
+  }
 };
 
 class JReactHostInspectorTarget
@@ -48,6 +55,8 @@ class JReactHostInspectorTarget
   static void registerNatives();
 
   void onReload(const PageReloadRequest& request) override;
+  void onSetPausedInDebuggerMessage(
+      const OverlaySetPausedInDebuggerMessageRequest&) override;
 
   jsinspector_modern::HostTarget* getInspectorTarget();
 

@@ -1175,6 +1175,7 @@ public class com/facebook/react/bridge/ReactInstanceManagerInspectorTarget : jav
 
 public abstract interface class com/facebook/react/bridge/ReactInstanceManagerInspectorTarget$TargetDelegate {
 	public abstract fun onReload ()V
+	public abstract fun onSetPausedInDebuggerMessage (Ljava/lang/String;)V
 }
 
 public class com/facebook/react/bridge/ReactMarker {

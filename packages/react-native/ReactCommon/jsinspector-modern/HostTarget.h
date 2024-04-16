@@ -67,6 +67,21 @@ class HostTargetDelegate {
     }
   };
 
+  struct OverlaySetPausedInDebuggerMessageRequest {
+    /**
+     * The message to display in the overlay. If nullopt, hide the overlay.
+     */
+    std::optional<std::string> message;
+
+    /**
+     * Equality operator, useful for unit tests
+     */
+    inline bool operator==(
+        const OverlaySetPausedInDebuggerMessageRequest& rhs) const {
+      return message == rhs.message;
+    }
+  };
+
   virtual ~HostTargetDelegate();
 
   /**
@@ -75,6 +90,19 @@ class HostTargetDelegate {
    * ILocalConnection::sendMessage was called).
    */
   virtual void onReload(const PageReloadRequest& request) = 0;
+
+  /**
+   * Called when the debugger requests that the "paused in debugger" overlay be
+   * shown or hidden. If the message is nullopt, hide the overlay, otherwise
+   * show it with the given message. This is called on the inspector thread.
+   *
+   * If this method is called with a non-null message, it's guaranteed to
+   * eventually be called again with a null message. In all other respects,
+   * the timing and payload of these messages are fully controlled by the
+   * client.
+   */
+  virtual void onSetPausedInDebuggerMessage(
+      const OverlaySetPausedInDebuggerMessageRequest& request) = 0;
 };
 
 /**
@@ -89,8 +117,28 @@ class HostTargetController final {
 
   bool hasInstance() const;
 
+  /**
+   * Increments the target's pause overlay counter. The counter represents the
+   * exact number of Agents that have (concurrently) requested the pause
+   * overlay to be shown. It's the caller's responsibility to only call this
+   * when the pause overlay's requested state transitions from hidden to
+   * visible.
+   */
+  void incrementPauseOverlayCounter();
+
+  /**
+   * Decrements the target's pause overlay counter. The counter represents the
+   * exact number of Agents that have (concurrently) requested the pause
+   * overlay to be shown. It's the caller's responsibility to only call this
+   * when the pause overlay's requested state transitions from hidden to
+   * visible.
+   * \returns false if the counter has reached 0, otherwise true.
+   */
+  bool decrementPauseOverlayCounter();
+
  private:
   HostTarget& target_;
+  size_t pauseOverlayCounter_{0};
 };
 
 /**
