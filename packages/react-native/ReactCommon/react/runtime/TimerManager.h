@@ -58,6 +58,33 @@ struct TimerCallback {
   bool repeat;
 };
 
+/**
+ * Container for the IdleCallback.
+ * The cotainer allow to cancel the Callback safely to avoid its execution
+ */
+struct IdleCallbackContainer {
+  IdleCallbackContainer(std::shared_ptr<TimerCallback> idleCallback)
+      : idleCallback_(idleCallback){};
+
+  void cancel() {
+    {
+      std::lock_guard<std::mutex> lock(mutex_);
+      cancelled_ = true;
+    }
+  }
+
+  bool isCancelled() {
+    {
+      std::lock_guard<std::mutex> lock(mutex_);
+      return cancelled_;
+    }
+  }
+
+  std::shared_ptr<TimerCallback> idleCallback_;
+  bool cancelled_{false};
+  std::mutex mutex_{};
+};
+
 class TimerManager {
  public:
   explicit TimerManager(
@@ -96,6 +123,16 @@ class TimerManager {
       jsi::Runtime& runtime,
       std::shared_ptr<TimerHandle> handle);
 
+  std::shared_ptr<TimerHandle> createIdleCallback(jsi::Function&& callback);
+
+  std::shared_ptr<TimerHandle> createIdleCallbackWithTimeout(
+      jsi::Function&& callback,
+      int32_t timeout);
+
+  void clearIdleCallback(
+      jsi::Runtime& runtime,
+      std::shared_ptr<TimerHandle> idleCallbackHandle);
+
   RuntimeExecutor runtimeExecutor_;
   std::unique_ptr<PlatformTimerRegistry> platformTimerRegistry_;
 
@@ -105,6 +142,14 @@ class TimerManager {
   // Each timeout that is registered on this queue gets a sequential id.  This
   // is the global count from which those are assigned.
   uint32_t timerIndex_{0};
+
+  // A map (id => callback func) of the currently active idleCallbacks
+  std::unordered_map<uint32_t, std::shared_ptr<IdleCallbackContainer>>
+      idleCallbacks_;
+
+  // Each idle callback that is registered on this queue gets a sequential id.
+  // This is the global count from which those are assigned.
+  uint32_t idleCallbackIndex_{0};
 
   // The React Native microtask queue is used to back public APIs including
   // `queueMicrotask`, `clearImmediate`, and `setImmediate` (which is used by

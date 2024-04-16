@@ -8,6 +8,7 @@
 #include "TimerManager.h"
 
 #include <cxxreact/SystraceSection.h>
+#include <chrono>
 #include <utility>
 
 namespace facebook::react {
@@ -81,6 +82,81 @@ std::shared_ptr<TimerHandle> TimerManager::createRecurringTimer(
   platformTimerRegistry_->createRecurringTimer(timerID, delay);
 
   return std::make_shared<TimerHandle>(timerID);
+}
+
+std::shared_ptr<TimerHandle> TimerManager::createIdleCallback(
+    jsi::Function&& callback) {
+  return createIdleCallbackWithTimeout(std::move(callback), -1);
+}
+
+std::shared_ptr<TimerHandle> TimerManager::createIdleCallbackWithTimeout(
+    jsi::Function&& callback,
+    int32_t timeout) {
+  uint32_t idleCallbackID = idleCallbackIndex_++;
+  auto sharedIdleCallback = std::make_shared<TimerCallback>(
+      std::move(callback), std::vector<jsi::Value>{}, timeout >= 0);
+  auto sharedIdleCallbackContainer =
+      std::make_shared<IdleCallbackContainer>(sharedIdleCallback);
+  idleCallbacks_[idleCallbackID] = std::move(sharedIdleCallbackContainer);
+
+  if (timeout >= 0) {
+    // Create with timeout. We want to execute the callback in the background,
+    // but not later than timeout. So, the implementation should be something
+    // like:
+    // 1. Schedule a timer that will run the callback after `timeout`
+    // 2. Schedule the work in background right away
+    // 3. If the work in background execute before `timout`, delete the timer
+    // 4. If the timer expires before the work in background,
+    //    execute the timer and delete the work in background.
+
+    // Schedule a "timer" in C++ that will wait for the timeout and
+    // will trigger the callback if it has not triggered before
+    std::chrono::seconds duration(timeout / 1000);
+    std::thread([this,
+                 duration,
+                 idleCallbackID,
+                 sharedIdleCallback,
+                 sharedIdleCallbackContainer]() {
+      std::this_thread::sleep_for(duration);
+      executeSynchronously_CAN_DEADLOCK(
+          runtimeExecutor_,
+          [this, idleCallbackID, sharedIdleCallback](jsi::Runtime& rt) {
+            if (idleCallbacks_[idleCallbackID] &&
+                !idleCallbacks_[idleCallbackID]->isCancelled()) {
+              sharedIdleCallback->invoke(rt);
+            }
+            idleCallbacks_.erase(idleCallbackID);
+          });
+    }).detach();
+  }
+
+  executeAsynchronously(
+      runtimeExecutor_,
+      [this, idleCallbackID, sharedIdleCallback](jsi::Runtime& rt) {
+        {
+          if (idleCallbacks_[idleCallbackID] &&
+              !idleCallbacks_[idleCallbackID]->isCancelled()) {
+            sharedIdleCallback->invoke(rt);
+          }
+          idleCallbacks_.erase(idleCallbackID);
+        }
+      });
+
+  return std::make_shared<TimerHandle>(idleCallbackID);
+}
+
+void TimerManager::clearIdleCallback(
+    jsi::Runtime& runtime,
+    std::shared_ptr<TimerHandle> idleCallbackHandle) {
+  if (idleCallbackHandle == nullptr) {
+    throw jsi::JSError(
+        runtime, "clearIdleCallback called with an invalid handle");
+  }
+
+  // This sets the callback to cancelled.
+  // When it will be executed, then the system give some time to execute
+  // the callback, execution will be skipped and the callback will be removed.
+  idleCallbacks_[idleCallbackHandle->index()]->cancel();
 }
 
 void TimerManager::deleteReactNativeMicrotask(
@@ -408,6 +484,77 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
             std::shared_ptr<TimerHandle> host =
                 args[0].asObject(rt).asHostObject<TimerHandle>(rt);
             deleteTimer(rt, host);
+            return jsi::Value::undefined();
+          }));
+
+  runtime.global().setProperty(
+      runtime,
+      "requestIdleCallback",
+      jsi::Function::createFromHostFunction(
+          runtime,
+          jsi::PropNameID::forAscii(runtime, "requestIdleCallback"),
+          2, // callback, options
+          [this](
+              jsi::Runtime& rt,
+              const jsi::Value& thisVal,
+              const jsi::Value* args,
+              size_t count) {
+            if (count < 0) {
+              throw jsi::JSError(
+                  rt,
+                  "requestIdleCallback must be called with at least a callback)");
+            }
+
+            if (!args[0].isObject() || !args[0].asObject(rt).isFunction(rt)) {
+              throw jsi::JSError(
+                  rt,
+                  "The first argument to requestIdleCallback must be a function.");
+            }
+
+            auto callback = args[0].getObject(rt).getFunction(rt);
+
+            if (count == 2) {
+              if (!args[1].isNull() && !args[1].isObject()) {
+                throw jsi::JSError(
+                    rt,
+                    "The second argument of requestIdleCallback, if provided, must be an object");
+              }
+              auto options = args[1].asObject(rt);
+              if (!options.hasProperty(rt, "timeout")) {
+                throw jsi::JSError(
+                    rt,
+                    "The second argument of requestIdleCallback must have a timeout property");
+              }
+              auto timeout = options.getProperty(rt, "timeout").asNumber();
+              auto handle =
+                  createIdleCallbackWithTimeout(std::move(callback), timeout);
+              return jsi::Object::createFromHostObject(rt, handle);
+            }
+
+            auto handle = createIdleCallback(std::move(callback));
+            return jsi::Object::createFromHostObject(rt, handle);
+          }));
+
+  runtime.global().setProperty(
+      runtime,
+      "clearIdleCallback",
+      jsi::Function::createFromHostFunction(
+          runtime,
+          jsi::PropNameID::forAscii(runtime, "clearIdleCallback"),
+          1, // idleCallbackID
+          [this](
+              jsi::Runtime& rt,
+              const jsi::Value& thisVal,
+              const jsi::Value* args,
+              size_t count) {
+            if (count == 0 || !args[0].isObject() ||
+                !args[0].asObject(rt).isHostObject<TimerHandle>(rt)) {
+              return jsi::Value::undefined();
+            }
+
+            std::shared_ptr<TimerHandle> host =
+                args[0].asObject(rt).asHostObject<TimerHandle>(rt);
+            clearIdleCallback(rt, host);
             return jsi::Value::undefined();
           }));
 }
