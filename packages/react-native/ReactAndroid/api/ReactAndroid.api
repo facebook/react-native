@@ -3047,9 +3047,14 @@ public class com/facebook/react/modules/blob/FileReaderModule : com/facebook/fbr
 	public fun readAsText (Lcom/facebook/react/bridge/ReadableMap;Ljava/lang/String;Lcom/facebook/react/bridge/Promise;)V
 }
 
-public class com/facebook/react/modules/camera/ImageStoreManager : com/facebook/fbreact/specs/NativeImageStoreAndroidSpec {
+public final class com/facebook/react/modules/camera/ImageStoreManager : com/facebook/fbreact/specs/NativeImageStoreAndroidSpec {
+	public static final field Companion Lcom/facebook/react/modules/camera/ImageStoreManager$Companion;
+	public static final field NAME Ljava/lang/String;
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
 	public fun getBase64ForTag (Ljava/lang/String;Lcom/facebook/react/bridge/Callback;Lcom/facebook/react/bridge/Callback;)V
+}
+
+public final class com/facebook/react/modules/camera/ImageStoreManager$Companion {
 }
 
 public final class com/facebook/react/modules/clipboard/ClipboardModule : com/facebook/fbreact/specs/NativeClipboardSpec {
