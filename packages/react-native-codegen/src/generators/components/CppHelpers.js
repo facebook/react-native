@@ -169,7 +169,7 @@ function getEnumMaskName(enumName: string): string {
 function convertDefaultTypeToString(
   componentName: string,
   prop: NamedShape<PropTypeAnnotation>,
-  fromBuilder = false,
+  fromBuilder: boolean  = false,
 ): string {
   const typeAnnotation = prop.typeAnnotation;
   switch (typeAnnotation.type) {
