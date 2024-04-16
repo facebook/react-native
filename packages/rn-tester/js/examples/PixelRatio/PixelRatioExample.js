@@ -20,8 +20,6 @@ import {
   View,
 } from 'react-native';
 
-import type {Element} from 'react';
-
 function LayoutSizeToPixel() {
   const [layoutDPSize, setLayoutDPSize] = useState<number>(0);
   const pixelSize = PixelRatio.getPixelSizeForLayoutSize(
