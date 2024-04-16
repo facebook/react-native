@@ -10,15 +10,52 @@
 
 'use strict';
 
+import type {Domain} from '../../src/private/fusebox/setUpFuseboxReactDevToolsDispatcher';
+
 if (__DEV__) {
   // Register dispatcher on global, which can be used later by Chrome DevTools frontend
   require('../../src/private/fusebox/setUpFuseboxReactDevToolsDispatcher');
 
+  // Install hook before React is loaded.
+  const reactDevTools = require('react-devtools-core');
+  // This should be defined in DEV, otherwise error is expected.
+  const fuseboxReactDevToolsDispatcher =
+    global.__FUSEBOX_REACT_DEVTOOLS_DISPATCHER__;
+  const reactDevToolsFuseboxGlobalBindingName =
+    fuseboxReactDevToolsDispatcher.BINDING_NAME;
+
+  const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleAttributes');
+  const devToolsSettingsManager = require('../DevToolsSettings/DevToolsSettingsManager');
+  const resolveRNStyle = require('../StyleSheet/flattenStyle');
+
+  let disconnect = null;
+  function disconnectBackendFromReactDevToolsInFuseboxIfNeeded() {
+    if (disconnect != null) {
+      disconnect();
+      disconnect = null;
+    }
+  }
+
+  function connectToReactDevToolsInFusebox(domain: Domain) {
+    disconnect = reactDevTools.connectWithCustomMessagingProtocol({
+      onSubscribe: listener => {
+        domain.onMessage.addEventListener(listener);
+      },
+      onUnsubscribe: listener => {
+        domain.onMessage.removeEventListener(listener);
+      },
+      onMessage: (event, payload) => {
+        domain.sendMessage({event, payload});
+      },
+      settingsManager: devToolsSettingsManager,
+      nativeStyleEditorValidAttributes: Object.keys(ReactNativeStyleAttributes),
+      resolveRNStyle,
+    });
+  }
+
   let isWebSocketOpen = false;
   let ws = null;
-
-  const reactDevTools = require('react-devtools-core');
-  const connectToDevTools = () => {
+  function connectToWSBasedReactDevToolsFrontend() {
     if (ws !== null && isWebSocketOpen) {
       // If the DevTools backend is already connected, don't recreate the WebSocket.
       // This would break the connection.
@@ -64,12 +101,9 @@ if (__DEV__) {
         isWebSocketOpen = true;
       });
 
-      const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleAttributes');
-      const devToolsSettingsManager = require('../DevToolsSettings/DevToolsSettingsManager');
-
       reactDevTools.connectToDevTools({
         isAppActive,
-        resolveRNStyle: require('../StyleSheet/flattenStyle'),
+        resolveRNStyle,
         nativeStyleEditorValidAttributes: Object.keys(
           ReactNativeStyleAttributes,
         ),
@@ -77,9 +111,31 @@ if (__DEV__) {
         devToolsSettingsManager,
       });
     }
-  };
+  }
 
-  const RCTNativeAppEventEmitter = require('../EventEmitter/RCTNativeAppEventEmitter');
-  RCTNativeAppEventEmitter.addListener('RCTDevMenuShown', connectToDevTools);
-  connectToDevTools(); // Try connecting once on load
+  // 1. If React DevTools has already been opened and initialized in Fusebox:
+  if (global[reactDevToolsFuseboxGlobalBindingName] != null) {
+    disconnectBackendFromReactDevToolsInFuseboxIfNeeded();
+    const domain =
+      fuseboxReactDevToolsDispatcher.initializeDomain('react-devtools');
+    connectToReactDevToolsInFusebox(domain);
+  } else {
+    // 2. If React DevTools panel in Fusebox was opened for the first time after the runtime has been created
+    global.__FUSEBOX_REACT_DEVTOOLS_DISPATCHER__.onDomainInitialization.addEventListener(
+      (domain: Domain) => {
+        if (domain.name === 'react-devtools') {
+          disconnectBackendFromReactDevToolsInFuseboxIfNeeded();
+          connectToReactDevToolsInFusebox(domain);
+        }
+      },
+    );
+
+    // 3. Fallback to attempting to connect WS-based RDT frontend
+    const RCTNativeAppEventEmitter = require('../EventEmitter/RCTNativeAppEventEmitter');
+    RCTNativeAppEventEmitter.addListener(
+      'RCTDevMenuShown',
+      connectToWSBasedReactDevToolsFrontend,
+    );
+    connectToWSBasedReactDevToolsFrontend(); // Try connecting once on load
+  }
 }
