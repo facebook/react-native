@@ -13,10 +13,19 @@
 
 namespace facebook::react {
 
-void AndroidPopupMenuEventEmitter::onSelectionChange(OnSelectionChange $event) const {
-  dispatchEvent("selectionChange", [$event=std::move($event)](jsi::Runtime &runtime) {
+void AndroidPopupMenuEventEmitter::onPopupMenuSelectionChange(OnPopupMenuSelectionChange $event) const {
+  dispatchEvent("popupMenuSelectionChange", [$event=std::move($event)](jsi::Runtime &runtime) {
     auto $payload = jsi::Object(runtime);
     $payload.setProperty(runtime, "item", $event.item);
+    return $payload;
+  });
+}
+
+
+void AndroidPopupMenuEventEmitter::onPopupMenuDismiss(OnPopupMenuDismiss $event) const {
+  dispatchEvent("popupMenuDismiss", [](jsi::Runtime &runtime) {
+    auto $payload = jsi::Object(runtime);
+    
     return $payload;
   });
 }

@@ -31,8 +31,8 @@ type NativeProps = $ReadOnly<{
   //Props
   menuItems?: ?$ReadOnlyArray<string>,
 
-  onSelectionChange?: DirectEventHandler<PopupMenuSelectionEvent>,
-  onPopupDismiss?: DirectEventHandler<PopupMenuDismissEvent>,
+  onPopupMenuSelectionChange?: DirectEventHandler<PopupMenuSelectionEvent>,
+  onPopupMenuDismiss?: DirectEventHandler<PopupMenuDismissEvent>,
 }>;
 
 type ComponentType = HostComponent<NativeProps>;
