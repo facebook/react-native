@@ -32,8 +32,6 @@ public class ReactFragment extends Fragment implements PermissionAwareActivity {
 
   protected ReactDelegate mReactDelegate;
 
-  protected boolean shouldCallDelegateLifecycleEvents = true;
-
   @Nullable private PermissionListener mPermissionListener;
 
   public ReactFragment() {
@@ -101,25 +99,19 @@ public class ReactFragment extends Fragment implements PermissionAwareActivity {
   @Override
   public void onResume() {
     super.onResume();
-    if (shouldCallDelegateLifecycleEvents) {
-      mReactDelegate.onHostResume();
-    }
+    mReactDelegate.onHostResume();
   }
 
   @Override
   public void onPause() {
     super.onPause();
-    if (shouldCallDelegateLifecycleEvents) {
-      mReactDelegate.onHostPause();
-    }
+    mReactDelegate.onHostPause();
   }
 
   @Override
   public void onDestroy() {
     super.onDestroy();
-    if (shouldCallDelegateLifecycleEvents) {
-      mReactDelegate.onHostDestroy();
-    }
+    mReactDelegate.onHostDestroy();
   }
 
   // endregion
