@@ -211,29 +211,18 @@ class RCTBridgeHostTargetDelegate : public facebook::react::jsinspector_modern::
     } else {
       __weak RCTBridge *bridgeWeak = bridge_;
       [pauseOverlayController_ showWithMessage:@(request.message.value().c_str())
-          onResume:^{
-            RCTAssertMainQueue();
-            RCTBridge *bridgeStrong = bridgeWeak;
-            if (!bridgeStrong) {
-              return;
-            }
-            if (!bridgeStrong.inspectorTarget) {
-              return;
-            }
-            bridgeStrong.inspectorTarget->sendCommand(facebook::react::jsinspector_modern::HostCommand::DebuggerResume);
-          }
-          onStepOver:^{
-            RCTAssertMainQueue();
-            RCTBridge *bridgeStrong = bridgeWeak;
-            if (!bridgeStrong) {
-              return;
-            }
-            if (!bridgeStrong.inspectorTarget) {
-              return;
-            }
-            bridgeStrong.inspectorTarget->sendCommand(
-                facebook::react::jsinspector_modern::HostCommand::DebuggerStepOver);
-          }];
+                                      onResume:^{
+                                        RCTAssertMainQueue();
+                                        RCTBridge *bridgeStrong = bridgeWeak;
+                                        if (!bridgeStrong) {
+                                          return;
+                                        }
+                                        if (!bridgeStrong.inspectorTarget) {
+                                          return;
+                                        }
+                                        bridgeStrong.inspectorTarget->sendCommand(
+                                            facebook::react::jsinspector_modern::HostCommand::DebuggerResume);
+                                      }];
     }
   }
 
