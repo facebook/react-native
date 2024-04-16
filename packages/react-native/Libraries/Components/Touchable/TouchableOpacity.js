@@ -275,6 +275,7 @@ class TouchableOpacity extends React.Component<Props, State> {
         accessibilityElementsHidden={
           this.props['aria-hidden'] ?? this.props.accessibilityElementsHidden
         }
+        accessibilitySplitFocus={this.props.accessibilitySplitFocus}
         style={[this.props.style, {opacity: this.state.anim}]}
         nativeID={this.props.id ?? this.props.nativeID}
         testID={this.props.testID}

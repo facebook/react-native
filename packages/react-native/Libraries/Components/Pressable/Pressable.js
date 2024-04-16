@@ -51,6 +51,7 @@ type Props = $ReadOnly<{|
   accessibilityLiveRegion?: ?('none' | 'polite' | 'assertive'),
   accessibilityRole?: ?AccessibilityRole,
   accessibilityState?: ?AccessibilityState,
+  accessibilitySplitFocus?: ?boolean,
   accessibilityValue?: ?AccessibilityValue,
   'aria-valuemax'?: AccessibilityValue['max'],
   'aria-valuemin'?: AccessibilityValue['min'],

@@ -221,11 +221,27 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
 
 - (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event
 {
+    BOOL result = NO;
   if (UIEdgeInsetsEqualToEdgeInsets(self.hitTestEdgeInsets, UIEdgeInsetsZero)) {
-    return [super pointInside:point withEvent:event];
+      result = [super pointInside:point withEvent:event];
+            } else {
+              CGRect hitFrame = UIEdgeInsetsInsetRect(self.bounds, self.hitTestEdgeInsets);
+              result = CGRectContainsPoint(hitFrame, point);
   }
-  CGRect hitFrame = UIEdgeInsetsInsetRect(self.bounds, self.hitTestEdgeInsets);
-  return CGRectContainsPoint(hitFrame, point);
+    if (result && self.accessibilitySplitFocus) {
+            NSArray<UIView *> *sortedSubviews = [self reactZIndexSortedSubviews];
+            UIView *hitSubview = nil;
+            for (UIView *subview in [sortedSubviews reverseObjectEnumerator]) {
+              CGPoint convertedPoint = [subview convertPoint:point fromView:self];
+              hitSubview = [subview hitTest:convertedPoint withEvent:event];
+              if (hitSubview != nil) {
+                break;
+              }
+            }
+            _shouldPreventAccessibilityFocus = hitSubview != nil && [hitSubview isAccessibilityElement];
+          }
+
+          return result;
 }
 
 #pragma mark - Accessibility
@@ -398,7 +414,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
 - (BOOL)isAccessibilityElement
 {
   if (self.reactAccessibilityElement == self) {
-    return [super isAccessibilityElement];
+      if ([super accessibilityElements]) {
+          return self.accessibilitySplitFocus ? !_shouldPreventAccessibilityFocus : YES;
+      } else {
+          return NO;
+      }
   }
 
   return NO;

@@ -181,6 +181,7 @@ class TouchableBounce extends React.Component<Props, State> {
         accessibilityElementsHidden={
           this.props['aria-hidden'] ?? this.props.accessibilityElementsHidden
         }
+        accessibilitySplitFocus={this.props.accessibilitySplitFocus}
         nativeID={this.props.id ?? this.props.nativeID}
         testID={this.props.testID}
         hitSlop={this.props.hitSlop}
