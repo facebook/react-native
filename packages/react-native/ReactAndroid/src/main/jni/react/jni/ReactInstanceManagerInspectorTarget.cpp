@@ -78,10 +78,28 @@ ReactInstanceManagerInspectorTarget::initHybrid(
   return makeCxxInstance(jobj, executor, delegate);
 }
 
+void ReactInstanceManagerInspectorTarget::sendDebuggerResumeCommand() {
+  if (inspectorTarget_) {
+    inspectorTarget_->sendCommand(HostCommand::DebuggerResume);
+  }
+}
+
+void ReactInstanceManagerInspectorTarget::sendDebuggerStepOverCommand() {
+  if (inspectorTarget_) {
+    inspectorTarget_->sendCommand(HostCommand::DebuggerStepOver);
+  }
+}
+
 void ReactInstanceManagerInspectorTarget::registerNatives() {
   registerHybrid({
       makeNativeMethod(
           "initHybrid", ReactInstanceManagerInspectorTarget::initHybrid),
+      makeNativeMethod(
+          "sendDebuggerResumeCommand",
+          ReactInstanceManagerInspectorTarget::sendDebuggerResumeCommand),
+      makeNativeMethod(
+          "sendDebuggerStepOverCommand",
+          ReactInstanceManagerInspectorTarget::sendDebuggerStepOverCommand),
   });
 }
 

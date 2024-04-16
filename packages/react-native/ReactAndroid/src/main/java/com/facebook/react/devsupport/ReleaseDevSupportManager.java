@@ -209,7 +209,8 @@ public class ReleaseDevSupportManager implements DevSupportManager {
   public void openDebugger() {}
 
   @Override
-  public void showPausedInDebuggerOverlay(String message) {}
+  public void showPausedInDebuggerOverlay(
+      String message, PausedInDebuggerOverlayCommandListener listener) {}
 
   @Override
   public void hidePausedInDebuggerOverlay() {}
