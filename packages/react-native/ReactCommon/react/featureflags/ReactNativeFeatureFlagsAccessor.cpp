@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9f5c5313e139b450449e2716735c26e7>>
+ * @generated SignedSource<<f77452d93caa28c074c6ba8595572e6c>>
  */
 
 /**
@@ -263,6 +263,24 @@ bool ReactNativeFeatureFlagsAccessor::inspectorEnableModernCDPRegistry() {
   return flagValue.value();
 }
 
+bool ReactNativeFeatureFlagsAccessor::preventDoubleTextMeasure() {
+  auto flagValue = preventDoubleTextMeasure_.load();
+
+  if (!flagValue.has_value()) {
+    // This block is not exclusive but it is not necessary.
+    // If multiple threads try to initialize the feature flag, we would only
+    // be accessing the provider multiple times but the end state of this
+    // instance and the returned flag value would be the same.
+
+    markFlagAsAccessed(13, "preventDoubleTextMeasure");
+
+    flagValue = currentProvider_->preventDoubleTextMeasure();
+    preventDoubleTextMeasure_ = flagValue;
+  }
+
+  return flagValue.value();
+}
+
 bool ReactNativeFeatureFlagsAccessor::useModernRuntimeScheduler() {
   auto flagValue = useModernRuntimeScheduler_.load();
 
@@ -272,7 +290,7 @@ bool ReactNativeFeatureFlagsAccessor::useModernRuntimeScheduler() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(13, "useModernRuntimeScheduler");
+    markFlagAsAccessed(14, "useModernRuntimeScheduler");
 
     flagValue = currentProvider_->useModernRuntimeScheduler();
     useModernRuntimeScheduler_ = flagValue;
@@ -290,7 +308,7 @@ bool ReactNativeFeatureFlagsAccessor::useNativeViewConfigsInBridgelessMode() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(14, "useNativeViewConfigsInBridgelessMode");
+    markFlagAsAccessed(15, "useNativeViewConfigsInBridgelessMode");
 
     flagValue = currentProvider_->useNativeViewConfigsInBridgelessMode();
     useNativeViewConfigsInBridgelessMode_ = flagValue;
@@ -308,7 +326,7 @@ bool ReactNativeFeatureFlagsAccessor::useStateAlignmentMechanism() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(15, "useStateAlignmentMechanism");
+    markFlagAsAccessed(16, "useStateAlignmentMechanism");
 
     flagValue = currentProvider_->useStateAlignmentMechanism();
     useStateAlignmentMechanism_ = flagValue;

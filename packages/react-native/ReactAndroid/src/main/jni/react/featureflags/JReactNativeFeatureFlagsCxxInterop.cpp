@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<82163a04d1e3cb54d6c5125173ab807f>>
+ * @generated SignedSource<<f8ac6f7e857808ade5d0f26ec7924604>>
  */
 
 /**
@@ -117,6 +117,12 @@ class ReactNativeFeatureFlagsProviderHolder
     return method(javaProvider_);
   }
 
+  bool preventDoubleTextMeasure() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("preventDoubleTextMeasure");
+    return method(javaProvider_);
+  }
+
   bool useModernRuntimeScheduler() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useModernRuntimeScheduler");
@@ -204,6 +210,11 @@ bool JReactNativeFeatureFlagsCxxInterop::inspectorEnableModernCDPRegistry(
   return ReactNativeFeatureFlags::inspectorEnableModernCDPRegistry();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::preventDoubleTextMeasure(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::preventDoubleTextMeasure();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::useModernRuntimeScheduler(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::useModernRuntimeScheduler();
@@ -275,6 +286,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "inspectorEnableModernCDPRegistry",
         JReactNativeFeatureFlagsCxxInterop::inspectorEnableModernCDPRegistry),
+      makeNativeMethod(
+        "preventDoubleTextMeasure",
+        JReactNativeFeatureFlagsCxxInterop::preventDoubleTextMeasure),
       makeNativeMethod(
         "useModernRuntimeScheduler",
         JReactNativeFeatureFlagsCxxInterop::useModernRuntimeScheduler),

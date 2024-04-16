@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<eb3ae68166b3ec7f797a0db4b2ec1f5b>>
+ * @generated SignedSource<<46e1a8dd088d588ea9eec703d7155710>>
  */
 
 /**
@@ -33,6 +33,7 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
   private var forceBatchingMountItemsOnAndroidCache: Boolean? = null
   private var inspectorEnableCxxInspectorPackagerConnectionCache: Boolean? = null
   private var inspectorEnableModernCDPRegistryCache: Boolean? = null
+  private var preventDoubleTextMeasureCache: Boolean? = null
   private var useModernRuntimeSchedulerCache: Boolean? = null
   private var useNativeViewConfigsInBridgelessModeCache: Boolean? = null
   private var useStateAlignmentMechanismCache: Boolean? = null
@@ -150,6 +151,15 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.inspectorEnableModernCDPRegistry()
       inspectorEnableModernCDPRegistryCache = cached
+    }
+    return cached
+  }
+
+  override fun preventDoubleTextMeasure(): Boolean {
+    var cached = preventDoubleTextMeasureCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.preventDoubleTextMeasure()
+      preventDoubleTextMeasureCache = cached
     }
     return cached
   }
