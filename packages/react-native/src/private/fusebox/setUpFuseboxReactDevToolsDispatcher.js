@@ -37,7 +37,7 @@ class EventScope<T> {
   }
 }
 
-class Domain {
+export class Domain {
   name: DomainName;
   onMessage: EventScope<JSONValue>;
 
