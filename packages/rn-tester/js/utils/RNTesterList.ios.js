@@ -263,6 +263,10 @@ const APIs: Array<RNTesterModuleInfo> = ([
     module: require('../examples/PlatformColor/PlatformColorExample'),
   },
   {
+    key: 'PixelRatio',
+    module: require('../examples/PixelRatio/PixelRatioExample'),
+  },
+  {
     key: 'PointerEventsExample',
     module: require('../examples/PointerEvents/PointerEventsExample'),
   },
