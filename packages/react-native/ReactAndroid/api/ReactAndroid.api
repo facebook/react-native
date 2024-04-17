@@ -1174,6 +1174,8 @@ public class com/facebook/react/bridge/ReactIgnorableMountingException : java/la
 public class com/facebook/react/bridge/ReactInstanceManagerInspectorTarget : java/lang/AutoCloseable {
 	public fun <init> (Lcom/facebook/react/bridge/ReactInstanceManagerInspectorTarget$TargetDelegate;)V
 	public fun close ()V
+	public fun sendDebuggerResumeCommand ()V
+	public fun sendDebuggerStepOverCommand ()V
 }
 
 public abstract interface class com/facebook/react/bridge/ReactInstanceManagerInspectorTarget$TargetDelegate {
@@ -2150,7 +2152,7 @@ public abstract class com/facebook/react/devsupport/DevSupportManagerBase : com/
 	public fun showDevOptionsDialog ()V
 	public fun showNewJSError (Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;I)V
 	public fun showNewJavaError (Ljava/lang/String;Ljava/lang/Throwable;)V
-	public fun showPausedInDebuggerOverlay (Ljava/lang/String;)V
+	public fun showPausedInDebuggerOverlay (Ljava/lang/String;Lcom/facebook/react/devsupport/interfaces/DevSupportManager$PausedInDebuggerOverlayCommandListener;)V
 	public fun startInspector ()V
 	public fun stopInspector ()V
 	public fun toggleElementInspector ()V
@@ -2316,7 +2318,7 @@ public class com/facebook/react/devsupport/ReleaseDevSupportManager : com/facebo
 	public fun showDevOptionsDialog ()V
 	public fun showNewJSError (Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;I)V
 	public fun showNewJavaError (Ljava/lang/String;Ljava/lang/Throwable;)V
-	public fun showPausedInDebuggerOverlay (Ljava/lang/String;)V
+	public fun showPausedInDebuggerOverlay (Ljava/lang/String;Lcom/facebook/react/devsupport/interfaces/DevSupportManager$PausedInDebuggerOverlayCommandListener;)V
 	public fun startInspector ()V
 	public fun stopInspector ()V
 	public fun toggleElementInspector ()V
@@ -2428,7 +2430,7 @@ public abstract interface class com/facebook/react/devsupport/interfaces/DevSupp
 	public abstract fun showDevOptionsDialog ()V
 	public abstract fun showNewJSError (Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;I)V
 	public abstract fun showNewJavaError (Ljava/lang/String;Ljava/lang/Throwable;)V
-	public abstract fun showPausedInDebuggerOverlay (Ljava/lang/String;)V
+	public abstract fun showPausedInDebuggerOverlay (Ljava/lang/String;Lcom/facebook/react/devsupport/interfaces/DevSupportManager$PausedInDebuggerOverlayCommandListener;)V
 	public abstract fun startInspector ()V
 	public abstract fun stopInspector ()V
 	public abstract fun toggleElementInspector ()V
@@ -2437,6 +2439,11 @@ public abstract interface class com/facebook/react/devsupport/interfaces/DevSupp
 
 public abstract interface class com/facebook/react/devsupport/interfaces/DevSupportManager$PackagerLocationCustomizer {
 	public abstract fun run (Ljava/lang/Runnable;)V
+}
+
+public abstract interface class com/facebook/react/devsupport/interfaces/DevSupportManager$PausedInDebuggerOverlayCommandListener {
+	public abstract fun onResume ()V
+	public abstract fun onStepOver ()V
 }
 
 public abstract interface class com/facebook/react/devsupport/interfaces/ErrorCustomizer {
