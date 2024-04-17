@@ -625,7 +625,7 @@ class ReactNativePodsUtils
             }
             path = File.join(user_project.path.parent, "PrivacyInfo.xcprivacy")
             Xcodeproj::Plist.write_to_path(privacy_manifest, path)
-            Pod::UI.puts "Your app does not have a privacy manifest! A template has been generated containing Required Reasons API usage in the core React Native library. Please add the PrivacyInfo.xcprivacy file to your project and complete data use, tracking and any additional required reasons your app is using according to Apple's guidance: https://developer.apple.com/.../privacy_manifest_files. Then, you will need to manually add this file to your project in Xcode.".red
+            Pod::UI.puts "Your app does not have a privacy manifest! A template has been generated containing Required Reasons API usage in the core React Native library. Please add the PrivacyInfo.xcprivacy file to your project and complete data use, tracking and any additional required reasons your app is using according to Apple's guidance: https://developer.apple.com/documentation/bundleresources/privacy_manifest_files. Then, you will need to manually add this file to your project in Xcode.".red
         end
     end
 
