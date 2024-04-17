@@ -5,12 +5,9 @@
     android:id="@+id/layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#ffffc1"
-    android:divider="#cacaca"
     android:gravity="center"
     android:layoutDirection="ltr"
     android:orientation="horizontal"
-    android:showDividers="middle"
     tools:ignore="MissingDefaultResource"
     >
 
@@ -18,10 +15,10 @@
         android:id="@+id/paused_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingHorizontal="12dp"
+        android:paddingStart="14dp"
         android:text=""
         android:textColor="@android:color/black"
-        android:textSize="14sp"
+        android:textSize="16sp"
         android:textStyle="bold"
         app:autoSizeTextType="uniform"
         />
@@ -35,16 +32,5 @@
         android:focusable="true"
         android:paddingVertical="8dp"
         android:src="@drawable/ic_resume"
-        />
-
-    <ImageButton
-        android:id="@+id/step_over_button"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:background="@drawable/ripple_effect"
-        android:clickable="true"
-        android:focusable="true"
-        android:paddingVertical="8dp"
-        android:src="@drawable/ic_step_over"
         />
 </LinearLayout>

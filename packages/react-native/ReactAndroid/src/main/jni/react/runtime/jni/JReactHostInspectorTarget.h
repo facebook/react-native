@@ -54,7 +54,6 @@ class JReactHostInspectorTarget
 
   static void registerNatives();
   void sendDebuggerResumeCommand();
-  void sendDebuggerStepOverCommand();
 
   jsinspector_modern::HostTarget* getInspectorTarget();
 
