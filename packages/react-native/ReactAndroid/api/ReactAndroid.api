@@ -7311,6 +7311,7 @@ public class com/facebook/react/views/text/ReactTextView : androidx/appcompat/wi
 	public fun invalidateDrawable (Landroid/graphics/drawable/Drawable;)V
 	public fun onAttachedToWindow ()V
 	public fun onDetachedFromWindow ()V
+	protected fun onDraw (Landroid/graphics/Canvas;)V
 	public fun onFinishTemporaryDetach ()V
 	protected fun onLayout (ZIIII)V
 	public fun onStartTemporaryDetach ()V
@@ -7322,10 +7323,14 @@ public class com/facebook/react/views/text/ReactTextView : androidx/appcompat/wi
 	public fun setBorderRadius (FI)V
 	public fun setBorderStyle (Ljava/lang/String;)V
 	public fun setBorderWidth (IF)V
+	public fun setBreakStrategy (I)V
 	public fun setEllipsizeLocation (Landroid/text/TextUtils$TruncateAt;)V
 	public fun setFontSize (F)V
+	public fun setHyphenationFrequency (I)V
+	public fun setIncludeFontPadding (Z)V
 	public fun setLetterSpacing (F)V
 	public fun setLinkifyMask (I)V
+	public fun setMinimumFontSize (F)V
 	public fun setNotifyOnInlineViewLayout (Z)V
 	public fun setNumberOfLines (I)V
 	public fun setSpanned (Landroid/text/Spannable;)V
@@ -7530,7 +7535,7 @@ public class com/facebook/react/views/text/TextLayoutManager {
 	public static fun isRTL (Lcom/facebook/react/bridge/ReadableMap;)Z
 	public static fun measureLines (Landroid/content/Context;Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/ReadableMap;F)Lcom/facebook/react/bridge/WritableArray;
 	public static fun measureText (Landroid/content/Context;Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/ReadableMap;FLcom/facebook/yoga/YogaMeasureMode;FLcom/facebook/yoga/YogaMeasureMode;Lcom/facebook/react/views/text/ReactTextViewManagerCallback;[F)J
-	public static fun setCachedSpannabledForTag (ILandroid/text/Spannable;)V
+	public static fun setCachedSpannableForTag (ILandroid/text/Spannable;)V
 }
 
 public class com/facebook/react/views/text/TextLayoutManagerMapBuffer {
@@ -7548,15 +7553,18 @@ public class com/facebook/react/views/text/TextLayoutManagerMapBuffer {
 	public static final field PA_KEY_ELLIPSIZE_MODE S
 	public static final field PA_KEY_HYPHENATION_FREQUENCY S
 	public static final field PA_KEY_INCLUDE_FONT_PADDING S
+	public static final field PA_KEY_MAXIMUM_FONT_SIZE S
 	public static final field PA_KEY_MAX_NUMBER_OF_LINES S
+	public static final field PA_KEY_MINIMUM_FONT_SIZE S
 	public static final field PA_KEY_TEXT_BREAK_STRATEGY S
 	public fun <init> ()V
+	public static fun adjustSpannableFontToFit (Landroid/text/Spannable;FLcom/facebook/yoga/YogaMeasureMode;FLcom/facebook/yoga/YogaMeasureMode;DIZII)V
 	public static fun deleteCachedSpannableForTag (I)V
 	public static fun getOrCreateSpannableForText (Landroid/content/Context;Lcom/facebook/react/common/mapbuffer/MapBuffer;Lcom/facebook/react/views/text/ReactTextViewManagerCallback;)Landroid/text/Spannable;
 	public static fun isRTL (Lcom/facebook/react/common/mapbuffer/MapBuffer;)Z
-	public static fun measureLines (Landroid/content/Context;Lcom/facebook/react/common/mapbuffer/MapBuffer;Lcom/facebook/react/common/mapbuffer/MapBuffer;F)Lcom/facebook/react/bridge/WritableArray;
+	public static fun measureLines (Landroid/content/Context;Lcom/facebook/react/common/mapbuffer/MapBuffer;Lcom/facebook/react/common/mapbuffer/MapBuffer;FF)Lcom/facebook/react/bridge/WritableArray;
 	public static fun measureText (Landroid/content/Context;Lcom/facebook/react/common/mapbuffer/MapBuffer;Lcom/facebook/react/common/mapbuffer/MapBuffer;FLcom/facebook/yoga/YogaMeasureMode;FLcom/facebook/yoga/YogaMeasureMode;Lcom/facebook/react/views/text/ReactTextViewManagerCallback;[F)J
-	public static fun setCachedSpannabledForTag (ILandroid/text/Spannable;)V
+	public static fun setCachedSpannableForTag (ILandroid/text/Spannable;)V
 }
 
 public final class com/facebook/react/views/text/TextTransform : java/lang/Enum {
