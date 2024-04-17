@@ -27,8 +27,6 @@ import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
-import com.facebook.react.common.annotations.FrameworkAPI;
-import com.facebook.react.common.annotations.UnstableReactNativeAPI;
 import java.lang.ref.WeakReference;
 import java.util.Collection;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -210,20 +208,6 @@ public abstract class ReactContext extends ContextWrapper {
       raiseCatalystInstanceMissingException();
     }
     return mCatalystInstance.getNativeModule(nativeModuleInterface);
-  }
-
-  /**
-   * @return the RuntimeExecutor, a thread-safe handler for accessing the runtime.
-   * @experimental
-   */
-  @Nullable
-  @FrameworkAPI
-  @UnstableReactNativeAPI
-  public RuntimeExecutor getRuntimeExecutor() {
-    if (mCatalystInstance == null) {
-      raiseCatalystInstanceMissingException();
-    }
-    return mCatalystInstance.getRuntimeExecutor();
   }
 
   /**
