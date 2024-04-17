@@ -30,6 +30,7 @@ import com.facebook.react.uimanager.ReactAccessibilityDelegate.Role;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.PointerEventHelper;
 import com.facebook.react.uimanager.util.ReactFindViewUtil;
+import com.facebook.react.views.view.ReactViewGroup;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -175,14 +176,10 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     defaultInt = Color.TRANSPARENT,
     customType = "Color")
   public void setBackgroundColor(@NonNull T view, long backgroundColor) {
-    try {
-      Method setBackgroundColorMethod = view.getClass().getMethod("setBackgroundColor", long.class);
-      setBackgroundColorMethod.invoke(view, backgroundColor);
-    } catch (NoSuchMethodException e) {
-      FLog.e(TAG, "setBackgroundColor(long) method not found in view class", e);
+    if (view instanceof ReactViewGroup) {
+      ((ReactViewGroup) view).setBackgroundColor(backgroundColor);
+    } else {
       view.setBackgroundColor(Color.toArgb(backgroundColor));
-    } catch (Exception e) {
-      FLog.e(TAG, "Failed to invoke setBackgroundColor(long)", e);
     }
   }
 
