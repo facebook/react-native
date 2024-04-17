@@ -19,26 +19,30 @@ static const facebook::react::Color UndefinedColor =
     std::numeric_limits<facebook::react::Color>::max();
 }
 
+// As defined by Android's ColorSpace.Named
+constexpr int kDisplayP3ColorSpace = 7;
+// DisplayP3 component range per Android's Color longs
+constexpr int kDisplayP3Ratio = 15360;
+// sRGB component range
+constexpr int kSRGBRatio = 255;
+
 inline Color hostPlatformColorFromComponents(ColorComponents components) {
   if (components.colorSpace == ColorSpace::DisplayP3) {
-    int ratio = 15360;
-    int red = static_cast<int>(round(components.red * ratio)) & 0xffff;
-    int green = static_cast<int>(round(components.green * ratio)) & 0xffff;
-    int blue = static_cast<int>(round(components.blue * ratio)) & 0xffff;
+    int red = static_cast<int>(round(components.red * kDisplayP3Ratio)) & 0xffff;
+    int green = static_cast<int>(round(components.green * kDisplayP3Ratio)) & 0xffff;
+    int blue = static_cast<int>(round(components.blue * kDisplayP3Ratio)) & 0xffff;
     int alpha = static_cast<int>(round(components.alpha * 0x3ff)) & 0x3ff;
-    int colorSpace = 7;
     int64_t androidColor = (static_cast<int64_t>(red) << 48) |
                           (static_cast<int64_t>(green) << 32) |
                           (static_cast<int64_t>(blue) << 16) |
                           (static_cast<int64_t>(alpha) << 6) |
-                          static_cast<int64_t>(colorSpace);
+                          static_cast<int64_t>(kDisplayP3ColorSpace);
     return androidColor;
   } else {
-    int ratio = 255;
-    int alpha = static_cast<int>(round(components.alpha * ratio)) & 0xff;
-    int red = static_cast<int>(round(components.red * ratio)) & 0xff;
-    int green = static_cast<int>(round(components.green * ratio)) & 0xff;
-    int blue = static_cast<int>(round(components.blue * ratio)) & 0xff;
+    int alpha = static_cast<int>(round(components.alpha * kSRGBRatio)) & 0xff;
+    int red = static_cast<int>(round(components.red * kSRGBRatio)) & 0xff;
+    int green = static_cast<int>(round(components.green * kSRGBRatio)) & 0xff;
+    int blue = static_cast<int>(round(components.blue * kSRGBRatio)) & 0xff;
     int64_t androidColor = (static_cast<int64_t>(alpha) << 56) |
                           (static_cast<int64_t>(red) << 48) |
                           (static_cast<int64_t>(green) << 40) |
@@ -48,21 +52,19 @@ inline Color hostPlatformColorFromComponents(ColorComponents components) {
 }
 
 inline ColorComponents colorComponentsFromHostPlatformColor(Color color) {
-  if ((color & 0x3f) == 7) {
-    int ratio = 15360;
+  if ((color & 0x3f) == kDisplayP3ColorSpace) {
     return ColorComponents{
-      (float)((color >> 48) & 0xffff) / ratio,
-      (float)((color >> 32) & 0xffff) / ratio,
-      (float)((color >> 16) & 0xffff) / ratio,
-      (float)((color >> 6) & 0x3ff) / ratio,
+      (float)((color >> 48) & 0xffff) / kDisplayP3Ratio,
+      (float)((color >> 32) & 0xffff) / kDisplayP3Ratio,
+      (float)((color >> 16) & 0xffff) / kDisplayP3Ratio,
+      (float)((color >> 6) & 0x3ff) / kDisplayP3Ratio,
       ColorSpace::DisplayP3};
   } else {
-    int ratio = 255;
     return ColorComponents{
-      (float)((color >> 48) & 0xff) / ratio,
-      (float)((color >> 40) & 0xff) / ratio,
-      (float)((color >> 32) & 0xff) / ratio,
-      (float)((color >> 56) & 0xff) / ratio,
+      (float)((color >> 48) & 0xff) / kSRGBRatio,
+      (float)((color >> 40) & 0xff) / kSRGBRatio,
+      (float)((color >> 32) & 0xff) / kSRGBRatio,
+      (float)((color >> 56) & 0xff) / kSRGBRatio,
       ColorSpace::sRGB};
   }
 }
