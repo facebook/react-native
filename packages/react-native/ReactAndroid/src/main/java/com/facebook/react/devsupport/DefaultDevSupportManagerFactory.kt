@@ -12,6 +12,7 @@ import com.facebook.react.common.SurfaceDelegateFactory
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener
 import com.facebook.react.devsupport.interfaces.DevLoadingViewManager
 import com.facebook.react.devsupport.interfaces.DevSupportManager
+import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager
 import com.facebook.react.devsupport.interfaces.RedBoxHandler
 import com.facebook.react.packagerconnection.RequestHandler
 
@@ -25,7 +26,7 @@ public class DefaultDevSupportManagerFactory : DevSupportManagerFactory {
   @Deprecated(
       "in favor of the customisable create for DevSupportManagerFactory",
       ReplaceWith(
-          "create(applicationContext, reactInstanceManagerHelper, packagerPathForJSBundleName, enableOnCreate, redBoxHandler, devBundleDownloadListener, minNumShakes, customPackagerCommandHandlers, surfaceDelegateFactory, devLoadingViewManager)"))
+          "create(applicationContext, reactInstanceManagerHelper, packagerPathForJSBundleName, enableOnCreate, redBoxHandler, devBundleDownloadListener, minNumShakes, customPackagerCommandHandlers, surfaceDelegateFactory, devLoadingViewManager, pausedInDebuggerOverlayManager)"))
   public fun create(
       applicationContext: Context,
       reactInstanceDevHelper: ReactInstanceDevHelper,
@@ -43,6 +44,7 @@ public class DefaultDevSupportManagerFactory : DevSupportManagerFactory {
         minNumShakes,
         null,
         null,
+        null,
         null)
   }
 
@@ -56,7 +58,8 @@ public class DefaultDevSupportManagerFactory : DevSupportManagerFactory {
       minNumShakes: Int,
       customPackagerCommandHandlers: Map<String, RequestHandler>?,
       surfaceDelegateFactory: SurfaceDelegateFactory?,
-      devLoadingViewManager: DevLoadingViewManager?
+      devLoadingViewManager: DevLoadingViewManager?,
+      pausedInDebuggerOverlayManager: PausedInDebuggerOverlayManager?
   ): DevSupportManager {
     return if (!enableOnCreate) {
       ReleaseDevSupportManager()
@@ -88,7 +91,8 @@ public class DefaultDevSupportManagerFactory : DevSupportManagerFactory {
                   Int::class.javaPrimitiveType,
                   MutableMap::class.java,
                   SurfaceDelegateFactory::class.java,
-                  DevLoadingViewManager::class.java)
+                  DevLoadingViewManager::class.java,
+                  PausedInDebuggerOverlayManager::class.java)
           constructor.newInstance(
               applicationContext,
               reactInstanceManagerHelper,
@@ -99,7 +103,8 @@ public class DefaultDevSupportManagerFactory : DevSupportManagerFactory {
               minNumShakes,
               customPackagerCommandHandlers,
               surfaceDelegateFactory,
-              devLoadingViewManager) as DevSupportManager
+              devLoadingViewManager,
+              pausedInDebuggerOverlayManager) as DevSupportManager
         } catch (e: Exception) {
           PerftestDevSupportManager(applicationContext)
         }
