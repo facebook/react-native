@@ -45,7 +45,6 @@ class ReactInstanceManagerInspectorTarget
           delegate);
 
   void sendDebuggerResumeCommand();
-  void sendDebuggerStepOverCommand();
 
   static void registerNatives();
 

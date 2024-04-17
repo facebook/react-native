@@ -1191,12 +1191,10 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
           pausedText.setText(message);
           View resumeButton = Assertions.assertNotNull(dialogView.findViewById(R.id.resume_button));
           resumeButton.setOnClickListener((v) -> listener.onResume());
-          View stepOverButton =
-              Assertions.assertNotNull(dialogView.findViewById(R.id.step_over_button));
-          stepOverButton.setOnClickListener((v) -> listener.onStepOver());
           Window dialogWindow = mPausedInDebuggerDialog.getWindow();
           if (dialogWindow != null) {
             dialogWindow.setGravity(Gravity.TOP);
+            dialogWindow.setBackgroundDrawableResource(R.drawable.paused_in_debugger_background);
           }
           mPausedInDebuggerDialog.show();
         });

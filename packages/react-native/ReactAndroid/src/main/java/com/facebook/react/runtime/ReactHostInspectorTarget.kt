@@ -26,8 +26,6 @@ internal class ReactHostInspectorTarget(private val reactHostImpl: ReactHostImpl
 
   public external fun sendDebuggerResumeCommand()
 
-  public external fun sendDebuggerStepOverCommand()
-
   override fun close() {
     mHybridData.resetNative()
   }

@@ -1516,14 +1516,6 @@ public class ReactInstanceManager {
                               mInspectorTarget.sendDebuggerResumeCommand();
                             }
                           }
-
-                          @Override
-                          public void onStepOver() {
-                            UiThreadUtil.assertOnUiThread();
-                            if (mInspectorTarget != null) {
-                              mInspectorTarget.sendDebuggerStepOverCommand();
-                            }
-                          }
                         });
                   }
                 }

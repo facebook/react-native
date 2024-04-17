@@ -42,8 +42,6 @@ public class ReactInstanceManagerInspectorTarget implements AutoCloseable {
 
   public native void sendDebuggerResumeCommand();
 
-  public native void sendDebuggerStepOverCommand();
-
   public void close() {
     mHybridData.resetNative();
   }

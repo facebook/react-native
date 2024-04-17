@@ -125,7 +125,5 @@ public interface DevSupportManager : JSExceptionHandler {
 
   public interface PausedInDebuggerOverlayCommandListener {
     public fun onResume()
-
-    public fun onStepOver()
   }
 }
