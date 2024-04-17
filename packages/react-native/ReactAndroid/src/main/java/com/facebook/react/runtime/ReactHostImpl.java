@@ -483,14 +483,6 @@ public class ReactHostImpl implements ReactHost {
                 mReactHostInspectorTarget.sendDebuggerResumeCommand();
               }
             }
-
-            @Override
-            public void onStepOver() {
-              UiThreadUtil.assertOnUiThread();
-              if (mReactHostInspectorTarget != null) {
-                mReactHostInspectorTarget.sendDebuggerStepOverCommand();
-              }
-            }
           });
     }
   }

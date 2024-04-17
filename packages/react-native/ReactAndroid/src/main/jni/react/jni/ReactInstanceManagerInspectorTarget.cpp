@@ -88,16 +88,6 @@ void ReactInstanceManagerInspectorTarget::sendDebuggerResumeCommand() {
   }
 }
 
-void ReactInstanceManagerInspectorTarget::sendDebuggerStepOverCommand() {
-  if (inspectorTarget_) {
-    inspectorTarget_->sendCommand(HostCommand::DebuggerStepOver);
-  } else {
-    jni::throwNewJavaException(
-        "java/lang/IllegalStateException",
-        "Cannot send command while the Fusebox backend is not enabled");
-  }
-}
-
 void ReactInstanceManagerInspectorTarget::registerNatives() {
   registerHybrid({
       makeNativeMethod(
@@ -105,9 +95,6 @@ void ReactInstanceManagerInspectorTarget::registerNatives() {
       makeNativeMethod(
           "sendDebuggerResumeCommand",
           ReactInstanceManagerInspectorTarget::sendDebuggerResumeCommand),
-      makeNativeMethod(
-          "sendDebuggerStepOverCommand",
-          ReactInstanceManagerInspectorTarget::sendDebuggerStepOverCommand),
   });
 }
 

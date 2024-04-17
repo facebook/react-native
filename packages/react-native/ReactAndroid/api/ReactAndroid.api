@@ -1175,7 +1175,6 @@ public class com/facebook/react/bridge/ReactInstanceManagerInspectorTarget : jav
 	public fun <init> (Lcom/facebook/react/bridge/ReactInstanceManagerInspectorTarget$TargetDelegate;)V
 	public fun close ()V
 	public fun sendDebuggerResumeCommand ()V
-	public fun sendDebuggerStepOverCommand ()V
 }
 
 public abstract interface class com/facebook/react/bridge/ReactInstanceManagerInspectorTarget$TargetDelegate {
@@ -2443,7 +2442,6 @@ public abstract interface class com/facebook/react/devsupport/interfaces/DevSupp
 
 public abstract interface class com/facebook/react/devsupport/interfaces/DevSupportManager$PausedInDebuggerOverlayCommandListener {
 	public abstract fun onResume ()V
-	public abstract fun onStepOver ()V
 }
 
 public abstract interface class com/facebook/react/devsupport/interfaces/ErrorCustomizer {
