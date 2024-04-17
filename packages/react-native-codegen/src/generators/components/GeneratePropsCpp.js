@@ -76,7 +76,7 @@ function generatePropsString(componentName: string, component: ComponentShape) {
       const sourceProp = getSourceProp(componentName, prop);
       const defaultValue = convertDefaultTypeToString(componentName, prop);
       const isWrappedProp = isWrappedPropType(prop);
-      let convertRawProp = `convertRawProp(context, rawProps, "${prop.name}", ${sourceProp} , {${defaultValue}})`;
+      let convertRawProp = `convertRawProp(context, rawProps, "${prop.name}", ${sourceProp}, {${defaultValue}})`;
       if (isWrappedProp) {
         convertRawProp += '.value';
       }
