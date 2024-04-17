@@ -604,6 +604,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   public void setNumberOfLines(int numberOfLines) {
     mNumberOfLines = numberOfLines == 0 ? ViewDefaults.NUMBER_OF_LINES : numberOfLines;
     setMaxLines(mNumberOfLines);
+    mShouldAdjustSpannableFontSize = true;
   }
 
   public void setAdjustFontSizeToFit(boolean adjustsFontSizeToFit) {
@@ -621,6 +622,25 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
   public void setMinimumFontSize(float minimumFontSize) {
     mMinimumFontSize = minimumFontSize;
+    mShouldAdjustSpannableFontSize = true;
+  }
+
+  @Override
+  public void setIncludeFontPadding(boolean includepad) {
+    super.setIncludeFontPadding(includepad);
+    mShouldAdjustSpannableFontSize = true;
+  }
+
+  @Override
+  public void setBreakStrategy(int breakStrategy) {
+    super.setBreakStrategy(breakStrategy);
+    mShouldAdjustSpannableFontSize = true;
+  }
+
+  @Override
+  public void setHyphenationFrequency(int hyphenationFrequency) {
+    super.setHyphenationFrequency(hyphenationFrequency);
+    mShouldAdjustSpannableFontSize = true;
   }
 
   public void setLetterSpacing(float letterSpacing) {
