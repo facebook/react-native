@@ -1168,7 +1168,8 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
   private @Nullable AlertDialog mPausedInDebuggerDialog;
 
   @Override
-  public void showPausedInDebuggerOverlay(String message) {
+  public void showPausedInDebuggerOverlay(
+      String message, PausedInDebuggerOverlayCommandListener listener) {
     UiThreadUtil.runOnUiThread(
         () -> {
           if (mPausedInDebuggerDialog != null) {
@@ -1179,7 +1180,14 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
             return;
           }
           mPausedInDebuggerDialog =
-              new AlertDialog.Builder(context).setMessage(message).setCancelable(false).create();
+              new AlertDialog.Builder(context)
+                  .setMessage(message)
+                  .setCancelable(false)
+                  .setNeutralButton(
+                      "Step Over", (DialogInterface dialog, int id) -> listener.onStepOver())
+                  .setPositiveButton(
+                      "Resume", (DialogInterface dialog, int id) -> listener.onResume())
+                  .create();
           mPausedInDebuggerDialog.show();
         });
   }

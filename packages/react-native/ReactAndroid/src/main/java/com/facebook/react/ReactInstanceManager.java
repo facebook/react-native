@@ -87,6 +87,7 @@ import com.facebook.react.devsupport.ReactInstanceDevHelper;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevLoadingViewManager;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
+import com.facebook.react.devsupport.interfaces.DevSupportManager.PausedInDebuggerOverlayCommandListener;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import com.facebook.react.devsupport.interfaces.RedBoxHandler;
 import com.facebook.react.internal.AndroidChoreographerProvider;
@@ -1505,7 +1506,25 @@ public class ReactInstanceManager {
                   if (message == null) {
                     mDevSupportManager.hidePausedInDebuggerOverlay();
                   } else {
-                    mDevSupportManager.showPausedInDebuggerOverlay(message);
+                    mDevSupportManager.showPausedInDebuggerOverlay(
+                        message,
+                        new PausedInDebuggerOverlayCommandListener() {
+                          @Override
+                          public void onResume() {
+                            UiThreadUtil.assertOnUiThread();
+                            if (mInspectorTarget != null) {
+                              mInspectorTarget.sendDebuggerResumeCommand();
+                            }
+                          }
+
+                          @Override
+                          public void onStepOver() {
+                            UiThreadUtil.assertOnUiThread();
+                            if (mInspectorTarget != null) {
+                              mInspectorTarget.sendDebuggerStepOverCommand();
+                            }
+                          }
+                        });
                   }
                 }
               });
