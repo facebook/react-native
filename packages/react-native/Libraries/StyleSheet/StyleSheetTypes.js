@@ -36,6 +36,7 @@ export type EdgeInsetsValue = {
 
 export type DimensionValue = number | string | 'auto' | AnimatedNode | null;
 export type AnimatableNumericValue = number | AnimatedNode;
+export type AnimatableNumericStringValue = number | AnimatedNode | string;
 
 export type CursorValue = 'auto' | 'pointer';
 
@@ -707,19 +708,19 @@ export type ____ViewStyle_InternalCore = $ReadOnly<{
   borderBlockColor?: ____ColorValue_Internal,
   borderBlockEndColor?: ____ColorValue_Internal,
   borderBlockStartColor?: ____ColorValue_Internal,
-  borderRadius?: AnimatableNumericValue,
-  borderBottomEndRadius?: AnimatableNumericValue,
-  borderBottomLeftRadius?: AnimatableNumericValue,
-  borderBottomRightRadius?: AnimatableNumericValue,
-  borderBottomStartRadius?: AnimatableNumericValue,
-  borderEndEndRadius?: AnimatableNumericValue,
-  borderEndStartRadius?: AnimatableNumericValue,
-  borderStartEndRadius?: AnimatableNumericValue,
-  borderStartStartRadius?: AnimatableNumericValue,
-  borderTopEndRadius?: AnimatableNumericValue,
-  borderTopLeftRadius?: AnimatableNumericValue,
-  borderTopRightRadius?: AnimatableNumericValue,
-  borderTopStartRadius?: AnimatableNumericValue,
+  borderRadius?: AnimatableNumericStringValue,
+  borderBottomEndRadius?: AnimatableNumericStringValue,
+  borderBottomLeftRadius?: AnimatableNumericStringValue,
+  borderBottomRightRadius?: AnimatableNumericStringValue,
+  borderBottomStartRadius?: AnimatableNumericStringValue,
+  borderEndEndRadius?: AnimatableNumericStringValue,
+  borderEndStartRadius?: AnimatableNumericStringValue,
+  borderStartEndRadius?: AnimatableNumericStringValue,
+  borderStartStartRadius?: AnimatableNumericStringValue,
+  borderTopEndRadius?: AnimatableNumericStringValue,
+  borderTopLeftRadius?: AnimatableNumericStringValue,
+  borderTopRightRadius?: AnimatableNumericStringValue,
+  borderTopStartRadius?: AnimatableNumericStringValue,
   borderStyle?: 'solid' | 'dotted' | 'dashed',
   borderWidth?: AnimatableNumericValue,
   borderBottomWidth?: AnimatableNumericValue,

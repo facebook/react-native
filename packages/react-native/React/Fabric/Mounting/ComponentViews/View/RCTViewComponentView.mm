@@ -522,10 +522,10 @@ using namespace facebook::react;
 static RCTCornerRadii RCTCornerRadiiFromBorderRadii(BorderRadii borderRadii)
 {
   return RCTCornerRadii{
-      .topLeft = (CGFloat)borderRadii.topLeft,
-      .topRight = (CGFloat)borderRadii.topRight,
-      .bottomLeft = (CGFloat)borderRadii.bottomLeft,
-      .bottomRight = (CGFloat)borderRadii.bottomRight};
+      .topLeft = (CGFloat)borderRadii.topLeft.value,
+      .topRight = (CGFloat)borderRadii.topRight.value,
+      .bottomLeft = (CGFloat)borderRadii.bottomLeft.value,
+      .bottomRight = (CGFloat)borderRadii.bottomRight.value};
 }
 
 static RCTBorderColors RCTCreateRCTBorderColorsFromBorderColors(BorderColors borderColors)
@@ -646,7 +646,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     CGColorRef borderColor = RCTCreateCGColorRefFromSharedColor(borderMetrics.borderColors.left);
     layer.borderColor = borderColor;
     CGColorRelease(borderColor);
-    layer.cornerRadius = (CGFloat)borderMetrics.borderRadii.topLeft;
+    layer.cornerRadius = (CGFloat)borderMetrics.borderRadii.topLeft.value;
 
     layer.cornerCurve = CornerCurveFromBorderCurve(borderMetrics.borderCurves.topLeft);
 
@@ -709,7 +709,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     if (self.clipsToBounds) {
       if (borderMetrics.borderRadii.isUniform()) {
         // In this case we can simply use `cornerRadius` exclusively.
-        cornerRadius = borderMetrics.borderRadii.topLeft;
+        cornerRadius = borderMetrics.borderRadii.topLeft.value;
       } else {
         // In this case we have to generate masking layer manually.
         CGPathRef path = RCTPathCreateWithRoundedRect(

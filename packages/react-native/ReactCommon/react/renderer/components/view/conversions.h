@@ -603,6 +603,35 @@ inline void fromRawValue(
 }
 
 inline void fromRawValue(
+    const PropsParserContext& /*context*/,
+    const RawValue& value,
+    ValueUnit& result) {
+  react_native_expect(value.hasType<RawValue>());
+  ValueUnit valueUnit;
+
+  if (value.hasType<Float>()) {
+    auto valueFloat = (float)value;
+    if (std::isfinite(valueFloat)) {
+      valueUnit = ValueUnit(valueFloat, UnitType::Point);
+    } else {
+      valueUnit = ValueUnit(0.0f, UnitType::Undefined);
+    }
+  } else if (value.hasType<std::string>()) {
+    const auto stringValue = (std::string)value;
+
+    if (stringValue.back() == '%') {
+      auto tryValue = folly::tryTo<float>(
+          std::string_view(stringValue).substr(0, stringValue.length() - 1));
+      if (tryValue.hasValue()) {
+        valueUnit = ValueUnit(tryValue.value(), UnitType::Percent);
+      }
+    }
+  }
+
+  result = valueUnit;
+}
+
+inline void fromRawValue(
     const PropsParserContext& context,
     const RawValue& value,
     PointerEventsMode& result) {

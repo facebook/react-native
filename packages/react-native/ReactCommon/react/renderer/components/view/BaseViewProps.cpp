@@ -9,11 +9,13 @@
 
 #include <algorithm>
 
+#include <primitives.h>
 #include <react/renderer/components/view/conversions.h>
 #include <react/renderer/components/view/propsConversions.h>
 #include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/core/propsConversions.h>
 #include <react/renderer/debug/debugStringConvertibleUtils.h>
+#include <react/renderer/graphics/ValueUnit.h>
 #include <react/utils/CoreFeatures.h>
 
 namespace facebook::react {
@@ -332,10 +334,10 @@ static BorderRadii ensureNoOverlap(const BorderRadii& radii, const Size& size) {
   // Source: https://www.w3.org/TR/css-backgrounds-3/#corner-overlap
 
   auto insets = EdgeInsets{
-      /* .left = */ radii.topLeft + radii.bottomLeft,
-      /* .top = */ radii.topLeft + radii.topRight,
-      /* .right = */ radii.topRight + radii.bottomRight,
-      /* .bottom = */ radii.bottomLeft + radii.bottomRight,
+      /* .left = */ radii.topLeft.value + radii.bottomLeft.value,
+      /* .top = */ radii.topLeft.value + radii.topRight.value,
+      /* .right = */ radii.topRight.value + radii.bottomRight.value,
+      /* .bottom = */ radii.bottomLeft.value + radii.bottomRight.value,
   };
 
   auto insetsScale = EdgeInsets{
@@ -351,13 +353,64 @@ static BorderRadii ensureNoOverlap(const BorderRadii& radii, const Size& size) {
 
   return BorderRadii{
       /* topLeft = */
-      radii.topLeft * std::min(insetsScale.top, insetsScale.left),
+      ValueUnit{
+          static_cast<float>(
+              radii.topLeft.value *
+              std::min(insetsScale.top, insetsScale.left)),
+          UnitType::Point},
       /* topRight = */
-      radii.topRight * std::min(insetsScale.top, insetsScale.right),
+      ValueUnit{
+          static_cast<float>(
+              radii.topRight.value *
+              std::min(insetsScale.top, insetsScale.right)),
+          UnitType::Point},
       /* bottomLeft = */
-      radii.bottomLeft * std::min(insetsScale.bottom, insetsScale.left),
+      ValueUnit{
+          static_cast<float>(
+              radii.bottomLeft.value *
+              std::min(insetsScale.bottom, insetsScale.left)),
+          UnitType::Point},
       /* bottomRight = */
-      radii.bottomRight * std::min(insetsScale.bottom, insetsScale.right),
+      ValueUnit{
+          static_cast<float>(
+              radii.bottomRight.value *
+              std::min(insetsScale.bottom, insetsScale.right)),
+          UnitType::Point},
+  };
+}
+
+static BorderRadii radiiPercentToPoint(
+    const BorderRadii& radii,
+    const Size& size) {
+  return BorderRadii{
+      /* topLeft = */
+      ValueUnit(
+          (radii.topLeft.unit == UnitType::Percent)
+              ? (radii.topLeft.value / 100) *
+                  (std::min(size.width, size.height) / 2)
+              : radii.topLeft.value,
+          UnitType::Point),
+      /* topRight = */
+      ValueUnit(
+          (radii.topRight.unit == UnitType::Percent)
+              ? (radii.topRight.value / 100) *
+                  (std::min(size.width, size.height) / 2)
+              : radii.topRight.value,
+          UnitType::Point),
+      /* bottomLeft = */
+      ValueUnit(
+          (radii.bottomLeft.unit == UnitType::Percent)
+              ? (radii.bottomLeft.value / 100) *
+                  (std::min(size.width, size.height) / 2)
+              : radii.bottomLeft.value,
+          UnitType::Point),
+      /* bottomRight = */
+      ValueUnit(
+          (radii.bottomRight.unit == UnitType::Percent)
+              ? (radii.bottomRight.value / 100) *
+                  (std::min(size.width, size.height) / 2)
+              : radii.bottomRight.value,
+          UnitType::Point),
   };
 }
 
@@ -387,11 +440,14 @@ BorderMetrics BaseViewProps::resolveBorderMetrics(
       optionalFloatFromYogaValue(yogaStyle.border(yoga::Edge::All)),
   };
 
+  BorderRadii radii = radiiPercentToPoint(
+      borderRadii.resolve(isRTL, ValueUnit{0.0f, UnitType::Point}),
+      layoutMetrics.frame.size);
+
   return {
       /* .borderColors = */ borderColors.resolve(isRTL, {}),
       /* .borderWidths = */ borderWidths.resolve(isRTL, 0),
-      /* .borderRadii = */
-      ensureNoOverlap(borderRadii.resolve(isRTL, 0), layoutMetrics.frame.size),
+      /* .borderRadii = */ ensureNoOverlap(radii, layoutMetrics.frame.size),
       /* .borderCurves = */ borderCurves.resolve(isRTL, BorderCurve::Circular),
       /* .borderStyles = */ borderStyles.resolve(isRTL, BorderStyle::Solid),
   };
