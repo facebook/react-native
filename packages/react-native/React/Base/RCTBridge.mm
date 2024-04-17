@@ -302,6 +302,14 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 - (void)didReceiveReloadCommand
 {
+  [self didReceiveReloadCommand:nil];
+}
+
+- (void)didReceiveReloadCommand:(NSURL *)bundleURL
+{
+  if (bundleURL) {
+    _bundleURL = bundleURL;
+  }
 #if RCT_ENABLE_INSPECTOR
   auto &inspectorFlags = facebook::react::jsinspector_modern::InspectorFlags::getInstance();
   if (!inspectorFlags.getEnableModernCDPRegistry()) {

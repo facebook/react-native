@@ -16,6 +16,7 @@
  */
 @protocol RCTReloadListener
 - (void)didReceiveReloadCommand;
+- (void)didReceiveReloadCommand:(NSURL  * _Nullable)bundleURL;
 @end
 
 /**

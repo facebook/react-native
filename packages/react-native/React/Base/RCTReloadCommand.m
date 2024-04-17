@@ -54,7 +54,7 @@ void RCTTriggerReloadCommandListeners(NSString *reason)
                                                     }];
 
   for (id<RCTReloadListener> l in [listeners allObjects]) {
-    [l didReceiveReloadCommand];
+    [l didReceiveReloadCommand:bundleURL];
   }
   [listenersLock unlock];
 }

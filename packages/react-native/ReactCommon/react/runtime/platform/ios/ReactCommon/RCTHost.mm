@@ -291,9 +291,17 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
 
 - (void)didReceiveReloadCommand
 {
+  [self didReceiveReloadCommand:nil];
+}
+
+- (void)didReceiveReloadCommand:(NSURL * _Nullable)bundleURL
+{
   [_instance invalidate];
   _instance = nil;
-  if (_bundleURLProvider) {
+  if (bundleURL) {
+    [self _setBundleURL:bundleURL];
+  }
+  else if (_bundleURLProvider) {
     [self _setBundleURL:_bundleURLProvider()];
   }
 
