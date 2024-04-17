@@ -9,7 +9,7 @@
 
 @interface RCTPausedInDebuggerOverlayController : NSObject
 
-- (void)showWithMessage:(NSString *)message onResume:(void (^)(void))onResume onStepOver:(void (^)(void))onStepOver;
+- (void)showWithMessage:(NSString *)message onResume:(void (^)(void))onResume;
 - (void)hide;
 
 @end

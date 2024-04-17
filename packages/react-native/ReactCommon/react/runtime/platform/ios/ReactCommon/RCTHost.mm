@@ -53,29 +53,19 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
       [pauseOverlayController_ hide];
     } else {
       __weak RCTHost *hostWeak = host_;
-      [pauseOverlayController_ showWithMessage:@(request.message.value().c_str())
-          onResume:^{
-            RCTAssertMainQueue();
-            RCTHost *hostStrong = hostWeak;
-            if (!hostStrong) {
-              return;
-            }
-            if (!hostStrong.inspectorTarget) {
-              return;
-            }
-            hostStrong.inspectorTarget->sendCommand(jsinspector_modern::HostCommand::DebuggerResume);
-          }
-          onStepOver:^{
-            RCTAssertMainQueue();
-            RCTHost *hostStrong = hostWeak;
-            if (!hostStrong) {
-              return;
-            }
-            if (!hostStrong.inspectorTarget) {
-              return;
-            }
-            hostStrong.inspectorTarget->sendCommand(jsinspector_modern::HostCommand::DebuggerStepOver);
-          }];
+      [pauseOverlayController_
+          showWithMessage:@(request.message.value().c_str())
+                 onResume:^{
+                   RCTAssertMainQueue();
+                   RCTHost *hostStrong = hostWeak;
+                   if (!hostStrong) {
+                     return;
+                   }
+                   if (!hostStrong.inspectorTarget) {
+                     return;
+                   }
+                   hostStrong.inspectorTarget->sendCommand(jsinspector_modern::HostCommand::DebuggerResume);
+                 }];
     }
   }
 

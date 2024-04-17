@@ -11,7 +11,6 @@
 
 @interface RCTPausedInDebuggerViewController : UIViewController
 @property (nonatomic, copy) void (^onResume)(void);
-@property (nonatomic, copy) void (^onStepOver)(void);
 @property (nonatomic, strong) NSString *message;
 @end
 
@@ -41,7 +40,7 @@
   messageLabel.text = self.message;
   messageLabel.textAlignment = NSTextAlignmentCenter;
   messageLabel.numberOfLines = 0;
-  messageLabel.font = [UIFont boldSystemFontOfSize:14];
+  messageLabel.font = [UIFont boldSystemFontOfSize:16];
   messageLabel.textColor = [UIColor blackColor];
   messageLabel.translatesAutoresizingMaskIntoConstraints = NO;
   UIView *messageContainer = [[UIView alloc] init];
@@ -49,8 +48,8 @@
   [NSLayoutConstraint activateConstraints:@[
     [messageLabel.topAnchor constraintEqualToAnchor:messageContainer.topAnchor],
     [messageLabel.bottomAnchor constraintEqualToAnchor:messageContainer.bottomAnchor],
-    [messageLabel.leadingAnchor constraintEqualToAnchor:messageContainer.leadingAnchor constant:12],
-    [messageLabel.trailingAnchor constraintEqualToAnchor:messageContainer.trailingAnchor constant:-12]
+    [messageLabel.leadingAnchor constraintEqualToAnchor:messageContainer.leadingAnchor constant:14],
+    [messageLabel.trailingAnchor constraintEqualToAnchor:messageContainer.trailingAnchor],
   ]];
 
   UIButton *resumeButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -62,57 +61,29 @@
     [resumeButton.heightAnchor constraintEqualToConstant:48],
   ]];
 
-  UIView *divider1 = [[UIView alloc] init];
-  divider1.backgroundColor = [UIColor colorWithRed:0.79 green:0.79 blue:0.79 alpha:1];
-  divider1.translatesAutoresizingMaskIntoConstraints = NO;
-  [NSLayoutConstraint activateConstraints:@[
-    [divider1.widthAnchor constraintEqualToConstant:1.0],
-    [divider1.heightAnchor constraintEqualToConstant:48.0],
-  ]];
-
-  UIButton *stepOverButton = [UIButton buttonWithType:UIButtonTypeCustom];
-  [stepOverButton setImage:[UIImage systemImageNamed:@"hand.point.up.left.and.text.fill"]
-                  forState:UIControlStateNormal];
-  [stepOverButton addTarget:self action:@selector(stepOverButtonTapped) forControlEvents:UIControlEventTouchUpInside];
-  [NSLayoutConstraint activateConstraints:@[
-    [stepOverButton.widthAnchor constraintEqualToConstant:48],
-    [stepOverButton.heightAnchor constraintEqualToConstant:48],
-  ]];
-
-  UIView *divider2 = [[UIView alloc] init];
-  divider2.backgroundColor = [UIColor colorWithRed:0.79 green:0.79 blue:0.79 alpha:1];
-  divider2.translatesAutoresizingMaskIntoConstraints = NO;
-  [NSLayoutConstraint activateConstraints:@[
-    [divider2.widthAnchor constraintEqualToConstant:1.0],
-    [divider2.heightAnchor constraintEqualToConstant:48.0],
-  ]];
-
-  UIStackView *stackView = [[UIStackView alloc]
-      initWithArrangedSubviews:@[ messageContainer, divider1, resumeButton, divider2, stepOverButton ]];
+  UIStackView *stackView = [[UIStackView alloc] initWithArrangedSubviews:@[ messageContainer, resumeButton ]];
+  stackView.backgroundColor = [UIColor colorWithRed:1 green:1 blue:0.757 alpha:1];
+  stackView.layer.cornerRadius = 12;
+  stackView.layer.borderWidth = 2;
+  stackView.layer.borderColor = [UIColor colorWithRed:0.816 green:0.816 blue:0.723 alpha:1].CGColor;
+  stackView.translatesAutoresizingMaskIntoConstraints = NO;
   stackView.axis = UILayoutConstraintAxisHorizontal;
   stackView.distribution = UIStackViewDistributionFill;
   stackView.alignment = UIStackViewAlignmentCenter;
 
   [self.view addSubview:stackView];
 
-  stackView.translatesAutoresizingMaskIntoConstraints = NO;
   [NSLayoutConstraint activateConstraints:@[
-    [stackView.topAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor constant:10],
+    [stackView.topAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor constant:12],
     [stackView.centerXAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.centerXAnchor],
   ]];
 
-  stackView.backgroundColor = [UIColor colorWithRed:1 green:1 blue:0.76 alpha:1];
   stackView.semanticContentAttribute = UISemanticContentAttributeForceLeftToRight;
 }
 
 - (void)resumeButtonTapped
 {
   self.onResume();
-}
-
-- (void)stepOverButtonTapped
-{
-  self.onStepOver();
 }
 @end
 
@@ -132,7 +103,7 @@
   return _alertWindow;
 }
 
-- (void)showWithMessage:(NSString *)message onResume:(void (^)(void))onResume onStepOver:(void (^)(void))onStepOver
+- (void)showWithMessage:(NSString *)message onResume:(void (^)(void))onResume
 {
   [self hide];
 
@@ -140,7 +111,6 @@
   view.modalPresentationStyle = UIModalPresentationOverFullScreen;
   view.message = message;
   view.onResume = onResume;
-  view.onStepOver = onStepOver;
   [self.alertWindow makeKeyAndVisible];
   [self.alertWindow.rootViewController presentViewController:view animated:NO completion:nil];
 }
