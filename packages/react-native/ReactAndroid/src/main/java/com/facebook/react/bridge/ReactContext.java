@@ -41,6 +41,7 @@ public abstract class ReactContext extends ContextWrapper {
 
   @DoNotStrip
   public interface RCTDeviceEventEmitter extends JavaScriptModule {
+
     void emit(@NonNull String eventName, @Nullable Object data);
   }
 
@@ -385,7 +386,19 @@ public abstract class ReactContext extends ContextWrapper {
         handleException(e);
       }
     }
-    mCurrentActivity = null;
+    resetCurrentActivity(false);
+  }
+
+  @ThreadConfined(UI)
+  public void onHostDestroy(boolean keepActivity) {
+    onHostDestroy();
+    resetCurrentActivity(keepActivity);
+  }
+
+  private void resetCurrentActivity(boolean keepActivity) {
+    if (!keepActivity) {
+      mCurrentActivity = null;
+    }
   }
 
   /** Destroy this instance, making it unusable. */
@@ -513,6 +526,7 @@ public abstract class ReactContext extends ContextWrapper {
   }
 
   public class ExceptionHandlerWrapper implements JSExceptionHandler {
+
     @Override
     public void handleException(Exception e) {
       ReactContext.this.handleException(e);

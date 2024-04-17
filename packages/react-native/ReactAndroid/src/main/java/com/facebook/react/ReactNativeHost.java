@@ -73,6 +73,12 @@ public abstract class ReactNativeHost {
 
   protected ReactInstanceManager createReactInstanceManager() {
     ReactMarker.logMarker(ReactMarkerConstants.BUILD_REACT_INSTANCE_MANAGER_START);
+    ReactInstanceManagerBuilder builder = getBaseReactInstanceManagerBuilder();
+    ReactMarker.logMarker(ReactMarkerConstants.BUILD_REACT_INSTANCE_MANAGER_END);
+    return builder.build();
+  }
+
+  protected ReactInstanceManagerBuilder getBaseReactInstanceManagerBuilder() {
     ReactInstanceManagerBuilder builder =
         ReactInstanceManager.builder()
             .setApplication(mApplication)
@@ -102,9 +108,7 @@ public abstract class ReactNativeHost {
     } else {
       builder.setBundleAssetName(Assertions.assertNotNull(getBundleAssetName()));
     }
-    ReactInstanceManager reactInstanceManager = builder.build();
-    ReactMarker.logMarker(ReactMarkerConstants.BUILD_REACT_INSTANCE_MANAGER_END);
-    return reactInstanceManager;
+    return builder;
   }
 
   /** Get the {@link RedBoxHandler} to send RedBox-related callbacks to. */

@@ -57,6 +57,7 @@ public class ReactInstanceManagerBuilder {
   private boolean mUseDeveloperSupport;
   private @Nullable DevSupportManagerFactory mDevSupportManagerFactory;
   private boolean mRequireActivity;
+  private boolean mKeepActivity;
   private @Nullable LifecycleState mInitialLifecycleState;
   private @Nullable JSExceptionHandler mJSExceptionHandler;
   private @Nullable Activity mCurrentActivity;
@@ -208,6 +209,11 @@ public class ReactInstanceManagerBuilder {
     return this;
   }
 
+  public ReactInstanceManagerBuilder setKeepActivity(boolean keepActivity) {
+    mKeepActivity = keepActivity;
+    return this;
+  }
+
   /**
    * When the {@link SurfaceDelegateFactory} is provided, it will be used for native modules to get
    * a {@link SurfaceDelegate} to interact with the platform specific surface that they that needs
@@ -345,6 +351,7 @@ public class ReactInstanceManagerBuilder {
             ? new DefaultDevSupportManagerFactory()
             : mDevSupportManagerFactory,
         mRequireActivity,
+        mKeepActivity,
         mBridgeIdleDebugListener,
         Assertions.assertNotNull(mInitialLifecycleState, "Initial lifecycle state was not set"),
         mJSExceptionHandler,

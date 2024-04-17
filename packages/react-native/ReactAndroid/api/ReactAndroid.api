@@ -293,6 +293,7 @@ public class com/facebook/react/ReactInstanceManagerBuilder {
 	public fun setJSExceptionHandler (Lcom/facebook/react/bridge/JSExceptionHandler;)Lcom/facebook/react/ReactInstanceManagerBuilder;
 	public fun setJSMainModulePath (Ljava/lang/String;)Lcom/facebook/react/ReactInstanceManagerBuilder;
 	public fun setJavaScriptExecutorFactory (Lcom/facebook/react/bridge/JavaScriptExecutorFactory;)Lcom/facebook/react/ReactInstanceManagerBuilder;
+	public fun setKeepActivity (Z)Lcom/facebook/react/ReactInstanceManagerBuilder;
 	public fun setLazyViewManagersEnabled (Z)Lcom/facebook/react/ReactInstanceManagerBuilder;
 	public fun setMinNumShakes (I)Lcom/facebook/react/ReactInstanceManagerBuilder;
 	public fun setMinTimeLeftInFrameForNonBatchedOperationMs (I)Lcom/facebook/react/ReactInstanceManagerBuilder;
@@ -309,6 +310,7 @@ public abstract class com/facebook/react/ReactNativeHost {
 	public fun clear ()V
 	protected fun createReactInstanceManager ()Lcom/facebook/react/ReactInstanceManager;
 	protected final fun getApplication ()Landroid/app/Application;
+	protected fun getBaseReactInstanceManagerBuilder ()Lcom/facebook/react/ReactInstanceManagerBuilder;
 	protected fun getBundleAssetName ()Ljava/lang/String;
 	protected fun getChoreographerProvider ()Lcom/facebook/react/internal/ChoreographerProvider;
 	protected fun getDevLoadingViewManager ()Lcom/facebook/react/devsupport/interfaces/DevLoadingViewManager;
@@ -1125,6 +1127,7 @@ public abstract class com/facebook/react/bridge/ReactContext : android/content/C
 	public fun isOnUiQueueThread ()Z
 	public fun onActivityResult (Landroid/app/Activity;IILandroid/content/Intent;)V
 	public fun onHostDestroy ()V
+	public fun onHostDestroy (Z)V
 	public fun onHostPause ()V
 	public fun onHostResume (Landroid/app/Activity;)V
 	public fun onNewIntent (Landroid/app/Activity;Landroid/content/Intent;)V
