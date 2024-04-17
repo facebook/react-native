@@ -80,7 +80,6 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
 {
   static NSMutableSet<NSString *> *supported = [NSMutableSet setWithObjects:@"DatePicker",
                                                                             @"ProgressView",
-                                                                            @"SegmentedControl",
                                                                             @"MaskedView",
                                                                             @"ARTSurfaceView",
                                                                             @"ARTText",
