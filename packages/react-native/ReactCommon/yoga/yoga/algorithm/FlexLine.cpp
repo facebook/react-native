@@ -27,6 +27,7 @@ FlexLine calculateFlexLine(
   float sizeConsumed = 0.0f;
   float totalFlexGrowFactors = 0.0f;
   float totalFlexShrinkScaledFactors = 0.0f;
+  size_t numberOfAutoMargins = 0;
   size_t endOfLineIndex = startOfLineIndex;
   size_t firstElementInLineIndex = startOfLineIndex;
 
@@ -47,6 +48,13 @@ FlexLine calculateFlexLine(
         firstElementInLineIndex++;
       }
       continue;
+    }
+
+    if (child->style().flexStartMarginIsAuto(mainAxis, ownerDirection)) {
+      numberOfAutoMargins++;
+    }
+    if (child->style().flexEndMarginIsAuto(mainAxis, ownerDirection)) {
+      numberOfAutoMargins++;
     }
 
     const bool isFirstElementInLine =
@@ -102,10 +110,11 @@ FlexLine calculateFlexLine(
   }
 
   return FlexLine{
-      std::move(itemsInFlow),
-      sizeConsumed,
-      endOfLineIndex,
-      FlexLineRunningLayout{
+      .itemsInFlow = std::move(itemsInFlow),
+      .sizeConsumed = sizeConsumed,
+      .endOfLineIndex = endOfLineIndex,
+      .numberOfAutoMargins = numberOfAutoMargins,
+      .layout = FlexLineRunningLayout{
           totalFlexGrowFactors,
           totalFlexShrinkScaledFactors,
       }};

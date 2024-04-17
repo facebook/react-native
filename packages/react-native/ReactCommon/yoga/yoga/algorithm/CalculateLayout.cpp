@@ -959,27 +959,16 @@ static void justifyMainAxis(
     }
   }
 
-  int numberOfAutoMarginsOnCurrentLine = 0;
-  for (size_t i = startOfLineIndex; i < flexLine.endOfLineIndex; i++) {
-    auto child = node->getChild(i);
-    if (child->style().positionType() != PositionType::Absolute) {
-      if (child->style().flexStartMarginIsAuto(mainAxis, direction)) {
-        numberOfAutoMarginsOnCurrentLine++;
-      }
-      if (child->style().flexEndMarginIsAuto(mainAxis, direction)) {
-        numberOfAutoMarginsOnCurrentLine++;
-      }
-    }
-  }
-
   // In order to position the elements in the main axis, we have two controls.
   // The space between the beginning and the first element and the space between
   // each two elements.
   float leadingMainDim = 0;
   float betweenMainDim = gap;
-  const Justify justifyContent = node->style().justifyContent();
+  const Justify justifyContent = flexLine.layout.remainingFreeSpace >= 0
+      ? node->style().justifyContent()
+      : fallbackAlignment(node->style().justifyContent());
 
-  if (numberOfAutoMarginsOnCurrentLine == 0) {
+  if (flexLine.numberOfAutoMargins == 0) {
     switch (justifyContent) {
       case Justify::Center:
         leadingMainDim = flexLine.layout.remainingFreeSpace / 2;
@@ -989,8 +978,7 @@ static void justifyMainAxis(
         break;
       case Justify::SpaceBetween:
         if (flexLine.itemsInFlow.size() > 1) {
-          betweenMainDim +=
-              yoga::maxOrDefined(flexLine.layout.remainingFreeSpace, 0.0f) /
+          betweenMainDim += flexLine.layout.remainingFreeSpace /
               static_cast<float>(flexLine.itemsInFlow.size() - 1);
         }
         break;
@@ -1043,9 +1031,10 @@ static void justifyMainAxis(
       // We need to do that only for relative elements. Absolute elements do not
       // take part in that phase.
       if (childStyle.positionType() != PositionType::Absolute) {
-        if (child->style().flexStartMarginIsAuto(mainAxis, direction)) {
+        if (child->style().flexStartMarginIsAuto(mainAxis, direction) &&
+            flexLine.layout.remainingFreeSpace > 0.0f) {
           flexLine.layout.mainDim += flexLine.layout.remainingFreeSpace /
-              static_cast<float>(numberOfAutoMarginsOnCurrentLine);
+              static_cast<float>(flexLine.numberOfAutoMargins);
         }
 
         if (performLayout) {
@@ -1059,9 +1048,10 @@ static void justifyMainAxis(
           flexLine.layout.mainDim += betweenMainDim;
         }
 
-        if (child->style().flexEndMarginIsAuto(mainAxis, direction)) {
+        if (child->style().flexEndMarginIsAuto(mainAxis, direction) &&
+            flexLine.layout.remainingFreeSpace > 0.0f) {
           flexLine.layout.mainDim += flexLine.layout.remainingFreeSpace /
-              static_cast<float>(numberOfAutoMarginsOnCurrentLine);
+              static_cast<float>(flexLine.numberOfAutoMargins);
         }
         bool canSkipFlex =
             !performLayout && sizingModeCrossDim == SizingMode::StretchFit;
@@ -1749,27 +1739,11 @@ static void calculateLayoutImpl(
 
     const float remainingAlignContentDim = innerCrossDim - totalLineCrossDim;
 
-    // Apply fallback alignments on overflow
-    // https://www.w3.org/TR/css-align-3/#distribution-values
-    const auto appliedAlignContent =
-        remainingAlignContentDim >= 0 ? node->style().alignContent() : [&]() {
-          switch (node->style().alignContent()) {
-            // Fallback to flex-start
-            case Align::SpaceBetween:
-            case Align::Stretch:
-              return Align::FlexStart;
+    const auto alignContent = remainingAlignContentDim >= 0
+        ? node->style().alignContent()
+        : fallbackAlignment(node->style().alignContent());
 
-            // Fallback to safe center. TODO: This should be aligned to Start
-            // instead of FlexStart (for row-reverse containers)
-            case Align::SpaceAround:
-            case Align::SpaceEvenly:
-              return Align::FlexStart;
-            default:
-              return node->style().alignContent();
-          }
-        }();
-
-    switch (appliedAlignContent) {
+    switch (alignContent) {
       case Align::FlexEnd:
         currentLead += remainingAlignContentDim;
         break;
