@@ -1502,7 +1502,11 @@ public class ReactInstanceManager {
 
                 @Override
                 public void onSetPausedInDebuggerMessage(@Nullable String message) {
-                  // TODO(moti): Implement this
+                  if (message == null) {
+                    mDevSupportManager.hidePausedInDebuggerOverlay();
+                  } else {
+                    mDevSupportManager.showPausedInDebuggerOverlay(message);
+                  }
                 }
               });
     }
