@@ -9,6 +9,7 @@ package com.facebook.react.uimanager;
 
 import android.view.View;
 import com.facebook.common.logging.FLog;
+import com.facebook.react.common.ClassFinder;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -109,9 +110,13 @@ public class ViewManagerPropertyUpdater {
   private static <T> T findGeneratedSetter(Class<?> cls) {
     String clsName = cls.getName();
     try {
-      Class<?> setterClass = Class.forName(clsName + "$$PropsSetter");
-      //noinspection unchecked
-      return (T) setterClass.newInstance();
+      Class<?> setterClass = ClassFinder.findClass(clsName + "$$PropsSetter");
+      if (setterClass != null) {
+        //noinspection unchecked
+        return (T) setterClass.newInstance();
+      } else {
+        return null;
+      }
     } catch (ClassNotFoundException e) {
       FLog.w(TAG, "Could not find generated setter for " + cls);
       return null;
