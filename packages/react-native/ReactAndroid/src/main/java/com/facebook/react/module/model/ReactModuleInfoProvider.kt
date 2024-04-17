@@ -5,12 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.module.model;
-
-import java.util.Map;
+package com.facebook.react.module.model
 
 /** Interface for auto-generated class by ReactModuleSpecProcessor. */
-public interface ReactModuleInfoProvider {
-
-  Map<String, ReactModuleInfo> getReactModuleInfos();
+public fun interface ReactModuleInfoProvider {
+  public fun getReactModuleInfos(): Map<String, ReactModuleInfo>
 }
