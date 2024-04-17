@@ -2130,6 +2130,7 @@ public abstract class com/facebook/react/devsupport/DevSupportManagerBase : com/
 	public fun handleException (Ljava/lang/Exception;)V
 	public fun hasUpToDateJSBundleInCache ()Z
 	protected fun hideDevLoadingView ()V
+	public fun hidePausedInDebuggerOverlay ()V
 	public fun hideRedboxDialog ()V
 	public fun isPackagerRunning (Lcom/facebook/react/devsupport/interfaces/PackagerStatusCallback;)V
 	public fun onNewReactContextCreated (Lcom/facebook/react/bridge/ReactContext;)V
@@ -2149,6 +2150,7 @@ public abstract class com/facebook/react/devsupport/DevSupportManagerBase : com/
 	public fun showDevOptionsDialog ()V
 	public fun showNewJSError (Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;I)V
 	public fun showNewJavaError (Ljava/lang/String;Ljava/lang/Throwable;)V
+	public fun showPausedInDebuggerOverlay (Ljava/lang/String;)V
 	public fun startInspector ()V
 	public fun stopInspector ()V
 	public fun toggleElementInspector ()V
@@ -2294,6 +2296,7 @@ public class com/facebook/react/devsupport/ReleaseDevSupportManager : com/facebo
 	public fun handleException (Ljava/lang/Exception;)V
 	public fun handleReloadJS ()V
 	public fun hasUpToDateJSBundleInCache ()Z
+	public fun hidePausedInDebuggerOverlay ()V
 	public fun hideRedboxDialog ()V
 	public fun isPackagerRunning (Lcom/facebook/react/devsupport/interfaces/PackagerStatusCallback;)V
 	public fun loadSplitBundleFromServer (Ljava/lang/String;Lcom/facebook/react/devsupport/interfaces/DevSplitBundleCallback;)V
@@ -2313,6 +2316,7 @@ public class com/facebook/react/devsupport/ReleaseDevSupportManager : com/facebo
 	public fun showDevOptionsDialog ()V
 	public fun showNewJSError (Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;I)V
 	public fun showNewJavaError (Ljava/lang/String;Ljava/lang/Throwable;)V
+	public fun showPausedInDebuggerOverlay (Ljava/lang/String;)V
 	public fun startInspector ()V
 	public fun stopInspector ()V
 	public fun toggleElementInspector ()V
@@ -2404,6 +2408,7 @@ public abstract interface class com/facebook/react/devsupport/interfaces/DevSupp
 	public abstract fun getSourceUrl ()Ljava/lang/String;
 	public abstract fun handleReloadJS ()V
 	public abstract fun hasUpToDateJSBundleInCache ()Z
+	public abstract fun hidePausedInDebuggerOverlay ()V
 	public abstract fun hideRedboxDialog ()V
 	public abstract fun isPackagerRunning (Lcom/facebook/react/devsupport/interfaces/PackagerStatusCallback;)V
 	public abstract fun loadSplitBundleFromServer (Ljava/lang/String;Lcom/facebook/react/devsupport/interfaces/DevSplitBundleCallback;)V
@@ -2423,6 +2428,7 @@ public abstract interface class com/facebook/react/devsupport/interfaces/DevSupp
 	public abstract fun showDevOptionsDialog ()V
 	public abstract fun showNewJSError (Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;I)V
 	public abstract fun showNewJavaError (Ljava/lang/String;Ljava/lang/Throwable;)V
+	public abstract fun showPausedInDebuggerOverlay (Ljava/lang/String;)V
 	public abstract fun startInspector ()V
 	public abstract fun stopInspector ()V
 	public abstract fun toggleElementInspector ()V
