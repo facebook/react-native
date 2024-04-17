@@ -53,12 +53,15 @@ class JReactHostInspectorTarget
       jni::alias_ref<JExecutor::javaobject>);
 
   static void registerNatives();
+  void sendDebuggerResumeCommand();
+  void sendDebuggerStepOverCommand();
 
+  jsinspector_modern::HostTarget* getInspectorTarget();
+
+  // HostTargetDelegate methods
   void onReload(const PageReloadRequest& request) override;
   void onSetPausedInDebuggerMessage(
       const OverlaySetPausedInDebuggerMessageRequest&) override;
-
-  jsinspector_modern::HostTarget* getInspectorTarget();
 
  private:
   JReactHostInspectorTarget(
