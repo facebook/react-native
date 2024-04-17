@@ -632,4 +632,72 @@ TEST_F(HostTargetProtocolTest, RuntimeAgentDelegateHasAccessToSessionState) {
   EXPECT_FALSE(runtimeAgentDelegates_[0]->sessionState.isRuntimeDomainEnabled);
 }
 
+TEST_F(HostTargetTest, HostCommands) {
+  // Set up expectations for the RuntimeAgentDelegate that will be created
+  // as part of the private session inside HostCommandSender.
+  EXPECT_CALL(runtimeTargetDelegate_, createAgentDelegate(_, _, _, _, _))
+      .WillOnce([this](
+                    FrontendChannel frontendChannel,
+                    SessionState& sessionState,
+                    std::unique_ptr<RuntimeAgentDelegate::ExportedState>
+                        exportedState,
+                    const ExecutionContextDescription& context,
+                    RuntimeExecutor runtimeExecutor) {
+        auto delegate = runtimeAgentDelegates_.make_unique(
+            std::move(frontendChannel),
+            sessionState,
+            std::move(exportedState),
+            context,
+            std::move(runtimeExecutor));
+        InSequence s;
+        EXPECT_CALL(
+            *delegate,
+            handleRequest(
+                Field(&cdp::PreparsedRequest::method, "Debugger.resume")))
+            .WillOnce(Return(false))
+            .RetiresOnSaturation();
+        EXPECT_CALL(
+            *delegate,
+            handleRequest(
+                Field(&cdp::PreparsedRequest::method, "Debugger.stepOver")))
+            .WillOnce(Return(false))
+            .RetiresOnSaturation();
+        return delegate;
+      })
+      .RetiresOnSaturation();
+
+  // No RuntimeAgent yet; this command is simply ignored.
+  page_->sendCommand(HostCommand::DebuggerStepOver);
+  EXPECT_FALSE(runtimeAgentDelegates_[0]);
+
+  auto& instanceTarget = page_->registerInstance(instanceTargetDelegate_);
+  auto& runtimeTarget =
+      instanceTarget.registerRuntime(runtimeTargetDelegate_, runtimeExecutor_);
+
+  page_->sendCommand(HostCommand::DebuggerResume);
+  page_->sendCommand(HostCommand::DebuggerStepOver);
+  ASSERT_TRUE(runtimeAgentDelegates_[0]);
+
+  connect();
+
+  // This is part of the HostCommandSender session.
+  ASSERT_TRUE(runtimeAgentDelegates_[0]);
+  // This is part of the session we just connect()ed to above.
+  EXPECT_TRUE(runtimeAgentDelegates_[1]);
+  // We can still send commands.
+  EXPECT_CALL(
+      *runtimeAgentDelegates_[0],
+      handleRequest(Field(&cdp::PreparsedRequest::method, "Debugger.stepOver")))
+      .WillOnce(Return(false))
+      .RetiresOnSaturation();
+  page_->sendCommand(HostCommand::DebuggerStepOver);
+
+  // NOTE: Our use of StrictMock ensures that the session doesn't receive any
+  // noise resulting from the sendCommand call ( = no
+  // runtimeAgentDelegates_[1]->handleRequest, no fromPage()->onMessage, etc).
+
+  instanceTarget.unregisterRuntime(runtimeTarget);
+  page_->unregisterInstance(instanceTarget);
+}
+
 } // namespace facebook::react::jsinspector_modern
