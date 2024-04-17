@@ -10,7 +10,6 @@ package com.facebook.react.devsupport;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -23,10 +22,8 @@ import android.hardware.SensorManager;
 import android.os.Build;
 import android.util.Pair;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -60,6 +57,7 @@ import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.devsupport.interfaces.ErrorCustomizer;
 import com.facebook.react.devsupport.interfaces.ErrorType;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
+import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager;
 import com.facebook.react.devsupport.interfaces.RedBoxHandler;
 import com.facebook.react.devsupport.interfaces.StackFrame;
 import com.facebook.react.modules.core.RCTNativeAppEventEmitter;
@@ -101,6 +99,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
   private final File mJSSplitBundlesDir;
   private final DefaultJSExceptionHandler mDefaultJSExceptionHandler;
   private final DevLoadingViewManager mDevLoadingViewManager;
+  private final PausedInDebuggerOverlayManager mPausedInDebuggerOverlayManager;
 
   private @Nullable SurfaceDelegate mRedBoxSurfaceDelegate;
   private @Nullable AlertDialog mDevOptionsDialog;
@@ -136,7 +135,8 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
       int minNumShakes,
       @Nullable Map<String, RequestHandler> customPackagerCommandHandlers,
       @Nullable SurfaceDelegateFactory surfaceDelegateFactory,
-      @Nullable DevLoadingViewManager devLoadingViewManager) {
+      @Nullable DevLoadingViewManager devLoadingViewManager,
+      @Nullable PausedInDebuggerOverlayManager pausedInDebuggerOverlayManager) {
     mReactInstanceDevHelper = reactInstanceDevHelper;
     mApplicationContext = applicationContext;
     mJSAppBundleName = packagerPathForJSBundleName;
@@ -193,6 +193,17 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
             ? devLoadingViewManager
             : new DefaultDevLoadingViewImplementation(reactInstanceDevHelper);
     mSurfaceDelegateFactory = surfaceDelegateFactory;
+    mPausedInDebuggerOverlayManager =
+        pausedInDebuggerOverlayManager != null
+            ? pausedInDebuggerOverlayManager
+            : new PausedInDebuggerOverlayDialogManager(
+                () -> {
+                  Activity context = mReactInstanceDevHelper.getCurrentActivity();
+                  if (context == null || context.isFinishing()) {
+                    return null;
+                  }
+                  return context;
+                });
   }
   ;
 
@@ -1168,46 +1179,14 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
         mCurrentContext, mApplicationContext.getString(R.string.catalyst_open_debugger_error));
   }
 
-  private @Nullable Dialog mPausedInDebuggerDialog;
-
   @Override
   public void showPausedInDebuggerOverlay(
       String message, PausedInDebuggerOverlayCommandListener listener) {
-    UiThreadUtil.runOnUiThread(
-        () -> {
-          if (mPausedInDebuggerDialog != null) {
-            mPausedInDebuggerDialog.dismiss();
-          }
-          Activity context = mReactInstanceDevHelper.getCurrentActivity();
-          if (context == null || context.isFinishing()) {
-            return;
-          }
-          View dialogView =
-              LayoutInflater.from(context).inflate(R.layout.paused_in_debugger_view, null);
-          mPausedInDebuggerDialog = new Dialog(context);
-          mPausedInDebuggerDialog.setContentView(dialogView);
-          mPausedInDebuggerDialog.setCancelable(false);
-          TextView pausedText = Assertions.assertNotNull(dialogView.findViewById(R.id.paused_text));
-          pausedText.setText(message);
-          View resumeButton = Assertions.assertNotNull(dialogView.findViewById(R.id.resume_button));
-          resumeButton.setOnClickListener((v) -> listener.onResume());
-          Window dialogWindow = mPausedInDebuggerDialog.getWindow();
-          if (dialogWindow != null) {
-            dialogWindow.setGravity(Gravity.TOP);
-            dialogWindow.setBackgroundDrawableResource(R.drawable.paused_in_debugger_background);
-          }
-          mPausedInDebuggerDialog.show();
-        });
+    mPausedInDebuggerOverlayManager.showPausedInDebuggerOverlay(message, listener);
   }
 
   @Override
   public void hidePausedInDebuggerOverlay() {
-    UiThreadUtil.runOnUiThread(
-        () -> {
-          if (mPausedInDebuggerDialog != null) {
-            mPausedInDebuggerDialog.dismiss();
-            mPausedInDebuggerDialog = null;
-          }
-        });
+    mPausedInDebuggerOverlayManager.hidePausedInDebuggerOverlay();
   }
 }
