@@ -63,9 +63,35 @@ JReactHostInspectorTarget::initHybrid(
   return makeCxxInstance(reactHostImpl, executor);
 }
 
+void JReactHostInspectorTarget::sendDebuggerResumeCommand() {
+  if (inspectorTarget_) {
+    inspectorTarget_->sendCommand(HostCommand::DebuggerResume);
+  } else {
+    jni::throwNewJavaException(
+        "java/lang/IllegalStateException",
+        "Cannot send command while the Fusebox backend is not enabled");
+  }
+}
+
+void JReactHostInspectorTarget::sendDebuggerStepOverCommand() {
+  if (inspectorTarget_) {
+    inspectorTarget_->sendCommand(HostCommand::DebuggerStepOver);
+  } else {
+    jni::throwNewJavaException(
+        "java/lang/IllegalStateException",
+        "Cannot send command while the Fusebox backend is not enabled");
+  }
+}
+
 void JReactHostInspectorTarget::registerNatives() {
   registerHybrid({
       makeNativeMethod("initHybrid", JReactHostInspectorTarget::initHybrid),
+      makeNativeMethod(
+          "sendDebuggerResumeCommand",
+          JReactHostInspectorTarget::sendDebuggerResumeCommand),
+      makeNativeMethod(
+          "sendDebuggerStepOverCommand",
+          JReactHostInspectorTarget::sendDebuggerStepOverCommand),
   });
 }
 
