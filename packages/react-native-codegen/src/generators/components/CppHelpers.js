@@ -169,7 +169,7 @@ function getEnumMaskName(enumName: string): string {
 function convertDefaultTypeToString(
   componentName: string,
   prop: NamedShape<PropTypeAnnotation>,
-  fromBuilder: boolean  = false,
+  fromBuilder: boolean = false,
 ): string {
   const typeAnnotation = prop.typeAnnotation;
   switch (typeAnnotation.type) {
@@ -232,7 +232,7 @@ function convertDefaultTypeToString(
           const defaultValue = `${enumName}::${toSafeCppString(
             elementType.default,
           )}`;
-          if ( fromBuilder ){
+          if (fromBuilder) {
             return `${enumMaskName}Wrapped{ .value = static_cast<${enumMaskName}>(${defaultValue})}`;
           }
           return `static_cast<${enumMaskName}>(${defaultValue})`;
@@ -278,9 +278,7 @@ function getSourceProp(
   return `sourceProps.${prop.name}`;
 }
 
-function isWrappedPropType(
-  prop: NamedShape<PropTypeAnnotation>,
-): boolean {
+function isWrappedPropType(prop: NamedShape<PropTypeAnnotation>): boolean {
   const typeAnnotation = prop.typeAnnotation;
   switch (typeAnnotation.type) {
     case 'ArrayTypeAnnotation':
