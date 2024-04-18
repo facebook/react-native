@@ -1705,6 +1705,7 @@ function DisplayOptionStatusExample({
   React.useEffect(() => {
     const listener = AccessibilityInfo.addEventListener(
       // $FlowFixMe[prop-missing]
+      // $FlowFixMe[invalid-computed-prop]
       notification,
       setStatusEnabled,
     );
