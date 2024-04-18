@@ -50,6 +50,10 @@ class HermesRuntimeTargetDelegate : public RuntimeTargetDelegate {
 
   bool supportsConsole() const override;
 
+  std::unique_ptr<StackTrace> captureStackTrace(
+      jsi::Runtime& runtime,
+      size_t framesToSkip) override;
+
  private:
   // We use the private implementation idiom to ensure this class has the same
   // layout regardless of whether HERMES_ENABLE_DEBUGGER is defined. The net
