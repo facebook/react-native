@@ -361,6 +361,21 @@ public abstract class ReactContext extends ContextWrapper {
   /** Should be called by the hosting Fragment in {@link Fragment#onDestroy} */
   @ThreadConfined(UI)
   public void onHostDestroy() {
+    onHostDestroyImpl();
+    mCurrentActivity = null;
+  }
+
+  @ThreadConfined(UI)
+  public void onHostDestroy(boolean keepActivity) {
+    if (!keepActivity) {
+      onHostDestroy();
+    } else {
+      onHostDestroyImpl();
+    }
+  }
+
+  @ThreadConfined(UI)
+  private void onHostDestroyImpl() {
     UiThreadUtil.assertOnUiThread();
     mLifecycleState = LifecycleState.BEFORE_CREATE;
     for (LifecycleEventListener listener : mLifecycleEventListeners) {
@@ -369,19 +384,6 @@ public abstract class ReactContext extends ContextWrapper {
       } catch (RuntimeException e) {
         handleException(e);
       }
-    }
-    resetCurrentActivity(false);
-  }
-
-  @ThreadConfined(UI)
-  public void onHostDestroy(boolean keepActivity) {
-    onHostDestroy();
-    resetCurrentActivity(keepActivity);
-  }
-
-  private void resetCurrentActivity(boolean keepActivity) {
-    if (!keepActivity) {
-      mCurrentActivity = null;
     }
   }
 
