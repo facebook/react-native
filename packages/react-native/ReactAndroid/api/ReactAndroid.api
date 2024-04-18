@@ -4257,7 +4257,6 @@ public class com/facebook/react/uimanager/NativeViewHierarchyManager {
 	protected final fun addRootViewGroup (ILandroid/view/View;)V
 	public fun clearJSResponder ()V
 	public fun createView (Lcom/facebook/react/uimanager/ThemedReactContext;ILjava/lang/String;Lcom/facebook/react/uimanager/ReactStylesDiffMap;)V
-	public fun dismissPopupMenu ()V
 	public fun dispatchCommand (IILcom/facebook/react/bridge/ReadableArray;)V
 	public fun dispatchCommand (ILjava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
 	protected fun dropView (Landroid/view/View;)V
@@ -4274,7 +4273,6 @@ public class com/facebook/react/uimanager/NativeViewHierarchyManager {
 	public fun setChildren (ILcom/facebook/react/bridge/ReadableArray;)V
 	public fun setJSResponder (IIZ)V
 	public fun setLayoutAnimationEnabled (Z)V
-	public fun showPopupMenu (ILcom/facebook/react/bridge/ReadableArray;Lcom/facebook/react/bridge/Callback;Lcom/facebook/react/bridge/Callback;)V
 	public fun updateInstanceHandle (IJ)V
 	public fun updateLayout (IIIIII)V
 	public fun updateProperties (ILcom/facebook/react/uimanager/ReactStylesDiffMap;)V
@@ -4989,7 +4987,6 @@ public class com/facebook/react/uimanager/UIImplementation {
 	protected fun createRootShadowNode ()Lcom/facebook/react/uimanager/ReactShadowNode;
 	protected fun createShadowNode (Ljava/lang/String;)Lcom/facebook/react/uimanager/ReactShadowNode;
 	public fun createView (ILjava/lang/String;ILcom/facebook/react/bridge/ReadableMap;)V
-	public fun dismissPopupMenu ()V
 	public fun dispatchViewManagerCommand (IILcom/facebook/react/bridge/ReadableArray;)V
 	public fun dispatchViewManagerCommand (ILjava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
 	public fun dispatchViewUpdates (I)V
@@ -5025,7 +5022,6 @@ public class com/facebook/react/uimanager/UIImplementation {
 	public fun setLayoutUpdateListener (Lcom/facebook/react/uimanager/UIImplementation$LayoutUpdateListener;)V
 	public fun setViewHierarchyUpdateDebugListener (Lcom/facebook/react/uimanager/debug/NotThreadSafeViewHierarchyUpdateDebugListener;)V
 	public fun setViewLocalData (ILjava/lang/Object;)V
-	public fun showPopupMenu (ILcom/facebook/react/bridge/ReadableArray;Lcom/facebook/react/bridge/Callback;Lcom/facebook/react/bridge/Callback;)V
 	public fun synchronouslyUpdateViewOnUIThread (ILcom/facebook/react/uimanager/ReactStylesDiffMap;)V
 	public fun updateNodeSize (III)V
 	public fun updateRootView (III)V
@@ -5069,7 +5065,6 @@ public class com/facebook/react/uimanager/UIManagerModule : com/facebook/react/b
 	public fun configureNextLayoutAnimation (Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/Callback;Lcom/facebook/react/bridge/Callback;)V
 	public static fun createConstants (Ljava/util/List;Ljava/util/Map;Ljava/util/Map;)Ljava/util/Map;
 	public fun createView (ILjava/lang/String;ILcom/facebook/react/bridge/ReadableMap;)V
-	public fun dismissPopupMenu ()V
 	public fun dispatchCommand (IILcom/facebook/react/bridge/ReadableArray;)V
 	public fun dispatchCommand (ILjava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
 	public fun dispatchViewManagerCommand (ILcom/facebook/react/bridge/Dynamic;Lcom/facebook/react/bridge/ReadableArray;)V
@@ -5113,7 +5108,6 @@ public class com/facebook/react/uimanager/UIManagerModule : com/facebook/react/b
 	public fun setLayoutAnimationEnabledExperimental (Z)V
 	public fun setViewHierarchyUpdateDebugListener (Lcom/facebook/react/uimanager/debug/NotThreadSafeViewHierarchyUpdateDebugListener;)V
 	public fun setViewLocalData (ILjava/lang/Object;)V
-	public fun showPopupMenu (ILcom/facebook/react/bridge/ReadableArray;Lcom/facebook/react/bridge/Callback;Lcom/facebook/react/bridge/Callback;)V
 	public fun startSurface (Landroid/view/View;Ljava/lang/String;Lcom/facebook/react/bridge/WritableMap;II)I
 	public fun stopSurface (I)V
 	public fun synchronouslyUpdateViewOnUIThread (ILcom/facebook/react/bridge/ReadableMap;)V
@@ -5144,7 +5138,6 @@ public class com/facebook/react/uimanager/UIViewOperationQueue {
 	public fun enqueueClearJSResponder ()V
 	public fun enqueueConfigureLayoutAnimation (Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/Callback;)V
 	public fun enqueueCreateView (Lcom/facebook/react/uimanager/ThemedReactContext;ILjava/lang/String;Lcom/facebook/react/uimanager/ReactStylesDiffMap;)V
-	public fun enqueueDismissPopupMenu ()V
 	public fun enqueueDispatchCommand (IILcom/facebook/react/bridge/ReadableArray;)V
 	public fun enqueueDispatchCommand (ILjava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
 	public fun enqueueFindTargetForTouch (IFFLcom/facebook/react/bridge/Callback;)V
@@ -5157,7 +5150,6 @@ public class com/facebook/react/uimanager/UIViewOperationQueue {
 	public fun enqueueSetChildren (ILcom/facebook/react/bridge/ReadableArray;)V
 	public fun enqueueSetJSResponder (IIZ)V
 	public fun enqueueSetLayoutAnimationEnabled (Z)V
-	public fun enqueueShowPopupMenu (ILcom/facebook/react/bridge/ReadableArray;Lcom/facebook/react/bridge/Callback;Lcom/facebook/react/bridge/Callback;)V
 	public fun enqueueUIBlock (Lcom/facebook/react/uimanager/UIBlock;)V
 	protected fun enqueueUIOperation (Lcom/facebook/react/uimanager/UIViewOperationQueue$UIOperation;)V
 	public fun enqueueUpdateExtraData (ILjava/lang/Object;)V

@@ -105,11 +105,6 @@ class UIManagerModuleConstants {
                 PointerEvents.AUTO.ordinal())));
 
     constants.put(
-        "PopupMenu",
-        MapBuilder.of(
-            ACTION_DISMISSED, ACTION_DISMISSED, ACTION_ITEM_SELECTED, ACTION_ITEM_SELECTED));
-
-    constants.put(
         "AccessibilityEventTypes",
         MapBuilder.of(
             "typeWindowStateChanged",
