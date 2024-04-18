@@ -1799,18 +1799,10 @@ class ScrollView extends React.Component<Props, State> {
     const {experimental_endDraggingSensitivityMultiplier, ...otherProps} =
       this.props;
 
-      if(this.props.showsVerticalScrollIndicator === false){
-        console.warn('deprecated showsVerticalScrollIndicator use hideVerticalScrollIndicator instead');
-      }
-
-      if(this.props.showsHorizontalScrollIndicator === false){
-        console.warn('deprecated showsHorizontalScrollIndicator use hideHorizontalScrollIndicator instead');
-      }
-
     const props = {
       ...otherProps,
-      showsVerticalScrollIndicator:!this.props.hideVerticalScrollIndicator,
-      showsHorizontalScrollIndicator:!this.props.hideHorizontalScrollIndicator,
+      showsVerticalScrollIndicator: !this.props.hideVerticalScrollIndicator,
+      showsHorizontalScrollIndicator: !this.props.hideHorizontalScrollIndicator,
       alwaysBounceHorizontal,
       alwaysBounceVertical,
       style: StyleSheet.compose(baseStyle, this.props.style),
