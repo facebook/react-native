@@ -142,6 +142,28 @@ public class TextLayoutManagerMapBuffer {
         == LayoutDirection.RTL;
   }
 
+  public static Layout.Alignment getTextAlignment(MapBuffer attributedString) {
+    Layout.Alignment alignment = Layout.Alignment.ALIGN_NORMAL;
+
+    MapBuffer fragments = attributedString.getMapBuffer(AS_KEY_FRAGMENTS);
+    if (fragments.getCount() != 0) {
+      MapBuffer fragment = fragments.getMapBuffer(0);
+      MapBuffer textAttributes = fragment.getMapBuffer(FR_KEY_TEXT_ATTRIBUTES);
+
+      if (textAttributes.contains(TextAttributeProps.TA_KEY_ALIGNMENT)) {
+        String alignmentAttr = textAttributes.getString(TextAttributeProps.TA_KEY_ALIGNMENT);
+
+        if (alignmentAttr.equals("center")) {
+          alignment = Layout.Alignment.ALIGN_CENTER;
+        } else if (alignmentAttr.equals("right")) {
+          alignment = Layout.Alignment.ALIGN_OPPOSITE;
+        }
+      }
+    }
+
+    return alignment;
+  }
+
   private static void buildSpannableFromFragments(
       Context context, MapBuffer fragments, SpannableStringBuilder sb, List<SetSpanOperation> ops) {
     if (ReactNativeFeatureFlags.enableSpannableBuildingUnification()) {
@@ -491,23 +513,7 @@ public class TextLayoutManagerMapBuffer {
             ? paragraphAttributes.getInt(PA_KEY_MAX_NUMBER_OF_LINES)
             : ReactConstants.UNSET;
 
-    Layout.Alignment alignment = Layout.Alignment.ALIGN_NORMAL;
-
-    MapBuffer fragments = attributedString.getMapBuffer(AS_KEY_FRAGMENTS);
-    if (fragments.getCount() != 0) {
-      MapBuffer fragment = fragments.getMapBuffer(0);
-      MapBuffer textAttributes = fragment.getMapBuffer(FR_KEY_TEXT_ATTRIBUTES);
-
-      if (textAttributes.contains(TextAttributeProps.TA_KEY_ALIGNMENT)) {
-        String alignmentAttr = textAttributes.getString(TextAttributeProps.TA_KEY_ALIGNMENT);
-
-        if (alignmentAttr.equals("center")) {
-          alignment = Layout.Alignment.ALIGN_CENTER;
-        } else if (alignmentAttr.equals("right")) {
-          alignment = Layout.Alignment.ALIGN_OPPOSITE;
-        }
-      }
-    }
+    Layout.Alignment alignment = getTextAlignment(attributedString);
 
     if (adjustFontSizeToFit) {
       double minimumFontSize =
@@ -715,9 +721,8 @@ public class TextLayoutManagerMapBuffer {
         paragraphAttributes.contains(PA_KEY_MAX_NUMBER_OF_LINES)
             ? paragraphAttributes.getInt(PA_KEY_MAX_NUMBER_OF_LINES)
             : ReactConstants.UNSET;
-
-    // TODO
-    Layout.Alignment alignment = Layout.Alignment.ALIGN_NORMAL;
+    
+    Layout.Alignment alignment = getTextAlignment(attributedString);
 
     if (adjustFontSizeToFit) {
       double minimumFontSize =
