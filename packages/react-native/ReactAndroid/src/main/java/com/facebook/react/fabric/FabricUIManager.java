@@ -513,7 +513,8 @@ public class FabricUIManager implements UIManager, LifecycleEventListener, UIBlo
             mReactApplicationContext,
             attributedString,
             paragraphAttributes,
-            PixelUtil.toPixelFromDIP(width));
+            PixelUtil.toPixelFromDIP(width),
+            PixelUtil.toPixelFromDIP(height));
   }
 
   @SuppressWarnings("unused")

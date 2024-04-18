@@ -644,9 +644,9 @@ type ____LayoutStyle_Internal = $ReadOnly<{
    * between children may be larger than the gap value.
    * See https://developer.mozilla.org/en-US/docs/Web/CSS/gap for more details.
    */
-  rowGap?: number,
-  columnGap?: number,
-  gap?: number,
+  rowGap?: number | string,
+  columnGap?: number | string,
+  gap?: number | string,
 }>;
 
 /**

@@ -771,7 +771,9 @@ public class ReactInstanceManager {
     }
 
     mHasStartedCreatingInitialContext = false;
-    mCurrentActivity = null;
+    if (!mKeepActivity) {
+      mCurrentActivity = null;
+    }
 
     ResourceDrawableIdHelper.getInstance().clear();
 

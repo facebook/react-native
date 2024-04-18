@@ -27,8 +27,6 @@ import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
-import com.facebook.react.common.annotations.FrameworkAPI;
-import com.facebook.react.common.annotations.UnstableReactNativeAPI;
 import java.lang.ref.WeakReference;
 import java.util.Collection;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -213,20 +211,6 @@ public abstract class ReactContext extends ContextWrapper {
   }
 
   /**
-   * @return the RuntimeExecutor, a thread-safe handler for accessing the runtime.
-   * @experimental
-   */
-  @Nullable
-  @FrameworkAPI
-  @UnstableReactNativeAPI
-  public RuntimeExecutor getRuntimeExecutor() {
-    if (mCatalystInstance == null) {
-      raiseCatalystInstanceMissingException();
-    }
-    return mCatalystInstance.getRuntimeExecutor();
-  }
-
-  /**
    * Calls RCTDeviceEventEmitter.emit to JavaScript, with given event name and an optional list of
    * arguments.
    */
@@ -377,6 +361,21 @@ public abstract class ReactContext extends ContextWrapper {
   /** Should be called by the hosting Fragment in {@link Fragment#onDestroy} */
   @ThreadConfined(UI)
   public void onHostDestroy() {
+    onHostDestroyImpl();
+    mCurrentActivity = null;
+  }
+
+  @ThreadConfined(UI)
+  public void onHostDestroy(boolean keepActivity) {
+    if (!keepActivity) {
+      onHostDestroy();
+    } else {
+      onHostDestroyImpl();
+    }
+  }
+
+  @ThreadConfined(UI)
+  private void onHostDestroyImpl() {
     UiThreadUtil.assertOnUiThread();
     mLifecycleState = LifecycleState.BEFORE_CREATE;
     for (LifecycleEventListener listener : mLifecycleEventListeners) {
@@ -385,19 +384,6 @@ public abstract class ReactContext extends ContextWrapper {
       } catch (RuntimeException e) {
         handleException(e);
       }
-    }
-    resetCurrentActivity(false);
-  }
-
-  @ThreadConfined(UI)
-  public void onHostDestroy(boolean keepActivity) {
-    onHostDestroy();
-    resetCurrentActivity(keepActivity);
-  }
-
-  private void resetCurrentActivity(boolean keepActivity) {
-    if (!keepActivity) {
-      mCurrentActivity = null;
     }
   }
 

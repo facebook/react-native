@@ -62,9 +62,9 @@ class DebuggingOverlayRegistry {
   constructor() {
     if (reactDevToolsHook?.reactDevtoolsAgent != null) {
       this.#onReactDevToolsAgentAttached(reactDevToolsHook.reactDevtoolsAgent);
-      return;
     }
 
+    // There could be cases when frontend is disconnected and then connected again for the same React Native runtime.
     reactDevToolsHook?.on?.(
       'react-devtools',
       this.#onReactDevToolsAgentAttached,

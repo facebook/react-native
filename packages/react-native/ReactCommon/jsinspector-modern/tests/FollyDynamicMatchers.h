@@ -77,4 +77,13 @@ MATCHER_P2(
   return false;
 }
 
+/**
+ * A user-defined literal for constructing a folly::dynamic from a JSON
+ * string. Not technically specific to GMock, but convenient to have in a test
+ * suite.
+ */
+inline folly::dynamic operator""_json(const char* s, size_t n) {
+  return folly::parseJson(std::string{s, n});
+}
+
 } // namespace facebook

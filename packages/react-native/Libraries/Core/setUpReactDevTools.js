@@ -113,29 +113,30 @@ if (__DEV__) {
     }
   }
 
-  // 1. If React DevTools has already been opened and initialized in Fusebox:
+  // 1. If React DevTools has already been opened and initialized in Fusebox, bindings survive reloads
   if (global[reactDevToolsFuseboxGlobalBindingName] != null) {
     disconnectBackendFromReactDevToolsInFuseboxIfNeeded();
     const domain =
       fuseboxReactDevToolsDispatcher.initializeDomain('react-devtools');
     connectToReactDevToolsInFusebox(domain);
-  } else {
-    // 2. If React DevTools panel in Fusebox was opened for the first time after the runtime has been created
-    global.__FUSEBOX_REACT_DEVTOOLS_DISPATCHER__.onDomainInitialization.addEventListener(
-      (domain: Domain) => {
-        if (domain.name === 'react-devtools') {
-          disconnectBackendFromReactDevToolsInFuseboxIfNeeded();
-          connectToReactDevToolsInFusebox(domain);
-        }
-      },
-    );
-
-    // 3. Fallback to attempting to connect WS-based RDT frontend
-    const RCTNativeAppEventEmitter = require('../EventEmitter/RCTNativeAppEventEmitter');
-    RCTNativeAppEventEmitter.addListener(
-      'RCTDevMenuShown',
-      connectToWSBasedReactDevToolsFrontend,
-    );
-    connectToWSBasedReactDevToolsFrontend(); // Try connecting once on load
   }
+
+  // 2. If React DevTools panel in Fusebox was opened for the first time after the runtime has been created
+  // 2. OR if React DevTools frontend was re-initialized: Chrome DevTools was closed and then re-opened
+  global.__FUSEBOX_REACT_DEVTOOLS_DISPATCHER__.onDomainInitialization.addEventListener(
+    (domain: Domain) => {
+      if (domain.name === 'react-devtools') {
+        disconnectBackendFromReactDevToolsInFuseboxIfNeeded();
+        connectToReactDevToolsInFusebox(domain);
+      }
+    },
+  );
+
+  // 3. Fallback to attempting to connect WS-based RDT frontend
+  const RCTNativeAppEventEmitter = require('../EventEmitter/RCTNativeAppEventEmitter');
+  RCTNativeAppEventEmitter.addListener(
+    'RCTDevMenuShown',
+    connectToWSBasedReactDevToolsFrontend,
+  );
+  connectToWSBasedReactDevToolsFrontend(); // Try connecting once on load
 }
