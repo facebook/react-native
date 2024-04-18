@@ -187,7 +187,8 @@ void RuntimeTarget::installConsoleHandler() {
                 size_t count,
                 RuntimeTargetDelegate& runtimeTargetDelegate,
                 ConsoleState& state,
-                double timestampMs)>&& body) {
+                double timestampMs,
+                std::unique_ptr<StackTrace> stackTrace)>&& body) {
           console.setProperty(
               runtime,
               methodName,
@@ -210,13 +211,17 @@ void RuntimeTarget::installConsoleHandler() {
                              body = std::move(body),
                              state,
                              timestampMs](auto& runtimeTargetDelegate) {
+                              auto stackTrace =
+                                  runtimeTargetDelegate.captureStackTrace(
+                                      runtime, /* framesToSkip */ 1);
                               body(
                                   runtime,
                                   args,
                                   count,
                                   runtimeTargetDelegate,
                                   *state,
-                                  timestampMs);
+                                  timestampMs,
+                                  std::move(stackTrace));
                             });
                         return jsi::Value::undefined();
                       })));
@@ -232,7 +237,8 @@ void RuntimeTarget::installConsoleHandler() {
            size_t count,
            RuntimeTargetDelegate& runtimeTargetDelegate,
            ConsoleState& state,
-           auto timestampMs) {
+           auto timestampMs,
+           std::unique_ptr<StackTrace> stackTrace) {
           std::string label = "default";
           if (count > 0 && !args[0].isUndefined()) {
             label = args[0].toString(runtime).utf8(runtime);
@@ -247,7 +253,11 @@ void RuntimeTarget::installConsoleHandler() {
           vec.emplace_back(jsi::String::createFromUtf8(
               runtime, label + ": "s + std::to_string(it->second)));
           runtimeTargetDelegate.addConsoleMessage(
-              runtime, {timestampMs, ConsoleAPIType::kCount, std::move(vec)});
+              runtime,
+              {timestampMs,
+               ConsoleAPIType::kCount,
+               std::move(vec),
+               std::move(stackTrace)});
         });
 
     /**
@@ -260,7 +270,8 @@ void RuntimeTarget::installConsoleHandler() {
            size_t count,
            RuntimeTargetDelegate& runtimeTargetDelegate,
            ConsoleState& state,
-           auto timestampMs) {
+           auto timestampMs,
+           std::unique_ptr<StackTrace> stackTrace) {
           std::string label = "default";
           if (count > 0 && !args[0].isUndefined()) {
             label = args[0].toString(runtime).utf8(runtime);
@@ -272,7 +283,10 @@ void RuntimeTarget::installConsoleHandler() {
                 runtime, "Count for '"s + label + "' does not exist"));
             runtimeTargetDelegate.addConsoleMessage(
                 runtime,
-                {timestampMs, ConsoleAPIType::kWarning, std::move(vec)});
+                {timestampMs,
+                 ConsoleAPIType::kWarning,
+                 std::move(vec),
+                 std::move(stackTrace)});
           } else {
             it->second = 0;
           }
@@ -288,7 +302,8 @@ void RuntimeTarget::installConsoleHandler() {
            size_t count,
            RuntimeTargetDelegate& runtimeTargetDelegate,
            ConsoleState& state,
-           auto timestampMs) {
+           auto timestampMs,
+           std::unique_ptr<StackTrace> stackTrace) {
           std::string label = "default";
           if (count > 0 && !args[0].isUndefined()) {
             label = args[0].toString(runtime).utf8(runtime);
@@ -302,7 +317,10 @@ void RuntimeTarget::installConsoleHandler() {
                 runtime, "Timer '"s + label + "' already exists"));
             runtimeTargetDelegate.addConsoleMessage(
                 runtime,
-                {timestampMs, ConsoleAPIType::kWarning, std::move(vec)});
+                {timestampMs,
+                 ConsoleAPIType::kWarning,
+                 std::move(vec),
+                 std::move(stackTrace)});
           }
         });
 
@@ -316,7 +334,8 @@ void RuntimeTarget::installConsoleHandler() {
            size_t count,
            RuntimeTargetDelegate& runtimeTargetDelegate,
            ConsoleState& state,
-           auto timestampMs) {
+           auto timestampMs,
+           std::unique_ptr<StackTrace> stackTrace) {
           std::string label = "default";
           if (count > 0 && !args[0].isUndefined()) {
             label = args[0].toString(runtime).utf8(runtime);
@@ -328,7 +347,10 @@ void RuntimeTarget::installConsoleHandler() {
                 runtime, "Timer '"s + label + "' does not exist"));
             runtimeTargetDelegate.addConsoleMessage(
                 runtime,
-                {timestampMs, ConsoleAPIType::kWarning, std::move(vec)});
+                {timestampMs,
+                 ConsoleAPIType::kWarning,
+                 std::move(vec),
+                 std::move(stackTrace)});
           } else {
             std::vector<jsi::Value> vec;
             vec.emplace_back(jsi::String::createFromUtf8(
@@ -338,7 +360,10 @@ void RuntimeTarget::installConsoleHandler() {
             state.timerTable.erase(it);
             runtimeTargetDelegate.addConsoleMessage(
                 runtime,
-                {timestampMs, ConsoleAPIType::kTimeEnd, std::move(vec)});
+                {timestampMs,
+                 ConsoleAPIType::kTimeEnd,
+                 std::move(vec),
+                 std::move(stackTrace)});
           }
         });
 
@@ -352,7 +377,8 @@ void RuntimeTarget::installConsoleHandler() {
            size_t count,
            RuntimeTargetDelegate& runtimeTargetDelegate,
            ConsoleState& state,
-           auto timestampMs) {
+           auto timestampMs,
+           std::unique_ptr<StackTrace> stackTrace) {
           std::string label = "default";
           if (count > 0 && !args[0].isUndefined()) {
             label = args[0].toString(runtime).utf8(runtime);
@@ -364,7 +390,10 @@ void RuntimeTarget::installConsoleHandler() {
                 runtime, "Timer '"s + label + "' does not exist"));
             runtimeTargetDelegate.addConsoleMessage(
                 runtime,
-                {timestampMs, ConsoleAPIType::kWarning, std::move(vec)});
+                {timestampMs,
+                 ConsoleAPIType::kWarning,
+                 std::move(vec),
+                 std::move(stackTrace)});
           } else {
             std::vector<jsi::Value> vec;
             vec.emplace_back(jsi::String::createFromUtf8(
@@ -377,7 +406,11 @@ void RuntimeTarget::installConsoleHandler() {
               }
             }
             runtimeTargetDelegate.addConsoleMessage(
-                runtime, {timestampMs, ConsoleAPIType::kLog, std::move(vec)});
+                runtime,
+                {timestampMs,
+                 ConsoleAPIType::kLog,
+                 std::move(vec),
+                 std::move(stackTrace)});
           }
         });
 
@@ -391,7 +424,8 @@ void RuntimeTarget::installConsoleHandler() {
            size_t count,
            RuntimeTargetDelegate& runtimeTargetDelegate,
            ConsoleState& /*state*/,
-           auto timestampMs) {
+           auto timestampMs,
+           std::unique_ptr<StackTrace> stackTrace) {
           if (count >= 1 && toBoolean(runtime, args[0])) {
             return;
           }
@@ -420,7 +454,8 @@ void RuntimeTarget::installConsoleHandler() {
                ConsoleAPIType::kAssert,
                std::vector<jsi::Value>(
                    make_move_iterator(data.begin()),
-                   make_move_iterator(data.end()))});
+                   make_move_iterator(data.end())),
+               std::move(stackTrace)});
         });
 
     for (auto& [name, type] : kForwardingConsoleMethods) {
@@ -432,13 +467,15 @@ void RuntimeTarget::installConsoleHandler() {
               size_t count,
               RuntimeTargetDelegate& runtimeTargetDelegate,
               ConsoleState& /*state*/,
-              auto timestampMs) {
+              auto timestampMs,
+              std::unique_ptr<StackTrace> stackTrace) {
             std::vector<jsi::Value> argsVec;
             for (size_t i = 0; i != count; ++i) {
               argsVec.emplace_back(runtime, args[i]);
             }
             runtimeTargetDelegate.addConsoleMessage(
-                runtime, {timestampMs, type, std::move(argsVec)});
+                runtime,
+                {timestampMs, type, std::move(argsVec), std::move(stackTrace)});
           });
     }
 

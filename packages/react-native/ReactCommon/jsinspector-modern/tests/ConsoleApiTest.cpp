@@ -51,6 +51,27 @@ class ConsoleApiTest
   void SetUp() override {
     JsiIntegrationPortableTest::SetUp();
     connect();
+    EXPECT_CALL(
+        fromPage(),
+        onMessage(
+            JsonParsed(AllOf(AtJsonPtr("/method", "Debugger.scriptParsed")))))
+        .Times(AnyNumber())
+        .WillRepeatedly(Invoke<>([this](std::string message) {
+          auto params = folly::parseJson(message);
+          // Store the script ID and URL for later use.
+          scriptUrlsById_.emplace(
+              params.at("params").at("scriptId").getString(),
+              params.at("params").at("url").getString());
+        }));
+    this->expectMessageFromPage(JsonEq(R"({
+                                            "id": 0,
+                                            "result": {}
+                                        })"));
+    this->toPage_->sendMessage(R"({
+                                    "id": 0,
+                                    "method": "Debugger.enable"
+                                })");
+
     if (GetParam().runtimeEnabledAtStart) {
       enableRuntimeDomain();
     }
@@ -79,7 +100,22 @@ class ConsoleApiTest
     expectedConsoleApiCalls_.clear();
   }
 
+  template <typename InnerMatcher>
+  Matcher<folly::dynamic> ScriptIdMapsTo(InnerMatcher urlMatcher) {
+    return ResultOf(
+        [this](const auto& id) { return getScriptUrlById(id.getString()); },
+        urlMatcher);
+  }
+
  private:
+  std::optional<std::string> getScriptUrlById(std::string scriptId) {
+    auto it = scriptUrlsById_.find(scriptId);
+    if (it == scriptUrlsById_.end()) {
+      return std::nullopt;
+    }
+    return it->second;
+  }
+
   void expectConsoleApiCallImpl(Matcher<folly::dynamic> paramsMatcher) {
     this->expectMessageFromPage(JsonParsed(AllOf(
         AtJsonPtr("/method", "Runtime.consoleAPICalled"),
@@ -137,6 +173,7 @@ class ConsoleApiTest
 
   std::vector<Matcher<folly::dynamic>> expectedConsoleApiCalls_;
   bool runtimeEnabled_{false};
+  std::unordered_map<std::string, std::string> scriptUrlsById_;
 };
 
 class ConsoleApiTestWithPreExistingConsole : public ConsoleApiTest {
@@ -677,6 +714,38 @@ TEST_P(ConsoleApiTestWithPreExistingConsole, testPreExistingConsoleObject) {
               "world"
             ]
           }])"));
+}
+
+TEST_P(ConsoleApiTest, testConsoleLogStack) {
+  InSequence s;
+  expectConsoleApiCall(AllOf(
+      AtJsonPtr("/type", "log"),
+      AtJsonPtr(
+          "/args",
+          R"([{
+                "type": "string",
+                "value": "hello"
+              }])"_json),
+      AtJsonPtr(
+          "/stackTrace/callFrames",
+          AllOf(
+              Each(AtJsonPtr(
+                  "/url",
+                  Conditional(
+                      GetParam().withConsolePolyfill,
+                      AnyOf("script.js", "prelude.js"),
+                      "script.js"))),
+              // A relatively weak assertion: we expect at least one frame tying
+              // the call to the `console.log` line.
+              Contains(AllOf(
+                  AtJsonPtr("/functionName", "global"),
+                  AtJsonPtr("/url", "script.js"),
+                  AtJsonPtr("/lineNumber", 1),
+                  AtJsonPtr("/scriptId", ScriptIdMapsTo("script.js"))))))));
+  eval(R"( // line 0
+    console.log('hello'); // line 1
+    //# sourceURL=script.js
+  )");
 }
 
 static const auto paramValues = testing::Values(
