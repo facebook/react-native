@@ -4167,7 +4167,7 @@ public class com/facebook/react/uimanager/LayoutShadowNode : com/facebook/react/
 	public fun setAspectRatio (F)V
 	public fun setBorderWidths (IF)V
 	public fun setCollapsable (Z)V
-	public fun setColumnGap (F)V
+	public fun setColumnGap (Lcom/facebook/react/bridge/Dynamic;)V
 	public fun setDisplay (Ljava/lang/String;)V
 	public fun setFlex (F)V
 	public fun setFlexBasis (Lcom/facebook/react/bridge/Dynamic;)V
@@ -4175,7 +4175,7 @@ public class com/facebook/react/uimanager/LayoutShadowNode : com/facebook/react/
 	public fun setFlexGrow (F)V
 	public fun setFlexShrink (F)V
 	public fun setFlexWrap (Ljava/lang/String;)V
-	public fun setGap (F)V
+	public fun setGap (Lcom/facebook/react/bridge/Dynamic;)V
 	public fun setHeight (Lcom/facebook/react/bridge/Dynamic;)V
 	public fun setJustifyContent (Ljava/lang/String;)V
 	public fun setMargins (ILcom/facebook/react/bridge/Dynamic;)V
@@ -4187,7 +4187,7 @@ public class com/facebook/react/uimanager/LayoutShadowNode : com/facebook/react/
 	public fun setPaddings (ILcom/facebook/react/bridge/Dynamic;)V
 	public fun setPosition (Ljava/lang/String;)V
 	public fun setPositionValues (ILcom/facebook/react/bridge/Dynamic;)V
-	public fun setRowGap (F)V
+	public fun setRowGap (Lcom/facebook/react/bridge/Dynamic;)V
 	public fun setShouldNotifyOnLayout (Z)V
 	public fun setShouldNotifyPointerEnter (Z)V
 	public fun setShouldNotifyPointerLeave (Z)V
@@ -4620,6 +4620,7 @@ public abstract interface class com/facebook/react/uimanager/ReactShadowNode {
 	public abstract fun setBaselineFunction (Lcom/facebook/yoga/YogaBaselineFunction;)V
 	public abstract fun setBorder (IF)V
 	public abstract fun setColumnGap (F)V
+	public abstract fun setColumnGapPercent (F)V
 	public abstract fun setDefaultPadding (IF)V
 	public abstract fun setDisplay (Lcom/facebook/yoga/YogaDisplay;)V
 	public abstract fun setFlex (F)V
@@ -4631,6 +4632,7 @@ public abstract interface class com/facebook/react/uimanager/ReactShadowNode {
 	public abstract fun setFlexShrink (F)V
 	public abstract fun setFlexWrap (Lcom/facebook/yoga/YogaWrap;)V
 	public abstract fun setGap (F)V
+	public abstract fun setGapPercent (F)V
 	public abstract fun setIsLayoutOnly (Z)V
 	public abstract fun setJustifyContent (Lcom/facebook/yoga/YogaJustify;)V
 	public abstract fun setLayoutDirection (Lcom/facebook/yoga/YogaDirection;)V
@@ -4650,6 +4652,7 @@ public abstract interface class com/facebook/react/uimanager/ReactShadowNode {
 	public abstract fun setReactTag (I)V
 	public abstract fun setRootTag (I)V
 	public abstract fun setRowGap (F)V
+	public abstract fun setRowGapPercent (F)V
 	public abstract fun setShouldNotifyOnLayout (Z)V
 	public abstract fun setStyleAspectRatio (F)V
 	public abstract fun setStyleHeight (F)V
@@ -4754,6 +4757,7 @@ public class com/facebook/react/uimanager/ReactShadowNodeImpl : com/facebook/rea
 	public fun setBaselineFunction (Lcom/facebook/yoga/YogaBaselineFunction;)V
 	public fun setBorder (IF)V
 	public fun setColumnGap (F)V
+	public fun setColumnGapPercent (F)V
 	public fun setDefaultPadding (IF)V
 	public fun setDisplay (Lcom/facebook/yoga/YogaDisplay;)V
 	public fun setFlex (F)V
@@ -4765,6 +4769,7 @@ public class com/facebook/react/uimanager/ReactShadowNodeImpl : com/facebook/rea
 	public fun setFlexShrink (F)V
 	public fun setFlexWrap (Lcom/facebook/yoga/YogaWrap;)V
 	public fun setGap (F)V
+	public fun setGapPercent (F)V
 	public final fun setIsLayoutOnly (Z)V
 	public fun setJustifyContent (Lcom/facebook/yoga/YogaJustify;)V
 	public fun setLayoutDirection (Lcom/facebook/yoga/YogaDirection;)V
@@ -4785,6 +4790,7 @@ public class com/facebook/react/uimanager/ReactShadowNodeImpl : com/facebook/rea
 	public fun setReactTag (I)V
 	public final fun setRootTag (I)V
 	public fun setRowGap (F)V
+	public fun setRowGapPercent (F)V
 	public fun setShouldNotifyOnLayout (Z)V
 	public fun setStyleAspectRatio (F)V
 	public fun setStyleHeight (F)V

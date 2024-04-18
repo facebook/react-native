@@ -7584,9 +7584,9 @@ type ____LayoutStyle_Internal = $ReadOnly<{
   aspectRatio?: number | string,
   zIndex?: number,
   direction?: \\"inherit\\" | \\"ltr\\" | \\"rtl\\",
-  rowGap?: number,
-  columnGap?: number,
-  gap?: number,
+  rowGap?: number | string,
+  columnGap?: number | string,
+  gap?: number | string,
 }>;
 export type ____ShadowStyle_InternalCore = $ReadOnly<{
   shadowColor?: ____ColorValue_Internal,
