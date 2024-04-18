@@ -718,13 +718,30 @@ export interface ScrollViewProps
 
   /**
    * When true, shows a horizontal scroll indicator.
+   * @deprecated `showsHorizontalScrollIndicator`
+   * use `hideVerticalScrollIndicator` instead
    */
+  // [FixMe remove-unused]
   showsHorizontalScrollIndicator?: boolean | undefined;
+  /**
+   * When true, hides horizontal scroll indicator.
+   * @default false
+   */
+  hideHorizontalScrollIndicator?: boolean | undefined;
 
   /**
    * When true, shows a vertical scroll indicator.
+   * @deprecated `showsVerticalScrollIndicator`
+   * use `hideVerticalScrollIndicator` instead
    */
+  // [FixMe remove-unused]
   showsVerticalScrollIndicator?: boolean | undefined;
+
+  /**
+   * When true, hides vertical scroll indicator.
+   * @default false
+   */
+  hideVerticalScrollIndicator?: boolean | undefined;
 
   /**
    * When true, Sticky header is hidden when scrolling down, and dock at the top when scrolling up.

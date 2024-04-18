@@ -63,7 +63,7 @@ export default function ScrollViewPressableStickyHeaderExample(): React.Node {
         ref={scrollRef}
         style={{flex: 1}}
         stickyHeaderIndices={[0]}
-        showsVerticalScrollIndicator={false}
+        hideVerticalScrollIndicator
         testID="scroll_pressable_sticky_header">
         <StickyHeader />
         {components}

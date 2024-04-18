@@ -308,10 +308,10 @@ type IOSProps = $ReadOnly<{|
    */
   onScrollToTop?: (event: ScrollEvent) => void,
   /**
-   * When true, shows a horizontal scroll indicator.
-   * The default value is true.
+   * When true, hide horizontal scroll indicator.
+   * The default value is false.
    */
-  showsHorizontalScrollIndicator?: ?boolean,
+  hideHorizontalScrollIndicator?: ?boolean,
   /**
    * The current scale of the scroll view content. The default value is 1.0.
    * @platform ios
@@ -577,10 +577,10 @@ export type Props = $ReadOnly<{|
    */
   scrollEventThrottle?: ?number,
   /**
-   * When true, shows a vertical scroll indicator.
-   * The default value is true.
+   * When false, hides vertical scroll indicator.
+   * The default value is false.
    */
-  showsVerticalScrollIndicator?: ?boolean,
+  hideVerticalScrollIndicator?: ?boolean,
   /**
    * When true, Sticky header is hidden when scrolling down, and dock at the top
    * when scrolling up
@@ -1798,8 +1798,19 @@ class ScrollView extends React.Component<Props, State> {
 
     const {experimental_endDraggingSensitivityMultiplier, ...otherProps} =
       this.props;
+
+      if(this.props.showsVerticalScrollIndicator === false){
+        console.warn('deprecated showsVerticalScrollIndicator use hideVerticalScrollIndicator instead');
+      }
+
+      if(this.props.showsHorizontalScrollIndicator === false){
+        console.warn('deprecated showsHorizontalScrollIndicator use hideHorizontalScrollIndicator instead');
+      }
+
     const props = {
       ...otherProps,
+      showsVerticalScrollIndicator:!this.props.hideVerticalScrollIndicator,
+      showsHorizontalScrollIndicator:!this.props.hideHorizontalScrollIndicator,
       alwaysBounceHorizontal,
       alwaysBounceVertical,
       style: StyleSheet.compose(baseStyle, this.props.style),

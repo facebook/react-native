@@ -692,8 +692,8 @@ const ScrollIndicatorExample = () => {
         style={[styles.scrollView, {height: 200}]}
         contentInset={{top: 10, bottom: 10, left: 10, right: 10}}
         scrollIndicatorInsets={scrollIndicatorInsets}
-        showsHorizontalScrollIndicator={showsHorizontalScrollIndic}
-        showsVerticalScrollIndicator={showsVerticalScrollIndic}
+        hideHorizontalScrollIndicator={!showsHorizontalScrollIndic}
+        hideVerticalScrollIndicator={!showsVerticalScrollIndic}
         nestedScrollEnabled>
         {ITEMS.map(createItemRow)}
       </ScrollView>
