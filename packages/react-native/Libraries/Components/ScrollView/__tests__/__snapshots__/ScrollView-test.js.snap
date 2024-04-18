@@ -38,6 +38,8 @@ exports[`ScrollView renders its children: should deep render when not mocked (pl
   sendMomentumEvents={false}
   snapToEnd={true}
   snapToStart={true}
+  hideVerticalScrollIndicator={false}
+  hideHorizontalScrollIndicator={false}
   style={
     Object {
       "flexDirection": "column",
