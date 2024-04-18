@@ -11,6 +11,7 @@
 #include "MountItem.h"
 #include "StateWrapperImpl.h"
 
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/jni/ReadableNativeMap.h>
 #include <react/renderer/components/scrollview/ScrollViewProps.h>
 #include <react/renderer/core/conversions.h>
@@ -777,6 +778,12 @@ void FabricMountingManager::executeMount(
 void FabricMountingManager::preallocateShadowView(
     SurfaceId surfaceId,
     const ShadowView& shadowView) {
+  if (ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop()) {
+    // FIXME T186151779: View preallocation is not compatible with batched
+    // rendering in the new event loop
+    return;
+  }
+
   {
     std::lock_guard lock(allocatedViewsMutex_);
     auto allocatedViewsIterator = allocatedViewRegistry_.find(surfaceId);
