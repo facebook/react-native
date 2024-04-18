@@ -321,7 +321,8 @@ public class TextLayoutManagerMapBuffer {
       YogaMeasureMode widthYogaMeasureMode,
       boolean includeFontPadding,
       int textBreakStrategy,
-      int hyphenationFrequency) {
+      int hyphenationFrequency,
+      Layout.Alignment alignment) {
     Layout layout;
     int spanLength = text.length();
     boolean unconstrainedWidth = widthYogaMeasureMode == YogaMeasureMode.UNDEFINED || width < 0;
@@ -337,7 +338,7 @@ public class TextLayoutManagerMapBuffer {
       int hintWidth = (int) Math.ceil(desiredWidth);
       layout =
           StaticLayout.Builder.obtain(text, 0, spanLength, sTextPaintInstance, hintWidth)
-              .setAlignment(Layout.Alignment.ALIGN_NORMAL)
+              .setAlignment(alignment)
               .setLineSpacing(0.f, 1.f)
               .setIncludePad(includeFontPadding)
               .setBreakStrategy(textBreakStrategy)
@@ -345,7 +346,7 @@ public class TextLayoutManagerMapBuffer {
               .build();
 
     } else if (boring != null && (unconstrainedWidth || boring.width <= width)) {
-      int boringLayoutWidth = boring.width;
+      int boringLayoutWidth = (int) width;
       if (boring.width < 0) {
         ReactSoftExceptionLogger.logSoftException(
             TAG, new ReactNoCrashSoftException("Text width is invalid: " + boring.width));
@@ -358,7 +359,7 @@ public class TextLayoutManagerMapBuffer {
               text,
               sTextPaintInstance,
               boringLayoutWidth,
-              Layout.Alignment.ALIGN_NORMAL,
+              alignment,
               1.f,
               0.f,
               boring,
@@ -367,7 +368,7 @@ public class TextLayoutManagerMapBuffer {
       // Is used for multiline, boring text and the width is known.
       StaticLayout.Builder builder =
           StaticLayout.Builder.obtain(text, 0, spanLength, sTextPaintInstance, (int) width)
-              .setAlignment(Layout.Alignment.ALIGN_NORMAL)
+              .setAlignment(alignment)
               .setLineSpacing(0.f, 1.f)
               .setIncludePad(includeFontPadding)
               .setBreakStrategy(textBreakStrategy)
@@ -392,7 +393,8 @@ public class TextLayoutManagerMapBuffer {
       int maximumNumberOfLines,
       boolean includeFontPadding,
       int textBreakStrategy,
-      int hyphenationFrequency) {
+      int hyphenationFrequency,
+      Layout.Alignment alignment) {
     BoringLayout.Metrics boring = BoringLayout.isBoring(text, sTextPaintInstance);
     Layout layout =
         createLayout(
@@ -402,7 +404,8 @@ public class TextLayoutManagerMapBuffer {
             widthYogaMeasureMode,
             includeFontPadding,
             textBreakStrategy,
-            hyphenationFrequency);
+            hyphenationFrequency,
+            alignment);
 
     // Minimum font size is 4pts to match the iOS implementation.
     int minimumFontSize =
@@ -445,7 +448,8 @@ public class TextLayoutManagerMapBuffer {
               widthYogaMeasureMode,
               includeFontPadding,
               textBreakStrategy,
-              hyphenationFrequency);
+              hyphenationFrequency,
+              alignment);
     }
   }
 
@@ -487,6 +491,24 @@ public class TextLayoutManagerMapBuffer {
             ? paragraphAttributes.getInt(PA_KEY_MAX_NUMBER_OF_LINES)
             : ReactConstants.UNSET;
 
+    Layout.Alignment alignment = Layout.Alignment.ALIGN_NORMAL;
+
+    MapBuffer fragments = attributedString.getMapBuffer(AS_KEY_FRAGMENTS);
+    if (fragments.getCount() != 0) {
+      MapBuffer fragment = fragments.getMapBuffer(0);
+      MapBuffer textAttributes = fragment.getMapBuffer(FR_KEY_TEXT_ATTRIBUTES);
+
+      if (textAttributes.contains(TextAttributeProps.TA_KEY_ALIGNMENT)) {
+        String alignmentAttr = textAttributes.getString(TextAttributeProps.TA_KEY_ALIGNMENT);
+
+        if (alignmentAttr.equals("center")) {
+          alignment = Layout.Alignment.ALIGN_CENTER;
+        } else if (alignmentAttr.equals("right")) {
+          alignment = Layout.Alignment.ALIGN_OPPOSITE;
+        }
+      }
+    }
+
     if (adjustFontSizeToFit) {
       double minimumFontSize =
           paragraphAttributes.contains(PA_KEY_MINIMUM_FONT_SIZE)
@@ -503,7 +525,8 @@ public class TextLayoutManagerMapBuffer {
           maximumNumberOfLines,
           includeFontPadding,
           textBreakStrategy,
-          hyphenationFrequency);
+          hyphenationFrequency,
+          alignment);
     }
 
     BoringLayout.Metrics boring = BoringLayout.isBoring(text, sTextPaintInstance);
@@ -515,7 +538,8 @@ public class TextLayoutManagerMapBuffer {
             widthYogaMeasureMode,
             includeFontPadding,
             textBreakStrategy,
-            hyphenationFrequency);
+            hyphenationFrequency,
+            alignment);
 
     int calculatedLineCount =
         maximumNumberOfLines == ReactConstants.UNSET || maximumNumberOfLines == 0
@@ -692,6 +716,9 @@ public class TextLayoutManagerMapBuffer {
             ? paragraphAttributes.getInt(PA_KEY_MAX_NUMBER_OF_LINES)
             : ReactConstants.UNSET;
 
+    // TODO
+    Layout.Alignment alignment = Layout.Alignment.ALIGN_NORMAL;
+
     if (adjustFontSizeToFit) {
       double minimumFontSize =
           paragraphAttributes.contains(PA_KEY_MINIMUM_FONT_SIZE)
@@ -708,7 +735,8 @@ public class TextLayoutManagerMapBuffer {
           maximumNumberOfLines,
           includeFontPadding,
           textBreakStrategy,
-          hyphenationFrequency);
+          hyphenationFrequency,
+          alignment);
     }
 
     Layout layout =
@@ -719,7 +747,8 @@ public class TextLayoutManagerMapBuffer {
             YogaMeasureMode.EXACTLY,
             includeFontPadding,
             textBreakStrategy,
-            hyphenationFrequency);
+            hyphenationFrequency,
+            alignment);
     return FontMetricsUtil.getFontMetrics(text, layout, sTextPaintInstance, context);
   }
 }
