@@ -546,6 +546,27 @@ TYPED_TEST(JsiIntegrationHermesTest, ScriptParsedExactlyOnce) {
                                })");
 }
 
+TYPED_TEST(JsiIntegrationHermesTest, FunctionDescriptionIncludesName) {
+  // See
+  // https://github.com/facebookexperimental/rn-chrome-devtools-frontend/blob/9a23d4c7c4c2d1a3d9e913af38d6965f474c4284/front_end/ui/legacy/components/object_ui/ObjectPropertiesSection.ts#L311-L391
+
+  this->connect();
+
+  InSequence s;
+
+  this->expectMessageFromPage(JsonParsed(AllOf(
+      AtJsonPtr("/id", 1),
+      AtJsonPtr("/result/result/type", "function"),
+      AtJsonPtr(
+          "/result/result/description",
+          DynamicString(StartsWith("function foo() {"))))));
+  this->toPage_->sendMessage(R"({
+                               "id": 1,
+                               "method": "Runtime.evaluate",
+                               "params": {"expression": "(function foo() {Math.random()});"}
+                             })");
+}
+
 #pragma endregion // AllHermesVariants
 
 } // namespace facebook::react::jsinspector_modern
