@@ -35,7 +35,6 @@ import com.facebook.systrace.TraceListener;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -92,7 +91,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private final Object mJSCallsPendingInitLock = new Object();
 
   private final NativeModuleRegistry mNativeModuleRegistry;
-  private final JSIModuleRegistry mJSIModuleRegistry = new JSIModuleRegistry();
   private final JSExceptionHandler mJSExceptionHandler;
   private final MessageQueueThread mNativeModulesQueueThread;
   private boolean mInitialized = false;
@@ -357,7 +355,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
     mNativeModulesQueueThread.runOnQueue(
         () -> {
           mNativeModuleRegistry.notifyJSInstanceDestroy();
-          mJSIModuleRegistry.notifyJSInstanceDestroy();
           if (mFabricUIManager != null) {
             mFabricUIManager.invalidate();
           }
@@ -543,17 +540,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   public native RuntimeScheduler getRuntimeScheduler();
 
-  @Override
-  @Deprecated
-  public <T extends JSIModule> void addJSIModules(List<JSIModuleSpec<T>> jsiModules) {
-    mJSIModuleRegistry.registerModules(jsiModules);
-  }
-
-  @Override
-  public JSIModule getJSIModule(JSIModuleType moduleType) {
-    return mJSIModuleRegistry.getModule(moduleType);
-  }
-
   private native long getJavaScriptContext();
 
   private void incrementPendingJSCalls() {
@@ -569,10 +555,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
             }
           });
     }
-  }
-
-  public void setTurboModuleManager(JSIModule module) {
-    mTurboModuleRegistry = (TurboModuleRegistry) module;
   }
 
   @Override
