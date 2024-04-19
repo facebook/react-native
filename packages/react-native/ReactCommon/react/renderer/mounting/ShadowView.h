@@ -64,6 +64,7 @@ std::vector<DebugStringConvertibleObject> getDebugProps(
  */
 struct ShadowViewNodePair final {
   using NonOwningList = std::vector<ShadowViewNodePair*>;
+  using OwningList = std::vector<ShadowViewNodePair>;
 
   ShadowView shadowView;
   const ShadowNode* shadowNode;
@@ -90,6 +91,30 @@ struct ShadowViewNodePair final {
   bool inOtherTree() const {
     return this->otherTreePair != nullptr;
   }
+};
+
+/*
+ * Describes pair of a `ShadowView` and a `ShadowNode`.
+ * This is not exposed to the mounting layer.
+ *
+ */
+struct ShadowViewNodePairLegacy final {
+  using OwningList = std::vector<ShadowViewNodePairLegacy>;
+
+  ShadowView shadowView;
+  const ShadowNode* shadowNode;
+  bool flattened{false};
+  bool isConcreteView{true};
+
+  size_t mountIndex{0};
+
+  bool inOtherTree{false};
+
+  /*
+   * The stored pointer to `ShadowNode` represents an identity of the pair.
+   */
+  bool operator==(const ShadowViewNodePairLegacy& rhs) const;
+  bool operator!=(const ShadowViewNodePairLegacy& rhs) const;
 };
 
 } // namespace facebook::react

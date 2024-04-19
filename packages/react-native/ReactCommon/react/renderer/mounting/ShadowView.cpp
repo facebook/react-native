@@ -85,4 +85,14 @@ bool ShadowViewNodePair::operator!=(const ShadowViewNodePair& rhs) const {
   return !(*this == rhs);
 }
 
+bool ShadowViewNodePairLegacy::operator==(
+    const ShadowViewNodePairLegacy& rhs) const {
+  return this->shadowNode == rhs.shadowNode;
+}
+
+bool ShadowViewNodePairLegacy::operator!=(
+    const ShadowViewNodePairLegacy& rhs) const {
+  return !(*this == rhs);
+}
+
 } // namespace facebook::react

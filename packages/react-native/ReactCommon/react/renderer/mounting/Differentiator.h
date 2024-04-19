@@ -53,10 +53,17 @@ ShadowViewMutation::List calculateShadowViewMutations(
  * flattened view hierarchy. The V2 version preserves nodes even if they do
  * not form views and their children are flattened.
  */
-ShadowViewNodePair::NonOwningList sliceChildShadowNodeViewPairs(
+ShadowViewNodePair::NonOwningList sliceChildShadowNodeViewPairsV2(
     const ShadowNode& shadowNode,
     ViewNodePairScope& viewNodePairScope,
     bool allowFlattened = false,
     Point layoutOffset = {0, 0});
+
+/*
+ * Generates a list of `ShadowViewNodePair`s that represents a layer of a
+ * flattened view hierarchy. This is *only* used by unit tests currently.
+ */
+ShadowViewNodePair::OwningList sliceChildShadowNodeViewPairsForTesting(
+    const ShadowNode& shadowNode);
 
 } // namespace facebook::react
