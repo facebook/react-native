@@ -3889,6 +3889,26 @@ declare module.exports: symbolicateStackTrace;
 "
 `;
 
+exports[`public API should not change unintentionally Libraries/Core/ErrorHandlers.js 1`] = `
+"type ErrorInfo = {
+  +componentStack?: ?string,
+  +errorBoundary?: ?React$Component<any, any>,
+};
+declare export function onUncaughtError(
+  errorValue: mixed,
+  errorInfo: ErrorInfo
+): void;
+declare export function onCaughtError(
+  errorValue: mixed,
+  errorInfo: ErrorInfo
+): void;
+declare export function onRecoverableError(
+  errorValue: mixed,
+  errorInfo: ErrorInfo
+): void;
+"
+`;
+
 exports[`public API should not change unintentionally Libraries/Core/ExceptionsManager.js 1`] = `
 "declare class SyntheticError extends Error {
   name: string;
@@ -7121,6 +7141,23 @@ export type TouchedViewDataAtPoint = $ReadOnly<{
   }>,
   ...InspectorData,
 }>;
+export type RenderRootOptions = {
+  onUncaughtError?: (
+    error: mixed,
+    errorInfo: { +componentStack?: ?string }
+  ) => void,
+  onCaughtError?: (
+    error: mixed,
+    errorInfo: {
+      +componentStack?: ?string,
+      +errorBoundary?: ?React$Component<any, any>,
+    }
+  ) => void,
+  onRecoverableError?: (
+    error: mixed,
+    errorInfo: { +componentStack?: ?string }
+  ) => void,
+};
 export type ReactNativeType = {
   findHostInstance_DEPRECATED<TElementType: ElementType>(
     componentOrHandle: ?(ElementRef<TElementType> | number)
@@ -7144,7 +7181,8 @@ export type ReactNativeType = {
   render(
     element: Element<ElementType>,
     containerTag: number,
-    callback: ?() => void
+    callback: ?() => void,
+    options: ?RenderRootOptions
   ): ?ElementRef<ElementType>,
   unmountComponentAtNode(containerTag: number): void,
   unmountComponentAtNodeAndRemoveContainer(containerTag: number): void,
@@ -7177,7 +7215,8 @@ export type ReactFabricType = {
     element: Element<ElementType>,
     containerTag: number,
     callback: ?() => void,
-    concurrentRoot: ?boolean
+    concurrentRoot: ?boolean,
+    options: ?RenderRootOptions
   ): ?ElementRef<ElementType>,
   unmountComponentAtNode(containerTag: number): void,
   getNodeFromInternalInstanceHandle(
