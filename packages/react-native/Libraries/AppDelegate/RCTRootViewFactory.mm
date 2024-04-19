@@ -83,7 +83,7 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 
 @end
 
-@interface RCTRootViewFactory () <RCTContextContainerHandling> {
+@interface RCTRootViewFactory () <RCTContextContainerHandling, RCTHostDelegate> {
   std::shared_ptr<const facebook::react::ReactNativeConfig> _reactNativeConfig;
   facebook::react::ContextContainer::Shared _contextContainer;
 }
@@ -181,6 +181,20 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
   return rootView;
 }
 
+#pragma mark - RCTHostDelegate
+
+- (void)hostDidStart:(RCTHost *)host
+{
+}
+
+- (void)host:(RCTHost *)host
+    didReceiveJSErrorStack:(NSArray<NSDictionary<NSString *, id> *> *)stack
+                   message:(NSString *)message
+               exceptionId:(NSUInteger)exceptionId
+                   isFatal:(BOOL)isFatal
+{
+}
+
 #pragma mark - RCTCxxBridgeDelegate
 - (std::unique_ptr<facebook::react::JSExecutorFactory>)jsExecutorFactoryForBridge:(RCTBridge *)bridge
 {
@@ -234,7 +248,7 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 
   __weak __typeof(self) weakSelf = self;
   _reactHost = [[RCTHost alloc] initWithBundleURLProvider:self->_configuration.bundleURLBlock
-                                             hostDelegate:nil
+                                             hostDelegate:self
                                turboModuleManagerDelegate:_turboModuleManagerDelegate
                                          jsEngineProvider:^std::shared_ptr<facebook::react::JSRuntimeFactory>() {
                                            return [weakSelf createJSRuntimeFactory];
