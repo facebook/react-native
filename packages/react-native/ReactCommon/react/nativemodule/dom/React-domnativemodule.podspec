@@ -45,7 +45,6 @@ Pod::Spec.new do |s|
   install_modules_dependencies(s)
 
   s.dependency "ReactCommon/turbomodule/core"
-  s.dependency "React-Fabric/uimanager"
-  s.dependency "React-Fabric/dom"
-  s.dependency "React-Fabric/components/root"
+  s.dependency "React-Fabric"
+  s.dependency "React-FabricComponents"
 end
