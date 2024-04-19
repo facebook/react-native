@@ -299,21 +299,7 @@
 
 #pragma mark - Feature Flags
 
-class RCTAppDelegateBridgelessFeatureFlags : public facebook::react::ReactNativeFeatureFlagsDefaults {
- public:
-  bool useModernRuntimeScheduler() override
-  {
-    return true;
-  }
-  bool enableMicrotasks() override
-  {
-    return true;
-  }
-  bool batchRenderingUpdatesInEventLoop() override
-  {
-    return true;
-  }
-};
+class RCTAppDelegateBridgelessFeatureFlags : public facebook::react::ReactNativeFeatureFlagsDefaults {};
 
 - (void)_setUpFeatureFlags
 {
