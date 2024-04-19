@@ -20,7 +20,7 @@
 #include "ShadowTreeRevision.h"
 
 #ifdef RN_SHADOW_TREE_INTROSPECTION
-#include <react/renderer/mounting/stubs.h>
+#include <react/renderer/mounting/stubs/stubs.h>
 #endif
 
 namespace facebook::react {
