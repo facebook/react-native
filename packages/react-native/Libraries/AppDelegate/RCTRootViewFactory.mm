@@ -95,7 +95,6 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 @end
 
 @implementation RCTRootViewFactory {
-  RCTHost *_reactHost;
   RCTRootViewFactoryConfiguration *_configuration;
   __weak id<RCTTurboModuleManagerDelegate> _turboModuleManagerDelegate;
 }
@@ -144,7 +143,7 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 
     [self createReactHostIfNeeded:launchOptions];
 
-    RCTFabricSurface *surface = [_reactHost createSurfaceWithModuleName:moduleName initialProperties:initProps];
+    RCTFabricSurface *surface = [self.reactHost createSurfaceWithModuleName:moduleName initialProperties:initProps];
 
     RCTSurfaceHostingProxyRootView *surfaceHostingProxyRootView = [[RCTSurfaceHostingProxyRootView alloc]
         initWithSurface:surface
@@ -228,23 +227,29 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 
 - (void)createReactHostIfNeeded:(NSDictionary *)launchOptions
 {
-  if (_reactHost) {
+  if (self.reactHost) {
     return;
   }
+  self.reactHost = [self createReactHost:launchOptions];
+}
 
+- (RCTHost *)createReactHost:(NSDictionary *)launchOptions
+{
   __weak __typeof(self) weakSelf = self;
-  _reactHost = [[RCTHost alloc] initWithBundleURLProvider:self->_configuration.bundleURLBlock
-                                             hostDelegate:nil
-                               turboModuleManagerDelegate:_turboModuleManagerDelegate
-                                         jsEngineProvider:^std::shared_ptr<facebook::react::JSRuntimeFactory>() {
-                                           return [weakSelf createJSRuntimeFactory];
-                                         }
-                                            launchOptions:launchOptions];
-  [_reactHost setBundleURLProvider:^NSURL *() {
+  RCTHost *reactHost =
+      [[RCTHost alloc] initWithBundleURLProvider:self->_configuration.bundleURLBlock
+                                    hostDelegate:nil
+                      turboModuleManagerDelegate:_turboModuleManagerDelegate
+                                jsEngineProvider:^std::shared_ptr<facebook::react::JSRuntimeFactory>() {
+                                  return [weakSelf createJSRuntimeFactory];
+                                }
+                                   launchOptions:launchOptions];
+  [reactHost setBundleURLProvider:^NSURL *() {
     return [weakSelf bundleURL];
   }];
-  [_reactHost setContextContainerHandler:self];
-  [_reactHost start];
+  [reactHost setContextContainerHandler:self];
+  [reactHost start];
+  return reactHost;
 }
 
 - (std::shared_ptr<facebook::react::JSRuntimeFactory>)createJSRuntimeFactory

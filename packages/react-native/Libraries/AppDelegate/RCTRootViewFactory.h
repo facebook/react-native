@@ -13,6 +13,7 @@
 @protocol RCTComponentViewFactoryComponentProvider;
 @protocol RCTTurboModuleManagerDelegate;
 @class RCTBridge;
+@class RCTHost;
 @class RCTRootView;
 @class RCTSurfacePresenterBridgeAdapter;
 
@@ -147,6 +148,7 @@ typedef BOOL (^RCTBridgeDidNotFindModuleBlock)(RCTBridge *bridge, NSString *modu
 @interface RCTRootViewFactory : NSObject
 
 @property (nonatomic, strong, nullable) RCTBridge *bridge;
+@property (nonatomic, strong, nullable) RCTHost *reactHost;
 @property (nonatomic, strong, nullable) RCTSurfacePresenterBridgeAdapter *bridgeAdapter;
 
 - (instancetype)initWithConfiguration:(RCTRootViewFactoryConfiguration *)configuration
@@ -169,6 +171,10 @@ typedef BOOL (^RCTBridgeDidNotFindModuleBlock)(RCTBridge *bridge, NSString *modu
                      initialProperties:(NSDictionary *__nullable)initialProperties;
 
 - (UIView *_Nonnull)viewWithModuleName:(NSString *)moduleName;
+
+#pragma mark - RCTRootViewFactory Helpers
+
+- (RCTHost *)createReactHost:(NSDictionary *__nullable)launchOptions;
 
 @end
 
