@@ -672,11 +672,12 @@ public class ReactHostImpl implements ReactHost {
     ReactContext currentContext = getCurrentReactContext();
     if (currentContext != null) {
       currentContext.onActivityResult(activity, requestCode, resultCode, data);
+    } else {
+      ReactSoftExceptionLogger.logSoftException(
+          TAG,
+          new ReactNoCrashSoftException(
+              "Tried to access onActivityResult while context is not ready"));
     }
-    ReactSoftExceptionLogger.logSoftException(
-        TAG,
-        new ReactNoCrashSoftException(
-            "Tried to access onActivityResult while context is not ready"));
   }
 
   /* To be called when focus has changed for the hosting window. */
@@ -689,11 +690,12 @@ public class ReactHostImpl implements ReactHost {
     ReactContext currentContext = getCurrentReactContext();
     if (currentContext != null) {
       currentContext.onWindowFocusChange(hasFocus);
+    } else {
+      ReactSoftExceptionLogger.logSoftException(
+          TAG,
+          new ReactNoCrashSoftException(
+              "Tried to access onWindowFocusChange while context is not ready"));
     }
-    ReactSoftExceptionLogger.logSoftException(
-        TAG,
-        new ReactNoCrashSoftException(
-            "Tried to access onWindowFocusChange while context is not ready"));
   }
 
   /* This method will give JS the opportunity to receive intents via Linking.
@@ -720,10 +722,11 @@ public class ReactHostImpl implements ReactHost {
         }
       }
       currentContext.onNewIntent(getCurrentActivity(), intent);
+    } else {
+      ReactSoftExceptionLogger.logSoftException(
+          TAG,
+          new ReactNoCrashSoftException("Tried to access onNewIntent while context is not ready"));
     }
-    ReactSoftExceptionLogger.logSoftException(
-        TAG,
-        new ReactNoCrashSoftException("Tried to access onNewIntent while context is not ready"));
   }
 
   @ThreadConfined(UI)
