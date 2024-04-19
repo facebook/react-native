@@ -562,21 +562,37 @@ UIWindow *__nullable RCTKeyWindow(void)
     return nil;
   }
 
-  for (UIScene *scene in RCTSharedApplication().connectedScenes) {
-    if (scene.activationState != UISceneActivationStateForegroundActive ||
-        ![scene isKindOfClass:[UIWindowScene class]]) {
+  NSSet<UIScene *> *connectedScenes = RCTSharedApplication().connectedScenes;
+
+  UIScene *foregroundActiveScene;
+  UIScene *foregroundInactiveScene;
+
+  for (UIScene *scene in connectedScenes) {
+    if (![scene isKindOfClass:[UIWindowScene class]]) {
       continue;
     }
-    UIWindowScene *windowScene = (UIWindowScene *)scene;
 
-    if (@available(iOS 15.0, *)) {
-      return windowScene.keyWindow;
+    if (scene.activationState == UISceneActivationStateForegroundActive) {
+      foregroundActiveScene = scene;
+      break;
     }
 
-    for (UIWindow *window in windowScene.windows) {
-      if (window.isKeyWindow) {
-        return window;
-      }
+    if (!foregroundInactiveScene && scene.activationState == UISceneActivationStateForegroundInactive) {
+      foregroundInactiveScene = scene;
+      // no break, we can have the active scene later in the set.
+    }
+  }
+
+  UIScene *sceneToUse = foregroundActiveScene ? foregroundActiveScene : foregroundInactiveScene;
+  UIWindowScene *windowScene = (UIWindowScene *)sceneToUse;
+
+  if (@available(iOS 15.0, *)) {
+    return windowScene.keyWindow;
+  }
+
+  for (UIWindow *window in windowScene.windows) {
+    if (window.isKeyWindow) {
+      return window;
     }
   }
 
