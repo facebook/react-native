@@ -28,6 +28,23 @@ TEST(TransformTest, transformingPoint) {
   EXPECT_EQ(translatedPoint.y, 100);
 }
 
+TEST(TransformTest, fromTransformOperationPercentage) {
+  auto point = facebook::react::Point{0, 0};
+  Size size = {120, 200};
+
+  auto operation = TransformOperation{
+          TransformOperationType::Translate, ValueUnit{50.0f, UnitType::Percent}, ValueUnit{20.0f, UnitType::Percent}};
+  auto translatedPoint = point * Transform::FromTransformOperation(operation, size);
+  EXPECT_EQ(translatedPoint.x, 60);
+  EXPECT_EQ(translatedPoint.y, 40);
+
+  operation = TransformOperation{
+          TransformOperationType::Translate, ValueUnit{40.0f, UnitType::Percent}, ValueUnit{20.0f, UnitType::Point}};
+  translatedPoint = point * Transform::FromTransformOperation(operation, size);
+  EXPECT_EQ(translatedPoint.x, 48);
+  EXPECT_EQ(translatedPoint.y, 20);
+}
+
 TEST(TransformTest, scalingRect) {
   auto point = facebook::react::Point{100, 200};
   auto size = facebook::react::Size{300, 400};
