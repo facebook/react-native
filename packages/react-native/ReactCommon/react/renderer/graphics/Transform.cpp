@@ -252,7 +252,7 @@ Transform Transform::Interpolate(
             type,
             ValueUnit(lhsOp.x.resolve(size.width) + (rhsOp.x.resolve(size.width) - lhsOp.x.resolve(size.width)) 
               * animationProgress, UnitType::Point),
-            ValueUnit(lhsOp.y.resolve(size.height) + (rhsOp.y.resolve(size.height) - lhsOp.y.resolve(size.width)) 
+            ValueUnit(lhsOp.y.resolve(size.height) + (rhsOp.y.resolve(size.height) - lhsOp.y.resolve(size.height)) 
               * animationProgress, UnitType::Point),
             ValueUnit(lhsOp.z.resolve(0) + (rhsOp.z.resolve(0) - lhsOp.z.resolve(0)) 
               * animationProgress, UnitType::Point)}, size);
