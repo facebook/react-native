@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9184044883f829855c2de9db42566287>>
+ * @generated SignedSource<<46e1a8dd088d588ea9eec703d7155710>>
  */
 
 /**
@@ -23,16 +23,20 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
   private var commonTestFlagCache: Boolean? = null
   private var batchRenderingUpdatesInEventLoopCache: Boolean? = null
   private var enableBackgroundExecutorCache: Boolean? = null
+  private var enableCleanTextInputYogaNodeCache: Boolean? = null
   private var enableCustomDrawOrderFabricCache: Boolean? = null
-  private var enableFixForClippedSubviewsCrashCache: Boolean? = null
   private var enableMicrotasksCache: Boolean? = null
   private var enableMountHooksAndroidCache: Boolean? = null
   private var enableSpannableBuildingUnificationCache: Boolean? = null
   private var enableSynchronousStateUpdatesCache: Boolean? = null
   private var enableUIConsistencyCache: Boolean? = null
+  private var forceBatchingMountItemsOnAndroidCache: Boolean? = null
   private var inspectorEnableCxxInspectorPackagerConnectionCache: Boolean? = null
   private var inspectorEnableModernCDPRegistryCache: Boolean? = null
+  private var preventDoubleTextMeasureCache: Boolean? = null
   private var useModernRuntimeSchedulerCache: Boolean? = null
+  private var useNativeViewConfigsInBridgelessModeCache: Boolean? = null
+  private var useStateAlignmentMechanismCache: Boolean? = null
 
   override fun commonTestFlag(): Boolean {
     var cached = commonTestFlagCache
@@ -61,20 +65,20 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     return cached
   }
 
+  override fun enableCleanTextInputYogaNode(): Boolean {
+    var cached = enableCleanTextInputYogaNodeCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableCleanTextInputYogaNode()
+      enableCleanTextInputYogaNodeCache = cached
+    }
+    return cached
+  }
+
   override fun enableCustomDrawOrderFabric(): Boolean {
     var cached = enableCustomDrawOrderFabricCache
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableCustomDrawOrderFabric()
       enableCustomDrawOrderFabricCache = cached
-    }
-    return cached
-  }
-
-  override fun enableFixForClippedSubviewsCrash(): Boolean {
-    var cached = enableFixForClippedSubviewsCrashCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.enableFixForClippedSubviewsCrash()
-      enableFixForClippedSubviewsCrashCache = cached
     }
     return cached
   }
@@ -124,6 +128,15 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     return cached
   }
 
+  override fun forceBatchingMountItemsOnAndroid(): Boolean {
+    var cached = forceBatchingMountItemsOnAndroidCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.forceBatchingMountItemsOnAndroid()
+      forceBatchingMountItemsOnAndroidCache = cached
+    }
+    return cached
+  }
+
   override fun inspectorEnableCxxInspectorPackagerConnection(): Boolean {
     var cached = inspectorEnableCxxInspectorPackagerConnectionCache
     if (cached == null) {
@@ -142,11 +155,38 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     return cached
   }
 
+  override fun preventDoubleTextMeasure(): Boolean {
+    var cached = preventDoubleTextMeasureCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.preventDoubleTextMeasure()
+      preventDoubleTextMeasureCache = cached
+    }
+    return cached
+  }
+
   override fun useModernRuntimeScheduler(): Boolean {
     var cached = useModernRuntimeSchedulerCache
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.useModernRuntimeScheduler()
       useModernRuntimeSchedulerCache = cached
+    }
+    return cached
+  }
+
+  override fun useNativeViewConfigsInBridgelessMode(): Boolean {
+    var cached = useNativeViewConfigsInBridgelessModeCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.useNativeViewConfigsInBridgelessMode()
+      useNativeViewConfigsInBridgelessModeCache = cached
+    }
+    return cached
+  }
+
+  override fun useStateAlignmentMechanism(): Boolean {
+    var cached = useStateAlignmentMechanismCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.useStateAlignmentMechanism()
+      useStateAlignmentMechanismCache = cached
     }
     return cached
   }

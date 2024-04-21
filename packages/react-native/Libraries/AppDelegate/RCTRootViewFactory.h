@@ -13,6 +13,7 @@
 @protocol RCTComponentViewFactoryComponentProvider;
 @protocol RCTTurboModuleManagerDelegate;
 @class RCTBridge;
+@class RCTHost;
 @class RCTRootView;
 @class RCTSurfacePresenterBridgeAdapter;
 
@@ -24,14 +25,10 @@ typedef UIView *_Nonnull (
 typedef RCTBridge *_Nonnull (
     ^RCTCreateBridgeWithDelegateBlock)(id<RCTBridgeDelegate> delegate, NSDictionary *launchOptions);
 typedef NSURL *_Nullable (^RCTSourceURLForBridgeBlock)(RCTBridge *bridge);
+typedef NSURL *_Nullable (^RCTBundleURLBlock)(void);
 typedef NSArray<id<RCTBridgeModule>> *_Nonnull (^RCTExtraModulesForBridgeBlock)(RCTBridge *bridge);
 typedef NSDictionary<NSString *, Class> *_Nonnull (^RCTExtraLazyModuleClassesForBridge)(RCTBridge *bridge);
 typedef BOOL (^RCTBridgeDidNotFindModuleBlock)(RCTBridge *bridge, NSString *moduleName);
-typedef void (^RCTLoadSourceForBridgeBlock)(RCTBridge *bridge, RCTSourceLoadBlock loadCallback);
-typedef void (^RCTLoadSourceForBridgeProgressBlock)(
-    RCTBridge *bridge,
-    RCTSourceLoadProgressBlock onProgress,
-    RCTSourceLoadBlock loadCallback);
 
 #pragma mark - RCTRootViewFactory Configuration
 @interface RCTRootViewFactoryConfiguration : NSObject
@@ -46,7 +43,7 @@ typedef void (^RCTLoadSourceForBridgeProgressBlock)(
 @property (nonatomic, assign, readonly) BOOL turboModuleEnabled;
 
 /// Return the bundle URL for the main bundle.
-@property (nonatomic) NSURL *bundleURL;
+@property (nonatomic, nonnull) RCTBundleURLBlock bundleURLBlock;
 
 /**
  * Use this method to initialize a new instance of `RCTRootViewFactoryConfiguration` by passing a `bundleURL`
@@ -57,10 +54,15 @@ typedef void (^RCTLoadSourceForBridgeProgressBlock)(
  * pointing to a path inside the app resources, e.g. `file://.../main.jsbundle`.
  *
  */
+- (instancetype)initWithBundleURLBlock:(RCTBundleURLBlock)bundleURLBlock
+                        newArchEnabled:(BOOL)newArchEnabled
+                    turboModuleEnabled:(BOOL)turboModuleEnabled
+                     bridgelessEnabled:(BOOL)bridgelessEnabled NS_DESIGNATED_INITIALIZER;
+
 - (instancetype)initWithBundleURL:(NSURL *)bundleURL
                    newArchEnabled:(BOOL)newArchEnabled
                turboModuleEnabled:(BOOL)turboModuleEnabled
-                bridgelessEnabled:(BOOL)bridgelessEnabled;
+                bridgelessEnabled:(BOOL)bridgelessEnabled __deprecated;
 
 /**
  * Block that allows to override logic of creating root view instance.
@@ -89,6 +91,9 @@ typedef void (^RCTLoadSourceForBridgeProgressBlock)(
  * @returns: a newly created instance of RCTBridge.
  */
 @property (nonatomic, nullable) RCTCreateBridgeWithDelegateBlock createBridgeWithDelegate;
+
+#pragma mark - RCTBridgeDelegate blocks
+
 /**
  * Block that returns the location of the JavaScript source file. When running from the packager
  * this should be an absolute URL, e.g. `http://localhost:8081/index.ios.bundle`.
@@ -127,19 +132,6 @@ typedef void (^RCTLoadSourceForBridgeProgressBlock)(
  */
 @property (nonatomic, nullable) RCTBridgeDidNotFindModuleBlock bridgeDidNotFindModule;
 
-/**
- * The bridge will automatically attempt to load the JS source code from the
- * location specified by the `sourceURLForBridge:` method, however, if you want
- * to handle loading the JS yourself, you can do so by implementing this method.
- */
-@property (nonatomic, nullable) RCTLoadSourceForBridgeProgressBlock loadSourceForBridgeProgressBlock;
-
-/**
- * Similar to loadSourceForBridge:onProgress:onComplete: but without progress
- * reporting.
- */
-@property (nonatomic, nullable) RCTLoadSourceForBridgeBlock loadSourceForBridgeBlock;
-
 @end
 
 #pragma mark - RCTRootViewFactory
@@ -156,17 +148,20 @@ typedef void (^RCTLoadSourceForBridgeProgressBlock)(
 @interface RCTRootViewFactory : NSObject
 
 @property (nonatomic, strong, nullable) RCTBridge *bridge;
+@property (nonatomic, strong, nullable) RCTHost *reactHost;
 @property (nonatomic, strong, nullable) RCTSurfacePresenterBridgeAdapter *bridgeAdapter;
 
 - (instancetype)initWithConfiguration:(RCTRootViewFactoryConfiguration *)configuration
         andTurboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate;
+
+- (instancetype)initWithConfiguration:(RCTRootViewFactoryConfiguration *)configuration;
 
 /**
  * This method can be used to create new RCTRootViews on demand.
  *
  * @parameter: moduleName  - the name of the app, used by Metro to resolve the module.
  * @parameter: initialProperties  -  a set of initial properties.
- * @parameter: moduleName  - a dictionary with a set of options.
+ * @parameter: launchOptions  - a dictionary with a set of options.
  */
 - (UIView *_Nonnull)viewWithModuleName:(NSString *)moduleName
                      initialProperties:(NSDictionary *__nullable)initialProperties
@@ -176,6 +171,10 @@ typedef void (^RCTLoadSourceForBridgeProgressBlock)(
                      initialProperties:(NSDictionary *__nullable)initialProperties;
 
 - (UIView *_Nonnull)viewWithModuleName:(NSString *)moduleName;
+
+#pragma mark - RCTRootViewFactory Helpers
+
+- (RCTHost *)createReactHost:(NSDictionary *__nullable)launchOptions;
 
 @end
 

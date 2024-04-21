@@ -406,8 +406,6 @@ void Binding::installFabricUIManager(
 
   CoreFeatures::enablePropIteratorSetter =
       getFeatureFlagValue("enableCppPropsIteratorSetter");
-  CoreFeatures::enableClonelessStateProgression =
-      getFeatureFlagValue("enableClonelessStateProgression");
   CoreFeatures::excludeYogaFromRawProps =
       getFeatureFlagValue("excludeYogaFromRawProps");
 

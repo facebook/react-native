@@ -10,9 +10,6 @@ package com.facebook.react.runtime
 import android.content.res.AssetManager
 import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.react.bridge.CatalystInstance
-import com.facebook.react.bridge.JSIModule
-import com.facebook.react.bridge.JSIModuleSpec
-import com.facebook.react.bridge.JSIModuleType
 import com.facebook.react.bridge.JavaScriptContextHolder
 import com.facebook.react.bridge.JavaScriptModule
 import com.facebook.react.bridge.NativeArray
@@ -92,36 +89,22 @@ public class BridgelessCatalystInstance(private val reactHost: ReactHostImpl) : 
     throw UnsupportedOperationException("Unimplemented method 'initialize'")
   }
 
-  override fun getReactQueueConfiguration(): ReactQueueConfiguration {
-    throw UnsupportedOperationException("Unimplemented method 'getReactQueueConfiguration'")
-  }
+  override fun getReactQueueConfiguration(): ReactQueueConfiguration =
+      reactHost.reactQueueConfiguration!!
 
-  override fun <T : JavaScriptModule> getJSModule(jsInterface: Class<T>): T {
-    throw UnsupportedOperationException("Unimplemented method 'getJSModule'")
-  }
+  override fun <T : JavaScriptModule> getJSModule(jsInterface: Class<T>): T =
+      reactHost.currentReactContext?.getJSModule(jsInterface)!!
 
-  override fun <T : NativeModule> hasNativeModule(nativeModuleInterface: Class<T>): Boolean {
-    throw UnsupportedOperationException("Unimplemented method 'hasNativeModule'")
-  }
+  override fun <T : NativeModule> hasNativeModule(nativeModuleInterface: Class<T>): Boolean =
+      reactHost.hasNativeModule(nativeModuleInterface)
 
-  override fun <T : NativeModule> getNativeModule(nativeModuleInterface: Class<T>): T? {
-    throw UnsupportedOperationException("Unimplemented method 'getNativeModule'")
-  }
+  override fun <T : NativeModule> getNativeModule(nativeModuleInterface: Class<T>): T? =
+      reactHost.getNativeModule(nativeModuleInterface)
 
-  override fun getNativeModule(moduleName: String): NativeModule? {
-    throw UnsupportedOperationException("Unimplemented method 'getNativeModule'")
-  }
+  override fun getNativeModule(moduleName: String): NativeModule? =
+      reactHost.getNativeModule(moduleName)
 
-  @Deprecated(
-      message =
-          "getJSIModule(JSIModuleType moduleType) is deprecated and will be deleted in the future. Please use ReactInstanceEventListener to subscribe for react instance events instead.")
-  override fun getJSIModule(moduleType: JSIModuleType): JSIModule {
-    throw UnsupportedOperationException("Unimplemented method 'getJSIModule'")
-  }
-
-  override fun getNativeModules(): Collection<NativeModule> {
-    throw UnsupportedOperationException("Unimplemented method 'getNativeModules'")
-  }
+  override fun getNativeModules(): Collection<NativeModule> = reactHost.getNativeModules()
 
   override fun extendNativeModules(modules: NativeModuleRegistry) {
     throw UnsupportedOperationException("Unimplemented method 'extendNativeModules'")
@@ -145,21 +128,16 @@ public class BridgelessCatalystInstance(private val reactHost: ReactHostImpl) : 
   }
 
   @Deprecated(message = "This API is unsupported in the New Architecture.")
-  override fun getJavaScriptContextHolder(): JavaScriptContextHolder {
-    throw UnsupportedOperationException("Unimplemented method 'getJavaScriptContextHolder'")
+  override fun getJavaScriptContextHolder(): JavaScriptContextHolder? {
+    return reactHost.getJavaScriptContextHolder()
   }
 
-  override fun getRuntimeExecutor(): RuntimeExecutor {
-    throw UnsupportedOperationException("Unimplemented method 'getRuntimeExecutor'")
+  override fun getRuntimeExecutor(): RuntimeExecutor? {
+    return reactHost.getRuntimeExecutor()
   }
 
   override fun getRuntimeScheduler(): RuntimeScheduler {
     throw UnsupportedOperationException("Unimplemented method 'getRuntimeScheduler'")
-  }
-
-  @Deprecated(message = "This API is unsupported in the New Architecture.")
-  override fun <T : JSIModule> addJSIModules(jsiModules: List<JSIModuleSpec<T>>) {
-    throw UnsupportedOperationException("Unimplemented method 'addJSIModules'")
   }
 
   override fun getJSCallInvokerHolder(): CallInvokerHolder? {
@@ -168,14 +146,6 @@ public class BridgelessCatalystInstance(private val reactHost: ReactHostImpl) : 
 
   override fun getNativeMethodCallInvokerHolder(): NativeMethodCallInvokerHolder {
     throw UnsupportedOperationException("Unimplemented method 'getNativeMethodCallInvokerHolder'")
-  }
-
-  @Deprecated(
-      message =
-          "setTurboModuleManager(JSIModule getter) is deprecated and will be deleted in the future. Please use setTurboModuleRegistry(TurboModuleRegistry turboModuleRegistry) instead.",
-      replaceWith = ReplaceWith("setTurboModuleRegistry(turboModuleRegistry)"))
-  override fun setTurboModuleManager(getter: JSIModule) {
-    throw UnsupportedOperationException("Unimplemented method 'setTurboModuleManager'")
   }
 
   @DeprecatedInNewArchitecture(

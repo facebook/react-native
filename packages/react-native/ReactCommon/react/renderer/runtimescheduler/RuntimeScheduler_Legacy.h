@@ -22,8 +22,7 @@ class RuntimeScheduler_Legacy final : public RuntimeSchedulerBase {
  public:
   explicit RuntimeScheduler_Legacy(
       RuntimeExecutor runtimeExecutor,
-      std::function<RuntimeSchedulerTimePoint()> now =
-          RuntimeSchedulerClock::now);
+      std::function<RuntimeSchedulerTimePoint()> now);
 
   /*
    * Not copyable.

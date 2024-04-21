@@ -18,6 +18,11 @@ Map {
 #ifndef __cplusplus
 #error This file must be compiled as Obj-C++. If you are importing it, you must change your file extension to .mm.
 #endif
+
+// Avoid multiple includes of SampleWithUppercaseName symbols
+#ifndef SampleWithUppercaseName_H
+#define SampleWithUppercaseName_H
+
 #import <Foundation/Foundation.h>
 #import <RCTRequired/RCTRequired.h>
 #import <RCTTypeSafety/RCTConvertHelpers.h>
@@ -45,6 +50,7 @@ namespace facebook::react {
   };
 } // namespace facebook::react
 
+#endif // SampleWithUppercaseName_H
 ",
 }
 `;
@@ -67,6 +73,11 @@ Map {
 #ifndef __cplusplus
 #error This file must be compiled as Obj-C++. If you are importing it, you must change your file extension to .mm.
 #endif
+
+// Avoid multiple includes of complex_objects symbols
+#ifndef complex_objects_H
+#define complex_objects_H
+
 #import <Foundation/Foundation.h>
 #import <RCTRequired/RCTRequired.h>
 #import <RCTTypeSafety/RCTConvertHelpers.h>
@@ -304,6 +315,7 @@ inline facebook::react::LazyVector<JS::NativeSampleTurboModule::SpecGetArraysOpt
   id const p = _v[@\\"arrayOfObjects\\"];
   return RCTBridgingToVec(p, ^JS::NativeSampleTurboModule::SpecGetArraysOptionsArrayOfObjectsElement(id itemValue_0) { return JS::NativeSampleTurboModule::SpecGetArraysOptionsArrayOfObjectsElement(itemValue_0); });
 }
+#endif // complex_objects_H
 ",
 }
 `;
@@ -326,6 +338,11 @@ Map {
 #ifndef __cplusplus
 #error This file must be compiled as Obj-C++. If you are importing it, you must change your file extension to .mm.
 #endif
+
+// Avoid multiple includes of cxx_only_native_modules symbols
+#ifndef cxx_only_native_modules_H
+#define cxx_only_native_modules_H
+
 #import <Foundation/Foundation.h>
 #import <RCTRequired/RCTRequired.h>
 #import <RCTTypeSafety/RCTConvertHelpers.h>
@@ -339,6 +356,7 @@ Map {
 
 
 
+#endif // cxx_only_native_modules_H
 ",
 }
 `;
@@ -361,6 +379,11 @@ Map {
 #ifndef __cplusplus
 #error This file must be compiled as Obj-C++. If you are importing it, you must change your file extension to .mm.
 #endif
+
+// Avoid multiple includes of empty_native_modules symbols
+#ifndef empty_native_modules_H
+#define empty_native_modules_H
+
 #import <Foundation/Foundation.h>
 #import <RCTRequired/RCTRequired.h>
 #import <RCTTypeSafety/RCTConvertHelpers.h>
@@ -388,6 +411,7 @@ namespace facebook::react {
   };
 } // namespace facebook::react
 
+#endif // empty_native_modules_H
 ",
 }
 `;
@@ -410,6 +434,11 @@ Map {
 #ifndef __cplusplus
 #error This file must be compiled as Obj-C++. If you are importing it, you must change your file extension to .mm.
 #endif
+
+// Avoid multiple includes of native_modules_with_type_aliases symbols
+#ifndef native_modules_with_type_aliases_H
+#define native_modules_with_type_aliases_H
+
 #import <Foundation/Foundation.h>
 #import <RCTRequired/RCTRequired.h>
 #import <RCTTypeSafety/RCTConvertHelpers.h>
@@ -557,6 +586,7 @@ inline std::optional<bool> JS::AliasTurboModule::Options::allowExternalStorage()
   id const p = _v[@\\"allowExternalStorage\\"];
   return RCTBridgingToOptionalBool(p);
 }
+#endif // native_modules_with_type_aliases_H
 ",
 }
 `;
@@ -579,6 +609,11 @@ Map {
 #ifndef __cplusplus
 #error This file must be compiled as Obj-C++. If you are importing it, you must change your file extension to .mm.
 #endif
+
+// Avoid multiple includes of real_module_example symbols
+#ifndef real_module_example_H
+#define real_module_example_H
+
 #import <Foundation/Foundation.h>
 #import <RCTRequired/RCTRequired.h>
 #import <RCTTypeSafety/RCTConvertHelpers.h>
@@ -799,6 +834,7 @@ inline id<NSObject> _Nullable JS::NativeExceptionsManager::ExceptionData::extraD
   id const p = _v[@\\"extraData\\"];
   return p;
 }
+#endif // real_module_example_H
 ",
 }
 `;
@@ -821,6 +857,11 @@ Map {
 #ifndef __cplusplus
 #error This file must be compiled as Obj-C++. If you are importing it, you must change your file extension to .mm.
 #endif
+
+// Avoid multiple includes of simple_native_modules symbols
+#ifndef simple_native_modules_H
+#define simple_native_modules_H
+
 #import <Foundation/Foundation.h>
 #import <RCTRequired/RCTRequired.h>
 #import <RCTTypeSafety/RCTConvertHelpers.h>
@@ -910,6 +951,7 @@ inline JS::NativeSampleTurboModule::Constants::Builder::Builder(const Input i) :
 inline JS::NativeSampleTurboModule::Constants::Builder::Builder(Constants i) : _factory(^{
   return i.unsafeRawValue();
 }) {}
+#endif // simple_native_modules_H
 ",
 }
 `;
@@ -932,6 +974,11 @@ Map {
 #ifndef __cplusplus
 #error This file must be compiled as Obj-C++. If you are importing it, you must change your file extension to .mm.
 #endif
+
+// Avoid multiple includes of two_modules_different_files symbols
+#ifndef two_modules_different_files_H
+#define two_modules_different_files_H
+
 #import <Foundation/Foundation.h>
 #import <RCTRequired/RCTRequired.h>
 #import <RCTTypeSafety/RCTConvertHelpers.h>
@@ -975,6 +1022,7 @@ namespace facebook::react {
 } // namespace facebook::react
 
 
+#endif // two_modules_different_files_H
 ",
 }
 `;

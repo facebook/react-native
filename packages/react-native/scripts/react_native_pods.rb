@@ -145,6 +145,7 @@ def use_react_native! (
   pod 'React-jsinspector', :path => "#{prefix}/ReactCommon/jsinspector-modern"
 
   pod 'React-callinvoker', :path => "#{prefix}/ReactCommon/callinvoker"
+  pod 'React-performancetimeline', :path => "#{prefix}/ReactCommon/react/performance/timeline"
   pod 'React-runtimeexecutor', :path => "#{prefix}/ReactCommon/runtimeexecutor"
   pod 'React-runtimescheduler', :path => "#{prefix}/ReactCommon/react/renderer/runtimescheduler"
   pod 'React-rendererdebug', :path => "#{prefix}/ReactCommon/react/renderer/debug"
@@ -296,6 +297,7 @@ def react_native_post_install(
   ReactNativePodsUtils.updateOSDeploymentTarget(installer)
   ReactNativePodsUtils.set_dynamic_frameworks_flags(installer)
   ReactNativePodsUtils.add_ndebug_flag_to_pods_in_release(installer)
+  ReactNativePodsUtils.add_privacy_manifest_if_needed(installer)
 
   NewArchitectureHelper.set_clang_cxx_language_standard_if_needed(installer)
   NewArchitectureHelper.modify_flags_for_new_architecture(installer, NewArchitectureHelper.new_arch_enabled)

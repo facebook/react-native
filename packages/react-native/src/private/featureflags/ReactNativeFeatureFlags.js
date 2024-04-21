@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<366b36d877532c93aa6e5a97b85edd06>>
+ * @generated SignedSource<<0e0858557eb27f3eebfecae18ee13c0b>>
  * @flow strict-local
  */
 
@@ -43,16 +43,20 @@ export type ReactNativeFeatureFlags = {
   commonTestFlag: Getter<boolean>,
   batchRenderingUpdatesInEventLoop: Getter<boolean>,
   enableBackgroundExecutor: Getter<boolean>,
+  enableCleanTextInputYogaNode: Getter<boolean>,
   enableCustomDrawOrderFabric: Getter<boolean>,
-  enableFixForClippedSubviewsCrash: Getter<boolean>,
   enableMicrotasks: Getter<boolean>,
   enableMountHooksAndroid: Getter<boolean>,
   enableSpannableBuildingUnification: Getter<boolean>,
   enableSynchronousStateUpdates: Getter<boolean>,
   enableUIConsistency: Getter<boolean>,
+  forceBatchingMountItemsOnAndroid: Getter<boolean>,
   inspectorEnableCxxInspectorPackagerConnection: Getter<boolean>,
   inspectorEnableModernCDPRegistry: Getter<boolean>,
+  preventDoubleTextMeasure: Getter<boolean>,
   useModernRuntimeScheduler: Getter<boolean>,
+  useNativeViewConfigsInBridgelessMode: Getter<boolean>,
+  useStateAlignmentMechanism: Getter<boolean>,
 }
 
 /**
@@ -108,13 +112,13 @@ export const batchRenderingUpdatesInEventLoop: Getter<boolean> = createNativeFla
  */
 export const enableBackgroundExecutor: Getter<boolean> = createNativeFlagGetter('enableBackgroundExecutor', false);
 /**
+ * Clean yoga node when <TextInput /> does not change.
+ */
+export const enableCleanTextInputYogaNode: Getter<boolean> = createNativeFlagGetter('enableCleanTextInputYogaNode', false);
+/**
  * When enabled, Fabric will use customDrawOrder in ReactViewGroup (similar to old architecture).
  */
 export const enableCustomDrawOrderFabric: Getter<boolean> = createNativeFlagGetter('enableCustomDrawOrderFabric', false);
-/**
- * Attempt at fixing a crash related to subview clipping on Android. This is a kill switch for the fix
- */
-export const enableFixForClippedSubviewsCrash: Getter<boolean> = createNativeFlagGetter('enableFixForClippedSubviewsCrash', false);
 /**
  * Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).
  */
@@ -136,6 +140,10 @@ export const enableSynchronousStateUpdates: Getter<boolean> = createNativeFlagGe
  */
 export const enableUIConsistency: Getter<boolean> = createNativeFlagGetter('enableUIConsistency', false);
 /**
+ * Forces the mounting layer on Android to always batch mount items instead of dispatching them immediately. This might fix some crashes related to synchronous state updates, where some views dispatch state updates during mount.
+ */
+export const forceBatchingMountItemsOnAndroid: Getter<boolean> = createNativeFlagGetter('forceBatchingMountItemsOnAndroid', false);
+/**
  * Flag determining if the C++ implementation of InspectorPackagerConnection should be used instead of the per-platform one. This flag is global and should not be changed across React Host lifetimes.
  */
 export const inspectorEnableCxxInspectorPackagerConnection: Getter<boolean> = createNativeFlagGetter('inspectorEnableCxxInspectorPackagerConnection', false);
@@ -144,9 +152,21 @@ export const inspectorEnableCxxInspectorPackagerConnection: Getter<boolean> = cr
  */
 export const inspectorEnableModernCDPRegistry: Getter<boolean> = createNativeFlagGetter('inspectorEnableModernCDPRegistry', false);
 /**
+ * When enabled, ParagraphShadowNode will no longer call measure twice.
+ */
+export const preventDoubleTextMeasure: Getter<boolean> = createNativeFlagGetter('preventDoubleTextMeasure', false);
+/**
  * When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.
  */
 export const useModernRuntimeScheduler: Getter<boolean> = createNativeFlagGetter('useModernRuntimeScheduler', false);
+/**
+ * When enabled, the native view configs are used in bridgeless mode.
+ */
+export const useNativeViewConfigsInBridgelessMode: Getter<boolean> = createNativeFlagGetter('useNativeViewConfigsInBridgelessMode', false);
+/**
+ * When enabled, it uses optimised state reconciliation algorithm.
+ */
+export const useStateAlignmentMechanism: Getter<boolean> = createNativeFlagGetter('useStateAlignmentMechanism', false);
 
 /**
  * Overrides the feature flags with the provided methods.

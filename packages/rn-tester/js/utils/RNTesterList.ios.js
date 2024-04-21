@@ -145,6 +145,10 @@ const Components: Array<RNTesterModuleInfo> = [
     category: 'Basic',
     module: require('../examples/Performance/PerformanceComparisonExample'),
   },
+  {
+    key: 'OSSLibraryExample',
+    module: require('../examples/OSSLibraryExample/OSSLibraryExample'),
+  },
 ];
 
 const APIs: Array<RNTesterModuleInfo> = ([
@@ -257,6 +261,10 @@ const APIs: Array<RNTesterModuleInfo> = ([
   {
     key: 'PlatformColorExample',
     module: require('../examples/PlatformColor/PlatformColorExample'),
+  },
+  {
+    key: 'PixelRatio',
+    module: require('../examples/PixelRatio/PixelRatioExample'),
   },
   {
     key: 'PointerEventsExample',

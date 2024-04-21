@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e3cfdd93315067ed37e7cf93aa60af74>>
+ * @generated SignedSource<<61b929b9624eeaedfa12d2f390299447>>
  */
 
 /**
@@ -47,16 +47,16 @@ public object ReactNativeFeatureFlags {
   public fun enableBackgroundExecutor(): Boolean = accessor.enableBackgroundExecutor()
 
   /**
+   * Clean yoga node when <TextInput /> does not change.
+   */
+  @JvmStatic
+  public fun enableCleanTextInputYogaNode(): Boolean = accessor.enableCleanTextInputYogaNode()
+
+  /**
    * When enabled, Fabric will use customDrawOrder in ReactViewGroup (similar to old architecture).
    */
   @JvmStatic
   public fun enableCustomDrawOrderFabric(): Boolean = accessor.enableCustomDrawOrderFabric()
-
-  /**
-   * Attempt at fixing a crash related to subview clipping on Android. This is a kill switch for the fix
-   */
-  @JvmStatic
-  public fun enableFixForClippedSubviewsCrash(): Boolean = accessor.enableFixForClippedSubviewsCrash()
 
   /**
    * Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).
@@ -89,6 +89,12 @@ public object ReactNativeFeatureFlags {
   public fun enableUIConsistency(): Boolean = accessor.enableUIConsistency()
 
   /**
+   * Forces the mounting layer on Android to always batch mount items instead of dispatching them immediately. This might fix some crashes related to synchronous state updates, where some views dispatch state updates during mount.
+   */
+  @JvmStatic
+  public fun forceBatchingMountItemsOnAndroid(): Boolean = accessor.forceBatchingMountItemsOnAndroid()
+
+  /**
    * Flag determining if the C++ implementation of InspectorPackagerConnection should be used instead of the per-platform one. This flag is global and should not be changed across React Host lifetimes.
    */
   @JvmStatic
@@ -101,10 +107,28 @@ public object ReactNativeFeatureFlags {
   public fun inspectorEnableModernCDPRegistry(): Boolean = accessor.inspectorEnableModernCDPRegistry()
 
   /**
+   * When enabled, ParagraphShadowNode will no longer call measure twice.
+   */
+  @JvmStatic
+  public fun preventDoubleTextMeasure(): Boolean = accessor.preventDoubleTextMeasure()
+
+  /**
    * When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.
    */
   @JvmStatic
   public fun useModernRuntimeScheduler(): Boolean = accessor.useModernRuntimeScheduler()
+
+  /**
+   * When enabled, the native view configs are used in bridgeless mode.
+   */
+  @JvmStatic
+  public fun useNativeViewConfigsInBridgelessMode(): Boolean = accessor.useNativeViewConfigsInBridgelessMode()
+
+  /**
+   * When enabled, it uses optimised state reconciliation algorithm.
+   */
+  @JvmStatic
+  public fun useStateAlignmentMechanism(): Boolean = accessor.useStateAlignmentMechanism()
 
   /**
    * Overrides the feature flags with the ones provided by the given provider

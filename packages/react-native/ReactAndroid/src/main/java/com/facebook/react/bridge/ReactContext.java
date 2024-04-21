@@ -27,8 +27,6 @@ import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
-import com.facebook.react.common.annotations.FrameworkAPI;
-import com.facebook.react.common.annotations.UnstableReactNativeAPI;
 import java.lang.ref.WeakReference;
 import java.util.Collection;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -41,6 +39,7 @@ public abstract class ReactContext extends ContextWrapper {
 
   @DoNotStrip
   public interface RCTDeviceEventEmitter extends JavaScriptModule {
+
     void emit(@NonNull String eventName, @Nullable Object data);
   }
 
@@ -212,20 +211,6 @@ public abstract class ReactContext extends ContextWrapper {
   }
 
   /**
-   * @return the RuntimeExecutor, a thread-safe handler for accessing the runtime.
-   * @experimental
-   */
-  @Nullable
-  @FrameworkAPI
-  @UnstableReactNativeAPI
-  public RuntimeExecutor getRuntimeExecutor() {
-    if (mCatalystInstance == null) {
-      raiseCatalystInstanceMissingException();
-    }
-    return mCatalystInstance.getRuntimeExecutor();
-  }
-
-  /**
    * Calls RCTDeviceEventEmitter.emit to JavaScript, with given event name and an optional list of
    * arguments.
    */
@@ -262,7 +247,17 @@ public abstract class ReactContext extends ContextWrapper {
     return mCatalystInstance != null && !mCatalystInstance.isDestroyed();
   }
 
+  /**
+   * This API has been deprecated due to naming consideration, please use hasReactInstance() instead
+   *
+   * @return
+   */
+  @Deprecated
   public boolean hasCatalystInstance() {
+    return mCatalystInstance != null;
+  }
+
+  public boolean hasReactInstance() {
     return mCatalystInstance != null;
   }
 
@@ -366,6 +361,21 @@ public abstract class ReactContext extends ContextWrapper {
   /** Should be called by the hosting Fragment in {@link Fragment#onDestroy} */
   @ThreadConfined(UI)
   public void onHostDestroy() {
+    onHostDestroyImpl();
+    mCurrentActivity = null;
+  }
+
+  @ThreadConfined(UI)
+  public void onHostDestroy(boolean keepActivity) {
+    if (!keepActivity) {
+      onHostDestroy();
+    } else {
+      onHostDestroyImpl();
+    }
+  }
+
+  @ThreadConfined(UI)
+  private void onHostDestroyImpl() {
     UiThreadUtil.assertOnUiThread();
     mLifecycleState = LifecycleState.BEFORE_CREATE;
     for (LifecycleEventListener listener : mLifecycleEventListeners) {
@@ -375,7 +385,6 @@ public abstract class ReactContext extends ContextWrapper {
         handleException(e);
       }
     }
-    mCurrentActivity = null;
   }
 
   /** Destroy this instance, making it unusable. */
@@ -503,6 +512,7 @@ public abstract class ReactContext extends ContextWrapper {
   }
 
   public class ExceptionHandlerWrapper implements JSExceptionHandler {
+
     @Override
     public void handleException(Exception e) {
       ReactContext.this.handleException(e);
@@ -581,10 +591,7 @@ public abstract class ReactContext extends ContextWrapper {
    * @return The UIManager when CatalystInstance is active.
    */
   public @Nullable UIManager getFabricUIManager() {
-    UIManager uiManager = mCatalystInstance.getFabricUIManager();
-    return uiManager != null
-        ? uiManager
-        : (UIManager) mCatalystInstance.getJSIModule(JSIModuleType.UIManager);
+    return mCatalystInstance.getFabricUIManager();
   }
 
   /**

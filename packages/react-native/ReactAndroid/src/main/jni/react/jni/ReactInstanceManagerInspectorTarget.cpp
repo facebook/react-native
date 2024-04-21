@@ -20,6 +20,14 @@ void ReactInstanceManagerInspectorTarget::TargetDelegate::onReload() const {
   method(self());
 }
 
+void ReactInstanceManagerInspectorTarget::TargetDelegate::
+    onSetPausedInDebuggerMessage(
+        const OverlaySetPausedInDebuggerMessageRequest& request) const {
+  auto method = javaClassStatic()->getMethod<void(local_ref<JString>)>(
+      "onSetPausedInDebuggerMessage");
+  method(self(), request.message ? make_jstring(*request.message) : nullptr);
+}
+
 ReactInstanceManagerInspectorTarget::ReactInstanceManagerInspectorTarget(
     jni::alias_ref<ReactInstanceManagerInspectorTarget::jhybridobject> jobj,
     jni::alias_ref<JExecutor::javaobject> executor,
@@ -50,7 +58,7 @@ ReactInstanceManagerInspectorTarget::ReactInstanceManagerInspectorTarget(
                       "Android Bridge (ReactInstanceManagerInspectorTarget)",
               });
         },
-        {.nativePageReloads = true});
+        {.nativePageReloads = true, .prefersFuseboxFrontend = true});
   }
 }
 
@@ -70,16 +78,34 @@ ReactInstanceManagerInspectorTarget::initHybrid(
   return makeCxxInstance(jobj, executor, delegate);
 }
 
+void ReactInstanceManagerInspectorTarget::sendDebuggerResumeCommand() {
+  if (inspectorTarget_) {
+    inspectorTarget_->sendCommand(HostCommand::DebuggerResume);
+  } else {
+    jni::throwNewJavaException(
+        "java/lang/IllegalStateException",
+        "Cannot send command while the Fusebox backend is not enabled");
+  }
+}
+
 void ReactInstanceManagerInspectorTarget::registerNatives() {
   registerHybrid({
       makeNativeMethod(
           "initHybrid", ReactInstanceManagerInspectorTarget::initHybrid),
+      makeNativeMethod(
+          "sendDebuggerResumeCommand",
+          ReactInstanceManagerInspectorTarget::sendDebuggerResumeCommand),
   });
 }
 
 void ReactInstanceManagerInspectorTarget::onReload(
     const PageReloadRequest& /*request*/) {
   delegate_->onReload();
+}
+
+void ReactInstanceManagerInspectorTarget::onSetPausedInDebuggerMessage(
+    const OverlaySetPausedInDebuggerMessageRequest& request) {
+  delegate_->onSetPausedInDebuggerMessage(request);
 }
 
 HostTarget* ReactInstanceManagerInspectorTarget::getInspectorTarget() {

@@ -42,6 +42,8 @@ export interface TouchableWithoutFeedbackProps
     AccessibilityProps {
   children?: React.ReactNode | undefined;
 
+  rejectResponderTermination?: boolean | undefined;
+
   /**
    * Delay in ms, from onPressIn, before onLongPress is called.
    */
@@ -61,6 +63,12 @@ export interface TouchableWithoutFeedbackProps
    * If true, disable all interactions for this component.
    */
   disabled?: boolean | undefined;
+
+  /**
+   * Whether this View should be focusable with a non-touch input device,
+   * eg. receive focus with a hardware keyboard / TV remote.
+   */
+  focusable?: boolean | undefined;
 
   /**
    * This defines how far your touch can start away from the button.

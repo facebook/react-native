@@ -248,20 +248,23 @@
 
 - (RCTRootViewFactory *)createRCTRootViewFactory
 {
-  RCTRootViewFactoryConfiguration *configuration =
-      [[RCTRootViewFactoryConfiguration alloc] initWithBundleURL:self.bundleURL
-                                                  newArchEnabled:self.fabricEnabled
-                                              turboModuleEnabled:self.turboModuleEnabled
-                                               bridgelessEnabled:self.bridgelessEnabled];
-
   __weak __typeof(self) weakSelf = self;
-  configuration.createRootViewWithBridge = ^UIView *(RCTBridge *bridge, NSString *moduleName, NSDictionary *initProps)
-  {
+  RCTBundleURLBlock bundleUrlBlock = ^{
+    RCTAppDelegate *strongSelf = weakSelf;
+    return strongSelf.bundleURL;
+  };
+
+  RCTRootViewFactoryConfiguration *configuration =
+      [[RCTRootViewFactoryConfiguration alloc] initWithBundleURLBlock:bundleUrlBlock
+                                                       newArchEnabled:self.fabricEnabled
+                                                   turboModuleEnabled:self.turboModuleEnabled
+                                                    bridgelessEnabled:self.bridgelessEnabled];
+
+  configuration.createRootViewWithBridge = ^UIView *(RCTBridge *bridge, NSString *moduleName, NSDictionary *initProps) {
     return [weakSelf createRootViewWithBridge:bridge moduleName:moduleName initProps:initProps];
   };
 
-  configuration.createBridgeWithDelegate = ^RCTBridge *(id<RCTBridgeDelegate> delegate, NSDictionary *launchOptions)
-  {
+  configuration.createBridgeWithDelegate = ^RCTBridge *(id<RCTBridgeDelegate> delegate, NSDictionary *launchOptions) {
     return [weakSelf createBridgeWithDelegate:delegate launchOptions:launchOptions];
   };
 
@@ -291,42 +294,12 @@
     };
   }
 
-  if ([self respondsToSelector:@selector(loadSourceForBridge:withBlock:)]) {
-    configuration.loadSourceForBridgeBlock =
-        ^void(RCTBridge *_Nonnull bridge, RCTSourceLoadBlock _Nonnull loadCallback) {
-          [weakSelf loadSourceForBridge:bridge withBlock:loadCallback];
-        };
-  }
-
-  if ([self respondsToSelector:@selector(loadSourceForBridge:onProgress:onComplete:)]) {
-    configuration.loadSourceForBridgeProgressBlock =
-        ^(RCTBridge *_Nonnull bridge,
-          RCTSourceLoadProgressBlock _Nonnull onProgress,
-          RCTSourceLoadBlock _Nonnull loadCallback) {
-          [weakSelf loadSourceForBridge:bridge onProgress:onProgress onComplete:loadCallback];
-        };
-  }
-
   return [[RCTRootViewFactory alloc] initWithConfiguration:configuration andTurboModuleManagerDelegate:self];
 }
 
 #pragma mark - Feature Flags
 
-class RCTAppDelegateBridgelessFeatureFlags : public facebook::react::ReactNativeFeatureFlagsDefaults {
- public:
-  bool useModernRuntimeScheduler() override
-  {
-    return true;
-  }
-  bool enableMicrotasks() override
-  {
-    return true;
-  }
-  bool batchRenderingUpdatesInEventLoop() override
-  {
-    return true;
-  }
-};
+class RCTAppDelegateBridgelessFeatureFlags : public facebook::react::ReactNativeFeatureFlagsDefaults {};
 
 - (void)_setUpFeatureFlags
 {

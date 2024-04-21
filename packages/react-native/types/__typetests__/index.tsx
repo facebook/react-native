@@ -106,6 +106,7 @@ import {
   TextStyle,
   TouchableNativeFeedback,
   TouchableOpacity,
+  TouchableHighlight,
   TouchableWithoutFeedback,
   UIManager,
   View,
@@ -484,6 +485,74 @@ function TouchableTest() {
   }
 }
 
+export class TouchableHighlightTest extends React.Component {
+  buttonRef = React.createRef<React.ElementRef<typeof TouchableHighlight>>();
+
+  render() {
+    return (
+      <>
+        <TouchableHighlight ref={this.buttonRef} />
+        <TouchableHighlight
+          ref={ref => {
+            ref?.focus();
+            ref?.blur();
+            ref?.measure(
+              (x, y, width, height, pageX, pageY): number =>
+                x + y + width + height + pageX + pageY,
+            );
+            ref?.measureInWindow(
+              (x, y, width, height): number => x + y + width + height,
+            );
+            ref?.setNativeProps({focusable: false});
+          }}
+        />
+      </>
+    );
+  }
+}
+
+export class TouchableOpacityTest extends React.Component {
+  buttonRef = React.createRef<React.ElementRef<typeof TouchableOpacity>>();
+
+  render() {
+    return (
+      <>
+        <TouchableOpacity ref={this.buttonRef} />
+        <TouchableOpacity
+          ref={ref => {
+            ref?.focus();
+            ref?.blur();
+            ref?.measure(
+              (x, y, width, height, pageX, pageY): number =>
+                x + y + width + height + pageX + pageY,
+            );
+            ref?.measureInWindow(
+              (x, y, width, height): number => x + y + width + height,
+            );
+            ref?.setNativeProps({focusable: false});
+          }}
+        />
+        <TouchableOpacity focusable={false} />
+        <TouchableOpacity rejectResponderTermination={true} />
+        <TouchableOpacity
+          role="button"
+          accessibilityRole="button"
+          accessibilityLabelledBy="my-label-text"
+          aria-labelledby="my-label-text"
+        />
+        <TouchableOpacity
+          // @ts-expect-error - expected boolean value
+          focusable={1}
+        />
+        <TouchableOpacity
+          // @ts-expect-error - expected boolean value
+          rejectResponderTermination={'not-bool'}
+        />
+      </>
+    );
+  }
+}
+
 // TouchableNativeFeedbackTest
 export class TouchableNativeFeedbackTest extends React.Component {
   onPressButton = (e: GestureResponderEvent) => {
@@ -500,6 +569,16 @@ export class TouchableNativeFeedbackTest extends React.Component {
             <Text style={{margin: 30}}>Button</Text>
           </View>
         </TouchableNativeFeedback>
+        <TouchableWithoutFeedback focusable={false}>
+          <View style={{width: 150, height: 100, backgroundColor: 'red'}}>
+            <Text style={{margin: 30}}>Button</Text>
+          </View>
+        </TouchableWithoutFeedback>
+        <TouchableWithoutFeedback rejectResponderTermination={true}>
+          <View style={{width: 150, height: 100, backgroundColor: 'red'}}>
+            <Text style={{margin: 30}}>Button</Text>
+          </View>
+        </TouchableWithoutFeedback>
         <TouchableNativeFeedback
           background={TouchableNativeFeedback.Ripple('red', true)}>
           <View style={{width: 150, height: 100, backgroundColor: 'red'}}>

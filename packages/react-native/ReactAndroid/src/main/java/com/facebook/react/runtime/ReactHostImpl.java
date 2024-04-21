@@ -26,6 +26,7 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
+import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.JSEngineResolutionAlgorithm;
 import com.facebook.react.MemoryPressureRouter;
 import com.facebook.react.ReactHost;
@@ -52,6 +53,7 @@ import com.facebook.react.devsupport.DevSupportManagerBase;
 import com.facebook.react.devsupport.InspectorFlags;
 import com.facebook.react.devsupport.ReleaseDevSupportManager;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
+import com.facebook.react.devsupport.interfaces.DevSupportManager.PausedInDebuggerOverlayCommandListener;
 import com.facebook.react.fabric.ComponentFactory;
 import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.interfaces.TaskInterface;
@@ -93,9 +95,6 @@ import kotlin.jvm.functions.Function0;
 @ThreadSafe
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class ReactHostImpl implements ReactHost {
-
-  // TODO T61403233 Make this configurable by product code
-  private static final boolean DEV = ReactBuildConfig.DEBUG;
   private static final String TAG = "ReactHost";
   private static final int BRIDGELESS_MARKER_INSTANCE_KEY = 1;
   private static final AtomicInteger mCounter = new AtomicInteger(0);
@@ -129,7 +128,7 @@ public class ReactHostImpl implements ReactHost {
   private final AtomicReference<WeakReference<Activity>> mLastUsedActivity =
       new AtomicReference<>(new WeakReference<>(null));
   private final BridgelessReactStateTracker mBridgelessReactStateTracker =
-      new BridgelessReactStateTracker(DEV);
+      new BridgelessReactStateTracker(ReactBuildConfig.DEBUG);
   private final ReactLifecycleStateManager mReactLifecycleStateManager =
       new ReactLifecycleStateManager(mBridgelessReactStateTracker);
   private final int mId = mCounter.getAndIncrement();
@@ -178,14 +177,15 @@ public class ReactHostImpl implements ReactHost {
     mQueueThreadExceptionHandler = ReactHostImpl.this::handleHostException;
     mMemoryPressureRouter = new MemoryPressureRouter(context);
     mAllowPackagerServerAccess = allowPackagerServerAccess;
-    if (DEV) {
+    mUseDevSupport = useDevSupport;
+
+    if (mUseDevSupport) {
       mDevSupportManager =
           new BridgelessDevSupportManager(
               ReactHostImpl.this, mContext, mReactHostDelegate.getJsMainModulePath());
     } else {
       mDevSupportManager = new ReleaseDevSupportManager();
     }
-    mUseDevSupport = useDevSupport;
   }
 
   @Override
@@ -468,6 +468,25 @@ public class ReactHostImpl implements ReactHost {
         .continueWithTask(Task::getResult);
   }
 
+  @DoNotStrip
+  private void setPausedInDebuggerMessage(@Nullable String message) {
+    if (message == null) {
+      mDevSupportManager.hidePausedInDebuggerOverlay();
+    } else {
+      mDevSupportManager.showPausedInDebuggerOverlay(
+          message,
+          new PausedInDebuggerOverlayCommandListener() {
+            @Override
+            public void onResume() {
+              UiThreadUtil.assertOnUiThread();
+              if (mReactHostInspectorTarget != null) {
+                mReactHostInspectorTarget.sendDebuggerResumeCommand();
+              }
+            }
+          });
+    }
+  }
+
   /**
    * Entrypoint to destroy the ReactInstance. If the ReactInstance is reloading, will wait until
    * reload is finished, before destroying.
@@ -594,6 +613,16 @@ public class ReactHostImpl implements ReactHost {
 
   /* package */
   @Nullable
+  NativeModule getNativeModule(String nativeModuleName) {
+    final ReactInstance reactInstance = mReactInstanceTaskRef.get().getResult();
+    if (reactInstance != null) {
+      return reactInstance.getNativeModule(nativeModuleName);
+    }
+    return null;
+  }
+
+  /* package */
+  @Nullable
   RuntimeExecutor getRuntimeExecutor() {
     final ReactInstance reactInstance = mReactInstanceTaskRef.get().getResult();
     if (reactInstance != null) {
@@ -643,11 +672,12 @@ public class ReactHostImpl implements ReactHost {
     ReactContext currentContext = getCurrentReactContext();
     if (currentContext != null) {
       currentContext.onActivityResult(activity, requestCode, resultCode, data);
+    } else {
+      ReactSoftExceptionLogger.logSoftException(
+          TAG,
+          new ReactNoCrashSoftException(
+              "Tried to access onActivityResult while context is not ready"));
     }
-    ReactSoftExceptionLogger.logSoftException(
-        TAG,
-        new ReactNoCrashSoftException(
-            "Tried to access onActivityResult while context is not ready"));
   }
 
   /* To be called when focus has changed for the hosting window. */
@@ -660,11 +690,12 @@ public class ReactHostImpl implements ReactHost {
     ReactContext currentContext = getCurrentReactContext();
     if (currentContext != null) {
       currentContext.onWindowFocusChange(hasFocus);
+    } else {
+      ReactSoftExceptionLogger.logSoftException(
+          TAG,
+          new ReactNoCrashSoftException(
+              "Tried to access onWindowFocusChange while context is not ready"));
     }
-    ReactSoftExceptionLogger.logSoftException(
-        TAG,
-        new ReactNoCrashSoftException(
-            "Tried to access onWindowFocusChange while context is not ready"));
   }
 
   /* This method will give JS the opportunity to receive intents via Linking.
@@ -691,10 +722,11 @@ public class ReactHostImpl implements ReactHost {
         }
       }
       currentContext.onNewIntent(getCurrentActivity(), intent);
+    } else {
+      ReactSoftExceptionLogger.logSoftException(
+          TAG,
+          new ReactNoCrashSoftException("Tried to access onNewIntent while context is not ready"));
     }
-    ReactSoftExceptionLogger.logSoftException(
-        TAG,
-        new ReactNoCrashSoftException("Tried to access onNewIntent while context is not ready"));
   }
 
   @ThreadConfined(UI)
@@ -761,7 +793,7 @@ public class ReactHostImpl implements ReactHost {
     final String method = "handleHostException(message = \"" + e.getMessage() + "\")";
     log(method);
 
-    if (DEV) {
+    if (mUseDevSupport) {
       mDevSupportManager.handleException(e);
     }
     destroy(method, e);
@@ -1118,7 +1150,7 @@ public class ReactHostImpl implements ReactHost {
     final String method = "getJSBundleLoader()";
     log(method);
 
-    if (DEV && mAllowPackagerServerAccess) {
+    if (mUseDevSupport && mAllowPackagerServerAccess) {
       return isMetroRunning()
           .onSuccessTask(
               task -> {
@@ -1131,7 +1163,7 @@ public class ReactHostImpl implements ReactHost {
               },
               mBGExecutor);
     } else {
-      if (DEV) {
+      if (ReactBuildConfig.DEBUG) {
         FLog.d(TAG, "Packager server access is disabled in this environment");
       }
 

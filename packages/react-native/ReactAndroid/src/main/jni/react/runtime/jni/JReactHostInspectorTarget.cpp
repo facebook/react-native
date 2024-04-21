@@ -45,7 +45,7 @@ JReactHostInspectorTarget::JReactHostInspectorTarget(
           // Reject the connection.
           return nullptr;
         },
-        {.nativePageReloads = true});
+        {.nativePageReloads = true, .prefersFuseboxFrontend = true});
   }
 }
 
@@ -63,14 +63,32 @@ JReactHostInspectorTarget::initHybrid(
   return makeCxxInstance(reactHostImpl, executor);
 }
 
+void JReactHostInspectorTarget::sendDebuggerResumeCommand() {
+  if (inspectorTarget_) {
+    inspectorTarget_->sendCommand(HostCommand::DebuggerResume);
+  } else {
+    jni::throwNewJavaException(
+        "java/lang/IllegalStateException",
+        "Cannot send command while the Fusebox backend is not enabled");
+  }
+}
+
 void JReactHostInspectorTarget::registerNatives() {
   registerHybrid({
       makeNativeMethod("initHybrid", JReactHostInspectorTarget::initHybrid),
+      makeNativeMethod(
+          "sendDebuggerResumeCommand",
+          JReactHostInspectorTarget::sendDebuggerResumeCommand),
   });
 }
 
 void JReactHostInspectorTarget::onReload(const PageReloadRequest& request) {
   javaReactHostImpl_->reload("CDP Page.reload");
+}
+
+void JReactHostInspectorTarget::onSetPausedInDebuggerMessage(
+    const OverlaySetPausedInDebuggerMessageRequest& request) {
+  javaReactHostImpl_->setPausedInDebuggerMessage(request.message);
 }
 
 HostTarget* JReactHostInspectorTarget::getInspectorTarget() {

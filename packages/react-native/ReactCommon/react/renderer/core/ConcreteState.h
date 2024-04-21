@@ -60,7 +60,7 @@ class ConcreteState : public State {
    */
   void updateState(Data&& newData) const {
     updateState([data{std::move(newData)}](const Data& oldData) -> SharedData {
-      return std::make_shared<Data const>(data);
+      return std::make_shared<const Data>(data);
     });
   }
 
@@ -85,7 +85,7 @@ class ConcreteState : public State {
     auto stateUpdate = StateUpdate{
         family, [=](const StateData::Shared& oldData) -> StateData::Shared {
           react_native_assert(oldData);
-          return callback(*static_cast<Data const*>(oldData.get()));
+          return callback(*static_cast<const Data*>(oldData.get()));
         }};
 
     family->dispatchRawState(std::move(stateUpdate));

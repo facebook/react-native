@@ -17,9 +17,15 @@ class AndroidPopupMenuEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
 
-  struct OnSelectionChange {
+  struct OnPopupMenuSelectionChange {
       int item;
     };
-  void onSelectionChange(OnSelectionChange value) const;
+
+  struct OnPopupMenuDismiss {
+      
+    };
+  void onPopupMenuSelectionChange(OnPopupMenuSelectionChange value) const;
+
+  void onPopupMenuDismiss(OnPopupMenuDismiss value) const;
 };
 } // namespace facebook::react

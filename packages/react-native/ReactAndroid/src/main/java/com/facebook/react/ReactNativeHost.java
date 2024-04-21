@@ -20,6 +20,7 @@ import com.facebook.react.common.SurfaceDelegateFactory;
 import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
 import com.facebook.react.devsupport.DevSupportManagerFactory;
 import com.facebook.react.devsupport.interfaces.DevLoadingViewManager;
+import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager;
 import com.facebook.react.devsupport.interfaces.RedBoxHandler;
 import com.facebook.react.internal.ChoreographerProvider;
 import java.util.List;
@@ -73,6 +74,12 @@ public abstract class ReactNativeHost {
 
   protected ReactInstanceManager createReactInstanceManager() {
     ReactMarker.logMarker(ReactMarkerConstants.BUILD_REACT_INSTANCE_MANAGER_START);
+    ReactInstanceManagerBuilder builder = getBaseReactInstanceManagerBuilder();
+    ReactMarker.logMarker(ReactMarkerConstants.BUILD_REACT_INSTANCE_MANAGER_END);
+    return builder.build();
+  }
+
+  protected ReactInstanceManagerBuilder getBaseReactInstanceManagerBuilder() {
     ReactInstanceManagerBuilder builder =
         ReactInstanceManager.builder()
             .setApplication(mApplication)
@@ -90,7 +97,8 @@ public abstract class ReactNativeHost {
             .setReactPackageTurboModuleManagerDelegateBuilder(
                 getReactPackageTurboModuleManagerDelegateBuilder())
             .setJSEngineResolutionAlgorithm(getJSEngineResolutionAlgorithm())
-            .setChoreographerProvider(getChoreographerProvider());
+            .setChoreographerProvider(getChoreographerProvider())
+            .setPausedInDebuggerOverlayManager(getPausedInDebuggerOverlayManager());
 
     for (ReactPackage reactPackage : getPackages()) {
       builder.addPackage(reactPackage);
@@ -102,9 +110,7 @@ public abstract class ReactNativeHost {
     } else {
       builder.setBundleAssetName(Assertions.assertNotNull(getBundleAssetName()));
     }
-    ReactInstanceManager reactInstanceManager = builder.build();
-    ReactMarker.logMarker(ReactMarkerConstants.BUILD_REACT_INSTANCE_MANAGER_END);
-    return reactInstanceManager;
+    return builder;
   }
 
   /** Get the {@link RedBoxHandler} to send RedBox-related callbacks to. */
@@ -164,6 +170,10 @@ public abstract class ReactNativeHost {
    * Get the {@link DevLoadingViewManager}. Override this to use a custom dev loading view manager
    */
   protected @Nullable DevLoadingViewManager getDevLoadingViewManager() {
+    return null;
+  }
+
+  protected @Nullable PausedInDebuggerOverlayManager getPausedInDebuggerOverlayManager() {
     return null;
   }
 

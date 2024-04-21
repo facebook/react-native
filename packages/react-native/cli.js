@@ -13,6 +13,7 @@
 const {name, version: currentVersion} = require('./package.json');
 const chalk = require('chalk');
 const {get} = require('https');
+const semver = require('semver');
 const {URL} = require('url');
 
 const deprecated = () => {
@@ -129,7 +130,8 @@ async function main() {
   if (isNpxRuntime && !process.env.SKIP && currentVersion !== HEAD) {
     try {
       const latest = await getLatestVersion();
-      if (latest !== currentVersion) {
+      // TODO: T184416093 When cli is deprecated, remove semver from package.json
+      if (semver.lt(currentVersion, latest)) {
         const msg = `
   ${chalk.bold.yellow('WARNING:')} You should run ${chalk.white.bold(
     'npx react-native@latest',

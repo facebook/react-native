@@ -264,10 +264,6 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     CoreFeatures::enableGranularScrollViewStateUpdatesIOS = true;
   }
 
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_cloneless_state_progression")) {
-    CoreFeatures::enableClonelessStateProgression = true;
-  }
-
   auto componentRegistryFactory =
       [factory = wrapManagedObject(_mountingManager.componentViewRegistry.componentViewFactory)](
           const EventDispatcher::Weak &eventDispatcher, const ContextContainer::Shared &contextContainer) {
@@ -299,7 +295,7 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
   toolbox.asynchronousEventBeatFactory =
       [runtimeExecutor](const EventBeat::SharedOwnerBox &ownerBox) -> std::unique_ptr<EventBeat> {
     auto runLoopObserver =
-        std::make_unique<MainRunLoopObserver const>(RunLoopObserver::Activity::BeforeWaiting, ownerBox->owner);
+        std::make_unique<const MainRunLoopObserver>(RunLoopObserver::Activity::BeforeWaiting, ownerBox->owner);
     return std::make_unique<AsynchronousEventBeat>(std::move(runLoopObserver), runtimeExecutor);
   };
 

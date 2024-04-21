@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<adcc82e9ad406a40cfaddaad816fb0f0>>
+ * @generated SignedSource<<92830e364788db00fd06d4e152ef7727>>
  */
 
 /**
@@ -41,9 +41,9 @@ class NativeReactNativeFeatureFlags
 
   bool enableBackgroundExecutor(jsi::Runtime& runtime);
 
-  bool enableCustomDrawOrderFabric(jsi::Runtime& runtime);
+  bool enableCleanTextInputYogaNode(jsi::Runtime& runtime);
 
-  bool enableFixForClippedSubviewsCrash(jsi::Runtime& runtime);
+  bool enableCustomDrawOrderFabric(jsi::Runtime& runtime);
 
   bool enableMicrotasks(jsi::Runtime& runtime);
 
@@ -55,11 +55,19 @@ class NativeReactNativeFeatureFlags
 
   bool enableUIConsistency(jsi::Runtime& runtime);
 
+  bool forceBatchingMountItemsOnAndroid(jsi::Runtime& runtime);
+
   bool inspectorEnableCxxInspectorPackagerConnection(jsi::Runtime& runtime);
 
   bool inspectorEnableModernCDPRegistry(jsi::Runtime& runtime);
 
+  bool preventDoubleTextMeasure(jsi::Runtime& runtime);
+
   bool useModernRuntimeScheduler(jsi::Runtime& runtime);
+
+  bool useNativeViewConfigsInBridgelessMode(jsi::Runtime& runtime);
+
+  bool useStateAlignmentMechanism(jsi::Runtime& runtime);
 };
 
 } // namespace facebook::react

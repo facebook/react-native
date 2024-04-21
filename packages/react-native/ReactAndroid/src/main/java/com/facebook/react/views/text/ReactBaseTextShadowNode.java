@@ -382,7 +382,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode
     // or images.
     for (int priorityIndex = 0; priorityIndex < ops.size(); priorityIndex++) {
       final SetSpanOperation op = ops.get(ops.size() - priorityIndex - 1);
-      final ReactSpan what = op.getWhat();
+      final ReactSpan what = op.what;
 
       boolean isInlineImage = what instanceof TextInlineImageSpan;
       if (isInlineImage || what instanceof TextInlineViewPlaceholderSpan) {

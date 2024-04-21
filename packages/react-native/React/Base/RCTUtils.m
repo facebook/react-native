@@ -468,8 +468,8 @@ BOOL RCTClassOverridesInstanceMethod(Class cls, SEL selector)
   return NO;
 }
 
-NSDictionary<NSString *, id>
-    *RCTMakeError(NSString *message, id __nullable toStringify, NSDictionary<NSString *, id> *__nullable extraData)
+NSDictionary<NSString *, id> *
+RCTMakeError(NSString *message, id __nullable toStringify, NSDictionary<NSString *, id> *__nullable extraData)
 {
   if (toStringify) {
     message = [message stringByAppendingString:[toStringify description]];
@@ -496,8 +496,8 @@ NSDictionary<NSString *, id> *RCTJSErrorFromNSError(NSError *error)
 }
 
 // TODO: Can we just replace RCTMakeError with this function instead?
-NSDictionary<NSString *, id>
-    *RCTJSErrorFromCodeMessageAndNSError(NSString *code, NSString *message, NSError *__nullable error)
+NSDictionary<NSString *, id> *
+RCTJSErrorFromCodeMessageAndNSError(NSString *code, NSString *message, NSError *__nullable error)
 {
   NSString *errorMessage;
   NSArray<NSString *> *stackTrace = [NSThread callStackSymbols];

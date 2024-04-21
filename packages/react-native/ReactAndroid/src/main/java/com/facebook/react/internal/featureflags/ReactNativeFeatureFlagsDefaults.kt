@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c903b5aa8d70665c1104baa6670f8cb1>>
+ * @generated SignedSource<<6cc4fccd13a1e426a2d6a2a24530e5e6>>
  */
 
 /**
@@ -29,9 +29,9 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableBackgroundExecutor(): Boolean = false
 
-  override fun enableCustomDrawOrderFabric(): Boolean = false
+  override fun enableCleanTextInputYogaNode(): Boolean = false
 
-  override fun enableFixForClippedSubviewsCrash(): Boolean = false
+  override fun enableCustomDrawOrderFabric(): Boolean = false
 
   override fun enableMicrotasks(): Boolean = false
 
@@ -43,9 +43,17 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableUIConsistency(): Boolean = false
 
+  override fun forceBatchingMountItemsOnAndroid(): Boolean = false
+
   override fun inspectorEnableCxxInspectorPackagerConnection(): Boolean = false
 
   override fun inspectorEnableModernCDPRegistry(): Boolean = false
 
+  override fun preventDoubleTextMeasure(): Boolean = false
+
   override fun useModernRuntimeScheduler(): Boolean = false
+
+  override fun useNativeViewConfigsInBridgelessMode(): Boolean = false
+
+  override fun useStateAlignmentMechanism(): Boolean = false
 }

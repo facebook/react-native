@@ -7,8 +7,6 @@
 
 package com.facebook.react.runtime.internal.bolts;
 
-import android.annotation.SuppressLint;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import androidx.annotation.NonNull;
@@ -78,7 +76,7 @@ final class AndroidExecutors {
             TimeUnit.SECONDS,
             new LinkedBlockingQueue<Runnable>());
 
-    allowCoreThreadTimeout(executor, true);
+    executor.allowCoreThreadTimeOut(true);
 
     return executor;
   }
@@ -104,25 +102,9 @@ final class AndroidExecutors {
             new LinkedBlockingQueue<Runnable>(),
             threadFactory);
 
-    allowCoreThreadTimeout(executor, true);
+    executor.allowCoreThreadTimeOut(true);
 
     return executor;
-  }
-
-  /**
-   * Compatibility helper function for {@link
-   * java.util.concurrent.ThreadPoolExecutor#allowCoreThreadTimeOut(boolean)}
-   *
-   * <p>Only available on android-9+.
-   *
-   * @param executor the {@link java.util.concurrent.ThreadPoolExecutor}
-   * @param value true if should time out, else false
-   */
-  @SuppressLint("NewApi")
-  public static void allowCoreThreadTimeout(@NonNull ThreadPoolExecutor executor, boolean value) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
-      executor.allowCoreThreadTimeOut(value);
-    }
   }
 
   /**

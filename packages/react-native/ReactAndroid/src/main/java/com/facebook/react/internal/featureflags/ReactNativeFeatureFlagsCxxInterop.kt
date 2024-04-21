@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4154c0f81f2e5ad7ff03e252c4aa965c>>
+ * @generated SignedSource<<56ac4a5eaf65775fdb757fc10ed82908>>
  */
 
 /**
@@ -34,9 +34,9 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun enableBackgroundExecutor(): Boolean
 
-  @DoNotStrip @JvmStatic public external fun enableCustomDrawOrderFabric(): Boolean
+  @DoNotStrip @JvmStatic public external fun enableCleanTextInputYogaNode(): Boolean
 
-  @DoNotStrip @JvmStatic public external fun enableFixForClippedSubviewsCrash(): Boolean
+  @DoNotStrip @JvmStatic public external fun enableCustomDrawOrderFabric(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableMicrotasks(): Boolean
 
@@ -48,11 +48,19 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun enableUIConsistency(): Boolean
 
+  @DoNotStrip @JvmStatic public external fun forceBatchingMountItemsOnAndroid(): Boolean
+
   @DoNotStrip @JvmStatic public external fun inspectorEnableCxxInspectorPackagerConnection(): Boolean
 
   @DoNotStrip @JvmStatic public external fun inspectorEnableModernCDPRegistry(): Boolean
 
+  @DoNotStrip @JvmStatic public external fun preventDoubleTextMeasure(): Boolean
+
   @DoNotStrip @JvmStatic public external fun useModernRuntimeScheduler(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun useNativeViewConfigsInBridgelessMode(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun useStateAlignmentMechanism(): Boolean
 
   @DoNotStrip @JvmStatic public external fun override(provider: Any)
 

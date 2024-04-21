@@ -219,12 +219,15 @@ static jsi::Value convertJSErrorDetailsToJSRuntimeError(jsi::Runtime &runtime, N
   NSString *message = jsErrorDetails[@"message"];
 
   auto jsError = createJSRuntimeError(runtime, [message UTF8String]);
-  jsError.asObject(runtime).setProperty(runtime, "cause", convertObjCObjectToJSIValue(runtime, jsErrorDetails));
+  for (NSString *key in jsErrorDetails) {
+    id value = jsErrorDetails[key];
+    jsError.asObject(runtime).setProperty(runtime, [key UTF8String], convertObjCObjectToJSIValue(runtime, value));
+  }
 
   return jsError;
 }
 
-}
+} // namespace TurboModuleConvertUtils
 
 jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string methodName, PromiseInvocationBlock invoke)
 {
@@ -810,5 +813,5 @@ void ObjCTurboModule::setMethodArgConversionSelector(NSString *methodName, size_
   methodArgConversionSelectors_[methodName][argIndex] = selectorValue;
 }
 
-}
-} // namespace facebook::react
+} // namespace react
+} // namespace facebook

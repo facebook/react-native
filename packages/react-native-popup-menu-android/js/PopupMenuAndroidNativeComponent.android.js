@@ -23,13 +23,16 @@ type PopupMenuSelectionEvent = $ReadOnly<{
   item: Int32,
 }>;
 
+type PopupMenuDismissEvent = $ReadOnly<{}>;
+
 type NativeProps = $ReadOnly<{
   ...ViewProps,
 
   //Props
   menuItems?: ?$ReadOnlyArray<string>,
 
-  onSelectionChange?: DirectEventHandler<PopupMenuSelectionEvent>,
+  onPopupMenuSelectionChange?: DirectEventHandler<PopupMenuSelectionEvent>,
+  onPopupMenuDismiss?: DirectEventHandler<PopupMenuDismissEvent>,
 }>;
 
 type ComponentType = HostComponent<NativeProps>;

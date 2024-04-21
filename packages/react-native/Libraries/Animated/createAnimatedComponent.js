@@ -8,12 +8,19 @@
  * @format
  */
 
+import View from '../Components/View/View';
 import useMergeRefs from '../Utilities/useMergeRefs';
 import useAnimatedProps from './useAnimatedProps';
 import * as React from 'react';
 
 // $FlowFixMe[deprecated-type]
-export type AnimatedProps<Props: {...}> = $ObjMap<Props, () => any>;
+export type AnimatedProps<Props: {...}> = $ObjMap<
+  Props &
+    $ReadOnly<{
+      passthroughAnimatedPropExplicitValues?: React.ElementConfig<typeof View>,
+    }>,
+  () => any,
+>;
 
 export type AnimatedComponentType<
   Props: {...},
@@ -36,9 +43,19 @@ export default function createAnimatedComponent<TProps: {...}, TInstance>(
       // transformed and Pressable, onPress will not work after transform
       // without these passthrough values.
       // $FlowFixMe[prop-missing]
-      const {style} = reducedProps;
+      const {passthroughAnimatedPropExplicitValues, style} = reducedProps;
+      const {style: passthroughStyle, ...passthroughProps} =
+        passthroughAnimatedPropExplicitValues ?? {};
+      const mergedStyle = {...style, ...passthroughStyle};
 
-      return <Component {...reducedProps} style={style} ref={ref} />;
+      return (
+        <Component
+          {...reducedProps}
+          {...passthroughProps}
+          style={mergedStyle}
+          ref={ref}
+        />
+      );
     },
   );
 

@@ -616,37 +616,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   }
 
   /**
-   * Show a PopupMenu.
-   *
-   * <p>This is deprecated, please use the <PopupMenuAndroid /> component instead.
-   *
-   * <p>TODO(T175424986): Remove UIManager.showPopupMenu() in React Native v0.75.
-   *
-   * @param reactTag the tag of the anchor view (the PopupMenu is displayed next to this view); this
-   *     needs to be the tag of a native view (shadow views can not be anchors)
-   * @param items the menu items as an array of strings
-   * @param error will be called if there is an error displaying the menu
-   * @param success will be called with the position of the selected item as the first argument, or
-   *     no arguments if the menu is dismissed
-   */
-  @ReactMethod
-  @Deprecated
-  public void showPopupMenu(int reactTag, ReadableArray items, Callback error, Callback success) {
-    mUIImplementation.showPopupMenu(reactTag, items, error, success);
-  }
-
-  /**
-   * This is deprecated, please use the <PopupMenuAndroid /> component instead.
-   *
-   * <p>TODO(T175424986): Remove UIManager.dismissPopupMenu() in React Native v0.75.
-   */
-  @ReactMethod
-  @Deprecated
-  public void dismissPopupMenu() {
-    mUIImplementation.dismissPopupMenu();
-  }
-
-  /**
    * LayoutAnimation API on Android is currently experimental. Therefore, it needs to be enabled
    * explicitly in order to avoid regression in existing application written for iOS using this API.
    *

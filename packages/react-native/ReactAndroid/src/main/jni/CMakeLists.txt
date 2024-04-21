@@ -71,6 +71,7 @@ add_react_common_subdir(react/renderer/runtimescheduler)
 add_react_common_subdir(react/debug)
 add_react_common_subdir(react/config)
 add_react_common_subdir(react/featureflags)
+add_react_common_subdir(react/performance/timeline)
 add_react_common_subdir(react/renderer/animations)
 add_react_common_subdir(react/renderer/attributedstring)
 add_react_common_subdir(react/renderer/componentregistry)
@@ -99,6 +100,7 @@ add_react_common_subdir(react/renderer/components/unimplementedview)
 add_react_common_subdir(react/renderer/components/modal)
 add_react_common_subdir(react/renderer/components/scrollview)
 add_react_common_subdir(react/renderer/leakchecker)
+add_react_common_subdir(react/renderer/observers/events)
 add_react_common_subdir(react/renderer/textlayoutmanager)
 add_react_common_subdir(react/utils)
 add_react_common_subdir(react/bridging)
@@ -204,6 +206,7 @@ add_executable(reactnative_unittest
   hermes-engine::libhermes
   hermes_inspector_modern
   jsi
+  react_cxxreact
   react_codegen_rncore
   react_debug
   react_render_animations
@@ -217,7 +220,6 @@ add_executable(reactnative_unittest
   react_render_textlayoutmanager
   react_render_uimanager
   react_utils
-  reactnative
   rrc_modal
   rrc_scrollview
   rrc_text

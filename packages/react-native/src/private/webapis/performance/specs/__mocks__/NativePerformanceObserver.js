@@ -95,11 +95,10 @@ const NativePerformanceObserverMock: NativePerformanceObserver = {
     durationThresholds.set(entryType, durationThreshold);
   },
 
-  clearEntries: (entryType: RawPerformanceEntryType, entryName?: string) => {
+  clearEntries: (entryType?: RawPerformanceEntryType, entryName?: string) => {
     entries = entries.filter(
       e =>
-        (entryType !== RawPerformanceEntryTypeValues.UNDEFINED &&
-          e.entryType !== entryType) ||
+        (entryType != null && e.entryType !== entryType) ||
         (entryName != null && e.name !== entryName),
     );
   },

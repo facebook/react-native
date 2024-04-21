@@ -2,14 +2,7 @@
   "name": "@react-native/monorepo",
   "private": true,
   "version": "1000.0.0",
-  "description": "A framework for building native apps using React",
   "license": "MIT",
-  "repository": "github:facebook/react-native",
-  "types": "types",
-  "jest-junit": {
-    "outputDirectory": "reports/junit",
-    "outputName": "js-test-results.xml"
-  },
   "scripts": {
     "android": "cd packages/rn-tester && npm run android",
     "build-android": "./gradlew :packages:react-native:ReactAndroid:build",
@@ -45,9 +38,6 @@
     "packages/*",
     "tools/*"
   ],
-  "peerDependencies": {
-    "react": "18.2.0"
-  },
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "@babel/eslint-parser": "^7.20.0",
@@ -86,7 +76,7 @@
     "eslint-plugin-redundant-undefined": "^0.4.0",
     "eslint-plugin-relay": "^1.8.3",
     "flow-api-translator": "0.20.1",
-    "flow-bin": "^0.232.0",
+    "flow-bin": "^0.234.0",
     "glob": "^7.1.1",
     "hermes-eslint": "0.20.1",
     "hermes-transform": "0.20.1",

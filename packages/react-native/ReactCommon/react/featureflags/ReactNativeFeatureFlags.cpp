@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<56f79a4cb62a993f9c3a8ea01eed2ab6>>
+ * @generated SignedSource<<0fe73e0526dbc2f860029b8cb0fbcfe3>>
  */
 
 /**
@@ -33,12 +33,12 @@ bool ReactNativeFeatureFlags::enableBackgroundExecutor() {
   return getAccessor().enableBackgroundExecutor();
 }
 
-bool ReactNativeFeatureFlags::enableCustomDrawOrderFabric() {
-  return getAccessor().enableCustomDrawOrderFabric();
+bool ReactNativeFeatureFlags::enableCleanTextInputYogaNode() {
+  return getAccessor().enableCleanTextInputYogaNode();
 }
 
-bool ReactNativeFeatureFlags::enableFixForClippedSubviewsCrash() {
-  return getAccessor().enableFixForClippedSubviewsCrash();
+bool ReactNativeFeatureFlags::enableCustomDrawOrderFabric() {
+  return getAccessor().enableCustomDrawOrderFabric();
 }
 
 bool ReactNativeFeatureFlags::enableMicrotasks() {
@@ -61,6 +61,10 @@ bool ReactNativeFeatureFlags::enableUIConsistency() {
   return getAccessor().enableUIConsistency();
 }
 
+bool ReactNativeFeatureFlags::forceBatchingMountItemsOnAndroid() {
+  return getAccessor().forceBatchingMountItemsOnAndroid();
+}
+
 bool ReactNativeFeatureFlags::inspectorEnableCxxInspectorPackagerConnection() {
   return getAccessor().inspectorEnableCxxInspectorPackagerConnection();
 }
@@ -69,8 +73,20 @@ bool ReactNativeFeatureFlags::inspectorEnableModernCDPRegistry() {
   return getAccessor().inspectorEnableModernCDPRegistry();
 }
 
+bool ReactNativeFeatureFlags::preventDoubleTextMeasure() {
+  return getAccessor().preventDoubleTextMeasure();
+}
+
 bool ReactNativeFeatureFlags::useModernRuntimeScheduler() {
   return getAccessor().useModernRuntimeScheduler();
+}
+
+bool ReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode() {
+  return getAccessor().useNativeViewConfigsInBridgelessMode();
+}
+
+bool ReactNativeFeatureFlags::useStateAlignmentMechanism() {
+  return getAccessor().useStateAlignmentMechanism();
 }
 
 void ReactNativeFeatureFlags::override(

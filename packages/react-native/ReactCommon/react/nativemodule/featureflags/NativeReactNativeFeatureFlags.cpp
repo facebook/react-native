@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<08ed8c4c27411ba5a04acb314eb36b63>>
+ * @generated SignedSource<<a24c9972eebff849abd9b0e7ef4ff525>>
  */
 
 /**
@@ -52,14 +52,14 @@ bool NativeReactNativeFeatureFlags::enableBackgroundExecutor(
   return ReactNativeFeatureFlags::enableBackgroundExecutor();
 }
 
+bool NativeReactNativeFeatureFlags::enableCleanTextInputYogaNode(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableCleanTextInputYogaNode();
+}
+
 bool NativeReactNativeFeatureFlags::enableCustomDrawOrderFabric(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableCustomDrawOrderFabric();
-}
-
-bool NativeReactNativeFeatureFlags::enableFixForClippedSubviewsCrash(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::enableFixForClippedSubviewsCrash();
 }
 
 bool NativeReactNativeFeatureFlags::enableMicrotasks(
@@ -87,6 +87,11 @@ bool NativeReactNativeFeatureFlags::enableUIConsistency(
   return ReactNativeFeatureFlags::enableUIConsistency();
 }
 
+bool NativeReactNativeFeatureFlags::forceBatchingMountItemsOnAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::forceBatchingMountItemsOnAndroid();
+}
+
 bool NativeReactNativeFeatureFlags::inspectorEnableCxxInspectorPackagerConnection(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::inspectorEnableCxxInspectorPackagerConnection();
@@ -97,9 +102,24 @@ bool NativeReactNativeFeatureFlags::inspectorEnableModernCDPRegistry(
   return ReactNativeFeatureFlags::inspectorEnableModernCDPRegistry();
 }
 
+bool NativeReactNativeFeatureFlags::preventDoubleTextMeasure(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::preventDoubleTextMeasure();
+}
+
 bool NativeReactNativeFeatureFlags::useModernRuntimeScheduler(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::useModernRuntimeScheduler();
+}
+
+bool NativeReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode();
+}
+
+bool NativeReactNativeFeatureFlags::useStateAlignmentMechanism(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::useStateAlignmentMechanism();
 }
 
 } // namespace facebook::react

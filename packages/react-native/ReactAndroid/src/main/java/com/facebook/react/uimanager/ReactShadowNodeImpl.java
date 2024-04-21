@@ -89,7 +89,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   private Integer mHeightMeasureSpec;
 
   public ReactShadowNodeImpl() {
-    mDefaultPadding = new Spacing(0);
+    mDefaultPadding = new Spacing(0f);
     if (!isVirtual()) {
       YogaNode node = YogaNodePool.get().acquire();
       mYogaNode = node == null ? YogaNodeFactory.create(sYogaConfig) : node;
@@ -828,13 +828,28 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   }
 
   @Override
+  public void setRowGapPercent(float percent) {
+    mYogaNode.setGapPercent(YogaGutter.ROW, percent);
+  }
+
+  @Override
   public void setColumnGap(float columnGap) {
     mYogaNode.setGap(YogaGutter.COLUMN, columnGap);
   }
 
   @Override
+  public void setColumnGapPercent(float percent) {
+    mYogaNode.setGapPercent(YogaGutter.COLUMN, percent);
+  }
+
+  @Override
   public void setGap(float gap) {
     mYogaNode.setGap(YogaGutter.ALL, gap);
+  }
+
+  @Override
+  public void setGapPercent(float percent) {
+    mYogaNode.setGap(YogaGutter.ALL, percent);
   }
 
   @Override

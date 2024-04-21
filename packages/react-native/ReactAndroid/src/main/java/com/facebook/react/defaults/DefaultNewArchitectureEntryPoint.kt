@@ -43,18 +43,13 @@ public object DefaultNewArchitectureEntryPoint {
     ReactFeatureFlags.enableFabricRenderer = fabricEnabled
     ReactFeatureFlags.unstable_useFabricInterop = fabricEnabled
     ReactFeatureFlags.enableBridgelessArchitecture = bridgelessEnabled
-    ReactFeatureFlags.useNativeViewConfigsInBridgelessMode = fabricEnabled && bridgelessEnabled
     ReactFeatureFlags.unstable_useTurboModuleInterop = bridgelessEnabled
     ReactFeatureFlags.enableFabricPendingEventQueue = fabricEnabled
 
     if (bridgelessEnabled) {
       ReactNativeFeatureFlags.override(
           object : ReactNativeFeatureFlagsDefaults() {
-            override fun useModernRuntimeScheduler(): Boolean = true
-
-            override fun enableMicrotasks(): Boolean = true
-
-            override fun batchRenderingUpdatesInEventLoop(): Boolean = true
+            override fun useNativeViewConfigsInBridgelessMode(): Boolean = fabricEnabled
           })
     }
 

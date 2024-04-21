@@ -185,4 +185,20 @@ describe('getDevToolsFrontendUrl', () => {
       expect(url.searchParams.get('launchId')).toBe(launchId);
     });
   });
+
+  describe('useFuseboxEntryPoint: true', () => {
+    test('should return rn_fusebox.html entry point', async () => {
+      const result = getDevToolsFrontendUrl(
+        experiments,
+        webSocketDebuggerUrl,
+        devServerUrl,
+        {
+          useFuseboxEntryPoint: true,
+        },
+      );
+      const url = new URL(result);
+
+      expect(url.pathname).toBe('/debugger-frontend/rn_fusebox.html');
+    });
+  });
 });

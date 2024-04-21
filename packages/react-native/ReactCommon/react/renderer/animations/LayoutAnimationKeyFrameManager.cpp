@@ -186,7 +186,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
     };
 #endif
 
-      // DEBUG ONLY: list existing inflight animations
+    // DEBUG ONLY: list existing inflight animations
 #ifdef LAYOUT_ANIMATION_VERBOSE_LOGGING
     LOG(ERROR) << "BEGINNING DISPLAYING ONGOING inflightAnimations_!";
     int i = 0;

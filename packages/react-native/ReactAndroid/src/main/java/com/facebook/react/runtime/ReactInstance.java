@@ -35,7 +35,6 @@ import com.facebook.react.bridge.queue.QueueThreadExceptionHandler;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationImpl;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
-import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.fabric.Binding;
 import com.facebook.react.fabric.BindingImpl;
@@ -45,6 +44,7 @@ import com.facebook.react.fabric.ReactNativeConfig;
 import com.facebook.react.fabric.events.EventBeatManager;
 import com.facebook.react.interfaces.exceptionmanager.ReactJsExceptionHandler;
 import com.facebook.react.internal.AndroidChoreographerProvider;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.internal.turbomodule.core.TurboModuleManager;
 import com.facebook.react.internal.turbomodule.core.TurboModuleManagerDelegate;
 import com.facebook.react.module.annotations.ReactModule;
@@ -230,7 +230,7 @@ final class ReactInstance {
     // It should come after getTurboModuleManagerDelegate as it relies on react packages being
     // initialized.
     // This happens inside getTurboModuleManagerDelegate getter.
-    if (ReactFeatureFlags.useNativeViewConfigsInBridgelessMode) {
+    if (ReactNativeFeatureFlags.useNativeViewConfigsInBridgelessMode()) {
       Map<String, Object> customDirectEvents = new HashMap<>();
 
       UIConstantsProviderBinding.install(

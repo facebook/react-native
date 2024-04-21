@@ -70,8 +70,8 @@ class ShadowNodeTraits {
     // to be cloned before the first mutation.
     ChildrenAreShared = 1 << 8,
 
-    // Temporary (?) to indicate MapBuffer support on Android
-    AndroidMapBufferPropsSupported = 1 << 9,
+    // Indicates that the node was cloned because of native state update.
+    ClonedByNativeStateUpdate = 1 << 9,
   };
 
   /*

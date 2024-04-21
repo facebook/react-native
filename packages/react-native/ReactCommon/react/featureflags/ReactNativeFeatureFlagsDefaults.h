@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9fd009411ce19224a3102d2713b0b042>>
+ * @generated SignedSource<<b638a8d33a5b542e93b1bfa784ff500d>>
  */
 
 /**
@@ -39,11 +39,11 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool enableCustomDrawOrderFabric() override {
+  bool enableCleanTextInputYogaNode() override {
     return false;
   }
 
-  bool enableFixForClippedSubviewsCrash() override {
+  bool enableCustomDrawOrderFabric() override {
     return false;
   }
 
@@ -67,6 +67,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool forceBatchingMountItemsOnAndroid() override {
+    return false;
+  }
+
   bool inspectorEnableCxxInspectorPackagerConnection() override {
     return false;
   }
@@ -75,7 +79,19 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool preventDoubleTextMeasure() override {
+    return false;
+  }
+
   bool useModernRuntimeScheduler() override {
+    return false;
+  }
+
+  bool useNativeViewConfigsInBridgelessMode() override {
+    return false;
+  }
+
+  bool useStateAlignmentMechanism() override {
     return false;
   }
 };

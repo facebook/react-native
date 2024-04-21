@@ -204,4 +204,14 @@ public class ReleaseDevSupportManager implements DevSupportManager {
   public @Nullable SurfaceDelegate createSurfaceDelegate(String moduleName) {
     return null;
   }
+
+  @Override
+  public void openDebugger() {}
+
+  @Override
+  public void showPausedInDebuggerOverlay(
+      String message, PausedInDebuggerOverlayCommandListener listener) {}
+
+  @Override
+  public void hidePausedInDebuggerOverlay() {}
 }

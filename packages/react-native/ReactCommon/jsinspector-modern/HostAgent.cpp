@@ -107,6 +107,22 @@ void HostAgent::handleRequest(const cdp::PreparsedRequest& req) {
 
     shouldSendOKResponse = true;
     isFinishedHandlingRequest = true;
+  } else if (req.method == "Overlay.setPausedInDebuggerMessage") {
+    auto message = req.params.isObject() && req.params.count("message")
+        ? std::optional(req.params.at("message").asString())
+        : std::nullopt;
+    if (!isPausedInDebuggerOverlayVisible_ && message.has_value()) {
+      targetController_.incrementPauseOverlayCounter();
+    } else if (isPausedInDebuggerOverlayVisible_ && !message.has_value()) {
+      targetController_.decrementPauseOverlayCounter();
+    }
+    isPausedInDebuggerOverlayVisible_ = message.has_value();
+    targetController_.getDelegate().onSetPausedInDebuggerMessage({
+        .message = message,
+    });
+
+    shouldSendOKResponse = true;
+    isFinishedHandlingRequest = true;
   } else if (req.method == "FuseboxClient.setClientMetadata") {
     fuseboxClientType_ = FuseboxClientType::Fusebox;
 
@@ -114,6 +130,26 @@ void HostAgent::handleRequest(const cdp::PreparsedRequest& req) {
       sendFuseboxNotice();
     }
 
+    shouldSendOKResponse = true;
+    isFinishedHandlingRequest = true;
+  } else if (req.method == "Tracing.start") {
+    // @cdp Tracing.start is implemented as a stub only.
+    frontendChannel_(cdp::jsonNotification(
+        // @cdp Tracing.bufferUsage is implemented as a stub only.
+        "Tracing.bufferUsage",
+        folly::dynamic::object("percentFull", 0)("eventCount", 0)("value", 0)));
+    shouldSendOKResponse = true;
+    isFinishedHandlingRequest = true;
+  } else if (req.method == "Tracing.end") {
+    // @cdp Tracing.end is implemented as a stub only.
+    frontendChannel_(cdp::jsonNotification(
+        // @cdp Tracing.dataCollected is implemented as a stub only.
+        "Tracing.dataCollected",
+        folly::dynamic::object("value", folly::dynamic::array())));
+    frontendChannel_(cdp::jsonNotification(
+        // @cdp Tracing.tracingComplete is implemented as a stub only.
+        "Tracing.tracingComplete",
+        folly::dynamic::object("dataLossOccurred", false)));
     shouldSendOKResponse = true;
     isFinishedHandlingRequest = true;
   }
@@ -132,6 +168,20 @@ void HostAgent::handleRequest(const cdp::PreparsedRequest& req) {
       req.id,
       cdp::ErrorCode::MethodNotFound,
       req.method + " not implemented yet"));
+}
+
+HostAgent::~HostAgent() {
+  if (isPausedInDebuggerOverlayVisible_) {
+    // In case of a non-graceful shutdown of the session, ensure we clean up
+    // the "paused on debugger" overlay if we've previously asked the
+    // integrator to display it.
+    isPausedInDebuggerOverlayVisible_ = false;
+    if (!targetController_.decrementPauseOverlayCounter()) {
+      targetController_.getDelegate().onSetPausedInDebuggerMessage({
+          .message = std::nullopt,
+      });
+    }
+  }
 }
 
 void HostAgent::sendFuseboxNotice() {
@@ -171,8 +221,8 @@ void HostAgent::sendInfoLogEntry(
               "timestamp",
               duration_cast<milliseconds>(
                   system_clock::now().time_since_epoch())
-                  .count())("source", "other")(
-              "level", "info")("text", text)("args", std::move(argsArray)))));
+                  .count())("source", "other")("level", "info")("text", text)(
+              "args", std::move(argsArray)))));
 }
 
 void HostAgent::setCurrentInstanceAgent(

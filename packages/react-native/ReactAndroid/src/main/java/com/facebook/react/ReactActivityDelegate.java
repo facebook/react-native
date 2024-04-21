@@ -108,7 +108,11 @@ public class ReactActivityDelegate {
     } else {
       mReactDelegate =
           new ReactDelegate(
-              getPlainActivity(), getReactNativeHost(), mainComponentName, launchOptions) {
+              getPlainActivity(),
+              getReactNativeHost(),
+              mainComponentName,
+              launchOptions,
+              isFabricEnabled()) {
             @Override
             protected ReactRootView createRootView() {
               ReactRootView rootView = ReactActivityDelegate.this.createRootView();

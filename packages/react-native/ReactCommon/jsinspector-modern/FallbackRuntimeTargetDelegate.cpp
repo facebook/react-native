@@ -36,4 +36,12 @@ bool FallbackRuntimeTargetDelegate::supportsConsole() const {
   return false;
 }
 
+std::unique_ptr<StackTrace> FallbackRuntimeTargetDelegate::captureStackTrace(
+    jsi::Runtime& /*runtime*/,
+    size_t /*framesToSkip*/
+) {
+  // TODO: Parse a JS `Error().stack` as a fallback
+  return std::make_unique<StackTrace>();
+}
+
 } // namespace facebook::react::jsinspector_modern

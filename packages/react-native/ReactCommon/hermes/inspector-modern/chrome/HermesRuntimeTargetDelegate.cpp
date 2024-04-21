@@ -29,6 +29,25 @@ namespace facebook::react::jsinspector_modern {
 
 #ifdef HERMES_ENABLE_DEBUGGER
 class HermesRuntimeTargetDelegate::Impl final : public RuntimeTargetDelegate {
+  using HermesStackTrace = debugger::StackTrace;
+
+  class HermesStackTraceWrapper : public StackTrace {
+   public:
+    explicit HermesStackTraceWrapper(HermesStackTrace&& hermesStackTrace)
+        : hermesStackTrace_{std::move(hermesStackTrace)} {}
+
+    HermesStackTrace& operator*() {
+      return hermesStackTrace_;
+    }
+
+    HermesStackTrace* operator->() {
+      return &hermesStackTrace_;
+    }
+
+   private:
+    HermesStackTrace hermesStackTrace_;
+  };
+
  public:
   explicit Impl(
       HermesRuntimeTargetDelegate& delegate,
@@ -118,12 +137,34 @@ class HermesRuntimeTargetDelegate::Impl final : public RuntimeTargetDelegate {
       default:
         throw std::logic_error{"Unknown console message type"};
     }
-    cdpDebugAPI_->addConsoleMessage(
-        HermesConsoleMessage{message.timestamp, type, std::move(message.args)});
+    HermesStackTrace hermesStackTrace{};
+    if (auto hermesStackTraceWrapper =
+            dynamic_cast<HermesStackTraceWrapper*>(message.stackTrace.get())) {
+      hermesStackTrace = std::move(**hermesStackTraceWrapper);
+    }
+    HermesConsoleMessage hermesConsoleMessage{
+        message.timestamp, type, std::move(message.args)};
+    // NOTE: HermesConsoleMessage should really have a constructor that takes a
+    // stack trace.
+    hermesConsoleMessage.stackTrace = std::move(hermesStackTrace);
+    cdpDebugAPI_->addConsoleMessage(std::move(hermesConsoleMessage));
   }
 
   bool supportsConsole() const override {
     return true;
+  }
+
+  std::unique_ptr<StackTrace> captureStackTrace(
+      jsi::Runtime& /* runtime */,
+      size_t /* framesToSkip */) override {
+    // TODO(moti): Pass framesToSkip to Hermes. Ignoring framesToSkip happens
+    // to work for our current use case, because the HostFunction frame we want
+    // to skip is stripped by CDPDebugAPI::addConsoleMessage before being sent
+    // to the client. This is still conceptually wrong and could block us from
+    // properly representing the stack trace in other use cases, where native
+    // frames aren't stripped on serialisation.
+    return std::make_unique<HermesStackTraceWrapper>(
+        runtime_->getDebugger().captureStackTrace());
   }
 
  private:
@@ -179,6 +220,12 @@ void HermesRuntimeTargetDelegate::addConsoleMessage(
 
 bool HermesRuntimeTargetDelegate::supportsConsole() const {
   return impl_->supportsConsole();
+}
+
+std::unique_ptr<StackTrace> HermesRuntimeTargetDelegate::captureStackTrace(
+    jsi::Runtime& runtime,
+    size_t framesToSkip) {
+  return impl_->captureStackTrace(runtime, framesToSkip);
 }
 
 #ifdef HERMES_ENABLE_DEBUGGER
