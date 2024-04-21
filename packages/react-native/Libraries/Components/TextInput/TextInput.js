@@ -1146,7 +1146,7 @@ function InternalTextInput(props: Props): React.Node {
       setLastNativeSelection({selection, mostRecentEventCount});
     }
 
-    if (Object.keys(nativeUpdate).length === 0) {
+    if (Object.keys(nativeUpdate).length !== 2) {
       return;
     }
 
