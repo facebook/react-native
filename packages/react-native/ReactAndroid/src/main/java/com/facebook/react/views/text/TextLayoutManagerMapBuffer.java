@@ -21,6 +21,7 @@ import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.util.LayoutDirection;
 import android.util.LruCache;
+import android.view.Gravity;
 import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -143,7 +144,8 @@ public class TextLayoutManagerMapBuffer {
   }
 
   public static Layout.Alignment getTextAlignment(MapBuffer attributedString) {
-    Layout.Alignment alignment = Layout.Alignment.ALIGN_NORMAL;
+    boolean isRTL = isRTL(attributedString);
+    Layout.Alignment alignment = isRTL ? Layout.Alignment.ALIGN_OPPOSITE : Layout.Alignment.ALIGN_NORMAL;
 
     MapBuffer fragments = attributedString.getMapBuffer(AS_KEY_FRAGMENTS);
     if (fragments.getCount() != 0) {
@@ -156,12 +158,27 @@ public class TextLayoutManagerMapBuffer {
         if (alignmentAttr.equals("center")) {
           alignment = Layout.Alignment.ALIGN_CENTER;
         } else if (alignmentAttr.equals("right")) {
-          alignment = Layout.Alignment.ALIGN_OPPOSITE;
+          alignment = isRTL ? Layout.Alignment.ALIGN_NORMAL : Layout.Alignment.ALIGN_OPPOSITE;
         }
       }
     }
 
     return alignment;
+  }
+
+  public static int getTextGravity(MapBuffer attributedString, int defaultValue) {
+    int gravity = defaultValue;
+    Layout.Alignment alignment = getTextAlignment(attributedString);
+
+    if (alignment == Layout.Alignment.ALIGN_NORMAL) {
+      gravity = Gravity.LEFT;
+    } else if (alignment == Layout.Alignment.ALIGN_OPPOSITE) {
+      gravity = Gravity.RIGHT;
+    } else if (alignment == Layout.Alignment.ALIGN_CENTER) {
+      gravity = Gravity.CENTER_HORIZONTAL;
+    }
+
+    return gravity;
   }
 
   private static void buildSpannableFromFragments(
@@ -356,6 +373,10 @@ public class TextLayoutManagerMapBuffer {
             || (!YogaConstants.isUndefined(desiredWidth) && desiredWidth <= width))) {
       // Is used when the width is not known and the text is not boring, ie. if it contains
       // unicode characters.
+
+      if (widthYogaMeasureMode == YogaMeasureMode.EXACTLY) {
+        desiredWidth = width;
+      }
 
       int hintWidth = (int) Math.ceil(desiredWidth);
       layout =
