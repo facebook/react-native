@@ -10,8 +10,8 @@
 #include <glog/logging.h>
 #include <jsi/JSIDynamic.h>
 #include <react/debug/react_native_assert.h>
+#include <react/renderer/components/view/LayoutableShadowNode.h>
 #include <react/renderer/components/view/PointerEvent.h>
-#include <react/renderer/core/LayoutableShadowNode.h>
 #include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/dom/DOM.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>

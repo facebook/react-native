@@ -7,8 +7,8 @@
 
 #import "RCTAttributedTextUtils.h"
 
+#include <react/renderer/components/view/LayoutableShadowNode.h>
 #include <react/renderer/components/view/accessibilityPropsConversions.h>
-#include <react/renderer/core/LayoutableShadowNode.h>
 #include <react/renderer/textlayoutmanager/RCTFontProperties.h>
 #include <react/renderer/textlayoutmanager/RCTFontUtils.h>
 #include <react/renderer/textlayoutmanager/RCTTextPrimitivesConversions.h>

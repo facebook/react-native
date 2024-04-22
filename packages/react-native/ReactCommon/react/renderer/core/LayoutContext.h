@@ -9,7 +9,7 @@
 
 #include <vector>
 
-#include <react/renderer/core/LayoutableShadowNode.h>
+#include <react/renderer/components/view/LayoutableShadowNode.h>
 
 namespace facebook::react {
 

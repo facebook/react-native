@@ -7,8 +7,8 @@
 
 #include "ShadowView.h"
 
+#include <react/renderer/components/view/LayoutableShadowNode.h>
 #include <react/renderer/core/LayoutMetrics.h>
-#include <react/renderer/core/LayoutableShadowNode.h>
 
 namespace facebook::react {
 

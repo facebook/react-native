@@ -13,8 +13,8 @@
 #include <yoga/node/Node.h>
 
 #include <react/debug/react_native_assert.h>
+#include <react/renderer/components/view/LayoutableShadowNode.h>
 #include <react/renderer/components/view/YogaStylableProps.h>
-#include <react/renderer/core/LayoutableShadowNode.h>
 #include <react/renderer/core/Sealable.h>
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/debug/DebugStringConvertible.h>

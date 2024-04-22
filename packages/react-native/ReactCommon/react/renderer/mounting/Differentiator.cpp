@@ -8,7 +8,7 @@
 #include "Differentiator.h"
 
 #include <react/debug/react_native_assert.h>
-#include <react/renderer/core/LayoutableShadowNode.h>
+#include <react/renderer/components/view/LayoutableShadowNode.h>
 #include <react/renderer/debug/SystraceSection.h>
 #include <algorithm>
 #include "ShadowView.h"

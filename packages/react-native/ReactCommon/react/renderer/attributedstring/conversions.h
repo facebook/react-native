@@ -15,8 +15,8 @@
 #include <react/renderer/attributedstring/TextAttributes.h>
 #include <react/renderer/attributedstring/conversions.h>
 #include <react/renderer/attributedstring/primitives.h>
+#include <react/renderer/components/view/LayoutableShadowNode.h>
 #include <react/renderer/components/view/accessibilityPropsConversions.h>
-#include <react/renderer/core/LayoutableShadowNode.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/core/conversions.h>

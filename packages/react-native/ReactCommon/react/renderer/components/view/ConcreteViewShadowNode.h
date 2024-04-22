@@ -7,11 +7,11 @@
 
 #pragma once
 
+#include <react/renderer/components/view/LayoutableShadowNode.h>
 #include <react/renderer/components/view/ViewEventEmitter.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/components/view/YogaLayoutableShadowNode.h>
 #include <react/renderer/core/ConcreteShadowNode.h>
-#include <react/renderer/core/LayoutableShadowNode.h>
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/core/ShadowNodeFragment.h>
 #include <react/renderer/debug/DebugStringConvertibleItem.h>

@@ -7,6 +7,7 @@
 
 #include "LayoutableShadowNode.h"
 
+#include <BaseViewProps.h>
 #include <react/renderer/core/LayoutConstraints.h>
 #include <react/renderer/core/LayoutContext.h>
 #include <react/renderer/core/LayoutMetrics.h>
@@ -314,6 +315,13 @@ ShadowNode::Shared LayoutableShadowNode::findNodeAtPoint(
   if (layoutableShadowNode == nullptr) {
     return nullptr;
   }
+
+  const auto& viewProps =
+      static_cast<const BaseViewProps&>(*layoutableShadowNode->getProps());
+  if (viewProps.pointerEvents == PointerEventsMode::None) {
+    return nullptr;
+  }
+
   auto frame = layoutableShadowNode->getLayoutMetrics().frame;
   auto transformedFrame = frame * layoutableShadowNode->getTransform();
   auto isPointInside = transformedFrame.containsPoint(point);
@@ -340,7 +348,7 @@ ShadowNode::Shared LayoutableShadowNode::findNodeAtPoint(
       return hitView;
     }
   }
-  return isPointInside ? node : nullptr;
+  return viewProps.pointerEvents != PointerEventsMode::BoxNone ? node : nullptr;
 }
 
 #if RN_DEBUG_STRING_CONVERTIBLE
