@@ -185,6 +185,9 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 
 - (void)hostDidStart:(RCTHost *)host
 {
+  if (self->_configuration.hostDidStartBlock) {
+    self->_configuration.hostDidStartBlock(host);
+  }
 }
 
 - (void)host:(RCTHost *)host
@@ -193,6 +196,9 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
                exceptionId:(NSUInteger)exceptionId
                    isFatal:(BOOL)isFatal
 {
+  if (self->_configuration.hostDidReceiveJSErrorStackBlock) {
+    self->_configuration.hostDidReceiveJSErrorStackBlock(host, stack, message, exceptionId, isFatal);
+  }
 }
 
 #pragma mark - RCTCxxBridgeDelegate
