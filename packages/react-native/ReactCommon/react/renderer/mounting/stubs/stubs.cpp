@@ -17,16 +17,16 @@ namespace facebook::react {
  * Sorting comparator for `reorderInPlaceIfNeeded`.
  */
 static bool shouldFirstPairComesBeforeSecondOne(
-    const ShadowViewNodePair& lhs,
-    const ShadowViewNodePair& rhs) noexcept {
-  return lhs.shadowNode->getOrderIndex() < rhs.shadowNode->getOrderIndex();
+    const ShadowViewNodePair* lhs,
+    const ShadowViewNodePair* rhs) noexcept {
+  return lhs->shadowNode->getOrderIndex() < rhs->shadowNode->getOrderIndex();
 }
 
 /*
  * Reorders pairs in-place based on `orderIndex` using a stable sort algorithm.
  */
 static void reorderInPlaceIfNeeded(
-    ShadowViewNodePair::OwningList& pairs) noexcept {
+    std::vector<ShadowViewNodePair*>& pairs) noexcept {
   // This is a simplified version of the function intentionally copied from
   // `Differentiator.cpp`.
   std::stable_sort(
@@ -41,24 +41,29 @@ static void reorderInPlaceIfNeeded(
  */
 static void calculateShadowViewMutationsForNewTree(
     ShadowViewMutation::List& mutations,
+    ViewNodePairScope& scope,
     const ShadowView& parentShadowView,
-    ShadowViewNodePair::OwningList newChildPairs) {
+    std::vector<ShadowViewNodePair*> newChildPairs) {
   // Sorting pairs based on `orderIndex` if needed.
   reorderInPlaceIfNeeded(newChildPairs);
 
-  for (size_t index = 0; index < newChildPairs.size(); index++) {
-    const auto& newChildPair = newChildPairs[index];
+  for (auto newChildPair : newChildPairs) {
+    if (!newChildPair->isConcreteView) {
+      continue;
+    }
 
     mutations.push_back(
-        ShadowViewMutation::CreateMutation(newChildPair.shadowView));
+        ShadowViewMutation::CreateMutation(newChildPair->shadowView));
     mutations.push_back(ShadowViewMutation::InsertMutation(
-        parentShadowView, newChildPair.shadowView, static_cast<int>(index)));
+        parentShadowView,
+        newChildPair->shadowView,
+        static_cast<int>(newChildPair->mountIndex)));
 
     auto newGrandChildPairs =
-        sliceChildShadowNodeViewPairsForTesting(*newChildPair.shadowNode);
+        sliceChildShadowNodeViewPairs(*newChildPair->shadowNode, scope);
 
     calculateShadowViewMutationsForNewTree(
-        mutations, newChildPair.shadowView, newGrandChildPairs);
+        mutations, scope, newChildPair->shadowView, newGrandChildPairs);
   }
 }
 
@@ -67,10 +72,12 @@ StubViewTree buildStubViewTreeWithoutUsingDifferentiator(
   auto mutations = ShadowViewMutation::List{};
   mutations.reserve(256);
 
+  ViewNodePairScope scope;
   calculateShadowViewMutationsForNewTree(
       mutations,
+      scope,
       ShadowView(rootShadowNode),
-      sliceChildShadowNodeViewPairsForTesting(rootShadowNode));
+      sliceChildShadowNodeViewPairs(rootShadowNode, scope));
 
   auto emptyRootShadowNode = rootShadowNode.clone(ShadowNodeFragment{
       ShadowNodeFragment::propsPlaceholder(),

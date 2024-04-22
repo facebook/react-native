@@ -632,4 +632,5 @@ if (global.nativeLoggingHook) {
     enumerable: false,
   });
 }})(globalThis, true)
+//# sourceURL=prelude.js
 )___";

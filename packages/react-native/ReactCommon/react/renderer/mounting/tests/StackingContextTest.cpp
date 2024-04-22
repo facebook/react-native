@@ -19,7 +19,7 @@
 #include <react/renderer/element/testUtils.h>
 #include <react/renderer/mounting/Differentiator.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
-#include <react/renderer/mounting/stubs.h>
+#include <react/renderer/mounting/stubs/stubs.h>
 
 namespace facebook::react {
 

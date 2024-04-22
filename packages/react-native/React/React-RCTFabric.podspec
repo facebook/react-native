@@ -75,11 +75,14 @@ Pod::Spec.new do |s|
 
   add_dependency(s, "React-FabricImage")
   add_dependency(s, "React-Fabric", :additional_framework_paths => [
-    "react/renderer/textlayoutmanager/platform/ios",
-    "react/renderer/components/textinput/platform/ios",
     "react/renderer/components/view/platform/cxx",
     "react/renderer/imagemanager/platform/ios",
   ])
+  add_dependency(s, "React-FabricComponents", :additional_framework_paths => [
+    "react/renderer/textlayoutmanager/platform/ios",
+    "react/renderer/components/textinput/platform/ios",
+  ]);
+
   add_dependency(s, "React-nativeconfig")
   add_dependency(s, "React-graphics", :additional_framework_paths => ["react/renderer/graphics/platform/ios"])
   add_dependency(s, "React-ImageManager")

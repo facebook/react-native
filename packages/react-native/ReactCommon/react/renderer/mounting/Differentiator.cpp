@@ -208,7 +208,7 @@ static inline bool shadowNodeIsConcrete(const ShadowNode& shadowNode) {
   return shadowNode.getTraits().check(ShadowNodeTraits::Trait::FormsView);
 }
 
-static void sliceChildShadowNodeViewPairsRecursivelyV2(
+static void sliceChildShadowNodeViewPairsRecursively(
     ShadowViewNodePair::NonOwningList& pairList,
     size_t& startOfStaticIndex,
     ViewNodePairScope& scope,
@@ -255,21 +255,21 @@ static void sliceChildShadowNodeViewPairsRecursivelyV2(
       pairList.insert(it, &scope.back());
       startOfStaticIndex++;
       if (areChildrenFlattened) {
-        sliceChildShadowNodeViewPairsRecursivelyV2(
+        sliceChildShadowNodeViewPairsRecursively(
             pairList, startOfStaticIndex, scope, origin, childShadowNode);
       }
     } else {
       pairList.push_back(&scope.back());
       if (areChildrenFlattened) {
         size_t pairListSize = pairList.size();
-        sliceChildShadowNodeViewPairsRecursivelyV2(
+        sliceChildShadowNodeViewPairsRecursively(
             pairList, pairListSize, scope, origin, childShadowNode);
       }
     }
   }
 }
 
-ShadowViewNodePair::NonOwningList sliceChildShadowNodeViewPairsV2(
+ShadowViewNodePair::NonOwningList sliceChildShadowNodeViewPairs(
     const ShadowNode& shadowNode,
     ViewNodePairScope& scope,
     bool allowFlattened,
@@ -284,7 +284,7 @@ ShadowViewNodePair::NonOwningList sliceChildShadowNodeViewPairsV2(
   }
 
   size_t startOfStaticIndex = 0;
-  sliceChildShadowNodeViewPairsRecursivelyV2(
+  sliceChildShadowNodeViewPairsRecursively(
       pairList, startOfStaticIndex, scope, layoutOffset, shadowNode);
 
   // Sorting pairs based on `orderIndex` if needed.
@@ -300,7 +300,7 @@ ShadowViewNodePair::NonOwningList sliceChildShadowNodeViewPairsV2(
 }
 
 /**
- * Prefer calling this over `sliceChildShadowNodeViewPairsV2` directly, when
+ * Prefer calling this over `sliceChildShadowNodeViewPairs` directly, when
  * possible. This can account for adding parent LayoutMetrics that are
  * important to take into account, but tricky, in (un)flattening cases.
  */
@@ -309,7 +309,7 @@ sliceChildShadowNodeViewPairsFromViewNodePair(
     const ShadowViewNodePair& shadowViewNodePair,
     ViewNodePairScope& scope,
     bool allowFlattened = false) {
-  return sliceChildShadowNodeViewPairsV2(
+  return sliceChildShadowNodeViewPairs(
       *shadowViewNodePair.shadowNode,
       scope,
       allowFlattened,
@@ -346,7 +346,7 @@ static_assert(
     std::is_move_assignable<ShadowViewNodePair::NonOwningList>::value,
     "`ShadowViewNodePair::NonOwningList` must be `move assignable`.");
 
-static void calculateShadowViewMutationsV2(
+static void calculateShadowViewMutations(
     ViewNodePairScope& scope,
     ShadowViewMutation::List& mutations,
     const ShadowView& parentShadowView,
@@ -499,7 +499,7 @@ static void updateMatchedPairSubtrees(
     auto newGrandChildPairs =
         sliceChildShadowNodeViewPairsFromViewNodePair(newPair, innerScope);
     const size_t newGrandChildPairsSize = newGrandChildPairs.size();
-    calculateShadowViewMutationsV2(
+    calculateShadowViewMutations(
         innerScope,
         *(newGrandChildPairsSize != 0u
               ? &mutationContainer.downwardMutations
@@ -834,7 +834,7 @@ static void calculateShadowViewMutationsFlattener(
       if (!oldTreeNodePair.flattened && !newTreeNodePair.flattened) {
         if (oldTreeNodePair.shadowNode != newTreeNodePair.shadowNode) {
           ViewNodePairScope innerScope{};
-          calculateShadowViewMutationsV2(
+          calculateShadowViewMutations(
               innerScope,
               mutationContainer.downwardMutations,
               newTreeNodePair.shadowView,
@@ -1010,7 +1010,7 @@ static void calculateShadowViewMutationsFlattener(
 
       if (!treeChildPair.flattened) {
         ViewNodePairScope innerScope{};
-        calculateShadowViewMutationsV2(
+        calculateShadowViewMutations(
             innerScope,
             mutationContainer.destructiveDownwardMutations,
             treeChildPair.shadowView,
@@ -1024,7 +1024,7 @@ static void calculateShadowViewMutationsFlattener(
 
       if (!treeChildPair.flattened) {
         ViewNodePairScope innerScope{};
-        calculateShadowViewMutationsV2(
+        calculateShadowViewMutations(
             innerScope,
             mutationContainer.downwardMutations,
             treeChildPair.shadowView,
@@ -1036,7 +1036,7 @@ static void calculateShadowViewMutationsFlattener(
   }
 }
 
-static void calculateShadowViewMutationsV2(
+static void calculateShadowViewMutations(
     ViewNodePairScope& scope,
     ShadowViewMutation::List& mutations,
     const ShadowView& parentShadowView,
@@ -1131,7 +1131,7 @@ static void calculateShadowViewMutationsV2(
       auto newGrandChildPairs = sliceChildShadowNodeViewPairsFromViewNodePair(
           newChildPair, innerScope);
       const size_t newGrandChildPairsSize = newGrandChildPairs.size();
-      calculateShadowViewMutationsV2(
+      calculateShadowViewMutations(
           innerScope,
           *(newGrandChildPairsSize != 0u
                 ? &mutationContainer.downwardMutations
@@ -1197,7 +1197,7 @@ static void calculateShadowViewMutationsV2(
       // We also have to call the algorithm recursively to clean up the entire
       // subtree starting from the removed view.
       ViewNodePairScope innerScope{};
-      calculateShadowViewMutationsV2(
+      calculateShadowViewMutations(
           innerScope,
           mutationContainer.destructiveDownwardMutations,
           oldChildPair.shadowView,
@@ -1231,7 +1231,7 @@ static void calculateShadowViewMutationsV2(
           ShadowViewMutation::CreateMutation(newChildPair.shadowView));
 
       ViewNodePairScope innerScope{};
-      calculateShadowViewMutationsV2(
+      calculateShadowViewMutations(
           innerScope,
           mutationContainer.downwardMutations,
           newChildPair.shadowView,
@@ -1468,7 +1468,7 @@ static void calculateShadowViewMutationsV2(
         // We also have to call the algorithm recursively to clean up the
         // entire subtree starting from the removed view.
         ViewNodePairScope innerScope{};
-        calculateShadowViewMutationsV2(
+        calculateShadowViewMutations(
             innerScope,
             mutationContainer.destructiveDownwardMutations,
             oldChildPair.shadowView,
@@ -1512,7 +1512,7 @@ static void calculateShadowViewMutationsV2(
           ShadowViewMutation::CreateMutation(newChildPair.shadowView));
 
       ViewNodePairScope innerScope{};
-      calculateShadowViewMutationsV2(
+      calculateShadowViewMutations(
           innerScope,
           mutationContainer.downwardMutations,
           newChildPair.shadowView,
@@ -1553,65 +1553,6 @@ static void calculateShadowViewMutationsV2(
       std::back_inserter(mutations));
 }
 
-/**
- * Only used by unit tests currently.
- */
-static void sliceChildShadowNodeViewPairsRecursivelyForTesting(
-    ShadowViewNodePair::OwningList& pairList,
-    Point layoutOffset,
-    const ShadowNode& shadowNode) {
-  for (const auto& sharedChildShadowNode : shadowNode.getChildren()) {
-    auto& childShadowNode = *sharedChildShadowNode;
-
-#ifndef ANDROID
-    // Temporary disabled on Android because the mounting infrastructure
-    // is not fully ready yet.
-    if (childShadowNode.getTraits().check(ShadowNodeTraits::Trait::Hidden)) {
-      continue;
-    }
-#endif
-
-    auto shadowView = ShadowView(childShadowNode);
-    auto origin = layoutOffset;
-    if (shadowView.layoutMetrics != EmptyLayoutMetrics) {
-      origin += shadowView.layoutMetrics.frame.origin;
-      shadowView.layoutMetrics.frame.origin += layoutOffset;
-    }
-
-    if (childShadowNode.getTraits().check(
-            ShadowNodeTraits::Trait::FormsStackingContext)) {
-      pairList.push_back({shadowView, &childShadowNode});
-    } else {
-      if (childShadowNode.getTraits().check(
-              ShadowNodeTraits::Trait::FormsView)) {
-        pairList.push_back({shadowView, &childShadowNode});
-      }
-
-      sliceChildShadowNodeViewPairsRecursivelyForTesting(
-          pairList, origin, childShadowNode);
-    }
-  }
-}
-
-/**
- * Only used by unit tests currently.
- */
-ShadowViewNodePair::OwningList sliceChildShadowNodeViewPairsForTesting(
-    const ShadowNode& shadowNode) {
-  auto pairList = ShadowViewNodePair::OwningList{};
-
-  if (!shadowNode.getTraits().check(
-          ShadowNodeTraits::Trait::FormsStackingContext) &&
-      shadowNode.getTraits().check(ShadowNodeTraits::Trait::FormsView)) {
-    return pairList;
-  }
-
-  sliceChildShadowNodeViewPairsRecursivelyForTesting(
-      pairList, {0, 0}, shadowNode);
-
-  return pairList;
-}
-
 ShadowViewMutation::List calculateShadowViewMutations(
     const ShadowNode& oldRootShadowNode,
     const ShadowNode& newRootShadowNode) {
@@ -1636,12 +1577,12 @@ ShadowViewMutation::List calculateShadowViewMutations(
         oldRootShadowView, newRootShadowView, {}));
   }
 
-  calculateShadowViewMutationsV2(
+  calculateShadowViewMutations(
       innerViewNodePairScope,
       mutations,
       ShadowView(oldRootShadowNode),
-      sliceChildShadowNodeViewPairsV2(oldRootShadowNode, viewNodePairScope),
-      sliceChildShadowNodeViewPairsV2(newRootShadowNode, viewNodePairScope));
+      sliceChildShadowNodeViewPairs(oldRootShadowNode, viewNodePairScope),
+      sliceChildShadowNodeViewPairs(newRootShadowNode, viewNodePairScope));
 
   return mutations;
 }

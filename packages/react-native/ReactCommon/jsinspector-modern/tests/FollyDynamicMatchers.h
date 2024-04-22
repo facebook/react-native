@@ -77,4 +77,31 @@ MATCHER_P2(
   return false;
 }
 
+/**
+ * A higher-order matcher that applies an inner matcher to the string value of
+ * a folly::dynamic.
+ */
+MATCHER_P(
+    DynamicString,
+    innerMatcher,
+    std::string{"string value "} +
+        testing::DescribeMatcher<std::string>(innerMatcher, negation)) {
+  using namespace ::testing;
+  using namespace folly_dynamic_matchers_utils;
+  if (!arg.isString()) {
+    *result_listener << "is not a string";
+    return false;
+  }
+  return ExplainMatchResult(innerMatcher, arg.getString(), result_listener);
+}
+
+/**
+ * A user-defined literal for constructing a folly::dynamic from a JSON
+ * string. Not technically specific to GMock, but convenient to have in a test
+ * suite.
+ */
+inline folly::dynamic operator""_json(const char* s, size_t n) {
+  return folly::parseJson(std::string{s, n});
+}
+
 } // namespace facebook

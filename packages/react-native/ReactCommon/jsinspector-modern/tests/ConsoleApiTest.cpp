@@ -47,15 +47,31 @@ struct Params {
 class ConsoleApiTest
     : public JsiIntegrationPortableTest<JsiIntegrationTestHermesEngineAdapter>,
       public WithParamInterface<Params> {
-  struct ExpectedConsoleApiCall {
-    std::string type;
-    std::string argsJson;
-  };
-
  protected:
   void SetUp() override {
     JsiIntegrationPortableTest::SetUp();
     connect();
+    EXPECT_CALL(
+        fromPage(),
+        onMessage(
+            JsonParsed(AllOf(AtJsonPtr("/method", "Debugger.scriptParsed")))))
+        .Times(AnyNumber())
+        .WillRepeatedly(Invoke<>([this](std::string message) {
+          auto params = folly::parseJson(message);
+          // Store the script ID and URL for later use.
+          scriptUrlsById_.emplace(
+              params.at("params").at("scriptId").getString(),
+              params.at("params").at("url").getString());
+        }));
+    this->expectMessageFromPage(JsonEq(R"({
+                                            "id": 0,
+                                            "result": {}
+                                        })"));
+    this->toPage_->sendMessage(R"({
+                                    "id": 0,
+                                    "method": "Debugger.enable"
+                                })");
+
     if (GetParam().runtimeEnabledAtStart) {
       enableRuntimeDomain();
     }
@@ -68,13 +84,11 @@ class ConsoleApiTest
     JsiIntegrationPortableTest::TearDown();
   }
 
-  void expectConsoleApiCall(std::string type, std::string argsJson) {
-    ExpectedConsoleApiCall call{
-        .type = std::move(type), .argsJson = std::move(argsJson)};
+  void expectConsoleApiCall(Matcher<folly::dynamic> paramsMatcher) {
     if (runtimeEnabled_) {
-      expectConsoleApiCallImpl(std::move(call));
+      expectConsoleApiCallImpl(std::move(paramsMatcher));
     } else {
-      expectedConsoleApiCalls_.emplace_back(call);
+      expectedConsoleApiCalls_.emplace_back(paramsMatcher);
     }
   }
 
@@ -86,12 +100,26 @@ class ConsoleApiTest
     expectedConsoleApiCalls_.clear();
   }
 
+  template <typename InnerMatcher>
+  Matcher<folly::dynamic> ScriptIdMapsTo(InnerMatcher urlMatcher) {
+    return ResultOf(
+        [this](const auto& id) { return getScriptUrlById(id.getString()); },
+        urlMatcher);
+  }
+
  private:
-  void expectConsoleApiCallImpl(ExpectedConsoleApiCall call) {
+  std::optional<std::string> getScriptUrlById(std::string scriptId) {
+    auto it = scriptUrlsById_.find(scriptId);
+    if (it == scriptUrlsById_.end()) {
+      return std::nullopt;
+    }
+    return it->second;
+  }
+
+  void expectConsoleApiCallImpl(Matcher<folly::dynamic> paramsMatcher) {
     this->expectMessageFromPage(JsonParsed(AllOf(
         AtJsonPtr("/method", "Runtime.consoleAPICalled"),
-        AtJsonPtr("/params/type", call.type),
-        AtJsonPtr("/params/args", Eq(folly::parseJson(call.argsJson))))));
+        AtJsonPtr("/params", std::move(paramsMatcher)))));
   }
 
   void enableRuntimeDomain() {
@@ -143,8 +171,9 @@ class ConsoleApiTest
     }
   }
 
-  std::vector<ExpectedConsoleApiCall> expectedConsoleApiCalls_;
+  std::vector<Matcher<folly::dynamic>> expectedConsoleApiCalls_;
   bool runtimeEnabled_{false};
+  std::unordered_map<std::string, std::string> scriptUrlsById_;
 };
 
 class ConsoleApiTestWithPreExistingConsole : public ConsoleApiTest {
@@ -171,91 +200,128 @@ class ConsoleApiTestWithPreExistingConsole : public ConsoleApiTest {
 
 TEST_P(ConsoleApiTest, testConsoleLog) {
   InSequence s;
-  expectConsoleApiCall("log", R"([{
-    "type": "string",
-    "value": "hello"
-  }, {
-    "type": "string",
-    "value": "world"
-  }])");
+  expectConsoleApiCall(AllOf(
+      AtJsonPtr("/type", "log"),
+      AtJsonPtr(
+          "/args",
+          R"([{
+                   "type": "string",
+                   "value": "hello"
+                 }, {
+                   "type": "string",
+                   "value": "world"
+                 }])"_json)));
   eval("console.log('hello', 'world');");
 }
 
 TEST_P(ConsoleApiTest, testConsoleDebug) {
   InSequence s;
-  expectConsoleApiCall("debug", R"([{
-    "type": "string",
-    "value": "hello fusebox"
-  }])");
+  expectConsoleApiCall(AllOf(
+      AtJsonPtr("/type", "debug"),
+      AtJsonPtr(
+          "/args",
+          R"([{
+                "type": "string",
+                "value": "hello fusebox"
+              }])"_json)));
   eval("console.debug('hello fusebox');");
 }
 
 TEST_P(ConsoleApiTest, testConsoleInfo) {
   InSequence s;
-  expectConsoleApiCall("info", R"([{
-    "type": "string",
-    "value": "you should know this"
-  }])");
+  expectConsoleApiCall(AllOf(
+      AtJsonPtr("/type", "info"),
+      AtJsonPtr(
+          "/args",
+          R"([{
+                "type": "string",
+                "value": "you should know this"
+              }])"_json)));
   eval("console.info('you should know this');");
 }
 
 TEST_P(ConsoleApiTest, testConsoleError) {
   InSequence s;
-  expectConsoleApiCall("error", R"([{
-    "type": "string",
-    "value": "uh oh"
-  }])");
+  expectConsoleApiCall(AllOf(
+      AtJsonPtr("/type", "error"),
+      AtJsonPtr(
+          "/args",
+          R"([{
+                "type": "string",
+                "value": "uh oh"
+              }])"_json)));
   eval("console.error('uh oh');");
 }
 
 TEST_P(ConsoleApiTest, testConsoleWarn) {
   InSequence s;
-  expectConsoleApiCall("warning", R"([{
-    "type": "string",
-    "value": "careful"
-  }])");
+  expectConsoleApiCall(AllOf(
+      AtJsonPtr("/type", "warning"),
+      AtJsonPtr(
+          "/args",
+          R"([{
+                "type": "string",
+                "value": "careful"
+              }])"_json)));
   eval("console.warn('careful');");
 }
 
 TEST_P(ConsoleApiTest, testConsoleDir) {
   InSequence s;
-  expectConsoleApiCall("dir", R"([{
-    "type": "string",
-    "value": "something"
-  }])");
+  expectConsoleApiCall(AllOf(
+      AtJsonPtr("/type", "dir"),
+      AtJsonPtr(
+          "/args",
+          R"([{
+                "type": "string",
+                "value": "something"
+              }])"_json)));
   eval("console.dir('something');");
 }
 
 TEST_P(ConsoleApiTest, testConsoleDirxml) {
   InSequence s;
-  expectConsoleApiCall("dirxml", R"([{
-    "type": "string",
-    "value": "pretend this is a DOM element"
-  }])");
+  expectConsoleApiCall(AllOf(
+      AtJsonPtr("/type", "dirxml"),
+      AtJsonPtr(
+          "/args",
+          R"([{
+                "type": "string",
+                "value": "pretend this is a DOM element"
+              }])"_json)));
   eval("console.dirxml('pretend this is a DOM element');");
 }
 
 TEST_P(ConsoleApiTest, testConsoleTable) {
   InSequence s;
-  expectConsoleApiCall("table", R"([{
-    "type": "string",
-    "value": "pretend this is a complex object"
-  }])");
+  expectConsoleApiCall(AllOf(
+      AtJsonPtr("/type", "table"),
+      AtJsonPtr(
+          "/args",
+          R"([{
+                "type": "string",
+                "value": "pretend this is a complex object"
+              }])"_json)));
   eval("console.table('pretend this is a complex object');");
 }
 
 TEST_P(ConsoleApiTest, testConsoleTrace) {
   InSequence s;
-  expectConsoleApiCall("trace", R"([{
-    "type": "string",
-    "value": "trace trace"
-  }])");
+  expectConsoleApiCall(AllOf(
+      AtJsonPtr("/type", "trace"),
+      AtJsonPtr(
+          "/args",
+          R"([{
+                "type": "string",
+                "value": "trace trace"
+              }])"_json)));
   eval("console.trace('trace trace');");
 }
 
 TEST_P(ConsoleApiTest, testConsoleClear) {
   InSequence s;
-  expectConsoleApiCall("clear", "[]");
+  expectConsoleApiCall(
+      AllOf(AtJsonPtr("/type", "clear"), AtJsonPtr("/args", "[]"_json)));
   eval("console.clear();");
 }
 
@@ -264,27 +330,41 @@ TEST_P(ConsoleApiTest, testConsoleClearAfterOtherCall) {
   if (isRuntimeDomainEnabled()) {
     // This should only be delivered if console notifications are enabled, not
     // when they're being cached for later.
-    expectConsoleApiCall("log", R"([{
-      "type": "string",
-      "value": "hello"
-    }])");
+    expectConsoleApiCall(AllOf(
+        AtJsonPtr("/type", "log"),
+        AtJsonPtr(
+            "/args",
+            R"([{
+                  "type": "string",
+                  "value": "hello"
+                }])"_json)));
   }
-  expectConsoleApiCall("clear", "[]");
+  expectConsoleApiCall(
+      AllOf(AtJsonPtr("/type", "clear"), AtJsonPtr("/args", "[]"_json)));
   eval("console.log('hello');");
   eval("console.clear();");
 }
 
 TEST_P(ConsoleApiTest, testConsoleGroup) {
   InSequence s;
-  expectConsoleApiCall("startGroup", R"([{
-    "type": "string",
-    "value": "group title"
-  }])");
-  expectConsoleApiCall("log", R"([{
-    "type": "string",
-    "value": "in group"
-  }])");
-  expectConsoleApiCall("endGroup", "[]");
+  expectConsoleApiCall(AllOf(
+      AtJsonPtr("/type", "startGroup"),
+      AtJsonPtr(
+          "/args",
+          R"([{
+                "type": "string",
+                "value": "group title"
+              }])"_json)));
+  expectConsoleApiCall(AllOf(
+      AtJsonPtr("/type", "log"),
+      AtJsonPtr(
+          "/args",
+          R"([{
+                "type": "string",
+                "value": "in group"
+              }])"_json)));
+  expectConsoleApiCall(
+      AllOf(AtJsonPtr("/type", "endGroup"), AtJsonPtr("/args", "[]"_json)));
   eval("console.group('group title');");
   eval("console.log('in group');");
   eval("console.groupEnd();");
@@ -292,15 +372,24 @@ TEST_P(ConsoleApiTest, testConsoleGroup) {
 
 TEST_P(ConsoleApiTest, testConsoleGroupCollapsed) {
   InSequence s;
-  expectConsoleApiCall("startGroupCollapsed", R"([{
-    "type": "string",
-    "value": "group collapsed title"
-  }])");
-  expectConsoleApiCall("log", R"([{
-    "type": "string",
-    "value": "in group collapsed"
-  }])");
-  expectConsoleApiCall("endGroup", "[]");
+  expectConsoleApiCall(AllOf(
+      AtJsonPtr("/type", "startGroupCollapsed"),
+      AtJsonPtr(
+          "/args",
+          R"([{
+                "type": "string",
+                "value": "group collapsed title"
+              }])"_json)));
+  expectConsoleApiCall(AllOf(
+      AtJsonPtr("/type", "log"),
+      AtJsonPtr(
+          "/args",
+          R"([{
+                "type": "string",
+                "value": "in group collapsed"
+              }])"_json)));
+  expectConsoleApiCall(
+      AllOf(AtJsonPtr("/type", "endGroup"), AtJsonPtr("/args", "[]"_json)));
   eval("console.groupCollapsed('group collapsed title');");
   eval("console.log('in group collapsed');");
   eval("console.groupEnd();");
@@ -308,93 +397,149 @@ TEST_P(ConsoleApiTest, testConsoleGroupCollapsed) {
 
 TEST_P(ConsoleApiTest, testConsoleAssert) {
   InSequence s;
-  expectConsoleApiCall("assert", R"([{
-    "type": "string",
-    "value": "Assertion failed: something is bad"
-  }])");
+  expectConsoleApiCall(AllOf(
+      AtJsonPtr("/type", "assert"),
+      AtJsonPtr(
+          "/args",
+          R"([{
+                "type": "string",
+                "value": "Assertion failed: something is bad"
+              }])"_json)));
   eval("console.assert(true, 'everything is good');");
   eval("console.assert(false, 'something is bad');");
 
-  expectConsoleApiCall("assert", R"([{
-    "type": "string",
-    "value": "Assertion failed"
-  }])");
+  expectConsoleApiCall(AllOf(
+      AtJsonPtr("/type", "assert"),
+      AtJsonPtr(
+          "/args",
+          R"([{
+                "type": "string",
+                "value": "Assertion failed"
+              }])"_json)));
   eval("console.assert();");
 }
 
 TEST_P(ConsoleApiTest, testConsoleCount) {
   InSequence s;
-  expectConsoleApiCall("count", R"([{
-    "type": "string",
-    "value": "default: 1"
-  }])");
-  expectConsoleApiCall("count", R"([{
-    "type": "string",
-    "value": "default: 2"
-  }])");
-  expectConsoleApiCall("count", R"([{
-    "type": "string",
-    "value": "default: 3"
-  }])");
+  expectConsoleApiCall(AllOf(
+      AtJsonPtr("/type", "count"),
+      AtJsonPtr(
+          "/args",
+          R"([{
+                "type": "string",
+                "value": "default: 1"
+              }])"_json)));
+  expectConsoleApiCall(AllOf(
+      AtJsonPtr("/type", "count"),
+      AtJsonPtr(
+          "/args",
+          R"([{
+                "type": "string",
+                "value": "default: 2"
+              }])"_json)));
+  expectConsoleApiCall(AllOf(
+      AtJsonPtr("/type", "count"),
+      AtJsonPtr(
+          "/args",
+          R"([{
+                "type": "string",
+                "value": "default: 3"
+              }])"_json)));
   eval("console.count();");
   eval("console.count('default');");
   eval("console.count();");
   eval("console.countReset();");
 
-  expectConsoleApiCall("count", R"([{
-    "type": "string",
-    "value": "default: 1"
-  }])");
+  expectConsoleApiCall(AllOf(
+      AtJsonPtr("/type", "count"),
+      AtJsonPtr(
+          "/args",
+          R"([{
+                "type": "string",
+                "value": "default: 1"
+              }])"_json)));
   eval("console.count();");
   eval("console.countReset('default');");
 
-  expectConsoleApiCall("count", R"([{
-    "type": "string",
-    "value": "default: 1"
-  }])");
+  expectConsoleApiCall(AllOf(
+      AtJsonPtr("/type", "count"),
+      AtJsonPtr(
+          "/args",
+          R"([{
+                "type": "string",
+                "value": "default: 1"
+              }])"_json)));
   eval("console.count();");
 }
 
 TEST_P(ConsoleApiTest, testConsoleCountLabel) {
   InSequence s;
-  expectConsoleApiCall("count", R"([{
-    "type": "string",
-    "value": "foo: 1"
-  }])");
-  expectConsoleApiCall("count", R"([{
-    "type": "string",
-    "value": "foo: 2"
-  }])");
-  expectConsoleApiCall("count", R"([{
-    "type": "string",
-    "value": "foo: 3"
-  }])");
+  expectConsoleApiCall(AllOf(
+      AtJsonPtr("/type", "count"),
+      AtJsonPtr(
+          "/args",
+          R"([{
+                "type": "string",
+                "value": "foo: 1"
+              }])"_json)));
+  expectConsoleApiCall(AllOf(
+      AtJsonPtr("/type", "count"),
+      AtJsonPtr(
+          "/args",
+          R"([{
+                "type": "string",
+                "value": "foo: 2"
+              }])"_json)));
+  expectConsoleApiCall(AllOf(
+      AtJsonPtr("/type", "count"),
+      AtJsonPtr(
+          "/args",
+          R"([{
+                "type": "string",
+                "value": "foo: 3"
+              }])"_json)));
   eval("console.count('foo');");
   eval("console.count('foo');");
   eval("console.count('foo');");
   eval("console.countReset('foo');");
 
-  expectConsoleApiCall("count", R"([{
-    "type": "string",
-    "value": "foo: 1"
-  }])");
+  expectConsoleApiCall(AllOf(
+      AtJsonPtr("/type", "count"),
+      AtJsonPtr(
+          "/args",
+          R"([{
+                "type": "string",
+                "value": "foo: 1"
+              }])"_json)));
   eval("console.count('foo');");
 }
 
 TEST_P(ConsoleApiTest, testConsoleCountResetInvalidLabel) {
   InSequence s;
-  expectConsoleApiCall("warning", R"([{
-    "type": "string",
-    "value": "Count for 'default' does not exist"
-  }])");
-  expectConsoleApiCall("warning", R"([{
-    "type": "string",
-    "value": "Count for 'default' does not exist"
-  }])");
-  expectConsoleApiCall("warning", R"([{
-    "type": "string",
-    "value": "Count for 'foo' does not exist"
-  }])");
+  expectConsoleApiCall(AllOf(
+      AtJsonPtr("/type", "warning"),
+      AtJsonPtr(
+          "/args",
+          R"([{
+                "type": "string",
+                "value": "Count for 'default' does not exist"
+              }])"_json)));
+  expectConsoleApiCall(AllOf(
+      AtJsonPtr("/type", "warning"),
+      AtJsonPtr(
+          "/args",
+          R"([{
+                "type": "string",
+                "value": "Count for 'default' does not exist"
+              }])"_json)));
+  expectConsoleApiCall(AllOf(
+      AtJsonPtr("/type", "warning"),
+      AtJsonPtr(
+          "/args",
+          R"([{
+                "type": "string",
+                "value": "Count for 'foo' does not exist"
+              }])"_json)));
   eval("console.countReset();");
   eval("console.countReset('default');");
   eval("console.countReset('foo');");
@@ -405,50 +550,82 @@ TEST_P(ConsoleApiTest, testConsoleCountResetInvalidLabel) {
 
 TEST_P(ConsoleApiTest, testConsoleTimeExistingLabel) {
   eval("console.time();");
-  expectConsoleApiCall("warning", R"([{
-    "type": "string",
-    "value": "Timer 'default' already exists"
-  }])");
+  expectConsoleApiCall(AllOf(
+      AtJsonPtr("/type", "warning"),
+      AtJsonPtr(
+          "/args",
+          R"([{
+                "type": "string",
+                "value": "Timer 'default' already exists"
+              }])"_json)));
   eval("console.time('default');");
 
   eval("console.time('foo');");
-  expectConsoleApiCall("warning", R"([{
-    "type": "string",
-    "value": "Timer 'foo' already exists"
-  }])");
+  expectConsoleApiCall(AllOf(
+      AtJsonPtr("/type", "warning"),
+      AtJsonPtr(
+          "/args",
+          R"([{
+                "type": "string",
+                "value": "Timer 'foo' already exists"
+              }])"_json)));
   eval("console.time('foo');");
 }
 
 TEST_P(ConsoleApiTest, testConsoleTimeInvalidLabel) {
   InSequence s;
-  expectConsoleApiCall("warning", R"([{
-    "type": "string",
-    "value": "Timer 'default' does not exist"
-  }])");
-  expectConsoleApiCall("warning", R"([{
-    "type": "string",
-    "value": "Timer 'default' does not exist"
-  }])");
-  expectConsoleApiCall("warning", R"([{
-    "type": "string",
-    "value": "Timer 'foo' does not exist"
-  }])");
+  expectConsoleApiCall(AllOf(
+      AtJsonPtr("/type", "warning"),
+      AtJsonPtr(
+          "/args",
+          R"([{
+                "type": "string",
+                "value": "Timer 'default' does not exist"
+              }])"_json)));
+  expectConsoleApiCall(AllOf(
+      AtJsonPtr("/type", "warning"),
+      AtJsonPtr(
+          "/args",
+          R"([{
+                "type": "string",
+                "value": "Timer 'default' does not exist"
+              }])"_json)));
+  expectConsoleApiCall(AllOf(
+      AtJsonPtr("/type", "warning"),
+      AtJsonPtr(
+          "/args",
+          R"([{
+                "type": "string",
+                "value": "Timer 'foo' does not exist"
+              }])"_json)));
   eval("console.timeEnd();");
   eval("console.timeEnd('default');");
   eval("console.timeEnd('foo');");
 
-  expectConsoleApiCall("warning", R"([{
-    "type": "string",
-    "value": "Timer 'default' does not exist"
-  }])");
-  expectConsoleApiCall("warning", R"([{
-    "type": "string",
-    "value": "Timer 'default' does not exist"
-  }])");
-  expectConsoleApiCall("warning", R"([{
-    "type": "string",
-    "value": "Timer 'foo' does not exist"
-  }])");
+  expectConsoleApiCall(AllOf(
+      AtJsonPtr("/type", "warning"),
+      AtJsonPtr(
+          "/args",
+          R"([{
+                "type": "string",
+                "value": "Timer 'default' does not exist"
+              }])"_json)));
+  expectConsoleApiCall(AllOf(
+      AtJsonPtr("/type", "warning"),
+      AtJsonPtr(
+          "/args",
+          R"([{
+                "type": "string",
+                "value": "Timer 'default' does not exist"
+              }])"_json)));
+  expectConsoleApiCall(AllOf(
+      AtJsonPtr("/type", "warning"),
+      AtJsonPtr(
+          "/args",
+          R"([{
+                "type": "string",
+                "value": "Timer 'foo' does not exist"
+              }])"_json)));
   eval("console.timeLog();");
   eval("console.timeLog('default');");
   eval("console.timeLog('foo');");
@@ -456,10 +633,14 @@ TEST_P(ConsoleApiTest, testConsoleTimeInvalidLabel) {
 
 TEST_P(ConsoleApiTest, testConsoleSilentlyClearedOnReload) {
   InSequence s;
-  expectConsoleApiCall("log", R"([{
-    "type": "string",
-    "value": "hello"
-  }])");
+  expectConsoleApiCall(AllOf(
+      AtJsonPtr("/type", "log"),
+      AtJsonPtr(
+          "/args",
+          R"([{
+                "type": "string",
+                "value": "hello"
+              }])"_json)));
   eval("console.log('hello');");
 
   // If there are any expectations we haven't checked yet, clear them
@@ -475,27 +656,43 @@ TEST_P(ConsoleApiTest, testConsoleSilentlyClearedOnReload) {
   }
   reload();
 
-  expectConsoleApiCall("log", R"([{
-    "type": "string",
-    "value": "world"
-  }])");
+  expectConsoleApiCall(AllOf(
+      AtJsonPtr("/type", "log"),
+      AtJsonPtr(
+          "/args",
+          R"([{
+                "type": "string",
+                "value": "world"
+              }])"_json)));
   eval("console.log('world');");
 }
 
 TEST_P(ConsoleApiTestWithPreExistingConsole, testPreExistingConsoleObject) {
   InSequence s;
-  expectConsoleApiCall("log", R"([{
-    "type": "string",
-    "value": "hello"
-  }])");
-  expectConsoleApiCall("warning", R"([{
-    "type": "string",
-    "value": "world"
-  }])");
-  expectConsoleApiCall("table", R"([{
-    "type": "number",
-    "value": 42
-  }])");
+  expectConsoleApiCall(AllOf(
+      AtJsonPtr("/type", "log"),
+      AtJsonPtr(
+          "/args",
+          R"([{
+              "type": "string",
+              "value": "hello"
+            }])"_json)));
+  expectConsoleApiCall(AllOf(
+      AtJsonPtr("/type", "warning"),
+      AtJsonPtr(
+          "/args",
+          R"([{
+              "type": "string",
+              "value": "world"
+            }])"_json)));
+  expectConsoleApiCall(AllOf(
+      AtJsonPtr("/type", "table"),
+      AtJsonPtr(
+          "/args",
+          R"([{
+              "type": "number",
+              "value": 42
+            }])"_json)));
   eval("console.log('hello');");
   eval("console.warn('world');");
   // NOTE: not present in the pre-existing console object
@@ -517,6 +714,38 @@ TEST_P(ConsoleApiTestWithPreExistingConsole, testPreExistingConsoleObject) {
               "world"
             ]
           }])"));
+}
+
+TEST_P(ConsoleApiTest, testConsoleLogStack) {
+  InSequence s;
+  expectConsoleApiCall(AllOf(
+      AtJsonPtr("/type", "log"),
+      AtJsonPtr(
+          "/args",
+          R"([{
+                "type": "string",
+                "value": "hello"
+              }])"_json),
+      AtJsonPtr(
+          "/stackTrace/callFrames",
+          AllOf(
+              Each(AtJsonPtr(
+                  "/url",
+                  Conditional(
+                      GetParam().withConsolePolyfill,
+                      AnyOf("script.js", "prelude.js"),
+                      "script.js"))),
+              // A relatively weak assertion: we expect at least one frame tying
+              // the call to the `console.log` line.
+              Contains(AllOf(
+                  AtJsonPtr("/functionName", "global"),
+                  AtJsonPtr("/url", "script.js"),
+                  AtJsonPtr("/lineNumber", 1),
+                  AtJsonPtr("/scriptId", ScriptIdMapsTo("script.js"))))))));
+  eval(R"( // line 0
+    console.log('hello'); // line 1
+    //# sourceURL=script.js
+  )");
 }
 
 static const auto paramValues = testing::Values(
