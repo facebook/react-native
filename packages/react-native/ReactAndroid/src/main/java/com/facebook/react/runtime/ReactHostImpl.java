@@ -624,27 +624,26 @@ public class ReactHostImpl implements ReactHost {
   /* package */
   @Nullable
   RuntimeExecutor getRuntimeExecutor() {
+    final String method = "getRuntimeExecutor()";
+
     final ReactInstance reactInstance = mReactInstanceTaskRef.get().getResult();
     if (reactInstance != null) {
       return reactInstance.getBufferedRuntimeExecutor();
     }
-    ReactSoftExceptionLogger.logSoftException(
-        TAG,
-        new ReactNoCrashSoftException("Tried to get runtime executor while instance is not ready"));
+    raiseSoftException(method, "Tried to get runtime executor while instance is not ready");
     return null;
   }
 
   /* package */
   @Nullable
   CallInvokerHolder getJSCallInvokerHolder() {
+    final String method = "getJSCallInvokerHolder()";
+
     final ReactInstance reactInstance = mReactInstanceTaskRef.get().getResult();
     if (reactInstance != null) {
       return reactInstance.getJSCallInvokerHolder();
     }
-    ReactSoftExceptionLogger.logSoftException(
-        TAG,
-        new ReactNoCrashSoftException(
-            "Tried to get JSCallInvokerHolder while instance is not ready"));
+    raiseSoftException(method, "Tried to get JSCallInvokerHolder while instance is not ready");
     return null;
   }
 
@@ -667,16 +666,12 @@ public class ReactHostImpl implements ReactHost {
             + "\", data = \""
             + data
             + "\")";
-    log(method);
 
     ReactContext currentContext = getCurrentReactContext();
     if (currentContext != null) {
       currentContext.onActivityResult(activity, requestCode, resultCode, data);
     } else {
-      ReactSoftExceptionLogger.logSoftException(
-          TAG,
-          new ReactNoCrashSoftException(
-              "Tried to access onActivityResult while context is not ready"));
+      raiseSoftException(method, "Tried to access onActivityResult while context is not ready");
     }
   }
 
@@ -685,16 +680,12 @@ public class ReactHostImpl implements ReactHost {
   @Override
   public void onWindowFocusChange(boolean hasFocus) {
     final String method = "onWindowFocusChange(hasFocus = \"" + hasFocus + "\")";
-    log(method);
 
     ReactContext currentContext = getCurrentReactContext();
     if (currentContext != null) {
       currentContext.onWindowFocusChange(hasFocus);
     } else {
-      ReactSoftExceptionLogger.logSoftException(
-          TAG,
-          new ReactNoCrashSoftException(
-              "Tried to access onWindowFocusChange while context is not ready"));
+      raiseSoftException(method, "Tried to access onWindowFocusChange while context is not ready");
     }
   }
 
@@ -705,7 +696,7 @@ public class ReactHostImpl implements ReactHost {
   @ThreadConfined(UI)
   @Override
   public void onNewIntent(Intent intent) {
-    log("onNewIntent()");
+    final String method = "onNewIntent(intent = \"" + intent + "\")";
 
     ReactContext currentContext = getCurrentReactContext();
     if (currentContext != null) {
@@ -723,9 +714,7 @@ public class ReactHostImpl implements ReactHost {
       }
       currentContext.onNewIntent(getCurrentActivity(), intent);
     } else {
-      ReactSoftExceptionLogger.logSoftException(
-          TAG,
-          new ReactNoCrashSoftException("Tried to access onNewIntent while context is not ready"));
+      raiseSoftException(method, "Tried to access onNewIntent while context is not ready");
     }
   }
 
