@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2ac50c51832dfbcebfc8875c02738727>>
+ * @generated SignedSource<<80c5c5bd35d913adfbad76a7d6d7c358>>
  */
 
 /**
@@ -32,6 +32,7 @@ class ReactNativeFeatureFlagsAccessor {
   ReactNativeFeatureFlagsAccessor();
 
   bool commonTestFlag();
+  bool allowCollapsableChildren();
   bool batchRenderingUpdatesInEventLoop();
   bool enableBackgroundExecutor();
   bool enableCleanTextInputYogaNode();
@@ -58,9 +59,10 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 17> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 18> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
+  std::atomic<std::optional<bool>> allowCollapsableChildren_;
   std::atomic<std::optional<bool>> batchRenderingUpdatesInEventLoop_;
   std::atomic<std::optional<bool>> enableBackgroundExecutor_;
   std::atomic<std::optional<bool>> enableCleanTextInputYogaNode_;

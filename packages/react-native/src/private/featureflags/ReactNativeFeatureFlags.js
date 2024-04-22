@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0e0858557eb27f3eebfecae18ee13c0b>>
+ * @generated SignedSource<<62868b76ef89758c816c9a3924b8e191>>
  * @flow strict-local
  */
 
@@ -41,6 +41,7 @@ export type ReactNativeFeatureFlagsJsOnlyOverrides = Partial<ReactNativeFeatureF
 export type ReactNativeFeatureFlags = {
   ...ReactNativeFeatureFlagsJsOnly,
   commonTestFlag: Getter<boolean>,
+  allowCollapsableChildren: Getter<boolean>,
   batchRenderingUpdatesInEventLoop: Getter<boolean>,
   enableBackgroundExecutor: Getter<boolean>,
   enableCleanTextInputYogaNode: Getter<boolean>,
@@ -103,6 +104,10 @@ export const shouldUseSetNativePropsInFabric: Getter<boolean> = createJavaScript
  * Common flag for testing. Do NOT modify.
  */
 export const commonTestFlag: Getter<boolean> = createNativeFlagGetter('commonTestFlag', false);
+/**
+ * Enables the differentiator to understand the "collapsableChildren" prop
+ */
+export const allowCollapsableChildren: Getter<boolean> = createNativeFlagGetter('allowCollapsableChildren', true);
 /**
  * When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.
  */

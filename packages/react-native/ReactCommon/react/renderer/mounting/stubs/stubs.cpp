@@ -60,7 +60,7 @@ static void calculateShadowViewMutationsForNewTree(
         static_cast<int>(newChildPair->mountIndex)));
 
     auto newGrandChildPairs =
-        sliceChildShadowNodeViewPairs(*newChildPair->shadowNode, scope);
+        sliceChildShadowNodeViewPairs(*newChildPair, scope);
 
     calculateShadowViewMutationsForNewTree(
         mutations, scope, newChildPair->shadowView, newGrandChildPairs);
@@ -73,11 +73,12 @@ StubViewTree buildStubViewTreeWithoutUsingDifferentiator(
   mutations.reserve(256);
 
   ViewNodePairScope scope;
+  ShadowViewNodePair rootShadowNodePair{.shadowNode = &rootShadowNode};
   calculateShadowViewMutationsForNewTree(
       mutations,
       scope,
       ShadowView(rootShadowNode),
-      sliceChildShadowNodeViewPairs(rootShadowNode, scope));
+      sliceChildShadowNodeViewPairs(rootShadowNodePair, scope));
 
   auto emptyRootShadowNode = rootShadowNode.clone(ShadowNodeFragment{
       ShadowNodeFragment::propsPlaceholder(),

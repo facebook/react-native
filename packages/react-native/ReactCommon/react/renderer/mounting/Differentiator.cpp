@@ -8,6 +8,7 @@
 #include "Differentiator.h"
 
 #include <react/debug/react_native_assert.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/core/LayoutableShadowNode.h>
 #include <react/renderer/debug/SystraceSection.h>
 #include <algorithm>
@@ -204,10 +205,6 @@ static void reorderInPlaceIfNeeded(
       pairs.begin(), pairs.end(), &shouldFirstPairComesBeforeSecondOne);
 }
 
-static inline bool shadowNodeIsConcrete(const ShadowNode& shadowNode) {
-  return shadowNode.getTraits().check(ShadowNodeTraits::Trait::FormsView);
-}
-
 static void sliceChildShadowNodeViewPairsRecursively(
     ShadowViewNodePair::NonOwningList& pairList,
     size_t& startOfStaticIndex,
@@ -235,9 +232,24 @@ static void sliceChildShadowNodeViewPairsRecursively(
     // This might not be a FormsView, or a FormsStackingContext. We let the
     // differ handle removal of flattened views from the Mounting layer and
     // shuffling their children around.
-    bool isConcreteView = shadowNodeIsConcrete(childShadowNode);
-    bool areChildrenFlattened = !childShadowNode.getTraits().check(
-        ShadowNodeTraits::Trait::FormsStackingContext);
+    bool isConcreteView = false;
+    bool areChildrenFlattened = false;
+    if (ReactNativeFeatureFlags::allowCollapsableChildren()) {
+      bool childrenFormStackingContexts = shadowNode.getTraits().check(
+          ShadowNodeTraits::Trait::ChildrenFormStackingContext);
+      isConcreteView = childShadowNode.getTraits().check(
+                           ShadowNodeTraits::Trait::FormsView) ||
+          childrenFormStackingContexts;
+      areChildrenFlattened =
+          !childShadowNode.getTraits().check(
+              ShadowNodeTraits::Trait::FormsStackingContext) &&
+          !childrenFormStackingContexts;
+    } else {
+      isConcreteView =
+          childShadowNode.getTraits().check(ShadowNodeTraits::Trait::FormsView);
+      areChildrenFlattened = !childShadowNode.getTraits().check(
+          ShadowNodeTraits::Trait::FormsStackingContext);
+    }
     Point storedOrigin = {};
     if (areChildrenFlattened) {
       storedOrigin = origin;
@@ -270,15 +282,14 @@ static void sliceChildShadowNodeViewPairsRecursively(
 }
 
 ShadowViewNodePair::NonOwningList sliceChildShadowNodeViewPairs(
-    const ShadowNode& shadowNode,
+    const ShadowViewNodePair& shadowNodePair,
     ViewNodePairScope& scope,
     bool allowFlattened,
     Point layoutOffset) {
+  const auto& shadowNode = *shadowNodePair.shadowNode;
   auto pairList = ShadowViewNodePair::NonOwningList{};
 
-  if (!shadowNode.getTraits().check(
-          ShadowNodeTraits::Trait::FormsStackingContext) &&
-      shadowNode.getTraits().check(ShadowNodeTraits::Trait::FormsView) &&
+  if (shadowNodePair.flattened && shadowNodePair.isConcreteView &&
       !allowFlattened) {
     return pairList;
   }
@@ -310,7 +321,7 @@ sliceChildShadowNodeViewPairsFromViewNodePair(
     ViewNodePairScope& scope,
     bool allowFlattened = false) {
   return sliceChildShadowNodeViewPairs(
-      *shadowViewNodePair.shadowNode,
+      shadowViewNodePair,
       scope,
       allowFlattened,
       shadowViewNodePair.contextOrigin);
@@ -1581,8 +1592,12 @@ ShadowViewMutation::List calculateShadowViewMutations(
       innerViewNodePairScope,
       mutations,
       ShadowView(oldRootShadowNode),
-      sliceChildShadowNodeViewPairs(oldRootShadowNode, viewNodePairScope),
-      sliceChildShadowNodeViewPairs(newRootShadowNode, viewNodePairScope));
+      sliceChildShadowNodeViewPairs(
+          ShadowViewNodePair{.shadowNode = &oldRootShadowNode},
+          viewNodePairScope),
+      sliceChildShadowNodeViewPairs(
+          ShadowViewNodePair{.shadowNode = &newRootShadowNode},
+          viewNodePairScope));
 
   return mutations;
 }

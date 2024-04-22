@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<46e1a8dd088d588ea9eec703d7155710>>
+ * @generated SignedSource<<4537ae4b45bd414dc4b57dc0de467e3a>>
  */
 
 /**
@@ -21,6 +21,7 @@ package com.facebook.react.internal.featureflags
 
 public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccessor {
   private var commonTestFlagCache: Boolean? = null
+  private var allowCollapsableChildrenCache: Boolean? = null
   private var batchRenderingUpdatesInEventLoopCache: Boolean? = null
   private var enableBackgroundExecutorCache: Boolean? = null
   private var enableCleanTextInputYogaNodeCache: Boolean? = null
@@ -43,6 +44,15 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.commonTestFlag()
       commonTestFlagCache = cached
+    }
+    return cached
+  }
+
+  override fun allowCollapsableChildren(): Boolean {
+    var cached = allowCollapsableChildrenCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.allowCollapsableChildren()
+      allowCollapsableChildrenCache = cached
     }
     return cached
   }

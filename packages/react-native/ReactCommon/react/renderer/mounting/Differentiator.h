@@ -54,7 +54,7 @@ ShadowViewMutation::List calculateShadowViewMutations(
  * not form views and their children are flattened.
  */
 ShadowViewNodePair::NonOwningList sliceChildShadowNodeViewPairs(
-    const ShadowNode& shadowNode,
+    const ShadowViewNodePair& shadowNodePair,
     ViewNodePairScope& viewNodePairScope,
     bool allowFlattened = false,
     Point layoutOffset = {0, 0});

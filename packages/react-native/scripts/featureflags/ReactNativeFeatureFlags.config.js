@@ -32,6 +32,11 @@ const definitions: FeatureFlagDefinitions = {
   common: {
     ...testDefinitions.common,
 
+    allowCollapsableChildren: {
+      defaultValue: true,
+      description:
+        'Enables the differentiator to understand the "collapsableChildren" prop',
+    },
     batchRenderingUpdatesInEventLoop: {
       defaultValue: false,
       description:

@@ -23,6 +23,7 @@ public object ViewProps {
   public const val DISPLAY: String = "display"
   public const val BOTTOM: String = "bottom"
   public const val COLLAPSABLE: String = "collapsable"
+  public const val COLLAPSABLE_CHILDREN: String = "collapsableChildren"
   public const val FLEX: String = "flex"
   public const val FLEX_GROW: String = "flexGrow"
   public const val FLEX_SHRINK: String = "flexShrink"

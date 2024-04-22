@@ -195,6 +195,7 @@ const validAttributesForNonEventProps = {
   width: true,
   minWidth: true,
   collapsable: true,
+  collapsableChildren: true,
   maxWidth: true,
   height: true,
   minHeight: true,

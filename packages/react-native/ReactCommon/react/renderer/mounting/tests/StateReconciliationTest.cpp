@@ -83,6 +83,7 @@ class StateReconciliationTest : public ::testing::TestWithParam<bool> {
   StateReconciliationTest() : builder_(simpleComponentBuilder()) {}
 
   void SetUp() override {
+    ReactNativeFeatureFlags::dangerouslyReset();
     ReactNativeFeatureFlags::override(
         std::make_unique<StateReconciliationTestFeatureFlags>(GetParam()));
   }

@@ -72,6 +72,9 @@ class ShadowNodeTraits {
 
     // Indicates that the node was cloned because of native state update.
     ClonedByNativeStateUpdate = 1 << 9,
+
+    // Indicates that direct children of the node should not be collapsed
+    ChildrenFormStackingContext = 1 << 10,
   };
 
   /*

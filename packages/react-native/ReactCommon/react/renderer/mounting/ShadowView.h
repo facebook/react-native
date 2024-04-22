@@ -67,7 +67,16 @@ struct ShadowViewNodePair final {
 
   ShadowView shadowView;
   const ShadowNode* shadowNode;
+
+  /**
+   * The ShadowNode does not form a stacking context, and the native views
+   * corresponding to its children may be parented to an ancestor.
+   */
   bool flattened{false};
+
+  /**
+   * Whether this ShadowNode should create a corresponding native view.
+   */
   bool isConcreteView{true};
   Point contextOrigin{0, 0};
 

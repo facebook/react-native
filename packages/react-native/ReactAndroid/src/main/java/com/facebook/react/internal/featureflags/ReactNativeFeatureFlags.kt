@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<61b929b9624eeaedfa12d2f390299447>>
+ * @generated SignedSource<<a2ffe9a6bc60c1673aeb58452b1df952>>
  */
 
 /**
@@ -33,6 +33,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun commonTestFlag(): Boolean = accessor.commonTestFlag()
+
+  /**
+   * Enables the differentiator to understand the "collapsableChildren" prop
+   */
+  @JvmStatic
+  public fun allowCollapsableChildren(): Boolean = accessor.allowCollapsableChildren()
 
   /**
    * When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.

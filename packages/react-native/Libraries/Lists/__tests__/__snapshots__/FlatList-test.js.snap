@@ -46,6 +46,7 @@ exports[`FlatList ignores invalid data 1`] = `
 >
   <RCTScrollContentView
     collapsable={false}
+    collapsableChildren={true}
     onLayout={[Function]}
     removeClippedSubviews={false}
     style={
@@ -240,6 +241,7 @@ exports[`FlatList renders array-like data 1`] = `
 >
   <RCTScrollContentView
     collapsable={false}
+    collapsableChildren={true}
     onLayout={[Function]}
     removeClippedSubviews={false}
     style={

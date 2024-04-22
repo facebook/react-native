@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6cc4fccd13a1e426a2d6a2a24530e5e6>>
+ * @generated SignedSource<<6d6e4b7a2c45db1b846dc549e7a6909b>>
  */
 
 /**
@@ -24,6 +24,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   // but that is more expensive than just duplicating the defaults here.
 
   override fun commonTestFlag(): Boolean = false
+
+  override fun allowCollapsableChildren(): Boolean = true
 
   override fun batchRenderingUpdatesInEventLoop(): Boolean = false
 
