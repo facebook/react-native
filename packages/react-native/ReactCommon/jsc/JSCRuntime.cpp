@@ -403,9 +403,11 @@ JSCRuntime::JSCRuntime(JSGlobalContextRef ctx)
 {
 #ifndef NDEBUG
 #ifdef _JSC_HAS_INSPECTABLE
+#if (__OSX_AVAILABLE_STARTING(MAC_NA, IPHONE_16_4))
   if (__builtin_available(macOS 13.3, iOS 16.4, tvOS 16.4, *)) {
     JSGlobalContextSetInspectable(ctx_, true);
   }
+#endif
 #endif
 #endif
 }
