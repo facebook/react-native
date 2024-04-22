@@ -16,7 +16,6 @@ import com.facebook.react.internal.turbomodule.core.interfaces.TurboModuleRegist
 import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder;
 import com.facebook.react.turbomodule.core.interfaces.NativeMethodCallInvokerHolder;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * A higher level API on top of the asynchronous JSC bridge. This provides an environment allowing
@@ -72,13 +71,6 @@ public interface CatalystInstance
   @Nullable
   NativeModule getNativeModule(String moduleName);
 
-  @Deprecated(
-      since =
-          "getJSIModule(JSIModuleType moduleType) is deprecated and will be deleted in the future."
-              + " Please use ReactInstanceEventListener to subscribe for react instance events"
-              + " instead.")
-  JSIModule getJSIModule(JSIModuleType moduleType);
-
   Collection<NativeModule> getNativeModules();
 
   /**
@@ -122,9 +114,6 @@ public interface CatalystInstance
 
   RuntimeScheduler getRuntimeScheduler();
 
-  @Deprecated
-  <T extends JSIModule> void addJSIModules(List<JSIModuleSpec<T>> jsiModules);
-
   /**
    * Returns a hybrid object that contains a pointer to a JS CallInvoker, which is used to schedule
    * work on the JS Thread. Required for TurboModuleManager initialization.
@@ -136,13 +125,6 @@ public interface CatalystInstance
    * schedule work on the NativeModules thread. Required for TurboModuleManager initialization.
    */
   NativeMethodCallInvokerHolder getNativeMethodCallInvokerHolder();
-
-  @Deprecated(
-      since =
-          "setTurboModuleManager(JSIModule getter) is deprecated and will be deleted in the future."
-              + " Please use setTurboModuleRegistry(TurboModuleRegistry"
-              + " turboModuleRegistry)instead.")
-  void setTurboModuleManager(JSIModule getter);
 
   @DeprecatedInNewArchitecture(
       message =

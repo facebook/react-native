@@ -49,12 +49,6 @@ public object DefaultNewArchitectureEntryPoint {
     if (bridgelessEnabled) {
       ReactNativeFeatureFlags.override(
           object : ReactNativeFeatureFlagsDefaults() {
-            override fun useModernRuntimeScheduler(): Boolean = true
-
-            override fun enableMicrotasks(): Boolean = true
-
-            override fun batchRenderingUpdatesInEventLoop(): Boolean = true
-
             override fun useNativeViewConfigsInBridgelessMode(): Boolean = fabricEnabled
           })
     }

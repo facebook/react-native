@@ -561,13 +561,11 @@ public final class com/facebook/react/bridge/CallbackImpl : com/facebook/react/b
 
 public abstract interface class com/facebook/react/bridge/CatalystInstance : com/facebook/react/bridge/JSBundleLoaderDelegate, com/facebook/react/bridge/JSInstance, com/facebook/react/bridge/MemoryPressureListener {
 	public abstract fun addBridgeIdleDebugListener (Lcom/facebook/react/bridge/NotThreadSafeBridgeIdleDebugListener;)V
-	public abstract fun addJSIModules (Ljava/util/List;)V
 	public abstract fun callFunction (Ljava/lang/String;Ljava/lang/String;Lcom/facebook/react/bridge/NativeArray;)V
 	public abstract fun destroy ()V
 	public abstract fun extendNativeModules (Lcom/facebook/react/bridge/NativeModuleRegistry;)V
 	public abstract fun getFabricUIManager ()Lcom/facebook/react/bridge/UIManager;
 	public abstract fun getJSCallInvokerHolder ()Lcom/facebook/react/turbomodule/core/interfaces/CallInvokerHolder;
-	public abstract fun getJSIModule (Lcom/facebook/react/bridge/JSIModuleType;)Lcom/facebook/react/bridge/JSIModule;
 	public abstract fun getJSModule (Ljava/lang/Class;)Lcom/facebook/react/bridge/JavaScriptModule;
 	public abstract fun getJavaScriptContextHolder ()Lcom/facebook/react/bridge/JavaScriptContextHolder;
 	public abstract fun getNativeMethodCallInvokerHolder ()Lcom/facebook/react/turbomodule/core/interfaces/NativeMethodCallInvokerHolder;
@@ -586,13 +584,11 @@ public abstract interface class com/facebook/react/bridge/CatalystInstance : com
 	public abstract fun removeBridgeIdleDebugListener (Lcom/facebook/react/bridge/NotThreadSafeBridgeIdleDebugListener;)V
 	public abstract fun runJSBundle ()V
 	public abstract fun setFabricUIManager (Lcom/facebook/react/bridge/UIManager;)V
-	public abstract fun setTurboModuleManager (Lcom/facebook/react/bridge/JSIModule;)V
 	public abstract fun setTurboModuleRegistry (Lcom/facebook/react/internal/turbomodule/core/interfaces/TurboModuleRegistry;)V
 }
 
 public class com/facebook/react/bridge/CatalystInstanceImpl : com/facebook/react/bridge/CatalystInstance {
 	public fun addBridgeIdleDebugListener (Lcom/facebook/react/bridge/NotThreadSafeBridgeIdleDebugListener;)V
-	public fun addJSIModules (Ljava/util/List;)V
 	public fun callFunction (Lcom/facebook/react/bridge/CatalystInstanceImpl$PendingJSCall;)V
 	public fun callFunction (Ljava/lang/String;Ljava/lang/String;Lcom/facebook/react/bridge/NativeArray;)V
 	public fun destroy ()V
@@ -600,7 +596,6 @@ public class com/facebook/react/bridge/CatalystInstanceImpl : com/facebook/react
 	public fun getFabricUIManager ()Lcom/facebook/react/bridge/UIManager;
 	public fun getJSCallInvokerHolder ()Lcom/facebook/react/turbomodule/core/CallInvokerHolderImpl;
 	public synthetic fun getJSCallInvokerHolder ()Lcom/facebook/react/turbomodule/core/interfaces/CallInvokerHolder;
-	public fun getJSIModule (Lcom/facebook/react/bridge/JSIModuleType;)Lcom/facebook/react/bridge/JSIModule;
 	public fun getJSModule (Ljava/lang/Class;)Lcom/facebook/react/bridge/JavaScriptModule;
 	public fun getJavaScriptContextHolder ()Lcom/facebook/react/bridge/JavaScriptContextHolder;
 	public fun getNativeMethodCallInvokerHolder ()Lcom/facebook/react/turbomodule/core/NativeMethodCallInvokerHolderImpl;
@@ -626,7 +621,6 @@ public class com/facebook/react/bridge/CatalystInstanceImpl : com/facebook/react
 	public fun setFabricUIManager (Lcom/facebook/react/bridge/UIManager;)V
 	public fun setGlobalVariable (Ljava/lang/String;Ljava/lang/String;)V
 	public fun setSourceURLs (Ljava/lang/String;Ljava/lang/String;)V
-	public fun setTurboModuleManager (Lcom/facebook/react/bridge/JSIModule;)V
 	public fun setTurboModuleRegistry (Lcom/facebook/react/internal/turbomodule/core/interfaces/TurboModuleRegistry;)V
 }
 
@@ -794,31 +788,6 @@ public abstract interface class com/facebook/react/bridge/JSBundleLoaderDelegate
 
 public abstract interface class com/facebook/react/bridge/JSExceptionHandler {
 	public abstract fun handleException (Ljava/lang/Exception;)V
-}
-
-public abstract interface class com/facebook/react/bridge/JSIModule {
-	public abstract fun initialize ()V
-	public abstract fun invalidate ()V
-}
-
-public abstract interface class com/facebook/react/bridge/JSIModulePackage {
-	public abstract fun getJSIModules (Lcom/facebook/react/bridge/ReactApplicationContext;Lcom/facebook/react/bridge/JavaScriptContextHolder;)Ljava/util/List;
-}
-
-public abstract interface class com/facebook/react/bridge/JSIModuleProvider {
-	public abstract fun get ()Lcom/facebook/react/bridge/JSIModule;
-}
-
-public abstract interface class com/facebook/react/bridge/JSIModuleSpec {
-	public abstract fun getJSIModuleProvider ()Lcom/facebook/react/bridge/JSIModuleProvider;
-	public abstract fun getJSIModuleType ()Lcom/facebook/react/bridge/JSIModuleType;
-}
-
-public final class com/facebook/react/bridge/JSIModuleType : java/lang/Enum {
-	public static final field TurboModuleManager Lcom/facebook/react/bridge/JSIModuleType;
-	public static final field UIManager Lcom/facebook/react/bridge/JSIModuleType;
-	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/bridge/JSIModuleType;
-	public static fun values ()[Lcom/facebook/react/bridge/JSIModuleType;
 }
 
 public class com/facebook/react/bridge/JSONArguments {
@@ -3706,13 +3675,11 @@ public abstract class com/facebook/react/runtime/BindingsInstaller {
 public final class com/facebook/react/runtime/BridgelessCatalystInstance : com/facebook/react/bridge/CatalystInstance {
 	public fun <init> (Lcom/facebook/react/runtime/ReactHostImpl;)V
 	public fun addBridgeIdleDebugListener (Lcom/facebook/react/bridge/NotThreadSafeBridgeIdleDebugListener;)V
-	public fun addJSIModules (Ljava/util/List;)V
 	public fun callFunction (Ljava/lang/String;Ljava/lang/String;Lcom/facebook/react/bridge/NativeArray;)V
 	public fun destroy ()V
 	public fun extendNativeModules (Lcom/facebook/react/bridge/NativeModuleRegistry;)V
 	public fun getFabricUIManager ()Lcom/facebook/react/bridge/UIManager;
 	public fun getJSCallInvokerHolder ()Lcom/facebook/react/turbomodule/core/interfaces/CallInvokerHolder;
-	public fun getJSIModule (Lcom/facebook/react/bridge/JSIModuleType;)Lcom/facebook/react/bridge/JSIModule;
 	public fun getJSModule (Ljava/lang/Class;)Lcom/facebook/react/bridge/JavaScriptModule;
 	public fun getJavaScriptContextHolder ()Lcom/facebook/react/bridge/JavaScriptContextHolder;
 	public fun getNativeMethodCallInvokerHolder ()Lcom/facebook/react/turbomodule/core/interfaces/NativeMethodCallInvokerHolder;
@@ -3736,7 +3703,6 @@ public final class com/facebook/react/runtime/BridgelessCatalystInstance : com/f
 	public fun runJSBundle ()V
 	public fun setFabricUIManager (Lcom/facebook/react/bridge/UIManager;)V
 	public fun setSourceURLs (Ljava/lang/String;Ljava/lang/String;)V
-	public fun setTurboModuleManager (Lcom/facebook/react/bridge/JSIModule;)V
 	public fun setTurboModuleRegistry (Lcom/facebook/react/internal/turbomodule/core/interfaces/TurboModuleRegistry;)V
 }
 

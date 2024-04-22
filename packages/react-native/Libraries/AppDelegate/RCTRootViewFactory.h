@@ -13,6 +13,7 @@
 @protocol RCTComponentViewFactoryComponentProvider;
 @protocol RCTTurboModuleManagerDelegate;
 @class RCTBridge;
+@class RCTHost;
 @class RCTRootView;
 @class RCTSurfacePresenterBridgeAdapter;
 @class RCTHost;
@@ -171,6 +172,7 @@ typedef void (^RCTHostDidReceiveJSErrorStackBlock)(
 @interface RCTRootViewFactory : NSObject
 
 @property (nonatomic, strong, nullable) RCTBridge *bridge;
+@property (nonatomic, strong, nullable) RCTHost *reactHost;
 @property (nonatomic, strong, nullable) RCTSurfacePresenterBridgeAdapter *bridgeAdapter;
 
 - (instancetype)initWithConfiguration:(RCTRootViewFactoryConfiguration *)configuration
@@ -193,6 +195,10 @@ typedef void (^RCTHostDidReceiveJSErrorStackBlock)(
                      initialProperties:(NSDictionary *__nullable)initialProperties;
 
 - (UIView *_Nonnull)viewWithModuleName:(NSString *)moduleName;
+
+#pragma mark - RCTRootViewFactory Helpers
+
+- (RCTHost *)createReactHost:(NSDictionary *__nullable)launchOptions;
 
 @end
 

@@ -591,10 +591,7 @@ public abstract class ReactContext extends ContextWrapper {
    * @return The UIManager when CatalystInstance is active.
    */
   public @Nullable UIManager getFabricUIManager() {
-    UIManager uiManager = mCatalystInstance.getFabricUIManager();
-    return uiManager != null
-        ? uiManager
-        : (UIManager) mCatalystInstance.getJSIModule(JSIModuleType.UIManager);
+    return mCatalystInstance.getFabricUIManager();
   }
 
   /**

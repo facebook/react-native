@@ -269,35 +269,6 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
 
 #pragma mark - Private
 
-- (NSTextStorage *)_textStorageForNSAttributesString:(NSAttributedString *)attributedString
-                                 paragraphAttributes:(ParagraphAttributes)paragraphAttributes
-                                                size:(CGSize)size
-{
-  NSTextContainer *textContainer = [[NSTextContainer alloc] initWithSize:size];
-
-  textContainer.lineFragmentPadding = 0.0; // Note, the default value is 5.
-  textContainer.lineBreakMode = paragraphAttributes.maximumNumberOfLines > 0
-      ? RCTNSLineBreakModeFromEllipsizeMode(paragraphAttributes.ellipsizeMode)
-      : NSLineBreakByClipping;
-  textContainer.maximumNumberOfLines = paragraphAttributes.maximumNumberOfLines;
-
-  NSLayoutManager *layoutManager = [NSLayoutManager new];
-  layoutManager.usesFontLeading = NO;
-  [layoutManager addTextContainer:textContainer];
-
-  NSTextStorage *textStorage = [[NSTextStorage alloc] initWithAttributedString:attributedString];
-
-  [textStorage addLayoutManager:layoutManager];
-
-  if (paragraphAttributes.adjustsFontSizeToFit) {
-    CGFloat minimumFontSize = !isnan(paragraphAttributes.minimumFontSize) ? paragraphAttributes.minimumFontSize : 4.0;
-    CGFloat maximumFontSize = !isnan(paragraphAttributes.maximumFontSize) ? paragraphAttributes.maximumFontSize : 96.0;
-    [textStorage scaleFontSizeToFitSize:size minimumFontSize:minimumFontSize maximumFontSize:maximumFontSize];
-  }
-
-  return textStorage;
-}
-
 - (NSAttributedString *)_nsAttributedStringFromAttributedString:(AttributedString)attributedString
 {
   auto sharedNSAttributedString = _cache.get(attributedString, [](AttributedString attributedString) {

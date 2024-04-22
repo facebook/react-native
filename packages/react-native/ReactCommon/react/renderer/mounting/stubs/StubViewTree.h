@@ -11,7 +11,7 @@
 #include <unordered_map>
 
 #include <react/renderer/mounting/ShadowViewMutation.h>
-#include <react/renderer/mounting/StubView.h>
+#include <react/renderer/mounting/stubs/StubView.h>
 
 namespace facebook::react {
 

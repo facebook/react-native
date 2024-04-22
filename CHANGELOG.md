@@ -256,8 +256,8 @@
 - Add errata for fix to marginStart/End for row-reverse flex direction ([2dad663c28](https://github.com/facebook/react-native/commit/2dad663c2870e0c098649854c8c9333e07be1793) by [@joevilches](https://github.com/joevilches))
 - Remove web performance logging from GlobalPerformanceLogger ([53a2742e13](https://github.com/facebook/react-native/commit/53a2742e13f55c3e412bde2ac7b56f6950e44b17) by [@rshest](https://github.com/rshest))
 - Rename AbsolutePositioning errata ([08eb985c33](https://github.com/facebook/react-native/commit/08eb985c333bca4fc47c854b51ad84f1353d344c) by [@joevilches](https://github.com/joevilches))
-- Refactor React to get rid of JSIModule and its dependencies ([6555205539](https://github.com/facebook/react-native/commit/65552055392a5996bf50548018953875dde4560b) by [@arushikesarwani](https://github.com/arushikesarwani94))
-- Get rid of old APIs in FabricUIManagerProvider ([c2c346ccaf](https://github.com/facebook/react-native/commit/c2c346ccaf9912f129b945944575c818eac99a6d) by [@arushikesarwani](https://github.com/arushikesarwani94))
+- Refactor React to get rid of JSIModule and its dependencies ([6555205539](https://github.com/facebook/react-native/commit/65552055392a5996bf50548018953875dde4560b) by [@arushikesarwani94](https://github.com/arushikesarwani94))
+- Get rid of old APIs in FabricUIManagerProvider ([c2c346ccaf](https://github.com/facebook/react-native/commit/c2c346ccaf9912f129b945944575c818eac99a6d) by [@arushikesarwani94](https://github.com/arushikesarwani94))
 
 #### Android specific
 
@@ -809,6 +809,20 @@
 - Fix release build error due to a casing issue in hermes tarball path after download prebuilt tarball ([2e2f8a6689](https://github.com/facebook/react-native/commit/2e2f8a668907552070a2a53a47137b1449b66bbd) by [@wfern](https://github.com/wfern))
 - Fix race condition between A11yManager and UIManager ([f39f34ed82](https://github.com/facebook/react-native/commit/f39f34ed82997d0595522a285c3cb8693594e718) by [@cipolleschi](https://github.com/cipolleschi))
 - Fix symbol not found _jump_fcontext with use_frameworks ([a2771ce58a](https://github.com/facebook/react-native/commit/a2771ce58ac221d1ac0de265c1ce571212fbcf83) by [@cipolleschi](https://github.com/cipolleschi))
+
+## v0.72.13
+
+### Added
+
+#### iOS specific
+
+- Add privacy manifest to pod install ([d39712f54a](https://github.com/facebook/react-native/commit/d39712f54a95e6dcdf1d2f80d9581211ab03c157) by [@philIip](https://github.com/philIip))
+
+### Fixed
+
+#### Android specific
+
+- Fixed possible deadlock in dispatchViewUpdates ([b2ca41eef5](https://github.com/facebook/react-native/commit/b2ca41eef59b17d212b35baa4a28c4b27a465b5c) by [@EvertEt](https://github.com/EvertEt))
 
 ## v0.72.12
 
