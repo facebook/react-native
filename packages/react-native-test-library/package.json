@@ -12,7 +12,7 @@
   },
   "main": "./index.js",
   "exports": {
-    "./": "./index.js",
+    ".": "./index.js",
     "./package.json": "./package.json"
   },
   "scripts": {
