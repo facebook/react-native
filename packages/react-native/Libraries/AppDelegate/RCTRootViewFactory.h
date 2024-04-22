@@ -16,7 +16,6 @@
 @class RCTHost;
 @class RCTRootView;
 @class RCTSurfacePresenterBridgeAdapter;
-@class RCTHost;
 
 NS_ASSUME_NONNULL_BEGIN
 
