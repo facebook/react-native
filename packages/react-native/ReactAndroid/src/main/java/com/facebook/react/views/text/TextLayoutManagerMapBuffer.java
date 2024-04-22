@@ -419,6 +419,7 @@ public class TextLayoutManagerMapBuffer {
     int initialFontSize = currentFontSize;
     while (currentFontSize > minimumFontSize
         && ((maximumNumberOfLines != ReactConstants.UNSET
+                && maximumNumberOfLines != 0
                 && layout.getLineCount() > maximumNumberOfLines)
             || (heightYogaMeasureMode != YogaMeasureMode.UNDEFINED
                 && layout.getHeight() > height))) {
