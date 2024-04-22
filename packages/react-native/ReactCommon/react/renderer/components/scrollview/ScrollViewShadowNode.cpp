@@ -69,7 +69,7 @@ Point ScrollViewShadowNode::getContentOriginOffset(
   auto contentOffset = stateData.contentOffset;
 
   const auto& props = getConcreteProps();
-  auto result = props.transform * Vector{-contentOffset.x, -contentOffset.y, 0, 1};
+  auto result = props.resolveTransform(layoutMetrics_) * Vector{-contentOffset.x, -contentOffset.y, 0, 1};
 
   return {result.x, result.y + stateData.scrollAwayPaddingTop};
 }
