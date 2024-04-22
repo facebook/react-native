@@ -27,6 +27,7 @@ import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.Role;
+import com.facebook.react.uimanager.ReactWideGamutView;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.PointerEventHelper;
 import com.facebook.react.uimanager.util.ReactFindViewUtil;
@@ -174,8 +175,8 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     defaultInt = Color.TRANSPARENT,
     customType = "Color")
   public void setBackgroundColor(@NonNull T view, long backgroundColor) {
-    if (view instanceof ReactViewGroup) {
-      ((ReactViewGroup) view).setBackgroundColor(backgroundColor);
+    if (view instanceof ReactWideGamutView) {
+      ((ReactWideGamutView) view).setBackgroundColor(backgroundColor);
     } else {
       view.setBackgroundColor(Color.toArgb(backgroundColor));
     }

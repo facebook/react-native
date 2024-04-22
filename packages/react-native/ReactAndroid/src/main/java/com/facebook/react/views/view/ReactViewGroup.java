@@ -45,6 +45,7 @@ import com.facebook.react.uimanager.ReactClippingViewGroup;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 import com.facebook.react.uimanager.ReactOverflowViewWithInset;
 import com.facebook.react.uimanager.ReactPointerEventsView;
+import com.facebook.react.uimanager.ReactWideGamutView;
 import com.facebook.react.uimanager.ReactZIndexedViewGroup;
 import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.RootViewUtil;
@@ -65,6 +66,7 @@ public class ReactViewGroup extends ViewGroup
         ReactClippingViewGroup,
         ReactPointerEventsView,
         ReactHitSlopView,
+        ReactWideGamutView,
         ReactZIndexedViewGroup,
         ReactOverflowViewWithInset {
 
