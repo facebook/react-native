@@ -53,6 +53,8 @@ Pod::Spec.new do |s|
   s.dependency "React-logger", version
   s.dependency "React-debug", version
 
+  s.resource_bundles = {'React-cxxreact_privacy' => 'PrivacyInfo.xcprivacy'}
+
   if ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == "1"
     s.dependency 'hermes-engine'
   end
