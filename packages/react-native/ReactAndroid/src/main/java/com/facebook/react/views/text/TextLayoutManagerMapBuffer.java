@@ -368,7 +368,10 @@ public class TextLayoutManagerMapBuffer {
               .build();
 
     } else if (boring != null && (unconstrainedWidth || boring.width <= width)) {
-      int boringLayoutWidth = (int) width;
+      int boringLayoutWidth = boring.width;
+      if (widthYogaMeasureMode == YogaMeasureMode.EXACTLY) {
+        boringLayoutWidth = (int) Math.ceil(width);
+      }
       if (boring.width < 0) {
         ReactSoftExceptionLogger.logSoftException(
             TAG, new ReactNoCrashSoftException("Text width is invalid: " + boring.width));
@@ -389,7 +392,7 @@ public class TextLayoutManagerMapBuffer {
     } else {
       // Is used for multiline, boring text and the width is known.
       StaticLayout.Builder builder =
-          StaticLayout.Builder.obtain(text, 0, spanLength, sTextPaintInstance, (int) width)
+          StaticLayout.Builder.obtain(text, 0, spanLength, sTextPaintInstance, (int) Math.ceil(width))
               .setAlignment(alignment)
               .setLineSpacing(0.f, 1.f)
               .setIncludePad(includeFontPadding)
