@@ -5414,6 +5414,7 @@ public abstract interface annotation class com/facebook/react/uimanager/annotati
 	public abstract fun defaultDouble ()D
 	public abstract fun defaultFloat ()F
 	public abstract fun defaultInt ()I
+	public abstract fun defaultLong ()J
 	public abstract fun name ()Ljava/lang/String;
 }
 
@@ -5423,6 +5424,7 @@ public abstract interface annotation class com/facebook/react/uimanager/annotati
 	public abstract fun defaultDouble ()D
 	public abstract fun defaultFloat ()F
 	public abstract fun defaultInt ()I
+	public abstract fun defaultLong ()J
 	public abstract fun names ()[Ljava/lang/String;
 }
 
