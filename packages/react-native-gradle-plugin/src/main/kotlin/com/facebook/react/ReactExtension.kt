@@ -147,4 +147,23 @@ abstract class ReactExtension @Inject constructor(project: Project) {
    */
   val codegenJavaPackageName: Property<String> =
       objects.property(String::class.java).convention("com.facebook.fbreact.specs")
+
+  /** Auto-linking Config */
+
+  /**
+   * Location of the JSON file used to configure autolinking. This file is the output of the
+   * `@react-native-community/cli` config command.
+   *
+   * If not specified, RNGP will just invoke whatever you pass as [autolinkConfigCommand].
+   */
+  val autolinkConfigFile: RegularFileProperty = objects.fileProperty()
+
+  /**
+   * The command to invoke as source of truth for the autolinking configuration. Default is
+   * `["@react-native-community/cli", "config"]`.
+   */
+  val autolinkConfigCommand: ListProperty<String> =
+      objects
+          .listProperty(String::class.java)
+          .convention(listOf("@react-native-community/cli", "config"))
 }
