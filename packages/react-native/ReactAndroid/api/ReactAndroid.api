@@ -128,6 +128,7 @@ public class com/facebook/react/ReactActivityDelegate {
 	public fun getReactInstanceManager ()Lcom/facebook/react/ReactInstanceManager;
 	protected fun getReactNativeHost ()Lcom/facebook/react/ReactNativeHost;
 	protected fun isFabricEnabled ()Z
+	protected fun isWideColorGamutEnabled ()Z
 	protected fun loadApp (Ljava/lang/String;)V
 	public fun onActivityResult (IILandroid/content/Intent;)V
 	public fun onBackPressed ()Z
