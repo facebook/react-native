@@ -96,6 +96,13 @@ public @interface ReactProp {
   int defaultInt() default 0;
 
   /**
+   * Default value for property of type {@code long}. This value will be provided to property setter
+   * method annotated with {@link ReactProp} if property with a given name gets removed from the
+   * component description in JS
+   */
+  long defaultLong() default 0L;
+
+  /**
    * Default value for property of type {@code boolean}. This value will be provided to property
    * setter method annotated with {@link ReactProp} if property with a given name gets removed from
    * the component description in JS
