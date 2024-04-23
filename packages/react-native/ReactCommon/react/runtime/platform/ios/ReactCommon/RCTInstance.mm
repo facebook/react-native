@@ -37,7 +37,7 @@
 #import <cxxreact/ReactMarker.h>
 #import <jsinspector-modern/ReactCdp.h>
 #import <jsireact/JSIExecutor.h>
-#import <react/runtime/BridgelessJSCallInvoker.h>
+#import <react/runtime/PriorityCallInvoker.h>
 #import <react/utils/ContextContainer.h>
 #import <react/utils/ManagedObjectWrapper.h>
 
@@ -256,7 +256,6 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   RuntimeExecutor bufferedRuntimeExecutor = _reactInstance->getBufferedRuntimeExecutor();
   timerManager->setRuntimeExecutor(bufferedRuntimeExecutor);
 
-  auto jsCallInvoker = make_shared<BridgelessJSCallInvoker>(bufferedRuntimeExecutor);
   RCTBridgeProxy *bridgeProxy =
       [[RCTBridgeProxy alloc] initWithViewRegistry:_bridgeModuleDecorator.viewRegistry_DEPRECATED
           moduleRegistry:_bridgeModuleDecorator.moduleRegistry
@@ -276,6 +275,8 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
           }
           runtime:_reactInstance->getJavaScriptContext()
           launchOptions:_launchOptions];
+  auto jsCallInvoker = make_shared<PriorityCallInvoker>(_reactInstance->getPriorityRuntimeExecutor());
+
   bridgeProxy.jsCallInvoker = jsCallInvoker;
   [RCTBridge setCurrentBridge:(RCTBridge *)bridgeProxy];
 
