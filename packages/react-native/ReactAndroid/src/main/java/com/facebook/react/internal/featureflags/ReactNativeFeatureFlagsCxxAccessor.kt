@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<46e1a8dd088d588ea9eec703d7155710>>
+ * @generated SignedSource<<f7e306b346e95ea68be34c7d7708c316>>
  */
 
 /**
@@ -26,7 +26,6 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
   private var enableCleanTextInputYogaNodeCache: Boolean? = null
   private var enableCustomDrawOrderFabricCache: Boolean? = null
   private var enableMicrotasksCache: Boolean? = null
-  private var enableMountHooksAndroidCache: Boolean? = null
   private var enableSpannableBuildingUnificationCache: Boolean? = null
   private var enableSynchronousStateUpdatesCache: Boolean? = null
   private var enableUIConsistencyCache: Boolean? = null
@@ -88,15 +87,6 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableMicrotasks()
       enableMicrotasksCache = cached
-    }
-    return cached
-  }
-
-  override fun enableMountHooksAndroid(): Boolean {
-    var cached = enableMountHooksAndroidCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.enableMountHooksAndroid()
-      enableMountHooksAndroidCache = cached
     }
     return cached
   }

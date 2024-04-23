@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b638a8d33a5b542e93b1bfa784ff500d>>
+ * @generated SignedSource<<a4f3d7d441089e7f8f95c19c463c038d>>
  */
 
 /**
@@ -48,10 +48,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableMicrotasks() override {
-    return false;
-  }
-
-  bool enableMountHooksAndroid() override {
     return false;
   }
 

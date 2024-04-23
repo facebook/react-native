@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6cc4fccd13a1e426a2d6a2a24530e5e6>>
+ * @generated SignedSource<<c6c02b3249add27dd868af02151235aa>>
  */
 
 /**
@@ -34,8 +34,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableCustomDrawOrderFabric(): Boolean = false
 
   override fun enableMicrotasks(): Boolean = false
-
-  override fun enableMountHooksAndroid(): Boolean = false
 
   override fun enableSpannableBuildingUnification(): Boolean = false
 

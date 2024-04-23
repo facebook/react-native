@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d6a33b997461fd186c58a956f6854aca>>
+ * @generated SignedSource<<89f6dda7de10b5dab880ffc2908248f6>>
  */
 
 /**
@@ -66,11 +66,6 @@ class ReactNativeFeatureFlags {
    * Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).
    */
   RN_EXPORT static bool enableMicrotasks();
-
-  /**
-   * Enables the notification of mount operations to mount hooks on Android.
-   */
-  RN_EXPORT static bool enableMountHooksAndroid();
 
   /**
    * Uses new, deduplicated logic for constructing Android Spannables from text fragments
