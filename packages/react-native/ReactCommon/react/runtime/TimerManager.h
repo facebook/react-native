@@ -101,6 +101,16 @@ class TimerManager {
       jsi::Runtime& runtime,
       std::shared_ptr<TimerHandle> handle);
 
+  std::shared_ptr<TimerHandle> createIdleCallback(jsi::Function&& callback);
+
+  std::shared_ptr<TimerHandle> createIdleCallbackWithTimeout(
+      jsi::Function&& callback,
+      int32_t timeout);
+
+  void clearIdleCallback(
+      jsi::Runtime& runtime,
+      std::shared_ptr<TimerHandle> idleCallbackHandle);
+
   RuntimeExecutor runtimeExecutor_;
   std::weak_ptr<RuntimeScheduler> runtimeScheduler_;
   std::unique_ptr<PlatformTimerRegistry> platformTimerRegistry_;
