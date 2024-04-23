@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c1c7546acade83cf63f3c06e78352982>>
+ * @generated SignedSource<<408507ae95266c6482ad2c4629249382>>
  */
 
 /**
@@ -26,6 +26,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
 
   private var commonTestFlagCache: Boolean? = null
   private var batchRenderingUpdatesInEventLoopCache: Boolean? = null
+  private var destroyFabricSurfacesInReactInstanceManagerCache: Boolean? = null
   private var enableBackgroundExecutorCache: Boolean? = null
   private var enableCleanTextInputYogaNodeCache: Boolean? = null
   private var enableCustomDrawOrderFabricCache: Boolean? = null
@@ -58,6 +59,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.batchRenderingUpdatesInEventLoop()
       accessedFeatureFlags.add("batchRenderingUpdatesInEventLoop")
       batchRenderingUpdatesInEventLoopCache = cached
+    }
+    return cached
+  }
+
+  override fun destroyFabricSurfacesInReactInstanceManager(): Boolean {
+    var cached = destroyFabricSurfacesInReactInstanceManagerCache
+    if (cached == null) {
+      cached = currentProvider.destroyFabricSurfacesInReactInstanceManager()
+      accessedFeatureFlags.add("destroyFabricSurfacesInReactInstanceManager")
+      destroyFabricSurfacesInReactInstanceManagerCache = cached
     }
     return cached
   }

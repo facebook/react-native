@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b638a8d33a5b542e93b1bfa784ff500d>>
+ * @generated SignedSource<<6f6a938511f68b70bdea7f9c2e537b17>>
  */
 
 /**
@@ -32,6 +32,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool batchRenderingUpdatesInEventLoop() override {
+    return false;
+  }
+
+  bool destroyFabricSurfacesInReactInstanceManager() override {
     return false;
   }
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<46e1a8dd088d588ea9eec703d7155710>>
+ * @generated SignedSource<<9f3e6458905d20cc9f25f0101e8984b6>>
  */
 
 /**
@@ -22,6 +22,7 @@ package com.facebook.react.internal.featureflags
 public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccessor {
   private var commonTestFlagCache: Boolean? = null
   private var batchRenderingUpdatesInEventLoopCache: Boolean? = null
+  private var destroyFabricSurfacesInReactInstanceManagerCache: Boolean? = null
   private var enableBackgroundExecutorCache: Boolean? = null
   private var enableCleanTextInputYogaNodeCache: Boolean? = null
   private var enableCustomDrawOrderFabricCache: Boolean? = null
@@ -52,6 +53,15 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.batchRenderingUpdatesInEventLoop()
       batchRenderingUpdatesInEventLoopCache = cached
+    }
+    return cached
+  }
+
+  override fun destroyFabricSurfacesInReactInstanceManager(): Boolean {
+    var cached = destroyFabricSurfacesInReactInstanceManagerCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.destroyFabricSurfacesInReactInstanceManager()
+      destroyFabricSurfacesInReactInstanceManagerCache = cached
     }
     return cached
   }

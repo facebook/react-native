@@ -37,6 +37,11 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.',
     },
+    destroyFabricSurfacesInReactInstanceManager: {
+      defaultValue: false,
+      description:
+        'When enabled, ReactInstanceManager will clean up Fabric surfaces on destroy().',
+    },
     enableBackgroundExecutor: {
       defaultValue: false,
       description:

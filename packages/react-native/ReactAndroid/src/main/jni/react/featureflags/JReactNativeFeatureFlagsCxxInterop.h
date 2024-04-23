@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a6b8839cf6f9e87848289a8c5c37a5c8>>
+ * @generated SignedSource<<2ee29bbfb8edbb9d9b2d1f7c15402aa8>>
  */
 
 /**
@@ -34,6 +34,9 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool batchRenderingUpdatesInEventLoop(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool destroyFabricSurfacesInReactInstanceManager(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enableBackgroundExecutor(

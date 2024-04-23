@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0e0858557eb27f3eebfecae18ee13c0b>>
+ * @generated SignedSource<<45609cc0c4bda5f3eee7d1e356e601b8>>
  * @flow strict-local
  */
 
@@ -42,6 +42,7 @@ export type ReactNativeFeatureFlags = {
   ...ReactNativeFeatureFlagsJsOnly,
   commonTestFlag: Getter<boolean>,
   batchRenderingUpdatesInEventLoop: Getter<boolean>,
+  destroyFabricSurfacesInReactInstanceManager: Getter<boolean>,
   enableBackgroundExecutor: Getter<boolean>,
   enableCleanTextInputYogaNode: Getter<boolean>,
   enableCustomDrawOrderFabric: Getter<boolean>,
@@ -107,6 +108,10 @@ export const commonTestFlag: Getter<boolean> = createNativeFlagGetter('commonTes
  * When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.
  */
 export const batchRenderingUpdatesInEventLoop: Getter<boolean> = createNativeFlagGetter('batchRenderingUpdatesInEventLoop', false);
+/**
+ * When enabled, ReactInstanceManager will clean up Fabric surfaces on destroy().
+ */
+export const destroyFabricSurfacesInReactInstanceManager: Getter<boolean> = createNativeFlagGetter('destroyFabricSurfacesInReactInstanceManager', false);
 /**
  * Enables the use of a background executor to compute layout and commit updates on Fabric (this system is deprecated and should not be used).
  */

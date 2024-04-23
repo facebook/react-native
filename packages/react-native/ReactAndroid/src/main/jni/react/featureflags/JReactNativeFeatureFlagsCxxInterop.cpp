@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f8ac6f7e857808ade5d0f26ec7924604>>
+ * @generated SignedSource<<595d8b68bfc185e336cbbea3f4113b49>>
  */
 
 /**
@@ -48,6 +48,12 @@ class ReactNativeFeatureFlagsProviderHolder
   bool batchRenderingUpdatesInEventLoop() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("batchRenderingUpdatesInEventLoop");
+    return method(javaProvider_);
+  }
+
+  bool destroyFabricSurfacesInReactInstanceManager() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("destroyFabricSurfacesInReactInstanceManager");
     return method(javaProvider_);
   }
 
@@ -155,6 +161,11 @@ bool JReactNativeFeatureFlagsCxxInterop::batchRenderingUpdatesInEventLoop(
   return ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::destroyFabricSurfacesInReactInstanceManager(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::destroyFabricSurfacesInReactInstanceManager();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableBackgroundExecutor(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableBackgroundExecutor();
@@ -253,6 +264,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "batchRenderingUpdatesInEventLoop",
         JReactNativeFeatureFlagsCxxInterop::batchRenderingUpdatesInEventLoop),
+      makeNativeMethod(
+        "destroyFabricSurfacesInReactInstanceManager",
+        JReactNativeFeatureFlagsCxxInterop::destroyFabricSurfacesInReactInstanceManager),
       makeNativeMethod(
         "enableBackgroundExecutor",
         JReactNativeFeatureFlagsCxxInterop::enableBackgroundExecutor),

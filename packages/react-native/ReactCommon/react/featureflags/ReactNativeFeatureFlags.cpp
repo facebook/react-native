@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0fe73e0526dbc2f860029b8cb0fbcfe3>>
+ * @generated SignedSource<<b1f5806a6f7c1bb3d9038ec5bde3ffae>>
  */
 
 /**
@@ -27,6 +27,10 @@ bool ReactNativeFeatureFlags::commonTestFlag() {
 
 bool ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop() {
   return getAccessor().batchRenderingUpdatesInEventLoop();
+}
+
+bool ReactNativeFeatureFlags::destroyFabricSurfacesInReactInstanceManager() {
+  return getAccessor().destroyFabricSurfacesInReactInstanceManager();
 }
 
 bool ReactNativeFeatureFlags::enableBackgroundExecutor() {

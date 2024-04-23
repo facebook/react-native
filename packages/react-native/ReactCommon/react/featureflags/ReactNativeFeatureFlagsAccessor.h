@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2ac50c51832dfbcebfc8875c02738727>>
+ * @generated SignedSource<<468f8228812166ef05f228a5509c42fc>>
  */
 
 /**
@@ -33,6 +33,7 @@ class ReactNativeFeatureFlagsAccessor {
 
   bool commonTestFlag();
   bool batchRenderingUpdatesInEventLoop();
+  bool destroyFabricSurfacesInReactInstanceManager();
   bool enableBackgroundExecutor();
   bool enableCleanTextInputYogaNode();
   bool enableCustomDrawOrderFabric();
@@ -58,10 +59,11 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 17> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 18> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> batchRenderingUpdatesInEventLoop_;
+  std::atomic<std::optional<bool>> destroyFabricSurfacesInReactInstanceManager_;
   std::atomic<std::optional<bool>> enableBackgroundExecutor_;
   std::atomic<std::optional<bool>> enableCleanTextInputYogaNode_;
   std::atomic<std::optional<bool>> enableCustomDrawOrderFabric_;
