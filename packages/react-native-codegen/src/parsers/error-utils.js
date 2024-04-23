@@ -186,6 +186,7 @@ function throwIfPropertyValueTypeIsUnsupported(
   type: string,
 ) {
   const invalidPropertyValueType =
+    // $FlowFixMe[invalid-computed-prop]
     UnsupportedObjectPropertyTypeToInvalidPropertyValueTypeMap[type];
 
   throw new UnsupportedObjectPropertyValueTypeAnnotationParserError(
@@ -245,6 +246,7 @@ function throwIfArrayElementTypeAnnotationIsUnsupported(
       hasteModuleName,
       flowElementType,
       flowArrayType,
+      // $FlowFixMe[invalid-computed-prop]
       TypeMap[type],
     );
   }

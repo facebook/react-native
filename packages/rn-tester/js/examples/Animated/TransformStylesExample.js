@@ -44,6 +44,7 @@ function AnimatedView({
   const transformStyles = properties.map(property => ({
     [property]: animatedValue.interpolate({
       inputRange: [0, 1],
+      // $FlowFixMe[invalid-computed-prop]
       outputRange: transformProperties[property].outputRange,
     }),
   }));
@@ -82,7 +83,9 @@ function AnimatedTransformStyleExample(): React.Node {
     setProperties({
       ...properties,
       [property]: {
+        // $FlowFixMe[invalid-computed-prop]
         ...properties[property],
+        // $FlowFixMe[invalid-computed-prop]
         selected: !properties[property].selected,
       },
     });

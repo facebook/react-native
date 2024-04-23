@@ -19,7 +19,8 @@ const objectTypeForPrimitiveType = {
 function wrapOptional(type: string, isRequired: boolean): string {
   return isRequired
     ? type
-    : `@Nullable ${objectTypeForPrimitiveType[type] ?? type}`;
+    : // $FlowFixMe[invalid-computed-prop]
+      `@Nullable ${objectTypeForPrimitiveType[type] ?? type}`;
 }
 
 module.exports = {

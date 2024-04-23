@@ -39,6 +39,7 @@ function generateSupportedApplePlatformsMacro(
   const compilerMacroString = Object.keys(supportedPlatformsMap)
     .reduce((acc: string[], platform) => {
       if (!supportedPlatformsMap[platform]) {
+        // $FlowFixMe[invalid-computed-prop]
         return [...acc, `!${APPLE_PLATFORMS_MACRO_MAP[platform]}`];
       }
       return acc;
