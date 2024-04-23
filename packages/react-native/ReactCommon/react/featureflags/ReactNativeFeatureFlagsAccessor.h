@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2ac50c51832dfbcebfc8875c02738727>>
+ * @generated SignedSource<<7ec1c929562737037ff524a042bbcf54>>
  */
 
 /**
@@ -37,7 +37,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableCleanTextInputYogaNode();
   bool enableCustomDrawOrderFabric();
   bool enableMicrotasks();
-  bool enableMountHooksAndroid();
   bool enableSpannableBuildingUnification();
   bool enableSynchronousStateUpdates();
   bool enableUIConsistency();
@@ -58,7 +57,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 17> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 16> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> batchRenderingUpdatesInEventLoop_;
@@ -66,7 +65,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableCleanTextInputYogaNode_;
   std::atomic<std::optional<bool>> enableCustomDrawOrderFabric_;
   std::atomic<std::optional<bool>> enableMicrotasks_;
-  std::atomic<std::optional<bool>> enableMountHooksAndroid_;
   std::atomic<std::optional<bool>> enableSpannableBuildingUnification_;
   std::atomic<std::optional<bool>> enableSynchronousStateUpdates_;
   std::atomic<std::optional<bool>> enableUIConsistency_;

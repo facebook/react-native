@@ -56,11 +56,6 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).',
     },
-    enableMountHooksAndroid: {
-      defaultValue: false,
-      description:
-        'Enables the notification of mount operations to mount hooks on Android.',
-    },
     enableSpannableBuildingUnification: {
       defaultValue: false,
       description:

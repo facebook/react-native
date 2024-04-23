@@ -1233,9 +1233,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener, UIBlo
         listener.didMountItems(FabricUIManager.this);
       }
 
-      if (!ReactNativeFeatureFlags.enableMountHooksAndroid()
-          || mountItems == null
-          || mountItems.isEmpty()) {
+      if (mountItems == null || mountItems.isEmpty()) {
         return;
       }
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<92830e364788db00fd06d4e152ef7727>>
+ * @generated SignedSource<<5d7f748ee93a70ac0bfe378e892c1051>>
  */
 
 /**
@@ -46,8 +46,6 @@ class NativeReactNativeFeatureFlags
   bool enableCustomDrawOrderFabric(jsi::Runtime& runtime);
 
   bool enableMicrotasks(jsi::Runtime& runtime);
-
-  bool enableMountHooksAndroid(jsi::Runtime& runtime);
 
   bool enableSpannableBuildingUnification(jsi::Runtime& runtime);
 
