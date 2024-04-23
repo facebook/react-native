@@ -54,6 +54,10 @@ const buildConfig /*: BuildConfig */ = {
       emitTypeScriptDefs: true,
       target: 'node',
     },
+    helloworld: {
+      emitFlowDefs: false,
+      target: 'node',
+    },
     'metro-config': {
       emitTypeScriptDefs: true,
       target: 'node',
