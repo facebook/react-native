@@ -649,7 +649,6 @@ public class com/facebook/react/bridge/ColorPropConverter {
 	public fun <init> ()V
 	public static fun getColor (Ljava/lang/Object;Landroid/content/Context;)Ljava/lang/Integer;
 	public static fun getColor (Ljava/lang/Object;Landroid/content/Context;I)Ljava/lang/Integer;
-	public static fun getColorInstance (Ljava/lang/Object;Landroid/content/Context;)Landroid/graphics/Color;
 	public static fun resolveResourcePath (Landroid/content/Context;Ljava/lang/String;)Ljava/lang/Integer;
 }
 
