@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5d7f748ee93a70ac0bfe378e892c1051>>
+ * @generated SignedSource<<8bf1b6f11737dfd3d837f5f0425cfc6e>>
  */
 
 /**
@@ -38,6 +38,8 @@ class NativeReactNativeFeatureFlags
   bool commonTestFlag(jsi::Runtime& runtime);
 
   bool batchRenderingUpdatesInEventLoop(jsi::Runtime& runtime);
+
+  bool destroyFabricSurfacesInReactInstanceManager(jsi::Runtime& runtime);
 
   bool enableBackgroundExecutor(jsi::Runtime& runtime);
 

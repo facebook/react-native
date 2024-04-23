@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<89f6dda7de10b5dab880ffc2908248f6>>
+ * @generated SignedSource<<d440f151b718198b83d18dcd1ca157d1>>
  */
 
 /**
@@ -46,6 +46,11 @@ class ReactNativeFeatureFlags {
    * When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.
    */
   RN_EXPORT static bool batchRenderingUpdatesInEventLoop();
+
+  /**
+   * When enabled, ReactInstanceManager will clean up Fabric surfaces on destroy().
+   */
+  RN_EXPORT static bool destroyFabricSurfacesInReactInstanceManager();
 
   /**
    * Enables the use of a background executor to compute layout and commit updates on Fabric (this system is deprecated and should not be used).

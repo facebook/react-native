@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8915b173bf7bc423cff555366f522615>>
+ * @generated SignedSource<<cf91b15910f94812cc0d4628fea91f97>>
  */
 
 /**
@@ -39,6 +39,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun batchRenderingUpdatesInEventLoop(): Boolean = accessor.batchRenderingUpdatesInEventLoop()
+
+  /**
+   * When enabled, ReactInstanceManager will clean up Fabric surfaces on destroy().
+   */
+  @JvmStatic
+  public fun destroyFabricSurfacesInReactInstanceManager(): Boolean = accessor.destroyFabricSurfacesInReactInstanceManager()
 
   /**
    * Enables the use of a background executor to compute layout and commit updates on Fabric (this system is deprecated and should not be used).
