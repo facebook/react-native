@@ -32,6 +32,19 @@ public class ColorPropConverter {
     return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
   }
 
+  private static void throwIfNullContext(Context context) {
+    if (context == null) {
+      throw new RuntimeException("Context may not be null.");
+    }
+  }
+
+  private static void throwIfNullResourcePath(ReadableArray resourcePaths) {
+    if (resourcePaths == null) {
+      throw new JSApplicationCausedNativeException(
+          "ColorValue: The `" + JSON_KEY + "` must be an array of color resource path strings.");
+    }
+  }
+
   public static Color getColorInstance(Object value, Context context) {
     if (value == null) {
       return null;
@@ -41,9 +54,7 @@ public class ColorPropConverter {
       return Color.valueOf(((Double) value).intValue());
     }
 
-    if (context == null) {
-      throw new RuntimeException("Context may not be null.");
-    }
+    throwIfNullContext(context);
 
     if (value instanceof ReadableMap) {
       ReadableMap map = (ReadableMap) value;
@@ -65,15 +76,46 @@ public class ColorPropConverter {
 
       ReadableArray resourcePaths = map.getArray(JSON_KEY);
 
-      if (resourcePaths == null) {
-        throw new JSApplicationCausedNativeException(
-            "ColorValue: The `" + JSON_KEY + "` must be an array of color resource path strings.");
-      }
+      throwIfNullResourcePath(resourcePaths);
 
       for (int i = 0; i < resourcePaths.size(); i++) {
         Integer result = resolveResourcePath(context, resourcePaths.getString(i));
-        if (apiSupportWideGamut() && result != null) {
-          return Color.valueOf(result);
+        if (result != null) {
+          if (apiSupportWideGamut()) {
+            return Color.valueOf(result);
+          }
+        }
+      }
+
+      throw new JSApplicationCausedNativeException(
+          "ColorValue: None of the paths in the `"
+              + JSON_KEY
+              + "` array resolved to a color resource.");
+    }
+
+    throw new JSApplicationCausedNativeException(
+        "ColorValue: the value must be a number or Object.");
+  }
+
+  private static Integer getColorInteger(Object value, Context context) {
+    if (value == null) {
+      return null;
+    }
+
+    throwIfNullContext(context);
+
+    if (value instanceof ReadableMap) {
+      ReadableMap map = (ReadableMap) value;
+
+      ReadableArray resourcePaths = map.getArray(JSON_KEY);
+
+      throwIfNullResourcePath(resourcePaths);
+
+      for (int i = 0; i < resourcePaths.size(); i++) {
+        Integer result = resolveResourcePath(context, resourcePaths.getString(i));
+
+        if (result != null) {
+          return result;
         }
       }
 
@@ -88,14 +130,16 @@ public class ColorPropConverter {
   }
 
   public static Integer getColor(Object value, Context context) {
+    if (!apiSupportWideGamut()) {
+      return getColorInteger(value, context);
+    }
+
     Color color = getColorInstance(value, context);
     if (color == null) {
       return null;
     }
-    if (apiSupportWideGamut()) {
-      return color.toArgb();
-    }
-    return null;
+
+    return color.toArgb();
   }
 
   public static Integer getColor(Object value, Context context, int defaultInt) {
