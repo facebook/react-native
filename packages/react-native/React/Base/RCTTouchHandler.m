@@ -137,6 +137,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
     // Pair the mouse down events with mouse up events so our _nativeTouches cache doesn't get stale
     if ([targetView isKindOfClass:[NSControl class]]) {
       _shouldSendMouseUpOnSystemBehalf = [(NSControl*)targetView isEnabled];
+    } else if ([targetView isKindOfClass:[NSTabView class]]) {
+      // NSTabView sends click events for tab buttons but doesn't inherit from NSControl
+      _shouldSendMouseUpOnSystemBehalf = YES;
     } else if ([targetView isKindOfClass:[NSText class]]) {
       _shouldSendMouseUpOnSystemBehalf = [(NSText*)targetView isSelectable];
     }
