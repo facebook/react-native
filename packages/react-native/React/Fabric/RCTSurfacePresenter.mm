@@ -334,7 +334,16 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 
 - (void)schedulerDidFinishTransaction:(MountingCoordinator::Shared)mountingCoordinator
 {
-  [_mountingManager scheduleTransaction:mountingCoordinator];
+  if (!ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop()) {
+    [_mountingManager scheduleTransaction:mountingCoordinator];
+  }
+}
+
+- (void)schedulerShouldRenderTransactions:(MountingCoordinator::Shared)mountingCoordinator
+{
+  if (ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop()) {
+    [_mountingManager scheduleTransaction:mountingCoordinator];
+  }
 }
 
 - (void)schedulerDidDispatchCommand:(const ShadowView &)shadowView

@@ -76,6 +76,12 @@ class MountingTransaction final {
    */
   Number getNumber() const;
 
+  /*
+   * Merges the given transaction in the current transaction, so they
+   * can be executed atomatically as a single transaction.
+   */
+  void mergeWith(MountingTransaction&& transaction);
+
  private:
   SurfaceId surfaceId_;
   Number number_;

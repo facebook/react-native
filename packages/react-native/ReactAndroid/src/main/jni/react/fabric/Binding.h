@@ -101,6 +101,9 @@ class Binding : public jni::HybridClass<Binding, JBinding>,
   void schedulerDidFinishTransaction(
       const MountingCoordinator::Shared& mountingCoordinator) override;
 
+  void schedulerShouldRenderTransactions(
+      const MountingCoordinator::Shared& mountingCoordinator) override;
+
   void schedulerDidRequestPreliminaryViewAllocation(
       const SurfaceId surfaceId,
       const ShadowNode& shadowNode) override;
@@ -145,6 +148,9 @@ class Binding : public jni::HybridClass<Binding, JBinding>,
   std::unordered_map<SurfaceId, SurfaceHandler> surfaceHandlerRegistry_{};
   std::shared_mutex
       surfaceHandlerRegistryMutex_; // Protects `surfaceHandlerRegistry_`.
+
+  // Track pending transactions, one per surfaceId
+  std::vector<MountingTransaction> pendingTransactions_;
 
   float pointScaleFactor_ = 1;
 

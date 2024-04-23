@@ -462,16 +462,38 @@ std::shared_ptr<FabricMountingManager> Binding::getMountingManager(
 
 void Binding::schedulerDidFinishTransaction(
     const MountingCoordinator::Shared& mountingCoordinator) {
-  auto mountingManager = getMountingManager("schedulerDidFinishTransaction");
-  if (!mountingManager) {
-    return;
-  }
-
   auto mountingTransaction = mountingCoordinator->pullTransaction();
   if (!mountingTransaction.has_value()) {
     return;
   }
-  mountingManager->executeMount(*mountingTransaction);
+
+  auto pendingTransaction = std::find_if(
+      pendingTransactions_.begin(),
+      pendingTransactions_.end(),
+      [&](const auto& transaction) {
+        return transaction.getSurfaceId() ==
+            mountingTransaction->getSurfaceId();
+      });
+
+  if (pendingTransaction != pendingTransactions_.end()) {
+    pendingTransaction->mergeWith(std::move(*mountingTransaction));
+  } else {
+    pendingTransactions_.push_back(std::move(*mountingTransaction));
+  }
+}
+
+void Binding::schedulerShouldRenderTransactions(
+    const MountingCoordinator::Shared& /*mountingCoordinator*/) {
+  auto mountingManager =
+      getMountingManager("schedulerShouldRenderTransactions");
+  if (!mountingManager) {
+    return;
+  }
+
+  for (auto& transaction : pendingTransactions_) {
+    mountingManager->executeMount(transaction);
+  }
+  pendingTransactions_.clear();
 }
 
 void Binding::schedulerDidRequestPreliminaryViewAllocation(

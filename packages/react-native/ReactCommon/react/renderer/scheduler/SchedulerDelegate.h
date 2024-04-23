@@ -29,6 +29,13 @@ class SchedulerDelegate {
       const MountingCoordinator::Shared& mountingCoordinator) = 0;
 
   /*
+   * Called when the runtime scheduler decides that one-or-more previously
+   * finished transactions should now be flushed to the screen (atomically).
+   */
+  virtual void schedulerShouldRenderTransactions(
+      const MountingCoordinator::Shared& mountingCoordinator) = 0;
+
+  /*
    * Called right after a new ShadowNode was created.
    */
   virtual void schedulerDidRequestPreliminaryViewAllocation(
