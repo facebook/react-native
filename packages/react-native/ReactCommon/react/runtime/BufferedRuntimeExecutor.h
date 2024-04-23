@@ -29,9 +29,11 @@ class BufferedRuntimeExecutor {
     }
   };
 
-  BufferedRuntimeExecutor(RuntimeExecutor runtimeExecutor);
+  explicit BufferedRuntimeExecutor(PriorityRuntimeExecutor runtimeExecutor);
 
-  void execute(Work&& callback);
+  void execute(
+      Work&& callback,
+      std::optional<SchedulerPriority> priority = std::nullopt);
 
   // Flush buffered JS calls and then diable JS buffering
   void flush();
@@ -40,7 +42,7 @@ class BufferedRuntimeExecutor {
   // Perform flushing without locking mechanism
   void unsafeFlush();
 
-  RuntimeExecutor runtimeExecutor_;
+  PriorityRuntimeExecutor runtimeExecutor_;
   bool isBufferingEnabled_;
   std::mutex lock_;
   std::atomic<uint64_t> lastIndex_;

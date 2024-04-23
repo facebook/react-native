@@ -41,6 +41,8 @@ class ReactInstance final : private jsinspector_modern::InstanceTargetDelegate {
 
   RuntimeExecutor getBufferedRuntimeExecutor() noexcept;
 
+  PriorityRuntimeExecutor getPriorityRuntimeExecutor() noexcept;
+
   std::shared_ptr<RuntimeScheduler> getRuntimeScheduler() noexcept;
 
   struct JSRuntimeFlags {

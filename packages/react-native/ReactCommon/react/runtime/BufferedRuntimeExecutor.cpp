@@ -12,15 +12,17 @@
 namespace facebook::react {
 
 BufferedRuntimeExecutor::BufferedRuntimeExecutor(
-    RuntimeExecutor runtimeExecutor)
+    PriorityRuntimeExecutor runtimeExecutor)
     : runtimeExecutor_(runtimeExecutor),
       isBufferingEnabled_(true),
       lastIndex_(0) {}
 
-void BufferedRuntimeExecutor::execute(Work&& callback) {
+void BufferedRuntimeExecutor::execute(
+    Work&& callback,
+    std::optional<SchedulerPriority> priority) {
   if (!isBufferingEnabled_) {
     // Fast path: Schedule directly to RuntimeExecutor, without locking
-    runtimeExecutor_(std::move(callback));
+    runtimeExecutor_(std::move(callback), priority);
     return;
   }
 
@@ -39,7 +41,7 @@ void BufferedRuntimeExecutor::execute(Work&& callback) {
   // Force flush the queue to maintain the execution order.
   unsafeFlush();
 
-  runtimeExecutor_(std::move(callback));
+  runtimeExecutor_(std::move(callback), priority);
 }
 
 void BufferedRuntimeExecutor::flush() {
@@ -52,7 +54,7 @@ void BufferedRuntimeExecutor::unsafeFlush() {
   while (queue_.size() > 0) {
     const BufferedWork& bufferedWork = queue_.top();
     Work work = std::move(bufferedWork.work_);
-    runtimeExecutor_(std::move(work));
+    runtimeExecutor_(std::move(work), std::nullopt);
     queue_.pop();
   }
 }

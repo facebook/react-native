@@ -88,7 +88,12 @@ ReactInstance::ReactInstance(
     auto executor = parentInspectorTarget_->executorFromThis();
 
     auto runtimeExecutorThatWaitsForInspectorSetup =
-        std::make_shared<BufferedRuntimeExecutor>(runtimeExecutor);
+        std::make_shared<BufferedRuntimeExecutor>(
+            [runtimeExecutor](
+                std::function<void(jsi::Runtime & runtime)>&& callback,
+                std::optional<SchedulerPriority> /*priority*/) {
+              runtimeExecutor(std::move(callback));
+            });
 
     // This code can execute from any thread, so we need to make sure we set up
     // the inspector logic in the right one. The callback executes immediately
@@ -122,8 +127,13 @@ ReactInstance::ReactInstance(
 
   bufferedRuntimeExecutor_ = std::make_shared<BufferedRuntimeExecutor>(
       [runtimeScheduler = runtimeScheduler_.get()](
-          std::function<void(jsi::Runtime & runtime)>&& callback) {
-        runtimeScheduler->scheduleWork(std::move(callback));
+          std::function<void(jsi::Runtime & runtime)>&& callback,
+          std::optional<SchedulerPriority> priority) {
+        if (priority) {
+          runtimeScheduler->scheduleTask(priority.value(), std::move(callback));
+        } else {
+          runtimeScheduler->scheduleWork(std::move(callback));
+        }
       });
 }
 
@@ -166,6 +176,18 @@ RuntimeExecutor ReactInstance::getBufferedRuntimeExecutor() noexcept {
 std::shared_ptr<RuntimeScheduler>
 ReactInstance::getRuntimeScheduler() noexcept {
   return runtimeScheduler_;
+}
+
+PriorityRuntimeExecutor ReactInstance::getPriorityRuntimeExecutor() noexcept {
+  return [weakBufferedRuntimeExecutor_ =
+              std::weak_ptr<BufferedRuntimeExecutor>(bufferedRuntimeExecutor_)](
+             std::function<void(jsi::Runtime & runtime)>&& callback,
+             std::optional<SchedulerPriority> priority) {
+    if (auto strongBufferedRuntimeExecutor_ =
+            weakBufferedRuntimeExecutor_.lock()) {
+      strongBufferedRuntimeExecutor_->execute(std::move(callback), priority);
+    }
+  };
 }
 
 namespace {

@@ -8,9 +8,12 @@
 #pragma once
 
 #include <mutex>
+#include <optional>
 #include <thread>
 
 #include <jsi/jsi.h>
+
+#include <ReactCommon/SchedulerPriority.h>
 
 namespace facebook::react {
 
@@ -24,6 +27,10 @@ namespace facebook::react {
  */
 using RuntimeExecutor =
     std::function<void(std::function<void(jsi::Runtime& runtime)>&& callback)>;
+
+using PriorityRuntimeExecutor = std::function<void(
+    std::function<void(jsi::Runtime& runtime)>&& callback,
+    std::optional<SchedulerPriority> priority)>;
 
 /*
  * Executes a `callback` in a *synchronous* manner on the same thread using
