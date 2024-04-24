@@ -38,7 +38,10 @@ class ImageResponseObserverCoordinator {
   /*
    * Platform-specific image loader will call this method with progress updates.
    */
-  void nativeImageResponseProgress(float progress) const;
+  void nativeImageResponseProgress(
+      float progress,
+      int64_t loaded,
+      int64_t total) const;
 
   /*
    * Platform-specific image loader will call this method with a completed image
@@ -50,7 +53,7 @@ class ImageResponseObserverCoordinator {
    * Platform-specific image loader will call this method in case of any
    * failures.
    */
-  void nativeImageResponseFailed() const;
+  void nativeImageResponseFailed(const ImageLoadError& loadError) const;
 
  private:
   /*
@@ -76,6 +79,12 @@ class ImageResponseObserverCoordinator {
    * Mutable: protected by mutex_.
    */
   mutable std::shared_ptr<void> imageMetadata_;
+
+  /*
+   * Cache image error Data.
+   * Mutable: protected by mutex_.
+   */
+  mutable std::shared_ptr<void> imageErrorData_;
 
   /*
    * Observer and data mutex.
