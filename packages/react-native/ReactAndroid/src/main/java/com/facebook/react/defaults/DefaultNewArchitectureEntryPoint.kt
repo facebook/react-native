@@ -44,7 +44,6 @@ public object DefaultNewArchitectureEntryPoint {
     ReactFeatureFlags.unstable_useFabricInterop = fabricEnabled
     ReactFeatureFlags.enableBridgelessArchitecture = bridgelessEnabled
     ReactFeatureFlags.unstable_useTurboModuleInterop = bridgelessEnabled
-    ReactFeatureFlags.enableFabricPendingEventQueue = fabricEnabled
 
     if (bridgelessEnabled) {
       ReactNativeFeatureFlags.override(

@@ -978,8 +978,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener, UIBlo
 
     EventEmitterWrapper eventEmitter = mMountingManager.getEventEmitter(surfaceId, reactTag);
     if (eventEmitter == null) {
-      if (ReactFeatureFlags.enableFabricPendingEventQueue
-          && mMountingManager.getViewExists(reactTag)) {
+      if (mMountingManager.getViewExists(reactTag)) {
         // The view is preallocated and created. However, it hasn't been mounted yet. We will have
         // access to the event emitter later when the view is mounted. For now just save the event
         // in the view state and trigger it later.
