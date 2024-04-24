@@ -385,10 +385,7 @@ declare module 'commander' {
      * @param opts - configuration options
      * @returns new command
      */
-    command(
-      nameAndArgs: string,
-      opts?: CommandOptions,
-    ): Command;
+    command(nameAndArgs: string, opts?: CommandOptions): Command;
 
     /**
      * Define a command, implemented in a separate executable file.
@@ -1000,4 +997,3 @@ declare module 'commander' {
   ): Argument;
   declare export var program: Command;
 }
-
