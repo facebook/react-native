@@ -116,7 +116,7 @@ public class ReactSurfaceView(context: Context?, private val surface: ReactSurfa
   override fun onChildEndedNativeGesture(childView: View, ev: MotionEvent) {
     val eventDispatcher = surface.eventDispatcher ?: return
     jsTouchDispatcher.onChildEndedNativeGesture(ev, eventDispatcher)
-    jsPointerDispatcher?.onChildStartedNativeGesture(childView, ev, eventDispatcher)
+    jsPointerDispatcher?.onChildEndedNativeGesture()
   }
 
   override fun handleException(t: Throwable) {
