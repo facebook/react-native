@@ -93,6 +93,7 @@ import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager;
 import com.facebook.react.devsupport.interfaces.RedBoxHandler;
 import com.facebook.react.internal.AndroidChoreographerProvider;
 import com.facebook.react.internal.ChoreographerProvider;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.internal.turbomodule.core.TurboModuleManager;
 import com.facebook.react.internal.turbomodule.core.TurboModuleManagerDelegate;
 import com.facebook.react.modules.appearance.AppearanceModule;
@@ -763,10 +764,21 @@ public class ReactInstanceManager {
     unregisterCxxErrorHandlerFunc();
 
     mCreateReactContextThread = null;
-    synchronized (mReactContextLock) {
-      if (mCurrentReactContext != null) {
-        mCurrentReactContext.destroy();
-        mCurrentReactContext = null;
+    synchronized (mAttachedReactRoots) {
+      synchronized (mReactContextLock) {
+        if (mCurrentReactContext != null) {
+          if (ReactNativeFeatureFlags.destroyFabricSurfacesInReactInstanceManager()) {
+            for (ReactRoot reactRoot : mAttachedReactRoots) {
+              // Fabric surfaces must be cleaned up when React Native is destroyed.
+              if (reactRoot.getUIManagerType() == UIManagerType.FABRIC) {
+                detachRootViewFromInstance(reactRoot, mCurrentReactContext);
+              }
+            }
+          }
+
+          mCurrentReactContext.destroy();
+          mCurrentReactContext = null;
+        }
       }
     }
 

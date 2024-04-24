@@ -27,6 +27,10 @@ namespace facebook::react {
 
 using ArrayPropsNativeComponentSizesMask = uint32_t;
 
+struct ArrayPropsNativeComponentSizesMaskWrapped {
+  ArrayPropsNativeComponentSizesMask value;
+};
+
 enum class ArrayPropsNativeComponentSizes: ArrayPropsNativeComponentSizesMask {
   Small = 1 << 0,
   Large = 1 << 1
@@ -50,29 +54,29 @@ constexpr void operator|=(
   lhs = lhs | static_cast<ArrayPropsNativeComponentSizesMask>(rhs);
 }
 
-static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsNativeComponentSizesMask &result) {
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsNativeComponentSizesMaskWrapped &wrapped) {
   auto items = std::vector<std::string>{value};
   for (const auto &item : items) {
     if (item == \\"small\\") {
-      result |= ArrayPropsNativeComponentSizes::Small;
+      wrapped.value |= ArrayPropsNativeComponentSizes::Small;
       continue;
     }
     if (item == \\"large\\") {
-      result |= ArrayPropsNativeComponentSizes::Large;
+      wrapped.value |= ArrayPropsNativeComponentSizes::Large;
       continue;
     }
     abort();
   }
 }
 
-static inline std::string toString(const ArrayPropsNativeComponentSizesMask &value) {
+static inline std::string toString(const ArrayPropsNativeComponentSizesMaskWrapped &wrapped) {
     auto result = std::string{};
     auto separator = std::string{\\", \\"};
 
-    if (value & ArrayPropsNativeComponentSizes::Small) {
+    if (wrapped.value & ArrayPropsNativeComponentSizes::Small) {
       result += \\"small\\" + separator;
     }
-    if (value & ArrayPropsNativeComponentSizes::Large) {
+    if (wrapped.value & ArrayPropsNativeComponentSizes::Large) {
       result += \\"large\\" + separator;
     }
     if (!result.empty()) {

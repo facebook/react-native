@@ -93,7 +93,7 @@ public abstract class com/facebook/react/ReactActivity : androidx/appcompat/app/
 	protected fun createReactActivityDelegate ()Lcom/facebook/react/ReactActivityDelegate;
 	protected fun getMainComponentName ()Ljava/lang/String;
 	public fun getReactActivityDelegate ()Lcom/facebook/react/ReactActivityDelegate;
-	public fun getReactDelegate ()V
+	public fun getReactDelegate ()Lcom/facebook/react/ReactDelegate;
 	protected final fun getReactInstanceManager ()Lcom/facebook/react/ReactInstanceManager;
 	protected final fun getReactNativeHost ()Lcom/facebook/react/ReactNativeHost;
 	public fun invokeDefaultOnBackPressed ()V
@@ -128,6 +128,7 @@ public class com/facebook/react/ReactActivityDelegate {
 	public fun getReactInstanceManager ()Lcom/facebook/react/ReactInstanceManager;
 	protected fun getReactNativeHost ()Lcom/facebook/react/ReactNativeHost;
 	protected fun isFabricEnabled ()Z
+	protected fun isWideColorGamutEnabled ()Z
 	protected fun loadApp (Ljava/lang/String;)V
 	public fun onActivityResult (IILandroid/content/Intent;)V
 	public fun onBackPressed ()Z
@@ -318,6 +319,7 @@ public abstract class com/facebook/react/ReactNativeHost {
 	protected fun getDevSupportManagerFactory ()Lcom/facebook/react/devsupport/DevSupportManagerFactory;
 	protected fun getJSBundleFile ()Ljava/lang/String;
 	protected fun getJSEngineResolutionAlgorithm ()Lcom/facebook/react/JSEngineResolutionAlgorithm;
+	protected fun getJSExceptionHandler ()Lcom/facebook/react/bridge/JSExceptionHandler;
 	protected fun getJSMainModuleName ()Ljava/lang/String;
 	protected fun getJavaScriptExecutorFactory ()Lcom/facebook/react/bridge/JavaScriptExecutorFactory;
 	public fun getLazyViewManagersEnabled ()Z
@@ -5411,6 +5413,7 @@ public abstract interface annotation class com/facebook/react/uimanager/annotati
 	public abstract fun defaultDouble ()D
 	public abstract fun defaultFloat ()F
 	public abstract fun defaultInt ()I
+	public abstract fun defaultLong ()J
 	public abstract fun name ()Ljava/lang/String;
 }
 
@@ -5420,6 +5423,7 @@ public abstract interface annotation class com/facebook/react/uimanager/annotati
 	public abstract fun defaultDouble ()D
 	public abstract fun defaultFloat ()F
 	public abstract fun defaultInt ()I
+	public abstract fun defaultLong ()J
 	public abstract fun names ()[Ljava/lang/String;
 }
 

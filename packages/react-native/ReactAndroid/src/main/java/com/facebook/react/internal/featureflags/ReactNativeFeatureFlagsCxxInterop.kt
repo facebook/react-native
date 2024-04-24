@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<56ac4a5eaf65775fdb757fc10ed82908>>
+ * @generated SignedSource<<c3f02dff409c10aa7922141cef3a6990>>
  */
 
 /**
@@ -30,7 +30,11 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun commonTestFlag(): Boolean
 
+  @DoNotStrip @JvmStatic public external fun androidEnablePendingFabricTransactions(): Boolean
+
   @DoNotStrip @JvmStatic public external fun batchRenderingUpdatesInEventLoop(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun destroyFabricSurfacesInReactInstanceManager(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableBackgroundExecutor(): Boolean
 
@@ -39,8 +43,6 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun enableCustomDrawOrderFabric(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableMicrotasks(): Boolean
-
-  @DoNotStrip @JvmStatic public external fun enableMountHooksAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableSpannableBuildingUnification(): Boolean
 

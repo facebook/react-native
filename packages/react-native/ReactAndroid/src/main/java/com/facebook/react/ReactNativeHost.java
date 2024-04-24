@@ -10,6 +10,7 @@ package com.facebook.react;
 import android.app.Application;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.JSExceptionHandler;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
@@ -89,6 +90,7 @@ public abstract class ReactNativeHost {
             .setDevLoadingViewManager(getDevLoadingViewManager())
             .setRequireActivity(getShouldRequireActivity())
             .setSurfaceDelegateFactory(getSurfaceDelegateFactory())
+            .setJSExceptionHandler(getJSExceptionHandler())
             .setLazyViewManagersEnabled(getLazyViewManagersEnabled())
             .setRedBoxHandler(getRedBoxHandler())
             .setJavaScriptExecutorFactory(getJavaScriptExecutorFactory())
@@ -115,6 +117,10 @@ public abstract class ReactNativeHost {
 
   /** Get the {@link RedBoxHandler} to send RedBox-related callbacks to. */
   protected @Nullable RedBoxHandler getRedBoxHandler() {
+    return null;
+  }
+
+  protected @Nullable JSExceptionHandler getJSExceptionHandler() {
     return null;
   }
 

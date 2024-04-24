@@ -10,6 +10,7 @@ package com.facebook.react.uimanager.common
 public object ViewUtil {
 
   public const val NO_SURFACE_ID: Int = -1
+
   /**
    * Counter for uniquely identifying views. - % 2 === 0 means it is a Fabric tag. See
    * https://github.com/facebook/react/pull/12587
@@ -56,6 +57,7 @@ public object ViewUtil {
     }
     return uiManagerType
   }
+
   /**
    * @param viewTag react tag
    * @return if the react tag received by parameter is a RootTag or not.

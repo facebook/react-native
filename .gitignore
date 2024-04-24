@@ -42,6 +42,8 @@ project.xcworkspace
 /packages/react-native/ReactAndroid/hermes-engine/.cxx/
 /packages/react-native/template/android/app/build/
 /packages/react-native/template/android/build/
+/packages/helloworld/android/app/build/
+/packages/helloworld/android/build/
 /packages/react-native-popup-menu-android/android/build/
 /packages/react-native-test-library/android/build/
 
@@ -108,6 +110,7 @@ package-lock.json
 # Ruby Gems (Bundler)
 /packages/react-native/vendor
 /packages/react-native/template/vendor
+/packages/helloworld/vendor
 .ruby-version
 /**/.ruby-version
 vendor/
@@ -116,6 +119,9 @@ vendor/
 /packages/react-native/template/ios/build/
 /packages/react-native/template/ios/Pods/
 /packages/react-native/template/ios/Podfile.lock
+/packages/helloworld/ios/build/
+/packages/helloworld/ios/Pods/
+/packages/helloworld/ios/Podfile.lock
 /packages/rn-tester/Gemfile.lock
 /packages/**/RCTLegacyInteropComponents.mm
 

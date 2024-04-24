@@ -334,6 +334,11 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 
 - (void)schedulerDidFinishTransaction:(MountingCoordinator::Shared)mountingCoordinator
 {
+  // no-op, we will flush the transaction from schedulerShouldRenderTransactions
+}
+
+- (void)schedulerShouldRenderTransactions:(MountingCoordinator::Shared)mountingCoordinator
+{
   [_mountingManager scheduleTransaction:mountingCoordinator];
 }
 

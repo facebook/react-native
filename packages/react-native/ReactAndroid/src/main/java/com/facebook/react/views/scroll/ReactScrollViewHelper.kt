@@ -538,6 +538,7 @@ public object ReactScrollViewHelper {
      * default value is zero, which means the scroll events are sent with no throttle.
      */
     public var scrollEventThrottle: Int
+
     /** Get the scroll view dispatch time for throttling */
     /** Set the scroll view's last dispatch time for throttling */
     public var lastScrollDispatchTime: Long

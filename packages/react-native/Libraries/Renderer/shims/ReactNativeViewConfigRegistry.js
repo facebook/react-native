@@ -8,9 +8,6 @@
  * @flow strict-local
  * @nolint
  * @generated SignedSource<<73af5b3fe29d226634ed64bc861634df>>
- * @generated SignedSource<<b616e9e4f0bcab37292324fd9dd1b01d>>
- *
- * This file was sync'd from the facebook/react repository.
  */
 
 'use strict';

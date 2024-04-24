@@ -51,12 +51,23 @@ const DefaultBrowserLauncher: BrowserLauncher = {
       `react-native-debugger-frontend-${browserType}`,
     );
     const launchedChrome = await ChromeLauncher.launch({
-      chromePath,
       chromeFlags: [
+        ...ChromeLauncher.Launcher.defaultFlags().filter(
+          /**
+           * This flag controls whether Chrome treats a visually covered (occluded) tab
+           * as "backgrounded". We launch CDT as a single tab/window via `--app`, so we
+           * do want Chrome to treat our tab as "backgrounded" when the UI is covered.
+           * Omitting this flag allows "visibilitychange" events to fire properly.
+           */
+          flag => flag !== '--disable-backgrounding-occluded-windows',
+        ),
         `--app=${url}`,
         `--user-data-dir=${userDataDir}`,
         '--window-size=1200,600',
+        '--guest',
       ],
+      chromePath,
+      ignoreDefaultFlags: true,
     });
 
     return {

@@ -630,6 +630,7 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): any) {
     this._lowerCaseResponseHeaders = Object.keys(headers).reduce<{
       [string]: any,
     }>((lcaseHeaders, headerName) => {
+      // $FlowFixMe[invalid-computed-prop]
       lcaseHeaders[headerName.toLowerCase()] = headers[headerName];
       return lcaseHeaders;
     }, {});

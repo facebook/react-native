@@ -258,7 +258,7 @@ public class ReactInstanceManagerBuilder {
    * DevSupportManager} will be used, which shows a redbox in dev mode and rethrows (crashes the
    * app) in prod mode.
    */
-  public ReactInstanceManagerBuilder setJSExceptionHandler(JSExceptionHandler handler) {
+  public ReactInstanceManagerBuilder setJSExceptionHandler(@Nullable JSExceptionHandler handler) {
     mJSExceptionHandler = handler;
     return this;
   }

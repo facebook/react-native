@@ -121,13 +121,17 @@ function resolveSizeInPlace(
   direction: string,
   dimension: string,
 ) {
+  // $FlowFixMe[invalid-computed-prop]
   if (style[direction] !== null && typeof style[direction] === 'string') {
     if (style[direction].indexOf('%') !== -1) {
       // $FlowFixMe[prop-missing]
       style[direction] =
+        // $FlowFixMe[invalid-computed-prop]
         (parseFloat(style[direction]) / 100.0) *
+        // $FlowFixMe[invalid-computed-prop]
         Dimensions.get('window')[dimension];
     }
+    // $FlowFixMe[invalid-computed-prop]
     if (style[direction] === 'auto') {
       // Ignore auto sizing in frame drawing due to complexity of correctly rendering this
       // $FlowFixMe[prop-missing]

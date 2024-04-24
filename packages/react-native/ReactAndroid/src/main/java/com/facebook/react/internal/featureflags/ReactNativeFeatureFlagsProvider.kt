@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a5cbe59693a5f7d64af6e004951ab971>>
+ * @generated SignedSource<<dceb20e62a9ddbb98c872a24fab9765c>>
  */
 
 /**
@@ -25,7 +25,11 @@ import com.facebook.proguard.annotations.DoNotStrip
 public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun commonTestFlag(): Boolean
 
+  @DoNotStrip public fun androidEnablePendingFabricTransactions(): Boolean
+
   @DoNotStrip public fun batchRenderingUpdatesInEventLoop(): Boolean
+
+  @DoNotStrip public fun destroyFabricSurfacesInReactInstanceManager(): Boolean
 
   @DoNotStrip public fun enableBackgroundExecutor(): Boolean
 
@@ -34,8 +38,6 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun enableCustomDrawOrderFabric(): Boolean
 
   @DoNotStrip public fun enableMicrotasks(): Boolean
-
-  @DoNotStrip public fun enableMountHooksAndroid(): Boolean
 
   @DoNotStrip public fun enableSpannableBuildingUnification(): Boolean
 
