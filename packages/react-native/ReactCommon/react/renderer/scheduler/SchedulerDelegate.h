@@ -32,8 +32,7 @@ class SchedulerDelegate {
    * Called right after a new ShadowNode was created.
    */
   virtual void schedulerDidRequestPreliminaryViewAllocation(
-      SurfaceId surfaceId,
-      const ShadowNode& shadowView) = 0;
+      const ShadowNode& shadowNode) = 0;
 
   virtual void schedulerDidDispatchCommand(
       const ShadowView& shadowView,

@@ -527,9 +527,9 @@ jsi::Value UIManagerBinding::get(
                     strongUIManager->completeSurface(
                         surfaceId,
                         shadowNodeList,
-                        {/* .enableStateReconciliation = */ true,
-                         /* .mountSynchronously = */ false,
-                         /* .shouldYield = */ shouldYield});
+                        {.enableStateReconciliation = true,
+                         .mountSynchronously = false,
+                         .shouldYield = shouldYield});
                   }
                 });
           } else {

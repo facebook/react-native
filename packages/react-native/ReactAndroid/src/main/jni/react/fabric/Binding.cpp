@@ -14,11 +14,7 @@
 #include "FabricMountingManager.h"
 #include "JBackgroundExecutor.h"
 #include "ReactNativeConfigHolder.h"
-#include "StateWrapperImpl.h"
 #include "SurfaceHandlerBinding.h"
-
-#include <cfenv>
-#include <cmath>
 
 #include <fbjni/fbjni.h>
 #include <glog/logging.h>
@@ -475,7 +471,6 @@ void Binding::schedulerDidFinishTransaction(
 }
 
 void Binding::schedulerDidRequestPreliminaryViewAllocation(
-    const SurfaceId surfaceId,
     const ShadowNode& shadowNode) {
   if (!shadowNode.getTraits().check(ShadowNodeTraits::Trait::FormsView)) {
     return;
@@ -485,7 +480,7 @@ void Binding::schedulerDidRequestPreliminaryViewAllocation(
   if (!mountingManager) {
     return;
   }
-  mountingManager->preallocateShadowView(surfaceId, ShadowView(shadowNode));
+  mountingManager->preallocateShadowView(shadowNode);
 }
 
 void Binding::schedulerDidDispatchCommand(

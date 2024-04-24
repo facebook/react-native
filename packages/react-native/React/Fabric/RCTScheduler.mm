@@ -31,7 +31,7 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
     [scheduler.delegate schedulerDidFinishTransaction:mountingCoordinator];
   }
 
-  void schedulerDidRequestPreliminaryViewAllocation(SurfaceId surfaceId, const ShadowNode &shadowNode) override
+  void schedulerDidRequestPreliminaryViewAllocation(const ShadowNode &shadowNode) override
   {
     // Does nothing.
     // This delegate method is not currently used on iOS.
