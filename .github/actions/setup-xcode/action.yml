@@ -9,6 +9,6 @@ runs:
   using: "composite"
   steps:
     - name: Setup xcode
-      uses: maxim-lobanov/setup-xcode@v1.6.0
+      uses: maxim-lobanov/setup-xcode@60606e260d2fc5762a71e64e74b2174e8ea3c8bd
       with:
         xcode-version: ${{ inputs.xcode-version }}
