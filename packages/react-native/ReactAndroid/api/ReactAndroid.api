@@ -93,7 +93,7 @@ public abstract class com/facebook/react/ReactActivity : androidx/appcompat/app/
 	protected fun createReactActivityDelegate ()Lcom/facebook/react/ReactActivityDelegate;
 	protected fun getMainComponentName ()Ljava/lang/String;
 	public fun getReactActivityDelegate ()Lcom/facebook/react/ReactActivityDelegate;
-	public fun getReactDelegate ()V
+	public fun getReactDelegate ()Lcom/facebook/react/ReactDelegate;
 	protected final fun getReactInstanceManager ()Lcom/facebook/react/ReactInstanceManager;
 	protected final fun getReactNativeHost ()Lcom/facebook/react/ReactNativeHost;
 	public fun invokeDefaultOnBackPressed ()V
