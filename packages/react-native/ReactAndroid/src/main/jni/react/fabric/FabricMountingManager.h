@@ -33,6 +33,7 @@ class FabricMountingManager final {
   void onSurfaceStop(SurfaceId surfaceId);
 
   void preallocateShadowView(SurfaceId surfaceId, const ShadowView& shadowView);
+  void updatePreallocatedShadowNode(const ShadowNode& shadowNode);
 
   void executeMount(const MountingTransaction& transaction);
 

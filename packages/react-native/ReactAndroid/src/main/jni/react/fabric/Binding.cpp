@@ -523,6 +523,17 @@ void Binding::schedulerDidRequestPreliminaryViewAllocation(
   mountingManager->preallocateShadowView(surfaceId, ShadowView(shadowNode));
 }
 
+void Binding::schedulerDidRequestUpdateToPreallocatedView(
+    const ShadowNode& shadowNode) {
+  auto mountingManager =
+      getMountingManager("schedulerDidRequestUpdateToPreallocatedView");
+  if (!mountingManager) {
+    return;
+  }
+
+  mountingManager->updatePreallocatedShadowNode(shadowNode);
+}
+
 void Binding::schedulerDidDispatchCommand(
     const ShadowView& shadowView,
     const std::string& commandName,

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b7f42eb3b24f3feed4274df8398c3c94>>
+ * @generated SignedSource<<4dc41ba7453a167d762168aca78ad8c4>>
  * @flow strict-local
  */
 
@@ -34,6 +34,7 @@ export interface Spec extends TurboModule {
   +enableSpannableBuildingUnification?: () => boolean;
   +enableSynchronousStateUpdates?: () => boolean;
   +enableUIConsistency?: () => boolean;
+  +fixMountedFlagAndFixPreallocationClone?: () => boolean;
   +forceBatchingMountItemsOnAndroid?: () => boolean;
   +inspectorEnableCxxInspectorPackagerConnection?: () => boolean;
   +inspectorEnableModernCDPRegistry?: () => boolean;

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6b90f52915db22d4077011a55a519b20>>
+ * @generated SignedSource<<2069622ac0b7f7a7aa1523d891d2969b>>
  * @flow strict-local
  */
 
@@ -51,6 +51,7 @@ export type ReactNativeFeatureFlags = {
   enableSpannableBuildingUnification: Getter<boolean>,
   enableSynchronousStateUpdates: Getter<boolean>,
   enableUIConsistency: Getter<boolean>,
+  fixMountedFlagAndFixPreallocationClone: Getter<boolean>,
   forceBatchingMountItemsOnAndroid: Getter<boolean>,
   inspectorEnableCxxInspectorPackagerConnection: Getter<boolean>,
   inspectorEnableModernCDPRegistry: Getter<boolean>,
@@ -144,6 +145,10 @@ export const enableSynchronousStateUpdates: Getter<boolean> = createNativeFlagGe
  * Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).
  */
 export const enableUIConsistency: Getter<boolean> = createNativeFlagGetter('enableUIConsistency', false);
+/**
+ * Splits hasBeenMounted and promoted.
+ */
+export const fixMountedFlagAndFixPreallocationClone: Getter<boolean> = createNativeFlagGetter('fixMountedFlagAndFixPreallocationClone', false);
 /**
  * Forces the mounting layer on Android to always batch mount items instead of dispatching them immediately. This might fix some crashes related to synchronous state updates, where some views dispatch state updates during mount.
  */

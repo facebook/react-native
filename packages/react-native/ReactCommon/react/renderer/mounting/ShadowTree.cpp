@@ -18,6 +18,7 @@
 #include <react/renderer/mounting/ShadowViewMutation.h>
 #include <react/renderer/telemetry/TransactionTelemetry.h>
 #include <react/utils/CoreFeatures.h>
+#include "updateMountedFlag.h"
 
 #include "ShadowTreeDelegate.h"
 
@@ -52,7 +53,7 @@ static void progressStateIfNecessary(
     // State was progressed without the need to clone.
     // We are done with this node, but need to keep traversing.
     progressStateIfNecessary(shadowNode, baseChildNode);
-  } else if (newChildNode.getHasBeenMounted()) {
+  } else if (newChildNode.getHasBeenPromoted()) {
     // `newShadowNode` was cloned from react and cloned from a native state
     // update. This child node was cloned only from a native state update.
     // This is branching and it is safe to promote the new branch from
@@ -270,65 +271,6 @@ static ShadowNode::Unshared progressState(
   });
 }
 
-static void updateMountedFlag(
-    const ShadowNode::ListOfShared& oldChildren,
-    const ShadowNode::ListOfShared& newChildren) {
-  // This is a simplified version of Diffing algorithm that only updates
-  // `mounted` flag on `ShadowNode`s. The algorithm sets "mounted" flag before
-  // "unmounted" to allow `ShadowNode` detect a situation where the node was
-  // remounted.
-
-  if (&oldChildren == &newChildren) {
-    // Lists are identical, nothing to do.
-    return;
-  }
-
-  if (oldChildren.empty() && newChildren.empty()) {
-    // Both lists are empty, nothing to do.
-    return;
-  }
-
-  size_t index;
-
-  // Stage 1: Mount and unmount "updated" children.
-  for (index = 0; index < oldChildren.size() && index < newChildren.size();
-       index++) {
-    const auto& oldChild = oldChildren[index];
-    const auto& newChild = newChildren[index];
-
-    if (oldChild == newChild) {
-      // Nodes are identical, skipping the subtree.
-      continue;
-    }
-
-    if (!ShadowNode::sameFamily(*oldChild, *newChild)) {
-      // Totally different nodes, updating is impossible.
-      break;
-    }
-
-    newChild->setMounted(true);
-    oldChild->setMounted(false);
-
-    updateMountedFlag(oldChild->getChildren(), newChild->getChildren());
-  }
-
-  size_t lastIndexAfterFirstStage = index;
-
-  // State 2: Mount new children.
-  for (index = lastIndexAfterFirstStage; index < newChildren.size(); index++) {
-    const auto& newChild = newChildren[index];
-    newChild->setMounted(true);
-    updateMountedFlag({}, newChild->getChildren());
-  }
-
-  // State 3: Unmount old children.
-  for (index = lastIndexAfterFirstStage; index < oldChildren.size(); index++) {
-    const auto& oldChild = oldChildren[index];
-    oldChild->setMounted(false);
-    updateMountedFlag(oldChild->getChildren(), {});
-  }
-}
-
 ShadowTree::ShadowTree(
     SurfaceId surfaceId,
     const LayoutConstraints& layoutConstraints,
@@ -509,9 +451,10 @@ CommitStatus ShadowTree::tryCommit(
 
     auto newRevisionNumber = currentRevision_.number + 1;
 
-    {
+    if (ReactNativeFeatureFlags::fixMountedFlagAndFixPreallocationClone()) {
+      newRootShadowNode->markPromotedRecursively();
+    } else {
       std::scoped_lock dispatchLock(EventEmitter::DispatchMutex());
-
       updateMountedFlag(
           currentRevision_.rootShadowNode->getChildren(),
           newRootShadowNode->getChildren());
@@ -521,6 +464,7 @@ CommitStatus ShadowTree::tryCommit(
     telemetry.setRevisionNumber(static_cast<int>(newRevisionNumber));
 
     // Seal the shadow node so it can no longer be mutated
+    // Does nothing in release.
     newRootShadowNode->sealRecursive();
 
     newRevision = ShadowTreeRevision{

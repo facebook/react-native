@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d12888990ebca7c6199f4b51802ee59b>>
+ * @generated SignedSource<<29720cb2aa02ebdbe8e5efbe9e3a4b01>>
  */
 
 /**
@@ -44,6 +44,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableSynchronousStateUpdates(): Boolean = false
 
   override fun enableUIConsistency(): Boolean = false
+
+  override fun fixMountedFlagAndFixPreallocationClone(): Boolean = false
 
   override fun forceBatchingMountItemsOnAndroid(): Boolean = false
 

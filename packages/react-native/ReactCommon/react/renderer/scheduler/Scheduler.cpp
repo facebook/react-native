@@ -322,6 +322,15 @@ void Scheduler::uiManagerDidCreateShadowNode(const ShadowNode& shadowNode) {
   }
 }
 
+void Scheduler::uiManagerDidCloneShadowNodeWithNewProps(
+    const ShadowNode& shadowNode) {
+  SystraceSection s("Scheduler::uiManagerDidCreateShadowNode");
+
+  if (delegate_ != nullptr) {
+    delegate_->schedulerDidRequestUpdateToPreallocatedView(shadowNode);
+  }
+}
+
 void Scheduler::uiManagerDidDispatchCommand(
     const ShadowNode::Shared& shadowNode,
     const std::string& commandName,

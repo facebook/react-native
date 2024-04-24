@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c06b3b34cea24459f6ade0ec5665dae7>>
+ * @generated SignedSource<<977c8d88557a37c750ec59e67c94878c>>
  */
 
 /**
@@ -35,6 +35,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var enableSpannableBuildingUnificationCache: Boolean? = null
   private var enableSynchronousStateUpdatesCache: Boolean? = null
   private var enableUIConsistencyCache: Boolean? = null
+  private var fixMountedFlagAndFixPreallocationCloneCache: Boolean? = null
   private var forceBatchingMountItemsOnAndroidCache: Boolean? = null
   private var inspectorEnableCxxInspectorPackagerConnectionCache: Boolean? = null
   private var inspectorEnableModernCDPRegistryCache: Boolean? = null
@@ -149,6 +150,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.enableUIConsistency()
       accessedFeatureFlags.add("enableUIConsistency")
       enableUIConsistencyCache = cached
+    }
+    return cached
+  }
+
+  override fun fixMountedFlagAndFixPreallocationClone(): Boolean {
+    var cached = fixMountedFlagAndFixPreallocationCloneCache
+    if (cached == null) {
+      cached = currentProvider.fixMountedFlagAndFixPreallocationClone()
+      accessedFeatureFlags.add("fixMountedFlagAndFixPreallocationClone")
+      fixMountedFlagAndFixPreallocationCloneCache = cached
     }
     return cached
   }
