@@ -30,6 +30,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)schedulerDidFinishTransaction:(facebook::react::MountingCoordinator::Shared)mountingCoordinator;
 
+- (void)schedulerShouldRenderTransactions:(facebook::react::MountingCoordinator::Shared)mountingCoordinator;
+
 - (void)schedulerDidDispatchCommand:(const facebook::react::ShadowView &)shadowView
                         commandName:(const std::string &)commandName
                                args:(const folly::dynamic &)args;

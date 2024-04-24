@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4832483bb3648380f2bb9312311f579c>>
+ * @generated SignedSource<<a1530f969f47f31b8588109e48f527a1>>
  */
 
 /**
@@ -28,6 +28,18 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   ReactNativeFeatureFlagsDefaults() = default;
 
   bool commonTestFlag() override {
+    return false;
+  }
+
+  bool androidEnablePendingFabricTransactions() override {
+    return false;
+  }
+
+  bool batchRenderingUpdatesInEventLoop() override {
+    return false;
+  }
+
+  bool destroyFabricSurfacesInReactInstanceManager() override {
     return false;
   }
 

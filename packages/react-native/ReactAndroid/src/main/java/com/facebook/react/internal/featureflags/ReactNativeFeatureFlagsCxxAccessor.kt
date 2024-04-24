@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<11824621ee7ca5dbdf2f09bdf1a1f983>>
+ * @generated SignedSource<<40668dcd951123da7c0b4ddde23f94c9>>
  */
 
 /**
@@ -21,6 +21,9 @@ package com.facebook.react.internal.featureflags
 
 public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccessor {
   private var commonTestFlagCache: Boolean? = null
+  private var androidEnablePendingFabricTransactionsCache: Boolean? = null
+  private var batchRenderingUpdatesInEventLoopCache: Boolean? = null
+  private var destroyFabricSurfacesInReactInstanceManagerCache: Boolean? = null
   private var enableBackgroundExecutorCache: Boolean? = null
   private var useModernRuntimeSchedulerCache: Boolean? = null
   private var enableMicrotasksCache: Boolean? = null
@@ -40,6 +43,55 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     return cached
   }
 
+<<<<<<< HEAD
+||||||| parent of 849da2146ca (Split scheduler commit and flush delegate methods (#44188))
+  override fun batchRenderingUpdatesInEventLoop(): Boolean {
+    var cached = batchRenderingUpdatesInEventLoopCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.batchRenderingUpdatesInEventLoop()
+      batchRenderingUpdatesInEventLoopCache = cached
+    }
+    return cached
+  }
+
+  override fun destroyFabricSurfacesInReactInstanceManager(): Boolean {
+    var cached = destroyFabricSurfacesInReactInstanceManagerCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.destroyFabricSurfacesInReactInstanceManager()
+      destroyFabricSurfacesInReactInstanceManagerCache = cached
+    }
+    return cached
+  }
+
+=======
+  override fun androidEnablePendingFabricTransactions(): Boolean {
+    var cached = androidEnablePendingFabricTransactionsCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.androidEnablePendingFabricTransactions()
+      androidEnablePendingFabricTransactionsCache = cached
+    }
+    return cached
+  }
+
+  override fun batchRenderingUpdatesInEventLoop(): Boolean {
+    var cached = batchRenderingUpdatesInEventLoopCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.batchRenderingUpdatesInEventLoop()
+      batchRenderingUpdatesInEventLoopCache = cached
+    }
+    return cached
+  }
+
+  override fun destroyFabricSurfacesInReactInstanceManager(): Boolean {
+    var cached = destroyFabricSurfacesInReactInstanceManagerCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.destroyFabricSurfacesInReactInstanceManager()
+      destroyFabricSurfacesInReactInstanceManagerCache = cached
+    }
+    return cached
+  }
+
+>>>>>>> 849da2146ca (Split scheduler commit and flush delegate methods (#44188))
   override fun enableBackgroundExecutor(): Boolean {
     var cached = enableBackgroundExecutorCache
     if (cached == null) {

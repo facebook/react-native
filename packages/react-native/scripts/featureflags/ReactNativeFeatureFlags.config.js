@@ -18,6 +18,21 @@ const definitions: FeatureFlagDefinitions = {
       defaultValue: false,
     },
 
+    androidEnablePendingFabricTransactions: {
+      defaultValue: false,
+      description:
+        "To be used with batchRenderingUpdatesInEventLoop. When enbled, the Android mounting layer will concatenate pending transactions to ensure they're applied atomatically",
+    },
+    batchRenderingUpdatesInEventLoop: {
+      defaultValue: false,
+      description:
+        'When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.',
+    },
+    destroyFabricSurfacesInReactInstanceManager: {
+      defaultValue: false,
+      description:
+        'When enabled, ReactInstanceManager will clean up Fabric surfaces on destroy().',
+    },
     enableBackgroundExecutor: {
       description:
         'Enables the use of a background executor to compute layout and commit updates on Fabric (this system is deprecated and should not be used).',

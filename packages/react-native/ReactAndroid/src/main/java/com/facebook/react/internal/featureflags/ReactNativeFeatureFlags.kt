@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c526fb1c44f00f5b032684396246e4d4>>
+ * @generated SignedSource<<f3d26e8e345068bc7ef4e156be460e09>>
  */
 
 /**
@@ -33,6 +33,24 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun commonTestFlag(): Boolean = accessor.commonTestFlag()
+
+  /**
+   * To be used with batchRenderingUpdatesInEventLoop. When enbled, the Android mounting layer will concatenate pending transactions to ensure they're applied atomatically
+   */
+  @JvmStatic
+  public fun androidEnablePendingFabricTransactions(): Boolean = accessor.androidEnablePendingFabricTransactions()
+
+  /**
+   * When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.
+   */
+  @JvmStatic
+  public fun batchRenderingUpdatesInEventLoop(): Boolean = accessor.batchRenderingUpdatesInEventLoop()
+
+  /**
+   * When enabled, ReactInstanceManager will clean up Fabric surfaces on destroy().
+   */
+  @JvmStatic
+  public fun destroyFabricSurfacesInReactInstanceManager(): Boolean = accessor.destroyFabricSurfacesInReactInstanceManager()
 
   /**
    * Enables the use of a background executor to compute layout and commit updates on Fabric (this system is deprecated and should not be used).
