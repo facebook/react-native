@@ -1927,7 +1927,6 @@ public class com/facebook/react/config/ReactFeatureFlags {
 	public static field enableCppPropsIteratorSetter Z
 	public static field enableEagerRootViewAttachment Z
 	public static field enableFabricLogs Z
-	public static field enableFabricPendingEventQueue Z
 	public static field enableFabricRenderer Z
 	public static field enableFabricRendererExclusively Z
 	public static field enableRemoveDeleteTreeInstruction Z

@@ -83,9 +83,6 @@ public class ReactFeatureFlags {
   /** Feature Flag to enable a cache of Spannable objects used by TextLayoutManagerMapBuffer */
   public static boolean enableTextSpannableCache = false;
 
-  /** Feature Flag to enable the pending event queue in fabric before mounting views */
-  public static boolean enableFabricPendingEventQueue = false;
-
   /**
    * Feature Flag to enable View Recycling. When enabled, individual ViewManagers must still opt-in.
    */
