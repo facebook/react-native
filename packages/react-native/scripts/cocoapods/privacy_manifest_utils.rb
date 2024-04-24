@@ -51,7 +51,7 @@ module PrivacyManifestUtils
     def self.read_privacyinfo_file(file_path)
         # Maybe add missing default NSPrivacyTracking, NSPrivacyTrackingDomains, NSPrivacyCollectedDataTypes, but this works without those keys
         source_data = nil
-        # Try to read an exisitng PrivacyInfo.xcprivacy file
+        # Try to read an existing PrivacyInfo.xcprivacy file
         begin
             source_data = Xcodeproj::Plist.read_from_path(file_path)
             Pod::UI.puts "[Privacy Manifest Aggregation] Appending aggregated reasons to existing PrivacyInfo.xcprivacy file."
@@ -62,7 +62,7 @@ module PrivacyManifestUtils
     end
 
     def self.ensure_reference(file_path, user_project, target)
-        reference_exists = target.resources_build_phase.files_references.any? { |file_ref| file_ref.path.include? "PrivacyInfo.xcprivacy" }
+        reference_exists = target.resources_build_phase.files_references.any? { |file_ref| file_ref.path.end_with? "PrivacyInfo.xcprivacy" }
         unless reference_exists
             # We try to find the main group, but if it doesn't exist, we default to adding the file to the project root – both work
             file_root = user_project.root_object.main_group.children.first { |group| group.name == target.name } || user_project
