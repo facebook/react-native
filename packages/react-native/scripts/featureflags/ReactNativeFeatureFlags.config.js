@@ -32,6 +32,11 @@ const definitions: FeatureFlagDefinitions = {
   common: {
     ...testDefinitions.common,
 
+    androidEnablePendingFabricTransactions: {
+      defaultValue: false,
+      description:
+        "To be used with batchRenderingUpdatesInEventLoop. When enbled, the Android mounting layer will concatenate pending transactions to ensure they're applied atomatically",
+    },
     batchRenderingUpdatesInEventLoop: {
       defaultValue: false,
       description:

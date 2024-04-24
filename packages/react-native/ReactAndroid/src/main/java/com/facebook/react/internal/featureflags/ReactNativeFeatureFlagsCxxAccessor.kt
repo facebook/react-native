@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d23f1c4cd3f8960397455c495ed240ba>>
+ * @generated SignedSource<<40668dcd951123da7c0b4ddde23f94c9>>
  */
 
 /**
@@ -21,6 +21,7 @@ package com.facebook.react.internal.featureflags
 
 public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccessor {
   private var commonTestFlagCache: Boolean? = null
+  private var androidEnablePendingFabricTransactionsCache: Boolean? = null
   private var batchRenderingUpdatesInEventLoopCache: Boolean? = null
   private var destroyFabricSurfacesInReactInstanceManagerCache: Boolean? = null
   private var enableBackgroundExecutorCache: Boolean? = null
@@ -43,6 +44,15 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.commonTestFlag()
       commonTestFlagCache = cached
+    }
+    return cached
+  }
+
+  override fun androidEnablePendingFabricTransactions(): Boolean {
+    var cached = androidEnablePendingFabricTransactionsCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.androidEnablePendingFabricTransactions()
+      androidEnablePendingFabricTransactionsCache = cached
     }
     return cached
   }

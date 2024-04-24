@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<71e419a1e59d8e61a8ade1b05468d662>>
+ * @generated SignedSource<<b7f42eb3b24f3feed4274df8398c3c94>>
  * @flow strict-local
  */
 
@@ -24,6 +24,7 @@ import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboMod
 
 export interface Spec extends TurboModule {
   +commonTestFlag?: () => boolean;
+  +androidEnablePendingFabricTransactions?: () => boolean;
   +batchRenderingUpdatesInEventLoop?: () => boolean;
   +destroyFabricSurfacesInReactInstanceManager?: () => boolean;
   +enableBackgroundExecutor?: () => boolean;

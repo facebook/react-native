@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6e65a5ef6ad8de65718a4ce67f36bab2>>
+ * @generated SignedSource<<6b90f52915db22d4077011a55a519b20>>
  * @flow strict-local
  */
 
@@ -41,6 +41,7 @@ export type ReactNativeFeatureFlagsJsOnlyOverrides = Partial<ReactNativeFeatureF
 export type ReactNativeFeatureFlags = {
   ...ReactNativeFeatureFlagsJsOnly,
   commonTestFlag: Getter<boolean>,
+  androidEnablePendingFabricTransactions: Getter<boolean>,
   batchRenderingUpdatesInEventLoop: Getter<boolean>,
   destroyFabricSurfacesInReactInstanceManager: Getter<boolean>,
   enableBackgroundExecutor: Getter<boolean>,
@@ -103,6 +104,10 @@ export const shouldUseSetNativePropsInFabric: Getter<boolean> = createJavaScript
  * Common flag for testing. Do NOT modify.
  */
 export const commonTestFlag: Getter<boolean> = createNativeFlagGetter('commonTestFlag', false);
+/**
+ * To be used with batchRenderingUpdatesInEventLoop. When enbled, the Android mounting layer will concatenate pending transactions to ensure they're applied atomatically
+ */
+export const androidEnablePendingFabricTransactions: Getter<boolean> = createNativeFlagGetter('androidEnablePendingFabricTransactions', false);
 /**
  * When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.
  */

@@ -291,6 +291,10 @@ void Scheduler::uiManagerDidFinishTransaction(
   SystraceSection s("Scheduler::uiManagerDidFinishTransaction");
 
   if (delegate_ != nullptr) {
+    // This is no-op on all platforms except for Android where we need to
+    // observe each transaction to be able to mount correctly.
+    delegate_->schedulerDidFinishTransaction(mountingCoordinator);
+
     auto weakRuntimeScheduler =
         contextContainer_->find<std::weak_ptr<RuntimeScheduler>>(
             "RuntimeScheduler");
@@ -301,13 +305,14 @@ void Scheduler::uiManagerDidFinishTransaction(
       runtimeScheduler->scheduleRenderingUpdate(
           [delegate = delegate_,
            mountingCoordinator = std::move(mountingCoordinator)]() {
-            delegate->schedulerDidFinishTransaction(mountingCoordinator);
+            delegate->schedulerShouldRenderTransactions(mountingCoordinator);
           });
     } else {
-      delegate_->schedulerDidFinishTransaction(mountingCoordinator);
+      delegate_->schedulerShouldRenderTransactions(mountingCoordinator);
     }
   }
 }
+
 void Scheduler::uiManagerDidCreateShadowNode(const ShadowNode& shadowNode) {
   SystraceSection s("Scheduler::uiManagerDidCreateShadowNode");
 

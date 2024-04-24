@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<17d6ac9c31290ac19caa64d87ce7215b>>
+ * @generated SignedSource<<c06b3b34cea24459f6ade0ec5665dae7>>
  */
 
 /**
@@ -25,6 +25,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private val accessedFeatureFlags = mutableSetOf<String>()
 
   private var commonTestFlagCache: Boolean? = null
+  private var androidEnablePendingFabricTransactionsCache: Boolean? = null
   private var batchRenderingUpdatesInEventLoopCache: Boolean? = null
   private var destroyFabricSurfacesInReactInstanceManagerCache: Boolean? = null
   private var enableBackgroundExecutorCache: Boolean? = null
@@ -48,6 +49,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.commonTestFlag()
       accessedFeatureFlags.add("commonTestFlag")
       commonTestFlagCache = cached
+    }
+    return cached
+  }
+
+  override fun androidEnablePendingFabricTransactions(): Boolean {
+    var cached = androidEnablePendingFabricTransactionsCache
+    if (cached == null) {
+      cached = currentProvider.androidEnablePendingFabricTransactions()
+      accessedFeatureFlags.add("androidEnablePendingFabricTransactions")
+      androidEnablePendingFabricTransactionsCache = cached
     }
     return cached
   }

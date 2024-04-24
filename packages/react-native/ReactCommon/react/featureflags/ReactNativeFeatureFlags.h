@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d440f151b718198b83d18dcd1ca157d1>>
+ * @generated SignedSource<<5a5c6772253f49b0b768cd7ef090af14>>
  */
 
 /**
@@ -41,6 +41,11 @@ class ReactNativeFeatureFlags {
    * Common flag for testing. Do NOT modify.
    */
   RN_EXPORT static bool commonTestFlag();
+
+  /**
+   * To be used with batchRenderingUpdatesInEventLoop. When enbled, the Android mounting layer will concatenate pending transactions to ensure they're applied atomatically
+   */
+  RN_EXPORT static bool androidEnablePendingFabricTransactions();
 
   /**
    * When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.

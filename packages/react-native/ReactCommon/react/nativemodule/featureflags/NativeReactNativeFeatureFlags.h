@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8bf1b6f11737dfd3d837f5f0425cfc6e>>
+ * @generated SignedSource<<86afdf79a8a49da18eddf53bc9d41051>>
  */
 
 /**
@@ -36,6 +36,8 @@ class NativeReactNativeFeatureFlags
   NativeReactNativeFeatureFlags(std::shared_ptr<CallInvoker> jsInvoker);
 
   bool commonTestFlag(jsi::Runtime& runtime);
+
+  bool androidEnablePendingFabricTransactions(jsi::Runtime& runtime);
 
   bool batchRenderingUpdatesInEventLoop(jsi::Runtime& runtime);
 
