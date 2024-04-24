@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d23f1c4cd3f8960397455c495ed240ba>>
+ * @generated SignedSource<<f2631d5b77fbc2e7dc42ad4a2b0fca1f>>
  */
 
 /**
@@ -25,7 +25,6 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
   private var destroyFabricSurfacesInReactInstanceManagerCache: Boolean? = null
   private var enableBackgroundExecutorCache: Boolean? = null
   private var enableCleanTextInputYogaNodeCache: Boolean? = null
-  private var enableCustomDrawOrderFabricCache: Boolean? = null
   private var enableMicrotasksCache: Boolean? = null
   private var enableSpannableBuildingUnificationCache: Boolean? = null
   private var enableSynchronousStateUpdatesCache: Boolean? = null
@@ -79,15 +78,6 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableCleanTextInputYogaNode()
       enableCleanTextInputYogaNodeCache = cached
-    }
-    return cached
-  }
-
-  override fun enableCustomDrawOrderFabric(): Boolean {
-    var cached = enableCustomDrawOrderFabricCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.enableCustomDrawOrderFabric()
-      enableCustomDrawOrderFabricCache = cached
     }
     return cached
   }

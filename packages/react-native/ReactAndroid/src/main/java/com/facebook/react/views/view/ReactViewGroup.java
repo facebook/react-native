@@ -32,7 +32,6 @@ import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.annotations.VisibleForTesting;
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.touch.OnInterceptTouchEventListener;
 import com.facebook.react.touch.ReactHitSlopView;
@@ -510,11 +509,9 @@ public class ReactViewGroup extends ViewGroup
     if (getId() == NO_ID) {
       return false;
     }
-    if (ViewUtil.getUIManagerType(getId()) != UIManagerType.FABRIC) {
-      return false;
-    }
 
-    return !ReactNativeFeatureFlags.enableCustomDrawOrderFabric();
+    // Custom draw order is disabled for Fabric.
+    return ViewUtil.getUIManagerType(getId()) == UIManagerType.FABRIC;
   }
 
   private void handleAddView(View view) {

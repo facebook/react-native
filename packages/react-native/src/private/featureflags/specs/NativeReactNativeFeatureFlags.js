@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<71e419a1e59d8e61a8ade1b05468d662>>
+ * @generated SignedSource<<f5f7f20e0ae8d92cf87460b312811254>>
  * @flow strict-local
  */
 
@@ -28,7 +28,6 @@ export interface Spec extends TurboModule {
   +destroyFabricSurfacesInReactInstanceManager?: () => boolean;
   +enableBackgroundExecutor?: () => boolean;
   +enableCleanTextInputYogaNode?: () => boolean;
-  +enableCustomDrawOrderFabric?: () => boolean;
   +enableMicrotasks?: () => boolean;
   +enableSpannableBuildingUnification?: () => boolean;
   +enableSynchronousStateUpdates?: () => boolean;

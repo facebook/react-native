@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<cf91b15910f94812cc0d4628fea91f97>>
+ * @generated SignedSource<<ff345f6631c72c388f2b055c9cb71385>>
  */
 
 /**
@@ -57,12 +57,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableCleanTextInputYogaNode(): Boolean = accessor.enableCleanTextInputYogaNode()
-
-  /**
-   * When enabled, Fabric will use customDrawOrder in ReactViewGroup (similar to old architecture).
-   */
-  @JvmStatic
-  public fun enableCustomDrawOrderFabric(): Boolean = accessor.enableCustomDrawOrderFabric()
 
   /**
    * Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).

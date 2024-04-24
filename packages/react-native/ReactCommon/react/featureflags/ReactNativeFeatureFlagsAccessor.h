@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3d0caf30dd1561c111603419fbc8598b>>
+ * @generated SignedSource<<6e78f6ad1d160806cd19c81bd4310b4b>>
  */
 
 /**
@@ -36,7 +36,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool destroyFabricSurfacesInReactInstanceManager();
   bool enableBackgroundExecutor();
   bool enableCleanTextInputYogaNode();
-  bool enableCustomDrawOrderFabric();
   bool enableMicrotasks();
   bool enableSpannableBuildingUnification();
   bool enableSynchronousStateUpdates();
@@ -58,14 +57,13 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 17> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 16> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> batchRenderingUpdatesInEventLoop_;
   std::atomic<std::optional<bool>> destroyFabricSurfacesInReactInstanceManager_;
   std::atomic<std::optional<bool>> enableBackgroundExecutor_;
   std::atomic<std::optional<bool>> enableCleanTextInputYogaNode_;
-  std::atomic<std::optional<bool>> enableCustomDrawOrderFabric_;
   std::atomic<std::optional<bool>> enableMicrotasks_;
   std::atomic<std::optional<bool>> enableSpannableBuildingUnification_;
   std::atomic<std::optional<bool>> enableSynchronousStateUpdates_;

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<491afbd43963ba14bb2d4741e23e0879>>
+ * @generated SignedSource<<0971dbf2bc26bc39ccf673849ded8b30>>
  */
 
 /**
@@ -39,10 +39,6 @@ bool ReactNativeFeatureFlags::enableBackgroundExecutor() {
 
 bool ReactNativeFeatureFlags::enableCleanTextInputYogaNode() {
   return getAccessor().enableCleanTextInputYogaNode();
-}
-
-bool ReactNativeFeatureFlags::enableCustomDrawOrderFabric() {
-  return getAccessor().enableCustomDrawOrderFabric();
 }
 
 bool ReactNativeFeatureFlags::enableMicrotasks() {
