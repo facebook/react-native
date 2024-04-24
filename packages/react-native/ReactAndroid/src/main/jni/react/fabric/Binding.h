@@ -109,6 +109,9 @@ class Binding : public jni::HybridClass<Binding, JBinding>,
       const SurfaceId surfaceId,
       const ShadowNode& shadowNode) override;
 
+  void schedulerDidRequestUpdateToPreallocatedView(
+      const ShadowNode& shadowNode) override;
+
   void schedulerDidDispatchCommand(
       const ShadowView& shadowView,
       const std::string& commandName,

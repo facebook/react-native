@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a1530f969f47f31b8588109e48f527a1>>
+ * @generated SignedSource<<1c1413a29d3a3baf9876d4dfbd18e54f>>
  */
 
 /**
@@ -68,6 +68,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableUIConsistency() override {
+    return false;
+  }
+
+  bool fixMountedFlagAndFixPreallocationClone() override {
     return false;
   }
 

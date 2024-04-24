@@ -154,6 +154,12 @@ class ShadowNode : public Sealable,
 
   void sealRecursive() const;
 
+  /*
+   * Marks this shadow node and all of its children as promoted. Promoted shadow
+   * node is scheduled to be mounted.
+   */
+  void markPromotedRecursively() const;
+
   const ShadowNodeFamily& getFamily() const;
 
 #pragma mark - Mutating Methods
@@ -172,10 +178,10 @@ class ShadowNode : public Sealable,
   void setMounted(bool mounted) const;
 
   /*
-   * Returns true if the shadow node has been marked as mounted before by
-   * calling `setMounted`.
+   * Returns true if the shadow node has been promoted to be the next mounted
+   * tree.
    */
-  bool getHasBeenMounted() const;
+  bool getHasBeenPromoted() const;
 
   /*
    * Applies the most recent state to the ShadowNode if following conditions are
@@ -224,7 +230,16 @@ class ShadowNode : public Sealable,
    */
   ShadowNodeFamily::Shared family_;
 
+  /*
+   * True if shadow node will be mounted shortly in the future but for all
+   * intents and purposes it should be treated as mounted.
+   */
   mutable std::atomic<bool> hasBeenMounted_{false};
+
+  /*
+   * True if shadow node has been promoted to be the next mounted tree.
+   */
+  mutable bool hasBeenPromoted_{false};
 
   static Props::Shared propsForClonedShadowNode(
       const ShadowNode& sourceShadowNode,

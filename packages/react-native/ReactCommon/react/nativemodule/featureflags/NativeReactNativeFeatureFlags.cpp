@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5285ee6c09bf4614cb5098952aac8c87>>
+ * @generated SignedSource<<425a83dc7418db4dcd44deae3b2dd4ce>>
  */
 
 /**
@@ -90,6 +90,11 @@ bool NativeReactNativeFeatureFlags::enableSynchronousStateUpdates(
 bool NativeReactNativeFeatureFlags::enableUIConsistency(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableUIConsistency();
+}
+
+bool NativeReactNativeFeatureFlags::fixMountedFlagAndFixPreallocationClone(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::fixMountedFlagAndFixPreallocationClone();
 }
 
 bool NativeReactNativeFeatureFlags::forceBatchingMountItemsOnAndroid(

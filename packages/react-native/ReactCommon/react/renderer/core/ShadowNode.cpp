@@ -10,6 +10,7 @@
 #include "ShadowNodeFragment.h"
 
 #include <react/debug/react_native_assert.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/core/ComponentDescriptor.h>
 #include <react/renderer/core/ShadowNodeFragment.h>
 #include <react/renderer/debug/DebugStringConvertible.h>
@@ -211,6 +212,18 @@ int ShadowNode::getOrderIndex() const {
   return orderIndex_;
 }
 
+void ShadowNode::markPromotedRecursively() const {
+  if (hasBeenPromoted_) {
+    return;
+  }
+
+  hasBeenPromoted_ = true;
+
+  for (const auto& child : *children_) {
+    child->markPromotedRecursively();
+  }
+}
+
 void ShadowNode::sealRecursive() const {
   if (getSealed()) {
     return;
@@ -287,12 +300,20 @@ void ShadowNode::setMounted(bool mounted) const {
   family_->eventEmitter_->setEnabled(mounted);
 }
 
-bool ShadowNode::getHasBeenMounted() const {
-  return hasBeenMounted_;
+bool ShadowNode::getHasBeenPromoted() const {
+  auto hasBeenPromoted =
+      ReactNativeFeatureFlags::fixMountedFlagAndFixPreallocationClone()
+      ? hasBeenPromoted_
+      : hasBeenMounted_.load();
+  return hasBeenPromoted;
 }
 
 bool ShadowNode::progressStateIfNecessary() {
-  if (!hasBeenMounted_ && state_) {
+  auto hasBeenPromoted =
+      ReactNativeFeatureFlags::fixMountedFlagAndFixPreallocationClone()
+      ? hasBeenPromoted_
+      : hasBeenMounted_.load();
+  if (!hasBeenPromoted && state_) {
     ensureUnsealed();
     auto mostRecentState = family_->getMostRecentStateIfObsolete(*state_);
     if (mostRecentState) {
