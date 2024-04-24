@@ -18,6 +18,7 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.StaticLayout;
+import android.text.TextDirectionHeuristics;
 import android.text.TextPaint;
 import android.util.LayoutDirection;
 import android.util.LruCache;
@@ -144,8 +145,7 @@ public class TextLayoutManagerMapBuffer {
   }
 
   public static Layout.Alignment getTextAlignment(MapBuffer attributedString) {
-    boolean isRTL = isRTL(attributedString);
-    Layout.Alignment alignment = isRTL ? Layout.Alignment.ALIGN_OPPOSITE : Layout.Alignment.ALIGN_NORMAL;
+    Layout.Alignment alignment = Layout.Alignment.ALIGN_NORMAL;
 
     MapBuffer fragments = attributedString.getMapBuffer(AS_KEY_FRAGMENTS);
     if (fragments.getCount() != 0) {
@@ -158,7 +158,7 @@ public class TextLayoutManagerMapBuffer {
         if (alignmentAttr.equals("center")) {
           alignment = Layout.Alignment.ALIGN_CENTER;
         } else if (alignmentAttr.equals("right")) {
-          alignment = isRTL ? Layout.Alignment.ALIGN_NORMAL : Layout.Alignment.ALIGN_OPPOSITE;
+          alignment = Layout.Alignment.ALIGN_OPPOSITE;
         }
       }
     }
@@ -171,9 +171,9 @@ public class TextLayoutManagerMapBuffer {
     Layout.Alignment alignment = getTextAlignment(attributedString);
 
     if (alignment == Layout.Alignment.ALIGN_NORMAL) {
-      gravity = Gravity.LEFT;
+      gravity = Gravity.START;
     } else if (alignment == Layout.Alignment.ALIGN_OPPOSITE) {
-      gravity = Gravity.RIGHT;
+      gravity = Gravity.END;
     } else if (alignment == Layout.Alignment.ALIGN_CENTER) {
       gravity = Gravity.CENTER_HORIZONTAL;
     }
@@ -386,6 +386,7 @@ public class TextLayoutManagerMapBuffer {
               .setIncludePad(includeFontPadding)
               .setBreakStrategy(textBreakStrategy)
               .setHyphenationFrequency(hyphenationFrequency)
+              .setTextDirection(TextDirectionHeuristics.FIRSTSTRONG_LTR)
               .build();
 
     } else if (boring != null && (unconstrainedWidth || boring.width <= width)) {
@@ -418,7 +419,8 @@ public class TextLayoutManagerMapBuffer {
               .setLineSpacing(0.f, 1.f)
               .setIncludePad(includeFontPadding)
               .setBreakStrategy(textBreakStrategy)
-              .setHyphenationFrequency(hyphenationFrequency);
+              .setHyphenationFrequency(hyphenationFrequency)
+              .setTextDirection(TextDirectionHeuristics.FIRSTSTRONG_LTR);
 
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
         builder.setUseLineSpacingFromFallbacks(true);
@@ -664,7 +666,7 @@ public class TextLayoutManagerMapBuffer {
                 characterAndParagraphDirectionMatch
                     ? layout.getPrimaryHorizontal(start)
                     : layout.getSecondaryHorizontal(start);
-            if (isRtlParagraph) {
+            if (isRtlParagraph && !isRtlChar) {
               // Adjust `placeholderLeftPosition` to work around an Android bug.
               // The bug is when the paragraph is RTL and `setSingleLine(true)`, some layout
               // methods such as `getPrimaryHorizontal`, `getSecondaryHorizontal`, and
