@@ -29,7 +29,7 @@ export type Version = {
  *
  * Some examples of valid versions are:
  * - stable: 0.68.1
- * - stable prerelease: 0.70.0-rc.0
+ * - prerelease: 0.Y.Z-rc.K
  * - e2e-test: X.Y.Z-20221116-2018
  * - nightly: X.Y.Z-20221116-0bc4547fc
  * - dryrun: 1000.0.0
