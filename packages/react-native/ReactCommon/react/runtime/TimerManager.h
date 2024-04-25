@@ -16,6 +16,8 @@
 
 namespace facebook::react {
 
+class RuntimeScheduler;
+
 /*
  * A HostObject subclass representing the result of a setTimeout call.
  * Can be used as an argument to clearTimeout.
@@ -65,6 +67,9 @@ class TimerManager {
 
   void setRuntimeExecutor(RuntimeExecutor runtimeExecutor) noexcept;
 
+  void setRuntimeScheduler(
+      std::weak_ptr<RuntimeScheduler> runtimeScheduler) noexcept;
+
   void callReactNativeMicrotasks(jsi::Runtime& runtime);
 
   void callTimer(uint32_t);
@@ -97,6 +102,7 @@ class TimerManager {
       std::shared_ptr<TimerHandle> handle);
 
   RuntimeExecutor runtimeExecutor_;
+  std::weak_ptr<RuntimeScheduler> runtimeScheduler_;
   std::unique_ptr<PlatformTimerRegistry> platformTimerRegistry_;
 
   // A map (id => callback func) of the currently active JS timers

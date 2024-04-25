@@ -305,13 +305,16 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   auto contextContainer = std::make_shared<ContextContainer>();
   [_delegate didCreateContextContainer:contextContainer];
 
+  std::weak_ptr<RuntimeScheduler> runtimeScheduler =
+      std::weak_ptr<RuntimeScheduler>(_reactInstance->getRuntimeScheduler());
+  timerManager->setRuntimeScheduler(runtimeScheduler);
   contextContainer->insert(
       "RCTImageLoader", facebook::react::wrapManagedObject([_turboModuleManager moduleForName:"RCTImageLoader"]));
   contextContainer->insert(
       "RCTEventDispatcher",
       facebook::react::wrapManagedObject([_turboModuleManager moduleForName:"RCTEventDispatcher"]));
   contextContainer->insert("RCTBridgeModuleDecorator", facebook::react::wrapManagedObject(_bridgeModuleDecorator));
-  contextContainer->insert("RuntimeScheduler", std::weak_ptr<RuntimeScheduler>(_reactInstance->getRuntimeScheduler()));
+  contextContainer->insert("RuntimeScheduler", runtimeScheduler);
   contextContainer->insert("RCTBridgeProxy", facebook::react::wrapManagedObject(bridgeProxy));
 
   _surfacePresenter = [[RCTSurfacePresenter alloc]
