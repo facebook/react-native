@@ -8,6 +8,8 @@
 #include "TimerManager.h"
 
 #include <cxxreact/SystraceSection.h>
+#include <react/renderer/runtimescheduler/RuntimeScheduler.h>
+#include <chrono>
 #include <utility>
 
 namespace facebook::react {
@@ -19,6 +21,11 @@ TimerManager::TimerManager(
 void TimerManager::setRuntimeExecutor(
     RuntimeExecutor runtimeExecutor) noexcept {
   runtimeExecutor_ = runtimeExecutor;
+}
+
+void TimerManager::setRuntimeScheduler(
+    std::weak_ptr<RuntimeScheduler> runtimeScheduler) noexcept {
+  runtimeScheduler_ = runtimeScheduler;
 }
 
 std::shared_ptr<TimerHandle> TimerManager::createReactNativeMicrotask(
