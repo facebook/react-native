@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9eadcbd838fd9cda33485db003c23f15>>
+ * @generated SignedSource<<71bd0e6d2f2bd2c768b86a073451430c>>
  */
 
 /**
@@ -33,6 +33,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun commonTestFlag(): Boolean = accessor.commonTestFlag()
+
+  /**
+   * Enables the differentiator to understand the "collapsableChildren" prop
+   */
+  @JvmStatic
+  public fun allowCollapsableChildren(): Boolean = accessor.allowCollapsableChildren()
 
   /**
    * To be used with batchRenderingUpdatesInEventLoop. When enbled, the Android mounting layer will concatenate pending transactions to ensure they're applied atomatically

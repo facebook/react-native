@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5594e9b51122080fbb3cbda8f5367abf>>
+ * @generated SignedSource<<0aac08cb953e08d090fedebf12a9e99c>>
  */
 
 /**
@@ -24,6 +24,8 @@ import com.facebook.proguard.annotations.DoNotStrip
 @DoNotStrip
 public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun commonTestFlag(): Boolean
+
+  @DoNotStrip public fun allowCollapsableChildren(): Boolean
 
   @DoNotStrip public fun androidEnablePendingFabricTransactions(): Boolean
 

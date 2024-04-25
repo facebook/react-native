@@ -561,6 +561,13 @@ export type ViewProps = $ReadOnly<{|
   collapsable?: ?boolean,
 
   /**
+   * Setting to false prevents direct children of the view from being removed
+   * from the native view hierarchy, similar to the effect of setting
+   * `collapsable={false}` on each child.
+   */
+  collapsableChildren?: ?boolean,
+
+  /**
    * Contols whether this view, and its transitive children, are laid in a way
    * consistent with web browsers ('strict'), or consistent with existing
    * React Native code which may rely on incorrect behavior ('classic').

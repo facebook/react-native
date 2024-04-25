@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<591d73f7e2f424ec872614831a4626ed>>
+ * @generated SignedSource<<f9ff3bc9f437dbd6965f5927ada5f645>>
  */
 
 /**
@@ -41,6 +41,11 @@ class ReactNativeFeatureFlags {
    * Common flag for testing. Do NOT modify.
    */
   RN_EXPORT static bool commonTestFlag();
+
+  /**
+   * Enables the differentiator to understand the "collapsableChildren" prop
+   */
+  RN_EXPORT static bool allowCollapsableChildren();
 
   /**
    * To be used with batchRenderingUpdatesInEventLoop. When enbled, the Android mounting layer will concatenate pending transactions to ensure they're applied atomatically

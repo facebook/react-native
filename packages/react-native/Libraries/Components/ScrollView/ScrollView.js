@@ -1764,6 +1764,13 @@ class ScrollView extends React.Component<Props, State> {
     const hasStickyHeaders =
       Array.isArray(stickyHeaderIndices) && stickyHeaderIndices.length > 0;
 
+    // Some ScrollView native component behaviors rely on using the metrics
+    // of mounted views for anchoring. Make sure not to flatten children if
+    // this is the case.
+    const preserveChildren =
+      this.props.maintainVisibleContentPosition != null ||
+      (Platform.OS === 'android' && this.props.snapToAlignment != null);
+
     const contentContainer = (
       <NativeDirectionalScrollContentView
         {...contentSizeChangeProps}
@@ -1776,7 +1783,8 @@ class ScrollView extends React.Component<Props, State> {
             ? false
             : this.props.removeClippedSubviews
         }
-        collapsable={false}>
+        collapsable={false}
+        collapsableChildren={!preserveChildren}>
         {children}
       </NativeDirectionalScrollContentView>
     );

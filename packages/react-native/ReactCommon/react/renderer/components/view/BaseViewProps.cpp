@@ -228,6 +228,15 @@ BaseViewProps::BaseViewProps(
                                                        "collapsable",
                                                        sourceProps.collapsable,
                                                        true)),
+      collapsableChildren(
+          CoreFeatures::enablePropIteratorSetter
+              ? sourceProps.collapsableChildren
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "collapsableChildren",
+                    sourceProps.collapsableChildren,
+                    true)),
       removeClippedSubviews(
           CoreFeatures::enablePropIteratorSetter
               ? sourceProps.removeClippedSubviews
@@ -287,6 +296,7 @@ void BaseViewProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(hitSlop);
     RAW_SET_PROP_SWITCH_CASE_BASIC(onLayout);
     RAW_SET_PROP_SWITCH_CASE_BASIC(collapsable);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(collapsableChildren);
     RAW_SET_PROP_SWITCH_CASE_BASIC(removeClippedSubviews);
     RAW_SET_PROP_SWITCH_CASE_BASIC(experimental_layoutConformance);
     RAW_SET_PROP_SWITCH_CASE_BASIC(cursor);

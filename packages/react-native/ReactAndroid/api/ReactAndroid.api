@@ -5309,6 +5309,7 @@ public final class com/facebook/react/uimanager/ViewProps {
 	public static final field BOTTOM Ljava/lang/String;
 	public static final field BOX_NONE Ljava/lang/String;
 	public static final field COLLAPSABLE Ljava/lang/String;
+	public static final field COLLAPSABLE_CHILDREN Ljava/lang/String;
 	public static final field COLOR Ljava/lang/String;
 	public static final field COLUMN_GAP Ljava/lang/String;
 	public static final field DISPLAY Ljava/lang/String;
@@ -7933,6 +7934,7 @@ public class com/facebook/react/views/view/ReactViewManager : com/facebook/react
 	public fun setBorderStyle (Lcom/facebook/react/views/view/ReactViewGroup;Ljava/lang/String;)V
 	public fun setBorderWidth (Lcom/facebook/react/views/view/ReactViewGroup;IF)V
 	public fun setCollapsable (Lcom/facebook/react/views/view/ReactViewGroup;Z)V
+	public fun setCollapsableChildren (Lcom/facebook/react/views/view/ReactViewGroup;Z)V
 	public fun setFocusable (Lcom/facebook/react/views/view/ReactViewGroup;Z)V
 	public fun setHitSlop (Lcom/facebook/react/views/view/ReactViewGroup;Lcom/facebook/react/bridge/Dynamic;)V
 	public fun setNativeBackground (Lcom/facebook/react/views/view/ReactViewGroup;Lcom/facebook/react/bridge/ReadableMap;)V

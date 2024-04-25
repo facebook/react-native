@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5155e9913578dcfd8313f768974d20fc>>
+ * @generated SignedSource<<1c619af9daa978beca7856be0705638d>>
  * @flow strict-local
  */
 
@@ -41,6 +41,7 @@ export type ReactNativeFeatureFlagsJsOnlyOverrides = Partial<ReactNativeFeatureF
 export type ReactNativeFeatureFlags = {
   ...ReactNativeFeatureFlagsJsOnly,
   commonTestFlag: Getter<boolean>,
+  allowCollapsableChildren: Getter<boolean>,
   androidEnablePendingFabricTransactions: Getter<boolean>,
   batchRenderingUpdatesInEventLoop: Getter<boolean>,
   destroyFabricSurfacesInReactInstanceManager: Getter<boolean>,
@@ -104,6 +105,10 @@ export const shouldUseSetNativePropsInFabric: Getter<boolean> = createJavaScript
  * Common flag for testing. Do NOT modify.
  */
 export const commonTestFlag: Getter<boolean> = createNativeFlagGetter('commonTestFlag', false);
+/**
+ * Enables the differentiator to understand the "collapsableChildren" prop
+ */
+export const allowCollapsableChildren: Getter<boolean> = createNativeFlagGetter('allowCollapsableChildren', true);
 /**
  * To be used with batchRenderingUpdatesInEventLoop. When enbled, the Android mounting layer will concatenate pending transactions to ensure they're applied atomatically
  */

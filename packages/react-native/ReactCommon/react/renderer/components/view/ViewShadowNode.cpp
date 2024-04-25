@@ -79,6 +79,12 @@ void ViewShadowNode::initialize() noexcept {
   } else {
     traits_.unset(ShadowNodeTraits::Trait::FormsStackingContext);
   }
+
+  if (!viewProps.collapsableChildren) {
+    traits_.set(ShadowNodeTraits::Trait::ChildrenFormStackingContext);
+  } else {
+    traits_.unset(ShadowNodeTraits::Trait::ChildrenFormStackingContext);
+  }
 }
 
 } // namespace facebook::react

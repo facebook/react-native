@@ -265,6 +265,11 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
     // handled in NativeViewHierarchyOptimizer
   }
 
+  @ReactProp(name = ViewProps.COLLAPSABLE_CHILDREN)
+  public void setCollapsableChildren(ReactViewGroup view, boolean collapsableChildren) {
+    // no-op: it's here only so that "collapsableChildren" property is exported to JS.
+  }
+
   @ReactProp(name = "focusable")
   public void setFocusable(final ReactViewGroup view, boolean focusable) {
     if (focusable) {

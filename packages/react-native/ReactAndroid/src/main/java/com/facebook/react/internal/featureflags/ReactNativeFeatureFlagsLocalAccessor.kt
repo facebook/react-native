@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a5880a25b1c555713b7bf55e61a39a3d>>
+ * @generated SignedSource<<5f08267961d732e2f573ed933abf5ab9>>
  */
 
 /**
@@ -25,6 +25,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private val accessedFeatureFlags = mutableSetOf<String>()
 
   private var commonTestFlagCache: Boolean? = null
+  private var allowCollapsableChildrenCache: Boolean? = null
   private var androidEnablePendingFabricTransactionsCache: Boolean? = null
   private var batchRenderingUpdatesInEventLoopCache: Boolean? = null
   private var destroyFabricSurfacesInReactInstanceManagerCache: Boolean? = null
@@ -49,6 +50,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.commonTestFlag()
       accessedFeatureFlags.add("commonTestFlag")
       commonTestFlagCache = cached
+    }
+    return cached
+  }
+
+  override fun allowCollapsableChildren(): Boolean {
+    var cached = allowCollapsableChildrenCache
+    if (cached == null) {
+      cached = currentProvider.allowCollapsableChildren()
+      accessedFeatureFlags.add("allowCollapsableChildren")
+      allowCollapsableChildrenCache = cached
     }
     return cached
   }

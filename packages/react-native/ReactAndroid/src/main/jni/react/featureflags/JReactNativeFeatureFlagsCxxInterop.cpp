@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<03c9714f0cdb99cbff20ba76b8deac87>>
+ * @generated SignedSource<<725d39e6d2dd9905afe14b1e8ce6f6d2>>
  */
 
 /**
@@ -42,6 +42,12 @@ class ReactNativeFeatureFlagsProviderHolder
   bool commonTestFlag() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("commonTestFlag");
+    return method(javaProvider_);
+  }
+
+  bool allowCollapsableChildren() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("allowCollapsableChildren");
     return method(javaProvider_);
   }
 
@@ -156,6 +162,11 @@ bool JReactNativeFeatureFlagsCxxInterop::commonTestFlag(
   return ReactNativeFeatureFlags::commonTestFlag();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::allowCollapsableChildren(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::allowCollapsableChildren();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::androidEnablePendingFabricTransactions(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::androidEnablePendingFabricTransactions();
@@ -261,6 +272,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "commonTestFlag",
         JReactNativeFeatureFlagsCxxInterop::commonTestFlag),
+      makeNativeMethod(
+        "allowCollapsableChildren",
+        JReactNativeFeatureFlagsCxxInterop::allowCollapsableChildren),
       makeNativeMethod(
         "androidEnablePendingFabricTransactions",
         JReactNativeFeatureFlagsCxxInterop::androidEnablePendingFabricTransactions),
