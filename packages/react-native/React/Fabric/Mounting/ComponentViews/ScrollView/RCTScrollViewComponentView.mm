@@ -420,6 +420,11 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
 
 - (void)prepareForRecycle
 {
+  [super prepareForRecycle];
+  // Must invalidate state before setting contentOffset on ScrollView.
+  // Otherwise the state will be propagated to shadow tree.
+  _state.reset();
+
   const auto &props = static_cast<const ScrollViewProps &>(*_props);
   _scrollView.contentOffset = RCTCGPointFromPoint(props.contentOffset);
   // We set the default behavior to "never" so that iOS
@@ -427,7 +432,6 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
   // and keeps it as an opt-in behavior.
   _scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
   _shouldUpdateContentInsetAdjustmentBehavior = YES;
-  _state.reset();
   _isUserTriggeredScrolling = NO;
   CGRect oldFrame = self.frame;
   self.frame = CGRectZero;
