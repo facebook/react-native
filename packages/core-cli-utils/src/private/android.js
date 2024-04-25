@@ -10,6 +10,7 @@
  */
 
 import type {Task} from './types';
+import type {ExecaPromise} from 'execa';
 
 import {isWindows, task, toPascalCase} from './utils';
 import execa from 'execa';
@@ -22,8 +23,6 @@ type AndroidBuild = {
   mode: AndroidBuildMode,
   gradleArgs?: Array<string>,
 };
-
-type GradleReturn = ReturnType<typeof execa>;
 
 async function gradle(
   cwd: string,
@@ -49,7 +48,7 @@ export const assemble = (
   appName: string,
   mode: AndroidBuildMode,
   ...args: $ReadOnlyArray<string>
-): GradleReturn =>
+): ExecaPromise =>
   gradle(cwd, `${appName}:assemble${toPascalCase(mode)}`, ...args);
 
 /**
@@ -60,7 +59,7 @@ export const build = (
   appName: string,
   mode: AndroidBuildMode,
   ...args: $ReadOnlyArray<string>
-): GradleReturn =>
+): ExecaPromise =>
   gradle(cwd, `${appName}:build${toPascalCase(mode)}`, ...args);
 
 /**
@@ -71,7 +70,7 @@ export const install = (
   appName: string,
   mode: AndroidBuildMode,
   ...args: $ReadOnlyArray<string>
-): GradleReturn =>
+): ExecaPromise =>
   gradle(cwd, `${appName}:install${toPascalCase(mode)}`, ...args);
 
 /**
@@ -81,40 +80,50 @@ export const customTask = (
   cwd: string,
   customTaskName: string,
   ...args: $ReadOnlyArray<string>
-): GradleReturn => gradle(cwd, customTaskName, ...args);
+): ExecaPromise => gradle(cwd, customTaskName, ...args);
+
+const FIRST = 1;
 
 //
 // Android Tasks
 //
-
 type AndroidTasks = {
-  assemble: (options: AndroidBuild, ...args: $ReadOnlyArray<string>) => Task[],
-  build: (options: AndroidBuild, ...args: $ReadOnlyArray<string>) => Task[],
-  install: (options: AndroidBuild, ...args: $ReadOnlyArray<string>) => Task[],
+  assemble: (
+    options: AndroidBuild,
+    ...args: $ReadOnlyArray<string>
+  ) => {run: Task<ExecaPromise>},
+  build: (
+    options: AndroidBuild,
+    ...args: $ReadOnlyArray<string>
+  ) => {run: Task<ExecaPromise>},
+  install: (
+    options: AndroidBuild,
+    ...args: $ReadOnlyArray<string>
+  ) => {run: Task<ExecaPromise>},
 };
 
 export const tasks: AndroidTasks = {
-  assemble: (options: AndroidBuild, ...gradleArgs: $ReadOnlyArray<string>) => [
-    task('Assemble Android App', () =>
+  assemble: (options: AndroidBuild, ...gradleArgs: $ReadOnlyArray<string>) => ({
+    run: task(FIRST, 'Assemble Android App', () =>
       assemble(options.sourceDir, options.appName, options.mode, ...gradleArgs),
     ),
-  ],
-  build: (options: AndroidBuild, ...gradleArgs: $ReadOnlyArray<string>) => [
-    task('Assembles and tests Android App', () =>
+  }),
+  build: (options: AndroidBuild, ...gradleArgs: $ReadOnlyArray<string>) => ({
+    run: task(FIRST, 'Assembles and tests Android App', () =>
       build(options.sourceDir, options.appName, options.mode, ...gradleArgs),
     ),
-  ],
+  }),
   /**
    * Useful extra gradle arguments:
    *
    * -PreactNativeDevServerPort=8081 sets the port for the installed app to point towards a Metro
    *                                 server on (for example) 8081.
    */
-  install: (options: AndroidBuild, ...gradleArgs: $ReadOnlyArray<string>) => [
-    task('Installs the assembled Android App', () =>
+  install: (options: AndroidBuild, ...gradleArgs: $ReadOnlyArray<string>) => ({
+    run: task(FIRST, 'Installs the assembled Android App', () =>
       install(options.sourceDir, options.appName, options.mode, ...gradleArgs),
     ),
-  ],
+  }),
 
   // We are not supporting launching the app and setting up the tunnel for metro <-> app, this is
   // a framework concern. For an example of how one could do this, please look at the community

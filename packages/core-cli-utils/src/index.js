@@ -4,25 +4,31 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
+ * @flow
  * @format
  * @oncall react_native
  */
 
-import {tasks as android} from './private/android.js';
-import {tasks as apple} from './private/apple.js';
-import {tasks as clean} from './private/clean.js';
-import * as version from './public/version.js';
+const path = require('path');
 
-/* eslint sort-keys : "error" */
-export default {
-  // Platforms
-  android: typeof android,
-  apple: typeof apple,
-  clean: typeof clean,
+/*::
+export type * from './index.flow.js';
+*/
 
-  // Meta
-  version: typeof version,
-};
+if (!process.env.BUILD_EXCLUDE_BABEL_REGISTER) {
+  // Handle internal cases when we call this from the monorepo, and external cases where users call it from a plain-old-node_modules
+  let {root, dir} = path.parse(__dirname);
+  while (dir !== root) {
+    try {
+      // $FlowFixMe[unsupported-syntax] we're doing magic here
+      require(
+        path.resolve(dir, 'scripts/build/babel-register'),
+      ).registerForMonorepo();
+      break;
+    } catch {
+      dir = path.resolve(dir, '..');
+    }
+  }
+}
 
-export type {Task} from './private/types';
+module.exports = require('./index.flow.js');

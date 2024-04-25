@@ -3,6 +3,9 @@
   "version": "0.75.0-main",
   "private": true,
   "scripts": {
+    "bootstrap": "node ./cli.js bootstrap",
+    "build": "node ./cli.js build",
+    "launch": "node ./cli.js launch",
     "lint": "eslint .",
     "test": "jest"
   },
@@ -24,6 +27,7 @@
     "jest": "^29.6.3",
     "listr": "^0.14.3",
     "react-test-renderer": "18.2.0",
+    "rxjs": "^7.8.1",
     "typescript": "5.0.4"
   },
   "engines": {

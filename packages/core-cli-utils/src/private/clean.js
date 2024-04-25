@@ -10,22 +10,16 @@
  */
 
 import type {Task} from './types';
-import type {Options as ExecaOptions} from 'execa';
+import type {ExecaPromise, Options as ExecaOptions} from 'execa';
 
-import {isMacOS, isWindows, task} from './utils';
+import {assertDependencies, isMacOS, isOnPath, isWindows, task} from './utils';
 import execa from 'execa';
 import {existsSync, readdirSync, rm} from 'fs';
 import os from 'os';
 import path from 'path';
 
-type CleanTasks = {
-  android: (androidSrcDir: ?string) => Task[],
-  cocoapods?: (projectRootDir: string) => Task[],
-  metro: () => Task[],
-  npm: (projectRootDir: string, verifyCache?: boolean) => Task[],
-  watchman: (projectRootDir: string) => Task[],
-  yarn: (projectRootDir: string) => Task[],
-};
+const FIRST = 1,
+  SECOND = 2;
 
 const rmrf = (pathname: string) => {
   if (!existsSync(pathname)) {
@@ -41,7 +35,7 @@ const rmrf = (pathname: string) => {
 export function deleteDirectoryContents(
   directory: string,
   filePattern: RegExp,
-): Task['action'] {
+): () => Promise<void> {
   return async function deleteDirectoryContentsAction() {
     const base = path.dirname(directory);
     const files = readdirSync(base).filter((filename: string) =>
@@ -57,7 +51,7 @@ export function deleteDirectoryContents(
  * Removes a directory recursively.
  * @private
  */
-export function deleteDirectory(directory: string): Task['action'] {
+export function deleteDirectory(directory: string): () => Promise<void> {
   return async function cleanDirectoryAction() {
     rmrf(directory);
   };
@@ -69,109 +63,141 @@ export function deleteDirectory(directory: string): Task['action'] {
  */
 export function deleteTmpDirectoryContents(
   filepattern: RegExp,
-): ReturnType<typeof deleteDirectoryContents> {
+): () => Promise<void> {
   return deleteDirectoryContents(os.tmpdir(), filepattern);
 }
 
+const platformGradlew = isWindows ? 'gradlew.bat' : 'gradlew';
+
+type CocoaPodsClean = {
+  clean: Task<ExecaPromise>,
+};
+type AndroidClean = {
+  validate: Task<void>,
+  run: Task<ExecaPromise>,
+};
+type MetroClean = {
+  metro: Task<Promise<void>>,
+  haste: Task<Promise<void>>,
+  react_native: Task<Promise<void>>,
+};
+
+type NpmClean = {
+  node_modules: Task<Promise<void>>,
+  verify_cache: Task<ExecaPromise>,
+};
+
+type WatchmanClean = {
+  stop: Task<ExecaPromise>,
+  cache: Task<ExecaPromise>,
+};
+
+type YarnClean = {
+  clean: Task<ExecaPromise>,
+};
+
+type CleanTasks = {
+  android: (andoirdSrcDir: ?string, opts?: ExecaOptions) => AndroidClean,
+  cocoapods: CocoaPodsClean,
+  metro: () => MetroClean,
+  npm: (projectRootDir: string) => NpmClean,
+  watchman: (projectRootDir: string) => WatchmanClean,
+  yarn: (projectRootDir: string) => YarnClean,
+  cocoapods?: (projectRootDir: string) => CocoaPodsClean,
+};
+
 // The tasks that cleanup various build artefacts.
+/* eslint sort-keys: "off" */
 export const tasks: CleanTasks = {
   /**
    * Cleans up the Android Gradle cache
    */
-  android: (androidSrcDir: ?string) => [
-    task('🧹 Clean Gradle cache', async function gradle(opts?: ExecaOptions) {
-      const gradlew = path.join(
-        androidSrcDir ?? 'android',
-        isWindows ? 'gradlew.bat' : 'gradlew',
-      );
-
-      if (!existsSync(gradlew)) {
-        return;
-      }
+  android: (androidSrcDir: ?string, opts?: ExecaOptions) => ({
+    validate: task(FIRST, 'Check gradlew is available', () => {
+      assertDependencies(isOnPath(platformGradlew, 'Gradle wrapper'));
+    }),
+    run: task(SECOND, '🧹 Clean Gradle cache', () => {
+      const gradlew = path.join(androidSrcDir ?? 'android', platformGradlew);
       const script = path.basename(gradlew);
       const cwd = path.dirname(gradlew);
-      await execa(isWindows ? script : `./${script}`, ['clean'], {
+      return execa(isWindows ? script : './' + script, ['clean'], {
         cwd,
         ...opts,
       });
     }),
-  ],
+  }),
 
   /**
-   * Agressively cleans up all Metro caches.
+   * Aggressively cleans up all Metro caches.
    */
-  metro: () => [
-    task('🧹 Clean Metro cache', deleteTmpDirectoryContents(/^metro-.+/)),
-    task('🧹 Clean Haste cache', deleteTmpDirectoryContents(/^haste-map-.+/)),
-    task(
+  metro: () => ({
+    metro: task(
+      FIRST,
+      '🧹 Clean Metro cache',
+      deleteTmpDirectoryContents(/^metro-.+/),
+    ),
+    haste: task(
+      FIRST,
+      '🧹 Clean Haste cache',
+      deleteTmpDirectoryContents(/^haste-map-.+/),
+    ),
+    react_native: task(
+      FIRST,
       '🧹 Clean React Native cache',
       deleteTmpDirectoryContents(/^react-.+/),
     ),
-  ],
+  }),
 
   /**
    * Cleans up the `node_modules` folder and optionally garbage collects the npm cache.
    */
-  npm: (projectRootDir: string, verifyCache = false) => {
-    const _tasks = [
-      task(
-        '🧹 Clean node_modules',
-        deleteDirectory(path.join(projectRootDir, 'node_modules')),
-      ),
-    ];
-    if (verifyCache) {
-      _tasks.push(
-        task('🔬 Verify npm cache', (opts?: ExecaOptions) =>
-          execa('npm', ['cache', 'verify'], {cwd: projectRootDir, ...opts}),
-        ),
-      );
-    }
-    return _tasks;
-  },
+  npm: (projectRootDir: string) => ({
+    node_modules: task(
+      FIRST,
+      '🧹 Clean node_modules',
+      deleteDirectory(path.join(projectRootDir, 'node_modules')),
+    ),
+    verify_cache: task(SECOND, '🔬 Verify npm cache', (opts?: ExecaOptions) =>
+      execa('npm', ['cache', 'verify'], {cwd: projectRootDir, ...opts}),
+    ),
+  }),
 
   /**
    * Stops Watchman and clears its cache
    */
-  watchman: (projectRootDir: string) => [
-    task('✋ Stop Watchman', (opts?: ExecaOptions) =>
+  watchman: (projectRootDir: string) => ({
+    stop: task(FIRST, '✋ Stop Watchman', (opts?: ExecaOptions) =>
       execa(isWindows ? 'tskill' : 'killall', ['watchman'], {
         cwd: projectRootDir,
         ...opts,
       }),
     ),
-    task('🧹 Delete Watchman cache', (opts?: ExecaOptions) =>
+    cache: task(SECOND, '🧹 Delete Watchman cache', (opts?: ExecaOptions) =>
       execa('watchman', ['watch-del-all'], {cwd: projectRootDir, ...opts}),
     ),
-  ],
+  }),
 
   /**
    * Cleans up the Yarn cache
    */
-  yarn: (projectRootDir: string) => [
-    task('🧹 Clean Yarn cache', (opts?: ExecaOptions) =>
+  yarn: (projectRootDir: string) => ({
+    clean: task(FIRST, '🧹 Clean Yarn cache', (opts?: ExecaOptions) =>
       execa('yarn', ['cache', 'clean'], {cwd: projectRootDir, ...opts}),
     ),
-  ],
+  }),
 };
 
 if (isMacOS) {
   /**
    * Cleans up the local and global CocoaPods cache
    */
-  tasks.cocoapods = (projectRootDir: string) => [
+  tasks.cocoapods = (projectRootDir: string) => ({
     // TODO: add project root
-    task(
-      '🧹 Clean CocoaPods pod cache',
-      function removePodCache(opts?: ExecaOptions) {
-        return execa('bundle', ['exec', 'pod', 'deintegrate'], {
-          cwd: projectRootDir,
-          ...opts,
-        });
-      },
+    clean: task(FIRST, '🧹 Clean CocoaPods pod cache', (opts?: ExecaOptions) =>
+      execa('bundle', ['exec', 'pod', 'deintegrate'], {
+        cwd: projectRootDir,
+        ...opts,
+      }),
     ),
-  ];
+  });
 }
-
-//
-// Internal CLI
-//
