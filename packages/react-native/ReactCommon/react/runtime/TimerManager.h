@@ -17,6 +17,7 @@
 namespace facebook::react {
 
 class RuntimeScheduler;
+struct Task;
 
 /*
  * A HostObject subclass representing the result of a setTimeout call.
@@ -121,6 +122,13 @@ class TimerManager {
   // Each timeout that is registered on this queue gets a sequential id.  This
   // is the global count from which those are assigned.
   uint32_t timerIndex_{0};
+
+  // A map (id => task func) of the currently active JS idleCallbacks
+  std::unordered_map<uint32_t, std::shared_ptr<Task>> idleCallbacks_;
+
+  // Each idleCallback that is registered on this queue gets a sequential id.
+  // This is the global count from which those are assigned.
+  uint32_t idleCallbackIndex_{0};
 
   // The React Native microtask queue is used to back public APIs including
   // `queueMicrotask`, `clearImmediate`, and `setImmediate` (which is used by

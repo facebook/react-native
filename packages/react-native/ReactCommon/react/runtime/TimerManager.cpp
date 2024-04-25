@@ -154,18 +154,65 @@ void TimerManager::callTimer(uint32_t timerID) {
 
 std::shared_ptr<TimerHandle> TimerManager::createIdleCallback(
     jsi::Function&& callback) {
-  return nullptr;
+  return createIdleCallbackWithTimeout(std::move(callback), -1);
 }
 
 std::shared_ptr<TimerHandle> TimerManager::createIdleCallbackWithTimeout(
     jsi::Function&& callback,
     int32_t timeout) {
+  if (auto scheduler = runtimeScheduler_.lock()) {
+    auto handle = idleCallbackIndex_++;
+    auto idleCallbackHandle = std::make_shared<TimerHandle>(handle);
+
+    auto sharedCallback = std::make_shared<TimerCallback>(
+        std::move(callback), std::vector<jsi::Value>{}, false);
+
+    auto rcb = [this, sharedCallback, idleCallbackHandle](jsi::Runtime& rt) {
+      sharedCallback->invoke(rt);
+      if (this->idleCallbacks_.find(idleCallbackHandle->index()) !=
+          this->idleCallbacks_.end()) {
+        this->idleCallbacks_.erase(idleCallbackHandle->index());
+      }
+    };
+
+    std::shared_ptr<Task> task;
+    if (timeout < 0) {
+      task = scheduler->scheduleTask(
+          SchedulerPriority::IdlePriority, std::move(rcb));
+    } else {
+      task = scheduler->scheduleTask(
+          SchedulerPriority::IdlePriority,
+          std::move(rcb),
+          std::chrono::milliseconds(timeout));
+    }
+
+    idleCallbacks_[handle] = task;
+    return std::make_shared<TimerHandle>(handle);
+  }
   return nullptr;
 }
 
 void TimerManager::clearIdleCallback(
     jsi::Runtime& runtime,
-    std::shared_ptr<TimerHandle> idleCallbackHandle) {}
+    std::shared_ptr<TimerHandle> idleCallbackHandle) {
+  if (idleCallbackHandle == nullptr) {
+    throw jsi::JSError(
+        runtime, "clearIdleCallback called with an invalid handle");
+  }
+
+  if (this->idleCallbacks_.find(idleCallbackHandle->index()) !=
+      this->idleCallbacks_.end()) {
+    auto task = idleCallbacks_[idleCallbackHandle->index()];
+    if (auto scheduler = runtimeScheduler_.lock()) {
+      scheduler->cancelTask(*task);
+    }
+
+    if (idleCallbacks_.find(idleCallbackHandle->index()) !=
+        idleCallbacks_.end()) {
+      idleCallbacks_.erase(idleCallbackHandle->index());
+    }
+  }
+}
 
 void TimerManager::attachGlobals(jsi::Runtime& runtime) {
   // Install host functions for timers.
