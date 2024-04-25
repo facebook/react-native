@@ -85,7 +85,7 @@ jobs:
 
           echo ${{ steps.hermes-version.outputs.version }}
   build_android:
-    runs-on: ubuntu-latest
+    runs-on: 8-core-ubuntu
     needs: [set_release_type, prepare_hermes_workspace]
     container:
       image: reactnativecommunity/react-native-android:latest
@@ -134,7 +134,7 @@ jobs:
             packages/react-native-codegen/lib
           enableCrossOsArchive: true
   test_android:
-    runs-on: ubuntu-latest
+    runs-on: 8-core-ubuntu
     needs: [prepare_hermes_workspace, build_android]
     container:
       image: reactnativecommunity/react-native-android:latest
