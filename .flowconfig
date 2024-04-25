@@ -1,6 +1,7 @@
 [ignore]
 ; Ignore templates for 'react-native init'
 <PROJECT_ROOT>/packages/react-native/template/.*
+<PROJECT_ROOT>/packages/react-native/sdks/.*
 
 ; Ignore the Dangerfile
 <PROJECT_ROOT>/packages/react-native-bots/dangerfile.js
