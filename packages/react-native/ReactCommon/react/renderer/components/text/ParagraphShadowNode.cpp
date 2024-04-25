@@ -243,6 +243,9 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
         dynamic_cast<LayoutableShadowNode&>(*clonedShadowNode);
 
     auto attachmentFrame = measurement.attachments[i].frame;
+    attachmentFrame.origin.x += this->yogaNode_.getLayout().padding(yoga::PhysicalEdge::Left);
+    attachmentFrame.origin.y += this->yogaNode_.getLayout().padding(yoga::PhysicalEdge::Top);
+
     auto attachmentSize = roundToPixel<&ceil>(
         attachmentFrame.size, layoutMetrics.pointScaleFactor);
     auto attachmentOrigin = roundToPixel<&round>(
