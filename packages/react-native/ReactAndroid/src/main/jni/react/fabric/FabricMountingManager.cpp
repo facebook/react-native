@@ -776,20 +776,22 @@ void FabricMountingManager::executeMount(
 }
 
 void FabricMountingManager::preallocateShadowView(
-    SurfaceId surfaceId,
-    const ShadowView& shadowView) {
+    const ShadowNode& shadowNode) {
   {
     std::lock_guard lock(allocatedViewsMutex_);
-    auto allocatedViewsIterator = allocatedViewRegistry_.find(surfaceId);
+    auto allocatedViewsIterator =
+        allocatedViewRegistry_.find(shadowNode.getSurfaceId());
     if (allocatedViewsIterator == allocatedViewRegistry_.end()) {
       return;
     }
     auto& allocatedViews = allocatedViewsIterator->second;
-    if (allocatedViews.find(shadowView.tag) != allocatedViews.end()) {
+    if (allocatedViews.find(shadowNode.getTag()) != allocatedViews.end()) {
       return;
     }
-    allocatedViews.insert(shadowView.tag);
+    allocatedViews.insert(shadowNode.getTag());
   }
+
+  auto shadowView = ShadowView(shadowNode);
 
   bool isLayoutableShadowNode = shadowView.layoutMetrics != EmptyLayoutMetrics;
 
@@ -818,7 +820,7 @@ void FabricMountingManager::preallocateShadowView(
 
   preallocateView(
       javaUIManager_,
-      surfaceId,
+      shadowNode.getSurfaceId(),
       shadowView.tag,
       component.get(),
       props.get(),

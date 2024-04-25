@@ -106,7 +106,6 @@ class Binding : public jni::HybridClass<Binding, JBinding>,
       const MountingCoordinator::Shared& mountingCoordinator) override;
 
   void schedulerDidRequestPreliminaryViewAllocation(
-      const SurfaceId surfaceId,
       const ShadowNode& shadowNode) override;
 
   void schedulerDidRequestUpdateToPreallocatedView(

@@ -89,8 +89,7 @@ std::shared_ptr<ShadowNode> UIManager::createNode(
 
   auto shadowNode = componentDescriptor.createShadowNode(
       ShadowNodeFragment{
-          /* .props = */
-          fallbackDescriptor != nullptr &&
+          .props = fallbackDescriptor != nullptr &&
                   fallbackDescriptor->getComponentHandle() ==
                       componentDescriptor.getComponentHandle()
               ? componentDescriptor.cloneProps(
@@ -98,8 +97,8 @@ std::shared_ptr<ShadowNode> UIManager::createNode(
                     props,
                     RawProps(folly::dynamic::object("name", name)))
               : props,
-          /* .children = */ ShadowNodeFragment::childrenPlaceholder(),
-          /* .state = */ state,
+          .children = ShadowNodeFragment::childrenPlaceholder(),
+          .state = state,
       },
       family);
 
@@ -152,8 +151,8 @@ std::shared_ptr<ShadowNode> UIManager::cloneNode(
   auto clonedShadowNode = componentDescriptor.cloneShadowNode(
       shadowNode,
       {
-          /* .props = */ props,
-          /* .children = */ children,
+          .props = props,
+          .children = children,
       });
 
   if (!rawProps.isEmpty() && delegate_ != nullptr) {

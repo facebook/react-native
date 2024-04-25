@@ -317,8 +317,7 @@ void Scheduler::uiManagerDidCreateShadowNode(const ShadowNode& shadowNode) {
   SystraceSection s("Scheduler::uiManagerDidCreateShadowNode");
 
   if (delegate_ != nullptr) {
-    delegate_->schedulerDidRequestPreliminaryViewAllocation(
-        shadowNode.getSurfaceId(), shadowNode);
+    delegate_->schedulerDidRequestPreliminaryViewAllocation(shadowNode);
   }
 }
 
