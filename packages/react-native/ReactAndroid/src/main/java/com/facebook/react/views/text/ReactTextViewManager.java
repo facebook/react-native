@@ -190,7 +190,7 @@ public class ReactTextViewManager
         spanned,
         -1, // UNUSED FOR TEXT
         false, // TODO add this into local Data
-        TextLayoutManagerMapBuffer.getTextGravity(attributedString, view.getGravityHorizontal()),
+        TextLayoutManagerMapBuffer.getTextGravity(attributedString, spanned, view.getGravityHorizontal()),
         textBreakStrategy,
         TextAttributeProps.getJustificationMode(props, currentJustificationMode));
   }

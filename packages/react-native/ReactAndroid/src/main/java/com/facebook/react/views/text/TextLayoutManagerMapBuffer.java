@@ -18,6 +18,7 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.StaticLayout;
+import android.text.TextDirectionHeuristic;
 import android.text.TextDirectionHeuristics;
 import android.text.TextPaint;
 import android.util.LayoutDirection;
@@ -144,8 +145,16 @@ public class TextLayoutManagerMapBuffer {
         == LayoutDirection.RTL;
   }
 
-  public static Layout.Alignment getTextAlignment(MapBuffer attributedString) {
-    Layout.Alignment alignment = Layout.Alignment.ALIGN_NORMAL;
+  public static Layout.Alignment getTextAlignment(MapBuffer attributedString, Spannable spanned) {
+    // Android will align text based on the script, so normal and opposite alignment needs to be
+    // swapped when the directions of paragraph and script don't match.
+    // I.e. paragraph is LTR but script is RTL, text needs to be aligned to the left, which means
+    // ALIGN_OPPOSITE needs to be used to align RTL script to the left
+    boolean isParagraphRTL = isRTL(attributedString);
+    boolean isScriptRTL = TextDirectionHeuristics.FIRSTSTRONG_LTR.isRtl(spanned, 0, spanned.length());
+    boolean swapNormalAndOpposite = isParagraphRTL != isScriptRTL;
+
+    Layout.Alignment alignment = swapNormalAndOpposite ? Layout.Alignment.ALIGN_OPPOSITE : Layout.Alignment.ALIGN_NORMAL;
 
     MapBuffer fragments = attributedString.getMapBuffer(AS_KEY_FRAGMENTS);
     if (fragments.getCount() != 0) {
@@ -158,7 +167,7 @@ public class TextLayoutManagerMapBuffer {
         if (alignmentAttr.equals("center")) {
           alignment = Layout.Alignment.ALIGN_CENTER;
         } else if (alignmentAttr.equals("right")) {
-          alignment = Layout.Alignment.ALIGN_OPPOSITE;
+          alignment = swapNormalAndOpposite ? Layout.Alignment.ALIGN_NORMAL : Layout.Alignment.ALIGN_OPPOSITE;
         }
       }
     }
@@ -166,14 +175,18 @@ public class TextLayoutManagerMapBuffer {
     return alignment;
   }
 
-  public static int getTextGravity(MapBuffer attributedString, int defaultValue) {
+  public static int getTextGravity(MapBuffer attributedString, Spannable spanned, int defaultValue) {
     int gravity = defaultValue;
-    Layout.Alignment alignment = getTextAlignment(attributedString);
+    Layout.Alignment alignment = getTextAlignment(attributedString, spanned);
+
+    // depending on whether the script is LTR or RTL, ALIGN_NORMAL and ALIGN_OPPOSITE may mean
+    // different things
+    boolean swapLeftAndRight = TextDirectionHeuristics.FIRSTSTRONG_LTR.isRtl(spanned, 0, spanned.length());
 
     if (alignment == Layout.Alignment.ALIGN_NORMAL) {
-      gravity = Gravity.START;
+      gravity = swapLeftAndRight ? Gravity.RIGHT : Gravity.LEFT;
     } else if (alignment == Layout.Alignment.ALIGN_OPPOSITE) {
-      gravity = Gravity.END;
+      gravity = swapLeftAndRight ? Gravity.LEFT : Gravity.RIGHT;
     } else if (alignment == Layout.Alignment.ALIGN_CENTER) {
       gravity = Gravity.CENTER_HORIZONTAL;
     }
@@ -367,6 +380,7 @@ public class TextLayoutManagerMapBuffer {
     boolean unconstrainedWidth = widthYogaMeasureMode == YogaMeasureMode.UNDEFINED || width < 0;
     float desiredWidth =
         boring == null ? Layout.getDesiredWidth(text, sTextPaintInstance) : Float.NaN;
+    boolean isScriptRTL = TextDirectionHeuristics.FIRSTSTRONG_LTR.isRtl(text, 0, spanLength);
 
     if (boring == null
         && (unconstrainedWidth
@@ -386,7 +400,7 @@ public class TextLayoutManagerMapBuffer {
               .setIncludePad(includeFontPadding)
               .setBreakStrategy(textBreakStrategy)
               .setHyphenationFrequency(hyphenationFrequency)
-              .setTextDirection(TextDirectionHeuristics.FIRSTSTRONG_LTR)
+              .setTextDirection(isScriptRTL ? TextDirectionHeuristics.RTL : TextDirectionHeuristics.LTR)
               .build();
 
     } else if (boring != null && (unconstrainedWidth || boring.width <= width)) {
@@ -420,7 +434,7 @@ public class TextLayoutManagerMapBuffer {
               .setIncludePad(includeFontPadding)
               .setBreakStrategy(textBreakStrategy)
               .setHyphenationFrequency(hyphenationFrequency)
-              .setTextDirection(TextDirectionHeuristics.FIRSTSTRONG_LTR);
+              .setTextDirection(isScriptRTL ? TextDirectionHeuristics.RTL : TextDirectionHeuristics.LTR);
 
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
         builder.setUseLineSpacingFromFallbacks(true);
@@ -539,7 +553,7 @@ public class TextLayoutManagerMapBuffer {
             ? paragraphAttributes.getInt(PA_KEY_MAX_NUMBER_OF_LINES)
             : ReactConstants.UNSET;
 
-    Layout.Alignment alignment = getTextAlignment(attributedString);
+    Layout.Alignment alignment = getTextAlignment(attributedString, text);
 
     if (adjustFontSizeToFit) {
       double minimumFontSize =
@@ -748,7 +762,7 @@ public class TextLayoutManagerMapBuffer {
             ? paragraphAttributes.getInt(PA_KEY_MAX_NUMBER_OF_LINES)
             : ReactConstants.UNSET;
     
-    Layout.Alignment alignment = getTextAlignment(attributedString);
+    Layout.Alignment alignment = getTextAlignment(attributedString, text);
 
     if (adjustFontSizeToFit) {
       double minimumFontSize =
