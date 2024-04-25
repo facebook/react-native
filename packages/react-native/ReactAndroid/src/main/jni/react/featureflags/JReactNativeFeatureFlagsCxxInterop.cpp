@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<42365eadf2648e4033ec6be2c387c019>>
+ * @generated SignedSource<<03c9714f0cdb99cbff20ba76b8deac87>>
  */
 
 /**
@@ -72,12 +72,6 @@ class ReactNativeFeatureFlagsProviderHolder
   bool enableCleanTextInputYogaNode() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableCleanTextInputYogaNode");
-    return method(javaProvider_);
-  }
-
-  bool enableCustomDrawOrderFabric() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableCustomDrawOrderFabric");
     return method(javaProvider_);
   }
 
@@ -187,11 +181,6 @@ bool JReactNativeFeatureFlagsCxxInterop::enableCleanTextInputYogaNode(
   return ReactNativeFeatureFlags::enableCleanTextInputYogaNode();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::enableCustomDrawOrderFabric(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::enableCustomDrawOrderFabric();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::enableMicrotasks(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableMicrotasks();
@@ -287,9 +276,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableCleanTextInputYogaNode",
         JReactNativeFeatureFlagsCxxInterop::enableCleanTextInputYogaNode),
-      makeNativeMethod(
-        "enableCustomDrawOrderFabric",
-        JReactNativeFeatureFlagsCxxInterop::enableCustomDrawOrderFabric),
       makeNativeMethod(
         "enableMicrotasks",
         JReactNativeFeatureFlagsCxxInterop::enableMicrotasks),

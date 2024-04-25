@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2069622ac0b7f7a7aa1523d891d2969b>>
+ * @generated SignedSource<<5155e9913578dcfd8313f768974d20fc>>
  * @flow strict-local
  */
 
@@ -46,7 +46,6 @@ export type ReactNativeFeatureFlags = {
   destroyFabricSurfacesInReactInstanceManager: Getter<boolean>,
   enableBackgroundExecutor: Getter<boolean>,
   enableCleanTextInputYogaNode: Getter<boolean>,
-  enableCustomDrawOrderFabric: Getter<boolean>,
   enableMicrotasks: Getter<boolean>,
   enableSpannableBuildingUnification: Getter<boolean>,
   enableSynchronousStateUpdates: Getter<boolean>,
@@ -125,10 +124,6 @@ export const enableBackgroundExecutor: Getter<boolean> = createNativeFlagGetter(
  * Clean yoga node when <TextInput /> does not change.
  */
 export const enableCleanTextInputYogaNode: Getter<boolean> = createNativeFlagGetter('enableCleanTextInputYogaNode', false);
-/**
- * When enabled, Fabric will use customDrawOrder in ReactViewGroup (similar to old architecture).
- */
-export const enableCustomDrawOrderFabric: Getter<boolean> = createNativeFlagGetter('enableCustomDrawOrderFabric', false);
 /**
  * Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).
  */

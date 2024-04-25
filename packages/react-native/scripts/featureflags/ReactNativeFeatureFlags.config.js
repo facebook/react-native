@@ -56,11 +56,6 @@ const definitions: FeatureFlagDefinitions = {
       defaultValue: false,
       description: 'Clean yoga node when <TextInput /> does not change.',
     },
-    enableCustomDrawOrderFabric: {
-      defaultValue: false,
-      description:
-        'When enabled, Fabric will use customDrawOrder in ReactViewGroup (similar to old architecture).',
-    },
     enableMicrotasks: {
       defaultValue: false,
       description:

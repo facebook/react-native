@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a5407b903ea2f1d695a948738ecce536>>
+ * @generated SignedSource<<591d73f7e2f424ec872614831a4626ed>>
  */
 
 /**
@@ -66,11 +66,6 @@ class ReactNativeFeatureFlags {
    * Clean yoga node when <TextInput /> does not change.
    */
   RN_EXPORT static bool enableCleanTextInputYogaNode();
-
-  /**
-   * When enabled, Fabric will use customDrawOrder in ReactViewGroup (similar to old architecture).
-   */
-  RN_EXPORT static bool enableCustomDrawOrderFabric();
 
   /**
    * Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).

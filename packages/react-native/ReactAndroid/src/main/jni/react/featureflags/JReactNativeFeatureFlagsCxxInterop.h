@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<dfdbec53de07274b4a95d51d74868686>>
+ * @generated SignedSource<<f6a67c3d3c0b96645c3bd9684132389d>>
  */
 
 /**
@@ -46,9 +46,6 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enableCleanTextInputYogaNode(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-
-  static bool enableCustomDrawOrderFabric(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enableMicrotasks(
