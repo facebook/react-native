@@ -53,6 +53,21 @@ std::shared_ptr<Task> RuntimeScheduler::scheduleTask(
   return runtimeSchedulerImpl_->scheduleTask(priority, std::move(callback));
 }
 
+std::shared_ptr<Task> RuntimeScheduler::scheduleTask(
+    SchedulerPriority priority,
+    jsi::Function&& callback,
+    std::chrono::milliseconds timeout) noexcept {
+  return runtimeSchedulerImpl_->scheduleTask(
+      priority, std::move(callback), timeout);
+}
+std::shared_ptr<Task> RuntimeScheduler::scheduleTask(
+    SchedulerPriority priority,
+    RawCallback&& callback,
+    std::chrono::milliseconds timeout) noexcept {
+  return runtimeSchedulerImpl_->scheduleTask(
+      priority, std::move(callback), timeout);
+}
+
 bool RuntimeScheduler::getShouldYield() const noexcept {
   return runtimeSchedulerImpl_->getShouldYield();
 }

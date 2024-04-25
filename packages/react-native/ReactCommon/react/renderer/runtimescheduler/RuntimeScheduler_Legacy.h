@@ -60,6 +60,15 @@ class RuntimeScheduler_Legacy final : public RuntimeSchedulerBase {
   std::shared_ptr<Task> scheduleTask(
       SchedulerPriority priority,
       RawCallback&& callback) noexcept override;
+  std::shared_ptr<Task> scheduleTask(
+      SchedulerPriority priority,
+      jsi::Function&& callback,
+      std::chrono::milliseconds timeout) noexcept override;
+
+  std::shared_ptr<Task> scheduleTask(
+      SchedulerPriority priority,
+      RawCallback&& callback,
+      std::chrono::milliseconds timeout) noexcept override;
 
   /*
    * Cancelled task will never be executed.

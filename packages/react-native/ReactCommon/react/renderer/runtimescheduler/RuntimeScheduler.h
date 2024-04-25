@@ -29,6 +29,14 @@ class RuntimeSchedulerBase {
   virtual std::shared_ptr<Task> scheduleTask(
       SchedulerPriority priority,
       RawCallback&& callback) noexcept = 0;
+  virtual std::shared_ptr<Task> scheduleTask(
+      SchedulerPriority priority,
+      jsi::Function&& callback,
+      std::chrono::milliseconds timeout) noexcept = 0;
+  virtual std::shared_ptr<Task> scheduleTask(
+      SchedulerPriority priority,
+      RawCallback&& callback,
+      std::chrono::milliseconds timeout) noexcept = 0;
   virtual void cancelTask(Task& task) noexcept = 0;
   virtual bool getShouldYield() const noexcept = 0;
   virtual SchedulerPriority getCurrentPriorityLevel() const noexcept = 0;
@@ -85,6 +93,14 @@ class RuntimeScheduler final : RuntimeSchedulerBase {
   std::shared_ptr<Task> scheduleTask(
       SchedulerPriority priority,
       RawCallback&& callback) noexcept override;
+  std::shared_ptr<Task> scheduleTask(
+      SchedulerPriority priority,
+      jsi::Function&& callback,
+      std::chrono::milliseconds timeout) noexcept override;
+  std::shared_ptr<Task> scheduleTask(
+      SchedulerPriority priority,
+      RawCallback&& callback,
+      std::chrono::milliseconds timeout) noexcept override;
 
   /*
    * Cancelled task will never be executed.

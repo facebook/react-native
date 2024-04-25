@@ -70,6 +70,20 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
       SchedulerPriority priority,
       RawCallback&& callback) noexcept override;
 
+  std::shared_ptr<Task> scheduleTask(
+      SchedulerPriority priority,
+      jsi::Function&& callback,
+      std::chrono::milliseconds timeout) noexcept override;
+
+  /*
+   * Adds a custom callback to the priority queue with the given priority.
+   * Triggers workloop if needed.
+   */
+  std::shared_ptr<Task> scheduleTask(
+      SchedulerPriority priority,
+      RawCallback&& callback,
+      std::chrono::milliseconds timeout) noexcept override;
+
   /*
    * Cancelled task will never be executed.
    *
