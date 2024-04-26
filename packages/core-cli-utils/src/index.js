@@ -31,4 +31,4 @@ if (!process.env.BUILD_EXCLUDE_BABEL_REGISTER) {
   }
 }
 
-module.exports = require('./index.flow.js');
+export * from './index.flow.js';
