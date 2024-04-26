@@ -89,7 +89,7 @@ def use_react_native! (
 
   ENV['RCT_FABRIC_ENABLED'] = fabric_enabled ? "1" : "0"
   ENV['USE_HERMES'] = hermes_enabled ? "1" : "0"
-  ENV['AGGREGATE_PRIVACY_FILES'] = privacy_file_aggregation_enabled ? "1" : "0"
+  ENV['RCT_AGGREGATE_PRIVACY_FILES'] = privacy_file_aggregation_enabled ? "1" : "0"
 
   prefix = path
 
@@ -276,7 +276,7 @@ def react_native_post_install(
 
   fabric_enabled = ENV['RCT_FABRIC_ENABLED'] == '1'
   hermes_enabled = ENV['USE_HERMES'] == '1'
-  privacy_file_aggregation_enabled = ENV['AGGREGATE_PRIVACY_FILES'] == '1'
+  privacy_file_aggregation_enabled = ENV['RCT_AGGREGATE_PRIVACY_FILES'] == '1'
 
   if hermes_enabled
     ReactNativePodsUtils.set_gcc_preprocessor_definition_for_React_hermes(installer)

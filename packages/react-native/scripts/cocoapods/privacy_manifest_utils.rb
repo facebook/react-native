@@ -1,18 +1,16 @@
 module PrivacyManifestUtils
     def self.add_aggregated_privacy_manifest(installer)
-        # Get all required reason APIs defined in current pods
-        required_reason_apis = get_used_required_reason_apis(installer)
-
         user_project = get_user_project_from(installer)
-
-        target = get_application_target(user_project)
-
-        file_path = get_privacyinfo_file_path(target, user_project)
+        targets = get_application_targets(user_project)
+        file_path = get_privacyinfo_file_path(user_project)
 
         privacy_info = read_privacyinfo_file(file_path) || {
             "NSPrivacyCollectedDataTypes" => [],
             "NSPrivacyTracking" => false
         }
+
+        # Get all required reason APIs defined in current pods
+        required_reason_apis = get_used_required_reason_apis(installer)
 
         # Add the Required Reason APIs from React Native core
         get_core_accessed_apis.each do |accessed_api|
@@ -41,11 +39,13 @@ module PrivacyManifestUtils
 
         Xcodeproj::Plist.write_to_path(privacy_info, file_path)
 
-        ensure_reference(file_path, user_project, target)
+        targets.each do |target|
+            ensure_reference(file_path, user_project, target)
+        end
     end
 
-    def self.get_application_target(user_project)
-        return user_project.targets.first{ |t| t.symbol_type == :application }    
+    def self.get_application_targets(user_project)
+        return user_project.targets.filter { |t| t.symbol_type == :application }    
     end
 
     def self.read_privacyinfo_file(file_path)
@@ -71,15 +71,15 @@ module PrivacyManifestUtils
         end
     end
 
-    def self.get_privacyinfo_file_path(target, user_project)
+    def self.get_privacyinfo_file_path(user_project)
         # We try to find a file we know exists in the project to get the path to the main group directory
-        app_delegate_path = target.source_build_phase.files_references.find { |file_ref| file_ref.name == "Info.plist" }
-        if app_delegate_path.nil?
+        info_plist_path = user_project.files.find { |file_ref| file_ref.name == "Info.plist" }
+        if info_plist_path.nil?
             # return path that is sibling to .xcodeproj
             path = user_project.path
             return File.join(File.dirname(path), "PrivacyInfo.xcprivacy")
         end
-        return File.join(File.dirname(app_delegate_path.real_path),"PrivacyInfo.xcprivacy")
+        return File.join(File.dirname(info_plist_path.real_path),"PrivacyInfo.xcprivacy")
     end
 
     def self.get_used_required_reason_apis(installer)
