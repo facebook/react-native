@@ -564,6 +564,35 @@ inline void fromRawValue(
 inline void fromRawValue(
     const PropsParserContext& /*context*/,
     const RawValue& value,
+    ValueUnit& result) {
+  react_native_expect(value.hasType<RawValue>());
+  ValueUnit valueUnit;
+
+  if (value.hasType<Float>()) {
+    auto valueFloat = (float)value;
+    if (std::isfinite(valueFloat)) {
+      valueUnit = ValueUnit(valueFloat, UnitType::Point);
+    } else {
+      valueUnit = ValueUnit(0.0f, UnitType::Undefined);
+    }
+  } else if (value.hasType<std::string>()) {
+    const auto stringValue = (std::string)value;
+
+    if (stringValue.back() == '%') {
+      auto tryValue = folly::tryTo<float>(
+          std::string_view(stringValue).substr(0, stringValue.length() - 1));
+      if (tryValue.hasValue()) {
+        valueUnit = ValueUnit(tryValue.value(), UnitType::Percent);
+      }
+    }
+  }
+
+  result = valueUnit;
+}
+
+inline void fromRawValue(
+    const PropsParserContext& context,
+    const RawValue& value,
     TransformOrigin& result) {
   react_native_expect(value.hasType<std::vector<RawValue>>());
   auto origins = (std::vector<RawValue>)value;
@@ -574,25 +603,7 @@ inline void fromRawValue(
 
   for (size_t i = 0; i < std::min(origins.size(), maxIndex); i++) {
     const auto& origin = origins[i];
-    if (origin.hasType<Float>()) {
-      auto originFloat = (float)origin;
-      if (std::isfinite(originFloat)) {
-        transformOrigin.xy[i] = ValueUnit(originFloat, UnitType::Point);
-      } else {
-        transformOrigin.xy[i] = ValueUnit(0.0f, UnitType::Undefined);
-      }
-    } else if (origin.hasType<std::string>()) {
-      const auto stringValue = (std::string)origin;
-
-      if (stringValue.back() == '%') {
-        auto tryValue = folly::tryTo<float>(
-            std::string_view(stringValue).substr(0, stringValue.length() - 1));
-        if (tryValue.hasValue()) {
-          transformOrigin.xy[i] =
-              ValueUnit(tryValue.value(), UnitType::Percent);
-        }
-      }
-    }
+    fromRawValue(context, origin, transformOrigin.xy[i]);
   }
 
   if (origins.size() >= 3 && origins[2].hasType<Float>()) {

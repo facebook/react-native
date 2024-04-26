@@ -10,10 +10,12 @@
 #include <algorithm>
 
 #include <react/renderer/components/view/conversions.h>
+#include <react/renderer/components/view/primitives.h>
 #include <react/renderer/components/view/propsConversions.h>
 #include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/core/propsConversions.h>
 #include <react/renderer/debug/debugStringConvertibleUtils.h>
+#include <react/renderer/graphics/ValueUnit.h>
 #include <react/utils/CoreFeatures.h>
 
 namespace facebook::react {
@@ -361,13 +363,47 @@ static BorderRadii ensureNoOverlap(const BorderRadii& radii, const Size& size) {
 
   return BorderRadii{
       /* topLeft = */
-      radii.topLeft * std::min(insetsScale.top, insetsScale.left),
+      static_cast<float>(
+          radii.topLeft * std::min(insetsScale.top, insetsScale.left)),
       /* topRight = */
-      radii.topRight * std::min(insetsScale.top, insetsScale.right),
+      static_cast<float>(
+          radii.topRight * std::min(insetsScale.top, insetsScale.right)),
       /* bottomLeft = */
-      radii.bottomLeft * std::min(insetsScale.bottom, insetsScale.left),
+      static_cast<float>(
+          radii.bottomLeft * std::min(insetsScale.bottom, insetsScale.left)),
       /* bottomRight = */
-      radii.bottomRight * std::min(insetsScale.bottom, insetsScale.right),
+      static_cast<float>(
+          radii.bottomRight * std::min(insetsScale.bottom, insetsScale.right)),
+  };
+}
+
+static BorderRadii radiiPercentToPoint(
+    const RectangleCorners<ValueUnit>& radii,
+    const Size& size) {
+  return BorderRadii{
+      /* topLeft = */
+      (radii.topLeft.unit == UnitType::Percent)
+          ? static_cast<float>(
+                (radii.topLeft.value / 100) * std::max(size.width, size.height))
+          : static_cast<float>(radii.topLeft.value),
+      /* topRight = */
+      (radii.topRight.unit == UnitType::Percent)
+          ? static_cast<float>(
+                (radii.topRight.value / 100) *
+                std::max(size.width, size.height))
+          : static_cast<float>(radii.topRight.value),
+      /* bottomLeft = */
+      (radii.bottomLeft.unit == UnitType::Percent)
+          ? static_cast<float>(
+                (radii.bottomLeft.value / 100) *
+                std::max(size.width, size.height))
+          : static_cast<float>(radii.bottomLeft.value),
+      /* bottomRight = */
+      (radii.bottomRight.unit == UnitType::Percent)
+          ? static_cast<float>(
+                (radii.bottomRight.value / 100) *
+                std::max(size.width, size.height))
+          : static_cast<float>(radii.bottomRight.value),
   };
 }
 
@@ -397,12 +433,17 @@ BorderMetrics BaseViewProps::resolveBorderMetrics(
       optionalFloatFromYogaValue(yogaStyle.border(yoga::Edge::All)),
   };
 
+  BorderRadii radii = radiiPercentToPoint(
+      borderRadii.resolve(isRTL, ValueUnit{0.0f, UnitType::Point}),
+      layoutMetrics.frame.size);
+
   return {
       /* .borderColors = */ borderColors.resolve(isRTL, {}),
       /* .borderWidths = */ borderWidths.resolve(isRTL, 0),
       /* .borderRadii = */
-      ensureNoOverlap(borderRadii.resolve(isRTL, 0), layoutMetrics.frame.size),
-      /* .borderCurves = */ borderCurves.resolve(isRTL, BorderCurve::Circular),
+      ensureNoOverlap(radii, layoutMetrics.frame.size),
+      /* .borderCurves = */
+      borderCurves.resolve(isRTL, BorderCurve::Circular),
       /* .borderStyles = */ borderStyles.resolve(isRTL, BorderStyle::Solid),
   };
 }
