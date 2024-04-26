@@ -12,6 +12,7 @@ import View from '../Components/View/View';
 import useMergeRefs from '../Utilities/useMergeRefs';
 import useAnimatedProps from './useAnimatedProps';
 import * as React from 'react';
+import {useMemo} from 'react';
 
 // $FlowFixMe[deprecated-type]
 export type AnimatedProps<Props: {...}> = $ObjMap<
@@ -46,7 +47,10 @@ export default function createAnimatedComponent<TProps: {...}, TInstance>(
       const {passthroughAnimatedPropExplicitValues, style} = reducedProps;
       const {style: passthroughStyle, ...passthroughProps} =
         passthroughAnimatedPropExplicitValues ?? {};
-      const mergedStyle = {...style, ...passthroughStyle};
+      const mergedStyle = useMemo(
+        () => ({...style, ...passthroughStyle}),
+        [style, passthroughStyle],
+      );
 
       return (
         <Component
