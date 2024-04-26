@@ -190,8 +190,8 @@ public class ReactTextViewManager
         spanned,
         -1, // UNUSED FOR TEXT
         false, // TODO add this into local Data
-        TextAttributeProps.getTextAlignment(
-            props, TextLayoutManagerMapBuffer.isRTL(attributedString), view.getGravityHorizontal()),
+        TextLayoutManagerMapBuffer.getTextGravity(
+            attributedString, spanned, view.getGravityHorizontal()),
         textBreakStrategy,
         TextAttributeProps.getJustificationMode(props, currentJustificationMode));
   }

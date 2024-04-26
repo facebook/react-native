@@ -18,9 +18,11 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.StaticLayout;
+import android.text.TextDirectionHeuristics;
 import android.text.TextPaint;
 import android.util.LayoutDirection;
 import android.util.LruCache;
+import android.view.Gravity;
 import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -140,6 +142,62 @@ public class TextLayoutManagerMapBuffer {
     return TextAttributeProps.getLayoutDirection(
             textAttributes.getString(TextAttributeProps.TA_KEY_LAYOUT_DIRECTION))
         == LayoutDirection.RTL;
+  }
+
+  public static Layout.Alignment getTextAlignment(MapBuffer attributedString, Spannable spanned) {
+    // Android will align text based on the script, so normal and opposite alignment needs to be
+    // swapped when the directions of paragraph and script don't match.
+    // I.e. paragraph is LTR but script is RTL, text needs to be aligned to the left, which means
+    // ALIGN_OPPOSITE needs to be used to align RTL script to the left
+    boolean isParagraphRTL = isRTL(attributedString);
+    boolean isScriptRTL =
+        TextDirectionHeuristics.FIRSTSTRONG_LTR.isRtl(spanned, 0, spanned.length());
+    boolean swapNormalAndOpposite = isParagraphRTL != isScriptRTL;
+
+    Layout.Alignment alignment =
+        swapNormalAndOpposite ? Layout.Alignment.ALIGN_OPPOSITE : Layout.Alignment.ALIGN_NORMAL;
+
+    MapBuffer fragments = attributedString.getMapBuffer(AS_KEY_FRAGMENTS);
+    if (fragments.getCount() != 0) {
+      MapBuffer fragment = fragments.getMapBuffer(0);
+      MapBuffer textAttributes = fragment.getMapBuffer(FR_KEY_TEXT_ATTRIBUTES);
+
+      if (textAttributes.contains(TextAttributeProps.TA_KEY_ALIGNMENT)) {
+        String alignmentAttr = textAttributes.getString(TextAttributeProps.TA_KEY_ALIGNMENT);
+
+        if (alignmentAttr.equals("center")) {
+          alignment = Layout.Alignment.ALIGN_CENTER;
+        } else if (alignmentAttr.equals("right")) {
+          alignment =
+              swapNormalAndOpposite
+                  ? Layout.Alignment.ALIGN_NORMAL
+                  : Layout.Alignment.ALIGN_OPPOSITE;
+        }
+      }
+    }
+
+    return alignment;
+  }
+
+  public static int getTextGravity(
+      MapBuffer attributedString, Spannable spanned, int defaultValue) {
+    int gravity = defaultValue;
+    Layout.Alignment alignment = getTextAlignment(attributedString, spanned);
+
+    // depending on whether the script is LTR or RTL, ALIGN_NORMAL and ALIGN_OPPOSITE may mean
+    // different things
+    boolean swapLeftAndRight =
+        TextDirectionHeuristics.FIRSTSTRONG_LTR.isRtl(spanned, 0, spanned.length());
+
+    if (alignment == Layout.Alignment.ALIGN_NORMAL) {
+      gravity = swapLeftAndRight ? Gravity.RIGHT : Gravity.LEFT;
+    } else if (alignment == Layout.Alignment.ALIGN_OPPOSITE) {
+      gravity = swapLeftAndRight ? Gravity.LEFT : Gravity.RIGHT;
+    } else if (alignment == Layout.Alignment.ALIGN_CENTER) {
+      gravity = Gravity.CENTER_HORIZONTAL;
+    }
+
+    return gravity;
   }
 
   private static void buildSpannableFromFragments(
@@ -321,12 +379,14 @@ public class TextLayoutManagerMapBuffer {
       YogaMeasureMode widthYogaMeasureMode,
       boolean includeFontPadding,
       int textBreakStrategy,
-      int hyphenationFrequency) {
+      int hyphenationFrequency,
+      Layout.Alignment alignment) {
     Layout layout;
     int spanLength = text.length();
     boolean unconstrainedWidth = widthYogaMeasureMode == YogaMeasureMode.UNDEFINED || width < 0;
     float desiredWidth =
         boring == null ? Layout.getDesiredWidth(text, sTextPaintInstance) : Float.NaN;
+    boolean isScriptRTL = TextDirectionHeuristics.FIRSTSTRONG_LTR.isRtl(text, 0, spanLength);
 
     if (boring == null
         && (unconstrainedWidth
@@ -334,18 +394,27 @@ public class TextLayoutManagerMapBuffer {
       // Is used when the width is not known and the text is not boring, ie. if it contains
       // unicode characters.
 
+      if (widthYogaMeasureMode == YogaMeasureMode.EXACTLY) {
+        desiredWidth = width;
+      }
+
       int hintWidth = (int) Math.ceil(desiredWidth);
       layout =
           StaticLayout.Builder.obtain(text, 0, spanLength, sTextPaintInstance, hintWidth)
-              .setAlignment(Layout.Alignment.ALIGN_NORMAL)
+              .setAlignment(alignment)
               .setLineSpacing(0.f, 1.f)
               .setIncludePad(includeFontPadding)
               .setBreakStrategy(textBreakStrategy)
               .setHyphenationFrequency(hyphenationFrequency)
+              .setTextDirection(
+                  isScriptRTL ? TextDirectionHeuristics.RTL : TextDirectionHeuristics.LTR)
               .build();
 
     } else if (boring != null && (unconstrainedWidth || boring.width <= width)) {
       int boringLayoutWidth = boring.width;
+      if (widthYogaMeasureMode == YogaMeasureMode.EXACTLY) {
+        boringLayoutWidth = (int) Math.ceil(width);
+      }
       if (boring.width < 0) {
         ReactSoftExceptionLogger.logSoftException(
             TAG, new ReactNoCrashSoftException("Text width is invalid: " + boring.width));
@@ -358,7 +427,7 @@ public class TextLayoutManagerMapBuffer {
               text,
               sTextPaintInstance,
               boringLayoutWidth,
-              Layout.Alignment.ALIGN_NORMAL,
+              alignment,
               1.f,
               0.f,
               boring,
@@ -366,12 +435,15 @@ public class TextLayoutManagerMapBuffer {
     } else {
       // Is used for multiline, boring text and the width is known.
       StaticLayout.Builder builder =
-          StaticLayout.Builder.obtain(text, 0, spanLength, sTextPaintInstance, (int) width)
-              .setAlignment(Layout.Alignment.ALIGN_NORMAL)
+          StaticLayout.Builder.obtain(
+                  text, 0, spanLength, sTextPaintInstance, (int) Math.ceil(width))
+              .setAlignment(alignment)
               .setLineSpacing(0.f, 1.f)
               .setIncludePad(includeFontPadding)
               .setBreakStrategy(textBreakStrategy)
-              .setHyphenationFrequency(hyphenationFrequency);
+              .setHyphenationFrequency(hyphenationFrequency)
+              .setTextDirection(
+                  isScriptRTL ? TextDirectionHeuristics.RTL : TextDirectionHeuristics.LTR);
 
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
         builder.setUseLineSpacingFromFallbacks(true);
@@ -392,7 +464,8 @@ public class TextLayoutManagerMapBuffer {
       int maximumNumberOfLines,
       boolean includeFontPadding,
       int textBreakStrategy,
-      int hyphenationFrequency) {
+      int hyphenationFrequency,
+      Layout.Alignment alignment) {
     BoringLayout.Metrics boring = BoringLayout.isBoring(text, sTextPaintInstance);
     Layout layout =
         createLayout(
@@ -402,7 +475,8 @@ public class TextLayoutManagerMapBuffer {
             widthYogaMeasureMode,
             includeFontPadding,
             textBreakStrategy,
-            hyphenationFrequency);
+            hyphenationFrequency,
+            alignment);
 
     // Minimum font size is 4pts to match the iOS implementation.
     int minimumFontSize =
@@ -446,7 +520,8 @@ public class TextLayoutManagerMapBuffer {
               widthYogaMeasureMode,
               includeFontPadding,
               textBreakStrategy,
-              hyphenationFrequency);
+              hyphenationFrequency,
+              alignment);
     }
   }
 
@@ -488,6 +563,8 @@ public class TextLayoutManagerMapBuffer {
             ? paragraphAttributes.getInt(PA_KEY_MAX_NUMBER_OF_LINES)
             : ReactConstants.UNSET;
 
+    Layout.Alignment alignment = getTextAlignment(attributedString, text);
+
     if (adjustFontSizeToFit) {
       double minimumFontSize =
           paragraphAttributes.contains(PA_KEY_MINIMUM_FONT_SIZE)
@@ -504,7 +581,8 @@ public class TextLayoutManagerMapBuffer {
           maximumNumberOfLines,
           includeFontPadding,
           textBreakStrategy,
-          hyphenationFrequency);
+          hyphenationFrequency,
+          alignment);
     }
 
     BoringLayout.Metrics boring = BoringLayout.isBoring(text, sTextPaintInstance);
@@ -516,7 +594,8 @@ public class TextLayoutManagerMapBuffer {
             widthYogaMeasureMode,
             includeFontPadding,
             textBreakStrategy,
-            hyphenationFrequency);
+            hyphenationFrequency,
+            alignment);
 
     int calculatedLineCount =
         maximumNumberOfLines == ReactConstants.UNSET || maximumNumberOfLines == 0
@@ -611,7 +690,7 @@ public class TextLayoutManagerMapBuffer {
                 characterAndParagraphDirectionMatch
                     ? layout.getPrimaryHorizontal(start)
                     : layout.getSecondaryHorizontal(start);
-            if (isRtlParagraph) {
+            if (isRtlParagraph && !isRtlChar) {
               // Adjust `placeholderLeftPosition` to work around an Android bug.
               // The bug is when the paragraph is RTL and `setSingleLine(true)`, some layout
               // methods such as `getPrimaryHorizontal`, `getSecondaryHorizontal`, and
@@ -693,6 +772,8 @@ public class TextLayoutManagerMapBuffer {
             ? paragraphAttributes.getInt(PA_KEY_MAX_NUMBER_OF_LINES)
             : ReactConstants.UNSET;
 
+    Layout.Alignment alignment = getTextAlignment(attributedString, text);
+
     if (adjustFontSizeToFit) {
       double minimumFontSize =
           paragraphAttributes.contains(PA_KEY_MINIMUM_FONT_SIZE)
@@ -709,7 +790,8 @@ public class TextLayoutManagerMapBuffer {
           maximumNumberOfLines,
           includeFontPadding,
           textBreakStrategy,
-          hyphenationFrequency);
+          hyphenationFrequency,
+          alignment);
     }
 
     Layout layout =
@@ -720,7 +802,8 @@ public class TextLayoutManagerMapBuffer {
             YogaMeasureMode.EXACTLY,
             includeFontPadding,
             textBreakStrategy,
-            hyphenationFrequency);
+            hyphenationFrequency,
+            alignment);
     return FontMetricsUtil.getFontMetrics(text, layout, sTextPaintInstance, context);
   }
 }

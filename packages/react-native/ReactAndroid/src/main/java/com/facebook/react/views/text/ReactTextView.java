@@ -375,7 +375,10 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
           mNumberOfLines,
           getIncludeFontPadding(),
           getBreakStrategy(),
-          getHyphenationFrequency());
+          getHyphenationFrequency(),
+          // always passing ALIGN_NORMAL here should be fine, since this method doesn't depend on
+          // how exacly lines are aligned, just their width
+          Layout.Alignment.ALIGN_NORMAL);
       setText(getSpanned());
     }
 
