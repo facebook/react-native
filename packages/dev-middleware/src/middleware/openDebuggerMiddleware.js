@@ -153,6 +153,8 @@ export default function openDebuggerMiddleware({
           status: 'success',
           appId: appId ?? null,
           deviceId: device ?? null,
+          resolvedTargetAppId: target.description,
+          prefersFuseboxFrontend: useFuseboxEntryPoint ?? false,
         });
         return;
       } catch (e) {
