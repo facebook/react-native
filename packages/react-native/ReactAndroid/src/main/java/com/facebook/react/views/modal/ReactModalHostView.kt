@@ -75,19 +75,19 @@ public class ReactModalHostView(context: ThemedReactContext) :
   public var statusBarTranslucent: Boolean = false
     set(value) {
       field = value
-      propertyRequiresNewDialog = true
+      createNewDialog = true
     }
 
   public var animationType: String? = null
     set(value) {
       field = value
-      propertyRequiresNewDialog = true
+      createNewDialog = true
     }
 
   public var hardwareAccelerated: Boolean = false
     set(value) {
       field = value
-      propertyRequiresNewDialog = true
+      createNewDialog = true
     }
 
   public var stateWrapper: StateWrapper?
@@ -105,9 +105,10 @@ public class ReactModalHostView(context: ThemedReactContext) :
   private var hostView: DialogRootViewGroup
 
   // Set this flag to true if changing a particular property on the view requires a new Dialog to
-  // be created.  For instance, animation does since it affects Dialog creation through the theme
+  // be created or Dialog was destroyed. For instance, animation does since it affects Dialog
+  // creation through the theme
   // but transparency does not since we can access the window to update the property.
-  private var propertyRequiresNewDialog = false
+  private var createNewDialog = false
 
   init {
     context.addLifecycleEventListener(this)
@@ -176,6 +177,7 @@ public class ReactModalHostView(context: ThemedReactContext) :
         }
       }
       dialog = null
+      createNewDialog = true
 
       // We need to remove the mHostView from the parent
       // It is possible we are dismissing this dialog and reattaching the hostView to another
@@ -210,7 +212,7 @@ public class ReactModalHostView(context: ThemedReactContext) :
 
     // If the existing Dialog is currently up, we may need to redraw it or we may be able to update
     // the property without having to recreate the dialog
-    if (propertyRequiresNewDialog) {
+    if (createNewDialog) {
       dismiss()
     } else {
       updateProperties()
@@ -218,7 +220,7 @@ public class ReactModalHostView(context: ThemedReactContext) :
     }
 
     // Reset the flag since we are going to create a new dialog
-    propertyRequiresNewDialog = false
+    createNewDialog = false
     val theme: Int =
         when (animationType) {
           "fade" -> R.style.Theme_FullScreenDialogAnimatedFade
