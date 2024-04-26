@@ -169,7 +169,7 @@ abstract class ReactExtension @Inject constructor(project: Project) {
           .convention(listOf("npx", "@react-native-community/cli", "config"))
 
   /**
-   * Location of the lock files used to consider wether autolinking [autolinkConfigCommand] should
+   * Location of the lock files used to consider whether autolinking [autolinkConfigCommand] should
    * re-execute or not. If file collection is unchanged, the autolinking command will not be
    * re-executed.
    *
