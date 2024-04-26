@@ -227,6 +227,7 @@ def react_native_post_install(installer, react_native_path = "../node_modules/re
   ReactNativePodsUtils.apply_xcode_15_patch(installer)
   ReactNativePodsUtils.updateIphoneOSDeploymentTarget(installer)
   ReactNativePodsUtils.fix_flipper_for_xcode_15_3(installer)
+  ReactNativePodsUtils.add_privacy_manifest_if_needed(installer)
 
   NewArchitectureHelper.set_clang_cxx_language_standard_if_needed(installer)
   is_new_arch_enabled = ENV['RCT_NEW_ARCH_ENABLED'] == "1"
