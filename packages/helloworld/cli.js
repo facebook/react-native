@@ -9,8 +9,9 @@
  * @oncall react_native
  */
 
-export type Task<R = mixed> = {
-  order: number,
-  label: string,
-  action: () => R,
-};
+if (process.env.BUILD_EXCLUDE_BABEL_REGISTER == null) {
+  // $FlowFixMe[cannot-resolve-module]
+  require('../../scripts/build/babel-register').registerForMonorepo();
+}
+
+require('./cli.flow.js');

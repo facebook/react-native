@@ -10,9 +10,12 @@
  */
 
 import type {Task} from './types';
+import type {ExecaPromise} from 'execa';
 
 import {assertDependencies, isOnPath, task} from './utils';
 import execa from 'execa';
+import fs from 'fs';
+import path from 'path';
 
 type AppleBuildMode = 'Debug' | 'Release';
 
@@ -20,84 +23,130 @@ type AppleBuildOptions = {
   isWorkspace: boolean,
   name: string,
   mode: AppleBuildMode,
-  scheme: string,
+  scheme?: string,
   destination?: string, // Device or Simulator or UUID
-} & AppleOptions;
-
-type AppleBootstrapOption = {
-  bundleInstall: boolean,
-  // Enabled by default
-  newArchitecture: boolean,
-} & AppleOptions;
-
-type AppleInstallApp = {
-  device: string,
-  appPath: string,
-} & AppleOptions;
-
-type AppleOptions = {cwd: string, env?: {[key: string]: string | void, ...}};
-
-type AppleBuildTasks = {
-  bootstrap: (options: AppleBootstrapOption) => Task[],
-  build: (
-    options: AppleBuildOptions,
-    ...args: $ReadOnlyArray<string>
-  ) => Task[],
-  ios: {
-    install: (options: AppleInstallApp) => Task[],
-  },
+  ...AppleOptions,
 };
 
-export const tasks: AppleBuildTasks = {
-  bootstrap: (options: AppleBootstrapOption) => [
-    task('Install CocoaPods dependencies', async () => {
+type AppleBootstrapOption = {
+  // Enabled by default
+  newArchitecture: boolean,
+  ...AppleOptions,
+};
+
+type AppleInstallApp = {
+  // Install the app on a simulator or device, typically this is the description from
+  // `xcrun simctl list devices`
+  device: string,
+  appPath: string,
+  ...AppleOptions,
+};
+
+type AppleOptions = {
+  // The directory where the Xcode project is located
+  cwd: string,
+  // The environment variables to pass to the build command
+  env?: {[key: string]: string | void, ...},
+};
+
+const FIRST = 1,
+  SECOND = 2,
+  THIRD = 3;
+
+/* eslint sort-keys: "off" */
+export const tasks = {
+  // 1. Setup your environment for building the iOS apps
+  bootstrap: (
+    options: AppleBootstrapOption,
+  ): {
+    validate: Task<void>,
+    installRubyGems: Task<ExecaPromise>,
+    installDependencies: Task<ExecaPromise>,
+  } => ({
+    validate: task(FIRST, 'Check Cocoapods and bundle are available', () => {
       assertDependencies(
         isOnPath('pod', 'CocoaPods'),
         isOnPath('bundle', "Bundler to manage Ruby's gems"),
       );
-
-      if (options.bundleInstall) {
-        await execa('bundle', ['exec', 'install'], {
-          cwd: options.cwd,
-        });
-      }
-
-      return await execa('bundle', ['exec', 'pod', 'install'], {
+    }),
+    installRubyGems: task(SECOND, 'Install Ruby Gems', () =>
+      execa('bundle', ['install'], {
+        cwd: options.cwd,
+      }),
+    ),
+    installDependencies: task(THIRD, 'Install CocoaPods dependencies', () =>
+      execa('bundle', ['exec', 'pod', 'install'], {
         cwd: options.cwd,
         env: {RCT_NEW_ARCH_ENABLED: options.newArchitecture ? '1' : '0'},
-      });
-    }),
-  ],
+      }),
+    ),
+  }),
 
-  build: (options: AppleBuildOptions, ...args: $ReadOnlyArray<string>) => [
-    task('build an app artifact', () => {
-      assertDependencies(isOnPath('xcodebuild', 'Xcode Commandline Tools'));
+  // 2. Build the iOS app using a setup environment
+  build: (
+    options: AppleBuildOptions,
+    ...args: $ReadOnlyArray<string>
+  ): {
+    validate: Task<void>,
+    hasPodsInstalled: Task<void>,
+    build: Task<ExecaPromise>,
+  } => ({
+    validate: task(
+      FIRST,
+      "Check you've run xcode-select --install for xcodebuild",
+      () => {
+        assertDependencies(isOnPath('xcodebuild', 'Xcode Commandline Tools'));
+      },
+    ),
+    hasPodsInstalled: task(FIRST, 'Check Pods are installed', () => {
+      for (const file of ['Podfile.lock', 'Pods']) {
+        try {
+          fs.accessSync(
+            path.join(options.cwd, file),
+            /* eslint-disable-next-line no-bitwise */
+            fs.constants.F_OK | fs.constants.R_OK,
+          );
+        } catch {
+          throw new Error('Please run: yarn run boostrap ios');
+        }
+      }
+    }),
+    build: task(SECOND, 'build an app artifact', () => {
       const _args = [
         options.isWorkspace ? '-workspace' : '-project',
         options.name,
-        '-scheme',
-        options.scheme,
       ];
+      if (options.scheme != null) {
+        _args.push('-scheme', options.scheme);
+      }
       if (options.destination != null) {
         _args.push('-destination', options.destination);
       }
       _args.push(...args);
       return execa('xcodebuild', _args, {cwd: options.cwd, env: options.env});
     }),
-  ],
+  }),
 
+  // 3. Install the built app on a simulator or device
   ios: {
-    install: (options: AppleInstallApp) => [
-      task('Install the app on a simulator', () => {
-        assertDependencies(
-          isOnPath('xcrun', 'An Xcode Commandline tool: xcrun'),
-        );
-        return execa(
-          'xcrun',
-          ['simctl', 'install', options.device, options.appPath],
-          {cwd: options.cwd, env: options.env},
-        );
-      }),
-    ],
+    install: (
+      options: AppleInstallApp,
+    ): {validate: Task<void>, install: Task<ExecaPromise>} => ({
+      validate: task(
+        FIRST,
+        "Check you've run xcode-select --install for xcrun",
+        () => {
+          assertDependencies(
+            isOnPath('xcrun', 'An Xcode Commandline tool: xcrun'),
+          );
+        },
+      ),
+      install: task(SECOND, 'Install the app on a simulator', () =>
+        execa('xcrun', ['simctl', 'install', options.device, options.appPath], {
+          cwd: options.cwd,
+          env: options.env,
+        }),
+      ),
+    }),
   },
 };
