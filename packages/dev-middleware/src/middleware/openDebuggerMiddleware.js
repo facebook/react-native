@@ -18,7 +18,6 @@ import type {NextHandleFunction} from 'connect';
 import type {IncomingMessage, ServerResponse} from 'http';
 
 import getDevToolsFrontendUrl from '../utils/getDevToolsFrontendUrl';
-import crypto from 'crypto';
 import url from 'url';
 
 const debuggerInstances = new Map<string, ?LaunchedBrowser>();
@@ -58,7 +57,11 @@ export default function openDebuggerMiddleware({
       (experiments.enableOpenDebuggerRedirect && req.method === 'GET')
     ) {
       const {query} = url.parse(req.url, true);
-      const {appId, device}: {appId?: string, device?: string, ...} = query;
+      const {
+        appId,
+        device,
+        launchId,
+      }: {appId?: string, device?: string, launchId?: string, ...} = query;
 
       const targets = inspectorProxy.getPageDescriptions().filter(
         // Only use targets with better reloading support
@@ -108,7 +111,6 @@ export default function openDebuggerMiddleware({
         return;
       }
 
-      const launchId = crypto.randomUUID();
       const useFuseboxEntryPoint =
         target.reactNative.capabilities?.prefersFuseboxFrontend;
 
