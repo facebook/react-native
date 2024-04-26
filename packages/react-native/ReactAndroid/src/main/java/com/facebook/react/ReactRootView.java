@@ -27,6 +27,7 @@ import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.view.ViewTreeObserver;
 import android.view.WindowInsets;
 import android.view.WindowManager;
@@ -192,51 +193,45 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
   @Override
   public void onChildStartedNativeGesture(View childView, MotionEvent ev) {
-    if (!isDispatcherReady()) {
+    EventDispatcher eventDispatcher = getEventDispatcher();
+    if (eventDispatcher == null) {
       return;
     }
 
-    EventDispatcher eventDispatcher =
-        UIManagerHelper.getEventDispatcher(getCurrentReactContext(), getUIManagerType());
-    if (eventDispatcher != null) {
-      mJSTouchDispatcher.onChildStartedNativeGesture(ev, eventDispatcher);
-      if (childView != null && mJSPointerDispatcher != null) {
-        mJSPointerDispatcher.onChildStartedNativeGesture(childView, ev, eventDispatcher);
-      }
+    mJSTouchDispatcher.onChildStartedNativeGesture(ev, eventDispatcher);
+    if (childView != null && mJSPointerDispatcher != null) {
+      mJSPointerDispatcher.onChildStartedNativeGesture(childView, ev, eventDispatcher);
     }
   }
 
   @Override
   public void onChildEndedNativeGesture(View childView, MotionEvent ev) {
-    if (!isDispatcherReady()) {
+    EventDispatcher eventDispatcher = getEventDispatcher();
+    if (eventDispatcher == null) {
       return;
     }
 
-    EventDispatcher eventDispatcher =
-        UIManagerHelper.getEventDispatcher(getCurrentReactContext(), getUIManagerType());
-    if (eventDispatcher != null) {
-      mJSTouchDispatcher.onChildEndedNativeGesture(ev, eventDispatcher);
-      if (mJSPointerDispatcher != null) {
-        mJSPointerDispatcher.onChildEndedNativeGesture();
-      }
+    mJSTouchDispatcher.onChildEndedNativeGesture(ev, eventDispatcher);
+    if (mJSPointerDispatcher != null) {
+      mJSPointerDispatcher.onChildEndedNativeGesture();
     }
   }
 
-  private boolean isDispatcherReady() {
+  protected @Nullable EventDispatcher getEventDispatcher() {
     if (!hasActiveReactContext() || !isViewAttachedToReactInstance()) {
       FLog.w(TAG, "Unable to dispatch touch to JS as the catalyst instance has not been attached");
-      return false;
+      return null;
     }
     if (mJSTouchDispatcher == null) {
       FLog.w(TAG, "Unable to dispatch touch to JS before the dispatcher is available");
-      return false;
+      return null;
     }
     if (ReactFeatureFlags.dispatchPointerEvents && mJSPointerDispatcher == null) {
       FLog.w(TAG, "Unable to dispatch pointer events to JS before the dispatcher is available");
-      return false;
+      return null;
     }
 
-    return true;
+    return UIManagerHelper.getEventDispatcher(getCurrentReactContext(), getUIManagerType());
   }
 
   // By default the JS touch events are dispatched at the root view. This can be overridden in
@@ -339,8 +334,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       return;
     }
 
-    EventDispatcher eventDispatcher =
-        UIManagerHelper.getEventDispatcher(getCurrentReactContext(), getUIManagerType());
+    EventDispatcher eventDispatcher = getEventDispatcher();
     if (eventDispatcher != null) {
       mJSPointerDispatcher.handleMotionEvent(event, eventDispatcher, isCapture);
     }
@@ -356,8 +350,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       return;
     }
 
-    EventDispatcher eventDispatcher =
-        UIManagerHelper.getEventDispatcher(getCurrentReactContext(), getUIManagerType());
+    EventDispatcher eventDispatcher = getEventDispatcher();
     if (eventDispatcher != null) {
       mJSTouchDispatcher.handleTouchEvent(event, eventDispatcher);
     }
@@ -367,8 +360,9 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   public void requestDisallowInterceptTouchEvent(boolean disallowIntercept) {
     // Override in order to still receive events to onInterceptTouchEvent even when some other
     // views disallow that, but propagate it up the tree if possible.
-    if (getParent() != null) {
-      getParent().requestDisallowInterceptTouchEvent(disallowIntercept);
+    ViewParent parent = getParent();
+    if (parent != null) {
+      parent.requestDisallowInterceptTouchEvent(disallowIntercept);
     }
   }
 
