@@ -1219,7 +1219,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     zoomScale: 1,
   };
   _scrollRef: ?React.ElementRef<any> = null;
-  _sentStartForContentLength = 0;
+  _sentStartForFirstVisibleItemKey: ?string = null;
   _sentEndForContentLength = 0;
   _updateCellsToRenderBatcher: Batchinator;
   _viewabilityTuples: Array<ViewabilityHelperCallbackTuple> = [];
@@ -1552,16 +1552,16 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       onStartReached != null &&
       this.state.cellsAroundViewport.first === 0 &&
       isWithinStartThreshold &&
-      this._listMetrics.getContentLength() !== this._sentStartForContentLength
+      this.state.firstVisibleItemKey !== this._sentStartForFirstVisibleItemKey
     ) {
-      this._sentStartForContentLength = this._listMetrics.getContentLength();
+      this._sentStartForFirstVisibleItemKey = this.state.firstVisibleItemKey;
       onStartReached({distanceFromStart});
     }
 
     // If the user scrolls away from the start or end and back again,
     // cause onStartReached or onEndReached to be triggered again
     if (!isWithinStartThreshold) {
-      this._sentStartForContentLength = 0;
+      this._sentStartForFirstVisibleItemKey = null;
     }
     if (!isWithinEndThreshold) {
       this._sentEndForContentLength = 0;
