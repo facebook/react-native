@@ -11,6 +11,7 @@ import com.facebook.react.utils.projectPathToLibraryName
 import javax.inject.Inject
 import org.gradle.api.Project
 import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.file.FileCollection
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
@@ -147,4 +148,35 @@ abstract class ReactExtension @Inject constructor(project: Project) {
    */
   val codegenJavaPackageName: Property<String> =
       objects.property(String::class.java).convention("com.facebook.fbreact.specs")
+
+  /** Auto-linking Config */
+
+  /**
+   * Location of the JSON file used to configure autolinking. This file is the output of the
+   * `@react-native-community/cli` config command.
+   *
+   * If not specified, RNGP will just invoke whatever you pass as [autolinkConfigCommand].
+   */
+  val autolinkConfigFile: RegularFileProperty = objects.fileProperty()
+
+  /**
+   * The command to invoke as source of truth for the autolinking configuration. Default is `["npx",
+   * "@react-native-community/cli", "config"]`.
+   */
+  val autolinkConfigCommand: ListProperty<String> =
+      objects
+          .listProperty(String::class.java)
+          .convention(listOf("npx", "@react-native-community/cli", "config"))
+
+  /**
+   * Location of the lock files used to consider wether autolinking [autolinkConfigCommand] should
+   * re-execute or not. If file collection is unchanged, the autolinking command will not be
+   * re-executed.
+   *
+   * If not specified, RNGP will just look for both yarn.lock and package.lock in the [root] folder.
+   */
+  val autolinkLockFiles: Property<FileCollection> =
+      objects
+          .property(FileCollection::class.java)
+          .convention(root.files("../yarn.lock", "../package-lock.json"))
 }
