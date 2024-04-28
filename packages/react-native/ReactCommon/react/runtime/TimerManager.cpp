@@ -152,6 +152,21 @@ void TimerManager::callTimer(uint32_t timerID) {
   });
 }
 
+std::shared_ptr<TimerHandle> TimerManager::createIdleCallback(
+    jsi::Function&& callback) {
+  return nullptr;
+}
+
+std::shared_ptr<TimerHandle> TimerManager::createIdleCallbackWithTimeout(
+    jsi::Function&& callback,
+    int32_t timeout) {
+  return nullptr;
+}
+
+void TimerManager::clearIdleCallback(
+    jsi::Runtime& runtime,
+    std::shared_ptr<TimerHandle> idleCallbackHandle) {}
+
 void TimerManager::attachGlobals(jsi::Runtime& runtime) {
   // Install host functions for timers.
   // TODO (T45786383): Add missing timer functions from JSTimers
