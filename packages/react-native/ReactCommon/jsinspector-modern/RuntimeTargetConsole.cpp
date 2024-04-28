@@ -155,7 +155,7 @@ void RuntimeTarget::installConsoleHandler() {
                  jsi::Runtime& runtime,
                  const jsi::Value& thisVal,
                  const jsi::Value* args,
-                 size_t count) mutable {
+                 size_t count) {
         jsi::Value retVal = innerFn(runtime, thisVal, args, count);
         if (originalConsole) {
           auto val = originalConsole->getProperty(runtime, methodName);
@@ -202,27 +202,21 @@ void RuntimeTarget::installConsoleHandler() {
                           jsi::Runtime& runtime,
                           const jsi::Value& /*thisVal*/,
                           const jsi::Value* args,
-                          size_t count) mutable {
+                          size_t count) {
                         auto timestampMs = getTimestampMs();
-                        delegateExecutorSync(
-                            [&runtime,
-                             args,
-                             count,
-                             body = std::move(body),
-                             state,
-                             timestampMs](auto& runtimeTargetDelegate) {
-                              auto stackTrace =
-                                  runtimeTargetDelegate.captureStackTrace(
-                                      runtime, /* framesToSkip */ 1);
-                              body(
-                                  runtime,
-                                  args,
-                                  count,
-                                  runtimeTargetDelegate,
-                                  *state,
-                                  timestampMs,
-                                  std::move(stackTrace));
-                            });
+                        delegateExecutorSync([&](auto& runtimeTargetDelegate) {
+                          auto stackTrace =
+                              runtimeTargetDelegate.captureStackTrace(
+                                  runtime, /* framesToSkip */ 1);
+                          body(
+                              runtime,
+                              args,
+                              count,
+                              runtimeTargetDelegate,
+                              *state,
+                              timestampMs,
+                              std::move(stackTrace));
+                        });
                         return jsi::Value::undefined();
                       })));
         };
