@@ -432,6 +432,77 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
             deleteTimer(rt, host);
             return jsi::Value::undefined();
           }));
+
+  runtime.global().setProperty(
+      runtime,
+      "requestIdleCallback",
+      jsi::Function::createFromHostFunction(
+          runtime,
+          jsi::PropNameID::forAscii(runtime, "requestIdleCallback"),
+          2, // callback, options
+          [this](
+              jsi::Runtime& rt,
+              const jsi::Value& /*thisVal*/,
+              const jsi::Value* args,
+              size_t count) {
+            if (count < 0) {
+              throw jsi::JSError(
+                  rt,
+                  "requestIdleCallback must be called with at least a callback)");
+            }
+
+            if (!args[0].isObject() || !args[0].asObject(rt).isFunction(rt)) {
+              throw jsi::JSError(
+                  rt,
+                  "The first argument to requestIdleCallback must be a function.");
+            }
+
+            auto callback = args[0].getObject(rt).getFunction(rt);
+
+            if (count >= 2) {
+              if (args[1].isNull() ||
+                  (!args[1].isNull() && !args[1].isObject())) {
+                throw jsi::JSError(
+                    rt,
+                    "The second argument of requestIdleCallback, if provided, must be an object");
+              }
+              auto options = args[1].asObject(rt);
+              if (!options.hasProperty(rt, "timeout")) {
+                throw jsi::JSError(
+                    rt,
+                    "The second argument of requestIdleCallback must have a timeout property");
+              }
+              auto timeout = options.getProperty(rt, "timeout").asNumber();
+              auto handle =
+                  createIdleCallbackWithTimeout(std::move(callback), timeout);
+              return jsi::Object::createFromHostObject(rt, handle);
+            }
+
+            auto handle = createIdleCallback(std::move(callback));
+            return jsi::Object::createFromHostObject(rt, handle);
+          }));
+
+  runtime.global().setProperty(
+      runtime,
+      "cancelIdleCallback",
+      jsi::Function::createFromHostFunction(
+          runtime,
+          jsi::PropNameID::forAscii(runtime, "cancelIdleCallback"),
+          1, // idleCallbackID
+          [this](
+              jsi::Runtime& rt,
+              const jsi::Value& /*thisVal*/,
+              const jsi::Value* args,
+              size_t count) {
+            if (count > 0 && args[0].isObject() &&
+                args[0].asObject(rt).isHostObject<TimerHandle>(rt)) {
+              std::shared_ptr<TimerHandle> host =
+                  args[0].asObject(rt).asHostObject<TimerHandle>(rt);
+              clearIdleCallback(rt, host);
+            }
+
+            return jsi::Value::undefined();
+          }));
 }
 
 } // namespace facebook::react
