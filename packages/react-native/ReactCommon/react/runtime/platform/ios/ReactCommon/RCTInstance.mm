@@ -144,7 +144,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 {
   if (_valid) {
     _reactInstance->callFunctionOnModule(
-        [moduleName UTF8String], [method UTF8String], convertIdToFollyDynamic(args ?: @[]));
+        [moduleName UTF8String], [method UTF8String], convertIdToFollyDynamic(args ? args : @[]));
   }
 }
 
@@ -255,6 +255,8 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 
   RuntimeExecutor bufferedRuntimeExecutor = _reactInstance->getBufferedRuntimeExecutor();
   timerManager->setRuntimeExecutor(bufferedRuntimeExecutor);
+
+  timerManager->setRuntimeScheduler(std::weak_ptr<RuntimeScheduler>(_reactInstance->getBufferedRuntimeScheduler()));
 
   auto jsCallInvoker = make_shared<BridgelessJSCallInvoker>(bufferedRuntimeExecutor);
   RCTBridgeProxy *bridgeProxy =

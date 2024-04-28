@@ -42,6 +42,8 @@ class ReactInstance final : private jsinspector_modern::InstanceTargetDelegate {
   RuntimeExecutor getBufferedRuntimeExecutor() noexcept;
 
   std::shared_ptr<RuntimeScheduler> getRuntimeScheduler() noexcept;
+  
+  std::shared_ptr<RuntimeScheduler> getBufferedRuntimeScheduler() noexcept;
 
   struct JSRuntimeFlags {
     bool isProfiling = false;
@@ -80,6 +82,7 @@ class ReactInstance final : private jsinspector_modern::InstanceTargetDelegate {
   std::shared_ptr<TimerManager> timerManager_;
   std::unordered_map<std::string, std::shared_ptr<CallableModule>> modules_;
   std::shared_ptr<RuntimeScheduler> runtimeScheduler_;
+  std::shared_ptr<RuntimeScheduler> bufferedRuntimeScheduler_;
   std::shared_ptr<JsErrorHandler> jsErrorHandler_;
 
   jsinspector_modern::InstanceTarget* inspectorTarget_{nullptr};

@@ -125,6 +125,9 @@ ReactInstance::ReactInstance(
           std::function<void(jsi::Runtime & runtime)>&& callback) {
         runtimeScheduler->scheduleWork(std::move(callback));
       });
+  
+
+  bufferedRuntimeScheduler_ = std::make_shared<RuntimeScheduler>(this->getBufferedRuntimeExecutor());
 }
 
 void ReactInstance::unregisterFromInspector() {
@@ -161,11 +164,14 @@ RuntimeExecutor ReactInstance::getBufferedRuntimeExecutor() noexcept {
   };
 }
 
-// TODO(T184010230): Should the RuntimeScheduler returned from this method be
-// buffered?
 std::shared_ptr<RuntimeScheduler>
 ReactInstance::getRuntimeScheduler() noexcept {
   return runtimeScheduler_;
+}
+
+std::shared_ptr<RuntimeScheduler>
+ReactInstance::getBufferedRuntimeScheduler() noexcept {
+  return bufferedRuntimeScheduler_;
 }
 
 namespace {
