@@ -21,7 +21,7 @@ folly_compiler_flags = folly_config[:compiler_flags]
 folly_version = folly_config[:version]
 
 is_new_arch_enabled = ENV["RCT_NEW_ARCH_ENABLED"] == "1"
-use_hermes =  ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == '1'
+use_hermes = ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == '1'
 
 new_arch_enabled_flag = (is_new_arch_enabled ? " -DRCT_NEW_ARCH_ENABLED" : "")
 is_fabric_enabled = true #is_new_arch_enabled || ENV["RCT_FABRIC_ENABLED"]
@@ -65,8 +65,6 @@ Pod::Spec.new do |s|
     "DEFINES_MODULE" => "YES"
   }
   s.user_target_xcconfig   = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/Headers/Private/React-Core\""}
-
-  use_hermes = ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == "1"
 
   s.dependency "React-Core"
   s.dependency "RCT-Folly", folly_version
