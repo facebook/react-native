@@ -7,6 +7,7 @@
 
 #include <jsinspector-modern/RuntimeTarget.h>
 
+#include <concepts>
 #include <deque>
 #include <string>
 
@@ -99,6 +100,25 @@ double getTimestampMs() {
       .count();
 }
 
+template <typename T>
+concept ConsoleMethodBody = std::invocable<
+    T,
+    jsi::Runtime& /*runtime*/,
+    const jsi::Value* /*args*/,
+    size_t /*count*/,
+    RuntimeTargetDelegate& /*runtimeTargetDelegate*/,
+    ConsoleState& /*state*/,
+    double /*timestampMs*/,
+    std::unique_ptr<StackTrace> /*stackTrace*/>;
+
+template <typename T>
+concept CallableAsHostFunction = std::invocable<
+    T,
+    jsi::Runtime& /*runtime*/,
+    const jsi::Value& /*thisVal*/,
+    const jsi::Value* /*args*/,
+    size_t /*count*/>;
+
 } // namespace
 
 void RuntimeTarget::installConsoleHandler() {
@@ -127,31 +147,30 @@ void RuntimeTarget::installConsoleHandler() {
      * \warning The callback will not run if the RuntimeTarget has been
      * destroyed.
      */
-    auto delegateExecutorSync = [selfWeak, selfExecutor](auto&& func) {
-      if (auto self = selfWeak.lock()) {
-        // Q: Why is it safe to use self->delegate_ here?
-        // A: Because the caller of InspectorTarget::registerRuntime
-        // is explicitly required to guarantee that the delegate not
-        // only outlives the target, but also outlives all JS code
-        // execution that occurs on the JS thread.
-        func(self->delegate_);
-        // To ensure we never destroy `self` on the JS thread, send
-        // our shared_ptr back to the inspector thread.
-        selfExecutor([self = std::move(self)](auto&) { (void)self; });
-      }
-    };
+    auto delegateExecutorSync =
+        [selfWeak,
+         selfExecutor](std::invocable<RuntimeTargetDelegate&> auto func) {
+          if (auto self = selfWeak.lock()) {
+            // Q: Why is it safe to use self->delegate_ here?
+            // A: Because the caller of InspectorTarget::registerRuntime
+            // is explicitly required to guarantee that the delegate not
+            // only outlives the target, but also outlives all JS code
+            // execution that occurs on the JS thread.
+            func(self->delegate_);
+            // To ensure we never destroy `self` on the JS thread, send
+            // our shared_ptr back to the inspector thread.
+            selfExecutor([self = std::move(self)](auto&) { (void)self; });
+          }
+        };
 
     /**
      * Call \param innerFn and forward any arguments to the original console
      * method named \param methodName, if possible.
      */
-    auto forwardToOriginalConsole = [originalConsole, delegateExecutorSync](
+    auto forwardToOriginalConsole = [originalConsole](
                                         const char* methodName,
-                                        auto&& innerFn) {
-      return [originalConsole,
-              delegateExecutorSync,
-              innerFn = std::forward<decltype(innerFn)>(innerFn),
-              methodName](
+                                        CallableAsHostFunction auto innerFn) {
+      return [originalConsole, innerFn = std::move(innerFn), methodName](
                  jsi::Runtime& runtime,
                  const jsi::Value& thisVal,
                  const jsi::Value* args,
@@ -179,47 +198,38 @@ void RuntimeTarget::installConsoleHandler() {
      * due to RuntimeTarget having been destroyed), the method of the same name
      * is also called on originalConsole (if it exists).
      */
-    auto installConsoleMethod =
-        [&](const char* methodName,
-            std::function<void(
-                jsi::Runtime & runtime,
-                const jsi::Value* args,
-                size_t count,
-                RuntimeTargetDelegate& runtimeTargetDelegate,
-                ConsoleState& state,
-                double timestampMs,
-                std::unique_ptr<StackTrace> stackTrace)>&& body) {
-          console.setProperty(
+    auto installConsoleMethod = [&](const char* methodName,
+                                    ConsoleMethodBody auto body) {
+      console.setProperty(
+          runtime,
+          methodName,
+          jsi::Function::createFromHostFunction(
               runtime,
-              methodName,
-              jsi::Function::createFromHostFunction(
-                  runtime,
-                  jsi::PropNameID::forAscii(runtime, methodName),
-                  0,
-                  forwardToOriginalConsole(
-                      methodName,
-                      [body = std::move(body), state, delegateExecutorSync](
-                          jsi::Runtime& runtime,
-                          const jsi::Value& /*thisVal*/,
-                          const jsi::Value* args,
-                          size_t count) {
-                        auto timestampMs = getTimestampMs();
-                        delegateExecutorSync([&](auto& runtimeTargetDelegate) {
-                          auto stackTrace =
-                              runtimeTargetDelegate.captureStackTrace(
-                                  runtime, /* framesToSkip */ 1);
-                          body(
-                              runtime,
-                              args,
-                              count,
-                              runtimeTargetDelegate,
-                              *state,
-                              timestampMs,
-                              std::move(stackTrace));
-                        });
-                        return jsi::Value::undefined();
-                      })));
-        };
+              jsi::PropNameID::forAscii(runtime, methodName),
+              0,
+              forwardToOriginalConsole(
+                  methodName,
+                  [body = std::move(body), state, delegateExecutorSync](
+                      jsi::Runtime& runtime,
+                      const jsi::Value& /*thisVal*/,
+                      const jsi::Value* args,
+                      size_t count) {
+                    auto timestampMs = getTimestampMs();
+                    delegateExecutorSync([&](auto& runtimeTargetDelegate) {
+                      auto stackTrace = runtimeTargetDelegate.captureStackTrace(
+                          runtime, /* framesToSkip */ 1);
+                      body(
+                          runtime,
+                          args,
+                          count,
+                          runtimeTargetDelegate,
+                          *state,
+                          timestampMs,
+                          std::move(stackTrace));
+                    });
+                    return jsi::Value::undefined();
+                  })));
+    };
 
     /**
      * console.count
