@@ -748,6 +748,16 @@ TEST_P(ConsoleApiTest, testConsoleLogStack) {
   )");
 }
 
+TEST_P(ConsoleApiTest, testConsoleLogTwice) {
+  InSequence s;
+  expectConsoleApiCall(
+      AllOf(AtJsonPtr("/type", "log"), AtJsonPtr("/args/0/value", "hello")));
+  eval("console.log('hello');");
+  expectConsoleApiCall(AllOf(
+      AtJsonPtr("/type", "log"), AtJsonPtr("/args/0/value", "hello again")));
+  eval("console.log('hello again');");
+}
+
 static const auto paramValues = testing::Values(
     Params{
         .withConsolePolyfill = true,
