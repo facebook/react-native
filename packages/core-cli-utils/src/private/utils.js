@@ -41,6 +41,7 @@ type PathCheckResult = {
 export function isOnPath(dep: string, description: string): PathCheckResult {
   const cmd = isWindows ? ['where', [dep]] : ['command', ['-v', dep]];
   try {
+    const args = isWindows ? ['where', [dep]] : ['command', ['-v', dep]];
     return {
       dep,
       description,

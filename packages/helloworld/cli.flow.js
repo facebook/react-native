@@ -41,21 +41,23 @@ type IOSDevice = {
   name: string,
 };
 
-function observe(result: ExecaPromise): Observable<string> {
+type ExecaPromiseMetaized = Promise<Result> & child_process$ChildProcess;
+
+function observe(result: ExecaPromiseMetaized): Observable<string> {
   return new Observable(observer => {
     result.stderr.on('data', data =>
       data
         .toString('utf8')
         .split('\n')
         .filter(line => line.length > 0)
-        .forEach(line => observer.next('🟢 ' + line)),
+        .forEach(line => observer.next('🟢 ' + line.trim())),
     );
     result.stdout.on('data', data =>
       data
         .toString('utf8')
         .split('\n')
         .filter(line => line.length > 0)
-        .forEach(line => observer.next('🟠 ' + line)),
+        .forEach(line => observer.next('🟠 ' + line.trim())),
     );
     for (const event of ['close', 'end']) {
       result.stdout.on(event, () => observer.complete());
@@ -68,6 +70,26 @@ function observe(result: ExecaPromise): Observable<string> {
       }
     };
   });
+}
+
+function getXcodeBuildSettings(iosProjectFolder: string) {
+  const {stdout} = execa.sync(
+    'xcodebuild',
+    [
+      '-workspace',
+      'HelloWorld.xcworkspace',
+      '-scheme',
+      'HelloWorld',
+      '-configuration',
+      'Debug',
+      '-sdk',
+      'iphonesimulator',
+      '-showBuildSettings',
+      '-json',
+    ],
+    {cwd: iosProjectFolder},
+  );
+  return JSON.parse(stdout);
 }
 
 async function getSimulatorDetails(nameOrUDID: string): Promise<IOSDevice> {
@@ -164,7 +186,9 @@ function run(
       title: task.label,
       task: () => {
         const action = task.action();
-        return action != null ? observe(action) : action;
+        if (action != null) {
+          return observe(action);
+        }
       },
     }));
   return new Listr(spec).run();
@@ -209,7 +233,38 @@ build
       }),
     );
 
-    // TODO: Install
+    const settings = {
+      appPath: '',
+      bundleId: '',
+    };
+
+    await run({
+      buildSettings: {
+        order: 1,
+        label: 'Getting your build settings',
+        action: (): void => {
+          const xcode = getXcodeBuildSettings(cwd.ios)[0].buildSettings;
+          settings.appPath = path.join(
+            xcode.TARGET_BUILD_DIR,
+            xcode.EXECUTABLE_FOLDER_PATH,
+          );
+          settings.bundleId = xcode.PRODUCT_BUNDLE_IDENTIFIER;
+        },
+      },
+    });
+
+    await run(
+      apple.ios.install({
+        cwd: cwd.ios,
+        device: device.udid,
+        appPath: settings.appPath,
+        bundleId: settings.bundleId,
+      }),
+    );
   });
 
-program.parse();
+if (require.main === module) {
+  program.parse();
+}
+
+export default program;
