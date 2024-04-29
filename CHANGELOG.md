@@ -1617,6 +1617,20 @@ This file contains all changelogs for latest releases, from 0.70.0 onward. Pleas
 
 - Enable Address and Undefined Behavior Sanitizers on RNTester ([65e61f3c88](https://github.com/facebook/react-native/commit/65e61f3c88388d4a2ed88bcc9a2cb5ba63fd8afa) by [@Saadnajmi](https://github.com/Saadnajmi))
 
+## v0.71.19
+
+### Added
+
+#### iOS Specific
+
+- Add privacy manifest to pod install and hello world ([d669ff7df8](https://github.com/facebook/react-native/commit/d669ff7df8727decb18143065273077db93267b6) by [@philIip](https://github.com/philIip))
+
+### Changed
+
+#### iOS Specific
+
+- Bumped hermes to remove Apple's RR API that were unused. Hermes does not requires a PrivacyManifest now. ([d8d096d995](https://github.com/facebook/react-native/commit/d8d096d995eacf63bc76b6a7f2ec4265c9fc1f37) by [@cipolleschi](https://github.com/cipolleschi))
+
 ## v0.71.18
 
 ### Fixed
