@@ -2,7 +2,7 @@
   "name": "@react-native/core-cli-utils",
   "version": "0.75.0-main",
   "description": "React Native CLI library for Frameworks to build on",
-  "main": "./src/index.js",
+  "main": "./src/index.flow.js",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -10,11 +10,11 @@
     "directory": "packages/core-cli-utils"
   },
   "exports": {
-    ".": "./src/index.js",
+    ".": "./src/index.flow.js",
     "./package.json": "./package.json",
     "./version.js": "./src/public/version.js"
   },
-  "types": "./dist/index.d.ts",
+  "types": "./dist/index.flow.d.ts",
   "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/core-cli-utils#readme",
   "keywords": [
     "cli-utils",
@@ -25,7 +25,7 @@
     "node": ">=18"
   },
   "files": [
-    "dist"
+    "src"
   ],
   "dependencies": {},
   "devDependencies": {}

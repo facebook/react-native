@@ -123,4 +123,4 @@ dependencies {
 }
 
 // TODO: This needs to use the new autolinking code in the gradle-plugin instead
-apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
+// apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)

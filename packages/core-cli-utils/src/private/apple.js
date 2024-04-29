@@ -39,6 +39,7 @@ type AppleInstallApp = {
   // `xcrun simctl list devices`
   device: string,
   appPath: string,
+  bundleId: string,
   ...AppleOptions,
 };
 

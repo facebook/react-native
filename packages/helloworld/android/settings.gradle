@@ -6,7 +6,6 @@
  */
 
 rootProject.name = 'HelloWorld'
-// TODO: Use the new autolinking feature in the gradle plugin (not that it's necessary as we don't have any native extensions here. Maybe we should have?)
-// apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesSettingsGradle(settings)
 include ':app'
-includeBuild('../../../../react-native-gradle-plugin')
+// Autolinking has now moved into the React Native Gradle Plugin
+includeBuild('../../react-native-gradle-plugin')

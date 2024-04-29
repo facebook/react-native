@@ -24,12 +24,8 @@ type AndroidBuild = {
   gradleArgs?: Array<string>,
 };
 
-async function gradle(
-  cwd: string,
-  ...args: string[]
-): ReturnType<typeof execa> {
+function gradle(cwd: string, ...args: string[]): ExecaPromise {
   const gradlew = isWindows ? 'gradlew.bat' : './gradlew';
-  // $FlowFixMe[incompatible-return] Mismatch between flow and TypeScript types
   return execa(gradlew, args, {
     cwd,
     stdio: 'inherit',

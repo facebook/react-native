@@ -38,7 +38,7 @@ export type StartCommandArgs = {
   https?: boolean,
   maxWorkers?: number,
   key?: string,
-  platforms?: string[],
+  platforms: string[],
   port?: number,
   resetCache?: boolean,
   sourceExts?: string[],
