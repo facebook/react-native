@@ -16,6 +16,7 @@
 
 #include <react/config/ReactNativeConfig.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/graphics/Color.h>
 #include <react/renderer/mounting/Differentiator.h>
 #include <react/renderer/mounting/stubs/stubs.h>
 
