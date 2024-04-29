@@ -14,12 +14,12 @@ namespace facebook::react {
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 
-std::string getDebugName(LayoutMetrics const & /*object*/) {
+std::string getDebugName(const LayoutMetrics& /*object*/) {
   return "LayoutMetrics";
 }
 
 std::vector<DebugStringConvertibleObject> getDebugProps(
-    LayoutMetrics const &object,
+    const LayoutMetrics& object,
     DebugStringConvertibleOptions options) {
   return {
       {"frame",

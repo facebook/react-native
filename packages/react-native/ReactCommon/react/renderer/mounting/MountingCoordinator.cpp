@@ -6,6 +6,7 @@
  */
 
 #include "MountingCoordinator.h"
+#include "updateMountedFlag.h"
 
 #ifdef RN_SHADOW_TREE_INTROSPECTION
 #include <glog/logging.h>
@@ -15,11 +16,13 @@
 #include <condition_variable>
 
 #include <react/debug/react_native_assert.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
+#include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
 
 namespace facebook::react {
 
-MountingCoordinator::MountingCoordinator(const ShadowTreeRevision &baseRevision)
+MountingCoordinator::MountingCoordinator(const ShadowTreeRevision& baseRevision)
     : surfaceId_(baseRevision.rootShadowNode->getSurfaceId()),
       baseRevision_(baseRevision),
       telemetryController_(*this) {
@@ -35,7 +38,7 @@ SurfaceId MountingCoordinator::getSurfaceId() const {
 
 void MountingCoordinator::push(ShadowTreeRevision revision) const {
   {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::scoped_lock lock(mutex_);
 
     react_native_assert(
         !lastRevision_.has_value() || revision.number != lastRevision_->number);
@@ -49,7 +52,7 @@ void MountingCoordinator::push(ShadowTreeRevision revision) const {
 }
 
 void MountingCoordinator::revoke() const {
-  std::lock_guard<std::mutex> lock(mutex_);
+  std::scoped_lock lock(mutex_);
   // We have two goals here.
   // 1. We need to stop retaining `ShadowNode`s to not prolong their lifetime
   // to prevent them from overliving `ComponentDescriptor`s.
@@ -66,23 +69,35 @@ bool MountingCoordinator::waitForTransaction(
 }
 
 void MountingCoordinator::updateBaseRevision(
-    ShadowTreeRevision const &baseRevision) const {
+    const ShadowTreeRevision& baseRevision) const {
+  std::scoped_lock lock(mutex_);
   baseRevision_ = baseRevision;
 }
 
 void MountingCoordinator::resetLatestRevision() const {
+  std::scoped_lock lock(mutex_);
   lastRevision_.reset();
 }
 
 std::optional<MountingTransaction> MountingCoordinator::pullTransaction()
     const {
-  std::lock_guard<std::mutex> lock(mutex_);
+  SystraceSection section("MountingCoordinator::pullTransaction");
+
+  std::scoped_lock lock(mutex_);
 
   auto transaction = std::optional<MountingTransaction>{};
 
   // Base case
   if (lastRevision_.has_value()) {
     number_++;
+
+    if (ReactNativeFeatureFlags::fixMountedFlagAndFixPreallocationClone()) {
+      std::scoped_lock dispatchLock(EventEmitter::DispatchMutex());
+
+      updateMountedFlag(
+          baseRevision_.rootShadowNode->getChildren(),
+          lastRevision_->rootShadowNode->getChildren());
+    }
 
     auto telemetry = lastRevision_->telemetry;
 
@@ -103,6 +118,8 @@ std::optional<MountingTransaction> MountingCoordinator::pullTransaction()
       mountingOverrideDelegate->shouldOverridePullTransaction();
 
   if (shouldOverridePullTransaction) {
+    SystraceSection section2("MountingCoordinator::overridePullTransaction");
+
     auto mutations = ShadowViewMutation::List{};
     auto telemetry = TransactionTelemetry{};
 
@@ -125,6 +142,9 @@ std::optional<MountingTransaction> MountingCoordinator::pullTransaction()
 
 #ifdef RN_SHADOW_TREE_INTROSPECTION
   if (transaction.has_value()) {
+    SystraceSection section2(
+        "MountingCoordinator::verifyMutationsForDebugging");
+
     // We have something to validate.
     auto mutations = transaction->getMutations();
 
@@ -175,13 +195,23 @@ std::optional<MountingTransaction> MountingCoordinator::pullTransaction()
   return transaction;
 }
 
-TelemetryController const &MountingCoordinator::getTelemetryController() const {
+bool MountingCoordinator::hasPendingTransactions() const {
+  std::scoped_lock lock(mutex_);
+  return lastRevision_.has_value();
+}
+
+const TelemetryController& MountingCoordinator::getTelemetryController() const {
   return telemetryController_;
 }
 
+ShadowTreeRevision MountingCoordinator::getBaseRevision() const {
+  std::scoped_lock lock(mutex_);
+  return baseRevision_;
+}
+
 void MountingCoordinator::setMountingOverrideDelegate(
-    std::weak_ptr<MountingOverrideDelegate const> delegate) const {
-  std::lock_guard<std::mutex> lock(mutex_);
+    std::weak_ptr<const MountingOverrideDelegate> delegate) const {
+  std::scoped_lock lock(mutex_);
   mountingOverrideDelegate_ = std::move(delegate);
 }
 

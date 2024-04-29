@@ -8,11 +8,13 @@
 package com.facebook.react.uimanager;
 
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 
 /**
  * Provides helper methods for converting transform operations into a matrix and then into a list of
  * translate, scale and rotate commands.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class MatrixMathHelper {
 
   private static final double EPSILON = .00001d;
@@ -98,7 +100,9 @@ public class MatrixMathHelper {
     out[15] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33;
   }
 
-  /** @param transformMatrix 16-element array of numbers representing 4x4 transform matrix */
+  /**
+   * @param transformMatrix 16-element array of numbers representing 4x4 transform matrix
+   */
   public static void decomposeMatrix(double[] transformMatrix, MatrixDecompositionContext ctx) {
     Assertions.assertCondition(transformMatrix.length == 16);
 

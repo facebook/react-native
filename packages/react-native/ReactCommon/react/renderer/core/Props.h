@@ -27,15 +27,17 @@ namespace facebook::react {
  */
 class Props : public virtual Sealable, public virtual DebugStringConvertible {
  public:
-  using Shared = std::shared_ptr<Props const>;
+  using Shared = std::shared_ptr<const Props>;
 
   Props() = default;
   Props(
-      const PropsParserContext &context,
-      const Props &sourceProps,
-      RawProps const &rawProps,
-      bool shouldSetRawProps = true);
+      const PropsParserContext& context,
+      const Props& sourceProps,
+      const RawProps& rawProps);
   virtual ~Props() = default;
+
+  Props(const Props& other) = delete;
+  Props& operator=(const Props& other) = delete;
 
   /**
    * Set a prop value via iteration (see enableIterator above).
@@ -48,20 +50,23 @@ class Props : public virtual Sealable, public virtual DebugStringConvertible {
    * ViewProps uses "propX", Props may also use "propX".
    */
   void setProp(
-      const PropsParserContext &context,
+      const PropsParserContext& context,
       RawPropsPropNameHash hash,
-      const char *propName,
-      RawValue const &value);
+      const char* propName,
+      const RawValue& value);
 
   std::string nativeId;
 
 #ifdef ANDROID
   folly::dynamic rawProps = folly::dynamic::object();
-
-  virtual void propsDiffMapBuffer(
-      Props const *oldProps,
-      MapBufferBuilder &builder) const;
 #endif
+
+ protected:
+  /** Initialize member variables of Props instance */
+  void initialize(
+      const PropsParserContext& context,
+      const Props& sourceProps,
+      const RawProps& rawProps);
 };
 
 } // namespace facebook::react

@@ -21,7 +21,7 @@
 #include <react/renderer/mounting/Differentiator.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
 
-#include <react/renderer/mounting/stubs.h>
+#include <react/renderer/mounting/stubs/stubs.h>
 #include <react/test_utils/Entropy.h>
 #include <react/test_utils/MockClock.h>
 #include <react/test_utils/shadowTreeGeneration.h>
@@ -49,21 +49,19 @@ static void testShadowNodeTreeLifeCycleLayoutAnimations(
   auto entropy = seed == 0 ? Entropy() : Entropy(seed);
 
   auto eventDispatcher = EventDispatcher::Shared{};
-  auto contextContainer = std::make_shared<ContextContainer const>();
+  auto contextContainer = std::make_shared<const ContextContainer>();
   auto componentDescriptorParameters =
       ComponentDescriptorParameters{eventDispatcher, contextContainer, nullptr};
   auto viewComponentDescriptor =
       ViewComponentDescriptor(componentDescriptorParameters);
   auto rootComponentDescriptor =
       RootComponentDescriptor(componentDescriptorParameters);
-  auto noopEventEmitter =
-      std::make_shared<ViewEventEmitter const>(nullptr, -1, eventDispatcher);
 
   PropsParserContext parserContext{-1, *contextContainer};
 
   // Create a RuntimeExecutor
   RuntimeExecutor runtimeExecutor =
-      [](std::function<void(jsi::Runtime &)> const & /*unused*/) {};
+      [](const std::function<void(jsi::Runtime&)>& /*unused*/) {};
 
   // Create component descriptor registry for animation driver
   auto providerRegistry =
@@ -95,11 +93,11 @@ static void testShadowNodeTreeLifeCycleLayoutAnimations(
     auto surfaceId = SurfaceId(surfaceIdInt);
 
     auto family = rootComponentDescriptor.createFamily(
-        {Tag(surfaceIdInt), surfaceId, nullptr}, nullptr);
+        {Tag(surfaceIdInt), surfaceId, nullptr});
 
     // Creating an initial root shadow node.
     auto emptyRootNode = std::const_pointer_cast<RootShadowNode>(
-        std::static_pointer_cast<RootShadowNode const>(
+        std::static_pointer_cast<const RootShadowNode>(
             rootComponentDescriptor.createShadowNode(
                 ShadowNodeFragment{RootShadowNode::defaultSharedProps()},
                 family)));
@@ -116,7 +114,7 @@ static void testShadowNodeTreeLifeCycleLayoutAnimations(
         generateShadowNodeTree(entropy, viewComponentDescriptor, treeSize);
 
     // Injecting a tree into the root node.
-    auto currentRootNode = std::static_pointer_cast<RootShadowNode const>(
+    auto currentRootNode = std::static_pointer_cast<const RootShadowNode>(
         emptyRootNode->ShadowNode::clone(ShadowNodeFragment{
             ShadowNodeFragment::propsPlaceholder(),
             std::make_shared<ShadowNode::ListOfShared>(
@@ -140,7 +138,7 @@ static void testShadowNodeTreeLifeCycleLayoutAnimations(
               &messWithLayoutableOnlyFlag,
           });
 
-      std::vector<LayoutableShadowNode const *> affectedLayoutableNodes{};
+      std::vector<const LayoutableShadowNode*> affectedLayoutableNodes{};
       affectedLayoutableNodes.reserve(1024);
 
       // Laying out the tree.
@@ -479,6 +477,7 @@ TEST(
 TEST(
     LayoutAnimationTest,
     stableSmallerTreeFewRepeatsFewStages_Overlapping_ManyConflicts_597132284) {
+  GTEST_SKIP();
   testShadowNodeTreeLifeCycleLayoutAnimations(
       /* seed */ 597132284,
       /* size */ 128,
@@ -499,6 +498,7 @@ TEST(
 TEST(
     LayoutAnimationTest,
     stableBiggerTreeFewRepeatsManyStages_Overlapping_ManyConflicts_2029343357) {
+  GTEST_SKIP();
   testShadowNodeTreeLifeCycleLayoutAnimations(
       /* seed */ 2029343357,
       /* size */ 512,

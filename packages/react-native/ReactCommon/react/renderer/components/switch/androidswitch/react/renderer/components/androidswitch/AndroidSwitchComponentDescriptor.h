@@ -21,25 +21,25 @@ class AndroidSwitchComponentDescriptor final
     : public ConcreteComponentDescriptor<AndroidSwitchShadowNode> {
  public:
   AndroidSwitchComponentDescriptor(
-      ComponentDescriptorParameters const &parameters)
+      const ComponentDescriptorParameters& parameters)
       : ConcreteComponentDescriptor(parameters),
         measurementsManager_(std::make_shared<AndroidSwitchMeasurementsManager>(
             contextContainer_)) {}
 
-  void adopt(ShadowNode::Unshared const &shadowNode) const override {
+  void adopt(ShadowNode& shadowNode) const override {
     ConcreteComponentDescriptor::adopt(shadowNode);
 
-    auto androidSwitchShadowNode =
-        std::static_pointer_cast<AndroidSwitchShadowNode>(shadowNode);
+    auto& androidSwitchShadowNode =
+        static_cast<AndroidSwitchShadowNode&>(shadowNode);
 
     // `AndroidSwitchShadowNode` uses `AndroidSwitchMeasurementsManager` to
     // provide measurements to Yoga.
-    androidSwitchShadowNode->setAndroidSwitchMeasurementsManager(
+    androidSwitchShadowNode.setAndroidSwitchMeasurementsManager(
         measurementsManager_);
 
     // All `AndroidSwitchShadowNode`s must have leaf Yoga nodes with properly
     // setup measure function.
-    androidSwitchShadowNode->enableMeasurement();
+    androidSwitchShadowNode.enableMeasurement();
   }
 
  private:

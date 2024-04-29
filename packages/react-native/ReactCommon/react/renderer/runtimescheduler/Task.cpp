@@ -11,7 +11,7 @@ namespace facebook::react {
 
 Task::Task(
     SchedulerPriority priority,
-    jsi::Function callback,
+    jsi::Function&& callback,
     std::chrono::steady_clock::time_point expirationTime)
     : priority(priority),
       callback(std::move(callback)),
@@ -19,20 +19,20 @@ Task::Task(
 
 Task::Task(
     SchedulerPriority priority,
-    RawCallback callback,
+    RawCallback&& callback,
     std::chrono::steady_clock::time_point expirationTime)
     : priority(priority),
       callback(std::move(callback)),
       expirationTime(expirationTime) {}
 
-jsi::Value Task::execute(jsi::Runtime &runtime, bool didUserCallbackTimeout) {
+jsi::Value Task::execute(jsi::Runtime& runtime, bool didUserCallbackTimeout) {
   auto result = jsi::Value::undefined();
   // Canceled task doesn't have a callback.
   if (!callback) {
     return result;
   }
 
-  auto &cbVal = callback.value();
+  auto& cbVal = callback.value();
 
   if (cbVal.index() == 0) {
     // Callback in JavaScript is expecting a single bool parameter.

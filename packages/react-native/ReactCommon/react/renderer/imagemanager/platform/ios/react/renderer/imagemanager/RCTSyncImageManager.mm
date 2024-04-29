@@ -37,12 +37,10 @@ using namespace facebook::react;
 - (ImageRequest)requestImage:(ImageSource)imageSource surfaceId:(SurfaceId)surfaceId
 {
   auto telemetry = std::make_shared<ImageTelemetry>(surfaceId);
-  auto imageRequest = ImageRequest(imageSource, telemetry);
+  auto sharedCancelationFunction = SharedFunction<>();
+  auto imageRequest = ImageRequest(imageSource, telemetry, sharedCancelationFunction);
   auto weakObserverCoordinator =
       (std::weak_ptr<const ImageResponseObserverCoordinator>)imageRequest.getSharedObserverCoordinator();
-
-  auto sharedCancelationFunction = SharedFunction<>();
-  imageRequest.setCancelationFunction(sharedCancelationFunction);
 
   dispatch_group_t imageWaitGroup = dispatch_group_create();
 
@@ -60,7 +58,8 @@ using namespace facebook::react;
       auto wrappedMetadata = metadata ? wrapManagedObject(metadata) : nullptr;
       observerCoordinator->nativeImageResponseComplete(ImageResponse(wrapManagedObject(image), wrappedMetadata));
     } else {
-      observerCoordinator->nativeImageResponseFailed();
+      auto wrappedError = error ? wrapManagedObject(error) : nullptr;
+      observerCoordinator->nativeImageResponseFailed(ImageLoadError(wrappedError));
     }
     dispatch_group_leave(imageWaitGroup);
   };
@@ -71,7 +70,7 @@ using namespace facebook::react;
       return;
     }
 
-    observerCoordinator->nativeImageResponseProgress((float)progress / (float)total);
+    observerCoordinator->nativeImageResponseProgress((float)progress / (float)total, progress, total);
   };
 
   RCTImageURLLoaderRequest *loaderRequest =

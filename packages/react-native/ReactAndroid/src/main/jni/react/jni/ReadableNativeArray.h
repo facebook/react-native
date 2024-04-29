@@ -25,14 +25,13 @@ class ReadableNativeArray
   friend HybridBase;
 
   template <class Dyn>
-  explicit ReadableNativeArray(Dyn &&array)
+  explicit ReadableNativeArray(Dyn&& array)
       : HybridBase(std::forward<Dyn>(array)) {}
 
  public:
-  static constexpr const char *kJavaDescriptor =
+  static constexpr const char* kJavaDescriptor =
       "Lcom/facebook/react/bridge/ReadableNativeArray;";
 
-  static void mapException(const std::exception &ex);
   static void mapException(std::exception_ptr ex);
   static void registerNatives();
 

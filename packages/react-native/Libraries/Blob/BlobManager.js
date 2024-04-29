@@ -66,10 +66,7 @@ class BlobManager {
 
     const blobId = uuidv4();
     const items = parts.map(part => {
-      if (
-        part instanceof ArrayBuffer ||
-        (global.ArrayBufferView && part instanceof global.ArrayBufferView)
-      ) {
+      if (part instanceof ArrayBuffer || ArrayBuffer.isView(part)) {
         throw new Error(
           "Creating blobs from 'ArrayBuffer' and 'ArrayBufferView' are not supported",
         );

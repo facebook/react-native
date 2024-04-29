@@ -28,7 +28,7 @@ class BaseTextShadowNode {
      * Unowning pointer to a `ShadowNode` that represents the attachment.
      * Cannot be `null`.
      */
-    ShadowNode const *shadowNode;
+    const ShadowNode* shadowNode;
 
     /*
      * Index of the fragment in `AttributedString` that represents the
@@ -52,10 +52,10 @@ class BaseTextShadowNode {
    * function, or if TextInput should inherit from BaseTextShadowNode.
    */
   static void buildAttributedString(
-      TextAttributes const &baseTextAttributes,
-      ShadowNode const &parentNode,
-      AttributedString &outAttributedString,
-      Attachments &outAttachments);
+      const TextAttributes& baseTextAttributes,
+      const ShadowNode& parentNode,
+      AttributedString& outAttributedString,
+      Attachments& outAttachments);
 
   /**
    * Returns a character used to measure empty strings in native platforms.

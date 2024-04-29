@@ -169,6 +169,7 @@ describe('Text compat with web', () => {
         disabled={true}
         ellipsizeMode="tail"
         isHighlighted={false}
+        role="main"
         selectionColor={null}
       />
     `);

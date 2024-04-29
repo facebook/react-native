@@ -18,6 +18,8 @@
 // For recoverable conditions that can be violated by user mistake (e.g. JS
 // code passes an unexpected prop value), consider react_native_expect instead.
 
+#pragma once
+
 #include "flags.h"
 
 #undef react_native_assert
@@ -36,10 +38,10 @@
 extern "C" {
 #endif // __cplusplus
 void react_native_assert_fail(
-    const char *func,
-    const char *file,
+    const char* func,
+    const char* file,
     int line,
-    const char *expr);
+    const char* expr);
 #ifdef __cplusplus
 }
 #endif // __cpusplus

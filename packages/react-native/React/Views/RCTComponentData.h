@@ -42,8 +42,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy, nullable) void (^eventInterceptor)
     (NSString *eventName, NSDictionary *event, NSNumber *reactTag);
 
++ (NSDictionary<NSString *, id> *)viewConfigForViewMangerClass:(Class)managerClass;
 - (NSDictionary<NSString *, id> *)viewConfig;
 
 @end
+
+RCT_EXTERN NSString *RCTViewManagerModuleNameForClass(Class managerClass);
 
 NS_ASSUME_NONNULL_END

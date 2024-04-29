@@ -10,14 +10,14 @@
 
 'use strict';
 
+const {setHermesTag} = require('./hermes-utils');
+const inquirer = require('inquirer');
 /**
  * This script walks a releaser through bumping the Hermes version for a release.
  * It needs be executed on a release branch.
  */
 const {exit} = require('shelljs');
 const yargs = require('yargs');
-const inquirer = require('inquirer');
-const {setHermesTag} = require('./hermes-utils');
 
 let argv = yargs.option('t', {
   alias: 'tag',

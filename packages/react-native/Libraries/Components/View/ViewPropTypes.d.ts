@@ -16,48 +16,6 @@ import {LayoutChangeEvent, PointerEvents} from '../../Types/CoreEventTypes';
 import {Touchable} from '../Touchable/Touchable';
 import {AccessibilityProps} from './ViewAccessibility';
 
-export type TVParallaxProperties = {
-  /**
-   * If true, parallax effects are enabled.  Defaults to true.
-   */
-  enabled?: boolean | undefined;
-
-  /**
-   * Defaults to 2.0.
-   */
-  shiftDistanceX?: number | undefined;
-
-  /**
-   * Defaults to 2.0.
-   */
-  shiftDistanceY?: number | undefined;
-
-  /**
-   * Defaults to 0.05.
-   */
-  tiltAngle?: number | undefined;
-
-  /**
-   * Defaults to 1.0
-   */
-  magnification?: number | undefined;
-
-  /**
-   * Defaults to 1.0
-   */
-  pressMagnification?: number | undefined;
-
-  /**
-   * Defaults to 0.3
-   */
-  pressDuration?: number | undefined;
-
-  /**
-   * Defaults to 0.3
-   */
-  pressDelay?: number | undefined;
-};
-
 export interface TVViewPropsIOS {
   /**
    * *(Apple TV only)* When set to true, this view will be focusable
@@ -73,13 +31,6 @@ export interface TVViewPropsIOS {
    * @platform ios
    */
   hasTVPreferredFocus?: boolean | undefined;
-
-  /**
-   * *(Apple TV only)* Object with properties to control Apple TV parallax effects.
-   *
-   * @platform ios
-   */
-  tvParallaxProperties?: TVParallaxProperties | undefined;
 
   /**
    * *(Apple TV only)* May be used to change the appearance of the Apple TV parallax effect when this view goes in or out of focus.  Defaults to 2.0.
@@ -133,20 +84,11 @@ export interface ViewPropsAndroid {
   collapsable?: boolean | undefined;
 
   /**
-   * Whether this view needs to rendered offscreen and composited with an alpha in order to preserve 100% correct colors and blending behavior.
-   * The default (false) falls back to drawing the component and its children
-   * with an alpha applied to the paint used to draw each element instead of rendering the full component offscreen and compositing it back with an alpha value.
-   * This default may be noticeable and undesired in the case where the View you are setting an opacity on
-   * has multiple overlapping elements (e.g. multiple overlapping Views, or text and a background).
-   *
-   * Rendering offscreen to preserve correct alpha behavior is extremely expensive
-   * and hard to debug for non-native developers, which is why it is not turned on by default.
-   * If you do need to enable this property for an animation,
-   * consider combining it with renderToHardwareTextureAndroid if the view contents are static (i.e. it doesn't need to be redrawn each frame).
-   * If that property is enabled, this View will be rendered off-screen once,
-   * saved in a hardware texture, and then composited onto the screen with an alpha each frame without having to switch rendering targets on the GPU.
+   * Setting to false prevents direct children of the view from being removed
+   * from the native view hierarchy, similar to the effect of setting
+   * `collapsable={false}` on each child.
    */
-  needsOffscreenAlphaCompositing?: boolean | undefined;
+  collapsableChildren?: boolean | undefined;
 
   /**
    * Whether this view should render itself (and all of its children) into a single hardware texture on the GPU.
@@ -161,6 +103,17 @@ export interface ViewPropsAndroid {
    * Whether this `View` should be focusable with a non-touch input device, eg. receive focus with a hardware keyboard.
    */
   focusable?: boolean | undefined;
+
+  /**
+   * Indicates whether this `View` should be focusable with a non-touch input device, eg. receive focus with a hardware keyboard.
+   * See https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex
+   * for more details.
+   *
+   * Supports the following values:
+   * -  0 (View is focusable)
+   * - -1 (View is not focusable)
+   */
+  tabIndex?: 0 | -1 | undefined;
 }
 
 /**
@@ -184,12 +137,28 @@ export interface ViewProps
    * the Z-index of sibling views always takes precedence if a touch
    * hits two overlapping views.
    */
-  hitSlop?: Insets | undefined;
+  hitSlop?: null | Insets | number | undefined;
 
   /**
    * Used to reference react managed views from native code.
    */
   id?: string | undefined;
+
+  /**
+   * Whether this view needs to rendered offscreen and composited with an alpha in order to preserve 100% correct colors and blending behavior.
+   * The default (false) falls back to drawing the component and its children
+   * with an alpha applied to the paint used to draw each element instead of rendering the full component offscreen and compositing it back with an alpha value.
+   * This default may be noticeable and undesired in the case where the View you are setting an opacity on
+   * has multiple overlapping elements (e.g. multiple overlapping Views, or text and a background).
+   *
+   * Rendering offscreen to preserve correct alpha behavior is extremely expensive
+   * and hard to debug for non-native developers, which is why it is not turned on by default.
+   * If you do need to enable this property for an animation,
+   * consider combining it with renderToHardwareTextureAndroid if the view contents are static (i.e. it doesn't need to be redrawn each frame).
+   * If that property is enabled, this View will be rendered off-screen once,
+   * saved in a hardware texture, and then composited onto the screen with an alpha each frame without having to switch rendering targets on the GPU.
+   */
+  needsOffscreenAlphaCompositing?: boolean | undefined;
 
   /**
    * Invoked on mount and layout changes with

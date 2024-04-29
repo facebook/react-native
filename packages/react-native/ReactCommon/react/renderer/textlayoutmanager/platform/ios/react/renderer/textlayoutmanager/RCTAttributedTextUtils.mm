@@ -7,6 +7,7 @@
 
 #import "RCTAttributedTextUtils.h"
 
+#include <react/renderer/components/view/accessibilityPropsConversions.h>
 #include <react/renderer/core/LayoutableShadowNode.h>
 #include <react/renderer/textlayoutmanager/RCTFontProperties.h>
 #include <react/renderer/textlayoutmanager/RCTFontUtils.h>
@@ -134,7 +135,7 @@ inline static CGFloat RCTEffectiveFontSizeMultiplierFromTextAttributes(const Tex
 
 inline static UIFont *RCTEffectiveFontFromTextAttributes(const TextAttributes &textAttributes)
 {
-  NSString *fontFamily = [NSString stringWithCString:textAttributes.fontFamily.c_str() encoding:NSUTF8StringEncoding];
+  NSString *fontFamily = [NSString stringWithUTF8String:textAttributes.fontFamily.c_str()];
 
   RCTFontProperties fontProperties;
   fontProperties.family = fontFamily;
@@ -177,7 +178,7 @@ inline static UIColor *RCTEffectiveBackgroundColorFromTextAttributes(const TextA
   return effectiveBackgroundColor ?: [UIColor clearColor];
 }
 
-NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(TextAttributes const &textAttributes)
+NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(const TextAttributes &textAttributes)
 {
   NSMutableDictionary<NSAttributedStringKey, id> *attributes = [NSMutableDictionary dictionaryWithCapacity:10];
 
@@ -284,134 +285,16 @@ NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(T
   }
 
   // Special
-  if (textAttributes.isHighlighted) {
+  if (textAttributes.isHighlighted.value_or(false)) {
     attributes[RCTAttributedStringIsHighlightedAttributeName] = @YES;
   }
 
-  if (textAttributes.accessibilityRole.has_value()) {
-    auto accessibilityRole = textAttributes.accessibilityRole.value();
-    switch (accessibilityRole) {
-      case AccessibilityRole::None:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("none");
-        break;
-      case AccessibilityRole::Button:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("button");
-        break;
-      case AccessibilityRole::Dropdownlist:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("dropdownlist");
-        break;
-      case AccessibilityRole::Togglebutton:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("togglebutton");
-        break;
-      case AccessibilityRole::Link:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("link");
-        break;
-      case AccessibilityRole::Search:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("search");
-        break;
-      case AccessibilityRole::Image:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("image");
-        break;
-      case AccessibilityRole::Keyboardkey:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("keyboardkey");
-        break;
-      case AccessibilityRole::Text:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("text");
-        break;
-      case AccessibilityRole::Adjustable:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("adjustable");
-        break;
-      case AccessibilityRole::Imagebutton:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("imagebutton");
-        break;
-      case AccessibilityRole::Header:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("header");
-        break;
-      case AccessibilityRole::Summary:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("summary");
-        break;
-      case AccessibilityRole::Alert:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("alert");
-        break;
-      case AccessibilityRole::Checkbox:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("checkbox");
-        break;
-      case AccessibilityRole::Combobox:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("combobox");
-        break;
-      case AccessibilityRole::Menu:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("menu");
-        break;
-      case AccessibilityRole::Menubar:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("menubar");
-        break;
-      case AccessibilityRole::Menuitem:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("menuitem");
-        break;
-      case AccessibilityRole::Progressbar:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("progressbar");
-        break;
-      case AccessibilityRole::Radio:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("radio");
-        break;
-      case AccessibilityRole::Radiogroup:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("radiogroup");
-        break;
-      case AccessibilityRole::Scrollbar:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("scrollbar");
-        break;
-      case AccessibilityRole::Spinbutton:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("spinbutton");
-        break;
-      case AccessibilityRole::Switch:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("switch");
-        break;
-      case AccessibilityRole::Tab:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("tab");
-        break;
-      case AccessibilityRole::Tabbar:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("tabbar");
-        break;
-      case AccessibilityRole::Tablist:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("tablist");
-        break;
-      case AccessibilityRole::Timer:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("timer");
-        break;
-      case AccessibilityRole::List:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("list");
-        break;
-      case AccessibilityRole::Toolbar:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("toolbar");
-        break;
-      case AccessibilityRole::Grid:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("grid");
-        break;
-      case AccessibilityRole::Pager:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("pager");
-        break;
-      case AccessibilityRole::Scrollview:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("scrollview");
-        break;
-      case AccessibilityRole::Horizontalscrollview:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("horizontalscrollview");
-        break;
-      case AccessibilityRole::Viewgroup:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("viewgroup");
-        break;
-      case AccessibilityRole::Webview:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("webview");
-        break;
-      case AccessibilityRole::Drawerlayout:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("drawerlayout");
-        break;
-      case AccessibilityRole::Slidingdrawer:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("slidingdrawer");
-        break;
-      case AccessibilityRole::Iconmenu:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("iconmenu");
-        break;
-    };
+  if (textAttributes.role.has_value()) {
+    std::string roleStr = toString(textAttributes.role.value());
+    attributes[RCTTextAttributesAccessibilityRoleAttributeName] = [NSString stringWithUTF8String:roleStr.c_str()];
+  } else if (textAttributes.accessibilityRole.has_value()) {
+    std::string roleStr = toString(textAttributes.accessibilityRole.value());
+    attributes[RCTTextAttributesAccessibilityRoleAttributeName] = [NSString stringWithUTF8String:roleStr.c_str()];
   }
 
   return [attributes copy];
@@ -461,6 +344,55 @@ static void RCTApplyBaselineOffset(NSMutableAttributedString *attributedText)
                          range:NSMakeRange(0, attributedText.length)];
 }
 
+static NSMutableAttributedString *RCTNSAttributedStringFragmentFromFragment(
+    const AttributedString::Fragment &fragment,
+    UIImage *placeholderImage)
+{
+  if (fragment.isAttachment()) {
+    auto layoutMetrics = fragment.parentShadowView.layoutMetrics;
+    CGRect bounds = {
+        .origin = {.x = layoutMetrics.frame.origin.x, .y = layoutMetrics.frame.origin.y},
+        .size = {.width = layoutMetrics.frame.size.width, .height = layoutMetrics.frame.size.height}};
+
+    NSTextAttachment *attachment = [NSTextAttachment new];
+    attachment.image = placeholderImage;
+    attachment.bounds = bounds;
+
+    return [[NSMutableAttributedString attributedStringWithAttachment:attachment] mutableCopy];
+  } else {
+    NSString *string = [NSString stringWithUTF8String:fragment.string.c_str()];
+
+    if (fragment.textAttributes.textTransform.has_value()) {
+      auto textTransform = fragment.textAttributes.textTransform.value();
+      string = RCTNSStringFromStringApplyingTextTransform(string, textTransform);
+    }
+
+    return [[NSMutableAttributedString alloc]
+        initWithString:string
+            attributes:RCTNSTextAttributesFromTextAttributes(fragment.textAttributes)];
+  }
+}
+
+static NSMutableAttributedString *RCTNSAttributedStringFragmentWithAttributesFromFragment(
+    const AttributedString::Fragment &fragment,
+    UIImage *placeholderImage)
+{
+  auto nsAttributedStringFragment = RCTNSAttributedStringFragmentFromFragment(fragment, placeholderImage);
+
+  if (fragment.parentShadowView.componentHandle) {
+    RCTWeakEventEmitterWrapper *eventEmitterWrapper = [RCTWeakEventEmitterWrapper new];
+    eventEmitterWrapper.eventEmitter = fragment.parentShadowView.eventEmitter;
+
+    NSDictionary<NSAttributedStringKey, id> *additionalTextAttributes =
+        @{RCTAttributedStringEventEmitterKey : eventEmitterWrapper};
+
+    [nsAttributedStringFragment addAttributes:additionalTextAttributes
+                                        range:NSMakeRange(0, nsAttributedStringFragment.length)];
+  }
+
+  return nsAttributedStringFragment;
+}
+
 NSAttributedString *RCTNSAttributedStringFromAttributedString(const AttributedString &attributedString)
 {
   static UIImage *placeholderImage;
@@ -474,42 +406,8 @@ NSAttributedString *RCTNSAttributedStringFromAttributedString(const AttributedSt
   [nsAttributedString beginEditing];
 
   for (auto fragment : attributedString.getFragments()) {
-    NSMutableAttributedString *nsAttributedStringFragment;
-
-    if (fragment.isAttachment()) {
-      auto layoutMetrics = fragment.parentShadowView.layoutMetrics;
-      CGRect bounds = {
-          .origin = {.x = layoutMetrics.frame.origin.x, .y = layoutMetrics.frame.origin.y},
-          .size = {.width = layoutMetrics.frame.size.width, .height = layoutMetrics.frame.size.height}};
-
-      NSTextAttachment *attachment = [NSTextAttachment new];
-      attachment.image = placeholderImage;
-      attachment.bounds = bounds;
-
-      nsAttributedStringFragment = [[NSMutableAttributedString attributedStringWithAttachment:attachment] mutableCopy];
-    } else {
-      NSString *string = [NSString stringWithCString:fragment.string.c_str() encoding:NSUTF8StringEncoding];
-
-      if (fragment.textAttributes.textTransform.has_value()) {
-        auto textTransform = fragment.textAttributes.textTransform.value();
-        string = RCTNSStringFromStringApplyingTextTransform(string, textTransform);
-      }
-
-      nsAttributedStringFragment = [[NSMutableAttributedString alloc]
-          initWithString:string
-              attributes:RCTNSTextAttributesFromTextAttributes(fragment.textAttributes)];
-    }
-
-    if (fragment.parentShadowView.componentHandle) {
-      RCTWeakEventEmitterWrapper *eventEmitterWrapper = [RCTWeakEventEmitterWrapper new];
-      eventEmitterWrapper.eventEmitter = fragment.parentShadowView.eventEmitter;
-
-      NSDictionary<NSAttributedStringKey, id> *additionalTextAttributes =
-          @{RCTAttributedStringEventEmitterKey : eventEmitterWrapper};
-
-      [nsAttributedStringFragment addAttributes:additionalTextAttributes
-                                          range:NSMakeRange(0, nsAttributedStringFragment.length)];
-    }
+    NSMutableAttributedString *nsAttributedStringFragment =
+        RCTNSAttributedStringFragmentWithAttributesFromFragment(fragment, placeholderImage);
 
     [nsAttributedString appendAttributedString:nsAttributedStringFragment];
   }
@@ -519,7 +417,7 @@ NSAttributedString *RCTNSAttributedStringFromAttributedString(const AttributedSt
   return nsAttributedString;
 }
 
-NSAttributedString *RCTNSAttributedStringFromAttributedStringBox(AttributedStringBox const &attributedStringBox)
+NSAttributedString *RCTNSAttributedStringFromAttributedStringBox(const AttributedStringBox &attributedStringBox)
 {
   switch (attributedStringBox.getMode()) {
     case AttributedStringBox::Mode::Value:

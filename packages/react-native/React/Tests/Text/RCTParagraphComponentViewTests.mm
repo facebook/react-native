@@ -32,52 +32,53 @@
 
 @end
 
+using namespace facebook;
 using namespace facebook::react;
 
-//┌──    RootShadowNode    ─────────────────────────────┐
-//│                                                     │
-//│┌─── ParagraphShadowNodeA ─────────────────────────┐ │
-//││ ┌─AA(AAA) ─────────┐ ┌─AB(ABA) ─┐ ┌─AC(ACA)────┐ │ │
-//││ │ Please check out │ │ Facebook │ │    and     │ │ │
-//││ └──────────────────┘ └──────────┘ └────────────┘ │ │
-//││ ┌─AD(ADA) ──┐ ┌──AE(AEA) ──────────────────────┐ │ │
-//││ │ Instagram │ │    for a full description.     │ │ │
-//││ └───────────┘ └────────────────────────────────┘ │ │
-//│└──────────────────────────────────────────────────┘ │
-//│                                                     │
-//│                                                     │
-//│┌── ParagraphShadowNodeB ──────────────────────────┐ │
-//││ ┌───BA(BAA) ───────────────────────────────────┐ │ │
-//││ │   Lorem ipsum dolor sit amet, consectetur    │ │ │
-//││ │ adipiscing elit. Maecenas ut risus et sapien │ │ │
-//││ │   bibendum volutpat. Nulla facilisi. Cras    │ │ │
-//││ │         imperdiet gravida tincidunt.         │ │ │
-//││ └──────────────────────────────────────────────┘ │ │
-//││ ┌─BB(BBA) ─────────────────────────────────────┐ │ │
-//││ │  In tempor, tellus et vestibulum venenatis,  │ │ │
-//││ │  lorem nunc eleifend lectus, a consectetur   │ │ │
-//││ │             magna augue at arcu.             │ │ │
-//││ └──────────────────────────────────────────────┘ │ │
-//│└──────────────────────────────────────────────────┘ │
-//│                                                     │
-//│┌── ParagraphShadowNodeC ──────────────────────────┐ │
-//││  ┌─CA(CAA) ────────┐                             │ │
-//││  │   Lorem ipsum   │                             │ │
-//││  └─────────────────┘                             │ │
-//││ ┌─CB(CBA) ─────────────────────────────────────┐ │ │
-//││ │ dolor sit amet, consectetur adipiscing elit. │ │ │
-//││ │Maecenas ut risus et sapien bibendum volutpat.│ │ │
-//││ │    Nulla facilisi. Cras imperdiet gravida    │ │ │
-//││ │  tincidunt. In tempor, tellus et vestibulum  │ │ │
-//││ │   venenatis, lorem nunc eleifend lectus, a   │ │ │
-//││ │       consectetur magna augue at arcu.       │ │ │
-//││ └──────────────────────────────────────────────┘ │ │
-//││ ┌─CC(CCA) ────────┐                              │ │
-//││ │    See Less     │                              │ │
-//││ └─────────────────┘                              │ │
-//│└──────────────────────────────────────────────────┘ │
-//│                                                     │
-//└─────────────────────────────────────────────────────┘
+// ┌──    RootShadowNode    ─────────────────────────────┐
+// │                                                     │
+// │┌─── ParagraphShadowNodeA ─────────────────────────┐ │
+// ││ ┌─AA(AAA) ─────────┐ ┌─AB(ABA) ─┐ ┌─AC(ACA)────┐ │ │
+// ││ │ Please check out │ │ Facebook │ │    and     │ │ │
+// ││ └──────────────────┘ └──────────┘ └────────────┘ │ │
+// ││ ┌─AD(ADA) ──┐ ┌──AE(AEA) ──────────────────────┐ │ │
+// ││ │ Instagram │ │    for a full description.     │ │ │
+// ││ └───────────┘ └────────────────────────────────┘ │ │
+// │└──────────────────────────────────────────────────┘ │
+// │                                                     │
+// │                                                     │
+// │┌── ParagraphShadowNodeB ──────────────────────────┐ │
+// ││ ┌───BA(BAA) ───────────────────────────────────┐ │ │
+// ││ │   Lorem ipsum dolor sit amet, consectetur    │ │ │
+// ││ │ adipiscing elit. Maecenas ut risus et sapien │ │ │
+// ││ │   bibendum volutpat. Nulla facilisi. Cras    │ │ │
+// ││ │         imperdiet gravida tincidunt.         │ │ │
+// ││ └──────────────────────────────────────────────┘ │ │
+// ││ ┌─BB(BBA) ─────────────────────────────────────┐ │ │
+// ││ │  In tempor, tellus et vestibulum venenatis,  │ │ │
+// ││ │  lorem nunc eleifend lectus, a consectetur   │ │ │
+// ││ │             magna augue at arcu.             │ │ │
+// ││ └──────────────────────────────────────────────┘ │ │
+// │└──────────────────────────────────────────────────┘ │
+// │                                                     │
+// │┌── ParagraphShadowNodeC ──────────────────────────┐ │
+// ││  ┌─CA(CAA) ────────┐                             │ │
+// ││  │   Lorem ipsum   │                             │ │
+// ││  └─────────────────┘                             │ │
+// ││ ┌─CB(CBA) ─────────────────────────────────────┐ │ │
+// ││ │ dolor sit amet, consectetur adipiscing elit. │ │ │
+// ││ │Maecenas ut risus et sapien bibendum volutpat.│ │ │
+// ││ │    Nulla facilisi. Cras imperdiet gravida    │ │ │
+// ││ │  tincidunt. In tempor, tellus et vestibulum  │ │ │
+// ││ │   venenatis, lorem nunc eleifend lectus, a   │ │ │
+// ││ │       consectetur magna augue at arcu.       │ │ │
+// ││ └──────────────────────────────────────────────┘ │ │
+// ││ ┌─CC(CCA) ────────┐                              │ │
+// ││ │    See Less     │                              │ │
+// ││ └─────────────────┘                              │ │
+// │└──────────────────────────────────────────────────┘ │
+// │                                                     │
+// └─────────────────────────────────────────────────────┘
 
 @implementation RCTParagraphComponentAccessibilityProviderTests {
   std::shared_ptr<ComponentBuilder> builder_;
@@ -120,8 +121,8 @@ using namespace facebook::react;
             auto &props = *sharedProps;
             props.layoutConstraints = LayoutConstraints{{0, 0}, {500, 500}};
             auto &yogaStyle = props.yogaStyle;
-            yogaStyle.dimensions()[YGDimensionWidth] = YGValue{200, YGUnitPoint};
-            yogaStyle.dimensions()[YGDimensionHeight] = YGValue{200, YGUnitPoint};
+            yogaStyle.setDimension(yoga::Dimension::Width, yoga::value::points(200));
+            yogaStyle.setDimension(yoga::Dimension::Height, yoga::value::points(200));
             return sharedProps;
           })
           .children({
@@ -132,11 +133,11 @@ using namespace facebook::react;
                     auto &props = *sharedProps;
                     props.accessible = true;
                     auto &yogaStyle = props.yogaStyle;
-                    yogaStyle.positionType() = YGPositionTypeAbsolute;
-                    yogaStyle.position()[YGEdgeLeft] = YGValue{0, YGUnitPoint};
-                    yogaStyle.position()[YGEdgeTop] = YGValue{0, YGUnitPoint};
-                    yogaStyle.dimensions()[YGDimensionWidth] = YGValue{200, YGUnitPoint};
-                    yogaStyle.dimensions()[YGDimensionHeight] = YGValue{20, YGUnitPoint};
+                    yogaStyle.setPositionType(yoga::PositionType::Absolute);
+                    yogaStyle.setPosition(yoga::Edge::Left, yoga::value::points(0));
+                    yogaStyle.setPosition(yoga::Edge::Top, yoga::value::points(0));
+                    yogaStyle.setDimension(yoga::Dimension::Width, yoga::value::points(200));
+                    yogaStyle.setDimension(yoga::Dimension::Height, yoga::value::points(200));
                     return sharedProps;
                   })
                   .children({
@@ -212,11 +213,11 @@ using namespace facebook::react;
                     auto &props = *sharedProps;
                     props.accessible = true;
                     auto &yogaStyle = props.yogaStyle;
-                    yogaStyle.positionType() = YGPositionTypeAbsolute;
-                    yogaStyle.position()[YGEdgeLeft] = YGValue{0, YGUnitPoint};
-                    yogaStyle.position()[YGEdgeTop] = YGValue{30, YGUnitPoint};
-                    yogaStyle.dimensions()[YGDimensionWidth] = YGValue{200, YGUnitPoint};
-                    yogaStyle.dimensions()[YGDimensionHeight] = YGValue{50, YGUnitPoint};
+                    yogaStyle.setPositionType(yoga::PositionType::Absolute);
+                    yogaStyle.setPosition(yoga::Edge::Left, yoga::value::points(0));
+                    yogaStyle.setPosition(yoga::Edge::Top, yoga::value::points(30));
+                    yogaStyle.setDimension(yoga::Dimension::Width, yoga::value::points(200));
+                    yogaStyle.setDimension(yoga::Dimension::Height, yoga::value::points(50));
                     return sharedProps;
                   })
                   .children({
@@ -256,11 +257,11 @@ using namespace facebook::react;
                     auto &props = *sharedProps;
                     props.accessible = true;
                     auto &yogaStyle = props.yogaStyle;
-                    yogaStyle.positionType() = YGPositionTypeAbsolute;
-                    yogaStyle.position()[YGEdgeLeft] = YGValue{0, YGUnitPoint};
-                    yogaStyle.position()[YGEdgeTop] = YGValue{90, YGUnitPoint};
-                    yogaStyle.dimensions()[YGDimensionWidth] = YGValue{200, YGUnitPoint};
-                    yogaStyle.dimensions()[YGDimensionHeight] = YGValue{50, YGUnitPoint};
+                    yogaStyle.setPositionType(yoga::PositionType::Absolute);
+                    yogaStyle.setPosition(yoga::Edge::Left, yoga::value::points(0));
+                    yogaStyle.setPosition(yoga::Edge::Top, yoga::value::points(90));
+                    yogaStyle.setDimension(yoga::Dimension::Width, yoga::value::points(200));
+                    yogaStyle.setDimension(yoga::Dimension::Height, yoga::value::points(50));
                     return sharedProps;
                   })
                   .children({
@@ -315,7 +316,7 @@ static ParagraphShadowNode::ConcreteState::Shared stateWithShadowNode(
     std::shared_ptr<ParagraphShadowNode> paragraphShadowNode)
 {
   auto sharedState =
-      std::static_pointer_cast<ParagraphShadowNode::ConcreteState const>(paragraphShadowNode->getState());
+      std::static_pointer_cast<const ParagraphShadowNode::ConcreteState>(paragraphShadowNode->getState());
   return sharedState;
 }
 
@@ -417,8 +418,8 @@ static ParagraphShadowNode::ConcreteState::Shared stateWithShadowNode(
                        auto &props = *sharedProps;
                        props.layoutConstraints = LayoutConstraints{{0, 0}, {500, 500}};
                        auto &yogaStyle = props.yogaStyle;
-                       yogaStyle.dimensions()[YGDimensionWidth] = YGValue{200, YGUnitPoint};
-                       yogaStyle.dimensions()[YGDimensionHeight] = YGValue{200, YGUnitPoint};
+                       yogaStyle.setDimension(yoga::Dimension::Width, yoga::value::points(200));
+                       yogaStyle.setDimension(yoga::Dimension::Height, yoga::value::points(200));
                        return sharedProps;
                      })
                      .children({
@@ -430,11 +431,11 @@ static ParagraphShadowNode::ConcreteState::Shared stateWithShadowNode(
                                props.accessible = true;
                                props.accessibilityTraits = AccessibilityTraits::Link;
                                auto &yogaStyle = props.yogaStyle;
-                               yogaStyle.positionType() = YGPositionTypeAbsolute;
-                               yogaStyle.position()[YGEdgeLeft] = YGValue{0, YGUnitPoint};
-                               yogaStyle.position()[YGEdgeTop] = YGValue{0, YGUnitPoint};
-                               yogaStyle.dimensions()[YGDimensionWidth] = YGValue{200, YGUnitPoint};
-                               yogaStyle.dimensions()[YGDimensionHeight] = YGValue{20, YGUnitPoint};
+                               yogaStyle.setPositionType(yoga::PositionType::Absolute);
+                               yogaStyle.setPosition(yoga::Edge::Left, yoga::value::points(0));
+                               yogaStyle.setPosition(yoga::Edge::Top, yoga::value::points(90));
+                               yogaStyle.setDimension(yoga::Dimension::Width, yoga::value::points(200));
+                               yogaStyle.setDimension(yoga::Dimension::Height, yoga::value::points(20));
                                return sharedProps;
                              })
                              .children({

@@ -68,6 +68,7 @@ type Props = {
 };
 
 const BaseFlatListExample = React.forwardRef(
+  // $FlowFixMe[incompatible-call]
   (
     props: Props,
     ref:

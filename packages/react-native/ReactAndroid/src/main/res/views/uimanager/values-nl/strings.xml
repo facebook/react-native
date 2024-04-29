@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- See fburl.com/140690840 for information about i18n on Android -->
+<!-- @generated -->
+<!-- FB Locale: nl_NL -->
+<resources exclude-from-buck-resource-map="true">
+    <string name="image_description" gender="unknown">Afbeelding</string>
+    <string name="imagebutton_description" gender="unknown">Knop, afbeelding</string>
+    <string name="header_description" gender="unknown">Kop</string>
+    <string name="alert_description" gender="unknown">Waarschuwing</string>
+    <string name="combobox_description" gender="unknown">Combivak</string>
+    <string name="menubar_description" gender="unknown">Menubalk</string>
+    <string name="menuitem_description" gender="unknown">Menu-item</string>
+    <string name="progressbar_description" gender="unknown">Voortgangsbalk</string>
+    <string name="radiogroup_description" gender="unknown">Keuzegroep</string>
+    <string name="scrollbar_description" gender="unknown">Scrollbalk</string>
+    <string name="spinbutton_description" gender="unknown">Draaiknop</string>
+    <string name="rn_tab_description" gender="unknown">Tabblad</string>
+    <string name="tablist_description" gender="unknown">Lijst met tabbladen</string>
+    <string name="toolbar_description" gender="unknown">Werkbalk</string>
+    <string name="summary_description" gender="unknown">Samenvatting</string>
+    <string name="state_busy_description" gender="unknown">bezig</string>
+    <string name="state_expanded_description" gender="unknown">uitgevouwen</string>
+    <string name="state_collapsed_description" gender="unknown">samengevouwen</string>
+    <string name="state_unselected_description" gender="unknown">gedeselecteerd</string>
+    <string name="state_on_description" gender="unknown">aan</string>
+    <string name="state_off_description" gender="unknown">uit</string>
+    <string name="state_mixed_description" gender="unknown">gemengd</string>
+</resources>

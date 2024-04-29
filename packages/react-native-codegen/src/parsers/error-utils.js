@@ -11,25 +11,25 @@
 'use strict';
 
 import type {NativeModuleTypeAnnotation} from '../CodegenSchema';
+import type {TypeDeclarationMap} from '../parsers/utils';
 import type {ParserType} from './errors';
 import type {Parser} from './parser';
-import type {TypeDeclarationMap} from '../parsers/utils';
 
 const {
-  MisnamedModuleInterfaceParserError,
-  UnsupportedFunctionReturnTypeAnnotationParserError,
-  ModuleInterfaceNotFoundParserError,
-  MoreThanOneModuleRegistryCallsParserError,
-  UnusedModuleInterfaceParserError,
+  IncorrectModuleRegistryCallArgumentTypeParserError,
   IncorrectModuleRegistryCallArityParserError,
   IncorrectModuleRegistryCallTypeParameterParserError,
-  IncorrectModuleRegistryCallArgumentTypeParserError,
+  MisnamedModuleInterfaceParserError,
+  ModuleInterfaceNotFoundParserError,
+  MoreThanOneModuleInterfaceParserError,
+  MoreThanOneModuleRegistryCallsParserError,
+  UnsupportedArrayElementTypeAnnotationParserError,
+  UnsupportedFunctionParamTypeAnnotationParserError,
+  UnsupportedFunctionReturnTypeAnnotationParserError,
+  UnsupportedModulePropertyParserError,
   UnsupportedObjectPropertyValueTypeAnnotationParserError,
   UntypedModuleRegistryCallParserError,
-  UnsupportedModulePropertyParserError,
-  MoreThanOneModuleInterfaceParserError,
-  UnsupportedFunctionParamTypeAnnotationParserError,
-  UnsupportedArrayElementTypeAnnotationParserError,
+  UnusedModuleInterfaceParserError,
 } = require('./errors');
 
 function throwIfModuleInterfaceIsMisnamed(
@@ -186,6 +186,7 @@ function throwIfPropertyValueTypeIsUnsupported(
   type: string,
 ) {
   const invalidPropertyValueType =
+    // $FlowFixMe[invalid-computed-prop]
     UnsupportedObjectPropertyTypeToInvalidPropertyValueTypeMap[type];
 
   throw new UnsupportedObjectPropertyValueTypeAnnotationParserError(
@@ -245,6 +246,7 @@ function throwIfArrayElementTypeAnnotationIsUnsupported(
       hasteModuleName,
       flowElementType,
       flowArrayType,
+      // $FlowFixMe[invalid-computed-prop]
       TypeMap[type],
     );
   }
@@ -343,6 +345,14 @@ function throwIfArgumentPropsAreNull(
   return argumentProps;
 }
 
+function throwIfTypeAliasIsNotInterface(typeAlias: $FlowFixMe, parser: Parser) {
+  if (typeAlias.type !== parser.interfaceDeclaration) {
+    throw new Error(
+      `The type argument for codegenNativeCommands must be an interface, received ${typeAlias.type}`,
+    );
+  }
+}
+
 module.exports = {
   throwIfModuleInterfaceIsMisnamed,
   throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
@@ -366,4 +376,5 @@ module.exports = {
   throwIfEventHasNoName,
   throwIfBubblingTypeIsNull,
   throwIfArgumentPropsAreNull,
+  throwIfTypeAliasIsNotInterface,
 };

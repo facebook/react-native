@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- See fburl.com/140690840 for information about i18n on Android -->
+<!-- @generated -->
+<!-- FB Locale: sk_SK -->
+<resources exclude-from-buck-resource-map="true">
+    <string name="link_description" gender="unknown">Odkaz</string>
+    <string name="image_description" gender="unknown">Obrázok</string>
+    <string name="imagebutton_description" gender="unknown">Tlačidlo, obrázok</string>
+    <string name="header_description" gender="unknown">Nadpis</string>
+    <string name="alert_description" gender="unknown">Upozornenie</string>
+    <string name="combobox_description" gender="unknown">Kombinované pole</string>
+    <string name="menu_description" gender="unknown">Ponuka</string>
+    <string name="menubar_description" gender="unknown">Lišta s ponukou</string>
+    <string name="menuitem_description" gender="unknown">Položka ponuky</string>
+    <string name="progressbar_description" gender="unknown">Indikátor postupu</string>
+    <string name="radiogroup_description" gender="unknown">Skupina tlačidiel na výber</string>
+    <string name="scrollbar_description" gender="unknown">Lišta na posúvanie</string>
+    <string name="spinbutton_description" gender="unknown">Otočné tlačidlo</string>
+    <string name="rn_tab_description" gender="unknown">Tabulátor</string>
+    <string name="tablist_description" gender="unknown">Zoznam kariet</string>
+    <string name="timer_description" gender="unknown">Časovač</string>
+    <string name="toolbar_description" gender="unknown">Panel s nástrojmi</string>
+    <string name="summary_description" gender="unknown">Súhrn</string>
+    <string name="state_busy_description" gender="unknown">obsadené</string>
+    <string name="state_expanded_description" gender="unknown">rozbalené</string>
+    <string name="state_collapsed_description" gender="unknown">zbalené</string>
+    <string name="state_unselected_description" gender="unknown">nevybrané</string>
+    <string name="state_on_description" gender="unknown">zapnuté</string>
+    <string name="state_off_description" gender="unknown">vypnuté</string>
+    <string name="state_mixed_description" gender="unknown">zmiešané</string>
+</resources>

@@ -13,6 +13,7 @@
 #import "RCTBridge.h"
 #import "RCTConvert+Transform.h"
 #import "RCTConvert.h"
+#import "RCTCursor.h"
 #import "RCTLog.h"
 #import "RCTShadowView.h"
 #import "RCTUIManager.h"
@@ -26,54 +27,97 @@
 RCT_MULTI_ENUM_CONVERTER(
     UIAccessibilityTraits,
     (@{
-      @"none" : @(UIAccessibilityTraitNone),
+      @"adjustable" : @(UIAccessibilityTraitAdjustable),
+      @"alert" : @(UIAccessibilityTraitNone),
+      @"alertdialog" : @(UIAccessibilityTraitNone),
+      @"allowsDirectInteraction" : @(UIAccessibilityTraitAllowsDirectInteraction),
+      @"application" : @(UIAccessibilityTraitNone),
+      @"article" : @(UIAccessibilityTraitNone),
+      @"banner" : @(UIAccessibilityTraitNone),
       @"button" : @(UIAccessibilityTraitButton),
+      @"cell" : @(UIAccessibilityTraitNone),
+      @"checkbox" : @(UIAccessibilityTraitNone),
+      @"columnheader" : @(UIAccessibilityTraitNone),
+      @"combobox" : @(UIAccessibilityTraitNone),
+      @"complementary" : @(UIAccessibilityTraitNone),
+      @"contentinfo" : @(UIAccessibilityTraitNone),
+      @"definition" : @(UIAccessibilityTraitNone),
+      @"dialog" : @(UIAccessibilityTraitNone),
+      @"directory" : @(UIAccessibilityTraitNone),
+      @"disabled" : @(UIAccessibilityTraitNotEnabled),
+      @"document" : @(UIAccessibilityTraitNone),
+      @"drawerlayout" : @(UIAccessibilityTraitNone),
       @"dropdownlist" : @(UIAccessibilityTraitNone),
-      @"togglebutton" : @(UIAccessibilityTraitButton),
-      @"link" : @(UIAccessibilityTraitLink),
+      @"feed" : @(UIAccessibilityTraitNone),
+      @"figure" : @(UIAccessibilityTraitNone),
+      @"form" : @(UIAccessibilityTraitNone),
+      @"frequentUpdates" : @(UIAccessibilityTraitUpdatesFrequently),
+      @"grid" : @(UIAccessibilityTraitNone),
+      @"group" : @(UIAccessibilityTraitNone),
       @"header" : @(UIAccessibilityTraitHeader),
-      @"search" : @(UIAccessibilityTraitSearchField),
+      @"heading" : @(UIAccessibilityTraitHeader),
+      @"horizontalscrollview" : @(UIAccessibilityTraitNone),
+      @"iconmenu" : @(UIAccessibilityTraitNone),
       @"image" : @(UIAccessibilityTraitImage),
       @"imagebutton" : @(UIAccessibilityTraitImage | UIAccessibilityTraitButton),
-      @"selected" : @(UIAccessibilityTraitSelected),
-      @"plays" : @(UIAccessibilityTraitPlaysSound),
+      @"img" : @(UIAccessibilityTraitImage),
       @"key" : @(UIAccessibilityTraitKeyboardKey),
       @"keyboardkey" : @(UIAccessibilityTraitKeyboardKey),
-      @"text" : @(UIAccessibilityTraitStaticText),
-      @"summary" : @(UIAccessibilityTraitSummaryElement),
-      @"disabled" : @(UIAccessibilityTraitNotEnabled),
-      @"frequentUpdates" : @(UIAccessibilityTraitUpdatesFrequently),
-      @"startsMedia" : @(UIAccessibilityTraitStartsMediaSession),
-      @"adjustable" : @(UIAccessibilityTraitAdjustable),
-      @"allowsDirectInteraction" : @(UIAccessibilityTraitAllowsDirectInteraction),
-      @"pageTurn" : @(UIAccessibilityTraitCausesPageTurn),
-      @"alert" : @(UIAccessibilityTraitNone),
-      @"checkbox" : @(UIAccessibilityTraitNone),
-      @"combobox" : @(UIAccessibilityTraitNone),
+      @"link" : @(UIAccessibilityTraitLink),
+      @"list" : @(UIAccessibilityTraitNone),
+      @"listitem" : @(UIAccessibilityTraitNone),
+      @"log" : @(UIAccessibilityTraitNone),
+      @"main" : @(UIAccessibilityTraitNone),
+      @"marquee" : @(UIAccessibilityTraitNone),
+      @"math" : @(UIAccessibilityTraitNone),
       @"menu" : @(UIAccessibilityTraitNone),
       @"menubar" : @(UIAccessibilityTraitNone),
       @"menuitem" : @(UIAccessibilityTraitNone),
+      @"meter" : @(UIAccessibilityTraitNone),
+      @"navigation" : @(UIAccessibilityTraitNone),
+      @"none" : @(UIAccessibilityTraitNone),
+      @"note" : @(UIAccessibilityTraitNone),
+      @"option" : @(UIAccessibilityTraitNone),
+      @"pager" : @(UIAccessibilityTraitNone),
+      @"pageTurn" : @(UIAccessibilityTraitCausesPageTurn),
+      @"plays" : @(UIAccessibilityTraitPlaysSound),
+      @"presentation" : @(UIAccessibilityTraitNone),
       @"progressbar" : @(UIAccessibilityTraitUpdatesFrequently),
       @"radio" : @(UIAccessibilityTraitNone),
       @"radiogroup" : @(UIAccessibilityTraitNone),
+      @"region" : @(UIAccessibilityTraitNone),
+      @"row" : @(UIAccessibilityTraitNone),
+      @"rowgroup" : @(UIAccessibilityTraitNone),
+      @"rowheader" : @(UIAccessibilityTraitNone),
       @"scrollbar" : @(UIAccessibilityTraitNone),
+      @"scrollview" : @(UIAccessibilityTraitNone),
+      @"search" : @(UIAccessibilityTraitSearchField),
+      @"searchbox" : @(UIAccessibilityTraitSearchField),
+      @"selected" : @(UIAccessibilityTraitSelected),
+      @"separator" : @(UIAccessibilityTraitNone),
+      @"slider" : @(UIAccessibilityTraitNone),
+      @"slidingdrawer" : @(UIAccessibilityTraitNone),
       @"spinbutton" : @(UIAccessibilityTraitNone),
+      @"startsMedia" : @(UIAccessibilityTraitStartsMediaSession),
+      @"status" : @(UIAccessibilityTraitNone),
+      @"summary" : @(UIAccessibilityTraitSummaryElement),
       @"switch" : @(SwitchAccessibilityTrait),
       @"tab" : @(UIAccessibilityTraitNone),
       @"tabbar" : @(UIAccessibilityTraitTabBar),
+      @"table" : @(UIAccessibilityTraitNone),
       @"tablist" : @(UIAccessibilityTraitNone),
+      @"tabpanel" : @(UIAccessibilityTraitNone),
+      @"term" : @(UIAccessibilityTraitNone),
+      @"text" : @(UIAccessibilityTraitStaticText),
       @"timer" : @(UIAccessibilityTraitNone),
+      @"togglebutton" : @(UIAccessibilityTraitButton),
       @"toolbar" : @(UIAccessibilityTraitNone),
-      @"pager" : @(UIAccessibilityTraitNone),
-      @"scrollview" : @(UIAccessibilityTraitNone),
-      @"horizontalscrollview" : @(UIAccessibilityTraitNone),
+      @"tooltip" : @(UIAccessibilityTraitNone),
+      @"tree" : @(UIAccessibilityTraitNone),
+      @"treegrid" : @(UIAccessibilityTraitNone),
+      @"treeitem" : @(UIAccessibilityTraitNone),
       @"viewgroup" : @(UIAccessibilityTraitNone),
       @"webview" : @(UIAccessibilityTraitNone),
-      @"drawerlayout" : @(UIAccessibilityTraitNone),
-      @"slidingdrawer" : @(UIAccessibilityTraitNone),
-      @"iconmenu" : @(UIAccessibilityTraitNone),
-      @"list" : @(UIAccessibilityTraitNone),
-      @"grid" : @(UIAccessibilityTraitNone),
     }),
     UIAccessibilityTraitNone,
     unsignedLongLongValue)
@@ -152,6 +196,7 @@ RCT_REMAP_VIEW_PROPERTY(testID, reactAccessibilityElement.accessibilityIdentifie
 
 RCT_EXPORT_VIEW_PROPERTY(backgroundColor, UIColor)
 RCT_REMAP_VIEW_PROPERTY(backfaceVisibility, layer.doubleSided, css_backface_visibility_t)
+RCT_EXPORT_VIEW_PROPERTY(cursor, RCTCursor)
 RCT_REMAP_VIEW_PROPERTY(opacity, alpha, CGFloat)
 RCT_REMAP_VIEW_PROPERTY(shadowColor, layer.shadowColor, CGColor)
 RCT_REMAP_VIEW_PROPERTY(shadowOffset, layer.shadowOffset, CGSize)
@@ -170,34 +215,48 @@ RCT_CUSTOM_VIEW_PROPERTY(shouldRasterizeIOS, BOOL, RCTView)
 {
   view.layer.shouldRasterize = json ? [RCTConvert BOOL:json] : defaultView.layer.shouldRasterize;
   view.layer.rasterizationScale =
-      view.layer.shouldRasterize ? [UIScreen mainScreen].scale : defaultView.layer.rasterizationScale;
+      view.layer.shouldRasterize ? view.traitCollection.displayScale : defaultView.layer.rasterizationScale;
 }
 
-RCT_CUSTOM_VIEW_PROPERTY(transform, CATransform3D, RCTView)
-{
-  view.layer.transform = json ? [RCTConvert CATransform3D:json] : defaultView.layer.transform;
-  // Enable edge antialiasing in rotation, skew, or perspective transforms
-  view.layer.allowsEdgeAntialiasing =
-      view.layer.transform.m12 != 0.0f || view.layer.transform.m21 != 0.0f || view.layer.transform.m34 != 0.0f;
-}
+RCT_REMAP_VIEW_PROPERTY(transform, reactTransform, CATransform3D)
+RCT_REMAP_VIEW_PROPERTY(transformOrigin, reactTransformOrigin, RCTTransformOrigin)
 
 RCT_CUSTOM_VIEW_PROPERTY(accessibilityRole, UIAccessibilityTraits, RCTView)
+{
+  UIAccessibilityTraits accessibilityRoleTraits =
+      json ? [RCTConvert UIAccessibilityTraits:json] : UIAccessibilityTraitNone;
+  if (view.reactAccessibilityElement.accessibilityRoleTraits != accessibilityRoleTraits) {
+    view.accessibilityRoleTraits = accessibilityRoleTraits;
+    view.reactAccessibilityElement.accessibilityRole = json ? [RCTConvert NSString:json] : nil;
+    [self updateAccessibilityTraitsForRole:view withDefaultView:defaultView];
+  }
+}
+
+RCT_CUSTOM_VIEW_PROPERTY(role, UIAccessibilityTraits, RCTView)
+{
+  UIAccessibilityTraits roleTraits = json ? [RCTConvert UIAccessibilityTraits:json] : UIAccessibilityTraitNone;
+  if (view.reactAccessibilityElement.roleTraits != roleTraits) {
+    view.roleTraits = roleTraits;
+    view.reactAccessibilityElement.role = json ? [RCTConvert NSString:json] : nil;
+    [self updateAccessibilityTraitsForRole:view withDefaultView:defaultView];
+  }
+}
+
+- (void)updateAccessibilityTraitsForRole:(RCTView *)view withDefaultView:(RCTView *)defaultView
 {
   const UIAccessibilityTraits AccessibilityRolesMask = UIAccessibilityTraitNone | UIAccessibilityTraitButton |
       UIAccessibilityTraitLink | UIAccessibilityTraitSearchField | UIAccessibilityTraitImage |
       UIAccessibilityTraitKeyboardKey | UIAccessibilityTraitStaticText | UIAccessibilityTraitAdjustable |
       UIAccessibilityTraitHeader | UIAccessibilityTraitSummaryElement | UIAccessibilityTraitTabBar |
       UIAccessibilityTraitUpdatesFrequently | SwitchAccessibilityTrait;
-  view.reactAccessibilityElement.accessibilityTraits =
-      view.reactAccessibilityElement.accessibilityTraits & ~AccessibilityRolesMask;
-  UIAccessibilityTraits newTraits = json ? [RCTConvert UIAccessibilityTraits:json] : defaultView.accessibilityTraits;
-  if (newTraits != UIAccessibilityTraitNone) {
-    UIAccessibilityTraits maskedTraits = newTraits & AccessibilityRolesMask;
-    view.reactAccessibilityElement.accessibilityTraits |= maskedTraits;
-  } else {
-    NSString *role = json ? [RCTConvert NSString:json] : @"";
-    view.reactAccessibilityElement.accessibilityRole = role;
-  }
+
+  // Clear any existing traits set for AccessibilityRole
+  view.reactAccessibilityElement.accessibilityTraits &= ~(AccessibilityRolesMask);
+
+  view.reactAccessibilityElement.accessibilityTraits |= view.reactAccessibilityElement.role
+      ? view.reactAccessibilityElement.roleTraits
+      : view.reactAccessibilityElement.accessibilityRole ? view.reactAccessibilityElement.accessibilityRoleTraits
+                                                         : (defaultView.accessibilityTraits & AccessibilityRolesMask);
 }
 
 RCT_CUSTOM_VIEW_PROPERTY(accessibilityState, NSDictionary, RCTView)
@@ -336,6 +395,20 @@ RCT_CUSTOM_VIEW_PROPERTY(collapsable, BOOL, RCTView)
   // filtered by view configs.
 }
 
+RCT_CUSTOM_VIEW_PROPERTY(collapsableChildren, BOOL, RCTView)
+{
+  // Property is only to be used in the new renderer.
+  // It is necessary to add it here, otherwise it gets
+  // filtered by view configs.
+}
+
+RCT_CUSTOM_VIEW_PROPERTY(experimental_layoutConformance, NSString *, RCTView)
+{
+  // Property is only to be used in the new renderer.
+  // It is necessary to add it here, otherwise it gets
+  // filtered by view configs.
+}
+
 #define RCT_VIEW_BORDER_PROPERTY(SIDE)                                                               \
   RCT_CUSTOM_VIEW_PROPERTY(border##SIDE##Width, float, RCTView)                                      \
   {                                                                                                  \
@@ -441,9 +514,9 @@ RCT_EXPORT_SHADOW_PROPERTY(alignSelf, YGAlign)
 RCT_EXPORT_SHADOW_PROPERTY(alignContent, YGAlign)
 RCT_EXPORT_SHADOW_PROPERTY(position, YGPositionType)
 RCT_EXPORT_SHADOW_PROPERTY(aspectRatio, float)
-RCT_EXPORT_SHADOW_PROPERTY(rowGap, float)
-RCT_EXPORT_SHADOW_PROPERTY(columnGap, float)
-RCT_EXPORT_SHADOW_PROPERTY(gap, float)
+RCT_EXPORT_SHADOW_PROPERTY(rowGap, YGValue)
+RCT_EXPORT_SHADOW_PROPERTY(columnGap, YGValue)
+RCT_EXPORT_SHADOW_PROPERTY(gap, YGValue)
 
 RCT_EXPORT_SHADOW_PROPERTY(overflow, YGOverflow)
 RCT_EXPORT_SHADOW_PROPERTY(display, YGDisplay)
@@ -487,5 +560,7 @@ RCT_EXPORT_VIEW_PROPERTY(onPointerEnter, RCTCapturingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onPointerLeave, RCTCapturingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onPointerOver, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onPointerOut, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onGotPointerCapture, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onLostPointerCapture, RCTBubblingEventBlock)
 
 @end

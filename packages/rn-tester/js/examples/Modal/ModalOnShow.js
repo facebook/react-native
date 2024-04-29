@@ -8,9 +8,10 @@
  * @format
  */
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+
 import * as React from 'react';
 import {Modal, Pressable, StyleSheet, Text, View} from 'react-native';
-import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 function ModalOnShowOnDismiss(): React.Node {
   const [modalShowComponent, setModalShowComponent] = React.useState(true);

@@ -13,12 +13,12 @@
 import type {IPerformanceLogger} from '../Utilities/createPerformanceLogger';
 
 import {type EventSubscription} from '../vendor/emitter/EventEmitter';
+import EventTarget from 'event-target-shim';
 
 const BlobManager = require('../Blob/BlobManager');
 const GlobalPerformanceLogger = require('../Utilities/GlobalPerformanceLogger');
 const RCTNetworking = require('./RCTNetworking').default;
 const base64 = require('base64-js');
-const EventTarget = require('event-target-shim');
 const invariant = require('invariant');
 
 const DEBUG_NETWORK_SEND_DELAY: false = false; // Set to a number of milliseconds when debugging
@@ -248,7 +248,10 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): any) {
         } else if (this._response === '') {
           this._cachedResponse = BlobManager.createFromParts([]);
         } else {
-          throw new Error(`Invalid response for blob: ${this._response}`);
+          throw new Error(
+            'Invalid response for blob - expecting object, was ' +
+              `${typeof this._response}: ${this._response.trim()}`,
+          );
         }
         break;
 
@@ -627,6 +630,7 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): any) {
     this._lowerCaseResponseHeaders = Object.keys(headers).reduce<{
       [string]: any,
     }>((lcaseHeaders, headerName) => {
+      // $FlowFixMe[invalid-computed-prop]
       lcaseHeaders[headerName.toLowerCase()] = headers[headerName];
       return lcaseHeaders;
     }, {});

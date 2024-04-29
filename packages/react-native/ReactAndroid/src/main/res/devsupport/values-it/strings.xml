@@ -3,6 +3,4 @@
 <!-- @generated -->
 <!-- FB Locale: it_IT -->
 <resources exclude-from-buck-resource-map="true">
-    <string name="catalyst_dev_menu_header" gender="unknown">Menu sviluppatori React Native (%1$s)</string>
-    <string name="catalyst_dev_menu_sub_header" gender="unknown">%1$s in esecuzione</string>
 </resources>

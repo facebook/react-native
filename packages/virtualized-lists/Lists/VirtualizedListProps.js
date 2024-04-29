@@ -8,19 +8,19 @@
  * @format
  */
 
-import {typeof ScrollView} from 'react-native';
-import type {
-  FocusEvent,
-  LayoutEvent,
-} from 'react-native/Libraries/Types/CoreEventTypes';
-import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 import type {
   ViewabilityConfig,
   ViewabilityConfigCallbackPair,
   ViewToken,
 } from './ViewabilityHelper';
+import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
+import type {
+  FocusEvent,
+  LayoutEvent,
+} from 'react-native/Libraries/Types/CoreEventTypes';
 
 import * as React from 'react';
+import {typeof ScrollView} from 'react-native';
 
 export type Item = any;
 
@@ -294,13 +294,44 @@ export type Props = {|
 |};
 
 /**
- * Subset of properties needed to calculate frame metrics
+ * Default Props Helper Functions
+ * Use the following helper functions for default values
  */
-export type FrameMetricProps = {
-  data: RequiredProps['data'],
-  getItemCount: RequiredProps['getItemCount'],
-  getItem: RequiredProps['getItem'],
-  getItemLayout?: OptionalProps['getItemLayout'],
-  keyExtractor?: OptionalProps['keyExtractor'],
-  ...
-};
+
+// horizontalOrDefault(this.props.horizontal)
+export function horizontalOrDefault(horizontal: ?boolean): boolean {
+  return horizontal ?? false;
+}
+
+// initialNumToRenderOrDefault(this.props.initialNumToRender)
+export function initialNumToRenderOrDefault(
+  initialNumToRender: ?number,
+): number {
+  return initialNumToRender ?? 10;
+}
+
+// maxToRenderPerBatchOrDefault(this.props.maxToRenderPerBatch)
+export function maxToRenderPerBatchOrDefault(
+  maxToRenderPerBatch: ?number,
+): number {
+  return maxToRenderPerBatch ?? 10;
+}
+
+// onStartReachedThresholdOrDefault(this.props.onStartReachedThreshold)
+export function onStartReachedThresholdOrDefault(
+  onStartReachedThreshold: ?number,
+): number {
+  return onStartReachedThreshold ?? 2;
+}
+
+// onEndReachedThresholdOrDefault(this.props.onEndReachedThreshold)
+export function onEndReachedThresholdOrDefault(
+  onEndReachedThreshold: ?number,
+): number {
+  return onEndReachedThreshold ?? 2;
+}
+
+// windowSizeOrDefault(this.props.windowSize)
+export function windowSizeOrDefault(windowSize: ?number): number {
+  return windowSize ?? 21;
+}

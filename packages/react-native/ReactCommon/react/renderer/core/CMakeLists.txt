@@ -9,10 +9,9 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 add_compile_options(
         -fexceptions
         -frtti
-        -std=c++17
+        -std=c++20
         -Wall
         -Wpedantic
-        -Wno-gnu-zero-variadic-macro-arguments
         -DLOG_TAG=\"Fabric\")
 
 file(GLOB react_render_core_SRC CONFIGURE_DEPENDS *.cpp)
@@ -23,9 +22,13 @@ target_link_libraries(react_render_core
         folly_runtime
         glog
         jsi
+        logger
         react_config
         react_debug
+        react_featureflags
         react_render_debug
         react_render_graphics
         react_render_mapbuffer
-        react_utils)
+        react_render_runtimescheduler
+        react_utils
+        runtimeexecutor)

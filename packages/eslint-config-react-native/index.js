@@ -19,7 +19,7 @@ module.exports = {
     },
   },
 
-  extends: ['plugin:prettier/recommended'],
+  extends: ['prettier'],
 
   plugins: [
     'eslint-comments',
@@ -220,6 +220,7 @@ module.exports = {
 
     'no-catch-shadow': 1, // disallow the catch clause parameter name being the same as a variable in the outer scope (off by default in the node environment)
     'no-delete-var': 1, // disallow deletion of variables
+    'no-global-assign': 2, // disallow assignments to native objects or read-only global variables
     'no-label-var': 1, // disallow labels that share a name with a variable
     'no-shadow': 1, // disallow declaration of variables already declared in the outer scope
     'no-shadow-restricted-names': 1, // disallow shadowing of names such as arguments
@@ -254,7 +255,6 @@ module.exports = {
     // These rules are purely matters of style and are quite subjective.
 
     'key-spacing': 0,
-    'keyword-spacing': 1, // enforce spacing before and after keywords
     'jsx-quotes': [1, 'prefer-double'], // enforces the usage of double quotes for all JSX attribute values which doesn’t contain a double quote
     'comma-spacing': 0,
     'no-multi-spaces': 0,

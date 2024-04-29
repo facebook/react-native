@@ -11,7 +11,7 @@
 #include <fbjni/fbjni.h>
 #include <memory>
 #include <string>
-#include <unordered_set>
+#include <vector>
 
 namespace facebook::react {
 
@@ -28,20 +28,21 @@ class CompositeTurboModuleManagerDelegate
   static void registerNatives();
 
   std::shared_ptr<TurboModule> getTurboModule(
-      const std::string &moduleName,
-      const std::shared_ptr<CallInvoker> &jsInvoker) override;
+      const std::string& moduleName,
+      const std::shared_ptr<CallInvoker>& jsInvoker) override;
+
   std::shared_ptr<TurboModule> getTurboModule(
-      const std::string &moduleName,
-      const JavaTurboModule::InitParams &params) override;
+      const std::string& moduleName,
+      const JavaTurboModule::InitParams& params) override;
 
  private:
   friend HybridBase;
   using HybridBase::HybridBase;
-  std::unordered_set<TurboModuleManagerDelegate *> mDelegates_;
+  std::vector<jni::global_ref<TurboModuleManagerDelegate::javaobject>>
+      mDelegates_;
 
   void addTurboModuleManagerDelegate(
-      jni::alias_ref<TurboModuleManagerDelegate::javaobject>
-          turboModuleManagerDelegate);
+      jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate);
 };
 
 } // namespace facebook::react

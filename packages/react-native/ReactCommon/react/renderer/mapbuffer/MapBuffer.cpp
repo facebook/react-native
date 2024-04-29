@@ -22,7 +22,7 @@ static inline int32_t valueOffset(int32_t bucketIndex) {
 // TODO T83483191: Extend MapBuffer C++ implementation to support basic random
 // access
 MapBuffer::MapBuffer(std::vector<uint8_t> data) : bytes_(std::move(data)) {
-  auto header = reinterpret_cast<Header const *>(bytes_.data());
+  auto header = reinterpret_cast<const Header*>(bytes_.data());
   count_ = header->count;
 
   if (header->bufferSize != bytes_.size()) {
@@ -39,7 +39,7 @@ int32_t MapBuffer::getKeyBucket(Key key) const {
     int32_t mid = (lo + hi) >> 1;
 
     Key midVal =
-        *reinterpret_cast<Key const *>(bytes_.data() + bucketOffset(mid));
+        *reinterpret_cast<const Key*>(bytes_.data() + bucketOffset(mid));
 
     if (midVal < key) {
       lo = mid + 1;
@@ -57,7 +57,15 @@ int32_t MapBuffer::getInt(Key key) const {
   auto bucketIndex = getKeyBucket(key);
   react_native_assert(bucketIndex != -1 && "Key not found in MapBuffer");
 
-  return *reinterpret_cast<int32_t const *>(
+  return *reinterpret_cast<const int32_t*>(
+      bytes_.data() + valueOffset(bucketIndex));
+}
+
+int64_t MapBuffer::getLong(Key key) const {
+  auto bucketIndex = getKeyBucket(key);
+  react_native_assert(bucketIndex != -1 && "Key not found in MapBuffer");
+
+  return *reinterpret_cast<const int64_t*>(
       bytes_.data() + valueOffset(bucketIndex));
 }
 
@@ -69,7 +77,7 @@ double MapBuffer::getDouble(Key key) const {
   auto bucketIndex = getKeyBucket(key);
   react_native_assert(bucketIndex != -1 && "Key not found in MapBuffer");
 
-  return *reinterpret_cast<double const *>(
+  return *reinterpret_cast<const double*>(
       bytes_.data() + valueOffset(bucketIndex));
 }
 
@@ -84,9 +92,9 @@ std::string MapBuffer::getString(Key key) const {
   // of the map buffer
   int32_t dynamicDataOffset = getDynamicDataOffset();
   int32_t offset = getInt(key);
-  int32_t stringLength = *reinterpret_cast<int32_t const *>(
+  int32_t stringLength = *reinterpret_cast<const int32_t*>(
       bytes_.data() + dynamicDataOffset + offset);
-  uint8_t const *stringPtr =
+  const uint8_t* stringPtr =
       bytes_.data() + dynamicDataOffset + offset + sizeof(int);
 
   return {stringPtr, stringPtr + stringLength};
@@ -98,7 +106,7 @@ MapBuffer MapBuffer::getMapBuffer(Key key) const {
   int32_t dynamicDataOffset = getDynamicDataOffset();
 
   int32_t offset = getInt(key);
-  int32_t mapBufferLength = *reinterpret_cast<int32_t const *>(
+  int32_t mapBufferLength = *reinterpret_cast<const int32_t*>(
       bytes_.data() + dynamicDataOffset + offset);
 
   std::vector<uint8_t> value(mapBufferLength);
@@ -116,13 +124,13 @@ std::vector<MapBuffer> MapBuffer::getMapBufferList(MapBuffer::Key key) const {
 
   int32_t dynamicDataOffset = getDynamicDataOffset();
   int32_t offset = getInt(key);
-  int32_t mapBufferListLength = *reinterpret_cast<int32_t const *>(
+  int32_t mapBufferListLength = *reinterpret_cast<const int32_t*>(
       bytes_.data() + dynamicDataOffset + offset);
   offset = offset + sizeof(uint32_t);
 
   int32_t curLen = 0;
   while (curLen < mapBufferListLength) {
-    int32_t mapBufferLength = *reinterpret_cast<int32_t const *>(
+    int32_t mapBufferLength = *reinterpret_cast<const int32_t*>(
         bytes_.data() + dynamicDataOffset + offset + curLen);
     curLen = curLen + sizeof(uint32_t);
     std::vector<uint8_t> value(mapBufferLength);
@@ -140,7 +148,7 @@ size_t MapBuffer::size() const {
   return bytes_.size();
 }
 
-uint8_t const *MapBuffer::data() const {
+const uint8_t* MapBuffer::data() const {
   return bytes_.data();
 }
 

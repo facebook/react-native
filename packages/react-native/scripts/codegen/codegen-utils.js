@@ -32,6 +32,20 @@ function getCodegen() {
   return RNCodegen;
 }
 
+function getCombineJSToSchema() {
+  let combineJSToSchema;
+  try {
+    combineJSToSchema = require('../../packages/react-native-codegen/lib/cli/combine/combine-js-to-schema.js');
+  } catch (e) {
+    combineJSToSchema = require('@react-native/codegen/lib/cli/combine/combine-js-to-schema.js');
+  }
+  if (!combineJSToSchema) {
+    throw 'combine-js-to-schema not found.';
+  }
+  return combineJSToSchema;
+}
+
 module.exports = {
   getCodegen: getCodegen,
+  getCombineJSToSchema: getCombineJSToSchema,
 };

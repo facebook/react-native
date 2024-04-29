@@ -17,7 +17,7 @@ class JBackgroundExecutor : public jni::JavaClass<JBackgroundExecutor> {
   static auto constexpr kJavaDescriptor =
       "Lcom/facebook/react/bridge/BackgroundExecutor;";
 
-  static BackgroundExecutor create(const std::string &name);
+  static BackgroundExecutor create(const std::string& name);
 };
 
 } // namespace facebook::react

@@ -83,9 +83,9 @@ public class ImageLoaderModule extends NativeImageLoaderAndroidSpec
   /**
    * Fetch the width and height of the given image.
    *
-   * @param uriString the URI of the remote image to prefetch
-   * @param promise the promise that is fulfilled when the image is successfully prefetched or
-   *     rejected when there is an error
+   * @param uriString the URI of the remote image
+   * @param promise the promise that is fulfilled when operation successfully completed or rejected
+   *     when there is an error
    */
   @ReactMethod
   public void getSize(final String uriString, final Promise promise) {
@@ -139,10 +139,10 @@ public class ImageLoaderModule extends NativeImageLoaderAndroidSpec
   /**
    * Fetch the width and height of the given image with headers.
    *
-   * @param uriString the URI of the remote image to prefetch
+   * @param uriString the URI of the remote image
    * @param headers headers send with the request
-   * @param promise the promise that is fulfilled when the image is successfully prefetched or
-   *     rejected when there is an error
+   * @param promise the promise that is fulfilled when operation successfully completed or rejected
+   *     when there is an error
    */
   @ReactMethod
   public void getSizeWithHeaders(

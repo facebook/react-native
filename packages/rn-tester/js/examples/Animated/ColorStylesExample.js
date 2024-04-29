@@ -9,11 +9,12 @@
  */
 
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
-import * as React from 'react';
-import {Animated, View, StyleSheet, Text} from 'react-native';
+
 import RNTConfigurationBlock from '../../components/RNTConfigurationBlock';
 import RNTesterButton from '../../components/RNTesterButton';
 import ToggleNativeDriver from './utils/ToggleNativeDriver';
+import * as React from 'react';
+import {Animated, StyleSheet, Text, View} from 'react-native';
 
 function AnimatedView({useNativeDriver}: {useNativeDriver: boolean}) {
   const animations = [];

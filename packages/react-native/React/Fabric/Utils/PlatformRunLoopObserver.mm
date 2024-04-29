@@ -45,7 +45,7 @@ static RunLoopObserver::Activity toRunLoopActivity(CFRunLoopActivity activity)
 
 PlatformRunLoopObserver::PlatformRunLoopObserver(
     RunLoopObserver::Activity activities,
-    RunLoopObserver::WeakOwner const &owner,
+    const RunLoopObserver::WeakOwner &owner,
     CFRunLoopRef runLoop)
     : RunLoopObserver(activities, owner), runLoop_(runLoop)
 {

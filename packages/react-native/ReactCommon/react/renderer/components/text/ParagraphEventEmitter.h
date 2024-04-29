@@ -16,7 +16,7 @@ class ParagraphEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
 
-  void onTextLayout(LinesMeasurements const &linesMeasurements) const;
+  void onTextLayout(const LinesMeasurements& linesMeasurements) const;
 
  private:
   mutable std::mutex linesMeasurementsMutex_;

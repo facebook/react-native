@@ -23,6 +23,21 @@ else
 fi
 YARN_BINARY="${YARN_BINARY:-$YARN_OR_NPM}"
 
+# mv command to use when copying files into the working directory
+EDEN_SAFE_MV="mv"
+
+if [ -x "$(command -v eden)" ]; then
+  pushd "$THIS_DIR"
+
+  # Detect if we are in an EdenFS checkout, but be sure to use /bin/cp
+  # incase users have GNU coreutils installed which is incompatible with -X
+  if [[ "$OSTYPE" == "darwin"* ]] && eden info; then
+    EDEN_SAFE_MV="/bin/cp -R -X"
+  fi
+
+  popd >/dev/null
+fi
+
 if [[ ${FBSOURCE_ENV:-0} -eq 1 ]]; then
   # Custom FB-specific setup
   pushd "$CODEGEN_DIR" >/dev/null
@@ -46,7 +61,7 @@ else
   if [ "$OSTYPE" = "msys" ] || [ "$OSTYPE" = "cygwin" ]; then
     tar cf - --exclude='*.lock' "$CODEGEN_DIR" | (cd "$TMP_DIR" && tar xvf - );
   else
-    cp -R "$CODEGEN_DIR/." "$TMP_DIR";
+    /bin/cp -R "$CODEGEN_DIR/." "$TMP_DIR";
   fi
 
   pushd "$TMP_DIR" >/dev/null
@@ -56,6 +71,7 @@ else
 
   popd >/dev/null
 
-  mv "$TMP_DIR/lib" "$TMP_DIR/node_modules" "$CODEGEN_DIR"
+  $EDEN_SAFE_MV "$TMP_DIR/lib" "$CODEGEN_DIR"
+  $EDEN_SAFE_MV "$TMP_DIR/node_modules" "$CODEGEN_DIR"
   rm -rf "$TMP_DIR"
 fi

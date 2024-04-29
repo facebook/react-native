@@ -28,11 +28,11 @@ std::vector<uint8_t> JReadableMapBuffer::data() const {
 }
 
 jni::local_ref<JReadableMapBuffer::jhybridobject>
-JReadableMapBuffer::createWithContents(MapBuffer &&map) {
+JReadableMapBuffer::createWithContents(MapBuffer&& map) {
   return newObjectCxxArgs(std::move(map));
 }
 
-JReadableMapBuffer::JReadableMapBuffer(MapBuffer &&map)
+JReadableMapBuffer::JReadableMapBuffer(MapBuffer&& map)
     : serializedData_(std::move(map.bytes_)) {
   react_native_assert(
       (serializedData_.size() != 0) && "Error no content in map");

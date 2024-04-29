@@ -7,7 +7,7 @@
 
 #pragma once
 
-#import <cxxreact/CxxModule.h>
+#include <cxxreact/CxxModule.h>
 
 namespace facebook::react {
 
@@ -28,19 +28,19 @@ class SampleTurboCxxModuleLegacyImpl
   bool getBool(bool arg);
   double getEnum(double arg);
   double getNumber(double arg);
-  std::string getString(const std::string &arg);
-  folly::dynamic getArray(const folly::dynamic &arg);
-  folly::dynamic getObject(const folly::dynamic &arg);
-  folly::dynamic getUnsafeObject(const folly::dynamic &arg);
+  std::string getString(const std::string& arg);
+  folly::dynamic getArray(const folly::dynamic& arg);
+  folly::dynamic getObject(const folly::dynamic& arg);
+  folly::dynamic getUnsafeObject(const folly::dynamic& arg);
   double getRootTag(double arg);
   folly::dynamic
-  getValue(double x, const std::string &y, const folly::dynamic &z);
+  getValue(double x, const std::string& y, const folly::dynamic& z);
   void getValueWithCallback(
-      const facebook::xplat::module::CxxModule::Callback &callback);
+      const facebook::xplat::module::CxxModule::Callback& callback);
   void getValueWithPromise(
       bool error,
-      const facebook::xplat::module::CxxModule::Callback &resolve,
-      const facebook::xplat::module::CxxModule::Callback &reject);
+      const facebook::xplat::module::CxxModule::Callback& resolve,
+      const facebook::xplat::module::CxxModule::Callback& reject);
 };
 
 } // namespace facebook::react

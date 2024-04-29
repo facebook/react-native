@@ -144,4 +144,11 @@ static const NSUInteger kMatrixArrayLength = 4 * 4;
   return transform;
 }
 
++ (RCTTransformOrigin)RCTTransformOrigin:(id)json
+{
+  RCTTransformOrigin transformOrigin = {
+      [RCTConvert YGValue:json[0]], [RCTConvert YGValue:json[1]], [RCTConvert CGFloat:json[2]]};
+  return transformOrigin;
+}
+
 @end

@@ -16,23 +16,24 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_flags = ' -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1'
-folly_compiler_flags = folly_flags + ' ' + '-Wno-comma -Wno-shorten-64-to-32'
+folly_config = get_folly_config()
+folly_compiler_flags = folly_config[:compiler_flags]
+folly_version = folly_config[:version]
 
 is_new_arch_enabled = ENV["RCT_NEW_ARCH_ENABLED"] == "1"
-new_arch_enabled_flag = (is_new_arch_enabled ? " -DRCT_NEW_ARCH_ENABLED" : "")
-is_fabric_enabled = is_new_arch_enabled || ENV["RCT_FABRIC_ENABLED"]
-fabric_flag = (is_fabric_enabled ? " -DRN_FABRIC_ENABLED" : "")
-other_cflags = "$(inherited)" + folly_flags + new_arch_enabled_flag + fabric_flag
+use_hermes = ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == '1'
 
-use_hermes = ENV['USE_HERMES'] == '1'
-use_frameworks = ENV['USE_FRAMEWORKS'] != nil
+new_arch_enabled_flag = (is_new_arch_enabled ? " -DRCT_NEW_ARCH_ENABLED" : "")
+is_fabric_enabled = true #is_new_arch_enabled || ENV["RCT_FABRIC_ENABLED"]
+hermes_flag = (use_hermes ? " -DUSE_HERMES" : "")
+other_cflags = "$(inherited)" + folly_compiler_flags + new_arch_enabled_flag + hermes_flag
 
 header_search_paths = [
-  "$(PODS_TARGET_SRCROOT)/ReactCommon",
+  "$(PODS_TARGET_SRCROOT)/../../ReactCommon",
   "$(PODS_ROOT)/Headers/Private/React-Core",
   "$(PODS_ROOT)/boost",
   "$(PODS_ROOT)/DoubleConversion",
+  "$(PODS_ROOT)/fmt/include",
   "$(PODS_ROOT)/RCT-Folly",
   "${PODS_ROOT}/Headers/Public/FlipperKit",
   "$(PODS_ROOT)/Headers/Public/ReactCommon",
@@ -41,14 +42,7 @@ header_search_paths = [
 ].concat(use_hermes ? [
   "$(PODS_ROOT)/Headers/Public/React-hermes",
   "$(PODS_ROOT)/Headers/Public/hermes-engine"
-] : []).concat(use_frameworks ? [
-  "$(PODS_CONFIGURATION_BUILD_DIR)/React-Fabric/React_Fabric.framework/Headers/",
-  "$(PODS_CONFIGURATION_BUILD_DIR)/React-graphics/React_graphics.framework/Headers/",
-  "$(PODS_CONFIGURATION_BUILD_DIR)/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios",
-  "$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core",
-  "$(PODS_CONFIGURATION_BUILD_DIR)/React-NativeModulesApple/React_NativeModulesApple.framework/Headers",
-  "$(PODS_CONFIGURATION_BUILD_DIR)/React-RCTFabric/RCTFabric.framework/Headers/",
-] : []).map{|p| "\"#{p}\""}.join(" ")
+] : [])
 
 Pod::Spec.new do |s|
   s.name            = "React-RCTAppDelegate"
@@ -58,7 +52,7 @@ Pod::Spec.new do |s|
   s.documentation_url      = "https://reactnative.dev/"
   s.license                = package["license"]
   s.author                 = "Meta Platforms, Inc. and its affiliates"
-  s.platforms              = { :ios => min_ios_version_supported }
+  s.platforms              = min_supported_versions
   s.source                 = source
   s.source_files            = "**/*.{c,h,m,mm,S,cpp}"
 
@@ -67,40 +61,41 @@ Pod::Spec.new do |s|
   s.pod_target_xcconfig    = {
     "HEADER_SEARCH_PATHS" => header_search_paths,
     "OTHER_CPLUSPLUSFLAGS" => other_cflags,
-    "CLANG_CXX_LANGUAGE_STANDARD" => "c++17"
+    "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
+    "DEFINES_MODULE" => "YES"
   }
   s.user_target_xcconfig   = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/Headers/Private/React-Core\""}
 
   s.dependency "React-Core"
-  s.dependency "RCT-Folly"
+  s.dependency "RCT-Folly", folly_version
   s.dependency "RCTRequired"
   s.dependency "RCTTypeSafety"
-  s.dependency "ReactCommon/turbomodule/core"
   s.dependency "React-RCTNetwork"
   s.dependency "React-RCTImage"
-  s.dependency "React-NativeModulesApple"
   s.dependency "React-CoreModules"
+  s.dependency "React-nativeconfig"
+  s.dependency "ReactCodegen"
+  s.dependency "React-domnativemodule"
+  s.dependency "React-featureflagsnativemodule"
+  s.dependency "React-microtasksnativemodule"
 
-  if ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == "1"
+  add_dependency(s, "ReactCommon", :subspec => "turbomodule/core", :additional_framework_paths => ["react/nativemodule/core"])
+  add_dependency(s, "React-NativeModulesApple")
+  add_dependency(s, "React-runtimescheduler")
+  add_dependency(s, "React-RCTFabric", :framework_name => "RCTFabric")
+  add_dependency(s, "React-RuntimeCore")
+  add_dependency(s, "React-RuntimeApple")
+  add_dependency(s, "React-Fabric", :additional_framework_paths => ["react/renderer/components/view/platform/cxx"])
+  add_dependency(s, "React-graphics", :additional_framework_paths => ["react/renderer/graphics/platform/ios"])
+  add_dependency(s, "React-utils")
+  add_dependency(s, "React-debug")
+  add_dependency(s, "React-rendererdebug")
+  add_dependency(s, "React-featureflags")
+
+  if use_hermes
     s.dependency "React-hermes"
+    s.dependency "React-RuntimeHermes"
   else
     s.dependency "React-jsc"
-  end
-
-  if is_new_arch_enabled
-    s.dependency "React-Fabric"
-    s.dependency "React-RCTFabric"
-    s.dependency "React-graphics"
-
-    s.script_phases = {
-      :name => "Generate Legacy Components Interop",
-      :script => "
-. ${PODS_ROOT}/../.xcode.env
-${NODE_BINARY} ${REACT_NATIVE_PATH}/scripts/codegen/generate-legacy-interop-components.js -p #{ENV['APP_PATH']} -o ${REACT_NATIVE_PATH}/Libraries/AppDelegate
-      ",
-      :execution_position => :before_compile,
-      :input_files => ["#{ENV['APP_PATH']}/react-native.config.js"],
-      :output_files => ["${REACT_NATIVE_PATH}/Libraries/AppDelegate/RCTLegacyInteropComponents.mm"],
-    }
   end
 end

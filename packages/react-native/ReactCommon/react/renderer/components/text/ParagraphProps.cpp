@@ -9,18 +9,18 @@
 
 #include <react/renderer/attributedstring/conversions.h>
 #include <react/renderer/attributedstring/primitives.h>
-#include <react/renderer/core/CoreFeatures.h>
 #include <react/renderer/core/propsConversions.h>
 #include <react/renderer/debug/debugStringConvertibleUtils.h>
+#include <react/utils/CoreFeatures.h>
 
 #include <glog/logging.h>
 
 namespace facebook::react {
 
 ParagraphProps::ParagraphProps(
-    const PropsParserContext &context,
-    ParagraphProps const &sourceProps,
-    RawProps const &rawProps)
+    const PropsParserContext& context,
+    const ParagraphProps& sourceProps,
+    const RawProps& rawProps)
     : ViewProps(context, sourceProps, rawProps),
       BaseTextProps(context, sourceProps, rawProps),
       paragraphAttributes(
@@ -56,10 +56,10 @@ ParagraphProps::ParagraphProps(
 };
 
 void ParagraphProps::setProp(
-    const PropsParserContext &context,
+    const PropsParserContext& context,
     RawPropsPropNameHash hash,
-    const char *propName,
-    RawValue const &value) {
+    const char* propName,
+    const RawValue& value) {
   // All Props structs setProp methods must always, unconditionally,
   // call all super::setProp methods, since multiple structs may
   // reuse the same values.

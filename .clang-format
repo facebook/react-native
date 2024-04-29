@@ -68,7 +68,7 @@ PenaltyBreakFirstLessLess: 120
 PenaltyBreakString: 1000
 PenaltyExcessCharacter: 1000000
 PenaltyReturnTypeOnItsOwnLine: 200
-PointerAlignment: Right
+PointerAlignment: Left
 ReflowComments:  true
 SortIncludes:    true
 SpaceAfterCStyleCast: false
@@ -84,8 +84,10 @@ SpacesInSquareBrackets: false
 Standard:        Cpp11
 TabWidth:        8
 UseTab:          Never
+QualifierAlignment: Left
 ---
 Language: ObjC
 ColumnLimit:     120
 BreakBeforeBraces: WebKit
+PointerAlignment: Right
 ...

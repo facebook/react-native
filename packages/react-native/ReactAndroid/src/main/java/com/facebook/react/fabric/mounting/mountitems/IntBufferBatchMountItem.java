@@ -16,6 +16,7 @@ import com.facebook.common.logging.FLog;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.mounting.MountingManager;
 import com.facebook.react.fabric.mounting.SurfaceMountingManager;
@@ -89,14 +90,6 @@ final class IntBufferBatchMountItem implements BatchMountItem {
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
   }
 
-  private static StateWrapper castToState(Object obj) {
-    return obj != null ? (StateWrapper) obj : null;
-  }
-
-  private static EventEmitterWrapper castToEventEmitter(Object obj) {
-    return obj != null ? (EventEmitterWrapper) obj : null;
-  }
-
   @Override
   public void execute(@NonNull MountingManager mountingManager) {
     SurfaceMountingManager surfaceMountingManager = mountingManager.getSurfaceManager(mSurfaceId);
@@ -128,9 +121,9 @@ final class IntBufferBatchMountItem implements BatchMountItem {
           surfaceMountingManager.createView(
               componentName,
               mIntBuffer[i++],
-              mObjBuffer[j++],
-              castToState(mObjBuffer[j++]),
-              castToEventEmitter(mObjBuffer[j++]),
+              (ReadableMap) mObjBuffer[j++],
+              (StateWrapper) mObjBuffer[j++],
+              (EventEmitterWrapper) mObjBuffer[j++],
               mIntBuffer[i++] == 1);
         } else if (type == INSTRUCTION_DELETE) {
           surfaceMountingManager.deleteView(mIntBuffer[i++]);
@@ -144,9 +137,9 @@ final class IntBufferBatchMountItem implements BatchMountItem {
           surfaceMountingManager.removeDeleteTreeAt(
               mIntBuffer[i++], mIntBuffer[i++], mIntBuffer[i++]);
         } else if (type == INSTRUCTION_UPDATE_PROPS) {
-          surfaceMountingManager.updateProps(mIntBuffer[i++], mObjBuffer[j++]);
+          surfaceMountingManager.updateProps(mIntBuffer[i++], (ReadableMap) mObjBuffer[j++]);
         } else if (type == INSTRUCTION_UPDATE_STATE) {
-          surfaceMountingManager.updateState(mIntBuffer[i++], castToState(mObjBuffer[j++]));
+          surfaceMountingManager.updateState(mIntBuffer[i++], (StateWrapper) mObjBuffer[j++]);
         } else if (type == INSTRUCTION_UPDATE_LAYOUT) {
           int reactTag = mIntBuffer[i++];
           int parentTag = mIntBuffer[i++];
@@ -177,7 +170,7 @@ final class IntBufferBatchMountItem implements BatchMountItem {
               overflowInsetBottom);
         } else if (type == INSTRUCTION_UPDATE_EVENT_EMITTER) {
           surfaceMountingManager.updateEventEmitter(
-              mIntBuffer[i++], castToEventEmitter(mObjBuffer[j++]));
+              mIntBuffer[i++], (EventEmitterWrapper) mObjBuffer[j++]);
         } else {
           throw new IllegalArgumentException(
               "Invalid type argument to IntBufferBatchMountItem: " + type + " at index: " + i);
@@ -239,10 +232,10 @@ final class IntBufferBatchMountItem implements BatchMountItem {
                     : "<hidden>";
             s.append(String.format("UPDATE PROPS [%d]: %s\n", mIntBuffer[i++], propsString));
           } else if (type == INSTRUCTION_UPDATE_STATE) {
-            StateWrapper state = castToState(mObjBuffer[j++]);
+            StateWrapper state = (StateWrapper) mObjBuffer[j++];
             String stateString =
                 IS_DEVELOPMENT_ENVIRONMENT
-                    ? (state != null ? state.getStateData().toString() : "<null>")
+                    ? (state != null ? state.toString() : "<null>")
                     : "<hidden>";
             s.append(String.format("UPDATE STATE [%d]: %s\n", mIntBuffer[i++], stateString));
           } else if (type == INSTRUCTION_UPDATE_LAYOUT) {

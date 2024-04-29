@@ -14,6 +14,7 @@
 
 #include <ReactCommon/RuntimeExecutor.h>
 #include <cxxreact/NativeToJsBridge.h>
+#include <jsinspector-modern/ReactCdp.h>
 
 #ifndef RN_EXPORT
 #define RN_EXPORT __attribute__((visibility("default")))
@@ -38,14 +39,15 @@ struct InstanceCallback {
   virtual void decrementPendingJSCalls() {}
 };
 
-class RN_EXPORT Instance {
+class RN_EXPORT Instance : private jsinspector_modern::InstanceTargetDelegate {
  public:
-  ~Instance();
+  ~Instance() override;
   void initializeBridge(
       std::unique_ptr<InstanceCallback> callback,
       std::shared_ptr<JSExecutorFactory> jsef,
       std::shared_ptr<MessageQueueThread> jsQueue,
-      std::shared_ptr<ModuleRegistry> moduleRegistry);
+      std::shared_ptr<ModuleRegistry> moduleRegistry,
+      jsinspector_modern::HostTarget* inspectorTarget = nullptr);
 
   void initializeRuntime();
 
@@ -57,10 +59,10 @@ class RN_EXPORT Instance {
       bool loadSynchronously);
   void loadRAMBundleFromString(
       std::unique_ptr<const JSBigString> script,
-      const std::string &sourceURL);
+      const std::string& sourceURL);
   void loadRAMBundleFromFile(
-      const std::string &sourcePath,
-      const std::string &sourceURL,
+      const std::string& sourcePath,
+      const std::string& sourceURL,
       bool loadSynchronously);
   void loadRAMBundle(
       std::unique_ptr<RAMBundleRegistry> bundleRegistry,
@@ -71,20 +73,20 @@ class RN_EXPORT Instance {
   void setGlobalVariable(
       std::string propName,
       std::unique_ptr<const JSBigString> jsonValue);
-  void *getJavaScriptContext();
+  void* getJavaScriptContext();
   bool isInspectable();
   bool isBatchActive();
   void callJSFunction(
-      std::string &&module,
-      std::string &&method,
-      folly::dynamic &&params);
-  void callJSCallback(uint64_t callbackId, folly::dynamic &&params);
+      std::string&& module,
+      std::string&& method,
+      folly::dynamic&& params);
+  void callJSCallback(uint64_t callbackId, folly::dynamic&& params);
 
   // This method is experimental, and may be modified or removed.
-  void registerBundle(uint32_t bundleId, const std::string &bundlePath);
+  void registerBundle(uint32_t bundleId, const std::string& bundlePath);
 
-  const ModuleRegistry &getModuleRegistry() const;
-  ModuleRegistry &getModuleRegistry();
+  const ModuleRegistry& getModuleRegistry() const;
+  ModuleRegistry& getModuleRegistry();
 
   void handleMemoryPressure(int pressureLevel);
 
@@ -132,8 +134,14 @@ class RN_EXPORT Instance {
    */
   RuntimeExecutor getRuntimeExecutor();
 
+  /**
+   * Unregisters the instance from the inspector. This method must be called
+   * on the main (non-JS) thread, AFTER \c initializeBridge has completed.
+   */
+  void unregisterFromInspector();
+
  private:
-  void callNativeModules(folly::dynamic &&calls, bool isEndOfBatch);
+  void callNativeModules(folly::dynamic&& calls, bool isEndOfBatch);
   void loadBundle(
       std::unique_ptr<RAMBundleRegistry> bundleRegistry,
       std::unique_ptr<const JSBigString> startupScript,
@@ -156,19 +164,23 @@ class RN_EXPORT Instance {
     std::weak_ptr<NativeToJsBridge> m_nativeToJsBridge;
     std::mutex m_mutex;
     bool m_shouldBuffer = true;
-    std::list<std::function<void()>> m_workBuffer;
+    std::list<CallFunc> m_workBuffer;
 
-    void scheduleAsync(std::function<void()> &&work);
+    void scheduleAsync(CallFunc&& work) noexcept;
 
    public:
     void setNativeToJsBridgeAndFlushCalls(
         std::weak_ptr<NativeToJsBridge> nativeToJsBridge);
-    void invokeAsync(std::function<void()> &&work) override;
-    void invokeSync(std::function<void()> &&work) override;
+    void invokeAsync(CallFunc&& work) noexcept override;
+    void invokeSync(CallFunc&& work) override;
   };
 
   std::shared_ptr<JSCallInvoker> jsCallInvoker_ =
       std::make_shared<JSCallInvoker>();
+
+  jsinspector_modern::HostTarget* parentInspectorTarget_{nullptr};
+  jsinspector_modern::InstanceTarget* inspectorTarget_{nullptr};
+  jsinspector_modern::RuntimeTarget* runtimeInspectorTarget_{nullptr};
 };
 
 } // namespace facebook::react

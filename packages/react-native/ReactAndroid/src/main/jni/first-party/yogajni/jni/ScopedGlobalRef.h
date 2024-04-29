@@ -12,9 +12,7 @@
 #include <type_traits>
 #include "corefunctions.h"
 
-namespace facebook {
-namespace yoga {
-namespace vanillajni {
+namespace facebook::yoga::vanillajni {
 
 /**
  * ScopedGlobalRef is a sort of smart reference that allows us to control the
@@ -35,9 +33,10 @@ namespace vanillajni {
  *
  * This class is very explicit in its behavior, and it does not allow to perform
  * unexpected conversions or unexpected ownership transfer. In practice, this
- * class acts as a unique pointer where the underying JNI reference can have one
- * and just one owner. Transferring ownership is allowed but it is an explicit
- * operation (implemented via move semantics and also via explicitly API calls).
+ * class acts as a unique pointer where the underlying JNI reference can have
+ * one and just one owner. Transferring ownership is allowed but it is an
+ * explicit operation (implemented via move semantics and also via explicitly
+ * API calls).
  *
  * Note that this class doesn't receive an explicit JNIEnv at construction time.
  * At destruction time it uses vanillajni::getCurrentEnv() to retrieve the
@@ -58,13 +57,13 @@ class ScopedGlobalRef {
           std::is_same<T, jbooleanArray>(),
       "ScopedGlobalRef instantiated for invalid type");
 
-public:
+ public:
   /**
    * Constructs a ScopedGlobalRef with a JNI global reference.
    *
    * @param globalRef the global reference to wrap. Can be NULL.
    */
-  ScopedGlobalRef(T globalRef) : mGlobalRef(globalRef) {}
+  explicit ScopedGlobalRef(T globalRef) : mGlobalRef(globalRef) {}
 
   /**
    * Equivalent to ScopedGlobalRef(NULL)
@@ -74,17 +73,19 @@ public:
   /**
    * Move construction is allowed.
    */
-  ScopedGlobalRef(ScopedGlobalRef&& s) : mGlobalRef(s.release()) {}
+  ScopedGlobalRef(ScopedGlobalRef&& s) noexcept : mGlobalRef(s.release()) {}
 
   /**
    * Move assignment is allowed.
    */
-  ScopedGlobalRef& operator=(ScopedGlobalRef&& s) {
+  ScopedGlobalRef& operator=(ScopedGlobalRef&& s) noexcept {
     reset(s.release());
     return *this;
   }
 
-  ~ScopedGlobalRef() { reset(); }
+  ~ScopedGlobalRef() {
+    reset();
+  }
 
   /**
    * Deletes the currently held reference and reassigns a new one to the
@@ -113,17 +114,21 @@ public:
   /**
    * Returns the underlying JNI global reference.
    */
-  T get() const { return mGlobalRef; }
+  T get() const {
+    return mGlobalRef;
+  }
 
   /**
    * Returns true if the underlying JNI reference is not NULL.
    */
-  operator bool() const { return mGlobalRef != NULL; }
+  operator bool() const {
+    return mGlobalRef != NULL;
+  }
 
   ScopedGlobalRef(const ScopedGlobalRef& ref) = delete;
   ScopedGlobalRef& operator=(const ScopedGlobalRef& other) = delete;
 
-private:
+ private:
   T mGlobalRef;
 };
 
@@ -132,6 +137,4 @@ ScopedGlobalRef<T> make_global_ref(T globalRef) {
   return ScopedGlobalRef<T>(globalRef);
 }
 
-} // namespace vanillajni
-} // namespace yoga
-} // namespace facebook
+} // namespace facebook::yoga::vanillajni

@@ -5,10 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTConvert.h"
+#import <React/RCTConvert.h>
+#import "UIView+React.h"
 
 @interface RCTConvert (Transform)
 
 + (CATransform3D)CATransform3D:(id)json;
+
++ (RCTTransformOrigin)RCTTransformOrigin:(id)json;
 
 @end

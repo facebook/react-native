@@ -9,8 +9,7 @@
 #include <atomic>
 #include <memory>
 
-namespace facebook {
-namespace yoga {
+namespace facebook::yoga {
 
 const char* LayoutPassReasonToString(const LayoutPassReason value) {
   switch (value) {
@@ -41,14 +40,14 @@ struct Node {
   std::function<Event::Subscriber> subscriber = nullptr;
   Node* next = nullptr;
 
-  Node(std::function<Event::Subscriber>&& subscriber)
+  explicit Node(std::function<Event::Subscriber>&& subscriber)
       : subscriber{std::move(subscriber)} {}
 };
 
 std::atomic<Node*> subscribers{nullptr};
 
 Node* push(Node* newHead) {
-  Node* oldHead;
+  Node* oldHead = nullptr;
   do {
     oldHead = subscribers.load(std::memory_order_relaxed);
     if (newHead != nullptr) {
@@ -74,7 +73,10 @@ void Event::subscribe(std::function<Subscriber>&& subscriber) {
   push(new Node{std::move(subscriber)});
 }
 
-void Event::publish(const YGNode& node, Type eventType, const Data& eventData) {
+void Event::publish(
+    YGNodeConstRef node,
+    Type eventType,
+    const Data& eventData) {
   for (auto subscriber = subscribers.load(std::memory_order_relaxed);
        subscriber != nullptr;
        subscriber = subscriber->next) {
@@ -82,5 +84,4 @@ void Event::publish(const YGNode& node, Type eventType, const Data& eventData) {
   }
 }
 
-} // namespace yoga
-} // namespace facebook
+} // namespace facebook::yoga

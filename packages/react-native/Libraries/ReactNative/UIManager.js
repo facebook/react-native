@@ -8,31 +8,10 @@
  * @format
  */
 
-import type {RootTag} from '../Types/RootTagTypes';
-import type {Spec} from './NativeUIManager';
+import type {UIManagerJSInterface} from '../Types/UIManagerJSInterface';
 
 import {getFabricUIManager} from './FabricUIManager';
 import nullthrows from 'nullthrows';
-
-export interface UIManagerJSInterface extends Spec {
-  +getViewManagerConfig: (viewManagerName: string) => Object;
-  +hasViewManagerConfig: (viewManagerName: string) => boolean;
-  +createView: (
-    reactTag: ?number,
-    viewName: string,
-    rootTag: RootTag,
-    props: Object,
-  ) => void;
-  +updateView: (reactTag: number, viewName: string, props: Object) => void;
-  +manageChildren: (
-    containerTag: ?number,
-    moveFromIndices: Array<number>,
-    moveToIndices: Array<number>,
-    addChildReactTags: Array<number>,
-    addAtIndices: Array<number>,
-    removeAtIndices: Array<number>,
-  ) => void;
-}
 
 function isFabricReactTag(reactTag: number): boolean {
   // React reserves even numbers for Fabric.
@@ -45,7 +24,7 @@ const UIManagerImpl: UIManagerJSInterface =
     : require('./PaperUIManager');
 
 // $FlowFixMe[cannot-spread-interface]
-const UIManager = {
+const UIManager: UIManagerJSInterface = {
   ...UIManagerImpl,
   measure(
     reactTag: number,
@@ -180,6 +159,14 @@ const UIManager = {
     commandName: number | string,
     commandArgs: any[],
   ) {
+    // Sometimes, libraries directly pass in the output of `findNodeHandle` to
+    // this function without checking if it's null. This guards against that
+    // case. We throw early here in Javascript so we can get a JS stacktrace
+    // instead of a harder-to-debug native Java or Objective-C stacktrace.
+    if (typeof reactTag !== 'number') {
+      throw new Error('dispatchViewManagerCommand: found null reactTag');
+    }
+
     if (isFabricReactTag(reactTag)) {
       const FabricUIManager = nullthrows(getFabricUIManager());
       const shadowNode =

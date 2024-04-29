@@ -7,9 +7,7 @@
 
 #pragma once
 
-#include <functional>
 #include <string>
-#include <unordered_set>
 
 #include <ReactCommon/CallInvoker.h>
 #include <ReactCommon/TurboModule.h>
@@ -32,24 +30,26 @@ class JSI_EXPORT JavaTurboModule : public TurboModule {
     jni::alias_ref<jobject> instance;
     std::shared_ptr<CallInvoker> jsInvoker;
     std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker;
+    bool shouldVoidMethodsExecuteSync;
   };
 
-  JavaTurboModule(const InitParams &params);
+  JavaTurboModule(const InitParams& params);
   virtual ~JavaTurboModule();
 
   jsi::Value invokeJavaMethod(
-      jsi::Runtime &runtime,
+      jsi::Runtime& runtime,
       TurboModuleMethodValueKind valueKind,
-      const std::string &methodName,
-      const std::string &methodSignature,
-      const jsi::Value *args,
+      const std::string& methodName,
+      const std::string& methodSignature,
+      const jsi::Value* args,
       size_t argCount,
-      jmethodID &cachedMethodID);
+      jmethodID& cachedMethodID);
 
  private:
   // instance_ can be of type JTurboModule, or JNativeModule
   jni::global_ref<jobject> instance_;
   std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker_;
+  bool shouldVoidMethodsExecuteSync_;
 };
 
 } // namespace facebook::react

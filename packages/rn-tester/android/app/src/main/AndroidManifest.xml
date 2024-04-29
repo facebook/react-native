@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest
-  xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
   <uses-feature
     android:name="android.software.leanback"
@@ -60,7 +59,6 @@
         <data android:scheme="rntester" android:host="example" />
       </intent-filter>
     </activity>
-    <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" android:exported="false"/>
     <provider
       android:name="com.facebook.react.modules.blob.BlobProvider"
       android:authorities="@string/blob_provider_authority"

@@ -173,7 +173,13 @@ function confirmProps(props: Props) {
   }
 }
 
-class Modal extends React.Component<Props> {
+// Create a state to track whether the Modal is rendering or not.
+// This is the only prop that controls whether the modal is rendered or not.
+type State = {
+  isRendered: boolean,
+};
+
+class Modal extends React.Component<Props, State> {
   static defaultProps: {|hardwareAccelerated: boolean, visible: boolean|} = {
     visible: true,
     hardwareAccelerated: false,
@@ -190,6 +196,9 @@ class Modal extends React.Component<Props> {
       confirmProps(props);
     }
     this._identifier = uniqueModalIdentifier++;
+    this.state = {
+      isRendered: props.visible === true,
+    };
   }
 
   componentDidMount() {
@@ -198,28 +207,44 @@ class Modal extends React.Component<Props> {
       this._eventSubscription = ModalEventEmitter.addListener(
         'modalDismissed',
         event => {
-          if (event.modalID === this._identifier && this.props.onDismiss) {
-            this.props.onDismiss();
-          }
+          this.setState({isRendered: false}, () => {
+            if (event.modalID === this._identifier && this.props.onDismiss) {
+              this.props.onDismiss();
+            }
+          });
         },
       );
     }
   }
 
   componentWillUnmount() {
+    this.setState({isRendered: false});
     if (this._eventSubscription) {
       this._eventSubscription.remove();
     }
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps: Props) {
+    if (prevProps.visible === false && this.props.visible === true) {
+      this.setState({isRendered: true});
+    }
+
     if (__DEV__) {
       confirmProps(this.props);
     }
   }
 
+  // Helper function to encapsulate platform specific logic to show or not the Modal.
+  _shouldShowModal(): boolean {
+    if (Platform.OS === 'ios') {
+      return this.props.visible === true || this.state.isRendered === true;
+    }
+
+    return this.props.visible === true;
+  }
+
   render(): React.Node {
-    if (this.props.visible !== true) {
+    if (!this._shouldShowModal()) {
       return null;
     }
 
@@ -244,6 +269,17 @@ class Modal extends React.Component<Props> {
       this.props.children
     );
 
+    const onDismiss = () => {
+      // OnDismiss is implemented on iOS only.
+      if (Platform.OS === 'ios') {
+        this.setState({isRendered: false}, () => {
+          if (this.props.onDismiss) {
+            this.props.onDismiss();
+          }
+        });
+      }
+    };
+
     return (
       <RCTModalHostView
         animationType={animationType}
@@ -252,11 +288,7 @@ class Modal extends React.Component<Props> {
         hardwareAccelerated={this.props.hardwareAccelerated}
         onRequestClose={this.props.onRequestClose}
         onShow={this.props.onShow}
-        onDismiss={() => {
-          if (this.props.onDismiss) {
-            this.props.onDismiss();
-          }
-        }}
+        onDismiss={onDismiss}
         visible={this.props.visible}
         statusBarTranslucent={this.props.statusBarTranslucent}
         identifier={this._identifier}

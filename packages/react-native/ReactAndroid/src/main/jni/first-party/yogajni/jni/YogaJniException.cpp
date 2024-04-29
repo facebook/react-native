@@ -5,14 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include "YogaJniException.h"
 #include <stdexcept>
 #include <string>
-#include "YogaJniException.h"
 #include "common.h"
 
-namespace facebook {
-namespace yoga {
-namespace vanillajni {
+namespace facebook::yoga::vanillajni {
 
 YogaJniException::YogaJniException() {
   jclass cl = getCurrentEnv()->FindClass("java/lang/RuntimeException");
@@ -27,7 +25,7 @@ YogaJniException::YogaJniException(jthrowable throwable) {
   throwable_ = newGlobalRef(getCurrentEnv(), throwable);
 }
 
-YogaJniException::YogaJniException(YogaJniException&& rhs)
+YogaJniException::YogaJniException(YogaJniException&& rhs) noexcept
     : throwable_(std::move(rhs.throwable_)) {}
 
 YogaJniException::YogaJniException(const YogaJniException& rhs) {
@@ -47,6 +45,5 @@ ScopedLocalRef<jthrowable> YogaJniException::getThrowable() const noexcept {
       getCurrentEnv(),
       static_cast<jthrowable>(getCurrentEnv()->NewLocalRef(throwable_.get())));
 }
-} // namespace vanillajni
-} // namespace yoga
-} // namespace facebook
+
+} // namespace facebook::yoga::vanillajni

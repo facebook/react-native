@@ -10,6 +10,7 @@
 #import <React/RCTBorderCurve.h>
 #import <React/RCTBorderStyle.h>
 #import <React/RCTComponent.h>
+#import <React/RCTCursor.h>
 #import <React/RCTPointerEvents.h>
 
 extern const UIAccessibilityTraits SwitchAccessibilityTrait;
@@ -120,6 +121,8 @@ extern const UIAccessibilityTraits SwitchAccessibilityTrait;
  */
 @property (nonatomic, assign) UIEdgeInsets hitTestEdgeInsets;
 
+@property (nonatomic, assign) RCTCursor cursor;
+
 /**
  * (Experimental and unused for Paper) Pointer event handlers.
  */
@@ -132,5 +135,7 @@ extern const UIAccessibilityTraits SwitchAccessibilityTrait;
 @property (nonatomic, assign) RCTCapturingEventBlock onPointerLeave;
 @property (nonatomic, assign) RCTBubblingEventBlock onPointerOver;
 @property (nonatomic, assign) RCTBubblingEventBlock onPointerOut;
+@property (nonatomic, assign) RCTBubblingEventBlock onGotPointerCapture;
+@property (nonatomic, assign) RCTBubblingEventBlock onLostPointerCapture;
 
 @end

@@ -16,7 +16,7 @@
 
 namespace facebook::react {
 
-void RawPropsKey::render(char *buffer, RawPropsPropNameLength *length)
+void RawPropsKey::render(char* buffer, RawPropsPropNameLength* length)
     const noexcept {
   *length = 0;
 
@@ -51,21 +51,21 @@ RawPropsKey::operator std::string() const noexcept {
   return std::string{buffer.data(), length};
 }
 
-static bool areFieldsEqual(char const *lhs, char const *rhs) {
+static bool areFieldsEqual(const char* lhs, const char* rhs) {
   if (lhs == nullptr || rhs == nullptr) {
     return lhs == rhs;
   }
   return lhs == rhs || strcmp(lhs, rhs) == 0;
 }
 
-bool operator==(RawPropsKey const &lhs, RawPropsKey const &rhs) noexcept {
+bool operator==(const RawPropsKey& lhs, const RawPropsKey& rhs) noexcept {
   // Note: We check the name first.
   return areFieldsEqual(lhs.name, rhs.name) &&
       areFieldsEqual(lhs.prefix, rhs.prefix) &&
       areFieldsEqual(lhs.suffix, rhs.suffix);
 }
 
-bool operator!=(RawPropsKey const &lhs, RawPropsKey const &rhs) noexcept {
+bool operator!=(const RawPropsKey& lhs, const RawPropsKey& rhs) noexcept {
   return !(lhs == rhs);
 }
 

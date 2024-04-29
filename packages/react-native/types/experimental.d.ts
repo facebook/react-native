@@ -133,4 +133,13 @@ declare module '.' {
      */
     paddingInlineStart?: DimensionValue | undefined;
   }
+
+  export interface ViewProps {
+    /**
+     * Contols whether this view, and its transitive children, are laid in a way
+     * consistent with web browsers ('strict'), or consistent with existing
+     * React Native code which may rely on incorrect behavior ('classic').
+     */
+    experimental_layoutConformance?: 'strict' | 'classic' | undefined;
+  }
 }

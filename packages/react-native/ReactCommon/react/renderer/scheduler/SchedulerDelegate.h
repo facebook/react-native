@@ -26,29 +26,45 @@ class SchedulerDelegate {
    * to construct a new one.
    */
   virtual void schedulerDidFinishTransaction(
-      const MountingCoordinator::Shared &mountingCoordinator) = 0;
+      const MountingCoordinator::Shared& mountingCoordinator) = 0;
+
+  /*
+   * Called when the runtime scheduler decides that one-or-more previously
+   * finished transactions should now be flushed to the screen (atomically).
+   *
+   * This is a separate callback from didFinishTransaction as the Android UI
+   * mounting layer needs to be able toobserve each created ShadowTree to
+   * correctly apply changes, due to changes in Props representation.
+   */
+  virtual void schedulerShouldRenderTransactions(
+      const MountingCoordinator::Shared& mountingCoordinator) = 0;
 
   /*
    * Called right after a new ShadowNode was created.
    */
   virtual void schedulerDidRequestPreliminaryViewAllocation(
-      SurfaceId surfaceId,
-      const ShadowNode &shadowView) = 0;
+      const ShadowNode& shadowNode) = 0;
+
+  /*
+   * Called after shadow node is cloned with new props.
+   */
+  virtual void schedulerDidRequestUpdateToPreallocatedView(
+      const ShadowNode& shadowView) = 0;
 
   virtual void schedulerDidDispatchCommand(
-      const ShadowView &shadowView,
-      std::string const &commandName,
-      folly::dynamic const &args) = 0;
+      const ShadowView& shadowView,
+      const std::string& commandName,
+      const folly::dynamic& args) = 0;
 
   virtual void schedulerDidSendAccessibilityEvent(
-      const ShadowView &shadowView,
-      std::string const &eventType) = 0;
+      const ShadowView& shadowView,
+      const std::string& eventType) = 0;
 
   /*
    * Set JS responder for a view
    */
   virtual void schedulerDidSetIsJSResponder(
-      ShadowView const &shadowView,
+      const ShadowView& shadowView,
       bool isJSResponder,
       bool blockNativeResponder) = 0;
 

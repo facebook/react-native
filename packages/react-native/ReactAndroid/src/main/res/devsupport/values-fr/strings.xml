@@ -3,5 +3,4 @@
 <!-- @generated -->
 <!-- FB Locale: fr_FR -->
 <resources exclude-from-buck-resource-map="true">
-    <string name="catalyst_dev_menu_sub_header" gender="unknown">En cours %1$s</string>
 </resources>

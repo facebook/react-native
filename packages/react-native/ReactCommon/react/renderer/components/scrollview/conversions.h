@@ -11,13 +11,14 @@
 #include <react/renderer/components/scrollview/primitives.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
+#include <unordered_map>
 
 namespace facebook::react {
 
 inline void fromRawValue(
-    const PropsParserContext &context,
-    const RawValue &value,
-    ScrollViewSnapToAlignment &result) {
+    const PropsParserContext& context,
+    const RawValue& value,
+    ScrollViewSnapToAlignment& result) {
   auto string = (std::string)value;
   if (string == "start") {
     result = ScrollViewSnapToAlignment::Start;
@@ -35,9 +36,9 @@ inline void fromRawValue(
 }
 
 inline void fromRawValue(
-    const PropsParserContext &context,
-    const RawValue &value,
-    ScrollViewIndicatorStyle &result) {
+    const PropsParserContext& context,
+    const RawValue& value,
+    ScrollViewIndicatorStyle& result) {
   auto string = (std::string)value;
   if (string == "default") {
     result = ScrollViewIndicatorStyle::Default;
@@ -55,9 +56,9 @@ inline void fromRawValue(
 }
 
 inline void fromRawValue(
-    const PropsParserContext &context,
-    const RawValue &value,
-    ScrollViewKeyboardDismissMode &result) {
+    const PropsParserContext& context,
+    const RawValue& value,
+    ScrollViewKeyboardDismissMode& result) {
   auto string = (std::string)value;
   if (string == "none") {
     result = ScrollViewKeyboardDismissMode::None;
@@ -75,9 +76,9 @@ inline void fromRawValue(
 }
 
 inline void fromRawValue(
-    const PropsParserContext &context,
-    const RawValue &value,
-    ContentInsetAdjustmentBehavior &result) {
+    const PropsParserContext& context,
+    const RawValue& value,
+    ContentInsetAdjustmentBehavior& result) {
   auto string = (std::string)value;
   if (string == "never") {
     result = ContentInsetAdjustmentBehavior::Never;
@@ -99,10 +100,10 @@ inline void fromRawValue(
 }
 
 inline void fromRawValue(
-    const PropsParserContext &context,
-    const RawValue &value,
-    ScrollViewMaintainVisibleContentPosition &result) {
-  auto map = (butter::map<std::string, RawValue>)value;
+    const PropsParserContext& context,
+    const RawValue& value,
+    ScrollViewMaintainVisibleContentPosition& result) {
+  auto map = (std::unordered_map<std::string, RawValue>)value;
 
   auto minIndexForVisible = map.find("minIndexForVisible");
   if (minIndexForVisible != map.end()) {
@@ -118,7 +119,7 @@ inline void fromRawValue(
   }
 }
 
-inline std::string toString(const ScrollViewSnapToAlignment &value) {
+inline std::string toString(const ScrollViewSnapToAlignment& value) {
   switch (value) {
     case ScrollViewSnapToAlignment::Start:
       return "start";
@@ -131,7 +132,7 @@ inline std::string toString(const ScrollViewSnapToAlignment &value) {
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 
-inline std::string toString(const ScrollViewIndicatorStyle &value) {
+inline std::string toString(const ScrollViewIndicatorStyle& value) {
   switch (value) {
     case ScrollViewIndicatorStyle::Default:
       return "default";
@@ -142,7 +143,7 @@ inline std::string toString(const ScrollViewIndicatorStyle &value) {
   }
 }
 
-inline std::string toString(const ScrollViewKeyboardDismissMode &value) {
+inline std::string toString(const ScrollViewKeyboardDismissMode& value) {
   switch (value) {
     case ScrollViewKeyboardDismissMode::None:
       return "none";
@@ -153,7 +154,7 @@ inline std::string toString(const ScrollViewKeyboardDismissMode &value) {
   }
 }
 
-inline std::string toString(const ContentInsetAdjustmentBehavior &value) {
+inline std::string toString(const ContentInsetAdjustmentBehavior& value) {
   switch (value) {
     case ContentInsetAdjustmentBehavior::Never:
       return "never";
@@ -167,7 +168,7 @@ inline std::string toString(const ContentInsetAdjustmentBehavior &value) {
 }
 
 inline std::string toString(
-    const std::optional<ScrollViewMaintainVisibleContentPosition> &value) {
+    const std::optional<ScrollViewMaintainVisibleContentPosition>& value) {
   if (!value) {
     return "null";
   }

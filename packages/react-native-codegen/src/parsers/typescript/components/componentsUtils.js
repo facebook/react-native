@@ -9,42 +9,15 @@
  */
 
 'use strict';
-const {
-  parseTopLevelType,
-  flattenIntersectionType,
-} = require('../parseTopLevelType');
-import type {TypeDeclarationMap, PropAST, ASTNode} from '../../utils';
+
 import type {BuildSchemaFN, Parser} from '../../parser';
+import type {ASTNode, PropAST, TypeDeclarationMap} from '../../utils';
 
-function getProperties(
-  typeName: string,
-  types: TypeDeclarationMap,
-): $FlowFixMe {
-  const alias = types[typeName];
-  if (!alias) {
-    throw new Error(
-      `Failed to find definition for "${typeName}", please check that you have a valid codegen typescript file`,
-    );
-  }
-  const aliasKind =
-    alias.type === 'TSInterfaceDeclaration' ? 'interface' : 'type';
-
-  try {
-    if (aliasKind === 'interface') {
-      return [...(alias.extends ?? []), ...alias.body.body];
-    }
-
-    return (
-      alias.typeAnnotation.members ||
-      alias.typeAnnotation.typeParameters.params[0].members ||
-      alias.typeAnnotation.typeParameters.params
-    );
-  } catch (e) {
-    throw new Error(
-      `Failed to find ${aliasKind} definition for "${typeName}", please check that you have a valid codegen typescript file`,
-    );
-  }
-}
+const {verifyPropNotAlreadyDefined} = require('../../parsers-commons');
+const {
+  flattenIntersectionType,
+  parseTopLevelType,
+} = require('../parseTopLevelType');
 
 function getUnionOfLiterals(
   name: string,
@@ -150,8 +123,8 @@ function detectArrayType<T>(
   // Covers: Array<T> and ReadonlyArray<T>
   if (
     typeAnnotation.type === 'TSTypeReference' &&
-    (typeAnnotation.typeName.name === 'ReadonlyArray' ||
-      typeAnnotation.typeName.name === 'Array')
+    (parser.getTypeAnnotationName(typeAnnotation) === 'ReadonlyArray' ||
+      parser.getTypeAnnotationName(typeAnnotation) === 'Array')
   ) {
     return {
       type: 'ArrayTypeAnnotation',
@@ -175,7 +148,7 @@ function buildObjectType<T>(
   parser: Parser,
   buildSchema: BuildSchemaFN<T>,
 ): $FlowFixMe {
-  const flattenedProperties = flattenProperties(rawProperties, types);
+  const flattenedProperties = flattenProperties(rawProperties, types, parser);
   const properties = flattenedProperties
     .map(prop => buildSchema(prop, types, parser))
     .filter(Boolean);
@@ -184,6 +157,34 @@ function buildObjectType<T>(
     type: 'ObjectTypeAnnotation',
     properties,
   };
+}
+
+function getPrimitiveTypeAnnotation(type: string): $FlowFixMe {
+  switch (type) {
+    case 'Int32':
+      return {
+        type: 'Int32TypeAnnotation',
+      };
+    case 'Double':
+      return {
+        type: 'DoubleTypeAnnotation',
+      };
+    case 'Float':
+      return {
+        type: 'FloatTypeAnnotation',
+      };
+    case 'TSBooleanKeyword':
+      return {
+        type: 'BooleanTypeAnnotation',
+      };
+    case 'Stringish':
+    case 'TSStringKeyword':
+      return {
+        type: 'StringTypeAnnotation',
+      };
+    default:
+      throw new Error(`Unknown primitive type "${type}"`);
+  }
 }
 
 function getCommonTypeAnnotation<T>(
@@ -253,26 +254,12 @@ function getCommonTypeAnnotation<T>(
         types,
       );
     case 'Int32':
-      return {
-        type: 'Int32TypeAnnotation',
-      };
     case 'Double':
-      return {
-        type: 'DoubleTypeAnnotation',
-      };
     case 'Float':
-      return {
-        type: 'FloatTypeAnnotation',
-      };
     case 'TSBooleanKeyword':
-      return {
-        type: 'BooleanTypeAnnotation',
-      };
     case 'Stringish':
     case 'TSStringKeyword':
-      return {
-        type: 'StringTypeAnnotation',
-      };
+      return getPrimitiveTypeAnnotation(type);
     case 'UnsafeMixed':
       return {
         type: 'MixedTypeAnnotation',
@@ -407,7 +394,7 @@ function getTypeAnnotation<T>(
   const type =
     typeAnnotation.type === 'TSTypeReference' ||
     typeAnnotation.type === 'TSTypeAliasDeclaration'
-      ? typeAnnotation.typeName.name
+      ? parser.getTypeAnnotationName(typeAnnotation)
       : typeAnnotation.type;
 
   const common = getCommonTypeAnnotation(
@@ -443,7 +430,6 @@ function getTypeAnnotation<T>(
         `Cannot use "${type}" type annotation for "${name}": must use a specific function type like BubblingEventHandler, or DirectEventHandler`,
       );
     default:
-      (type: empty);
       throw new Error(`Unknown prop type for "${name}": "${type}"`);
   }
 }
@@ -483,20 +469,10 @@ function getSchemaInfo(
   };
 }
 
-function verifyPropNotAlreadyDefined(
-  props: $ReadOnlyArray<PropAST>,
-  needleProp: PropAST,
-) {
-  const propName = needleProp.key.name;
-  const foundProp = props.some(prop => prop.key.name === propName);
-  if (foundProp) {
-    throw new Error(`A prop was already defined with the name ${propName}`);
-  }
-}
-
 function flattenProperties(
   typeDefinition: $ReadOnlyArray<PropAST>,
   types: TypeDeclarationMap,
+  parser: Parser,
 ): $ReadOnlyArray<PropAST> {
   return typeDefinition
     .map(property => {
@@ -504,23 +480,29 @@ function flattenProperties(
         return property;
       } else if (property.type === 'TSTypeReference') {
         return flattenProperties(
-          getProperties(property.typeName.name, types),
+          parser.getProperties(property.typeName.name, types),
           types,
+          parser,
         );
       } else if (
         property.type === 'TSExpressionWithTypeArguments' ||
         property.type === 'TSInterfaceHeritage'
       ) {
         return flattenProperties(
-          getProperties(property.expression.name, types),
+          parser.getProperties(property.expression.name, types),
           types,
+          parser,
         );
       } else if (property.type === 'TSTypeLiteral') {
-        return flattenProperties(property.members, types);
+        return flattenProperties(property.members, types, parser);
       } else if (property.type === 'TSInterfaceDeclaration') {
-        return flattenProperties(getProperties(property.id.name, types), types);
+        return flattenProperties(
+          parser.getProperties(property.id.name, types),
+          types,
+          parser,
+        );
       } else if (property.type === 'TSIntersectionType') {
-        return flattenProperties(property.types, types);
+        return flattenProperties(property.types, types, parser);
       } else {
         throw new Error(
           `${property.type} is not a supported object literal type.`,
@@ -544,8 +526,8 @@ function flattenProperties(
 }
 
 module.exports = {
-  getProperties,
   getSchemaInfo,
   getTypeAnnotation,
+  getPrimitiveTypeAnnotation,
   flattenProperties,
 };

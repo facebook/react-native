@@ -9,12 +9,12 @@
 
 'use strict';
 
+const {getHermesPrebuiltArtifactsTarballName} = require('./hermes-utils');
 /**
  * This script returns the filename that would be used for a
  * Hermes tarball for the given build type and release version.
  */
 const yargs = require('yargs');
-const {getHermesPrebuiltArtifactsTarballName} = require('./hermes-utils');
 
 let argv = yargs.option('b', {
   alias: 'buildType',

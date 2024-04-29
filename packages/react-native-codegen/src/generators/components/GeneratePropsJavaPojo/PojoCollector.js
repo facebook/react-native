@@ -11,16 +11,17 @@
 'use strict';
 
 import type {
-  ReservedPropTypeAnnotation,
-  NamedShape,
-  ObjectTypeAnnotation,
+  ArrayTypeAnnotation,
   BooleanTypeAnnotation,
-  StringTypeAnnotation,
   DoubleTypeAnnotation,
   FloatTypeAnnotation,
   Int32TypeAnnotation,
-  PropTypeAnnotation,
   MixedTypeAnnotation,
+  NamedShape,
+  ObjectTypeAnnotation,
+  PropTypeAnnotation,
+  ReservedPropTypeAnnotation,
+  StringTypeAnnotation,
 } from '../../../CodegenSchema';
 
 const {capitalize} = require('../../Utils');
@@ -110,11 +111,8 @@ class PojoCollector {
       }
       case 'ArrayTypeAnnotation': {
         const arrayTypeAnnotation = typeAnnotation;
-        // TODO: Flow assumes elementType can be any. Fix this.
-        const elementType: $PropertyType<
-          typeof arrayTypeAnnotation,
-          'elementType',
-        > = arrayTypeAnnotation.elementType;
+        const elementType: $PropertyType<ArrayTypeAnnotation, 'elementType'> =
+          arrayTypeAnnotation.elementType;
 
         const pojoElementType = (() => {
           switch (elementType.type) {

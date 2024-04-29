@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- See fburl.com/140690840 for information about i18n on Android -->
+<!-- @generated -->
+<!-- FB Locale: pl_PL -->
+<resources exclude-from-buck-resource-map="true">
+    <string name="image_description" gender="unknown">Obraz</string>
+    <string name="imagebutton_description" gender="unknown">Przycisk, obraz</string>
+    <string name="header_description" gender="unknown">Nagłówek</string>
+    <string name="combobox_description" gender="unknown">Pole kombi</string>
+    <string name="menubar_description" gender="unknown">Pasek menu</string>
+    <string name="menuitem_description" gender="unknown">Pozycja menu</string>
+    <string name="progressbar_description" gender="unknown">Pasek postępu</string>
+    <string name="radiogroup_description" gender="unknown">Grupa przycisków radiowych</string>
+    <string name="scrollbar_description" gender="unknown">Pasek przewijania</string>
+    <string name="spinbutton_description" gender="unknown">Przycisk kręcenia</string>
+    <string name="rn_tab_description" gender="unknown">Karta</string>
+    <string name="tablist_description" gender="unknown">Lista kart</string>
+    <string name="timer_description" gender="unknown">Czasomierz</string>
+    <string name="toolbar_description" gender="unknown">Pasek narzędzi</string>
+    <string name="summary_description" gender="unknown">Podsumowanie</string>
+    <string name="state_busy_description" gender="unknown">zajęte</string>
+    <string name="state_expanded_description" gender="unknown">rozwinięte</string>
+    <string name="state_collapsed_description" gender="unknown">zwinięte</string>
+    <string name="state_unselected_description" gender="unknown">nie wybrano</string>
+    <string name="state_on_description" gender="unknown">wł.</string>
+    <string name="state_off_description" gender="unknown">wył.</string>
+    <string name="state_mixed_description" gender="unknown">mieszane</string>
+</resources>

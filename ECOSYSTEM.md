@@ -14,12 +14,19 @@ Partners are companies that are significantly invested in React Native and demon
 
 Partners think of React Native as a product; they understand the trade offs that the project makes as well as future plans and goals. Together we shape the vision for React Native to make it the best way to build applications.
 
-Baseline responsibilities of partners include:
-* Attending monthly meeting
-* Contributing to the release process. Examples include being a [community releaser](https://reactnative.dev/contributing/release-roles-responsibilities#release-role-2-community-releaser), testing new releases, technical support for release issues.
-* Engage on the core contributor Discord
+### Application process
+To become a React Native partner, an existing partner needs to refer and champion your application. Partners will undergo a 3 month incubating period, after which Partners will vote to convert to full membership.
 
-Our current partners and other areas of ownership:
+Partnership is not a status symbol, it is a commitment to invest significant resources into improving React Native.
+
+Maintaining partner status requires consistently meeting the baseline responsibilities, including:
+* Attending monthly meeting.
+* Contributing to the release process.
+* Engaging in the core contributor Discord.
+
+Examples of contributing to the release include being a [community releaser](https://reactnative.dev/contributing/release-roles-responsibilities#release-role-2-community-releaser), testing new releases, and technical support for release issues.
+
+### Current partners:
 * **[Coinbase](https://www.coinbase.com/):** Publishes [posts](https://blog.coinbase.com/tagged/react-native) advocating React Native usage. Supports `@react-native-community/datetimepicker` and other community modules to migrate to the new architecture. Supports releases in testing and feedback.
 * **[Callstack](https://callstack.com/):** Maintains the [React Native CLI](https://github.com/react-native-community/react-native-cli) and [other community libraries](https://github.com/callstack), organizes [React Native EU](https://react-native.eu/) and hosts [The React Native Show podcast](https://www.callstack.com/podcast-react-native-show)
 * **[Expo](https://expo.dev/):** Builds [Expo Go and SDK](https://github.com/expo/expo), [Snack](https://snack.expo.dev/), and [Expo Application Services](https://expo.dev/eas). Maintains [React Native Directory](https://reactnative.directory/), stewards [React Navigation](https://reactnavigation.org/) along with other partners.
@@ -30,7 +37,11 @@ Our current partners and other areas of ownership:
 * **[Software Mansion](https://swmansion.com/):** Maintain core infrastructure including JSC, Animated, and other popular third-party plugins and organizes [App.js Conf](https://appjs.co/)
 * **[Wix.com](https://wix.engineering/open-source):** Maintains a variety of React Native open source projects ([see all](https://github.com/orgs/wix/repositories?q=react-native)), including:  [Detox](https://wix.github.io/Detox/) end-to-end testing library for React Native apps, [RN UILib](https://wix.github.io/react-native-ui-lib/), [RN Navigation](https://wix.github.io/react-native-navigation/), [RN Calendars](https://wix.github.io/react-native-calendars/) and [RN Notifications](https://github.com/wix/react-native-notifications).
 
-This list may fluctuate in response to newcomers who meet our partner definition. In terms of open source work, pull requests from partners are commonly prioritized. When you are contributing to React Native, you'll most likely meet somebody who works at one of the partner companies and who is a core contributor:
+### Incubating partners:
+* **[Expensify](https://expensify.com/):** Developing [Expensify Chat](https://github.com/Expensify/App), an open-source React Native app built by the community, while [sponsoring dependencies](https://github.com/orgs/Expensify/sponsoring), conferences, and New Architecture advancements.
+* **[Sentry](https://sentry.io/for/react-native/):** Develops Error and Performance Monitoring [SDK for React Native](https://github.com/getsentry/sentry-react-native) and [New Architecture Turbo Modules Mixed Stack Traces](https://github.com/reactwg/react-native-new-architecture/discussions/122).
+
+When you are contributing to React Native, you'll most likely meet somebody who works at one of the partner companies and who is a core contributor.
 
 ## Core Contributors
 

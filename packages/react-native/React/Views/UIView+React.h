@@ -8,9 +8,16 @@
 #import <UIKit/UIKit.h>
 
 #import <React/RCTComponent.h>
+#import <React/RCTConvert.h>
 #import <yoga/YGEnums.h>
 
 @class RCTShadowView;
+
+typedef struct {
+  YGValue x;
+  YGValue y;
+  CGFloat z;
+} RCTTransformOrigin;
 
 @interface UIView (React) <RCTComponent>
 
@@ -105,6 +112,13 @@
 @property (nonatomic, readonly) CGRect reactContentFrame;
 
 /**
+ * The anchorPoint property doesn't work in the same way as on web - updating it updates the frame.
+ * To work around this, we take both the transform and the transform-origin, and compute it ourselves
+ */
+@property (nonatomic, assign) CATransform3D reactTransform;
+@property (nonatomic, assign) RCTTransformOrigin reactTransformOrigin;
+
+/**
  * The (sub)view which represents this view in terms of accessibility.
  * ViewManager will apply all accessibility properties directly to this view.
  * May be overridden in view subclass which needs to be accessiblitywise
@@ -117,10 +131,13 @@
  * Accessibility properties
  */
 @property (nonatomic, copy) NSString *accessibilityRole;
+@property (nonatomic, copy) NSString *role;
 @property (nonatomic, copy) NSDictionary<NSString *, id> *accessibilityState;
 @property (nonatomic, copy) NSArray<NSDictionary *> *accessibilityActions;
 @property (nonatomic, copy) NSDictionary *accessibilityValueInternal;
 @property (nonatomic, copy) NSString *accessibilityLanguage;
+@property (nonatomic) UIAccessibilityTraits accessibilityRoleTraits;
+@property (nonatomic) UIAccessibilityTraits roleTraits;
 
 /**
  * Used in debugging to get a description of the view hierarchy rooted at

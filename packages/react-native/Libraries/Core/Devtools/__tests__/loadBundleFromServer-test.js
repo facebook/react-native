@@ -11,6 +11,9 @@
 
 'use strict';
 
+// TODO(legacy-fake-timers): Fix these tests to work with modern timers.
+jest.useFakeTimers({legacyFakeTimers: true});
+
 jest.mock('react-native/Libraries/Utilities/HMRClient');
 
 jest.mock('react-native/Libraries/Core/Devtools/getDevServer', () =>
@@ -29,7 +32,7 @@ const loadingViewMock = {
   hide: jest.fn(),
 };
 jest.mock(
-  'react-native/Libraries/Utilities/LoadingView',
+  'react-native/Libraries/Utilities/DevLoadingView',
   () => loadingViewMock,
 );
 

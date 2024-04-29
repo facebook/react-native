@@ -65,6 +65,8 @@ const PERMISSIONS = Object.freeze({
   READ_MEDIA_IMAGES: 'android.permission.READ_MEDIA_IMAGES',
   READ_MEDIA_VIDEO: 'android.permission.READ_MEDIA_VIDEO',
   READ_MEDIA_AUDIO: 'android.permission.READ_MEDIA_AUDIO',
+  READ_MEDIA_VISUAL_USER_SELECTED:
+    'android.permission.READ_MEDIA_VISUAL_USER_SELECTED',
   WRITE_EXTERNAL_STORAGE: 'android.permission.WRITE_EXTERNAL_STORAGE',
   BLUETOOTH_CONNECT: 'android.permission.BLUETOOTH_CONNECT',
   BLUETOOTH_SCAN: 'android.permission.BLUETOOTH_SCAN',
@@ -115,6 +117,7 @@ class PermissionsAndroid {
     READ_MEDIA_IMAGES: string,
     READ_MEDIA_VIDEO: string,
     READ_MEDIA_AUDIO: string,
+    READ_MEDIA_VISUAL_USER_SELECTED: string,
     READ_PHONE_NUMBERS: string,
     READ_PHONE_STATE: string,
     READ_SMS: string,
@@ -131,9 +134,9 @@ class PermissionsAndroid {
     WRITE_EXTERNAL_STORAGE: string,
   |} = PERMISSIONS;
   RESULTS: {|
-    DENIED: $TEMPORARY$string<'denied'>,
-    GRANTED: $TEMPORARY$string<'granted'>,
-    NEVER_ASK_AGAIN: $TEMPORARY$string<'never_ask_again'>,
+    DENIED: 'denied',
+    GRANTED: 'granted',
+    NEVER_ASK_AGAIN: 'never_ask_again',
   |} = PERMISSION_REQUEST_RESULT;
 
   /**
@@ -287,7 +290,6 @@ class PermissionsAndroid {
       NativePermissionsAndroid,
       'PermissionsAndroid is not installed correctly.',
     );
-
     return NativePermissionsAndroid.requestMultiplePermissions(permissions);
   }
 }

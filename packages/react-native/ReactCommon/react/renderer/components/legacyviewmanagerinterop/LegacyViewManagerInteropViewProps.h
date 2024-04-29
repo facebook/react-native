@@ -16,13 +16,13 @@ class LegacyViewManagerInteropViewProps final : public ViewProps {
  public:
   LegacyViewManagerInteropViewProps() = default;
   LegacyViewManagerInteropViewProps(
-      const PropsParserContext &context,
-      const LegacyViewManagerInteropViewProps &sourceProps,
-      const RawProps &rawProps);
+      const PropsParserContext& context,
+      const LegacyViewManagerInteropViewProps& sourceProps,
+      const RawProps& rawProps);
 
 #pragma mark - Props
 
-  folly::dynamic const otherProps;
+  const folly::dynamic otherProps;
 };
 
 } // namespace facebook::react

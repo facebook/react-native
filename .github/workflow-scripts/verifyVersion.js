@@ -11,7 +11,7 @@ module.exports = async (github, context) => {
   const issue = context.payload.issue;
 
   // Ignore issues using upgrade template (they use a special label)
-  if (issue.labels.find(label => label.name == 'Type: Upgrade Issue')) {
+  if (issue.labels.find(label => label.name === 'Type: Upgrade Issue')) {
     return;
   }
 
@@ -42,6 +42,11 @@ module.exports = async (github, context) => {
   ).data;
   const latestVersion = parseVersionFromString(latestRelease.name);
 
+  // We want to "insta-close" an issue if RN version provided is too old. And encourage users to upgrade.
+  if (isVersionTooOld(issueVersion, latestVersion)) {
+    return {label: 'Type: Too Old Version'};
+  }
+
   if (!isVersionSupported(issueVersion, latestVersion)) {
     return {label: 'Type: Unsupported Version'};
   }
@@ -59,11 +64,31 @@ module.exports = async (github, context) => {
   }
 };
 
-// We support N-2 minor versions, and the latest major.
+/**
+ * Check if the RN version provided in an issue is supported.
+ *
+ * "We support `N-2` minor versions, and the `latest` major".
+ */
 function isVersionSupported(actualVersion, latestVersion) {
   return (
     actualVersion.major >= latestVersion.major &&
     actualVersion.minor >= latestVersion.minor - 2
+  );
+}
+
+/**
+ * Check if the RN version provided in an issue is too old.
+ * "We support `N-2` minor versions, and the `latest` major".
+ *
+ * A RN version is *too old* if it's:
+ * - `1` or more *major* behind the *latest major*.
+ * - `5` or more *minor* behind the *latest minor* in the *same major*. Less aggressive.
+ *   (e.g. If `0.72.0` is the current latest then `0.67.0` and lower is too old for `0.72.0`)
+ */
+function isVersionTooOld(actualVersion, latestVersion) {
+  return (
+    latestVersion.major - actualVersion.major >= 1 ||
+    latestVersion.minor - actualVersion.minor >= 5
   );
 }
 

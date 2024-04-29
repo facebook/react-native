@@ -19,12 +19,14 @@
 
 namespace facebook::react {
 
-inline ComponentBuilder simpleComponentBuilder() {
+inline ComponentBuilder simpleComponentBuilder(
+    ContextContainer::Shared contextContainer = nullptr) {
   ComponentDescriptorProviderRegistry componentDescriptorProviderRegistry{};
   auto eventDispatcher = EventDispatcher::Shared{};
   auto componentDescriptorRegistry =
       componentDescriptorProviderRegistry.createComponentDescriptorRegistry(
-          ComponentDescriptorParameters{eventDispatcher, nullptr, nullptr});
+          ComponentDescriptorParameters{
+              eventDispatcher, std::move(contextContainer), nullptr});
 
   componentDescriptorProviderRegistry.add(
       concreteComponentDescriptorProvider<RootComponentDescriptor>());

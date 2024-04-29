@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#pragma once
+
 #include <ReactCommon/RuntimeExecutor.h>
 #include <react/renderer/core/EventBeat.h>
 #include <react/utils/RunLoopObserver.h>
@@ -28,7 +30,7 @@ class AsynchronousEventBeat : public EventBeat,
 #pragma mark - RunLoopObserver::Delegate
 
   void activityDidChange(
-      RunLoopObserver::Delegate const *delegate,
+      const RunLoopObserver::Delegate* delegate,
       RunLoopObserver::Activity activity) const noexcept override;
 
  private:

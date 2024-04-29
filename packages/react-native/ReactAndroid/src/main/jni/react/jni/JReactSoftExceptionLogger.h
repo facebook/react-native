@@ -15,7 +15,7 @@ namespace facebook::react {
 class JReactSoftExceptionLogger
     : public jni::JavaClass<JReactSoftExceptionLogger> {
  public:
-  static constexpr const char *kJavaDescriptor =
+  static constexpr const char* kJavaDescriptor =
       "Lcom/facebook/react/bridge/ReactSoftExceptionLogger;";
 
   static void logNoThrowSoftExceptionWithMessage(

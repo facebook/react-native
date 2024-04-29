@@ -29,17 +29,10 @@ class TextShadowNode : public ConcreteShadowNode<
  public:
   static ShadowNodeTraits BaseTraits() {
     auto traits = ConcreteShadowNode::BaseTraits();
-
 #ifdef ANDROID
     traits.set(ShadowNodeTraits::Trait::FormsView);
 #endif
-    traits.set(IdentifierTrait());
-
     return traits;
-  }
-
-  static ShadowNodeTraits::Trait IdentifierTrait() {
-    return ShadowNodeTraits::Trait::Text;
   }
 
   using ConcreteShadowNode::ConcreteShadowNode;
@@ -52,8 +45,8 @@ class TextShadowNode : public ConcreteShadowNode<
       TextEventEmitter>;
 
   TextShadowNode(
-      ShadowNodeFragment const &fragment,
-      ShadowNodeFamily::Shared const &family,
+      const ShadowNodeFragment& fragment,
+      const ShadowNodeFamily::Shared& family,
       ShadowNodeTraits traits)
       : BaseShadowNode(fragment, family, traits), BaseTextShadowNode() {
     orderIndex_ = std::numeric_limits<decltype(orderIndex_)>::max();

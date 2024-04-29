@@ -12,16 +12,16 @@
 
 import type {NativeMethods} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
 
+const ScreenshotManager = require('../../../NativeModuleExample/NativeScreenshotManager');
 const React = require('react');
 const {
   ActionSheetIOS,
+  Alert,
   StyleSheet,
   Text,
   View,
-  Alert,
   findNodeHandle,
 } = require('react-native');
-const ScreenshotManager = require('../../../NativeModuleExample/NativeScreenshotManager');
 
 const BUTTONS = ['Option 0', 'Option 1', 'Option 2', 'Delete', 'Cancel'];
 const DESTRUCTIVE_INDEX = 3;

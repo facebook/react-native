@@ -8,15 +8,18 @@
 package com.facebook.react.modules.core;
 
 import android.util.SparseArray;
+import android.view.Choreographer;
 import androidx.annotation.Nullable;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.common.SystemClock;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.jstasks.HeadlessJsTaskContext;
+import com.facebook.react.jstasks.HeadlessJsTaskEventListener;
 import java.util.Comparator;
 import java.util.PriorityQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -27,7 +30,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *
  * <p>This is used by the NativeModule {@link TimingModule}.
  */
-public class JavaTimerManager {
+public class JavaTimerManager implements LifecycleEventListener, HeadlessJsTaskEventListener {
 
   // These timing constants should be kept in sync with the ones in `JSTimers.js`.
   // The minimum time in milliseconds left in the frame to call idle callbacks.
@@ -51,7 +54,7 @@ public class JavaTimerManager {
     }
   }
 
-  private class TimerFrameCallback extends ChoreographerCompat.FrameCallback {
+  private class TimerFrameCallback implements Choreographer.FrameCallback {
 
     // Temporary map for constructing the individual arrays of timers to call
     private @Nullable WritableArray mTimersToCall = null;
@@ -89,7 +92,7 @@ public class JavaTimerManager {
     }
   }
 
-  private class IdleFrameCallback extends ChoreographerCompat.FrameCallback {
+  private class IdleFrameCallback implements Choreographer.FrameCallback {
 
     @Override
     public void doFrame(long frameTimeNanos) {
@@ -195,19 +198,24 @@ public class JavaTimerManager {
               }
             });
     mTimerIdsToTimers = new SparseArray<>();
+
+    mReactApplicationContext.addLifecycleEventListener(this);
   }
 
+  @Override
   public void onHostPause() {
     isPaused.set(true);
     clearFrameCallback();
     maybeIdleCallback();
   }
 
+  @Override
   public void onHostDestroy() {
     clearFrameCallback();
     maybeIdleCallback();
   }
 
+  @Override
   public void onHostResume() {
     isPaused.set(false);
     // TODO(5195192) Investigate possible problems related to restarting all tasks at the same
@@ -216,6 +224,7 @@ public class JavaTimerManager {
     maybeSetChoreographerIdleCallback();
   }
 
+  @Override
   public void onHeadlessJsTaskStart(int taskId) {
     if (!isRunningTasks.getAndSet(true)) {
       setChoreographerCallback();
@@ -223,6 +232,7 @@ public class JavaTimerManager {
     }
   }
 
+  @Override
   public void onHeadlessJsTaskFinish(int taskId) {
     HeadlessJsTaskContext headlessJsTaskContext =
         HeadlessJsTaskContext.getInstance(mReactApplicationContext);
@@ -234,6 +244,8 @@ public class JavaTimerManager {
   }
 
   public void onInstanceDestroy() {
+    mReactApplicationContext.removeLifecycleEventListener(this);
+
     clearFrameCallback();
     clearChoreographerIdleCallback();
   }

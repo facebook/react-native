@@ -8,16 +8,14 @@
  * @flow strict
  */
 
+import type {
+  Platform as PlatformType,
+  PlatformSelectSpec,
+} from './Platform.flow';
+
 import NativePlatformConstantsAndroid from './NativePlatformConstantsAndroid';
 
-export type PlatformSelectSpec<T> = {
-  android?: T,
-  native?: T,
-  default?: T,
-  ...
-};
-
-const Platform = {
+const Platform: PlatformType = {
   __constants: null,
   OS: 'android',
   // $FlowFixMe[unsafe-getters-setters]
@@ -28,6 +26,7 @@ const Platform = {
   // $FlowFixMe[unsafe-getters-setters]
   get constants(): {|
     isTesting: boolean,
+    isDisableAnimations?: boolean,
     reactNativeVersion: {|
       major: number,
       minor: number,
@@ -61,19 +60,28 @@ const Platform = {
     return false;
   },
   // $FlowFixMe[unsafe-getters-setters]
+  get isDisableAnimations(): boolean {
+    // $FlowFixMe[object-this-reference]
+    return this.constants.isDisableAnimations ?? this.isTesting;
+  },
+  // $FlowFixMe[unsafe-getters-setters]
   get isTV(): boolean {
     // $FlowFixMe[object-this-reference]
     return this.constants.uiMode === 'tv';
+  },
+  // $FlowFixMe[unsafe-getters-setters]
+  get isVision(): boolean {
+    return false;
   },
   select: <T>(spec: PlatformSelectSpec<T>): T =>
     'android' in spec
       ? // $FlowFixMe[incompatible-return]
         spec.android
       : 'native' in spec
-      ? // $FlowFixMe[incompatible-return]
-        spec.native
-      : // $FlowFixMe[incompatible-return]
-        spec.default,
+        ? // $FlowFixMe[incompatible-return]
+          spec.native
+        : // $FlowFixMe[incompatible-return]
+          spec.default,
 };
 
 module.exports = Platform;

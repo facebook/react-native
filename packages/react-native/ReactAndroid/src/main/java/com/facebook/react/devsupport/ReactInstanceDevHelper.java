@@ -15,8 +15,8 @@ import com.facebook.react.bridge.JavaScriptExecutorFactory;
 
 /**
  * Interface used by {@link DevSupportManager} for accessing some fields and methods of {@link
- * ReactInstanceManager} or {@link ReactHost} for the purpose of displaying and handling developer
- * menu options.
+ * ReactInstanceManager} or {@link ReactHostImpl} for the purpose of displaying and handling
+ * developer menu options.
  */
 public interface ReactInstanceDevHelper {
 

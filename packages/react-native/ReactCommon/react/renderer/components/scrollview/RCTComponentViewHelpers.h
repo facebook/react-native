@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 RCT_EXTERN inline void
-RCTScrollViewHandleCommand(id<RCTScrollViewProtocol> componentView, NSString const *commandName, NSArray const *args)
+RCTScrollViewHandleCommand(id<RCTScrollViewProtocol> componentView, const NSString *commandName, const NSArray *args)
 {
   if ([commandName isEqualToString:@"flashScrollIndicators"]) {
 #if RCT_DEBUG

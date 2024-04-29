@@ -9,6 +9,7 @@
  */
 
 import UIManager from '../../ReactNative/UIManager';
+import nullthrows from 'nullthrows';
 
 /**
  * This is a function exposed to the React Renderer that can be used by the
@@ -19,13 +20,13 @@ function legacySendAccessibilityEvent(
   eventType: string,
 ): void {
   if (eventType === 'focus') {
-    UIManager.sendAccessibilityEvent(
+    nullthrows(UIManager.sendAccessibilityEvent)(
       reactTag,
       UIManager.getConstants().AccessibilityEventTypes.typeViewFocused,
     );
   }
   if (eventType === 'click') {
-    UIManager.sendAccessibilityEvent(
+    nullthrows(UIManager.sendAccessibilityEvent)(
       reactTag,
       UIManager.getConstants().AccessibilityEventTypes.typeViewClicked,
     );

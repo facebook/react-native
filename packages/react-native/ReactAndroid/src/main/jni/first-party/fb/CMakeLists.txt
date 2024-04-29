@@ -7,7 +7,7 @@ cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
 add_library(fb
-        SHARED
+        STATIC
         assert.cpp
         log.cpp)
 
@@ -21,7 +21,7 @@ add_compile_options(
         -Wno-error=unused-but-set-variable
         -DHAVE_POSIX_CLOCKS
 )
-if(${CMAKE_BUILD_TYPE} MATCHES Release)
+if(NOT ${CMAKE_BUILD_TYPE} MATCHES Debug)
         add_compile_options(-DNDEBUG)
 endif()
 

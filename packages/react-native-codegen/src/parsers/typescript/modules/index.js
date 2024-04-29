@@ -13,46 +13,44 @@
 import type {
   NamedShape,
   NativeModuleAliasMap,
-  NativeModuleEnumMap,
   NativeModuleBaseTypeAnnotation,
+  NativeModuleEnumMap,
   NativeModuleTypeAnnotation,
   Nullable,
 } from '../../../CodegenSchema';
-
 import type {Parser} from '../../parser';
 import type {
   ParserErrorCapturer,
-  TypeResolutionStatus,
   TypeDeclarationMap,
+  TypeResolutionStatus,
 } from '../../utils';
-const {flattenIntersectionType} = require('../parseTopLevelType');
-const {flattenProperties} = require('../components/componentsUtils');
-
-const {parseObjectProperty} = require('../../parsers-commons');
-
-const {
-  emitArrayType,
-  emitFunction,
-  emitDictionary,
-  emitPromise,
-  emitRootTag,
-  emitUnion,
-  emitCommonTypes,
-  typeAliasResolution,
-  typeEnumResolution,
-  translateArrayTypeAnnotation,
-} = require('../../parsers-primitives');
 
 const {
   UnsupportedGenericParserError,
   UnsupportedTypeAnnotationParserError,
 } = require('../../errors');
+const {parseObjectProperty} = require('../../parsers-commons');
+const {
+  emitArrayType,
+  emitCommonTypes,
+  emitDictionary,
+  emitFunction,
+  emitPromise,
+  emitRootTag,
+  emitUnion,
+  translateArrayTypeAnnotation,
+  typeAliasResolution,
+  typeEnumResolution,
+} = require('../../parsers-primitives');
+const {flattenProperties} = require('../components/componentsUtils');
+const {flattenIntersectionType} = require('../parseTopLevelType');
 
 function translateObjectTypeAnnotation(
   hasteModuleName: string,
   /**
    * TODO(T108222691): Use flow-types for @babel/parser
    */
+  typeScriptTypeAnnotation: $FlowFixMe,
   nullable: boolean,
   objectMembers: $ReadOnlyArray<$FlowFixMe>,
   typeResolutionStatus: TypeResolutionStatus,
@@ -69,6 +67,7 @@ function translateObjectTypeAnnotation(
     .map<?NamedShape<Nullable<NativeModuleBaseTypeAnnotation>>>(property => {
       return tryParse(() => {
         return parseObjectProperty(
+          typeScriptTypeAnnotation,
           property,
           hasteModuleName,
           types,
@@ -234,7 +233,7 @@ function translateTypeAnnotation(
     }
     case 'TSTypeReference': {
       return translateTypeReferenceAnnotation(
-        typeAnnotation.typeName.name,
+        parser.getTypeAnnotationName(typeAnnotation),
         nullable,
         typeAnnotation,
         hasteModuleName,
@@ -269,8 +268,9 @@ function translateTypeAnnotation(
 
       return translateObjectTypeAnnotation(
         hasteModuleName,
+        typeScriptTypeAnnotation,
         nullable,
-        flattenProperties([typeAnnotation], types),
+        flattenProperties([typeAnnotation], types, parser),
         typeResolutionStatus,
         baseTypes,
         types,
@@ -284,10 +284,12 @@ function translateTypeAnnotation(
     case 'TSIntersectionType': {
       return translateObjectTypeAnnotation(
         hasteModuleName,
+        typeScriptTypeAnnotation,
         nullable,
         flattenProperties(
           flattenIntersectionType(typeAnnotation, types),
           types,
+          parser,
         ),
         typeResolutionStatus,
         [],
@@ -326,6 +328,7 @@ function translateTypeAnnotation(
 
       return translateObjectTypeAnnotation(
         hasteModuleName,
+        typeScriptTypeAnnotation,
         nullable,
         typeAnnotation.members,
         typeResolutionStatus,

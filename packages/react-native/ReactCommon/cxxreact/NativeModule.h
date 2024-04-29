@@ -34,10 +34,10 @@ class NativeModule {
   virtual std::vector<MethodDescriptor> getMethods() = 0;
   virtual folly::dynamic getConstants() = 0;
   virtual void
-  invoke(unsigned int reactMethodId, folly::dynamic &&params, int callId) = 0;
+  invoke(unsigned int reactMethodId, folly::dynamic&& params, int callId) = 0;
   virtual MethodCallResult callSerializableNativeHook(
       unsigned int reactMethodId,
-      folly::dynamic &&args) = 0;
+      folly::dynamic&& args) = 0;
 };
 
 } // namespace facebook::react

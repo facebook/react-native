@@ -5,12 +5,14 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#pragma once
+
 #include <jsi/jsi.h>
 
 namespace facebook::react {
 
 inline static void
-handleJSError(jsi::Runtime &runtime, const jsi::JSError &error, bool isFatal) {
+handleJSError(jsi::Runtime& runtime, const jsi::JSError& error, bool isFatal) {
   auto errorUtils = runtime.global().getProperty(runtime, "ErrorUtils");
   if (errorUtils.isUndefined() || !errorUtils.isObject() ||
       !errorUtils.getObject(runtime).hasProperty(runtime, "reportFatalError") ||

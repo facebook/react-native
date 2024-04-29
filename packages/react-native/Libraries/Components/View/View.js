@@ -12,7 +12,6 @@ import type {ViewProps} from './ViewPropTypes';
 
 import flattenStyle from '../../StyleSheet/flattenStyle';
 import TextAncestor from '../../Text/TextAncestor';
-import {getAccessibilityRoleFromRole} from '../../Utilities/AcessibilityMapping';
 import ViewNativeComponent from './ViewNativeComponent';
 import * as React from 'react';
 
@@ -35,7 +34,6 @@ const View: React.AbstractComponent<
       accessibilityLabel,
       accessibilityLabelledBy,
       accessibilityLiveRegion,
-      accessibilityRole,
       accessibilityState,
       accessibilityValue,
       'aria-busy': ariaBusy,
@@ -56,7 +54,6 @@ const View: React.AbstractComponent<
       importantForAccessibility,
       nativeID,
       pointerEvents,
-      role,
       tabIndex,
       ...otherProps
     }: ViewProps,
@@ -102,6 +99,7 @@ const View: React.AbstractComponent<
     // $FlowFixMe[underconstrained-implicit-instantiation]
     let style = flattenStyle(otherProps.style);
 
+    // $FlowFixMe[sketchy-null-mixed]
     const newPointerEvents = style?.pointerEvents || pointerEvents;
 
     const actualView = (
@@ -113,9 +111,6 @@ const View: React.AbstractComponent<
         accessibilityLabel={ariaLabel ?? accessibilityLabel}
         focusable={tabIndex !== undefined ? !tabIndex : focusable}
         accessibilityState={_accessibilityState}
-        accessibilityRole={
-          role ? getAccessibilityRoleFromRole(role) : accessibilityRole
-        }
         accessibilityElementsHidden={ariaHidden ?? accessibilityElementsHidden}
         accessibilityLabelledBy={_accessibilityLabelledBy}
         accessibilityValue={_accessibilityValue}
@@ -126,6 +121,7 @@ const View: React.AbstractComponent<
         }
         nativeID={id ?? nativeID}
         style={style}
+        // $FlowFixMe[incompatible-type]
         pointerEvents={newPointerEvents}
         ref={forwardedRef}
       />

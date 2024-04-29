@@ -8,6 +8,7 @@
 #import <objc/runtime.h>
 
 #import <React/RCTBridge.h>
+#import <React/RCTBridgeProxy.h>
 
 @protocol RCTSurfaceProtocol;
 
@@ -38,6 +39,13 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @interface RCTBridge (RCTSurfacePresenterStub)
+
+- (id<RCTSurfacePresenterStub>)surfacePresenter;
+- (void)setSurfacePresenter:(id<RCTSurfacePresenterStub>)presenter;
+
+@end
+
+@interface RCTBridgeProxy (RCTSurfacePresenterStub)
 
 - (id<RCTSurfacePresenterStub>)surfacePresenter;
 - (void)setSurfacePresenter:(id<RCTSurfacePresenterStub>)presenter;

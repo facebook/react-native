@@ -18,12 +18,12 @@ const {
   GITHUB_SHA,
 } = process.env;
 
-const fs = require('fs');
 const datastore = require('./datastore');
 const {
   createOrUpdateComment,
   validateEnvironment: validateEnvironmentForMakeComment,
 } = require('./make-comment');
+const fs = require('fs');
 
 /**
  * Generates and submits a comment. If this is run on the main or release branch, data is

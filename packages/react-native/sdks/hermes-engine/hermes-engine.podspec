@@ -8,22 +8,12 @@ require_relative "./hermes-utils.rb"
 
 react_native_path = File.join(__dir__, "..", "..")
 
-# Whether Hermes is built for Release or Debug is determined by the PRODUCTION envvar.
-build_type = ENV['PRODUCTION'] == "1" ? :release : :debug
-
 # package.json
 package = JSON.parse(File.read(File.join(react_native_path, "package.json")))
 version = package['version']
 
-# sdks/.hermesversion
-hermestag_file = File.join(react_native_path, "sdks", ".hermesversion")
-build_from_source = ENV['BUILD_FROM_SOURCE'] === 'true'
-
-git = "https://github.com/facebook/hermes.git"
-
-abort_if_invalid_tarball_provided!
-
-source = compute_hermes_source(build_from_source, hermestag_file, git, version, build_type, react_native_path)
+source_type = hermes_source_type(version, react_native_path)
+source = podspec_source(source_type, version, react_native_path)
 
 Pod::Spec.new do |spec|
   spec.name        = "hermes-engine"
@@ -34,31 +24,54 @@ Pod::Spec.new do |spec|
   spec.license     = package['license']
   spec.author      = "Facebook"
   spec.source      = source
-  spec.platforms   = { :osx => "10.13", :ios => min_ios_version_supported }
+  spec.platforms   = { :osx => "10.13", :ios => "13.4" }
 
   spec.preserve_paths      = '**/*.*'
   spec.source_files        = ''
 
   spec.pod_target_xcconfig = {
-                    "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
+                    "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
                     "CLANG_CXX_LIBRARY" => "compiler-default"
-                  }.merge!(build_type == :debug ? { "GCC_PREPROCESSOR_DEFINITIONS" => "HERMES_ENABLE_DEBUGGER=1" } : {})
+                  }
 
   spec.ios.vendored_frameworks = "destroot/Library/Frameworks/ios/hermes.framework"
   spec.osx.vendored_frameworks = "destroot/Library/Frameworks/macosx/hermes.framework"
 
-  if source[:http] then
+  if HermesEngineSourceType::isPrebuilt(source_type) then
 
     spec.subspec 'Pre-built' do |ss|
-      ss.preserve_paths = ["destroot/bin/*"].concat(build_type == :debug ? ["**/*.{h,c,cpp}"] : [])
-      ss.source_files = "destroot/include/**/*.h"
-      ss.exclude_files = ["destroot/include/jsi/jsi/JSIDynamic.{h,cpp}", "destroot/include/jsi/jsi/jsilib-*.{h,cpp}"]
+      ss.preserve_paths = ["destroot/bin/*"].concat(["**/*.{h,c,cpp}"])
+      ss.source_files = "destroot/include/hermes/**/*.h"
       ss.header_mappings_dir = "destroot/include"
       ss.ios.vendored_frameworks = "destroot/Library/Frameworks/universal/hermes.xcframework"
       ss.osx.vendored_frameworks = "destroot/Library/Frameworks/macosx/hermes.framework"
     end
 
-  elsif source[:git] then
+
+    # Right now, even reinstalling pods with the PRODUCTION flag turned on, does not change the version of hermes that is downloaded
+    # To remove the PRODUCTION flag, we want to download the right version of hermes on the flight
+    # we do so in a pre-build script we invoke from the Xcode build pipeline
+    # We use this only for Apps created using the template. RNTester and Nightlies should not be used to build for Release.
+    # We ignore this if we provide a specific tarball: the assumption here is that if you are providing a tarball, is because you want to
+    # test something specific for that tarball.
+    if source_type == HermesEngineSourceType::DOWNLOAD_PREBUILD_RELEASE_TARBALL
+      spec.script_phase = {
+        :name => "[Hermes] Replace Hermes for the right configuration, if needed",
+        :execution_position => :before_compile,
+        :script => <<-EOS
+        . "$REACT_NATIVE_PATH/scripts/xcode/with-environment.sh"
+
+        CONFIG="Release"
+        if echo $GCC_PREPROCESSOR_DEFINITIONS | grep -q "DEBUG=1"; then
+          CONFIG="Debug"
+        fi
+
+        "$NODE_BINARY" "$REACT_NATIVE_PATH/sdks/hermes-engine/utils/replace_hermes_version.js" -c "$CONFIG" -r "#{version}" -p "$PODS_ROOT"
+        EOS
+      }
+    end
+
+  elsif HermesEngineSourceType::isFromSource(source_type) then
 
     spec.subspec 'Hermes' do |ss|
       ss.source_files = ''
@@ -66,10 +79,22 @@ Pod::Spec.new do |spec|
       ss.header_dir = 'hermes'
     end
 
-    spec.subspec 'JSI' do |ss|
+    spec.subspec 'cdp' do |ss|
       ss.source_files = ''
-      ss.public_header_files = 'API/jsi/jsi/*.h'
-      ss.header_dir = 'jsi'
+      ss.public_header_files = 'API/hermes/cdp/*.h'
+      ss.header_dir = 'hermes/cdp'
+    end
+
+    spec.subspec 'inspector' do |ss|
+      ss.source_files = ''
+      ss.public_header_files = 'API/hermes/inspector/*.h'
+      ss.header_dir = 'hermes/inspector'
+    end
+
+    spec.subspec 'inspector_chrome' do |ss|
+      ss.source_files = ''
+      ss.public_header_files = 'API/hermes/inspector/chrome/*.h'
+      ss.header_dir = 'hermes/inspector/chrome'
     end
 
     spec.subspec 'Public' do |ss|
@@ -90,25 +115,36 @@ Pod::Spec.new do |spec|
 
     spec.prepare_command = ". #{react_native_path}/sdks/hermes-engine/utils/create-dummy-hermes-xcframework.sh"
 
-    CMAKE_BINARY = %x(command -v cmake | tr -d '\n')
-    # NOTE: Script phases are sorted alphabetically inside Xcode project
-    spec.script_phases = [
-      {
-        :name => '[RN] [1] Build Hermesc',
-        :script => <<-EOS
-        . ${PODS_ROOT}/../.xcode.env
-        export CMAKE_BINARY=${CMAKE_BINARY:-#{CMAKE_BINARY}}
-        . ${REACT_NATIVE_PATH}/sdks/hermes-engine/utils/build-hermesc-xcode.sh #{hermesc_path}
-        EOS
-      },
-      {
-        :name => '[RN] [2] Build Hermes',
-        :script => <<-EOS
-        . ${PODS_ROOT}/../.xcode.env
-        export CMAKE_BINARY=${CMAKE_BINARY:-#{CMAKE_BINARY}}
-        . ${REACT_NATIVE_PATH}/sdks/hermes-engine/utils/build-hermes-xcode.sh #{version} #{hermesc_path}/ImportHermesc.cmake
-        EOS
-      }
-    ]
+    # This podspec is also run in CI to build Hermes without using Pod install
+    # and sometimes CI fails because `Pod::Executable` does not exist if it is not run with Pod Install.
+    if defined?(Pod::Executable.to_s)
+      CMAKE_BINARY = Pod::Executable::which!('cmake')
+      # NOTE: Script phases are sorted alphabetically inside Xcode project
+      spec.script_phases = [
+        {
+          :name => '[RN] [1] Build Hermesc',
+          :output_files => [
+            "#{hermesc_path}/ImportHermesc.cmake"
+          ],
+          :script => <<-EOS
+          . "${REACT_NATIVE_PATH}/scripts/xcode/with-environment.sh"
+          export CMAKE_BINARY=${CMAKE_BINARY:-#{CMAKE_BINARY}}
+          . ${REACT_NATIVE_PATH}/sdks/hermes-engine/utils/build-hermesc-xcode.sh #{hermesc_path} ${REACT_NATIVE_PATH}/ReactCommon/jsi
+          EOS
+        },
+        {
+          :name => '[RN] [2] Build Hermes',
+          :input_files => ["#{hermesc_path}/ImportHermesc.cmake"],
+          :output_files => [
+            "${PODS_ROOT}/hermes-engine/build/iphonesimulator/API/hermes/hermes.framework/hermes"
+          ],
+          :script => <<-EOS
+          . "${REACT_NATIVE_PATH}/scripts/xcode/with-environment.sh"
+          export CMAKE_BINARY=${CMAKE_BINARY:-#{CMAKE_BINARY}}
+          . ${REACT_NATIVE_PATH}/sdks/hermes-engine/utils/build-hermes-xcode.sh #{version} #{hermesc_path}/ImportHermesc.cmake ${REACT_NATIVE_PATH}/ReactCommon/jsi
+          EOS
+        }
+      ]
+    end
   end
 end

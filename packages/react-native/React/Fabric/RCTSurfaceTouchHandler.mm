@@ -362,7 +362,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
     std::vector<ActiveTouch> activeTouches;
     activeTouches.reserve(_activeTouches.size());
 
-    for (auto const &pair : _activeTouches) {
+    for (const auto &pair : _activeTouches) {
       activeTouches.push_back(pair.second);
     }
 

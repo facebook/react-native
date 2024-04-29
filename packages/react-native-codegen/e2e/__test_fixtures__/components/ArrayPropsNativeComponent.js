@@ -8,21 +8,22 @@
  * @flow strict-local
  */
 
+import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
+import type {ImageSource} from 'react-native/Libraries/Image/ImageSource';
+import type {HostComponent} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
+import type {ColorValue} from 'react-native/Libraries/StyleSheet/StyleSheet';
 import type {
   DimensionValue,
   EdgeInsetsValue,
   PointValue,
 } from 'react-native/Libraries/StyleSheet/StyleSheetTypes';
-import type {ColorValue} from 'react-native/Libraries/StyleSheet/StyleSheet';
-import type {ImageSource} from 'react-native/Libraries/Image/ImageSource';
 import type {
-  Int32,
   Float,
+  Int32,
   WithDefault,
 } from 'react-native/Libraries/Types/CodegenTypes';
-import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
+
 import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
-import type {HostComponent} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,

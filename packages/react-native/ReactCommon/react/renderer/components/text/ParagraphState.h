@@ -10,7 +10,7 @@
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/attributedstring/AttributedString.h>
 #include <react/renderer/attributedstring/ParagraphAttributes.h>
-#include <react/renderer/components/text/ParagraphLayoutManager.h>
+#include <react/renderer/textlayoutmanager/TextLayoutManager.h>
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
@@ -32,7 +32,8 @@ constexpr static MapBuffer::Key TX_STATE_KEY_MOST_RECENT_EVENT_COUNT = 3;
  * State for <Paragraph> component.
  * Represents what to render and how to render.
  */
-struct ParagraphState {
+class ParagraphState final {
+ public:
   /*
    * All content of <Paragraph> component represented as an `AttributedString`.
    */
@@ -45,26 +46,26 @@ struct ParagraphState {
   ParagraphAttributes paragraphAttributes;
 
   /*
-   * `ParagraphLayoutManager` provides a connection to platform-specific
+   * `TextLayoutManager` provides a connection to platform-specific
    * text rendering infrastructure which is capable to render the
    * `AttributedString`.
    * This is not on every platform. This is not used on Android, but is
    * used on the iOS mounting layer.
    */
-  ParagraphLayoutManager paragraphLayoutManager;
+  std::weak_ptr<const TextLayoutManager> layoutManager;
 
 #ifdef ANDROID
   ParagraphState(
-      AttributedString const &attributedString,
-      ParagraphAttributes const &paragraphAttributes,
-      ParagraphLayoutManager const &paragraphLayoutManager)
+      const AttributedString& attributedString,
+      const ParagraphAttributes& paragraphAttributes,
+      const std::weak_ptr<const TextLayoutManager>& layoutManager)
       : attributedString(attributedString),
         paragraphAttributes(paragraphAttributes),
-        paragraphLayoutManager(paragraphLayoutManager) {}
+        layoutManager(layoutManager) {}
   ParagraphState() = default;
   ParagraphState(
-      ParagraphState const &previousState,
-      folly::dynamic const &data) {
+      const ParagraphState& previousState,
+      const folly::dynamic& data) {
     react_native_assert(false && "Not supported");
   };
   folly::dynamic getDynamic() const;

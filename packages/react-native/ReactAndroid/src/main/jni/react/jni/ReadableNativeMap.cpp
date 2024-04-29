@@ -11,18 +11,10 @@ using namespace facebook::jni;
 
 namespace facebook::react {
 
-// TODO T112842309: Remove after fbjni upgraded in OSS
-void ReadableNativeMap::mapException(const std::exception &ex) {
-  if (dynamic_cast<const folly::TypeError *>(&ex) != nullptr) {
-    throwNewJavaException(
-        exceptions::gUnexpectedNativeTypeExceptionClass, ex.what());
-  }
-}
-
 void ReadableNativeMap::mapException(std::exception_ptr ex) {
   try {
     std::rethrow_exception(ex);
-  } catch (const folly::TypeError &err) {
+  } catch (const folly::TypeError& err) {
     throwNewJavaException(
         exceptions::gUnexpectedNativeTypeExceptionClass, err.what());
   }
@@ -31,7 +23,7 @@ void ReadableNativeMap::mapException(std::exception_ptr ex) {
 void addDynamicToJArray(
     local_ref<JArrayClass<jobject>> jarray,
     jint index,
-    const folly::dynamic &dyn) {
+    const folly::dynamic& dyn) {
   switch (dyn.type()) {
     case folly::dynamic::Type::NULLT: {
       jarray->setElement(index, nullptr);
@@ -76,7 +68,7 @@ local_ref<JArrayClass<jstring>> ReadableNativeMap::importKeys() {
   }
   auto jarray = JArrayClass<jstring>::newArray(map_.size());
   jint i = 0;
-  for (auto &pair : map_.items()) {
+  for (auto& pair : map_.items()) {
     auto value = pair.first.asString();
     (*keys_).push_back(value);
     (*jarray)[i++] = make_jstring(value);
@@ -88,10 +80,10 @@ local_ref<JArrayClass<jstring>> ReadableNativeMap::importKeys() {
 local_ref<JArrayClass<jobject>> ReadableNativeMap::importValues() {
   throwIfConsumed();
 
-  jint size = keys_.value().size();
+  auto size = static_cast<jint>(keys_.value().size());
   auto jarray = JArrayClass<jobject>::newArray(size);
   for (jint ii = 0; ii < size; ii++) {
-    const std::string &key = (*keys_)[ii].getString();
+    const std::string& key = (*keys_)[ii].getString();
     addDynamicToJArray(jarray, ii, map_.at(key));
   }
   return jarray;
@@ -100,17 +92,17 @@ local_ref<JArrayClass<jobject>> ReadableNativeMap::importValues() {
 local_ref<JArrayClass<jobject>> ReadableNativeMap::importTypes() {
   throwIfConsumed();
 
-  jint size = keys_.value().size();
+  auto size = static_cast<jint>(keys_.value().size());
   auto jarray = JArrayClass<jobject>::newArray(size);
   for (jint ii = 0; ii < size; ii++) {
-    const std::string &key = (*keys_)[ii].getString();
+    const std::string& key = (*keys_)[ii].getString();
     (*jarray)[ii] = ReadableType::getType(map_.at(key).type());
   }
   return jarray;
 }
 
 local_ref<ReadableNativeMap::jhybridobject>
-ReadableNativeMap::createWithContents(folly::dynamic &&map) {
+ReadableNativeMap::createWithContents(folly::dynamic&& map) {
   if (map.isNull()) {
     return local_ref<jhybridobject>(nullptr);
   }

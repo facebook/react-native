@@ -5,12 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
-import * as React from 'react';
 import type {RNTesterModule} from '../../types/RNTesterTypes';
-import {Alert, StyleSheet, Text, Pressable, View} from 'react-native';
+
+import * as React from 'react';
+import {Alert, Pressable, StyleSheet, Text, View} from 'react-native';
 
 // Shows log on the screen
 const Log = ({message}: {message: string}) =>
@@ -226,7 +227,9 @@ const AlertWithStylesPreferred = () => {
 };
 
 const PromptOptions = () => {
-  const [promptValue, setPromptValue] = React.useState<string>('');
+  const [promptValue, setPromptValue] = React.useState<
+    string | {login: string, password: string},
+  >('');
 
   const customButtons = [
     {
@@ -242,7 +245,8 @@ const PromptOptions = () => {
   return (
     <View>
       <Text style={styles.promptValue}>
-        <Text style={styles.bold}>Prompt value:</Text> {promptValue}
+        <Text style={styles.bold}>Prompt value:</Text>
+        {JSON.stringify(promptValue, null, 2)}
       </Text>
 
       <Pressable

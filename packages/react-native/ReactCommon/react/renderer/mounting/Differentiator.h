@@ -45,25 +45,18 @@ using ViewNodePairScope = std::deque<ShadowViewNodePair>;
  * The list of mutations might be and might not be optimal.
  */
 ShadowViewMutation::List calculateShadowViewMutations(
-    ShadowNode const &oldRootShadowNode,
-    ShadowNode const &newRootShadowNode);
+    const ShadowNode& oldRootShadowNode,
+    const ShadowNode& newRootShadowNode);
 
 /**
  * Generates a list of `ShadowViewNodePair`s that represents a layer of a
  * flattened view hierarchy. The V2 version preserves nodes even if they do
  * not form views and their children are flattened.
  */
-ShadowViewNodePair::NonOwningList sliceChildShadowNodeViewPairsV2(
-    ShadowNode const &shadowNode,
-    ViewNodePairScope &viewNodePairScope,
+ShadowViewNodePair::NonOwningList sliceChildShadowNodeViewPairs(
+    const ShadowViewNodePair& shadowNodePair,
+    ViewNodePairScope& viewNodePairScope,
     bool allowFlattened = false,
     Point layoutOffset = {0, 0});
-
-/*
- * Generates a list of `ShadowViewNodePair`s that represents a layer of a
- * flattened view hierarchy. This is *only* used by unit tests currently.
- */
-ShadowViewNodePair::OwningList sliceChildShadowNodeViewPairsLegacy(
-    ShadowNode const &shadowNode);
 
 } // namespace facebook::react

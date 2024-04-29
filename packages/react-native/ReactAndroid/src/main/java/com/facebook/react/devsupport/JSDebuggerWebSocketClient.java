@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.common.JavascriptException;
+import com.facebook.react.common.annotations.VisibleForTesting;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -139,7 +140,8 @@ public class JSDebuggerWebSocketClient extends WebSocketListener {
     }
   }
 
-  private void sendMessage(int requestID, String message) {
+  @VisibleForTesting
+  /* package */ void sendMessage(int requestID, String message) {
     if (mWebSocket == null) {
       triggerRequestFailure(
           requestID, new IllegalStateException("WebSocket connection no longer valid"));
@@ -152,7 +154,8 @@ public class JSDebuggerWebSocketClient extends WebSocketListener {
     }
   }
 
-  private void triggerRequestFailure(int requestID, Throwable cause) {
+  @VisibleForTesting
+  /* package */ void triggerRequestFailure(int requestID, Throwable cause) {
     JSDebuggerCallback callback = mCallbacks.get(requestID);
     if (callback != null) {
       mCallbacks.remove(requestID);
@@ -160,7 +163,8 @@ public class JSDebuggerWebSocketClient extends WebSocketListener {
     }
   }
 
-  private void triggerRequestSuccess(int requestID, @Nullable String response) {
+  @VisibleForTesting
+  /* package */ void triggerRequestSuccess(int requestID, @Nullable String response) {
     JSDebuggerCallback callback = mCallbacks.get(requestID);
     if (callback != null) {
       mCallbacks.remove(requestID);
@@ -169,7 +173,7 @@ public class JSDebuggerWebSocketClient extends WebSocketListener {
   }
 
   @Override
-  public void onMessage(WebSocket webSocket, String text) {
+  public void onMessage(@Nullable WebSocket webSocket, String text) {
     Integer replyID = null;
 
     try {
@@ -222,7 +226,8 @@ public class JSDebuggerWebSocketClient extends WebSocketListener {
     mWebSocket = null;
   }
 
-  private void abort(String message, Throwable cause) {
+  @VisibleForTesting
+  /* package */ void abort(String message, Throwable cause) {
     FLog.e(TAG, "Error occurred, shutting down websocket connection: " + message, cause);
     closeQuietly();
 

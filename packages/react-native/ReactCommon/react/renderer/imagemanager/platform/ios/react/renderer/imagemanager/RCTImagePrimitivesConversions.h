@@ -48,10 +48,10 @@ inline static NSURL *NSURLFromImageSource(const facebook::react::ImageSource &im
 {
   // `NSURL` has a history of crashing with bad input, so let's be safe.
   @try {
-    NSString *urlString = [NSString stringWithCString:imageSource.uri.c_str() encoding:NSASCIIStringEncoding];
+    NSString *urlString = [NSString stringWithUTF8String:imageSource.uri.c_str()];
 
     if (!imageSource.bundle.empty()) {
-      NSString *bundle = [NSString stringWithCString:imageSource.bundle.c_str() encoding:NSASCIIStringEncoding];
+      NSString *bundle = [NSString stringWithUTF8String:imageSource.bundle.c_str()];
       urlString = [NSString stringWithFormat:@"%@.bundle/%@", bundle, urlString];
     }
 
@@ -64,7 +64,8 @@ inline static NSURL *NSURLFromImageSource(const facebook::react::ImageSource &im
 
     if ([urlString rangeOfString:@":"].location != NSNotFound) {
       // The URL has a scheme.
-      urlString = [urlString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+      urlString =
+          [urlString stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
       url = [NSURL URLWithString:urlString];
       return url;
     }

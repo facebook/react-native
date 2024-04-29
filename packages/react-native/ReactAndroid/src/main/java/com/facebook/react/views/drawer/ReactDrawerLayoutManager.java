@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.drawerlayout.widget.DrawerLayout;
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
@@ -37,6 +38,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** View Manager for {@link ReactDrawerLayout} components. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @ReactModule(name = ReactDrawerLayoutManager.REACT_CLASS)
 public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout>
     implements AndroidDrawerLayoutManagerInterface<ReactDrawerLayout> {

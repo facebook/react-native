@@ -13,7 +13,7 @@
 
 namespace facebook::react {
 
-thread_local TransactionTelemetry *threadLocalTransactionTelemetry = nullptr;
+thread_local TransactionTelemetry* threadLocalTransactionTelemetry = nullptr;
 
 TransactionTelemetry::TransactionTelemetry()
     : TransactionTelemetry(telemetryTimePointNow) {}
@@ -22,7 +22,7 @@ TransactionTelemetry::TransactionTelemetry(
     std::function<TelemetryTimePoint()> now)
     : now_{std::move(now)} {}
 
-TransactionTelemetry *TransactionTelemetry::threadLocalTelemetry() {
+TransactionTelemetry* TransactionTelemetry::threadLocalTelemetry() {
   return threadLocalTransactionTelemetry;
 }
 
@@ -82,6 +82,11 @@ void TransactionTelemetry::didLayout() {
   react_native_assert(layoutStartTime_ != kTelemetryUndefinedTimePoint);
   react_native_assert(layoutEndTime_ == kTelemetryUndefinedTimePoint);
   layoutEndTime_ = now_();
+}
+
+void TransactionTelemetry::didLayout(int affectedLayoutNodesCount) {
+  didLayout();
+  affectedLayoutNodesCount_ = affectedLayoutNodesCount;
 }
 
 void TransactionTelemetry::willMount() {
@@ -158,6 +163,10 @@ int TransactionTelemetry::getNumberOfTextMeasurements() const {
 
 int TransactionTelemetry::getRevisionNumber() const {
   return revisionNumber_;
+}
+
+int TransactionTelemetry::getAffectedLayoutNodesCount() const {
+  return affectedLayoutNodesCount_;
 }
 
 } // namespace facebook::react

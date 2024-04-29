@@ -16,8 +16,8 @@ namespace facebook::react {
 class AsyncEventBeat final : public EventBeat, public EventBeatManagerObserver {
  public:
   AsyncEventBeat(
-      EventBeat::SharedOwnerBox const &ownerBox,
-      EventBeatManager *eventBeatManager,
+      const EventBeat::SharedOwnerBox& ownerBox,
+      EventBeatManager* eventBeatManager,
       RuntimeExecutor runtimeExecutor,
       jni::global_ref<jobject> javaUIManager);
 
@@ -30,7 +30,7 @@ class AsyncEventBeat final : public EventBeat, public EventBeatManagerObserver {
   void request() const override;
 
  private:
-  EventBeatManager *eventBeatManager_;
+  EventBeatManager* eventBeatManager_;
   RuntimeExecutor runtimeExecutor_;
   jni::global_ref<jobject> javaUIManager_;
   mutable std::atomic<bool> isBeatCallbackScheduled_{false};

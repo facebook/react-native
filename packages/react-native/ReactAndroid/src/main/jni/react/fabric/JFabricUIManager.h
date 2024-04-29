@@ -18,7 +18,7 @@ class JFabricUIManager : public jni::JavaClass<JFabricUIManager> {
   static constexpr auto kJavaDescriptor =
       "Lcom/facebook/react/fabric/FabricUIManager;";
 
-  Binding *getBinding();
+  Binding* getBinding();
 };
 
 } // namespace facebook::react

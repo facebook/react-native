@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMarker;
+import com.facebook.react.common.ClassFinder;
 import com.facebook.react.devsupport.LogBoxModule;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.module.annotations.ReactModuleList;
@@ -30,7 +31,6 @@ import com.facebook.react.modules.debug.DevSettingsModule;
 import com.facebook.react.modules.debug.SourceCodeModule;
 import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
 import com.facebook.react.modules.systeminfo.AndroidInfoModule;
-import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerResolver;
@@ -57,7 +57,7 @@ import java.util.Map;
       TimingModule.class,
       UIManagerModule.class,
     })
-public class CoreModulesPackage extends TurboReactPackage implements ReactPackageLogger {
+class CoreModulesPackage extends TurboReactPackage implements ReactPackageLogger {
 
   private final ReactInstanceManager mReactInstanceManager;
   private final DefaultHardwareBackBtnHandler mHardwareBackBtnHandler;
@@ -77,54 +77,21 @@ public class CoreModulesPackage extends TurboReactPackage implements ReactPackag
 
   /**
    * This method is overridden, since OSS does not run the annotation processor to generate {@link
-   * CoreModulesPackage$$ReactModuleInfoProvider} class. Here we check if it exists. If it does not
-   * exist, we generate one manually in {@link
-   * CoreModulesPackage#getReactModuleInfoByInitialization()} and return that instead.
+   * CoreModulesPackage$$ReactModuleInfoProvider} class. Here we check if it exists with the method
+   * {@link canLoadClassesFromAnnotationProcessors}. If it does not exist, we generate one manually
+   * in {@link CoreModulesPackage#getReactModuleInfoByInitialization()} and return that instead.
    */
   @Override
   public ReactModuleInfoProvider getReactModuleInfoProvider() {
+    if (!ClassFinder.canLoadClassesFromAnnotationProcessors()) {
+      return fallbackForMissingClass();
+    }
     try {
       Class<?> reactModuleInfoProviderClass =
-          Class.forName("com.facebook.react.CoreModulesPackage$$ReactModuleInfoProvider");
+          ClassFinder.findClass("com.facebook.react.CoreModulesPackage$$ReactModuleInfoProvider");
       return (ReactModuleInfoProvider) reactModuleInfoProviderClass.newInstance();
     } catch (ClassNotFoundException e) {
-      // In OSS case, the annotation processor does not run. We fall back on creating this byhand
-      Class<? extends NativeModule>[] moduleList =
-          new Class[] {
-            AndroidInfoModule.class,
-            DeviceEventManagerModule.class,
-            DeviceInfoModule.class,
-            DevSettingsModule.class,
-            ExceptionsManagerModule.class,
-            LogBoxModule.class,
-            HeadlessJsTaskSupportModule.class,
-            SourceCodeModule.class,
-            TimingModule.class,
-            UIManagerModule.class,
-          };
-
-      final Map<String, ReactModuleInfo> reactModuleInfoMap = new HashMap<>();
-      for (Class<? extends NativeModule> moduleClass : moduleList) {
-        ReactModule reactModule = moduleClass.getAnnotation(ReactModule.class);
-
-        reactModuleInfoMap.put(
-            reactModule.name(),
-            new ReactModuleInfo(
-                reactModule.name(),
-                moduleClass.getName(),
-                reactModule.canOverrideExistingModule(),
-                reactModule.needsEagerInit(),
-                reactModule.hasConstants(),
-                reactModule.isCxxModule(),
-                TurboModule.class.isAssignableFrom(moduleClass)));
-      }
-
-      return new ReactModuleInfoProvider() {
-        @Override
-        public Map<String, ReactModuleInfo> getReactModuleInfos() {
-          return reactModuleInfoMap;
-        }
-      };
+      return fallbackForMissingClass();
     } catch (InstantiationException e) {
       throw new RuntimeException(
           "No ReactModuleInfoProvider for CoreModulesPackage$$ReactModuleInfoProvider", e);
@@ -132,6 +99,40 @@ public class CoreModulesPackage extends TurboReactPackage implements ReactPackag
       throw new RuntimeException(
           "No ReactModuleInfoProvider for CoreModulesPackage$$ReactModuleInfoProvider", e);
     }
+  }
+
+  private ReactModuleInfoProvider fallbackForMissingClass() {
+    // In OSS case, the annotation processor does not run. We fall back on creating this byhand
+    Class<? extends NativeModule>[] moduleList =
+        new Class[] {
+          AndroidInfoModule.class,
+          DeviceEventManagerModule.class,
+          DeviceInfoModule.class,
+          DevSettingsModule.class,
+          ExceptionsManagerModule.class,
+          LogBoxModule.class,
+          HeadlessJsTaskSupportModule.class,
+          SourceCodeModule.class,
+          TimingModule.class,
+          UIManagerModule.class,
+        };
+
+    final Map<String, ReactModuleInfo> reactModuleInfoMap = new HashMap<>();
+    for (Class<? extends NativeModule> moduleClass : moduleList) {
+      ReactModule reactModule = moduleClass.getAnnotation(ReactModule.class);
+
+      reactModuleInfoMap.put(
+          reactModule.name(),
+          new ReactModuleInfo(
+              reactModule.name(),
+              moduleClass.getName(),
+              reactModule.canOverrideExistingModule(),
+              reactModule.needsEagerInit(),
+              reactModule.isCxxModule(),
+              ReactModuleInfo.classIsTurboModule(moduleClass)));
+    }
+
+    return () -> reactModuleInfoMap;
   }
 
   @Override

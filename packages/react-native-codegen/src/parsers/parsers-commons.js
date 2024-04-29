@@ -11,58 +11,66 @@
 'use strict';
 
 import type {
-  Nullable,
+  EventTypeAnnotation,
+  EventTypeShape,
   NamedShape,
   NativeModuleAliasMap,
   NativeModuleBaseTypeAnnotation,
-  NativeModuleSchema,
-  NativeModuleTypeAnnotation,
+  NativeModuleEnumMap,
   NativeModuleFunctionTypeAnnotation,
   NativeModuleParamTypeAnnotation,
   NativeModulePropertyShape,
-  SchemaType,
-  NativeModuleEnumMap,
+  NativeModuleSchema,
+  NativeModuleTypeAnnotation,
+  Nullable,
+  ObjectTypeAnnotation,
   OptionsShape,
   PropTypeAnnotation,
-  EventTypeAnnotation,
-  ObjectTypeAnnotation,
+  SchemaType,
 } from '../CodegenSchema.js';
-
-import type {Parser} from './parser';
 import type {ParserType} from './errors';
-import type {ParserErrorCapturer, TypeDeclarationMap, PropAST} from './utils';
+import type {Parser} from './parser';
 import type {ComponentSchemaBuilderConfig} from './schema.js';
+import type {
+  ParserErrorCapturer,
+  PropAST,
+  TypeDeclarationMap,
+  TypeResolutionStatus,
+} from './utils';
 
 const {
-  getConfigType,
-  extractNativeModuleName,
-  createParserErrorCapturer,
-  visit,
-  isModuleRegistryCall,
-  verifyPlatforms,
-} = require('./utils');
-const {
+  throwIfConfigNotfound,
+  throwIfIncorrectModuleRegistryCallArgument,
+  throwIfIncorrectModuleRegistryCallTypeParameterParserError,
+  throwIfModuleInterfaceIsMisnamed,
+  throwIfModuleInterfaceNotFound,
+  throwIfModuleTypeIsUnsupported,
+  throwIfMoreThanOneCodegenNativecommands,
+  throwIfMoreThanOneConfig,
+  throwIfMoreThanOneModuleInterfaceParserError,
+  throwIfMoreThanOneModuleRegistryCalls,
   throwIfPropertyValueTypeIsUnsupported,
+  throwIfTypeAliasIsNotInterface,
   throwIfUnsupportedFunctionParamTypeAnnotationParserError,
   throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
-  throwIfModuleTypeIsUnsupported,
-  throwIfUnusedModuleInterfaceParserError,
-  throwIfMoreThanOneModuleRegistryCalls,
-  throwIfWrongNumberOfCallExpressionArgs,
   throwIfUntypedModule,
-  throwIfIncorrectModuleRegistryCallTypeParameterParserError,
-  throwIfIncorrectModuleRegistryCallArgument,
-  throwIfModuleInterfaceNotFound,
-  throwIfMoreThanOneModuleInterfaceParserError,
-  throwIfModuleInterfaceIsMisnamed,
+  throwIfUnusedModuleInterfaceParserError,
+  throwIfWrongNumberOfCallExpressionArgs,
 } = require('./error-utils');
-
 const {
   MissingTypeParameterGenericParserError,
   MoreThanOneTypeParameterGenericParserError,
   UnnamedFunctionParamParserError,
+  UnsupportedObjectDirectRecursivePropertyParserError,
 } = require('./errors');
-
+const {
+  createParserErrorCapturer,
+  extractNativeModuleName,
+  getConfigType,
+  isModuleRegistryCall,
+  verifyPlatforms,
+  visit,
+} = require('./utils');
 const invariant = require('invariant');
 
 export type CommandOptions = $ReadOnly<{
@@ -77,6 +85,12 @@ type ExtendedPropResult = {
   knownTypeName: 'ReactNativeCoreViewProps',
 } | null;
 
+export type EventArgumentReturnType = {
+  argumentProps: ?$ReadOnlyArray<$FlowFixMe>,
+  paperTopLevelNameDeprecated: ?$FlowFixMe,
+  bubblingType: ?'direct' | 'bubble',
+};
+
 function wrapModuleSchema(
   nativeModuleSchema: NativeModuleSchema,
   hasteModuleName: string,
@@ -88,6 +102,7 @@ function wrapModuleSchema(
   };
 }
 
+// $FlowFixMe[unsupported-variance-annotation]
 function unwrapNullable<+T: NativeModuleTypeAnnotation>(
   x: Nullable<T>,
 ): [T, boolean] {
@@ -98,6 +113,7 @@ function unwrapNullable<+T: NativeModuleTypeAnnotation>(
   return [x, false];
 }
 
+// $FlowFixMe[unsupported-variance-annotation]
 function wrapNullable<+T: NativeModuleTypeAnnotation>(
   nullable: boolean,
   typeAnnotation: T,
@@ -156,6 +172,7 @@ function isObjectProperty(property: $FlowFixMe, language: ParserType): boolean {
 }
 
 function parseObjectProperty(
+  parentObject?: $FlowFixMe,
   property: $FlowFixMe,
   hasteModuleName: string,
   types: TypeDeclarationMap,
@@ -176,6 +193,41 @@ function parseObjectProperty(
       ? property.typeAnnotation.typeAnnotation
       : property.value;
 
+  // Handle recursive types
+  if (parentObject) {
+    const propertyType = parser.getResolveTypeAnnotationFN()(
+      languageTypeAnnotation,
+      types,
+      parser,
+    );
+    if (
+      propertyType.typeResolutionStatus.successful === true &&
+      propertyType.typeResolutionStatus.type === 'alias' &&
+      (language === 'TypeScript'
+        ? parentObject.typeName &&
+          parentObject.typeName.name === languageTypeAnnotation.typeName?.name
+        : parentObject.id &&
+          parentObject.id.name === languageTypeAnnotation.id?.name)
+    ) {
+      if (!optional) {
+        throw new UnsupportedObjectDirectRecursivePropertyParserError(
+          name,
+          languageTypeAnnotation,
+          hasteModuleName,
+        );
+      }
+      return {
+        name,
+        optional,
+        typeAnnotation: {
+          type: 'TypeAliasTypeAnnotation',
+          name: propertyType.typeResolutionStatus.name,
+        },
+      };
+    }
+  }
+
+  // Handle non-recursive types
   const [propertyTypeAnnotation, isPropertyNullable] =
     unwrapNullable<$FlowFixMe>(
       translateTypeAnnotation(
@@ -191,7 +243,7 @@ function parseObjectProperty(
     );
 
   if (
-    propertyTypeAnnotation.type === 'FunctionTypeAnnotation' ||
+    (propertyTypeAnnotation.type === 'FunctionTypeAnnotation' && !cxxOnly) ||
     propertyTypeAnnotation.type === 'PromiseTypeAnnotation' ||
     propertyTypeAnnotation.type === 'VoidTypeAnnotation'
   ) {
@@ -465,7 +517,7 @@ function buildSchema(
     return {modules: {}};
   }
 
-  const ast = parser.getAst(contents);
+  const ast = parser.getAst(contents, filename);
   const configType = getConfigType(ast, Visitor);
 
   return buildSchemaFromConfigType(
@@ -688,6 +740,7 @@ function findNativeComponentType(
   // expression so we need to go one level deeper
   if (
     declaration.type === 'TSAsExpression' ||
+    declaration.type === 'AsExpression' ||
     declaration.type === 'TypeCastExpression'
   ) {
     declaration = declaration.expression;
@@ -808,7 +861,7 @@ function getCommandTypeNameAndOptionsExpression(
   }
 
   return {
-    commandTypeName: parser.nameForGenericTypeAnnotation(typeArgumentParam),
+    commandTypeName: parser.getTypeAnnotationName(typeArgumentParam),
     commandOptionsExpression: callExpression.arguments[0],
   };
 }
@@ -884,17 +937,259 @@ function buildPropSchema(
  * LTI update could not be added via codemod */
 function getEventArgument(
   argumentProps: PropAST,
-  buildPropertiesForEvent: (
-    property: PropAST,
+  parser: Parser,
+  getPropertyType: (
+    name: $FlowFixMe,
+    optional: boolean,
+    typeAnnotation: $FlowFixMe,
     parser: Parser,
   ) => NamedShape<EventTypeAnnotation>,
-  parser: Parser,
 ): ObjectTypeAnnotation<EventTypeAnnotation> {
   return {
     type: 'ObjectTypeAnnotation',
     properties: argumentProps.map(member =>
-      buildPropertiesForEvent(member, parser),
+      buildPropertiesForEvent(member, parser, getPropertyType),
     ),
+  };
+}
+
+/* $FlowFixMe[signature-verification-failure] there's no flowtype for AST.
+ * TODO(T108222691): Use flow-types for @babel/parser */
+function findComponentConfig(ast: $FlowFixMe, parser: Parser) {
+  const foundConfigs: Array<{[string]: string}> = [];
+
+  const defaultExports = ast.body.filter(
+    node => node.type === 'ExportDefaultDeclaration',
+  );
+
+  defaultExports.forEach(statement => {
+    findNativeComponentType(statement, foundConfigs, parser);
+  });
+
+  throwIfConfigNotfound(foundConfigs);
+  throwIfMoreThanOneConfig(foundConfigs);
+
+  const foundConfig = foundConfigs[0];
+
+  const namedExports = ast.body.filter(
+    node => node.type === 'ExportNamedDeclaration',
+  );
+
+  const commandsTypeNames = namedExports
+    .map(statement => getCommandTypeNameAndOptionsExpression(statement, parser))
+    .filter(Boolean);
+
+  throwIfMoreThanOneCodegenNativecommands(commandsTypeNames);
+
+  return createComponentConfig(foundConfig, commandsTypeNames);
+}
+
+// $FlowFixMe[signature-verification-failure] there's no flowtype for AST
+function getCommandProperties(ast: $FlowFixMe, parser: Parser) {
+  const {commandTypeName, commandOptionsExpression} = findComponentConfig(
+    ast,
+    parser,
+  );
+
+  if (commandTypeName == null) {
+    return [];
+  }
+  const types = parser.getTypes(ast);
+
+  const typeAlias = types[commandTypeName];
+
+  throwIfTypeAliasIsNotInterface(typeAlias, parser);
+
+  const properties = parser.bodyProperties(typeAlias);
+  if (!properties) {
+    throw new Error(
+      `Failed to find type definition for "${commandTypeName}", please check that you have a valid codegen file`,
+    );
+  }
+
+  const commandPropertyNames = propertyNames(properties);
+
+  const commandOptions = getCommandOptions(commandOptionsExpression);
+
+  if (commandOptions == null || commandOptions.supportedCommands == null) {
+    throw new Error(
+      'codegenNativeCommands must be given an options object with supportedCommands array',
+    );
+  }
+
+  if (
+    commandOptions.supportedCommands.length !== commandPropertyNames.length ||
+    !commandOptions.supportedCommands.every(supportedCommand =>
+      commandPropertyNames.includes(supportedCommand),
+    )
+  ) {
+    throw new Error(
+      `codegenNativeCommands expected the same supportedCommands specified in the ${commandTypeName} interface: ${commandPropertyNames.join(
+        ', ',
+      )}`,
+    );
+  }
+
+  return properties;
+}
+
+function getTypeResolutionStatus(
+  type: 'alias' | 'enum',
+  typeAnnotation: $FlowFixMe,
+  parser: Parser,
+): TypeResolutionStatus {
+  return {
+    successful: true,
+    type,
+    name: parser.getTypeAnnotationName(typeAnnotation),
+  };
+}
+
+function handleGenericTypeAnnotation(
+  typeAnnotation: $FlowFixMe,
+  resolvedTypeAnnotation: TypeDeclarationMap,
+  parser: Parser,
+): {
+  typeAnnotation: $FlowFixMe,
+  typeResolutionStatus: TypeResolutionStatus,
+} {
+  let typeResolutionStatus;
+  let node;
+
+  switch (resolvedTypeAnnotation.type) {
+    case parser.typeAlias: {
+      typeResolutionStatus = getTypeResolutionStatus(
+        'alias',
+        typeAnnotation,
+        parser,
+      );
+      node = parser.nextNodeForTypeAlias(resolvedTypeAnnotation);
+      break;
+    }
+    case parser.enumDeclaration: {
+      typeResolutionStatus = getTypeResolutionStatus(
+        'enum',
+        typeAnnotation,
+        parser,
+      );
+      node = parser.nextNodeForEnum(resolvedTypeAnnotation);
+      break;
+    }
+    // parser.interfaceDeclaration is not used here because for flow it should fall through to default case and throw an error
+    case 'TSInterfaceDeclaration': {
+      typeResolutionStatus = getTypeResolutionStatus(
+        'alias',
+        typeAnnotation,
+        parser,
+      );
+      node = resolvedTypeAnnotation;
+      break;
+    }
+    default: {
+      throw new TypeError(
+        parser.genericTypeAnnotationErrorMessage(resolvedTypeAnnotation),
+      );
+    }
+  }
+
+  return {
+    typeAnnotation: node,
+    typeResolutionStatus,
+  };
+}
+
+function buildPropertiesForEvent(
+  property: $FlowFixMe,
+  parser: Parser,
+  getPropertyType: (
+    name: $FlowFixMe,
+    optional: boolean,
+    typeAnnotation: $FlowFixMe,
+    parser: Parser,
+  ) => NamedShape<EventTypeAnnotation>,
+): NamedShape<EventTypeAnnotation> {
+  const name = property.key.name;
+  const optional = parser.isOptionalProperty(property);
+  const typeAnnotation = parser.getTypeAnnotationFromProperty(property);
+
+  return getPropertyType(name, optional, typeAnnotation, parser);
+}
+
+function verifyPropNotAlreadyDefined(
+  props: $ReadOnlyArray<PropAST>,
+  needleProp: PropAST,
+) {
+  const propName = needleProp.key.name;
+  const foundProp = props.some(prop => prop.key.name === propName);
+  if (foundProp) {
+    throw new Error(`A prop was already defined with the name ${propName}`);
+  }
+}
+
+function handleEventHandler(
+  name: 'BubblingEventHandler' | 'DirectEventHandler',
+  typeAnnotation: $FlowFixMe,
+  parser: Parser,
+  types: TypeDeclarationMap,
+  findEventArgumentsAndType: (
+    parser: Parser,
+    typeAnnotation: $FlowFixMe,
+    types: TypeDeclarationMap,
+    bubblingType: void | 'direct' | 'bubble',
+    paperName: ?$FlowFixMe,
+  ) => EventArgumentReturnType,
+): EventArgumentReturnType {
+  const eventType = name === 'BubblingEventHandler' ? 'bubble' : 'direct';
+  const paperTopLevelNameDeprecated =
+    parser.getPaperTopLevelNameDeprecated(typeAnnotation);
+
+  switch (typeAnnotation.typeParameters.params[0].type) {
+    case parser.nullLiteralTypeAnnotation:
+    case parser.undefinedLiteralTypeAnnotation:
+      return {
+        argumentProps: [],
+        bubblingType: eventType,
+        paperTopLevelNameDeprecated,
+      };
+    default:
+      return findEventArgumentsAndType(
+        parser,
+        typeAnnotation.typeParameters.params[0],
+        types,
+        eventType,
+        paperTopLevelNameDeprecated,
+      );
+  }
+}
+
+function emitBuildEventSchema(
+  paperTopLevelNameDeprecated: $FlowFixMe,
+  name: $FlowFixMe,
+  optional: $FlowFixMe,
+  nonNullableBubblingType: 'direct' | 'bubble',
+  argument: ObjectTypeAnnotation<EventTypeAnnotation>,
+): ?EventTypeShape {
+  if (paperTopLevelNameDeprecated != null) {
+    return {
+      name,
+      optional,
+      bubblingType: nonNullableBubblingType,
+      paperTopLevelNameDeprecated,
+      typeAnnotation: {
+        type: 'EventTypeAnnotation',
+        argument: argument,
+      },
+    };
+  }
+
+  return {
+    name,
+    optional,
+    bubblingType: nonNullableBubblingType,
+    typeAnnotation: {
+      type: 'EventTypeAnnotation',
+      argument: argument,
+    },
   };
 }
 
@@ -920,4 +1215,12 @@ module.exports = {
   extendsForProp,
   buildPropSchema,
   getEventArgument,
+  findComponentConfig,
+  getCommandProperties,
+  handleGenericTypeAnnotation,
+  getTypeResolutionStatus,
+  buildPropertiesForEvent,
+  verifyPropNotAlreadyDefined,
+  handleEventHandler,
+  emitBuildEventSchema,
 };

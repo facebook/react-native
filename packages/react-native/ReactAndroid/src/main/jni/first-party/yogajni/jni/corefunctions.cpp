@@ -6,17 +6,15 @@
  */
 
 #include "corefunctions.h"
-#include "macros.h"
 #include "YogaJniException.h"
+#include "macros.h"
 
-namespace facebook {
-namespace yoga {
-namespace vanillajni {
+namespace facebook::yoga::vanillajni {
 
 namespace {
-JavaVM* globalVm = NULL;
+JavaVM* globalVm = nullptr;
 struct JavaVMInitializer {
-  JavaVMInitializer(JavaVM* vm) {
+  explicit JavaVMInitializer(JavaVM* vm) {
     if (!vm) {
       logErrorMessageAndDie(
           "You cannot pass a NULL JavaVM to ensureInitialized");
@@ -29,7 +27,7 @@ struct JavaVMInitializer {
 jint ensureInitialized(JNIEnv** env, JavaVM* vm) {
   static JavaVMInitializer init(vm);
 
-  if (!env) {
+  if (env == nullptr) {
     logErrorMessageAndDie(
         "Need to pass a valid JNIEnv pointer to vanillajni initialization "
         "routine");
@@ -45,8 +43,8 @@ jint ensureInitialized(JNIEnv** env, JavaVM* vm) {
 
 // TODO why we need JNIEXPORT for getCurrentEnv ?
 JNIEXPORT JNIEnv* getCurrentEnv() {
-  JNIEnv* env;
-  jint ret = globalVm->GetEnv((void**) &env, JNI_VERSION_1_6);
+  JNIEnv* env = nullptr;
+  jint ret = globalVm->GetEnv((void**)&env, JNI_VERSION_1_6);
   if (ret != JNI_OK) {
     logErrorMessageAndDie(
         "There was an error retrieving the current JNIEnv. Make sure the "
@@ -56,7 +54,7 @@ JNIEXPORT JNIEnv* getCurrentEnv() {
 }
 
 void logErrorMessageAndDie(const char* message) {
-  (void) message;
+  (void)message;
   VANILLAJNI_LOG_ERROR(
       "VanillaJni",
       "Aborting due to error detected in native code: %s",
@@ -70,7 +68,7 @@ void assertNoPendingJniException(JNIEnv* env) {
   }
 
   auto throwable = env->ExceptionOccurred();
-  if (!throwable) {
+  if (throwable == nullptr) {
     logErrorMessageAndDie("Unable to get pending JNI exception.");
   }
   env->ExceptionClear();
@@ -90,6 +88,4 @@ void assertNoPendingJniExceptionIf(JNIEnv* env, bool condition) {
   throw YogaJniException();
 }
 
-} // namespace vanillajni
-} // namespace yoga
-} // namespace facebook
+} // namespace facebook::yoga::vanillajni

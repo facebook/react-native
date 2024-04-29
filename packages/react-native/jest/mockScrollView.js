@@ -12,11 +12,10 @@
 
 'use strict';
 
-const React = require('react');
 const View = require('../Libraries/Components/View/View');
-
 const requireNativeComponent =
   require('../Libraries/ReactNative/requireNativeComponent').default;
+const React = require('react');
 const RCTScrollView: $FlowFixMe = requireNativeComponent('RCTScrollView');
 
 function mockScrollView(BaseComponent: $FlowFixMe) {

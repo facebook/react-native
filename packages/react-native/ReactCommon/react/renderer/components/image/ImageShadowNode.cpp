@@ -16,7 +16,7 @@ namespace facebook::react {
 
 const char ImageComponentName[] = "Image";
 
-void ImageShadowNode::setImageManager(const SharedImageManager &imageManager) {
+void ImageShadowNode::setImageManager(const SharedImageManager& imageManager) {
   ensureUnsealed();
   imageManager_ = imageManager;
 }
@@ -25,7 +25,7 @@ void ImageShadowNode::updateStateIfNeeded() {
   ensureUnsealed();
 
   auto imageSource = getImageSource();
-  auto const &currentState = getStateData();
+  const auto& currentState = getStateData();
   bool hasSameRadius =
       getConcreteProps().blurRadius == currentState.getBlurRadius();
   bool hasSameImageSource = currentState.getImageSource() == imageSource;
@@ -66,7 +66,7 @@ ImageSource ImageShadowNode::getImageSource() const {
 
   auto bestSource = ImageSource{};
 
-  for (const auto &source : sources) {
+  for (const auto& source : sources) {
     auto sourceSize = source.size;
     auto sourceScale = source.scale == 0 ? scale : source.scale;
     auto sourceArea =

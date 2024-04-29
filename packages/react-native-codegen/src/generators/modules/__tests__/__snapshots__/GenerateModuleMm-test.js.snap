@@ -18,16 +18,14 @@ Map {
 #import \\"SampleWithUppercaseName.h\\"
 
 
-namespace facebook {
-  namespace react {
-    
+namespace facebook::react {
+  
 
-    NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
-      : ObjCTurboModule(params) {
-        
-    }
-  } // namespace react
-} // namespace facebook
+  NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
+    : ObjCTurboModule(params) {
+      
+  }
+} // namespace facebook::react
 ",
 }
 `;
@@ -85,9 +83,8 @@ Map {
   return facebook::react::managedPointer<JS::NativeSampleTurboModule::SpecGetArraysOptions>(json);
 }
 @end
-namespace facebook {
-  namespace react {
-    
+namespace facebook::react {
+  
     static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_difficult(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"difficult\\", @selector(difficult:), args, count);
     }
@@ -116,9 +113,9 @@ namespace facebook {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ArrayKind, \\"getNullableArray\\", @selector(getNullableArray), args, count);
     }
 
-    NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
-      : ObjCTurboModule(params) {
-        
+  NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
+    : ObjCTurboModule(params) {
+      
         methodMap_[\\"difficult\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleSpecJSI_difficult};
         setMethodArgConversionSelector(@\\"difficult\\", 0, @\\"JS_NativeSampleTurboModule_SpecDifficultA:\\");
         
@@ -139,9 +136,8 @@ namespace facebook {
         
         methodMap_[\\"getNullableArray\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleSpecJSI_getNullableArray};
         
-    }
-  } // namespace react
-} // namespace facebook
+  }
+} // namespace facebook::react
 ",
 }
 `;
@@ -186,16 +182,14 @@ Map {
 #import \\"empty_native_modules.h\\"
 
 
-namespace facebook {
-  namespace react {
-    
+namespace facebook::react {
+  
 
-    NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
-      : ObjCTurboModule(params) {
-        
-    }
-  } // namespace react
-} // namespace facebook
+  NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
+    : ObjCTurboModule(params) {
+      
+  }
+} // namespace facebook::react
 ",
 }
 `;
@@ -241,21 +235,19 @@ Map {
   return facebook::react::managedPointer<JS::AliasTurboModule::Options>(json);
 }
 @end
-namespace facebook {
-  namespace react {
-    
+namespace facebook::react {
+  
     static facebook::jsi::Value __hostFunction_AliasTurboModuleSpecJSI_cropImage(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, \\"cropImage\\", @selector(cropImage:), args, count);
     }
 
-    AliasTurboModuleSpecJSI::AliasTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
-      : ObjCTurboModule(params) {
-        
+  AliasTurboModuleSpecJSI::AliasTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
+    : ObjCTurboModule(params) {
+      
         methodMap_[\\"cropImage\\"] = MethodMetadata {1, __hostFunction_AliasTurboModuleSpecJSI_cropImage};
         setMethodArgConversionSelector(@\\"cropImage\\", 0, @\\"JS_AliasTurboModule_Options:\\");
-    }
-  } // namespace react
-} // namespace facebook
+  }
+} // namespace facebook::react
 ",
 }
 `;
@@ -283,9 +275,8 @@ Map {
   return facebook::react::managedPointer<JS::NativeCameraRollManager::GetPhotosParams>(json);
 }
 @end
-namespace facebook {
-  namespace react {
-    
+namespace facebook::react {
+  
     static facebook::jsi::Value __hostFunction_NativeCameraRollManagerSpecJSI_getPhotos(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, \\"getPhotos\\", @selector(getPhotos:resolve:reject:), args, count);
     }
@@ -298,9 +289,9 @@ namespace facebook {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, \\"deletePhotos\\", @selector(deletePhotos:resolve:reject:), args, count);
     }
 
-    NativeCameraRollManagerSpecJSI::NativeCameraRollManagerSpecJSI(const ObjCTurboModule::InitParams &params)
-      : ObjCTurboModule(params) {
-        
+  NativeCameraRollManagerSpecJSI::NativeCameraRollManagerSpecJSI(const ObjCTurboModule::InitParams &params)
+    : ObjCTurboModule(params) {
+      
         methodMap_[\\"getPhotos\\"] = MethodMetadata {1, __hostFunction_NativeCameraRollManagerSpecJSI_getPhotos};
         setMethodArgConversionSelector(@\\"getPhotos\\", 0, @\\"JS_NativeCameraRollManager_GetPhotosParams:\\");
         
@@ -309,9 +300,8 @@ namespace facebook {
         
         methodMap_[\\"deletePhotos\\"] = MethodMetadata {1, __hostFunction_NativeCameraRollManagerSpecJSI_deletePhotos};
         
-    }
-  } // namespace react
-} // namespace facebook
+  }
+} // namespace facebook::react
 @implementation RCTCxxConvert (NativeExceptionsManager_StackFrame)
 + (RCTManagedPointer *)JS_NativeExceptionsManager_StackFrame:(id)json
 {
@@ -324,9 +314,8 @@ namespace facebook {
   return facebook::react::managedPointer<JS::NativeExceptionsManager::ExceptionData>(json);
 }
 @end
-namespace facebook {
-  namespace react {
-    
+namespace facebook::react {
+  
     static facebook::jsi::Value __hostFunction_NativeExceptionsManagerSpecJSI_reportFatalException(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, \\"reportFatalException\\", @selector(reportFatalException:stack:exceptionId:), args, count);
     }
@@ -347,9 +336,9 @@ namespace facebook {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, \\"dismissRedbox\\", @selector(dismissRedbox), args, count);
     }
 
-    NativeExceptionsManagerSpecJSI::NativeExceptionsManagerSpecJSI(const ObjCTurboModule::InitParams &params)
-      : ObjCTurboModule(params) {
-        
+  NativeExceptionsManagerSpecJSI::NativeExceptionsManagerSpecJSI(const ObjCTurboModule::InitParams &params)
+    : ObjCTurboModule(params) {
+      
         methodMap_[\\"reportFatalException\\"] = MethodMetadata {3, __hostFunction_NativeExceptionsManagerSpecJSI_reportFatalException};
         
         
@@ -364,9 +353,8 @@ namespace facebook {
         
         methodMap_[\\"dismissRedbox\\"] = MethodMetadata {0, __hostFunction_NativeExceptionsManagerSpecJSI_dismissRedbox};
         
-    }
-  } // namespace react
-} // namespace facebook
+  }
+} // namespace facebook::react
 ",
 }
 `;
@@ -389,9 +377,8 @@ Map {
 #import \\"simple_native_modules.h\\"
 
 
-namespace facebook {
-  namespace react {
-    
+namespace facebook::react {
+  
     static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_voidFunc(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, \\"voidFunc\\", @selector(voidFunc), args, count);
     }
@@ -448,9 +435,9 @@ namespace facebook {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getConstants\\", @selector(getConstants), args, count);
     }
 
-    NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
-      : ObjCTurboModule(params) {
-        
+  NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
+    : ObjCTurboModule(params) {
+      
         methodMap_[\\"voidFunc\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleSpecJSI_voidFunc};
         
         
@@ -492,9 +479,8 @@ namespace facebook {
         
         methodMap_[\\"getConstants\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleSpecJSI_getConstants};
         
-    }
-  } // namespace react
-} // namespace facebook
+  }
+} // namespace facebook::react
 ",
 }
 `;
@@ -517,37 +503,33 @@ Map {
 #import \\"two_modules_different_files.h\\"
 
 
-namespace facebook {
-  namespace react {
-    
+namespace facebook::react {
+  
     static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_voidFunc(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, \\"voidFunc\\", @selector(voidFunc), args, count);
     }
 
-    NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
-      : ObjCTurboModule(params) {
-        
+  NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
+    : ObjCTurboModule(params) {
+      
         methodMap_[\\"voidFunc\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleSpecJSI_voidFunc};
         
-    }
-  } // namespace react
-} // namespace facebook
+  }
+} // namespace facebook::react
 
-namespace facebook {
-  namespace react {
-    
+namespace facebook::react {
+  
     static facebook::jsi::Value __hostFunction_NativeSampleTurboModule2SpecJSI_voidFunc(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, \\"voidFunc\\", @selector(voidFunc), args, count);
     }
 
-    NativeSampleTurboModule2SpecJSI::NativeSampleTurboModule2SpecJSI(const ObjCTurboModule::InitParams &params)
-      : ObjCTurboModule(params) {
-        
+  NativeSampleTurboModule2SpecJSI::NativeSampleTurboModule2SpecJSI(const ObjCTurboModule::InitParams &params)
+    : ObjCTurboModule(params) {
+      
         methodMap_[\\"voidFunc\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModule2SpecJSI_voidFunc};
         
-    }
-  } // namespace react
-} // namespace facebook
+  }
+} // namespace facebook::react
 ",
 }
 `;

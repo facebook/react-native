@@ -31,15 +31,24 @@ class UIManagerDelegate {
    * might use this to optimistically allocate a new native view
    * instances.
    */
-  virtual void uiManagerDidCreateShadowNode(const ShadowNode &shadowNode) = 0;
+  virtual void uiManagerDidCreateShadowNode(const ShadowNode& shadowNode) = 0;
+
+  /*
+   * Called after shadow node is cloned with new props.
+   * Receiver should use this to adjust props passed to mounting layer
+   * during view pre-allocation that was triggered from
+   * `uiManagerDidCreateShadowNode`.
+   */
+  virtual void uiManagerDidCloneShadowNodeWithNewProps(
+      const ShadowNode& shadowNode) = 0;
 
   /*
    * Called when UIManager wants to dispatch a command to the mounting layer.
    */
   virtual void uiManagerDidDispatchCommand(
-      const ShadowNode::Shared &shadowNode,
-      std::string const &commandName,
-      folly::dynamic const &args) = 0;
+      const ShadowNode::Shared& shadowNode,
+      const std::string& commandName,
+      const folly::dynamic& args) = 0;
 
   /*
    * Called when UIManager wants to dispatch some accessibility event
@@ -47,14 +56,14 @@ class UIManagerDelegate {
    * platforms will necessarily implement the same set of events.
    */
   virtual void uiManagerDidSendAccessibilityEvent(
-      const ShadowNode::Shared &shadowNode,
-      std::string const &eventType) = 0;
+      const ShadowNode::Shared& shadowNode,
+      const std::string& eventType) = 0;
 
   /*
    * Set JS responder for a view.
    */
   virtual void uiManagerDidSetIsJSResponder(
-      ShadowNode::Shared const &shadowNode,
+      const ShadowNode::Shared& shadowNode,
       bool isJSResponder,
       bool blockNativeResponder) = 0;
 

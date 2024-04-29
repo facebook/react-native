@@ -19,6 +19,7 @@ import typeof CustomEvent from '../Events/CustomEvent';
 import typeof {
   createPublicInstance,
   createPublicTextInstance,
+  getInternalInstanceHandleFromPublicInstance,
   getNativeTagFromPublicInstance,
   getNodeFromPublicInstance,
 } from '../ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstance';
@@ -27,7 +28,7 @@ import typeof {
   diff as diffAttributePayloads,
 } from '../ReactNative/ReactFabricPublicInstance/ReactNativeAttributePayload';
 import typeof UIManager from '../ReactNative/UIManager';
-import typeof ReactNativeViewConfigRegistry from '../Renderer/shims/ReactNativeViewConfigRegistry';
+import typeof * as ReactNativeViewConfigRegistry from '../Renderer/shims/ReactNativeViewConfigRegistry';
 import typeof flattenStyle from '../StyleSheet/flattenStyle';
 import type {DangerouslyImpreciseStyleProp} from '../StyleSheet/StyleSheet';
 import typeof deepFreezeAndThrowOnMutationInDev from '../Utilities/deepFreezeAndThrowOnMutationInDev';
@@ -69,6 +70,7 @@ module.exports = {
   // TODO: Remove when React has migrated to `createAttributePayload` and `diffAttributePayloads`
   get flattenStyle(): flattenStyle<DangerouslyImpreciseStyleProp> {
     // $FlowFixMe[underconstrained-implicit-instantiation]
+    // $FlowFixMe[incompatible-return]
     return require('../StyleSheet/flattenStyle');
   },
   get ReactFiberErrorDialog(): ReactFiberErrorDialog {
@@ -106,5 +108,9 @@ module.exports = {
   get getNodeFromPublicInstance(): getNodeFromPublicInstance {
     return require('../ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstance')
       .getNodeFromPublicInstance;
+  },
+  get getInternalInstanceHandleFromPublicInstance(): getInternalInstanceHandleFromPublicInstance {
+    return require('../ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstance')
+      .getInternalInstanceHandleFromPublicInstance;
   },
 };

@@ -23,7 +23,7 @@ namespace facebook::react {
 
 std::function<void(folly::dynamic)> makeCallback(
     std::weak_ptr<Instance> instance,
-    const folly::dynamic &callbackId) {
+    const folly::dynamic& callbackId) {
   if (!callbackId.isNumber()) {
     throw std::invalid_argument("Expected callback(s) as final argument");
   }
@@ -62,8 +62,8 @@ void CxxNativeModule::setShouldWarnOnUse(bool value) {
 }
 
 void CxxNativeModule::emitWarnIfWarnOnUsage(
-    const std::string &method_name,
-    const std::string &module_name) {
+    const std::string& method_name,
+    const std::string& module_name) {
   if (shouldWarnOnUse_) {
     std::string message = folly::to<std::string>(
         "Calling ",
@@ -95,7 +95,7 @@ std::vector<MethodDescriptor> CxxNativeModule::getMethods() {
   lazyInit();
 
   std::vector<MethodDescriptor> descs;
-  for (auto &method : methods_) {
+  for (auto& method : methods_) {
     descs.emplace_back(method.name, method.getType());
   }
   return descs;
@@ -111,7 +111,7 @@ folly::dynamic CxxNativeModule::getConstants() {
   emitWarnIfWarnOnUsage("getConstants()", getName());
 
   folly::dynamic constants = folly::dynamic::object();
-  for (auto &pair : module_->getConstants()) {
+  for (auto& pair : module_->getConstants()) {
     constants.insert(std::move(pair.first), std::move(pair.second));
   }
   return constants;
@@ -119,7 +119,7 @@ folly::dynamic CxxNativeModule::getConstants() {
 
 void CxxNativeModule::invoke(
     unsigned int reactMethodId,
-    folly::dynamic &&params,
+    folly::dynamic&& params,
     int callId) {
   if (reactMethodId >= methods_.size()) {
     throw std::invalid_argument(folly::to<std::string>(
@@ -137,7 +137,7 @@ void CxxNativeModule::invoke(
   CxxModule::Callback first;
   CxxModule::Callback second;
 
-  const auto &method = methods_[reactMethodId];
+  const auto& method = methods_[reactMethodId];
 
   if (!method.func) {
     throw std::runtime_error(folly::to<std::string>(
@@ -184,7 +184,7 @@ void CxxNativeModule::invoke(
   // stack.  I'm told that will be possible in the future.  TODO
   // mhorowitz #7128529: convert C++ exceptions to Java
 
-  const auto &moduleName = name_;
+  const auto& moduleName = name_;
   SystraceSection s(
       "CxxMethodCallQueue", "module", moduleName, "method", method.name);
   messageQueueThread_->runOnQueue([method,
@@ -204,13 +204,13 @@ void CxxNativeModule::invoke(
         "CxxMethodCallDispatch", "module", moduleName, "method", method.name);
     try {
       method.func(std::move(params), first, second);
-    } catch (const facebook::xplat::JsArgumentException &ex) {
+    } catch (const facebook::xplat::JsArgumentException& ex) {
       throw;
-    } catch (std::exception &e) {
+    } catch (std::exception& e) {
       LOG(ERROR) << "std::exception. Method call " << method.name.c_str()
                  << " failed: " << e.what();
       std::terminate();
-    } catch (std::string &error) {
+    } catch (std::string& error) {
       LOG(ERROR) << "std::string. Method call " << method.name.c_str()
                  << " failed: " << error.c_str();
       std::terminate();
@@ -224,13 +224,13 @@ void CxxNativeModule::invoke(
 
 MethodCallResult CxxNativeModule::callSerializableNativeHook(
     unsigned int hookId,
-    folly::dynamic &&args) {
+    folly::dynamic&& args) {
   if (hookId >= methods_.size()) {
     throw std::invalid_argument(folly::to<std::string>(
         "methodId ", hookId, " out of range [0..", methods_.size(), "]"));
   }
 
-  const auto &method = methods_[hookId];
+  const auto& method = methods_[hookId];
 
   if (!method.syncFunc) {
     throw std::runtime_error(folly::to<std::string>(

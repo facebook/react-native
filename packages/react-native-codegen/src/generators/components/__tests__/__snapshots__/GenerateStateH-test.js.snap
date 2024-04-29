@@ -18,8 +18,7 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class ArrayPropsNativeComponentState {
 public:
@@ -36,8 +35,7 @@ public:
 #endif
 };
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -59,8 +57,7 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class ArrayPropsNativeComponentState {
 public:
@@ -77,8 +74,7 @@ public:
 #endif
 };
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -100,8 +96,7 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class BooleanPropNativeComponentState {
 public:
@@ -118,8 +113,7 @@ public:
 #endif
 };
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -141,8 +135,7 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class ColorPropNativeComponentState {
 public:
@@ -159,8 +152,7 @@ public:
 #endif
 };
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -182,8 +174,7 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class CommandNativeComponentState {
 public:
@@ -200,8 +191,7 @@ public:
 #endif
 };
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -223,8 +213,7 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class CommandNativeComponentState {
 public:
@@ -241,8 +230,7 @@ public:
 #endif
 };
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -264,8 +252,7 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class DimensionPropNativeComponentState {
 public:
@@ -282,8 +269,7 @@ public:
 #endif
 };
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -305,8 +291,7 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class DoublePropNativeComponentState {
 public:
@@ -323,8 +308,7 @@ public:
 #endif
 };
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -346,8 +330,7 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class EventsNestedObjectNativeComponentState {
 public:
@@ -364,8 +347,7 @@ public:
 #endif
 };
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -387,8 +369,7 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class EventsNativeComponentState {
 public:
@@ -405,8 +386,7 @@ public:
 #endif
 };
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -428,13 +408,11 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -456,8 +434,7 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class ExcludedAndroidComponentState {
 public:
@@ -474,8 +451,7 @@ public:
 #endif
 };
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -497,8 +473,7 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class ExcludedAndroidIosComponentState {
 public:
@@ -515,8 +490,7 @@ public:
 #endif
 };
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -538,8 +512,7 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class ExcludedIosComponentState {
 public:
@@ -571,8 +544,7 @@ public:
 #endif
 };
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -594,8 +566,7 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class FloatPropNativeComponentState {
 public:
@@ -612,8 +583,7 @@ public:
 #endif
 };
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -635,8 +605,7 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class ImagePropNativeComponentState {
 public:
@@ -653,8 +622,7 @@ public:
 #endif
 };
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -676,8 +644,7 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class InsetsPropNativeComponentState {
 public:
@@ -694,8 +661,7 @@ public:
 #endif
 };
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -717,8 +683,7 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class Int32EnumPropsNativeComponentState {
 public:
@@ -735,8 +700,7 @@ public:
 #endif
 };
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -758,8 +722,7 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class IntegerPropNativeComponentState {
 public:
@@ -776,8 +739,7 @@ public:
 #endif
 };
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -799,13 +761,11 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -827,8 +787,7 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class MixedPropNativeComponentState {
 public:
@@ -845,8 +804,7 @@ public:
 #endif
 };
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -868,8 +826,7 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class ImageColorPropNativeComponentState {
 public:
@@ -886,8 +843,7 @@ public:
 #endif
 };
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -909,8 +865,7 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class NoPropsNoEventsComponentState {
 public:
@@ -927,8 +882,7 @@ public:
 #endif
 };
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -950,8 +904,7 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class ObjectPropsState {
 public:
@@ -968,8 +921,7 @@ public:
 #endif
 };
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -991,8 +943,7 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class PointPropNativeComponentState {
 public:
@@ -1009,8 +960,7 @@ public:
 #endif
 };
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -1032,8 +982,7 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class StringEnumPropsNativeComponentState {
 public:
@@ -1050,8 +999,7 @@ public:
 #endif
 };
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -1073,8 +1021,7 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class StringPropComponentState {
 public:
@@ -1091,8 +1038,7 @@ public:
 #endif
 };
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -1114,8 +1060,7 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class MultiFile1NativeComponentState {
 public:
@@ -1147,8 +1092,7 @@ public:
 #endif
 };
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -1170,8 +1114,7 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class MultiComponent1NativeComponentState {
 public:
@@ -1203,7 +1146,6 @@ public:
 #endif
 };
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;

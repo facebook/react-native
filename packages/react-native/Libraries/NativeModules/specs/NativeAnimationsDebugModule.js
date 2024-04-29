@@ -8,13 +8,6 @@
  * @format
  */
 
-import type {TurboModule} from '../../TurboModule/RCTExport';
-
-import * as TurboModuleRegistry from '../../TurboModule/TurboModuleRegistry';
-
-export interface Spec extends TurboModule {
-  +startRecordingFps: () => void;
-  +stopRecordingFps: (animationStopTimeMs: number) => void;
-}
-
-export default (TurboModuleRegistry.get<Spec>('AnimationsDebugModule'): ?Spec);
+export * from '../../../src/private/specs/modules/NativeAnimationsDebugModule';
+import NativeAnimationsDebugModule from '../../../src/private/specs/modules/NativeAnimationsDebugModule';
+export default NativeAnimationsDebugModule;

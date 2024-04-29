@@ -3,5 +3,4 @@
 <!-- @generated -->
 <!-- FB Locale: el_GR -->
 <resources exclude-from-buck-resource-map="true">
-    <string name="catalyst_dev_menu_sub_header" gender="unknown">Προβάλλεται: %1$s</string>
 </resources>

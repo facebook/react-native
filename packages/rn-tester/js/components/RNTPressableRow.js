@@ -5,14 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
-import * as React from 'react';
-import {RNTesterThemeContext} from './RNTesterTheme';
 import RNTesterComponentTitle from './RNTesterComponentTitle';
-
-import {Platform, StyleSheet, Pressable, Text, View} from 'react-native';
+import {RNTesterThemeContext} from './RNTesterTheme';
+import * as React from 'react';
+import {Platform, Pressable, StyleSheet, Text, View} from 'react-native';
 
 type ViewStyleProp = $ElementType<React.ElementConfig<typeof View>, 'style'>;
 type Props = {
@@ -20,7 +19,6 @@ type Props = {
   testID?: ?string,
   onPressIn?: ?() => mixed,
   onPressOut?: ?() => mixed,
-  rightAddOn?: ?React.Node,
   bottomAddOn?: ?React.Node,
   children?: ?React.Node,
   title: string,
@@ -34,7 +32,6 @@ export default function RNTPressableRow({
   onPressOut,
   title,
   description,
-  rightAddOn,
   bottomAddOn,
   onPress,
   style,
@@ -58,7 +55,6 @@ export default function RNTPressableRow({
       onPress={onPress}>
       <View style={styles.topRowStyle}>
         <RNTesterComponentTitle>{title}</RNTesterComponentTitle>
-        {rightAddOn}
       </View>
       <Text
         style={[styles.descriptionText, {color: theme.SecondaryLabelColor}]}>

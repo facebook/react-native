@@ -48,12 +48,10 @@ using namespace facebook::react;
     telemetry = nullptr;
   }
 
-  auto imageRequest = ImageRequest(imageSource, telemetry);
+  auto sharedCancelationFunction = SharedFunction<>();
+  auto imageRequest = ImageRequest(imageSource, telemetry, sharedCancelationFunction);
   auto weakObserverCoordinator =
       (std::weak_ptr<const ImageResponseObserverCoordinator>)imageRequest.getSharedObserverCoordinator();
-
-  auto sharedCancelationFunction = SharedFunction<>();
-  imageRequest.setCancelationFunction(sharedCancelationFunction);
 
   /*
    * Even if an image is being loaded asynchronously on some other background thread, some other preparation
@@ -76,7 +74,8 @@ using namespace facebook::react;
         auto wrappedMetadata = metadata ? wrapManagedObject(metadata) : nullptr;
         observerCoordinator->nativeImageResponseComplete(ImageResponse(wrapManagedObject(image), wrappedMetadata));
       } else {
-        observerCoordinator->nativeImageResponseFailed();
+        auto wrappedError = error ? wrapManagedObject(error) : nullptr;
+        observerCoordinator->nativeImageResponseFailed(ImageLoadError(wrappedError));
       }
     };
 
@@ -86,7 +85,7 @@ using namespace facebook::react;
         return;
       }
 
-      observerCoordinator->nativeImageResponseProgress((float)progress / (float)total);
+      observerCoordinator->nativeImageResponseProgress((float)progress / (float)total, progress, total);
     };
 
     RCTImageURLLoaderRequest *loaderRequest =

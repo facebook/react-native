@@ -13,9 +13,9 @@
 namespace facebook::react {
 
 RawTextProps::RawTextProps(
-    const PropsParserContext &context,
-    const RawTextProps &sourceProps,
-    const RawProps &rawProps)
+    const PropsParserContext& context,
+    const RawTextProps& sourceProps,
+    const RawProps& rawProps)
     : Props(context, sourceProps, rawProps),
       text(convertRawProp(context, rawProps, "text", sourceProps.text, {})){};
 

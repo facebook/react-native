@@ -3,6 +3,22 @@ require_relative '../react-native/scripts/react_native_pods'
 source 'https://cdn.cocoapods.org/'
 platform :ios, min_ios_version_supported
 
+cmake_path = `command -v cmake`
+
+if cmake_path == ""
+  brew_path = `command -v brew`
+  if brew_path != ""
+    Pod::UI.puts "Installing CMake using brew. This is required to build RNTester.".red
+    `brew install cmake`
+  else
+    Pod::UI.puts "In order to build RNTester locally, you need cmake installed, please install it and try again".red
+    return
+  end
+else
+  Pod::UI.puts "Cmake found at: #{cmake_path}".green
+end
+
+
 prepare_react_native_project!
 
 IN_CI = ENV['CI'] == 'true'
@@ -16,43 +32,35 @@ if USE_FRAMEWORKS
   use_frameworks! :linkage => linkage.to_sym
 end
 
-def pods(target_name, options = {}, use_flipper: !IN_CI && !USE_FRAMEWORKS)
+def pods(target_name, options = {})
   project 'RNTesterPods.xcodeproj'
 
-  fabric_enabled = ENV['USE_FRAMEWORKS'] == 'dynamic' ? false : true
+  fabric_enabled = true
 
   # Hermes is now enabled by default.
   # The following line will only disable Hermes if the USE_HERMES envvar is SET to a value other than 1 (e.g. USE_HERMES=0).
   hermes_enabled = !ENV.has_key?('USE_HERMES') || ENV['USE_HERMES'] == '1'
   puts "Configuring #{target_name} with Fabric #{fabric_enabled ? "enabled" : "disabled"}.#{hermes_enabled ? " Using Hermes engine." : ""}"
 
-  if ENV['RCT_NEW_ARCH_ENABLED'] == '1'
-    # Custom fabric component is only supported when using codegen discovery.
-    pod 'MyNativeView', :path => "NativeComponentExample"
-  end
-
   use_react_native!(
     path: @prefix_path,
     fabric_enabled: fabric_enabled,
     hermes_enabled: hermes_enabled,
-    flipper_configuration: use_flipper ? FlipperConfiguration.enabled : FlipperConfiguration.disabled,
     app_path: "#{Dir.pwd}",
     config_file_dir: "#{Dir.pwd}/node_modules",
-    production: !ENV['PRODUCTION'].nil?,
-    ios_folder: '.',
+    production: false, #deprecated
   )
   pod 'ReactCommon-Samples', :path => "#{@prefix_path}/ReactCommon/react/nativemodule/samples"
 
   # Additional Pods which aren't included in the default Podfile
   pod 'React-RCTPushNotification', :path => "#{@prefix_path}/Libraries/PushNotificationIOS"
-  pod 'Yoga', :path => "#{@prefix_path}/ReactCommon/yoga", :modular_headers => true
   # Additional Pods which are classed as unstable
 
   # RNTester native modules and components
   pod 'ScreenshotManager', :path => "NativeModuleExample"
-  if ENV['RCT_NEW_ARCH_ENABLED'] == '1'
-    pod 'NativeCxxModuleExample', :path => "NativeCxxModuleExample"
-  end
+  pod 'MyNativeView', :path => "NativeComponentExample"
+  pod 'NativeCxxModuleExample', :path => "NativeCxxModuleExample"
+  pod 'OSSLibraryExample', :path => '../react-native-test-library'
 end
 
 target 'RNTester' do
@@ -72,5 +80,4 @@ end
 
 post_install do |installer|
   react_native_post_install(installer, @prefix_path, :mac_catalyst_enabled => false)
-  __fix_double_definition_of_clockid_in_folly()
 end

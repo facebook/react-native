@@ -8,15 +8,13 @@
  * @format
  */
 
+import type {I18nManagerConstants} from './NativeI18nManager';
+
 import NativeI18nManager from './NativeI18nManager';
 
-const i18nConstants: {|
-  doLeftAndRightSwapInRTL: boolean,
-  isRTL: boolean,
-  localeIdentifier?: ?string,
-|} = getI18nManagerConstants();
+const i18nConstants: I18nManagerConstants = getI18nManagerConstants();
 
-function getI18nManagerConstants() {
+function getI18nManagerConstants(): I18nManagerConstants {
   if (NativeI18nManager) {
     const {isRTL, doLeftAndRightSwapInRTL, localeIdentifier} =
       NativeI18nManager.getConstants();
@@ -30,11 +28,7 @@ function getI18nManagerConstants() {
 }
 
 module.exports = {
-  getConstants: (): {|
-    doLeftAndRightSwapInRTL: boolean,
-    isRTL: boolean,
-    localeIdentifier: ?string,
-  |} => {
+  getConstants: (): I18nManagerConstants => {
     return i18nConstants;
   },
 

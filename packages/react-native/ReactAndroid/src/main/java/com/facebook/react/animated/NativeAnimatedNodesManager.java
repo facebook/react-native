@@ -22,6 +22,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.common.UIManagerType;
@@ -295,6 +296,7 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
     // same time. Therefore it does not make much sense to create an animationId -> animation
     // object map that would require additional memory just to support the use-case of stopping
     // an animation
+    WritableArray events = null;
     for (int i = 0; i < mActiveAnimations.size(); i++) {
       AnimationDriver animation = mActiveAnimations.valueAt(i);
       if (animatedNode.equals(animation.mAnimatedValue)) {
@@ -302,6 +304,7 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
           // Invoke animation end callback with {finished: false}
           WritableMap endCallbackResponse = Arguments.createMap();
           endCallbackResponse.putBoolean("finished", false);
+          endCallbackResponse.putDouble("value", animation.mAnimatedValue.mValue);
           animation.mEndCallback.invoke(endCallbackResponse);
         } else if (mReactApplicationContext != null) {
           // If no callback is passed in, this /may/ be an animation set up by the single-op
@@ -310,12 +313,18 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
           WritableMap params = Arguments.createMap();
           params.putInt("animationId", animation.mId);
           params.putBoolean("finished", false);
-          mReactApplicationContext.emitDeviceEvent(
-              "onNativeAnimatedModuleAnimationFinished", params);
+          params.putDouble("value", animation.mAnimatedValue.mValue);
+          if (events == null) {
+            events = Arguments.createArray();
+          }
+          events.pushMap(params);
         }
         mActiveAnimations.removeAt(i);
         i--;
       }
+    }
+    if (events != null) {
+      mReactApplicationContext.emitDeviceEvent("onNativeAnimatedModuleAnimationFinished", events);
     }
   }
 
@@ -325,6 +334,7 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
     // same time. Therefore it does not make much sense to create an animationId -> animation
     // object map that would require additional memory just to support the use-case of stopping
     // an animation
+    WritableArray events = null;
     for (int i = 0; i < mActiveAnimations.size(); i++) {
       AnimationDriver animation = mActiveAnimations.valueAt(i);
       if (animation.mId == animationId) {
@@ -332,6 +342,7 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
           // Invoke animation end callback with {finished: false}
           WritableMap endCallbackResponse = Arguments.createMap();
           endCallbackResponse.putBoolean("finished", false);
+          endCallbackResponse.putDouble("value", animation.mAnimatedValue.mValue);
           animation.mEndCallback.invoke(endCallbackResponse);
         } else if (mReactApplicationContext != null) {
           // If no callback is passed in, this /may/ be an animation set up by the single-op
@@ -340,12 +351,18 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
           WritableMap params = Arguments.createMap();
           params.putInt("animationId", animation.mId);
           params.putBoolean("finished", false);
-          mReactApplicationContext.emitDeviceEvent(
-              "onNativeAnimatedModuleAnimationFinished", params);
+          params.putDouble("value", animation.mAnimatedValue.mValue);
+          if (events == null) {
+            events = Arguments.createArray();
+          }
+          events.pushMap(params);
         }
         mActiveAnimations.removeAt(i);
-        return;
+        break;
       }
+    }
+    if (events != null) {
+      mReactApplicationContext.emitDeviceEvent("onNativeAnimatedModuleAnimationFinished", events);
     }
     // Do not throw an error in the case animation could not be found. We only keep "active"
     // animations in the registry and there is a chance that Animated.js will enqueue a
@@ -410,7 +427,8 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
     }
     if (mReactApplicationContext == null) {
       throw new IllegalStateException(
-          "connectAnimatedNodeToView: Animated node could not be connected, no ReactApplicationContext: "
+          "connectAnimatedNodeToView: Animated node could not be connected, no"
+              + " ReactApplicationContext: "
               + viewTag);
     }
 
@@ -421,7 +439,8 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
       ReactSoftExceptionLogger.logSoftException(
           TAG,
           new ReactNoCrashSoftException(
-              "connectAnimatedNodeToView: Animated node could not be connected to UIManager - uiManager disappeared for tag: "
+              "connectAnimatedNodeToView: Animated node could not be connected to UIManager -"
+                  + " uiManager disappeared for tag: "
                   + viewTag));
       return;
     }
@@ -586,7 +605,7 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
         if (matchSpec.match(driver.mViewTag, driver.mEventName)) {
           foundAtLeastOneDriver = true;
           stopAnimationsForNode(driver.mValueNode);
-          event.dispatch(driver);
+          event.dispatchModern(driver);
           mRunUpdateNodeList.add(driver.mValueNode);
         }
       }
@@ -639,12 +658,14 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
     // Cleanup finished animations. Iterate over the array of animations and override ones that has
     // finished, then resize `mActiveAnimations`.
     if (hasFinishedAnimations) {
+      WritableArray events = null;
       for (int i = mActiveAnimations.size() - 1; i >= 0; i--) {
         AnimationDriver animation = mActiveAnimations.valueAt(i);
         if (animation.mHasFinished) {
           if (animation.mEndCallback != null) {
             WritableMap endCallbackResponse = Arguments.createMap();
             endCallbackResponse.putBoolean("finished", true);
+            endCallbackResponse.putDouble("value", animation.mAnimatedValue.mValue);
             animation.mEndCallback.invoke(endCallbackResponse);
           } else if (mReactApplicationContext != null) {
             // If no callback is passed in, this /may/ be an animation set up by the single-op
@@ -653,11 +674,17 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
             WritableMap params = Arguments.createMap();
             params.putInt("animationId", animation.mId);
             params.putBoolean("finished", true);
-            mReactApplicationContext.emitDeviceEvent(
-                "onNativeAnimatedModuleAnimationFinished", params);
+            params.putDouble("value", animation.mAnimatedValue.mValue);
+            if (events == null) {
+              events = Arguments.createArray();
+            }
+            events.pushMap(params);
           }
           mActiveAnimations.removeAt(i);
         }
+      }
+      if (events != null) {
+        mReactApplicationContext.emitDeviceEvent("onNativeAnimatedModuleAnimationFinished", events);
       }
     }
   }

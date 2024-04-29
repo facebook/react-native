@@ -7,10 +7,10 @@
 
 package com.facebook.react.modules.debug;
 
+import android.view.Choreographer;
 import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
 import com.facebook.react.bridge.ReactBridge;
 import com.facebook.react.common.LongArray;
-import com.facebook.react.modules.core.ChoreographerCompat;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 
@@ -18,9 +18,9 @@ import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugL
  * Debug object that listens to bridge busy/idle events and UiManagerModule dispatches and uses it
  * to calculate whether JS was able to update the UI during a given frame. After being installed on
  * a {@link ReactBridge} and a {@link UIManagerModule}, {@link #getDidJSHitFrameAndCleanup} should
- * be called once per frame via a {@link ChoreographerCompat.FrameCallback}.
+ * be called once per frame via a {@link Choreographer.FrameCallback}.
  */
-public class DidJSUpdateUiDuringFrameDetector
+class DidJSUpdateUiDuringFrameDetector
     implements NotThreadSafeBridgeIdleDebugListener, NotThreadSafeViewHierarchyUpdateDebugListener {
 
   private final LongArray mTransitionToIdleEvents = LongArray.createWithInitialCapacity(20);
@@ -57,7 +57,7 @@ public class DidJSUpdateUiDuringFrameDetector
   }
 
   /**
-   * Designed to be called from a {@link ChoreographerCompat.FrameCallback#doFrame} call.
+   * Designed to be called from a {@link Choreographer.FrameCallback#doFrame} call.
    *
    * <p>There are two 'success' cases that will cause {@link #getDidJSHitFrameAndCleanup} to return
    * true for a given frame:

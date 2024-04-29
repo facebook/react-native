@@ -23,9 +23,9 @@ class JReadableMapBuffer : public jni::HybridClass<JReadableMapBuffer> {
   static void registerNatives();
 
   static jni::local_ref<JReadableMapBuffer::jhybridobject> createWithContents(
-      MapBuffer &&map);
+      MapBuffer&& map);
 
-  explicit JReadableMapBuffer(MapBuffer &&map);
+  explicit JReadableMapBuffer(MapBuffer&& map);
 
   jni::local_ref<jni::JByteBuffer> importByteBuffer();
 

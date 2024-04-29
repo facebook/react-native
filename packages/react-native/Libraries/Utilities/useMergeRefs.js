@@ -8,12 +8,8 @@
  * @format
  */
 
+import * as React from 'react';
 import {useCallback} from 'react';
-
-type CallbackRef<T> = T => mixed;
-type ObjectRef<T> = {current: T, ...};
-
-type Ref<T> = CallbackRef<T> | ObjectRef<T>;
 
 /**
  * Constructs a new ref that forwards new values to each of the given refs. The
@@ -24,11 +20,11 @@ type Ref<T> = CallbackRef<T> | ObjectRef<T>;
  * the returned callback ref is supplied as a `ref` to a React element, this may
  * lead to problems with the given refs being invoked more times than desired.
  */
-export default function useMergeRefs<T>(
-  ...refs: $ReadOnlyArray<?Ref<T>>
-): CallbackRef<T> {
+export default function useMergeRefs<Instance>(
+  ...refs: $ReadOnlyArray<?React.RefSetter<Instance>>
+): (Instance | null) => void {
   return useCallback(
-    (current: T) => {
+    (current: Instance | null) => {
       for (const ref of refs) {
         if (ref != null) {
           if (typeof ref === 'function') {

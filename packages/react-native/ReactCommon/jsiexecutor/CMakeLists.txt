@@ -9,7 +9,7 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 add_compile_options(
         -fexceptions
         -frtti
-        -std=c++17
+        -std=c++20
         -O3)
 
 add_library(jsireact
@@ -20,7 +20,7 @@ add_library(jsireact
 target_include_directories(jsireact PUBLIC .)
 
 target_link_libraries(jsireact
-        reactnative
+        react_cxxreact
         reactperflogger
         folly_runtime
         glog

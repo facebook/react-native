@@ -11,7 +11,6 @@
 'use strict';
 
 const React = require('react');
-
 const {
   Animated,
   Image,

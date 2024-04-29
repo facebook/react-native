@@ -5,15 +5,16 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
-import * as React from 'react';
-import {useState} from 'react';
-import {StyleSheet, View, Pressable, ScrollView, Text} from 'react-native';
-import {EventTracker} from './PointerEventSupport';
 import type {EventOccurrence} from './PointerEventSupport';
 import type {PointerEvent} from 'react-native/Libraries/Types/CoreEventTypes';
+
+import {EventTracker} from './PointerEventSupport';
+import * as React from 'react';
+import {useState} from 'react';
+import {Pressable, ScrollView, StyleSheet, Text, View} from 'react-native';
 
 const eventsToTrack = ['onClick'];
 

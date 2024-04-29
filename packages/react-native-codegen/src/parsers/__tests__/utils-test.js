@@ -11,13 +11,13 @@
 
 'use strict';
 
+const {ParserError} = require('../errors');
 const {
-  extractNativeModuleName,
   createParserErrorCapturer,
+  extractNativeModuleName,
   verifyPlatforms,
   visit,
 } = require('../utils.js');
-const {ParserError} = require('../errors');
 
 beforeEach(() => {
   jest.clearAllMocks();

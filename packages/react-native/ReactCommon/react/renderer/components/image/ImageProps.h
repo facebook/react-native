@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#pragma once
+
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/graphics/Color.h>
@@ -17,15 +19,15 @@ class ImageProps final : public ViewProps {
  public:
   ImageProps() = default;
   ImageProps(
-      const PropsParserContext &context,
-      const ImageProps &sourceProps,
-      const RawProps &rawProps);
+      const PropsParserContext& context,
+      const ImageProps& sourceProps,
+      const RawProps& rawProps);
 
   void setProp(
-      const PropsParserContext &context,
+      const PropsParserContext& context,
       RawPropsPropNameHash hash,
-      const char *propName,
-      RawValue const &value);
+      const char* propName,
+      const RawValue& value);
 
 #pragma mark - Props
 

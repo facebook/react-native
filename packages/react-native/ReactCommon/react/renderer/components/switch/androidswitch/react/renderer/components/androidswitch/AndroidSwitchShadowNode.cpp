@@ -12,8 +12,8 @@ namespace facebook::react {
 extern const char AndroidSwitchComponentName[] = "AndroidSwitch";
 
 void AndroidSwitchShadowNode::setAndroidSwitchMeasurementsManager(
-    const std::shared_ptr<AndroidSwitchMeasurementsManager>
-        &measurementsManager) {
+    const std::shared_ptr<AndroidSwitchMeasurementsManager>&
+        measurementsManager) {
   ensureUnsealed();
   measurementsManager_ = measurementsManager;
 }
@@ -21,8 +21,8 @@ void AndroidSwitchShadowNode::setAndroidSwitchMeasurementsManager(
 #pragma mark - LayoutableShadowNode
 
 Size AndroidSwitchShadowNode::measureContent(
-    LayoutContext const & /*layoutContext*/,
-    LayoutConstraints const &layoutConstraints) const {
+    const LayoutContext& /*layoutContext*/,
+    const LayoutConstraints& layoutConstraints) const {
   return measurementsManager_->measure(getSurfaceId(), layoutConstraints);
 }
 

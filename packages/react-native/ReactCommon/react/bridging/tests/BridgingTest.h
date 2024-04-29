@@ -17,18 +17,18 @@ namespace facebook::react {
 
 class TestCallInvoker : public CallInvoker {
  public:
-  void invokeAsync(std::function<void()> &&fn) override {
+  void invokeAsync(CallFunc&& fn) noexcept override {
     queue_.push_back(std::move(fn));
   }
 
-  void invokeSync(std::function<void()> &&) override {
+  void invokeSync(CallFunc&&) override {
     FAIL() << "JSCallInvoker does not support invokeSync()";
   }
 
  private:
   friend class BridgingTest;
 
-  std::list<std::function<void()>> queue_;
+  std::list<CallFunc> queue_;
 };
 
 class BridgingTest : public ::testing::Test {
@@ -43,27 +43,27 @@ class BridgingTest : public ::testing::Test {
         rt(*runtime) {}
 
   ~BridgingTest() {
-    LongLivedObjectCollection::get().clear();
+    LongLivedObjectCollection::get(rt).clear();
   }
 
   void TearDown() override {
     flushQueue();
 
     // After flushing the invoker queue, we shouldn't leak memory.
-    EXPECT_EQ(0, LongLivedObjectCollection::get().size());
+    EXPECT_EQ(0, LongLivedObjectCollection::get(rt).size());
   }
 
-  jsi::Value eval(const std::string &js) {
+  jsi::Value eval(const std::string& js) {
     return rt.global().getPropertyAsFunction(rt, "eval").call(rt, js);
   }
 
-  jsi::Function function(const std::string &js) {
+  jsi::Function function(const std::string& js) {
     return eval(("(" + js + ")").c_str()).getObject(rt).getFunction(rt);
   }
 
   void flushQueue() {
     while (!invoker->queue_.empty()) {
-      invoker->queue_.front()();
+      invoker->queue_.front()(*runtime);
       invoker->queue_.pop_front();
       rt.drainMicrotasks(); // Run microtasks every cycle.
     }
@@ -71,7 +71,7 @@ class BridgingTest : public ::testing::Test {
 
   std::shared_ptr<TestCallInvoker> invoker;
   std::unique_ptr<jsi::Runtime> runtime;
-  jsi::Runtime &rt;
+  jsi::Runtime& rt;
 };
 
 } // namespace facebook::react

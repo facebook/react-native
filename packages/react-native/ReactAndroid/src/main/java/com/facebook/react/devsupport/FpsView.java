@@ -22,7 +22,7 @@ import java.util.Locale;
  *
  * <p>NB: Requires API 16 for use of FpsDebugFrameCallback.
  */
-public class FpsView extends FrameLayout {
+class FpsView extends FrameLayout {
 
   private static final int UPDATE_INTERVAL_MS = 500;
 

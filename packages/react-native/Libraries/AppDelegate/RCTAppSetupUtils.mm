@@ -7,89 +7,111 @@
 
 #import "RCTAppSetupUtils.h"
 
-#if RCT_NEW_ARCH_ENABLED
+#import <React/RCTJSIExecutorRuntimeInstaller.h>
+#import <react/renderer/runtimescheduler/RuntimeScheduler.h>
+#import <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
+
 // Turbo Module
-#import <React/CoreModulesPlugins.h>
+#import <React/RCTBundleAssetImageLoader.h>
 #import <React/RCTDataRequestHandler.h>
 #import <React/RCTFileRequestHandler.h>
 #import <React/RCTGIFImageDecoder.h>
 #import <React/RCTHTTPRequestHandler.h>
 #import <React/RCTImageLoader.h>
-#import <React/RCTJSIExecutorRuntimeInstaller.h>
-#import <React/RCTLocalAssetImageLoader.h>
 #import <React/RCTNetworking.h>
 
 // Fabric
-#import <React/RCTFabricSurfaceHostingProxyRootView.h>
-#import <react/renderer/runtimescheduler/RuntimeScheduler.h>
-#import <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
-#endif
+#import <React/RCTFabricSurface.h>
+#import <React/RCTSurfaceHostingProxyRootView.h>
 
-#ifdef FB_SONARKIT_ENABLED
-#import <FlipperKit/FlipperClient.h>
-#import <FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h>
-#import <FlipperKitNetworkPlugin/FlipperKitNetworkPlugin.h>
-#import <FlipperKitReactPlugin/FlipperKitReactPlugin.h>
-#import <FlipperKitUserDefaultsPlugin/FKUserDefaultsPlugin.h>
-#import <SKIOSNetworkPlugin/SKIOSNetworkAdapter.h>
+// jsinspector-modern
+#import <jsinspector-modern/InspectorFlags.h>
 
-static void InitializeFlipper(UIApplication *application)
-{
-  FlipperClient *client = [FlipperClient sharedClient];
-  SKDescriptorMapper *layoutDescriptorMapper = [[SKDescriptorMapper alloc] initWithDefaults];
-  [client addPlugin:[[FlipperKitLayoutPlugin alloc] initWithRootNode:application
-                                                withDescriptorMapper:layoutDescriptorMapper]];
-  [client addPlugin:[[FKUserDefaultsPlugin alloc] initWithSuiteName:nil]];
-  [client addPlugin:[FlipperKitReactPlugin new]];
-  [client addPlugin:[[FlipperKitNetworkPlugin alloc] initWithNetworkAdapter:[SKIOSNetworkAdapter new]]];
-  [client start];
-}
+#if __has_include(<ReactCodegen/RCTModulesConformingToProtocolsProvider.h>)
+#define USE_OSS_CODEGEN 1
+#import <ReactCodegen/RCTModulesConformingToProtocolsProvider.h>
+#else
+// Meta internal system do not generate the RCTModulesConformingToProtocolsProvider.h file
+#define USE_OSS_CODEGEN 0
 #endif
 
 void RCTAppSetupPrepareApp(UIApplication *application, BOOL turboModuleEnabled)
 {
-#ifdef FB_SONARKIT_ENABLED
-  InitializeFlipper(application);
-#endif
-
-#if RCT_NEW_ARCH_ENABLED
   RCTEnableTurboModule(turboModuleEnabled);
+
+#if DEBUG
+  // Disable idle timer in dev builds to avoid putting application in background and complicating
+  // Metro reconnection logic. Users only need this when running the application using our CLI tooling.
+  application.idleTimerDisabled = YES;
 #endif
 }
 
 UIView *
 RCTAppSetupDefaultRootView(RCTBridge *bridge, NSString *moduleName, NSDictionary *initialProperties, BOOL fabricEnabled)
 {
-#if RCT_NEW_ARCH_ENABLED
   if (fabricEnabled) {
-    return [[RCTFabricSurfaceHostingProxyRootView alloc] initWithBridge:bridge
-                                                             moduleName:moduleName
-                                                      initialProperties:initialProperties];
+    id<RCTSurfaceProtocol> surface = [[RCTFabricSurface alloc] initWithBridge:bridge
+                                                                   moduleName:moduleName
+                                                            initialProperties:initialProperties];
+    return [[RCTSurfaceHostingProxyRootView alloc] initWithSurface:surface];
   }
-#endif
   return [[RCTRootView alloc] initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties];
 }
 
-#if RCT_NEW_ARCH_ENABLED
 id<RCTTurboModule> RCTAppSetupDefaultModuleFromClass(Class moduleClass)
 {
+  // private block used to filter out modules depending on protocol conformance
+  NSArray * (^extractModuleConformingToProtocol)(RCTModuleRegistry *, Protocol *) =
+      ^NSArray *(RCTModuleRegistry *moduleRegistry, Protocol *protocol) {
+        NSArray<NSString *> *classNames = @[];
+
+#if USE_OSS_CODEGEN
+        if (protocol == @protocol(RCTImageURLLoader)) {
+          classNames = [RCTModulesConformingToProtocolsProvider imageURLLoaderClassNames];
+        } else if (protocol == @protocol(RCTImageDataDecoder)) {
+          classNames = [RCTModulesConformingToProtocolsProvider imageDataDecoderClassNames];
+        } else if (protocol == @protocol(RCTURLRequestHandler)) {
+          classNames = [RCTModulesConformingToProtocolsProvider URLRequestHandlerClassNames];
+        }
+#endif
+
+        NSMutableArray *modules = [NSMutableArray new];
+
+        for (NSString *className in classNames) {
+          const char *cModuleName = [className cStringUsingEncoding:NSUTF8StringEncoding];
+          id moduleFromLibrary = [moduleRegistry moduleForName:cModuleName];
+          if (![moduleFromLibrary conformsToProtocol:protocol]) {
+            continue;
+          }
+          [modules addObject:moduleFromLibrary];
+        }
+        return modules;
+      };
+
   // Set up the default RCTImageLoader and RCTNetworking modules.
   if (moduleClass == RCTImageLoader.class) {
     return [[moduleClass alloc] initWithRedirectDelegate:nil
         loadersProvider:^NSArray<id<RCTImageURLLoader>> *(RCTModuleRegistry *moduleRegistry) {
-          return @[ [RCTLocalAssetImageLoader new] ];
+          NSArray *imageURLLoaderModules =
+              extractModuleConformingToProtocol(moduleRegistry, @protocol(RCTImageURLLoader));
+
+          return [@[ [RCTBundleAssetImageLoader new] ] arrayByAddingObjectsFromArray:imageURLLoaderModules];
         }
         decodersProvider:^NSArray<id<RCTImageDataDecoder>> *(RCTModuleRegistry *moduleRegistry) {
-          return @[ [RCTGIFImageDecoder new] ];
+          NSArray *imageDataDecoder = extractModuleConformingToProtocol(moduleRegistry, @protocol(RCTImageDataDecoder));
+          return [@[ [RCTGIFImageDecoder new] ] arrayByAddingObjectsFromArray:imageDataDecoder];
         }];
   } else if (moduleClass == RCTNetworking.class) {
     return [[moduleClass alloc]
         initWithHandlersProvider:^NSArray<id<RCTURLRequestHandler>> *(RCTModuleRegistry *moduleRegistry) {
-          return @[
+          NSArray *URLRequestHandlerModules =
+              extractModuleConformingToProtocol(moduleRegistry, @protocol(RCTURLRequestHandler));
+          return [@[
             [RCTHTTPRequestHandler new],
             [RCTDataRequestHandler new],
             [RCTFileRequestHandler new],
-          ];
+            [moduleRegistry moduleForName:"BlobModule"],
+          ] arrayByAddingObjectsFromArray:URLRequestHandlerModules];
         }];
   }
   // No custom initializer here.
@@ -99,28 +121,26 @@ id<RCTTurboModule> RCTAppSetupDefaultModuleFromClass(Class moduleClass)
 std::unique_ptr<facebook::react::JSExecutorFactory> RCTAppSetupDefaultJsExecutorFactory(
     RCTBridge *bridge,
     RCTTurboModuleManager *turboModuleManager,
-    std::shared_ptr<facebook::react::RuntimeScheduler> const &runtimeScheduler)
+    const std::shared_ptr<facebook::react::RuntimeScheduler> &runtimeScheduler)
 {
   // Necessary to allow NativeModules to lookup TurboModules
   [bridge setRCTTurboModuleRegistry:turboModuleManager];
 
 #if RCT_DEV
-  if (!RCTTurboModuleEagerInitEnabled()) {
-    /**
-     * Instantiating DevMenu has the side-effect of registering
-     * shortcuts for CMD + d, CMD + i,  and CMD + n via RCTDevMenu.
-     * Therefore, when TurboModules are enabled, we must manually create this
-     * NativeModule.
-     */
-    [turboModuleManager moduleForName:"RCTDevMenu"];
-  }
-#endif
+  /**
+   * Instantiating DevMenu has the side-effect of registering
+   * shortcuts for CMD + d, CMD + i,  and CMD + n via RCTDevMenu.
+   * Therefore, when TurboModules are enabled, we must manually create this
+   * NativeModule.
+   */
+  [turboModuleManager moduleForName:"RCTDevMenu"];
+#endif // end RCT_DEV
 
-#if RCT_USE_HERMES
+#if USE_HERMES
   return std::make_unique<facebook::react::HermesExecutorFactory>(
 #else
   return std::make_unique<facebook::react::JSCExecutorFactory>(
-#endif
+#endif // USE_HERMES
       facebook::react::RCTJSIExecutorRuntimeInstaller(
           [turboModuleManager, bridge, runtimeScheduler](facebook::jsi::Runtime &runtime) {
             if (!bridge || !turboModuleManager) {
@@ -129,10 +149,25 @@ std::unique_ptr<facebook::react::JSExecutorFactory> RCTAppSetupDefaultJsExecutor
             if (runtimeScheduler) {
               facebook::react::RuntimeSchedulerBinding::createAndInstallIfNeeded(runtime, runtimeScheduler);
             }
-            facebook::react::RuntimeExecutor syncRuntimeExecutor =
-                [&](std::function<void(facebook::jsi::Runtime & runtime_)> &&callback) { callback(runtime); };
-            [turboModuleManager installJSBindingWithRuntimeExecutor:syncRuntimeExecutor];
+            [turboModuleManager installJSBindings:runtime];
           }));
 }
 
-#endif
+std::unique_ptr<facebook::react::JSExecutorFactory> RCTAppSetupJsExecutorFactoryForOldArch(
+    RCTBridge *bridge,
+    const std::shared_ptr<facebook::react::RuntimeScheduler> &runtimeScheduler)
+{
+#if USE_HERMES
+  return std::make_unique<facebook::react::HermesExecutorFactory>(
+#else
+  return std::make_unique<facebook::react::JSCExecutorFactory>(
+#endif // USE_HERMES
+      facebook::react::RCTJSIExecutorRuntimeInstaller([bridge, runtimeScheduler](facebook::jsi::Runtime &runtime) {
+        if (!bridge) {
+          return;
+        }
+        if (runtimeScheduler) {
+          facebook::react::RuntimeSchedulerBinding::createAndInstallIfNeeded(runtime, runtimeScheduler);
+        }
+      }));
+}

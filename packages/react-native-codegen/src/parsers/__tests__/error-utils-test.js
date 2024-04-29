@@ -15,41 +15,41 @@ const {
   throwIfConfigNotfound,
   throwIfMoreThanOneConfig,
 } = require('../error-utils');
-
 const {
-  throwIfModuleInterfaceNotFound,
-  throwIfMoreThanOneModuleRegistryCalls,
-  throwIfModuleInterfaceIsMisnamed,
-  throwIfUnusedModuleInterfaceParserError,
-  throwIfWrongNumberOfCallExpressionArgs,
-  throwIfIncorrectModuleRegistryCallTypeParameterParserError,
-  throwIfIncorrectModuleRegistryCallArgument,
-  throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
-  throwIfMoreThanOneModuleInterfaceParserError,
-  throwIfModuleTypeIsUnsupported,
-  throwIfUntypedModule,
-  throwIfUnsupportedFunctionParamTypeAnnotationParserError,
+  throwIfArgumentPropsAreNull,
   throwIfArrayElementTypeAnnotationIsUnsupported,
+  throwIfBubblingTypeIsNull,
+  throwIfEventHasNoName,
+  throwIfIncorrectModuleRegistryCallArgument,
+  throwIfIncorrectModuleRegistryCallTypeParameterParserError,
+  throwIfModuleInterfaceIsMisnamed,
+  throwIfModuleInterfaceNotFound,
+  throwIfModuleTypeIsUnsupported,
+  throwIfMoreThanOneCodegenNativecommands,
+  throwIfMoreThanOneModuleInterfaceParserError,
+  throwIfMoreThanOneModuleRegistryCalls,
   throwIfPartialNotAnnotatingTypeParameter,
   throwIfPartialWithMoreParameter,
-  throwIfMoreThanOneCodegenNativecommands,
-  throwIfEventHasNoName,
-  throwIfBubblingTypeIsNull,
-  throwIfArgumentPropsAreNull,
+  throwIfTypeAliasIsNotInterface,
+  throwIfUnsupportedFunctionParamTypeAnnotationParserError,
+  throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
+  throwIfUntypedModule,
+  throwIfUnusedModuleInterfaceParserError,
+  throwIfWrongNumberOfCallExpressionArgs,
 } = require('../error-utils');
 const {
-  UnsupportedModulePropertyParserError,
-  ModuleInterfaceNotFoundParserError,
-  MoreThanOneModuleRegistryCallsParserError,
-  MisnamedModuleInterfaceParserError,
-  UnusedModuleInterfaceParserError,
+  IncorrectModuleRegistryCallArgumentTypeParserError,
   IncorrectModuleRegistryCallArityParserError,
   IncorrectModuleRegistryCallTypeParameterParserError,
-  IncorrectModuleRegistryCallArgumentTypeParserError,
-  UnsupportedFunctionReturnTypeAnnotationParserError,
-  UntypedModuleRegistryCallParserError,
+  MisnamedModuleInterfaceParserError,
+  ModuleInterfaceNotFoundParserError,
   MoreThanOneModuleInterfaceParserError,
+  MoreThanOneModuleRegistryCallsParserError,
   UnsupportedFunctionParamTypeAnnotationParserError,
+  UnsupportedFunctionReturnTypeAnnotationParserError,
+  UnsupportedModulePropertyParserError,
+  UntypedModuleRegistryCallParserError,
+  UnusedModuleInterfaceParserError,
 } = require('../errors');
 const {FlowParser} = require('../flow/parser');
 const {TypeScriptParser} = require('../typescript/parser');
@@ -991,6 +991,51 @@ describe('throwIfArgumentPropsAreNull', () => {
 
     expect(() => {
       throwIfArgumentPropsAreNull(argumentProps, eventName);
+    }).not.toThrow();
+  });
+});
+
+describe('throwIfTypeAliasIsNotInterface', () => {
+  const flowParser = new FlowParser();
+  const typescriptParser = new TypeScriptParser();
+
+  it('throws an error if type argument for codegenNativeCommands is not an interface in Flow', () => {
+    const typeAlias = {
+      type: '',
+    };
+    expect(() => {
+      throwIfTypeAliasIsNotInterface(typeAlias, flowParser);
+    }).toThrowError(
+      `The type argument for codegenNativeCommands must be an interface, received ${typeAlias.type}`,
+    );
+  });
+
+  it('does not throw an error if type argument for codegenNativeCommands is an interface in Flow', () => {
+    const typeAlias = {
+      type: 'InterfaceDeclaration',
+    };
+    expect(() => {
+      throwIfTypeAliasIsNotInterface(typeAlias, flowParser);
+    }).not.toThrow();
+  });
+
+  it('throws an error if type argument for codegenNativeCommands is not an interface in Trypscript', () => {
+    const typeAlias = {
+      type: '',
+    };
+    expect(() => {
+      throwIfTypeAliasIsNotInterface(typeAlias, typescriptParser);
+    }).toThrowError(
+      `The type argument for codegenNativeCommands must be an interface, received ${typeAlias.type}`,
+    );
+  });
+
+  it('does not throw an error if type argument for codegenNativeCommands is an interface in Typescript', () => {
+    const typeAlias = {
+      type: 'TSInterfaceDeclaration',
+    };
+    expect(() => {
+      throwIfTypeAliasIsNotInterface(typeAlias, typescriptParser);
     }).not.toThrow();
   });
 });

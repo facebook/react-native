@@ -15,6 +15,7 @@
 #import "RCTConstants.h"
 #import "RCTConvert.h"
 #import "RCTEventDispatcherProtocol.h"
+#import "RCTModuleMethod.h"
 #import "RCTParserUtils.h"
 #import "RCTShadowView.h"
 #import "RCTUtils.h"
@@ -55,7 +56,7 @@ static SEL selectorForType(NSString *type)
     _viewPropBlocks = [NSMutableDictionary new];
     _shadowPropBlocks = [NSMutableDictionary new];
 
-    _name = moduleNameForClass(managerClass);
+    _name = RCTViewManagerModuleNameForClass(managerClass);
   }
   return self;
 }
@@ -70,7 +71,7 @@ static SEL selectorForType(NSString *type)
                                                         object:nil
                                                       userInfo:@{@"module" : _bridgelessViewManager}];
   }
-  return _manager ?: _bridgelessViewManager;
+  return _manager ? _manager : _bridgelessViewManager;
 }
 
 RCT_NOT_IMPLEMENTED(-(instancetype)init)
@@ -365,27 +366,62 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
 
 - (void)setProps:(NSDictionary<NSString *, id> *)props forView:(id<RCTComponent>)view
 {
+  [self setProps:props forView:view isShadowView:NO];
+}
+
+- (void)setProps:(NSDictionary<NSString *, id> *)props forShadowView:(RCTShadowView *)shadowView
+{
+  [self setProps:props forView:shadowView isShadowView:YES];
+}
+
+- (void)setProps:(NSDictionary<NSString *, id> *)props forView:(id<RCTComponent>)view isShadowView:(BOOL)isShadowView
+{
   if (!view) {
     return;
   }
 
   [props enumerateKeysAndObjectsUsingBlock:^(NSString *key, id json, __unused BOOL *stop) {
-    [self propBlockForKey:key isShadowView:NO](view, json);
+    [self propBlockForKey:key isShadowView:isShadowView](view, json);
   }];
 }
 
-- (void)setProps:(NSDictionary<NSString *, id> *)props forShadowView:(RCTShadowView *)shadowView
++ (NSDictionary<NSString *, NSNumber *> *)commandsForViewMangerClass:(Class)managerClass
+                                                             methods:(Method *)methods
+                                                         methodCount:(unsigned int)methodCount
 {
-  if (!shadowView) {
-    return;
+  NSMutableDictionary<NSString *, NSNumber *> *commands = [NSMutableDictionary new];
+  static const char *prefix = "__rct_export__";
+  const unsigned int prefixLength = strlen(prefix);
+  int commandCount = 0;
+  for (int i = 0; i < methodCount; i++) {
+    SEL selector = method_getName(methods[i]);
+    const char *selectorName = sel_getName(selector);
+    if (strncmp(selectorName, prefix, prefixLength) != 0) {
+      continue;
+    }
+    RCTMethodInfo *methodInfo = ((RCTMethodInfo * (*)(id, SEL)) objc_msgSend)(managerClass, selector);
+    RCTModuleMethod *moduleMethod = [[RCTModuleMethod alloc] initWithExportedMethod:methodInfo
+                                                                        moduleClass:managerClass];
+    NSString *methodName = @(moduleMethod.JSMethodName);
+    commands[methodName] = @(commandCount);
+    commandCount += 1;
   }
-
-  [props enumerateKeysAndObjectsUsingBlock:^(NSString *key, id json, __unused BOOL *stop) {
-    [self propBlockForKey:key isShadowView:YES](shadowView, json);
-  }];
+  // View manager do not export getConstants with RCT_EXPORT_METHOD, so we inject it into "Commands" manually.
+  if (commandCount > 0) {
+    commands[@"getConstants"] = @(commandCount);
+  }
+  return commands;
 }
 
-- (NSDictionary<NSString *, id> *)viewConfig
++ (NSDictionary<NSString *, id> *)constantsForViewMangerClass:(Class)managerClass
+{
+  if ([managerClass instancesRespondToSelector:@selector(constantsToExport)]) {
+    return [[managerClass new] constantsToExport];
+  }
+  return @{};
+}
+
++ (NSDictionary<NSString *, id> *)viewConfigForViewMangerClass:(Class)managerClass
 {
   NSMutableArray<NSString *> *bubblingEvents = [NSMutableArray new];
   NSMutableArray<NSString *> *capturingEvents = [NSMutableArray new];
@@ -393,8 +429,8 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  if (RCTClassOverridesInstanceMethod(_managerClass, @selector(customBubblingEventTypes))) {
-    NSArray<NSString *> *events = [self.manager customBubblingEventTypes];
+  if (RCTClassOverridesInstanceMethod(managerClass, @selector(customBubblingEventTypes))) {
+    NSArray<NSString *> *events = [[managerClass new] customBubblingEventTypes];
     for (NSString *event in events) {
       [bubblingEvents addObject:RCTNormalizeInputEventName(event)];
     }
@@ -403,7 +439,7 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
 
   unsigned int count = 0;
   NSMutableDictionary *propTypes = [NSMutableDictionary new];
-  Method *methods = class_copyMethodList(object_getClass(_managerClass), &count);
+  Method *methods = class_copyMethodList(object_getClass(managerClass), &count);
   for (unsigned int i = 0; i < count; i++) {
     SEL selector = method_getName(methods[i]);
     const char *selectorName = sel_getName(selector);
@@ -418,13 +454,13 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
     }
 
     NSString *name = @(underscorePos + 1);
-    NSString *type = ((NSArray<NSString *> * (*)(id, SEL)) objc_msgSend)(_managerClass, selector)[0];
+    NSString *type = ((NSArray<NSString *> * (*)(id, SEL)) objc_msgSend)(managerClass, selector)[0];
     if (RCT_DEBUG && propTypes[name] && ![propTypes[name] isEqualToString:type]) {
       RCTLogError(
           @"Property '%@' of component '%@' redefined from '%@' "
            "to '%@'",
           name,
-          _name,
+          RCTViewManagerModuleNameForClass(managerClass),
           propTypes[name],
           type);
     }
@@ -442,7 +478,6 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
       propTypes[name] = type;
     }
   }
-  free(methods);
 
 #if RCT_DEBUG
   for (NSString *event in bubblingEvents) {
@@ -450,24 +485,40 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
       RCTLogError(
           @"Component '%@' registered '%@' as both a bubbling event "
            "and a direct event",
-          _name,
+          RCTViewManagerModuleNameForClass(managerClass),
           event);
     }
   }
 #endif
 
-  Class superClass = [_managerClass superclass];
+  Class superClass = [managerClass superclass];
 
-  return @{
+  NSMutableDictionary *result = [[NSMutableDictionary alloc] initWithDictionary:@{
     @"propTypes" : propTypes,
     @"directEvents" : directEvents,
     @"bubblingEvents" : bubblingEvents,
     @"capturingEvents" : capturingEvents,
-    @"baseModuleName" : superClass == [NSObject class] ? (id)kCFNull : moduleNameForClass(superClass),
-  };
+    @"baseModuleName" : superClass == [NSObject class] ? (id)kCFNull : RCTViewManagerModuleNameForClass(superClass),
+  }];
+
+  if (RCTGetUseNativeViewConfigsInBridgelessMode()) {
+    result[@"Commands"] = [self commandsForViewMangerClass:managerClass methods:methods methodCount:count];
+    result[@"Constants"] = [self constantsForViewMangerClass:managerClass];
+  }
+
+  free(methods);
+
+  return result;
 }
 
-static NSString *moduleNameForClass(Class managerClass)
+- (NSDictionary<NSString *, id> *)viewConfig
+{
+  // Make sure the manager is initialized before accessing view config.
+  [self manager];
+  return [RCTComponentData viewConfigForViewMangerClass:_managerClass];
+}
+
+NSString *RCTViewManagerModuleNameForClass(Class managerClass)
 {
   // Hackety hack, this partially re-implements RCTBridgeModuleNameForClass
   // We want to get rid of RCT and RK prefixes, but a lot of JS code still references

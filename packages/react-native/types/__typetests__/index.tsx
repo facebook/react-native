@@ -84,8 +84,7 @@ import {
   SectionListProps,
   SectionListRenderItemInfo,
   Share,
-  ShareDismissedAction,
-  ShareSharedAction,
+  ShareAction,
   StatusBar,
   StyleProp,
   StyleSheet,
@@ -107,6 +106,7 @@ import {
   TextStyle,
   TouchableNativeFeedback,
   TouchableOpacity,
+  TouchableHighlight,
   TouchableWithoutFeedback,
   UIManager,
   View,
@@ -387,6 +387,7 @@ const testNativeSyntheticEvent = <T extends {}>(
   e.isTrusted;
   e.nativeEvent;
   e.target;
+  e.target.measure(() => {});
   e.timeStamp;
   e.type;
   e.nativeEvent;
@@ -411,7 +412,9 @@ class CustomView extends React.Component {
   }
 }
 
-class Welcome extends React.Component<ElementProps<View> & {color: string}> {
+class Welcome extends React.Component<
+  ElementProps<View> & {color: string; bgColor?: null | undefined | string}
+> {
   rootViewRef = React.useRef<View>(null);
   customViewRef = React.useRef<CustomView>(null);
 
@@ -436,12 +439,18 @@ class Welcome extends React.Component<ElementProps<View> & {color: string}> {
   }
 
   render() {
-    const {color, ...props} = this.props;
+    const {color, bgColor, ...props} = this.props;
     return (
       <View
         {...props}
         ref={this.rootViewRef}
-        style={[[styles.container], undefined, null, false]}>
+        style={[
+          [styles.container],
+          undefined,
+          null,
+          false,
+          bgColor && {backgroundColor: bgColor},
+        ]}>
         <Text style={styles.welcome}>Welcome to React Native</Text>
         <Text style={styles.instructions}>
           To get started, edit index.ios.js
@@ -476,6 +485,74 @@ function TouchableTest() {
   }
 }
 
+export class TouchableHighlightTest extends React.Component {
+  buttonRef = React.createRef<React.ElementRef<typeof TouchableHighlight>>();
+
+  render() {
+    return (
+      <>
+        <TouchableHighlight ref={this.buttonRef} />
+        <TouchableHighlight
+          ref={ref => {
+            ref?.focus();
+            ref?.blur();
+            ref?.measure(
+              (x, y, width, height, pageX, pageY): number =>
+                x + y + width + height + pageX + pageY,
+            );
+            ref?.measureInWindow(
+              (x, y, width, height): number => x + y + width + height,
+            );
+            ref?.setNativeProps({focusable: false});
+          }}
+        />
+      </>
+    );
+  }
+}
+
+export class TouchableOpacityTest extends React.Component {
+  buttonRef = React.createRef<React.ElementRef<typeof TouchableOpacity>>();
+
+  render() {
+    return (
+      <>
+        <TouchableOpacity ref={this.buttonRef} />
+        <TouchableOpacity
+          ref={ref => {
+            ref?.focus();
+            ref?.blur();
+            ref?.measure(
+              (x, y, width, height, pageX, pageY): number =>
+                x + y + width + height + pageX + pageY,
+            );
+            ref?.measureInWindow(
+              (x, y, width, height): number => x + y + width + height,
+            );
+            ref?.setNativeProps({focusable: false});
+          }}
+        />
+        <TouchableOpacity focusable={false} />
+        <TouchableOpacity rejectResponderTermination={true} />
+        <TouchableOpacity
+          role="button"
+          accessibilityRole="button"
+          accessibilityLabelledBy="my-label-text"
+          aria-labelledby="my-label-text"
+        />
+        <TouchableOpacity
+          // @ts-expect-error - expected boolean value
+          focusable={1}
+        />
+        <TouchableOpacity
+          // @ts-expect-error - expected boolean value
+          rejectResponderTermination={'not-bool'}
+        />
+      </>
+    );
+  }
+}
+
 // TouchableNativeFeedbackTest
 export class TouchableNativeFeedbackTest extends React.Component {
   onPressButton = (e: GestureResponderEvent) => {
@@ -492,6 +569,16 @@ export class TouchableNativeFeedbackTest extends React.Component {
             <Text style={{margin: 30}}>Button</Text>
           </View>
         </TouchableNativeFeedback>
+        <TouchableWithoutFeedback focusable={false}>
+          <View style={{width: 150, height: 100, backgroundColor: 'red'}}>
+            <Text style={{margin: 30}}>Button</Text>
+          </View>
+        </TouchableWithoutFeedback>
+        <TouchableWithoutFeedback rejectResponderTermination={true}>
+          <View style={{width: 150, height: 100, backgroundColor: 'red'}}>
+            <Text style={{margin: 30}}>Button</Text>
+          </View>
+        </TouchableWithoutFeedback>
         <TouchableNativeFeedback
           background={TouchableNativeFeedback.Ripple('red', true)}>
           <View style={{width: 150, height: 100, backgroundColor: 'red'}}>
@@ -1068,7 +1155,6 @@ const sub2 = androidEventEmitter.addListener(
 androidEventEmitter.listenerCount('event'); // $ExpectType number
 sub2.remove();
 androidEventEmitter.removeAllListeners('event');
-androidEventEmitter.removeSubscription(sub1);
 
 // NativeEventEmitter - IOS
 const nativeModule: NativeModule = {
@@ -1081,7 +1167,6 @@ const sub4 = iosEventEmitter.addListener('event', (event: object) => event, {});
 iosEventEmitter.listenerCount('event');
 sub4.remove();
 iosEventEmitter.removeAllListeners('event');
-iosEventEmitter.removeSubscription(sub3);
 
 class CustomEventEmitter extends NativeEventEmitter {}
 
@@ -1269,11 +1354,17 @@ export class ImageTest extends React.Component {
         }
       });
 
+    const promise1: Promise<any> = Image.getSize(uri).then(({width, height}) =>
+      console.log(width, height),
+    );
     Image.getSize(uri, (width, height) => console.log(width, height));
     Image.getSize(
       uri,
       (width, height) => console.log(width, height),
       error => console.error(error),
+    );
+    const promise2: Promise<any> = Image.getSizeWithHeaders(uri, headers).then(
+      ({width, height}) => console.log(width, height),
     );
     Image.getSizeWithHeaders(uri, headers, (width, height) =>
       console.log(width, height),
@@ -2117,4 +2208,7 @@ const ActionSheetIOSTest = () => {
     },
     () => undefined,
   );
+
+  // test dismissActionSheet method
+  ActionSheetIOS.dismissActionSheet();
 };

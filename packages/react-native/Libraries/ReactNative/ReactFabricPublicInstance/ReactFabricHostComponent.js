@@ -124,7 +124,7 @@ export default class ReactFabricHostComponent implements INativeMethods {
       this.__internalInstanceHandle,
     );
     if (node != null) {
-      const rect = fabricGetBoundingClientRect(node);
+      const rect = fabricGetBoundingClientRect(node, true);
 
       if (rect) {
         return new DOMRect(rect[0], rect[1], rect[2], rect[3]);

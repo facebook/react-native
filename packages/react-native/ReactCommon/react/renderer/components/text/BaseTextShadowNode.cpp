@@ -11,12 +11,11 @@
 #include <react/renderer/components/text/RawTextShadowNode.h>
 #include <react/renderer/components/text/TextProps.h>
 #include <react/renderer/components/text/TextShadowNode.h>
-#include <react/renderer/core/TraitCast.h>
 #include <react/renderer/mounting/ShadowView.h>
 
 namespace facebook::react {
 
-inline ShadowView shadowViewFromShadowNode(ShadowNode const &shadowNode) {
+inline ShadowView shadowViewFromShadowNode(const ShadowNode& shadowNode) {
   auto shadowView = ShadowView{shadowNode};
   // Clearing `props` and `state` (which we don't use) allows avoiding retain
   // cycles.
@@ -26,14 +25,14 @@ inline ShadowView shadowViewFromShadowNode(ShadowNode const &shadowNode) {
 }
 
 void BaseTextShadowNode::buildAttributedString(
-    TextAttributes const &baseTextAttributes,
-    ShadowNode const &parentNode,
-    AttributedString &outAttributedString,
-    Attachments &outAttachments) {
-  for (auto const &childNode : parentNode.getChildren()) {
+    const TextAttributes& baseTextAttributes,
+    const ShadowNode& parentNode,
+    AttributedString& outAttributedString,
+    Attachments& outAttachments) {
+  for (const auto& childNode : parentNode.getChildren()) {
     // RawShadowNode
     auto rawTextShadowNode =
-        traitCast<RawTextShadowNode const *>(childNode.get());
+        dynamic_cast<const RawTextShadowNode*>(childNode.get());
     if (rawTextShadowNode != nullptr) {
       auto fragment = AttributedString::Fragment{};
       fragment.string = rawTextShadowNode->getConcreteProps().text;
@@ -49,7 +48,7 @@ void BaseTextShadowNode::buildAttributedString(
     }
 
     // TextShadowNode
-    auto textShadowNode = traitCast<TextShadowNode const *>(childNode.get());
+    auto textShadowNode = dynamic_cast<const TextShadowNode*>(childNode.get());
     if (textShadowNode != nullptr) {
       auto localTextAttributes = baseTextAttributes;
       localTextAttributes.apply(

@@ -18,11 +18,11 @@ template <
     typename... Args,
     typename... JSArgs>
 T callFromJs(
-    jsi::Runtime &rt,
-    R (C::*method)(jsi::Runtime &, Args...),
-    const std::shared_ptr<CallInvoker> &jsInvoker,
-    C *instance,
-    JSArgs &&...args) {
+    jsi::Runtime& rt,
+    R (C::*method)(jsi::Runtime&, Args...),
+    const std::shared_ptr<CallInvoker>& jsInvoker,
+    C* instance,
+    JSArgs&&... args) {
   static_assert(
       sizeof...(Args) == sizeof...(JSArgs), "Incorrect arguments length");
   static_assert(

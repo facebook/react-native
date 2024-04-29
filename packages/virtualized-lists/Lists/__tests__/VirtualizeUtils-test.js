@@ -42,14 +42,19 @@ describe('newRangeCount', function () {
 describe('elementsThatOverlapOffsets', function () {
   it('handles fixed length', function () {
     const offsets = [0, 250, 350, 450];
-    function getFrameMetrics(index: number) {
+    function getCellMetricsApprox(index: number) {
       return {
         length: 100,
         offset: 100 * index,
       };
     }
     expect(
-      elementsThatOverlapOffsets(offsets, fakeProps(100), getFrameMetrics, 1),
+      elementsThatOverlapOffsets(
+        offsets,
+        fakeProps(100),
+        {getCellMetricsApprox},
+        1,
+      ),
     ).toEqual([0, 2, 3, 4]);
   });
   it('handles variable length', function () {
@@ -65,21 +70,26 @@ describe('elementsThatOverlapOffsets', function () {
       elementsThatOverlapOffsets(
         offsets,
         fakeProps(frames.length),
-        ii => frames[ii],
+        {getCellMetricsApprox: ii => frames[ii]},
         1,
       ),
     ).toEqual([1, 1, 3]);
   });
   it('handles frame boundaries', function () {
     const offsets = [0, 100, 200, 300];
-    function getFrameMetrics(index: number) {
+    function getCellMetricsApprox(index: number) {
       return {
         length: 100,
         offset: 100 * index,
       };
     }
     expect(
-      elementsThatOverlapOffsets(offsets, fakeProps(100), getFrameMetrics, 1),
+      elementsThatOverlapOffsets(
+        offsets,
+        fakeProps(100),
+        {getCellMetricsApprox},
+        1,
+      ),
     ).toEqual([0, 0, 1, 2]);
   });
   it('handles out of bounds', function () {
@@ -93,7 +103,7 @@ describe('elementsThatOverlapOffsets', function () {
       elementsThatOverlapOffsets(
         offsets,
         fakeProps(frames.length),
-        ii => frames[ii],
+        {getCellMetricsApprox: ii => frames[ii]},
         1,
       ),
     ).toEqual([undefined, 1]);

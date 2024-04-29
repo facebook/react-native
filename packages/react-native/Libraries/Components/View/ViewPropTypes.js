@@ -105,6 +105,10 @@ type PointerEventProps = $ReadOnly<{|
   onPointerOverCapture?: ?(e: PointerEvent) => void,
   onPointerOut?: ?(e: PointerEvent) => void,
   onPointerOutCapture?: ?(e: PointerEvent) => void,
+  onGotPointerCapture?: ?(e: PointerEvent) => void,
+  onGotPointerCaptureCapture?: ?(e: PointerEvent) => void,
+  onLostPointerCapture?: ?(e: PointerEvent) => void,
+  onLostPointerCaptureCapture?: ?(e: PointerEvent) => void,
 |}>;
 
 type FocusEventProps = $ReadOnly<{|
@@ -160,8 +164,8 @@ type GestureResponderEventProps = $ReadOnly<{|
    * `View.props.onResponderGrant: (event) => {}`, where `event` is a synthetic
    * touch event as described above.
    *
-   * PanResponder includes a note `// TODO: t7467124 investigate if this can be removed` that
-   * should help fixing this return type.
+   * Return true from this callback to prevent any other native components from
+   * becoming responder until this responder terminates (Android-only).
    *
    * See https://reactnative.dev/docs/view#onrespondergrant
    */
@@ -262,28 +266,21 @@ type AndroidDrawableRipple = $ReadOnly<{|
 type AndroidDrawable = AndroidDrawableThemeAttr | AndroidDrawableRipple;
 
 type AndroidViewProps = $ReadOnly<{|
-  nativeBackgroundAndroid?: ?AndroidDrawable,
-  nativeForegroundAndroid?: ?AndroidDrawable,
-
   /**
-   * Whether this `View` should render itself (and all of its children) into a
-   * single hardware texture on the GPU.
+   * Identifies the element that labels the element it is applied to. When the assistive technology focuses on the component with this props,
+   * the text is read aloud. The value should should match the nativeID of the related element.
    *
    * @platform android
-   *
-   * See https://reactnative.dev/docs/view#rendertohardwaretextureandroid
    */
-  renderToHardwareTextureAndroid?: ?boolean,
+  accessibilityLabelledBy?: ?string | ?Array<string>,
 
   /**
-   * Whether this `View` needs to rendered offscreen and composited with an
-   * alpha in order to preserve 100% correct colors and blending behavior.
+   * Identifies the element that labels the element it is applied to. When the assistive technology focuses on the component with this props,
+   * the text is read aloud. The value should should match the nativeID of the related element.
    *
    * @platform android
-   *
-   * See https://reactnative.dev/docs/view#needsoffscreenalphacompositing
    */
-  needsOffscreenAlphaCompositing?: ?boolean,
+  'aria-labelledby'?: ?string,
 
   /**
    * Indicates to accessibility services whether the user should be notified
@@ -304,6 +301,19 @@ type AndroidViewProps = $ReadOnly<{|
    * See https://reactnative.dev/docs/view#accessibilityliveregion
    */
   'aria-live'?: ?('polite' | 'assertive' | 'off'),
+
+  nativeBackgroundAndroid?: ?AndroidDrawable,
+  nativeForegroundAndroid?: ?AndroidDrawable,
+
+  /**
+   * Whether this `View` should render itself (and all of its children) into a
+   * single hardware texture on the GPU.
+   *
+   * @platform android
+   *
+   * See https://reactnative.dev/docs/view#rendertohardwaretextureandroid
+   */
+  renderToHardwareTextureAndroid?: ?boolean,
 
   /**
    * Controls how view is important for accessibility which is if it
@@ -425,6 +435,15 @@ type IOSViewProps = $ReadOnly<{|
   accessibilityElementsHidden?: ?boolean,
 
   /**
+   * Indicates to the accessibility services that the UI component is in
+   * a specific language. The provided string should be formatted following
+   * the BCP 47 specification (https://www.rfc-editor.org/info/bcp47).
+   *
+   * @platform ios
+   */
+  accessibilityLanguage?: ?Stringish,
+
+  /**
    * Whether this `View` should be rendered as a bitmap before compositing.
    *
    * @platform ios
@@ -481,15 +500,6 @@ export type ViewProps = $ReadOnly<{|
   'aria-label'?: ?Stringish,
 
   /**
-   * Indicates to the accessibility services that the UI component is in
-   * a specific language. The provided string should be formatted following
-   * the BCP 47 specification (https://www.rfc-editor.org/info/bcp47).
-   *
-   * @platform ios
-   */
-  accessibilityLanguage?: ?Stringish,
-
-  /**
    * Indicates to accessibility services to treat UI component like a specific role.
    */
   accessibilityRole?: ?AccessibilityRole,
@@ -521,13 +531,6 @@ export type ViewProps = $ReadOnly<{|
   accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
 
   /**
-   * Specifies the nativeID of the associated label text. When the assistive technology focuses on the component with this props, the text is read aloud.
-   *
-   * @platform android
-   */
-  accessibilityLabelledBy?: ?string | ?Array<string>,
-
-  /**
    * alias for accessibilityState
    *
    * see https://reactnative.dev/docs/accessibility#accessibilitystate
@@ -545,13 +548,6 @@ export type ViewProps = $ReadOnly<{|
   'aria-hidden'?: ?boolean,
 
   /**
-   * It represents the nativeID of the associated label text. When the assistive technology focuses on the component with this props, the text is read aloud.
-   *
-   * @platform android
-   */
-  'aria-labelledby'?: ?string,
-
-  /**
    * Views that are only used to layout their children or otherwise don't draw
    * anything may be automatically removed from the native hierarchy as an
    * optimization. Set this property to `false` to disable this optimization and
@@ -565,7 +561,23 @@ export type ViewProps = $ReadOnly<{|
   collapsable?: ?boolean,
 
   /**
-   * Used to locate this view from native classes.
+   * Setting to false prevents direct children of the view from being removed
+   * from the native view hierarchy, similar to the effect of setting
+   * `collapsable={false}` on each child.
+   */
+  collapsableChildren?: ?boolean,
+
+  /**
+   * Contols whether this view, and its transitive children, are laid in a way
+   * consistent with web browsers ('strict'), or consistent with existing
+   * React Native code which may rely on incorrect behavior ('classic').
+   *
+   * This prop only works when using Fabric.
+   */
+  experimental_layoutConformance?: ?('strict' | 'classic'),
+
+  /**
+   * Used to locate this view from native classes. Has precedence over `nativeID` prop.
    *
    * > This disables the 'layout-only view removal' optimization for this view!
    *
@@ -590,6 +602,14 @@ export type ViewProps = $ReadOnly<{|
    * See https://reactnative.dev/docs/view#nativeid
    */
   nativeID?: ?string,
+
+  /**
+   * Whether this `View` needs to rendered offscreen and composited with an
+   * alpha in order to preserve 100% correct colors and blending behavior.
+   *
+   * See https://reactnative.dev/docs/view#needsoffscreenalphacompositing
+   */
+  needsOffscreenAlphaCompositing?: ?boolean,
 
   /**
    * This defines how far a touch event can start away from the view.

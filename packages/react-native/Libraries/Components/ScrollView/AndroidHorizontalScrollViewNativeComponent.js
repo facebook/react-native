@@ -29,6 +29,7 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig = {
     overScrollMode: true,
     pagingEnabled: true,
     persistentScrollbar: true,
+    horizontal: true,
     scrollEnabled: true,
     scrollPerfTag: true,
     sendMomentumEvents: true,

@@ -10,8 +10,9 @@
 namespace facebook::react {
 
 folly::dynamic mergeDynamicProps(
-    folly::dynamic const &source,
-    folly::dynamic const &patch) {
+    const folly::dynamic& source,
+    const folly::dynamic& patch,
+    NullValueStrategy nullValueStrategy) {
   auto result = source;
 
   if (!result.isObject()) {
@@ -24,7 +25,11 @@ folly::dynamic mergeDynamicProps(
 
   // Note, here we have to preserve sub-prop objects with `null` value as
   // an indication for the legacy mounting layer that it needs to clean them up.
-  for (auto const &pair : patch.items()) {
+  for (const auto& pair : patch.items()) {
+    if (nullValueStrategy == NullValueStrategy::Ignore &&
+        source.find(pair.first) == source.items().end()) {
+      continue;
+    }
     result[pair.first] = pair.second;
   }
 

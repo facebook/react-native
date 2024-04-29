@@ -1,0 +1,48 @@
+name: ios-tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - "*"
+
+jobs:
+  test_ios_rntester-Hermes:
+    runs-on: macos-latest-large
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'yarn'
+      - name: Yarn Install
+        run: yarn install
+      - name: Get latest commit from Hermes
+        run: |
+          mkdir -p tmp/hermes
+          HERMES_TAG_SHA=$(git ls-remote https://github.com/facebook/hermes main | cut -f 1 | tr -d '[:space:]')
+          echo $HERMES_TAG_SHA > tmp/hermes/hermesversion
+          echo "Latest Commit is:"
+          cat tmp/hermes/hermesversion
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+          ruby-version: '3.2'
+      - name: Cache cocoapods
+        uses: actions/cache@v3
+        with:
+          path: packages/rn-tester/Pods
+          key: v3-${{ runner.os }}-RNTesterPods-${{ hashFiles('packages/rn-tester/Podfile.lock') }}-${{ hashFiles('packages/rn-tester/Podfile') }}-${{ hashFiles('tmp/hermes/hermesversion') }}
+      - name: Pod Install
+        run: |
+          cd packages/rn-tester
+          bundle install
+          bundle exec pod install
+      - name: Install XCBeautify
+        run: brew install xcbeautify
+      - name: Build iOS
+        run: ./scripts/objc-test.sh

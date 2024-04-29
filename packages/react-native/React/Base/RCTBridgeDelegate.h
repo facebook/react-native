@@ -10,6 +10,8 @@
 @class RCTBridge;
 @protocol RCTBridgeModule;
 
+NS_ASSUME_NONNULL_BEGIN
+
 @protocol RCTBridgeDelegate <NSObject>
 
 /**
@@ -18,7 +20,7 @@
  * When running from a locally bundled JS file, this should be a `file://` url
  * pointing to a path inside the app resources, e.g. `file://.../main.jsbundle`.
  */
-- (NSURL *)sourceURLForBridge:(RCTBridge *)bridge;
+- (NSURL *__nullable)sourceURLForBridge:(RCTBridge *)bridge;
 
 @optional
 
@@ -77,3 +79,5 @@
 - (NSDictionary<NSString *, Class> *)extraLazyModuleClassesForBridge:(RCTBridge *)bridge;
 
 @end
+
+NS_ASSUME_NONNULL_END

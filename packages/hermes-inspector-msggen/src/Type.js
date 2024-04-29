@@ -8,8 +8,8 @@
  * @format
  */
 
-import {Property} from './Property';
 import {jsTypeToCppType, toCppNamespace, toCppType} from './Converters';
+import {Property} from './Property';
 
 export class Type {
   domain: string;

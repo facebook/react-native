@@ -12,16 +12,16 @@
 // Provide a prototype to silence missing prototype warning in release
 // mode.
 extern "C" void react_native_assert_fail(
-    const char *func,
-    const char *file,
+    const char* func,
+    const char* file,
     int line,
-    const char *expr);
+    const char* expr);
 
 extern "C" void react_native_assert_fail(
-    const char *func,
-    const char *file,
+    const char* func,
+    const char* file,
     int line,
-    const char *expr) {
+    const char* expr) {
   // Print as an error so it shows up in logcat before crash...
   __android_log_print(
       ANDROID_LOG_ERROR,

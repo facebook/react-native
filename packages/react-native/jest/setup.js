@@ -12,7 +12,6 @@
 const MockNativeMethods = jest.requireActual('./MockNativeMethods');
 const mockComponent = jest.requireActual('./mockComponent');
 
-jest.requireActual('@react-native/js-polyfills/Object.es8');
 jest.requireActual('@react-native/js-polyfills/error-guard');
 
 Object.defineProperties(global, {
@@ -26,6 +25,12 @@ Object.defineProperties(global, {
     configurable: true,
     enumerable: true,
     value: id => clearTimeout(id),
+    writable: true,
+  },
+  nativeFabricUIManager: {
+    configurable: true,
+    enumerable: true,
+    value: {},
     writable: true,
   },
   performance: {
@@ -88,8 +93,6 @@ jest
     }),
     measure: jest.fn(),
     manageChildren: jest.fn(),
-    removeSubviewsFromContainerWithID: jest.fn(),
-    replaceExistingNonRootView: jest.fn(),
     setChildren: jest.fn(),
     updateView: jest.fn(),
     AndroidDrawerLayout: {
@@ -109,17 +112,9 @@ jest
       Constants: {},
     },
   }))
-  .mock('../Libraries/Image/Image', () => {
-    const Image = mockComponent('../Libraries/Image/Image');
-    Image.getSize = jest.fn();
-    Image.getSizeWithHeaders = jest.fn();
-    Image.prefetch = jest.fn();
-    Image.prefetchWithMetadata = jest.fn();
-    Image.queryCache = jest.fn();
-    Image.resolveAssetSource = jest.fn();
-
-    return Image;
-  })
+  .mock('../Libraries/Image/Image', () =>
+    mockComponent('../Libraries/Image/Image'),
+  )
   .mock('../Libraries/Text/Text', () =>
     mockComponent('../Libraries/Text/Text', MockNativeMethods),
   )
@@ -198,6 +193,8 @@ jest
     addEventListener: jest.fn(() => ({
       remove: jest.fn(),
     })),
+    removeEventListener: jest.fn(),
+    currentState: jest.fn(),
   }))
   .mock('../Libraries/Linking/Linking', () => ({
     openURL: jest.fn(),
@@ -256,7 +253,12 @@ jest
     },
     ImageLoader: {
       getSize: jest.fn(url => Promise.resolve([320, 240])),
+      getSizeWithHeaders: jest.fn((url, headers) =>
+        Promise.resolve({height: 222, width: 333}),
+      ),
       prefetchImage: jest.fn(),
+      prefetchImageWithMetadata: jest.fn(),
+      queryCache: jest.fn(),
     },
     ImageViewManager: {
       getSize: jest.fn((uri, success) =>

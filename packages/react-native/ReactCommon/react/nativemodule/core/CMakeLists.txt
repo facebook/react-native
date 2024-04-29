@@ -9,10 +9,9 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 add_compile_options(
         -fexceptions
         -frtti
-        -std=c++17
+        -std=c++20
         -Wall
         -Wpedantic
-        -Wno-gnu-zero-variadic-macro-arguments
         -DLOG_TAG=\"ReactNative\")
 
 
@@ -32,8 +31,10 @@ target_include_directories(react_nativemodule_core
 target_link_libraries(react_nativemodule_core
         fbjni
         folly_runtime
+        glog
         jsi
         react_bridging
         react_debug
+        react_utils
         reactperflogger
         reactnativejni)

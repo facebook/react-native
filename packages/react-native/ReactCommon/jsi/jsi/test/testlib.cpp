@@ -50,7 +50,8 @@ TEST_P(JSITest, PropNameIDTest) {
       rt, movedQuux, PropNameID::forAscii(rt, std::string("foo"))));
   uint8_t utf8[] = {0xF0, 0x9F, 0x86, 0x97};
   PropNameID utf8PropNameID = PropNameID::forUtf8(rt, utf8, sizeof(utf8));
-  EXPECT_EQ(utf8PropNameID.utf8(rt), u8"\U0001F197");
+  EXPECT_EQ(
+      utf8PropNameID.utf8(rt), reinterpret_cast<const char*>(u8"\U0001F197"));
   EXPECT_TRUE(PropNameID::compare(
       rt, utf8PropNameID, PropNameID::forUtf8(rt, utf8, sizeof(utf8))));
   PropNameID nonUtf8PropNameID = PropNameID::forUtf8(rt, "meow");
@@ -478,6 +479,20 @@ TEST_P(JSITest, ArrayTest) {
   Array alpha2 = Array(rt, 1);
   alpha2 = std::move(alpha);
   EXPECT_EQ(alpha2.size(rt), 4);
+
+  // Test getting/setting an element that is an accessor.
+  auto arrWithAccessor =
+      eval(
+          "Object.defineProperty([], '0', {set(){ throw 72 }, get(){ return 45 }});")
+          .getObject(rt)
+          .getArray(rt);
+  try {
+    arrWithAccessor.setValueAtIndex(rt, 0, 1);
+    FAIL() << "Expected exception";
+  } catch (const JSError& err) {
+    EXPECT_EQ(err.value().getNumber(), 72);
+  }
+  EXPECT_EQ(arrWithAccessor.getValueAtIndex(rt, 0).getNumber(), 45);
 }
 
 TEST_P(JSITest, FunctionTest) {
@@ -518,7 +533,7 @@ TEST_P(JSITest, FunctionTest) {
                    "s1",
                    String::createFromAscii(rt, "s2"),
                    std::string{"s3"},
-                   std::string{u8"s\u2600"},
+                   std::string{reinterpret_cast<const char*>(u8"s\u2600")},
                    // invalid UTF8 sequence due to unexpected continuation byte
                    std::string{"s\x80"},
                    Object(rt),
@@ -740,7 +755,7 @@ TEST_P(JSITest, HostFunctionTest) {
           .utf8(rt),
       "A cat was called with std::function::target");
   EXPECT_TRUE(callable.isHostFunction(rt));
-  EXPECT_NE(callable.getHostFunction(rt).target<Callable>(), nullptr);
+  EXPECT_TRUE(callable.getHostFunction(rt).target<Callable>() != nullptr);
 
   std::string strval = "strval1";
   auto getter = Object(rt);
@@ -1231,7 +1246,7 @@ TEST_P(JSITest, MultiDecoratorTest) {
       0,
       [](Runtime& rt, const Value& thisVal, const Value* args, size_t count) {
         MultiRuntime* funcmrt = dynamic_cast<MultiRuntime*>(&rt);
-        EXPECT_NE(funcmrt, nullptr);
+        EXPECT_TRUE(funcmrt != nullptr);
         EXPECT_EQ(funcmrt->count(), 3);
         EXPECT_EQ(funcmrt->nest(), 1);
         return Value::undefined();
@@ -1343,6 +1358,38 @@ TEST_P(JSITest, JSErrorTest) {
       JSIException);
 }
 
+TEST_P(JSITest, MicrotasksTest) {
+  try {
+    rt.global().setProperty(rt, "globalValue", String::createFromAscii(rt, ""));
+
+    auto microtask1 =
+        function("function microtask1() { globalValue += 'hello'; }");
+    auto microtask2 =
+        function("function microtask2() { globalValue += ' world' }");
+
+    rt.queueMicrotask(microtask1);
+    rt.queueMicrotask(microtask2);
+
+    EXPECT_EQ(
+        rt.global().getProperty(rt, "globalValue").asString(rt).utf8(rt), "");
+
+    rt.drainMicrotasks();
+
+    EXPECT_EQ(
+        rt.global().getProperty(rt, "globalValue").asString(rt).utf8(rt),
+        "hello world");
+
+    // Microtasks shouldn't run again
+    rt.drainMicrotasks();
+
+    EXPECT_EQ(
+        rt.global().getProperty(rt, "globalValue").asString(rt).utf8(rt),
+        "hello world");
+  } catch (const JSINativeException& ex) {
+    // queueMicrotask() is unimplemented by some runtimes, ignore such failures.
+  }
+}
+
 //----------------------------------------------------------------------
 // Test that multiple levels of delegation in DecoratedHostObjects works.
 
@@ -1425,7 +1472,111 @@ TEST_P(JSITest, MultilevelDecoratedHostObject) {
   EXPECT_EQ(1, RD2::numGets);
 }
 
-INSTANTIATE_TEST_SUITE_P(
+TEST_P(JSITest, ArrayBufferSizeTest) {
+  auto ab =
+      eval("var x = new ArrayBuffer(10); x").getObject(rt).getArrayBuffer(rt);
+  EXPECT_EQ(ab.size(rt), 10);
+
+  try {
+    // Ensure we can safely write some data to the buffer.
+    memset(ab.data(rt), 0xab, 10);
+  } catch (const JSINativeException& ex) {
+    // data() is unimplemented by some runtimes, ignore such failures.
+  }
+
+  // Ensure that setting the byteLength property does not change the length.
+  eval("Object.defineProperty(x, 'byteLength', {value: 20})");
+  EXPECT_EQ(ab.size(rt), 10);
+}
+
+namespace {
+
+struct IntState : public NativeState {
+  explicit IntState(int value) : value(value) {}
+  int value;
+};
+
+} // namespace
+
+TEST_P(JSITest, NativeState) {
+  Object holder(rt);
+  EXPECT_FALSE(holder.hasNativeState(rt));
+
+  auto stateValue = std::make_shared<IntState>(42);
+  holder.setNativeState(rt, stateValue);
+  EXPECT_TRUE(holder.hasNativeState(rt));
+  EXPECT_EQ(
+      std::dynamic_pointer_cast<IntState>(holder.getNativeState(rt))->value,
+      42);
+
+  stateValue = std::make_shared<IntState>(21);
+  holder.setNativeState(rt, stateValue);
+  EXPECT_TRUE(holder.hasNativeState(rt));
+  EXPECT_EQ(
+      std::dynamic_pointer_cast<IntState>(holder.getNativeState(rt))->value,
+      21);
+
+  // There's currently way to "delete" the native state of a component fully
+  // Even when reset with nullptr, hasNativeState will still return true
+  holder.setNativeState(rt, nullptr);
+  EXPECT_TRUE(holder.hasNativeState(rt));
+  EXPECT_TRUE(holder.getNativeState(rt) == nullptr);
+}
+
+TEST_P(JSITest, NativeStateSymbolOverrides) {
+  Object holder(rt);
+
+  auto stateValue = std::make_shared<IntState>(42);
+  holder.setNativeState(rt, stateValue);
+
+  // Attempting to change configurable attribute of unconfigurable property
+  try {
+    function(
+        "function (obj) {"
+        "  var mySymbol = Symbol();"
+        "  obj[mySymbol] = 'foo';"
+        "  var allSymbols = Object.getOwnPropertySymbols(obj);"
+        "  for (var sym of allSymbols) {"
+        "    Object.defineProperty(obj, sym, {configurable: true, writable: true});"
+        "    obj[sym] = 'bar';"
+        "  }"
+        "}")
+        .call(rt, holder);
+  } catch (const JSError& ex) {
+    // On JSC this throws, but it doesn't on Hermes
+    std::string exc = ex.what();
+    EXPECT_NE(
+        exc.find(
+            "Attempting to change configurable attribute of unconfigurable property"),
+        std::string::npos);
+  }
+
+  EXPECT_TRUE(holder.hasNativeState(rt));
+  EXPECT_EQ(
+      std::dynamic_pointer_cast<IntState>(holder.getNativeState(rt))->value,
+      42);
+}
+
+TEST_P(JSITest, UTF8ExceptionTest) {
+  // Test that a native exception containing UTF-8 characters is correctly
+  // passed through.
+  Function throwUtf8 = Function::createFromHostFunction(
+      rt,
+      PropNameID::forAscii(rt, "throwUtf8"),
+      1,
+      [](Runtime& rt, const Value&, const Value* args, size_t) -> Value {
+        throw JSINativeException(args[0].asString(rt).utf8(rt));
+      });
+  std::string utf8 = "👍";
+  try {
+    throwUtf8.call(rt, utf8);
+    FAIL();
+  } catch (const JSError& e) {
+    EXPECT_NE(e.getMessage().find(utf8), std::string::npos);
+  }
+}
+
+INSTANTIATE_TEST_CASE_P(
     Runtimes,
     JSITest,
     ::testing::ValuesIn(runtimeGenerators()));

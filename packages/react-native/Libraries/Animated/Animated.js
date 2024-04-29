@@ -21,9 +21,9 @@ import Platform from '../Utilities/Platform';
 import AnimatedImplementation from './AnimatedImplementation';
 import AnimatedMock from './AnimatedMock';
 
-const Animated = ((Platform.isTesting
+const Animated: typeof AnimatedImplementation = Platform.isDisableAnimations
   ? AnimatedMock
-  : AnimatedImplementation): typeof AnimatedImplementation);
+  : AnimatedImplementation;
 
 export default {
   get FlatList(): AnimatedFlatList {

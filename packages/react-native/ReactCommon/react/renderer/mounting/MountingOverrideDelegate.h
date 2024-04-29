@@ -38,7 +38,7 @@ class MountingOverrideDelegate {
   virtual std::optional<MountingTransaction> pullTransaction(
       SurfaceId surfaceId,
       MountingTransaction::Number number,
-      TransactionTelemetry const &telemetry,
+      const TransactionTelemetry& telemetry,
       ShadowViewMutationList mutations) const = 0;
 };
 

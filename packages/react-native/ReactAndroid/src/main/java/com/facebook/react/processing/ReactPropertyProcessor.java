@@ -13,6 +13,7 @@ import static javax.lang.model.element.Modifier.PUBLIC;
 import static javax.tools.Diagnostic.Kind.ERROR;
 import static javax.tools.Diagnostic.Kind.WARNING;
 
+import com.facebook.annotationprocessors.common.ProcessorBase;
 import com.facebook.infer.annotation.SuppressFieldNotInitialized;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.DynamicFromObject;
@@ -40,7 +41,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nullable;
-import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -66,7 +66,7 @@ import javax.lang.model.util.Types;
  */
 @SupportedAnnotationTypes("com.facebook.react.uimanager.annotations.ReactPropertyHolder")
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
-public class ReactPropertyProcessor extends AbstractProcessor {
+public class ReactPropertyProcessor extends ProcessorBase {
   private static final Map<TypeName, String> DEFAULT_TYPES;
   private static final Set<TypeName> BOXED_PRIMITIVES;
 
@@ -108,10 +108,12 @@ public class ReactPropertyProcessor extends AbstractProcessor {
     DEFAULT_TYPES.put(TypeName.DOUBLE, "number");
     DEFAULT_TYPES.put(TypeName.FLOAT, "number");
     DEFAULT_TYPES.put(TypeName.INT, "number");
+    DEFAULT_TYPES.put(TypeName.LONG, "number");
 
     // Boxed primitives
     DEFAULT_TYPES.put(TypeName.BOOLEAN.box(), "boolean");
     DEFAULT_TYPES.put(TypeName.INT.box(), "number");
+    DEFAULT_TYPES.put(TypeName.LONG.box(), "number");
 
     // Class types
     DEFAULT_TYPES.put(STRING_TYPE, "String");
@@ -124,6 +126,7 @@ public class ReactPropertyProcessor extends AbstractProcessor {
     BOXED_PRIMITIVES.add(TypeName.BOOLEAN.box());
     BOXED_PRIMITIVES.add(TypeName.FLOAT.box());
     BOXED_PRIMITIVES.add(TypeName.INT.box());
+    BOXED_PRIMITIVES.add(TypeName.LONG.box());
   }
 
   public ReactPropertyProcessor() {
@@ -141,7 +144,7 @@ public class ReactPropertyProcessor extends AbstractProcessor {
   }
 
   @Override
-  public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+  public boolean processImpl(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
     // Clear properties from previous rounds
     mClasses.clear();
 
@@ -409,6 +412,11 @@ public class ReactPropertyProcessor extends AbstractProcessor {
         return;
       }
     }
+    if (propertyType.equals(TypeName.LONG)) {
+      long defaultLong = info.mProperty.defaultLong();
+      builder.add("!(value instanceof Long) ? $L : (long)value", defaultLong);
+      return;
+    }
     if ("Color".equals(info.mProperty.customType())) {
       switch (classInfo.getType()) {
         case VIEW_MANAGER:
@@ -502,6 +510,8 @@ public class ReactPropertyProcessor extends AbstractProcessor {
 
     int defaultInt();
 
+    long defaultLong();
+
     boolean defaultBoolean();
   }
 
@@ -535,6 +545,11 @@ public class ReactPropertyProcessor extends AbstractProcessor {
     @Override
     public int defaultInt() {
       return mProp.defaultInt();
+    }
+
+    @Override
+    public long defaultLong() {
+      return mProp.defaultLong();
     }
 
     @Override
@@ -575,6 +590,11 @@ public class ReactPropertyProcessor extends AbstractProcessor {
     @Override
     public int defaultInt() {
       return mProp.defaultInt();
+    }
+
+    @Override
+    public long defaultLong() {
+      return mProp.defaultLong();
     }
 
     @Override
@@ -704,7 +724,7 @@ public class ReactPropertyProcessor extends AbstractProcessor {
 
     public ReactPropertyException(String message, PropertyInfo propertyInfo) {
       super(message);
-      this.element = propertyInfo.element;
+      element = propertyInfo.element;
     }
 
     public ReactPropertyException(String message, Element element) {

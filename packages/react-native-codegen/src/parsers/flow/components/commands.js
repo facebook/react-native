@@ -11,8 +11,9 @@
 'use strict';
 
 import type {
-  NamedShape,
+  CommandParamTypeAnnotation,
   CommandTypeAnnotation,
+  NamedShape,
 } from '../../../CodegenSchema.js';
 import type {TypeDeclarationMap} from '../../utils';
 
@@ -21,7 +22,24 @@ const {getValueFromTypes} = require('../utils.js');
 // $FlowFixMe[unclear-type] there's no flowtype for ASTs
 type EventTypeAST = Object;
 
-function buildCommandSchema(property: EventTypeAST, types: TypeDeclarationMap) {
+function buildCommandSchema(
+  property: EventTypeAST,
+  types: TypeDeclarationMap,
+): $ReadOnly<{
+  name: string,
+  optional: boolean,
+  typeAnnotation: {
+    type: 'FunctionTypeAnnotation',
+    params: $ReadOnlyArray<{
+      name: string,
+      optional: boolean,
+      typeAnnotation: CommandParamTypeAnnotation,
+    }>,
+    returnTypeAnnotation: {
+      type: 'VoidTypeAnnotation',
+    },
+  },
+}> {
   const name = property.key.name;
   const optional = property.optional;
   const value = getValueFromTypes(property.value, types);
@@ -48,7 +66,7 @@ function buildCommandSchema(property: EventTypeAST, types: TypeDeclarationMap) {
       paramValue.type === 'GenericTypeAnnotation'
         ? paramValue.id.name
         : paramValue.type;
-    let returnType;
+    let returnType: CommandParamTypeAnnotation;
 
     switch (type) {
       case 'RootTag':
@@ -80,6 +98,30 @@ function buildCommandSchema(property: EventTypeAST, types: TypeDeclarationMap) {
       case 'StringTypeAnnotation':
         returnType = {
           type: 'StringTypeAnnotation',
+        };
+        break;
+      case 'Array':
+      case '$ReadOnlyArray':
+        if (!paramValue.type === 'GenericTypeAnnotation') {
+          throw new Error(
+            'Array and $ReadOnlyArray are GenericTypeAnnotation for array',
+          );
+        }
+        returnType = {
+          type: 'ArrayTypeAnnotation',
+          elementType: {
+            // TODO: T172453752 support complex type annotation for array element
+            type: paramValue.typeParameters.params[0].type,
+          },
+        };
+        break;
+      case 'ArrayTypeAnnotation':
+        returnType = {
+          type: 'ArrayTypeAnnotation',
+          elementType: {
+            // TODO: T172453752 support complex type annotation for array element
+            type: paramValue.elementType.type,
+          },
         };
         break;
       default:

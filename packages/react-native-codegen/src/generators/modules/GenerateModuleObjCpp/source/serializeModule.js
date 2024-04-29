@@ -10,11 +10,11 @@
 
 'use strict';
 
-import type {Struct} from '../StructCollector';
 import type {
   MethodSerializationOutput,
   StructParameterRecord,
 } from '../serializeMethod';
+import type {Struct} from '../StructCollector';
 
 const ModuleTemplate = ({
   hasteModuleName,
@@ -29,34 +29,32 @@ const ModuleTemplate = ({
     RCTCxxConvertCategoryTemplate({hasteModuleName, structName: struct.name}),
   )
   .join('\n')}
-namespace facebook {
-  namespace react {
-    ${methodSerializationOutputs
-      .map(serializedMethodParts =>
-        InlineHostFunctionTemplate({
-          hasteModuleName,
-          methodName: serializedMethodParts.methodName,
-          returnJSType: serializedMethodParts.returnJSType,
-          selector: serializedMethodParts.selector,
-        }),
-      )
-      .join('\n')}
+namespace facebook::react {
+  ${methodSerializationOutputs
+    .map(serializedMethodParts =>
+      InlineHostFunctionTemplate({
+        hasteModuleName,
+        methodName: serializedMethodParts.methodName,
+        returnJSType: serializedMethodParts.returnJSType,
+        selector: serializedMethodParts.selector,
+      }),
+    )
+    .join('\n')}
 
-    ${hasteModuleName}SpecJSI::${hasteModuleName}SpecJSI(const ObjCTurboModule::InitParams &params)
-      : ObjCTurboModule(params) {
-        ${methodSerializationOutputs
-          .map(({methodName, structParamRecords, argCount}) =>
-            MethodMapEntryTemplate({
-              hasteModuleName,
-              methodName,
-              structParamRecords,
-              argCount,
-            }),
-          )
-          .join('\n' + ' '.repeat(8))}
-    }
-  } // namespace react
-} // namespace facebook`;
+  ${hasteModuleName}SpecJSI::${hasteModuleName}SpecJSI(const ObjCTurboModule::InitParams &params)
+    : ObjCTurboModule(params) {
+      ${methodSerializationOutputs
+        .map(({methodName, structParamRecords, argCount}) =>
+          MethodMapEntryTemplate({
+            hasteModuleName,
+            methodName,
+            structParamRecords,
+            argCount,
+          }),
+        )
+        .join('\n' + ' '.repeat(8))}
+  }
+} // namespace facebook::react`;
 
 const RCTCxxConvertCategoryTemplate = ({
   hasteModuleName,

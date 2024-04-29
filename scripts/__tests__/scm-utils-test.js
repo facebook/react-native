@@ -7,7 +7,7 @@
  * @format
  */
 
-const {isTaggedLatest, saveFiles, revertFiles} = require('../scm-utils');
+const {isTaggedLatest, revertFiles, saveFiles} = require('../scm-utils');
 
 let execResult = null;
 const cpMock = jest.fn();

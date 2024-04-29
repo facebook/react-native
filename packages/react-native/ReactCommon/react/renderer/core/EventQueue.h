@@ -19,6 +19,8 @@
 
 namespace facebook::react {
 
+class RuntimeScheduler;
+
 /*
  * Event Queue synchronized with given Event Beat and dispatching event
  * using given Event Pipe.
@@ -27,27 +29,32 @@ class EventQueue {
  public:
   EventQueue(
       EventQueueProcessor eventProcessor,
-      std::unique_ptr<EventBeat> eventBeat);
-  virtual ~EventQueue() = default;
+      std::unique_ptr<EventBeat> eventBeat,
+      RuntimeScheduler& runtimeScheduler);
 
   /*
    * Enqueues and (probably later) dispatch a given event.
    * Can be called on any thread.
    */
-  void enqueueEvent(RawEvent &&rawEvent) const;
+  void enqueueEvent(RawEvent&& rawEvent) const;
 
   /*
    * Enqueues and (probably later) dispatches a given event.
    * Deletes last RawEvent from the queue if it has the same type and target.
    * Can be called on any thread.
    */
-  void enqueueUniqueEvent(RawEvent &&rawEvent) const;
+  void enqueueUniqueEvent(RawEvent&& rawEvent) const;
 
   /*
    * Enqueues and (probably later) dispatch a given state update.
    * Can be called on any thread.
    */
-  void enqueueStateUpdate(StateUpdate &&stateUpdate) const;
+  void enqueueStateUpdate(StateUpdate&& stateUpdate) const;
+
+  /*
+   * Experimental API exposed to support EventEmitter::experimental_flushSync.
+   */
+  void experimental_flushSync() const;
 
  protected:
   /*
@@ -55,10 +62,10 @@ class EventQueue {
    * Override in subclasses to trigger beat `request` and/or beat `induce`.
    * Default implementation does nothing.
    */
-  virtual void onEnqueue() const = 0;
-  void onBeat(jsi::Runtime &runtime) const;
+  void onEnqueue() const;
+  void onBeat(jsi::Runtime& runtime) const;
 
-  void flushEvents(jsi::Runtime &runtime) const;
+  void flushEvents(jsi::Runtime& runtime) const;
   void flushStateUpdates() const;
 
   EventQueueProcessor eventProcessor_;
@@ -68,7 +75,10 @@ class EventQueue {
   mutable std::vector<RawEvent> eventQueue_;
   mutable std::vector<StateUpdate> stateUpdateQueue_;
   mutable std::mutex queueMutex_;
-  mutable bool hasContinuousEventStarted_{false};
+
+  // TODO: T183075253
+  RuntimeScheduler* runtimeScheduler_;
+  mutable std::atomic_bool synchronousAccessRequested_{false};
 };
 
 } // namespace facebook::react

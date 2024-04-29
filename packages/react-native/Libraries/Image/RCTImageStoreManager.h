@@ -8,7 +8,10 @@
 #import <UIKit/UIKit.h>
 
 #import <React/RCTBridge.h>
+#import <React/RCTBridgeProxy.h>
 #import <React/RCTURLRequestHandler.h>
+
+RCT_EXTERN void RCTEnableImageStoreManagerStorageQueue(BOOL enabled);
 
 @interface RCTImageStoreManager : NSObject <RCTURLRequestHandler>
 
@@ -40,6 +43,12 @@
 @end
 
 @interface RCTBridge (RCTImageStoreManager)
+
+@property (nonatomic, readonly) RCTImageStoreManager *imageStoreManager;
+
+@end
+
+@interface RCTBridgeProxy (RCTImageStoreManager)
 
 @property (nonatomic, readonly) RCTImageStoreManager *imageStoreManager;
 

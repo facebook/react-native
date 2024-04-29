@@ -14,7 +14,7 @@
 
 namespace facebook::react {
 
-bool ParagraphAttributes::operator==(const ParagraphAttributes &rhs) const {
+bool ParagraphAttributes::operator==(const ParagraphAttributes& rhs) const {
   return std::tie(
              maximumNumberOfLines,
              ellipsizeMode,
@@ -33,7 +33,7 @@ bool ParagraphAttributes::operator==(const ParagraphAttributes &rhs) const {
       floatEquality(maximumFontSize, rhs.maximumFontSize);
 }
 
-bool ParagraphAttributes::operator!=(const ParagraphAttributes &rhs) const {
+bool ParagraphAttributes::operator!=(const ParagraphAttributes& rhs) const {
   return !(*this == rhs);
 }
 

@@ -15,7 +15,9 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
+import androidx.collection.SparseArrayCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
@@ -28,7 +30,6 @@ import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.build.ReactBuildConfig;
-import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.fabric.GuardedFrameCallback;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
@@ -48,16 +49,14 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.uimanager.events.EventCategoryDef;
-import com.facebook.react.views.view.ReactMapBufferViewManager;
-import com.facebook.react.views.view.ReactViewManagerWrapper;
+import java.util.ArrayDeque;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 import java.util.Stack;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import javax.annotation.Nullable;
 
 public class SurfaceMountingManager {
   public static final String TAG = SurfaceMountingManager.class.getSimpleName();
@@ -72,7 +71,7 @@ public class SurfaceMountingManager {
   // These are all non-null, until StopSurface is called
   private ConcurrentHashMap<Integer, ViewState> mTagToViewState =
       new ConcurrentHashMap<>(); // any thread
-  private ConcurrentLinkedQueue<MountItem> mOnViewAttachItems = new ConcurrentLinkedQueue<>();
+  private Queue<MountItem> mOnViewAttachMountItems = new ArrayDeque<>();
   private JSResponderHandler mJSResponderHandler;
   private ViewManagerRegistry mViewManagerRegistry;
   private RootViewManager mRootViewManager;
@@ -88,10 +87,10 @@ public class SurfaceMountingManager {
   private final Set<Integer> mErroneouslyReaddedReactTags = new HashSet<>();
 
   @ThreadConfined(UI)
-  private RemoveDeleteTreeUIFrameCallback mRemoveDeleteTreeUIFrameCallback;
+  private @Nullable RemoveDeleteTreeUIFrameCallback mRemoveDeleteTreeUIFrameCallback;
 
   // This is null *until* StopSurface is called.
-  private Set<Integer> mTagSetForStoppedSurface;
+  private SparseArrayCompat<Object> mTagSetForStoppedSurface;
 
   private final int mSurfaceId;
 
@@ -166,7 +165,7 @@ public class SurfaceMountingManager {
     // If Surface stopped, check if tag *was* associated with this Surface, even though it's been
     // deleted. This helps distinguish between scenarios where an invalid tag is referenced, vs
     // race conditions where an imperative method is called on a tag during/just after StopSurface.
-    if (mTagSetForStoppedSurface != null && mTagSetForStoppedSurface.contains(tag)) {
+    if (mTagSetForStoppedSurface != null && mTagSetForStoppedSurface.containsKey(tag)) {
       return true;
     }
     if (mTagToViewState == null) {
@@ -175,9 +174,10 @@ public class SurfaceMountingManager {
     return mTagToViewState.containsKey(tag);
   }
 
-  @AnyThread
-  public void executeOnViewAttach(MountItem item) {
-    mOnViewAttachItems.add(item);
+  @UiThread
+  @ThreadConfined(UI)
+  public void scheduleMountItemOnViewAttach(MountItem item) {
+    mOnViewAttachMountItems.add(item);
   }
 
   @AnyThread
@@ -186,13 +186,7 @@ public class SurfaceMountingManager {
       return;
     }
 
-    mTagToViewState.put(
-        mSurfaceId,
-        new ViewState(
-            mSurfaceId,
-            rootView,
-            new ReactViewManagerWrapper.DefaultViewManager((ViewManager) mRootViewManager),
-            true));
+    mTagToViewState.put(mSurfaceId, new ViewState(mSurfaceId, rootView, mRootViewManager, true));
 
     Runnable runnable =
         () -> {
@@ -212,13 +206,15 @@ public class SurfaceMountingManager {
           } else if (rootView.getId() != View.NO_ID) {
             FLog.e(
                 TAG,
-                "Trying to add RootTag to RootView that already has a tag: existing tag: [%d] new tag: [%d]",
+                "Trying to add RootTag to RootView that already has a tag: existing tag: [%d] new"
+                    + " tag: [%d]",
                 rootView.getId(),
                 mSurfaceId);
             throw new IllegalViewOperationException(
-                "Trying to add a root view with an explicit id already set. React Native uses "
-                    + "the id field to track react tags and will overwrite this field. If that is fine, "
-                    + "explicitly overwrite the id field to View.NO_ID before calling addRootView.");
+                "Trying to add a root view with an explicit id already set. React Native uses the"
+                    + " id field to track react tags and will overwrite this field. If that is"
+                    + " fine, explicitly overwrite the id field to View.NO_ID before calling"
+                    + " addRootView.");
           }
           rootView.setId(mSurfaceId);
 
@@ -227,7 +223,7 @@ public class SurfaceMountingManager {
           }
           mRootViewAttached = true;
 
-          executeViewAttachMountItems();
+          executeMountItemsOnViewAttach();
         };
 
     if (UiThreadUtil.isOnUiThread()) {
@@ -239,8 +235,8 @@ public class SurfaceMountingManager {
 
   @UiThread
   @ThreadConfined(UI)
-  private void executeViewAttachMountItems() {
-    mMountItemExecutor.executeItems(mOnViewAttachItems);
+  private void executeMountItemsOnViewAttach() {
+    mMountItemExecutor.executeItems(mOnViewAttachMountItems);
   }
 
   /**
@@ -287,27 +283,30 @@ public class SurfaceMountingManager {
     }
 
     Runnable runnable =
-        new Runnable() {
-          @Override
-          public void run() {
+        () -> {
+          mTagSetForStoppedSurface = new SparseArrayCompat<>();
+          for (Map.Entry<Integer, ViewState> entry : mTagToViewState.entrySet()) {
+            // Using this as a placeholder value in the map. We're using SparseArrayCompat
+            // since it can efficiently represent the list of pending tags
+            mTagSetForStoppedSurface.put(entry.getKey(), this);
+
             // We must call `onDropViewInstance` on all remaining Views
-            for (ViewState viewState : mTagToViewState.values()) {
-              onViewStateDeleted(viewState);
-            }
-
-            // Evict all views from cache and memory
-            mTagSetForStoppedSurface = mTagToViewState.keySet();
-            mTagToViewState = null;
-            mJSResponderHandler = null;
-            mRootViewManager = null;
-            mMountItemExecutor = null;
-            mOnViewAttachItems.clear();
-
-            if (ReactFeatureFlags.enableViewRecycling) {
-              mViewManagerRegistry.onSurfaceStopped(mSurfaceId);
-            }
-            FLog.e(TAG, "Surface [" + mSurfaceId + "] was stopped on SurfaceMountingManager.");
+            onViewStateDeleted(entry.getValue());
           }
+
+          // Evict all views from cache and memory
+          // TODO: clear instead of nulling out to simplify null-safety in this class
+          mTagToViewState = null;
+          mJSResponderHandler = null;
+          mRootViewManager = null;
+          mMountItemExecutor = null;
+          mThemedReactContext = null;
+          mOnViewAttachMountItems.clear();
+
+          if (ReactFeatureFlags.enableViewRecycling) {
+            mViewManagerRegistry.onSurfaceStopped(mSurfaceId);
+          }
+          FLog.e(TAG, "Surface [" + mSurfaceId + "] was stopped on SurfaceMountingManager.");
         };
 
     if (UiThreadUtil.isOnUiThread()) {
@@ -434,7 +433,8 @@ public class SurfaceMountingManager {
       ReactSoftExceptionLogger.logSoftException(
           TAG,
           new IllegalViewOperationException(
-              "removeViewAt tried to remove a React View that was actually reused. This indicates a bug in the Differ (specifically instruction ordering). ["
+              "removeViewAt tried to remove a React View that was actually reused. This indicates a"
+                  + " bug in the Differ (specifically instruction ordering). ["
                   + tag
                   + "]"));
       return;
@@ -755,17 +755,9 @@ public class SurfaceMountingManager {
 
     // The View has been removed from the View hierarchy; now it
     // and all of its children, if any, need to be deleted, recursively.
-    // We want to maintain the legacy ordering: delete (and call onViewStateDeleted)
-    // for leaf nodes, and then parents, recursively.
     // Schedule the Runnable first, to detect if we need to schedule a Runnable at all.
     // Since this current function and the Runnable both run on the UI thread, there is
     // no race condition here.
-    runDeferredTagRemovalAndDeletion();
-    mReactTagsToRemove.push(tag);
-  }
-
-  @UiThread
-  private void runDeferredTagRemovalAndDeletion() {
     if (mReactTagsToRemove.empty()) {
       if (mRemoveDeleteTreeUIFrameCallback == null) {
         mRemoveDeleteTreeUIFrameCallback = new RemoveDeleteTreeUIFrameCallback(mThemedReactContext);
@@ -774,13 +766,14 @@ public class SurfaceMountingManager {
           .postFrameCallback(
               ReactChoreographer.CallbackType.IDLE_EVENT, mRemoveDeleteTreeUIFrameCallback);
     }
+    mReactTagsToRemove.push(tag);
   }
 
   @UiThread
   public void createView(
       @NonNull String componentName,
       int reactTag,
-      @Nullable Object props,
+      @Nullable ReadableMap props,
       @Nullable StateWrapper stateWrapper,
       @Nullable EventEmitterWrapper eventEmitterWrapper,
       boolean isLayoutable) {
@@ -818,27 +811,18 @@ public class SurfaceMountingManager {
   public void createViewUnsafe(
       @NonNull String componentName,
       int reactTag,
-      @Nullable Object props,
+      @Nullable ReadableMap props,
       @Nullable StateWrapper stateWrapper,
       @Nullable EventEmitterWrapper eventEmitterWrapper,
       boolean isLayoutable) {
     View view = null;
-    ReactViewManagerWrapper viewManager = null;
+    ViewManager viewManager = null;
 
-    Object propMap;
-    if (props instanceof ReadableMap) {
-      propMap = new ReactStylesDiffMap((ReadableMap) props);
-    } else {
-      propMap = props;
-    }
+    ReactStylesDiffMap propMap = new ReactStylesDiffMap(props);
 
     if (isLayoutable) {
-      viewManager =
-          props instanceof ReadableMapBuffer
-              ? ReactMapBufferViewManager.INSTANCE
-              : new ReactViewManagerWrapper.DefaultViewManager(
-                  mViewManagerRegistry.get(componentName));
-      // View Managers are responsible for dealing with initial state and props.
+      viewManager = mViewManagerRegistry.get(componentName);
+      // View Managers are responsible for dealing with inital state and props.
       view =
           viewManager.createView(
               reactTag, mThemedReactContext, propMap, stateWrapper, mJSResponderHandler);
@@ -852,14 +836,13 @@ public class SurfaceMountingManager {
     mTagToViewState.put(reactTag, viewState);
   }
 
-  public void updateProps(int reactTag, Object props) {
+  public void updateProps(int reactTag, ReadableMap props) {
     if (isStopped()) {
       return;
     }
 
     ViewState viewState = getViewState(reactTag);
-    viewState.mCurrentProps =
-        props instanceof ReadableMap ? new ReactStylesDiffMap((ReadableMap) props) : props;
+    viewState.mCurrentProps = new ReactStylesDiffMap(props);
     View view = viewState.mView;
 
     if (view == null) {
@@ -979,7 +962,7 @@ public class SurfaceMountingManager {
     ViewState parentViewState = getViewState(parentTag);
     IViewGroupManager<?> parentViewManager = null;
     if (parentViewState.mViewManager != null) {
-      parentViewManager = parentViewState.mViewManager.getViewGroupManager();
+      parentViewManager = (IViewGroupManager) parentViewState.mViewManager;
     }
     if (parentViewManager == null || !parentViewManager.needsCustomLayoutForChildren()) {
       viewToUpdate.layout(x, y, x + width, y + height);
@@ -1010,7 +993,7 @@ public class SurfaceMountingManager {
       throw new IllegalStateException("Unable to find View for tag: " + reactTag);
     }
 
-    ReactViewManagerWrapper viewManager = viewState.mViewManager;
+    ViewManager viewManager = viewState.mViewManager;
     if (viewManager == null) {
       throw new IllegalStateException("Unable to find ViewManager for view: " + viewState);
     }
@@ -1060,7 +1043,7 @@ public class SurfaceMountingManager {
     StateWrapper prevStateWrapper = viewState.mStateWrapper;
     viewState.mStateWrapper = stateWrapper;
 
-    ReactViewManagerWrapper viewManager = viewState.mViewManager;
+    ViewManager viewManager = viewState.mViewManager;
 
     if (viewManager == null) {
       throw new IllegalStateException("Unable to find ViewManager for tag: " + reactTag);
@@ -1101,23 +1084,13 @@ public class SurfaceMountingManager {
       previousEventEmitterWrapper.destroy();
     }
 
-    Queue<ViewEvent> pendingEventQueue = viewState.mPendingEventQueue;
+    Queue<PendingViewEvent> pendingEventQueue = viewState.mPendingEventQueue;
     if (pendingEventQueue != null) {
       // Invoke pending event queued to the view state
-      for (ViewEvent viewEvent : pendingEventQueue) {
-        dispatchEvent(eventEmitter, viewEvent);
+      for (PendingViewEvent viewEvent : pendingEventQueue) {
+        viewEvent.dispatch(eventEmitter);
       }
       viewState.mPendingEventQueue = null;
-    }
-  }
-
-  private void dispatchEvent(EventEmitterWrapper eventEmitter, ViewEvent viewEvent) {
-    if (viewEvent.canCoalesceEvent()) {
-      eventEmitter.dispatchUnique(
-          viewEvent.getEventName(), viewEvent.getParams(), viewEvent.getCustomCoalesceKey());
-    } else {
-      eventEmitter.dispatch(
-          viewEvent.getEventName(), viewEvent.getParams(), viewEvent.getEventCategory());
     }
   }
 
@@ -1170,7 +1143,7 @@ public class SurfaceMountingManager {
     }
 
     // For non-root views we notify viewmanager with {@link ViewManager#onDropInstance}
-    ReactViewManagerWrapper viewManager = viewState.mViewManager;
+    ViewManager viewManager = viewState.mViewManager;
     if (!viewState.mIsRoot && viewManager != null) {
       viewManager.onDropViewInstance(viewState.mView);
     }
@@ -1205,7 +1178,7 @@ public class SurfaceMountingManager {
   public void preallocateView(
       @NonNull String componentName,
       int reactTag,
-      @Nullable Object props,
+      @Nullable ReadableMap props,
       @Nullable StateWrapper stateWrapper,
       @Nullable EventEmitterWrapper eventEmitterWrapper,
       boolean isLayoutable) {
@@ -1265,7 +1238,7 @@ public class SurfaceMountingManager {
     if (viewState.mViewManager == null) {
       throw new IllegalStateException("Unable to find ViewManager for view: " + viewState);
     }
-    return (IViewGroupManager<ViewGroup>) viewState.mViewManager.getViewGroupManager();
+    return (IViewGroupManager<ViewGroup>) viewState.mViewManager;
   }
 
   public void printSurfaceState() {
@@ -1287,10 +1260,13 @@ public class SurfaceMountingManager {
     }
   }
 
-  @UiThread
-  public void enqueuePendingEvent(int reactTag, ViewEvent viewEvent) {
-    UiThreadUtil.assertOnUiThread();
-
+  @AnyThread
+  public void enqueuePendingEvent(
+      int reactTag,
+      String eventName,
+      boolean canCoalesceEvent,
+      @Nullable WritableMap params,
+      @EventCategoryDef int eventCategory) {
     // When the surface stopped we will reset the view state map. We are not going to enqueue
     // pending events as they are not expected to be dispatched anyways.
     if (mTagToViewState == null) {
@@ -1302,23 +1278,23 @@ public class SurfaceMountingManager {
       // Cannot queue event without view state. Do nothing here.
       return;
     }
-    EventEmitterWrapper eventEmitter = viewState.mEventEmitter;
-    if (eventEmitter != null) {
-      // TODO T152630743: Verify threading for mEventEmitter
-      FLog.i(
-          TAG,
-          "Queue pending events when event emitter is null for the given view state, this should be dispatched instead - surfaceId: "
-              + mSurfaceId
-              + " reactTag: "
-              + reactTag);
-      dispatchEvent(eventEmitter, viewEvent);
-      return;
-    }
 
-    if (viewState.mPendingEventQueue == null) {
-      viewState.mPendingEventQueue = new LinkedList<>();
-    }
-    viewState.mPendingEventQueue.add(viewEvent);
+    PendingViewEvent viewEvent =
+        new PendingViewEvent(eventName, params, eventCategory, canCoalesceEvent);
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            if (viewState.mEventEmitter != null) {
+              viewEvent.dispatch(viewState.mEventEmitter);
+            } else {
+              if (viewState.mPendingEventQueue == null) {
+                viewState.mPendingEventQueue = new LinkedList<>();
+              }
+              viewState.mPendingEventQueue.add(viewEvent);
+            }
+          }
+        });
   }
 
   /**
@@ -1329,23 +1305,22 @@ public class SurfaceMountingManager {
     @Nullable final View mView;
     final int mReactTag;
     final boolean mIsRoot;
-    @Nullable final ReactViewManagerWrapper mViewManager;
-    @Nullable public Object mCurrentProps = null;
+    @Nullable final ViewManager mViewManager;
+    @Nullable public ReactStylesDiffMap mCurrentProps = null;
     @Nullable public ReadableMap mCurrentLocalData = null;
     @Nullable public StateWrapper mStateWrapper = null;
     @Nullable public EventEmitterWrapper mEventEmitter = null;
-    @Nullable public Queue<ViewEvent> mPendingEventQueue = null;
 
-    private ViewState(
-        int reactTag, @Nullable View view, @Nullable ReactViewManagerWrapper viewManager) {
+    @ThreadConfined(UI)
+    @Nullable
+    public Queue<PendingViewEvent> mPendingEventQueue = null;
+
+    private ViewState(int reactTag, @Nullable View view, @Nullable ViewManager viewManager) {
       this(reactTag, view, viewManager, false);
     }
 
     private ViewState(
-        int reactTag,
-        @Nullable View view,
-        @Nullable ReactViewManagerWrapper viewManager,
-        boolean isRoot) {
+        int reactTag, @Nullable View view, @Nullable ViewManager viewManager, boolean isRoot) {
       mReactTag = reactTag;
       mView = view;
       mIsRoot = isRoot;
@@ -1371,44 +1346,29 @@ public class SurfaceMountingManager {
     }
   }
 
-  public static class ViewEvent {
+  private static class PendingViewEvent {
     private final String mEventName;
     private final boolean mCanCoalesceEvent;
-    private final int mCustomCoalesceKey;
     private final @EventCategoryDef int mEventCategory;
-    private @Nullable WritableMap mParams;
+    private final @Nullable WritableMap mParams;
 
-    public ViewEvent(
+    public PendingViewEvent(
         String eventName,
         @Nullable WritableMap params,
         @EventCategoryDef int eventCategory,
-        boolean canCoalesceEvent,
-        int customCoalesceKey) {
+        boolean canCoalesceEvent) {
       mEventName = eventName;
       mParams = params;
       mEventCategory = eventCategory;
       mCanCoalesceEvent = canCoalesceEvent;
-      mCustomCoalesceKey = customCoalesceKey;
     }
 
-    public String getEventName() {
-      return mEventName;
-    }
-
-    public boolean canCoalesceEvent() {
-      return mCanCoalesceEvent;
-    }
-
-    public int getCustomCoalesceKey() {
-      return mCustomCoalesceKey;
-    }
-
-    public @EventCategoryDef int getEventCategory() {
-      return mEventCategory;
-    }
-
-    public @Nullable WritableMap getParams() {
-      return mParams;
+    public void dispatch(EventEmitterWrapper eventEmitter) {
+      if (mCanCoalesceEvent) {
+        eventEmitter.dispatchUnique(mEventName, mParams);
+      } else {
+        eventEmitter.dispatch(mEventName, mParams, mEventCategory);
+      }
     }
   }
 
@@ -1445,7 +1405,8 @@ public class SurfaceMountingManager {
             ReactSoftExceptionLogger.logSoftException(
                 TAG,
                 new IllegalViewOperationException(
-                    "RemoveDeleteTree recursively tried to remove a React View that was actually reused. This indicates a bug in the Differ. ["
+                    "RemoveDeleteTree recursively tried to remove a React View that was actually"
+                        + " reused. This indicates a bug in the Differ. ["
                         + reactTag
                         + "]"));
             continue;
@@ -1456,19 +1417,21 @@ public class SurfaceMountingManager {
           ViewState thisViewState = getNullableViewState(reactTag);
           if (thisViewState != null) {
             View thisView = thisViewState.mView;
-            int numChildren = 0;
+            ViewManager thisViewManager = thisViewState.mViewManager;
+            if (thisViewManager instanceof IViewGroupManager) {
+              IViewGroupManager viewManager = (IViewGroupManager) thisViewManager;
 
-            // Children are managed by React Native if both of the following are true:
-            // 1) There are 1 or more children of this View, which must be a ViewGroup
-            // 2) Those children are managed by RN (this is not the case for certain native
-            // components, like embedded Litho hierarchies)
-            boolean childrenAreManaged = false;
+              // Children are managed by React Native if both of the following are true:
+              // 1) There are 1 or more children of this View, which must be a ViewGroup
+              // 2) Those children are managed by RN (this is not the case for certain native
+              // components, like embedded Litho hierarchies)
+              boolean childrenAreManaged = false;
 
-            if (thisView instanceof ViewGroup) {
-              View nextChild = null;
               // For reasons documented elsewhere in this class, getChildCount is not
               // necessarily reliable, and so we rely instead on requesting children directly.
-              while ((nextChild = ((ViewGroup) thisView).getChildAt(numChildren)) != null) {
+              View nextChild = null;
+              int numChildren = 0;
+              while ((nextChild = viewManager.getChildAt(thisView, numChildren)) != null) {
                 int childId = nextChild.getId();
                 childrenAreManaged = childrenAreManaged || getNullableViewState(childId) != null;
                 localChildren.push(nextChild.getId());
@@ -1488,16 +1451,17 @@ public class SurfaceMountingManager {
                   // In debug mode, the SoftException will cause a crash. In production it
                   // will not. This should give good visibility into whether or not this is
                   // a problem without causing user-facing errors.
-                  ((ViewGroup) thisView).removeAllViews();
+                  viewManager.removeAllViews(thisView);
                 } catch (RuntimeException e) {
                   childrenAreManaged = false;
                   ReactSoftExceptionLogger.logSoftException(TAG, e);
                 }
               }
-            }
-            if (childrenAreManaged) {
-              // Push tags onto the stack so we process all children
-              mReactTagsToRemove.addAll(localChildren);
+
+              if (childrenAreManaged) {
+                // Push tags onto the stack so we process all children
+                mReactTagsToRemove.addAll(localChildren);
+              }
             }
 
             // Immediately remove tag and notify listeners.

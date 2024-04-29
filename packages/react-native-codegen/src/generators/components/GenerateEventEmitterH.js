@@ -10,23 +10,22 @@
 
 'use strict';
 
-const nullthrows = require('nullthrows');
-
-const {
-  getImports,
-  getCppArrayTypeForAnnotation,
-  getCppTypeForAnnotation,
-  generateEventStructName,
-} = require('./CppHelpers');
-const {indent, toSafeCppString} = require('../Utils');
-
 import type {
   ComponentShape,
+  EventTypeAnnotation,
   EventTypeShape,
   NamedShape,
-  EventTypeAnnotation,
   SchemaType,
 } from '../../CodegenSchema';
+
+const {indent, toSafeCppString} = require('../Utils');
+const {
+  generateEventStructName,
+  getCppArrayTypeForAnnotation,
+  getCppTypeForAnnotation,
+  getImports,
+} = require('./CppHelpers');
+const nullthrows = require('nullthrows');
 
 // File path -> contents
 type FilesOutput = Map<string, string>;
@@ -57,11 +56,9 @@ const FileTemplate = ({
 #include <react/renderer/components/view/ViewEventEmitter.h>
 ${[...extraIncludes].join('\n')}
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 ${componentEmitters}
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 `;
 
 const ComponentTemplate = ({
@@ -314,6 +311,7 @@ module.exports = {
     schema: SchemaType,
     packageName?: string,
     assumeNonnull: boolean = false,
+    headerPrefix?: string,
   ): FilesOutput {
     const moduleComponents: ComponentCollection = Object.keys(schema.modules)
       .map(moduleName => {

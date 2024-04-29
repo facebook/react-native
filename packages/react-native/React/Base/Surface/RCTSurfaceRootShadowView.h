@@ -27,6 +27,6 @@
  */
 @property (nonatomic, assign) YGDirection baseDirection;
 
-- (void)layoutWithAffectedShadowViews:(NSHashTable<RCTShadowView *> *)affectedShadowViews;
+- (void)layoutWithAffectedShadowViews:(NSPointerArray *)affectedShadowViews;
 
 @end

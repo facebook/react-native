@@ -11,5 +11,6 @@ data class ModelCodegenConfig(
     val name: String?,
     val type: String?,
     val jsSrcsDir: String?,
-    val android: ModelCodegenConfigAndroid?
+    val android: ModelCodegenConfigAndroid?,
+    val includesGeneratedCode: Boolean?,
 )

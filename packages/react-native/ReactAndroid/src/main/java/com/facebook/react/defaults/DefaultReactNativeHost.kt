@@ -8,10 +8,19 @@
 package com.facebook.react.defaults
 
 import android.app.Application
+import android.content.Context
 import com.facebook.react.JSEngineResolutionAlgorithm
+import com.facebook.react.ReactHost
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackageTurboModuleManagerDelegate
-import com.facebook.react.bridge.JSIModulePackage
+import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.bridge.UIManagerProvider
+import com.facebook.react.common.annotations.UnstableReactNativeAPI
+import com.facebook.react.fabric.ComponentFactory
+import com.facebook.react.fabric.FabricUIManagerProviderImpl
+import com.facebook.react.fabric.ReactNativeConfig
+import com.facebook.react.uimanager.ViewManagerRegistry
+import com.facebook.react.uimanager.ViewManagerResolver
 
 /**
  * A utility class that allows you to simplify the setup of a [ReactNativeHost] for new apps in Open
@@ -21,7 +30,7 @@ import com.facebook.react.bridge.JSIModulePackage
  * providing the default TurboModuleManagerDelegateBuilder and the default JSIModulePackage,
  * provided the name of the dynamic library to load.
  */
-abstract class DefaultReactNativeHost
+public abstract class DefaultReactNativeHost
 protected constructor(
     application: Application,
 ) : ReactNativeHost(application) {
@@ -34,9 +43,30 @@ protected constructor(
         null
       }
 
-  override fun getJSIModulePackage(): JSIModulePackage? =
+  override fun getUIManagerProvider(): UIManagerProvider? =
       if (isNewArchEnabled) {
-        DefaultJSIModulePackage(this)
+        UIManagerProvider { reactApplicationContext: ReactApplicationContext ->
+          val componentFactory = ComponentFactory()
+          DefaultComponentsRegistry.register(componentFactory)
+
+          val viewManagerRegistry =
+              if (lazyViewManagersEnabled) {
+                ViewManagerRegistry(
+                    object : ViewManagerResolver {
+                      override fun getViewManager(viewManagerName: String) =
+                          reactInstanceManager.createViewManager(viewManagerName)
+
+                      override fun getViewManagerNames() = reactInstanceManager.viewManagerNames
+                    })
+              } else {
+                ViewManagerRegistry(
+                    reactInstanceManager.getOrCreateViewManagers(reactApplicationContext))
+              }
+
+          FabricUIManagerProviderImpl(
+                  componentFactory, ReactNativeConfig.DEFAULT_CONFIG, viewManagerRegistry)
+              .createUIManager(reactApplicationContext)
+        }
       } else {
         null
       }
@@ -68,4 +98,20 @@ protected constructor(
    */
   protected open val isHermesEnabled: Boolean?
     get() = null
+
+  /**
+   * Converts this [ReactNativeHost] (bridge-mode) to a [ReactHost] (bridgeless-mode).
+   *
+   * @param context the Android [Context] to use for creating the [ReactHost]
+   */
+  @UnstableReactNativeAPI
+  internal fun toReactHost(context: Context): ReactHost =
+      DefaultReactHost.getDefaultReactHost(
+          context,
+          packages,
+          jsMainModuleName,
+          bundleAssetName ?: "index",
+          isHermesEnabled ?: true,
+          useDeveloperSupport,
+      )
 }

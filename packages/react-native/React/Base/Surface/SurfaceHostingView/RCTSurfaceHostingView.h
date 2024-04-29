@@ -28,29 +28,12 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RCTSurfaceHostingView : UIView <RCTSurfaceDelegate>
 
 /**
- * Create an instance of RCTSurface to be hosted.
- */
-+ (RCTSurface *)createSurfaceWithBridge:(RCTBridge *)bridge
-                             moduleName:(NSString *)moduleName
-                      initialProperties:(NSDictionary *)initialProperties;
-
-/**
  * Designated initializer.
  * Instantiates a view with given Surface object.
  * Note: The view retains the surface object.
  */
 - (instancetype)initWithSurface:(id<RCTSurfaceProtocol>)surface
                 sizeMeasureMode:(RCTSurfaceSizeMeasureMode)sizeMeasureMode NS_DESIGNATED_INITIALIZER;
-
-/**
- * Convenience initializer.
- * Instantiates a Surface object with given `bridge`, `moduleName`, and
- * `initialProperties`, and then use it to instantiate a view.
- */
-- (instancetype)initWithBridge:(RCTBridge *)bridge
-                    moduleName:(NSString *)moduleName
-             initialProperties:(NSDictionary *)initialProperties
-               sizeMeasureMode:(RCTSurfaceSizeMeasureMode)sizeMeasureMode;
 
 /**
  * Surface object which is currently using to power the view.
@@ -73,6 +56,13 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic, copy, nullable) RCTSurfaceHostingViewActivityIndicatorViewFactory activityIndicatorViewFactory;
 
+/**
+ * When set to `YES`, the activity indicator is not automatically hidden when the Surface stage changes.
+ * In this scenario, users should invoke `hideActivityIndicator` to remove it.
+ *
+ * @param disabled: if `YES`, the auto-hide is disabled. Otherwise the loading view will be hidden automatically
+ */
+- (void)disableActivityIndicatorAutoHide:(BOOL)disabled;
 @end
 
 NS_ASSUME_NONNULL_END

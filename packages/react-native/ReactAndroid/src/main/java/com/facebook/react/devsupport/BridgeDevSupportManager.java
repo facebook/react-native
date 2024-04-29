@@ -14,6 +14,7 @@ import com.facebook.common.logging.FLog;
 import com.facebook.debug.holder.PrinterHolder;
 import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.R;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.JavaJSExecutor;
@@ -28,6 +29,7 @@ import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevLoadingViewManager;
 import com.facebook.react.devsupport.interfaces.DevOptionHandler;
 import com.facebook.react.devsupport.interfaces.DevSplitBundleCallback;
+import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager;
 import com.facebook.react.devsupport.interfaces.RedBoxHandler;
 import com.facebook.react.packagerconnection.RequestHandler;
 import java.io.File;
@@ -57,11 +59,6 @@ import java.util.concurrent.TimeoutException;
  * instance manager recreates it (through {@link #onNewReactContextCreated). Also, instance manager
  * is responsible for enabling/disabling dev support in case when app is backgrounded or when all
  * the views has been detached from the instance (through {@link #setDevSupportEnabled} method).
- *
- * IMPORTANT: In order for developer support to work correctly it is required that the
- * manifest of your application contain the following entries:
- * {@code <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" android:exported="false"/>}
- * {@code <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>}
  */
 public final class BridgeDevSupportManager extends DevSupportManagerBase {
   private boolean mIsSamplingProfilerEnabled = false;
@@ -78,7 +75,8 @@ public final class BridgeDevSupportManager extends DevSupportManagerBase {
       int minNumShakes,
       @Nullable Map<String, RequestHandler> customPackagerCommandHandlers,
       @Nullable SurfaceDelegateFactory surfaceDelegateFactory,
-      @Nullable DevLoadingViewManager devLoadingViewManager) {
+      @Nullable DevLoadingViewManager devLoadingViewManager,
+      @Nullable PausedInDebuggerOverlayManager pausedInDebuggerOverlayManager) {
     super(
         applicationContext,
         reactInstanceManagerHelper,
@@ -89,10 +87,8 @@ public final class BridgeDevSupportManager extends DevSupportManagerBase {
         minNumShakes,
         customPackagerCommandHandlers,
         surfaceDelegateFactory,
-        devLoadingViewManager);
-
-    mReactInstanceManagerHelper = reactInstanceManagerHelper;
-    mDevLoadingViewManager = devLoadingViewManager;
+        devLoadingViewManager,
+        pausedInDebuggerOverlayManager);
 
     if (getDevSettings().isStartSamplingProfilerOnInit()) {
       // Only start the profiler. If its already running, there is an error
@@ -108,21 +104,13 @@ public final class BridgeDevSupportManager extends DevSupportManagerBase {
     }
 
     addCustomDevOption(
-        mIsSamplingProfilerEnabled ? "Disable Sampling Profiler" : "Enable Sampling Profiler",
+        applicationContext.getString(R.string.catalyst_sample_profiler_toggle),
         new DevOptionHandler() {
           @Override
           public void onOptionSelected() {
             toggleJSSamplingProfiler();
           }
         });
-  }
-
-  public DevLoadingViewManager getDevLoadingViewManager() {
-    return mDevLoadingViewManager;
-  }
-
-  public ReactInstanceDevHelper getReactInstanceManagerHelper() {
-    return mReactInstanceManagerHelper;
   }
 
   @Override

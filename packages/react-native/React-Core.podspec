@@ -16,13 +16,14 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
-folly_version = '2021.07.22.00'
-socket_rocket_version = '0.6.0'
+folly_config = get_folly_config()
+folly_compiler_flags = folly_config[:compiler_flags]
+folly_version = folly_config[:version]
+socket_rocket_version = '0.7.0'
 boost_compiler_flags = '-Wno-documentation'
 
-use_hermes = ENV['USE_HERMES'] == '1'
-use_frameworks = ENV['USE_FRAMEWORKS'] != nil
+use_hermes = ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == '1'
+use_hermes_flag = use_hermes ? "-DUSE_HERMES=1" : ""
 
 header_subspecs = {
   'CoreModulesHeaders'          => 'React/CoreModules/**/*.h',
@@ -40,25 +41,19 @@ header_subspecs = {
 
 frameworks_search_paths = []
 frameworks_search_paths << "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-hermes\"" if use_hermes
-frameworks_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon\"" if use_frameworks
-frameworks_search_paths << "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-RCTFabric\"" if use_frameworks
 
 header_search_paths = [
   "$(PODS_TARGET_SRCROOT)/ReactCommon",
   "$(PODS_ROOT)/boost",
   "$(PODS_ROOT)/DoubleConversion",
+  "$(PODS_ROOT)/fmt/include",
   "$(PODS_ROOT)/RCT-Folly",
   "${PODS_ROOT}/Headers/Public/FlipperKit",
   "$(PODS_ROOT)/Headers/Public/ReactCommon",
-  "$(PODS_ROOT)/Headers/Public/React-RCTFabric"
 ].concat(use_hermes ? [
   "$(PODS_ROOT)/Headers/Public/React-hermes",
   "$(PODS_ROOT)/Headers/Public/hermes-engine"
-] : []).concat(use_frameworks ? [
-  "$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers",
-  "$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core",
-  "$(PODS_CONFIGURATION_BUILD_DIR)/React-NativeModulesApple/React_NativeModulesApple.framework/Headers"
-] : []).map{|p| "\"#{p}\""}.join(" ")
+] : [])
 
 Pod::Spec.new do |s|
   s.name                   = "React-Core"
@@ -67,17 +62,17 @@ Pod::Spec.new do |s|
   s.homepage               = "https://reactnative.dev/"
   s.license                = package["license"]
   s.author                 = "Meta Platforms, Inc. and its affiliates"
-  s.platforms              = { :ios => min_ios_version_supported }
+  s.platforms              = min_supported_versions
   s.source                 = source
-  s.resource_bundle        = { "AccessibilityResources" => ["React/AccessibilityResources/*.lproj"]}
-  s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
+  s.resource_bundle        = { "RCTI18nStrings" => ["React/I18n/strings/*.lproj"]}
+  s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags + ' ' + use_hermes_flag
   s.header_dir             = "React"
   s.framework              = "JavaScriptCore"
   s.pod_target_xcconfig    = {
                                "HEADER_SEARCH_PATHS" => header_search_paths,
                                "DEFINES_MODULE" => "YES",
                                "GCC_PREPROCESSOR_DEFINITIONS" => "RCT_METRO_PORT=${RCT_METRO_PORT}",
-                               "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
+                               "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
                                "FRAMEWORK_SEARCH_PATHS" => frameworks_search_paths.join(" ")
                              }
   s.user_target_xcconfig   = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/Headers/Private/React-Core\""}
@@ -91,11 +86,11 @@ Pod::Spec.new do |s|
       "React/Fabric/**/*",
       "React/FBReactNativeSpec/**/*",
       "React/Tests/**/*",
-      "React/Inspector/**/*"
+      "React/Inspector/**/*",
     ]
     # If we are using Hermes (the default is use hermes, so USE_HERMES can be nil), we don't have jsc installed
     # So we have to exclude the JSCExecutorFactory
-    if ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == "1"
+    if use_hermes
       exclude_files = exclude_files.append("React/CxxBridge/JSCExecutorFactory.{h,mm}")
     end
     ss.exclude_files = exclude_files
@@ -108,7 +103,7 @@ Pod::Spec.new do |s|
 
     ss.dependency "React-Core/Default", version
     ss.dependency "React-Core/RCTWebSocket", version
-    ss.dependency "React-jsinspector", version
+    ss.private_header_files = "React/Inspector/RCTCxx*.h"
   end
 
   s.subspec "RCTWebSocket" do |ss|
@@ -126,18 +121,26 @@ Pod::Spec.new do |s|
   end
 
   s.dependency "RCT-Folly", folly_version
-  s.dependency "React-cxxreact", version
-  s.dependency "React-perflogger", version
-  s.dependency "React-jsi", version
-  s.dependency "React-jsiexecutor", version
+  s.dependency "React-cxxreact"
+  s.dependency "React-perflogger"
+  s.dependency "React-jsi"
+  s.dependency "React-jsiexecutor"
+  s.dependency "React-utils"
+  s.dependency "React-featureflags"
   s.dependency "SocketRocket", socket_rocket_version
+  s.dependency "React-runtimescheduler"
   s.dependency "Yoga"
   s.dependency "glog"
 
-  if ENV['USE_HERMES'] == "0"
-    s.dependency 'React-jsc'
-  else
+  s.resource_bundles = {'React-Core_privacy' => 'React/Resources/PrivacyInfo.xcprivacy'}
+
+  add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
+  add_dependency(s, "RCTDeprecation")
+
+  if use_hermes
     s.dependency 'React-hermes'
     s.dependency 'hermes-engine'
+  else
+    s.dependency 'React-jsc'
   end
 end

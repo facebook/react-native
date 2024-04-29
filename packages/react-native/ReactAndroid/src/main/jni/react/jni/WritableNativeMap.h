@@ -27,7 +27,7 @@ struct WritableNativeMap
       "Lcom/facebook/react/bridge/WritableNativeMap;";
 
   WritableNativeMap();
-  WritableNativeMap(folly::dynamic &&val);
+  WritableNativeMap(folly::dynamic&& val);
 
   static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jclass>);
 
@@ -36,9 +36,9 @@ struct WritableNativeMap
   void putDouble(std::string key, double val);
   void putInt(std::string key, int val);
   void putString(std::string key, jni::alias_ref<jstring> val);
-  void putNativeArray(std::string key, ReadableNativeArray *val);
-  void putNativeMap(std::string key, ReadableNativeMap *val);
-  void mergeNativeMap(ReadableNativeMap *other);
+  void putNativeArray(std::string key, ReadableNativeArray* val);
+  void putNativeMap(std::string key, ReadableNativeMap* val);
+  void mergeNativeMap(ReadableNativeMap* other);
 
   static void registerNatives();
 

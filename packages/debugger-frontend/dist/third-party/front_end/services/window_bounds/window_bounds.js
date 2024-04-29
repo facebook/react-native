@@ -1,0 +1,1 @@
+import*as e from"../../ui/legacy/legacy.js";let n;class t{static instance(e={forceNew:null}){const{forceNew:o}=e;return n&&!o||(n=new t),n}getDevToolsBoundingElement(){return e.InspectorView.InspectorView.maybeGetInspectorViewInstance()?.element||document.body}}var o=Object.freeze({__proto__:null,WindowBoundsServiceImpl:t});export{o as WindowBoundsService};

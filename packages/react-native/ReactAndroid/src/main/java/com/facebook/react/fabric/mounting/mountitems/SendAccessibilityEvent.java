@@ -8,11 +8,13 @@
 package com.facebook.react.fabric.mounting.mountitems;
 
 import androidx.annotation.NonNull;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.fabric.mounting.MountingManager;
 
-public class SendAccessibilityEvent implements MountItem {
+@Nullsafe(Nullsafe.Mode.LOCAL)
+class SendAccessibilityEvent implements MountItem {
 
   private final String TAG = "Fabric.SendAccessibilityEvent";
 

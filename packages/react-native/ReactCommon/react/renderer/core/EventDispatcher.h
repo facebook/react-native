@@ -7,17 +7,19 @@
 
 #pragma once
 
-#include <react/renderer/core/BatchedEventQueue.h>
 #include <react/renderer/core/EventBeat.h>
 #include <react/renderer/core/EventListener.h>
-#include <react/renderer/core/EventPriority.h>
+#include <react/renderer/core/EventLogger.h>
+#include <react/renderer/core/EventQueue.h>
 #include <react/renderer/core/EventQueueProcessor.h>
+#include <react/renderer/core/StatePipe.h>
 #include <react/renderer/core/StateUpdate.h>
-#include <react/renderer/core/UnbatchedEventQueue.h>
+#include <memory>
 
 namespace facebook::react {
 
 struct RawEvent;
+class RuntimeScheduler;
 
 /*
  * Represents event-delivery infrastructure.
@@ -25,54 +27,57 @@ struct RawEvent;
  */
 class EventDispatcher {
  public:
-  using Shared = std::shared_ptr<EventDispatcher const>;
-  using Weak = std::weak_ptr<EventDispatcher const>;
+  using Shared = std::shared_ptr<const EventDispatcher>;
+  using Weak = std::weak_ptr<const EventDispatcher>;
 
   EventDispatcher(
-      EventQueueProcessor const &eventProcessor,
-      EventBeat::Factory const &synchonousEventBeatFactory,
-      EventBeat::Factory const &asynchronousEventBeatFactory,
-      EventBeat::SharedOwnerBox const &ownerBox);
+      const EventQueueProcessor& eventProcessor,
+      const EventBeat::Factory& asynchronousEventBeatFactory,
+      const EventBeat::SharedOwnerBox& ownerBox,
+      RuntimeScheduler& runtimeScheduler,
+      StatePipe statePipe,
+      std::weak_ptr<EventLogger> eventLogger);
 
   /*
    * Dispatches a raw event with given priority using event-delivery pipe.
    */
-  void dispatchEvent(RawEvent &&rawEvent, EventPriority priority) const;
+  void dispatchEvent(RawEvent&& rawEvent) const;
+
+  /*
+   * Experimental API exposed to support EventEmitter::experimental_flushSync.
+   */
+  void experimental_flushSync() const;
 
   /*
    * Dispatches a raw event with asynchronous batched priority. Before the
    * dispatch we make sure that no other RawEvent of same type and same target
    * is on the queue.
    */
-  void dispatchUniqueEvent(RawEvent &&rawEvent) const;
+  void dispatchUniqueEvent(RawEvent&& rawEvent) const;
 
   /*
    * Dispatches a state update with given priority.
    */
-  void dispatchStateUpdate(StateUpdate &&stateUpdate, EventPriority priority)
-      const;
+  void dispatchStateUpdate(StateUpdate&& stateUpdate) const;
 
 #pragma mark - Event listeners
   /*
    * Adds provided event listener to the event dispatcher.
    */
-  void addListener(const std::shared_ptr<EventListener const> &listener) const;
+  void addListener(const std::shared_ptr<const EventListener>& listener) const;
 
   /*
    * Removes provided event listener to the event dispatcher.
    */
   void removeListener(
-      const std::shared_ptr<EventListener const> &listener) const;
+      const std::shared_ptr<const EventListener>& listener) const;
 
  private:
-  EventQueue const &getEventQueue(EventPriority priority) const;
-
-  std::unique_ptr<UnbatchedEventQueue> synchronousUnbatchedQueue_;
-  std::unique_ptr<BatchedEventQueue> synchronousBatchedQueue_;
-  std::unique_ptr<UnbatchedEventQueue> asynchronousUnbatchedQueue_;
-  std::unique_ptr<BatchedEventQueue> asynchronousBatchedQueue_;
+  EventQueue eventQueue_;
+  const StatePipe statePipe_;
 
   mutable EventListenerContainer eventListeners_;
+  const std::weak_ptr<EventLogger> eventLogger_;
 };
 
 } // namespace facebook::react

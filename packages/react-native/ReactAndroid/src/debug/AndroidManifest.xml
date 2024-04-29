@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <!--
+    This manifest file is used only by Gradle to configure debug-only capabilities
+    for React Native Apps.
+   -->
+  <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+
+  <application>
+    <activity android:name="com.facebook.react.devsupport.DevSettingsActivity"
+              android:exported="false" />
+  </application>
+
+</manifest>

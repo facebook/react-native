@@ -5,9 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#import <React/RCTBridgeProxy.h>
 #import <React/RCTEventEmitter.h>
 #import <React/RCTNetworkTask.h>
 #import <React/RCTURLRequestHandler.h>
+
+RCT_EXTERN void RCTEnableNetworkingRequestQueue(BOOL enabled);
 
 @protocol RCTNetworkingRequestHandler <NSObject>
 
@@ -26,6 +29,8 @@
 @end
 
 @interface RCTNetworking : RCTEventEmitter
+
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
 
 /**
  * Allows RCTNetworking instances to be initialized with handlers.
@@ -53,9 +58,17 @@
 
 - (void)removeResponseHandler:(id<RCTNetworkingResponseHandler>)handler;
 
+- (dispatch_queue_t)requestQueue;
+
 @end
 
 @interface RCTBridge (RCTNetworking)
+
+@property (nonatomic, readonly) RCTNetworking *networking;
+
+@end
+
+@interface RCTBridgeProxy (RCTNetworking)
 
 @property (nonatomic, readonly) RCTNetworking *networking;
 

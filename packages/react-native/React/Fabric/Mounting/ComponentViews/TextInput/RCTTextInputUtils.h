@@ -35,8 +35,10 @@ UIKeyboardType RCTUIKeyboardTypeFromKeyboardType(facebook::react::KeyboardType k
 
 UIReturnKeyType RCTUIReturnKeyTypeFromReturnKeyType(facebook::react::ReturnKeyType returnKeyType);
 
-UITextContentType RCTUITextContentTypeFromString(std::string const &contentType);
+UITextContentType RCTUITextContentTypeFromString(const std::string &contentType);
 
-UITextInputPasswordRules *RCTUITextInputPasswordRulesFromString(std::string const &passwordRules);
+UITextInputPasswordRules *RCTUITextInputPasswordRulesFromString(const std::string &passwordRules);
+
+UITextSmartInsertDeleteType RCTUITextSmartInsertDeleteTypeFromOptionalBool(std::optional<bool> smartInsertDelete);
 
 NS_ASSUME_NONNULL_END

@@ -295,6 +295,10 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     }
 
     public static AccessibilityRole fromValue(@Nullable String value) {
+      if (value == null) {
+        return NONE;
+      }
+
       for (AccessibilityRole role : AccessibilityRole.values()) {
         if (role.name().equalsIgnoreCase(value)) {
           return role;
@@ -625,11 +629,6 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
         final boolean boolValue = value.asBoolean();
         info.setCheckable(true);
         info.setChecked(boolValue);
-        if (info.getClassName().equals(AccessibilityRole.getValue(AccessibilityRole.SWITCH))) {
-          info.setText(
-              context.getString(
-                  boolValue ? R.string.state_on_description : R.string.state_off_description));
-        }
       }
     }
   }
@@ -786,9 +785,18 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
       return;
     }
 
+    // NOTE: The span may not actually have visible bounds within its parent,
+    // due to line limits, etc.
+    final Rect bounds = getBoundsInParent(accessibleTextSpan);
+    if (bounds == null) {
+      node.setContentDescription("");
+      node.setBoundsInParent(new Rect(0, 0, 1, 1));
+      return;
+    }
+
     node.setContentDescription(accessibleTextSpan.description);
     node.addAction(AccessibilityNodeInfoCompat.ACTION_CLICK);
-    node.setBoundsInParent(getBoundsInParent(accessibleTextSpan));
+    node.setBoundsInParent(bounds);
     node.setRoleDescription(mView.getResources().getString(R.string.link_description));
     node.setClassName(AccessibilityRole.getValue(AccessibilityRole.BUTTON));
   }
@@ -805,10 +813,19 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
       return new Rect(0, 0, textView.getWidth(), textView.getHeight());
     }
 
-    Rect rootRect = new Rect();
-
     double startOffset = accessibleLink.start;
     double endOffset = accessibleLink.end;
+
+    // Ensure the link hasn't been ellipsized away; in such cases,
+    // getPrimaryHorizontal will crash (and the link isn't rendered anyway).
+    int startOffsetLineNumber = textViewLayout.getLineForOffset((int) startOffset);
+    int lineEndOffset = textViewLayout.getLineEnd(startOffsetLineNumber);
+    if (startOffset > lineEndOffset) {
+      return null;
+    }
+
+    Rect rootRect = new Rect();
+
     double startXCoordinates = textViewLayout.getPrimaryHorizontal((int) startOffset);
 
     final Paint paint = new Paint();
@@ -818,7 +835,6 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     paint.setTextSize(textSize);
     int textWidth = (int) Math.ceil(paint.measureText(accessibleLink.description));
 
-    int startOffsetLineNumber = textViewLayout.getLineForOffset((int) startOffset);
     int endOffsetLineNumber = textViewLayout.getLineForOffset((int) endOffset);
     boolean isMultiline = startOffsetLineNumber != endOffsetLineNumber;
     textViewLayout.getLineBounds(startOffsetLineNumber, rootRect);

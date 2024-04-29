@@ -6,6 +6,7 @@
  */
 
 #include <cxxreact/JSExecutor.h>
+#include <logger/react_native_log.h>
 #include "EventEmitter.h"
 #include "EventLogger.h"
 #include "EventQueue.h"
@@ -15,23 +16,28 @@ namespace facebook::react {
 
 EventQueueProcessor::EventQueueProcessor(
     EventPipe eventPipe,
-    StatePipe statePipe)
-    : eventPipe_(std::move(eventPipe)), statePipe_(std::move(statePipe)) {}
+    EventPipeConclusion eventPipeConclusion,
+    StatePipe statePipe,
+    std::weak_ptr<EventLogger> eventLogger)
+    : eventPipe_(std::move(eventPipe)),
+      eventPipeConclusion_(std::move(eventPipeConclusion)),
+      statePipe_(std::move(statePipe)),
+      eventLogger_(std::move(eventLogger)) {}
 
 void EventQueueProcessor::flushEvents(
-    jsi::Runtime &runtime,
-    std::vector<RawEvent> &&events) const {
+    jsi::Runtime& runtime,
+    std::vector<RawEvent>&& events) const {
   {
-    std::lock_guard<std::mutex> lock(EventEmitter::DispatchMutex());
+    std::scoped_lock lock(EventEmitter::DispatchMutex());
 
-    for (const auto &event : events) {
+    for (const auto& event : events) {
       if (event.eventTarget) {
         event.eventTarget->retain(runtime);
       }
     }
   }
 
-  for (auto const &event : events) {
+  for (const auto& event : events) {
     if (event.category == RawEvent::Category::ContinuousEnd) {
       hasContinuousEventStarted_ = false;
     }
@@ -48,9 +54,15 @@ void EventQueueProcessor::flushEvents(
       reactPriority = ReactEventPriority::Discrete;
     }
 
-    auto eventLogger = getEventLogger();
+    auto eventLogger = eventLogger_.lock();
     if (eventLogger != nullptr) {
-      eventLogger->onEventDispatch(event.loggingTag);
+      eventLogger->onEventProcessingStart(event.loggingTag);
+    }
+
+    if (event.eventPayload == nullptr) {
+      react_native_log_error(
+          "EventQueueProcessor: Unexpected null event payload");
+      continue;
     }
 
     eventPipe_(
@@ -58,10 +70,10 @@ void EventQueueProcessor::flushEvents(
         event.eventTarget.get(),
         event.type,
         reactPriority,
-        event.payloadFactory);
+        *event.eventPayload);
 
     if (eventLogger != nullptr) {
-      eventLogger->onEventEnd(event.loggingTag);
+      eventLogger->onEventProcessingEnd(event.loggingTag);
     }
 
     if (event.category == RawEvent::Category::ContinuousStart) {
@@ -69,11 +81,14 @@ void EventQueueProcessor::flushEvents(
     }
   }
 
+  // We only run the "Conclusion" once per event group when batched.
+  eventPipeConclusion_(runtime);
+
   // No need to lock `EventEmitter::DispatchMutex()` here.
   // The mutex protects from a situation when the `instanceHandle` can be
   // deallocated during accessing, but that's impossible at this point because
   // we have a strong pointer to it.
-  for (const auto &event : events) {
+  for (const auto& event : events) {
     if (event.eventTarget) {
       event.eventTarget->release(runtime);
     }
@@ -81,8 +96,8 @@ void EventQueueProcessor::flushEvents(
 }
 
 void EventQueueProcessor::flushStateUpdates(
-    std::vector<StateUpdate> &&states) const {
-  for (const auto &stateUpdate : states) {
+    std::vector<StateUpdate>&& states) const {
+  for (const auto& stateUpdate : states) {
     statePipe_(stateUpdate);
   }
 }

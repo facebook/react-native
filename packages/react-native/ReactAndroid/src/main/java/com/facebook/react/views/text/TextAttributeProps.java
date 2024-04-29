@@ -12,6 +12,7 @@ import android.text.Layout;
 import android.text.TextUtils;
 import android.util.LayoutDirection;
 import android.view.Gravity;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.ReadableArray;
@@ -30,7 +31,7 @@ import java.util.List;
 // TODO: T63643819 refactor naming of TextAttributeProps to make explicit that this represents
 // TextAttributes and not TextProps. As part of this refactor extract methods that don't belong to
 // TextAttributeProps (e.g. TextAlign)
-public class TextAttributeProps {
+public class TextAttributeProps implements EffectiveTextAttributeProvider {
 
   // constants for Text Attributes serialization
   public static final short TA_KEY_FOREGROUND_COLOR = 0;
@@ -59,6 +60,7 @@ public class TextAttributeProps {
   public static final short TA_KEY_ACCESSIBILITY_ROLE = 24;
   public static final short TA_KEY_LINE_BREAK_STRATEGY = 25;
   public static final short TA_KEY_ROLE = 26;
+  public static final short TA_KEY_TEXT_TRANSFORM = 27;
 
   public static final int UNSET = -1;
 
@@ -73,10 +75,8 @@ public class TextAttributeProps {
   private static final int DEFAULT_TEXT_SHADOW_COLOR = 0x55000000;
   private static final int DEFAULT_JUSTIFICATION_MODE =
       (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? 0 : Layout.JUSTIFICATION_MODE_NONE;
-  private static final int DEFAULT_BREAK_STRATEGY =
-      (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ? 0 : Layout.BREAK_STRATEGY_HIGH_QUALITY;
-  private static final int DEFAULT_HYPHENATION_FREQUENCY =
-      (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ? 0 : Layout.HYPHENATION_FREQUENCY_NONE;
+  private static final int DEFAULT_BREAK_STRATEGY = Layout.BREAK_STRATEGY_HIGH_QUALITY;
+  private static final int DEFAULT_HYPHENATION_FREQUENCY = Layout.HYPHENATION_FREQUENCY_NONE;
 
   protected float mLineHeight = Float.NaN;
   protected boolean mIsColorSet = false;
@@ -85,17 +85,17 @@ public class TextAttributeProps {
   protected boolean mIsBackgroundColorSet = false;
   protected int mBackgroundColor;
 
-  protected int mNumberOfLines = UNSET;
-  protected int mFontSize = UNSET;
-  protected float mFontSizeInput = UNSET;
-  protected float mLineHeightInput = UNSET;
+  protected int mNumberOfLines = ReactConstants.UNSET;
+  protected int mFontSize = ReactConstants.UNSET;
+  protected float mFontSizeInput = ReactConstants.UNSET;
+  protected float mLineHeightInput = ReactConstants.UNSET;
   protected float mLetterSpacingInput = Float.NaN;
   protected int mTextAlign = Gravity.NO_GRAVITY;
 
-  // `UNSET` is -1 and is the same as `LayoutDirection.UNDEFINED` but the symbol isn't available.
-  protected int mLayoutDirection = UNSET;
+  // `ReactConstants.UNSET` is -1, same as `LayoutDirection.UNDEFINED` (which is a hidden symbol)
+  protected int mLayoutDirection = ReactConstants.UNSET;
 
-  protected TextTransform mTextTransform = TextTransform.NONE;
+  @NonNull protected TextTransform mTextTransform = TextTransform.NONE;
 
   protected float mTextShadowOffsetDx = 0;
   protected float mTextShadowOffsetDy = 0;
@@ -109,8 +109,9 @@ public class TextAttributeProps {
   protected @Nullable AccessibilityRole mAccessibilityRole = null;
   protected @Nullable Role mRole = null;
 
-  protected int mFontStyle = UNSET;
-  protected int mFontWeight = UNSET;
+  protected int mFontStyle = ReactConstants.UNSET;
+  protected int mFontWeight = ReactConstants.UNSET;
+
   /**
    * NB: If a font family is used that does not have a style in a certain Android version (ie.
    * monospace bold pre Android 5.0), that style (ie. bold) will not be inherited by nested Text
@@ -134,7 +135,9 @@ public class TextAttributeProps {
    */
   protected @Nullable String mFontFamily = null;
 
-  /** @see android.graphics.Paint#setFontFeatureSettings */
+  /**
+   * @see android.graphics.Paint#setFontFeatureSettings
+   */
   protected @Nullable String mFontFeatureSettings = null;
 
   protected boolean mContainsImages = false;
@@ -219,6 +222,9 @@ public class TextAttributeProps {
         case TA_KEY_ROLE:
           result.setRole(Role.values()[entry.getIntValue()]);
           break;
+        case TA_KEY_TEXT_TRANSFORM:
+          result.setTextTransform(entry.getStringValue());
+          break;
       }
     }
 
@@ -226,17 +232,16 @@ public class TextAttributeProps {
     // setNumberOfLines
     // setColor
     // setIncludeFontPadding
-    // setTextTransform
     return result;
   }
 
   public static TextAttributeProps fromReadableMap(ReactStylesDiffMap props) {
     TextAttributeProps result = new TextAttributeProps();
-    result.setNumberOfLines(getIntProp(props, ViewProps.NUMBER_OF_LINES, UNSET));
-    result.setLineHeight(getFloatProp(props, ViewProps.LINE_HEIGHT, UNSET));
+    result.setNumberOfLines(getIntProp(props, ViewProps.NUMBER_OF_LINES, ReactConstants.UNSET));
+    result.setLineHeight(getFloatProp(props, ViewProps.LINE_HEIGHT, ReactConstants.UNSET));
     result.setLetterSpacing(getFloatProp(props, ViewProps.LETTER_SPACING, Float.NaN));
     result.setAllowFontScaling(getBooleanProp(props, ViewProps.ALLOW_FONT_SCALING, true));
-    result.setFontSize(getFloatProp(props, ViewProps.FONT_SIZE, UNSET));
+    result.setFontSize(getFloatProp(props, ViewProps.FONT_SIZE, ReactConstants.UNSET));
     result.setColor(props.hasKey(ViewProps.COLOR) ? props.getInt(ViewProps.COLOR, 0) : null);
     result.setColor(
         props.hasKey(ViewProps.FOREGROUND_COLOR)
@@ -342,6 +347,7 @@ public class TextAttributeProps {
 
   // Returns a line height which takes into account the requested line height
   // and the height of the inline images.
+  @Override
   public float getEffectiveLineHeight() {
     boolean useInlineViewHeight =
         !Float.isNaN(mLineHeight)
@@ -351,12 +357,12 @@ public class TextAttributeProps {
   }
 
   private void setNumberOfLines(int numberOfLines) {
-    mNumberOfLines = numberOfLines == 0 ? UNSET : numberOfLines;
+    mNumberOfLines = numberOfLines == 0 ? ReactConstants.UNSET : numberOfLines;
   }
 
   private void setLineHeight(float lineHeight) {
     mLineHeightInput = lineHeight;
-    if (lineHeight == UNSET) {
+    if (lineHeight == ReactConstants.UNSET) {
       mLineHeight = Float.NaN;
     } else {
       mLineHeight =
@@ -368,6 +374,12 @@ public class TextAttributeProps {
 
   private void setLetterSpacing(float letterSpacing) {
     mLetterSpacingInput = letterSpacing;
+  }
+
+  @Override
+  @NonNull
+  public TextTransform getTextTransform() {
+    return mTextTransform;
   }
 
   public float getLetterSpacing() {
@@ -385,6 +397,16 @@ public class TextAttributeProps {
     return letterSpacingPixels / mFontSize;
   }
 
+  @Override
+  public float getEffectiveLetterSpacing() {
+    return getLetterSpacing();
+  }
+
+  @Override
+  public int getEffectiveFontSize() {
+    return mFontSize;
+  }
+
   private void setAllowFontScaling(boolean allowFontScaling) {
     if (allowFontScaling != mAllowFontScaling) {
       mAllowFontScaling = allowFontScaling;
@@ -396,7 +418,7 @@ public class TextAttributeProps {
 
   private void setFontSize(float fontSize) {
     mFontSizeInput = fontSize;
-    if (fontSize != UNSET) {
+    if (fontSize != ReactConstants.UNSET) {
       fontSize =
           mAllowFontScaling
               ? (float) Math.ceil(PixelUtil.toPixelFromSP(fontSize))
@@ -405,11 +427,26 @@ public class TextAttributeProps {
     mFontSize = (int) fontSize;
   }
 
+  @Override
+  public int getColor() {
+    return mColor;
+  }
+
   private void setColor(@Nullable Integer color) {
     mIsColorSet = (color != null);
     if (mIsColorSet) {
       mColor = color;
     }
+  }
+
+  @Override
+  public boolean isColorSet() {
+    return mIsColorSet;
+  }
+
+  @Override
+  public int getBackgroundColor() {
+    return mBackgroundColor;
   }
 
   private void setBackgroundColor(Integer color) {
@@ -421,6 +458,21 @@ public class TextAttributeProps {
       mBackgroundColor = color;
     }
     // }
+  }
+
+  @Override
+  public boolean isBackgroundColorSet() {
+    return mIsBackgroundColorSet;
+  }
+
+  @Override
+  public int getFontStyle() {
+    return mFontStyle;
+  }
+
+  @Override
+  public String getFontFamily() {
+    return mFontFamily;
   }
 
   private void setFontFamily(@Nullable String fontFamily) {
@@ -525,6 +577,16 @@ public class TextAttributeProps {
     mFontFeatureSettings = TextUtils.join(", ", features);
   }
 
+  @Override
+  public String getFontFeatureSettings() {
+    return mFontFeatureSettings;
+  }
+
+  @Override
+  public int getFontWeight() {
+    return mFontWeight;
+  }
+
   private void setFontWeight(@Nullable String fontWeightString) {
     mFontWeight = ReactTypefaceUtils.parseFontWeight(fontWeightString);
   }
@@ -551,6 +613,16 @@ public class TextAttributeProps {
     }
   }
 
+  @Override
+  public boolean isUnderlineTextDecorationSet() {
+    return mIsUnderlineTextDecorationSet;
+  }
+
+  @Override
+  public boolean isLineThroughTextDecorationSet() {
+    return mIsLineThroughTextDecorationSet;
+  }
+
   private void setTextShadowOffset(ReadableMap offsetMap) {
     mTextShadowOffsetDx = 0;
     mTextShadowOffsetDy = 0;
@@ -569,8 +641,18 @@ public class TextAttributeProps {
     }
   }
 
+  @Override
+  public float getTextShadowOffsetDx() {
+    return mTextShadowOffsetDx;
+  }
+
   private void setTextShadowOffsetDx(float dx) {
     mTextShadowOffsetDx = PixelUtil.toPixelFromDIP(dx);
+  }
+
+  @Override
+  public float getTextShadowOffsetDy() {
+    return mTextShadowOffsetDy;
   }
 
   private void setTextShadowOffsetDy(float dy) {
@@ -580,14 +662,14 @@ public class TextAttributeProps {
   public static int getLayoutDirection(@Nullable String layoutDirection) {
     int androidLayoutDirection;
     if (layoutDirection == null || "undefined".equals(layoutDirection)) {
-      androidLayoutDirection = UNSET;
+      androidLayoutDirection = ReactConstants.UNSET;
     } else if ("rtl".equals(layoutDirection)) {
       androidLayoutDirection = LayoutDirection.RTL;
     } else if ("ltr".equals(layoutDirection)) {
       androidLayoutDirection = LayoutDirection.LTR;
     } else {
       FLog.w(ReactConstants.TAG, "Invalid layoutDirection: " + layoutDirection);
-      androidLayoutDirection = UNSET;
+      androidLayoutDirection = ReactConstants.UNSET;
     }
     return androidLayoutDirection;
   }
@@ -596,10 +678,20 @@ public class TextAttributeProps {
     mLayoutDirection = getLayoutDirection(layoutDirection);
   }
 
+  @Override
+  public float getTextShadowRadius() {
+    return mTextShadowRadius;
+  }
+
   private void setTextShadowRadius(float textShadowRadius) {
     if (textShadowRadius != mTextShadowRadius) {
       mTextShadowRadius = textShadowRadius;
     }
+  }
+
+  @Override
+  public int getTextShadowColor() {
+    return mTextShadowColor;
   }
 
   private void setTextShadowColor(int textShadowColor) {
@@ -623,12 +715,23 @@ public class TextAttributeProps {
     }
   }
 
+  @Override
+  public AccessibilityRole getAccessibilityRole() {
+    return mAccessibilityRole;
+  }
+
   private void setAccessibilityRole(@Nullable String accessibilityRole) {
     if (accessibilityRole == null) {
       mAccessibilityRole = null;
     } else {
       mAccessibilityRole = AccessibilityRole.fromValue(accessibilityRole);
     }
+  }
+
+  @Nullable
+  @Override
+  public Role getRole() {
+    return mRole;
   }
 
   private void setRole(@Nullable String role) {

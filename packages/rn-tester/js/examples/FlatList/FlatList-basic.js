@@ -10,11 +10,29 @@
 
 'use strict';
 
+import type {Item} from '../../components/ListExampleShared';
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type {AnimatedComponentType} from 'react-native/Libraries/Animated/createAnimatedComponent';
 import typeof FlatListType from 'react-native/Libraries/Lists/FlatList';
 import type {RenderItemProps} from 'react-native/Libraries/Lists/VirtualizedList';
 
-import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+import {
+  FooterComponent,
+  HeaderComponent,
+  ItemComponent,
+  ItemSeparatorComponent,
+  ListEmptyComponent,
+  LoadingComponent,
+  PlainInput,
+  SeparatorComponent,
+  Spindicator,
+  genNewerItems,
+  genOlderItems,
+  getItemLayout,
+  pressItem,
+  renderSmallSwitchOption,
+} from '../../components/ListExampleShared';
+import RNTesterPage from '../../components/RNTesterPage';
 import * as React from 'react';
 import {
   Alert,
@@ -25,26 +43,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import RNTesterPage from '../../components/RNTesterPage';
 import infoLog from 'react-native/Libraries/Utilities/infoLog';
-import {
-  FooterComponent,
-  HeaderComponent,
-  ItemComponent,
-  ListEmptyComponent,
-  ItemSeparatorComponent,
-  PlainInput,
-  SeparatorComponent,
-  LoadingComponent,
-  Spindicator,
-  genNewerItems,
-  genOlderItems,
-  getItemLayout,
-  pressItem,
-  renderSmallSwitchOption,
-} from '../../components/ListExampleShared';
-
-import type {Item} from '../../components/ListExampleShared';
 
 const PAGE_SIZE = 100;
 const NUM_PAGES = 10;
@@ -158,6 +157,7 @@ class FlatListExample extends React.PureComponent<Props, State> {
           <View style={styles.searchRow}>
             <View style={styles.options}>
               <PlainInput
+                testID="search_bar_flat_list"
                 onChangeText={this._onChangeFilterText}
                 placeholder="Search..."
                 value={this.state.filterText}
@@ -248,7 +248,9 @@ class FlatListExample extends React.PureComponent<Props, State> {
           <SeparatorComponent />
           <Animated.FlatList
             fadingEdgeLength={this.state.fadingEdgeLength}
-            ItemSeparatorComponent={ItemSeparatorComponent}
+            ItemSeparatorComponent={
+              this.state.horizontal ? null : ItemSeparatorComponent
+            }
             ListHeaderComponent={
               this.state.previousLoading ? LoadingComponent : HeaderComponent
             }
@@ -280,6 +282,7 @@ class FlatListExample extends React.PureComponent<Props, State> {
             onScroll={
               this.state.horizontal ? this._scrollSinkX : this._scrollSinkY
             }
+            onScrollToIndexFailed={this._onScrollToIndexFailed}
             onViewableItemsChanged={this._onViewableItemsChanged}
             ref={this._captureRef}
             refreshing={false}
@@ -369,6 +372,19 @@ class FlatListExample extends React.PureComponent<Props, State> {
         }
       : {renderItem: renderProp};
   };
+
+  _onScrollToIndexFailed = ({
+    index,
+    highestMeasuredFrameIndex,
+  }: {
+    index: number,
+    highestMeasuredFrameIndex: number,
+  }) => {
+    console.warn(
+      `failed to scroll to index: ${index} (measured up to ${highestMeasuredFrameIndex})`,
+    );
+  };
+
   // This is called when items change viewability by scrolling into or out of
   // the viewable area.
   _onViewableItemsChanged = (info: {

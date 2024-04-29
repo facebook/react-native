@@ -61,11 +61,11 @@ class Sealable {
 class Sealable {
  public:
   Sealable();
-  Sealable(const Sealable &other);
-  Sealable(Sealable &&other) noexcept;
+  Sealable(const Sealable& other);
+  Sealable(Sealable&& other) noexcept;
   ~Sealable() noexcept;
-  Sealable &operator=(const Sealable &other);
-  Sealable &operator=(Sealable &&other) noexcept;
+  Sealable& operator=(const Sealable& other);
+  Sealable& operator=(Sealable&& other) noexcept;
 
   /*
    * Seals the object. This operation is irreversible;

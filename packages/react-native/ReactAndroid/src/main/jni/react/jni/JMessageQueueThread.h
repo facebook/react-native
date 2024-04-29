@@ -27,24 +27,20 @@ class JMessageQueueThread : public MessageQueueThread {
   /**
    * Enqueues the given function to run on this MessageQueueThread.
    */
-  void runOnQueue(std::function<void()> &&runnable) override;
+  void runOnQueue(std::function<void()>&& runnable) override;
 
   /**
    * Synchronously executes the given function to run on this
    * MessageQueueThread, waiting until it completes.  Can be called from any
    * thread, but will block if not called on this MessageQueueThread.
    */
-  void runOnQueueSync(std::function<void()> &&runnable) override;
+  void runOnQueueSync(std::function<void()>&& runnable) override;
 
   /**
    * Synchronously quits the current MessageQueueThread. Can be called from any
    * thread, but will block if not called on this MessageQueueThread.
    */
   void quitSynchronous() override;
-
-  JavaMessageQueueThread::javaobject jobj() {
-    return m_jobj.get();
-  }
 
  private:
   jni::global_ref<JavaMessageQueueThread::javaobject> m_jobj;

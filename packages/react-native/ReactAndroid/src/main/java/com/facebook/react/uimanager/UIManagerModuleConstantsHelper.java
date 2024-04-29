@@ -7,13 +7,13 @@
 
 package com.facebook.react.uimanager;
 
-import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
-
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.common.MapBuilder;
+import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.config.ReactFeatureFlags;
-import com.facebook.systrace.SystraceMessage;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -25,8 +25,9 @@ import java.util.Set;
  * Helps generate constants map for {@link UIManagerModule} by collecting and merging constants from
  * registered view managers.
  */
-/* package */ class UIManagerModuleConstantsHelper {
-
+@Nullsafe(Nullsafe.Mode.LOCAL)
+public class UIManagerModuleConstantsHelper {
+  private static final String TAG = "UIManagerModuleConstantsHelper";
   private static final String BUBBLING_EVENTS_KEY = "bubblingEventTypes";
   private static final String DIRECT_EVENTS_KEY = "directEventTypes";
 
@@ -44,10 +45,35 @@ import java.util.Set;
     return constants;
   }
 
-  /* package */ static Map<String, Object> getDefaultExportableEventTypes() {
+  public static Map<String, Object> getDefaultExportableEventTypes() {
     return MapBuilder.<String, Object>of(
         BUBBLING_EVENTS_KEY, UIManagerModuleConstants.getBubblingEventTypeConstants(),
         DIRECT_EVENTS_KEY, UIManagerModuleConstants.getDirectEventTypeConstants());
+  }
+
+  private static void validateDirectEventNames(
+      String viewManagerName, Map<String, Object> directEvents) {
+    if (!ReactBuildConfig.DEBUG || directEvents == null) {
+      return;
+    }
+
+    for (String key : directEvents.keySet()) {
+      Object value = directEvents.get(key);
+      if (value != null && (value instanceof Map)) {
+        String regName = (String) ((Map) value).get("registrationName");
+        if (regName != null
+            && key.startsWith("top")
+            && regName.startsWith("on")
+            && !key.substring(3).equals(regName.substring(2))) {
+          FLog.e(
+              TAG,
+              String.format(
+                  "Direct event name for '%s' doesn't correspond to the naming convention,"
+                      + " expected 'topEventName'->'onEventName', got '%s'->'%s'",
+                  viewManagerName, key, regName));
+        }
+      }
+    }
   }
 
   /**
@@ -85,21 +111,11 @@ import java.util.Set;
     for (ViewManager viewManager : viewManagers) {
       final String viewManagerName = viewManager.getName();
 
-      SystraceMessage.beginSection(
-              TRACE_TAG_REACT_JAVA_BRIDGE, "UIManagerModuleConstantsHelper.createConstants")
-          .arg("ViewManager", viewManagerName)
-          .arg("Lazy", false)
-          .flush();
-
-      try {
-        Map viewManagerConstants =
-            createConstantsForViewManager(
-                viewManager, null, null, allBubblingEventTypes, allDirectEventTypes);
-        if (!viewManagerConstants.isEmpty()) {
-          constants.put(viewManagerName, viewManagerConstants);
-        }
-      } finally {
-        SystraceMessage.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+      Map viewManagerConstants =
+          createConstantsForViewManager(
+              viewManager, null, null, allBubblingEventTypes, allDirectEventTypes);
+      if (!viewManagerConstants.isEmpty()) {
+        constants.put(viewManagerName, viewManagerConstants);
       }
     }
 
@@ -118,7 +134,6 @@ import java.util.Set;
 
     Map viewManagerBubblingEvents = viewManager.getExportedCustomBubblingEventTypeConstants();
     if (viewManagerBubblingEvents != null) {
-
       if (ReactFeatureFlags.enableFabricRenderer && ReactFeatureFlags.unstable_useFabricInterop) {
         // For Fabric, events needs to be fired with a "top" prefix.
         // For the sake of Fabric Interop, here we normalize events adding "top" in their
@@ -133,7 +148,14 @@ import java.util.Set;
     }
 
     Map viewManagerDirectEvents = viewManager.getExportedCustomDirectEventTypeConstants();
+    validateDirectEventNames(viewManager.getName(), viewManagerDirectEvents);
     if (viewManagerDirectEvents != null) {
+      if (ReactFeatureFlags.enableFabricRenderer && ReactFeatureFlags.unstable_useFabricInterop) {
+        // For Fabric, events needs to be fired with a "top" prefix.
+        // For the sake of Fabric Interop, here we normalize events adding "top" in their
+        // name if the user hasn't provided it.
+        normalizeEventTypes(viewManagerDirectEvents);
+      }
       recursiveMerge(cumulativeDirectEventTypes, viewManagerDirectEvents);
       recursiveMerge(viewManagerDirectEvents, defaultDirectEvents);
       viewManagerConstants.put(DIRECT_EVENTS_KEY, viewManagerDirectEvents);
@@ -158,7 +180,7 @@ import java.util.Set;
   }
 
   @VisibleForTesting
-  /* package */ static void normalizeEventTypes(Map events) {
+  /* package */ static void normalizeEventTypes(@Nullable Map events) {
     if (events == null) {
       return;
     }
@@ -173,7 +195,15 @@ import java.util.Set;
     }
     for (String oldKey : keysToNormalize) {
       Object value = events.get(oldKey);
-      String newKey = "top" + oldKey.substring(0, 1).toUpperCase() + oldKey.substring(1);
+      String baseKey = "";
+      if (oldKey.startsWith("on")) {
+        // Drop "on" prefix.
+        baseKey = oldKey.substring(2);
+      } else {
+        // Capitalize first letter.
+        baseKey = oldKey.substring(0, 1).toUpperCase() + oldKey.substring(1);
+      }
+      String newKey = "top" + baseKey;
       events.put(newKey, value);
     }
   }

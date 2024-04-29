@@ -12,13 +12,13 @@
 namespace facebook::react {
 
 TelemetryController::TelemetryController(
-    MountingCoordinator const &mountingCoordinator) noexcept
+    const MountingCoordinator& mountingCoordinator) noexcept
     : mountingCoordinator_(mountingCoordinator) {}
 
 bool TelemetryController::pullTransaction(
-    MountingTransactionCallback const &willMount,
-    MountingTransactionCallback const &doMount,
-    MountingTransactionCallback const &didMount) const {
+    const MountingTransactionCallback& willMount,
+    const MountingTransactionCallback& doMount,
+    const MountingTransactionCallback& didMount) const {
   auto optional = mountingCoordinator_.pullTransaction();
   if (!optional.has_value()) {
     return false;
@@ -26,7 +26,7 @@ bool TelemetryController::pullTransaction(
 
   auto transaction = std::move(*optional);
 
-  auto &telemetry = transaction.getTelemetry();
+  auto& telemetry = transaction.getTelemetry();
   auto numberOfMutations = static_cast<int>(transaction.getMutations().size());
 
   mutex_.lock();

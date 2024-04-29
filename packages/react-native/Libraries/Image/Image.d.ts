@@ -223,7 +223,7 @@ export interface ImagePropsBase
    *
    * The currently supported formats are png, jpg, jpeg, bmp, gif, webp (Android only), psd (iOS only).
    */
-  source: ImageSourcePropType;
+  source?: ImageSourcePropType | undefined;
 
   /**
    * A string representing the resource identifier for the image. Similar to
@@ -260,7 +260,7 @@ export interface ImagePropsBase
   /**
    * A static image to display while downloading the final image off the network.
    */
-  defaultSource?: ImageURISource | number | undefined;
+  defaultSource?: ImageURISource | ImageRequireSource | undefined;
 
   /**
    * The text that's read by the screen reader when the user interacts with
@@ -325,20 +325,31 @@ export interface ImageProps extends ImagePropsBase {
   style?: StyleProp<ImageStyle> | undefined;
 }
 
+export interface ImageSize {
+  width: number;
+  height: number;
+}
+
 declare class ImageComponent extends React.Component<ImageProps> {}
 declare const ImageBase: Constructor<NativeMethods> & typeof ImageComponent;
 export class Image extends ImageBase {
+  static getSize(uri: string): Promise<ImageSize>;
   static getSize(
     uri: string,
     success: (width: number, height: number) => void,
     failure?: (error: any) => void,
-  ): any;
+  ): void;
+
+  static getSizeWithHeaders(
+    uri: string,
+    headers: {[index: string]: string},
+  ): Promise<ImageSize>;
   static getSizeWithHeaders(
     uri: string,
     headers: {[index: string]: string},
     success: (width: number, height: number) => void,
     failure?: (error: any) => void,
-  ): any;
+  ): void;
   static prefetch(url: string): Promise<boolean>;
   static prefetchWithMetadata(
     url: string,
@@ -368,16 +379,4 @@ export interface ImageBackgroundProps extends ImagePropsBase {
 declare class ImageBackgroundComponent extends React.Component<ImageBackgroundProps> {}
 declare const ImageBackgroundBase: Constructor<NativeMethods> &
   typeof ImageBackgroundComponent;
-export class ImageBackground extends ImageBackgroundBase {
-  resizeMode: ImageResizeMode;
-  getSize(
-    uri: string,
-    success: (width: number, height: number) => void,
-    failure: (error: any) => void,
-  ): any;
-  prefetch(url: string): any;
-  abortPrefetch?(requestId: number): void;
-  queryCache?(
-    urls: string[],
-  ): Promise<{[url: string]: 'memory' | 'disk' | 'disk/memory'}>;
-}
+export class ImageBackground extends ImageBackgroundBase {}

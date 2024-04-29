@@ -31,7 +31,7 @@ type TaskCancelProvider = () => TaskCanceller;
 
 export type ComponentProvider = () => React$ComponentType<any>;
 export type ComponentProviderInstrumentationHook = (
-  component: ComponentProvider,
+  component_: ComponentProvider,
   scopedPerformanceLogger: IPerformanceLogger,
 ) => React$ComponentType<any>;
 export type AppConfig = {
@@ -196,10 +196,8 @@ const AppRegistry = {
     displayMode?: number,
   ): void {
     if (appKey !== 'LogBox') {
-      const logParams = __DEV__
-        ? '" with ' + JSON.stringify(appParameters)
-        : '';
-      const msg = 'Running "' + appKey + logParams;
+      const logParams = __DEV__ ? ` with ${JSON.stringify(appParameters)}` : '';
+      const msg = `Running "${appKey}"${logParams}`;
       infoLog(msg);
       BugReporting.addSource(
         'AppRegistry.runApplication' + runCount++,
@@ -361,7 +359,9 @@ global.RN$SurfaceRegistry = {
   setSurfaceProps: AppRegistry.setSurfaceProps,
 };
 
-if (global.RN$Bridgeless !== true) {
+if (global.RN$Bridgeless === true) {
+  console.log('Bridgeless mode is enabled');
+} else {
   BatchedBridge.registerCallableModule('AppRegistry', AppRegistry);
 }
 

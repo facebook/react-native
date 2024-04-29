@@ -27,8 +27,7 @@ using namespace facebook::react;
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-    static auto const defaultProps = std::make_shared<UnimplementedViewProps const>();
-    _props = defaultProps;
+    _props = UnimplementedViewShadowNode::defaultSharedProps();
 
     _label = [[UILabel alloc] initWithFrame:self.bounds];
     _label.backgroundColor = [UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:0.3];
@@ -52,10 +51,10 @@ using namespace facebook::react;
   return concreteComponentDescriptorProvider<UnimplementedViewComponentDescriptor>();
 }
 
-- (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
+- (void)updateProps:(const Props::Shared &)props oldProps:(const Props::Shared &)oldProps
 {
-  auto const &oldUnimplementedViewProps = *std::static_pointer_cast<UnimplementedViewProps const>(_props);
-  auto const &newUnimplementedViewProps = *std::static_pointer_cast<UnimplementedViewProps const>(props);
+  const auto &oldUnimplementedViewProps = static_cast<const UnimplementedViewProps &>(*_props);
+  const auto &newUnimplementedViewProps = static_cast<const UnimplementedViewProps &>(*props);
 
   if (oldUnimplementedViewProps.getComponentName() != newUnimplementedViewProps.getComponentName()) {
     _label.text =

@@ -12,9 +12,7 @@ import static com.facebook.react.uimanager.common.UIManagerType.DEFAULT;
 import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.graphics.Canvas;
 import android.graphics.Insets;
 import android.graphics.Point;
@@ -53,7 +51,6 @@ import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.modules.appregistry.AppRegistry;
 import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
-import com.facebook.react.surface.ReactStage;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.JSPointerDispatcher;
@@ -62,6 +59,7 @@ import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactClippingProhibitedView;
 import com.facebook.react.uimanager.ReactRoot;
 import com.facebook.react.uimanager.ReactRootViewTagGenerator;
+import com.facebook.react.uimanager.ReactStage;
 import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.RootViewUtil;
 import com.facebook.react.uimanager.UIManagerHelper;
@@ -94,7 +92,6 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   private @Nullable ReactInstanceManager mReactInstanceManager;
   private @Nullable String mJSModuleName;
   private @Nullable Bundle mAppProperties;
-  private @Nullable String mInitialUITemplate;
   private @Nullable CustomGlobalLayoutListener mCustomGlobalLayoutListener;
   private @Nullable ReactRootViewEventListener mRootViewEventListener;
   private int mRootViewTag =
@@ -194,20 +191,14 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   }
 
   @Override
-  public void onChildStartedNativeGesture(MotionEvent ev) {
-    onChildStartedNativeGesture(null, ev);
-  }
-
-  @Override
   public void onChildStartedNativeGesture(View childView, MotionEvent ev) {
     if (!isDispatcherReady()) {
       return;
     }
-    ReactContext reactContext = getCurrentReactContext();
-    UIManager uiManager = UIManagerHelper.getUIManager(reactContext, getUIManagerType());
 
-    if (uiManager != null) {
-      EventDispatcher eventDispatcher = uiManager.getEventDispatcher();
+    EventDispatcher eventDispatcher =
+        UIManagerHelper.getEventDispatcher(getCurrentReactContext(), getUIManagerType());
+    if (eventDispatcher != null) {
       mJSTouchDispatcher.onChildStartedNativeGesture(ev, eventDispatcher);
       if (childView != null && mJSPointerDispatcher != null) {
         mJSPointerDispatcher.onChildStartedNativeGesture(childView, ev, eventDispatcher);
@@ -220,11 +211,10 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     if (!isDispatcherReady()) {
       return;
     }
-    ReactContext reactContext = getCurrentReactContext();
-    UIManager uiManager = UIManagerHelper.getUIManager(reactContext, getUIManagerType());
 
-    if (uiManager != null) {
-      EventDispatcher eventDispatcher = uiManager.getEventDispatcher();
+    EventDispatcher eventDispatcher =
+        UIManagerHelper.getEventDispatcher(getCurrentReactContext(), getUIManagerType());
+    if (eventDispatcher != null) {
       mJSTouchDispatcher.onChildEndedNativeGesture(ev, eventDispatcher);
       if (mJSPointerDispatcher != null) {
         mJSPointerDispatcher.onChildEndedNativeGesture();
@@ -327,7 +317,8 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     if (!hasActiveReactContext() || !isViewAttachedToReactInstance()) {
       FLog.w(
           TAG,
-          "Unable to handle child focus changed event as the catalyst instance has not been attached");
+          "Unable to handle child focus changed event as the catalyst instance has not been"
+              + " attached");
       super.requestChildFocus(child, focused);
       return;
     }
@@ -347,11 +338,10 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       FLog.w(TAG, "Unable to dispatch pointer events to JS before the dispatcher is available");
       return;
     }
-    ReactContext reactContext = getCurrentReactContext();
-    UIManager uiManager = UIManagerHelper.getUIManager(reactContext, getUIManagerType());
 
-    if (uiManager != null) {
-      EventDispatcher eventDispatcher = uiManager.getEventDispatcher();
+    EventDispatcher eventDispatcher =
+        UIManagerHelper.getEventDispatcher(getCurrentReactContext(), getUIManagerType());
+    if (eventDispatcher != null) {
       mJSPointerDispatcher.handleMotionEvent(event, eventDispatcher, isCapture);
     }
   }
@@ -365,11 +355,10 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       FLog.w(TAG, "Unable to dispatch touch to JS before the dispatcher is available");
       return;
     }
-    ReactContext reactContext = getCurrentReactContext();
-    UIManager uiManager = UIManagerHelper.getUIManager(reactContext, getUIManagerType());
 
-    if (uiManager != null) {
-      EventDispatcher eventDispatcher = uiManager.getEventDispatcher();
+    EventDispatcher eventDispatcher =
+        UIManagerHelper.getEventDispatcher(getCurrentReactContext(), getUIManagerType());
+    if (eventDispatcher != null) {
       mJSTouchDispatcher.handleTouchEvent(event, eventDispatcher);
     }
   }
@@ -432,8 +421,9 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
                 ReactSoftExceptionLogger.logSoftException(
                     TAG,
                     new ReactNoCrashSoftException(
-                        "A view was illegally added as a child of a ReactRootView. "
-                            + "This View should not be a direct child of a ReactRootView, because it is not visible and will never be reachable. Child: "
+                        "A view was illegally added as a child of a ReactRootView. This View should"
+                            + " not be a direct child of a ReactRootView, because it is not visible"
+                            + " and will never be reachable. Child: "
                             + child.getClass().getCanonicalName().toString()
                             + " child ID: "
                             + child.getId()));
@@ -461,26 +451,17 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     startReactApplication(reactInstanceManager, moduleName, null);
   }
 
-  /** {@see #startReactApplication(ReactInstanceManager, String, android.os.Bundle, String)} */
-  public void startReactApplication(
-      ReactInstanceManager reactInstanceManager,
-      String moduleName,
-      @Nullable Bundle initialProperties) {
-    startReactApplication(reactInstanceManager, moduleName, initialProperties, null);
-  }
-
   /**
    * Schedule rendering of the react component rendered by the JS application from the given JS
    * module (@{param moduleName}) using provided {@param reactInstanceManager} to attach to the JS
-   * context of that manager. Extra parameter {@param launchOptions} can be used to pass initial
+   * context of that manager. Extra parameter {@param initialProperties} can be used to pass initial
    * properties for the react component.
    */
   @ThreadConfined(UI)
   public void startReactApplication(
       ReactInstanceManager reactInstanceManager,
       String moduleName,
-      @Nullable Bundle initialProperties,
-      @Nullable String initialUITemplate) {
+      @Nullable Bundle initialProperties) {
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "startReactApplication");
     try {
       UiThreadUtil.assertOnUiThread();
@@ -495,7 +476,6 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       mReactInstanceManager = reactInstanceManager;
       mJSModuleName = moduleName;
       mAppProperties = initialProperties;
-      mInitialUITemplate = initialUITemplate;
 
       mReactInstanceManager.createReactContextInBackground();
       // if in this experiment, we initialize the root earlier in startReactApplication
@@ -620,7 +600,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   }
 
   @Override
-  public void onStage(int stage) {
+  public void onStage(@ReactStage int stage) {
     switch (stage) {
       case ReactStage.ON_ATTACH_TO_INSTANCE:
         onAttachedToReactInstance();
@@ -658,11 +638,6 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   @Override
   public @Nullable Bundle getAppProperties() {
     return mAppProperties;
-  }
-
-  @Override
-  public @Nullable String getInitialUITemplate() {
-    return mInitialUITemplate;
   }
 
   @ThreadConfined(UI)
@@ -785,11 +760,11 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     super.finalize();
     Assertions.assertCondition(
         !mIsAttachedToInstance,
-        "The application this ReactRootView was rendering was not unmounted before the "
-            + "ReactRootView was garbage collected. This usually means that your application is "
-            + "leaking large amounts of memory. To solve this, make sure to call "
-            + "ReactRootView#unmountReactApplication in the onDestroy() of your hosting Activity or in "
-            + "the onDestroyView() of your hosting Fragment.");
+        "The application this ReactRootView was rendering was not unmounted before the"
+            + " ReactRootView was garbage collected. This usually means that your application is"
+            + " leaking large amounts of memory. To solve this, make sure to call"
+            + " ReactRootView#unmountReactApplication in the onDestroy() of your hosting Activity"
+            + " or in the onDestroyView() of your hosting Fragment.");
   }
 
   public int getRootViewTag() {
@@ -881,14 +856,6 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       checkForDeviceDimensionsChanges();
     }
 
-    private Activity getActivity() {
-      Context context = getContext();
-      while (!(context instanceof Activity) && context instanceof ContextWrapper) {
-        context = ((ContextWrapper) context).getBaseContext();
-      }
-      return (Activity) context;
-    }
-
     @RequiresApi(api = Build.VERSION_CODES.R)
     private void checkForKeyboardEvents() {
       getRootView().getWindowVisibleDisplayFrame(mVisibleViewArea);
@@ -906,7 +873,10 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
           Insets barInsets = rootInsets.getInsets(WindowInsets.Type.systemBars());
           int height = imeInsets.bottom - barInsets.bottom;
 
-          int softInputMode = getActivity().getWindow().getAttributes().softInputMode;
+          ViewGroup.LayoutParams rootLayoutParams = getRootView().getLayoutParams();
+          Assertions.assertCondition(rootLayoutParams instanceof WindowManager.LayoutParams);
+
+          int softInputMode = ((WindowManager.LayoutParams) rootLayoutParams).softInputMode;
           int screenY =
               softInputMode == WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING
                   ? mVisibleViewArea.bottom - height

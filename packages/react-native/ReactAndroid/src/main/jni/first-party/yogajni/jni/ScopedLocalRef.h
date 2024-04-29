@@ -15,9 +15,7 @@
 #include <cstddef>
 #include <type_traits>
 
-namespace facebook {
-namespace yoga {
-namespace vanillajni {
+namespace facebook::yoga::vanillajni {
 
 /**
  * ScopedLocalRef is a sort of smart reference that allows us to control the
@@ -37,9 +35,10 @@ namespace vanillajni {
  *
  * This class is very explicit in its behavior, and it does not allow to perform
  * unexpected conversions or unexpected ownership transfer. In practice, this
- * class acts as a unique pointer where the underying JNI reference can have one
- * and just one owner. Transferring ownership is allowed but it is an explicit
- * operation (implemented via move semantics and also via explicitly API calls).
+ * class acts as a unique pointer where the underlying JNI reference can have
+ * one and just one owner. Transferring ownership is allowed but it is an
+ * explicit operation (implemented via move semantics and also via explicitly
+ * API calls).
  *
  * As with standard JNI local references it is not a valid operation to keep a
  * reference around between different native method calls.
@@ -56,7 +55,7 @@ class ScopedLocalRef {
           std::is_same<T, jbooleanArray>(),
       "ScopedLocalRef instantiated for invalid type");
 
-public:
+ public:
   /**
    * Constructs a ScopedLocalRef with a JNI local reference.
    *
@@ -72,18 +71,21 @@ public:
   /**
    * Move construction is allowed.
    */
-  ScopedLocalRef(ScopedLocalRef&& s) : mEnv(s.mEnv), mLocalRef(s.release()) {}
+  ScopedLocalRef(ScopedLocalRef&& s) noexcept
+      : mEnv(s.mEnv), mLocalRef(s.release()) {}
 
   /**
    * Move assignment is allowed.
    */
-  ScopedLocalRef& operator=(ScopedLocalRef&& s) {
+  ScopedLocalRef& operator=(ScopedLocalRef&& s) noexcept {
     reset(s.release());
     mEnv = s.mEnv;
     return *this;
   }
 
-  ~ScopedLocalRef() { reset(); }
+  ~ScopedLocalRef() {
+    reset();
+  }
 
   /**
    * Deletes the currently held reference and reassigns a new one to the
@@ -112,17 +114,21 @@ public:
   /**
    * Returns the underlying JNI local reference.
    */
-  T get() const { return mLocalRef; }
+  T get() const {
+    return mLocalRef;
+  }
 
   /**
    * Returns true if the underlying JNI reference is not NULL.
    */
-  operator bool() const { return mLocalRef != NULL; }
+  operator bool() const {
+    return mLocalRef != NULL;
+  }
 
   ScopedLocalRef(const ScopedLocalRef& ref) = delete;
   ScopedLocalRef& operator=(const ScopedLocalRef& other) = delete;
 
-private:
+ private:
   JNIEnv* mEnv;
   T mLocalRef;
 };
@@ -132,6 +138,4 @@ ScopedLocalRef<T> make_local_ref(JNIEnv* env, T localRef) {
   return ScopedLocalRef<T>(env, localRef);
 }
 
-} // namespace vanillajni
-} // namespace yoga
-} // namespace facebook
+} // namespace facebook::yoga::vanillajni

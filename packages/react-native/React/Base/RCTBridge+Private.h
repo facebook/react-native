@@ -70,9 +70,6 @@ RCT_EXTERN void RCTRegisterModule(Class);
  */
 @property (nonatomic, strong, readonly) RCTModuleRegistry *moduleRegistry;
 
-@property (nonatomic, copy, readwrite) NSArray<NSString *> *eagerInitModuleNames_DO_NOT_USE;
-@property (nonatomic, copy, readwrite) NSArray<NSString *> *eagerInitMainQueueModuleNames_DO_NOT_USE;
-
 @end
 
 @interface RCTBridge (RCTCxxBridge)
@@ -141,12 +138,6 @@ RCT_EXTERN void RCTRegisterModule(Class);
  * Allow super fast, one time, timers to skip the queue and be directly executed
  */
 - (void)_immediatelyCallTimer:(NSNumber *)timer;
-
-@end
-
-@interface RCTBridge (Inspector)
-
-@property (nonatomic, readonly, getter=isInspectable) BOOL inspectable;
 
 @end
 

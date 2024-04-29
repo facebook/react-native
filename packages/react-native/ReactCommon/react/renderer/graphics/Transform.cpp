@@ -14,8 +14,8 @@
 
 namespace facebook::react {
 
-#ifdef RN_DEBUG_STRING_CONVERTIBLE
-void Transform::print(Transform const &t, std::string prefix) {
+#if RN_DEBUG_STRING_CONVERTIBLE
+void Transform::print(const Transform& t, std::string prefix) {
   LOG(ERROR) << prefix << "[ " << t.matrix[0] << " " << t.matrix[1] << " "
              << t.matrix[2] << " " << t.matrix[3] << " ]";
   LOG(ERROR) << prefix << "[ " << t.matrix[4] << " " << t.matrix[5] << " "
@@ -191,8 +191,8 @@ TransformOperation Transform::DefaultTransformOperation(
 
 Transform Transform::Interpolate(
     Float animationProgress,
-    Transform const &lhs,
-    Transform const &rhs) {
+    const Transform& lhs,
+    const Transform& rhs) {
   // Iterate through operations and reconstruct an interpolated resulting
   // transform If at any point we hit an "Arbitrary" Transform, return at that
   // point
@@ -248,15 +248,15 @@ Transform Transform::Interpolate(
   return result;
 }
 
-bool Transform::isVerticalInversion(Transform const &transform) {
+bool Transform::isVerticalInversion(const Transform& transform) {
   return transform.at(1, 1) == -1;
 }
 
-bool Transform::isHorizontalInversion(Transform const &transform) {
+bool Transform::isHorizontalInversion(const Transform& transform) {
   return transform.at(0, 0) == -1;
 }
 
-bool Transform::operator==(Transform const &rhs) const {
+bool Transform::operator==(const Transform& rhs) const {
   for (auto i = 0; i < 16; i++) {
     if (matrix[i] != rhs.matrix[i]) {
       return false;
@@ -265,25 +265,25 @@ bool Transform::operator==(Transform const &rhs) const {
   return true;
 }
 
-bool Transform::operator!=(Transform const &rhs) const {
+bool Transform::operator!=(const Transform& rhs) const {
   return !(*this == rhs);
 }
 
-Transform Transform::operator*(Transform const &rhs) const {
+Transform Transform::operator*(const Transform& rhs) const {
   if (*this == Transform::Identity()) {
     return rhs;
   }
 
-  const auto &lhs = *this;
+  const auto& lhs = *this;
   auto result = Transform{};
-  for (const auto &op : this->operations) {
+  for (const auto& op : this->operations) {
     if (op.type == TransformOperationType::Identity &&
         !result.operations.empty()) {
       continue;
     }
     result.operations.push_back(op);
   }
-  for (const auto &op : rhs.operations) {
+  for (const auto& op : rhs.operations) {
     if (op.type == TransformOperationType::Identity &&
         !result.operations.empty()) {
       continue;
@@ -347,15 +347,15 @@ Transform Transform::operator*(Transform const &rhs) const {
   return result;
 }
 
-Float &Transform::at(int i, int j) {
+Float& Transform::at(int i, int j) {
   return matrix[(i * 4) + j];
 }
 
-Float const &Transform::at(int i, int j) const {
+const Float& Transform::at(int i, int j) const {
   return matrix[(i * 4) + j];
 }
 
-Point operator*(Point const &point, Transform const &transform) {
+Point operator*(const Point& point, const Transform& transform) {
   if (transform == Transform::Identity()) {
     return point;
   }
@@ -365,29 +365,32 @@ Point operator*(Point const &point, Transform const &transform) {
   return {result.x, result.y};
 }
 
-Rect operator*(Rect const &rect, Transform const &transform) {
-  auto centre = rect.getCenter();
+Rect operator*(const Rect& rect, const Transform& transform) {
+  auto center = rect.getCenter();
+  return transform.applyWithCenter(rect, center);
+}
 
-  auto a = Point{rect.origin.x, rect.origin.y} - centre;
-  auto b = Point{rect.getMaxX(), rect.origin.y} - centre;
-  auto c = Point{rect.getMaxX(), rect.getMaxY()} - centre;
-  auto d = Point{rect.origin.x, rect.getMaxY()} - centre;
+Rect Transform::applyWithCenter(const Rect& rect, const Point& center) const {
+  auto a = Point{rect.origin.x, rect.origin.y} - center;
+  auto b = Point{rect.getMaxX(), rect.origin.y} - center;
+  auto c = Point{rect.getMaxX(), rect.getMaxY()} - center;
+  auto d = Point{rect.origin.x, rect.getMaxY()} - center;
 
-  auto vectorA = transform * Vector{a.x, a.y, 0, 1};
-  auto vectorB = transform * Vector{b.x, b.y, 0, 1};
-  auto vectorC = transform * Vector{c.x, c.y, 0, 1};
-  auto vectorD = transform * Vector{d.x, d.y, 0, 1};
+  auto vectorA = *this * Vector{a.x, a.y, 0, 1};
+  auto vectorB = *this * Vector{b.x, b.y, 0, 1};
+  auto vectorC = *this * Vector{c.x, c.y, 0, 1};
+  auto vectorD = *this * Vector{d.x, d.y, 0, 1};
 
-  Point transformedA{vectorA.x + centre.x, vectorA.y + centre.y};
-  Point transformedB{vectorB.x + centre.x, vectorB.y + centre.y};
-  Point transformedC{vectorC.x + centre.x, vectorC.y + centre.y};
-  Point transformedD{vectorD.x + centre.x, vectorD.y + centre.y};
+  Point transformedA{vectorA.x + center.x, vectorA.y + center.y};
+  Point transformedB{vectorB.x + center.x, vectorB.y + center.y};
+  Point transformedC{vectorC.x + center.x, vectorC.y + center.y};
+  Point transformedD{vectorD.x + center.x, vectorD.y + center.y};
 
   return Rect::boundingRect(
       transformedA, transformedB, transformedC, transformedD);
 }
 
-EdgeInsets operator*(EdgeInsets const &edgeInsets, Transform const &transform) {
+EdgeInsets operator*(const EdgeInsets& edgeInsets, const Transform& transform) {
   return EdgeInsets{
       edgeInsets.left * transform.matrix[0],
       edgeInsets.top * transform.matrix[5],
@@ -395,7 +398,7 @@ EdgeInsets operator*(EdgeInsets const &edgeInsets, Transform const &transform) {
       edgeInsets.bottom * transform.matrix[5]};
 }
 
-Vector operator*(Transform const &transform, Vector const &vector) {
+Vector operator*(const Transform& transform, const Vector& vector) {
   return {
       vector.x * transform.at(0, 0) + vector.y * transform.at(1, 0) +
           vector.z * transform.at(2, 0) + vector.w * transform.at(3, 0),
@@ -408,7 +411,7 @@ Vector operator*(Transform const &transform, Vector const &vector) {
   };
 }
 
-Size operator*(Size const &size, Transform const &transform) {
+Size operator*(const Size& size, const Transform& transform) {
   if (transform == Transform::Identity()) {
     return size;
   }

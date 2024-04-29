@@ -10,14 +10,16 @@
 
 'use strict';
 
+import type {RNTesterModule} from '../../types/RNTesterTypes';
+
+import TextLegend from '../../components/TextLegend';
 import TextAdjustsDynamicLayoutExample from './TextAdjustsDynamicLayoutExample';
+import TextInlineViewsExample from './TextInlineViewsExample';
 
 const RNTesterBlock = require('../../components/RNTesterBlock');
 const RNTesterPage = require('../../components/RNTesterPage');
-const React = require('react');
 const TextInlineView = require('../../components/TextInlineView');
-import TextLegend from '../../components/TextLegend';
-
+const React = require('react');
 const {LayoutAnimation, StyleSheet, Text, View} = require('react-native');
 
 class Entity extends React.Component<{|children: React.Node|}> {
@@ -981,25 +983,24 @@ function TextBaseLineLayoutExample(props: {}): React.Node {
   );
 }
 
-exports.title = 'Text';
-exports.documentationURL = 'https://reactnative.dev/docs/text';
-exports.category = 'Basic';
-exports.description = 'Base component for rendering styled text.';
-exports.examples = [
+const examples = [
   {
     title: 'Basic text',
+    name: 'basicText',
     render: function (): React.Element<typeof TextExample> {
       return <TextExample />;
     },
   },
   {
     title: "Text `alignItems: 'baseline'` style",
+    name: 'alignItemsBaseline',
     render: function (): React.Node {
       return <TextBaseLineLayoutExample />;
     },
   },
   {
     title: 'Selectable Text',
+    name: 'selectableText',
     render: function (): React.Node {
       return (
         <View>
@@ -1010,6 +1011,7 @@ exports.examples = [
   },
   {
     title: 'Text alignment',
+    name: 'textAlignment',
     render: function (): React.Node {
       return (
         <View>
@@ -1030,4 +1032,14 @@ exports.examples = [
       );
     },
   },
+  TextInlineViewsExample,
 ];
+
+module.exports = ({
+  title: 'Text',
+  documentationURL: 'https://reactnative.dev/docs/text',
+  category: 'Basic',
+  description: 'Base component for rendering styled text.',
+  displayName: 'TextExample',
+  examples,
+}: RNTesterModule);

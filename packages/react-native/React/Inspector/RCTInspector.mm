@@ -9,7 +9,7 @@
 
 #if RCT_DEV || RCT_REMOTE_PROFILE
 
-#include <jsinspector/InspectorInterfaces.h>
+#import <jsinspector-modern/InspectorInterfaces.h>
 
 #import <React/RCTDefines.h>
 #import <React/RCTInspectorPackagerConnection.h>
@@ -17,6 +17,7 @@
 #import <React/RCTUtils.h>
 
 using namespace facebook::react;
+using namespace facebook::react::jsinspector_modern;
 
 // This is a port of the Android impl, at
 // react-native-github/ReactAndroid/src/main/java/com/facebook/react/bridge/Inspector.java
@@ -57,7 +58,7 @@ class RemoteConnection : public IRemoteConnection {
 
 static IInspector *getInstance()
 {
-  return &facebook::react::getInspectorInstance();
+  return &facebook::react::jsinspector_modern::getInspectorInstance();
 }
 
 @implementation RCTInspector
@@ -66,7 +67,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 + (NSArray<RCTInspectorPage *> *)pages
 {
-  std::vector<InspectorPage> pages = getInstance()->getPages();
+  std::vector<InspectorPageDescription> pages = getInstance()->getPages();
   NSMutableArray<RCTInspectorPage *> *array = [NSMutableArray arrayWithCapacity:pages.size()];
   for (size_t i = 0; i < pages.size(); i++) {
     RCTInspectorPage *pageWrapper = [[RCTInspectorPage alloc] initWithId:pages[i].id

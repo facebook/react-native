@@ -12,6 +12,7 @@
 #include <react/renderer/attributedstring/AttributedStringBox.h>
 #include <react/renderer/attributedstring/ParagraphAttributes.h>
 #include <react/renderer/core/LayoutConstraints.h>
+#include <react/renderer/textlayoutmanager/TextLayoutContext.h>
 #include <react/renderer/textlayoutmanager/TextMeasureCache.h>
 #include <react/utils/ContextContainer.h>
 
@@ -24,7 +25,7 @@ class TextLayoutManager;
  */
 class TextLayoutManager {
  public:
-  TextLayoutManager(ContextContainer::Shared const &contextContainer);
+  TextLayoutManager(const ContextContainer::Shared& contextContainer);
 
   /*
    * Measures `attributedString` using native text rendering infrastructure.
@@ -32,8 +33,8 @@ class TextLayoutManager {
   TextMeasurement measure(
       AttributedStringBox attributedStringBox,
       ParagraphAttributes paragraphAttributes,
-      LayoutConstraints layoutConstraints,
-      std::shared_ptr<void> hostTextStorage) const;
+      const TextLayoutContext& layoutContext,
+      LayoutConstraints layoutConstraints) const;
 
   /*
    * Measures lines of `attributedString` using native text rendering
@@ -43,11 +44,6 @@ class TextLayoutManager {
       AttributedString attributedString,
       ParagraphAttributes paragraphAttributes,
       Size size) const;
-
-  std::shared_ptr<void> getHostTextStorage(
-      AttributedString attributedString,
-      ParagraphAttributes paragraphAttributes,
-      LayoutConstraints layoutConstraints) const;
 
   /*
    * Returns an opaque pointer to platform-specific TextLayoutManager.

@@ -9,8 +9,9 @@ class Pathname
 
     attr_reader :path
 
-    def initialize(path)
+    def initialize(path, parent = "")
         @path = path
+        @parent = parent
     end
 
     def realpath
@@ -19,6 +20,10 @@ class Pathname
 
     def relative_path_from(path)
         return @path
+    end
+
+    def parent
+        return @parent
     end
 
     def self.pwd!(pwd)
@@ -34,6 +39,9 @@ class Pathname
         return @@pwd_invocation_count
     end
 
+    def to_s
+        return @path
+    end
 
     def self.reset()
         @@pwd = ""

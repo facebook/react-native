@@ -169,6 +169,7 @@ function getEnumMaskName(enumName: string): string {
 function convertDefaultTypeToString(
   componentName: string,
   prop: NamedShape<PropTypeAnnotation>,
+  fromBuilder: boolean = false,
 ): string {
   const typeAnnotation = prop.typeAnnotation;
   switch (typeAnnotation.type) {
@@ -231,6 +232,9 @@ function convertDefaultTypeToString(
           const defaultValue = `${enumName}::${toSafeCppString(
             elementType.default,
           )}`;
+          if (fromBuilder) {
+            return `${enumMaskName}Wrapped{ .value = static_cast<${enumMaskName}>(${defaultValue})}`;
+          }
           return `static_cast<${enumMaskName}>(${defaultValue})`;
         default:
           return '';
@@ -256,6 +260,50 @@ function convertDefaultTypeToString(
   }
 }
 
+function getSourceProp(
+  componentName: string,
+  prop: NamedShape<PropTypeAnnotation>,
+): string {
+  const typeAnnotation = prop.typeAnnotation;
+  switch (typeAnnotation.type) {
+    case 'ArrayTypeAnnotation':
+      const elementType = typeAnnotation.elementType;
+      switch (elementType.type) {
+        case 'StringEnumTypeAnnotation':
+          const enumName = getEnumName(componentName, prop.name);
+          const enumMaskName = getEnumMaskName(enumName);
+          return `${enumMaskName}Wrapped{ .value = sourceProps.${prop.name} }`;
+      }
+  }
+  return `sourceProps.${prop.name}`;
+}
+
+function isWrappedPropType(prop: NamedShape<PropTypeAnnotation>): boolean {
+  const typeAnnotation = prop.typeAnnotation;
+  switch (typeAnnotation.type) {
+    case 'ArrayTypeAnnotation':
+      const elementType = typeAnnotation.elementType;
+      switch (elementType.type) {
+        case 'StringEnumTypeAnnotation':
+          return true;
+      }
+  }
+  return false;
+}
+
+const IncludeTemplate = ({
+  headerPrefix,
+  file,
+}: {
+  headerPrefix: string,
+  file: string,
+}): string => {
+  if (headerPrefix === '') {
+    return `#include "${file}"`;
+  }
+  return `#include <${headerPrefix}${file}>`;
+};
+
 module.exports = {
   convertDefaultTypeToString,
   getCppArrayTypeForAnnotation,
@@ -265,4 +313,7 @@ module.exports = {
   toIntEnumValueName,
   generateStructName,
   generateEventStructName,
+  IncludeTemplate,
+  getSourceProp,
+  isWrappedPropType,
 };

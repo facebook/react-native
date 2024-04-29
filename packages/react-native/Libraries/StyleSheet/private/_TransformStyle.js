@@ -52,4 +52,18 @@ export type ____TransformStyle_Internal = $ReadOnly<{|
           |},
       >
     | string,
+  /**
+   * `transformOrigin` accepts an array with 3 elements - each element either being
+   * a number, or a string of a number ending with `%`. The last element cannot be
+   * a percentage, so must be a number.
+   *
+   * E.g. transformOrigin: ['30%', '80%', 15]
+   *
+   * Alternatively accepts a string of the CSS syntax. You must use `%` or `px`.
+   *
+   * E.g. transformOrigin: '30% 80% 15px'
+   */
+  transformOrigin?:
+    | [string | number, string | number, string | number]
+    | string,
 |}>;

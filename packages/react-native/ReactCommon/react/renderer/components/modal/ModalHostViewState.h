@@ -30,7 +30,7 @@ class ModalHostViewState final {
 
 #ifdef ANDROID
   ModalHostViewState(
-      ModalHostViewState const &previousState,
+      const ModalHostViewState& previousState,
       folly::dynamic data)
       : screenSize(Size{
             (Float)data["screenWidth"].getDouble(),

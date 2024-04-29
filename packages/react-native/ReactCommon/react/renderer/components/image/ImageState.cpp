@@ -13,7 +13,7 @@ ImageSource ImageState::getImageSource() const {
   return imageSource_;
 }
 
-ImageRequest const &ImageState::getImageRequest() const {
+const ImageRequest& ImageState::getImageRequest() const {
   return *imageRequest_;
 }
 

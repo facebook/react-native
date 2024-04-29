@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#pragma once
+
 #include <folly/dynamic.h>
 #include <react/renderer/components/rncore/Props.h>
 #include <react/renderer/core/propsConversions.h>
@@ -12,7 +14,7 @@
 namespace facebook::react {
 
 #ifdef ANDROID
-inline folly::dynamic toDynamic(AndroidProgressBarProps const &props) {
+inline folly::dynamic toDynamic(const AndroidProgressBarProps& props) {
   folly::dynamic serializedProps = folly::dynamic::object();
   serializedProps["styleAttr"] = props.styleAttr;
   serializedProps["typeAttr"] = props.typeAttr;

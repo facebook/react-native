@@ -18,7 +18,7 @@ const props = {
   data,
   getItemCount: () => data.length,
 };
-function getFrameMetrics(index: number) {
+function getCellMetrics(index: number) {
   const frame = rowFrames[data[index].key];
   return {length: frame.height, offset: frame.y};
 }
@@ -38,9 +38,9 @@ describe('computeViewableItems', function () {
       d: {y: 150, height: 50},
     };
     data = [{key: 'a'}, {key: 'b'}, {key: 'c'}, {key: 'd'}];
-    expect(helper.computeViewableItems(props, 0, 200, getFrameMetrics)).toEqual(
-      [0, 1, 2, 3],
-    );
+    expect(
+      helper.computeViewableItems(props, 0, 200, {getCellMetrics}),
+    ).toEqual([0, 1, 2, 3]);
   });
 
   it('returns top 2 rows as viewable (1. entirely visible and 2. majority)', function () {
@@ -54,9 +54,9 @@ describe('computeViewableItems', function () {
       d: {y: 250, height: 50},
     };
     data = [{key: 'a'}, {key: 'b'}, {key: 'c'}, {key: 'd'}];
-    expect(helper.computeViewableItems(props, 0, 200, getFrameMetrics)).toEqual(
-      [0, 1],
-    );
+    expect(
+      helper.computeViewableItems(props, 0, 200, {getCellMetrics}),
+    ).toEqual([0, 1]);
   });
 
   it('returns only 2nd row as viewable (majority)', function () {
@@ -71,7 +71,7 @@ describe('computeViewableItems', function () {
     };
     data = [{key: 'a'}, {key: 'b'}, {key: 'c'}, {key: 'd'}];
     expect(
-      helper.computeViewableItems(props, 25, 200, getFrameMetrics),
+      helper.computeViewableItems(props, 25, 200, {getCellMetrics}),
     ).toEqual([1]);
   });
 
@@ -81,9 +81,9 @@ describe('computeViewableItems', function () {
     });
     rowFrames = {};
     data = [];
-    expect(helper.computeViewableItems(props, 0, 200, getFrameMetrics)).toEqual(
-      [],
-    );
+    expect(
+      helper.computeViewableItems(props, 0, 200, {getCellMetrics}),
+    ).toEqual([]);
   });
 
   it('handles different view area coverage percent thresholds', function () {
@@ -96,39 +96,39 @@ describe('computeViewableItems', function () {
     data = [{key: 'a'}, {key: 'b'}, {key: 'c'}, {key: 'd'}];
 
     let helper = new ViewabilityHelper({viewAreaCoveragePercentThreshold: 0});
-    expect(helper.computeViewableItems(props, 0, 50, getFrameMetrics)).toEqual([
-      0,
-    ]);
-    expect(helper.computeViewableItems(props, 1, 50, getFrameMetrics)).toEqual([
-      0, 1,
-    ]);
+    expect(helper.computeViewableItems(props, 0, 50, {getCellMetrics})).toEqual(
+      [0],
+    );
+    expect(helper.computeViewableItems(props, 1, 50, {getCellMetrics})).toEqual(
+      [0, 1],
+    );
     expect(
-      helper.computeViewableItems(props, 199, 50, getFrameMetrics),
+      helper.computeViewableItems(props, 199, 50, {getCellMetrics}),
     ).toEqual([1, 2]);
     expect(
-      helper.computeViewableItems(props, 250, 50, getFrameMetrics),
+      helper.computeViewableItems(props, 250, 50, {getCellMetrics}),
     ).toEqual([2]);
 
     helper = new ViewabilityHelper({viewAreaCoveragePercentThreshold: 100});
-    expect(helper.computeViewableItems(props, 0, 200, getFrameMetrics)).toEqual(
-      [0, 1],
-    );
-    expect(helper.computeViewableItems(props, 1, 200, getFrameMetrics)).toEqual(
-      [1],
-    );
     expect(
-      helper.computeViewableItems(props, 400, 200, getFrameMetrics),
+      helper.computeViewableItems(props, 0, 200, {getCellMetrics}),
+    ).toEqual([0, 1]);
+    expect(
+      helper.computeViewableItems(props, 1, 200, {getCellMetrics}),
+    ).toEqual([1]);
+    expect(
+      helper.computeViewableItems(props, 400, 200, {getCellMetrics}),
     ).toEqual([2]);
     expect(
-      helper.computeViewableItems(props, 600, 200, getFrameMetrics),
+      helper.computeViewableItems(props, 600, 200, {getCellMetrics}),
     ).toEqual([3]);
 
     helper = new ViewabilityHelper({viewAreaCoveragePercentThreshold: 10});
     expect(
-      helper.computeViewableItems(props, 30, 200, getFrameMetrics),
+      helper.computeViewableItems(props, 30, 200, {getCellMetrics}),
     ).toEqual([0, 1, 2]);
     expect(
-      helper.computeViewableItems(props, 31, 200, getFrameMetrics),
+      helper.computeViewableItems(props, 31, 200, {getCellMetrics}),
     ).toEqual([1, 2]);
   });
 
@@ -141,30 +141,30 @@ describe('computeViewableItems', function () {
     };
     data = [{key: 'a'}, {key: 'b'}, {key: 'c'}, {key: 'd'}];
     let helper = new ViewabilityHelper({itemVisiblePercentThreshold: 0});
-    expect(helper.computeViewableItems(props, 0, 50, getFrameMetrics)).toEqual([
-      0,
-    ]);
-    expect(helper.computeViewableItems(props, 1, 50, getFrameMetrics)).toEqual([
-      0, 1,
-    ]);
+    expect(helper.computeViewableItems(props, 0, 50, {getCellMetrics})).toEqual(
+      [0],
+    );
+    expect(helper.computeViewableItems(props, 1, 50, {getCellMetrics})).toEqual(
+      [0, 1],
+    );
 
     helper = new ViewabilityHelper({itemVisiblePercentThreshold: 100});
-    expect(helper.computeViewableItems(props, 0, 250, getFrameMetrics)).toEqual(
-      [0, 1, 2],
-    );
-    expect(helper.computeViewableItems(props, 1, 250, getFrameMetrics)).toEqual(
-      [1, 2],
-    );
+    expect(
+      helper.computeViewableItems(props, 0, 250, {getCellMetrics}),
+    ).toEqual([0, 1, 2]);
+    expect(
+      helper.computeViewableItems(props, 1, 250, {getCellMetrics}),
+    ).toEqual([1, 2]);
 
     helper = new ViewabilityHelper({itemVisiblePercentThreshold: 10});
     expect(
-      helper.computeViewableItems(props, 184, 20, getFrameMetrics),
+      helper.computeViewableItems(props, 184, 20, {getCellMetrics}),
     ).toEqual([1]);
     expect(
-      helper.computeViewableItems(props, 185, 20, getFrameMetrics),
+      helper.computeViewableItems(props, 185, 20, {getCellMetrics}),
     ).toEqual([1, 2]);
     expect(
-      helper.computeViewableItems(props, 186, 20, getFrameMetrics),
+      helper.computeViewableItems(props, 186, 20, {getCellMetrics}),
     ).toEqual([2]);
   });
 });
@@ -181,7 +181,7 @@ describe('onUpdate', function () {
       props,
       0,
       200,
-      getFrameMetrics,
+      {getCellMetrics},
       createViewToken,
       onViewableItemsChanged,
     );
@@ -195,7 +195,7 @@ describe('onUpdate', function () {
       props,
       0,
       200,
-      getFrameMetrics,
+      {getCellMetrics},
       createViewToken,
       onViewableItemsChanged,
     );
@@ -204,7 +204,7 @@ describe('onUpdate', function () {
       props,
       100,
       200,
-      getFrameMetrics,
+      {getCellMetrics},
       createViewToken,
       onViewableItemsChanged,
     );
@@ -228,7 +228,7 @@ describe('onUpdate', function () {
       props,
       0,
       200,
-      getFrameMetrics,
+      {getCellMetrics},
       createViewToken,
       onViewableItemsChanged,
     );
@@ -242,7 +242,7 @@ describe('onUpdate', function () {
       props,
       100,
       200,
-      getFrameMetrics,
+      {getCellMetrics},
       createViewToken,
       onViewableItemsChanged,
     );
@@ -260,7 +260,7 @@ describe('onUpdate', function () {
       props,
       200,
       200,
-      getFrameMetrics,
+      {getCellMetrics},
       createViewToken,
       onViewableItemsChanged,
     );
@@ -287,7 +287,7 @@ describe('onUpdate', function () {
       props,
       0,
       200,
-      getFrameMetrics,
+      {getCellMetrics},
       createViewToken,
       onViewableItemsChanged,
     );
@@ -321,7 +321,7 @@ describe('onUpdate', function () {
       props,
       0,
       200,
-      getFrameMetrics,
+      {getCellMetrics},
       createViewToken,
       onViewableItemsChanged,
     );
@@ -329,7 +329,7 @@ describe('onUpdate', function () {
       props,
       300, // scroll past item 'a'
       200,
-      getFrameMetrics,
+      {getCellMetrics},
       createViewToken,
       onViewableItemsChanged,
     );
@@ -362,7 +362,7 @@ describe('onUpdate', function () {
       props,
       0,
       100,
-      getFrameMetrics,
+      {getCellMetrics},
       createViewToken,
       onViewableItemsChanged,
     );
@@ -374,7 +374,7 @@ describe('onUpdate', function () {
       props,
       20,
       100,
-      getFrameMetrics,
+      {getCellMetrics},
       createViewToken,
       onViewableItemsChanged,
     );
@@ -401,7 +401,7 @@ describe('onUpdate', function () {
       props,
       0,
       200,
-      getFrameMetrics,
+      {getCellMetrics},
       createViewToken,
       onViewableItemsChanged,
     );
@@ -426,7 +426,7 @@ describe('onUpdate', function () {
       props,
       0,
       200,
-      getFrameMetrics,
+      {getCellMetrics},
       createViewToken,
       onViewableItemsChanged,
     );
@@ -440,5 +440,30 @@ describe('onUpdate', function () {
       viewabilityConfig: {viewAreaCoveragePercentThreshold: 0},
       viewableItems: [{isViewable: true, key: 'c'}],
     });
+  });
+
+  it('should account for imprecision on measurements of width of viewport and item', () => {
+    // This test assures we round down the calculations of the item cell layout
+    // to avoid cases of imprecison when measuring layout
+    const helper = new ViewabilityHelper({itemVisiblePercentThreshold: 100});
+    const testProps = {
+      getItemCount: () => 1,
+      data: ['Item'],
+    };
+    const listMetrics = {
+      getCellMetrics: () => ({
+        index: 0,
+        length: 147.4285888671875,
+        offset: 1767.6190185546875,
+        isMounted: true,
+      }),
+    };
+    const viewableIndices = helper.computeViewableItems(
+      testProps,
+      1503.61901855, // scrollOffset
+      411.4285583496094, // viewportHeight (viewportWidth depending on scrolling axis)
+      listMetrics,
+    );
+    expect(viewableIndices).toEqual([0]);
   });
 });

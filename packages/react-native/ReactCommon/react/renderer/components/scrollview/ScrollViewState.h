@@ -41,7 +41,7 @@ class ScrollViewState final {
   Size getContentSize() const;
 
 #ifdef ANDROID
-  ScrollViewState(ScrollViewState const &previousState, folly::dynamic data)
+  ScrollViewState(const ScrollViewState& previousState, folly::dynamic data)
       : contentOffset(
             {(Float)data["contentOffsetLeft"].getDouble(),
              (Float)data["contentOffsetTop"].getDouble()}),

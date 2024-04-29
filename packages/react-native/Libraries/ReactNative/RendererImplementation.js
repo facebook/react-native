@@ -9,10 +9,15 @@
  */
 
 import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
+import type ReactFabricHostComponent from './ReactFabricPublicInstance/ReactFabricHostComponent';
 import type {Element, ElementRef, ElementType} from 'react';
 
+import {
+  onCaughtError,
+  onRecoverableError,
+  onUncaughtError,
+} from '../Core/ErrorHandlers';
 import {type RootTag} from './RootTag';
-
 export function renderElement({
   element,
   rootTag,
@@ -30,9 +35,23 @@ export function renderElement({
       rootTag,
       null,
       useConcurrentRoot,
+      {
+        onCaughtError,
+        onUncaughtError,
+        onRecoverableError,
+      },
     );
   } else {
-    require('../Renderer/shims/ReactNative').render(element, rootTag);
+    require('../Renderer/shims/ReactNative').render(
+      element,
+      rootTag,
+      undefined,
+      {
+        onCaughtError,
+        onUncaughtError,
+        onRecoverableError,
+      },
+    );
   }
 }
 
@@ -109,4 +128,14 @@ export function unstable_batchedUpdates<T>(
 
 export function isProfilingRenderer(): boolean {
   return Boolean(__DEV__);
+}
+
+export function isChildPublicInstance(
+  parentInstance: ReactFabricHostComponent | HostComponent<mixed>,
+  childInstance: ReactFabricHostComponent | HostComponent<mixed>,
+): boolean {
+  return require('../Renderer/shims/ReactNative').isChildPublicInstance(
+    parentInstance,
+    childInstance,
+  );
 }

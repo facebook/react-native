@@ -11,9 +11,11 @@ import android.view.InputDevice;
 import android.view.MotionEvent;
 import android.view.View;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.R;
 
 /** Class responsible for generating catalyst touch events based on android {@link MotionEvent}. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class PointerEventHelper {
 
   public static final String POINTER_TYPE_TOUCH = "touch";
@@ -25,6 +27,8 @@ public class PointerEventHelper {
   public static enum EVENT {
     CANCEL,
     CANCEL_CAPTURE,
+    CLICK,
+    CLICK_CAPTURE,
     DOWN,
     DOWN_CAPTURE,
     ENTER,
@@ -49,6 +53,7 @@ public class PointerEventHelper {
   public static final String POINTER_UP = "topPointerUp";
   public static final String POINTER_OVER = "topPointerOver";
   public static final String POINTER_OUT = "topPointerOut";
+  public static final String CLICK = "topClick";
 
   // https://w3c.github.io/pointerevents/#the-buttons-property
   public static int getButtons(String eventName, String pointerType, int buttonState) {
@@ -117,6 +122,8 @@ public class PointerEventHelper {
       case UP_CAPTURE:
       case CANCEL:
       case CANCEL_CAPTURE:
+      case CLICK:
+      case CLICK_CAPTURE:
         return true;
     }
 

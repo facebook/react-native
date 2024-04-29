@@ -1,0 +1,8 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`inspector proxy HTTP API /json/version endpoint returns version 1`] = `
+Object {
+  "Browser": "Mobile JavaScript",
+  "Protocol-Version": "1.1",
+}
+`;

@@ -30,6 +30,10 @@ static NSString *interfaceIdiom(UIUserInterfaceIdiom idiom)
       return @"tv";
     case UIUserInterfaceIdiomCarPlay:
       return @"carplay";
+#if TARGET_OS_VISION
+    case UIUserInterfaceIdiomVision:
+      return @"vision";
+#endif
     default:
       return @"unknown";
   }
@@ -77,6 +81,11 @@ RCT_EXPORT_MODULE(PlatformConstants)
              .prerelease = [versions[@"prerelease"] isKindOfClass:[NSNull class]]
                  ? std::optional<double>{}
                  : [versions[@"prerelease"] doubleValue]}),
+#if TARGET_OS_MACCATALYST
+        .isMacCatalyst = true,
+#else
+        .isMacCatalyst = false,
+#endif
     });
   });
 

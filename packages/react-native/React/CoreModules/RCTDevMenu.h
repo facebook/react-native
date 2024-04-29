@@ -9,6 +9,7 @@
 
 #import <React/RCTBridge.h>
 #import <React/RCTBridgeModule.h>
+#import <React/RCTBridgeProxy.h>
 #import <React/RCTDefines.h>
 
 #if RCT_DEV_MENU
@@ -97,6 +98,8 @@ typedef NSString * (^RCTDevMenuItemTitleBlock)(void);
  */
 + (instancetype)buttonItemWithTitleBlock:(RCTDevMenuItemTitleBlock)titleBlock handler:(dispatch_block_t)handler;
 
+@property (nonatomic, assign, getter=isDisabled) BOOL disabled;
+
 @end
 
 /**
@@ -104,6 +107,12 @@ typedef NSString * (^RCTDevMenuItemTitleBlock)(void);
  * RCTBridge, which is useful for any class that needs to access the menu.
  */
 @interface RCTBridge (RCTDevMenu)
+
+@property (nonatomic, readonly) RCTDevMenu *devMenu;
+
+@end
+
+@interface RCTBridgeProxy (RCTDevMenu)
 
 @property (nonatomic, readonly) RCTDevMenu *devMenu;
 

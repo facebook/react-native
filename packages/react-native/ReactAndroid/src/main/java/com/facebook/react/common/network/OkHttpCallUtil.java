@@ -7,12 +7,14 @@
 
 package com.facebook.react.common.network;
 
+import com.facebook.infer.annotation.Nullsafe;
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
 
 /**
  * Helper class that provides the necessary methods for canceling queued and running OkHttp calls
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class OkHttpCallUtil {
 
   private OkHttpCallUtil() {}

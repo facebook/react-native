@@ -14,6 +14,8 @@
 #include <shared_mutex>
 
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
+#include <react/renderer/consistency/ShadowTreeRevisionConsistencyManager.h>
+#include <react/renderer/core/InstanceHandle.h>
 #include <react/renderer/core/RawValue.h>
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/core/StateData.h>
@@ -23,6 +25,9 @@
 #include <react/renderer/mounting/ShadowTreeRegistry.h>
 #include <react/renderer/uimanager/UIManagerAnimationDelegate.h>
 #include <react/renderer/uimanager/UIManagerDelegate.h>
+#include <react/renderer/uimanager/consistency/LatestShadowTreeRevisionProvider.h>
+#include <react/renderer/uimanager/consistency/LazyShadowTreeRevisionConsistencyManager.h>
+#include <react/renderer/uimanager/consistency/ShadowTreeRevisionProvider.h>
 #include <react/renderer/uimanager/primitives.h>
 #include <react/utils/ContextContainer.h>
 
@@ -30,33 +35,34 @@ namespace facebook::react {
 
 class UIManagerBinding;
 class UIManagerCommitHook;
+class UIManagerMountHook;
 
 class UIManager final : public ShadowTreeDelegate {
  public:
   UIManager(
-      RuntimeExecutor const &runtimeExecutor,
+      const RuntimeExecutor& runtimeExecutor,
       BackgroundExecutor backgroundExecutor,
       ContextContainer::Shared contextContainer);
 
   ~UIManager() override;
 
   void setComponentDescriptorRegistry(
-      const SharedComponentDescriptorRegistry &componentDescriptorRegistry);
+      const SharedComponentDescriptorRegistry& componentDescriptorRegistry);
 
   /*
    * Sets and gets the UIManager's delegate.
    * The delegate is stored as a raw pointer, so the owner must null
    * the pointer before being destroyed.
    */
-  void setDelegate(UIManagerDelegate *delegate);
-  UIManagerDelegate *getDelegate();
+  void setDelegate(UIManagerDelegate* delegate);
+  UIManagerDelegate* getDelegate();
 
   /**
    * Sets and gets the UIManager's Animation APIs delegate.
    * The delegate is stored as a raw pointer, so the owner must null
    * the pointer before being destroyed.
    */
-  void setAnimationDelegate(UIManagerAnimationDelegate *delegate);
+  void setAnimationDelegate(UIManagerAnimationDelegate* delegate);
 
   /**
    * Execute stopSurface on any UIMAnagerAnimationDelegate.
@@ -72,41 +78,41 @@ class UIManager final : public ShadowTreeDelegate {
    * The callback is called synchronously on the same thread.
    */
   void visitBinding(
-      std::function<void(UIManagerBinding const &uiManagerBinding)> const
-          &callback,
-      jsi::Runtime &runtime) const;
+      const std::function<void(const UIManagerBinding& uiManagerBinding)>&
+          callback,
+      jsi::Runtime& runtime) const;
 
   /*
    * Registers and unregisters a commit hook.
    */
-  void registerCommitHook(UIManagerCommitHook const &commitHook) const;
-  void unregisterCommitHook(UIManagerCommitHook const &commitHook) const;
+  void registerCommitHook(UIManagerCommitHook& commitHook);
+  void unregisterCommitHook(UIManagerCommitHook& commitHook);
+
+  /*
+   * Registers and unregisters a mount hook.
+   */
+  void registerMountHook(UIManagerMountHook& mountHook);
+  void unregisterMountHook(UIManagerMountHook& mountHook);
 
   ShadowNode::Shared getNewestCloneOfShadowNode(
-      ShadowNode const &shadowNode) const;
+      const ShadowNode& shadowNode) const;
 
-  ShadowNode::Shared getNewestParentOfShadowNode(
-      ShadowNode const &shadowNode) const;
-
-  std::string getTextContentInNewestCloneOfShadowNode(
-      ShadowNode const &shadowNode) const;
-
-  int compareDocumentPosition(
-      ShadowNode const &shadowNode,
-      ShadowNode const &otherShadowNode) const;
+  ShadowTreeRevisionConsistencyManager*
+  getShadowTreeRevisionConsistencyManager();
+  ShadowTreeRevisionProvider* getShadowTreeRevisionProvider();
 
 #pragma mark - Surface Start & Stop
 
   void startSurface(
-      ShadowTree::Unique &&shadowTree,
-      std::string const &moduleName,
-      folly::dynamic const &props,
+      ShadowTree::Unique&& shadowTree,
+      const std::string& moduleName,
+      const folly::dynamic& props,
       DisplayMode displayMode) const;
 
   void setSurfaceProps(
       SurfaceId surfaceId,
-      std::string const &moduleName,
-      folly::dynamic const &props,
+      const std::string& moduleName,
+      const folly::dynamic& props,
       DisplayMode displayMode) const;
 
   ShadowTree::Unique stopSurface(SurfaceId surfaceId) const;
@@ -118,38 +124,38 @@ class UIManager final : public ShadowTreeDelegate {
       bool mountSynchronously) const override;
 
   RootShadowNode::Unshared shadowTreeWillCommit(
-      ShadowTree const &shadowTree,
-      RootShadowNode::Shared const &oldRootShadowNode,
-      RootShadowNode::Unshared const &newRootShadowNode) const override;
+      const ShadowTree& shadowTree,
+      const RootShadowNode::Shared& oldRootShadowNode,
+      const RootShadowNode::Unshared& newRootShadowNode) const override;
 
-  ShadowNode::Shared createNode(
+  std::shared_ptr<ShadowNode> createNode(
       Tag tag,
-      std::string const &componentName,
+      const std::string& componentName,
       SurfaceId surfaceId,
-      const RawProps &props,
-      SharedEventTarget eventTarget) const;
+      RawProps props,
+      InstanceHandle::Shared instanceHandle) const;
 
-  ShadowNode::Shared cloneNode(
-      ShadowNode const &shadowNode,
-      ShadowNode::SharedListOfShared const &children = nullptr,
-      RawProps const *rawProps = nullptr) const;
+  std::shared_ptr<ShadowNode> cloneNode(
+      const ShadowNode& shadowNode,
+      const ShadowNode::SharedListOfShared& children,
+      RawProps rawProps) const;
 
   void appendChild(
-      const ShadowNode::Shared &parentShadowNode,
-      const ShadowNode::Shared &childShadowNode) const;
+      const ShadowNode::Shared& parentShadowNode,
+      const ShadowNode::Shared& childShadowNode) const;
 
   void completeSurface(
       SurfaceId surfaceId,
-      ShadowNode::UnsharedListOfShared const &rootChildren,
-      ShadowTree::CommitOptions commitOptions) const;
+      const ShadowNode::UnsharedListOfShared& rootChildren,
+      ShadowTree::CommitOptions commitOptions);
 
   void setIsJSResponder(
-      ShadowNode::Shared const &shadowNode,
+      const ShadowNode::Shared& shadowNode,
       bool isJSResponder,
       bool blockNativeResponder) const;
 
   ShadowNode::Shared findNodeAtPoint(
-      ShadowNode::Shared const &shadowNode,
+      const ShadowNode::Shared& shadowNode,
       Point point) const;
 
   /*
@@ -158,28 +164,28 @@ class UIManager final : public ShadowTreeDelegate {
    * `ancestorShadowNode` is nullptr).
    */
   LayoutMetrics getRelativeLayoutMetrics(
-      ShadowNode const &shadowNode,
-      ShadowNode const *ancestorShadowNode,
+      const ShadowNode& shadowNode,
+      const ShadowNode* ancestorShadowNode,
       LayoutableShadowNode::LayoutInspectingPolicy policy) const;
 
   /*
    * Creates a new shadow node with given state data, clones what's necessary
    * and performs a commit.
    */
-  void updateState(StateUpdate const &stateUpdate) const;
+  void updateState(const StateUpdate& stateUpdate) const;
 
   void dispatchCommand(
-      const ShadowNode::Shared &shadowNode,
-      std::string const &commandName,
-      folly::dynamic const &args) const;
+      const ShadowNode::Shared& shadowNode,
+      const std::string& commandName,
+      const folly::dynamic& args) const;
 
   void setNativeProps_DEPRECATED(
-      ShadowNode::Shared const &shadowNode,
-      RawProps const &rawProps) const;
+      const ShadowNode::Shared& shadowNode,
+      RawProps rawProps) const;
 
   void sendAccessibilityEvent(
-      const ShadowNode::Shared &shadowNode,
-      std::string const &eventType);
+      const ShadowNode::Shared& shadowNode,
+      const std::string& eventType);
 
   /*
    * Iterates over all shadow nodes which are parts of all registered surfaces
@@ -189,7 +195,13 @@ class UIManager final : public ShadowTreeDelegate {
    */
   ShadowNode::Shared findShadowNodeByTag_DEPRECATED(Tag tag) const;
 
-  ShadowTreeRegistry const &getShadowTreeRegistry() const;
+  const ShadowTreeRegistry& getShadowTreeRegistry() const;
+
+  void reportMount(SurfaceId surfaceId) const;
+
+  bool hasBackgroundExecutor() const {
+    return backgroundExecutor_ != nullptr;
+  }
 
  private:
   friend class UIManagerBinding;
@@ -201,23 +213,35 @@ class UIManager final : public ShadowTreeDelegate {
    * This API configures a global LayoutAnimation starting from the root node.
    */
   void configureNextLayoutAnimation(
-      jsi::Runtime &runtime,
-      RawValue const &config,
-      jsi::Value const &successCallback,
-      jsi::Value const &failureCallback) const;
+      jsi::Runtime& runtime,
+      const RawValue& config,
+      const jsi::Value& successCallback,
+      const jsi::Value& failureCallback) const;
+
+  ShadowNode::Shared getShadowNodeInSubtree(
+      const ShadowNode& shadowNode,
+      const ShadowNode::Shared& ancestorShadowNode) const;
 
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
-  UIManagerDelegate *delegate_{};
-  UIManagerAnimationDelegate *animationDelegate_{nullptr};
-  RuntimeExecutor const runtimeExecutor_{};
+  UIManagerDelegate* delegate_{};
+  UIManagerAnimationDelegate* animationDelegate_{nullptr};
+  const RuntimeExecutor runtimeExecutor_{};
   ShadowTreeRegistry shadowTreeRegistry_{};
-  BackgroundExecutor const backgroundExecutor_{};
+  const BackgroundExecutor backgroundExecutor_{};
   ContextContainer::Shared contextContainer_;
 
   mutable std::shared_mutex commitHookMutex_;
-  mutable std::vector<UIManagerCommitHook const *> commitHooks_;
+  mutable std::vector<UIManagerCommitHook*> commitHooks_;
+
+  mutable std::shared_mutex mountHookMutex_;
+  mutable std::vector<UIManagerMountHook*> mountHooks_;
 
   std::unique_ptr<LeakChecker> leakChecker_;
+
+  std::unique_ptr<LazyShadowTreeRevisionConsistencyManager>
+      lazyShadowTreeRevisionConsistencyManager_;
+  std::unique_ptr<LatestShadowTreeRevisionProvider>
+      latestShadowTreeRevisionProvider_;
 };
 
 } // namespace facebook::react

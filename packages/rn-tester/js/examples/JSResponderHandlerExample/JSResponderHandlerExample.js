@@ -8,11 +8,10 @@
  * @flow strict-local
  */
 
-const React = require('react');
-
-const {Text, View, StyleSheet} = require('react-native');
-
 import {PanResponder, ScrollView} from 'react-native';
+
+const React = require('react');
+const {StyleSheet, Text, View} = require('react-native');
 
 exports.displayName = 'JSResponderHandlerExample';
 exports.framework = 'React';
@@ -41,7 +40,7 @@ exports.examples = [
         views[i] = (
           <View key={i} style={styles.row} collapsable={false}>
             <View style={styles.touchable_area} collapsable={false}>
-              <Text>I am row {i}</Text>
+              <Text testID="row_js_responder_handler">I am row {i}</Text>
             </View>
           </View>
         );

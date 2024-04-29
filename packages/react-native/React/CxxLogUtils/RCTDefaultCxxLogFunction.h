@@ -11,6 +11,6 @@
 
 namespace facebook::react {
 
-void RCTDefaultCxxLogFunction(ReactNativeLogLevel level, const char *message);
+void RCTDefaultCxxLogFunction(ReactNativeLogLevel level, const char* message);
 
 } // namespace facebook::react

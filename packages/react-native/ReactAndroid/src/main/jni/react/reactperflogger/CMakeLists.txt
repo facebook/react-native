@@ -6,18 +6,17 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(-fexceptions -frtti -std=c++17 -Wall)
+add_compile_options(-fexceptions -frtti -std=c++20 -Wall)
 
-add_library(reactperfloggerjni SHARED reactperflogger/OnLoad.cpp)
+add_library(reactperfloggerjni INTERFACE)
 
 target_include_directories(reactperfloggerjni
-        PUBLIC
+        INTERFACE
           ${CMAKE_CURRENT_SOURCE_DIR}
-        PRIVATE
-          ${CMAKE_CURRENT_SOURCE_DIR}/reactperflogger
 )
 
 target_link_libraries(reactperfloggerjni
+        INTERFACE
         fb
         fbjni
         android

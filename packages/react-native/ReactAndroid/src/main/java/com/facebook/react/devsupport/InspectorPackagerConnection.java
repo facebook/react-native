@@ -27,20 +27,17 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class InspectorPackagerConnection {
+public class InspectorPackagerConnection implements IInspectorPackagerConnection {
   private static final String TAG = "InspectorPackagerConnection";
 
   private final Connection mConnection;
   private final Map<String, Inspector.LocalConnection> mInspectorConnections;
   private final String mPackageName;
-  private BundleStatusProvider mBundleStatusProvider;
 
-  public InspectorPackagerConnection(
-      String url, String packageName, BundleStatusProvider bundleStatusProvider) {
+  public InspectorPackagerConnection(String url, String packageName) {
     mConnection = new Connection(url);
     mInspectorConnections = new HashMap<>();
     mPackageName = packageName;
-    mBundleStatusProvider = bundleStatusProvider;
   }
 
   public void connect() {
@@ -150,15 +147,12 @@ public class InspectorPackagerConnection {
   private JSONArray getPages() throws JSONException {
     List<Inspector.Page> pages = Inspector.getPages();
     JSONArray array = new JSONArray();
-    BundleStatus bundleStatus = mBundleStatusProvider.getBundleStatus();
     for (Inspector.Page page : pages) {
       JSONObject jsonPage = new JSONObject();
       jsonPage.put("id", String.valueOf(page.getId()));
       jsonPage.put("title", page.getTitle());
       jsonPage.put("app", mPackageName);
       jsonPage.put("vm", page.getVM());
-      jsonPage.put("isLastBundleDownloadSuccess", bundleStatus.isLastDownloadSuccess);
-      jsonPage.put("bundleUpdateTimestamp", bundleStatus.updateTimestamp);
       array.put(jsonPage);
     }
     return array;
@@ -316,23 +310,5 @@ public class InspectorPackagerConnection {
         mWebSocket = null;
       }
     }
-  }
-
-  public static class BundleStatus {
-    public Boolean isLastDownloadSuccess;
-    public long updateTimestamp = -1;
-
-    public BundleStatus(Boolean isLastDownloadSuccess, long updateTimestamp) {
-      this.isLastDownloadSuccess = isLastDownloadSuccess;
-      this.updateTimestamp = updateTimestamp;
-    }
-
-    public BundleStatus() {
-      this(false, -1);
-    }
-  }
-
-  public interface BundleStatusProvider {
-    public BundleStatus getBundleStatus();
   }
 }

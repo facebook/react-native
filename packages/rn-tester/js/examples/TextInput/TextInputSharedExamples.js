@@ -10,37 +10,26 @@
 
 'use strict';
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+import type {TextStyle} from 'react-native/Libraries/StyleSheet/StyleSheet';
+
+import RNTesterButton from '../../components/RNTesterButton';
+import {RNTesterThemeContext} from '../../components/RNTesterTheme';
+import ExampleTextInput from './ExampleTextInput';
 import * as React from 'react';
 import {useContext, useState} from 'react';
 import {
   Button,
   Platform,
+  StyleSheet,
   Text,
   TextInput,
   View,
-  StyleSheet,
 } from 'react-native';
-import type {TextStyle} from 'react-native/Libraries/StyleSheet/StyleSheet';
-
-import RNTesterButton from '../../components/RNTesterButton';
-import {RNTesterThemeContext} from '../../components/RNTesterTheme';
-import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 const styles = StyleSheet.create({
-  default: {
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: '#0f0f0f',
-    flex: 1,
-    fontSize: 13,
-    padding: 4,
-  },
   multiline: {
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: '#0f0f0f',
-    flex: 1,
-    fontSize: 13,
     height: 50,
-    padding: 4,
     marginBottom: 4,
   },
   singleLine: {
@@ -78,11 +67,6 @@ const styles = StyleSheet.create({
   },
   focusedUncontrolled: {
     margin: -2,
-    borderWidth: 2,
-    borderColor: '#0a0a0a',
-    flex: 1,
-    fontSize: 13,
-    padding: 4,
   },
   screenshotArea: {
     position: 'absolute',
@@ -115,7 +99,7 @@ class RewriteExample extends React.Component<$FlowFixMeProps, any> {
     const remainderColor = remainder > 5 ? 'blue' : 'red';
     return (
       <View style={styles.rewriteContainer}>
-        <TextInput
+        <ExampleTextInput
           testID="rewrite_sp_underscore_input"
           autoCorrect={false}
           multiline={false}
@@ -124,7 +108,6 @@ class RewriteExample extends React.Component<$FlowFixMeProps, any> {
             text = text.replace(/ /g, '_');
             this.setState({text});
           }}
-          style={styles.default}
           value={this.state.text}
         />
         <Text style={[styles.remainder, {color: remainderColor}]}>
@@ -146,14 +129,13 @@ class RewriteExampleInvalidCharacters extends React.Component<
   render(): React.Node {
     return (
       <View style={styles.rewriteContainer}>
-        <TextInput
+        <ExampleTextInput
           testID="rewrite_no_sp_input"
           autoCorrect={false}
           multiline={false}
           onChangeText={text => {
             this.setState({text: text.replace(/\s/g, '')});
           }}
-          style={styles.default}
           value={this.state.text}
         />
       </View>
@@ -174,7 +156,7 @@ class RewriteInvalidCharactersAndClearExample extends React.Component<
   render(): React.Node {
     return (
       <View style={styles.rewriteContainer}>
-        <TextInput
+        <ExampleTextInput
           testID="rewrite_clear_input"
           autoCorrect={false}
           ref={ref => {
@@ -184,7 +166,6 @@ class RewriteInvalidCharactersAndClearExample extends React.Component<
           onChangeText={text => {
             this.setState({text: text.replace(/ /g, '')});
           }}
-          style={styles.default}
           value={this.state.text}
         />
         <Button
@@ -213,7 +194,7 @@ class BlurOnSubmitExample extends React.Component<{...}> {
   render(): React.Node {
     return (
       <View>
-        <TextInput
+        <ExampleTextInput
           ref={this.ref1}
           style={styles.singleLine}
           placeholder="blurOnSubmit = false"
@@ -221,7 +202,7 @@ class BlurOnSubmitExample extends React.Component<{...}> {
           blurOnSubmit={false}
           onSubmitEditing={() => this.ref2.current?.focus()}
         />
-        <TextInput
+        <ExampleTextInput
           ref={this.ref2}
           style={styles.singleLine}
           keyboardType="email-address"
@@ -230,7 +211,7 @@ class BlurOnSubmitExample extends React.Component<{...}> {
           blurOnSubmit={false}
           onSubmitEditing={() => this.ref3.current?.focus()}
         />
-        <TextInput
+        <ExampleTextInput
           ref={this.ref3}
           style={styles.singleLine}
           keyboardType="url"
@@ -239,7 +220,7 @@ class BlurOnSubmitExample extends React.Component<{...}> {
           blurOnSubmit={false}
           onSubmitEditing={() => this.ref4.current?.focus()}
         />
-        <TextInput
+        <ExampleTextInput
           ref={this.ref4}
           style={styles.singleLine}
           keyboardType="numeric"
@@ -247,7 +228,7 @@ class BlurOnSubmitExample extends React.Component<{...}> {
           blurOnSubmit={false}
           onSubmitEditing={() => this.ref5.current?.focus()}
         />
-        <TextInput
+        <ExampleTextInput
           ref={this.ref5}
           style={styles.singleLine}
           keyboardType="numbers-and-punctuation"
@@ -275,69 +256,73 @@ class SubmitBehaviorExample extends React.Component<{...}> {
   render(): React.Node {
     return (
       <View>
-        <TextInput
+        <ExampleTextInput
           ref={this.ref1}
           placeholder="single line submit"
           submitBehavior="submit"
           onSubmitEditing={() => this.ref2.current?.focus()}
         />
-        <TextInput
+        <ExampleTextInput
           ref={this.ref2}
           placeholder="single line blurAndSubmit"
           submitBehavior="blurAndSubmit"
           onSubmitEditing={() => this.ref3.current?.focus()}
         />
-        <TextInput
+        <ExampleTextInput
           ref={this.ref3}
           placeholder="single line default"
           onSubmitEditing={() => this.ref4.current?.focus()}
         />
-        <TextInput
+        <ExampleTextInput
           ref={this.ref4}
           blurOnSubmit
           placeholder="single line blurOnSubmit true"
           onSubmitEditing={() => this.ref5.current?.focus()}
         />
-        <TextInput
+        <ExampleTextInput
           ref={this.ref5}
           blurOnSubmit={false}
           placeholder="single line blurOnSubmit false"
           onSubmitEditing={() => this.ref6.current?.focus()}
         />
-        <TextInput
+        <ExampleTextInput
           ref={this.ref6}
           multiline
           placeholder="multiline submit"
           submitBehavior="submit"
           onSubmitEditing={() => this.ref7.current?.focus()}
         />
-        <TextInput
+        <ExampleTextInput
           ref={this.ref7}
           multiline
           placeholder="multiline blurAndSubmit"
           submitBehavior="blurAndSubmit"
           onSubmitEditing={() => this.ref8.current?.focus()}
         />
-        <TextInput
+        <ExampleTextInput
           ref={this.ref8}
           multiline
           blurOnSubmit
           placeholder="multiline blurOnSubmit true"
           onSubmitEditing={() => this.ref9.current?.focus()}
         />
-        <TextInput
+        <ExampleTextInput
           ref={this.ref9}
           multiline
           blurOnSubmit={false}
           placeholder="multiline blurOnSubmit false"
         />
-        <TextInput
+        <ExampleTextInput
           ref={this.ref10}
           multiline
           placeholder="multiline newline"
           submitBehavior="newline"
         />
-        <TextInput ref={this.ref11} multiline placeholder="multiline default" />
+        <ExampleTextInput
+          ref={this.ref11}
+          multiline
+          placeholder="multiline default"
+        />
       </View>
     );
   }
@@ -372,7 +357,7 @@ class TextEventsExample extends React.Component<{...}, $FlowFixMeState> {
   render(): React.Node {
     return (
       <View>
-        <TextInput
+        <ExampleTextInput
           autoCapitalize="none"
           placeholder="Enter text to see events"
           autoCorrect={false}
@@ -460,7 +445,7 @@ class TokenizedTextExample extends React.Component<
 
     return (
       <View style={{flexDirection: 'row'}}>
-        <TextInput
+        <ExampleTextInput
           testID="text-input"
           multiline={true}
           style={styles.multiline}
@@ -468,7 +453,7 @@ class TokenizedTextExample extends React.Component<
             this.setState({text});
           }}>
           <Text>{parts}</Text>
-        </TextInput>
+        </ExampleTextInput>
       </View>
     );
   }
@@ -540,7 +525,7 @@ class SelectionExample extends React.Component<
     return (
       <View>
         <View style={{flexDirection: 'row'}}>
-          <TextInput
+          <ExampleTextInput
             testID={`${this.props.testID}-text-input`}
             multiline={this.props.multiline}
             onChangeText={value => this.setState({value})}
@@ -591,10 +576,10 @@ function UncontrolledExample() {
   const [isFocused, setIsFocused] = React.useState(false);
 
   return (
-    <TextInput
+    <ExampleTextInput
       defaultValue="Hello World!"
       testID="uncontrolled-textinput"
-      style={isFocused ? styles.focusedUncontrolled : styles.default}
+      style={isFocused ? styles.focusedUncontrolled : undefined}
       onFocus={() => setIsFocused(true)}
       onBlur={() => setIsFocused(false)}
     />
@@ -790,11 +775,8 @@ function StyledTextInput({
   styleOffset,
 }: StyledTextInputProps) {
   return (
-    <TextInput
-      style={[
-        styles.default,
-        textStyles[(0 + styleOffset) % textStyles.length],
-      ]}
+    <ExampleTextInput
+      style={textStyles[(0 + styleOffset) % textStyles.length]}
       testID={`style-${name}`}>
       <Text>He</Text>
       <Text style={textStyles[(1 + styleOffset) % textStyles.length]}>ll</Text>
@@ -805,7 +787,7 @@ function StyledTextInput({
       <Text style={textStyles[(3 + styleOffset) % textStyles.length]}>Wo</Text>
       <Text style={textStyles[(4 + styleOffset) % textStyles.length]}>rl</Text>
       <Text style={textStyles[(5 + styleOffset) % textStyles.length]}>d!</Text>
-    </TextInput>
+    </ExampleTextInput>
   );
 }
 
@@ -815,12 +797,9 @@ function MultilineStyledTextInput({
   styleOffset,
 }: StyledTextInputProps) {
   return (
-    <TextInput
+    <ExampleTextInput
       multiline={true}
-      style={[
-        styles.default,
-        textStyles[(0 + styleOffset) % textStyles.length],
-      ]}
+      style={textStyles[(0 + styleOffset) % textStyles.length]}
       testID={`style-${name}`}>
       <Text>Hel{'\n'}</Text>
       <Text style={textStyles[(1 + styleOffset) % textStyles.length]}>
@@ -830,7 +809,7 @@ function MultilineStyledTextInput({
         Wor{'\n'}
       </Text>
       <Text style={textStyles[(3 + styleOffset) % textStyles.length]}>ld!</Text>
-    </TextInput>
+    </ExampleTextInput>
   );
 }
 
@@ -839,9 +818,8 @@ module.exports = ([
     title: 'Auto-focus',
     render: function (): React.Node {
       return (
-        <TextInput
+        <ExampleTextInput
           autoFocus={true}
-          style={styles.default}
           accessibilityLabel="I am the accessibility label for text input"
         />
       );
@@ -874,31 +852,24 @@ module.exports = ([
       return (
         <View>
           <WithLabel label="none">
-            <TextInput
-              testID="capitalize-none"
-              autoCapitalize="none"
-              style={styles.default}
-            />
+            <ExampleTextInput testID="capitalize-none" autoCapitalize="none" />
           </WithLabel>
           <WithLabel label="sentences">
-            <TextInput
+            <ExampleTextInput
               testID="capitalize-sentences"
               autoCapitalize="sentences"
-              style={styles.default}
             />
           </WithLabel>
           <WithLabel label="words">
-            <TextInput
+            <ExampleTextInput
               testID="capitalize-words"
               autoCapitalize="words"
-              style={styles.default}
             />
           </WithLabel>
           <WithLabel label="characters">
-            <TextInput
+            <ExampleTextInput
               testID="capitalize-characters"
               autoCapitalize="characters"
-              style={styles.default}
             />
           </WithLabel>
         </View>
@@ -911,10 +882,10 @@ module.exports = ([
       return (
         <View>
           <WithLabel label="true">
-            <TextInput autoCorrect={true} style={styles.default} />
+            <ExampleTextInput autoCorrect={true} />
           </WithLabel>
           <WithLabel label="false">
-            <TextInput autoCorrect={false} style={styles.default} />
+            <ExampleTextInput autoCorrect={false} />
           </WithLabel>
         </View>
       );
@@ -942,7 +913,7 @@ module.exports = ([
       const examples = keyboardTypes.map(type => {
         return (
           <WithLabel key={type} label={type}>
-            <TextInput keyboardType={type} style={styles.default} />
+            <ExampleTextInput keyboardType={type} />
           </WithLabel>
         );
       });
@@ -966,7 +937,7 @@ module.exports = ([
       const examples = inputMode.map(mode => {
         return (
           <WithLabel key={mode} label={mode}>
-            <TextInput inputMode={mode} style={styles.default} />
+            <ExampleTextInput inputMode={mode} />
           </WithLabel>
         );
       });
@@ -995,7 +966,7 @@ module.exports = ([
       const examples = enterKeyHintTypesHints.map(hint => {
         return (
           <WithLabel key={hint} label={hint}>
-            <TextInput enterKeyHint={hint} style={styles.default} />
+            <ExampleTextInput enterKeyHint={hint} />
           </WithLabel>
         );
       });
@@ -1022,32 +993,32 @@ module.exports = ([
 
       return (
         <View>
-          <TextInput
+          <ExampleTextInput
             style={[styles.singleLine, {fontFamily: fontFamilyA}]}
             placeholder={`Custom fonts like ${fontFamilyA} are supported`}
           />
-          <TextInput
+          <ExampleTextInput
             style={[
               styles.singleLine,
               {fontFamily: fontFamilyA, fontWeight: 'bold'},
             ]}
             placeholder={`${fontFamilyA} bold`}
           />
-          <TextInput
+          <ExampleTextInput
             style={[
               styles.singleLine,
               {fontFamily: fontFamilyA, fontWeight: '500'},
             ]}
             placeholder={`${fontFamilyA} 500`}
           />
-          <TextInput
+          <ExampleTextInput
             style={[
               styles.singleLine,
               {fontFamily: fontFamilyA, fontStyle: 'italic'},
             ]}
             placeholder={`${fontFamilyA} italic`}
           />
-          <TextInput
+          <ExampleTextInput
             style={[styles.singleLine, {fontFamily: fontFamilyB}]}
             placeholder={fontFamilyB}
           />
@@ -1070,7 +1041,6 @@ module.exports = ([
         <View>
           <SelectionExample
             testID="singleline"
-            style={styles.default}
             value="text selection can be changed"
           />
           <SelectionExample
@@ -1091,7 +1061,6 @@ module.exports = ([
         <View>
           <SelectionExample
             testID="singlelineImperative"
-            style={styles.default}
             value="text selection can be changed imperatively"
             imperative={true}
           />

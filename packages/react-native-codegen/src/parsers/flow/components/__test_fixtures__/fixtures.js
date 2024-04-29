@@ -1001,10 +1001,16 @@ export type ScrollTo = (
 
 interface NativeCommands {
   +scrollTo: ScrollTo;
+  +addOverlays: (
+    viewRef: React.ElementRef<NativeType>,
+    overlayColorsReadOnly: $ReadOnlyArray<string>,
+    overlayColorsArray: Array<string>,
+    overlayColorsArrayAnnotation: string[],
+  ) => void;
 }
 
 export const Commands = codegenNativeCommands<NativeCommands>({
-  supportedCommands: ['scrollTo'],
+  supportedCommands: ['scrollTo', 'addOverlays'],
 });
 
 export default (codegenNativeComponent<ModuleProps>(

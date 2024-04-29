@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  * @oncall react_native
  */
@@ -38,6 +38,10 @@ type JestMockFn<TArguments: $ReadOnlyArray<any>, TReturn> = {
      * instantiated from this mock function.
      */
     instances: Array<TReturn>,
+    /**
+     * An array that contains the contexts for all calls of the mock function.
+     */
+    contexts: Array<mixed>,
     /**
      * An array that contains all the object results that have been
      * returned by this mock function call

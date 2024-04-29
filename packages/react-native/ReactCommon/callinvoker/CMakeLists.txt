@@ -9,10 +9,9 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 add_compile_options(
         -fexceptions
         -frtti
-        -std=c++17
+        -std=c++20
         -Wall
-        -Wpedantic
-        -Wno-gnu-zero-variadic-macro-arguments)
+        -Wpedantic)
 
 add_library(callinvoker INTERFACE)
 

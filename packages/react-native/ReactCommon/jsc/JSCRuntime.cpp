@@ -13,8 +13,8 @@
 #include <atomic>
 #include <condition_variable>
 #include <cstdlib>
+#include <deque>
 #include <mutex>
-#include <queue>
 #include <sstream>
 #include <thread>
 
@@ -28,8 +28,8 @@ class ArgsConverter;
 class JSCRuntime;
 
 struct Lock {
-  void lock(const jsc::JSCRuntime &) const {}
-  void unlock(const jsc::JSCRuntime &) const {}
+  void lock(const jsc::JSCRuntime&) const {}
+  void unlock(const jsc::JSCRuntime&) const {}
 };
 
 class JSCRuntime : public jsi::Runtime {
@@ -41,16 +41,22 @@ class JSCRuntime : public jsi::Runtime {
   ~JSCRuntime();
 
   std::shared_ptr<const jsi::PreparedJavaScript> prepareJavaScript(
-      const std::shared_ptr<const jsi::Buffer> &buffer,
+      const std::shared_ptr<const jsi::Buffer>& buffer,
       std::string sourceURL) override;
 
   jsi::Value evaluatePreparedJavaScript(
-      const std::shared_ptr<const jsi::PreparedJavaScript> &js) override;
+      const std::shared_ptr<const jsi::PreparedJavaScript>& js) override;
 
   jsi::Value evaluateJavaScript(
-      const std::shared_ptr<const jsi::Buffer> &buffer,
-      const std::string &sourceURL) override;
+      const std::shared_ptr<const jsi::Buffer>& buffer,
+      const std::string& sourceURL) override;
 
+  // If we use this interface to implement microtasks in the host we need to
+  // polyfill `Promise` to use these methods, because JSC doesn't currently
+  // support providing a custom queue for its built-in implementation.
+  // Not doing this would result in a non-compliant behavior, as microtasks
+  // wouldn't execute in the order in which they were queued.
+  void queueMicrotask(const jsi::Function& callback) override;
   bool drainMicrotasks(int maxMicrotasksHint = -1) override;
 
   jsi::Object global() override;
@@ -59,7 +65,7 @@ class JSCRuntime : public jsi::Runtime {
 
   bool isInspectable() override;
 
-  void setDescription(const std::string &desc);
+  void setDescription(const std::string& desc);
 
   // Please don't use the following two functions, only exposed for
   // integration efforts.
@@ -71,7 +77,7 @@ class JSCRuntime : public jsi::Runtime {
   jsi::Value createValue(JSValueRef value) const;
 
   // Value->JSValueRef (similar to above)
-  JSValueRef valueRef(const jsi::Value &value);
+  JSValueRef valueRef(const jsi::Value& value);
 
  protected:
   friend class detail::ArgsConverter;
@@ -79,24 +85,24 @@ class JSCRuntime : public jsi::Runtime {
 #ifndef NDEBUG
     JSCSymbolValue(
         JSGlobalContextRef ctx,
-        const std::atomic<bool> &ctxInvalid,
+        const std::atomic<bool>& ctxInvalid,
         JSValueRef sym,
-        std::atomic<intptr_t> &counter);
+        std::atomic<intptr_t>& counter);
 #else
     JSCSymbolValue(
         JSGlobalContextRef ctx,
-        const std::atomic<bool> &ctxInvalid,
+        const std::atomic<bool>& ctxInvalid,
         JSValueRef sym);
 #endif
     void invalidate() override;
 
     JSGlobalContextRef ctx_;
-    const std::atomic<bool> &ctxInvalid_;
+    const std::atomic<bool>& ctxInvalid_;
     // There is no C type in the JSC API to represent Symbol, so this stored
     // a JSValueRef which contains the Symbol.
     JSValueRef sym_;
 #ifndef NDEBUG
-    std::atomic<intptr_t> &counter_;
+    std::atomic<intptr_t>& counter_;
 #endif
    protected:
     friend class JSCRuntime;
@@ -104,7 +110,7 @@ class JSCRuntime : public jsi::Runtime {
 
   class JSCStringValue final : public PointerValue {
 #ifndef NDEBUG
-    JSCStringValue(JSStringRef str, std::atomic<intptr_t> &counter);
+    JSCStringValue(JSStringRef str, std::atomic<intptr_t>& counter);
 #else
     JSCStringValue(JSStringRef str);
 #endif
@@ -112,7 +118,7 @@ class JSCRuntime : public jsi::Runtime {
 
     JSStringRef str_;
 #ifndef NDEBUG
-    std::atomic<intptr_t> &counter_;
+    std::atomic<intptr_t>& counter_;
 #endif
    protected:
     friend class JSCRuntime;
@@ -121,132 +127,127 @@ class JSCRuntime : public jsi::Runtime {
   class JSCObjectValue final : public PointerValue {
     JSCObjectValue(
         JSGlobalContextRef ctx,
-        const std::atomic<bool> &ctxInvalid,
+        const std::atomic<bool>& ctxInvalid,
         JSObjectRef obj
 #ifndef NDEBUG
         ,
-        std::atomic<intptr_t> &counter
+        std::atomic<intptr_t>& counter
 #endif
     );
 
     void invalidate() override;
 
     JSGlobalContextRef ctx_;
-    const std::atomic<bool> &ctxInvalid_;
+    const std::atomic<bool>& ctxInvalid_;
     JSObjectRef obj_;
 #ifndef NDEBUG
-    std::atomic<intptr_t> &counter_;
+    std::atomic<intptr_t>& counter_;
 #endif
    protected:
     friend class JSCRuntime;
   };
 
-  PointerValue *cloneSymbol(const Runtime::PointerValue *pv) override;
-  PointerValue *cloneBigInt(const Runtime::PointerValue *pv) override;
-  PointerValue *cloneString(const Runtime::PointerValue *pv) override;
-  PointerValue *cloneObject(const Runtime::PointerValue *pv) override;
-  PointerValue *clonePropNameID(const Runtime::PointerValue *pv) override;
+  PointerValue* cloneSymbol(const Runtime::PointerValue* pv) override;
+  PointerValue* cloneBigInt(const Runtime::PointerValue* pv) override;
+  PointerValue* cloneString(const Runtime::PointerValue* pv) override;
+  PointerValue* cloneObject(const Runtime::PointerValue* pv) override;
+  PointerValue* clonePropNameID(const Runtime::PointerValue* pv) override;
 
-  jsi::PropNameID createPropNameIDFromAscii(const char *str, size_t length)
+  jsi::PropNameID createPropNameIDFromAscii(const char* str, size_t length)
       override;
-  jsi::PropNameID createPropNameIDFromUtf8(const uint8_t *utf8, size_t length)
+  jsi::PropNameID createPropNameIDFromUtf8(const uint8_t* utf8, size_t length)
       override;
-  jsi::PropNameID createPropNameIDFromString(const jsi::String &str) override;
-  jsi::PropNameID createPropNameIDFromSymbol(const jsi::Symbol &sym) override;
-  std::string utf8(const jsi::PropNameID &) override;
-  bool compare(const jsi::PropNameID &, const jsi::PropNameID &) override;
+  jsi::PropNameID createPropNameIDFromString(const jsi::String& str) override;
+  jsi::PropNameID createPropNameIDFromSymbol(const jsi::Symbol& sym) override;
+  std::string utf8(const jsi::PropNameID&) override;
+  bool compare(const jsi::PropNameID&, const jsi::PropNameID&) override;
 
-  std::string symbolToString(const jsi::Symbol &) override;
+  std::string symbolToString(const jsi::Symbol&) override;
 
   jsi::BigInt createBigIntFromInt64(int64_t) override;
   jsi::BigInt createBigIntFromUint64(uint64_t) override;
-  bool bigintIsInt64(const jsi::BigInt &) override;
-  bool bigintIsUint64(const jsi::BigInt &) override;
-  uint64_t truncate(const jsi::BigInt &) override;
-  jsi::String bigintToString(const jsi::BigInt &, int) override;
+  bool bigintIsInt64(const jsi::BigInt&) override;
+  bool bigintIsUint64(const jsi::BigInt&) override;
+  uint64_t truncate(const jsi::BigInt&) override;
+  jsi::String bigintToString(const jsi::BigInt&, int) override;
 
-  jsi::String createStringFromAscii(const char *str, size_t length) override;
-  jsi::String createStringFromUtf8(const uint8_t *utf8, size_t length) override;
-  std::string utf8(const jsi::String &) override;
+  jsi::String createStringFromAscii(const char* str, size_t length) override;
+  jsi::String createStringFromUtf8(const uint8_t* utf8, size_t length) override;
+  std::string utf8(const jsi::String&) override;
 
   jsi::Object createObject() override;
   jsi::Object createObject(std::shared_ptr<jsi::HostObject> ho) override;
   virtual std::shared_ptr<jsi::HostObject> getHostObject(
-      const jsi::Object &) override;
-  jsi::HostFunctionType &getHostFunction(const jsi::Function &) override;
+      const jsi::Object&) override;
+  jsi::HostFunctionType& getHostFunction(const jsi::Function&) override;
 
-  bool hasNativeState(const jsi::Object &) override;
-  std::shared_ptr<jsi::NativeState> getNativeState(
-      const jsi::Object &) override;
-  void setNativeState(const jsi::Object &, std::shared_ptr<jsi::NativeState>)
+  bool hasNativeState(const jsi::Object&) override;
+  std::shared_ptr<jsi::NativeState> getNativeState(const jsi::Object&) override;
+  void setNativeState(const jsi::Object&, std::shared_ptr<jsi::NativeState>)
       override;
 
-  jsi::Value getProperty(const jsi::Object &, const jsi::String &name) override;
-  jsi::Value getProperty(const jsi::Object &, const jsi::PropNameID &name)
+  jsi::Value getProperty(const jsi::Object&, const jsi::String& name) override;
+  jsi::Value getProperty(const jsi::Object&, const jsi::PropNameID& name)
       override;
-  bool hasProperty(const jsi::Object &, const jsi::String &name) override;
-  bool hasProperty(const jsi::Object &, const jsi::PropNameID &name) override;
+  bool hasProperty(const jsi::Object&, const jsi::String& name) override;
+  bool hasProperty(const jsi::Object&, const jsi::PropNameID& name) override;
   void setPropertyValue(
-      const jsi::Object &,
-      const jsi::String &name,
-      const jsi::Value &value) override;
+      const jsi::Object&,
+      const jsi::String& name,
+      const jsi::Value& value) override;
   void setPropertyValue(
-      const jsi::Object &,
-      const jsi::PropNameID &name,
-      const jsi::Value &value) override;
-  bool isArray(const jsi::Object &) const override;
-  bool isArrayBuffer(const jsi::Object &) const override;
-  bool isFunction(const jsi::Object &) const override;
-  bool isHostObject(const jsi::Object &) const override;
-  bool isHostFunction(const jsi::Function &) const override;
-  jsi::Array getPropertyNames(const jsi::Object &) override;
+      const jsi::Object&,
+      const jsi::PropNameID& name,
+      const jsi::Value& value) override;
+  bool isArray(const jsi::Object&) const override;
+  bool isArrayBuffer(const jsi::Object&) const override;
+  bool isFunction(const jsi::Object&) const override;
+  bool isHostObject(const jsi::Object&) const override;
+  bool isHostFunction(const jsi::Function&) const override;
+  jsi::Array getPropertyNames(const jsi::Object&) override;
 
   // TODO: revisit this implementation
-  jsi::WeakObject createWeakObject(const jsi::Object &) override;
-  jsi::Value lockWeakObject(const jsi::WeakObject &) override;
+  jsi::WeakObject createWeakObject(const jsi::Object&) override;
+  jsi::Value lockWeakObject(const jsi::WeakObject&) override;
 
   jsi::Array createArray(size_t length) override;
   jsi::ArrayBuffer createArrayBuffer(
       std::shared_ptr<jsi::MutableBuffer> buffer) override;
-  size_t size(const jsi::Array &) override;
-  size_t size(const jsi::ArrayBuffer &) override;
-  uint8_t *data(const jsi::ArrayBuffer &) override;
-  jsi::Value getValueAtIndex(const jsi::Array &, size_t i) override;
-  void setValueAtIndexImpl(
-      const jsi::Array &,
-      size_t i,
-      const jsi::Value &value) override;
+  size_t size(const jsi::Array&) override;
+  size_t size(const jsi::ArrayBuffer&) override;
+  uint8_t* data(const jsi::ArrayBuffer&) override;
+  jsi::Value getValueAtIndex(const jsi::Array&, size_t i) override;
+  void setValueAtIndexImpl(const jsi::Array&, size_t i, const jsi::Value& value)
+      override;
 
   jsi::Function createFunctionFromHostFunction(
-      const jsi::PropNameID &name,
+      const jsi::PropNameID& name,
       unsigned int paramCount,
       jsi::HostFunctionType func) override;
   jsi::Value call(
-      const jsi::Function &,
-      const jsi::Value &jsThis,
-      const jsi::Value *args,
+      const jsi::Function&,
+      const jsi::Value& jsThis,
+      const jsi::Value* args,
       size_t count) override;
   jsi::Value callAsConstructor(
-      const jsi::Function &,
-      const jsi::Value *args,
+      const jsi::Function&,
+      const jsi::Value* args,
       size_t count) override;
 
-  bool strictEquals(const jsi::Symbol &a, const jsi::Symbol &b) const override;
-  bool strictEquals(const jsi::BigInt &a, const jsi::BigInt &b) const override;
-  bool strictEquals(const jsi::String &a, const jsi::String &b) const override;
-  bool strictEquals(const jsi::Object &a, const jsi::Object &b) const override;
-  bool instanceOf(const jsi::Object &o, const jsi::Function &f) override;
+  bool strictEquals(const jsi::Symbol& a, const jsi::Symbol& b) const override;
+  bool strictEquals(const jsi::BigInt& a, const jsi::BigInt& b) const override;
+  bool strictEquals(const jsi::String& a, const jsi::String& b) const override;
+  bool strictEquals(const jsi::Object& a, const jsi::Object& b) const override;
+  bool instanceOf(const jsi::Object& o, const jsi::Function& f) override;
+  void setExternalMemoryPressure(const jsi::Object&, size_t) override;
 
  private:
   // Basically convenience casts
-  static JSValueRef symbolRef(const jsi::Symbol &str);
-  static JSStringRef stringRef(const jsi::String &str);
-  static JSStringRef stringRef(const jsi::PropNameID &sym);
-  static JSObjectRef objectRef(const jsi::Object &obj);
-
-#ifdef RN_FABRIC_ENABLED
-  static JSObjectRef objectRef(const jsi::WeakObject &obj);
-#endif
+  static JSValueRef symbolRef(const jsi::Symbol& str);
+  static JSStringRef stringRef(const jsi::String& str);
+  static JSStringRef stringRef(const jsi::PropNameID& sym);
+  static JSObjectRef objectRef(const jsi::Object& obj);
+  static JSObjectRef objectRef(const jsi::WeakObject& obj);
 
   // Factory methods for creating String/Object
   jsi::Symbol createSymbol(JSValueRef symbolRef) const;
@@ -255,18 +256,22 @@ class JSCRuntime : public jsi::Runtime {
   jsi::Object createObject(JSObjectRef objectRef) const;
 
   // Used by factory methods and clone methods
-  jsi::Runtime::PointerValue *makeSymbolValue(JSValueRef sym) const;
-  jsi::Runtime::PointerValue *makeStringValue(JSStringRef str) const;
-  jsi::Runtime::PointerValue *makeObjectValue(JSObjectRef obj) const;
+  jsi::Runtime::PointerValue* makeSymbolValue(JSValueRef sym) const;
+  jsi::Runtime::PointerValue* makeStringValue(JSStringRef str) const;
+  jsi::Runtime::PointerValue* makeObjectValue(JSObjectRef obj) const;
+
+  JSValueRef getNativeStateSymbol();
 
   void checkException(JSValueRef exc);
   void checkException(JSValueRef res, JSValueRef exc);
-  void checkException(JSValueRef exc, const char *msg);
-  void checkException(JSValueRef res, JSValueRef exc, const char *msg);
+  void checkException(JSValueRef exc, const char* msg);
+  void checkException(JSValueRef res, JSValueRef exc, const char* msg);
 
   JSGlobalContextRef ctx_;
   std::atomic<bool> ctxInvalid_;
   std::string desc_;
+  JSValueRef nativeStateSymbol_ = nullptr;
+  std::deque<jsi::Function> microtaskQueue_;
 #ifndef NDEBUG
   mutable std::atomic<intptr_t> objectCounter_;
   mutable std::atomic<intptr_t> symbolCounter_;
@@ -294,24 +299,8 @@ class JSCRuntime : public jsi::Runtime {
   } while (0)
 
 #if defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
-// This takes care of watch and tvos (due to backwards compatibility in
-// Availability.h
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_9_0
-#define _JSC_FAST_IS_ARRAY
-#endif
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_10_0
-#define _JSC_NO_ARRAY_BUFFERS
-#endif
-#endif
-#if defined(__MAC_OS_X_VERSION_MIN_REQUIRED)
-#if __MAC_OS_X_VERSION_MIN_REQUIRED >= __MAC_10_11
-// Only one of these should be set for a build.  If somehow that's not
-// true, this will be a compile-time error and it can be resolved when
-// we understand why.
-#define _JSC_FAST_IS_ARRAY
-#endif
-#if __MAC_OS_X_VERSION_MIN_REQUIRED < __MAC_10_12
-#define _JSC_NO_ARRAY_BUFFERS
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 160400
+#define _JSC_HAS_INSPECTABLE
 #endif
 #endif
 
@@ -322,7 +311,7 @@ std::string JSStringToSTLString(JSStringRef str) {
   // in stackBuffer.size() bytes of UTF-8 (including the null terminator).
   std::array<char, 20> stackBuffer;
   std::unique_ptr<char[]> heapBuffer;
-  char *buffer;
+  char* buffer;
   // NOTE: By definition, maxBytes >= 1 since the null terminator is included.
   size_t maxBytes = JSStringGetMaximumUTF8CStringSize(str);
   if (maxBytes <= stackBuffer.size()) {
@@ -361,23 +350,11 @@ JSStringRef getFunctionString() {
   static JSStringRef func = JSStringCreateWithUTF8CString("Function");
   return func;
 }
-
-#if !defined(_JSC_FAST_IS_ARRAY)
-JSStringRef getArrayString() {
-  static JSStringRef array = JSStringCreateWithUTF8CString("Array");
-  return array;
-}
-
-JSStringRef getIsArrayString() {
-  static JSStringRef isArray = JSStringCreateWithUTF8CString("isArray");
-  return isArray;
-}
-#endif
 } // namespace
 
 // std::string utility
 namespace {
-std::string to_string(void *value) {
+std::string to_string(void* value) {
   std::ostringstream ss;
   ss << value;
   return ss.str();
@@ -398,9 +375,22 @@ JSCRuntime::JSCRuntime(JSGlobalContextRef ctx)
       stringCounter_(0)
 #endif
 {
+#ifndef NDEBUG
+#ifdef _JSC_HAS_INSPECTABLE
+#if (__OSX_AVAILABLE_STARTING(MAC_NA, IPHONE_16_4))
+  if (__builtin_available(macOS 13.3, iOS 16.4, tvOS 16.4, *)) {
+    JSGlobalContextSetInspectable(ctx_, true);
+  }
+#endif
+#endif
+#endif
 }
 
 JSCRuntime::~JSCRuntime() {
+  // We need to clear the microtask queue to remove all references to the
+  // callbacks, so objectCounter_ would be 0 below.
+  microtaskQueue_.clear();
+
   // On shutting down and cleaning up: when JSC is actually torn down,
   // it calls JSC::Heap::lastChanceToFinalize internally which
   // finalizes anything left over.  But at this point,
@@ -408,6 +398,8 @@ JSCRuntime::~JSCRuntime() {
   // atomic<bool> to avoid unsafe unprotects happening after shutdown
   // has started.
   ctxInvalid_ = true;
+  // No need to unprotect nativeStateSymbol_ since the heap is getting torn down
+  // anyway
   JSGlobalContextRelease(ctx_);
 #ifndef NDEBUG
   assert(
@@ -418,16 +410,16 @@ JSCRuntime::~JSCRuntime() {
 }
 
 std::shared_ptr<const jsi::PreparedJavaScript> JSCRuntime::prepareJavaScript(
-    const std::shared_ptr<const jsi::Buffer> &buffer,
+    const std::shared_ptr<const jsi::Buffer>& buffer,
     std::string sourceURL) {
   return std::make_shared<jsi::SourceJavaScriptPreparation>(
       buffer, std::move(sourceURL));
 }
 
 jsi::Value JSCRuntime::evaluatePreparedJavaScript(
-    const std::shared_ptr<const jsi::PreparedJavaScript> &js) {
+    const std::shared_ptr<const jsi::PreparedJavaScript>& js) {
   assert(
-      dynamic_cast<const jsi::SourceJavaScriptPreparation *>(js.get()) &&
+      dynamic_cast<const jsi::SourceJavaScriptPreparation*>(js.get()) &&
       "preparedJavaScript must be a SourceJavaScriptPreparation");
   auto sourceJs =
       std::static_pointer_cast<const jsi::SourceJavaScriptPreparation>(js);
@@ -435,10 +427,10 @@ jsi::Value JSCRuntime::evaluatePreparedJavaScript(
 }
 
 jsi::Value JSCRuntime::evaluateJavaScript(
-    const std::shared_ptr<const jsi::Buffer> &buffer,
-    const std::string &sourceURL) {
+    const std::shared_ptr<const jsi::Buffer>& buffer,
+    const std::string& sourceURL) {
   std::string tmp(
-      reinterpret_cast<const char *>(buffer->data()), buffer->size());
+      reinterpret_cast<const char*>(buffer->data()), buffer->size());
   JSStringRef sourceRef = JSStringCreateWithUTF8CString(tmp.c_str());
   JSStringRef sourceURLRef = nullptr;
   if (!sourceURL.empty()) {
@@ -455,7 +447,23 @@ jsi::Value JSCRuntime::evaluateJavaScript(
   return createValue(res);
 }
 
-bool JSCRuntime::drainMicrotasks(int maxMicrotasksHint) {
+void JSCRuntime::queueMicrotask(const jsi::Function& callback) {
+  microtaskQueue_.emplace_back(callback.getFunction(*this));
+}
+
+bool JSCRuntime::drainMicrotasks(int /*maxMicrotasksHint*/) {
+  // Note that new jobs can be enqueued during the draining.
+  while (!microtaskQueue_.empty()) {
+    jsi::Function callback = std::move(microtaskQueue_.front());
+
+    // We need to pop before calling the callback because that might throw.
+    // When that happens, the host will call `drainMicrotasks` again to execute
+    // the remaining microtasks, and this one shouldn't run again.
+    microtaskQueue_.pop_front();
+
+    callback.call(*this);
+  }
+
   return true;
 }
 
@@ -474,32 +482,13 @@ bool JSCRuntime::isInspectable() {
   return false;
 }
 
-namespace {
-
-bool smellsLikeES6Symbol(JSGlobalContextRef ctx, JSValueRef ref) {
-  // Since iOS 13, JSValueGetType will return kJSTypeSymbol
-  // Before: Empirically, an es6 Symbol is not an object, but its type is
-  // object.  This makes no sense, but we'll run with it.
-  // https://github.com/WebKit/webkit/blob/master/Source/JavaScriptCore/API/JSValueRef.cpp#L79-L82
-
-  JSType type = JSValueGetType(ctx, ref);
-
-  if (type == /* kJSTypeSymbol */ 6) {
-    return true;
-  }
-
-  return (!JSValueIsObject(ctx, ref) && type == kJSTypeObject);
-}
-
-} // namespace
-
 JSCRuntime::JSCSymbolValue::JSCSymbolValue(
     JSGlobalContextRef ctx,
-    const std::atomic<bool> &ctxInvalid,
+    const std::atomic<bool>& ctxInvalid,
     JSValueRef sym
 #ifndef NDEBUG
     ,
-    std::atomic<intptr_t> &counter
+    std::atomic<intptr_t>& counter
 #endif
     )
     : ctx_(ctx),
@@ -510,7 +499,7 @@ JSCRuntime::JSCSymbolValue::JSCSymbolValue(
       counter_(counter)
 #endif
 {
-  assert(smellsLikeES6Symbol(ctx_, sym_));
+  assert(JSValueIsSymbol(ctx_, sym_));
   JSValueProtect(ctx_, sym_);
 #ifndef NDEBUG
   counter_ += 1;
@@ -531,7 +520,7 @@ void JSCRuntime::JSCSymbolValue::invalidate() {
 #ifndef NDEBUG
 JSCRuntime::JSCStringValue::JSCStringValue(
     JSStringRef str,
-    std::atomic<intptr_t> &counter)
+    std::atomic<intptr_t>& counter)
     : str_(JSStringRetain(str)), counter_(counter) {
   // Since std::atomic returns a copy instead of a reference when calling
   // operator+= we must do this explicitly in the constructor
@@ -556,11 +545,11 @@ void JSCRuntime::JSCStringValue::invalidate() {
 
 JSCRuntime::JSCObjectValue::JSCObjectValue(
     JSGlobalContextRef ctx,
-    const std::atomic<bool> &ctxInvalid,
+    const std::atomic<bool>& ctxInvalid,
     JSObjectRef obj
 #ifndef NDEBUG
     ,
-    std::atomic<intptr_t> &counter
+    std::atomic<intptr_t>& counter
 #endif
     )
     : ctx_(ctx),
@@ -609,52 +598,52 @@ void JSCRuntime::JSCObjectValue::invalidate() {
   delete this;
 }
 
-jsi::Runtime::PointerValue *JSCRuntime::cloneSymbol(
-    const jsi::Runtime::PointerValue *pv) {
+jsi::Runtime::PointerValue* JSCRuntime::cloneSymbol(
+    const jsi::Runtime::PointerValue* pv) {
   if (!pv) {
     return nullptr;
   }
-  const JSCSymbolValue *symbol = static_cast<const JSCSymbolValue *>(pv);
+  const JSCSymbolValue* symbol = static_cast<const JSCSymbolValue*>(pv);
   return makeSymbolValue(symbol->sym_);
 }
 
-jsi::Runtime::PointerValue *JSCRuntime::cloneBigInt(
-    const Runtime::PointerValue *) {
+jsi::Runtime::PointerValue* JSCRuntime::cloneBigInt(
+    const Runtime::PointerValue*) {
   throw std::logic_error("Not implemented");
 }
 
-jsi::Runtime::PointerValue *JSCRuntime::cloneString(
-    const jsi::Runtime::PointerValue *pv) {
+jsi::Runtime::PointerValue* JSCRuntime::cloneString(
+    const jsi::Runtime::PointerValue* pv) {
   if (!pv) {
     return nullptr;
   }
-  const JSCStringValue *string = static_cast<const JSCStringValue *>(pv);
+  const JSCStringValue* string = static_cast<const JSCStringValue*>(pv);
   return makeStringValue(string->str_);
 }
 
-jsi::Runtime::PointerValue *JSCRuntime::cloneObject(
-    const jsi::Runtime::PointerValue *pv) {
+jsi::Runtime::PointerValue* JSCRuntime::cloneObject(
+    const jsi::Runtime::PointerValue* pv) {
   if (!pv) {
     return nullptr;
   }
-  const JSCObjectValue *object = static_cast<const JSCObjectValue *>(pv);
+  const JSCObjectValue* object = static_cast<const JSCObjectValue*>(pv);
   assert(
       object->ctx_ == ctx_ &&
       "Don't try to clone an object backed by a different Runtime");
   return makeObjectValue(object->obj_);
 }
 
-jsi::Runtime::PointerValue *JSCRuntime::clonePropNameID(
-    const jsi::Runtime::PointerValue *pv) {
+jsi::Runtime::PointerValue* JSCRuntime::clonePropNameID(
+    const jsi::Runtime::PointerValue* pv) {
   if (!pv) {
     return nullptr;
   }
-  const JSCStringValue *string = static_cast<const JSCStringValue *>(pv);
+  const JSCStringValue* string = static_cast<const JSCStringValue*>(pv);
   return makeStringValue(string->str_);
 }
 
 jsi::PropNameID JSCRuntime::createPropNameIDFromAscii(
-    const char *str,
+    const char* str,
     size_t length) {
   // For system JSC this must is identical to a string
   std::string tmp(str, length);
@@ -665,35 +654,35 @@ jsi::PropNameID JSCRuntime::createPropNameIDFromAscii(
 }
 
 jsi::PropNameID JSCRuntime::createPropNameIDFromUtf8(
-    const uint8_t *utf8,
+    const uint8_t* utf8,
     size_t length) {
-  std::string tmp(reinterpret_cast<const char *>(utf8), length);
+  std::string tmp(reinterpret_cast<const char*>(utf8), length);
   JSStringRef strRef = JSStringCreateWithUTF8CString(tmp.c_str());
   auto res = createPropNameID(strRef);
   JSStringRelease(strRef);
   return res;
 }
 
-jsi::PropNameID JSCRuntime::createPropNameIDFromString(const jsi::String &str) {
+jsi::PropNameID JSCRuntime::createPropNameIDFromString(const jsi::String& str) {
   return createPropNameID(stringRef(str));
 }
 
-jsi::PropNameID JSCRuntime::createPropNameIDFromSymbol(const jsi::Symbol &sym) {
+jsi::PropNameID JSCRuntime::createPropNameIDFromSymbol(const jsi::Symbol& sym) {
   // TODO: Support for symbols through the native API in JSC is very limited.
   // While we could construct a PropNameID here, we would not be able to get a
   // symbol property through the C++ API.
   throw std::logic_error("Not implemented");
 }
 
-std::string JSCRuntime::utf8(const jsi::PropNameID &sym) {
+std::string JSCRuntime::utf8(const jsi::PropNameID& sym) {
   return JSStringToSTLString(stringRef(sym));
 }
 
-bool JSCRuntime::compare(const jsi::PropNameID &a, const jsi::PropNameID &b) {
+bool JSCRuntime::compare(const jsi::PropNameID& a, const jsi::PropNameID& b) {
   return JSStringIsEqual(stringRef(a), stringRef(b));
 }
 
-std::string JSCRuntime::symbolToString(const jsi::Symbol &sym) {
+std::string JSCRuntime::symbolToString(const jsi::Symbol& sym) {
   return jsi::Value(*this, sym).toString(*this).utf8(*this);
 }
 
@@ -705,40 +694,40 @@ jsi::BigInt JSCRuntime::createBigIntFromUint64(uint64_t) {
   throw std::logic_error("Not implemented");
 }
 
-bool JSCRuntime::bigintIsInt64(const jsi::BigInt &) {
+bool JSCRuntime::bigintIsInt64(const jsi::BigInt&) {
   throw std::logic_error("Not implemented");
 }
 
-bool JSCRuntime::bigintIsUint64(const jsi::BigInt &) {
+bool JSCRuntime::bigintIsUint64(const jsi::BigInt&) {
   throw std::logic_error("Not implemented");
 }
 
-uint64_t JSCRuntime::truncate(const jsi::BigInt &) {
+uint64_t JSCRuntime::truncate(const jsi::BigInt&) {
   throw std::logic_error("Not implemented");
 }
 
-jsi::String JSCRuntime::bigintToString(const jsi::BigInt &, int) {
+jsi::String JSCRuntime::bigintToString(const jsi::BigInt&, int) {
   throw std::logic_error("Not implemented");
 }
 
-jsi::String JSCRuntime::createStringFromAscii(const char *str, size_t length) {
+jsi::String JSCRuntime::createStringFromAscii(const char* str, size_t length) {
   // Yes we end up double casting for semantic reasons (UTF8 contains ASCII,
   // not the other way around)
   return this->createStringFromUtf8(
-      reinterpret_cast<const uint8_t *>(str), length);
+      reinterpret_cast<const uint8_t*>(str), length);
 }
 
 jsi::String JSCRuntime::createStringFromUtf8(
-    const uint8_t *str,
+    const uint8_t* str,
     size_t length) {
-  std::string tmp(reinterpret_cast<const char *>(str), length);
+  std::string tmp(reinterpret_cast<const char*>(str), length);
   JSStringRef stringRef = JSStringCreateWithUTF8CString(tmp.c_str());
   auto result = createString(stringRef);
   JSStringRelease(stringRef);
   return result;
 }
 
-std::string JSCRuntime::utf8(const jsi::String &str) {
+std::string JSCRuntime::utf8(const jsi::String& str) {
   return JSStringToSTLString(stringRef(str));
 }
 
@@ -747,40 +736,38 @@ jsi::Object JSCRuntime::createObject() {
 }
 
 // HostObject details
-namespace detail {
+namespace {
 struct HostObjectProxyBase {
   HostObjectProxyBase(
-      JSCRuntime &rt,
-      const std::shared_ptr<jsi::HostObject> &sho)
+      JSCRuntime& rt,
+      const std::shared_ptr<jsi::HostObject>& sho)
       : runtime(rt), hostObject(sho) {}
 
-  JSCRuntime &runtime;
+  JSCRuntime& runtime;
   std::shared_ptr<jsi::HostObject> hostObject;
 };
-} // namespace detail
 
-namespace {
 std::once_flag hostObjectClassOnceFlag;
 JSClassRef hostObjectClass{};
 } // namespace
 
 jsi::Object JSCRuntime::createObject(std::shared_ptr<jsi::HostObject> ho) {
-  struct HostObjectProxy : public detail::HostObjectProxyBase {
+  struct HostObjectProxy : public HostObjectProxyBase {
     static JSValueRef getProperty(
         JSContextRef ctx,
         JSObjectRef object,
         JSStringRef propName,
-        JSValueRef *exception) {
-      auto proxy = static_cast<HostObjectProxy *>(JSObjectGetPrivate(object));
-      auto &rt = proxy->runtime;
+        JSValueRef* exception) {
+      auto proxy = static_cast<HostObjectProxy*>(JSObjectGetPrivate(object));
+      auto& rt = proxy->runtime;
       jsi::PropNameID sym = rt.createPropNameID(propName);
       jsi::Value ret;
       try {
         ret = proxy->hostObject->get(rt, sym);
-      } catch (const jsi::JSError &error) {
+      } catch (const jsi::JSError& error) {
         *exception = rt.valueRef(error.value());
         return JSValueMakeUndefined(ctx);
-      } catch (const std::exception &ex) {
+      } catch (const std::exception& ex) {
         auto excValue =
             rt.global()
                 .getPropertyAsFunction(rt, "Error")
@@ -813,17 +800,17 @@ jsi::Object JSCRuntime::createObject(std::shared_ptr<jsi::HostObject> ho) {
         JSObjectRef object,
         JSStringRef propName,
         JSValueRef value,
-        JSValueRef *exception) {
+        JSValueRef* exception) {
       JSC_UNUSED(ctx);
-      auto proxy = static_cast<HostObjectProxy *>(JSObjectGetPrivate(object));
-      auto &rt = proxy->runtime;
+      auto proxy = static_cast<HostObjectProxy*>(JSObjectGetPrivate(object));
+      auto& rt = proxy->runtime;
       jsi::PropNameID sym = rt.createPropNameID(propName);
       try {
         proxy->hostObject->set(rt, sym, rt.createValue(value));
-      } catch (const jsi::JSError &error) {
+      } catch (const jsi::JSError& error) {
         *exception = rt.valueRef(error.value());
         return false;
-      } catch (const std::exception &ex) {
+      } catch (const std::exception& ex) {
         auto excValue =
             rt.global()
                 .getPropertyAsFunction(rt, "Error")
@@ -857,10 +844,10 @@ jsi::Object JSCRuntime::createObject(std::shared_ptr<jsi::HostObject> ho) {
         JSObjectRef object,
         JSPropertyNameAccumulatorRef propertyNames) noexcept {
       JSC_UNUSED(ctx);
-      auto proxy = static_cast<HostObjectProxy *>(JSObjectGetPrivate(object));
-      auto &rt = proxy->runtime;
+      auto proxy = static_cast<HostObjectProxy*>(JSObjectGetPrivate(object));
+      auto& rt = proxy->runtime;
       auto names = proxy->hostObject->getPropertyNames(rt);
-      for (auto &name : names) {
+      for (auto& name : names) {
         JSPropertyNameAccumulatorAddName(propertyNames, stringRef(name));
       }
     }
@@ -868,7 +855,7 @@ jsi::Object JSCRuntime::createObject(std::shared_ptr<jsi::HostObject> ho) {
 #undef JSC_UNUSED
 
     static void finalize(JSObjectRef obj) {
-      auto hostObject = static_cast<HostObjectProxy *>(JSObjectGetPrivate(obj));
+      auto hostObject = static_cast<HostObjectProxy*>(JSObjectGetPrivate(obj));
       JSObjectSetPrivate(obj, nullptr);
       delete hostObject;
     }
@@ -893,34 +880,116 @@ jsi::Object JSCRuntime::createObject(std::shared_ptr<jsi::HostObject> ho) {
 }
 
 std::shared_ptr<jsi::HostObject> JSCRuntime::getHostObject(
-    const jsi::Object &obj) {
+    const jsi::Object& obj) {
   // We are guaranteed at this point to have isHostObject(obj) == true
   // so the private data should be HostObjectMetadata
   JSObjectRef object = objectRef(obj);
-  auto metadata =
-      static_cast<detail::HostObjectProxyBase *>(JSObjectGetPrivate(object));
+  auto metadata = static_cast<HostObjectProxyBase*>(JSObjectGetPrivate(object));
   assert(metadata);
   return metadata->hostObject;
 }
 
-bool JSCRuntime::hasNativeState(const jsi::Object &) {
-  throw std::logic_error("Not implemented");
+// NativeState details
+namespace {
+struct NativeStateContainer {
+  NativeStateContainer(std::shared_ptr<jsi::NativeState> state)
+      : nativeState(std::move(state)) {}
+
+  std::shared_ptr<jsi::NativeState> nativeState;
+
+  static void finalize(JSObjectRef obj) {
+    auto container =
+        static_cast<NativeStateContainer*>(JSObjectGetPrivate(obj));
+    delete container;
+  }
+};
+
+JSClassRef getNativeStateClass() {
+  static JSClassRef nativeStateClass = [] {
+    JSClassDefinition nativeStateClassDef = kJSClassDefinitionEmpty;
+    nativeStateClassDef.version = 0;
+    nativeStateClassDef.attributes = kJSClassAttributeNoAutomaticPrototype;
+    nativeStateClassDef.finalize = NativeStateContainer::finalize;
+    return JSClassCreate(&nativeStateClassDef);
+  }();
+  return nativeStateClass;
+}
+} // namespace
+
+JSValueRef JSCRuntime::getNativeStateSymbol() {
+  if (!nativeStateSymbol_) {
+    JSStringRef symbolName =
+        JSStringCreateWithUTF8CString("__internal_nativeState");
+    JSValueRef symbol = JSValueMakeSymbol(ctx_, symbolName);
+    JSValueProtect(ctx_, symbol);
+    nativeStateSymbol_ = symbol;
+    JSStringRelease(symbolName);
+  }
+  return nativeStateSymbol_;
+}
+
+bool JSCRuntime::hasNativeState(const jsi::Object& obj) {
+  JSValueRef exc = nullptr;
+  JSValueRef state = JSObjectGetPropertyForKey(
+      ctx_, objectRef(obj), getNativeStateSymbol(), &exc);
+  checkException(exc);
+
+  return JSValueIsObjectOfClass(ctx_, state, getNativeStateClass());
 }
 
 std::shared_ptr<jsi::NativeState> JSCRuntime::getNativeState(
-    const jsi::Object &) {
-  throw std::logic_error("Not implemented");
+    const jsi::Object& obj) {
+  JSValueRef exc = nullptr;
+  JSValueRef state = JSObjectGetPropertyForKey(
+      ctx_, objectRef(obj), getNativeStateSymbol(), &exc);
+  checkException(exc);
+
+  JSObjectRef stateObj = JSValueToObject(ctx_, state, &exc);
+  checkException(exc);
+
+  auto container =
+      static_cast<NativeStateContainer*>(JSObjectGetPrivate(stateObj));
+  assert(container);
+  return container->nativeState;
 }
 
 void JSCRuntime::setNativeState(
-    const jsi::Object &,
-    std::shared_ptr<jsi::NativeState>) {
-  throw std::logic_error("Not implemented");
+    const jsi::Object& obj,
+    std::shared_ptr<jsi::NativeState> nativeState) {
+  JSValueRef nativeStateSymbol = getNativeStateSymbol();
+
+  JSValueRef exc = nullptr;
+  JSValueRef state =
+      JSObjectGetPropertyForKey(ctx_, objectRef(obj), nativeStateSymbol, &exc);
+  checkException(exc);
+  if (JSValueIsUndefined(ctx_, state)) {
+    JSObjectRef stateObj = JSObjectMake(
+        ctx_,
+        getNativeStateClass(),
+        new NativeStateContainer(std::move(nativeState)));
+    JSObjectSetPropertyForKey(
+        ctx_,
+        objectRef(obj),
+        nativeStateSymbol,
+        stateObj,
+        kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontEnum |
+            kJSPropertyAttributeDontDelete,
+        &exc);
+    checkException(exc);
+  } else {
+    JSObjectRef stateObj = JSValueToObject(ctx_, state, &exc);
+    checkException(exc);
+
+    auto container =
+        static_cast<NativeStateContainer*>(JSObjectGetPrivate(stateObj));
+    assert(container);
+    container->nativeState = std::move(nativeState);
+  }
 }
 
 jsi::Value JSCRuntime::getProperty(
-    const jsi::Object &obj,
-    const jsi::String &name) {
+    const jsi::Object& obj,
+    const jsi::String& name) {
   JSObjectRef objRef = objectRef(obj);
   JSValueRef exc = nullptr;
   JSValueRef res = JSObjectGetProperty(ctx_, objRef, stringRef(name), &exc);
@@ -929,8 +998,8 @@ jsi::Value JSCRuntime::getProperty(
 }
 
 jsi::Value JSCRuntime::getProperty(
-    const jsi::Object &obj,
-    const jsi::PropNameID &name) {
+    const jsi::Object& obj,
+    const jsi::PropNameID& name) {
   JSObjectRef objRef = objectRef(obj);
   JSValueRef exc = nullptr;
   JSValueRef res = JSObjectGetProperty(ctx_, objRef, stringRef(name), &exc);
@@ -938,22 +1007,22 @@ jsi::Value JSCRuntime::getProperty(
   return createValue(res);
 }
 
-bool JSCRuntime::hasProperty(const jsi::Object &obj, const jsi::String &name) {
+bool JSCRuntime::hasProperty(const jsi::Object& obj, const jsi::String& name) {
   JSObjectRef objRef = objectRef(obj);
   return JSObjectHasProperty(ctx_, objRef, stringRef(name));
 }
 
 bool JSCRuntime::hasProperty(
-    const jsi::Object &obj,
-    const jsi::PropNameID &name) {
+    const jsi::Object& obj,
+    const jsi::PropNameID& name) {
   JSObjectRef objRef = objectRef(obj);
   return JSObjectHasProperty(ctx_, objRef, stringRef(name));
 }
 
 void JSCRuntime::setPropertyValue(
-    const jsi::Object &object,
-    const jsi::PropNameID &name,
-    const jsi::Value &value) {
+    const jsi::Object& object,
+    const jsi::PropNameID& name,
+    const jsi::Value& value) {
   JSValueRef exc = nullptr;
   JSObjectSetProperty(
       ctx_,
@@ -966,9 +1035,9 @@ void JSCRuntime::setPropertyValue(
 }
 
 void JSCRuntime::setPropertyValue(
-    const jsi::Object &object,
-    const jsi::String &name,
-    const jsi::Value &value) {
+    const jsi::Object& object,
+    const jsi::String& name,
+    const jsi::Value& value) {
   JSValueRef exc = nullptr;
   JSObjectSetProperty(
       ctx_,
@@ -980,69 +1049,35 @@ void JSCRuntime::setPropertyValue(
   checkException(exc);
 }
 
-bool JSCRuntime::isArray(const jsi::Object &obj) const {
-#if !defined(_JSC_FAST_IS_ARRAY)
-  JSObjectRef global = JSContextGetGlobalObject(ctx_);
-  JSStringRef arrayString = getArrayString();
-  JSValueRef exc = nullptr;
-  JSValueRef arrayCtorValue =
-      JSObjectGetProperty(ctx_, global, arrayString, &exc);
-  JSC_ASSERT(exc);
-  JSObjectRef arrayCtor = JSValueToObject(ctx_, arrayCtorValue, &exc);
-  JSC_ASSERT(exc);
-  JSStringRef isArrayString = getIsArrayString();
-  JSValueRef isArrayValue =
-      JSObjectGetProperty(ctx_, arrayCtor, isArrayString, &exc);
-  JSC_ASSERT(exc);
-  JSObjectRef isArray = JSValueToObject(ctx_, isArrayValue, &exc);
-  JSC_ASSERT(exc);
-  JSValueRef arg = objectRef(obj);
-  JSValueRef result =
-      JSObjectCallAsFunction(ctx_, isArray, nullptr, 1, &arg, &exc);
-  JSC_ASSERT(exc);
-  return JSValueToBoolean(ctx_, result);
-#else
+bool JSCRuntime::isArray(const jsi::Object& obj) const {
   return JSValueIsArray(ctx_, objectRef(obj));
-#endif
 }
 
-bool JSCRuntime::isArrayBuffer(const jsi::Object &obj) const {
-#if defined(_JSC_NO_ARRAY_BUFFERS)
-  throw std::runtime_error("Unsupported");
-#else
+bool JSCRuntime::isArrayBuffer(const jsi::Object& obj) const {
   auto typedArrayType = JSValueGetTypedArrayType(ctx_, objectRef(obj), nullptr);
   return typedArrayType == kJSTypedArrayTypeArrayBuffer;
-#endif
 }
 
-uint8_t *JSCRuntime::data(const jsi::ArrayBuffer &obj) {
-#if defined(_JSC_NO_ARRAY_BUFFERS)
-  throw std::runtime_error("Unsupported");
-#else
-  return static_cast<uint8_t *>(
+uint8_t* JSCRuntime::data(const jsi::ArrayBuffer& obj) {
+  return static_cast<uint8_t*>(
       JSObjectGetArrayBufferBytesPtr(ctx_, objectRef(obj), nullptr));
-#endif
 }
 
-size_t JSCRuntime::size(const jsi::ArrayBuffer &obj) {
-#if defined(_JSC_NO_ARRAY_BUFFERS)
-  throw std::runtime_error("Unsupported");
-#else
+size_t JSCRuntime::size(const jsi::ArrayBuffer& obj) {
   return JSObjectGetArrayBufferByteLength(ctx_, objectRef(obj), nullptr);
-#endif
 }
 
-bool JSCRuntime::isFunction(const jsi::Object &obj) const {
+bool JSCRuntime::isFunction(const jsi::Object& obj) const {
   return JSObjectIsFunction(ctx_, objectRef(obj));
 }
 
-bool JSCRuntime::isHostObject(const jsi::Object &obj) const {
+bool JSCRuntime::isHostObject(const jsi::Object& obj) const {
   auto cls = hostObjectClass;
   return cls != nullptr && JSValueIsObjectOfClass(ctx_, objectRef(obj), cls);
 }
 
 // Very expensive
-jsi::Array JSCRuntime::getPropertyNames(const jsi::Object &obj) {
+jsi::Array JSCRuntime::getPropertyNames(const jsi::Object& obj) {
   JSPropertyNameArrayRef names =
       JSObjectCopyPropertyNames(ctx_, objectRef(obj));
   size_t len = JSPropertyNameArrayGetCount(names);
@@ -1056,24 +1091,16 @@ jsi::Array JSCRuntime::getPropertyNames(const jsi::Object &obj) {
   return result;
 }
 
-jsi::WeakObject JSCRuntime::createWeakObject(const jsi::Object &obj) {
-#ifdef RN_FABRIC_ENABLED
+jsi::WeakObject JSCRuntime::createWeakObject(const jsi::Object& obj) {
   // TODO: revisit this implementation
   JSObjectRef objRef = objectRef(obj);
   return make<jsi::WeakObject>(makeObjectValue(objRef));
-#else
-  throw std::logic_error("Not implemented");
-#endif
 }
 
-jsi::Value JSCRuntime::lockWeakObject(const jsi::WeakObject &obj) {
-#ifdef RN_FABRIC_ENABLED
+jsi::Value JSCRuntime::lockWeakObject(const jsi::WeakObject& obj) {
   // TODO: revisit this implementation
   JSObjectRef objRef = objectRef(obj);
   return jsi::Value(createObject(objRef));
-#else
-  throw std::logic_error("Not implemented");
-#endif
 }
 
 jsi::Array JSCRuntime::createArray(size_t length) {
@@ -1096,12 +1123,12 @@ jsi::ArrayBuffer JSCRuntime::createArrayBuffer(
   throw std::logic_error("Not implemented");
 }
 
-size_t JSCRuntime::size(const jsi::Array &arr) {
+size_t JSCRuntime::size(const jsi::Array& arr) {
   return static_cast<size_t>(
       getProperty(arr, createPropNameID(getLengthString())).getNumber());
 }
 
-jsi::Value JSCRuntime::getValueAtIndex(const jsi::Array &arr, size_t i) {
+jsi::Value JSCRuntime::getValueAtIndex(const jsi::Array& arr, size_t i) {
   JSValueRef exc = nullptr;
   auto res = JSObjectGetPropertyAtIndex(ctx_, objectRef(arr), (int)i, &exc);
   checkException(exc);
@@ -1109,9 +1136,9 @@ jsi::Value JSCRuntime::getValueAtIndex(const jsi::Array &arr, size_t i) {
 }
 
 void JSCRuntime::setValueAtIndexImpl(
-    const jsi::Array &arr,
+    const jsi::Array& arr,
     size_t i,
-    const jsi::Value &value) {
+    const jsi::Value& value) {
   JSValueRef exc = nullptr;
   JSObjectSetPropertyAtIndex(
       ctx_, objectRef(arr), (int)i, valueRef(value), &exc);
@@ -1127,7 +1154,7 @@ class HostFunctionProxy {
   HostFunctionProxy(jsi::HostFunctionType hostFunction)
       : hostFunction_(hostFunction) {}
 
-  jsi::HostFunctionType &getHostFunction() {
+  jsi::HostFunctionType& getHostFunction() {
     return hostFunction_;
   }
 
@@ -1137,7 +1164,7 @@ class HostFunctionProxy {
 } // namespace
 
 jsi::Function JSCRuntime::createFunctionFromHostFunction(
-    const jsi::PropNameID &name,
+    const jsi::PropNameID& name,
     unsigned int paramCount,
     jsi::HostFunctionType func) {
   class HostFunctionMetadata : public HostFunctionProxy {
@@ -1146,8 +1173,8 @@ jsi::Function JSCRuntime::createFunctionFromHostFunction(
       // We need to set up the prototype chain properly here. In theory we
       // could set func.prototype.prototype = Function.prototype to get the
       // same result. Not sure which approach is better.
-      HostFunctionMetadata *metadata =
-          static_cast<HostFunctionMetadata *>(JSObjectGetPrivate(object));
+      HostFunctionMetadata* metadata =
+          static_cast<HostFunctionMetadata*>(JSObjectGetPrivate(object));
 
       JSValueRef exc = nullptr;
       JSObjectSetProperty(
@@ -1195,7 +1222,7 @@ jsi::Function JSCRuntime::createFunctionFromHostFunction(
       JSObjectSetPrototype(ctx, object, funcProto);
     }
 
-    static JSValueRef makeError(JSCRuntime &rt, const std::string &desc) {
+    static JSValueRef makeError(JSCRuntime& rt, const std::string& desc) {
       jsi::Value value =
           rt.global().getPropertyAsFunction(rt, "Error").call(rt, desc);
       return rt.valueRef(value);
@@ -1207,14 +1234,14 @@ jsi::Function JSCRuntime::createFunctionFromHostFunction(
         JSObjectRef thisObject,
         size_t argumentCount,
         const JSValueRef arguments[],
-        JSValueRef *exception) {
-      HostFunctionMetadata *metadata =
-          static_cast<HostFunctionMetadata *>(JSObjectGetPrivate(function));
-      JSCRuntime &rt = *(metadata->runtime);
+        JSValueRef* exception) {
+      HostFunctionMetadata* metadata =
+          static_cast<HostFunctionMetadata*>(JSObjectGetPrivate(function));
+      JSCRuntime& rt = *(metadata->runtime);
       const unsigned maxStackArgCount = 8;
       jsi::Value stackArgs[maxStackArgCount];
       std::unique_ptr<jsi::Value[]> heapArgs;
-      jsi::Value *args;
+      jsi::Value* args;
       if (argumentCount > maxStackArgCount) {
         heapArgs = std::make_unique<jsi::Value[]>(argumentCount);
         for (size_t i = 0; i < argumentCount; i++) {
@@ -1232,15 +1259,15 @@ jsi::Function JSCRuntime::createFunctionFromHostFunction(
       try {
         res = rt.valueRef(
             metadata->hostFunction_(rt, thisVal, args, argumentCount));
-      } catch (const jsi::JSError &error) {
+      } catch (const jsi::JSError& error) {
         *exception = rt.valueRef(error.value());
         res = JSValueMakeUndefined(ctx);
-      } catch (const std::exception &ex) {
+      } catch (const std::exception& ex) {
         std::string exceptionString("Exception in HostFunction: ");
         exceptionString += ex.what();
         *exception = makeError(rt, exceptionString);
         res = JSValueMakeUndefined(ctx);
-      } catch (const std::string &ex) {
+      } catch (const std::string& ex) {
         std::string exceptionString("Exception in HostFunction: ");
         exceptionString += ex;
         *exception = makeError(rt, exceptionString);
@@ -1254,14 +1281,14 @@ jsi::Function JSCRuntime::createFunctionFromHostFunction(
     }
 
     static void finalize(JSObjectRef object) {
-      HostFunctionMetadata *metadata =
-          static_cast<HostFunctionMetadata *>(JSObjectGetPrivate(object));
+      HostFunctionMetadata* metadata =
+          static_cast<HostFunctionMetadata*>(JSObjectGetPrivate(object));
       JSObjectSetPrivate(object, nullptr);
       delete metadata;
     }
 
     HostFunctionMetadata(
-        JSCRuntime *rt,
+        JSCRuntime* rt,
         jsi::HostFunctionType hf,
         unsigned ac,
         JSStringRef n)
@@ -1270,7 +1297,7 @@ jsi::Function JSCRuntime::createFunctionFromHostFunction(
           argCount(ac),
           name(JSStringRetain(n)) {}
 
-    JSCRuntime *runtime;
+    JSCRuntime* runtime;
     unsigned argCount;
     JSStringRef name;
   };
@@ -1297,8 +1324,8 @@ namespace detail {
 
 class ArgsConverter {
  public:
-  ArgsConverter(JSCRuntime &rt, const jsi::Value *args, size_t count) {
-    JSValueRef *destination = inline_;
+  ArgsConverter(JSCRuntime& rt, const jsi::Value* args, size_t count) {
+    JSValueRef* destination = inline_;
     if (count > maxStackArgs) {
       outOfLine_ = std::make_unique<JSValueRef[]>(count);
       destination = outOfLine_.get();
@@ -1309,7 +1336,7 @@ class ArgsConverter {
     }
   }
 
-  operator JSValueRef *() {
+  operator JSValueRef*() {
     return outOfLine_ ? outOfLine_.get() : inline_;
   }
 
@@ -1320,22 +1347,22 @@ class ArgsConverter {
 };
 } // namespace detail
 
-bool JSCRuntime::isHostFunction(const jsi::Function &obj) const {
+bool JSCRuntime::isHostFunction(const jsi::Function& obj) const {
   auto cls = hostFunctionClass;
   return cls != nullptr && JSValueIsObjectOfClass(ctx_, objectRef(obj), cls);
 }
 
-jsi::HostFunctionType &JSCRuntime::getHostFunction(const jsi::Function &obj) {
+jsi::HostFunctionType& JSCRuntime::getHostFunction(const jsi::Function& obj) {
   // We know that isHostFunction(obj) is true here, so its safe to proceed
   auto proxy =
-      static_cast<HostFunctionProxy *>(JSObjectGetPrivate(objectRef(obj)));
+      static_cast<HostFunctionProxy*>(JSObjectGetPrivate(objectRef(obj)));
   return proxy->getHostFunction();
 }
 
 jsi::Value JSCRuntime::call(
-    const jsi::Function &f,
-    const jsi::Value &jsThis,
-    const jsi::Value *args,
+    const jsi::Function& f,
+    const jsi::Value& jsThis,
+    const jsi::Value* args,
     size_t count) {
   JSValueRef exc = nullptr;
   auto res = JSObjectCallAsFunction(
@@ -1350,8 +1377,8 @@ jsi::Value JSCRuntime::call(
 }
 
 jsi::Value JSCRuntime::callAsConstructor(
-    const jsi::Function &f,
-    const jsi::Value *args,
+    const jsi::Function& f,
+    const jsi::Value* args,
     size_t count) {
   JSValueRef exc = nullptr;
   auto res = JSObjectCallAsConstructor(
@@ -1364,30 +1391,30 @@ jsi::Value JSCRuntime::callAsConstructor(
   return createValue(res);
 }
 
-bool JSCRuntime::strictEquals(const jsi::Symbol &a, const jsi::Symbol &b)
+bool JSCRuntime::strictEquals(const jsi::Symbol& a, const jsi::Symbol& b)
     const {
   JSValueRef exc = nullptr;
   bool ret = JSValueIsEqual(ctx_, symbolRef(a), symbolRef(b), &exc);
-  const_cast<JSCRuntime *>(this)->checkException(exc);
+  const_cast<JSCRuntime*>(this)->checkException(exc);
   return ret;
 }
 
-bool JSCRuntime::strictEquals(const jsi::BigInt &a, const jsi::BigInt &b)
+bool JSCRuntime::strictEquals(const jsi::BigInt& a, const jsi::BigInt& b)
     const {
   throw std::logic_error("Not implemented");
 }
 
-bool JSCRuntime::strictEquals(const jsi::String &a, const jsi::String &b)
+bool JSCRuntime::strictEquals(const jsi::String& a, const jsi::String& b)
     const {
   return JSStringIsEqual(stringRef(a), stringRef(b));
 }
 
-bool JSCRuntime::strictEquals(const jsi::Object &a, const jsi::Object &b)
+bool JSCRuntime::strictEquals(const jsi::Object& a, const jsi::Object& b)
     const {
   return objectRef(a) == objectRef(b);
 }
 
-bool JSCRuntime::instanceOf(const jsi::Object &o, const jsi::Function &f) {
+bool JSCRuntime::instanceOf(const jsi::Object& o, const jsi::Function& f) {
   JSValueRef exc = nullptr;
   bool res =
       JSValueIsInstanceOfConstructor(ctx_, objectRef(o), objectRef(f), &exc);
@@ -1395,7 +1422,9 @@ bool JSCRuntime::instanceOf(const jsi::Object &o, const jsi::Function &f) {
   return res;
 }
 
-jsi::Runtime::PointerValue *JSCRuntime::makeSymbolValue(
+void JSCRuntime::setExternalMemoryPressure(const jsi::Object&, size_t) {}
+
+jsi::Runtime::PointerValue* JSCRuntime::makeSymbolValue(
     JSValueRef symbolRef) const {
 #ifndef NDEBUG
   return new JSCSymbolValue(ctx_, ctxInvalid_, symbolRef, symbolCounter_);
@@ -1411,7 +1440,7 @@ JSStringRef getEmptyString() {
 }
 } // namespace
 
-jsi::Runtime::PointerValue *JSCRuntime::makeStringValue(
+jsi::Runtime::PointerValue* JSCRuntime::makeStringValue(
     JSStringRef stringRef) const {
   if (!stringRef) {
     stringRef = getEmptyString();
@@ -1435,7 +1464,7 @@ jsi::PropNameID JSCRuntime::createPropNameID(JSStringRef str) {
   return make<jsi::PropNameID>(makeStringValue(str));
 }
 
-jsi::Runtime::PointerValue *JSCRuntime::makeObjectValue(
+jsi::Runtime::PointerValue* JSCRuntime::makeObjectValue(
     JSObjectRef objectRef) const {
   if (!objectRef) {
     objectRef = JSObjectMake(ctx_, nullptr, nullptr);
@@ -1473,20 +1502,15 @@ jsi::Value JSCRuntime::createValue(JSValueRef value) const {
       JSObjectRef objRef = JSValueToObject(ctx_, value, nullptr);
       return jsi::Value(createObject(objRef));
     }
-      // TODO: Uncomment this when all supported JSC versions have this symbol
-      //    case kJSTypeSymbol:
-    default: {
-      if (smellsLikeES6Symbol(ctx_, value)) {
-        return jsi::Value(createSymbol(value));
-      } else {
-        // WHAT ARE YOU
-        abort();
-      }
-    }
+    case kJSTypeSymbol:
+      return jsi::Value(createSymbol(value));
+    default:
+      // WHAT ARE YOU
+      abort();
   }
 }
 
-JSValueRef JSCRuntime::valueRef(const jsi::Value &value) {
+JSValueRef JSCRuntime::valueRef(const jsi::Value& value) {
   // I would rather switch on value.kind_
   if (value.isUndefined()) {
     return JSValueMakeUndefined(ctx_);
@@ -1508,28 +1532,26 @@ JSValueRef JSCRuntime::valueRef(const jsi::Value &value) {
   }
 }
 
-JSValueRef JSCRuntime::symbolRef(const jsi::Symbol &sym) {
-  return static_cast<const JSCSymbolValue *>(getPointerValue(sym))->sym_;
+JSValueRef JSCRuntime::symbolRef(const jsi::Symbol& sym) {
+  return static_cast<const JSCSymbolValue*>(getPointerValue(sym))->sym_;
 }
 
-JSStringRef JSCRuntime::stringRef(const jsi::String &str) {
-  return static_cast<const JSCStringValue *>(getPointerValue(str))->str_;
+JSStringRef JSCRuntime::stringRef(const jsi::String& str) {
+  return static_cast<const JSCStringValue*>(getPointerValue(str))->str_;
 }
 
-JSStringRef JSCRuntime::stringRef(const jsi::PropNameID &sym) {
-  return static_cast<const JSCStringValue *>(getPointerValue(sym))->str_;
+JSStringRef JSCRuntime::stringRef(const jsi::PropNameID& sym) {
+  return static_cast<const JSCStringValue*>(getPointerValue(sym))->str_;
 }
 
-JSObjectRef JSCRuntime::objectRef(const jsi::Object &obj) {
-  return static_cast<const JSCObjectValue *>(getPointerValue(obj))->obj_;
+JSObjectRef JSCRuntime::objectRef(const jsi::Object& obj) {
+  return static_cast<const JSCObjectValue*>(getPointerValue(obj))->obj_;
 }
 
-#ifdef RN_FABRIC_ENABLED
-JSObjectRef JSCRuntime::objectRef(const jsi::WeakObject &obj) {
+JSObjectRef JSCRuntime::objectRef(const jsi::WeakObject& obj) {
   // TODO: revisit this implementation
-  return static_cast<const JSCObjectValue *>(getPointerValue(obj))->obj_;
+  return static_cast<const JSCObjectValue*>(getPointerValue(obj))->obj_;
 }
-#endif
 
 void JSCRuntime::checkException(JSValueRef exc) {
   if (JSC_UNLIKELY(exc)) {
@@ -1543,7 +1565,7 @@ void JSCRuntime::checkException(JSValueRef res, JSValueRef exc) {
   }
 }
 
-void JSCRuntime::checkException(JSValueRef exc, const char *msg) {
+void JSCRuntime::checkException(JSValueRef exc, const char* msg) {
   if (JSC_UNLIKELY(exc)) {
     throw jsi::JSError(std::string(msg), *this, createValue(exc));
   }
@@ -1552,7 +1574,7 @@ void JSCRuntime::checkException(JSValueRef exc, const char *msg) {
 void JSCRuntime::checkException(
     JSValueRef res,
     JSValueRef exc,
-    const char *msg) {
+    const char* msg) {
   if (JSC_UNLIKELY(!res)) {
     throw jsi::JSError(std::string(msg), *this, createValue(exc));
   }

@@ -6,7 +6,7 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(-fexceptions -frtti -std=c++17 -Wall -DLOG_TAG=\"ReactNative\")
+add_compile_options(-fexceptions -frtti -std=c++20 -Wall -DLOG_TAG=\"ReactNative\")
 
 file(GLOB react_newarchdefaults_SRC CONFIGURE_DEPENDS *.cpp)
 
@@ -17,6 +17,11 @@ target_include_directories(react_newarchdefaults PUBLIC .)
 target_link_libraries(react_newarchdefaults
         fbjni
         fabricjni
+        react_featureflagsjni
         react_nativemodule_core
         react_codegen_rncore
+        react_cxxreactpackage
+        react_nativemodule_dom
+        react_nativemodule_featureflags
+        react_nativemodule_microtasks
         jsi)

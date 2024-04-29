@@ -7,14 +7,12 @@
 
 package com.facebook.react.fabric.mounting;
 
-import static com.facebook.infer.annotation.ThreadConfined.ANY;
 import static com.facebook.infer.annotation.ThreadConfined.UI;
 import static com.facebook.react.fabric.FabricUIManager.ENABLE_FABRIC_LOGS;
 import static com.facebook.react.fabric.FabricUIManager.IS_DEVELOPMENT_ENVIRONMENT;
 
 import android.os.SystemClock;
 import android.view.View;
-import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
@@ -26,6 +24,7 @@ import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.fabric.mounting.mountitems.DispatchCommandMountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.systrace.Systrace;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -62,10 +61,8 @@ public class MountItemDispatcher {
     mItemDispatchListener = listener;
   }
 
-  @AnyThread
-  @ThreadConfined(ANY)
-  public void dispatchCommandMountItem(DispatchCommandMountItem command) {
-    addViewCommandMountItem(command);
+  public void addViewCommandMountItem(DispatchCommandMountItem mountItem) {
+    mViewCommandMountItems.add(mountItem);
   }
 
   public void addMountItem(MountItem mountItem) {
@@ -88,20 +85,12 @@ public class MountItemDispatcher {
     }
   }
 
-  public void addViewCommandMountItem(DispatchCommandMountItem mountItem) {
-    mViewCommandMountItems.add(mountItem);
-  }
-
   /**
-   * Try to dispatch MountItems. Returns true if any items were dispatched, false otherwise. A
-   * `false` return value doesn't indicate errors, it may just indicate there was no work to be
-   * done.
-   *
-   * @return
+   * Try to dispatch MountItems. In case of the exception, we will retry 10 times before giving up.
    */
   @UiThread
   @ThreadConfined(UI)
-  public boolean tryDispatchMountItems() {
+  public void tryDispatchMountItems() {
     // If we're already dispatching, don't reenter.
     // Reentrance can potentially happen a lot on Android in Fabric because
     // `updateState` from the
@@ -111,7 +100,11 @@ public class MountItemDispatcher {
     // This is a pretty blunt tool, but we might not have better options since we really don't want
     // to execute anything out-of-order.
     if (mInDispatch) {
-      return false;
+      return;
+    }
+
+    if (ReactNativeFeatureFlags.forceBatchingMountItemsOnAndroid()) {
+      mInDispatch = true;
     }
 
     final boolean didDispatchItems;
@@ -138,14 +131,14 @@ public class MountItemDispatcher {
             new ReactNoCrashSoftException(
                 "Re-dispatched "
                     + mReDispatchCounter
-                    + " times. This indicates setState (?) is likely being called too many times during mounting."));
+                    + " times. This indicates setState (?) is likely being called too many times"
+                    + " during mounting."));
       }
 
       mReDispatchCounter++;
       tryDispatchMountItems();
     }
     mReDispatchCounter = 0;
-    return didDispatchItems;
   }
 
   @UiThread
@@ -164,7 +157,7 @@ public class MountItemDispatcher {
             mountItem.incrementRetries();
             // In case we haven't retried executing this item yet, execute in the next batch of
             // items
-            dispatchCommandMountItem(mountItem);
+            addViewCommandMountItem(mountItem);
           }
         } else {
           printMountItem(
@@ -174,9 +167,17 @@ public class MountItemDispatcher {
     }
   }
 
+  /*
+   * Executes view commands, pre mount items and mount items in the respective order:
+   * 1. View commands.
+   * 2. Pre mount items.
+   * 3. Regular mount items.
+   *
+   * Does nothing if `viewCommandMountItemsToDispatch` and `mountItemsToDispatch` are empty.
+   * Nothing should call this directly except for `tryDispatchMountItems`.
+   */
   @UiThread
   @ThreadConfined(UI)
-  /** Nothing should call this directly except for `tryDispatchMountItems`. */
   private boolean dispatchMountItems() {
     if (mReDispatchCounter == 0) {
       mBatchedExecutionTime = 0;
@@ -192,7 +193,7 @@ public class MountItemDispatcher {
       return false;
     }
 
-    mItemDispatchListener.willMountItems();
+    mItemDispatchListener.willMountItems(mountItemsToDispatch);
 
     // As an optimization, execute all ViewCommands first
     // This should be:
@@ -219,7 +220,7 @@ public class MountItemDispatcher {
           // the current batch of mount items has finished executing.
           if (command.getRetries() == 0) {
             command.incrementRetries();
-            dispatchCommandMountItem(command);
+            addViewCommandMountItem(command);
           } else {
             // It's very common for commands to be executed on views that no longer exist - for
             // example, a blur event on TextInput being fired because of a navigation event away
@@ -247,12 +248,13 @@ public class MountItemDispatcher {
     // If there are MountItems to dispatch, we make sure all the "pre mount items" are executed
     // first
     Collection<MountItem> preMountItemsToDispatch = getAndResetPreMountItems();
-
     if (preMountItemsToDispatch != null) {
       Systrace.beginSection(
           Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricUIManager::mountViews preMountItems");
-
       for (MountItem preMountItem : preMountItemsToDispatch) {
+        if (ENABLE_FABRIC_LOGS) {
+          printMountItem(preMountItem, "dispatchMountItems: Executing preMountItem");
+        }
         executeOrEnqueue(preMountItem);
       }
 
@@ -301,16 +303,27 @@ public class MountItemDispatcher {
       mBatchedExecutionTime += SystemClock.uptimeMillis() - batchedExecutionStartTime;
     }
 
-    mItemDispatchListener.didMountItems();
+    mItemDispatchListener.didMountItems(mountItemsToDispatch);
 
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
 
     return true;
   }
 
+  /*
+   * Executes pre mount items. Pre mount items are operations that can be executed before the mount items come. For example view preallocation.
+   * This is a performance optimisation to do as much work ahead of time as possible.
+   *
+   * `tryDispatchMountItems` will also execute pre mount items, but only if there are mount items to be executed.
+   */
   @UiThread
   @ThreadConfined(UI)
   public void dispatchPreMountItems(long frameTimeNanos) {
+    if (mPreMountItems.isEmpty()) {
+      // Avoid starting systrace if there are no pre mount items.
+      return;
+    }
+
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricUIManager::premountViews");
 
     // dispatchPreMountItems cannot be reentrant, but we want to prevent dispatchMountItems from
@@ -330,11 +343,8 @@ public class MountItemDispatcher {
         }
 
         if (ENABLE_FABRIC_LOGS) {
-          printMountItem(
-              preMountItemToDispatch,
-              "dispatchPreMountItems: Dispatching PreAllocateViewMountItem");
+          printMountItem(preMountItemToDispatch, "dispatchPreMountItems");
         }
-
         executeOrEnqueue(preMountItemToDispatch);
       }
     } finally {
@@ -354,7 +364,7 @@ public class MountItemDispatcher {
       }
       SurfaceMountingManager surfaceMountingManager =
           mMountingManager.getSurfaceManager(item.getSurfaceId());
-      surfaceMountingManager.executeOnViewAttach(item);
+      surfaceMountingManager.scheduleMountItemOnViewAttach(item);
     } else {
       item.execute(mMountingManager);
     }
@@ -419,9 +429,9 @@ public class MountItemDispatcher {
   }
 
   public interface ItemDispatchListener {
-    void willMountItems();
+    void willMountItems(List<MountItem> mountItems);
 
-    void didMountItems();
+    void didMountItems(List<MountItem> mountItems);
 
     void didDispatchMountItems();
   }

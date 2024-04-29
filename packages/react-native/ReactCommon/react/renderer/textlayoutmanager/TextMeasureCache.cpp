@@ -11,7 +11,7 @@
 
 namespace facebook::react {
 
-static Rect rectFromDynamic(folly::dynamic const &data) {
+static Rect rectFromDynamic(const folly::dynamic& data) {
   Point origin;
   origin.x = static_cast<Float>(data.getDefault("x", 0).getDouble());
   origin.y = static_cast<Float>(data.getDefault("y", 0).getDouble());
@@ -38,7 +38,7 @@ LineMeasurement::LineMeasurement(
       ascender(ascender),
       xHeight(xHeight) {}
 
-LineMeasurement::LineMeasurement(folly::dynamic const &data)
+LineMeasurement::LineMeasurement(const folly::dynamic& data)
     : text(data.getDefault("text", "").getString()),
       frame(rectFromDynamic(data)),
       descender(
@@ -48,7 +48,7 @@ LineMeasurement::LineMeasurement(folly::dynamic const &data)
       ascender(static_cast<Float>(data.getDefault("ascender", 0).getDouble())),
       xHeight(static_cast<Float>(data.getDefault("xHeight", 0).getDouble())) {}
 
-bool LineMeasurement::operator==(LineMeasurement const &rhs) const {
+bool LineMeasurement::operator==(const LineMeasurement& rhs) const {
   return std::tie(
              this->text,
              this->frame,

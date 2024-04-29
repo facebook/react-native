@@ -36,7 +36,7 @@
 
   RCTBridge *bridge = _bridge;
   if (bridge) {
-    module = [bridge moduleForName:[NSString stringWithUTF8String:moduleName] lazilyLoadIfNecessary:lazilyLoad];
+    module = [bridge moduleForName: [NSString stringWithUTF8String:moduleName] lazilyLoadIfNecessary:lazilyLoad];
   }
 
   id<RCTTurboModuleRegistry> turboModuleRegistry = _turboModuleRegistry;
@@ -45,6 +45,28 @@
   }
 
   return module;
+}
+
+- (BOOL)moduleIsInitialized:(Class)moduleClass
+{
+  RCTBridge *bridge = _bridge;
+
+  if (bridge) {
+    return [bridge moduleIsInitialized:moduleClass];
+  }
+
+  id<RCTTurboModuleRegistry> turboModuleRegistry = _turboModuleRegistry;
+  if (turboModuleRegistry) {
+    NSString *moduleName = RCTBridgeModuleNameForClass(moduleClass);
+    return [turboModuleRegistry moduleIsInitialized:[moduleName UTF8String]];
+  }
+
+  return NO;
+}
+
+- (id)moduleForClass:(Class)moduleClass
+{
+  return [self moduleForName:RCTBridgeModuleNameForClass(moduleClass).UTF8String];
 }
 
 @end

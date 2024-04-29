@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include <react/debug/react_native_assert.h>
 #include <react/renderer/components/safeareaview/SafeAreaViewShadowNode.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
@@ -19,24 +18,13 @@ namespace facebook::react {
 class SafeAreaViewComponentDescriptor final
     : public ConcreteComponentDescriptor<SafeAreaViewShadowNode> {
   using ConcreteComponentDescriptor::ConcreteComponentDescriptor;
-  void adopt(ShadowNode::Unshared const &shadowNode) const override {
-    react_native_assert(
-        std::dynamic_pointer_cast<SafeAreaViewShadowNode>(shadowNode));
-    auto safeAreaViewShadowNode =
-        std::static_pointer_cast<SafeAreaViewShadowNode>(shadowNode);
-
-    react_native_assert(std::dynamic_pointer_cast<YogaLayoutableShadowNode>(
-        safeAreaViewShadowNode));
-    auto layoutableShadowNode =
-        std::static_pointer_cast<YogaLayoutableShadowNode>(
-            safeAreaViewShadowNode);
-
-    auto state =
-        std::static_pointer_cast<const SafeAreaViewShadowNode::ConcreteState>(
-            shadowNode->getState());
-    auto stateData = state->getData();
-
-    layoutableShadowNode->setPadding(stateData.padding);
+  void adopt(ShadowNode& shadowNode) const override {
+    auto& layoutableShadowNode =
+        static_cast<YogaLayoutableShadowNode&>(shadowNode);
+    auto& stateData = static_cast<const SafeAreaViewShadowNode::ConcreteState&>(
+                          *shadowNode.getState())
+                          .getData();
+    layoutableShadowNode.setPadding(stateData.padding);
 
     ConcreteComponentDescriptor::adopt(shadowNode);
   }

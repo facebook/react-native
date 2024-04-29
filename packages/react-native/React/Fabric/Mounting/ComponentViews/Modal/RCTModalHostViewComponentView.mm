@@ -56,7 +56,7 @@ static UIInterfaceOrientationMask supportedOrientationsMask(ModalHostViewSupport
   return supportedOrientations;
 }
 
-static std::tuple<BOOL, UIModalTransitionStyle> animationConfiguration(ModalHostViewAnimationType const animation)
+static std::tuple<BOOL, UIModalTransitionStyle> animationConfiguration(const ModalHostViewAnimationType animation)
 {
   switch (animation) {
     case ModalHostViewAnimationType::None:
@@ -68,7 +68,7 @@ static std::tuple<BOOL, UIModalTransitionStyle> animationConfiguration(ModalHost
   }
 }
 
-static UIModalPresentationStyle presentationConfiguration(ModalHostViewProps const &props)
+static UIModalPresentationStyle presentationConfiguration(const ModalHostViewProps &props)
 {
   if (props.transparent) {
     return UIModalPresentationOverFullScreen;
@@ -110,8 +110,7 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-    static const auto defaultProps = std::make_shared<const ModalHostViewProps>();
-    _props = defaultProps;
+    _props = ModalHostViewShadowNode::defaultSharedProps();
     _shouldAnimatePresentation = YES;
 
     _isPresented = NO;
@@ -142,6 +141,7 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
                      animated:(BOOL)animated
                    completion:(void (^)(void))completion
 {
+  _modalContentsSnapshot = [self.viewController.view snapshotViewAfterScreenUpdates:NO];
   [modalViewController dismissViewControllerAnimated:animated completion:completion];
 }
 
@@ -166,7 +166,10 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
     // To animate dismissal of view controller, snapshot of
     // view hierarchy needs to be added to the UIViewController.
     UIView *snapshot = _modalContentsSnapshot;
-    [self.viewController.view addSubview:snapshot];
+
+    if (_shouldPresent) {
+      [self.viewController.view addSubview:snapshot];
+    }
 
     [self dismissViewController:self.viewController
                        animated:_shouldAnimatePresentation
@@ -182,20 +185,12 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
 
 - (std::shared_ptr<const ModalHostViewEventEmitter>)modalEventEmitter
 {
-  if (!self->_eventEmitter) {
+  if (!_eventEmitter) {
     return nullptr;
   }
 
-  assert(std::dynamic_pointer_cast<ModalHostViewEventEmitter const>(self->_eventEmitter));
-  return std::static_pointer_cast<ModalHostViewEventEmitter const>(self->_eventEmitter);
-}
-
-#pragma mark - RCTMountingTransactionObserving
-
-- (void)mountingTransactionWillMount:(MountingTransaction const &)transaction
-                withSurfaceTelemetry:(facebook::react::SurfaceTelemetry const &)surfaceTelemetry
-{
-  _modalContentsSnapshot = [self.viewController.view snapshotViewAfterScreenUpdates:NO];
+  assert(std::dynamic_pointer_cast<const ModalHostViewEventEmitter>(_eventEmitter));
+  return std::static_pointer_cast<const ModalHostViewEventEmitter>(_eventEmitter);
 }
 
 #pragma mark - UIView methods
@@ -243,15 +238,15 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
   _shouldPresent = NO;
 }
 
-- (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
+- (void)updateProps:(const Props::Shared &)props oldProps:(const Props::Shared &)oldProps
 {
-  const auto &newProps = *std::static_pointer_cast<const ModalHostViewProps>(props);
+  const auto &newProps = static_cast<const ModalHostViewProps &>(*props);
 
 #if !TARGET_OS_TV
   self.viewController.supportedInterfaceOrientations = supportedOrientationsMask(newProps.supportedOrientations);
 #endif
 
-  auto const [shouldAnimate, transitionStyle] = animationConfiguration(newProps.animationType);
+  const auto [shouldAnimate, transitionStyle] = animationConfiguration(newProps.animationType);
   _shouldAnimatePresentation = shouldAnimate;
   self.viewController.modalTransitionStyle = transitionStyle;
 
@@ -263,8 +258,8 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
   [super updateProps:props oldProps:oldProps];
 }
 
-- (void)updateState:(facebook::react::State::Shared const &)state
-           oldState:(facebook::react::State::Shared const &)oldState
+- (void)updateState:(const facebook::react::State::Shared &)state
+           oldState:(const facebook::react::State::Shared &)oldState
 {
   _state = std::static_pointer_cast<const ModalHostViewShadowNode::ConcreteState>(state);
 }

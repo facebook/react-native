@@ -10,21 +10,21 @@
 namespace facebook::react {
 
 void WeakFamilyRegistry::add(
-    ShadowNodeFamily::Shared const &shadowNodeFamily) const {
-  std::lock_guard<std::mutex> lock(familiesMutex_);
+    const ShadowNodeFamily::Shared& shadowNodeFamily) const {
+  std::scoped_lock lock(familiesMutex_);
   ShadowNodeFamily::Weak weakFamily = shadowNodeFamily;
   families_[shadowNodeFamily->getSurfaceId()].push_back(weakFamily);
 }
 
 void WeakFamilyRegistry::removeFamiliesWithSurfaceId(
     SurfaceId surfaceId) const {
-  std::lock_guard<std::mutex> lock(familiesMutex_);
+  std::scoped_lock lock(familiesMutex_);
   families_.erase(surfaceId);
 }
 
 WeakFamilyRegistry::WeakFamilies WeakFamilyRegistry::weakFamiliesForSurfaceId(
     SurfaceId surfaceId) const {
-  std::lock_guard<std::mutex> lock(familiesMutex_);
+  std::scoped_lock lock(familiesMutex_);
   if (families_.find(surfaceId) != families_.end()) {
     return families_[surfaceId];
   }

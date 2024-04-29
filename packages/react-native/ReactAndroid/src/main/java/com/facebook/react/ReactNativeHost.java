@@ -10,22 +10,30 @@ package com.facebook.react;
 import android.app.Application;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.bridge.JSIModulePackage;
+import com.facebook.react.bridge.JSExceptionHandler;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
+import com.facebook.react.bridge.UIManagerProvider;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.SurfaceDelegate;
 import com.facebook.react.common.SurfaceDelegateFactory;
+import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
 import com.facebook.react.devsupport.DevSupportManagerFactory;
 import com.facebook.react.devsupport.interfaces.DevLoadingViewManager;
+import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager;
 import com.facebook.react.devsupport.interfaces.RedBoxHandler;
+import com.facebook.react.internal.ChoreographerProvider;
 import java.util.List;
 
 /**
  * Simple class that holds an instance of {@link ReactInstanceManager}. This can be used in your
  * {@link Application class} (see {@link ReactApplication}), or as a static field.
  */
+@DeprecatedInNewArchitecture(
+    message =
+        "This class will be replaced by com.facebook.react.ReactHost in the new architecture of"
+            + " React Native.")
 public abstract class ReactNativeHost {
 
   private final Application mApplication;
@@ -38,6 +46,7 @@ public abstract class ReactNativeHost {
   /** Get the current {@link ReactInstanceManager} instance, or create one. */
   public ReactInstanceManager getReactInstanceManager() {
     if (mReactInstanceManager == null) {
+      ReactMarker.logMarker(ReactMarkerConstants.INIT_REACT_RUNTIME_START);
       ReactMarker.logMarker(ReactMarkerConstants.GET_REACT_INSTANCE_MANAGER_START);
       mReactInstanceManager = createReactInstanceManager();
       ReactMarker.logMarker(ReactMarkerConstants.GET_REACT_INSTANCE_MANAGER_END);
@@ -66,6 +75,12 @@ public abstract class ReactNativeHost {
 
   protected ReactInstanceManager createReactInstanceManager() {
     ReactMarker.logMarker(ReactMarkerConstants.BUILD_REACT_INSTANCE_MANAGER_START);
+    ReactInstanceManagerBuilder builder = getBaseReactInstanceManagerBuilder();
+    ReactMarker.logMarker(ReactMarkerConstants.BUILD_REACT_INSTANCE_MANAGER_END);
+    return builder.build();
+  }
+
+  protected ReactInstanceManagerBuilder getBaseReactInstanceManagerBuilder() {
     ReactInstanceManagerBuilder builder =
         ReactInstanceManager.builder()
             .setApplication(mApplication)
@@ -75,14 +90,17 @@ public abstract class ReactNativeHost {
             .setDevLoadingViewManager(getDevLoadingViewManager())
             .setRequireActivity(getShouldRequireActivity())
             .setSurfaceDelegateFactory(getSurfaceDelegateFactory())
+            .setJSExceptionHandler(getJSExceptionHandler())
             .setLazyViewManagersEnabled(getLazyViewManagersEnabled())
             .setRedBoxHandler(getRedBoxHandler())
             .setJavaScriptExecutorFactory(getJavaScriptExecutorFactory())
-            .setJSIModulesPackage(getJSIModulePackage())
+            .setUIManagerProvider(getUIManagerProvider())
             .setInitialLifecycleState(LifecycleState.BEFORE_CREATE)
             .setReactPackageTurboModuleManagerDelegateBuilder(
                 getReactPackageTurboModuleManagerDelegateBuilder())
-            .setJSEngineResolutionAlgorithm(getJSEngineResolutionAlgorithm());
+            .setJSEngineResolutionAlgorithm(getJSEngineResolutionAlgorithm())
+            .setChoreographerProvider(getChoreographerProvider())
+            .setPausedInDebuggerOverlayManager(getPausedInDebuggerOverlayManager());
 
     for (ReactPackage reactPackage : getPackages()) {
       builder.addPackage(reactPackage);
@@ -94,13 +112,15 @@ public abstract class ReactNativeHost {
     } else {
       builder.setBundleAssetName(Assertions.assertNotNull(getBundleAssetName()));
     }
-    ReactInstanceManager reactInstanceManager = builder.build();
-    ReactMarker.logMarker(ReactMarkerConstants.BUILD_REACT_INSTANCE_MANAGER_END);
-    return reactInstanceManager;
+    return builder;
   }
 
   /** Get the {@link RedBoxHandler} to send RedBox-related callbacks to. */
   protected @Nullable RedBoxHandler getRedBoxHandler() {
+    return null;
+  }
+
+  protected @Nullable JSExceptionHandler getJSExceptionHandler() {
     return null;
   }
 
@@ -118,8 +138,8 @@ public abstract class ReactNativeHost {
     return mApplication;
   }
 
-  protected @Nullable JSIModulePackage getJSIModulePackage() {
-    return null;
+  protected @Nullable UIManagerProvider getUIManagerProvider() {
+    return reactApplicationContext -> null;
   }
 
   /** Returns whether or not to treat it as normal if Activity is null. */
@@ -156,6 +176,10 @@ public abstract class ReactNativeHost {
    * Get the {@link DevLoadingViewManager}. Override this to use a custom dev loading view manager
    */
   protected @Nullable DevLoadingViewManager getDevLoadingViewManager() {
+    return null;
+  }
+
+  protected @Nullable PausedInDebuggerOverlayManager getPausedInDebuggerOverlayManager() {
     return null;
   }
 
@@ -206,6 +230,14 @@ public abstract class ReactNativeHost {
    * will try to load JSC first and fallback to Hermes if JSC is not available.
    */
   protected @Nullable JSEngineResolutionAlgorithm getJSEngineResolutionAlgorithm() {
+    return null;
+  }
+
+  /**
+   * Returns a custom implementation of ChoreographerProvider to be used this host. If null - React
+   * will use default direct android.view.Choreographer-based provider.
+   */
+  protected @Nullable ChoreographerProvider getChoreographerProvider() {
     return null;
   }
 }

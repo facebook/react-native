@@ -181,7 +181,7 @@ class TouchableBounce extends React.Component<Props, State> {
         accessibilityElementsHidden={
           this.props['aria-hidden'] ?? this.props.accessibilityElementsHidden
         }
-        nativeID={this.props.nativeID}
+        nativeID={this.props.id ?? this.props.nativeID}
         testID={this.props.testID}
         hitSlop={this.props.hitSlop}
         focusable={
@@ -203,8 +203,13 @@ class TouchableBounce extends React.Component<Props, State> {
     this.state.pressability.configure(this._createPressabilityConfig());
   }
 
+  componentDidMount(): mixed {
+    this.state.pressability.configure(this._createPressabilityConfig());
+  }
+
   componentWillUnmount(): void {
     this.state.pressability.reset();
+    this.state.scale.resetAnimation();
   }
 }
 

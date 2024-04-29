@@ -8,11 +8,13 @@
 package com.facebook.react.uimanager.events;
 
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Nullsafe;
 
 /**
  * A singleton class that overrides {@link EventDispatcher} with no-op methods, to be used by
  * callers that expect an EventDispatcher when the instance doesn't exist.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class BlackHoleEventDispatcher implements EventDispatcher {
 
   private static final EventDispatcher sEventDispatcher = new BlackHoleEventDispatcher();

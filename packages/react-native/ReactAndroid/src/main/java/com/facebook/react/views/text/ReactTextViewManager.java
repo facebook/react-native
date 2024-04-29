@@ -25,6 +25,8 @@ import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewProps;
+import com.facebook.react.views.text.internal.span.ReactClickableSpan;
+import com.facebook.react.views.text.internal.span.TextInlineImageSpan;
 import com.facebook.yoga.YogaMeasureMode;
 import java.util.HashMap;
 import java.util.Map;
@@ -174,6 +176,10 @@ public class ReactTextViewManager
             view.getContext(), attributedString, mReactTextViewManagerCallback);
     view.setSpanned(spanned);
 
+    float minimumFontSize =
+        (float) paragraphAttributes.getDouble(TextLayoutManagerMapBuffer.PA_KEY_MINIMUM_FONT_SIZE);
+    view.setMinimumFontSize(minimumFontSize);
+
     int textBreakStrategy =
         TextAttributeProps.getTextBreakStrategy(
             paragraphAttributes.getString(TextLayoutManagerMapBuffer.PA_KEY_TEXT_BREAK_STRATEGY));
@@ -184,8 +190,8 @@ public class ReactTextViewManager
         spanned,
         -1, // UNUSED FOR TEXT
         false, // TODO add this into local Data
-        TextAttributeProps.getTextAlignment(
-            props, TextLayoutManagerMapBuffer.isRTL(attributedString), view.getGravityHorizontal()),
+        TextLayoutManagerMapBuffer.getTextGravity(
+            attributedString, spanned, view.getGravityHorizontal()),
         textBreakStrategy,
         TextAttributeProps.getJustificationMode(props, currentJustificationMode));
   }

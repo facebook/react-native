@@ -7,11 +7,18 @@
 
 package com.facebook.react.uimanager.events;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.PixelUtil;
 
-/** Event dispatched when total width or height of a view's children changes */
+/**
+ * Event dispatched when total width or height of a view's children changes.
+ *
+ * @deprecated Please define your own event for custom components
+ */
+@Nullsafe(Nullsafe.Mode.LOCAL)
+@Deprecated
 public class ContentSizeChangeEvent extends Event<ContentSizeChangeEvent> {
 
   public static final String EVENT_NAME = "topContentSizeChange";

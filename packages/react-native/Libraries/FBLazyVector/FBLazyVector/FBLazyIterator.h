@@ -29,11 +29,11 @@ class LazyIterator {
   LazyIterator(U vector, convert_type convert, size_type i)
       : _v(vector), _i(i), _convert(std::move(convert)) {}
 
-  bool operator==(const LazyIterator &other) const {
+  bool operator==(const LazyIterator& other) const {
     return _i == other._i && _v == other._v;
   }
 
-  bool operator<(const LazyIterator &b) const {
+  bool operator<(const LazyIterator& b) const {
     return _i < b._i;
   }
 
@@ -49,12 +49,12 @@ class LazyIterator {
     return LazyIterator(_v, _convert, _i + n);
   }
 
-  LazyIterator &operator+=(difference_type n) {
+  LazyIterator& operator+=(difference_type n) {
     _i += n;
     return *this;
   }
 
-  LazyIterator &operator-=(difference_type n) {
+  LazyIterator& operator-=(difference_type n) {
     _i -= n;
     return *this;
   }
@@ -63,11 +63,11 @@ class LazyIterator {
     return LazyIterator(_v, _i - n);
   }
 
-  difference_type operator-(const LazyIterator &a) const {
+  difference_type operator-(const LazyIterator& a) const {
     return _i - a._i;
   }
 
-  LazyIterator &operator++() {
+  LazyIterator& operator++() {
     return *this += 1;
   }
 
@@ -77,7 +77,7 @@ class LazyIterator {
     return tmp;
   }
 
-  LazyIterator &operator--() {
+  LazyIterator& operator--() {
     return *this -= 1;
   }
 
@@ -100,27 +100,27 @@ class LazyIterator {
 template <typename T, typename U>
 LazyIterator<T, U> operator+(
     typename LazyIterator<T, U>::difference_type n,
-    const LazyIterator<T, U> &i) {
+    const LazyIterator<T, U>& i) {
   return i + n;
 }
 
 template <typename T, typename U>
-bool operator!=(const LazyIterator<T, U> &a, const LazyIterator<T, U> &b) {
+bool operator!=(const LazyIterator<T, U>& a, const LazyIterator<T, U>& b) {
   return !(a == b);
 }
 
 template <typename T, typename U>
-bool operator<=(const LazyIterator<T, U> &a, const LazyIterator<T, U> &b) {
+bool operator<=(const LazyIterator<T, U>& a, const LazyIterator<T, U>& b) {
   return a < b || a == b;
 }
 
 template <typename T, typename U>
-bool operator>(const LazyIterator<T, U> &a, const LazyIterator<T, U> &b) {
+bool operator>(const LazyIterator<T, U>& a, const LazyIterator<T, U>& b) {
   return b < a;
 }
 
 template <typename T, typename U>
-bool operator>=(const LazyIterator<T, U> &a, const LazyIterator<T, U> &b) {
+bool operator>=(const LazyIterator<T, U>& a, const LazyIterator<T, U>& b) {
   return a > b || a == b;
 }
 

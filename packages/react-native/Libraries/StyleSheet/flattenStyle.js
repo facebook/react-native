@@ -13,7 +13,7 @@
 import type {DangerouslyImpreciseStyleProp} from './StyleSheet';
 import type {____FlattenStyleProp_Internal} from './StyleSheetTypes';
 
-function flattenStyle<+TStyleProp: DangerouslyImpreciseStyleProp>(
+function flattenStyle<TStyleProp: DangerouslyImpreciseStyleProp>(
   style: ?TStyleProp,
   // $FlowFixMe[underconstrained-implicit-instantiation]
 ): ?____FlattenStyleProp_Internal<TStyleProp> {
@@ -22,6 +22,7 @@ function flattenStyle<+TStyleProp: DangerouslyImpreciseStyleProp>(
   }
 
   if (!Array.isArray(style)) {
+    // $FlowFixMe[incompatible-return]
     return style;
   }
 
@@ -30,11 +31,15 @@ function flattenStyle<+TStyleProp: DangerouslyImpreciseStyleProp>(
     // $FlowFixMe[underconstrained-implicit-instantiation]
     const computedStyle = flattenStyle(style[i]);
     if (computedStyle) {
+      // $FlowFixMe[invalid-in-rhs]
       for (const key in computedStyle) {
+        // $FlowFixMe[incompatible-use]
+        // $FlowFixMe[invalid-computed-prop]
         result[key] = computedStyle[key];
       }
     }
   }
+  // $FlowFixMe[incompatible-return]
   return result;
 }
 

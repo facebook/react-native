@@ -10,12 +10,13 @@
 #include <array>
 #include <vector>
 
-#include <folly/Hash.h>
 #include <react/renderer/graphics/Float.h>
 #include <react/renderer/graphics/Point.h>
 #include <react/renderer/graphics/RectangleEdges.h>
 #include <react/renderer/graphics/Size.h>
+#include <react/renderer/graphics/ValueUnit.h>
 #include <react/renderer/graphics/Vector.h>
+#include <react/utils/hash_combine.h>
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
@@ -43,11 +44,28 @@ enum class TransformOperationType {
   Rotate,
   Skew
 };
+
 struct TransformOperation {
   TransformOperationType type;
   Float x;
   Float y;
   Float z;
+};
+
+struct TransformOrigin {
+  std::array<ValueUnit, 2> xy;
+  float z = 0.0f;
+
+  bool operator==(const TransformOrigin& other) const {
+    return xy[0] == other.xy[0] && xy[1] == other.xy[1] && z == other.z;
+  }
+  bool operator!=(const TransformOrigin& other) const {
+    return !(*this == other);
+  }
+  bool isSet() const {
+    return xy[0].value != 0.0f || xy[0].unit != UnitType::Undefined ||
+        xy[1].value != 0.0f || xy[1].unit != UnitType::Undefined || z != 0.0f;
+  }
 };
 
 /*
@@ -62,8 +80,8 @@ struct Transform {
   /**
    * For debugging only. Prints out the matrix.
    */
-#ifdef RN_DEBUG_STRING_CONVERTIBLE
-  static void print(Transform const &t, std::string prefix);
+#if RN_DEBUG_STRING_CONVERTIBLE
+  static void print(const Transform& t, std::string prefix);
 #endif
 
   /*
@@ -132,28 +150,30 @@ struct Transform {
    */
   static Transform Interpolate(
       Float animationProgress,
-      Transform const &lhs,
-      Transform const &rhs);
+      const Transform& lhs,
+      const Transform& rhs);
 
-  static bool isVerticalInversion(Transform const &transform);
-  static bool isHorizontalInversion(Transform const &transform);
+  static bool isVerticalInversion(const Transform& transform);
+  static bool isHorizontalInversion(const Transform& transform);
 
   /*
    * Equality operators.
    */
-  bool operator==(Transform const &rhs) const;
-  bool operator!=(Transform const &rhs) const;
+  bool operator==(const Transform& rhs) const;
+  bool operator!=(const Transform& rhs) const;
 
   /*
    * Matrix subscript.
    */
-  Float &at(int i, int j);
-  Float const &at(int i, int j) const;
+  Float& at(int i, int j);
+  const Float& at(int i, int j) const;
 
   /*
    * Concatenates (multiplies) transform matrices.
    */
-  Transform operator*(Transform const &rhs) const;
+  Transform operator*(const Transform& rhs) const;
+
+  Rect applyWithCenter(const Rect& rect, const Point& center) const;
 
   /**
    * Convert to folly::dynamic.
@@ -184,26 +204,26 @@ struct Transform {
 /*
  * Applies transformation to the given point.
  */
-Point operator*(Point const &point, Transform const &transform);
+Point operator*(const Point& point, const Transform& transform);
 
 /*
  * Applies transformation to the given size.
  */
-Size operator*(Size const &size, Transform const &transform);
+Size operator*(const Size& size, const Transform& transform);
 
 /*
  * Applies transformation to the given rect.
  * ONLY SUPPORTS scale and translation transformation.
  */
-Rect operator*(Rect const &rect, Transform const &transform);
+Rect operator*(const Rect& rect, const Transform& transform);
 
 /*
  * Applies transformation to the given EdgeInsets.
  * ONLY SUPPORTS scale transformation.
  */
-EdgeInsets operator*(EdgeInsets const &edgeInsets, Transform const &transform);
+EdgeInsets operator*(const EdgeInsets& edgeInsets, const Transform& transform);
 
-Vector operator*(Transform const &transform, Vector const &vector);
+Vector operator*(const Transform& transform, const Vector& vector);
 
 } // namespace facebook::react
 
@@ -211,9 +231,8 @@ namespace std {
 
 template <>
 struct hash<facebook::react::Transform> {
-  size_t operator()(const facebook::react::Transform &transform) const {
-    return folly::hash::hash_combine(
-        0,
+  size_t operator()(const facebook::react::Transform& transform) const {
+    return facebook::react::hash_combine(
         transform.matrix[0],
         transform.matrix[1],
         transform.matrix[2],

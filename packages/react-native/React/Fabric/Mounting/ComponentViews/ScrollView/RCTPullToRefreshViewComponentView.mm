@@ -36,16 +36,19 @@ using namespace facebook::react;
     // The pull-to-refresh view is not a subview of this view.
     self.hidden = YES;
 
-    static auto const defaultProps = std::make_shared<PullToRefreshViewProps const>();
-    _props = defaultProps;
-
-    _refreshControl = [UIRefreshControl new];
-    [_refreshControl addTarget:self
-                        action:@selector(handleUIControlEventValueChanged)
-              forControlEvents:UIControlEventValueChanged];
+    _props = PullToRefreshViewShadowNode::defaultSharedProps();
+    [self _initializeUIRefreshControl];
   }
 
   return self;
+}
+
+- (void)_initializeUIRefreshControl
+{
+  _refreshControl = [UIRefreshControl new];
+  [_refreshControl addTarget:self
+                      action:@selector(handleUIControlEventValueChanged)
+            forControlEvents:UIControlEventValueChanged];
 }
 
 #pragma mark - RCTComponentViewProtocol
@@ -55,10 +58,17 @@ using namespace facebook::react;
   return concreteComponentDescriptorProvider<PullToRefreshViewComponentDescriptor>();
 }
 
-- (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
+- (void)prepareForRecycle
 {
-  auto const &oldConcreteProps = *std::static_pointer_cast<PullToRefreshViewProps const>(_props);
-  auto const &newConcreteProps = *std::static_pointer_cast<PullToRefreshViewProps const>(props);
+  [super prepareForRecycle];
+  _scrollViewComponentView = nil;
+  [self _initializeUIRefreshControl];
+}
+
+- (void)updateProps:(const Props::Shared &)props oldProps:(const Props::Shared &)oldProps
+{
+  const auto &oldConcreteProps = static_cast<const PullToRefreshViewProps &>(*_props);
+  const auto &newConcreteProps = static_cast<const PullToRefreshViewProps &>(*props);
 
   if (newConcreteProps.refreshing != oldConcreteProps.refreshing) {
     if (newConcreteProps.refreshing) {
@@ -89,12 +99,12 @@ using namespace facebook::react;
 
 - (void)handleUIControlEventValueChanged
 {
-  std::static_pointer_cast<PullToRefreshViewEventEmitter const>(_eventEmitter)->onRefresh({});
+  static_cast<const PullToRefreshViewEventEmitter &>(*_eventEmitter).onRefresh({});
 }
 
 - (void)_updateTitle
 {
-  auto const &concreteProps = *std::static_pointer_cast<PullToRefreshViewProps const>(_props);
+  const auto &concreteProps = static_cast<const PullToRefreshViewProps &>(*_props);
 
   if (concreteProps.title.empty()) {
     _refreshControl.attributedTitle = nil;
@@ -114,6 +124,7 @@ using namespace facebook::react;
 
 - (void)didMoveToWindow
 {
+  [super didMoveToWindow];
   if (self.window) {
     [self _attach];
   } else {

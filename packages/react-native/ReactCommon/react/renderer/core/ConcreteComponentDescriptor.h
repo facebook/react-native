@@ -11,9 +11,7 @@
 #include <memory>
 
 #include <react/debug/react_native_assert.h>
-#include <react/renderer/components/view/ViewPropsInterpolation.h>
 #include <react/renderer/core/ComponentDescriptor.h>
-#include <react/renderer/core/CoreFeatures.h>
 #include <react/renderer/core/EventDispatcher.h>
 #include <react/renderer/core/Props.h>
 #include <react/renderer/core/PropsParserContext.h>
@@ -21,6 +19,7 @@
 #include <react/renderer/core/ShadowNodeFragment.h>
 #include <react/renderer/core/State.h>
 #include <react/renderer/graphics/Float.h>
+#include <react/utils/CoreFeatures.h>
 
 namespace facebook::react {
 
@@ -47,7 +46,7 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   using ConcreteState = typename ShadowNodeT::ConcreteState;
   using ConcreteStateData = typename ShadowNodeT::ConcreteState::Data;
 
-  ConcreteComponentDescriptor(ComponentDescriptorParameters const &parameters)
+  ConcreteComponentDescriptor(const ComponentDescriptorParameters& parameters)
       : ComponentDescriptor(parameters) {
     rawPropsParser_.prepare<ConcreteProps>();
   }
@@ -64,40 +63,39 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
     return ShadowNodeT::BaseTraits();
   }
 
-  ShadowNode::Shared createShadowNode(
-      const ShadowNodeFragment &fragment,
-      ShadowNodeFamily::Shared const &family) const override {
+  std::shared_ptr<ShadowNode> createShadowNode(
+      const ShadowNodeFragment& fragment,
+      const ShadowNodeFamily::Shared& family) const override {
     auto shadowNode =
         std::make_shared<ShadowNodeT>(fragment, family, getTraits());
 
-    adopt(shadowNode);
+    adopt(*shadowNode);
 
     return shadowNode;
   }
 
   ShadowNode::Unshared cloneShadowNode(
-      const ShadowNode &sourceShadowNode,
-      const ShadowNodeFragment &fragment) const override {
+      const ShadowNode& sourceShadowNode,
+      const ShadowNodeFragment& fragment) const override {
     auto shadowNode = std::make_shared<ShadowNodeT>(sourceShadowNode, fragment);
 
-    adopt(shadowNode);
+    adopt(*shadowNode);
     return shadowNode;
   }
 
   void appendChild(
-      const ShadowNode::Shared &parentShadowNode,
-      const ShadowNode::Shared &childShadowNode) const override {
-    auto concreteParentShadowNode =
-        std::static_pointer_cast<const ShadowNodeT>(parentShadowNode);
-    auto concreteNonConstParentShadowNode =
-        std::const_pointer_cast<ShadowNodeT>(concreteParentShadowNode);
-    concreteNonConstParentShadowNode->appendChild(childShadowNode);
+      const ShadowNode::Shared& parentShadowNode,
+      const ShadowNode::Shared& childShadowNode) const override {
+    auto& concreteParentShadowNode =
+        static_cast<const ShadowNodeT&>(*parentShadowNode);
+    const_cast<ShadowNodeT&>(concreteParentShadowNode)
+        .appendChild(childShadowNode);
   }
 
   virtual Props::Shared cloneProps(
-      const PropsParserContext &context,
-      const Props::Shared &props,
-      const RawProps &rawProps) const override {
+      const PropsParserContext& context,
+      const Props::Shared& props,
+      RawProps rawProps) const override {
     // Optimization:
     // Quite often nodes are constructed with default/empty props: the base
     // `props` object is `null` (there no base because it's not cloning) and the
@@ -107,7 +105,11 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
       return ShadowNodeT::defaultSharedProps();
     }
 
-    rawProps.parse(rawPropsParser_, context);
+    if constexpr (RawPropsFilterable<ShadowNodeT>) {
+      ShadowNodeT::filterRawProps(rawProps);
+    }
+
+    rawProps.parse(rawPropsParser_);
 
     // Call old-style constructor
     auto shadowNodeProps = ShadowNodeT::Props(context, rawProps, props);
@@ -117,8 +119,8 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
     // the type of ShadowNode; it acts as the single global flag.
     if (CoreFeatures::enablePropIteratorSetter) {
       rawProps.iterateOverValues([&](RawPropsPropNameHash hash,
-                                     const char *propName,
-                                     RawValue const &fn) {
+                                     const char* propName,
+                                     const RawValue& fn) {
         shadowNodeProps.get()->setProp(context, hash, propName, fn);
       });
     }
@@ -126,48 +128,23 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
     return shadowNodeProps;
   };
 
-  Props::Shared interpolateProps(
-      const PropsParserContext &context,
-      Float animationProgress,
-      const Props::Shared &props,
-      const Props::Shared &newProps) const override {
-#ifdef ANDROID
-    // On Android only, the merged props should have the same RawProps as the
-    // final props struct
-    Props::Shared interpolatedPropsShared =
-        (newProps != nullptr ? cloneProps(context, newProps, newProps->rawProps)
-                             : cloneProps(context, newProps, {}));
-#else
-    Props::Shared interpolatedPropsShared = cloneProps(context, newProps, {});
-#endif
-
-    if (ConcreteShadowNode::BaseTraits().check(
-            ShadowNodeTraits::Trait::ViewKind)) {
-      interpolateViewProps(
-          animationProgress, props, newProps, interpolatedPropsShared);
-    }
-
-    return interpolatedPropsShared;
-  };
-
   virtual State::Shared createInitialState(
-      Props::Shared const &props,
-      ShadowNodeFamily::Shared const &family) const override {
+      const Props::Shared& props,
+      const ShadowNodeFamily::Shared& family) const override {
     if (std::is_same<ConcreteStateData, StateData>::value) {
       // Default case: Returning `null` for nodes that don't use `State`.
       return nullptr;
     }
 
     return std::make_shared<ConcreteState>(
-        std::make_shared<ConcreteStateData const>(
-            ConcreteShadowNode::initialStateData(
-                props, ShadowNodeFamilyFragment::build(*family), *this)),
+        std::make_shared<const ConcreteStateData>(
+            ConcreteShadowNode::initialStateData(props, family, *this)),
         family);
   }
 
   virtual State::Shared createState(
-      ShadowNodeFamily const &family,
-      StateData::Shared const &data) const override {
+      const ShadowNodeFamily& family,
+      const StateData::Shared& data) const override {
     if (std::is_same<ConcreteStateData, StateData>::value) {
       // Default case: Returning `null` for nodes that don't use `State`.
       return nullptr;
@@ -175,40 +152,25 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
 
     react_native_assert(data && "Provided `data` is nullptr.");
 
-    return std::make_shared<ConcreteState const>(
-        std::static_pointer_cast<ConcreteStateData const>(data),
+    return std::make_shared<const ConcreteState>(
+        std::static_pointer_cast<const ConcreteStateData>(data),
         *family.getMostRecentState());
   }
 
   ShadowNodeFamily::Shared createFamily(
-      ShadowNodeFamilyFragment const &fragment,
-      SharedEventTarget eventTarget) const override {
-    auto eventEmitter = std::make_shared<ConcreteEventEmitter const>(
-        std::move(eventTarget), fragment.tag, eventDispatcher_);
+      const ShadowNodeFamilyFragment& fragment) const override {
+    auto eventEmitter = std::make_shared<const ConcreteEventEmitter>(
+        std::make_shared<EventTarget>(fragment.instanceHandle),
+        eventDispatcher_);
     return std::make_shared<ShadowNodeFamily>(
-        ShadowNodeFamilyFragment{
-            fragment.tag, fragment.surfaceId, eventEmitter},
-        eventDispatcher_,
-        *this);
+        fragment, std::move(eventEmitter), eventDispatcher_, *this);
   }
 
  protected:
-  /*
-   * Called immediately after `ShadowNode` is created or cloned.
-   *
-   * Override this method to pass information from custom `ComponentDescriptor`
-   * to new instance of `ShadowNode`.
-   *
-   * Example usages:
-   *   - Inject image manager to `ImageShadowNode` in
-   * `ImageComponentDescriptor`.
-   *   - Set `ShadowNode`'s size from state in
-   * `ModalHostViewComponentDescriptor`.
-   */
-  virtual void adopt(ShadowNode::Unshared const &shadowNode) const {
+  virtual void adopt(ShadowNode& shadowNode) const override {
     // Default implementation does nothing.
     react_native_assert(
-        shadowNode->getComponentHandle() == getComponentHandle());
+        shadowNode.getComponentHandle() == getComponentHandle());
   }
 };
 

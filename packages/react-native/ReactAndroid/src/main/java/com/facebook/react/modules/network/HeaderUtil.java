@@ -13,7 +13,7 @@ package com.facebook.react.modules.network;
  * information. It is better to get 401 from the server in this case, rather than non descriptive
  * error as 401 could be handled to invalidate the wrong token in the client code.
  */
-public class HeaderUtil {
+class HeaderUtil {
 
   public static String stripHeaderName(String name) {
     StringBuilder builder = new StringBuilder(name.length());
@@ -27,19 +27,5 @@ public class HeaderUtil {
       }
     }
     return modified ? builder.toString() : name;
-  }
-
-  public static String stripHeaderValue(String value) {
-    StringBuilder builder = new StringBuilder(value.length());
-    boolean modified = false;
-    for (int i = 0, length = value.length(); i < length; i++) {
-      char c = value.charAt(i);
-      if ((c > '\u001f' && c < '\u007f') || c == '\t') {
-        builder.append(c);
-      } else {
-        modified = true;
-      }
-    }
-    return modified ? builder.toString() : value;
   }
 }

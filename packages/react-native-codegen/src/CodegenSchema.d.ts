@@ -199,7 +199,16 @@ export type CommandParamTypeAnnotation =
   | Int32TypeAnnotation
   | DoubleTypeAnnotation
   | FloatTypeAnnotation
-  | StringTypeAnnotation;
+  | StringTypeAnnotation
+  | {
+    readonly type: 'ArrayTypeAnnotation';
+    readonly elementType:
+    | Int32TypeAnnotation
+    | DoubleTypeAnnotation
+    | FloatTypeAnnotation
+    | BooleanTypeAnnotation
+    | StringTypeAnnotation
+  };
 
 export interface ReservedTypeAnnotation {
   readonly type: 'ReservedTypeAnnotation';

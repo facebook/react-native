@@ -28,7 +28,7 @@ exports[`VirtualizedSectionList handles nested lists 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
 >
   <View>
@@ -62,7 +62,6 @@ exports[`VirtualizedSectionList handles nested lists 1`] = `
         getItemCount={[Function]}
         horizontal={false}
         keyExtractor={[Function]}
-        onContentSizeChange={[Function]}
         onLayout={[Function]}
         onMomentumScrollBegin={[Function]}
         onMomentumScrollEnd={[Function]}
@@ -70,7 +69,7 @@ exports[`VirtualizedSectionList handles nested lists 1`] = `
         onScrollBeginDrag={[Function]}
         onScrollEndDrag={[Function]}
         renderItem={[Function]}
-        scrollEventThrottle={50}
+        scrollEventThrottle={0.0001}
         stickyHeaderIndices={Array []}
       >
         <View
@@ -136,7 +135,7 @@ exports[`VirtualizedSectionList handles nested lists 1`] = `
         onScrollBeginDrag={[Function]}
         onScrollEndDrag={[Function]}
         renderItem={[Function]}
-        scrollEventThrottle={50}
+        scrollEventThrottle={0.0001}
         stickyHeaderIndices={Array []}
       >
         <View>
@@ -239,7 +238,7 @@ exports[`VirtualizedSectionList handles separators correctly 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
 >
   <View>
@@ -253,80 +252,76 @@ exports[`VirtualizedSectionList handles separators correctly 1`] = `
       onLayout={[Function]}
       style={null}
     >
-      <View>
-        <item
-          title="i0"
-        />
-        <separator
-          highlighted={false}
-          leadingItem={
-            Object {
-              "key": "i0",
-            }
+      <item
+        title="i0"
+      />
+      <separator
+        highlighted={false}
+        leadingItem={
+          Object {
+            "key": "i0",
           }
-          section={
-            Object {
-              "data": Array [
-                Object {
-                  "key": "i0",
-                },
-                Object {
-                  "key": "i1",
-                },
-                Object {
-                  "key": "i2",
-                },
-              ],
-              "title": "s0",
-            }
+        }
+        section={
+          Object {
+            "data": Array [
+              Object {
+                "key": "i0",
+              },
+              Object {
+                "key": "i1",
+              },
+              Object {
+                "key": "i2",
+              },
+            ],
+            "title": "s0",
           }
-          trailingItem={
-            Object {
-              "key": "i1",
-            }
+        }
+        trailingItem={
+          Object {
+            "key": "i1",
           }
-        />
-      </View>
+        }
+      />
     </View>
     <View
       onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
-      <View>
-        <item
-          title="i1"
-        />
-        <separator
-          highlighted={false}
-          leadingItem={
-            Object {
-              "key": "i1",
-            }
+      <item
+        title="i1"
+      />
+      <separator
+        highlighted={false}
+        leadingItem={
+          Object {
+            "key": "i1",
           }
-          section={
-            Object {
-              "data": Array [
-                Object {
-                  "key": "i0",
-                },
-                Object {
-                  "key": "i1",
-                },
-                Object {
-                  "key": "i2",
-                },
-              ],
-              "title": "s0",
-            }
+        }
+        section={
+          Object {
+            "data": Array [
+              Object {
+                "key": "i0",
+              },
+              Object {
+                "key": "i1",
+              },
+              Object {
+                "key": "i2",
+              },
+            ],
+            "title": "s0",
           }
-          trailingItem={
-            Object {
-              "key": "i2",
-            }
+        }
+        trailingItem={
+          Object {
+            "key": "i2",
           }
-        />
-      </View>
+        }
+      />
     </View>
     <View
       onFocusCapture={[Function]}
@@ -377,7 +372,7 @@ exports[`VirtualizedSectionList handles separators correctly 2`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
 >
   <View>
@@ -391,80 +386,76 @@ exports[`VirtualizedSectionList handles separators correctly 2`] = `
       onLayout={[Function]}
       style={null}
     >
-      <View>
-        <item
-          title="i0"
-        />
-        <separator
-          highlighted={true}
-          leadingItem={
-            Object {
-              "key": "i0",
-            }
+      <item
+        title="i0"
+      />
+      <separator
+        highlighted={true}
+        leadingItem={
+          Object {
+            "key": "i0",
           }
-          section={
-            Object {
-              "data": Array [
-                Object {
-                  "key": "i0",
-                },
-                Object {
-                  "key": "i1",
-                },
-                Object {
-                  "key": "i2",
-                },
-              ],
-              "title": "s0",
-            }
+        }
+        section={
+          Object {
+            "data": Array [
+              Object {
+                "key": "i0",
+              },
+              Object {
+                "key": "i1",
+              },
+              Object {
+                "key": "i2",
+              },
+            ],
+            "title": "s0",
           }
-          trailingItem={
-            Object {
-              "key": "i1",
-            }
+        }
+        trailingItem={
+          Object {
+            "key": "i1",
           }
-        />
-      </View>
+        }
+      />
     </View>
     <View
       onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
-      <View>
-        <item
-          title="i1"
-        />
-        <separator
-          highlighted={true}
-          leadingItem={
-            Object {
-              "key": "i1",
-            }
+      <item
+        title="i1"
+      />
+      <separator
+        highlighted={true}
+        leadingItem={
+          Object {
+            "key": "i1",
           }
-          section={
-            Object {
-              "data": Array [
-                Object {
-                  "key": "i0",
-                },
-                Object {
-                  "key": "i1",
-                },
-                Object {
-                  "key": "i2",
-                },
-              ],
-              "title": "s0",
-            }
+        }
+        section={
+          Object {
+            "data": Array [
+              Object {
+                "key": "i0",
+              },
+              Object {
+                "key": "i1",
+              },
+              Object {
+                "key": "i2",
+              },
+            ],
+            "title": "s0",
           }
-          trailingItem={
-            Object {
-              "key": "i2",
-            }
+        }
+        trailingItem={
+          Object {
+            "key": "i2",
           }
-        />
-      </View>
+        }
+      />
     </View>
     <View
       onFocusCapture={[Function]}
@@ -515,7 +506,7 @@ exports[`VirtualizedSectionList handles separators correctly 3`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
 >
   <View>
@@ -529,81 +520,77 @@ exports[`VirtualizedSectionList handles separators correctly 3`] = `
       onLayout={[Function]}
       style={null}
     >
-      <View>
-        <item
-          title="i0"
-        />
-        <separator
-          highlighted={true}
-          leadingItem={
-            Object {
-              "key": "i0",
-            }
+      <item
+        title="i0"
+      />
+      <separator
+        highlighted={true}
+        leadingItem={
+          Object {
+            "key": "i0",
           }
-          section={
-            Object {
-              "data": Array [
-                Object {
-                  "key": "i0",
-                },
-                Object {
-                  "key": "i1",
-                },
-                Object {
-                  "key": "i2",
-                },
-              ],
-              "title": "s0",
-            }
+        }
+        section={
+          Object {
+            "data": Array [
+              Object {
+                "key": "i0",
+              },
+              Object {
+                "key": "i1",
+              },
+              Object {
+                "key": "i2",
+              },
+            ],
+            "title": "s0",
           }
-          trailingItem={
-            Object {
-              "key": "i1",
-            }
+        }
+        trailingItem={
+          Object {
+            "key": "i1",
           }
-        />
-      </View>
+        }
+      />
     </View>
     <View
       onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
-      <View>
-        <item
-          title="i1"
-        />
-        <separator
-          highlighted={true}
-          leadingItem={
-            Object {
-              "key": "i1",
-            }
+      <item
+        title="i1"
+      />
+      <separator
+        highlighted={true}
+        leadingItem={
+          Object {
+            "key": "i1",
           }
-          press={true}
-          section={
-            Object {
-              "data": Array [
-                Object {
-                  "key": "i0",
-                },
-                Object {
-                  "key": "i1",
-                },
-                Object {
-                  "key": "i2",
-                },
-              ],
-              "title": "s0",
-            }
+        }
+        press={true}
+        section={
+          Object {
+            "data": Array [
+              Object {
+                "key": "i0",
+              },
+              Object {
+                "key": "i1",
+              },
+              Object {
+                "key": "i2",
+              },
+            ],
+            "title": "s0",
           }
-          trailingItem={
-            Object {
-              "key": "i2",
-            }
+        }
+        trailingItem={
+          Object {
+            "key": "i2",
           }
-        />
-      </View>
+        }
+      />
     </View>
     <View
       onFocusCapture={[Function]}
@@ -654,7 +641,7 @@ exports[`VirtualizedSectionList handles separators correctly 4`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
 >
   <View>
@@ -668,81 +655,77 @@ exports[`VirtualizedSectionList handles separators correctly 4`] = `
       onLayout={[Function]}
       style={null}
     >
-      <View>
-        <item
-          title="i0"
-        />
-        <separator
-          highlighted={false}
-          leadingItem={
-            Object {
-              "key": "i0",
-            }
+      <item
+        title="i0"
+      />
+      <separator
+        highlighted={false}
+        leadingItem={
+          Object {
+            "key": "i0",
           }
-          section={
-            Object {
-              "data": Array [
-                Object {
-                  "key": "i0",
-                },
-                Object {
-                  "key": "i1",
-                },
-                Object {
-                  "key": "i2",
-                },
-              ],
-              "title": "s0",
-            }
+        }
+        section={
+          Object {
+            "data": Array [
+              Object {
+                "key": "i0",
+              },
+              Object {
+                "key": "i1",
+              },
+              Object {
+                "key": "i2",
+              },
+            ],
+            "title": "s0",
           }
-          trailingItem={
-            Object {
-              "key": "i1",
-            }
+        }
+        trailingItem={
+          Object {
+            "key": "i1",
           }
-        />
-      </View>
+        }
+      />
     </View>
     <View
       onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
-      <View>
-        <item
-          title="i1"
-        />
-        <separator
-          highlighted={false}
-          leadingItem={
-            Object {
-              "key": "i1",
-            }
+      <item
+        title="i1"
+      />
+      <separator
+        highlighted={false}
+        leadingItem={
+          Object {
+            "key": "i1",
           }
-          press={true}
-          section={
-            Object {
-              "data": Array [
-                Object {
-                  "key": "i0",
-                },
-                Object {
-                  "key": "i1",
-                },
-                Object {
-                  "key": "i2",
-                },
-              ],
-              "title": "s0",
-            }
+        }
+        press={true}
+        section={
+          Object {
+            "data": Array [
+              Object {
+                "key": "i0",
+              },
+              Object {
+                "key": "i1",
+              },
+              Object {
+                "key": "i2",
+              },
+            ],
+            "title": "s0",
           }
-          trailingItem={
-            Object {
-              "key": "i2",
-            }
+        }
+        trailingItem={
+          Object {
+            "key": "i2",
           }
-        />
-      </View>
+        }
+      />
     </View>
     <View
       onFocusCapture={[Function]}
@@ -796,6 +779,7 @@ exports[`VirtualizedSectionList renders all the bells and whistles 1`] = `
   getItemLayout={[Function]}
   invertStickyHeaders={true}
   inverted={true}
+  isInvertedVirtualizedList={true}
   keyExtractor={[Function]}
   onContentSizeChange={[Function]}
   onLayout={[Function]}
@@ -813,7 +797,7 @@ exports[`VirtualizedSectionList renders all the bells and whistles 1`] = `
   }
   refreshing={false}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
   style={
     Array [
@@ -879,12 +863,10 @@ exports[`VirtualizedSectionList renders all the bells and whistles 1`] = `
         ]
       }
     >
-      <View>
-        <separator />
-        <item
-          value="0"
-        />
-      </View>
+      <separator />
+      <item
+        value="0"
+      />
     </View>
     <View
       onFocusCapture={[Function]}
@@ -903,12 +885,10 @@ exports[`VirtualizedSectionList renders all the bells and whistles 1`] = `
         ]
       }
     >
-      <View>
-        <separator />
-        <item
-          value="1"
-        />
-      </View>
+      <separator />
+      <item
+        value="1"
+      />
     </View>
     <View
       onFocusCapture={[Function]}
@@ -927,12 +907,10 @@ exports[`VirtualizedSectionList renders all the bells and whistles 1`] = `
         ]
       }
     >
-      <View>
-        <separator />
-        <item
-          value="2"
-        />
-      </View>
+      <separator />
+      <item
+        value="2"
+      />
     </View>
     <View
       onFocusCapture={[Function]}
@@ -951,12 +929,10 @@ exports[`VirtualizedSectionList renders all the bells and whistles 1`] = `
         ]
       }
     >
-      <View>
-        <separator />
-        <item
-          value="3"
-        />
-      </View>
+      <separator />
+      <item
+        value="3"
+      />
     </View>
     <View
       onFocusCapture={[Function]}
@@ -1028,7 +1004,7 @@ exports[`VirtualizedSectionList renders empty list 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
 >
   <View />
@@ -1052,7 +1028,7 @@ exports[`VirtualizedSectionList renders empty list with empty component 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
 >
   <View>
@@ -1098,7 +1074,7 @@ exports[`VirtualizedSectionList renders list with empty component 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
 >
   <View>
@@ -1156,7 +1132,7 @@ exports[`VirtualizedSectionList renders simple list 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
 >
   <View>

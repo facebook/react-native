@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#if RN_DEBUG_STRING_CONVERTIBLE
 #include <memory>
 
 #include <gtest/gtest.h>
@@ -82,3 +83,4 @@ TEST(DebugStringConvertibleTest, handleNodeWithComplexProps) {
       item->getDebugDescription().c_str(),
       "<View=hello x=1(height=100 width=200)/>");
 }
+#endif

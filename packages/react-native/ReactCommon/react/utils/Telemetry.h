@@ -30,7 +30,7 @@ using TelemetryDuration = std::chrono::nanoseconds;
 /*
  * Represents a time point which never happens.
  */
-static TelemetryTimePoint const kTelemetryUndefinedTimePoint =
+static const TelemetryTimePoint kTelemetryUndefinedTimePoint =
     TelemetryTimePoint::max();
 
 /*

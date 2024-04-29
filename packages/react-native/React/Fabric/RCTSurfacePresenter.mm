@@ -27,14 +27,14 @@
 #import <React/RCTUtils.h>
 
 #import <react/config/ReactNativeConfig.h>
+#import <react/featureflags/ReactNativeFeatureFlags.h>
 #import <react/renderer/componentregistry/ComponentDescriptorFactory.h>
 #import <react/renderer/components/text/BaseTextProps.h>
-#import <react/renderer/core/CoreFeatures.h>
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import <react/renderer/scheduler/AsynchronousEventBeat.h>
 #import <react/renderer/scheduler/SchedulerToolbox.h>
-#import <react/renderer/scheduler/SynchronousEventBeat.h>
 #import <react/utils/ContextContainer.h>
+#import <react/utils/CoreFeatures.h>
 #import <react/utils/ManagedObjectWrapper.h>
 
 #import "PlatformRunLoopObserver.h"
@@ -201,7 +201,7 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
   return YES;
 }
 
-- (void)setupAnimationDriverWithSurfaceHandler:(facebook::react::SurfaceHandler const &)surfaceHandler
+- (void)setupAnimationDriverWithSurfaceHandler:(const facebook::react::SurfaceHandler &)surfaceHandler
 {
   [[self scheduler] setupAnimationDriver:surfaceHandler];
 }
@@ -254,31 +254,19 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 
 - (RCTScheduler *)_createScheduler
 {
-  auto reactNativeConfig = _contextContainer->at<std::shared_ptr<ReactNativeConfig const>>("ReactNativeConfig");
-
-  if (reactNativeConfig && reactNativeConfig->getBool("rn_convergence:dispatch_pointer_events")) {
-    RCTSetDispatchW3CPointerEvents(YES);
-  }
+  auto reactNativeConfig = _contextContainer->at<std::shared_ptr<const ReactNativeConfig>>("ReactNativeConfig");
 
   if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_cpp_props_iterator_setter_ios")) {
     CoreFeatures::enablePropIteratorSetter = true;
   }
 
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:use_native_state")) {
-    CoreFeatures::useNativeState = true;
-  }
-
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:cancel_image_downloads_on_recycle")) {
-    CoreFeatures::cancelImageDownloadsOnRecycle = true;
-  }
-
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:disable_transaction_commit")) {
-    CoreFeatures::disableTransactionCommit = true;
+  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_granular_scroll_view_state_updates_ios")) {
+    CoreFeatures::enableGranularScrollViewStateUpdatesIOS = true;
   }
 
   auto componentRegistryFactory =
       [factory = wrapManagedObject(_mountingManager.componentViewRegistry.componentViewFactory)](
-          EventDispatcher::Weak const &eventDispatcher, ContextContainer::Shared const &contextContainer) {
+          const EventDispatcher::Weak &eventDispatcher, const ContextContainer::Shared &contextContainer) {
         return [(RCTComponentViewFactory *)unwrapManagedObject(factory)
             createComponentDescriptorRegistryWithParameters:{eventDispatcher, contextContainer}];
       };
@@ -300,26 +288,14 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
   toolbox.runtimeExecutor = runtimeExecutor;
   toolbox.bridgelessBindingsExecutor = _bridgelessBindingsExecutor;
 
-  toolbox.mainRunLoopObserverFactory = [](RunLoopObserver::Activity activities,
-                                          RunLoopObserver::WeakOwner const &owner) {
-    return std::make_unique<MainRunLoopObserver>(activities, owner);
-  };
-
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_background_executor_ios")) {
+  if (ReactNativeFeatureFlags::enableBackgroundExecutor()) {
     toolbox.backgroundExecutor = RCTGetBackgroundExecutor();
   }
 
-  toolbox.synchronousEventBeatFactory =
-      [runtimeExecutor, runtimeScheduler = runtimeScheduler](EventBeat::SharedOwnerBox const &ownerBox) {
-        auto runLoopObserver =
-            std::make_unique<MainRunLoopObserver const>(RunLoopObserver::Activity::BeforeWaiting, ownerBox->owner);
-        return std::make_unique<SynchronousEventBeat>(std::move(runLoopObserver), runtimeExecutor, runtimeScheduler);
-      };
-
   toolbox.asynchronousEventBeatFactory =
-      [runtimeExecutor](EventBeat::SharedOwnerBox const &ownerBox) -> std::unique_ptr<EventBeat> {
+      [runtimeExecutor](const EventBeat::SharedOwnerBox &ownerBox) -> std::unique_ptr<EventBeat> {
     auto runLoopObserver =
-        std::make_unique<MainRunLoopObserver const>(RunLoopObserver::Activity::BeforeWaiting, ownerBox->owner);
+        std::make_unique<const MainRunLoopObserver>(RunLoopObserver::Activity::BeforeWaiting, ownerBox->owner);
     return std::make_unique<AsynchronousEventBeat>(std::move(runLoopObserver), runtimeExecutor);
   };
 
@@ -358,12 +334,17 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 
 - (void)schedulerDidFinishTransaction:(MountingCoordinator::Shared)mountingCoordinator
 {
+  // no-op, we will flush the transaction from schedulerShouldRenderTransactions
+}
+
+- (void)schedulerShouldRenderTransactions:(MountingCoordinator::Shared)mountingCoordinator
+{
   [_mountingManager scheduleTransaction:mountingCoordinator];
 }
 
-- (void)schedulerDidDispatchCommand:(ShadowView const &)shadowView
-                        commandName:(std::string const &)commandName
-                               args:(folly::dynamic const &)args
+- (void)schedulerDidDispatchCommand:(const ShadowView &)shadowView
+                        commandName:(const std::string &)commandName
+                               args:(const folly::dynamic &)args
 {
   ReactTag tag = shadowView.tag;
   NSString *commandStr = [[NSString alloc] initWithUTF8String:commandName.c_str()];
@@ -383,7 +364,7 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 
 - (void)schedulerDidSetIsJSResponder:(BOOL)isJSResponder
                 blockNativeResponder:(BOOL)blockNativeResponder
-                       forShadowView:(facebook::react::ShadowView const &)shadowView;
+                       forShadowView:(const facebook::react::ShadowView &)shadowView;
 {
   [_mountingManager setIsJSResponder:isJSResponder blockNativeResponder:blockNativeResponder forShadowView:shadowView];
 }
@@ -437,6 +418,15 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     if ([observer respondsToSelector:@selector(didMountComponentsWithRootTag:)]) {
       [observer didMountComponentsWithRootTag:rootTag];
     }
+  }
+
+  RCTScheduler *scheduler = [self scheduler];
+  if (scheduler) {
+    // Notify mount when the effects are visible and prevent mount hooks to
+    // delay paint.
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [scheduler reportMount:rootTag];
+    });
   }
 }
 

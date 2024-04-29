@@ -9,10 +9,9 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 add_compile_options(
         -fexceptions
         -frtti
-        -std=c++17
+        -std=c++20
         -Wall
         -Wpedantic
-        -Wno-gnu-zero-variadic-macro-arguments
         -DLOG_TAG=\"Fabric\")
 
 file(GLOB rrc_image_SRC CONFIGURE_DEPENDS *.cpp)
@@ -26,6 +25,7 @@ target_link_libraries(rrc_image
         glog_init
         jsi
         react_debug
+        react_utils
         react_render_core
         react_render_debug
         react_render_graphics

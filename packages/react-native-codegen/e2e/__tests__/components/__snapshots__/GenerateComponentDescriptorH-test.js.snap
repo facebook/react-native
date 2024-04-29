@@ -16,14 +16,16 @@ Object {
 
 #include <react/renderer/components/RNCodegenModuleFixtures/ShadowNodes.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
+#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 using ArrayPropsNativeComponentViewComponentDescriptor = ConcreteComponentDescriptor<ArrayPropsNativeComponentViewShadowNode>;
 
-} // namespace react
-} // namespace facebook
+void RNCodegenModuleFixtures_registerComponentDescriptorsFromCodegen(
+  std::shared_ptr<const ComponentDescriptorProviderRegistry> registry);
+
+} // namespace facebook::react
 ",
 }
 `;
@@ -44,14 +46,16 @@ Object {
 
 #include <react/renderer/components/RNCodegenModuleFixtures/ShadowNodes.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
+#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 using BooleanPropNativeComponentViewComponentDescriptor = ConcreteComponentDescriptor<BooleanPropNativeComponentViewShadowNode>;
 
-} // namespace react
-} // namespace facebook
+void RNCodegenModuleFixtures_registerComponentDescriptorsFromCodegen(
+  std::shared_ptr<const ComponentDescriptorProviderRegistry> registry);
+
+} // namespace facebook::react
 ",
 }
 `;
@@ -72,14 +76,16 @@ Object {
 
 #include <react/renderer/components/RNCodegenModuleFixtures/ShadowNodes.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
+#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 using ColorPropNativeComponentViewComponentDescriptor = ConcreteComponentDescriptor<ColorPropNativeComponentViewShadowNode>;
 
-} // namespace react
-} // namespace facebook
+void RNCodegenModuleFixtures_registerComponentDescriptorsFromCodegen(
+  std::shared_ptr<const ComponentDescriptorProviderRegistry> registry);
+
+} // namespace facebook::react
 ",
 }
 `;
@@ -100,14 +106,16 @@ Object {
 
 #include <react/renderer/components/RNCodegenModuleFixtures/ShadowNodes.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
+#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 using DimensionPropNativeComponentViewComponentDescriptor = ConcreteComponentDescriptor<DimensionPropNativeComponentViewShadowNode>;
 
-} // namespace react
-} // namespace facebook
+void RNCodegenModuleFixtures_registerComponentDescriptorsFromCodegen(
+  std::shared_ptr<const ComponentDescriptorProviderRegistry> registry);
+
+} // namespace facebook::react
 ",
 }
 `;
@@ -128,14 +136,16 @@ Object {
 
 #include <react/renderer/components/RNCodegenModuleFixtures/ShadowNodes.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
+#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 using EdgeInsetsPropNativeComponentViewComponentDescriptor = ConcreteComponentDescriptor<EdgeInsetsPropNativeComponentViewShadowNode>;
 
-} // namespace react
-} // namespace facebook
+void RNCodegenModuleFixtures_registerComponentDescriptorsFromCodegen(
+  std::shared_ptr<const ComponentDescriptorProviderRegistry> registry);
+
+} // namespace facebook::react
 ",
 }
 `;
@@ -156,14 +166,16 @@ Object {
 
 #include <react/renderer/components/RNCodegenModuleFixtures/ShadowNodes.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
+#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 using EnumPropNativeComponentViewComponentDescriptor = ConcreteComponentDescriptor<EnumPropNativeComponentViewShadowNode>;
 
-} // namespace react
-} // namespace facebook
+void RNCodegenModuleFixtures_registerComponentDescriptorsFromCodegen(
+  std::shared_ptr<const ComponentDescriptorProviderRegistry> registry);
+
+} // namespace facebook::react
 ",
 }
 `;
@@ -184,14 +196,16 @@ Object {
 
 #include <react/renderer/components/RNCodegenModuleFixtures/ShadowNodes.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
+#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 using EventNestedObjectPropsNativeComponentViewComponentDescriptor = ConcreteComponentDescriptor<EventNestedObjectPropsNativeComponentViewShadowNode>;
 
-} // namespace react
-} // namespace facebook
+void RNCodegenModuleFixtures_registerComponentDescriptorsFromCodegen(
+  std::shared_ptr<const ComponentDescriptorProviderRegistry> registry);
+
+} // namespace facebook::react
 ",
 }
 `;
@@ -212,14 +226,16 @@ Object {
 
 #include <react/renderer/components/RNCodegenModuleFixtures/ShadowNodes.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
+#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 using EventPropsNativeComponentViewComponentDescriptor = ConcreteComponentDescriptor<EventPropsNativeComponentViewShadowNode>;
 
-} // namespace react
-} // namespace facebook
+void RNCodegenModuleFixtures_registerComponentDescriptorsFromCodegen(
+  std::shared_ptr<const ComponentDescriptorProviderRegistry> registry);
+
+} // namespace facebook::react
 ",
 }
 `;
@@ -240,14 +256,16 @@ Object {
 
 #include <react/renderer/components/RNCodegenModuleFixtures/ShadowNodes.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
+#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 using FloatPropsNativeComponentViewComponentDescriptor = ConcreteComponentDescriptor<FloatPropsNativeComponentViewShadowNode>;
 
-} // namespace react
-} // namespace facebook
+void RNCodegenModuleFixtures_registerComponentDescriptorsFromCodegen(
+  std::shared_ptr<const ComponentDescriptorProviderRegistry> registry);
+
+} // namespace facebook::react
 ",
 }
 `;
@@ -268,14 +286,16 @@ Object {
 
 #include <react/renderer/components/RNCodegenModuleFixtures/ShadowNodes.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
+#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 using ImagePropNativeComponentViewComponentDescriptor = ConcreteComponentDescriptor<ImagePropNativeComponentViewShadowNode>;
 
-} // namespace react
-} // namespace facebook
+void RNCodegenModuleFixtures_registerComponentDescriptorsFromCodegen(
+  std::shared_ptr<const ComponentDescriptorProviderRegistry> registry);
+
+} // namespace facebook::react
 ",
 }
 `;
@@ -296,14 +316,16 @@ Object {
 
 #include <react/renderer/components/RNCodegenModuleFixtures/ShadowNodes.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
+#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 using IntegerPropNativeComponentViewComponentDescriptor = ConcreteComponentDescriptor<IntegerPropNativeComponentViewShadowNode>;
 
-} // namespace react
-} // namespace facebook
+void RNCodegenModuleFixtures_registerComponentDescriptorsFromCodegen(
+  std::shared_ptr<const ComponentDescriptorProviderRegistry> registry);
+
+} // namespace facebook::react
 ",
 }
 `;
@@ -324,14 +346,16 @@ Object {
 
 #include <react/renderer/components/RNCodegenModuleFixtures/ShadowNodes.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
+#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 
 
-} // namespace react
-} // namespace facebook
+void RNCodegenModuleFixtures_registerComponentDescriptorsFromCodegen(
+  std::shared_ptr<const ComponentDescriptorProviderRegistry> registry);
+
+} // namespace facebook::react
 ",
 }
 `;
@@ -352,14 +376,16 @@ Object {
 
 #include <react/renderer/components/RNCodegenModuleFixtures/ShadowNodes.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
+#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 using MixedPropNativeComponentViewComponentDescriptor = ConcreteComponentDescriptor<MixedPropNativeComponentViewShadowNode>;
 
-} // namespace react
-} // namespace facebook
+void RNCodegenModuleFixtures_registerComponentDescriptorsFromCodegen(
+  std::shared_ptr<const ComponentDescriptorProviderRegistry> registry);
+
+} // namespace facebook::react
 ",
 }
 `;
@@ -380,14 +406,16 @@ Object {
 
 #include <react/renderer/components/RNCodegenModuleFixtures/ShadowNodes.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
+#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 using MultiNativePropNativeComponentViewComponentDescriptor = ConcreteComponentDescriptor<MultiNativePropNativeComponentViewShadowNode>;
 
-} // namespace react
-} // namespace facebook
+void RNCodegenModuleFixtures_registerComponentDescriptorsFromCodegen(
+  std::shared_ptr<const ComponentDescriptorProviderRegistry> registry);
+
+} // namespace facebook::react
 ",
 }
 `;
@@ -408,14 +436,16 @@ Object {
 
 #include <react/renderer/components/RNCodegenModuleFixtures/ShadowNodes.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
+#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 using NoPropsNoEventsNativeComponentViewComponentDescriptor = ConcreteComponentDescriptor<NoPropsNoEventsNativeComponentViewShadowNode>;
 
-} // namespace react
-} // namespace facebook
+void RNCodegenModuleFixtures_registerComponentDescriptorsFromCodegen(
+  std::shared_ptr<const ComponentDescriptorProviderRegistry> registry);
+
+} // namespace facebook::react
 ",
 }
 `;
@@ -436,14 +466,16 @@ Object {
 
 #include <react/renderer/components/RNCodegenModuleFixtures/ShadowNodes.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
+#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 using ObjectPropsNativeComponentComponentDescriptor = ConcreteComponentDescriptor<ObjectPropsNativeComponentShadowNode>;
 
-} // namespace react
-} // namespace facebook
+void RNCodegenModuleFixtures_registerComponentDescriptorsFromCodegen(
+  std::shared_ptr<const ComponentDescriptorProviderRegistry> registry);
+
+} // namespace facebook::react
 ",
 }
 `;
@@ -464,14 +496,16 @@ Object {
 
 #include <react/renderer/components/RNCodegenModuleFixtures/ShadowNodes.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
+#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 using PointPropNativeComponentViewComponentDescriptor = ConcreteComponentDescriptor<PointPropNativeComponentViewShadowNode>;
 
-} // namespace react
-} // namespace facebook
+void RNCodegenModuleFixtures_registerComponentDescriptorsFromCodegen(
+  std::shared_ptr<const ComponentDescriptorProviderRegistry> registry);
+
+} // namespace facebook::react
 ",
 }
 `;
@@ -492,14 +526,16 @@ Object {
 
 #include <react/renderer/components/RNCodegenModuleFixtures/ShadowNodes.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
+#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 using StringPropNativeComponentViewComponentDescriptor = ConcreteComponentDescriptor<StringPropNativeComponentViewShadowNode>;
 
-} // namespace react
-} // namespace facebook
+void RNCodegenModuleFixtures_registerComponentDescriptorsFromCodegen(
+  std::shared_ptr<const ComponentDescriptorProviderRegistry> registry);
+
+} // namespace facebook::react
 ",
 }
 `;

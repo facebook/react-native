@@ -11,8 +11,8 @@
 
 'use strict';
 
-const {FlowParser} = require('../../../src/parsers/flow/parser');
 const generator = require('../../../src/generators/components/GenerateShadowNodeH');
+const {FlowParser} = require('../../../src/parsers/flow/parser');
 const fs = require('fs');
 
 const FIXTURE_DIR = `${__dirname}/../../__test_fixtures__/components`;
@@ -24,7 +24,13 @@ fixtures.forEach(fixture => {
   it(`GenerateShadowNodeH can generate for '${fixture}'`, () => {
     const libName = 'RNCodegenModuleFixtures';
     const schema = parser.parseFile(`${FIXTURE_DIR}/${fixture}`);
-    const output = generator.generate(libName, schema, undefined, false);
+    const output = generator.generate(
+      libName,
+      schema,
+      '',
+      false,
+      `react/renderer/components/${libName}/`,
+    );
     expect(Object.fromEntries(output)).toMatchSnapshot();
   });
 });

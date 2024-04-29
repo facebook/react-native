@@ -9,30 +9,27 @@
 #include <string>
 #include "common.h"
 
-namespace facebook {
-namespace yoga {
-namespace vanillajni {
+namespace facebook::yoga::vanillajni {
 /**
  * This class wraps a Java exception (jthrowable) into a C++ exception; A global
  * reference to Java exception (jthrowable) is made so that the exception object
  * does not gets cleared before jni call completion
  */
 class YogaJniException : public std::exception {
-public:
+ public:
   YogaJniException();
   ~YogaJniException() override;
 
   explicit YogaJniException(jthrowable throwable);
 
-  YogaJniException(YogaJniException&& rhs);
+  YogaJniException(YogaJniException&& rhs) noexcept;
 
-  YogaJniException(const YogaJniException& other);
+  YogaJniException(const YogaJniException& rhs);
 
   ScopedLocalRef<jthrowable> getThrowable() const noexcept;
 
-private:
+ private:
   ScopedGlobalRef<jthrowable> throwable_;
 };
-} // namespace vanillajni
-} // namespace yoga
-} // namespace facebook
+
+} // namespace facebook::yoga::vanillajni

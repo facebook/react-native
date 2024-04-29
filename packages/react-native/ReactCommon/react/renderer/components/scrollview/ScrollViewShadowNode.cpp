@@ -18,7 +18,7 @@ void ScrollViewShadowNode::updateStateIfNeeded() {
   ensureUnsealed();
 
   auto contentBoundingRect = Rect{};
-  for (const auto &childNode : getLayoutableChildNodes()) {
+  for (const auto& childNode : getLayoutableChildNodes()) {
     contentBoundingRect.unionInPlace(childNode->getLayoutMetrics().frame);
   }
 
@@ -49,10 +49,10 @@ void ScrollViewShadowNode::updateScrollContentOffsetIfNeeded() {
 }
 
 ScrollViewState ScrollViewShadowNode::initialStateData(
-    Props::Shared const &props,
-    const ShadowNodeFamilyFragment & /*familyFragment*/,
-    const ComponentDescriptor & /*componentDescriptor*/) {
-  return {static_cast<ScrollViewProps const &>(*props).contentOffset, {}, 0};
+    const Props::Shared& props,
+    const ShadowNodeFamily::Shared& /*family*/,
+    const ComponentDescriptor& /*componentDescriptor*/) {
+  return {static_cast<const ScrollViewProps&>(*props).contentOffset, {}, 0};
 }
 
 #pragma mark - LayoutableShadowNode

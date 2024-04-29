@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- See fburl.com/140690840 for information about i18n on Android -->
+<!-- @generated -->
+<!-- FB Locale: ta_IN -->
+<resources exclude-from-buck-resource-map="true">
+    <string name="link_description" gender="unknown">இணைப்பு</string>
+    <string name="image_description" gender="unknown">படம்</string>
+    <string name="imagebutton_description" gender="unknown">பொத்தான், படம்</string>
+    <string name="header_description" gender="unknown">தலைப்பு</string>
+    <string name="alert_description" gender="unknown">நினைவூட்டல்</string>
+    <string name="combobox_description" gender="unknown">காம்போ பெட்டி</string>
+    <string name="menu_description" gender="unknown">மெனு</string>
+    <string name="menubar_description" gender="unknown">மெனு பட்டி</string>
+    <string name="menuitem_description" gender="unknown">மெனு பொருள்</string>
+    <string name="progressbar_description" gender="unknown">போக்கு பட்டி</string>
+    <string name="radiogroup_description" gender="unknown">ரேடியோ குழு</string>
+    <string name="scrollbar_description" gender="unknown">உருட்டுப்பட்டி</string>
+    <string name="spinbutton_description" gender="unknown">ஸ்பின் பட்டன்</string>
+    <string name="rn_tab_description" gender="unknown">பிரிவு</string>
+    <string name="tablist_description" gender="unknown">பிரிவுப் பட்டியல்</string>
+    <string name="timer_description" gender="unknown">டைமர்</string>
+    <string name="toolbar_description" gender="unknown">கருவிப்பட்டி</string>
+    <string name="summary_description" gender="unknown">சுருக்கம்</string>
+    <string name="state_busy_description" gender="unknown">பணிமிகுதி</string>
+    <string name="state_expanded_description" gender="unknown">விரிவாக்கப்பட்டது</string>
+    <string name="state_collapsed_description" gender="unknown">சுருக்கப்பட்டது</string>
+    <string name="state_unselected_description" gender="unknown">தேர்வுநீக்கப்பட்டது</string>
+    <string name="state_on_description" gender="unknown">ஆன்</string>
+    <string name="state_off_description" gender="unknown">ஆஃப்</string>
+    <string name="state_mixed_description" gender="unknown">கலந்துள்ளது</string>
+</resources>

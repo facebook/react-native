@@ -24,23 +24,23 @@ namespace facebook::react {
 template <typename DataT>
 class ConcreteState : public State {
  public:
-  using Shared = std::shared_ptr<ConcreteState const>;
+  using Shared = std::shared_ptr<const ConcreteState>;
   using Data = DataT;
-  using SharedData = std::shared_ptr<Data const>;
+  using SharedData = std::shared_ptr<const Data>;
 
   /*
    * Creates an updated `State` object with given previous one and `data`.
    */
-  explicit ConcreteState(SharedData const &data, State const &state)
-      : State(data, state) {}
+  explicit ConcreteState(const SharedData& data, const State& previousState)
+      : State(data, previousState) {}
 
   /*
    * Creates a first-of-its-family `State` object with given `family` and
    * `data`.
    */
   explicit ConcreteState(
-      SharedData const &data,
-      ShadowNodeFamily::Shared const &family)
+      const SharedData& data,
+      const ShadowNodeFamily::Shared& family)
       : State(data, family) {}
 
   ~ConcreteState() override = default;
@@ -48,8 +48,8 @@ class ConcreteState : public State {
   /*
    * Returns stored data.
    */
-  Data const &getData() const {
-    return *std::static_pointer_cast<Data const>(data_);
+  const Data& getData() const {
+    return *static_cast<const Data*>(data_.get());
   }
 
   /*
@@ -58,14 +58,10 @@ class ConcreteState : public State {
    * function for cases where a new value of data does not depend on an old
    * value.
    */
-  void updateState(
-      Data &&newData,
-      EventPriority priority = EventPriority::AsynchronousUnbatched) const {
-    updateState(
-        [data{std::move(newData)}](Data const &oldData) -> SharedData {
-          return std::make_shared<Data const>(data);
-        },
-        priority);
+  void updateState(Data&& newData) const {
+    updateState([data{std::move(newData)}](const Data& oldData) -> SharedData {
+      return std::make_shared<const Data>(data);
+    });
   }
 
   /*
@@ -77,8 +73,7 @@ class ConcreteState : public State {
    * return `nullptr`.
    */
   void updateState(
-      std::function<StateData::Shared(Data const &oldData)> callback,
-      EventPriority priority = EventPriority::AsynchronousBatched) const {
+      std::function<StateData::Shared(const Data& oldData)> callback) const {
     auto family = family_.lock();
 
     if (!family) {
@@ -88,12 +83,12 @@ class ConcreteState : public State {
     }
 
     auto stateUpdate = StateUpdate{
-        family, [=](StateData::Shared const &oldData) -> StateData::Shared {
+        family, [=](const StateData::Shared& oldData) -> StateData::Shared {
           react_native_assert(oldData);
-          return callback(*std::static_pointer_cast<Data const>(oldData));
+          return callback(*static_cast<const Data*>(oldData.get()));
         }};
 
-    family->dispatchRawState(std::move(stateUpdate), priority);
+    family->dispatchRawState(std::move(stateUpdate));
   }
 
 #ifdef ANDROID
@@ -101,7 +96,7 @@ class ConcreteState : public State {
     return getData().getDynamic();
   }
 
-  void updateState(folly::dynamic &&data) const override {
+  void updateState(folly::dynamic&& data) const override {
     updateState(Data(getData(), std::move(data)));
   }
 

@@ -11,11 +11,13 @@
 'use strict';
 
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
+import type AnimatedNode from '../nodes/AnimatedNode';
 import type AnimatedValue from '../nodes/AnimatedValue';
 
 import NativeAnimatedHelper from '../NativeAnimatedHelper';
+import AnimatedProps from '../nodes/AnimatedProps';
 
-export type EndResult = {finished: boolean, ...};
+export type EndResult = {finished: boolean, value?: number, ...};
 export type EndCallback = (result: EndResult) => void;
 
 export type AnimationConfig = {
@@ -34,9 +36,11 @@ let startNativeAnimationNextId = 1;
 export default class Animation {
   __active: boolean;
   __isInteraction: boolean;
-  __nativeId: number;
   __onEnd: ?EndCallback;
   __iterations: number;
+
+  _nativeId: number;
+
   start(
     fromValue: number,
     onUpdate: (value: number) => void,
@@ -44,22 +48,41 @@ export default class Animation {
     previousAnimation: ?Animation,
     animatedValue: AnimatedValue,
   ): void {}
+
   stop(): void {
-    if (this.__nativeId) {
-      NativeAnimatedHelper.API.stopAnimation(this.__nativeId);
+    if (this._nativeId) {
+      NativeAnimatedHelper.API.stopAnimation(this._nativeId);
     }
   }
+
   __getNativeAnimationConfig(): any {
     // Subclasses that have corresponding animation implementation done in native
     // should override this method
     throw new Error('This animation type cannot be offloaded to native');
   }
+
   // Helper function for subclasses to make sure onEnd is only called once.
   __debouncedOnEnd(result: EndResult): void {
     const onEnd = this.__onEnd;
     this.__onEnd = null;
     onEnd && onEnd(result);
   }
+
+  __findAnimatedPropsNodes(node: AnimatedNode): Array<AnimatedProps> {
+    const result = [];
+
+    if (node instanceof AnimatedProps) {
+      result.push(node);
+      return result;
+    }
+
+    for (const child of node.__getChildren()) {
+      result.push(...this.__findAnimatedPropsNodes(child));
+    }
+
+    return result;
+  }
+
   __startNativeAnimation(animatedValue: AnimatedValue): void {
     const startNativeAnimationWaitId = `${startNativeAnimationNextId}:startAnimation`;
     startNativeAnimationNextId += 1;
@@ -69,13 +92,28 @@ export default class Animation {
     try {
       const config = this.__getNativeAnimationConfig();
       animatedValue.__makeNative(config.platformConfig);
-      this.__nativeId = NativeAnimatedHelper.generateNewAnimationId();
+      this._nativeId = NativeAnimatedHelper.generateNewAnimationId();
       NativeAnimatedHelper.API.startAnimatingNode(
-        this.__nativeId,
+        this._nativeId,
         animatedValue.__getNativeTag(),
         config,
-        // $FlowFixMe[method-unbinding] added when improving typing for this parameters
-        this.__debouncedOnEnd.bind(this),
+        result => {
+          this.__debouncedOnEnd(result);
+
+          // When using natively driven animations, once the animation completes,
+          // we need to ensure that the JS side nodes are synced with the updated
+          // values.
+          const {value} = result;
+          if (value != null) {
+            animatedValue.__onAnimatedValueUpdateReceived(value);
+
+            // Once the JS side node is synced with the updated values, trigger an
+            // update on the AnimatedProps nodes to call any registered callbacks.
+            this.__findAnimatedPropsNodes(animatedValue).forEach(node =>
+              node.update(),
+            );
+          }
+        },
       );
     } catch (e) {
       throw e;

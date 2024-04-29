@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#pragma once
+
 #include <folly/dynamic.h>
 #include <react/renderer/attributedstring/conversions.h>
 #include <react/renderer/components/text/ParagraphState.h>
@@ -16,7 +18,7 @@
 namespace facebook::react {
 
 #ifdef ANDROID
-inline folly::dynamic toDynamic(ParagraphState const &paragraphState) {
+inline folly::dynamic toDynamic(const ParagraphState& paragraphState) {
   folly::dynamic newState = folly::dynamic::object();
   newState["attributedString"] = toDynamic(paragraphState.attributedString);
   newState["paragraphAttributes"] =
@@ -25,7 +27,7 @@ inline folly::dynamic toDynamic(ParagraphState const &paragraphState) {
   return newState;
 }
 
-inline MapBuffer toMapBuffer(ParagraphState const &paragraphState) {
+inline MapBuffer toMapBuffer(const ParagraphState& paragraphState) {
   auto builder = MapBufferBuilder();
   auto attStringMapBuffer = toMapBuffer(paragraphState.attributedString);
   builder.putMapBuffer(TX_STATE_KEY_ATTRIBUTED_STRING, attStringMapBuffer);

@@ -8,6 +8,7 @@
 #include "RCTLegacyViewManagerInteropCoordinator.h"
 #include <React/RCTBridge+Private.h>
 #include <React/RCTBridgeMethod.h>
+#include <React/RCTBridgeProxy.h>
 #include <React/RCTComponentData.h>
 #include <React/RCTEventDispatcherProtocol.h>
 #include <React/RCTFollyConvert.h>
@@ -16,6 +17,7 @@
 #include <React/RCTUIManager.h>
 #include <React/RCTUIManagerUtils.h>
 #include <React/RCTUtils.h>
+#include <React/RCTViewManager.h>
 #include <folly/json.h>
 #include <objc/runtime.h>
 
@@ -25,6 +27,8 @@ using namespace facebook::react;
   RCTComponentData *_componentData;
   __weak RCTBridge *_bridge;
   __weak RCTBridgeModuleDecorator *_bridgelessInteropData;
+  __weak RCTBridgeProxy *_bridgeProxy;
+
   /*
    Each instance of `RCTLegacyViewManagerInteropComponentView` registers a block to which events are dispatched.
    This is the container that maps unretained UIView pointer to a block to which the event is dispatched.
@@ -40,13 +44,16 @@ using namespace facebook::react;
 }
 
 - (instancetype)initWithComponentData:(RCTComponentData *)componentData
-                               bridge:(RCTBridge *)bridge
-                bridgelessInteropData:(RCTBridgeModuleDecorator *)bridgelessInteropData;
+                               bridge:(nullable RCTBridge *)bridge
+                          bridgeProxy:(nullable RCTBridgeProxy *)bridgeProxy
+                bridgelessInteropData:(RCTBridgeModuleDecorator *)bridgelessInteropData
 {
   if (self = [super init]) {
     _componentData = componentData;
     _bridge = bridge;
     _bridgelessInteropData = bridgelessInteropData;
+    _bridgeProxy = bridgeProxy;
+
     if (bridgelessInteropData) {
       //  During bridge mode, RCTBridgeModules will be decorated with these APIs by the bridge.
       RCTAssert(
@@ -62,7 +69,9 @@ using namespace facebook::react;
       if (strongSelf) {
         InterceptorBlock block = [strongSelf->_eventInterceptors objectForKey:reactTag];
         if (block) {
-          block(std::string([RCTNormalizeInputEventName(eventName) UTF8String]), convertIdToFollyDynamic(event ?: @{}));
+          block(
+              std::string([RCTNormalizeInputEventName(eventName) UTF8String]),
+              convertIdToFollyDynamic(event ? event : @{}));
         }
       }
     };
@@ -80,18 +89,19 @@ using namespace facebook::react;
   [_eventInterceptors removeObjectForKey:[NSNumber numberWithInteger:tag]];
 }
 
-- (UIView *)createPaperViewWithTag:(NSInteger)tag;
+- (UIView *)createPaperViewWithTag:(NSInteger)tag
 {
   UIView *view = [_componentData createViewWithTag:[NSNumber numberWithInteger:tag] rootTag:NULL];
   [_bridgelessInteropData attachInteropAPIsToModule:(id<RCTBridgeModule>)_componentData.bridgelessViewManager];
   return view;
 }
 
-- (void)setProps:(folly::dynamic const &)props forView:(UIView *)view
+- (void)setProps:(NSDictionary<NSString *, id> *)props forView:(UIView *)view
 {
-  if (props.isObject()) {
-    NSDictionary<NSString *, id> *convertedProps = convertFollyDynamicToId(props);
-    [_componentData setProps:convertedProps forView:view];
+  [_componentData setProps:props forView:view];
+
+  if ([view respondsToSelector:@selector(didSetProps:)]) {
+    [view performSelector:@selector(didSetProps:) withObject:[props allKeys]];
   }
 }
 
@@ -131,47 +141,44 @@ using namespace facebook::react;
   NSArray *newArgs = [@[ [NSNumber numberWithInteger:tag] ] arrayByAddingObjectsFromArray:args];
 
   if (_bridge) {
-    [self _addViewToRegistry:paperView withTag:tag];
-    [_bridge.batchedBridge
-        dispatchBlock:^{
-          [method invokeWithBridge:self->_bridge module:self->_componentData.manager arguments:newArgs];
-          [self->_bridge.uiManager setNeedsLayout];
-        }
-                queue:RCTGetUIManagerQueue()];
-    [self _removeViewFromRegistryWithTag:tag];
+    [self _handleCommandsOnBridge:method withArgs:newArgs];
   } else {
-    // TODO T86826778 - Figure out which queue this should be dispatched to.
-    [method invokeWithBridge:nil module:self->_componentData.manager arguments:newArgs];
+    [self _handleCommandsOnBridgeless:method withArgs:newArgs];
   }
 }
 
 #pragma mark - Private
-- (void)_addViewToRegistry:(UIView *)view withTag:(NSInteger)tag
+- (void)_handleCommandsOnBridge:(id<RCTBridgeMethod>)method withArgs:(NSArray *)newArgs
 {
-  [self _addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-    if ([viewRegistry objectForKey:@(tag)] != NULL) {
-      return;
-    }
-    NSMutableDictionary<NSNumber *, UIView *> *mutableViewRegistry =
-        (NSMutableDictionary<NSNumber *, UIView *> *)viewRegistry;
-    [mutableViewRegistry setObject:view forKey:@(tag)];
-  }];
+  [_bridge.batchedBridge
+      dispatchBlock:^{
+        [method invokeWithBridge:self->_bridge module:self->_componentData.manager arguments:newArgs];
+        [self->_bridge.uiManager setNeedsLayout];
+      }
+              queue:RCTGetUIManagerQueue()];
 }
 
-- (void)_removeViewFromRegistryWithTag:(NSInteger)tag
+- (void)_handleCommandsOnBridgeless:(id<RCTBridgeMethod>)method withArgs:(NSArray *)newArgs
 {
-  [self _addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-    if ([viewRegistry objectForKey:@(tag)] == NULL) {
-      return;
-    }
+  RCTViewManager *componentViewManager = self->_componentData.manager;
+  [componentViewManager setValue:_bridgeProxy forKey:@"bridge"];
 
-    NSMutableDictionary<NSNumber *, UIView *> *mutableViewRegistry =
-        (NSMutableDictionary<NSNumber *, UIView *> *)viewRegistry;
-    [mutableViewRegistry removeObjectForKey:@(tag)];
-  }];
+  [self->_bridgeProxy.uiManager
+      addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+        [method invokeWithBridge:nil module:componentViewManager arguments:newArgs];
+      }];
 }
 
 - (void)_addUIBlock:(RCTViewManagerUIBlock)block
+{
+  if (_bridge) {
+    [self _addUIBlockOnBridge:block];
+  } else {
+    [self->_bridgeProxy.uiManager addUIBlock:block];
+  }
+}
+
+- (void)_addUIBlockOnBridge:(RCTViewManagerUIBlock)block
 {
   __weak __typeof__(self) weakSelf = self;
   [_bridge.batchedBridge

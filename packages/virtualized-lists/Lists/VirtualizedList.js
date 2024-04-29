@@ -8,35 +8,29 @@
  * @format
  */
 
-import type {ScrollResponderType} from 'react-native/Libraries/Components/ScrollView/ScrollView';
-import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
-import type {
-  LayoutEvent,
-  ScrollEvent,
-} from 'react-native/Libraries/Types/CoreEventTypes';
+import type {CellMetricProps, ListOrientation} from './ListMetricsAggregator';
 import type {ViewToken} from './ViewabilityHelper';
 import type {
-  FrameMetricProps,
   Item,
   Props,
   RenderItemProps,
   RenderItemType,
   Separators,
 } from './VirtualizedListProps';
+import type {ScrollResponderType} from 'react-native/Libraries/Components/ScrollView/ScrollView';
+import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
+import type {
+  LayoutEvent,
+  ScrollEvent,
+} from 'react-native/Libraries/Types/CoreEventTypes';
 
-import {
-  RefreshControl,
-  ScrollView,
-  View,
-  StyleSheet,
-  findNodeHandle,
-} from 'react-native';
 import Batchinator from '../Interaction/Batchinator';
 import clamp from '../Utilities/clamp';
 import infoLog from '../Utilities/infoLog';
 import {CellRenderMask} from './CellRenderMask';
 import ChildListCollection from './ChildListCollection';
 import FillRateHelper from './FillRateHelper';
+import ListMetricsAggregator from './ListMetricsAggregator';
 import StateSafePureComponent from './StateSafePureComponent';
 import ViewabilityHelper from './ViewabilityHelper';
 import CellRenderer from './VirtualizedListCellRenderer';
@@ -46,12 +40,29 @@ import {
   VirtualizedListContextProvider,
 } from './VirtualizedListContext.js';
 import {
+  horizontalOrDefault,
+  initialNumToRenderOrDefault,
+  maxToRenderPerBatchOrDefault,
+  onEndReachedThresholdOrDefault,
+  onStartReachedThresholdOrDefault,
+  windowSizeOrDefault,
+} from './VirtualizedListProps';
+import {
   computeWindowedRenderLimits,
   keyExtractor as defaultKeyExtractor,
 } from './VirtualizeUtils';
 import invariant from 'invariant';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
+import {
+  I18nManager,
+  Platform,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  View,
+  findNodeHandle,
+} from 'react-native';
 
 export type {RenderItemProps, RenderItemType, Separators};
 
@@ -79,62 +90,8 @@ type State = {
   pendingScrollUpdateCount: number,
 };
 
-/**
- * Default Props Helper Functions
- * Use the following helper functions for default values
- */
-
-// horizontalOrDefault(this.props.horizontal)
-function horizontalOrDefault(horizontal: ?boolean) {
-  return horizontal ?? false;
-}
-
-// initialNumToRenderOrDefault(this.props.initialNumToRender)
-function initialNumToRenderOrDefault(initialNumToRender: ?number) {
-  return initialNumToRender ?? 10;
-}
-
-// maxToRenderPerBatchOrDefault(this.props.maxToRenderPerBatch)
-function maxToRenderPerBatchOrDefault(maxToRenderPerBatch: ?number) {
-  return maxToRenderPerBatch ?? 10;
-}
-
-// onStartReachedThresholdOrDefault(this.props.onStartReachedThreshold)
-function onStartReachedThresholdOrDefault(onStartReachedThreshold: ?number) {
-  return onStartReachedThreshold ?? 2;
-}
-
-// onEndReachedThresholdOrDefault(this.props.onEndReachedThreshold)
-function onEndReachedThresholdOrDefault(onEndReachedThreshold: ?number) {
-  return onEndReachedThreshold ?? 2;
-}
-
-// getScrollingThreshold(visibleLength, onEndReachedThreshold)
 function getScrollingThreshold(threshold: number, visibleLength: number) {
   return (threshold * visibleLength) / 2;
-}
-
-// scrollEventThrottleOrDefault(this.props.scrollEventThrottle)
-function scrollEventThrottleOrDefault(scrollEventThrottle: ?number) {
-  return scrollEventThrottle ?? 50;
-}
-
-// windowSizeOrDefault(this.props.windowSize)
-function windowSizeOrDefault(windowSize: ?number) {
-  return windowSize ?? 21;
-}
-
-function findLastWhere<T>(
-  arr: $ReadOnlyArray<T>,
-  predicate: (element: T) => boolean,
-): T | null {
-  for (let i = arr.length - 1; i >= 0; i--) {
-    if (predicate(arr[i])) {
-      return arr[i];
-    }
-  }
-
-  return null;
 }
 
 /**
@@ -176,7 +133,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     if (veryLast < 0) {
       return;
     }
-    const frame = this.__getFrameMetricsApprox(veryLast, this.props);
+    const frame = this._listMetrics.getCellMetricsApprox(veryLast, this.props);
     const offset = Math.max(
       0,
       frame.offset +
@@ -185,24 +142,8 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
         this._scrollMetrics.visibleLength,
     );
 
-    if (this._scrollRef == null) {
-      return;
-    }
-
-    if (this._scrollRef.scrollTo == null) {
-      console.warn(
-        'No scrollTo method provided. This may be because you have two nested ' +
-          'VirtualizedLists with the same orientation, or because you are ' +
-          'using a custom component that does not implement scrollTo.',
-      );
-      return;
-    }
-
-    this._scrollRef.scrollTo(
-      horizontalOrDefault(this.props.horizontal)
-        ? {x: offset, animated}
-        : {y: offset, animated},
-    );
+    // TODO: consider using `ref.scrollToEnd` directly
+    this.scrollToOffset({animated, offset});
   }
 
   // scrollToIndex may be janky without getItemLayout prop
@@ -213,13 +154,8 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     viewPosition?: number,
     ...
   }): $FlowFixMe {
-    const {
-      data,
-      horizontal,
-      getItemCount,
-      getItemLayout,
-      onScrollToIndexFailed,
-    } = this.props;
+    const {data, getItemCount, getItemLayout, onScrollToIndexFailed} =
+      this.props;
     const {animated, index, viewOffset, viewPosition} = params;
     invariant(
       index >= 0,
@@ -237,44 +173,36 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
         getItemCount(data) - 1
       }`,
     );
-    if (!getItemLayout && index > this._highestMeasuredFrameIndex) {
+    if (
+      !getItemLayout &&
+      index > this._listMetrics.getHighestMeasuredCellIndex()
+    ) {
       invariant(
         !!onScrollToIndexFailed,
         'scrollToIndex should be used in conjunction with getItemLayout or onScrollToIndexFailed, ' +
           'otherwise there is no way to know the location of offscreen indices or handle failures.',
       );
       onScrollToIndexFailed({
-        averageItemLength: this._averageCellLength,
-        highestMeasuredFrameIndex: this._highestMeasuredFrameIndex,
+        averageItemLength: this._listMetrics.getAverageCellLength(),
+        highestMeasuredFrameIndex:
+          this._listMetrics.getHighestMeasuredCellIndex(),
         index,
       });
       return;
     }
-    const frame = this.__getFrameMetricsApprox(Math.floor(index), this.props);
+    const frame = this._listMetrics.getCellMetricsApprox(
+      Math.floor(index),
+      this.props,
+    );
     const offset =
       Math.max(
         0,
-        this._getOffsetApprox(index, this.props) -
+        this._listMetrics.getCellOffsetApprox(index, this.props) -
           (viewPosition || 0) *
             (this._scrollMetrics.visibleLength - frame.length),
       ) - (viewOffset || 0);
 
-    if (this._scrollRef == null) {
-      return;
-    }
-
-    if (this._scrollRef.scrollTo == null) {
-      console.warn(
-        'No scrollTo method provided. This may be because you have two nested ' +
-          'VirtualizedLists with the same orientation, or because you are ' +
-          'using a custom component that does not implement scrollTo.',
-      );
-      return;
-    }
-
-    this._scrollRef.scrollTo(
-      horizontal ? {x: offset, animated} : {y: offset, animated},
-    );
+    this.scrollToOffset({offset, animated});
   }
 
   // scrollToItem may be janky without getItemLayout prop. Required linear scan through items -
@@ -309,12 +237,13 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
    */
   scrollToOffset(params: {animated?: ?boolean, offset: number, ...}) {
     const {animated, offset} = params;
+    const scrollRef = this._scrollRef;
 
-    if (this._scrollRef == null) {
+    if (scrollRef == null) {
       return;
     }
 
-    if (this._scrollRef.scrollTo == null) {
+    if (scrollRef.scrollTo == null) {
       console.warn(
         'No scrollTo method provided. This may be because you have two nested ' +
           'VirtualizedLists with the same orientation, or because you are ' +
@@ -323,11 +252,31 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       return;
     }
 
-    this._scrollRef.scrollTo(
-      horizontalOrDefault(this.props.horizontal)
-        ? {x: offset, animated}
-        : {y: offset, animated},
-    );
+    const {horizontal, rtl} = this._orientation();
+    if (horizontal && rtl && !this._listMetrics.hasContentLength()) {
+      console.warn(
+        'scrollToOffset may not be called in RTL before content is laid out',
+      );
+      return;
+    }
+
+    scrollRef.scrollTo({
+      animated,
+      ...this._scrollToParamsFromOffset(offset),
+    });
+  }
+
+  _scrollToParamsFromOffset(offset: number): {x?: number, y?: number} {
+    const {horizontal, rtl} = this._orientation();
+    if (horizontal && rtl) {
+      // Add the visible length of the scrollview so that the offset is right-aligned
+      const cartOffset = this._listMetrics.cartesianOffset(
+        offset + this._scrollMetrics.visibleLength,
+      );
+      return horizontal ? {x: cartOffset} : {y: cartOffset};
+    } else {
+      return horizontal ? {x: offset} : {y: offset};
+    }
   }
 
   recordInteraction() {
@@ -427,7 +376,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     super(props);
     this._checkProps(props);
 
-    this._fillRateHelper = new FillRateHelper(this._getFrameMetrics);
+    this._fillRateHelper = new FillRateHelper(this._listMetrics);
     this._updateCellsToRenderBatcher = new Batchinator(
       this._updateCellsToRender,
       this.props.updateCellsBatchingPeriod ?? 50,
@@ -644,7 +593,8 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     const onEndReachedThreshold = onEndReachedThresholdOrDefault(
       props.onEndReachedThreshold,
     );
-    const {contentLength, offset, visibleLength} = this._scrollMetrics;
+    const {offset, visibleLength} = this._scrollMetrics;
+    const contentLength = this._listMetrics.getContentLength();
     const distanceFromEnd = contentLength - visibleLength - offset;
 
     // Wait until the scroll view metrics have been set up. And until then,
@@ -683,7 +633,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
         maxToRenderPerBatchOrDefault(props.maxToRenderPerBatch),
         windowSizeOrDefault(props.windowSize),
         cellsAroundViewport,
-        this.__getFrameMetricsApprox,
+        this._listMetrics,
         this._scrollMetrics,
       );
       invariant(
@@ -861,7 +811,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
           key={key}
           prevCellKey={prevCellKey}
           onUpdateSeparators={this._onUpdateSeparators}
-          onCellFocusCapture={e => this._onCellFocusCapture(key)}
+          onCellFocusCapture={this._onCellFocusCapture}
           onUnmount={this._onCellUnmount}
           ref={ref => {
             this._cellRefs[key] = ref;
@@ -881,15 +831,19 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     props: Props,
   ): {first: number, last: number} {
     const itemCount = props.getItemCount(props.data);
-    const last = Math.min(itemCount - 1, cells.last);
+    const lastPossibleCellIndex = itemCount - 1;
 
+    // Constraining `last` may significantly shrink the window. Adjust `first`
+    // to expand the window if the new `last` results in a new window smaller
+    // than the number of cells rendered per batch.
     const maxToRenderPerBatch = maxToRenderPerBatchOrDefault(
       props.maxToRenderPerBatch,
     );
+    const maxFirst = Math.max(0, lastPossibleCellIndex - maxToRenderPerBatch);
 
     return {
-      first: clamp(0, itemCount - 1 - maxToRenderPerBatch, cells.first),
-      last,
+      first: clamp(0, cells.first, maxFirst),
+      last: Math.min(lastPossibleCellIndex, cells.last),
     };
   }
 
@@ -1001,10 +955,12 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
           {React.cloneElement(element, {
             onLayout: (event: LayoutEvent) => {
               this._onLayoutEmpty(event);
+              // $FlowFixMe[prop-missing] React.Element internal inspection
               if (element.props.onLayout) {
                 element.props.onLayout(event);
               }
             },
+            // $FlowFixMe[prop-missing] React.Element internal inspection
             style: StyleSheet.compose(inversionStyle, element.props.style),
           })}
         </VirtualizedListCellContextProvider>,
@@ -1018,7 +974,8 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       const spacerKey = this._getSpacerKey(!horizontal);
 
       const renderRegions = this.state.renderMask.enumerateRegions();
-      const lastSpacer = findLastWhere(renderRegions, r => r.isSpacer);
+      const lastRegion = renderRegions[renderRegions.length - 1];
+      const lastSpacer = lastRegion?.isSpacer ? lastRegion : null;
 
       for (const section of renderRegions) {
         if (section.isSpacer) {
@@ -1037,15 +994,18 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
             ? clamp(
                 section.first - 1,
                 section.last,
-                this._highestMeasuredFrameIndex,
+                this._listMetrics.getHighestMeasuredCellIndex(),
               )
             : section.last;
 
-          const firstMetrics = this.__getFrameMetricsApprox(
+          const firstMetrics = this._listMetrics.getCellMetricsApprox(
             section.first,
             this.props,
           );
-          const lastMetrics = this.__getFrameMetricsApprox(last, this.props);
+          const lastMetrics = this._listMetrics.getCellMetricsApprox(
+            last,
+            this.props,
+          );
           const spacerSize =
             lastMetrics.offset + lastMetrics.length - firstMetrics.offset;
           cells.push(
@@ -1114,9 +1074,9 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       onScrollEndDrag: this._onScrollEndDrag,
       onMomentumScrollBegin: this._onMomentumScrollBegin,
       onMomentumScrollEnd: this._onMomentumScrollEnd,
-      scrollEventThrottle: scrollEventThrottleOrDefault(
-        this.props.scrollEventThrottle,
-      ), // TODO: Android support
+      // iOS/macOS requires a non-zero scrollEventThrottle to fire more than a
+      // single notification while scrolling. This will otherwise no-op.
+      scrollEventThrottle: this.props.scrollEventThrottle ?? 0.0001,
       invertStickyHeaders:
         this.props.invertStickyHeaders !== undefined
           ? this.props.invertStickyHeaders
@@ -1125,6 +1085,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       style: inversionStyle
         ? [inversionStyle, this.props.style]
         : this.props.style,
+      isInvertedVirtualizedList: this.props.inverted,
       maintainVisibleContentPosition:
         this.props.maintainVisibleContentPosition != null
           ? {
@@ -1174,7 +1135,6 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
               this.context == null &&
               this.props.scrollEnabled !== false
             ) {
-              // TODO (T46547044): use React.warn once 16.9 is sync'd: https://github.com/facebook/react/pull/15170
               console.error(
                 'VirtualizedLists should never be nested inside plain ScrollViews with the same ' +
                   'orientation because it can break windowing and other functionality - use another ' +
@@ -1223,17 +1183,9 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     }
   }
 
-  _averageCellLength = 0;
   _cellRefs: {[string]: null | CellRenderer<any>} = {};
   _fillRateHelper: FillRateHelper;
-  _frames: {
-    [string]: {
-      inLayout?: boolean,
-      index: number,
-      length: number,
-      offset: number,
-    },
-  } = {};
+  _listMetrics: ListMetricsAggregator = new ListMetricsAggregator();
   _footerLength = 0;
   // Used for preventing scrollToIndex from being called multiple times for initialScrollIndex
   _hasTriggeredInitialScrollToIndex = false;
@@ -1242,16 +1194,22 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
   _hasWarned: {[string]: boolean} = {};
   _headerLength = 0;
   _hiPriInProgress: boolean = false; // flag to prevent infinite hiPri cell limit update
-  _highestMeasuredFrameIndex = 0;
   _indicesToKeys: Map<number, string> = new Map();
   _lastFocusedCellKey: ?string = null;
   _nestedChildLists: ChildListCollection<VirtualizedList> =
     new ChildListCollection();
   _offsetFromParentVirtualizedList: number = 0;
+  _pendingViewabilityUpdate: boolean = false;
   _prevParentOffset: number = 0;
-  // $FlowFixMe[missing-local-annot]
-  _scrollMetrics = {
-    contentLength: 0,
+  _scrollMetrics: {
+    dOffset: number,
+    dt: number,
+    offset: number,
+    timestamp: number,
+    velocity: number,
+    visibleLength: number,
+    zoomScale: number,
+  } = {
     dOffset: 0,
     dt: 10,
     offset: 0,
@@ -1263,8 +1221,6 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
   _scrollRef: ?React.ElementRef<any> = null;
   _sentStartForContentLength = 0;
   _sentEndForContentLength = 0;
-  _totalCellLength = 0;
-  _totalCellsMeasured = 0;
   _updateCellsToRenderBatcher: Batchinator;
   _viewabilityTuples: Array<ViewabilityHelperCallbackTuple> = [];
 
@@ -1287,8 +1243,10 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
   _defaultRenderScrollComponent = props => {
     const onRefresh = props.onRefresh;
     if (this._isNestedWithSameOrientation()) {
-      // $FlowFixMe[prop-missing] - Typing ReactNativeComponent revealed errors
-      return <View {...props} />;
+      // Prevent VirtualizedList._onContentSizeChange from being triggered by a bubbling onContentSizeChange event.
+      // This could lead to internal inconsistencies within VirtualizedList.
+      const {onContentSizeChange, ...otherProps} = props;
+      return <View {...otherProps} />;
     } else if (onRefresh) {
       invariant(
         typeof props.refreshing === 'boolean',
@@ -1322,52 +1280,35 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     }
   };
 
-  _onCellLayout = (e: LayoutEvent, cellKey: string, index: number): void => {
-    const layout = e.nativeEvent.layout;
-    const next = {
-      offset: this._selectOffset(layout),
-      length: this._selectLength(layout),
-      index,
-      inLayout: true,
-    };
-    const curr = this._frames[cellKey];
-    if (
-      !curr ||
-      next.offset !== curr.offset ||
-      next.length !== curr.length ||
-      index !== curr.index
-    ) {
-      this._totalCellLength += next.length - (curr ? curr.length : 0);
-      this._totalCellsMeasured += curr ? 0 : 1;
-      this._averageCellLength =
-        this._totalCellLength / this._totalCellsMeasured;
-      this._frames[cellKey] = next;
-      this._highestMeasuredFrameIndex = Math.max(
-        this._highestMeasuredFrameIndex,
-        index,
-      );
+  _onCellLayout = (
+    e: LayoutEvent,
+    cellKey: string,
+    cellIndex: number,
+  ): void => {
+    const layoutHasChanged = this._listMetrics.notifyCellLayout({
+      cellIndex,
+      cellKey,
+      layout: e.nativeEvent.layout,
+      orientation: this._orientation(),
+    });
+
+    if (layoutHasChanged) {
       this._scheduleCellsToRenderUpdate();
-    } else {
-      this._frames[cellKey].inLayout = true;
     }
 
     this._triggerRemeasureForChildListsInCell(cellKey);
-
     this._computeBlankness();
     this._updateViewableItems(this.props, this.state.cellsAroundViewport);
   };
 
-  _onCellFocusCapture(cellKey: string) {
+  _onCellFocusCapture = (cellKey: string) => {
     this._lastFocusedCellKey = cellKey;
     this._updateCellsToRender();
-  }
+  };
 
   _onCellUnmount = (cellKey: string) => {
     delete this._cellRefs[cellKey];
-    const curr = this._frames[cellKey];
-    if (curr) {
-      this._frames[cellKey] = {...curr, inLayout: false};
-    }
+    this._listMetrics.notifyCellUnmounted(cellKey);
   };
 
   _triggerRemeasureForChildListsInCell(cellKey: string): void {
@@ -1389,9 +1330,9 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
         this.context.getOutermostParentListRef().getScrollRef(),
         (x, y, width, height) => {
           this._offsetFromParentVirtualizedList = this._selectOffset({x, y});
-          this._scrollMetrics.contentLength = this._selectLength({
-            width,
-            height,
+          this._listMetrics.notifyListContentLayout({
+            layout: {width, height},
+            orientation: this._orientation(),
           });
           const scrollMetrics = this._convertParentScrollMetrics(
             this.context.getScrollMetrics(),
@@ -1463,23 +1404,20 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
   _renderDebugOverlay() {
     const normalize =
       this._scrollMetrics.visibleLength /
-      (this._scrollMetrics.contentLength || 1);
+      (this._listMetrics.getContentLength() || 1);
     const framesInLayout = [];
     const itemCount = this.props.getItemCount(this.props.data);
     for (let ii = 0; ii < itemCount; ii++) {
-      const frame = this.__getFrameMetricsApprox(ii, this.props);
-      /* $FlowFixMe[prop-missing] (>=0.68.0 site=react_native_fb) This comment
-       * suppresses an error found when Flow v0.68 was deployed. To see the
-       * error delete this comment and run Flow. */
-      if (frame.inLayout) {
+      const frame = this._listMetrics.getCellMetricsApprox(ii, this.props);
+      if (frame.isMounted) {
         framesInLayout.push(frame);
       }
     }
-    const windowTop = this.__getFrameMetricsApprox(
+    const windowTop = this._listMetrics.getCellMetricsApprox(
       this.state.cellsAroundViewport.first,
       this.props,
     ).offset;
-    const frameLast = this.__getFrameMetricsApprox(
+    const frameLast = this._listMetrics.getCellMetricsApprox(
       this.state.cellsAroundViewport.last,
       this.props,
     );
@@ -1538,14 +1476,15 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       : metrics.width;
   }
 
-  _selectOffset(
-    metrics: $ReadOnly<{
-      x: number,
-      y: number,
-      ...
-    }>,
-  ): number {
-    return !horizontalOrDefault(this.props.horizontal) ? metrics.y : metrics.x;
+  _selectOffset({x, y}: $ReadOnly<{x: number, y: number, ...}>): number {
+    return this._orientation().horizontal ? x : y;
+  }
+
+  _orientation(): ListOrientation {
+    return {
+      horizontal: horizontalOrDefault(this.props.horizontal),
+      rtl: I18nManager.isRTL,
+    };
   }
 
   _maybeCallOnEdgeReached() {
@@ -1563,9 +1502,10 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       return;
     }
 
-    const {contentLength, visibleLength, offset} = this._scrollMetrics;
+    const {visibleLength, offset} = this._scrollMetrics;
     let distanceFromStart = offset;
-    let distanceFromEnd = contentLength - visibleLength - offset;
+    let distanceFromEnd =
+      this._listMetrics.getContentLength() - visibleLength - offset;
 
     // Especially when oERT is zero it's necessary to 'floor' very small distance values to be 0
     // since debouncing causes us to not fire this event for every single "pixel" we scroll and can thus
@@ -1599,41 +1539,62 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       onEndReached &&
       this.state.cellsAroundViewport.last === getItemCount(data) - 1 &&
       isWithinEndThreshold &&
-      this._scrollMetrics.contentLength !== this._sentEndForContentLength
+      this._listMetrics.getContentLength() !== this._sentEndForContentLength
     ) {
-      this._sentEndForContentLength = this._scrollMetrics.contentLength;
+      this._sentEndForContentLength = this._listMetrics.getContentLength();
       onEndReached({distanceFromEnd});
     }
 
     // Next check if the user just scrolled within the start threshold
     // and call onStartReached only once for a given content length,
     // and only if onEndReached is not being executed
-    else if (
+    if (
       onStartReached != null &&
       this.state.cellsAroundViewport.first === 0 &&
       isWithinStartThreshold &&
-      this._scrollMetrics.contentLength !== this._sentStartForContentLength
+      this._listMetrics.getContentLength() !== this._sentStartForContentLength
     ) {
-      this._sentStartForContentLength = this._scrollMetrics.contentLength;
+      this._sentStartForContentLength = this._listMetrics.getContentLength();
       onStartReached({distanceFromStart});
     }
 
     // If the user scrolls away from the start or end and back again,
     // cause onStartReached or onEndReached to be triggered again
-    else {
-      this._sentStartForContentLength = isWithinStartThreshold
-        ? this._sentStartForContentLength
-        : 0;
-      this._sentEndForContentLength = isWithinEndThreshold
-        ? this._sentEndForContentLength
-        : 0;
+    if (!isWithinStartThreshold) {
+      this._sentStartForContentLength = 0;
+    }
+    if (!isWithinEndThreshold) {
+      this._sentEndForContentLength = 0;
     }
   }
 
   _onContentSizeChange = (width: number, height: number) => {
+    this._listMetrics.notifyListContentLayout({
+      layout: {width, height},
+      orientation: this._orientation(),
+    });
+
+    this._maybeScrollToInitialScrollIndex(width, height);
+
+    if (this.props.onContentSizeChange) {
+      this.props.onContentSizeChange(width, height);
+    }
+    this._scheduleCellsToRenderUpdate();
+    this._maybeCallOnEdgeReached();
+  };
+
+  /**
+   * Scroll to a specified `initialScrollIndex` prop after the ScrollView
+   * content has been laid out, if it is still valid. Only a single scroll is
+   * triggered throughout the lifetime of the list.
+   */
+  _maybeScrollToInitialScrollIndex(
+    contentWidth: number,
+    contentHeight: number,
+  ) {
     if (
-      width > 0 &&
-      height > 0 &&
+      contentWidth > 0 &&
+      contentHeight > 0 &&
       this.props.initialScrollIndex != null &&
       this.props.initialScrollIndex > 0 &&
       !this._hasTriggeredInitialScrollToIndex
@@ -1653,13 +1614,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       }
       this._hasTriggeredInitialScrollToIndex = true;
     }
-    if (this.props.onContentSizeChange) {
-      this.props.onContentSizeChange(width, height);
-    }
-    this._scrollMetrics.contentLength = this._selectLength({height, width});
-    this._scheduleCellsToRenderUpdate();
-    this._maybeCallOnEdgeReached();
-  };
+  }
 
   /* Translates metrics from a scroll event in a parent VirtualizedList into
    * coordinates relative to the child list.
@@ -1674,7 +1629,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     // Child's visible length is the same as its parent's
     const visibleLength = metrics.visibleLength;
     const dOffset = offset - this._scrollMetrics.offset;
-    const contentLength = this._scrollMetrics.contentLength;
+    const contentLength = this._listMetrics.getContentLength();
 
     return {
       visibleLength,
@@ -1694,11 +1649,11 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     const timestamp = e.timeStamp;
     let visibleLength = this._selectLength(e.nativeEvent.layoutMeasurement);
     let contentLength = this._selectLength(e.nativeEvent.contentSize);
-    let offset = this._selectOffset(e.nativeEvent.contentOffset);
+    let offset = this._offsetFromScrollEvent(e);
     let dOffset = offset - this._scrollMetrics.offset;
 
     if (this._isNestedWithSameOrientation()) {
-      if (this._scrollMetrics.contentLength === 0) {
+      if (this._listMetrics.getContentLength() === 0) {
         // Ignore scroll events until onLayout has been called and we
         // know our offset from our offset from our parent
         return;
@@ -1733,7 +1688,6 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     // For invalid negative values (w/ RTL), set this to 1.
     const zoomScale = e.nativeEvent.zoomScale < 0 ? 1 : e.nativeEvent.zoomScale;
     this._scrollMetrics = {
-      contentLength,
       dt,
       dOffset,
       offset,
@@ -1759,7 +1713,46 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     this._scheduleCellsToRenderUpdate();
   };
 
+  _offsetFromScrollEvent(e: ScrollEvent): number {
+    const {contentOffset, contentSize, layoutMeasurement} = e.nativeEvent;
+    const {horizontal, rtl} = this._orientation();
+    if (horizontal && rtl) {
+      return (
+        this._selectLength(contentSize) -
+        (this._selectOffset(contentOffset) +
+          this._selectLength(layoutMeasurement))
+      );
+    } else {
+      return this._selectOffset(contentOffset);
+    }
+  }
+
   _scheduleCellsToRenderUpdate() {
+    // Only trigger high-priority updates if we've actually rendered cells,
+    // and with that size estimate, accurately compute how many cells we should render.
+    // Otherwise, it would just render as many cells as it can (of zero dimension),
+    // each time through attempting to render more (limited by maxToRenderPerBatch),
+    // starving the renderer from actually laying out the objects and computing _averageCellLength.
+    // If this is triggered in an `componentDidUpdate` followed by a hiPri cellToRenderUpdate
+    // We shouldn't do another hipri cellToRenderUpdate
+    if (
+      (this._listMetrics.getAverageCellLength() > 0 ||
+        this.props.getItemLayout != null) &&
+      this._shouldRenderWithPriority() &&
+      !this._hiPriInProgress
+    ) {
+      this._hiPriInProgress = true;
+      // Don't worry about interactions when scrolling quickly; focus on filling content as fast
+      // as possible.
+      this._updateCellsToRenderBatcher.dispose({abort: true});
+      this._updateCellsToRender();
+      return;
+    } else {
+      this._updateCellsToRenderBatcher.schedule();
+    }
+  }
+
+  _shouldRenderWithPriority(): boolean {
     const {first, last} = this.state.cellsAroundViewport;
     const {offset, visibleLength, velocity} = this._scrollMetrics;
     const itemCount = this.props.getItemCount(this.props.data);
@@ -1774,7 +1767,8 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     // But only if there are items before the first rendered item
     if (first > 0) {
       const distTop =
-        offset - this.__getFrameMetricsApprox(first, this.props).offset;
+        offset -
+        this._listMetrics.getCellMetricsApprox(first, this.props).offset;
       hiPri =
         distTop < 0 ||
         (velocity < -2 &&
@@ -1785,7 +1779,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     // But only if there are items after the last rendered item
     if (!hiPri && last >= 0 && last < itemCount - 1) {
       const distBottom =
-        this.__getFrameMetricsApprox(last, this.props).offset -
+        this._listMetrics.getCellMetricsApprox(last, this.props).offset -
         (offset + visibleLength);
       hiPri =
         distBottom < 0 ||
@@ -1793,27 +1787,8 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
           distBottom <
             getScrollingThreshold(onEndReachedThreshold, visibleLength));
     }
-    // Only trigger high-priority updates if we've actually rendered cells,
-    // and with that size estimate, accurately compute how many cells we should render.
-    // Otherwise, it would just render as many cells as it can (of zero dimension),
-    // each time through attempting to render more (limited by maxToRenderPerBatch),
-    // starving the renderer from actually laying out the objects and computing _averageCellLength.
-    // If this is triggered in an `componentDidUpdate` followed by a hiPri cellToRenderUpdate
-    // We shouldn't do another hipri cellToRenderUpdate
-    if (
-      hiPri &&
-      (this._averageCellLength || this.props.getItemLayout) &&
-      !this._hiPriInProgress
-    ) {
-      this._hiPriInProgress = true;
-      // Don't worry about interactions when scrolling quickly; focus on filling content as fast
-      // as possible.
-      this._updateCellsToRenderBatcher.dispose({abort: true});
-      this._updateCellsToRender();
-      return;
-    } else {
-      this._updateCellsToRenderBatcher.schedule();
-    }
+
+    return hiPri;
   }
 
   _onScrollBeginDrag = (e: ScrollEvent): void => {
@@ -1885,7 +1860,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
   _createViewToken = (
     index: number,
     isViewable: boolean,
-    props: FrameMetricProps,
+    props: CellMetricProps,
     // $FlowFixMe[missing-local-annot]
   ) => {
     const {data, getItem} = props;
@@ -1898,81 +1873,12 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     };
   };
 
-  /**
-   * Gets an approximate offset to an item at a given index. Supports
-   * fractional indices.
-   */
-  _getOffsetApprox = (index: number, props: FrameMetricProps): number => {
-    if (Number.isInteger(index)) {
-      return this.__getFrameMetricsApprox(index, props).offset;
-    } else {
-      const frameMetrics = this.__getFrameMetricsApprox(
-        Math.floor(index),
-        props,
-      );
-      const remainder = index - Math.floor(index);
-      return frameMetrics.offset + remainder * frameMetrics.length;
-    }
-  };
-
-  __getFrameMetricsApprox: (
-    index: number,
-    props: FrameMetricProps,
-  ) => {
-    length: number,
-    offset: number,
-    ...
-  } = (index, props) => {
-    const frame = this._getFrameMetrics(index, props);
-    if (frame && frame.index === index) {
-      // check for invalid frames due to row re-ordering
-      return frame;
-    } else {
-      const {data, getItemCount, getItemLayout} = props;
-      invariant(
-        index >= 0 && index < getItemCount(data),
-        'Tried to get frame for out of range index ' + index,
-      );
-      invariant(
-        !getItemLayout,
-        'Should not have to estimate frames when a measurement metrics function is provided',
-      );
-      return {
-        length: this._averageCellLength,
-        offset: this._averageCellLength * index,
-      };
-    }
-  };
-
-  _getFrameMetrics = (
-    index: number,
-    props: FrameMetricProps,
-  ): ?{
-    length: number,
-    offset: number,
-    index: number,
-    inLayout?: boolean,
-    ...
-  } => {
-    const {data, getItemCount, getItemLayout} = props;
-    invariant(
-      index >= 0 && index < getItemCount(data),
-      'Tried to get frame for out of range index ' + index,
-    );
-    const frame = this._frames[VirtualizedList._getItemKey(props, index)];
-    if (!frame || frame.index !== index) {
-      if (getItemLayout) {
-        /* $FlowFixMe[prop-missing] (>=0.63.0 site=react_native_fb) This comment
-         * suppresses an error found when Flow v0.63 was deployed. To see the error
-         * delete this comment and run Flow. */
-        return getItemLayout(data, index);
-      }
-    }
-    return frame;
-  };
+  __getListMetrics(): ListMetricsAggregator {
+    return this._listMetrics;
+  }
 
   _getNonViewportRenderRegions = (
-    props: FrameMetricProps,
+    props: CellMetricProps,
   ): $ReadOnlyArray<{
     first: number,
     last: number,
@@ -2008,7 +1914,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       i--
     ) {
       first--;
-      heightOfCellsBeforeFocused += this.__getFrameMetricsApprox(
+      heightOfCellsBeforeFocused += this._listMetrics.getCellMetricsApprox(
         i,
         props,
       ).length;
@@ -2023,7 +1929,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       i++
     ) {
       last++;
-      heightOfCellsAfterFocused += this.__getFrameMetricsApprox(
+      heightOfCellsAfterFocused += this._listMetrics.getCellMetricsApprox(
         i,
         props,
       ).length;
@@ -2033,7 +1939,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
   };
 
   _updateViewableItems(
-    props: FrameMetricProps,
+    props: CellMetricProps,
     cellsAroundViewport: {first: number, last: number},
   ) {
     // If we have any pending scroll updates it means that the scroll metrics
@@ -2046,7 +1952,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
         props,
         this._scrollMetrics.offset,
         this._scrollMetrics.visibleLength,
-        this._getFrameMetrics,
+        this._listMetrics,
         this._createViewToken,
         tuple.onViewableItemsChanged,
         cellsAroundViewport,
@@ -2056,9 +1962,10 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
 }
 
 const styles = StyleSheet.create({
-  verticallyInverted: {
-    transform: [{scaleY: -1}],
-  },
+  verticallyInverted:
+    Platform.OS === 'android'
+      ? {transform: [{scale: -1}]}
+      : {transform: [{scaleY: -1}]},
   horizontallyInverted: {
     transform: [{scaleX: -1}],
   },

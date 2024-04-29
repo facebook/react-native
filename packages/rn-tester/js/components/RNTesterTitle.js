@@ -8,10 +8,10 @@
  * @flow strict-local
  */
 
-const React = require('react');
-
-const {StyleSheet, Text, View} = require('react-native');
 import {RNTesterThemeContext} from './RNTesterTheme';
+
+const React = require('react');
+const {StyleSheet, Text, View} = require('react-native');
 
 class RNTesterTitle extends React.Component<$FlowFixMeProps> {
   render(): React.Node {

@@ -5,5 +5,16 @@
   "requirePragma": true,
   "singleQuote": true,
   "trailingComma": "all",
-  "endOfLine": "lf"
+  "endOfLine": "lf",
+  "overrides": [
+    {
+      "files": [
+        "*.js",
+        "*.js.flow"
+      ],
+      "options": {
+        "parser": "hermes"
+      }
+    }
+  ]
 }

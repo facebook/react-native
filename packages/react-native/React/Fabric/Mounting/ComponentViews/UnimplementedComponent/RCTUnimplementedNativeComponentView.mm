@@ -20,8 +20,7 @@ using namespace facebook::react;
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-    static const auto defaultProps = std::make_shared<const UnimplementedNativeViewProps>();
-    _props = defaultProps;
+    _props = UnimplementedNativeViewShadowNode::defaultSharedProps();
 
     CGRect bounds = self.bounds;
     _label = [[UILabel alloc] initWithFrame:bounds];
@@ -45,10 +44,10 @@ using namespace facebook::react;
   return concreteComponentDescriptorProvider<UnimplementedNativeViewComponentDescriptor>();
 }
 
-- (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
+- (void)updateProps:(const Props::Shared &)props oldProps:(const Props::Shared &)oldProps
 {
-  const auto &oldViewProps = *std::static_pointer_cast<const UnimplementedNativeViewProps>(_props);
-  const auto &newViewProps = *std::static_pointer_cast<const UnimplementedNativeViewProps>(props);
+  const auto &oldViewProps = static_cast<const UnimplementedNativeViewProps &>(*_props);
+  const auto &newViewProps = static_cast<const UnimplementedNativeViewProps &>(*props);
 
   if (oldViewProps.name != newViewProps.name) {
     _label.text = [NSString stringWithFormat:@"'%s' is not Fabric compatible yet.", newViewProps.name.c_str()];

@@ -13,7 +13,7 @@ exports[`<Modal /> should render as <RCTModalHostView> when not mocked 1`] = `
 <RCTModalHostView
   animationType="none"
   hardwareAccelerated={false}
-  identifier={4}
+  identifier={3}
   onDismiss={[Function]}
   onStartShouldSetResponder={[Function]}
   presentationStyle="fullScreen"

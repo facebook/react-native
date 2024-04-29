@@ -13,14 +13,36 @@ extern NSString *const RCTRemoteNotificationReceived;
 
 typedef void (^RCTRemoteNotificationCallback)(UIBackgroundFetchResult result);
 
-#if !TARGET_OS_UIKITFORMAC
-+ (void)didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings;
 + (void)didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken;
-+ (void)didReceiveRemoteNotification:(NSDictionary *)notification;
++ (void)didFailToRegisterForRemoteNotificationsWithError:(NSError *)error;
+/**
+ * Triggers remoteNotificationReceived or localNotificationReceived events.
+ *
+ * Call this method from UNUserNotificationCenterDelegate's
+ * `userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:` in order to process a user tap on a
+ * notification.
+ *
+ * To process notifications received while the app is in the foreground, call this method from
+ * `userNotificationCenter:willPresentNotification:withCompletionHandler:`. Use the completion handler to determine if
+ * the push notification should be shown; to match prior behavior which does not show foreground notifications, use
+ * UNNotificationPresentationOptionNone.
+ *
+ * If you need to determine if the notification is remote, check that notification.request.trigger
+ * is an instance of UNPushNotificationTrigger.
+ */
++ (void)didReceiveNotification:(UNNotification *)notification;
+/**
+ * Call this from your app delegate's `application:didReceiveRemoteNotification:fetchCompletionHandler:`. If you
+ * implement both that method and `userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:`, only
+ * the latter will be called.
+ */
 + (void)didReceiveRemoteNotification:(NSDictionary *)notification
               fetchCompletionHandler:(RCTRemoteNotificationCallback)completionHandler;
-+ (void)didReceiveLocalNotification:(UILocalNotification *)notification;
-+ (void)didFailToRegisterForRemoteNotificationsWithError:(NSError *)error;
-#endif
+
+/**
+ * Call this in `userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:`
+ * to get the correct value from .getInitialNotification in JS.
+ */
++ (void)setInitialNotification:(UNNotification *)notification;
 
 @end
