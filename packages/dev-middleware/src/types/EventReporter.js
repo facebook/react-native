@@ -36,7 +36,12 @@ export type ReportableEvent =
       type: 'launch_debugger_frontend',
       launchType: 'launch' | 'redirect',
       ...
-        | SuccessResult<{appId: string | null, deviceId: string | null}>
+        | SuccessResult<{
+            appId: string | null,
+            deviceId: string | null,
+            resolvedTargetDescription: string,
+            prefersFuseboxFrontend: boolean,
+          }>
         | ErrorResult<mixed>
         | CodedErrorResult<'NO_APPS_FOUND'>,
     }
