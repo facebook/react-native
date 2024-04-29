@@ -33,7 +33,7 @@ Pod::Spec.new do |s|
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = min_supported_versions
   s.source                 = source
-  s.source_files           = "*.{cpp,h}"
+  s.source_files           = "*.{cpp,h,def}"
   s.header_dir             = 'jsinspector-modern'
   s.compiler_flags         = folly_compiler_flags
   s.pod_target_xcconfig    = {
