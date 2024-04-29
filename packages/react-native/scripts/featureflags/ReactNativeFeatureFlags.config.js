@@ -12,6 +12,14 @@
 
 import type {FeatureFlagDefinitions} from './types';
 
+/**
+ * This is the source of truth for React Native feature flags.
+ *
+ * If you modify this file, you need to update all the generated files
+ * running the following script from the repo root:
+ *   yarn featureflags-update
+ */
+
 // These flags are only used in tests for the feature flags system
 const testDefinitions: FeatureFlagDefinitions = {
   common: {
