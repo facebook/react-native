@@ -162,6 +162,10 @@ class JSINSPECTOR_EXPORT HostTarget
    * \param executor An executor that may be used to call methods on this
    * HostTarget while it exists. \c create additionally guarantees that the
    * executor will not be called after the HostTarget is destroyed.
+   * \note Copies of the provided executor may be destroyed on arbitrary
+   * threads, including after the HostTarget is destroyed. Callers must ensure
+   * that such destructor calls are safe - e.g. if using a lambda as the
+   * executor, all captured values must be safe to destroy from any thread.
    */
   static std::shared_ptr<HostTarget> create(
       HostTargetDelegate& delegate,

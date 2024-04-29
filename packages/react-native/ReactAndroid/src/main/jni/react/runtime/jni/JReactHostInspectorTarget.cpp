@@ -8,6 +8,7 @@
 #include "JReactHostInspectorTarget.h"
 #include <fbjni/NativeRunnable.h>
 #include <jsinspector-modern/InspectorFlags.h>
+#include <react/jni/SafeReleaseJniRef.h>
 
 using namespace facebook::jni;
 using namespace facebook::react::jsinspector_modern;
@@ -23,7 +24,10 @@ JReactHostInspectorTarget::JReactHostInspectorTarget(
     inspectorTarget_ = HostTarget::create(
         *this,
         [javaExecutor =
-             javaExecutor_](std::function<void()>&& callback) mutable {
+             // Use a SafeReleaseJniRef because this lambda may be copied to
+             // arbitrary threads.
+         SafeReleaseJniRef(javaExecutor_)](
+            std::function<void()>&& callback) mutable {
           auto jrunnable =
               JNativeRunnable::newObjectCxxArgs(std::move(callback));
           javaExecutor->execute(jrunnable);

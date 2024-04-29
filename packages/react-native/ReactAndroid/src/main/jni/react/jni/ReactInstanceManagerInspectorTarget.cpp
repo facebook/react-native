@@ -6,6 +6,7 @@
  */
 
 #include "ReactInstanceManagerInspectorTarget.h"
+#include "SafeReleaseJniRef.h"
 
 #include <fbjni/NativeRunnable.h>
 #include <jsinspector-modern/InspectorFlags.h>
@@ -39,7 +40,11 @@ ReactInstanceManagerInspectorTarget::ReactInstanceManagerInspectorTarget(
 
   if (inspectorFlags.getEnableModernCDPRegistry()) {
     inspectorTarget_ = HostTarget::create(
-        *this, [javaExecutor = make_global(executor)](auto callback) mutable {
+        *this,
+        [javaExecutor =
+             // Use a SafeReleaseJniRef because this lambda may be copied to
+             // arbitrary threads.
+         SafeReleaseJniRef(make_global(executor))](auto callback) mutable {
           auto jrunnable =
               JNativeRunnable::newObjectCxxArgs(std::move(callback));
           javaExecutor->execute(jrunnable);
