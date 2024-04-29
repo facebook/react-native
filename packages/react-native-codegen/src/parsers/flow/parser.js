@@ -304,7 +304,7 @@ class FlowParser implements Parser {
     return properties.map(prop => {
       return {
         name: prop.key.name,
-        optional: true,
+        optional: prop?.optional ?? false,
         typeAnnotation: flowTranslateTypeAnnotation(
           hasteModuleName,
           prop.value,

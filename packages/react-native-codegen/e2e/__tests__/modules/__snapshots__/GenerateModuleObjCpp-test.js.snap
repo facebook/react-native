@@ -1201,7 +1201,7 @@ inline JS::NativeOptionalObjectTurboModule::Constants::Builder::Builder(Constant
 inline NSString *JS::NativePartialAnnotationTurboModule::SpecGetSomeObjFromPartialSomeObjValue::a() const
 {
   id const p = _v[@\\"a\\"];
-  return RCTBridgingToOptionalString(p);
+  return RCTBridgingToString(p);
 }
 inline std::optional<bool> JS::NativePartialAnnotationTurboModule::SpecGetSomeObjFromPartialSomeObjValue::b() const
 {
@@ -1211,7 +1211,7 @@ inline std::optional<bool> JS::NativePartialAnnotationTurboModule::SpecGetSomeOb
 inline NSString *JS::NativePartialAnnotationTurboModule::SpecGetPartialPartialValue1::a() const
 {
   id const p = _v[@\\"a\\"];
-  return RCTBridgingToOptionalString(p);
+  return RCTBridgingToString(p);
 }
 inline std::optional<bool> JS::NativePartialAnnotationTurboModule::SpecGetPartialPartialValue1::b() const
 {
@@ -1221,7 +1221,7 @@ inline std::optional<bool> JS::NativePartialAnnotationTurboModule::SpecGetPartia
 inline NSString *JS::NativePartialAnnotationTurboModule::SpecGetPartialPartialValue2::a() const
 {
   id const p = _v[@\\"a\\"];
-  return RCTBridgingToOptionalString(p);
+  return RCTBridgingToString(p);
 }
 inline std::optional<bool> JS::NativePartialAnnotationTurboModule::SpecGetPartialPartialValue2::b() const
 {
@@ -2553,7 +2553,7 @@ inline JS::NativeOptionalObjectTurboModule::Constants::Builder::Builder(Constant
 inline NSString *JS::NativePartialAnnotationTurboModule::SpecGetSomeObjFromPartialSomeObjValue::a() const
 {
   id const p = _v[@\\"a\\"];
-  return RCTBridgingToOptionalString(p);
+  return RCTBridgingToString(p);
 }
 inline std::optional<bool> JS::NativePartialAnnotationTurboModule::SpecGetSomeObjFromPartialSomeObjValue::b() const
 {
@@ -2563,7 +2563,7 @@ inline std::optional<bool> JS::NativePartialAnnotationTurboModule::SpecGetSomeOb
 inline NSString *JS::NativePartialAnnotationTurboModule::SpecGetPartialPartialValue1::a() const
 {
   id const p = _v[@\\"a\\"];
-  return RCTBridgingToOptionalString(p);
+  return RCTBridgingToString(p);
 }
 inline std::optional<bool> JS::NativePartialAnnotationTurboModule::SpecGetPartialPartialValue1::b() const
 {
@@ -2573,7 +2573,7 @@ inline std::optional<bool> JS::NativePartialAnnotationTurboModule::SpecGetPartia
 inline NSString *JS::NativePartialAnnotationTurboModule::SpecGetPartialPartialValue2::a() const
 {
   id const p = _v[@\\"a\\"];
-  return RCTBridgingToOptionalString(p);
+  return RCTBridgingToString(p);
 }
 inline std::optional<bool> JS::NativePartialAnnotationTurboModule::SpecGetPartialPartialValue2::b() const
 {
