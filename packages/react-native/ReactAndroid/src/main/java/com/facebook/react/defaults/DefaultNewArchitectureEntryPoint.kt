@@ -57,8 +57,6 @@ public object DefaultNewArchitectureEntryPoint {
             override fun batchRenderingUpdatesInEventLoop(): Boolean = true
 
             override fun androidEnablePendingFabricTransactions(): Boolean = true
-
-            override fun useNativeViewConfigsInBridgelessMode(): Boolean = fabricEnabled
           })
     }
 
