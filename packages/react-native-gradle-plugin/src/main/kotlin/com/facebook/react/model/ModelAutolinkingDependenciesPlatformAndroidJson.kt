@@ -15,8 +15,8 @@ data class ModelAutolinkingDependenciesPlatformAndroidJson(
     val libraryName: String,
     val componentDescriptors: List<String>,
     val cmakeListsPath: String,
-    val cxxModuleCMakeListsModuleName: String?,
-    val cxxModuleCMakeListsPath: String?,
-    val cxxModuleHeaderName: String?,
-    val dependencyConfiguration: String?
+    val cxxModuleCMakeListsModuleName: String? = null,
+    val cxxModuleCMakeListsPath: String? = null,
+    val cxxModuleHeaderName: String? = null,
+    val dependencyConfiguration: String? = null
 )

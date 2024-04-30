@@ -12,6 +12,7 @@ import com.android.build.gradle.internal.tasks.factory.dependsOn
 import com.facebook.react.internal.PrivateReactExtension
 import com.facebook.react.tasks.GenerateCodegenArtifactsTask
 import com.facebook.react.tasks.GenerateCodegenSchemaTask
+import com.facebook.react.tasks.GeneratePackageListTask
 import com.facebook.react.tasks.RunAutolinkingConfigTask
 import com.facebook.react.utils.AgpConfiguratorUtils.configureBuildConfigFieldsForApp
 import com.facebook.react.utils.AgpConfiguratorUtils.configureBuildConfigFieldsForLibraries
@@ -219,13 +220,41 @@ class ReactPlugin : Plugin<Project> {
   ) {
     val generatedAutolinkingDir: Provider<Directory> =
         project.layout.buildDirectory.dir("generated/autolinking")
+    val generatedAutolinkingJavaDir: Provider<Directory> =
+        project.layout.buildDirectory.dir("generated/autolinking/src/main/java")
     val configOutputFile = generatedAutolinkingDir.get().file("config-output.json")
 
-    project.tasks.register("runAutolinkingConfig", RunAutolinkingConfigTask::class.java) { task ->
-      task.autolinkConfigCommand.set(extension.autolinkConfigCommand)
-      task.autolinkConfigFile.set(extension.autolinkConfigFile)
-      task.autolinkOutputFile.set(configOutputFile)
-      task.autolinkLockFiles.set(extension.autolinkLockFiles)
+    val runAutolinkingConfigTask =
+        project.tasks.register("runAutolinkingConfig", RunAutolinkingConfigTask::class.java) { task
+          ->
+          task.autolinkConfigCommand.set(extension.autolinkConfigCommand)
+          task.autolinkConfigFile.set(extension.autolinkConfigFile)
+          task.autolinkOutputFile.set(configOutputFile)
+          task.autolinkLockFiles.set(extension.autolinkLockFiles)
+        }
+
+    // We add a task called generateAutolinkingPackageList to do not clash with the existing task
+    // called generatePackageList. This can to be renamed once we unlink the rn <-> cli
+    // dependency.
+    val generatePackageListTask =
+        project.tasks.register(
+            "generateAutolinkingPackageList", GeneratePackageListTask::class.java) { task ->
+              task.dependsOn(runAutolinkingConfigTask)
+              task.autolinkInputFile.set(configOutputFile)
+              task.generatedOutputDirectory.set(generatedAutolinkingJavaDir)
+            }
+
+    // We let generateAutolinkingPackageList depend on the preBuild task so it's executed before
+    // everything else.
+    project.tasks.named("preBuild", Task::class.java).dependsOn(generatePackageListTask)
+
+    // We tell Android Gradle Plugin that inside /build/generated/autolinking/src/main/java there
+    // are sources to be compiled as well.
+    project.extensions.getByType(AndroidComponentsExtension::class.java).apply {
+      onVariants(selector().all()) { variant ->
+        variant.sources.java?.addStaticSourceDirectory(
+            generatedAutolinkingJavaDir.get().asFile.absolutePath)
+      }
     }
   }
 }

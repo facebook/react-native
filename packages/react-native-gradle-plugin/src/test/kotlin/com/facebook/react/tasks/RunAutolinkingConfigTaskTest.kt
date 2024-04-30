@@ -24,7 +24,7 @@ class RunAutolinkingConfigTaskTest {
 
   @Test
   fun runAutolinkingConfigTask_groupIsSetCorrectly() {
-    val task = createTestTask<BundleHermesCTask> {}
+    val task = createTestTask<RunAutolinkingConfigTask> {}
     assertEquals("react", task.group)
   }
 
