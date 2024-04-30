@@ -32,7 +32,6 @@ const {getEnumName, toSafeCppString} = require('../Utils');
 const {indent} = require('../Utils');
 const {
   createAliasResolver,
-  getAreEnumMembersInteger,
   getModules,
   isArrayRecursiveMember,
   isDirectRecursiveMember,
@@ -344,7 +343,7 @@ ${value.properties
     .join('\n');
 }
 
-type NativeEnumMemberValueType = 'std::string' | 'int32_t' | 'float';
+type NativeEnumMemberValueType = 'std::string' | 'int32_t';
 
 const EnumTemplate = ({
   enumName,
@@ -399,16 +398,10 @@ function generateEnum(
   const enumName = getEnumName(moduleName, origEnumName);
 
   const nativeEnumMemberType: NativeEnumMemberValueType =
-    memberType === 'StringTypeAnnotation'
-      ? 'std::string'
-      : getAreEnumMembersInteger(members)
-      ? 'int32_t'
-      : 'float';
+    memberType === 'StringTypeAnnotation' ? 'std::string' : 'int32_t';
 
   const getMemberValueAppearance = (value: string) =>
-    memberType === 'StringTypeAnnotation'
-      ? `"${value}"`
-      : `${value}${nativeEnumMemberType === 'float' ? 'f' : ''}`;
+    memberType === 'StringTypeAnnotation' ? `"${value}"` : `${value}`;
 
   const fromCases =
     members

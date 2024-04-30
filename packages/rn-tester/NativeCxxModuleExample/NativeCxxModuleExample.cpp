@@ -81,10 +81,10 @@ GraphNode NativeCxxModuleExample::getGraphNode(
   return arg;
 }
 
-NativeCxxModuleExampleCxxEnumFloat NativeCxxModuleExample::getNumEnum(
+NativeCxxModuleExampleCxxEnumInt NativeCxxModuleExample::getNumEnum(
     jsi::Runtime& rt,
     NativeCxxModuleExampleCxxEnumInt arg) {
-  return NativeCxxModuleExampleCxxEnumFloat::FB;
+  return arg;
 }
 
 NativeCxxModuleExampleCxxEnumStr NativeCxxModuleExample::getStrEnum(

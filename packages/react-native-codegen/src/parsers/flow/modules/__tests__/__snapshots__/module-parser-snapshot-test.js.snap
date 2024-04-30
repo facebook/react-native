@@ -161,21 +161,6 @@ exports[`RN Codegen Flow Parser can generate fixture CXX_ONLY_NATIVE_MODULE 1`] 
             }
           ]
         },
-        'Floppy': {
-          'name': 'Floppy',
-          'type': 'EnumDeclarationWithMembers',
-          'memberType': 'NumberTypeAnnotation',
-          'members': [
-            {
-              'name': 'LowDensity',
-              'value': 0.72
-            },
-            {
-              'name': 'HighDensity',
-              'value': 1.44
-            }
-          ]
-        },
         'StringOptions': {
           'name': 'StringOptions',
           'type': 'EnumDeclarationWithMembers',
@@ -255,15 +240,6 @@ exports[`RN Codegen Flow Parser can generate fixture CXX_ONLY_NATIVE_MODULE 1`] 
                   'optional': true,
                   'typeAnnotation': {
                     'name': 'Resolution',
-                    'type': 'EnumDeclaration',
-                    'memberType': 'NumberTypeAnnotation'
-                  }
-                },
-                {
-                  'name': 'floppy',
-                  'optional': false,
-                  'typeAnnotation': {
-                    'name': 'Floppy',
                     'type': 'EnumDeclaration',
                     'memberType': 'NumberTypeAnnotation'
                   }
@@ -488,21 +464,6 @@ exports[`RN Codegen Flow Parser can generate fixture IOS_ONLY_NATIVE_MODULE 1`] 
             }
           ]
         },
-        'Floppy': {
-          'name': 'Floppy',
-          'type': 'EnumDeclarationWithMembers',
-          'memberType': 'NumberTypeAnnotation',
-          'members': [
-            {
-              'name': 'LowDensity',
-              'value': 0.72
-            },
-            {
-              'name': 'HighDensity',
-              'value': 1.44
-            }
-          ]
-        },
         'StringOptions': {
           'name': 'StringOptions',
           'type': 'EnumDeclarationWithMembers',
@@ -548,15 +509,6 @@ exports[`RN Codegen Flow Parser can generate fixture IOS_ONLY_NATIVE_MODULE 1`] 
                   'optional': true,
                   'typeAnnotation': {
                     'name': 'Resolution',
-                    'type': 'EnumDeclaration',
-                    'memberType': 'NumberTypeAnnotation'
-                  }
-                },
-                {
-                  'name': 'floppy',
-                  'optional': false,
-                  'typeAnnotation': {
-                    'name': 'Floppy',
                     'type': 'EnumDeclaration',
                     'memberType': 'NumberTypeAnnotation'
                   }

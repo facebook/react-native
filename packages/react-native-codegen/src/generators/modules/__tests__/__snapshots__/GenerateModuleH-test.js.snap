@@ -240,9 +240,9 @@ template <>
 struct Bridging<SampleTurboModuleCxxEnumFloat> {
   static SampleTurboModuleCxxEnumFloat fromJs(jsi::Runtime &rt, const jsi::Value &rawValue) {
     double value = (double)rawValue.asNumber();
-    if (value == 1.23f) {
+    if (value == 1.23) {
       return SampleTurboModuleCxxEnumFloat::FA;
-    } else if (value == 4.56f) {
+    } else if (value == 4.56) {
       return SampleTurboModuleCxxEnumFloat::FB;
     } else {
       throw jsi::JSError(rt, \\"No appropriate enum member found for value\\");
@@ -251,9 +251,9 @@ struct Bridging<SampleTurboModuleCxxEnumFloat> {
 
   static jsi::Value toJs(jsi::Runtime &rt, SampleTurboModuleCxxEnumFloat value) {
     if (value == SampleTurboModuleCxxEnumFloat::FA) {
-      return bridging::toJs(rt, 1.23f);
+      return bridging::toJs(rt, 1.23);
     } else if (value == SampleTurboModuleCxxEnumFloat::FB) {
-      return bridging::toJs(rt, 4.56f);
+      return bridging::toJs(rt, 4.56);
     } else {
       throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
     }
@@ -1815,11 +1815,11 @@ template <>
 struct Bridging<SampleTurboModuleFloatEnum> {
   static SampleTurboModuleFloatEnum fromJs(jsi::Runtime &rt, const jsi::Value &rawValue) {
     double value = (double)rawValue.asNumber();
-    if (value == 0.0f) {
+    if (value == 0.0) {
       return SampleTurboModuleFloatEnum::POINT_ZERO;
-    } else if (value == 0.1f) {
+    } else if (value == 0.1) {
       return SampleTurboModuleFloatEnum::POINT_ONE;
-    } else if (value == 0.2f) {
+    } else if (value == 0.2) {
       return SampleTurboModuleFloatEnum::POINT_TWO;
     } else {
       throw jsi::JSError(rt, \\"No appropriate enum member found for value\\");
@@ -1828,11 +1828,11 @@ struct Bridging<SampleTurboModuleFloatEnum> {
 
   static jsi::Value toJs(jsi::Runtime &rt, SampleTurboModuleFloatEnum value) {
     if (value == SampleTurboModuleFloatEnum::POINT_ZERO) {
-      return bridging::toJs(rt, 0.0f);
+      return bridging::toJs(rt, 0.0);
     } else if (value == SampleTurboModuleFloatEnum::POINT_ONE) {
-      return bridging::toJs(rt, 0.1f);
+      return bridging::toJs(rt, 0.1);
     } else if (value == SampleTurboModuleFloatEnum::POINT_TWO) {
-      return bridging::toJs(rt, 0.2f);
+      return bridging::toJs(rt, 0.2);
     } else {
       throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
     }
