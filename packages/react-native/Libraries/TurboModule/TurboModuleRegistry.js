@@ -93,11 +93,11 @@ interface ModuleHolder<T> {
   module: T | null
 }
 
-export function getLazy<T: TurboModule>(name: string): ?T {
+export function getLazy<T: TurboModule>(name: string): T {
   const proxy = new Proxy<ModuleHolder<T>>({ module: null }, {
     get: (target, property) => {
       if (target.module == null) {
-        target.module = get(name);
+        target.module = getEnforcing(name);
       }
       return target.module[property];
     },
