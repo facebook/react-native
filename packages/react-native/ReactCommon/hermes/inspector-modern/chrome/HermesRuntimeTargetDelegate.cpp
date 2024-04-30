@@ -143,10 +143,10 @@ class HermesRuntimeTargetDelegate::Impl final : public RuntimeTargetDelegate {
       hermesStackTrace = std::move(**hermesStackTraceWrapper);
     }
     HermesConsoleMessage hermesConsoleMessage{
-        message.timestamp, type, std::move(message.args)};
-    // NOTE: HermesConsoleMessage should really have a constructor that takes a
-    // stack trace.
-    hermesConsoleMessage.stackTrace = std::move(hermesStackTrace);
+        message.timestamp,
+        type,
+        std::move(message.args),
+        std::move(hermesStackTrace)};
     cdpDebugAPI_->addConsoleMessage(std::move(hermesConsoleMessage));
   }
 
