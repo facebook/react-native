@@ -1,0 +1,22 @@
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+package com.facebook.react.model
+
+data class ModelAutolinkingDependenciesPlatformAndroidJson(
+    val sourceDir: String,
+    val packageImportPath: String,
+    val packageInstance: String,
+    val buildTypes: List<String>,
+    val libraryName: String,
+    val componentDescriptors: List<String>,
+    val cmakeListsPath: String,
+    val cxxModuleCMakeListsModuleName: String?,
+    val cxxModuleCMakeListsPath: String?,
+    val cxxModuleHeaderName: String?,
+    val dependencyConfiguration: String?
+)

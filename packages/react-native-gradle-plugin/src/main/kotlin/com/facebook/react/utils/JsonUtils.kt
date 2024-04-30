@@ -7,6 +7,7 @@
 
 package com.facebook.react.utils
 
+import com.facebook.react.model.ModelAutolinkingConfigJson
 import com.facebook.react.model.ModelPackageJson
 import com.google.gson.Gson
 import java.io.File
@@ -17,5 +18,11 @@ object JsonUtils {
   fun fromPackageJson(input: File): ModelPackageJson? =
       input.bufferedReader().use {
         runCatching { gsonConverter.fromJson(it, ModelPackageJson::class.java) }.getOrNull()
+      }
+
+  fun fromAutolinkingConfigJson(input: File): ModelAutolinkingConfigJson? =
+      input.bufferedReader().use {
+        runCatching { gsonConverter.fromJson(it, ModelAutolinkingConfigJson::class.java) }
+            .getOrNull()
       }
 }
