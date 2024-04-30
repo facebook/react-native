@@ -55,6 +55,10 @@ public object DefaultNewArchitectureEntryPoint {
             override fun enableMicrotasks(): Boolean = true
 
             override fun batchRenderingUpdatesInEventLoop(): Boolean = true
+
+            override fun androidEnablePendingFabricTransactions(): Boolean = true
+
+            override fun useNativeViewConfigsInBridgelessMode(): Boolean = fabricEnabled
           })
     }
 
