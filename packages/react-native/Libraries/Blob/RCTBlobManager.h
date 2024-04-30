@@ -18,6 +18,8 @@ RCT_EXTERN void RCTEnableBlobManagerProcessingQueue(BOOL enabled);
 
 - (void)store:(NSData *)data withId:(NSString *)blobId;
 
+- (NSUInteger)lengthOfBlobWithId:(NSString *)blobId;
+
 - (NSData *)resolve:(NSDictionary<NSString *, id> *)blob;
 
 - (NSData *)resolve:(NSString *)blobId offset:(NSInteger)offset size:(NSInteger)size;

@@ -18,6 +18,8 @@ class BlobCollector : public jni::HybridClass<BlobCollector>,
   BlobCollector(jni::global_ref<jobject> blobModule, const std::string& blobId);
   ~BlobCollector();
 
+  size_t getBlobLength();
+
   static constexpr auto kJavaDescriptor =
       "Lcom/facebook/react/modules/blob/BlobCollector;";
 
