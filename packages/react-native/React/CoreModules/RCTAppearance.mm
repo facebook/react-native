@@ -70,8 +70,6 @@ NSString *RCTColorSchemePreference(UITraitCollection *traitCollection)
 - (instancetype)init
 {
   if ((self = [super init])) {
-    UITraitCollection *traitCollection = RCTKeyWindow().traitCollection;
-    _currentColorScheme = RCTColorSchemePreference(traitCollection);
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(appearanceChanged:)
                                                  name:RCTUserInterfaceStyleDidChangeNotification
@@ -109,6 +107,10 @@ RCT_EXPORT_METHOD(setColorScheme : (NSString *)style)
 
 RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString *, getColorScheme)
 {
+  if (_currentColorScheme == nil) {
+    UITraitCollection *traitCollection = RCTKeyWindow().traitCollection;
+    _currentColorScheme = RCTColorSchemePreference(traitCollection);
+  }
   return _currentColorScheme;
 }
 
