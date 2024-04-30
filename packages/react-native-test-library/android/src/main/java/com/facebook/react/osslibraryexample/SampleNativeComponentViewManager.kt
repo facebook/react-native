@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.reactnative.osslibraryexample
+package com.facebook.react.osslibraryexample
 
 import android.annotation.SuppressLint
 import android.graphics.Color
