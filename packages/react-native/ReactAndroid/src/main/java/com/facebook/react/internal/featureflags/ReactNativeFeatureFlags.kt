@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f3d26e8e345068bc7ef4e156be460e09>>
+ * @generated SignedSource<<b86e9fd5499308ce65b389342eb436a2>>
  */
 
 /**
@@ -69,12 +69,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableMicrotasks(): Boolean = accessor.enableMicrotasks()
-
-  /**
-   * When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.
-   */
-  @JvmStatic
-  public fun batchRenderingUpdatesInEventLoop(): Boolean = accessor.batchRenderingUpdatesInEventLoop()
 
   /**
    * Uses new, deduplicated logic for constructing Android Spannables from text fragments

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a1530f969f47f31b8588109e48f527a1>>
+ * @generated SignedSource<<8a0f2e61752ae83a7a3032939f4a59fa>>
  */
 
 /**
@@ -52,10 +52,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableMicrotasks() override {
-    return false;
-  }
-
-  bool batchRenderingUpdatesInEventLoop() override {
     return false;
   }
 

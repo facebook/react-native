@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<40668dcd951123da7c0b4ddde23f94c9>>
+ * @generated SignedSource<<c0a85b92bca9bb03f28af67224239c09>>
  */
 
 /**
@@ -27,7 +27,6 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
   private var enableBackgroundExecutorCache: Boolean? = null
   private var useModernRuntimeSchedulerCache: Boolean? = null
   private var enableMicrotasksCache: Boolean? = null
-  private var batchRenderingUpdatesInEventLoopCache: Boolean? = null
   private var enableSpannableBuildingUnificationCache: Boolean? = null
   private var enableCustomDrawOrderFabricCache: Boolean? = null
   private var enableFixForClippedSubviewsCrashCache: Boolean? = null
@@ -93,15 +92,6 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableMicrotasks()
       enableMicrotasksCache = cached
-    }
-    return cached
-  }
-
-  override fun batchRenderingUpdatesInEventLoop(): Boolean {
-    var cached = batchRenderingUpdatesInEventLoopCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.batchRenderingUpdatesInEventLoop()
-      batchRenderingUpdatesInEventLoopCache = cached
     }
     return cached
   }

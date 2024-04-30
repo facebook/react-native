@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b7f42eb3b24f3feed4274df8398c3c94>>
+ * @generated SignedSource<<8f82962343a5146622f36c2de071ff6a>>
  * @flow strict-local
  */
 
@@ -30,7 +30,6 @@ export interface Spec extends TurboModule {
   +enableBackgroundExecutor?: () => boolean;
   +useModernRuntimeScheduler?: () => boolean;
   +enableMicrotasks?: () => boolean;
-  +batchRenderingUpdatesInEventLoop?: () => boolean;
   +enableSpannableBuildingUnification?: () => boolean;
   +enableCustomDrawOrderFabric?: () => boolean;
   +enableFixForClippedSubviewsCrash?: () => boolean;

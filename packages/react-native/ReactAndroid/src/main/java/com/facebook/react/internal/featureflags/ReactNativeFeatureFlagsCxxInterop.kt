@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c3f02dff409c10aa7922141cef3a6990>>
+ * @generated SignedSource<<5fece1bcbbd750b82b8e4b125c57101e>>
  */
 
 /**
@@ -41,8 +41,6 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun useModernRuntimeScheduler(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableMicrotasks(): Boolean
-
-  @DoNotStrip @JvmStatic public external fun batchRenderingUpdatesInEventLoop(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableSpannableBuildingUnification(): Boolean
 

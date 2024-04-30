@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6b90f52915db22d4077011a55a519b20>>
+ * @generated SignedSource<<b7ebc6e4360a4b7733335f283300a4bb>>
  * @flow strict-local
  */
 
@@ -47,7 +47,6 @@ export type ReactNativeFeatureFlags = {
   enableBackgroundExecutor: Getter<boolean>,
   useModernRuntimeScheduler: Getter<boolean>,
   enableMicrotasks: Getter<boolean>,
-  batchRenderingUpdatesInEventLoop: Getter<boolean>,
   enableSpannableBuildingUnification: Getter<boolean>,
   enableCustomDrawOrderFabric: Getter<boolean>,
   enableFixForClippedSubviewsCrash: Getter<boolean>,
@@ -123,10 +122,6 @@ export const useModernRuntimeScheduler: Getter<boolean> = createNativeFlagGetter
  * Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).
  */
 export const enableMicrotasks: Getter<boolean> = createNativeFlagGetter('enableMicrotasks', false);
-/**
- * When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.
- */
-export const batchRenderingUpdatesInEventLoop: Getter<boolean> = createNativeFlagGetter('batchRenderingUpdatesInEventLoop', false);
 /**
  * Uses new, deduplicated logic for constructing Android Spannables from text fragments
  */

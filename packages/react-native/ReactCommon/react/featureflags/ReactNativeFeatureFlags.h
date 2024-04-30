@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5a5c6772253f49b0b768cd7ef090af14>>
+ * @generated SignedSource<<bf4d30ecf78c8d2f65741c16d8d07bde>>
  */
 
 /**
@@ -36,22 +36,22 @@ class ReactNativeFeatureFlags {
   /**
    * Common flag for testing. Do NOT modify.
    */
-  RN_EXPORT static bool commonTestFlag();
+  static bool commonTestFlag();
 
   /**
    * To be used with batchRenderingUpdatesInEventLoop. When enbled, the Android mounting layer will concatenate pending transactions to ensure they're applied atomatically
    */
-  RN_EXPORT static bool androidEnablePendingFabricTransactions();
+  static bool androidEnablePendingFabricTransactions();
 
   /**
    * When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.
    */
-  RN_EXPORT static bool batchRenderingUpdatesInEventLoop();
+  static bool batchRenderingUpdatesInEventLoop();
 
   /**
    * When enabled, ReactInstanceManager will clean up Fabric surfaces on destroy().
    */
-  RN_EXPORT static bool destroyFabricSurfacesInReactInstanceManager();
+  static bool destroyFabricSurfacesInReactInstanceManager();
 
   /**
    * Enables the use of a background executor to compute layout and commit updates on Fabric (this system is deprecated and should not be used).
@@ -67,11 +67,6 @@ class ReactNativeFeatureFlags {
    * Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).
    */
   static bool enableMicrotasks();
-
-  /**
-   * When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.
-   */
-  static bool batchRenderingUpdatesInEventLoop();
 
   /**
    * Uses new, deduplicated logic for constructing Android Spannables from text fragments

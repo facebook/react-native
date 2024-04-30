@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3f99a52c114d6f96edb2b2b2f549b6a6>>
+ * @generated SignedSource<<9194d576893a97a6d9b88f5a32c71197>>
  */
 
 /**
@@ -32,7 +32,6 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool enableBackgroundExecutor() = 0;
   virtual bool useModernRuntimeScheduler() = 0;
   virtual bool enableMicrotasks() = 0;
-  virtual bool batchRenderingUpdatesInEventLoop() = 0;
   virtual bool enableSpannableBuildingUnification() = 0;
   virtual bool enableCustomDrawOrderFabric() = 0;
   virtual bool enableFixForClippedSubviewsCrash() = 0;

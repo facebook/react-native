@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b402923520c287a015cd57bd75af47cf>>
+ * @generated SignedSource<<5311a007bec258c79bf1ca3e2355101c>>
  */
 
 /**
@@ -119,8 +119,8 @@ bool ReactNativeFeatureFlagsAccessor::enableBackgroundExecutor() {
   return flagValue.value();
 }
 
-bool ReactNativeFeatureFlagsAccessor::enableCleanTextInputYogaNode() {
-  auto flagValue = enableCleanTextInputYogaNode_.load();
+bool ReactNativeFeatureFlagsAccessor::useModernRuntimeScheduler() {
+  auto flagValue = useModernRuntimeScheduler_.load();
 
   if (!flagValue.has_value()) {
     // This block is not exclusive but it is not necessary.
@@ -128,25 +128,7 @@ bool ReactNativeFeatureFlagsAccessor::enableCleanTextInputYogaNode() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(5, "enableCleanTextInputYogaNode");
-
-    flagValue = currentProvider_->enableCleanTextInputYogaNode();
-    enableCleanTextInputYogaNode_ = flagValue;
-  }
-
-  return flagValue.value();
-}
-
-bool ReactNativeFeatureFlagsAccessor::enableCustomDrawOrderFabric() {
-  auto flagValue = enableCustomDrawOrderFabric_.load();
-
-  if (!flagValue.has_value()) {
-    // This block is not exclusive but it is not necessary.
-    // If multiple threads try to initialize the feature flag, we would only
-    // be accessing the provider multiple times but the end state of this
-    // instance and the returned flag value would be the same.
-
-    markFlagAsAccessed(6, "enableCustomDrawOrderFabric");
+    markFlagAsAccessed(5, "useModernRuntimeScheduler");
 
     flagValue = currentProvider_->useModernRuntimeScheduler();
     useModernRuntimeScheduler_ = flagValue;
@@ -164,28 +146,10 @@ bool ReactNativeFeatureFlagsAccessor::enableMicrotasks() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(7, "enableMicrotasks");
+    markFlagAsAccessed(6, "enableMicrotasks");
 
     flagValue = currentProvider_->enableMicrotasks();
     enableMicrotasks_ = flagValue;
-  }
-
-  return flagValue.value();
-}
-
-bool ReactNativeFeatureFlagsAccessor::batchRenderingUpdatesInEventLoop() {
-  auto flagValue = batchRenderingUpdatesInEventLoop_.load();
-
-  if (!flagValue.has_value()) {
-    // This block is not exclusive but it is not necessary.
-    // If multiple threads try to initialize the feature flag, we would only
-    // be accessing the provider multiple times but the end state of this
-    // instance and the returned flag value would be the same.
-
-    markFlagAsAccessed(8, "enableSpannableBuildingUnification");
-
-    flagValue = currentProvider_->batchRenderingUpdatesInEventLoop();
-    batchRenderingUpdatesInEventLoop_ = flagValue;
   }
 
   return flagValue.value();
@@ -200,7 +164,7 @@ bool ReactNativeFeatureFlagsAccessor::enableSpannableBuildingUnification() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(9, "enableSynchronousStateUpdates");
+    markFlagAsAccessed(7, "enableSpannableBuildingUnification");
 
     flagValue = currentProvider_->enableSpannableBuildingUnification();
     enableSpannableBuildingUnification_ = flagValue;
@@ -218,7 +182,7 @@ bool ReactNativeFeatureFlagsAccessor::enableCustomDrawOrderFabric() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(10, "enableUIConsistency");
+    markFlagAsAccessed(8, "enableCustomDrawOrderFabric");
 
     flagValue = currentProvider_->enableCustomDrawOrderFabric();
     enableCustomDrawOrderFabric_ = flagValue;
@@ -236,7 +200,7 @@ bool ReactNativeFeatureFlagsAccessor::enableFixForClippedSubviewsCrash() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(11, "forceBatchingMountItemsOnAndroid");
+    markFlagAsAccessed(9, "enableFixForClippedSubviewsCrash");
 
     flagValue = currentProvider_->enableFixForClippedSubviewsCrash();
     enableFixForClippedSubviewsCrash_ = flagValue;
@@ -254,7 +218,7 @@ bool ReactNativeFeatureFlagsAccessor::inspectorEnableCxxInspectorPackagerConnect
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(12, "inspectorEnableCxxInspectorPackagerConnection");
+    markFlagAsAccessed(10, "inspectorEnableCxxInspectorPackagerConnection");
 
     flagValue = currentProvider_->inspectorEnableCxxInspectorPackagerConnection();
     inspectorEnableCxxInspectorPackagerConnection_ = flagValue;
@@ -272,82 +236,10 @@ bool ReactNativeFeatureFlagsAccessor::inspectorEnableModernCDPRegistry() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(13, "inspectorEnableModernCDPRegistry");
+    markFlagAsAccessed(11, "inspectorEnableModernCDPRegistry");
 
     flagValue = currentProvider_->inspectorEnableModernCDPRegistry();
     inspectorEnableModernCDPRegistry_ = flagValue;
-  }
-
-  return flagValue.value();
-}
-
-bool ReactNativeFeatureFlagsAccessor::preventDoubleTextMeasure() {
-  auto flagValue = preventDoubleTextMeasure_.load();
-
-  if (!flagValue.has_value()) {
-    // This block is not exclusive but it is not necessary.
-    // If multiple threads try to initialize the feature flag, we would only
-    // be accessing the provider multiple times but the end state of this
-    // instance and the returned flag value would be the same.
-
-    markFlagAsAccessed(14, "preventDoubleTextMeasure");
-
-    flagValue = currentProvider_->preventDoubleTextMeasure();
-    preventDoubleTextMeasure_ = flagValue;
-  }
-
-  return flagValue.value();
-}
-
-bool ReactNativeFeatureFlagsAccessor::useModernRuntimeScheduler() {
-  auto flagValue = useModernRuntimeScheduler_.load();
-
-  if (!flagValue.has_value()) {
-    // This block is not exclusive but it is not necessary.
-    // If multiple threads try to initialize the feature flag, we would only
-    // be accessing the provider multiple times but the end state of this
-    // instance and the returned flag value would be the same.
-
-    markFlagAsAccessed(15, "useModernRuntimeScheduler");
-
-    flagValue = currentProvider_->useModernRuntimeScheduler();
-    useModernRuntimeScheduler_ = flagValue;
-  }
-
-  return flagValue.value();
-}
-
-bool ReactNativeFeatureFlagsAccessor::useNativeViewConfigsInBridgelessMode() {
-  auto flagValue = useNativeViewConfigsInBridgelessMode_.load();
-
-  if (!flagValue.has_value()) {
-    // This block is not exclusive but it is not necessary.
-    // If multiple threads try to initialize the feature flag, we would only
-    // be accessing the provider multiple times but the end state of this
-    // instance and the returned flag value would be the same.
-
-    markFlagAsAccessed(16, "useNativeViewConfigsInBridgelessMode");
-
-    flagValue = currentProvider_->useNativeViewConfigsInBridgelessMode();
-    useNativeViewConfigsInBridgelessMode_ = flagValue;
-  }
-
-  return flagValue.value();
-}
-
-bool ReactNativeFeatureFlagsAccessor::useStateAlignmentMechanism() {
-  auto flagValue = useStateAlignmentMechanism_.load();
-
-  if (!flagValue.has_value()) {
-    // This block is not exclusive but it is not necessary.
-    // If multiple threads try to initialize the feature flag, we would only
-    // be accessing the provider multiple times but the end state of this
-    // instance and the returned flag value would be the same.
-
-    markFlagAsAccessed(17, "useStateAlignmentMechanism");
-
-    flagValue = currentProvider_->useStateAlignmentMechanism();
-    useStateAlignmentMechanism_ = flagValue;
   }
 
   return flagValue.value();

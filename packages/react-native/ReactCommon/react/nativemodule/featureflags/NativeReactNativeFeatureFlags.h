@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<86afdf79a8a49da18eddf53bc9d41051>>
+ * @generated SignedSource<<a62e65429512894e2d7c6ea696cebcba>>
  */
 
 /**
@@ -43,8 +43,6 @@ class NativeReactNativeFeatureFlags
   bool useModernRuntimeScheduler(jsi::Runtime& runtime);
 
   bool enableMicrotasks(jsi::Runtime& runtime);
-
-  bool batchRenderingUpdatesInEventLoop(jsi::Runtime& runtime);
 
   bool enableSpannableBuildingUnification(jsi::Runtime& runtime);
 

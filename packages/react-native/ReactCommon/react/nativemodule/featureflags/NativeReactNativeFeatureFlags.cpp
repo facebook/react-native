@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5285ee6c09bf4614cb5098952aac8c87>>
+ * @generated SignedSource<<6d0bae7c1b0d126e58c8b9bdeaf9247e>>
  */
 
 /**
@@ -68,11 +68,6 @@ bool NativeReactNativeFeatureFlags::useModernRuntimeScheduler(
 bool NativeReactNativeFeatureFlags::enableMicrotasks(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableMicrotasks();
-}
-
-bool NativeReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop();
 }
 
 bool NativeReactNativeFeatureFlags::enableSpannableBuildingUnification(

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d12888990ebca7c6199f4b51802ee59b>>
+ * @generated SignedSource<<4462edcf10a85654be7c71a7438a2288>>
  */
 
 /**
@@ -36,8 +36,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun useModernRuntimeScheduler(): Boolean = false
 
   override fun enableMicrotasks(): Boolean = false
-
-  override fun batchRenderingUpdatesInEventLoop(): Boolean = false
 
   override fun enableSpannableBuildingUnification(): Boolean = false
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ec76fca802fcc6f2c2357de21f482cb3>>
+ * @generated SignedSource<<7ab741aec808bc3a138470fe18ef8b8a>>
  */
 
 /**
@@ -81,12 +81,6 @@ class ReactNativeFeatureFlagsProviderHolder
     return method(javaProvider_);
   }
 
-  bool batchRenderingUpdatesInEventLoop() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("batchRenderingUpdatesInEventLoop");
-    return method(javaProvider_);
-  }
-
   bool enableSpannableBuildingUnification() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableSpannableBuildingUnification");
@@ -156,11 +150,6 @@ bool JReactNativeFeatureFlagsCxxInterop::enableMicrotasks(
   return ReactNativeFeatureFlags::enableMicrotasks();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::batchRenderingUpdatesInEventLoop(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::enableSpannableBuildingUnification(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableSpannableBuildingUnification();
@@ -224,9 +213,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableMicrotasks",
         JReactNativeFeatureFlagsCxxInterop::enableMicrotasks),
-      makeNativeMethod(
-        "batchRenderingUpdatesInEventLoop",
-        JReactNativeFeatureFlagsCxxInterop::batchRenderingUpdatesInEventLoop),
       makeNativeMethod(
         "enableSpannableBuildingUnification",
         JReactNativeFeatureFlagsCxxInterop::enableSpannableBuildingUnification),
