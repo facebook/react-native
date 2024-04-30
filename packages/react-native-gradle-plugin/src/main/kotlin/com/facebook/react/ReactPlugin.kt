@@ -12,6 +12,7 @@ import com.android.build.gradle.internal.tasks.factory.dependsOn
 import com.facebook.react.internal.PrivateReactExtension
 import com.facebook.react.tasks.GenerateCodegenArtifactsTask
 import com.facebook.react.tasks.GenerateCodegenSchemaTask
+import com.facebook.react.tasks.RunAutolinkingConfigTask
 import com.facebook.react.utils.AgpConfiguratorUtils.configureBuildConfigFieldsForApp
 import com.facebook.react.utils.AgpConfiguratorUtils.configureBuildConfigFieldsForLibraries
 import com.facebook.react.utils.AgpConfiguratorUtils.configureDevPorts
@@ -78,6 +79,7 @@ class ReactPlugin : Plugin<Project> {
           project.configureReactTasks(variant = variant, config = extension)
         }
       }
+      configureAutolinking(project, extension)
       configureCodegen(project, extension, rootExtension, isLibrary = false)
     }
 
@@ -208,5 +210,22 @@ class ReactPlugin : Plugin<Project> {
     // `preBuild` is one of the base tasks automatically registered by AGP.
     // This will invoke the codegen before compiling the entire project.
     project.tasks.named("preBuild", Task::class.java).dependsOn(generateCodegenArtifactsTask)
+  }
+
+  /** This function sets up Autolinking for App users */
+  private fun configureAutolinking(
+      project: Project,
+      extension: ReactExtension,
+  ) {
+    val generatedAutolinkingDir: Provider<Directory> =
+        project.layout.buildDirectory.dir("generated/autolinking")
+    val configOutputFile = generatedAutolinkingDir.get().file("config-output.json")
+
+    project.tasks.register("runAutolinkingConfig", RunAutolinkingConfigTask::class.java) { task ->
+      task.autolinkConfigCommand.set(extension.autolinkConfigCommand)
+      task.autolinkConfigFile.set(extension.autolinkConfigFile)
+      task.autolinkOutputFile.set(configOutputFile)
+      task.autolinkLockFiles.set(extension.autolinkLockFiles)
+    }
   }
 }
