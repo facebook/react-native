@@ -18,8 +18,7 @@ LazyShadowTreeRevisionConsistencyManager::
 void LazyShadowTreeRevisionConsistencyManager::updateCurrentRevision(
     SurfaceId surfaceId,
     RootShadowNode::Shared rootShadowNode) {
-  capturedRootShadowNodesForConsistency_.emplace(
-      surfaceId, std::move(rootShadowNode));
+  capturedRootShadowNodesForConsistency_[surfaceId] = std::move(rootShadowNode);
 }
 
 #pragma mark - ShadowTreeRevisionProvider
@@ -38,7 +37,7 @@ LazyShadowTreeRevisionConsistencyManager::getCurrentRevision(
     rootShadowNode = shadowTree.getCurrentRevision().rootShadowNode;
   });
 
-  capturedRootShadowNodesForConsistency_.emplace(surfaceId, rootShadowNode);
+  capturedRootShadowNodesForConsistency_[surfaceId] = rootShadowNode;
 
   return rootShadowNode;
 }

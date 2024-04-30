@@ -75,10 +75,6 @@ AndroidTextInputProps::AndroidTextInputProps(
           "showSoftInputOnFocus",
           sourceProps.showSoftInputOnFocus,
           {false})),
-      autoCapitalize(CoreFeatures::enablePropIteratorSetter? sourceProps.autoCapitalize : convertRawProp(context, rawProps,
-          "autoCapitalize",
-          sourceProps.autoCapitalize,
-          {})),
       autoCorrect(CoreFeatures::enablePropIteratorSetter? sourceProps.autoCorrect : convertRawProp(context, rawProps,
           "autoCorrect",
           sourceProps.autoCorrect,
@@ -228,7 +224,6 @@ void AndroidTextInputProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(inlineImagePadding);
     RAW_SET_PROP_SWITCH_CASE_BASIC(importantForAutofill);
     RAW_SET_PROP_SWITCH_CASE_BASIC(showSoftInputOnFocus);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(autoCapitalize);
     RAW_SET_PROP_SWITCH_CASE_BASIC(autoCorrect);
     RAW_SET_PROP_SWITCH_CASE_BASIC(allowFontScaling);
     RAW_SET_PROP_SWITCH_CASE_BASIC(maxFontSizeMultiplier);
