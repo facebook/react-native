@@ -646,6 +646,26 @@
 - Fix race condition between A11yManager and UIManager ([f39f34ed82](https://github.com/facebook/react-native/commit/f39f34ed82997d0595522a285c3cb8693594e718) by [@cipolleschi](https://github.com/cipolleschi))
 - Fix symbol not found _jump_fcontext with use_frameworks ([a2771ce58a](https://github.com/facebook/react-native/commit/a2771ce58ac221d1ac0de265c1ce571212fbcf83) by [@cipolleschi](https://github.com/cipolleschi))
 
+## v0.72.14
+
+### Added
+
+#### iOS specific
+
+- add privacy manifest to hello world template ([d357a61ead](https://github.com/facebook/react-native/commit/d357a61ead033f30221f82f16aed771649c6d981) by [@phillip](https://github.com/phillip))
+
+### Changed
+
+#### iOS specific
+
+- Bumped hermes to remove Apple's RR API that were unused. Hermes does not requires a PrivacyManifest now ([ee14572](https://github.com/facebook/react-native/commit/ee14572e2438dabc1076c434fa99350ab2e1c4b9) by [@hurali97](https://github.com/hurali97))
+
+### Fixed
+
+#### iOS specific
+
+- fix Symbol not found: (_JSGlobalContextSetInspectable) ([ae4c62a](https://github.com/facebook/react-native/commit/ae4c62a933f7ffcfe4be8a3499fb6e1cbe7f1c43) by [@cipolleschi](https://github.com/cipolleschi))
+
 ## v0.72.13
 
 ### Added
