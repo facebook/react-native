@@ -93,6 +93,62 @@ exports[`RN Codegen TypeScript Parser can generate fixture CXX_ONLY_NATIVE_MODUL
               }
             }
           ]
+        },
+        'MenuItem': {
+          'type': 'ObjectTypeAnnotation',
+          'properties': [
+            {
+              'name': 'label',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'StringTypeAnnotation'
+              }
+            },
+            {
+              'name': 'onPress',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'FunctionTypeAnnotation',
+                'returnTypeAnnotation': {
+                  'type': 'VoidTypeAnnotation'
+                },
+                'params': [
+                  {
+                    'name': 'value',
+                    'optional': false,
+                    'typeAnnotation': {
+                      'type': 'StringTypeAnnotation'
+                    }
+                  },
+                  {
+                    'name': 'flag',
+                    'optional': false,
+                    'typeAnnotation': {
+                      'type': 'BooleanTypeAnnotation'
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              'name': 'shortcut',
+              'optional': true,
+              'typeAnnotation': {
+                'type': 'StringTypeAnnotation'
+              }
+            },
+            {
+              'name': 'items',
+              'optional': true,
+              'typeAnnotation': {
+                'type': 'ArrayTypeAnnotation',
+                'elementType': {
+                  'type': 'TypeAliasTypeAnnotation',
+                  'name': 'MenuItem'
+                }
+              }
+            }
+          ]
         }
       },
       'enumMap': {
@@ -383,6 +439,26 @@ exports[`RN Codegen TypeScript Parser can generate fixture CXX_ONLY_NATIVE_MODUL
                   'typeAnnotation': {
                     'type': 'UnionTypeAnnotation',
                     'memberType': 'StringTypeAnnotation'
+                  }
+                }
+              ]
+            }
+          },
+          {
+            'name': 'setMenu',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'VoidTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'menuItem',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'TypeAliasTypeAnnotation',
+                    'name': 'MenuItem'
                   }
                 }
               ]

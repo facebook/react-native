@@ -836,6 +836,13 @@ export type GraphNode = {
   neighbors?: Array<GraphNode>,
 };
 
+export type MenuItem = {
+  label: string,
+  onPress: (value: string, flag: boolean) => void,
+  shortcut?: string,
+  items?: Array<MenuItem>,
+};
+
 export interface Spec extends TurboModule {
   readonly getCallback: () => () => void;
   readonly getMixed: (arg: unknown) => unknown;
@@ -845,6 +852,7 @@ export interface Spec extends TurboModule {
   readonly getMap: (arg: {[a: string]: number | null;}) => {[b: string]: number | null;};
   readonly getAnotherMap: (arg: {[key: string]: string}) => {[key: string]: string};
   readonly getUnion: (chooseInt: ChooseInt, chooseFloat: ChooseFloat, chooseObject: ChooseObject, chooseString: ChooseString) => ChooseObject;
+  readonly setMenu: (menuItem: MenuItem) => void;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>(

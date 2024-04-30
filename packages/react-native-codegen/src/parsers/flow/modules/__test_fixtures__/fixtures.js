@@ -742,6 +742,13 @@ export type GraphNode = {
   neighbors?: Array<GraphNode>,
 };
 
+export type MenuItem = {
+  label: string,
+  onPress: (value: string, flag: boolean) => void,
+  shortcut?: string,
+  items?: Array<MenuItem>,
+};
+
 export interface Spec extends TurboModule {
   +getCallback: () => () => void;
   +getMixed: (arg: mixed) => mixed;
@@ -751,6 +758,7 @@ export interface Spec extends TurboModule {
   +getMap: (arg: {[a: string]: ?number}) => {[b: string]: ?number};
   +getAnotherMap: (arg: {[string]: string}) => {[string]: string};
   +getUnion: (chooseInt: ChooseInt, chooseFloat: ChooseFloat, chooseObject: ChooseObject, chooseString: ChooseString) => ChooseObject;
+  +setMenu: (menuItem: MenuItem) => void;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModuleCxx');
