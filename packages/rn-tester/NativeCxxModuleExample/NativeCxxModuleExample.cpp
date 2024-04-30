@@ -180,15 +180,18 @@ void NativeCxxModuleExample::setMenu(jsi::Runtime& rt, MenuItem menuItem) {
 
 void NativeCxxModuleExample::emitCustomDeviceEvent(
     jsi::Runtime& rt,
-    jsi::String eventName) {
+    const std::string& eventName) {
   // Test emitting device events (RCTDeviceEventEmitter.emit) from C++
-  // TurboModule with arbitrary arguments
+  // TurboModule with arbitrary arguments. This can be called from any thread
   emitDeviceEvent(
-      eventName.utf8(rt).c_str(),
-      [](jsi::Runtime& rt, std::vector<jsi::Value>& args) {
+      eventName,
+      [jsInvoker = jsInvoker_](
+          jsi::Runtime& rt, std::vector<jsi::Value>& args) {
         args.emplace_back(jsi::Value(true));
         args.emplace_back(jsi::Value(42));
         args.emplace_back(jsi::String::createFromAscii(rt, "stringArg"));
+        args.emplace_back(bridging::toJs(
+            rt, CustomDeviceEvent{"one", 2, std::nullopt}, jsInvoker));
       });
 }
 

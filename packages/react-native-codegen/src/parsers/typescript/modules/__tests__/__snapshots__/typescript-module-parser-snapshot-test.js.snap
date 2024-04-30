@@ -93,6 +93,32 @@ exports[`RN Codegen TypeScript Parser can generate fixture CXX_ONLY_NATIVE_MODUL
               }
             }
           ]
+        },
+        'CustomDeviceEvent': {
+          'type': 'ObjectTypeAnnotation',
+          'properties': [
+            {
+              'name': 'type',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'StringTypeAnnotation'
+              }
+            },
+            {
+              'name': 'level',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'NumberTypeAnnotation'
+              }
+            },
+            {
+              'name': 'degree',
+              'optional': true,
+              'typeAnnotation': {
+                'type': 'NumberTypeAnnotation'
+              }
+            }
+          ]
         }
       },
       'enumMap': {
