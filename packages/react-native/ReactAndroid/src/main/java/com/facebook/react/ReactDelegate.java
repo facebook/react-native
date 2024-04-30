@@ -98,7 +98,7 @@ public class ReactDelegate {
         && mReactHost.getDevSupportManager() != null) {
       return mReactHost.getDevSupportManager();
     } else if (getReactNativeHost().hasInstance()
-        && getReactNativeHost().getUseDeveloperSupport()) {
+        && getReactNativeHost().getReactInstanceManager() != null) {
       return getReactNativeHost().getReactInstanceManager().getDevSupportManager();
     } else {
       return null;
