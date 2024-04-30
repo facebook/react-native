@@ -38,7 +38,8 @@ describe('LogBoxButton', () => {
           pressed: 'red',
         }}
         hitSlop={{}}
-        onPress={() => {}}>
+        onPress={() => {}}
+        testID="logBoxButtonID">
         <Text>Press me</Text>
       </LogBoxButton>,
     );

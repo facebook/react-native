@@ -6,6 +6,7 @@ exports[`LogBoxButton should render TouchableWithoutFeedback and pass through pr
   onPress={[Function]}
   onPressIn={[Function]}
   onPressOut={[Function]}
+  testID="logBoxButtonID"
 >
   <View
     style={
