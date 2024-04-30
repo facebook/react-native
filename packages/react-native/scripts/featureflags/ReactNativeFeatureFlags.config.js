@@ -48,11 +48,6 @@ const definitions: FeatureFlagDefinitions = {
         'Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).',
       defaultValue: false,
     },
-    batchRenderingUpdatesInEventLoop: {
-      description:
-        'When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.',
-      defaultValue: false,
-    },
     enableSpannableBuildingUnification: {
       description:
         'Uses new, deduplicated logic for constructing Android Spannables from text fragments',

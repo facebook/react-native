@@ -4,9 +4,9 @@ PODS:
   - FBLazyVector (0.74.0)
   - fmt (9.1.0)
   - glog (0.3.5)
-  - hermes-engine (0.74.0-rc.9):
-    - hermes-engine/Pre-built (= 0.74.0-rc.9)
-  - hermes-engine/Pre-built (0.74.0-rc.9)
+  - hermes-engine (0.74.0):
+    - hermes-engine/Pre-built (= 0.74.0)
+  - hermes-engine/Pre-built (0.74.0)
   - MyNativeView (0.74.81):
     - DoubleConversion
     - glog
@@ -1027,6 +1027,7 @@ PODS:
     - React-CoreModules
     - React-debug
     - React-Fabric
+    - React-featureflags
     - React-graphics
     - React-hermes
     - React-nativeconfig
@@ -1354,7 +1355,7 @@ EXTERNAL SOURCES:
     :podspec: "../react-native/third-party-podspecs/glog.podspec"
   hermes-engine:
     :podspec: "../react-native/sdks/hermes-engine/hermes-engine.podspec"
-    :tag: hermes-2024-02-20-RNv0.74.0-999cfd9979b5f57b1269119679ab8cdf60897de9
+    :tag: hermes-2024-04-25-RNv0.74.1-b54a3a01c531f4f5f1904cb0770033e8b7153dff
   MyNativeView:
     :path: NativeComponentExample
   NativeCxxModuleExample:
@@ -1470,9 +1471,9 @@ SPEC CHECKSUMS:
   FBLazyVector: 026c8f4ae67b06e088ae01baa2271ef8a26c0e8c
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
   glog: c5d68082e772fa1c511173d6b30a9de2c05a69a2
-  hermes-engine: 25f62f55d7f9efed5910366b12e083b77effd566
-  MyNativeView: da8b495f57b82cc523016c1b91e4eb1ada26d0d2
-  NativeCxxModuleExample: d6113a417ec017490907fe073219f7cc7f856d14
+  hermes-engine: 6eae7edb2f563ee41d7c1f91f4f2e57c26d8a5c3
+  MyNativeView: 5ba689702f7f1dd8f9d0298ca8096631cd151f8c
+  NativeCxxModuleExample: f26f744dc971bcf56ee4901948df123a6d853503
   OCMock: 9491e4bec59e0b267d52a9184ff5605995e74be8
   RCT-Folly: 045d6ecaa59d826c5736dfba0b2f4083ff8d79df
   RCTDeprecation: 3ca8b6c36bfb302e1895b72cfe7db0de0c92cd47
@@ -1503,9 +1504,9 @@ SPEC CHECKSUMS:
   React-perflogger: 271f1111779fef70f9502d1d38da5132e5585230
   React-RCTActionSheet: 5d6fb9adb11ab1bfbce6695a2b785767e4658c53
   React-RCTAnimation: 86ace32c56e69b3822e7e5184ea83a79d47fc7b9
-  React-RCTAppDelegate: 74b45c4e3c1c23db88385d74cf4f5a8500694527
+  React-RCTAppDelegate: 1006ff406079a7d023cd5b624815e45ddc2a38d5
   React-RCTBlob: fb91c62a549f004e251235c65c665c6890a923a3
-  React-RCTFabric: af6b9bc4aa9dfa0af1a1bcf5d8e5c5b1f17ae99c
+  React-RCTFabric: 593660526e2b6b59857acf9585de1247660e9b68
   React-RCTImage: b482f07cfdbe8e413edbf9d85953cecdb569472c
   React-RCTLinking: fbd73a66cab34df69b2389c17f200e4722890fd9
   React-RCTNetwork: fbdd716fbd6e53feb6d8e00eeb85e8184ad42ac8
@@ -1524,7 +1525,7 @@ SPEC CHECKSUMS:
   React-utils: f013537c3371270d2095bff1d594d00d4bc9261b
   ReactCommon: 2cde697fd80bd31da1d6448d25a5803088585219
   ReactCommon-Samples: 42ebf205296931f800b9affcf9851c3397e8ba06
-  ScreenshotManager: 5abe653a25bd3f74418f0572d7b4b0ca0dac3152
+  ScreenshotManager: 48ef69c5b70f9d1eecfee64cc40959fd4e251c96
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
   Yoga: 56f906bf6c11c931588191dde1229fd3e4e3d557
 
