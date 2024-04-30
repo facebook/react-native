@@ -74,6 +74,12 @@ export type MenuItem = {
   items?: Array<MenuItem>,
 };
 
+export type CustomDeviceEvent = {
+  type: string,
+  level: number,
+  degree?: ?number,
+};
+
 export interface Spec extends TurboModule {
   +getArray: (arg: Array<ObjectStruct | null>) => Array<ObjectStruct | null>;
   +getBool: (arg: boolean) => boolean;

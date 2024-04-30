@@ -171,6 +171,52 @@ function isObjectProperty(property: $FlowFixMe, language: ParserType): boolean {
   }
 }
 
+function getObjectTypeAnnotations(
+  hasteModuleName: string,
+  types: TypeDeclarationMap,
+  tryParse: ParserErrorCapturer,
+  translateTypeAnnotation: $FlowFixMe,
+  parser: Parser,
+): {...NativeModuleAliasMap} {
+  const aliasMap: {...NativeModuleAliasMap} = {};
+  Object.entries(types).forEach(([key, value]) => {
+    const isTypeAlias =
+      value.type === 'TypeAlias' || value.type === 'TSTypeAliasDeclaration';
+    if (!isTypeAlias) {
+      return;
+    }
+    const parent = parser.nextNodeForTypeAlias(value);
+    if (
+      parent.type !== 'ObjectTypeAnnotation' &&
+      parent.type !== 'TSTypeLiteral'
+    ) {
+      return;
+    }
+    const typeProperties = parser
+      .getAnnotatedElementProperties(value)
+      .map(prop =>
+        parseObjectProperty(
+          parent,
+          prop,
+          hasteModuleName,
+          types,
+          aliasMap,
+          {}, // enumMap
+          tryParse,
+          true, // cxxOnly
+          prop?.optional || false,
+          translateTypeAnnotation,
+          parser,
+        ),
+      );
+    aliasMap[key] = {
+      type: 'ObjectTypeAnnotation',
+      properties: typeProperties,
+    };
+  });
+  return aliasMap;
+}
+
 function parseObjectProperty(
   parentObject?: $FlowFixMe,
   property: $FlowFixMe,
@@ -659,6 +705,16 @@ const buildModuleSchema = (
     moduleName,
   );
 
+  const aliasMap: {...NativeModuleAliasMap} = cxxOnly
+    ? getObjectTypeAnnotations(
+        hasteModuleName,
+        types,
+        tryParse,
+        translateTypeAnnotation,
+        parser,
+      )
+    : {};
+
   const properties: $ReadOnlyArray<$FlowFixMe> =
     language === 'Flow' ? moduleSpec.body.properties : moduleSpec.body.body;
 
@@ -675,9 +731,7 @@ const buildModuleSchema = (
       enumMap: NativeModuleEnumMap,
       propertyShape: NativeModulePropertyShape,
     }>(property => {
-      const aliasMap: {...NativeModuleAliasMap} = {};
       const enumMap: {...NativeModuleEnumMap} = {};
-
       return tryParse(() => ({
         aliasMap,
         enumMap,
@@ -696,10 +750,7 @@ const buildModuleSchema = (
     })
     .filter(Boolean)
     .reduce(
-      (
-        moduleSchema: NativeModuleSchema,
-        {aliasMap, enumMap, propertyShape},
-      ) => ({
+      (moduleSchema: NativeModuleSchema, {enumMap, propertyShape}) => ({
         type: 'NativeModule',
         aliasMap: {...moduleSchema.aliasMap, ...aliasMap},
         enumMap: {...moduleSchema.enumMap, ...enumMap},

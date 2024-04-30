@@ -742,6 +742,12 @@ export type GraphNode = {
   neighbors?: Array<GraphNode>,
 };
 
+export type CustomDeviceEvent = {
+  type: string,
+  level: number,
+  degree?: number,
+};
+
 export interface Spec extends TurboModule {
   +getCallback: () => () => void;
   +getMixed: (arg: mixed) => mixed;
