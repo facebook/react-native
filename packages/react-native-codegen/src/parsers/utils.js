@@ -190,7 +190,8 @@ function isModuleRegistryCall(node: $FlowFixMe): boolean {
     !(
       memberExpression.property.type === 'Identifier' &&
       (memberExpression.property.name === 'get' ||
-        memberExpression.property.name === 'getEnforcing')
+        memberExpression.property.name === 'getEnforcing' ||
+        memberExpression.property.name === 'getLazy')
     )
   ) {
     return false;
