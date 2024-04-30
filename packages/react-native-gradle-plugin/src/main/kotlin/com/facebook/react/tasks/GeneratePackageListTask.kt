@@ -132,20 +132,20 @@ abstract class GeneratePackageListTask : DefaultTask() {
               private ReactNativeHost reactNativeHost;
               private MainPackageConfig mConfig;
             
-              public PackageList(ReactNativeHost reactNativeHost) {
+              public PackageList2(ReactNativeHost reactNativeHost) {
                 this(reactNativeHost, null);
               }
             
-              public PackageList(Application application) {
+              public PackageList2(Application application) {
                 this(application, null);
               }
             
-              public PackageList(ReactNativeHost reactNativeHost, MainPackageConfig config) {
+              public PackageList2(ReactNativeHost reactNativeHost, MainPackageConfig config) {
                 this.reactNativeHost = reactNativeHost;
                 mConfig = config;
               }
             
-              public PackageList(Application application, MainPackageConfig config) {
+              public PackageList2(Application application, MainPackageConfig config) {
                 this.reactNativeHost = null;
                 this.application = application;
                 mConfig = config;
