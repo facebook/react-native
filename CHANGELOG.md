@@ -531,6 +531,26 @@
 
 - Bump activesupport to minimum 6.1.7.5 CVE-2023-38037. ([07a159f279](https://github.com/facebook/react-native/commit/07a159f279cdcbed29c9c437dec1c0b8ac2d852f) by [@lunaleaps](https://github.com/lunaleaps))
 
+## v0.73.8
+
+### Added
+
+#### iOS specific
+
+- Added privacy manifest to template ([520d120375](https://github.com/facebook/react-native/commit/520d120375c6b24bc161adea4f48d76537a34abc) by [@philIip](https://github.com/philIip)) (_fixed to include the file in the build_)
+
+### Changed
+
+- Update Hermes version ([1d0cbfd01b](https://github.com/facebook/react-native/commit/1d0cbfd01b1f47bcf5279d86a9ad9e0d28804346) by [@Titozzz](https://github.com/Titozzz))
+
+### Fixed
+
+#### iOS specific
+
+- Add `HERMES_ENABLE_DEBUGGER=1` flag to React-RuntimeApple ([794aaa52d3](https://github.com/facebook/react-native/commit/794aaa52d39f2c419fcd49126c69dff3030e7bb9) by [@cipolleschi](https://github.com/cipolleschi))
+- Fix Symbol not found: (_JSGlobalContextSetInspectable) ([224ac21568](https://github.com/facebook/react-native/commit/224ac21568278617c192bf00b6254d30c0957e11) by [@cipolleschi](https://github.com/cipolleschi))
+- Add missing dependency to React-RuntimeHermes podspec ([fd48b94319](https://github.com/facebook/react-native/commit/fd48b9431954be8a79d5c094173f064944ba86e6) by [@cipolleschi](https://github.com/cipolleschi))
+
 ## v0.73.7
 
 ### Fixed
