@@ -48,29 +48,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
     return cached
   }
 
-<<<<<<< HEAD
-||||||| parent of 849da2146ca (Split scheduler commit and flush delegate methods (#44188))
-  override fun batchRenderingUpdatesInEventLoop(): Boolean {
-    var cached = batchRenderingUpdatesInEventLoopCache
-    if (cached == null) {
-      cached = currentProvider.batchRenderingUpdatesInEventLoop()
-      accessedFeatureFlags.add("batchRenderingUpdatesInEventLoop")
-      batchRenderingUpdatesInEventLoopCache = cached
-    }
-    return cached
-  }
-
-  override fun destroyFabricSurfacesInReactInstanceManager(): Boolean {
-    var cached = destroyFabricSurfacesInReactInstanceManagerCache
-    if (cached == null) {
-      cached = currentProvider.destroyFabricSurfacesInReactInstanceManager()
-      accessedFeatureFlags.add("destroyFabricSurfacesInReactInstanceManager")
-      destroyFabricSurfacesInReactInstanceManagerCache = cached
-    }
-    return cached
-  }
-
-=======
   override fun androidEnablePendingFabricTransactions(): Boolean {
     var cached = androidEnablePendingFabricTransactionsCache
     if (cached == null) {
@@ -101,7 +78,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
     return cached
   }
 
->>>>>>> 849da2146ca (Split scheduler commit and flush delegate methods (#44188))
   override fun enableBackgroundExecutor(): Boolean {
     var cached = enableBackgroundExecutorCache
     if (cached == null) {
