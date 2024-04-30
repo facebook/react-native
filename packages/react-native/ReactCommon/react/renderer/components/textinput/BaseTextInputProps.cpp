@@ -96,7 +96,13 @@ BaseTextInputProps::BaseTextInputProps(
           rawProps,
           "autoFocus",
           sourceProps.autoFocus,
-          {})){};
+          {})),
+      autoCapitalize(convertRawProp(
+          context,
+          rawProps,
+          "autoCapitalize",
+          sourceProps.autoCapitalize,
+          {})) {}
 
 void BaseTextInputProps::setProp(
     const PropsParserContext& context,
@@ -173,6 +179,7 @@ void BaseTextInputProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(cursorColor);
     RAW_SET_PROP_SWITCH_CASE_BASIC(text);
     RAW_SET_PROP_SWITCH_CASE_BASIC(mostRecentEventCount);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(autoCapitalize);
   }
 }
 
