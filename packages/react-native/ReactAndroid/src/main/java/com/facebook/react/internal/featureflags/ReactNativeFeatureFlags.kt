@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2ce486e0fad0c305ea953c877e146104>>
+ * @generated SignedSource<<3585602cd983452045d3165edbafc0ca>>
  */
 
 /**
@@ -117,6 +117,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun inspectorEnableModernCDPRegistry(): Boolean = accessor.inspectorEnableModernCDPRegistry()
+
+  /**
+   * Only enqueue Choreographer calls if there is an ongoing animation, instead of enqueueing every frame.
+   */
+  @JvmStatic
+  public fun lazyAnimationCallbacks(): Boolean = accessor.lazyAnimationCallbacks()
 
   /**
    * When enabled, ParagraphShadowNode will no longer call measure twice.

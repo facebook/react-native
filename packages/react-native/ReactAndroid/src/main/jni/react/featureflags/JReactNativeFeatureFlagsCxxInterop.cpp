@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1a5515a24a45dac77e9833fecfa7d952>>
+ * @generated SignedSource<<70cc98f74b676cb12f4e510b88d551aa>>
  */
 
 /**
@@ -129,6 +129,12 @@ class ReactNativeFeatureFlagsProviderHolder
     return method(javaProvider_);
   }
 
+  bool lazyAnimationCallbacks() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("lazyAnimationCallbacks");
+    return method(javaProvider_);
+  }
+
   bool preventDoubleTextMeasure() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("preventDoubleTextMeasure");
@@ -232,6 +238,11 @@ bool JReactNativeFeatureFlagsCxxInterop::inspectorEnableModernCDPRegistry(
   return ReactNativeFeatureFlags::inspectorEnableModernCDPRegistry();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::lazyAnimationCallbacks(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::lazyAnimationCallbacks();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::preventDoubleTextMeasure(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::preventDoubleTextMeasure();
@@ -314,6 +325,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "inspectorEnableModernCDPRegistry",
         JReactNativeFeatureFlagsCxxInterop::inspectorEnableModernCDPRegistry),
+      makeNativeMethod(
+        "lazyAnimationCallbacks",
+        JReactNativeFeatureFlagsCxxInterop::lazyAnimationCallbacks),
       makeNativeMethod(
         "preventDoubleTextMeasure",
         JReactNativeFeatureFlagsCxxInterop::preventDoubleTextMeasure),

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<583232adaacd64df92bef3d111a08df0>>
+ * @generated SignedSource<<aff7e65ca1f679a79456b2b622dc070f>>
  * @flow strict-local
  */
 
@@ -55,6 +55,7 @@ export type ReactNativeFeatureFlags = {
   forceBatchingMountItemsOnAndroid: Getter<boolean>,
   inspectorEnableCxxInspectorPackagerConnection: Getter<boolean>,
   inspectorEnableModernCDPRegistry: Getter<boolean>,
+  lazyAnimationCallbacks: Getter<boolean>,
   preventDoubleTextMeasure: Getter<boolean>,
   useModernRuntimeScheduler: Getter<boolean>,
   useNativeViewConfigsInBridgelessMode: Getter<boolean>,
@@ -161,6 +162,10 @@ export const inspectorEnableCxxInspectorPackagerConnection: Getter<boolean> = cr
  * Flag determining if the modern CDP backend should be enabled. This flag is global and should not be changed across React Host lifetimes.
  */
 export const inspectorEnableModernCDPRegistry: Getter<boolean> = createNativeFlagGetter('inspectorEnableModernCDPRegistry', false);
+/**
+ * Only enqueue Choreographer calls if there is an ongoing animation, instead of enqueueing every frame.
+ */
+export const lazyAnimationCallbacks: Getter<boolean> = createNativeFlagGetter('lazyAnimationCallbacks', false);
 /**
  * When enabled, ParagraphShadowNode will no longer call measure twice.
  */

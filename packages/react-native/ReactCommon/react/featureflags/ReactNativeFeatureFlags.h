@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<029cba10ed8a02c85ecc54d4752e8e14>>
+ * @generated SignedSource<<b081516c5b1aa804ec4f444f48773fbb>>
  */
 
 /**
@@ -111,6 +111,11 @@ class ReactNativeFeatureFlags {
    * Flag determining if the modern CDP backend should be enabled. This flag is global and should not be changed across React Host lifetimes.
    */
   RN_EXPORT static bool inspectorEnableModernCDPRegistry();
+
+  /**
+   * Only enqueue Choreographer calls if there is an ongoing animation, instead of enqueueing every frame.
+   */
+  RN_EXPORT static bool lazyAnimationCallbacks();
 
   /**
    * When enabled, ParagraphShadowNode will no longer call measure twice.

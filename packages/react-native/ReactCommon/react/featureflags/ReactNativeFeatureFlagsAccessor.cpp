@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0681b9ba9141253f4caf6e2bac00a60f>>
+ * @generated SignedSource<<2091c7b1d7d19d8967a6bb5ebb2ac76f>>
  */
 
 /**
@@ -299,6 +299,24 @@ bool ReactNativeFeatureFlagsAccessor::inspectorEnableModernCDPRegistry() {
   return flagValue.value();
 }
 
+bool ReactNativeFeatureFlagsAccessor::lazyAnimationCallbacks() {
+  auto flagValue = lazyAnimationCallbacks_.load();
+
+  if (!flagValue.has_value()) {
+    // This block is not exclusive but it is not necessary.
+    // If multiple threads try to initialize the feature flag, we would only
+    // be accessing the provider multiple times but the end state of this
+    // instance and the returned flag value would be the same.
+
+    markFlagAsAccessed(15, "lazyAnimationCallbacks");
+
+    flagValue = currentProvider_->lazyAnimationCallbacks();
+    lazyAnimationCallbacks_ = flagValue;
+  }
+
+  return flagValue.value();
+}
+
 bool ReactNativeFeatureFlagsAccessor::preventDoubleTextMeasure() {
   auto flagValue = preventDoubleTextMeasure_.load();
 
@@ -308,7 +326,7 @@ bool ReactNativeFeatureFlagsAccessor::preventDoubleTextMeasure() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(15, "preventDoubleTextMeasure");
+    markFlagAsAccessed(16, "preventDoubleTextMeasure");
 
     flagValue = currentProvider_->preventDoubleTextMeasure();
     preventDoubleTextMeasure_ = flagValue;
@@ -326,7 +344,7 @@ bool ReactNativeFeatureFlagsAccessor::useModernRuntimeScheduler() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(16, "useModernRuntimeScheduler");
+    markFlagAsAccessed(17, "useModernRuntimeScheduler");
 
     flagValue = currentProvider_->useModernRuntimeScheduler();
     useModernRuntimeScheduler_ = flagValue;
@@ -344,7 +362,7 @@ bool ReactNativeFeatureFlagsAccessor::useNativeViewConfigsInBridgelessMode() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(17, "useNativeViewConfigsInBridgelessMode");
+    markFlagAsAccessed(18, "useNativeViewConfigsInBridgelessMode");
 
     flagValue = currentProvider_->useNativeViewConfigsInBridgelessMode();
     useNativeViewConfigsInBridgelessMode_ = flagValue;
@@ -362,7 +380,7 @@ bool ReactNativeFeatureFlagsAccessor::useStateAlignmentMechanism() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(18, "useStateAlignmentMechanism");
+    markFlagAsAccessed(19, "useStateAlignmentMechanism");
 
     flagValue = currentProvider_->useStateAlignmentMechanism();
     useStateAlignmentMechanism_ = flagValue;
