@@ -13,6 +13,7 @@ import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.CatalystInstance;
+import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.JavaScriptModuleRegistry;
 import com.facebook.react.bridge.NativeArray;
@@ -20,6 +21,8 @@ import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.WritableNativeArray;
+import com.facebook.react.common.annotations.FrameworkAPI;
+import com.facebook.react.common.annotations.UnstableReactNativeAPI;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
@@ -152,6 +155,13 @@ class BridgelessReactContext extends ReactApplicationContext implements EventDis
   @Override
   public @Nullable <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface) {
     return mReactHost.getNativeModule(nativeModuleInterface);
+  }
+
+  @Override
+  @FrameworkAPI
+  @UnstableReactNativeAPI
+  public @Nullable JavaScriptContextHolder getJavaScriptContextHolder() {
+    return mReactHost.getJavaScriptContextHolder();
   }
 
   @Override
