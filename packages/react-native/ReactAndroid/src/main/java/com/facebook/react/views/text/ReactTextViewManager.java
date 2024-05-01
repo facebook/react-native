@@ -145,17 +145,17 @@ public class ReactTextViewManager
     MapBuffer attributedString = state.getMapBuffer(TX_STATE_KEY_ATTRIBUTED_STRING);
     MapBuffer paragraphAttributes = state.getMapBuffer(TX_STATE_KEY_PARAGRAPH_ATTRIBUTES);
     Spannable spanned =
-        TextLayoutManagerMapBuffer.getOrCreateSpannableForText(
+        TextLayoutManager.getOrCreateSpannableForText(
             view.getContext(), attributedString, mReactTextViewManagerCallback);
     view.setSpanned(spanned);
 
     float minimumFontSize =
-        (float) paragraphAttributes.getDouble(TextLayoutManagerMapBuffer.PA_KEY_MINIMUM_FONT_SIZE);
+        (float) paragraphAttributes.getDouble(TextLayoutManager.PA_KEY_MINIMUM_FONT_SIZE);
     view.setMinimumFontSize(minimumFontSize);
 
     int textBreakStrategy =
         TextAttributeProps.getTextBreakStrategy(
-            paragraphAttributes.getString(TextLayoutManagerMapBuffer.PA_KEY_TEXT_BREAK_STRATEGY));
+            paragraphAttributes.getString(TextLayoutManager.PA_KEY_TEXT_BREAK_STRATEGY));
     int currentJustificationMode =
         Build.VERSION.SDK_INT < Build.VERSION_CODES.O ? 0 : view.getJustificationMode();
 
@@ -163,8 +163,7 @@ public class ReactTextViewManager
         spanned,
         -1, // UNUSED FOR TEXT
         false, // TODO add this into local Data
-        TextLayoutManagerMapBuffer.getTextGravity(
-            attributedString, spanned, view.getGravityHorizontal()),
+        TextLayoutManager.getTextGravity(attributedString, spanned, view.getGravityHorizontal()),
         textBreakStrategy,
         TextAttributeProps.getJustificationMode(props, currentJustificationMode));
   }
@@ -193,7 +192,7 @@ public class ReactTextViewManager
       float height,
       YogaMeasureMode heightMode,
       @Nullable float[] attachmentsPositions) {
-    return TextLayoutManagerMapBuffer.measureText(
+    return TextLayoutManager.measureText(
         context,
         localData,
         props,

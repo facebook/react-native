@@ -67,7 +67,7 @@ import com.facebook.react.views.text.ReactTextUpdate;
 import com.facebook.react.views.text.ReactTextViewManagerCallback;
 import com.facebook.react.views.text.ReactTypefaceUtils;
 import com.facebook.react.views.text.TextAttributeProps;
-import com.facebook.react.views.text.TextLayoutManagerMapBuffer;
+import com.facebook.react.views.text.TextLayoutManager;
 import com.facebook.react.views.text.TextTransform;
 import com.facebook.react.views.text.internal.span.TextInlineImageSpan;
 import com.facebook.yoga.YogaConstants;
@@ -1389,12 +1389,12 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     MapBuffer paragraphAttributes = state.getMapBuffer(TX_STATE_KEY_PARAGRAPH_ATTRIBUTES);
 
     Spannable spanned =
-        TextLayoutManagerMapBuffer.getOrCreateSpannableForText(
+        TextLayoutManager.getOrCreateSpannableForText(
             view.getContext(), attributedString, mReactTextViewManagerCallback);
 
     int textBreakStrategy =
         TextAttributeProps.getTextBreakStrategy(
-            paragraphAttributes.getString(TextLayoutManagerMapBuffer.PA_KEY_TEXT_BREAK_STRATEGY));
+            paragraphAttributes.getString(TextLayoutManager.PA_KEY_TEXT_BREAK_STRATEGY));
     int currentJustificationMode =
         Build.VERSION.SDK_INT < Build.VERSION_CODES.O ? 0 : view.getJustificationMode();
 
@@ -1402,7 +1402,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         spanned,
         state.getInt(TX_STATE_KEY_MOST_RECENT_EVENT_COUNT),
         TextAttributeProps.getTextAlignment(
-            props, TextLayoutManagerMapBuffer.isRTL(attributedString), view.getGravityHorizontal()),
+            props, TextLayoutManager.isRTL(attributedString), view.getGravityHorizontal()),
         textBreakStrategy,
         TextAttributeProps.getJustificationMode(props, currentJustificationMode));
   }

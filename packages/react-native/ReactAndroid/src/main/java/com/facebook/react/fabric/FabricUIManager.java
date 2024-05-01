@@ -85,7 +85,7 @@ import com.facebook.react.uimanager.events.EventCategoryDef;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.FabricEventDispatcher;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
-import com.facebook.react.views.text.TextLayoutManagerMapBuffer;
+import com.facebook.react.views.text.TextLayoutManager;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -497,7 +497,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener, UIBlo
       float width,
       float height) {
     return (NativeArray)
-        TextLayoutManagerMapBuffer.measureLines(
+        TextLayoutManager.measureLines(
             mReactApplicationContext,
             attributedString,
             paragraphAttributes,

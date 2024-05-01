@@ -58,7 +58,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 /** Class responsible of creating {@link Spanned} object for the JS representation of Text */
-public class TextLayoutManagerMapBuffer {
+public class TextLayoutManager {
 
   // constants for AttributedString serialization
   public static final short AS_KEY_HASH = 0;
@@ -86,7 +86,7 @@ public class TextLayoutManagerMapBuffer {
 
   private static final boolean ENABLE_MEASURE_LOGGING = ReactBuildConfig.DEBUG && false;
 
-  private static final String TAG = TextLayoutManagerMapBuffer.class.getSimpleName();
+  private static final String TAG = TextLayoutManager.class.getSimpleName();
 
   // It's important to pass the ANTI_ALIAS_FLAG flag to the constructor rather than setting it
   // later by calling setFlags. This is because the latter approach triggers a bug on Android 4.4.2.
