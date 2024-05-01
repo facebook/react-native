@@ -94,7 +94,7 @@ function getNpmInfo(buildType /*: BuildType */) /*: NpmInfo */ {
       );
     }
 
-    const {version, major, minor, prerelease} = parseVersion(
+    const {version, major, minor, patch, prerelease} = parseVersion(
       process.env.CIRCLE_TAG,
       buildType,
     );
@@ -107,15 +107,19 @@ function getNpmInfo(buildType /*: BuildType */) /*: NpmInfo */ {
     );
 
     const releaseBranchTag = `${major}.${minor}-stable`;
-
+    let tag = releaseBranchTag;
     // npm will automatically tag the version as `latest` if no tag is set when we publish
     // To prevent this, use `releaseBranchTag` when we don't want that (ex. releasing a patch on older release)
-    const tag =
-      prerelease != null
-        ? 'next'
-        : isLatest === true
-        ? 'latest'
-        : releaseBranchTag;
+    if (prerelease != null) {
+      if (patch === '0') {
+        // Set `next` tag only on prereleases of 0.m.0-RC.k.
+        tag = 'next';
+      } else {
+        tag = '--no-tag';
+      }
+    } else if (isLatest === true) {
+      tag = 'latest';
+    }
 
     return {
       version,
@@ -131,8 +135,18 @@ function publishPackage(
   packageOptions /*: NpmPackageOptions */,
   execOptions /*: ?ExecOptsSync */,
 ) /*: ShellString */ {
-  const {otp, tags} = packageOptions;
-  const tagsFlag = tags != null ? tags.map(t => ` --tag ${t}`).join('') : '';
+  const {otp, tags, access} = packageOptions;
+
+  let tagsFlag = '';
+  if (tags != null) {
+    tagsFlag = tags.includes('--no-tag')
+      ? ' --no-tag'
+      : tags
+          .filter(Boolean)
+          .map(t => ` --tag ${t}`)
+          .join('');
+  }
+
   const otpFlag = otp != null ? ` --otp ${otp}` : '';
   const options = execOptions
     ? {...execOptions, cwd: packagePath}

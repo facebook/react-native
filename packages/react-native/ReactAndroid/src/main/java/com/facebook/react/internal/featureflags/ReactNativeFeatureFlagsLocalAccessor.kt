@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<63356ad414e641eae11ca07b1a876fd3>>
+ * @generated SignedSource<<e02f6a9473a98f27ee44ff303db9e0b7>>
  */
 
 /**
@@ -25,10 +25,12 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private val accessedFeatureFlags = mutableSetOf<String>()
 
   private var commonTestFlagCache: Boolean? = null
+  private var androidEnablePendingFabricTransactionsCache: Boolean? = null
+  private var batchRenderingUpdatesInEventLoopCache: Boolean? = null
+  private var destroyFabricSurfacesInReactInstanceManagerCache: Boolean? = null
   private var enableBackgroundExecutorCache: Boolean? = null
   private var useModernRuntimeSchedulerCache: Boolean? = null
   private var enableMicrotasksCache: Boolean? = null
-  private var batchRenderingUpdatesInEventLoopCache: Boolean? = null
   private var enableSpannableBuildingUnificationCache: Boolean? = null
   private var enableCustomDrawOrderFabricCache: Boolean? = null
   private var enableFixForClippedSubviewsCrashCache: Boolean? = null
@@ -41,6 +43,36 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.commonTestFlag()
       accessedFeatureFlags.add("commonTestFlag")
       commonTestFlagCache = cached
+    }
+    return cached
+  }
+
+  override fun androidEnablePendingFabricTransactions(): Boolean {
+    var cached = androidEnablePendingFabricTransactionsCache
+    if (cached == null) {
+      cached = currentProvider.androidEnablePendingFabricTransactions()
+      accessedFeatureFlags.add("androidEnablePendingFabricTransactions")
+      androidEnablePendingFabricTransactionsCache = cached
+    }
+    return cached
+  }
+
+  override fun batchRenderingUpdatesInEventLoop(): Boolean {
+    var cached = batchRenderingUpdatesInEventLoopCache
+    if (cached == null) {
+      cached = currentProvider.batchRenderingUpdatesInEventLoop()
+      accessedFeatureFlags.add("batchRenderingUpdatesInEventLoop")
+      batchRenderingUpdatesInEventLoopCache = cached
+    }
+    return cached
+  }
+
+  override fun destroyFabricSurfacesInReactInstanceManager(): Boolean {
+    var cached = destroyFabricSurfacesInReactInstanceManagerCache
+    if (cached == null) {
+      cached = currentProvider.destroyFabricSurfacesInReactInstanceManager()
+      accessedFeatureFlags.add("destroyFabricSurfacesInReactInstanceManager")
+      destroyFabricSurfacesInReactInstanceManagerCache = cached
     }
     return cached
   }
@@ -71,16 +103,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.enableMicrotasks()
       accessedFeatureFlags.add("enableMicrotasks")
       enableMicrotasksCache = cached
-    }
-    return cached
-  }
-
-  override fun batchRenderingUpdatesInEventLoop(): Boolean {
-    var cached = batchRenderingUpdatesInEventLoopCache
-    if (cached == null) {
-      cached = currentProvider.batchRenderingUpdatesInEventLoop()
-      accessedFeatureFlags.add("batchRenderingUpdatesInEventLoop")
-      batchRenderingUpdatesInEventLoopCache = cached
     }
     return cached
   }

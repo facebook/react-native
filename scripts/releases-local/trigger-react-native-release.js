@@ -146,7 +146,7 @@ async function main() {
   }
 
   let latest = false;
-  const {version, prerelease} = parseVersion(releaseVersion, 'release');
+  const {version, patch, prerelease} = parseVersion(releaseVersion, 'release');
   if (!prerelease) {
     const {setLatest} = await inquirer.prompt({
       type: 'confirm',
@@ -156,7 +156,7 @@ async function main() {
     latest = setLatest;
   }
 
-  const npmTag = latest ? 'latest' : !prerelease ? branch : 'next';
+  const npmTag = latest ? 'latest' : !prerelease ? branch : patch == 0 ? 'next' : '--no-tag';
   const {confirmRelease} = await inquirer.prompt({
     type: 'confirm',
     name: 'confirmRelease',

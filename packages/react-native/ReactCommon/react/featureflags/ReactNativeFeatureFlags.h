@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3bfae310dfd28040f4b80d1a1df8b7b3>>
+ * @generated SignedSource<<bf4d30ecf78c8d2f65741c16d8d07bde>>
  */
 
 /**
@@ -39,6 +39,21 @@ class ReactNativeFeatureFlags {
   static bool commonTestFlag();
 
   /**
+   * To be used with batchRenderingUpdatesInEventLoop. When enbled, the Android mounting layer will concatenate pending transactions to ensure they're applied atomatically
+   */
+  static bool androidEnablePendingFabricTransactions();
+
+  /**
+   * When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.
+   */
+  static bool batchRenderingUpdatesInEventLoop();
+
+  /**
+   * When enabled, ReactInstanceManager will clean up Fabric surfaces on destroy().
+   */
+  static bool destroyFabricSurfacesInReactInstanceManager();
+
+  /**
    * Enables the use of a background executor to compute layout and commit updates on Fabric (this system is deprecated and should not be used).
    */
   static bool enableBackgroundExecutor();
@@ -52,11 +67,6 @@ class ReactNativeFeatureFlags {
    * Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).
    */
   static bool enableMicrotasks();
-
-  /**
-   * When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.
-   */
-  static bool batchRenderingUpdatesInEventLoop();
 
   /**
    * Uses new, deduplicated logic for constructing Android Spannables from text fragments

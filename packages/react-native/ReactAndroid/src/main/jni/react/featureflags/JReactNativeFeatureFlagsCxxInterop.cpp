@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f40d52242f2c758ed616f1e5d8c3a082>>
+ * @generated SignedSource<<7ab741aec808bc3a138470fe18ef8b8a>>
  */
 
 /**
@@ -45,6 +45,24 @@ class ReactNativeFeatureFlagsProviderHolder
     return method(javaProvider_);
   }
 
+  bool androidEnablePendingFabricTransactions() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("androidEnablePendingFabricTransactions");
+    return method(javaProvider_);
+  }
+
+  bool batchRenderingUpdatesInEventLoop() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("batchRenderingUpdatesInEventLoop");
+    return method(javaProvider_);
+  }
+
+  bool destroyFabricSurfacesInReactInstanceManager() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("destroyFabricSurfacesInReactInstanceManager");
+    return method(javaProvider_);
+  }
+
   bool enableBackgroundExecutor() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableBackgroundExecutor");
@@ -60,12 +78,6 @@ class ReactNativeFeatureFlagsProviderHolder
   bool enableMicrotasks() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableMicrotasks");
-    return method(javaProvider_);
-  }
-
-  bool batchRenderingUpdatesInEventLoop() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("batchRenderingUpdatesInEventLoop");
     return method(javaProvider_);
   }
 
@@ -108,6 +120,21 @@ bool JReactNativeFeatureFlagsCxxInterop::commonTestFlag(
   return ReactNativeFeatureFlags::commonTestFlag();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::androidEnablePendingFabricTransactions(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::androidEnablePendingFabricTransactions();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::batchRenderingUpdatesInEventLoop(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::destroyFabricSurfacesInReactInstanceManager(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::destroyFabricSurfacesInReactInstanceManager();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableBackgroundExecutor(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableBackgroundExecutor();
@@ -121,11 +148,6 @@ bool JReactNativeFeatureFlagsCxxInterop::useModernRuntimeScheduler(
 bool JReactNativeFeatureFlagsCxxInterop::enableMicrotasks(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableMicrotasks();
-}
-
-bool JReactNativeFeatureFlagsCxxInterop::batchRenderingUpdatesInEventLoop(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::enableSpannableBuildingUnification(
@@ -174,6 +196,15 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "commonTestFlag",
         JReactNativeFeatureFlagsCxxInterop::commonTestFlag),
       makeNativeMethod(
+        "androidEnablePendingFabricTransactions",
+        JReactNativeFeatureFlagsCxxInterop::androidEnablePendingFabricTransactions),
+      makeNativeMethod(
+        "batchRenderingUpdatesInEventLoop",
+        JReactNativeFeatureFlagsCxxInterop::batchRenderingUpdatesInEventLoop),
+      makeNativeMethod(
+        "destroyFabricSurfacesInReactInstanceManager",
+        JReactNativeFeatureFlagsCxxInterop::destroyFabricSurfacesInReactInstanceManager),
+      makeNativeMethod(
         "enableBackgroundExecutor",
         JReactNativeFeatureFlagsCxxInterop::enableBackgroundExecutor),
       makeNativeMethod(
@@ -182,9 +213,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableMicrotasks",
         JReactNativeFeatureFlagsCxxInterop::enableMicrotasks),
-      makeNativeMethod(
-        "batchRenderingUpdatesInEventLoop",
-        JReactNativeFeatureFlagsCxxInterop::batchRenderingUpdatesInEventLoop),
       makeNativeMethod(
         "enableSpannableBuildingUnification",
         JReactNativeFeatureFlagsCxxInterop::enableSpannableBuildingUnification),

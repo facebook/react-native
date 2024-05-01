@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<82f226df2b3824d03b755a042b20bec5>>
+ * @generated SignedSource<<7ba277e9902ca2a0b171daf223644b89>>
  */
 
 /**
@@ -25,6 +25,18 @@ bool ReactNativeFeatureFlags::commonTestFlag() {
   return getAccessor().commonTestFlag();
 }
 
+bool ReactNativeFeatureFlags::androidEnablePendingFabricTransactions() {
+  return getAccessor().androidEnablePendingFabricTransactions();
+}
+
+bool ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop() {
+  return getAccessor().batchRenderingUpdatesInEventLoop();
+}
+
+bool ReactNativeFeatureFlags::destroyFabricSurfacesInReactInstanceManager() {
+  return getAccessor().destroyFabricSurfacesInReactInstanceManager();
+}
+
 bool ReactNativeFeatureFlags::enableBackgroundExecutor() {
   return getAccessor().enableBackgroundExecutor();
 }
@@ -35,10 +47,6 @@ bool ReactNativeFeatureFlags::useModernRuntimeScheduler() {
 
 bool ReactNativeFeatureFlags::enableMicrotasks() {
   return getAccessor().enableMicrotasks();
-}
-
-bool ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop() {
-  return getAccessor().batchRenderingUpdatesInEventLoop();
 }
 
 bool ReactNativeFeatureFlags::enableSpannableBuildingUnification() {

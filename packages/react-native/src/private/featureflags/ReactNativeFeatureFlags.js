@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7c83d5613c3be517efe48378e6356e79>>
+ * @generated SignedSource<<b7ebc6e4360a4b7733335f283300a4bb>>
  * @flow strict-local
  */
 
@@ -41,10 +41,12 @@ export type ReactNativeFeatureFlagsJsOnlyOverrides = Partial<ReactNativeFeatureF
 export type ReactNativeFeatureFlags = {
   ...ReactNativeFeatureFlagsJsOnly,
   commonTestFlag: Getter<boolean>,
+  androidEnablePendingFabricTransactions: Getter<boolean>,
+  batchRenderingUpdatesInEventLoop: Getter<boolean>,
+  destroyFabricSurfacesInReactInstanceManager: Getter<boolean>,
   enableBackgroundExecutor: Getter<boolean>,
   useModernRuntimeScheduler: Getter<boolean>,
   enableMicrotasks: Getter<boolean>,
-  batchRenderingUpdatesInEventLoop: Getter<boolean>,
   enableSpannableBuildingUnification: Getter<boolean>,
   enableCustomDrawOrderFabric: Getter<boolean>,
   enableFixForClippedSubviewsCrash: Getter<boolean>,
@@ -97,6 +99,18 @@ export const shouldUseRemoveClippedSubviewsAsDefaultOnIOS: Getter<boolean> = cre
  */
 export const commonTestFlag: Getter<boolean> = createNativeFlagGetter('commonTestFlag', false);
 /**
+ * To be used with batchRenderingUpdatesInEventLoop. When enbled, the Android mounting layer will concatenate pending transactions to ensure they're applied atomatically
+ */
+export const androidEnablePendingFabricTransactions: Getter<boolean> = createNativeFlagGetter('androidEnablePendingFabricTransactions', false);
+/**
+ * When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.
+ */
+export const batchRenderingUpdatesInEventLoop: Getter<boolean> = createNativeFlagGetter('batchRenderingUpdatesInEventLoop', false);
+/**
+ * When enabled, ReactInstanceManager will clean up Fabric surfaces on destroy().
+ */
+export const destroyFabricSurfacesInReactInstanceManager: Getter<boolean> = createNativeFlagGetter('destroyFabricSurfacesInReactInstanceManager', false);
+/**
  * Enables the use of a background executor to compute layout and commit updates on Fabric (this system is deprecated and should not be used).
  */
 export const enableBackgroundExecutor: Getter<boolean> = createNativeFlagGetter('enableBackgroundExecutor', false);
@@ -108,10 +122,6 @@ export const useModernRuntimeScheduler: Getter<boolean> = createNativeFlagGetter
  * Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).
  */
 export const enableMicrotasks: Getter<boolean> = createNativeFlagGetter('enableMicrotasks', false);
-/**
- * When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.
- */
-export const batchRenderingUpdatesInEventLoop: Getter<boolean> = createNativeFlagGetter('batchRenderingUpdatesInEventLoop', false);
 /**
  * Uses new, deduplicated logic for constructing Android Spannables from text fragments
  */

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4832483bb3648380f2bb9312311f579c>>
+ * @generated SignedSource<<8a0f2e61752ae83a7a3032939f4a59fa>>
  */
 
 /**
@@ -31,6 +31,18 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool androidEnablePendingFabricTransactions() override {
+    return false;
+  }
+
+  bool batchRenderingUpdatesInEventLoop() override {
+    return false;
+  }
+
+  bool destroyFabricSurfacesInReactInstanceManager() override {
+    return false;
+  }
+
   bool enableBackgroundExecutor() override {
     return false;
   }
@@ -40,10 +52,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableMicrotasks() override {
-    return false;
-  }
-
-  bool batchRenderingUpdatesInEventLoop() override {
     return false;
   }
 
