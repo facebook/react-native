@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.devsupport.DoubleTapReloadRecognizer;
 import com.facebook.react.devsupport.ReleaseDevSupportManager;
@@ -98,7 +99,7 @@ public class ReactDelegate {
         && mReactHost.getDevSupportManager() != null) {
       return mReactHost.getDevSupportManager();
     } else if (getReactNativeHost().hasInstance()
-        && getReactNativeHost().getUseDeveloperSupport()) {
+        && getReactNativeHost().getReactInstanceManager() != null) {
       return getReactNativeHost().getReactInstanceManager().getDevSupportManager();
     } else {
       return null;
@@ -237,17 +238,31 @@ public class ReactDelegate {
 
   public void reload() {
     DevSupportManager devSupportManager = getDevSupportManager();
-    if (devSupportManager != null) {
-      // With Bridgeless enabled, reload in RELEASE mode
-      if (devSupportManager instanceof ReleaseDevSupportManager
-          && ReactFeatureFlags.enableBridgelessArchitecture
-          && mReactHost != null) {
-        // Do not reload the bundle from JS as there is no bundler running in release mode.
-        mReactHost.reload("ReactDelegate.reload()");
-      } else {
-        devSupportManager.handleReloadJS();
-      }
+    if (devSupportManager == null) {
+      return;
     }
+
+    // Reload in RELEASE mode
+    if (devSupportManager instanceof ReleaseDevSupportManager) {
+      // Do not reload the bundle from JS as there is no bundler running in release mode.
+      if (ReactFeatureFlags.enableBridgelessArchitecture) {
+        if (mReactHost != null) {
+          mReactHost.reload("ReactDelegate.reload()");
+        }
+      } else {
+        UiThreadUtil.runOnUiThread(
+            () -> {
+              if (mReactNativeHost.hasInstance()
+                  && mReactNativeHost.getReactInstanceManager() != null) {
+                mReactNativeHost.getReactInstanceManager().recreateReactContextInBackground();
+              }
+            });
+      }
+      return;
+    }
+
+    // Reload in DEBUG mode
+    devSupportManager.handleReloadJS();
   }
 
   public void loadApp() {
