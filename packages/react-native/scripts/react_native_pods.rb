@@ -16,6 +16,9 @@ require_relative './cocoapods/utils.rb'
 require_relative './cocoapods/new_architecture.rb'
 require_relative './cocoapods/local_podspec_patch.rb'
 require_relative './cocoapods/helpers.rb'
+require_relative './cocoapods/privacy_manifest_utils.rb'
+# Importing to expose use_native_modules!
+require_relative './cocoapods/autolinking.rb'
 
 $CODEGEN_OUTPUT_DIR = 'build/generated/ios'
 $CODEGEN_COMPONENT_DIR = 'react/renderer/components'
@@ -74,7 +77,8 @@ def use_react_native! (
   flipper_configuration: FlipperConfiguration.disabled,
   app_path: '..',
   config_file_dir: '',
-  ios_folder: 'ios'
+  ios_folder: 'ios',
+  privacy_file_aggregation_enabled: true
 )
 
   # Set the app_path as env variable so the podspecs can access it.
@@ -93,6 +97,7 @@ def use_react_native! (
   fabric_enabled = fabric_enabled || new_arch_enabled
   ENV['RCT_FABRIC_ENABLED'] = fabric_enabled ? "1" : "0"
   ENV['USE_HERMES'] = hermes_enabled ? "1" : "0"
+  ENV['RCT_AGGREGATE_PRIVACY_FILES'] = privacy_file_aggregation_enabled ? "1" : "0"
 
   prefix = path
 
@@ -238,6 +243,14 @@ def react_native_post_install(
   if ReactNativePodsUtils.has_pod(installer, 'Flipper')
     flipper_post_install(installer)
   end
+  
+  fabric_enabled = ENV['RCT_FABRIC_ENABLED'] == '1'
+  hermes_enabled = ENV['USE_HERMES'] == '1'
+  privacy_file_aggregation_enabled = ENV['RCT_AGGREGATE_PRIVACY_FILES'] == '1'
+
+  if hermes_enabled
+    ReactNativePodsUtils.set_gcc_preprocessor_definition_for_React_hermes(installer)
+  end
 
   fabric_enabled = ReactNativePodsUtils.has_pod(installer, 'React-Fabric')
 
@@ -249,7 +262,12 @@ def react_native_post_install(
   ReactNativePodsUtils.apply_xcode_15_patch(installer)
   ReactNativePodsUtils.updateIphoneOSDeploymentTarget(installer)
   ReactNativePodsUtils.fix_flipper_for_xcode_15_3(installer)
-  ReactNativePodsUtils.add_privacy_manifest_if_needed(installer)
+
+  if privacy_file_aggregation_enabled
+    PrivacyManifestUtils.add_aggregated_privacy_manifest(installer)
+  else
+    PrivacyManifestUtils.add_privacy_manifest_if_needed(installer)
+  end
 
   NewArchitectureHelper.set_clang_cxx_language_standard_if_needed(installer)
   is_new_arch_enabled = ENV['RCT_NEW_ARCH_ENABLED'] == "1"
