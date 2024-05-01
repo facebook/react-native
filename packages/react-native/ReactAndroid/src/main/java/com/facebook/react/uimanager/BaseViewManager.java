@@ -19,6 +19,7 @@ import androidx.core.view.ViewCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.R;
 import com.facebook.react.bridge.Dynamic;
+import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
@@ -53,6 +54,14 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   private static final String STATE_BUSY = "busy";
   private static final String STATE_EXPANDED = "expanded";
   private static final String STATE_MIXED = "mixed";
+
+  public BaseViewManager() {
+    super(null);
+  }
+
+  public BaseViewManager(@Nullable ReactApplicationContext reactContext) {
+    super(reactContext);
+  }
 
   @Override
   protected T prepareToRecycleView(@NonNull ThemedReactContext reactContext, T view) {

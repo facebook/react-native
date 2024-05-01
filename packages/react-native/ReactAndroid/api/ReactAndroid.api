@@ -3940,6 +3940,7 @@ public abstract interface class com/facebook/react/turbomodule/core/interfaces/T
 
 public abstract class com/facebook/react/uimanager/BaseViewManager : com/facebook/react/uimanager/ViewManager, android/view/View$OnLayoutChangeListener, com/facebook/react/uimanager/BaseViewManagerInterface {
 	public fun <init> ()V
+	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
 	public fun getExportedCustomBubblingEventTypeConstants ()Ljava/util/Map;
 	public fun getExportedCustomDirectEventTypeConstants ()Ljava/util/Map;
 	protected fun onAfterUpdateTransaction (Landroid/view/View;)V
@@ -5160,6 +5161,7 @@ public class com/facebook/react/uimanager/ViewGroupDrawingOrderHelper {
 
 public abstract class com/facebook/react/uimanager/ViewGroupManager : com/facebook/react/uimanager/BaseViewManager, com/facebook/react/uimanager/IViewGroupManager {
 	public fun <init> ()V
+	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
 	public synthetic fun addView (Landroid/view/View;Landroid/view/View;I)V
 	public fun addView (Landroid/view/ViewGroup;Landroid/view/View;I)V
 	public fun addViews (Landroid/view/ViewGroup;Ljava/util/List;)V
@@ -5182,6 +5184,7 @@ public abstract class com/facebook/react/uimanager/ViewGroupManager : com/facebo
 
 public abstract class com/facebook/react/uimanager/ViewManager : com/facebook/react/bridge/BaseJavaModule {
 	public fun <init> ()V
+	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
 	protected fun addEventEmitters (Lcom/facebook/react/uimanager/ThemedReactContext;Landroid/view/View;)V
 	public fun createShadowNodeInstance ()Lcom/facebook/react/uimanager/ReactShadowNode;
 	public fun createShadowNodeInstance (Lcom/facebook/react/bridge/ReactApplicationContext;)Lcom/facebook/react/uimanager/ReactShadowNode;
