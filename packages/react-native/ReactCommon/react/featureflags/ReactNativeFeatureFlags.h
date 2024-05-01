@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<cbdfc9073ec79d17d0c866b7cd089973>>
+ * @generated SignedSource<<029cba10ed8a02c85ecc54d4752e8e14>>
  */
 
 /**
@@ -71,6 +71,11 @@ class ReactNativeFeatureFlags {
    * Clean yoga node when <TextInput /> does not change.
    */
   RN_EXPORT static bool enableCleanTextInputYogaNode();
+
+  /**
+   * When enabled, the renderer would only fail commits when they propagate state and the last commit that updated state changed before committing.
+   */
+  RN_EXPORT static bool enableGranularShadowTreeStateReconciliation();
 
   /**
    * Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).

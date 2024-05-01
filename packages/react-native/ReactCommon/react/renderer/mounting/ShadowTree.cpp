@@ -17,7 +17,6 @@
 #include <react/renderer/mounting/ShadowTreeRevision.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
 #include <react/renderer/telemetry/TransactionTelemetry.h>
-#include <react/utils/CoreFeatures.h>
 #include "updateMountedFlag.h"
 
 #include "ShadowTreeDelegate.h"
@@ -435,7 +434,8 @@ CommitStatus ShadowTree::tryCommit(
       return CommitStatus::Cancelled;
     }
 
-    if (CoreFeatures::enableGranularShadowTreeStateReconciliation) {
+    if (ReactNativeFeatureFlags::
+            enableGranularShadowTreeStateReconciliation()) {
       auto lastRevisionNumberWithNewStateChanged =
           lastRevisionNumberWithNewState != lastRevisionNumberWithNewState_;
       // Commit should only fail if we propagated the wrong state.

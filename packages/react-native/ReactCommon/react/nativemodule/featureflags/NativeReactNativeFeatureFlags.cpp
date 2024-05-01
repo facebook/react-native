@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f52d4ec9f6a2439613a33c6d88a74d12>>
+ * @generated SignedSource<<7c26b7fcb1adba6d47b0cc77ccf17bbc>>
  */
 
 /**
@@ -70,6 +70,11 @@ bool NativeReactNativeFeatureFlags::enableBackgroundExecutor(
 bool NativeReactNativeFeatureFlags::enableCleanTextInputYogaNode(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableCleanTextInputYogaNode();
+}
+
+bool NativeReactNativeFeatureFlags::enableGranularShadowTreeStateReconciliation(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableGranularShadowTreeStateReconciliation();
 }
 
 bool NativeReactNativeFeatureFlags::enableMicrotasks(
