@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1c619af9daa978beca7856be0705638d>>
+ * @generated SignedSource<<eb485b4b868f748219ee42f380ef409c>>
  * @flow strict-local
  */
 
@@ -48,7 +48,6 @@ export type ReactNativeFeatureFlags = {
   enableBackgroundExecutor: Getter<boolean>,
   enableCleanTextInputYogaNode: Getter<boolean>,
   enableMicrotasks: Getter<boolean>,
-  enableSpannableBuildingUnification: Getter<boolean>,
   enableSynchronousStateUpdates: Getter<boolean>,
   enableUIConsistency: Getter<boolean>,
   fixMountedFlagAndFixPreallocationClone: Getter<boolean>,
@@ -133,10 +132,6 @@ export const enableCleanTextInputYogaNode: Getter<boolean> = createNativeFlagGet
  * Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).
  */
 export const enableMicrotasks: Getter<boolean> = createNativeFlagGetter('enableMicrotasks', false);
-/**
- * Uses new, deduplicated logic for constructing Android Spannables from text fragments
- */
-export const enableSpannableBuildingUnification: Getter<boolean> = createNativeFlagGetter('enableSpannableBuildingUnification', false);
 /**
  * Dispatches state updates synchronously in Fabric (e.g.: updates the scroll position in the shadow tree synchronously from the main thread).
  */

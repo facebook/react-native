@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<71bd0e6d2f2bd2c768b86a073451430c>>
+ * @generated SignedSource<<ed2d49ccaaa01c0f34e37ff43b53d1d8>>
  */
 
 /**
@@ -75,12 +75,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableMicrotasks(): Boolean = accessor.enableMicrotasks()
-
-  /**
-   * Uses new, deduplicated logic for constructing Android Spannables from text fragments
-   */
-  @JvmStatic
-  public fun enableSpannableBuildingUnification(): Boolean = accessor.enableSpannableBuildingUnification()
 
   /**
    * Dispatches state updates synchronously in Fabric (e.g.: updates the scroll position in the shadow tree synchronously from the main thread).

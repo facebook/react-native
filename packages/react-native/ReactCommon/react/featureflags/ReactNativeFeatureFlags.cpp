@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4670cd532d74243e679e1fcd7731d8c8>>
+ * @generated SignedSource<<cb25070682573da5125cb283a45f9922>>
  */
 
 /**
@@ -51,10 +51,6 @@ bool ReactNativeFeatureFlags::enableCleanTextInputYogaNode() {
 
 bool ReactNativeFeatureFlags::enableMicrotasks() {
   return getAccessor().enableMicrotasks();
-}
-
-bool ReactNativeFeatureFlags::enableSpannableBuildingUnification() {
-  return getAccessor().enableSpannableBuildingUnification();
 }
 
 bool ReactNativeFeatureFlags::enableSynchronousStateUpdates() {
