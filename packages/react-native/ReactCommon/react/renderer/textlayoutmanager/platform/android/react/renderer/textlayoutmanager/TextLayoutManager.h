@@ -84,11 +84,6 @@ class TextLayoutManager {
       const ParagraphAttributes& paragraphAttributes,
       LayoutConstraints layoutConstraints) const;
 
-  LinesMeasurements measureLinesMapBuffer(
-      const AttributedString& attributedString,
-      const ParagraphAttributes& paragraphAttributes,
-      Size size) const;
-
   void* self_{};
   ContextContainer::Shared contextContainer_;
   TextMeasureCache measureCache_;
