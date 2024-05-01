@@ -240,7 +240,7 @@ LinesMeasurements TextLayoutManager::measureLines(
               JReadableMapBuffer::javaobject,
               JReadableMapBuffer::javaobject,
               jfloat,
-              jfloat)>("measureLinesMapBuffer");
+              jfloat)>("measureLines");
 
   auto attributedStringMB =
       JReadableMapBuffer::createWithContents(toMapBuffer(attributedString));
