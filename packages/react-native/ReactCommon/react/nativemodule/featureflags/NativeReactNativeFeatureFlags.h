@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e7b81fbf480d345c46c551f7e986c0c6>>
+ * @generated SignedSource<<b7db63d4f2be7d4718b996fc442e30cf>>
  */
 
 /**
@@ -50,8 +50,6 @@ class NativeReactNativeFeatureFlags
   bool enableCleanTextInputYogaNode(jsi::Runtime& runtime);
 
   bool enableMicrotasks(jsi::Runtime& runtime);
-
-  bool enableSpannableBuildingUnification(jsi::Runtime& runtime);
 
   bool enableSynchronousStateUpdates(jsi::Runtime& runtime);
 

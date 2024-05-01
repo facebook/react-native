@@ -73,11 +73,6 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).',
     },
-    enableSpannableBuildingUnification: {
-      defaultValue: false,
-      description:
-        'Uses new, deduplicated logic for constructing Android Spannables from text fragments',
-    },
     enableSynchronousStateUpdates: {
       defaultValue: false,
       description:
