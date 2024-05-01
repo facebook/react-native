@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d8d295e1acb37f820e21670cf0b1a0dc>>
+ * @generated SignedSource<<33058307ecf739d0e8c9e2240a4f7b98>>
  * @flow strict-local
  */
 
@@ -31,7 +31,6 @@ export interface Spec extends TurboModule {
   +enableBackgroundExecutor?: () => boolean;
   +enableCleanTextInputYogaNode?: () => boolean;
   +enableMicrotasks?: () => boolean;
-  +enableSpannableBuildingUnification?: () => boolean;
   +enableSynchronousStateUpdates?: () => boolean;
   +enableUIConsistency?: () => boolean;
   +fixMountedFlagAndFixPreallocationClone?: () => boolean;
