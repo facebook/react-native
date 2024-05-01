@@ -366,6 +366,9 @@ void UIManager::updateState(const StateUpdate& stateUpdate) const {
   auto& callback = stateUpdate.callback;
   auto& family = stateUpdate.family;
   auto& componentDescriptor = family->getComponentDescriptor();
+  auto clonedByNativeStateTraits = ShadowNodeTraits();
+  clonedByNativeStateTraits.set(
+      ShadowNodeTraits::Trait::ClonedByNativeStateUpdate);
 
   shadowTreeRegistry_.visit(
       family->getSurfaceId(), [&](const ShadowTree& shadowTree) {
@@ -374,7 +377,8 @@ void UIManager::updateState(const StateUpdate& stateUpdate) const {
               auto isValid = true;
 
               auto rootNode = oldRootShadowNode.cloneTree(
-                  *family, [&](const ShadowNode& oldShadowNode) {
+                  *family,
+                  [&](const ShadowNode& oldShadowNode) {
                     auto newData =
                         callback(oldShadowNode.getState()->getDataPointer());
 
@@ -387,13 +391,13 @@ void UIManager::updateState(const StateUpdate& stateUpdate) const {
                     auto newState =
                         componentDescriptor.createState(*family, newData);
 
-                    return oldShadowNode.clone({
-                        /* .props = */ ShadowNodeFragment::propsPlaceholder(),
-                        /* .children = */
-                        ShadowNodeFragment::childrenPlaceholder(),
-                        /* .state = */ newState,
-                    });
-                  });
+                    return oldShadowNode.clone(
+                        {.props = ShadowNodeFragment::propsPlaceholder(),
+                         .children = ShadowNodeFragment::childrenPlaceholder(),
+                         .state = newState,
+                         .traits = clonedByNativeStateTraits});
+                  },
+                  clonedByNativeStateTraits);
 
               return isValid
                   ? std::static_pointer_cast<RootShadowNode>(rootNode)
