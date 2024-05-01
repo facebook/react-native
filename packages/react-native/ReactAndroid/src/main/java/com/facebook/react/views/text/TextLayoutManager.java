@@ -31,13 +31,11 @@ import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.build.ReactBuildConfig;
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.Role;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ViewProps;
-import com.facebook.react.views.text.fragments.BridgeTextFragmentList;
 import com.facebook.react.views.text.internal.span.CustomLetterSpacingSpan;
 import com.facebook.react.views.text.internal.span.CustomLineHeightSpan;
 import com.facebook.react.views.text.internal.span.CustomStyleSpan;
@@ -114,18 +112,6 @@ public class TextLayoutManager {
   }
 
   private static void buildSpannableFromFragments(
-      Context context,
-      ReadableArray fragments,
-      SpannableStringBuilder sb,
-      List<SetSpanOperation> ops) {
-    if (ReactNativeFeatureFlags.enableSpannableBuildingUnification()) {
-      buildSpannableFromFragmentsUnified(context, fragments, sb, ops);
-    } else {
-      buildSpannableFromFragmentsDuplicated(context, fragments, sb, ops);
-    }
-  }
-
-  private static void buildSpannableFromFragmentsDuplicated(
       Context context,
       ReadableArray fragments,
       SpannableStringBuilder sb,
@@ -221,17 +207,6 @@ public class TextLayoutManager {
         ops.add(new SetSpanOperation(start, end, new ReactTagSpan(reactTag)));
       }
     }
-  }
-
-  private static void buildSpannableFromFragmentsUnified(
-      Context context,
-      ReadableArray fragments,
-      SpannableStringBuilder sb,
-      List<SetSpanOperation> ops) {
-
-    final BridgeTextFragmentList textFragmentList = new BridgeTextFragmentList(fragments);
-
-    TextLayoutUtils.buildSpannableFromTextFragmentList(context, textFragmentList, sb, ops);
   }
 
   // public because both ReactTextViewManager and ReactTextInputManager need to use this

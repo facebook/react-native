@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d03e37b3d80929ca78d8a6eecd9852a9>>
+ * @generated SignedSource<<50c8aeff2f02f26b75bcf62f448ca60d>>
  */
 
 /**
@@ -28,7 +28,6 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
   private var enableBackgroundExecutorCache: Boolean? = null
   private var enableCleanTextInputYogaNodeCache: Boolean? = null
   private var enableMicrotasksCache: Boolean? = null
-  private var enableSpannableBuildingUnificationCache: Boolean? = null
   private var enableSynchronousStateUpdatesCache: Boolean? = null
   private var enableUIConsistencyCache: Boolean? = null
   private var fixMountedFlagAndFixPreallocationCloneCache: Boolean? = null
@@ -108,15 +107,6 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableMicrotasks()
       enableMicrotasksCache = cached
-    }
-    return cached
-  }
-
-  override fun enableSpannableBuildingUnification(): Boolean {
-    var cached = enableSpannableBuildingUnificationCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.enableSpannableBuildingUnification()
-      enableSpannableBuildingUnificationCache = cached
     }
     return cached
   }
