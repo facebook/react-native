@@ -192,6 +192,38 @@ private:
 };
 
 
+#pragma mark - NativeEnumTurboModuleStatusNumEnum
+
+enum class NativeEnumTurboModuleStatusNumEnum { Active, Paused, Off };
+
+template <>
+struct Bridging<NativeEnumTurboModuleStatusNumEnum> {
+  static NativeEnumTurboModuleStatusNumEnum fromJs(jsi::Runtime &rt, const jsi::Value &rawValue) {
+    double value = (double)rawValue.asNumber();
+    if (value == 2) {
+      return NativeEnumTurboModuleStatusNumEnum::Active;
+    } else if (value == 1) {
+      return NativeEnumTurboModuleStatusNumEnum::Paused;
+    } else if (value == 0) {
+      return NativeEnumTurboModuleStatusNumEnum::Off;
+    } else {
+      throw jsi::JSError(rt, \\"No appropriate enum member found for value\\");
+    }
+  }
+
+  static jsi::Value toJs(jsi::Runtime &rt, NativeEnumTurboModuleStatusNumEnum value) {
+    if (value == NativeEnumTurboModuleStatusNumEnum::Active) {
+      return bridging::toJs(rt, 2);
+    } else if (value == NativeEnumTurboModuleStatusNumEnum::Paused) {
+      return bridging::toJs(rt, 1);
+    } else if (value == NativeEnumTurboModuleStatusNumEnum::Off) {
+      return bridging::toJs(rt, 0);
+    } else {
+      throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
+    }
+  }
+};
+
 #pragma mark - NativeEnumTurboModuleStatusRegularEnum
 
 enum class NativeEnumTurboModuleStatusRegularEnum { Active, Paused, Off };
@@ -250,38 +282,6 @@ struct Bridging<NativeEnumTurboModuleStatusStrEnum> {
       return bridging::toJs(rt, \\"paused\\");
     } else if (value == NativeEnumTurboModuleStatusStrEnum::Off) {
       return bridging::toJs(rt, \\"off\\");
-    } else {
-      throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
-    }
-  }
-};
-
-#pragma mark - NativeEnumTurboModuleStatusNumEnum
-
-enum class NativeEnumTurboModuleStatusNumEnum { Active, Paused, Off };
-
-template <>
-struct Bridging<NativeEnumTurboModuleStatusNumEnum> {
-  static NativeEnumTurboModuleStatusNumEnum fromJs(jsi::Runtime &rt, const jsi::Value &rawValue) {
-    double value = (double)rawValue.asNumber();
-    if (value == 2) {
-      return NativeEnumTurboModuleStatusNumEnum::Active;
-    } else if (value == 1) {
-      return NativeEnumTurboModuleStatusNumEnum::Paused;
-    } else if (value == 0) {
-      return NativeEnumTurboModuleStatusNumEnum::Off;
-    } else {
-      throw jsi::JSError(rt, \\"No appropriate enum member found for value\\");
-    }
-  }
-
-  static jsi::Value toJs(jsi::Runtime &rt, NativeEnumTurboModuleStatusNumEnum value) {
-    if (value == NativeEnumTurboModuleStatusNumEnum::Active) {
-      return bridging::toJs(rt, 2);
-    } else if (value == NativeEnumTurboModuleStatusNumEnum::Paused) {
-      return bridging::toJs(rt, 1);
-    } else if (value == NativeEnumTurboModuleStatusNumEnum::Off) {
-      return bridging::toJs(rt, 0);
     } else {
       throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
     }
@@ -2146,6 +2146,38 @@ private:
 };
 
 
+#pragma mark - NativeEnumTurboModuleStatusNumEnum
+
+enum class NativeEnumTurboModuleStatusNumEnum { Active, Paused, Off };
+
+template <>
+struct Bridging<NativeEnumTurboModuleStatusNumEnum> {
+  static NativeEnumTurboModuleStatusNumEnum fromJs(jsi::Runtime &rt, const jsi::Value &rawValue) {
+    double value = (double)rawValue.asNumber();
+    if (value == 2) {
+      return NativeEnumTurboModuleStatusNumEnum::Active;
+    } else if (value == 1) {
+      return NativeEnumTurboModuleStatusNumEnum::Paused;
+    } else if (value == 0) {
+      return NativeEnumTurboModuleStatusNumEnum::Off;
+    } else {
+      throw jsi::JSError(rt, \\"No appropriate enum member found for value\\");
+    }
+  }
+
+  static jsi::Value toJs(jsi::Runtime &rt, NativeEnumTurboModuleStatusNumEnum value) {
+    if (value == NativeEnumTurboModuleStatusNumEnum::Active) {
+      return bridging::toJs(rt, 2);
+    } else if (value == NativeEnumTurboModuleStatusNumEnum::Paused) {
+      return bridging::toJs(rt, 1);
+    } else if (value == NativeEnumTurboModuleStatusNumEnum::Off) {
+      return bridging::toJs(rt, 0);
+    } else {
+      throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
+    }
+  }
+};
+
 #pragma mark - NativeEnumTurboModuleStatusRegularEnum
 
 enum class NativeEnumTurboModuleStatusRegularEnum { Active, Paused, Off };
@@ -2204,38 +2236,6 @@ struct Bridging<NativeEnumTurboModuleStatusStrEnum> {
       return bridging::toJs(rt, \\"paused\\");
     } else if (value == NativeEnumTurboModuleStatusStrEnum::Off) {
       return bridging::toJs(rt, \\"off\\");
-    } else {
-      throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
-    }
-  }
-};
-
-#pragma mark - NativeEnumTurboModuleStatusNumEnum
-
-enum class NativeEnumTurboModuleStatusNumEnum { Active, Paused, Off };
-
-template <>
-struct Bridging<NativeEnumTurboModuleStatusNumEnum> {
-  static NativeEnumTurboModuleStatusNumEnum fromJs(jsi::Runtime &rt, const jsi::Value &rawValue) {
-    double value = (double)rawValue.asNumber();
-    if (value == 2) {
-      return NativeEnumTurboModuleStatusNumEnum::Active;
-    } else if (value == 1) {
-      return NativeEnumTurboModuleStatusNumEnum::Paused;
-    } else if (value == 0) {
-      return NativeEnumTurboModuleStatusNumEnum::Off;
-    } else {
-      throw jsi::JSError(rt, \\"No appropriate enum member found for value\\");
-    }
-  }
-
-  static jsi::Value toJs(jsi::Runtime &rt, NativeEnumTurboModuleStatusNumEnum value) {
-    if (value == NativeEnumTurboModuleStatusNumEnum::Active) {
-      return bridging::toJs(rt, 2);
-    } else if (value == NativeEnumTurboModuleStatusNumEnum::Paused) {
-      return bridging::toJs(rt, 1);
-    } else if (value == NativeEnumTurboModuleStatusNumEnum::Off) {
-      return bridging::toJs(rt, 0);
     } else {
       throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
     }
