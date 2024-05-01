@@ -10,11 +10,11 @@
  */
 
 /*::
-export type * from './version.flow';
+export type * from './index.flow';
 */
 
 if (process.env.BUILD_EXCLUDE_BABEL_REGISTER == null) {
-  require('../../../../scripts/build/babel-register').registerForMonorepo();
+  require('../../../scripts/build/babel-register').registerForMonorepo();
 }
 
-module.exports = require('./version.flow');
+module.exports = require('./index.flow');
