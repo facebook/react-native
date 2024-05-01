@@ -68,6 +68,11 @@ const definitions: FeatureFlagDefinitions = {
       defaultValue: false,
       description: 'Clean yoga node when <TextInput /> does not change.',
     },
+    enableGranularShadowTreeStateReconciliation: {
+      defaultValue: false,
+      description:
+        'When enabled, the renderer would only fail commits when they propagate state and the last commit that updated state changed before committing.',
+    },
     enableMicrotasks: {
       defaultValue: false,
       description:

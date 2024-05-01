@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<88e9d6c51edd3e6fca3c01b9a8968bba>>
+ * @generated SignedSource<<2453d73e433ecc5c13e0d08f6323539b>>
  */
 
 /**
@@ -31,6 +31,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var destroyFabricSurfacesInReactInstanceManagerCache: Boolean? = null
   private var enableBackgroundExecutorCache: Boolean? = null
   private var enableCleanTextInputYogaNodeCache: Boolean? = null
+  private var enableGranularShadowTreeStateReconciliationCache: Boolean? = null
   private var enableMicrotasksCache: Boolean? = null
   private var enableSynchronousStateUpdatesCache: Boolean? = null
   private var enableUIConsistencyCache: Boolean? = null
@@ -109,6 +110,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.enableCleanTextInputYogaNode()
       accessedFeatureFlags.add("enableCleanTextInputYogaNode")
       enableCleanTextInputYogaNodeCache = cached
+    }
+    return cached
+  }
+
+  override fun enableGranularShadowTreeStateReconciliation(): Boolean {
+    var cached = enableGranularShadowTreeStateReconciliationCache
+    if (cached == null) {
+      cached = currentProvider.enableGranularShadowTreeStateReconciliation()
+      accessedFeatureFlags.add("enableGranularShadowTreeStateReconciliation")
+      enableGranularShadowTreeStateReconciliationCache = cached
     }
     return cached
   }

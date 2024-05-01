@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<eb485b4b868f748219ee42f380ef409c>>
+ * @generated SignedSource<<583232adaacd64df92bef3d111a08df0>>
  * @flow strict-local
  */
 
@@ -47,6 +47,7 @@ export type ReactNativeFeatureFlags = {
   destroyFabricSurfacesInReactInstanceManager: Getter<boolean>,
   enableBackgroundExecutor: Getter<boolean>,
   enableCleanTextInputYogaNode: Getter<boolean>,
+  enableGranularShadowTreeStateReconciliation: Getter<boolean>,
   enableMicrotasks: Getter<boolean>,
   enableSynchronousStateUpdates: Getter<boolean>,
   enableUIConsistency: Getter<boolean>,
@@ -128,6 +129,10 @@ export const enableBackgroundExecutor: Getter<boolean> = createNativeFlagGetter(
  * Clean yoga node when <TextInput /> does not change.
  */
 export const enableCleanTextInputYogaNode: Getter<boolean> = createNativeFlagGetter('enableCleanTextInputYogaNode', false);
+/**
+ * When enabled, the renderer would only fail commits when they propagate state and the last commit that updated state changed before committing.
+ */
+export const enableGranularShadowTreeStateReconciliation: Getter<boolean> = createNativeFlagGetter('enableGranularShadowTreeStateReconciliation', false);
 /**
  * Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).
  */

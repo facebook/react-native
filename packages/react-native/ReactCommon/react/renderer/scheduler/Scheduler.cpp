@@ -151,10 +151,6 @@ Scheduler::Scheduler(
       "react_fabric:remove_outstanding_surfaces_on_destruction_ios");
 #endif
 
-  CoreFeatures::enableGranularShadowTreeStateReconciliation =
-      reactNativeConfig_->getBool(
-          "react_fabric:enable_granular_shadow_tree_state_reconciliation");
-
   CoreFeatures::enableReportEventPaintTime = reactNativeConfig_->getBool(
       "rn_responsiveness_performance:enable_paint_time_reporting");
 

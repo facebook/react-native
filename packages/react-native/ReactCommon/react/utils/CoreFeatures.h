@@ -23,10 +23,6 @@ class CoreFeatures {
   // updates for all changes in scroll position.
   static bool enableGranularScrollViewStateUpdatesIOS;
 
-  // When enabled, the renderer would only fail commits when they propagate
-  // state and the last commit that updated state changed before committing.
-  static bool enableGranularShadowTreeStateReconciliation;
-
   // When enabled, rawProps in Props will not include Yoga specific props.
   static bool excludeYogaFromRawProps;
 
