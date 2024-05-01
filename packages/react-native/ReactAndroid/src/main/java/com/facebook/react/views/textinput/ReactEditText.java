@@ -55,7 +55,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.text.ReactTextUpdate;
 import com.facebook.react.views.text.ReactTypefaceUtils;
 import com.facebook.react.views.text.TextAttributes;
-import com.facebook.react.views.text.TextLayoutManager;
+import com.facebook.react.views.text.TextLayoutManagerMapBuffer;
 import com.facebook.react.views.text.internal.span.CustomLetterSpacingSpan;
 import com.facebook.react.views.text.internal.span.CustomLineHeightSpan;
 import com.facebook.react.views.text.internal.span.CustomStyleSpan;
@@ -216,7 +216,7 @@ public class ReactEditText extends AppCompatEditText {
     if (DEBUG_MODE) {
       FLog.e(TAG, "finalize[" + getId() + "] delete cached spannable");
     }
-    TextLayoutManager.deleteCachedSpannableForTag(getId());
+    TextLayoutManagerMapBuffer.deleteCachedSpannableForTag(getId());
   }
 
   // After the text changes inside an EditText, TextView checks if a layout() has been requested.
@@ -1219,7 +1219,7 @@ public class ReactEditText extends AppCompatEditText {
     }
 
     addSpansFromStyleAttributes(sb);
-    TextLayoutManager.setCachedSpannableForTag(getId(), sb);
+    TextLayoutManagerMapBuffer.setCachedSpannableForTag(getId(), sb);
   }
 
   void setEventDispatcher(@Nullable EventDispatcher eventDispatcher) {
