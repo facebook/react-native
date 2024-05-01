@@ -156,7 +156,14 @@ async function main() {
     latest = setLatest;
   }
 
-  const npmTag = latest ? 'latest' : !prerelease ? branch : patch == 0 ? 'next' : '--no-tag';
+  const npmTag = latest
+    ? 'latest'
+    : !prerelease
+    ? branch
+    : patch === '0'
+    ? 'next'
+    : '--no-tag';
+
   const {confirmRelease} = await inquirer.prompt({
     type: 'confirm',
     name: 'confirmRelease',

@@ -135,7 +135,7 @@ function publishPackage(
   packageOptions /*: NpmPackageOptions */,
   execOptions /*: ?ExecOptsSync */,
 ) /*: ShellString */ {
-  const {otp, tags, access} = packageOptions;
+  const {otp, tags} = packageOptions;
 
   let tagsFlag = '';
   if (tags != null) {
