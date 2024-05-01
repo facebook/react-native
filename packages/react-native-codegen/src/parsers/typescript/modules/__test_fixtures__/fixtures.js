@@ -766,11 +766,6 @@ export enum Resolution {
   High = 1080,
 }
 
-export enum Floppy {
-  LowDensity = 0.72,
-  HighDensity = 1.44,
-}
-
 export enum StringOptions {
   One = 'one',
   Two = 'two',
@@ -778,7 +773,7 @@ export enum StringOptions {
 }
 
 export interface Spec extends TurboModule {
-  readonly getEnums: (quality: Quality, resolution?: Resolution, floppy: Floppy, stringOptions: StringOptions) => string;
+  readonly getEnums: (quality: Quality, resolution?: Resolution, stringOptions: StringOptions) => string;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>(
@@ -807,11 +802,6 @@ export enum Quality {
 export enum Resolution {
   Low = 720,
   High = 1080,
-}
-
-export enum Floppy {
-  LowDensity = 0.72,
-  HighDensity = 1.44,
 }
 
 export enum StringOptions {
@@ -845,7 +835,7 @@ export type CustomDeviceEvent = {
 export interface Spec extends TurboModule {
   readonly getCallback: () => () => void;
   readonly getMixed: (arg: unknown) => unknown;
-  readonly getEnums: (quality: Quality, resolution?: Resolution, floppy: Floppy, stringOptions: StringOptions) => string;
+  readonly getEnums: (quality: Quality, resolution?: Resolution, stringOptions: StringOptions) => string;
   readonly getBinaryTreeNode: (arg: BinaryTreeNode) => BinaryTreeNode;
   readonly getGraphNode: (arg: GraphNode) => GraphNode;
   readonly getMap: (arg: {[a: string]: number | null;}) => {[b: string]: number | null;};

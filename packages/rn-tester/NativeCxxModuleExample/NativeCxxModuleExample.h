@@ -161,7 +161,7 @@ class NativeCxxModuleExample
 
   GraphNode getGraphNode(jsi::Runtime& rt, GraphNode arg);
 
-  NativeCxxModuleExampleCxxEnumFloat getNumEnum(
+  NativeCxxModuleExampleCxxEnumInt getNumEnum(
       jsi::Runtime& rt,
       NativeCxxModuleExampleCxxEnumInt arg);
 

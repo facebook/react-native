@@ -105,7 +105,6 @@ namespace JS {
       NSString *regular() const;
       NSString *str() const;
       double num() const;
-      double fraction() const;
 
       StateTypeWithEnums(NSDictionary *const v) : _v(v) {}
     private:
@@ -122,11 +121,9 @@ namespace JS {
 - (NSString *)getStatusRegular:(JS::NativeEnumTurboModule::StateType &)statusProp;
 - (NSString *)getStatusStr:(JS::NativeEnumTurboModule::StateType &)statusProp;
 - (NSNumber *)getStatusNum:(JS::NativeEnumTurboModule::StateType &)statusProp;
-- (NSNumber *)getStatusFraction:(JS::NativeEnumTurboModule::StateType &)statusProp;
 - (NSDictionary *)getStateType:(NSString *)a
                              b:(NSString *)b
-                             c:(double)c
-                             d:(double)d;
+                             c:(double)c;
 - (NSDictionary *)getStateTypeWithEnums:(JS::NativeEnumTurboModule::StateTypeWithEnums &)paramOfTypeWithEnums;
 
 @end
@@ -1053,11 +1050,6 @@ inline NSString *JS::NativeEnumTurboModule::StateTypeWithEnums::str() const
 inline double JS::NativeEnumTurboModule::StateTypeWithEnums::num() const
 {
   id const p = _v[@\\"num\\"];
-  return RCTBridgingToDouble(p);
-}
-inline double JS::NativeEnumTurboModule::StateTypeWithEnums::fraction() const
-{
-  id const p = _v[@\\"fraction\\"];
   return RCTBridgingToDouble(p);
 }
 
@@ -1457,7 +1449,6 @@ namespace JS {
       NSString *regular() const;
       NSString *str() const;
       double num() const;
-      double fraction() const;
 
       StateTypeWithEnums(NSDictionary *const v) : _v(v) {}
     private:
@@ -1474,11 +1465,9 @@ namespace JS {
 - (NSString *)getStatusRegular:(JS::NativeEnumTurboModule::StateType &)statusProp;
 - (NSString *)getStatusStr:(JS::NativeEnumTurboModule::StateType &)statusProp;
 - (NSNumber *)getStatusNum:(JS::NativeEnumTurboModule::StateType &)statusProp;
-- (NSNumber *)getStatusFraction:(JS::NativeEnumTurboModule::StateType &)statusProp;
 - (NSDictionary *)getStateType:(NSString *)a
                              b:(NSString *)b
-                             c:(double)c
-                             d:(double)d;
+                             c:(double)c;
 - (NSDictionary *)getStateTypeWithEnums:(JS::NativeEnumTurboModule::StateTypeWithEnums &)paramOfTypeWithEnums;
 
 @end
@@ -2405,11 +2394,6 @@ inline NSString *JS::NativeEnumTurboModule::StateTypeWithEnums::str() const
 inline double JS::NativeEnumTurboModule::StateTypeWithEnums::num() const
 {
   id const p = _v[@\\"num\\"];
-  return RCTBridgingToDouble(p);
-}
-inline double JS::NativeEnumTurboModule::StateTypeWithEnums::fraction() const
-{
-  id const p = _v[@\\"fraction\\"];
   return RCTBridgingToDouble(p);
 }
 
@@ -2815,12 +2799,8 @@ namespace facebook::react {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, NumberKind, \\"getStatusNum\\", @selector(getStatusNum:), args, count);
     }
 
-    static facebook::jsi::Value __hostFunction_NativeEnumTurboModuleSpecJSI_getStatusFraction(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, NumberKind, \\"getStatusFraction\\", @selector(getStatusFraction:), args, count);
-    }
-
     static facebook::jsi::Value __hostFunction_NativeEnumTurboModuleSpecJSI_getStateType(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getStateType\\", @selector(getStateType:b:c:d:), args, count);
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getStateType\\", @selector(getStateType:b:c:), args, count);
     }
 
     static facebook::jsi::Value __hostFunction_NativeEnumTurboModuleSpecJSI_getStateTypeWithEnums(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
@@ -2839,10 +2819,7 @@ namespace facebook::react {
         methodMap_[\\"getStatusNum\\"] = MethodMetadata {1, __hostFunction_NativeEnumTurboModuleSpecJSI_getStatusNum};
         setMethodArgConversionSelector(@\\"getStatusNum\\", 0, @\\"JS_NativeEnumTurboModule_StateType:\\");
         
-        methodMap_[\\"getStatusFraction\\"] = MethodMetadata {1, __hostFunction_NativeEnumTurboModuleSpecJSI_getStatusFraction};
-        setMethodArgConversionSelector(@\\"getStatusFraction\\", 0, @\\"JS_NativeEnumTurboModule_StateType:\\");
-        
-        methodMap_[\\"getStateType\\"] = MethodMetadata {4, __hostFunction_NativeEnumTurboModuleSpecJSI_getStateType};
+        methodMap_[\\"getStateType\\"] = MethodMetadata {3, __hostFunction_NativeEnumTurboModuleSpecJSI_getStateType};
         
         
         methodMap_[\\"getStateTypeWithEnums\\"] = MethodMetadata {1, __hostFunction_NativeEnumTurboModuleSpecJSI_getStateTypeWithEnums};
