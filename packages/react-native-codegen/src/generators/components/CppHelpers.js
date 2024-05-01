@@ -166,6 +166,14 @@ function getEnumMaskName(enumName: string): string {
   return `${enumName}Mask`;
 }
 
+function getDefaultInitializerString(
+  componentName: string,
+  prop: NamedShape<PropTypeAnnotation>,
+): string {
+  const defaultValue = convertDefaultTypeToString(componentName, prop);
+  return `{${defaultValue}}`;
+}
+
 function convertDefaultTypeToString(
   componentName: string,
   prop: NamedShape<PropTypeAnnotation>,
@@ -270,6 +278,7 @@ const IncludeTemplate = ({
 };
 
 module.exports = {
+  getDefaultInitializerString,
   convertDefaultTypeToString,
   getCppArrayTypeForAnnotation,
   getCppTypeForAnnotation,

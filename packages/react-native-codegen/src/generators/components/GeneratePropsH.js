@@ -23,8 +23,8 @@ const {
   getNativeTypeFromAnnotation,
 } = require('./ComponentsGeneratorUtils.js');
 const {
-  convertDefaultTypeToString,
   generateStructName,
+  getDefaultInitializerString,
   getEnumMaskName,
   toIntEnumValueName,
 } = require('./CppHelpers.js');
@@ -456,13 +456,21 @@ function generateEnumString(
 function generatePropsString(
   componentName: string,
   props: $ReadOnlyArray<NamedShape<PropTypeAnnotation>>,
+  nameParts: $ReadOnlyArray<string>,
 ) {
   return props
     .map(prop => {
-      const nativeType = getNativeTypeFromAnnotation(componentName, prop, []);
-      const defaultValue = convertDefaultTypeToString(componentName, prop);
+      const nativeType = getNativeTypeFromAnnotation(
+        componentName,
+        prop,
+        nameParts,
+      );
+      const defaultInitializer = getDefaultInitializerString(
+        componentName,
+        prop,
+      );
 
-      return `${nativeType} ${prop.name}{${defaultValue}};`;
+      return `${nativeType} ${prop.name}${defaultInitializer};`;
     })
     .join('\n' + '  ');
 }
@@ -629,16 +637,11 @@ function generateStruct(
 ): void {
   const structNameParts = nameParts;
   const structName = generateStructName(componentName, structNameParts);
-
-  const fields = properties
-    .map(property => {
-      return `${getNativeTypeFromAnnotation(
-        componentName,
-        property,
-        structNameParts,
-      )} ${property.name};`;
-    })
-    .join('\n' + '  ');
+  const fields = generatePropsString(
+    componentName,
+    properties,
+    structNameParts,
+  );
 
   properties.forEach((property: NamedShape<PropTypeAnnotation>) => {
     const name = property.name;
@@ -738,6 +741,7 @@ module.exports = {
             const propsString = generatePropsString(
               componentName,
               component.props,
+              [],
             );
             const extendString = getClassExtendString(component);
             const extendsImports = getExtendsImports(component.extendsProps);
