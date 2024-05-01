@@ -287,38 +287,6 @@ struct Bridging<NativeEnumTurboModuleStatusNumEnum> {
     }
   }
 };
-
-#pragma mark - NativeEnumTurboModuleStatusFractionEnum
-
-enum class NativeEnumTurboModuleStatusFractionEnum { Active, Paused, Off };
-
-template <>
-struct Bridging<NativeEnumTurboModuleStatusFractionEnum> {
-  static NativeEnumTurboModuleStatusFractionEnum fromJs(jsi::Runtime &rt, const jsi::Value &rawValue) {
-    double value = (double)rawValue.asNumber();
-    if (value == 0.2f) {
-      return NativeEnumTurboModuleStatusFractionEnum::Active;
-    } else if (value == 0.1f) {
-      return NativeEnumTurboModuleStatusFractionEnum::Paused;
-    } else if (value == 0f) {
-      return NativeEnumTurboModuleStatusFractionEnum::Off;
-    } else {
-      throw jsi::JSError(rt, \\"No appropriate enum member found for value\\");
-    }
-  }
-
-  static jsi::Value toJs(jsi::Runtime &rt, NativeEnumTurboModuleStatusFractionEnum value) {
-    if (value == NativeEnumTurboModuleStatusFractionEnum::Active) {
-      return bridging::toJs(rt, 0.2f);
-    } else if (value == NativeEnumTurboModuleStatusFractionEnum::Paused) {
-      return bridging::toJs(rt, 0.1f);
-    } else if (value == NativeEnumTurboModuleStatusFractionEnum::Off) {
-      return bridging::toJs(rt, 0f);
-    } else {
-      throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
-    }
-  }
-};
   
 #pragma mark - NativeEnumTurboModuleStateType
 
@@ -363,15 +331,14 @@ struct NativeEnumTurboModuleStateTypeBridging {
 
 #pragma mark - NativeEnumTurboModuleStateTypeWithEnums
 
-template <typename P0, typename P1, typename P2, typename P3, typename P4>
+template <typename P0, typename P1, typename P2, typename P3>
 struct NativeEnumTurboModuleStateTypeWithEnums {
   P0 state;
   P1 regular;
   P2 str;
   P3 num;
-  P4 fraction;
   bool operator==(const NativeEnumTurboModuleStateTypeWithEnums &other) const {
-    return state == other.state && regular == other.regular && str == other.str && num == other.num && fraction == other.fraction;
+    return state == other.state && regular == other.regular && str == other.str && num == other.num;
   }
 };
 
@@ -387,8 +354,7 @@ struct NativeEnumTurboModuleStateTypeWithEnumsBridging {
       bridging::fromJs<decltype(types.state)>(rt, value.getProperty(rt, \\"state\\"), jsInvoker),
       bridging::fromJs<decltype(types.regular)>(rt, value.getProperty(rt, \\"regular\\"), jsInvoker),
       bridging::fromJs<decltype(types.str)>(rt, value.getProperty(rt, \\"str\\"), jsInvoker),
-      bridging::fromJs<decltype(types.num)>(rt, value.getProperty(rt, \\"num\\"), jsInvoker),
-      bridging::fromJs<decltype(types.fraction)>(rt, value.getProperty(rt, \\"fraction\\"), jsInvoker)};
+      bridging::fromJs<decltype(types.num)>(rt, value.getProperty(rt, \\"num\\"), jsInvoker)};
     return result;
   }
 
@@ -408,10 +374,6 @@ struct NativeEnumTurboModuleStateTypeWithEnumsBridging {
   static jsi::Value numToJs(jsi::Runtime &rt, decltype(types.num) value) {
     return bridging::toJs(rt, value);
   }
-
-  static jsi::Value fractionToJs(jsi::Runtime &rt, decltype(types.fraction) value) {
-    return bridging::toJs(rt, value);
-  }
 #endif
 
   static jsi::Object toJs(
@@ -423,7 +385,6 @@ struct NativeEnumTurboModuleStateTypeWithEnumsBridging {
     result.setProperty(rt, \\"regular\\", bridging::toJs(rt, value.regular, jsInvoker));
     result.setProperty(rt, \\"str\\", bridging::toJs(rt, value.str, jsInvoker));
     result.setProperty(rt, \\"num\\", bridging::toJs(rt, value.num, jsInvoker));
-    result.setProperty(rt, \\"fraction\\", bridging::toJs(rt, value.fraction, jsInvoker));
     return result;
   }
 };
@@ -436,8 +397,7 @@ public:
   virtual jsi::String getStatusRegular(jsi::Runtime &rt, jsi::Object statusProp) = 0;
   virtual jsi::String getStatusStr(jsi::Runtime &rt, jsi::Object statusProp) = 0;
   virtual jsi::Value getStatusNum(jsi::Runtime &rt, jsi::Object statusProp) = 0;
-  virtual jsi::Value getStatusFraction(jsi::Runtime &rt, jsi::Object statusProp) = 0;
-  virtual jsi::Object getStateType(jsi::Runtime &rt, jsi::String a, jsi::String b, jsi::Value c, jsi::Value d) = 0;
+  virtual jsi::Object getStateType(jsi::Runtime &rt, jsi::String a, jsi::String b, jsi::Value c) = 0;
   virtual jsi::Object getStateTypeWithEnums(jsi::Runtime &rt, jsi::Object paramOfTypeWithEnums) = 0;
 
 };
@@ -486,21 +446,13 @@ private:
       return bridging::callFromJs<jsi::Value>(
           rt, &T::getStatusNum, jsInvoker_, instance_, std::move(statusProp));
     }
-    jsi::Value getStatusFraction(jsi::Runtime &rt, jsi::Object statusProp) override {
+    jsi::Object getStateType(jsi::Runtime &rt, jsi::String a, jsi::String b, jsi::Value c) override {
       static_assert(
-          bridging::getParameterCount(&T::getStatusFraction) == 2,
-          \\"Expected getStatusFraction(...) to have 2 parameters\\");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::getStatusFraction, jsInvoker_, instance_, std::move(statusProp));
-    }
-    jsi::Object getStateType(jsi::Runtime &rt, jsi::String a, jsi::String b, jsi::Value c, jsi::Value d) override {
-      static_assert(
-          bridging::getParameterCount(&T::getStateType) == 5,
-          \\"Expected getStateType(...) to have 5 parameters\\");
+          bridging::getParameterCount(&T::getStateType) == 4,
+          \\"Expected getStateType(...) to have 4 parameters\\");
 
       return bridging::callFromJs<jsi::Object>(
-          rt, &T::getStateType, jsInvoker_, instance_, std::move(a), std::move(b), std::move(c), std::move(d));
+          rt, &T::getStateType, jsInvoker_, instance_, std::move(a), std::move(b), std::move(c));
     }
     jsi::Object getStateTypeWithEnums(jsi::Runtime &rt, jsi::Object paramOfTypeWithEnums) override {
       static_assert(
@@ -2289,38 +2241,6 @@ struct Bridging<NativeEnumTurboModuleStatusNumEnum> {
     }
   }
 };
-
-#pragma mark - NativeEnumTurboModuleStatusFractionEnum
-
-enum class NativeEnumTurboModuleStatusFractionEnum { Active, Paused, Off };
-
-template <>
-struct Bridging<NativeEnumTurboModuleStatusFractionEnum> {
-  static NativeEnumTurboModuleStatusFractionEnum fromJs(jsi::Runtime &rt, const jsi::Value &rawValue) {
-    double value = (double)rawValue.asNumber();
-    if (value == 0.2f) {
-      return NativeEnumTurboModuleStatusFractionEnum::Active;
-    } else if (value == 0.1f) {
-      return NativeEnumTurboModuleStatusFractionEnum::Paused;
-    } else if (value == 0f) {
-      return NativeEnumTurboModuleStatusFractionEnum::Off;
-    } else {
-      throw jsi::JSError(rt, \\"No appropriate enum member found for value\\");
-    }
-  }
-
-  static jsi::Value toJs(jsi::Runtime &rt, NativeEnumTurboModuleStatusFractionEnum value) {
-    if (value == NativeEnumTurboModuleStatusFractionEnum::Active) {
-      return bridging::toJs(rt, 0.2f);
-    } else if (value == NativeEnumTurboModuleStatusFractionEnum::Paused) {
-      return bridging::toJs(rt, 0.1f);
-    } else if (value == NativeEnumTurboModuleStatusFractionEnum::Off) {
-      return bridging::toJs(rt, 0f);
-    } else {
-      throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
-    }
-  }
-};
   
 #pragma mark - NativeEnumTurboModuleStateType
 
@@ -2365,15 +2285,14 @@ struct NativeEnumTurboModuleStateTypeBridging {
 
 #pragma mark - NativeEnumTurboModuleStateTypeWithEnums
 
-template <typename P0, typename P1, typename P2, typename P3, typename P4>
+template <typename P0, typename P1, typename P2, typename P3>
 struct NativeEnumTurboModuleStateTypeWithEnums {
   P0 state;
   P1 regular;
   P2 str;
   P3 num;
-  P4 fraction;
   bool operator==(const NativeEnumTurboModuleStateTypeWithEnums &other) const {
-    return state == other.state && regular == other.regular && str == other.str && num == other.num && fraction == other.fraction;
+    return state == other.state && regular == other.regular && str == other.str && num == other.num;
   }
 };
 
@@ -2389,8 +2308,7 @@ struct NativeEnumTurboModuleStateTypeWithEnumsBridging {
       bridging::fromJs<decltype(types.state)>(rt, value.getProperty(rt, \\"state\\"), jsInvoker),
       bridging::fromJs<decltype(types.regular)>(rt, value.getProperty(rt, \\"regular\\"), jsInvoker),
       bridging::fromJs<decltype(types.str)>(rt, value.getProperty(rt, \\"str\\"), jsInvoker),
-      bridging::fromJs<decltype(types.num)>(rt, value.getProperty(rt, \\"num\\"), jsInvoker),
-      bridging::fromJs<decltype(types.fraction)>(rt, value.getProperty(rt, \\"fraction\\"), jsInvoker)};
+      bridging::fromJs<decltype(types.num)>(rt, value.getProperty(rt, \\"num\\"), jsInvoker)};
     return result;
   }
 
@@ -2410,10 +2328,6 @@ struct NativeEnumTurboModuleStateTypeWithEnumsBridging {
   static jsi::Value numToJs(jsi::Runtime &rt, decltype(types.num) value) {
     return bridging::toJs(rt, value);
   }
-
-  static jsi::Value fractionToJs(jsi::Runtime &rt, decltype(types.fraction) value) {
-    return bridging::toJs(rt, value);
-  }
 #endif
 
   static jsi::Object toJs(
@@ -2425,7 +2339,6 @@ struct NativeEnumTurboModuleStateTypeWithEnumsBridging {
     result.setProperty(rt, \\"regular\\", bridging::toJs(rt, value.regular, jsInvoker));
     result.setProperty(rt, \\"str\\", bridging::toJs(rt, value.str, jsInvoker));
     result.setProperty(rt, \\"num\\", bridging::toJs(rt, value.num, jsInvoker));
-    result.setProperty(rt, \\"fraction\\", bridging::toJs(rt, value.fraction, jsInvoker));
     return result;
   }
 };
@@ -2438,8 +2351,7 @@ public:
   virtual jsi::String getStatusRegular(jsi::Runtime &rt, jsi::Object statusProp) = 0;
   virtual jsi::String getStatusStr(jsi::Runtime &rt, jsi::Object statusProp) = 0;
   virtual jsi::Value getStatusNum(jsi::Runtime &rt, jsi::Object statusProp) = 0;
-  virtual jsi::Value getStatusFraction(jsi::Runtime &rt, jsi::Object statusProp) = 0;
-  virtual jsi::Object getStateType(jsi::Runtime &rt, jsi::String a, jsi::String b, jsi::Value c, jsi::Value d) = 0;
+  virtual jsi::Object getStateType(jsi::Runtime &rt, jsi::String a, jsi::String b, jsi::Value c) = 0;
   virtual jsi::Object getStateTypeWithEnums(jsi::Runtime &rt, jsi::Object paramOfTypeWithEnums) = 0;
 
 };
@@ -2488,21 +2400,13 @@ private:
       return bridging::callFromJs<jsi::Value>(
           rt, &T::getStatusNum, jsInvoker_, instance_, std::move(statusProp));
     }
-    jsi::Value getStatusFraction(jsi::Runtime &rt, jsi::Object statusProp) override {
+    jsi::Object getStateType(jsi::Runtime &rt, jsi::String a, jsi::String b, jsi::Value c) override {
       static_assert(
-          bridging::getParameterCount(&T::getStatusFraction) == 2,
-          \\"Expected getStatusFraction(...) to have 2 parameters\\");
-
-      return bridging::callFromJs<jsi::Value>(
-          rt, &T::getStatusFraction, jsInvoker_, instance_, std::move(statusProp));
-    }
-    jsi::Object getStateType(jsi::Runtime &rt, jsi::String a, jsi::String b, jsi::Value c, jsi::Value d) override {
-      static_assert(
-          bridging::getParameterCount(&T::getStateType) == 5,
-          \\"Expected getStateType(...) to have 5 parameters\\");
+          bridging::getParameterCount(&T::getStateType) == 4,
+          \\"Expected getStateType(...) to have 4 parameters\\");
 
       return bridging::callFromJs<jsi::Object>(
-          rt, &T::getStateType, jsInvoker_, instance_, std::move(a), std::move(b), std::move(c), std::move(d));
+          rt, &T::getStateType, jsInvoker_, instance_, std::move(a), std::move(b), std::move(c));
     }
     jsi::Object getStateTypeWithEnums(jsi::Runtime &rt, jsi::Object paramOfTypeWithEnums) override {
       static_assert(

@@ -17,11 +17,6 @@ export enum EnumInt {
   IB = 42,
 }
 
-export enum EnumFloat {
-  FA = 1.23,
-  FB = 4.56,
-}
-
 export enum EnumNone {
   NA,
   NB,
@@ -89,7 +84,7 @@ export interface Spec extends TurboModule {
   +consumeCustomHostObject: (customHostObject: CustomHostObject) => string;
   +getBinaryTreeNode: (arg: BinaryTreeNode) => BinaryTreeNode;
   +getGraphNode: (arg: GraphNode) => GraphNode;
-  +getNumEnum: (arg: EnumInt) => EnumFloat;
+  +getNumEnum: (arg: EnumInt) => EnumInt;
   +getStrEnum: (arg: EnumNone) => EnumStr;
   +getMap: (arg: {[key: string]: ?number}) => {[key: string]: ?number};
   +getNumber: (arg: number) => number;
