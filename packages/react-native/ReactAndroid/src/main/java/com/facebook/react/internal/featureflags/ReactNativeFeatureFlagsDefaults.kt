@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0c39f3c8abdce75d6a197b6227bb181e>>
+ * @generated SignedSource<<e6a248df3e57d36319d9a32bd49dfa5a>>
  */
 
 /**
@@ -52,6 +52,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun inspectorEnableCxxInspectorPackagerConnection(): Boolean = false
 
   override fun inspectorEnableModernCDPRegistry(): Boolean = false
+
+  override fun lazyAnimationCallbacks(): Boolean = false
 
   override fun preventDoubleTextMeasure(): Boolean = false
 

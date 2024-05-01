@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<cb271f43cd3a105679439b8dc269beac>>
+ * @generated SignedSource<<36558176ca3a38b086a50ac90cf08c67>>
  */
 
 /**
@@ -35,6 +35,7 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
   private var forceBatchingMountItemsOnAndroidCache: Boolean? = null
   private var inspectorEnableCxxInspectorPackagerConnectionCache: Boolean? = null
   private var inspectorEnableModernCDPRegistryCache: Boolean? = null
+  private var lazyAnimationCallbacksCache: Boolean? = null
   private var preventDoubleTextMeasureCache: Boolean? = null
   private var useModernRuntimeSchedulerCache: Boolean? = null
   private var useNativeViewConfigsInBridgelessModeCache: Boolean? = null
@@ -171,6 +172,15 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.inspectorEnableModernCDPRegistry()
       inspectorEnableModernCDPRegistryCache = cached
+    }
+    return cached
+  }
+
+  override fun lazyAnimationCallbacks(): Boolean {
+    var cached = lazyAnimationCallbacksCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.lazyAnimationCallbacks()
+      lazyAnimationCallbacksCache = cached
     }
     return cached
   }

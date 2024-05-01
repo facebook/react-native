@@ -107,6 +107,11 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Flag determining if the modern CDP backend should be enabled. This flag is global and should not be changed across React Host lifetimes.',
     },
+    lazyAnimationCallbacks: {
+      defaultValue: false,
+      description:
+        'Only enqueue Choreographer calls if there is an ongoing animation, instead of enqueueing every frame.',
+    },
     preventDoubleTextMeasure: {
       defaultValue: false,
       description:

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4fa2aa14a3e8646855b6464dc6fb3668>>
+ * @generated SignedSource<<5065ed4400b76ae62f43ec64ee03ebd2>>
  */
 
 /**
@@ -73,6 +73,9 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool inspectorEnableModernCDPRegistry(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool lazyAnimationCallbacks(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool preventDoubleTextMeasure(
