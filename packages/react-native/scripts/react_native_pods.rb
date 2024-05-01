@@ -16,6 +16,7 @@ require_relative './cocoapods/new_architecture.rb'
 require_relative './cocoapods/local_podspec_patch.rb'
 require_relative './cocoapods/runtime.rb'
 require_relative './cocoapods/helpers.rb'
+require_relative './cocoapods/privacy_manifest_utils.rb'
 # Importing to expose use_native_modules!
 require_relative './cocoapods/autolinking.rb'
 
@@ -63,7 +64,8 @@ def use_react_native! (
   production: false, # deprecated
   hermes_enabled: ENV['USE_HERMES'] && ENV['USE_HERMES'] == '0' ? false : true,
   app_path: '..',
-  config_file_dir: ''
+  config_file_dir: '',
+  privacy_file_aggregation_enabled: true
 )
 
   # Set the app_path as env variable so the podspecs can access it.
@@ -87,6 +89,7 @@ def use_react_native! (
 
   ENV['RCT_FABRIC_ENABLED'] = fabric_enabled ? "1" : "0"
   ENV['USE_HERMES'] = hermes_enabled ? "1" : "0"
+  ENV['RCT_AGGREGATE_PRIVACY_FILES'] = privacy_file_aggregation_enabled ? "1" : "0"
 
   prefix = path
 
@@ -273,6 +276,7 @@ def react_native_post_install(
 
   fabric_enabled = ENV['RCT_FABRIC_ENABLED'] == '1'
   hermes_enabled = ENV['USE_HERMES'] == '1'
+  privacy_file_aggregation_enabled = ENV['RCT_AGGREGATE_PRIVACY_FILES'] == '1'
 
   if hermes_enabled
     ReactNativePodsUtils.set_gcc_preprocessor_definition_for_React_hermes(installer)
@@ -287,7 +291,12 @@ def react_native_post_install(
   ReactNativePodsUtils.updateOSDeploymentTarget(installer)
   ReactNativePodsUtils.set_dynamic_frameworks_flags(installer)
   ReactNativePodsUtils.add_ndebug_flag_to_pods_in_release(installer)
-  ReactNativePodsUtils.add_privacy_manifest_if_needed(installer)
+
+  if privacy_file_aggregation_enabled
+    PrivacyManifestUtils.add_aggregated_privacy_manifest(installer)
+  else
+    PrivacyManifestUtils.add_privacy_manifest_if_needed(installer)
+  end
 
   NewArchitectureHelper.set_clang_cxx_language_standard_if_needed(installer)
   NewArchitectureHelper.modify_flags_for_new_architecture(installer, NewArchitectureHelper.new_arch_enabled)
