@@ -25,9 +25,8 @@ import type {
   TypeResolutionStatus,
 } from '../../utils';
 
-import {UnsupportedEnumDeclarationParserError} from '../../errors';
-
 const {
+  UnsupportedEnumDeclarationParserError,
   UnsupportedGenericParserError,
   UnsupportedTypeAnnotationParserError,
 } = require('../../errors');
