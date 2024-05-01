@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0da2db91c1f04980d3bb69869acb94c6>>
+ * @generated SignedSource<<9e91caddfdc8fdf56f9229c2d4c43355>>
  */
 
 /**
@@ -39,7 +39,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableBackgroundExecutor();
   bool enableCleanTextInputYogaNode();
   bool enableMicrotasks();
-  bool enableSpannableBuildingUnification();
   bool enableSynchronousStateUpdates();
   bool enableUIConsistency();
   bool fixMountedFlagAndFixPreallocationClone();
@@ -60,7 +59,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 19> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 18> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> allowCollapsableChildren_;
@@ -70,7 +69,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableBackgroundExecutor_;
   std::atomic<std::optional<bool>> enableCleanTextInputYogaNode_;
   std::atomic<std::optional<bool>> enableMicrotasks_;
-  std::atomic<std::optional<bool>> enableSpannableBuildingUnification_;
   std::atomic<std::optional<bool>> enableSynchronousStateUpdates_;
   std::atomic<std::optional<bool>> enableUIConsistency_;
   std::atomic<std::optional<bool>> fixMountedFlagAndFixPreallocationClone_;

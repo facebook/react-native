@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f9ff3bc9f437dbd6965f5927ada5f645>>
+ * @generated SignedSource<<cbdfc9073ec79d17d0c866b7cd089973>>
  */
 
 /**
@@ -76,11 +76,6 @@ class ReactNativeFeatureFlags {
    * Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).
    */
   RN_EXPORT static bool enableMicrotasks();
-
-  /**
-   * Uses new, deduplicated logic for constructing Android Spannables from text fragments
-   */
-  RN_EXPORT static bool enableSpannableBuildingUnification();
 
   /**
    * Dispatches state updates synchronously in Fabric (e.g.: updates the scroll position in the shadow tree synchronously from the main thread).

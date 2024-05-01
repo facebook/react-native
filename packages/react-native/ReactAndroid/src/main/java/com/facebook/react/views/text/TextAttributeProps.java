@@ -31,7 +31,7 @@ import java.util.List;
 // TODO: T63643819 refactor naming of TextAttributeProps to make explicit that this represents
 // TextAttributes and not TextProps. As part of this refactor extract methods that don't belong to
 // TextAttributeProps (e.g. TextAlign)
-public class TextAttributeProps implements EffectiveTextAttributeProvider {
+public class TextAttributeProps {
 
   // constants for Text Attributes serialization
   public static final short TA_KEY_FOREGROUND_COLOR = 0;
@@ -347,7 +347,6 @@ public class TextAttributeProps implements EffectiveTextAttributeProvider {
 
   // Returns a line height which takes into account the requested line height
   // and the height of the inline images.
-  @Override
   public float getEffectiveLineHeight() {
     boolean useInlineViewHeight =
         !Float.isNaN(mLineHeight)
@@ -376,7 +375,6 @@ public class TextAttributeProps implements EffectiveTextAttributeProvider {
     mLetterSpacingInput = letterSpacing;
   }
 
-  @Override
   @NonNull
   public TextTransform getTextTransform() {
     return mTextTransform;
@@ -397,12 +395,10 @@ public class TextAttributeProps implements EffectiveTextAttributeProvider {
     return letterSpacingPixels / mFontSize;
   }
 
-  @Override
   public float getEffectiveLetterSpacing() {
     return getLetterSpacing();
   }
 
-  @Override
   public int getEffectiveFontSize() {
     return mFontSize;
   }
@@ -427,7 +423,6 @@ public class TextAttributeProps implements EffectiveTextAttributeProvider {
     mFontSize = (int) fontSize;
   }
 
-  @Override
   public int getColor() {
     return mColor;
   }
@@ -439,12 +434,10 @@ public class TextAttributeProps implements EffectiveTextAttributeProvider {
     }
   }
 
-  @Override
   public boolean isColorSet() {
     return mIsColorSet;
   }
 
-  @Override
   public int getBackgroundColor() {
     return mBackgroundColor;
   }
@@ -460,17 +453,14 @@ public class TextAttributeProps implements EffectiveTextAttributeProvider {
     // }
   }
 
-  @Override
   public boolean isBackgroundColorSet() {
     return mIsBackgroundColorSet;
   }
 
-  @Override
   public int getFontStyle() {
     return mFontStyle;
   }
 
-  @Override
   public String getFontFamily() {
     return mFontFamily;
   }
@@ -577,12 +567,10 @@ public class TextAttributeProps implements EffectiveTextAttributeProvider {
     mFontFeatureSettings = TextUtils.join(", ", features);
   }
 
-  @Override
   public String getFontFeatureSettings() {
     return mFontFeatureSettings;
   }
 
-  @Override
   public int getFontWeight() {
     return mFontWeight;
   }
@@ -613,12 +601,10 @@ public class TextAttributeProps implements EffectiveTextAttributeProvider {
     }
   }
 
-  @Override
   public boolean isUnderlineTextDecorationSet() {
     return mIsUnderlineTextDecorationSet;
   }
 
-  @Override
   public boolean isLineThroughTextDecorationSet() {
     return mIsLineThroughTextDecorationSet;
   }
@@ -641,7 +627,6 @@ public class TextAttributeProps implements EffectiveTextAttributeProvider {
     }
   }
 
-  @Override
   public float getTextShadowOffsetDx() {
     return mTextShadowOffsetDx;
   }
@@ -650,7 +635,6 @@ public class TextAttributeProps implements EffectiveTextAttributeProvider {
     mTextShadowOffsetDx = PixelUtil.toPixelFromDIP(dx);
   }
 
-  @Override
   public float getTextShadowOffsetDy() {
     return mTextShadowOffsetDy;
   }
@@ -678,7 +662,6 @@ public class TextAttributeProps implements EffectiveTextAttributeProvider {
     mLayoutDirection = getLayoutDirection(layoutDirection);
   }
 
-  @Override
   public float getTextShadowRadius() {
     return mTextShadowRadius;
   }
@@ -689,7 +672,6 @@ public class TextAttributeProps implements EffectiveTextAttributeProvider {
     }
   }
 
-  @Override
   public int getTextShadowColor() {
     return mTextShadowColor;
   }
@@ -715,7 +697,6 @@ public class TextAttributeProps implements EffectiveTextAttributeProvider {
     }
   }
 
-  @Override
   public AccessibilityRole getAccessibilityRole() {
     return mAccessibilityRole;
   }
@@ -729,7 +710,6 @@ public class TextAttributeProps implements EffectiveTextAttributeProvider {
   }
 
   @Nullable
-  @Override
   public Role getRole() {
     return mRole;
   }

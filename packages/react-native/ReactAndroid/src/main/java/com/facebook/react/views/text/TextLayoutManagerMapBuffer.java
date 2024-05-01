@@ -34,11 +34,9 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.common.mapbuffer.MapBuffer;
 import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.Role;
-import com.facebook.react.views.text.fragments.MapBufferTextFragmentList;
 import com.facebook.react.views.text.internal.span.CustomLetterSpacingSpan;
 import com.facebook.react.views.text.internal.span.CustomLineHeightSpan;
 import com.facebook.react.views.text.internal.span.CustomStyleSpan;
@@ -202,15 +200,6 @@ public class TextLayoutManagerMapBuffer {
 
   private static void buildSpannableFromFragments(
       Context context, MapBuffer fragments, SpannableStringBuilder sb, List<SetSpanOperation> ops) {
-    if (ReactNativeFeatureFlags.enableSpannableBuildingUnification()) {
-      buildSpannableFromFragmentsUnified(context, fragments, sb, ops);
-    } else {
-      buildSpannableFromFragmentsDuplicated(context, fragments, sb, ops);
-    }
-  }
-
-  private static void buildSpannableFromFragmentsDuplicated(
-      Context context, MapBuffer fragments, SpannableStringBuilder sb, List<SetSpanOperation> ops) {
 
     for (int i = 0, length = fragments.getCount(); i < length; i++) {
       MapBuffer fragment = fragments.getMapBuffer(i);
@@ -301,14 +290,6 @@ public class TextLayoutManagerMapBuffer {
         ops.add(new SetSpanOperation(start, end, new ReactTagSpan(reactTag)));
       }
     }
-  }
-
-  private static void buildSpannableFromFragmentsUnified(
-      Context context, MapBuffer fragments, SpannableStringBuilder sb, List<SetSpanOperation> ops) {
-
-    final MapBufferTextFragmentList textFragmentList = new MapBufferTextFragmentList(fragments);
-
-    TextLayoutUtils.buildSpannableFromTextFragmentList(context, textFragmentList, sb, ops);
   }
 
   // public because both ReactTextViewManager and ReactTextInputManager need to use this
