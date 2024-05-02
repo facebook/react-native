@@ -889,19 +889,16 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
 
   @ReactProp(name = "onPointerEnter")
   public void setShouldNotifyPointerEnter(boolean value) {
-    // This method exists to inject Native View configs in RN Android VR
-    // DO NOTHING
+    // Do Nothing: Align with static ViewConfigs
   }
 
   @ReactProp(name = "onPointerLeave")
   public void setShouldNotifyPointerLeave(boolean value) {
-    // This method exists to inject Native View configs in RN Android VR
-    // DO NOTHING
+    // Do Nothing: Align with static ViewConfigs
   }
 
   @ReactProp(name = "onPointerMove")
   public void setShouldNotifyPointerMove(boolean value) {
-    // This method exists to inject Native View configs in RN Android VR
-    // DO NOTHING
+    // Do Nothing: Align with static ViewConfigs
   }
 }
