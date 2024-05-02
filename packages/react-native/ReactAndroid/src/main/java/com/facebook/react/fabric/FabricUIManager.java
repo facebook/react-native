@@ -85,7 +85,6 @@ import com.facebook.react.uimanager.events.EventCategoryDef;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.FabricEventDispatcher;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
-import com.facebook.react.views.text.TextLayoutManager;
 import com.facebook.react.views.text.TextLayoutManagerMapBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -493,17 +492,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener, UIBlo
 
   @SuppressWarnings("unused")
   private NativeArray measureLines(
-      ReadableMap attributedString, ReadableMap paragraphAttributes, float width, float height) {
-    return (NativeArray)
-        TextLayoutManager.measureLines(
-            mReactApplicationContext,
-            attributedString,
-            paragraphAttributes,
-            PixelUtil.toPixelFromDIP(width));
-  }
-
-  @SuppressWarnings("unused")
-  private NativeArray measureLinesMapBuffer(
       ReadableMapBuffer attributedString,
       ReadableMapBuffer paragraphAttributes,
       float width,
