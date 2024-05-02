@@ -1,6 +1,6 @@
 {
   "name": "@react-native/eslint-plugin",
-  "version": "0.74.82",
+  "version": "0.74.83",
   "description": "ESLint rules for @react-native/eslint-config",
   "license": "MIT",
   "repository": {
