@@ -24,7 +24,7 @@
     "nullthrows": "^1.1.1"
   },
   "devDependencies": {
-    "react-test-renderer": "18.2.0"
+    "react-test-renderer": "18.3.1"
   },
   "peerDependencies": {
     "@types/react": "^18.2.6",
