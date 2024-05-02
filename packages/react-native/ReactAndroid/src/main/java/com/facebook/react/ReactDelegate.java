@@ -247,7 +247,7 @@ public class ReactDelegate {
     }
 
     // Reload in RELEASE mode
-    if (devSupportManager instanceof ReleaseDevSupportManager) {
+    if (devSupportManager instanceof DisabledDevSupportManager) {
       // Do not reload the bundle from JS as there is no bundler running in release mode.
       if (ReactFeatureFlags.enableBridgelessArchitecture) {
         if (mReactHost != null) {
