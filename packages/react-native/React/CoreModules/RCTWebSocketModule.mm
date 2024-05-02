@@ -34,6 +34,13 @@
 
 @end
 
+static SRSecurityPolicyProvider securityPolicyProvider;
+
+void RCTSetSRSecurityPolicyProvider(SRSecurityPolicyProvider provider)
+{
+  securityPolicyProvider = provider;
+}
+
 @implementation RCTWebSocketModule {
   NSMutableDictionary<NSNumber *, SRWebSocket *> *_sockets;
   NSMutableDictionary<NSNumber *, id<RCTWebSocketContentHandler>> *_contentHandlers;
@@ -90,7 +97,15 @@ RCT_EXPORT_METHOD(connect
     }];
   }
 
-  SRWebSocket *webSocket = [[SRWebSocket alloc] initWithURLRequest:request protocols:protocols];
+  SRWebSocket *webSocket;
+  if (securityPolicyProvider) {
+    SRSecurityPolicy *securityPolicy = securityPolicyProvider(request);
+    webSocket = [[SRWebSocket alloc] initWithURLRequest:request protocols:protocols securityPolicy:securityPolicy];
+  } else {
+    webSocket = [[SRWebSocket alloc] initWithURLRequest:request protocols:protocols];
+  }
+  assert(webSocket != nil);
+
   [webSocket setDelegateDispatchQueue:[self methodQueue]];
   webSocket.delegate = self;
   webSocket.reactTag = @(socketID);

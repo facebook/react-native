@@ -5,10 +5,16 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#import <Foundation/Foundation.h>
 #import <React/RCTBridgeProxy.h>
 #import <React/RCTEventEmitter.h>
+#import <SocketRocket/SRWebSocket.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+typedef SRSecurityPolicy * _Nonnull (^SRSecurityPolicyProvider)(NSURLRequest *);
+
+RCT_EXTERN void RCTSetSRSecurityPolicyProvider(SRSecurityPolicyProvider);
 
 @protocol RCTWebSocketContentHandler <NSObject>
 
