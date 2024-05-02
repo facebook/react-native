@@ -4145,6 +4145,9 @@ public class com/facebook/react/uimanager/LayoutShadowNode : com/facebook/react/
 	public fun setFlexWrap (Ljava/lang/String;)V
 	public fun setGap (Lcom/facebook/react/bridge/Dynamic;)V
 	public fun setHeight (Lcom/facebook/react/bridge/Dynamic;)V
+	public fun setInset (Lcom/facebook/react/bridge/Dynamic;)V
+	public fun setInsetBlock (ILcom/facebook/react/bridge/Dynamic;)V
+	public fun setInsetInline (ILcom/facebook/react/bridge/Dynamic;)V
 	public fun setJustifyContent (Ljava/lang/String;)V
 	public fun setLayoutConformance (Ljava/lang/String;)V
 	public fun setMargins (ILcom/facebook/react/bridge/Dynamic;)V
