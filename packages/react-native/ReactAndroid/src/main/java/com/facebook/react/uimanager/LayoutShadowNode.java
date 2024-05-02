@@ -126,6 +126,12 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
 
   boolean mCollapsable;
 
+  @ReactProp(name = "collapsableChildren")
+  public void setCollapsableChildren(boolean collapsableChildren) {
+    // Do Nothing: Align with static ViewConfigs
+
+  }
+
   @ReactProp(name = "collapsable")
   public void setCollapsable(boolean collapsable) {
     mCollapsable = collapsable;
