@@ -7,7 +7,7 @@ module PrivacyManifestUtils
     def self.add_aggregated_privacy_manifest(installer)
         user_project = get_user_project_from(installer)
         targets = get_application_targets(user_project)
-        file_path = get_privacyinfo_file_path(user_project)
+        file_path = get_privacyinfo_file_path(user_project, targets)
 
         privacy_info = read_privacyinfo_file(file_path) || {
             "NSPrivacyCollectedDataTypes" => [],
@@ -76,8 +76,9 @@ module PrivacyManifestUtils
         end
     end
 
-    def self.get_privacyinfo_file_path(user_project)
-        existing_file = user_project.files.find { |file_ref| file_ref.path.end_with? "PrivacyInfo.xcprivacy" }
+    def self.get_privacyinfo_file_path(user_project, targets)
+        file_refs = targets.flat_map { |target| target.resources_build_phase.files_references }
+        existing_file = file_refs.find { |file_ref| file_ref.path.end_with? "PrivacyInfo.xcprivacy" }
         if existing_file
             return existing_file.real_path
         end
