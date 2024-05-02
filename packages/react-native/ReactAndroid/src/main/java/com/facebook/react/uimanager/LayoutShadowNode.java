@@ -719,6 +719,46 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
 
   @ReactPropGroup(
       names = {
+        "marginBlock",
+        "marginBlockEnd",
+        "marginBlockStart",
+      })
+  public void setMarginBlock(int index, Dynamic margin) {
+    // Do Nothing: Align with static ViewConfigs
+  }
+
+  @ReactPropGroup(
+      names = {
+        "marginInline",
+        "marginInlineEnd",
+        "marginInlineStart",
+      })
+  public void setMarginInline(int index, Dynamic margin) {
+    // Do Nothing: Align with static ViewConfigs
+  }
+
+  @ReactPropGroup(
+      names = {
+        "paddingBlock",
+        "paddingBlockEnd",
+        "paddingBlockStart",
+      })
+  public void setPaddingBlock(int index, Dynamic padding) {
+    // Do Nothing: Align with static ViewConfigs
+  }
+
+  @ReactPropGroup(
+      names = {
+        "paddingInline",
+        "paddingInlineEnd",
+        "paddingInlineStart",
+      })
+  public void setPaddingInline(int index, Dynamic padding) {
+    // Do Nothing: Align with static ViewConfigs
+  }
+
+  @ReactPropGroup(
+      names = {
         "insetBlock",
         "insetBlockEnd",
         "insetBlockStart",
