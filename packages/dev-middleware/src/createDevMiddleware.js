@@ -129,5 +129,6 @@ function getExperiments(config: ExperimentsConfig): Experiments {
     enableNewDebugger: config.enableNewDebugger ?? false,
     enableOpenDebuggerRedirect: config.enableOpenDebuggerRedirect ?? false,
     enableNetworkInspector: config.enableNetworkInspector ?? false,
+    useFuseboxInternalBranding: config.useFuseboxInternalBranding ?? false,
   };
 }
