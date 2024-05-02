@@ -32,6 +32,7 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig = {
     persistentScrollbar: true,
     horizontal: true,
     scrollEnabled: true,
+    scrollEventThrottle: true,
     scrollPerfTag: true,
     sendMomentumEvents: true,
     showsHorizontalScrollIndicator: true,
