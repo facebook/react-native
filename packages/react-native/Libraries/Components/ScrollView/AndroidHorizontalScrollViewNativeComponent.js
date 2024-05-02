@@ -23,6 +23,7 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig = {
   validAttributes: {
     decelerationRate: true,
     disableIntervalMomentum: true,
+    maintainVisibleContentPosition: true,
     endFillColor: {process: require('../../StyleSheet/processColor').default},
     fadingEdgeLength: true,
     nestedScrollEnabled: true,
