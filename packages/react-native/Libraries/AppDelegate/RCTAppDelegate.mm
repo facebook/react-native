@@ -30,9 +30,7 @@
 #else
 #import <ReactCommon/RCTJscInstance.h>
 #endif
-#import <react/nativemodule/dom/NativeDOM.h>
-#import <react/nativemodule/featureflags/NativeReactNativeFeatureFlags.h>
-#import <react/nativemodule/microtasks/NativeMicrotasks.h>
+#import <react/nativemodule/defaults/DefaultTurboModules.h>
 
 @interface RCTAppDelegate () <RCTComponentViewFactoryComponentProvider>
 @end
@@ -212,19 +210,7 @@
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
                                                       jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
 {
-  if (name == facebook::react::NativeReactNativeFeatureFlags::kModuleName) {
-    return std::make_shared<facebook::react::NativeReactNativeFeatureFlags>(jsInvoker);
-  }
-
-  if (name == facebook::react::NativeMicrotasks::kModuleName) {
-    return std::make_shared<facebook::react::NativeMicrotasks>(jsInvoker);
-  }
-
-  if (name == facebook::react::NativeDOM::kModuleName) {
-    return std::make_shared<facebook::react::NativeDOM>(jsInvoker);
-  }
-
-  return nullptr;
+  return facebook::react::DefaultTurboModules::getTurboModule(name, jsInvoker);
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
