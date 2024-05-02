@@ -482,6 +482,55 @@ RCT_EXPORT_SHADOW_PROPERTY(borderStartWidth, float)
 RCT_EXPORT_SHADOW_PROPERTY(borderEndWidth, float)
 RCT_EXPORT_SHADOW_PROPERTY(borderWidth, float)
 
+RCT_CUSTOM_SHADOW_PROPERTY(inset, YGValue, RCTView)
+{
+  // Property is only to be used in the new renderer.
+  // It is necessary to add it here, otherwise it gets
+  // filtered by view configs.
+}
+
+RCT_CUSTOM_SHADOW_PROPERTY(insetBlock, YGValue, RCTView)
+{
+  // Property is only to be used in the new renderer.
+  // It is necessary to add it here, otherwise it gets
+  // filtered by view configs.
+}
+
+RCT_CUSTOM_SHADOW_PROPERTY(insetBlockStart, YGValue, RCTView)
+{
+  // Property is only to be used in the new renderer.
+  // It is necessary to add it here, otherwise it gets
+  // filtered by view configs.
+}
+
+RCT_CUSTOM_SHADOW_PROPERTY(insetBlockEnd, YGValue, RCTView)
+{
+  // Property is only to be used in the new renderer.
+  // It is necessary to add it here, otherwise it gets
+  // filtered by view configs.
+}
+
+RCT_CUSTOM_SHADOW_PROPERTY(insetInline, YGValue, RCTView)
+{
+  // Property is only to be used in the new renderer.
+  // It is necessary to add it here, otherwise it gets
+  // filtered by view configs.
+}
+
+RCT_CUSTOM_SHADOW_PROPERTY(insetInlineStart, YGValue, RCTView)
+{
+  // Property is only to be used in the new renderer.
+  // It is necessary to add it here, otherwise it gets
+  // filtered by view configs.
+}
+
+RCT_CUSTOM_SHADOW_PROPERTY(insetInlineEnd, YGValue, RCTView)
+{
+  // Property is only to be used in the new renderer.
+  // It is necessary to add it here, otherwise it gets
+  // filtered by view configs.
+}
+
 RCT_EXPORT_SHADOW_PROPERTY(marginTop, YGValue)
 RCT_EXPORT_SHADOW_PROPERTY(marginRight, YGValue)
 RCT_EXPORT_SHADOW_PROPERTY(marginBottom, YGValue)
