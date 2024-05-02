@@ -315,7 +315,8 @@ public class ReactDelegate {
    */
   public boolean shouldShowDevMenuOrReload(int keyCode, KeyEvent event) {
     DevSupportManager devSupportManager = getDevSupportManager();
-    if (devSupportManager == null) {
+    // shouldShowDevMenuOrReload is a Dev API and not supported in RELEASE mode.
+    if (devSupportManager == null || devSupportManager instanceof ReleaseDevSupportManager) {
       return false;
     }
 
