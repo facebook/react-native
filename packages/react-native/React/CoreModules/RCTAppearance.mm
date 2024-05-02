@@ -31,6 +31,18 @@ void RCTOverrideAppearancePreference(NSString *const colorSchemeOverride)
   sColorSchemeOverride = colorSchemeOverride;
 }
 
+static rct_color_scheme_change_callback_t sColorSchemeChangeCallback = nil;
+void RCTAddColorSchemeChangeCallback(rct_color_scheme_change_callback_t callback)
+{
+  sColorSchemeChangeCallback = callback;
+}
+
+static BOOL sUseUIMainScreenForSystemStyle = NO;
+void RCTUseUIMainScreenForSystemStyle(BOOL useMainScreen)
+{
+  sUseUIMainScreenForSystemStyle = useMainScreen;
+}
+
 NSString *RCTCurrentOverrideAppearancePreference()
 {
   return sColorSchemeOverride;
@@ -56,8 +68,10 @@ NSString *RCTColorSchemePreference(UITraitCollection *traitCollection)
     // Return the default if the app doesn't allow different color schemes.
     return RCTAppearanceColorSchemeLight;
   }
-
-  return appearances[@(traitCollection.userInterfaceStyle)] ?: RCTAppearanceColorSchemeLight;
+  UIUserInterfaceStyle systemStyle = sUseUIMainScreenForSystemStyle
+      ? UIScreen.mainScreen.traitCollection.userInterfaceStyle
+      : traitCollection.userInterfaceStyle;
+  return appearances[@(systemStyle)] ?: RCTAppearanceColorSchemeLight;
 }
 
 @interface RCTAppearance () <NativeAppearanceSpec>
@@ -99,6 +113,11 @@ RCT_EXPORT_MODULE(Appearance)
 
 RCT_EXPORT_METHOD(setColorScheme : (NSString *)style)
 {
+  if (sColorSchemeChangeCallback) {
+    sColorSchemeChangeCallback(style);
+    return;
+  }
+
   UIUserInterfaceStyle userInterfaceStyle = [RCTConvert UIUserInterfaceStyle:style];
   NSArray<__kindof UIWindow *> *windows = RCTSharedApplication().windows;
 
