@@ -4134,6 +4134,7 @@ public class com/facebook/react/uimanager/LayoutShadowNode : com/facebook/react/
 	public fun setAspectRatio (F)V
 	public fun setBorderWidths (IF)V
 	public fun setCollapsable (Z)V
+	public fun setCollapsableChildren (Z)V
 	public fun setColumnGap (Lcom/facebook/react/bridge/Dynamic;)V
 	public fun setDisplay (Ljava/lang/String;)V
 	public fun setFlex (F)V
