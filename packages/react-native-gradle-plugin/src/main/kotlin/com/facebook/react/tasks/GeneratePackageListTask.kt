@@ -7,7 +7,8 @@
 
 package com.facebook.react.tasks
 
-import com.facebook.react.model.ModelAutolinkingDependenciesJson
+import com.facebook.react.model.ModelAutolinkingConfigJson
+import com.facebook.react.model.ModelAutolinkingDependenciesPlatformAndroidJson
 import com.facebook.react.utils.JsonUtils
 import java.io.File
 import org.gradle.api.DefaultTask
@@ -35,10 +36,10 @@ abstract class GeneratePackageListTask : DefaultTask() {
         model?.project?.android?.packageName
             ?: error(
                 "RNGP - Autolinking: Could not find project.android.packageName in react-native config output! Could not autolink packages without this field.")
-    val packages = model.dependencies?.values ?: emptyList()
 
-    val packageImports = composePackageImports(packageName, packages)
-    val packageClassInstance = composePackageInstance(packageName, packages)
+    val androidPackages = filterAndroidPackages(model)
+    val packageImports = composePackageImports(packageName, androidPackages)
+    val packageClassInstance = composePackageInstance(packageName, androidPackages)
     val generatedFileContents = composeFileContent(packageImports, packageClassInstance)
 
     val outputDir = generatedOutputDirectory.get().asFile
@@ -51,32 +52,41 @@ abstract class GeneratePackageListTask : DefaultTask() {
 
   internal fun composePackageImports(
       packageName: String,
-      packages: Collection<ModelAutolinkingDependenciesJson>
+      packages: Map<String, ModelAutolinkingDependenciesPlatformAndroidJson>
   ) =
-      packages.joinToString("\n") { entry ->
+      packages.entries.joinToString("\n") { (name, dep) ->
         val packageImportPath =
-            requireNotNull(entry.platforms?.android?.packageImportPath) {
-              "RNGP - Autolinking: Missing `packageImportPath` in `config` for dependency ${entry.name}. This is required to generate the autolinking package list."
+            requireNotNull(dep.packageImportPath) {
+              "RNGP - Autolinking: Missing `packageImportPath` in `config` for dependency $name. This is required to generate the autolinking package list."
             }
-        "// ${entry.name}\n${interpolateDynamicValues(packageImportPath, packageName)}"
+        "// $name\n${interpolateDynamicValues(packageImportPath, packageName)}"
       }
 
   internal fun composePackageInstance(
       packageName: String,
-      packages: Collection<ModelAutolinkingDependenciesJson>
+      packages: Map<String, ModelAutolinkingDependenciesPlatformAndroidJson>
   ) =
       if (packages.isEmpty()) {
         ""
       } else {
         ",\n      " +
-            packages.joinToString(",\n      ") { entry ->
+            packages.entries.joinToString(",\n      ") { (name, dep) ->
               val packageInstance =
-                  requireNotNull(entry.platforms?.android?.packageInstance) {
-                    "RNGP - Autolinking: Missing `packageInstance` in `config` for dependency ${entry.name}. This is required to generate the autolinking package list."
+                  requireNotNull(dep.packageInstance) {
+                    "RNGP - Autolinking: Missing `packageInstance` in `config` for dependency $name. This is required to generate the autolinking package list."
                   }
               interpolateDynamicValues(packageInstance, packageName)
             }
       }
+
+  internal fun filterAndroidPackages(
+      model: ModelAutolinkingConfigJson?
+  ): Map<String, ModelAutolinkingDependenciesPlatformAndroidJson> {
+    val packages = model?.dependencies?.values ?: emptyList()
+    return packages
+        .filter { it.platforms?.android != null }
+        .associate { it.name to checkNotNull(it.platforms?.android) }
+  }
 
   internal fun composeFileContent(packageImports: String, packageClassInstance: String): String =
       generatedFileContentsTemplate

@@ -7,6 +7,7 @@
 
 package com.facebook.react.tasks
 
+import com.facebook.react.model.ModelAutolinkingConfigJson
 import com.facebook.react.model.ModelAutolinkingDependenciesJson
 import com.facebook.react.model.ModelAutolinkingDependenciesPlatformAndroidJson
 import com.facebook.react.model.ModelAutolinkingDependenciesPlatformJson
@@ -39,6 +40,67 @@ class GenerateAutolinkingNewArchitecturesFileTaskTest {
 
     Assert.assertEquals(inputFile, task.inputs.files.singleFile)
     Assert.assertEquals(outputFolder, task.outputs.files.singleFile)
+  }
+
+  @Test
+  fun filterAndroidPackages_withNull_returnsEmpty() {
+    val task = createTestTask<GenerateAutolinkingNewArchitecturesFileTask>()
+    val result = task.filterAndroidPackages(null)
+    Assert.assertEquals(emptyList<ModelAutolinkingDependenciesPlatformAndroidJson>(), result)
+  }
+
+  @Test
+  fun filterAndroidPackages_withEmptyObject_returnsEmpty() {
+    val task = createTestTask<GenerateAutolinkingNewArchitecturesFileTask>()
+    val result = task.filterAndroidPackages(ModelAutolinkingConfigJson("1000.0.0", null, null))
+    Assert.assertEquals(emptyList<ModelAutolinkingDependenciesPlatformAndroidJson>(), result)
+  }
+
+  @Test
+  fun filterAndroidPackages_withNoAndroidObject_returnsEmpty() {
+    val task = createTestTask<GenerateAutolinkingNewArchitecturesFileTask>()
+    val result =
+        task.filterAndroidPackages(
+            ModelAutolinkingConfigJson(
+                reactNativeVersion = "1000.0.0",
+                dependencies =
+                    mapOf(
+                        "a-dependency" to
+                            ModelAutolinkingDependenciesJson(
+                                root = "./a/directory",
+                                name = "a-dependency",
+                                platforms =
+                                    ModelAutolinkingDependenciesPlatformJson(android = null))),
+                project = null))
+    Assert.assertEquals(emptyList<ModelAutolinkingDependenciesPlatformAndroidJson>(), result)
+  }
+
+  @Test
+  fun filterAndroidPackages_withValidAndroidObject_returnsIt() {
+    val task = createTestTask<GenerateAutolinkingNewArchitecturesFileTask>()
+    val android =
+        ModelAutolinkingDependenciesPlatformAndroidJson(
+            sourceDir = "./a/directory/android",
+            packageImportPath = "import com.facebook.react.aPackage;",
+            packageInstance = "new APackage()",
+            buildTypes = emptyList(),
+        )
+
+    val result =
+        task.filterAndroidPackages(
+            ModelAutolinkingConfigJson(
+                reactNativeVersion = "1000.0.0",
+                dependencies =
+                    mapOf(
+                        "a-dependency" to
+                            ModelAutolinkingDependenciesJson(
+                                root = "./a/directory",
+                                name = "a-dependency",
+                                platforms =
+                                    ModelAutolinkingDependenciesPlatformJson(android = android))),
+                project = null))
+    Assert.assertEquals(1, result.size)
+    Assert.assertEquals(android, result.first())
   }
 
   @Test
@@ -185,30 +247,22 @@ class GenerateAutolinkingNewArchitecturesFileTaskTest {
 
   private val testDependencies =
       listOf(
-          ModelAutolinkingDependenciesJson(
-              "root",
-              "@react-native/a-package",
-              ModelAutolinkingDependenciesPlatformJson(
-                  ModelAutolinkingDependenciesPlatformAndroidJson(
-                      sourceDir = "./a/directory",
-                      packageImportPath = "import com.facebook.react.aPackage;",
-                      packageInstance = "new APackage()",
-                      buildTypes = emptyList(),
-                      libraryName = "aPackage",
-                      componentDescriptors = emptyList(),
-                      cmakeListsPath = "./a/directory/CMakeLists.txt",
-                  ))),
-          ModelAutolinkingDependenciesJson(
-              "root",
-              "@react-native/another-package",
-              ModelAutolinkingDependenciesPlatformJson(
-                  ModelAutolinkingDependenciesPlatformAndroidJson(
-                      sourceDir = "./another/directory",
-                      packageImportPath = "import com.facebook.react.anotherPackage;",
-                      packageInstance = "new AnotherPackage()",
-                      buildTypes = emptyList(),
-                      libraryName = "anotherPackage",
-                      componentDescriptors = emptyList(),
-                      cmakeListsPath = "./another/directory/CMakeLists.txt",
-                  ))))
+          ModelAutolinkingDependenciesPlatformAndroidJson(
+              sourceDir = "./a/directory",
+              packageImportPath = "import com.facebook.react.aPackage;",
+              packageInstance = "new APackage()",
+              buildTypes = emptyList(),
+              libraryName = "aPackage",
+              componentDescriptors = emptyList(),
+              cmakeListsPath = "./a/directory/CMakeLists.txt",
+          ),
+          ModelAutolinkingDependenciesPlatformAndroidJson(
+              sourceDir = "./another/directory",
+              packageImportPath = "import com.facebook.react.anotherPackage;",
+              packageInstance = "new AnotherPackage()",
+              buildTypes = emptyList(),
+              libraryName = "anotherPackage",
+              componentDescriptors = emptyList(),
+              cmakeListsPath = "./another/directory/CMakeLists.txt",
+          ))
 }
