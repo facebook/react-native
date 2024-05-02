@@ -100,12 +100,15 @@ RCT_EXPORT_METHOD(connect
   SRWebSocket *webSocket;
   if (securityPolicyProvider) {
     SRSecurityPolicy *securityPolicy = securityPolicyProvider(request);
-    webSocket = [[SRWebSocket alloc] initWithURLRequest:request protocols:protocols securityPolicy:securityPolicy];
+    if (securityPolicy) {
+      webSocket = [[SRWebSocket alloc] initWithURLRequest:request protocols:protocols securityPolicy:securityPolicy];
+    } else {
+      webSocket = [[SRWebSocket alloc] initWithURLRequest:request protocols:protocols];
+    }
   } else {
     webSocket = [[SRWebSocket alloc] initWithURLRequest:request protocols:protocols];
   }
   assert(webSocket != nil);
-
   [webSocket setDelegateDispatchQueue:[self methodQueue]];
   webSocket.delegate = self;
   webSocket.reactTag = @(socketID);

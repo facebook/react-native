@@ -12,7 +12,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef SRSecurityPolicy * _Nonnull (^SRSecurityPolicyProvider)(NSURLRequest *);
+typedef SRSecurityPolicy * __nullable (^SRSecurityPolicyProvider)(NSURLRequest * _Nonnull);
 
 RCT_EXTERN void RCTSetSRSecurityPolicyProvider(SRSecurityPolicyProvider);
 
