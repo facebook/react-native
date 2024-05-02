@@ -87,7 +87,7 @@ exports[`setVersion updates monorepo for nightly: packages/react-native/template
   \\"version\\": \\"0.0.1\\",
   \\"private\\": true,
   \\"dependencies\\": {
-    \\"react\\": \\"18.2.0\\",
+    \\"react\\": \\"18.3.1\\",
     \\"react-native\\": \\"0.81.0-nightly-29282302-abcd1234\\"
   },
   \\"devDependencies\\": {
@@ -187,7 +187,7 @@ exports[`setVersion updates monorepo for release-candidate: packages/react-nativ
   \\"version\\": \\"0.0.1\\",
   \\"private\\": true,
   \\"dependencies\\": {
-    \\"react\\": \\"18.2.0\\",
+    \\"react\\": \\"18.3.1\\",
     \\"react-native\\": \\"0.80.0-rc.3\\"
   },
   \\"devDependencies\\": {
@@ -287,7 +287,7 @@ exports[`setVersion updates monorepo for stable version: packages/react-native/t
   \\"version\\": \\"0.0.1\\",
   \\"private\\": true,
   \\"dependencies\\": {
-    \\"react\\": \\"18.2.0\\",
+    \\"react\\": \\"18.3.1\\",
     \\"react-native\\": \\"0.80.1\\"
   },
   \\"devDependencies\\": {
@@ -387,7 +387,7 @@ exports[`setVersion updates monorepo on main after release cut: packages/react-n
   \\"version\\": \\"0.0.1\\",
   \\"private\\": true,
   \\"dependencies\\": {
-    \\"react\\": \\"18.2.0\\",
+    \\"react\\": \\"18.3.1\\",
     \\"react-native\\": \\"1000.0.0\\"
   },
   \\"devDependencies\\": {

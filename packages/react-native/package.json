@@ -99,7 +99,7 @@
   },
   "peerDependencies": {
     "@types/react": "^18.2.6",
-    "react": "18.2.0"
+    "react": "^18.2.0"
   },
   "peerDependenciesMeta": {
     "@types/react": {
