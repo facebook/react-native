@@ -13,8 +13,6 @@
 export type * from './index.flow';
 */
 
-if (!process.env.BUILD_EXCLUDE_BABEL_REGISTER) {
-  require('../../../scripts/build/babel-register').registerForMonorepo();
-}
+require('../../../scripts/build/babel-register').registerForMonorepo();
 
-export * from './index.flow';
+module.exports = require('./index.flow');
