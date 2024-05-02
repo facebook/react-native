@@ -374,6 +374,7 @@ const validAttributesForEventProps = ConditionallyIgnoredEventHandlers({
 
   // Pointer events
   onClick: true,
+  onClickCapture: true,
   onPointerUp: true,
   onPointerDown: true,
   onPointerCancel: true,
