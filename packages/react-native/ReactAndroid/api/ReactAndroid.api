@@ -4145,6 +4145,7 @@ public class com/facebook/react/uimanager/LayoutShadowNode : com/facebook/react/
 	public fun setGap (Lcom/facebook/react/bridge/Dynamic;)V
 	public fun setHeight (Lcom/facebook/react/bridge/Dynamic;)V
 	public fun setJustifyContent (Ljava/lang/String;)V
+	public fun setLayoutConformance (Ljava/lang/String;)V
 	public fun setMargins (ILcom/facebook/react/bridge/Dynamic;)V
 	public fun setMaxHeight (Lcom/facebook/react/bridge/Dynamic;)V
 	public fun setMaxWidth (Lcom/facebook/react/bridge/Dynamic;)V
@@ -7935,7 +7936,6 @@ public class com/facebook/react/views/view/ReactViewManager : com/facebook/react
 	public fun setTVPreferredFocus (Lcom/facebook/react/views/view/ReactViewGroup;Z)V
 	protected synthetic fun setTransformProperty (Landroid/view/View;Lcom/facebook/react/bridge/ReadableArray;Lcom/facebook/react/bridge/ReadableArray;)V
 	protected fun setTransformProperty (Lcom/facebook/react/views/view/ReactViewGroup;Lcom/facebook/react/bridge/ReadableArray;Lcom/facebook/react/bridge/ReadableArray;)V
-	public fun setexperimental_layoutConformance (Lcom/facebook/react/views/view/ReactViewGroup;Ljava/lang/String;)V
 }
 
 public class com/facebook/react/views/view/ReactViewManager$$PropsSetter : com/facebook/react/uimanager/ViewManagerPropertyUpdater$ViewManagerSetter {
