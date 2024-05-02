@@ -29,12 +29,6 @@ const config /*: BabelCoreOptions */ = {
   ],
   plugins: [
     [
-      require.resolve('babel-plugin-transform-define'),
-      {
-        'process.env.BUILD_EXCLUDE_BABEL_REGISTER': true,
-      },
-    ],
-    [
       require.resolve('babel-plugin-minify-dead-code-elimination'),
       {keepFnName: true, keepFnArgs: true, keepClassName: true},
     ],

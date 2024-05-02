@@ -20,15 +20,18 @@ let isRegisteredForMonorepo = false;
  * developing in the React Native repo.
  *
  * A call should located in each entry point file in a package (i.e. for all
- * paths in "exports"), inside a special `if` condition that will be compiled
- * away on build.
+ * paths in "exports"):
  *
- *   if (!process.env.BUILD_EXCLUDE_BABEL_REGISTER) {
- *     require('../../../scripts/build/babel-register').registerForMonorepo();
- *   }
+ *   require('../../../scripts/build/babel-register').registerForMonorepo();
  */
 function registerForMonorepo() {
   if (isRegisteredForMonorepo) {
+    return;
+  }
+
+  if (process.env.JEST_WORKER_ID != null) {
+    // Code under test doesn't need inline transformation, already handled by the
+    // Jest transformer.
     return;
   }
 

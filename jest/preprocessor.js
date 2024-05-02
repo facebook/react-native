@@ -38,16 +38,6 @@ const {only: _, ...nodeBabelOptions} = metroBabelRegister.config([]);
 require('../scripts/build/babel-register').registerForMonorepo();
 const transformer = require('@react-native/metro-babel-transformer');
 
-// Set BUILD_EXCLUDE_BABEL_REGISTER (see ../scripts/build/babel-register.js) to
-// prevent inline Babel registration in code under test, normally required when
-// running from source, but not in combination with the Jest transformer.
-const babelPluginPreventBabelRegister = [
-  require.resolve('babel-plugin-transform-define'),
-  {
-    'process.env.BUILD_EXCLUDE_BABEL_REGISTER': true,
-  },
-];
-
 module.exports = {
   process(src /*: string */, file /*: string */) /*: {code: string, ...} */ {
     if (nodeFiles.test(file)) {
@@ -56,10 +46,7 @@ module.exports = {
         filename: file,
         sourceType: 'script',
         ...nodeBabelOptions,
-        plugins: [
-          ...(nodeBabelOptions.plugins ?? []),
-          babelPluginPreventBabelRegister,
-        ],
+        plugins: [...(nodeBabelOptions.plugins ?? [])],
         ast: false,
       });
     }
@@ -92,7 +79,6 @@ module.exports = {
       plugins: [
         // TODO(moti): Replace with require('metro-transform-plugins').inlineRequiresPlugin when available in OSS
         require('babel-preset-fbjs/plugins/inline-requires'),
-        babelPluginPreventBabelRegister,
       ],
       sourceType: 'module',
     });
