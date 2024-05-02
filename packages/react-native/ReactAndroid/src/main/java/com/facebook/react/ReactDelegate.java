@@ -221,11 +221,13 @@ public class ReactDelegate {
 
   public boolean onKeyLongPress(int keyCode) {
     if (keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD) {
-      if (ReactFeatureFlags.enableBridgelessArchitecture
-          && mReactHost != null
-          && mReactHost.getDevSupportManager() != null) {
-        mReactHost.getDevSupportManager().showDevOptionsDialog();
-        return true;
+      if (ReactFeatureFlags.enableBridgelessArchitecture && mReactHost != null) {
+        DevSupportManager devSupportManager = mReactHost.getDevSupportManager();
+        // onKeyLongPress is a Dev API and not supported in RELEASE mode.
+        if (devSupportManager != null && !(devSupportManager instanceof ReleaseDevSupportManager)) {
+          devSupportManager.showDevOptionsDialog();
+          return true;
+        }
       } else {
         if (getReactNativeHost().hasInstance() && getReactNativeHost().getUseDeveloperSupport()) {
           getReactNativeHost().getReactInstanceManager().showDevOptionsDialog();
