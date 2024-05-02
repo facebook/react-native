@@ -349,4 +349,9 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
   public void setScrollEventThrottle(ReactHorizontalScrollView view, int scrollEventThrottle) {
     view.setScrollEventThrottle(scrollEventThrottle);
   }
+
+  @ReactProp(name = "horizontal")
+  public void setHorizontal(ReactHorizontalScrollView view, boolean horizontal) {
+    // Do Nothing: Align with static ViewConfigs
+  }
 }
