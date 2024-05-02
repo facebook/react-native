@@ -719,6 +719,31 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
 
   @ReactPropGroup(
       names = {
+        "insetBlock",
+        "insetBlockEnd",
+        "insetBlockStart",
+      })
+  public void setInsetBlock(int index, Dynamic inset) {
+    // Do Nothing: Align with static ViewConfigs
+  }
+
+  @ReactPropGroup(
+      names = {
+        "insetInline",
+        "insetInlineEnd",
+        "insetInlineStart",
+      })
+  public void setInsetInline(int index, Dynamic inset) {
+    // Do Nothing: Align with static ViewConfigs
+  }
+
+  @ReactProp(name = "inset")
+  public void setInset(Dynamic inset) {
+    // Do Nothing: Align with static ViewConfigs
+  }
+
+  @ReactPropGroup(
+      names = {
         ViewProps.MARGIN,
         ViewProps.MARGIN_VERTICAL,
         ViewProps.MARGIN_HORIZONTAL,
