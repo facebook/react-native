@@ -1,5 +1,48 @@
 # Changelog
 
+## 0.74.1
+
+### Added
+
+#### iOS Specific
+
+- Implement privacy manifest aggregation  ([4be1fafec8](https://github.com/facebook/react-native/commit/4be1fafec8edca5da5ebe515ad359d4178db7d23) by [@aleqsio](https://github.com/@aleqsio))
+
+### Changed
+
+- Align debugger Chrome launch flags with Meta-internal version ([93956e267c](https://github.com/facebook/react-native/commit/93956e267cd4f1a77adaa842a55ca6f2d0d1b9c5) by [@motiz88](https://github.com/@motiz88))
+- Update "Open Debugger" to print extended Flipper guidance ([261a58761c](https://github.com/facebook/react-native/commit/261a58761c2e7e10cc5cf0a63ed9785e1cdf097c) by [@huntie](https://github.com/@huntie))
+- Enable event loop by default when bridgeless is enabled ([b440672468](https://github.com/facebook/react-native/commit/b440672468b6d1d99cd322a4348dd90150703f24) by [@rubennorte](https://github.com/@rubennorte))
+- Upgrade `@react-native-community/cli` to 13.6.6 ([58b1f9b2d4](https://github.com/facebook/react-native/commit/58b1f9b2d4f617290a3a535153ff1e93a4672038) by [@szymonrybczak](https://github.com/@szymonrybczak))
+
+#### Android specific
+
+- Support more stubbed methods in `BridgelessCatalystInstance` ([cc1c69799e](https://github.com/facebook/react-native/commit/cc1c69799e284b368e3eaaac0ccd8e238384857f) by [@javache](https://github.com/@javache))
+
+
+### Fixed
+
+- Reset animation state in TouchableOpacity and TouchableBounce ([165cabb21f](https://github.com/facebook/react-native/commit/165cabb21f2419bde63acb4b52be2f4fb7a2ec2e) by [@sammy-SChttps://github.com/@sammy-]())
+- Add missing struct member initialization in Props.h ([13739510fb](https://github.com/facebook/react-native/commit/13739510fb1c2400fbae1df1635fb93dae55abaa) by [@alanleedev](https://github.com/@alanleedev))
+
+
+#### Android Specific
+
+- Split scheduler commit and flush delegate methods ([ff4b20e823](https://github.com/facebook/react-native/commit/ff4b20e823d2838b3f72e550e7a89daa08551a72) by [@javache](https://github.com/@javache))
+- Fixing exposing ReactDelegate through ReactActivity for reload ([7a841dbcd1](https://github.com/facebook/react-native/commit/7a841dbcd1b4eead77827eda2bd307f11babec1f) by [@arushikesarwani94](https://github.com/@arushikesarwani94))
+- Fix ReactActivity.getReactDelegate().reload() ([56631cd471](https://github.com/facebook/react-native/commit/56631cd471008c39fe6f771052c3f1af7085bd63) by [@kudo](https://github.com/@kudo))
+
+#### iOS Specific
+
+- Fix Symbol not found: (_JSGlobalContextSetInspectable) which crashed iOS <16.4 with JSC ([0a4d97362f](https://github.com/facebook/react-native/commit/0a4d97362f5a40cff62edce5200c3e7e8622d912) by [@cipolleschi](https://github.com/@cipolleschi))
+- Fallback to the first foregroundInactive window when there are no `foregroundActive` windows in RCTKeyWindow ([eaaf865449](https://github.com/facebook/react-native/commit/eaaf865449e6b89cc2794b68f314d01aa775748e) by [@cipolleschi](https://github.com/@cipolleschi))
+- Fix enable hermes debugger in Bridgeless mode ([3467f2f3a3](https://github.com/facebook/react-native/commit/3467f2f3a3319cc695bd729a8789c46d15ac8314) by [@Cipolleschi](https://github.com/@Cipolleschi))
+- Maintain correct content offset when scroll view is suspended ([305249f964](https://github.com/facebook/react-native/commit/305249f9642da50bf680b1401644eaba9d5dce50) by [@sammy-SChttps://github.com/@sammy-]())
+- Avoid calling abstract methods in RCTComposedViewRegistry ([59e7ed5038](https://github.com/facebook/react-native/commit/59e7ed50386cdae8f4a10d9ebc70566b9b36d01c) by [@cipolleschi](https://github.com/@cipolleschi))
+- Honor requiresMainQueueSetup in bridgeless mode for ViewManagers ([8813061286](https://github.com/facebook/react-native/commit/88130612864b40adf9001efed9fae2d1ab80b30c) by [@cipolleschi](https://github.com/@cipolleschi))
+
+
+
 ## 0.74.0
 
 ### Breaking
