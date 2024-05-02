@@ -7,7 +7,7 @@ module PrivacyManifestUtils
     def self.add_aggregated_privacy_manifest(installer)
         user_project = get_user_project_from(installer)
         targets = get_application_targets(user_project)
-        file_path = get_privacyinfo_file_path(user_project)
+        file_path = get_privacyinfo_file_path(user_project, targets)
 
         privacy_info = read_privacyinfo_file(file_path) || {
             "NSPrivacyCollectedDataTypes" => [],
@@ -70,13 +70,18 @@ module PrivacyManifestUtils
         reference_exists = target.resources_build_phase.files_references.any? { |file_ref| file_ref.path.end_with? "PrivacyInfo.xcprivacy" }
         unless reference_exists
             # We try to find the main group, but if it doesn't exist, we default to adding the file to the project root – both work
-            file_root = user_project.root_object.main_group.children.first { |group| group.name == target.name } || user_project
+            file_root = user_project.root_object.main_group.children.find { |group| group.class == Xcodeproj::Project::Object::PBXGroup && (group.name == target.name || group.path == target.name) } || user_project
             file_ref = file_root.new_file(file_path)
             build_file = target.resources_build_phase.add_file_reference(file_ref, true)
         end
     end
 
-    def self.get_privacyinfo_file_path(user_project)
+    def self.get_privacyinfo_file_path(user_project, targets)
+        file_refs = targets.flat_map { |target| target.resources_build_phase.files_references }
+        existing_file = file_refs.find { |file_ref| file_ref.path.end_with? "PrivacyInfo.xcprivacy" }
+        if existing_file
+            return existing_file.real_path
+        end
         # We try to find a file we know exists in the project to get the path to the main group directory
         info_plist_path = user_project.files.find { |file_ref| file_ref.name == "Info.plist" }
         if info_plist_path.nil?
