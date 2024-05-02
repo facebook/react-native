@@ -7493,7 +7493,7 @@ public class com/facebook/react/views/text/TextAttributes {
 	public fun toString ()Ljava/lang/String;
 }
 
-public class com/facebook/react/views/text/TextLayoutManagerMapBuffer {
+public class com/facebook/react/views/text/TextLayoutManager {
 	public static final field AS_KEY_CACHE_ID S
 	public static final field AS_KEY_FRAGMENTS S
 	public static final field AS_KEY_HASH S

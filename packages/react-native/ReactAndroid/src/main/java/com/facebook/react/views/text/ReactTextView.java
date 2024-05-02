@@ -365,7 +365,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   protected void onDraw(Canvas canvas) {
     if (mAdjustsFontSizeToFit && getSpanned() != null && mShouldAdjustSpannableFontSize) {
       mShouldAdjustSpannableFontSize = false;
-      TextLayoutManagerMapBuffer.adjustSpannableFontToFit(
+      TextLayoutManager.adjustSpannableFontToFit(
           getSpanned(),
           getWidth(),
           YogaMeasureMode.EXACTLY,
