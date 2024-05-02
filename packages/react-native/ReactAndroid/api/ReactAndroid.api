@@ -4150,12 +4150,16 @@ public class com/facebook/react/uimanager/LayoutShadowNode : com/facebook/react/
 	public fun setInsetInline (ILcom/facebook/react/bridge/Dynamic;)V
 	public fun setJustifyContent (Ljava/lang/String;)V
 	public fun setLayoutConformance (Ljava/lang/String;)V
+	public fun setMarginBlock (ILcom/facebook/react/bridge/Dynamic;)V
+	public fun setMarginInline (ILcom/facebook/react/bridge/Dynamic;)V
 	public fun setMargins (ILcom/facebook/react/bridge/Dynamic;)V
 	public fun setMaxHeight (Lcom/facebook/react/bridge/Dynamic;)V
 	public fun setMaxWidth (Lcom/facebook/react/bridge/Dynamic;)V
 	public fun setMinHeight (Lcom/facebook/react/bridge/Dynamic;)V
 	public fun setMinWidth (Lcom/facebook/react/bridge/Dynamic;)V
 	public fun setOverflow (Ljava/lang/String;)V
+	public fun setPaddingBlock (ILcom/facebook/react/bridge/Dynamic;)V
+	public fun setPaddingInline (ILcom/facebook/react/bridge/Dynamic;)V
 	public fun setPaddings (ILcom/facebook/react/bridge/Dynamic;)V
 	public fun setPosition (Ljava/lang/String;)V
 	public fun setPositionValues (ILcom/facebook/react/bridge/Dynamic;)V
