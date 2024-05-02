@@ -77,6 +77,10 @@ module PrivacyManifestUtils
     end
 
     def self.get_privacyinfo_file_path(user_project)
+        existing_file = user_project.files.find { |file_ref| file_ref.path.end_with? "PrivacyInfo.xcprivacy" }
+        if existing_file
+            return existing_file.real_path
+        end
         # We try to find a file we know exists in the project to get the path to the main group directory
         info_plist_path = user_project.files.find { |file_ref| file_ref.name == "Info.plist" }
         if info_plist_path.nil?
