@@ -9,6 +9,7 @@ package com.facebook.react.bridge;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import com.facebook.proguard.annotations.DoNotStrip;
 
 /*
  * Implementation of {@link Promise} that represents a JavaScript Promise which can be passed to the
@@ -17,6 +18,7 @@ import androidx.annotation.Nullable;
  * Methods annotated with {@link ReactMethod} that use a {@link Promise} as the last parameter
  * will be marked as "promise" and will return a promise when invoked from JavaScript.
  */
+@DoNotStrip
 public class PromiseImpl implements Promise {
   // Number of stack frames to parse and return to mReject.invoke
   // for ERROR_MAP_KEY_NATIVE_STACK
@@ -40,6 +42,7 @@ public class PromiseImpl implements Promise {
   private @Nullable Callback mResolve;
   private @Nullable Callback mReject;
 
+  @DoNotStrip
   public PromiseImpl(@Nullable Callback resolve, @Nullable Callback reject) {
     mResolve = resolve;
     mReject = reject;

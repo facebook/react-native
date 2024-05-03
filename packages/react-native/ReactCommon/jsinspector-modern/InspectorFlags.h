@@ -37,16 +37,21 @@ class InspectorFlags {
   void dangerouslyResetFlags();
 
  private:
-  InspectorFlags();
+  struct Values {
+    bool enableCxxInspectorPackagerConnection;
+    bool enableModernCDPRegistry;
+    bool operator==(const Values&) const = default;
+  };
+
+  InspectorFlags() = default;
   InspectorFlags(const InspectorFlags&) = delete;
   InspectorFlags& operator=(const InspectorFlags&) = default;
   ~InspectorFlags() = default;
 
-  bool enableModernCDPRegistry_;
-  bool enableCxxInspectorPackagerConnection_;
-
+  mutable std::optional<Values> cachedValues_;
   mutable bool inconsistentFlagsStateLogged_{false};
-  void assertFlagsMatchUpstream() const;
+
+  const Values& loadFlagsAndAssertUnchanged() const;
 };
 
 } // namespace facebook::react::jsinspector_modern

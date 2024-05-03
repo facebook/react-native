@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<95e3fd7cf662623e3c09b093649d4ff2>>
+ * @generated SignedSource<<ea2440da83ee9eddc3fce3e7e69935b2>>
  */
 
 /**
@@ -31,7 +31,19 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool allowCollapsableChildren() override {
+    return true;
+  }
+
+  bool androidEnablePendingFabricTransactions() override {
+    return false;
+  }
+
   bool batchRenderingUpdatesInEventLoop() override {
+    return false;
+  }
+
+  bool destroyFabricSurfacesInReactInstanceManager() override {
     return false;
   }
 
@@ -39,11 +51,11 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool enableCustomDrawOrderFabric() override {
+  bool enableCleanTextInputYogaNode() override {
     return false;
   }
 
-  bool enableFixForClippedSubviewsCrash() override {
+  bool enableGranularShadowTreeStateReconciliation() override {
     return false;
   }
 
@@ -51,11 +63,19 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool enableMountHooksAndroid() override {
+  bool enableSynchronousStateUpdates() override {
     return false;
   }
 
-  bool enableSpannableBuildingUnification() override {
+  bool enableUIConsistency() override {
+    return false;
+  }
+
+  bool fixMountedFlagAndFixPreallocationClone() override {
+    return false;
+  }
+
+  bool forceBatchingMountItemsOnAndroid() override {
     return false;
   }
 
@@ -67,11 +87,23 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool skipMountHookNotifications() override {
+  bool lazyAnimationCallbacks() override {
+    return false;
+  }
+
+  bool preventDoubleTextMeasure() override {
     return false;
   }
 
   bool useModernRuntimeScheduler() override {
+    return false;
+  }
+
+  bool useNativeViewConfigsInBridgelessMode() override {
+    return false;
+  }
+
+  bool useStateAlignmentMechanism() override {
     return false;
   }
 };

@@ -64,9 +64,8 @@ class AsyncCallback {
     if (auto wrapper = callback_->wrapper_.lock()) {
       auto fn = [callback = callback_,
                  argsPtr = std::make_shared<std::tuple<Args...>>(
-                     std::make_tuple(std::forward<Args>(args)...))] {
-        callback->apply(std::move(*argsPtr));
-      };
+                     std::make_tuple(std::forward<Args>(args)...))](
+                    jsi::Runtime&) { callback->apply(std::move(*argsPtr)); };
 
       auto& jsInvoker = wrapper->jsInvoker();
       if (priority) {
@@ -85,9 +84,10 @@ class AsyncCallback {
       // Capture callback_ and not wrapper_. If callback_ is deallocated or the
       // JSVM is shutdown before the async task is scheduled, the underlying
       // function will have been deallocated.
-      auto fn = [callback = callback_, callImpl = std::move(callImpl)]() {
+      auto fn = [callback = callback_,
+                 callImpl = std::move(callImpl)](jsi::Runtime& rt) {
         if (auto wrapper2 = callback->wrapper_.lock()) {
-          callImpl(wrapper2->runtime(), wrapper2->callback());
+          callImpl(rt, wrapper2->callback());
         }
       };
 

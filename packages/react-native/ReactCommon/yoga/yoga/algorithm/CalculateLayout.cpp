@@ -929,7 +929,8 @@ static void justifyMainAxis(
       node->style().computeFlexEndPaddingAndBorder(
           mainAxis, direction, ownerWidth);
 
-  const float gap = node->style().computeGapForAxis(mainAxis);
+  const float gap =
+      node->style().computeGapForAxis(mainAxis, availableInnerMainDim);
   // If we are using "at most" rules in the main axis, make sure that
   // remainingFreeSpace is 0 when min main dimension is not given
   if (sizingModeMainDim == SizingMode::FitContent &&
@@ -958,27 +959,16 @@ static void justifyMainAxis(
     }
   }
 
-  int numberOfAutoMarginsOnCurrentLine = 0;
-  for (size_t i = startOfLineIndex; i < flexLine.endOfLineIndex; i++) {
-    auto child = node->getChild(i);
-    if (child->style().positionType() != PositionType::Absolute) {
-      if (child->style().flexStartMarginIsAuto(mainAxis, direction)) {
-        numberOfAutoMarginsOnCurrentLine++;
-      }
-      if (child->style().flexEndMarginIsAuto(mainAxis, direction)) {
-        numberOfAutoMarginsOnCurrentLine++;
-      }
-    }
-  }
-
   // In order to position the elements in the main axis, we have two controls.
   // The space between the beginning and the first element and the space between
   // each two elements.
   float leadingMainDim = 0;
   float betweenMainDim = gap;
-  const Justify justifyContent = node->style().justifyContent();
+  const Justify justifyContent = flexLine.layout.remainingFreeSpace >= 0
+      ? node->style().justifyContent()
+      : fallbackAlignment(node->style().justifyContent());
 
-  if (numberOfAutoMarginsOnCurrentLine == 0) {
+  if (flexLine.numberOfAutoMargins == 0) {
     switch (justifyContent) {
       case Justify::Center:
         leadingMainDim = flexLine.layout.remainingFreeSpace / 2;
@@ -988,8 +978,7 @@ static void justifyMainAxis(
         break;
       case Justify::SpaceBetween:
         if (flexLine.itemsInFlow.size() > 1) {
-          betweenMainDim +=
-              yoga::maxOrDefined(flexLine.layout.remainingFreeSpace, 0.0f) /
+          betweenMainDim += flexLine.layout.remainingFreeSpace /
               static_cast<float>(flexLine.itemsInFlow.size() - 1);
         }
         break;
@@ -1042,9 +1031,10 @@ static void justifyMainAxis(
       // We need to do that only for relative elements. Absolute elements do not
       // take part in that phase.
       if (childStyle.positionType() != PositionType::Absolute) {
-        if (child->style().flexStartMarginIsAuto(mainAxis, direction)) {
+        if (child->style().flexStartMarginIsAuto(mainAxis, direction) &&
+            flexLine.layout.remainingFreeSpace > 0.0f) {
           flexLine.layout.mainDim += flexLine.layout.remainingFreeSpace /
-              static_cast<float>(numberOfAutoMarginsOnCurrentLine);
+              static_cast<float>(flexLine.numberOfAutoMargins);
         }
 
         if (performLayout) {
@@ -1058,9 +1048,10 @@ static void justifyMainAxis(
           flexLine.layout.mainDim += betweenMainDim;
         }
 
-        if (child->style().flexEndMarginIsAuto(mainAxis, direction)) {
+        if (child->style().flexEndMarginIsAuto(mainAxis, direction) &&
+            flexLine.layout.remainingFreeSpace > 0.0f) {
           flexLine.layout.mainDim += flexLine.layout.remainingFreeSpace /
-              static_cast<float>(numberOfAutoMarginsOnCurrentLine);
+              static_cast<float>(flexLine.numberOfAutoMargins);
         }
         bool canSkipFlex =
             !performLayout && sizingModeCrossDim == SizingMode::StretchFit;
@@ -1380,7 +1371,8 @@ static void calculateLayoutImpl(
       generationCount);
 
   if (childCount > 1) {
-    totalMainDim += node->style().computeGapForAxis(mainAxis) *
+    totalMainDim +=
+        node->style().computeGapForAxis(mainAxis, availableInnerMainDim) *
         static_cast<float>(childCount - 1);
   }
 
@@ -1404,7 +1396,8 @@ static void calculateLayoutImpl(
   // Accumulated cross dimensions of all lines so far.
   float totalLineCrossDim = 0;
 
-  const float crossAxisGap = node->style().computeGapForAxis(crossAxis);
+  const float crossAxisGap =
+      node->style().computeGapForAxis(crossAxis, availableInnerCrossDim);
 
   // Max main dimension of all the lines.
   float maxLineMainDim = 0;
@@ -1745,7 +1738,12 @@ static void calculateLayoutImpl(
         paddingAndBorderAxisCross;
 
     const float remainingAlignContentDim = innerCrossDim - totalLineCrossDim;
-    switch (node->style().alignContent()) {
+
+    const auto alignContent = remainingAlignContentDim >= 0
+        ? node->style().alignContent()
+        : fallbackAlignment(node->style().alignContent());
+
+    switch (alignContent) {
       case Align::FlexEnd:
         currentLead += remainingAlignContentDim;
         break;
@@ -1753,33 +1751,21 @@ static void calculateLayoutImpl(
         currentLead += remainingAlignContentDim / 2;
         break;
       case Align::Stretch:
-        if (innerCrossDim > totalLineCrossDim) {
-          leadPerLine =
-              remainingAlignContentDim / static_cast<float>(lineCount);
-        }
+        leadPerLine = remainingAlignContentDim / static_cast<float>(lineCount);
         break;
       case Align::SpaceAround:
-        if (innerCrossDim > totalLineCrossDim) {
-          currentLead +=
-              remainingAlignContentDim / (2 * static_cast<float>(lineCount));
-          leadPerLine =
-              remainingAlignContentDim / static_cast<float>(lineCount);
-        } else {
-          currentLead += remainingAlignContentDim / 2;
-        }
+        currentLead +=
+            remainingAlignContentDim / (2 * static_cast<float>(lineCount));
+        leadPerLine = remainingAlignContentDim / static_cast<float>(lineCount);
         break;
       case Align::SpaceEvenly:
-        if (innerCrossDim > totalLineCrossDim) {
-          currentLead +=
-              remainingAlignContentDim / static_cast<float>(lineCount + 1);
-          leadPerLine =
-              remainingAlignContentDim / static_cast<float>(lineCount + 1);
-        } else {
-          currentLead += remainingAlignContentDim / 2;
-        }
+        currentLead +=
+            remainingAlignContentDim / static_cast<float>(lineCount + 1);
+        leadPerLine =
+            remainingAlignContentDim / static_cast<float>(lineCount + 1);
         break;
       case Align::SpaceBetween:
-        if (innerCrossDim > totalLineCrossDim && lineCount > 1) {
+        if (lineCount > 1) {
           leadPerLine =
               remainingAlignContentDim / static_cast<float>(lineCount - 1);
         }
@@ -2040,26 +2026,7 @@ static void calculateLayoutImpl(
   }
 
   if (performLayout) {
-    // STEP 10: SIZING AND POSITIONING ABSOLUTE CHILDREN
-    // Let the containing block layout its absolute descendants. By definition
-    // the containing block will not be static unless we are at the root.
-    if (node->style().positionType() != PositionType::Static ||
-        node->alwaysFormsContainingBlock() || depth == 1) {
-      layoutAbsoluteDescendants(
-          node,
-          node,
-          isMainAxisRow ? sizingModeMainDim : sizingModeCrossDim,
-          direction,
-          layoutMarkerData,
-          depth,
-          generationCount,
-          0.0f,
-          0.0f,
-          availableInnerWidth,
-          availableInnerHeight);
-    }
-
-    // STEP 11: SETTING TRAILING POSITIONS FOR CHILDREN
+    // STEP 10: SETTING TRAILING POSITIONS FOR CHILDREN
     const bool needsMainTrailingPos = needsTrailingPosition(mainAxis);
     const bool needsCrossTrailingPos = needsTrailingPosition(crossAxis);
 
@@ -2081,6 +2048,24 @@ static void calculateLayoutImpl(
           setChildTrailingPosition(node, child, crossAxis);
         }
       }
+    }
+
+    // STEP 11: SIZING AND POSITIONING ABSOLUTE CHILDREN
+    // Let the containing block layout its absolute descendants.
+    if (node->style().positionType() != PositionType::Static ||
+        node->alwaysFormsContainingBlock() || depth == 1) {
+      layoutAbsoluteDescendants(
+          node,
+          node,
+          isMainAxisRow ? sizingModeMainDim : sizingModeCrossDim,
+          direction,
+          layoutMarkerData,
+          depth,
+          generationCount,
+          0.0f,
+          0.0f,
+          availableInnerWidth,
+          availableInnerHeight);
     }
   }
 }

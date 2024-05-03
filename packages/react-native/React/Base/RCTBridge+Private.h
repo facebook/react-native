@@ -6,9 +6,6 @@
  */
 
 #import <React/RCTBridge.h>
-#ifdef __cplusplus
-#import <jsinspector-modern/ReactCdp.h>
-#endif
 
 @class RCTModuleRegistry;
 @class RCTModuleData;
@@ -73,17 +70,6 @@ RCT_EXTERN void RCTRegisterModule(Class);
  */
 @property (nonatomic, strong, readonly) RCTModuleRegistry *moduleRegistry;
 
-/**
- * The HostTarget for this bridge, if one has been created. Exposed for RCTCxxBridge only.
- */
-@property (nonatomic, assign, readonly)
-#ifdef __cplusplus
-    facebook::react::jsinspector_modern::HostTarget *
-#else
-    // The inspector infrastructure cannot be used in C code.
-    void *
-#endif
-        inspectorTarget;
 @end
 
 @interface RCTBridge (RCTCxxBridge)
@@ -152,12 +138,6 @@ RCT_EXTERN void RCTRegisterModule(Class);
  * Allow super fast, one time, timers to skip the queue and be directly executed
  */
 - (void)_immediatelyCallTimer:(NSNumber *)timer;
-
-@end
-
-@interface RCTBridge (Inspector)
-
-@property (nonatomic, readonly, getter=isInspectable) BOOL inspectable;
 
 @end
 

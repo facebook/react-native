@@ -13,8 +13,6 @@ import android.text.Spannable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.react.R;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.common.mapbuffer.MapBuffer;
@@ -24,7 +22,6 @@ import com.facebook.react.uimanager.ReactAccessibilityDelegate;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.views.text.internal.span.ReactClickableSpan;
 import com.facebook.react.views.text.internal.span.TextInlineImageSpan;
 import com.facebook.yoga.YogaMeasureMode;
@@ -138,33 +135,9 @@ public class ReactTextViewManager
     MapBuffer stateMapBuffer = stateWrapper.getStateDataMapBuffer();
     if (stateMapBuffer != null) {
       return getReactTextUpdate(view, props, stateMapBuffer);
-    }
-    ReadableNativeMap state = stateWrapper.getStateData();
-    if (state == null) {
+    } else {
       return null;
     }
-
-    ReadableMap attributedString = state.getMap("attributedString");
-    ReadableMap paragraphAttributes = state.getMap("paragraphAttributes");
-    Spannable spanned =
-        TextLayoutManager.getOrCreateSpannableForText(
-            view.getContext(), attributedString, mReactTextViewManagerCallback);
-    view.setSpanned(spanned);
-
-    int textBreakStrategy =
-        TextAttributeProps.getTextBreakStrategy(
-            paragraphAttributes.getString(ViewProps.TEXT_BREAK_STRATEGY));
-    int currentJustificationMode =
-        Build.VERSION.SDK_INT < Build.VERSION_CODES.O ? 0 : view.getJustificationMode();
-
-    return new ReactTextUpdate(
-        spanned,
-        state.hasKey("mostRecentEventCount") ? state.getInt("mostRecentEventCount") : -1,
-        false, // TODO add this into local Data
-        TextAttributeProps.getTextAlignment(
-            props, TextLayoutManager.isRTL(attributedString), view.getGravityHorizontal()),
-        textBreakStrategy,
-        TextAttributeProps.getJustificationMode(props, currentJustificationMode));
   }
 
   private Object getReactTextUpdate(ReactTextView view, ReactStylesDiffMap props, MapBuffer state) {
@@ -172,13 +145,17 @@ public class ReactTextViewManager
     MapBuffer attributedString = state.getMapBuffer(TX_STATE_KEY_ATTRIBUTED_STRING);
     MapBuffer paragraphAttributes = state.getMapBuffer(TX_STATE_KEY_PARAGRAPH_ATTRIBUTES);
     Spannable spanned =
-        TextLayoutManagerMapBuffer.getOrCreateSpannableForText(
+        TextLayoutManager.getOrCreateSpannableForText(
             view.getContext(), attributedString, mReactTextViewManagerCallback);
     view.setSpanned(spanned);
 
+    float minimumFontSize =
+        (float) paragraphAttributes.getDouble(TextLayoutManager.PA_KEY_MINIMUM_FONT_SIZE);
+    view.setMinimumFontSize(minimumFontSize);
+
     int textBreakStrategy =
         TextAttributeProps.getTextBreakStrategy(
-            paragraphAttributes.getString(TextLayoutManagerMapBuffer.PA_KEY_TEXT_BREAK_STRATEGY));
+            paragraphAttributes.getString(TextLayoutManager.PA_KEY_TEXT_BREAK_STRATEGY));
     int currentJustificationMode =
         Build.VERSION.SDK_INT < Build.VERSION_CODES.O ? 0 : view.getJustificationMode();
 
@@ -186,8 +163,7 @@ public class ReactTextViewManager
         spanned,
         -1, // UNUSED FOR TEXT
         false, // TODO add this into local Data
-        TextAttributeProps.getTextAlignment(
-            props, TextLayoutManagerMapBuffer.isRTL(attributedString), view.getGravityHorizontal()),
+        TextLayoutManager.getTextGravity(attributedString, spanned, view.getGravityHorizontal()),
         textBreakStrategy,
         TextAttributeProps.getJustificationMode(props, currentJustificationMode));
   }
@@ -208,29 +184,6 @@ public class ReactTextViewManager
   @Override
   public long measure(
       Context context,
-      ReadableMap localData,
-      ReadableMap props,
-      ReadableMap state,
-      float width,
-      YogaMeasureMode widthMode,
-      float height,
-      YogaMeasureMode heightMode,
-      @Nullable float[] attachmentsPositions) {
-    return TextLayoutManager.measureText(
-        context,
-        localData,
-        props,
-        width,
-        widthMode,
-        height,
-        heightMode,
-        mReactTextViewManagerCallback,
-        attachmentsPositions);
-  }
-
-  @Override
-  public long measure(
-      Context context,
       MapBuffer localData,
       MapBuffer props,
       @Nullable MapBuffer state,
@@ -239,7 +192,7 @@ public class ReactTextViewManager
       float height,
       YogaMeasureMode heightMode,
       @Nullable float[] attachmentsPositions) {
-    return TextLayoutManagerMapBuffer.measureText(
+    return TextLayoutManager.measureText(
         context,
         localData,
         props,

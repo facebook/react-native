@@ -4,6 +4,11 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+if [ "$CI" ]; then
+  set -x
+fi
+set -e
+
 # shellcheck source=xplat/js/react-native-github/sdks/hermes-engine/utils/build-apple-framework.sh
 CURR_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 . "${CURR_SCRIPT_DIR}/build-apple-framework.sh"

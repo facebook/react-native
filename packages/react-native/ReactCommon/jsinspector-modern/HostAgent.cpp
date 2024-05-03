@@ -22,14 +22,8 @@ namespace facebook::react::jsinspector_modern {
 
 #define ANSI_WEIGHT_BOLD "\x1B[1m"
 #define ANSI_WEIGHT_RESET "\x1B[22m"
-#define ANSI_STYLE_ITALIC "\x1B[3m"
-#define ANSI_STYLE_RESET "\x1B[23m"
 #define ANSI_COLOR_BG_YELLOW "\x1B[48;2;253;247;231m"
-
-static constexpr auto kModernCDPBackendNotice =
-    ANSI_COLOR_BG_YELLOW ANSI_WEIGHT_BOLD
-    "NOTE:" ANSI_WEIGHT_RESET " You are using the " ANSI_STYLE_ITALIC
-    "modern" ANSI_STYLE_RESET " CDP backend for React Native (HostTarget)."sv;
+#define CSS_STYLE_PLACEHOLDER "%c"
 
 HostAgent::HostAgent(
     FrontendChannel frontendChannel,
@@ -51,12 +45,15 @@ void HostAgent::handleRequest(const cdp::PreparsedRequest& req) {
   if (req.method == "Log.enable") {
     sessionState_.isLogDomainEnabled = true;
 
-    // Send a log entry identifying the modern CDP backend.
-    sendInfoLogEntry(kModernCDPBackendNotice);
+    if (fuseboxClientType_ == FuseboxClientType::Fusebox) {
+      sendFuseboxNotice();
+    }
 
     // Send a log entry with the integration name.
     if (sessionMetadata_.integrationName) {
-      sendInfoLogEntry("Integration: " + *sessionMetadata_.integrationName);
+      sendInfoLogEntry(
+          ANSI_COLOR_BG_YELLOW "Debugger integration: " +
+          *sessionMetadata_.integrationName);
     }
 
     shouldSendOKResponse = true;
@@ -69,10 +66,28 @@ void HostAgent::handleRequest(const cdp::PreparsedRequest& req) {
   } else if (req.method == "Runtime.enable") {
     sessionState_.isRuntimeDomainEnabled = true;
 
+    if (fuseboxClientType_ == FuseboxClientType::Unknown) {
+      // Since we know the Fusebox frontend sends
+      // FuseboxClient.setClientMetadata before enabling the Runtime domain, we
+      // can conclude that we're dealing with some other client.
+      fuseboxClientType_ = FuseboxClientType::NonFusebox;
+      sendNonFuseboxNotice();
+    }
+
     shouldSendOKResponse = true;
     isFinishedHandlingRequest = false;
   } else if (req.method == "Runtime.disable") {
     sessionState_.isRuntimeDomainEnabled = false;
+
+    shouldSendOKResponse = true;
+    isFinishedHandlingRequest = false;
+  } else if (req.method == "Debugger.enable") {
+    sessionState_.isDebuggerDomainEnabled = true;
+
+    shouldSendOKResponse = true;
+    isFinishedHandlingRequest = false;
+  } else if (req.method == "Debugger.disable") {
+    sessionState_.isDebuggerDomainEnabled = false;
 
     shouldSendOKResponse = true;
     isFinishedHandlingRequest = false;
@@ -90,6 +105,51 @@ void HostAgent::handleRequest(const cdp::PreparsedRequest& req) {
             : std::nullopt,
     });
 
+    shouldSendOKResponse = true;
+    isFinishedHandlingRequest = true;
+  } else if (req.method == "Overlay.setPausedInDebuggerMessage") {
+    auto message = req.params.isObject() && req.params.count("message")
+        ? std::optional(req.params.at("message").asString())
+        : std::nullopt;
+    if (!isPausedInDebuggerOverlayVisible_ && message.has_value()) {
+      targetController_.incrementPauseOverlayCounter();
+    } else if (isPausedInDebuggerOverlayVisible_ && !message.has_value()) {
+      targetController_.decrementPauseOverlayCounter();
+    }
+    isPausedInDebuggerOverlayVisible_ = message.has_value();
+    targetController_.getDelegate().onSetPausedInDebuggerMessage({
+        .message = message,
+    });
+
+    shouldSendOKResponse = true;
+    isFinishedHandlingRequest = true;
+  } else if (req.method == "FuseboxClient.setClientMetadata") {
+    fuseboxClientType_ = FuseboxClientType::Fusebox;
+
+    if (sessionState_.isLogDomainEnabled) {
+      sendFuseboxNotice();
+    }
+
+    shouldSendOKResponse = true;
+    isFinishedHandlingRequest = true;
+  } else if (req.method == "Tracing.start") {
+    // @cdp Tracing.start is implemented as a stub only.
+    frontendChannel_(cdp::jsonNotification(
+        // @cdp Tracing.bufferUsage is implemented as a stub only.
+        "Tracing.bufferUsage",
+        folly::dynamic::object("percentFull", 0)("eventCount", 0)("value", 0)));
+    shouldSendOKResponse = true;
+    isFinishedHandlingRequest = true;
+  } else if (req.method == "Tracing.end") {
+    // @cdp Tracing.end is implemented as a stub only.
+    frontendChannel_(cdp::jsonNotification(
+        // @cdp Tracing.dataCollected is implemented as a stub only.
+        "Tracing.dataCollected",
+        folly::dynamic::object("value", folly::dynamic::array())));
+    frontendChannel_(cdp::jsonNotification(
+        // @cdp Tracing.tracingComplete is implemented as a stub only.
+        "Tracing.tracingComplete",
+        folly::dynamic::object("dataLossOccurred", false)));
     shouldSendOKResponse = true;
     isFinishedHandlingRequest = true;
   }
@@ -110,7 +170,49 @@ void HostAgent::handleRequest(const cdp::PreparsedRequest& req) {
       req.method + " not implemented yet"));
 }
 
-void HostAgent::sendInfoLogEntry(std::string_view text) {
+HostAgent::~HostAgent() {
+  if (isPausedInDebuggerOverlayVisible_) {
+    // In case of a non-graceful shutdown of the session, ensure we clean up
+    // the "paused on debugger" overlay if we've previously asked the
+    // integrator to display it.
+    isPausedInDebuggerOverlayVisible_ = false;
+    if (!targetController_.decrementPauseOverlayCounter()) {
+      targetController_.getDelegate().onSetPausedInDebuggerMessage({
+          .message = std::nullopt,
+      });
+    }
+  }
+}
+
+void HostAgent::sendFuseboxNotice() {
+  static constexpr auto kFuseboxNotice = ANSI_COLOR_BG_YELLOW
+      "Welcome to the new React Native debugger (codename " ANSI_WEIGHT_BOLD
+      "React Fusebox " CSS_STYLE_PLACEHOLDER
+      "⚡️" CSS_STYLE_PLACEHOLDER ANSI_WEIGHT_RESET ")."sv;
+
+  sendInfoLogEntry(
+      kFuseboxNotice, {"font-family: sans-serif;", "font-family: monospace;"});
+}
+
+void HostAgent::sendNonFuseboxNotice() {
+  static constexpr auto kNonFuseboxNotice =
+      ANSI_COLOR_BG_YELLOW ANSI_WEIGHT_BOLD
+      "NOTE: " ANSI_WEIGHT_RESET
+      "You are using an unsupported debugging client. "
+      "Use the Dev Menu in your app (or type `j` in the Metro terminal) to open the latest, supported React Native debugger."sv;
+
+  std::vector<std::string> args;
+  args.emplace_back(kNonFuseboxNotice);
+  sendConsoleMessage({ConsoleAPIType::kInfo, args});
+}
+
+void HostAgent::sendInfoLogEntry(
+    std::string_view text,
+    std::initializer_list<std::string_view> args) {
+  folly::dynamic argsArray = folly::dynamic::array();
+  for (auto arg : args) {
+    argsArray.push_back(arg);
+  }
   frontendChannel_(cdp::jsonNotification(
       "Log.entryAdded",
       folly::dynamic::object(
@@ -119,8 +221,8 @@ void HostAgent::sendInfoLogEntry(std::string_view text) {
               "timestamp",
               duration_cast<milliseconds>(
                   system_clock::now().time_since_epoch())
-                  .count())("source", "other")(
-              "level", "info")("text", text))));
+                  .count())("source", "other")("level", "info")("text", text)(
+              "args", std::move(argsArray)))));
 }
 
 void HostAgent::setCurrentInstanceAgent(
@@ -141,6 +243,15 @@ void HostAgent::setCurrentInstanceAgent(
   if (instanceAgent_) {
     // TODO: Send Runtime.executionContextCreated here - at the moment we expect
     // the runtime to do it for us.
+  }
+}
+
+void HostAgent::sendConsoleMessage(SimpleConsoleMessage message) {
+  if (instanceAgent_) {
+    instanceAgent_->sendConsoleMessage(std::move(message));
+  } else {
+    // Will be sent by the InstanceAgent eventually.
+    sessionState_.pendingSimpleConsoleMessages.emplace_back(std::move(message));
   }
 }
 

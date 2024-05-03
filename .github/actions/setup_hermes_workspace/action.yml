@@ -1,0 +1,11 @@
+name: setup_hermes_workspace
+description: "Setup hermes workspace"
+runs:
+  using: composite
+  steps:
+    - name: Set up workspace
+      shell: bash
+      run: |
+        mkdir -p $HERMES_OSXBIN_ARTIFACTS_DIR ./packages/react-native/sdks/hermes
+        cp -r $HERMES_WS_DIR/hermes/* ./packages/react-native/sdks/hermes/.
+        cp -r ./packages/react-native/sdks/hermes-engine/utils ./packages/react-native/sdks/hermes/.

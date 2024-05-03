@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c3bb3615d6a32333f4f20e9d204b5dbb>>
+ * @generated SignedSource<<5065ed4400b76ae62f43ec64ee03ebd2>>
  */
 
 /**
@@ -33,25 +33,40 @@ class JReactNativeFeatureFlagsCxxInterop
   static bool commonTestFlag(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
+  static bool allowCollapsableChildren(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool androidEnablePendingFabricTransactions(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
   static bool batchRenderingUpdatesInEventLoop(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool destroyFabricSurfacesInReactInstanceManager(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enableBackgroundExecutor(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
-  static bool enableCustomDrawOrderFabric(
+  static bool enableCleanTextInputYogaNode(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
-  static bool enableFixForClippedSubviewsCrash(
+  static bool enableGranularShadowTreeStateReconciliation(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enableMicrotasks(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
-  static bool enableMountHooksAndroid(
+  static bool enableSynchronousStateUpdates(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
-  static bool enableSpannableBuildingUnification(
+  static bool enableUIConsistency(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool fixMountedFlagAndFixPreallocationClone(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool forceBatchingMountItemsOnAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool inspectorEnableCxxInspectorPackagerConnection(
@@ -60,10 +75,19 @@ class JReactNativeFeatureFlagsCxxInterop
   static bool inspectorEnableModernCDPRegistry(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
-  static bool skipMountHookNotifications(
+  static bool lazyAnimationCallbacks(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool preventDoubleTextMeasure(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool useModernRuntimeScheduler(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool useNativeViewConfigsInBridgelessMode(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool useStateAlignmentMechanism(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static void override(

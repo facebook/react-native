@@ -79,7 +79,7 @@ class RawPropsParser final {
   void iterateOverValues(
       const RawProps& rawProps,
       const std::function<
-          void(RawPropsPropNameHash, const char*, RawValue const&)>& visit)
+          void(RawPropsPropNameHash, const char*, const RawValue&)>& visit)
       const;
 
   mutable std::vector<RawPropsKey> keys_{};

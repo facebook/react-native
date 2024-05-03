@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fd7ff07ffc0f5f7b2d553a6b5064a1c0>>
+ * @generated SignedSource<<6c93c729ef1a05b5b7d00bafa1f386ad>>
  */
 
 /**
@@ -25,32 +25,52 @@ bool ReactNativeFeatureFlags::commonTestFlag() {
   return getAccessor().commonTestFlag();
 }
 
+bool ReactNativeFeatureFlags::allowCollapsableChildren() {
+  return getAccessor().allowCollapsableChildren();
+}
+
+bool ReactNativeFeatureFlags::androidEnablePendingFabricTransactions() {
+  return getAccessor().androidEnablePendingFabricTransactions();
+}
+
 bool ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop() {
   return getAccessor().batchRenderingUpdatesInEventLoop();
+}
+
+bool ReactNativeFeatureFlags::destroyFabricSurfacesInReactInstanceManager() {
+  return getAccessor().destroyFabricSurfacesInReactInstanceManager();
 }
 
 bool ReactNativeFeatureFlags::enableBackgroundExecutor() {
   return getAccessor().enableBackgroundExecutor();
 }
 
-bool ReactNativeFeatureFlags::enableCustomDrawOrderFabric() {
-  return getAccessor().enableCustomDrawOrderFabric();
+bool ReactNativeFeatureFlags::enableCleanTextInputYogaNode() {
+  return getAccessor().enableCleanTextInputYogaNode();
 }
 
-bool ReactNativeFeatureFlags::enableFixForClippedSubviewsCrash() {
-  return getAccessor().enableFixForClippedSubviewsCrash();
+bool ReactNativeFeatureFlags::enableGranularShadowTreeStateReconciliation() {
+  return getAccessor().enableGranularShadowTreeStateReconciliation();
 }
 
 bool ReactNativeFeatureFlags::enableMicrotasks() {
   return getAccessor().enableMicrotasks();
 }
 
-bool ReactNativeFeatureFlags::enableMountHooksAndroid() {
-  return getAccessor().enableMountHooksAndroid();
+bool ReactNativeFeatureFlags::enableSynchronousStateUpdates() {
+  return getAccessor().enableSynchronousStateUpdates();
 }
 
-bool ReactNativeFeatureFlags::enableSpannableBuildingUnification() {
-  return getAccessor().enableSpannableBuildingUnification();
+bool ReactNativeFeatureFlags::enableUIConsistency() {
+  return getAccessor().enableUIConsistency();
+}
+
+bool ReactNativeFeatureFlags::fixMountedFlagAndFixPreallocationClone() {
+  return getAccessor().fixMountedFlagAndFixPreallocationClone();
+}
+
+bool ReactNativeFeatureFlags::forceBatchingMountItemsOnAndroid() {
+  return getAccessor().forceBatchingMountItemsOnAndroid();
 }
 
 bool ReactNativeFeatureFlags::inspectorEnableCxxInspectorPackagerConnection() {
@@ -61,12 +81,24 @@ bool ReactNativeFeatureFlags::inspectorEnableModernCDPRegistry() {
   return getAccessor().inspectorEnableModernCDPRegistry();
 }
 
-bool ReactNativeFeatureFlags::skipMountHookNotifications() {
-  return getAccessor().skipMountHookNotifications();
+bool ReactNativeFeatureFlags::lazyAnimationCallbacks() {
+  return getAccessor().lazyAnimationCallbacks();
+}
+
+bool ReactNativeFeatureFlags::preventDoubleTextMeasure() {
+  return getAccessor().preventDoubleTextMeasure();
 }
 
 bool ReactNativeFeatureFlags::useModernRuntimeScheduler() {
   return getAccessor().useModernRuntimeScheduler();
+}
+
+bool ReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode() {
+  return getAccessor().useNativeViewConfigsInBridgelessMode();
+}
+
+bool ReactNativeFeatureFlags::useStateAlignmentMechanism() {
+  return getAccessor().useStateAlignmentMechanism();
 }
 
 void ReactNativeFeatureFlags::override(

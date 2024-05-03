@@ -416,7 +416,20 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
 + (NSDictionary<NSString *, id> *)constantsForViewMangerClass:(Class)managerClass
 {
   if ([managerClass instancesRespondToSelector:@selector(constantsToExport)]) {
-    return [[managerClass new] constantsToExport];
+    BOOL shouldRunOnMainThread = NO;
+
+    if ([managerClass respondsToSelector:@selector(requiresMainQueueSetup)]) {
+      shouldRunOnMainThread = [managerClass requiresMainQueueSetup];
+    }
+    if (shouldRunOnMainThread) {
+      __block NSDictionary<NSString *, id> *constants;
+      RCTUnsafeExecuteOnMainQueueSync(^{
+        constants = [[managerClass new] constantsToExport];
+      });
+      return constants;
+    } else {
+      return [[managerClass new] constantsToExport];
+    }
   }
   return @{};
 }

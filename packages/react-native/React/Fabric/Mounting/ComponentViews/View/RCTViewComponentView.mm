@@ -195,7 +195,7 @@ using namespace facebook::react;
   RCTAssert(
       propsRawPtr &&
           ([self class] == [RCTViewComponentView class] ||
-           typeid(*propsRawPtr).hash_code() != typeid(ViewProps const).hash_code()),
+           typeid(*propsRawPtr).hash_code() != typeid(const ViewProps).hash_code()),
       @"`RCTViewComponentView` subclasses (and `%@` particularly) must setup `_props`"
        " instance variable with a default value in the constructor.",
       NSStringFromClass([self class]));
@@ -761,6 +761,15 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   }
 
   return RCTRecursiveAccessibilityLabel(self);
+}
+
+- (BOOL)isAccessibilityElement
+{
+  if (self.contentView != nil) {
+    return self.contentView.isAccessibilityElement;
+  }
+
+  return [super isAccessibilityElement];
 }
 
 - (NSString *)accessibilityValue

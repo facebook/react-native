@@ -5,34 +5,30 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <folly/executors/QueuedImmediateExecutor.h>
-
 #include "JsiIntegrationTestHermesEngineAdapter.h"
-
-using facebook::hermes::makeHermesRuntime;
 
 namespace facebook::react::jsinspector_modern {
 
 JsiIntegrationTestHermesEngineAdapter::JsiIntegrationTestHermesEngineAdapter(
     folly::Executor& jsExecutor)
-    : runtime_{hermes::makeHermesRuntime()},
+    : runtime_{hermes::makeHermesRuntime(
+          ::hermes::vm::RuntimeConfig::Builder()
+              .withCompilationMode(
+                  ::hermes::vm::CompilationMode::ForceLazyCompilation)
+              .build())},
       jsExecutor_{jsExecutor},
-      targetDelegate_{runtime_} {}
+      runtimeTargetDelegate_{runtime_} {}
 
-std::unique_ptr<RuntimeAgentDelegate>
-JsiIntegrationTestHermesEngineAdapter::createAgentDelegate(
-    FrontendChannel frontendChannel,
-    SessionState& sessionState,
-    std::unique_ptr<RuntimeAgentDelegate::ExportedState>
-        previouslyExportedState,
-    const ExecutionContextDescription& executionContextDescription,
-    RuntimeExecutor runtimeExecutor) {
-  return targetDelegate_.createAgentDelegate(
-      std::move(frontendChannel),
-      sessionState,
-      std::move(previouslyExportedState),
-      executionContextDescription,
-      std::move(runtimeExecutor));
+/* static */ InspectorFlagOverrides
+JsiIntegrationTestHermesEngineAdapter::getInspectorFlagOverrides() noexcept {
+  return {
+      .enableModernCDPRegistry = true,
+  };
+}
+
+RuntimeTargetDelegate&
+JsiIntegrationTestHermesEngineAdapter::getRuntimeTargetDelegate() {
+  return runtimeTargetDelegate_;
 }
 
 jsi::Runtime& JsiIntegrationTestHermesEngineAdapter::getRuntime()

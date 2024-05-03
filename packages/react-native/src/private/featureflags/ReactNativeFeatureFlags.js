@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5d1eca67ace8cccc336a6c6f65b40c99>>
+ * @generated SignedSource<<aff7e65ca1f679a79456b2b622dc070f>>
  * @flow strict-local
  */
 
@@ -41,17 +41,25 @@ export type ReactNativeFeatureFlagsJsOnlyOverrides = Partial<ReactNativeFeatureF
 export type ReactNativeFeatureFlags = {
   ...ReactNativeFeatureFlagsJsOnly,
   commonTestFlag: Getter<boolean>,
+  allowCollapsableChildren: Getter<boolean>,
+  androidEnablePendingFabricTransactions: Getter<boolean>,
   batchRenderingUpdatesInEventLoop: Getter<boolean>,
+  destroyFabricSurfacesInReactInstanceManager: Getter<boolean>,
   enableBackgroundExecutor: Getter<boolean>,
-  enableCustomDrawOrderFabric: Getter<boolean>,
-  enableFixForClippedSubviewsCrash: Getter<boolean>,
+  enableCleanTextInputYogaNode: Getter<boolean>,
+  enableGranularShadowTreeStateReconciliation: Getter<boolean>,
   enableMicrotasks: Getter<boolean>,
-  enableMountHooksAndroid: Getter<boolean>,
-  enableSpannableBuildingUnification: Getter<boolean>,
+  enableSynchronousStateUpdates: Getter<boolean>,
+  enableUIConsistency: Getter<boolean>,
+  fixMountedFlagAndFixPreallocationClone: Getter<boolean>,
+  forceBatchingMountItemsOnAndroid: Getter<boolean>,
   inspectorEnableCxxInspectorPackagerConnection: Getter<boolean>,
   inspectorEnableModernCDPRegistry: Getter<boolean>,
-  skipMountHookNotifications: Getter<boolean>,
+  lazyAnimationCallbacks: Getter<boolean>,
+  preventDoubleTextMeasure: Getter<boolean>,
   useModernRuntimeScheduler: Getter<boolean>,
+  useNativeViewConfigsInBridgelessMode: Getter<boolean>,
+  useStateAlignmentMechanism: Getter<boolean>,
 }
 
 /**
@@ -99,33 +107,53 @@ export const shouldUseSetNativePropsInFabric: Getter<boolean> = createJavaScript
  */
 export const commonTestFlag: Getter<boolean> = createNativeFlagGetter('commonTestFlag', false);
 /**
+ * Enables the differentiator to understand the "collapsableChildren" prop
+ */
+export const allowCollapsableChildren: Getter<boolean> = createNativeFlagGetter('allowCollapsableChildren', true);
+/**
+ * To be used with batchRenderingUpdatesInEventLoop. When enbled, the Android mounting layer will concatenate pending transactions to ensure they're applied atomatically
+ */
+export const androidEnablePendingFabricTransactions: Getter<boolean> = createNativeFlagGetter('androidEnablePendingFabricTransactions', false);
+/**
  * When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.
  */
 export const batchRenderingUpdatesInEventLoop: Getter<boolean> = createNativeFlagGetter('batchRenderingUpdatesInEventLoop', false);
+/**
+ * When enabled, ReactInstanceManager will clean up Fabric surfaces on destroy().
+ */
+export const destroyFabricSurfacesInReactInstanceManager: Getter<boolean> = createNativeFlagGetter('destroyFabricSurfacesInReactInstanceManager', false);
 /**
  * Enables the use of a background executor to compute layout and commit updates on Fabric (this system is deprecated and should not be used).
  */
 export const enableBackgroundExecutor: Getter<boolean> = createNativeFlagGetter('enableBackgroundExecutor', false);
 /**
- * When enabled, Fabric will use customDrawOrder in ReactViewGroup (similar to old architecture).
+ * Clean yoga node when <TextInput /> does not change.
  */
-export const enableCustomDrawOrderFabric: Getter<boolean> = createNativeFlagGetter('enableCustomDrawOrderFabric', false);
+export const enableCleanTextInputYogaNode: Getter<boolean> = createNativeFlagGetter('enableCleanTextInputYogaNode', false);
 /**
- * Attempt at fixing a crash related to subview clipping on Android. This is a kill switch for the fix
+ * When enabled, the renderer would only fail commits when they propagate state and the last commit that updated state changed before committing.
  */
-export const enableFixForClippedSubviewsCrash: Getter<boolean> = createNativeFlagGetter('enableFixForClippedSubviewsCrash', false);
+export const enableGranularShadowTreeStateReconciliation: Getter<boolean> = createNativeFlagGetter('enableGranularShadowTreeStateReconciliation', false);
 /**
  * Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).
  */
 export const enableMicrotasks: Getter<boolean> = createNativeFlagGetter('enableMicrotasks', false);
 /**
- * Enables the notification of mount operations to mount hooks on Android.
+ * Dispatches state updates synchronously in Fabric (e.g.: updates the scroll position in the shadow tree synchronously from the main thread).
  */
-export const enableMountHooksAndroid: Getter<boolean> = createNativeFlagGetter('enableMountHooksAndroid', false);
+export const enableSynchronousStateUpdates: Getter<boolean> = createNativeFlagGetter('enableSynchronousStateUpdates', false);
 /**
- * Uses new, deduplicated logic for constructing Android Spannables from text fragments
+ * Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).
  */
-export const enableSpannableBuildingUnification: Getter<boolean> = createNativeFlagGetter('enableSpannableBuildingUnification', false);
+export const enableUIConsistency: Getter<boolean> = createNativeFlagGetter('enableUIConsistency', false);
+/**
+ * Splits hasBeenMounted and promoted.
+ */
+export const fixMountedFlagAndFixPreallocationClone: Getter<boolean> = createNativeFlagGetter('fixMountedFlagAndFixPreallocationClone', false);
+/**
+ * Forces the mounting layer on Android to always batch mount items instead of dispatching them immediately. This might fix some crashes related to synchronous state updates, where some views dispatch state updates during mount.
+ */
+export const forceBatchingMountItemsOnAndroid: Getter<boolean> = createNativeFlagGetter('forceBatchingMountItemsOnAndroid', false);
 /**
  * Flag determining if the C++ implementation of InspectorPackagerConnection should be used instead of the per-platform one. This flag is global and should not be changed across React Host lifetimes.
  */
@@ -135,13 +163,25 @@ export const inspectorEnableCxxInspectorPackagerConnection: Getter<boolean> = cr
  */
 export const inspectorEnableModernCDPRegistry: Getter<boolean> = createNativeFlagGetter('inspectorEnableModernCDPRegistry', false);
 /**
- * This is a temporary flag to disable part of the mount hooks pipeline to investigate a crash.
+ * Only enqueue Choreographer calls if there is an ongoing animation, instead of enqueueing every frame.
  */
-export const skipMountHookNotifications: Getter<boolean> = createNativeFlagGetter('skipMountHookNotifications', false);
+export const lazyAnimationCallbacks: Getter<boolean> = createNativeFlagGetter('lazyAnimationCallbacks', false);
+/**
+ * When enabled, ParagraphShadowNode will no longer call measure twice.
+ */
+export const preventDoubleTextMeasure: Getter<boolean> = createNativeFlagGetter('preventDoubleTextMeasure', false);
 /**
  * When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.
  */
 export const useModernRuntimeScheduler: Getter<boolean> = createNativeFlagGetter('useModernRuntimeScheduler', false);
+/**
+ * When enabled, the native view configs are used in bridgeless mode.
+ */
+export const useNativeViewConfigsInBridgelessMode: Getter<boolean> = createNativeFlagGetter('useNativeViewConfigsInBridgelessMode', false);
+/**
+ * When enabled, it uses optimised state reconciliation algorithm.
+ */
+export const useStateAlignmentMechanism: Getter<boolean> = createNativeFlagGetter('useStateAlignmentMechanism', false);
 
 /**
  * Overrides the feature flags with the provided methods.

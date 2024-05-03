@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b10df028d57c3aebd1972bc4624d1b84>>
+ * @generated SignedSource<<acbc14ea4c336f7e8e3c9e2252b57e77>>
  */
 
 /**
@@ -31,34 +31,49 @@ namespace facebook::react {
 
 class NativeReactNativeFeatureFlags
     : public NativeReactNativeFeatureFlagsCxxSpec<
-          NativeReactNativeFeatureFlags>,
-      std::enable_shared_from_this<NativeReactNativeFeatureFlags> {
+          NativeReactNativeFeatureFlags> {
  public:
   NativeReactNativeFeatureFlags(std::shared_ptr<CallInvoker> jsInvoker);
 
   bool commonTestFlag(jsi::Runtime& runtime);
 
+  bool allowCollapsableChildren(jsi::Runtime& runtime);
+
+  bool androidEnablePendingFabricTransactions(jsi::Runtime& runtime);
+
   bool batchRenderingUpdatesInEventLoop(jsi::Runtime& runtime);
+
+  bool destroyFabricSurfacesInReactInstanceManager(jsi::Runtime& runtime);
 
   bool enableBackgroundExecutor(jsi::Runtime& runtime);
 
-  bool enableCustomDrawOrderFabric(jsi::Runtime& runtime);
+  bool enableCleanTextInputYogaNode(jsi::Runtime& runtime);
 
-  bool enableFixForClippedSubviewsCrash(jsi::Runtime& runtime);
+  bool enableGranularShadowTreeStateReconciliation(jsi::Runtime& runtime);
 
   bool enableMicrotasks(jsi::Runtime& runtime);
 
-  bool enableMountHooksAndroid(jsi::Runtime& runtime);
+  bool enableSynchronousStateUpdates(jsi::Runtime& runtime);
 
-  bool enableSpannableBuildingUnification(jsi::Runtime& runtime);
+  bool enableUIConsistency(jsi::Runtime& runtime);
+
+  bool fixMountedFlagAndFixPreallocationClone(jsi::Runtime& runtime);
+
+  bool forceBatchingMountItemsOnAndroid(jsi::Runtime& runtime);
 
   bool inspectorEnableCxxInspectorPackagerConnection(jsi::Runtime& runtime);
 
   bool inspectorEnableModernCDPRegistry(jsi::Runtime& runtime);
 
-  bool skipMountHookNotifications(jsi::Runtime& runtime);
+  bool lazyAnimationCallbacks(jsi::Runtime& runtime);
+
+  bool preventDoubleTextMeasure(jsi::Runtime& runtime);
 
   bool useModernRuntimeScheduler(jsi::Runtime& runtime);
+
+  bool useNativeViewConfigsInBridgelessMode(jsi::Runtime& runtime);
+
+  bool useStateAlignmentMechanism(jsi::Runtime& runtime);
 };
 
 } // namespace facebook::react

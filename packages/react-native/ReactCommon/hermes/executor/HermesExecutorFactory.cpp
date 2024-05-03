@@ -253,24 +253,14 @@ HermesExecutor::HermesExecutor(
     HermesRuntime& hermesRuntime)
     : JSIExecutor(runtime, delegate, timeoutInvoker, runtimeInstaller),
       runtime_(runtime),
-      targetDelegate_{
-          std::shared_ptr<HermesRuntime>(runtime_, &hermesRuntime)} {}
+      hermesRuntime_(runtime_, &hermesRuntime) {}
 
-std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate>
-HermesExecutor::createAgentDelegate(
-    jsinspector_modern::FrontendChannel frontendChannel,
-    jsinspector_modern::SessionState& sessionState,
-    std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate::ExportedState>
-        previouslyExportedState,
-    const jsinspector_modern::ExecutionContextDescription&
-        executionContextDescription,
-    RuntimeExecutor runtimeExecutor) {
-  return targetDelegate_.createAgentDelegate(
-      std::move(frontendChannel),
-      sessionState,
-      std::move(previouslyExportedState),
-      executionContextDescription,
-      std::move(runtimeExecutor));
+jsinspector_modern::RuntimeTargetDelegate&
+HermesExecutor::getRuntimeTargetDelegate() {
+  if (!targetDelegate_) {
+    targetDelegate_.emplace(hermesRuntime_);
+  }
+  return *targetDelegate_;
 }
 
 } // namespace facebook::react

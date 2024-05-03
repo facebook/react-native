@@ -19,6 +19,8 @@
 #import <React/RCTBridge+Private.h>
 #import <React/RCTBridgeModule.h>
 #import <React/RCTBridgeProxy.h>
+#import <React/RCTCallInvoker.h>
+#import <React/RCTCallInvokerModule.h>
 #import <React/RCTConstants.h>
 #import <React/RCTCxxModule.h>
 #import <React/RCTInitializing.h>
@@ -165,7 +167,7 @@ bool isTurboModuleInstance(id module)
 {
   return isTurboModuleClass([module class]);
 }
-}
+} // namespace
 
 // Fallback lookup since RCT class prefix is sometimes stripped in the existing NativeModule system.
 // This will be removed in the future.
@@ -177,6 +179,11 @@ static Class getFallbackClassFromName(const char *name)
   }
   return moduleClass;
 }
+
+typedef struct {
+  id<RCTBridgeModule> module;
+  dispatch_queue_t methodQueue;
+} ModuleQueuePair;
 
 @implementation RCTTurboModuleManager {
   std::shared_ptr<CallInvoker> _jsInvoker;
@@ -573,9 +580,8 @@ static Class getFallbackClassFromName(const char *name)
         if (!strongSelf) {
           return;
         }
-        module = [strongSelf _createAndSetUpObjCModule:moduleClass
-                                            moduleName:moduleName
-                                              moduleId:moduleHolder->getModuleId()];
+        module = [strongSelf _createAndSetUpObjCModule:moduleClass moduleName:moduleName moduleId:moduleHolder
+                      ->getModuleId()];
       };
 
       if ([self _requiresMainQueueSetup:moduleClass]) {
@@ -674,7 +680,7 @@ static Class getFallbackClassFromName(const char *name)
        */
       if (_bridge) {
         [(id)module setValue:_bridge forKey:@"bridge"];
-      } else if (_bridgeProxy && [self _isLegacyModuleClass:[module class]]) {
+      } else if (_bridgeProxy) {
         [(id)module setValue:_bridgeProxy forKey:@"bridge"];
       }
     } @catch (NSException *exception) {
@@ -691,6 +697,12 @@ static Class getFallbackClassFromName(const char *name)
     RCTRuntimeExecutor *runtimeExecutor = [[RCTRuntimeExecutor alloc]
         initWithRuntimeExecutor:[_runtimeHandler runtimeExecutorForTurboModuleManager:self]];
     [(id<RCTRuntimeExecutorModule>)module setRuntimeExecutor:runtimeExecutor];
+  }
+
+  // This is a more performant alternative for conformsToProtocol:@protocol(RCTCallInvokerModule)
+  if ([module respondsToSelector:@selector(setCallInvoker:)]) {
+    RCTCallInvoker *callInvoker = [[RCTCallInvoker alloc] initWithCallInvoker:_jsInvoker];
+    [(id<RCTCallInvokerModule>)module setCallInvoker:callInvoker];
   }
 
   /**
@@ -1033,7 +1045,7 @@ static Class getFallbackClassFromName(const char *name)
 {
   // Backward-compatibility: RCTInvalidating handling.
   dispatch_group_t moduleInvalidationGroup = dispatch_group_create();
-
+  std::vector<ModuleQueuePair> modulesToInvalidate;
   for (auto &pair : _moduleHolders) {
     std::string moduleName = pair.first;
     ModuleHolder *moduleHolder = &pair.second;
@@ -1056,22 +1068,31 @@ static Class getFallbackClassFromName(const char *name)
             [module class]);
         continue;
       }
+      modulesToInvalidate.push_back({module, methodQueue});
+    }
+  }
 
-      dispatch_group_enter(moduleInvalidationGroup);
-      dispatch_block_t invalidateModule = ^{
-        [((id<RCTInvalidating>)module) invalidate];
-        dispatch_group_leave(moduleInvalidationGroup);
-      };
+  for (auto unused : modulesToInvalidate) {
+    dispatch_group_enter(moduleInvalidationGroup);
+  }
 
-      if (_bridge) {
-        [_bridge dispatchBlock:invalidateModule queue:methodQueue];
+  for (auto &moduleQueuePair : modulesToInvalidate) {
+    id<RCTBridgeModule> module = moduleQueuePair.module;
+    dispatch_queue_t methodQueue = moduleQueuePair.methodQueue;
+
+    dispatch_block_t invalidateModule = ^{
+      [((id<RCTInvalidating>)module) invalidate];
+      dispatch_group_leave(moduleInvalidationGroup);
+    };
+
+    if (_bridge) {
+      [_bridge dispatchBlock:invalidateModule queue:methodQueue];
+    } else {
+      // Bridgeless mode
+      if (methodQueue == RCTJSThread) {
+        invalidateModule();
       } else {
-        // Bridgeless mode
-        if (methodQueue == RCTJSThread) {
-          invalidateModule();
-        } else {
-          dispatch_async(methodQueue, invalidateModule);
-        }
+        dispatch_async(methodQueue, invalidateModule);
       }
     }
   }

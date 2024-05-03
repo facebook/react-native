@@ -76,6 +76,7 @@ class BaseViewProps : public YogaStylableProps, public AccessibilityProps {
   ViewEvents events{};
 
   bool collapsable{true};
+  bool collapsableChildren{true};
 
   bool removeClippedSubviews{false};
 

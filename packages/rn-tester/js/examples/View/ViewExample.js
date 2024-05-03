@@ -648,6 +648,96 @@ export default ({
       },
     },
     {
+      title: 'Rounded Borders (Percentages)',
+      name: 'rounded-borders-percentage',
+      render(): React.Node {
+        return (
+          <View
+            testID="view-test-rounded-borders-percentages"
+            style={{flexDirection: 'row', flexWrap: 'wrap'}}>
+            <View
+              style={{
+                width: 50,
+                height: 50,
+                borderRadius: '50%',
+                borderWidth: 1,
+                marginRight: 10,
+              }}
+            />
+            <View
+              style={{
+                width: 50,
+                height: 50,
+                borderRadius: '50%',
+                borderWidth: 10,
+                marginRight: 10,
+              }}
+            />
+            <View
+              style={{
+                width: 50,
+                height: 50,
+                borderTopLeftRadius: '10%',
+                borderTopRightRadius: '20%',
+                borderBottomRightRadius: '50%',
+                borderBottomLeftRadius: '100%',
+                borderWidth: 1,
+                marginRight: 10,
+              }}
+            />
+            <View
+              style={{
+                width: 50,
+                height: 50,
+                borderTopLeftRadius: '10%',
+                borderTopRightRadius: '20%',
+                borderBottomRightRadius: '50%',
+                borderBottomLeftRadius: '100%',
+                borderWidth: 10,
+                marginRight: 10,
+              }}
+            />
+            <View
+              style={{
+                width: 50,
+                height: 50,
+                borderLeftWidth: 6,
+                borderTopWidth: 6,
+                borderTopLeftRadius: '40%',
+              }}
+            />
+            <View
+              style={{
+                width: 50,
+                height: 50,
+                borderRightWidth: 6,
+                borderTopWidth: 6,
+                borderTopRightRadius: '40%',
+              }}
+            />
+            <View
+              style={{
+                width: 50,
+                height: 50,
+                borderBottomWidth: 6,
+                borderLeftWidth: 6,
+                borderBottomLeftRadius: '40%',
+              }}
+            />
+            <View
+              style={{
+                width: 50,
+                height: 50,
+                borderBottomWidth: 6,
+                borderRightWidth: 6,
+                borderBottomRightRadius: '40%',
+              }}
+            />
+          </View>
+        );
+      },
+    },
+    {
       title: 'Overflow',
       name: 'overflow',
       render(): React.Node {

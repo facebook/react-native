@@ -11,7 +11,6 @@
 import type {HighResTimeStamp, PerformanceEntryType} from './PerformanceEntry';
 
 import warnOnce from '../../../../Libraries/Utilities/warnOnce';
-import NativePerformanceObserver from './NativePerformanceObserver';
 import {PerformanceEntry} from './PerformanceEntry';
 import PerformanceEventTiming from './PerformanceEventTiming';
 import {
@@ -19,22 +18,25 @@ import {
   rawToPerformanceEntry,
   rawToPerformanceEntryType,
 } from './RawPerformanceEntry';
+import NativePerformanceObserver from './specs/NativePerformanceObserver';
 
 export type PerformanceEntryList = $ReadOnlyArray<PerformanceEntry>;
 
+export {PerformanceEntry} from './PerformanceEntry';
+
 export class PerformanceObserverEntryList {
-  _entries: PerformanceEntryList;
+  #entries: PerformanceEntryList;
 
   constructor(entries: PerformanceEntryList) {
-    this._entries = entries;
+    this.#entries = entries;
   }
 
   getEntries(): PerformanceEntryList {
-    return this._entries;
+    return this.#entries;
   }
 
   getEntriesByType(type: PerformanceEntryType): PerformanceEntryList {
-    return this._entries.filter(entry => entry.entryType === type);
+    return this.#entries.filter(entry => entry.entryType === type);
   }
 
   getEntriesByName(
@@ -42,9 +44,9 @@ export class PerformanceObserverEntryList {
     type?: PerformanceEntryType,
   ): PerformanceEntryList {
     if (type === undefined) {
-      return this._entries.filter(entry => entry.name === name);
+      return this.#entries.filter(entry => entry.name === name);
     } else {
-      return this._entries.filter(
+      return this.#entries.filter(
         entry => entry.name === name && entry.entryType === type,
       );
     }
@@ -98,11 +100,17 @@ const onPerformanceEntry = () => {
       const durationThreshold = observerConfig.entryTypes.get(entry.entryType);
       return entry.duration >= (durationThreshold ?? 0);
     });
-    observerConfig.callback(
-      new PerformanceObserverEntryList(entriesForObserver),
-      observer,
-      droppedEntriesCount,
-    );
+    if (entriesForObserver.length !== 0) {
+      try {
+        observerConfig.callback(
+          new PerformanceObserverEntryList(entriesForObserver),
+          observer,
+          droppedEntriesCount,
+        );
+      } catch (error) {
+        console.error(error);
+      }
+    }
   }
 };
 
@@ -167,11 +175,11 @@ function getSupportedPerformanceEntryTypes(): $ReadOnlyArray<PerformanceEntryTyp
  * observer.observe({ type: "event" });
  */
 export default class PerformanceObserver {
-  _callback: PerformanceObserverCallback;
-  _type: 'single' | 'multiple' | void;
+  #callback: PerformanceObserverCallback;
+  #type: 'single' | 'multiple' | void;
 
   constructor(callback: PerformanceObserverCallback) {
-    this._callback = callback;
+    this.#callback = callback;
   }
 
   observe(options: PerformanceObserverInit): void {
@@ -180,17 +188,17 @@ export default class PerformanceObserver {
       return;
     }
 
-    this._validateObserveOptions(options);
+    this.#validateObserveOptions(options);
 
     let requestedEntryTypes;
 
     if (options.entryTypes) {
-      this._type = 'multiple';
+      this.#type = 'multiple';
       requestedEntryTypes = new Map(
         options.entryTypes.map(t => [t, undefined]),
       );
     } else {
-      this._type = 'single';
+      this.#type = 'single';
       requestedEntryTypes = new Map([
         [options.type, options.durationThreshold],
       ]);
@@ -209,7 +217,7 @@ export default class PerformanceObserver {
     }
 
     registeredObservers.set(this, {
-      callback: this._callback,
+      callback: this.#callback,
       entryTypes: nextEntryTypes,
     });
 
@@ -276,7 +284,7 @@ export default class PerformanceObserver {
     applyDurationThresholds();
   }
 
-  _validateObserveOptions(options: PerformanceObserverInit): void {
+  #validateObserveOptions(options: PerformanceObserverInit): void {
     const {type, entryTypes, durationThreshold} = options;
 
     if (!type && !entryTypes) {
@@ -291,13 +299,13 @@ export default class PerformanceObserver {
       );
     }
 
-    if (this._type === 'multiple' && type) {
+    if (this.#type === 'multiple' && type) {
       throw new Error(
         "Failed to execute 'observe' on 'PerformanceObserver': This observer has performed observe({entryTypes:...}, therefore it cannot perform observe({type:...})",
       );
     }
 
-    if (this._type === 'single' && entryTypes) {
+    if (this.#type === 'single' && entryTypes) {
       throw new Error(
         "Failed to execute 'observe' on 'PerformanceObserver': This PerformanceObserver has performed observe({type:...}, therefore it cannot perform observe({entryTypes:...})",
       );

@@ -48,7 +48,20 @@ public class ReactPopupMenuManager :
     popupMenu.showPopupMenu()
   }
 
+  override fun getExportedCustomDirectEventTypeConstants(): Map<String, Any> {
+    val baseEventTypeConstants = super.getExportedCustomDirectEventTypeConstants()
+    val eventTypeConstants: MutableMap<String, Any> = baseEventTypeConstants ?: HashMap()
+    eventTypeConstants.putAll(DIRECT_EVENT_TYPE_CONSTANT)
+    return eventTypeConstants
+  }
+
   public companion object {
     public const val REACT_CLASS: String = "AndroidPopupMenu"
+    private const val REGISTRATION_NAME = "registrationName"
+    private val DIRECT_EVENT_TYPE_CONSTANT =
+        mapOf(
+            PopupMenuSelectionEvent.EVENT_NAME to
+                mapOf(REGISTRATION_NAME to "onPopupMenuSelectionChange"),
+            PopupMenuDismissEvent.EVENT_NAME to mapOf(REGISTRATION_NAME to "onPopupMenuDismiss"))
   }
 }

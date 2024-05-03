@@ -17,6 +17,7 @@ type PopupMenuAndroidInstance = {
 type Props = {
   menuItems: Array<string>;
   onSelectionChange: (number) => void;
+  onDismiss: () => void;
   children: React.ReactNode | undefined;
   instanceRef: React.ElementRef<HostComponent<PopupMenuAndroidInstance>>;
 };

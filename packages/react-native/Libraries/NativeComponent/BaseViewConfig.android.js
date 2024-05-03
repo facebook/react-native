@@ -195,6 +195,7 @@ const validAttributesForNonEventProps = {
   width: true,
   minWidth: true,
   collapsable: true,
+  collapsableChildren: true,
   maxWidth: true,
   height: true,
   minHeight: true,
@@ -305,6 +306,7 @@ const validAttributesForEventProps = {
 
   // Pointer events
   onClick: true,
+  onClickCapture: true,
   onPointerEnter: true,
   onPointerEnterCapture: true,
   onPointerLeave: true,

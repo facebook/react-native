@@ -382,6 +382,11 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
     view.setScrollEventThrottle(scrollEventThrottle);
   }
 
+  @ReactProp(name = "horizontal")
+  public void setHorizontal(ReactScrollView view, boolean horizontal) {
+    // Do Nothing: Align with static ViewConfigs
+  }
+
   @ReactProp(name = "isInvertedVirtualizedList")
   public void setIsInvertedVirtualizedList(ReactScrollView view, boolean applyFix) {
     // Usually when inverting the scroll view we are using scaleY: -1 on the list

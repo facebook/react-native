@@ -4,6 +4,11 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+if [ "$CI" ]; then
+  set -x
+fi
+set -e
+
 # Given a specific target, retrieve the right architecture for it
 # $1 the target you want to build. Allowed values: iphoneos, iphonesimulator, catalyst
 function get_architecture {

@@ -10,7 +10,6 @@ package com.facebook.react.popupmenu
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.uimanager.events.Event
-import com.facebook.react.uimanager.events.RCTEventEmitter
 
 public class PopupMenuSelectionEvent(surfaceId: Int, viewId: Int, private val item: Int) :
     Event<PopupMenuSelectionEvent>(surfaceId, viewId) {
@@ -26,11 +25,7 @@ public class PopupMenuSelectionEvent(surfaceId: Int, viewId: Int, private val it
     return eventData
   }
 
-  override fun dispatch(rctEventEmitter: RCTEventEmitter) {
-    rctEventEmitter.receiveEvent(viewTag, eventName, eventData)
-  }
-
   public companion object {
-    public const val EVENT_NAME: String = "topSelectionChange"
+    public const val EVENT_NAME: String = "topPopupMenuSelectionChange"
   }
 }

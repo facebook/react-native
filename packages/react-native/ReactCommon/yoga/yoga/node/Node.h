@@ -271,7 +271,7 @@ class YG_EXPORT Node : public ::YGNode {
 
   bool hasNewLayout_ : 1 = true;
   bool isReferenceBaseline_ : 1 = false;
-  bool isDirty_ : 1 = false;
+  bool isDirty_ : 1 = true;
   bool alwaysFormsContainingBlock_ : 1 = false;
   NodeType nodeType_ : bitCount<NodeType>() = NodeType::Default;
   void* context_ = nullptr;

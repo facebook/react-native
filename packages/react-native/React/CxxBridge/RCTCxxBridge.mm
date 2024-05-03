@@ -9,6 +9,7 @@
 #include <future>
 
 #import <React/RCTAssert.h>
+#import <React/RCTBridge+Inspector.h>
 #import <React/RCTBridge+Private.h>
 #import <React/RCTBridge.h>
 #import <React/RCTBridgeMethod.h>
@@ -28,6 +29,7 @@
 #import <React/RCTPerformanceLogger.h>
 #import <React/RCTProfile.h>
 #import <React/RCTRedBox.h>
+#import <React/RCTRedBoxSetEnabled.h>
 #import <React/RCTReloadCommand.h>
 #import <React/RCTTurboModuleRegistry.h>
 #import <React/RCTUtils.h>
@@ -105,7 +107,7 @@ class GetDescAdapter : public JSExecutorFactory {
   std::shared_ptr<JSExecutorFactory> factory_;
 };
 
-}
+} // namespace
 
 static void mapReactMarkerToPerformanceLogger(
     const ReactMarker::ReactMarkerId markerId,
@@ -1084,7 +1086,8 @@ struct RCTInstanceCallback : public InstanceCallback {
 
   if (self->_valid && !self->_loading) {
     if ([error userInfo][RCTJSRawStackTraceKey]) {
-      [self.redBox showErrorMessage:[error localizedDescription] withRawStack:[error userInfo][RCTJSRawStackTraceKey]];
+      RCTRedBox *redBox = RCTRedBoxGetEnabled() ? [self.moduleRegistry moduleForName:"RedBox"] : nil;
+      [redBox showErrorMessage:[error localizedDescription] withRawStack:[error userInfo][RCTJSRawStackTraceKey]];
     }
 
     RCTFatal(error);
@@ -1099,7 +1102,7 @@ struct RCTInstanceCallback : public InstanceCallback {
 
   // Hack: once the bridge is invalidated below, it won't initialize any new native
   // modules. Initialize the redbox module now so we can still report this error.
-  RCTRedBox *redBox = [self redBox];
+  RCTRedBox *redBox = RCTRedBoxGetEnabled() ? [self.moduleRegistry moduleForName:"RedBox"] : nil;
 
   _loading = NO;
   _valid = NO;
@@ -1566,7 +1569,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithBundleURL
   return _reactInstance->getJavaScriptContext();
 }
 
-- (void)invokeAsync:(std::function<void()> &&)func
+- (void)invokeAsync:(CallFunc &&)func
 {
   __block auto retainedFunc = std::move(func);
   __weak __typeof(self) weakSelf = self;

@@ -20,7 +20,7 @@ import {createValueIterator} from './ArrayLikeUtils';
 
 // $FlowIssue[prop-missing] Flow doesn't understand [Symbol.iterator]() {} and thinks this class doesn't implement the Iterable interface.
 export default class DOMRectList implements Iterable<DOMRectReadOnly> {
-  _length: number;
+  #length: number;
 
   /**
    * Use `createDOMRectList` to create instances of this class.
@@ -38,15 +38,15 @@ export default class DOMRectList implements Iterable<DOMRectReadOnly> {
       });
     }
 
-    this._length = elements.length;
+    this.#length = elements.length;
   }
 
   get length(): number {
-    return this._length;
+    return this.#length;
   }
 
   item(index: number): DOMRectReadOnly | null {
-    if (index < 0 || index >= this._length) {
+    if (index < 0 || index >= this.#length) {
       return null;
     }
 

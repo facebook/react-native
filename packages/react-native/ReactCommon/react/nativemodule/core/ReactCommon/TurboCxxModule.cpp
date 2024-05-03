@@ -33,24 +33,23 @@ CxxModule::Callback makeTurboCxxModuleCallback(
       return;
     }
 
-    strongWrapper->jsInvoker().invokeAsync([weakWrapper, args]() {
-      auto strongWrapper2 = weakWrapper.lock();
-      if (!strongWrapper2) {
-        return;
-      }
+    strongWrapper->jsInvoker().invokeAsync(
+        [weakWrapper, args](jsi::Runtime& rt) {
+          auto strongWrapper2 = weakWrapper.lock();
+          if (!strongWrapper2) {
+            return;
+          }
 
-      std::vector<jsi::Value> innerArgs;
-      for (auto& a : args) {
-        innerArgs.push_back(
-            jsi::valueFromDynamic(strongWrapper2->runtime(), a));
-      }
-      strongWrapper2->callback().call(
-          strongWrapper2->runtime(),
-          (const jsi::Value*)innerArgs.data(),
-          innerArgs.size());
+          std::vector<jsi::Value> innerArgs;
+          innerArgs.reserve(args.size());
+          for (auto& a : args) {
+            innerArgs.push_back(jsi::valueFromDynamic(rt, a));
+          }
+          strongWrapper2->callback().call(
+              rt, (const jsi::Value*)innerArgs.data(), innerArgs.size());
 
-      strongWrapper2->destroy();
-    });
+          strongWrapper2->destroy();
+        });
 
     wrapperWasCalled = true;
   };

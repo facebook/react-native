@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4c5446d5b72429d090e17523f2d544a7>>
+ * @generated SignedSource<<7fde6d4edaab918ff5cfd1df7e496333>>
  */
 
 /**
@@ -32,17 +32,25 @@ class ReactNativeFeatureFlagsAccessor {
   ReactNativeFeatureFlagsAccessor();
 
   bool commonTestFlag();
+  bool allowCollapsableChildren();
+  bool androidEnablePendingFabricTransactions();
   bool batchRenderingUpdatesInEventLoop();
+  bool destroyFabricSurfacesInReactInstanceManager();
   bool enableBackgroundExecutor();
-  bool enableCustomDrawOrderFabric();
-  bool enableFixForClippedSubviewsCrash();
+  bool enableCleanTextInputYogaNode();
+  bool enableGranularShadowTreeStateReconciliation();
   bool enableMicrotasks();
-  bool enableMountHooksAndroid();
-  bool enableSpannableBuildingUnification();
+  bool enableSynchronousStateUpdates();
+  bool enableUIConsistency();
+  bool fixMountedFlagAndFixPreallocationClone();
+  bool forceBatchingMountItemsOnAndroid();
   bool inspectorEnableCxxInspectorPackagerConnection();
   bool inspectorEnableModernCDPRegistry();
-  bool skipMountHookNotifications();
+  bool lazyAnimationCallbacks();
+  bool preventDoubleTextMeasure();
   bool useModernRuntimeScheduler();
+  bool useNativeViewConfigsInBridgelessMode();
+  bool useStateAlignmentMechanism();
 
   void override(std::unique_ptr<ReactNativeFeatureFlagsProvider> provider);
 
@@ -53,20 +61,28 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 12> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 20> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
+  std::atomic<std::optional<bool>> allowCollapsableChildren_;
+  std::atomic<std::optional<bool>> androidEnablePendingFabricTransactions_;
   std::atomic<std::optional<bool>> batchRenderingUpdatesInEventLoop_;
+  std::atomic<std::optional<bool>> destroyFabricSurfacesInReactInstanceManager_;
   std::atomic<std::optional<bool>> enableBackgroundExecutor_;
-  std::atomic<std::optional<bool>> enableCustomDrawOrderFabric_;
-  std::atomic<std::optional<bool>> enableFixForClippedSubviewsCrash_;
+  std::atomic<std::optional<bool>> enableCleanTextInputYogaNode_;
+  std::atomic<std::optional<bool>> enableGranularShadowTreeStateReconciliation_;
   std::atomic<std::optional<bool>> enableMicrotasks_;
-  std::atomic<std::optional<bool>> enableMountHooksAndroid_;
-  std::atomic<std::optional<bool>> enableSpannableBuildingUnification_;
+  std::atomic<std::optional<bool>> enableSynchronousStateUpdates_;
+  std::atomic<std::optional<bool>> enableUIConsistency_;
+  std::atomic<std::optional<bool>> fixMountedFlagAndFixPreallocationClone_;
+  std::atomic<std::optional<bool>> forceBatchingMountItemsOnAndroid_;
   std::atomic<std::optional<bool>> inspectorEnableCxxInspectorPackagerConnection_;
   std::atomic<std::optional<bool>> inspectorEnableModernCDPRegistry_;
-  std::atomic<std::optional<bool>> skipMountHookNotifications_;
+  std::atomic<std::optional<bool>> lazyAnimationCallbacks_;
+  std::atomic<std::optional<bool>> preventDoubleTextMeasure_;
   std::atomic<std::optional<bool>> useModernRuntimeScheduler_;
+  std::atomic<std::optional<bool>> useNativeViewConfigsInBridgelessMode_;
+  std::atomic<std::optional<bool>> useStateAlignmentMechanism_;
 };
 
 } // namespace facebook::react

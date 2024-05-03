@@ -24,6 +24,7 @@ import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.fabric.mounting.mountitems.DispatchCommandMountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.systrace.Systrace;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -102,6 +103,10 @@ public class MountItemDispatcher {
       return;
     }
 
+    if (ReactNativeFeatureFlags.forceBatchingMountItemsOnAndroid()) {
+      mInDispatch = true;
+    }
+
     final boolean didDispatchItems;
     try {
       didDispatchItems = dispatchMountItems();
@@ -126,7 +131,8 @@ public class MountItemDispatcher {
             new ReactNoCrashSoftException(
                 "Re-dispatched "
                     + mReDispatchCounter
-                    + " times. This indicates setState (?) is likely being called too many times during mounting."));
+                    + " times. This indicates setState (?) is likely being called too many times"
+                    + " during mounting."));
       }
 
       mReDispatchCounter++;

@@ -14,6 +14,7 @@ import type {RNTesterModule} from '../../types/RNTesterTypes';
 
 import TextLegend from '../../components/TextLegend';
 import TextAdjustsDynamicLayoutExample from './TextAdjustsDynamicLayoutExample';
+import TextInlineViewsExample from './TextInlineViewsExample';
 
 const RNTesterBlock = require('../../components/RNTesterBlock');
 const RNTesterPage = require('../../components/RNTesterPage');
@@ -985,18 +986,21 @@ function TextBaseLineLayoutExample(props: {}): React.Node {
 const examples = [
   {
     title: 'Basic text',
+    name: 'basicText',
     render: function (): React.Element<typeof TextExample> {
       return <TextExample />;
     },
   },
   {
     title: "Text `alignItems: 'baseline'` style",
+    name: 'alignItemsBaseline',
     render: function (): React.Node {
       return <TextBaseLineLayoutExample />;
     },
   },
   {
     title: 'Selectable Text',
+    name: 'selectableText',
     render: function (): React.Node {
       return (
         <View>
@@ -1007,6 +1011,7 @@ const examples = [
   },
   {
     title: 'Text alignment',
+    name: 'textAlignment',
     render: function (): React.Node {
       return (
         <View>
@@ -1027,6 +1032,7 @@ const examples = [
       );
     },
   },
+  TextInlineViewsExample,
 ];
 
 module.exports = ({

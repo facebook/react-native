@@ -8,12 +8,9 @@
  */
 
 import type * as React from 'react';
-import {Constructor} from '../../../types/private/Utilities';
-import {TimerMixin} from '../../../types/private/TimerMixin';
-import {NativeMethods} from '../../../types/public/ReactNativeTypes';
 import {ColorValue, StyleProp} from '../../StyleSheet/StyleSheet';
 import {ViewStyle} from '../../StyleSheet/StyleSheetTypes';
-import {TouchableMixin} from './Touchable';
+import {View} from '../../Components/View/View';
 import {TouchableWithoutFeedbackProps} from './TouchableWithoutFeedback';
 
 /**
@@ -60,9 +57,6 @@ export interface TouchableHighlightProps extends TouchableWithoutFeedbackProps {
  *
  * @see https://reactnative.dev/docs/touchablehighlight
  */
-declare class TouchableHighlightComponent extends React.Component<TouchableHighlightProps> {}
-declare const TouchableHighlightBase: Constructor<NativeMethods> &
-  Constructor<TimerMixin> &
-  Constructor<TouchableMixin> &
-  typeof TouchableHighlightComponent;
-export class TouchableHighlight extends TouchableHighlightBase {}
+export const TouchableHighlight: React.ForwardRefExoticComponent<
+  React.PropsWithoutRef<TouchableHighlightProps> & React.RefAttributes<View>
+>;

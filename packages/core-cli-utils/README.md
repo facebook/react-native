@@ -47,6 +47,9 @@ $ ./fancy-framework android clean
     Gradle: ....
 ```
 
+## Features
+- `"@react-native/core-cli-utils/version.js"` contains the platform and tooling version requirements for react-native.
+
 ## Contributing
 
 Changes to this package can be made locally and linked against your app. Please see the [Contributing guide](https://reactnative.dev/contributing/overview#contributing-code).

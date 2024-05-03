@@ -27,7 +27,7 @@ const startCommand: Command = {
     },
     {
       name: '--host <string>',
-      default: '',
+      default: 'localhost',
     },
     {
       name: '--projectRoot <path>',

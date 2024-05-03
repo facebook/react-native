@@ -364,8 +364,8 @@ TEST_P(RuntimeSchedulerTest, continuationTask) {
         jsi::PropNameID::forUtf8(*runtime_, ""),
         1,
         [&](jsi::Runtime& /*runtime*/,
-            jsi::Value const& /*unused*/,
-            jsi::Value const* /*arguments*/,
+            const jsi::Value& /*unused*/,
+            const jsi::Value* /*arguments*/,
             size_t /*unused*/) noexcept -> jsi::Value {
           didContinuationTask = true;
           return jsi::Value::undefined();
@@ -777,11 +777,9 @@ TEST_P(RuntimeSchedulerTest, basicSameThreadExecution) {
   bool didRunSynchronousTask = false;
   std::thread t1([this, &didRunSynchronousTask]() {
     runtimeScheduler_->executeNowOnTheSameThread(
-        [this, &didRunSynchronousTask](jsi::Runtime& /*rt*/) {
-          EXPECT_TRUE(runtimeScheduler_->getIsSynchronous());
+        [&didRunSynchronousTask](jsi::Runtime& /*rt*/) {
           didRunSynchronousTask = true;
         });
-    EXPECT_FALSE(runtimeScheduler_->getIsSynchronous());
   });
 
   auto hasTask = stubQueue_->waitForTask();

@@ -80,6 +80,7 @@ typedef NSURL RCTFileURL;
 + (UIReturnKeyType)UIReturnKeyType:(id)json;
 + (UIUserInterfaceStyle)UIUserInterfaceStyle:(id)json API_AVAILABLE(ios(12));
 + (UIInterfaceOrientationMask)UIInterfaceOrientationMask:(NSString *)orientation;
++ (UIModalPresentationStyle)UIModalPresentationStyle:(id)json;
 
 #if !TARGET_OS_TV
 + (UIDataDetectorTypes)UIDataDetectorTypes:(id)json;

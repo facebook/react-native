@@ -149,12 +149,6 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
     view.setBorderStyle(borderStyle);
   }
 
-  // This is unused by the view manager, and not wired to be sent to Java, but
-  // must be present for the prop to show up in the view config.
-  @ReactProp(name = "experimental_layoutConformance")
-  public void setexperimental_layoutConformance(
-      ReactViewGroup view, @Nullable String layoutConformance) {}
-
   @ReactProp(name = "hitSlop")
   public void setHitSlop(final ReactViewGroup view, Dynamic hitSlop) {
     switch (hitSlop.getType()) {
@@ -263,6 +257,11 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
   public void setCollapsable(ReactViewGroup view, boolean collapsable) {
     // no-op: it's here only so that "collapsable" property is exported to JS. The value is actually
     // handled in NativeViewHierarchyOptimizer
+  }
+
+  @ReactProp(name = ViewProps.COLLAPSABLE_CHILDREN)
+  public void setCollapsableChildren(ReactViewGroup view, boolean collapsableChildren) {
+    // no-op: it's here only so that "collapsableChildren" property is exported to JS.
   }
 
   @ReactProp(name = "focusable")

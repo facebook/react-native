@@ -7,7 +7,7 @@
   "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/rn-tester-e2e",
   "repository": {
     "type": "git",
-    "url": "git@github.com:facebook/react-native.git",
+    "url": "git+ssh://git@github.com/facebook/react-native.git",
     "directory": "packages/rn-tester-e2e"
   },
   "scripts": {

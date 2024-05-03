@@ -74,11 +74,11 @@ using namespace facebook::react;
 {
   RCTAssert(state, @"`state` must not be null.");
   RCTAssert(
-      std::dynamic_pointer_cast<ImageShadowNode::ConcreteState const>(state),
+      std::dynamic_pointer_cast<const ImageShadowNode::ConcreteState>(state),
       @"`state` must be a pointer to `ImageShadowNode::ConcreteState`.");
 
-  auto oldImageState = std::static_pointer_cast<ImageShadowNode::ConcreteState const>(_state);
-  auto newImageState = std::static_pointer_cast<ImageShadowNode::ConcreteState const>(state);
+  auto oldImageState = std::static_pointer_cast<const ImageShadowNode::ConcreteState>(_state);
+  auto newImageState = std::static_pointer_cast<const ImageShadowNode::ConcreteState>(state);
 
   [self _setStateAndResubscribeImageResponseObserver:newImageState];
 
@@ -136,7 +136,7 @@ using namespace facebook::react;
     return;
   }
 
-  static_cast<const ImageEventEmitter &>(*_eventEmitter).onLoad();
+  static_cast<const ImageEventEmitter &>(*_eventEmitter).onLoad(_state->getData().getImageSource());
   static_cast<const ImageEventEmitter &>(*_eventEmitter).onLoadEnd();
 
   const auto &imageProps = static_cast<const ImageProps &>(*_props);
@@ -168,16 +168,19 @@ using namespace facebook::react;
   }
 }
 
-- (void)didReceiveProgress:(float)progress fromObserver:(const void *)observer
+- (void)didReceiveProgress:(float)progress
+                    loaded:(int64_t)loaded
+                     total:(int64_t)total
+              fromObserver:(const void *)observer
 {
   if (!_eventEmitter) {
     return;
   }
 
-  static_cast<const ImageEventEmitter &>(*_eventEmitter).onProgress(progress);
+  static_cast<const ImageEventEmitter &>(*_eventEmitter).onProgress(progress, loaded, total);
 }
 
-- (void)didReceiveFailureFromObserver:(const void *)observer
+- (void)didReceiveFailure:(NSError *)error fromObserver:(const void *)observer
 {
   _imageView.image = nil;
 
@@ -185,7 +188,24 @@ using namespace facebook::react;
     return;
   }
 
-  static_cast<const ImageEventEmitter &>(*_eventEmitter).onError();
+  ImageErrorInfo info;
+
+  if (error) {
+    info.error = std::string([error.localizedDescription UTF8String]);
+    id code = error.userInfo[@"httpStatusCode"];
+    if (code) {
+      info.responseCode = [code intValue];
+    }
+    id rspHeaders = error.userInfo[@"httpResponseHeaders"];
+    if (rspHeaders) {
+      for (NSString *key in rspHeaders) {
+        id value = rspHeaders[key];
+        info.httpResponseHeaders.push_back(
+            std::pair<std::string, std::string>(std::string([key UTF8String]), std::string([value UTF8String])));
+      }
+    }
+  }
+  static_cast<const ImageEventEmitter &>(*_eventEmitter).onError(ImageErrorInfo(info));
   static_cast<const ImageEventEmitter &>(*_eventEmitter).onLoadEnd();
 }
 

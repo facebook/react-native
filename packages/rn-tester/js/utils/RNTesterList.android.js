@@ -140,6 +140,10 @@ const Components: Array<RNTesterModuleInfo> = [
     category: 'Basic',
     module: require('../examples/Performance/PerformanceComparisonExample'),
   },
+  {
+    key: 'OSSLibraryExample',
+    module: require('../examples/OSSLibraryExample/OSSLibraryExample'),
+  },
 ];
 
 const APIs: Array<RNTesterModuleInfo> = ([
@@ -256,6 +260,11 @@ const APIs: Array<RNTesterModuleInfo> = ([
     key: 'PanResponderExample',
     category: 'Basic',
     module: require('../examples/PanResponder/PanResponderExample'),
+  },
+  {
+    key: 'PixelRatio',
+    category: 'UI',
+    module: require('../examples/PixelRatio/PixelRatioExample'),
   },
   {
     key: 'PermissionsExampleAndroid',

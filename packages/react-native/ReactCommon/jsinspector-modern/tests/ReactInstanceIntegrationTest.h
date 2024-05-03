@@ -10,6 +10,7 @@
 #include "InspectorMocks.h"
 #include "ReactNativeMocks.h"
 #include "UniquePtrFactory.h"
+#include "utils/InspectorFlagOverridesGuard.h"
 
 #include <folly/executors/QueuedImmediateExecutor.h>
 #include <folly/json.h>
@@ -31,6 +32,7 @@ struct FeatureFlags {
 class ReactInstanceIntegrationTest : public Test {
  protected:
   ReactInstanceIntegrationTest();
+
   void SetUp() override;
   void TearDown() override;
 
@@ -46,7 +48,6 @@ class ReactInstanceIntegrationTest : public Test {
   std::unique_ptr<react::ReactInstance> instance;
   std::shared_ptr<MockMessageQueueThread> messageQueueThread;
   std::shared_ptr<ErrorUtils> errorHandler;
-  std::unique_ptr<FeatureFlags> featureFlags;
 
   MockRemoteConnection& getRemoteConnection() {
     EXPECT_EQ(mockRemoteConnections_.objectsVended(), 1);
@@ -68,10 +69,11 @@ class ReactInstanceIntegrationTest : public Test {
 
 class ReactInstanceIntegrationTestWithFlags
     : public ReactInstanceIntegrationTest,
-      public ::testing::WithParamInterface<FeatureFlags> {
-  void SetUp() override {
-    featureFlags = std::make_unique<FeatureFlags>(GetParam());
-    ReactInstanceIntegrationTest::SetUp();
-  }
+      public ::testing::WithParamInterface<InspectorFlagOverrides> {
+ protected:
+  ReactInstanceIntegrationTestWithFlags() : inspectorFlagsGuard_(GetParam()) {}
+
+ private:
+  InspectorFlagOverridesGuard inspectorFlagsGuard_;
 };
 } // namespace facebook::react::jsinspector_modern

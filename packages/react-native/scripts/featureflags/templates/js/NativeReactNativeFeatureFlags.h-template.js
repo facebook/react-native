@@ -39,8 +39,7 @@ namespace facebook::react {
 
 class NativeReactNativeFeatureFlags
     : public NativeReactNativeFeatureFlagsCxxSpec<
-          NativeReactNativeFeatureFlags>,
-      std::enable_shared_from_this<NativeReactNativeFeatureFlags> {
+          NativeReactNativeFeatureFlags> {
  public:
   NativeReactNativeFeatureFlags(std::shared_ptr<CallInvoker> jsInvoker);
 

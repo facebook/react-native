@@ -8,6 +8,7 @@
 #include "JReactHostInspectorTarget.h"
 #include <fbjni/NativeRunnable.h>
 #include <jsinspector-modern/InspectorFlags.h>
+#include <react/jni/SafeReleaseJniRef.h>
 
 using namespace facebook::jni;
 using namespace facebook::react::jsinspector_modern;
@@ -23,7 +24,10 @@ JReactHostInspectorTarget::JReactHostInspectorTarget(
     inspectorTarget_ = HostTarget::create(
         *this,
         [javaExecutor =
-             javaExecutor_](std::function<void()>&& callback) mutable {
+             // Use a SafeReleaseJniRef because this lambda may be copied to
+             // arbitrary threads.
+         SafeReleaseJniRef(javaExecutor_)](
+            std::function<void()>&& callback) mutable {
           auto jrunnable =
               JNativeRunnable::newObjectCxxArgs(std::move(callback));
           javaExecutor->execute(jrunnable);
@@ -45,7 +49,7 @@ JReactHostInspectorTarget::JReactHostInspectorTarget(
           // Reject the connection.
           return nullptr;
         },
-        {.nativePageReloads = true});
+        {.nativePageReloads = true, .prefersFuseboxFrontend = true});
   }
 }
 
@@ -63,14 +67,32 @@ JReactHostInspectorTarget::initHybrid(
   return makeCxxInstance(reactHostImpl, executor);
 }
 
+void JReactHostInspectorTarget::sendDebuggerResumeCommand() {
+  if (inspectorTarget_) {
+    inspectorTarget_->sendCommand(HostCommand::DebuggerResume);
+  } else {
+    jni::throwNewJavaException(
+        "java/lang/IllegalStateException",
+        "Cannot send command while the Fusebox backend is not enabled");
+  }
+}
+
 void JReactHostInspectorTarget::registerNatives() {
   registerHybrid({
       makeNativeMethod("initHybrid", JReactHostInspectorTarget::initHybrid),
+      makeNativeMethod(
+          "sendDebuggerResumeCommand",
+          JReactHostInspectorTarget::sendDebuggerResumeCommand),
   });
 }
 
 void JReactHostInspectorTarget::onReload(const PageReloadRequest& request) {
   javaReactHostImpl_->reload("CDP Page.reload");
+}
+
+void JReactHostInspectorTarget::onSetPausedInDebuggerMessage(
+    const OverlaySetPausedInDebuggerMessageRequest& request) {
+  javaReactHostImpl_->setPausedInDebuggerMessage(request.message);
 }
 
 HostTarget* JReactHostInspectorTarget::getInspectorTarget() {

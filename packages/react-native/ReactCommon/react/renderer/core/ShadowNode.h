@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <limits>
 #include <memory>
 #include <string>
 #include <type_traits>
@@ -100,8 +101,8 @@ class ShadowNode : public Sealable,
    */
   Unshared cloneTree(
       const ShadowNodeFamily& shadowNodeFamily,
-      const std::function<Unshared(ShadowNode const& oldShadowNode)>& callback)
-      const;
+      const std::function<Unshared(const ShadowNode& oldShadowNode)>& callback,
+      ShadowNodeTraits traits = {}) const;
 
 #pragma mark - Getters
 
@@ -153,6 +154,12 @@ class ShadowNode : public Sealable,
 
   void sealRecursive() const;
 
+  /*
+   * Marks this shadow node and all of its children as promoted. Promoted shadow
+   * node is scheduled to be mounted.
+   */
+  void markPromotedRecursively() const;
+
   const ShadowNodeFamily& getFamily() const;
 
 #pragma mark - Mutating Methods
@@ -161,7 +168,7 @@ class ShadowNode : public Sealable,
   virtual void replaceChild(
       const ShadowNode& oldChild,
       const Shared& newChild,
-      int32_t suggestedIndex = -1);
+      size_t suggestedIndex = std::numeric_limits<size_t>::max());
 
   /*
    * Performs all side effects associated with mounting/unmounting in one place.
@@ -171,13 +178,21 @@ class ShadowNode : public Sealable,
   void setMounted(bool mounted) const;
 
   /*
+   * Returns true if the shadow node has been promoted to be the next mounted
+   * tree.
+   */
+  bool getHasBeenPromoted() const;
+
+  /*
    * Applies the most recent state to the ShadowNode if following conditions are
    * met:
    * - ShadowNode has a state.
    * - ShadowNode has not been mounted before.
    * - ShadowNode's current state is obsolete.
+   *
+   * Returns true if the state was applied, false otherwise.
    */
-  void progressStateIfNecessary();
+  bool progressStateIfNecessary();
 
 #pragma mark - DebugStringConvertible
 
@@ -215,7 +230,16 @@ class ShadowNode : public Sealable,
    */
   ShadowNodeFamily::Shared family_;
 
+  /*
+   * True if shadow node will be mounted shortly in the future but for all
+   * intents and purposes it should be treated as mounted.
+   */
   mutable std::atomic<bool> hasBeenMounted_{false};
+
+  /*
+   * True if shadow node has been promoted to be the next mounted tree.
+   */
+  mutable bool hasBeenPromoted_{false};
 
   static Props::Shared propsForClonedShadowNode(
       const ShadowNode& sourceShadowNode,

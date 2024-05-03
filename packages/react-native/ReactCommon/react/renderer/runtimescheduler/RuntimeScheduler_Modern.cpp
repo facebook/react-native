@@ -10,10 +10,10 @@
 
 #include <cxxreact/ErrorUtils.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
+#include <react/renderer/consistency/ScopedShadowTreeRevisionLock.h>
 #include <react/renderer/debug/SystraceSection.h>
 #include <react/utils/OnScopeExit.h>
 #include <utility>
-#include "ErrorUtils.h"
 
 namespace facebook::react {
 
@@ -71,11 +71,7 @@ bool RuntimeScheduler_Modern::getShouldYield() const noexcept {
   std::shared_lock lock(schedulingMutex_);
 
   return syncTaskRequests_ > 0 ||
-      (!taskQueue_.empty() && taskQueue_.top() != currentTask_);
-}
-
-bool RuntimeScheduler_Modern::getIsSynchronous() const noexcept {
-  return isSynchronous_;
+      (!taskQueue_.empty() && taskQueue_.top().get() != currentTask_);
 }
 
 void RuntimeScheduler_Modern::cancelTask(Task& task) noexcept {
@@ -105,18 +101,13 @@ void RuntimeScheduler_Modern::executeNowOnTheSameThread(
 
         syncTaskRequests_--;
 
-        isSynchronous_ = true;
-
         auto currentTime = now_();
         auto priority = SchedulerPriority::ImmediatePriority;
         auto expirationTime =
             currentTime + timeoutForSchedulerPriority(priority);
-        auto task = std::make_shared<Task>(
-            priority, std::move(callback), expirationTime);
 
+        auto task = Task{priority, std::move(callback), expirationTime};
         executeTask(runtime, task, currentTime);
-
-        isSynchronous_ = false;
       });
 
   bool shouldScheduleWorkLoop = false;
@@ -159,6 +150,12 @@ void RuntimeScheduler_Modern::scheduleRenderingUpdate(
       renderingUpdate();
     }
   }
+}
+
+void RuntimeScheduler_Modern::setShadowTreeRevisionConsistencyManager(
+    ShadowTreeRevisionConsistencyManager*
+        shadowTreeRevisionConsistencyManager) {
+  shadowTreeRevisionConsistencyManager_ = shadowTreeRevisionConsistencyManager;
 }
 
 #pragma mark - Private
@@ -209,10 +206,10 @@ void RuntimeScheduler_Modern::startWorkLoop(
         break;
       }
 
-      executeTask(runtime, topPriorityTask, currentTime);
+      executeTask(runtime, *topPriorityTask, currentTime);
     }
   } catch (jsi::JSError& error) {
-    handleFatalError(runtime, error);
+    handleJSError(runtime, error, true);
   }
 
   currentPriority_ = previousPriority;
@@ -247,31 +244,38 @@ std::shared_ptr<Task> RuntimeScheduler_Modern::selectTask(
 
 void RuntimeScheduler_Modern::executeTask(
     jsi::Runtime& runtime,
-    const std::shared_ptr<Task>& task,
+    Task& task,
     RuntimeSchedulerTimePoint currentTime) {
-  auto didUserCallbackTimeout = task->expirationTime <= currentTime;
+  auto didUserCallbackTimeout = task.expirationTime <= currentTime;
 
   SystraceSection s(
       "RuntimeScheduler::executeTask",
       "priority",
-      serialize(task->priority),
+      serialize(task.priority),
       "didUserCallbackTimeout",
       didUserCallbackTimeout);
 
-  currentTask_ = task;
-  currentPriority_ = task->priority;
+  currentTask_ = &task;
+  currentPriority_ = task.priority;
 
-  executeMacrotask(runtime, task, didUserCallbackTimeout);
+  {
+    ScopedShadowTreeRevisionLock revisionLock(
+        shadowTreeRevisionConsistencyManager_);
 
-  if (ReactNativeFeatureFlags::enableMicrotasks()) {
-    // "Perform a microtask checkpoint" step.
-    performMicrotaskCheckpoint(runtime);
+    executeMacrotask(runtime, task, didUserCallbackTimeout);
+
+    if (ReactNativeFeatureFlags::enableMicrotasks()) {
+      // "Perform a microtask checkpoint" step.
+      performMicrotaskCheckpoint(runtime);
+    }
+
+    if (ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop()) {
+      // "Update the rendering" step.
+      updateRendering();
+    }
   }
 
-  if (ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop()) {
-    // "Update the rendering" step.
-    updateRendering();
-  }
+  currentTask_ = nullptr;
 }
 
 /**
@@ -293,16 +297,16 @@ void RuntimeScheduler_Modern::updateRendering() {
 
 void RuntimeScheduler_Modern::executeMacrotask(
     jsi::Runtime& runtime,
-    std::shared_ptr<Task> task,
+    Task& task,
     bool didUserCallbackTimeout) const {
   SystraceSection s("RuntimeScheduler::executeMacrotask");
 
-  auto result = task->execute(runtime, didUserCallbackTimeout);
+  auto result = task.execute(runtime, didUserCallbackTimeout);
 
   if (result.isObject() && result.getObject(runtime).isFunction(runtime)) {
     // If the task returned a continuation callback, we re-assign it to the task
     // and keep the task in the queue.
-    task->callback = result.getObject(runtime).getFunction(runtime);
+    task.callback = result.getObject(runtime).getFunction(runtime);
   }
 }
 

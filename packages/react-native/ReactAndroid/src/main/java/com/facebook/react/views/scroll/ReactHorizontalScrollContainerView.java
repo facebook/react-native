@@ -50,7 +50,10 @@ public class ReactHorizontalScrollContainerView extends ReactViewGroup {
       int newLeft = 0;
       int width = right - left;
       int newRight = newLeft + width;
-      setLeftTopRightBottom(newLeft, top, newRight, bottom);
+      setLeft(newLeft);
+      setTop(top);
+      setRight(newRight);
+      setBottom(bottom);
     }
   }
 }

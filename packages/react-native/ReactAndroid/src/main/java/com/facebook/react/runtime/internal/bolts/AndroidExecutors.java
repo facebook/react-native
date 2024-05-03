@@ -7,8 +7,6 @@
 
 package com.facebook.react.runtime.internal.bolts;
 
-import android.annotation.SuppressLint;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import androidx.annotation.NonNull;
@@ -54,6 +52,7 @@ final class AndroidExecutors {
    * <p>https://github.com/android/platform_frameworks_base/commit/719c44e03b97e850a46136ba336d729f5fbd1f47
    */
   private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
+
   /* package */ static final int CORE_POOL_SIZE = CPU_COUNT + 1;
   /* package */ static final int MAX_POOL_SIZE = CPU_COUNT * 2 + 1;
   /* package */ static final long KEEP_ALIVE_TIME = 1L;
@@ -77,7 +76,7 @@ final class AndroidExecutors {
             TimeUnit.SECONDS,
             new LinkedBlockingQueue<Runnable>());
 
-    allowCoreThreadTimeout(executor, true);
+    executor.allowCoreThreadTimeOut(true);
 
     return executor;
   }
@@ -103,25 +102,9 @@ final class AndroidExecutors {
             new LinkedBlockingQueue<Runnable>(),
             threadFactory);
 
-    allowCoreThreadTimeout(executor, true);
+    executor.allowCoreThreadTimeOut(true);
 
     return executor;
-  }
-
-  /**
-   * Compatibility helper function for {@link
-   * java.util.concurrent.ThreadPoolExecutor#allowCoreThreadTimeOut(boolean)}
-   *
-   * <p>Only available on android-9+.
-   *
-   * @param executor the {@link java.util.concurrent.ThreadPoolExecutor}
-   * @param value true if should time out, else false
-   */
-  @SuppressLint("NewApi")
-  public static void allowCoreThreadTimeout(@NonNull ThreadPoolExecutor executor, boolean value) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
-      executor.allowCoreThreadTimeOut(value);
-    }
   }
 
   /**
