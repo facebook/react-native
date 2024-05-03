@@ -99,21 +99,21 @@ module PrivacyManifestUtils
         installer.pod_targets.each do |pod_target|
             # puts pod_target
             pod_target.file_accessors.each do |file_accessor|
-            file_accessor.resource_bundles.each do |bundle_name, bundle_files|
-                bundle_files.each do |file_path|
-                # This needs to be named like that due to apple requirements
-                if File.basename(file_path) == 'PrivacyInfo.xcprivacy'
-                    content = Xcodeproj::Plist.read_from_path(file_path)
-                    accessed_api_types = content["NSPrivacyAccessedAPITypes"]
-                    accessed_api_types.each do |accessed_api|
-                    api_type = accessed_api["NSPrivacyAccessedAPIType"]
-                    reasons = accessed_api["NSPrivacyAccessedAPITypeReasons"]
-                    used_apis[api_type] ||= []
-                    used_apis[api_type] += reasons
+                file_accessor.resource_bundles.each do |bundle_name, bundle_files|
+                    bundle_files.each do |file_path|
+                        # This needs to be named like that due to apple requirements
+                        if File.basename(file_path) == 'PrivacyInfo.xcprivacy'
+                            content = Xcodeproj::Plist.read_from_path(file_path)
+                            accessed_api_types = content["NSPrivacyAccessedAPITypes"]
+                            accessed_api_types.each do |accessed_api|
+                                api_type = accessed_api["NSPrivacyAccessedAPIType"]
+                                reasons = accessed_api["NSPrivacyAccessedAPITypeReasons"]
+                                used_apis[api_type] ||= []
+                                used_apis[api_type] += reasons
+                            end
+                        end
                     end
                 end
-                end
-            end
             end
         end
         return used_apis
