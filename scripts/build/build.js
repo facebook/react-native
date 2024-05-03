@@ -278,10 +278,6 @@ async function rewritePackageExports(packageName /*: string */) {
   }
   pkg.exports = rewriteExportsField(pkg.exports);
 
-  if (pkg.main != null) {
-    pkg.main = rewriteExportsTarget(pkg.main);
-  }
-
   await fs.writeFile(packageJsonPath, JSON.stringify(pkg, null, 2) + '\n');
 }
 
