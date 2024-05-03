@@ -37,6 +37,7 @@ import com.facebook.react.touch.OnInterceptTouchEventListener;
 import com.facebook.react.touch.ReactHitSlopView;
 import com.facebook.react.touch.ReactInterceptingViewGroup;
 import com.facebook.react.uimanager.IllegalViewOperationException;
+import com.facebook.react.uimanager.LengthPercentage;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
 import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.ReactClippingProhibitedView;
@@ -332,7 +333,7 @@ public class ReactViewGroup extends ViewGroup
     backgroundDrawable.setRadius(borderRadius, position);
   }
 
-  public void setBorderRadius(BorderRadiusProp property, @Nullable Float borderRadius) {
+  public void setBorderRadius(BorderRadiusProp property, LengthPercentage borderRadius) {
     CSSBackgroundDrawable backgroundDrawable = getOrCreateReactViewBackground();
     backgroundDrawable.setBorderRadius(property, borderRadius);
   }
@@ -923,7 +924,9 @@ public class ReactViewGroup extends ViewGroup
             }
 
             final ComputedBorderRadius borderRadius =
-                mReactBackgroundDrawable.getBorderRadius().resolve(mLayoutDirection, getContext());
+                mReactBackgroundDrawable
+                    .getBorderRadius()
+                    .resolve(mLayoutDirection, getContext(), getWidth(), getHeight());
 
             if (borderRadius.hasRoundedBorders()) {
               if (mPath == null) {

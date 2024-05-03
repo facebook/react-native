@@ -27,10 +27,13 @@ import androidx.core.graphics.ColorUtils;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.FloatUtil;
+import com.facebook.react.uimanager.LengthPercentage;
+import com.facebook.react.uimanager.LengthPercentageType;
 import com.facebook.react.uimanager.Spacing;
 import com.facebook.react.uimanager.style.BorderRadiusProp;
 import com.facebook.react.uimanager.style.BorderRadiusStyle;
 import com.facebook.react.uimanager.style.ComputedBorderRadius;
+import com.facebook.yoga.YogaConstants;
 import java.util.Locale;
 
 /**
@@ -235,23 +238,28 @@ public class CSSBackgroundDrawable extends Drawable {
   }
 
   /**
-   * @deprecated Use {@link #setBorderRadius(BorderRadiusProp, Float)} instead.
+   * @deprecated Use {@link #setBorderRadius(BorderRadiusProp, LengthPercentage)} instead.
    */
   public void setRadius(float radius) {
-    @Nullable Float boxedRadius = Float.isNaN(radius) ? null : Float.valueOf(radius);
-    setBorderRadius(BorderRadiusProp.BORDER_RADIUS, boxedRadius);
+    Float boxedRadius = Float.isNaN(radius) ? YogaConstants.UNDEFINED : Float.valueOf(radius);
+    setBorderRadius(
+        BorderRadiusProp.BORDER_RADIUS,
+        new LengthPercentage(boxedRadius, LengthPercentageType.POINT));
   }
 
   /**
-   * @deprecated Use {@link #setBorderRadius(BorderRadiusProp, Float)} instead.
+   * @deprecated Use {@link #setBorderRadius(BorderRadiusProp, LengthPercentage)} instead.
    */
   public void setRadius(float radius, int position) {
-    @Nullable Float boxedRadius = Float.isNaN(radius) ? null : Float.valueOf(radius);
-    setBorderRadius(BorderRadiusProp.values()[position], boxedRadius);
+    Float boxedRadius = Float.isNaN(radius) ? YogaConstants.UNDEFINED : Float.valueOf(radius);
+    setBorderRadius(
+        BorderRadiusProp.values()[position],
+        new LengthPercentage(boxedRadius, LengthPercentageType.POINT));
   }
 
-  public void setBorderRadius(BorderRadiusProp property, @Nullable Float radius) {
-    if (!FloatUtil.floatsEqual(mBorderRadius.getUniform(), radius)) {
+  public void setBorderRadius(BorderRadiusProp property, LengthPercentage radius) {
+    if (mBorderRadius.getUniform() == null
+        || !FloatUtil.floatsEqual(mBorderRadius.getUniform().getValue(), radius.getValue())) {
       mBorderRadius.set(property, radius);
       mNeedUpdatePathForBorderRadius = true;
       invalidateSelf();
@@ -568,7 +576,12 @@ public class CSSBackgroundDrawable extends Drawable {
     mTempRectForCenterDrawPath.left += borderWidth.left * 0.5f;
     mTempRectForCenterDrawPath.right -= borderWidth.right * 0.5f;
 
-    ComputedBorderRadius radius = mBorderRadius.resolve(mLayoutDirection, mContext);
+    ComputedBorderRadius radius =
+        mBorderRadius.resolve(
+            mLayoutDirection,
+            mContext,
+            mOuterClipTempRectForBorderRadius.width(),
+            mOuterClipTempRectForBorderRadius.height());
     float topLeftRadius = radius.getTopLeft();
     float topRightRadius = radius.getTopRight();
     float bottomLeftRadius = radius.getBottomLeft();

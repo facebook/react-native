@@ -21,6 +21,8 @@ import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.module.annotations.ReactModule;
+import com.facebook.react.uimanager.LengthPercentage;
+import com.facebook.react.uimanager.LengthPercentageType;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.Spacing;
@@ -30,6 +32,7 @@ import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.uimanager.style.BorderRadiusProp;
 import com.facebook.yoga.YogaConstants;
 import java.util.Map;
 
@@ -128,6 +131,26 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
         ViewProps.BORDER_START_START_RADIUS,
       },
       defaultFloat = YogaConstants.UNDEFINED)
+  public void setBorderRadius(ReactViewGroup view, int index, Dynamic rawBorderRadius) {
+
+    LengthPercentage borderRadius = new LengthPercentage();
+
+    borderRadius.setFromDynamic(rawBorderRadius);
+    if ((borderRadius.getUnit() != LengthPercentageType.UNDEFINED)
+        && (borderRadius.getValue() < 0)) {
+      borderRadius.setValue(YogaConstants.UNDEFINED);
+    }
+
+    if (index == 0) {
+      view.setBorderRadius(BorderRadiusProp.BORDER_RADIUS, borderRadius);
+    } else {
+      view.setBorderRadius(BorderRadiusProp.values()[index - 1], borderRadius);
+    }
+  }
+
+  /**
+   * @deprecated Use {@link #setBorderRadius(ReactViewGroup, int, Dynamic)} instead.
+   */
   public void setBorderRadius(ReactViewGroup view, int index, float borderRadius) {
     if (!YogaConstants.isUndefined(borderRadius) && borderRadius < 0) {
       borderRadius = YogaConstants.UNDEFINED;
