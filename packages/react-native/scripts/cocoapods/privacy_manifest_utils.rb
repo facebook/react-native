@@ -107,6 +107,7 @@ module PrivacyManifestUtils
                             accessed_api_types = content["NSPrivacyAccessedAPITypes"]
                             accessed_api_types.each do |accessed_api|
                                 api_type = accessed_api["NSPrivacyAccessedAPIType"]
+                                next unless api_type
                                 reasons = accessed_api["NSPrivacyAccessedAPITypeReasons"]
                                 used_apis[api_type] ||= []
                                 used_apis[api_type] += reasons
