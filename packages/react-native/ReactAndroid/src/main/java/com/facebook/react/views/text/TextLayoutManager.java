@@ -125,6 +125,12 @@ public class TextLayoutManager {
   }
 
   public static boolean isRTL(MapBuffer attributedString) {
+    // TODO: Don't read AS_KEY_FRAGMENTS, which may be expensive, and is not present when using
+    // cached Spannable
+    if (!attributedString.contains(AS_KEY_FRAGMENTS)) {
+      return false;
+    }
+
     MapBuffer fragments = attributedString.getMapBuffer(AS_KEY_FRAGMENTS);
     if (fragments.getCount() == 0) {
       return false;
@@ -143,6 +149,12 @@ public class TextLayoutManager {
   }
 
   public static Layout.Alignment getTextAlignment(MapBuffer attributedString, Spannable spanned) {
+    // TODO: Don't read AS_KEY_FRAGMENTS, which may be expensive, and is not present when using
+    // cached Spannable
+    if (!attributedString.contains(AS_KEY_FRAGMENTS)) {
+      return Layout.Alignment.ALIGN_NORMAL;
+    }
+
     // Android will align text based on the script, so normal and opposite alignment needs to be
     // swapped when the directions of paragraph and script don't match.
     // I.e. paragraph is LTR but script is RTL, text needs to be aligned to the left, which means
