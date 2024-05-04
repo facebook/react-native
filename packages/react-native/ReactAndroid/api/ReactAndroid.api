@@ -1071,6 +1071,7 @@ public abstract class com/facebook/react/bridge/ReactContext : android/content/C
 	public fun getCurrentActivity ()Landroid/app/Activity;
 	public fun getExceptionHandler ()Lcom/facebook/react/bridge/JSExceptionHandler;
 	public fun getFabricUIManager ()Lcom/facebook/react/bridge/UIManager;
+	public fun getJSCallInvokerHolder ()Lcom/facebook/react/turbomodule/core/interfaces/CallInvokerHolder;
 	public fun getJSExceptionHandler ()Lcom/facebook/react/bridge/JSExceptionHandler;
 	public fun getJSMessageQueueThread ()Lcom/facebook/react/bridge/queue/MessageQueueThread;
 	public fun getJSModule (Ljava/lang/Class;)Lcom/facebook/react/bridge/JavaScriptModule;

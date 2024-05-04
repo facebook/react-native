@@ -118,6 +118,7 @@ public interface CatalystInstance
    * Returns a hybrid object that contains a pointer to a JS CallInvoker, which is used to schedule
    * work on the JS Thread. Required for TurboModuleManager initialization.
    */
+  @Deprecated
   CallInvokerHolder getJSCallInvokerHolder();
 
   /**
