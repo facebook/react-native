@@ -37,75 +37,6 @@ Size measureAndroidComponent(
     const ContextContainer::Shared& contextContainer,
     Tag rootTag,
     const std::string& componentName,
-    folly::dynamic localData,
-    folly::dynamic props,
-    folly::dynamic state,
-    float minWidth,
-    float maxWidth,
-    float minHeight,
-    float maxHeight,
-    jfloatArray attachmentPositions) {
-  const jni::global_ref<jobject>& fabricUIManager =
-      contextContainer->at<jni::global_ref<jobject>>("FabricUIManager");
-
-  static auto measure =
-      jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
-          ->getMethod<jlong(
-              jint,
-              jstring,
-              ReadableMap::javaobject,
-              ReadableMap::javaobject,
-              ReadableMap::javaobject,
-              jfloat,
-              jfloat,
-              jfloat,
-              jfloat,
-              jfloatArray)>("measure");
-
-  auto componentNameRef = make_jstring(componentName);
-  local_ref<ReadableNativeMap::javaobject> localDataRNM =
-      ReadableNativeMap::newObjectCxxArgs(std::move(localData));
-  local_ref<ReadableNativeMap::javaobject> propsRNM =
-      ReadableNativeMap::newObjectCxxArgs(std::move(props));
-  local_ref<ReadableNativeMap::javaobject> stateRNM =
-      ReadableNativeMap::newObjectCxxArgs(std::move(state));
-
-  local_ref<ReadableMap::javaobject> localDataRM =
-      make_local(reinterpret_cast<ReadableMap::javaobject>(localDataRNM.get()));
-  local_ref<ReadableMap::javaobject> propsRM =
-      make_local(reinterpret_cast<ReadableMap::javaobject>(propsRNM.get()));
-  local_ref<ReadableMap::javaobject> stateRM =
-      make_local(reinterpret_cast<ReadableMap::javaobject>(stateRNM.get()));
-
-  auto size = yogaMeassureToSize(measure(
-      fabricUIManager,
-      rootTag,
-      componentNameRef.get(),
-      localDataRM.get(),
-      propsRM.get(),
-      stateRM.get(),
-      minWidth,
-      maxWidth,
-      minHeight,
-      maxHeight,
-      attachmentPositions));
-
-  // Explicitly release smart pointers to free up space faster in JNI tables
-  componentNameRef.reset();
-  localDataRM.reset();
-  localDataRNM.reset();
-  propsRM.reset();
-  propsRNM.reset();
-  stateRM.reset();
-  stateRNM.reset();
-
-  return size;
-}
-
-Size measureAndroidComponentMapBuffer(
-    const ContextContainer::Shared& contextContainer,
-    Tag rootTag,
-    const std::string& componentName,
     MapBuffer localData,
     MapBuffer props,
     float minWidth,
@@ -179,8 +110,8 @@ TextMeasurement TextLayoutManager::measure(
           telemetry->willMeasureText();
         }
 
-        auto measurement = doMeasureMapBuffer(
-            attributedString, paragraphAttributes, layoutConstraints);
+        auto measurement =
+            doMeasure(attributedString, paragraphAttributes, layoutConstraints);
 
         if (telemetry != nullptr) {
           telemetry->didMeasureText();
@@ -202,16 +133,17 @@ TextMeasurement TextLayoutManager::measureCachedSpannableById(
   auto minimumSize = layoutConstraints.minimumSize;
   auto maximumSize = layoutConstraints.maximumSize;
 
-  folly::dynamic cacheIdMap = folly::dynamic::object;
-  cacheIdMap["cacheId"] = cacheId;
+  auto localDataBuilder = MapBufferBuilder();
+
+  // TODO: this is always sourced from an int, and Java expects an int
+  localDataBuilder.putInt(AS_KEY_CACHE_ID, static_cast<int32_t>(cacheId));
 
   auto size = measureAndroidComponent(
       contextContainer_,
       -1, // TODO: we should pass rootTag in
       "RCTText",
-      std::move(cacheIdMap),
-      toDynamic(paragraphAttributes),
-      nullptr,
+      localDataBuilder.build(),
+      toMapBuffer(paragraphAttributes),
       minimumSize.width,
       maximumSize.width,
       minimumSize.height,
@@ -282,69 +214,10 @@ TextMeasurement TextLayoutManager::doMeasure(
   auto minimumSize = layoutConstraints.minimumSize;
   auto maximumSize = layoutConstraints.maximumSize;
 
-  auto serializedAttributedString = toDynamic(attributedString);
-  auto size = measureAndroidComponent(
-      contextContainer_,
-      -1, // TODO: we should pass rootTag in
-      "RCTText",
-      serializedAttributedString,
-      toDynamic(paragraphAttributes),
-      nullptr,
-      minimumSize.width,
-      maximumSize.width,
-      minimumSize.height,
-      maximumSize.height,
-      attachmentPositions);
-
-  jfloat* attachmentData =
-      env->GetFloatArrayElements(attachmentPositions, nullptr);
-
-  auto attachments = TextMeasurement::Attachments{};
-  if (attachmentCount > 0) {
-    const folly::dynamic& fragments = serializedAttributedString["fragments"];
-    int attachmentIndex = 0;
-    for (const auto& fragment : fragments) {
-      auto isAttachment = fragment.find("isAttachment");
-      if (isAttachment != fragment.items().end() &&
-          isAttachment->second.getBool()) {
-        float top = attachmentData[attachmentIndex * 2];
-        float left = attachmentData[attachmentIndex * 2 + 1];
-        auto width = (float)fragment["width"].getDouble();
-        auto height = (float)fragment["height"].getDouble();
-
-        auto rect = facebook::react::Rect{
-            {left, top}, facebook::react::Size{width, height}};
-        attachments.push_back(TextMeasurement::Attachment{rect, false});
-        attachmentIndex++;
-      }
-    }
-  }
-
-  // Clean up allocated ref
-  env->ReleaseFloatArrayElements(
-      attachmentPositions, attachmentData, JNI_ABORT);
-  env->DeleteLocalRef(attachmentPositions);
-
-  return TextMeasurement{size, attachments};
-}
-
-TextMeasurement TextLayoutManager::doMeasureMapBuffer(
-    AttributedString attributedString,
-    const ParagraphAttributes& paragraphAttributes,
-    LayoutConstraints layoutConstraints) const {
-  layoutConstraints.maximumSize.height = std::numeric_limits<Float>::infinity();
-
-  const int attachmentCount = countAttachments(attributedString);
-  auto env = Environment::current();
-  auto attachmentPositions = env->NewFloatArray(attachmentCount * 2);
-
-  auto minimumSize = layoutConstraints.minimumSize;
-  auto maximumSize = layoutConstraints.maximumSize;
-
   auto attributedStringMap = toMapBuffer(attributedString);
   auto paragraphAttributesMap = toMapBuffer(paragraphAttributes);
 
-  auto size = measureAndroidComponentMapBuffer(
+  auto size = measureAndroidComponent(
       contextContainer_,
       -1, // TODO: we should pass rootTag in
       "RCTText",
