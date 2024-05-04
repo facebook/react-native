@@ -27,6 +27,7 @@ import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
+import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder;
 import java.lang.ref.WeakReference;
 import java.util.Collection;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -577,6 +578,17 @@ public abstract class ReactContext extends ContextWrapper {
   public @Nullable JavaScriptContextHolder getJavaScriptContextHolder() {
     if (mCatalystInstance != null) {
       return mCatalystInstance.getJavaScriptContextHolder();
+    }
+    return null;
+  }
+
+  /**
+   * Returns a hybrid object that contains a pointer to a JS CallInvoker, which is used to schedule
+   * work on the JS Thread.
+   */
+  public @Nullable CallInvokerHolder getJSCallInvokerHolder() {
+    if (mCatalystInstance != null) {
+      return mCatalystInstance.getJSCallInvokerHolder();
     }
     return null;
   }
