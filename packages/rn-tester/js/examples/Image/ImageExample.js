@@ -429,6 +429,45 @@ class LoadingIndicatorSourceExample extends React.Component<
   }
 }
 
+type FadeDurationExampleState = {|
+  imageHash: number,
+|};
+
+type FadeDurationExampleProps = $ReadOnly<{||}>;
+
+class FadeDurationExample extends React.Component<
+  FadeDurationExampleProps,
+  FadeDurationExampleState,
+> {
+  state: FadeDurationExampleState = {
+    imageHash: Date.now(),
+  };
+
+  reloadImage = () => {
+    this.setState({
+      imageHash: Date.now(),
+    });
+  };
+
+  render(): React.Node {
+    const loadingImage = {
+      uri: `https://www.facebook.com/ads/pics/successstories.png?hash=${this.state.imageHash}`,
+    };
+
+    return (
+      <View>
+        <View style={styles.spaceBetweenView}>
+          <Text style={styles.touchableText} onPress={this.reloadImage}>
+            Refresh Image
+          </Text>
+        </View>
+        <Image fadeDuration={1500} source={loadingImage} style={styles.base} />
+        <Text>This image will fade in over the time of 1.5s.</Text>
+      </View>
+    );
+  }
+}
+
 type OnLayoutExampleState = {|
   width: number,
   height: number,
@@ -1448,12 +1487,7 @@ exports.examples = [
     description:
       ('The time (in miliseconds) that an image will fade in for when it appears (default = 300).': string),
     render: function (): React.Node {
-      return (
-        <>
-          <Image fadeDuration={1500} source={fullImage} style={styles.base} />
-          <Text>This image will fade in over the time of 1.5s.</Text>
-        </>
-      );
+      return <FadeDurationExample />;
     },
     platform: 'android',
   },
