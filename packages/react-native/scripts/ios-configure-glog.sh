@@ -42,6 +42,10 @@ EOF
     patch -p1 config.sub fix_glog_0.3.5_apple_silicon.patch
 fi
 
+XCRUN="$(which xcrun)"
+if [ -z "$XCRUN" ]; then
+  export CC="$(which gcc)"
+fi
 export CC="$(xcrun -find -sdk $PLATFORM_NAME cc) -arch $CURRENT_ARCH -isysroot $(xcrun -sdk $PLATFORM_NAME --show-sdk-path)"
 export CXX="$CC"
 
