@@ -119,6 +119,6 @@ export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['openDrawer', 'closeDrawer'],
 });
 
-export default (codegenNativeComponent<NativeProps>(
-  'AndroidDrawerLayout',
-): NativeType);
+export default (codegenNativeComponent<NativeProps>('AndroidDrawerLayout', {
+  interfaceOnly: true,
+}): NativeType);

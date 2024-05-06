@@ -47,6 +47,7 @@ target_link_libraries(
         rrc_image
         rrc_modal
         rrc_progressbar
+        rrc_drawerlayout
         rrc_root
         rrc_scrollview
         rrc_switch
