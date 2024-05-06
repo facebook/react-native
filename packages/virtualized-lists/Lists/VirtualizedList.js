@@ -1546,8 +1546,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     }
 
     // Next check if the user just scrolled within the start threshold
-    // and call onStartReached only once for a given content length,
-    // and only if onEndReached is not being executed
+    // and call onStartReached only once for a given first visible item
     if (
       onStartReached != null &&
       this.state.cellsAroundViewport.first === 0 &&
