@@ -7,9 +7,9 @@
 
 #import "RCTScheduler.h"
 
+#import <cxxreact/SystraceSection.h>
 #import <react/renderer/animations/LayoutAnimationDriver.h>
 #import <react/renderer/componentregistry/ComponentDescriptorFactory.h>
-#import <react/renderer/debug/SystraceSection.h>
 #import <react/renderer/scheduler/Scheduler.h>
 #import <react/renderer/scheduler/SchedulerDelegate.h>
 #import <react/utils/RunLoopObserver.h>
