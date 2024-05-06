@@ -19,6 +19,8 @@ using namespace facebook::react;
 NSString *const RCTAppearanceColorSchemeLight = @"light";
 NSString *const RCTAppearanceColorSchemeDark = @"dark";
 
+static BOOL sIsAppearancePreferenceSet = NO; 
+
 static BOOL sAppearancePreferenceEnabled = YES;
 void RCTEnableAppearancePreference(BOOL enabled)
 {
@@ -57,7 +59,12 @@ NSString *RCTColorSchemePreference(UITraitCollection *traitCollection)
     return RCTAppearanceColorSchemeLight;
   }
 
-  return appearances[@(traitCollection.userInterfaceStyle)] ?: RCTAppearanceColorSchemeLight;
+  if (appearances[@(traitCollection.userInterfaceStyle)]){
+    sIsAppearancePreferenceSet = YES;
+    return appearances[@(traitCollection.userInterfaceStyle)];
+  }
+
+  return RCTAppearanceColorSchemeLight;
 }
 
 @interface RCTAppearance () <NativeAppearanceSpec>
@@ -70,6 +77,8 @@ NSString *RCTColorSchemePreference(UITraitCollection *traitCollection)
 - (instancetype)init
 {
   if ((self = [super init])) {
+    UITraitCollection *traitCollection = RCTKeyWindow().traitCollection;
+    _currentColorScheme = RCTColorSchemePreference(traitCollection);
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(appearanceChanged:)
                                                  name:RCTUserInterfaceStyleDidChangeNotification
@@ -107,7 +116,7 @@ RCT_EXPORT_METHOD(setColorScheme : (NSString *)style)
 
 RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString *, getColorScheme)
 {
-  if (_currentColorScheme == nil) {
+  if (!sIsAppearancePreferenceSet) {
     UITraitCollection *traitCollection = RCTKeyWindow().traitCollection;
     _currentColorScheme = RCTColorSchemePreference(traitCollection);
   }
