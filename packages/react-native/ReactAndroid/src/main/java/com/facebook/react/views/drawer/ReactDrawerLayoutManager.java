@@ -22,6 +22,8 @@ import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.ReactStylesDiffMap;
+import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.ViewGroupManager;
@@ -183,6 +185,14 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
   public boolean needsCustomLayoutForChildren() {
     // Return true, since DrawerLayout will lay out it's own children.
     return true;
+  }
+
+  @Nullable
+  @Override
+  public Object updateState(@NonNull ReactDrawerLayout view, ReactStylesDiffMap props, StateWrapper stateWrapper) {
+    view.setStateWrapper(stateWrapper);
+    view.updateState();
+    return null;
   }
 
   @Override
