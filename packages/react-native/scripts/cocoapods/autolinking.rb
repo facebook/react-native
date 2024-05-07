@@ -7,6 +7,7 @@ require 'json'
 require 'pathname'
 require 'cocoapods'
 require_relative './autolinking_utils.rb'
+require_relative '../react_native_pods.rb'
 
 # Your project will have to depend on the @react-native-community/cli if you use this method
 # for listing React native modules.
