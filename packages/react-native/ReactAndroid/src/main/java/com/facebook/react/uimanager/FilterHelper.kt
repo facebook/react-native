@@ -35,9 +35,10 @@ internal object FilterHelper {
             "grayscale" -> createGrayscaleEffect(amount, chainedEffects)
             "sepia" -> createSepiaEffect(amount, chainedEffects)
             "saturate" -> createSaturateEffect(amount, chainedEffects)
-            "hue-rotate" -> createHueRotateEffect(amount, chainedEffects)
+            "hueRotate" -> createHueRotateEffect(amount, chainedEffects)
             "invert" -> createInvertEffect(amount, chainedEffects)
             "blur" -> createBlurEffect(amount, chainedEffects)
+            "opacity" -> createOpacityEffect(amount, chainedEffects)
             else -> throw IllegalArgumentException("Invalid filter name: $filterName")
           }
     }
@@ -63,6 +64,7 @@ internal object FilterHelper {
             "saturate" -> createSaturateColorMatrix(amount)
             "hueRotate" -> createHueRotateColorMatrix(amount)
             "invert" -> createInvertColorMatrix(amount)
+            "opacity" -> createOpacityColorMatrix(amount)
             else -> throw IllegalArgumentException("Invalid color matrix filter: $filterName")
           }
 
@@ -114,6 +116,20 @@ internal object FilterHelper {
   private fun createBrightnessColorMatrix(amount: Float): ColorMatrix {
     val matrix = ColorMatrix()
     matrix.setScale(amount, amount, amount, 1f)
+    return matrix
+  }
+
+  // https://www.w3.org/TR/filter-effects-1/#opacityEquivalent
+  public fun createOpacityEffect(
+      amount: Float,
+      chainedEffects: RenderEffect? = null
+  ): RenderEffect {
+    return createColorMatrixEffect(createOpacityColorMatrix(amount), chainedEffects)
+  }
+
+  public fun createOpacityColorMatrix(amount: Float): ColorMatrix {
+    val matrix = ColorMatrix()
+    matrix.setScale(1f, 1f, 1f, amount)
     return matrix
   }
 
