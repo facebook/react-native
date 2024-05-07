@@ -41,8 +41,6 @@ class AndroidDrawerLayoutState final {
   MapBuffer getMapBuffer() const {
     return MapBufferBuilder::EMPTY();
   };
-
-#pragma mark - Getters
 };
 
 } // namespace facebook::react

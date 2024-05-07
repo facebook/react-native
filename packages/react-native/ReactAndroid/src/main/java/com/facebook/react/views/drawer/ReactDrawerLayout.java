@@ -150,6 +150,7 @@ class ReactDrawerLayout extends DrawerLayout {
   public void updateState() {
     this.updateState(mOpened, mDrawerPosition == Gravity.START, PixelUtil.toDIPFromPixel(getWidth()), PixelUtil.toDIPFromPixel(mDrawerWidth));
   }
+
   private void updateState(boolean isOpen, boolean onLeft, float containerWidth, float drawerWidth) {
     if (this.mStateWrapper == null) {
       return;
@@ -183,7 +184,7 @@ class ReactDrawerLayout extends DrawerLayout {
       stateDrawerWidth = currentState.getDouble("drawerWidth");
     }
 
-    if (isOpen != stateDrawerOpened || onLeft != stateOnLeft || Math.abs(stateContainerWidth - containerWidth) > delta  || Math.abs(stateDrawerWidth - drawerWidth) > delta) {
+    if (isOpen != stateDrawerOpened || onLeft != stateOnLeft || Math.abs(stateContainerWidth - containerWidth) > delta || Math.abs(stateDrawerWidth - drawerWidth) > delta) {
       WritableNativeMap newState = new WritableNativeMap();
       newState.putBoolean("drawerOnLeft", onLeft);
       newState.putBoolean("drawerOpened", isOpen);
