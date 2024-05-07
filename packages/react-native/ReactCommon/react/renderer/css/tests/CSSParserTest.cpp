@@ -267,6 +267,34 @@ TEST(CSSParser, number_ratio_values) {
   EXPECT_EQ(degenerateRatio.getNumber().value, 0.0f);
 }
 
+TEST(CSSParser, angle_values) {
+  auto emptyValue = parseCSSComponentValue<CSSWideKeyword, CSSAngle>("");
+  EXPECT_EQ(emptyValue.type(), CSSValueType::CSSWideKeyword);
+  EXPECT_EQ(emptyValue.getCSSWideKeyword(), CSSWideKeyword::Unset);
+
+  auto degreeValue = parseCSSComponentValue<CSSWideKeyword, CSSAngle>("10deg");
+  EXPECT_EQ(degreeValue.type(), CSSValueType::Angle);
+  EXPECT_EQ(degreeValue.getAngle().degrees, 10.0f);
+
+  auto radianValue = parseCSSComponentValue<CSSWideKeyword, CSSAngle>("10rad");
+  EXPECT_EQ(radianValue.type(), CSSValueType::Angle);
+  EXPECT_NEAR(radianValue.getAngle().degrees, 572.958f, 0.001f);
+
+  auto negativeRadianValue =
+      parseCSSComponentValue<CSSWideKeyword, CSSAngle>("-10rad");
+  EXPECT_EQ(negativeRadianValue.type(), CSSValueType::Angle);
+  EXPECT_NEAR(negativeRadianValue.getAngle().degrees, -572.958f, 0.001f);
+
+  auto gradianValue =
+      parseCSSComponentValue<CSSWideKeyword, CSSAngle>("10grad");
+  EXPECT_EQ(gradianValue.type(), CSSValueType::Angle);
+  ASSERT_NEAR(gradianValue.getAngle().degrees, 9.0f, 0.001f);
+
+  auto turnValue = parseCSSComponentValue<CSSWideKeyword, CSSAngle>("1turn");
+  EXPECT_EQ(turnValue.type(), CSSValueType::Angle);
+  EXPECT_EQ(turnValue.getAngle().degrees, 360.0f);
+}
+
 TEST(CSSParser, parse_prop) {
   auto emptyValue = parseCSSProp<CSSProp::Width>("");
   EXPECT_EQ(emptyValue.type(), CSSValueType::CSSWideKeyword);

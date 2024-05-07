@@ -28,6 +28,7 @@ enum class CSSValueType : uint8_t {
   Number,
   Percentage,
   Ratio,
+  Angle,
 };
 
 /**
@@ -72,6 +73,14 @@ struct CSSNumber {
 struct CSSRatio {
   float numerator{};
   float denominator{};
+};
+
+/**
+ * Representation of CSS <angle> data type
+ * https://www.w3.org/TR/css-values-4/#angles
+ */
+struct CSSAngle {
+  float degrees{};
 };
 
 /**
@@ -161,6 +170,12 @@ class CSSValueVariant {
         CSSValueType::Ratio, CSSRatio{numerator, denominator});
   }
 
+  static constexpr CSSValueVariant angle(float degrees)
+    requires(canRepresent<CSSAngle>())
+  {
+    return CSSValueVariant(CSSValueType::Angle, CSSAngle{degrees});
+  }
+
   constexpr CSSValueType type() const {
     return type_;
   }
@@ -201,6 +216,12 @@ class CSSValueVariant {
     return getIf<CSSValueType::Ratio, CSSRatio>();
   }
 
+  constexpr CSSAngle getAngle() const
+    requires(canRepresent<CSSAngle>())
+  {
+    return getIf<CSSValueType::Angle, CSSAngle>();
+  }
+
   constexpr operator bool() const
     requires(canRepresent<CSSWideKeyword>())
   {
@@ -225,6 +246,8 @@ class CSSValueVariant {
         return getPercentage() == other.getPercentage();
       case CSSValueType::Ratio:
         return getRatio() == other.getRatio();
+      case CSSValueType::Angle:
+        return getAngle() == other.getAngle();
     }
 
     return false;
