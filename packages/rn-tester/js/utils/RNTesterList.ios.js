@@ -295,6 +295,10 @@ const APIs: Array<RNTesterModuleInfo> = ([
     module: require('../examples/Transform/TransformExample'),
   },
   {
+    key: 'FilterExample',
+    module: require('../examples/Filter/FilterExample'),
+  },
+  {
     key: 'TurboModuleExample',
     module: require('../examples/TurboModule/TurboModuleExample'),
   },
