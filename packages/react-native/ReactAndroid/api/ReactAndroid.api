@@ -2474,7 +2474,7 @@ public abstract interface class com/facebook/react/fabric/Binding {
 	public abstract fun unregisterSurface (Lcom/facebook/react/fabric/SurfaceHandlerBinding;)V
 }
 
-public class com/facebook/react/fabric/BindingImpl : com/facebook/react/fabric/Binding {
+public final class com/facebook/react/fabric/BindingImpl : com/facebook/react/fabric/Binding {
 	public fun <init> ()V
 	public fun driveCxxAnimations ()V
 	public fun getInspectorDataForInstance (Lcom/facebook/react/fabric/events/EventEmitterWrapper;)Lcom/facebook/react/bridge/ReadableNativeMap;
