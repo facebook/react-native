@@ -12,6 +12,7 @@ import type {AnyAttributeType} from '../../Renderer/shims/ReactNativeTypes';
 
 import processAspectRatio from '../../StyleSheet/processAspectRatio';
 import processColor from '../../StyleSheet/processColor';
+import processFilter from '../../StyleSheet/processFilter';
 import processFontVariant from '../../StyleSheet/processFontVariant';
 import processTransform from '../../StyleSheet/processTransform';
 import processTransformOrigin from '../../StyleSheet/processTransformOrigin';
@@ -113,6 +114,11 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
    */
   transform: {process: processTransform},
   transformOrigin: {process: processTransformOrigin},
+
+  /**
+   * Filter
+   */
+  experimental_filter: {process: processFilter},
 
   /**
    * View
