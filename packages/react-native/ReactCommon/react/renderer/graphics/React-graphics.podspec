@@ -65,5 +65,4 @@ Pod::Spec.new do |s|
   s.dependency "React-jsiexecutor"
   s.dependency "React-utils"
   s.dependency "DoubleConversion"
-  s.dependency "fmt", "9.1.0"
 end
