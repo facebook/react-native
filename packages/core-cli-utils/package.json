@@ -3,7 +3,7 @@
   "version": "0.75.0-main",
   "description": "React Native CLI library for Frameworks to build on",
   "license": "MIT",
-  "main": "./src/index.js",
+  "main": "./src/index.flow.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/facebook/react-native.git",

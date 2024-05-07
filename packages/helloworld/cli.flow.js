@@ -201,8 +201,9 @@ bootstrap
   .action(async (_, options: {newArchitecture: boolean}) => {
     await run(
       apple.bootstrap({
-        newArchitecture: options.newArchitecture,
         cwd: cwd.ios,
+        hermes: true,
+        newArchitecture: options.newArchitecture,
       }),
     );
   });

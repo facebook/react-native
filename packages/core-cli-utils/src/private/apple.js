@@ -29,8 +29,11 @@ type AppleBuildOptions = {
 };
 
 type AppleBootstrapOption = {
-  // Enabled by default
-  hermes?: boolean | string,
+  // Configure what type of VM and how we'd like it built
+  // - true: build Hermes from source
+  // - false: use JSC
+  // - 'Debug' | 'Release': download a prebuilt copy of Hermes
+  hermes: boolean,
   newArchitecture: boolean,
   ...AppleOptions,
 };
@@ -84,7 +87,7 @@ export const tasks = {
       if (options.hermes != null) {
         switch (typeof options.hermes) {
           case 'string':
-            env.HERMES = options.hermes;
+            env.HERMES = '1';
             break;
           case 'boolean':
             env.HERMES = options.hermes ? '1' : '0';
