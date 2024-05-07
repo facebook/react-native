@@ -5,9 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <react/nativemodule/dom/NativeDOM.h>
-#include <react/nativemodule/featureflags/NativeReactNativeFeatureFlags.h>
-#include <react/nativemodule/microtasks/NativeMicrotasks.h>
+#include <ReactCommon/TurboModule.h>
 
 namespace facebook::react {
 
