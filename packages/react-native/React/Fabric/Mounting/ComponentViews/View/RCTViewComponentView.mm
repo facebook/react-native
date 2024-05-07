@@ -29,6 +29,7 @@ using namespace facebook::react;
 @implementation RCTViewComponentView {
   UIColor *_backgroundColor;
   __weak CALayer *_borderLayer;
+  CALayer *_filterLayer;
   BOOL _needsInvalidateLayer;
   BOOL _isJSResponder;
   BOOL _removeClippedSubviews;
@@ -388,6 +389,11 @@ using namespace facebook::react;
     self.accessibilityIdentifier = RCTNSStringFromString(newViewProps.testId);
   }
 
+  // `filter`
+  if (oldViewProps.filter != newViewProps.filter) {
+    _needsInvalidateLayer = YES;
+  }
+
   _needsInvalidateLayer = _needsInvalidateLayer || needsInvalidateLayer;
 
   _props = std::static_pointer_cast<const ViewProps>(props);
@@ -725,6 +731,33 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
 
     layer.cornerRadius = cornerRadius;
     layer.mask = maskLayer;
+  }
+
+  [_filterLayer removeFromSuperlayer];
+  _filterLayer = nil;
+  self.layer.opacity = (float)_props->opacity;
+  if (!_props->filter.empty()) {
+    float multiplicativeBrightness = 1;
+    for (const auto &primitive : _props->filter) {
+      if (primitive.type == FilterType::Brightness) {
+        multiplicativeBrightness *= primitive.amount;
+      } else if (primitive.type == FilterType::Opacity) {
+        self.layer.opacity *= primitive.amount;
+      }
+    }
+
+    _filterLayer = [CALayer layer];
+    _filterLayer.frame = CGRectMake(0, 0, layer.frame.size.width, layer.frame.size.height);
+    _filterLayer.compositingFilter = @"multiplyBlendMode";
+    _filterLayer.backgroundColor = [UIColor colorWithRed:multiplicativeBrightness
+                                                   green:multiplicativeBrightness
+                                                    blue:multiplicativeBrightness
+                                                   alpha:self.layer.opacity]
+                                       .CGColor;
+    // So that this layer is always above any potential sublayers this view may
+    // add
+    _filterLayer.zPosition = CGFLOAT_MAX;
+    [self.layer addSublayer:_filterLayer];
   }
 }
 
