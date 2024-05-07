@@ -376,8 +376,11 @@ void YogaLayoutableShadowNode::updateYogaProps() {
   yogaNode_.setStyle(styleResult);
   if (getTraits().check(ShadowNodeTraits::ViewKind)) {
     auto& viewProps = static_cast<const ViewProps&>(*props_);
-    YGNodeSetAlwaysFormsContainingBlock(
-        &yogaNode_, viewProps.transform != Transform::Identity());
+    // https://developer.mozilla.org/en-US/docs/Web/CSS/Containing_block#identifying_the_containing_block
+    bool alwaysFormsContainingBlock =
+        viewProps.transform != Transform::Identity() ||
+        !viewProps.filter.empty();
+    YGNodeSetAlwaysFormsContainingBlock(&yogaNode_, alwaysFormsContainingBlock);
   }
 }
 
