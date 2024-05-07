@@ -9,6 +9,7 @@
 
 #include <optional>
 
+#include <react/renderer/css/CSSAngleUnit.h>
 #include <react/renderer/css/CSSKeywords.h>
 #include <react/renderer/css/CSSLengthUnit.h>
 #include <react/renderer/css/CSSProperties.h>
@@ -105,6 +106,12 @@ class CSSParser {
     if constexpr (traits::containsType<CSSLength, AllowedTypesT...>()) {
       if (auto unit = parseCSSLengthUnit(peek().unit())) {
         return CSSValueT::length(consumeToken().numericValue(), *unit);
+      }
+    }
+    if constexpr (traits::containsType<CSSAngle, AllowedTypesT...>()) {
+      if (auto unit = parseCSSAngleUnit(peek().unit())) {
+        return CSSValueT::angle(
+            canonicalize(consumeToken().numericValue(), *unit));
       }
     }
     return {};
