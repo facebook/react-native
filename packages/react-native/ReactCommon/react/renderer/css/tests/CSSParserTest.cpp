@@ -290,9 +290,9 @@ TEST(CSSParser, angle_values) {
   EXPECT_EQ(gradianValue.type(), CSSValueType::Angle);
   ASSERT_NEAR(gradianValue.getAngle().degrees, 9.0f, 0.001f);
 
-  auto turnValue = parseCSSComponentValue<CSSWideKeyword, CSSAngle>("1turn");
+  auto turnValue = parseCSSComponentValue<CSSWideKeyword, CSSAngle>(".25turn");
   EXPECT_EQ(turnValue.type(), CSSValueType::Angle);
-  EXPECT_EQ(turnValue.getAngle().degrees, 360.0f);
+  EXPECT_EQ(turnValue.getAngle().degrees, 90.0f);
 }
 
 TEST(CSSParser, parse_prop) {

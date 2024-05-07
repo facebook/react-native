@@ -90,6 +90,11 @@ TEST(CSSTokenizer, number_values) {
       "+81.07e+0",
       CSSToken{CSSTokenType::Number, +81.07e+0},
       CSSToken{CSSTokenType::EndOfFile});
+
+  EXPECT_TOKENS(
+      "+.123e+0",
+      CSSToken{CSSTokenType::Number, +.123e+0},
+      CSSToken{CSSTokenType::EndOfFile});
 }
 
 TEST(CSSTokenizer, dimension_values) {
@@ -102,6 +107,11 @@ TEST(CSSTokenizer, dimension_values) {
       "463.2abc",
       CSSToken{CSSTokenType::Dimension, 463.2, "abc"},
       CSSToken{CSSTokenType::EndOfFile});
+
+  EXPECT_TOKENS(
+      ".3xyz",
+      CSSToken{CSSTokenType::Dimension, 0.3, "xyz"},
+      CSSToken{CSSTokenType::EndOfFile});
 }
 
 TEST(CSSTokenizer, percent_values) {
@@ -113,6 +123,11 @@ TEST(CSSTokenizer, percent_values) {
   EXPECT_TOKENS(
       "-28.5%",
       CSSToken{CSSTokenType::Percentage, -28.5f},
+      CSSToken{CSSTokenType::EndOfFile});
+
+  EXPECT_TOKENS(
+      ".02%",
+      CSSToken{CSSTokenType::Percentage, 0.02f},
       CSSToken{CSSTokenType::EndOfFile});
 }
 

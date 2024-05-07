@@ -83,42 +83,46 @@ class CSSTokenizer {
   explicit constexpr CSSTokenizer(std::string_view characters)
       : remainingCharacters_{characters} {}
 
+  /**
+   * Returns the next token according to the algorithm described in
+   * https://www.w3.org/TR/css-syntax-3/#consume-token
+   */
   constexpr CSSToken next() {
-    // https://www.w3.org/TR/css-syntax-3/#token-diagrams
     char nextChar = peek();
+
     if (isWhitespace(nextChar)) {
       return consumeWhitespace();
-    } else if (nextChar == '+') {
-      if (isDigit(peekNext())) {
-        return consumeNumeric();
-      } else {
-        return consumeDelim();
-      }
-    } else if (nextChar == '-') {
-      if (isDigit(peekNext())) {
-        return consumeNumeric();
-      } else {
-        return consumeDelim();
-      }
-    } else if (isDigit(nextChar)) {
-      return consumeNumeric();
-    } else if (isIdentStart(nextChar)) {
-      return consumeIdent();
-    } else if (nextChar == '\0') {
-      return CSSToken{CSSTokenType::EndOfFile};
-    } else {
-      return consumeDelim();
     }
+
+    switch (nextChar) {
+      case '+':
+      case '-':
+      case '.':
+        if (wouldStartNumber()) {
+          return consumeNumeric();
+        } else {
+          return consumeDelim();
+        }
+    }
+
+    if (isDigit(nextChar)) {
+      return consumeNumeric();
+    }
+
+    if (isIdentStart(nextChar)) {
+      return consumeIdent();
+    }
+
+    if (nextChar == '\0') {
+      return CSSToken{CSSTokenType::EndOfFile};
+    }
+
+    return consumeDelim();
   }
 
  private:
-  constexpr char peek() const {
-    auto index = position_;
-    return index >= remainingCharacters_.size() ? '\0'
-                                                : remainingCharacters_[index];
-  }
-  constexpr char peekNext() const {
-    auto index = position_ + 1;
+  constexpr char peek(size_t i = 0) const {
+    auto index = position_ + i;
     return index >= remainingCharacters_.size() ? '\0'
                                                 : remainingCharacters_[index];
   }
@@ -139,6 +143,24 @@ class CSSTokenizer {
 
     consumeRunningValue();
     return CSSToken{CSSTokenType::WhiteSpace};
+  }
+
+  constexpr bool wouldStartNumber() const {
+    // https://www.w3.org/TR/css-syntax-3/#starts-with-a-number
+    if (peek() == '+' || peek() == '-') {
+      if (isDigit(peek(1))) {
+        return true;
+      }
+      if (peek(1) == '.' && isDigit(peek(2))) {
+        return true;
+      }
+    } else if (peek() == '.' && isDigit(peek(1))) {
+      return true;
+    } else if (isDigit(peek())) {
+      return true;
+    }
+
+    return false;
   }
 
   constexpr CSSToken consumeNumber() {
