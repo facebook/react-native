@@ -47,7 +47,10 @@ void TimerManager::callReactNativeMicrotasks(jsi::Runtime& runtime) {
       auto it = timers_.find(reactNativeMicrotaskID);
       if (it != timers_.end()) {
         it->second.invoke(runtime);
-        timers_.erase(it);
+
+        // Invoking a timer has the potential to delete it. Do not re-use the
+        // existing iterator to erase it from the map.
+        timers_.erase(reactNativeMicrotaskID);
       }
     }
   }
@@ -101,9 +104,6 @@ void TimerManager::deleteReactNativeMicrotask(
       timerHandle);
   if (it != reactNativeMicrotasksQueue_.end()) {
     reactNativeMicrotasksQueue_.erase(it);
-  }
-
-  if (timers_.find(timerHandle) != timers_.end()) {
     timers_.erase(timerHandle);
   }
 }
@@ -114,9 +114,7 @@ void TimerManager::deleteTimer(jsi::Runtime& runtime, TimerHandle timerHandle) {
   }
 
   platformTimerRegistry_->deleteTimer(timerHandle);
-  if (timers_.find(timerHandle) != timers_.end()) {
-    timers_.erase(timerHandle);
-  }
+  timers_.erase(timerHandle);
 }
 
 void TimerManager::deleteRecurringTimer(
@@ -127,11 +125,7 @@ void TimerManager::deleteRecurringTimer(
   }
 
   platformTimerRegistry_->deleteTimer(timerHandle);
-
-  auto it = timers_.find(timerHandle);
-  if (it != timers_.end()) {
-    timers_.erase(it);
-  }
+  timers_.erase(timerHandle);
 }
 
 void TimerManager::callTimer(TimerHandle timerHandle) {
@@ -143,12 +137,9 @@ void TimerManager::callTimer(TimerHandle timerHandle) {
       it->second.invoke(runtime);
 
       if (!repeats) {
-        // Invoking a timer has the potential to delete it. Double check the
-        // timer still exists before accessing it again.
-        it = timers_.find(timerHandle);
-        if (it != timers_.end()) {
-          timers_.erase(it);
-        }
+        // Invoking a timer has the potential to delete it. Do not re-use the
+        // existing iterator to erase it from the map.
+        timers_.erase(timerHandle);
       }
     }
   });
