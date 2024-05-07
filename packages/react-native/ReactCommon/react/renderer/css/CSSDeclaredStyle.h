@@ -93,7 +93,8 @@ class CSSDeclaredStyle {
                CSSLength,
                CSSNumber,
                CSSPercentage,
-               CSSRatio>)>
+               CSSRatio,
+               CSSAngle>)>
         value;
 
     constexpr bool operator<(const PropMapping& rhs) const {
