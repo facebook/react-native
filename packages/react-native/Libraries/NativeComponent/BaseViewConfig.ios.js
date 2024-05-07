@@ -220,6 +220,9 @@ const validAttributesForNonEventProps = {
   hitSlop: {diff: require('../Utilities/differ/insetsDiffer')},
   collapsable: true,
   collapsableChildren: true,
+  experimental_filter: {
+    process: require('../StyleSheet/processFilter').default,
+  },
 
   borderTopWidth: true,
   borderTopColor: {process: require('../StyleSheet/processColor').default},
