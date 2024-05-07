@@ -2281,6 +2281,14 @@ export type NativeProps = $ReadOnly<{|
       contentSize: $ReadOnly<{| width: Double, height: Double |}>,
     |}>,
   >,
+  onTextInput?: ?BubblingEventHandler<
+    $ReadOnly<{|
+      target: Int32,
+      text: string,
+      previousText: string,
+      range: $ReadOnly<{| start: Double, end: Double |}>,
+    |}>,
+  >,
   onEndEditing?: ?BubblingEventHandler<
     $ReadOnly<{| target: Int32, text: string |}>,
   >,
