@@ -15,6 +15,7 @@
 #include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/RawProps.h>
+#include <react/renderer/graphics/Filter.h>
 #include <react/renderer/graphics/Transform.h>
 #include <react/renderer/graphics/ValueUnit.h>
 #include <stdlib.h>
@@ -759,6 +760,48 @@ inline void fromRawValue(
   }
   LOG(ERROR) << "Could not parse LayoutConformance:" << stringValue;
   react_native_expect(false);
+}
+
+inline void fromRawValue(
+    const PropsParserContext& /*context*/,
+    const RawValue& value,
+    std::vector<FilterPrimitive>& result) {
+  react_native_expect(value.hasType<std::vector<RawValue>>());
+  if (!value.hasType<std::vector<RawValue>>()) {
+    result = {};
+    return;
+  }
+
+  std::vector<FilterPrimitive> filter{};
+  auto rawFilter = static_cast<std::vector<RawValue>>(value);
+  for (const auto& rawFilterPrimitive : rawFilter) {
+    bool isMap =
+        rawFilterPrimitive.hasType<std::unordered_map<std::string, RawValue>>();
+    react_native_expect(isMap);
+    if (!isMap) {
+      // If a filter is malformed then we should not apply any of them which
+      // is the web behavior.
+      result = {};
+      return;
+    }
+
+    auto rawFilterPrimitiveMap =
+        static_cast<std::unordered_map<std::string, RawValue>>(
+            rawFilterPrimitive);
+    FilterPrimitive filterPrimitive{};
+    try {
+      filterPrimitive.type =
+          filterTypeFromString(rawFilterPrimitiveMap.begin()->first);
+      filterPrimitive.amount = (float)rawFilterPrimitiveMap.begin()->second;
+      filter.push_back(filterPrimitive);
+    } catch (const std::exception& e) {
+      LOG(ERROR) << "Could not parse FilterPrimitive: " << e.what();
+      filter = {};
+      return;
+    }
+  }
+
+  result = filter;
 }
 
 template <size_t N>
