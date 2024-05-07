@@ -314,6 +314,9 @@ export class AnimatedEvent {
       clearTimeout(this._flushUpdatesTimer);
     }
 
+    // Don't update immediately in case more events will follow. Rendering on every frame
+    // defeats the purpose of the native driver and we realistically want to commit once the
+    // event stream ends.
     this._flushUpdatesTimer = setTimeout(() => {
       this._dependantAnimatedProps.forEach((node) => {
         node.update();
