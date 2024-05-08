@@ -28,7 +28,7 @@ const defaultPlugins = [
   [require('@babel/plugin-syntax-flow')],
   [require('babel-plugin-transform-flow-enums')],
   [require('@babel/plugin-transform-block-scoping')],
-  [require('@babel/plugin-proposal-class-properties'), {loose}],
+  [require('@babel/plugin-transform-class-properties'), {loose}],
   [require('@babel/plugin-transform-private-methods'), {loose}],
   [require('@babel/plugin-transform-private-property-in-object'), {loose}],
   [require('@babel/plugin-syntax-dynamic-import')],
@@ -95,11 +95,11 @@ const getPreset = (src, options) => {
       require('@babel/plugin-transform-shorthand-properties'),
     ]);
     extraPlugins.push([
-      require('@babel/plugin-proposal-optional-catch-binding'),
+      require('@babel/plugin-transform-optional-catch-binding'),
     ]);
     extraPlugins.push([require('@babel/plugin-transform-function-name')]);
     extraPlugins.push([require('@babel/plugin-transform-literals')]);
-    extraPlugins.push([require('@babel/plugin-proposal-numeric-separator')]);
+    extraPlugins.push([require('@babel/plugin-transform-numeric-separator')]);
     extraPlugins.push([require('@babel/plugin-transform-sticky-regex')]);
   } else {
     extraPlugins.push([
@@ -116,7 +116,7 @@ const getPreset = (src, options) => {
     extraPlugins.push(
       [require('@babel/plugin-transform-spread')],
       [
-        require('@babel/plugin-proposal-object-rest-spread'),
+        require('@babel/plugin-transform-object-rest-spread'),
         // Assume no dependence on getters or evaluation order. See https://github.com/babel/babel/pull/11520
         {loose: true, useBuiltIns: true},
       ],
@@ -124,7 +124,7 @@ const getPreset = (src, options) => {
   }
   if (isNull || src.indexOf('async') !== -1) {
     extraPlugins.push([
-      require('@babel/plugin-proposal-async-generator-functions'),
+      require('@babel/plugin-transform-async-generator-functions'),
     ]);
     extraPlugins.push([require('@babel/plugin-transform-async-to-generator')]);
   }
@@ -137,13 +137,13 @@ const getPreset = (src, options) => {
   }
   if (!isHermes && (isNull || src.indexOf('?.') !== -1)) {
     extraPlugins.push([
-      require('@babel/plugin-proposal-optional-chaining'),
+      require('@babel/plugin-transform-optional-chaining'),
       {loose: true},
     ]);
   }
   if (!isHermes && (isNull || src.indexOf('??') !== -1)) {
     extraPlugins.push([
-      require('@babel/plugin-proposal-nullish-coalescing-operator'),
+      require('@babel/plugin-transform-nullish-coalescing-operator'),
       {loose: true},
     ]);
   }
@@ -155,7 +155,7 @@ const getPreset = (src, options) => {
       src.indexOf('&&=') !== -1)
   ) {
     extraPlugins.push([
-      require('@babel/plugin-proposal-logical-assignment-operators'),
+      require('@babel/plugin-transform-logical-assignment-operators'),
       {loose: true},
     ]);
   }
