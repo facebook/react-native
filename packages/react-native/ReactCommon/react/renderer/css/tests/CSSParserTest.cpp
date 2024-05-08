@@ -311,8 +311,7 @@ TEST(CSSParser, parse_prop) {
 
   auto autoWidthValue = parseCSSProp<CSSProp::Width>("auto");
   EXPECT_EQ(autoWidthValue.type(), CSSValueType::Keyword);
-  EXPECT_EQ(
-      autoWidthValue.getKeyword(), CSSAllowedKeywords<CSSProp::Width>::Auto);
+  EXPECT_EQ(autoWidthValue.getKeyword(), CSSKeyword::Auto);
 
   auto invalidWidthValue = parseCSSProp<CSSProp::Width>("50");
   EXPECT_EQ(invalidWidthValue.type(), CSSValueType::CSSWideKeyword);
@@ -331,8 +330,7 @@ TEST(CSSParser, parse_prop) {
 TEST(CSSParser, parse_keyword_prop_constexpr) {
   constexpr auto rowValue = parseCSSProp<CSSProp::FlexDirection>("row");
   EXPECT_EQ(rowValue.type(), CSSValueType::Keyword);
-  EXPECT_EQ(
-      rowValue.getKeyword(), CSSAllowedKeywords<CSSProp::FlexDirection>::Row);
+  EXPECT_EQ(rowValue.getKeyword(), CSSKeyword::Row);
 }
 
 TEST(CSSParser, parse_length_prop_constexpr) {
