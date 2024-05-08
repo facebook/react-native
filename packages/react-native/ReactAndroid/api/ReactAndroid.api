@@ -3970,6 +3970,7 @@ public abstract class com/facebook/react/uimanager/BaseViewManager : com/faceboo
 	public fun setClick (Landroid/view/View;Z)V
 	public fun setClickCapture (Landroid/view/View;Z)V
 	public fun setElevation (Landroid/view/View;F)V
+	public fun setFilter (Landroid/view/View;Lcom/facebook/react/bridge/ReadableArray;)V
 	public fun setImportantForAccessibility (Landroid/view/View;Ljava/lang/String;)V
 	public fun setMoveShouldSetResponder (Landroid/view/View;Z)V
 	public fun setMoveShouldSetResponderCapture (Landroid/view/View;Z)V
@@ -4039,6 +4040,7 @@ public abstract interface class com/facebook/react/uimanager/BaseViewManagerInte
 	public abstract fun setBorderTopLeftRadius (Landroid/view/View;F)V
 	public abstract fun setBorderTopRightRadius (Landroid/view/View;F)V
 	public abstract fun setElevation (Landroid/view/View;F)V
+	public abstract fun setFilter (Landroid/view/View;Lcom/facebook/react/bridge/ReadableArray;)V
 	public abstract fun setImportantForAccessibility (Landroid/view/View;Ljava/lang/String;)V
 	public abstract fun setNativeId (Landroid/view/View;Ljava/lang/String;)V
 	public abstract fun setOpacity (Landroid/view/View;F)V
@@ -5333,6 +5335,7 @@ public final class com/facebook/react/uimanager/ViewProps {
 	public static final field ELLIPSIZE_MODE Ljava/lang/String;
 	public static final field ENABLED Ljava/lang/String;
 	public static final field END Ljava/lang/String;
+	public static final field FILTER Ljava/lang/String;
 	public static final field FLEX Ljava/lang/String;
 	public static final field FLEX_BASIS Ljava/lang/String;
 	public static final field FLEX_DIRECTION Ljava/lang/String;
