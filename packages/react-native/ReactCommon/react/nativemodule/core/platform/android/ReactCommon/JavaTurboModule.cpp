@@ -86,16 +86,55 @@ struct JNIArgs {
   std::vector<jobject> globalRefs_;
 };
 
+jsi::Value createJSRuntimeError(
+    jsi::Runtime& runtime,
+    const std::string& message) {
+  return runtime.global()
+      .getPropertyAsFunction(runtime, "Error")
+      .call(runtime, message);
+}
+
+auto createRejectionError(jsi::Runtime& rt, folly::dynamic args) {
+  DCHECK(args.size() == 1) << "promise reject should has only one argument";
+
+  auto value = jsi::valueFromDynamic(rt, args[0]);
+  DCHECK(value.isObject()) << "promise reject should return a map";
+
+  const jsi::Object& valueAsObject = value.asObject(rt);
+
+  auto messageProperty = valueAsObject.getProperty(rt, "message");
+  auto jsError =
+      createJSRuntimeError(rt, messageProperty.asString(rt).utf8(rt));
+
+  auto propertyNames = valueAsObject.getPropertyNames(rt);
+  for (size_t i = 0; i < propertyNames.size(rt); ++i) {
+    auto propertyName = propertyNames.getValueAtIndex(rt, i).asString(rt);
+    jsError.asObject(rt).setProperty(
+        rt, propertyName, valueAsObject.getProperty(rt, propertyName));
+  }
+  return jsError;
+}
+
 auto createJavaCallback(
     jsi::Runtime& rt,
     jsi::Function&& function,
-    std::shared_ptr<CallInvoker> jsInvoker) {
+    std::shared_ptr<CallInvoker> jsInvoker,
+    bool returnAsJsError) {
   std::optional<AsyncCallback<>> callback(
       {rt, std::move(function), std::move(jsInvoker)});
   return JCxxCallbackImpl::newObjectCxxArgs(
-      [callback = std::move(callback)](folly::dynamic args) mutable {
+      [callback = std::move(callback),
+       returnAsJsError](folly::dynamic args) mutable {
         if (!callback) {
           LOG(FATAL) << "Callback arg cannot be called more than once";
+          return;
+        }
+        if (returnAsJsError) {
+          callback->call([args = std::move(args)](
+                             jsi::Runtime& rt, jsi::Function& jsFunction) {
+            auto error = createRejectionError(rt, std::move(args));
+            jsFunction.call(rt, error);
+          });
           return;
         }
 
@@ -363,7 +402,7 @@ JNIArgs convertJSIArgsToJNIArgs(
       }
       jsi::Function fn = arg->getObject(rt).getFunction(rt);
       jarg->l = makeGlobalIfNecessary(
-          createJavaCallback(rt, std::move(fn), jsInvoker).release());
+          createJavaCallback(rt, std::move(fn), jsInvoker, false).release());
     } else if (type == "Lcom/facebook/react/bridge/ReadableArray;") {
       if (!(arg->isObject() && arg->getObject(rt).isArray(rt))) {
         throw JavaTurboModuleArgumentConversionException(
@@ -405,14 +444,6 @@ jsi::Value convertFromJMapToValue(JNIEnv* env, jsi::Runtime& rt, jobject arg) {
   auto jResult = jni::adopt_local(constants);
   auto result = jni::static_ref_cast<NativeMap::jhybridobject>(jResult);
   return jsi::valueFromDynamic(rt, result->cthis()->consume());
-}
-
-jsi::Value createJSRuntimeError(
-    jsi::Runtime& runtime,
-    const std::string& message) {
-  return runtime.global()
-      .getPropertyAsFunction(runtime, "Error")
-      .call(runtime, message);
 }
 
 /**
@@ -854,11 +885,13 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
                 auto resolve = createJavaCallback(
                     runtime,
                     args[0].getObject(runtime).getFunction(runtime),
-                    jsInvoker_);
+                    jsInvoker_,
+                    false);
                 auto reject = createJavaCallback(
                     runtime,
                     args[1].getObject(runtime).getFunction(runtime),
-                    jsInvoker_);
+                    jsInvoker_,
+                    true);
                 javaPromise = JPromiseImpl::create(resolve, reject).release();
 
                 return jsi::Value::undefined();
