@@ -14,6 +14,7 @@ import styles from './TurboModuleExampleCommon';
 import * as React from 'react';
 import {
   FlatList,
+  Platform,
   RootTagContext,
   Text,
   TouchableOpacity,
@@ -128,6 +129,9 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
           this._setResult('promiseAssert', e.message);
         });
     },
+    installJSIBindings: () => {
+      return global.__SampleTurboModuleJSIBindings;
+    },
   };
 
   _setResult(
@@ -192,6 +196,14 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
     if (global.__turboModuleProxy == null) {
       throw new Error(
         'Cannot load this example because TurboModule is not configured.',
+      );
+    }
+    if (
+      global.__SampleTurboModuleJSIBindings == null &&
+      Platform.OS === 'android' // TODO: Add iOS support
+    ) {
+      throw new Error(
+        'The JSI bindings for SampleTurboModule are not installed.',
       );
     }
   }

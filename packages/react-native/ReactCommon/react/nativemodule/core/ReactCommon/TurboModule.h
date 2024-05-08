@@ -48,6 +48,8 @@ class JSI_EXPORT TurboModule : public facebook::jsi::HostObject {
  public:
   TurboModule(std::string name, std::shared_ptr<CallInvoker> jsInvoker);
 
+  using BindingsInstaller = std::function<void(jsi::Runtime& runtime)>;
+
   // Note: keep this method declared inline to avoid conflicts
   // between RTTI and non-RTTI compilation units
   facebook::jsi::Value get(
