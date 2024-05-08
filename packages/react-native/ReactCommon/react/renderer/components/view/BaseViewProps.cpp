@@ -150,6 +150,14 @@ BaseViewProps::BaseViewProps(
                                                        "cursor",
                                                        sourceProps.cursor,
                                                        {})),
+      filter(
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.filter
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "experimental_filter",
+                                                       sourceProps.filter,
+                                                       {})),
       transform(
           CoreFeatures::enablePropIteratorSetter ? sourceProps.transform
                                                  : convertRawProp(
