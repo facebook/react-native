@@ -17,11 +17,15 @@ namespace facebook::react {
  * https://www.w3.org/TR/css-syntax-3/#tokenizer-definitions
  */
 enum class CSSTokenType {
+  CloseParen,
+  Comma,
   Delim,
   Dimension,
   EndOfFile,
+  Function,
   Ident,
   Number,
+  OpenParen,
   Percentage,
   WhiteSpace,
 };
@@ -95,6 +99,12 @@ class CSSTokenizer {
     }
 
     switch (nextChar) {
+      case '(':
+        return consumeCharacter(CSSTokenType::OpenParen);
+      case ')':
+        return consumeCharacter(CSSTokenType::CloseParen);
+      case ',':
+        return consumeCharacter(CSSTokenType::Comma);
       case '+':
       case '-':
       case '.':
@@ -110,7 +120,7 @@ class CSSTokenizer {
     }
 
     if (isIdentStart(nextChar)) {
-      return consumeIdent();
+      return consumeIdentlikeToken();
     }
 
     if (nextChar == '\0') {
@@ -134,6 +144,12 @@ class CSSTokenizer {
   constexpr CSSToken consumeDelim() {
     advance();
     return {CSSTokenType::Delim, consumeRunningValue()};
+  }
+
+  constexpr CSSToken consumeCharacter(CSSTokenType tokenType) {
+    advance();
+    consumeRunningValue();
+    return CSSToken{tokenType};
   }
 
   constexpr CSSToken consumeWhitespace() {
@@ -226,7 +242,7 @@ class CSSTokenizer {
     auto numberToken = consumeNumber();
 
     if (isIdent(peek())) {
-      auto ident = consumeIdent();
+      auto ident = consumeIdentSequence();
       return {
           CSSTokenType::Dimension,
           numberToken.numericValue(),
@@ -240,7 +256,19 @@ class CSSTokenizer {
     }
   }
 
-  constexpr CSSToken consumeIdent() {
+  constexpr CSSToken consumeIdentlikeToken() {
+    // https://www.w3.org/TR/css-syntax-3/#consume-ident-like-token
+    auto ident = consumeIdentSequence();
+    if (peek() == '(') {
+      advance();
+      consumeRunningValue();
+      return {CSSTokenType::Function, ident.stringValue()};
+    }
+
+    return ident;
+  }
+
+  constexpr CSSToken consumeIdentSequence() {
     // https://www.w3.org/TR/css-syntax-3/#consume-an-ident-sequence
     while (isIdent(peek())) {
       advance();
