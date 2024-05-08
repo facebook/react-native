@@ -85,6 +85,7 @@ import com.facebook.react.uimanager.events.EventCategoryDef;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.FabricEventDispatcher;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
+import com.facebook.react.uimanager.events.SynchronousEventReceiver;
 import com.facebook.react.views.text.TextLayoutManager;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -99,7 +100,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 @SuppressLint("MissingNativeLoadLibrary")
 @DoNotStripAny
-public class FabricUIManager implements UIManager, LifecycleEventListener, UIBlockViewResolver {
+public class FabricUIManager
+    implements UIManager, LifecycleEventListener, UIBlockViewResolver, SynchronousEventReceiver {
   public static final String TAG = FabricUIManager.class.getSimpleName();
 
   // The IS_DEVELOPMENT_ENVIRONMENT variable is used to log extra data when running fabric in a
@@ -955,6 +957,19 @@ public class FabricUIManager implements UIManager, LifecycleEventListener, UIBlo
       boolean canCoalesceEvent,
       @Nullable WritableMap params,
       @EventCategoryDef int eventCategory) {
+    receiveEvent(surfaceId, reactTag, eventName, canCoalesceEvent, params, eventCategory, false);
+  }
+
+  @Override
+  public void receiveEvent(
+      int surfaceId,
+      int reactTag,
+      String eventName,
+      boolean canCoalesceEvent,
+      @Nullable WritableMap params,
+      @EventCategoryDef int eventCategory,
+      boolean experimental_isSynchronous) {
+
     if (ReactBuildConfig.DEBUG && surfaceId == View.NO_ID) {
       FLog.d(TAG, "Emitted event without surfaceId: [%d] %s", reactTag, eventName);
     }
@@ -979,10 +994,14 @@ public class FabricUIManager implements UIManager, LifecycleEventListener, UIBlo
       return;
     }
 
-    if (canCoalesceEvent) {
-      eventEmitter.dispatchUnique(eventName, params);
+    if (experimental_isSynchronous) {
+      eventEmitter.dispatchEventSynchronously(eventName, params);
     } else {
-      eventEmitter.dispatch(eventName, params, eventCategory);
+      if (canCoalesceEvent) {
+        eventEmitter.dispatchUnique(eventName, params);
+      } else {
+        eventEmitter.dispatch(eventName, params, eventCategory);
+      }
     }
   }
 

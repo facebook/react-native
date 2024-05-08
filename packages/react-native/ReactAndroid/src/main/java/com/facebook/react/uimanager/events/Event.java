@@ -184,6 +184,10 @@ public abstract class Event<T extends Event> {
     return EventCategoryDef.UNSPECIFIED;
   }
 
+  protected boolean experimental_isSynchronous() {
+    return false;
+  }
+
   /**
    * Dispatch this event to JS using a V2 EventEmitter. If surfaceId is not -1 and `getEventData` is
    * non-null, this will use the RCTModernEventEmitter API. Otherwise, it falls back to the
