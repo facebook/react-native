@@ -89,9 +89,11 @@ import com.facebook.react.uimanager.events.SynchronousEventReceiver;
 import com.facebook.react.views.text.TextLayoutManager;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -182,6 +184,9 @@ public class FabricUIManager
   @ThreadConfined(UI)
   @NonNull
   private final DispatchUIFrameCallback mDispatchUIFrameCallback;
+
+  /** Set of events sent synchronously during the current frame render. Cleared after each frame. */
+  private final Set<SynchronousEvent> mSynchronousEvents = new HashSet<>();
 
   /**
    * This is used to keep track of whether or not the FabricUIManager has been destroyed. Once the
@@ -995,7 +1000,12 @@ public class FabricUIManager
     }
 
     if (experimental_isSynchronous) {
-      eventEmitter.dispatchEventSynchronously(eventName, params);
+      // add() returns true only if there are no equivalent events already in the set
+      boolean firstEventForFrame =
+          mSynchronousEvents.add(new SynchronousEvent(surfaceId, reactTag, eventName));
+      if (firstEventForFrame) {
+        eventEmitter.dispatchEventSynchronously(eventName, params);
+      }
     } else {
       if (canCoalesceEvent) {
         eventEmitter.dispatchUnique(eventName, params);
@@ -1351,6 +1361,8 @@ public class FabricUIManager
             .postFrameCallback(
                 ReactChoreographer.CallbackType.DISPATCH_UI, mDispatchUIFrameCallback);
       }
+
+      mSynchronousEvents.clear();
     }
   }
 }
