@@ -37,6 +37,15 @@ const REACT_NATIVE_PACKAGE_DIR /*: string */ = path.join(
 );
 
 /**
+ * The absolute path to the helloworld package.
+ */
+const HELLOWORLD_DIR /*: string */ = path.join(
+  REPO_ROOT,
+  'packages',
+  'helloworld',
+);
+
+/**
  * The absolute path to the rn-tester package.
  */
 const RN_TESTER_DIR /*: string */ = path.join(
@@ -46,6 +55,7 @@ const RN_TESTER_DIR /*: string */ = path.join(
 );
 
 module.exports = {
+  HELLOWORLD_DIR,
   PACKAGES_DIR,
   REACT_NATIVE_PACKAGE_DIR,
   REPO_ROOT,

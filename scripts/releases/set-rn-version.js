@@ -16,7 +16,7 @@ import type {BuildType, Version} from './utils/version-utils';
 const {REPO_ROOT} = require('../consts');
 const {applyPackageVersions} = require('../npm-utils');
 const {getNpmInfo} = require('../npm-utils');
-const updateTemplatePackage = require('./update-template-package');
+const updatePackage = require('./update-package');
 const {parseVersion, validateBuildType} = require('./utils/version-utils');
 const {parseArgs} = require('@pkgjs/parseargs');
 const {promises: fs} = require('fs');
@@ -82,7 +82,7 @@ async function setReactNativeVersion(
 ) {
   const versionInfo = parseVersion(version, buildType);
 
-  updateTemplatePackage({
+  updatePackage({
     ...(dependencyVersions ?? {}),
     'react-native': versionInfo.version,
   });

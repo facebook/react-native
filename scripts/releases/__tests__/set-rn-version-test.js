@@ -11,7 +11,7 @@
 
 const readFileMock = jest.fn();
 const writeFileMock = jest.fn();
-const updateTemplatePackageMock = jest.fn();
+const updatePackageMock = jest.fn();
 
 jest.mock('fs', () => ({
   ...jest.requireActual<$FlowFixMe>('fs'),
@@ -21,7 +21,7 @@ jest.mock('fs', () => ({
     writeFile: writeFileMock,
   },
 }));
-jest.mock('./../update-template-package', () => updateTemplatePackageMock);
+jest.mock('./../update-package', () => updatePackageMock);
 
 const {REPO_ROOT} = require('../../consts');
 const {setReactNativeVersion} = require('../set-rn-version');
@@ -64,7 +64,7 @@ describe('setReactNativeVersion', () => {
     };
     await setReactNativeVersion(version, dependencyVersions, 'nightly');
 
-    expect(updateTemplatePackageMock).toHaveBeenCalledWith({
+    expect(updatePackageMock).toHaveBeenCalledWith({
       '@react-native/package-a': version,
       'react-native': version,
     });
@@ -81,7 +81,7 @@ describe('setReactNativeVersion', () => {
     const version = '0.81.0';
     await setReactNativeVersion(version, null, 'release');
 
-    expect(updateTemplatePackageMock).toHaveBeenCalledWith({
+    expect(updatePackageMock).toHaveBeenCalledWith({
       'react-native': version,
     });
 

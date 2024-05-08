@@ -18,6 +18,6 @@ Sets a singular version for the entire monorepo (including `react-native` packag
 
 Updates relevant files in the `react-native` package and template to materialize the given release version.
 
-### `update-template-package`
+### `update-package`
 
-Updates workspace dependencies in the template app`package.json`
+Updates workspace dependencies in the template and HelloWorld app `package.json`

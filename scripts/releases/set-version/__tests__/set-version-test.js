@@ -14,6 +14,12 @@ const path = require('path');
 jest.mock('../../../consts', () => ({
   REPO_ROOT: path.join(__dirname, '__fixtures__'),
   PACKAGES_DIR: path.join(__dirname, '__fixtures__', 'packages'),
+  HELLOWORLD_DIR: path.join(
+    __dirname,
+    '__fixtures__',
+    'packages',
+    'helloworld',
+  ),
   REACT_NATIVE_PACKAGE_DIR: path.join(
     __dirname,
     '__fixtures__',
@@ -88,7 +94,13 @@ describe('setVersion', () => {
         'template',
         'package.json',
       );
+      const helloworldPath = path.join('helloworld', 'package.json');
       if (filePath.endsWith(templatePath)) {
+        expect(JSON.parse(content).dependencies['react-native']).toBe(
+          '1000.0.0',
+        );
+      } else if (filePath.endsWith(helloworldPath)) {
+        // Should always use 'repository' version of RN.
         expect(JSON.parse(content).dependencies['react-native']).toBe(
           '1000.0.0',
         );

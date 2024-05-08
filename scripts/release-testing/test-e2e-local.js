@@ -19,7 +19,7 @@
 
 const {REPO_ROOT} = require('../consts');
 const {initNewProjectFromSource} = require('../e2e/init-template-e2e');
-const updateTemplatePackage = require('../releases/update-template-package');
+const updatePackage = require('../releases/update-package');
 const {
   checkPackagerRunning,
   launchPackagerInSeparateWindow,
@@ -35,14 +35,17 @@ const {cd, exec, popd, pushd, pwd, sed} = require('shelljs');
 const yargs = require('yargs');
 
 /* ::
+import type {Argv} from 'yargs';
 type Unwrap<T> = T extends Promise<infer U> ? U : T;
+type CircleCIArtifacts = Unwrap<ReturnType<typeof setupCircleCIArtifacts>>;
 */
 
-const argv = yargs
+// $FlowIgnore - We know this isn't a Promise
+const argv /*: Argv*/ = yargs
   .option('t', {
     alias: 'target',
     default: 'RNTester',
-    choices: ['RNTester', 'RNTestProject'],
+    choices: ['RNTester', 'RNTestProject', 'helloworld'],
   })
   .option('p', {
     alias: 'platform',
@@ -66,7 +69,8 @@ const argv = yargs
       'the configuration you are testing.',
     type: 'boolean',
     default: false,
-  }).argv;
+  })
+  .parse();
 
 // === RNTester === //
 
@@ -78,7 +82,7 @@ const argv = yargs
  * - @onReleaseBranch whether we are on a release branch or not
  */
 async function testRNTesterIOS(
-  circleCIArtifacts /*: Unwrap<ReturnType<typeof setupCircleCIArtifacts>> */,
+  circleCIArtifacts /*: CircleCIArtifacts */,
   onReleaseBranch /*: boolean */,
 ) {
   console.info(
@@ -124,9 +128,7 @@ async function testRNTesterIOS(
  * Parameters:
  * - @circleCIArtifacts manager object to manage all the download of CircleCIArtifacts. If null, it will fallback not to use them.
  */
-async function testRNTesterAndroid(
-  circleCIArtifacts /*: Unwrap<ReturnType<typeof setupCircleCIArtifacts>> */,
-) {
+async function testRNTesterAndroid(circleCIArtifacts /*: CircleCIArtifacts */) {
   maybeLaunchAndroidEmulator();
 
   console.info(
@@ -186,7 +188,7 @@ async function testRNTesterAndroid(
  * - @onReleaseBranch whether we are on a release branch or not
  */
 async function testRNTester(
-  circleCIArtifacts /*:Unwrap<ReturnType<typeof setupCircleCIArtifacts>> */,
+  circleCIArtifacts /*: CircleCIArtifacts */,
   onReleaseBranch /*: boolean */,
 ) {
   // FIXME: make sure that the commands retains colors
@@ -204,9 +206,7 @@ async function testRNTester(
 
 // === RNTestProject === //
 
-async function testRNTestProject(
-  circleCIArtifacts /*: Unwrap<ReturnType<typeof setupCircleCIArtifacts>> */,
-) {
+async function testRNTestProject(circleCIArtifacts /*: CircleCIArtifacts */) {
   console.info("We're going to test a fresh new RN project");
 
   // create the local npm package to feed the CLI
@@ -261,7 +261,7 @@ async function testRNTestProject(
     }
   }
 
-  updateTemplatePackage({
+  updatePackage({
     'react-native': `file://${localNodeTGZPath}`,
   });
 
@@ -318,6 +318,45 @@ async function testRNTestProject(
   popd();
 }
 
+async function testHelloWorld(circleCIArtifacts /*: CircleCIArtifacts */) {
+  console.info('We are going to test a fresh new HelloWorld project');
+
+  pushd('packages/helloworld');
+
+  exec('yarn');
+  debug(`Building HelloWorld: ${argv.platform}`);
+  const args /*: string[]*/ = [];
+  switch (argv.platform) {
+    case 'ios': {
+      if (argv.hermes) {
+        if (argv.hermes === true && circleCIArtifacts != null) {
+          const hermesURL = await circleCIArtifacts.artifactURLHermesDebug();
+          const hermesPath = path.join(
+            circleCIArtifacts.baseTmpPath(),
+            'hermes-ios-debug.tar.gz',
+          );
+          // download hermes source code from manifold
+          circleCIArtifacts.downloadArtifact(hermesURL, hermesPath);
+          args.push(`--hermes file:${hermesPath}`);
+        } else {
+          args.push(`--hermes ${argv.hermes}`);
+        }
+      }
+      exec('yarn run bootstrap ios');
+      exec('yarn run build ios');
+      exec('yarn run ios');
+      break;
+    }
+    case 'android': {
+      exec('yarn run build android');
+      exec('yarn run android');
+      break;
+    }
+  }
+
+  popd();
+}
+
 async function main() {
   /*
    * see the test-local-e2e.js script for clean up process
@@ -344,19 +383,24 @@ async function main() {
     argv.useLastSuccessfulPipeline,
   );
 
-  if (argv.target === 'RNTester') {
-    await testRNTester(circleCIArtifacts, onReleaseBranch);
-  } else {
-    await testRNTestProject(circleCIArtifacts);
-
-    console.warn(
-      chalk.yellow(`
+  switch (argv.target) {
+    case 'helloworld':
+      await testHelloWorld(circleCIArtifacts);
+      break;
+    case 'RNTester':
+      await testRNTester(circleCIArtifacts, onReleaseBranch);
+      break;
+    case 'RNTestProject':
+      await testRNTestProject(circleCIArtifacts);
+      console.warn(
+        chalk.yellow(`
 ================================================================================
 NOTE: Verdaccio may still be running on after this script has finished. Please
 Force Quit via Activity Monitor.
 ================================================================================
     `),
-    );
+      );
+      break;
   }
 }
 

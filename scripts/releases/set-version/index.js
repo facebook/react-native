@@ -53,11 +53,17 @@ async function setVersion(
     newPackageVersions,
   );
 
+  const excludedPackages = new Set([
+    // Exclude the react-native package as it's handled by `setReactNativeVersion`.
+    'react-native',
+    // Exclude the helloworld package as it should also use the repositories current
+    // version of react-native (1000.0.0).
+    'helloworld',
+  ]);
+
   const packagesToUpdate = [
     await getWorkspaceRoot(),
-    // Exclude the react-native package, since this (and the template) are
-    // handled by `setReactNativeVersion`.
-    ...Object.values(packages).filter(pkg => pkg.name !== 'react-native'),
+    ...Object.values(packages).filter(pkg => !excludedPackages.has(pkg.name)),
   ];
 
   await Promise.all(

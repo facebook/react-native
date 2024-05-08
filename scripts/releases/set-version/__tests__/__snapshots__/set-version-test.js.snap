@@ -12,6 +12,25 @@ exports[`setVersion updates monorepo for nightly: package.json 1`] = `
 "
 `;
 
+exports[`setVersion updates monorepo for nightly: packages/helloworld/package.json 1`] = `
+"{
+  \\"name\\": \\"helloworld\\",
+  \\"version\\": \\"0.0.1\\",
+  \\"private\\": true,
+  \\"dependencies\\": {
+    \\"react\\": \\"18.3.1\\",
+    \\"react-native\\": \\"0.81.0-nightly-29282302-abcd1234\\"
+  },
+  \\"devDependencies\\": {
+    \\"@monorepo/pkg-a\\": \\"0.81.0-nightly-29282302-abcd1234\\",
+    \\"@monorepo/pkg-c\\": \\"0.81.0-nightly-29282302-abcd1234\\",
+    \\"@types/react\\": \\"^18.2.6\\",
+    \\"@types/react-test-renderer\\": \\"^18.0.0\\"
+  }
+}
+"
+`;
+
 exports[`setVersion updates monorepo for nightly: packages/monorepo-pkg-a/package.json 1`] = `
 "{
   \\"name\\": \\"@monorepo/pkg-a\\",
@@ -68,6 +87,22 @@ exports[`setVersion updates monorepo for nightly: packages/react-native/ReactCom
 exports[`setVersion updates monorepo for nightly: packages/react-native/package.json 1`] = `
 "{
   \\"name\\": \\"react-native\\",
+  \\"version\\": \\"1000.0.0\\",
+  \\"description\\": \\"fake react native package\\",
+  \\"dependencies\\": {
+    \\"@monorepo/pkg-a\\": \\"0.81.0-nightly-29282302-abcd1234\\",
+    \\"@monorepo/pkg-b\\": \\"0.81.0-nightly-29282302-abcd1234\\",
+    \\"@monorepo/pkg-c\\": \\"0.81.0-nightly-29282302-abcd1234\\",
+    \\"metro-config\\": \\"^0.80.3\\",
+    \\"metro-runtime\\": \\"^0.80.3\\"
+  }
+}
+"
+`;
+
+exports[`setVersion updates monorepo for nightly: packages/react-native/package.json 2`] = `
+"{
+  \\"name\\": \\"react-native\\",
   \\"version\\": \\"0.81.0-nightly-29282302-abcd1234\\",
   \\"description\\": \\"fake react native package\\",
   \\"dependencies\\": {
@@ -81,25 +116,6 @@ exports[`setVersion updates monorepo for nightly: packages/react-native/package.
 "
 `;
 
-exports[`setVersion updates monorepo for nightly: packages/react-native/template/package.json 1`] = `
-"{
-  \\"name\\": \\"react-native-test-template\\",
-  \\"version\\": \\"0.0.1\\",
-  \\"private\\": true,
-  \\"dependencies\\": {
-    \\"react\\": \\"18.3.1\\",
-    \\"react-native\\": \\"0.81.0-nightly-29282302-abcd1234\\"
-  },
-  \\"devDependencies\\": {
-    \\"@monorepo/pkg-a\\": \\"0.81.0-nightly-29282302-abcd1234\\",
-    \\"@monorepo/pkg-c\\": \\"0.81.0-nightly-29282302-abcd1234\\",
-    \\"@types/react\\": \\"^18.2.6\\",
-    \\"@types/react-test-renderer\\": \\"^18.0.0\\"
-  }
-}
-"
-`;
-
 exports[`setVersion updates monorepo for release-candidate: package.json 1`] = `
 "{
   \\"name\\": \\"@react-native/monorepo\\",
@@ -107,6 +123,25 @@ exports[`setVersion updates monorepo for release-candidate: package.json 1`] = `
   \\"version\\": \\"1000.0.0\\",
   \\"devDependencies\\": {
     \\"@monorepo/pkg-c\\": \\"0.80.0-rc.3\\"
+  }
+}
+"
+`;
+
+exports[`setVersion updates monorepo for release-candidate: packages/helloworld/package.json 1`] = `
+"{
+  \\"name\\": \\"helloworld\\",
+  \\"version\\": \\"0.0.1\\",
+  \\"private\\": true,
+  \\"dependencies\\": {
+    \\"react\\": \\"18.3.1\\",
+    \\"react-native\\": \\"0.80.0-rc.3\\"
+  },
+  \\"devDependencies\\": {
+    \\"@monorepo/pkg-a\\": \\"0.80.0-rc.3\\",
+    \\"@monorepo/pkg-c\\": \\"0.80.0-rc.3\\",
+    \\"@types/react\\": \\"^18.2.6\\",
+    \\"@types/react-test-renderer\\": \\"^18.0.0\\"
   }
 }
 "
@@ -168,6 +203,22 @@ exports[`setVersion updates monorepo for release-candidate: packages/react-nativ
 exports[`setVersion updates monorepo for release-candidate: packages/react-native/package.json 1`] = `
 "{
   \\"name\\": \\"react-native\\",
+  \\"version\\": \\"1000.0.0\\",
+  \\"description\\": \\"fake react native package\\",
+  \\"dependencies\\": {
+    \\"@monorepo/pkg-a\\": \\"0.80.0-rc.3\\",
+    \\"@monorepo/pkg-b\\": \\"0.80.0-rc.3\\",
+    \\"@monorepo/pkg-c\\": \\"0.80.0-rc.3\\",
+    \\"metro-config\\": \\"^0.80.3\\",
+    \\"metro-runtime\\": \\"^0.80.3\\"
+  }
+}
+"
+`;
+
+exports[`setVersion updates monorepo for release-candidate: packages/react-native/package.json 2`] = `
+"{
+  \\"name\\": \\"react-native\\",
   \\"version\\": \\"0.80.0-rc.3\\",
   \\"description\\": \\"fake react native package\\",
   \\"dependencies\\": {
@@ -181,25 +232,6 @@ exports[`setVersion updates monorepo for release-candidate: packages/react-nativ
 "
 `;
 
-exports[`setVersion updates monorepo for release-candidate: packages/react-native/template/package.json 1`] = `
-"{
-  \\"name\\": \\"react-native-test-template\\",
-  \\"version\\": \\"0.0.1\\",
-  \\"private\\": true,
-  \\"dependencies\\": {
-    \\"react\\": \\"18.3.1\\",
-    \\"react-native\\": \\"0.80.0-rc.3\\"
-  },
-  \\"devDependencies\\": {
-    \\"@monorepo/pkg-a\\": \\"0.80.0-rc.3\\",
-    \\"@monorepo/pkg-c\\": \\"0.80.0-rc.3\\",
-    \\"@types/react\\": \\"^18.2.6\\",
-    \\"@types/react-test-renderer\\": \\"^18.0.0\\"
-  }
-}
-"
-`;
-
 exports[`setVersion updates monorepo for stable version: package.json 1`] = `
 "{
   \\"name\\": \\"@react-native/monorepo\\",
@@ -207,6 +239,25 @@ exports[`setVersion updates monorepo for stable version: package.json 1`] = `
   \\"version\\": \\"1000.0.0\\",
   \\"devDependencies\\": {
     \\"@monorepo/pkg-c\\": \\"0.80.1\\"
+  }
+}
+"
+`;
+
+exports[`setVersion updates monorepo for stable version: packages/helloworld/package.json 1`] = `
+"{
+  \\"name\\": \\"helloworld\\",
+  \\"version\\": \\"0.0.1\\",
+  \\"private\\": true,
+  \\"dependencies\\": {
+    \\"react\\": \\"18.3.1\\",
+    \\"react-native\\": \\"0.80.1\\"
+  },
+  \\"devDependencies\\": {
+    \\"@monorepo/pkg-a\\": \\"0.80.1\\",
+    \\"@monorepo/pkg-c\\": \\"0.80.1\\",
+    \\"@types/react\\": \\"^18.2.6\\",
+    \\"@types/react-test-renderer\\": \\"^18.0.0\\"
   }
 }
 "
@@ -268,6 +319,22 @@ exports[`setVersion updates monorepo for stable version: packages/react-native/R
 exports[`setVersion updates monorepo for stable version: packages/react-native/package.json 1`] = `
 "{
   \\"name\\": \\"react-native\\",
+  \\"version\\": \\"1000.0.0\\",
+  \\"description\\": \\"fake react native package\\",
+  \\"dependencies\\": {
+    \\"@monorepo/pkg-a\\": \\"0.80.1\\",
+    \\"@monorepo/pkg-b\\": \\"0.80.1\\",
+    \\"@monorepo/pkg-c\\": \\"0.80.1\\",
+    \\"metro-config\\": \\"^0.80.3\\",
+    \\"metro-runtime\\": \\"^0.80.3\\"
+  }
+}
+"
+`;
+
+exports[`setVersion updates monorepo for stable version: packages/react-native/package.json 2`] = `
+"{
+  \\"name\\": \\"react-native\\",
   \\"version\\": \\"0.80.1\\",
   \\"description\\": \\"fake react native package\\",
   \\"dependencies\\": {
@@ -281,25 +348,6 @@ exports[`setVersion updates monorepo for stable version: packages/react-native/p
 "
 `;
 
-exports[`setVersion updates monorepo for stable version: packages/react-native/template/package.json 1`] = `
-"{
-  \\"name\\": \\"react-native-test-template\\",
-  \\"version\\": \\"0.0.1\\",
-  \\"private\\": true,
-  \\"dependencies\\": {
-    \\"react\\": \\"18.3.1\\",
-    \\"react-native\\": \\"0.80.1\\"
-  },
-  \\"devDependencies\\": {
-    \\"@monorepo/pkg-a\\": \\"0.80.1\\",
-    \\"@monorepo/pkg-c\\": \\"0.80.1\\",
-    \\"@types/react\\": \\"^18.2.6\\",
-    \\"@types/react-test-renderer\\": \\"^18.0.0\\"
-  }
-}
-"
-`;
-
 exports[`setVersion updates monorepo on main after release cut: package.json 1`] = `
 "{
   \\"name\\": \\"@react-native/monorepo\\",
@@ -307,6 +355,25 @@ exports[`setVersion updates monorepo on main after release cut: package.json 1`]
   \\"version\\": \\"1000.0.0\\",
   \\"devDependencies\\": {
     \\"@monorepo/pkg-c\\": \\"0.82.0-main\\"
+  }
+}
+"
+`;
+
+exports[`setVersion updates monorepo on main after release cut: packages/helloworld/package.json 1`] = `
+"{
+  \\"name\\": \\"helloworld\\",
+  \\"version\\": \\"0.0.1\\",
+  \\"private\\": true,
+  \\"dependencies\\": {
+    \\"react\\": \\"18.3.1\\",
+    \\"react-native\\": \\"1000.0.0\\"
+  },
+  \\"devDependencies\\": {
+    \\"@monorepo/pkg-a\\": \\"0.82.0-main\\",
+    \\"@monorepo/pkg-c\\": \\"0.82.0-main\\",
+    \\"@types/react\\": \\"^18.2.6\\",
+    \\"@types/react-test-renderer\\": \\"^18.0.0\\"
   }
 }
 "
@@ -381,20 +448,17 @@ exports[`setVersion updates monorepo on main after release cut: packages/react-n
 "
 `;
 
-exports[`setVersion updates monorepo on main after release cut: packages/react-native/template/package.json 1`] = `
+exports[`setVersion updates monorepo on main after release cut: packages/react-native/package.json 2`] = `
 "{
-  \\"name\\": \\"react-native-test-template\\",
-  \\"version\\": \\"0.0.1\\",
-  \\"private\\": true,
+  \\"name\\": \\"react-native\\",
+  \\"version\\": \\"1000.0.0\\",
+  \\"description\\": \\"fake react native package\\",
   \\"dependencies\\": {
-    \\"react\\": \\"18.3.1\\",
-    \\"react-native\\": \\"1000.0.0\\"
-  },
-  \\"devDependencies\\": {
     \\"@monorepo/pkg-a\\": \\"0.82.0-main\\",
+    \\"@monorepo/pkg-b\\": \\"0.82.0-main\\",
     \\"@monorepo/pkg-c\\": \\"0.82.0-main\\",
-    \\"@types/react\\": \\"^18.2.6\\",
-    \\"@types/react-test-renderer\\": \\"^18.0.0\\"
+    \\"metro-config\\": \\"^0.80.3\\",
+    \\"metro-runtime\\": \\"^0.80.3\\"
   }
 }
 "

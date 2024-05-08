@@ -9,22 +9,37 @@
  * @oncall react_native
  */
 
-const {REACT_NATIVE_PACKAGE_DIR} = require('../consts');
+const {HELLOWORLD_DIR, REACT_NATIVE_PACKAGE_DIR} = require('../consts');
 const {applyPackageVersions} = require('../npm-utils');
 const fs = require('fs');
 const path = require('path');
 
-const TEMPLATE_DIR = path.join(REACT_NATIVE_PACKAGE_DIR, 'template');
+function updateAllPackages(dependencyMap /*: Record<string, string> */) {
+  updateHelloWorldPackage(dependencyMap);
+  updateTemplatePackage(dependencyMap);
+}
+
+function updateTemplatePackage(dependencyMap /*: Record<string, string> */) {
+  updatePackage(
+    path.join(REACT_NATIVE_PACKAGE_DIR, 'package.json'),
+    dependencyMap,
+  );
+}
+
+function updateHelloWorldPackage(dependencyMap /*: Record<string, string> */) {
+  updatePackage(path.join(HELLOWORLD_DIR, 'package.json'), dependencyMap);
+}
 
 /**
- * Updates the react-native template package.json with
- * dependencies in `dependencyMap`.
+ * Updates the package.json with dependencies in `dependencyMap`.
  *
  * `dependencyMap` is a dict of package name to its version
  * ex. {"react-native": "0.23.0", "other-dep": "nightly"}
  */
-function updateTemplatePackage(dependencyMap /*: Record<string, string> */) {
-  const jsonPath = path.join(TEMPLATE_DIR, 'package.json');
+function updatePackage(
+  jsonPath /*: string*/,
+  dependencyMap /*: Record<string, string> */,
+) {
   const templatePackageJson = JSON.parse(fs.readFileSync(jsonPath, 'utf-8'));
 
   const updatedPackageJson = applyPackageVersions(
@@ -48,7 +63,8 @@ if (require.main === module) {
     process.exit(1);
   }
 
-  updateTemplatePackage(JSON.parse(dependencyMapStr));
+  const dependencyMap = JSON.parse(dependencyMapStr);
+  updateAllPackages(dependencyMap);
 }
 
-module.exports = updateTemplatePackage;
+module.exports = updateAllPackages;
