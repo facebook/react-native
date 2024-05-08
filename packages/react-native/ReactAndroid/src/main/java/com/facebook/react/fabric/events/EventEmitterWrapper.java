@@ -40,6 +40,8 @@ public class EventEmitterWrapper {
   private native void dispatchEvent(
       String eventName, @Nullable NativeMap params, @EventCategoryDef int category);
 
+  private native void dispatchEventSynchronously(String eventName, @Nullable NativeMap params);
+
   private native void dispatchUniqueEvent(String eventName, @Nullable NativeMap params);
 
   /**
