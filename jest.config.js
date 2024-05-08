@@ -41,12 +41,6 @@ module.exports = {
     defaultPlatform: 'ios',
     platforms: ['ios', 'android'],
   },
-  moduleNameMapper: {
-    // This module is internal to Meta and used by their custom React renderer.
-    // In tests, we can just use a mock.
-    '^ReactNativeInternalFeatureFlags$':
-      '<rootDir>/packages/react-native/jest/ReactNativeInternalFeatureFlagsMock.js',
-  },
   moduleFileExtensions: ['fb.js'].concat(defaults.moduleFileExtensions),
   modulePathIgnorePatterns: ['scripts/.*/__fixtures__/'],
   unmockedModulePathPatterns: [
