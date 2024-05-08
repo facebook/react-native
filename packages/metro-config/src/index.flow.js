@@ -58,7 +58,6 @@ export function getDefaultConfig(projectRoot: string): ConfigT {
       getModulesRunBeforeMainModule: () => [
         require.resolve('react-native/Libraries/Core/InitializeCore'),
       ],
-      // $FlowFixMe[untyped-import]
       getPolyfills: () => require('@react-native/js-polyfills')(),
       isThirdPartyModule({path: modulePath}: $ReadOnly<{path: string, ...}>) {
         return (
