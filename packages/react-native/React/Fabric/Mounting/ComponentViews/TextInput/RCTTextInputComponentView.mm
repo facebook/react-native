@@ -27,6 +27,8 @@ using namespace facebook::react;
 @interface RCTTextInputComponentView () <RCTBackedTextInputDelegate, RCTTextInputViewProtocol>
 @end
 
+static NSSet<NSNumber *> *returnKeyTypesSet;
+
 @implementation RCTTextInputComponentView {
   TextInputShadowNode::ConcreteState::Shared _state;
   UIView<RCTBackedTextInputViewProtocol> *_backedTextInputView;
@@ -62,32 +64,39 @@ using namespace facebook::react;
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-    const auto &defaultProps = TextInputShadowNode::defaultSharedProps();
-    _props = defaultProps;
+        const auto &defaultProps = TextInputShadowNode::defaultSharedProps();
+        _props = defaultProps;
 
-    _backedTextInputView = defaultProps->traits.multiline ? [RCTUITextView new] : [RCTUITextField new];
-    _backedTextInputView.textInputDelegate = self;
-    _ignoreNextTextInputCall = NO;
-    _comingFromJS = NO;
-    _didMoveToWindow = NO;
-    [self addSubview:_backedTextInputView];
-  }
+        _backedTextInputView = defaultProps->traits.multiline ? [RCTUITextView new] : [RCTUITextField new];
+        _backedTextInputView.textInputDelegate = self;
+        _ignoreNextTextInputCall = NO;
+        _comingFromJS = NO;
+        _didMoveToWindow = NO;
 
-  return self;
+        [self addSubview:_backedTextInputView];
+        [self initializeReturnKeyType];
+        
+
+    }
+
+    return self;
 }
 
 - (void)didMoveToWindow
 {
   [super didMoveToWindow];
 
-  if (self.window && !_didMoveToWindow) {
-    const auto &props = static_cast<const TextInputProps &>(*_props);
-    if (props.autoFocus) {
-      [_backedTextInputView becomeFirstResponder];
+    if (self.window && !_didMoveToWindow) {
+        const auto &props = static_cast<const TextInputProps &>(*_props);
+        if (props.autoFocus) {
+            [_backedTextInputView becomeFirstResponder];
+        }
+        _didMoveToWindow = YES;
+        [self initializeReturnKeyType];
+
     }
-    _didMoveToWindow = YES;
-  }
-  [self _restoreTextSelection];
+
+    [self _restoreTextSelection];
 }
 
 #pragma mark - RCTViewComponentView overrides
@@ -386,7 +395,7 @@ using namespace facebook::react;
 
   if (_eventEmitter) {
     const auto &textInputEventEmitter = static_cast<const TextInputEventEmitter &>(*_eventEmitter);
-    textInputEventEmitter.onChange([self _textInputMetrics]);
+      textInputEventEmitter.onChange([self _textInputMetrics]);
   }
 }
 
@@ -462,6 +471,51 @@ using namespace facebook::react;
 
 #pragma mark - Default input accessory view
 
+- (NSString *)returnKeyTypeToString:(UIReturnKeyType)returnKeyType {
+switch (returnKeyType) {
+    case UIReturnKeyDefault:
+        return @"Default";
+    case UIReturnKeyGo:
+        return @"Go";
+    case UIReturnKeyNext:
+        return @"Next";
+    case UIReturnKeySearch:
+        return @"Search";
+    case UIReturnKeySend:
+        return @"Send";
+    case UIReturnKeyYahoo:
+        return @"Yahoo";
+    case UIReturnKeyGoogle:
+        return @"Google";
+    case UIReturnKeyRoute:
+        return @"Route";
+    case UIReturnKeyJoin:
+        return @"Join";
+    case UIReturnKeyEmergencyCall:
+        return @"Emergency Call";
+    default:
+        return @"Done";
+  }
+ }
+
+- (void)initializeReturnKeyType {
+        returnKeyTypesSet = [NSSet setWithObjects:
+            @(UIReturnKeyDone),
+            @(UIReturnKeyGo),
+            @(UIReturnKeyDefault),
+            @(UIReturnKeyNext),
+            @(UIReturnKeySearch),
+            @(UIReturnKeySend),
+            @(UIReturnKeyYahoo),
+            @(UIReturnKeyGoogle),
+            @(UIReturnKeyRoute),
+            @(UIReturnKeyJoin),
+            @(UIReturnKeyRoute),
+            @(UIReturnKeyEmergencyCall),
+            nil
+        ];
+}
+
 - (void)setDefaultInputAccessoryView
 {
   // InputAccessoryView component sets the inputAccessoryView when inputAccessoryViewID exists
@@ -473,27 +527,35 @@ using namespace facebook::react;
   }
 
   UIKeyboardType keyboardType = _backedTextInputView.keyboardType;
+  UIReturnKeyType returnKeyType = _backedTextInputView.returnKeyType;
 
-  // These keyboard types (all are number pads) don't have a "Done" button by default,
+  BOOL containsKeyType = [returnKeyTypesSet containsObject:@(returnKeyType)];
+
+
+
+  // These keyboard types (all are number pads) don't have a "returnKey" button by default,
   // so we create an `inputAccessoryView` with this button for them.
   BOOL shouldHaveInputAccessoryView =
       (keyboardType == UIKeyboardTypeNumberPad || keyboardType == UIKeyboardTypePhonePad ||
        keyboardType == UIKeyboardTypeDecimalPad || keyboardType == UIKeyboardTypeASCIICapableNumberPad) &&
-      _backedTextInputView.returnKeyType == UIReturnKeyDone;
+      containsKeyType;
 
   if ((_backedTextInputView.inputAccessoryView != nil) == shouldHaveInputAccessoryView) {
     return;
   }
 
   if (shouldHaveInputAccessoryView) {
+    NSString *buttonLabel = [self returnKeyTypeToString:returnKeyType];
+
     UIToolbar *toolbarView = [UIToolbar new];
     [toolbarView sizeToFit];
     UIBarButtonItem *flexibleSpace =
         [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-    UIBarButtonItem *doneButton =
-        [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
-                                                      target:self
-                                                      action:@selector(handleInputAccessoryDoneButton)];
+        UIBarButtonItem *doneButton = 
+        [[UIBarButtonItem alloc] initWithTitle:buttonLabel 
+                                         style:UIBarButtonItemStylePlain 
+                                        target:self 
+                                        action:@selector(handleInputAccessoryDoneButton)];
     toolbarView.items = @[ flexibleSpace, doneButton ];
     _backedTextInputView.inputAccessoryView = toolbarView;
   } else {

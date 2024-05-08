@@ -22,6 +22,7 @@
 
 /** Native iOS text field bottom keyboard offset amount */
 static const CGFloat kSingleLineKeyboardBottomOffset = 15.0;
+static NSSet<NSNumber *> *returnKeyTypesSet;
 
 @implementation RCTBaseTextInputView {
   __weak RCTBridge *_bridge;
@@ -62,6 +63,7 @@ static const CGFloat kSingleLineKeyboardBottomOffset = 15.0;
   if (self = [super initWithFrame:CGRectZero]) {
     _bridge = bridge;
     _eventDispatcher = bridge.eventDispatcher;
+    [self initializeReturnKeyType];
   }
 
   return self;
@@ -622,6 +624,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
 {
   if (self.autoFocus && !_didMoveToWindow) {
     [self.backedTextInputView reactFocus];
+    [self initializeReturnKeyType];
   } else {
     [self.backedTextInputView reactFocusIfNeeded];
   }
@@ -685,6 +688,24 @@ switch (returnKeyType) {
   }
  }
 
+- (void)initializeReturnKeyType {
+        returnKeyTypesSet = [NSSet setWithObjects:
+            @(UIReturnKeyDone),
+            @(UIReturnKeyGo),
+            @(UIReturnKeyDefault),
+            @(UIReturnKeyNext),
+            @(UIReturnKeySearch),
+            @(UIReturnKeySend),
+            @(UIReturnKeyYahoo),
+            @(UIReturnKeyGoogle),
+            @(UIReturnKeyRoute),
+            @(UIReturnKeyJoin),
+            @(UIReturnKeyRoute),
+            @(UIReturnKeyEmergencyCall),
+            nil
+        ];
+}
+
 - (void)setDefaultInputAccessoryView
 {
   UIView<RCTBackedTextInputViewProtocol> *textInputView = self.backedTextInputView;
@@ -693,21 +714,11 @@ switch (returnKeyType) {
   // These keyboard types (all are number pads) don't have a Return Key button by default,
   // so we create an `inputAccessoryView` with this button for them.
 
-  NSArray<NSNumber *> *returnKeyTypes = @[
-        @(UIReturnKeyDone),
-        @(UIReturnKeyGo),
-        @(UIReturnKeyDefault),
-        @(UIReturnKeyNext),
-        @(UIReturnKeySearch),
-        @(UIReturnKeySend),
-        @(UIReturnKeyYahoo),
-        @(UIReturnKeyGoogle),
-        @(UIReturnKeyRoute),
-        @(UIReturnKeyJoin),
-        @(UIReturnKeyRoute),
-        @(UIReturnKeyEmergencyCall)
-  ];
-  BOOL containsKeyType = [returnKeyTypes containsObject:@(textInputView.returnKeyType)];
+
+  UIReturnKeyType returnKeyType = textInputView.returnKeyType;
+ 
+  BOOL containsKeyType = [returnKeyTypesSet containsObject:@(returnKeyType)];
+
   BOOL shouldHaveInputAccessoryView =
       (keyboardType == UIKeyboardTypeNumberPad || keyboardType == UIKeyboardTypePhonePad ||
        keyboardType == UIKeyboardTypeDecimalPad || keyboardType == UIKeyboardTypeASCIICapableNumberPad) &&
@@ -720,7 +731,7 @@ switch (returnKeyType) {
   _hasInputAccessoryView = shouldHaveInputAccessoryView;
 
   if (shouldHaveInputAccessoryView) {
-    NSString *buttonLabel = [self returnKeyTypeToString:textInputView.returnKeyType];
+    NSString *buttonLabel = [self returnKeyTypeToString:returnKeyType];
 
     UIToolbar *toolbarView = [UIToolbar new];
     [toolbarView sizeToFit];
