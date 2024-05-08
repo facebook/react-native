@@ -235,7 +235,9 @@ RCT_EXPORT_MODULE()
 {
   NSDictionary *userInfo = notification.userInfo;
   id<RCTEvent> event = [userInfo objectForKey:@"event"];
-  [self notifyObserversOfEvent:event];
+  if (event) {
+    [self notifyObserversOfEvent:event];
+  }
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
