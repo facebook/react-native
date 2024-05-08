@@ -526,22 +526,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   }
 
   /**
-   * Like {@link #measure} and {@link #measureLayout} but measures relative to the immediate parent.
-   *
-   * <p>NB: Unlike {@link #measure}, this will measure relative to the view layout, not the visible
-   * window which can cause unexpected results when measuring relative to things like ScrollViews
-   * that can have offset content on the screen.
-   *
-   * @deprecated this method will not be available in FabricUIManager class.
-   */
-  @ReactMethod
-  @Deprecated
-  public void measureLayoutRelativeToParent(
-      int tag, Callback errorCallback, Callback successCallback) {
-    mUIImplementation.measureLayoutRelativeToParent(tag, errorCallback, successCallback);
-  }
-
-  /**
    * Find the touch target child native view in the supplied root view hierarchy, given a react
    * target location.
    *

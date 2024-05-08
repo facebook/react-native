@@ -5069,7 +5069,6 @@ public class com/facebook/react/uimanager/UIManagerModule : com/facebook/react/b
 	public fun measure (ILcom/facebook/react/bridge/Callback;)V
 	public fun measureInWindow (ILcom/facebook/react/bridge/Callback;)V
 	public fun measureLayout (IILcom/facebook/react/bridge/Callback;Lcom/facebook/react/bridge/Callback;)V
-	public fun measureLayoutRelativeToParent (ILcom/facebook/react/bridge/Callback;Lcom/facebook/react/bridge/Callback;)V
 	public fun onBatchComplete ()V
 	public fun onHostDestroy ()V
 	public fun onHostPause ()V
