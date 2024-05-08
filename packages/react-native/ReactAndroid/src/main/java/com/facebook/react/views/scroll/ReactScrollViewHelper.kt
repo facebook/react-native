@@ -101,7 +101,8 @@ public object ReactScrollViewHelper {
       scrollView: T,
       scrollEventType: ScrollEventType,
       xVelocity: Float,
-      yVelocity: Float
+      yVelocity: Float,
+      experimental_isSynchronous: Boolean = false,
   ) where T : HasScrollEventThrottle?, T : ViewGroup {
     val now = System.currentTimeMillis()
     // Throttle the scroll event if scrollEventThrottle is set to be equal or more than 17 ms.
@@ -136,7 +137,8 @@ public object ReactScrollViewHelper {
               contentView.width,
               contentView.height,
               scrollView.width,
-              scrollView.height))
+              scrollView.height,
+              experimental_isSynchronous))
       scrollView.lastScrollDispatchTime = now
     }
   }
@@ -364,12 +366,28 @@ public object ReactScrollViewHelper {
   T : HasScrollState?,
   T : HasStateWrapper?,
   T : ViewGroup {
+    updateStateOnScrollChanged(scrollView, xVelocity, yVelocity, false)
+  }
+
+  @JvmStatic
+  public fun <T> updateStateOnScrollChanged(
+      scrollView: T,
+      xVelocity: Float,
+      yVelocity: Float,
+      experimental_synchronous: Boolean,
+  ) where
+  T : HasFlingAnimator?,
+  T : HasScrollEventThrottle?,
+  T : HasScrollState?,
+  T : HasStateWrapper?,
+  T : ViewGroup {
     // Race an UpdateState with every onScroll. This makes it more likely that, in Fabric,
     // when JS processes the scroll event, the C++ ShadowNode representation will have a
     // "more correct" scroll position. It will frequently be /incorrect/ but this decreases
     // the error as much as possible.
     updateFabricScrollState(scrollView)
-    emitScrollEvent(scrollView, xVelocity, yVelocity)
+    emitScrollEvent(
+        scrollView, ScrollEventType.SCROLL, xVelocity, yVelocity, experimental_synchronous)
   }
 
   public fun <T> registerFlingAnimator(scrollView: T) where

@@ -93,9 +93,11 @@ public class ReactScrollView extends ScrollView
   private @Nullable Runnable mPostTouchRunnable;
   private boolean mRemoveClippedSubviews;
   private boolean mScrollEnabled = true;
+  private boolean mPreventReentry = false;
   private boolean mSendMomentumEvents;
   private @Nullable FpsListener mFpsListener = null;
   private @Nullable String mScrollPerfTag;
+  private boolean mEnableSyncOnScroll = false;
   private @Nullable Drawable mEndBackground;
   private int mEndFillColor = Color.TRANSPARENT;
   private boolean mDisableIntervalMomentum = false;
@@ -199,6 +201,10 @@ public class ReactScrollView extends ScrollView
 
   public void setScrollPerfTag(@Nullable String scrollPerfTag) {
     mScrollPerfTag = scrollPerfTag;
+  }
+
+  public void setEnableSyncOnScroll(boolean enableSyncOnScroll) {
+    mEnableSyncOnScroll = enableSyncOnScroll;
   }
 
   public void setScrollEnabled(boolean scrollEnabled) {
@@ -388,11 +394,16 @@ public class ReactScrollView extends ScrollView
       if (mRemoveClippedSubviews) {
         updateClippingRect();
       }
-
+      if (mPreventReentry) {
+        return;
+      }
+      mPreventReentry = true;
       ReactScrollViewHelper.updateStateOnScrollChanged(
           this,
           mOnScrollDispatchHelper.getXFlingVelocity(),
-          mOnScrollDispatchHelper.getYFlingVelocity());
+          mOnScrollDispatchHelper.getYFlingVelocity(),
+          mEnableSyncOnScroll);
+      mPreventReentry = false;
     }
   }
 

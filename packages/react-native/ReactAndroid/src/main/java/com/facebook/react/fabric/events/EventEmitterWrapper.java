@@ -58,6 +58,14 @@ public class EventEmitterWrapper {
     dispatchEvent(eventName, (NativeMap) params, eventCategory);
   }
 
+  public synchronized void dispatchEventSynchronously(
+      String eventName, @Nullable WritableMap params) {
+    if (!isValid()) {
+      return;
+    }
+    dispatchEventSynchronously(eventName, (NativeMap) params);
+  }
+
   /**
    * Invokes the execution of the C++ EventEmitter. C++ will coalesce events sent to the same
    * target.
