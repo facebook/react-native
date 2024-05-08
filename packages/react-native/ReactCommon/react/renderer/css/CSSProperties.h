@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <react/renderer/css/CSSValue.h>
+#include <react/renderer/css/CSSValueVariant.h>
 
 namespace facebook::react {
 
