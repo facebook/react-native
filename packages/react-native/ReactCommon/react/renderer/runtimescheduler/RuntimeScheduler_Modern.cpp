@@ -9,9 +9,9 @@
 #include "SchedulerPriorityUtils.h"
 
 #include <cxxreact/ErrorUtils.h>
+#include <cxxreact/SystraceSection.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/consistency/ScopedShadowTreeRevisionLock.h>
-#include <react/renderer/debug/SystraceSection.h>
 #include <react/utils/OnScopeExit.h>
 #include <utility>
 
