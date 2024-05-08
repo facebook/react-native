@@ -205,11 +205,11 @@ class TouchableBounce extends React.Component<Props, State> {
 
   componentDidMount(): mixed {
     this.state.pressability.configure(this._createPressabilityConfig());
+    this.state.scale.resetAnimation();
   }
 
   componentWillUnmount(): void {
     this.state.pressability.reset();
-    this.state.scale.resetAnimation();
   }
 }
 
