@@ -151,6 +151,38 @@ TEST(CSSTokenizer, ratio_values) {
       CSSToken{CSSTokenType::EndOfFile});
 }
 
+TEST(CSSTokenizer, function_values) {
+  EXPECT_TOKENS(
+      "blur(50px)",
+      CSSToken{CSSTokenType::Function, "blur"},
+      CSSToken{CSSTokenType::Dimension, 50.0f, "px"},
+      CSSToken{CSSTokenType::CloseParen},
+      CSSToken{CSSTokenType::EndOfFile});
+
+  EXPECT_TOKENS(
+      "scale3d( 1.2, 150% 0.5) ",
+      CSSToken{CSSTokenType::Function, "scale3d"},
+      CSSToken{CSSTokenType::WhiteSpace},
+      CSSToken{CSSTokenType::Number, 1.2f},
+      CSSToken{CSSTokenType::Comma},
+      CSSToken{CSSTokenType::WhiteSpace},
+      CSSToken{CSSTokenType::Percentage, 150.f},
+      CSSToken{CSSTokenType::WhiteSpace},
+      CSSToken{CSSTokenType::Number, 0.5f},
+      CSSToken{CSSTokenType::CloseParen},
+      CSSToken{CSSTokenType::WhiteSpace},
+      CSSToken{CSSTokenType::EndOfFile});
+
+  EXPECT_TOKENS(
+      "blur (50px)",
+      CSSToken{CSSTokenType::Ident, "blur"},
+      CSSToken{CSSTokenType::WhiteSpace},
+      CSSToken{CSSTokenType::OpenParen},
+      CSSToken{CSSTokenType::Dimension, 50.0f, "px"},
+      CSSToken{CSSTokenType::CloseParen},
+      CSSToken{CSSTokenType::EndOfFile});
+}
+
 TEST(CSSTokenizer, invalid_values) {
   EXPECT_TOKENS(
       "100*",
@@ -165,7 +197,7 @@ TEST(CSSTokenizer, invalid_values) {
 
   EXPECT_TOKENS(
       "(%",
-      CSSToken{CSSTokenType::Delim, "("},
+      CSSToken{CSSTokenType::OpenParen},
       CSSToken{CSSTokenType::Delim, "%"},
       CSSToken{CSSTokenType::EndOfFile});
 }
