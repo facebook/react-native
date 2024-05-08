@@ -30,6 +30,7 @@ type AppleBuildOptions = {
 
 type AppleBootstrapOption = {
   // Enabled by default
+  hermes: boolean,
   newArchitecture: boolean,
   ...AppleOptions,
 };
@@ -75,12 +76,16 @@ export const tasks = {
         cwd: options.cwd,
       }),
     ),
-    installDependencies: task(THIRD, 'Install CocoaPods dependencies', () =>
-      execa('bundle', ['exec', 'pod', 'install'], {
+    installDependencies: task(THIRD, 'Install CocoaPods dependencies', () => {
+      const env = {
+        RCT_NEW_ARCH_ENABLED: options.newArchitecture ? '1' : '0',
+        HERMES: options.hermes ? '1' : '0',
+      };
+      return execa('bundle', ['exec', 'pod', 'install'], {
         cwd: options.cwd,
-        env: {RCT_NEW_ARCH_ENABLED: options.newArchitecture ? '1' : '0'},
-      }),
-    ),
+        env,
+      });
+    }),
   }),
 
   // 2. Build the iOS app using a setup environment

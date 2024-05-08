@@ -197,12 +197,14 @@ function run(
 bootstrap
   .command('ios')
   .description('Bootstrap iOS')
+  .option('--hermes', 'Enable Hermes', true)
   .option('--new-architecture', 'Enable new architecture', true)
-  .action(async (_, options: {newArchitecture: boolean}) => {
+  .action(async (_, options: {newArchitecture: boolean, hermes: boolean}) => {
     await run(
       apple.bootstrap({
-        newArchitecture: options.newArchitecture,
         cwd: cwd.ios,
+        hermes: options.hermes,
+        newArchitecture: options.newArchitecture,
       }),
     );
   });
