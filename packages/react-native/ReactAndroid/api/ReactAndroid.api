@@ -2569,7 +2569,7 @@ public final class com/facebook/react/fabric/FabricSoLoader {
 	public static final fun staticInit ()V
 }
 
-public class com/facebook/react/fabric/FabricUIManager : com/facebook/react/bridge/LifecycleEventListener, com/facebook/react/bridge/UIManager, com/facebook/react/fabric/interop/UIBlockViewResolver {
+public class com/facebook/react/fabric/FabricUIManager : com/facebook/react/bridge/LifecycleEventListener, com/facebook/react/bridge/UIManager, com/facebook/react/fabric/interop/UIBlockViewResolver, com/facebook/react/uimanager/events/SynchronousEventReceiver {
 	public static final field ENABLE_FABRIC_LOGS Z
 	public static final field ENABLE_FABRIC_PERF_LOGS Z
 	public static final field IS_DEVELOPMENT_ENVIRONMENT Z
@@ -2603,6 +2603,7 @@ public class com/facebook/react/fabric/FabricUIManager : com/facebook/react/brid
 	public fun profileNextBatch ()V
 	public fun receiveEvent (IILjava/lang/String;Lcom/facebook/react/bridge/WritableMap;)V
 	public fun receiveEvent (IILjava/lang/String;ZLcom/facebook/react/bridge/WritableMap;I)V
+	public fun receiveEvent (IILjava/lang/String;ZLcom/facebook/react/bridge/WritableMap;IZ)V
 	public fun receiveEvent (ILjava/lang/String;Lcom/facebook/react/bridge/WritableMap;)V
 	public fun removeUIManagerEventListener (Lcom/facebook/react/bridge/UIManagerListener;)V
 	public fun resolveCustomDirectEventName (Ljava/lang/String;)Ljava/lang/String;
@@ -2680,6 +2681,7 @@ public final class com/facebook/react/fabric/events/EventBeatManager : com/faceb
 public class com/facebook/react/fabric/events/EventEmitterWrapper {
 	public fun destroy ()V
 	public fun dispatch (Ljava/lang/String;Lcom/facebook/react/bridge/WritableMap;I)V
+	public fun dispatchEventSynchronously (Ljava/lang/String;Lcom/facebook/react/bridge/WritableMap;)V
 	public fun dispatchUnique (Ljava/lang/String;Lcom/facebook/react/bridge/WritableMap;)V
 }
 
@@ -5537,6 +5539,7 @@ public abstract class com/facebook/react/uimanager/events/Event {
 	public fun coalesce (Lcom/facebook/react/uimanager/events/Event;)Lcom/facebook/react/uimanager/events/Event;
 	public fun dispatch (Lcom/facebook/react/uimanager/events/RCTEventEmitter;)V
 	public fun dispatchModern (Lcom/facebook/react/uimanager/events/RCTModernEventEmitter;)V
+	protected fun experimental_isSynchronous ()Z
 	public fun getCoalescingKey ()S
 	public fun getEventAnimationDriverMatchSpec ()Lcom/facebook/react/uimanager/events/Event$EventAnimationDriverMatchSpec;
 	protected fun getEventCategory ()I
@@ -5709,6 +5712,10 @@ public abstract interface class com/facebook/react/uimanager/events/RCTModernEve
 	public abstract fun receiveEvent (IILjava/lang/String;Lcom/facebook/react/bridge/WritableMap;)V
 	public abstract fun receiveEvent (IILjava/lang/String;ZILcom/facebook/react/bridge/WritableMap;I)V
 	public abstract fun receiveTouches (Lcom/facebook/react/uimanager/events/TouchEvent;)V
+}
+
+public abstract interface class com/facebook/react/uimanager/events/SynchronousEventReceiver {
+	public abstract fun receiveEvent (IILjava/lang/String;ZLcom/facebook/react/bridge/WritableMap;IZ)V
 }
 
 public final class com/facebook/react/uimanager/events/TouchEvent : com/facebook/react/uimanager/events/Event {
@@ -6655,6 +6662,7 @@ public class com/facebook/react/views/scroll/ReactHorizontalScrollView : android
 	public fun setBorderWidth (IF)V
 	public fun setDecelerationRate (F)V
 	public fun setDisableIntervalMomentum (Z)V
+	public fun setEnableSyncOnScroll (Z)V
 	public fun setEndFillColor (I)V
 	public fun setLastScrollDispatchTime (J)V
 	public fun setMaintainVisibleContentPosition (Lcom/facebook/react/views/scroll/MaintainVisibleScrollPositionHelper$Config;)V
@@ -6702,6 +6710,7 @@ public class com/facebook/react/views/scroll/ReactHorizontalScrollViewManager : 
 	public fun setContentOffset (Lcom/facebook/react/views/scroll/ReactHorizontalScrollView;Lcom/facebook/react/bridge/ReadableMap;)V
 	public fun setDecelerationRate (Lcom/facebook/react/views/scroll/ReactHorizontalScrollView;F)V
 	public fun setDisableIntervalMomentum (Lcom/facebook/react/views/scroll/ReactHorizontalScrollView;Z)V
+	public fun setEnableSyncOnScroll (Lcom/facebook/react/views/scroll/ReactHorizontalScrollView;Z)V
 	public fun setFadingEdgeLength (Lcom/facebook/react/views/scroll/ReactHorizontalScrollView;I)V
 	public fun setHorizontal (Lcom/facebook/react/views/scroll/ReactHorizontalScrollView;Z)V
 	public fun setMaintainVisibleContentPosition (Lcom/facebook/react/views/scroll/ReactHorizontalScrollView;Lcom/facebook/react/bridge/ReadableMap;)V
@@ -6782,6 +6791,7 @@ public class com/facebook/react/views/scroll/ReactScrollView : android/widget/Sc
 	public fun setContentOffset (Lcom/facebook/react/bridge/ReadableMap;)V
 	public fun setDecelerationRate (F)V
 	public fun setDisableIntervalMomentum (Z)V
+	public fun setEnableSyncOnScroll (Z)V
 	public fun setEndFillColor (I)V
 	public fun setLastScrollDispatchTime (J)V
 	public fun setMaintainVisibleContentPosition (Lcom/facebook/react/views/scroll/MaintainVisibleScrollPositionHelper$Config;)V
@@ -6860,6 +6870,7 @@ public final class com/facebook/react/views/scroll/ReactScrollViewHelper {
 	public static final fun updateFabricScrollState (Landroid/view/ViewGroup;)V
 	public final fun updateFabricScrollState (Landroid/view/ViewGroup;II)V
 	public static final fun updateStateOnScrollChanged (Landroid/view/ViewGroup;FF)V
+	public static final fun updateStateOnScrollChanged (Landroid/view/ViewGroup;FFZ)V
 }
 
 public abstract interface class com/facebook/react/views/scroll/ReactScrollViewHelper$HasFlingAnimator {
@@ -6938,6 +6949,7 @@ public class com/facebook/react/views/scroll/ReactScrollViewManager : com/facebo
 	public fun setContentOffset (Lcom/facebook/react/views/scroll/ReactScrollView;Lcom/facebook/react/bridge/ReadableMap;)V
 	public fun setDecelerationRate (Lcom/facebook/react/views/scroll/ReactScrollView;F)V
 	public fun setDisableIntervalMomentum (Lcom/facebook/react/views/scroll/ReactScrollView;Z)V
+	public fun setEnableSyncOnScroll (Lcom/facebook/react/views/scroll/ReactScrollView;Z)V
 	public fun setFadingEdgeLength (Lcom/facebook/react/views/scroll/ReactScrollView;I)V
 	public fun setHorizontal (Lcom/facebook/react/views/scroll/ReactScrollView;Z)V
 	public fun setIsInvertedVirtualizedList (Lcom/facebook/react/views/scroll/ReactScrollView;Z)V
@@ -6974,13 +6986,13 @@ public final class com/facebook/react/views/scroll/ScrollEvent : com/facebook/re
 	public static final field Companion Lcom/facebook/react/views/scroll/ScrollEvent$Companion;
 	public fun canCoalesce ()Z
 	public fun getEventName ()Ljava/lang/String;
-	public static final fun obtain (IILcom/facebook/react/views/scroll/ScrollEventType;FFFFIIII)Lcom/facebook/react/views/scroll/ScrollEvent;
+	public static final fun obtain (IILcom/facebook/react/views/scroll/ScrollEventType;FFFFIIIIZ)Lcom/facebook/react/views/scroll/ScrollEvent;
 	public static final fun obtain (ILcom/facebook/react/views/scroll/ScrollEventType;FFFFIIII)Lcom/facebook/react/views/scroll/ScrollEvent;
 	public fun onDispose ()V
 }
 
 public final class com/facebook/react/views/scroll/ScrollEvent$Companion {
-	public final fun obtain (IILcom/facebook/react/views/scroll/ScrollEventType;FFFFIIII)Lcom/facebook/react/views/scroll/ScrollEvent;
+	public final fun obtain (IILcom/facebook/react/views/scroll/ScrollEventType;FFFFIIIIZ)Lcom/facebook/react/views/scroll/ScrollEvent;
 	public final fun obtain (ILcom/facebook/react/views/scroll/ScrollEventType;FFFFIIII)Lcom/facebook/react/views/scroll/ScrollEvent;
 }
 

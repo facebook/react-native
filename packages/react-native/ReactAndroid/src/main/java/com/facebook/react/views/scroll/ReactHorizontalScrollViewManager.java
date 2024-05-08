@@ -88,6 +88,11 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
     view.setDecelerationRate(decelerationRate);
   }
 
+  @ReactProp(name = "enableSyncOnScroll")
+  public void setEnableSyncOnScroll(ReactHorizontalScrollView view, boolean enableSyncOnScroll) {
+    view.setEnableSyncOnScroll(enableSyncOnScroll);
+  }
+
   @ReactProp(name = "disableIntervalMomentum")
   public void setDisableIntervalMomentum(
       ReactHorizontalScrollView view, boolean disableIntervalMomentum) {
