@@ -45,6 +45,7 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
             diff: require('../../Utilities/differ/pointsDiffer'),
           },
           decelerationRate: true,
+          enableSyncOnScroll: true, // Fabric only.
           disableIntervalMomentum: true,
           maintainVisibleContentPosition: true,
           pagingEnabled: true,
@@ -134,7 +135,7 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
           contentInsetAdjustmentBehavior: true,
           decelerationRate: true,
           endDraggingSensitivityMultiplier: true,
-          enableSyncOnScroll: true, // iOS-Fabric only.
+          enableSyncOnScroll: true, // Fabric only.
           directionalLockEnabled: true,
           disableIntervalMomentum: true,
           indicatorStyle: true,
