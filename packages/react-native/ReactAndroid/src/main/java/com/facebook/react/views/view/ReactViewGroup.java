@@ -37,6 +37,7 @@ import com.facebook.react.touch.OnInterceptTouchEventListener;
 import com.facebook.react.touch.ReactHitSlopView;
 import com.facebook.react.touch.ReactInterceptingViewGroup;
 import com.facebook.react.uimanager.IllegalViewOperationException;
+import com.facebook.react.uimanager.LengthPercentage;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
 import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.ReactClippingProhibitedView;
@@ -123,7 +124,7 @@ public class ReactViewGroup extends ViewGroup
   private @Nullable String mOverflow;
   private PointerEvents mPointerEvents;
   private @Nullable ChildrenLayoutChangeListener mChildrenLayoutChangeListener;
-  private @Nullable ReactViewBackgroundDrawable mReactBackgroundDrawable;
+  private @Nullable CSSBackgroundDrawable mCSSBackgroundDrawable;
   private @Nullable OnInterceptTouchEventListener mOnInterceptTouchEventListener;
   private boolean mNeedsOffscreenAlphaCompositing;
   private @Nullable ViewGroupDrawingOrderHelper mDrawingOrderHelper;
@@ -153,7 +154,7 @@ public class ReactViewGroup extends ViewGroup
     mOverflow = null;
     mPointerEvents = PointerEvents.AUTO;
     mChildrenLayoutChangeListener = null;
-    mReactBackgroundDrawable = null;
+    mCSSBackgroundDrawable = null;
     mOnInterceptTouchEventListener = null;
     mNeedsOffscreenAlphaCompositing = false;
     mDrawingOrderHelper = null;
@@ -200,8 +201,8 @@ public class ReactViewGroup extends ViewGroup
 
   @Override
   public void onRtlPropertiesChanged(int layoutDirection) {
-    if (mReactBackgroundDrawable != null) {
-      mReactBackgroundDrawable.setResolvedLayoutDirection(mLayoutDirection);
+    if (mCSSBackgroundDrawable != null) {
+      mCSSBackgroundDrawable.setResolvedLayoutDirection(mLayoutDirection);
     }
   }
 
@@ -224,7 +225,7 @@ public class ReactViewGroup extends ViewGroup
 
   @Override
   public void setBackgroundColor(int color) {
-    if (color == Color.TRANSPARENT && mReactBackgroundDrawable == null) {
+    if (color == Color.TRANSPARENT && mCSSBackgroundDrawable == null) {
       // don't do anything, no need to allocate ReactBackgroundDrawable for transparent background
     } else {
       getOrCreateReactViewBackground().setColor(color);
@@ -243,9 +244,9 @@ public class ReactViewGroup extends ViewGroup
     // as a background previously. This will not work correctly as the drawable callback logic is
     // messed up in AOSP
     updateBackgroundDrawable(null);
-    if (mReactBackgroundDrawable != null && background != null) {
+    if (mCSSBackgroundDrawable != null && background != null) {
       LayerDrawable layerDrawable =
-          new LayerDrawable(new Drawable[] {mReactBackgroundDrawable, background});
+          new LayerDrawable(new Drawable[] {mCSSBackgroundDrawable, background});
       updateBackgroundDrawable(layerDrawable);
     } else if (background != null) {
       updateBackgroundDrawable(background);
@@ -332,7 +333,7 @@ public class ReactViewGroup extends ViewGroup
     backgroundDrawable.setRadius(borderRadius, position);
   }
 
-  public void setBorderRadius(BorderRadiusProp property, @Nullable Float borderRadius) {
+  public void setBorderRadius(BorderRadiusProp property, @Nullable LengthPercentage borderRadius) {
     CSSBackgroundDrawable backgroundDrawable = getOrCreateReactViewBackground();
     backgroundDrawable.setBorderRadius(property, borderRadius);
   }
@@ -791,26 +792,26 @@ public class ReactViewGroup extends ViewGroup
     return DEFAULT_BACKGROUND_COLOR;
   }
 
-  /* package */ ReactViewBackgroundDrawable getOrCreateReactViewBackground() {
-    if (mReactBackgroundDrawable == null) {
-      mReactBackgroundDrawable = new ReactViewBackgroundDrawable(getContext());
+  /* package */ CSSBackgroundDrawable getOrCreateReactViewBackground() {
+    if (mCSSBackgroundDrawable == null) {
+      mCSSBackgroundDrawable = new CSSBackgroundDrawable(getContext());
       Drawable backgroundDrawable = getBackground();
       updateBackgroundDrawable(
           null); // required so that drawable callback is cleared before we add the
       // drawable back as a part of LayerDrawable
       if (backgroundDrawable == null) {
-        updateBackgroundDrawable(mReactBackgroundDrawable);
+        updateBackgroundDrawable(mCSSBackgroundDrawable);
       } else {
         LayerDrawable layerDrawable =
-            new LayerDrawable(new Drawable[] {mReactBackgroundDrawable, backgroundDrawable});
+            new LayerDrawable(new Drawable[] {mCSSBackgroundDrawable, backgroundDrawable});
         updateBackgroundDrawable(layerDrawable);
       }
 
       mLayoutDirection =
           I18nUtil.getInstance().isRTL(getContext()) ? LAYOUT_DIRECTION_RTL : LAYOUT_DIRECTION_LTR;
-      mReactBackgroundDrawable.setResolvedLayoutDirection(mLayoutDirection);
+      mCSSBackgroundDrawable.setResolvedLayoutDirection(mLayoutDirection);
     }
-    return mReactBackgroundDrawable;
+    return mCSSBackgroundDrawable;
   }
 
   @Override
@@ -849,7 +850,7 @@ public class ReactViewGroup extends ViewGroup
    * @param drawable {@link Drawable} The Drawable to use as the background, or null to remove the
    *     background
    */
-  /* package */ void updateBackgroundDrawable(Drawable drawable) {
+  /* package */ void updateBackgroundDrawable(@Nullable Drawable drawable) {
     super.setBackground(drawable);
   }
 
@@ -909,8 +910,8 @@ public class ReactViewGroup extends ViewGroup
 
           boolean hasClipPath = false;
 
-          if (mReactBackgroundDrawable != null) {
-            final RectF borderWidth = mReactBackgroundDrawable.getDirectionAwareBorderInsets();
+          if (mCSSBackgroundDrawable != null) {
+            final RectF borderWidth = mCSSBackgroundDrawable.getDirectionAwareBorderInsets();
 
             if (borderWidth.top > 0
                 || borderWidth.left > 0
@@ -923,7 +924,7 @@ public class ReactViewGroup extends ViewGroup
             }
 
             final ComputedBorderRadius borderRadius =
-                mReactBackgroundDrawable.getBorderRadius().resolve(mLayoutDirection, getContext());
+                mCSSBackgroundDrawable.getComputedBorderRadius();
 
             if (borderRadius.hasRoundedBorders()) {
               if (mPath == null) {
