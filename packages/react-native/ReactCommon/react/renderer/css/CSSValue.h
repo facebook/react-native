@@ -222,11 +222,15 @@ class CSSValueVariant {
     return getIf<CSSValueType::Angle, CSSAngle>();
   }
 
-  constexpr operator bool() const
+  constexpr bool hasValue() const
     requires(canRepresent<CSSWideKeyword>())
   {
     return type() != CSSValueType::CSSWideKeyword ||
         getCSSWideKeyword() != CSSWideKeyword::Unset;
+  }
+
+  constexpr operator bool() const {
+    return hasValue();
   }
 
   constexpr bool operator==(const CSSValueVariant& other) const {
