@@ -208,10 +208,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener, UIBlo
           // This executor can be technically accessed before the dispatcher is created,
           // but if that happens, something is terribly wrong
           if (ReactNativeFeatureFlags.forceBatchingMountItemsOnAndroid()) {
-            for (MountItem mountItem : items) {
-              mMountItemDispatcher.addMountItem(mountItem);
-            }
-            mMountItemDispatcher.tryDispatchMountItems();
+            mMountItemDispatcher.batchMountItemsIfNecessary(items);
           } else {
             mMountItemDispatcher.dispatchMountItems(items);
           }

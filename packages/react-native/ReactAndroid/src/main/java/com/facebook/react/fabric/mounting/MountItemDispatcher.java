@@ -48,6 +48,8 @@ public class MountItemDispatcher {
   @NonNull
   private final ConcurrentLinkedQueue<MountItem> mMountItems = new ConcurrentLinkedQueue<>();
 
+  @Nullable private List<MountItem> mCurrentMountItemsBatch;
+
   @NonNull
   private final ConcurrentLinkedQueue<MountItem> mPreMountItems = new ConcurrentLinkedQueue<>();
 
@@ -67,6 +69,16 @@ public class MountItemDispatcher {
 
   public void addMountItem(MountItem mountItem) {
     mMountItems.add(mountItem);
+  }
+
+  @UiThread
+  @ThreadConfined(UI)
+  public void batchMountItemsIfNecessary(Queue<MountItem> items) {
+    if (mCurrentMountItemsBatch != null) {
+      mCurrentMountItemsBatch.addAll(items);
+    } else {
+      dispatchMountItems(items);
+    }
   }
 
   public void addPreAllocateMountItem(MountItem mountItem) {
@@ -101,10 +113,6 @@ public class MountItemDispatcher {
     // to execute anything out-of-order.
     if (mInDispatch) {
       return;
-    }
-
-    if (ReactNativeFeatureFlags.forceBatchingMountItemsOnAndroid()) {
-      mInDispatch = true;
     }
 
     final boolean didDispatchItems;
@@ -188,6 +196,10 @@ public class MountItemDispatcher {
     List<DispatchCommandMountItem> viewCommandMountItemsToDispatch =
         getAndResetViewCommandMountItems();
     List<MountItem> mountItemsToDispatch = getAndResetMountItems();
+
+    if (ReactNativeFeatureFlags.forceBatchingMountItemsOnAndroid()) {
+      mCurrentMountItemsBatch = mountItemsToDispatch;
+    }
 
     if (mountItemsToDispatch == null && viewCommandMountItemsToDispatch == null) {
       return false;
@@ -304,6 +316,8 @@ public class MountItemDispatcher {
     }
 
     mItemDispatchListener.didMountItems(mountItemsToDispatch);
+
+    mCurrentMountItemsBatch = null;
 
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
 
