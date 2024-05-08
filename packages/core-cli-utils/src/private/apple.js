@@ -29,7 +29,6 @@ type AppleBuildOptions = {
 };
 
 type AppleBootstrapOption = {
-  // Enabled by default
   hermes: boolean,
   newArchitecture: boolean,
   ...AppleOptions,
