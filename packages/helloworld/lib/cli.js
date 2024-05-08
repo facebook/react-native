@@ -1,0 +1,148 @@
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow strict-local
+ * @format
+ * @oncall react_native
+ */
+
+import type {Task} from '@react-native/core-cli-utils';
+import type {Result} from 'execa';
+import type {ExecaPromise} from 'execa';
+import type {TaskSpec} from 'listr';
+
+import chalk from 'chalk';
+import Listr from 'listr';
+import {Observable} from 'rxjs';
+
+export function trim(
+  line: string,
+  // $FlowFixMe[prop-missing]
+  maxLength: number = Math.min(process.stdout?.columns, 120),
+): string {
+  const flattened = line.replaceAll('\n', ' ').trim();
+  return flattened.length >= maxLength
+    ? flattened.slice(0, maxLength - 3) + '...'
+    : flattened.trim();
+}
+
+type ExecaPromiseMetaized = Promise<Result> & child_process$ChildProcess;
+
+export function observe(result: ExecaPromiseMetaized): Observable<string> {
+  return new Observable(observer => {
+    result.stderr.on('data', (data: Buffer) =>
+      data
+        .toString('utf8')
+        .split('\n')
+        .filter(line => line.length > 0)
+        .forEach(line => observer.next('🟢 ' + trim(line))),
+    );
+    result.stdout.on('data', (data: Buffer) =>
+      data
+        .toString('utf8')
+        .split('\n')
+        .filter(line => line.length > 0)
+        .forEach(line => observer.next('🟠 ' + trim(line))),
+    );
+
+    // Terminal events
+    result.stdout.on('error', error => observer.error(error.trim()));
+    result.then(
+      (_: Result) => observer.complete(),
+      error =>
+        observer.error(
+          new Error(
+            `${chalk.red.bold(error.shortMessage)}\n${
+              error.stderr || error.stdout
+            }`,
+          ),
+        ),
+    );
+
+    return () => {
+      for (const out of [result.stderr, result.stdout]) {
+        out.destroy();
+        out.removeAllListeners();
+      }
+    };
+  });
+}
+
+type MixedTasks = Task<ExecaPromise> | Task<void>;
+type Tasks = {
+  +[label: string]: MixedTasks,
+};
+
+export function run(
+  tasks: Tasks,
+  exclude: {[label: string]: boolean} = {},
+): Promise<void> {
+  let ordered: MixedTasks[] = [];
+  for (const [label, task] of Object.entries(tasks)) {
+    if (label in exclude) {
+      continue;
+    }
+    ordered.push(task);
+  }
+  ordered = ordered.sort((a, b) => a.order - b.order);
+
+  const spec: TaskSpec<void, Observable<string> | Promise<void> | void>[] =
+    ordered.map(task => ({
+      title: task.label,
+      task: () => {
+        const action = task.action();
+        if (action != null) {
+          return observe(action);
+        }
+      },
+    }));
+  return new Listr(spec).run();
+}
+
+export function handlePipedArgs(): Promise<string[]> {
+  return new Promise(resolve => {
+    if (process.stdin.isTTY == null) {
+      return resolve([]);
+    }
+
+    const args: string[] = [];
+    const msg: string[] = [];
+    let count = 0;
+    const assignment = /^(.+?)=(.*)$/;
+
+    function processLine(line: string) {
+      const match = assignment.exec(line);
+      if (!match) {
+        msg.push(chalk.red(line));
+        count++;
+        return;
+      }
+      const [key, value] = match.slice(1);
+      if (value == null) {
+        msg.push(chalk.bold(line) + chalk.red('<missing value>'));
+        count++;
+        return;
+      }
+      msg.push(chalk.dim(line));
+      args.push(`--${key} ${value}`);
+    }
+
+    process.stdout.on('line', processLine);
+    process.stdout.on('close', () => {
+      process.stdout.removeListener('line', processLine);
+      if (count > 0) {
+        process.stderr.write(
+          `The config piped into ${chalk.bold(
+            'helloword/cli',
+          )} contained errors:\n\n` +
+            msg.map(line => ' ' + line).join('\n') +
+            '\n',
+        );
+      }
+      resolve(args);
+    });
+  });
+}
