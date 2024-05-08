@@ -35,7 +35,10 @@ const INTERNAL_CALLSITES_REGEX = new RegExp(
     '/node_modules/react-refresh/.+\\.js$',
     '/node_modules/scheduler/.+\\.js$',
     '^\\[native code\\]$',
-  ].join('|'),
+  ]
+    // Make patterns work with both Windows and POSIX paths.
+    .map(pathPattern => pathPattern.replaceAll('/', '[/\\\\]'))
+    .join('|'),
 );
 
 export {mergeConfig} from 'metro-config';
