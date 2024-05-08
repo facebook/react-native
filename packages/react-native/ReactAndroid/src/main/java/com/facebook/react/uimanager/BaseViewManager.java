@@ -8,6 +8,7 @@
 package com.facebook.react.uimanager;
 
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Build;
 import android.text.TextUtils;
 import android.view.View;
@@ -104,6 +105,10 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     view.setTag(R.id.invalidate_transform, null);
     view.removeOnLayoutChangeListener(this);
 
+    view.setTag(R.id.use_hardware_layer, null);
+    view.setTag(R.id.filter, null);
+    applyFilter(view, null);
+
     // setShadowColor
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
       view.setOutlineAmbientShadowColor(Color.BLACK);
@@ -182,6 +187,12 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   }
 
   @Override
+  @ReactProp(name = ViewProps.FILTER)
+  public void setFilter(@NonNull T view, @Nullable ReadableArray filter) {
+    view.setTag(R.id.filter, filter);
+  }
+
+  @Override
   @ReactProp(name = ViewProps.TRANSFORM)
   public void setTransform(@NonNull T view, @Nullable ReadableArray matrix) {
     view.setTag(R.id.transform, matrix);
@@ -235,7 +246,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   @Override
   @ReactProp(name = ViewProps.RENDER_TO_HARDWARE_TEXTURE)
   public void setRenderToHardwareTexture(@NonNull T view, boolean useHWTexture) {
-    view.setLayerType(useHWTexture ? View.LAYER_TYPE_HARDWARE : View.LAYER_TYPE_NONE, null);
+    view.setTag(R.id.use_hardware_layer, useHWTexture);
   }
 
   @Override
@@ -491,6 +502,28 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     }
   }
 
+  private void applyFilter(@NonNull T view, @Nullable ReadableArray filter) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+      view.setRenderEffect(null);
+    }
+    Boolean useHWLayer = (Boolean) view.getTag(R.id.use_hardware_layer);
+    int layerType =
+        useHWLayer != null && useHWLayer ? View.LAYER_TYPE_HARDWARE : View.LAYER_TYPE_NONE;
+    view.setLayerType(layerType, null);
+
+    if (filter == null) {
+      return;
+    }
+
+    if (FilterHelper.isOnlyColorMatrixFilters(filter)) {
+      Paint p = new Paint();
+      p.setColorFilter(FilterHelper.parseColorMatrixFilters(filter));
+      view.setLayerType(View.LAYER_TYPE_HARDWARE, p);
+    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+      view.setRenderEffect(FilterHelper.parseFilters(filter));
+    }
+  }
+
   protected void setTransformProperty(
       @NonNull T view,
       @Nullable ReadableArray transforms,
@@ -595,6 +628,14 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
       setTransformProperty(view, transformMatrix, transformOrigin);
       view.setTag(R.id.invalidate_transform, false);
     }
+
+    Boolean useHWLayer = (Boolean) view.getTag(R.id.use_hardware_layer);
+    if (useHWLayer != null) {
+      view.setLayerType(useHWLayer ? View.LAYER_TYPE_HARDWARE : View.LAYER_TYPE_NONE, null);
+    }
+
+    ReadableArray filter = (ReadableArray) view.getTag(R.id.filter);
+    applyFilter(view, filter);
   }
 
   @Override
