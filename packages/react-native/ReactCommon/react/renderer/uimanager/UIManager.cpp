@@ -125,8 +125,9 @@ std::shared_ptr<ShadowNode> UIManager::cloneNode(
   auto& componentDescriptor = shadowNode.getComponentDescriptor();
   auto& family = shadowNode.getFamily();
   auto props = ShadowNodeFragment::propsPlaceholder();
+  auto isRawPropsEmpty = rawProps.isEmpty();
 
-  if (!rawProps.isEmpty()) {
+  if (!isRawPropsEmpty) {
     if (family.nativeProps_DEPRECATED != nullptr) {
       // Values in `rawProps` patch (take precedence over)
       // `nativeProps_DEPRECATED`. For example, if both `nativeProps_DEPRECATED`
@@ -155,7 +156,7 @@ std::shared_ptr<ShadowNode> UIManager::cloneNode(
           .children = children,
       });
 
-  if (!rawProps.isEmpty() && delegate_ != nullptr) {
+  if (!isRawPropsEmpty && delegate_ != nullptr) {
     delegate_->uiManagerDidCloneShadowNodeWithNewProps(*clonedShadowNode);
   }
 
