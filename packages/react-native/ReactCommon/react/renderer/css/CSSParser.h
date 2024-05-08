@@ -14,7 +14,7 @@
 #include <react/renderer/css/CSSLengthUnit.h>
 #include <react/renderer/css/CSSProperties.h>
 #include <react/renderer/css/CSSTokenizer.h>
-#include <react/renderer/css/CSSValue.h>
+#include <react/renderer/css/CSSValueVariant.h>
 #include <react/utils/PackTraits.h>
 
 namespace facebook::react {
