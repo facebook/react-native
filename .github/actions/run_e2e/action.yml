@@ -1,0 +1,17 @@
+name: run_e2e
+description: "Run End-to-End Tests"
+inputs:
+  platform:
+    description: "Platform to run tests on"
+    required: true
+    default: "js"
+  retries:
+    description: "Number of times to retry failed tests"
+    required: true
+    default: "3"
+runs:
+  using: composite
+  steps:
+    - name: "Run Tests: ${{ inputs.platform }} End-to-End Tests"
+      run: node ./scripts/e2e/run-ci-e2e-tests.js --${{ inputs.platform }} --retries ${{ inputs.retries }}
+      shell: bash
