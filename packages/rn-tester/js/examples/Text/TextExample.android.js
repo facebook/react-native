@@ -213,21 +213,23 @@ class TextExample extends React.Component<{...}> {
           <TextAdjustsDynamicLayoutExample />
         </RNTesterBlock>
         <RNTesterBlock title="Wrap">
-          <Text>
+          <Text style={styles.wrappedText}>
             The text should wrap if it goes on multiple lines. See, this is
             going to the next line.
           </Text>
         </RNTesterBlock>
         <RNTesterBlock title="Hyphenation">
-          <Text android_hyphenationFrequency="normal">
+          <Text
+            android_hyphenationFrequency="normal"
+            style={styles.wrappedText}>
             <Text style={{color: 'red'}}>Normal: </Text>
             WillHaveAHyphenWhenBreakingForNewLine
           </Text>
-          <Text android_hyphenationFrequency="none">
+          <Text android_hyphenationFrequency="none" style={styles.wrappedText}>
             <Text style={{color: 'red'}}>None: </Text>
             WillNotHaveAHyphenWhenBreakingForNewLine
           </Text>
-          <Text android_hyphenationFrequency="full">
+          <Text android_hyphenationFrequency="full" style={styles.wrappedText}>
             <Text style={{color: 'red'}}>Full: </Text>
             WillHaveAHyphenWhenBreakingForNewLine
           </Text>
@@ -580,7 +582,7 @@ class TextExample extends React.Component<{...}> {
           </Text>
         </RNTesterBlock>
         <RNTesterBlock title="Line Height">
-          <Text style={{lineHeight: 35}}>
+          <Text style={[{lineHeight: 35}, styles.wrappedText]}>
             Holisticly formulate inexpensive ideas before best-of-breed
             benefits. <Text style={{fontSize: 20}}>Continually</Text> expedite
             magnetic potentialities rather than client-focused interfaces.
@@ -674,19 +676,19 @@ class TextExample extends React.Component<{...}> {
           </Text>
         </RNTesterBlock>
         <RNTesterBlock title="numberOfLines attribute">
-          <Text numberOfLines={1}>
+          <Text numberOfLines={1} style={styles.wrappedText}>
             Maximum of one line no matter now much I write here. If I keep
             writing it{"'"}ll just truncate after one line
           </Text>
-          <Text style={{fontSize: 31}} numberOfLines={1}>
+          <Text style={[{fontSize: 31}, styles.wrappedText]} numberOfLines={1}>
             Maximum of one line no matter now much I write here. If I keep
             writing it{"'"}ll just truncate after one line
           </Text>
-          <Text numberOfLines={2} style={{marginTop: 20}}>
+          <Text numberOfLines={2} style={[{marginTop: 20}, styles.wrappedText]}>
             Maximum of two lines no matter now much I write here. If I keep
             writing it{"'"}ll just truncate after two lines
           </Text>
-          <Text style={{marginTop: 20}}>
+          <Text style={[{marginTop: 20}, styles.wrappedText]}>
             No maximum lines specified no matter now much I write here. If I
             keep writing it{"'"}ll just keep going and going
           </Text>
@@ -751,16 +753,25 @@ class TextExample extends React.Component<{...}> {
           </Text>
         </RNTesterBlock>
         <RNTesterBlock title="Ellipsize mode">
-          <Text numberOfLines={1}>
+          <Text numberOfLines={1} style={styles.wrappedText}>
             This very long text should be truncated with dots in the end.
           </Text>
-          <Text ellipsizeMode="middle" numberOfLines={1}>
+          <Text
+            ellipsizeMode="middle"
+            numberOfLines={1}
+            style={styles.wrappedText}>
             This very long text should be truncated with dots in the middle.
           </Text>
-          <Text ellipsizeMode="head" numberOfLines={1}>
+          <Text
+            ellipsizeMode="head"
+            numberOfLines={1}
+            style={styles.wrappedText}>
             This very long text should be truncated with dots in the beginning.
           </Text>
-          <Text ellipsizeMode="clip" numberOfLines={1}>
+          <Text
+            ellipsizeMode="clip"
+            numberOfLines={1}
+            style={styles.wrappedText}>
             This very long text should be clipped and this will not be visible.
           </Text>
         </RNTesterBlock>
@@ -925,6 +936,9 @@ const styles = StyleSheet.create({
     color: '#000000',
     textAlignVertical: 'center',
     alignSelf: 'center',
+  },
+  wrappedText: {
+    maxWidth: 300,
   },
 });
 
