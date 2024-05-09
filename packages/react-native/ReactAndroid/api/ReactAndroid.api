@@ -3223,9 +3223,8 @@ public final class com/facebook/react/modules/debug/FpsDebugFrameCallback$FpsInf
 	public final fun getTotalTimeMs ()I
 }
 
-public class com/facebook/react/modules/debug/SourceCodeModule : com/facebook/fbreact/specs/NativeSourceCodeSpec {
+public final class com/facebook/react/modules/debug/SourceCodeModule : com/facebook/fbreact/specs/NativeSourceCodeSpec {
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
-	protected fun getTypedExportedConstants ()Ljava/util/Map;
 }
 
 public abstract interface class com/facebook/react/modules/debug/interfaces/DeveloperSettings {
