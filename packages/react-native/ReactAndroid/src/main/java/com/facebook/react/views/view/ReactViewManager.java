@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Dynamic;
+import com.facebook.react.bridge.DynamicFromObject;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
@@ -21,6 +22,7 @@ import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.module.annotations.ReactModule;
+import com.facebook.react.uimanager.LengthPercentage;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.Spacing;
@@ -30,6 +32,7 @@ import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.uimanager.style.BorderRadiusProp;
 import com.facebook.yoga.YogaConstants;
 import java.util.Map;
 
@@ -126,22 +129,19 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
         ViewProps.BORDER_END_START_RADIUS,
         ViewProps.BORDER_START_END_RADIUS,
         ViewProps.BORDER_START_START_RADIUS,
-      },
-      defaultFloat = YogaConstants.UNDEFINED)
+      })
+  public void setBorderRadius(ReactViewGroup view, int index, Dynamic rawBorderRadius) {
+
+    @Nullable LengthPercentage borderRadius = LengthPercentage.setFromDynamic(rawBorderRadius);
+
+    view.setBorderRadius(BorderRadiusProp.values()[index], borderRadius);
+  }
+
+  /**
+   * @deprecated Use {@link #setBorderRadius(ReactViewGroup, int, Dynamic)} instead.
+   */
   public void setBorderRadius(ReactViewGroup view, int index, float borderRadius) {
-    if (!YogaConstants.isUndefined(borderRadius) && borderRadius < 0) {
-      borderRadius = YogaConstants.UNDEFINED;
-    }
-
-    if (!YogaConstants.isUndefined(borderRadius)) {
-      borderRadius = PixelUtil.toPixelFromDIP(borderRadius);
-    }
-
-    if (index == 0) {
-      view.setBorderRadius(borderRadius);
-    } else {
-      view.setBorderRadius(borderRadius, index - 1);
-    }
+    setBorderRadius(view, index, new DynamicFromObject(borderRadius));
   }
 
   @ReactProp(name = "borderStyle")

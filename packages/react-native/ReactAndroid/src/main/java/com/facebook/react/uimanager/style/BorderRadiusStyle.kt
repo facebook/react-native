@@ -10,9 +10,11 @@ package com.facebook.react.uimanager.style
 import android.content.Context
 import android.util.LayoutDirection
 import com.facebook.react.modules.i18nmanager.I18nUtil
+import com.facebook.react.uimanager.LengthPercentage
 
 /** Represents the collection of possible border radius style properties. */
 public enum class BorderRadiusProp {
+  BORDER_RADIUS,
   BORDER_TOP_LEFT_RADIUS,
   BORDER_TOP_RIGHT_RADIUS,
   BORDER_BOTTOM_RIGHT_RADIUS,
@@ -25,30 +27,29 @@ public enum class BorderRadiusProp {
   BORDER_END_START_RADIUS,
   BORDER_START_END_RADIUS,
   BORDER_START_START_RADIUS,
-  BORDER_RADIUS,
 }
 
 /** Represents all logical properties and shorthands for border radius. */
 public data class BorderRadiusStyle(
-    var uniform: Float? = null,
-    var topLeft: Float? = null,
-    var topRight: Float? = null,
-    var bottomLeft: Float? = null,
-    var bottomRight: Float? = null,
-    var topStart: Float? = null,
-    var topEnd: Float? = null,
-    var bottomStart: Float? = null,
-    var bottomEnd: Float? = null,
-    var startStart: Float? = null,
-    var startEnd: Float? = null,
-    var endStart: Float? = null,
-    var endEnd: Float? = null
+    var uniform: LengthPercentage? = null,
+    var topLeft: LengthPercentage? = null,
+    var topRight: LengthPercentage? = null,
+    var bottomLeft: LengthPercentage? = null,
+    var bottomRight: LengthPercentage? = null,
+    var topStart: LengthPercentage? = null,
+    var topEnd: LengthPercentage? = null,
+    var bottomStart: LengthPercentage? = null,
+    var bottomEnd: LengthPercentage? = null,
+    var startStart: LengthPercentage? = null,
+    var startEnd: LengthPercentage? = null,
+    var endStart: LengthPercentage? = null,
+    var endEnd: LengthPercentage? = null
 ) {
-  public constructor(properties: List<Pair<BorderRadiusProp, Float>>) : this() {
+  public constructor(properties: List<Pair<BorderRadiusProp, LengthPercentage>>) : this() {
     properties.forEach { (k, v) -> set(k, v) }
   }
 
-  public fun set(property: BorderRadiusProp, value: Float?) {
+  public fun set(property: BorderRadiusProp, value: LengthPercentage?) {
     when (property) {
       BorderRadiusProp.BORDER_RADIUS -> uniform = value
       BorderRadiusProp.BORDER_TOP_LEFT_RADIUS -> topLeft = value
@@ -66,7 +67,7 @@ public data class BorderRadiusStyle(
     }
   }
 
-  public fun get(property: BorderRadiusProp): Float? {
+  public fun get(property: BorderRadiusProp): LengthPercentage? {
     return when (property) {
       BorderRadiusProp.BORDER_RADIUS -> uniform
       BorderRadiusProp.BORDER_TOP_LEFT_RADIUS -> topLeft
@@ -85,45 +86,55 @@ public data class BorderRadiusStyle(
   }
 
   public fun hasRoundedBorders(): Boolean {
-    return ((uniform ?: 0f) > 0f) ||
-        ((topLeft ?: 0f) > 0f) ||
-        ((topRight ?: 0f) > 0f) ||
-        ((bottomLeft ?: 0f) > 0f) ||
-        ((bottomRight ?: 0f) > 0f) ||
-        ((topStart ?: 0f) > 0f) ||
-        ((topEnd ?: 0f) > 0f) ||
-        ((bottomStart ?: 0f) > 0f) ||
-        ((bottomEnd ?: 0f) > 0f) ||
-        ((startStart ?: 0f) > 0f) ||
-        ((startEnd ?: 0f) > 0f) ||
-        ((endStart ?: 0f) > 0f) ||
-        ((endEnd ?: 0f) > 0f)
+    return uniform != null ||
+        topLeft != null ||
+        topRight != null ||
+        bottomLeft != null ||
+        bottomRight != null ||
+        topStart != null ||
+        topEnd != null ||
+        bottomStart != null ||
+        bottomEnd != null ||
+        startStart != null ||
+        startEnd != null ||
+        endStart != null ||
+        endEnd != null
   }
 
   public fun resolve(
       layoutDirection: Int,
       context: Context,
+      width: Float,
+      height: Float,
   ): ComputedBorderRadius {
+    val topLeft: LengthPercentage? = startStart ?: topStart ?: topLeft ?: uniform
+    val topRight: LengthPercentage? = endStart ?: topEnd ?: topRight ?: uniform
+    val bottomLeft: LengthPercentage? = startEnd ?: bottomStart ?: bottomLeft ?: uniform
+    val bottomRight: LengthPercentage? = endEnd ?: bottomEnd ?: bottomRight ?: uniform
+
     return when (layoutDirection) {
       LayoutDirection.LTR ->
           ComputedBorderRadius(
-              topLeft = startStart ?: topStart ?: topLeft ?: uniform ?: 0f,
-              topRight = endStart ?: topEnd ?: topRight ?: uniform ?: 0f,
-              bottomLeft = startEnd ?: bottomStart ?: bottomLeft ?: uniform ?: 0f,
-              bottomRight = endEnd ?: bottomEnd ?: bottomRight ?: uniform ?: 0f)
+              topLeft = topLeft?.resolve(width, height) ?: 0f,
+              topRight = topRight?.resolve(width, height) ?: 0f,
+              bottomLeft = bottomLeft?.resolve(width, height) ?: 0f,
+              bottomRight = bottomRight?.resolve(width, height) ?: 0f,
+          )
       LayoutDirection.RTL ->
           if (I18nUtil.getInstance().doLeftAndRightSwapInRTL(context)) {
             ComputedBorderRadius(
-                topLeft = endStart ?: topEnd ?: topRight ?: uniform ?: 0f,
-                topRight = startStart ?: topStart ?: topLeft ?: uniform ?: 0f,
-                bottomLeft = endEnd ?: bottomStart ?: bottomRight ?: uniform ?: 0f,
-                bottomRight = startEnd ?: bottomEnd ?: bottomLeft ?: uniform ?: 0f)
+                topLeft = topRight?.resolve(width, height) ?: 0f,
+                topRight = topLeft?.resolve(width, height) ?: 0f,
+                bottomLeft = bottomRight?.resolve(width, height) ?: 0f,
+                bottomRight = bottomLeft?.resolve(width, height) ?: 0f,
+            )
           } else {
             ComputedBorderRadius(
-                topLeft = endStart ?: topEnd ?: topLeft ?: uniform ?: 0f,
-                topRight = startStart ?: topStart ?: topRight ?: uniform ?: 0f,
-                bottomLeft = endEnd ?: bottomStart ?: bottomLeft ?: uniform ?: 0f,
-                bottomRight = startEnd ?: bottomEnd ?: bottomRight ?: uniform ?: 0f)
+                topLeft = topRight?.resolve(width, height) ?: 0f,
+                topRight = topLeft?.resolve(width, height) ?: 0f,
+                bottomLeft = bottomRight?.resolve(width, height) ?: 0f,
+                bottomRight = bottomLeft?.resolve(width, height) ?: 0f,
+            )
           }
       else -> throw IllegalArgumentException("Expected resolved layout direction")
     }
