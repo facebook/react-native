@@ -64,6 +64,7 @@ export type ReportableEvent =
       timeSinceStart: number | null,
       ...DebuggerSessionIDs,
       frontendUserAgent: string | null,
+      prefersFuseboxFrontend: boolean | null,
       ...
         | SuccessResult<void>
         | CodedErrorResult<

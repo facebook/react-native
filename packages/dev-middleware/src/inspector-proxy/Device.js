@@ -320,6 +320,9 @@ export default class Device {
       this.#deviceEventReporter?.logRequest(debuggerRequest, 'debugger', {
         pageId: this.#debuggerConnection?.pageId ?? null,
         frontendUserAgent: metadata.userAgent,
+        prefersFuseboxFrontend: this.#isPageFuseboxFrontend(
+          this.#debuggerConnection?.pageId,
+        ),
       });
       let processedReq = debuggerRequest;
 
@@ -521,6 +524,7 @@ export default class Device {
         this.#deviceEventReporter?.logResponse(parsedPayload, 'device', {
           pageId,
           frontendUserAgent: this.#debuggerConnection?.userAgent ?? null,
+          prefersFuseboxFrontend: this.#isPageFuseboxFrontend(pageId),
         });
       }
 
@@ -601,9 +605,11 @@ export default class Device {
     ];
 
     for (const message of toSend) {
+      const pageId = this.#debuggerConnection?.pageId ?? null;
       this.#deviceEventReporter?.logRequest(message, 'proxy', {
-        pageId: this.#debuggerConnection?.pageId ?? null,
+        pageId,
         frontendUserAgent: this.#debuggerConnection?.userAgent ?? null,
+        prefersFuseboxFrontend: this.#isPageFuseboxFrontend(pageId),
       });
       this.#sendMessageToDevice({
         event: 'wrappedEvent',
@@ -713,6 +719,9 @@ export default class Device {
       this.#deviceEventReporter?.logRequest(resumeMessage, 'proxy', {
         pageId: this.#debuggerConnection?.pageId ?? null,
         frontendUserAgent: this.#debuggerConnection?.userAgent ?? null,
+        prefersFuseboxFrontend: this.#isPageFuseboxFrontend(
+          this.#debuggerConnection?.pageId,
+        ),
       });
       this.#sendMessageToDevice({
         event: 'wrappedEvent',
@@ -796,9 +805,11 @@ export default class Device {
         result,
       };
       socket.send(JSON.stringify(response));
+      const pageId = this.#debuggerConnection?.pageId ?? null;
       this.#deviceEventReporter?.logResponse(response, 'proxy', {
-        pageId: this.#debuggerConnection?.pageId ?? null,
+        pageId,
         frontendUserAgent: this.#debuggerConnection?.userAgent ?? null,
+        prefersFuseboxFrontend: this.#isPageFuseboxFrontend(pageId),
       });
     };
     const sendErrorResponse = (error: string) => {
@@ -809,9 +820,11 @@ export default class Device {
 
       // Send to the console as well, so the user can see it
       this.#sendErrorToDebugger(error);
+      const pageId = this.#debuggerConnection?.pageId ?? null;
       this.#deviceEventReporter?.logResponse(response, 'proxy', {
-        pageId: this.#debuggerConnection?.pageId ?? null,
+        pageId,
         frontendUserAgent: this.#debuggerConnection?.userAgent ?? null,
+        prefersFuseboxFrontend: this.#isPageFuseboxFrontend(pageId),
       });
     };
 
@@ -908,5 +921,14 @@ export default class Device {
         }),
       );
     }
+  }
+
+  #isPageFuseboxFrontend(pageId: ?string): boolean | null {
+    const page = pageId == null ? null : this.#pages.get(pageId);
+    if (page == null) {
+      return null;
+    }
+
+    return this.#pageHasCapability(page, 'prefersFuseboxFrontend');
   }
 }
