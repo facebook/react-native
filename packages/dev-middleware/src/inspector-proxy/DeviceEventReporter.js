@@ -31,6 +31,11 @@ type RequestMetadata = $ReadOnly<{
   frontendUserAgent: string | null,
 }>;
 
+type ResponseMetadata = $ReadOnly<{
+  pageId: string | null,
+  frontendUserAgent: string | null,
+}>;
+
 class DeviceEventReporter {
   #eventReporter: EventReporter;
 
@@ -72,10 +77,7 @@ class DeviceEventReporter {
   logResponse(
     res: CDPResponse<>,
     origin: 'device' | 'proxy',
-    metadata: $ReadOnly<{
-      pageId: string | null,
-      frontendUserAgent: string | null,
-    }>,
+    metadata: ResponseMetadata,
   ): void {
     const pendingCommand = this.#pendingCommands.get(res.id);
     if (!pendingCommand) {
