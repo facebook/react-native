@@ -19,12 +19,13 @@ const hotdog = require('../../assets/hotdog.jpg');
 
 type Props = $ReadOnly<{
   style: ViewStyleProp,
+  testID?: string,
 }>;
 
 function StaticViewAndImage(props: Props): React.Node {
   return (
     <>
-      <View style={styles.container}>
+      <View style={styles.container} testID={props.testID}>
         <View style={[props.style, styles.commonView]}>
           <View style={styles.subview}>
             <View style={styles.subsubview} />
@@ -50,7 +51,12 @@ function StaticViewAndImageWithState(props: Props): React.Node {
   const [s, setS] = React.useState(true);
   setTimeout(() => setS(!s), 5000);
 
-  return <StaticViewAndImage style={s ? [props.style] : null} />;
+  return (
+    <StaticViewAndImage
+      style={s ? [props.style] : null}
+      testID={props.testID}
+    />
+  );
 }
 
 const styles = StyleSheet.create({
@@ -87,10 +93,12 @@ exports.examples = [
   {
     title: 'Brightness',
     description: 'brightness(1.5)',
+    name: 'brightness',
     render(): React.Node {
       return (
         <StaticViewAndImage
           style={{experimental_filter: [{brightness: 1.5}]}}
+          testID="filter-test-brightness"
         />
       );
     },
@@ -98,6 +106,7 @@ exports.examples = [
   {
     title: 'Opacity',
     description: 'opacity(0.5)',
+    name: 'opacity',
     render(): React.Node {
       return (
         <StaticViewAndImage style={{experimental_filter: [{opacity: 0.5}]}} />
@@ -107,6 +116,7 @@ exports.examples = [
   {
     title: 'Contrast',
     description: 'contrast(0.5)',
+    name: 'contrast',
     platform: 'android',
     render(): React.Node {
       return (
@@ -117,6 +127,7 @@ exports.examples = [
   {
     title: 'Sepia',
     description: 'sepia(0.5)',
+    name: 'sepia',
     platform: 'android',
     render(): React.Node {
       return (
@@ -127,6 +138,7 @@ exports.examples = [
   {
     title: 'Grayscale',
     description: 'grayscale(0.5)',
+    name: 'grayscale',
     platform: 'android',
     render(): React.Node {
       return (
@@ -137,6 +149,7 @@ exports.examples = [
   {
     title: 'Saturate',
     description: 'saturate(4)',
+    name: 'saturate',
     platform: 'android',
     render(): React.Node {
       return (
@@ -147,6 +160,7 @@ exports.examples = [
   {
     title: 'Hue Rotate',
     description: 'hueRotate(-90deg)',
+    name: 'hueRotate',
     platform: 'android',
     render(): React.Node {
       return (
@@ -159,6 +173,7 @@ exports.examples = [
   {
     title: 'Invert',
     description: 'invert(0.7)',
+    name: 'invert',
     platform: 'android',
     render(): React.Node {
       return (
@@ -169,9 +184,28 @@ exports.examples = [
   {
     title: 'Blur',
     description: 'blur(10)',
+    name: 'blur',
     platform: 'android',
     render(): React.Node {
-      return <StaticViewAndImage style={{experimental_filter: [{blur: 10}]}} />;
+      return (
+        <StaticViewAndImage
+          style={{experimental_filter: [{blur: 10}]}}
+          testID="filter-test-blur"
+        />
+      );
+    },
+  },
+  {
+    title: 'Chained filters',
+    description: 'brightness(1.5) opacity(0.5)',
+    name: 'chained-filters',
+    render(): React.Node {
+      return (
+        <StaticViewAndImageWithState
+          style={{experimental_filter: [{brightness: 1.5}, {opacity: 0.5}]}}
+          testID="filter-test-chain"
+        />
+      );
     },
   },
   {
