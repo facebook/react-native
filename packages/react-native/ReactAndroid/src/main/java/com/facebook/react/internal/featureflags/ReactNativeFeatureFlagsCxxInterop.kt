@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<34806c87ad1769ee08a5322994b0bb1b>>
+ * @generated SignedSource<<2cd7ab4688ca2179ba3a19e9a062f695>>
  */
 
 /**
@@ -49,8 +49,6 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun enableSynchronousStateUpdates(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableUIConsistency(): Boolean
-
-  @DoNotStrip @JvmStatic public external fun fixMountedFlagAndFixPreallocationClone(): Boolean
 
   @DoNotStrip @JvmStatic public external fun forceBatchingMountItemsOnAndroid(): Boolean
 

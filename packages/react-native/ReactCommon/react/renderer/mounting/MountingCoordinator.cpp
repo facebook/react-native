@@ -17,7 +17,6 @@
 
 #include <cxxreact/SystraceSection.h>
 #include <react/debug/react_native_assert.h>
-#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
 
 namespace facebook::react {
@@ -90,14 +89,6 @@ std::optional<MountingTransaction> MountingCoordinator::pullTransaction()
   // Base case
   if (lastRevision_.has_value()) {
     number_++;
-
-    if (ReactNativeFeatureFlags::fixMountedFlagAndFixPreallocationClone()) {
-      std::scoped_lock dispatchLock(EventEmitter::DispatchMutex());
-
-      updateMountedFlag(
-          baseRevision_.rootShadowNode->getChildren(),
-          lastRevision_->rootShadowNode->getChildren());
-    }
 
     auto telemetry = lastRevision_->telemetry;
 

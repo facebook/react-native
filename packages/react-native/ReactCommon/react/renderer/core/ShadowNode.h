@@ -154,12 +154,6 @@ class ShadowNode : public Sealable,
 
   void sealRecursive() const;
 
-  /*
-   * Marks this shadow node and all of its children as promoted. Promoted shadow
-   * node is scheduled to be mounted.
-   */
-  void markPromotedRecursively() const;
-
   const ShadowNodeFamily& getFamily() const;
 
 #pragma mark - Mutating Methods

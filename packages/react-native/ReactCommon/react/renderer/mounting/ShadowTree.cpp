@@ -451,9 +451,7 @@ CommitStatus ShadowTree::tryCommit(
 
     auto newRevisionNumber = currentRevision_.number + 1;
 
-    if (ReactNativeFeatureFlags::fixMountedFlagAndFixPreallocationClone()) {
-      newRootShadowNode->markPromotedRecursively();
-    } else {
+    {
       std::scoped_lock dispatchLock(EventEmitter::DispatchMutex());
       updateMountedFlag(
           currentRevision_.rootShadowNode->getChildren(),
