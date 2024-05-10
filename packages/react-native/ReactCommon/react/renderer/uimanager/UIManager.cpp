@@ -155,10 +155,6 @@ std::shared_ptr<ShadowNode> UIManager::cloneNode(
           .children = children,
       });
 
-  if (!rawProps.isEmpty() && delegate_ != nullptr) {
-    delegate_->uiManagerDidCloneShadowNodeWithNewProps(*clonedShadowNode);
-  }
-
   return clonedShadowNode;
 }
 

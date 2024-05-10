@@ -88,10 +88,6 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).',
     },
-    fixMountedFlagAndFixPreallocationClone: {
-      defaultValue: false,
-      description: 'Splits hasBeenMounted and promoted.',
-    },
     forceBatchingMountItemsOnAndroid: {
       defaultValue: false,
       description:

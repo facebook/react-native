@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<70cc98f74b676cb12f4e510b88d551aa>>
+ * @generated SignedSource<<630ef8f9e65223c8d4c2b07bcc0ebadd>>
  */
 
 /**
@@ -102,12 +102,6 @@ class ReactNativeFeatureFlagsProviderHolder
   bool enableUIConsistency() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableUIConsistency");
-    return method(javaProvider_);
-  }
-
-  bool fixMountedFlagAndFixPreallocationClone() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fixMountedFlagAndFixPreallocationClone");
     return method(javaProvider_);
   }
 
@@ -218,11 +212,6 @@ bool JReactNativeFeatureFlagsCxxInterop::enableUIConsistency(
   return ReactNativeFeatureFlags::enableUIConsistency();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::fixMountedFlagAndFixPreallocationClone(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::fixMountedFlagAndFixPreallocationClone();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::forceBatchingMountItemsOnAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::forceBatchingMountItemsOnAndroid();
@@ -313,9 +302,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableUIConsistency",
         JReactNativeFeatureFlagsCxxInterop::enableUIConsistency),
-      makeNativeMethod(
-        "fixMountedFlagAndFixPreallocationClone",
-        JReactNativeFeatureFlagsCxxInterop::fixMountedFlagAndFixPreallocationClone),
       makeNativeMethod(
         "forceBatchingMountItemsOnAndroid",
         JReactNativeFeatureFlagsCxxInterop::forceBatchingMountItemsOnAndroid),

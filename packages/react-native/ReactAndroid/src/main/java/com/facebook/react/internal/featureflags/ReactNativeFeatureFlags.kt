@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3585602cd983452045d3165edbafc0ca>>
+ * @generated SignedSource<<c35ee97cf5c4b5f77cdd045341f2848b>>
  */
 
 /**
@@ -93,12 +93,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableUIConsistency(): Boolean = accessor.enableUIConsistency()
-
-  /**
-   * Splits hasBeenMounted and promoted.
-   */
-  @JvmStatic
-  public fun fixMountedFlagAndFixPreallocationClone(): Boolean = accessor.fixMountedFlagAndFixPreallocationClone()
 
   /**
    * Forces the mounting layer on Android to always batch mount items instead of dispatching them immediately. This might fix some crashes related to synchronous state updates, where some views dispatch state updates during mount.
