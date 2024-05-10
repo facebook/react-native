@@ -23,11 +23,14 @@ import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
+import com.facebook.react.turbomodule.core.BindingsInstallerHolder;
+import com.facebook.react.turbomodule.core.interfaces.TurboModuleWithJSIBindings;
 import java.util.HashMap;
 import java.util.Map;
 
 @ReactModule(name = SampleTurboModule.NAME)
-public class SampleTurboModule extends NativeSampleTurboModuleSpec {
+public class SampleTurboModule extends NativeSampleTurboModuleSpec
+    implements TurboModuleWithJSIBindings {
 
   public static final String NAME = "SampleTurboModule";
 
@@ -251,4 +254,12 @@ public class SampleTurboModule extends NativeSampleTurboModuleSpec {
   public String getName() {
     return NAME;
   }
+
+  @Override
+  @DoNotStrip
+  public BindingsInstallerHolder getBindingsInstaller() {
+    return getBindingsInstallerCxx();
+  }
+
+  private static native BindingsInstallerHolder getBindingsInstallerCxx();
 }
