@@ -3015,6 +3015,7 @@ public class com/facebook/react/modules/blob/BlobModule : com/facebook/fbreact/s
 	public fun addNetworkingHandler ()V
 	public fun addWebSocketHandler (D)V
 	public fun createFromParts (Lcom/facebook/react/bridge/ReadableArray;Ljava/lang/String;)V
+	public fun getLengthOfBlob (Ljava/lang/String;)J
 	public fun getTypedExportedConstants ()Ljava/util/Map;
 	public fun initialize ()V
 	public fun release (Ljava/lang/String;)V
