@@ -2948,7 +2948,7 @@ public abstract interface class com/facebook/react/module/model/ReactModuleInfoP
 	public abstract fun getReactModuleInfos ()Ljava/util/Map;
 }
 
-public class com/facebook/react/modules/accessibilityinfo/AccessibilityInfoModule : com/facebook/fbreact/specs/NativeAccessibilityInfoSpec, com/facebook/react/bridge/LifecycleEventListener {
+public final class com/facebook/react/modules/accessibilityinfo/AccessibilityInfoModule : com/facebook/fbreact/specs/NativeAccessibilityInfoSpec, com/facebook/react/bridge/LifecycleEventListener {
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
 	public fun announceForAccessibility (Ljava/lang/String;)V
 	public fun getRecommendedTimeoutMillis (DLcom/facebook/react/bridge/Callback;)V
