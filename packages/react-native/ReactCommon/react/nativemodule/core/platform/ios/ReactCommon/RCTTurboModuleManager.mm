@@ -180,11 +180,6 @@ static Class getFallbackClassFromName(const char *name)
   return moduleClass;
 }
 
-typedef struct {
-  id<RCTBridgeModule> module;
-  dispatch_queue_t methodQueue;
-} ModuleQueuePair;
-
 @implementation RCTTurboModuleManager {
   std::shared_ptr<CallInvoker> _jsInvoker;
   __weak id<RCTTurboModuleManagerDelegate> _delegate;
@@ -1045,7 +1040,7 @@ typedef struct {
 {
   // Backward-compatibility: RCTInvalidating handling.
   dispatch_group_t moduleInvalidationGroup = dispatch_group_create();
-  std::vector<ModuleQueuePair> modulesToInvalidate;
+
   for (auto &pair : _moduleHolders) {
     std::string moduleName = pair.first;
     ModuleHolder *moduleHolder = &pair.second;
@@ -1068,31 +1063,22 @@ typedef struct {
             [module class]);
         continue;
       }
-      modulesToInvalidate.push_back({module, methodQueue});
-    }
-  }
 
-  for (auto unused : modulesToInvalidate) {
-    dispatch_group_enter(moduleInvalidationGroup);
-  }
+      dispatch_group_enter(moduleInvalidationGroup);
+      dispatch_block_t invalidateModule = ^{
+        [((id<RCTInvalidating>)module) invalidate];
+        dispatch_group_leave(moduleInvalidationGroup);
+      };
 
-  for (auto &moduleQueuePair : modulesToInvalidate) {
-    id<RCTBridgeModule> module = moduleQueuePair.module;
-    dispatch_queue_t methodQueue = moduleQueuePair.methodQueue;
-
-    dispatch_block_t invalidateModule = ^{
-      [((id<RCTInvalidating>)module) invalidate];
-      dispatch_group_leave(moduleInvalidationGroup);
-    };
-
-    if (_bridge) {
-      [_bridge dispatchBlock:invalidateModule queue:methodQueue];
-    } else {
-      // Bridgeless mode
-      if (methodQueue == RCTJSThread) {
-        invalidateModule();
+      if (_bridge) {
+        [_bridge dispatchBlock:invalidateModule queue:methodQueue];
       } else {
-        dispatch_async(methodQueue, invalidateModule);
+        // Bridgeless mode
+        if (methodQueue == RCTJSThread) {
+          invalidateModule();
+        } else {
+          dispatch_async(methodQueue, invalidateModule);
+        }
       }
     }
   }
