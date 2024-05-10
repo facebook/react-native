@@ -166,7 +166,7 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
 /**
  * Implements this function if a TurboModule needs to install its own JSI bindings.
  */
-- (RCTTurboModuleBindingsInstaller *)createBindingsInstaller;
+- (nonnull RCTTurboModuleBindingsInstaller *)createBindingsInstaller;
 
 @end
 

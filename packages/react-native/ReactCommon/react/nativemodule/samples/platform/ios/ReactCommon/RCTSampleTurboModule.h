@@ -16,6 +16,6 @@
  */
 @interface RCTSampleTurboModule : NSObject <NativeSampleTurboModuleSpec>
 
-- (RCTTurboModuleBindingsInstaller *)createBindingsInstaller;
+- (nonnull RCTTurboModuleBindingsInstaller *)createBindingsInstaller;
 
 @end

@@ -306,8 +306,7 @@ typedef struct {
  * (for now).
  */
 
-- (std::shared_ptr<TurboModule>)provideTurboModule:(const char *)moduleName
-                                       withRuntime:(facebook::jsi::Runtime *)runtime
+- (std::shared_ptr<TurboModule>)provideTurboModule:(const char *)moduleName runtime:(facebook::jsi::Runtime *)runtime
 {
   auto turboModuleLookup = _turboModuleCache.find(moduleName);
   if (turboModuleLookup != _turboModuleCache.end()) {
@@ -415,9 +414,7 @@ typedef struct {
     if ([module respondsToSelector:@selector(createBindingsInstaller)]) {
       RCTTurboModuleBindingsInstaller *installer =
           (RCTTurboModuleBindingsInstaller *)[module performSelector:@selector(createBindingsInstaller)];
-      if (installer != nil) {
-        installer.get(*runtime);
-      }
+      [installer get](*runtime);
     }
     return turboModule;
   }
@@ -781,7 +778,7 @@ typedef struct {
    * Attach method queue to id<RCTBridgeModule> object.
    * This is necessary because the id<RCTBridgeModule> object can be eagerly created/initialized before the method
    * queue is required. The method queue is required for an id<RCTBridgeModule> for JS -> Native calls. So, we need it
-   * before we create the id<RCTBridgeModule>'s TurboModule jsi::HostObject in provideTurboModule:.
+   * before we create the id<RCTBridgeModule>'s TurboModule jsi::HostObject in provideTurboModule:runtime:.
    */
   objc_setAssociatedObject(module, &kAssociatedMethodQueueKey, methodQueue, OBJC_ASSOCIATION_RETAIN);
 
@@ -946,7 +943,7 @@ typedef struct {
      * Additionally, if a TurboModule with the name `name` isn't found, then we
      * trigger an assertion failure.
      */
-    auto turboModule = [self provideTurboModule:moduleName withRuntime:runtime];
+    auto turboModule = [self provideTurboModule:moduleName runtime:runtime];
 
     if (moduleWasNotInitialized && [self moduleIsInitialized:moduleName]) {
       [self->_bridge.performanceLogger markStopForTag:RCTPLTurboModuleSetup];
