@@ -35,7 +35,6 @@ packages/react-native/interface.js
 packages/react-native/flow/
 
 [options]
-experimental.global_find_ref=true
 enums=true
 casting_syntax=both
 
