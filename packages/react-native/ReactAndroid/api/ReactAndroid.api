@@ -7362,15 +7362,6 @@ public class com/facebook/react/views/textinput/ReactTextChangedEvent : com/face
 	public fun getEventName ()Ljava/lang/String;
 }
 
-public class com/facebook/react/views/textinput/ReactTextInputEvent : com/facebook/react/uimanager/events/Event {
-	public static final field EVENT_NAME Ljava/lang/String;
-	public fun <init> (IILjava/lang/String;Ljava/lang/String;II)V
-	public fun <init> (ILjava/lang/String;Ljava/lang/String;II)V
-	public fun canCoalesce ()Z
-	protected fun getEventData ()Lcom/facebook/react/bridge/WritableMap;
-	public fun getEventName ()Ljava/lang/String;
-}
-
 public final class com/facebook/react/views/textinput/ReactTextInputLocalData {
 	public fun <init> (Landroid/widget/EditText;)V
 	public fun apply (Landroid/widget/EditText;)V
