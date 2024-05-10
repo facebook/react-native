@@ -63,7 +63,7 @@ public class LengthPercentage(
 
   public fun resolve(width: Float, height: Float): Float {
     if (unit == LengthPercentageType.PERCENT) {
-      return (value / 100) * Math.max(width, height)
+      return (value / 100) * Math.min(width, height)
     }
 
     return value
