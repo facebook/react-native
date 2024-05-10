@@ -7,11 +7,11 @@
 
 #pragma once
 
+#include "CdpJson.h"
 #include "RuntimeTarget.h"
 #include "SessionState.h"
 
 #include <jsinspector-modern/InspectorInterfaces.h>
-#include <jsinspector-modern/Parsing.h>
 #include <jsinspector-modern/RuntimeAgent.h>
 
 #include <functional>
@@ -54,8 +54,15 @@ class InstanceAgent final {
    */
   void setCurrentRuntime(RuntimeTarget* runtime);
 
+  /**
+   * Send a console message to the frontend, or buffer it to be sent later.
+   */
+  void sendConsoleMessage(SimpleConsoleMessage message);
+
  private:
   void maybeSendExecutionContextCreatedNotification();
+  void sendConsoleMessageImmediately(SimpleConsoleMessage message);
+  void maybeSendPendingConsoleMessages();
 
   FrontendChannel frontendChannel_;
   InstanceTarget& target_;

@@ -56,6 +56,13 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic, copy, nullable) RCTSurfaceHostingViewActivityIndicatorViewFactory activityIndicatorViewFactory;
 
+/**
+ * When set to `YES`, the activity indicator is not automatically hidden when the Surface stage changes.
+ * In this scenario, users should invoke `hideActivityIndicator` to remove it.
+ *
+ * @param disabled: if `YES`, the auto-hide is disabled. Otherwise the loading view will be hidden automatically
+ */
+- (void)disableActivityIndicatorAutoHide:(BOOL)disabled;
 @end
 
 NS_ASSUME_NONNULL_END

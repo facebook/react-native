@@ -135,6 +135,9 @@ function build_apple_framework {
     mkdir -p destroot/include/hermes
     cp API/hermes/*.h destroot/include/hermes
 
+    mkdir -p destroot/include/hermes/cdp
+    cp API/hermes/cdp/*.h destroot/include/hermes/cdp
+
     mkdir -p destroot/include/hermes/inspector
     cp API/hermes/inspector/*.h destroot/include/hermes/inspector
 
@@ -161,6 +164,9 @@ function prepare_dest_root_for_ci {
 
   mkdir -p destroot/include/hermes
   cp API/hermes/*.h destroot/include/hermes
+
+  mkdir -p destroot/include/hermes/cdp
+  cp API/hermes/cdp/*.h destroot/include/hermes/cdp
 
   mkdir -p destroot/include/hermes/inspector
   cp API/hermes/inspector/*.h destroot/include/hermes/inspector

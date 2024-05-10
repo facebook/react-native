@@ -34,6 +34,15 @@ class UIManagerDelegate {
   virtual void uiManagerDidCreateShadowNode(const ShadowNode& shadowNode) = 0;
 
   /*
+   * Called after shadow node is cloned with new props.
+   * Receiver should use this to adjust props passed to mounting layer
+   * during view pre-allocation that was triggered from
+   * `uiManagerDidCreateShadowNode`.
+   */
+  virtual void uiManagerDidCloneShadowNodeWithNewProps(
+      const ShadowNode& shadowNode) = 0;
+
+  /*
    * Called when UIManager wants to dispatch a command to the mounting layer.
    */
   virtual void uiManagerDidDispatchCommand(

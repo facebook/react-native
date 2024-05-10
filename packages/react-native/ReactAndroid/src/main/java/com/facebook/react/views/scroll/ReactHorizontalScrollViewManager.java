@@ -88,6 +88,11 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
     view.setDecelerationRate(decelerationRate);
   }
 
+  @ReactProp(name = "enableSyncOnScroll")
+  public void setEnableSyncOnScroll(ReactHorizontalScrollView view, boolean enableSyncOnScroll) {
+    view.setEnableSyncOnScroll(enableSyncOnScroll);
+  }
+
   @ReactProp(name = "disableIntervalMomentum")
   public void setDisableIntervalMomentum(
       ReactHorizontalScrollView view, boolean disableIntervalMomentum) {
@@ -348,5 +353,10 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
   @ReactProp(name = "scrollEventThrottle")
   public void setScrollEventThrottle(ReactHorizontalScrollView view, int scrollEventThrottle) {
     view.setScrollEventThrottle(scrollEventThrottle);
+  }
+
+  @ReactProp(name = "horizontal")
+  public void setHorizontal(ReactHorizontalScrollView view, boolean horizontal) {
+    // Do Nothing: Align with static ViewConfigs
   }
 }

@@ -20,7 +20,7 @@ void log(LogLevel level, const char* format, ...) noexcept;
 void log(
     const yoga::Node* node,
     LogLevel level,
-    const char* message,
+    const char* format,
     ...) noexcept;
 
 void log(

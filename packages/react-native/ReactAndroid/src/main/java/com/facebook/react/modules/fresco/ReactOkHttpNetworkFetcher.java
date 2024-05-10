@@ -29,7 +29,9 @@ class ReactOkHttpNetworkFetcher extends OkHttpNetworkFetcher {
   private final OkHttpClient mOkHttpClient;
   private final Executor mCancellationExecutor;
 
-  /** @param okHttpClient client to use */
+  /**
+   * @param okHttpClient client to use
+   */
   public ReactOkHttpNetworkFetcher(OkHttpClient okHttpClient) {
     super(okHttpClient);
     mOkHttpClient = okHttpClient;

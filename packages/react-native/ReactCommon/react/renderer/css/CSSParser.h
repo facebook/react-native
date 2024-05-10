@@ -9,11 +9,12 @@
 
 #include <optional>
 
+#include <react/renderer/css/CSSAngleUnit.h>
 #include <react/renderer/css/CSSKeywords.h>
 #include <react/renderer/css/CSSLengthUnit.h>
 #include <react/renderer/css/CSSProperties.h>
 #include <react/renderer/css/CSSTokenizer.h>
-#include <react/renderer/css/CSSValue.h>
+#include <react/renderer/css/CSSValueVariant.h>
 #include <react/utils/PackTraits.h>
 
 namespace facebook::react {
@@ -105,6 +106,12 @@ class CSSParser {
     if constexpr (traits::containsType<CSSLength, AllowedTypesT...>()) {
       if (auto unit = parseCSSLengthUnit(peek().unit())) {
         return CSSValueT::length(consumeToken().numericValue(), *unit);
+      }
+    }
+    if constexpr (traits::containsType<CSSAngle, AllowedTypesT...>()) {
+      if (auto unit = parseCSSAngleUnit(peek().unit())) {
+        return CSSValueT::angle(
+            canonicalize(consumeToken().numericValue(), *unit));
       }
     }
     return {};
@@ -210,7 +217,7 @@ CSSValueVariant<AllowedTypesT...> parseCSSComponentValue(std::string_view css) {
 };
 
 template <CSSProp Prop>
-constexpr auto parseCSSProp(std::string_view css) {
+constexpr CSSDeclaredValue<Prop> parseCSSProp(std::string_view css) {
   // For now we only allow parsing props composed of a single component value.
   CSSDeclaredValue<Prop> value;
   parseCSSComponentValue(css, value);

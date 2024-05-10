@@ -129,8 +129,6 @@ Transform Transform::RotateZ(Float radians) {
 
 Transform Transform::Rotate(Float x, Float y, Float z) {
   auto transform = Transform{};
-  transform.operations.push_back(
-      TransformOperation{TransformOperationType::Rotate, x, y, z});
   if (!isZero(x)) {
     transform = transform * Transform::RotateX(x);
   }

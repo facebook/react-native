@@ -4,11 +4,12 @@
           - equal: [ false, << pipeline.parameters.run_release_workflow >> ]
           - equal: [ false, << pipeline.parameters.run_nightly_workflow >> ]
     jobs:
-      - prepare_package_for_release:
-          name: prepare_package_for_release
-          version: ''
-          latest : false
-          dryrun: true
+      - prepare_release:
+          name: "prepare_release (dry run test)"
+          version: "0.0.0"
+          monorepo_packages_version: "0.0.0"
+          tag: test
+          dry_run: true
       - prepare_hermes_workspace
       - build_android:
           release_type: "dry-run"

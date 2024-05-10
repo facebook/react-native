@@ -161,6 +161,11 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
   }
 
   @Override
+  public long getLong(@NonNull String name) {
+    return getValue(name, Long.class).longValue();
+  }
+
+  @Override
   public @Nullable String getString(@NonNull String name) {
     return getNullableValue(name, String.class);
   }

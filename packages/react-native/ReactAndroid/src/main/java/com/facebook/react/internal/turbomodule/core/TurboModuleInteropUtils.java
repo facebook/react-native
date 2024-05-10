@@ -18,7 +18,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.internal.turbomodule.core.interfaces.TurboModule;
+import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -227,7 +227,8 @@ class TurboModuleInteropUtils {
           throw new ParsingException(
               moduleName,
               methodName,
-              "Unable to parse JavaScript arg count. Promises must be used as last parameter only.");
+              "Unable to parse JavaScript arg count. Promises must be used as last parameter"
+                  + " only.");
         }
 
         return paramClasses.length - 1;

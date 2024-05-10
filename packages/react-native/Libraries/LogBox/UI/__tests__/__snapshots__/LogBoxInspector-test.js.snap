@@ -21,6 +21,7 @@ exports[`LogBoxContainer should render fatal with selectedIndex 2 1`] = `
         "category": "Some kind of message (third)",
         "codeFrame": undefined,
         "componentStack": Array [],
+        "componentStackType": "legacy",
         "count": 1,
         "extraData": undefined,
         "isComponentError": false,
@@ -33,6 +34,11 @@ exports[`LogBoxContainer should render fatal with selectedIndex 2 1`] = `
         "symbolicated": Object {
           "error": null,
           "stack": null,
+          "status": "NONE",
+        },
+        "symbolicatedComponentStack": Object {
+          "componentStack": null,
+          "error": null,
           "status": "NONE",
         },
         "type": undefined,
@@ -71,6 +77,7 @@ exports[`LogBoxContainer should render warning with selectedIndex 0 1`] = `
         "category": "Some kind of message (first)",
         "codeFrame": undefined,
         "componentStack": Array [],
+        "componentStackType": "legacy",
         "count": 1,
         "extraData": undefined,
         "isComponentError": false,
@@ -83,6 +90,11 @@ exports[`LogBoxContainer should render warning with selectedIndex 0 1`] = `
         "symbolicated": Object {
           "error": null,
           "stack": null,
+          "status": "NONE",
+        },
+        "symbolicatedComponentStack": Object {
+          "componentStack": null,
+          "error": null,
           "status": "NONE",
         },
         "type": undefined,

@@ -144,6 +144,7 @@ const RNTesterApp = ({
         rawModuleKey,
         `${rawModuleKey}Index`,
         `${rawModuleKey}Example`,
+        // $FlowFixMe[invalid-computed-prop]
       ].filter(k => RNTesterList.Modules[k] != null);
       if (validModuleKeys.length !== 1) {
         if (validModuleKeys.length === 0) {
@@ -159,6 +160,7 @@ const RNTesterApp = ({
       }
 
       const resolvedModuleKey = validModuleKeys[0];
+      // $FlowFixMe[invalid-computed-prop]
       const exampleModule = RNTesterList.Modules[resolvedModuleKey];
 
       if (exampleKey != null) {
@@ -208,6 +210,7 @@ const RNTesterApp = ({
   }
 
   const activeModule =
+    // $FlowFixMe[invalid-computed-prop]
     activeModuleKey != null ? RNTesterList.Modules[activeModuleKey] : null;
   const activeModuleExample =
     activeModuleExampleKey != null
@@ -217,8 +220,8 @@ const RNTesterApp = ({
     activeModuleTitle != null
       ? activeModuleTitle
       : screen === Screens.COMPONENTS
-      ? 'Components'
-      : 'APIs';
+        ? 'Components'
+        : 'APIs';
 
   const activeExampleList =
     screen === Screens.COMPONENTS ? examplesList.components : examplesList.apis;

@@ -11,6 +11,8 @@ package com.facebook.react.defaults
 
 import com.facebook.react.common.annotations.VisibleForTesting
 import com.facebook.react.config.ReactFeatureFlags
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsDefaults
 
 /**
  * A utility class that serves as an entry point for users setup the New Architecture.
@@ -41,9 +43,14 @@ public object DefaultNewArchitectureEntryPoint {
     ReactFeatureFlags.enableFabricRenderer = fabricEnabled
     ReactFeatureFlags.unstable_useFabricInterop = fabricEnabled
     ReactFeatureFlags.enableBridgelessArchitecture = bridgelessEnabled
-    ReactFeatureFlags.useNativeViewConfigsInBridgelessMode = fabricEnabled && bridgelessEnabled
     ReactFeatureFlags.unstable_useTurboModuleInterop = bridgelessEnabled
-    ReactFeatureFlags.enableFabricPendingEventQueue = fabricEnabled
+
+    if (bridgelessEnabled) {
+      ReactNativeFeatureFlags.override(
+          object : ReactNativeFeatureFlagsDefaults() {
+            override fun useNativeViewConfigsInBridgelessMode(): Boolean = fabricEnabled
+          })
+    }
 
     privateFabricEnabled = fabricEnabled
     privateTurboModulesEnabled = turboModulesEnabled

@@ -84,6 +84,20 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
     return BaseShadowNode::getConcreteProps().resolveTransform(layoutMetrics);
   }
 
+  bool canBeTouchTarget() const override {
+    auto pointerEvents =
+        BaseShadowNode::getConcreteProps().ViewProps::pointerEvents;
+    return pointerEvents == PointerEventsMode::Auto ||
+        pointerEvents == PointerEventsMode::BoxOnly;
+  }
+
+  bool canChildrenBeTouchTarget() const override {
+    auto pointerEvents =
+        BaseShadowNode::getConcreteProps().ViewProps::pointerEvents;
+    return pointerEvents == PointerEventsMode::Auto ||
+        pointerEvents == PointerEventsMode::BoxNone;
+  }
+
  private:
   void initialize() noexcept {
     auto& props = BaseShadowNode::getConcreteProps();

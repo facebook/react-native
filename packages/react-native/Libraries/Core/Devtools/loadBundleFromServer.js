@@ -10,8 +10,8 @@
  */
 
 import Networking from '../../Network/RCTNetworking';
+import DevLoadingView from '../../Utilities/DevLoadingView';
 import HMRClient from '../../Utilities/HMRClient';
-import LoadingView from '../../Utilities/LoadingView';
 import getDevServer from './getDevServer';
 
 declare var global: {globalEvalWithSourceUrl?: (string, string) => mixed, ...};
@@ -110,7 +110,7 @@ module.exports = function (bundlePathAndQuery: string): Promise<void> {
   if (loadPromise) {
     return loadPromise;
   }
-  LoadingView.showMessage('Downloading...', 'load');
+  DevLoadingView.showMessage('Downloading...', 'load');
   ++pendingRequests;
 
   loadPromise = asyncRequest(requestUrl)
@@ -143,7 +143,7 @@ module.exports = function (bundlePathAndQuery: string): Promise<void> {
     })
     .finally(() => {
       if (!--pendingRequests) {
-        LoadingView.hide();
+        DevLoadingView.hide();
       }
     });
 

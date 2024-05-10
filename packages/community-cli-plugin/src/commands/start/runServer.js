@@ -34,11 +34,11 @@ export type StartCommandArgs = {
   cert?: string,
   customLogReporterPath?: string,
   experimentalDebugger: boolean,
-  host?: string,
+  host: string,
   https?: boolean,
   maxWorkers?: number,
   key?: string,
-  platforms?: string[],
+  platforms: string[],
   port?: number,
   resetCache?: boolean,
   sourceExts?: string[],
@@ -63,14 +63,13 @@ async function runServer(
     projectRoot: args.projectRoot,
     sourceExts: args.sourceExts,
   });
-  const hostname = args.host?.length ? args.host : 'localhost';
   const {
     projectRoot,
     server: {port},
     watchFolders,
   } = metroConfig;
   const protocol = args.https === true ? 'https' : 'http';
-  const devServerUrl = url.format({protocol, hostname, port});
+  const devServerUrl = url.format({protocol, hostname: args.host, port});
 
   logger.info(`Welcome to React Native v${ctx.reactNativeVersion}`);
 
@@ -104,7 +103,7 @@ async function runServer(
     messageSocketEndpoint,
     eventsSocketEndpoint,
   } = createDevServerMiddleware({
-    host: hostname,
+    host: args.host,
     port,
     watchFolders,
   });

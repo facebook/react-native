@@ -94,7 +94,9 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
     return mDraweeControllerBuilder;
   }
 
-  /** @deprecated use {@link ReactCallerContextFactory} instead */
+  /**
+   * @deprecated use {@link ReactCallerContextFactory} instead
+   */
   @Deprecated
   public Object getCallerContext() {
     return mCallerContext;
@@ -122,6 +124,11 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
 
   // In JS this is Image.props.source
   @ReactProp(name = "src")
+  public void setSrc(ReactImageView view, @Nullable ReadableArray sources) {
+    setSource(view, sources);
+  }
+
+  @ReactProp(name = "source")
   public void setSource(ReactImageView view, @Nullable ReadableArray sources) {
     view.setSource(sources);
   }

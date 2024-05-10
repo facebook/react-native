@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <react/renderer/css/CSSValue.h>
+#include <react/renderer/css/CSSValueVariant.h>
 
 namespace facebook::react {
 
@@ -135,9 +135,6 @@ template <CSSProp P>
 struct CSSPropDefinition {};
 
 template <CSSProp P>
-using CSSAllowedKeywords = typename CSSPropDefinition<P>::Keyword;
-
-template <CSSProp P>
 using CSSDeclaredValue = typename CSSPropDefinition<P>::DeclaredValue;
 
 template <CSSProp P>
@@ -162,6 +159,8 @@ enum class CSSFlavor {
  */
 template <>
 struct CSSPropDefinition<CSSProp::AlignContent> {
+  constexpr static std::string_view kName = "alignContent";
+
   enum class Keyword : std::underlying_type_t<CSSKeyword> {
     Center = to_underlying(CSSKeyword::Center),
     FlexEnd = to_underlying(CSSKeyword::FlexEnd),
@@ -196,6 +195,8 @@ struct CSSPropDefinition<CSSProp::AlignContent> {
  */
 template <>
 struct CSSPropDefinition<CSSProp::AlignItems> {
+  constexpr static std::string_view kName = "alignItems";
+
   enum class Keyword : std::underlying_type_t<CSSKeyword> {
     Baseline = to_underlying(CSSKeyword::Baseline),
     Center = to_underlying(CSSKeyword::Center),
@@ -226,6 +227,8 @@ struct CSSPropDefinition<CSSProp::AlignItems> {
  */
 template <>
 struct CSSPropDefinition<CSSProp::AlignSelf> {
+  constexpr static std::string_view kName = "alignSelf";
+
   enum class Keyword : std::underlying_type_t<CSSKeyword> {
     Auto = to_underlying(CSSKeyword::Auto),
     Baseline = to_underlying(CSSKeyword::Baseline),
@@ -256,6 +259,8 @@ struct CSSPropDefinition<CSSProp::AlignSelf> {
  */
 template <>
 struct CSSPropDefinition<CSSProp::AspectRatio> {
+  constexpr static std::string_view kName = "aspectRatio";
+
   enum class Keyword : std::underlying_type_t<CSSKeyword> {
     Auto = to_underlying(CSSKeyword::Auto),
   };
@@ -279,6 +284,8 @@ struct CSSPropDefinition<CSSProp::AspectRatio> {
  */
 template <>
 struct CSSPropDefinition<CSSProp::BorderRadius> {
+  constexpr static std::string_view kName = "borderRadius";
+
   using DeclaredValue =
       CSSValueVariant<CSSWideKeyword, CSSLength, CSSPercentage>;
   using SpecifiedValue = CSSValueVariant<CSSLength, CSSPercentage>;
@@ -295,35 +302,51 @@ struct CSSPropDefinition<CSSProp::BorderRadius> {
 
 template <>
 struct CSSPropDefinition<CSSProp::BorderTopLeftRadius>
-    : CSSPropDefinition<CSSProp::BorderRadius> {};
+    : CSSPropDefinition<CSSProp::BorderRadius> {
+  constexpr static std::string_view kName = "borderTopLeftRadius";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::BorderTopRightRadius>
-    : CSSPropDefinition<CSSProp::BorderRadius> {};
+    : CSSPropDefinition<CSSProp::BorderRadius> {
+  constexpr static std::string_view kName = "borderTopRightRadius";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::BorderBottomLeftRadius>
-    : CSSPropDefinition<CSSProp::BorderRadius> {};
+    : CSSPropDefinition<CSSProp::BorderRadius> {
+  constexpr static std::string_view kName = "borderBottomLeftRadius";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::BorderBottomRightRadius>
-    : CSSPropDefinition<CSSProp::BorderRadius> {};
+    : CSSPropDefinition<CSSProp::BorderRadius> {
+  constexpr static std::string_view kName = "borderBottomRightRadius";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::BorderStartStartRadius>
-    : CSSPropDefinition<CSSProp::BorderRadius> {};
+    : CSSPropDefinition<CSSProp::BorderRadius> {
+  constexpr static std::string_view kName = "borderStartStartRadius";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::BorderStartEndRadius>
-    : CSSPropDefinition<CSSProp::BorderRadius> {};
+    : CSSPropDefinition<CSSProp::BorderRadius> {
+  constexpr static std::string_view kName = "borderStartEndRadius";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::BorderEndStartRadius>
-    : CSSPropDefinition<CSSProp::BorderRadius> {};
+    : CSSPropDefinition<CSSProp::BorderRadius> {
+  constexpr static std::string_view kName = "borderEndStartRadius";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::BorderEndEndRadius>
-    : CSSPropDefinition<CSSProp::BorderRadius> {};
+    : CSSPropDefinition<CSSProp::BorderRadius> {
+  constexpr static std::string_view kName = "borderEndEndRadius";
+};
 
 /**
  * CSS "border-style" properties
@@ -331,6 +354,8 @@ struct CSSPropDefinition<CSSProp::BorderEndEndRadius>
  */
 template <>
 struct CSSPropDefinition<CSSProp::BorderStyle> {
+  constexpr static std::string_view kName = "borderStyle";
+
   enum class Keyword : std::underlying_type_t<CSSKeyword> {
     None = to_underlying(CSSKeyword::None),
     Hidden = to_underlying(CSSKeyword::Hidden),
@@ -360,43 +385,63 @@ struct CSSPropDefinition<CSSProp::BorderStyle> {
 
 template <>
 struct CSSPropDefinition<CSSProp::BorderBlockEndStyle>
-    : CSSPropDefinition<CSSProp::BorderStyle> {};
+    : CSSPropDefinition<CSSProp::BorderStyle> {
+  constexpr static std::string_view kName = "borderBlockEndStyle";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::BorderBlockStartStyle>
-    : CSSPropDefinition<CSSProp::BorderStyle> {};
+    : CSSPropDefinition<CSSProp::BorderStyle> {
+  constexpr static std::string_view kName = "borderBlockStartStyle";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::BorderBlockStyle>
-    : CSSPropDefinition<CSSProp::BorderStyle> {};
+    : CSSPropDefinition<CSSProp::BorderStyle> {
+  constexpr static std::string_view kName = "borderBlockStyle";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::BorderBottomStyle>
-    : CSSPropDefinition<CSSProp::BorderStyle> {};
+    : CSSPropDefinition<CSSProp::BorderStyle> {
+  constexpr static std::string_view kName = "borderBottomStyle";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::BorderInlineEndStyle>
-    : CSSPropDefinition<CSSProp::BorderStyle> {};
+    : CSSPropDefinition<CSSProp::BorderStyle> {
+  constexpr static std::string_view kName = "borderInlineEndStyle";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::BorderInlineStartStyle>
-    : CSSPropDefinition<CSSProp::BorderStyle> {};
+    : CSSPropDefinition<CSSProp::BorderStyle> {
+  constexpr static std::string_view kName = "borderInlineStartStyle";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::BorderInlineStyle>
-    : CSSPropDefinition<CSSProp::BorderStyle> {};
+    : CSSPropDefinition<CSSProp::BorderStyle> {
+  constexpr static std::string_view kName = "borderInlineStyle";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::BorderLeftStyle>
-    : CSSPropDefinition<CSSProp::BorderStyle> {};
+    : CSSPropDefinition<CSSProp::BorderStyle> {
+  constexpr static std::string_view kName = "borderLeftStyle";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::BorderRightStyle>
-    : CSSPropDefinition<CSSProp::BorderStyle> {};
+    : CSSPropDefinition<CSSProp::BorderStyle> {
+  constexpr static std::string_view kName = "borderRightStyle";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::BorderTopStyle>
-    : CSSPropDefinition<CSSProp::BorderStyle> {};
+    : CSSPropDefinition<CSSProp::BorderStyle> {
+  constexpr static std::string_view kName = "borderTopStyle";
+};
 
 /**
  * CSS "border-width" properties
@@ -404,6 +449,8 @@ struct CSSPropDefinition<CSSProp::BorderTopStyle>
  */
 template <>
 struct CSSPropDefinition<CSSProp::BorderWidth> {
+  constexpr static std::string_view kName = "borderWidth";
+
   enum class Keyword : std::underlying_type_t<CSSKeyword> {
     Thin = to_underlying(CSSKeyword::Thin),
     Medium = to_underlying(CSSKeyword::Medium),
@@ -427,59 +474,87 @@ struct CSSPropDefinition<CSSProp::BorderWidth> {
 
 template <>
 struct CSSPropDefinition<CSSProp::BorderBlockEndWidth>
-    : CSSPropDefinition<CSSProp::BorderWidth> {};
+    : CSSPropDefinition<CSSProp::BorderWidth> {
+  constexpr static std::string_view kName = "borderBlockEndWidth";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::BorderBlockStartWidth>
-    : CSSPropDefinition<CSSProp::BorderWidth> {};
+    : CSSPropDefinition<CSSProp::BorderWidth> {
+  constexpr static std::string_view kName = "borderBlockStartWidth";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::BorderBlockWidth>
-    : CSSPropDefinition<CSSProp::BorderWidth> {};
+    : CSSPropDefinition<CSSProp::BorderWidth> {
+  constexpr static std::string_view kName = "borderBlockWidth";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::BorderBottomWidth>
-    : CSSPropDefinition<CSSProp::BorderWidth> {};
+    : CSSPropDefinition<CSSProp::BorderWidth> {
+  constexpr static std::string_view kName = "borderBottomWidth";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::BorderEndWidth>
-    : CSSPropDefinition<CSSProp::BorderWidth> {};
+    : CSSPropDefinition<CSSProp::BorderWidth> {
+  constexpr static std::string_view kName = "borderEndWidth";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::BorderHorizontalWidth>
-    : CSSPropDefinition<CSSProp::BorderWidth> {};
+    : CSSPropDefinition<CSSProp::BorderWidth> {
+  constexpr static std::string_view kName = "borderHorizontalWidth";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::BorderInlineEndWidth>
-    : CSSPropDefinition<CSSProp::BorderWidth> {};
+    : CSSPropDefinition<CSSProp::BorderWidth> {
+  constexpr static std::string_view kName = "borderInlineEndWidth";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::BorderInlineStartWidth>
-    : CSSPropDefinition<CSSProp::BorderWidth> {};
+    : CSSPropDefinition<CSSProp::BorderWidth> {
+  constexpr static std::string_view kName = "borderInlineStartWidth";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::BorderInlineWidth>
-    : CSSPropDefinition<CSSProp::BorderWidth> {};
+    : CSSPropDefinition<CSSProp::BorderWidth> {
+  constexpr static std::string_view kName = "borderInlineWidth";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::BorderLeftWidth>
-    : CSSPropDefinition<CSSProp::BorderWidth> {};
+    : CSSPropDefinition<CSSProp::BorderWidth> {
+  constexpr static std::string_view kName = "borderLeftWidth";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::BorderRightWidth>
-    : CSSPropDefinition<CSSProp::BorderWidth> {};
+    : CSSPropDefinition<CSSProp::BorderWidth> {
+  constexpr static std::string_view kName = "borderRightWidth";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::BorderStartWidth>
-    : CSSPropDefinition<CSSProp::BorderWidth> {};
+    : CSSPropDefinition<CSSProp::BorderWidth> {
+  constexpr static std::string_view kName = "borderStartWidth";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::BorderTopWidth>
-    : CSSPropDefinition<CSSProp::BorderWidth> {};
+    : CSSPropDefinition<CSSProp::BorderWidth> {
+  constexpr static std::string_view kName = "borderTopWidth";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::BorderVerticalWidth>
-    : CSSPropDefinition<CSSProp::BorderWidth> {};
+    : CSSPropDefinition<CSSProp::BorderWidth> {
+  constexpr static std::string_view kName = "borderVerticalWidth";
+};
 
 /**
  * CSS "direction" property.
@@ -487,6 +562,8 @@ struct CSSPropDefinition<CSSProp::BorderVerticalWidth>
  */
 template <>
 struct CSSPropDefinition<CSSProp::Direction> {
+  constexpr static std::string_view kName = "direction";
+
   enum class Keyword : std::underlying_type_t<CSSKeyword> {
     Ltr = to_underlying(CSSKeyword::Ltr),
     Rtl = to_underlying(CSSKeyword::Rtl),
@@ -511,6 +588,8 @@ struct CSSPropDefinition<CSSProp::Direction> {
  */
 template <>
 struct CSSPropDefinition<CSSProp::Display> {
+  constexpr static std::string_view kName = "display";
+
   enum class Keyword : std::underlying_type_t<CSSKeyword> {
     None = to_underlying(CSSKeyword::None),
     Contents = to_underlying(CSSKeyword::Contents),
@@ -546,6 +625,8 @@ struct CSSPropDefinition<CSSProp::Display> {
  */
 template <>
 struct CSSPropDefinition<CSSProp::Flex> {
+  constexpr static std::string_view kName = "flex";
+
   enum class Keyword : std::underlying_type_t<CSSKeyword> {
     Auto = to_underlying(CSSKeyword::Auto),
     None = to_underlying(CSSKeyword::None),
@@ -570,6 +651,8 @@ struct CSSPropDefinition<CSSProp::Flex> {
  */
 template <>
 struct CSSPropDefinition<CSSProp::FlexBasis> {
+  constexpr static std::string_view kName = "flexBasis";
+
   enum class Keyword : std::underlying_type_t<CSSKeyword> {
     Auto = to_underlying(CSSKeyword::Auto),
     Content = to_underlying(CSSKeyword::Content),
@@ -595,6 +678,8 @@ struct CSSPropDefinition<CSSProp::FlexBasis> {
  */
 template <>
 struct CSSPropDefinition<CSSProp::FlexDirection> {
+  constexpr static std::string_view kName = "flexDirection";
+
   enum class Keyword : std::underlying_type_t<CSSKeyword> {
     Row = to_underlying(CSSKeyword::Row),
     RowReverse = to_underlying(CSSKeyword::RowReverse),
@@ -622,6 +707,8 @@ struct CSSPropDefinition<CSSProp::FlexDirection> {
  */
 template <>
 struct CSSPropDefinition<CSSProp::FlexGrow> {
+  constexpr static std::string_view kName = "flexGrow";
+
   using DeclaredValue = CSSValueVariant<CSSWideKeyword, CSSNumber>;
   using SpecifiedValue = CSSValueVariant<CSSNumber>;
   using ComputedValue = CSSValueVariant<CSSNumber>;
@@ -641,6 +728,8 @@ struct CSSPropDefinition<CSSProp::FlexGrow> {
  */
 template <>
 struct CSSPropDefinition<CSSProp::FlexShrink> {
+  constexpr static std::string_view kName = "flexShrink";
+
   using DeclaredValue = CSSValueVariant<CSSWideKeyword, CSSNumber>;
   using SpecifiedValue = CSSValueVariant<CSSNumber>;
   using ComputedValue = CSSValueVariant<CSSNumber>;
@@ -661,6 +750,8 @@ struct CSSPropDefinition<CSSProp::FlexShrink> {
  */
 template <>
 struct CSSPropDefinition<CSSProp::FlexWrap> {
+  constexpr static std::string_view kName = "flexWrap";
+
   enum class Keyword : std::underlying_type_t<CSSKeyword> {
     NoWrap = to_underlying(CSSKeyword::NoWrap),
     Wrap = to_underlying(CSSKeyword::Wrap),
@@ -686,6 +777,8 @@ struct CSSPropDefinition<CSSProp::FlexWrap> {
  */
 template <>
 struct CSSPropDefinition<CSSProp::Gap> {
+  constexpr static std::string_view kName = "gap";
+
   enum class Keyword : std::underlying_type_t<CSSKeyword> {
     Normal = to_underlying(CSSKeyword::Normal),
   };
@@ -705,10 +798,13 @@ struct CSSPropDefinition<CSSProp::Gap> {
 
 template <>
 struct CSSPropDefinition<CSSProp::ColumnGap> : CSSPropDefinition<CSSProp::Gap> {
+  constexpr static std::string_view kName = "columnGap";
 };
 
 template <>
-struct CSSPropDefinition<CSSProp::RowGap> : CSSPropDefinition<CSSProp::Gap> {};
+struct CSSPropDefinition<CSSProp::RowGap> : CSSPropDefinition<CSSProp::Gap> {
+  constexpr static std::string_view kName = "rowGap";
+};
 
 /**
  * CSS sizing properties
@@ -716,6 +812,8 @@ struct CSSPropDefinition<CSSProp::RowGap> : CSSPropDefinition<CSSProp::Gap> {};
  */
 template <>
 struct CSSPropDefinition<CSSProp::Height> {
+  constexpr static std::string_view kName = "height";
+
   enum class Keyword : std::underlying_type_t<CSSKeyword> {
     Auto = to_underlying(CSSKeyword::Auto),
     MaxContent = to_underlying(CSSKeyword::MaxContent),
@@ -738,23 +836,32 @@ struct CSSPropDefinition<CSSProp::Height> {
 
 template <>
 struct CSSPropDefinition<CSSProp::Width> : CSSPropDefinition<CSSProp::Height> {
+  constexpr static std::string_view kName = "width";
 };
 
 template <>
 struct CSSPropDefinition<CSSProp::MinWidth>
-    : CSSPropDefinition<CSSProp::Height> {};
+    : CSSPropDefinition<CSSProp::Height> {
+  constexpr static std::string_view kName = "minWidth";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::MinHeight>
-    : CSSPropDefinition<CSSProp::Height> {};
+    : CSSPropDefinition<CSSProp::Height> {
+  constexpr static std::string_view kName = "minHeight";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::MaxWidth>
-    : CSSPropDefinition<CSSProp::Height> {};
+    : CSSPropDefinition<CSSProp::Height> {
+  constexpr static std::string_view kName = "maxWidth";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::MaxHeight>
-    : CSSPropDefinition<CSSProp::Height> {};
+    : CSSPropDefinition<CSSProp::Height> {
+  constexpr static std::string_view kName = "maxHeight";
+};
 
 /**
  * CSS box inset properties
@@ -762,6 +869,8 @@ struct CSSPropDefinition<CSSProp::MaxHeight>
  */
 template <>
 struct CSSPropDefinition<CSSProp::Inset> {
+  constexpr static std::string_view kName = "inset";
+
   enum class Keyword : std::underlying_type_t<CSSKeyword> {
     Auto = to_underlying(CSSKeyword::Auto),
   };
@@ -781,47 +890,70 @@ struct CSSPropDefinition<CSSProp::Inset> {
 };
 
 template <>
-struct CSSPropDefinition<CSSProp::Top> : CSSPropDefinition<CSSProp::Inset> {};
-
-template <>
-struct CSSPropDefinition<CSSProp::Right> : CSSPropDefinition<CSSProp::Inset> {};
-
-template <>
-struct CSSPropDefinition<CSSProp::Bottom> : CSSPropDefinition<CSSProp::Inset> {
+struct CSSPropDefinition<CSSProp::Top> : CSSPropDefinition<CSSProp::Inset> {
+  constexpr static std::string_view kName = "top";
 };
 
 template <>
-struct CSSPropDefinition<CSSProp::Left> : CSSPropDefinition<CSSProp::Inset> {};
+struct CSSPropDefinition<CSSProp::Right> : CSSPropDefinition<CSSProp::Inset> {
+  constexpr static std::string_view kName = "right";
+};
 
 template <>
-struct CSSPropDefinition<CSSProp::Start> : CSSPropDefinition<CSSProp::Inset> {};
+struct CSSPropDefinition<CSSProp::Bottom> : CSSPropDefinition<CSSProp::Inset> {
+  constexpr static std::string_view kName = "bottom";
+};
 
 template <>
-struct CSSPropDefinition<CSSProp::End> : CSSPropDefinition<CSSProp::Inset> {};
+struct CSSPropDefinition<CSSProp::Left> : CSSPropDefinition<CSSProp::Inset> {
+  constexpr static std::string_view kName = "left";
+};
+
+template <>
+struct CSSPropDefinition<CSSProp::Start> : CSSPropDefinition<CSSProp::Inset> {
+  constexpr static std::string_view kName = "start";
+};
+
+template <>
+struct CSSPropDefinition<CSSProp::End> : CSSPropDefinition<CSSProp::Inset> {
+  constexpr static std::string_view kName = "end";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::InsetBlock>
-    : CSSPropDefinition<CSSProp::Inset> {};
+    : CSSPropDefinition<CSSProp::Inset> {
+  constexpr static std::string_view kName = "insetBlock";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::InsetBlockEnd>
-    : CSSPropDefinition<CSSProp::Inset> {};
+    : CSSPropDefinition<CSSProp::Inset> {
+  constexpr static std::string_view kName = "insetBlockEnd";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::InsetBlockStart>
-    : CSSPropDefinition<CSSProp::Inset> {};
+    : CSSPropDefinition<CSSProp::Inset> {
+  constexpr static std::string_view kName = "insetBlockStart";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::InsetInline>
-    : CSSPropDefinition<CSSProp::Inset> {};
+    : CSSPropDefinition<CSSProp::Inset> {
+  constexpr static std::string_view kName = "insetInline";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::InsetInlineEnd>
-    : CSSPropDefinition<CSSProp::Inset> {};
+    : CSSPropDefinition<CSSProp::Inset> {
+  constexpr static std::string_view kName = "insetInlineEnd";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::InsetInlineStart>
-    : CSSPropDefinition<CSSProp::Inset> {};
+    : CSSPropDefinition<CSSProp::Inset> {
+  constexpr static std::string_view kName = "insetInlineStart";
+};
 
 /**
  * CSS "justify-content" property.
@@ -830,6 +962,8 @@ struct CSSPropDefinition<CSSProp::InsetInlineStart>
  */
 template <>
 struct CSSPropDefinition<CSSProp::JustifyContent> {
+  constexpr static std::string_view kName = "justifyContent";
+
   enum class Keyword : std::underlying_type_t<CSSKeyword> {
     Center = to_underlying(CSSKeyword::Center),
     FlexEnd = to_underlying(CSSKeyword::FlexEnd),
@@ -860,6 +994,8 @@ struct CSSPropDefinition<CSSProp::JustifyContent> {
  */
 template <>
 struct CSSPropDefinition<CSSProp::Margin> {
+  constexpr static std::string_view kName = "margin";
+
   enum class Keyword : std::underlying_type_t<CSSKeyword> {
     Auto = to_underlying(CSSKeyword::Auto),
   };
@@ -880,59 +1016,87 @@ struct CSSPropDefinition<CSSProp::Margin> {
 
 template <>
 struct CSSPropDefinition<CSSProp::MarginBlock>
-    : CSSPropDefinition<CSSProp::Margin> {};
+    : CSSPropDefinition<CSSProp::Margin> {
+  constexpr static std::string_view kName = "marginBlock";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::MarginBlockEnd>
-    : CSSPropDefinition<CSSProp::Margin> {};
+    : CSSPropDefinition<CSSProp::Margin> {
+  constexpr static std::string_view kName = "marginBlockEnd";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::MarginBlockStart>
-    : CSSPropDefinition<CSSProp::Margin> {};
+    : CSSPropDefinition<CSSProp::Margin> {
+  constexpr static std::string_view kName = "marginBlockStart";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::MarginBottom>
-    : CSSPropDefinition<CSSProp::Margin> {};
+    : CSSPropDefinition<CSSProp::Margin> {
+  constexpr static std::string_view kName = "marginBottom";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::MarginEnd>
-    : CSSPropDefinition<CSSProp::Margin> {};
+    : CSSPropDefinition<CSSProp::Margin> {
+  constexpr static std::string_view kName = "marginEnd";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::MarginHorizontal>
-    : CSSPropDefinition<CSSProp::Margin> {};
+    : CSSPropDefinition<CSSProp::Margin> {
+  constexpr static std::string_view kName = "marginHorizontal";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::MarginInline>
-    : CSSPropDefinition<CSSProp::Margin> {};
+    : CSSPropDefinition<CSSProp::Margin> {
+  constexpr static std::string_view kName = "marginInline";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::MarginInlineEnd>
-    : CSSPropDefinition<CSSProp::Margin> {};
+    : CSSPropDefinition<CSSProp::Margin> {
+  constexpr static std::string_view kName = "marginInlineEnd";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::MarginInlineStart>
-    : CSSPropDefinition<CSSProp::Margin> {};
+    : CSSPropDefinition<CSSProp::Margin> {
+  constexpr static std::string_view kName = "marginInlineStart";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::MarginLeft>
-    : CSSPropDefinition<CSSProp::Margin> {};
+    : CSSPropDefinition<CSSProp::Margin> {
+  constexpr static std::string_view kName = "marginLeft";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::MarginRight>
-    : CSSPropDefinition<CSSProp::Margin> {};
+    : CSSPropDefinition<CSSProp::Margin> {
+  constexpr static std::string_view kName = "marginRight";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::MarginStart>
-    : CSSPropDefinition<CSSProp::Margin> {};
+    : CSSPropDefinition<CSSProp::Margin> {
+  constexpr static std::string_view kName = "marginStart";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::MarginTop>
-    : CSSPropDefinition<CSSProp::Margin> {};
+    : CSSPropDefinition<CSSProp::Margin> {
+  constexpr static std::string_view kName = "marginTop";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::MarginVertical>
-    : CSSPropDefinition<CSSProp::Margin> {};
+    : CSSPropDefinition<CSSProp::Margin> {
+  constexpr static std::string_view kName = "marginVertical";
+};
 
 /**
  * CSS "opacity" property
@@ -940,6 +1104,8 @@ struct CSSPropDefinition<CSSProp::MarginVertical>
  */
 template <>
 struct CSSPropDefinition<CSSProp::Opacity> {
+  constexpr static std::string_view kName = "opacity";
+
   using DeclaredValue = CSSValueVariant<CSSWideKeyword, CSSNumber>;
   using SpecifiedValue = CSSValueVariant<CSSNumber>;
   using ComputedValue = CSSValueVariant<CSSNumber>;
@@ -959,6 +1125,8 @@ struct CSSPropDefinition<CSSProp::Opacity> {
  */
 template <>
 struct CSSPropDefinition<CSSProp::Overflow> {
+  constexpr static std::string_view kName = "overflow";
+
   enum class Keyword : std::underlying_type_t<CSSKeyword> {
     Auto = to_underlying(CSSKeyword::Auto),
     Clip = to_underlying(CSSKeyword::Clip),
@@ -986,6 +1154,8 @@ struct CSSPropDefinition<CSSProp::Overflow> {
  */
 template <>
 struct CSSPropDefinition<CSSProp::Padding> {
+  constexpr static std::string_view kName = "padding";
+
   using DeclaredValue =
       CSSValueVariant<CSSWideKeyword, CSSLength, CSSPercentage>;
   using SpecifiedValue = CSSValueVariant<CSSLength, CSSPercentage>;
@@ -1002,59 +1172,87 @@ struct CSSPropDefinition<CSSProp::Padding> {
 
 template <>
 struct CSSPropDefinition<CSSProp::PaddingBlock>
-    : CSSPropDefinition<CSSProp::Padding> {};
+    : CSSPropDefinition<CSSProp::Padding> {
+  constexpr static std::string_view kName = "paddingBlock";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::PaddingBlockEnd>
-    : CSSPropDefinition<CSSProp::Padding> {};
+    : CSSPropDefinition<CSSProp::Padding> {
+  constexpr static std::string_view kName = "paddingBlockEnd";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::PaddingBlockStart>
-    : CSSPropDefinition<CSSProp::Padding> {};
+    : CSSPropDefinition<CSSProp::Padding> {
+  constexpr static std::string_view kName = "paddingBlockStart";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::PaddingBottom>
-    : CSSPropDefinition<CSSProp::Padding> {};
+    : CSSPropDefinition<CSSProp::Padding> {
+  constexpr static std::string_view kName = "paddingBottom";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::PaddingEnd>
-    : CSSPropDefinition<CSSProp::Padding> {};
+    : CSSPropDefinition<CSSProp::Padding> {
+  constexpr static std::string_view kName = "paddingEnd";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::PaddingHorizontal>
-    : CSSPropDefinition<CSSProp::Padding> {};
+    : CSSPropDefinition<CSSProp::Padding> {
+  constexpr static std::string_view kName = "paddingHorizontal";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::PaddingInline>
-    : CSSPropDefinition<CSSProp::Padding> {};
+    : CSSPropDefinition<CSSProp::Padding> {
+  constexpr static std::string_view kName = "paddingInline";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::PaddingInlineEnd>
-    : CSSPropDefinition<CSSProp::Padding> {};
+    : CSSPropDefinition<CSSProp::Padding> {
+  constexpr static std::string_view kName = "paddingInlineEnd";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::PaddingInlineStart>
-    : CSSPropDefinition<CSSProp::Padding> {};
+    : CSSPropDefinition<CSSProp::Padding> {
+  constexpr static std::string_view kName = "paddingInlineStart";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::PaddingLeft>
-    : CSSPropDefinition<CSSProp::Padding> {};
+    : CSSPropDefinition<CSSProp::Padding> {
+  constexpr static std::string_view kName = "paddingLeft";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::PaddingRight>
-    : CSSPropDefinition<CSSProp::Padding> {};
+    : CSSPropDefinition<CSSProp::Padding> {
+  constexpr static std::string_view kName = "paddingRight";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::PaddingStart>
-    : CSSPropDefinition<CSSProp::Padding> {};
+    : CSSPropDefinition<CSSProp::Padding> {
+  constexpr static std::string_view kName = "paddingStart";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::PaddingTop>
-    : CSSPropDefinition<CSSProp::Padding> {};
+    : CSSPropDefinition<CSSProp::Padding> {
+  constexpr static std::string_view kName = "paddingTop";
+};
 
 template <>
 struct CSSPropDefinition<CSSProp::PaddingVertical>
-    : CSSPropDefinition<CSSProp::Padding> {};
+    : CSSPropDefinition<CSSProp::Padding> {
+  constexpr static std::string_view kName = "paddingVertical";
+};
 
 /**
  * CSS "position" property.
@@ -1062,6 +1260,8 @@ struct CSSPropDefinition<CSSProp::PaddingVertical>
  */
 template <>
 struct CSSPropDefinition<CSSProp::Position> {
+  constexpr static std::string_view kName = "position";
+
   enum class Keyword : std::underlying_type_t<CSSKeyword> {
     Static = to_underlying(CSSKeyword::Static),
     Relative = to_underlying(CSSKeyword::Relative),

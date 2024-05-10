@@ -7,5 +7,5 @@
  * @format
  */
 
-export type {default} from './PopupMenuAndroid';
-export type {PopupMenuAndroidInstance} from './PopupMenuAndroid';
+export type {default} from './js/PopupMenuAndroid';
+export type {PopupMenuAndroidInstance} from './js/PopupMenuAndroid';

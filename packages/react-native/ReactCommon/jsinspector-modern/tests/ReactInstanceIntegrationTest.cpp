@@ -17,57 +17,36 @@
 #include <react/featureflags/ReactNativeFeatureFlagsDefaults.h>
 #include <react/runtime/hermes/HermesInstance.h>
 
-namespace facebook::react::jsinspector_modern {
-
 using namespace ::testing;
 
-class ReactInstanceIntegrationTestFeatureFlagsProvider
-    : public ReactNativeFeatureFlagsDefaults {
- private:
-  FeatureFlags flags_;
+namespace facebook::react::jsinspector_modern {
 
- public:
-  explicit ReactInstanceIntegrationTestFeatureFlagsProvider(
-      FeatureFlags featureFlags)
-      : flags_(featureFlags) {}
-
-  bool inspectorEnableModernCDPRegistry() override {
-    return flags_.enableModernCDPRegistry;
-  }
-  bool inspectorEnableCxxInspectorPackagerConnection() override {
-    return flags_.enableCxxInspectorPackagerConnection;
-  }
-};
+#pragma region ReactInstanceIntegrationTest
 
 ReactInstanceIntegrationTest::ReactInstanceIntegrationTest()
     : runtime(nullptr),
       instance(nullptr),
       messageQueueThread(std::make_shared<MockMessageQueueThread>()),
-      errorHandler(std::make_shared<ErrorUtils>()),
-      featureFlags(std::make_unique<FeatureFlags>()) {}
+      errorHandler(std::make_shared<ErrorUtils>()) {}
 
 void ReactInstanceIntegrationTest::SetUp() {
-  ReactNativeFeatureFlags::override(
-      std::make_unique<ReactInstanceIntegrationTestFeatureFlagsProvider>(
-          *featureFlags));
-  // Reset InspectorFlags to overridden upstream values before creating objects
-  // that may access them.
-  InspectorFlags::getInstance().dangerouslyResetFlags();
-
-  // Double check that a flag matches our overrides.
-  ASSERT_EQ(
-      InspectorFlags::getInstance().getEnableModernCDPRegistry(),
-      featureFlags->enableModernCDPRegistry);
-
   auto mockRegistry = std::make_unique<MockTimerRegistry>();
   auto timerManager =
       std::make_shared<react::TimerManager>(std::move(mockRegistry));
 
-  auto jsErrorHandlingFunc = [](react::MapBuffer error) noexcept {
-    LOG(INFO) << "Error: \nFile: " << error.getString(react::kFrameFileName)
-              << "\nLine: " << error.getInt(react::kFrameLineNumber)
-              << "\nColumn: " << error.getInt(react::kFrameColumnNumber)
-              << "\nMethod: " << error.getString(react::kFrameMethodName);
+  auto onJsError = [](const JsErrorHandler::ParsedError& errorMap) noexcept {
+    LOG(INFO) << "[jsErrorHandlingFunc called]";
+    LOG(INFO) << "message: " << errorMap.message;
+    LOG(INFO) << "exceptionId: " << std::to_string(errorMap.exceptionId);
+    LOG(INFO) << "isFatal: "
+              << std::to_string(static_cast<int>(errorMap.isFatal));
+    auto frames = errorMap.frames;
+    for (const auto& mapBuffer : frames) {
+      LOG(INFO) << "[Frame]" << std::endl << "\tfile: " << mapBuffer.fileName;
+      LOG(INFO) << "\tmethodName: " << mapBuffer.methodName;
+      LOG(INFO) << "\tlineNumber: " << std::to_string(mapBuffer.lineNumber);
+      LOG(INFO) << "\tcolumn: " << std::to_string(mapBuffer.columnNumber);
+    }
   };
 
   auto jsRuntimeFactory = std::make_unique<react::HermesInstance>();
@@ -83,7 +62,7 @@ void ReactInstanceIntegrationTest::SetUp() {
 
   std::shared_ptr<HostTarget> hostTargetIfModernCDP = nullptr;
 
-  if (featureFlags->enableModernCDPRegistry) {
+  if (InspectorFlags::getInstance().getEnableModernCDPRegistry()) {
     VoidExecutor inspectorExecutor = [this](auto callback) {
       immediateExecutor_.add(callback);
     };
@@ -96,7 +75,7 @@ void ReactInstanceIntegrationTest::SetUp() {
       std::move(runtime_),
       messageQueueThread,
       timerManager,
-      std::move(jsErrorHandlingFunc),
+      std::move(onJsError),
       hostTargetIfModernCDP == nullptr ? nullptr : hostTargetIfModernCDP.get());
 
   timerManager->setRuntimeExecutor(instance->getBufferedRuntimeExecutor());
@@ -136,6 +115,14 @@ void ReactInstanceIntegrationTest::SetUp() {
       inspector.connect(pageId_.value(), mockRemoteConnections_.make_unique());
 
   ASSERT_NE(clientToVM_, nullptr);
+
+  // Default to ignoring console messages originating inside the backend.
+  EXPECT_CALL(
+      getRemoteConnection(),
+      onMessage(JsonParsed(AllOf(
+          AtJsonPtr("/method", "Runtime.consoleAPICalled"),
+          AtJsonPtr("/params/context", "main#InstanceAgent")))))
+      .Times(AnyNumber());
 }
 
 void ReactInstanceIntegrationTest::TearDown() {
@@ -143,7 +130,8 @@ void ReactInstanceIntegrationTest::TearDown() {
   // Destroy the local connection.
   clientToVM_.reset();
 
-  if (pageId_.has_value() && featureFlags->enableModernCDPRegistry) {
+  if (pageId_.has_value() &&
+      InspectorFlags::getInstance().getEnableModernCDPRegistry()) {
     // Under modern CDP, clean up the page we added in SetUp and destroy
     // resources owned by HostTarget.
     getInspectorInstance().removePage(pageId_.value());
@@ -159,7 +147,11 @@ void ReactInstanceIntegrationTest::initializeRuntime(std::string_view script) {
   react::ReactInstance::JSRuntimeFlags flags{
       .isProfiling = false,
   };
-  instance->initializeRuntime(flags, [](jsi::Runtime&) {});
+  instance->initializeRuntime(flags, [](jsi::Runtime& rt) {
+    // NOTE: RN's console polyfill (included in prelude.js.h) depends on the
+    // native logging hook being installed, even if it's a noop.
+    facebook::react::bindNativeLogger(rt, [](auto, auto) {});
+  });
 
   messageQueueThread->tick();
 
@@ -209,6 +201,8 @@ bool ReactInstanceIntegrationTest::verbose(bool isVerbose) {
   return previous;
 }
 
+#pragma endregion
+
 TEST_F(ReactInstanceIntegrationTest, RuntimeEvalTest) {
   auto val = run("1 + 2");
   EXPECT_EQ(val.asNumber(), 3);
@@ -225,17 +219,11 @@ TEST_P(ReactInstanceIntegrationTestWithFlags, ConsoleLog) {
 
   InSequence s;
 
-  // Hermes console.* interception is currently explicitly disabled under the
-  // modern registry, and the runtime does not yet fire these events. When the
-  // implementation is more complete we should be able to remove this
-  // condition.
-  if (!featureFlags->enableModernCDPRegistry) {
-    EXPECT_CALL(
-        getRemoteConnection(),
-        onMessage(JsonParsed(AllOf(
-            AtJsonPtr("/params/args/0/value", Eq("Hello, World!")),
-            AtJsonPtr("/method", Eq("Runtime.consoleAPICalled"))))));
-  }
+  EXPECT_CALL(
+      getRemoteConnection(),
+      onMessage(JsonParsed(AllOf(
+          AtJsonPtr("/params/args/0/value", Eq("Hello, World!")),
+          AtJsonPtr("/method", Eq("Runtime.consoleAPICalled"))))));
 
   EXPECT_CALL(getRemoteConnection(), onDisconnect());
 
@@ -247,14 +235,14 @@ INSTANTIATE_TEST_SUITE_P(
     ReactInstanceVaryingInspectorFlags,
     ReactInstanceIntegrationTestWithFlags,
     ::testing::Values(
-        FeatureFlags{
-            .enableCxxInspectorPackagerConnection = true,
-            .enableModernCDPRegistry = true},
-        FeatureFlags{
+        InspectorFlagOverrides{
             .enableCxxInspectorPackagerConnection = false,
             .enableModernCDPRegistry = false},
-        FeatureFlags{
+        InspectorFlagOverrides{
             .enableCxxInspectorPackagerConnection = true,
-            .enableModernCDPRegistry = false}));
+            .enableModernCDPRegistry = false},
+        InspectorFlagOverrides{
+            .enableCxxInspectorPackagerConnection = true,
+            .enableModernCDPRegistry = true}));
 
 } // namespace facebook::react::jsinspector_modern

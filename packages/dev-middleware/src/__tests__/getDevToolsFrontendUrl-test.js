@@ -20,9 +20,10 @@ describe('getDevToolsFrontendUrl', () => {
     enableNetworkInspector: false,
     enableNewDebugger: false,
     enableOpenDebuggerRedirect: false,
+    useFuseboxInternalBranding: false,
   };
 
-  describe('relative: false (default)', () => {
+  describe('relative: false, launchId: undefined (default)', () => {
     test('should return a valid url for all experiments off', async () => {
       const actual = getDevToolsFrontendUrl(
         experiments,
@@ -126,6 +127,79 @@ describe('getDevToolsFrontendUrl', () => {
       expect(url.searchParams.get('ws')).toBe(
         'localhost:8082/inspector/debug?device=1a9372c&page=-1',
       );
+    });
+  });
+
+  describe('launchId: non-null', () => {
+    const launchId = 'dG8gdGhlIG1vb24h%21';
+
+    test('should return a valid url for all experiments off', async () => {
+      const actual = getDevToolsFrontendUrl(
+        experiments,
+        webSocketDebuggerUrl,
+        devServerUrl,
+        {
+          launchId,
+        },
+      );
+      const url = new URL(actual);
+      expect(url.pathname).toBe('/debugger-frontend/rn_inspector.html');
+      expect(url.searchParams.get('ws')).toBe(
+        '/inspector/debug?device=1a9372c&page=-1',
+      );
+      expect(url.searchParams.get('launchId')).toBe(launchId);
+    });
+
+    test('should return a valid url for enableNetworkInspector experiment on', async () => {
+      const actual = getDevToolsFrontendUrl(
+        {...experiments, enableNetworkInspector: true, enableNewDebugger: true},
+        webSocketDebuggerUrl,
+        devServerUrl,
+        {
+          launchId,
+        },
+      );
+      const url = new URL(actual);
+      expect(url.pathname).toBe('/debugger-frontend/rn_inspector.html');
+      expect(url.searchParams.get('unstable_enableNetworkPanel')).toBe('true');
+      expect(url.searchParams.get('ws')).toBe(
+        '/inspector/debug?device=1a9372c&page=-1',
+      );
+      expect(url.searchParams.get('launchId')).toBe(launchId);
+    });
+
+    test('should return a full WS URL if on a different host than the dev server', () => {
+      const otherWebSocketDebuggerUrl =
+        'ws://localhost:8082/inspector/debug?device=1a9372c&page=-1';
+      const actual = getDevToolsFrontendUrl(
+        experiments,
+        otherWebSocketDebuggerUrl,
+        devServerUrl,
+        {
+          launchId,
+        },
+      );
+      const url = new URL(actual);
+      expect(url.searchParams.get('ws')).toBe(
+        'localhost:8082/inspector/debug?device=1a9372c&page=-1',
+      );
+      expect(url.searchParams.get('launchId')).toBe(launchId);
+    });
+  });
+
+  describe('useFuseboxEntryPoint: true', () => {
+    test('should return rn_fusebox.html entry point', async () => {
+      const result = getDevToolsFrontendUrl(
+        experiments,
+        webSocketDebuggerUrl,
+        devServerUrl,
+        {
+          useFuseboxEntryPoint: true,
+        },
+      );
+      const url = new URL(result);
+
+      expect(url.pathname).toBe('/debugger-frontend/rn_fusebox.html');
     });
   });
 });

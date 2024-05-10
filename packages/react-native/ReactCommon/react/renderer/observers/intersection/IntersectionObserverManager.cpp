@@ -7,7 +7,7 @@
 
 #include "IntersectionObserverManager.h"
 #include <cxxreact/JSExecutor.h>
-#include <react/renderer/debug/SystraceSection.h>
+#include <cxxreact/SystraceSection.h>
 #include <utility>
 #include "IntersectionObserver.h"
 

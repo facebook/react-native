@@ -43,6 +43,7 @@ export type PopupMenuAndroidInstance = {
 type Props = {
   menuItems: $ReadOnlyArray<string>,
   onSelectionChange: number => void,
+  onDismiss?: () => void,
   children: Node,
   instanceRef: RefObject<?PopupMenuAndroidInstance>,
 };

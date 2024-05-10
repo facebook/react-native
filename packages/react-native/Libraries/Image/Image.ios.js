@@ -11,6 +11,7 @@
 import type {ImageStyle, ImageStyleProp} from '../StyleSheet/StyleSheet';
 import type {RootTag} from '../Types/RootTagTypes';
 import type {AbstractImageIOS, ImageIOS} from './ImageTypes.flow';
+import type {ImageSize} from './NativeImageLoaderAndroid';
 
 import {createRootTag} from '../ReactNative/RootTag';
 import flattenStyle from '../StyleSheet/flattenStyle';
@@ -29,15 +30,22 @@ import * as React from 'react';
 
 function getSize(
   uri: string,
-  success: (width: number, height: number) => void,
+  success?: (width: number, height: number) => void,
   failure?: (error: mixed) => void,
-): void {
-  NativeImageLoaderIOS.getSize(uri)
-    .then(([width, height]) => success(width, height))
+): void | Promise<ImageSize> {
+  const promise = NativeImageLoaderIOS.getSize(uri).then(([width, height]) => ({
+    width,
+    height,
+  }));
+  if (typeof success !== 'function') {
+    return promise;
+  }
+  promise
+    .then(sizes => success(sizes.width, sizes.height))
     .catch(
       failure ||
         function () {
-          console.warn('Failed to get size for image ' + uri);
+          console.warn('Failed to get size for image: ' + uri);
         },
     );
 }
@@ -45,13 +53,15 @@ function getSize(
 function getSizeWithHeaders(
   uri: string,
   headers: {[string]: string, ...},
-  success: (width: number, height: number) => void,
+  success?: (width: number, height: number) => void,
   failure?: (error: mixed) => void,
-): void {
-  NativeImageLoaderIOS.getSizeWithHeaders(uri, headers)
-    .then(function (sizes) {
-      success(sizes.width, sizes.height);
-    })
+): void | Promise<ImageSize> {
+  const promise = NativeImageLoaderIOS.getSizeWithHeaders(uri, headers);
+  if (typeof success !== 'function') {
+    return promise;
+  }
+  promise
+    .then(sizes => success(sizes.width, sizes.height))
     .catch(
       failure ||
         function () {

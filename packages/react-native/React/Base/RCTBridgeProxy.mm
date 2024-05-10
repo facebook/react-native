@@ -6,10 +6,13 @@
  */
 
 #import "RCTBridgeProxy.h"
+#import "RCTBridgeProxy+Cxx.h"
+
 #import <React/RCTBridge+Private.h>
 #import <React/RCTBridge.h>
 #import <React/RCTLog.h>
 #import <React/RCTUIManager.h>
+#import <ReactCommon/CallInvoker.h>
 #import <jsi/jsi.h>
 
 using namespace facebook;
@@ -21,11 +24,18 @@ using namespace facebook;
 - (void)forwardInvocation:(NSInvocation *)invocation;
 @end
 
+@interface RCTBridgeProxy ()
+
+@property (nonatomic, readwrite) std::shared_ptr<facebook::react::CallInvoker> jsCallInvoker;
+
+@end
+
 @implementation RCTBridgeProxy {
   RCTUIManagerProxy *_uiManagerProxy;
   RCTModuleRegistry *_moduleRegistry;
   RCTBundleManager *_bundleManager;
   RCTCallableJSModules *_callableJSModules;
+  NSDictionary *_launchOptions;
   void (^_dispatchToJSThread)(dispatch_block_t);
   void (^_registerSegmentWithId)(NSNumber *, NSString *);
   void *_runtime;
@@ -38,6 +48,7 @@ using namespace facebook;
                   dispatchToJSThread:(void (^)(dispatch_block_t))dispatchToJSThread
                registerSegmentWithId:(void (^)(NSNumber *, NSString *))registerSegmentWithId
                              runtime:(void *)runtime
+                       launchOptions:(nullable NSDictionary *)launchOptions
 {
   self = [super self];
   if (self) {
@@ -48,6 +59,7 @@ using namespace facebook;
     _dispatchToJSThread = dispatchToJSThread;
     _registerSegmentWithId = registerSegmentWithId;
     _runtime = runtime;
+    _launchOptions = [launchOptions copy];
   }
   return self;
 }
@@ -82,6 +94,12 @@ using namespace facebook;
 {
   [self logWarning:@"Please migrate to C++ TurboModule or RuntimeExecutor." cmd:_cmd];
   return _runtime;
+}
+
+- (std::shared_ptr<facebook::react::CallInvoker>)jsCallInvoker
+{
+  [self logWarning:@"Please migrate to RuntimeExecutor" cmd:_cmd];
+  return _jsCallInvoker;
 }
 
 /**
@@ -176,8 +194,7 @@ using namespace facebook;
 
 - (NSDictionary *)launchOptions
 {
-  [self logError:@"This method is not supported. Returning nil." cmd:_cmd];
-  return nil;
+  return _launchOptions;
 }
 
 - (BOOL)loading
