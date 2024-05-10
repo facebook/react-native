@@ -67,7 +67,7 @@ module PrivacyManifestUtils
     end
 
     def self.ensure_reference(file_path, user_project, target)
-        reference_exists = target.resources_build_phase.files_references.any? { |file_ref| file_ref.path.end_with? "PrivacyInfo.xcprivacy" }
+        reference_exists = target.resources_build_phase.files_references.any? { |file_ref| file_ref.path&.end_with? "PrivacyInfo.xcprivacy" }
         unless reference_exists
             # We try to find the main group, but if it doesn't exist, we default to adding the file to the project root – both work
             file_root = user_project.root_object.main_group.children.find { |group| group.class == Xcodeproj::Project::Object::PBXGroup && (group.name == target.name || group.path == target.name) } || user_project
@@ -78,7 +78,7 @@ module PrivacyManifestUtils
 
     def self.get_privacyinfo_file_path(user_project, targets)
         file_refs = targets.flat_map { |target| target.resources_build_phase.files_references }
-        existing_file = file_refs.find { |file_ref| file_ref.path.end_with? "PrivacyInfo.xcprivacy" }
+        existing_file = file_refs.find { |file_ref| file_ref.path&.end_with? "PrivacyInfo.xcprivacy" }
         if existing_file
             return existing_file.real_path
         end
