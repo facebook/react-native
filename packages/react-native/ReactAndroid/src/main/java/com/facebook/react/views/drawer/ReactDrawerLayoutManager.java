@@ -192,19 +192,6 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
 
   @Override
   public void receiveCommand(
-      @NonNull ReactDrawerLayout root, int commandId, @Nullable ReadableArray args) {
-    switch (commandId) {
-      case OPEN_DRAWER:
-        root.openDrawer();
-        break;
-      case CLOSE_DRAWER:
-        root.closeDrawer();
-        break;
-    }
-  }
-
-  @Override
-  public void receiveCommand(
       @NonNull ReactDrawerLayout root, String commandId, @Nullable ReadableArray args) {
     switch (commandId) {
       case "openDrawer":

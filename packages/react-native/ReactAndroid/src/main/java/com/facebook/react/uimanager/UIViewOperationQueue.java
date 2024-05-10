@@ -259,49 +259,6 @@ public class UIViewOperationQueue {
     int getRetries();
   }
 
-  @Deprecated
-  private final class DispatchCommandOperation extends ViewOperation
-      implements DispatchCommandViewOperation {
-
-    private final int mCommand;
-    private final @Nullable ReadableArray mArgs;
-
-    private int numRetries = 0;
-
-    public DispatchCommandOperation(int tag, int command, @Nullable ReadableArray args) {
-      super(tag);
-      mCommand = command;
-      mArgs = args;
-    }
-
-    @Override
-    public void execute() {
-      try {
-        mNativeViewHierarchyManager.dispatchCommand(mTag, mCommand, mArgs);
-      } catch (Throwable e) {
-        ReactSoftExceptionLogger.logSoftException(
-            TAG, new RuntimeException("Error dispatching View Command", e));
-      }
-    }
-
-    @Override
-    public void executeWithExceptions() {
-      mNativeViewHierarchyManager.dispatchCommand(mTag, mCommand, mArgs);
-    }
-
-    @Override
-    @UiThread
-    public void incrementRetries() {
-      numRetries++;
-    }
-
-    @Override
-    @UiThread
-    public int getRetries() {
-      return numRetries;
-    }
-  }
-
   private final class DispatchStringCommandOperation extends ViewOperation
       implements DispatchCommandViewOperation {
 
@@ -656,14 +613,6 @@ public class UIViewOperationQueue {
   public void enqueueClearJSResponder() {
     // Tag is 0 because JSResponderHandler doesn't need one in order to clear the responder.
     mOperations.add(new ChangeJSResponderOperation(0, 0, true /*clearResponder*/, false));
-  }
-
-  @Deprecated
-  public void enqueueDispatchCommand(
-      int reactTag, int commandId, @Nullable ReadableArray commandArgs) {
-    final DispatchCommandOperation command =
-        new DispatchCommandOperation(reactTag, commandId, commandArgs);
-    mViewCommandOperations.add(command);
   }
 
   public void enqueueDispatchCommand(

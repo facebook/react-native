@@ -718,18 +718,6 @@ public class UIImplementation {
     mOperationsQueue.enqueueClearJSResponder();
   }
 
-  @Deprecated
-  public void dispatchViewManagerCommand(
-      int reactTag, int commandId, @Nullable ReadableArray commandArgs) {
-    boolean viewExists =
-        checkOrAssertViewExists(reactTag, "dispatchViewManagerCommand: " + commandId);
-    if (!viewExists) {
-      return;
-    }
-
-    mOperationsQueue.enqueueDispatchCommand(reactTag, commandId, commandArgs);
-  }
-
   public void dispatchViewManagerCommand(
       int reactTag, String commandId, @Nullable ReadableArray commandArgs) {
     boolean viewExists =

@@ -52,20 +52,6 @@ public interface UIManager extends PerformanceCounter {
    * Dispatches the commandId received by parameter to the view associated with the reactTag. The
    * command will be processed in the UIThread.
    *
-   * <p>Receiving commands as ints is deprecated and will be removed in a future release.
-   *
-   * <p>Pre-Fabric, this is only called on the Native Module Thread.
-   *
-   * @param reactTag {@link int} that identifies the view that will receive this command
-   * @param commandId {@link int} command id
-   * @param commandArgs {@link ReadableArray} parameters associated with the command
-   */
-  void dispatchCommand(int reactTag, int commandId, @Nullable ReadableArray commandArgs);
-
-  /**
-   * Dispatches the commandId received by parameter to the view associated with the reactTag. The
-   * command will be processed in the UIThread.
-   *
    * <p>Pre-Fabric, this is only called on the Native Module Thread.
    *
    * @param reactTag {@link int} that identifies the view that will receive this command

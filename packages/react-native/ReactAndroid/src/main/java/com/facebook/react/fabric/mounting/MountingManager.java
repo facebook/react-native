@@ -266,14 +266,6 @@ public class MountingManager {
     return getSurfaceManagerForView(reactTag) != null;
   }
 
-  @Deprecated
-  public void receiveCommand(
-      int surfaceId, int reactTag, int commandId, @Nullable ReadableArray commandArgs) {
-    UiThreadUtil.assertOnUiThread();
-    getSurfaceManagerEnforced(surfaceId, "receiveCommand:int")
-        .receiveCommand(reactTag, commandId, commandArgs);
-  }
-
   public void receiveCommand(
       int surfaceId, int reactTag, @NonNull String commandId, @Nullable ReadableArray commandArgs) {
     UiThreadUtil.assertOnUiThread();

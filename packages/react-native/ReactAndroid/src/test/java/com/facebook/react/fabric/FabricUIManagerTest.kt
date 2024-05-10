@@ -46,13 +46,4 @@ class FabricUIManagerTest {
     val className = command::class.java.name.substringAfterLast(".")
     assertEquals("DispatchStringCommandMountItem", className)
   }
-
-  @Test
-  fun createDispatchCommandMountItemForInterop_withValidInt_returnsIntEvent() {
-    val command = underTest.createDispatchCommandMountItemForInterop(11, 1, "42", null)
-
-    // DispatchIntCommandMountItem is package private so we can `as` check it.
-    val className = command::class.java.name.substringAfterLast(".")
-    assertEquals("DispatchIntCommandMountItem", className)
-  }
 }

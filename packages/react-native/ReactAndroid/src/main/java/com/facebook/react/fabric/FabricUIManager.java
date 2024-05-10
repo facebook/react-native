@@ -1042,34 +1042,10 @@ public class FabricUIManager
   @AnyThread
   @ThreadConfined(ANY)
   public void dispatchCommand(
-      final int reactTag, final int commandId, @Nullable final ReadableArray commandArgs) {
-    throw new UnsupportedOperationException(
-        "dispatchCommand called without surfaceId - Fabric dispatchCommand must be called through"
-            + " Fabric JSI API");
-  }
-
-  @Override
-  @Deprecated
-  @AnyThread
-  @ThreadConfined(ANY)
-  public void dispatchCommand(
       final int reactTag, final String commandId, @Nullable final ReadableArray commandArgs) {
     throw new UnsupportedOperationException(
         "dispatchCommand called without surfaceId - Fabric dispatchCommand must be called through"
             + " Fabric JSI API");
-  }
-
-  @Deprecated
-  @AnyThread
-  @ThreadConfined(ANY)
-  public void dispatchCommand(
-      final int surfaceId,
-      final int reactTag,
-      final int commandId,
-      @Nullable final ReadableArray commandArgs) {
-    mMountItemDispatcher.addViewCommandMountItem(
-        MountItemFactory.createDispatchCommandMountItem(
-            surfaceId, reactTag, commandId, commandArgs));
   }
 
   @AnyThread
@@ -1304,14 +1280,8 @@ public class FabricUIManager
       final int reactTag,
       final String commandId,
       @Nullable final ReadableArray commandArgs) {
-    try {
-      int commandIdInteger = Integer.parseInt(commandId);
-      return MountItemFactory.createDispatchCommandMountItem(
-          surfaceId, reactTag, commandIdInteger, commandArgs);
-    } catch (NumberFormatException e) {
-      return MountItemFactory.createDispatchCommandMountItem(
-          surfaceId, reactTag, commandId, commandArgs);
-    }
+    return MountItemFactory.createDispatchCommandMountItem(
+        surfaceId, reactTag, commandId, commandArgs);
   }
 
   private class DispatchUIFrameCallback extends GuardedFrameCallback {

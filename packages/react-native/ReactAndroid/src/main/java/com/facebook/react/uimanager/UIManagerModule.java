@@ -22,7 +22,6 @@ import com.facebook.debug.holder.PrinterHolder;
 import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
-import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.GuardedRunnable;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.OnBatchCompleteListener;
@@ -32,7 +31,6 @@ import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UIManagerListener;
 import com.facebook.react.bridge.UiThreadUtil;
@@ -570,7 +568,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
 
   @ReactMethod
   public void dispatchViewManagerCommand(
-      int reactTag, Dynamic commandId, @Nullable ReadableArray commandArgs) {
+      int reactTag, String commandId, @Nullable ReadableArray commandArgs) {
     // Fabric dispatchCommands should go through the JSI API - this will crash in Fabric.
     @Nullable
     UIManager uiManager =
@@ -580,18 +578,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
       return;
     }
 
-    if (commandId.getType() == ReadableType.Number) {
-      uiManager.dispatchCommand(reactTag, commandId.asInt(), commandArgs);
-    } else if (commandId.getType() == ReadableType.String) {
-      uiManager.dispatchCommand(reactTag, commandId.asString(), commandArgs);
-    }
-  }
-
-  /** Deprecated, use {@link #dispatchCommand(int, String, ReadableArray)} instead. */
-  @Deprecated
-  @Override
-  public void dispatchCommand(int reactTag, int commandId, @Nullable ReadableArray commandArgs) {
-    mUIImplementation.dispatchViewManagerCommand(reactTag, commandId, commandArgs);
+    uiManager.dispatchCommand(reactTag, commandId, commandArgs);
   }
 
   @Override

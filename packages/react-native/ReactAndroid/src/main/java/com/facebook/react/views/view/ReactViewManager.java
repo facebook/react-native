@@ -334,22 +334,6 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
   }
 
   @Override
-  public void receiveCommand(ReactViewGroup root, int commandId, @Nullable ReadableArray args) {
-    switch (commandId) {
-      case CMD_HOTSPOT_UPDATE:
-        {
-          handleHotspotUpdate(root, args);
-          break;
-        }
-      case CMD_SET_PRESSED:
-        {
-          handleSetPressed(root, args);
-          break;
-        }
-    }
-  }
-
-  @Override
   public void receiveCommand(ReactViewGroup root, String commandId, @Nullable ReadableArray args) {
     switch (commandId) {
       case HOTSPOT_UPDATE_KEY:

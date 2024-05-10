@@ -60,10 +60,6 @@ class FakeUIManager : UIManager, UIBlockViewResolver {
     TODO("Not yet implemented")
   }
 
-  override fun dispatchCommand(reactTag: Int, commandId: Int, commandArgs: ReadableArray?) {
-    TODO("Not yet implemented")
-  }
-
   override fun dispatchCommand(reactTag: Int, commandId: String?, commandArgs: ReadableArray?) {
     TODO("Not yet implemented")
   }

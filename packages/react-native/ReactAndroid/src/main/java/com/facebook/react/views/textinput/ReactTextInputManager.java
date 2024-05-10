@@ -277,25 +277,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
   @Override
   public void receiveCommand(
-      ReactEditText reactEditText, int commandId, @Nullable ReadableArray args) {
-    switch (commandId) {
-      case FOCUS_TEXT_INPUT:
-        this.receiveCommand(reactEditText, "focus", args);
-        break;
-      case BLUR_TEXT_INPUT:
-        this.receiveCommand(reactEditText, "blur", args);
-        break;
-      case SET_MOST_RECENT_EVENT_COUNT:
-        // TODO: delete, this is no longer used from JS
-        break;
-      case SET_TEXT_AND_SELECTION:
-        this.receiveCommand(reactEditText, "setTextAndSelection", args);
-        break;
-    }
-  }
-
-  @Override
-  public void receiveCommand(
       ReactEditText reactEditText, String commandId, @Nullable ReadableArray args) {
     switch (commandId) {
       case "focus":

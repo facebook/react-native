@@ -75,17 +75,6 @@ internal class SampleNativeComponentViewManager :
     }
   }
 
-  @SuppressLint("BadMethodUse-android.view.View.setBackgroundColor")
-  @Suppress("DEPRECATION") // We intentionally want to test against the legacy API here.
-  override fun receiveCommand(view: SampleNativeView, commandId: Int, args: ReadableArray?) {
-    when (commandId) {
-      COMMAND_CHANGE_BACKGROUND_COLOR -> {
-        val sentColor: Int = Color.parseColor(args?.getString(0))
-        view.setBackgroundColor(sentColor)
-      }
-    }
-  }
-
   override fun getCommandsMap(): Map<String, Int> =
       mapOf("changeBackgroundColor" to COMMAND_CHANGE_BACKGROUND_COLOR)
 

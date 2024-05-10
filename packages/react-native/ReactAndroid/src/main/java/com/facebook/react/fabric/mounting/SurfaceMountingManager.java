@@ -853,35 +853,6 @@ public class SurfaceMountingManager {
         .updateProperties(view, viewState.mCurrentProps);
   }
 
-  @Deprecated
-  public void receiveCommand(int reactTag, int commandId, @Nullable ReadableArray commandArgs) {
-    if (isStopped()) {
-      return;
-    }
-
-    ViewState viewState = getNullableViewState(reactTag);
-
-    // It's not uncommon for JS to send events as/after a component is being removed from the
-    // view hierarchy. For example, TextInput may send a "blur" command in response to the view
-    // disappearing. Throw `ReactNoCrashSoftException` so they're logged but don't crash in dev
-    // for now.
-    if (viewState == null) {
-      throw new RetryableMountingLayerException(
-          "Unable to find viewState for tag: [" + reactTag + "] for commandId: " + commandId);
-    }
-
-    if (viewState.mViewManager == null) {
-      throw new RetryableMountingLayerException("Unable to find viewManager for tag " + reactTag);
-    }
-
-    if (viewState.mView == null) {
-      throw new RetryableMountingLayerException(
-          "Unable to find viewState view for tag " + reactTag);
-    }
-
-    viewState.mViewManager.receiveCommand(viewState.mView, commandId, commandArgs);
-  }
-
   public void receiveCommand(
       int reactTag, @NonNull String commandId, @Nullable ReadableArray commandArgs) {
     if (isStopped()) {

@@ -14,16 +14,6 @@ import com.facebook.react.uimanager.StateWrapper
 
 /** Factory class that expose creation of [MountItem] */
 public object MountItemFactory {
-  /** @return a [DispatchCommandMountItem] for commands identified by an int */
-  @JvmStatic
-  public fun createDispatchCommandMountItem(
-      surfaceId: Int,
-      reactTag: Int,
-      commandId: Int,
-      commandArgs: ReadableArray?
-  ): DispatchCommandMountItem =
-      DispatchIntCommandMountItem(surfaceId, reactTag, commandId, commandArgs)
-
   /** @return a [DispatchCommandMountItem] for commands identified by a String */
   @JvmStatic
   public fun createDispatchCommandMountItem(

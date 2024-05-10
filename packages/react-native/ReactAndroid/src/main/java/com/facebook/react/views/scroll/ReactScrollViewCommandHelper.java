@@ -66,37 +66,6 @@ public class ReactScrollViewCommandHelper {
   public static <T> void receiveCommand(
       ScrollCommandHandler<T> viewManager,
       T scrollView,
-      int commandType,
-      @Nullable ReadableArray args) {
-    Assertions.assertNotNull(viewManager);
-    Assertions.assertNotNull(scrollView);
-    Assertions.assertNotNull(args);
-    switch (commandType) {
-      case COMMAND_SCROLL_TO:
-        {
-          scrollTo(viewManager, scrollView, args);
-          return;
-        }
-      case COMMAND_SCROLL_TO_END:
-        {
-          scrollToEnd(viewManager, scrollView, args);
-          return;
-        }
-      case COMMAND_FLASH_SCROLL_INDICATORS:
-        viewManager.flashScrollIndicators(scrollView);
-        return;
-
-      default:
-        throw new IllegalArgumentException(
-            String.format(
-                "Unsupported command %d received by %s.",
-                commandType, viewManager.getClass().getSimpleName()));
-    }
-  }
-
-  public static <T> void receiveCommand(
-      ScrollCommandHandler<T> viewManager,
-      T scrollView,
       String commandType,
       @Nullable ReadableArray args) {
     Assertions.assertNotNull(viewManager);

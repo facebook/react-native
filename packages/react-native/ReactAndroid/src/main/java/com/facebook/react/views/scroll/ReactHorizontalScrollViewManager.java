@@ -186,12 +186,6 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
 
   @Override
   public void receiveCommand(
-      ReactHorizontalScrollView scrollView, int commandId, @Nullable ReadableArray args) {
-    ReactScrollViewCommandHelper.receiveCommand(this, scrollView, commandId, args);
-  }
-
-  @Override
-  public void receiveCommand(
       ReactHorizontalScrollView scrollView, String commandId, @Nullable ReadableArray args) {
     ReactScrollViewCommandHelper.receiveCommand(this, scrollView, commandId, args);
   }
