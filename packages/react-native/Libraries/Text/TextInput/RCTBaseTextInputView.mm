@@ -493,24 +493,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
     }
   }
 
-  NSString *previousText = [backedTextInputView.attributedText.string copy] ?: @"";
-
   if (range.location + range.length > backedTextInputView.attributedText.string.length) {
     _predictedText = backedTextInputView.attributedText.string;
   } else if (text != nil) {
     _predictedText = [backedTextInputView.attributedText.string stringByReplacingCharactersInRange:range
                                                                                         withString:text];
-  }
-
-  if (_onTextInput) {
-    _onTextInput(@{
-      // We copy the string here because if it's a mutable string it may get released before we stop using it on a
-      // different thread, causing a crash.
-      @"text" : [text copy],
-      @"previousText" : previousText,
-      @"range" : @{@"start" : @(range.location), @"end" : @(range.location + range.length)},
-      @"eventCount" : @(_nativeEventCount),
-    });
   }
 
   return text; // Accepting the change.
