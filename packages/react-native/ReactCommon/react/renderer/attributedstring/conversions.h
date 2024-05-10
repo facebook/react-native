@@ -457,6 +457,52 @@ inline std::string toString(const TextAlignment& textAlignment) {
 }
 
 inline void fromRawValue(
+    const PropsParserContext& /*context*/,
+    const RawValue& value,
+    TextAlignmentVertical& result) {
+  react_native_expect(value.hasType<std::string>());
+  if (value.hasType<std::string>()) {
+    auto string = (std::string)value;
+    if (string == "auto") {
+      result = TextAlignmentVertical::Auto;
+    } else if (string == "top") {
+      result = TextAlignmentVertical::Top;
+    } else if (string == "bottom") {
+      result = TextAlignmentVertical::Bottom;
+    } else if (string == "center") {
+      result = TextAlignmentVertical::Center;
+    } else {
+      LOG(ERROR) << "Unsupported TextAlignment value: " << string;
+      react_native_expect(false);
+      // sane default for prod
+      result = TextAlignmentVertical::Auto;
+    }
+    return;
+  }
+
+  LOG(ERROR) << "Unsupported TextAlignmentVertical type";
+  // sane default for prod
+  result = TextAlignmentVertical::Auto;
+}
+
+inline std::string toString(const TextAlignmentVertical& textAlignment) {
+  switch (textAlignment) {
+    case TextAlignmentVertical::Auto:
+      return "auto";
+    case TextAlignmentVertical::Top:
+      return "top";
+    case TextAlignmentVertical::Bottom:
+      return "bottom";
+    case TextAlignmentVertical::Center:
+      return "center";
+  }
+
+  LOG(ERROR) << "Unsupported TextAlignmentVertical value";
+  // sane default for prod
+  return "auto";
+}
+
+inline void fromRawValue(
     const PropsParserContext& context,
     const RawValue& value,
     WritingDirection& result) {
@@ -893,6 +939,10 @@ inline folly::dynamic toDynamic(const TextAttributes& textAttributes) {
     _textAttributes(
         "accessibilityRole", toString(*textAttributes.accessibilityRole));
   }
+  if (textAttributes.textAlignVertical.has_value()) {
+    _textAttributes(
+        "textAlignVertical", toString(*textAttributes.textAlignVertical));
+  }
   return _textAttributes;
 }
 
@@ -975,6 +1025,7 @@ constexpr static MapBuffer::Key TA_KEY_ACCESSIBILITY_ROLE = 24;
 constexpr static MapBuffer::Key TA_KEY_LINE_BREAK_STRATEGY = 25;
 constexpr static MapBuffer::Key TA_KEY_ROLE = 26;
 constexpr static MapBuffer::Key TA_KEY_TEXT_TRANSFORM = 27;
+constexpr static MapBuffer::Key TA_KEY_ALIGNMENT_VERTICAL = 28;
 
 // constants for ParagraphAttributes serialization
 constexpr static MapBuffer::Key PA_KEY_MAX_NUMBER_OF_LINES = 0;
@@ -1140,6 +1191,10 @@ inline MapBuffer toMapBuffer(const TextAttributes& textAttributes) {
   }
   if (textAttributes.role.has_value()) {
     builder.putInt(TA_KEY_ROLE, static_cast<int32_t>(*textAttributes.role));
+  }
+  if (textAttributes.textAlignVertical.has_value()) {
+    builder.putString(
+        TA_KEY_ALIGNMENT_VERTICAL, toString(*textAttributes.textAlignVertical));
   }
   return builder.build();
 }
