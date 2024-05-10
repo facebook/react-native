@@ -137,5 +137,5 @@ public abstract class BaseViewManagerDelegate<T extends View, U extends BaseView
   }
 
   @Override
-  public void receiveCommand(T view, String commandName, ReadableArray args) {}
+  public void receiveCommand(T view, String commandName, @Nullable ReadableArray args) {}
 }
