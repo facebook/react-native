@@ -49,6 +49,12 @@ void IntersectionObserverManager::observe(
     mountingCoordinator = shadowTree.getMountingCoordinator();
     rootShadowNode = shadowTree.getCurrentRevision().rootShadowNode;
   });
+
+  // If the surface doesn't exist for some reason, we skip initial notification.
+  if (!rootShadowNode) {
+    return;
+  }
+
   auto hasPendingTransactions = mountingCoordinator != nullptr &&
       mountingCoordinator->hasPendingTransactions();
 
