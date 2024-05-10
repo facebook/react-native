@@ -128,6 +128,9 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
           this._setResult('promiseAssert', e.message);
         });
     },
+    installJSIBindings: () => {
+      return global.__SampleTurboModuleJSIBindings;
+    },
   };
 
   _setResult(
@@ -192,6 +195,11 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
     if (global.__turboModuleProxy == null) {
       throw new Error(
         'Cannot load this example because TurboModule is not configured.',
+      );
+    }
+    if (global.__SampleTurboModuleJSIBindings == null) {
+      throw new Error(
+        'The JSI bindings for SampleTurboModule are not installed.',
       );
     }
   }
