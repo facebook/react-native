@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.PermissionAwareActivity;
 import com.facebook.react.modules.core.PermissionListener;
+import org.jetbrains.annotations.NotNull;
 
 /** Base Activity for React Native applications. */
 public abstract class ReactActivity extends AppCompatActivity
@@ -62,6 +63,14 @@ public abstract class ReactActivity extends AppCompatActivity
   protected void onDestroy() {
     super.onDestroy();
     mDelegate.onDestroy();
+  }
+
+  public @Nullable ReactDelegate getReactDelegate() {
+    return mDelegate.getReactDelegate();
+  }
+
+  public ReactActivityDelegate getReactActivityDelegate() {
+    return mDelegate;
   }
 
   @Override
@@ -112,7 +121,8 @@ public abstract class ReactActivity extends AppCompatActivity
 
   @Override
   public void onRequestPermissionsResult(
-      int requestCode, String[] permissions, int[] grantResults) {
+      int requestCode, @NotNull String[] permissions, @NotNull int[] grantResults) {
+    super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     mDelegate.onRequestPermissionsResult(requestCode, permissions, grantResults);
   }
 
@@ -123,7 +133,7 @@ public abstract class ReactActivity extends AppCompatActivity
   }
 
   @Override
-  public void onConfigurationChanged(Configuration newConfig) {
+  public void onConfigurationChanged(@NotNull Configuration newConfig) {
     super.onConfigurationChanged(newConfig);
     mDelegate.onConfigurationChanged(newConfig);
   }

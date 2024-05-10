@@ -10,27 +10,40 @@
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <concepts>
 
 #include <yoga/Yoga.h>
 
 namespace facebook::yoga {
 
-constexpr bool isUndefined(auto value) {
+constexpr bool isUndefined(std::floating_point auto value) {
   return value != value;
 }
 
-constexpr bool isDefined(auto value) {
+constexpr bool isDefined(std::floating_point auto value) {
   return !isUndefined(value);
 }
 
-constexpr auto maxOrDefined(auto a, auto b) {
+/**
+ * Constexpr version of `std::isinf` before C++ 23
+ */
+constexpr bool isinf(auto value) {
+  return value == +std::numeric_limits<decltype(value)>::infinity() ||
+      value == -std::numeric_limits<decltype(value)>::infinity();
+}
+
+constexpr auto maxOrDefined(
+    std::floating_point auto a,
+    std::floating_point auto b) {
   if (yoga::isDefined(a) && yoga::isDefined(b)) {
     return std::max(a, b);
   }
   return yoga::isUndefined(a) ? b : a;
 }
 
-constexpr auto minOrDefined(auto a, auto b) {
+constexpr auto minOrDefined(
+    std::floating_point auto a,
+    std::floating_point auto b) {
   if (yoga::isDefined(a) && yoga::isDefined(b)) {
     return std::min(a, b);
   }
@@ -52,19 +65,6 @@ inline bool inexactEquals(double a, double b) {
     return std::abs(a - b) < 0.0001;
   }
   return yoga::isUndefined(a) && yoga::isUndefined(b);
-}
-
-inline bool inexactEquals(const YGValue& a, const YGValue& b) {
-  if (a.unit != b.unit) {
-    return false;
-  }
-
-  if (a.unit == YGUnitUndefined ||
-      (yoga::isUndefined(a.value) && yoga::isUndefined(b.value))) {
-    return true;
-  }
-
-  return fabs(a.value - b.value) < 0.0001f;
 }
 
 template <std::size_t Size, typename ElementT>

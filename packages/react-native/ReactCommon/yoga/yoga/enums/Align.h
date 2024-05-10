@@ -28,20 +28,15 @@ enum class Align : uint8_t {
 };
 
 template <>
-constexpr inline int32_t ordinalCount<Align>() {
+constexpr int32_t ordinalCount<Align>() {
   return 9;
-} 
+}
 
-template <>
-constexpr inline int32_t bitCount<Align>() {
-  return 4;
-} 
-
-constexpr inline Align scopedEnum(YGAlign unscoped) {
+constexpr Align scopedEnum(YGAlign unscoped) {
   return static_cast<Align>(unscoped);
 }
 
-constexpr inline YGAlign unscopedEnum(Align scoped) {
+constexpr YGAlign unscopedEnum(Align scoped) {
   return static_cast<YGAlign>(scoped);
 }
 

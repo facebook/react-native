@@ -61,6 +61,6 @@ if (!argv.length) {
   if (outputPath) {
     fs.writeFileSync(outputPath, composedMapJSON, 'utf8');
   } else {
-    process.stdout.write();
+    process.stdout.write(composedMapJSON);
   }
 }

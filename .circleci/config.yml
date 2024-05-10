@@ -12,19 +12,23 @@ parameters:
     default: false
     type: boolean
 
-  release_latest:
-    default: false
-    type: boolean
-
-  release_version:
-    default: "9999"
-    type: string
-
   run_nightly_workflow:
     default: false
     type: boolean
 
-  run_prealpha_workflow:
+  release_version:
+    default: ""
+    type: string
+
+  release_monorepo_packages_version:
+    default: ""
+    type: string
+
+  release_tag:
+    default: ""
+    type: string
+
+  release_dry_run:
     default: false
     type: boolean
 
@@ -64,7 +68,7 @@ jobs:
                   value: << pipeline.git.branch >>
           steps:
             - run:
-                name: "[Main or Stable] Create input fo config to test everything"
+                name: "[Main or Stable] Create input for config to test everything"
                 command: |
                   mkdir -p /tmp/circleci/
                   echo '{ "run_all": true }' > /tmp/circleci/pipeline_config.json

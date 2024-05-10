@@ -7,7 +7,7 @@
  * @noformat
  * @flow strict
  * @nolint
- * @generated SignedSource<<652b117c94307244bcf5e4af18928903>>
+ * @generated SignedSource<<c41f61379973354629ee7bf55ba92541>>
  */
 
 import type {ElementRef, ElementType, Element, AbstractComponent} from 'react';
@@ -127,7 +127,7 @@ export type NativeMethods = $ReadOnly<{|
 |}>;
 
 // This validates that INativeMethods and NativeMethods stay in sync using Flow!
-declare var ensureNativeMethodsAreSynced: NativeMethods;
+declare const ensureNativeMethodsAreSynced: NativeMethods;
 (ensureNativeMethodsAreSynced: INativeMethods);
 
 export type HostComponent<T> = AbstractComponent<T, $ReadOnly<NativeMethods>>;
@@ -144,11 +144,6 @@ type InspectorDataProps = $ReadOnly<{
   ...
 }>;
 
-type InspectorDataSource = $ReadOnly<{
-  fileName?: string,
-  lineNumber?: number,
-}>;
-
 type InspectorDataGetter = (
   <TElementType: ElementType>(
     componentOrHandle: ElementRef<TElementType> | number,
@@ -156,7 +151,6 @@ type InspectorDataGetter = (
 ) => $ReadOnly<{
   measure: (callback: MeasureOnSuccessCallback) => void,
   props: InspectorDataProps,
-  source: InspectorDataSource,
 }>;
 
 export type InspectorData = $ReadOnly<{
@@ -167,7 +161,7 @@ export type InspectorData = $ReadOnly<{
   }>,
   selectedIndex: ?number,
   props: InspectorDataProps,
-  source: ?InspectorDataSource,
+  componentStack: string,
 }>;
 
 export type TouchedViewDataAtPoint = $ReadOnly<{
@@ -182,6 +176,25 @@ export type TouchedViewDataAtPoint = $ReadOnly<{
   ...InspectorData,
 }>;
 
+export type RenderRootOptions = {
+  onUncaughtError?: (
+    error: mixed,
+    errorInfo: {+componentStack?: ?string},
+  ) => void,
+  onCaughtError?: (
+    error: mixed,
+    errorInfo: {
+      +componentStack?: ?string,
+      // $FlowFixMe[unclear-type] unknown props and state.
+      +errorBoundary?: ?React$Component<any, any>,
+    },
+  ) => void,
+  onRecoverableError?: (
+    error: mixed,
+    errorInfo: {+componentStack?: ?string},
+  ) => void,
+};
+
 /**
  * Flat ReactNative renderer bundles are too big for Flow to parse efficiently.
  * Provide minimal Flow typing for the high-level RN API and call it a day.
@@ -193,6 +206,10 @@ export type ReactNativeType = {
   findNodeHandle<TElementType: ElementType>(
     componentOrHandle: ?(ElementRef<TElementType> | number),
   ): ?number,
+  isChildPublicInstance(
+    parent: PublicInstance | HostComponent<mixed>,
+    child: PublicInstance | HostComponent<mixed>,
+  ): boolean,
   dispatchCommand(
     handle: ElementRef<HostComponent<mixed>>,
     command: string,
@@ -206,6 +223,7 @@ export type ReactNativeType = {
     element: Element<ElementType>,
     containerTag: number,
     callback: ?() => void,
+    options: ?RenderRootOptions,
   ): ?ElementRef<ElementType>,
   unmountComponentAtNode(containerTag: number): void,
   unmountComponentAtNodeAndRemoveContainer(containerTag: number): void,
@@ -231,6 +249,7 @@ export type ReactFabricType = {
     command: string,
     args: Array<mixed>,
   ): void,
+  isChildPublicInstance(parent: PublicInstance, child: PublicInstance): boolean,
   sendAccessibilityEvent(
     handle: ElementRef<HostComponent<mixed>>,
     eventType: string,
@@ -240,6 +259,7 @@ export type ReactFabricType = {
     containerTag: number,
     callback: ?() => void,
     concurrentRoot: ?boolean,
+    options: ?RenderRootOptions,
   ): ?ElementRef<ElementType>,
   unmountComponentAtNode(containerTag: number): void,
   getNodeFromInternalInstanceHandle(
@@ -247,7 +267,7 @@ export type ReactFabricType = {
   ): ?Node,
   getPublicInstanceFromInternalInstanceHandle(
     internalInstanceHandle: InternalInstanceHandle,
-  ): PublicInstance | PublicTextInstance,
+  ): PublicInstance | PublicTextInstance | null,
   ...
 };
 

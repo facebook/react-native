@@ -26,14 +26,6 @@ class RawTextShadowNode : public ConcreteShadowNode<
                               RawTextProps> {
  public:
   using ConcreteShadowNode::ConcreteShadowNode;
-  static ShadowNodeTraits BaseTraits() {
-    auto traits = ConcreteShadowNode::BaseTraits();
-    traits.set(IdentifierTrait());
-    return traits;
-  }
-  static ShadowNodeTraits::Trait IdentifierTrait() {
-    return ShadowNodeTraits::Trait::RawText;
-  }
 };
 
 } // namespace facebook::react

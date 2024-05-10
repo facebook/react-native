@@ -10,10 +10,10 @@ package com.facebook.react
 import com.facebook.react.bridge.ReactContext
 
 /** Interface to subscribe for react instance events */
-interface ReactInstanceEventListener {
+public interface ReactInstanceEventListener {
   /**
    * Called when the react context is initialized (all modules registered). Always called on the UI
    * thread.
    */
-  fun onReactContextInitialized(context: ReactContext)
+  public fun onReactContextInitialized(context: ReactContext)
 }

@@ -77,6 +77,26 @@ TEST(TransformTest, rotatingRect) {
   ASSERT_NEAR(transformedRect.size.height, 14.1421, 0.0001);
 }
 
+TEST(TransformTest, rotate3dOverload) {
+  auto point = facebook::react::Point{10, 10};
+  auto size = facebook::react::Size{10, 10};
+  auto rect = facebook::react::Rect{point, size};
+
+  auto transform = Transform::Rotate(0, 0, M_PI_4);
+  EXPECT_EQ(transform.operations.size(), 1);
+  EXPECT_EQ(transform.operations[0].type, TransformOperationType::Rotate);
+  EXPECT_EQ(transform.operations[0].x, 0);
+  EXPECT_EQ(transform.operations[0].y, 0);
+  ASSERT_NEAR(transform.operations[0].z, M_PI_4, 0.0001);
+
+  auto transformedRect = rect * Transform::Rotate(0, 0, M_PI_4);
+
+  ASSERT_NEAR(transformedRect.origin.x, 7.9289, 0.0001);
+  ASSERT_NEAR(transformedRect.origin.y, 7.9289, 0.0001);
+  ASSERT_NEAR(transformedRect.size.width, 14.1421, 0.0001);
+  ASSERT_NEAR(transformedRect.size.height, 14.1421, 0.0001);
+}
+
 TEST(TransformTest, scalingAndTranslatingRect) {
   auto point = facebook::react::Point{100, 200};
   auto size = facebook::react::Size{300, 400};

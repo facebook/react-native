@@ -65,10 +65,26 @@ std::string NativeCxxModuleExample::consumeCustomHostObject(
   return value->a_ + std::to_string(value->b_);
 }
 
-NativeCxxModuleExampleCxxEnumFloat NativeCxxModuleExample::getNumEnum(
+BinaryTreeNode NativeCxxModuleExample::getBinaryTreeNode(
+    jsi::Runtime& rt,
+    BinaryTreeNode arg) {
+  return arg;
+}
+
+GraphNode NativeCxxModuleExample::getGraphNode(
+    jsi::Runtime& rt,
+    GraphNode arg) {
+  if (arg.neighbors) {
+    arg.neighbors->emplace_back(GraphNode{.label = "top"});
+    arg.neighbors->emplace_back(GraphNode{.label = "down"});
+  }
+  return arg;
+}
+
+NativeCxxModuleExampleCxxEnumInt NativeCxxModuleExample::getNumEnum(
     jsi::Runtime& rt,
     NativeCxxModuleExampleCxxEnumInt arg) {
-  return NativeCxxModuleExampleCxxEnumFloat::FB;
+  return arg;
 }
 
 NativeCxxModuleExampleCxxEnumStr NativeCxxModuleExample::getStrEnum(
@@ -153,18 +169,29 @@ void NativeCxxModuleExample::voidFunc(jsi::Runtime& rt) {
   // Nothing to do
 }
 
+void NativeCxxModuleExample::setMenu(jsi::Runtime& rt, MenuItem menuItem) {
+  menuItem.onPress("value", true);
+  if (menuItem.items) {
+    for (auto subMenuItem : *menuItem.items) {
+      subMenuItem.onPress("another value", false);
+    }
+  }
+}
+
 void NativeCxxModuleExample::emitCustomDeviceEvent(
     jsi::Runtime& rt,
-    jsi::String eventName) {
+    const std::string& eventName) {
   // Test emitting device events (RCTDeviceEventEmitter.emit) from C++
-  // TurboModule with arbitrary arguments
+  // TurboModule with arbitrary arguments. This can be called from any thread
   emitDeviceEvent(
-      rt,
-      eventName.utf8(rt).c_str(),
-      [](jsi::Runtime& rt, std::vector<jsi::Value>& args) {
+      eventName,
+      [jsInvoker = jsInvoker_](
+          jsi::Runtime& rt, std::vector<jsi::Value>& args) {
         args.emplace_back(jsi::Value(true));
         args.emplace_back(jsi::Value(42));
         args.emplace_back(jsi::String::createFromAscii(rt, "stringArg"));
+        args.emplace_back(bridging::toJs(
+            rt, CustomDeviceEvent{"one", 2, std::nullopt}, jsInvoker));
       });
 }
 

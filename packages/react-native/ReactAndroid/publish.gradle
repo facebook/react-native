@@ -13,7 +13,6 @@ def signingKey = findProperty("SIGNING_KEY")
 def signingPwd = findProperty("SIGNING_PWD")
 
 def reactAndroidProjectDir = project(':packages:react-native:ReactAndroid').projectDir
-def androidOutputUrl = "file://${reactAndroidProjectDir}/../android"
 def mavenTempLocalUrl = "file:///tmp/maven-local"
 
 publishing {
@@ -65,10 +64,6 @@ publishing {
     }
 
     repositories {
-        maven {
-            name = "npm"
-            url = androidOutputUrl
-        }
         maven {
             name = "mavenTempLocal"
             url = mavenTempLocalUrl

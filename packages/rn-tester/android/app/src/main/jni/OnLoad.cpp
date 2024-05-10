@@ -5,28 +5,29 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <AppSpecs.h>
 #include <DefaultComponentsRegistry.h>
 #include <DefaultTurboModuleManagerDelegate.h>
 #include <NativeCxxModuleExample.h>
 #include <ReactCommon/SampleTurboModuleSpec.h>
 #include <fbjni/fbjni.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
-#include <react/renderer/components/AppSpecs/ComponentDescriptors.h>
-#include <react/renderer/components/legacyviewmanagerinterop/UnstableLegacyViewManagerInteropComponentDescriptor.h>
+#include <rncore.h>
+
+#ifdef REACT_NATIVE_APP_CODEGEN_HEADER
+#include REACT_NATIVE_APP_CODEGEN_HEADER
+#endif
+#ifdef REACT_NATIVE_APP_COMPONENT_DESCRIPTORS_HEADER
+#include REACT_NATIVE_APP_COMPONENT_DESCRIPTORS_HEADER
+#endif
 
 namespace facebook {
 namespace react {
 
-extern const char RNTMyNativeViewName[] = "RNTMyLegacyNativeView";
-
 void registerComponents(
     std::shared_ptr<const ComponentDescriptorProviderRegistry> registry) {
-  registry->add(concreteComponentDescriptorProvider<
-                RNTMyNativeViewComponentDescriptor>());
-  registry->add(concreteComponentDescriptorProvider<
-                UnstableLegacyViewManagerInteropComponentDescriptor<
-                    RNTMyNativeViewName>>());
+#ifdef REACT_NATIVE_APP_COMPONENT_REGISTRATION
+  REACT_NATIVE_APP_COMPONENT_REGISTRATION(registry);
+#endif
 }
 
 std::shared_ptr<TurboModule> cxxModuleProvider(
@@ -41,14 +42,22 @@ std::shared_ptr<TurboModule> cxxModuleProvider(
 std::shared_ptr<TurboModule> javaModuleProvider(
     const std::string& name,
     const JavaTurboModule::InitParams& params) {
-  auto module = AppSpecs_ModuleProvider(name, params);
-  if (module != nullptr) {
-    return module;
-  }
-  module = SampleTurboModuleSpec_ModuleProvider(name, params);
+  auto module = SampleTurboModuleSpec_ModuleProvider(name, params);
   if (module != nullptr) {
     return module;
   };
+#ifdef REACT_NATIVE_APP_MODULE_PROVIDER
+  module = REACT_NATIVE_APP_MODULE_PROVIDER(name, params);
+  if (module != nullptr) {
+    return module;
+  }
+#endif
+
+  // We first try to look up core modules
+  if (auto module = rncore_ModuleProvider(name, params)) {
+    return module;
+  }
+
   return nullptr;
 }
 

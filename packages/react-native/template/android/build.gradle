@@ -1,13 +1,11 @@
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
-
 buildscript {
     ext {
         buildToolsVersion = "34.0.0"
         minSdkVersion = 23
         compileSdkVersion = 34
         targetSdkVersion = 34
-        ndkVersion = "26.0.10792818"
-        kotlinVersion = "1.8.0"
+        ndkVersion = "26.1.10909125"
+        kotlinVersion = "1.9.23"
     }
     repositories {
         google()
@@ -19,3 +17,5 @@ buildscript {
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
     }
 }
+
+apply plugin: "com.facebook.react.rootproject"

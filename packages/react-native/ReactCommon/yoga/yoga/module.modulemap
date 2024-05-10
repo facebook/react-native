@@ -7,8 +7,13 @@
 
 module yoga [system] {
     module core {
+        header "YGConfig.h"
         header "YGEnums.h"
         header "YGMacros.h"
+        header "YGNode.h"
+        header "YGNodeLayout.h"
+        header "YGNodeStyle.h"
+        header "YGPixelGrid.h"
         header "YGValue.h"
         header "Yoga.h"
         export *

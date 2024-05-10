@@ -9,15 +9,56 @@
  * @oncall react_native
  */
 
+/**
+ * A capability flag disables a specific feature/hack in the InspectorProxy
+ * layer by indicating that the target supports one or more modern CDP features.
+ */
+export type TargetCapabilityFlags = $ReadOnly<{
+  /**
+   * The target supports a stable page representation across reloads.
+   *
+   * In the proxy, this disables legacy page reload emulation and the
+   * additional '(Experimental)' target in `/json/list`.
+   *
+   * In the launch flow, this allows targets to be matched directly by `appId`.
+   */
+  nativePageReloads?: boolean,
+
+  /**
+   * The target supports fetching source code and source maps.
+   *
+   * In the proxy, this disables source fetching emulation and host rewrites.
+   */
+  nativeSourceCodeFetching?: boolean,
+
+  /**
+   * The target supports native network inspection.
+   *
+   * In the proxy, this disables intercepting and storing network requests.
+   */
+  nativeNetworkInspection?: boolean,
+
+  /**
+   * The target supports the modern `rn_fusebox.html` entry point.
+   *
+   * In the launch flow, this controls the Chrome DevTools entrypoint that is used.
+   */
+  prefersFuseboxFrontend?: boolean,
+}>;
+
 // Page information received from the device. New page is created for
 // each new instance of VM and can appear when user reloads React Native
 // application.
-export type Page = $ReadOnly<{
+
+export type PageFromDevice = $ReadOnly<{
   id: string,
   title: string,
   vm: string,
   app: string,
+  capabilities?: TargetCapabilityFlags,
 }>;
+
+export type Page = Required<PageFromDevice>;
 
 // Chrome Debugger Protocol message/event passed between device and debugger.
 export type WrappedEvent = $ReadOnly<{
@@ -48,7 +89,7 @@ export type GetPagesRequest = {event: 'getPages'};
 // Response to GetPagesRequest containing a list of page infos.
 export type GetPagesResponse = {
   event: 'getPages',
-  payload: $ReadOnlyArray<Page>,
+  payload: $ReadOnlyArray<PageFromDevice>,
 };
 
 // Union type for all possible messages sent from device to Inspector Proxy.
@@ -78,10 +119,11 @@ export type PageDescription = $ReadOnly<{
   // Metadata specific to React Native
   reactNative: $ReadOnly<{
     logicalDeviceId: string,
+    capabilities: Page['capabilities'],
   }>,
 }>;
 
-export type JsonPagesListResponse = $ReadOnlyArray<PageDescription>;
+export type JsonPagesListResponse = Array<PageDescription>;
 
 // Response to /json/version HTTP request from the debugger specifying browser type and
 // Chrome protocol version.
@@ -89,49 +131,6 @@ export type JsonVersionResponse = $ReadOnly<{
   Browser: string,
   'Protocol-Version': string,
 }>;
-
-/**
- * Types were exported from https://github.com/ChromeDevTools/devtools-protocol/blob/master/types/protocol.d.ts
- */
-
-export type SetBreakpointByUrlRequest = $ReadOnly<{
-  id: number,
-  method: 'Debugger.setBreakpointByUrl',
-  params: $ReadOnly<{
-    lineNumber: number,
-    url?: string,
-    urlRegex?: string,
-    scriptHash?: string,
-    columnNumber?: number,
-    condition?: string,
-  }>,
-}>;
-
-export type GetScriptSourceRequest = $ReadOnly<{
-  id: number,
-  method: 'Debugger.getScriptSource',
-  params: {
-    scriptId: string,
-  },
-}>;
-
-export type GetScriptSourceResponse = $ReadOnly<{
-  scriptSource: string,
-  /**
-   * Wasm bytecode.
-   */
-  bytecode?: string,
-}>;
-
-export type ErrorResponse = $ReadOnly<{
-  error: $ReadOnly<{
-    message: string,
-  }>,
-}>;
-
-export type DebuggerRequest =
-  | SetBreakpointByUrlRequest
-  | GetScriptSourceRequest;
 
 export type JSONSerializable =
   | boolean

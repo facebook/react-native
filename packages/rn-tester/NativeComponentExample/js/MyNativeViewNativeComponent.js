@@ -32,6 +32,10 @@ type Event = $ReadOnly<{
   multiArrays: $ReadOnlyArray<$ReadOnlyArray<Int32>>,
 }>;
 
+type LegacyStyleEvent = $ReadOnly<{
+  string: string,
+}>;
+
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
   opacity?: Float,
@@ -39,6 +43,10 @@ type NativeProps = $ReadOnly<{|
 
   // Events
   onIntArrayChanged?: ?BubblingEventHandler<Event>,
+  onLegacyStyleEvent?: ?BubblingEventHandler<
+    LegacyStyleEvent,
+    'alternativeLegacyName',
+  >,
 |}>;
 
 export type MyNativeViewType = HostComponent<NativeProps>;
@@ -48,10 +56,26 @@ interface NativeCommands {
     viewRef: React.ElementRef<MyNativeViewType>,
     color: string,
   ) => void;
+
+  +callNativeMethodToAddOverlays: (
+    viewRef: React.ElementRef<MyNativeViewType>,
+    overlayColors: $ReadOnlyArray<string>,
+  ) => void;
+
+  +callNativeMethodToRemoveOverlays: (
+    viewRef: React.ElementRef<MyNativeViewType>,
+  ) => void;
+
+  +fireLagacyStyleEvent: (viewRef: React.ElementRef<MyNativeViewType>) => void;
 }
 
 export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
-  supportedCommands: ['callNativeMethodToChangeBackgroundColor'],
+  supportedCommands: [
+    'callNativeMethodToChangeBackgroundColor',
+    'callNativeMethodToAddOverlays',
+    'callNativeMethodToRemoveOverlays',
+    'fireLagacyStyleEvent',
+  ],
 });
 
 export default (codegenNativeComponent<NativeProps>(

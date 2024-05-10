@@ -62,6 +62,7 @@ export type RNTesterNavigationState = {
   activeModuleExampleKey: null | string,
   screen: ScreenTypes,
   recentlyUsed: ComponentList,
+  hadDeepLink: boolean,
 };
 
 export type RNTesterJsStallsState = {

@@ -244,8 +244,8 @@ function PressableNativeMethods() {
           {status == null
             ? 'Missing Ref!'
             : status === true
-            ? 'Native Methods Exist'
-            : 'Native Methods Missing!'}
+              ? 'Native Methods Exist'
+              : 'Native Methods Missing!'}
         </Text>
       </View>
     </>

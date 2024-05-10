@@ -184,7 +184,7 @@ id convertJSIValueToObjCObject(jsi::Runtime &runtime, const jsi::Value &value, s
     return convertJSIObjectToNSDictionary(runtime, o, jsInvoker);
   }
 
-  throw std::runtime_error("Unsupported jsi::jsi::Value kind");
+  throw std::runtime_error("Unsupported jsi::Value kind");
 }
 
 static jsi::Value createJSRuntimeError(jsi::Runtime &runtime, const std::string &message)
@@ -211,7 +211,23 @@ static jsi::JSError convertNSExceptionToJSError(jsi::Runtime &runtime, NSExcepti
   return {runtime, std::move(error)};
 }
 
+/**
+ * Creates JS error value with current JS runtime and error details.
+ */
+static jsi::Value convertJSErrorDetailsToJSRuntimeError(jsi::Runtime &runtime, NSDictionary *jsErrorDetails)
+{
+  NSString *message = jsErrorDetails[@"message"];
+
+  auto jsError = createJSRuntimeError(runtime, [message UTF8String]);
+  for (NSString *key in jsErrorDetails) {
+    id value = jsErrorDetails[key];
+    jsError.asObject(runtime).setProperty(runtime, [key UTF8String], convertObjCObjectToJSIValue(runtime, value));
+  }
+
+  return jsError;
 }
+
+} // namespace TurboModuleConvertUtils
 
 jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string methodName, PromiseInvocationBlock invoke)
 {
@@ -279,11 +295,10 @@ jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string met
                 return;
               }
 
-              NSDictionary *jsError = RCTJSErrorFromCodeMessageAndNSError(code, message, error);
-              reject->call([jsError](jsi::Runtime &rt, jsi::Function &jsFunction) {
-                jsFunction.call(rt, convertObjCObjectToJSIValue(rt, jsError));
+              NSDictionary *jsErrorDetails = RCTJSErrorFromCodeMessageAndNSError(code, message, error);
+              reject->call([jsErrorDetails](jsi::Runtime &rt, jsi::Function &jsFunction) {
+                jsFunction.call(rt, convertJSErrorDetailsToJSRuntimeError(rt, jsErrorDetails));
               });
-
               resolveWasCalled = NO;
               resolve = std::nullopt;
               reject = std::nullopt;
@@ -583,7 +598,7 @@ void ObjCTurboModule::setInvocationArg(
      * Convert objects using RCTConvert.
      */
     if (objCArgType == @encode(id)) {
-      NSString *argumentType = getArgumentTypeName(runtime, methodNameNSString, i);
+      NSString *argumentType = getArgumentTypeName(runtime, methodNameNSString, static_cast<int>(i));
       if (argumentType != nil) {
         NSString *rctConvertMethodName = [NSString stringWithFormat:@"%@:", argumentType];
         SEL rctConvertSelector = NSSelectorFromString(rctConvertMethodName);
@@ -764,19 +779,19 @@ jsi::Value ObjCTurboModule::invokeObjCMethod(
   return returnValue;
 }
 
-BOOL ObjCTurboModule::hasMethodArgConversionSelector(NSString *methodName, int argIndex)
+BOOL ObjCTurboModule::hasMethodArgConversionSelector(NSString *methodName, size_t argIndex)
 {
   return methodArgConversionSelectors_ && methodArgConversionSelectors_[methodName] &&
       ![methodArgConversionSelectors_[methodName][argIndex] isEqual:[NSNull null]];
 }
 
-SEL ObjCTurboModule::getMethodArgConversionSelector(NSString *methodName, int argIndex)
+SEL ObjCTurboModule::getMethodArgConversionSelector(NSString *methodName, size_t argIndex)
 {
   assert(hasMethodArgConversionSelector(methodName, argIndex));
   return (SEL)((NSValue *)methodArgConversionSelectors_[methodName][argIndex]).pointerValue;
 }
 
-void ObjCTurboModule::setMethodArgConversionSelector(NSString *methodName, int argIndex, NSString *fnName)
+void ObjCTurboModule::setMethodArgConversionSelector(NSString *methodName, size_t argIndex, NSString *fnName)
 {
   if (!methodArgConversionSelectors_) {
     methodArgConversionSelectors_ = [NSMutableDictionary new];
@@ -798,5 +813,5 @@ void ObjCTurboModule::setMethodArgConversionSelector(NSString *methodName, int a
   methodArgConversionSelectors_[methodName][argIndex] = selectorValue;
 }
 
-}
-} // namespace facebook::react
+} // namespace react
+} // namespace facebook

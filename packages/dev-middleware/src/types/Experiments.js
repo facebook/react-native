@@ -23,6 +23,17 @@ export type Experiments = $ReadOnly<{
    * interface.
    */
   enableOpenDebuggerRedirect: boolean,
+
+  /**
+   * Enables the Network panel when launching the custom debugger frontend.
+   */
+  enableNetworkInspector: boolean,
+
+  /**
+   * [Meta-internal] Controls visibility of the internal "Fusebox" codename
+   * across the UI when using the modern `rn_fusebox` entry point.
+   */
+  useFuseboxInternalBranding: boolean,
 }>;
 
 export type ExperimentsConfig = Partial<Experiments>;

@@ -23,7 +23,7 @@ internal fun Project.configureReactTasks(variant: Variant, config: ReactExtensio
   val targetName = variant.name.capitalizeCompat()
   val targetPath = variant.name
 
-  val buildDir = this.layout.buildDirectory.get().asFile
+  val buildDir = layout.buildDirectory.get().asFile
   // Resources: generated/assets/react/<variant>/index.android.bundle
   val resourcesDir = File(buildDir, "generated/res/react/$targetPath")
   // Bundle: generated/assets/react/<variant>/index.android.bundle

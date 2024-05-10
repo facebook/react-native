@@ -15,8 +15,7 @@ exports[`GenerateModuleH can generate a header file NativeModule specs 1`] = `
 #include <ReactCommon/TurboModule.h>
 #include <react/bridging/Bridging.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 
   class JSI_EXPORT NativeArrayTurboModuleCxxSpecJSI : public TurboModule {
@@ -42,7 +41,7 @@ public:
 protected:
   NativeArrayTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeArrayTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeArrayTurboModuleCxxSpecJSI {
@@ -105,7 +104,7 @@ public:
 protected:
   NativeBooleanTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeBooleanTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeBooleanTurboModuleCxxSpecJSI {
@@ -160,7 +159,7 @@ public:
 protected:
   NativeCallbackTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeCallbackTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeCallbackTurboModuleCxxSpecJSI {
@@ -193,9 +192,41 @@ private:
 };
 
 
+#pragma mark - NativeEnumTurboModuleStatusNumEnum
+
+enum class NativeEnumTurboModuleStatusNumEnum { Active, Paused, Off };
+
+template <>
+struct Bridging<NativeEnumTurboModuleStatusNumEnum> {
+  static NativeEnumTurboModuleStatusNumEnum fromJs(jsi::Runtime &rt, const jsi::Value &rawValue) {
+    double value = (double)rawValue.asNumber();
+    if (value == 2) {
+      return NativeEnumTurboModuleStatusNumEnum::Active;
+    } else if (value == 1) {
+      return NativeEnumTurboModuleStatusNumEnum::Paused;
+    } else if (value == 0) {
+      return NativeEnumTurboModuleStatusNumEnum::Off;
+    } else {
+      throw jsi::JSError(rt, \\"No appropriate enum member found for value\\");
+    }
+  }
+
+  static jsi::Value toJs(jsi::Runtime &rt, NativeEnumTurboModuleStatusNumEnum value) {
+    if (value == NativeEnumTurboModuleStatusNumEnum::Active) {
+      return bridging::toJs(rt, 2);
+    } else if (value == NativeEnumTurboModuleStatusNumEnum::Paused) {
+      return bridging::toJs(rt, 1);
+    } else if (value == NativeEnumTurboModuleStatusNumEnum::Off) {
+      return bridging::toJs(rt, 0);
+    } else {
+      throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
+    }
+  }
+};
+
 #pragma mark - NativeEnumTurboModuleStatusRegularEnum
 
-enum NativeEnumTurboModuleStatusRegularEnum { Active, Paused, Off };
+enum class NativeEnumTurboModuleStatusRegularEnum { Active, Paused, Off };
 
 template <>
 struct Bridging<NativeEnumTurboModuleStatusRegularEnum> {
@@ -227,7 +258,7 @@ struct Bridging<NativeEnumTurboModuleStatusRegularEnum> {
 
 #pragma mark - NativeEnumTurboModuleStatusStrEnum
 
-enum NativeEnumTurboModuleStatusStrEnum { Active, Paused, Off };
+enum class NativeEnumTurboModuleStatusStrEnum { Active, Paused, Off };
 
 template <>
 struct Bridging<NativeEnumTurboModuleStatusStrEnum> {
@@ -256,101 +287,39 @@ struct Bridging<NativeEnumTurboModuleStatusStrEnum> {
     }
   }
 };
-
-#pragma mark - NativeEnumTurboModuleStatusNumEnum
-
-enum NativeEnumTurboModuleStatusNumEnum { Active, Paused, Off };
-
-template <>
-struct Bridging<NativeEnumTurboModuleStatusNumEnum> {
-  static NativeEnumTurboModuleStatusNumEnum fromJs(jsi::Runtime &rt, const jsi::Value &rawValue) {
-    double value = (double)rawValue.asNumber();
-    if (value == 2) {
-      return NativeEnumTurboModuleStatusNumEnum::Active;
-    } else if (value == 1) {
-      return NativeEnumTurboModuleStatusNumEnum::Paused;
-    } else if (value == 0) {
-      return NativeEnumTurboModuleStatusNumEnum::Off;
-    } else {
-      throw jsi::JSError(rt, \\"No appropriate enum member found for value\\");
-    }
-  }
-
-  static jsi::Value toJs(jsi::Runtime &rt, NativeEnumTurboModuleStatusNumEnum value) {
-    if (value == NativeEnumTurboModuleStatusNumEnum::Active) {
-      return bridging::toJs(rt, 2);
-    } else if (value == NativeEnumTurboModuleStatusNumEnum::Paused) {
-      return bridging::toJs(rt, 1);
-    } else if (value == NativeEnumTurboModuleStatusNumEnum::Off) {
-      return bridging::toJs(rt, 0);
-    } else {
-      throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
-    }
-  }
-};
-
-#pragma mark - NativeEnumTurboModuleStatusFractionEnum
-
-enum NativeEnumTurboModuleStatusFractionEnum { Active, Paused, Off };
-
-template <>
-struct Bridging<NativeEnumTurboModuleStatusFractionEnum> {
-  static NativeEnumTurboModuleStatusFractionEnum fromJs(jsi::Runtime &rt, const jsi::Value &rawValue) {
-    double value = (double)rawValue.asNumber();
-    if (value == 0.2f) {
-      return NativeEnumTurboModuleStatusFractionEnum::Active;
-    } else if (value == 0.1f) {
-      return NativeEnumTurboModuleStatusFractionEnum::Paused;
-    } else if (value == 0f) {
-      return NativeEnumTurboModuleStatusFractionEnum::Off;
-    } else {
-      throw jsi::JSError(rt, \\"No appropriate enum member found for value\\");
-    }
-  }
-
-  static jsi::Value toJs(jsi::Runtime &rt, NativeEnumTurboModuleStatusFractionEnum value) {
-    if (value == NativeEnumTurboModuleStatusFractionEnum::Active) {
-      return bridging::toJs(rt, 0.2f);
-    } else if (value == NativeEnumTurboModuleStatusFractionEnum::Paused) {
-      return bridging::toJs(rt, 0.1f);
-    } else if (value == NativeEnumTurboModuleStatusFractionEnum::Off) {
-      return bridging::toJs(rt, 0f);
-    } else {
-      throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
-    }
-  }
-};
   
-#pragma mark - NativeEnumTurboModuleBaseStateType
+#pragma mark - NativeEnumTurboModuleStateType
 
 template <typename P0>
-struct NativeEnumTurboModuleBaseStateType {
+struct NativeEnumTurboModuleStateType {
   P0 state;
-  bool operator==(const NativeEnumTurboModuleBaseStateType &other) const {
+  bool operator==(const NativeEnumTurboModuleStateType &other) const {
     return state == other.state;
   }
 };
 
-template <typename P0>
-struct NativeEnumTurboModuleBaseStateTypeBridging {
-  static NativeEnumTurboModuleBaseStateType<P0> fromJs(
+template <typename T>
+struct NativeEnumTurboModuleStateTypeBridging {
+  static T types;
+
+  static T fromJs(
       jsi::Runtime &rt,
       const jsi::Object &value,
       const std::shared_ptr<CallInvoker> &jsInvoker) {
-    NativeEnumTurboModuleBaseStateType<P0> result{
-      bridging::fromJs<P0>(rt, value.getProperty(rt, \\"state\\"), jsInvoker)};
+    T result{
+      bridging::fromJs<decltype(types.state)>(rt, value.getProperty(rt, \\"state\\"), jsInvoker)};
     return result;
   }
 
 #ifdef DEBUG
-  static jsi::String stateToJs(jsi::Runtime &rt, P0 value) {
+  static jsi::String stateToJs(jsi::Runtime &rt, decltype(types.state) value) {
     return bridging::toJs(rt, value);
   }
 #endif
 
   static jsi::Object toJs(
       jsi::Runtime &rt,
-      const NativeEnumTurboModuleBaseStateType<P0> &value,
+      const T &value,
       const std::shared_ptr<CallInvoker> &jsInvoker) {
     auto result = facebook::jsi::Object(rt);
     result.setProperty(rt, \\"state\\", bridging::toJs(rt, value.state, jsInvoker));
@@ -360,67 +329,62 @@ struct NativeEnumTurboModuleBaseStateTypeBridging {
 
 
 
-#pragma mark - NativeEnumTurboModuleBaseStateTypeWithEnums
+#pragma mark - NativeEnumTurboModuleStateTypeWithEnums
 
-template <typename P0, typename P1, typename P2, typename P3, typename P4>
-struct NativeEnumTurboModuleBaseStateTypeWithEnums {
+template <typename P0, typename P1, typename P2, typename P3>
+struct NativeEnumTurboModuleStateTypeWithEnums {
   P0 state;
   P1 regular;
   P2 str;
   P3 num;
-  P4 fraction;
-  bool operator==(const NativeEnumTurboModuleBaseStateTypeWithEnums &other) const {
-    return state == other.state && regular == other.regular && str == other.str && num == other.num && fraction == other.fraction;
+  bool operator==(const NativeEnumTurboModuleStateTypeWithEnums &other) const {
+    return state == other.state && regular == other.regular && str == other.str && num == other.num;
   }
 };
 
-template <typename P0, typename P1, typename P2, typename P3, typename P4>
-struct NativeEnumTurboModuleBaseStateTypeWithEnumsBridging {
-  static NativeEnumTurboModuleBaseStateTypeWithEnums<P0, P1, P2, P3, P4> fromJs(
+template <typename T>
+struct NativeEnumTurboModuleStateTypeWithEnumsBridging {
+  static T types;
+
+  static T fromJs(
       jsi::Runtime &rt,
       const jsi::Object &value,
       const std::shared_ptr<CallInvoker> &jsInvoker) {
-    NativeEnumTurboModuleBaseStateTypeWithEnums<P0, P1, P2, P3, P4> result{
-      bridging::fromJs<P0>(rt, value.getProperty(rt, \\"state\\"), jsInvoker),
-      bridging::fromJs<P1>(rt, value.getProperty(rt, \\"regular\\"), jsInvoker),
-      bridging::fromJs<P2>(rt, value.getProperty(rt, \\"str\\"), jsInvoker),
-      bridging::fromJs<P3>(rt, value.getProperty(rt, \\"num\\"), jsInvoker),
-      bridging::fromJs<P4>(rt, value.getProperty(rt, \\"fraction\\"), jsInvoker)};
+    T result{
+      bridging::fromJs<decltype(types.state)>(rt, value.getProperty(rt, \\"state\\"), jsInvoker),
+      bridging::fromJs<decltype(types.regular)>(rt, value.getProperty(rt, \\"regular\\"), jsInvoker),
+      bridging::fromJs<decltype(types.str)>(rt, value.getProperty(rt, \\"str\\"), jsInvoker),
+      bridging::fromJs<decltype(types.num)>(rt, value.getProperty(rt, \\"num\\"), jsInvoker)};
     return result;
   }
 
 #ifdef DEBUG
-  static jsi::String stateToJs(jsi::Runtime &rt, P0 value) {
+  static jsi::String stateToJs(jsi::Runtime &rt, decltype(types.state) value) {
     return bridging::toJs(rt, value);
   }
 
-  static jsi::String regularToJs(jsi::Runtime &rt, P1 value) {
+  static jsi::String regularToJs(jsi::Runtime &rt, decltype(types.regular) value) {
     return bridging::toJs(rt, value);
   }
 
-  static jsi::String strToJs(jsi::Runtime &rt, P2 value) {
+  static jsi::String strToJs(jsi::Runtime &rt, decltype(types.str) value) {
     return bridging::toJs(rt, value);
   }
 
-  static int numToJs(jsi::Runtime &rt, P3 value) {
-    return bridging::toJs(rt, value);
-  }
-
-  static double fractionToJs(jsi::Runtime &rt, P4 value) {
+  static jsi::Value numToJs(jsi::Runtime &rt, decltype(types.num) value) {
     return bridging::toJs(rt, value);
   }
 #endif
 
   static jsi::Object toJs(
       jsi::Runtime &rt,
-      const NativeEnumTurboModuleBaseStateTypeWithEnums<P0, P1, P2, P3, P4> &value,
+      const T &value,
       const std::shared_ptr<CallInvoker> &jsInvoker) {
     auto result = facebook::jsi::Object(rt);
     result.setProperty(rt, \\"state\\", bridging::toJs(rt, value.state, jsInvoker));
     result.setProperty(rt, \\"regular\\", bridging::toJs(rt, value.regular, jsInvoker));
     result.setProperty(rt, \\"str\\", bridging::toJs(rt, value.str, jsInvoker));
     result.setProperty(rt, \\"num\\", bridging::toJs(rt, value.num, jsInvoker));
-    result.setProperty(rt, \\"fraction\\", bridging::toJs(rt, value.fraction, jsInvoker));
     return result;
   }
 };
@@ -432,9 +396,8 @@ protected:
 public:
   virtual jsi::String getStatusRegular(jsi::Runtime &rt, jsi::Object statusProp) = 0;
   virtual jsi::String getStatusStr(jsi::Runtime &rt, jsi::Object statusProp) = 0;
-  virtual int getStatusNum(jsi::Runtime &rt, jsi::Object statusProp) = 0;
-  virtual double getStatusFraction(jsi::Runtime &rt, jsi::Object statusProp) = 0;
-  virtual jsi::Object getStateType(jsi::Runtime &rt, jsi::String a, jsi::String b, int c, double d) = 0;
+  virtual jsi::Value getStatusNum(jsi::Runtime &rt, jsi::Object statusProp) = 0;
+  virtual jsi::Object getStateType(jsi::Runtime &rt, jsi::String a, jsi::String b, jsi::Value c) = 0;
   virtual jsi::Object getStateTypeWithEnums(jsi::Runtime &rt, jsi::Object paramOfTypeWithEnums) = 0;
 
 };
@@ -451,7 +414,7 @@ public:
 protected:
   NativeEnumTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeEnumTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeEnumTurboModuleCxxSpecJSI {
@@ -475,29 +438,21 @@ private:
       return bridging::callFromJs<jsi::String>(
           rt, &T::getStatusStr, jsInvoker_, instance_, std::move(statusProp));
     }
-    int getStatusNum(jsi::Runtime &rt, jsi::Object statusProp) override {
+    jsi::Value getStatusNum(jsi::Runtime &rt, jsi::Object statusProp) override {
       static_assert(
           bridging::getParameterCount(&T::getStatusNum) == 2,
           \\"Expected getStatusNum(...) to have 2 parameters\\");
 
-      return bridging::callFromJs<int>(
+      return bridging::callFromJs<jsi::Value>(
           rt, &T::getStatusNum, jsInvoker_, instance_, std::move(statusProp));
     }
-    double getStatusFraction(jsi::Runtime &rt, jsi::Object statusProp) override {
+    jsi::Object getStateType(jsi::Runtime &rt, jsi::String a, jsi::String b, jsi::Value c) override {
       static_assert(
-          bridging::getParameterCount(&T::getStatusFraction) == 2,
-          \\"Expected getStatusFraction(...) to have 2 parameters\\");
-
-      return bridging::callFromJs<double>(
-          rt, &T::getStatusFraction, jsInvoker_, instance_, std::move(statusProp));
-    }
-    jsi::Object getStateType(jsi::Runtime &rt, jsi::String a, jsi::String b, int c, double d) override {
-      static_assert(
-          bridging::getParameterCount(&T::getStateType) == 5,
-          \\"Expected getStateType(...) to have 5 parameters\\");
+          bridging::getParameterCount(&T::getStateType) == 4,
+          \\"Expected getStateType(...) to have 4 parameters\\");
 
       return bridging::callFromJs<jsi::Object>(
-          rt, &T::getStateType, jsInvoker_, instance_, std::move(a), std::move(b), std::move(c), std::move(d));
+          rt, &T::getStateType, jsInvoker_, instance_, std::move(a), std::move(b), std::move(c));
     }
     jsi::Object getStateTypeWithEnums(jsi::Runtime &rt, jsi::Object paramOfTypeWithEnums) override {
       static_assert(
@@ -542,7 +497,7 @@ public:
 protected:
   NativeNullableTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeNullableTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeNullableTurboModuleCxxSpecJSI {
@@ -629,7 +584,7 @@ public:
 protected:
   NativeNumberTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeNumberTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeNumberTurboModuleCxxSpecJSI {
@@ -687,7 +642,7 @@ public:
 protected:
   NativeObjectTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeObjectTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeObjectTurboModuleCxxSpecJSI {
@@ -765,7 +720,7 @@ public:
 protected:
   NativeOptionalObjectTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeOptionalObjectTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeOptionalObjectTurboModuleCxxSpecJSI {
@@ -791,42 +746,44 @@ private:
 
 
   
-#pragma mark - NativePartialAnnotationTurboModuleBaseSomeObj
+#pragma mark - NativePartialAnnotationTurboModuleSomeObj
 
 template <typename P0, typename P1>
-struct NativePartialAnnotationTurboModuleBaseSomeObj {
+struct NativePartialAnnotationTurboModuleSomeObj {
   P0 a;
   P1 b;
-  bool operator==(const NativePartialAnnotationTurboModuleBaseSomeObj &other) const {
+  bool operator==(const NativePartialAnnotationTurboModuleSomeObj &other) const {
     return a == other.a && b == other.b;
   }
 };
 
-template <typename P0, typename P1>
-struct NativePartialAnnotationTurboModuleBaseSomeObjBridging {
-  static NativePartialAnnotationTurboModuleBaseSomeObj<P0, P1> fromJs(
+template <typename T>
+struct NativePartialAnnotationTurboModuleSomeObjBridging {
+  static T types;
+
+  static T fromJs(
       jsi::Runtime &rt,
       const jsi::Object &value,
       const std::shared_ptr<CallInvoker> &jsInvoker) {
-    NativePartialAnnotationTurboModuleBaseSomeObj<P0, P1> result{
-      bridging::fromJs<P0>(rt, value.getProperty(rt, \\"a\\"), jsInvoker),
-      bridging::fromJs<P1>(rt, value.getProperty(rt, \\"b\\"), jsInvoker)};
+    T result{
+      bridging::fromJs<decltype(types.a)>(rt, value.getProperty(rt, \\"a\\"), jsInvoker),
+      bridging::fromJs<decltype(types.b)>(rt, value.getProperty(rt, \\"b\\"), jsInvoker)};
     return result;
   }
 
 #ifdef DEBUG
-  static jsi::String aToJs(jsi::Runtime &rt, P0 value) {
+  static jsi::String aToJs(jsi::Runtime &rt, decltype(types.a) value) {
     return bridging::toJs(rt, value);
   }
 
-  static bool bToJs(jsi::Runtime &rt, P1 value) {
+  static bool bToJs(jsi::Runtime &rt, decltype(types.b) value) {
     return bridging::toJs(rt, value);
   }
 #endif
 
   static jsi::Object toJs(
       jsi::Runtime &rt,
-      const NativePartialAnnotationTurboModuleBaseSomeObj<P0, P1> &value,
+      const T &value,
       const std::shared_ptr<CallInvoker> &jsInvoker) {
     auto result = facebook::jsi::Object(rt);
     result.setProperty(rt, \\"a\\", bridging::toJs(rt, value.a, jsInvoker));
@@ -861,7 +818,7 @@ public:
 protected:
   NativePartialAnnotationTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativePartialAnnotationTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativePartialAnnotationTurboModuleCxxSpecJSI {
@@ -932,7 +889,7 @@ public:
 protected:
   NativePromiseTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativePromiseTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativePromiseTurboModuleCxxSpecJSI {
@@ -966,36 +923,38 @@ private:
 
 
   
-#pragma mark - SampleTurboModuleBaseAnimal
+#pragma mark - SampleTurboModuleAnimal
 
 template <typename P0>
-struct SampleTurboModuleBaseAnimal {
+struct SampleTurboModuleAnimal {
   P0 name;
-  bool operator==(const SampleTurboModuleBaseAnimal &other) const {
+  bool operator==(const SampleTurboModuleAnimal &other) const {
     return name == other.name;
   }
 };
 
-template <typename P0>
-struct SampleTurboModuleBaseAnimalBridging {
-  static SampleTurboModuleBaseAnimal<P0> fromJs(
+template <typename T>
+struct SampleTurboModuleAnimalBridging {
+  static T types;
+
+  static T fromJs(
       jsi::Runtime &rt,
       const jsi::Object &value,
       const std::shared_ptr<CallInvoker> &jsInvoker) {
-    SampleTurboModuleBaseAnimal<P0> result{
-      bridging::fromJs<P0>(rt, value.getProperty(rt, \\"name\\"), jsInvoker)};
+    T result{
+      bridging::fromJs<decltype(types.name)>(rt, value.getProperty(rt, \\"name\\"), jsInvoker)};
     return result;
   }
 
 #ifdef DEBUG
-  static jsi::String nameToJs(jsi::Runtime &rt, P0 value) {
+  static jsi::String nameToJs(jsi::Runtime &rt, decltype(types.name) value) {
     return bridging::toJs(rt, value);
   }
 #endif
 
   static jsi::Object toJs(
       jsi::Runtime &rt,
-      const SampleTurboModuleBaseAnimal<P0> &value,
+      const T &value,
       const std::shared_ptr<CallInvoker> &jsInvoker) {
     auto result = facebook::jsi::Object(rt);
     result.setProperty(rt, \\"name\\", bridging::toJs(rt, value.name, jsInvoker));
@@ -1036,7 +995,7 @@ public:
 protected:
   NativeSampleTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeSampleTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeSampleTurboModuleCxxSpecJSI {
@@ -1158,36 +1117,38 @@ private:
 
 
   
-#pragma mark - SampleTurboModuleArraysBaseAnimal
+#pragma mark - SampleTurboModuleArraysAnimal
 
 template <typename P0>
-struct SampleTurboModuleArraysBaseAnimal {
+struct SampleTurboModuleArraysAnimal {
   P0 name;
-  bool operator==(const SampleTurboModuleArraysBaseAnimal &other) const {
+  bool operator==(const SampleTurboModuleArraysAnimal &other) const {
     return name == other.name;
   }
 };
 
-template <typename P0>
-struct SampleTurboModuleArraysBaseAnimalBridging {
-  static SampleTurboModuleArraysBaseAnimal<P0> fromJs(
+template <typename T>
+struct SampleTurboModuleArraysAnimalBridging {
+  static T types;
+
+  static T fromJs(
       jsi::Runtime &rt,
       const jsi::Object &value,
       const std::shared_ptr<CallInvoker> &jsInvoker) {
-    SampleTurboModuleArraysBaseAnimal<P0> result{
-      bridging::fromJs<P0>(rt, value.getProperty(rt, \\"name\\"), jsInvoker)};
+    T result{
+      bridging::fromJs<decltype(types.name)>(rt, value.getProperty(rt, \\"name\\"), jsInvoker)};
     return result;
   }
 
 #ifdef DEBUG
-  static jsi::String nameToJs(jsi::Runtime &rt, P0 value) {
+  static jsi::String nameToJs(jsi::Runtime &rt, decltype(types.name) value) {
     return bridging::toJs(rt, value);
   }
 #endif
 
   static jsi::Object toJs(
       jsi::Runtime &rt,
-      const SampleTurboModuleArraysBaseAnimal<P0> &value,
+      const T &value,
       const std::shared_ptr<CallInvoker> &jsInvoker) {
     auto result = facebook::jsi::Object(rt);
     result.setProperty(rt, \\"name\\", bridging::toJs(rt, value.name, jsInvoker));
@@ -1228,7 +1189,7 @@ public:
 protected:
   NativeSampleTurboModuleArraysCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeSampleTurboModuleArraysCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeSampleTurboModuleArraysCxxSpecJSI {
@@ -1350,36 +1311,38 @@ private:
 
 
   
-#pragma mark - SampleTurboModuleNullableBaseAnimal
+#pragma mark - SampleTurboModuleNullableAnimal
 
 template <typename P0>
-struct SampleTurboModuleNullableBaseAnimal {
+struct SampleTurboModuleNullableAnimal {
   P0 name;
-  bool operator==(const SampleTurboModuleNullableBaseAnimal &other) const {
+  bool operator==(const SampleTurboModuleNullableAnimal &other) const {
     return name == other.name;
   }
 };
 
-template <typename P0>
-struct SampleTurboModuleNullableBaseAnimalBridging {
-  static SampleTurboModuleNullableBaseAnimal<P0> fromJs(
+template <typename T>
+struct SampleTurboModuleNullableAnimalBridging {
+  static T types;
+
+  static T fromJs(
       jsi::Runtime &rt,
       const jsi::Object &value,
       const std::shared_ptr<CallInvoker> &jsInvoker) {
-    SampleTurboModuleNullableBaseAnimal<P0> result{
-      bridging::fromJs<P0>(rt, value.getProperty(rt, \\"name\\"), jsInvoker)};
+    T result{
+      bridging::fromJs<decltype(types.name)>(rt, value.getProperty(rt, \\"name\\"), jsInvoker)};
     return result;
   }
 
 #ifdef DEBUG
-  static std::optional<jsi::String> nameToJs(jsi::Runtime &rt, P0 value) {
+  static std::optional<jsi::String> nameToJs(jsi::Runtime &rt, decltype(types.name) value) {
     return bridging::toJs(rt, value);
   }
 #endif
 
   static jsi::Object toJs(
       jsi::Runtime &rt,
-      const SampleTurboModuleNullableBaseAnimal<P0> &value,
+      const T &value,
       const std::shared_ptr<CallInvoker> &jsInvoker) {
     auto result = facebook::jsi::Object(rt);
     result.setProperty(rt, \\"name\\", bridging::toJs(rt, value.name, jsInvoker));
@@ -1420,7 +1383,7 @@ public:
 protected:
   NativeSampleTurboModuleNullableCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeSampleTurboModuleNullableCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeSampleTurboModuleNullableCxxSpecJSI {
@@ -1542,36 +1505,38 @@ private:
 
 
   
-#pragma mark - SampleTurboModuleNullableAndOptionalBaseAnimal
+#pragma mark - SampleTurboModuleNullableAndOptionalAnimal
 
 template <typename P0>
-struct SampleTurboModuleNullableAndOptionalBaseAnimal {
+struct SampleTurboModuleNullableAndOptionalAnimal {
   P0 name;
-  bool operator==(const SampleTurboModuleNullableAndOptionalBaseAnimal &other) const {
+  bool operator==(const SampleTurboModuleNullableAndOptionalAnimal &other) const {
     return name == other.name;
   }
 };
 
-template <typename P0>
-struct SampleTurboModuleNullableAndOptionalBaseAnimalBridging {
-  static SampleTurboModuleNullableAndOptionalBaseAnimal<P0> fromJs(
+template <typename T>
+struct SampleTurboModuleNullableAndOptionalAnimalBridging {
+  static T types;
+
+  static T fromJs(
       jsi::Runtime &rt,
       const jsi::Object &value,
       const std::shared_ptr<CallInvoker> &jsInvoker) {
-    SampleTurboModuleNullableAndOptionalBaseAnimal<P0> result{
-      bridging::fromJs<P0>(rt, value.getProperty(rt, \\"name\\"), jsInvoker)};
+    T result{
+      bridging::fromJs<decltype(types.name)>(rt, value.getProperty(rt, \\"name\\"), jsInvoker)};
     return result;
   }
 
 #ifdef DEBUG
-  static std::optional<jsi::String> nameToJs(jsi::Runtime &rt, P0 value) {
+  static std::optional<jsi::String> nameToJs(jsi::Runtime &rt, decltype(types.name) value) {
     return bridging::toJs(rt, value);
   }
 #endif
 
   static jsi::Object toJs(
       jsi::Runtime &rt,
-      const SampleTurboModuleNullableAndOptionalBaseAnimal<P0> &value,
+      const T &value,
       const std::shared_ptr<CallInvoker> &jsInvoker) {
     auto result = facebook::jsi::Object(rt);
     if (value.name) {
@@ -1614,7 +1579,7 @@ public:
 protected:
   NativeSampleTurboModuleNullableAndOptionalCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeSampleTurboModuleNullableAndOptionalCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeSampleTurboModuleNullableAndOptionalCxxSpecJSI {
@@ -1736,36 +1701,38 @@ private:
 
 
   
-#pragma mark - SampleTurboModuleOptionalBaseAnimal
+#pragma mark - SampleTurboModuleOptionalAnimal
 
 template <typename P0>
-struct SampleTurboModuleOptionalBaseAnimal {
+struct SampleTurboModuleOptionalAnimal {
   P0 name;
-  bool operator==(const SampleTurboModuleOptionalBaseAnimal &other) const {
+  bool operator==(const SampleTurboModuleOptionalAnimal &other) const {
     return name == other.name;
   }
 };
 
-template <typename P0>
-struct SampleTurboModuleOptionalBaseAnimalBridging {
-  static SampleTurboModuleOptionalBaseAnimal<P0> fromJs(
+template <typename T>
+struct SampleTurboModuleOptionalAnimalBridging {
+  static T types;
+
+  static T fromJs(
       jsi::Runtime &rt,
       const jsi::Object &value,
       const std::shared_ptr<CallInvoker> &jsInvoker) {
-    SampleTurboModuleOptionalBaseAnimal<P0> result{
-      bridging::fromJs<P0>(rt, value.getProperty(rt, \\"name\\"), jsInvoker)};
+    T result{
+      bridging::fromJs<decltype(types.name)>(rt, value.getProperty(rt, \\"name\\"), jsInvoker)};
     return result;
   }
 
 #ifdef DEBUG
-  static jsi::String nameToJs(jsi::Runtime &rt, P0 value) {
+  static jsi::String nameToJs(jsi::Runtime &rt, decltype(types.name) value) {
     return bridging::toJs(rt, value);
   }
 #endif
 
   static jsi::Object toJs(
       jsi::Runtime &rt,
-      const SampleTurboModuleOptionalBaseAnimal<P0> &value,
+      const T &value,
       const std::shared_ptr<CallInvoker> &jsInvoker) {
     auto result = facebook::jsi::Object(rt);
     if (value.name) {
@@ -1808,7 +1775,7 @@ public:
 protected:
   NativeSampleTurboModuleOptionalCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeSampleTurboModuleOptionalCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeSampleTurboModuleOptionalCxxSpecJSI {
@@ -1951,7 +1918,7 @@ public:
 protected:
   NativeStringTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeStringTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeStringTurboModuleCxxSpecJSI {
@@ -1983,8 +1950,7 @@ private:
   Delegate delegate_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 "
 `;
 
@@ -2003,8 +1969,7 @@ exports[`GenerateModuleH can generate a header file NativeModule specs with assu
 #include <ReactCommon/TurboModule.h>
 #include <react/bridging/Bridging.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 
   class JSI_EXPORT NativeArrayTurboModuleCxxSpecJSI : public TurboModule {
@@ -2030,7 +1995,7 @@ public:
 protected:
   NativeArrayTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeArrayTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeArrayTurboModuleCxxSpecJSI {
@@ -2093,7 +2058,7 @@ public:
 protected:
   NativeBooleanTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeBooleanTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeBooleanTurboModuleCxxSpecJSI {
@@ -2148,7 +2113,7 @@ public:
 protected:
   NativeCallbackTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeCallbackTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeCallbackTurboModuleCxxSpecJSI {
@@ -2181,9 +2146,41 @@ private:
 };
 
 
+#pragma mark - NativeEnumTurboModuleStatusNumEnum
+
+enum class NativeEnumTurboModuleStatusNumEnum { Active, Paused, Off };
+
+template <>
+struct Bridging<NativeEnumTurboModuleStatusNumEnum> {
+  static NativeEnumTurboModuleStatusNumEnum fromJs(jsi::Runtime &rt, const jsi::Value &rawValue) {
+    double value = (double)rawValue.asNumber();
+    if (value == 2) {
+      return NativeEnumTurboModuleStatusNumEnum::Active;
+    } else if (value == 1) {
+      return NativeEnumTurboModuleStatusNumEnum::Paused;
+    } else if (value == 0) {
+      return NativeEnumTurboModuleStatusNumEnum::Off;
+    } else {
+      throw jsi::JSError(rt, \\"No appropriate enum member found for value\\");
+    }
+  }
+
+  static jsi::Value toJs(jsi::Runtime &rt, NativeEnumTurboModuleStatusNumEnum value) {
+    if (value == NativeEnumTurboModuleStatusNumEnum::Active) {
+      return bridging::toJs(rt, 2);
+    } else if (value == NativeEnumTurboModuleStatusNumEnum::Paused) {
+      return bridging::toJs(rt, 1);
+    } else if (value == NativeEnumTurboModuleStatusNumEnum::Off) {
+      return bridging::toJs(rt, 0);
+    } else {
+      throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
+    }
+  }
+};
+
 #pragma mark - NativeEnumTurboModuleStatusRegularEnum
 
-enum NativeEnumTurboModuleStatusRegularEnum { Active, Paused, Off };
+enum class NativeEnumTurboModuleStatusRegularEnum { Active, Paused, Off };
 
 template <>
 struct Bridging<NativeEnumTurboModuleStatusRegularEnum> {
@@ -2215,7 +2212,7 @@ struct Bridging<NativeEnumTurboModuleStatusRegularEnum> {
 
 #pragma mark - NativeEnumTurboModuleStatusStrEnum
 
-enum NativeEnumTurboModuleStatusStrEnum { Active, Paused, Off };
+enum class NativeEnumTurboModuleStatusStrEnum { Active, Paused, Off };
 
 template <>
 struct Bridging<NativeEnumTurboModuleStatusStrEnum> {
@@ -2244,101 +2241,39 @@ struct Bridging<NativeEnumTurboModuleStatusStrEnum> {
     }
   }
 };
-
-#pragma mark - NativeEnumTurboModuleStatusNumEnum
-
-enum NativeEnumTurboModuleStatusNumEnum { Active, Paused, Off };
-
-template <>
-struct Bridging<NativeEnumTurboModuleStatusNumEnum> {
-  static NativeEnumTurboModuleStatusNumEnum fromJs(jsi::Runtime &rt, const jsi::Value &rawValue) {
-    double value = (double)rawValue.asNumber();
-    if (value == 2) {
-      return NativeEnumTurboModuleStatusNumEnum::Active;
-    } else if (value == 1) {
-      return NativeEnumTurboModuleStatusNumEnum::Paused;
-    } else if (value == 0) {
-      return NativeEnumTurboModuleStatusNumEnum::Off;
-    } else {
-      throw jsi::JSError(rt, \\"No appropriate enum member found for value\\");
-    }
-  }
-
-  static jsi::Value toJs(jsi::Runtime &rt, NativeEnumTurboModuleStatusNumEnum value) {
-    if (value == NativeEnumTurboModuleStatusNumEnum::Active) {
-      return bridging::toJs(rt, 2);
-    } else if (value == NativeEnumTurboModuleStatusNumEnum::Paused) {
-      return bridging::toJs(rt, 1);
-    } else if (value == NativeEnumTurboModuleStatusNumEnum::Off) {
-      return bridging::toJs(rt, 0);
-    } else {
-      throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
-    }
-  }
-};
-
-#pragma mark - NativeEnumTurboModuleStatusFractionEnum
-
-enum NativeEnumTurboModuleStatusFractionEnum { Active, Paused, Off };
-
-template <>
-struct Bridging<NativeEnumTurboModuleStatusFractionEnum> {
-  static NativeEnumTurboModuleStatusFractionEnum fromJs(jsi::Runtime &rt, const jsi::Value &rawValue) {
-    double value = (double)rawValue.asNumber();
-    if (value == 0.2f) {
-      return NativeEnumTurboModuleStatusFractionEnum::Active;
-    } else if (value == 0.1f) {
-      return NativeEnumTurboModuleStatusFractionEnum::Paused;
-    } else if (value == 0f) {
-      return NativeEnumTurboModuleStatusFractionEnum::Off;
-    } else {
-      throw jsi::JSError(rt, \\"No appropriate enum member found for value\\");
-    }
-  }
-
-  static jsi::Value toJs(jsi::Runtime &rt, NativeEnumTurboModuleStatusFractionEnum value) {
-    if (value == NativeEnumTurboModuleStatusFractionEnum::Active) {
-      return bridging::toJs(rt, 0.2f);
-    } else if (value == NativeEnumTurboModuleStatusFractionEnum::Paused) {
-      return bridging::toJs(rt, 0.1f);
-    } else if (value == NativeEnumTurboModuleStatusFractionEnum::Off) {
-      return bridging::toJs(rt, 0f);
-    } else {
-      throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
-    }
-  }
-};
   
-#pragma mark - NativeEnumTurboModuleBaseStateType
+#pragma mark - NativeEnumTurboModuleStateType
 
 template <typename P0>
-struct NativeEnumTurboModuleBaseStateType {
+struct NativeEnumTurboModuleStateType {
   P0 state;
-  bool operator==(const NativeEnumTurboModuleBaseStateType &other) const {
+  bool operator==(const NativeEnumTurboModuleStateType &other) const {
     return state == other.state;
   }
 };
 
-template <typename P0>
-struct NativeEnumTurboModuleBaseStateTypeBridging {
-  static NativeEnumTurboModuleBaseStateType<P0> fromJs(
+template <typename T>
+struct NativeEnumTurboModuleStateTypeBridging {
+  static T types;
+
+  static T fromJs(
       jsi::Runtime &rt,
       const jsi::Object &value,
       const std::shared_ptr<CallInvoker> &jsInvoker) {
-    NativeEnumTurboModuleBaseStateType<P0> result{
-      bridging::fromJs<P0>(rt, value.getProperty(rt, \\"state\\"), jsInvoker)};
+    T result{
+      bridging::fromJs<decltype(types.state)>(rt, value.getProperty(rt, \\"state\\"), jsInvoker)};
     return result;
   }
 
 #ifdef DEBUG
-  static jsi::String stateToJs(jsi::Runtime &rt, P0 value) {
+  static jsi::String stateToJs(jsi::Runtime &rt, decltype(types.state) value) {
     return bridging::toJs(rt, value);
   }
 #endif
 
   static jsi::Object toJs(
       jsi::Runtime &rt,
-      const NativeEnumTurboModuleBaseStateType<P0> &value,
+      const T &value,
       const std::shared_ptr<CallInvoker> &jsInvoker) {
     auto result = facebook::jsi::Object(rt);
     result.setProperty(rt, \\"state\\", bridging::toJs(rt, value.state, jsInvoker));
@@ -2348,67 +2283,62 @@ struct NativeEnumTurboModuleBaseStateTypeBridging {
 
 
 
-#pragma mark - NativeEnumTurboModuleBaseStateTypeWithEnums
+#pragma mark - NativeEnumTurboModuleStateTypeWithEnums
 
-template <typename P0, typename P1, typename P2, typename P3, typename P4>
-struct NativeEnumTurboModuleBaseStateTypeWithEnums {
+template <typename P0, typename P1, typename P2, typename P3>
+struct NativeEnumTurboModuleStateTypeWithEnums {
   P0 state;
   P1 regular;
   P2 str;
   P3 num;
-  P4 fraction;
-  bool operator==(const NativeEnumTurboModuleBaseStateTypeWithEnums &other) const {
-    return state == other.state && regular == other.regular && str == other.str && num == other.num && fraction == other.fraction;
+  bool operator==(const NativeEnumTurboModuleStateTypeWithEnums &other) const {
+    return state == other.state && regular == other.regular && str == other.str && num == other.num;
   }
 };
 
-template <typename P0, typename P1, typename P2, typename P3, typename P4>
-struct NativeEnumTurboModuleBaseStateTypeWithEnumsBridging {
-  static NativeEnumTurboModuleBaseStateTypeWithEnums<P0, P1, P2, P3, P4> fromJs(
+template <typename T>
+struct NativeEnumTurboModuleStateTypeWithEnumsBridging {
+  static T types;
+
+  static T fromJs(
       jsi::Runtime &rt,
       const jsi::Object &value,
       const std::shared_ptr<CallInvoker> &jsInvoker) {
-    NativeEnumTurboModuleBaseStateTypeWithEnums<P0, P1, P2, P3, P4> result{
-      bridging::fromJs<P0>(rt, value.getProperty(rt, \\"state\\"), jsInvoker),
-      bridging::fromJs<P1>(rt, value.getProperty(rt, \\"regular\\"), jsInvoker),
-      bridging::fromJs<P2>(rt, value.getProperty(rt, \\"str\\"), jsInvoker),
-      bridging::fromJs<P3>(rt, value.getProperty(rt, \\"num\\"), jsInvoker),
-      bridging::fromJs<P4>(rt, value.getProperty(rt, \\"fraction\\"), jsInvoker)};
+    T result{
+      bridging::fromJs<decltype(types.state)>(rt, value.getProperty(rt, \\"state\\"), jsInvoker),
+      bridging::fromJs<decltype(types.regular)>(rt, value.getProperty(rt, \\"regular\\"), jsInvoker),
+      bridging::fromJs<decltype(types.str)>(rt, value.getProperty(rt, \\"str\\"), jsInvoker),
+      bridging::fromJs<decltype(types.num)>(rt, value.getProperty(rt, \\"num\\"), jsInvoker)};
     return result;
   }
 
 #ifdef DEBUG
-  static jsi::String stateToJs(jsi::Runtime &rt, P0 value) {
+  static jsi::String stateToJs(jsi::Runtime &rt, decltype(types.state) value) {
     return bridging::toJs(rt, value);
   }
 
-  static jsi::String regularToJs(jsi::Runtime &rt, P1 value) {
+  static jsi::String regularToJs(jsi::Runtime &rt, decltype(types.regular) value) {
     return bridging::toJs(rt, value);
   }
 
-  static jsi::String strToJs(jsi::Runtime &rt, P2 value) {
+  static jsi::String strToJs(jsi::Runtime &rt, decltype(types.str) value) {
     return bridging::toJs(rt, value);
   }
 
-  static int numToJs(jsi::Runtime &rt, P3 value) {
-    return bridging::toJs(rt, value);
-  }
-
-  static double fractionToJs(jsi::Runtime &rt, P4 value) {
+  static jsi::Value numToJs(jsi::Runtime &rt, decltype(types.num) value) {
     return bridging::toJs(rt, value);
   }
 #endif
 
   static jsi::Object toJs(
       jsi::Runtime &rt,
-      const NativeEnumTurboModuleBaseStateTypeWithEnums<P0, P1, P2, P3, P4> &value,
+      const T &value,
       const std::shared_ptr<CallInvoker> &jsInvoker) {
     auto result = facebook::jsi::Object(rt);
     result.setProperty(rt, \\"state\\", bridging::toJs(rt, value.state, jsInvoker));
     result.setProperty(rt, \\"regular\\", bridging::toJs(rt, value.regular, jsInvoker));
     result.setProperty(rt, \\"str\\", bridging::toJs(rt, value.str, jsInvoker));
     result.setProperty(rt, \\"num\\", bridging::toJs(rt, value.num, jsInvoker));
-    result.setProperty(rt, \\"fraction\\", bridging::toJs(rt, value.fraction, jsInvoker));
     return result;
   }
 };
@@ -2420,9 +2350,8 @@ protected:
 public:
   virtual jsi::String getStatusRegular(jsi::Runtime &rt, jsi::Object statusProp) = 0;
   virtual jsi::String getStatusStr(jsi::Runtime &rt, jsi::Object statusProp) = 0;
-  virtual int getStatusNum(jsi::Runtime &rt, jsi::Object statusProp) = 0;
-  virtual double getStatusFraction(jsi::Runtime &rt, jsi::Object statusProp) = 0;
-  virtual jsi::Object getStateType(jsi::Runtime &rt, jsi::String a, jsi::String b, int c, double d) = 0;
+  virtual jsi::Value getStatusNum(jsi::Runtime &rt, jsi::Object statusProp) = 0;
+  virtual jsi::Object getStateType(jsi::Runtime &rt, jsi::String a, jsi::String b, jsi::Value c) = 0;
   virtual jsi::Object getStateTypeWithEnums(jsi::Runtime &rt, jsi::Object paramOfTypeWithEnums) = 0;
 
 };
@@ -2439,7 +2368,7 @@ public:
 protected:
   NativeEnumTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeEnumTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeEnumTurboModuleCxxSpecJSI {
@@ -2463,29 +2392,21 @@ private:
       return bridging::callFromJs<jsi::String>(
           rt, &T::getStatusStr, jsInvoker_, instance_, std::move(statusProp));
     }
-    int getStatusNum(jsi::Runtime &rt, jsi::Object statusProp) override {
+    jsi::Value getStatusNum(jsi::Runtime &rt, jsi::Object statusProp) override {
       static_assert(
           bridging::getParameterCount(&T::getStatusNum) == 2,
           \\"Expected getStatusNum(...) to have 2 parameters\\");
 
-      return bridging::callFromJs<int>(
+      return bridging::callFromJs<jsi::Value>(
           rt, &T::getStatusNum, jsInvoker_, instance_, std::move(statusProp));
     }
-    double getStatusFraction(jsi::Runtime &rt, jsi::Object statusProp) override {
+    jsi::Object getStateType(jsi::Runtime &rt, jsi::String a, jsi::String b, jsi::Value c) override {
       static_assert(
-          bridging::getParameterCount(&T::getStatusFraction) == 2,
-          \\"Expected getStatusFraction(...) to have 2 parameters\\");
-
-      return bridging::callFromJs<double>(
-          rt, &T::getStatusFraction, jsInvoker_, instance_, std::move(statusProp));
-    }
-    jsi::Object getStateType(jsi::Runtime &rt, jsi::String a, jsi::String b, int c, double d) override {
-      static_assert(
-          bridging::getParameterCount(&T::getStateType) == 5,
-          \\"Expected getStateType(...) to have 5 parameters\\");
+          bridging::getParameterCount(&T::getStateType) == 4,
+          \\"Expected getStateType(...) to have 4 parameters\\");
 
       return bridging::callFromJs<jsi::Object>(
-          rt, &T::getStateType, jsInvoker_, instance_, std::move(a), std::move(b), std::move(c), std::move(d));
+          rt, &T::getStateType, jsInvoker_, instance_, std::move(a), std::move(b), std::move(c));
     }
     jsi::Object getStateTypeWithEnums(jsi::Runtime &rt, jsi::Object paramOfTypeWithEnums) override {
       static_assert(
@@ -2530,7 +2451,7 @@ public:
 protected:
   NativeNullableTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeNullableTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeNullableTurboModuleCxxSpecJSI {
@@ -2617,7 +2538,7 @@ public:
 protected:
   NativeNumberTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeNumberTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeNumberTurboModuleCxxSpecJSI {
@@ -2675,7 +2596,7 @@ public:
 protected:
   NativeObjectTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeObjectTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeObjectTurboModuleCxxSpecJSI {
@@ -2753,7 +2674,7 @@ public:
 protected:
   NativeOptionalObjectTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeOptionalObjectTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeOptionalObjectTurboModuleCxxSpecJSI {
@@ -2779,42 +2700,44 @@ private:
 
 
   
-#pragma mark - NativePartialAnnotationTurboModuleBaseSomeObj
+#pragma mark - NativePartialAnnotationTurboModuleSomeObj
 
 template <typename P0, typename P1>
-struct NativePartialAnnotationTurboModuleBaseSomeObj {
+struct NativePartialAnnotationTurboModuleSomeObj {
   P0 a;
   P1 b;
-  bool operator==(const NativePartialAnnotationTurboModuleBaseSomeObj &other) const {
+  bool operator==(const NativePartialAnnotationTurboModuleSomeObj &other) const {
     return a == other.a && b == other.b;
   }
 };
 
-template <typename P0, typename P1>
-struct NativePartialAnnotationTurboModuleBaseSomeObjBridging {
-  static NativePartialAnnotationTurboModuleBaseSomeObj<P0, P1> fromJs(
+template <typename T>
+struct NativePartialAnnotationTurboModuleSomeObjBridging {
+  static T types;
+
+  static T fromJs(
       jsi::Runtime &rt,
       const jsi::Object &value,
       const std::shared_ptr<CallInvoker> &jsInvoker) {
-    NativePartialAnnotationTurboModuleBaseSomeObj<P0, P1> result{
-      bridging::fromJs<P0>(rt, value.getProperty(rt, \\"a\\"), jsInvoker),
-      bridging::fromJs<P1>(rt, value.getProperty(rt, \\"b\\"), jsInvoker)};
+    T result{
+      bridging::fromJs<decltype(types.a)>(rt, value.getProperty(rt, \\"a\\"), jsInvoker),
+      bridging::fromJs<decltype(types.b)>(rt, value.getProperty(rt, \\"b\\"), jsInvoker)};
     return result;
   }
 
 #ifdef DEBUG
-  static jsi::String aToJs(jsi::Runtime &rt, P0 value) {
+  static jsi::String aToJs(jsi::Runtime &rt, decltype(types.a) value) {
     return bridging::toJs(rt, value);
   }
 
-  static bool bToJs(jsi::Runtime &rt, P1 value) {
+  static bool bToJs(jsi::Runtime &rt, decltype(types.b) value) {
     return bridging::toJs(rt, value);
   }
 #endif
 
   static jsi::Object toJs(
       jsi::Runtime &rt,
-      const NativePartialAnnotationTurboModuleBaseSomeObj<P0, P1> &value,
+      const T &value,
       const std::shared_ptr<CallInvoker> &jsInvoker) {
     auto result = facebook::jsi::Object(rt);
     result.setProperty(rt, \\"a\\", bridging::toJs(rt, value.a, jsInvoker));
@@ -2849,7 +2772,7 @@ public:
 protected:
   NativePartialAnnotationTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativePartialAnnotationTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativePartialAnnotationTurboModuleCxxSpecJSI {
@@ -2920,7 +2843,7 @@ public:
 protected:
   NativePromiseTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativePromiseTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativePromiseTurboModuleCxxSpecJSI {
@@ -2954,36 +2877,38 @@ private:
 
 
   
-#pragma mark - SampleTurboModuleBaseAnimal
+#pragma mark - SampleTurboModuleAnimal
 
 template <typename P0>
-struct SampleTurboModuleBaseAnimal {
+struct SampleTurboModuleAnimal {
   P0 name;
-  bool operator==(const SampleTurboModuleBaseAnimal &other) const {
+  bool operator==(const SampleTurboModuleAnimal &other) const {
     return name == other.name;
   }
 };
 
-template <typename P0>
-struct SampleTurboModuleBaseAnimalBridging {
-  static SampleTurboModuleBaseAnimal<P0> fromJs(
+template <typename T>
+struct SampleTurboModuleAnimalBridging {
+  static T types;
+
+  static T fromJs(
       jsi::Runtime &rt,
       const jsi::Object &value,
       const std::shared_ptr<CallInvoker> &jsInvoker) {
-    SampleTurboModuleBaseAnimal<P0> result{
-      bridging::fromJs<P0>(rt, value.getProperty(rt, \\"name\\"), jsInvoker)};
+    T result{
+      bridging::fromJs<decltype(types.name)>(rt, value.getProperty(rt, \\"name\\"), jsInvoker)};
     return result;
   }
 
 #ifdef DEBUG
-  static jsi::String nameToJs(jsi::Runtime &rt, P0 value) {
+  static jsi::String nameToJs(jsi::Runtime &rt, decltype(types.name) value) {
     return bridging::toJs(rt, value);
   }
 #endif
 
   static jsi::Object toJs(
       jsi::Runtime &rt,
-      const SampleTurboModuleBaseAnimal<P0> &value,
+      const T &value,
       const std::shared_ptr<CallInvoker> &jsInvoker) {
     auto result = facebook::jsi::Object(rt);
     result.setProperty(rt, \\"name\\", bridging::toJs(rt, value.name, jsInvoker));
@@ -3024,7 +2949,7 @@ public:
 protected:
   NativeSampleTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeSampleTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeSampleTurboModuleCxxSpecJSI {
@@ -3146,36 +3071,38 @@ private:
 
 
   
-#pragma mark - SampleTurboModuleArraysBaseAnimal
+#pragma mark - SampleTurboModuleArraysAnimal
 
 template <typename P0>
-struct SampleTurboModuleArraysBaseAnimal {
+struct SampleTurboModuleArraysAnimal {
   P0 name;
-  bool operator==(const SampleTurboModuleArraysBaseAnimal &other) const {
+  bool operator==(const SampleTurboModuleArraysAnimal &other) const {
     return name == other.name;
   }
 };
 
-template <typename P0>
-struct SampleTurboModuleArraysBaseAnimalBridging {
-  static SampleTurboModuleArraysBaseAnimal<P0> fromJs(
+template <typename T>
+struct SampleTurboModuleArraysAnimalBridging {
+  static T types;
+
+  static T fromJs(
       jsi::Runtime &rt,
       const jsi::Object &value,
       const std::shared_ptr<CallInvoker> &jsInvoker) {
-    SampleTurboModuleArraysBaseAnimal<P0> result{
-      bridging::fromJs<P0>(rt, value.getProperty(rt, \\"name\\"), jsInvoker)};
+    T result{
+      bridging::fromJs<decltype(types.name)>(rt, value.getProperty(rt, \\"name\\"), jsInvoker)};
     return result;
   }
 
 #ifdef DEBUG
-  static jsi::String nameToJs(jsi::Runtime &rt, P0 value) {
+  static jsi::String nameToJs(jsi::Runtime &rt, decltype(types.name) value) {
     return bridging::toJs(rt, value);
   }
 #endif
 
   static jsi::Object toJs(
       jsi::Runtime &rt,
-      const SampleTurboModuleArraysBaseAnimal<P0> &value,
+      const T &value,
       const std::shared_ptr<CallInvoker> &jsInvoker) {
     auto result = facebook::jsi::Object(rt);
     result.setProperty(rt, \\"name\\", bridging::toJs(rt, value.name, jsInvoker));
@@ -3216,7 +3143,7 @@ public:
 protected:
   NativeSampleTurboModuleArraysCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeSampleTurboModuleArraysCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeSampleTurboModuleArraysCxxSpecJSI {
@@ -3338,36 +3265,38 @@ private:
 
 
   
-#pragma mark - SampleTurboModuleNullableBaseAnimal
+#pragma mark - SampleTurboModuleNullableAnimal
 
 template <typename P0>
-struct SampleTurboModuleNullableBaseAnimal {
+struct SampleTurboModuleNullableAnimal {
   P0 name;
-  bool operator==(const SampleTurboModuleNullableBaseAnimal &other) const {
+  bool operator==(const SampleTurboModuleNullableAnimal &other) const {
     return name == other.name;
   }
 };
 
-template <typename P0>
-struct SampleTurboModuleNullableBaseAnimalBridging {
-  static SampleTurboModuleNullableBaseAnimal<P0> fromJs(
+template <typename T>
+struct SampleTurboModuleNullableAnimalBridging {
+  static T types;
+
+  static T fromJs(
       jsi::Runtime &rt,
       const jsi::Object &value,
       const std::shared_ptr<CallInvoker> &jsInvoker) {
-    SampleTurboModuleNullableBaseAnimal<P0> result{
-      bridging::fromJs<P0>(rt, value.getProperty(rt, \\"name\\"), jsInvoker)};
+    T result{
+      bridging::fromJs<decltype(types.name)>(rt, value.getProperty(rt, \\"name\\"), jsInvoker)};
     return result;
   }
 
 #ifdef DEBUG
-  static std::optional<jsi::String> nameToJs(jsi::Runtime &rt, P0 value) {
+  static std::optional<jsi::String> nameToJs(jsi::Runtime &rt, decltype(types.name) value) {
     return bridging::toJs(rt, value);
   }
 #endif
 
   static jsi::Object toJs(
       jsi::Runtime &rt,
-      const SampleTurboModuleNullableBaseAnimal<P0> &value,
+      const T &value,
       const std::shared_ptr<CallInvoker> &jsInvoker) {
     auto result = facebook::jsi::Object(rt);
     result.setProperty(rt, \\"name\\", bridging::toJs(rt, value.name, jsInvoker));
@@ -3408,7 +3337,7 @@ public:
 protected:
   NativeSampleTurboModuleNullableCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeSampleTurboModuleNullableCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeSampleTurboModuleNullableCxxSpecJSI {
@@ -3530,36 +3459,38 @@ private:
 
 
   
-#pragma mark - SampleTurboModuleNullableAndOptionalBaseAnimal
+#pragma mark - SampleTurboModuleNullableAndOptionalAnimal
 
 template <typename P0>
-struct SampleTurboModuleNullableAndOptionalBaseAnimal {
+struct SampleTurboModuleNullableAndOptionalAnimal {
   P0 name;
-  bool operator==(const SampleTurboModuleNullableAndOptionalBaseAnimal &other) const {
+  bool operator==(const SampleTurboModuleNullableAndOptionalAnimal &other) const {
     return name == other.name;
   }
 };
 
-template <typename P0>
-struct SampleTurboModuleNullableAndOptionalBaseAnimalBridging {
-  static SampleTurboModuleNullableAndOptionalBaseAnimal<P0> fromJs(
+template <typename T>
+struct SampleTurboModuleNullableAndOptionalAnimalBridging {
+  static T types;
+
+  static T fromJs(
       jsi::Runtime &rt,
       const jsi::Object &value,
       const std::shared_ptr<CallInvoker> &jsInvoker) {
-    SampleTurboModuleNullableAndOptionalBaseAnimal<P0> result{
-      bridging::fromJs<P0>(rt, value.getProperty(rt, \\"name\\"), jsInvoker)};
+    T result{
+      bridging::fromJs<decltype(types.name)>(rt, value.getProperty(rt, \\"name\\"), jsInvoker)};
     return result;
   }
 
 #ifdef DEBUG
-  static std::optional<jsi::String> nameToJs(jsi::Runtime &rt, P0 value) {
+  static std::optional<jsi::String> nameToJs(jsi::Runtime &rt, decltype(types.name) value) {
     return bridging::toJs(rt, value);
   }
 #endif
 
   static jsi::Object toJs(
       jsi::Runtime &rt,
-      const SampleTurboModuleNullableAndOptionalBaseAnimal<P0> &value,
+      const T &value,
       const std::shared_ptr<CallInvoker> &jsInvoker) {
     auto result = facebook::jsi::Object(rt);
     if (value.name) {
@@ -3602,7 +3533,7 @@ public:
 protected:
   NativeSampleTurboModuleNullableAndOptionalCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeSampleTurboModuleNullableAndOptionalCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeSampleTurboModuleNullableAndOptionalCxxSpecJSI {
@@ -3724,36 +3655,38 @@ private:
 
 
   
-#pragma mark - SampleTurboModuleOptionalBaseAnimal
+#pragma mark - SampleTurboModuleOptionalAnimal
 
 template <typename P0>
-struct SampleTurboModuleOptionalBaseAnimal {
+struct SampleTurboModuleOptionalAnimal {
   P0 name;
-  bool operator==(const SampleTurboModuleOptionalBaseAnimal &other) const {
+  bool operator==(const SampleTurboModuleOptionalAnimal &other) const {
     return name == other.name;
   }
 };
 
-template <typename P0>
-struct SampleTurboModuleOptionalBaseAnimalBridging {
-  static SampleTurboModuleOptionalBaseAnimal<P0> fromJs(
+template <typename T>
+struct SampleTurboModuleOptionalAnimalBridging {
+  static T types;
+
+  static T fromJs(
       jsi::Runtime &rt,
       const jsi::Object &value,
       const std::shared_ptr<CallInvoker> &jsInvoker) {
-    SampleTurboModuleOptionalBaseAnimal<P0> result{
-      bridging::fromJs<P0>(rt, value.getProperty(rt, \\"name\\"), jsInvoker)};
+    T result{
+      bridging::fromJs<decltype(types.name)>(rt, value.getProperty(rt, \\"name\\"), jsInvoker)};
     return result;
   }
 
 #ifdef DEBUG
-  static jsi::String nameToJs(jsi::Runtime &rt, P0 value) {
+  static jsi::String nameToJs(jsi::Runtime &rt, decltype(types.name) value) {
     return bridging::toJs(rt, value);
   }
 #endif
 
   static jsi::Object toJs(
       jsi::Runtime &rt,
-      const SampleTurboModuleOptionalBaseAnimal<P0> &value,
+      const T &value,
       const std::shared_ptr<CallInvoker> &jsInvoker) {
     auto result = facebook::jsi::Object(rt);
     if (value.name) {
@@ -3796,7 +3729,7 @@ public:
 protected:
   NativeSampleTurboModuleOptionalCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeSampleTurboModuleOptionalCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeSampleTurboModuleOptionalCxxSpecJSI {
@@ -3939,7 +3872,7 @@ public:
 protected:
   NativeStringTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeStringTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeStringTurboModuleCxxSpecJSI {
@@ -3971,7 +3904,6 @@ private:
   Delegate delegate_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 "
 `;

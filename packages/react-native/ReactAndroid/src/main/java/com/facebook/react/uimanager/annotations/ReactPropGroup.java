@@ -10,6 +10,7 @@ package com.facebook.react.uimanager.annotations;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import androidx.annotation.Nullable;
+import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
@@ -40,6 +41,7 @@ import java.lang.annotation.Target;
  * provided as a default.
  */
 @Retention(RUNTIME)
+@DeprecatedInNewArchitecture
 @Target(ElementType.METHOD)
 public @interface ReactPropGroup {
 
@@ -87,4 +89,11 @@ public @interface ReactPropGroup {
    * the component description in JS
    */
   int defaultInt() default 0;
+
+  /**
+   * Default value for property of type {@code long}. This value will be provided to property setter
+   * method annotated with {@link ReactProp} if property with a given name gets removed from the
+   * component description in JS
+   */
+  long defaultLong() default 0L;
 }

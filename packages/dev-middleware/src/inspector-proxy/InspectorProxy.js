@@ -11,6 +11,7 @@
 
 import type {EventReporter} from '../types/EventReporter';
 import type {Experiments} from '../types/Experiments';
+import type {CreateCustomMessageHandlerFn} from './CustomMessageHandler';
 import type {
   JsonPagesListResponse,
   JsonVersionResponse,
@@ -18,8 +19,14 @@ import type {
   PageDescription,
 } from './types';
 import type {IncomingMessage, ServerResponse} from 'http';
+// $FlowFixMe[cannot-resolve-module] libdef missing in RN OSS
+import type {Timeout} from 'timers';
 
 import Device from './Device';
+import nullthrows from 'nullthrows';
+// Import these from node:timers to get the correct Flow types.
+// $FlowFixMe[cannot-resolve-module] libdef missing in RN OSS
+import {clearTimeout, setTimeout} from 'timers';
 import url from 'url';
 import WS from 'ws';
 
@@ -30,6 +37,8 @@ const WS_DEBUGGER_URL = '/inspector/debug';
 const PAGES_LIST_JSON_URL = '/json';
 const PAGES_LIST_JSON_URL_2 = '/json/list';
 const PAGES_LIST_JSON_VERSION_URL = '/json/version';
+const MAX_PONG_LATENCY_MS = 5000;
+const DEBUGGER_HEARTBEAT_INTERVAL_MS = 10000;
 
 const INTERNAL_ERROR_CODE = 1011;
 
@@ -42,43 +51,48 @@ export interface InspectorProxyQueries {
  */
 export default class InspectorProxy implements InspectorProxyQueries {
   // Root of the project used for relative to absolute source path conversion.
-  _projectRoot: string;
+  #projectRoot: string;
 
   /** The base URL to the dev server from the developer machine. */
-  _serverBaseUrl: string;
+  #serverBaseUrl: string;
 
   // Maps device ID to Device instance.
-  _devices: Map<string, Device>;
+  #devices: Map<string, Device>;
 
   // Internal counter for device IDs -- just gets incremented for each new device.
-  _deviceCounter: number = 0;
+  #deviceCounter: number = 0;
 
-  _eventReporter: ?EventReporter;
+  #eventReporter: ?EventReporter;
 
-  _experiments: Experiments;
+  #experiments: Experiments;
+
+  // custom message handler factory allowing implementers to handle unsupported CDP messages.
+  #customMessageHandler: ?CreateCustomMessageHandlerFn;
 
   constructor(
     projectRoot: string,
     serverBaseUrl: string,
     eventReporter: ?EventReporter,
     experiments: Experiments,
+    customMessageHandler: ?CreateCustomMessageHandlerFn,
   ) {
-    this._projectRoot = projectRoot;
-    this._serverBaseUrl = serverBaseUrl;
-    this._devices = new Map();
-    this._eventReporter = eventReporter;
-    this._experiments = experiments;
+    this.#projectRoot = projectRoot;
+    this.#serverBaseUrl = serverBaseUrl;
+    this.#devices = new Map();
+    this.#eventReporter = eventReporter;
+    this.#experiments = experiments;
+    this.#customMessageHandler = customMessageHandler;
   }
 
   getPageDescriptions(): Array<PageDescription> {
     // Build list of pages from all devices.
     let result: Array<PageDescription> = [];
-    Array.from(this._devices.entries()).forEach(([deviceId, device]) => {
+    Array.from(this.#devices.entries()).forEach(([deviceId, device]) => {
       result = result.concat(
         device
           .getPagesList()
           .map((page: Page) =>
-            this._buildPageDescription(deviceId, device, page),
+            this.#buildPageDescription(deviceId, device, page),
           ),
       );
     });
@@ -99,9 +113,9 @@ export default class InspectorProxy implements InspectorProxyQueries {
       pathname === PAGES_LIST_JSON_URL ||
       pathname === PAGES_LIST_JSON_URL_2
     ) {
-      this._sendJsonResponse(response, this.getPageDescriptions());
+      this.#sendJsonResponse(response, this.getPageDescriptions());
     } else if (pathname === PAGES_LIST_JSON_VERSION_URL) {
-      this._sendJsonResponse(response, {
+      this.#sendJsonResponse(response, {
         Browser: 'Mobile JavaScript',
         'Protocol-Version': '1.1',
       });
@@ -114,19 +128,19 @@ export default class InspectorProxy implements InspectorProxyQueries {
     [path: string]: WS.Server,
   } {
     return {
-      [WS_DEVICE_URL]: this._createDeviceConnectionWSServer(),
-      [WS_DEBUGGER_URL]: this._createDebuggerConnectionWSServer(),
+      [WS_DEVICE_URL]: this.#createDeviceConnectionWSServer(),
+      [WS_DEBUGGER_URL]: this.#createDebuggerConnectionWSServer(),
     };
   }
 
   // Converts page information received from device into PageDescription object
   // that is sent to debugger.
-  _buildPageDescription(
+  #buildPageDescription(
     deviceId: string,
     device: Device,
     page: Page,
   ): PageDescription {
-    const {host, protocol} = new URL(this._serverBaseUrl);
+    const {host, protocol} = new URL(this.#serverBaseUrl);
     const webSocketScheme = protocol === 'https:' ? 'wss' : 'ws';
 
     const webSocketUrlWithoutProtocol = `${host}${WS_DEBUGGER_URL}?device=${deviceId}&page=${page.id}`;
@@ -151,13 +165,14 @@ export default class InspectorProxy implements InspectorProxyQueries {
       deviceName: device.getName(),
       reactNative: {
         logicalDeviceId: deviceId,
+        capabilities: nullthrows(page.capabilities),
       },
     };
   }
 
   // Sends object as response to HTTP request.
   // Just serializes object using JSON and sets required headers.
-  _sendJsonResponse(
+  #sendJsonResponse(
     response: ServerResponse,
     object: JsonPagesListResponse | JsonVersionResponse,
   ) {
@@ -165,7 +180,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
     response.writeHead(200, {
       'Content-Type': 'application/json; charset=UTF-8',
       'Cache-Control': 'no-cache',
-      'Content-Length': data.length.toString(),
+      'Content-Length': Buffer.byteLength(data).toString(),
       Connection: 'close',
     });
     response.end(data);
@@ -176,7 +191,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
   // HTTP GET params.
   // For each new websocket connection we parse device and app names and create
   // new instance of Device class.
-  _createDeviceConnectionWSServer(): ws$WebSocketServer {
+  #createDeviceConnectionWSServer(): ws$WebSocketServer {
     const wss = new WS.Server({
       noServer: true,
       perMessageDeflate: true,
@@ -187,35 +202,36 @@ export default class InspectorProxy implements InspectorProxyQueries {
     // $FlowFixMe[value-as-type]
     wss.on('connection', async (socket: WS, req) => {
       try {
-        const fallbackDeviceId = String(this._deviceCounter++);
+        const fallbackDeviceId = String(this.#deviceCounter++);
 
         const query = url.parse(req.url || '', true).query || {};
         const deviceId = query.device || fallbackDeviceId;
         const deviceName = query.name || 'Unknown';
         const appName = query.app || 'Unknown';
 
-        const oldDevice = this._devices.get(deviceId);
+        const oldDevice = this.#devices.get(deviceId);
         const newDevice = new Device(
           deviceId,
           deviceName,
           appName,
           socket,
-          this._projectRoot,
-          this._eventReporter,
+          this.#projectRoot,
+          this.#eventReporter,
+          this.#customMessageHandler,
         );
 
         if (oldDevice) {
           oldDevice.handleDuplicateDeviceConnection(newDevice);
         }
 
-        this._devices.set(deviceId, newDevice);
+        this.#devices.set(deviceId, newDevice);
 
         debug(
           `Got new connection: name=${deviceName}, app=${appName}, device=${deviceId}`,
         );
 
         socket.on('close', () => {
-          this._devices.delete(deviceId);
+          this.#devices.delete(deviceId);
           debug(`Device ${deviceName} disconnected.`);
         });
       } catch (e) {
@@ -231,7 +247,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
   // in /json response.
   // When debugger connects we try to parse device and page IDs from the query and pass
   // websocket object to corresponding Device instance.
-  _createDebuggerConnectionWSServer(): ws$WebSocketServer {
+  #createDebuggerConnectionWSServer(): ws$WebSocketServer {
     const wss = new WS.Server({
       noServer: true,
       perMessageDeflate: false,
@@ -250,18 +266,20 @@ export default class InspectorProxy implements InspectorProxyQueries {
           throw new Error('Incorrect URL - must provide device and page IDs');
         }
 
-        const device = this._devices.get(deviceId);
+        const device = this.#devices.get(deviceId);
         if (device == null) {
           throw new Error('Unknown device with ID ' + deviceId);
         }
 
+        this.#startHeartbeat(socket, DEBUGGER_HEARTBEAT_INTERVAL_MS);
+
         device.handleDebuggerConnection(socket, pageId, {
-          userAgent: req.headers['user-agent'] ?? null,
+          userAgent: req.headers['user-agent'] ?? query.userAgent ?? null,
         });
       } catch (e) {
         console.error(e);
         socket.close(INTERNAL_ERROR_CODE, e?.toString() ?? 'Unknown error');
-        this._eventReporter?.logEvent({
+        this.#eventReporter?.logEvent({
           type: 'connect_debugger_frontend',
           status: 'error',
           error: e,
@@ -269,5 +287,46 @@ export default class InspectorProxy implements InspectorProxyQueries {
       }
     });
     return wss;
+  }
+
+  // Starts pinging the socket at the given interval. Compliant clients will
+  // respond with pong frame. This serves both to detect when the client
+  // has gone away without sending a close frame, and as a keepalive in cases
+  // where proxies may drop idle connections (e.g., VS Code tunnels).
+  //
+  // https://datatracker.ietf.org/doc/html/rfc6455#section-5.5.2
+  #startHeartbeat(socket: WS, intervalMs: number) {
+    let terminateTimeout = null;
+
+    const pingTimeout: Timeout = setTimeout(() => {
+      if (socket.readyState !== WS.OPEN) {
+        // May be connecting or closing, try again later.
+        pingTimeout.refresh();
+        return;
+      }
+      socket.ping();
+      terminateTimeout = setTimeout(() => {
+        if (socket.readyState !== WS.OPEN) {
+          return;
+        }
+        // We don't use close() here because that initiates a closing handshake,
+        // which will not complete if the other end has gone away - 'close'
+        // would not be emitted.
+        //
+        // terminate() emits 'close' immediately, allowing us to handle it and
+        // inform any clients.
+        socket.terminate();
+      }, MAX_PONG_LATENCY_MS).unref();
+    }, intervalMs).unref();
+
+    socket.on('pong', () => {
+      terminateTimeout && clearTimeout(terminateTimeout);
+      pingTimeout.refresh();
+    });
+
+    socket.on('close', () => {
+      terminateTimeout && clearTimeout(terminateTimeout);
+      clearTimeout(pingTimeout);
+    });
   }
 }

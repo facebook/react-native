@@ -8,6 +8,7 @@
 #include <memory>
 
 #include <gtest/gtest.h>
+#include <hermes/hermes.h>
 #include <react/debug/flags.h>
 #include <react/renderer/core/ConcreteShadowNode.h>
 #include <react/renderer/core/PropsParserContext.h>
@@ -16,6 +17,7 @@
 
 #include "TestComponent.h"
 
+using namespace facebook;
 using namespace facebook::react;
 
 class PropsSingleFloat : public Props {
@@ -151,10 +153,10 @@ TEST(RawPropsTest, handleProps) {
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  const auto& raw = RawProps(folly::dynamic::object("nativeID", "abc"));
+  auto raw = RawProps(folly::dynamic::object("nativeID", "abc"));
   auto parser = RawPropsParser();
   parser.prepare<Props>();
-  raw.parse(parser, parserContext);
+  raw.parse(parser);
 
   auto props = std::make_shared<Props>(parserContext, Props(), raw);
 
@@ -168,10 +170,10 @@ TEST(RawPropsTest, handleRawPropsSingleString) {
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  const auto& raw = RawProps(folly::dynamic::object("nativeID", "abc"));
+  auto raw = RawProps(folly::dynamic::object("nativeID", "abc"));
   auto parser = RawPropsParser();
   parser.prepare<Props>();
-  raw.parse(parser, parserContext);
+  raw.parse(parser);
 
   std::string value = (std::string)*raw.at("nativeID", nullptr, nullptr);
 
@@ -182,11 +184,10 @@ TEST(RawPropsTest, handleRawPropsSingleFloat) {
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  const auto& raw =
-      RawProps(folly::dynamic::object("floatValue", (float)42.42));
+  auto raw = RawProps(folly::dynamic::object("floatValue", (float)42.42));
   auto parser = RawPropsParser();
   parser.prepare<PropsSingleFloat>();
-  raw.parse(parser, parserContext);
+  raw.parse(parser);
 
   auto value = (float)*raw.at("floatValue", nullptr, nullptr);
 
@@ -197,11 +198,10 @@ TEST(RawPropsTest, handleRawPropsSingleDouble) {
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  const auto& raw =
-      RawProps(folly::dynamic::object("doubleValue", (double)42.42));
+  auto raw = RawProps(folly::dynamic::object("doubleValue", (double)42.42));
   auto parser = RawPropsParser();
   parser.prepare<PropsSingleDouble>();
-  raw.parse(parser, parserContext);
+  raw.parse(parser);
 
   auto value = (double)*raw.at("doubleValue", nullptr, nullptr);
 
@@ -212,10 +212,10 @@ TEST(RawPropsTest, handleRawPropsSingleInt) {
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  const auto& raw = RawProps(folly::dynamic::object("intValue", (int)42.42));
+  auto raw = RawProps(folly::dynamic::object("intValue", (int)42.42));
   auto parser = RawPropsParser();
   parser.prepare<PropsSingleInt>();
-  raw.parse(parser, parserContext);
+  raw.parse(parser);
 
   int value = (int)*raw.at("intValue", nullptr, nullptr);
 
@@ -226,10 +226,10 @@ TEST(RawPropsTest, handleRawPropsSingleIntGetManyTimes) {
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  const auto& raw = RawProps(folly::dynamic::object("intValue", (int)42.42));
+  auto raw = RawProps(folly::dynamic::object("intValue", (int)42.42));
   auto parser = RawPropsParser();
   parser.prepare<PropsSingleInt>();
-  raw.parse(parser, parserContext);
+  raw.parse(parser);
 
   EXPECT_EQ((int)*raw.at("intValue", nullptr, nullptr), 42);
   EXPECT_EQ((int)*raw.at("intValue", nullptr, nullptr), 42);
@@ -240,14 +240,13 @@ TEST(RawPropsTest, handleRawPropsPrimitiveTypes) {
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  const auto& raw = RawProps(
-      folly::dynamic::object("intValue", (int)42)("doubleValue", (double)17.42)(
-          "floatValue",
-          (float)66.67)("stringValue", "helloworld")("boolValue", true));
+  auto raw = RawProps(folly::dynamic::object("intValue", (int)42)(
+      "doubleValue", (double)17.42)("floatValue", (float)66.67)(
+      "stringValue", "helloworld")("boolValue", true));
 
   auto parser = RawPropsParser();
   parser.prepare<PropsPrimitiveTypes>();
-  raw.parse(parser, parserContext);
+  raw.parse(parser);
 
   EXPECT_EQ((int)*raw.at("intValue", nullptr, nullptr), 42);
   EXPECT_NEAR((double)*raw.at("doubleValue", nullptr, nullptr), 17.42, 0.0001);
@@ -262,14 +261,13 @@ TEST(RawPropsTest, handleRawPropsPrimitiveTypesGetTwice) {
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  const auto& raw = RawProps(
-      folly::dynamic::object("intValue", (int)42)("doubleValue", (double)17.42)(
-          "floatValue",
-          (float)66.67)("stringValue", "helloworld")("boolValue", true));
+  auto raw = RawProps(folly::dynamic::object("intValue", (int)42)(
+      "doubleValue", (double)17.42)("floatValue", (float)66.67)(
+      "stringValue", "helloworld")("boolValue", true));
 
   auto parser = RawPropsParser();
   parser.prepare<PropsPrimitiveTypes>();
-  raw.parse(parser, parserContext);
+  raw.parse(parser);
 
   EXPECT_EQ((int)*raw.at("intValue", nullptr, nullptr), 42);
   EXPECT_NEAR((double)*raw.at("doubleValue", nullptr, nullptr), 17.42, 0.0001);
@@ -292,14 +290,13 @@ TEST(RawPropsTest, handleRawPropsPrimitiveTypesGetOutOfOrder) {
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  const auto& raw = RawProps(
-      folly::dynamic::object("intValue", (int)42)("doubleValue", (double)17.42)(
-          "floatValue",
-          (float)66.67)("stringValue", "helloworld")("boolValue", true));
+  auto raw = RawProps(folly::dynamic::object("intValue", (int)42)(
+      "doubleValue", (double)17.42)("floatValue", (float)66.67)(
+      "stringValue", "helloworld")("boolValue", true));
 
   auto parser = RawPropsParser();
   parser.prepare<PropsPrimitiveTypes>();
-  raw.parse(parser, parserContext);
+  raw.parse(parser);
 
   EXPECT_EQ((int)*raw.at("intValue", nullptr, nullptr), 42);
   EXPECT_NEAR((double)*raw.at("doubleValue", nullptr, nullptr), 17.42, 0.0001);
@@ -322,11 +319,11 @@ TEST(RawPropsTest, handleRawPropsPrimitiveTypesIncomplete) {
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  const auto& raw = RawProps(folly::dynamic::object("intValue", (int)42));
+  auto raw = RawProps(folly::dynamic::object("intValue", (int)42));
 
   auto parser = RawPropsParser();
   parser.prepare<PropsPrimitiveTypes>();
-  raw.parse(parser, parserContext);
+  raw.parse(parser);
 
   EXPECT_EQ((int)*raw.at("intValue", nullptr, nullptr), 42);
   EXPECT_EQ(raw.at("doubleValue", nullptr, nullptr), nullptr);
@@ -342,11 +339,11 @@ TEST(RawPropsTest, handleRawPropsPrimitiveTypesIncorrectLookup) {
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  const auto& raw = RawProps(folly::dynamic::object("intValue", (int)42));
+  auto raw = RawProps(folly::dynamic::object("intValue", (int)42));
 
   auto parser = RawPropsParser();
   parser.prepare<PropsPrimitiveTypes>();
-  raw.parse(parser, parserContext);
+  raw.parse(parser);
 
   // Before D18662135, looking up an invalid key would trigger
   // an infinite loop. This is out of contract, so we should only
@@ -360,10 +357,10 @@ TEST(RawPropsTest, handlePropsMultiLookup) {
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  const auto& raw = RawProps(folly::dynamic::object("floatValue", (float)10.0));
+  auto raw = RawProps(folly::dynamic::object("floatValue", (float)10.0));
   auto parser = RawPropsParser();
   parser.prepare<PropsMultiLookup>();
-  raw.parse(parser, parserContext);
+  raw.parse(parser);
 
   auto props = std::make_shared<PropsMultiLookup>(
       parserContext, PropsMultiLookup(), raw);
@@ -373,4 +370,133 @@ TEST(RawPropsTest, handlePropsMultiLookup) {
 
   EXPECT_NEAR(props->floatValue, 10.0, 0.00001);
   EXPECT_NEAR(props->derivedFloatValue, 20.0, 0.00001);
+}
+
+TEST(RawPropsTest, copyDynamicRawProps) {
+  ContextContainer contextContainer{};
+  PropsParserContext parserContext{-1, contextContainer};
+
+  auto rawProps = RawProps(folly::dynamic::object("floatValue", (float)10.0));
+
+  auto copy = RawProps(rawProps);
+
+  EXPECT_FALSE(copy.isEmpty());
+
+  auto parser = RawPropsParser();
+  parser.prepare<PropsMultiLookup>();
+
+  rawProps.parse(parser);
+  copy.parse(parser);
+
+  auto originalProps = std::make_shared<PropsMultiLookup>(
+      parserContext, PropsMultiLookup(), rawProps);
+  auto copyProps = std::make_shared<PropsMultiLookup>(
+      parserContext, PropsMultiLookup(), copy);
+
+  // Props are not sealed after applying raw props.
+  EXPECT_FALSE(copyProps->getSealed());
+
+  EXPECT_NEAR(copyProps->floatValue, originalProps->floatValue, 0.00001);
+  EXPECT_NEAR(
+      copyProps->derivedFloatValue, originalProps->derivedFloatValue, 0.00001);
+}
+
+TEST(RawPropsTest, copyEmptyRawProps) {
+  ContextContainer contextContainer{};
+  PropsParserContext parserContext{-1, contextContainer};
+
+  auto rawProps = RawProps();
+
+  auto copy = RawProps(rawProps);
+
+  EXPECT_TRUE(rawProps.isEmpty());
+  EXPECT_TRUE(copy.isEmpty());
+
+  EXPECT_TRUE(((folly::dynamic)copy).empty());
+}
+
+TEST(RawPropsTest, copyNullJSIRawProps) {
+  auto runtime = facebook::hermes::makeHermesRuntime();
+
+  ContextContainer contextContainer{};
+  PropsParserContext parserContext{-1, contextContainer};
+
+  auto rawProps = RawProps(*runtime, jsi::Value::null());
+
+  auto copy = RawProps(rawProps);
+
+  EXPECT_TRUE(rawProps.isEmpty());
+  EXPECT_TRUE(copy.isEmpty());
+
+  EXPECT_TRUE(((folly::dynamic)copy).empty());
+}
+
+TEST(RawPropsTest, copyJSIRawProps) {
+  auto runtime = facebook::hermes::makeHermesRuntime();
+
+  ContextContainer contextContainer{};
+  PropsParserContext parserContext{-1, contextContainer};
+
+  auto object = jsi::Object(*runtime);
+  object.setProperty(*runtime, "floatValue", 10.0);
+
+  auto rawProps = RawProps(*runtime, jsi::Value(*runtime, object));
+  auto copy = RawProps(rawProps);
+
+  EXPECT_FALSE(rawProps.isEmpty());
+  EXPECT_FALSE(copy.isEmpty());
+
+  auto parser = RawPropsParser();
+  parser.prepare<PropsMultiLookup>();
+
+  rawProps.parse(parser);
+  copy.parse(parser);
+
+  auto originalProps = std::make_shared<PropsMultiLookup>(
+      parserContext, PropsMultiLookup(), rawProps);
+  auto copyProps = std::make_shared<PropsMultiLookup>(
+      parserContext, PropsMultiLookup(), copy);
+
+  // Props are not sealed after applying raw props.
+  EXPECT_FALSE(copyProps->getSealed());
+
+  EXPECT_NEAR(copyProps->floatValue, originalProps->floatValue, 0.00001);
+  EXPECT_NEAR(
+      copyProps->derivedFloatValue, originalProps->derivedFloatValue, 0.00001);
+}
+
+TEST(RawPropsTest, filterYogaRawProps) {
+  auto runtime = facebook::hermes::makeHermesRuntime();
+
+  ContextContainer contextContainer{};
+  PropsParserContext parserContext{-1, contextContainer};
+
+  auto object = jsi::Object(*runtime);
+  object.setProperty(*runtime, "floatValue", 10.0);
+  object.setProperty(*runtime, "flex", 1);
+
+  auto rawProps = RawProps(*runtime, jsi::Value(*runtime, object));
+
+  EXPECT_FALSE(rawProps.isEmpty());
+
+  auto dynamicProps = (folly::dynamic)rawProps;
+
+  EXPECT_EQ(dynamicProps["floatValue"], 10.0);
+  EXPECT_EQ(dynamicProps["flex"], 1);
+
+  rawProps.filterYogaStylePropsInDynamicConversion();
+
+  dynamicProps = (folly::dynamic)rawProps;
+
+  EXPECT_EQ(dynamicProps["floatValue"], 10.0);
+  EXPECT_EQ(dynamicProps["flex"], nullptr);
+
+  // The fact that filterYogaStylePropsInDynamicConversion should
+  // must apply to a copy as well.
+  auto copy = RawProps(rawProps);
+
+  auto dynamicPropsFromCopy = (folly::dynamic)copy;
+
+  EXPECT_EQ(dynamicPropsFromCopy["floatValue"], 10.0);
+  EXPECT_EQ(dynamicPropsFromCopy["flex"], nullptr);
 }

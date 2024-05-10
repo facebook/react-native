@@ -52,8 +52,8 @@ class YogaDirtyFlagTest : public ::testing::Test {
                     auto &props = *mutableViewProps;
                     props.nativeId = "native Id";
                     props.opacity = 0.5;
-                    props.yogaStyle.alignContent() = yoga::Align::Baseline;
-                    props.yogaStyle.flexDirection() = yoga::FlexDirection::RowReverse;
+                    props.yogaStyle.setAlignContent(yoga::Align::Baseline);
+                    props.yogaStyle.setFlexDirection(yoga::FlexDirection::RowReverse);
                     return mutableViewProps;
                   }),
                 Element<ViewShadowNode>()
@@ -136,8 +136,8 @@ TEST_F(YogaDirtyFlagTest, changingLayoutSubPropsMustDirtyYogaNode) {
         auto viewProps = std::make_shared<ViewShadowNodeProps>();
         auto& props = *viewProps;
 
-        props.yogaStyle.alignContent() = yoga::Align::Baseline;
-        props.yogaStyle.display() = yoga::Display::None;
+        props.yogaStyle.setAlignContent(yoga::Align::Baseline);
+        props.yogaStyle.setDisplay(yoga::Display::None);
 
         return oldShadowNode.clone(ShadowNodeFragment{viewProps});
       });
@@ -174,7 +174,7 @@ TEST_F(YogaDirtyFlagTest, removingLastChildMustDirtyYogaNode) {
 
         return oldShadowNode.clone(
             {ShadowNodeFragment::propsPlaceholder(),
-             std::make_shared<ShadowNode::ListOfShared const>(children)});
+             std::make_shared<const ShadowNode::ListOfShared>(children)});
       });
 
   EXPECT_TRUE(
@@ -193,7 +193,7 @@ TEST_F(YogaDirtyFlagTest, reversingListOfChildrenMustDirtyYogaNode) {
 
         return oldShadowNode.clone(
             {ShadowNodeFragment::propsPlaceholder(),
-             std::make_shared<ShadowNode::ListOfShared const>(children)});
+             std::make_shared<const ShadowNode::ListOfShared>(children)});
       });
 
   EXPECT_TRUE(

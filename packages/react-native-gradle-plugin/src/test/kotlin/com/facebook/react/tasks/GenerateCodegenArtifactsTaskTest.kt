@@ -141,7 +141,7 @@ class GenerateCodegenArtifactsTaskTest {
           writeText(
               """
         {
-            "name": "@a/libray",
+            "name": "@a/library",
             "codegenConfig": {
                 "name": "an-awesome-library",
                 "android": {
@@ -174,7 +174,7 @@ class GenerateCodegenArtifactsTaskTest {
           writeText(
               """
         {
-            "name": "@a/libray",
+            "name": "@a/library",
             "codegenConfig": {
             }
         }

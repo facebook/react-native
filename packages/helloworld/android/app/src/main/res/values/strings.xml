@@ -1,0 +1,3 @@
+<resources>
+    <string name="app_name" description="The name of the application to display to users">Hello App Display Name</string>
+</resources>

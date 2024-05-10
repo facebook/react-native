@@ -33,6 +33,7 @@ const UIView = {
   onMagicTap: true,
   onAccessibilityEscape: true,
   collapsable: true,
+  collapsableChildren: true,
   needsOffscreenAlphaCompositing: true,
   style: ReactNativeStyleAttributes,
   role: true,

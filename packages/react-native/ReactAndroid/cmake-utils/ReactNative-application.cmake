@@ -58,7 +58,6 @@ target_compile_options(${CMAKE_PROJECT_NAME}
                 -fexceptions
                 -frtti
                 -std=c++20
-                -DWITH_INSPECTOR=1
                 -DLOG_TAG=\"ReactNative\")
 
 # Prefab packages from React Native
@@ -74,10 +73,13 @@ add_library(react_newarchdefaults ALIAS ReactAndroid::react_newarchdefaults)
 add_library(react_render_core ALIAS ReactAndroid::react_render_core)
 add_library(react_render_graphics ALIAS ReactAndroid::react_render_graphics)
 add_library(rrc_view ALIAS ReactAndroid::rrc_view)
+add_library(rrc_text ALIAS ReactAndroid::rrc_text)
+add_library(rrc_textinput ALIAS ReactAndroid::rrc_textinput)
 add_library(jsi ALIAS ReactAndroid::jsi)
 add_library(glog ALIAS ReactAndroid::glog)
 add_library(fabricjni ALIAS ReactAndroid::fabricjni)
 add_library(react_render_mapbuffer ALIAS ReactAndroid::react_render_mapbuffer)
+add_library(react_render_textlayoutmanager ALIAS ReactAndroid::react_render_textlayoutmanager)
 add_library(yoga ALIAS ReactAndroid::yoga)
 add_library(folly_runtime ALIAS ReactAndroid::folly_runtime)
 add_library(react_nativemodule_core ALIAS ReactAndroid::react_nativemodule_core)
@@ -105,8 +107,11 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         react_render_graphics               # prefab ready
         react_render_imagemanager           # prefab ready
         react_render_mapbuffer              # prefab ready
+        react_render_textlayoutmanager      # prefab ready
         rrc_image                           # prefab ready
         rrc_view                            # prefab ready
+        rrc_text                            # prefab ready
+        rrc_textinput                       # prefab ready
         rrc_legacyviewmanagerinterop        # prefab ready
         runtimeexecutor                     # prefab ready
         turbomodulejsijni                   # prefab ready
@@ -133,4 +138,15 @@ if(EXISTS ${PROJECT_BUILD_DIR}/generated/source/codegen/jni/CMakeLists.txt)
         get_property(APP_CODEGEN_TARGET DIRECTORY ${PROJECT_BUILD_DIR}/generated/source/codegen/jni/ PROPERTY BUILDSYSTEM_TARGETS)
         target_link_libraries(${CMAKE_PROJECT_NAME} ${APP_CODEGEN_TARGET})
         target_link_libraries(${APP_CODEGEN_TARGET} common_flags)
+
+        # We need to pass the generated header and module provider to the OnLoad.cpp file so
+        # local app modules can properly be linked.
+        string(REGEX REPLACE "react_codegen_" "" APP_CODEGEN_HEADER "${APP_CODEGEN_TARGET}")
+        target_compile_options(${CMAKE_PROJECT_NAME}
+                PRIVATE
+                -DREACT_NATIVE_APP_CODEGEN_HEADER="${APP_CODEGEN_HEADER}.h"
+                -DREACT_NATIVE_APP_COMPONENT_DESCRIPTORS_HEADER="react/renderer/components/${APP_CODEGEN_HEADER}/ComponentDescriptors.h"
+                -DREACT_NATIVE_APP_COMPONENT_REGISTRATION=${APP_CODEGEN_HEADER}_registerComponentDescriptorsFromCodegen
+                -DREACT_NATIVE_APP_MODULE_PROVIDER=${APP_CODEGEN_HEADER}_ModuleProvider
+        )
 endif()

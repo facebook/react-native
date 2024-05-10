@@ -22,6 +22,7 @@ import type {Parser} from '../../parser';
 import type {ParserErrorCapturer, TypeDeclarationMap} from '../../utils';
 
 const {
+  UnsupportedEnumDeclarationParserError,
   UnsupportedGenericParserError,
   UnsupportedTypeAnnotationParserError,
 } = require('../../errors');
@@ -176,6 +177,7 @@ function translateTypeAnnotation(
             property => {
               return tryParse(() => {
                 return parseObjectProperty(
+                  flowTypeAnnotation,
                   property,
                   hasteModuleName,
                   types,
@@ -226,6 +228,19 @@ function translateTypeAnnotation(
     }
     case 'EnumStringBody':
     case 'EnumNumberBody': {
+      if (
+        typeAnnotation.type === 'EnumNumberBody' &&
+        typeAnnotation.members.some(
+          m =>
+            m.type === 'EnumNumberMember' && !Number.isInteger(m.init?.value),
+        )
+      ) {
+        throw new UnsupportedEnumDeclarationParserError(
+          hasteModuleName,
+          typeAnnotation,
+          parser.language(),
+        );
+      }
       return typeEnumResolution(
         typeAnnotation,
         typeResolutionStatus,

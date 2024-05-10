@@ -199,6 +199,11 @@ RCT_EXPORT_MODULE()
     [_tasksByRequestID[requestID] cancel];
   }
   [_tasksByRequestID removeAllObjects];
+  for (id<RCTURLRequestHandler> handler in _handlers) {
+    if ([handler conformsToProtocol:@protocol(RCTInvalidating)]) {
+      [(id<RCTInvalidating>)handler invalidate];
+    }
+  }
   _handlers = nil;
   _requestHandlers = nil;
   _responseHandlers = nil;

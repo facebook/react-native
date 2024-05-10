@@ -8,6 +8,7 @@
 #pragma once
 
 #include <memory>
+#include <mutex>
 #include <shared_mutex>
 #include <unordered_map>
 
@@ -34,7 +35,11 @@ class ReactNativeConfig;
 class Scheduler;
 class SurfaceHandlerBinding;
 
-class Binding : public jni::HybridClass<Binding>,
+struct JBinding : public jni::JavaClass<JBinding> {
+  constexpr static auto kJavaDescriptor = "Lcom/facebook/react/fabric/Binding;";
+};
+
+class Binding : public jni::HybridClass<Binding, JBinding>,
                 public SchedulerDelegate,
                 public LayoutAnimationStatusDelegate {
  public:
@@ -97,8 +102,13 @@ class Binding : public jni::HybridClass<Binding>,
   void schedulerDidFinishTransaction(
       const MountingCoordinator::Shared& mountingCoordinator) override;
 
+  void schedulerShouldRenderTransactions(
+      const MountingCoordinator::Shared& mountingCoordinator) override;
+
   void schedulerDidRequestPreliminaryViewAllocation(
-      const SurfaceId surfaceId,
+      const ShadowNode& shadowNode) override;
+
+  void schedulerDidRequestUpdateToPreallocatedView(
       const ShadowNode& shadowNode) override;
 
   void schedulerDidDispatchCommand(
@@ -141,6 +151,10 @@ class Binding : public jni::HybridClass<Binding>,
   std::unordered_map<SurfaceId, SurfaceHandler> surfaceHandlerRegistry_{};
   std::shared_mutex
       surfaceHandlerRegistryMutex_; // Protects `surfaceHandlerRegistry_`.
+
+  // Track pending transactions, one per surfaceId
+  std::mutex pendingTransactionsMutex_;
+  std::vector<MountingTransaction> pendingTransactions_;
 
   float pointScaleFactor_ = 1;
 

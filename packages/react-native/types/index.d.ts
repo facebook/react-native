@@ -103,6 +103,7 @@ export * from '../Libraries/Components/View/View';
 export * from '../Libraries/Components/View/ViewAccessibility';
 export * from '../Libraries/Components/View/ViewPropTypes';
 export * from '../Libraries/Components/Button';
+export * from '../Libraries/Core/registerCallableModule';
 export * from '../Libraries/DevToolsSettings/DevToolsSettingsManager';
 export * from '../Libraries/EventEmitter/NativeEventEmitter';
 export * from '../Libraries/EventEmitter/RCTDeviceEventEmitter';

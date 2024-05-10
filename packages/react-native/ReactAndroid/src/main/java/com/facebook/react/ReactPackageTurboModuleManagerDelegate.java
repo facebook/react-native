@@ -9,15 +9,16 @@ package com.facebook.react;
 
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.jni.HybridData;
 import com.facebook.react.bridge.CxxModuleWrapper;
 import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.internal.turbomodule.core.TurboModuleManagerDelegate;
-import com.facebook.react.internal.turbomodule.core.interfaces.TurboModule;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.module.model.ReactModuleInfo;
+import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -45,13 +46,26 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
   private final boolean mEnableTurboModuleSyncVoidMethods =
       ReactFeatureFlags.unstable_enableTurboModuleSyncVoidMethods;
 
-  protected ReactPackageTurboModuleManagerDelegate() {
-    super();
-  }
+  // Lazy Props
+  private List<ReactPackage> mPackages;
+  private ReactApplicationContext mReactContext;
 
   protected ReactPackageTurboModuleManagerDelegate(
       ReactApplicationContext reactApplicationContext, List<ReactPackage> packages) {
     super();
+    initialize(reactApplicationContext, packages);
+  }
+
+  protected ReactPackageTurboModuleManagerDelegate(
+      ReactApplicationContext reactApplicationContext,
+      List<ReactPackage> packages,
+      HybridData hybridData) {
+    super(hybridData);
+    initialize(reactApplicationContext, packages);
+  }
+
+  private void initialize(
+      ReactApplicationContext reactApplicationContext, List<ReactPackage> packages) {
     final ReactApplicationContext applicationContext = reactApplicationContext;
     for (ReactPackage reactPackage : packages) {
       if (reactPackage instanceof BaseReactPackage) {
@@ -107,14 +121,14 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
                       reactModule.canOverrideExistingModule(),
                       true,
                       reactModule.isCxxModule(),
-                      TurboModule.class.isAssignableFrom(moduleClass))
+                      ReactModuleInfo.classIsTurboModule(moduleClass))
                   : new ReactModuleInfo(
                       moduleName,
                       moduleClass.getName(),
                       module.canOverrideExistingModule(),
                       true,
                       CxxModuleWrapper.class.isAssignableFrom(moduleClass),
-                      TurboModule.class.isAssignableFrom(moduleClass));
+                      ReactModuleInfo.classIsTurboModule(moduleClass));
 
           reactModuleInfoMap.put(moduleName, moduleInfo);
           moduleMap.put(moduleName, module);
@@ -148,24 +162,15 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
     NativeModule resolvedModule = null;
 
     for (final ModuleProvider moduleProvider : mModuleProviders) {
-      try {
-        final ReactModuleInfo moduleInfo = mPackageModuleInfos.get(moduleProvider).get(moduleName);
-        if (moduleInfo != null
-            && moduleInfo.isTurboModule()
-            && (resolvedModule == null || moduleInfo.canOverrideExistingModule())) {
+      final ReactModuleInfo moduleInfo = mPackageModuleInfos.get(moduleProvider).get(moduleName);
+      if (moduleInfo != null
+          && moduleInfo.isTurboModule()
+          && (resolvedModule == null || moduleInfo.canOverrideExistingModule())) {
 
-          final NativeModule module = moduleProvider.getModule(moduleName);
-          if (module != null) {
-            resolvedModule = module;
-          }
+        final NativeModule module = moduleProvider.getModule(moduleName);
+        if (module != null) {
+          resolvedModule = module;
         }
-
-      } catch (IllegalArgumentException ex) {
-        /*
-         TurboReactPackages can throw an IllegalArgumentException when a module isn't found. If
-         this happens, it's safe to ignore the exception because a later TurboReactPackage could
-         provide the module.
-        */
       }
     }
 
@@ -176,11 +181,6 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
     }
 
     return (TurboModule) resolvedModule;
-  }
-
-  @Override
-  public boolean unstable_isLazyTurboModuleDelegate() {
-    return false;
   }
 
   @Override
@@ -215,24 +215,15 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
     NativeModule resolvedModule = null;
 
     for (final ModuleProvider moduleProvider : mModuleProviders) {
-      try {
-        final ReactModuleInfo moduleInfo = mPackageModuleInfos.get(moduleProvider).get(moduleName);
-        if (moduleInfo != null
-            && !moduleInfo.isTurboModule()
-            && (resolvedModule == null || moduleInfo.canOverrideExistingModule())) {
+      final ReactModuleInfo moduleInfo = mPackageModuleInfos.get(moduleProvider).get(moduleName);
+      if (moduleInfo != null
+          && !moduleInfo.isTurboModule()
+          && (resolvedModule == null || moduleInfo.canOverrideExistingModule())) {
 
-          final NativeModule module = moduleProvider.getModule(moduleName);
-          if (module != null) {
-            resolvedModule = module;
-          }
+        final NativeModule module = moduleProvider.getModule(moduleName);
+        if (module != null) {
+          resolvedModule = module;
         }
-
-      } catch (IllegalArgumentException ex) {
-        /*
-         * TurboReactPackages can throw an IllegalArgumentException when a module isn't found. If
-         * this happens, it's safe to ignore the exception because a later TurboReactPackage could
-         * provide the module.
-         */
       }
     }
 
@@ -282,10 +273,12 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
     public ReactPackageTurboModuleManagerDelegate build() {
       Assertions.assertNotNull(
           mContext,
-          "The ReactApplicationContext must be provided to create ReactPackageTurboModuleManagerDelegate");
+          "The ReactApplicationContext must be provided to create"
+              + " ReactPackageTurboModuleManagerDelegate");
       Assertions.assertNotNull(
           mPackages,
-          "A set of ReactPackages must be provided to create ReactPackageTurboModuleManagerDelegate");
+          "A set of ReactPackages must be provided to create"
+              + " ReactPackageTurboModuleManagerDelegate");
       return build(mContext, mPackages);
     }
   }

@@ -29,7 +29,7 @@ export type ReactDevToolsAgentEvents = {
   drawTraceUpdates: [Array<{node: InstanceFromReactDevTools, color: string}>],
   disableTraceUpdates: [],
 
-  showNativeHighlight: [node: InstanceFromReactDevTools],
+  showNativeHighlight: [nodes: Array<InstanceFromReactDevTools>],
   hideNativeHighlight: [],
   shutdown: [],
   startInspectingNative: [],

@@ -51,7 +51,6 @@ import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.modules.appregistry.AppRegistry;
 import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
-import com.facebook.react.surface.ReactStage;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.JSPointerDispatcher;
@@ -60,6 +59,7 @@ import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactClippingProhibitedView;
 import com.facebook.react.uimanager.ReactRoot;
 import com.facebook.react.uimanager.ReactRootViewTagGenerator;
+import com.facebook.react.uimanager.ReactStage;
 import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.RootViewUtil;
 import com.facebook.react.uimanager.UIManagerHelper;
@@ -317,7 +317,8 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     if (!hasActiveReactContext() || !isViewAttachedToReactInstance()) {
       FLog.w(
           TAG,
-          "Unable to handle child focus changed event as the catalyst instance has not been attached");
+          "Unable to handle child focus changed event as the catalyst instance has not been"
+              + " attached");
       super.requestChildFocus(child, focused);
       return;
     }
@@ -420,8 +421,9 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
                 ReactSoftExceptionLogger.logSoftException(
                     TAG,
                     new ReactNoCrashSoftException(
-                        "A view was illegally added as a child of a ReactRootView. "
-                            + "This View should not be a direct child of a ReactRootView, because it is not visible and will never be reachable. Child: "
+                        "A view was illegally added as a child of a ReactRootView. This View should"
+                            + " not be a direct child of a ReactRootView, because it is not visible"
+                            + " and will never be reachable. Child: "
                             + child.getClass().getCanonicalName().toString()
                             + " child ID: "
                             + child.getId()));
@@ -452,7 +454,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   /**
    * Schedule rendering of the react component rendered by the JS application from the given JS
    * module (@{param moduleName}) using provided {@param reactInstanceManager} to attach to the JS
-   * context of that manager. Extra parameter {@param launchOptions} can be used to pass initial
+   * context of that manager. Extra parameter {@param initialProperties} can be used to pass initial
    * properties for the react component.
    */
   @ThreadConfined(UI)
@@ -598,7 +600,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   }
 
   @Override
-  public void onStage(int stage) {
+  public void onStage(@ReactStage int stage) {
     switch (stage) {
       case ReactStage.ON_ATTACH_TO_INSTANCE:
         onAttachedToReactInstance();
@@ -758,11 +760,11 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     super.finalize();
     Assertions.assertCondition(
         !mIsAttachedToInstance,
-        "The application this ReactRootView was rendering was not unmounted before the "
-            + "ReactRootView was garbage collected. This usually means that your application is "
-            + "leaking large amounts of memory. To solve this, make sure to call "
-            + "ReactRootView#unmountReactApplication in the onDestroy() of your hosting Activity or in "
-            + "the onDestroyView() of your hosting Fragment.");
+        "The application this ReactRootView was rendering was not unmounted before the"
+            + " ReactRootView was garbage collected. This usually means that your application is"
+            + " leaking large amounts of memory. To solve this, make sure to call"
+            + " ReactRootView#unmountReactApplication in the onDestroy() of your hosting Activity"
+            + " or in the onDestroyView() of your hosting Fragment.");
   }
 
   public int getRootViewTag() {

@@ -1,0 +1,19 @@
+name: Setup node.js
+description: 'Set up your GitHub Actions workflow with a specific version of node.js'
+inputs:
+  node-version:
+    description: 'The node.js version to use'
+    required: false
+    default: '18'
+  cache:
+    description: 'The package manager to use for caching dependencies'
+    required: false
+    default: 'yarn'
+runs:
+  using: "composite"
+  steps:
+    - name: Setup node.js
+      uses: actions/setup-node@v4.0.0
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: ${{ inputs.cache }}

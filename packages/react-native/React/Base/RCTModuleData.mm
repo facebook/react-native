@@ -16,6 +16,7 @@
 #import "RCTBridge+Private.h"
 #import "RCTBridge.h"
 #import "RCTBridgeModuleDecorator.h"
+#import "RCTCallInvokerModule.h"
 #import "RCTConstants.h"
 #import "RCTInitializing.h"
 #import "RCTLog.h"
@@ -31,7 +32,7 @@ int32_t getUniqueId()
   static std::atomic<int32_t> counter{0};
   return counter++;
 }
-}
+} // namespace
 
 @implementation RCTModuleData {
   NSDictionary<NSString *, id> *_constantsToExport;
@@ -87,24 +88,24 @@ int32_t getUniqueId()
                       bundleManager:(RCTBundleManager *)bundleManager
                   callableJSModules:(RCTCallableJSModules *)callableJSModules
 {
-  return [self initWithModuleClass:moduleClass
-                    moduleProvider:^id<RCTBridgeModule> {
-                      return [moduleClass new];
-                    }
-                            bridge:bridge
-                    moduleRegistry:moduleRegistry
-           viewRegistry_DEPRECATED:viewRegistry_DEPRECATED
-                     bundleManager:bundleManager
-                 callableJSModules:callableJSModules];
+  return [self _initWithModuleClass:moduleClass
+                     moduleProvider:^id<RCTBridgeModule> {
+                       return [moduleClass new];
+                     }
+                             bridge:bridge
+                     moduleRegistry:moduleRegistry
+            viewRegistry_DEPRECATED:viewRegistry_DEPRECATED
+                      bundleManager:bundleManager
+                  callableJSModules:callableJSModules];
 }
 
-- (instancetype)initWithModuleClass:(Class)moduleClass
-                     moduleProvider:(RCTBridgeModuleProvider)moduleProvider
-                             bridge:(RCTBridge *)bridge
-                     moduleRegistry:(RCTModuleRegistry *)moduleRegistry
-            viewRegistry_DEPRECATED:(RCTViewRegistry *)viewRegistry_DEPRECATED
-                      bundleManager:(RCTBundleManager *)bundleManager
-                  callableJSModules:(RCTCallableJSModules *)callableJSModules
+- (instancetype)_initWithModuleClass:(Class)moduleClass
+                      moduleProvider:(RCTBridgeModuleProvider)moduleProvider
+                              bridge:(RCTBridge *)bridge
+                      moduleRegistry:(RCTModuleRegistry *)moduleRegistry
+             viewRegistry_DEPRECATED:(RCTViewRegistry *)viewRegistry_DEPRECATED
+                       bundleManager:(RCTBundleManager *)bundleManager
+                   callableJSModules:(RCTCallableJSModules *)callableJSModules
 {
   if (self = [super init]) {
     _bridge = bridge;
@@ -201,6 +202,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
                                                    bundleManager:_bundleManager
                                                callableJSModules:_callableJSModules];
       [moduleDecorator attachInteropAPIsToModule:_instance];
+
+      // This is a more performant alternative for conformsToProtocol:@protocol(RCTCallInvokerModule)
+      if ([_instance respondsToSelector:@selector(setCallInvoker:)]) {
+        [(id<RCTCallInvokerModule>)_instance setCallInvoker:[self.callInvokerProvider callInvokerForModuleData:self]];
+      }
     }
 
     [self setUpMethodQueue];

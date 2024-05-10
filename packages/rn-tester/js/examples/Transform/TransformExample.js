@@ -247,6 +247,7 @@ const styles = StyleSheet.create({
     marginVertical: 40,
     flex: 1,
     alignSelf: 'center',
+    zIndex: 0,
   },
   flipCard: {
     width: 200,
@@ -255,7 +256,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: 'blue',
     backfaceVisibility: 'hidden',
-    zIndex: 1024,
   },
   flipCard1: {
     position: 'absolute',

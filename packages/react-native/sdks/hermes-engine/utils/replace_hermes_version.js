@@ -53,7 +53,7 @@ function shouldReplaceHermesConfiguration(configuration) {
 }
 
 function replaceHermesConfiguration(configuration, version, podsRoot) {
-  const tarballURLPath = `${podsRoot}/hermes-engine-artifacts/hermes-ios-${version}-${configuration}.tar.gz`;
+  const tarballURLPath = `${podsRoot}/hermes-engine-artifacts/hermes-ios-${version.toLowerCase()}-${configuration.toLowerCase()}.tar.gz`;
 
   const finalLocation = 'hermes-engine';
   console.log('Preparing the final location');

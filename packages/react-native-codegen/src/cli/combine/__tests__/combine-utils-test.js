@@ -11,67 +11,7 @@
 
 'use-strict';
 
-const {filterJSFile, parseArgs} = require('../combine-utils.js');
-
-describe('parseArgs', () => {
-  const nodeBin = 'node';
-  const combineApp = 'app';
-  const schemaJson = 'schema.json';
-  const specFile1 = 'NativeSpec.js';
-  const specFile2 = 'SpecNativeComponent.js';
-
-  describe('when no platform provided', () => {
-    it('returns null platform, schema and fileList', () => {
-      const {platform, outfile, fileList} = parseArgs([
-        nodeBin,
-        combineApp,
-        schemaJson,
-        specFile1,
-        specFile2,
-      ]);
-
-      expect(platform).toBeNull();
-      expect(outfile).toBe(schemaJson);
-      expect(fileList).toStrictEqual([specFile1, specFile2]);
-    });
-  });
-
-  describe('when platform passed with --platform', () => {
-    it('returns the platform, the schema and the fileList', () => {
-      const {platform, outfile, fileList} = parseArgs([
-        nodeBin,
-        combineApp,
-        '--platform',
-        'ios',
-        schemaJson,
-        specFile1,
-        specFile2,
-      ]);
-
-      expect(platform).toBe('ios');
-      expect(outfile).toBe(schemaJson);
-      expect(fileList).toStrictEqual([specFile1, specFile2]);
-    });
-  });
-
-  describe('when platform passed with -p', () => {
-    it('returns the platform, the schema and the fileList', () => {
-      const {platform, outfile, fileList} = parseArgs([
-        nodeBin,
-        combineApp,
-        '-p',
-        'android',
-        schemaJson,
-        specFile1,
-        specFile2,
-      ]);
-
-      expect(platform).toBe('android');
-      expect(outfile).toBe(schemaJson);
-      expect(fileList).toStrictEqual([specFile1, specFile2]);
-    });
-  });
-});
+const {filterJSFile} = require('../combine-utils.js');
 
 describe('filterJSFile', () => {
   describe('When the file is not a Spec file', () => {
@@ -103,9 +43,19 @@ describe('filterJSFile', () => {
   });
 
   describe('When the file is NativeSampleTurboModule', () => {
-    it('returns false', () => {
+    it('returns true', () => {
       const file = 'NativeSampleTurboModule.js';
       const result = filterJSFile(file);
+      expect(result).toBeTruthy();
+    });
+
+    it('returns false, when excluded', () => {
+      const file = 'NativeSampleTurboModule.js';
+      const result = filterJSFile(
+        file,
+        null,
+        new RegExp('NativeSampleTurboModule'),
+      );
       expect(result).toBeFalsy();
     });
   });

@@ -24,6 +24,7 @@ import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.fabric.mounting.mountitems.DispatchCommandMountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.systrace.Systrace;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -102,37 +103,55 @@ public class MountItemDispatcher {
       return;
     }
 
-    final boolean didDispatchItems;
-    try {
-      didDispatchItems = dispatchMountItems();
-    } catch (Throwable e) {
-      mReDispatchCounter = 0;
-      throw e;
-    } finally {
-      // Clean up after running dispatchMountItems - even if an exception was thrown
-      mInDispatch = false;
-    }
+    if (ReactNativeFeatureFlags.forceBatchingMountItemsOnAndroid()) {
+      mInDispatch = true;
 
-    // We call didDispatchMountItems regardless of whether we actually dispatched anything, since
-    // NativeAnimatedModule relies on this for executing any animations that may have been scheduled
-    mItemDispatchListener.didDispatchMountItems();
-
-    // Decide if we want to try reentering
-    if (mReDispatchCounter < 10 && didDispatchItems) {
-      // Executing twice in a row is normal. Only log after that point.
-      if (mReDispatchCounter > 2) {
-        ReactSoftExceptionLogger.logSoftException(
-            TAG,
-            new ReactNoCrashSoftException(
-                "Re-dispatched "
-                    + mReDispatchCounter
-                    + " times. This indicates setState (?) is likely being called too many times during mounting."));
+      try {
+        boolean didDispatchItems = true;
+        // Dispatch as many mount items as we find. Some mount items might
+        // trigger state updates that trigger more mount items. This will
+        // process them correctly.
+        while (didDispatchItems) {
+          didDispatchItems = dispatchMountItems();
+        }
+      } finally {
+        mInDispatch = false;
+      }
+    } else {
+      final boolean didDispatchItems;
+      try {
+        didDispatchItems = dispatchMountItems();
+      } catch (Throwable e) {
+        mReDispatchCounter = 0;
+        throw e;
+      } finally {
+        // Clean up after running dispatchMountItems - even if an exception was thrown
+        mInDispatch = false;
       }
 
-      mReDispatchCounter++;
-      tryDispatchMountItems();
+      // We call didDispatchMountItems regardless of whether we actually dispatched anything, since
+      // NativeAnimatedModule relies on this for executing any animations that may have been
+      // scheduled
+      mItemDispatchListener.didDispatchMountItems();
+
+      // Decide if we want to try reentering
+      if (mReDispatchCounter < 10 && didDispatchItems) {
+        // Executing twice in a row is normal. Only log after that point.
+        if (mReDispatchCounter > 2) {
+          ReactSoftExceptionLogger.logSoftException(
+              TAG,
+              new ReactNoCrashSoftException(
+                  "Re-dispatched "
+                      + mReDispatchCounter
+                      + " times. This indicates setState (?) is likely being called too many times"
+                      + " during mounting."));
+        }
+
+        mReDispatchCounter++;
+        tryDispatchMountItems();
+      }
+      mReDispatchCounter = 0;
     }
-    mReDispatchCounter = 0;
   }
 
   @UiThread
@@ -304,10 +323,6 @@ public class MountItemDispatcher {
     return true;
   }
 
-  public boolean hasMountItems() {
-    return !mPreMountItems.isEmpty() || !mMountItems.isEmpty() || !mViewCommandMountItems.isEmpty();
-  }
-
   /*
    * Executes pre mount items. Pre mount items are operations that can be executed before the mount items come. For example view preallocation.
    * This is a performance optimisation to do as much work ahead of time as possible.
@@ -362,7 +377,7 @@ public class MountItemDispatcher {
       }
       SurfaceMountingManager surfaceMountingManager =
           mMountingManager.getSurfaceManager(item.getSurfaceId());
-      surfaceMountingManager.executeOnViewAttach(item);
+      surfaceMountingManager.scheduleMountItemOnViewAttach(item);
     } else {
       item.execute(mMountingManager);
     }

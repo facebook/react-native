@@ -43,12 +43,59 @@ export function callNativeMethodToChangeBackgroundColor(
     console.log('viewRef is null');
     return;
   }
+  const reactTag = ReactNative.findNodeHandle(viewRef);
+  if (reactTag == null) {
+    console.log('reactTag is null');
+    return;
+  }
   UIManager.dispatchViewManagerCommand(
-    ReactNative.findNodeHandle(viewRef),
-    UIManager.getViewManagerConfig(
-      'RNTMyLegacyNativeView',
-    ).Commands.changeBackgroundColor.toString(),
+    reactTag,
+    UIManager.getViewManagerConfig('RNTMyLegacyNativeView').Commands
+      .changeBackgroundColor,
     [color],
+  );
+}
+
+export function callNativeMethodToAddOverlays(
+  viewRef: React.ElementRef<MyLegacyViewType> | null,
+  overlayColors: $ReadOnlyArray<string>,
+) {
+  if (!viewRef) {
+    console.log('viewRef is null');
+    return;
+  }
+  const reactTag = ReactNative.findNodeHandle(viewRef);
+  if (reactTag == null) {
+    console.log('reactTag is null');
+    return;
+  }
+
+  UIManager.dispatchViewManagerCommand(
+    reactTag,
+    UIManager.getViewManagerConfig('RNTMyLegacyNativeView').Commands
+      .addOverlays,
+    [overlayColors],
+  );
+}
+
+export function callNativeMethodToRemoveOverlays(
+  viewRef: React.ElementRef<MyLegacyViewType> | null,
+) {
+  if (!viewRef) {
+    console.log('viewRef is null');
+    return;
+  }
+  const reactTag = ReactNative.findNodeHandle(viewRef);
+  if (reactTag == null) {
+    console.log('reactTag is null');
+    return;
+  }
+
+  UIManager.dispatchViewManagerCommand(
+    reactTag,
+    UIManager.getViewManagerConfig('RNTMyLegacyNativeView').Commands
+      .removeOverlays,
+    [],
   );
 }
 

@@ -10,10 +10,12 @@
 #include <algorithm>
 
 #include <react/renderer/components/view/conversions.h>
+#include <react/renderer/components/view/primitives.h>
 #include <react/renderer/components/view/propsConversions.h>
 #include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/core/propsConversions.h>
 #include <react/renderer/debug/debugStringConvertibleUtils.h>
+#include <react/renderer/graphics/ValueUnit.h>
 #include <react/utils/CoreFeatures.h>
 
 namespace facebook::react {
@@ -140,6 +142,22 @@ BaseViewProps::BaseViewProps(
                                                        "shadowRadius",
                                                        sourceProps.shadowRadius,
                                                        {})),
+      cursor(
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.cursor
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "cursor",
+                                                       sourceProps.cursor,
+                                                       {})),
+      filter(
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.filter
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "experimental_filter",
+                                                       sourceProps.filter,
+                                                       {})),
       transform(
           CoreFeatures::enablePropIteratorSetter ? sourceProps.transform
                                                  : convertRawProp(
@@ -220,6 +238,15 @@ BaseViewProps::BaseViewProps(
                                                        "collapsable",
                                                        sourceProps.collapsable,
                                                        true)),
+      collapsableChildren(
+          CoreFeatures::enablePropIteratorSetter
+              ? sourceProps.collapsableChildren
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "collapsableChildren",
+                    sourceProps.collapsableChildren,
+                    true)),
       removeClippedSubviews(
           CoreFeatures::enablePropIteratorSetter
               ? sourceProps.removeClippedSubviews
@@ -279,8 +306,10 @@ void BaseViewProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(hitSlop);
     RAW_SET_PROP_SWITCH_CASE_BASIC(onLayout);
     RAW_SET_PROP_SWITCH_CASE_BASIC(collapsable);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(collapsableChildren);
     RAW_SET_PROP_SWITCH_CASE_BASIC(removeClippedSubviews);
     RAW_SET_PROP_SWITCH_CASE_BASIC(experimental_layoutConformance);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(cursor);
     // events field
     VIEW_EVENT_CASE(PointerEnter);
     VIEW_EVENT_CASE(PointerEnterCapture);
@@ -342,13 +371,47 @@ static BorderRadii ensureNoOverlap(const BorderRadii& radii, const Size& size) {
 
   return BorderRadii{
       /* topLeft = */
-      radii.topLeft * std::min(insetsScale.top, insetsScale.left),
+      static_cast<float>(
+          radii.topLeft * std::min(insetsScale.top, insetsScale.left)),
       /* topRight = */
-      radii.topRight * std::min(insetsScale.top, insetsScale.right),
+      static_cast<float>(
+          radii.topRight * std::min(insetsScale.top, insetsScale.right)),
       /* bottomLeft = */
-      radii.bottomLeft * std::min(insetsScale.bottom, insetsScale.left),
+      static_cast<float>(
+          radii.bottomLeft * std::min(insetsScale.bottom, insetsScale.left)),
       /* bottomRight = */
-      radii.bottomRight * std::min(insetsScale.bottom, insetsScale.right),
+      static_cast<float>(
+          radii.bottomRight * std::min(insetsScale.bottom, insetsScale.right)),
+  };
+}
+
+static BorderRadii radiiPercentToPoint(
+    const RectangleCorners<ValueUnit>& radii,
+    const Size& size) {
+  return BorderRadii{
+      /* topLeft = */
+      (radii.topLeft.unit == UnitType::Percent)
+          ? static_cast<float>(
+                (radii.topLeft.value / 100) * std::max(size.width, size.height))
+          : static_cast<float>(radii.topLeft.value),
+      /* topRight = */
+      (radii.topRight.unit == UnitType::Percent)
+          ? static_cast<float>(
+                (radii.topRight.value / 100) *
+                std::max(size.width, size.height))
+          : static_cast<float>(radii.topRight.value),
+      /* bottomLeft = */
+      (radii.bottomLeft.unit == UnitType::Percent)
+          ? static_cast<float>(
+                (radii.bottomLeft.value / 100) *
+                std::max(size.width, size.height))
+          : static_cast<float>(radii.bottomLeft.value),
+      /* bottomRight = */
+      (radii.bottomRight.unit == UnitType::Percent)
+          ? static_cast<float>(
+                (radii.bottomRight.value / 100) *
+                std::max(size.width, size.height))
+          : static_cast<float>(radii.bottomRight.value),
   };
 }
 
@@ -358,34 +421,43 @@ BorderMetrics BaseViewProps::resolveBorderMetrics(
       bool{layoutMetrics.layoutDirection == LayoutDirection::RightToLeft};
 
   auto borderWidths = CascadedBorderWidths{
-      /* .left = */ optionalFloatFromYogaValue(yogaStyle.border()[YGEdgeLeft]),
-      /* .top = */ optionalFloatFromYogaValue(yogaStyle.border()[YGEdgeTop]),
+      /* .left = */ optionalFloatFromYogaValue(
+          yogaStyle.border(yoga::Edge::Left)),
+      /* .top = */
+      optionalFloatFromYogaValue(yogaStyle.border(yoga::Edge::Top)),
       /* .right = */
-      optionalFloatFromYogaValue(yogaStyle.border()[YGEdgeRight]),
+      optionalFloatFromYogaValue(yogaStyle.border(yoga::Edge::Right)),
       /* .bottom = */
-      optionalFloatFromYogaValue(yogaStyle.border()[YGEdgeBottom]),
+      optionalFloatFromYogaValue(yogaStyle.border(yoga::Edge::Bottom)),
       /* .start = */
-      optionalFloatFromYogaValue(yogaStyle.border()[YGEdgeStart]),
-      /* .end = */ optionalFloatFromYogaValue(yogaStyle.border()[YGEdgeEnd]),
+      optionalFloatFromYogaValue(yogaStyle.border(yoga::Edge::Start)),
+      /* .end = */
+      optionalFloatFromYogaValue(yogaStyle.border(yoga::Edge::End)),
       /* .horizontal = */
-      optionalFloatFromYogaValue(yogaStyle.border()[YGEdgeHorizontal]),
+      optionalFloatFromYogaValue(yogaStyle.border(yoga::Edge::Horizontal)),
       /* .vertical = */
-      optionalFloatFromYogaValue(yogaStyle.border()[YGEdgeVertical]),
-      /* .all = */ optionalFloatFromYogaValue(yogaStyle.border()[YGEdgeAll]),
+      optionalFloatFromYogaValue(yogaStyle.border(yoga::Edge::Vertical)),
+      /* .all = */
+      optionalFloatFromYogaValue(yogaStyle.border(yoga::Edge::All)),
   };
+
+  BorderRadii radii = radiiPercentToPoint(
+      borderRadii.resolve(isRTL, ValueUnit{0.0f, UnitType::Point}),
+      layoutMetrics.frame.size);
 
   return {
       /* .borderColors = */ borderColors.resolve(isRTL, {}),
       /* .borderWidths = */ borderWidths.resolve(isRTL, 0),
       /* .borderRadii = */
-      ensureNoOverlap(borderRadii.resolve(isRTL, 0), layoutMetrics.frame.size),
-      /* .borderCurves = */ borderCurves.resolve(isRTL, BorderCurve::Circular),
+      ensureNoOverlap(radii, layoutMetrics.frame.size),
+      /* .borderCurves = */
+      borderCurves.resolve(isRTL, BorderCurve::Circular),
       /* .borderStyles = */ borderStyles.resolve(isRTL, BorderStyle::Solid),
   };
 }
 
 Transform BaseViewProps::resolveTransform(
-    LayoutMetrics const& layoutMetrics) const {
+    const LayoutMetrics& layoutMetrics) const {
   float viewWidth = layoutMetrics.frame.size.width;
   float viewHeight = layoutMetrics.frame.size.height;
   if (!transformOrigin.isSet() || (viewWidth == 0 && viewHeight == 0)) {

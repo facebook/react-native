@@ -8,6 +8,7 @@
  */
 
 const NEEDS_REPRO_LABEL = 'Needs: Repro';
+const NEEDS_AUTHOR_FEEDBACK_LABEL = 'Needs: Author Feedback';
 const NEEDS_REPRO_HEADER = 'Missing Reproducible Example';
 const NEEDS_REPRO_MESSAGE =
   `| :warning: | Missing Reproducible Example |\n` +
@@ -83,7 +84,7 @@ module.exports = async (github, context) => {
   } else {
     await github.rest.issues.addLabels({
       ...issueData,
-      labels: [NEEDS_REPRO_LABEL],
+      labels: [NEEDS_REPRO_LABEL, NEEDS_AUTHOR_FEEDBACK_LABEL],
     });
 
     if (botComment) return;

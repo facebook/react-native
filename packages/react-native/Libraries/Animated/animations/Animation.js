@@ -14,11 +14,8 @@ import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type AnimatedNode from '../nodes/AnimatedNode';
 import type AnimatedValue from '../nodes/AnimatedValue';
 
-import Platform from '../../Utilities/Platform';
 import NativeAnimatedHelper from '../NativeAnimatedHelper';
-import AnimatedColor from '../nodes/AnimatedColor';
 import AnimatedProps from '../nodes/AnimatedProps';
-import AnimatedValueXY from '../nodes/AnimatedValueXY';
 
 export type EndResult = {finished: boolean, value?: number, ...};
 export type EndCallback = (result: EndResult) => void;

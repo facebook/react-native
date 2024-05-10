@@ -17,6 +17,7 @@ import type {
 import type {TypeDeclarationMap} from '../../utils';
 
 const {parseTopLevelType} = require('../parseTopLevelType');
+const {getPrimitiveTypeAnnotation} = require('./componentsUtils');
 
 // $FlowFixMe[unclear-type] there's no flowtype for ASTs
 type EventTypeAST = Object;
@@ -62,28 +63,34 @@ function buildCommandSchemaInternal(
         };
         break;
       case 'TSBooleanKeyword':
-        returnType = {
-          type: 'BooleanTypeAnnotation',
-        };
-        break;
       case 'Int32':
-        returnType = {
-          type: 'Int32TypeAnnotation',
-        };
-        break;
       case 'Double':
-        returnType = {
-          type: 'DoubleTypeAnnotation',
-        };
-        break;
       case 'Float':
+      case 'TSStringKeyword':
+        returnType = getPrimitiveTypeAnnotation(type);
+        break;
+      case 'Array':
+      case 'ReadOnlyArray':
+        if (!paramValue.type === 'TSTypeReference') {
+          throw new Error(
+            'Array and ReadOnlyArray are TSTypeReference for array',
+          );
+        }
         returnType = {
-          type: 'FloatTypeAnnotation',
+          type: 'ArrayTypeAnnotation',
+          elementType: getPrimitiveTypeAnnotation(
+            // TODO: T172453752 support complex type annotation for array element
+            paramValue.typeParameters.params[0].type,
+          ),
         };
         break;
-      case 'TSStringKeyword':
+      case 'TSArrayType':
         returnType = {
-          type: 'StringTypeAnnotation',
+          type: 'ArrayTypeAnnotation',
+          elementType: {
+            // TODO: T172453752 support complex type annotation for array element
+            type: getPrimitiveTypeAnnotation(paramValue.elementType.type).type,
+          },
         };
         break;
       default:

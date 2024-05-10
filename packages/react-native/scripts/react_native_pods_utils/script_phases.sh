@@ -76,7 +76,7 @@ generateCodegenSchemaFromJavaScript () {
 
     # shellcheck disable=SC2086
     # $JS_SRCS not having double quotations is intentional
-    "$NODE_BINARY" "$CODEGEN_CLI_PATH/lib/cli/combine/combine-js-to-schema-cli.js" "$GENERATED_SCHEMA_FILE" $JS_SRCS
+    "$NODE_BINARY" "$CODEGEN_CLI_PATH/lib/cli/combine/combine-js-to-schema-cli.js" --exclude NativeSampleTurboModule "$GENERATED_SCHEMA_FILE" $JS_SRCS
 }
 
 generateCodegenArtifactsFromSchema () {
@@ -96,7 +96,7 @@ generateCodegenArtifactsFromSchema () {
 generateArtifacts () {
     describe "Generating codegen artifacts"
     pushd "$RCT_SCRIPT_RN_DIR" >/dev/null || exit 1
-        "$NODE_BINARY" "scripts/generate-codegen-artifacts.js" --path "$RCT_SCRIPT_APP_PATH" --outputPath "$TEMP_OUTPUT_DIR" --fabricEnabled "$RCT_SCRIPT_FABRIC_ENABLED" --configFileDir "$RCT_SCRIPT_CONFIG_FILE_DIR" --nodeBinary "$NODE_BINARY"
+        "$NODE_BINARY" "scripts/generate-codegen-artifacts.js" --path "$RCT_SCRIPT_APP_PATH" --outputPath "$TEMP_OUTPUT_DIR" --targetPlatform "ios"
     popd >/dev/null || exit 1
 }
 
@@ -104,7 +104,7 @@ moveOutputs () {
     mkdir -p "$RCT_SCRIPT_OUTPUT_DIR"
 
     # Copy all output to output_dir
-    cp -R -X "$TEMP_OUTPUT_DIR/." "$RCT_SCRIPT_OUTPUT_DIR" || exit 1
+    /bin/cp -R -X "$TEMP_OUTPUT_DIR/." "$RCT_SCRIPT_OUTPUT_DIR" || exit 1
     echo "$LIBRARY_NAME output has been written to $RCT_SCRIPT_OUTPUT_DIR:" >> "${SCRIPT_OUTPUT_FILE_0}" 2>&1
     ls -1 "$RCT_SCRIPT_OUTPUT_DIR" >> "${SCRIPT_OUTPUT_FILE_0}" 2>&1
 }

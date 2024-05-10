@@ -29,11 +29,6 @@ class AccessibilityProps {
       const char* propName,
       const RawValue& value);
 
-#ifdef ANDROID
-  void propsDiffMapBuffer(const Props* oldProps, MapBufferBuilder& builder)
-      const;
-#endif
-
 #pragma mark - Props
 
   bool accessible{false};

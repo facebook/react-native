@@ -8,18 +8,15 @@
  * @flow
  */
 
+import type {InspectedViewRef} from '../ReactNative/AppContainer-dev';
 import type {PointerEvent} from '../Types/CoreEventTypes';
 import type {PressEvent} from '../Types/CoreEventTypes';
-import type {
-  InstanceFromReactDevTools,
-  ReactDevToolsAgent,
-} from '../Types/ReactDevToolsTypes';
-import type {HostRef} from './getInspectorDataForViewAtPoint';
+import type {ReactDevToolsAgent} from '../Types/ReactDevToolsTypes';
+import type {InspectedElement} from './Inspector';
 
 import View from '../Components/View/View';
 import ReactNativeFeatureFlags from '../ReactNative/ReactNativeFeatureFlags';
 import StyleSheet from '../StyleSheet/StyleSheet';
-import Dimensions from '../Utilities/Dimensions';
 import ElementBox from './ElementBox';
 import * as React from 'react';
 
@@ -29,61 +26,19 @@ const getInspectorDataForViewAtPoint = require('./getInspectorDataForViewAtPoint
 const {useEffect, useState, useCallback} = React;
 
 type Props = {
-  inspectedView: ?HostRef,
+  inspectedViewRef: InspectedViewRef,
   reactDevToolsAgent: ReactDevToolsAgent,
 };
 
 export default function ReactDevToolsOverlay({
-  inspectedView,
+  inspectedViewRef,
   reactDevToolsAgent,
 }: Props): React.Node {
-  const [inspected, setInspected] = useState<null | {
-    frame: {+height: any, +left: any, +top: any, +width: any},
-  }>(null);
+  const [inspected, setInspected] = useState<?InspectedElement>(null);
   const [isInspecting, setIsInspecting] = useState(false);
 
   useEffect(() => {
-    let hideTimeoutId = null;
-
-    function onAgentHideNativeHighlight() {
-      // we wait to actually hide in order to avoid flicker
-      clearTimeout(hideTimeoutId);
-      hideTimeoutId = setTimeout(() => {
-        setInspected(null);
-      }, 100);
-    }
-
-    function onAgentShowNativeHighlight(node?: InstanceFromReactDevTools) {
-      clearTimeout(hideTimeoutId);
-
-      // `canonical.publicInstance` => Fabric
-      // `canonical` => Legacy Fabric
-      // `node` => Legacy renderer
-      const component =
-        (node?.canonical && node.canonical.publicInstance) ??
-        // TODO: remove this check when syncing the new version of the renderer from React to React Native.
-        node?.canonical ??
-        node;
-      if (!component || !component.measure) {
-        return;
-      }
-
-      component.measure((x, y, width, height, left, top) => {
-        setInspected({
-          frame: {left, top, width, height},
-        });
-      });
-    }
-
     function cleanup() {
-      reactDevToolsAgent.removeListener(
-        'hideNativeHighlight',
-        onAgentHideNativeHighlight,
-      );
-      reactDevToolsAgent.removeListener(
-        'showNativeHighlight',
-        onAgentShowNativeHighlight,
-      );
       reactDevToolsAgent.removeListener('shutdown', cleanup);
       reactDevToolsAgent.removeListener(
         'startInspectingNative',
@@ -103,14 +58,6 @@ export default function ReactDevToolsOverlay({
       setIsInspecting(false);
     }
 
-    reactDevToolsAgent.addListener(
-      'hideNativeHighlight',
-      onAgentHideNativeHighlight,
-    );
-    reactDevToolsAgent.addListener(
-      'showNativeHighlight',
-      onAgentShowNativeHighlight,
-    );
     reactDevToolsAgent.addListener('shutdown', cleanup);
     reactDevToolsAgent.addListener(
       'startInspectingNative',
@@ -126,24 +73,29 @@ export default function ReactDevToolsOverlay({
 
   const findViewForLocation = useCallback(
     (x: number, y: number) => {
-      getInspectorDataForViewAtPoint(inspectedView, x, y, viewData => {
-        const {touchedViewTag, closestInstance, frame} = viewData;
-        if (closestInstance != null || touchedViewTag != null) {
-          // We call `selectNode` for both non-fabric(viewTag) and fabric(instance),
-          // this makes sure it works for both architectures.
-          reactDevToolsAgent.selectNode(findNodeHandle(touchedViewTag));
-          if (closestInstance != null) {
-            reactDevToolsAgent.selectNode(closestInstance);
+      getInspectorDataForViewAtPoint(
+        inspectedViewRef.current,
+        x,
+        y,
+        viewData => {
+          const {touchedViewTag, closestInstance, frame} = viewData;
+          if (closestInstance != null || touchedViewTag != null) {
+            // We call `selectNode` for both non-fabric(viewTag) and fabric(instance),
+            // this makes sure it works for both architectures.
+            reactDevToolsAgent.selectNode(findNodeHandle(touchedViewTag));
+            if (closestInstance != null) {
+              reactDevToolsAgent.selectNode(closestInstance);
+            }
+            setInspected({
+              frame,
+            });
+            return true;
           }
-          setInspected({
-            frame,
-          });
-          return true;
-        }
-        return false;
-      });
+          return false;
+        },
+      );
     },
-    [inspectedView, reactDevToolsAgent],
+    [inspectedViewRef, reactDevToolsAgent],
   );
 
   const stopInspecting = useCallback(() => {
@@ -177,7 +129,8 @@ export default function ReactDevToolsOverlay({
     [onResponderMove],
   );
 
-  let highlight = inspected ? <ElementBox frame={inspected.frame} /> : null;
+  const highlight = inspected ? <ElementBox frame={inspected.frame} /> : null;
+
   if (isInspecting) {
     const events =
       // Pointer events only work on fabric
@@ -196,7 +149,7 @@ export default function ReactDevToolsOverlay({
     return (
       <View
         nativeID="devToolsInspectorOverlay"
-        style={[styles.inspector, {height: Dimensions.get('window').height}]}
+        style={styles.inspector}
         {...events}>
         {highlight}
       </View>
@@ -213,5 +166,6 @@ const styles = StyleSheet.create({
     left: 0,
     top: 0,
     right: 0,
+    bottom: 0,
   },
 });

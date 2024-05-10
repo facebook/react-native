@@ -23,8 +23,7 @@ static NSString *const kRemoteNotificationsRegistered = @"RemoteNotificationsReg
 static NSString *const kRemoteNotificationRegistrationFailed = @"RemoteNotificationRegistrationFailed";
 
 static NSString *const kErrorUnableToRequestPermissions = @"E_UNABLE_TO_REQUEST_PERMISSIONS";
-
-#if !TARGET_OS_UIKITFORMAC
+static UNNotification *kInitialNotification = nil;
 
 @interface RCTPushNotificationManager () <NativePushNotificationManagerIOSSpec>
 @property (nonatomic, strong) NSMutableDictionary *remoteNotificationCallbacks;
@@ -95,34 +94,8 @@ RCT_ENUM_CONVERTER(
     integerValue)
 
 @end
-#else
-@interface RCTPushNotificationManager () <NativePushNotificationManagerIOSSpec>
-@end
-#endif // TARGET_OS_UIKITFORMAC
 
 @implementation RCTPushNotificationManager
-
-#if !TARGET_OS_UIKITFORMAC
-
-/** DEPRECATED. UILocalNotification was deprecated in iOS 10. Please don't add new callsites. */
-static NSDictionary *RCTFormatLocalNotification(UILocalNotification *notification)
-{
-  NSMutableDictionary *formattedLocalNotification = [NSMutableDictionary dictionary];
-  if (notification.fireDate) {
-    NSDateFormatter *formatter = [NSDateFormatter new];
-    [formatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"];
-    NSString *fireDateString = [formatter stringFromDate:notification.fireDate];
-    formattedLocalNotification[@"fireDate"] = fireDateString;
-  }
-  formattedLocalNotification[@"alertAction"] = RCTNullIfNil(notification.alertAction);
-  formattedLocalNotification[@"alertBody"] = RCTNullIfNil(notification.alertBody);
-  formattedLocalNotification[@"applicationIconBadgeNumber"] = @(notification.applicationIconBadgeNumber);
-  formattedLocalNotification[@"category"] = RCTNullIfNil(notification.category);
-  formattedLocalNotification[@"soundName"] = RCTNullIfNil(notification.soundName);
-  formattedLocalNotification[@"userInfo"] = RCTNullIfNil(RCTJSONClean(notification.userInfo));
-  formattedLocalNotification[@"remote"] = @NO;
-  return formattedLocalNotification;
-}
 
 /** For delivered notifications */
 static NSDictionary<NSString *, id> *RCTFormatUNNotification(UNNotification *notification)
@@ -176,7 +149,10 @@ static NSString *RCTFormatNotificationDateFromNSDate(NSDate *date)
   return [formatter stringFromDate:date];
 }
 
-#endif // TARGET_OS_UIKITFORMAC
+static BOOL IsNotificationRemote(UNNotification *notification)
+{
+  return [notification.request.trigger isKindOfClass:[UNPushNotificationTrigger class]];
+}
 
 RCT_EXPORT_MODULE()
 
@@ -185,7 +161,6 @@ RCT_EXPORT_MODULE()
   return dispatch_get_main_queue();
 }
 
-#if !TARGET_OS_UIKITFORMAC
 - (void)startObserving
 {
   [[NSNotificationCenter defaultCenter] addObserver:self
@@ -241,28 +216,47 @@ RCT_EXPORT_MODULE()
                                                     userInfo:@{@"error" : error}];
 }
 
-+ (void)didReceiveRemoteNotification:(NSDictionary *)notification
++ (void)didReceiveNotification:(UNNotification *)notification
 {
-  NSDictionary *userInfo = @{@"notification" : notification};
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTRemoteNotificationReceived
-                                                      object:self
-                                                    userInfo:userInfo];
+  BOOL const isRemoteNotification = IsNotificationRemote(notification);
+  if (isRemoteNotification) {
+    NSDictionary *userInfo = @{@"notification" : notification.request.content.userInfo};
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTRemoteNotificationReceived
+                                                        object:self
+                                                      userInfo:userInfo];
+  } else {
+    [[NSNotificationCenter defaultCenter] postNotificationName:kLocalNotificationReceived
+                                                        object:self
+                                                      userInfo:RCTFormatUNNotification(notification)];
+  }
 }
 
 + (void)didReceiveRemoteNotification:(NSDictionary *)notification
               fetchCompletionHandler:(RCTRemoteNotificationCallback)completionHandler
 {
-  NSDictionary *userInfo = @{@"notification" : notification, @"completionHandler" : completionHandler};
+  NSDictionary *userInfo = completionHandler
+      ? @{@"notification" : notification, @"completionHandler" : completionHandler}
+      : @{@"notification" : notification};
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTRemoteNotificationReceived
                                                       object:self
                                                     userInfo:userInfo];
 }
 
-+ (void)didReceiveLocalNotification:(UILocalNotification *)notification
++ (void)setInitialNotification:(UNNotification *)notification
 {
-  [[NSNotificationCenter defaultCenter] postNotificationName:kLocalNotificationReceived
-                                                      object:self
-                                                    userInfo:RCTFormatLocalNotification(notification)];
+  kInitialNotification = notification;
+}
+
+- (void)invalidate
+{
+  [super invalidate];
+
+  kInitialNotification = nil;
+}
+
+- (void)dealloc
+{
+  kInitialNotification = nil;
 }
 
 - (void)handleLocalNotificationReceived:(NSNotification *)notification
@@ -516,20 +510,25 @@ RCT_EXPORT_METHOD(getInitialNotification
                   : (RCTPromiseResolveBlock)resolve reject
                   : (__unused RCTPromiseRejectBlock)reject)
 {
-  NSMutableDictionary<NSString *, id> *initialNotification =
-      [self.bridge.launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey] mutableCopy];
-
-  UILocalNotification *initialLocalNotification =
-      self.bridge.launchOptions[UIApplicationLaunchOptionsLocalNotificationKey];
-
-  if (initialNotification) {
-    initialNotification[@"remote"] = @YES;
-    resolve(initialNotification);
-  } else if (initialLocalNotification) {
-    resolve(RCTFormatLocalNotification(initialLocalNotification));
-  } else {
-    resolve((id)kCFNull);
+  // The user actioned a local or remote notification to launch the app. Notification is represented by UNNotification.
+  // Set this property in the implementation of
+  // userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler.
+  if (kInitialNotification) {
+    NSDictionary<NSString *, id> *notificationDict =
+        RCTFormatUNNotificationContent(kInitialNotification.request.content);
+    if (IsNotificationRemote(kInitialNotification)) {
+      // For backwards compatibility, remote notifications only returns a userInfo dict.
+      NSMutableDictionary<NSString *, id> *userInfoCopy = [notificationDict[@"userInfo"] mutableCopy];
+      userInfoCopy[@"remote"] = @YES;
+      resolve(userInfoCopy);
+    } else {
+      // For backwards compatibility, local notifications return the notification.
+      resolve(notificationDict);
+    }
+    return;
   }
+
+  resolve((id)kCFNull);
 }
 
 RCT_EXPORT_METHOD(getScheduledLocalNotifications : (RCTResponseSenderBlock)callback)
@@ -576,100 +575,6 @@ RCT_EXPORT_METHOD(getAuthorizationStatus : (RCTResponseSenderBlock)callback)
     callback(@[ @(settings.authorizationStatus) ]);
   }];
 }
-
-#else // TARGET_OS_UIKITFORMAC
-
-RCT_EXPORT_METHOD(onFinishRemoteNotification : (NSString *)notificationId fetchResult : (NSString *)fetchResult)
-{
-  RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
-}
-
-RCT_EXPORT_METHOD(setApplicationIconBadgeNumber : (double)number)
-{
-  RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
-}
-
-RCT_EXPORT_METHOD(getApplicationIconBadgeNumber : (RCTResponseSenderBlock)callback)
-{
-  RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
-}
-
-RCT_EXPORT_METHOD(requestPermissions
-                  : (JS::NativePushNotificationManagerIOS::SpecRequestPermissionsPermission &)permissions resolve
-                  : (RCTPromiseResolveBlock)resolve reject
-                  : (RCTPromiseRejectBlock)reject)
-{
-  RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
-}
-
-RCT_EXPORT_METHOD(abandonPermissions)
-{
-  RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
-}
-
-RCT_EXPORT_METHOD(checkPermissions : (RCTResponseSenderBlock)callback)
-{
-  RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
-}
-
-RCT_EXPORT_METHOD(presentLocalNotification : (JS::NativePushNotificationManagerIOS::Notification &)notification)
-{
-  RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
-}
-
-RCT_EXPORT_METHOD(scheduleLocalNotification : (JS::NativePushNotificationManagerIOS::Notification &)notification)
-{
-  RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
-}
-
-RCT_EXPORT_METHOD(cancelAllLocalNotifications)
-{
-  RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
-}
-
-RCT_EXPORT_METHOD(cancelLocalNotifications : (NSDictionary<NSString *, id> *)userInfo)
-{
-  RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
-}
-
-RCT_EXPORT_METHOD(getInitialNotification
-                  : (RCTPromiseResolveBlock)resolve reject
-                  : (__unused RCTPromiseRejectBlock)reject)
-{
-  RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
-}
-
-RCT_EXPORT_METHOD(getScheduledLocalNotifications : (RCTResponseSenderBlock)callback)
-{
-  RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
-}
-
-RCT_EXPORT_METHOD(removeAllDeliveredNotifications)
-{
-  RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
-}
-
-RCT_EXPORT_METHOD(removeDeliveredNotifications : (NSArray<NSString *> *)identifiers)
-{
-  RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
-}
-
-RCT_EXPORT_METHOD(getDeliveredNotifications : (RCTResponseSenderBlock)callback)
-{
-  RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
-}
-
-RCT_EXPORT_METHOD(getAuthorizationStatus : (RCTResponseSenderBlock)callback)
-{
-  RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
-}
-
-- (NSArray<NSString *> *)supportedEvents
-{
-  return @[];
-}
-
-#endif // TARGET_OS_UIKITFORMAC
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
     (const facebook::react::ObjCTurboModule::InitParams &)params

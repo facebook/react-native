@@ -56,11 +56,9 @@ const FileTemplate = ({
 #include <react/renderer/components/view/ViewEventEmitter.h>
 ${[...extraIncludes].join('\n')}
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 ${componentEmitters}
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 `;
 
 const ComponentTemplate = ({
@@ -313,6 +311,7 @@ module.exports = {
     schema: SchemaType,
     packageName?: string,
     assumeNonnull: boolean = false,
+    headerPrefix?: string,
   ): FilesOutput {
     const moduleComponents: ComponentCollection = Object.keys(schema.modules)
       .map(moduleName => {

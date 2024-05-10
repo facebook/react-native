@@ -41,7 +41,7 @@ static UIActivityIndicatorViewStyle convertActivityIndicatorViewStyle(const Acti
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-    static const auto defaultProps = std::make_shared<const ActivityIndicatorViewProps>();
+    const auto &defaultProps = ActivityIndicatorViewShadowNode::defaultSharedProps();
     _props = defaultProps;
 
     _activityIndicatorView = [[UIActivityIndicatorView alloc] initWithFrame:self.bounds];

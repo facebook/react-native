@@ -26,10 +26,6 @@ public class JSCHeapCapture extends NativeJSCHeapCaptureSpec {
     CaptureException(String message) {
       super(message);
     }
-
-    CaptureException(String message, Throwable cause) {
-      super(message, cause);
-    }
   }
 
   public interface CaptureCallback {

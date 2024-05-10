@@ -9,12 +9,14 @@
  * @oncall react_native
  */
 
+const {PACKAGES_DIR} = require('../consts');
 const {parseArgs} = require('@pkgjs/parseargs');
 // $FlowFixMe[untyped-import]: TODO type ansi-styles
 const ansiStyles = require('ansi-styles');
 const chalk = require('chalk');
 const {execSync, spawnSync} = require('child_process');
 const {promises: fs} = require('fs');
+const nullthrows = require('nullthrows');
 const {hostname, tmpdir, userInfo} = require('os');
 const path = require('path');
 // $FlowFixMe[untyped-import]: TODO type rimraf
@@ -27,9 +29,6 @@ const supportsColor = require('supports-color');
 const DEVTOOLS_FRONTEND_REPO_URL =
   'https://github.com/facebookexperimental/rn-chrome-devtools-frontend';
 
-const REPO_ROOT = path.resolve(__dirname, '../..');
-const PACKAGES_DIR /*: string */ = path.join(REPO_ROOT, 'packages');
-
 const config = {
   allowPositionals: true,
   options: {
@@ -37,13 +36,32 @@ const config = {
     'keep-scratch': {type: 'boolean'},
     nohooks: {type: 'boolean'},
     help: {type: 'boolean'},
+    'create-diff': {type: 'boolean'},
   },
 };
+
+/*::
+type DiffBaseInfo = {
+  packagePath: string,
+  baseGitRevision: string,
+};
+
+type ParsedBuildInfo = {
+  gitRevision: string,
+  isLocalCheckout: boolean,
+};
+*/
 
 async function main() {
   const {
     positionals,
-    values: {help, branch, nohooks, 'keep-scratch': keepScratch},
+    values: {
+      help,
+      branch,
+      nohooks,
+      'keep-scratch': keepScratch,
+      'create-diff': createDiff,
+    },
   } = parseArgs(config);
 
   if (help === true) {
@@ -69,10 +87,18 @@ async function main() {
   process.stdout.write(chalk.dim(`Scratch path: ${scratchPath}\n\n`));
 
   await checkRequiredTools();
-  await buildDebuggerFrontend(scratchPath, localCheckoutPath, {
+  const packagePath = path.join(PACKAGES_DIR, 'debugger-frontend');
+  let diffBaseInfo;
+  if (createDiff) {
+    diffBaseInfo = await checkCanCreateDiff(packagePath);
+  }
+  await buildDebuggerFrontend(packagePath, scratchPath, localCheckoutPath, {
     branch: branch ?? '',
     gclientSyncOptions: {nohooks: nohooks === true},
   });
+  if (createDiff && diffBaseInfo) {
+    await createSyncDiff(diffBaseInfo, scratchPath);
+  }
   await cleanup(scratchPath, keepScratch === true);
   process.stdout.write(
     chalk.green('Sync done.') +
@@ -117,6 +143,7 @@ async function checkRequiredTools() {
 }
 
 async function buildDebuggerFrontend(
+  packagePath /*: string */,
   scratchPath /*: string */,
   localCheckoutPath /*: ?string */,
   {branch, gclientSyncOptions} /*: $ReadOnly<{
@@ -140,7 +167,6 @@ async function buildDebuggerFrontend(
 
   const {buildPath, gnArgsSummary} = await performReleaseBuild(checkoutPath);
 
-  const packagePath = path.join(PACKAGES_DIR, 'debugger-frontend');
   const destPathInPackage = path.join(packagePath, 'dist', 'third-party');
   await cleanPackageFiles(destPathInPackage);
 
@@ -381,6 +407,114 @@ async function spawnSafe(
       process.stderr.write(ansiStyles.dim.close);
     }
   }
+}
+
+async function checkCanCreateDiff(
+  packagePath /*: string */,
+) /*: Promise<DiffBaseInfo> */ {
+  process.stdout.write('Checking that we can create a diff' + '\n');
+  try {
+    const {stdout: hgRootStdout} = await spawnSafe('hg', ['root'], {
+      cwd: packagePath,
+      stdio: ['ignore', 'pipe', 'inherit'],
+    });
+    const repoRoot = hgRootStdout.toString().trim();
+    const projectid = (
+      await fs.readFile(path.join(repoRoot, '.projectid'), 'utf8')
+    ).trim();
+    if (projectid !== 'fbsource') {
+      throw new Error(
+        'Expected .projectid to contain "fbsource" but found: ' + projectid,
+      );
+    }
+    await spawnSafe('jf', ['-v'], {cwd: packagePath, stdio: 'ignore'});
+  } catch (e) {
+    process.stderr.write(
+      'Must be in an fbsource checkout (Meta-only) to create a diff\n',
+    );
+    throw e;
+  }
+  try {
+    const {stdout: hgStatusStdout} = await spawnSafe(
+      'hg',
+      ['status', 'BUILD_INFO'],
+      {cwd: packagePath, stdio: ['ignore', 'pipe', 'inherit']},
+    );
+    if (hgStatusStdout.toString().trim() !== '') {
+      throw new Error(
+        'Must have a clean base BUILD_INFO file to create a diff',
+      );
+    }
+    const {gitRevision: baseGitRevision} = await readBuildInfo(packagePath);
+    return {
+      packagePath,
+      baseGitRevision,
+    };
+  } catch (e) {
+    process.stderr.write('Must have a BUILD_INFO file to create a diff\n');
+    throw e;
+  }
+}
+
+async function readBuildInfo(
+  packagePath /*: string*/,
+) /*: Promise<ParsedBuildInfo> */ {
+  const buildInfo = await fs.readFile(
+    path.join(packagePath, 'BUILD_INFO'),
+    'utf8',
+  );
+  const GIT_REV_RE = /^Git revision: ([0-9a-f]{40})/m;
+  const gitRevision = nullthrows(
+    GIT_REV_RE.exec(buildInfo),
+    'Could not extract git revision from BUILD_INFO',
+  )[1];
+  const isLocalCheckout = !/^Is local checkout: false$/m.test(buildInfo);
+  return {
+    isLocalCheckout,
+    gitRevision,
+  };
+}
+
+async function createSyncDiff(
+  diffBaseInfo /*: DiffBaseInfo */,
+  scratchPath /*: string */,
+) {
+  process.stdout.write('Creating a sync diff\n');
+  const {packagePath, baseGitRevision} = diffBaseInfo;
+  const baseGitRevisionShort = baseGitRevision.slice(0, 7);
+  const {gitRevision: newGitRevision, isLocalCheckout} =
+    await readBuildInfo(packagePath);
+  const newGitRevisionShort = newGitRevision.slice(0, 7);
+
+  const commitMessage = [
+    (isLocalCheckout ? 'DO NOT LAND ' : '') +
+      `[RN] Update debugger-frontend from ${baseGitRevisionShort}...${newGitRevisionShort}`,
+    '',
+    'Summary:',
+    `Changelog: [Internal] - Update \`@react-native/debugger-frontend\` from ${baseGitRevisionShort}...${newGitRevisionShort}`,
+    '',
+    `Resyncs \`@react-native/debugger-frontend\` from GitHub - see \`rn-chrome-devtools-frontend\` [changelog](${DEVTOOLS_FRONTEND_REPO_URL}/compare/${baseGitRevision}...${newGitRevision}).`,
+    '',
+    'Test Plan: CI',
+    '',
+    'Reviewers: #rn-debugging',
+    '',
+    'Tags: msdkland[metro]',
+    '',
+  ].join('\n');
+
+  // TODO: Generate a detailed inline changelog from Git commits?
+
+  const commitMessageFile = path.join(scratchPath, 'commit-msg');
+  await fs.writeFile(commitMessageFile, commitMessage);
+  await spawnSafe(
+    'hg',
+    ['commit', packagePath, '--addremove', '-l', commitMessageFile],
+    {cwd: packagePath},
+  );
+  await spawnSafe('jf', ['submit', '--draft'], {
+    cwd: packagePath,
+  });
 }
 
 if (require.main === module) {

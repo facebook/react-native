@@ -57,13 +57,19 @@ export default function openDebuggerMiddleware({
       (experiments.enableOpenDebuggerRedirect && req.method === 'GET')
     ) {
       const {query} = url.parse(req.url, true);
-      const {appId, device}: {appId?: string, device?: string, ...} = query;
+      const {
+        appId,
+        device,
+        launchId,
+      }: {appId?: string, device?: string, launchId?: string, ...} = query;
 
       const targets = inspectorProxy.getPageDescriptions().filter(
         // Only use targets with better reloading support
         app =>
-          app.title === 'React Native Experimental (Improved Chrome Reloads)',
+          app.title === 'React Native Experimental (Improved Chrome Reloads)' ||
+          app.reactNative.capabilities?.nativePageReloads === true,
       );
+
       let target;
 
       const launchType: 'launch' | 'redirect' =
@@ -105,6 +111,9 @@ export default function openDebuggerMiddleware({
         return;
       }
 
+      const useFuseboxEntryPoint =
+        target.reactNative.capabilities?.prefersFuseboxFrontend;
+
       try {
         switch (launchType) {
           case 'launch':
@@ -117,8 +126,10 @@ export default function openDebuggerMiddleware({
               frontendInstanceId,
               await browserLauncher.launchDebuggerAppWindow(
                 getDevToolsFrontendUrl(
+                  experiments,
                   target.webSocketDebuggerUrl,
                   serverBaseUrl,
+                  {launchId, useFuseboxEntryPoint},
                 ),
               ),
             );
@@ -127,9 +138,10 @@ export default function openDebuggerMiddleware({
           case 'redirect':
             res.writeHead(302, {
               Location: getDevToolsFrontendUrl(
+                experiments,
                 target.webSocketDebuggerUrl,
-                // Use a relative URL.
-                '',
+                serverBaseUrl,
+                {relative: true, launchId, useFuseboxEntryPoint},
               ),
             });
             res.end();
@@ -143,6 +155,8 @@ export default function openDebuggerMiddleware({
           status: 'success',
           appId: appId ?? null,
           deviceId: device ?? null,
+          resolvedTargetDescription: target.description,
+          prefersFuseboxFrontend: useFuseboxEntryPoint ?? false,
         });
         return;
       } catch (e) {

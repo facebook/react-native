@@ -1,11 +1,11 @@
 {
   "name": "@react-native/eslint-config",
-  "version": "0.74.0",
+  "version": "0.75.0-main",
   "description": "ESLint config for React Native",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/facebook/react-native.git",
+    "url": "git+https://github.com/facebook/react-native.git",
     "directory": "packages/eslint-config-react-native"
   },
   "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/eslint-config-react-native#readme",
@@ -22,14 +22,13 @@
   "dependencies": {
     "@babel/core": "^7.20.0",
     "@babel/eslint-parser": "^7.20.0",
-    "@react-native/eslint-plugin": "^0.74.0",
-    "@typescript-eslint/eslint-plugin": "^6.7.4",
-    "@typescript-eslint/parser": "^6.7.4",
+    "@react-native/eslint-plugin": "0.75.0-main",
+    "@typescript-eslint/eslint-plugin": "^7.1.1",
+    "@typescript-eslint/parser": "^7.1.1",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-eslint-comments": "^3.2.0",
     "eslint-plugin-ft-flow": "^2.0.1",
-    "eslint-plugin-jest": "^26.5.3",
-    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-jest": "^27.9.0",
     "eslint-plugin-react": "^7.30.1",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-native": "^4.0.0"
@@ -39,7 +38,7 @@
     "prettier": ">=2"
   },
   "devDependencies": {
-    "eslint": "^8.23.1",
+    "eslint": "^8.57.0",
     "prettier": "2.8.8"
   }
 }

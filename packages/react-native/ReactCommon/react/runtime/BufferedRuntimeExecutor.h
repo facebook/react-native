@@ -5,11 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#pragma once
+
 #include <ReactCommon/RuntimeExecutor.h>
 #include <jsi/jsi.h>
 #include <atomic>
 #include <queue>
-#include "TimerManager.h"
 
 namespace facebook::react {
 

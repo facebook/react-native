@@ -9,6 +9,7 @@
  */
 
 'use strict';
+
 import type {BuildSchemaFN, Parser} from '../../parser';
 import type {ASTNode, PropAST, TypeDeclarationMap} from '../../utils';
 
@@ -158,6 +159,34 @@ function buildObjectType<T>(
   };
 }
 
+function getPrimitiveTypeAnnotation(type: string): $FlowFixMe {
+  switch (type) {
+    case 'Int32':
+      return {
+        type: 'Int32TypeAnnotation',
+      };
+    case 'Double':
+      return {
+        type: 'DoubleTypeAnnotation',
+      };
+    case 'Float':
+      return {
+        type: 'FloatTypeAnnotation',
+      };
+    case 'TSBooleanKeyword':
+      return {
+        type: 'BooleanTypeAnnotation',
+      };
+    case 'Stringish':
+    case 'TSStringKeyword':
+      return {
+        type: 'StringTypeAnnotation',
+      };
+    default:
+      throw new Error(`Unknown primitive type "${type}"`);
+  }
+}
+
 function getCommonTypeAnnotation<T>(
   name: string,
   forArray: boolean,
@@ -225,26 +254,12 @@ function getCommonTypeAnnotation<T>(
         types,
       );
     case 'Int32':
-      return {
-        type: 'Int32TypeAnnotation',
-      };
     case 'Double':
-      return {
-        type: 'DoubleTypeAnnotation',
-      };
     case 'Float':
-      return {
-        type: 'FloatTypeAnnotation',
-      };
     case 'TSBooleanKeyword':
-      return {
-        type: 'BooleanTypeAnnotation',
-      };
     case 'Stringish':
     case 'TSStringKeyword':
-      return {
-        type: 'StringTypeAnnotation',
-      };
+      return getPrimitiveTypeAnnotation(type);
     case 'UnsafeMixed':
       return {
         type: 'MixedTypeAnnotation',
@@ -513,5 +528,6 @@ function flattenProperties(
 module.exports = {
   getSchemaInfo,
   getTypeAnnotation,
+  getPrimitiveTypeAnnotation,
   flattenProperties,
 };

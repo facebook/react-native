@@ -81,7 +81,7 @@ class ConcreteShadowNode : public BaseShadowNodeT {
         rawProps);
   }
 
-  static SharedConcreteProps defaultSharedProps() {
+  static const SharedConcreteProps& defaultSharedProps() {
     static const SharedConcreteProps defaultSharedProps =
         std::make_shared<const PropsT>();
     return defaultSharedProps;

@@ -9,6 +9,8 @@
  * @oncall react_native
  */
 
+import type {TargetCapabilityFlags} from '../inspector-proxy/types';
+
 import {allowSelfSignedCertsInNodeFetch} from './FetchUtils';
 import {
   createAndConnectTarget,
@@ -23,6 +25,10 @@ import {
   withServerForEachTest,
 } from './ServerUtils';
 import {createHash} from 'crypto';
+import fs from 'fs';
+import path from 'path';
+
+const fsPromise = fs.promises;
 
 // WebSocket is unreliable when using fake timers.
 jest.useRealTimers();
@@ -89,6 +95,52 @@ describe.each(['HTTP', 'HTTPS'])(
       }
     });
 
+    test('async source map fetching does not reorder events', async () => {
+      serverRef.app.use(
+        '/source-map',
+        serveStaticJson({
+          version: 3,
+          // Mojibake insurance.
+          file: '\u2757.js',
+        }),
+      );
+      const {device, debugger_} = await createAndConnectTarget(
+        serverRef,
+        autoCleanup.signal,
+        {
+          app: 'bar-app',
+          id: 'page1',
+          title: 'bar-title',
+          vm: 'bar-vm',
+        },
+      );
+      try {
+        await Promise.all([
+          sendFromTargetToDebugger(device, debugger_, 'page1', {
+            method: 'Debugger.scriptParsed',
+            params: {
+              sourceMapURL: `${serverRef.serverBaseUrl}/source-map`,
+            },
+          }),
+          sendFromTargetToDebugger(device, debugger_, 'page1', {
+            method: 'Debugger.aSubsequentEvent',
+          }),
+        ]);
+        expect(debugger_.handle).toHaveBeenNthCalledWith(1, {
+          method: 'Debugger.scriptParsed',
+          params: {
+            sourceMapURL: expect.stringMatching(/^data:/),
+          },
+        });
+        expect(debugger_.handle).toHaveBeenNthCalledWith(2, {
+          method: 'Debugger.aSubsequentEvent',
+        });
+      } finally {
+        device.close();
+        debugger_.close();
+      }
+    });
+
     test('handling of failure to fetch source map', async () => {
       const {device, debugger_} = await createAndConnectTarget(
         serverRef,
@@ -140,7 +192,7 @@ describe.each(['HTTP', 'HTTPS'])(
       }
     });
 
-    describe.each(['10.0.2.2', '10.0.3.2'])(
+    describe.each(['10.0.2.2', '10.0.3.2', '127.0.0.1'])(
       '%s aliasing to and from localhost',
       sourceHost => {
         test('in source map fetching during Debugger.scriptParsed', async () => {
@@ -331,6 +383,13 @@ describe.each(['HTTP', 'HTTPS'])(
       });
 
       test('reads source from disk', async () => {
+        // Should be just 'foo\n', but the newline can get mangled by the OS
+        // and/or SCM, so let's read the source of truth from disk.
+        const fileRealContents = await fsPromise.readFile(
+          path.join(__dirname, '__fixtures__', 'mock-source-file.txt'),
+          'utf8',
+        );
+
         const {device, debugger_} = await createAndConnectTarget(
           serverRef,
           autoCleanup.signal,
@@ -351,7 +410,7 @@ describe.each(['HTTP', 'HTTPS'])(
               endLine: 0,
               startColumn: 0,
               endColumn: 0,
-              hash: createHash('sha256').update('foo\n').digest('hex'),
+              hash: createHash('sha256').update(fileRealContents).digest('hex'),
             },
           });
           const response = await debugger_.sendAndGetResponse({
@@ -362,7 +421,7 @@ describe.each(['HTTP', 'HTTPS'])(
             },
           });
           expect(response.result).toEqual(
-            expect.objectContaining({scriptSource: 'foo\n'}),
+            expect.objectContaining({scriptSource: fileRealContents}),
           );
           // The device does not receive the getScriptSource request, since it
           // is handled by the proxy.
@@ -460,6 +519,72 @@ describe.each(['HTTP', 'HTTPS'])(
           }
         },
       );
+    });
+
+    describe("disabled when target has 'nativeSourceCodeFetching' capability flag", () => {
+      const pageDescription = {
+        app: 'bar-app',
+        id: 'page1',
+        title: 'bar-title',
+        capabilities: {
+          nativeSourceCodeFetching: true,
+        },
+        vm: 'bar-vm',
+      };
+
+      describe('Debugger.scriptParsed', () => {
+        test('should forward event directly to client (does not rewrite sourceMapURL host)', async () => {
+          const {device, debugger_} = await createAndConnectTarget(
+            serverRef,
+            autoCleanup.signal,
+            pageDescription,
+          );
+          try {
+            const message = {
+              method: 'Debugger.scriptParsed',
+              params: {
+                sourceMapURL: `${protocol.toLowerCase()}://10.0.2.2:${
+                  serverRef.port
+                }/source-map`,
+              },
+            };
+            await sendFromTargetToDebugger(device, debugger_, 'page1', message);
+
+            expect(debugger_.handle).toBeCalledWith(message);
+          } finally {
+            device.close();
+            debugger_.close();
+          }
+        });
+      });
+
+      describe('Debugger.getScriptSource', () => {
+        test('should forward request directly to device (does not read source from disk in proxy)', async () => {
+          const {device, debugger_} = await createAndConnectTarget(
+            serverRef,
+            autoCleanup.signal,
+            pageDescription,
+          );
+          try {
+            const message = {
+              id: 1,
+              method: 'Debugger.getScriptSource',
+              params: {
+                scriptId: 'script1',
+              },
+            };
+            await sendFromDebuggerToTarget(debugger_, device, 'page1', message);
+
+            expect(device.wrappedEventParsed).toBeCalledWith({
+              pageId: 'page1',
+              wrappedEvent: message,
+            });
+          } finally {
+            device.close();
+            debugger_.close();
+          }
+        });
+      });
     });
   },
 );

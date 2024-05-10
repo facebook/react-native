@@ -25,7 +25,13 @@ fixtures.forEach(fixture => {
   it(`GeneratePropsCpp can generate for '${fixture}'`, () => {
     const libName = 'RNCodegenModuleFixtures';
     const schema = parser.parseFile(`${FIXTURE_DIR}/${fixture}`);
-    const output = generator.generate(libName, schema);
+    const output = generator.generate(
+      libName,
+      schema,
+      '',
+      false,
+      `react/renderer/components/${libName}/`,
+    );
     expect(Object.fromEntries(output)).toMatchSnapshot();
   });
 });

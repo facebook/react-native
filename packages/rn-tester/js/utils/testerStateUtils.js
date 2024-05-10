@@ -29,6 +29,7 @@ export const initialNavigationState: RNTesterNavigationState = {
   activeModuleExampleKey: null,
   screen: Screens.COMPONENTS,
   recentlyUsed: {components: [], apis: []},
+  hadDeepLink: false,
 };
 
 const filterEmptySections = (examplesList: ExamplesList): any => {
@@ -48,15 +49,21 @@ const filterEmptySections = (examplesList: ExamplesList): any => {
 
 export const getExamplesListWithRecentlyUsed = ({
   recentlyUsed,
+  testList,
 }: {
   recentlyUsed: ComponentList,
+  testList?: {
+    components?: Array<RNTesterModuleInfo>,
+    apis?: Array<RNTesterModuleInfo>,
+  },
 }): ExamplesList | null => {
   // Return early if state has not been initialized from storage
   if (!recentlyUsed) {
     return null;
   }
 
-  const components = RNTesterList.Components.map(
+  const componentList = testList?.components ?? RNTesterList.Components;
+  const components = componentList.map(
     (componentExample): RNTesterModuleInfo => ({
       ...componentExample,
       exampleType: Screens.COMPONENTS,
@@ -69,7 +76,8 @@ export const getExamplesListWithRecentlyUsed = ({
     )
     .filter(Boolean);
 
-  const apis = RNTesterList.APIs.map((apiExample): RNTesterModuleInfo => ({
+  const apisList = testList?.apis ?? RNTesterList.APIs;
+  const apis = apisList.map((apiExample): RNTesterModuleInfo => ({
     ...apiExample,
     exampleType: Screens.APIS,
   }));

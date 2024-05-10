@@ -20,7 +20,7 @@ export function cleanAssetCatalog(catalogDir: string): void {
     .readdirSync(catalogDir)
     .filter(file => file.endsWith('.imageset'));
   for (const file of files) {
-    fs.rmSync(path.join(catalogDir, file));
+    fs.rmSync(path.join(catalogDir, file), {recursive: true, force: true});
   }
 }
 

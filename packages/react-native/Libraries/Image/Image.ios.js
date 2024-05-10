@@ -11,12 +11,16 @@
 import type {ImageStyle, ImageStyleProp} from '../StyleSheet/StyleSheet';
 import type {RootTag} from '../Types/RootTagTypes';
 import type {AbstractImageIOS, ImageIOS} from './ImageTypes.flow';
+import type {ImageSize} from './NativeImageLoaderAndroid';
 
 import {createRootTag} from '../ReactNative/RootTag';
 import flattenStyle from '../StyleSheet/flattenStyle';
 import StyleSheet from '../StyleSheet/StyleSheet';
 import ImageAnalyticsTagContext from './ImageAnalyticsTagContext';
-import {unstable_getImageComponentDecorator} from './ImageInjection';
+import {
+  unstable_getImageComponentDecorator,
+  useWrapRefWithImageAttachedCallbacks,
+} from './ImageInjection';
 import {getImageSourcesFromImageProps} from './ImageSourceUtils';
 import {convertObjectFitToResizeMode} from './ImageUtils';
 import ImageViewNativeComponent from './ImageViewNativeComponent';
@@ -26,15 +30,22 @@ import * as React from 'react';
 
 function getSize(
   uri: string,
-  success: (width: number, height: number) => void,
+  success?: (width: number, height: number) => void,
   failure?: (error: mixed) => void,
-): void {
-  NativeImageLoaderIOS.getSize(uri)
-    .then(([width, height]) => success(width, height))
+): void | Promise<ImageSize> {
+  const promise = NativeImageLoaderIOS.getSize(uri).then(([width, height]) => ({
+    width,
+    height,
+  }));
+  if (typeof success !== 'function') {
+    return promise;
+  }
+  promise
+    .then(sizes => success(sizes.width, sizes.height))
     .catch(
       failure ||
         function () {
-          console.warn('Failed to get size for image ' + uri);
+          console.warn('Failed to get size for image: ' + uri);
         },
     );
 }
@@ -42,13 +53,15 @@ function getSize(
 function getSizeWithHeaders(
   uri: string,
   headers: {[string]: string, ...},
-  success: (width: number, height: number) => void,
+  success?: (width: number, height: number) => void,
   failure?: (error: mixed) => void,
-): void {
-  NativeImageLoaderIOS.getSizeWithHeaders(uri, headers)
-    .then(function (sizes) {
-      success(sizes.width, sizes.height);
-    })
+): void | Promise<ImageSize> {
+  const promise = NativeImageLoaderIOS.getSizeWithHeaders(uri, headers);
+  if (typeof success !== 'function') {
+    return promise;
+  }
+  promise
+    .then(sizes => success(sizes.width, sizes.height))
     .catch(
       failure ||
         function () {
@@ -158,6 +171,8 @@ let BaseImage: AbstractImageIOS = React.forwardRef((props, forwardedRef) => {
   };
   const accessibilityLabel = props['aria-label'] ?? props.accessibilityLabel;
 
+  const actualRef = useWrapRefWithImageAttachedCallbacks(forwardedRef);
+
   return (
     <ImageAnalyticsTagContext.Consumer>
       {analyticTag => {
@@ -167,7 +182,7 @@ let BaseImage: AbstractImageIOS = React.forwardRef((props, forwardedRef) => {
             {...restProps}
             accessible={props.alt !== undefined ? true : props.accessible}
             accessibilityLabel={accessibilityLabel ?? props.alt}
-            ref={forwardedRef}
+            ref={actualRef}
             style={style}
             resizeMode={resizeMode}
             tintColor={tintColor}
@@ -240,12 +255,6 @@ Image.queryCache = queryCache;
  */
 // $FlowFixMe[incompatible-use] This property isn't writable but we're actually defining it here for the first time.
 Image.resolveAssetSource = resolveAssetSource;
-
-/**
- * Switch to `deprecated-react-native-prop-types` for compatibility with future
- * releases. This is deprecated and will be removed in the future.
- */
-Image.propTypes = require('deprecated-react-native-prop-types').ImagePropTypes;
 
 const styles = StyleSheet.create({
   base: {

@@ -17,8 +17,9 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1 -Wno-comma -Wno-shorten-64-to-32'
-folly_version = '2023.08.07.00'
+folly_config = get_folly_config()
+folly_compiler_flags = folly_config[:compiler_flags]
+folly_version = folly_config[:version]
 boost_compiler_flags = '-Wno-documentation'
 
 Pod::Spec.new do |s|
@@ -39,18 +40,20 @@ Pod::Spec.new do |s|
   }
   s.header_dir             = "cxxreact"
 
-  s.dependency "boost", "1.83.0"
+  s.dependency "boost"
   s.dependency "DoubleConversion"
   s.dependency "fmt", "9.1.0"
   s.dependency "RCT-Folly", folly_version
   s.dependency "glog"
-  s.dependency "React-jsinspector", version
+  add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
   s.dependency "React-callinvoker", version
   s.dependency "React-runtimeexecutor", version
   s.dependency "React-perflogger", version
   s.dependency "React-jsi", version
   s.dependency "React-logger", version
   s.dependency "React-debug", version
+
+  s.resource_bundles = {'React-cxxreact_privacy' => 'PrivacyInfo.xcprivacy'}
 
   if ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == "1"
     s.dependency 'hermes-engine'

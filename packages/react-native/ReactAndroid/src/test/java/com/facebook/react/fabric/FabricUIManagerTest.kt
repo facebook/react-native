@@ -7,6 +7,7 @@
 
 package com.facebook.react.fabric
 
+import com.facebook.react.bridge.BridgeReactContext
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.uimanager.ViewManagerRegistry
 import com.facebook.react.uimanager.events.BatchEventDispatchedListener
@@ -31,7 +32,7 @@ class FabricUIManagerTest {
 
   @Before
   fun setup() {
-    reactContext = ReactApplicationContext(RuntimeEnvironment.getApplication())
+    reactContext = BridgeReactContext(RuntimeEnvironment.getApplication())
     viewManagerRegistry = ViewManagerRegistry(emptyList())
     batchEventDispatchedListener = FakeBatchEventDispatchedListener()
     underTest = FabricUIManager(reactContext, viewManagerRegistry, batchEventDispatchedListener)

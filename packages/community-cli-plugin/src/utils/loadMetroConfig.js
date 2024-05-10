@@ -29,7 +29,10 @@ export type ConfigLoadingContext = $ReadOnly<{
 /**
  * Get the config options to override based on RN CLI inputs.
  */
-function getOverrideConfig(ctx: ConfigLoadingContext): InputConfigT {
+function getOverrideConfig(
+  ctx: ConfigLoadingContext,
+  config: ConfigT,
+): InputConfigT {
   const outOfTreePlatforms = Object.keys(ctx.platforms).filter(
     platform => ctx.platforms[platform].npmPackageName,
   );
@@ -46,6 +49,7 @@ function getOverrideConfig(ctx: ConfigLoadingContext): InputConfigT {
         },
         {},
       ),
+      config.resolver?.resolveRequest,
     );
   }
 
@@ -62,6 +66,7 @@ function getOverrideConfig(ctx: ConfigLoadingContext): InputConfigT {
         ...outOfTreePlatforms.map(platform =>
           require.resolve(
             `${ctx.platforms[platform].npmPackageName}/Libraries/Core/InitializeCore`,
+            {paths: [ctx.root]},
           ),
         ),
       ],
@@ -79,8 +84,6 @@ export default async function loadMetroConfig(
   ctx: ConfigLoadingContext,
   options: YargArguments = {},
 ): Promise<ConfigT> {
-  const overrideConfig = getOverrideConfig(ctx);
-
   const cwd = ctx.root;
   const projectConfig = await resolveConfig(options.config, cwd);
 
@@ -105,11 +108,12 @@ This warning will be removed in future (https://github.com/facebook/metro/issues
     }
   }
 
-  return mergeConfig(
-    await loadConfig({
-      cwd,
-      ...options,
-    }),
-    overrideConfig,
-  );
+  const config = await loadConfig({
+    cwd,
+    ...options,
+  });
+
+  const overrideConfig = getOverrideConfig(ctx, config);
+
+  return mergeConfig(config, overrideConfig);
 }

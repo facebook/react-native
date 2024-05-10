@@ -8,8 +8,9 @@
 #include <gtest/gtest.h>
 #include <hermes/hermes.h>
 #include <jsi/jsi.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
+#include <react/featureflags/ReactNativeFeatureFlagsDefaults.h>
 #include <react/renderer/runtimescheduler/RuntimeScheduler.h>
-#include <react/utils/CoreFeatures.h>
 #include <memory>
 #include <semaphore>
 
@@ -21,19 +22,41 @@ namespace facebook::react {
 
 using namespace std::chrono_literals;
 
+static bool forcedBatchRenderingUpdatesInEventLoop = false;
+
+class RuntimeSchedulerTestFeatureFlags
+    : public ReactNativeFeatureFlagsDefaults {
+ public:
+  RuntimeSchedulerTestFeatureFlags(bool useModernRuntimeScheduler)
+      : useModernRuntimeScheduler_(useModernRuntimeScheduler) {}
+
+  bool useModernRuntimeScheduler() override {
+    return useModernRuntimeScheduler_;
+  }
+
+  bool enableMicrotasks() override {
+    return useModernRuntimeScheduler_;
+  }
+
+  bool batchRenderingUpdatesInEventLoop() override {
+    return forcedBatchRenderingUpdatesInEventLoop;
+  }
+
+ private:
+  bool useModernRuntimeScheduler_;
+};
+
 class RuntimeSchedulerTest : public testing::TestWithParam<bool> {
  protected:
   void SetUp() override {
     hostFunctionCallCount_ = 0;
 
-    auto useModernRuntimeScheduler = GetParam();
-
-    CoreFeatures::enableMicrotasks = useModernRuntimeScheduler;
+    ReactNativeFeatureFlags::override(
+        std::make_unique<RuntimeSchedulerTestFeatureFlags>(GetParam()));
 
     // Configuration that enables microtasks
     ::hermes::vm::RuntimeConfig::Builder runtimeConfigBuilder =
-        ::hermes::vm::RuntimeConfig::Builder().withMicrotaskQueue(
-            useModernRuntimeScheduler);
+        ::hermes::vm::RuntimeConfig::Builder().withMicrotaskQueue(GetParam());
 
     runtime_ =
         facebook::hermes::makeHermesRuntime(runtimeConfigBuilder.build());
@@ -54,8 +77,12 @@ class RuntimeSchedulerTest : public testing::TestWithParam<bool> {
       return stubClock_->getNow();
     };
 
-    runtimeScheduler_ = std::make_unique<RuntimeScheduler>(
-        runtimeExecutor, useModernRuntimeScheduler, stubNow);
+    runtimeScheduler_ =
+        std::make_unique<RuntimeScheduler>(runtimeExecutor, stubNow);
+  }
+
+  void TearDown() override {
+    ReactNativeFeatureFlags::dangerouslyReset();
   }
 
   jsi::Function createHostFunctionFromLambda(
@@ -125,7 +152,7 @@ TEST_P(RuntimeSchedulerTest, scheduleSingleTask) {
 }
 
 TEST_P(RuntimeSchedulerTest, scheduleNonBatchedRenderingUpdate) {
-  CoreFeatures::blockPaintForUseLayoutEffect = false;
+  forcedBatchRenderingUpdatesInEventLoop = false;
 
   bool didRunRenderingUpdate = false;
 
@@ -143,7 +170,7 @@ TEST_P(
     return;
   }
 
-  CoreFeatures::blockPaintForUseLayoutEffect = true;
+  forcedBatchRenderingUpdatesInEventLoop = true;
 
   uint nextOperationPosition = 1;
 
@@ -173,13 +200,7 @@ TEST_P(
           return jsi::Value::undefined();
         });
 
-    // Hermes doesn't expose a C++ API to schedule microtasks, so we just access
-    // the API that it exposes to JS.
-    auto global = runtime_->global();
-    auto enqueueJobFn = global.getPropertyAsObject(*runtime_, "HermesInternal")
-                            .getPropertyAsFunction(*runtime_, "enqueueJob");
-
-    enqueueJobFn.call(*runtime_, std::move(microtaskCallback));
+    runtime_->queueMicrotask(microtaskCallback);
 
     return jsi::Value::undefined();
   });
@@ -343,8 +364,8 @@ TEST_P(RuntimeSchedulerTest, continuationTask) {
         jsi::PropNameID::forUtf8(*runtime_, ""),
         1,
         [&](jsi::Runtime& /*runtime*/,
-            jsi::Value const& /*unused*/,
-            jsi::Value const* /*arguments*/,
+            const jsi::Value& /*unused*/,
+            const jsi::Value* /*arguments*/,
             size_t /*unused*/) noexcept -> jsi::Value {
           didContinuationTask = true;
           return jsi::Value::undefined();
@@ -756,11 +777,9 @@ TEST_P(RuntimeSchedulerTest, basicSameThreadExecution) {
   bool didRunSynchronousTask = false;
   std::thread t1([this, &didRunSynchronousTask]() {
     runtimeScheduler_->executeNowOnTheSameThread(
-        [this, &didRunSynchronousTask](jsi::Runtime& /*rt*/) {
-          EXPECT_TRUE(runtimeScheduler_->getIsSynchronous());
+        [&didRunSynchronousTask](jsi::Runtime& /*rt*/) {
           didRunSynchronousTask = true;
         });
-    EXPECT_FALSE(runtimeScheduler_->getIsSynchronous());
   });
 
   auto hasTask = stubQueue_->waitForTask();

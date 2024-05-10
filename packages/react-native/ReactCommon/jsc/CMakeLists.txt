@@ -30,10 +30,6 @@ target_link_libraries(jscruntime
         jsi
         glog)
 
-# TODO: Remove this flag when ready.
-# Android has this enabled by default, but the flag is still needed for iOS.
-target_compile_options(jscruntime PRIVATE -DRN_FABRIC_ENABLED)
-
 if(NOT ${CMAKE_BUILD_TYPE} MATCHES Debug)
         target_compile_options(jscruntime PRIVATE -DNDEBUG)
 endif()

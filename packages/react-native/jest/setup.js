@@ -27,6 +27,12 @@ Object.defineProperties(global, {
     value: id => clearTimeout(id),
     writable: true,
   },
+  nativeFabricUIManager: {
+    configurable: true,
+    enumerable: true,
+    value: {},
+    writable: true,
+  },
   performance: {
     configurable: true,
     enumerable: true,
@@ -87,8 +93,6 @@ jest
     }),
     measure: jest.fn(),
     manageChildren: jest.fn(),
-    removeSubviewsFromContainerWithID: jest.fn(),
-    replaceExistingNonRootView: jest.fn(),
     setChildren: jest.fn(),
     updateView: jest.fn(),
     AndroidDrawerLayout: {
@@ -108,17 +112,9 @@ jest
       Constants: {},
     },
   }))
-  .mock('../Libraries/Image/Image', () => {
-    const Image = mockComponent('../Libraries/Image/Image');
-    Image.getSize = jest.fn();
-    Image.getSizeWithHeaders = jest.fn();
-    Image.prefetch = jest.fn();
-    Image.prefetchWithMetadata = jest.fn();
-    Image.queryCache = jest.fn();
-    Image.resolveAssetSource = jest.fn();
-
-    return Image;
-  })
+  .mock('../Libraries/Image/Image', () =>
+    mockComponent('../Libraries/Image/Image'),
+  )
   .mock('../Libraries/Text/Text', () =>
     mockComponent('../Libraries/Text/Text', MockNativeMethods),
   )
@@ -257,7 +253,12 @@ jest
     },
     ImageLoader: {
       getSize: jest.fn(url => Promise.resolve([320, 240])),
+      getSizeWithHeaders: jest.fn((url, headers) =>
+        Promise.resolve({height: 222, width: 333}),
+      ),
       prefetchImage: jest.fn(),
+      prefetchImageWithMetadata: jest.fn(),
+      queryCache: jest.fn(),
     },
     ImageViewManager: {
       getSize: jest.fn((uri, success) =>

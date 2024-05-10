@@ -250,13 +250,15 @@ JNIArgs convertJSIArgsToJNIArgs(
     size_t count,
     const std::shared_ptr<CallInvoker>& jsInvoker,
     TurboModuleMethodValueKind valueKind) {
-  unsigned int expectedArgumentCount = valueKind == PromiseKind
+  size_t expectedArgumentCount = valueKind == PromiseKind
       ? methodArgTypes.size() - 1
       : methodArgTypes.size();
 
   if (expectedArgumentCount != count) {
     throw JavaTurboModuleInvalidArgumentCountException(
-        methodName, count, expectedArgumentCount);
+        methodName,
+        static_cast<int>(count),
+        static_cast<int>(expectedArgumentCount));
   }
 
   JNIArgs jniArgs(valueKind == PromiseKind ? count + 1 : count);
@@ -505,7 +507,8 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
    * GlobalReferences. The LocalReferences are then promptly deleted
    * after the conversion.
    */
-  unsigned int actualArgCount = valueKind == VoidKind ? 0 : argCount;
+  unsigned int actualArgCount =
+      valueKind == VoidKind ? 0 : static_cast<unsigned int>(argCount);
   unsigned int estimatedLocalRefCount =
       actualArgCount + maxReturnObjects + buffer;
 

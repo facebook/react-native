@@ -10,27 +10,21 @@
 
 #if RCT_DEV || RCT_REMOTE_PROFILE
 
-@interface RCTBundleStatus : NSObject
-@property (atomic, assign) BOOL isLastBundleDownloadSuccess;
-@property (atomic, assign) NSTimeInterval bundleUpdateTimestamp;
-@end
-
-typedef RCTBundleStatus * (^RCTBundleStatusProvider)(void);
-
-@interface RCTInspectorPackagerConnection : NSObject
+@protocol RCTInspectorPackagerConnectionProtocol <NSObject>
 - (instancetype)initWithURL:(NSURL *)url;
 
 - (bool)isConnected;
 - (void)connect;
 - (void)closeQuietly;
 - (void)sendEventToAllConnections:(NSString *)event;
-- (void)setBundleStatusProvider:(RCTBundleStatusProvider)bundleStatusProvider;
+@end
+
+@interface RCTInspectorPackagerConnection : NSObject <RCTInspectorPackagerConnectionProtocol>
 @end
 
 @interface RCTInspectorRemoteConnection : NSObject
 - (void)onMessage:(NSString *)message;
 - (void)onDisconnect;
-- (void)handleBackgroundEvent:(NSNotification *)notification;
 @end
 
 #endif

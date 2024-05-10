@@ -5,15 +5,10 @@
 
 require 'json'
 
-require_relative "./utils"
+require_relative "./utils.rb"
+require_relative "./helpers.rb"
 
 class NewArchitectureHelper
-    @@shared_flags = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1"
-
-    @@folly_compiler_flags = "#{@@shared_flags} -Wno-comma -Wno-shorten-64-to-32"
-
-    @@new_arch_cpp_flags = "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 #{@@shared_flags}"
-
     @@cplusplus_version = "c++20"
 
     @@NewArchWarningEmitted = false # Used not to spam warnings to the user.
@@ -45,61 +40,39 @@ class NewArchitectureHelper
         end
     end
 
+    def self.computeFlags(is_new_arch_enabled)
+        new_arch_flag = is_new_arch_enabled ? "-DRCT_NEW_ARCH_ENABLED=1 " : ""
+        return " #{new_arch_flag}#{Helpers::Constants.folly_config()[:compiler_flags]}"
+    end
+
     def self.modify_flags_for_new_architecture(installer, is_new_arch_enabled)
-        unless is_new_arch_enabled
-            return
-        end
-        ndebug_flag = " -DNDEBUG"
-        # Add RCT_NEW_ARCH_ENABLED to Target pods xcconfig
+        # Add flags to Target pods xcconfig
         installer.aggregate_targets.each do |aggregate_target|
             aggregate_target.xcconfigs.each do |config_name, config_file|
-                config_file.attributes['OTHER_CPLUSPLUSFLAGS'] = @@new_arch_cpp_flags
-
-                if config_name == "Release"
-                    config_file.attributes['OTHER_CPLUSPLUSFLAGS'] = config_file.attributes['OTHER_CPLUSPLUSFLAGS'] + ndebug_flag
-                    other_cflags = config_file.attributes['OTHER_CFLAGS'] != nil ? config_file.attributes['OTHER_CFLAGS'] : "$(inherited)"
-                    config_file.attributes['OTHER_CFLAGS'] = other_cflags + ndebug_flag
-                end
+                ReactNativePodsUtils.add_flag_to_map_with_inheritance(config_file.attributes, "OTHER_CPLUSPLUSFLAGS", self.computeFlags(is_new_arch_enabled))
 
                 xcconfig_path = aggregate_target.xcconfig_path(config_name)
                 config_file.save_as(xcconfig_path)
             end
         end
 
-        # Add RCT_NEW_ARCH_ENABLED to generated pod target projects
+        # Add flags to Target pods xcconfig
         installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
             # The React-Core pod may have a suffix added by Cocoapods, so we test whether 'React-Core' is a substring, and do not require exact match
             if pod_name.include? 'React-Core'
                 target_installation_result.native_target.build_configurations.each do |config|
-                    config.build_settings['OTHER_CPLUSPLUSFLAGS'] = @@new_arch_cpp_flags
-                end
-            end
-
-            # Set "RCT_DYNAMIC_FRAMEWORKS=1" if pod are installed with USE_FRAMEWORKS=dynamic
-            # This helps with backward compatibility.
-            if pod_name == 'React-RCTFabric' && ENV['USE_FRAMEWORKS'] == 'dynamic'
-                Pod::UI.puts "Setting -DRCT_DYNAMIC_FRAMEWORKS=1 to React-RCTFabric".green
-                rct_dynamic_framework_flag = " -DRCT_DYNAMIC_FRAMEWORKS=1"
-                target_installation_result.native_target.build_configurations.each do |config|
-                    prev_build_settings = config.build_settings['OTHER_CPLUSPLUSFLAGS'] != nil ? config.build_settings['OTHER_CPLUSPLUSFLAGS'] : "$(inherithed)"
-                    config.build_settings['OTHER_CPLUSPLUSFLAGS'] = prev_build_settings + rct_dynamic_framework_flag
-                end
-            end
-
-            target_installation_result.native_target.build_configurations.each do |config|
-                if config.name == "Release"
-                    current_flags = config.build_settings['OTHER_CPLUSPLUSFLAGS'] != nil ? config.build_settings['OTHER_CPLUSPLUSFLAGS'] : "$(inherited)"
-                    config.build_settings['OTHER_CPLUSPLUSFLAGS'] = current_flags + ndebug_flag
-                    current_cflags = config.build_settings['OTHER_CFLAGS'] != nil ? config.build_settings['OTHER_CFLAGS'] : "$(inherited)"
-                    config.build_settings['OTHER_CFLAGS'] = current_cflags + ndebug_flag
+                    ReactNativePodsUtils.add_flag_to_map_with_inheritance(config.build_settings, "OTHER_CPLUSPLUSFLAGS", self.computeFlags(is_new_arch_enabled))
                 end
             end
         end
     end
 
-    def self.install_modules_dependencies(spec, new_arch_enabled, folly_version)
+    def self.install_modules_dependencies(spec, new_arch_enabled, folly_version = get_folly_config()[:version])
         # Pod::Specification does not have getters so, we have to read
         # the existing values from a hash representation of the object.
+        folly_config = get_folly_config()
+        folly_compiler_flags = folly_config[:compiler_flags]
+
         hash = spec.to_hash
 
         compiler_flags = hash["compiler_flags"] ? hash["compiler_flags"] : ""
@@ -117,6 +90,7 @@ class NewArchitectureHelper
                 .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-NativeModulesApple", "React_NativeModulesApple", []))
                 .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-RCTFabric", "RCTFabric", []))
                 .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-utils", "React_utils", []))
+                .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-featureflags", "React_featureflags", []))
                 .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-debug", "React_debug", []))
                 .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-ImageManager", "React_ImageManager", []))
                 .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-rendererdebug", "React_rendererdebug", []))
@@ -125,7 +99,7 @@ class NewArchitectureHelper
                 }
         end
         header_search_paths_string = header_search_paths.join(" ")
-        spec.compiler_flags = compiler_flags.empty? ? @@folly_compiler_flags : "#{compiler_flags} #{@@folly_compiler_flags}"
+        spec.compiler_flags = compiler_flags.empty? ? self.computeFlags(new_arch_enabled).strip! : "#{compiler_flags} #{self.computeFlags(new_arch_enabled)}"
         current_config["HEADER_SEARCH_PATHS"] = current_headers.empty? ?
             header_search_paths_string :
             "#{current_headers} #{header_search_paths_string}"
@@ -133,39 +107,43 @@ class NewArchitectureHelper
 
 
         spec.dependency "React-Core"
-        spec.dependency "RCT-Folly", '2023.08.07.00'
+        spec.dependency "RCT-Folly", folly_version
         spec.dependency "glog"
 
-        if new_arch_enabled
-            current_config["OTHER_CPLUSPLUSFLAGS"] = @@new_arch_cpp_flags
-            spec.dependency "React-RCTFabric" # This is for Fabric Component
-            spec.dependency "React-Codegen"
 
-            spec.dependency "RCTRequired"
-            spec.dependency "RCTTypeSafety"
-            spec.dependency "ReactCommon/turbomodule/bridging"
-            spec.dependency "ReactCommon/turbomodule/core"
-            spec.dependency "React-NativeModulesApple"
-            spec.dependency "Yoga"
-            spec.dependency "React-Fabric"
-            spec.dependency "React-graphics"
-            spec.dependency "React-utils"
-            spec.dependency "React-debug"
-            spec.dependency "React-ImageManager"
-            spec.dependency "React-rendererdebug"
+        ReactNativePodsUtils.add_flag_to_map_with_inheritance(current_config, "OTHER_CPLUSPLUSFLAGS", self.computeFlags(new_arch_enabled))
 
-            if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
-                spec.dependency "hermes-engine"
-            else
-                spec.dependency "React-jsi"
-            end
+        spec.dependency "React-RCTFabric" # This is for Fabric Component
+        spec.dependency "ReactCodegen"
+
+        spec.dependency "RCTRequired"
+        spec.dependency "RCTTypeSafety"
+        spec.dependency "ReactCommon/turbomodule/bridging"
+        spec.dependency "ReactCommon/turbomodule/core"
+        spec.dependency "React-NativeModulesApple"
+        spec.dependency "Yoga"
+        spec.dependency "React-Fabric"
+        spec.dependency "React-graphics"
+        spec.dependency "React-utils"
+        spec.dependency "React-featureflags"
+        spec.dependency "React-debug"
+        spec.dependency "React-ImageManager"
+        spec.dependency "React-rendererdebug"
+        # This dependency is required for the cases when the pod includes generated sources, specifically Props.cpp.
+        spec.dependency "DoubleConversion"
+
+        if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
+            spec.dependency "hermes-engine"
+        else
+            spec.dependency "React-jsi"
         end
 
         spec.pod_target_xcconfig = current_config
     end
 
     def self.folly_compiler_flags
-        return @@folly_compiler_flags
+        folly_config = get_folly_config()
+        return folly_config[:compiler_flags]
     end
 
     def self.extract_react_native_version(react_native_path, file_manager: File, json_parser: JSON)
@@ -208,6 +186,6 @@ class NewArchitectureHelper
     end
 
     def self.new_arch_enabled
-        return ENV["RCT_NEW_ARCH_ENABLED"] == "1"
+        return ENV["RCT_NEW_ARCH_ENABLED"] == nil || ENV["RCT_NEW_ARCH_ENABLED"] == "1"
     end
 end

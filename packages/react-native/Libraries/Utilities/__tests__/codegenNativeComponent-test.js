@@ -29,6 +29,14 @@ jest
   );
 
 describe('codegenNativeComponent', () => {
+  beforeEach(() => {
+    global.RN$Bridgeless = false;
+    jest
+      .spyOn(console, 'warn')
+      .mockReset()
+      .mockImplementation(() => {});
+  });
+
   it('should require component as is ', () => {
     const component = codegenNativeComponent('ComponentName');
     expect(component).toBe('ComponentName');
@@ -62,6 +70,20 @@ describe('codegenNativeComponent', () => {
       }),
     ).toThrow(
       'Failed to find native component for either ComponentNameDoesNotExistOne or ComponentNameDoesNotExistTwo',
+    );
+  });
+
+  it('should NOT warn if called directly in BRIDGE mode', () => {
+    global.RN$Bridgeless = false;
+    codegenNativeComponent('ComponentName');
+    expect(console.warn).not.toHaveBeenCalled();
+  });
+
+  it('should warn if called directly in BRIDGELESS mode', () => {
+    global.RN$Bridgeless = true;
+    codegenNativeComponent('ComponentName');
+    expect(console.warn).toHaveBeenCalledWith(
+      `Codegen didn't run for ComponentName. This will be an error in the future. Make sure you are using @react-native/babel-preset when building your JavaScript code.`,
     );
   });
 });

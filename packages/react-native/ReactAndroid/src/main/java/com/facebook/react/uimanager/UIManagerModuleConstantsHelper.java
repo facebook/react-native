@@ -10,6 +10,7 @@ package com.facebook.react.uimanager;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.config.ReactFeatureFlags;
@@ -24,7 +25,8 @@ import java.util.Set;
  * Helps generate constants map for {@link UIManagerModule} by collecting and merging constants from
  * registered view managers.
  */
-/* package */ class UIManagerModuleConstantsHelper {
+@Nullsafe(Nullsafe.Mode.LOCAL)
+public class UIManagerModuleConstantsHelper {
   private static final String TAG = "UIManagerModuleConstantsHelper";
   private static final String BUBBLING_EVENTS_KEY = "bubblingEventTypes";
   private static final String DIRECT_EVENTS_KEY = "directEventTypes";
@@ -43,7 +45,7 @@ import java.util.Set;
     return constants;
   }
 
-  /* package */ static Map<String, Object> getDefaultExportableEventTypes() {
+  public static Map<String, Object> getDefaultExportableEventTypes() {
     return MapBuilder.<String, Object>of(
         BUBBLING_EVENTS_KEY, UIManagerModuleConstants.getBubblingEventTypeConstants(),
         DIRECT_EVENTS_KEY, UIManagerModuleConstants.getDirectEventTypeConstants());
@@ -178,7 +180,7 @@ import java.util.Set;
   }
 
   @VisibleForTesting
-  /* package */ static void normalizeEventTypes(Map events) {
+  /* package */ static void normalizeEventTypes(@Nullable Map events) {
     if (events == null) {
       return;
     }
@@ -193,7 +195,15 @@ import java.util.Set;
     }
     for (String oldKey : keysToNormalize) {
       Object value = events.get(oldKey);
-      String newKey = "top" + oldKey.substring(0, 1).toUpperCase() + oldKey.substring(1);
+      String baseKey = "";
+      if (oldKey.startsWith("on")) {
+        // Drop "on" prefix.
+        baseKey = oldKey.substring(2);
+      } else {
+        // Capitalize first letter.
+        baseKey = oldKey.substring(0, 1).toUpperCase() + oldKey.substring(1);
+      }
+      String newKey = "top" + baseKey;
       events.put(newKey, value);
     }
   }

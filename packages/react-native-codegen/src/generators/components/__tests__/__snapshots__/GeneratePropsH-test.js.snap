@@ -23,10 +23,13 @@ Map {
 #include <vector>
 #include <yoga/Yoga.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 using ArrayPropsNativeComponentSizesMask = uint32_t;
+
+struct ArrayPropsNativeComponentSizesMaskWrapped {
+  ArrayPropsNativeComponentSizesMask value;
+};
 
 enum class ArrayPropsNativeComponentSizes: ArrayPropsNativeComponentSizesMask {
   Small = 1 << 0,
@@ -51,29 +54,29 @@ constexpr void operator|=(
   lhs = lhs | static_cast<ArrayPropsNativeComponentSizesMask>(rhs);
 }
 
-static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsNativeComponentSizesMask &result) {
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsNativeComponentSizesMaskWrapped &wrapped) {
   auto items = std::vector<std::string>{value};
   for (const auto &item : items) {
     if (item == \\"small\\") {
-      result |= ArrayPropsNativeComponentSizes::Small;
+      wrapped.value |= ArrayPropsNativeComponentSizes::Small;
       continue;
     }
     if (item == \\"large\\") {
-      result |= ArrayPropsNativeComponentSizes::Large;
+      wrapped.value |= ArrayPropsNativeComponentSizes::Large;
       continue;
     }
     abort();
   }
 }
 
-static inline std::string toString(const ArrayPropsNativeComponentSizesMask &value) {
+static inline std::string toString(const ArrayPropsNativeComponentSizesMaskWrapped &wrapped) {
     auto result = std::string{};
     auto separator = std::string{\\", \\"};
 
-    if (value & ArrayPropsNativeComponentSizes::Small) {
+    if (wrapped.value & ArrayPropsNativeComponentSizes::Small) {
       result += \\"small\\" + separator;
     }
-    if (value & ArrayPropsNativeComponentSizes::Large) {
+    if (wrapped.value & ArrayPropsNativeComponentSizes::Large) {
       result += \\"large\\" + separator;
     }
     if (!result.empty()) {
@@ -82,7 +85,7 @@ static inline std::string toString(const ArrayPropsNativeComponentSizesMask &val
     return result;
 }
 struct ArrayPropsNativeComponentObjectStruct {
-  std::string stringProp;
+  std::string stringProp{\\"\\"};
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsNativeComponentObjectStruct &result) {
@@ -109,7 +112,7 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
 
 
 struct ArrayPropsNativeComponentArrayObjectStruct {
-  std::string stringProp;
+  std::string stringProp{\\"\\"};
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsNativeComponentArrayObjectStruct &result) {
@@ -136,7 +139,7 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
 
 
 struct ArrayPropsNativeComponentArrayStruct {
-  std::vector<ArrayPropsNativeComponentArrayObjectStruct> object;
+  std::vector<ArrayPropsNativeComponentArrayObjectStruct> object{};
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsNativeComponentArrayStruct &result) {
@@ -163,7 +166,7 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
 
 
 struct ArrayPropsNativeComponentArrayOfArrayOfObjectStruct {
-  std::string stringProp;
+  std::string stringProp{\\"\\"};
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsNativeComponentArrayOfArrayOfObjectStruct &result) {
@@ -213,8 +216,7 @@ class ArrayPropsNativeComponentProps final : public ViewProps {
   std::vector<std::vector<ArrayPropsNativeComponentArrayOfArrayOfObjectStruct>> arrayOfArrayOfObject{};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -241,13 +243,12 @@ Map {
 #include <react/renderer/imagemanager/primitives.h>
 #include <vector>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 struct ArrayPropsNativeComponentNativePrimitivesStruct {
-  std::vector<SharedColor> colors;
-  std::vector<ImageSource> srcs;
-  std::vector<Point> points;
+  std::vector<SharedColor> colors{};
+  std::vector<ImageSource> srcs{};
+  std::vector<Point> points{};
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsNativeComponentNativePrimitivesStruct &result) {
@@ -290,8 +291,7 @@ class ArrayPropsNativeComponentProps final : public ViewProps {
   std::vector<ArrayPropsNativeComponentNativePrimitivesStruct> nativePrimitives{};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -312,8 +312,7 @@ Map {
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class BooleanPropNativeComponentProps final : public ViewProps {
  public:
@@ -325,8 +324,7 @@ class BooleanPropNativeComponentProps final : public ViewProps {
   bool disabled{false};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -348,8 +346,7 @@ Map {
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/graphics/Color.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class ColorPropNativeComponentProps final : public ViewProps {
  public:
@@ -361,8 +358,7 @@ class ColorPropNativeComponentProps final : public ViewProps {
   SharedColor tintColor{};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -383,8 +379,7 @@ Map {
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class CommandNativeComponentProps final : public ViewProps {
  public:
@@ -396,8 +391,7 @@ class CommandNativeComponentProps final : public ViewProps {
   
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -418,8 +412,7 @@ Map {
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class CommandNativeComponentProps final : public ViewProps {
  public:
@@ -431,8 +424,7 @@ class CommandNativeComponentProps final : public ViewProps {
   std::string accessibilityHint{\\"\\"};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -454,8 +446,7 @@ Map {
 #include <react/renderer/core/PropsParserContext.h>
 #include <yoga/Yoga.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class DimensionPropNativeComponentProps final : public ViewProps {
  public:
@@ -467,8 +458,7 @@ class DimensionPropNativeComponentProps final : public ViewProps {
   YGValue marginBack{};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -489,8 +479,7 @@ Map {
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class DoublePropNativeComponentProps final : public ViewProps {
  public:
@@ -507,8 +496,7 @@ class DoublePropNativeComponentProps final : public ViewProps {
   double blurRadius6{0.0};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -529,8 +517,7 @@ Map {
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class EventsNestedObjectNativeComponentProps final : public ViewProps {
  public:
@@ -542,8 +529,7 @@ class EventsNestedObjectNativeComponentProps final : public ViewProps {
   bool disabled{false};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -564,8 +550,7 @@ Map {
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class EventsNativeComponentProps final : public ViewProps {
  public:
@@ -577,8 +562,7 @@ class EventsNativeComponentProps final : public ViewProps {
   bool disabled{false};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -599,8 +583,7 @@ Map {
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class InterfaceOnlyComponentProps final : public ViewProps {
  public:
@@ -612,8 +595,7 @@ class InterfaceOnlyComponentProps final : public ViewProps {
   
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -634,8 +616,7 @@ Map {
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class ExcludedAndroidComponentProps final : public ViewProps {
  public:
@@ -647,8 +628,7 @@ class ExcludedAndroidComponentProps final : public ViewProps {
   
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -669,8 +649,7 @@ Map {
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class ExcludedAndroidIosComponentProps final : public ViewProps {
  public:
@@ -682,8 +661,7 @@ class ExcludedAndroidIosComponentProps final : public ViewProps {
   
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -704,8 +682,7 @@ Map {
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class ExcludedIosComponentProps final : public ViewProps {
  public:
@@ -727,8 +704,7 @@ class MultiFileIncludedNativeComponentProps final : public ViewProps {
   bool disabled{true};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -749,8 +725,7 @@ Map {
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class FloatPropNativeComponentProps final : public ViewProps {
  public:
@@ -767,8 +742,7 @@ class FloatPropNativeComponentProps final : public ViewProps {
   Float blurRadius6{0.0};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -790,8 +764,7 @@ Map {
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/imagemanager/primitives.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class ImagePropNativeComponentProps final : public ViewProps {
  public:
@@ -803,8 +776,7 @@ class ImagePropNativeComponentProps final : public ViewProps {
   ImageSource thumbImage{};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -826,8 +798,7 @@ Map {
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/graphics/RectangleEdges.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class InsetsPropNativeComponentProps final : public ViewProps {
  public:
@@ -839,8 +810,7 @@ class InsetsPropNativeComponentProps final : public ViewProps {
   EdgeInsets contentInset{};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -861,8 +831,7 @@ Map {
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 enum class Int32EnumPropsNativeComponentMaxInterval { MaxInterval0 = 0, MaxInterval1 = 1, MaxInterval2 = 2 };
 
@@ -901,8 +870,7 @@ class Int32EnumPropsNativeComponentProps final : public ViewProps {
   Int32EnumPropsNativeComponentMaxInterval maxInterval{Int32EnumPropsNativeComponentMaxInterval::MaxInterval0};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -923,8 +891,7 @@ Map {
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class IntegerPropNativeComponentProps final : public ViewProps {
  public:
@@ -938,8 +905,7 @@ class IntegerPropNativeComponentProps final : public ViewProps {
   int progress3{10};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -960,8 +926,7 @@ Map {
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class InterfaceOnlyComponentProps final : public ViewProps {
  public:
@@ -973,8 +938,7 @@ class InterfaceOnlyComponentProps final : public ViewProps {
   std::string accessibilityHint{\\"\\"};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -995,8 +959,7 @@ Map {
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class MixedPropNativeComponentProps final : public ViewProps {
  public:
@@ -1008,8 +971,7 @@ class MixedPropNativeComponentProps final : public ViewProps {
   folly::dynamic mixedProp{};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -1033,8 +995,7 @@ Map {
 #include <react/renderer/graphics/Point.h>
 #include <react/renderer/imagemanager/primitives.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class ImageColorPropNativeComponentProps final : public ViewProps {
  public:
@@ -1049,8 +1010,7 @@ class ImageColorPropNativeComponentProps final : public ViewProps {
   Point point{};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -1071,8 +1031,7 @@ Map {
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class NoPropsNoEventsComponentProps final : public ViewProps {
  public:
@@ -1084,8 +1043,7 @@ class NoPropsNoEventsComponentProps final : public ViewProps {
   
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -1112,8 +1070,7 @@ Map {
 #include <react/renderer/imagemanager/primitives.h>
 #include <vector>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 enum class ObjectPropsStringEnumProp { Option1 };
 
@@ -1147,7 +1104,7 @@ static inline std::string toString(const ObjectPropsIntEnumProp &value) {
   }
 }
 struct ObjectPropsObjectPropObjectArrayPropStruct {
-  std::vector<std::string> array;
+  std::vector<std::string> array{};
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsObjectPropObjectArrayPropStruct &result) {
@@ -1164,9 +1121,9 @@ static inline std::string toString(const ObjectPropsObjectPropObjectArrayPropStr
 }
 
 struct ObjectPropsObjectPropObjectPrimitiveRequiredPropStruct {
-  ImageSource image;
-  SharedColor color;
-  Point point;
+  ImageSource image{};
+  SharedColor color{};
+  Point point{};
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsObjectPropObjectPrimitiveRequiredPropStruct &result) {
@@ -1191,7 +1148,7 @@ static inline std::string toString(const ObjectPropsObjectPropObjectPrimitiveReq
 }
 
 struct ObjectPropsObjectPropNestedPropANestedPropBStruct {
-  std::string nestedPropC;
+  std::string nestedPropC{\\"\\"};
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsObjectPropNestedPropANestedPropBStruct &result) {
@@ -1208,7 +1165,7 @@ static inline std::string toString(const ObjectPropsObjectPropNestedPropANestedP
 }
 
 struct ObjectPropsObjectPropNestedPropAStruct {
-  ObjectPropsObjectPropNestedPropANestedPropBStruct nestedPropB;
+  ObjectPropsObjectPropNestedPropANestedPropBStruct nestedPropB{};
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsObjectPropNestedPropAStruct &result) {
@@ -1225,7 +1182,7 @@ static inline std::string toString(const ObjectPropsObjectPropNestedPropAStruct 
 }
 
 struct ObjectPropsObjectPropNestedArrayAsPropertyArrayPropStruct {
-  std::string stringProp;
+  std::string stringProp{\\"\\"};
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsObjectPropNestedArrayAsPropertyArrayPropStruct &result) {
@@ -1252,7 +1209,7 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
 
 
 struct ObjectPropsObjectPropNestedArrayAsPropertyStruct {
-  std::vector<ObjectPropsObjectPropNestedArrayAsPropertyArrayPropStruct> arrayProp;
+  std::vector<ObjectPropsObjectPropNestedArrayAsPropertyArrayPropStruct> arrayProp{};
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsObjectPropNestedArrayAsPropertyStruct &result) {
@@ -1269,16 +1226,20 @@ static inline std::string toString(const ObjectPropsObjectPropNestedArrayAsPrope
 }
 
 struct ObjectPropsObjectPropStruct {
-  std::string stringProp;
-  bool booleanProp;
-  Float floatProp;
-  int intProp;
-  ObjectPropsStringEnumProp stringEnumProp;
-  ObjectPropsIntEnumProp intEnumProp;
-  ObjectPropsObjectPropObjectArrayPropStruct objectArrayProp;
-  ObjectPropsObjectPropObjectPrimitiveRequiredPropStruct objectPrimitiveRequiredProp;
-  ObjectPropsObjectPropNestedPropAStruct nestedPropA;
-  ObjectPropsObjectPropNestedArrayAsPropertyStruct nestedArrayAsProperty;
+  std::string stringProp{\\"\\"};
+  bool booleanProp{false};
+  Float floatProp{0.0};
+  int intProp{0};
+  std::string stringUserDefaultProp{\\"user_default\\"};
+  bool booleanUserDefaultProp{true};
+  Float floatUserDefaultProp{3.14};
+  int intUserDefaultProp{9999};
+  ObjectPropsStringEnumProp stringEnumProp{ObjectPropsStringEnumProp::Option1};
+  ObjectPropsIntEnumProp intEnumProp{ObjectPropsIntEnumProp::IntEnumProp0};
+  ObjectPropsObjectPropObjectArrayPropStruct objectArrayProp{};
+  ObjectPropsObjectPropObjectPrimitiveRequiredPropStruct objectPrimitiveRequiredProp{};
+  ObjectPropsObjectPropNestedPropAStruct nestedPropA{};
+  ObjectPropsObjectPropNestedArrayAsPropertyStruct nestedArrayAsProperty{};
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsObjectPropStruct &result) {
@@ -1299,6 +1260,22 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
   auto tmp_intProp = map.find(\\"intProp\\");
   if (tmp_intProp != map.end()) {
     fromRawValue(context, tmp_intProp->second, result.intProp);
+  }
+  auto tmp_stringUserDefaultProp = map.find(\\"stringUserDefaultProp\\");
+  if (tmp_stringUserDefaultProp != map.end()) {
+    fromRawValue(context, tmp_stringUserDefaultProp->second, result.stringUserDefaultProp);
+  }
+  auto tmp_booleanUserDefaultProp = map.find(\\"booleanUserDefaultProp\\");
+  if (tmp_booleanUserDefaultProp != map.end()) {
+    fromRawValue(context, tmp_booleanUserDefaultProp->second, result.booleanUserDefaultProp);
+  }
+  auto tmp_floatUserDefaultProp = map.find(\\"floatUserDefaultProp\\");
+  if (tmp_floatUserDefaultProp != map.end()) {
+    fromRawValue(context, tmp_floatUserDefaultProp->second, result.floatUserDefaultProp);
+  }
+  auto tmp_intUserDefaultProp = map.find(\\"intUserDefaultProp\\");
+  if (tmp_intUserDefaultProp != map.end()) {
+    fromRawValue(context, tmp_intUserDefaultProp->second, result.intUserDefaultProp);
   }
   auto tmp_stringEnumProp = map.find(\\"stringEnumProp\\");
   if (tmp_stringEnumProp != map.end()) {
@@ -1339,8 +1316,7 @@ class ObjectPropsProps final : public ViewProps {
   ObjectPropsObjectPropStruct objectProp{};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -1362,8 +1338,7 @@ Map {
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/graphics/Point.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class PointPropNativeComponentProps final : public ViewProps {
  public:
@@ -1375,8 +1350,7 @@ class PointPropNativeComponentProps final : public ViewProps {
   Point startPoint{};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -1397,8 +1371,7 @@ Map {
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 enum class StringEnumPropsNativeComponentAlignment { Top, Center, BottomRight };
 
@@ -1428,8 +1401,7 @@ class StringEnumPropsNativeComponentProps final : public ViewProps {
   StringEnumPropsNativeComponentAlignment alignment{StringEnumPropsNativeComponentAlignment::Center};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -1450,8 +1422,7 @@ Map {
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class StringPropComponentProps final : public ViewProps {
  public:
@@ -1464,8 +1435,7 @@ class StringPropComponentProps final : public ViewProps {
   std::string accessibilityRole{};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -1486,8 +1456,7 @@ Map {
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class MultiFile1NativeComponentProps final : public ViewProps {
  public:
@@ -1509,8 +1478,7 @@ class MultiFile2NativeComponentProps final : public ViewProps {
   bool disabled{true};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -1531,8 +1499,7 @@ Map {
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class MultiComponent1NativeComponentProps final : public ViewProps {
  public:
@@ -1554,8 +1521,7 @@ class MultiComponent2NativeComponentProps final : public ViewProps {
   bool disabled{true};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;

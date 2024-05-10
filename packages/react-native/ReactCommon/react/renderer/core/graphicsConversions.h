@@ -14,6 +14,7 @@
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/RawProps.h>
 #include <react/renderer/graphics/Color.h>
+#include <react/renderer/graphics/Float.h>
 #include <react/renderer/graphics/PlatformColorParser.h>
 #include <react/renderer/graphics/Point.h>
 #include <react/renderer/graphics/Rect.h>
@@ -29,29 +30,7 @@ inline void fromRawValue(
     const PropsParserContext& context,
     const RawValue& value,
     SharedColor& result) {
-  ColorComponents colorComponents = {0, 0, 0, 0};
-
-  if (value.hasType<int>()) {
-    auto argb = (int64_t)value;
-    auto ratio = 255.f;
-    colorComponents.alpha = ((argb >> 24) & 0xFF) / ratio;
-    colorComponents.red = ((argb >> 16) & 0xFF) / ratio;
-    colorComponents.green = ((argb >> 8) & 0xFF) / ratio;
-    colorComponents.blue = (argb & 0xFF) / ratio;
-  } else if (value.hasType<std::vector<float>>()) {
-    auto items = (std::vector<float>)value;
-    auto length = items.size();
-    react_native_expect(length == 3 || length == 4);
-    colorComponents.red = items.at(0);
-    colorComponents.green = items.at(1);
-    colorComponents.blue = items.at(2);
-    colorComponents.alpha = length == 4 ? items.at(3) : 1.0f;
-  } else {
-    result = parsePlatformColor(context, value);
-    return;
-  }
-
-  result = colorFromComponents(colorComponents);
+  fromRawValue(context.contextContainer, context.surfaceId, value, result);
 }
 
 #ifdef ANDROID

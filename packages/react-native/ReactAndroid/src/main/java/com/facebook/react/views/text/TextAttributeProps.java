@@ -12,6 +12,7 @@ import android.text.Layout;
 import android.text.TextUtils;
 import android.util.LayoutDirection;
 import android.view.Gravity;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.ReadableArray;
@@ -84,17 +85,17 @@ public class TextAttributeProps {
   protected boolean mIsBackgroundColorSet = false;
   protected int mBackgroundColor;
 
-  protected int mNumberOfLines = UNSET;
-  protected int mFontSize = UNSET;
-  protected float mFontSizeInput = UNSET;
-  protected float mLineHeightInput = UNSET;
+  protected int mNumberOfLines = ReactConstants.UNSET;
+  protected int mFontSize = ReactConstants.UNSET;
+  protected float mFontSizeInput = ReactConstants.UNSET;
+  protected float mLineHeightInput = ReactConstants.UNSET;
   protected float mLetterSpacingInput = Float.NaN;
   protected int mTextAlign = Gravity.NO_GRAVITY;
 
-  // `UNSET` is -1 and is the same as `LayoutDirection.UNDEFINED` but the symbol isn't available.
-  protected int mLayoutDirection = UNSET;
+  // `ReactConstants.UNSET` is -1, same as `LayoutDirection.UNDEFINED` (which is a hidden symbol)
+  protected int mLayoutDirection = ReactConstants.UNSET;
 
-  protected TextTransform mTextTransform = TextTransform.NONE;
+  @NonNull protected TextTransform mTextTransform = TextTransform.NONE;
 
   protected float mTextShadowOffsetDx = 0;
   protected float mTextShadowOffsetDy = 0;
@@ -108,8 +109,9 @@ public class TextAttributeProps {
   protected @Nullable AccessibilityRole mAccessibilityRole = null;
   protected @Nullable Role mRole = null;
 
-  protected int mFontStyle = UNSET;
-  protected int mFontWeight = UNSET;
+  protected int mFontStyle = ReactConstants.UNSET;
+  protected int mFontWeight = ReactConstants.UNSET;
+
   /**
    * NB: If a font family is used that does not have a style in a certain Android version (ie.
    * monospace bold pre Android 5.0), that style (ie. bold) will not be inherited by nested Text
@@ -133,7 +135,9 @@ public class TextAttributeProps {
    */
   protected @Nullable String mFontFamily = null;
 
-  /** @see android.graphics.Paint#setFontFeatureSettings */
+  /**
+   * @see android.graphics.Paint#setFontFeatureSettings
+   */
   protected @Nullable String mFontFeatureSettings = null;
 
   protected boolean mContainsImages = false;
@@ -233,11 +237,11 @@ public class TextAttributeProps {
 
   public static TextAttributeProps fromReadableMap(ReactStylesDiffMap props) {
     TextAttributeProps result = new TextAttributeProps();
-    result.setNumberOfLines(getIntProp(props, ViewProps.NUMBER_OF_LINES, UNSET));
-    result.setLineHeight(getFloatProp(props, ViewProps.LINE_HEIGHT, UNSET));
+    result.setNumberOfLines(getIntProp(props, ViewProps.NUMBER_OF_LINES, ReactConstants.UNSET));
+    result.setLineHeight(getFloatProp(props, ViewProps.LINE_HEIGHT, ReactConstants.UNSET));
     result.setLetterSpacing(getFloatProp(props, ViewProps.LETTER_SPACING, Float.NaN));
     result.setAllowFontScaling(getBooleanProp(props, ViewProps.ALLOW_FONT_SCALING, true));
-    result.setFontSize(getFloatProp(props, ViewProps.FONT_SIZE, UNSET));
+    result.setFontSize(getFloatProp(props, ViewProps.FONT_SIZE, ReactConstants.UNSET));
     result.setColor(props.hasKey(ViewProps.COLOR) ? props.getInt(ViewProps.COLOR, 0) : null);
     result.setColor(
         props.hasKey(ViewProps.FOREGROUND_COLOR)
@@ -352,12 +356,12 @@ public class TextAttributeProps {
   }
 
   private void setNumberOfLines(int numberOfLines) {
-    mNumberOfLines = numberOfLines == 0 ? UNSET : numberOfLines;
+    mNumberOfLines = numberOfLines == 0 ? ReactConstants.UNSET : numberOfLines;
   }
 
   private void setLineHeight(float lineHeight) {
     mLineHeightInput = lineHeight;
-    if (lineHeight == UNSET) {
+    if (lineHeight == ReactConstants.UNSET) {
       mLineHeight = Float.NaN;
     } else {
       mLineHeight =
@@ -369,6 +373,11 @@ public class TextAttributeProps {
 
   private void setLetterSpacing(float letterSpacing) {
     mLetterSpacingInput = letterSpacing;
+  }
+
+  @NonNull
+  public TextTransform getTextTransform() {
+    return mTextTransform;
   }
 
   public float getLetterSpacing() {
@@ -386,6 +395,14 @@ public class TextAttributeProps {
     return letterSpacingPixels / mFontSize;
   }
 
+  public float getEffectiveLetterSpacing() {
+    return getLetterSpacing();
+  }
+
+  public int getEffectiveFontSize() {
+    return mFontSize;
+  }
+
   private void setAllowFontScaling(boolean allowFontScaling) {
     if (allowFontScaling != mAllowFontScaling) {
       mAllowFontScaling = allowFontScaling;
@@ -397,7 +414,7 @@ public class TextAttributeProps {
 
   private void setFontSize(float fontSize) {
     mFontSizeInput = fontSize;
-    if (fontSize != UNSET) {
+    if (fontSize != ReactConstants.UNSET) {
       fontSize =
           mAllowFontScaling
               ? (float) Math.ceil(PixelUtil.toPixelFromSP(fontSize))
@@ -406,11 +423,23 @@ public class TextAttributeProps {
     mFontSize = (int) fontSize;
   }
 
+  public int getColor() {
+    return mColor;
+  }
+
   private void setColor(@Nullable Integer color) {
     mIsColorSet = (color != null);
     if (mIsColorSet) {
       mColor = color;
     }
+  }
+
+  public boolean isColorSet() {
+    return mIsColorSet;
+  }
+
+  public int getBackgroundColor() {
+    return mBackgroundColor;
   }
 
   private void setBackgroundColor(Integer color) {
@@ -422,6 +451,18 @@ public class TextAttributeProps {
       mBackgroundColor = color;
     }
     // }
+  }
+
+  public boolean isBackgroundColorSet() {
+    return mIsBackgroundColorSet;
+  }
+
+  public int getFontStyle() {
+    return mFontStyle;
+  }
+
+  public String getFontFamily() {
+    return mFontFamily;
   }
 
   private void setFontFamily(@Nullable String fontFamily) {
@@ -526,6 +567,14 @@ public class TextAttributeProps {
     mFontFeatureSettings = TextUtils.join(", ", features);
   }
 
+  public String getFontFeatureSettings() {
+    return mFontFeatureSettings;
+  }
+
+  public int getFontWeight() {
+    return mFontWeight;
+  }
+
   private void setFontWeight(@Nullable String fontWeightString) {
     mFontWeight = ReactTypefaceUtils.parseFontWeight(fontWeightString);
   }
@@ -552,6 +601,14 @@ public class TextAttributeProps {
     }
   }
 
+  public boolean isUnderlineTextDecorationSet() {
+    return mIsUnderlineTextDecorationSet;
+  }
+
+  public boolean isLineThroughTextDecorationSet() {
+    return mIsLineThroughTextDecorationSet;
+  }
+
   private void setTextShadowOffset(ReadableMap offsetMap) {
     mTextShadowOffsetDx = 0;
     mTextShadowOffsetDy = 0;
@@ -570,8 +627,16 @@ public class TextAttributeProps {
     }
   }
 
+  public float getTextShadowOffsetDx() {
+    return mTextShadowOffsetDx;
+  }
+
   private void setTextShadowOffsetDx(float dx) {
     mTextShadowOffsetDx = PixelUtil.toPixelFromDIP(dx);
+  }
+
+  public float getTextShadowOffsetDy() {
+    return mTextShadowOffsetDy;
   }
 
   private void setTextShadowOffsetDy(float dy) {
@@ -581,14 +646,14 @@ public class TextAttributeProps {
   public static int getLayoutDirection(@Nullable String layoutDirection) {
     int androidLayoutDirection;
     if (layoutDirection == null || "undefined".equals(layoutDirection)) {
-      androidLayoutDirection = UNSET;
+      androidLayoutDirection = ReactConstants.UNSET;
     } else if ("rtl".equals(layoutDirection)) {
       androidLayoutDirection = LayoutDirection.RTL;
     } else if ("ltr".equals(layoutDirection)) {
       androidLayoutDirection = LayoutDirection.LTR;
     } else {
       FLog.w(ReactConstants.TAG, "Invalid layoutDirection: " + layoutDirection);
-      androidLayoutDirection = UNSET;
+      androidLayoutDirection = ReactConstants.UNSET;
     }
     return androidLayoutDirection;
   }
@@ -597,10 +662,18 @@ public class TextAttributeProps {
     mLayoutDirection = getLayoutDirection(layoutDirection);
   }
 
+  public float getTextShadowRadius() {
+    return mTextShadowRadius;
+  }
+
   private void setTextShadowRadius(float textShadowRadius) {
     if (textShadowRadius != mTextShadowRadius) {
       mTextShadowRadius = textShadowRadius;
     }
+  }
+
+  public int getTextShadowColor() {
+    return mTextShadowColor;
   }
 
   private void setTextShadowColor(int textShadowColor) {
@@ -624,12 +697,21 @@ public class TextAttributeProps {
     }
   }
 
+  public AccessibilityRole getAccessibilityRole() {
+    return mAccessibilityRole;
+  }
+
   private void setAccessibilityRole(@Nullable String accessibilityRole) {
     if (accessibilityRole == null) {
       mAccessibilityRole = null;
     } else {
       mAccessibilityRole = AccessibilityRole.fromValue(accessibilityRole);
     }
+  }
+
+  @Nullable
+  public Role getRole() {
+    return mRole;
   }
 
   private void setRole(@Nullable String role) {

@@ -160,6 +160,11 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
     view.setScrollPerfTag(scrollPerfTag);
   }
 
+  @ReactProp(name = "enableSyncOnScroll")
+  public void setEnableSyncOnScroll(ReactScrollView view, boolean value) {
+    view.setEnableSyncOnScroll(value);
+  }
+
   @ReactProp(name = "pagingEnabled")
   public void setPagingEnabled(ReactScrollView view, boolean pagingEnabled) {
     view.setPagingEnabled(pagingEnabled);
@@ -380,6 +385,11 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
   @ReactProp(name = "scrollEventThrottle")
   public void setScrollEventThrottle(ReactScrollView view, int scrollEventThrottle) {
     view.setScrollEventThrottle(scrollEventThrottle);
+  }
+
+  @ReactProp(name = "horizontal")
+  public void setHorizontal(ReactScrollView view, boolean horizontal) {
+    // Do Nothing: Align with static ViewConfigs
   }
 
   @ReactProp(name = "isInvertedVirtualizedList")

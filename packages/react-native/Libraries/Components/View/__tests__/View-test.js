@@ -178,7 +178,6 @@ describe('View compat with web', () => {
 
     expect(instance.toJSON()).toMatchInlineSnapshot(`
       <RCTView
-        pointerEvents="none"
         style={
           Object {
             "backgroundColor": "white",

@@ -46,12 +46,12 @@ export default function attachKeyHandlers({
   const onPress = async (key: string) => {
     switch (key) {
       case 'r':
-        messageSocket.broadcast('reload', null);
         logger.info('Reloading connected app(s)...');
+        messageSocket.broadcast('reload', null);
         break;
       case 'd':
-        messageSocket.broadcast('devMenu', null);
         logger.info('Opening Dev Menu...');
+        messageSocket.broadcast('devMenu', null);
         break;
       case 'i':
         logger.info('Opening app on iOS...');

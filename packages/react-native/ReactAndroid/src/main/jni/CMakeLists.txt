@@ -50,7 +50,6 @@ add_react_third_party_ndk_subdir(glog)
 add_react_third_party_ndk_subdir(boost)
 add_react_third_party_ndk_subdir(double-conversion)
 add_react_third_party_ndk_subdir(fmt)
-add_react_third_party_ndk_subdir(libevent)
 add_react_third_party_ndk_subdir(folly)
 add_react_third_party_ndk_subdir(jsc)
 add_react_third_party_ndk_subdir(googletest)
@@ -71,6 +70,8 @@ add_react_common_subdir(hermes/inspector-modern)
 add_react_common_subdir(react/renderer/runtimescheduler)
 add_react_common_subdir(react/debug)
 add_react_common_subdir(react/config)
+add_react_common_subdir(react/featureflags)
+add_react_common_subdir(react/performance/timeline)
 add_react_common_subdir(react/renderer/animations)
 add_react_common_subdir(react/renderer/attributedstring)
 add_react_common_subdir(react/renderer/componentregistry)
@@ -79,6 +80,9 @@ add_react_common_subdir(react/renderer/scheduler)
 add_react_common_subdir(react/renderer/telemetry)
 add_react_common_subdir(react/renderer/uimanager)
 add_react_common_subdir(react/renderer/core)
+add_react_common_subdir(react/renderer/consistency)
+add_react_common_subdir(react/renderer/uimanager/consistency)
+add_react_common_subdir(react/renderer/dom)
 add_react_common_subdir(react/renderer/element)
 add_react_common_subdir(react/renderer/graphics)
 add_react_common_subdir(react/renderer/debug)
@@ -96,11 +100,16 @@ add_react_common_subdir(react/renderer/components/unimplementedview)
 add_react_common_subdir(react/renderer/components/modal)
 add_react_common_subdir(react/renderer/components/scrollview)
 add_react_common_subdir(react/renderer/leakchecker)
+add_react_common_subdir(react/renderer/observers/events)
 add_react_common_subdir(react/renderer/textlayoutmanager)
 add_react_common_subdir(react/utils)
 add_react_common_subdir(react/bridging)
 add_react_common_subdir(react/renderer/mapbuffer)
 add_react_common_subdir(react/nativemodule/core)
+add_react_common_subdir(react/nativemodule/defaults)
+add_react_common_subdir(react/nativemodule/dom)
+add_react_common_subdir(react/nativemodule/featureflags)
+add_react_common_subdir(react/nativemodule/microtasks)
 add_react_common_subdir(jserrorhandler)
 add_react_common_subdir(react/runtime)
 add_react_common_subdir(react/runtime/hermes)
@@ -119,12 +128,15 @@ add_react_android_subdir(src/main/jni/react/uimanager)
 add_react_android_subdir(src/main/jni/react/mapbuffer)
 add_react_android_subdir(src/main/jni/react/reactnativeblob)
 add_react_android_subdir(src/main/jni/react/fabric)
+add_react_android_subdir(src/main/jni/react/featureflags)
 add_react_android_subdir(src/main/jni/react/newarchdefaults)
 add_react_android_subdir(src/main/jni/react/hermes/reactexecutor)
 add_react_android_subdir(src/main/jni/react/hermes/instrumentation/)
+add_react_android_subdir(src/main/jni/react/runtime/cxxreactpackage)
 add_react_android_subdir(src/main/jni/react/runtime/jni)
 add_react_android_subdir(src/main/jni/react/runtime/hermes/jni)
 add_react_android_subdir(src/main/jni/react/runtime/jsc/jni)
+add_react_android_subdir(src/main/jni/react/devsupport)
 
 # GTest dependencies
 add_executable(reactnative_unittest
@@ -151,7 +163,6 @@ add_executable(reactnative_unittest
   ${REACT_COMMON_DIR}/react/renderer/core/tests/PrimitivesTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/core/tests/RawPropsTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/core/tests/ShadowNodeFamilyTest.cpp
-  ${REACT_COMMON_DIR}/react/renderer/core/tests/traitCastTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/debug/tests/DebugStringConvertibleTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/element/tests/ElementTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/graphics/tests/GraphicsTest.cpp
@@ -196,6 +207,7 @@ add_executable(reactnative_unittest
   hermes-engine::libhermes
   hermes_inspector_modern
   jsi
+  react_cxxreact
   react_codegen_rncore
   react_debug
   react_render_animations
@@ -209,7 +221,6 @@ add_executable(reactnative_unittest
   react_render_textlayoutmanager
   react_render_uimanager
   react_utils
-  reactnative
   rrc_modal
   rrc_scrollview
   rrc_text

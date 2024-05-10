@@ -23,20 +23,15 @@ enum class FlexDirection : uint8_t {
 };
 
 template <>
-constexpr inline int32_t ordinalCount<FlexDirection>() {
+constexpr int32_t ordinalCount<FlexDirection>() {
   return 4;
-} 
+}
 
-template <>
-constexpr inline int32_t bitCount<FlexDirection>() {
-  return 2;
-} 
-
-constexpr inline FlexDirection scopedEnum(YGFlexDirection unscoped) {
+constexpr FlexDirection scopedEnum(YGFlexDirection unscoped) {
   return static_cast<FlexDirection>(unscoped);
 }
 
-constexpr inline YGFlexDirection unscopedEnum(FlexDirection scoped) {
+constexpr YGFlexDirection unscopedEnum(FlexDirection scoped) {
   return static_cast<YGFlexDirection>(scoped);
 }
 

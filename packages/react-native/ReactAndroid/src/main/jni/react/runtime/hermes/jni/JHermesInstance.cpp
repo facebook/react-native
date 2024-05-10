@@ -28,7 +28,7 @@ void JHermesInstance::registerNatives() {
   });
 }
 
-std::unique_ptr<jsi::Runtime> JHermesInstance::createJSRuntime(
+std::unique_ptr<JSRuntime> JHermesInstance::createJSRuntime(
     std::shared_ptr<MessageQueueThread> msgQueueThread) noexcept {
   return HermesInstance::createJSRuntime(
       reactNativeConfig_, nullptr, msgQueueThread);

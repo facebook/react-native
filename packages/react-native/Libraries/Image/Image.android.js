@@ -16,11 +16,16 @@ import flattenStyle from '../StyleSheet/flattenStyle';
 import StyleSheet from '../StyleSheet/StyleSheet';
 import TextAncestor from '../Text/TextAncestor';
 import ImageAnalyticsTagContext from './ImageAnalyticsTagContext';
-import {unstable_getImageComponentDecorator} from './ImageInjection';
+import {
+  unstable_getImageComponentDecorator,
+  useWrapRefWithImageAttachedCallbacks,
+} from './ImageInjection';
 import {getImageSourcesFromImageProps} from './ImageSourceUtils';
 import {convertObjectFitToResizeMode} from './ImageUtils';
 import ImageViewNativeComponent from './ImageViewNativeComponent';
-import NativeImageLoaderAndroid from './NativeImageLoaderAndroid';
+import NativeImageLoaderAndroid, {
+  type ImageSize,
+} from './NativeImageLoaderAndroid';
 import resolveAssetSource from './resolveAssetSource';
 import TextInlineImageNativeComponent from './TextInlineImageNativeComponent';
 import * as React from 'react';
@@ -37,13 +42,15 @@ function generateRequestId() {
  */
 function getSize(
   url: string,
-  success: (width: number, height: number) => void,
+  success?: (width: number, height: number) => void,
   failure?: (error: mixed) => void,
-): void {
-  NativeImageLoaderAndroid.getSize(url)
-    .then(function (sizes) {
-      success(sizes.width, sizes.height);
-    })
+): void | Promise<ImageSize> {
+  const promise = NativeImageLoaderAndroid.getSize(url);
+  if (typeof success !== 'function') {
+    return promise;
+  }
+  promise
+    .then(sizes => success(sizes.width, sizes.height))
     .catch(
       failure ||
         function () {
@@ -61,13 +68,15 @@ function getSize(
 function getSizeWithHeaders(
   url: string,
   headers: {[string]: string, ...},
-  success: (width: number, height: number) => void,
+  success?: (width: number, height: number) => void,
   failure?: (error: mixed) => void,
-): void {
-  NativeImageLoaderAndroid.getSizeWithHeaders(url, headers)
-    .then(function (sizes) {
-      success(sizes.width, sizes.height);
-    })
+): void | Promise<ImageSize> {
+  const promise = NativeImageLoaderAndroid.getSizeWithHeaders(url, headers);
+  if (typeof success !== 'function') {
+    return promise;
+  }
+  promise
+    .then(sizes => success(sizes.width, sizes.height))
     .catch(
       failure ||
         function () {
@@ -168,7 +177,11 @@ let BaseImage: AbstractImageAndroid = React.forwardRef(
       ...restProps,
       style,
       shouldNotifyLoadEvents: !!(onLoadStart || onLoad || onLoadEnd || onError),
+      // Both iOS and C++ sides expect to have "source" prop, whereas on Android it's "src"
+      // (for historical reasons). So in the latter case we populate both "src" and "source",
+      // in order to have a better alignment between platforms in the future.
       src: sources,
+      source: sources,
       /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
        * when making Flow check .android.js files. */
       headers: (source?.[0]?.headers || source?.headers: ?{[string]: string}),
@@ -176,7 +189,6 @@ let BaseImage: AbstractImageAndroid = React.forwardRef(
       loadingIndicatorSrc: loadingIndicatorSource
         ? loadingIndicatorSource.uri
         : null,
-      ref: forwardedRef,
       accessibilityLabel:
         props['aria-label'] ?? props.accessibilityLabel ?? props.alt,
       accessibilityLabelledBy:
@@ -196,6 +208,8 @@ let BaseImage: AbstractImageAndroid = React.forwardRef(
       : null;
     const resizeMode =
       objectFit || props.resizeMode || style?.resizeMode || 'cover';
+
+    const actualRef = useWrapRefWithImageAttachedCallbacks(forwardedRef);
 
     return (
       <ImageAnalyticsTagContext.Consumer>
@@ -218,7 +232,7 @@ let BaseImage: AbstractImageAndroid = React.forwardRef(
                       resizeMode={resizeMode}
                       headers={nativeProps.headers}
                       src={sources}
-                      ref={forwardedRef}
+                      ref={actualRef}
                     />
                   );
                 }
@@ -227,6 +241,7 @@ let BaseImage: AbstractImageAndroid = React.forwardRef(
                   <ImageViewNativeComponent
                     {...nativePropsWithAnalytics}
                     resizeMode={resizeMode}
+                    ref={actualRef}
                   />
                 );
               }}
@@ -306,12 +321,6 @@ Image.queryCache = queryCache;
  */
 // $FlowFixMe[incompatible-use] This property isn't writable but we're actually defining it here for the first time.
 Image.resolveAssetSource = resolveAssetSource;
-
-/**
- * Switch to `deprecated-react-native-prop-types` for compatibility with future
- * releases. This is deprecated and will be removed in the future.
- */
-Image.propTypes = require('deprecated-react-native-prop-types').ImagePropTypes;
 
 const styles = StyleSheet.create({
   base: {

@@ -30,7 +30,7 @@ public class ReactFragment extends Fragment implements PermissionAwareActivity {
   protected static final String ARG_LAUNCH_OPTIONS = "arg_launch_options";
   protected static final String ARG_FABRIC_ENABLED = "arg_fabric_enabled";
 
-  private ReactDelegate mReactDelegate;
+  protected ReactDelegate mReactDelegate;
 
   @Nullable private PermissionListener mPermissionListener;
 
@@ -113,6 +113,7 @@ public class ReactFragment extends Fragment implements PermissionAwareActivity {
     super.onDestroy();
     mReactDelegate.onHostDestroy();
   }
+
   // endregion
 
   @Override

@@ -227,7 +227,9 @@ const AlertWithStylesPreferred = () => {
 };
 
 const PromptOptions = () => {
-  const [promptValue, setPromptValue] = React.useState<string>('');
+  const [promptValue, setPromptValue] = React.useState<
+    string | {login: string, password: string},
+  >('');
 
   const customButtons = [
     {
@@ -243,7 +245,8 @@ const PromptOptions = () => {
   return (
     <View>
       <Text style={styles.promptValue}>
-        <Text style={styles.bold}>Prompt value:</Text> {promptValue}
+        <Text style={styles.bold}>Prompt value:</Text>
+        {JSON.stringify(promptValue, null, 2)}
       </Text>
 
       <Pressable

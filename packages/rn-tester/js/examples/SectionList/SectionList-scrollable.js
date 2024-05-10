@@ -156,6 +156,16 @@ const onScrollToIndexFailed = (info: {
    */
 };
 
+// $FlowFixMe[missing-local-annot]
+const ItemSeparatorComponent = info => (
+  <CustomSeparatorComponent {...info} text="ITEM SEPARATOR" />
+);
+
+// $FlowFixMe[missing-local-annot]
+const SectionSeparatorComponent = info => (
+  <CustomSeparatorComponent {...info} text="SECTION SEPARATOR" />
+);
+
 export function SectionList_scrollable(Props: {
   ...
 }): React.Element<typeof RNTesterPage> {
@@ -280,14 +290,8 @@ export function SectionList_scrollable(Props: {
         ref={ref}
         ListHeaderComponent={HeaderComponent}
         ListFooterComponent={FooterComponent}
-        // $FlowFixMe[missing-local-annot]
-        SectionSeparatorComponent={info => (
-          <CustomSeparatorComponent {...info} text="SECTION SEPARATOR" />
-        )}
-        // $FlowFixMe[missing-local-annot]
-        ItemSeparatorComponent={info => (
-          <CustomSeparatorComponent {...info} text="ITEM SEPARATOR" />
-        )}
+        SectionSeparatorComponent={SectionSeparatorComponent}
+        ItemSeparatorComponent={ItemSeparatorComponent}
         accessibilityRole="list"
         debug={debug}
         inverted={inverted}

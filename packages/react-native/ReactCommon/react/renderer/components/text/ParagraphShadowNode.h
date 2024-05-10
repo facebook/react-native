@@ -41,7 +41,6 @@ class ParagraphShadowNode final : public ConcreteViewShadowNode<
   static ShadowNodeTraits BaseTraits() {
     auto traits = ConcreteViewShadowNode::BaseTraits();
     traits.set(ShadowNodeTraits::Trait::LeafYogaNode);
-    traits.set(ShadowNodeTraits::Trait::TextKind);
     traits.set(ShadowNodeTraits::Trait::MeasurableYogaNode);
 
 #ifdef ANDROID
@@ -64,6 +63,7 @@ class ParagraphShadowNode final : public ConcreteViewShadowNode<
 #pragma mark - LayoutableShadowNode
 
   void layout(LayoutContext layoutContext) override;
+
   Size measureContent(
       const LayoutContext& layoutContext,
       const LayoutConstraints& layoutConstraints) const override;
@@ -97,6 +97,8 @@ class ParagraphShadowNode final : public ConcreteViewShadowNode<
    * `TextLayoutManager`) if needed.
    */
   void updateStateIfNeeded(const Content& content);
+
+  std::shared_ptr<const TextLayoutManager> textLayoutManager_;
 
   /*
    * Cached content of the subtree started from the node.

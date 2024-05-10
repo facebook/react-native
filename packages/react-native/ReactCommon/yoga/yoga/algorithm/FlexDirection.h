@@ -11,7 +11,10 @@
 
 #include <yoga/debug/AssertFatal.h>
 #include <yoga/enums/Dimension.h>
+#include <yoga/enums/Direction.h>
+#include <yoga/enums/Edge.h>
 #include <yoga/enums/FlexDirection.h>
+#include <yoga/enums/PhysicalEdge.h>
 
 namespace facebook::yoga {
 
@@ -47,83 +50,59 @@ inline FlexDirection resolveCrossDirection(
       : FlexDirection::Column;
 }
 
-inline YGEdge flexStartEdge(const FlexDirection flexDirection) {
+inline PhysicalEdge flexStartEdge(FlexDirection flexDirection) {
   switch (flexDirection) {
     case FlexDirection::Column:
-      return YGEdgeTop;
+      return PhysicalEdge::Top;
     case FlexDirection::ColumnReverse:
-      return YGEdgeBottom;
+      return PhysicalEdge::Bottom;
     case FlexDirection::Row:
-      return YGEdgeLeft;
+      return PhysicalEdge::Left;
     case FlexDirection::RowReverse:
-      return YGEdgeRight;
+      return PhysicalEdge::Right;
   }
 
   fatalWithMessage("Invalid FlexDirection");
 }
 
-inline YGEdge flexEndEdge(const FlexDirection flexDirection) {
+inline PhysicalEdge flexEndEdge(FlexDirection flexDirection) {
   switch (flexDirection) {
     case FlexDirection::Column:
-      return YGEdgeBottom;
+      return PhysicalEdge::Bottom;
     case FlexDirection::ColumnReverse:
-      return YGEdgeTop;
+      return PhysicalEdge::Top;
     case FlexDirection::Row:
-      return YGEdgeRight;
+      return PhysicalEdge::Right;
     case FlexDirection::RowReverse:
-      return YGEdgeLeft;
+      return PhysicalEdge::Left;
   }
 
   fatalWithMessage("Invalid FlexDirection");
 }
 
-inline YGEdge inlineStartEdge(
-    const FlexDirection flexDirection,
-    const Direction direction) {
-  if (isRow(flexDirection)) {
-    return direction == Direction::RTL ? YGEdgeRight : YGEdgeLeft;
-  }
-
-  return YGEdgeTop;
-}
-
-inline YGEdge inlineEndEdge(
-    const FlexDirection flexDirection,
-    const Direction direction) {
-  if (isRow(flexDirection)) {
-    return direction == Direction::RTL ? YGEdgeLeft : YGEdgeRight;
-  }
-
-  return YGEdgeBottom;
-}
-
-/**
- * The physical edges that YGEdgeStart and YGEdgeEnd correspond to (e.g.
- * left/right) are soley dependent on the direction. However, there are cases
- * where we want the flex start/end edge (i.e. which edge is the start/end
- * for laying out flex items), which can be distinct from the corresponding
- * inline edge. In these cases we need to know which "relative edge"
- * (YGEdgeStart/YGEdgeEnd) corresponds to the said flex start/end edge as these
- * relative edges can be used instead of physical ones when defining certain
- * attributes like border or padding.
- */
-inline YGEdge flexStartRelativeEdge(
+inline PhysicalEdge inlineStartEdge(
     FlexDirection flexDirection,
     Direction direction) {
-  const YGEdge leadLayoutEdge = inlineStartEdge(flexDirection, direction);
-  const YGEdge leadFlexItemEdge = flexStartEdge(flexDirection);
-  return leadLayoutEdge == leadFlexItemEdge ? YGEdgeStart : YGEdgeEnd;
+  if (isRow(flexDirection)) {
+    return direction == Direction::RTL ? PhysicalEdge::Right
+                                       : PhysicalEdge::Left;
+  }
+
+  return PhysicalEdge::Top;
 }
 
-inline YGEdge flexEndRelativeEdge(
+inline PhysicalEdge inlineEndEdge(
     FlexDirection flexDirection,
     Direction direction) {
-  const YGEdge trailLayoutEdge = inlineEndEdge(flexDirection, direction);
-  const YGEdge trailFlexItemEdge = flexEndEdge(flexDirection);
-  return trailLayoutEdge == trailFlexItemEdge ? YGEdgeEnd : YGEdgeStart;
+  if (isRow(flexDirection)) {
+    return direction == Direction::RTL ? PhysicalEdge::Left
+                                       : PhysicalEdge::Right;
+  }
+
+  return PhysicalEdge::Bottom;
 }
 
-inline Dimension dimension(const FlexDirection flexDirection) {
+inline Dimension dimension(FlexDirection flexDirection) {
   switch (flexDirection) {
     case FlexDirection::Column:
       return Dimension::Height;

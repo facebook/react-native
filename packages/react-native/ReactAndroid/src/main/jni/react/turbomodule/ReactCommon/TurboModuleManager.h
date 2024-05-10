@@ -28,7 +28,7 @@ class TurboModuleManager : public jni::HybridClass<TurboModuleManager> {
   static auto constexpr kJavaDescriptor =
       "Lcom/facebook/react/internal/turbomodule/core/TurboModuleManager;";
   static jni::local_ref<jhybriddata> initHybrid(
-      jni::alias_ref<jhybridobject> jThis,
+      jni::alias_ref<jhybridobject> /* unused */,
       jni::alias_ref<JRuntimeExecutor::javaobject> runtimeExecutor,
       jni::alias_ref<CallInvokerHolder::javaobject> jsCallInvokerHolder,
       jni::alias_ref<NativeMethodCallInvokerHolder::javaobject>
@@ -38,7 +38,6 @@ class TurboModuleManager : public jni::HybridClass<TurboModuleManager> {
 
  private:
   friend HybridBase;
-  jni::global_ref<TurboModuleManager::javaobject> javaPart_;
   RuntimeExecutor runtimeExecutor_;
   std::shared_ptr<CallInvoker> jsCallInvoker_;
   std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker_;
@@ -56,20 +55,21 @@ class TurboModuleManager : public jni::HybridClass<TurboModuleManager> {
   std::shared_ptr<ModuleCache> turboModuleCache_;
   std::shared_ptr<ModuleCache> legacyModuleCache_;
 
-  void installJSIBindings(
+  static void installJSIBindings(
+      jni::alias_ref<jhybridobject> javaPart,
       bool shouldCreateLegacyModules,
       bool enableSyncVoidMethods);
   explicit TurboModuleManager(
-      jni::alias_ref<TurboModuleManager::jhybridobject> jThis,
       RuntimeExecutor runtimeExecutor,
       std::shared_ptr<CallInvoker> jsCallInvoker,
       std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker,
       jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate);
 
   TurboModuleProviderFunctionType createTurboModuleProvider(
+      jni::alias_ref<jhybridobject> javaPart,
       bool enableSyncVoidMethods);
   TurboModuleProviderFunctionType createLegacyModuleProvider(
-      bool enableSyncVoidMethods);
+      jni::alias_ref<jhybridobject> javaPart);
 };
 
 } // namespace facebook::react

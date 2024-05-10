@@ -8,19 +8,6 @@
  * @format
  */
 
-import type {TurboModule} from '../../TurboModule/RCTExport';
-
-import * as TurboModuleRegistry from '../../TurboModule/TurboModuleRegistry';
-
-export interface Spec extends TurboModule {
-  +createTimer: (
-    callbackID: number,
-    duration: number,
-    jsSchedulingTime: number,
-    repeats: boolean,
-  ) => void;
-  +deleteTimer: (timerID: number) => void;
-  +setSendIdleEvents: (sendIdleEvents: boolean) => void;
-}
-
-export default (TurboModuleRegistry.get<Spec>('Timing'): ?Spec);
+export * from '../../../src/private/specs/modules/NativeTiming';
+import NativeTiming from '../../../src/private/specs/modules/NativeTiming';
+export default NativeTiming;

@@ -8,12 +8,14 @@
 package com.facebook.react.uimanager.layoutanimation;
 
 import android.view.animation.Interpolator;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableType;
 
 /** Simple spring interpolator */
 // TODO(7613736): Improve spring interpolator with friction and damping variable support
-/* package */ class SimpleSpringInterpolator implements Interpolator {
+/* package */ @Nullsafe(Nullsafe.Mode.LOCAL)
+class SimpleSpringInterpolator implements Interpolator {
 
   private static final float FACTOR = 0.5f;
   public static final String PARAM_SPRING_DAMPING = "springDamping";

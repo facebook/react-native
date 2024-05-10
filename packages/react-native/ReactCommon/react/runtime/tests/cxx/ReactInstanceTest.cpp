@@ -13,8 +13,8 @@
 
 #include <ReactCommon/RuntimeExecutor.h>
 #include <hermes/hermes.h>
+#include <jserrorhandler/JsErrorHandler.h>
 #include <jsi/jsi.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
 #include <react/runtime/ReactInstance.h>
 
 using ::testing::_;
@@ -116,20 +116,22 @@ class ReactInstanceTest : public ::testing::Test {
   ReactInstanceTest() {}
 
   void SetUp() override {
-    auto runtime = hermes::makeHermesRuntime();
-    runtime_ = runtime.get();
+    auto runtime =
+        std::make_unique<JSIRuntimeHolder>(hermes::makeHermesRuntime());
+    runtime_ = &runtime->getRuntime();
     messageQueueThread_ = std::make_shared<MockMessageQueueThread>();
     auto mockRegistry = std::make_unique<MockTimerRegistry>();
     mockRegistry_ = mockRegistry.get();
     timerManager_ = std::make_shared<TimerManager>(std::move(mockRegistry));
-    auto jsErrorHandlingFunc = [](MapBuffer errorMap) noexcept {
+    auto onJsError = [](const JsErrorHandler::ParsedError& errorMap) noexcept {
       // Do nothing
     };
+
     instance_ = std::make_unique<ReactInstance>(
         std::move(runtime),
         messageQueueThread_,
         timerManager_,
-        std::move(jsErrorHandlingFunc));
+        std::move(onJsError));
     timerManager_->setRuntimeExecutor(instance_->getBufferedRuntimeExecutor());
 
     // Install a C++ error handler
@@ -535,16 +537,10 @@ TEST_F(ReactInstanceTest, testSetIntervalWithInvalidArgs) {
 
   EXPECT_EQ(
       getErrorMessage("setInterval();"),
-      "setInterval must be called with at least two arguments (the function to call and the delay).");
-  EXPECT_EQ(
-      getErrorMessage("setInterval(() => {});"),
-      "setInterval must be called with at least two arguments (the function to call and the delay).");
+      "setInterval must be called with at least one argument (the function to call).");
   EXPECT_EQ(
       getErrorMessage("setInterval('invalid', 100);"),
       "The first argument to setInterval must be a function.");
-  EXPECT_EQ(
-      getErrorMessage("setInterval(() => {}, 'invalid');"),
-      "The second argument to setInterval must be a number.");
 }
 
 TEST_F(ReactInstanceTest, testClearInterval) {
