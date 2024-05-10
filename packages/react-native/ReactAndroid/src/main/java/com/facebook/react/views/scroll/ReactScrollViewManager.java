@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.RetryableMountingLayerException;
@@ -39,6 +40,7 @@ import java.util.Map;
  * <p>Note that {@link ReactScrollView} and {@link ReactHorizontalScrollView} are exposed to JS as a
  * single ScrollView component, configured via the {@code horizontal} boolean property.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @ReactModule(name = ReactScrollViewManager.REACT_CLASS)
 public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
     implements ReactScrollViewCommandHelper.ScrollCommandHandler<ReactScrollView> {
@@ -341,7 +343,7 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
   }
 
   @Override
-  public Object updateState(
+  public @Nullable Object updateState(
       ReactScrollView view, ReactStylesDiffMap props, StateWrapper stateWrapper) {
     view.setStateWrapper(stateWrapper);
     return null;
