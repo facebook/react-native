@@ -126,9 +126,9 @@ const styles = StyleSheet.create({
   },
   border9Percentages: {
     borderWidth: 10,
-    borderTopLeftRadius: '10%',
-    borderBottomRightRadius: '20%',
-    borderColor: 'black',
+    borderTopLeftRadius: '20%',
+    borderBottomRightRadius: '10%',
+    borderColor: 'red',
   },
   border10: {
     borderWidth: 10,
@@ -141,9 +141,9 @@ const styles = StyleSheet.create({
   border10Percentages: {
     borderWidth: 10,
     backgroundColor: 'white',
-    borderTopLeftRadius: '10%',
-    borderBottomRightRadius: '20%',
-    borderColor: 'black',
+    borderTopLeftRadius: '20%',
+    borderBottomRightRadius: '10%',
+    borderColor: 'red',
     elevation: 10,
   },
   border11: {
@@ -359,7 +359,7 @@ export default ({
     },
     {
       title: 'Corner Radii (Percentages)',
-      name: 'corner-radii',
+      name: 'corner-radii-percentages',
       description: 'borderTopLeftRadius & borderBottomRightRadius',
       render: function (): React.Node {
         return (
@@ -386,7 +386,7 @@ export default ({
     },
     {
       title: 'Corner Radii / Elevation (Percentages)',
-      name: 'corner-radii-elevation',
+      name: 'corner-radii-elevation-percentages',
       description: 'borderTopLeftRadius & borderBottomRightRadius & elevation',
       platform: 'android',
       render: function (): React.Node {
