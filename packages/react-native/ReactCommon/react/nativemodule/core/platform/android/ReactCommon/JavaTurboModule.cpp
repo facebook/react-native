@@ -95,10 +95,11 @@ jsi::Value createJSRuntimeError(
 }
 
 auto createRejectionError(jsi::Runtime& rt, folly::dynamic args) {
-  DCHECK(args.size() == 1) << "promise reject should has only one argument";
+  react_native_assert(
+      args.size() == 1 && "promise reject should has only one argument");
 
   auto value = jsi::valueFromDynamic(rt, args[0]);
-  DCHECK(value.isObject()) << "promise reject should return a map";
+  react_native_assert(value.isObject() && "promise reject should return a map");
 
   const jsi::Object& valueAsObject = value.asObject(rt);
 
@@ -106,10 +107,12 @@ auto createRejectionError(jsi::Runtime& rt, folly::dynamic args) {
   auto jsError =
       createJSRuntimeError(rt, messageProperty.asString(rt).utf8(rt));
 
+  auto jsErrorAsObject = jsError.asObject(rt);
   auto propertyNames = valueAsObject.getPropertyNames(rt);
   for (size_t i = 0; i < propertyNames.size(rt); ++i) {
-    auto propertyName = propertyNames.getValueAtIndex(rt, i).asString(rt);
-    jsError.asObject(rt).setProperty(
+    auto propertyName = jsi::PropNameID::forString(
+        rt, propertyNames.getValueAtIndex(rt, i).asString(rt));
+    jsErrorAsObject.setProperty(
         rt, propertyName, valueAsObject.getProperty(rt, propertyName));
   }
   return jsError;
@@ -135,18 +138,18 @@ auto createJavaCallback(
             auto error = createRejectionError(rt, std::move(args));
             jsFunction.call(rt, error);
           });
-          return;
+        } else {
+          callback->call([args = std::move(args)](
+                             jsi::Runtime& rt, jsi::Function& jsFunction) {
+            std::vector<jsi::Value> jsArgs;
+            jsArgs.reserve(args.size());
+            for (const auto& val : args) {
+              jsArgs.emplace_back(jsi::valueFromDynamic(rt, val));
+            }
+            jsFunction.call(
+                rt, (const jsi::Value*)jsArgs.data(), jsArgs.size());
+          });
         }
-
-        callback->call([args = std::move(args)](
-                           jsi::Runtime& rt, jsi::Function& jsFunction) {
-          std::vector<jsi::Value> jsArgs;
-          jsArgs.reserve(args.size());
-          for (const auto& val : args) {
-            jsArgs.emplace_back(jsi::valueFromDynamic(rt, val));
-          }
-          jsFunction.call(rt, (const jsi::Value*)jsArgs.data(), jsArgs.size());
-        });
         callback = std::nullopt;
       });
 }
