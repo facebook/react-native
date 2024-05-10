@@ -649,7 +649,7 @@ export default ({
     },
     {
       title: 'Rounded Borders (Percentages)',
-      name: 'rounded-borders-percentage',
+      name: 'rounded-borders-percentages',
       render(): React.Node {
         return (
           <View
