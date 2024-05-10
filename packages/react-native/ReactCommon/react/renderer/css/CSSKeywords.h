@@ -80,12 +80,16 @@ enum class CSSKeyword : uint8_t {
 };
 
 /**
- * Represents a contrained set of CSS keywords.
+ * Represents a constrained set of CSS keywords.
  */
 template <typename T>
 concept CSSKeywordSet = std::is_enum_v<T> &&
     std::is_same_v<std::underlying_type_t<T>,
                    std::underlying_type_t<CSSKeyword>>;
+
+constexpr bool operator==(CSSKeywordSet auto a, CSSKeyword b) {
+  return to_underlying(a) == to_underlying(b);
+}
 
 /**
  * CSS-wide keywords.
