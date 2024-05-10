@@ -14,6 +14,7 @@ const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleA
 const resolveAssetSource = require('../Image/resolveAssetSource');
 const processColor = require('../StyleSheet/processColor').default;
 const processColorArray = require('../StyleSheet/processColorArray');
+const processFilter = require('../StyleSheet/processFilter').default;
 const insetsDiffer = require('../Utilities/differ/insetsDiffer');
 const matricesDiffer = require('../Utilities/differ/matricesDiffer');
 const pointsDiffer = require('../Utilities/differ/pointsDiffer');
@@ -188,6 +189,8 @@ function getProcessorForType(typeName: string): ?(nextProp: any) => any {
       return processColor;
     case 'ColorArray':
       return processColorArray;
+    case 'Filter':
+      return processFilter;
     case 'ImageSource':
       return resolveAssetSource;
   }

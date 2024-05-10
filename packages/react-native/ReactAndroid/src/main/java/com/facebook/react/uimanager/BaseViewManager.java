@@ -187,7 +187,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   }
 
   @Override
-  @ReactProp(name = ViewProps.FILTER)
+  @ReactProp(name = ViewProps.FILTER, customType = "Filter")
   public void setFilter(@NonNull T view, @Nullable ReadableArray filter) {
     view.setTag(R.id.filter, filter);
   }
