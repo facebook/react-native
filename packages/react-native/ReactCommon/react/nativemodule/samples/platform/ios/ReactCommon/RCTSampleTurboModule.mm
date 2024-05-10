@@ -35,6 +35,13 @@ RCT_EXPORT_MODULE()
   return std::make_shared<NativeSampleTurboModuleSpecJSI>(params);
 }
 
+- (RCTTurboModuleBindingsInstaller *)createBindingsInstaller;
+{
+  return [[RCTTurboModuleBindingsInstaller alloc] initWithBindingsInstaller:[](facebook::jsi::Runtime &runtime) {
+    runtime.global().setProperty(runtime, "__SampleTurboModuleJSIBindings", "Hello JSI!");
+  }];
+}
+
 // Backward compatible invalidation
 - (void)invalidate
 {

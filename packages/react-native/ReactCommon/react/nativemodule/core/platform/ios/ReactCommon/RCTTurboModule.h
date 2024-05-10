@@ -154,9 +154,20 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
 
 } // namespace facebook::react
 
+@class RCTTurboModuleBindingsInstaller;
+
 @protocol RCTTurboModule <NSObject>
+
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
     (const facebook::react::ObjCTurboModule::InitParams &)params;
+
+@optional
+
+/**
+ * Implements this function if a TurboModule needs to install its own JSI bindings.
+ */
+- (RCTTurboModuleBindingsInstaller *)createBindingsInstaller;
+
 @end
 
 /**

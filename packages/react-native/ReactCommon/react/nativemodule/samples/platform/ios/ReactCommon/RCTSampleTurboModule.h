@@ -6,6 +6,7 @@
  */
 
 #import <Foundation/Foundation.h>
+#import <ReactCommon/RCTTurboModuleBindingsInstaller.h>
 
 #import "RCTNativeSampleTurboModuleSpec.h"
 
@@ -14,5 +15,7 @@
  * This class is also 100% compatible with the NativeModule system.
  */
 @interface RCTSampleTurboModule : NSObject <NativeSampleTurboModuleSpec>
+
+- (RCTTurboModuleBindingsInstaller *)createBindingsInstaller;
 
 @end

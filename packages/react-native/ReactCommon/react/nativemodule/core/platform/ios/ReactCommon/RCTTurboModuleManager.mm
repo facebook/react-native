@@ -30,6 +30,7 @@
 #import <React/RCTRuntimeExecutorModule.h>
 #import <React/RCTUtils.h>
 #import <ReactCommon/CxxTurboModuleUtils.h>
+#import <ReactCommon/RCTTurboModuleBindingsInstaller.h>
 #import <ReactCommon/TurboCxxModule.h>
 #import <ReactCommon/TurboModulePerfLogger.h>
 #import <ReactCommon/TurboModuleUtils.h>
@@ -306,6 +307,7 @@ typedef struct {
  */
 
 - (std::shared_ptr<TurboModule>)provideTurboModule:(const char *)moduleName
+                                       withRuntime:(facebook::jsi::Runtime *)runtime
 {
   auto turboModuleLookup = _turboModuleCache.find(moduleName);
   if (turboModuleLookup != _turboModuleCache.end()) {
@@ -409,6 +411,14 @@ typedef struct {
       RCTLogError(@"TurboModule \"%@\"'s getTurboModule: method returned nil.", moduleClass);
     }
     _turboModuleCache.insert({moduleName, turboModule});
+
+    if ([module respondsToSelector:@selector(createBindingsInstaller)]) {
+      RCTTurboModuleBindingsInstaller *installer =
+          (RCTTurboModuleBindingsInstaller *)[module performSelector:@selector(createBindingsInstaller)];
+      if (installer != nil) {
+        installer.get(*runtime);
+      }
+    }
     return turboModule;
   }
 
@@ -921,7 +931,8 @@ typedef struct {
    * aren't any strong references to it in ObjC. Hence, we give
    * __turboModuleProxy a strong reference to TurboModuleManager.
    */
-  auto turboModuleProvider = [self](const std::string &name) -> std::shared_ptr<react::TurboModule> {
+  auto turboModuleProvider = [self,
+                              runtime = &runtime](const std::string &name) -> std::shared_ptr<react::TurboModule> {
     auto moduleName = name.c_str();
 
     TurboModulePerfLogger::moduleJSRequireBeginningStart(moduleName);
@@ -935,7 +946,7 @@ typedef struct {
      * Additionally, if a TurboModule with the name `name` isn't found, then we
      * trigger an assertion failure.
      */
-    auto turboModule = [self provideTurboModule:moduleName];
+    auto turboModule = [self provideTurboModule:moduleName withRuntime:runtime];
 
     if (moduleWasNotInitialized && [self moduleIsInitialized:moduleName]) {
       [self->_bridge.performanceLogger markStopForTag:RCTPLTurboModuleSetup];
