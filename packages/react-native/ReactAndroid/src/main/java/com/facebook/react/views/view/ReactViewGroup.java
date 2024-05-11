@@ -32,6 +32,7 @@ import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.touch.OnInterceptTouchEventListener;
 import com.facebook.react.touch.ReactHitSlopView;
@@ -129,7 +130,6 @@ public class ReactViewGroup extends ViewGroup
   private boolean mNeedsOffscreenAlphaCompositing;
   private @Nullable ViewGroupDrawingOrderHelper mDrawingOrderHelper;
   private @Nullable Path mPath;
-  private int mLayoutDirection;
   private float mBackfaceOpacity;
   private String mBackfaceVisibility;
 
@@ -159,7 +159,6 @@ public class ReactViewGroup extends ViewGroup
     mNeedsOffscreenAlphaCompositing = false;
     mDrawingOrderHelper = null;
     mPath = null;
-    mLayoutDirection = 0; // set when background is created
     mBackfaceOpacity = 1.f;
     mBackfaceVisibility = "visible";
   }
@@ -197,13 +196,6 @@ public class ReactViewGroup extends ViewGroup
   @Override
   protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
     // No-op since UIManagerModule handles actually laying out children.
-  }
-
-  @Override
-  public void onRtlPropertiesChanged(int layoutDirection) {
-    if (mCSSBackgroundDrawable != null) {
-      mCSSBackgroundDrawable.setResolvedLayoutDirection(mLayoutDirection);
-    }
   }
 
   @Override
@@ -806,10 +798,12 @@ public class ReactViewGroup extends ViewGroup
             new LayerDrawable(new Drawable[] {mCSSBackgroundDrawable, backgroundDrawable});
         updateBackgroundDrawable(layerDrawable);
       }
-
-      mLayoutDirection =
-          I18nUtil.getInstance().isRTL(getContext()) ? LAYOUT_DIRECTION_RTL : LAYOUT_DIRECTION_LTR;
-      mCSSBackgroundDrawable.setResolvedLayoutDirection(mLayoutDirection);
+      if (!ReactNativeFeatureFlags.setAndroidLayoutDirection()) {
+        mCSSBackgroundDrawable.setLayoutDirectionOverride(
+            I18nUtil.getInstance().isRTL(getContext())
+                ? LAYOUT_DIRECTION_RTL
+                : LAYOUT_DIRECTION_LTR);
+      }
     }
     return mCSSBackgroundDrawable;
   }
