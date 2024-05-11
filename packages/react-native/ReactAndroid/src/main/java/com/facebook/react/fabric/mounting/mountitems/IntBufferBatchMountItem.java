@@ -11,8 +11,8 @@ import static com.facebook.react.fabric.FabricUIManager.ENABLE_FABRIC_LOGS;
 import static com.facebook.react.fabric.FabricUIManager.IS_DEVELOPMENT_ENVIRONMENT;
 import static com.facebook.react.fabric.mounting.mountitems.FabricNameComponentMapping.getFabricComponentName;
 
-import androidx.annotation.NonNull;
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
@@ -36,6 +36,7 @@ import com.facebook.systrace.Systrace;
  * allocations in C++ and JNI round-trips.
  */
 @DoNotStrip
+@Nullsafe(Nullsafe.Mode.LOCAL)
 final class IntBufferBatchMountItem implements BatchMountItem {
   static final String TAG = IntBufferBatchMountItem.class.getSimpleName();
 
@@ -56,8 +57,8 @@ final class IntBufferBatchMountItem implements BatchMountItem {
   private final int mSurfaceId;
   private final int mCommitNumber;
 
-  private final @NonNull int[] mIntBuffer;
-  private final @NonNull Object[] mObjBuffer;
+  private final int[] mIntBuffer;
+  private final Object[] mObjBuffer;
 
   private final int mIntBufferLen;
   private final int mObjBufferLen;
@@ -92,7 +93,7 @@ final class IntBufferBatchMountItem implements BatchMountItem {
   }
 
   @Override
-  public void execute(@NonNull MountingManager mountingManager) {
+  public void execute(MountingManager mountingManager) {
     SurfaceMountingManager surfaceMountingManager = mountingManager.getSurfaceManager(mSurfaceId);
     if (surfaceMountingManager == null) {
       FLog.e(
