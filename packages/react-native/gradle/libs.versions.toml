@@ -6,7 +6,7 @@ compileSdk = "34"
 buildTools = "34.0.0"
 ndkVersion = "26.1.10909125"
 # Dependencies versions
-agp = "8.3.1"
+agp = "8.4.0"
 androidx-annotation = "1.6.0"
 androidx-appcompat = "1.6.1"
 androidx-autofill = "1.1.0"
