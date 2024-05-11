@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<446991ce24c5765399940bfda55c0e5c>>
+ * @generated SignedSource<<0563625894ea466e12b8b6edd2f0022a>>
  * @flow strict-local
  */
 
@@ -39,6 +39,7 @@ export interface Spec extends TurboModule {
   +inspectorEnableModernCDPRegistry?: () => boolean;
   +lazyAnimationCallbacks?: () => boolean;
   +preventDoubleTextMeasure?: () => boolean;
+  +setAndroidLayoutDirection?: () => boolean;
   +useModernRuntimeScheduler?: () => boolean;
   +useNativeViewConfigsInBridgelessMode?: () => boolean;
   +useStateAlignmentMechanism?: () => boolean;

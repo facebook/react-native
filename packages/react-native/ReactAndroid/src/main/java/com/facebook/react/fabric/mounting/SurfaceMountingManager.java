@@ -35,6 +35,7 @@ import com.facebook.react.fabric.GuardedFrameCallback;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.mounting.MountingManager.MountItemExecutor;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.uimanager.IViewGroupManager;
@@ -934,7 +935,14 @@ public class SurfaceMountingManager {
 
   @UiThread
   public void updateLayout(
-      int reactTag, int parentTag, int x, int y, int width, int height, int displayType) {
+      int reactTag,
+      int parentTag,
+      int x,
+      int y,
+      int width,
+      int height,
+      int displayType,
+      int layoutDirection) {
     if (isStopped()) {
       return;
     }
@@ -948,6 +956,13 @@ public class SurfaceMountingManager {
     View viewToUpdate = viewState.mView;
     if (viewToUpdate == null) {
       throw new IllegalStateException("Unable to find View for tag: " + reactTag);
+    }
+
+    if (ReactNativeFeatureFlags.setAndroidLayoutDirection()) {
+      viewToUpdate.setLayoutDirection(
+          layoutDirection == 1
+              ? View.LAYOUT_DIRECTION_LTR
+              : layoutDirection == 2 ? View.LAYOUT_DIRECTION_RTL : View.LAYOUT_DIRECTION_INHERIT);
     }
 
     viewToUpdate.measure(

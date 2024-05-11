@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<39dde965f082a0dffbe00763e184d1db>>
+ * @generated SignedSource<<fd151d4269bfaf17dc5bac9a09015f3f>>
  */
 
 /**
@@ -76,6 +76,9 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool preventDoubleTextMeasure(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool setAndroidLayoutDirection(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool useModernRuntimeScheduler(
