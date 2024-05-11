@@ -121,7 +121,7 @@ public data class BorderRadiusStyle(
               bottomRight = bottomRight?.resolve(width, height) ?: 0f,
           )
       LayoutDirection.RTL ->
-          if (I18nUtil.getInstance().doLeftAndRightSwapInRTL(context)) {
+          if (I18nUtil.instance.doLeftAndRightSwapInRTL(context)) {
             ComputedBorderRadius(
                 topLeft = topRight?.resolve(width, height) ?: 0f,
                 topRight = topLeft?.resolve(width, height) ?: 0f,

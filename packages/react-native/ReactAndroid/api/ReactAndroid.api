@@ -3329,7 +3329,7 @@ public class com/facebook/react/modules/fresco/SystraceRequestListener : com/fac
 	public fun requiresExtraMap (Ljava/lang/String;)Z
 }
 
-public class com/facebook/react/modules/i18nmanager/I18nManagerModule : com/facebook/fbreact/specs/NativeI18nManagerSpec {
+public final class com/facebook/react/modules/i18nmanager/I18nManagerModule : com/facebook/fbreact/specs/NativeI18nManagerSpec {
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
 	public fun allowRTL (Z)V
 	public fun forceRTL (Z)V
@@ -3337,13 +3337,18 @@ public class com/facebook/react/modules/i18nmanager/I18nManagerModule : com/face
 	public fun swapLeftAndRightInRTL (Z)V
 }
 
-public class com/facebook/react/modules/i18nmanager/I18nUtil {
-	public fun allowRTL (Landroid/content/Context;Z)V
-	public fun doLeftAndRightSwapInRTL (Landroid/content/Context;)Z
-	public fun forceRTL (Landroid/content/Context;Z)V
-	public static fun getInstance ()Lcom/facebook/react/modules/i18nmanager/I18nUtil;
-	public fun isRTL (Landroid/content/Context;)Z
-	public fun swapLeftAndRightInRTL (Landroid/content/Context;Z)V
+public final class com/facebook/react/modules/i18nmanager/I18nUtil {
+	public static final field Companion Lcom/facebook/react/modules/i18nmanager/I18nUtil$Companion;
+	public final fun allowRTL (Landroid/content/Context;Z)V
+	public final fun doLeftAndRightSwapInRTL (Landroid/content/Context;)Z
+	public final fun forceRTL (Landroid/content/Context;Z)V
+	public static final fun getInstance ()Lcom/facebook/react/modules/i18nmanager/I18nUtil;
+	public final fun isRTL (Landroid/content/Context;)Z
+	public final fun swapLeftAndRightInRTL (Landroid/content/Context;Z)V
+}
+
+public final class com/facebook/react/modules/i18nmanager/I18nUtil$Companion {
+	public final fun getInstance ()Lcom/facebook/react/modules/i18nmanager/I18nUtil;
 }
 
 public final class com/facebook/react/modules/image/ImageLoaderModule : com/facebook/fbreact/specs/NativeImageLoaderAndroidSpec, com/facebook/react/bridge/LifecycleEventListener {
