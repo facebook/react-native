@@ -3241,10 +3241,10 @@ public abstract interface class com/facebook/react/modules/debug/interfaces/Deve
 	public abstract fun setRemoteJSDebugEnabled (Z)V
 }
 
-public class com/facebook/react/modules/deviceinfo/DeviceInfoModule : com/facebook/fbreact/specs/NativeDeviceInfoSpec, com/facebook/react/bridge/LifecycleEventListener {
+public final class com/facebook/react/modules/deviceinfo/DeviceInfoModule : com/facebook/fbreact/specs/NativeDeviceInfoSpec, com/facebook/react/bridge/LifecycleEventListener {
 	public fun <init> (Landroid/content/Context;)V
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
-	public fun emitUpdateDimensionsEvent ()V
+	public final fun emitUpdateDimensionsEvent ()V
 	public fun getTypedExportedConstants ()Ljava/util/Map;
 	public fun invalidate ()V
 	public fun onHostDestroy ()V
