@@ -792,6 +792,10 @@ public abstract interface class com/facebook/react/bridge/JSExceptionHandler {
 	public abstract fun handleException (Ljava/lang/Exception;)V
 }
 
+public abstract interface class com/facebook/react/bridge/JSInstance {
+	public abstract fun invokeCallback (ILcom/facebook/react/bridge/NativeArrayInterface;)V
+}
+
 public class com/facebook/react/bridge/JSONArguments {
 	public fun <init> ()V
 	public static fun fromJSONArray (Lorg/json/JSONArray;)Lcom/facebook/react/bridge/ReadableArray;
