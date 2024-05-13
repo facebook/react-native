@@ -70,7 +70,6 @@ function CursorExampleAuto() {
       </View>
       <Text>Some text</Text>
     </View>
-
   );
 }
 
