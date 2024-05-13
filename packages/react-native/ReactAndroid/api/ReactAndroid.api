@@ -4208,39 +4208,44 @@ public final class com/facebook/react/uimanager/LengthPercentageType : java/lang
 	public static fun values ()[Lcom/facebook/react/uimanager/LengthPercentageType;
 }
 
-public class com/facebook/react/uimanager/MatrixMathHelper {
-	public fun <init> ()V
-	public static fun applyPerspective ([DD)V
-	public static fun applyRotateX ([DD)V
-	public static fun applyRotateY ([DD)V
-	public static fun applyRotateZ ([DD)V
-	public static fun applyScaleX ([DD)V
-	public static fun applyScaleY ([DD)V
-	public static fun applyScaleZ ([DD)V
-	public static fun applySkewX ([DD)V
-	public static fun applySkewY ([DD)V
-	public static fun applyTranslate2D ([DDD)V
-	public static fun applyTranslate3D ([DDDD)V
-	public static fun createIdentityMatrix ()[D
-	public static fun decomposeMatrix ([DLcom/facebook/react/uimanager/MatrixMathHelper$MatrixDecompositionContext;)V
-	public static fun degreesToRadians (D)D
-	public static fun determinant ([D)D
-	public static fun inverse ([D)[D
-	public static fun multiplyInto ([D[D[D)V
-	public static fun multiplyVectorByMatrix ([D[D[D)V
-	public static fun resetIdentityMatrix ([D)V
-	public static fun roundTo3Places (D)D
-	public static fun transpose ([D)[D
-	public static fun v3Combine ([D[DDD)[D
-	public static fun v3Cross ([D[D)[D
-	public static fun v3Dot ([D[D)D
-	public static fun v3Length ([D)D
-	public static fun v3Normalize ([DD)[D
+public final class com/facebook/react/uimanager/MatrixMathHelper {
+	public static final field INSTANCE Lcom/facebook/react/uimanager/MatrixMathHelper;
+	public static final fun applyPerspective ([DD)V
+	public static final fun applyRotateX ([DD)V
+	public static final fun applyRotateY ([DD)V
+	public static final fun applyRotateZ ([DD)V
+	public static final fun applyScaleX ([DD)V
+	public static final fun applyScaleY ([DD)V
+	public final fun applyScaleZ ([DD)V
+	public static final fun applySkewX ([DD)V
+	public static final fun applySkewY ([DD)V
+	public static final fun applyTranslate2D ([DDD)V
+	public static final fun applyTranslate3D ([DDDD)V
+	public static final fun createIdentityMatrix ()[D
+	public static final fun decomposeMatrix ([DLcom/facebook/react/uimanager/MatrixMathHelper$MatrixDecompositionContext;)V
+	public static final fun degreesToRadians (D)D
+	public static final fun determinant ([D)D
+	public static final fun inverse ([D)[D
+	public static final fun multiplyInto ([D[D[D)V
+	public static final fun multiplyVectorByMatrix ([D[D[D)V
+	public static final fun resetIdentityMatrix ([D)V
+	public static final fun roundTo3Places (D)D
+	public static final fun transpose ([D)[D
+	public static final fun v3Combine ([D[DDD)[D
+	public static final fun v3Cross ([D[D)[D
+	public static final fun v3Dot ([D[D)D
+	public static final fun v3Length ([D)D
+	public static final fun v3Normalize ([DD)[D
 }
 
 public class com/facebook/react/uimanager/MatrixMathHelper$MatrixDecompositionContext {
+	public field perspective [D
+	public field rotationDegrees [D
+	public field scale [D
+	public field skew [D
+	public field translation [D
 	public fun <init> ()V
-	public fun reset ()V
+	public final fun reset ()V
 }
 
 public final class com/facebook/react/uimanager/MeasureSpecAssertions {
