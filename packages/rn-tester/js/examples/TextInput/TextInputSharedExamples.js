@@ -1085,4 +1085,16 @@ module.exports = ([
     name: 'textStyles',
     render: () => <TextStylesExample />,
   },
+  {
+    title: 'showSoftInputOnFocus',
+    render: function (): React.Node {
+      return (
+        <View>
+          <WithLabel label="showSoftInputOnFocus: false">
+            <ExampleTextInput showSoftInputOnFocus={false} />
+          </WithLabel>
+        </View>
+      );
+    },
+  },
 ]: Array<RNTesterModuleExample>);
