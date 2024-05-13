@@ -1543,9 +1543,9 @@ public class ReactHostImpl implements ReactHost {
 
                     // Step 3: Stop all React Native surfaces
                     stopAttachedSurfaces(method, reactInstance);
-
-                    // TODO(T161461674): Should we clear mAttachedSurfaces?
-                    // Not clearing mAttachedSurfaces could lead to a memory leak.
+                    synchronized (mAttachedSurfaces) {
+                      mAttachedSurfaces.clear();
+                    }
 
                     return task;
                   },
