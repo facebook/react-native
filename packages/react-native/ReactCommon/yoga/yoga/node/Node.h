@@ -66,9 +66,9 @@ class YG_EXPORT Node : public ::YGNode {
   }
 
   YGSize measure(
-      float width,
+      float availableWidth,
       MeasureMode widthMode,
-      float height,
+      float availableHeight,
       MeasureMode heightMode);
 
   bool hasBaselineFunc() const noexcept {
