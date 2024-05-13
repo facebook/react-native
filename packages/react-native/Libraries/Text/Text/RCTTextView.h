@@ -5,15 +5,18 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTComponent.h>
-
 #import <UIKit/UIKit.h>
+
+#import <React/RCTComponent.h>
+#import <React/RCTCursor.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface RCTTextView : UIView
 
 @property (nonatomic, assign) BOOL selectable;
+
+@property (nonatomic, assign) RCTCursor cursor;
 
 - (void)setTextStorage:(NSTextStorage *)textStorage
           contentFrame:(CGRect)contentFrame

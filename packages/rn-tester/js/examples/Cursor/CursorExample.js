@@ -46,6 +46,11 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     gap: 10,
   },
+  column: {
+    flexDirection: 'column',
+    flexWrap: 'wrap',
+    gap: 10,
+  },
   centerContent: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -54,39 +59,33 @@ const styles = StyleSheet.create({
 
 function CursorExampleAuto() {
   return (
-    <View style={styles.row}>
-      <View style={styles.box} />
-      <View style={styles.circle} />
-      <View style={styles.halfcircle} />
-      <View style={[styles.box, styles.solid]} />
-      <View style={[styles.circle, styles.solid]} />
-      <View style={[styles.halfcircle, styles.solid]} />
+    <View style={styles.column}>
+      <View style={styles.row}>
+        <View style={styles.box} />
+        <View style={styles.circle} />
+        <View style={styles.halfcircle} />
+        <View style={[styles.box, styles.solid]} />
+        <View style={[styles.circle, styles.solid]} />
+        <View style={[styles.halfcircle, styles.solid]} />
+      </View>
+      <Text>Some text</Text>
     </View>
+
   );
 }
 
 function CursorExamplePointer() {
   return (
-    <View style={styles.row}>
-      <View style={[styles.box, styles.pointer]} />
-      <View style={[styles.circle, styles.pointer]} />
-      <View style={[styles.halfcircle, styles.pointer]} />
-      <View style={[styles.box, styles.solid, styles.pointer]} />
-      <View style={[styles.circle, styles.solid, styles.pointer]} />
-      <View style={[styles.halfcircle, styles.solid, styles.pointer]} />
-    </View>
-  );
-}
-
-function CursorExamplePointer() {
-  return (
-    <View style={styles.row}>
-      <View style={[styles.box, styles.pointer]} />
-      <View style={[styles.circle, styles.pointer]} />
-      <View style={[styles.halfcircle, styles.pointer]} />
-      <View style={[styles.box, styles.solid, styles.pointer]} />
-      <View style={[styles.circle, styles.solid, styles.pointer]} />
-      <View style={[styles.halfcircle, styles.solid, styles.pointer]} />
+    <View style={styles.column}>
+      <View style={styles.row}>
+        <View style={[styles.box, styles.pointer]} />
+        <View style={[styles.circle, styles.pointer]} />
+        <View style={[styles.halfcircle, styles.pointer]} />
+        <View style={[styles.box, styles.solid, styles.pointer]} />
+        <View style={[styles.circle, styles.solid, styles.pointer]} />
+        <View style={[styles.halfcircle, styles.solid, styles.pointer]} />
+      </View>
+      <Text style={styles.pointer}>Some text</Text>
     </View>
   );
 }
