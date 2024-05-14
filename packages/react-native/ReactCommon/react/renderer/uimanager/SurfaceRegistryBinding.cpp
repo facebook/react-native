@@ -6,7 +6,7 @@
  */
 
 #include "SurfaceRegistryBinding.h"
-#include <react/renderer/debug/SystraceSection.h>
+#include <cxxreact/SystraceSection.h>
 #include <react/renderer/uimanager/bindingUtils.h>
 #include <react/renderer/uimanager/primitives.h>
 #include "bindingUtils.h"

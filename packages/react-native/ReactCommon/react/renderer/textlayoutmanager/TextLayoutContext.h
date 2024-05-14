@@ -26,14 +26,14 @@ struct TextLayoutContext {
 };
 
 inline bool operator==(
-    TextLayoutContext const& lhs,
-    TextLayoutContext const& rhs) {
+    const TextLayoutContext& lhs,
+    const TextLayoutContext& rhs) {
   return std::tie(lhs.pointScaleFactor) == std::tie(rhs.pointScaleFactor);
 }
 
 inline bool operator!=(
-    TextLayoutContext const& lhs,
-    TextLayoutContext const& rhs) {
+    const TextLayoutContext& lhs,
+    const TextLayoutContext& rhs) {
   return !(lhs == rhs);
 }
 

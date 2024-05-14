@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9b38540981705aea015b0a5d0ac07c6e>>
+ * @generated SignedSource<<2cd7ab4688ca2179ba3a19e9a062f695>>
  */
 
 /**
@@ -30,29 +30,41 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun commonTestFlag(): Boolean
 
+  @DoNotStrip @JvmStatic public external fun allowCollapsableChildren(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun androidEnablePendingFabricTransactions(): Boolean
+
   @DoNotStrip @JvmStatic public external fun batchRenderingUpdatesInEventLoop(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun destroyFabricSurfacesInReactInstanceManager(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableBackgroundExecutor(): Boolean
 
-  @DoNotStrip @JvmStatic public external fun enableCustomDrawOrderFabric(): Boolean
+  @DoNotStrip @JvmStatic public external fun enableCleanTextInputYogaNode(): Boolean
 
-  @DoNotStrip @JvmStatic public external fun enableFixForClippedSubviewsCrash(): Boolean
+  @DoNotStrip @JvmStatic public external fun enableGranularShadowTreeStateReconciliation(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableMicrotasks(): Boolean
 
-  @DoNotStrip @JvmStatic public external fun enableMountHooksAndroid(): Boolean
+  @DoNotStrip @JvmStatic public external fun enableSynchronousStateUpdates(): Boolean
 
-  @DoNotStrip @JvmStatic public external fun enableSpannableBuildingUnification(): Boolean
+  @DoNotStrip @JvmStatic public external fun enableUIConsistency(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun forceBatchingMountItemsOnAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun inspectorEnableCxxInspectorPackagerConnection(): Boolean
 
-  @DoNotStrip @JvmStatic public external fun inspectorEnableHermesCDPAgent(): Boolean
-
   @DoNotStrip @JvmStatic public external fun inspectorEnableModernCDPRegistry(): Boolean
 
-  @DoNotStrip @JvmStatic public external fun skipMountHookNotifications(): Boolean
+  @DoNotStrip @JvmStatic public external fun lazyAnimationCallbacks(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun preventDoubleTextMeasure(): Boolean
 
   @DoNotStrip @JvmStatic public external fun useModernRuntimeScheduler(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun useNativeViewConfigsInBridgelessMode(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun useStateAlignmentMechanism(): Boolean
 
   @DoNotStrip @JvmStatic public external fun override(provider: Any)
 

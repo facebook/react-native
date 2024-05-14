@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e4631762e5a422465444236542d9c3aa>>
+ * @generated SignedSource<<0f7b95b5d42c879dabea8f7d53f9cc17>>
  */
 
 /**
@@ -43,9 +43,24 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool commonTestFlag();
 
   /**
+   * Enables the differentiator to understand the "collapsableChildren" prop
+   */
+  RN_EXPORT static bool allowCollapsableChildren();
+
+  /**
+   * To be used with batchRenderingUpdatesInEventLoop. When enbled, the Android mounting layer will concatenate pending transactions to ensure they're applied atomatically
+   */
+  RN_EXPORT static bool androidEnablePendingFabricTransactions();
+
+  /**
    * When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.
    */
   RN_EXPORT static bool batchRenderingUpdatesInEventLoop();
+
+  /**
+   * When enabled, ReactInstanceManager will clean up Fabric surfaces on destroy().
+   */
+  RN_EXPORT static bool destroyFabricSurfacesInReactInstanceManager();
 
   /**
    * Enables the use of a background executor to compute layout and commit updates on Fabric (this system is deprecated and should not be used).
@@ -53,14 +68,14 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableBackgroundExecutor();
 
   /**
-   * When enabled, Fabric will use customDrawOrder in ReactViewGroup (similar to old architecture).
+   * Clean yoga node when <TextInput /> does not change.
    */
-  RN_EXPORT static bool enableCustomDrawOrderFabric();
+  RN_EXPORT static bool enableCleanTextInputYogaNode();
 
   /**
-   * Attempt at fixing a crash related to subview clipping on Android. This is a kill switch for the fix
+   * When enabled, the renderer would only fail commits when they propagate state and the last commit that updated state changed before committing.
    */
-  RN_EXPORT static bool enableFixForClippedSubviewsCrash();
+  RN_EXPORT static bool enableGranularShadowTreeStateReconciliation();
 
   /**
    * Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).
@@ -68,14 +83,19 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableMicrotasks();
 
   /**
-   * Enables the notification of mount operations to mount hooks on Android.
+   * Dispatches state updates synchronously in Fabric (e.g.: updates the scroll position in the shadow tree synchronously from the main thread).
    */
-  RN_EXPORT static bool enableMountHooksAndroid();
+  RN_EXPORT static bool enableSynchronousStateUpdates();
 
   /**
-   * Uses new, deduplicated logic for constructing Android Spannables from text fragments
+   * Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).
    */
-  RN_EXPORT static bool enableSpannableBuildingUnification();
+  RN_EXPORT static bool enableUIConsistency();
+
+  /**
+   * Forces the mounting layer on Android to always batch mount items instead of dispatching them immediately. This might fix some crashes related to synchronous state updates, where some views dispatch state updates during mount.
+   */
+  RN_EXPORT static bool forceBatchingMountItemsOnAndroid();
 
   /**
    * Flag determining if the C++ implementation of InspectorPackagerConnection should be used instead of the per-platform one. This flag is global and should not be changed across React Host lifetimes.
@@ -83,24 +103,34 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool inspectorEnableCxxInspectorPackagerConnection();
 
   /**
-   * Flag determining if the new Hermes CDPAgent API should be enabled in the modern CDP backend. This flag is global and should not be changed across React Host lifetimes.
-   */
-  RN_EXPORT static bool inspectorEnableHermesCDPAgent();
-
-  /**
    * Flag determining if the modern CDP backend should be enabled. This flag is global and should not be changed across React Host lifetimes.
    */
   RN_EXPORT static bool inspectorEnableModernCDPRegistry();
 
   /**
-   * This is a temporary flag to disable part of the mount hooks pipeline to investigate a crash.
+   * Only enqueue Choreographer calls if there is an ongoing animation, instead of enqueueing every frame.
    */
-  RN_EXPORT static bool skipMountHookNotifications();
+  RN_EXPORT static bool lazyAnimationCallbacks();
+
+  /**
+   * When enabled, ParagraphShadowNode will no longer call measure twice.
+   */
+  RN_EXPORT static bool preventDoubleTextMeasure();
 
   /**
    * When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.
    */
   RN_EXPORT static bool useModernRuntimeScheduler();
+
+  /**
+   * When enabled, the native view configs are used in bridgeless mode.
+   */
+  RN_EXPORT static bool useNativeViewConfigsInBridgelessMode();
+
+  /**
+   * When enabled, it uses optimised state reconciliation algorithm.
+   */
+  RN_EXPORT static bool useStateAlignmentMechanism();
 
   /**
    * Overrides the feature flags with the ones provided by the given provider

@@ -58,6 +58,14 @@ const argv = yargs
   .option('c', {
     alias: 'circleciToken',
     type: 'string',
+  })
+  .option('useLastSuccessfulPipeline', {
+    desc:
+      'Use the last successful CI pipeline to download build artifacts.' +
+      'Only use this option if you are certain that this is sufficient for ' +
+      'the configuration you are testing.',
+    type: 'boolean',
+    default: false,
   }).argv;
 
 // === RNTester === //
@@ -332,6 +340,8 @@ async function main() {
     // $FlowIgnoreError[prop-missing]
     argv.circleciToken,
     branchName,
+    // $FlowIgnoreError[prop-missing]
+    argv.useLastSuccessfulPipeline,
   );
 
   if (argv.target === 'RNTester') {

@@ -5,7 +5,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/facebook/react-native.git",
+    "url": "git+https://github.com/facebook/react-native.git",
     "directory": "packages/virtualized-lists"
   },
   "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/virtualized-lists#readme",
@@ -24,10 +24,16 @@
     "nullthrows": "^1.1.1"
   },
   "devDependencies": {
-    "react-test-renderer": "18.2.0"
+    "react-test-renderer": "18.3.1"
   },
   "peerDependencies": {
+    "@types/react": "^18.2.6",
     "react": "*",
     "react-native": "*"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
   }
 }

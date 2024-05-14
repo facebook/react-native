@@ -12,6 +12,8 @@
 
 import type {ReactTestRenderer as ReactTestRendererType} from 'react-test-renderer';
 
+import TouchableWithoutFeedback from '../Components/Touchable/TouchableWithoutFeedback';
+
 const Switch = require('../Components/Switch/Switch').default;
 const TextInput = require('../Components/TextInput/TextInput');
 const View = require('../Components/View/View');
@@ -49,6 +51,9 @@ function byClickable(): Predicate {
       (node.type === Switch && node.props && node.props.disabled !== true) ||
       (node.type === View &&
         node?.props?.onStartShouldSetResponder?.testOnly_pressabilityConfig) ||
+      (node.type === TouchableWithoutFeedback &&
+        node.props &&
+        typeof node.props.onPress === 'function') ||
       // HACK: Find components that use `Pressability`.
       node.instance?.state?.pressability != null ||
       // TODO: Remove this after deleting `Touchable`.

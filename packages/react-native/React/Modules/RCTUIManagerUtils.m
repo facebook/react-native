@@ -97,7 +97,8 @@ void RCTUnsafeExecuteOnUIManagerQueueSync(dispatch_block_t block)
 
 NSNumber *RCTAllocateRootViewTag(void)
 {
-  // Numbering of these tags goes from 1, 11, 21, 31, ..., 100501, ...
+  // Keep in sync with ReactRootViewTagGenerator.h - see that file for an explanation on why the
+  // increment here is 10.
   static _Atomic int64_t rootViewTagCounter = 0;
   return @(atomic_fetch_add_explicit(&rootViewTagCounter, 1, memory_order_relaxed) * 10 + 1);
 }

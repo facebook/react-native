@@ -24,32 +24,13 @@ std::shared_ptr<void> TextLayoutManager::getNativeTextLayoutManager() const
   return self_;
 }
 
-std::shared_ptr<void> TextLayoutManager::getHostTextStorage(
-    AttributedString attributedString,
-    ParagraphAttributes paragraphAttributes,
-    LayoutConstraints layoutConstraints) const
-{
-  RCTTextLayoutManager *textLayoutManager = (RCTTextLayoutManager *)unwrapManagedObject(self_);
-  CGSize maximumSize = CGSize{layoutConstraints.maximumSize.width, CGFLOAT_MAX};
-
-  NSTextStorage *textStorage = [textLayoutManager textStorageForAttributesString:attributedString
-                                                             paragraphAttributes:paragraphAttributes
-                                                                            size:maximumSize];
-  return wrapManagedObject(textStorage);
-}
-
 TextMeasurement TextLayoutManager::measure(
     AttributedStringBox attributedStringBox,
     ParagraphAttributes paragraphAttributes,
     const TextLayoutContext &layoutContext,
-    LayoutConstraints layoutConstraints,
-    std::shared_ptr<void> hostTextStorage) const
+    LayoutConstraints layoutConstraints) const
 {
   RCTTextLayoutManager *textLayoutManager = (RCTTextLayoutManager *)unwrapManagedObject(self_);
-  NSTextStorage *textStorage;
-  if (hostTextStorage) {
-    textStorage = unwrapManagedObject(hostTextStorage);
-  }
 
   auto measurement = TextMeasurement{};
 
@@ -66,8 +47,7 @@ TextMeasurement TextLayoutManager::measure(
 
             auto measurement = [textLayoutManager measureAttributedString:attributedString
                                                       paragraphAttributes:paragraphAttributes
-                                                        layoutConstraints:layoutConstraints
-                                                              textStorage:textStorage];
+                                                        layoutConstraints:layoutConstraints];
 
             if (telemetry) {
               telemetry->didMeasureText();
@@ -89,8 +69,7 @@ TextMeasurement TextLayoutManager::measure(
 
       measurement = [textLayoutManager measureNSAttributedString:nsAttributedString
                                              paragraphAttributes:paragraphAttributes
-                                               layoutConstraints:layoutConstraints
-                                                     textStorage:textStorage];
+                                               layoutConstraints:layoutConstraints];
 
       if (telemetry) {
         telemetry->didMeasureText();

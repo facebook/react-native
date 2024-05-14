@@ -17,36 +17,30 @@ import com.facebook.react.module.model.ReactModuleInfoProvider
 import com.facebook.react.uimanager.ViewManager
 
 @ReactModuleList(nativeModules = arrayOf())
-class PopupMenuPackage() : BaseReactPackage(), ViewManagerOnDemandReactPackage {
-  private var viewManagersMap: Map<String, ModuleSpec>? = null
+public class PopupMenuPackage() : BaseReactPackage(), ViewManagerOnDemandReactPackage {
+  private val viewManagersMap: Map<String, ModuleSpec> =
+      mapOf(
+          ReactPopupMenuManager.REACT_CLASS to
+              ModuleSpec.viewManagerSpec({ ReactPopupMenuManager() }),
+      )
 
   override fun getModule(name: String, context: ReactApplicationContext): NativeModule? {
     return null
   }
 
-  private fun getViewManagersMap(): Map<String, ModuleSpec> {
-    val viewManagers =
-        viewManagersMap
-            ?: mapOf(
-                ReactPopupMenuManager.REACT_CLASS to
-                    ModuleSpec.viewManagerSpec({ ReactPopupMenuManager() }))
-    viewManagersMap = viewManagers
-    return viewManagers
-  }
-
   protected override fun getViewManagers(context: ReactApplicationContext): List<ModuleSpec> {
-    return ArrayList(getViewManagersMap().values)
+    return viewManagersMap.values.toList()
   }
 
   override fun getViewManagerNames(context: ReactApplicationContext): Collection<String> {
-    return getViewManagersMap().keys
+    return viewManagersMap.keys
   }
 
   override fun createViewManager(
       reactContext: ReactApplicationContext,
       viewManagerName: String
   ): ViewManager<*, *>? {
-    val spec: ModuleSpec? = getViewManagersMap().get(viewManagerName)
+    val spec: ModuleSpec? = viewManagersMap.get(viewManagerName)
     return if (spec != null) (spec.getProvider().get() as ViewManager<*, *>) else null
   }
 

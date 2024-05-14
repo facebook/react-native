@@ -31,28 +31,27 @@ class InspectorFlags {
   bool getEnableCxxInspectorPackagerConnection() const;
 
   /**
-   * Flag determining if the new Hermes CDPAgent API should be enabled.
-   */
-  bool getEnableHermesCDPAgent() const;
-
-  /**
    * Reset flags to their upstream values. The caller must ensure any resources
    * that have read previous flag values have been cleaned up.
    */
   void dangerouslyResetFlags();
 
  private:
-  InspectorFlags();
+  struct Values {
+    bool enableCxxInspectorPackagerConnection;
+    bool enableModernCDPRegistry;
+    bool operator==(const Values&) const = default;
+  };
+
+  InspectorFlags() = default;
   InspectorFlags(const InspectorFlags&) = delete;
   InspectorFlags& operator=(const InspectorFlags&) = default;
   ~InspectorFlags() = default;
 
-  bool enableModernCDPRegistry_;
-  bool enableCxxInspectorPackagerConnection_;
-  bool enableHermesCDPAgent_;
-
+  mutable std::optional<Values> cachedValues_;
   mutable bool inconsistentFlagsStateLogged_{false};
-  void assertFlagsMatchUpstream() const;
+
+  const Values& loadFlagsAndAssertUnchanged() const;
 };
 
 } // namespace facebook::react::jsinspector_modern

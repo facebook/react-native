@@ -27,11 +27,14 @@ class ReactNativeFeatureFlagsOverrides
       : overrides_(overrides) {}
 
   bool inspectorEnableCxxInspectorPackagerConnection() override {
-    return overrides_.enableCxxInspectorPackagerConnection;
+    return overrides_.enableCxxInspectorPackagerConnection.value_or(
+        ReactNativeFeatureFlagsDefaults::
+            inspectorEnableCxxInspectorPackagerConnection());
   }
 
   bool inspectorEnableModernCDPRegistry() override {
-    return overrides_.enableModernCDPRegistry;
+    return overrides_.enableModernCDPRegistry.value_or(
+        ReactNativeFeatureFlagsDefaults::inspectorEnableModernCDPRegistry());
   }
 
  private:
@@ -40,12 +43,12 @@ class ReactNativeFeatureFlagsOverrides
 
 InspectorFlagOverridesGuard::InspectorFlagOverridesGuard(
     const InspectorFlagOverrides& overrides) {
+  InspectorFlags::getInstance().dangerouslyResetFlags();
   ReactNativeFeatureFlags::override(
       std::make_unique<ReactNativeFeatureFlagsOverrides>(overrides));
 }
 
 InspectorFlagOverridesGuard::~InspectorFlagOverridesGuard() {
-  InspectorFlags::getInstance().dangerouslyResetFlags();
   ReactNativeFeatureFlags::dangerouslyReset();
 }
 

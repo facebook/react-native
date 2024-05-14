@@ -54,8 +54,15 @@ class InstanceAgent final {
    */
   void setCurrentRuntime(RuntimeTarget* runtime);
 
+  /**
+   * Send a console message to the frontend, or buffer it to be sent later.
+   */
+  void sendConsoleMessage(SimpleConsoleMessage message);
+
  private:
   void maybeSendExecutionContextCreatedNotification();
+  void sendConsoleMessageImmediately(SimpleConsoleMessage message);
+  void maybeSendPendingConsoleMessages();
 
   FrontendChannel frontendChannel_;
   InstanceTarget& target_;

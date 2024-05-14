@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "repository": {
     "type": "git",
-    "url": "git@github.com:facebook/react-native.git",
+    "url": "git+ssh://git@github.com/facebook/react-native.git",
     "directory": "packages/react-native-babel-transformer"
   },
   "keywords": [
@@ -17,7 +17,7 @@
   "dependencies": {
     "@babel/core": "^7.20.0",
     "@react-native/babel-preset": "0.75.0-main",
-    "hermes-parser": "0.20.1",
+    "hermes-parser": "0.21.0",
     "nullthrows": "^1.1.1"
   },
   "peerDependencies": {

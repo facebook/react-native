@@ -17,6 +17,8 @@ import com.facebook.react.fabric.ComponentFactory
  *
  * This class works together with the [DefaultNewArchitectureEntryPoint] and it's C++ implementation
  * is hosted inside the React Native framework
+ *
+ * TODO(T186951312): Should this be @UnstableReactNativeAPI?
  */
 @DoNotStrip
 public class DefaultComponentsRegistry

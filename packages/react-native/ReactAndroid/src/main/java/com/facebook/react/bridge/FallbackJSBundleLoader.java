@@ -31,7 +31,9 @@ public final class FallbackJSBundleLoader extends JSBundleLoader {
   // Reasons why we fell-back on previous loaders, in order of occurrence.
   private final ArrayList<Exception> mRecoveredErrors = new ArrayList<>();
 
-  /** @param loaders Loaders for the sources to try, in descending order of preference. */
+  /**
+   * @param loaders Loaders for the sources to try, in descending order of preference.
+   */
   public FallbackJSBundleLoader(List<JSBundleLoader> loaders) {
     mLoaders = new Stack<>();
     ListIterator<JSBundleLoader> it = loaders.listIterator(loaders.size());

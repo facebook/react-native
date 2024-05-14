@@ -216,7 +216,7 @@ using namespace facebook::react;
 
 - (void)updateState:(const State::Shared &)state oldState:(const State::Shared &)oldState
 {
-  _state = std::static_pointer_cast<TextInputShadowNode::ConcreteState const>(state);
+  _state = std::static_pointer_cast<const TextInputShadowNode::ConcreteState>(state);
 
   if (!_state) {
     assert(false && "State is `null` for <TextInput> component.");
@@ -336,16 +336,11 @@ using namespace facebook::react;
 
   if (!_backedTextInputView.textWasPasted) {
     if (_eventEmitter) {
-      KeyPressMetrics keyPressMetrics;
-      keyPressMetrics.text = RCTStringFromNSString(text);
-      keyPressMetrics.eventCount = _mostRecentEventCount;
-
       const auto &textInputEventEmitter = static_cast<const TextInputEventEmitter &>(*_eventEmitter);
-      if (props.onKeyPressSync) {
-        textInputEventEmitter.onKeyPressSync(keyPressMetrics);
-      } else {
-        textInputEventEmitter.onKeyPress(keyPressMetrics);
-      }
+      textInputEventEmitter.onKeyPress({
+          .text = RCTStringFromNSString(text),
+          .eventCount = static_cast<int>(_mostRecentEventCount),
+      });
     }
   }
 
@@ -391,12 +386,7 @@ using namespace facebook::react;
 
   if (_eventEmitter) {
     const auto &textInputEventEmitter = static_cast<const TextInputEventEmitter &>(*_eventEmitter);
-    const auto &props = static_cast<const TextInputProps &>(*_props);
-    if (props.onChangeSync) {
-      textInputEventEmitter.onChangeSync([self _textInputMetrics]);
-    } else {
-      textInputEventEmitter.onChange([self _textInputMetrics]);
-    }
+    textInputEventEmitter.onChange([self _textInputMetrics]);
   }
 }
 
@@ -524,29 +514,18 @@ using namespace facebook::react;
 
 #pragma mark - Other
 
-- (TextInputMetrics)_textInputMetrics
+- (TextInputEventEmitter::Metrics)_textInputMetrics
 {
-  TextInputMetrics metrics;
-  metrics.text = RCTStringFromNSString(_backedTextInputView.attributedText.string);
-  metrics.selectionRange = [self _selectionRange];
-  metrics.eventCount = _mostRecentEventCount;
-
-  CGPoint contentOffset = _backedTextInputView.contentOffset;
-  metrics.contentOffset = {contentOffset.x, contentOffset.y};
-
-  UIEdgeInsets contentInset = _backedTextInputView.contentInset;
-  metrics.contentInset = {contentInset.left, contentInset.top, contentInset.right, contentInset.bottom};
-
-  CGSize contentSize = _backedTextInputView.contentSize;
-  metrics.contentSize = {contentSize.width, contentSize.height};
-
-  CGSize layoutMeasurement = _backedTextInputView.bounds.size;
-  metrics.layoutMeasurement = {layoutMeasurement.width, layoutMeasurement.height};
-
-  CGFloat zoomScale = _backedTextInputView.zoomScale;
-  metrics.zoomScale = zoomScale;
-
-  return metrics;
+  return {
+      .text = RCTStringFromNSString(_backedTextInputView.attributedText.string),
+      .selectionRange = [self _selectionRange],
+      .eventCount = static_cast<int>(_mostRecentEventCount),
+      .contentOffset = RCTPointFromCGPoint(_backedTextInputView.contentOffset),
+      .contentInset = RCTEdgeInsetsFromUIEdgeInsets(_backedTextInputView.contentInset),
+      .contentSize = RCTSizeFromCGSize(_backedTextInputView.contentSize),
+      .layoutMeasurement = RCTSizeFromCGSize(_backedTextInputView.bounds.size),
+      .zoomScale = _backedTextInputView.zoomScale,
+  };
 }
 
 - (void)_updateState
@@ -594,6 +573,9 @@ using namespace facebook::react;
   UITextRange *selectedRange = _backedTextInputView.selectedTextRange;
   NSInteger oldTextLength = _backedTextInputView.attributedText.string.length;
   _backedTextInputView.attributedText = attributedString;
+  // Updating the UITextView attributedText, for example changing the lineHeight, the color or adding
+  // a new paragraph with \n, causes the cursor to move to the end of the Text and scroll.
+  // This is fixed by restoring the cursor position and scrolling to that position (iOS issue 652653).
   if (selectedRange.empty) {
     // Maintaining a cursor position relative to the end of the old text.
     NSInteger offsetStart = [_backedTextInputView offsetFromPosition:_backedTextInputView.beginningOfDocument
@@ -604,6 +586,7 @@ using namespace facebook::react;
                                                                    offset:newOffset];
     [_backedTextInputView setSelectedTextRange:[_backedTextInputView textRangeFromPosition:position toPosition:position]
                                 notifyDelegate:YES];
+    [_backedTextInputView scrollRangeToVisible:NSMakeRange(offsetStart, 0)];
   }
   [self _restoreTextSelection];
   _lastStringStateWasUpdatedWith = attributedString;

@@ -10,7 +10,7 @@
   "bugs": "https://github.com/facebook/react-native/issues",
   "repository": {
     "type": "git",
-    "url": "https://github.com/facebook/react-native.git",
+    "url": "git+https://github.com/facebook/react-native.git",
     "directory": "packages/community-cli-plugin"
   },
   "license": "MIT",
@@ -22,8 +22,8 @@
     "dist"
   ],
   "dependencies": {
-    "@react-native-community/cli-server-api": "13.6.1",
-    "@react-native-community/cli-tools": "13.6.1",
+    "@react-native-community/cli-server-api": "14.0.0-alpha.2",
+    "@react-native-community/cli-tools": "14.0.0-alpha.2",
     "@react-native/dev-middleware": "0.75.0-main",
     "@react-native/metro-babel-transformer": "0.75.0-main",
     "chalk": "^4.0.0",

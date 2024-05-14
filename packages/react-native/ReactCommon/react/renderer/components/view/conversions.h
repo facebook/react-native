@@ -14,6 +14,8 @@
 #include <react/renderer/components/view/primitives.h>
 #include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/core/RawProps.h>
+#include <react/renderer/graphics/Filter.h>
 #include <react/renderer/graphics/Transform.h>
 #include <react/renderer/graphics/ValueUnit.h>
 #include <stdlib.h>
@@ -563,6 +565,35 @@ inline void fromRawValue(
 inline void fromRawValue(
     const PropsParserContext& /*context*/,
     const RawValue& value,
+    ValueUnit& result) {
+  react_native_expect(value.hasType<RawValue>());
+  ValueUnit valueUnit;
+
+  if (value.hasType<Float>()) {
+    auto valueFloat = (float)value;
+    if (std::isfinite(valueFloat)) {
+      valueUnit = ValueUnit(valueFloat, UnitType::Point);
+    } else {
+      valueUnit = ValueUnit(0.0f, UnitType::Undefined);
+    }
+  } else if (value.hasType<std::string>()) {
+    const auto stringValue = (std::string)value;
+
+    if (stringValue.back() == '%') {
+      auto tryValue = folly::tryTo<float>(
+          std::string_view(stringValue).substr(0, stringValue.length() - 1));
+      if (tryValue.hasValue()) {
+        valueUnit = ValueUnit(tryValue.value(), UnitType::Percent);
+      }
+    }
+  }
+
+  result = valueUnit;
+}
+
+inline void fromRawValue(
+    const PropsParserContext& context,
+    const RawValue& value,
     TransformOrigin& result) {
   react_native_expect(value.hasType<std::vector<RawValue>>());
   auto origins = (std::vector<RawValue>)value;
@@ -573,25 +604,7 @@ inline void fromRawValue(
 
   for (size_t i = 0; i < std::min(origins.size(), maxIndex); i++) {
     const auto& origin = origins[i];
-    if (origin.hasType<Float>()) {
-      auto originFloat = (float)origin;
-      if (std::isfinite(originFloat)) {
-        transformOrigin.xy[i] = ValueUnit(originFloat, UnitType::Point);
-      } else {
-        transformOrigin.xy[i] = ValueUnit(0.0f, UnitType::Undefined);
-      }
-    } else if (origin.hasType<std::string>()) {
-      const auto stringValue = (std::string)origin;
-
-      if (stringValue.back() == '%') {
-        auto tryValue = folly::tryTo<float>(
-            std::string_view(stringValue).substr(0, stringValue.length() - 1));
-        if (tryValue.hasValue()) {
-          transformOrigin.xy[i] =
-              ValueUnit(tryValue.value(), UnitType::Percent);
-        }
-      }
-    }
+    fromRawValue(context, origin, transformOrigin.xy[i]);
   }
 
   if (origins.size() >= 3 && origins[2].hasType<Float>()) {
@@ -747,6 +760,48 @@ inline void fromRawValue(
   }
   LOG(ERROR) << "Could not parse LayoutConformance:" << stringValue;
   react_native_expect(false);
+}
+
+inline void fromRawValue(
+    const PropsParserContext& /*context*/,
+    const RawValue& value,
+    std::vector<FilterPrimitive>& result) {
+  react_native_expect(value.hasType<std::vector<RawValue>>());
+  if (!value.hasType<std::vector<RawValue>>()) {
+    result = {};
+    return;
+  }
+
+  std::vector<FilterPrimitive> filter{};
+  auto rawFilter = static_cast<std::vector<RawValue>>(value);
+  for (const auto& rawFilterPrimitive : rawFilter) {
+    bool isMap =
+        rawFilterPrimitive.hasType<std::unordered_map<std::string, RawValue>>();
+    react_native_expect(isMap);
+    if (!isMap) {
+      // If a filter is malformed then we should not apply any of them which
+      // is the web behavior.
+      result = {};
+      return;
+    }
+
+    auto rawFilterPrimitiveMap =
+        static_cast<std::unordered_map<std::string, RawValue>>(
+            rawFilterPrimitive);
+    FilterPrimitive filterPrimitive{};
+    try {
+      filterPrimitive.type =
+          filterTypeFromString(rawFilterPrimitiveMap.begin()->first);
+      filterPrimitive.amount = (float)rawFilterPrimitiveMap.begin()->second;
+      filter.push_back(filterPrimitive);
+    } catch (const std::exception& e) {
+      LOG(ERROR) << "Could not parse FilterPrimitive: " << e.what();
+      filter = {};
+      return;
+    }
+  }
+
+  result = filter;
 }
 
 template <size_t N>

@@ -45,6 +45,15 @@ class HermesRuntimeTargetDelegate : public RuntimeTargetDelegate {
           executionContextDescription,
       RuntimeExecutor runtimeExecutor) override;
 
+  void addConsoleMessage(jsi::Runtime& runtime, ConsoleMessage message)
+      override;
+
+  bool supportsConsole() const override;
+
+  std::unique_ptr<StackTrace> captureStackTrace(
+      jsi::Runtime& runtime,
+      size_t framesToSkip) override;
+
  private:
   // We use the private implementation idiom to ensure this class has the same
   // layout regardless of whether HERMES_ENABLE_DEBUGGER is defined. The net
@@ -55,7 +64,7 @@ class HermesRuntimeTargetDelegate : public RuntimeTargetDelegate {
 // Callers within this library may set HERMES_ENABLE_DEBUGGER to see this extra
 // API.
 #ifdef HERMES_ENABLE_DEBUGGER
-  friend class HermesRuntimeAgentDelegateNew;
+  friend class HermesRuntimeAgentDelegate;
 
   hermes::cdp::CDPDebugAPI& getCDPDebugAPI();
 #endif

@@ -9,10 +9,12 @@
 
 #include <ReactCommon/RuntimeExecutor.h>
 
+#include "ConsoleMessage.h"
 #include "ExecutionContext.h"
 #include "InspectorInterfaces.h"
 #include "RuntimeAgent.h"
 #include "ScopedExecutor.h"
+#include "StackTrace.h"
 #include "WeakList.h"
 
 #include <memory>
@@ -51,6 +53,43 @@ class RuntimeTargetDelegate {
           previouslyExportedState,
       const ExecutionContextDescription& executionContextDescription,
       RuntimeExecutor runtimeExecutor) = 0;
+
+  /**
+   * Called when the runtime intercepts a console API call. The target delegate
+   * should notify the frontend (via its agent delegates) of the message, and
+   * perform any buffering required for logging the message later (in the
+   * existing and/or new sessions).
+   *
+   * \note The method is called on the JS thread, and receives a valid reference
+   * to the current \c jsi::Runtime. The callee MAY use its own intrinsic
+   * Runtime reference, if it has one, without checking it for equivalence with
+   * the one provided here.
+   */
+  virtual void addConsoleMessage(
+      jsi::Runtime& runtime,
+      ConsoleMessage message) = 0;
+
+  /**
+   * \returns true if the runtime supports reporting console API calls over CDP.
+   * \c addConsoleMessage MAY be called even if this method returns false.
+   */
+  virtual bool supportsConsole() const = 0;
+
+  /**
+   * \returns an opaque representation of a stack trace. This may be passed back
+   * to the `RuntimeTargetDelegate` as part of `addConsoleMessage` or other APIs
+   * that report stack traces.
+   * \param framesToSkip The number of call frames to skip. The first call frame
+   * is the topmost (current) frame on the Runtime's call stack, which will
+   * typically be the (native) JSI HostFunction that called this method.
+   * \note The method is called on the JS thread, and receives a valid reference
+   * to the current \c jsi::Runtime. The callee MAY use its own intrinsic
+   * Runtime reference, if it has one, without checking it for equivalence with
+   * the one provided here.
+   */
+  virtual std::unique_ptr<StackTrace> captureStackTrace(
+      jsi::Runtime& runtime,
+      size_t framesToSkip = 0) = 0;
 };
 
 /**
@@ -155,6 +194,17 @@ class JSINSPECTOR_EXPORT RuntimeTarget
    * sessions that have registered to receive binding events for that name.
    */
   void installBindingHandler(const std::string& bindingName);
+
+  /**
+   * Installs any global values we want to expose to framework/user JavaScript
+   * code.
+   */
+  void installGlobals();
+
+  /**
+   * Install the console API handler.
+   */
+  void installConsoleHandler();
 
   // Necessary to allow RuntimeAgent to access RuntimeTarget's internals in a
   // controlled way (i.e. only RuntimeTargetController gets friend access, while

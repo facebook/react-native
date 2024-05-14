@@ -175,6 +175,14 @@ public class BlobModule extends NativeBlobModuleSpec {
   }
 
   @DoNotStrip
+  public long getLengthOfBlob(String blobId) {
+    synchronized (mBlobs) {
+      byte[] data = mBlobs.get(blobId);
+      return data != null ? data.length : 0;
+    }
+  }
+
+  @DoNotStrip
   public void remove(String blobId) {
     synchronized (mBlobs) {
       mBlobs.remove(blobId);

@@ -125,7 +125,9 @@ public class Task<TResult> implements TaskInterface<TResult> {
     }
   }
 
-  /** @return {@code true} if the task was cancelled, {@code false} otherwise. */
+  /**
+   * @return {@code true} if the task was cancelled, {@code false} otherwise.
+   */
   @Override
   public boolean isCancelled() {
     synchronized (lock) {
@@ -133,7 +135,9 @@ public class Task<TResult> implements TaskInterface<TResult> {
     }
   }
 
-  /** @return {@code true} if the task has an error, {@code false} otherwise. */
+  /**
+   * @return {@code true} if the task has an error, {@code false} otherwise.
+   */
   @Override
   public boolean isFaulted() {
     synchronized (lock) {
@@ -141,7 +145,9 @@ public class Task<TResult> implements TaskInterface<TResult> {
     }
   }
 
-  /** @return The result of the task, if set. {@code null} otherwise. */
+  /**
+   * @return The result of the task, if set. {@code null} otherwise.
+   */
   @Override
   public TResult getResult() {
     synchronized (lock) {
@@ -149,7 +155,9 @@ public class Task<TResult> implements TaskInterface<TResult> {
     }
   }
 
-  /** @return The error for the task, if set. {@code null} otherwise. */
+  /**
+   * @return The error for the task, if set. {@code null} otherwise.
+   */
   @Override
   public Exception getError() {
     synchronized (lock) {

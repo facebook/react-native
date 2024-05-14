@@ -110,14 +110,28 @@ std::string jsonResult(
     const folly::dynamic& result = folly::dynamic::object());
 
 /**
- * Returns a JSON-formatted string representing a unilateral notifcation.
+ * Returns a JSON-formatted string representing a unilateral notification.
  *
  * {"method": <method>, "params": <params>}
  *
  * \param method Notification (aka "event") method.
- * \param params Optional payload pbject.
+ * \param params Optional payload object.
  */
 std::string jsonNotification(
+    std::string_view method,
+    std::optional<folly::dynamic> params = std::nullopt);
+
+/**
+ * Returns a JSON-formatted string representing a request.
+ *
+ * {"id": <id>, "method": <method>, "params": <params>}
+ *
+ * \param id Request ID.
+ * \param method Requested method.
+ * \param params Optional payload object.
+ */
+std::string jsonRequest(
+    RequestId id,
     std::string_view method,
     std::optional<folly::dynamic> params = std::nullopt);
 

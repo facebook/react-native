@@ -41,13 +41,12 @@ Pod::Spec.new do |s|
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
 
   if ENV['USE_FRAMEWORKS']
-    s.header_mappings_dir     = './'
+    s.header_mappings_dir     = '../'
     s.module_name             = 'React_jserrorhandler'
   end
 
   s.dependency folly_dep_name, folly_version
   s.dependency "React-jsi"
   add_dependency(s, "React-debug")
-  add_dependency(s, "React-Mapbuffer")
 
 end

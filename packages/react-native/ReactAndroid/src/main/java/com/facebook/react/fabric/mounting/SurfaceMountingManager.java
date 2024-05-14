@@ -35,7 +35,6 @@ import com.facebook.react.fabric.GuardedFrameCallback;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.mounting.MountingManager.MountItemExecutor;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.uimanager.IViewGroupManager;
@@ -50,7 +49,6 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.uimanager.events.EventCategoryDef;
-import com.facebook.react.views.view.ReactViewGroup;
 import java.util.ArrayDeque;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -208,13 +206,15 @@ public class SurfaceMountingManager {
           } else if (rootView.getId() != View.NO_ID) {
             FLog.e(
                 TAG,
-                "Trying to add RootTag to RootView that already has a tag: existing tag: [%d] new tag: [%d]",
+                "Trying to add RootTag to RootView that already has a tag: existing tag: [%d] new"
+                    + " tag: [%d]",
                 rootView.getId(),
                 mSurfaceId);
             throw new IllegalViewOperationException(
-                "Trying to add a root view with an explicit id already set. React Native uses "
-                    + "the id field to track react tags and will overwrite this field. If that is fine, "
-                    + "explicitly overwrite the id field to View.NO_ID before calling addRootView.");
+                "Trying to add a root view with an explicit id already set. React Native uses the"
+                    + " id field to track react tags and will overwrite this field. If that is"
+                    + " fine, explicitly overwrite the id field to View.NO_ID before calling"
+                    + " addRootView.");
           }
           rootView.setId(mSurfaceId);
 
@@ -382,25 +382,8 @@ public class SurfaceMountingManager {
       // should be impossible - we mark this as a "readded" View and
       // thus prevent the RemoveDeleteTree worker from deleting this
       // View in the future.
-      if (ReactNativeFeatureFlags.enableFixForClippedSubviewsCrash()) {
-        if (viewParent instanceof ReactViewGroup) {
-          ReactViewGroup viewParentGroup = (ReactViewGroup) viewParent;
-          // If the parent group has subview clipping enabled, we need to use the specialized
-          // method.
-          // Otherwise, ReactViewGroup's member variables managing subview clipping
-          // will get out of sync with Android's view hierarchy, leading to a crash.
-          if (viewParentGroup.getRemoveClippedSubviews()) {
-            viewParentGroup.removeViewWithSubviewClippingEnabled(view);
-          } else {
-            viewParentGroup.removeView(view);
-          }
-        } else if (viewParent instanceof ViewGroup) {
-          ((ViewGroup) viewParent).removeView(view);
-        }
-      } else {
-        if (viewParent instanceof ViewGroup) {
-          ((ViewGroup) viewParent).removeView(view);
-        }
+      if (viewParent instanceof ViewGroup) {
+        ((ViewGroup) viewParent).removeView(view);
       }
       mErroneouslyReaddedReactTags.add(tag);
     }
@@ -450,7 +433,8 @@ public class SurfaceMountingManager {
       ReactSoftExceptionLogger.logSoftException(
           TAG,
           new IllegalViewOperationException(
-              "removeViewAt tried to remove a React View that was actually reused. This indicates a bug in the Differ (specifically instruction ordering). ["
+              "removeViewAt tried to remove a React View that was actually reused. This indicates a"
+                  + " bug in the Differ (specifically instruction ordering). ["
                   + tag
                   + "]"));
       return;
@@ -1421,7 +1405,8 @@ public class SurfaceMountingManager {
             ReactSoftExceptionLogger.logSoftException(
                 TAG,
                 new IllegalViewOperationException(
-                    "RemoveDeleteTree recursively tried to remove a React View that was actually reused. This indicates a bug in the Differ. ["
+                    "RemoveDeleteTree recursively tried to remove a React View that was actually"
+                        + " reused. This indicates a bug in the Differ. ["
                         + reactTag
                         + "]"));
             continue;

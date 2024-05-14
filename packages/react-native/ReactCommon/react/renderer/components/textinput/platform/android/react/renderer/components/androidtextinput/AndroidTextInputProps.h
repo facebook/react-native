@@ -12,8 +12,7 @@
 
 #include <react/renderer/attributedstring/TextAttributes.h>
 #include <react/renderer/attributedstring/conversions.h>
-#include <react/renderer/components/text/BaseTextProps.h>
-#include <react/renderer/components/view/ViewProps.h>
+#include <react/renderer/components/textinput/BaseTextInputProps.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
 #include <react/renderer/graphics/Color.h>
@@ -58,7 +57,7 @@ inline folly::dynamic toDynamic(
   return dynamicValue;
 }
 
-class AndroidTextInputProps final : public ViewProps, public BaseTextProps {
+class AndroidTextInputProps final : public BaseTextInputProps {
  public:
   AndroidTextInputProps() = default;
   AndroidTextInputProps(
@@ -81,28 +80,19 @@ class AndroidTextInputProps final : public ViewProps, public BaseTextProps {
   int numberOfLines{0};
   bool disableFullscreenUI{false};
   std::string textBreakStrategy{};
-  SharedColor underlineColorAndroid{};
   std::string inlineImageLeft{};
   int inlineImagePadding{0};
   std::string importantForAutofill{};
   bool showSoftInputOnFocus{false};
-  std::string autoCapitalize{};
   bool autoCorrect{false};
-  bool autoFocus{false};
   bool allowFontScaling{false};
   Float maxFontSizeMultiplier{0.0};
   bool editable{false};
   std::string keyboardType{};
   std::string returnKeyType{};
-  int maxLength{0};
   bool multiline{false};
-  std::string placeholder{};
-  SharedColor placeholderTextColor{};
   bool secureTextEntry{false};
-  SharedColor selectionColor{};
-  SharedColor selectionHandleColor{};
   std::string value{};
-  std::string defaultValue{};
   bool selectTextOnFocus{false};
   std::string submitBehavior{};
   bool caretHidden{false};
@@ -121,16 +111,6 @@ class AndroidTextInputProps final : public ViewProps, public BaseTextProps {
   bool includeFontPadding{false};
   std::string fontWeight{};
   std::string fontFamily{};
-  std::string textAlignVertical{};
-  SharedColor cursorColor{};
-  int mostRecentEventCount{0};
-  std::string text{};
-
-  /*
-   * Contains all prop values that affect visual representation of the
-   * paragraph.
-   */
-  ParagraphAttributes paragraphAttributes{};
 
   /**
    * Auxiliary information to detect if these props are set or not.

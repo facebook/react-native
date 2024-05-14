@@ -99,8 +99,6 @@ val preparePrefab by
               PrefabPreprocessingEntry(
                   "react_newarchdefaults", Pair("src/main/jni/react/newarchdefaults", "")),
               PrefabPreprocessingEntry(
-                  "react_cxxreactpackage", Pair("src/main/jni/react/runtime/cxxreactpackage", "")),
-              PrefabPreprocessingEntry(
                   "react_render_animations",
                   Pair("../ReactCommon/react/renderer/animations/", "react/renderer/animations/")),
               PrefabPreprocessingEntry(
@@ -127,14 +125,24 @@ val preparePrefab by
                   )),
               PrefabPreprocessingEntry(
                   "rrc_text",
-                  Pair(
-                      "../ReactCommon/react/renderer/components/text/",
-                      "react/renderer/components/text/")),
+                  listOf(
+                      Pair(
+                          "../ReactCommon/react/renderer/components/text/",
+                          "react/renderer/components/text/"),
+                      Pair(
+                          "../ReactCommon/react/renderer/attributedstring",
+                          "react/renderer/attributedstring"),
+                  )),
               PrefabPreprocessingEntry(
                   "rrc_textinput",
-                  Pair(
-                      "../ReactCommon/react/renderer/components/textinput/",
-                      "react/renderer/components/androidtextinput/")),
+                  listOf(
+                      Pair(
+                          "../ReactCommon/react/renderer/components/textinput/",
+                          "react/renderer/components/textinput/"),
+                      Pair(
+                          "../ReactCommon/react/renderer/components/textinput/platform/android/",
+                          ""),
+                  )),
               PrefabPreprocessingEntry(
                   "rrc_legacyviewmanagerinterop",
                   Pair(
@@ -205,6 +213,8 @@ val preparePrefab by
                       Pair("../ReactCommon/react/debug/", "react/debug/"),
                       Pair("../ReactCommon/react/utils/", "react/utils/"),
                       Pair("src/main/jni/react/jni", "react/jni/"),
+                      // From: react_cxxreactpackage
+                      Pair("src/main/jni/react/runtime/cxxreactpackage", ""),
                   )),
               PrefabPreprocessingEntry(
                   "react_utils",
@@ -531,7 +541,6 @@ android {
         targets(
             "jsijniprofiler",
             "reactnativeblob",
-            "reactperfloggerjni",
             "bridgeless",
             "rninstance",
             "hermesinstancejni",
@@ -547,13 +556,16 @@ android {
             "react_codegen_rncore",
             "react_debug",
             "react_featureflags",
+            "react_performance_timeline",
             "react_utils",
             "react_render_componentregistry",
             "react_newarchdefaults",
-            "react_cxxreactpackage",
             "react_render_animations",
             "react_render_core",
+            "react_render_consistency",
+            "react_render_dom",
             "react_render_graphics",
+            "react_render_observers_events",
             "rrc_image",
             "rrc_root",
             "rrc_view",
@@ -570,6 +582,7 @@ android {
             "react_nativemodule_core",
             "react_render_imagemanager",
             "react_render_uimanager",
+            "react_render_uimanager_consistency",
             "react_render_scheduler",
             "react_render_mounting",
             "hermes_executor",
@@ -668,9 +681,6 @@ android {
     }
     create("react_newarchdefaults") {
       headers = File(prefabHeadersDir, "react_newarchdefaults").absolutePath
-    }
-    create("react_cxxreactpackage") {
-      headers = File(prefabHeadersDir, "react_cxxreactpackage").absolutePath
     }
     create("react_render_animations") {
       headers = File(prefabHeadersDir, "react_render_animations").absolutePath

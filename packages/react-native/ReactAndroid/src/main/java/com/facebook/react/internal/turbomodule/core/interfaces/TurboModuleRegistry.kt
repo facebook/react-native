@@ -28,6 +28,7 @@ public interface TurboModuleRegistry {
 
   /** Has the NativeModule with name `moduleName` been instantiated? */
   public fun hasModule(moduleName: String): Boolean
+
   /**
    * Return the names of all the NativeModules that are supposed to be eagerly initialized. By
    * calling getModule on each name, this allows the application to eagerly initialize its

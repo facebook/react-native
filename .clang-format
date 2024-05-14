@@ -84,6 +84,7 @@ SpacesInSquareBrackets: false
 Standard:        Cpp11
 TabWidth:        8
 UseTab:          Never
+QualifierAlignment: Left
 ---
 Language: ObjC
 ColumnLimit:     120

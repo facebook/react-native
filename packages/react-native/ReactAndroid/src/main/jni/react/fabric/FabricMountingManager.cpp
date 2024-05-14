@@ -11,10 +11,11 @@
 #include "MountItem.h"
 #include "StateWrapperImpl.h"
 
+#include <cxxreact/SystraceSection.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/jni/ReadableNativeMap.h>
 #include <react/renderer/components/scrollview/ScrollViewProps.h>
 #include <react/renderer/core/conversions.h>
-#include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/mounting/MountingTransaction.h>
 #include <react/renderer/mounting/ShadowView.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
@@ -775,20 +776,22 @@ void FabricMountingManager::executeMount(
 }
 
 void FabricMountingManager::preallocateShadowView(
-    SurfaceId surfaceId,
-    const ShadowView& shadowView) {
+    const ShadowNode& shadowNode) {
   {
     std::lock_guard lock(allocatedViewsMutex_);
-    auto allocatedViewsIterator = allocatedViewRegistry_.find(surfaceId);
+    auto allocatedViewsIterator =
+        allocatedViewRegistry_.find(shadowNode.getSurfaceId());
     if (allocatedViewsIterator == allocatedViewRegistry_.end()) {
       return;
     }
     auto& allocatedViews = allocatedViewsIterator->second;
-    if (allocatedViews.find(shadowView.tag) != allocatedViews.end()) {
+    if (allocatedViews.find(shadowNode.getTag()) != allocatedViews.end()) {
       return;
     }
-    allocatedViews.insert(shadowView.tag);
+    allocatedViews.insert(shadowNode.getTag());
   }
+
+  auto shadowView = ShadowView(shadowNode);
 
   bool isLayoutableShadowNode = shadowView.layoutMetrics != EmptyLayoutMetrics;
 
@@ -817,7 +820,7 @@ void FabricMountingManager::preallocateShadowView(
 
   preallocateView(
       javaUIManager_,
-      surfaceId,
+      shadowNode.getSurfaceId(),
       shadowView.tag,
       component.get(),
       props.get(),

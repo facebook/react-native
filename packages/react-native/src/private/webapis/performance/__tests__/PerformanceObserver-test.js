@@ -12,12 +12,12 @@ import {RawPerformanceEntryTypeValues} from '../RawPerformanceEntry';
 
 // NOTE: Jest mocks of transitive dependencies don't appear to work with
 // ES6 module imports, therefore forced to use commonjs style imports here.
-const NativePerformanceObserver = require('../NativePerformanceObserver');
 const PerformanceObserver = require('../PerformanceObserver').default;
+const NativePerformanceObserver = require('../specs/NativePerformanceObserver');
 
 jest.mock(
-  '../NativePerformanceObserver',
-  () => require('../__mocks__/NativePerformanceObserver').default,
+  '../specs/NativePerformanceObserver',
+  () => require('../specs/__mocks__/NativePerformanceObserver').default,
 );
 
 describe('PerformanceObserver', () => {
@@ -204,5 +204,59 @@ describe('PerformanceObserver', () => {
       'mark6',
       'mark7',
     ]);
+  });
+
+  it('should guard against errors in observer callbacks', () => {
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    const observer1Callback = jest.fn(() => {
+      throw new Error('observer 1 callback');
+    });
+    const observer1 = new PerformanceObserver(observer1Callback);
+
+    const observer2Callback = jest.fn();
+    const observer2 = new PerformanceObserver(observer2Callback);
+
+    observer1.observe({type: 'mark'});
+    observer2.observe({type: 'mark'});
+
+    NativePerformanceObserver.logRawEntry({
+      name: 'mark1',
+      entryType: RawPerformanceEntryTypeValues.MARK,
+      startTime: 0,
+      duration: 200,
+    });
+
+    jest.runAllTicks();
+
+    expect(observer1Callback).toHaveBeenCalled();
+    expect(observer2Callback).toHaveBeenCalled();
+
+    expect(console.error).toHaveBeenCalledWith(
+      new Error('observer 1 callback'),
+    );
+  });
+
+  it('should not invoke observers with non-matching entries', () => {
+    const observer1Callback = jest.fn();
+    const observer1 = new PerformanceObserver(observer1Callback);
+
+    const observer2Callback = jest.fn();
+    const observer2 = new PerformanceObserver(observer2Callback);
+
+    observer1.observe({type: 'mark'});
+    observer2.observe({type: 'measure'});
+
+    NativePerformanceObserver.logRawEntry({
+      name: 'mark1',
+      entryType: RawPerformanceEntryTypeValues.MARK,
+      startTime: 0,
+      duration: 200,
+    });
+
+    jest.runAllTicks();
+
+    expect(observer1Callback).toHaveBeenCalled();
+    expect(observer2Callback).not.toHaveBeenCalled();
   });
 });

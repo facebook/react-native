@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e59e70d753403b168558b0d2b9513b5c>>
+ * @generated SignedSource<<a2c4f2c950a7b92163fdc6219864d6ca>>
  */
 
 /**
@@ -25,27 +25,39 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun commonTestFlag(): Boolean = false
 
+  override fun allowCollapsableChildren(): Boolean = true
+
+  override fun androidEnablePendingFabricTransactions(): Boolean = false
+
   override fun batchRenderingUpdatesInEventLoop(): Boolean = false
+
+  override fun destroyFabricSurfacesInReactInstanceManager(): Boolean = false
 
   override fun enableBackgroundExecutor(): Boolean = false
 
-  override fun enableCustomDrawOrderFabric(): Boolean = false
+  override fun enableCleanTextInputYogaNode(): Boolean = false
 
-  override fun enableFixForClippedSubviewsCrash(): Boolean = false
+  override fun enableGranularShadowTreeStateReconciliation(): Boolean = false
 
   override fun enableMicrotasks(): Boolean = false
 
-  override fun enableMountHooksAndroid(): Boolean = false
+  override fun enableSynchronousStateUpdates(): Boolean = false
 
-  override fun enableSpannableBuildingUnification(): Boolean = false
+  override fun enableUIConsistency(): Boolean = false
+
+  override fun forceBatchingMountItemsOnAndroid(): Boolean = false
 
   override fun inspectorEnableCxxInspectorPackagerConnection(): Boolean = false
 
-  override fun inspectorEnableHermesCDPAgent(): Boolean = false
-
   override fun inspectorEnableModernCDPRegistry(): Boolean = false
 
-  override fun skipMountHookNotifications(): Boolean = false
+  override fun lazyAnimationCallbacks(): Boolean = false
+
+  override fun preventDoubleTextMeasure(): Boolean = false
 
   override fun useModernRuntimeScheduler(): Boolean = false
+
+  override fun useNativeViewConfigsInBridgelessMode(): Boolean = false
+
+  override fun useStateAlignmentMechanism(): Boolean = false
 }

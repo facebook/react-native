@@ -43,14 +43,14 @@ class BridgingTest : public ::testing::Test {
         rt(*runtime) {}
 
   ~BridgingTest() {
-    LongLivedObjectCollection::get().clear();
+    LongLivedObjectCollection::get(rt).clear();
   }
 
   void TearDown() override {
     flushQueue();
 
     // After flushing the invoker queue, we shouldn't leak memory.
-    EXPECT_EQ(0, LongLivedObjectCollection::get().size());
+    EXPECT_EQ(0, LongLivedObjectCollection::get(rt).size());
   }
 
   jsi::Value eval(const std::string& js) {

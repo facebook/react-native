@@ -11,8 +11,6 @@
 
 'use strict';
 
-const {REPO_ROOT} = require('../consts');
-const detectPackageUnreleasedChanges = require('../monorepo/bump-all-updated-packages/bump-utils.js');
 const checkForGitChanges = require('../monorepo/check-for-git-changes');
 const {failIfTagExists} = require('../releases/utils/release-utils');
 const {
@@ -23,7 +21,6 @@ const {exitIfNotOnGit, getBranchName} = require('../scm-utils');
 const {getPackages} = require('../utils/monorepo');
 const chalk = require('chalk');
 const inquirer = require('inquirer');
-const path = require('path');
 const request = require('request');
 const {echo, exit} = require('shelljs');
 const yargs = require('yargs');
@@ -49,6 +46,10 @@ let argv = yargs
     describe: 'Version you aim to release, ex. 0.67.0-rc.1, 0.66.3',
     required: true,
   })
+  .option('dry-run', {
+    type: 'boolean',
+    default: false,
+  })
   .check(() => {
     const branch = exitIfNotOnGit(
       () => getBranchName(),
@@ -67,54 +68,34 @@ function exitIfNotOnReleaseBranch(branch /*: string */) {
   }
 }
 
-const buildExecutor =
-  (
-    packageAbsolutePath /*: string */,
-    packageRelativePathFromRoot /*: string */,
-    packageManifest /*: $FlowFixMe */,
-  ) =>
-  async () => {
-    const {name: packageName} = packageManifest;
-    if (packageManifest.private) {
-      return;
-    }
-
-    if (
-      detectPackageUnreleasedChanges(
-        packageRelativePathFromRoot,
-        packageName,
-        REPO_ROOT,
-      )
-    ) {
-      // if I enter here, I want to throw an error upward
-      throw new Error(
-        `Package ${packageName} has unreleased changes. Please release it first.`,
-      );
-    }
-  };
-
-async function exitIfUnreleasedPackages() {
-  // use the other script to verify that there's no packages in the monorepo
-  // that have changes that haven't been released
+/**
+ * Get the next version that all workspace packages will be set to.
+ *
+ * This approach is specific to the 0.74 release. For 0.75, the `--to-version`
+ * value will be used instead, setting all packages to a single version.
+ */
+async function getNextMonorepoPackagesVersion() /*: Promise<string | null> */ {
+  // Based on last publish before this strategy
+  const _0_74_MIN_PATCH = 75;
 
   const packages = await getPackages({
     includeReactNative: false,
-    includePrivate: true,
   });
 
-  for (const pkg of Object.values(packages)) {
-    const executor = buildExecutor(
-      pkg.path,
-      path.relative(REPO_ROOT, pkg.path),
-      pkg.packageJson,
-    );
+  let patchVersion = _0_74_MIN_PATCH;
 
-    await executor().catch(error => {
-      echo(chalk.red(error));
-      // need to throw upward
-      throw error;
-    });
+  for (const pkg of Object.values(packages)) {
+    const {version} = pkg.packageJson;
+
+    if (!version.startsWith('0.74.') || version.endsWith('-main')) {
+      return null;
+    }
+
+    const {patch} = parseVersion(version, 'release');
+    patchVersion = Math.max(patchVersion, parseInt(patch, 10) + 1);
   }
+
+  return '0.74.' + patchVersion;
 }
 
 function triggerReleaseWorkflow(options /*: $FlowFixMe */) {
@@ -142,13 +123,6 @@ async function main() {
         'Found uncommitted changes. Please commit or stash them before running this script',
       ),
     );
-    exit(1);
-  }
-
-  // now check for unreleased packages
-  try {
-    await exitIfUnreleasedPackages();
-  } catch (error) {
     exit(1);
   }
 
@@ -194,10 +168,28 @@ async function main() {
     return;
   }
 
+  let nextMonorepoPackagesVersion = await getNextMonorepoPackagesVersion();
+
+  if (nextMonorepoPackagesVersion == null) {
+    // TODO(T182538198): Once this warning is hit, we can remove the
+    // `release_monorepo_packages_version` logic from here and the CI jobs,
+    // see other TODOs.
+    console.warn(
+      'Warning: No longer on the 0.74-stable branch, meaning we will ' +
+        'write all package versions identically. Please double-check the ' +
+        'generated diff to see if this is correct.',
+    );
+    nextMonorepoPackagesVersion = version;
+  }
+
   const parameters = {
-    release_version: version,
-    release_latest: latest,
     run_release_workflow: true,
+    release_version: version,
+    release_tag: npmTag,
+    // NOTE: Necessary for 0.74, should be dropped for 0.75+
+    release_monorepo_packages_version: nextMonorepoPackagesVersion,
+    // $FlowFixMe[prop-missing]
+    release_dry_run: argv.dryRun,
   };
 
   const options = {

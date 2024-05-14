@@ -25,6 +25,7 @@ import com.facebook.react.defaults.DefaultReactHost
 import com.facebook.react.defaults.DefaultReactNativeHost
 import com.facebook.react.module.model.ReactModuleInfo
 import com.facebook.react.module.model.ReactModuleInfoProvider
+import com.facebook.react.osslibraryexample.OSSLibraryExamplePackage
 import com.facebook.react.popupmenu.PopupMenuPackage
 import com.facebook.react.shell.MainReactPackage
 import com.facebook.react.uiapp.component.MyLegacyViewManager
@@ -46,6 +47,7 @@ class RNTesterApplication : Application(), ReactApplication {
         return listOf(
             MainReactPackage(),
             PopupMenuPackage(),
+            OSSLibraryExamplePackage(),
             object : TurboReactPackage() {
               override fun getModule(
                   name: String,
@@ -111,11 +113,13 @@ class RNTesterApplication : Application(), ReactApplication {
               override fun createViewManager(
                   reactContext: ReactApplicationContext,
                   viewManagerName: String
-              ): ViewManager<*, out ReactShadowNode<*>> =
+              ): ViewManager<*, out ReactShadowNode<*>>? =
                   if (viewManagerName == "RNTMyNativeView") {
                     MyNativeViewManager()
-                  } else {
+                  } else if (viewManagerName == "RNTMyLegacyNativeView") {
                     MyLegacyViewManager(reactContext)
+                  } else {
+                    null
                   }
             })
       }

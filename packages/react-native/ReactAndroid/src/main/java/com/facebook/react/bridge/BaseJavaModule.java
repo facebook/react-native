@@ -64,7 +64,9 @@ public abstract class BaseJavaModule implements NativeModule {
     mReactApplicationContext = reactContext;
   }
 
-  /** @return a map of constants this module exports to JS. Supports JSON types. */
+  /**
+   * @return a map of constants this module exports to JS. Supports JSON types.
+   */
   @DeprecatedInNewArchitecture()
   public @Nullable Map<String, Object> getConstants() {
     return null;
@@ -94,7 +96,8 @@ public abstract class BaseJavaModule implements NativeModule {
   protected final ReactApplicationContext getReactApplicationContext() {
     return Assertions.assertNotNull(
         mReactApplicationContext,
-        "Tried to get ReactApplicationContext even though NativeModule wasn't instantiated with one");
+        "Tried to get ReactApplicationContext even though NativeModule wasn't instantiated with"
+            + " one");
   }
 
   /**

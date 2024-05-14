@@ -715,6 +715,18 @@ static void jni_YGNodeStyleSetGapJNI(
       static_cast<float>(gapLength));
 }
 
+static void jni_YGNodeStyleSetGapPercentJNI(
+    JNIEnv* /*env*/,
+    jobject /*obj*/,
+    jlong nativePointer,
+    jint gutter,
+    jfloat gapLength) {
+  YGNodeStyleSetGapPercent(
+      _jlong2YGNodeRef(nativePointer),
+      static_cast<YGGutter>(gutter),
+      static_cast<float>(gapLength));
+}
+
 // Yoga specific properties, not compatible with flexbox specification
 YG_NODE_JNI_STYLE_PROP(jfloat, float, AspectRatio);
 
@@ -944,6 +956,9 @@ static JNINativeMethod methods[] = {
      (void*)jni_YGNodeSetHasMeasureFuncJNI},
     {"jni_YGNodeStyleGetGapJNI", "(JI)F", (void*)jni_YGNodeStyleGetGapJNI},
     {"jni_YGNodeStyleSetGapJNI", "(JIF)V", (void*)jni_YGNodeStyleSetGapJNI},
+    {"jni_YGNodeStyleSetGapPercentJNI",
+     "(JIF)V",
+     (void*)jni_YGNodeStyleSetGapPercentJNI},
     {"jni_YGNodeSetHasBaselineFuncJNI",
      "(JZ)V",
      (void*)jni_YGNodeSetHasBaselineFuncJNI},

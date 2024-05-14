@@ -48,6 +48,9 @@ public interface ReactHost {
   /** [JSEngineResolutionAlgorithm] used by this host. */
   public var jsEngineResolutionAlgorithm: JSEngineResolutionAlgorithm?
 
+  /** Routes memory pressure events to interested components */
+  public val memoryPressureRouter: MemoryPressureRouter
+
   /** To be called when back button is pressed */
   public fun onBackPressed(): Boolean
 
@@ -119,6 +122,14 @@ public interface ReactHost {
       resultCode: Int,
       data: Intent?,
   )
+
+  /* To be called when focus has changed for the hosting window. */
+  public fun onWindowFocusChange(hasFocus: Boolean)
+
+  /* This method will give JS the opportunity to receive intents via Linking. */
+  public fun onNewIntent(intent: Intent)
+
+  public fun onConfigurationChanged(context: Context)
 
   public fun addBeforeDestroyListener(onBeforeDestroy: () -> Unit)
 

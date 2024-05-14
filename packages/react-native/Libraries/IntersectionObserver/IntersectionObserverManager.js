@@ -67,19 +67,11 @@ function setTargetForInstanceHandle(
   instanceHandleToTargetMap.set(key, target);
 }
 
-function unsetTargetForInstanceHandle(instanceHandle: mixed): void {
-  // $FlowExpectedError[incompatible-type] instanceHandle is typed as mixed but we know it's an object and we need it to be to use it as a key in a WeakMap.
-  const key: interface {} = instanceHandle;
-  instanceHandleToTargetMap.delete(key);
-}
-
 // The mapping between ReactNativeElement and their corresponding shadow node
 // also needs to be kept here because React removes the link when unmounting.
-// We also keep the instance handle so we don't have to retrieve it again
-// from the target to unobserve.
-const targetToShadowNodeAndInstanceHandleMap: WeakMap<
+const targetToShadowNodeMap: WeakMap<
   ReactNativeElement,
-  [ReturnType<typeof getShadowNode>, mixed],
+  ReturnType<typeof getShadowNode>,
 > = new WeakMap();
 
 /**
@@ -163,12 +155,8 @@ export function observe({
   // access it even after the instance handle has been unmounted.
   setTargetForInstanceHandle(instanceHandle, target);
 
-  // Same for the mapping between the target and its shadow node
-  // and instance handle.
-  targetToShadowNodeAndInstanceHandleMap.set(target, [
-    targetShadowNode,
-    instanceHandle,
-  ]);
+  // Same for the mapping between the target and its shadow node.
+  targetToShadowNodeMap.set(target, targetShadowNode);
 
   if (!isConnected) {
     NativeIntersectionObserver.connect(notifyIntersectionObservers);
@@ -201,26 +189,18 @@ export function unobserve(
     return;
   }
 
-  const targetShadowNodeAndInstanceHandle =
-    targetToShadowNodeAndInstanceHandleMap.get(target);
-  if (targetShadowNodeAndInstanceHandle == null) {
+  const targetShadowNode = targetToShadowNodeMap.get(target);
+  if (targetShadowNode == null) {
     console.error(
       'IntersectionObserverManager: could not find registration data for target',
     );
     return;
   }
 
-  const [targetShadowNode, instanceHandle] = targetShadowNodeAndInstanceHandle;
-
   NativeIntersectionObserver.unobserve(
     intersectionObserverId,
     targetShadowNode,
   );
-
-  // We can guarantee we won't receive any more entries for this target,
-  // so we don't need to keep the mappings anymore.
-  unsetTargetForInstanceHandle(instanceHandle);
-  targetToShadowNodeAndInstanceHandleMap.delete(target);
 }
 
 /**

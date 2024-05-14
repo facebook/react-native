@@ -93,7 +93,8 @@ public class ReactModuleSpecProcessor extends ProcessorBase {
         reactModuleList = typeElement.getAnnotation(ReactModuleList.class);
       } catch (Exception ex) {
         throw new RuntimeException(
-            "Could not load classes set in @ReactModuleList.nativeModules. Check that they exist and are imported correctly on class: "
+            "Could not load classes set in @ReactModuleList.nativeModules. Check that they exist"
+                + " and are imported correctly on class: "
                 + typeElement.getQualifiedName(),
             ex);
       }
