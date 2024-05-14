@@ -32,6 +32,7 @@ import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
@@ -55,6 +56,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Similar to {@link ReactScrollView} but only supports horizontal scrolling. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ReactHorizontalScrollView extends HorizontalScrollView
     implements ReactClippingViewGroup,
         ViewGroup.OnHierarchyChangeListener,
@@ -109,7 +111,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   private boolean mPagedArrowScrolling = false;
   private int pendingContentOffsetX = UNSET_CONTENT_OFFSET;
   private int pendingContentOffsetY = UNSET_CONTENT_OFFSET;
-  private StateWrapper mStateWrapper = null;
+  private @Nullable StateWrapper mStateWrapper = null;
   private final ReactScrollViewScrollState mReactScrollViewScrollState;
   private final ValueAnimator DEFAULT_FLING_ANIMATOR = ObjectAnimator.ofInt(this, "scrollX", 0, 0);
   private PointerEvents mPointerEvents = PointerEvents.AUTO;
@@ -248,7 +250,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     mSnapInterval = snapInterval;
   }
 
-  public void setSnapOffsets(List<Integer> snapOffsets) {
+  public void setSnapOffsets(@Nullable List<Integer> snapOffsets) {
     mSnapOffsets = snapOffsets;
   }
 
@@ -268,7 +270,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     awakenScrollBars();
   }
 
-  public void setOverflow(String overflow) {
+  public void setOverflow(@Nullable String overflow) {
     mOverflow = overflow;
     invalidate();
   }
@@ -307,17 +309,10 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     if (DEBUG_MODE) {
       FLog.i(TAG, "onDraw[%d]", getId());
     }
-
     getDrawingRect(mRect);
-
-    switch (mOverflow) {
-      case ViewProps.VISIBLE:
-        break;
-      default:
-        canvas.clipRect(mRect);
-        break;
+    if (!ViewProps.VISIBLE.equals(mOverflow)) {
+      canvas.clipRect(mRect);
     }
-
     super.onDraw(canvas);
   }
 
@@ -839,8 +834,10 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   }
 
   @Override
-  public void onChildViewRemoved(View parent, View child) {
-    mContentView.removeOnLayoutChangeListener(this);
+  public @Nullable void onChildViewRemoved(View parent, View child) {
+    if (mContentView != null) {
+      mContentView.removeOnLayoutChangeListener(this);
+    }
     mContentView = null;
   }
 
