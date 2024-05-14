@@ -101,7 +101,7 @@ public class ReactActivityDelegate {
     return mMainComponentName;
   }
 
-  public void onCreate(Bundle savedInstanceState) {
+  public void onCreate(@Nullable Bundle savedInstanceState) {
     String mainComponentName = getMainComponentName();
     final Bundle launchOptions = composeLaunchOptions();
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && isWideColorGamutEnabled()) {
