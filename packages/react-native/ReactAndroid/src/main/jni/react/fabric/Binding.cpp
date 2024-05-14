@@ -91,7 +91,7 @@ void Binding::setPixelDensity(float pointScaleFactor) {
 }
 
 void Binding::driveCxxAnimations() {
-  scheduler_->animationTick();
+  getScheduler()->animationTick();
 }
 
 void Binding::reportMount(SurfaceId surfaceId) {
@@ -189,7 +189,7 @@ void Binding::startSurfaceWithConstraints(
       isRTL ? LayoutDirection::RightToLeft : LayoutDirection::LeftToRight;
 
   auto surfaceHandler = SurfaceHandler{moduleName->toStdString(), surfaceId};
-  surfaceHandler.setContextContainer(scheduler_->getContextContainer());
+  surfaceHandler.setContextContainer(scheduler->getContextContainer());
   surfaceHandler.setProps(initialProps->consume());
   surfaceHandler.constraintLayout(constraints, context);
 
