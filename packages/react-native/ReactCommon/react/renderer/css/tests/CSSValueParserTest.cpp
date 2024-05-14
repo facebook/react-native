@@ -307,4 +307,17 @@ TEST(CSSValueParser, parse_prop) {
   EXPECT_EQ(keywordlessValue.getLength().unit, CSSLengthUnit::Px);
 }
 
+TEST(CSSValueParser, parse_keyword_prop_constexpr) {
+  constexpr auto rowValue = parseCSSProp<CSSProp::FlexDirection>("row");
+  EXPECT_EQ(rowValue.type(), CSSValueType::Keyword);
+  EXPECT_EQ(rowValue.getKeyword(), CSSKeyword::Row);
+}
+
+TEST(CSSValueParser, parse_length_prop_constexpr) {
+  constexpr auto pxValue = parseCSSProp<CSSProp::BorderWidth>("2px");
+  EXPECT_EQ(pxValue.type(), CSSValueType::Length);
+  EXPECT_EQ(pxValue.getLength().value, 2.0f);
+  EXPECT_EQ(pxValue.getLength().unit, CSSLengthUnit::Px);
+}
+
 } // namespace facebook::react

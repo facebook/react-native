@@ -10,131 +10,223 @@
 
 namespace facebook::react {
 
+static void consumeFunction(
+    CSSSyntaxParser& parser,
+    CSSFunctionVisitor<void> auto&& visitor) {
+  EXPECT_TRUE(
+      parser.consumeComponentValue<bool>([&](const CSSFunctionBlock& function) {
+        visitor(function);
+        return true;
+      }));
+}
+
+static void consumePreservedToken(
+    CSSSyntaxParser& parser,
+    CSSPreservedTokenVisitor<void> auto&& visitor) {
+  EXPECT_TRUE(
+      parser.consumeComponentValue<bool>([&](const CSSPreservedToken& token) {
+        visitor(token);
+        return true;
+      }));
+}
+
 TEST(CSSSyntaxParser, simple) {
   CSSSyntaxParser parser{"1px solid black"};
 
-  auto value = parser.consumeComponentValue();
-  EXPECT_TRUE(std::holds_alternative<CSSSyntaxParser::PreservedToken>(value));
-  EXPECT_EQ(
-      std::get<CSSSyntaxParser::PreservedToken>(value).type(),
-      CSSTokenType::Dimension);
-  EXPECT_EQ(
-      std::get<CSSSyntaxParser::PreservedToken>(value).numericValue(), 1.0f);
-  EXPECT_EQ(std::get<CSSSyntaxParser::PreservedToken>(value).unit(), "px");
+  consumePreservedToken(parser, [](const CSSPreservedToken& token) {
+    EXPECT_EQ(token.type(), CSSTokenType::Dimension);
+    EXPECT_EQ(token.numericValue(), 1.0f);
+    EXPECT_EQ(token.unit(), "px");
+  });
 
-  value = parser.consumeComponentValue();
-  EXPECT_TRUE(std::holds_alternative<CSSSyntaxParser::PreservedToken>(value));
-  EXPECT_EQ(
-      std::get<CSSSyntaxParser::PreservedToken>(value).type(),
-      CSSTokenType::WhiteSpace);
+  consumePreservedToken(parser, [](const CSSPreservedToken& token) {
+    EXPECT_EQ(token.type(), CSSTokenType::WhiteSpace);
+  });
 
-  value = parser.consumeComponentValue();
-  EXPECT_TRUE(std::holds_alternative<CSSSyntaxParser::PreservedToken>(value));
-  EXPECT_EQ(
-      std::get<CSSSyntaxParser::PreservedToken>(value).type(),
-      CSSTokenType::Ident);
-  EXPECT_EQ(
-      std::get<CSSSyntaxParser::PreservedToken>(value).stringValue(), "solid");
+  consumePreservedToken(parser, [](const CSSPreservedToken& token) {
+    EXPECT_EQ(token.type(), CSSTokenType::Ident);
+    EXPECT_EQ(token.stringValue(), "solid");
+  });
 
-  value = parser.consumeComponentValue();
-  EXPECT_TRUE(std::holds_alternative<CSSSyntaxParser::PreservedToken>(value));
-  EXPECT_EQ(
-      std::get<CSSSyntaxParser::PreservedToken>(value).type(),
-      CSSTokenType::WhiteSpace);
+  consumePreservedToken(parser, [](const CSSPreservedToken& token) {
+    EXPECT_EQ(token.type(), CSSTokenType::WhiteSpace);
+  });
 
-  value = parser.consumeComponentValue();
-  EXPECT_TRUE(std::holds_alternative<CSSSyntaxParser::PreservedToken>(value));
-  EXPECT_EQ(
-      std::get<CSSSyntaxParser::PreservedToken>(value).type(),
-      CSSTokenType::Ident);
-  EXPECT_EQ(
-      std::get<CSSSyntaxParser::PreservedToken>(value).stringValue(), "black");
+  consumePreservedToken(parser, [](const CSSPreservedToken& token) {
+    EXPECT_EQ(token.type(), CSSTokenType::Ident);
+    EXPECT_EQ(token.stringValue(), "black");
+  });
 }
 
 TEST(CSSSyntaxParser, single_function_no_args) {
   CSSSyntaxParser parser{"foo()"};
 
-  auto value = parser.consumeComponentValue();
-  EXPECT_TRUE(std::holds_alternative<CSSSyntaxParser::Function>(value));
-
-  auto function = std::get<CSSSyntaxParser::Function>(value);
-  EXPECT_EQ(function.name, "foo");
-  EXPECT_TRUE(function.args.empty());
+  consumeFunction(parser, [&](const CSSFunctionBlock& function) {
+    EXPECT_EQ(function.name, "foo");
+  });
 }
 
 TEST(CSSSyntaxParser, single_function_with_args) {
   CSSSyntaxParser parser{"foo(a b, c)"};
 
-  auto value = parser.consumeComponentValue();
-  EXPECT_TRUE(std::holds_alternative<CSSSyntaxParser::Function>(value));
+  consumeFunction(parser, [&](const CSSFunctionBlock& function) {
+    EXPECT_EQ(function.name, "foo");
 
-  auto function = std::get<CSSSyntaxParser::Function>(value);
-  EXPECT_EQ(function.name, "foo");
-  EXPECT_EQ(function.args.size(), 6);
+    consumePreservedToken(parser, [](const CSSPreservedToken& token) {
+      EXPECT_EQ(token.type(), CSSTokenType::Ident);
+      EXPECT_EQ(token.stringValue(), "a");
+    });
 
-  auto arg0 = std::get<CSSSyntaxParser::PreservedToken>(function.args.at(0));
-  EXPECT_EQ(arg0.type(), CSSTokenType::Ident);
-  EXPECT_EQ(arg0.stringValue(), "a");
+    consumePreservedToken(parser, [](const CSSPreservedToken& token) {
+      EXPECT_EQ(token.type(), CSSTokenType::WhiteSpace);
+    });
 
-  auto arg1 = std::get<CSSSyntaxParser::PreservedToken>(function.args.at(1));
-  EXPECT_EQ(arg1.type(), CSSTokenType::WhiteSpace);
+    consumePreservedToken(parser, [](const CSSPreservedToken& token) {
+      EXPECT_EQ(token.type(), CSSTokenType::Ident);
+      EXPECT_EQ(token.stringValue(), "b");
+    });
 
-  auto arg2 = std::get<CSSSyntaxParser::PreservedToken>(function.args.at(2));
-  EXPECT_EQ(arg2.type(), CSSTokenType::Ident);
-  EXPECT_EQ(arg2.stringValue(), "b");
+    consumePreservedToken(parser, [](const CSSPreservedToken& token) {
+      EXPECT_EQ(token.type(), CSSTokenType::Comma);
+    });
 
-  auto arg3 = std::get<CSSSyntaxParser::PreservedToken>(function.args.at(3));
-  EXPECT_EQ(arg3.type(), CSSTokenType::Comma);
+    consumePreservedToken(parser, [](const CSSPreservedToken& token) {
+      EXPECT_EQ(token.type(), CSSTokenType::WhiteSpace);
+    });
 
-  auto arg4 = std::get<CSSSyntaxParser::PreservedToken>(function.args.at(4));
-  EXPECT_EQ(arg4.type(), CSSTokenType::WhiteSpace);
-
-  auto arg5 = std::get<CSSSyntaxParser::PreservedToken>(function.args.at(5));
-  EXPECT_EQ(arg5.type(), CSSTokenType::Ident);
-  EXPECT_EQ(arg5.stringValue(), "c");
+    consumePreservedToken(parser, [](const CSSPreservedToken& token) {
+      EXPECT_EQ(token.type(), CSSTokenType::Ident);
+      EXPECT_EQ(token.stringValue(), "c");
+    });
+  });
 }
 
 TEST(CSSSyntaxParser, complex) {
   CSSSyntaxParser parser{"foo(a bar())baz() 12px"};
 
-  auto function1 =
-      std::get<CSSSyntaxParser::Function>(parser.consumeComponentValue());
-  EXPECT_EQ(function1.name, "foo");
-  EXPECT_EQ(function1.args.size(), 3);
+  consumeFunction(parser, [&](const CSSFunctionBlock& function) {
+    EXPECT_EQ(function.name, "foo");
 
-  auto arg0 = std::get<CSSSyntaxParser::PreservedToken>(function1.args.at(0));
-  EXPECT_EQ(arg0.type(), CSSTokenType::Ident);
-  EXPECT_EQ(arg0.stringValue(), "a");
+    consumePreservedToken(parser, [](const CSSPreservedToken& token) {
+      EXPECT_EQ(token.type(), CSSTokenType::Ident);
+      EXPECT_EQ(token.stringValue(), "a");
+    });
 
-  auto arg1 = std::get<CSSSyntaxParser::PreservedToken>(function1.args.at(1));
-  EXPECT_EQ(arg1.type(), CSSTokenType::WhiteSpace);
+    consumePreservedToken(parser, [](const CSSPreservedToken& token) {
+      EXPECT_EQ(token.type(), CSSTokenType::WhiteSpace);
+    });
 
-  auto arg2 = std::get<CSSSyntaxParser::Function>(function1.args.at(2));
-  EXPECT_EQ(arg2.name, "bar");
-  EXPECT_TRUE(arg2.args.empty());
+    consumeFunction(parser, [&](const CSSFunctionBlock& function) {
+      EXPECT_EQ(function.name, "bar");
+    });
+  });
 
-  auto function2 =
-      std::get<CSSSyntaxParser::Function>(parser.consumeComponentValue());
-  EXPECT_EQ(function2.name, "baz");
-  EXPECT_TRUE(function2.args.empty());
+  consumeFunction(parser, [&](const CSSFunctionBlock& function) {
+    EXPECT_EQ(function.name, "baz");
+  });
 
-  auto ws =
-      std::get<CSSSyntaxParser::PreservedToken>(parser.consumeComponentValue());
-  EXPECT_EQ(ws.type(), CSSTokenType::WhiteSpace);
+  consumePreservedToken(parser, [](const CSSPreservedToken& token) {
+    EXPECT_EQ(token.type(), CSSTokenType::WhiteSpace);
+  });
 
-  auto dim =
-      std::get<CSSSyntaxParser::PreservedToken>(parser.consumeComponentValue());
-  EXPECT_EQ(dim.type(), CSSTokenType::Dimension);
-  EXPECT_EQ(dim.numericValue(), 12.0f);
-  EXPECT_EQ(dim.unit(), "px");
+  consumePreservedToken(parser, [](const CSSPreservedToken& token) {
+    EXPECT_EQ(token.type(), CSSTokenType::Dimension);
+    EXPECT_EQ(token.numericValue(), 12.0f);
+    EXPECT_EQ(token.unit(), "px");
+  });
 }
 
 TEST(CSSSyntaxParser, unterminated_functions) {
-  EXPECT_TRUE(std::holds_alternative<std::monostate>(
-      CSSSyntaxParser{"foo("}.consumeComponentValue()));
+  EXPECT_FALSE(CSSSyntaxParser{"foo("}.consumeComponentValue<bool>(
+      [](const CSSFunctionBlock&) { return true; }));
 
-  EXPECT_TRUE(std::holds_alternative<std::monostate>(
-      CSSSyntaxParser{"foo(a bar()baz()"}.consumeComponentValue()));
+  EXPECT_FALSE(CSSSyntaxParser{"foo(a bar()baz()"}.consumeComponentValue<bool>(
+      [](const CSSFunctionBlock&) { return true; }));
+}
+
+TEST(CSSSyntaxParser, value_propagation) {
+  CSSSyntaxParser parser{"1px"};
+
+  auto length = parser.consumeComponentValue<float>(
+      [&](const CSSPreservedToken& token) { return token.numericValue(); });
+
+  EXPECT_EQ(length, 1.0f);
+}
+
+TEST(CSSSyntaxParser, simple_blocks) {
+  CSSSyntaxParser parser1{"(a)"};
+  auto identValue = parser1.consumeComponentValue<std::string_view>(
+      [&](const CSSSimpleBlock& block) {
+        EXPECT_EQ(block.openBracketType, CSSTokenType::OpenParen);
+        return parser1.consumeComponentValue<std::string_view>(
+            [](const CSSPreservedToken& token) {
+              EXPECT_EQ(token.type(), CSSTokenType::Ident);
+              return token.stringValue();
+            });
+      });
+  EXPECT_EQ(identValue, "a");
+
+  CSSSyntaxParser parser2{"[b ]"};
+  auto identValue2 = parser2.consumeComponentValue<std::string_view>(
+      [&](const CSSSimpleBlock& block) {
+        EXPECT_EQ(block.openBracketType, CSSTokenType::OpenSquare);
+        return parser2.consumeComponentValue<std::string_view>(
+            [](const CSSPreservedToken& token) {
+              EXPECT_EQ(token.type(), CSSTokenType::Ident);
+              return token.stringValue();
+            });
+      });
+  EXPECT_EQ(identValue2, "b");
+
+  CSSSyntaxParser parser3{"{c}"};
+  auto identValue3 = parser3.consumeComponentValue<std::string_view>(
+      [&](const CSSSimpleBlock& block) {
+        EXPECT_EQ(block.openBracketType, CSSTokenType::OpenCurly);
+        return parser3.consumeComponentValue<std::string_view>(
+            [](const CSSPreservedToken& token) {
+              EXPECT_EQ(token.type(), CSSTokenType::Ident);
+              return token.stringValue();
+            });
+      });
+  EXPECT_EQ(identValue3, "c");
+}
+
+TEST(CSSSyntaxParser, unterminated_simple_blocks) {
+  CSSSyntaxParser parser1{"(a"};
+  auto identValue = parser1.consumeComponentValue<std::string_view>(
+      [&](const CSSSimpleBlock& block) {
+        EXPECT_EQ(block.openBracketType, CSSTokenType::OpenParen);
+        return parser1.consumeComponentValue<std::string_view>(
+            [](const CSSPreservedToken& token) {
+              EXPECT_EQ(token.type(), CSSTokenType::Ident);
+              return token.stringValue();
+            });
+      });
+  EXPECT_EQ(identValue, "");
+
+  CSSSyntaxParser parser2{"[b "};
+  auto identValue2 = parser2.consumeComponentValue<std::string_view>(
+      [&](const CSSSimpleBlock& block) {
+        EXPECT_EQ(block.openBracketType, CSSTokenType::OpenSquare);
+        return parser2.consumeComponentValue<std::string_view>(
+            [](const CSSPreservedToken& token) {
+              EXPECT_EQ(token.type(), CSSTokenType::Ident);
+              return token.stringValue();
+            });
+      });
+  EXPECT_EQ(identValue2, "");
+
+  CSSSyntaxParser parser3{"{c"};
+  auto identValue3 = parser3.consumeComponentValue<std::string_view>(
+      [&](const CSSSimpleBlock& block) {
+        EXPECT_EQ(block.openBracketType, CSSTokenType::OpenCurly);
+        return parser3.consumeComponentValue<std::string_view>(
+            [](const CSSPreservedToken& token) {
+              EXPECT_EQ(token.type(), CSSTokenType::Ident);
+              return token.stringValue();
+            });
+      });
+  EXPECT_EQ(identValue3, "");
 }
 
 } // namespace facebook::react

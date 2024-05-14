@@ -16,7 +16,9 @@ namespace facebook::react {
  * https://www.w3.org/TR/css-syntax-3/#tokenizer-definitions
  */
 enum class CSSTokenType {
+  CloseCurly,
   CloseParen,
+  CloseSquare,
   Comma,
   Delim,
   Dimension,
@@ -24,7 +26,9 @@ enum class CSSTokenType {
   Function,
   Ident,
   Number,
+  OpenCurly,
   OpenParen,
+  OpenSquare,
   Percentage,
   WhiteSpace,
 };
