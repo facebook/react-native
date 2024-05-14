@@ -63,8 +63,8 @@ public object MountItemFactory {
   @JvmStatic
   public fun createIntBufferBatchMountItem(
       surfaceId: Int,
-      intBuf: IntArray?,
-      objBuf: Array<Any?>?,
+      intBuf: IntArray,
+      objBuf: Array<Any?>,
       commitNumber: Int
   ): MountItem = IntBufferBatchMountItem(surfaceId, intBuf, objBuf, commitNumber)
 }

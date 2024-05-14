@@ -776,9 +776,12 @@ public class FabricUIManager
   @AnyThread
   @ThreadConfined(ANY)
   private MountItem createIntBufferBatchMountItem(
-      int rootTag, int[] intBuffer, Object[] objBuffer, int commitNumber) {
+      int rootTag, @Nullable int[] intBuffer, @Nullable Object[] objBuffer, int commitNumber) {
     return MountItemFactory.createIntBufferBatchMountItem(
-        rootTag, intBuffer, objBuffer, commitNumber);
+        rootTag,
+        intBuffer == null ? new int[0] : intBuffer,
+        objBuffer == null ? new Object[0] : objBuffer,
+        commitNumber);
   }
 
   /**
