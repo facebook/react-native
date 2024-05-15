@@ -7629,8 +7629,12 @@ function requestUpdateLane(fiber) {
   if (0 !== (executionContext & 2) && 0 !== workInProgressRootRenderLanes)
     return workInProgressRootRenderLanes & -workInProgressRootRenderLanes;
   fiber = ReactCurrentBatchConfig$1.transition;
-  null !== fiber && fiber._callbacks.add(handleAsyncAction);
   if (null !== fiber)
+    if (!fiber._callbacks) {
+      fiber._callbacks = new Set();
+    }
+    fiber._callbacks.add(handleAsyncAction);
+    
     return (
       0 === currentEventTransitionLane &&
         (currentEventTransitionLane = claimNextTransitionLane()),

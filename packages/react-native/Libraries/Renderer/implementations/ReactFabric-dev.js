@@ -17912,6 +17912,10 @@ to return true:wantsResponderID|                            |
       var transition = ReactCurrentBatchConfig$1.transition;
 
       if (transition !== null) {
+        if (!transition._callbacks) {
+          transition._callbacks = new Set();
+        }
+
         // Whenever a transition update is scheduled, register a callback on the
         // transition object so we can get the return value of the scope function.
         transition._callbacks.add(handleAsyncAction);
