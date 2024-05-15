@@ -58,6 +58,8 @@ commands:
             # Set ruby dependencies
             rbenv global << parameters.ruby_version >>
             if [[ << parameters.ruby_version >> == "2.6.10" ]]; then
+              # RubyGems 3.0.3.1 breaks Bundler
+              gem update --system 3.2.3
               gem install bundler -v 2.4.22
             else
               gem install bundler
