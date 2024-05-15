@@ -62,8 +62,6 @@ import java.util.concurrent.TimeoutException;
  */
 public final class BridgeDevSupportManager extends DevSupportManagerBase {
   private boolean mIsSamplingProfilerEnabled = false;
-  private ReactInstanceDevHelper mReactInstanceManagerHelper;
-  private @Nullable DevLoadingViewManager mDevLoadingViewManager;
 
   public BridgeDevSupportManager(
       Context applicationContext,
@@ -211,7 +209,11 @@ public final class BridgeDevSupportManager extends DevSupportManagerBase {
       String bundleURL =
           getDevServerHelper()
               .getDevServerBundleURL(Assertions.assertNotNull(getJSAppBundleName()));
-      reloadJSFromServer(bundleURL);
+      reloadJSFromServer(
+          bundleURL,
+          () ->
+              UiThreadUtil.runOnUiThread(
+                  () -> getReactInstanceDevHelper().onJSBundleLoadedFromServer()));
     }
   }
 

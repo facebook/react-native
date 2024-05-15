@@ -52,6 +52,7 @@ import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.devsupport.DevSupportManagerBase;
 import com.facebook.react.devsupport.InspectorFlags;
 import com.facebook.react.devsupport.ReleaseDevSupportManager;
+import com.facebook.react.devsupport.interfaces.BundleLoadCallback;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.devsupport.interfaces.DevSupportManager.PausedInDebuggerOverlayCommandListener;
 import com.facebook.react.fabric.ComponentFactory;
@@ -1183,10 +1184,6 @@ public class ReactHostImpl implements ReactHost {
     return taskCompletionSource.getTask();
   }
 
-  /**
-   * TODO(T104078367): Ensure that if creating this JSBundleLoader fails, we route the errors
-   * through ReactHost's error reporting pipeline
-   */
   private Task<JSBundleLoader> loadJSBundleFromMetro() {
     final String method = "loadJSBundleFromMetro()";
     log(method);
@@ -1202,12 +1199,20 @@ public class ReactHostImpl implements ReactHost {
 
     asyncDevSupportManager.reloadJSFromServer(
         bundleURL,
-        () -> {
-          log(method, "Creating BundleLoader");
-          JSBundleLoader bundleLoader =
-              JSBundleLoader.createCachedBundleFromNetworkLoader(
-                  bundleURL, asyncDevSupportManager.getDownloadedJSBundleFile());
-          taskCompletionSource.setResult(bundleLoader);
+        new BundleLoadCallback() {
+          @Override
+          public void onSuccess() {
+            log(method, "Creating BundleLoader");
+            JSBundleLoader bundleLoader =
+                JSBundleLoader.createCachedBundleFromNetworkLoader(
+                    bundleURL, asyncDevSupportManager.getDownloadedJSBundleFile());
+            taskCompletionSource.setResult(bundleLoader);
+          }
+
+          @Override
+          public void onError(Exception cause) {
+            taskCompletionSource.setError(cause);
+          }
         });
 
     return taskCompletionSource.getTask();
