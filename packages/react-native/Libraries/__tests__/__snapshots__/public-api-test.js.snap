@@ -5888,12 +5888,6 @@ declare export function isIgnored(value: mixed): boolean;
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/NativeModules/specs/NativeAnimationsDebugModule.js 1`] = `
-"export * from \\"../../../src/private/specs/modules/NativeAnimationsDebugModule\\";
-declare export default typeof NativeAnimationsDebugModule;
-"
-`;
-
 exports[`public API should not change unintentionally Libraries/NativeModules/specs/NativeDevMenu.js 1`] = `
 "export * from \\"../../../src/private/specs/modules/NativeDevMenu\\";
 declare export default typeof NativeDevMenu;
