@@ -105,7 +105,7 @@
   if (currentClassImp != baseClassImp) {
     NSString *warnMessage =
         @"If you are using the `createRootViewWithBridge` to customize the root view appearence,"
-         "for example to set the backgroundColor, please migrate to `customiseView` method.\n"
+         "for example to set the backgroundColor, please migrate to `customizeRootView` method.\n"
          "The `createRootViewWithBridge` method is not invoked in bridgeless.";
     RCTLogWarn(@"%@", warnMessage);
   }
