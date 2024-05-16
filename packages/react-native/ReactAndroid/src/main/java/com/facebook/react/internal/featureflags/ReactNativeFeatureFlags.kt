@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c35ee97cf5c4b5f77cdd045341f2848b>>
+ * @generated SignedSource<<0d5f4b26573154fb42c312b03c0dc6a7>>
  */
 
 /**
@@ -123,6 +123,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun preventDoubleTextMeasure(): Boolean = accessor.preventDoubleTextMeasure()
+
+  /**
+   * Propagate layout direction to Android views.
+   */
+  @JvmStatic
+  public fun setAndroidLayoutDirection(): Boolean = accessor.setAndroidLayoutDirection()
 
   /**
    * When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.

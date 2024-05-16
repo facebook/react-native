@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a9582288194b7e00f20bf6071458da61>>
+ * @generated SignedSource<<1818a852d68148dbabfe5bebd4142ae2>>
  */
 
 /**
@@ -47,6 +47,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool inspectorEnableModernCDPRegistry();
   bool lazyAnimationCallbacks();
   bool preventDoubleTextMeasure();
+  bool setAndroidLayoutDirection();
   bool useModernRuntimeScheduler();
   bool useNativeViewConfigsInBridgelessMode();
   bool useStateAlignmentMechanism();
@@ -60,7 +61,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 19> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 20> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> allowCollapsableChildren_;
@@ -78,6 +79,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> inspectorEnableModernCDPRegistry_;
   std::atomic<std::optional<bool>> lazyAnimationCallbacks_;
   std::atomic<std::optional<bool>> preventDoubleTextMeasure_;
+  std::atomic<std::optional<bool>> setAndroidLayoutDirection_;
   std::atomic<std::optional<bool>> useModernRuntimeScheduler_;
   std::atomic<std::optional<bool>> useNativeViewConfigsInBridgelessMode_;
   std::atomic<std::optional<bool>> useStateAlignmentMechanism_;

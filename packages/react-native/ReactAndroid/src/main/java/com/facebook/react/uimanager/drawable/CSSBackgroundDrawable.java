@@ -7,6 +7,7 @@
 
 package com.facebook.react.uimanager.drawable;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -119,7 +120,9 @@ public class CSSBackgroundDrawable extends Drawable {
   private BorderRadiusStyle mBorderRadius = new BorderRadiusStyle();
   private ComputedBorderRadius mComputedBorderRadius = new ComputedBorderRadius();
   private final Context mContext;
-  private int mLayoutDirection;
+
+  // Should be removed after migrating to Android layout direction.
+  private int mLayoutDirectionOverride = -1;
 
   public CSSBackgroundDrawable(Context context) {
     mContext = context;
@@ -161,6 +164,19 @@ public class CSSBackgroundDrawable extends Drawable {
   @Override
   public void setColorFilter(ColorFilter cf) {
     // do nothing
+  }
+
+  @Deprecated
+  public void setLayoutDirectionOverride(int layoutDirection) {
+    if (mLayoutDirectionOverride != layoutDirection) {
+      mLayoutDirectionOverride = layoutDirection;
+    }
+  }
+
+  @Override
+  @SuppressLint("WrongConstant")
+  public int getLayoutDirection() {
+    return mLayoutDirectionOverride == -1 ? super.getLayoutDirection() : mLayoutDirectionOverride;
   }
 
   @Override
@@ -292,25 +308,6 @@ public class CSSBackgroundDrawable extends Drawable {
     invalidateSelf();
   }
 
-  /** Similar to Drawable.getLayoutDirection, but available in APIs < 23. */
-  public int getResolvedLayoutDirection() {
-    return mLayoutDirection;
-  }
-
-  /** Similar to Drawable.setLayoutDirection, but available in APIs < 23. */
-  public boolean setResolvedLayoutDirection(int layoutDirection) {
-    if (mLayoutDirection != layoutDirection) {
-      mLayoutDirection = layoutDirection;
-      return onResolvedLayoutDirectionChanged(layoutDirection);
-    }
-    return false;
-  }
-
-  /** Similar to Drawable.onLayoutDirectionChanged, but available in APIs < 23. */
-  public boolean onResolvedLayoutDirectionChanged(int layoutDirection) {
-    return false;
-  }
-
   @VisibleForTesting
   public int getColor() {
     return mColor;
@@ -392,7 +389,7 @@ public class CSSBackgroundDrawable extends Drawable {
         // Clip inner border
         canvas.clipPath(mInnerClipPathForBorderRadius, Region.Op.DIFFERENCE);
 
-        final boolean isRTL = getResolvedLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
+        final boolean isRTL = getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
         int colorStart = getBorderColor(Spacing.START);
         int colorEnd = getBorderColor(Spacing.END);
 
@@ -591,7 +588,7 @@ public class CSSBackgroundDrawable extends Drawable {
 
     mComputedBorderRadius =
         mBorderRadius.resolve(
-            mLayoutDirection,
+            getLayoutDirection(),
             mContext,
             mOuterClipTempRectForBorderRadius.width(),
             mOuterClipTempRectForBorderRadius.height());
@@ -1080,7 +1077,7 @@ public class CSSBackgroundDrawable extends Drawable {
         colorTop = colorBlockStart;
       }
 
-      final boolean isRTL = getResolvedLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
+      final boolean isRTL = getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
       int colorStart = getBorderColor(Spacing.START);
       int colorEnd = getBorderColor(Spacing.END);
 
@@ -1305,7 +1302,7 @@ public class CSSBackgroundDrawable extends Drawable {
     float borderRightWidth = getBorderWidthOrDefaultTo(borderWidth, Spacing.RIGHT);
 
     if (mBorderWidth != null) {
-      final boolean isRTL = getResolvedLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
+      final boolean isRTL = getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
       float borderStartWidth = mBorderWidth.getRaw(Spacing.START);
       float borderEndWidth = mBorderWidth.getRaw(Spacing.END);
 

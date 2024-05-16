@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<48f657b282ef658ab7e9024f470d37ad>>
+ * @generated SignedSource<<8f6a50230ef99335baa5929070b94ddc>>
  */
 
 /**
@@ -40,6 +40,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var inspectorEnableModernCDPRegistryCache: Boolean? = null
   private var lazyAnimationCallbacksCache: Boolean? = null
   private var preventDoubleTextMeasureCache: Boolean? = null
+  private var setAndroidLayoutDirectionCache: Boolean? = null
   private var useModernRuntimeSchedulerCache: Boolean? = null
   private var useNativeViewConfigsInBridgelessModeCache: Boolean? = null
   private var useStateAlignmentMechanismCache: Boolean? = null
@@ -200,6 +201,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.preventDoubleTextMeasure()
       accessedFeatureFlags.add("preventDoubleTextMeasure")
       preventDoubleTextMeasureCache = cached
+    }
+    return cached
+  }
+
+  override fun setAndroidLayoutDirection(): Boolean {
+    var cached = setAndroidLayoutDirectionCache
+    if (cached == null) {
+      cached = currentProvider.setAndroidLayoutDirection()
+      accessedFeatureFlags.add("setAndroidLayoutDirection")
+      setAndroidLayoutDirectionCache = cached
     }
     return cached
   }

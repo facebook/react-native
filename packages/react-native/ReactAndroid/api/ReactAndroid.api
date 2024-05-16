@@ -2790,7 +2790,7 @@ public class com/facebook/react/fabric/mounting/SurfaceMountingManager {
 	public fun setJSResponder (IIZ)V
 	public fun stopSurface ()V
 	public fun updateEventEmitter (ILcom/facebook/react/fabric/events/EventEmitterWrapper;)V
-	public fun updateLayout (IIIIIII)V
+	public fun updateLayout (IIIIIIII)V
 	public fun updateOverflowInset (IIIII)V
 	public fun updatePadding (IIIII)V
 	public fun updateProps (ILcom/facebook/react/bridge/ReadableMap;)V
@@ -5527,12 +5527,11 @@ public class com/facebook/react/uimanager/drawable/CSSBackgroundDrawable : andro
 	public fun getComputedBorderRadius ()Lcom/facebook/react/uimanager/style/ComputedBorderRadius;
 	public fun getDirectionAwareBorderInsets ()Landroid/graphics/RectF;
 	public fun getFullBorderWidth ()F
+	public fun getLayoutDirection ()I
 	public fun getOpacity ()I
 	public fun getOutline (Landroid/graphics/Outline;)V
-	public fun getResolvedLayoutDirection ()I
 	public fun hasRoundedBorders ()Z
 	protected fun onBoundsChange (Landroid/graphics/Rect;)V
-	public fun onResolvedLayoutDirectionChanged (I)Z
 	public fun paddingBoxPath ()Landroid/graphics/Path;
 	public fun setAlpha (I)V
 	public fun setBorderColor (IFF)V
@@ -5542,9 +5541,9 @@ public class com/facebook/react/uimanager/drawable/CSSBackgroundDrawable : andro
 	public fun setBorderWidth (IF)V
 	public fun setColor (I)V
 	public fun setColorFilter (Landroid/graphics/ColorFilter;)V
+	public fun setLayoutDirectionOverride (I)V
 	public fun setRadius (F)V
 	public fun setRadius (FI)V
-	public fun setResolvedLayoutDirection (I)Z
 }
 
 public abstract interface class com/facebook/react/uimanager/events/BatchEventDispatchedListener {
@@ -6633,6 +6632,7 @@ public class com/facebook/react/views/scroll/OnScrollDispatchHelper {
 
 public class com/facebook/react/views/scroll/ReactHorizontalScrollContainerView : com/facebook/react/views/view/ReactViewGroup {
 	public fun <init> (Landroid/content/Context;)V
+	public fun getLayoutDirection ()I
 	protected fun onLayout (ZIIII)V
 	public fun setRemoveClippedSubviews (Z)V
 }
@@ -7927,7 +7927,6 @@ public class com/facebook/react/views/view/ReactViewGroup : android/view/ViewGro
 	public fun onInterceptTouchEvent (Landroid/view/MotionEvent;)Z
 	protected fun onLayout (ZIIII)V
 	protected fun onMeasure (II)V
-	public fun onRtlPropertiesChanged (I)V
 	protected fun onSizeChanged (IIII)V
 	public fun onTouchEvent (Landroid/view/MotionEvent;)Z
 	public fun removeView (Landroid/view/View;)V
