@@ -8,6 +8,7 @@
 package com.facebook.react.modules.i18nmanager
 
 import android.content.Context
+import android.content.pm.ApplicationInfo
 import androidx.core.text.TextUtilsCompat
 import androidx.core.view.ViewCompat
 import java.util.Locale
@@ -22,6 +23,19 @@ public class I18nUtil private constructor() {
       if (isRTLForced(context)) {
         true
       } else isRTLAllowed(context) && isDevicePreferredLanguageRTL
+
+  /**
+   * Android relies on the presence of `android:supportsRtl="true"` being set in order to resolve
+   * RTL as a layout direction for native Android views. RTL in React Native relies on this being
+   * set.
+   */
+  private fun applicationHasRtlSupport(context: Context): Boolean {
+    return (context.getApplicationInfo().flags and ApplicationInfo.FLAG_SUPPORTS_RTL) != 0
+  }
+
+  public fun hasRtlSupport(context: Context): Boolean {
+    return applicationHasRtlSupport(context) || isRTLAllowed(context)
+  }
 
   /**
    * Should be used very early during app start up Before the bridge is initialized
