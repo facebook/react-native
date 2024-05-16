@@ -173,7 +173,6 @@ public open class ReadableNativeMap protected constructor(hybridData: HybridData
         ReadableType.String -> {}
         ReadableType.Map -> hashMap[key] = Assertions.assertNotNull(getMap(key)).toHashMap()
         ReadableType.Array -> hashMap[key] = Assertions.assertNotNull(getArray(key)).toArrayList()
-        else -> throw IllegalArgumentException("Could not convert object with key: $key.")
       }
     }
     return hashMap
