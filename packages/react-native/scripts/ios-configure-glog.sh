@@ -43,11 +43,13 @@ EOF
 fi
 
 XCRUN="$(which xcrun)"
-if [ -z "$XCRUN" ]; then
-  export CC="$(which gcc)"
+if [ -n "$XCRUN" ]; then
+  export CC="$CC:-$(xcrun -find -sdk $PLATFORM_NAME cc) -arch $CURRENT_ARCH -isysroot $(xcrun -sdk $PLATFORM_NAME --show-sdk-path)"
+else
+  export CC="$CC:-$(which gcc)"
+  export CXX="$CXX:-$(which g++)"
 fi
-export CC="$(xcrun -find -sdk $PLATFORM_NAME cc) -arch $CURRENT_ARCH -isysroot $(xcrun -sdk $PLATFORM_NAME --show-sdk-path)"
-export CXX="$CC"
+export CXX="$CCX:-$CC"
 
 # Remove automake symlink if it exists
 if [ -h "test-driver" ]; then
