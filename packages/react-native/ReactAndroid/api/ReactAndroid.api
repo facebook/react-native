@@ -1413,7 +1413,7 @@ public class com/facebook/react/bridge/ReadableNativeMap : com/facebook/react/br
 	public fun getDynamic (Ljava/lang/String;)Lcom/facebook/react/bridge/Dynamic;
 	public fun getEntryIterator ()Ljava/util/Iterator;
 	public fun getInt (Ljava/lang/String;)I
-	public static fun getJNIPassCounter ()I
+	public static final fun getJNIPassCounter ()I
 	public fun getLong (Ljava/lang/String;)J
 	public synthetic fun getMap (Ljava/lang/String;)Lcom/facebook/react/bridge/ReadableMap;
 	public fun getMap (Ljava/lang/String;)Lcom/facebook/react/bridge/ReadableNativeMap;
@@ -1542,7 +1542,7 @@ public class com/facebook/react/bridge/WritableNativeArray : com/facebook/react/
 	public fun pushString (Ljava/lang/String;)V
 }
 
-public class com/facebook/react/bridge/WritableNativeMap : com/facebook/react/bridge/ReadableNativeMap, com/facebook/react/bridge/WritableMap {
+public final class com/facebook/react/bridge/WritableNativeMap : com/facebook/react/bridge/ReadableNativeMap, com/facebook/react/bridge/WritableMap {
 	public fun <init> ()V
 	public fun copy ()Lcom/facebook/react/bridge/WritableMap;
 	public fun merge (Lcom/facebook/react/bridge/ReadableMap;)V
