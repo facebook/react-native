@@ -59,6 +59,7 @@ public abstract class com/facebook/react/HeadlessJsTaskService : android/app/Ser
 public final class com/facebook/react/JSEngineResolutionAlgorithm : java/lang/Enum {
 	public static final field HERMES Lcom/facebook/react/JSEngineResolutionAlgorithm;
 	public static final field JSC Lcom/facebook/react/JSEngineResolutionAlgorithm;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/JSEngineResolutionAlgorithm;
 	public static fun values ()[Lcom/facebook/react/JSEngineResolutionAlgorithm;
 }
@@ -926,6 +927,7 @@ public final class com/facebook/react/bridge/MemoryPressure : java/lang/Enum {
 	public static final field CRITICAL Lcom/facebook/react/bridge/MemoryPressure;
 	public static final field MODERATE Lcom/facebook/react/bridge/MemoryPressure;
 	public static final field UI_HIDDEN Lcom/facebook/react/bridge/MemoryPressure;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/bridge/MemoryPressure;
 	public static fun values ()[Lcom/facebook/react/bridge/MemoryPressure;
 }
@@ -1431,6 +1433,7 @@ public final class com/facebook/react/bridge/ReadableType : java/lang/Enum {
 	public static final field Null Lcom/facebook/react/bridge/ReadableType;
 	public static final field Number Lcom/facebook/react/bridge/ReadableType;
 	public static final field String Lcom/facebook/react/bridge/ReadableType;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/bridge/ReadableType;
 	public static fun values ()[Lcom/facebook/react/bridge/ReadableType;
 }
@@ -1685,6 +1688,7 @@ public final class com/facebook/react/common/LifecycleState : java/lang/Enum {
 	public static final field BEFORE_CREATE Lcom/facebook/react/common/LifecycleState;
 	public static final field BEFORE_RESUME Lcom/facebook/react/common/LifecycleState;
 	public static final field RESUMED Lcom/facebook/react/common/LifecycleState;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/common/LifecycleState;
 	public static fun values ()[Lcom/facebook/react/common/LifecycleState;
 }
@@ -1853,6 +1857,7 @@ public final class com/facebook/react/common/mapbuffer/MapBuffer$DataType : java
 	public static final field LONG Lcom/facebook/react/common/mapbuffer/MapBuffer$DataType;
 	public static final field MAP Lcom/facebook/react/common/mapbuffer/MapBuffer$DataType;
 	public static final field STRING Lcom/facebook/react/common/mapbuffer/MapBuffer$DataType;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/common/mapbuffer/MapBuffer$DataType;
 	public static fun values ()[Lcom/facebook/react/common/mapbuffer/MapBuffer$DataType;
 }
@@ -2426,6 +2431,7 @@ public final class com/facebook/react/devsupport/interfaces/ErrorType : java/lan
 	public static final field JS Lcom/facebook/react/devsupport/interfaces/ErrorType;
 	public static final field NATIVE Lcom/facebook/react/devsupport/interfaces/ErrorType;
 	public final fun getDisplayName ()Ljava/lang/String;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public fun toString ()Ljava/lang/String;
 	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/devsupport/interfaces/ErrorType;
 	public static fun values ()[Lcom/facebook/react/devsupport/interfaces/ErrorType;
@@ -4211,6 +4217,7 @@ public final class com/facebook/react/uimanager/LengthPercentage$Companion {
 public final class com/facebook/react/uimanager/LengthPercentageType : java/lang/Enum {
 	public static final field PERCENT Lcom/facebook/react/uimanager/LengthPercentageType;
 	public static final field POINT Lcom/facebook/react/uimanager/LengthPercentageType;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/uimanager/LengthPercentageType;
 	public static fun values ()[Lcom/facebook/react/uimanager/LengthPercentageType;
 }
@@ -4264,6 +4271,7 @@ public final class com/facebook/react/uimanager/NativeKind : java/lang/Enum {
 	public static final field LEAF Lcom/facebook/react/uimanager/NativeKind;
 	public static final field NONE Lcom/facebook/react/uimanager/NativeKind;
 	public static final field PARENT Lcom/facebook/react/uimanager/NativeKind;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/uimanager/NativeKind;
 	public static fun values ()[Lcom/facebook/react/uimanager/NativeKind;
 }
@@ -4340,6 +4348,7 @@ public final class com/facebook/react/uimanager/PointerEvents : java/lang/Enum {
 	public static final field NONE Lcom/facebook/react/uimanager/PointerEvents;
 	public static final fun canBeTouchTarget (Lcom/facebook/react/uimanager/PointerEvents;)Z
 	public static final fun canChildrenBeTouchTarget (Lcom/facebook/react/uimanager/PointerEvents;)Z
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static final fun parsePointerEvents (Ljava/lang/String;)Lcom/facebook/react/uimanager/PointerEvents;
 	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/uimanager/PointerEvents;
 	public static fun values ()[Lcom/facebook/react/uimanager/PointerEvents;
@@ -5788,6 +5797,7 @@ public final class com/facebook/react/uimanager/events/TouchEventType : java/lan
 	public static final field END Lcom/facebook/react/uimanager/events/TouchEventType;
 	public static final field MOVE Lcom/facebook/react/uimanager/events/TouchEventType;
 	public static final field START Lcom/facebook/react/uimanager/events/TouchEventType;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static final fun getJSEventName (Lcom/facebook/react/uimanager/events/TouchEventType;)Ljava/lang/String;
 	public final fun getJsName ()Ljava/lang/String;
 	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/uimanager/events/TouchEventType;
@@ -5811,6 +5821,7 @@ public final class com/facebook/react/uimanager/layoutanimation/InterpolatorType
 	public static final field LINEAR Lcom/facebook/react/uimanager/layoutanimation/InterpolatorType;
 	public static final field SPRING Lcom/facebook/react/uimanager/layoutanimation/InterpolatorType;
 	public static final fun fromString (Ljava/lang/String;)Lcom/facebook/react/uimanager/layoutanimation/InterpolatorType;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/uimanager/layoutanimation/InterpolatorType;
 	public static fun values ()[Lcom/facebook/react/uimanager/layoutanimation/InterpolatorType;
 }
@@ -5846,6 +5857,7 @@ public final class com/facebook/react/uimanager/style/BorderRadiusProp : java/la
 	public static final field BORDER_TOP_LEFT_RADIUS Lcom/facebook/react/uimanager/style/BorderRadiusProp;
 	public static final field BORDER_TOP_RIGHT_RADIUS Lcom/facebook/react/uimanager/style/BorderRadiusProp;
 	public static final field BORDER_TOP_START_RADIUS Lcom/facebook/react/uimanager/style/BorderRadiusProp;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/uimanager/style/BorderRadiusProp;
 	public static fun values ()[Lcom/facebook/react/uimanager/style/BorderRadiusProp;
 }
@@ -6309,6 +6321,7 @@ public final class com/facebook/react/views/image/ImageResizeMethod : java/lang/
 	public static final field AUTO Lcom/facebook/react/views/image/ImageResizeMethod;
 	public static final field RESIZE Lcom/facebook/react/views/image/ImageResizeMethod;
 	public static final field SCALE Lcom/facebook/react/views/image/ImageResizeMethod;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/views/image/ImageResizeMethod;
 	public static fun values ()[Lcom/facebook/react/views/image/ImageResizeMethod;
 }
@@ -7037,6 +7050,7 @@ public final class com/facebook/react/views/scroll/ScrollEventType : java/lang/E
 	public static final field MOMENTUM_BEGIN Lcom/facebook/react/views/scroll/ScrollEventType;
 	public static final field MOMENTUM_END Lcom/facebook/react/views/scroll/ScrollEventType;
 	public static final field SCROLL Lcom/facebook/react/views/scroll/ScrollEventType;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static final fun getJSEventName (Lcom/facebook/react/views/scroll/ScrollEventType;)Ljava/lang/String;
 	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/views/scroll/ScrollEventType;
 	public static fun values ()[Lcom/facebook/react/views/scroll/ScrollEventType;
