@@ -5,18 +5,16 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.bridge;
-
+package com.facebook.react.bridge
 /**
  * Interface that represent javascript callback function which can be passed to the native module as
  * a method parameter.
  */
-public interface Callback {
-
+public fun interface Callback {
   /**
-   * Schedule javascript function execution represented by this {@link Callback} instance
+   * Schedule javascript function execution represented by this [Callback] instance
    *
    * @param args arguments passed to javascript callback method via bridge
    */
-  void invoke(Object... args);
+  public operator fun invoke(vararg args: Any?)
 }
