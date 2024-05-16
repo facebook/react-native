@@ -43,6 +43,14 @@ class CSSTokenizer {
         return consumeCharacter(CSSTokenType::OpenParen);
       case ')':
         return consumeCharacter(CSSTokenType::CloseParen);
+      case '[':
+        return consumeCharacter(CSSTokenType::OpenSquare);
+      case ']':
+        return consumeCharacter(CSSTokenType::CloseSquare);
+      case '{':
+        return consumeCharacter(CSSTokenType::OpenCurly);
+      case '}':
+        return consumeCharacter(CSSTokenType::CloseCurly);
       case ',':
         return consumeCharacter(CSSTokenType::Comma);
       case '+':

@@ -8,6 +8,7 @@
 #pragma once
 
 #include <optional>
+#include <type_traits>
 
 #include <react/renderer/css/CSSAngleUnit.h>
 #include <react/renderer/css/CSSProperties.h>
@@ -18,190 +19,197 @@ namespace facebook::react {
 
 namespace detail {
 
+template <CSSDataType... AllowedTypesT>
 class CSSValueParser {
+  using CSSValue = CSSValueVariant<AllowedTypesT...>;
+
  public:
-  explicit inline CSSValueParser(std::string_view css)
-      : parser_{css}, currentComponentValue_{parser_.consumeComponentValue()} {}
+  explicit constexpr CSSValueParser(std::string_view css) : parser_{css} {}
 
   /*
    * Attempts to parse the characters starting at the current component value
    * into one of the given data types.
    */
-  template <CSSDataType... AllowedTypesT>
-  inline CSSValueVariant<AllowedTypesT...> consumeValue() {
-    using CSSValueT = CSSValueVariant<AllowedTypesT...>;
-
-    if (holdsToken()) {
-      switch (peekToken().type()) {
-        case CSSTokenType::Ident:
-          if (auto keywordValue =
-                  consumeIdentToken<CSSValueT, AllowedTypesT...>()) {
-            return *keywordValue;
+  constexpr CSSValue consumeValue(
+      CSSComponentValueDelimiter delimeter = CSSComponentValueDelimiter::None) {
+    return parser_.consumeComponentValue<CSSValue>(
+        delimeter, [&](const CSSPreservedToken& token) {
+          // CSS-global keywords
+          if constexpr (hasType<CSSWideKeyword>()) {
+            if (auto cssWideKeyword = consumeCSSWideKeyword(token)) {
+              return *cssWideKeyword;
+            }
           }
-          break;
-        case CSSTokenType::Dimension:
-          if (auto dimensionValue =
-                  consumeDimensionToken<CSSValueT, AllowedTypesT...>()) {
-            return *dimensionValue;
+          // Property-specific keywords
+          if constexpr (hasType<typename CSSValue::Keyword>()) {
+            if (auto keyword = consumeKeyword(token)) {
+              return *keyword;
+            }
           }
-          break;
-        case CSSTokenType::Percentage:
-          if (auto percentageValue =
-                  consumePercentageToken<CSSValueT, AllowedTypesT...>()) {
-            return *percentageValue;
+          // <ratio>
+          if constexpr (hasType<CSSRatio>()) {
+            if (auto ratio = consumeRatio(token)) {
+              return *ratio;
+            }
           }
-          break;
-        case CSSTokenType::Number:
-          if (auto numberValue =
-                  consumeNumberToken<CSSValueT, AllowedTypesT...>()) {
-            return *numberValue;
+          // <number>
+          if constexpr (hasType<CSSNumber>()) {
+            if (auto number = consumeNumber(token)) {
+              return *number;
+            }
           }
-          break;
-        default:
-          break;
-      }
-    }
+          // <length>
+          if constexpr (hasType<CSSLength>()) {
+            if (auto length = consumeLength(token)) {
+              return *length;
+            }
+          }
+          // <angle>
+          if constexpr (hasType<CSSAngle>()) {
+            if (auto angle = consumeAngle(token)) {
+              return *angle;
+            }
+          }
+          // <percentage>
+          if constexpr (hasType<CSSPercentage>()) {
+            if (auto percentage = consumePercentage(token)) {
+              return *percentage;
+            }
+          }
 
-    if (holdsFunction()) {
-      // Function component values not yet supported
-    }
-
-    consumeComponentValue();
-    return {};
-  }
-
-  inline void consumeWhitespace() {
-    while (holdsToken() && peekToken().type() == CSSTokenType::WhiteSpace) {
-      consumeComponentValue();
-    }
+          return CSSValue{};
+        });
+    // TODO: support function component values and simple blocks
   }
 
   constexpr bool isFinished() const {
-    return holdsToken() && peekToken().type() == CSSTokenType::EndOfFile;
+    return parser_.isFinished();
+  }
+
+  constexpr void consumeWhitespace() {
+    parser_.consumeWhitespace();
   }
 
  private:
-  constexpr const CSSSyntaxParser::ComponentValue& peek() const {
-    return currentComponentValue_;
+  template <CSSDataType T>
+  constexpr static bool hasType() {
+    return traits::containsType<T, AllowedTypesT...>();
   }
 
-  constexpr bool holdsToken() const {
-    return std::holds_alternative<CSSSyntaxParser::PreservedToken>(peek());
+  template <typename T>
+  constexpr static bool hasType() {
+    return false;
   }
 
-  constexpr bool holdsFunction() const {
-    return std::holds_alternative<CSSSyntaxParser::Function>(peek());
-  }
-
-  constexpr const CSSSyntaxParser::PreservedToken& peekToken() const {
-    return std::get<CSSSyntaxParser::PreservedToken>(peek());
-  }
-
-  constexpr const CSSSyntaxParser::Function& peekFunction() const {
-    return std::get<CSSSyntaxParser::Function>(peek());
-  }
-
-  inline CSSSyntaxParser::ComponentValue consumeComponentValue() {
-    auto prevComponentValue = std::move(currentComponentValue_);
-    currentComponentValue_ = parser_.consumeComponentValue();
-    return prevComponentValue;
-  }
-
-  inline CSSSyntaxParser::PreservedToken consumeToken() {
-    return std::get<CSSSyntaxParser::PreservedToken>(consumeComponentValue());
-  }
-
-  inline CSSSyntaxParser::Function consumeFunction() {
-    return std::get<CSSSyntaxParser::Function>(consumeComponentValue());
-  }
-
-  template <typename CSSValueT, CSSDataType... AllowedTypesT>
-  inline std::optional<CSSValueT> consumeIdentToken() {
-    if constexpr (!std::is_same_v<typename CSSValueT::Keyword, void>) {
-      if (auto keyword = parseCSSKeyword<typename CSSValueT::Keyword>(
-              peekToken().stringValue())) {
-        consumeComponentValue();
-        return CSSValueT::keyword(*keyword);
-      }
-    }
-    if constexpr (traits::containsType<CSSWideKeyword, AllowedTypesT...>()) {
-      if (auto keyword =
-              parseCSSKeyword<CSSWideKeyword>(peekToken().stringValue())) {
-        consumeComponentValue();
-        return CSSValueT::cssWideKeyword(*keyword);
+  constexpr std::optional<CSSValue> consumeKeyword(
+      const CSSPreservedToken& token) {
+    if (token.type() == CSSTokenType::Ident) {
+      if (auto keyword = parseCSSKeyword<typename CSSValue::Keyword>(
+              token.stringValue())) {
+        return CSSValue::keyword(*keyword);
       }
     }
     return {};
   }
 
-  template <typename CSSValueT, CSSDataType... AllowedTypesT>
-  inline std::optional<CSSValueT> consumeDimensionToken() {
-    if constexpr (traits::containsType<CSSLength, AllowedTypesT...>()) {
-      if (auto unit = parseCSSLengthUnit(peekToken().unit())) {
-        return CSSValueT::length(consumeToken().numericValue(), *unit);
-      }
-    }
-    if constexpr (traits::containsType<CSSAngle, AllowedTypesT...>()) {
-      if (auto unit = parseCSSAngleUnit(peekToken().unit())) {
-        return CSSValueT::angle(
-            canonicalize(consumeToken().numericValue(), *unit));
+  constexpr std::optional<CSSValue> consumeCSSWideKeyword(
+      const CSSPreservedToken& token) {
+    if (token.type() == CSSTokenType::Ident) {
+      if (auto keyword = parseCSSKeyword<CSSWideKeyword>(token.stringValue())) {
+        return CSSValue::cssWideKeyword(*keyword);
       }
     }
     return {};
   }
 
-  template <typename CSSValueT, CSSDataType... AllowedTypesT>
-  constexpr std::optional<CSSValueT> consumePercentageToken() {
-    if constexpr (traits::containsType<CSSPercentage, AllowedTypesT...>()) {
-      return CSSValueT::percentage(consumeToken().numericValue());
+  constexpr std::optional<CSSValue> consumeAngle(
+      const CSSPreservedToken& token) {
+    if (token.type() == CSSTokenType::Dimension) {
+      if (auto unit = parseCSSAngleUnit(token.unit())) {
+        return CSSValue::angle(canonicalize(token.numericValue(), *unit));
+      }
     }
     return {};
   }
 
-  template <typename CSSValueT, CSSDataType... AllowedTypesT>
-  constexpr std::optional<CSSValueT> consumeNumberToken() {
+  constexpr std::optional<CSSValue> consumePercentage(
+      const CSSPreservedToken& token) {
+    if (token.type() == CSSTokenType::Percentage) {
+      return CSSValue::percentage(token.numericValue());
+    }
+
+    return {};
+  }
+
+  constexpr std::optional<CSSValue> consumeNumber(
+      const CSSPreservedToken& token) {
+    if (token.type() == CSSTokenType::Number) {
+      return CSSValue::number(token.numericValue());
+    }
+
+    return {};
+  }
+
+  constexpr std::optional<CSSValue> consumeLength(
+      const CSSPreservedToken& token) {
+    switch (token.type()) {
+      case CSSTokenType::Dimension:
+        if (auto unit = parseCSSLengthUnit(token.unit())) {
+          return CSSValue::length(token.numericValue(), *unit);
+        }
+        break;
+      case CSSTokenType::Number:
+        // For zero lengths the unit identifier is optional (i.e. can be
+        // syntactically represented as the <number> 0). However, if a 0
+        // could be parsed as either a <number> or a <length> in a
+        // property (such as line-height), it must parse as a <number>.
+        // https://www.w3.org/TR/css-values-4/#lengths
+        if (token.numericValue() == 0) {
+          return CSSValue::length(token.numericValue(), CSSLengthUnit::Px);
+        }
+        break;
+      default:
+        break;
+    }
+
+    return {};
+  }
+
+  constexpr std::optional<CSSValue> consumeRatio(
+      const CSSPreservedToken& token) {
     // <ratio> = <number [0,∞]> [ / <number [0,∞]> ]?
     // https://www.w3.org/TR/css-values-4/#ratio
-    if constexpr (traits::containsType<CSSRatio, AllowedTypesT...>()) {
-      if (isValidRatioPart(peekToken().numericValue())) {
-        float numerator = consumeToken().numericValue();
-        float denominator = 1.0;
+    if (isValidRatioPart(token.numericValue())) {
+      float numerator = token.numericValue();
 
-        consumeWhitespace();
+      CSSSyntaxParser lookaheadParser{parser_};
 
-        if (holdsToken() && peekToken().type() == CSSTokenType::Delim &&
-            peekToken().stringValue() == "/") {
-          consumeToken();
-          consumeWhitespace();
+      auto hasSolidus = lookaheadParser.consumeComponentValue<bool>(
+          CSSComponentValueDelimiter::Whitespace,
+          [&](const CSSPreservedToken& token) {
+            return token.type() == CSSTokenType::Delim &&
+                token.stringValue() == "/";
+          });
 
-          // TODO: for now, we don't support denominator being a function
-          // component value. CSS math functions allow substituion though, where
-          // this usage is valid.
-          if (holdsToken() && peekToken().type() == CSSTokenType::Number &&
-              isValidRatioPart(peekToken().numericValue())) {
-            denominator = consumeToken().numericValue();
-          } else {
-            return {};
-          }
-        }
-
-        return CSSValueT::ratio(numerator, denominator);
+      if (!hasSolidus) {
+        return CSSValue::ratio(numerator, 1.0f);
       }
-    }
 
-    if constexpr (traits::containsType<CSSNumber, AllowedTypesT...>()) {
-      return CSSValueT::number(consumeToken().numericValue());
-    }
+      // TODO: support math expression substituion for <number>
+      auto denominator =
+          lookaheadParser.consumeComponentValue<std::optional<float>>(
+              CSSComponentValueDelimiter::Whitespace,
+              [&](const CSSPreservedToken& token) {
+                if (token.type() == CSSTokenType::Number &&
+                    isValidRatioPart(token.numericValue())) {
+                  return std::optional(token.numericValue());
+                }
+                return std::optional<float>{};
+              });
 
-    // For zero lengths the unit identifier is optional (i.e. can be
-    // syntactically represented as the <number> 0). However, if a 0
-    // could be parsed as either a <number> or a <length> in a
-    // property (such as line-height), it must parse as a <number>.
-    // https://www.w3.org/TR/css-values-4/#lengths
-    if constexpr (traits::containsType<CSSLength, AllowedTypesT...>()) {
-      if (peekToken().numericValue() == 0) {
-        return CSSValueT::length(
-            consumeToken().numericValue(), CSSLengthUnit::Px);
+      if (denominator.has_value()) {
+        parser_ = lookaheadParser;
+        return CSSValue::ratio(numerator, *denominator);
       }
     }
 
@@ -217,17 +225,16 @@ class CSSValueParser {
   }
 
   CSSSyntaxParser parser_;
-  CSSSyntaxParser::ComponentValue currentComponentValue_;
 };
 
 template <CSSDataType... AllowedTypesT>
-inline void parseCSSValue(
+constexpr void parseCSSValue(
     std::string_view css,
     CSSValueVariant<AllowedTypesT...>& value) {
-  detail::CSSValueParser parser(css);
+  detail::CSSValueParser<AllowedTypesT...> parser(css);
 
   parser.consumeWhitespace();
-  auto componentValue = parser.consumeValue<AllowedTypesT...>();
+  auto componentValue = parser.consumeValue();
   parser.consumeWhitespace();
 
   if (parser.isFinished()) {
