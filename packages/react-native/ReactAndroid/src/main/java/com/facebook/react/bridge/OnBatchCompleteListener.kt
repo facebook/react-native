@@ -5,10 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.bridge;
+package com.facebook.react.bridge
 
 /** Interface for a module that will be notified when a batch of JS->Java calls has finished. */
-public interface OnBatchCompleteListener {
-
-  void onBatchComplete();
+public fun interface OnBatchCompleteListener {
+  public fun onBatchComplete()
 }
