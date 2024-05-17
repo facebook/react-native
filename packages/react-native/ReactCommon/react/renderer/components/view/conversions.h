@@ -481,88 +481,6 @@ inline Float toRadians(
 }
 
 inline void fromRawValue(
-    const PropsParserContext& context,
-    const RawValue& value,
-    Transform& result) {
-  auto transformMatrix = Transform{};
-  react_native_expect(value.hasType<std::vector<RawValue>>());
-  if (!value.hasType<std::vector<RawValue>>()) {
-    result = transformMatrix;
-    return;
-  }
-
-  auto configurations = static_cast<std::vector<RawValue>>(value);
-  for (const auto& configuration : configurations) {
-    if (!configuration.hasType<std::unordered_map<std::string, RawValue>>()) {
-      // TODO: The following checks have to be removed after codegen is shipped.
-      // See T45151459.
-      continue;
-    }
-
-    auto configurationPair =
-        static_cast<std::unordered_map<std::string, RawValue>>(configuration);
-    auto pair = configurationPair.begin();
-    auto operation = pair->first;
-    auto& parameters = pair->second;
-
-    if (operation == "matrix") {
-      react_native_expect(parameters.hasType<std::vector<Float>>());
-      auto numbers = (std::vector<Float>)parameters;
-      react_native_expect(numbers.size() == transformMatrix.matrix.size());
-      auto i = 0;
-      for (auto number : numbers) {
-        transformMatrix.matrix[i++] = number;
-      }
-      transformMatrix.operations.push_back(
-          TransformOperation{TransformOperationType::Arbitrary, 0, 0, 0});
-    } else if (operation == "perspective") {
-      transformMatrix =
-          transformMatrix * Transform::Perspective((Float)parameters);
-    } else if (operation == "rotateX") {
-      transformMatrix = transformMatrix *
-          Transform::Rotate(toRadians(parameters, 0.0f), 0, 0);
-    } else if (operation == "rotateY") {
-      transformMatrix = transformMatrix *
-          Transform::Rotate(0, toRadians(parameters, 0.0f), 0);
-    } else if (operation == "rotateZ" || operation == "rotate") {
-      transformMatrix = transformMatrix *
-          Transform::Rotate(0, 0, toRadians(parameters, 0.0f));
-    } else if (operation == "scale") {
-      auto number = (Float)parameters;
-      transformMatrix =
-          transformMatrix * Transform::Scale(number, number, number);
-    } else if (operation == "scaleX") {
-      transformMatrix =
-          transformMatrix * Transform::Scale((Float)parameters, 1, 1);
-    } else if (operation == "scaleY") {
-      transformMatrix =
-          transformMatrix * Transform::Scale(1, (Float)parameters, 1);
-    } else if (operation == "scaleZ") {
-      transformMatrix =
-          transformMatrix * Transform::Scale(1, 1, (Float)parameters);
-    } else if (operation == "translate") {
-      auto numbers = (std::vector<Float>)parameters;
-      transformMatrix = transformMatrix *
-          Transform::Translate(numbers.at(0), numbers.at(1), 0);
-    } else if (operation == "translateX") {
-      transformMatrix =
-          transformMatrix * Transform::Translate((Float)parameters, 0, 0);
-    } else if (operation == "translateY") {
-      transformMatrix =
-          transformMatrix * Transform::Translate(0, (Float)parameters, 0);
-    } else if (operation == "skewX") {
-      transformMatrix =
-          transformMatrix * Transform::Skew(toRadians(parameters, 0.0f), 0);
-    } else if (operation == "skewY") {
-      transformMatrix =
-          transformMatrix * Transform::Skew(0, toRadians(parameters, 0.0f));
-    }
-  }
-
-  result = transformMatrix;
-}
-
-inline void fromRawValue(
     const PropsParserContext& /*context*/,
     const RawValue& value,
     ValueUnit& result) {
@@ -589,6 +507,125 @@ inline void fromRawValue(
   }
 
   result = valueUnit;
+}
+
+inline void fromRawValue(
+    const PropsParserContext& context,
+    const RawValue& value,
+    Transform& result) {
+  auto transformMatrix = Transform{};
+  react_native_expect(value.hasType<std::vector<RawValue>>());
+  if (!value.hasType<std::vector<RawValue>>()) {
+    result = transformMatrix;
+    return;
+  }
+
+  auto configurations = static_cast<std::vector<RawValue>>(value);
+  for (const auto& configuration : configurations) {
+    if (!configuration.hasType<std::unordered_map<std::string, RawValue>>()) {
+      // TODO: The following checks have to be removed after codegen is shipped.
+      // See T45151459.
+      continue;
+    }
+
+    auto configurationPair =
+        static_cast<std::unordered_map<std::string, RawValue>>(configuration);
+    auto pair = configurationPair.begin();
+    auto operation = pair->first;
+    auto& parameters = pair->second;
+    auto Zero = ValueUnit(0, UnitType::Point);
+    auto One = ValueUnit(1, UnitType::Point);
+
+    if (operation == "matrix") {
+      react_native_expect(parameters.hasType<std::vector<Float>>());
+      auto numbers = (std::vector<Float>)parameters;
+      react_native_expect(numbers.size() == transformMatrix.matrix.size());
+      auto i = 0;
+      for (auto number : numbers) {
+        transformMatrix.matrix[i++] = number;
+      }
+      transformMatrix.operations.push_back(TransformOperation{
+          TransformOperationType::Arbitrary, Zero, Zero, Zero});
+    } else if (operation == "perspective") {
+      transformMatrix.operations.push_back(TransformOperation{
+          TransformOperationType::Perspective,
+          ValueUnit((Float)parameters, UnitType::Point),
+          Zero,
+          Zero});
+    } else if (operation == "rotateX") {
+      transformMatrix.operations.push_back(TransformOperation{
+          TransformOperationType::Rotate,
+          ValueUnit(toRadians(parameters, 0.0f), UnitType::Point),
+          Zero,
+          Zero});
+    } else if (operation == "rotateY") {
+      transformMatrix.operations.push_back(TransformOperation{
+          TransformOperationType::Rotate,
+          Zero,
+          ValueUnit(toRadians(parameters, 0.0f), UnitType::Point),
+          Zero});
+    } else if (operation == "rotateZ" || operation == "rotate") {
+      transformMatrix.operations.push_back(TransformOperation{
+          TransformOperationType::Rotate,
+          Zero,
+          Zero,
+          ValueUnit(toRadians(parameters, 0.0f), UnitType::Point)});
+    } else if (operation == "scale") {
+      auto number = ValueUnit((Float)parameters, UnitType::Point);
+      transformMatrix.operations.push_back(TransformOperation{
+          TransformOperationType::Scale, number, number, number});
+    } else if (operation == "scaleX") {
+      transformMatrix.operations.push_back(TransformOperation{
+          TransformOperationType::Scale,
+          ValueUnit((Float)parameters, UnitType::Point),
+          One,
+          One});
+    } else if (operation == "scaleY") {
+      transformMatrix.operations.push_back(TransformOperation{
+          TransformOperationType::Scale,
+          One,
+          ValueUnit((Float)parameters, UnitType::Point),
+          One});
+    } else if (operation == "scaleZ") {
+      transformMatrix.operations.push_back(TransformOperation{
+          TransformOperationType::Scale,
+          One,
+          One,
+          ValueUnit((Float)parameters, UnitType::Point)});
+    } else if (operation == "translate") {
+      auto numbers = (std::vector<RawValue>)parameters;
+      ValueUnit valueX;
+      fromRawValue(context, numbers.at(0), valueX);
+      ValueUnit valueY;
+      fromRawValue(context, numbers.at(1), valueY);
+      transformMatrix.operations.push_back(TransformOperation{
+          TransformOperationType::Translate, valueX, valueY, Zero});
+    } else if (operation == "translateX") {
+      ValueUnit valueX;
+      fromRawValue(context, parameters, valueX);
+      transformMatrix.operations.push_back(TransformOperation{
+          TransformOperationType::Translate, valueX, Zero, Zero});
+    } else if (operation == "translateY") {
+      ValueUnit valueY;
+      fromRawValue(context, parameters, valueY);
+      transformMatrix.operations.push_back(TransformOperation{
+          TransformOperationType::Translate, Zero, valueY, Zero});
+    } else if (operation == "skewX") {
+      transformMatrix.operations.push_back(TransformOperation{
+          TransformOperationType::Skew,
+          ValueUnit(toRadians(parameters, 0.0f), UnitType::Point),
+          Zero,
+          Zero});
+    } else if (operation == "skewY") {
+      transformMatrix.operations.push_back(TransformOperation{
+          TransformOperationType::Skew,
+          Zero,
+          ValueUnit(toRadians(parameters, 0.0f), UnitType::Point),
+          Zero});
+    }
+  }
+
+  result = transformMatrix;
 }
 
 inline void fromRawValue(
