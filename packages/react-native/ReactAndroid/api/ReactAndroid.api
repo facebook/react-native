@@ -3351,6 +3351,7 @@ public final class com/facebook/react/modules/i18nmanager/I18nUtil {
 	public final fun doLeftAndRightSwapInRTL (Landroid/content/Context;)Z
 	public final fun forceRTL (Landroid/content/Context;Z)V
 	public static final fun getInstance ()Lcom/facebook/react/modules/i18nmanager/I18nUtil;
+	public final fun hasRtlSupport (Landroid/content/Context;)Z
 	public final fun isRTL (Landroid/content/Context;)Z
 	public final fun swapLeftAndRightInRTL (Landroid/content/Context;Z)V
 }
