@@ -11,6 +11,7 @@ import android.content.Context
 import android.util.LayoutDirection
 import com.facebook.react.modules.i18nmanager.I18nUtil
 import com.facebook.react.uimanager.LengthPercentage
+import com.facebook.react.uimanager.LengthPercentageType
 
 /** Represents the collection of possible border radius style properties. */
 public enum class BorderRadiusProp {
@@ -107,36 +108,90 @@ public data class BorderRadiusStyle(
       width: Float,
       height: Float,
   ): ComputedBorderRadius {
-    val topLeft: LengthPercentage? = startStart ?: topStart ?: topLeft ?: uniform
-    val topRight: LengthPercentage? = endStart ?: topEnd ?: topRight ?: uniform
-    val bottomLeft: LengthPercentage? = startEnd ?: bottomStart ?: bottomLeft ?: uniform
-    val bottomRight: LengthPercentage? = endEnd ?: bottomEnd ?: bottomRight ?: uniform
-
     return when (layoutDirection) {
       LayoutDirection.LTR ->
           ComputedBorderRadius(
-              topLeft = topLeft?.resolve(width, height) ?: 0f,
-              topRight = topRight?.resolve(width, height) ?: 0f,
-              bottomLeft = bottomLeft?.resolve(width, height) ?: 0f,
-              bottomRight = bottomRight?.resolve(width, height) ?: 0f,
-          )
+              topLeft =
+                  startStart?.resolve(width, height)
+                      ?: topStart?.resolve(width, height)
+                      ?: topLeft?.resolve(width, height)
+                      ?: uniform?.resolve(width, height)
+                      ?: LengthPercentage(0f, LengthPercentageType.POINT).resolve(width, height),
+              topRight =
+                  endStart?.resolve(width, height)
+                      ?: topEnd?.resolve(width, height)
+                      ?: topRight?.resolve(width, height)
+                      ?: uniform?.resolve(width, height)
+                      ?: LengthPercentage(0f, LengthPercentageType.POINT).resolve(width, height),
+              bottomLeft =
+                  startEnd?.resolve(width, height)
+                      ?: bottomStart?.resolve(width, height)
+                      ?: bottomLeft?.resolve(width, height)
+                      ?: uniform?.resolve(width, height)
+                      ?: LengthPercentage(0f, LengthPercentageType.POINT).resolve(width, height),
+              bottomRight =
+                  endEnd?.resolve(width, height)
+                      ?: bottomEnd?.resolve(width, height)
+                      ?: bottomRight?.resolve(width, height)
+                      ?: uniform?.resolve(width, height)
+                      ?: LengthPercentage(0f, LengthPercentageType.POINT).resolve(width, height))
       LayoutDirection.RTL ->
           if (I18nUtil.instance.doLeftAndRightSwapInRTL(context)) {
             ComputedBorderRadius(
-                topLeft = topRight?.resolve(width, height) ?: 0f,
-                topRight = topLeft?.resolve(width, height) ?: 0f,
-                bottomLeft = bottomRight?.resolve(width, height) ?: 0f,
-                bottomRight = bottomLeft?.resolve(width, height) ?: 0f,
+                topLeft =
+                    endStart?.resolve(width, height)
+                        ?: topEnd?.resolve(width, height)
+                        ?: topRight?.resolve(width, height)
+                        ?: uniform?.resolve(width, height)
+                        ?: LengthPercentage(0f, LengthPercentageType.POINT).resolve(width, height),
+                topRight =
+                    startStart?.resolve(width, height)
+                        ?: topStart?.resolve(width, height)
+                        ?: topLeft?.resolve(width, height)
+                        ?: uniform?.resolve(width, height)
+                        ?: LengthPercentage(0f, LengthPercentageType.POINT).resolve(width, height),
+                bottomLeft =
+                    endEnd?.resolve(width, height)
+                        ?: bottomStart?.resolve(width, height)
+                        ?: bottomRight?.resolve(width, height)
+                        ?: uniform?.resolve(width, height)
+                        ?: LengthPercentage(0f, LengthPercentageType.POINT).resolve(width, height),
+                bottomRight =
+                    startEnd?.resolve(width, height)
+                        ?: bottomEnd?.resolve(width, height)
+                        ?: bottomLeft?.resolve(width, height)
+                        ?: uniform?.resolve(width, height)
+                        ?: LengthPercentage(0f, LengthPercentageType.POINT).resolve(width, height),
             )
           } else {
             ComputedBorderRadius(
-                topLeft = topRight?.resolve(width, height) ?: 0f,
-                topRight = topLeft?.resolve(width, height) ?: 0f,
-                bottomLeft = bottomRight?.resolve(width, height) ?: 0f,
-                bottomRight = bottomLeft?.resolve(width, height) ?: 0f,
+                topLeft =
+                    endStart?.resolve(width, height)
+                        ?: topEnd?.resolve(width, height)
+                        ?: topLeft?.resolve(width, height)
+                        ?: uniform?.resolve(width, height)
+                        ?: LengthPercentage(0f, LengthPercentageType.POINT).resolve(width, height),
+                topRight =
+                    startStart?.resolve(width, height)
+                        ?: topStart?.resolve(width, height)
+                        ?: topRight?.resolve(width, height)
+                        ?: uniform?.resolve(width, height)
+                        ?: LengthPercentage(0f, LengthPercentageType.POINT).resolve(width, height),
+                bottomLeft =
+                    endEnd?.resolve(width, height)
+                        ?: bottomStart?.resolve(width, height)
+                        ?: bottomLeft?.resolve(width, height)
+                        ?: uniform?.resolve(width, height)
+                        ?: LengthPercentage(0f, LengthPercentageType.POINT).resolve(width, height),
+                bottomRight =
+                    startEnd?.resolve(width, height)
+                        ?: bottomEnd?.resolve(width, height)
+                        ?: bottomRight?.resolve(width, height)
+                        ?: uniform?.resolve(width, height)
+                        ?: LengthPercentage(0f, LengthPercentageType.POINT).resolve(width, height),
             )
           }
-      else -> throw IllegalArgumentException("Expected resolved layout direction")
+      else -> throw IllegalArgumentException("Expected?.resolved layout direction")
     }
   }
 }
