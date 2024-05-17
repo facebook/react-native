@@ -20,9 +20,8 @@ public class I18nUtil private constructor() {
    * * allows RTL layout when using RTL locale
    */
   public fun isRTL(context: Context): Boolean =
-      if (isRTLForced(context)) {
-        true
-      } else isRTLAllowed(context) && isDevicePreferredLanguageRTL
+      applicationHasRtlSupport(context) &&
+          (isRTLForced(context) || (isRTLAllowed(context) && isDevicePreferredLanguageRTL))
 
   /**
    * Android relies on the presence of `android:supportsRtl="true"` being set in order to resolve
@@ -31,10 +30,6 @@ public class I18nUtil private constructor() {
    */
   private fun applicationHasRtlSupport(context: Context): Boolean {
     return (context.getApplicationInfo().flags and ApplicationInfo.FLAG_SUPPORTS_RTL) != 0
-  }
-
-  public fun hasRtlSupport(context: Context): Boolean {
-    return applicationHasRtlSupport(context) || isRTLAllowed(context)
   }
 
   /**
