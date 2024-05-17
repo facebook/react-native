@@ -29,9 +29,11 @@ import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.Role;
+import com.facebook.react.uimanager.ReactWideGamutView;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.PointerEventHelper;
 import com.facebook.react.uimanager.util.ReactFindViewUtil;
+import com.facebook.react.views.view.ReactViewGroup;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -178,12 +180,20 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   }
 
   @Override
-  @ReactProp(
-      name = ViewProps.BACKGROUND_COLOR,
-      defaultInt = Color.TRANSPARENT,
-      customType = "Color")
   public void setBackgroundColor(@NonNull T view, int backgroundColor) {
     view.setBackgroundColor(backgroundColor);
+  }
+
+  @ReactProp(
+    name = ViewProps.BACKGROUND_COLOR,
+    defaultInt = Color.TRANSPARENT,
+    customType = "Color")
+  public void setBackgroundColor(@NonNull T view, long backgroundColor) {
+    if (view instanceof ReactWideGamutView) {
+      ((ReactWideGamutView) view).setBackgroundColor(backgroundColor);
+    } else {
+      view.setBackgroundColor(Color.toArgb(backgroundColor));
+    }
   }
 
   @Override
@@ -224,11 +234,18 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   }
 
   @Override
-  @ReactProp(name = ViewProps.SHADOW_COLOR, defaultInt = Color.BLACK, customType = "Color")
   public void setShadowColor(@NonNull T view, int shadowColor) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
       view.setOutlineAmbientShadowColor(shadowColor);
       view.setOutlineSpotShadowColor(shadowColor);
+    }
+  }
+
+  @ReactProp(name = ViewProps.SHADOW_COLOR, defaultInt = Color.BLACK, customType = "Color")
+  public void setShadowColor(@NonNull T view, long shadowColor) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+      view.setOutlineAmbientShadowColor(Color.toArgb(shadowColor));
+      view.setOutlineSpotShadowColor(Color.toArgb(shadowColor));
     }
   }
 

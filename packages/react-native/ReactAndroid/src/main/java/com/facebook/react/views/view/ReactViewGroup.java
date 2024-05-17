@@ -45,6 +45,7 @@ import com.facebook.react.uimanager.ReactClippingViewGroup;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 import com.facebook.react.uimanager.ReactOverflowViewWithInset;
 import com.facebook.react.uimanager.ReactPointerEventsView;
+import com.facebook.react.uimanager.ReactWideGamutView;
 import com.facebook.react.uimanager.ReactZIndexedViewGroup;
 import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.RootViewUtil;
@@ -65,6 +66,7 @@ public class ReactViewGroup extends ViewGroup
         ReactClippingViewGroup,
         ReactPointerEventsView,
         ReactHitSlopView,
+        ReactWideGamutView,
         ReactZIndexedViewGroup,
         ReactOverflowViewWithInset {
 
@@ -232,6 +234,14 @@ public class ReactViewGroup extends ViewGroup
     }
   }
 
+  public void setBackgroundColor(long color) {
+    if (color == Color.pack(Color.TRANSPARENT) && mReactBackgroundDrawable == null) {
+      // don't do anything, no need to allocate ReactBackgroundDrawable for transparent background
+    } else {
+      getOrCreateReactViewBackground().setColor(color);
+    }
+  }
+
   @Override
   public void setBackground(Drawable drawable) {
     throw new UnsupportedOperationException(
@@ -313,8 +323,8 @@ public class ReactViewGroup extends ViewGroup
     getOrCreateReactViewBackground().setBorderWidth(position, width);
   }
 
-  public void setBorderColor(int position, float rgb, float alpha) {
-    getOrCreateReactViewBackground().setBorderColor(position, rgb, alpha);
+  public void setBorderColor(int position, long color) {
+    getOrCreateReactViewBackground().setBorderColor(position, color);
   }
 
   /**
