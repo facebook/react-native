@@ -5518,32 +5518,30 @@ public abstract interface class com/facebook/react/uimanager/debug/NotThreadSafe
 
 public class com/facebook/react/uimanager/drawable/CSSBackgroundDrawable : android/graphics/drawable/Drawable {
 	public fun <init> (Landroid/content/Context;)V
-	public fun borderBoxPath ()Landroid/graphics/Path;
+	public final fun borderBoxPath ()Landroid/graphics/Path;
 	public fun draw (Landroid/graphics/Canvas;)V
-	public fun getAlpha ()I
-	public fun getBorderColor (I)I
-	public fun getBorderRadius ()Lcom/facebook/react/uimanager/style/BorderRadiusStyle;
-	public fun getBorderWidthOrDefaultTo (FI)F
-	public fun getComputedBorderRadius ()Lcom/facebook/react/uimanager/style/ComputedBorderRadius;
-	public fun getDirectionAwareBorderInsets ()Landroid/graphics/RectF;
-	public fun getFullBorderWidth ()F
+	public final fun getBorderColor (I)I
+	public final fun getBorderRadius ()Lcom/facebook/react/uimanager/style/BorderRadiusStyle;
+	public final fun getBorderWidthOrDefaultTo (FI)F
+	public final fun getComputedBorderRadius ()Lcom/facebook/react/uimanager/style/ComputedBorderRadius;
+	public final fun getDirectionAwareBorderInsets ()Landroid/graphics/RectF;
 	public fun getLayoutDirection ()I
 	public fun getOpacity ()I
 	public fun getOutline (Landroid/graphics/Outline;)V
-	public fun hasRoundedBorders ()Z
+	public final fun hasRoundedBorders ()Z
 	protected fun onBoundsChange (Landroid/graphics/Rect;)V
-	public fun paddingBoxPath ()Landroid/graphics/Path;
+	public final fun paddingBoxPath ()Landroid/graphics/Path;
 	public fun setAlpha (I)V
-	public fun setBorderColor (IFF)V
-	public fun setBorderRadius (Lcom/facebook/react/uimanager/style/BorderRadiusProp;Lcom/facebook/react/uimanager/LengthPercentage;)V
-	public fun setBorderRadius (Lcom/facebook/react/uimanager/style/BorderRadiusStyle;)V
-	public fun setBorderStyle (Ljava/lang/String;)V
-	public fun setBorderWidth (IF)V
-	public fun setColor (I)V
+	public final fun setBorderColor (IFF)V
+	public final fun setBorderRadius (Lcom/facebook/react/uimanager/style/BorderRadiusProp;Lcom/facebook/react/uimanager/LengthPercentage;)V
+	public final fun setBorderRadius (Lcom/facebook/react/uimanager/style/BorderRadiusStyle;)V
+	public final fun setBorderStyle (Ljava/lang/String;)V
+	public final fun setBorderWidth (IF)V
+	public final fun setColor (I)V
 	public fun setColorFilter (Landroid/graphics/ColorFilter;)V
-	public fun setLayoutDirectionOverride (I)V
-	public fun setRadius (F)V
-	public fun setRadius (FI)V
+	public final fun setLayoutDirectionOverride (I)V
+	public final fun setRadius (F)V
+	public final fun setRadius (FI)V
 }
 
 public abstract interface class com/facebook/react/uimanager/events/BatchEventDispatchedListener {
