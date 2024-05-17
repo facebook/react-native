@@ -35,6 +35,7 @@ import com.facebook.react.fabric.GuardedFrameCallback;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.mounting.MountingManager.MountItemExecutor;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.uimanager.IViewGroupManager;
@@ -301,6 +302,9 @@ public class SurfaceMountingManager {
           mRootViewManager = null;
           mMountItemExecutor = null;
           mThemedReactContext = null;
+          if (ReactNativeFeatureFlags.fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak()) {
+            mRemoveDeleteTreeUIFrameCallback = null;
+          }
           mOnViewAttachMountItems.clear();
 
           if (ReactFeatureFlags.enableViewRecycling) {

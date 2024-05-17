@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<48f657b282ef658ab7e9024f470d37ad>>
+ * @generated SignedSource<<67f1828f6a4cf9b2cf808be12d3fb06b>>
  */
 
 /**
@@ -35,6 +35,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var enableMicrotasksCache: Boolean? = null
   private var enableSynchronousStateUpdatesCache: Boolean? = null
   private var enableUIConsistencyCache: Boolean? = null
+  private var fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeakCache: Boolean? = null
   private var forceBatchingMountItemsOnAndroidCache: Boolean? = null
   private var inspectorEnableCxxInspectorPackagerConnectionCache: Boolean? = null
   private var inspectorEnableModernCDPRegistryCache: Boolean? = null
@@ -150,6 +151,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.enableUIConsistency()
       accessedFeatureFlags.add("enableUIConsistency")
       enableUIConsistencyCache = cached
+    }
+    return cached
+  }
+
+  override fun fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak(): Boolean {
+    var cached = fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeakCache
+    if (cached == null) {
+      cached = currentProvider.fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak()
+      accessedFeatureFlags.add("fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak")
+      fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeakCache = cached
     }
     return cached
   }

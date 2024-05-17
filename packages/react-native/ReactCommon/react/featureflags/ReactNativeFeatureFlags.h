@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0f7b95b5d42c879dabea8f7d53f9cc17>>
+ * @generated SignedSource<<4dd4bd2c61bff37de19a52b1bb60211c>>
  */
 
 /**
@@ -91,6 +91,11 @@ class ReactNativeFeatureFlags {
    * Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).
    */
   RN_EXPORT static bool enableUIConsistency();
+
+  /**
+   * Fixes a leak in SurfaceMountingManager.mRemoveDeleteTreeUIFrameCallback
+   */
+  RN_EXPORT static bool fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak();
 
   /**
    * Forces the mounting layer on Android to always batch mount items instead of dispatching them immediately. This might fix some crashes related to synchronous state updates, where some views dispatch state updates during mount.

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0f3d31f94f4bded41936fe4ecafbdd4a>>
+ * @generated SignedSource<<a6a65fe7d9b04671de407a03e1feb161>>
  */
 
 /**
@@ -44,6 +44,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun enableSynchronousStateUpdates(): Boolean
 
   @DoNotStrip public fun enableUIConsistency(): Boolean
+
+  @DoNotStrip public fun fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak(): Boolean
 
   @DoNotStrip public fun forceBatchingMountItemsOnAndroid(): Boolean
 

@@ -88,6 +88,11 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).',
     },
+    fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak: {
+      defaultValue: false,
+      description:
+        'Fixes a leak in SurfaceMountingManager.mRemoveDeleteTreeUIFrameCallback',
+    },
     forceBatchingMountItemsOnAndroid: {
       defaultValue: false,
       description:

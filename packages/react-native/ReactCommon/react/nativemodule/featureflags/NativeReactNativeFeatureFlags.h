@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a3aae2684ef3f10db61782fc7823704b>>
+ * @generated SignedSource<<07b3c6e705bdc70c7eba50d70b0dbf32>>
  */
 
 /**
@@ -56,6 +56,8 @@ class NativeReactNativeFeatureFlags
   bool enableSynchronousStateUpdates(jsi::Runtime& runtime);
 
   bool enableUIConsistency(jsi::Runtime& runtime);
+
+  bool fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak(jsi::Runtime& runtime);
 
   bool forceBatchingMountItemsOnAndroid(jsi::Runtime& runtime);
 
