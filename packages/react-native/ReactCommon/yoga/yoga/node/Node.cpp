@@ -10,6 +10,7 @@
 #include <iostream>
 
 #include <yoga/debug/AssertFatal.h>
+#include <yoga/debug/Log.h>
 #include <yoga/node/Node.h>
 #include <yoga/numeric/Comparison.h>
 
@@ -49,12 +50,31 @@ Node::Node(Node&& node) noexcept
 }
 
 YGSize Node::measure(
-    float width,
+    float availableWidth,
     MeasureMode widthMode,
-    float height,
+    float availableHeight,
     MeasureMode heightMode) {
-  return measureFunc_(
-      this, width, unscopedEnum(widthMode), height, unscopedEnum(heightMode));
+  const auto size = measureFunc_(
+      this,
+      availableWidth,
+      unscopedEnum(widthMode),
+      availableHeight,
+      unscopedEnum(heightMode));
+
+  if (yoga::isUndefined(size.height) || size.height < 0 ||
+      yoga::isUndefined(size.width) || size.width < 0) {
+    yoga::log(
+        this,
+        LogLevel::Warn,
+        "Measure function returned an invalid dimension to Yoga: [width=%f, height=%f]",
+        size.width,
+        size.height);
+    return {
+        .width = maxOrDefined(0.0f, size.width),
+        .height = maxOrDefined(0.0f, size.height)};
+  }
+
+  return size;
 }
 
 float Node::baseline(float width, float height) const {
