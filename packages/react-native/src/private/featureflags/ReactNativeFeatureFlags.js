@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7d51e120696413a287b048d6c4dd7b5c>>
+ * @generated SignedSource<<20c3c50d2124fbfc7bbe434c940ce3bf>>
  * @flow strict-local
  */
 
@@ -57,6 +57,7 @@ export type ReactNativeFeatureFlags = {
   inspectorEnableModernCDPRegistry: Getter<boolean>,
   lazyAnimationCallbacks: Getter<boolean>,
   preventDoubleTextMeasure: Getter<boolean>,
+  setAndroidLayoutDirection: Getter<boolean>,
   useModernRuntimeScheduler: Getter<boolean>,
   useNativeViewConfigsInBridgelessMode: Getter<boolean>,
   useStateAlignmentMechanism: Getter<boolean>,
@@ -170,6 +171,10 @@ export const lazyAnimationCallbacks: Getter<boolean> = createNativeFlagGetter('l
  * When enabled, ParagraphShadowNode will no longer call measure twice.
  */
 export const preventDoubleTextMeasure: Getter<boolean> = createNativeFlagGetter('preventDoubleTextMeasure', false);
+/**
+ * Propagate layout direction to Android views.
+ */
+export const setAndroidLayoutDirection: Getter<boolean> = createNativeFlagGetter('setAndroidLayoutDirection', false);
 /**
  * When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.
  */

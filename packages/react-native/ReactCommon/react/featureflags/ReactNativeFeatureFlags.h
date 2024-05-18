@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4dd4bd2c61bff37de19a52b1bb60211c>>
+ * @generated SignedSource<<c53481eb714387bf0a390fba1c02c331>>
  */
 
 /**
@@ -121,6 +121,11 @@ class ReactNativeFeatureFlags {
    * When enabled, ParagraphShadowNode will no longer call measure twice.
    */
   RN_EXPORT static bool preventDoubleTextMeasure();
+
+  /**
+   * Propagate layout direction to Android views.
+   */
+  RN_EXPORT static bool setAndroidLayoutDirection();
 
   /**
    * When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ad6b81206d1f410cd6c8d9109bd340bd>>
+ * @generated SignedSource<<5d0f0b1953af3f0dd2ee66fed2b1115a>>
  */
 
 /**
@@ -141,6 +141,12 @@ class ReactNativeFeatureFlagsProviderHolder
     return method(javaProvider_);
   }
 
+  bool setAndroidLayoutDirection() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("setAndroidLayoutDirection");
+    return method(javaProvider_);
+  }
+
   bool useModernRuntimeScheduler() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useModernRuntimeScheduler");
@@ -248,6 +254,11 @@ bool JReactNativeFeatureFlagsCxxInterop::preventDoubleTextMeasure(
   return ReactNativeFeatureFlags::preventDoubleTextMeasure();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::setAndroidLayoutDirection(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::setAndroidLayoutDirection();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::useModernRuntimeScheduler(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::useModernRuntimeScheduler();
@@ -331,6 +342,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "preventDoubleTextMeasure",
         JReactNativeFeatureFlagsCxxInterop::preventDoubleTextMeasure),
+      makeNativeMethod(
+        "setAndroidLayoutDirection",
+        JReactNativeFeatureFlagsCxxInterop::setAndroidLayoutDirection),
       makeNativeMethod(
         "useModernRuntimeScheduler",
         JReactNativeFeatureFlagsCxxInterop::useModernRuntimeScheduler),

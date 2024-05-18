@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<07b3c6e705bdc70c7eba50d70b0dbf32>>
+ * @generated SignedSource<<9653b7699416f1702ba2f5e8b8f6da93>>
  */
 
 /**
@@ -68,6 +68,8 @@ class NativeReactNativeFeatureFlags
   bool lazyAnimationCallbacks(jsi::Runtime& runtime);
 
   bool preventDoubleTextMeasure(jsi::Runtime& runtime);
+
+  bool setAndroidLayoutDirection(jsi::Runtime& runtime);
 
   bool useModernRuntimeScheduler(jsi::Runtime& runtime);
 

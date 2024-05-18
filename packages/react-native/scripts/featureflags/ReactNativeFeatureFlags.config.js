@@ -118,6 +118,10 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'When enabled, ParagraphShadowNode will no longer call measure twice.',
     },
+    setAndroidLayoutDirection: {
+      defaultValue: false,
+      description: 'Propagate layout direction to Android views.',
+    },
     useModernRuntimeScheduler: {
       defaultValue: false,
       description:

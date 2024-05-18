@@ -20,6 +20,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.mounting.MountingManager;
 import com.facebook.react.fabric.mounting.SurfaceMountingManager;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.systrace.Systrace;
 
@@ -150,9 +151,14 @@ final class IntBufferBatchMountItem implements BatchMountItem {
           int height = mIntBuffer[i++];
           int displayType = mIntBuffer[i++];
 
-          surfaceMountingManager.updateLayout(
-              reactTag, parentTag, x, y, width, height, displayType);
-
+          if (ReactNativeFeatureFlags.setAndroidLayoutDirection()) {
+            int layoutDirection = mIntBuffer[i++];
+            surfaceMountingManager.updateLayout(
+                reactTag, parentTag, x, y, width, height, displayType, layoutDirection);
+          } else {
+            surfaceMountingManager.updateLayout(
+                reactTag, parentTag, x, y, width, height, displayType, 0);
+          }
         } else if (type == INSTRUCTION_UPDATE_PADDING) {
           surfaceMountingManager.updatePadding(
               mIntBuffer[i++], mIntBuffer[i++], mIntBuffer[i++], mIntBuffer[i++], mIntBuffer[i++]);
