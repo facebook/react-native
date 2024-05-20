@@ -18,6 +18,7 @@ LazyShadowTreeRevisionConsistencyManager::
 void LazyShadowTreeRevisionConsistencyManager::updateCurrentRevision(
     SurfaceId surfaceId,
     RootShadowNode::Shared rootShadowNode) {
+  std::unique_lock lock(capturedRootShadowNodesForConsistencyMutex_);
   capturedRootShadowNodesForConsistency_[surfaceId] = std::move(rootShadowNode);
 }
 
@@ -26,18 +27,28 @@ void LazyShadowTreeRevisionConsistencyManager::updateCurrentRevision(
 RootShadowNode::Shared
 LazyShadowTreeRevisionConsistencyManager::getCurrentRevision(
     SurfaceId surfaceId) {
-  auto it = capturedRootShadowNodesForConsistency_.find(surfaceId);
-  if (it != capturedRootShadowNodesForConsistency_.end()) {
-    return it->second;
+  {
+    std::unique_lock lock(capturedRootShadowNodesForConsistencyMutex_);
+
+    auto it = capturedRootShadowNodesForConsistency_.find(surfaceId);
+    if (it != capturedRootShadowNodesForConsistency_.end()) {
+      return it->second;
+    }
   }
 
+  // This method is only going to be called from JS, so we don't need to protect
+  // the access to the shadow tree registry as well.
+  // If this was multi-threaded, we would need to protect it to avoid capturing
+  // root shadow nodes concurrently.
   RootShadowNode::Shared rootShadowNode;
-
   shadowTreeRegistry_.visit(surfaceId, [&](const ShadowTree& shadowTree) {
     rootShadowNode = shadowTree.getCurrentRevision().rootShadowNode;
   });
 
-  capturedRootShadowNodesForConsistency_[surfaceId] = rootShadowNode;
+  {
+    std::unique_lock lock(capturedRootShadowNodesForConsistencyMutex_);
+    capturedRootShadowNodesForConsistency_[surfaceId] = rootShadowNode;
+  }
 
   return rootShadowNode;
 }
@@ -65,6 +76,8 @@ void LazyShadowTreeRevisionConsistencyManager::unlockRevisions() {
   }
 
   isLocked_ = false;
+
+  std::unique_lock lock(capturedRootShadowNodesForConsistencyMutex_);
   capturedRootShadowNodesForConsistency_.clear();
 }
 
