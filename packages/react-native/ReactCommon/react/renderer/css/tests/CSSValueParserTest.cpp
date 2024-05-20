@@ -320,4 +320,61 @@ TEST(CSSValueParser, parse_length_prop_constexpr) {
   EXPECT_EQ(pxValue.getLength().unit, CSSLengthUnit::Px);
 }
 
+TEST(CSSValueParser, hex_color_values) {
+  auto emptyValue = parseCSSValue<CSSWideKeyword, CSSColor>("");
+  EXPECT_EQ(emptyValue.type(), CSSValueType::CSSWideKeyword);
+  EXPECT_EQ(emptyValue.getCSSWideKeyword(), CSSWideKeyword::Unset);
+
+  auto hex3DigitColorValue = parseCSSValue<CSSWideKeyword, CSSColor>("#fff");
+  EXPECT_EQ(hex3DigitColorValue.type(), CSSValueType::Color);
+  EXPECT_EQ(hex3DigitColorValue.getColor().r, 255);
+  EXPECT_EQ(hex3DigitColorValue.getColor().g, 255);
+  EXPECT_EQ(hex3DigitColorValue.getColor().b, 255);
+  EXPECT_EQ(hex3DigitColorValue.getColor().a, 255);
+
+  auto hex4DigitColorValue = parseCSSValue<CSSWideKeyword, CSSColor>("#ffff");
+  EXPECT_EQ(hex4DigitColorValue.type(), CSSValueType::Color);
+  EXPECT_EQ(hex4DigitColorValue.getColor().r, 255);
+  EXPECT_EQ(hex4DigitColorValue.getColor().g, 255);
+  EXPECT_EQ(hex4DigitColorValue.getColor().b, 255);
+  EXPECT_EQ(hex4DigitColorValue.getColor().a, 255);
+
+  auto hex6DigitColorValue = parseCSSValue<CSSWideKeyword, CSSColor>("#ffffff");
+  EXPECT_EQ(hex6DigitColorValue.type(), CSSValueType::Color);
+  EXPECT_EQ(hex6DigitColorValue.getColor().r, 255);
+  EXPECT_EQ(hex6DigitColorValue.getColor().g, 255);
+  EXPECT_EQ(hex6DigitColorValue.getColor().b, 255);
+  EXPECT_EQ(hex6DigitColorValue.getColor().a, 255);
+
+  auto hex8DigitColorValue =
+      parseCSSValue<CSSWideKeyword, CSSColor>("#ffffffff");
+  EXPECT_EQ(hex8DigitColorValue.type(), CSSValueType::Color);
+  EXPECT_EQ(hex8DigitColorValue.getColor().r, 255);
+  EXPECT_EQ(hex8DigitColorValue.getColor().g, 255);
+  EXPECT_EQ(hex8DigitColorValue.getColor().b, 255);
+  EXPECT_EQ(hex8DigitColorValue.getColor().a, 255);
+
+  auto hexMixedCaseColorValue =
+      parseCSSValue<CSSWideKeyword, CSSColor>("#FFCc99");
+  EXPECT_EQ(hexMixedCaseColorValue.type(), CSSValueType::Color);
+  EXPECT_EQ(hexMixedCaseColorValue.getColor().r, 255);
+  EXPECT_EQ(hexMixedCaseColorValue.getColor().g, 204);
+  EXPECT_EQ(hexMixedCaseColorValue.getColor().b, 153);
+  EXPECT_EQ(hexMixedCaseColorValue.getColor().a, 255);
+
+  auto hexDigitOnlyColorValue = parseCSSValue<CSSWideKeyword, CSSColor>("#369");
+  EXPECT_EQ(hexDigitOnlyColorValue.type(), CSSValueType::Color);
+  EXPECT_EQ(hexDigitOnlyColorValue.getColor().r, 51);
+  EXPECT_EQ(hexDigitOnlyColorValue.getColor().g, 102);
+  EXPECT_EQ(hexDigitOnlyColorValue.getColor().b, 153);
+  EXPECT_EQ(hexDigitOnlyColorValue.getColor().a, 255);
+
+  auto hexAlphaTestValue = parseCSSValue<CSSWideKeyword, CSSColor>("#FFFFFFCC");
+  EXPECT_EQ(hexAlphaTestValue.type(), CSSValueType::Color);
+  EXPECT_EQ(hexAlphaTestValue.getColor().r, 255);
+  EXPECT_EQ(hexAlphaTestValue.getColor().g, 255);
+  EXPECT_EQ(hexAlphaTestValue.getColor().b, 255);
+  EXPECT_EQ(hexAlphaTestValue.getColor().a, 204);
+}
+
 } // namespace facebook::react
