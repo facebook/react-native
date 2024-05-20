@@ -33,6 +33,39 @@ type State = {|
   },
 |};
 
+type Examples =
+  | 'callback'
+  | 'getArray'
+  | 'getBool'
+  | 'getConstants'
+  | 'getCustomEnum'
+  | 'getCustomHostObject'
+  | 'getBinaryTreeNode'
+  | 'getGraphNode'
+  | 'getNumEnum'
+  | 'getStrEnum'
+  | 'getMap'
+  | 'getNumber'
+  | 'getObject'
+  | 'getSet'
+  | 'getString'
+  | 'getUnion'
+  | 'getValue'
+  | 'promise'
+  | 'rejectPromise'
+  | 'voidFunc'
+  | 'setMenuItem'
+  | 'optionalArgs'
+  | 'emitDeviceEvent';
+
+type ErrorExamples =
+  | 'voidFuncThrows'
+  | 'getObjectThrows'
+  | 'promiseThrows'
+  | 'voidFuncAssert'
+  | 'getObjectAssert'
+  | 'promiseAssert';
+
 class SampleTurboModuleExample extends React.Component<{||}, State> {
   static contextType: React$Context<RootTag> = RootTagContext;
 
@@ -55,7 +88,6 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
       NativeSampleTurboModule.getValueWithPromise(true)
         .then(() => {})
         .catch(e => {
-          console.error(e);
           this._setResult('rejectPromise', e.message);
         }),
     getConstants: () => NativeSampleTurboModule.getConstants(),
@@ -80,6 +112,10 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
     getRootTag: () => NativeSampleTurboModule.getRootTag(this.context),
     getValue: () =>
       NativeSampleTurboModule.getValue(5, 'test', {a: 1, b: 'foo'}),
+  };
+
+  // $FlowFixMe[missing-local-annot]
+  _errorTests = {
     voidFuncThrows: () => {
       try {
         NativeSampleTurboModule.voidFuncThrows?.();
@@ -101,7 +137,6 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
         .then(() => {})
         .catch(e => {
           console.error(e);
-          this._setResult('promiseThrows', e.message);
         });
     },
     voidFuncAssert: () => {
@@ -125,34 +160,12 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
         .then(() => {})
         .catch(e => {
           console.error(e);
-          this._setResult('promiseAssert', e.message);
         });
     },
   };
 
   _setResult(
-    name:
-      | string
-      | 'callback'
-      | 'getArray'
-      | 'getBool'
-      | 'getEnum'
-      | 'getConstants'
-      | 'getNumber'
-      | 'getObject'
-      | 'getRootTag'
-      | 'getString'
-      | 'getUnsafeObject'
-      | 'getValue'
-      | 'promise'
-      | 'rejectPromise'
-      | 'voidFunc'
-      | 'voidFuncThrows'
-      | 'getObjectThrows'
-      | 'promiseThrows'
-      | 'voidFuncAssert'
-      | 'getObjectAssert'
-      | 'promiseAssert',
+    name: Examples | ErrorExamples,
     result:
       | $FlowFixMe
       | void
@@ -204,6 +217,7 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
             style={[styles.column, styles.button]}
             onPress={() =>
               Object.keys(this._tests).forEach(item =>
+                // $FlowFixMe[incompatible-call]
                 this._setResult(item, this._tests[item]()),
               )
             }>
@@ -216,13 +230,32 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
           </TouchableOpacity>
         </View>
         <FlatList
+          // $FlowFixMe[incompatible-type-arg]
           data={Object.keys(this._tests)}
           keyExtractor={item => item}
-          renderItem={({item}) => (
+          renderItem={({item}: {item: Examples, ...}) => (
             <View style={styles.item}>
               <TouchableOpacity
                 style={[styles.column, styles.button]}
                 onPress={e => this._setResult(item, this._tests[item]())}>
+                <Text style={styles.buttonText}>{item}</Text>
+              </TouchableOpacity>
+              <View style={[styles.column]}>{this._renderResult(item)}</View>
+            </View>
+          )}
+        />
+        <View style={styles.item}>
+          <Text style={styles.buttonTextLarge}>Report errors tests</Text>
+        </View>
+        <FlatList
+          // $FlowFixMe[incompatible-type-arg]
+          data={Object.keys(this._errorTests)}
+          keyExtractor={item => item}
+          renderItem={({item}: {item: ErrorExamples, ...}) => (
+            <View style={styles.item}>
+              <TouchableOpacity
+                style={[styles.column, styles.button]}
+                onPress={e => this._setResult(item, this._errorTests[item]())}>
                 <Text style={styles.buttonText}>{item}</Text>
               </TouchableOpacity>
               <View style={[styles.column]}>{this._renderResult(item)}</View>
