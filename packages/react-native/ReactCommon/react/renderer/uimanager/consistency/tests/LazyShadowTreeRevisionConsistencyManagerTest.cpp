@@ -301,4 +301,33 @@ TEST_F(LazyShadowTreeRevisionConsistencyManagerTest, testLockAfterUnlock) {
   consistencyManager_.unlockRevisions();
 }
 
+TEST_F(LazyShadowTreeRevisionConsistencyManagerTest, testUpdateToUnmounted) {
+  shadowTreeRegistry_.add(createShadowTree(0));
+
+  auto element = Element<RootShadowNode>();
+  auto builder = simpleComponentBuilder();
+  auto newRootShadowNode = builder.build(element);
+
+  shadowTreeRegistry_.visit(
+      0, [newRootShadowNode](const ShadowTree& shadowTree) {
+        shadowTree.commit(
+            [&](const RootShadowNode& /*oldRootShadowNode*/) {
+              return newRootShadowNode;
+            },
+            {});
+      });
+
+  consistencyManager_.lockRevisions();
+
+  EXPECT_EQ(
+      consistencyManager_.getCurrentRevision(0).get(), newRootShadowNode.get());
+
+  consistencyManager_.updateCurrentRevision(0, nullptr);
+
+  // Updated
+  EXPECT_EQ(consistencyManager_.getCurrentRevision(0).get(), nullptr);
+
+  consistencyManager_.unlockRevisions();
+}
+
 } // namespace facebook::react

@@ -18,6 +18,7 @@ LazyShadowTreeRevisionConsistencyManager::
 void LazyShadowTreeRevisionConsistencyManager::updateCurrentRevision(
     SurfaceId surfaceId,
     RootShadowNode::Shared rootShadowNode) {
+  std::unique_lock lock(capturedRootShadowNodesForConsistencyMutex_);
   capturedRootShadowNodesForConsistency_[surfaceId] = std::move(rootShadowNode);
 }
 
@@ -26,6 +27,8 @@ void LazyShadowTreeRevisionConsistencyManager::updateCurrentRevision(
 RootShadowNode::Shared
 LazyShadowTreeRevisionConsistencyManager::getCurrentRevision(
     SurfaceId surfaceId) {
+  std::unique_lock lock(capturedRootShadowNodesForConsistencyMutex_);
+
   auto it = capturedRootShadowNodesForConsistency_.find(surfaceId);
   if (it != capturedRootShadowNodesForConsistency_.end()) {
     return it->second;
@@ -65,6 +68,8 @@ void LazyShadowTreeRevisionConsistencyManager::unlockRevisions() {
   }
 
   isLocked_ = false;
+
+  std::unique_lock lock(capturedRootShadowNodesForConsistencyMutex_);
   capturedRootShadowNodesForConsistency_.clear();
 }
 
