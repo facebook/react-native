@@ -841,6 +841,48 @@ TEST_P(RuntimeSchedulerTest, sameThreadTaskCreatesImmediatePriorityTask) {
   EXPECT_EQ(stubQueue_->size(), 0);
 }
 
+TEST_P(RuntimeSchedulerTest, syncAccessReentryProtection) {
+  bool didRunFirstSyncTask = false;
+  bool didRunSecondSyncTask = false;
+  std::thread t1([this, &didRunFirstSyncTask, &didRunSecondSyncTask]() {
+    runtimeScheduler_->executeNowOnTheSameThread(
+        [this, &didRunFirstSyncTask, &didRunSecondSyncTask](
+            jsi::Runtime& /*runtime*/) {
+          didRunFirstSyncTask = true;
+          runtimeScheduler_->executeNowOnTheSameThread(
+              [&didRunSecondSyncTask](jsi::Runtime& /*runtime*/) {
+                EXPECT_FALSE(didRunSecondSyncTask);
+                didRunSecondSyncTask = true;
+              });
+
+          EXPECT_TRUE(didRunSecondSyncTask);
+        });
+  });
+
+  auto hasTask = stubQueue_->waitForTask();
+
+  EXPECT_TRUE(hasTask);
+  EXPECT_FALSE(didRunFirstSyncTask);
+  EXPECT_FALSE(didRunSecondSyncTask);
+  EXPECT_EQ(stubQueue_->size(), 1);
+
+  stubQueue_->tick();
+  t1.join();
+
+  if (GetParam()) {
+    EXPECT_EQ(stubQueue_->size(), 0);
+  } else {
+    // The legacy RuntimeScheduler always schedules a task and within the task
+    // it checks if the task queue is empty. Unlike the modern RuntimeScheduler,
+    // which bails out before scheduling a task.
+    EXPECT_EQ(stubQueue_->size(), 1);
+  }
+
+  EXPECT_TRUE(didRunFirstSyncTask);
+  EXPECT_TRUE(didRunSecondSyncTask);
+  EXPECT_FALSE(runtimeScheduler_->getShouldYield());
+}
+
 TEST_P(RuntimeSchedulerTest, sameThreadTaskCreatesLowPriorityTask) {
   bool didRunSynchronousTask = false;
   bool didRunSubsequentTask = false;
