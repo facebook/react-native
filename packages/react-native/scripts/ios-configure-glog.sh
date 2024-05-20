@@ -50,7 +50,7 @@ else
   export CC="$CC:-$(which gcc)"
   export CXX="$CXX:-$(which g++ || true)"
 fi
-export CXX="$CCX:-$CC"
+export CXX="$CXX:-$CC"
 
 # Remove automake symlink if it exists
 if [ -h "test-driver" ]; then
