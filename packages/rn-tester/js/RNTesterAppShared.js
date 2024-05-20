@@ -199,6 +199,10 @@ const RNTesterApp = ({
     [dispatch],
   );
   React.useEffect(() => {
+    // Initial deeplink
+    Linking.getInitialURL()
+      .then(url => url != null && handleOpenUrlRequest({url: url}))
+      .catch(_ => {});
     const subscription = Linking.addEventListener('url', handleOpenUrlRequest);
     return () => subscription.remove();
   }, [handleOpenUrlRequest]);
