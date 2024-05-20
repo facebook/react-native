@@ -28,7 +28,7 @@ public class LengthPercentage(
       return when (dynamic.getType()) {
         ReadableType.Number -> {
           val value = dynamic.asDouble()
-          if (value > 0f) {
+          if (value >= 0f) {
             LengthPercentage(PixelUtil.toPixelFromDIP(value), LengthPercentageType.POINT)
           } else {
             null
@@ -39,7 +39,7 @@ public class LengthPercentage(
           if (s.endsWith("%")) {
             try {
               val value = s.substring(0, s.length - 1).toFloat()
-              if (value > 0f) {
+              if (value >= 0f) {
                 LengthPercentage(value, LengthPercentageType.PERCENT)
               } else {
                 null

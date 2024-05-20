@@ -107,36 +107,40 @@ public data class BorderRadiusStyle(
       width: Float,
       height: Float,
   ): ComputedBorderRadius {
-    val topLeft: LengthPercentage? = startStart ?: topStart ?: topLeft ?: uniform
-    val topRight: LengthPercentage? = endStart ?: topEnd ?: topRight ?: uniform
-    val bottomLeft: LengthPercentage? = startEnd ?: bottomStart ?: bottomLeft ?: uniform
-    val bottomRight: LengthPercentage? = endEnd ?: bottomEnd ?: bottomRight ?: uniform
-
     return when (layoutDirection) {
       LayoutDirection.LTR ->
           ComputedBorderRadius(
-              topLeft = topLeft?.resolve(width, height) ?: 0f,
-              topRight = topRight?.resolve(width, height) ?: 0f,
-              bottomLeft = bottomLeft?.resolve(width, height) ?: 0f,
-              bottomRight = bottomRight?.resolve(width, height) ?: 0f,
+              topLeft =
+                  (startStart ?: topStart ?: topLeft ?: uniform)?.resolve(width, height) ?: 0f,
+              topRight = (endStart ?: topEnd ?: topRight ?: uniform)?.resolve(width, height) ?: 0f,
+              bottomLeft =
+                  (startEnd ?: bottomStart ?: bottomLeft ?: uniform)?.resolve(width, height) ?: 0f,
+              bottomRight =
+                  (endEnd ?: bottomEnd ?: bottomRight ?: uniform)?.resolve(width, height) ?: 0f,
           )
       LayoutDirection.RTL ->
           if (I18nUtil.instance.doLeftAndRightSwapInRTL(context)) {
             ComputedBorderRadius(
-                topLeft = topRight?.resolve(width, height) ?: 0f,
-                topRight = topLeft?.resolve(width, height) ?: 0f,
-                bottomLeft = bottomRight?.resolve(width, height) ?: 0f,
-                bottomRight = bottomLeft?.resolve(width, height) ?: 0f,
+                topLeft = (endStart ?: topEnd ?: topRight ?: uniform)?.resolve(width, height) ?: 0f,
+                topRight =
+                    (startStart ?: topStart ?: topLeft ?: uniform)?.resolve(width, height) ?: 0f,
+                bottomLeft =
+                    (endEnd ?: bottomStart ?: bottomRight ?: uniform)?.resolve(width, height) ?: 0f,
+                bottomRight =
+                    (startEnd ?: bottomEnd ?: bottomLeft ?: uniform)?.resolve(width, height) ?: 0f,
             )
           } else {
             ComputedBorderRadius(
-                topLeft = topRight?.resolve(width, height) ?: 0f,
-                topRight = topLeft?.resolve(width, height) ?: 0f,
-                bottomLeft = bottomRight?.resolve(width, height) ?: 0f,
-                bottomRight = bottomLeft?.resolve(width, height) ?: 0f,
+                topLeft = (endStart ?: topEnd ?: topLeft ?: uniform)?.resolve(width, height) ?: 0f,
+                topRight =
+                    (startStart ?: topStart ?: topRight ?: uniform)?.resolve(width, height) ?: 0f,
+                bottomLeft =
+                    (endEnd ?: bottomStart ?: bottomLeft ?: uniform)?.resolve(width, height) ?: 0f,
+                bottomRight =
+                    (startEnd ?: bottomEnd ?: bottomRight ?: uniform)?.resolve(width, height) ?: 0f,
             )
           }
-      else -> throw IllegalArgumentException("Expected resolved layout direction")
+      else -> throw IllegalArgumentException("Expected?.resolved layout direction")
     }
   }
 }
