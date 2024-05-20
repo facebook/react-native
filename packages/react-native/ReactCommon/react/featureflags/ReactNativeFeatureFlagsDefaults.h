@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<35a53d5dae3f58a924034a4a55bddb07>>
+ * @generated SignedSource<<2bfa4670757aa340c88ae8ff57270308>>
  */
 
 /**
@@ -55,11 +55,11 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool enableMicrotasks() override {
+  bool enableGranularShadowTreeStateReconciliation() override {
     return false;
   }
 
-  bool enableSpannableBuildingUnification() override {
+  bool enableMicrotasks() override {
     return false;
   }
 
@@ -71,7 +71,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool fixMountedFlagAndFixPreallocationClone() override {
+  bool fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak() override {
     return false;
   }
 
@@ -87,7 +87,15 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool lazyAnimationCallbacks() override {
+    return false;
+  }
+
   bool preventDoubleTextMeasure() override {
+    return false;
+  }
+
+  bool setAndroidLayoutDirection() override {
     return false;
   }
 

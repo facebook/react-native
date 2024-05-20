@@ -61,6 +61,10 @@ react {
   //   The hermes compiler command to run. By default it is 'hermesc'
   hermesCommand = "$reactNativeDirPath/ReactAndroid/hermes-engine/build/hermes/bin/hermesc"
   enableHermesOnlyInVariants = listOf("hermesDebug", "hermesRelease")
+
+  /* Autolinking */
+  //   The location of the monorepo lockfiles to `config` is cached correctly.
+  autolinkLockFiles = files("$rootDir/yarn.lock")
 }
 
 /** Run Proguard to shrink the Java bytecode in release builds. */

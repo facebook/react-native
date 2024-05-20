@@ -1,5 +1,48 @@
 # Changelog
 
+## 0.74.1
+
+### Added
+
+#### iOS Specific
+
+- Implement privacy manifest aggregation  ([4be1fafec8](https://github.com/facebook/react-native/commit/4be1fafec8edca5da5ebe515ad359d4178db7d23) by [@aleqsio](https://github.com/@aleqsio))
+
+### Changed
+
+- Align debugger Chrome launch flags with Meta-internal version ([93956e267c](https://github.com/facebook/react-native/commit/93956e267cd4f1a77adaa842a55ca6f2d0d1b9c5) by [@motiz88](https://github.com/@motiz88))
+- Update "Open Debugger" to print extended Flipper guidance ([261a58761c](https://github.com/facebook/react-native/commit/261a58761c2e7e10cc5cf0a63ed9785e1cdf097c) by [@huntie](https://github.com/@huntie))
+- Enable event loop by default when bridgeless is enabled ([b440672468](https://github.com/facebook/react-native/commit/b440672468b6d1d99cd322a4348dd90150703f24) by [@rubennorte](https://github.com/@rubennorte))
+- Upgrade `@react-native-community/cli` to 13.6.6 ([58b1f9b2d4](https://github.com/facebook/react-native/commit/58b1f9b2d4f617290a3a535153ff1e93a4672038) by [@szymonrybczak](https://github.com/@szymonrybczak))
+
+#### Android specific
+
+- Support more stubbed methods in `BridgelessCatalystInstance` ([cc1c69799e](https://github.com/facebook/react-native/commit/cc1c69799e284b368e3eaaac0ccd8e238384857f) by [@javache](https://github.com/@javache))
+
+
+### Fixed
+
+- Reset animation state in TouchableOpacity and TouchableBounce ([165cabb21f](https://github.com/facebook/react-native/commit/165cabb21f2419bde63acb4b52be2f4fb7a2ec2e) by [@sammy-SChttps://github.com/@sammy-]())
+- Add missing struct member initialization in Props.h ([13739510fb](https://github.com/facebook/react-native/commit/13739510fb1c2400fbae1df1635fb93dae55abaa) by [@alanleedev](https://github.com/@alanleedev))
+
+
+#### Android Specific
+
+- Split scheduler commit and flush delegate methods ([ff4b20e823](https://github.com/facebook/react-native/commit/ff4b20e823d2838b3f72e550e7a89daa08551a72) by [@javache](https://github.com/@javache))
+- Fixing exposing ReactDelegate through ReactActivity for reload ([7a841dbcd1](https://github.com/facebook/react-native/commit/7a841dbcd1b4eead77827eda2bd307f11babec1f) by [@arushikesarwani94](https://github.com/@arushikesarwani94))
+- Fix ReactActivity.getReactDelegate().reload() ([56631cd471](https://github.com/facebook/react-native/commit/56631cd471008c39fe6f771052c3f1af7085bd63) by [@kudo](https://github.com/@kudo))
+
+#### iOS Specific
+
+- Fix Symbol not found: (_JSGlobalContextSetInspectable) which crashed iOS <16.4 with JSC ([0a4d97362f](https://github.com/facebook/react-native/commit/0a4d97362f5a40cff62edce5200c3e7e8622d912) by [@cipolleschi](https://github.com/@cipolleschi))
+- Fallback to the first foregroundInactive window when there are no `foregroundActive` windows in RCTKeyWindow ([eaaf865449](https://github.com/facebook/react-native/commit/eaaf865449e6b89cc2794b68f314d01aa775748e) by [@cipolleschi](https://github.com/@cipolleschi))
+- Fix enable hermes debugger in Bridgeless mode ([3467f2f3a3](https://github.com/facebook/react-native/commit/3467f2f3a3319cc695bd729a8789c46d15ac8314) by [@Cipolleschi](https://github.com/@Cipolleschi))
+- Maintain correct content offset when scroll view is suspended ([305249f964](https://github.com/facebook/react-native/commit/305249f9642da50bf680b1401644eaba9d5dce50) by [@sammy-SChttps://github.com/@sammy-]())
+- Avoid calling abstract methods in RCTComposedViewRegistry ([59e7ed5038](https://github.com/facebook/react-native/commit/59e7ed50386cdae8f4a10d9ebc70566b9b36d01c) by [@cipolleschi](https://github.com/@cipolleschi))
+- Honor requiresMainQueueSetup in bridgeless mode for ViewManagers ([8813061286](https://github.com/facebook/react-native/commit/88130612864b40adf9001efed9fae2d1ab80b30c) by [@cipolleschi](https://github.com/@cipolleschi))
+
+
+
 ## 0.74.0
 
 ### Breaking
@@ -531,6 +574,26 @@
 
 - Bump activesupport to minimum 6.1.7.5 CVE-2023-38037. ([07a159f279](https://github.com/facebook/react-native/commit/07a159f279cdcbed29c9c437dec1c0b8ac2d852f) by [@lunaleaps](https://github.com/lunaleaps))
 
+## v0.73.8
+
+### Added
+
+#### iOS specific
+
+- Added privacy manifest to template ([520d120375](https://github.com/facebook/react-native/commit/520d120375c6b24bc161adea4f48d76537a34abc) by [@philIip](https://github.com/philIip)) (_fixed to include the file in the build_)
+
+### Changed
+
+- Update Hermes version ([1d0cbfd01b](https://github.com/facebook/react-native/commit/1d0cbfd01b1f47bcf5279d86a9ad9e0d28804346) by [@Titozzz](https://github.com/Titozzz))
+
+### Fixed
+
+#### iOS specific
+
+- Add `HERMES_ENABLE_DEBUGGER=1` flag to React-RuntimeApple ([794aaa52d3](https://github.com/facebook/react-native/commit/794aaa52d39f2c419fcd49126c69dff3030e7bb9) by [@cipolleschi](https://github.com/cipolleschi))
+- Fix Symbol not found: (_JSGlobalContextSetInspectable) ([224ac21568](https://github.com/facebook/react-native/commit/224ac21568278617c192bf00b6254d30c0957e11) by [@cipolleschi](https://github.com/cipolleschi))
+- Add missing dependency to React-RuntimeHermes podspec ([fd48b94319](https://github.com/facebook/react-native/commit/fd48b9431954be8a79d5c094173f064944ba86e6) by [@cipolleschi](https://github.com/cipolleschi))
+
 ## v0.73.7
 
 ### Fixed
@@ -625,6 +688,26 @@
 - Fix release build error due to a casing issue in hermes tarball path after download prebuilt tarball ([2e2f8a6689](https://github.com/facebook/react-native/commit/2e2f8a668907552070a2a53a47137b1449b66bbd) by [@wfern](https://github.com/wfern))
 - Fix race condition between A11yManager and UIManager ([f39f34ed82](https://github.com/facebook/react-native/commit/f39f34ed82997d0595522a285c3cb8693594e718) by [@cipolleschi](https://github.com/cipolleschi))
 - Fix symbol not found _jump_fcontext with use_frameworks ([a2771ce58a](https://github.com/facebook/react-native/commit/a2771ce58ac221d1ac0de265c1ce571212fbcf83) by [@cipolleschi](https://github.com/cipolleschi))
+
+## v0.72.14
+
+### Added
+
+#### iOS specific
+
+- add privacy manifest to hello world template ([d357a61ead](https://github.com/facebook/react-native/commit/d357a61ead033f30221f82f16aed771649c6d981) by [@phillip](https://github.com/phillip))
+
+### Changed
+
+#### iOS specific
+
+- Bumped hermes to remove Apple's RR API that were unused. Hermes does not requires a PrivacyManifest now ([ee14572](https://github.com/facebook/react-native/commit/ee14572e2438dabc1076c434fa99350ab2e1c4b9) by [@hurali97](https://github.com/hurali97))
+
+### Fixed
+
+#### iOS specific
+
+- fix Symbol not found: (_JSGlobalContextSetInspectable) ([ae4c62a](https://github.com/facebook/react-native/commit/ae4c62a933f7ffcfe4be8a3499fb6e1cbe7f1c43) by [@cipolleschi](https://github.com/cipolleschi))
 
 ## v0.72.13
 
@@ -1616,6 +1699,20 @@ This file contains all changelogs for latest releases, from 0.70.0 onward. Pleas
 #### iOS specific
 
 - Enable Address and Undefined Behavior Sanitizers on RNTester ([65e61f3c88](https://github.com/facebook/react-native/commit/65e61f3c88388d4a2ed88bcc9a2cb5ba63fd8afa) by [@Saadnajmi](https://github.com/Saadnajmi))
+
+## v0.71.19
+
+### Added
+
+#### iOS Specific
+
+- Add privacy manifest to pod install and hello world ([d669ff7df8](https://github.com/facebook/react-native/commit/d669ff7df8727decb18143065273077db93267b6) by [@philIip](https://github.com/philIip))
+
+### Changed
+
+#### iOS Specific
+
+- Bumped hermes to remove Apple's RR API that were unused. Hermes does not requires a PrivacyManifest now. ([d8d096d995](https://github.com/facebook/react-native/commit/d8d096d995eacf63bc76b6a7f2ec4265c9fc1f37) by [@cipolleschi](https://github.com/cipolleschi))
 
 ## v0.71.18
 

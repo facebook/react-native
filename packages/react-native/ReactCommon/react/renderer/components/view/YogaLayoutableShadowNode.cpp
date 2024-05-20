@@ -6,6 +6,7 @@
  */
 
 #include "YogaLayoutableShadowNode.h"
+#include <cxxreact/SystraceSection.h>
 #include <logger/react_native_log.h>
 #include <react/debug/flags.h>
 #include <react/debug/react_native_assert.h>
@@ -15,7 +16,6 @@
 #include <react/renderer/core/LayoutConstraints.h>
 #include <react/renderer/core/LayoutContext.h>
 #include <react/renderer/debug/DebugStringConvertibleItem.h>
-#include <react/renderer/debug/SystraceSection.h>
 #include <react/utils/CoreFeatures.h>
 #include <yoga/Yoga.h>
 #include <algorithm>
@@ -376,8 +376,11 @@ void YogaLayoutableShadowNode::updateYogaProps() {
   yogaNode_.setStyle(styleResult);
   if (getTraits().check(ShadowNodeTraits::ViewKind)) {
     auto& viewProps = static_cast<const ViewProps&>(*props_);
-    YGNodeSetAlwaysFormsContainingBlock(
-        &yogaNode_, viewProps.transform != Transform::Identity());
+    // https://developer.mozilla.org/en-US/docs/Web/CSS/Containing_block#identifying_the_containing_block
+    bool alwaysFormsContainingBlock =
+        viewProps.transform != Transform::Identity() ||
+        !viewProps.filter.empty();
+    YGNodeSetAlwaysFormsContainingBlock(&yogaNode_, alwaysFormsContainingBlock);
   }
 }
 

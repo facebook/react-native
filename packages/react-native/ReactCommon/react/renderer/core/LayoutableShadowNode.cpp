@@ -262,6 +262,14 @@ Point LayoutableShadowNode::getContentOriginOffset() const {
   return {0, 0};
 }
 
+bool LayoutableShadowNode::canBeTouchTarget() const {
+  return false;
+}
+
+bool LayoutableShadowNode::canChildrenBeTouchTarget() const {
+  return true;
+}
+
 LayoutableShadowNode::UnsharedList
 LayoutableShadowNode::getLayoutableChildNodes() const {
   LayoutableShadowNode::UnsharedList layoutableChildren;
@@ -314,12 +322,20 @@ ShadowNode::Shared LayoutableShadowNode::findNodeAtPoint(
   if (layoutableShadowNode == nullptr) {
     return nullptr;
   }
+
+  if (!layoutableShadowNode->canBeTouchTarget() &&
+      !layoutableShadowNode->canChildrenBeTouchTarget()) {
+    return nullptr;
+  }
+
   auto frame = layoutableShadowNode->getLayoutMetrics().frame;
   auto transformedFrame = frame * layoutableShadowNode->getTransform();
   auto isPointInside = transformedFrame.containsPoint(point);
 
   if (!isPointInside) {
     return nullptr;
+  } else if (!layoutableShadowNode->canChildrenBeTouchTarget()) {
+    return node;
   }
 
   auto newPoint = point - transformedFrame.origin -
@@ -340,7 +356,7 @@ ShadowNode::Shared LayoutableShadowNode::findNodeAtPoint(
       return hitView;
     }
   }
-  return isPointInside ? node : nullptr;
+  return layoutableShadowNode->canBeTouchTarget() ? node : nullptr;
 }
 
 #if RN_DEBUG_STRING_CONVERTIBLE

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4670cd532d74243e679e1fcd7731d8c8>>
+ * @generated SignedSource<<71ea09d31186aea96ff207b1015f155e>>
  */
 
 /**
@@ -49,12 +49,12 @@ bool ReactNativeFeatureFlags::enableCleanTextInputYogaNode() {
   return getAccessor().enableCleanTextInputYogaNode();
 }
 
-bool ReactNativeFeatureFlags::enableMicrotasks() {
-  return getAccessor().enableMicrotasks();
+bool ReactNativeFeatureFlags::enableGranularShadowTreeStateReconciliation() {
+  return getAccessor().enableGranularShadowTreeStateReconciliation();
 }
 
-bool ReactNativeFeatureFlags::enableSpannableBuildingUnification() {
-  return getAccessor().enableSpannableBuildingUnification();
+bool ReactNativeFeatureFlags::enableMicrotasks() {
+  return getAccessor().enableMicrotasks();
 }
 
 bool ReactNativeFeatureFlags::enableSynchronousStateUpdates() {
@@ -65,8 +65,8 @@ bool ReactNativeFeatureFlags::enableUIConsistency() {
   return getAccessor().enableUIConsistency();
 }
 
-bool ReactNativeFeatureFlags::fixMountedFlagAndFixPreallocationClone() {
-  return getAccessor().fixMountedFlagAndFixPreallocationClone();
+bool ReactNativeFeatureFlags::fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak() {
+  return getAccessor().fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak();
 }
 
 bool ReactNativeFeatureFlags::forceBatchingMountItemsOnAndroid() {
@@ -81,8 +81,16 @@ bool ReactNativeFeatureFlags::inspectorEnableModernCDPRegistry() {
   return getAccessor().inspectorEnableModernCDPRegistry();
 }
 
+bool ReactNativeFeatureFlags::lazyAnimationCallbacks() {
+  return getAccessor().lazyAnimationCallbacks();
+}
+
 bool ReactNativeFeatureFlags::preventDoubleTextMeasure() {
   return getAccessor().preventDoubleTextMeasure();
+}
+
+bool ReactNativeFeatureFlags::setAndroidLayoutDirection() {
+  return getAccessor().setAndroidLayoutDirection();
 }
 
 bool ReactNativeFeatureFlags::useModernRuntimeScheduler() {

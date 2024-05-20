@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<71bd0e6d2f2bd2c768b86a073451430c>>
+ * @generated SignedSource<<0ae7be647ca12c3efcc34f6098155550>>
  */
 
 /**
@@ -71,16 +71,16 @@ public object ReactNativeFeatureFlags {
   public fun enableCleanTextInputYogaNode(): Boolean = accessor.enableCleanTextInputYogaNode()
 
   /**
+   * When enabled, the renderer would only fail commits when they propagate state and the last commit that updated state changed before committing.
+   */
+  @JvmStatic
+  public fun enableGranularShadowTreeStateReconciliation(): Boolean = accessor.enableGranularShadowTreeStateReconciliation()
+
+  /**
    * Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).
    */
   @JvmStatic
   public fun enableMicrotasks(): Boolean = accessor.enableMicrotasks()
-
-  /**
-   * Uses new, deduplicated logic for constructing Android Spannables from text fragments
-   */
-  @JvmStatic
-  public fun enableSpannableBuildingUnification(): Boolean = accessor.enableSpannableBuildingUnification()
 
   /**
    * Dispatches state updates synchronously in Fabric (e.g.: updates the scroll position in the shadow tree synchronously from the main thread).
@@ -95,10 +95,10 @@ public object ReactNativeFeatureFlags {
   public fun enableUIConsistency(): Boolean = accessor.enableUIConsistency()
 
   /**
-   * Splits hasBeenMounted and promoted.
+   * Fixes a leak in SurfaceMountingManager.mRemoveDeleteTreeUIFrameCallback
    */
   @JvmStatic
-  public fun fixMountedFlagAndFixPreallocationClone(): Boolean = accessor.fixMountedFlagAndFixPreallocationClone()
+  public fun fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak(): Boolean = accessor.fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak()
 
   /**
    * Forces the mounting layer on Android to always batch mount items instead of dispatching them immediately. This might fix some crashes related to synchronous state updates, where some views dispatch state updates during mount.
@@ -119,10 +119,22 @@ public object ReactNativeFeatureFlags {
   public fun inspectorEnableModernCDPRegistry(): Boolean = accessor.inspectorEnableModernCDPRegistry()
 
   /**
+   * Only enqueue Choreographer calls if there is an ongoing animation, instead of enqueueing every frame.
+   */
+  @JvmStatic
+  public fun lazyAnimationCallbacks(): Boolean = accessor.lazyAnimationCallbacks()
+
+  /**
    * When enabled, ParagraphShadowNode will no longer call measure twice.
    */
   @JvmStatic
   public fun preventDoubleTextMeasure(): Boolean = accessor.preventDoubleTextMeasure()
+
+  /**
+   * Propagate layout direction to Android views.
+   */
+  @JvmStatic
+  public fun setAndroidLayoutDirection(): Boolean = accessor.setAndroidLayoutDirection()
 
   /**
    * When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.

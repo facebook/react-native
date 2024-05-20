@@ -289,21 +289,9 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
   return _moduleRegistry;
 }
 
-// Deprecated
-- (RCTModuleRegistry *)getModuleRegistry
-{
-  return self.moduleRegistry;
-}
-
 - (RCTSurfacePresenter *)surfacePresenter
 {
   return [_instance surfacePresenter];
-}
-
-// Deprecated
-- (RCTSurfacePresenter *)getSurfacePresenter
-{
-  return self.surfacePresenter;
 }
 
 - (void)callFunctionOnJSModule:(NSString *)moduleName method:(NSString *)method args:(NSArray *)args

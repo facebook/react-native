@@ -22,8 +22,7 @@ namespace facebook::react::jsinspector_modern {
 
 #define ANSI_WEIGHT_BOLD "\x1B[1m"
 #define ANSI_WEIGHT_RESET "\x1B[22m"
-#define ANSI_COLOR_BG_YELLOW "\x1B[48;2;253;247;231m"
-#define CSS_STYLE_PLACEHOLDER "%c"
+#define ANSI_COLOR_BG_YELLOW "\x1B[48;2;253;247;231m\x1B[30m"
 
 HostAgent::HostAgent(
     FrontendChannel frontendChannel,
@@ -186,12 +185,10 @@ HostAgent::~HostAgent() {
 
 void HostAgent::sendFuseboxNotice() {
   static constexpr auto kFuseboxNotice = ANSI_COLOR_BG_YELLOW
-      "Welcome to the new React Native debugger (codename " ANSI_WEIGHT_BOLD
-      "React Fusebox " CSS_STYLE_PLACEHOLDER
-      "⚡️" CSS_STYLE_PLACEHOLDER ANSI_WEIGHT_RESET ")."sv;
+      "Welcome to " ANSI_WEIGHT_BOLD "React Native DevTools" ANSI_WEIGHT_RESET
+      " (experimental)"sv;
 
-  sendInfoLogEntry(
-      kFuseboxNotice, {"font-family: sans-serif;", "font-family: monospace;"});
+  sendInfoLogEntry(kFuseboxNotice);
 }
 
 void HostAgent::sendNonFuseboxNotice() {

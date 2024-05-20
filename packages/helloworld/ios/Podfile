@@ -1,4 +1,4 @@
-require "../scripts/react_native_pods.rb"
+require "../../react-native/scripts/cocoapods/autolinking.rb"
 
 platform :ios, min_ios_version_supported
 prepare_react_native_project!

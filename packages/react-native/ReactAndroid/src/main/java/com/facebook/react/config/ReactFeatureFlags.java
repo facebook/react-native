@@ -80,7 +80,7 @@ public class ReactFeatureFlags {
 
   public static boolean dispatchPointerEvents = false;
 
-  /** Feature Flag to enable a cache of Spannable objects used by TextLayoutManagerMapBuffer */
+  /** Feature Flag to enable a cache of Spannable objects used by TextLayoutManager */
   public static boolean enableTextSpannableCache = false;
 
   /**

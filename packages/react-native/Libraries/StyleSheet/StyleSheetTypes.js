@@ -11,6 +11,7 @@
 'use strict';
 
 import type AnimatedNode from '../Animated/nodes/AnimatedNode';
+import type {FilterPrimitive} from '../StyleSheet/processFilter';
 import type {
   ____DangerouslyImpreciseStyle_InternalOverrides,
   ____ImageStyle_InternalOverrides,
@@ -690,10 +691,15 @@ export type ____ShadowStyle_Internal = $ReadOnly<{
   ...____ShadowStyle_InternalOverrides,
 }>;
 
+type ____FilterStyle_Internal = $ReadOnly<{
+  experimental_filter?: $ReadOnlyArray<FilterPrimitive>,
+}>;
+
 export type ____ViewStyle_InternalCore = $ReadOnly<{
   ...$Exact<____LayoutStyle_Internal>,
   ...$Exact<____ShadowStyle_Internal>,
   ...$Exact<____TransformStyle_Internal>,
+  ...____FilterStyle_Internal,
   backfaceVisibility?: 'visible' | 'hidden',
   backgroundColor?: ____ColorValue_Internal,
   borderColor?: ____ColorValue_Internal,
@@ -707,19 +713,19 @@ export type ____ViewStyle_InternalCore = $ReadOnly<{
   borderBlockColor?: ____ColorValue_Internal,
   borderBlockEndColor?: ____ColorValue_Internal,
   borderBlockStartColor?: ____ColorValue_Internal,
-  borderRadius?: AnimatableNumericValue,
-  borderBottomEndRadius?: AnimatableNumericValue,
-  borderBottomLeftRadius?: AnimatableNumericValue,
-  borderBottomRightRadius?: AnimatableNumericValue,
-  borderBottomStartRadius?: AnimatableNumericValue,
-  borderEndEndRadius?: AnimatableNumericValue,
-  borderEndStartRadius?: AnimatableNumericValue,
-  borderStartEndRadius?: AnimatableNumericValue,
-  borderStartStartRadius?: AnimatableNumericValue,
-  borderTopEndRadius?: AnimatableNumericValue,
-  borderTopLeftRadius?: AnimatableNumericValue,
-  borderTopRightRadius?: AnimatableNumericValue,
-  borderTopStartRadius?: AnimatableNumericValue,
+  borderRadius?: AnimatableNumericValue | string,
+  borderBottomEndRadius?: AnimatableNumericValue | string,
+  borderBottomLeftRadius?: AnimatableNumericValue | string,
+  borderBottomRightRadius?: AnimatableNumericValue | string,
+  borderBottomStartRadius?: AnimatableNumericValue | string,
+  borderEndEndRadius?: AnimatableNumericValue | string,
+  borderEndStartRadius?: AnimatableNumericValue | string,
+  borderStartEndRadius?: AnimatableNumericValue | string,
+  borderStartStartRadius?: AnimatableNumericValue | string,
+  borderTopEndRadius?: AnimatableNumericValue | string,
+  borderTopLeftRadius?: AnimatableNumericValue | string,
+  borderTopRightRadius?: AnimatableNumericValue | string,
+  borderTopStartRadius?: AnimatableNumericValue | string,
   borderStyle?: 'solid' | 'dotted' | 'dashed',
   borderWidth?: AnimatableNumericValue,
   borderBottomWidth?: AnimatableNumericValue,

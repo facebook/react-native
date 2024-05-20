@@ -10,12 +10,12 @@
 #include <glog/logging.h>
 #include <jsi/jsi.h>
 
+#include <cxxreact/SystraceSection.h>
 #include <react/debug/react_native_assert.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
 #include <react/renderer/core/EventQueueProcessor.h>
 #include <react/renderer/core/LayoutContext.h>
-#include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/mounting/MountingOverrideDelegate.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
 #include <react/renderer/runtimescheduler/RuntimeScheduler.h>
@@ -150,10 +150,6 @@ Scheduler::Scheduler(
   removeOutstandingSurfacesOnDestruction_ = reactNativeConfig_->getBool(
       "react_fabric:remove_outstanding_surfaces_on_destruction_ios");
 #endif
-
-  CoreFeatures::enableGranularShadowTreeStateReconciliation =
-      reactNativeConfig_->getBool(
-          "react_fabric:enable_granular_shadow_tree_state_reconciliation");
 
   CoreFeatures::enableReportEventPaintTime = reactNativeConfig_->getBool(
       "rn_responsiveness_performance:enable_paint_time_reporting");
@@ -318,15 +314,6 @@ void Scheduler::uiManagerDidCreateShadowNode(const ShadowNode& shadowNode) {
 
   if (delegate_ != nullptr) {
     delegate_->schedulerDidRequestPreliminaryViewAllocation(shadowNode);
-  }
-}
-
-void Scheduler::uiManagerDidCloneShadowNodeWithNewProps(
-    const ShadowNode& shadowNode) {
-  SystraceSection s("Scheduler::uiManagerDidCreateShadowNode");
-
-  if (delegate_ != nullptr) {
-    delegate_->schedulerDidRequestUpdateToPreallocatedView(shadowNode);
   }
 }
 

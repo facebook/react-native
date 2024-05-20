@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<da4828437bc8a27e9572235a78280e44>>
+ * @generated SignedSource<<1fdca69483db9e0fc9f9ab7a2cd9ff85>>
  */
 
 /**
@@ -72,14 +72,14 @@ bool NativeReactNativeFeatureFlags::enableCleanTextInputYogaNode(
   return ReactNativeFeatureFlags::enableCleanTextInputYogaNode();
 }
 
+bool NativeReactNativeFeatureFlags::enableGranularShadowTreeStateReconciliation(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableGranularShadowTreeStateReconciliation();
+}
+
 bool NativeReactNativeFeatureFlags::enableMicrotasks(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableMicrotasks();
-}
-
-bool NativeReactNativeFeatureFlags::enableSpannableBuildingUnification(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::enableSpannableBuildingUnification();
 }
 
 bool NativeReactNativeFeatureFlags::enableSynchronousStateUpdates(
@@ -92,9 +92,9 @@ bool NativeReactNativeFeatureFlags::enableUIConsistency(
   return ReactNativeFeatureFlags::enableUIConsistency();
 }
 
-bool NativeReactNativeFeatureFlags::fixMountedFlagAndFixPreallocationClone(
+bool NativeReactNativeFeatureFlags::fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak(
     jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::fixMountedFlagAndFixPreallocationClone();
+  return ReactNativeFeatureFlags::fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak();
 }
 
 bool NativeReactNativeFeatureFlags::forceBatchingMountItemsOnAndroid(
@@ -112,9 +112,19 @@ bool NativeReactNativeFeatureFlags::inspectorEnableModernCDPRegistry(
   return ReactNativeFeatureFlags::inspectorEnableModernCDPRegistry();
 }
 
+bool NativeReactNativeFeatureFlags::lazyAnimationCallbacks(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::lazyAnimationCallbacks();
+}
+
 bool NativeReactNativeFeatureFlags::preventDoubleTextMeasure(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::preventDoubleTextMeasure();
+}
+
+bool NativeReactNativeFeatureFlags::setAndroidLayoutDirection(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::setAndroidLayoutDirection();
 }
 
 bool NativeReactNativeFeatureFlags::useModernRuntimeScheduler(

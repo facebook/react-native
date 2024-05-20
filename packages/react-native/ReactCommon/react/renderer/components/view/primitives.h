@@ -10,6 +10,7 @@
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/graphics/RectangleCorners.h>
 #include <react/renderer/graphics/RectangleEdges.h>
+#include <react/renderer/graphics/ValueUnit.h>
 
 #include <array>
 #include <bitset>
@@ -257,7 +258,7 @@ using CascadedBorderWidths = CascadedRectangleEdges<Float>;
 using CascadedBorderCurves = CascadedRectangleCorners<BorderCurve>;
 using CascadedBorderStyles = CascadedRectangleEdges<BorderStyle>;
 using CascadedBorderColors = CascadedRectangleEdges<SharedColor>;
-using CascadedBorderRadii = CascadedRectangleCorners<Float>;
+using CascadedBorderRadii = CascadedRectangleCorners<ValueUnit>;
 
 struct BorderMetrics {
   BorderColors borderColors{};

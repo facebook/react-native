@@ -86,6 +86,38 @@ struct JNIArgs {
   std::vector<jobject> globalRefs_;
 };
 
+jsi::Value createJSRuntimeError(
+    jsi::Runtime& runtime,
+    const std::string& message) {
+  return runtime.global()
+      .getPropertyAsFunction(runtime, "Error")
+      .call(runtime, message);
+}
+
+jsi::Value createRejectionError(jsi::Runtime& rt, const folly::dynamic& args) {
+  react_native_assert(
+      args.size() == 1 && "promise reject should has only one argument");
+
+  auto value = jsi::valueFromDynamic(rt, args[0]);
+  react_native_assert(value.isObject() && "promise reject should return a map");
+
+  const jsi::Object& valueAsObject = value.asObject(rt);
+
+  auto messageProperty = valueAsObject.getProperty(rt, "message");
+  auto jsError =
+      createJSRuntimeError(rt, messageProperty.asString(rt).utf8(rt));
+
+  auto jsErrorAsObject = jsError.asObject(rt);
+  auto propertyNames = valueAsObject.getPropertyNames(rt);
+  for (size_t i = 0; i < propertyNames.size(rt); ++i) {
+    auto propertyName = jsi::PropNameID::forString(
+        rt, propertyNames.getValueAtIndex(rt, i).asString(rt));
+    jsErrorAsObject.setProperty(
+        rt, propertyName, valueAsObject.getProperty(rt, propertyName));
+  }
+  return jsError;
+}
+
 auto createJavaCallback(
     jsi::Runtime& rt,
     jsi::Function&& function,
@@ -98,7 +130,6 @@ auto createJavaCallback(
           LOG(FATAL) << "Callback arg cannot be called more than once";
           return;
         }
-
         callback->call([args = std::move(args)](
                            jsi::Runtime& rt, jsi::Function& jsFunction) {
           std::vector<jsi::Value> jsArgs;
@@ -107,6 +138,26 @@ auto createJavaCallback(
             jsArgs.emplace_back(jsi::valueFromDynamic(rt, val));
           }
           jsFunction.call(rt, (const jsi::Value*)jsArgs.data(), jsArgs.size());
+        });
+        callback = std::nullopt;
+      });
+}
+
+auto createJavaRejectCallback(
+    jsi::Runtime& rt,
+    jsi::Function&& function,
+    std::shared_ptr<CallInvoker> jsInvoker) {
+  std::optional<AsyncCallback<>> callback(
+      {rt, std::move(function), std::move(jsInvoker)});
+  return JCxxCallbackImpl::newObjectCxxArgs(
+      [callback = std::move(callback)](folly::dynamic args) mutable {
+        if (!callback) {
+          LOG(FATAL) << "Callback arg cannot be called more than once";
+          return;
+        }
+        callback->call([args = std::move(args)](
+                           jsi::Runtime& rt, jsi::Function& jsFunction) {
+          jsFunction.call(rt, createRejectionError(rt, args));
         });
         callback = std::nullopt;
       });
@@ -405,14 +456,6 @@ jsi::Value convertFromJMapToValue(JNIEnv* env, jsi::Runtime& rt, jobject arg) {
   auto jResult = jni::adopt_local(constants);
   auto result = jni::static_ref_cast<NativeMap::jhybridobject>(jResult);
   return jsi::valueFromDynamic(rt, result->cthis()->consume());
-}
-
-jsi::Value createJSRuntimeError(
-    jsi::Runtime& runtime,
-    const std::string& message) {
-  return runtime.global()
-      .getPropertyAsFunction(runtime, "Error")
-      .call(runtime, message);
 }
 
 /**
@@ -855,7 +898,7 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
                     runtime,
                     args[0].getObject(runtime).getFunction(runtime),
                     jsInvoker_);
-                auto reject = createJavaCallback(
+                auto reject = createJavaRejectCallback(
                     runtime,
                     args[1].getObject(runtime).getFunction(runtime),
                     jsInvoker_);

@@ -14,10 +14,15 @@ import type {Task} from './types';
 import execa from 'execa';
 import os from 'os';
 
-export function task(label: string, action: Task['action']): Task {
+export function task<R>(
+  order: number,
+  label: string,
+  action: Task<R>['action'],
+): Task<R> {
   return {
     action,
     label,
+    order,
   };
 }
 
@@ -34,12 +39,21 @@ type PathCheckResult = {
 };
 
 export function isOnPath(dep: string, description: string): PathCheckResult {
-  const result = execa.sync(isWindows ? 'where' : 'which', [dep]);
-  return {
-    dep,
-    description,
-    found: result.exitCode === 0,
-  };
+  const cmd = isWindows ? ['where', [dep]] : ['command', ['-v', dep]];
+  try {
+    const args = isWindows ? ['where', [dep]] : ['command', ['-v', dep]];
+    return {
+      dep,
+      description,
+      found: execa.sync(...cmd).exitCode === 0,
+    };
+  } catch {
+    return {
+      dep,
+      description,
+      found: false,
+    };
+  }
 }
 
 export function assertDependencies(

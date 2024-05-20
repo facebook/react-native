@@ -16,6 +16,7 @@
 #include "ReactNativeConfigHolder.h"
 #include "SurfaceHandlerBinding.h"
 
+#include <cxxreact/SystraceSection.h>
 #include <fbjni/fbjni.h>
 #include <glog/logging.h>
 #include <jsi/JSIDynamic.h>
@@ -26,7 +27,6 @@
 #include <react/renderer/core/EventBeat.h>
 #include <react/renderer/core/EventEmitter.h>
 #include <react/renderer/core/conversions.h>
-#include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/scheduler/Scheduler.h>
 #include <react/renderer/scheduler/SchedulerDelegate.h>
 #include <react/renderer/scheduler/SchedulerToolbox.h>
@@ -91,7 +91,7 @@ void Binding::setPixelDensity(float pointScaleFactor) {
 }
 
 void Binding::driveCxxAnimations() {
-  scheduler_->animationTick();
+  getScheduler()->animationTick();
 }
 
 void Binding::reportMount(SurfaceId surfaceId) {
@@ -189,7 +189,7 @@ void Binding::startSurfaceWithConstraints(
       isRTL ? LayoutDirection::RightToLeft : LayoutDirection::LeftToRight;
 
   auto surfaceHandler = SurfaceHandler{moduleName->toStdString(), surfaceId};
-  surfaceHandler.setContextContainer(scheduler_->getContextContainer());
+  surfaceHandler.setContextContainer(scheduler->getContextContainer());
   surfaceHandler.setProps(initialProps->consume());
   surfaceHandler.constraintLayout(constraints, context);
 
@@ -516,17 +516,6 @@ void Binding::schedulerDidRequestPreliminaryViewAllocation(
     return;
   }
   mountingManager->preallocateShadowView(shadowNode);
-}
-
-void Binding::schedulerDidRequestUpdateToPreallocatedView(
-    const ShadowNode& shadowNode) {
-  auto mountingManager =
-      getMountingManager("schedulerDidRequestUpdateToPreallocatedView");
-  if (!mountingManager) {
-    return;
-  }
-
-  mountingManager->updatePreallocatedShadowNode(shadowNode);
 }
 
 void Binding::schedulerDidDispatchCommand(

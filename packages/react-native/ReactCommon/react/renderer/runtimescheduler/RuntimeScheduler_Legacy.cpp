@@ -9,8 +9,8 @@
 #include "SchedulerPriorityUtils.h"
 
 #include <cxxreact/ErrorUtils.h>
+#include <cxxreact/SystraceSection.h>
 #include <react/renderer/consistency/ScopedShadowTreeRevisionLock.h>
-#include <react/renderer/debug/SystraceSection.h>
 #include <utility>
 
 namespace facebook::react {

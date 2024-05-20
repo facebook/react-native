@@ -18,7 +18,6 @@
 #include <jni.h>
 #include <jsi/jsi.h>
 #include <jsireact/JSIExecutor.h>
-#include <react/common/mapbuffer/JReadableMapBuffer.h>
 #include <react/jni/JRuntimeExecutor.h>
 #include <react/jni/JSLogging.h>
 #include <react/runtime/BridgelessJSCallInvoker.h>

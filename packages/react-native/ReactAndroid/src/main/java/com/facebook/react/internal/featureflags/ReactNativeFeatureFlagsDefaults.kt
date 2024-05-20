@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<eae8be3ca2fef75be0f254a6711fe40c>>
+ * @generated SignedSource<<4f50dab251c41380a14506975355e49d>>
  */
 
 /**
@@ -37,15 +37,15 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableCleanTextInputYogaNode(): Boolean = false
 
-  override fun enableMicrotasks(): Boolean = false
+  override fun enableGranularShadowTreeStateReconciliation(): Boolean = false
 
-  override fun enableSpannableBuildingUnification(): Boolean = false
+  override fun enableMicrotasks(): Boolean = false
 
   override fun enableSynchronousStateUpdates(): Boolean = false
 
   override fun enableUIConsistency(): Boolean = false
 
-  override fun fixMountedFlagAndFixPreallocationClone(): Boolean = false
+  override fun fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak(): Boolean = false
 
   override fun forceBatchingMountItemsOnAndroid(): Boolean = false
 
@@ -53,7 +53,11 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun inspectorEnableModernCDPRegistry(): Boolean = false
 
+  override fun lazyAnimationCallbacks(): Boolean = false
+
   override fun preventDoubleTextMeasure(): Boolean = false
+
+  override fun setAndroidLayoutDirection(): Boolean = false
 
   override fun useModernRuntimeScheduler(): Boolean = false
 

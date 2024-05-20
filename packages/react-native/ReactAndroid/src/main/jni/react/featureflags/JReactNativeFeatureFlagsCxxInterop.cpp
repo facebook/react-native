@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<725d39e6d2dd9905afe14b1e8ce6f6d2>>
+ * @generated SignedSource<<5d0f0b1953af3f0dd2ee66fed2b1115a>>
  */
 
 /**
@@ -81,15 +81,15 @@ class ReactNativeFeatureFlagsProviderHolder
     return method(javaProvider_);
   }
 
-  bool enableMicrotasks() override {
+  bool enableGranularShadowTreeStateReconciliation() override {
     static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableMicrotasks");
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableGranularShadowTreeStateReconciliation");
     return method(javaProvider_);
   }
 
-  bool enableSpannableBuildingUnification() override {
+  bool enableMicrotasks() override {
     static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableSpannableBuildingUnification");
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableMicrotasks");
     return method(javaProvider_);
   }
 
@@ -105,9 +105,9 @@ class ReactNativeFeatureFlagsProviderHolder
     return method(javaProvider_);
   }
 
-  bool fixMountedFlagAndFixPreallocationClone() override {
+  bool fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak() override {
     static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fixMountedFlagAndFixPreallocationClone");
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak");
     return method(javaProvider_);
   }
 
@@ -129,9 +129,21 @@ class ReactNativeFeatureFlagsProviderHolder
     return method(javaProvider_);
   }
 
+  bool lazyAnimationCallbacks() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("lazyAnimationCallbacks");
+    return method(javaProvider_);
+  }
+
   bool preventDoubleTextMeasure() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("preventDoubleTextMeasure");
+    return method(javaProvider_);
+  }
+
+  bool setAndroidLayoutDirection() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("setAndroidLayoutDirection");
     return method(javaProvider_);
   }
 
@@ -192,14 +204,14 @@ bool JReactNativeFeatureFlagsCxxInterop::enableCleanTextInputYogaNode(
   return ReactNativeFeatureFlags::enableCleanTextInputYogaNode();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableGranularShadowTreeStateReconciliation(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableGranularShadowTreeStateReconciliation();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableMicrotasks(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableMicrotasks();
-}
-
-bool JReactNativeFeatureFlagsCxxInterop::enableSpannableBuildingUnification(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::enableSpannableBuildingUnification();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::enableSynchronousStateUpdates(
@@ -212,9 +224,9 @@ bool JReactNativeFeatureFlagsCxxInterop::enableUIConsistency(
   return ReactNativeFeatureFlags::enableUIConsistency();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::fixMountedFlagAndFixPreallocationClone(
+bool JReactNativeFeatureFlagsCxxInterop::fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::fixMountedFlagAndFixPreallocationClone();
+  return ReactNativeFeatureFlags::fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::forceBatchingMountItemsOnAndroid(
@@ -232,9 +244,19 @@ bool JReactNativeFeatureFlagsCxxInterop::inspectorEnableModernCDPRegistry(
   return ReactNativeFeatureFlags::inspectorEnableModernCDPRegistry();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::lazyAnimationCallbacks(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::lazyAnimationCallbacks();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::preventDoubleTextMeasure(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::preventDoubleTextMeasure();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::setAndroidLayoutDirection(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::setAndroidLayoutDirection();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::useModernRuntimeScheduler(
@@ -291,11 +313,11 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "enableCleanTextInputYogaNode",
         JReactNativeFeatureFlagsCxxInterop::enableCleanTextInputYogaNode),
       makeNativeMethod(
+        "enableGranularShadowTreeStateReconciliation",
+        JReactNativeFeatureFlagsCxxInterop::enableGranularShadowTreeStateReconciliation),
+      makeNativeMethod(
         "enableMicrotasks",
         JReactNativeFeatureFlagsCxxInterop::enableMicrotasks),
-      makeNativeMethod(
-        "enableSpannableBuildingUnification",
-        JReactNativeFeatureFlagsCxxInterop::enableSpannableBuildingUnification),
       makeNativeMethod(
         "enableSynchronousStateUpdates",
         JReactNativeFeatureFlagsCxxInterop::enableSynchronousStateUpdates),
@@ -303,8 +325,8 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "enableUIConsistency",
         JReactNativeFeatureFlagsCxxInterop::enableUIConsistency),
       makeNativeMethod(
-        "fixMountedFlagAndFixPreallocationClone",
-        JReactNativeFeatureFlagsCxxInterop::fixMountedFlagAndFixPreallocationClone),
+        "fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak",
+        JReactNativeFeatureFlagsCxxInterop::fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak),
       makeNativeMethod(
         "forceBatchingMountItemsOnAndroid",
         JReactNativeFeatureFlagsCxxInterop::forceBatchingMountItemsOnAndroid),
@@ -315,8 +337,14 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "inspectorEnableModernCDPRegistry",
         JReactNativeFeatureFlagsCxxInterop::inspectorEnableModernCDPRegistry),
       makeNativeMethod(
+        "lazyAnimationCallbacks",
+        JReactNativeFeatureFlagsCxxInterop::lazyAnimationCallbacks),
+      makeNativeMethod(
         "preventDoubleTextMeasure",
         JReactNativeFeatureFlagsCxxInterop::preventDoubleTextMeasure),
+      makeNativeMethod(
+        "setAndroidLayoutDirection",
+        JReactNativeFeatureFlagsCxxInterop::setAndroidLayoutDirection),
       makeNativeMethod(
         "useModernRuntimeScheduler",
         JReactNativeFeatureFlagsCxxInterop::useModernRuntimeScheduler),

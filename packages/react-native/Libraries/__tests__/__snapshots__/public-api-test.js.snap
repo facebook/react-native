@@ -5888,12 +5888,6 @@ declare export function isIgnored(value: mixed): boolean;
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/NativeModules/specs/NativeAnimationsDebugModule.js 1`] = `
-"export * from \\"../../../src/private/specs/modules/NativeAnimationsDebugModule\\";
-declare export default typeof NativeAnimationsDebugModule;
-"
-`;
-
 exports[`public API should not change unintentionally Libraries/NativeModules/specs/NativeDevMenu.js 1`] = `
 "export * from \\"../../../src/private/specs/modules/NativeDevMenu\\";
 declare export default typeof NativeDevMenu;
@@ -7502,10 +7496,7 @@ declare module.exports: {
   hairlineWidth: hairlineWidth,
   absoluteFill: any,
   absoluteFillObject: absoluteFill,
-  compose<T: DangerouslyImpreciseStyleProp>(
-    style1: ?T,
-    style2: ?T
-  ): ?T | $ReadOnlyArray<T>,
+  compose: composeStyles,
   flatten: flatten,
   setStyleAttributePreprocessor(
     property: string,
@@ -7642,10 +7633,14 @@ export type ____ShadowStyle_Internal = $ReadOnly<{
   ...____ShadowStyle_InternalCore,
   ...____ShadowStyle_InternalOverrides,
 }>;
+type ____FilterStyle_Internal = $ReadOnly<{
+  experimental_filter?: $ReadOnlyArray<FilterPrimitive>,
+}>;
 export type ____ViewStyle_InternalCore = $ReadOnly<{
   ...$Exact<____LayoutStyle_Internal>,
   ...$Exact<____ShadowStyle_Internal>,
   ...$Exact<____TransformStyle_Internal>,
+  ...____FilterStyle_Internal,
   backfaceVisibility?: \\"visible\\" | \\"hidden\\",
   backgroundColor?: ____ColorValue_Internal,
   borderColor?: ____ColorValue_Internal,
@@ -7659,19 +7654,19 @@ export type ____ViewStyle_InternalCore = $ReadOnly<{
   borderBlockColor?: ____ColorValue_Internal,
   borderBlockEndColor?: ____ColorValue_Internal,
   borderBlockStartColor?: ____ColorValue_Internal,
-  borderRadius?: AnimatableNumericValue,
-  borderBottomEndRadius?: AnimatableNumericValue,
-  borderBottomLeftRadius?: AnimatableNumericValue,
-  borderBottomRightRadius?: AnimatableNumericValue,
-  borderBottomStartRadius?: AnimatableNumericValue,
-  borderEndEndRadius?: AnimatableNumericValue,
-  borderEndStartRadius?: AnimatableNumericValue,
-  borderStartEndRadius?: AnimatableNumericValue,
-  borderStartStartRadius?: AnimatableNumericValue,
-  borderTopEndRadius?: AnimatableNumericValue,
-  borderTopLeftRadius?: AnimatableNumericValue,
-  borderTopRightRadius?: AnimatableNumericValue,
-  borderTopStartRadius?: AnimatableNumericValue,
+  borderRadius?: AnimatableNumericValue | string,
+  borderBottomEndRadius?: AnimatableNumericValue | string,
+  borderBottomLeftRadius?: AnimatableNumericValue | string,
+  borderBottomRightRadius?: AnimatableNumericValue | string,
+  borderBottomStartRadius?: AnimatableNumericValue | string,
+  borderEndEndRadius?: AnimatableNumericValue | string,
+  borderEndStartRadius?: AnimatableNumericValue | string,
+  borderStartEndRadius?: AnimatableNumericValue | string,
+  borderStartStartRadius?: AnimatableNumericValue | string,
+  borderTopEndRadius?: AnimatableNumericValue | string,
+  borderTopLeftRadius?: AnimatableNumericValue | string,
+  borderTopRightRadius?: AnimatableNumericValue | string,
+  borderTopStartRadius?: AnimatableNumericValue | string,
   borderStyle?: \\"solid\\" | \\"dotted\\" | \\"dashed\\",
   borderWidth?: AnimatableNumericValue,
   borderBottomWidth?: AnimatableNumericValue,
@@ -7939,6 +7934,23 @@ exports[`public API should not change unintentionally Libraries/StyleSheet/proce
   colors: ?$ReadOnlyArray<ColorValue>
 ): ?$ReadOnlyArray<ProcessedColorValue>;
 declare module.exports: processColorArray;
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/StyleSheet/processFilter.js 1`] = `
+"export type FilterPrimitive =
+  | { brightness: number | string }
+  | { blur: number | string }
+  | { contrast: number | string }
+  | { grayscale: number | string }
+  | { hueRotate: number | string }
+  | { invert: number | string }
+  | { opacity: number | string }
+  | { saturate: number | string }
+  | { sepia: number | string };
+declare export default function processFilter(
+  filter: $ReadOnlyArray<FilterPrimitive> | string
+): $ReadOnlyArray<FilterPrimitive>;
 "
 `;
 

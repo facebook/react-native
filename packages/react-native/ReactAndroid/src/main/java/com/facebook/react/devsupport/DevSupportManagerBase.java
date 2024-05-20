@@ -910,12 +910,6 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
     mLastErrorType = errorType;
   }
 
-  public void reloadJSFromServer(final String bundleURL) {
-    reloadJSFromServer(
-        bundleURL,
-        () -> UiThreadUtil.runOnUiThread(mReactInstanceDevHelper::onJSBundleLoadedFromServer));
-  }
-
   public void reloadJSFromServer(final String bundleURL, final BundleLoadCallback callback) {
     ReactMarker.logMarker(ReactMarkerConstants.DOWNLOAD_START);
 
@@ -954,6 +948,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
             }
             FLog.e(ReactConstants.TAG, "Unable to download JS bundle", cause);
             reportBundleLoadingFailure(cause);
+            callback.onError(cause);
           }
         },
         mJSBundleDownloadedFile,

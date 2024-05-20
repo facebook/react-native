@@ -17,6 +17,7 @@
 #include <react/renderer/element/ComponentBuilder.h>
 #include <react/renderer/element/Element.h>
 #include <react/renderer/element/testUtils.h>
+#include <react/renderer/graphics/ValueUnit.h>
 #include <react/renderer/mounting/Differentiator.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
 #include <react/renderer/mounting/stubs/stubs.h>
@@ -271,7 +272,7 @@ TEST_F(StackingContextTest, mostPropsDoNotForceViewsToMaterialize) {
   mutateViewShadowNodeProps_(nodeBBA_, [](ViewProps& props) {
     auto& yogaStyle = props.yogaStyle;
     yogaStyle.setPositionType(yoga::PositionType::Relative);
-    props.borderRadii.all = 42;
+    props.borderRadii.all = ValueUnit{42, UnitType::Point};
     props.borderColors.all = blackColor();
   });
 

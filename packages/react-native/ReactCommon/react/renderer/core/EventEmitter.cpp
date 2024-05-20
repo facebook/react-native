@@ -7,10 +7,10 @@
 
 #include "EventEmitter.h"
 
+#include <cxxreact/SystraceSection.h>
 #include <folly/dynamic.h>
 #include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
-#include <react/renderer/debug/SystraceSection.h>
 
 #include "RawEvent.h"
 

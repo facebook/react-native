@@ -124,12 +124,26 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 20,
     borderColor: 'black',
   },
+  border9Percentages: {
+    borderWidth: 10,
+    borderTopLeftRadius: '20%',
+    borderBottomRightRadius: '10%',
+    borderColor: 'red',
+  },
   border10: {
     borderWidth: 10,
     backgroundColor: 'white',
     borderTopLeftRadius: 10,
     borderBottomRightRadius: 20,
     borderColor: 'black',
+    elevation: 10,
+  },
+  border10Percentages: {
+    borderWidth: 10,
+    backgroundColor: 'white',
+    borderTopLeftRadius: '20%',
+    borderBottomRightRadius: '10%',
+    borderColor: 'red',
     elevation: 10,
   },
   border11: {
@@ -344,6 +358,19 @@ export default ({
       },
     },
     {
+      title: 'Corner Radii (Percentages)',
+      name: 'corner-radii-percentages',
+      description: 'borderTopLeftRadius & borderBottomRightRadius',
+      render: function (): React.Node {
+        return (
+          <View
+            testID="border-test-corner-radii-percentages"
+            style={[styles.box, styles.border9Percentages]}
+          />
+        );
+      },
+    },
+    {
       title: 'Corner Radii / Elevation',
       name: 'corner-radii-elevation',
       description: 'borderTopLeftRadius & borderBottomRightRadius & elevation',
@@ -353,6 +380,20 @@ export default ({
           <View
             testID="border-test-corner-radii-elevation"
             style={[styles.box, styles.border10]}
+          />
+        );
+      },
+    },
+    {
+      title: 'Corner Radii / Elevation (Percentages)',
+      name: 'corner-radii-elevation-percentages',
+      description: 'borderTopLeftRadius & borderBottomRightRadius & elevation',
+      platform: 'android',
+      render: function (): React.Node {
+        return (
+          <View
+            testID="border-test-corner-radii-elevation-percentages"
+            style={[styles.box, styles.border10Percentages]}
           />
         );
       },

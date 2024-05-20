@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f9ff3bc9f437dbd6965f5927ada5f645>>
+ * @generated SignedSource<<c53481eb714387bf0a390fba1c02c331>>
  */
 
 /**
@@ -73,14 +73,14 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableCleanTextInputYogaNode();
 
   /**
+   * When enabled, the renderer would only fail commits when they propagate state and the last commit that updated state changed before committing.
+   */
+  RN_EXPORT static bool enableGranularShadowTreeStateReconciliation();
+
+  /**
    * Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).
    */
   RN_EXPORT static bool enableMicrotasks();
-
-  /**
-   * Uses new, deduplicated logic for constructing Android Spannables from text fragments
-   */
-  RN_EXPORT static bool enableSpannableBuildingUnification();
 
   /**
    * Dispatches state updates synchronously in Fabric (e.g.: updates the scroll position in the shadow tree synchronously from the main thread).
@@ -93,9 +93,9 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableUIConsistency();
 
   /**
-   * Splits hasBeenMounted and promoted.
+   * Fixes a leak in SurfaceMountingManager.mRemoveDeleteTreeUIFrameCallback
    */
-  RN_EXPORT static bool fixMountedFlagAndFixPreallocationClone();
+  RN_EXPORT static bool fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak();
 
   /**
    * Forces the mounting layer on Android to always batch mount items instead of dispatching them immediately. This might fix some crashes related to synchronous state updates, where some views dispatch state updates during mount.
@@ -113,9 +113,19 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool inspectorEnableModernCDPRegistry();
 
   /**
+   * Only enqueue Choreographer calls if there is an ongoing animation, instead of enqueueing every frame.
+   */
+  RN_EXPORT static bool lazyAnimationCallbacks();
+
+  /**
    * When enabled, ParagraphShadowNode will no longer call measure twice.
    */
   RN_EXPORT static bool preventDoubleTextMeasure();
+
+  /**
+   * Propagate layout direction to Android views.
+   */
+  RN_EXPORT static bool setAndroidLayoutDirection();
 
   /**
    * When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.

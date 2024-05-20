@@ -13,7 +13,7 @@
 
 namespace facebook::react {
 
-constexpr int DEFAULT_MAX_SIZE = 1024;
+constexpr size_t DEFAULT_MAX_SIZE = 1024;
 
 /**
  * A container for storing entries of type T, with the following properties:
@@ -47,7 +47,8 @@ class BoundedConsumableBuffer {
     DROP = 2,
   };
 
-  BoundedConsumableBuffer(int maxSize = DEFAULT_MAX_SIZE) : maxSize_(maxSize) {
+  BoundedConsumableBuffer(size_t maxSize = DEFAULT_MAX_SIZE)
+      : maxSize_(maxSize) {
     entries_.reserve(maxSize_);
   }
 
@@ -229,18 +230,18 @@ class BoundedConsumableBuffer {
  private:
   std::vector<T> entries_;
 
-  const int maxSize_;
+  const size_t maxSize_;
 
   // Current starting position in the circular buffer:
-  int position_{0};
+  size_t position_{0};
 
-  // Current "cursor" - positions of the firsst and after last unconsumed
+  // Current "cursor" - positions of the first and after last unconsumed
   // element, relative to the starting position:
-  int cursorStart_{0};
-  int cursorEnd_{0};
+  size_t cursorStart_{0};
+  size_t cursorEnd_{0};
 
   // Number of currently unconsumed elements:
-  int numToConsume_{0};
+  size_t numToConsume_{0};
 };
 
 } // namespace facebook::react

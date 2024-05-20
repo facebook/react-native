@@ -292,10 +292,12 @@ final class ReactInstance {
         eventBeatManager,
         componentFactory,
         config);
-    Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
 
     // Initialize the FabricUIManager
     mFabricUIManager.initialize();
+
+    Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+    Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
   }
 
   private static synchronized void loadLibraryIfNeeded() {

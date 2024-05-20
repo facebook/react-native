@@ -12,6 +12,14 @@
 
 import type {FeatureFlagDefinitions} from './types';
 
+/**
+ * This is the source of truth for React Native feature flags.
+ *
+ * If you modify this file, you need to update all the generated files
+ * running the following script from the repo root:
+ *   yarn featureflags-update
+ */
+
 // These flags are only used in tests for the feature flags system
 const testDefinitions: FeatureFlagDefinitions = {
   common: {
@@ -60,15 +68,15 @@ const definitions: FeatureFlagDefinitions = {
       defaultValue: false,
       description: 'Clean yoga node when <TextInput /> does not change.',
     },
+    enableGranularShadowTreeStateReconciliation: {
+      defaultValue: false,
+      description:
+        'When enabled, the renderer would only fail commits when they propagate state and the last commit that updated state changed before committing.',
+    },
     enableMicrotasks: {
       defaultValue: false,
       description:
         'Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).',
-    },
-    enableSpannableBuildingUnification: {
-      defaultValue: false,
-      description:
-        'Uses new, deduplicated logic for constructing Android Spannables from text fragments',
     },
     enableSynchronousStateUpdates: {
       defaultValue: false,
@@ -80,9 +88,10 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).',
     },
-    fixMountedFlagAndFixPreallocationClone: {
+    fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak: {
       defaultValue: false,
-      description: 'Splits hasBeenMounted and promoted.',
+      description:
+        'Fixes a leak in SurfaceMountingManager.mRemoveDeleteTreeUIFrameCallback',
     },
     forceBatchingMountItemsOnAndroid: {
       defaultValue: false,
@@ -99,10 +108,19 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Flag determining if the modern CDP backend should be enabled. This flag is global and should not be changed across React Host lifetimes.',
     },
+    lazyAnimationCallbacks: {
+      defaultValue: false,
+      description:
+        'Only enqueue Choreographer calls if there is an ongoing animation, instead of enqueueing every frame.',
+    },
     preventDoubleTextMeasure: {
       defaultValue: false,
       description:
         'When enabled, ParagraphShadowNode will no longer call measure twice.',
+    },
+    setAndroidLayoutDirection: {
+      defaultValue: false,
+      description: 'Propagate layout direction to Android views.',
     },
     useModernRuntimeScheduler: {
       defaultValue: false,

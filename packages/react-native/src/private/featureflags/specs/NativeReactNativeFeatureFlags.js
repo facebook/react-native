@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d8d295e1acb37f820e21670cf0b1a0dc>>
+ * @generated SignedSource<<c892b2d381564962b505e389ed78e9f2>>
  * @flow strict-local
  */
 
@@ -30,15 +30,17 @@ export interface Spec extends TurboModule {
   +destroyFabricSurfacesInReactInstanceManager?: () => boolean;
   +enableBackgroundExecutor?: () => boolean;
   +enableCleanTextInputYogaNode?: () => boolean;
+  +enableGranularShadowTreeStateReconciliation?: () => boolean;
   +enableMicrotasks?: () => boolean;
-  +enableSpannableBuildingUnification?: () => boolean;
   +enableSynchronousStateUpdates?: () => boolean;
   +enableUIConsistency?: () => boolean;
-  +fixMountedFlagAndFixPreallocationClone?: () => boolean;
+  +fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak?: () => boolean;
   +forceBatchingMountItemsOnAndroid?: () => boolean;
   +inspectorEnableCxxInspectorPackagerConnection?: () => boolean;
   +inspectorEnableModernCDPRegistry?: () => boolean;
+  +lazyAnimationCallbacks?: () => boolean;
   +preventDoubleTextMeasure?: () => boolean;
+  +setAndroidLayoutDirection?: () => boolean;
   +useModernRuntimeScheduler?: () => boolean;
   +useNativeViewConfigsInBridgelessMode?: () => boolean;
   +useStateAlignmentMechanism?: () => boolean;
