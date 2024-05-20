@@ -14,11 +14,10 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - name: Setup node.js
+        uses: ./.github/actions/setup-node
         with:
           node-version: 20
-          cache: 'yarn'
       - name: Yarn Install
         run: yarn install
       - name: Get latest commit from Hermes
