@@ -240,6 +240,10 @@ function Pressable(props: Props, forwardedRef): React.Node {
 
   const android_rippleConfig = useAndroidRippleForView(android_ripple, viewRef);
 
+  const isStyleAFunction = typeof style === 'function';
+  const isChildrenAFunction = typeof children === 'function';
+  const shouldUpdateState = isStyleAFunction || isChildrenAFunction;
+
   const [pressed, setPressed] = usePressState(testOnly_pressed === true);
 
   let _accessibilityState = {
@@ -297,7 +301,7 @@ function Pressable(props: Props, forwardedRef): React.Node {
         if (android_rippleConfig != null) {
           android_rippleConfig.onPressIn(event);
         }
-        setPressed(true);
+        shouldUpdateState && setPressed(true);
         if (onPressIn != null) {
           onPressIn(event);
         }
@@ -307,7 +311,7 @@ function Pressable(props: Props, forwardedRef): React.Node {
         if (android_rippleConfig != null) {
           android_rippleConfig.onPressOut(event);
         }
-        setPressed(false);
+        shouldUpdateState && setPressed(false);
         if (onPressOut != null) {
           onPressOut(event);
         }
@@ -331,6 +335,7 @@ function Pressable(props: Props, forwardedRef): React.Node {
       pressRetentionOffset,
       setPressed,
       unstable_pressDelay,
+      shouldUpdateState,
     ],
   );
   const eventHandlers = usePressability(config);
@@ -340,9 +345,9 @@ function Pressable(props: Props, forwardedRef): React.Node {
       {...restPropsWithDefaults}
       {...eventHandlers}
       ref={mergedRef}
-      style={typeof style === 'function' ? style({pressed}) : style}
+      style={isStyleAFunction ? style({pressed}) : style}
       collapsable={false}>
-      {typeof children === 'function' ? children({pressed}) : children}
+      {isChildrenAFunction ? children({pressed}) : children}
       {__DEV__ ? <PressabilityDebugView color="red" hitSlop={hitSlop} /> : null}
     </View>
   );
