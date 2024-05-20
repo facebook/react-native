@@ -31,6 +31,7 @@ enum class CSSTokenType {
   OpenSquare,
   Percentage,
   WhiteSpace,
+  Hash,
 };
 
 /*
