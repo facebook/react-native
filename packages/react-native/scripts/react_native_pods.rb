@@ -294,6 +294,7 @@ def react_native_post_install(
   ReactNativePodsUtils.updateOSDeploymentTarget(installer)
   ReactNativePodsUtils.set_dynamic_frameworks_flags(installer)
   ReactNativePodsUtils.add_ndebug_flag_to_pods_in_release(installer)
+  ReactNativePodsUtils.apply_spm_dependencies(installer)
 
   if privacy_file_aggregation_enabled
     PrivacyManifestUtils.add_aggregated_privacy_manifest(installer)

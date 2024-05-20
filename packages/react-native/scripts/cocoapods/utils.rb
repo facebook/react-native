@@ -4,6 +4,7 @@
 # LICENSE file in the root directory of this source tree.
 
 require_relative "./helpers.rb"
+require_relative "./spm.rb"
 
 # Utilities class for React Native Cocoapods
 class ReactNativePodsUtils
@@ -196,7 +197,14 @@ class ReactNativePodsUtils
             end
             project.save()
         end
+    end
 
+    def self.apply_spm_dependencies(installer)
+        SPM.apply(installer)
+    end
+
+    def self.spm_dependency(s, url:, requirement:,  products:)
+        SPM.dependency(s, url: url, requirement: requirement,  products: products)
     end
 
     private
