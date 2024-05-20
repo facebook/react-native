@@ -44,10 +44,11 @@ fi
 
 XCRUN="$(which xcrun)"
 if [ -n "$XCRUN" ]; then
-  export CC="$CC:-$(xcrun -find -sdk $PLATFORM_NAME cc) -arch $CURRENT_ARCH -isysroot $(xcrun -sdk $PLATFORM_NAME --show-sdk-path)"
+  export CC="$(xcrun -find -sdk $PLATFORM_NAME cc) -arch $CURRENT_ARCH -isysroot $(xcrun -sdk $PLATFORM_NAME --show-sdk-path)"
+  export CXX="$CC"
 else
   export CC="$CC:-$(which gcc)"
-  export CXX="$CXX:-$(which g++)"
+  export CXX="$CXX:-$(which g++ || true)"
 fi
 export CXX="$CCX:-$CC"
 
