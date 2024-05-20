@@ -61,9 +61,9 @@
           ruby_version: "3.2.0"
           architecture: "NewArch"
           flavor: "Debug"
-          executor: reactnativeios-lts
+          jsengine: "Hermes"
+          use_frameworks: "StaticLibraries"
       - test_ios_template:
-          architecture: "OldArch"
           requires:
             - build_npm_package
           matrix:
@@ -71,34 +71,22 @@
               flavor: ["Debug", "Release"]
               jsengine: ["Hermes", "JSC"]
               use_frameworks: ["StaticLibraries", "DynamicFrameworks"]
+              architecture: ["NewArch", "OldArch"]
             exclude:
               # This config is tested with Ruby 3.2.0. Let's not double test it.
               - flavor: "Debug"
                 jsengine: "Hermes"
                 use_frameworks: "StaticLibraries"
+                architecture: "NewArch"
       - test_ios_rntester:
           requires:
             - build_hermes_macos
-          name: "Test RNTester with Ruby 3.2.0"
+          use_frameworks: "DynamicFrameworks"
           ruby_version: "3.2.0"
-          executor: reactnativeios-lts
-      - test_ios_rntester:
-          requires:
-            - build_hermes_macos
           matrix:
             parameters:
               jsengine: ["Hermes", "JSC"]
-              use_frameworks: ["StaticLibraries", "DynamicFrameworks"]
-            exclude:
-              # Tested by test_ios-Hermes
-              - jsengine: "Hermes"
-                use_frameworks: "StaticLibraries"
-              # Tested by test_ios-JSC
-              - jsengine: "JSC"
-                use_frameworks: "StaticLibraries"
-              # Tested with Ruby 3.2.0, do not test this twice.
-              - jsengine: "Hermes"
-                use_frameworks: "StaticLibraries"
+              architecture: ["NewArch", "OldArch"]
       - test_ios_rntester:
           run_unit_tests: true
           use_frameworks: "StaticLibraries"
