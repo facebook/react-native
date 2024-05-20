@@ -14,6 +14,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowInsets;
 import android.view.WindowInsetsController;
 import android.view.WindowManager;
@@ -21,6 +22,7 @@ import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.fbreact.specs.NativeStatusBarManagerAndroidSpec;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.GuardedRunnable;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -33,6 +35,7 @@ import java.util.Map;
 
 /** {@link NativeModule} that allows changing the appearance of the status bar. */
 @ReactModule(name = NativeStatusBarManagerAndroidSpec.NAME)
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class StatusBarModule extends NativeStatusBarManagerAndroidSpec {
 
   private static final String HEIGHT_KEY = "HEIGHT";
@@ -44,7 +47,7 @@ public class StatusBarModule extends NativeStatusBarManagerAndroidSpec {
   }
 
   @Override
-  public @Nullable Map<String, Object> getTypedExportedConstants() {
+  public Map<String, Object> getTypedExportedConstants() {
     final Context context = getReactApplicationContext();
     final Activity activity = getCurrentActivity();
 
@@ -57,8 +60,11 @@ public class StatusBarModule extends NativeStatusBarManagerAndroidSpec {
     String statusBarColorString = "black";
 
     if (activity != null) {
-      final int statusBarColor = activity.getWindow().getStatusBarColor();
-      statusBarColorString = String.format("#%06X", (0xFFFFFF & statusBarColor));
+      Window window = activity.getWindow();
+      if (window != null) {
+        final int statusBarColor = window.getStatusBarColor();
+        statusBarColorString = String.format("#%06X", (0xFFFFFF & statusBarColor));
+      }
     }
 
     return MapBuilder.<String, Object>of(
@@ -81,11 +87,13 @@ public class StatusBarModule extends NativeStatusBarManagerAndroidSpec {
         new GuardedRunnable(getReactApplicationContext()) {
           @Override
           public void runGuarded() {
-            activity
-                .getWindow()
-                .addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            Window window = activity.getWindow();
+            if (window == null) {
+              return;
+            }
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             if (animated) {
-              int curColor = activity.getWindow().getStatusBarColor();
+              int curColor = window.getStatusBarColor();
               ValueAnimator colorAnimation =
                   ValueAnimator.ofObject(new ArgbEvaluator(), curColor, color);
 
@@ -93,13 +101,16 @@ public class StatusBarModule extends NativeStatusBarManagerAndroidSpec {
                   new ValueAnimator.AnimatorUpdateListener() {
                     @Override
                     public void onAnimationUpdate(ValueAnimator animator) {
-                      activity.getWindow().setStatusBarColor((Integer) animator.getAnimatedValue());
+                      Window window = activity.getWindow();
+                      if (window != null) {
+                        window.setStatusBarColor((Integer) animator.getAnimatedValue());
+                      }
                     }
                   });
               colorAnimation.setDuration(300).setStartDelay(0);
               colorAnimation.start();
             } else {
-              activity.getWindow().setStatusBarColor(color);
+              window.setStatusBarColor(color);
             }
           }
         });
@@ -121,7 +132,11 @@ public class StatusBarModule extends NativeStatusBarManagerAndroidSpec {
           public void runGuarded() {
             // If the status bar is translucent hook into the window insets calculations
             // and consume all the top insets so no padding will be added under the status bar.
-            View decorView = activity.getWindow().getDecorView();
+            Window window = activity.getWindow();
+            if (window == null) {
+              return;
+            }
+            View decorView = window.getDecorView();
             if (translucent) {
               decorView.setOnApplyWindowInsetsListener(
                   new View.OnApplyWindowInsetsListener() {
@@ -157,12 +172,16 @@ public class StatusBarModule extends NativeStatusBarManagerAndroidSpec {
         new Runnable() {
           @Override
           public void run() {
+            Window window = activity.getWindow();
+            if (window == null) {
+              return;
+            }
             if (hidden) {
-              activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-              activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+              window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+              window.clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
             } else {
-              activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
-              activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+              window.addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+              window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
             }
           }
         });
@@ -183,8 +202,15 @@ public class StatusBarModule extends NativeStatusBarManagerAndroidSpec {
           @TargetApi(Build.VERSION_CODES.R)
           @Override
           public void run() {
+            Window window = activity.getWindow();
+            if (window == null) {
+              return;
+            }
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R) {
-              WindowInsetsController insetsController = activity.getWindow().getInsetsController();
+              WindowInsetsController insetsController = window.getInsetsController();
+              if (insetsController == null) {
+                return;
+              }
               if ("dark-content".equals(style)) {
                 // dark-content means dark icons on a light status bar
                 insetsController.setSystemBarsAppearance(
@@ -195,7 +221,7 @@ public class StatusBarModule extends NativeStatusBarManagerAndroidSpec {
                     0, WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS);
               }
             } else {
-              View decorView = activity.getWindow().getDecorView();
+              View decorView = window.getDecorView();
               int systemUiVisibilityFlags = decorView.getSystemUiVisibility();
               if ("dark-content".equals(style)) {
                 systemUiVisibilityFlags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
