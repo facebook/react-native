@@ -23,7 +23,7 @@ function RNTTestDetails({
   title: string,
   theme: RNTesterTheme,
 }): React.Node {
-  const [collapsed, setCollapsed] = React.useState(false);
+  const [collapsed, setCollapsed] = React.useState(true);
 
   const content = (
     <>
