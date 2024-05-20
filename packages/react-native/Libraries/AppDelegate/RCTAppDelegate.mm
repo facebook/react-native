@@ -54,7 +54,6 @@
   if (self.newArchEnabled || self.fabricEnabled) {
     [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
   }
-  [self _logWarnIfCreateRootViewWithBridgeIsOverridden];
   [self customizeRootView:(RCTRootView *)rootView];
 
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
@@ -94,21 +93,6 @@
   rootView.backgroundColor = [UIColor systemBackgroundColor];
 
   return rootView;
-}
-
-// TODO T173939093 - Remove _logWarnIfCreateRootViewWithBridgeIsOverridden after 0.74 is cut
-- (void)_logWarnIfCreateRootViewWithBridgeIsOverridden
-{
-  SEL selector = @selector(createRootViewWithBridge:moduleName:initProps:);
-  IMP baseClassImp = method_getImplementation(class_getInstanceMethod([RCTAppDelegate class], selector));
-  IMP currentClassImp = method_getImplementation(class_getInstanceMethod([self class], selector));
-  if (currentClassImp != baseClassImp) {
-    NSString *warnMessage =
-        @"If you are using the `createRootViewWithBridge` to customize the root view appearence,"
-         "for example to set the backgroundColor, please migrate to `customizeRootView` method.\n"
-         "The `createRootViewWithBridge` method is not invoked in bridgeless.";
-    RCTLogWarn(@"%@", warnMessage);
-  }
 }
 
 - (UIViewController *)createRootViewController
