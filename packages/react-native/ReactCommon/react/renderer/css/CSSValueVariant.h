@@ -109,6 +109,13 @@ class CSSValueVariant {
     return CSSValueVariant(CSSValueType::Angle, CSSAngle{degrees});
   }
 
+  static constexpr CSSValueVariant
+  color(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
+    requires(canRepresent<CSSColor>())
+  {
+    return CSSValueVariant(CSSValueType::Color, CSSColor{r, g, b, a});
+  }
+
   constexpr CSSValueType type() const {
     return type_;
   }
@@ -155,6 +162,12 @@ class CSSValueVariant {
     return getIf<CSSValueType::Angle, CSSAngle>();
   }
 
+  constexpr CSSColor getColor() const
+    requires(canRepresent<CSSColor>())
+  {
+    return getIf<CSSValueType::Color, CSSColor>();
+  }
+
   constexpr bool hasValue() const
     requires(canRepresent<CSSWideKeyword>())
   {
@@ -185,6 +198,8 @@ class CSSValueVariant {
         return getRatio() == other.getRatio();
       case CSSValueType::Angle:
         return getAngle() == other.getAngle();
+      case CSSValueType::Color:
+        return getColor() == other.getColor();
     }
 
     return false;
