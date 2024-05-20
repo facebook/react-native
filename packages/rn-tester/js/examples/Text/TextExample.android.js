@@ -1211,7 +1211,7 @@ const examples = [
   },
   {
     title: 'Inline views',
-    name: 'inlineViews',
+    name: 'inlineViewsBasic',
     render: function (): React.Node {
       return <TextInlineView.Basic />;
     },
