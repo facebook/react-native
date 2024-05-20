@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4832483bb3648380f2bb9312311f579c>>
+ * @generated SignedSource<<2bfa4670757aa340c88ae8ff57270308>>
  */
 
 /**
@@ -31,15 +31,11 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool enableBackgroundExecutor() override {
-    return false;
+  bool allowCollapsableChildren() override {
+    return true;
   }
 
-  bool useModernRuntimeScheduler() override {
-    return false;
-  }
-
-  bool enableMicrotasks() override {
+  bool androidEnablePendingFabricTransactions() override {
     return false;
   }
 
@@ -47,15 +43,39 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool enableSpannableBuildingUnification() override {
+  bool destroyFabricSurfacesInReactInstanceManager() override {
     return false;
   }
 
-  bool enableCustomDrawOrderFabric() override {
+  bool enableBackgroundExecutor() override {
     return false;
   }
 
-  bool enableFixForClippedSubviewsCrash() override {
+  bool enableCleanTextInputYogaNode() override {
+    return false;
+  }
+
+  bool enableGranularShadowTreeStateReconciliation() override {
+    return false;
+  }
+
+  bool enableMicrotasks() override {
+    return false;
+  }
+
+  bool enableSynchronousStateUpdates() override {
+    return false;
+  }
+
+  bool enableUIConsistency() override {
+    return false;
+  }
+
+  bool fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak() override {
+    return false;
+  }
+
+  bool forceBatchingMountItemsOnAndroid() override {
     return false;
   }
 
@@ -64,6 +84,30 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool inspectorEnableModernCDPRegistry() override {
+    return false;
+  }
+
+  bool lazyAnimationCallbacks() override {
+    return false;
+  }
+
+  bool preventDoubleTextMeasure() override {
+    return false;
+  }
+
+  bool setAndroidLayoutDirection() override {
+    return false;
+  }
+
+  bool useModernRuntimeScheduler() override {
+    return false;
+  }
+
+  bool useNativeViewConfigsInBridgelessMode() override {
+    return false;
+  }
+
+  bool useStateAlignmentMechanism() override {
     return false;
   }
 };

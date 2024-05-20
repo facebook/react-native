@@ -165,7 +165,7 @@ class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
       DeviceEventEmitter.addListener(CUSTOM_EVENT_TYPE, (...args) => {
         this._setResult(
           'emitDeviceEvent',
-          `${CUSTOM_EVENT_TYPE}(${args.map(s => `${s}`).join(', ')})`,
+          `${CUSTOM_EVENT_TYPE}(${args.map(s => (typeof s === 'object' ? JSON.stringify(s) : s)).join(', ')})`,
         );
       });
       NativeCxxModuleExample?.emitCustomDeviceEvent(CUSTOM_EVENT_TYPE);

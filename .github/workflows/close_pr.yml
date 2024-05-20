@@ -42,18 +42,18 @@ jobs:
               repo: context.repo.repo,
             })).data;
 
-            // If the PR has already been processed (labeled as Merged), skip it
-            const mergedLabel = "Merged";
-            if(pr.labels && pr.labels.some(label => label.name === mergedLabel)) return;
-
             const authorName = author?.login ? `@${author.login}` : commit.author.name;
 
             github.rest.issues.createComment({
               issue_number: closedPrNumber,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: `This pull request was successfully merged by ${authorName} in **${sha}**.\n\n<sup>[When will my fix make it into a release?](https://github.com/facebook/react-native/wiki/Release-FAQ#when-will-my-fix-make-it-into-a-release) | [Upcoming Releases](https://github.com/reactwg/react-native-releases/discussions/categories/releases)</sup>`
+              body: `This pull request was successfully merged by ${authorName} in **${sha}**.\n\n<sup>[When will my fix make it into a release?](https://github.com/reactwg/react-native-releases/blob/main/docs/faq.md#when-will-my-fix-make-it-into-a-release) | [How to file a pick request?](https://github.com/reactwg/react-native-releases/blob/main/docs/faq.md#how-to-open-a-pick-request)</sup>`
             });
+
+            // If the PR has already been processed (labeled as Merged), skip it
+            const mergedLabel = "Merged";
+            if(pr.labels && pr.labels.some(label => label.name === mergedLabel)) return;
 
             github.rest.issues.addLabels({
               issue_number: closedPrNumber,

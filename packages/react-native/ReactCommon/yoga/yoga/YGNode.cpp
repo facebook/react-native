@@ -216,12 +216,12 @@ void YGNodeSetChildren(
   auto owner = resolveRef(ownerRef);
   auto children = reinterpret_cast<yoga::Node* const*>(childrenRefs);
 
-  if (!owner) {
+  if (owner == nullptr) {
     return;
   }
 
   const std::vector<yoga::Node*> childrenVector = {children, children + count};
-  if (childrenVector.size() == 0) {
+  if (childrenVector.empty()) {
     if (owner->getChildCount() > 0) {
       for (auto* child : owner->getChildren()) {
         child->setLayout({});

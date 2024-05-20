@@ -42,8 +42,6 @@ class RuntimeSchedulerBinding : public jsi::HostObject {
    */
   jsi::Value get(jsi::Runtime& runtime, const jsi::PropNameID& name) override;
 
-  bool getIsSynchronous() const;
-
  private:
   std::shared_ptr<RuntimeScheduler> runtimeScheduler_;
 };

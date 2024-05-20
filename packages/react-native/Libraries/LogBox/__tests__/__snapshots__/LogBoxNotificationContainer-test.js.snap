@@ -19,6 +19,7 @@ exports[`LogBoxNotificationContainer should render inspector with logs, even whe
           "category": "Some kind of message",
           "codeFrame": undefined,
           "componentStack": Array [],
+          "componentStackType": "legacy",
           "count": 1,
           "extraData": undefined,
           "isComponentError": false,
@@ -33,12 +34,18 @@ exports[`LogBoxNotificationContainer should render inspector with logs, even whe
             "stack": null,
             "status": "NONE",
           },
+          "symbolicatedComponentStack": Object {
+            "componentStack": null,
+            "error": null,
+            "status": "NONE",
+          },
           "type": undefined,
         },
         LogBoxLog {
           "category": "Some kind of message (latest)",
           "codeFrame": undefined,
           "componentStack": Array [],
+          "componentStackType": "legacy",
           "count": 1,
           "extraData": undefined,
           "isComponentError": false,
@@ -51,6 +58,11 @@ exports[`LogBoxNotificationContainer should render inspector with logs, even whe
           "symbolicated": Object {
             "error": null,
             "stack": null,
+            "status": "NONE",
+          },
+          "symbolicatedComponentStack": Object {
+            "componentStack": null,
+            "error": null,
             "status": "NONE",
           },
           "type": undefined,

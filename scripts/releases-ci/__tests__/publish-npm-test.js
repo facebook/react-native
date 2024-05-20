@@ -160,8 +160,14 @@ describe('publish-npm', () => {
       expect(setVersionMock).toBeCalledWith(expectedVersion);
       expect(generateAndroidArtifactsMock).toHaveBeenCalled();
       expect(publishPackageMock.mock.calls).toEqual([
-        ['path/to/monorepo/pkg-a', {otp: undefined, tags: ['nightly']}],
-        ['path/to/monorepo/pkg-b', {otp: undefined, tags: ['nightly']}],
+        [
+          'path/to/monorepo/pkg-a',
+          {otp: undefined, tags: ['nightly'], access: 'public'},
+        ],
+        [
+          'path/to/monorepo/pkg-b',
+          {otp: undefined, tags: ['nightly'], access: 'public'},
+        ],
         [
           path.join(REPO_ROOT, 'packages', 'react-native'),
           {otp: undefined, tags: ['nightly']},
@@ -249,8 +255,14 @@ describe('publish-npm', () => {
 
       // Note that we don't call `publishPackage` for react-native, or monorepo/pkg-c
       expect(publishPackageMock.mock.calls).toEqual([
-        ['path/to/monorepo/pkg-a', {otp: undefined, tags: ['nightly']}],
-        ['path/to/monorepo/pkg-b', {otp: undefined, tags: ['nightly']}],
+        [
+          'path/to/monorepo/pkg-a',
+          {otp: undefined, tags: ['nightly'], access: 'public'},
+        ],
+        [
+          'path/to/monorepo/pkg-b',
+          {otp: undefined, tags: ['nightly'], access: 'public'},
+        ],
       ]);
 
       expect(consoleLogMock.mock.calls).toEqual([

@@ -49,6 +49,7 @@ export default function RNTOption(props: Props): React.Node {
       testID={props.testID}>
       <View
         style={[
+          {borderColor: theme.BorderColor},
           styles.container,
           props.selected === true ? styles.selected : null,
           pressed && props.selected !== true ? styles.pressed : null,
@@ -60,7 +61,7 @@ export default function RNTOption(props: Props): React.Node {
             : null,
           props.style,
         ]}>
-        <Text style={styles.label}>{props.label}</Text>
+        <Text style={{color: theme.SecondaryLabelColor}}>{props.label}</Text>
       </View>
     </Pressable>
   );
@@ -70,16 +71,12 @@ const styles = StyleSheet.create({
   pressed: {
     backgroundColor: 'rgba(100,215,255,.3)',
   },
-  label: {
-    color: 'black',
-  },
   selected: {
     backgroundColor: 'rgba(100,215,255,.3)',
     borderColor: 'rgba(100,215,255,.3)',
   },
   disabled: {borderWidth: 0},
   container: {
-    borderColor: 'rgba(0,0,0, 0.1)',
     borderWidth: 1,
     borderRadius: 16,
     padding: 6,

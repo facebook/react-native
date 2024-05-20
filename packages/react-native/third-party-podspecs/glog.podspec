@@ -29,23 +29,12 @@ Pod::Spec.new do |spec|
                         'src/base/*.h'
   spec.exclude_files       = "src/windows/**/*"
   spec.compiler_flags      = '-Wno-shorten-64-to-32'
-
-  # TODO: T167482718 Remove this code after April 2024, when Apple will
-  # push the lower version of Xcode required to upload apps to the Store.
-  xcode_path = `xcodebuild -version` # This return the current version of Xcode
-
-  match = xcode_path.match(/Xcode (\d+)\.(\d+)/)
-  major_version = match[1].to_i
-  minor_version = match[2].to_i
-  is_greater_than_15 = major_version >= 15
-  is_greater_than_14_3 = major_version == 14 && minor_version >= 3
-  should_define_modules = is_greater_than_15 ? "YES" : is_greater_than_14_3 ? "YES" : "NO"
-  # End TODO.
+  spec.resource_bundles = {'glog_privacy' => 'glog/PrivacyInfo.xcprivacy'}
 
   spec.pod_target_xcconfig = {
     "USE_HEADERMAP" => "NO",
     "HEADER_SEARCH_PATHS" => "$(PODS_TARGET_SRCROOT)/src",
-    "DEFINES_MODULE" => should_define_modules # When the workaround is removed, set this var to "YES"
+    "DEFINES_MODULE" => "YES"
   }
 
   # Pinning to the same version as React.podspec.

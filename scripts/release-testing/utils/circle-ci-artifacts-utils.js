@@ -11,6 +11,7 @@
 
 'use strict';
 
+const chalk = require('chalk');
 const fetch = require('node-fetch');
 const {exec} = require('shelljs');
 
@@ -71,6 +72,14 @@ type Artifact = {
 type Pipeline = {
   id: string,
   number: number,
+  vcs: {
+    revision: string,
+    commit?: {
+      subject: string,
+      ...
+    },
+    ...
+  },
   ...
 }
 */
@@ -79,12 +88,15 @@ async function initialize(
   circleCIToken /*: string */,
   baseTempPath /*: string */,
   branchName /*: string */,
+  useLastSuccessfulPipeline /*: boolean */ = false,
 ) {
   console.info('Getting CircleCI information');
   circleCIHeaders = {'Circle-Token': circleCIToken};
   baseTemporaryPath = baseTempPath;
   exec(`mkdir -p ${baseTemporaryPath}`);
-  const pipeline = await _getLastCircleCIPipelineID(branchName);
+  const pipeline = await (
+    useLastSuccessfulPipeline ? _getLastSuccessfulPipeline : _getLatestPipeline
+  )(branchName);
   const testsWorkflow = await _getTestsWorkflow(pipeline.id);
   const jobsResults = await _getCircleCIJobs(testsWorkflow.id);
 
@@ -95,7 +107,53 @@ function baseTmpPath() /*: string */ {
   return baseTemporaryPath;
 }
 
-async function _getLastCircleCIPipelineID(branchName /*: string */) {
+async function _getLatestPipeline(
+  branchName /*: string */,
+) /*: Promise<Pipeline> */ {
+  return (await _fetchPipelinesForBranch(branchName))[0];
+}
+
+async function _getLastSuccessfulPipeline(
+  branchName /*: string */,
+) /*: Promise<Pipeline> */ {
+  const PIPELINE_SEARCH_LIMIT = 5;
+  const latestPipelines = (await _fetchPipelinesForBranch(branchName)).slice(
+    0,
+    PIPELINE_SEARCH_LIMIT,
+  );
+
+  for (const pipeline of latestPipelines) {
+    // $FlowIgnore[prop-missing] Conflicting .flowconfig in Meta's monorepo
+    const response = await fetch(
+      `https://circleci.com/api/v2/pipeline/${pipeline.id}/workflow`,
+      {method: 'GET', headers: circleCIHeaders},
+    );
+
+    const {items} = await response.json();
+
+    const success = items.every(w => w.status === 'success');
+
+    if (success) {
+      if (pipeline.id !== latestPipelines[0].id) {
+        console.warn(
+          chalk.yellow(
+            `Using last successful pipeline at revision ${pipeline.vcs.revision} (${pipeline.vcs.commit?.subject ?? 'unknown'})`,
+          ),
+        );
+      }
+
+      return pipeline;
+    }
+  }
+
+  throw new Error(
+    `Found no successful pipelines on this branch for the last ${PIPELINE_SEARCH_LIMIT} pipelines.`,
+  );
+}
+
+async function _fetchPipelinesForBranch(
+  branchName /*: string */,
+) /*: Promise<Array<Pipeline>> */ {
   const qs = new URLSearchParams({branch: branchName}).toString();
   const url =
     'https://circleci.com/api/v2/project/gh/facebook/react-native/pipeline?' +
@@ -123,8 +181,7 @@ async function _getLastCircleCIPipelineID(branchName /*: string */) {
     );
   }
 
-  const lastPipeline = items[0];
-  return {id: lastPipeline.id, number: lastPipeline.number};
+  return items;
 }
 
 async function _getSpecificWorkflow(

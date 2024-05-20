@@ -6,6 +6,7 @@
  */
 
 #include "ReactNativeMocks.h"
+#include <glog/logging.h>
 
 namespace facebook::react::jsinspector_modern {
 

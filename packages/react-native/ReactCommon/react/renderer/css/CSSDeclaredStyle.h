@@ -14,10 +14,26 @@
 #include <vector>
 
 #include <react/debug/react_native_assert.h>
-#include <react/renderer/css/CSSParser.h>
 #include <react/renderer/css/CSSProperties.h>
+#include <react/renderer/css/CSSValueParser.h>
 
 namespace facebook::react {
+
+namespace detail {
+constexpr CSSProp kFirstCSSProp = static_cast<CSSProp>(0);
+
+template <CSSProp Prop = kFirstCSSProp>
+constexpr size_t maxSizeofDeclaredValue() {
+  if constexpr (to_underlying(Prop) < kCSSPropCount - 1) {
+    return std::max(
+        sizeof(CSSDeclaredValue<Prop>),
+        maxSizeofDeclaredValue<static_cast<CSSProp>(
+            to_underlying(Prop) + 1)>());
+  } else {
+    return sizeof(CSSDeclaredValue<Prop>);
+  }
+}
+} // namespace detail
 
 /**
  * CSSDeclaredStyle represents the set of style declarations on an element set
@@ -49,8 +65,14 @@ class CSSDeclaredStyle {
   }
 
   template <CSSProp Prop>
-  void set(std::string_view value) {
-    set<Prop>(parseCSSProp<Prop>(value));
+  bool set(std::string_view value) {
+    auto cssProp = parseCSSProp<Prop>(value);
+    set<Prop>(cssProp);
+    return cssProp.hasValue();
+  }
+
+  bool set(std::string_view prop, std::string_view value) {
+    return setPropIfHashMatches(fnv1a(prop), value);
   }
 
   /**
@@ -85,21 +107,29 @@ class CSSDeclaredStyle {
  private:
   struct PropMapping {
     CSSProp prop;
-    std::array<
-        std::byte,
-        sizeof(CSSValueVariant<
-               CSSWideKeyword,
-               CSSKeyword,
-               CSSLength,
-               CSSNumber,
-               CSSPercentage,
-               CSSRatio>)>
-        value;
+    std::array<std::byte, detail::maxSizeofDeclaredValue()> value;
 
     constexpr bool operator<(const PropMapping& rhs) const {
       return to_underlying(prop) < to_underlying(rhs.prop);
     }
   };
+
+  template <CSSProp CurrentProp = detail::kFirstCSSProp>
+  constexpr bool setPropIfHashMatches(
+      size_t propNameHash,
+      std::string_view value) {
+    constexpr std::string_view currentPropName =
+        CSSPropDefinition<CurrentProp>::kName;
+    constexpr size_t currentHash = fnv1a(currentPropName);
+    if (currentHash == propNameHash) {
+      return set<CurrentProp>(value);
+    } else if constexpr (to_underlying(CurrentProp) < kCSSPropCount - 1) {
+      return setPropIfHashMatches<static_cast<CSSProp>(
+          to_underlying(CurrentProp) + 1)>(propNameHash, value);
+    } else {
+      return false;
+    }
+  }
 
   std::vector<PropMapping> properties_;
   std::bitset<kCSSPropCount> specifiedProperties_;

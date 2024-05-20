@@ -78,10 +78,10 @@ const Platform: PlatformType = {
       ? // $FlowFixMe[incompatible-return]
         spec.android
       : 'native' in spec
-      ? // $FlowFixMe[incompatible-return]
-        spec.native
-      : // $FlowFixMe[incompatible-return]
-        spec.default,
+        ? // $FlowFixMe[incompatible-return]
+          spec.native
+        : // $FlowFixMe[incompatible-return]
+          spec.default,
 };
 
 module.exports = Platform;

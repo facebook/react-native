@@ -62,13 +62,20 @@ export function get<Config>(
 
     let viewConfig;
     if (native) {
-      viewConfig = getNativeComponentAttributes(name);
+      viewConfig =
+        getNativeComponentAttributes(name) ??
+        createViewConfig(viewConfigProvider());
     } else {
-      viewConfig = createViewConfig(viewConfigProvider());
-      if (viewConfig == null) {
-        viewConfig = getNativeComponentAttributes(name);
-      }
+      viewConfig =
+        createViewConfig(viewConfigProvider()) ??
+        getNativeComponentAttributes(name);
     }
+
+    invariant(
+      viewConfig != null,
+      'NativeComponentRegistry.get: both static and native view config are missing for native component "%s".',
+      name,
+    );
 
     if (verify) {
       const nativeViewConfig = native

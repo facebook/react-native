@@ -209,6 +209,13 @@ class JSI_EXPORT Runtime {
   virtual Value evaluatePreparedJavaScript(
       const std::shared_ptr<const PreparedJavaScript>& js) = 0;
 
+  /// Queues a microtask in the JavaScript VM internal Microtask (a.k.a. Job in
+  /// ECMA262) queue, to be executed when the host drains microtasks in
+  /// its event loop implementation.
+  ///
+  /// \param callback a function to be executed as a microtask.
+  virtual void queueMicrotask(const jsi::Function& callback) = 0;
+
   /// Drain the JavaScript VM internal Microtask (a.k.a. Job in ECMA262) queue.
   ///
   /// \param maxMicrotasksHint a hint to tell an implementation that it should
@@ -487,7 +494,7 @@ class JSI_EXPORT PropNameID : public Pointer {
 
   // Creates a vector of given PropNameIDs.
   template <size_t N>
-  static std::vector<PropNameID> names(PropNameID(&&propertyNames)[N]);
+  static std::vector<PropNameID> names(PropNameID (&&propertyNames)[N]);
 
   /// Copies the data in a PropNameID as utf8 into a C++ string.
   std::string utf8(Runtime& runtime) const {
@@ -993,6 +1000,11 @@ class JSI_EXPORT Function : public Object {
   /// \param name the name property for the function.
   /// \param paramCount the length property for the function, which
   /// may not be the number of arguments the function is passed.
+  /// \note The std::function's dtor will be called when the GC finalizes this
+  /// function. As with HostObject, this may be as late as when the Runtime is
+  /// shut down, and may occur on an arbitrary thread. If the function contains
+  /// any captured values, you are responsible for ensuring that their
+  /// destructors are safe to call on any thread.
   static Function createFromHostFunction(
       Runtime& runtime,
       const jsi::PropNameID& name,

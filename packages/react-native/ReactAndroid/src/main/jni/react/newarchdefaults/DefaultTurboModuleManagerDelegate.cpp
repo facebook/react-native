@@ -9,8 +9,7 @@
 
 #include <algorithm>
 
-#include <react/nativemodule/featureflags/NativeReactNativeFeatureFlags.h>
-#include <rncore.h>
+#include <react/nativemodule/defaults/DefaultTurboModules.h>
 
 namespace facebook::react {
 
@@ -74,11 +73,7 @@ std::shared_ptr<TurboModule> DefaultTurboModuleManagerDelegate::getTurboModule(
     }
   }
 
-  if (name == NativeReactNativeFeatureFlags::kModuleName) {
-    return std::make_shared<NativeReactNativeFeatureFlags>(jsInvoker);
-  }
-
-  return nullptr;
+  return DefaultTurboModules::getTurboModule(name, jsInvoker);
 }
 
 std::shared_ptr<TurboModule> DefaultTurboModuleManagerDelegate::getTurboModule(
@@ -90,7 +85,8 @@ std::shared_ptr<TurboModule> DefaultTurboModuleManagerDelegate::getTurboModule(
       return resolvedModule;
     }
   }
-  return rncore_ModuleProvider(name, params);
+
+  return nullptr;
 }
 
 } // namespace facebook::react

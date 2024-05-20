@@ -121,8 +121,8 @@ async function initNewProjectFromSource(
         --directory ${directory} \
         --template ${templatePath} \
         --verbose \
-        --skip-install \
-        --yarn-config-options npmRegistryServer="${VERDACCIO_SERVER_URL}"`,
+        --pm npm \
+        --skip-install`,
       {
         // Avoid loading packages/react-native/react-native.config.js
         cwd: REPO_ROOT,

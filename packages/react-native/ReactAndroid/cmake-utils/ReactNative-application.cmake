@@ -70,14 +70,16 @@ add_library(react_debug ALIAS ReactAndroid::react_debug)
 add_library(react_utils ALIAS ReactAndroid::react_utils)
 add_library(react_render_componentregistry ALIAS ReactAndroid::react_render_componentregistry)
 add_library(react_newarchdefaults ALIAS ReactAndroid::react_newarchdefaults)
-add_library(react_cxxreactpackage ALIAS ReactAndroid::react_cxxreactpackage)
 add_library(react_render_core ALIAS ReactAndroid::react_render_core)
 add_library(react_render_graphics ALIAS ReactAndroid::react_render_graphics)
 add_library(rrc_view ALIAS ReactAndroid::rrc_view)
+add_library(rrc_text ALIAS ReactAndroid::rrc_text)
+add_library(rrc_textinput ALIAS ReactAndroid::rrc_textinput)
 add_library(jsi ALIAS ReactAndroid::jsi)
 add_library(glog ALIAS ReactAndroid::glog)
 add_library(fabricjni ALIAS ReactAndroid::fabricjni)
 add_library(react_render_mapbuffer ALIAS ReactAndroid::react_render_mapbuffer)
+add_library(react_render_textlayoutmanager ALIAS ReactAndroid::react_render_textlayoutmanager)
 add_library(yoga ALIAS ReactAndroid::yoga)
 add_library(folly_runtime ALIAS ReactAndroid::folly_runtime)
 add_library(react_nativemodule_core ALIAS ReactAndroid::react_nativemodule_core)
@@ -99,15 +101,17 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         react_utils                         # prefab ready
         react_nativemodule_core             # prefab ready
         react_newarchdefaults               # prefab ready
-        react_cxxreactpackage               # prefab ready
         react_render_componentregistry      # prefab ready
         react_render_core                   # prefab ready
         react_render_debug                  # prefab ready
         react_render_graphics               # prefab ready
         react_render_imagemanager           # prefab ready
         react_render_mapbuffer              # prefab ready
+        react_render_textlayoutmanager      # prefab ready
         rrc_image                           # prefab ready
         rrc_view                            # prefab ready
+        rrc_text                            # prefab ready
+        rrc_textinput                       # prefab ready
         rrc_legacyviewmanagerinterop        # prefab ready
         runtimeexecutor                     # prefab ready
         turbomodulejsijni                   # prefab ready

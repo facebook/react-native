@@ -7,11 +7,10 @@
 
 #pragma once
 
+#include "CdpJson.h"
 #include "InspectorInterfaces.h"
 #include "RuntimeAgentDelegate.h"
 #include "RuntimeTarget.h"
-
-#include <jsinspector-modern/Parsing.h>
 
 namespace facebook::react::jsinspector_modern {
 

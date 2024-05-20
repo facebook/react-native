@@ -8,14 +8,24 @@
 #include <gtest/gtest.h>
 #include <hermes/hermes.h>
 #include <jsi/jsi.h>
+#include <react/renderer/core/EventLogger.h>
 #include <react/renderer/core/EventPipe.h>
 #include <react/renderer/core/EventQueueProcessor.h>
 #include <react/renderer/core/StatePipe.h>
 #include <react/renderer/core/ValueFactoryEventPayload.h>
 
 #include <memory>
+#include <string_view>
 
 namespace facebook::react {
+
+class MockEventLogger : public EventLogger {
+  EventTag onEventStart(std::string_view /*name*/) override {
+    return EMPTY_EVENT_TAG;
+  }
+  void onEventProcessingStart(EventTag /*tag*/) override {}
+  void onEventProcessingEnd(EventTag /*tag*/) override {}
+};
 
 class EventQueueProcessorTest : public testing::Test {
  protected:
@@ -34,9 +44,10 @@ class EventQueueProcessorTest : public testing::Test {
 
     auto dummyEventPipeConclusion = [](jsi::Runtime& runtime) {};
     auto dummyStatePipe = [](const StateUpdate& stateUpdate) {};
+    auto mockEventLogger = std::make_shared<MockEventLogger>();
 
     eventProcessor_ = std::make_unique<EventQueueProcessor>(
-        eventPipe, dummyEventPipeConclusion, dummyStatePipe);
+        eventPipe, dummyEventPipeConclusion, dummyStatePipe, mockEventLogger);
   }
 
   std::unique_ptr<facebook::hermes::HermesRuntime> runtime_;

@@ -8,103 +8,173 @@
  * @format
  */
 
+/* eslint sort-keys: 'error' */
+
 import type {FeatureFlagDefinitions} from './types';
+
+/**
+ * This is the source of truth for React Native feature flags.
+ *
+ * If you modify this file, you need to update all the generated files
+ * running the following script from the repo root:
+ *   yarn featureflags-update
+ */
+
+// These flags are only used in tests for the feature flags system
+const testDefinitions: FeatureFlagDefinitions = {
+  common: {
+    commonTestFlag: {
+      defaultValue: false,
+      description: 'Common flag for testing. Do NOT modify.',
+    },
+  },
+  jsOnly: {
+    jsOnlyTestFlag: {
+      defaultValue: false,
+      description: 'JS-only flag for testing. Do NOT modify.',
+    },
+  },
+};
 
 const definitions: FeatureFlagDefinitions = {
   common: {
-    // This is only used in unit tests for the feature flags system.
-    commonTestFlag: {
-      description: 'Common flag for testing. Do NOT modify.',
-      defaultValue: false,
-    },
-
-    enableBackgroundExecutor: {
+    ...testDefinitions.common,
+    allowCollapsableChildren: {
+      defaultValue: true,
       description:
-        'Enables the use of a background executor to compute layout and commit updates on Fabric (this system is deprecated and should not be used).',
-      defaultValue: false,
+        'Enables the differentiator to understand the "collapsableChildren" prop',
     },
-    useModernRuntimeScheduler: {
-      description:
-        'When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.',
+    androidEnablePendingFabricTransactions: {
       defaultValue: false,
-    },
-    enableMicrotasks: {
       description:
-        'Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).',
-      defaultValue: false,
+        "To be used with batchRenderingUpdatesInEventLoop. When enbled, the Android mounting layer will concatenate pending transactions to ensure they're applied atomatically",
     },
     batchRenderingUpdatesInEventLoop: {
+      defaultValue: false,
       description:
         'When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.',
-      defaultValue: false,
     },
-    enableSpannableBuildingUnification: {
-      description:
-        'Uses new, deduplicated logic for constructing Android Spannables from text fragments',
+    destroyFabricSurfacesInReactInstanceManager: {
       defaultValue: false,
+      description:
+        'When enabled, ReactInstanceManager will clean up Fabric surfaces on destroy().',
     },
-    enableCustomDrawOrderFabric: {
-      description:
-        'When enabled, Fabric will use customDrawOrder in ReactViewGroup (similar to old architecture).',
+    enableBackgroundExecutor: {
       defaultValue: false,
+      description:
+        'Enables the use of a background executor to compute layout and commit updates on Fabric (this system is deprecated and should not be used).',
     },
-    enableFixForClippedSubviewsCrash: {
-      description:
-        'Attempt at fixing a crash related to subview clipping on Android. This is a kill switch for the fix',
+    enableCleanTextInputYogaNode: {
       defaultValue: false,
+      description: 'Clean yoga node when <TextInput /> does not change.',
+    },
+    enableGranularShadowTreeStateReconciliation: {
+      defaultValue: false,
+      description:
+        'When enabled, the renderer would only fail commits when they propagate state and the last commit that updated state changed before committing.',
+    },
+    enableMicrotasks: {
+      defaultValue: false,
+      description:
+        'Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).',
+    },
+    enableSynchronousStateUpdates: {
+      defaultValue: false,
+      description:
+        'Dispatches state updates synchronously in Fabric (e.g.: updates the scroll position in the shadow tree synchronously from the main thread).',
+    },
+    enableUIConsistency: {
+      defaultValue: false,
+      description:
+        'Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).',
+    },
+    fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak: {
+      defaultValue: false,
+      description:
+        'Fixes a leak in SurfaceMountingManager.mRemoveDeleteTreeUIFrameCallback',
+    },
+    forceBatchingMountItemsOnAndroid: {
+      defaultValue: false,
+      description:
+        'Forces the mounting layer on Android to always batch mount items instead of dispatching them immediately. This might fix some crashes related to synchronous state updates, where some views dispatch state updates during mount.',
     },
     inspectorEnableCxxInspectorPackagerConnection: {
+      defaultValue: false,
       description:
         'Flag determining if the C++ implementation of InspectorPackagerConnection should be used instead of the per-platform one. This flag is global and should not be changed across React Host lifetimes.',
-      defaultValue: false,
     },
     inspectorEnableModernCDPRegistry: {
+      defaultValue: false,
       description:
         'Flag determining if the modern CDP backend should be enabled. This flag is global and should not be changed across React Host lifetimes.',
+    },
+    lazyAnimationCallbacks: {
       defaultValue: false,
+      description:
+        'Only enqueue Choreographer calls if there is an ongoing animation, instead of enqueueing every frame.',
+    },
+    preventDoubleTextMeasure: {
+      defaultValue: false,
+      description:
+        'When enabled, ParagraphShadowNode will no longer call measure twice.',
+    },
+    setAndroidLayoutDirection: {
+      defaultValue: false,
+      description: 'Propagate layout direction to Android views.',
+    },
+    useModernRuntimeScheduler: {
+      defaultValue: false,
+      description:
+        'When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.',
+    },
+    useNativeViewConfigsInBridgelessMode: {
+      defaultValue: false,
+      description:
+        'When enabled, the native view configs are used in bridgeless mode.',
+    },
+    useStateAlignmentMechanism: {
+      defaultValue: false,
+      description:
+        'When enabled, it uses optimised state reconciliation algorithm.',
     },
   },
 
   jsOnly: {
-    // This is only used in unit tests for the feature flags system.
-    jsOnlyTestFlag: {
-      description: 'JS-only flag for testing. Do NOT modify.',
-      defaultValue: false,
-    },
+    ...testDefinitions.jsOnly,
 
-    isLayoutAnimationEnabled: {
-      description:
-        'Function used to enable / disabled Layout Animations in React Native.',
-      defaultValue: true,
-    },
     animatedShouldDebounceQueueFlush: {
+      defaultValue: false,
       description:
         'Enables an experimental flush-queue debouncing in Animated.js.',
-      defaultValue: false,
     },
     animatedShouldUseSingleOp: {
+      defaultValue: false,
       description:
         'Enables an experimental mega-operation for Animated.js that replaces many calls to native with a single call into native, to reduce JSI/JNI traffic.',
-      defaultValue: false,
     },
     enableAccessToHostTreeInFabric: {
+      defaultValue: false,
       description:
         'Enables access to the host tree in Fabric using DOM-compatible APIs.',
-      defaultValue: false,
+    },
+    isLayoutAnimationEnabled: {
+      defaultValue: true,
+      description:
+        'Function used to enable / disabled Layout Animations in React Native.',
     },
     shouldUseAnimatedObjectForTransform: {
+      defaultValue: false,
       description:
         'Enables use of AnimatedObject for animating transform values.',
-      defaultValue: false,
-    },
-    shouldUseSetNativePropsInFabric: {
-      description: 'Enables use of setNativeProps in JS driven animations.',
-      defaultValue: true,
     },
     shouldUseRemoveClippedSubviewsAsDefaultOnIOS: {
+      defaultValue: false,
       description:
         'removeClippedSubviews prop will be used as the default in FlatList on iOS to match Android',
-      defaultValue: false,
+    },
+    shouldUseSetNativePropsInFabric: {
+      defaultValue: true,
+      description: 'Enables use of setNativeProps in JS driven animations.',
     },
   },
 };

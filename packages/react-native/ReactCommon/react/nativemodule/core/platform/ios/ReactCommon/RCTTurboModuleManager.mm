@@ -19,6 +19,8 @@
 #import <React/RCTBridge+Private.h>
 #import <React/RCTBridgeModule.h>
 #import <React/RCTBridgeProxy.h>
+#import <React/RCTCallInvoker.h>
+#import <React/RCTCallInvokerModule.h>
 #import <React/RCTConstants.h>
 #import <React/RCTCxxModule.h>
 #import <React/RCTInitializing.h>
@@ -165,7 +167,7 @@ bool isTurboModuleInstance(id module)
 {
   return isTurboModuleClass([module class]);
 }
-}
+} // namespace
 
 // Fallback lookup since RCT class prefix is sometimes stripped in the existing NativeModule system.
 // This will be removed in the future.
@@ -573,9 +575,8 @@ static Class getFallbackClassFromName(const char *name)
         if (!strongSelf) {
           return;
         }
-        module = [strongSelf _createAndSetUpObjCModule:moduleClass
-                                            moduleName:moduleName
-                                              moduleId:moduleHolder->getModuleId()];
+        module = [strongSelf _createAndSetUpObjCModule:moduleClass moduleName:moduleName moduleId:moduleHolder
+                      ->getModuleId()];
       };
 
       if ([self _requiresMainQueueSetup:moduleClass]) {
@@ -674,7 +675,7 @@ static Class getFallbackClassFromName(const char *name)
        */
       if (_bridge) {
         [(id)module setValue:_bridge forKey:@"bridge"];
-      } else if (_bridgeProxy && [self _isLegacyModuleClass:[module class]]) {
+      } else if (_bridgeProxy) {
         [(id)module setValue:_bridgeProxy forKey:@"bridge"];
       }
     } @catch (NSException *exception) {
@@ -691,6 +692,12 @@ static Class getFallbackClassFromName(const char *name)
     RCTRuntimeExecutor *runtimeExecutor = [[RCTRuntimeExecutor alloc]
         initWithRuntimeExecutor:[_runtimeHandler runtimeExecutorForTurboModuleManager:self]];
     [(id<RCTRuntimeExecutorModule>)module setRuntimeExecutor:runtimeExecutor];
+  }
+
+  // This is a more performant alternative for conformsToProtocol:@protocol(RCTCallInvokerModule)
+  if ([module respondsToSelector:@selector(setCallInvoker:)]) {
+    RCTCallInvoker *callInvoker = [[RCTCallInvoker alloc] initWithCallInvoker:_jsInvoker];
+    [(id<RCTCallInvokerModule>)module setCallInvoker:callInvoker];
   }
 
   /**

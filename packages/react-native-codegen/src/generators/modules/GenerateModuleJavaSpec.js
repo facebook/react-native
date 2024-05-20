@@ -462,7 +462,7 @@ module.exports = {
         'com.facebook.react.bridge.ReactApplicationContext',
         'com.facebook.react.bridge.ReactContextBaseJavaModule',
         'com.facebook.react.bridge.ReactMethod',
-        'com.facebook.react.internal.turbomodule.core.interfaces.TurboModule',
+        'com.facebook.react.turbomodule.core.interfaces.TurboModule',
         'com.facebook.proguard.annotations.DoNotStrip',
         'javax.annotation.Nonnull',
       ]);

@@ -11,6 +11,7 @@
 #include <ReactCommon/SampleTurboModuleSpec.h>
 #include <fbjni/fbjni.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
+#include <rncore.h>
 
 #ifdef REACT_NATIVE_APP_CODEGEN_HEADER
 #include REACT_NATIVE_APP_CODEGEN_HEADER
@@ -51,6 +52,12 @@ std::shared_ptr<TurboModule> javaModuleProvider(
     return module;
   }
 #endif
+
+  // We first try to look up core modules
+  if (auto module = rncore_ModuleProvider(name, params)) {
+    return module;
+  }
+
   return nullptr;
 }
 

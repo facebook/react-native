@@ -26,12 +26,6 @@ describe('TouchableWithoutFeedback', () => {
 
     expect(instance.toJSON()).toMatchSnapshot();
   });
-
-  it('has displayName', () => {
-    expect(TouchableWithoutFeedback.displayName).toEqual(
-      'TouchableWithoutFeedback',
-    );
-  });
 });
 
 describe('TouchableWithoutFeedback with disabled state', () => {
