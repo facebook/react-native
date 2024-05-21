@@ -195,13 +195,16 @@ type Props = $ReadOnly<{|
   'aria-label'?: ?string,
 |}>;
 
+type Instance = React.ElementRef<typeof View>;
+
 /**
  * Component used to build display components that should respond to whether the
  * component is currently pressed or not.
  */
-/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
- * LTI update could not be added via codemod */
-function Pressable(props: Props, forwardedRef): React.Node {
+function Pressable(
+  props: Props,
+  forwardedRef: React.RefSetter<Instance>,
+): React.Node {
   const {
     accessible,
     accessibilityState,
@@ -235,7 +238,7 @@ function Pressable(props: Props, forwardedRef): React.Node {
     ...restProps
   } = props;
 
-  const viewRef = useRef<React.ElementRef<typeof View> | null>(null);
+  const viewRef = useRef<Instance | null>(null);
   const mergedRef = useMergeRefs(forwardedRef, viewRef);
 
   const android_rippleConfig = useAndroidRippleForView(android_ripple, viewRef);
