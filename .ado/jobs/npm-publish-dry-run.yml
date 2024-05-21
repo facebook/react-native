@@ -1,0 +1,18 @@
+jobs:
+- job: NPMPublishDryRun
+  displayName: NPM Publish Dry Run
+  pool:
+    vmImage: $(VmImageApple)
+  timeoutInMinutes: 60 # how long to run the job before automatically cancelling
+  cancelTimeoutInMinutes: 5 # how much time to give 'run always even if cancelled tasks' before killing them
+  steps:
+    - checkout: self # self represents the repo where the initial Pipelines YAML file was found
+      clean: true # whether to fetch clean each time
+      # fetchDepth: 2 # the depth of commits to ask Git to fetch
+      lfs: false # whether to download Git-LFS files
+      submodules: recursive # set to 'true' for a single level of submodules or 'recursive' to get submodules of submodules
+      persistCredentials: true # set to 'true' to leave the OAuth token in the Git config after the initial fetch
+
+    - template: /.ado/templates/apple-steps-publish.yml@self
+      parameters:
+        build_type: 'dry-run'

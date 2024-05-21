@@ -1,0 +1,62 @@
+jobs:
+  - job: CliInit
+    displayName: Verify react-native-macos-init
+    pool:
+      vmImage: $(VmImageApple)
+    steps:
+      - checkout: self # self represents the repo where the initial Pipelines YAML file was found
+        clean: true # whether to fetch clean each time
+        # fetchDepth: 2 # the depth of commits to ask Git to fetch
+        lfs: false # whether to download Git-LFS files
+        submodules: false # set to 'true' for a single level of submodules or 'recursive' to get submodules of submodules
+        persistCredentials: false # set to 'true' to leave the OAuth token in the Git config after the initial fetch
+
+      - template: /.ado/templates/apple-tools-setup.yml@self
+
+      - template: /.ado/templates/verdaccio-init.yml@self
+
+      - template: /.ado/templates/verdaccio-publish.yml@self
+
+      # First do a build of the local package, since we point the cli at the local files, it needs to be pre-built
+      - task: CmdLine@2
+        displayName: yarn install (local react-native-macos)
+        inputs:
+          script: yarn install --immutable
+
+      - task: CmdLine@2
+        displayName: yarn install (local react-native-macos-init)
+        inputs:
+          script: |
+            cd packages/react-native-macos-init
+            yarn install --immutable
+
+      - task: CmdLine@2
+        displayName: yarn build (local react-native-macos-init)
+        inputs:
+          script: |
+            cd packages/react-native-macos-init
+            yarn build
+
+      - task: CmdLine@2
+        displayName: Init new project
+        inputs:
+          script: npx --yes react-native@0.71.5 init testcli --template react-native@0.71.5 --skip-install
+          workingDirectory: $(Agent.BuildDirectory)
+
+      - task: CmdLine@2
+        displayName: yarn install (local react-native-macos-init)
+        inputs:
+          script: yarn install --immutable
+          workingDirectory: $(Agent.BuildDirectory)/testcli
+
+      - task: CmdLine@2
+        displayName: Apply macos template
+        inputs:
+          script: npx react-native-macos-init --version latest --overwrite --prerelease
+          workingDirectory: $(Agent.BuildDirectory)/testcli
+
+      - task: CmdLine@2
+        displayName: Run macos [test]
+        inputs:
+          script: npx react-native run-macos
+          workingDirectory: $(Agent.BuildDirectory)/testcli

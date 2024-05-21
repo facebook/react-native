@@ -16,7 +16,7 @@ trigger:
 pr: none
 
 variables:
-  - template: variables/vars.yml
+  - template: /.ado/variables/vars.yml@self
   - group: React-native-macos Secrets
   - group: InfoSec-SecurityResults
   - name: tags
@@ -79,11 +79,11 @@ extends:
              # - Skipping the actual `git tag`, `git push`, and `npm publish steps as we do that here instead
 
              - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/main') }}:
-               - template: .ado/templates/apple-job-publish.yml@self
+               - template: .ado/templates/apple-steps-publish.yml@self
                  parameters:
                    build_type: nightly
              - ${{ elseif endsWith(variables['Build.SourceBranchName'], '-stable') }}:
-               - template: .ado/templates/apple-job-publish.yml@self
+               - template: .ado/templates/apple-steps-publish.yml@self
                  parameters:
                    build_type: release
              - ${{ else }}:
