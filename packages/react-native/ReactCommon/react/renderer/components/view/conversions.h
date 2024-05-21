@@ -833,7 +833,7 @@ inline void fromRawValue(
       filter.push_back(filterPrimitive);
     } catch (const std::exception& e) {
       LOG(ERROR) << "Could not parse FilterPrimitive: " << e.what();
-      filter = {};
+      result = {};
       return;
     }
   }
