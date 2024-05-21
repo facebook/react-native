@@ -245,6 +245,9 @@ function Pressable(
 
   const [pressed, setPressed] = usePressState(testOnly_pressed === true);
 
+  const shouldUpdatePressed =
+    typeof children === 'function' || typeof style === 'function';
+
   let _accessibilityState = {
     busy: ariaBusy ?? accessibilityState?.busy,
     checked: ariaChecked ?? accessibilityState?.checked,
@@ -300,7 +303,7 @@ function Pressable(
         if (android_rippleConfig != null) {
           android_rippleConfig.onPressIn(event);
         }
-        setPressed(true);
+        shouldUpdatePressed && setPressed(true);
         if (onPressIn != null) {
           onPressIn(event);
         }
@@ -310,7 +313,7 @@ function Pressable(
         if (android_rippleConfig != null) {
           android_rippleConfig.onPressOut(event);
         }
-        setPressed(false);
+        shouldUpdatePressed && setPressed(false);
         if (onPressOut != null) {
           onPressOut(event);
         }
@@ -333,6 +336,7 @@ function Pressable(
       onPressOut,
       pressRetentionOffset,
       setPressed,
+      shouldUpdatePressed,
       unstable_pressDelay,
     ],
   );
