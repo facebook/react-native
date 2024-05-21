@@ -59,6 +59,11 @@ TEST(CSSValueParser, length_values) {
   EXPECT_EQ(pxValue.getLength().value, 20.0f);
   EXPECT_EQ(pxValue.getLength().unit, CSSLengthUnit::Px);
 
+  auto capsValue = parseCSSValue<CSSWideKeyword, CSSLength>("50PX");
+  EXPECT_EQ(capsValue.type(), CSSValueType::Length);
+  EXPECT_EQ(capsValue.getLength().value, 50.0f);
+  EXPECT_EQ(capsValue.getLength().unit, CSSLengthUnit::Px);
+
   auto cmValue = parseCSSValue<CSSWideKeyword, CSSLength>("453cm");
   EXPECT_EQ(cmValue.type(), CSSValueType::Length);
   EXPECT_EQ(cmValue.getLength().value, 453.0f);
@@ -257,6 +262,10 @@ TEST(CSSValueParser, angle_values) {
   auto degreeValue = parseCSSValue<CSSWideKeyword, CSSAngle>("10deg");
   EXPECT_EQ(degreeValue.type(), CSSValueType::Angle);
   EXPECT_EQ(degreeValue.getAngle().degrees, 10.0f);
+
+  auto spongebobCaseValue = parseCSSValue<CSSWideKeyword, CSSAngle>("20dEg");
+  EXPECT_EQ(spongebobCaseValue.type(), CSSValueType::Angle);
+  EXPECT_EQ(spongebobCaseValue.getAngle().degrees, 20.0f);
 
   auto radianValue = parseCSSValue<CSSWideKeyword, CSSAngle>("10rad");
   EXPECT_EQ(radianValue.type(), CSSValueType::Angle);

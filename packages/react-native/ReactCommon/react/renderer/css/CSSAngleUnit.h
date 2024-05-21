@@ -31,7 +31,7 @@ enum class CSSAngleUnit : uint8_t {
  * Parses a unit from a dimension token into a CSS angle unit.
  */
 constexpr std::optional<CSSAngleUnit> parseCSSAngleUnit(std::string_view unit) {
-  switch (fnv1a(unit)) {
+  switch (fnv1aLowercase(unit)) {
     case fnv1a("deg"):
       return CSSAngleUnit::Deg;
     case fnv1a("grad"):

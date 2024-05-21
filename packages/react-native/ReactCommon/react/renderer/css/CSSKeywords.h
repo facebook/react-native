@@ -175,16 +175,7 @@ CSS_DEFINE_KEYWORD_CONEPTS(WrapReverse)
  */
 template <CSSKeywordSet KeywordT>
 constexpr std::optional<KeywordT> parseCSSKeyword(std::string_view ident) {
-  struct LowerCaseTransform {
-    constexpr char operator()(char c) const {
-      if (c >= 'A' && c <= 'Z') {
-        return c + static_cast<char>('a' - 'A');
-      }
-      return c;
-    }
-  };
-
-  switch (fnv1a<LowerCaseTransform>(ident)) {
+  switch (fnv1aLowercase(ident)) {
     case fnv1a("absolute"):
       if constexpr (detail::hasAbsolute<KeywordT>) {
         return KeywordT::Absolute;
