@@ -1,0 +1,164 @@
+parameters:
+  - name: appleBuildMatrix
+    type: object
+    default:
+      - name: macos_oldarch_jsc 
+        friendly_name: 'macOS, Old Arch, JSC'
+        sdk: macosx
+        scheme: RNTester-macOS
+        packager_platform: 'macos'
+        new_arch_enabled: '0'
+        use_hermes: '0'
+      - name: macos_newarch_jsc
+        friendly_name: 'macOS, New Arch, JSC'
+        sdk: macosx
+        scheme: RNTester-macOS
+        packager_platform: 'macos'
+        new_arch_enabled: '1'
+        use_hermes: '0'
+      # - name: macos_oldarch_hermes
+      #   friendly_name: 'macOS, Old Arch, Hermes'
+      #   sdk: macosx
+      #   scheme: RNTester-macOS
+      #   packager_platform: 'macos'
+      #   new_arch_enabled: '1'
+      #   use_hermes: '1'
+      # - name: macos_newarch_hermes
+      #   friendly_name: 'macOS, New Arch, Hermes'
+      #   sdk: macosx
+      #   scheme: RNTester-macOS
+      #   packager_platform: 'macos'
+      #   new_arch_enabled: '1'
+      #   use_hermes: '1'
+      - name: ios_oldarch_jsc 
+        friendly_name: 'iOS, Old Arch, JSC'
+        sdk: iphonesimulator
+        scheme: RNTester
+        packager_platform: 'ios'
+        new_arch_enabled: '0'
+        use_hermes: '0'
+      - name: ios_newarch_jsc
+        friendly_name: 'iOS, New Arch, JSC'
+        sdk: iphonesimulator
+        scheme: RNTester
+        packager_platform: 'ios'
+        new_arch_enabled: '1'
+        use_hermes: '0'
+      # - name: ios_oldarch_hermes
+      #   friendly_name: 'iOS, Old Arch, Hermes'
+      #   sdk: iphonesimulator
+      #   scheme: RNTester
+      #   packager_platform: 'ios'
+      #   new_arch_enabled: '1'
+      #   use_hermes: '1'
+      # - name: ios_newarch_hermes
+      #   friendly_name: 'iOS, New Arch, Hermes'
+      #   sdk: iphonesimulator
+      #   scheme: RNTester
+      #   packager_platform: 'ios'
+      #   new_arch_enabled: '1'
+      #   use_hermes: '1'
+      - name: xros_oldarch_jsc 
+        friendly_name: 'xrOS, Old Arch, JSC'
+        sdk: xrsimulator
+        scheme: RNTester-visionOS
+        packager_platform: 'ios'
+        new_arch_enabled: '0'
+        use_hermes: '0'
+      - name: xros_newarch_jsc
+        friendly_name: 'xrOS, New Arch, JSC'
+        sdk: xrsimulator
+        scheme: RNTester-visionOS
+        packager_platform: 'ios'
+        new_arch_enabled: '1'
+        use_hermes: '0'
+      # - name: xros_oldarch_hermes
+      #   friendly_name: 'xrOS, Old Arch, Hermes'
+      #   sdk: xrsimulator
+      #   scheme: RNTester-visionOS
+      #   packager_platform: 'ios'
+      #   new_arch_enabled: '1'
+      #   use_hermes: '1'
+      # - name: xros_newarch_hermes
+      #   friendly_name: 'xrOS, New Arch, Hermes'
+      #   sdk: xrsimulator
+      #   scheme: RNTester-visionOS
+      #   packager_platform: 'ios'
+      #   new_arch_enabled: '1'
+      #   use_hermes: '1'
+
+jobs:
+  - ${{ each slice in parameters.appleBuildMatrix }}:
+      - job: ${{ slice.name }}
+        displayName: ${{ slice.friendly_name }}
+        pool:
+          vmImage: $(vmImageApple)
+        timeoutInMinutes: 90
+        cancelTimeoutInMinutes: 5
+        steps:
+        - template: /.ado/templates/apple-tools-setup.yml@self
+
+        - task: CmdLine@2
+          displayName: yarn install
+          inputs:
+            script: |
+              set -eox pipefail
+              yarn install --immutable
+
+        - task: CmdLine@2
+          displayName: pod install
+          inputs:
+            script: |
+              set -eox pipefail
+              cd packages/rn-tester
+              bundle install
+              bundle exec pod install --verbose
+          env:
+            RCT_NEW_ARCH_ENABLED: ${{ slice.new_arch_enabled }}
+            USE_HERMES: ${{ slice.use_hermes }}
+
+        - task: CmdLine@2
+          displayName: Build ${{ slice.scheme }}
+          inputs:
+            script: |
+              set -eox pipefail
+              ./.ado/scripts/xcodebuild.sh packages/rn-tester/RNTesterPods.xcworkspace ${{ slice.sdk }} ${{ slice.scheme }} build
+          env:
+            CCACHE_DISABLE: 1
+      
+        # Skip testing on visionOS via the conditions below
+
+        - ${{ if ne(slice.scheme, 'RNTester-visionOS') }}:
+          - task: ShellScript@2
+            displayName: 'Setup packager and WebSocket test server'
+            inputs:
+              scriptPath: '.ado/scripts/ado-test-setup.sh'
+              disableAutoCwd: true
+              cwd: ''
+
+          - bash: |
+              echo Preparing the packager for platform $PLATFORM
+              curl --retry-connrefused --connect-timeout 5 --max-time 10 --retry 10 --retry-delay 5 --retry-max-time 120 "http://localhost:8081/packages/rn-tester/js/RNTesterApp.${PLATFORM}.bundle?platform=${PLATFORM}&dev=true" -o /dev/null
+              curl --retry-connrefused --connect-timeout 5 --max-time 10 --retry 10 --retry-delay 5 --retry-max-time 120 "http://localhost:8081/packages/rn-tester/js/RNTesterApp.${PLATFORM}.bundle?platform=${PLATFORM}&dev=true&minify=false" -o /dev/null
+              curl --retry-connrefused --connect-timeout 5 --max-time 10 --retry 10 --retry-delay 5 --retry-max-time 120 "http://localhost:8081/IntegrationTests/IntegrationTestsApp.bundle?platform=${PLATFORM}&dev=true" -o /dev/null
+              curl --retry-connrefused --connect-timeout 5 --max-time 10 --retry 10 --retry-delay 5 --retry-max-time 120 "http://localhost:8081/IntegrationTests/RCTRootViewIntegrationTestApp.bundle?platform=${PLATFORM}&dev=true" -o /dev/null
+            env:
+              PLATFORM: ${{ slice.packager_platform }}
+            displayName: 'curl the packager'
+
+          - task: CmdLine@2
+            displayName: Test ${{ slice.scheme }}
+            inputs:
+              script: |
+                set -eox pipefail
+                ./.ado/scripts/xcodebuild.sh packages/rn-tester/RNTesterPods.xcworkspace ${{ slice.sdk }} ${{ slice.scheme }} test
+            env:
+              CCACHE_DISABLE: 1
+
+          - task: ShellScript@2
+            displayName: 'Cleanup packager and WebSocket test server'
+            inputs:
+              scriptPath: '.ado/scripts/ado-test-cleanup.sh'
+              disableAutoCwd: true
+              cwd: ''
+            condition: always()

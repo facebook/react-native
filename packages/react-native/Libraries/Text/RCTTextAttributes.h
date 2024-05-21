@@ -7,14 +7,11 @@
 
 #import <React/RCTUIKit.h> // [macOS]
 
+#import <React/RCTCursor.h> // [macOS]
 #import <React/RCTDynamicTypeRamp.h>
 #import <React/RCTTextDecorationLineType.h>
 
 #import "RCTTextTransform.h"
-
-#if TARGET_OS_OSX // [macOS
-#import <React/RCTCursor.h>
-#endif // macOS]
 
 NS_ASSUME_NONNULL_BEGIN
 

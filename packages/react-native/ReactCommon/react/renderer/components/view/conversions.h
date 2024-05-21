@@ -686,6 +686,102 @@ inline void fromRawValue(
   react_native_expect(false);
 }
 
+// [macOS [visionOS]
+inline void fromRawValue(
+    const PropsParserContext& context,
+    const RawValue& value,
+    Cursor& result) {
+  result = Cursor::Auto;
+  react_native_expect(value.hasType<std::string>());
+  if (!value.hasType<std::string>()) {
+    return;
+  }
+  auto stringValue = (std::string)value;
+  if (stringValue == "alias") {
+    result = Cursor::Alias;
+    return;
+  }
+  if (stringValue == "auto") {
+    result = Cursor::Auto;
+    return;
+  }
+  if (stringValue == "col-resize") {
+    result = Cursor::ColumnResize;
+    return;
+  }
+  if (stringValue == "context-menu") {
+    result = Cursor::ContextualMenu;
+    return;
+  }
+  if (stringValue == "copy") {
+    result = Cursor::Copy;
+    return;
+  }
+  if (stringValue == "crosshair") {
+    result = Cursor::Crosshair;
+    return;
+  }
+  if (stringValue == "default") {
+    result = Cursor::Default;
+    return;
+  }
+  if (stringValue == "disappearing-item") {
+    result = Cursor::DisappearingItem;
+    return;
+  }
+  if (stringValue == "e-resize") {
+    result = Cursor::EastResize;
+    return;
+  }
+  if (stringValue == "grab") {
+    result = Cursor::Grab;
+    return;
+  }
+  if (stringValue == "grabbing") {
+    result = Cursor::Grabbing;
+    return;
+  }
+  if (stringValue == "n-resize") {
+    result = Cursor::NorthResize;
+    return;
+  }
+  if (stringValue == "no-drop") {
+    result = Cursor::NoDrop;
+    return;
+  }
+  if (stringValue == "not-allowed") {
+    result = Cursor::NotAllowed;
+    return;
+  }
+  if (stringValue == "pointer") {
+    result = Cursor::Pointer;
+    return;
+  }
+  if (stringValue == "row-resize") {
+    result = Cursor::RowResize;
+    return;
+  }
+  if (stringValue == "s-resize") {
+    result = Cursor::SouthResize;
+    return;
+  }
+  if (stringValue == "text") {
+    result = Cursor::Text;
+    return;
+  }
+  if (stringValue == "vertical-text") {
+    result = Cursor::VerticalText;
+    return;
+  }
+  if (stringValue == "w-resize") {
+    result = Cursor::WestResize;
+    return;
+  }
+  LOG(ERROR) << "Could not parse Cursor:" << stringValue;
+  react_native_expect(false);
+}
+// macOS] [visionOS]
+
 inline void fromRawValue(
     const PropsParserContext& /*context*/,
     const RawValue& value,

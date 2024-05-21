@@ -53,13 +53,13 @@ The Publish flow does the following:
 An attempt was made to simplify the steps above and re-use more of the scripts that React Native Core uses. Namely:
 - Use more of the RN scripts to handle preparing the build. The intention is to leverage new features that have been added to those scripts, like the ability to build nightlies and dry runs, along with increased safety via checks on the version number. 
 - Don't bother with manually removing and restoring workspace config. We don't need the `private` field set anyway since we don't have beachball auto-publishing or anything. 
-- Extract all the steps to a template `apple-job-publish` with a parameter to switch between nightlies, dry runs, and releases. This was done so that we can now add a new "NPM Publish Dry Run" step to our PR checks.
+- Extract all the steps to a template `apple-steps-publish` with a parameter to switch between nightlies, dry runs, and releases. This was done so that we can now add a new "NPM Publish Dry Run" step to our PR checks.
 
 We don't however use the scripts from upstream to publish to NPM or Github: we still keep that as separate steps in Azure Pipelines. In the future, we can look into removing these steps and just using the scripts directly. 
 
 The Publish flow does the following:
 
-1. Call the template `apple-job-publish` with either nightly or release as the build type based on branch name. 
+1. Call the template `apple-steps-publish` with either nightly or release as the build type based on branch name. 
 2. The template will do the following steps based on build type:
     - If we're a *nightly* or *dry run*
       - Just call `publish-npm.js`, as this will take care of bumping versions, and publishing and no pushing back to Github is needed

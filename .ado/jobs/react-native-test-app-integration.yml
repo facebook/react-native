@@ -1,37 +1,14 @@
-name: Integrate $(Date:yyyyMMdd).$(Rev:.r)
-variables:
-  - template: variables/vars.yml
-trigger:
-  branches:
-    include:
-      - main
-      - '*-stable'
-  paths:
-    exclude:
-      - '*.md'
-pr:
-  branches:
-    include:
-      - main
-      - '*-stable'
-  paths:
-    exclude:
-      - '*.md'
 jobs:
   - job: react_native_test_app
     displayName: react-native-test-app
     pool:
       vmImage: $(VmImageApple)
-      demands: ['npm', 'sh', 'xcode']
     workspace:
       clean: all
     timeoutInMinutes: 60
     cancelTimeoutInMinutes: 5
     steps:
-      - template: templates/apple-tools-setup.yml
-        parameters:
-          slice_name: $(slice_name)
-          xcode_version: $(xcode_version)
+      - template: /.ado/templates/apple-tools-setup.yml@self
       - bash: |
           echo "##vso[task.setvariable variable=package_version]$(cat package.json | jq .version | awk '{ print substr($0, 2, length($0) - 2) }')"
           echo "##vso[task.setvariable variable=react_version]$(cat package.json | jq .peerDependencies.react)"
@@ -74,7 +51,7 @@ jobs:
           cat package.json | jq .devDependencies
         displayName: Modify example app dependencies
         workingDirectory: react-native-test-app/example
-      - template: templates/verdaccio-init.yml
+      - template: /.ado/templates/verdaccio-init.yml@self
       - bash: |
           npx beachball publish --branch origin/$(System.PullRequest.TargetBranch) --no-push --registry http://localhost:4873 --yes --access public
         displayName: Publish beachball packages to verdaccio

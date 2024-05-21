@@ -211,10 +211,16 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)decoder)
     NSAttributedString *oldAttributedText = [self.backedTextInputView.attributedText copy];
     NSInteger oldTextLength = oldAttributedText.string.length;
 
-    [self.backedTextInputView.undoManager registerUndoWithTarget:self handler:^(RCTBaseTextInputView *strongSelf) {
-      strongSelf.attributedText = oldAttributedText;
-      [strongSelf textInputDidChange];
-    }];
+    // Ghost text changes should not be part of the undo stack
+    if (!self.backedTextInputView.ghostTextChanging) {
+      // If there was ghost text previously, we don't want it showing up if we undo.
+      // If something goes wrong when trying to remove it, just stick with oldAttributedText.
+      NSAttributedString *oldAttributedTextWithoutGhostText = [self removingGhostTextFromString:oldAttributedText strict:YES] ?: oldAttributedText;
+      [self.backedTextInputView.undoManager registerUndoWithTarget:self handler:^(RCTBaseTextInputView *strongSelf) {
+        strongSelf.attributedText = oldAttributedTextWithoutGhostText;
+        [strongSelf textInputDidChange];
+      }];
+    }
 
     self.backedTextInputView.attributedText = attributedText;
 
@@ -975,27 +981,12 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)decoder)
   self.backedTextInputView.ghostTextChanging = YES;
 
   if (_ghostText != nil) {
-    BOOL shouldDeleteGhostText = YES;
-    NSRange ghostTextRange = NSMakeRange(_ghostTextPosition, _ghostText.length);
-    NSMutableAttributedString *attributedString = [self.attributedText mutableCopy];
+    // When setGhostText: is called after making a standard edit, the ghost text may already be gone
+    BOOL ghostTextMayAlreadyBeGone = newGhostText == nil;
+    NSAttributedString *attributedStringWithoutGhostText = [self removingGhostTextFromString:self.attributedText strict:!ghostTextMayAlreadyBeGone];
 
-    if ([attributedString length] < NSMaxRange(ghostTextRange)) {
-      RCTAssert(false, @"Ghost text not fully present in text view text");
-      shouldDeleteGhostText = NO;
-    }
-
-    NSString *actualGhostText = shouldDeleteGhostText
-      ? [[attributedString attributedSubstringFromRange:ghostTextRange] string]
-      : nil;
-
-    if (![actualGhostText isEqual:_ghostText]) {
-      RCTAssert(false, @"Ghost text does not match text view text");
-      shouldDeleteGhostText = NO;
-    }
-
-    if (shouldDeleteGhostText) {
-      [attributedString deleteCharactersInRange:ghostTextRange];
-      self.attributedText = attributedString;
+    if (attributedStringWithoutGhostText != nil) {
+      self.attributedText = attributedStringWithoutGhostText;
       [self setSelectionStart:selection.start selectionEnd:selection.end];
     }
   }
@@ -1014,6 +1005,48 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)decoder)
   }
 
   self.backedTextInputView.ghostTextChanging = NO;
+}
+
+/**
+ * Attempts to remove the ghost text from a provided string given our current state.
+ *
+ * If `strict` mode is enabled, this method assumes the ghost text exists exactly
+ * where we expect it to be. We assert and return `nil` if we don't find the expected ghost text.
+ * It's the responsibility of the caller to make sure the result isn't `nil`.
+ *
+ * If disabled, we allow for the possibility that the ghost text has already been removed,
+ * which can happen if a delegate callback is trying to remove ghost text after invoking `setAttributedText:`.
+ */
+- (NSAttributedString *)removingGhostTextFromString:(NSAttributedString *)string strict:(BOOL)strict {
+  if (_ghostText == nil) {
+    return string;
+  }
+
+  NSRange ghostTextRange = NSMakeRange(_ghostTextPosition, _ghostText.length);
+  NSMutableAttributedString *attributedString = [string mutableCopy];
+
+  if ([attributedString length] < NSMaxRange(ghostTextRange)) {
+    if (strict) {
+      RCTAssert(false, @"Ghost text not fully present in text view text");
+      return nil;
+    } else {
+      return string;
+    }
+  }
+
+  NSString *actualGhostText = [[attributedString attributedSubstringFromRange:ghostTextRange] string];
+
+  if (![actualGhostText isEqual:_ghostText]) {
+    if (strict) {
+      RCTAssert(false, @"Ghost text does not match text view text");
+      return nil;
+    } else {
+      return string;
+    }
+  }
+
+  [attributedString deleteCharactersInRange:ghostTextRange];
+  return attributedString;
 }
 
 // macOS]

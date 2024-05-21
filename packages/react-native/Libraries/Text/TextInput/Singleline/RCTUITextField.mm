@@ -121,6 +121,12 @@
   return self;
 }
 
+#if TARGET_OS_OSX
+- (NSRange)selectedRange {
+  return [[self currentEditor] selectedRange];
+}
+#endif
+
 - (void)_textDidChange
 {
   _textWasPasted = NO;

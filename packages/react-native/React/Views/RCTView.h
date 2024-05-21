@@ -10,12 +10,9 @@
 #import <React/RCTBorderCurve.h>
 #import <React/RCTBorderStyle.h>
 #import <React/RCTComponent.h>
+#import <React/RCTCursor.h> // [macOS] [visionOS]
 #import <React/RCTEventDispatcherProtocol.h> // [macOS]
 #import <React/RCTPointerEvents.h>
-
-#if TARGET_OS_OSX // [macOS
-#import <React/RCTCursor.h>
-#endif // macOS]
 
 #if !TARGET_OS_OSX // [macOS]
 extern const UIAccessibilityTraits SwitchAccessibilityTrait;
@@ -143,6 +140,8 @@ extern const UIAccessibilityTraits SwitchAccessibilityTrait;
  */
 @property (nonatomic, assign) UIEdgeInsets hitTestEdgeInsets;
 
+@property (nonatomic, assign) RCTCursor cursor;
+
 /**
  * (Experimental and unused for Paper) Pointer event handlers.
  */
@@ -162,8 +161,6 @@ extern const UIAccessibilityTraits SwitchAccessibilityTrait;
 /**
  * macOS Properties
  */
-@property (nonatomic, assign) RCTCursor cursor;
-
 @property (nonatomic, assign) CATransform3D transform3D;
 
 // `allowsVibrancy` is readonly on NSView, so let's create a new property to make it assignable

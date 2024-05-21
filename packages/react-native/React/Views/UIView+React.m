@@ -306,10 +306,21 @@ static void updateTransform(RCTPlatformView *view) // [macOS]
     transform = view.reactTransform;
   }
 
+#if !TARGET_OS_OSX // [macOS]
   view.layer.transform = transform;
   // Enable edge antialiasing in rotation, skew, or perspective transforms
   view.layer.allowsEdgeAntialiasing = transform.m12 != 0.0f || transform.m21 != 0.0f || transform.m34 != 0.0f;
+#else // [macOS
+  [view updateReactTransformInternal:transform];
+#endif // macOS]
 }
+
+#if TARGET_OS_OSX // [macOS
+- (void)updateReactTransformInternal:(CATransform3D)transform
+{
+  // Do nothing, this will get overridden by RCTView and other subclasses as needed.
+}
+#endif // macOS]
 
 - (UIViewController *)reactViewController
 {

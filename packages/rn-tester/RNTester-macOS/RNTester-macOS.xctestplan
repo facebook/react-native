@@ -24,6 +24,7 @@
       "identifier" : "ACC52F3D299ECB7A002A2B0B",
       "name" : "RNTester-macOS"
     },
+    "testRepetitionMode" : "retryOnFailure",
     "undefinedBehaviorSanitizerEnabled" : true
   },
   "testTargets" : [

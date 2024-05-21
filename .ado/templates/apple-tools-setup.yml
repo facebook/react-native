@@ -10,16 +10,4 @@ steps:
         brew bundle --file .ado/Brewfile
         cat .ado/Brewfile.lock.json
 
-  - ${{ if ne(parameters.xcode_version, '')}}:
-    - template: apple-xcode-select.yml
-      parameters:
-        slice_name: ${{ parameters.slice_name }}
-        xcode_version: ${{ parameters.xcode_version }}
-
-  - script: |
-      xcrun simctl list
-    displayName: 'List Simulators'
-    
-  - script: |
-      xcrun --sdk iphonesimulator --show-sdk-version
-    displayName: 'Determine iOS SDK version'
+  - template: /.ado/templates/apple-xcode-select.yml@self

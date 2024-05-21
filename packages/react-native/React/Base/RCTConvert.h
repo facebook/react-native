@@ -11,6 +11,7 @@
 #import <React/RCTAnimationType.h>
 #import <React/RCTBorderCurve.h>
 #import <React/RCTBorderStyle.h>
+#import <React/RCTCursor.h> // [macOS] [visionOS]
 #import <React/RCTDefines.h>
 #import <React/RCTLog.h>
 #import <React/RCTPointerEvents.h>
@@ -84,6 +85,8 @@ typedef NSURL RCTFileURL;
 #endif
 #endif // [macOS]
 
++ (RCTCursor)RCTCursor:(id)json; // [macOS] [visionOS]
+
 #if TARGET_OS_OSX // [macOS
 + (NSTextCheckingTypes)NSTextCheckingTypes:(id)json;
 #endif // macOS]
@@ -144,7 +147,7 @@ typedef BOOL css_backface_visibility_t;
 + (RCTTextDecorationLineType)RCTTextDecorationLineType:(id)json;
 
 #if TARGET_OS_OSX // [macOS
-+ (NSString *)accessibilityRoleFromTraits:(id)json;
++ (NSString *)accessibilityRoleFromTraits:(id)json useAriaMappings:(BOOL) useAriaMappings;
 
 + (NSArray<RCTHandledKey *> *)RCTHandledKeyArray:(id)json;
 #endif // macOS]

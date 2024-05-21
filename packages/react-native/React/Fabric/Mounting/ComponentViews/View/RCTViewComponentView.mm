@@ -102,6 +102,18 @@ using namespace facebook::react;
   _backgroundColor = backgroundColor;
 }
 
+#if TARGET_OS_OSX // [macOS
+- (void)resetCursorRects
+{
+  [self discardCursorRects];
+  if (_props->cursor != Cursor::Auto)
+  {
+    NSCursor *cursor = NSCursorFromCursor(_props->cursor);
+    [self addCursorRect:self.bounds cursor:cursor];
+  }
+}
+#endif // macOS]
+
 #pragma mark - RCTComponentViewProtocol
 
 + (ComponentDescriptorProvider)componentDescriptorProvider
@@ -257,6 +269,11 @@ using namespace facebook::react;
   // `backfaceVisibility`
   if (oldViewProps.backfaceVisibility != newViewProps.backfaceVisibility) {
     self.layer.doubleSided = newViewProps.backfaceVisibility == BackfaceVisibility::Visible;
+  }
+  
+  // `cursor`
+  if (oldViewProps.cursor != newViewProps.cursor) {
+    needsInvalidateLayer = YES;
   }
 
   // `shouldRasterize`
@@ -579,6 +596,55 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
   }
 }
 
+#if TARGET_OS_OSX // [macOS
+  static NSCursor *NSCursorFromCursor(Cursor cursor)
+{
+  switch (cursor) {
+    case Cursor::Auto:
+      return [NSCursor arrowCursor];
+    case Cursor::Alias:
+      return [NSCursor dragLinkCursor];
+    case Cursor::ColumnResize:
+      return [NSCursor resizeLeftRightCursor];
+    case Cursor::ContextualMenu:
+      return [NSCursor contextualMenuCursor];
+    case Cursor::Copy:
+      return [NSCursor dragCopyCursor];
+    case Cursor::Crosshair:
+      return [NSCursor crosshairCursor];
+    case Cursor::Default:
+      return [NSCursor arrowCursor];
+    case Cursor::DisappearingItem:
+      return [NSCursor disappearingItemCursor];
+    case Cursor::EastResize:
+      return [NSCursor resizeRightCursor];
+    case Cursor::Grab:
+      return [NSCursor openHandCursor];
+    case Cursor::Grabbing:
+      return [NSCursor closedHandCursor];
+    case Cursor::NorthResize:
+      return [NSCursor resizeUpCursor];
+    case Cursor::NoDrop:
+      return [NSCursor operationNotAllowedCursor];
+    case Cursor::NotAllowed:
+      return [NSCursor operationNotAllowedCursor];
+    case Cursor::Pointer:
+      return [NSCursor pointingHandCursor];
+    case Cursor::RowResize:
+      return [NSCursor resizeUpDownCursor];
+    case Cursor::SouthResize:
+      return [NSCursor resizeDownCursor];
+    case Cursor::Text:
+      return [NSCursor IBeamCursor];
+    case Cursor::VerticalText:
+      return [NSCursor IBeamCursorForVerticalLayout];
+    case Cursor::WestResize:
+      return [NSCursor resizeLeftCursor];
+  }
+}
+#endif // macOS]
+
+
 - (void)invalidateLayer
 {
   CALayer *layer = self.layer;
@@ -606,6 +672,33 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
   } else {
     layer.shadowPath = nil;
   }
+  
+#if !TARGET_OS_OSX // [visionOS]
+  // Stage 1.5. Cursor / Hover Effects
+  if (@available(iOS 17.0, *)) {
+    UIHoverStyle *hoverStyle = nil;
+    if (_props->cursor == Cursor::Pointer) {
+      const RCTCornerInsets cornerInsets =
+          RCTGetCornerInsets(RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii), UIEdgeInsetsZero);
+#if TARGET_OS_IOS
+      // Due to an Apple bug, it seems on iOS, UIShapes made with `[UIShape shapeWithBezierPath:]`
+      // evaluate their shape on the superviews' coordinate space. This leads to the hover shape
+      // rendering incorrectly on iOS, iOS apps in compatibility mode on visionOS, but not on visionOS.
+      // To work around this, for iOS, we can calculate the border path based on `view.frame` (the
+      // superview's coordinate space) instead of view.bounds.
+      CGPathRef borderPath = RCTPathCreateWithRoundedRect(self.frame, cornerInsets, NULL);
+#else // TARGET_OS_VISION
+      CGPathRef borderPath = RCTPathCreateWithRoundedRect(self.bounds, cornerInsets, NULL);
+#endif
+      UIBezierPath *bezierPath = [UIBezierPath bezierPathWithCGPath:borderPath];
+      CGPathRelease(borderPath);
+      UIShape *shape = [UIShape shapeWithBezierPath:bezierPath];
+      
+      hoverStyle = [UIHoverStyle styleWithEffect:[UIHoverAutomaticEffect effect] shape:shape];
+    }
+    [self setHoverStyle:hoverStyle];
+  }
+#endif // [visionOS]
 
   // Stage 2. Border Rendering
   const bool useCoreAnimationBorderRendering =

@@ -13,6 +13,7 @@
 #import "RCTBridge.h"
 #import "RCTConvert+Transform.h"
 #import "RCTConvert.h"
+#import "RCTCursor.h" // [macOS] [visionOS]
 #import "RCTLog.h"
 #import "RCTShadowView.h"
 #import "RCTUIManager.h"
@@ -20,10 +21,6 @@
 #import "RCTUtils.h"
 #import "RCTView.h"
 #import "UIView+React.h"
-
-#if TARGET_OS_OSX  // [macOS
-#import "RCTCursor.h"
-#endif  // macOS]
 
 @implementation RCTConvert (UIAccessibilityTraits)
 
@@ -233,10 +230,9 @@ RCT_REMAP_VIEW_PROPERTY(onMagicTap, reactAccessibilityElement.onMagicTap, RCTDir
 #else // [macOS accessibilityTraits is gone in react-native and deprecated in react-native-macos, use accessibilityRole instead
 RCT_CUSTOM_VIEW_PROPERTY(accessibilityTraits, NSString, RCTView)
 {
-  if (json) {
-    view.accessibilityRole = [RCTConvert accessibilityRoleFromTraits:json];
-  } else {
-    view.accessibilityRole = defaultView.accessibilityRole;
+  view.reactAccessibilityElement.accessibilityRoleInternal = json ? [RCTConvert accessibilityRoleFromTraits:json useAriaMappings:NO] : nil;
+  if (view.reactAccessibilityElement.accessibilityRole != view.reactAccessibilityElement.accessibilityRoleInternal) {
+    [self updateAccessibilityRole:view withDefaultView:defaultView];
   }
 }
 #endif // macOS]
@@ -245,6 +241,7 @@ RCT_REMAP_VIEW_PROPERTY(testID, reactAccessibilityElement.accessibilityIdentifie
 
 RCT_EXPORT_VIEW_PROPERTY(backgroundColor, UIColor)
 RCT_REMAP_VIEW_PROPERTY(backfaceVisibility, layer.doubleSided, css_backface_visibility_t)
+RCT_EXPORT_VIEW_PROPERTY(cursor, RCTCursor) // [visionOS]
 #if !TARGET_OS_OSX // [macOS]
 RCT_REMAP_VIEW_PROPERTY(opacity, alpha, CGFloat)
 #else // [macOS
@@ -295,25 +292,35 @@ RCT_CUSTOM_VIEW_PROPERTY(accessibilityRole, UIAccessibilityTraits, RCTView)
     [self updateAccessibilityTraitsForRole:view withDefaultView:defaultView];
   }
   #else // [macOS
-    if (json) {
-      view.reactAccessibilityElement.accessibilityRole = [RCTConvert accessibilityRoleFromTraits:json];
-    } else {
-      view.reactAccessibilityElement.accessibilityRole = defaultView.accessibilityRole;
-    }
+    // accessibilityRoleInternal is used to cache the converted value from the prop
+  view.reactAccessibilityElement.accessibilityRoleInternal = json ? [RCTConvert accessibilityRoleFromTraits:json useAriaMappings:NO] : nil;
+  // update the actual NSAccessibilityRole if it doesn't match
+  if (view.reactAccessibilityElement.accessibilityRole != view.reactAccessibilityElement.accessibilityRoleInternal) {
+    [self updateAccessibilityRole:view withDefaultView:defaultView];
+  }
   #endif // macOS]
 }
 
-#if !TARGET_OS_OSX // [macOS]
 RCT_CUSTOM_VIEW_PROPERTY(role, UIAccessibilityTraits, RCTView)
 {
+#if !TARGET_OS_OSX // [macOS]
   UIAccessibilityTraits roleTraits = json ? [RCTConvert UIAccessibilityTraits:json] : UIAccessibilityTraitNone;
   if (view.reactAccessibilityElement.roleTraits != roleTraits) {
     view.roleTraits = roleTraits;
     view.reactAccessibilityElement.role = json ? [RCTConvert NSString:json] : nil;
     [self updateAccessibilityTraitsForRole:view withDefaultView:defaultView];
   }
+#else // [macOS
+  // role is used to cache the converted value from the prop
+  view.reactAccessibilityElement.role = json ? [RCTConvert accessibilityRoleFromTraits:json useAriaMappings:YES] : nil;
+  // update the actual NSAccessibilityRole if it doesn't match
+  if (view.reactAccessibilityElement.accessibilityRole != view.reactAccessibilityElement.role) {
+    [self updateAccessibilityRole:view withDefaultView:defaultView];
+  }
+#endif // macOS]
 }
 
+#if !TARGET_OS_OSX // [macOS]
 - (void)updateAccessibilityTraitsForRole:(RCTView *)view withDefaultView:(RCTView *)defaultView
 {
   const UIAccessibilityTraits AccessibilityRolesMask = UIAccessibilityTraitNone | UIAccessibilityTraitButton |
@@ -330,7 +337,17 @@ RCT_CUSTOM_VIEW_PROPERTY(role, UIAccessibilityTraits, RCTView)
       : view.reactAccessibilityElement.accessibilityRole ? view.reactAccessibilityElement.accessibilityRoleTraits
                                                          : (defaultView.accessibilityTraits & AccessibilityRolesMask);                        
 }
-#endif // [macOS]
+#else // [macOS
+- (void) updateAccessibilityRole:(RCTView *)view withDefaultView:(RCTView *)defaultView
+{
+  // First check the value from `role`
+  view.reactAccessibilityElement.accessibilityRole = view.reactAccessibilityElement.role ? view.reactAccessibilityElement.role : nil;
+  // Fallback to `accessibilityRole` if nil, or the defaultView's NSAccessibilityRole
+  if (view.reactAccessibilityElement.accessibilityRole == nil) {
+    view.reactAccessibilityElement.accessibilityRole = view.reactAccessibilityElement.accessibilityRoleInternal ? view.reactAccessibilityElement.accessibilityRoleInternal : defaultView.accessibilityRole;
+  }
+}
+#endif // macOS]
 
 RCT_CUSTOM_VIEW_PROPERTY(accessibilityState, NSDictionary, RCTView)
 {
@@ -580,7 +597,6 @@ RCT_EXPORT_VIEW_PROPERTY(onBlur, RCTBubblingEventBlock)
 #if TARGET_OS_OSX // [macOS
 #pragma mark - macOS properties
 
-RCT_EXPORT_VIEW_PROPERTY(cursor, RCTCursor)
 RCT_EXPORT_VIEW_PROPERTY(onMouseEnter, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onMouseLeave, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onDragEnter, RCTDirectEventBlock)
