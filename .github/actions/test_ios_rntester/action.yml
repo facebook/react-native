@@ -127,7 +127,7 @@ runs:
     - name: "Run Tests: iOS Unit and Integration Tests"
       if: ${{ inputs.run-unit-tests == true }}
       shell: bash
-      run: node ./scripts/circleci/run_with_retry.js 3 yarn test-ios
+      run: yarn test-ios
     - name: Zip Derived data folder
       if: ${{ inputs.run-unit-tests == true }}
       shell: bash
