@@ -7,7 +7,6 @@
 
 package com.facebook.react.jstasks;
 
-import android.os.Handler;
 import android.util.SparseArray;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
@@ -52,7 +51,6 @@ public class HeadlessJsTaskContext {
   private final Set<HeadlessJsTaskEventListener> mHeadlessJsTaskEventListeners =
       new CopyOnWriteArraySet<>();
   private final AtomicInteger mLastTaskId = new AtomicInteger(0);
-  private final Handler mHandler = new Handler();
   private final Set<Integer> mActiveTasks = new CopyOnWriteArraySet<>();
   private final Map<Integer, HeadlessJsTaskConfig> mActiveTaskConfigs = new ConcurrentHashMap<>();
   private final SparseArray<Runnable> mTaskTimeouts = new SparseArray<>();
@@ -194,9 +192,9 @@ public class HeadlessJsTaskContext {
   }
 
   private void removeTimeout(int taskId) {
-    Runnable timeout = mTaskTimeouts.get(taskId);
-    if (timeout != null) {
-      mHandler.removeCallbacks(timeout);
+    Runnable runnable = mTaskTimeouts.get(taskId);
+    if (runnable != null) {
+      UiThreadUtil.removeOnUiThread(runnable);
       mTaskTimeouts.remove(taskId);
     }
   }
@@ -210,14 +208,8 @@ public class HeadlessJsTaskContext {
   }
 
   private void scheduleTaskTimeout(final int taskId, long timeout) {
-    Runnable runnable =
-        new Runnable() {
-          @Override
-          public void run() {
-            finishTask(taskId);
-          }
-        };
+    Runnable runnable = () -> finishTask(taskId);
     mTaskTimeouts.append(taskId, runnable);
-    mHandler.postDelayed(runnable, timeout);
+    UiThreadUtil.runOnUiThread(runnable, timeout);
   }
 }
