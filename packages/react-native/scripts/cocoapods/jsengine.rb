@@ -30,5 +30,5 @@ def setup_hermes!(react_native_path: "../node_modules/react-native")
     hermestag = File.exist?(hermestag_file) ? File.read(hermestag_file).strip : ''
     pod 'hermes-engine', :podspec => "#{react_native_path}/sdks/hermes-engine/hermes-engine.podspec", :tag => hermestag
     pod 'React-hermes', :path => "#{react_native_path}/ReactCommon/hermes"
-    pod 'libevent', '~> 2.1.12'
+    pod 'libevent', :podspec => "#{react_native_path}/third-party-podspecs/libevent.podspec" # [visionOS]
 end

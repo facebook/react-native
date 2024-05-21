@@ -1,13 +1,5 @@
-#
-# Task Group: Xcode select proper version
-#
-
-parameters:
-  slice_name: ''
-  xcode_version: ''
-
 steps:
   - bash: |
-      sudo xcode-select --switch '${{ parameters.xcode_version }}'
-    displayName: Switch Xcode version ${{ parameters.xcode_version }} for ${{ parameters.slice_name }}
+      sudo xcode-select --switch $(xcode_version)
+    displayName: Use $(xcode_friendly_name)
     failOnStderr: true

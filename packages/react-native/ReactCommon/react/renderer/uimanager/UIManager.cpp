@@ -77,9 +77,8 @@ ShadowNode::Shared UIManager::createNode(
 
   PropsParserContext propsParserContext{surfaceId, *contextContainer_.get()};
 
-  const auto fragment =
-      ShadowNodeFamilyFragment{tag, surfaceId, instanceHandle};
-  auto family = componentDescriptor.createFamily(fragment);
+  auto family =
+      componentDescriptor.createFamily({tag, surfaceId, instanceHandle});
   const auto props =
       componentDescriptor.cloneProps(propsParserContext, nullptr, rawProps);
   const auto state = componentDescriptor.createInitialState(props, family);
