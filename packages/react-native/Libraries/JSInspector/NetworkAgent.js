@@ -10,8 +10,6 @@
 
 'use strict';
 
-import type EventSender from './InspectorAgent';
-
 const XMLHttpRequest = require('../Network/XMLHttpRequest');
 const InspectorAgent = require('./InspectorAgent');
 const JSInspector = require('./JSInspector');
@@ -232,7 +230,7 @@ class Interceptor {
     const event: LoadingFinishedEvent = {
       requestId: String(id),
       timestamp: JSInspector.getTimestamp(),
-      encodedDataLength: encodedDataLength,
+      encodedDataLength,
     };
     this._agent.sendEvent('loadingFinished', event);
   }
@@ -262,7 +260,6 @@ type EnableArgs = {
 class NetworkAgent extends InspectorAgent {
   static DOMAIN: $TEMPORARY$string<'Network'> = 'Network';
 
-  _sendEvent: EventSender;
   _interceptor: ?Interceptor;
 
   enable({maxResourceBufferSize, maxTotalBufferSize}: EnableArgs) {

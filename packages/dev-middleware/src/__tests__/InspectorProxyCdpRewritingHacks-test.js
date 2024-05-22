@@ -9,8 +9,6 @@
  * @oncall react_native
  */
 
-import type {TargetCapabilityFlags} from '../inspector-proxy/types';
-
 import {allowSelfSignedCertsInNodeFetch} from './FetchUtils';
 import {
   createAndConnectTarget,

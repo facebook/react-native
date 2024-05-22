@@ -36,7 +36,7 @@ const HeaderIOS = ({
       <View
         style={[styles.header, {backgroundColor: theme.SystemBackgroundColor}]}>
         <View style={styles.headerCenter}>
-          <Text style={{...styles.title, ...{color: theme.LabelColor}}}>
+          <Text style={{...styles.title, color: theme.LabelColor}}>
             {title}
           </Text>
           {documentationURL && (
