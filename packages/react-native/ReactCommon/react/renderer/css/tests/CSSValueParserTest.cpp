@@ -386,4 +386,34 @@ TEST(CSSValueParser, hex_color_values) {
   EXPECT_EQ(hexAlphaTestValue.getColor().a, 204);
 }
 
+TEST(CSSValueParser, named_colors) {
+  auto invalidNamedColorTestValue =
+      parseCSSValue<CSSWideKeyword, CSSColor>("redd");
+  EXPECT_EQ(invalidNamedColorTestValue.type(), CSSValueType::CSSWideKeyword);
+  EXPECT_EQ(
+      invalidNamedColorTestValue.getCSSWideKeyword(), CSSWideKeyword::Unset);
+
+  auto namedColorTestValue1 = parseCSSValue<CSSWideKeyword, CSSColor>("red");
+  EXPECT_EQ(namedColorTestValue1.type(), CSSValueType::Color);
+  EXPECT_EQ(namedColorTestValue1.getColor().r, 255);
+  EXPECT_EQ(namedColorTestValue1.getColor().g, 0);
+  EXPECT_EQ(namedColorTestValue1.getColor().b, 0);
+  EXPECT_EQ(namedColorTestValue1.getColor().a, 255);
+
+  auto namedColorTestValue2 =
+      parseCSSValue<CSSWideKeyword, CSSColor>("cornsilk");
+  EXPECT_EQ(namedColorTestValue2.type(), CSSValueType::Color);
+  EXPECT_EQ(namedColorTestValue2.getColor().r, 255);
+  EXPECT_EQ(namedColorTestValue2.getColor().g, 248);
+  EXPECT_EQ(namedColorTestValue2.getColor().b, 220);
+  EXPECT_EQ(namedColorTestValue2.getColor().a, 255);
+
+  auto namedColorMixedCaseTestValue =
+      parseCSSValue<CSSWideKeyword, CSSColor>("sPrINgGrEEn");
+  EXPECT_EQ(namedColorMixedCaseTestValue.type(), CSSValueType::Color);
+  EXPECT_EQ(namedColorMixedCaseTestValue.getColor().r, 0);
+  EXPECT_EQ(namedColorMixedCaseTestValue.getColor().g, 255);
+  EXPECT_EQ(namedColorMixedCaseTestValue.getColor().b, 127);
+  EXPECT_EQ(namedColorMixedCaseTestValue.getColor().a, 255);
+}
 } // namespace facebook::react
