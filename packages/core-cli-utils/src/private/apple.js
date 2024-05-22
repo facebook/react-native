@@ -79,7 +79,7 @@ export const tasks = {
     installDependencies: task(THIRD, 'Install CocoaPods dependencies', () => {
       const env = {
         RCT_NEW_ARCH_ENABLED: options.newArchitecture ? '1' : '0',
-        HERMES: options.hermes ? '1' : '0',
+        USE_HERMES: options.hermes ? '1' : '0',
       };
       return execa('bundle', ['exec', 'pod', 'install'], {
         cwd: options.cwd,
