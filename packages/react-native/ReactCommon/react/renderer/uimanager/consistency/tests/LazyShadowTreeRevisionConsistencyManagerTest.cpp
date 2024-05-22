@@ -93,6 +93,27 @@ TEST_F(LazyShadowTreeRevisionConsistencyManagerTest, testLockedOnNoRevision) {
   consistencyManager_.unlockRevisions();
 }
 
+TEST_F(LazyShadowTreeRevisionConsistencyManagerTest, testNotLocked) {
+  EXPECT_EQ(consistencyManager_.getCurrentRevision(0), nullptr);
+
+  shadowTreeRegistry_.add(createShadowTree(0));
+
+  auto element = Element<RootShadowNode>();
+  auto builder = simpleComponentBuilder();
+  auto newRootShadowNode = builder.build(element);
+
+  shadowTreeRegistry_.visit(
+      0, [newRootShadowNode](const ShadowTree& shadowTree) {
+        shadowTree.commit(
+            [&](const RootShadowNode& /*oldRootShadowNode*/) {
+              return newRootShadowNode;
+            },
+            {});
+      });
+
+  EXPECT_EQ(consistencyManager_.getCurrentRevision(0), newRootShadowNode);
+}
+
 TEST_F(
     LazyShadowTreeRevisionConsistencyManagerTest,
     testLockedOnNoRevisionWithUpdate) {
@@ -328,6 +349,47 @@ TEST_F(LazyShadowTreeRevisionConsistencyManagerTest, testUpdateToUnmounted) {
   EXPECT_EQ(consistencyManager_.getCurrentRevision(0).get(), nullptr);
 
   consistencyManager_.unlockRevisions();
+}
+
+TEST_F(LazyShadowTreeRevisionConsistencyManagerTest, testReentrance) {
+  consistencyManager_.lockRevisions();
+
+  EXPECT_EQ(consistencyManager_.getCurrentRevision(0), nullptr);
+
+  shadowTreeRegistry_.add(createShadowTree(0));
+
+  auto element = Element<RootShadowNode>();
+  auto builder = simpleComponentBuilder();
+  auto newRootShadowNode = builder.build(element);
+
+  shadowTreeRegistry_.visit(
+      0, [newRootShadowNode](const ShadowTree& shadowTree) {
+        shadowTree.commit(
+            [&](const RootShadowNode& /*oldRootShadowNode*/) {
+              return newRootShadowNode;
+            },
+            {});
+      });
+
+  EXPECT_EQ(consistencyManager_.getCurrentRevision(0), nullptr);
+
+  // Re-entrance
+  consistencyManager_.lockRevisions();
+
+  EXPECT_EQ(consistencyManager_.getCurrentRevision(0), nullptr);
+
+  // Exit second lock
+  consistencyManager_.unlockRevisions();
+
+  EXPECT_EQ(consistencyManager_.getCurrentRevision(0), nullptr);
+
+  // Exit first lock
+
+  consistencyManager_.unlockRevisions();
+
+  // Updated!
+  EXPECT_EQ(
+      consistencyManager_.getCurrentRevision(0).get(), newRootShadowNode.get());
 }
 
 } // namespace facebook::react
