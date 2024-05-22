@@ -16,8 +16,6 @@ import TextLegend from '../../components/TextLegend';
 import TextAdjustsDynamicLayoutExample from './TextAdjustsDynamicLayoutExample';
 import TextInlineViewsExample from './TextInlineViewsExample';
 
-const RNTesterBlock = require('../../components/RNTesterBlock');
-const RNTesterPage = require('../../components/RNTesterPage');
 const TextInlineView = require('../../components/TextInlineView');
 const React = require('react');
 const {LayoutAnimation, StyleSheet, Text, View} = require('react-native');
@@ -968,21 +966,21 @@ const examples = [
   {
     title: 'Dynamic Font Size Adjustment',
     name: 'ajustingFontSize',
-    render: function (): React.Node {
+    render(): React.Node {
       return <AdjustingFontSize />;
     },
   },
   {
     title: 'Font Size Adjustment with Dynamic Layout',
     name: 'textAdjustsDynamicLayout',
-    render: function (): React.Node {
+    render(): React.Node {
       return <TextAdjustsDynamicLayoutExample />;
     },
   },
   {
     title: 'Wrap',
     name: 'wrap',
-    render: function (): React.Node {
+    render(): React.Node {
       return (
         <Text style={styles.wrappedText}>
           The text should wrap if it goes on multiple lines. See, this is going
@@ -994,14 +992,14 @@ const examples = [
   {
     title: 'Hyphenation',
     name: 'hyphenation',
-    render: function (): React.Node {
+    render(): React.Node {
       return <HyphenationExample />;
     },
   },
   {
     title: 'Padding',
     name: 'padding',
-    render: function (): React.Node {
+    render(): React.Node {
       return (
         <Text style={{padding: 10}}>
           This text is indented by 10px padding on all sides.
@@ -1012,35 +1010,35 @@ const examples = [
   {
     title: 'Text metrics legend',
     name: 'textMetricLegend',
-    render: function (): React.Node {
+    render(): React.Node {
       return <TextLegend />;
     },
   },
   {
     title: 'Font Family',
     name: 'fontFamily',
-    render: function (): React.Node {
+    render(): React.Node {
       return <FontFamilyExample />;
     },
   },
   {
     title: 'Android Material Design Fonts',
     name: 'androidMaterialDesignFonts',
-    render: function (): React.Node {
+    render(): React.Node {
       return <AndroidMaterialDesignFonts />;
     },
   },
   {
     title: 'Custom Fonts',
     name: 'customFonts',
-    render: function (): React.Node {
+    render(): React.Node {
       return <CustomFontsExample />;
     },
   },
   {
     title: 'Font Size',
     name: 'fontSize',
-    render: function (): React.Node {
+    render(): React.Node {
       return (
         <>
           <Text style={{fontSize: 23}}>Size 23</Text>
@@ -1052,7 +1050,7 @@ const examples = [
   {
     title: 'Color',
     name: 'color',
-    render: function (): React.Node {
+    render(): React.Node {
       return (
         <>
           <Text style={{color: 'red'}}>Red color</Text>
@@ -1064,14 +1062,14 @@ const examples = [
   {
     title: 'Font Weight',
     name: 'fontWeight',
-    render: function (): React.Node {
+    render(): React.Node {
       return <FontWeightExample />;
     },
   },
   {
     title: 'Font Style',
     name: 'fontStyle',
-    render: function (): React.Node {
+    render(): React.Node {
       return (
         <>
           <Text style={{fontStyle: 'italic'}}>Move fast and be italic</Text>
@@ -1083,7 +1081,7 @@ const examples = [
   {
     title: 'Font Style and Weight',
     name: 'fontStyleAndWeight',
-    render: function (): React.Node {
+    render(): React.Node {
       return (
         <Text style={{fontStyle: 'italic', fontWeight: 'bold'}}>
           Move fast and be both bold and italic
@@ -1094,35 +1092,35 @@ const examples = [
   {
     title: 'Text Decoration',
     name: 'textDecoration',
-    render: function (): React.Node {
+    render(): React.Node {
       return <TextDecorationExample />;
     },
   },
   {
     title: 'Nested',
     name: 'nested',
-    render: function (): React.Node {
+    render(): React.Node {
       return <NestedExample />;
     },
   },
   {
     title: 'Text Align',
     name: 'textAlign',
-    render: function (): React.Node {
+    render(): React.Node {
       return <TextAlignExample />;
     },
   },
   {
     title: 'Unicode',
     name: 'unicode',
-    render: function (): React.Node {
+    render(): React.Node {
       return <UnicodeExample />;
     },
   },
   {
     title: 'Spaces',
     name: 'spaces',
-    render: function (): React.Node {
+    render(): React.Node {
       return (
         <Text>
           A {'generated'} {'string'} and some &nbsp;&nbsp;&nbsp; spaces
@@ -1133,63 +1131,63 @@ const examples = [
   {
     title: 'Line Height',
     name: 'lineHeight',
-    render: function (): React.Node {
+    render(): React.Node {
       return <LineHeightExample />;
     },
   },
   {
     title: 'Letter Spacing',
     name: 'letterSpacing',
-    render: function (): React.Node {
+    render(): React.Node {
       return <LetterSpacingExample />;
     },
   },
   {
     title: 'Empty Text',
     name: 'emptyText',
-    render: function (): React.Node {
+    render(): React.Node {
       return <Text />;
     },
   },
   {
     title: 'Toggling Attributes',
     name: 'togglingAttributes',
-    render: function (): React.Node {
+    render(): React.Node {
       return <AttributeToggler />;
     },
   },
   {
     title: 'backgroundColor attribute',
     name: 'backgroundColorAttribute',
-    render: function (): React.Node {
+    render(): React.Node {
       return <BackgroundColorExample />;
     },
   },
   {
     title: 'containerBackgroundColor attribute',
     name: 'containerBackgroundColorAttribute',
-    render: function (): React.Node {
+    render(): React.Node {
       return <ContainerBackgroundColorExample />;
     },
   },
   {
     title: 'numberOfLines attribute',
     name: 'numberOfLines',
-    render: function (): React.Node {
+    render(): React.Node {
       return <NumberOfLinesExample />;
     },
   },
   {
     title: 'allowFontScaling attribute',
     name: 'allowFontScaling',
-    render: function (): React.Node {
+    render(): React.Node {
       return <AllowFontScalingExample />;
     },
   },
   {
     title: 'selectable attribute',
     name: 'selectable',
-    render: function (): React.Node {
+    render(): React.Node {
       return (
         <Text selectable>
           This text is selectable if you click-and-hold, and will offer the
@@ -1201,7 +1199,7 @@ const examples = [
   {
     title: 'selectionColor attribute',
     name: 'selectionColor',
-    render: function (): React.Node {
+    render(): React.Node {
       return (
         <Text selectable selectionColor="orange">
           This text will have a orange highlight on selection.
@@ -1212,84 +1210,84 @@ const examples = [
   {
     title: 'Inline views',
     name: 'inlineViewsBasic',
-    render: function (): React.Node {
+    render(): React.Node {
       return <TextInlineView.Basic />;
     },
   },
   {
     title: 'Inline views with multiple nested texts',
     name: 'inlineViewsMultiple',
-    render: function (): React.Node {
+    render(): React.Node {
       return <TextInlineView.NestedTexts />;
     },
   },
   {
     title: 'Inline image/view clipped by <Text>',
     name: 'inlineViewsClipped',
-    render: function (): React.Node {
+    render(): React.Node {
       return <TextInlineView.ClippedByText />;
     },
   },
   {
     title: 'Relayout inline image',
     name: 'relayoutInlineImage',
-    render: function (): React.Node {
+    render(): React.Node {
       return <TextInlineView.ChangeImageSize />;
     },
   },
   {
     title: 'Relayout inline view',
     name: 'relayoutInlineView',
-    render: function (): React.Node {
+    render(): React.Node {
       return <TextInlineView.ChangeViewSize />;
     },
   },
   {
     title: 'Relayout nested inline view',
     name: 'relayoutNestedInlineView',
-    render: function (): React.Node {
+    render(): React.Node {
       return <TextInlineView.ChangeInnerViewSize />;
     },
   },
   {
     title: 'Text shadow',
     name: 'textShadow',
-    render: function (): React.Node {
+    render(): React.Node {
       return <TextShadowExample />;
     },
   },
   {
     title: 'Ellipsize mode',
     name: 'ellipsizeMode',
-    render: function (): React.Node {
+    render(): React.Node {
       return <EllipsizeModeExample />;
     },
   },
   {
     title: 'Font variants',
     name: 'fontVariants',
-    render: function (): React.Node {
+    render(): React.Node {
       return <FontVariantsExample />;
     },
   },
   {
     title: 'Include Font Padding',
     name: 'includeFontPadding',
-    render: function (): React.Node {
+    render(): React.Node {
       return <IncludeFontPaddingExample />;
     },
   },
   {
     title: 'Text Transform',
     name: 'textTransform',
-    render: function (): React.Node {
+    render(): React.Node {
       return <TextTransformExample />;
     },
   },
   {
     title: 'Substring Emoji (should only see "test")',
     name: 'substringEmoji',
-    render: function (): React.Node {
+    render(): React.Node {
       return <Text>{'test🙃'.substring(0, 5)}</Text>;
     },
   },
@@ -1297,21 +1295,21 @@ const examples = [
   {
     title: 'Text linkify',
     name: 'textLinkify',
-    render: function (): React.Node {
+    render(): React.Node {
       return <TextLinkifyExample />;
     },
   },
   {
     title: "Text `alignItems: 'baseline'` style",
     name: 'alignItemsBaseline',
-    render: function (): React.Node {
+    render(): React.Node {
       return <TextBaseLineLayoutExample />;
     },
   },
   {
     title: 'Selectable Text',
     name: 'selectableText',
-    render: function (): React.Node {
+    render(): React.Node {
       return (
         <View>
           <Text style={{userSelect: 'auto'}}>Text element is selectable</Text>
@@ -1322,7 +1320,7 @@ const examples = [
   {
     title: 'Text alignment',
     name: 'textAlignment',
-    render: function (): React.Node {
+    render(): React.Node {
       return (
         <View>
           <Text style={{textAlignVertical: 'top', borderWidth: 1, height: 75}}>
