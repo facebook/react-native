@@ -128,7 +128,12 @@ ${chalk.yellow('⚠')}️ The \`init\` command is deprecated.
  *
  */
 async function main() {
-  if (isNpxRuntime && !process.env.SKIP && currentVersion !== HEAD && isInitCommand) {
+  if (
+    isNpxRuntime &&
+    !process.env.SKIP &&
+    currentVersion !== HEAD &&
+    isInitCommand
+  ) {
     try {
       const latest = await getLatestVersion();
       // TODO: T184416093 When cli is deprecated, remove semver from package.json
