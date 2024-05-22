@@ -326,6 +326,19 @@ public class CSSBackgroundDrawable extends Drawable {
     return Preconditions.checkNotNull(mInnerClipPathForBorderRadius);
   }
 
+  public RectF getPaddingBoxRect() {
+    RectF insets = getDirectionAwareBorderInsets();
+    if (insets == null) {
+      return new RectF(0, 0, getBounds().width(), getBounds().height());
+    }
+
+    return new RectF(
+        insets.left,
+        insets.top,
+        getBounds().width() - insets.right,
+        getBounds().height() - insets.bottom);
+  }
+
   private void drawRoundedBackgroundWithBorders(Canvas canvas) {
     updatePath();
     canvas.save();
@@ -1304,7 +1317,7 @@ public class CSSBackgroundDrawable extends Drawable {
     return CSSBackgroundDrawable.colorFromAlphaAndRGBComponents(alpha, rgb);
   }
 
-  public RectF getDirectionAwareBorderInsets() {
+  private RectF getDirectionAwareBorderInsets() {
     final float borderWidth = getBorderWidthOrDefaultTo(0, Spacing.ALL);
     final float borderTopWidth = getBorderWidthOrDefaultTo(borderWidth, Spacing.TOP);
     final float borderBottomWidth = getBorderWidthOrDefaultTo(borderWidth, Spacing.BOTTOM);

@@ -5561,7 +5561,6 @@ public class com/facebook/react/uimanager/drawable/CSSBackgroundDrawable : andro
 	public fun getBorderRadius ()Lcom/facebook/react/uimanager/style/BorderRadiusStyle;
 	public fun getBorderWidthOrDefaultTo (FI)F
 	public fun getComputedBorderRadius ()Lcom/facebook/react/uimanager/style/ComputedBorderRadius;
-	public fun getDirectionAwareBorderInsets ()Landroid/graphics/RectF;
 	public fun getFullBorderWidth ()F
 	public fun getLayoutDirection ()I
 	public fun getOpacity ()I
