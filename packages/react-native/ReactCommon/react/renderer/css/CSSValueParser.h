@@ -11,6 +11,7 @@
 #include <type_traits>
 
 #include <react/renderer/css/CSSAngleUnit.h>
+#include <react/renderer/css/CSSColorUtils.h>
 #include <react/renderer/css/CSSProperties.h>
 #include <react/renderer/css/CSSSyntaxParser.h>
 #include <react/renderer/css/CSSValueVariant.h>
@@ -229,13 +230,14 @@ class CSSValueParser {
         value != -std::numeric_limits<float>::infinity();
   }
 
-  enum class HexColorType {
-    Long,
-    Short,
-  };
-
   constexpr std::optional<CSSValue> consumeColorToken(
       const CSSPreservedToken& token) {
+    if (token.type() == CSSTokenType::Ident) {
+      return parseCSSNamedColor<CSSValue>(token.stringValue());
+    } else if (token.type() != CSSTokenType::Hash) {
+      return {};
+    }
+
     // https://www.w3.org/TR/css-color-4/#hex-color
     std::string_view hexColorValue = token.stringValue();
     if (isValidHexColor(hexColorValue)) {
@@ -266,54 +268,6 @@ class CSSValueParser {
       }
     }
     return {};
-  }
-
-  constexpr char toLower(char c) {
-    if (c >= 'A' && c <= 'Z') {
-      return static_cast<char>(c + 32);
-    }
-    return c;
-  }
-
-  constexpr uint8_t hexToNumeric(std::string_view hex, HexColorType hexType) {
-    int result = 0;
-    for (char c : hex) {
-      int value = 0;
-      if (c >= '0' && c <= '9') {
-        value = c - '0';
-      } else {
-        value = toLower(c) - 'a' + 10;
-      }
-      result *= 16;
-      result += value;
-    }
-
-    if (hexType == HexColorType::Short) {
-      return result * 16 + result;
-    } else {
-      return result;
-    }
-  }
-
-  constexpr bool isValidHexColor(std::string_view hex) {
-    // The syntax of a <hex-color> is a <hash-token> token whose value consists
-    // of 3, 4, 6, or 8 hexadecimal digits.
-    if (hex.size() != 3 && hex.size() != 4 && hex.size() != 6 &&
-        hex.size() != 8) {
-      return false;
-    }
-
-    for (auto c : hex) {
-      if (!isHexDigit(c)) {
-        return false;
-      }
-    }
-
-    return true;
-  }
-
-  constexpr bool isHexDigit(char c) {
-    return (c >= '0' && c <= '9') || (toLower(c) >= 'a' && toLower(c) <= 'f');
   }
 
   CSSSyntaxParser parser_;
