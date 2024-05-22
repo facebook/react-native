@@ -5,7 +5,9 @@
   "scripts": {
     "bootstrap": "node ./cli.js bootstrap",
     "build": "node ./cli.js build",
+    "bundle": "node ./cli.js bundle ",
     "launch": "node ./scripts/metro.js",
+    "upload": "node ./cli.js upload",
     "lint": "eslint .",
     "test": "jest"
   },
