@@ -94,6 +94,9 @@ const messageStyles = StyleSheet.create({
     includeFontPadding: false,
     lineHeight: 28,
   },
+  'fusebox-upsell': {
+    color: LogBoxStyle.getLogColor(1),
+  },
   warn: {
     color: LogBoxStyle.getWarningColor(1),
   },

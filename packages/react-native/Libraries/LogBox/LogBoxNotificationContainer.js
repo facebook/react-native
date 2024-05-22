@@ -35,7 +35,15 @@ export function _LogBoxNotificationContainer(props: Props): React.Node {
     LogBoxData.setSelectedLog(index);
   };
 
+  const onDismissAll = () => {
+    LogBoxData.clear();
+  };
+
   function openLog(log: LogBoxLog) {
+    if (log.onNotificationPress) {
+      log.onNotificationPress();
+      return;
+    }
     let index = logs.length - 1;
 
     // Stop at zero because if we don't find any log, we'll open the first log.
@@ -53,6 +61,7 @@ export function _LogBoxNotificationContainer(props: Props): React.Node {
   const errors = logs.filter(
     log => log.level === 'error' || log.level === 'fatal',
   );
+  const fuseboxUpsells = logs.filter(log => log.level === 'fusebox-upsell');
   return (
     <View style={styles.list}>
       {warnings.length > 0 && (
@@ -74,6 +83,17 @@ export function _LogBoxNotificationContainer(props: Props): React.Node {
             totalLogCount={errors.length}
             onPressOpen={() => openLog(errors[errors.length - 1])}
             onPressDismiss={onDismissErrors}
+          />
+        </View>
+      )}
+      {fuseboxUpsells.length > 0 && (
+        <View style={styles.toast}>
+          <LogBoxLogNotification
+            log={fuseboxUpsells[0]}
+            level="fusebox-upsell"
+            totalLogCount={fuseboxUpsells.length}
+            onPressOpen={() => openLog(fuseboxUpsells[0])}
+            onPressDismiss={onDismissAll}
           />
         </View>
       )}

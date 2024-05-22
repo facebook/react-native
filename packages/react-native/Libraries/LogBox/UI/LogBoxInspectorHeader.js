@@ -88,6 +88,10 @@ const backgroundForLevel = (level: LogLevel) =>
       default: 'transparent',
       pressed: LogBoxStyle.getFatalDarkColor(),
     },
+    'fusebox-upsell': {
+      default: 'transparent',
+      pressed: LogBoxStyle.getLogDarkColor(),
+    },
   })[level];
 
 function LogBoxInspectorHeaderButton(
@@ -140,6 +144,9 @@ const styles = StyleSheet.create({
   },
   error: {
     backgroundColor: LogBoxStyle.getErrorColor(),
+  },
+  'fusebox-upsell': {
+    backgroundColor: LogBoxStyle.getLogColor(),
   },
   header: {
     flexDirection: 'row',

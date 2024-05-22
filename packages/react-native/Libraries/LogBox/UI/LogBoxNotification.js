@@ -24,7 +24,7 @@ import * as React from 'react';
 type Props = $ReadOnly<{
   log: LogBoxLog,
   totalLogCount: number,
-  level: 'warn' | 'error',
+  level: 'fusebox-upsell' | 'warn' | 'error',
   onPressOpen: () => void,
   onPressDismiss: () => void,
 }>;
@@ -56,7 +56,10 @@ function LogBoxLogNotification(props: Props): React.Node {
   );
 }
 
-function CountBadge(props: {count: number, level: 'error' | 'warn'}) {
+function CountBadge(props: {
+  count: number,
+  level: 'fusebox-upsell' | 'error' | 'warn',
+}) {
   return (
     <View style={countStyles.outside}>
       {/* $FlowFixMe[incompatible-type] (>=0.114.0) This suppression was added
@@ -119,7 +122,7 @@ const countStyles = StyleSheet.create({
   error: {
     backgroundColor: LogBoxStyle.getErrorColor(1),
   },
-  log: {
+  'fusebox-upsell': {
     backgroundColor: LogBoxStyle.getLogColor(1),
   },
   outside: {

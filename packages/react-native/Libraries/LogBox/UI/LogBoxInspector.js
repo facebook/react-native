@@ -90,6 +90,9 @@ const headerTitleMap = {
   fatal: 'Uncaught Error',
   syntax: 'Syntax Error',
   component: 'Render Error',
+
+  // Never actually rendered
+  'fusebox-upsell': 'React Native DevTools',
 };
 
 function LogBoxInspectorBody(props: {log: LogBoxLog, onRetry: () => void}) {

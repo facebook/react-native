@@ -21,7 +21,7 @@ import * as LogBoxSymbolication from './LogBoxSymbolication';
 
 type SymbolicationStatus = 'NONE' | 'PENDING' | 'COMPLETE' | 'FAILED';
 
-export type LogLevel = 'warn' | 'error' | 'fatal' | 'syntax';
+export type LogLevel = 'fusebox-upsell' | 'warn' | 'error' | 'fatal' | 'syntax';
 
 // TODO: once component stacks are fully supported, we can refactor
 // ComponentStack to just be Stack and remove these conversions fns.
@@ -66,6 +66,7 @@ export type LogBoxLogData = $ReadOnly<{|
   codeFrame?: ?CodeFrame,
   isComponentError: boolean,
   extraData?: mixed,
+  onNotificationPress?: ?() => void,
 |}>;
 
 class LogBoxLog {
@@ -102,6 +103,7 @@ class LogBoxLog {
     componentStack: null,
     status: 'NONE',
   };
+  onNotificationPress: ?() => void;
 
   constructor(data: LogBoxLogData) {
     this.level = data.level;
@@ -115,6 +117,7 @@ class LogBoxLog {
     this.isComponentError = data.isComponentError;
     this.extraData = data.extraData;
     this.count = 1;
+    this.onNotificationPress = data.onNotificationPress;
   }
 
   incrementCount(): void {

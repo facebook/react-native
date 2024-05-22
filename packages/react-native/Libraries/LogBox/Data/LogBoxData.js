@@ -8,6 +8,8 @@
  * @format
  */
 
+import NativeDevSettings from '../../NativeModules/specs/NativeDevSettings';
+
 ('use strict');
 
 import type {ExtendedError} from '../../Core/ExtendedError';
@@ -25,13 +27,13 @@ import LogBoxLog from './LogBoxLog';
 import {parseLogBoxException} from './parseLogBoxLog';
 import * as React from 'react';
 export type LogBoxLogs = Set<LogBoxLog>;
-export type LogData = $ReadOnly<{|
+export type LogData = $ReadOnly<{
   level: LogLevel,
   message: Message,
   category: Category,
   componentStack: ComponentStack,
   stack?: string,
-|}>;
+}>;
 
 export type Observer = (
   $ReadOnly<{|
@@ -72,6 +74,7 @@ let logs: LogBoxLogs = new Set();
 let updateTimeout: $FlowFixMe | null = null;
 let _isDisabled = false;
 let _selectedIndex = -1;
+let hasShownFuseboxUpsellMessage = false;
 
 let warningFilter: WarningFilter = function (format) {
   return {
@@ -193,6 +196,11 @@ function appendNewLog(newLog: LogBoxLog) {
 }
 
 export function addLog(log: LogData): void {
+  if (log.level !== 'fatal' && global.__FUSEBOX_HAS_FULL_CONSOLE_SUPPORT__) {
+    // Under Fusebox, only report fatal errors to LogBox.
+    showFuseboxUpsellMessageOnce();
+    return;
+  }
   const errorForStackTrace = new Error();
 
   // Parsing logs are expensive so we schedule this
@@ -218,6 +226,11 @@ export function addLog(log: LogData): void {
 }
 
 export function addException(error: ExtendedExceptionData): void {
+  if (!error.isFatal && global.__FUSEBOX_HAS_FULL_CONSOLE_SUPPORT__) {
+    // Under Fusebox, only report fatal errors to LogBox.
+    showFuseboxUpsellMessageOnce();
+    return;
+  }
   // Parsing logs are expensive so we schedule this
   // otherwise spammy logs would pause rendering.
   setImmediate(() => {
@@ -452,4 +465,30 @@ export function withSubscription(
   }
 
   return LogBoxStateSubscription;
+}
+
+function showFuseboxUpsellMessageOnce() {
+  if (hasShownFuseboxUpsellMessage) {
+    return;
+  }
+  hasShownFuseboxUpsellMessage = true;
+  appendNewLog(
+    new LogBoxLog({
+      level: 'fusebox-upsell',
+      message: {
+        content: 'Open debugger to view logs.',
+        substitutions: [],
+      },
+      isComponentError: false,
+      stack: [],
+      category: 'fusebox-upsell',
+      componentStack: [],
+      onNotificationPress: () => {
+        if (NativeDevSettings.openDebugger) {
+          NativeDevSettings.openDebugger();
+        }
+        clear();
+      },
+    }),
+  );
 }
