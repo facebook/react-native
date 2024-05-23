@@ -836,6 +836,7 @@ public class ReactEditText extends AppCompatEditText {
               mFontWeight,
               getFontFeatureSettings(),
               mFontFamily,
+              "",
               getContext().getAssets()),
           0,
           workingText.length(),

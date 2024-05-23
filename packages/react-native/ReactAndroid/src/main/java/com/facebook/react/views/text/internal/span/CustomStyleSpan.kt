@@ -10,6 +10,7 @@ package com.facebook.react.views.text.internal.span
 import android.content.res.AssetManager
 import android.graphics.Paint
 import android.graphics.Typeface
+import android.os.Build
 import android.text.TextPaint
 import android.text.style.MetricAffectingSpan
 import com.facebook.react.common.ReactConstants
@@ -32,14 +33,15 @@ public class CustomStyleSpan(
     private val privateWeight: Int,
     public val fontFeatureSettings: String?,
     public val fontFamily: String?,
+    public val fontVariationSettings: String?,
     private val assetManager: AssetManager
 ) : MetricAffectingSpan(), ReactSpan {
   public override fun updateDrawState(ds: TextPaint) {
-    apply(ds, privateStyle, privateWeight, fontFeatureSettings, fontFamily, assetManager)
+    apply(ds, privateStyle, privateWeight, fontFeatureSettings, fontFamily, fontVariationSettings, assetManager)
   }
 
   public override fun updateMeasureState(paint: TextPaint) {
-    apply(paint, privateStyle, privateWeight, fontFeatureSettings, fontFamily, assetManager)
+    apply(paint, privateStyle, privateWeight, fontFeatureSettings, fontFamily, fontVariationSettings, assetManager)
   }
 
   public val style: Int
@@ -65,12 +67,16 @@ public class CustomStyleSpan(
         weight: Int,
         fontFeatureSettingsParam: String?,
         family: String?,
+        fontVariationSettingsParam: String?,
         assetManager: AssetManager
     ) {
       val typeface =
           ReactTypefaceUtils.applyStyles(paint.typeface, style, weight, family, assetManager)
       paint.apply {
         fontFeatureSettings = fontFeatureSettingsParam
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+          fontVariationSettings = fontVariationSettingsParam
+        }
         setTypeface(typeface)
         isSubpixelText = true
       }

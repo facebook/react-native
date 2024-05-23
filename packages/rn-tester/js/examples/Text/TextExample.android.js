@@ -506,6 +506,21 @@ function FontWeightExample(props: {}): React.Node {
   );
 }
 
+function FontVariantionSettingsExample(props: {}): React.Node {
+  return (
+    <>
+      <Text
+        style={{
+          fontFamily: 'inter',
+          fontSize: 24,
+          fontVariationSettings: "'wght' 800, 'slnt' 6",
+        }}>
+        Inter 'wght' 200, 'slnt' 6
+      </Text>
+    </>
+  );
+}
+
 function BackgroundColorExample(props: {}): React.Node {
   return (
     <>
@@ -1064,6 +1079,13 @@ const examples = [
     name: 'fontWeight',
     render(): React.Node {
       return <FontWeightExample />;
+    },
+  },
+  {
+    title: 'Font Variation Settings',
+    name: 'fontVariationSettings',
+    render(): React.Node {
+      return <FontVariantionSettingsExample />;
     },
   },
   {
