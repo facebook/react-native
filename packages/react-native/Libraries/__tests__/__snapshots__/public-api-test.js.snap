@@ -6582,6 +6582,7 @@ export type Registry = {
 export type WrapperComponentProvider = (
   appParameters: Object
 ) => React$ComponentType<any>;
+export type RootViewStyleProvider = (appParameters: Object) => ViewStyleProp;
 declare const AppRegistry: {
   setWrapperComponentProvider(provider: WrapperComponentProvider): void,
   setRootViewStyleProvider(provider: RootViewStyleProvider): void,
