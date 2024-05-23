@@ -17,8 +17,8 @@ InspectorFlags& InspectorFlags::getInstance() {
   return instance;
 }
 
-bool InspectorFlags::getEnableModernCDPRegistry() const {
-  return loadFlagsAndAssertUnchanged().enableModernCDPRegistry;
+bool InspectorFlags::getFuseboxEnabled() const {
+  return loadFlagsAndAssertUnchanged().fuseboxEnabled;
 }
 
 void InspectorFlags::dangerouslyResetFlags() {
@@ -28,11 +28,11 @@ void InspectorFlags::dangerouslyResetFlags() {
 const InspectorFlags::Values& InspectorFlags::loadFlagsAndAssertUnchanged()
     const {
   InspectorFlags::Values newValues = {
-      .enableModernCDPRegistry =
+      .fuseboxEnabled =
 #ifdef REACT_NATIVE_FORCE_ENABLE_FUSEBOX
           true,
 #else
-          ReactNativeFeatureFlags::inspectorEnableModernCDPRegistry(),
+          ReactNativeFeatureFlags::fuseboxEnabled(),
 #endif
   };
 

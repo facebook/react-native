@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fcb07f35176bcccf1363539f5f43a201>>
+ * @generated SignedSource<<8e7914cb00c51ceb4f6d4e7dd09ae4df>>
  * @flow strict-local
  */
 
@@ -53,7 +53,7 @@ export type ReactNativeFeatureFlags = {
   enableUIConsistency: Getter<boolean>,
   fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak: Getter<boolean>,
   forceBatchingMountItemsOnAndroid: Getter<boolean>,
-  inspectorEnableModernCDPRegistry: Getter<boolean>,
+  fuseboxEnabled: Getter<boolean>,
   lazyAnimationCallbacks: Getter<boolean>,
   preventDoubleTextMeasure: Getter<boolean>,
   setAndroidLayoutDirection: Getter<boolean>,
@@ -155,9 +155,9 @@ export const fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak: Getter<boolea
  */
 export const forceBatchingMountItemsOnAndroid: Getter<boolean> = createNativeFlagGetter('forceBatchingMountItemsOnAndroid', false);
 /**
- * Flag determining if the modern CDP backend should be enabled. This flag is global and should not be changed across React Host lifetimes.
+ * Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled. This flag is global and should not be changed across React Host lifetimes.
  */
-export const inspectorEnableModernCDPRegistry: Getter<boolean> = createNativeFlagGetter('inspectorEnableModernCDPRegistry', false);
+export const fuseboxEnabled: Getter<boolean> = createNativeFlagGetter('fuseboxEnabled', false);
 /**
  * Only enqueue Choreographer calls if there is an ongoing animation, instead of enqueueing every frame.
  */

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<afcccd6ebe0986b3c4585298d1dc41a2>>
+ * @generated SignedSource<<abfe4f0adc936917b3d505bb5b84382b>>
  */
 
 /**
@@ -103,9 +103,9 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool forceBatchingMountItemsOnAndroid();
 
   /**
-   * Flag determining if the modern CDP backend should be enabled. This flag is global and should not be changed across React Host lifetimes.
+   * Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled. This flag is global and should not be changed across React Host lifetimes.
    */
-  RN_EXPORT static bool inspectorEnableModernCDPRegistry();
+  RN_EXPORT static bool fuseboxEnabled();
 
   /**
    * Only enqueue Choreographer calls if there is an ongoing animation, instead of enqueueing every frame.

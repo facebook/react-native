@@ -26,9 +26,9 @@ class ReactNativeFeatureFlagsOverrides
       const InspectorFlagOverrides& overrides)
       : overrides_(overrides) {}
 
-  bool inspectorEnableModernCDPRegistry() override {
-    return overrides_.enableModernCDPRegistry.value_or(
-        ReactNativeFeatureFlagsDefaults::inspectorEnableModernCDPRegistry());
+  bool fuseboxEnabled() override {
+    return overrides_.fuseboxEnabled.value_or(
+        ReactNativeFeatureFlagsDefaults::fuseboxEnabled());
   }
 
  private:

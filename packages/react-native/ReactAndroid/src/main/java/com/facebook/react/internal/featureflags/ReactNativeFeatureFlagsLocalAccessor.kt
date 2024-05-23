@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a2706af43bfe0803eab9a70d24cd79c9>>
+ * @generated SignedSource<<28e42dd2ab3adbf71e828037a8314f3a>>
  */
 
 /**
@@ -37,7 +37,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var enableUIConsistencyCache: Boolean? = null
   private var fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeakCache: Boolean? = null
   private var forceBatchingMountItemsOnAndroidCache: Boolean? = null
-  private var inspectorEnableModernCDPRegistryCache: Boolean? = null
+  private var fuseboxEnabledCache: Boolean? = null
   private var lazyAnimationCallbacksCache: Boolean? = null
   private var preventDoubleTextMeasureCache: Boolean? = null
   private var setAndroidLayoutDirectionCache: Boolean? = null
@@ -175,12 +175,12 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
     return cached
   }
 
-  override fun inspectorEnableModernCDPRegistry(): Boolean {
-    var cached = inspectorEnableModernCDPRegistryCache
+  override fun fuseboxEnabled(): Boolean {
+    var cached = fuseboxEnabledCache
     if (cached == null) {
-      cached = currentProvider.inspectorEnableModernCDPRegistry()
-      accessedFeatureFlags.add("inspectorEnableModernCDPRegistry")
-      inspectorEnableModernCDPRegistryCache = cached
+      cached = currentProvider.fuseboxEnabled()
+      accessedFeatureFlags.add("fuseboxEnabled")
+      fuseboxEnabledCache = cached
     }
     return cached
   }

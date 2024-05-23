@@ -215,7 +215,7 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
     [self _setBundleURL:_bundleURLProvider()];
   }
   auto &inspectorFlags = jsinspector_modern::InspectorFlags::getInstance();
-  if (inspectorFlags.getEnableModernCDPRegistry() && !_inspectorPageId.has_value()) {
+  if (inspectorFlags.getFuseboxEnabled() && !_inspectorPageId.has_value()) {
     _inspectorTarget =
         facebook::react::jsinspector_modern::HostTarget::create(*_inspectorHostDelegate, [](auto callback) {
           RCTExecuteOnMainQueue(^{
