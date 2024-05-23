@@ -9,6 +9,7 @@
  */
 
 import type {RootTag} from './RootTag';
+import type { ViewStyleProp } from '../StyleSheet/StyleSheet';
 
 import * as React from 'react';
 
@@ -19,6 +20,7 @@ export type Props = $ReadOnly<{|
   initialProps?: {...},
   showArchitectureIndicator?: boolean,
   WrapperComponent?: ?React.ComponentType<any>,
+  rootViewStyle?: ?ViewStyleProp,
   internal_excludeLogBox?: boolean,
   internal_excludeInspector?: boolean,
 |}>;

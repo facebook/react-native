@@ -9,6 +9,7 @@
  */
 
 import type {IPerformanceLogger} from '../Utilities/createPerformanceLogger';
+import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 
 import GlobalPerformanceLogger from '../Utilities/GlobalPerformanceLogger';
 import PerformanceLoggerContext from '../Utilities/PerformanceLoggerContext';
@@ -32,6 +33,7 @@ export default function renderApplication<Props: Object>(
   initialProps: Props,
   rootTag: any,
   WrapperComponent?: ?React.ComponentType<any>,
+  rootViewStyle?: ?ViewStyleProp,
   fabric?: boolean,
   showArchitectureIndicator?: boolean,
   scopedPerformanceLogger?: IPerformanceLogger,
@@ -52,6 +54,7 @@ export default function renderApplication<Props: Object>(
         fabric={fabric}
         showArchitectureIndicator={showArchitectureIndicator}
         WrapperComponent={WrapperComponent}
+        rootViewStyle={rootViewStyle}
         initialProps={initialProps ?? Object.freeze({})}
         internal_excludeLogBox={isLogBox}>
         <RootComponent {...initialProps} rootTag={rootTag} />
