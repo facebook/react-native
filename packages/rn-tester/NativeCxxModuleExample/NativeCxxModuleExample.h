@@ -160,13 +160,13 @@ class NativeCxxModuleExample
 
   GraphNode getGraphNode(jsi::Runtime& rt, GraphNode arg);
 
-  NativeCxxModuleExampleCxxEnumInt getNumEnum(
+  NativeCxxModuleExampleEnumInt getNumEnum(
       jsi::Runtime& rt,
-      NativeCxxModuleExampleCxxEnumInt arg);
+      NativeCxxModuleExampleEnumInt arg);
 
-  NativeCxxModuleExampleCxxEnumStr getStrEnum(
+  NativeCxxModuleExampleEnumStr getStrEnum(
       jsi::Runtime& rt,
-      NativeCxxModuleExampleCxxEnumNone arg);
+      NativeCxxModuleExampleEnumNone arg);
 
   std::map<std::string, std::optional<int32_t>> getMap(
       jsi::Runtime& rt,
