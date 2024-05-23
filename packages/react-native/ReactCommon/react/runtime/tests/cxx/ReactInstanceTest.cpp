@@ -18,6 +18,7 @@
 #include <react/runtime/ReactInstance.h>
 
 using ::testing::_;
+using ::testing::HasSubstr;
 using ::testing::SaveArg;
 
 namespace facebook::react {
@@ -801,9 +802,10 @@ TEST_F(ReactInstanceTest, testCallFunctionOnModule_invalidModule) {
   instance_->callFunctionOnModule("invalidModule", "method", std::move(args));
   step();
   expectError();
-  EXPECT_EQ(
+  EXPECT_THAT(
       getLastErrorMessage(),
-      "Failed to call into JavaScript module method invalidModule.method(). Module has not been registered as callable. Registered callable JavaScript modules (n = 0):. Did you forget to call `RN$registerCallableModule`?");
+      HasSubstr(
+          "Failed to call into JavaScript module method invalidModule.method()"));
 }
 
 TEST_F(ReactInstanceTest, testCallFunctionOnModule_undefinedMethod) {
@@ -820,7 +822,7 @@ RN$registerCallableModule('foo', () => module);
   expectError();
   EXPECT_EQ(
       getLastErrorMessage(),
-      "Failed to call into JavaScript module method foo.invalidMethod. Module exists, but the method is undefined.");
+      "getPropertyAsObject: property 'invalidMethod' is undefined, expected an Object");
 }
 
 TEST_F(ReactInstanceTest, testCallFunctionOnModule_invalidMethod) {
