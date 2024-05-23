@@ -27,10 +27,6 @@ class FakeYogaConfig : YogaConfig() {
     // no-op
   }
 
-  override fun setPrintTreeFlag(enable: Boolean) {
-    // no-op
-  }
-
   override fun setPointScaleFactor(pixelsInPoint: Float) {
     // no-op
   }

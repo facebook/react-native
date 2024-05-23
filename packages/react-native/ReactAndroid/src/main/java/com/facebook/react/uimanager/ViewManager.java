@@ -46,6 +46,14 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    */
   @Nullable private HashMap<Integer, Stack<T>> mRecyclableViews = null;
 
+  public ViewManager() {
+    super(null);
+  }
+
+  public ViewManager(@Nullable ReactApplicationContext reactContext) {
+    super(reactContext);
+  }
+
   /** Call in constructor of concrete ViewManager class to enable. */
   protected void setupViewRecycling() {
     if (ReactFeatureFlags.enableViewRecycling) {

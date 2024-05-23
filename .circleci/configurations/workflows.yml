@@ -15,15 +15,16 @@
 workflows:
   version: 2
 
-  # This workflow should only be triggered by release script
-  package_release:
+  # Release workflow, triggered by `yarn trigger-react-native-release`
+  create_release:
     when: << pipeline.parameters.run_release_workflow >>
     jobs:
-      # This job will push a tag that will trigger the publish_release workflow
-      - prepare_package_for_release:
-          name: prepare_package_for_release
+      - prepare_release:
+          name: prepare_release
           version: << pipeline.parameters.release_version >>
-          latest : << pipeline.parameters.release_latest >>
+          monorepo_packages_version: << pipeline.parameters.release_monorepo_packages_version >>
+          tag: << pipeline.parameters.release_tag >>
+          dry_run: << pipeline.parameters.release_dry_run >>
 
   # This job will run only when a tag is published due to all the jobs being filtered.
   publish_release:
@@ -116,6 +117,7 @@ workflows:
             parameters:
               flavor: ["Debug", "Release"]
       - build_npm_package:
+          name: build_nightly_npm_package
           release_type: "nightly"
           requires:
             - build_android

@@ -13,6 +13,7 @@ import com.facebook.react.common.SurfaceDelegateFactory;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevLoadingViewManager;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
+import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager;
 import com.facebook.react.devsupport.interfaces.RedBoxHandler;
 import com.facebook.react.packagerconnection.RequestHandler;
 import java.util.Map;
@@ -28,5 +29,6 @@ public interface DevSupportManagerFactory {
       int minNumShakes,
       @Nullable Map<String, RequestHandler> customPackagerCommandHandlers,
       @Nullable SurfaceDelegateFactory surfaceDelegateFactory,
-      @Nullable DevLoadingViewManager devLoadingViewManager);
+      @Nullable DevLoadingViewManager devLoadingViewManager,
+      @Nullable PausedInDebuggerOverlayManager pausedInDebuggerOverlayManager);
 }

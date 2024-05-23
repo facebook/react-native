@@ -17,6 +17,7 @@ import type {
   ViewToken,
 } from '@react-native/virtualized-lists';
 
+import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
 import {type ScrollResponderType} from '../Components/ScrollView/ScrollView';
 import {
   VirtualizedList,
@@ -158,7 +159,11 @@ type OptionalProps<ItemT> = {|
 
 // removeClippedSubviewsOrDefault(this.props.removeClippedSubviews)
 function removeClippedSubviewsOrDefault(removeClippedSubviews: ?boolean) {
-  return removeClippedSubviews ?? Platform.OS === 'android';
+  if (ReactNativeFeatureFlags.shouldUseRemoveClippedSubviewsAsDefaultOnIOS()) {
+    return removeClippedSubviews ?? true;
+  } else {
+    return removeClippedSubviews ?? Platform.OS === 'android';
+  }
 }
 
 // numColumnsOrDefault(this.props.numColumns)
@@ -303,7 +308,6 @@ export type Props<ItemT> = {
  * Also inherits [ScrollView Props](docs/scrollview.html#props), unless it is nested in another FlatList of same orientation.
  */
 class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
-  props: Props<ItemT>;
   /**
    * Scrolls to the end of the content. May be janky without `getItemLayout` prop.
    */

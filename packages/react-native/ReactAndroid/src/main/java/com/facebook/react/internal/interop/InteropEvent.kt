@@ -15,9 +15,9 @@ import com.facebook.react.uimanager.events.Event
  * the data which is received by the `receiveEvent` method and will be passed over the the
  * [com.facebook.react.uimanager.events.EventDispatcher]
  */
-class InteropEvent(
-    @get:JvmName("eventName") val eventName: String,
-    @get:JvmName("eventData") val eventData: WritableMap?,
+public class InteropEvent(
+    @get:JvmName("eventName") public val eventName: String,
+    @get:JvmName("eventData") public val eventData: WritableMap?,
     surfaceId: Int,
     viewTag: Int
 ) : Event<InteropEvent>(surfaceId, viewTag) {

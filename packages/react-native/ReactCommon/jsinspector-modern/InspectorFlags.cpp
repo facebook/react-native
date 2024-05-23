@@ -5,10 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <glog/logging.h>
-#include <cassert>
-
 #include "InspectorFlags.h"
+
+#include <glog/logging.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 
 namespace facebook::react::jsinspector_modern {
 
@@ -17,44 +17,54 @@ InspectorFlags& InspectorFlags::getInstance() {
   return instance;
 }
 
-void InspectorFlags::initFromConfig(
-    const ReactNativeConfig& reactNativeConfig) {
-  bool enableModernCDPRegistry =
-      reactNativeConfig.getBool("react_native_devx:enable_modern_cdp_registry");
-  if (enableModernCDPRegistry_.has_value()) {
-    assert(
-        *enableModernCDPRegistry_ == enableModernCDPRegistry &&
-        "Flag value was changed after init");
-  }
-  enableModernCDPRegistry_ = enableModernCDPRegistry;
-  bool enableCxxInspectorPackagerConnection = reactNativeConfig.getBool(
-      "react_native_devx:enable_cxx_inspector_packager_connection");
-  if (enableCxxInspectorPackagerConnection_.has_value()) {
-    assert(
-        *enableCxxInspectorPackagerConnection_ ==
-            enableCxxInspectorPackagerConnection &&
-        "Flag value was changed after init");
-  }
-  enableCxxInspectorPackagerConnection_ = enableCxxInspectorPackagerConnection;
-}
-
 bool InspectorFlags::getEnableModernCDPRegistry() const {
-  if (!enableModernCDPRegistry_.has_value()) {
-    LOG(WARNING)
-        << "InspectorFlags::getEnableModernCDPRegistry was called before init";
-  }
-  return enableModernCDPRegistry_.value_or(false);
+  return loadFlagsAndAssertUnchanged().enableModernCDPRegistry;
 }
 
 bool InspectorFlags::getEnableCxxInspectorPackagerConnection() const {
-  if (!enableCxxInspectorPackagerConnection_.has_value()) {
-    LOG(WARNING)
-        << "InspectorFlags::getEnableCxxInspectorPackagerConnection was called before init";
-  }
-  return enableCxxInspectorPackagerConnection_.value_or(false) ||
+  auto& values = loadFlagsAndAssertUnchanged();
+
+  return values.enableCxxInspectorPackagerConnection ||
       // If we are using the modern CDP registry, then we must also use the C++
       // InspectorPackagerConnection implementation.
-      getEnableModernCDPRegistry();
+      values.enableModernCDPRegistry;
+}
+
+void InspectorFlags::dangerouslyResetFlags() {
+  *this = InspectorFlags{};
+}
+
+const InspectorFlags::Values& InspectorFlags::loadFlagsAndAssertUnchanged()
+    const {
+  InspectorFlags::Values newValues = {
+      .enableCxxInspectorPackagerConnection =
+#ifdef REACT_NATIVE_FORCE_ENABLE_FUSEBOX
+          true,
+#else
+          ReactNativeFeatureFlags::
+              inspectorEnableCxxInspectorPackagerConnection(),
+#endif
+      .enableModernCDPRegistry =
+#ifdef REACT_NATIVE_FORCE_ENABLE_FUSEBOX
+          true,
+#else
+          ReactNativeFeatureFlags::inspectorEnableModernCDPRegistry(),
+#endif
+  };
+
+  if (cachedValues_.has_value() && !inconsistentFlagsStateLogged_) {
+    if (cachedValues_ != newValues) {
+      LOG(ERROR)
+          << "[InspectorFlags] Error: One or more ReactNativeFeatureFlags values "
+          << "have changed during the global app lifetime. This may lead to "
+          << "inconsistent inspector behaviour. Please quit and restart the app.";
+      inconsistentFlagsStateLogged_ = true;
+    }
+  }
+
+  cachedValues_ = newValues;
+
+  return cachedValues_.value();
 }
 
 } // namespace facebook::react::jsinspector_modern

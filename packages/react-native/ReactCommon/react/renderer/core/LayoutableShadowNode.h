@@ -39,9 +39,6 @@ class LayoutableShadowNode : public ShadowNode {
       const ShadowNode& sourceShadowNode,
       const ShadowNodeFragment& fragment);
 
-  static ShadowNodeTraits BaseTraits();
-  static ShadowNodeTraits::Trait IdentifierTrait();
-
   struct LayoutInspectingPolicy {
     bool includeTransform{true};
     bool includeViewportOffset{false};
@@ -155,6 +152,9 @@ class LayoutableShadowNode : public ShadowNode {
    */
   virtual Float firstBaseline(Size size) const;
   virtual Float lastBaseline(Size size) const;
+
+  virtual bool canBeTouchTarget() const;
+  virtual bool canChildrenBeTouchTarget() const;
 
   /*
    * Returns layoutable children to iterate on.

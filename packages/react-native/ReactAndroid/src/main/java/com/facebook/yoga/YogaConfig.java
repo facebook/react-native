@@ -15,8 +15,6 @@ public abstract class YogaConfig {
 
   public abstract void setUseWebDefaults(boolean useWebDefaults);
 
-  public abstract void setPrintTreeFlag(boolean enable);
-
   public abstract void setPointScaleFactor(float pixelsInPoint);
 
   public abstract void setErrata(YogaErrata errata);

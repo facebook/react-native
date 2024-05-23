@@ -64,7 +64,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
         CodegenUtils.new().generate_react_codegen_podspec!(spec, codegen_output_dir, file_manager: FileMock)
 
         # Assert
-        assert_equal(Pod::UI.collected_messages, ["[Codegen] Skipping React-Codegen podspec generation."])
+        assert_equal(Pod::UI.collected_messages, ["[Codegen] Skipping ReactCodegen podspec generation."])
         assert_equal(Pathname.pwd_invocation_count, 0)
         assert_equal(Pod::Executable.executed_commands, [])
         assert_equal(Pod::Config.instance.installation_root.relative_path_from_invocation_count, 0)
@@ -83,8 +83,8 @@ class CodegenUtilsTests < Test::Unit::TestCase
         assert_equal(Pathname.pwd_invocation_count, 1)
         assert_equal(Pod::Config.instance.installation_root.relative_path_from_invocation_count, 1)
         assert_equal(Pod::Executable.executed_commands, [{ "command" => 'mkdir', "arguments" => ["-p", "~/app/ios/build"]}])
-        assert_equal(Pod::UI.collected_messages, ["[Codegen] Generating ~/app/ios/build/React-Codegen.podspec.json"])
-        assert_equal(FileMock.open_files_with_mode["~/app/ios/build/React-Codegen.podspec.json"], 'w')
+        assert_equal(Pod::UI.collected_messages, ["[Codegen] Generating ~/app/ios/build/ReactCodegen.podspec.json"])
+        assert_equal(FileMock.open_files_with_mode["~/app/ios/build/ReactCodegen.podspec.json"], 'w')
         assert_equal(FileMock.open_files[0].collected_write, ['{"name":"Test Podspec"}'])
         assert_equal(FileMock.open_files[0].fsync_invocation_count, 1)
 
@@ -108,7 +108,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
 
         # Assert
         assert_equal(podspec, get_podspec_fabric_and_script_phases("echo Test Script Phase"))
-        assert_equal(Pod::UI.collected_messages, ["[Codegen] Adding script_phases to React-Codegen."])
+        assert_equal(Pod::UI.collected_messages, ["[Codegen] Adding script_phases to ReactCodegen."])
     end
 
     def testGetReactCodegenSpec_whenUseFrameworksAndNewArch_generatesAPodspec
@@ -337,7 +337,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
         # Arrange
         app_path = "~/app"
         computed_script = "echo TestScript"
-        codegen_spec = {"name" => "React-Codegen"}
+        codegen_spec = {"name" => "ReactCodegen"}
 
         codegen_utils_mock = CodegenUtilsMock.new(
             :react_codegen_script_phases => computed_script,
@@ -370,7 +370,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
         }])
         assert_equal(codegen_utils_mock.generate_react_codegen_spec_params,  [{
             :codegen_output_dir=>"build/generated/ios",
-            :react_codegen_spec=>{"name"=>"React-Codegen"}
+            :react_codegen_spec=>{"name"=>"ReactCodegen"}
         }])
         assert_equal(Pod::Executable.executed_commands, [
             {
@@ -501,7 +501,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
 
     def get_podspec_no_fabric_no_script
         spec = {
-          'name' => "React-Codegen",
+          'name' => "ReactCodegen",
           'version' => "99.98.97",
           'summary' => 'Temp pod for generated files for React Native',
           'homepage' => 'https://facebook.com/',
@@ -522,7 +522,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
                 "\"$(PODS_ROOT)/RCT-Folly\"",
                 "\"$(PODS_ROOT)/DoubleConversion\"",
                 "\"$(PODS_ROOT)/fmt/include\"",
-                "\"${PODS_ROOT}/Headers/Public/React-Codegen/react/renderer/components\"",
+                "\"${PODS_ROOT}/Headers/Public/ReactCodegen/react/renderer/components\"",
                 "\"$(PODS_ROOT)/Headers/Private/React-Fabric\"",
                 "\"$(PODS_ROOT)/Headers/Private/React-RCTFabric\"",
                 "\"$(PODS_ROOT)/Headers/Private/Yoga\"",
@@ -556,6 +556,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
             'React-Fabric': [],
             'React-FabricImage': [],
             'React-utils': [],
+            'React-featureflags': [],
             'React-debug': [],
             'React-rendererdebug': [],
         })
@@ -569,13 +570,14 @@ class CodegenUtilsTests < Test::Unit::TestCase
         specs = get_podspec_no_fabric_no_script()
 
         specs["pod_target_xcconfig"]["FRAMEWORK_SEARCH_PATHS"].concat([])
-        specs["pod_target_xcconfig"]["HEADER_SEARCH_PATHS"].concat(" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-FabricImage/React_FabricImage.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-NativeModulesApple/React_NativeModulesApple.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-debug/React_debug.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-rendererdebug/React_rendererdebug.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-utils/React_utils.framework/Headers\"")
+        specs["pod_target_xcconfig"]["HEADER_SEARCH_PATHS"].concat(" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-FabricImage/React_FabricImage.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-NativeModulesApple/React_NativeModulesApple.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-debug/React_debug.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-rendererdebug/React_rendererdebug.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-utils/React_utils.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-featureflags/React_featureflags.framework/Headers\"")
 
         specs[:dependencies].merge!({
             'React-graphics': [],
             'React-Fabric': [],
             'React-FabricImage': [],
             'React-utils': [],
+            'React-featureflags': [],
             'React-debug': [],
             'React-rendererdebug': [],
         })

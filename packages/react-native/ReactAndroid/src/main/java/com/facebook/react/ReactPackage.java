@@ -46,7 +46,9 @@ public interface ReactPackage {
   @DeprecatedInNewArchitecture
   List<NativeModule> createNativeModules(@NonNull ReactApplicationContext reactContext);
 
-  /** @return a list of view managers that should be registered with {@link UIManagerModule} */
+  /**
+   * @return a list of view managers that should be registered with {@link UIManagerModule}
+   */
   @NonNull
   List<ViewManager> createViewManagers(@NonNull ReactApplicationContext reactContext);
 

@@ -43,6 +43,7 @@ Pod::Spec.new do |s|
   s.dependency "DoubleConversion"
   s.dependency "fmt", "9.1.0"
   s.dependency "glog"
+  add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
 
   if ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == "1"
     s.dependency 'hermes-engine'

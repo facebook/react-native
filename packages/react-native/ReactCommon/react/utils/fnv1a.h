@@ -7,6 +7,10 @@
 
 #pragma once
 
+#include <cstdint>
+#include <functional>
+#include <string_view>
+
 namespace facebook::react {
 
 /**
@@ -17,13 +21,14 @@ namespace facebook::react {
  * when std::hash does not provide the needed functionality. For example,
  * constexpr.
  */
+template <typename CharTransformT = std::identity>
 constexpr uint32_t fnv1a(std::string_view string) noexcept {
   constexpr uint32_t offset_basis = 2166136261;
 
   uint32_t hash = offset_basis;
 
-  for (auto const& c : string) {
-    hash ^= static_cast<int8_t>(c);
+  for (const auto& c : string) {
+    hash ^= static_cast<int8_t>(CharTransformT{}(c));
     // Using shifts and adds instead of multiplication with a prime number.
     // This is faster when compiled with optimizations.
     hash +=
@@ -31,6 +36,19 @@ constexpr uint32_t fnv1a(std::string_view string) noexcept {
   }
 
   return hash;
+}
+
+constexpr uint32_t fnv1aLowercase(std::string_view string) {
+  struct LowerCaseTransform {
+    constexpr char operator()(char c) const {
+      if (c >= 'A' && c <= 'Z') {
+        return c + static_cast<char>('a' - 'A');
+      }
+      return c;
+    }
+  };
+
+  return fnv1a<LowerCaseTransform>(string);
 }
 
 } // namespace facebook::react

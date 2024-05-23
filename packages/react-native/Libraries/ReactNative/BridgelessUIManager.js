@@ -41,7 +41,7 @@ const getUIManagerConstantsCached = (function () {
   };
 })();
 
-const getConstantsForViewManager: ?(viewManagerName: string) => Object =
+const getConstantsForViewManager: ?(viewManagerName: string) => ?Object =
   global.RN$LegacyInterop_UIManager_getConstantsForViewManager;
 
 const getDefaultEventTypes: ?() => Object =
@@ -65,7 +65,7 @@ const getDefaultEventTypesCached = (function () {
  */
 const UIManagerJSOverridenAPIs = {
   measure: (
-    reactTag: ?number,
+    reactTag: number,
     callback: (
       left: number,
       top: number,
@@ -78,14 +78,14 @@ const UIManagerJSOverridenAPIs = {
     raiseSoftError('measure');
   },
   measureInWindow: (
-    reactTag: ?number,
+    reactTag: number,
     callback: (x: number, y: number, width: number, height: number) => void,
   ): void => {
     raiseSoftError('measureInWindow');
   },
   measureLayout: (
-    reactTag: ?number,
-    ancestorReactTag: ?number,
+    reactTag: number,
+    ancestorReactTag: number,
     errorCallback: (error: Object) => void,
     callback: (
       left: number,
@@ -97,7 +97,7 @@ const UIManagerJSOverridenAPIs = {
     raiseSoftError('measureLayout');
   },
   measureLayoutRelativeToParent: (
-    reactTag: ?number,
+    reactTag: number,
     errorCallback: (error: Object) => void,
     callback: (
       left: number,
@@ -109,7 +109,7 @@ const UIManagerJSOverridenAPIs = {
     raiseSoftError('measureLayoutRelativeToParent');
   },
   dispatchViewManagerCommand: (
-    reactTag: ?number,
+    reactTag: number,
     commandID: number,
     commandArgs: ?Array<string | number | boolean>,
   ): void => {
@@ -122,9 +122,9 @@ const UIManagerJSOverridenAPIs = {
  * In OSS, the New Architecture will just use the Fabric renderer, which uses
  * different APIs.
  */
-const UIManagerJSUnusedAPIs = {
+const UIManagerJSUnusedInNewArchAPIs = {
   createView: (
-    reactTag: ?number,
+    reactTag: number,
     viewName: string,
     rootTag: RootTag,
     props: Object,
@@ -134,11 +134,11 @@ const UIManagerJSUnusedAPIs = {
   updateView: (reactTag: number, viewName: string, props: Object): void => {
     raiseSoftError('updateView');
   },
-  setChildren: (containerTag: ?number, reactTags: Array<number>): void => {
+  setChildren: (containerTag: number, reactTags: Array<number>): void => {
     raiseSoftError('setChildren');
   },
   manageChildren: (
-    containerTag: ?number,
+    containerTag: number,
     moveFromIndices: Array<number>,
     moveToIndices: Array<number>,
     addChildReactTags: Array<number>,
@@ -147,7 +147,7 @@ const UIManagerJSUnusedAPIs = {
   ): void => {
     raiseSoftError('manageChildren');
   },
-  setJSResponder: (reactTag: ?number, blockNativeResponder: boolean): void => {
+  setJSResponder: (reactTag: number, blockNativeResponder: boolean): void => {
     raiseSoftError('setJSResponder');
   },
   clearJSResponder: (): void => {
@@ -155,9 +155,17 @@ const UIManagerJSUnusedAPIs = {
   },
 };
 
+/**
+ * Leave unimplemented: These APIs are deprecated in UIManager. We will eventually remove
+ * them from React Native.
+ */
+const UIManagerJSDeprecatedPlatformAPIs = Platform.select({
+  android: {},
+});
+
 const UIManagerJSPlatformAPIs = Platform.select({
   android: {
-    getConstantsForViewManager: (viewManagerName: string): Object => {
+    getConstantsForViewManager: (viewManagerName: string): ?Object => {
       if (getConstantsForViewManager) {
         return getConstantsForViewManager(viewManagerName);
       }
@@ -185,16 +193,7 @@ const UIManagerJSPlatformAPIs = Platform.select({
         );
       }
     },
-    sendAccessibilityEvent: (reactTag: ?number, eventType: number): void => {
-      if (reactTag == null) {
-        console.error(
-          `sendAccessibilityEvent() dropping event: Cannot be called with ${String(
-            reactTag,
-          )} reactTag`,
-        );
-        return;
-      }
-
+    sendAccessibilityEvent: (reactTag: number, eventType: number): void => {
       // Keep this in sync with java:FabricUIManager.sendAccessibilityEventFromJS
       // and legacySendAccessibilityEvent.android.js
       const AccessibilityEvent = {
@@ -232,31 +231,18 @@ const UIManagerJSPlatformAPIs = Platform.select({
 
       FabricUIManager.sendAccessibilityEvent(shadowNode, eventName);
     },
-    showPopupMenu: (
-      reactTag: ?number,
-      items: Array<string>,
-      error: (error: Object) => void,
-      success: (event: string, selected?: number) => void,
-    ): void => {
-      raiseSoftError('showPopupMenu');
-    },
-    dismissPopupMenu: (): void => {
-      raiseSoftError('dismissPopupMenu');
-    },
   },
   ios: {
+    /**
+     * TODO(T174674274): Implement lazy loading of legacy view managers in the new architecture.
+     *
+     * Leave this unimplemented until we implement lazy loading of legacy modules and view managers in the new architecture.
+     */
     lazilyLoadView: (name: string): Object => {
       raiseSoftError('lazilyLoadView');
       return {};
     },
-    focus: (reactTag: ?number): void => {
-      if (reactTag == null) {
-        console.error(
-          `focus() noop: Cannot be called with ${String(reactTag)} reactTag`,
-        );
-        return;
-      }
-
+    focus: (reactTag: number): void => {
       const FabricUIManager = nullthrows(getFabricUIManager());
       const shadowNode =
         FabricUIManager.findShadowNodeByTag_DEPRECATED(reactTag);
@@ -266,14 +252,7 @@ const UIManagerJSPlatformAPIs = Platform.select({
       }
       FabricUIManager.dispatchCommand(shadowNode, 'focus', []);
     },
-    blur: (reactTag: ?number): void => {
-      if (reactTag == null) {
-        console.error(
-          `blur() noop: Cannot be called with ${String(reactTag)} reactTag`,
-        );
-        return;
-      }
-
+    blur: (reactTag: number): void => {
       const FabricUIManager = nullthrows(getFabricUIManager());
       const shadowNode =
         FabricUIManager.findShadowNodeByTag_DEPRECATED(reactTag);
@@ -288,8 +267,9 @@ const UIManagerJSPlatformAPIs = Platform.select({
 
 const UIManagerJS: UIManagerJSInterface & {[string]: any} = {
   ...UIManagerJSOverridenAPIs,
+  ...UIManagerJSDeprecatedPlatformAPIs,
   ...UIManagerJSPlatformAPIs,
-  ...UIManagerJSUnusedAPIs,
+  ...UIManagerJSUnusedInNewArchAPIs,
   getViewManagerConfig: (viewManagerName: string): mixed => {
     if (getUIManagerConstants) {
       const constants = getUIManagerConstantsCached();
@@ -321,7 +301,7 @@ const UIManagerJS: UIManagerJSInterface & {[string]: any} = {
     }
   },
   findSubviewIn: (
-    reactTag: ?number,
+    reactTag: number,
     point: Array<number>,
     callback: (
       nativeViewTag: number,
@@ -331,36 +311,56 @@ const UIManagerJS: UIManagerJSInterface & {[string]: any} = {
       height: number,
     ) => void,
   ): void => {
-    raiseSoftError('findSubviewIn');
-  },
-  viewIsDescendantOf: (
-    reactTag: ?number,
-    ancestorReactTag: ?number,
-    callback: (result: Array<boolean>) => void,
-  ): void => {
-    if (reactTag == null) {
+    const FabricUIManager = nullthrows(getFabricUIManager());
+    const shadowNode = FabricUIManager.findShadowNodeByTag_DEPRECATED(reactTag);
+
+    if (!shadowNode) {
       console.error(
-        `viewIsDescendantOf() noop: Cannot be called with ${String(
-          reactTag,
-        )} reactTag`,
+        `findSubviewIn() noop: Cannot find view with reactTag ${reactTag}`,
       );
       return;
     }
 
+    FabricUIManager.findNodeAtPoint(
+      shadowNode,
+      point[0],
+      point[1],
+      function (internalInstanceHandle) {
+        if (internalInstanceHandle == null) {
+          console.error('findSubviewIn(): Cannot find node at point');
+          return;
+        }
+
+        let instanceHandle: Object = internalInstanceHandle;
+        let node = instanceHandle.stateNode.node;
+
+        if (!node) {
+          console.error('findSubviewIn(): Cannot find node at point');
+          return;
+        }
+
+        let nativeViewTag: number =
+          instanceHandle.stateNode.canonical.nativeTag;
+
+        FabricUIManager.measure(
+          node,
+          function (x, y, width, height, pageX, pageY) {
+            callback(nativeViewTag, pageX, pageY, width, height);
+          },
+        );
+      },
+    );
+  },
+  viewIsDescendantOf: (
+    reactTag: number,
+    ancestorReactTag: number,
+    callback: (result: Array<boolean>) => void,
+  ): void => {
     const FabricUIManager = nullthrows(getFabricUIManager());
     const shadowNode = FabricUIManager.findShadowNodeByTag_DEPRECATED(reactTag);
     if (!shadowNode) {
       console.error(
         `viewIsDescendantOf() noop: Cannot find view with reactTag ${reactTag}`,
-      );
-      return;
-    }
-
-    if (ancestorReactTag == null) {
-      console.error(
-        `viewIsDescendantOf() noop: Cannot be called with ${String(
-          ancestorReactTag,
-        )} ancestorReactTag`,
       );
       return;
     }

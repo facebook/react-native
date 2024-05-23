@@ -14,16 +14,17 @@ add_compile_options(
 
 
 #########################
-### cxxreactpackage ###
+###  cxxreactpackage  ###
 #########################
 
-add_library(react_cxxreactpackage SHARED ReactCommon/OnLoad.cpp)
+add_library(react_cxxreactpackage INTERFACE)
 
 target_include_directories(react_cxxreactpackage
-        PUBLIC
+        INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 target_link_libraries(react_cxxreactpackage
+        INTERFACE
         fb
         fbjni)

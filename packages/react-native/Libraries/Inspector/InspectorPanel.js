@@ -58,7 +58,6 @@ class InspectorPanel extends React.Component<Props> {
           <ElementProperties
             style={this.props.inspected.style}
             frame={this.props.inspected.frame}
-            source={this.props.inspected.source}
             hierarchy={this.props.hierarchy}
             selection={this.props.selection}
             setSelection={this.props.setSelection}

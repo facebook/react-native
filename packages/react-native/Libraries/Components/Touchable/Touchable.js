@@ -11,7 +11,6 @@
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {PressEvent} from '../../Types/CoreEventTypes';
-import type {TouchableType} from './Touchable.flow';
 
 import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
 import UIManager from '../../ReactNative/UIManager';
@@ -41,8 +40,8 @@ const extractSingleTouch = (nativeEvent: {
   return !hasTouches && hasChangedTouches
     ? changedTouches[0]
     : hasTouches
-    ? touches[0]
-    : nativeEvent;
+      ? touches[0]
+      : nativeEvent;
 };
 
 /**
@@ -947,7 +946,7 @@ const {
 TouchableMixin.withoutDefaultFocusAndBlur =
   TouchableMixinWithoutDefaultFocusAndBlur;
 
-const Touchable: TouchableType = {
+const Touchable = {
   Mixin: TouchableMixin,
   /**
    * Renders a debugging overlay to visualize touch target with hitSlop (might not work on Android).
@@ -967,4 +966,4 @@ const Touchable: TouchableType = {
   },
 };
 
-module.exports = Touchable;
+export default Touchable;

@@ -232,7 +232,7 @@ class Interceptor {
     const event: LoadingFinishedEvent = {
       requestId: String(id),
       timestamp: JSInspector.getTimestamp(),
-      encodedDataLength: encodedDataLength,
+      encodedDataLength,
     };
     this._agent.sendEvent('loadingFinished', event);
   }

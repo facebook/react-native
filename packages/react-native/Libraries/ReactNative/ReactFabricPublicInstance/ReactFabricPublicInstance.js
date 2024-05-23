@@ -23,7 +23,7 @@ import type {
 } from '../../Renderer/shims/ReactNativeTypes';
 import type ReactFabricHostComponent from './ReactFabricHostComponent';
 
-import ReactNativeFeatureFlags from '../ReactNativeFeatureFlags';
+import * as ReactNativeFeatureFlags from '../../../src/private/featureflags/ReactNativeFeatureFlags';
 
 // Lazy loaded to avoid evaluating the module when using the legacy renderer.
 let PublicInstanceClass:

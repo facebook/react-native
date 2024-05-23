@@ -41,6 +41,10 @@ module Helpers
             return '13.4'
         end
 
+        def self.min_xcode_version_supported
+            return '14.3'
+        end
+
         def self.folly_config
             return {
                 :version => '2024.01.01.00',

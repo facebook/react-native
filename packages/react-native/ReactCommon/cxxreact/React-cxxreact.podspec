@@ -40,18 +40,20 @@ Pod::Spec.new do |s|
   }
   s.header_dir             = "cxxreact"
 
-  s.dependency "boost", "1.83.0"
+  s.dependency "boost"
   s.dependency "DoubleConversion"
   s.dependency "fmt", "9.1.0"
   s.dependency "RCT-Folly", folly_version
   s.dependency "glog"
-  s.dependency "React-jsinspector", version
+  add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
   s.dependency "React-callinvoker", version
   s.dependency "React-runtimeexecutor", version
   s.dependency "React-perflogger", version
   s.dependency "React-jsi", version
   s.dependency "React-logger", version
   s.dependency "React-debug", version
+
+  s.resource_bundles = {'React-cxxreact_privacy' => 'PrivacyInfo.xcprivacy'}
 
   if ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == "1"
     s.dependency 'hermes-engine'

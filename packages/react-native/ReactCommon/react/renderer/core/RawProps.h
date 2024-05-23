@@ -101,7 +101,7 @@ class RawProps final {
    */
   void iterateOverValues(
       const std::function<
-          void(RawPropsPropNameHash, const char*, RawValue const&)>& fn) const;
+          void(RawPropsPropNameHash, const char*, const RawValue&)>& fn) const;
 
  private:
   friend class RawPropsParser;
@@ -135,6 +135,18 @@ class RawProps final {
   mutable std::vector<RawValue> values_;
 
   bool ignoreYogaStyleProps_{false};
+};
+
+/*
+ * Once called, props will be filtered out during conversion to
+ * folly::dynamic. folly::dynamic conversion is only used on Android and props
+ * specific to Yoga do not need to be send over JNI to Android.
+ * This is a performance optimisation to minimise traffic between C++ and
+ * Java.
+ */
+template <typename T>
+concept RawPropsFilterable = requires(RawProps& rawProps) {
+  { T::filterRawProps(rawProps) } -> std::same_as<void>;
 };
 
 } // namespace facebook::react

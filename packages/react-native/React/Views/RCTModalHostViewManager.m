@@ -14,21 +14,6 @@
 #import "RCTShadowView.h"
 #import "RCTUtils.h"
 
-@implementation RCTConvert (RCTModalHostView)
-
-RCT_ENUM_CONVERTER(
-    UIModalPresentationStyle,
-    (@{
-      @"fullScreen" : @(UIModalPresentationFullScreen),
-      @"pageSheet" : @(UIModalPresentationPageSheet),
-      @"formSheet" : @(UIModalPresentationFormSheet),
-      @"overFullScreen" : @(UIModalPresentationOverFullScreen),
-    }),
-    UIModalPresentationFullScreen,
-    integerValue)
-
-@end
-
 @interface RCTModalHostShadowView : RCTShadowView
 
 @end
@@ -98,8 +83,13 @@ RCT_EXPORT_MODULE()
   dispatch_async(dispatch_get_main_queue(), ^{
     if (self->_dismissalBlock) {
       self->_dismissalBlock([modalHostView reactViewController], viewController, animated, completionBlock);
-    } else {
+    } else if (viewController.presentingViewController) {
       [viewController.presentingViewController dismissViewControllerAnimated:animated completion:completionBlock];
+    } else {
+      // Make sure to call the completion block in case the presenting view controller is nil
+      // In an internal app we have a use case where a modal presents another view without bein dismissed
+      // This, somehow, invalidate the presenting view controller and the modal remains always visible.
+      completionBlock();
     }
   });
 }

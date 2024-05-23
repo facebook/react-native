@@ -49,17 +49,11 @@ struct SchedulerToolbox final {
   RuntimeExecutor runtimeExecutor;
 
   /*
-   * Represent connections with a platform-specific UI run loops.
-   */
-  RunLoopObserver::Factory mainRunLoopObserverFactory;
-
-  /*
    * Asynchronous & synchronous event beats.
    * Represent connections with the platform-specific run loops and general
    * purpose background queue.
    */
   EventBeat::Factory asynchronousEventBeatFactory;
-  EventBeat::Factory synchronousEventBeatFactory;
 
   /*
    * General-purpose executor that is used to dispatch work on some utility

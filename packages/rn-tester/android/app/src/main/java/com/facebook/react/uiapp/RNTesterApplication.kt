@@ -25,6 +25,8 @@ import com.facebook.react.defaults.DefaultReactHost
 import com.facebook.react.defaults.DefaultReactNativeHost
 import com.facebook.react.module.model.ReactModuleInfo
 import com.facebook.react.module.model.ReactModuleInfoProvider
+import com.facebook.react.osslibraryexample.OSSLibraryExamplePackage
+import com.facebook.react.popupmenu.PopupMenuPackage
 import com.facebook.react.shell.MainReactPackage
 import com.facebook.react.uiapp.component.MyLegacyViewManager
 import com.facebook.react.uiapp.component.MyNativeViewManager
@@ -44,11 +46,14 @@ class RNTesterApplication : Application(), ReactApplication {
       public override fun getPackages(): List<ReactPackage> {
         return listOf(
             MainReactPackage(),
+            PopupMenuPackage(),
+            OSSLibraryExamplePackage(),
             object : TurboReactPackage() {
               override fun getModule(
                   name: String,
                   reactContext: ReactApplicationContext
               ): NativeModule? {
+                @Suppress("DEPRECATION")
                 if (!ReactFeatureFlags.useTurboModules) {
                   return null
                 }
@@ -66,6 +71,7 @@ class RNTesterApplication : Application(), ReactApplication {
               // modules.
               override fun getReactModuleInfoProvider(): ReactModuleInfoProvider =
                   ReactModuleInfoProvider {
+                    @Suppress("DEPRECATION")
                     if (ReactFeatureFlags.useTurboModules) {
                       mapOf(
                           SampleTurboModule.NAME to
@@ -107,11 +113,13 @@ class RNTesterApplication : Application(), ReactApplication {
               override fun createViewManager(
                   reactContext: ReactApplicationContext,
                   viewManagerName: String
-              ): ViewManager<*, out ReactShadowNode<*>> =
+              ): ViewManager<*, out ReactShadowNode<*>>? =
                   if (viewManagerName == "RNTMyNativeView") {
                     MyNativeViewManager()
-                  } else {
+                  } else if (viewManagerName == "RNTMyLegacyNativeView") {
                     MyLegacyViewManager(reactContext)
+                  } else {
+                    null
                   }
             })
       }
@@ -122,7 +130,7 @@ class RNTesterApplication : Application(), ReactApplication {
   }
 
   override val reactHost: ReactHost
-    get() = DefaultReactHost.getDefaultReactHost(this.applicationContext, reactNativeHost)
+    get() = DefaultReactHost.getDefaultReactHost(applicationContext, reactNativeHost)
 
   override fun onCreate() {
     ReactFontManager.getInstance().addCustomFont(this, "Rubik", R.font.rubik)

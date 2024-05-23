@@ -10,6 +10,7 @@
 #include "RAMBundleRegistry.h"
 
 #include <folly/Conv.h>
+#include <jsinspector-modern/ReactCdp.h>
 
 #include <chrono>
 
@@ -32,6 +33,14 @@ double JSExecutor::performanceNow() {
 
   constexpr double NANOSECONDS_IN_MILLISECOND = 1000000.0;
   return duration / NANOSECONDS_IN_MILLISECOND;
+}
+
+jsinspector_modern::RuntimeTargetDelegate&
+JSExecutor::getRuntimeTargetDelegate() {
+  if (!runtimeTargetDelegate_) {
+    runtimeTargetDelegate_.emplace(getDescription());
+  }
+  return *runtimeTargetDelegate_;
 }
 
 } // namespace facebook::react

@@ -38,18 +38,18 @@ import com.facebook.react.runtime.hermes.HermesInstance
  */
 @DoNotStrip
 @UnstableReactNativeAPI
-class DefaultReactHostDelegate(
+public class DefaultReactHostDelegate(
     override val jsMainModulePath: String,
     override val jsBundleLoader: JSBundleLoader,
     override val reactPackages: List<ReactPackage> = emptyList(),
     override val jsRuntimeFactory: JSRuntimeFactory = HermesInstance(),
-    override val bindingsInstaller: BindingsInstaller = DefaultBindingsInstaller(),
+    override val bindingsInstaller: BindingsInstaller? = null,
     private val reactNativeConfig: ReactNativeConfig = ReactNativeConfig.DEFAULT_CONFIG,
     private val exceptionHandler: (Exception) -> Unit = {},
     override val turboModuleManagerDelegateBuilder: ReactPackageTurboModuleManagerDelegate.Builder
 ) : ReactHostDelegate {
 
-  override fun getReactNativeConfig() = reactNativeConfig
+  override fun getReactNativeConfig(): ReactNativeConfig = reactNativeConfig
 
-  override fun handleInstanceException(error: Exception) = exceptionHandler(error)
+  override fun handleInstanceException(error: Exception): Unit = exceptionHandler(error)
 }

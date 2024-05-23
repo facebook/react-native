@@ -379,12 +379,12 @@ class TouchableHighlight extends React.Component<Props, State> {
   }
 }
 
-const Touchable = (React.forwardRef((props, hostRef) => (
-  <TouchableHighlight {...props} hostRef={hostRef} />
-)): React.AbstractComponent<
+const Touchable: React.AbstractComponent<
   $ReadOnly<$Diff<Props, {|hostRef: React.Ref<typeof View>|}>>,
   React.ElementRef<typeof View>,
->);
+> = React.forwardRef((props, hostRef) => (
+  <TouchableHighlight {...props} hostRef={hostRef} />
+));
 
 Touchable.displayName = 'TouchableHighlight';
 

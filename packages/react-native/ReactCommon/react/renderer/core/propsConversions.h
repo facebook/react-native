@@ -13,7 +13,6 @@
 #include <react/renderer/core/RawProps.h>
 #include <react/renderer/core/RawPropsKey.h>
 #include <react/renderer/core/graphicsConversions.h>
-#include <react/renderer/graphics/Color.h>
 
 namespace facebook::react {
 
@@ -111,8 +110,8 @@ T convertRawProp(
     const PropsParserContext& context,
     const RawProps& rawProps,
     const char* name,
-    T const& sourceValue,
-    U const& defaultValue,
+    const T& sourceValue,
+    const U& defaultValue,
     const char* namePrefix = nullptr,
     const char* nameSuffix = nullptr) {
   const auto* rawValue = rawProps.at(name, namePrefix, nameSuffix);

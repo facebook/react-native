@@ -24,6 +24,14 @@ IRemoteConnection::~IRemoteConnection() {}
 IInspector::~IInspector() {}
 IPageStatusListener::~IPageStatusListener() {}
 
+const folly::dynamic targetCapabilitiesToDynamic(
+    const InspectorTargetCapabilities& capabilities) {
+  return folly::dynamic::object(
+      "nativePageReloads", capabilities.nativePageReloads)(
+      "nativeSourceCodeFetching", capabilities.nativeSourceCodeFetching)(
+      "prefersFuseboxFrontend", capabilities.prefersFuseboxFrontend);
+}
+
 namespace {
 
 class InspectorImpl : public IInspector {
@@ -32,7 +40,7 @@ class InspectorImpl : public IInspector {
       const std::string& title,
       const std::string& vm,
       ConnectFunc connectFunc,
-      InspectorPageType type) override;
+      InspectorTargetCapabilities capabilities) override;
   void removePage(int pageId) override;
 
   std::vector<InspectorPageDescription> getPages() const override;
@@ -51,7 +59,7 @@ class InspectorImpl : public IInspector {
         const std::string& title,
         const std::string& vm,
         ConnectFunc connectFunc,
-        InspectorPageType type);
+        InspectorTargetCapabilities capabilities);
     operator InspectorPageDescription() const;
 
     ConnectFunc getConnectFunc() const;
@@ -61,7 +69,7 @@ class InspectorImpl : public IInspector {
     std::string title_;
     std::string vm_;
     ConnectFunc connectFunc_;
-    InspectorPageType type_;
+    InspectorTargetCapabilities capabilities_;
   };
   mutable std::mutex mutex_;
   int nextPageId_{1};
@@ -74,19 +82,19 @@ InspectorImpl::Page::Page(
     const std::string& title,
     const std::string& vm,
     ConnectFunc connectFunc,
-    InspectorPageType type)
+    InspectorTargetCapabilities capabilities)
     : id_(id),
       title_(title),
       vm_(vm),
       connectFunc_(std::move(connectFunc)),
-      type_(type) {}
+      capabilities_(std::move(capabilities)) {}
 
 InspectorImpl::Page::operator InspectorPageDescription() const {
   return InspectorPageDescription{
       .id = id_,
       .title = title_,
       .vm = vm_,
-      .type = type_,
+      .capabilities = capabilities_,
   };
 }
 
@@ -98,12 +106,13 @@ int InspectorImpl::addPage(
     const std::string& title,
     const std::string& vm,
     ConnectFunc connectFunc,
-    InspectorPageType type) {
+    InspectorTargetCapabilities capabilities) {
   std::scoped_lock lock(mutex_);
 
   int pageId = nextPageId_++;
   assert(pages_.count(pageId) == 0 && "Unexpected duplicate page ID");
-  pages_.emplace(pageId, Page{pageId, title, vm, std::move(connectFunc), type});
+  pages_.emplace(
+      pageId, Page{pageId, title, vm, std::move(connectFunc), capabilities});
 
   return pageId;
 }

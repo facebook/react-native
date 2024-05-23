@@ -61,6 +61,10 @@ react {
   //   The hermes compiler command to run. By default it is 'hermesc'
   hermesCommand = "$reactNativeDirPath/ReactAndroid/hermes-engine/build/hermes/bin/hermesc"
   enableHermesOnlyInVariants = listOf("hermesDebug", "hermesRelease")
+
+  /* Autolinking */
+  //   The location of the monorepo lockfiles to `config` is cached correctly.
+  autolinkLockFiles = files("$rootDir/yarn.lock")
 }
 
 /** Run Proguard to shrink the Java bytecode in release builds. */
@@ -151,6 +155,8 @@ android {
 dependencies {
   // Build React Native from source
   implementation(project(":packages:react-native:ReactAndroid"))
+  implementation(project(":packages:react-native-popup-menu-android:android"))
+  implementation(project(":packages:react-native-test-library:android"))
 
   // Consume Hermes as built from source only for the Hermes variant.
   "hermesImplementation"(project(":packages:react-native:ReactAndroid:hermes-engine"))

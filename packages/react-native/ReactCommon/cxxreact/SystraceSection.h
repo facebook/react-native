@@ -50,7 +50,7 @@ struct DummySystraceSection {
  public:
   template <typename... ConvertsToStringPiece>
   explicit DummySystraceSection(
-      __unused const char* name,
+      const __unused char* name,
       __unused ConvertsToStringPiece&&... args) {}
 };
 using SystraceSection = DummySystraceSection;

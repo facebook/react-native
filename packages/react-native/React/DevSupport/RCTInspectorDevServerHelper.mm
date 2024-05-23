@@ -83,7 +83,13 @@ static NSString *getInspectorDeviceId()
   // An alphanumeric string that uniquely identifies a device to the app's vendor. [Source: Apple docs]
   NSString *identifierForVendor = [[UIDevice currentDevice] identifierForVendor].UUIDString;
 
-  NSString *rawDeviceId = [NSString stringWithFormat:@"apple-%@-%@", identifierForVendor, bundleId];
+  auto &inspectorFlags = facebook::react::jsinspector_modern::InspectorFlags::getInstance();
+
+  NSString *rawDeviceId =
+      [NSString stringWithFormat:@"apple-%@-%@-%s",
+                                 identifierForVendor,
+                                 bundleId,
+                                 inspectorFlags.getEnableModernCDPRegistry() ? "fusebox" : "legacy"];
 
   return getSHA256(rawDeviceId);
 }
@@ -116,6 +122,17 @@ static void sendEventToAllConnections(NSString *event)
   for (NSString *socketId in socketConnections) {
     [socketConnections[socketId] sendEventToAllConnections:event];
   }
+}
+
++ (BOOL)isPackagerDisconnected
+{
+  for (NSString *socketId in socketConnections) {
+    if ([socketConnections[socketId] isConnected]) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 + (void)openDebugger:(NSURL *)bundleURL withErrorMessage:(NSString *)errorMessage

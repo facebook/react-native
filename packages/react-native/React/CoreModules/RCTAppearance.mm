@@ -31,6 +31,12 @@ void RCTOverrideAppearancePreference(NSString *const colorSchemeOverride)
   sColorSchemeOverride = colorSchemeOverride;
 }
 
+static BOOL sUseKeyWindowForSystemStyle = NO;
+void RCTUseKeyWindowForSystemStyle(BOOL useMainScreen)
+{
+  sUseKeyWindowForSystemStyle = useMainScreen;
+}
+
 NSString *RCTCurrentOverrideAppearancePreference()
 {
   return sColorSchemeOverride;
@@ -56,8 +62,9 @@ NSString *RCTColorSchemePreference(UITraitCollection *traitCollection)
     // Return the default if the app doesn't allow different color schemes.
     return RCTAppearanceColorSchemeLight;
   }
-
-  return appearances[@(traitCollection.userInterfaceStyle)] ?: RCTAppearanceColorSchemeLight;
+  UIUserInterfaceStyle systemStyle = sUseKeyWindowForSystemStyle ? RCTKeyWindow().traitCollection.userInterfaceStyle
+                                                                 : traitCollection.userInterfaceStyle;
+  return appearances[@(systemStyle)] ?: RCTAppearanceColorSchemeLight;
 }
 
 @interface RCTAppearance () <NativeAppearanceSpec>
@@ -70,7 +77,7 @@ NSString *RCTColorSchemePreference(UITraitCollection *traitCollection)
 - (instancetype)init
 {
   if ((self = [super init])) {
-    UITraitCollection *traitCollection = RCTSharedApplication().delegate.window.traitCollection;
+    UITraitCollection *traitCollection = RCTKeyWindow().traitCollection;
     _currentColorScheme = RCTColorSchemePreference(traitCollection);
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(appearanceChanged:)

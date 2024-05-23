@@ -141,6 +141,7 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
                      animated:(BOOL)animated
                    completion:(void (^)(void))completion
 {
+  _modalContentsSnapshot = [self.viewController.view snapshotViewAfterScreenUpdates:NO];
   [modalViewController dismissViewControllerAnimated:animated completion:completion];
 }
 
@@ -190,14 +191,6 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
 
   assert(std::dynamic_pointer_cast<const ModalHostViewEventEmitter>(_eventEmitter));
   return std::static_pointer_cast<const ModalHostViewEventEmitter>(_eventEmitter);
-}
-
-#pragma mark - RCTMountingTransactionObserving
-
-- (void)mountingTransactionWillMount:(const MountingTransaction &)transaction
-                withSurfaceTelemetry:(const facebook::react::SurfaceTelemetry &)surfaceTelemetry
-{
-  _modalContentsSnapshot = [self.viewController.view snapshotViewAfterScreenUpdates:YES];
 }
 
 #pragma mark - UIView methods

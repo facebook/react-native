@@ -52,20 +52,20 @@ import com.facebook.react.uimanager.ReactAccessibilityDelegate;
 import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
-import com.facebook.react.views.text.CustomLetterSpacingSpan;
-import com.facebook.react.views.text.CustomLineHeightSpan;
-import com.facebook.react.views.text.CustomStyleSpan;
-import com.facebook.react.views.text.ReactAbsoluteSizeSpan;
-import com.facebook.react.views.text.ReactBackgroundColorSpan;
-import com.facebook.react.views.text.ReactForegroundColorSpan;
-import com.facebook.react.views.text.ReactSpan;
-import com.facebook.react.views.text.ReactStrikethroughSpan;
 import com.facebook.react.views.text.ReactTextUpdate;
 import com.facebook.react.views.text.ReactTypefaceUtils;
-import com.facebook.react.views.text.ReactUnderlineSpan;
 import com.facebook.react.views.text.TextAttributes;
-import com.facebook.react.views.text.TextInlineImageSpan;
 import com.facebook.react.views.text.TextLayoutManager;
+import com.facebook.react.views.text.internal.span.CustomLetterSpacingSpan;
+import com.facebook.react.views.text.internal.span.CustomLineHeightSpan;
+import com.facebook.react.views.text.internal.span.CustomStyleSpan;
+import com.facebook.react.views.text.internal.span.ReactAbsoluteSizeSpan;
+import com.facebook.react.views.text.internal.span.ReactBackgroundColorSpan;
+import com.facebook.react.views.text.internal.span.ReactForegroundColorSpan;
+import com.facebook.react.views.text.internal.span.ReactSpan;
+import com.facebook.react.views.text.internal.span.ReactStrikethroughSpan;
+import com.facebook.react.views.text.internal.span.ReactUnderlineSpan;
+import com.facebook.react.views.text.internal.span.TextInlineImageSpan;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -83,6 +83,7 @@ import java.util.Objects;
  * VisibleForTesting from {@link TextInputEventsTestCase}.
  */
 public class ReactEditText extends AppCompatEditText {
+
   private final InputMethodManager mInputMethodManager;
   private final String TAG = ReactEditText.class.getSimpleName();
   public static final boolean DEBUG_MODE = ReactBuildConfig.DEBUG && false;
@@ -268,6 +269,12 @@ public class ReactEditText extends AppCompatEditText {
       return true;
     }
     return super.onKeyUp(keyCode, event);
+  }
+
+  @Override
+  public void setLineHeight(int lineHeight) {
+    mTextAttributes.setLineHeight(lineHeight);
+    // We don't call super.setLineHeight() because LineHeight is fully managed by ReactNative
   }
 
   @Override
@@ -1212,7 +1219,7 @@ public class ReactEditText extends AppCompatEditText {
     }
 
     addSpansFromStyleAttributes(sb);
-    TextLayoutManager.setCachedSpannabledForTag(getId(), sb);
+    TextLayoutManager.setCachedSpannableForTag(getId(), sb);
   }
 
   void setEventDispatcher(@Nullable EventDispatcher eventDispatcher) {
@@ -1224,6 +1231,7 @@ public class ReactEditText extends AppCompatEditText {
    * changed by the user, and not explicitly set by JS.
    */
   private class TextWatcherDelegator implements TextWatcher {
+
     @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
       if (!mIsSettingTextFromJS && mListeners != null) {

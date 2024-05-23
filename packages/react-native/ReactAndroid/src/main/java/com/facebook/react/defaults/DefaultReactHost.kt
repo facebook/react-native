@@ -13,11 +13,14 @@ import com.facebook.react.ReactHost
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.JSBundleLoader
+import com.facebook.react.bridge.ReactContext
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
+import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.fabric.ComponentFactory
 import com.facebook.react.interfaces.exceptionmanager.ReactJsExceptionHandler
 import com.facebook.react.runtime.JSCInstance
 import com.facebook.react.runtime.ReactHostImpl
+import com.facebook.react.runtime.cxxreactpackage.CxxReactPackage
 import com.facebook.react.runtime.hermes.HermesInstance
 
 /**
@@ -27,7 +30,7 @@ import com.facebook.react.runtime.hermes.HermesInstance
  * [ReactHost] is an interface responsible of handling the lifecycle of a React Native app when
  * running in bridgeless mode.
  */
-object DefaultReactHost {
+public object DefaultReactHost {
   private var reactHost: ReactHost? = null
 
   /**
@@ -41,27 +44,37 @@ object DefaultReactHost {
    * @param jsBundleAssetPath the path to the JS bundle relative to the assets directory. Will be
    *   composed in a `asset://...` URL
    * @param isHermesEnabled whether to use Hermes as the JS engine, default to true.
+   * @param useDevSupport whether to enable dev support, default to ReactBuildConfig.DEBUG.
+   * @param cxxReactPackageProviders a list of cxxreactpackage providers (to register c++ turbo
+   *   modules)
+   *
+   * TODO(T186951312): Should this be @UnstableReactNativeAPI?
    */
   @OptIn(UnstableReactNativeAPI::class)
   @JvmStatic
-  fun getDefaultReactHost(
+  public fun getDefaultReactHost(
       context: Context,
       packageList: List<ReactPackage>,
       jsMainModulePath: String = "index",
       jsBundleAssetPath: String = "index",
-      isHermesEnabled: Boolean = true
+      isHermesEnabled: Boolean = true,
+      useDevSupport: Boolean = ReactBuildConfig.DEBUG,
+      cxxReactPackageProviders: List<(ReactContext) -> CxxReactPackage> = emptyList(),
   ): ReactHost {
     if (reactHost == null) {
       val jsBundleLoader =
           JSBundleLoader.createAssetLoader(context, "assets://$jsBundleAssetPath", true)
       val jsRuntimeFactory = if (isHermesEnabled) HermesInstance() else JSCInstance()
+      val defaultTmmDelegateBuilder = DefaultTurboModuleManagerDelegate.Builder()
+      cxxReactPackageProviders.forEach { defaultTmmDelegateBuilder.addCxxReactPackage(it) }
       val defaultReactHostDelegate =
           DefaultReactHostDelegate(
               jsMainModulePath = jsMainModulePath,
               jsBundleLoader = jsBundleLoader,
               reactPackages = packageList,
               jsRuntimeFactory = jsRuntimeFactory,
-              turboModuleManagerDelegateBuilder = DefaultTurboModuleManagerDelegate.Builder())
+              turboModuleManagerDelegateBuilder = defaultTmmDelegateBuilder)
+      // TODO: T180971255 Improve default exception handler
       val reactJsExceptionHandler = ReactJsExceptionHandler { _ -> }
       val componentFactory = ComponentFactory()
       DefaultComponentsRegistry.register(componentFactory)
@@ -71,9 +84,10 @@ object DefaultReactHost {
                   context,
                   defaultReactHostDelegate,
                   componentFactory,
-                  true,
+                  true /* allowPackagerServerAccess */,
                   reactJsExceptionHandler,
-                  true)
+                  useDevSupport,
+              )
               .apply {
                 jsEngineResolutionAlgorithm =
                     if (isHermesEnabled) {
@@ -95,9 +109,13 @@ object DefaultReactHost {
    *
    * @param context the Android [Context] to use for creating the [ReactHost]
    * @param reactNativeHost the [ReactNativeHost] to use for creating the [ReactHost]
+   *
+   * TODO(T186951312): Should this be @UnstableReactNativeAPI? It's not, to maintain consistency
+   *   with above getDefaultReactHost.
    */
+  @OptIn(UnstableReactNativeAPI::class)
   @JvmStatic
-  fun getDefaultReactHost(
+  public fun getDefaultReactHost(
       context: Context,
       reactNativeHost: ReactNativeHost,
   ): ReactHost {

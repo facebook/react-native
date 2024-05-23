@@ -7,8 +7,8 @@
 
 #pragma once
 
-#if __has_include(<React-Codegen/AppSpecsJSI.h>) // CocoaPod headers on Apple
-#include <React-Codegen/AppSpecsJSI.h>
+#if __has_include(<ReactCodegen/AppSpecsJSI.h>) // CocoaPod headers on Apple
+#include <ReactCodegen/AppSpecsJSI.h>
 #elif __has_include("AppSpecsJSI.h") // Cmake headers on Android
 #include "AppSpecsJSI.h"
 #else // BUCK headers
@@ -116,6 +116,17 @@ template <>
 struct Bridging<MenuItem>
     : NativeCxxModuleExampleCxxMenuItemBridging<MenuItem> {};
 
+#pragma mark - RCTDeviceEventEmitter events
+
+using CustomDeviceEvent = NativeCxxModuleExampleCxxCustomDeviceEvent<
+    std::string,
+    int32_t,
+    std::optional<float>>;
+
+template <>
+struct Bridging<CustomDeviceEvent>
+    : NativeCxxModuleExampleCxxCustomDeviceEventBridging<CustomDeviceEvent> {};
+
 #pragma mark - implementation
 class NativeCxxModuleExample
     : public NativeCxxModuleExampleCxxSpec<NativeCxxModuleExample> {
@@ -150,7 +161,7 @@ class NativeCxxModuleExample
 
   GraphNode getGraphNode(jsi::Runtime& rt, GraphNode arg);
 
-  NativeCxxModuleExampleCxxEnumFloat getNumEnum(
+  NativeCxxModuleExampleCxxEnumInt getNumEnum(
       jsi::Runtime& rt,
       NativeCxxModuleExampleCxxEnumInt arg);
 
@@ -185,7 +196,7 @@ class NativeCxxModuleExample
 
   void setMenu(jsi::Runtime& rt, MenuItem menuItem);
 
-  void emitCustomDeviceEvent(jsi::Runtime& rt, jsi::String eventName);
+  void emitCustomDeviceEvent(jsi::Runtime& rt, const std::string& eventName);
 
   void voidFuncThrows(jsi::Runtime& rt);
 

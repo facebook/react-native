@@ -22,4 +22,5 @@ target_include_directories(react_utils PUBLIC ${REACT_COMMON_DIR})
 target_link_libraries(react_utils
         glog
         glog_init
+        jsireact
         react_debug)

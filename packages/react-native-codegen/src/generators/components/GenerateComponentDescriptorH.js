@@ -12,14 +12,18 @@
 
 import type {SchemaType} from '../../CodegenSchema';
 
+const {IncludeTemplate} = require('./CppHelpers');
+
 // File path -> contents
 type FilesOutput = Map<string, string>;
 
 const FileTemplate = ({
-  componentDescriptors,
+  libraryName,
+  componentDefinitions,
   headerPrefix,
 }: {
-  componentDescriptors: string,
+  libraryName: string,
+  componentDefinitions: string,
   headerPrefix: string,
 }) => `
 /**
@@ -33,17 +37,21 @@ const FileTemplate = ({
 
 #pragma once
 
-#include <${headerPrefix}ShadowNodes.h>
+${IncludeTemplate({headerPrefix, file: 'ShadowNodes.h'})}
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
+#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 
 namespace facebook::react {
 
-${componentDescriptors}
+${componentDefinitions}
+
+void ${libraryName}_registerComponentDescriptorsFromCodegen(
+  std::shared_ptr<const ComponentDescriptorProviderRegistry> registry);
 
 } // namespace facebook::react
 `;
 
-const ComponentTemplate = ({className}: {className: string}) =>
+const ComponentDefinitionTemplate = ({className}: {className: string}) =>
   `
 using ${className}ComponentDescriptor = ConcreteComponentDescriptor<${className}ShadowNode>;
 `.trim();
@@ -58,7 +66,7 @@ module.exports = {
   ): FilesOutput {
     const fileName = 'ComponentDescriptors.h';
 
-    const componentDescriptors = Object.keys(schema.modules)
+    const componentDefinitions = Object.keys(schema.modules)
       .map(moduleName => {
         const module = schema.modules[moduleName];
         if (module.type !== 'Component') {
@@ -77,7 +85,7 @@ module.exports = {
               return;
             }
 
-            return ComponentTemplate({className: componentName});
+            return ComponentDefinitionTemplate({className: componentName});
           })
           .join('\n');
       })
@@ -85,7 +93,8 @@ module.exports = {
       .join('\n');
 
     const replacedTemplate = FileTemplate({
-      componentDescriptors,
+      libraryName,
+      componentDefinitions,
       headerPrefix: headerPrefix ?? '',
     });
 

@@ -15,7 +15,7 @@ import android.view.ViewGroup
  * is used to control touch event flow in cases in which they requested to be intercepted by some
  * parent view based on a JS gesture detector.
  */
-interface ReactInterceptingViewGroup {
+public interface ReactInterceptingViewGroup {
 
   /**
    * A [ViewGroup] instance that implement this interface is responsible for storing the listener
@@ -27,5 +27,5 @@ interface ReactInterceptingViewGroup {
    * @param listener A callback that [ViewGroup] should delegate calls for
    *   [ViewGroup#onInterceptTouchEvent] to
    */
-  fun setOnInterceptTouchEventListener(listener: OnInterceptTouchEventListener)
+  public fun setOnInterceptTouchEventListener(listener: OnInterceptTouchEventListener)
 }

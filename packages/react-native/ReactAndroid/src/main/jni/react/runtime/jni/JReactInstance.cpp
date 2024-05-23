@@ -18,10 +18,8 @@
 #include <jni.h>
 #include <jsi/jsi.h>
 #include <jsireact/JSIExecutor.h>
-#include <react/common/mapbuffer/JReadableMapBuffer.h>
 #include <react/jni/JRuntimeExecutor.h>
 #include <react/jni/JSLogging.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
 #include <react/runtime/BridgelessJSCallInvoker.h>
 #include <react/runtime/BridgelessNativeMethodCallInvoker.h>
 #include "JavaTimerRegistry.h"
@@ -37,7 +35,8 @@ JReactInstance::JReactInstance(
     jni::alias_ref<JReactExceptionManager::javaobject> jReactExceptionManager,
     jni::alias_ref<JBindingsInstaller::javaobject> jBindingsInstaller,
     bool isProfiling,
-    bool useModernRuntimeScheduler) noexcept {
+    jni::alias_ref<JReactHostInspectorTarget::javaobject>
+        jReactHostInspectorTarget) noexcept {
   // TODO(janzer): Lazily create runtime
   auto sharedJSMessageQueueThread =
       std::make_shared<JMessageQueueThread>(jsMessageQueueThread);
@@ -51,13 +50,14 @@ JReactInstance::JReactInstance(
   jsTimerExecutor->cthis()->setTimerManager(timerManager);
 
   jReactExceptionManager_ = jni::make_global(jReactExceptionManager);
-  auto jsErrorHandlingFunc = [this](MapBuffer errorMap) noexcept {
-    if (jReactExceptionManager_ != nullptr) {
-      auto jErrorMap =
-          JReadableMapBuffer::createWithContents(std::move(errorMap));
-      jReactExceptionManager_->reportJsException(jErrorMap.get());
-    }
-  };
+  auto onJsError =
+      [weakJReactExceptionManager = jni::make_weak(jReactExceptionManager)](
+          const JsErrorHandler::ParsedError& error) mutable noexcept {
+        if (auto jReactExceptionManager =
+                weakJReactExceptionManager.lockLocal()) {
+          jReactExceptionManager->reportJsException(error);
+        }
+      };
 
   jBindingsInstaller_ = jni::make_global(jBindingsInstaller);
 
@@ -65,8 +65,10 @@ JReactInstance::JReactInstance(
       jsRuntimeFactory->cthis()->createJSRuntime(sharedJSMessageQueueThread),
       sharedJSMessageQueueThread,
       timerManager,
-      std::move(jsErrorHandlingFunc),
-      useModernRuntimeScheduler);
+      std::move(onJsError),
+      jReactHostInspectorTarget
+          ? jReactHostInspectorTarget->cthis()->getInspectorTarget()
+          : nullptr);
 
   auto bufferedRuntimeExecutor = instance_->getBufferedRuntimeExecutor();
   timerManager->setRuntimeExecutor(bufferedRuntimeExecutor);
@@ -118,7 +120,8 @@ jni::local_ref<JReactInstance::jhybriddata> JReactInstance::initHybrid(
     jni::alias_ref<JReactExceptionManager::javaobject> jReactExceptionManager,
     jni::alias_ref<JBindingsInstaller::javaobject> jBindingsInstaller,
     bool isProfiling,
-    bool useModernRuntimeScheduler) {
+    jni::alias_ref<JReactHostInspectorTarget::javaobject>
+        jReactHostInspectorTarget) {
   return makeCxxInstance(
       jsRuntimeFactory,
       jsMessageQueueThread,
@@ -128,7 +131,7 @@ jni::local_ref<JReactInstance::jhybriddata> JReactInstance::initHybrid(
       jReactExceptionManager,
       jBindingsInstaller,
       isProfiling,
-      useModernRuntimeScheduler);
+      jReactHostInspectorTarget);
 }
 
 void JReactInstance::loadJSBundleFromAssets(
@@ -205,6 +208,14 @@ void JReactInstance::handleMemoryPressureJs(jint level) {
   instance_->handleMemoryPressureJs(level);
 }
 
+jlong JReactInstance::getJavaScriptContext() {
+  return (jlong)(intptr_t)instance_->getJavaScriptContext();
+}
+
+void JReactInstance::unregisterFromInspector() {
+  instance_->unregisterFromInspector();
+}
+
 void JReactInstance::registerNatives() {
   registerHybrid({
       makeNativeMethod("initHybrid", JReactInstance::initHybrid),
@@ -229,12 +240,14 @@ void JReactInstance::registerNatives() {
           JReactInstance::getBufferedRuntimeExecutor),
       makeNativeMethod(
           "getRuntimeScheduler", JReactInstance::getRuntimeScheduler),
-
       makeNativeMethod(
           "registerSegmentNative", JReactInstance::registerSegment),
       makeNativeMethod(
           "handleMemoryPressureJs", JReactInstance::handleMemoryPressureJs),
+      makeNativeMethod(
+          "getJavaScriptContext", JReactInstance::getJavaScriptContext),
+      makeNativeMethod(
+          "unregisterFromInspector", JReactInstance::unregisterFromInspector),
   });
 }
-
 } // namespace facebook::react

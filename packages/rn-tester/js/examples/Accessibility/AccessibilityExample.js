@@ -13,6 +13,8 @@
 import type {PressEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 import type {EventSubscription} from 'react-native/Libraries/vendor/emitter/EventEmitter';
 
+import {RNTesterThemeContext} from '../../components/RNTesterTheme';
+
 const RNTesterBlock = require('../../components/RNTesterBlock');
 const checkImageSource = require('./check.png');
 const mixedCheckboxImageSource = require('./mixed.png');
@@ -104,180 +106,214 @@ const styles = StyleSheet.create({
 class AccessibilityExample extends React.Component<{}> {
   render(): React.Node {
     return (
-      <View style={styles.sectionContainer}>
-        <RNTesterBlock title="TextView without label">
-          <Text>
-            Text's accessibilityLabel is the raw text itself unless it is set
-            explicitly.
-          </Text>
-        </RNTesterBlock>
-
-        <RNTesterBlock title="TextView with label">
-          <Text accessibilityLabel="I have label, so I read it instead of embedded text.">
-            This text component's accessibilityLabel is set explicitly.
-          </Text>
-        </RNTesterBlock>
-
-        <RNTesterBlock title="Nonaccessible view with TextViews">
-          <View>
-            <Text style={{color: 'green'}}>This is text one.</Text>
-            <Text style={{color: 'blue'}}>This is text two.</Text>
-          </View>
-        </RNTesterBlock>
-
-        <RNTesterBlock title="Accessible view with TextViews without label">
-          <View accessible={true}>
-            <Text style={{color: 'green'}}>This is text one.</Text>
-            <Text style={{color: 'blue'}}>This is text two.</Text>
-          </View>
-        </RNTesterBlock>
-
-        <RNTesterBlock title="Accessible view with TextViews with label">
-          <View
-            accessible={true}
-            accessibilityLabel="I have label, so I read it instead of embedded text.">
-            <Text style={{color: 'green'}}>This is text one.</Text>
-            <Text style={{color: 'blue'}}>This is text two.</Text>
-          </View>
-        </RNTesterBlock>
-
-        <RNTesterBlock title="View with hidden children from accessibility tree.">
-          <View aria-hidden>
-            <Text>
-              This view's children are hidden from the accessibility tree
-            </Text>
-          </View>
-        </RNTesterBlock>
-
-        {/* Android screen readers will say the accessibility hint instead of the text
-           since the view doesn't have a label. */}
-        <RNTesterBlock title="Accessible view with TextViews with hint">
-          <View accessibilityHint="Accessibility hint." accessible={true}>
-            <Text style={{color: 'green'}}>This is text one.</Text>
-            <Text style={{color: 'blue'}}>This is text two.</Text>
-          </View>
-        </RNTesterBlock>
-
-        <RNTesterBlock title="Accessible view TextViews with label and hint">
-          <View
-            accessibilityLabel="Accessibility label."
-            accessibilityHint="Accessibility hint."
-            accessible={true}>
-            <Text style={{color: 'green'}}>This is text one.</Text>
-            <Text style={{color: 'blue'}}>This is text two.</Text>
-          </View>
-        </RNTesterBlock>
-
-        <RNTesterBlock title="Text with accessibilityRole = header">
-          <Text accessibilityRole="header">This is a title.</Text>
-        </RNTesterBlock>
-
-        <RNTesterBlock title="Text with role = heading">
-          <Text role="heading">This is a title.</Text>
-        </RNTesterBlock>
-
-        <RNTesterBlock title="Touchable with accessibilityRole = link">
-          <TouchableOpacity
-            onPress={() => Alert.alert('Link has been clicked!')}
-            accessibilityRole="link">
-            <View>
-              <Text>Click me</Text>
-            </View>
-          </TouchableOpacity>
-        </RNTesterBlock>
-
-        <RNTesterBlock title="Touchable with accessibilityRole = button">
-          <TouchableOpacity
-            onPress={() => Alert.alert('Button has been pressed!')}
-            accessibilityRole="button">
-            <Text>Click me</Text>
-          </TouchableOpacity>
-        </RNTesterBlock>
-
-        <RNTesterBlock title="Disabled Touchable with role">
-          <TouchableOpacity
-            onPress={() => Alert.alert('Button has been pressed!')}
-            accessibilityRole="button"
-            accessibilityState={{disabled: true}}
-            disabled={true}>
-            <View>
-              <Text>
-                I am disabled. Clicking me will not trigger any action.
+      <RNTesterThemeContext.Consumer>
+        {theme => (
+          <View style={styles.sectionContainer}>
+            <RNTesterBlock title="TextView without label">
+              <Text style={{color: theme.SecondaryLabelColor}}>
+                Text's accessibilityLabel is the raw text itself unless it is
+                set explicitly.
               </Text>
-            </View>
-          </TouchableOpacity>
-        </RNTesterBlock>
+            </RNTesterBlock>
 
-        <RNTesterBlock title="Disabled TouchableOpacity">
-          <TouchableOpacity
-            onPress={() => Alert.alert('Disabled Button has been pressed!')}
-            accessibilityLabel={'You are pressing Disabled TouchableOpacity'}
-            accessibilityState={{disabled: true}}>
-            <View>
-              <Text>
-                I am disabled. Clicking me will not trigger any action.
+            <RNTesterBlock title="TextView with label">
+              <Text
+                style={{color: theme.SecondaryLabelColor}}
+                accessibilityLabel="I have label, so I read it instead of embedded text.">
+                This text component's accessibilityLabel is set explicitly.
               </Text>
-            </View>
-          </TouchableOpacity>
-        </RNTesterBlock>
-        <RNTesterBlock title="View with multiple states">
-          <View
-            accessible={true}
-            accessibilityState={{selected: true, disabled: true}}>
-            <Text>This view is selected and disabled.</Text>
-          </View>
-        </RNTesterBlock>
+            </RNTesterBlock>
 
-        <RNTesterBlock title="View with label, hint, role, and state">
-          <View
-            accessible={true}
-            accessibilityLabel="Accessibility label."
-            accessibilityRole="button"
-            accessibilityState={{selected: true}}
-            accessibilityHint="Accessibility hint.">
-            <Text>Accessible view with label, hint, role, and state</Text>
-          </View>
-        </RNTesterBlock>
+            <RNTesterBlock title="Nonaccessible view with TextViews">
+              <View>
+                <Text style={{color: 'green'}}>This is text one.</Text>
+                <Text style={{color: 'blue'}}>This is text two.</Text>
+              </View>
+            </RNTesterBlock>
 
-        <RNTesterBlock title="View with label, hint, role, and state">
-          <View
-            accessible={true}
-            accessibilityLabel="Accessibility label."
-            accessibilityRole="button"
-            aria-selected={true}
-            accessibilityHint="Accessibility hint.">
-            <Text>Accessible view with label, hint, role, and state</Text>
-          </View>
-        </RNTesterBlock>
+            <RNTesterBlock title="Accessible view with TextViews without label">
+              <View accessible={true}>
+                <Text style={{color: 'green'}}>This is text one.</Text>
+                <Text style={{color: 'blue'}}>This is text two.</Text>
+              </View>
+            </RNTesterBlock>
 
-        <RNTesterBlock title="TextInput with accessibilityLabelledBy attribute">
-          <View>
-            <Text nativeID="formLabel1">Mail Address</Text>
-            <TextInput
-              accessibilityLabel="input test1"
-              accessibilityLabelledBy="formLabel1"
-              style={styles.default}
-            />
-            <Text nativeID="formLabel2">First Name</Text>
-            <TextInput
-              accessibilityLabel="input test2"
-              accessibilityLabelledBy={['formLabel2', 'formLabel3']}
-              style={styles.default}
-              value="Foo"
-            />
+            <RNTesterBlock title="Accessible view with TextViews with label">
+              <View
+                accessible={true}
+                accessibilityLabel="I have label, so I read it instead of embedded text.">
+                <Text style={{color: 'green'}}>This is text one.</Text>
+                <Text style={{color: 'blue'}}>This is text two.</Text>
+              </View>
+            </RNTesterBlock>
+
+            <RNTesterBlock title="View with hidden children from accessibility tree.">
+              <View aria-hidden>
+                <Text style={{color: theme.SecondaryLabelColor}}>
+                  This view's children are hidden from the accessibility tree
+                </Text>
+              </View>
+            </RNTesterBlock>
+
+            {/* Android screen readers will say the accessibility hint instead of the text
+                   since the view doesn't have a label. */}
+            <RNTesterBlock title="Accessible view with TextViews with hint">
+              <View accessibilityHint="Accessibility hint." accessible={true}>
+                <Text style={{color: 'green'}}>This is text one.</Text>
+                <Text style={{color: 'blue'}}>This is text two.</Text>
+              </View>
+            </RNTesterBlock>
+
+            <RNTesterBlock title="Accessible view TextViews with label and hint">
+              <View
+                accessibilityLabel="Accessibility label."
+                accessibilityHint="Accessibility hint."
+                accessible={true}>
+                <Text style={{color: 'green'}}>This is text one.</Text>
+                <Text style={{color: 'blue'}}>This is text two.</Text>
+              </View>
+            </RNTesterBlock>
+
+            <RNTesterBlock title="Text with accessibilityRole = header">
+              <Text
+                accessibilityRole="header"
+                style={{color: theme.SecondaryLabelColor}}>
+                This is a title.
+              </Text>
+            </RNTesterBlock>
+
+            <RNTesterBlock title="Text with role = heading">
+              <Text role="heading" style={{color: theme.SecondaryLabelColor}}>
+                This is a title.
+              </Text>
+            </RNTesterBlock>
+
+            <RNTesterBlock title="Touchable with accessibilityRole = link">
+              <TouchableOpacity
+                onPress={() => Alert.alert('Link has been clicked!')}
+                accessibilityRole="link">
+                <View>
+                  <Text style={{color: theme.SecondaryLabelColor}}>
+                    Click me
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            </RNTesterBlock>
+
+            <RNTesterBlock title="Touchable with accessibilityRole = button">
+              <TouchableOpacity
+                onPress={() => Alert.alert('Button has been pressed!')}
+                accessibilityRole="button">
+                <Text style={{color: theme.SecondaryLabelColor}}>Click me</Text>
+              </TouchableOpacity>
+            </RNTesterBlock>
+
+            <RNTesterBlock title="Disabled Touchable with role">
+              <TouchableOpacity
+                onPress={() => Alert.alert('Button has been pressed!')}
+                accessibilityRole="button"
+                accessibilityState={{disabled: true}}
+                disabled={true}>
+                <View>
+                  <Text style={{color: theme.SecondaryLabelColor}}>
+                    I am disabled. Clicking me will not trigger any action.
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            </RNTesterBlock>
+
+            <RNTesterBlock title="Disabled TouchableOpacity">
+              <TouchableOpacity
+                onPress={() => Alert.alert('Disabled Button has been pressed!')}
+                accessibilityLabel={
+                  'You are pressing Disabled TouchableOpacity'
+                }
+                accessibilityState={{disabled: true}}>
+                <View>
+                  <Text style={{color: theme.SecondaryLabelColor}}>
+                    I am disabled. Clicking me will not trigger any action.
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            </RNTesterBlock>
+            <RNTesterBlock title="View with multiple states">
+              <View
+                accessible={true}
+                accessibilityState={{selected: true, disabled: true}}>
+                <Text style={{color: theme.SecondaryLabelColor}}>
+                  This view is selected and disabled.
+                </Text>
+              </View>
+            </RNTesterBlock>
+
+            <RNTesterBlock title="View with label, hint, role, and state">
+              <View
+                accessible={true}
+                accessibilityLabel="Accessibility label."
+                accessibilityRole="button"
+                accessibilityState={{selected: true}}
+                accessibilityHint="Accessibility hint.">
+                <Text style={{color: theme.SecondaryLabelColor}}>
+                  Accessible view with label, hint, role, and state
+                </Text>
+              </View>
+            </RNTesterBlock>
+
+            <RNTesterBlock title="View with label, hint, role, and state">
+              <View
+                accessible={true}
+                accessibilityLabel="Accessibility label."
+                accessibilityRole="button"
+                aria-selected={true}
+                accessibilityHint="Accessibility hint.">
+                <Text style={{color: theme.SecondaryLabelColor}}>
+                  Accessible view with label, hint, role, and state
+                </Text>
+              </View>
+            </RNTesterBlock>
+
+            <RNTesterBlock title="TextInput with accessibilityLabelledBy attribute">
+              <View>
+                <Text
+                  nativeID="formLabel1"
+                  style={{color: theme.SecondaryLabelColor}}>
+                  Mail Address
+                </Text>
+                <TextInput
+                  accessibilityLabel="input test1"
+                  accessibilityLabelledBy="formLabel1"
+                  style={styles.default}
+                />
+                <Text
+                  nativeID="formLabel2"
+                  style={{color: theme.SecondaryLabelColor}}>
+                  First Name
+                </Text>
+                <TextInput
+                  accessibilityLabel="input test2"
+                  accessibilityLabelledBy={['formLabel2', 'formLabel3']}
+                  style={styles.default}
+                  value="Foo"
+                />
+              </View>
+            </RNTesterBlock>
+            <RNTesterBlock title="Switch with accessibilityLabelledBy attribute">
+              <View>
+                <Text
+                  nativeID="formLabel4"
+                  style={{color: theme.SecondaryLabelColor}}>
+                  Enable Notifications
+                </Text>
+                <Switch
+                  value={true}
+                  accessibilityLabel="switch test1"
+                  accessibilityLabelledBy="formLabel4"
+                />
+              </View>
+            </RNTesterBlock>
           </View>
-        </RNTesterBlock>
-        <RNTesterBlock title="Switch with accessibilityLabelledBy attribute">
-          <View>
-            <Text nativeID="formLabel4">Enable Notifications</Text>
-            <Switch
-              value={true}
-              accessibilityLabel="switch test1"
-              accessibilityLabelledBy="formLabel4"
-            />
-          </View>
-        </RNTesterBlock>
-      </View>
+        )}
+      </RNTesterThemeContext.Consumer>
     );
   }
 }
@@ -285,134 +321,170 @@ class AccessibilityExample extends React.Component<{}> {
 class AutomaticContentGrouping extends React.Component<{}> {
   render(): React.Node {
     return (
-      <View style={styles.sectionContainer}>
-        <RNTesterBlock title="The parent and the children have a different role">
-          <TouchableNativeFeedback accessible={true} accessibilityRole="button">
-            <View accessible={false}>
-              <Text accessibilityRole="image" accessible={false}>
-                Text number 1 with a role
-              </Text>
-              <Text accessible={false}>Text number 2</Text>
-            </View>
-          </TouchableNativeFeedback>
-        </RNTesterBlock>
-
-        <RNTesterBlock title="The parent has the accessibilityActions cut, copy and paste">
-          <TouchableNativeFeedback
-            accessible={true}
-            accessibilityActions={[
-              {name: 'cut', label: 'cut label'},
-              {name: 'copy', label: 'copy label'},
-              {name: 'paste', label: 'paste label'},
-            ]}
-            onAccessibilityAction={event => {
-              switch (event.nativeEvent.actionName) {
-                case 'cut':
-                  Alert.alert('Alert', 'cut action success');
-                  break;
-                case 'copy':
-                  Alert.alert('Alert', 'copy action success');
-                  break;
-                case 'paste':
-                  Alert.alert('Alert', 'paste action success');
-                  break;
-              }
-            }}
-            accessibilityRole="button">
-            <View>
-              <Text accessible={false}>Text number 1</Text>
-              <Text accessible={false}>
-                Text number 2<Text accessible={false}>Text number 3</Text>
-              </Text>
-            </View>
-          </TouchableNativeFeedback>
-        </RNTesterBlock>
-
-        <RNTesterBlock title="Talkback only pulls the child's contentDescription or text but does not include the child's accessibilityState or accessibilityRole. TalkBack avoids announcements of conflicting states or roles (for example, 'button' and 'slider').">
-          <View
-            accessible={true}
-            accessibilityRole="button"
-            accessibilityState={{checked: true}}>
-            <Text
-              accessible={false}
-              accessibilityState={{checked: true, disabled: false}}>
-              Text number 1
-            </Text>
-            <Text
-              style={styles.smallRedSquare}
-              accessible={false}
-              accessibilityState={{checked: false, disabled: true}}
-              accessibilityLabel="This child Text does not have text, but has an accessibilityLabel and accessibilityState. The child accessibility state disabled is not announced."
-              accessibilityRole="image"
-            />
-          </View>
-        </RNTesterBlock>
-
-        <RNTesterBlock title="One of the children has accessibilityLabel, role, state, and accessibilityValue.">
-          <View accessible={true} accessibilityRole="button">
-            <View>
-              <Text accessible={false}>Text number 1</Text>
+      <RNTesterThemeContext.Consumer>
+        {theme => (
+          <View style={styles.sectionContainer}>
+            <RNTesterBlock title="The parent and the children have a different role">
               <TouchableNativeFeedback
-                focusable={true}
-                onPress={() => console.warn('onPress child')}
-                accessible={false}
-                accessibilityLabel="this is my label"
-                accessibilityRole="image"
-                accessibilityState={{disabled: true}}
-                accessibilityValue={{text: 'this is the accessibility value'}}>
-                <Text accessible={false}>Text number 3</Text>
+                accessible={true}
+                accessibilityRole="button">
+                <View accessible={false}>
+                  <Text
+                    accessibilityRole="image"
+                    accessible={false}
+                    style={{color: theme.SecondaryLabelColor}}>
+                    Text number 1 with a role
+                  </Text>
+                  <Text
+                    accessible={false}
+                    style={{color: theme.SecondaryLabelColor}}>
+                    Text number 2
+                  </Text>
+                </View>
               </TouchableNativeFeedback>
-            </View>
+            </RNTesterBlock>
+
+            <RNTesterBlock title="The parent has the accessibilityActions cut, copy and paste">
+              <TouchableNativeFeedback
+                accessible={true}
+                accessibilityActions={[
+                  {name: 'cut', label: 'cut label'},
+                  {name: 'copy', label: 'copy label'},
+                  {name: 'paste', label: 'paste label'},
+                ]}
+                onAccessibilityAction={event => {
+                  switch (event.nativeEvent.actionName) {
+                    case 'cut':
+                      Alert.alert('Alert', 'cut action success');
+                      break;
+                    case 'copy':
+                      Alert.alert('Alert', 'copy action success');
+                      break;
+                    case 'paste':
+                      Alert.alert('Alert', 'paste action success');
+                      break;
+                  }
+                }}
+                accessibilityRole="button">
+                <View>
+                  <Text
+                    accessible={false}
+                    style={{color: theme.SecondaryLabelColor}}>
+                    Text number 1
+                  </Text>
+                  <Text
+                    accessible={false}
+                    style={{color: theme.SecondaryLabelColor}}>
+                    Text number 2<Text accessible={false}>Text number 3</Text>
+                  </Text>
+                </View>
+              </TouchableNativeFeedback>
+            </RNTesterBlock>
+
+            <RNTesterBlock title="Talkback only pulls the child's contentDescription or text but does not include the child's accessibilityState or accessibilityRole. TalkBack avoids announcements of conflicting states or roles (for example, 'button' and 'slider').">
+              <View
+                accessible={true}
+                accessibilityRole="button"
+                accessibilityState={{checked: true}}>
+                <Text
+                  accessible={false}
+                  accessibilityState={{checked: true, disabled: false}}
+                  style={{color: theme.SecondaryLabelColor}}>
+                  Text number 1
+                </Text>
+                <Text
+                  style={styles.smallRedSquare}
+                  accessible={false}
+                  accessibilityState={{checked: false, disabled: true}}
+                  accessibilityLabel="This child Text does not have text, but has an accessibilityLabel and accessibilityState. The child accessibility state disabled is not announced."
+                  accessibilityRole="image"
+                />
+              </View>
+            </RNTesterBlock>
+
+            <RNTesterBlock title="One of the children has accessibilityLabel, role, state, and accessibilityValue.">
+              <View accessible={true} accessibilityRole="button">
+                <View>
+                  <Text
+                    accessible={false}
+                    style={{color: theme.SecondaryLabelColor}}>
+                    Text number 1
+                  </Text>
+                  <TouchableNativeFeedback
+                    focusable={true}
+                    onPress={() => console.warn('onPress child')}
+                    accessible={false}
+                    accessibilityLabel="this is my label"
+                    accessibilityRole="image"
+                    accessibilityState={{disabled: true}}
+                    accessibilityValue={{
+                      text: 'this is the accessibility value',
+                    }}>
+                    <Text
+                      accessible={false}
+                      style={{color: theme.SecondaryLabelColor}}>
+                      Text number 3
+                    </Text>
+                  </TouchableNativeFeedback>
+                </View>
+              </View>
+            </RNTesterBlock>
+
+            <RNTesterBlock title="The parent has a TextInput child component.">
+              <TouchableNativeFeedback
+                accessible={true}
+                accessibilityRole="button">
+                <TextInput
+                  value="this is the value"
+                  accessible={false}
+                  style={styles.default}
+                  placeholder="this is the placeholder"
+                />
+              </TouchableNativeFeedback>
+            </RNTesterBlock>
+
+            <RNTesterBlock title="The parents include three levels of nested Components.">
+              <TouchableNativeFeedback
+                accessible={true}
+                accessibilityRole="button">
+                <Text
+                  accessible={false}
+                  style={{color: theme.SecondaryLabelColor}}>
+                  Text number 2
+                  <Text accessible={false}>
+                    Text number 3<Text accessible={false}>Text number 4</Text>
+                  </Text>
+                </Text>
+              </TouchableNativeFeedback>
+            </RNTesterBlock>
+
+            <RNTesterBlock title="The child is not TextInput. The contentDescription is not empty and does not have node text.">
+              <TouchableNativeFeedback
+                onPress={() => console.warn('onPress child')}
+                accessible={true}
+                accessibilityRole="button">
+                <View>
+                  <Text
+                    style={styles.smallRedSquare}
+                    accessibilityLabel="this is the child Text accessibilityLabel"
+                    accessible={false}
+                  />
+                </View>
+              </TouchableNativeFeedback>
+            </RNTesterBlock>
+
+            <RNTesterBlock title="One of the child has accessibilityHint (hasText triggers the announcement).">
+              <View accessible={true} accessibilityRole="button">
+                <Text
+                  style={styles.smallRedSquare}
+                  accessible={false}
+                  accessibilityHint="this child Text does not have text, but has hint and should be announced by TalkBack"
+                />
+              </View>
+            </RNTesterBlock>
           </View>
-        </RNTesterBlock>
-
-        <RNTesterBlock title="The parent has a TextInput child component.">
-          <TouchableNativeFeedback accessible={true} accessibilityRole="button">
-            <TextInput
-              value="this is the value"
-              accessible={false}
-              style={styles.default}
-              placeholder="this is the placeholder"
-            />
-          </TouchableNativeFeedback>
-        </RNTesterBlock>
-
-        <RNTesterBlock title="The parents include three levels of nested Components.">
-          <TouchableNativeFeedback accessible={true} accessibilityRole="button">
-            <Text accessible={false}>
-              Text number 2
-              <Text accessible={false}>
-                Text number 3<Text accessible={false}>Text number 4</Text>
-              </Text>
-            </Text>
-          </TouchableNativeFeedback>
-        </RNTesterBlock>
-
-        <RNTesterBlock title="The child is not TextInput. The contentDescription is not empty and does not have node text.">
-          <TouchableNativeFeedback
-            onPress={() => console.warn('onPress child')}
-            accessible={true}
-            accessibilityRole="button">
-            <View>
-              <Text
-                style={styles.smallRedSquare}
-                accessibilityLabel="this is the child Text accessibilityLabel"
-                accessible={false}
-              />
-            </View>
-          </TouchableNativeFeedback>
-        </RNTesterBlock>
-
-        <RNTesterBlock title="One of the child has accessibilityHint (hasText triggers the announcement).">
-          <View accessible={true} accessibilityRole="button">
-            <Text
-              style={styles.smallRedSquare}
-              accessible={false}
-              accessibilityHint="this child Text does not have text, but has hint and should be announced by TalkBack"
-            />
-          </View>
-        </RNTesterBlock>
-      </View>
+        )}
+      </RNTesterThemeContext.Consumer>
     );
   }
 }
@@ -444,14 +516,20 @@ class CheckboxExample extends React.Component<
 
   render(): React.Node {
     return (
-      <TouchableOpacity
-        onPress={this._onCheckboxPress}
-        accessibilityLabel="element 2"
-        accessibilityRole="checkbox"
-        accessibilityState={{checked: this.state.checkboxState}}
-        accessibilityHint="click me to change state">
-        <Text>Checkbox example</Text>
-      </TouchableOpacity>
+      <RNTesterThemeContext.Consumer>
+        {theme => (
+          <TouchableOpacity
+            onPress={this._onCheckboxPress}
+            accessibilityLabel="element 2"
+            accessibilityRole="checkbox"
+            accessibilityState={{checked: this.state.checkboxState}}
+            accessibilityHint="click me to change state">
+            <Text style={{color: theme.SecondaryLabelColor}}>
+              Checkbox example
+            </Text>
+          </TouchableOpacity>
+        )}
+      </RNTesterThemeContext.Consumer>
     );
   }
 }
@@ -476,14 +554,20 @@ class SwitchExample extends React.Component<
 
   render(): React.Node {
     return (
-      <TouchableOpacity
-        onPress={this._onSwitchToggle}
-        accessibilityLabel="element 12"
-        accessibilityRole="switch"
-        accessibilityState={{checked: this.state.switchState}}
-        accessible={true}>
-        <Text>Switch example</Text>
-      </TouchableOpacity>
+      <RNTesterThemeContext.Consumer>
+        {theme => (
+          <TouchableOpacity
+            onPress={this._onSwitchToggle}
+            accessibilityLabel="element 12"
+            accessibilityRole="switch"
+            accessibilityState={{checked: this.state.switchState}}
+            accessible={true}>
+            <Text style={{color: theme.SecondaryLabelColor}}>
+              Switch example
+            </Text>
+          </TouchableOpacity>
+        )}
+      </RNTesterThemeContext.Consumer>
     );
   }
 }
@@ -589,13 +673,19 @@ class ExpandableElementExample extends React.Component<
 
   render(): React.Node {
     return (
-      <TouchableOpacity
-        onPress={this._onElementPress}
-        accessibilityLabel="element 18"
-        accessibilityState={{expanded: this.state.expandState}}
-        accessibilityHint="click me to change state">
-        <Text>Expandable element example</Text>
-      </TouchableOpacity>
+      <RNTesterThemeContext.Consumer>
+        {theme => (
+          <TouchableOpacity
+            onPress={this._onElementPress}
+            accessibilityLabel="element 18"
+            accessibilityState={{expanded: this.state.expandState}}
+            accessibilityHint="click me to change state">
+            <Text style={{color: theme.SecondaryLabelColor}}>
+              Expandable element example
+            </Text>
+          </TouchableOpacity>
+        )}
+      </RNTesterThemeContext.Consumer>
     );
   }
 }
@@ -645,8 +735,8 @@ class NestedCheckBox extends React.Component<
         checkbox2 && this.state.checkbox3
           ? true
           : checkbox2 || this.state.checkbox3
-          ? 'mixed'
-          : false,
+            ? 'mixed'
+            : false,
     });
   };
 
@@ -659,62 +749,66 @@ class NestedCheckBox extends React.Component<
         this.state.checkbox2 && checkbox3
           ? true
           : this.state.checkbox2 || checkbox3
-          ? 'mixed'
-          : false,
+            ? 'mixed'
+            : false,
     });
   };
 
   render(): React.Node {
     return (
-      <View>
-        <TouchableOpacity
-          style={{flex: 1, flexDirection: 'row'}}
-          onPress={this._onPress1}
-          accessibilityLabel="Meat"
-          accessibilityHint="State changes in 2 seconds after clicking."
-          accessibilityRole="checkbox"
-          accessibilityState={{checked: this.state.checkbox1}}>
-          <Image
-            style={styles.image}
-            source={
-              this.state.checkbox1 === 'mixed'
-                ? mixedCheckboxImageSource
-                : this.state.checkbox1
-                ? checkImageSource
-                : uncheckImageSource
-            }
-          />
-          <Text>Meat</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={{flex: 1, flexDirection: 'row'}}
-          onPress={this._onPress2}
-          accessibilityLabel="Beef"
-          accessibilityRole="checkbox"
-          accessibilityState={{checked: this.state.checkbox2}}>
-          <Image
-            style={styles.image}
-            source={
-              this.state.checkbox2 ? checkImageSource : uncheckImageSource
-            }
-          />
-          <Text>Beef</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={{flex: 1, flexDirection: 'row'}}
-          onPress={this._onPress3}
-          accessibilityLabel="Bacon"
-          accessibilityRole="checkbox"
-          accessibilityState={{checked: this.state.checkbox3}}>
-          <Image
-            style={styles.image}
-            source={
-              this.state.checkbox3 ? checkImageSource : uncheckImageSource
-            }
-          />
-          <Text>Bacon</Text>
-        </TouchableOpacity>
-      </View>
+      <RNTesterThemeContext.Consumer>
+        {theme => (
+          <View>
+            <TouchableOpacity
+              style={{flex: 1, flexDirection: 'row'}}
+              onPress={this._onPress1}
+              accessibilityLabel="Meat"
+              accessibilityHint="State changes in 2 seconds after clicking."
+              accessibilityRole="checkbox"
+              accessibilityState={{checked: this.state.checkbox1}}>
+              <Image
+                style={styles.image}
+                source={
+                  this.state.checkbox1 === 'mixed'
+                    ? mixedCheckboxImageSource
+                    : this.state.checkbox1
+                      ? checkImageSource
+                      : uncheckImageSource
+                }
+              />
+              <Text style={{color: theme.SecondaryLabelColor}}>Meat</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={{flex: 1, flexDirection: 'row'}}
+              onPress={this._onPress2}
+              accessibilityLabel="Beef"
+              accessibilityRole="checkbox"
+              accessibilityState={{checked: this.state.checkbox2}}>
+              <Image
+                style={styles.image}
+                source={
+                  this.state.checkbox2 ? checkImageSource : uncheckImageSource
+                }
+              />
+              <Text style={{color: theme.SecondaryLabelColor}}>Beef</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={{flex: 1, flexDirection: 'row'}}
+              onPress={this._onPress3}
+              accessibilityLabel="Bacon"
+              accessibilityRole="checkbox"
+              accessibilityState={{checked: this.state.checkbox3}}>
+              <Image
+                style={styles.image}
+                source={
+                  this.state.checkbox3 ? checkImageSource : uncheckImageSource
+                }
+              />
+              <Text style={{color: theme.SecondaryLabelColor}}>Bacon</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      </RNTesterThemeContext.Consumer>
     );
   }
 }
@@ -732,156 +826,210 @@ class AccessibilityRoleAndStateExample extends React.Component<{}> {
     ];
 
     return (
-      <View style={styles.sectionContainer}>
-        <RNTesterBlock title="ScrollView with grid role">
-          <ScrollView accessibilityRole="grid" style={styles.scrollView}>
-            {content}
-          </ScrollView>
-        </RNTesterBlock>
-        <RNTesterBlock title="ScrollView with scrollview role">
-          <ScrollView accessibilityRole="scrollview" style={styles.scrollView}>
-            {content}
-          </ScrollView>
-        </RNTesterBlock>
-        <RNTesterBlock title="HorizontalScrollView with horizontalscrollview role">
-          <ScrollView
-            horizontal
-            accessibilityRole="horizontalscrollview"
-            style={styles.scrollView}>
-            {content}
-          </ScrollView>
-        </RNTesterBlock>
-        <RNTesterBlock title="accessibilityRole with View Component">
-          <View>
-            <View
-              accessibilityLabel="element 1"
-              accessibilityRole="alert"
-              accessible={true}>
-              <Text>Alert example</Text>
-            </View>
-            <CheckboxExample />
-            <View
-              accessibilityLabel="element 3"
-              accessibilityRole="combobox"
-              accessible={true}>
-              <Text>Combobox example</Text>
-            </View>
-            <View
-              accessibilityLabel="element 4"
-              accessibilityRole="menu"
-              accessible={true}>
-              <Text>Menu example</Text>
-            </View>
-            <View
-              accessibilityLabel="element 5"
-              accessibilityRole="menubar"
-              accessible={true}>
-              <Text>Menu bar example</Text>
-            </View>
-            <View
-              accessibilityLabel="element 6"
-              accessibilityRole="menuitem"
-              accessible={true}>
-              <Text>Menu item example</Text>
-            </View>
-            <View
-              accessibilityLabel="element 7"
-              accessibilityRole="progressbar"
-              accessible={true}>
-              <Text>Progress bar example</Text>
-            </View>
-            <View
-              accessibilityLabel="element 8"
-              accessibilityRole="radio"
-              accessible={true}>
-              <Text>Radio button example</Text>
-            </View>
-            <View
-              accessibilityLabel="element 9"
-              accessibilityRole="radiogroup"
-              accessible={true}>
-              <Text>Radio group example</Text>
-            </View>
-            <View
-              accessibilityLabel="element 10"
-              accessibilityRole="scrollbar"
-              accessible={true}>
-              <Text>Scrollbar example</Text>
-            </View>
-            <View
-              accessibilityLabel="element 11"
-              accessibilityRole="spinbutton"
-              accessible={true}>
-              <Text>Spin button example</Text>
-            </View>
-            <SwitchExample />
-            <View
-              accessibilityLabel="element 13"
-              accessibilityRole="tab"
-              accessible={true}>
-              <Text>Tab example</Text>
-            </View>
-            <View
-              accessibilityLabel="element 14"
-              accessibilityRole="tablist"
-              accessible={true}>
-              <Text>Tab list example</Text>
-            </View>
-            <View
-              accessibilityLabel="element 15"
-              accessibilityRole="timer"
-              accessible={true}>
-              <Text>Timer example</Text>
-            </View>
-            <View
-              accessibilityLabel="element 16"
-              accessibilityRole="toolbar"
-              accessible={true}>
-              <Text>Toolbar example</Text>
-            </View>
-            <View
-              accessibilityLabel="element 17"
-              accessibilityState={{busy: true}}
-              accessible={true}>
-              <Text>State busy example</Text>
-            </View>
-            <View
-              accessibilityLabel="element 18"
-              accessibilityRole="dropdownlist"
-              accessible={true}>
-              <Text>Drop Down List example</Text>
-            </View>
-            <View
-              accessibilityLabel="element 19"
-              accessibilityRole="pager"
-              accessible={true}>
-              <Text>Pager example</Text>
-            </View>
-            <View
-              accessibilityLabel="element 20"
-              accessibilityRole="togglebutton"
-              accessible={true}>
-              <Text>Toggle Button example</Text>
-            </View>
-            <View
-              accessibilityLabel="element 21"
-              accessibilityRole="viewgroup"
-              accessible={true}>
-              <Text>Viewgroup example</Text>
-            </View>
-            <View
-              accessibilityLabel="element 22"
-              accessibilityRole="webview"
-              accessible={true}>
-              <Text>Webview example</Text>
-            </View>
-            <ExpandableElementExample />
-            <SelectionExample />
-            <Text>Nested checkbox with delayed state change</Text>
-            <NestedCheckBox />
+      <RNTesterThemeContext.Consumer>
+        {theme => (
+          <View style={styles.sectionContainer}>
+            <RNTesterBlock title="ScrollView with grid role">
+              <ScrollView accessibilityRole="grid" style={styles.scrollView}>
+                <Text style={{color: theme.SecondaryLabelColor}}>
+                  {content}
+                </Text>
+              </ScrollView>
+            </RNTesterBlock>
+            <RNTesterBlock title="ScrollView with scrollview role">
+              <ScrollView
+                accessibilityRole="scrollview"
+                style={styles.scrollView}>
+                <Text style={{color: theme.SecondaryLabelColor}}>
+                  {content}
+                </Text>
+              </ScrollView>
+            </RNTesterBlock>
+            <RNTesterBlock title="HorizontalScrollView with horizontalscrollview role">
+              <ScrollView
+                horizontal
+                accessibilityRole="horizontalscrollview"
+                style={styles.scrollView}>
+                <Text style={{color: theme.SecondaryLabelColor}}>
+                  {content}
+                </Text>
+              </ScrollView>
+            </RNTesterBlock>
+            <RNTesterBlock title="accessibilityRole with View Component">
+              <View>
+                <View
+                  accessibilityLabel="element 1"
+                  accessibilityRole="alert"
+                  accessible={true}>
+                  <Text style={{color: theme.SecondaryLabelColor}}>
+                    Alert example
+                  </Text>
+                </View>
+                <CheckboxExample />
+                <View
+                  accessibilityLabel="element 3"
+                  accessibilityRole="combobox"
+                  accessible={true}>
+                  <Text style={{color: theme.SecondaryLabelColor}}>
+                    Combobox example
+                  </Text>
+                </View>
+                <View
+                  accessibilityLabel="element 4"
+                  accessibilityRole="menu"
+                  accessible={true}>
+                  <Text style={{color: theme.SecondaryLabelColor}}>
+                    Menu example
+                  </Text>
+                </View>
+                <View
+                  accessibilityLabel="element 5"
+                  accessibilityRole="menubar"
+                  accessible={true}>
+                  <Text style={{color: theme.SecondaryLabelColor}}>
+                    Menu bar example
+                  </Text>
+                </View>
+                <View
+                  accessibilityLabel="element 6"
+                  accessibilityRole="menuitem"
+                  accessible={true}>
+                  <Text style={{color: theme.SecondaryLabelColor}}>
+                    Menu item example
+                  </Text>
+                </View>
+                <View
+                  accessibilityLabel="element 7"
+                  accessibilityRole="progressbar"
+                  accessible={true}>
+                  <Text style={{color: theme.SecondaryLabelColor}}>
+                    Progress bar example
+                  </Text>
+                </View>
+                <View
+                  accessibilityLabel="element 8"
+                  accessibilityRole="radio"
+                  accessible={true}>
+                  <Text style={{color: theme.SecondaryLabelColor}}>
+                    Radio button example
+                  </Text>
+                </View>
+                <View
+                  accessibilityLabel="element 9"
+                  accessibilityRole="radiogroup"
+                  accessible={true}>
+                  <Text style={{color: theme.SecondaryLabelColor}}>
+                    Radio group example
+                  </Text>
+                </View>
+                <View
+                  accessibilityLabel="element 10"
+                  accessibilityRole="scrollbar"
+                  accessible={true}>
+                  <Text style={{color: theme.SecondaryLabelColor}}>
+                    Scrollbar example
+                  </Text>
+                </View>
+                <View
+                  accessibilityLabel="element 11"
+                  accessibilityRole="spinbutton"
+                  accessible={true}>
+                  <Text style={{color: theme.SecondaryLabelColor}}>
+                    Spin button example
+                  </Text>
+                </View>
+                <SwitchExample />
+                <View
+                  accessibilityLabel="element 13"
+                  accessibilityRole="tab"
+                  accessible={true}>
+                  <Text style={{color: theme.SecondaryLabelColor}}>
+                    Tab example
+                  </Text>
+                </View>
+                <View
+                  accessibilityLabel="element 14"
+                  accessibilityRole="tablist"
+                  accessible={true}>
+                  <Text style={{color: theme.SecondaryLabelColor}}>
+                    Tab list example
+                  </Text>
+                </View>
+                <View
+                  accessibilityLabel="element 15"
+                  accessibilityRole="timer"
+                  accessible={true}>
+                  <Text style={{color: theme.SecondaryLabelColor}}>
+                    Timer example
+                  </Text>
+                </View>
+                <View
+                  accessibilityLabel="element 16"
+                  accessibilityRole="toolbar"
+                  accessible={true}>
+                  <Text style={{color: theme.SecondaryLabelColor}}>
+                    Toolbar example
+                  </Text>
+                </View>
+                <View
+                  accessibilityLabel="element 17"
+                  accessibilityState={{busy: true}}
+                  accessible={true}>
+                  <Text style={{color: theme.SecondaryLabelColor}}>
+                    State busy example
+                  </Text>
+                </View>
+                <View
+                  accessibilityLabel="element 18"
+                  accessibilityRole="dropdownlist"
+                  accessible={true}>
+                  <Text style={{color: theme.SecondaryLabelColor}}>
+                    Drop Down List example
+                  </Text>
+                </View>
+                <View
+                  accessibilityLabel="element 19"
+                  accessibilityRole="pager"
+                  accessible={true}>
+                  <Text style={{color: theme.SecondaryLabelColor}}>
+                    Pager example
+                  </Text>
+                </View>
+                <View
+                  accessibilityLabel="element 20"
+                  accessibilityRole="togglebutton"
+                  accessible={true}>
+                  <Text style={{color: theme.SecondaryLabelColor}}>
+                    Toggle Button example
+                  </Text>
+                </View>
+                <View
+                  accessibilityLabel="element 21"
+                  accessibilityRole="viewgroup"
+                  accessible={true}>
+                  <Text style={{color: theme.SecondaryLabelColor}}>
+                    Viewgroup example
+                  </Text>
+                </View>
+                <View
+                  accessibilityLabel="element 22"
+                  accessibilityRole="webview"
+                  accessible={true}>
+                  <Text style={{color: theme.SecondaryLabelColor}}>
+                    Webview example
+                  </Text>
+                </View>
+                <ExpandableElementExample />
+                <SelectionExample />
+                <Text style={{color: theme.SecondaryLabelColor}}>
+                  Nested checkbox with delayed state change
+                </Text>
+                <NestedCheckBox />
+              </View>
+            </RNTesterBlock>
           </View>
-        </RNTesterBlock>
-      </View>
+        )}
+      </RNTesterThemeContext.Consumer>
     );
   }
 }
@@ -889,138 +1037,150 @@ class AccessibilityRoleAndStateExample extends React.Component<{}> {
 class AccessibilityActionsExample extends React.Component<{}> {
   render(): React.Node {
     return (
-      <View style={styles.sectionContainer}>
-        <RNTesterBlock title="Non-touchable with activate action">
-          <View
-            accessible={true}
-            accessibilityActions={[{name: 'activate'}]}
-            onAccessibilityAction={event => {
-              switch (event.nativeEvent.actionName) {
-                case 'activate':
-                  Alert.alert('Alert', 'View is clicked');
-                  break;
-              }
-            }}>
-            <Text>Click me</Text>
+      <RNTesterThemeContext.Consumer>
+        {theme => (
+          <View style={styles.sectionContainer}>
+            <RNTesterBlock title="Non-touchable with activate action">
+              <View
+                accessible={true}
+                accessibilityActions={[{name: 'activate'}]}
+                onAccessibilityAction={event => {
+                  switch (event.nativeEvent.actionName) {
+                    case 'activate':
+                      Alert.alert('Alert', 'View is clicked');
+                      break;
+                  }
+                }}>
+                <Text style={{color: theme.SecondaryLabelColor}}>Click me</Text>
+              </View>
+            </RNTesterBlock>
+
+            <RNTesterBlock title="View with multiple actions">
+              <View
+                accessible={true}
+                accessibilityActions={[
+                  {name: 'cut', label: 'cut label'},
+                  {name: 'copy', label: 'copy label'},
+                  {name: 'paste', label: 'paste label'},
+                ]}
+                onAccessibilityAction={event => {
+                  switch (event.nativeEvent.actionName) {
+                    case 'cut':
+                      Alert.alert('Alert', 'cut action success');
+                      break;
+                    case 'copy':
+                      Alert.alert('Alert', 'copy action success');
+                      break;
+                    case 'paste':
+                      Alert.alert('Alert', 'paste action success');
+                      break;
+                  }
+                }}>
+                <Text style={{color: theme.SecondaryLabelColor}}>
+                  This view supports many actions.
+                </Text>
+              </View>
+            </RNTesterBlock>
+
+            <RNTesterBlock title="Adjustable with increment/decrement actions">
+              <View
+                accessible={true}
+                accessibilityRole="adjustable"
+                accessibilityActions={[
+                  {name: 'increment'},
+                  {name: 'decrement'},
+                ]}
+                onAccessibilityAction={event => {
+                  switch (event.nativeEvent.actionName) {
+                    case 'increment':
+                      Alert.alert('Alert', 'increment action success');
+                      break;
+                    case 'decrement':
+                      Alert.alert('Alert', 'decrement action success');
+                      break;
+                  }
+                }}>
+                <Text style={{color: theme.SecondaryLabelColor}}>Slider</Text>
+              </View>
+            </RNTesterBlock>
+
+            <RNTesterBlock title="TouchableWithoutFeedback with custom accessibility actions">
+              <TouchableWithoutFeedback
+                accessible={true}
+                accessibilityActions={[
+                  {name: 'cut', label: 'cut label'},
+                  {name: 'copy', label: 'copy label'},
+                  {name: 'paste', label: 'paste label'},
+                ]}
+                onAccessibilityAction={event => {
+                  switch (event.nativeEvent.actionName) {
+                    case 'cut':
+                      Alert.alert('Alert', 'cut action success');
+                      break;
+                    case 'copy':
+                      Alert.alert('Alert', 'copy action success');
+                      break;
+                    case 'paste':
+                      Alert.alert('Alert', 'paste action success');
+                      break;
+                  }
+                }}
+                onPress={() => Alert.alert('Button has been pressed!')}
+                accessibilityRole="button">
+                <View>
+                  <Text style={{color: theme.SecondaryLabelColor}}>
+                    Click me
+                  </Text>
+                </View>
+              </TouchableWithoutFeedback>
+            </RNTesterBlock>
+
+            <RNTesterBlock title="Button with accessibility actions">
+              <Button
+                accessible={true}
+                accessibilityActions={[
+                  {name: 'activate', label: 'activate label'},
+                  {name: 'copy', label: 'copy label'},
+                ]}
+                onAccessibilityAction={event => {
+                  switch (event.nativeEvent.actionName) {
+                    case 'activate':
+                      Alert.alert('Alert', 'Activate accessibility action');
+                      break;
+                    case 'copy':
+                      Alert.alert('Alert', 'copy action success');
+                      break;
+                  }
+                }}
+                onPress={() => Alert.alert('Button has been pressed!')}
+                title="Button with accessibility action"
+              />
+            </RNTesterBlock>
+
+            <RNTesterBlock title="Text with custom accessibility actions">
+              <Text
+                style={{color: theme.SecondaryLabelColor}}
+                accessible={true}
+                accessibilityActions={[
+                  {name: 'activate', label: 'activate label'},
+                  {name: 'copy', label: 'copy label'},
+                ]}
+                onAccessibilityAction={event => {
+                  switch (event.nativeEvent.actionName) {
+                    case 'activate':
+                      Alert.alert('Alert', 'Activate accessibility action');
+                      break;
+                    case 'copy':
+                      Alert.alert('Alert', 'copy action success');
+                      break;
+                  }
+                }}>
+                Text
+              </Text>
+            </RNTesterBlock>
           </View>
-        </RNTesterBlock>
-
-        <RNTesterBlock title="View with multiple actions">
-          <View
-            accessible={true}
-            accessibilityActions={[
-              {name: 'cut', label: 'cut label'},
-              {name: 'copy', label: 'copy label'},
-              {name: 'paste', label: 'paste label'},
-            ]}
-            onAccessibilityAction={event => {
-              switch (event.nativeEvent.actionName) {
-                case 'cut':
-                  Alert.alert('Alert', 'cut action success');
-                  break;
-                case 'copy':
-                  Alert.alert('Alert', 'copy action success');
-                  break;
-                case 'paste':
-                  Alert.alert('Alert', 'paste action success');
-                  break;
-              }
-            }}>
-            <Text>This view supports many actions.</Text>
-          </View>
-        </RNTesterBlock>
-
-        <RNTesterBlock title="Adjustable with increment/decrement actions">
-          <View
-            accessible={true}
-            accessibilityRole="adjustable"
-            accessibilityActions={[{name: 'increment'}, {name: 'decrement'}]}
-            onAccessibilityAction={event => {
-              switch (event.nativeEvent.actionName) {
-                case 'increment':
-                  Alert.alert('Alert', 'increment action success');
-                  break;
-                case 'decrement':
-                  Alert.alert('Alert', 'decrement action success');
-                  break;
-              }
-            }}>
-            <Text>Slider</Text>
-          </View>
-        </RNTesterBlock>
-
-        <RNTesterBlock title="TouchableWithoutFeedback with custom accessibility actions">
-          <TouchableWithoutFeedback
-            accessible={true}
-            accessibilityActions={[
-              {name: 'cut', label: 'cut label'},
-              {name: 'copy', label: 'copy label'},
-              {name: 'paste', label: 'paste label'},
-            ]}
-            onAccessibilityAction={event => {
-              switch (event.nativeEvent.actionName) {
-                case 'cut':
-                  Alert.alert('Alert', 'cut action success');
-                  break;
-                case 'copy':
-                  Alert.alert('Alert', 'copy action success');
-                  break;
-                case 'paste':
-                  Alert.alert('Alert', 'paste action success');
-                  break;
-              }
-            }}
-            onPress={() => Alert.alert('Button has been pressed!')}
-            accessibilityRole="button">
-            <View>
-              <Text>Click me</Text>
-            </View>
-          </TouchableWithoutFeedback>
-        </RNTesterBlock>
-
-        <RNTesterBlock title="Button with accessibility actions">
-          <Button
-            accessible={true}
-            accessibilityActions={[
-              {name: 'activate', label: 'activate label'},
-              {name: 'copy', label: 'copy label'},
-            ]}
-            onAccessibilityAction={event => {
-              switch (event.nativeEvent.actionName) {
-                case 'activate':
-                  Alert.alert('Alert', 'Activate accessibility action');
-                  break;
-                case 'copy':
-                  Alert.alert('Alert', 'copy action success');
-                  break;
-              }
-            }}
-            onPress={() => Alert.alert('Button has been pressed!')}
-            title="Button with accessibility action"
-          />
-        </RNTesterBlock>
-
-        <RNTesterBlock title="Text with custom accessibility actions">
-          <Text
-            accessible={true}
-            accessibilityActions={[
-              {name: 'activate', label: 'activate label'},
-              {name: 'copy', label: 'copy label'},
-            ]}
-            onAccessibilityAction={event => {
-              switch (event.nativeEvent.actionName) {
-                case 'activate':
-                  Alert.alert('Alert', 'Activate accessibility action');
-                  break;
-                case 'copy':
-                  Alert.alert('Alert', 'copy action success');
-                  break;
-              }
-            }}>
-            Text
-          </Text>
-        </RNTesterBlock>
-      </View>
+        )}
+      </RNTesterThemeContext.Consumer>
     );
   }
 }
@@ -1057,58 +1217,66 @@ class FakeSliderExample extends React.Component<{}, FakeSliderExampleState> {
 
   render(): React.Node {
     return (
-      <View>
-        <View
-          accessible={true}
-          accessibilityLabel="Fake Slider"
-          accessibilityRole="adjustable"
-          accessibilityActions={[{name: 'increment'}, {name: 'decrement'}]}
-          onAccessibilityAction={event => {
-            switch (event.nativeEvent.actionName) {
-              case 'increment':
-                this.increment();
-                break;
-              case 'decrement':
-                this.decrement();
-                break;
-            }
-          }}
-          accessibilityValue={{
-            min: 0,
-            now: this.state.current,
-            max: 100,
-          }}>
-          <Text>Fake Slider</Text>
-        </View>
-        <TouchableWithoutFeedback
-          accessible={true}
-          accessibilityLabel="Equalizer"
-          accessibilityRole="adjustable"
-          accessibilityActions={[{name: 'increment'}, {name: 'decrement'}]}
-          onAccessibilityAction={event => {
-            switch (event.nativeEvent.actionName) {
-              case 'increment':
-                if (this.state.textualValue === 'center') {
-                  this.setState({textualValue: 'right'});
-                } else if (this.state.textualValue === 'left') {
-                  this.setState({textualValue: 'center'});
-                }
-                break;
-              case 'decrement':
-                if (this.state.textualValue === 'center') {
-                  this.setState({textualValue: 'left'});
-                } else if (this.state.textualValue === 'right') {
-                  this.setState({textualValue: 'center'});
-                }
-                break;
-            }
-          }}
-          accessibilityValue={{text: this.state.textualValue}}>
+      <RNTesterThemeContext.Consumer>
+        {theme => (
           <View>
-            <Text>Equalizer</Text>
+            <View
+              accessible={true}
+              accessibilityLabel="Fake Slider"
+              accessibilityRole="adjustable"
+              accessibilityActions={[{name: 'increment'}, {name: 'decrement'}]}
+              onAccessibilityAction={event => {
+                switch (event.nativeEvent.actionName) {
+                  case 'increment':
+                    this.increment();
+                    break;
+                  case 'decrement':
+                    this.decrement();
+                    break;
+                }
+              }}
+              accessibilityValue={{
+                min: 0,
+                now: this.state.current,
+                max: 100,
+              }}>
+              <Text style={{color: theme.SecondaryLabelColor}}>
+                Fake Slider
+              </Text>
+            </View>
+            <TouchableWithoutFeedback
+              accessible={true}
+              accessibilityLabel="Equalizer"
+              accessibilityRole="adjustable"
+              accessibilityActions={[{name: 'increment'}, {name: 'decrement'}]}
+              onAccessibilityAction={event => {
+                switch (event.nativeEvent.actionName) {
+                  case 'increment':
+                    if (this.state.textualValue === 'center') {
+                      this.setState({textualValue: 'right'});
+                    } else if (this.state.textualValue === 'left') {
+                      this.setState({textualValue: 'center'});
+                    }
+                    break;
+                  case 'decrement':
+                    if (this.state.textualValue === 'center') {
+                      this.setState({textualValue: 'left'});
+                    } else if (this.state.textualValue === 'right') {
+                      this.setState({textualValue: 'center'});
+                    }
+                    break;
+                }
+              }}
+              accessibilityValue={{text: this.state.textualValue}}>
+              <View>
+                <Text style={{color: theme.SecondaryLabelColor}}>
+                  Equalizer
+                </Text>
+              </View>
+            </TouchableWithoutFeedback>
           </View>
-        </TouchableWithoutFeedback>
-      </View>
+        )}
+      </RNTesterThemeContext.Consumer>
     );
   }
 }
@@ -1144,57 +1312,65 @@ class FakeSliderExampleForAccessibilityValue extends React.Component<
 
   render(): React.Node {
     return (
-      <View>
-        <View
-          accessible={true}
-          accessibilityLabel="Fake Slider"
-          accessibilityRole="adjustable"
-          accessibilityActions={[{name: 'increment'}, {name: 'decrement'}]}
-          onAccessibilityAction={event => {
-            switch (event.nativeEvent.actionName) {
-              case 'increment':
-                this.increment();
-                break;
-              case 'decrement':
-                this.decrement();
-                break;
-            }
-          }}
-          aria-valuemax={100}
-          aria-valuemin={0}
-          aria-valuetext={'slider aria value text'}
-          aria-valuenow={this.state.current}>
-          <Text>Fake Slider</Text>
-        </View>
-        <TouchableWithoutFeedback
-          accessible={true}
-          accessibilityLabel="Equalizer"
-          accessibilityRole="adjustable"
-          accessibilityActions={[{name: 'increment'}, {name: 'decrement'}]}
-          onAccessibilityAction={event => {
-            switch (event.nativeEvent.actionName) {
-              case 'increment':
-                if (this.state.textualValue === 'center') {
-                  this.setState({textualValue: 'right'});
-                } else if (this.state.textualValue === 'left') {
-                  this.setState({textualValue: 'center'});
-                }
-                break;
-              case 'decrement':
-                if (this.state.textualValue === 'center') {
-                  this.setState({textualValue: 'left'});
-                } else if (this.state.textualValue === 'right') {
-                  this.setState({textualValue: 'center'});
-                }
-                break;
-            }
-          }}
-          accessibilityValue={{text: this.state.textualValue}}>
+      <RNTesterThemeContext.Consumer>
+        {theme => (
           <View>
-            <Text>Equalizer</Text>
+            <View
+              accessible={true}
+              accessibilityLabel="Fake Slider"
+              accessibilityRole="adjustable"
+              accessibilityActions={[{name: 'increment'}, {name: 'decrement'}]}
+              onAccessibilityAction={event => {
+                switch (event.nativeEvent.actionName) {
+                  case 'increment':
+                    this.increment();
+                    break;
+                  case 'decrement':
+                    this.decrement();
+                    break;
+                }
+              }}
+              aria-valuemax={100}
+              aria-valuemin={0}
+              aria-valuetext={'slider aria value text'}
+              aria-valuenow={this.state.current}>
+              <Text style={{color: theme.SecondaryLabelColor}}>
+                Fake Slider
+              </Text>
+            </View>
+            <TouchableWithoutFeedback
+              accessible={true}
+              accessibilityLabel="Equalizer"
+              accessibilityRole="adjustable"
+              accessibilityActions={[{name: 'increment'}, {name: 'decrement'}]}
+              onAccessibilityAction={event => {
+                switch (event.nativeEvent.actionName) {
+                  case 'increment':
+                    if (this.state.textualValue === 'center') {
+                      this.setState({textualValue: 'right'});
+                    } else if (this.state.textualValue === 'left') {
+                      this.setState({textualValue: 'center'});
+                    }
+                    break;
+                  case 'decrement':
+                    if (this.state.textualValue === 'center') {
+                      this.setState({textualValue: 'left'});
+                    } else if (this.state.textualValue === 'right') {
+                      this.setState({textualValue: 'center'});
+                    }
+                    break;
+                }
+              }}
+              accessibilityValue={{text: this.state.textualValue}}>
+              <View>
+                <Text style={{color: theme.SecondaryLabelColor}}>
+                  Equalizer
+                </Text>
+              </View>
+            </TouchableWithoutFeedback>
           </View>
-        </TouchableWithoutFeedback>
-      </View>
+        )}
+      </RNTesterThemeContext.Consumer>
     );
   }
 }
@@ -1272,6 +1448,7 @@ class AnnounceForAccessibility extends React.Component<{}> {
 
 function SetAccessibilityFocusExample(props: {}): React.Node {
   const myRef = React.useRef<?React.ElementRef<typeof Text>>(null);
+  const theme = React.useContext(RNTesterThemeContext);
 
   const onPress = () => {
     if (myRef && myRef.current) {
@@ -1281,7 +1458,7 @@ function SetAccessibilityFocusExample(props: {}): React.Node {
 
   return (
     <View>
-      <Text ref={myRef}>
+      <Text ref={myRef} style={{color: theme.SecondaryLabelColor}}>
         SetAccessibilityFocus on native element. This should get focus after
         clicking the button!
       </Text>
@@ -1447,16 +1624,20 @@ class EnabledExample extends React.Component<
 
   render(): React.Node {
     return (
-      <View>
-        <Text>
-          The {this.props.test} is{' '}
-          {this.state.isEnabled ? 'enabled' : 'disabled'}
-        </Text>
-        <Button
-          title={this.state.isEnabled ? 'disable' : 'enable'}
-          onPress={this._handleToggled}
-        />
-      </View>
+      <RNTesterThemeContext.Consumer>
+        {theme => (
+          <View>
+            <Text style={{color: theme.SecondaryLabelColor}}>
+              The {this.props.test} is{' '}
+              {this.state.isEnabled ? 'enabled' : 'disabled'}
+            </Text>
+            <Button
+              title={this.state.isEnabled ? 'disable' : 'enable'}
+              onPress={this._handleToggled}
+            />
+          </View>
+        )}
+      </RNTesterThemeContext.Consumer>
     );
   }
 }
@@ -1520,9 +1701,11 @@ function DisplayOptionStatusExample({
   optionName: string,
 }) {
   const [statusEnabled, setStatusEnabled] = React.useState(false);
+  const theme = React.useContext(RNTesterThemeContext);
   React.useEffect(() => {
     const listener = AccessibilityInfo.addEventListener(
       // $FlowFixMe[prop-missing]
+      // $FlowFixMe[invalid-computed-prop]
       notification,
       setStatusEnabled,
     );
@@ -1536,7 +1719,7 @@ function DisplayOptionStatusExample({
   }, [optionChecker, notification]);
   return (
     <View>
-      <Text>
+      <Text style={{color: theme.SecondaryLabelColor}}>
         {optionName}
         {' is '}
         {statusEnabled ? 'enabled' : 'disabled'}.
@@ -1549,10 +1732,11 @@ function AccessibilityExpandedExample(): React.Node {
   const [expand, setExpanded] = React.useState(false);
   const expandAction = {name: 'expand'};
   const collapseAction = {name: 'collapse'};
+  const theme = React.useContext(RNTesterThemeContext);
   return (
     <View style={styles.sectionContainer}>
       <RNTesterBlock title="Collapse/Expanded state change (Paper)">
-        <Text>
+        <Text style={{color: theme.SecondaryLabelColor}}>
           The following component announces expanded/collapsed state correctly
         </Text>
         <Button
@@ -1574,12 +1758,16 @@ function AccessibilityExpandedExample(): React.Node {
       </RNTesterBlock>
 
       <RNTesterBlock title="Screenreader announces the visible text">
-        <Text>Announcing expanded/collapse and the visible text.</Text>
+        <Text style={{color: theme.SecondaryLabelColor}}>
+          Announcing expanded/collapse and the visible text.
+        </Text>
         <TouchableOpacity
           style={styles.button}
           onPress={() => setExpanded(!expand)}
           accessibilityState={{expanded: expand}}>
-          <Text>Click me to change state</Text>
+          <Text style={{color: theme.SecondaryLabelColor}}>
+            Click me to change state
+          </Text>
         </TouchableOpacity>
       </RNTesterBlock>
 
@@ -1588,10 +1776,29 @@ function AccessibilityExpandedExample(): React.Node {
           accessibilityState={{expanded: true}}
           accessible={true}>
           <View>
-            <Text>Clicking me does not change state</Text>
+            <Text style={{color: theme.SecondaryLabelColor}}>
+              Clicking me does not change state
+            </Text>
           </View>
         </TouchableWithoutFeedback>
       </RNTesterBlock>
+    </View>
+  );
+}
+
+function AccessibilityTextInputWithArialabelledByAttributeExample(): React.Node {
+  const theme = React.useContext(RNTesterThemeContext);
+  return (
+    <View>
+      <Text
+        nativeID="testAriaLabelledBy"
+        style={{color: theme.SecondaryLabelColor}}>
+        Phone Number
+      </Text>
+      <TextInput
+        aria-labelledby={'testAriaLabelledBy'}
+        style={styles.default}
+      />
     </View>
   );
 }
@@ -1688,17 +1895,11 @@ exports.examples = [
     },
   },
   {
-    title: 'TextInput with aria-labelledby attribute"',
-    render(): React.Element<typeof View> {
-      return (
-        <View>
-          <Text nativeID="testAriaLabelledBy">Phone Number</Text>
-          <TextInput
-            aria-labelledby={'testAriaLabelledBy'}
-            style={styles.default}
-          />
-        </View>
-      );
+    title: 'TextInput with aria-labelledby attribute',
+    render(): React.Element<
+      typeof AccessibilityTextInputWithArialabelledByAttributeExample,
+    > {
+      return <AccessibilityTextInputWithArialabelledByAttributeExample />;
     },
   },
 ];

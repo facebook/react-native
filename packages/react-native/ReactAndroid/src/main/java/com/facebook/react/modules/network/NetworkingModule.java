@@ -139,7 +139,9 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
     this(context, defaultUserAgent, client, null);
   }
 
-  /** @param context the ReactContext of the application */
+  /**
+   * @param context the ReactContext of the application
+   */
   public NetworkingModule(final ReactApplicationContext context) {
     this(context, null, OkHttpClientProvider.createClient(context), null);
   }
@@ -256,7 +258,9 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
     }
   }
 
-  /** @param timeout value of 0 results in no timeout */
+  /**
+   * @param timeout value of 0 results in no timeout
+   */
   public void sendRequestInternal(
       String method,
       String url,

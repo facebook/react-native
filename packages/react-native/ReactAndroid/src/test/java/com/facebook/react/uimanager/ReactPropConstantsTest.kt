@@ -8,7 +8,7 @@
 package com.facebook.react.uimanager
 
 import android.view.View
-import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.bridge.BridgeReactContext
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.common.MapBuilder
@@ -45,46 +45,46 @@ class ReactPropConstantsTest {
       error("This method should not be executed as a part of this test")
     }
 
-    @ReactProp(name = "boolProp") fun setBoolProp(v: View?, value: Boolean) {}
+    @ReactProp(name = "boolProp") fun setBoolProp(v: View?, value: Boolean) = Unit
 
-    @ReactProp(name = "intProp") fun setIntProp(v: View?, value: Int) {}
+    @ReactProp(name = "intProp") fun setIntProp(v: View?, value: Int) = Unit
 
-    @ReactProp(name = "floatProp") fun setFloatProp(v: View?, value: Float) {}
+    @ReactProp(name = "floatProp") fun setFloatProp(v: View?, value: Float) = Unit
 
-    @ReactProp(name = "doubleProp") fun setDoubleProp(v: View?, value: Double) {}
+    @ReactProp(name = "doubleProp") fun setDoubleProp(v: View?, value: Double) = Unit
 
-    @ReactProp(name = "stringProp") fun setStringProp(v: View?, value: String?) {}
+    @ReactProp(name = "stringProp") fun setStringProp(v: View?, value: String?) = Unit
 
-    @ReactProp(name = "boxedBoolProp") fun setBoxedBoolProp(v: View?, value: Boolean?) {}
+    @ReactProp(name = "boxedBoolProp") fun setBoxedBoolProp(v: View?, value: Boolean?) = Unit
 
-    @ReactProp(name = "boxedIntProp") fun setBoxedIntProp(v: View?, value: Int?) {}
+    @ReactProp(name = "boxedIntProp") fun setBoxedIntProp(v: View?, value: Int?) = Unit
 
-    @ReactProp(name = "arrayProp") fun setArrayProp(v: View?, value: ReadableArray?) {}
+    @ReactProp(name = "arrayProp") fun setArrayProp(v: View?, value: ReadableArray?) = Unit
 
-    @ReactProp(name = "mapProp") fun setMapProp(v: View?, value: ReadableMap?) {}
+    @ReactProp(name = "mapProp") fun setMapProp(v: View?, value: ReadableMap?) = Unit
 
     @ReactPropGroup(names = ["floatGroupPropFirst", "floatGroupPropSecond"])
-    fun setFloatGroupProp(v: View?, index: Int, value: Float) {}
+    fun setFloatGroupProp(v: View?, index: Int, value: Float) = Unit
 
     @ReactPropGroup(names = ["intGroupPropFirst", "intGroupPropSecond"])
-    fun setIntGroupProp(v: View?, index: Int, value: Int) {}
+    fun setIntGroupProp(v: View?, index: Int, value: Int) = Unit
 
     @ReactPropGroup(names = ["boxedIntGroupPropFirst", "boxedIntGroupPropSecond"])
-    fun setBoxedIntGroupProp(v: View?, index: Int, value: Int?) {}
+    fun setBoxedIntGroupProp(v: View?, index: Int, value: Int?) = Unit
 
     @ReactProp(name = "customIntProp", customType = "date")
-    fun customIntProp(v: View?, value: Int) {}
+    fun customIntProp(v: View?, value: Int) = Unit
 
     @ReactPropGroup(
         names = ["customBoxedIntGroupPropFirst", "customBoxedIntGroupPropSecond"],
         customType = "color")
-    fun customIntGroupProp(v: View?, index: Int, value: Int?) {}
+    fun customIntGroupProp(v: View?, index: Int, value: Int?) = Unit
   }
 
   @Test
   fun testNativePropsIncludeCorrectTypes() {
     val viewManagers = listOf<ViewManager<*, *>>(ViewManagerUnderTest())
-    val reactContext = ReactApplicationContext(RuntimeEnvironment.getApplication())
+    val reactContext = BridgeReactContext(RuntimeEnvironment.getApplication())
     val uiManagerModule = UIManagerModule(reactContext, viewManagers, 0)
     val constants: Map<*, *> =
         valueAtPath(uiManagerModule.constants as Map<*, *>, "SomeView", "NativeProps")

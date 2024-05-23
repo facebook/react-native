@@ -39,9 +39,10 @@ typedef void (^RCTRemoteNotificationCallback)(UIBackgroundFetchResult result);
 + (void)didReceiveRemoteNotification:(NSDictionary *)notification
               fetchCompletionHandler:(RCTRemoteNotificationCallback)completionHandler;
 
-/** DEPRECATED. Use didReceiveNotification instead. */
-+ (void)didReceiveLocalNotification:(UILocalNotification *)notification RCT_DEPRECATED;
-/** DEPRECATED. Use didReceiveNotification instead. */
-+ (void)didReceiveRemoteNotification:(NSDictionary *)notification RCT_DEPRECATED;
+/**
+ * Call this in `userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:`
+ * to get the correct value from .getInitialNotification in JS.
+ */
++ (void)setInitialNotification:(UNNotification *)notification;
 
 @end

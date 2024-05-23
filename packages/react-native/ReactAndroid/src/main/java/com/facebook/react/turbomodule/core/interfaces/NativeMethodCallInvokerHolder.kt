@@ -10,4 +10,4 @@ package com.facebook.react.turbomodule.core.interfaces
  * This interface represents the opaque Java object that contains a pointer to and instance of
  * NativeMethodCallInvoker.
  */
-interface NativeMethodCallInvokerHolder
+public interface NativeMethodCallInvokerHolder

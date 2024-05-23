@@ -12,10 +12,10 @@ import android.util.DisplayMetrics
 import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.drawee.drawable.ScalingUtils
 import com.facebook.react.bridge.Arguments
+import com.facebook.react.bridge.BridgeReactContext
 import com.facebook.react.bridge.CatalystInstance
 import com.facebook.react.bridge.JavaOnlyArray
 import com.facebook.react.bridge.JavaOnlyMap
-import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactTestHelper.createMockCatalystInstance
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.bridge.WritableMap
@@ -41,9 +41,9 @@ import org.robolectric.RuntimeEnvironment
 @RunWith(RobolectricTestRunner::class)
 class ReactImagePropertyTest {
 
-  private var context: ReactApplicationContext? = null
-  private var catalystInstanceMock: CatalystInstance? = null
-  private var themeContext: ThemedReactContext? = null
+  private lateinit var context: BridgeReactContext
+  private lateinit var catalystInstanceMock: CatalystInstance
+  private lateinit var themeContext: ThemedReactContext
   private lateinit var arguments: MockedStatic<Arguments>
   private lateinit var rnLog: MockedStatic<RNLog>
 
@@ -57,9 +57,9 @@ class ReactImagePropertyTest {
     rnLog.`when`<Boolean> { RNLog.w(any(), anyString()) }.thenAnswer {}
 
     SoLoader.setInTestMode()
-    context = ReactApplicationContext(RuntimeEnvironment.getApplication())
+    context = BridgeReactContext(RuntimeEnvironment.getApplication())
     catalystInstanceMock = createMockCatalystInstance()
-    context!!.initializeWithInstance(catalystInstanceMock)
+    context.initializeWithInstance(catalystInstanceMock)
     themeContext = ThemedReactContext(context, context, null, -1)
     Fresco.initialize(context)
     DisplayMetricsHolder.setWindowDisplayMetrics(DisplayMetrics())
@@ -79,7 +79,7 @@ class ReactImagePropertyTest {
   @Test
   fun testBorderColor() {
     val viewManager = ReactImageManager()
-    val view = viewManager.createViewInstance(themeContext!!)
+    val view = viewManager.createViewInstance(themeContext)
     viewManager.updateProperties(
         view,
         buildStyles("src", JavaOnlyArray.of(JavaOnlyMap.of("uri", "http://mysite.com/mypic.jpg"))))
@@ -106,7 +106,7 @@ class ReactImagePropertyTest {
   @Test
   fun testRoundedCorners() {
     val viewManager = ReactImageManager()
-    val view = viewManager.createViewInstance(themeContext!!)
+    val view = viewManager.createViewInstance(themeContext)
     viewManager.updateProperties(
         view,
         buildStyles("src", JavaOnlyArray.of(JavaOnlyMap.of("uri", "http://mysite.com/mypic.jpg"))))
@@ -121,7 +121,7 @@ class ReactImagePropertyTest {
   @Test
   fun testAccessibilityFocus() {
     val viewManager = ReactImageManager()
-    val view = viewManager.createViewInstance(themeContext!!)
+    val view = viewManager.createViewInstance(themeContext)
     viewManager.setAccessible(view, true)
     Assert.assertEquals(true, view.isFocusable)
   }
@@ -129,7 +129,7 @@ class ReactImagePropertyTest {
   @Test
   fun testTintColor() {
     val viewManager = ReactImageManager()
-    val view = viewManager.createViewInstance(themeContext!!)
+    val view = viewManager.createViewInstance(themeContext)
     Assert.assertNull(view.colorFilter)
     viewManager.updateProperties(view, buildStyles("tintColor", Color.argb(50, 0, 0, 255)))
     // Can't actually assert the specific color so this is the next best thing.
@@ -142,7 +142,7 @@ class ReactImagePropertyTest {
   @Test
   fun testNullSrcs() {
     val viewManager = ReactImageManager()
-    val view = viewManager.createViewInstance(themeContext!!)
+    val view = viewManager.createViewInstance(themeContext)
     val sources = Arguments.createArray()
     val srcObj = Arguments.createMap()
     srcObj.putNull("uri")

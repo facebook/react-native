@@ -12,7 +12,7 @@
 
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 
-import ReactNativeFeatureFlags from '../../ReactNative/ReactNativeFeatureFlags';
+import * as ReactNativeFeatureFlags from '../../../src/private/featureflags/ReactNativeFeatureFlags';
 import flattenStyle from '../../StyleSheet/flattenStyle';
 import Platform from '../../Utilities/Platform';
 import NativeAnimatedHelper from '../NativeAnimatedHelper';
