@@ -9,7 +9,7 @@
 
 import type * as React from 'react';
 import type {IPerformanceLogger} from '../Utilities/IPerformanceLogger';
-import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
+import type {ViewStyle} from '../StyleSheet/StyleSheetTypes';
 
 type Task = (taskData: any) => Promise<void>;
 type TaskProvider = () => Task;
@@ -37,7 +37,7 @@ export type WrapperComponentProvider = (
 
 export type RootViewStyleProvider = (
   appParameters: any,
-) => ViewStyleProp;
+) => ViewStyle;
 
 /**
  * `AppRegistry` is the JS entry point to running all React Native apps.  App
