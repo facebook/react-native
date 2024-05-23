@@ -141,7 +141,11 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
 
   _updateBottomIfNecessary = async () => {
     if (this._keyboardEvent == null) {
-      this._setBottom(0);
+      if (Keyboard.isVisible()) {
+        this._setBottom(Keyboard.metrics().height);
+      } else {
+        this._setBottom(0);
+      }
       return;
     }
 
