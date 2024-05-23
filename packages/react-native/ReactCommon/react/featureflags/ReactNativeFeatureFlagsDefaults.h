@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2bfa4670757aa340c88ae8ff57270308>>
+ * @generated SignedSource<<c8414078d11f764c38bf225bbe9ad824>>
  */
 
 /**
@@ -76,10 +76,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool forceBatchingMountItemsOnAndroid() override {
-    return false;
-  }
-
-  bool inspectorEnableCxxInspectorPackagerConnection() override {
     return false;
   }
 

@@ -182,9 +182,10 @@ static void sendEventToAllConnections(NSString *event)
   NSString *key = [inspectorURL absoluteString];
   id<RCTInspectorPackagerConnectionProtocol> connection = socketConnections[key];
   if (!connection || !connection.isConnected) {
-    if (facebook::react::jsinspector_modern::InspectorFlags::getInstance().getEnableCxxInspectorPackagerConnection()) {
+    if (facebook::react::jsinspector_modern::InspectorFlags::getInstance().getEnableModernCDPRegistry()) {
       connection = [[RCTCxxInspectorPackagerConnection alloc] initWithURL:inspectorURL];
     } else {
+      // TODO(T190163403): Remove legacy RCTInspectorPackagerConnection
       connection = [[RCTInspectorPackagerConnection alloc] initWithURL:inspectorURL];
     }
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c53481eb714387bf0a390fba1c02c331>>
+ * @generated SignedSource<<afcccd6ebe0986b3c4585298d1dc41a2>>
  */
 
 /**
@@ -101,11 +101,6 @@ class ReactNativeFeatureFlags {
    * Forces the mounting layer on Android to always batch mount items instead of dispatching them immediately. This might fix some crashes related to synchronous state updates, where some views dispatch state updates during mount.
    */
   RN_EXPORT static bool forceBatchingMountItemsOnAndroid();
-
-  /**
-   * Flag determining if the C++ implementation of InspectorPackagerConnection should be used instead of the per-platform one. This flag is global and should not be changed across React Host lifetimes.
-   */
-  RN_EXPORT static bool inspectorEnableCxxInspectorPackagerConnection();
 
   /**
    * Flag determining if the modern CDP backend should be enabled. This flag is global and should not be changed across React Host lifetimes.

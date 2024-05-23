@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1fdca69483db9e0fc9f9ab7a2cd9ff85>>
+ * @generated SignedSource<<8b16e85f68631df0af57e9dc3366c022>>
  */
 
 /**
@@ -100,11 +100,6 @@ bool NativeReactNativeFeatureFlags::fixStoppedSurfaceRemoveDeleteTreeUIFrameCall
 bool NativeReactNativeFeatureFlags::forceBatchingMountItemsOnAndroid(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::forceBatchingMountItemsOnAndroid();
-}
-
-bool NativeReactNativeFeatureFlags::inspectorEnableCxxInspectorPackagerConnection(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::inspectorEnableCxxInspectorPackagerConnection();
 }
 
 bool NativeReactNativeFeatureFlags::inspectorEnableModernCDPRegistry(

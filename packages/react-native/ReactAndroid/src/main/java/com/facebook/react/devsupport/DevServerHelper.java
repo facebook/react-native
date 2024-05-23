@@ -210,10 +210,11 @@ public class DevServerHelper {
     new AsyncTask<Void, Void, Void>() {
       @Override
       protected Void doInBackground(Void... params) {
-        if (InspectorFlags.getEnableCxxInspectorPackagerConnection()) {
+        if (InspectorFlags.getEnableModernCDPRegistry()) {
           mInspectorPackagerConnection =
               new CxxInspectorPackagerConnection(getInspectorDeviceUrl(), mPackageName);
         } else {
+          // TODO(T190163403): Remove legacy InspectorPackagerConnection
           mInspectorPackagerConnection =
               new InspectorPackagerConnection(getInspectorDeviceUrl(), mPackageName);
         }
