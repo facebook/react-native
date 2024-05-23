@@ -48,7 +48,11 @@ const InspectorFlags::Values& InspectorFlags::loadFlagsAndAssertUnchanged()
 #ifdef REACT_NATIVE_FORCE_ENABLE_FUSEBOX
           true,
 #else
+#if RCT_DEBUG
           ReactNativeFeatureFlags::inspectorEnableModernCDPRegistry(),
+#else
+          false,
+#endif
 #endif
   };
 
