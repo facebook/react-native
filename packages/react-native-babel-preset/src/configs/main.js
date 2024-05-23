@@ -106,12 +106,10 @@ const getPreset = (src, options) => {
       require('@babel/plugin-transform-named-capturing-groups-regex'),
     ]);
   }
-  if (!isHermesCanary) {
-    extraPlugins.push([
-      require('@babel/plugin-transform-destructuring'),
-      {useBuiltIns: true},
-    ]);
-  }
+  extraPlugins.push([
+    require('@babel/plugin-transform-destructuring'),
+    {useBuiltIns: true},
+  ]);
   if (!isHermes && (isNull || hasClass || src.indexOf('...') !== -1)) {
     extraPlugins.push(
       [require('@babel/plugin-transform-spread')],
