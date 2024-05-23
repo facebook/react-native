@@ -105,6 +105,12 @@ const getPreset = (src, options) => {
     extraPlugins.push([
       require('@babel/plugin-transform-named-capturing-groups-regex'),
     ]);
+    // Needed for regenerator for hermes-canary
+    if (isHermesCanary) {
+      extraPlugins.push([
+        require('@babel/plugin-transform-optional-catch-binding'),
+      ]);
+    }
   }
   extraPlugins.push([
     require('@babel/plugin-transform-destructuring'),
@@ -133,13 +139,17 @@ const getPreset = (src, options) => {
   ) {
     extraPlugins.push([require('@babel/plugin-transform-react-display-name')]);
   }
-  if (!isHermes && (isNull || src.indexOf('?.') !== -1)) {
+  // Check !isHermesStable because this is needed for regenerator for
+  // hermes-canary
+  if (!isHermesStable && (isNull || src.indexOf('?.') !== -1)) {
     extraPlugins.push([
       require('@babel/plugin-transform-optional-chaining'),
       {loose: true},
     ]);
   }
-  if (!isHermes && (isNull || src.indexOf('??') !== -1)) {
+  // Check !isHermesStable because this is needed for regenerator for
+  // hermes-canary
+  if (!isHermesStable && (isNull || src.indexOf('??') !== -1)) {
     extraPlugins.push([
       require('@babel/plugin-transform-nullish-coalescing-operator'),
       {loose: true},
@@ -163,6 +173,18 @@ const getPreset = (src, options) => {
     extraPlugins.push([require('@babel/plugin-transform-react-jsx-self')]);
   }
 
+  if (isHermesCanary) {
+    const hasForOf =
+      isNull || (src.indexOf('for') !== -1 && src.indexOf('of') !== -1);
+    if (hasForOf) {
+      // Needed for regenerator
+      extraPlugins.push([
+        require('@babel/plugin-transform-for-of'),
+        {loose: true},
+      ]);
+    }
+  }
+
   if (!options || options.enableBabelRuntime !== false) {
     // Allows configuring a specific runtime version to optimize output
     const isVersion = typeof options?.enableBabelRuntime === 'string';
@@ -171,10 +193,12 @@ const getPreset = (src, options) => {
       require('@babel/plugin-transform-runtime'),
       {
         helpers: true,
-        regenerator: !isHermes,
+        regenerator: !isHermesStable,
         ...(isVersion && {version: options.enableBabelRuntime}),
       },
     ]);
+  } else if (isHermesCanary) {
+    extraPlugins.push([require('@babel/plugin-transform-regenerator')]);
   }
 
   return {
