@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<86c1725630e3dadfb97ca9bccd618dd7>>
+ * @generated SignedSource<<53fb9cc52c068dd294507e060d06d75f>>
  */
 
 /**
@@ -33,7 +33,8 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
   private var enableUIConsistencyCache: Boolean? = null
   private var fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeakCache: Boolean? = null
   private var forceBatchingMountItemsOnAndroidCache: Boolean? = null
-  private var fuseboxEnabledCache: Boolean? = null
+  private var fuseboxEnabledDebugCache: Boolean? = null
+  private var fuseboxEnabledReleaseCache: Boolean? = null
   private var lazyAnimationCallbacksCache: Boolean? = null
   private var preventDoubleTextMeasureCache: Boolean? = null
   private var setAndroidLayoutDirectionCache: Boolean? = null
@@ -158,11 +159,20 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     return cached
   }
 
-  override fun fuseboxEnabled(): Boolean {
-    var cached = fuseboxEnabledCache
+  override fun fuseboxEnabledDebug(): Boolean {
+    var cached = fuseboxEnabledDebugCache
     if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.fuseboxEnabled()
-      fuseboxEnabledCache = cached
+      cached = ReactNativeFeatureFlagsCxxInterop.fuseboxEnabledDebug()
+      fuseboxEnabledDebugCache = cached
+    }
+    return cached
+  }
+
+  override fun fuseboxEnabledRelease(): Boolean {
+    var cached = fuseboxEnabledReleaseCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.fuseboxEnabledRelease()
+      fuseboxEnabledReleaseCache = cached
     }
     return cached
   }

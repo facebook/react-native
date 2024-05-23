@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e05adbe3f6ea91121c0bf5a46c9cd5c5>>
+ * @generated SignedSource<<d42b9949ba1bedd690893c8c34ac6a2b>>
  */
 
 /**
@@ -44,7 +44,8 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableUIConsistency();
   bool fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak();
   bool forceBatchingMountItemsOnAndroid();
-  bool fuseboxEnabled();
+  bool fuseboxEnabledDebug();
+  bool fuseboxEnabledRelease();
   bool lazyAnimationCallbacks();
   bool preventDoubleTextMeasure();
   bool setAndroidLayoutDirection();
@@ -61,7 +62,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 20> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 21> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> allowCollapsableChildren_;
@@ -76,7 +77,8 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableUIConsistency_;
   std::atomic<std::optional<bool>> fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak_;
   std::atomic<std::optional<bool>> forceBatchingMountItemsOnAndroid_;
-  std::atomic<std::optional<bool>> fuseboxEnabled_;
+  std::atomic<std::optional<bool>> fuseboxEnabledDebug_;
+  std::atomic<std::optional<bool>> fuseboxEnabledRelease_;
   std::atomic<std::optional<bool>> lazyAnimationCallbacks_;
   std::atomic<std::optional<bool>> preventDoubleTextMeasure_;
   std::atomic<std::optional<bool>> setAndroidLayoutDirection_;

@@ -32,7 +32,11 @@ const InspectorFlags::Values& InspectorFlags::loadFlagsAndAssertUnchanged()
 #ifdef REACT_NATIVE_FORCE_ENABLE_FUSEBOX
           true,
 #else
-          ReactNativeFeatureFlags::fuseboxEnabled(),
+#if RCT_DEBUG
+          ReactNativeFeatureFlags::fuseboxEnabledDebug(),
+#else
+          ReactNativeFeatureFlags::fuseboxEnabledRelease(),
+#endif
 #endif
   };
 

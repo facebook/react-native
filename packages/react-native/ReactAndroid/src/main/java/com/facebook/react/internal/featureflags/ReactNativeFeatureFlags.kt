@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<66b25d6d12959ea3378e8b8dbbae037e>>
+ * @generated SignedSource<<d6c66f8e1322b8962191fa4af5c8da4b>>
  */
 
 /**
@@ -107,10 +107,16 @@ public object ReactNativeFeatureFlags {
   public fun forceBatchingMountItemsOnAndroid(): Boolean = accessor.forceBatchingMountItemsOnAndroid()
 
   /**
-   * Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled. This flag is global and should not be changed across React Host lifetimes.
+   * Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled in debug builds. This flag is global and should not be changed across React Host lifetimes.
    */
   @JvmStatic
-  public fun fuseboxEnabled(): Boolean = accessor.fuseboxEnabled()
+  public fun fuseboxEnabledDebug(): Boolean = accessor.fuseboxEnabledDebug()
+
+  /**
+   * Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled in release builds. This flag is global and should not be changed across React Host lifetimes.
+   */
+  @JvmStatic
+  public fun fuseboxEnabledRelease(): Boolean = accessor.fuseboxEnabledRelease()
 
   /**
    * Only enqueue Choreographer calls if there is an ongoing animation, instead of enqueueing every frame.
