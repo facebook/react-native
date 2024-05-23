@@ -35,9 +35,7 @@ export type WrapperComponentProvider = (
   appParameters: any,
 ) => React.ComponentType<any>;
 
-export type RootViewStyleProvider = (
-  appParameters: any,
-) => ViewStyle;
+export type RootViewStyleProvider = (appParameters: any) => ViewStyle;
 
 /**
  * `AppRegistry` is the JS entry point to running all React Native apps.  App

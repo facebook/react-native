@@ -61,9 +61,7 @@ export type Registry = {
 export type WrapperComponentProvider = (
   appParameters: Object,
 ) => React$ComponentType<any>;
-export type RootViewStyleProvider = (
-  appParameters: Object,
-) => ViewStyleProp;
+export type RootViewStyleProvider = (appParameters: Object) => ViewStyleProp;
 
 const runnables: Runnables = {};
 let runCount = 1;

@@ -9,7 +9,7 @@
  */
 
 import type {RootTag} from './RootTag';
-import type { ViewStyleProp } from '../StyleSheet/StyleSheet';
+import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 
 import * as React from 'react';
 
