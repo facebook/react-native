@@ -39,7 +39,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
     containerView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     _modalViewController.view = containerView;
     _touchHandler = [[RCTTouchHandler alloc] initWithBridge:bridge];
-    _touchHandler.delegate = self;
     _isPresented = NO;
 
     __weak typeof(self) weakSelf = self;
