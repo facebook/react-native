@@ -204,27 +204,27 @@ Map {
 namespace facebook::react {
 
 
-#pragma mark - SampleTurboModuleCxxEnumInt
+#pragma mark - NativeSampleTurboModuleEnumInt
 
-enum class SampleTurboModuleCxxEnumInt { IA, IB };
+enum class NativeSampleTurboModuleEnumInt { IA, IB };
 
 template <>
-struct Bridging<SampleTurboModuleCxxEnumInt> {
-  static SampleTurboModuleCxxEnumInt fromJs(jsi::Runtime &rt, const jsi::Value &rawValue) {
+struct Bridging<NativeSampleTurboModuleEnumInt> {
+  static NativeSampleTurboModuleEnumInt fromJs(jsi::Runtime &rt, const jsi::Value &rawValue) {
     double value = (double)rawValue.asNumber();
     if (value == 23) {
-      return SampleTurboModuleCxxEnumInt::IA;
+      return NativeSampleTurboModuleEnumInt::IA;
     } else if (value == 42) {
-      return SampleTurboModuleCxxEnumInt::IB;
+      return NativeSampleTurboModuleEnumInt::IB;
     } else {
       throw jsi::JSError(rt, \\"No appropriate enum member found for value\\");
     }
   }
 
-  static jsi::Value toJs(jsi::Runtime &rt, SampleTurboModuleCxxEnumInt value) {
-    if (value == SampleTurboModuleCxxEnumInt::IA) {
+  static jsi::Value toJs(jsi::Runtime &rt, NativeSampleTurboModuleEnumInt value) {
+    if (value == NativeSampleTurboModuleEnumInt::IA) {
       return bridging::toJs(rt, 23);
-    } else if (value == SampleTurboModuleCxxEnumInt::IB) {
+    } else if (value == NativeSampleTurboModuleEnumInt::IB) {
       return bridging::toJs(rt, 42);
     } else {
       throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
@@ -232,27 +232,27 @@ struct Bridging<SampleTurboModuleCxxEnumInt> {
   }
 };
 
-#pragma mark - SampleTurboModuleCxxEnumFloat
+#pragma mark - NativeSampleTurboModuleEnumFloat
 
-enum class SampleTurboModuleCxxEnumFloat { FA, FB };
+enum class NativeSampleTurboModuleEnumFloat { FA, FB };
 
 template <>
-struct Bridging<SampleTurboModuleCxxEnumFloat> {
-  static SampleTurboModuleCxxEnumFloat fromJs(jsi::Runtime &rt, const jsi::Value &rawValue) {
+struct Bridging<NativeSampleTurboModuleEnumFloat> {
+  static NativeSampleTurboModuleEnumFloat fromJs(jsi::Runtime &rt, const jsi::Value &rawValue) {
     double value = (double)rawValue.asNumber();
     if (value == 1.23) {
-      return SampleTurboModuleCxxEnumFloat::FA;
+      return NativeSampleTurboModuleEnumFloat::FA;
     } else if (value == 4.56) {
-      return SampleTurboModuleCxxEnumFloat::FB;
+      return NativeSampleTurboModuleEnumFloat::FB;
     } else {
       throw jsi::JSError(rt, \\"No appropriate enum member found for value\\");
     }
   }
 
-  static jsi::Value toJs(jsi::Runtime &rt, SampleTurboModuleCxxEnumFloat value) {
-    if (value == SampleTurboModuleCxxEnumFloat::FA) {
+  static jsi::Value toJs(jsi::Runtime &rt, NativeSampleTurboModuleEnumFloat value) {
+    if (value == NativeSampleTurboModuleEnumFloat::FA) {
       return bridging::toJs(rt, 1.23);
-    } else if (value == SampleTurboModuleCxxEnumFloat::FB) {
+    } else if (value == NativeSampleTurboModuleEnumFloat::FB) {
       return bridging::toJs(rt, 4.56);
     } else {
       throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
@@ -260,27 +260,27 @@ struct Bridging<SampleTurboModuleCxxEnumFloat> {
   }
 };
 
-#pragma mark - SampleTurboModuleCxxEnumNone
+#pragma mark - NativeSampleTurboModuleEnumNone
 
-enum class SampleTurboModuleCxxEnumNone { NA, NB };
+enum class NativeSampleTurboModuleEnumNone { NA, NB };
 
 template <>
-struct Bridging<SampleTurboModuleCxxEnumNone> {
-  static SampleTurboModuleCxxEnumNone fromJs(jsi::Runtime &rt, const jsi::String &rawValue) {
+struct Bridging<NativeSampleTurboModuleEnumNone> {
+  static NativeSampleTurboModuleEnumNone fromJs(jsi::Runtime &rt, const jsi::String &rawValue) {
     std::string value = rawValue.utf8(rt);
     if (value == \\"NA\\") {
-      return SampleTurboModuleCxxEnumNone::NA;
+      return NativeSampleTurboModuleEnumNone::NA;
     } else if (value == \\"NB\\") {
-      return SampleTurboModuleCxxEnumNone::NB;
+      return NativeSampleTurboModuleEnumNone::NB;
     } else {
       throw jsi::JSError(rt, \\"No appropriate enum member found for value\\");
     }
   }
 
-  static jsi::String toJs(jsi::Runtime &rt, SampleTurboModuleCxxEnumNone value) {
-    if (value == SampleTurboModuleCxxEnumNone::NA) {
+  static jsi::String toJs(jsi::Runtime &rt, NativeSampleTurboModuleEnumNone value) {
+    if (value == NativeSampleTurboModuleEnumNone::NA) {
       return bridging::toJs(rt, \\"NA\\");
-    } else if (value == SampleTurboModuleCxxEnumNone::NB) {
+    } else if (value == NativeSampleTurboModuleEnumNone::NB) {
       return bridging::toJs(rt, \\"NB\\");
     } else {
       throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
@@ -288,27 +288,27 @@ struct Bridging<SampleTurboModuleCxxEnumNone> {
   }
 };
 
-#pragma mark - SampleTurboModuleCxxEnumStr
+#pragma mark - NativeSampleTurboModuleEnumStr
 
-enum class SampleTurboModuleCxxEnumStr { SA, SB };
+enum class NativeSampleTurboModuleEnumStr { SA, SB };
 
 template <>
-struct Bridging<SampleTurboModuleCxxEnumStr> {
-  static SampleTurboModuleCxxEnumStr fromJs(jsi::Runtime &rt, const jsi::String &rawValue) {
+struct Bridging<NativeSampleTurboModuleEnumStr> {
+  static NativeSampleTurboModuleEnumStr fromJs(jsi::Runtime &rt, const jsi::String &rawValue) {
     std::string value = rawValue.utf8(rt);
     if (value == \\"s---a\\") {
-      return SampleTurboModuleCxxEnumStr::SA;
+      return NativeSampleTurboModuleEnumStr::SA;
     } else if (value == \\"s---b\\") {
-      return SampleTurboModuleCxxEnumStr::SB;
+      return NativeSampleTurboModuleEnumStr::SB;
     } else {
       throw jsi::JSError(rt, \\"No appropriate enum member found for value\\");
     }
   }
 
-  static jsi::String toJs(jsi::Runtime &rt, SampleTurboModuleCxxEnumStr value) {
-    if (value == SampleTurboModuleCxxEnumStr::SA) {
+  static jsi::String toJs(jsi::Runtime &rt, NativeSampleTurboModuleEnumStr value) {
+    if (value == NativeSampleTurboModuleEnumStr::SA) {
       return bridging::toJs(rt, \\"s---a\\");
-    } else if (value == SampleTurboModuleCxxEnumStr::SB) {
+    } else if (value == NativeSampleTurboModuleEnumStr::SB) {
       return bridging::toJs(rt, \\"s---b\\");
     } else {
       throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
@@ -1779,27 +1779,27 @@ Map {
 namespace facebook::react {
 
 
-#pragma mark - SampleTurboModuleNumEnum
+#pragma mark - NativeSampleTurboModuleNumEnum
 
-enum class SampleTurboModuleNumEnum { ONE, TWO };
+enum class NativeSampleTurboModuleNumEnum { ONE, TWO };
 
 template <>
-struct Bridging<SampleTurboModuleNumEnum> {
-  static SampleTurboModuleNumEnum fromJs(jsi::Runtime &rt, const jsi::Value &rawValue) {
+struct Bridging<NativeSampleTurboModuleNumEnum> {
+  static NativeSampleTurboModuleNumEnum fromJs(jsi::Runtime &rt, const jsi::Value &rawValue) {
     double value = (double)rawValue.asNumber();
     if (value == 1) {
-      return SampleTurboModuleNumEnum::ONE;
+      return NativeSampleTurboModuleNumEnum::ONE;
     } else if (value == 2) {
-      return SampleTurboModuleNumEnum::TWO;
+      return NativeSampleTurboModuleNumEnum::TWO;
     } else {
       throw jsi::JSError(rt, \\"No appropriate enum member found for value\\");
     }
   }
 
-  static jsi::Value toJs(jsi::Runtime &rt, SampleTurboModuleNumEnum value) {
-    if (value == SampleTurboModuleNumEnum::ONE) {
+  static jsi::Value toJs(jsi::Runtime &rt, NativeSampleTurboModuleNumEnum value) {
+    if (value == NativeSampleTurboModuleNumEnum::ONE) {
       return bridging::toJs(rt, 1);
-    } else if (value == SampleTurboModuleNumEnum::TWO) {
+    } else if (value == NativeSampleTurboModuleNumEnum::TWO) {
       return bridging::toJs(rt, 2);
     } else {
       throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
@@ -1807,31 +1807,31 @@ struct Bridging<SampleTurboModuleNumEnum> {
   }
 };
 
-#pragma mark - SampleTurboModuleFloatEnum
+#pragma mark - NativeSampleTurboModuleFloatEnum
 
-enum class SampleTurboModuleFloatEnum { POINT_ZERO, POINT_ONE, POINT_TWO };
+enum class NativeSampleTurboModuleFloatEnum { POINT_ZERO, POINT_ONE, POINT_TWO };
 
 template <>
-struct Bridging<SampleTurboModuleFloatEnum> {
-  static SampleTurboModuleFloatEnum fromJs(jsi::Runtime &rt, const jsi::Value &rawValue) {
+struct Bridging<NativeSampleTurboModuleFloatEnum> {
+  static NativeSampleTurboModuleFloatEnum fromJs(jsi::Runtime &rt, const jsi::Value &rawValue) {
     double value = (double)rawValue.asNumber();
     if (value == 0.0) {
-      return SampleTurboModuleFloatEnum::POINT_ZERO;
+      return NativeSampleTurboModuleFloatEnum::POINT_ZERO;
     } else if (value == 0.1) {
-      return SampleTurboModuleFloatEnum::POINT_ONE;
+      return NativeSampleTurboModuleFloatEnum::POINT_ONE;
     } else if (value == 0.2) {
-      return SampleTurboModuleFloatEnum::POINT_TWO;
+      return NativeSampleTurboModuleFloatEnum::POINT_TWO;
     } else {
       throw jsi::JSError(rt, \\"No appropriate enum member found for value\\");
     }
   }
 
-  static jsi::Value toJs(jsi::Runtime &rt, SampleTurboModuleFloatEnum value) {
-    if (value == SampleTurboModuleFloatEnum::POINT_ZERO) {
+  static jsi::Value toJs(jsi::Runtime &rt, NativeSampleTurboModuleFloatEnum value) {
+    if (value == NativeSampleTurboModuleFloatEnum::POINT_ZERO) {
       return bridging::toJs(rt, 0.0);
-    } else if (value == SampleTurboModuleFloatEnum::POINT_ONE) {
+    } else if (value == NativeSampleTurboModuleFloatEnum::POINT_ONE) {
       return bridging::toJs(rt, 0.1);
-    } else if (value == SampleTurboModuleFloatEnum::POINT_TWO) {
+    } else if (value == NativeSampleTurboModuleFloatEnum::POINT_TWO) {
       return bridging::toJs(rt, 0.2);
     } else {
       throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
@@ -1839,27 +1839,27 @@ struct Bridging<SampleTurboModuleFloatEnum> {
   }
 };
 
-#pragma mark - SampleTurboModuleStringEnum
+#pragma mark - NativeSampleTurboModuleStringEnum
 
-enum class SampleTurboModuleStringEnum { HELLO, GoodBye };
+enum class NativeSampleTurboModuleStringEnum { HELLO, GoodBye };
 
 template <>
-struct Bridging<SampleTurboModuleStringEnum> {
-  static SampleTurboModuleStringEnum fromJs(jsi::Runtime &rt, const jsi::String &rawValue) {
+struct Bridging<NativeSampleTurboModuleStringEnum> {
+  static NativeSampleTurboModuleStringEnum fromJs(jsi::Runtime &rt, const jsi::String &rawValue) {
     std::string value = rawValue.utf8(rt);
     if (value == \\"hello\\") {
-      return SampleTurboModuleStringEnum::HELLO;
+      return NativeSampleTurboModuleStringEnum::HELLO;
     } else if (value == \\"goodbye\\") {
-      return SampleTurboModuleStringEnum::GoodBye;
+      return NativeSampleTurboModuleStringEnum::GoodBye;
     } else {
       throw jsi::JSError(rt, \\"No appropriate enum member found for value\\");
     }
   }
 
-  static jsi::String toJs(jsi::Runtime &rt, SampleTurboModuleStringEnum value) {
-    if (value == SampleTurboModuleStringEnum::HELLO) {
+  static jsi::String toJs(jsi::Runtime &rt, NativeSampleTurboModuleStringEnum value) {
+    if (value == NativeSampleTurboModuleStringEnum::HELLO) {
       return bridging::toJs(rt, \\"hello\\");
-    } else if (value == SampleTurboModuleStringEnum::GoodBye) {
+    } else if (value == NativeSampleTurboModuleStringEnum::GoodBye) {
       return bridging::toJs(rt, \\"goodbye\\");
     } else {
       throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
