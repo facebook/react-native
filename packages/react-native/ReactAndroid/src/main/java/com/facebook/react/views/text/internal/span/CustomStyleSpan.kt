@@ -74,10 +74,10 @@ public class CustomStyleSpan(
           ReactTypefaceUtils.applyStyles(paint.typeface, style, weight, family, assetManager)
       paint.apply {
         fontFeatureSettings = fontFeatureSettingsParam
+        setTypeface(typeface)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
           fontVariationSettings = fontVariationSettingsParam
         }
-        setTypeface(typeface)
         isSubpixelText = true
       }
     }
