@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<20c3c50d2124fbfc7bbe434c940ce3bf>>
+ * @generated SignedSource<<63e7a8952026600cb58367e9c70fb68d>>
  * @flow strict-local
  */
 
@@ -170,7 +170,7 @@ export const lazyAnimationCallbacks: Getter<boolean> = createNativeFlagGetter('l
 /**
  * When enabled, ParagraphShadowNode will no longer call measure twice.
  */
-export const preventDoubleTextMeasure: Getter<boolean> = createNativeFlagGetter('preventDoubleTextMeasure', false);
+export const preventDoubleTextMeasure: Getter<boolean> = createNativeFlagGetter('preventDoubleTextMeasure', true);
 /**
  * Propagate layout direction to Android views.
  */

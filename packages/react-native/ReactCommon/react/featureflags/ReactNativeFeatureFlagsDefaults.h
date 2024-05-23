@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2bfa4670757aa340c88ae8ff57270308>>
+ * @generated SignedSource<<54a1827a45d7dd15b5e8a26d49ad6d30>>
  */
 
 /**
@@ -92,7 +92,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool preventDoubleTextMeasure() override {
-    return false;
+    return true;
   }
 
   bool setAndroidLayoutDirection() override {
