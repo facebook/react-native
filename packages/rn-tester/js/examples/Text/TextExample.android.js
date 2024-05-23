@@ -1127,7 +1127,7 @@ const examples = [
     },
   },
   {
-    title: 'Font Variation Settings',
+    title: 'Variable Font Settings',
     name: 'fontVariationSettings',
     render(): React.Node {
       return <FontVariationSettingsExample />;
