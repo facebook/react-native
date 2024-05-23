@@ -211,7 +211,7 @@ function translatePrimitiveJSTypeToCpp(
 }
 
 function createStructsString(
-  moduleName: string,
+  hasteModuleName: string,
   aliasMap: NativeModuleAliasMap,
   resolveAlias: AliasResolver,
   enumMap: NativeModuleEnumMap,
@@ -221,7 +221,7 @@ function createStructsString(
     v: NamedShape<Nullable<NativeModuleBaseTypeAnnotation>>,
   ) =>
     translatePrimitiveJSTypeToCpp(
-      moduleName,
+      hasteModuleName,
       parentObjectAlias,
       v.typeAnnotation,
       false,
@@ -236,7 +236,7 @@ function createStructsString(
       if (value.properties.length === 0) {
         return '';
       }
-      const structName = `${moduleName}${alias}`;
+      const structName = `${hasteModuleName}${alias}`;
       const templateParameter = value.properties.filter(
         v =>
           !isDirectRecursiveMember(alias, v.typeAnnotation) &&
@@ -530,7 +530,7 @@ module.exports = {
       } = nativeModules[hasteModuleName];
       const resolveAlias = createAliasResolver(aliasMap);
       const structs = createStructsString(
-        moduleName,
+        hasteModuleName,
         aliasMap,
         resolveAlias,
         enumMap,

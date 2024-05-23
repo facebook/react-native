@@ -24,27 +24,27 @@ namespace facebook::react {
 
 #pragma mark - Structs
 using ConstantsStruct =
-    NativeCxxModuleExampleCxxConstantsStruct<bool, int32_t, std::string>;
+    NativeCxxModuleExampleConstantsStruct<bool, int32_t, std::string>;
 
 template <>
 struct Bridging<ConstantsStruct>
-    : NativeCxxModuleExampleCxxConstantsStructBridging<ConstantsStruct> {};
+    : NativeCxxModuleExampleConstantsStructBridging<ConstantsStruct> {};
 
-using ObjectStruct = NativeCxxModuleExampleCxxObjectStruct<
+using ObjectStruct = NativeCxxModuleExampleObjectStruct<
     int32_t,
     std::string,
     std::optional<std::string>>;
 
 template <>
 struct Bridging<ObjectStruct>
-    : NativeCxxModuleExampleCxxObjectStructBridging<ObjectStruct> {};
+    : NativeCxxModuleExampleObjectStructBridging<ObjectStruct> {};
 
 using ValueStruct =
-    NativeCxxModuleExampleCxxValueStruct<double, std::string, ObjectStruct>;
+    NativeCxxModuleExampleValueStruct<double, std::string, ObjectStruct>;
 
 template <>
 struct Bridging<ValueStruct>
-    : NativeCxxModuleExampleCxxValueStructBridging<ValueStruct> {};
+    : NativeCxxModuleExampleValueStructBridging<ValueStruct> {};
 
 #pragma mark - enums
 enum class CustomEnumInt : int32_t { A = 23, B = 42 };
@@ -93,39 +93,38 @@ using CustomHostObject = HostObjectWrapper<CustomHostObjectRef>;
 
 #pragma mark - recursive objects
 
-using BinaryTreeNode = NativeCxxModuleExampleCxxBinaryTreeNode<int32_t>;
+using BinaryTreeNode = NativeCxxModuleExampleBinaryTreeNode<int32_t>;
 
 template <>
 struct Bridging<BinaryTreeNode>
-    : NativeCxxModuleExampleCxxBinaryTreeNodeBridging<BinaryTreeNode> {};
+    : NativeCxxModuleExampleBinaryTreeNodeBridging<BinaryTreeNode> {};
 
-using GraphNode = NativeCxxModuleExampleCxxGraphNode<std::string>;
+using GraphNode = NativeCxxModuleExampleGraphNode<std::string>;
 
 template <>
 struct Bridging<GraphNode>
-    : NativeCxxModuleExampleCxxGraphNodeBridging<GraphNode> {};
+    : NativeCxxModuleExampleGraphNodeBridging<GraphNode> {};
 
 #pragma mark - functional object properties
 
-using MenuItem = NativeCxxModuleExampleCxxMenuItem<
+using MenuItem = NativeCxxModuleExampleMenuItem<
     std::string,
     AsyncCallback<std::string, bool>,
     std::optional<std::string>>;
 
 template <>
-struct Bridging<MenuItem>
-    : NativeCxxModuleExampleCxxMenuItemBridging<MenuItem> {};
+struct Bridging<MenuItem> : NativeCxxModuleExampleMenuItemBridging<MenuItem> {};
 
 #pragma mark - RCTDeviceEventEmitter events
 
-using CustomDeviceEvent = NativeCxxModuleExampleCxxCustomDeviceEvent<
+using CustomDeviceEvent = NativeCxxModuleExampleCustomDeviceEvent<
     std::string,
     int32_t,
     std::optional<float>>;
 
 template <>
 struct Bridging<CustomDeviceEvent>
-    : NativeCxxModuleExampleCxxCustomDeviceEventBridging<CustomDeviceEvent> {};
+    : NativeCxxModuleExampleCustomDeviceEventBridging<CustomDeviceEvent> {};
 
 #pragma mark - implementation
 class NativeCxxModuleExample

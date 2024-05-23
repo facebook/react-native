@@ -316,20 +316,20 @@ struct Bridging<SampleTurboModuleCxxEnumStr> {
   }
 };
   
-#pragma mark - SampleTurboModuleCxxConstantsStruct
+#pragma mark - NativeSampleTurboModuleConstantsStruct
 
 template <typename P0, typename P1, typename P2>
-struct SampleTurboModuleCxxConstantsStruct {
+struct NativeSampleTurboModuleConstantsStruct {
   P0 const1;
   P1 const2;
   P2 const3;
-  bool operator==(const SampleTurboModuleCxxConstantsStruct &other) const {
+  bool operator==(const NativeSampleTurboModuleConstantsStruct &other) const {
     return const1 == other.const1 && const2 == other.const2 && const3 == other.const3;
   }
 };
 
 template <typename T>
-struct SampleTurboModuleCxxConstantsStructBridging {
+struct NativeSampleTurboModuleConstantsStructBridging {
   static T types;
 
   static T fromJs(
@@ -372,20 +372,20 @@ struct SampleTurboModuleCxxConstantsStructBridging {
 
 
 
-#pragma mark - SampleTurboModuleCxxBinaryTreeNode
+#pragma mark - NativeSampleTurboModuleBinaryTreeNode
 
 template <typename P0>
-struct SampleTurboModuleCxxBinaryTreeNode {
-  std::unique_ptr<SampleTurboModuleCxxBinaryTreeNode<P0>> left;
+struct NativeSampleTurboModuleBinaryTreeNode {
+  std::unique_ptr<NativeSampleTurboModuleBinaryTreeNode<P0>> left;
   P0 value;
-  std::unique_ptr<SampleTurboModuleCxxBinaryTreeNode<P0>> right;
-  bool operator==(const SampleTurboModuleCxxBinaryTreeNode &other) const {
+  std::unique_ptr<NativeSampleTurboModuleBinaryTreeNode<P0>> right;
+  bool operator==(const NativeSampleTurboModuleBinaryTreeNode &other) const {
     return left == other.left && value == other.value && right == other.right;
   }
 };
 
 template <typename T>
-struct SampleTurboModuleCxxBinaryTreeNodeBridging {
+struct NativeSampleTurboModuleBinaryTreeNodeBridging {
   static T types;
 
   static T fromJs(
@@ -431,19 +431,19 @@ struct SampleTurboModuleCxxBinaryTreeNodeBridging {
 
 
 
-#pragma mark - SampleTurboModuleCxxGraphNode
+#pragma mark - NativeSampleTurboModuleGraphNode
 
 template <typename P0>
-struct SampleTurboModuleCxxGraphNode {
+struct NativeSampleTurboModuleGraphNode {
   P0 label;
-  std::optional<std::vector<SampleTurboModuleCxxGraphNode<P0>>> neighbors;
-  bool operator==(const SampleTurboModuleCxxGraphNode &other) const {
+  std::optional<std::vector<NativeSampleTurboModuleGraphNode<P0>>> neighbors;
+  bool operator==(const NativeSampleTurboModuleGraphNode &other) const {
     return label == other.label && neighbors == other.neighbors;
   }
 };
 
 template <typename T>
-struct SampleTurboModuleCxxGraphNodeBridging {
+struct NativeSampleTurboModuleGraphNodeBridging {
   static T types;
 
   static T fromJs(
@@ -481,20 +481,20 @@ struct SampleTurboModuleCxxGraphNodeBridging {
 
 
 
-#pragma mark - SampleTurboModuleCxxObjectStruct
+#pragma mark - NativeSampleTurboModuleObjectStruct
 
 template <typename P0, typename P1, typename P2>
-struct SampleTurboModuleCxxObjectStruct {
+struct NativeSampleTurboModuleObjectStruct {
   P0 a;
   P1 b;
   P2 c;
-  bool operator==(const SampleTurboModuleCxxObjectStruct &other) const {
+  bool operator==(const NativeSampleTurboModuleObjectStruct &other) const {
     return a == other.a && b == other.b && c == other.c;
   }
 };
 
 template <typename T>
-struct SampleTurboModuleCxxObjectStructBridging {
+struct NativeSampleTurboModuleObjectStructBridging {
   static T types;
 
   static T fromJs(
@@ -538,20 +538,20 @@ struct SampleTurboModuleCxxObjectStructBridging {
 
 
 
-#pragma mark - SampleTurboModuleCxxValueStruct
+#pragma mark - NativeSampleTurboModuleValueStruct
 
 template <typename P0, typename P1, typename P2>
-struct SampleTurboModuleCxxValueStruct {
+struct NativeSampleTurboModuleValueStruct {
   P0 x;
   P1 y;
   P2 z;
-  bool operator==(const SampleTurboModuleCxxValueStruct &other) const {
+  bool operator==(const NativeSampleTurboModuleValueStruct &other) const {
     return x == other.x && y == other.y && z == other.z;
   }
 };
 
 template <typename T>
-struct SampleTurboModuleCxxValueStructBridging {
+struct NativeSampleTurboModuleValueStructBridging {
   static T types;
 
   static T fromJs(
@@ -593,21 +593,21 @@ struct SampleTurboModuleCxxValueStructBridging {
 
 
 
-#pragma mark - SampleTurboModuleCxxMenuItem
+#pragma mark - NativeSampleTurboModuleMenuItem
 
 template <typename P0, typename P1, typename P2>
-struct SampleTurboModuleCxxMenuItem {
+struct NativeSampleTurboModuleMenuItem {
   P0 label;
   P1 onPress;
   P2 shortcut;
-  std::optional<std::vector<SampleTurboModuleCxxMenuItem<P0, P1, P2>>> items;
-  bool operator==(const SampleTurboModuleCxxMenuItem &other) const {
+  std::optional<std::vector<NativeSampleTurboModuleMenuItem<P0, P1, P2>>> items;
+  bool operator==(const NativeSampleTurboModuleMenuItem &other) const {
     return label == other.label && onPress == other.onPress && shortcut == other.shortcut && items == other.items;
   }
 };
 
 template <typename T>
-struct SampleTurboModuleCxxMenuItemBridging {
+struct NativeSampleTurboModuleMenuItemBridging {
   static T types;
 
   static T fromJs(
@@ -1175,23 +1175,23 @@ namespace facebook::react {
 
 
   
-#pragma mark - CameraRollManagerPhotoIdentifierImage
+#pragma mark - NativeCameraRollManagerPhotoIdentifierImage
 
 template <typename P0, typename P1, typename P2, typename P3, typename P4, typename P5>
-struct CameraRollManagerPhotoIdentifierImage {
+struct NativeCameraRollManagerPhotoIdentifierImage {
   P0 uri;
   P1 playableDuration;
   P2 width;
   P3 height;
   P4 isStored;
   P5 filename;
-  bool operator==(const CameraRollManagerPhotoIdentifierImage &other) const {
+  bool operator==(const NativeCameraRollManagerPhotoIdentifierImage &other) const {
     return uri == other.uri && playableDuration == other.playableDuration && width == other.width && height == other.height && isStored == other.isStored && filename == other.filename;
   }
 };
 
 template <typename T>
-struct CameraRollManagerPhotoIdentifierImageBridging {
+struct NativeCameraRollManagerPhotoIdentifierImageBridging {
   static T types;
 
   static T fromJs(
@@ -1253,18 +1253,18 @@ struct CameraRollManagerPhotoIdentifierImageBridging {
 
 
 
-#pragma mark - CameraRollManagerPhotoIdentifier
+#pragma mark - NativeCameraRollManagerPhotoIdentifier
 
 template <typename P0>
-struct CameraRollManagerPhotoIdentifier {
+struct NativeCameraRollManagerPhotoIdentifier {
   P0 node;
-  bool operator==(const CameraRollManagerPhotoIdentifier &other) const {
+  bool operator==(const NativeCameraRollManagerPhotoIdentifier &other) const {
     return node == other.node;
   }
 };
 
 template <typename T>
-struct CameraRollManagerPhotoIdentifierBridging {
+struct NativeCameraRollManagerPhotoIdentifierBridging {
   static T types;
 
   static T fromJs(
@@ -1294,19 +1294,19 @@ struct CameraRollManagerPhotoIdentifierBridging {
 
 
 
-#pragma mark - CameraRollManagerPhotoIdentifiersPage
+#pragma mark - NativeCameraRollManagerPhotoIdentifiersPage
 
 template <typename P0, typename P1>
-struct CameraRollManagerPhotoIdentifiersPage {
+struct NativeCameraRollManagerPhotoIdentifiersPage {
   P0 edges;
   P1 page_info;
-  bool operator==(const CameraRollManagerPhotoIdentifiersPage &other) const {
+  bool operator==(const NativeCameraRollManagerPhotoIdentifiersPage &other) const {
     return edges == other.edges && page_info == other.page_info;
   }
 };
 
 template <typename T>
-struct CameraRollManagerPhotoIdentifiersPageBridging {
+struct NativeCameraRollManagerPhotoIdentifiersPageBridging {
   static T types;
 
   static T fromJs(
@@ -1342,10 +1342,10 @@ struct CameraRollManagerPhotoIdentifiersPageBridging {
 
 
 
-#pragma mark - CameraRollManagerGetPhotosParams
+#pragma mark - NativeCameraRollManagerGetPhotosParams
 
 template <typename P0, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6>
-struct CameraRollManagerGetPhotosParams {
+struct NativeCameraRollManagerGetPhotosParams {
   P0 first;
   P1 after;
   P2 groupName;
@@ -1353,13 +1353,13 @@ struct CameraRollManagerGetPhotosParams {
   P4 assetType;
   P5 maxSize;
   P6 mimeTypes;
-  bool operator==(const CameraRollManagerGetPhotosParams &other) const {
+  bool operator==(const NativeCameraRollManagerGetPhotosParams &other) const {
     return first == other.first && after == other.after && groupName == other.groupName && groupTypes == other.groupTypes && assetType == other.assetType && maxSize == other.maxSize && mimeTypes == other.mimeTypes;
   }
 };
 
 template <typename T>
-struct CameraRollManagerGetPhotosParamsBridging {
+struct NativeCameraRollManagerGetPhotosParamsBridging {
   static T types;
 
   static T fromJs(
@@ -1509,22 +1509,22 @@ private:
 
 
   
-#pragma mark - ExceptionsManagerStackFrame
+#pragma mark - NativeExceptionsManagerStackFrame
 
 template <typename P0, typename P1, typename P2, typename P3, typename P4>
-struct ExceptionsManagerStackFrame {
+struct NativeExceptionsManagerStackFrame {
   P0 column;
   P1 file;
   P2 lineNumber;
   P3 methodName;
   P4 collapse;
-  bool operator==(const ExceptionsManagerStackFrame &other) const {
+  bool operator==(const NativeExceptionsManagerStackFrame &other) const {
     return column == other.column && file == other.file && lineNumber == other.lineNumber && methodName == other.methodName && collapse == other.collapse;
   }
 };
 
 template <typename T>
-struct ExceptionsManagerStackFrameBridging {
+struct NativeExceptionsManagerStackFrameBridging {
   static T types;
 
   static T fromJs(
@@ -1584,10 +1584,10 @@ struct ExceptionsManagerStackFrameBridging {
 
 
 
-#pragma mark - ExceptionsManagerExceptionData
+#pragma mark - NativeExceptionsManagerExceptionData
 
 template <typename P0, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7>
-struct ExceptionsManagerExceptionData {
+struct NativeExceptionsManagerExceptionData {
   P0 message;
   P1 originalMessage;
   P2 name;
@@ -1596,13 +1596,13 @@ struct ExceptionsManagerExceptionData {
   P5 id;
   P6 isFatal;
   P7 extraData;
-  bool operator==(const ExceptionsManagerExceptionData &other) const {
+  bool operator==(const NativeExceptionsManagerExceptionData &other) const {
     return message == other.message && originalMessage == other.originalMessage && name == other.name && componentStack == other.componentStack && stack == other.stack && id == other.id && isFatal == other.isFatal && extraData == other.extraData;
   }
 };
 
 template <typename T>
-struct ExceptionsManagerExceptionDataBridging {
+struct NativeExceptionsManagerExceptionDataBridging {
   static T types;
 
   static T fromJs(
