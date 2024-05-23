@@ -93,6 +93,7 @@ inline bool areTextAttributesEquivalentLayoutWise(
              lhs.fontWeight,
              lhs.fontStyle,
              lhs.fontVariant,
+			 lhs.fontVariationSettings,
              lhs.allowFontScaling,
              lhs.dynamicTypeRamp,
              lhs.alignment) ==
@@ -101,6 +102,7 @@ inline bool areTextAttributesEquivalentLayoutWise(
              rhs.fontWeight,
              rhs.fontStyle,
              rhs.fontVariant,
+			 rhs.fontVariationSettings,
              rhs.allowFontScaling,
              rhs.dynamicTypeRamp,
              rhs.alignment) &&
@@ -121,6 +123,7 @@ inline size_t textAttributesHashLayoutWise(
       textAttributes.fontWeight,
       textAttributes.fontStyle,
       textAttributes.fontVariant,
+	  textAttributes.fontVariationSettings,
       textAttributes.allowFontScaling,
       textAttributes.dynamicTypeRamp,
       textAttributes.letterSpacing,

@@ -32,6 +32,7 @@ struct RCTFontProperties {
   UIFontWeight weight = NAN;
   RCTFontStyle style = RCTFontStyleUndefined;
   RCTFontVariant variant = RCTFontVariantUndefined;
+  NSString *fontVariationSettings = nil;
   CGFloat sizeMultiplier = NAN;
 };
 

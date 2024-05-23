@@ -189,6 +189,7 @@ static NSArray<NSString *> *fontNamesForFamilyName(NSString *familyName)
                       weight:[RCTConvert NSString:json[@"fontWeight"]]
                        style:[RCTConvert NSString:json[@"fontStyle"]]
                      variant:[RCTConvert NSStringArray:json[@"fontVariant"]]
+	   fontVariationSettings:[RCTConvert NSString:json[@"fontVariationSettings"]] 
              scaleMultiplier:1];
 }
 
@@ -378,12 +379,27 @@ RCT_ARRAY_CONVERTER(RCTFontVariantDescriptor)
 
 @implementation RCTFont
 
++ (NSNumber *)openTypeTagToNumber:(NSString *)tag {
+	if (tag.length != 4) {
+		return nil;
+	}
+	
+	NSData *data = [tag dataUsingEncoding:NSUTF8StringEncoding];
+	const char *bytes = (const char *)[data bytes];
+	
+	uint32_t value = (bytes[0] << 24) | (bytes[1] << 16) | (bytes[2] << 8) | bytes[3];
+	
+	return @(value);
+}
+
+
 + (UIFont *)updateFont:(UIFont *)font
             withFamily:(NSString *)family
                   size:(NSNumber *)size
                 weight:(NSString *)weight
                  style:(NSString *)style
                variant:(NSArray<RCTFontVariantDescriptor *> *)variant
+ fontVariationSettings:(NSString *)fontVariationSettings
        scaleMultiplier:(CGFloat)scaleMultiplier
 {
   // Defaults
@@ -499,27 +515,82 @@ RCT_ARRAY_CONVERTER(RCTFontVariantDescriptor)
     font = [UIFont fontWithDescriptor:fontDescriptor size:fontSize];
   }
 
+	if (fontVariationSettings) {
+		NSArray<NSString *> *variationSettings = [fontVariationSettings componentsSeparatedByString:@","];
+		for (NSString *variationSetting in variationSettings) {
+			NSString *trimmedSetting = [variationSetting stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+			NSArray<NSString *> *setting = [trimmedSetting componentsSeparatedByString:@" "];
+			
+			if (setting.count != 2) {
+				NSLog(@"Error: Setting does not contain exactly 2 components. Setting: %@", setting);
+				continue;
+			}
+			
+			NSString *attribute = [[[setting[0] 
+									 stringByReplacingOccurrencesOfString:@"\"" withString:@""]
+									stringByReplacingOccurrencesOfString:@"\'" withString:@""]
+								   stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+			
+			NSString *value = [setting[1] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+			
+			if (attribute.length == 0 || value.length == 0) {
+				NSLog(@"Error: Invalid attribute or value. Attribute: %@, Value: %@", attribute, value);
+				continue;
+			}
+			
+			NSNumber *tag = [RCTFont openTypeTagToNumber:attribute];
+			if (!tag) {
+				NSLog(@"Error: Invalid attribute in fontVariationSettings: %@", attribute);
+				continue;
+			}
+			
+			NSNumber *valueNumber = @([value intValue]);
+			NSDictionary<NSNumber *, NSNumber *> *variations = @{tag: valueNumber};
+			
+			UIFontDescriptor *fontDescriptor = [UIFontDescriptor fontDescriptorWithFontAttributes:@{
+				UIFontDescriptorNameAttribute: familyName, 
+				(NSString *)kCTFontVariationAttribute: variations
+			}];
+			
+			if (!fontDescriptor) {
+				NSLog(@"Error: Could not create font descriptor with variations. Variations: %@", variations);
+				continue;
+			}
+			
+			UIFontDescriptor *existingFontDescriptors = font.fontDescriptor;
+			UIFontDescriptor *mergedFontDescriptor = [existingFontDescriptors fontDescriptorByAddingAttributes:fontDescriptor.fontAttributes];
+			font = [UIFont fontWithDescriptor:mergedFontDescriptor size:fontSize];
+		}
+	}
+
   return font;
 }
 
 + (UIFont *)updateFont:(UIFont *)font withFamily:(NSString *)family
 {
-  return [self updateFont:font withFamily:family size:nil weight:nil style:nil variant:nil scaleMultiplier:1];
+  return [self updateFont:font withFamily:family size:nil weight:nil style:nil variant:nil fontVariationSettings:nil scaleMultiplier:1];
 }
 
 + (UIFont *)updateFont:(UIFont *)font withSize:(NSNumber *)size
 {
-  return [self updateFont:font withFamily:nil size:size weight:nil style:nil variant:nil scaleMultiplier:1];
+  return [self updateFont:font withFamily:nil size:size weight:nil style:nil variant:nil fontVariationSettings:nil scaleMultiplier:1];
 }
 
 + (UIFont *)updateFont:(UIFont *)font withWeight:(NSString *)weight
 {
-  return [self updateFont:font withFamily:nil size:nil weight:weight style:nil variant:nil scaleMultiplier:1];
+  return [self updateFont:font withFamily:nil size:nil weight:weight style:nil variant:nil fontVariationSettings:nil scaleMultiplier:1];
 }
 
 + (UIFont *)updateFont:(UIFont *)font withStyle:(NSString *)style
 {
-  return [self updateFont:font withFamily:nil size:nil weight:nil style:style variant:nil scaleMultiplier:1];
+  return [self updateFont:font withFamily:nil size:nil weight:nil style:style variant:nil fontVariationSettings:nil scaleMultiplier:1];
 }
+
++ (UIFont *)updateFont:(UIFont *)font withFontVariationSettings:(NSString *)fontVariationSettings
+{
+  return [self updateFont:font withFamily:nil size:nil weight:nil style:nil variant:nil fontVariationSettings:fontVariationSettings scaleMultiplier:1];
+}
+
+
 
 @end

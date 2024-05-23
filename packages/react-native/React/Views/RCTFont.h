@@ -33,6 +33,7 @@ RCT_EXTERN BOOL RCTHasFontHandlerSet(void);
                 weight:(NSString *)weight
                  style:(NSString *)style
                variant:(NSArray<NSString *> *)variant
+ fontVariationSettings:(NSString *)fontVariationSettings
        scaleMultiplier:(CGFloat)scaleMultiplier;
 
 + (UIFont *)updateFont:(UIFont *)font withFamily:(NSString *)family;
