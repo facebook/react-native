@@ -47,8 +47,10 @@ const InspectorFlags::Values& InspectorFlags::loadFlagsAndAssertUnchanged()
       .enableModernCDPRegistry =
 #ifdef REACT_NATIVE_FORCE_ENABLE_FUSEBOX
           true,
-#else
+#elif defined(HERMES_ENABLE_DEBUGGER)
           ReactNativeFeatureFlags::inspectorEnableModernCDPRegistry(),
+#else
+              false,
 #endif
   };
 
