@@ -51,6 +51,7 @@ const DefaultBrowserLauncher: BrowserLauncher = {
       `react-native-debugger-frontend-${browserType}`,
     );
     const launchedChrome = await ChromeLauncher.launch({
+      ignoreDefaultFlags: true,
       chromeFlags: [
         ...ChromeLauncher.Launcher.defaultFlags().filter(
           /**
@@ -64,10 +65,8 @@ const DefaultBrowserLauncher: BrowserLauncher = {
         `--app=${url}`,
         `--user-data-dir=${userDataDir}`,
         '--window-size=1200,600',
-        '--guest',
       ],
       chromePath,
-      ignoreDefaultFlags: true,
     });
 
     return {
