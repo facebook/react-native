@@ -502,6 +502,7 @@ switch (returnKeyType) {
         returnKeyTypesSet = [NSSet setWithObjects:
             @(UIReturnKeyDone),
             @(UIReturnKeyGo),
+            @(UIReturnKeyDefault),
             @(UIReturnKeyNext),
             @(UIReturnKeySearch),
             @(UIReturnKeySend),
