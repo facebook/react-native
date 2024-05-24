@@ -10,7 +10,7 @@
  */
 
 import type {InspectorProxyQueries} from '../inspector-proxy/InspectorProxy';
-import type {BrowserLauncher, LaunchedBrowser} from '../types/BrowserLauncher';
+import type {BrowserLauncher} from '../types/BrowserLauncher';
 import type {EventReporter} from '../types/EventReporter';
 import type {Experiments} from '../types/Experiments';
 import type {Logger} from '../types/Logger';
@@ -19,8 +19,6 @@ import type {IncomingMessage, ServerResponse} from 'http';
 
 import getDevToolsFrontendUrl from '../utils/getDevToolsFrontendUrl';
 import url from 'url';
-
-const debuggerInstances = new Map<string, ?LaunchedBrowser>();
 
 type Options = $ReadOnly<{
   serverBaseUrl: string,
@@ -117,20 +115,12 @@ export default function openDebuggerMiddleware({
       try {
         switch (launchType) {
           case 'launch':
-            const frontendInstanceId =
-              device != null
-                ? 'device:' + device
-                : 'app:' + (appId ?? '<null>');
-            await debuggerInstances.get(frontendInstanceId)?.kill();
-            debuggerInstances.set(
-              frontendInstanceId,
-              await browserLauncher.launchDebuggerAppWindow(
-                getDevToolsFrontendUrl(
-                  experiments,
-                  target.webSocketDebuggerUrl,
-                  serverBaseUrl,
-                  {launchId, useFuseboxEntryPoint},
-                ),
+            await browserLauncher.launchDebuggerAppWindow(
+              getDevToolsFrontendUrl(
+                experiments,
+                target.webSocketDebuggerUrl,
+                serverBaseUrl,
+                {launchId, useFuseboxEntryPoint},
               ),
             );
             res.end();
