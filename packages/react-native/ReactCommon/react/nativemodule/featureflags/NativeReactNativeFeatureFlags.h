@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f366fc75beee206eb044e5be1a974c59>>
+ * @generated SignedSource<<960d94901a0cca61c54ea64c7da7e27a>>
  */
 
 /**
@@ -61,7 +61,7 @@ class NativeReactNativeFeatureFlags
 
   bool forceBatchingMountItemsOnAndroid(jsi::Runtime& runtime);
 
-  bool inspectorEnableModernCDPRegistry(jsi::Runtime& runtime);
+  bool fuseboxEnabled(jsi::Runtime& runtime);
 
   bool lazyAnimationCallbacks(jsi::Runtime& runtime);
 

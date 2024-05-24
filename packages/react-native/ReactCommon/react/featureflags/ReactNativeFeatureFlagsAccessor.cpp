@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a1e228f62a883630e427d5984cc9fba0>>
+ * @generated SignedSource<<08b1bb44603924e62d8e887c93ce2ea2>>
  */
 
 /**
@@ -263,8 +263,8 @@ bool ReactNativeFeatureFlagsAccessor::forceBatchingMountItemsOnAndroid() {
   return flagValue.value();
 }
 
-bool ReactNativeFeatureFlagsAccessor::inspectorEnableModernCDPRegistry() {
-  auto flagValue = inspectorEnableModernCDPRegistry_.load();
+bool ReactNativeFeatureFlagsAccessor::fuseboxEnabled() {
+  auto flagValue = fuseboxEnabled_.load();
 
   if (!flagValue.has_value()) {
     // This block is not exclusive but it is not necessary.
@@ -272,10 +272,10 @@ bool ReactNativeFeatureFlagsAccessor::inspectorEnableModernCDPRegistry() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(13, "inspectorEnableModernCDPRegistry");
+    markFlagAsAccessed(13, "fuseboxEnabled");
 
-    flagValue = currentProvider_->inspectorEnableModernCDPRegistry();
-    inspectorEnableModernCDPRegistry_ = flagValue;
+    flagValue = currentProvider_->fuseboxEnabled();
+    fuseboxEnabled_ = flagValue;
   }
 
   return flagValue.value();

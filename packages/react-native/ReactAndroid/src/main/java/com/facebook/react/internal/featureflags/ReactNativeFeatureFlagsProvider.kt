@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fff46073d92efbec147cd2f1dad110cb>>
+ * @generated SignedSource<<500cd1ff0d3ddbaff62d99f6d9e79e5b>>
  */
 
 /**
@@ -49,7 +49,7 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun forceBatchingMountItemsOnAndroid(): Boolean
 
-  @DoNotStrip public fun inspectorEnableModernCDPRegistry(): Boolean
+  @DoNotStrip public fun fuseboxEnabled(): Boolean
 
   @DoNotStrip public fun lazyAnimationCallbacks(): Boolean
 

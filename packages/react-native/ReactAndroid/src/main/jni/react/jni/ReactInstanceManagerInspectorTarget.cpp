@@ -38,7 +38,7 @@ ReactInstanceManagerInspectorTarget::ReactInstanceManagerInspectorTarget(
     : delegate_(make_global(delegate)) {
   auto& inspectorFlags = InspectorFlags::getInstance();
 
-  if (inspectorFlags.getEnableModernCDPRegistry()) {
+  if (inspectorFlags.getFuseboxEnabled()) {
     inspectorTarget_ = HostTarget::create(
         *this,
         [javaExecutor =

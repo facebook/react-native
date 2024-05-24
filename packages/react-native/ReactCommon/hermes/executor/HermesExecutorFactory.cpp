@@ -203,8 +203,7 @@ std::unique_ptr<JSExecutor> HermesExecutorFactory::createJSExecutor(
 
   HermesRuntime& hermesRuntimeRef = *hermesRuntime;
   auto& inspectorFlags = jsinspector_modern::InspectorFlags::getInstance();
-  bool enableDebugger =
-      !inspectorFlags.getEnableModernCDPRegistry() && enableDebugger_;
+  bool enableDebugger = !inspectorFlags.getFuseboxEnabled() && enableDebugger_;
   auto decoratedRuntime = std::make_shared<DecoratedRuntime>(
       std::move(hermesRuntime),
       hermesRuntimeRef,

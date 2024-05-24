@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4445b86f8e66d2ec2b1cdbd2d99a551e>>
+ * @generated SignedSource<<a84c2654be6bc46c82c5dd466cdcf3b0>>
  */
 
 /**
@@ -73,8 +73,8 @@ bool ReactNativeFeatureFlags::forceBatchingMountItemsOnAndroid() {
   return getAccessor().forceBatchingMountItemsOnAndroid();
 }
 
-bool ReactNativeFeatureFlags::inspectorEnableModernCDPRegistry() {
-  return getAccessor().inspectorEnableModernCDPRegistry();
+bool ReactNativeFeatureFlags::fuseboxEnabled() {
+  return getAccessor().fuseboxEnabled();
 }
 
 bool ReactNativeFeatureFlags::lazyAnimationCallbacks() {
