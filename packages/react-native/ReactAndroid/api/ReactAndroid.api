@@ -3553,14 +3553,17 @@ public final class com/facebook/react/modules/sound/SoundManagerModule : com/fac
 	public fun playTouchSound ()V
 }
 
-public class com/facebook/react/modules/statusbar/StatusBarModule : com/facebook/fbreact/specs/NativeStatusBarManagerAndroidSpec {
+public final class com/facebook/react/modules/statusbar/StatusBarModule : com/facebook/fbreact/specs/NativeStatusBarManagerAndroidSpec {
+	public static final field Companion Lcom/facebook/react/modules/statusbar/StatusBarModule$Companion;
 	public static final field NAME Ljava/lang/String;
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
-	public fun getTypedExportedConstants ()Ljava/util/Map;
 	public fun setColor (DZ)V
 	public fun setHidden (Z)V
 	public fun setStyle (Ljava/lang/String;)V
 	public fun setTranslucent (Z)V
+}
+
+public final class com/facebook/react/modules/statusbar/StatusBarModule$Companion {
 }
 
 public class com/facebook/react/modules/systeminfo/AndroidInfoHelpers {
