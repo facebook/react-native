@@ -81,7 +81,7 @@ internal class BoxShadowDrawable(
     }
 
     with(canvas) {
-      clipOutPath(background.getBorderBoxPath())
+      clipOutPath(background.borderBoxPath())
       drawRenderNode(renderNode)
     }
   }

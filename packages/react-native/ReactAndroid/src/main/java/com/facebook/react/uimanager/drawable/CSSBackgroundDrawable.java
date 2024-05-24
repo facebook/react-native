@@ -316,27 +316,14 @@ public class CSSBackgroundDrawable extends Drawable {
     return mColor;
   }
 
-  public Path getBorderBoxPath() {
+  public Path borderBoxPath() {
     updatePath();
     return Preconditions.checkNotNull(mOuterClipPathForBorderRadius);
   }
 
-  public Path getPaddingBoxPath() {
+  public Path paddingBoxPath() {
     updatePath();
     return Preconditions.checkNotNull(mInnerClipPathForBorderRadius);
-  }
-
-  public RectF getPaddingBoxRect() {
-    RectF insets = getDirectionAwareBorderInsets();
-    if (insets == null) {
-      return new RectF(0, 0, getBounds().width(), getBounds().height());
-    }
-
-    return new RectF(
-        insets.left,
-        insets.top,
-        getBounds().width() - insets.right,
-        getBounds().height() - insets.bottom);
   }
 
   private void drawRoundedBackgroundWithBorders(Canvas canvas) {
@@ -344,7 +331,7 @@ public class CSSBackgroundDrawable extends Drawable {
     canvas.save();
 
     // Clip outer border
-    canvas.clipPath(getBorderBoxPath(), Region.Op.INTERSECT);
+    canvas.clipPath(borderBoxPath(), Region.Op.INTERSECT);
 
     // Draws the View without its border first (with background color fill)
     int useColor = ColorUtils.setAlphaComponent(mColor, getOpacity());
@@ -403,7 +390,7 @@ public class CSSBackgroundDrawable extends Drawable {
         mPaint.setStyle(Paint.Style.FILL);
 
         // Clip inner border
-        canvas.clipPath(getPaddingBoxPath(), Region.Op.DIFFERENCE);
+        canvas.clipPath(paddingBoxPath(), Region.Op.DIFFERENCE);
 
         final boolean isRTL = getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
         int colorStart = getBorderColor(Spacing.START);
@@ -1317,7 +1304,7 @@ public class CSSBackgroundDrawable extends Drawable {
     return CSSBackgroundDrawable.colorFromAlphaAndRGBComponents(alpha, rgb);
   }
 
-  private RectF getDirectionAwareBorderInsets() {
+  public RectF getDirectionAwareBorderInsets() {
     final float borderWidth = getBorderWidthOrDefaultTo(0, Spacing.ALL);
     final float borderTopWidth = getBorderWidthOrDefaultTo(borderWidth, Spacing.TOP);
     final float borderBottomWidth = getBorderWidthOrDefaultTo(borderWidth, Spacing.BOTTOM);
