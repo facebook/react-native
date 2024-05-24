@@ -192,6 +192,38 @@ private:
 };
 
 
+#pragma mark - NativeEnumTurboModuleStatusLowerCaseEnum
+
+enum class NativeEnumTurboModuleStatusLowerCaseEnum { Active, Paused, Off };
+
+template <>
+struct Bridging<NativeEnumTurboModuleStatusLowerCaseEnum> {
+  static NativeEnumTurboModuleStatusLowerCaseEnum fromJs(jsi::Runtime &rt, const jsi::String &rawValue) {
+    std::string value = rawValue.utf8(rt);
+    if (value == \\"active\\") {
+      return NativeEnumTurboModuleStatusLowerCaseEnum::Active;
+    } else if (value == \\"paused\\") {
+      return NativeEnumTurboModuleStatusLowerCaseEnum::Paused;
+    } else if (value == \\"off\\") {
+      return NativeEnumTurboModuleStatusLowerCaseEnum::Off;
+    } else {
+      throw jsi::JSError(rt, \\"No appropriate enum member found for value\\");
+    }
+  }
+
+  static jsi::String toJs(jsi::Runtime &rt, NativeEnumTurboModuleStatusLowerCaseEnum value) {
+    if (value == NativeEnumTurboModuleStatusLowerCaseEnum::Active) {
+      return bridging::toJs(rt, \\"active\\");
+    } else if (value == NativeEnumTurboModuleStatusLowerCaseEnum::Paused) {
+      return bridging::toJs(rt, \\"paused\\");
+    } else if (value == NativeEnumTurboModuleStatusLowerCaseEnum::Off) {
+      return bridging::toJs(rt, \\"off\\");
+    } else {
+      throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
+    }
+  }
+};
+
 #pragma mark - NativeEnumTurboModuleStatusNumEnum
 
 enum class NativeEnumTurboModuleStatusNumEnum { Active, Paused, Off };
@@ -331,14 +363,15 @@ struct NativeEnumTurboModuleStateTypeBridging {
 
 #pragma mark - NativeEnumTurboModuleStateTypeWithEnums
 
-template <typename P0, typename P1, typename P2, typename P3>
+template <typename P0, typename P1, typename P2, typename P3, typename P4>
 struct NativeEnumTurboModuleStateTypeWithEnums {
   P0 state;
   P1 regular;
   P2 str;
   P3 num;
+  P4 lowerCase;
   bool operator==(const NativeEnumTurboModuleStateTypeWithEnums &other) const {
-    return state == other.state && regular == other.regular && str == other.str && num == other.num;
+    return state == other.state && regular == other.regular && str == other.str && num == other.num && lowerCase == other.lowerCase;
   }
 };
 
@@ -354,7 +387,8 @@ struct NativeEnumTurboModuleStateTypeWithEnumsBridging {
       bridging::fromJs<decltype(types.state)>(rt, value.getProperty(rt, \\"state\\"), jsInvoker),
       bridging::fromJs<decltype(types.regular)>(rt, value.getProperty(rt, \\"regular\\"), jsInvoker),
       bridging::fromJs<decltype(types.str)>(rt, value.getProperty(rt, \\"str\\"), jsInvoker),
-      bridging::fromJs<decltype(types.num)>(rt, value.getProperty(rt, \\"num\\"), jsInvoker)};
+      bridging::fromJs<decltype(types.num)>(rt, value.getProperty(rt, \\"num\\"), jsInvoker),
+      bridging::fromJs<decltype(types.lowerCase)>(rt, value.getProperty(rt, \\"lowerCase\\"), jsInvoker)};
     return result;
   }
 
@@ -374,6 +408,10 @@ struct NativeEnumTurboModuleStateTypeWithEnumsBridging {
   static jsi::Value numToJs(jsi::Runtime &rt, decltype(types.num) value) {
     return bridging::toJs(rt, value);
   }
+
+  static jsi::String lowerCaseToJs(jsi::Runtime &rt, decltype(types.lowerCase) value) {
+    return bridging::toJs(rt, value);
+  }
 #endif
 
   static jsi::Object toJs(
@@ -385,6 +423,7 @@ struct NativeEnumTurboModuleStateTypeWithEnumsBridging {
     result.setProperty(rt, \\"regular\\", bridging::toJs(rt, value.regular, jsInvoker));
     result.setProperty(rt, \\"str\\", bridging::toJs(rt, value.str, jsInvoker));
     result.setProperty(rt, \\"num\\", bridging::toJs(rt, value.num, jsInvoker));
+    result.setProperty(rt, \\"lowerCase\\", bridging::toJs(rt, value.lowerCase, jsInvoker));
     return result;
   }
 };
@@ -397,7 +436,8 @@ public:
   virtual jsi::String getStatusRegular(jsi::Runtime &rt, jsi::Object statusProp) = 0;
   virtual jsi::String getStatusStr(jsi::Runtime &rt, jsi::Object statusProp) = 0;
   virtual jsi::Value getStatusNum(jsi::Runtime &rt, jsi::Object statusProp) = 0;
-  virtual jsi::Object getStateType(jsi::Runtime &rt, jsi::String a, jsi::String b, jsi::Value c) = 0;
+  virtual jsi::String getStatusLowerCase(jsi::Runtime &rt, jsi::Object statusProp) = 0;
+  virtual jsi::Object getStateType(jsi::Runtime &rt, jsi::String a, jsi::String b, jsi::Value c, jsi::String d) = 0;
   virtual jsi::Object getStateTypeWithEnums(jsi::Runtime &rt, jsi::Object paramOfTypeWithEnums) = 0;
 
 };
@@ -446,13 +486,21 @@ private:
       return bridging::callFromJs<jsi::Value>(
           rt, &T::getStatusNum, jsInvoker_, instance_, std::move(statusProp));
     }
-    jsi::Object getStateType(jsi::Runtime &rt, jsi::String a, jsi::String b, jsi::Value c) override {
+    jsi::String getStatusLowerCase(jsi::Runtime &rt, jsi::Object statusProp) override {
       static_assert(
-          bridging::getParameterCount(&T::getStateType) == 4,
-          \\"Expected getStateType(...) to have 4 parameters\\");
+          bridging::getParameterCount(&T::getStatusLowerCase) == 2,
+          \\"Expected getStatusLowerCase(...) to have 2 parameters\\");
+
+      return bridging::callFromJs<jsi::String>(
+          rt, &T::getStatusLowerCase, jsInvoker_, instance_, std::move(statusProp));
+    }
+    jsi::Object getStateType(jsi::Runtime &rt, jsi::String a, jsi::String b, jsi::Value c, jsi::String d) override {
+      static_assert(
+          bridging::getParameterCount(&T::getStateType) == 5,
+          \\"Expected getStateType(...) to have 5 parameters\\");
 
       return bridging::callFromJs<jsi::Object>(
-          rt, &T::getStateType, jsInvoker_, instance_, std::move(a), std::move(b), std::move(c));
+          rt, &T::getStateType, jsInvoker_, instance_, std::move(a), std::move(b), std::move(c), std::move(d));
     }
     jsi::Object getStateTypeWithEnums(jsi::Runtime &rt, jsi::Object paramOfTypeWithEnums) override {
       static_assert(
@@ -2146,6 +2194,38 @@ private:
 };
 
 
+#pragma mark - NativeEnumTurboModuleStatusLowerCaseEnum
+
+enum class NativeEnumTurboModuleStatusLowerCaseEnum { Active, Paused, Off };
+
+template <>
+struct Bridging<NativeEnumTurboModuleStatusLowerCaseEnum> {
+  static NativeEnumTurboModuleStatusLowerCaseEnum fromJs(jsi::Runtime &rt, const jsi::String &rawValue) {
+    std::string value = rawValue.utf8(rt);
+    if (value == \\"active\\") {
+      return NativeEnumTurboModuleStatusLowerCaseEnum::Active;
+    } else if (value == \\"paused\\") {
+      return NativeEnumTurboModuleStatusLowerCaseEnum::Paused;
+    } else if (value == \\"off\\") {
+      return NativeEnumTurboModuleStatusLowerCaseEnum::Off;
+    } else {
+      throw jsi::JSError(rt, \\"No appropriate enum member found for value\\");
+    }
+  }
+
+  static jsi::String toJs(jsi::Runtime &rt, NativeEnumTurboModuleStatusLowerCaseEnum value) {
+    if (value == NativeEnumTurboModuleStatusLowerCaseEnum::Active) {
+      return bridging::toJs(rt, \\"active\\");
+    } else if (value == NativeEnumTurboModuleStatusLowerCaseEnum::Paused) {
+      return bridging::toJs(rt, \\"paused\\");
+    } else if (value == NativeEnumTurboModuleStatusLowerCaseEnum::Off) {
+      return bridging::toJs(rt, \\"off\\");
+    } else {
+      throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
+    }
+  }
+};
+
 #pragma mark - NativeEnumTurboModuleStatusNumEnum
 
 enum class NativeEnumTurboModuleStatusNumEnum { Active, Paused, Off };
@@ -2285,14 +2365,15 @@ struct NativeEnumTurboModuleStateTypeBridging {
 
 #pragma mark - NativeEnumTurboModuleStateTypeWithEnums
 
-template <typename P0, typename P1, typename P2, typename P3>
+template <typename P0, typename P1, typename P2, typename P3, typename P4>
 struct NativeEnumTurboModuleStateTypeWithEnums {
   P0 state;
   P1 regular;
   P2 str;
   P3 num;
+  P4 lowerCase;
   bool operator==(const NativeEnumTurboModuleStateTypeWithEnums &other) const {
-    return state == other.state && regular == other.regular && str == other.str && num == other.num;
+    return state == other.state && regular == other.regular && str == other.str && num == other.num && lowerCase == other.lowerCase;
   }
 };
 
@@ -2308,7 +2389,8 @@ struct NativeEnumTurboModuleStateTypeWithEnumsBridging {
       bridging::fromJs<decltype(types.state)>(rt, value.getProperty(rt, \\"state\\"), jsInvoker),
       bridging::fromJs<decltype(types.regular)>(rt, value.getProperty(rt, \\"regular\\"), jsInvoker),
       bridging::fromJs<decltype(types.str)>(rt, value.getProperty(rt, \\"str\\"), jsInvoker),
-      bridging::fromJs<decltype(types.num)>(rt, value.getProperty(rt, \\"num\\"), jsInvoker)};
+      bridging::fromJs<decltype(types.num)>(rt, value.getProperty(rt, \\"num\\"), jsInvoker),
+      bridging::fromJs<decltype(types.lowerCase)>(rt, value.getProperty(rt, \\"lowerCase\\"), jsInvoker)};
     return result;
   }
 
@@ -2328,6 +2410,10 @@ struct NativeEnumTurboModuleStateTypeWithEnumsBridging {
   static jsi::Value numToJs(jsi::Runtime &rt, decltype(types.num) value) {
     return bridging::toJs(rt, value);
   }
+
+  static jsi::String lowerCaseToJs(jsi::Runtime &rt, decltype(types.lowerCase) value) {
+    return bridging::toJs(rt, value);
+  }
 #endif
 
   static jsi::Object toJs(
@@ -2339,6 +2425,7 @@ struct NativeEnumTurboModuleStateTypeWithEnumsBridging {
     result.setProperty(rt, \\"regular\\", bridging::toJs(rt, value.regular, jsInvoker));
     result.setProperty(rt, \\"str\\", bridging::toJs(rt, value.str, jsInvoker));
     result.setProperty(rt, \\"num\\", bridging::toJs(rt, value.num, jsInvoker));
+    result.setProperty(rt, \\"lowerCase\\", bridging::toJs(rt, value.lowerCase, jsInvoker));
     return result;
   }
 };
@@ -2351,7 +2438,8 @@ public:
   virtual jsi::String getStatusRegular(jsi::Runtime &rt, jsi::Object statusProp) = 0;
   virtual jsi::String getStatusStr(jsi::Runtime &rt, jsi::Object statusProp) = 0;
   virtual jsi::Value getStatusNum(jsi::Runtime &rt, jsi::Object statusProp) = 0;
-  virtual jsi::Object getStateType(jsi::Runtime &rt, jsi::String a, jsi::String b, jsi::Value c) = 0;
+  virtual jsi::String getStatusLowerCase(jsi::Runtime &rt, jsi::Object statusProp) = 0;
+  virtual jsi::Object getStateType(jsi::Runtime &rt, jsi::String a, jsi::String b, jsi::Value c, jsi::String d) = 0;
   virtual jsi::Object getStateTypeWithEnums(jsi::Runtime &rt, jsi::Object paramOfTypeWithEnums) = 0;
 
 };
@@ -2400,13 +2488,21 @@ private:
       return bridging::callFromJs<jsi::Value>(
           rt, &T::getStatusNum, jsInvoker_, instance_, std::move(statusProp));
     }
-    jsi::Object getStateType(jsi::Runtime &rt, jsi::String a, jsi::String b, jsi::Value c) override {
+    jsi::String getStatusLowerCase(jsi::Runtime &rt, jsi::Object statusProp) override {
       static_assert(
-          bridging::getParameterCount(&T::getStateType) == 4,
-          \\"Expected getStateType(...) to have 4 parameters\\");
+          bridging::getParameterCount(&T::getStatusLowerCase) == 2,
+          \\"Expected getStatusLowerCase(...) to have 2 parameters\\");
+
+      return bridging::callFromJs<jsi::String>(
+          rt, &T::getStatusLowerCase, jsInvoker_, instance_, std::move(statusProp));
+    }
+    jsi::Object getStateType(jsi::Runtime &rt, jsi::String a, jsi::String b, jsi::Value c, jsi::String d) override {
+      static_assert(
+          bridging::getParameterCount(&T::getStateType) == 5,
+          \\"Expected getStateType(...) to have 5 parameters\\");
 
       return bridging::callFromJs<jsi::Object>(
-          rt, &T::getStateType, jsInvoker_, instance_, std::move(a), std::move(b), std::move(c));
+          rt, &T::getStateType, jsInvoker_, instance_, std::move(a), std::move(b), std::move(c), std::move(d));
     }
     jsi::Object getStateTypeWithEnums(jsi::Runtime &rt, jsi::Object paramOfTypeWithEnums) override {
       static_assert(
