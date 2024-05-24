@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0ae7be647ca12c3efcc34f6098155550>>
+ * @generated SignedSource<<53200319e16c1f14028d9cb8a2c87078>>
  */
 
 /**
@@ -105,12 +105,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun forceBatchingMountItemsOnAndroid(): Boolean = accessor.forceBatchingMountItemsOnAndroid()
-
-  /**
-   * Flag determining if the C++ implementation of InspectorPackagerConnection should be used instead of the per-platform one. This flag is global and should not be changed across React Host lifetimes.
-   */
-  @JvmStatic
-  public fun inspectorEnableCxxInspectorPackagerConnection(): Boolean = accessor.inspectorEnableCxxInspectorPackagerConnection()
 
   /**
    * Flag determining if the modern CDP backend should be enabled. This flag is global and should not be changed across React Host lifetimes.

@@ -235,14 +235,8 @@ INSTANTIATE_TEST_SUITE_P(
     ReactInstanceVaryingInspectorFlags,
     ReactInstanceIntegrationTestWithFlags,
     ::testing::Values(
-        InspectorFlagOverrides{
-            .enableCxxInspectorPackagerConnection = false,
-            .enableModernCDPRegistry = false},
-        InspectorFlagOverrides{
-            .enableCxxInspectorPackagerConnection = true,
-            .enableModernCDPRegistry = false},
-        InspectorFlagOverrides{
-            .enableCxxInspectorPackagerConnection = true,
-            .enableModernCDPRegistry = true}));
+        InspectorFlagOverrides{.enableModernCDPRegistry = false},
+        InspectorFlagOverrides{.enableModernCDPRegistry = false},
+        InspectorFlagOverrides{.enableModernCDPRegistry = true}));
 
 } // namespace facebook::react::jsinspector_modern

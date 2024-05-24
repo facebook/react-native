@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<63e7a8952026600cb58367e9c70fb68d>>
+ * @generated SignedSource<<6b04d73d4a2525022a2e81334656cc86>>
  * @flow strict-local
  */
 
@@ -53,7 +53,6 @@ export type ReactNativeFeatureFlags = {
   enableUIConsistency: Getter<boolean>,
   fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak: Getter<boolean>,
   forceBatchingMountItemsOnAndroid: Getter<boolean>,
-  inspectorEnableCxxInspectorPackagerConnection: Getter<boolean>,
   inspectorEnableModernCDPRegistry: Getter<boolean>,
   lazyAnimationCallbacks: Getter<boolean>,
   preventDoubleTextMeasure: Getter<boolean>,
@@ -155,10 +154,6 @@ export const fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak: Getter<boolea
  * Forces the mounting layer on Android to always batch mount items instead of dispatching them immediately. This might fix some crashes related to synchronous state updates, where some views dispatch state updates during mount.
  */
 export const forceBatchingMountItemsOnAndroid: Getter<boolean> = createNativeFlagGetter('forceBatchingMountItemsOnAndroid', false);
-/**
- * Flag determining if the C++ implementation of InspectorPackagerConnection should be used instead of the per-platform one. This flag is global and should not be changed across React Host lifetimes.
- */
-export const inspectorEnableCxxInspectorPackagerConnection: Getter<boolean> = createNativeFlagGetter('inspectorEnableCxxInspectorPackagerConnection', false);
 /**
  * Flag determining if the modern CDP backend should be enabled. This flag is global and should not be changed across React Host lifetimes.
  */

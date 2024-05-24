@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d2f016e3a0648f6fd0b6c1f45b9a1f62>>
+ * @generated SignedSource<<48f683554e70183664d5a1bf6a7ab328>>
  */
 
 /**
@@ -67,9 +67,6 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool forceBatchingMountItemsOnAndroid(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-
-  static bool inspectorEnableCxxInspectorPackagerConnection(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool inspectorEnableModernCDPRegistry(

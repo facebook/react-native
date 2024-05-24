@@ -25,12 +25,6 @@ class InspectorFlags {
   bool getEnableModernCDPRegistry() const;
 
   /**
-   * Flag determining if the C++ implementation of InspectorPackagerConnection
-   * should be used instead of the per-platform one.
-   */
-  bool getEnableCxxInspectorPackagerConnection() const;
-
-  /**
    * Reset flags to their upstream values. The caller must ensure any resources
    * that have read previous flag values have been cleaned up.
    */
@@ -38,7 +32,6 @@ class InspectorFlags {
 
  private:
   struct Values {
-    bool enableCxxInspectorPackagerConnection;
     bool enableModernCDPRegistry;
     bool operator==(const Values&) const = default;
   };
