@@ -2182,7 +2182,6 @@ public abstract interface class com/facebook/react/devsupport/HMRClient : com/fa
 
 public final class com/facebook/react/devsupport/InspectorFlags {
 	public static final field INSTANCE Lcom/facebook/react/devsupport/InspectorFlags;
-	public static final fun getEnableCxxInspectorPackagerConnection ()Z
 	public static final fun getEnableModernCDPRegistry ()Z
 }
 

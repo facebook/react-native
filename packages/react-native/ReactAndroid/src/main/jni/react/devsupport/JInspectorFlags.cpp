@@ -16,20 +16,11 @@ bool JInspectorFlags::getEnableModernCDPRegistry(jni::alias_ref<jclass>) {
   return inspectorFlags.getEnableModernCDPRegistry();
 }
 
-bool JInspectorFlags::getEnableCxxInspectorPackagerConnection(
-    jni::alias_ref<jclass>) {
-  auto& inspectorFlags = InspectorFlags::getInstance();
-  return inspectorFlags.getEnableCxxInspectorPackagerConnection();
-}
-
 void JInspectorFlags::registerNatives() {
   javaClassLocal()->registerNatives({
       makeNativeMethod(
           "getEnableModernCDPRegistry",
           JInspectorFlags::getEnableModernCDPRegistry),
-      makeNativeMethod(
-          "getEnableCxxInspectorPackagerConnection",
-          JInspectorFlags::getEnableCxxInspectorPackagerConnection),
   });
 }
 
