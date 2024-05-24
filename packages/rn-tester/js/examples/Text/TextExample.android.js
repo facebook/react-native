@@ -541,7 +541,17 @@ function FontVariationSettingsExample(props: {}): React.Node {
         </Text>
       ))}
 
-      <View style={{marginVertical: 12}} />
+      <View style={{marginVertical: 6}} />
+
+      <Text
+        style={{
+          fontFamily: 'inter',
+          fontVariationSettings: "'wght' 800, slnt -10",
+        }}>
+        {'Invalid font variation settings - should fallback to default font'}
+      </Text>
+
+      <View style={{marginVertical: 6}} />
 
       {/* Font Icons with custom axes */}
       <Text>Material Symbols Sharp - 'wght' 400, 'FILL' 0</Text>

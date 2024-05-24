@@ -61,6 +61,7 @@ public class CustomStyleSpan(
         }
 
   public companion object {
+    private val TAG = CustomStyleSpan::class.simpleName
     private fun apply(
         paint: Paint,
         style: Int,
@@ -76,7 +77,11 @@ public class CustomStyleSpan(
         fontFeatureSettings = fontFeatureSettingsParam
         setTypeface(typeface)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-          fontVariationSettings = fontVariationSettingsParam
+          try {
+            fontVariationSettings = fontVariationSettingsParam
+          } catch (e: Exception) {
+            // Do nothing
+          }
         }
         isSubpixelText = true
       }
