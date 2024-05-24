@@ -14,6 +14,7 @@ import type {BrowserLauncher} from '../types/BrowserLauncher';
 const {spawn} = require('child_process');
 const ChromeLauncher = require('chrome-launcher');
 const {Launcher: EdgeLauncher} = require('chromium-edge-launcher');
+const open = require('open');
 
 /**
  * Default `BrowserLauncher` implementation which opens URLs on the host
@@ -31,15 +32,15 @@ const DefaultBrowserLauncher: BrowserLauncher = {
       // Locate Chrome installation path, will throw if not found
       chromePath = ChromeLauncher.getChromePath();
     } catch (e) {
+      // Fall back to Microsoft Edge
       chromePath = EdgeLauncher.getFirstInstallation();
+    }
 
-      if (chromePath == null) {
-        throw new Error(
-          'Unable to find a browser on the host to open the debugger. ' +
-            'Supported browsers: Google Chrome, Microsoft Edge.\n' +
-            url,
-        );
-      }
+    if (chromePath == null) {
+      // Fall back to default browser - the frontend will warn if the browser
+      // is not supported.
+      await open(url);
+      return;
     }
 
     const chromeFlags = [`--app=${url}`, '--window-size=1200,600'];
