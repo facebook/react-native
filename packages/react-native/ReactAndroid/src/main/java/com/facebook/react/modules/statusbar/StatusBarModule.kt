@@ -31,6 +31,7 @@ import com.facebook.react.uimanager.PixelUtil
 public class StatusBarModule(reactContext: ReactApplicationContext?) :
     NativeStatusBarManagerAndroidSpec(reactContext) {
 
+  @Suppress("DEPRECATION")
   override fun getTypedExportedConstants(): Map<String, Any> {
     val context = getReactApplicationContext()
     val heightResId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
@@ -53,6 +54,7 @@ public class StatusBarModule(reactContext: ReactApplicationContext?) :
     )
   }
 
+  @Suppress("DEPRECATION")
   override fun setColor(colorDouble: Double, animated: Boolean) {
     val color = colorDouble.toInt()
     val activity = getCurrentActivity()
