@@ -20,7 +20,7 @@ NSString *const RCTUserInterfaceStyleDidChangeNotificationTraitCollectionKey = @
 NSString *const RCTUserInterfaceStyleDidChangeNotificationAppearanceKey = @"appearance";
 #endif // macOS]
 
-NSString *const RCTRootViewFrameDidChangeNotification = @"RCTRootViewFrameDidChangeNotification";
+NSString *const RCTWindowFrameDidChangeNotification = @"RCTWindowFrameDidChangeNotification";
 
 NSString *const RCTJavaScriptDidFailToLoadNotification = @"RCTJavaScriptDidFailToLoadNotification";
 NSString *const RCTJavaScriptDidLoadNotification = @"RCTJavaScriptDidLoadNotification";

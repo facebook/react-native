@@ -78,7 +78,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (nonnull NSCoder *)aDecoder)
 
 - (void)sendFrameChangedEvent:(__unused NSNotification *)notification
 {
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTRootViewFrameDidChangeNotification object:self];
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTWindowFrameDidChangeNotification object:self];
 }
 
 #endif // macOS]

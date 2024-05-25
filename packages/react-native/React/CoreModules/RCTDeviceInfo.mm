@@ -82,13 +82,48 @@ RCT_EXPORT_MODULE()
 
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(interfaceFrameDidChange)
-                                               name:RCTRootViewFrameDidChangeNotification
+                                               name:RCTWindowFrameDidChangeNotification
+                                             object:nil];
+
+  // TODO T175901725 - Registering the RCTDeviceInfo module to the notification is a short-term fix to unblock 0.73
+  // The actual behavior should be that the module is properly registered in the TurboModule/Bridge infrastructure
+  // and the infrastructure imperatively invoke the `invalidate` method, rather than listening to a notification.
+  // This is a temporary workaround until we can investigate the issue better as there might be other modules in a
+  // similar situation.
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(invalidate)
+                                               name:RCTBridgeWillInvalidateModulesNotification
                                              object:nil];
 }
 
 - (void)invalidate
 {
+  if (_invalidated) {
+    return;
+  }
   _invalidated = YES;
+  [self _cleanupObservers];
+}
+
+- (void)_cleanupObservers
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                  name:RCTAccessibilityManagerDidUpdateMultiplierNotification
+                                                object:[_moduleRegistry moduleForName:"AccessibilityManager"]];
+
+#if TARGET_OS_IOS // [macOS] [visionOS]
+  [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                  name:UIApplicationDidChangeStatusBarOrientationNotification
+                                                object:nil];
+#endif // [macOS] [visionOS]
+
+  [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidBecomeActiveNotification object:nil];
+
+  [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTUserInterfaceStyleDidChangeNotification object:nil];
+
+  [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTWindowFrameDidChangeNotification object:nil];
+
+  [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTBridgeWillInvalidateModulesNotification object:nil];
 }
 
 static BOOL RCTIsIPhoneNotched()

@@ -235,7 +235,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
         interfaceOrientation:(UIInterfaceOrientation)previousInterfaceOrientation
              traitCollection:(UITraitCollection *)previousTraitCollection API_AVAILABLE(ios(13.0))
 {
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTRootViewFrameDidChangeNotification object:self];
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTWindowFrameDidChangeNotification object:self];
 }
 #endif // [macOS]
 
