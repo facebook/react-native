@@ -1,19 +1,20 @@
-
-$rn_spm_dependencies_by_pod = {}
-
-class SPM
-  def self.dependency(pod_spec, url:, requirement:,  products:)
-    $rn_spm_dependencies_by_pod[pod_spec.name] ||= []
-    $rn_spm_dependencies_by_pod[pod_spec.name] << { url: url, requirement: requirement, products: products}
+class SPMManager
+  def initialize()
+     @dependencies_by_pod = {}
   end
 
-  def self.apply(installer)
+  def dependency(pod_spec, url:, requirement:,  products:)
+    @dependencies_by_pod[pod_spec.name] ||= []
+    @dependencies_by_pod[pod_spec.name] << { url: url, requirement: requirement, products: products}
+  end
+
+  def apply_on_post_install(installer)
     project = installer.pods_project
 
     log 'Cleaning old SPM dependencies from Pods project'
-    clean_spm_dependencies_from_target(project)
+    clean_spm_dependencies_from_target(project, @dependencies_by_pod)
     log 'Adding SPM dependencies to Pods project'
-    $rn_spm_dependencies_by_pod.each do |pod_name, dependencies|
+    @dependencies_by_pod.each do |pod_name, dependencies|
       dependencies.each do |spm_spec|
         log "Adding SPM dependency on product #{spm_spec[:products]}"
         add_spm_to_target(
@@ -38,23 +39,24 @@ class SPM
 
   private
 
-  def self.log(msg)
-    puts "[SPM] #{msg}"
+  def log(msg)
+    ::Pod::UI.puts "[SPM] #{msg}"
   end
 
-  def self.clean_spm_dependencies_from_target(project)
-    project.root_object.package_references.delete_if { |pkg| pkg.class == Xcodeproj::Project::Object::XCRemoteSwiftPackageReference }
+  def clean_spm_dependencies_from_target(project, new_targets)
+    project.root_object.package_references.delete_if { |pkg| (pkg.class == Xcodeproj::Project::Object::XCRemoteSwiftPackageReference) }
   end
 
-  def self.add_spm_to_target(project, target, url, requirement, products)
+  def add_spm_to_target(project, target, url, requirement, products)
     pkg_class = Xcodeproj::Project::Object::XCRemoteSwiftPackageReference
     ref_class = Xcodeproj::Project::Object::XCSwiftPackageProductDependency
     pkg = project.root_object.package_references.find { |p| p.class == pkg_class && p.repositoryURL == url }
     if !pkg
+      log(" UUID: #{project.generate_uuid}")
       pkg = project.new(pkg_class)
       pkg.repositoryURL = url
       pkg.requirement = requirement
-      log(" Requirement: #{requirement}")
+      log(" Adding package to workspace: #{pkg.inspect}")
       project.root_object.package_references << pkg
     end
     products.each do |product_name|
@@ -71,3 +73,5 @@ class SPM
     end
   end
 end
+
+SPM = SPMManager.new
