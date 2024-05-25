@@ -111,9 +111,11 @@ RCT_EXPORT_MODULE()
                                                   name:RCTAccessibilityManagerDidUpdateMultiplierNotification
                                                 object:[_moduleRegistry moduleForName:"AccessibilityManager"]];
 
+#if TARGET_OS_IOS // [macOS] [visionOS]
   [[NSNotificationCenter defaultCenter] removeObserver:self
                                                   name:UIApplicationDidChangeStatusBarOrientationNotification
                                                 object:nil];
+#endif // [macOS] [visionOS]
 
   [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidBecomeActiveNotification object:nil];
 
