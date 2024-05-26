@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<00a695402781a9f3c45ba0594a785b57>>
+ * @generated SignedSource<<a2706af43bfe0803eab9a70d24cd79c9>>
  */
 
 /**
@@ -37,7 +37,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var enableUIConsistencyCache: Boolean? = null
   private var fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeakCache: Boolean? = null
   private var forceBatchingMountItemsOnAndroidCache: Boolean? = null
-  private var inspectorEnableCxxInspectorPackagerConnectionCache: Boolean? = null
   private var inspectorEnableModernCDPRegistryCache: Boolean? = null
   private var lazyAnimationCallbacksCache: Boolean? = null
   private var preventDoubleTextMeasureCache: Boolean? = null
@@ -172,16 +171,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.forceBatchingMountItemsOnAndroid()
       accessedFeatureFlags.add("forceBatchingMountItemsOnAndroid")
       forceBatchingMountItemsOnAndroidCache = cached
-    }
-    return cached
-  }
-
-  override fun inspectorEnableCxxInspectorPackagerConnection(): Boolean {
-    var cached = inspectorEnableCxxInspectorPackagerConnectionCache
-    if (cached == null) {
-      cached = currentProvider.inspectorEnableCxxInspectorPackagerConnection()
-      accessedFeatureFlags.add("inspectorEnableCxxInspectorPackagerConnection")
-      inspectorEnableCxxInspectorPackagerConnectionCache = cached
     }
     return cached
   }

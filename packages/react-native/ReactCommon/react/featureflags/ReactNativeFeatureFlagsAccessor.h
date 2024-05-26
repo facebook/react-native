@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7d1c4c90d5e1feb0015376f20943ee51>>
+ * @generated SignedSource<<fcfe3b796552cf37e27790af0d424802>>
  */
 
 /**
@@ -44,7 +44,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableUIConsistency();
   bool fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak();
   bool forceBatchingMountItemsOnAndroid();
-  bool inspectorEnableCxxInspectorPackagerConnection();
   bool inspectorEnableModernCDPRegistry();
   bool lazyAnimationCallbacks();
   bool preventDoubleTextMeasure();
@@ -62,7 +61,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 21> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 20> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> allowCollapsableChildren_;
@@ -77,7 +76,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableUIConsistency_;
   std::atomic<std::optional<bool>> fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak_;
   std::atomic<std::optional<bool>> forceBatchingMountItemsOnAndroid_;
-  std::atomic<std::optional<bool>> inspectorEnableCxxInspectorPackagerConnection_;
   std::atomic<std::optional<bool>> inspectorEnableModernCDPRegistry_;
   std::atomic<std::optional<bool>> lazyAnimationCallbacks_;
   std::atomic<std::optional<bool>> preventDoubleTextMeasure_;

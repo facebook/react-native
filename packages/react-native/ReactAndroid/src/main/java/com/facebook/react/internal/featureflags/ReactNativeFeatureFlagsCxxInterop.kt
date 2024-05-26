@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e68ae1e7b4f0d7714722fb7b442c66c9>>
+ * @generated SignedSource<<4eee31ea22fc4116e9070f714dc59daf>>
  */
 
 /**
@@ -53,8 +53,6 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak(): Boolean
 
   @DoNotStrip @JvmStatic public external fun forceBatchingMountItemsOnAndroid(): Boolean
-
-  @DoNotStrip @JvmStatic public external fun inspectorEnableCxxInspectorPackagerConnection(): Boolean
 
   @DoNotStrip @JvmStatic public external fun inspectorEnableModernCDPRegistry(): Boolean
 

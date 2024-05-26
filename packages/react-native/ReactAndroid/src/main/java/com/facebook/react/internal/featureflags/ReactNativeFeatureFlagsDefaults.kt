@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<64ab913d2c940a7abfcd2aac32be1b72>>
+ * @generated SignedSource<<f29998f04860c4af0eb027b2e660c4b4>>
  */
 
 /**
@@ -48,8 +48,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak(): Boolean = false
 
   override fun forceBatchingMountItemsOnAndroid(): Boolean = false
-
-  override fun inspectorEnableCxxInspectorPackagerConnection(): Boolean = false
 
   override fun inspectorEnableModernCDPRegistry(): Boolean = false
 
