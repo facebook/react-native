@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2bfa4670757aa340c88ae8ff57270308>>
+ * @generated SignedSource<<d106a5f9684bbeb5add66a57623956be>>
  */
 
 /**
@@ -79,10 +79,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool inspectorEnableCxxInspectorPackagerConnection() override {
-    return false;
-  }
-
   bool inspectorEnableModernCDPRegistry() override {
     return false;
   }
@@ -92,7 +88,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool preventDoubleTextMeasure() override {
-    return false;
+    return true;
   }
 
   bool setAndroidLayoutDirection() override {

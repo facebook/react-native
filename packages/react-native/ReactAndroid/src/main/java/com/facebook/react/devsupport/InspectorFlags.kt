@@ -17,6 +17,4 @@ public object InspectorFlags {
   }
 
   @DoNotStrip @JvmStatic public external fun getEnableModernCDPRegistry(): Boolean
-
-  @DoNotStrip @JvmStatic public external fun getEnableCxxInspectorPackagerConnection(): Boolean
 }
