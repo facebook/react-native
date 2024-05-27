@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<030a36407880de0362dbabcf604eed87>>
+ * @generated SignedSource<<6535d6d14ba4387ea73d129f064548e0>>
  */
 
 /**
@@ -79,7 +79,11 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool fuseboxEnabled() override {
+  bool fuseboxEnabledDebug() override {
+    return false;
+  }
+
+  bool fuseboxEnabledRelease() override {
     return false;
   }
 

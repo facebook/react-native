@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9b6a65c3d49849807a6cb61895a31d85>>
+ * @generated SignedSource<<30b0640e8893abd282c4694d7463e90e>>
  * @flow strict-local
  */
 
@@ -36,7 +36,8 @@ export interface Spec extends TurboModule {
   +enableUIConsistency?: () => boolean;
   +fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak?: () => boolean;
   +forceBatchingMountItemsOnAndroid?: () => boolean;
-  +fuseboxEnabled?: () => boolean;
+  +fuseboxEnabledDebug?: () => boolean;
+  +fuseboxEnabledRelease?: () => boolean;
   +lazyAnimationCallbacks?: () => boolean;
   +preventDoubleTextMeasure?: () => boolean;
   +setAndroidLayoutDirection?: () => boolean;

@@ -235,8 +235,8 @@ INSTANTIATE_TEST_SUITE_P(
     ReactInstanceVaryingInspectorFlags,
     ReactInstanceIntegrationTestWithFlags,
     ::testing::Values(
-        InspectorFlagOverrides{.fuseboxEnabled = false},
-        InspectorFlagOverrides{.fuseboxEnabled = false},
-        InspectorFlagOverrides{.fuseboxEnabled = true}));
+        InspectorFlagOverrides{.fuseboxEnabledDebug = false},
+        InspectorFlagOverrides{.fuseboxEnabledDebug = false},
+        InspectorFlagOverrides{.fuseboxEnabledDebug = true}));
 
 } // namespace facebook::react::jsinspector_modern

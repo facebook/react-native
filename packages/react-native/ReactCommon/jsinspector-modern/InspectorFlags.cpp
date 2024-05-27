@@ -18,7 +18,7 @@ InspectorFlags& InspectorFlags::getInstance() {
 }
 
 bool InspectorFlags::getFuseboxEnabled() const {
-  return loadFlagsAndAssertUnchanged().fuseboxEnabled;
+  return loadFlagsAndAssertUnchanged().fuseboxEnabledDebug;
 }
 
 void InspectorFlags::dangerouslyResetFlags() {
@@ -28,13 +28,13 @@ void InspectorFlags::dangerouslyResetFlags() {
 const InspectorFlags::Values& InspectorFlags::loadFlagsAndAssertUnchanged()
     const {
   InspectorFlags::Values newValues = {
-      .fuseboxEnabled =
+      .fuseboxEnabledDebug =
 #ifdef REACT_NATIVE_FORCE_ENABLE_FUSEBOX
           true,
 #elif defined(HERMES_ENABLE_DEBUGGER)
-          ReactNativeFeatureFlags::fuseboxEnabled(),
+          ReactNativeFeatureFlags::fuseboxEnabledDebug(),
 #else
-          false,
+          ReactNativeFeatureFlags::fuseboxEnabledRelease(),
 #endif
   };
 

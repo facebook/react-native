@@ -22,7 +22,7 @@ JsiIntegrationTestHermesEngineAdapter::JsiIntegrationTestHermesEngineAdapter(
 /* static */ InspectorFlagOverrides
 JsiIntegrationTestHermesEngineAdapter::getInspectorFlagOverrides() noexcept {
   return {
-      .fuseboxEnabled = true,
+      .fuseboxEnabledDebug = true,
   };
 }
 

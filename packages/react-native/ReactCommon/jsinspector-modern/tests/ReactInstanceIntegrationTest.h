@@ -25,7 +25,7 @@ namespace facebook::react::jsinspector_modern {
 using namespace ::testing;
 
 struct FeatureFlags {
-  const bool fuseboxEnabled = true;
+  const bool fuseboxEnabledDebug = true;
 };
 
 class ReactInstanceIntegrationTest : public Test {

@@ -26,9 +26,9 @@ class ReactNativeFeatureFlagsOverrides
       const InspectorFlagOverrides& overrides)
       : overrides_(overrides) {}
 
-  bool fuseboxEnabled() override {
-    return overrides_.fuseboxEnabled.value_or(
-        ReactNativeFeatureFlagsDefaults::fuseboxEnabled());
+  bool fuseboxEnabledDebug() override {
+    return overrides_.fuseboxEnabledDebug.value_or(
+        ReactNativeFeatureFlagsDefaults::fuseboxEnabledDebug());
   }
 
  private:
