@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fcfe3b796552cf37e27790af0d424802>>
+ * @generated SignedSource<<e05adbe3f6ea91121c0bf5a46c9cd5c5>>
  */
 
 /**
@@ -44,7 +44,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableUIConsistency();
   bool fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak();
   bool forceBatchingMountItemsOnAndroid();
-  bool inspectorEnableModernCDPRegistry();
+  bool fuseboxEnabled();
   bool lazyAnimationCallbacks();
   bool preventDoubleTextMeasure();
   bool setAndroidLayoutDirection();
@@ -76,7 +76,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableUIConsistency_;
   std::atomic<std::optional<bool>> fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak_;
   std::atomic<std::optional<bool>> forceBatchingMountItemsOnAndroid_;
-  std::atomic<std::optional<bool>> inspectorEnableModernCDPRegistry_;
+  std::atomic<std::optional<bool>> fuseboxEnabled_;
   std::atomic<std::optional<bool>> lazyAnimationCallbacks_;
   std::atomic<std::optional<bool>> preventDoubleTextMeasure_;
   std::atomic<std::optional<bool>> setAndroidLayoutDirection_;

@@ -85,11 +85,10 @@ static NSString *getInspectorDeviceId()
 
   auto &inspectorFlags = facebook::react::jsinspector_modern::InspectorFlags::getInstance();
 
-  NSString *rawDeviceId =
-      [NSString stringWithFormat:@"apple-%@-%@-%s",
-                                 identifierForVendor,
-                                 bundleId,
-                                 inspectorFlags.getEnableModernCDPRegistry() ? "fusebox" : "legacy"];
+  NSString *rawDeviceId = [NSString stringWithFormat:@"apple-%@-%@-%s",
+                                                     identifierForVendor,
+                                                     bundleId,
+                                                     inspectorFlags.getFuseboxEnabled() ? "fusebox" : "legacy"];
 
   return getSHA256(rawDeviceId);
 }
@@ -163,7 +162,7 @@ static void sendEventToAllConnections(NSString *event)
 + (void)disableDebugger
 {
   auto &inspectorFlags = facebook::react::jsinspector_modern::InspectorFlags::getInstance();
-  if (!inspectorFlags.getEnableModernCDPRegistry()) {
+  if (!inspectorFlags.getFuseboxEnabled()) {
     sendEventToAllConnections(kDebuggerMsgDisable);
   }
 }
@@ -182,7 +181,7 @@ static void sendEventToAllConnections(NSString *event)
   NSString *key = [inspectorURL absoluteString];
   id<RCTInspectorPackagerConnectionProtocol> connection = socketConnections[key];
   if (!connection || !connection.isConnected) {
-    if (facebook::react::jsinspector_modern::InspectorFlags::getInstance().getEnableModernCDPRegistry()) {
+    if (facebook::react::jsinspector_modern::InspectorFlags::getInstance().getFuseboxEnabled()) {
       connection = [[RCTCxxInspectorPackagerConnection alloc] initWithURL:inspectorURL];
     } else {
       // TODO(T190163403): Remove legacy RCTInspectorPackagerConnection

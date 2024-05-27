@@ -2182,7 +2182,7 @@ public abstract interface class com/facebook/react/devsupport/HMRClient : com/fa
 
 public final class com/facebook/react/devsupport/InspectorFlags {
 	public static final field INSTANCE Lcom/facebook/react/devsupport/InspectorFlags;
-	public static final fun getEnableModernCDPRegistry ()Z
+	public static final fun getFuseboxEnabled ()Z
 }
 
 public class com/facebook/react/devsupport/InspectorPackagerConnection : com/facebook/react/devsupport/IInspectorPackagerConnection {

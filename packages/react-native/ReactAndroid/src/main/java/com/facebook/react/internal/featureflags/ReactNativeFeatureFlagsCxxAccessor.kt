@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<54a79c6e6f4946c4c36692fbc19b927a>>
+ * @generated SignedSource<<86c1725630e3dadfb97ca9bccd618dd7>>
  */
 
 /**
@@ -33,7 +33,7 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
   private var enableUIConsistencyCache: Boolean? = null
   private var fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeakCache: Boolean? = null
   private var forceBatchingMountItemsOnAndroidCache: Boolean? = null
-  private var inspectorEnableModernCDPRegistryCache: Boolean? = null
+  private var fuseboxEnabledCache: Boolean? = null
   private var lazyAnimationCallbacksCache: Boolean? = null
   private var preventDoubleTextMeasureCache: Boolean? = null
   private var setAndroidLayoutDirectionCache: Boolean? = null
@@ -158,11 +158,11 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     return cached
   }
 
-  override fun inspectorEnableModernCDPRegistry(): Boolean {
-    var cached = inspectorEnableModernCDPRegistryCache
+  override fun fuseboxEnabled(): Boolean {
+    var cached = fuseboxEnabledCache
     if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.inspectorEnableModernCDPRegistry()
-      inspectorEnableModernCDPRegistryCache = cached
+      cached = ReactNativeFeatureFlagsCxxInterop.fuseboxEnabled()
+      fuseboxEnabledCache = cached
     }
     return cached
   }

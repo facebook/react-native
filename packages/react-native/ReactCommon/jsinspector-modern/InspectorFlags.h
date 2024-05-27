@@ -22,7 +22,7 @@ class InspectorFlags {
   /**
    * Flag determining if the modern CDP backend should be enabled.
    */
-  bool getEnableModernCDPRegistry() const;
+  bool getFuseboxEnabled() const;
 
   /**
    * Reset flags to their upstream values. The caller must ensure any resources
@@ -32,7 +32,7 @@ class InspectorFlags {
 
  private:
   struct Values {
-    bool enableModernCDPRegistry;
+    bool fuseboxEnabled;
     bool operator==(const Values&) const = default;
   };
 

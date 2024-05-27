@@ -25,7 +25,7 @@ namespace facebook::react::jsinspector_modern {
 using namespace ::testing;
 
 struct FeatureFlags {
-  const bool enableModernCDPRegistry = true;
+  const bool fuseboxEnabled = true;
 };
 
 class ReactInstanceIntegrationTest : public Test {

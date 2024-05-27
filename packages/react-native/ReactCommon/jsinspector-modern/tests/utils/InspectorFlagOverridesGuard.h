@@ -19,7 +19,7 @@ namespace facebook::react::jsinspector_modern {
 struct InspectorFlagOverrides {
   // NOTE: Keep these entries in sync with ReactNativeFeatureFlagsOverrides in
   // the implementation file.
-  std::optional<bool> enableModernCDPRegistry;
+  std::optional<bool> fuseboxEnabled;
 };
 
 /**

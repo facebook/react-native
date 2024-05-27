@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<48f683554e70183664d5a1bf6a7ab328>>
+ * @generated SignedSource<<ddf6ea7126754a1f10e06eb9ac4fb276>>
  */
 
 /**
@@ -69,7 +69,7 @@ class JReactNativeFeatureFlagsCxxInterop
   static bool forceBatchingMountItemsOnAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
-  static bool inspectorEnableModernCDPRegistry(
+  static bool fuseboxEnabled(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool lazyAnimationCallbacks(
