@@ -31,8 +31,8 @@ type AppleBuildOptions = {
 type AppleBootstrapOption = {
   // Enabled by default
   hermes: boolean,
-  framework: 'static' | 'dynamic',
   newArchitecture: boolean,
+  frameworks?: 'static' | 'dynamic',
   ...AppleOptions,
 };
 
@@ -80,9 +80,12 @@ export const tasks = {
     installDependencies: task(THIRD, 'Install CocoaPods dependencies', () => {
       const env = {
         RCT_NEW_ARCH_ENABLED: options.newArchitecture ? '1' : '0',
+        USE_FRAMEWORKS: options.frameworks,
         USE_HERMES: options.hermes ? '1' : '0',
-        USE_FRAMEWORK: options.framework,
       };
+      if (options.frameworks == null) {
+        delete env.USE_FRAMEWORKS;
+      }
       return execa('bundle', ['exec', 'pod', 'install'], {
         cwd: options.cwd,
         env,
@@ -140,6 +143,8 @@ export const tasks = {
       const _args = [
         options.isWorkspace ? '-workspace' : '-project',
         options.name,
+        '-configuration',
+        options.mode,
       ];
       if (options.scheme != null) {
         _args.push('-scheme', options.scheme);

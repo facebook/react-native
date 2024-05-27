@@ -12,7 +12,7 @@
 import type {Task} from '@react-native/core-cli-utils';
 import type {Result} from 'execa';
 import type {ExecaPromise} from 'execa';
-import type {ListrTask, ObservableLike} from 'listr2';
+import type {TaskSpec, TaskResult} from 'listr2';
 
 import chalk from 'chalk';
 import {Listr} from 'listr2';
@@ -34,7 +34,7 @@ export function trim(
 
 type ExecaPromiseMetaized = Promise<Result> & child_process$ChildProcess;
 
-export function observe(result: ExecaPromiseMetaized): ObservableLike<string> {
+export function observe(result: ExecaPromiseMetaized): TaskResult<{}, string> {
   const obs = new Observable<string>(observer => {
     result.stderr.on('data', (data: Buffer) =>
       data
@@ -95,7 +95,7 @@ export function run(
   }
   ordered = ordered.sort((a, b) => a.order - b.order);
 
-  const spec: ListrTask<void>[] = ordered.map(task => ({
+  const spec: TaskSpec<void>[] = ordered.map(task => ({
     title: task.label,
     task: () => {
       const action = task.action();

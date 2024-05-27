@@ -127,6 +127,7 @@ export async function launchApp(
 
 export function getXcodeBuildSettings(
   iosProjectFolder: string,
+  mode: 'Release' | 'Debug',
 ): XcodeBuildSettings[] {
   const {stdout} = execa.sync(
     'xcodebuild',
@@ -136,7 +137,7 @@ export function getXcodeBuildSettings(
       '-scheme',
       'HelloWorld',
       '-configuration',
-      'Debug',
+      mode,
       '-sdk',
       'iphonesimulator',
       '-showBuildSettings',
@@ -145,4 +146,20 @@ export function getXcodeBuildSettings(
     {cwd: iosProjectFolder},
   );
   return JSON.parse(stdout);
+}
+
+export function expensivePodCheck(iosPath: string, pkg: string): boolean {
+  const POD_LOCKFILE = './Podfile.lock';
+  return execa
+    .sync(
+      'ruby',
+      [
+        '-rbundler/setup',
+        '-rcocoapods',
+        '-e',
+        `puts Pod::Lockfile.from_file(Pathname.new "${POD_LOCKFILE}").pod_names.include? "${pkg}"`,
+      ],
+      {cwd: iosPath},
+    )
+    .stdout.startsWith('true');
 }

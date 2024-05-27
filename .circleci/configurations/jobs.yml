@@ -456,29 +456,27 @@ jobs:
                   cd packages/helloworld
                   args=()
                   if [[ << parameters.architecture >> == "OldArch" ]]; then
-                    args+=(--new-architecture false)
+                    args+=(--arch old)
                   fi
                   if [[ << parameters.jsengine >> == "JSC" ]]; then
-                    args+=(--hermes false)
+                    args+=(--vm jsc)
                   fi
                   if [[ << parameters.use_frameworks >> == "DynamicFrameworks" ]]; then
-                    args+=(--framework dynamic)
-                  else
-                    args+=(--framework static)
+                    args+=(--frameworks dynamic)
                   fi
-                  yarn bootstrap ios "${args[@]}"
+                  yarn bootstrap ios "${args[@]}" | cat
             - run:
                 name: Build helloworld project
                 command: |
                   cd packages/helloworld
                   args=()
                   if [[ << parameters.flavor >> == "Release" ]]; then
-                    args+=(--debug false)
+                    args+=(--prod)
                   fi
                   if [[ << parameters.jsengine >> == "JSC" ]]; then
                     args+=(--hermes false)
                   fi
-                  yarn build ios "${args[@]}"
+                  yarn build ios "${args[@]}" | cat
 
   # -------------------------
   #    JOBS: Test iOS RNTester

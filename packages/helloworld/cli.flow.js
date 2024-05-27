@@ -9,27 +9,23 @@
  * @oncall react_native
  */
 
-import type {IOSDevice} from './lib/ios';
-
 import {run} from './lib/cli';
 import {getExistingPath, pauseWatchman} from './lib/filesystem';
 import {
   bootSimulator,
+  expensivePodCheck,
   getSimulatorDetails,
   getXcodeBuildSettings,
   launchApp,
   launchSimulator,
 } from './lib/ios';
 import {app, apple} from '@react-native/core-cli-utils';
-import chalk from 'chalk';
 import {Option, program} from 'commander';
 import {readFileSync} from 'fs';
 import {Listr} from 'listr2';
 import path from 'path';
 
 program.version(JSON.parse(readFileSync('./package.json', 'utf8')).version);
-
-const FIRST = 1;
 
 const bootstrap = program.command('bootstrap');
 
@@ -46,44 +42,49 @@ const possibleHermescPaths = [
   path.join(cwd.ios, 'Pods/hermes-engine/build_host_hermesc/bin/hermesc'),
 ];
 
+const vmOption = new Option('--vm <vm>', 'Choose VM used on device')
+  .choices(['jsc', 'hermes'])
+  .default('hermes');
+
+type BootstrapOptions = {
+  arch: 'old' | 'new',
+  vm: 'hermes' | 'jsc',
+  frameworks?: 'static' | 'dynamic',
+};
+
 bootstrap
   .command('ios')
   .description('Bootstrap iOS')
-  .option('--hermes', 'Enable Hermes', true)
-  .option('--new-architecture', 'Enable new architecture', true)
   .addOption(
-    new Option('--framework <type>', 'Use frameworks')
-      .choices(['static', 'dynamic'])
-      .default('static'),
+    new Option('--arch <arch>', "Choose React Native's architecture")
+      .choices(['new', 'old'])
+      .default('new'),
   )
-  .action(
-    async (
-      _,
-      options: {
-        newArchitecture: boolean,
-        hermes: boolean,
-        framework: 'static' | 'dynamic',
-      },
-    ) => {
-      await pauseWatchman(async () => {
-        await run(
-          apple.bootstrap({
-            framework: options.framework,
-            cwd: cwd.ios,
-            hermes: options.hermes,
-            newArchitecture: options.newArchitecture,
-          }),
-        );
-      });
-    },
-  );
-
-const build = program.command('build');
+  .addOption(
+    new Option(
+      '--frameworks <linkage>',
+      'Use frameworks instead of static libraries',
+    )
+      .choices(['static', 'dynamic'])
+      .default(undefined),
+  )
+  .addOption(vmOption)
+  .action(async ({vm, arch, frameworks}: BootstrapOptions) => {
+    await run(
+      apple.bootstrap({
+        cwd: cwd.ios,
+        frameworks,
+        hermes: vm === 'hermes',
+        newArchitecture: arch === 'new',
+      }),
+    );
+  });
 
 type BuildOptions = {
-  hermes: boolean,
-  onlyBuild: boolean,
   device: string,
+  arch: 'old' | 'new',
+  prod: boolean,
+  vm: 'hermes' | 'jsc',
 };
 
 const optionalBool = (value: string | void) => value?.toLowerCase() === 'true';
@@ -95,73 +96,24 @@ type BuildSettings = {
   bundleResourceDir: string,
 };
 
-const _buildSettings: Partial<BuildSettings> = {};
-const getBuildSettings = (): BuildSettings => {
-  if (_buildSettings.appPath == null) {
-    const xcode = getXcodeBuildSettings(cwd.ios)[0].buildSettings;
-    _buildSettings.appPath = path.join(
-      xcode.TARGET_BUILD_DIR,
-      xcode.EXECUTABLE_FOLDER_PATH,
-    );
-    _buildSettings.bundleId = xcode.PRODUCT_BUNDLE_IDENTIFIER;
-    _buildSettings.bundleBuildDir = xcode.CONFIGURATION_BUILD_DIR;
-    _buildSettings.bundleResourceDir = path.join(
+const getBuildSettings = (mode: 'Debug' | 'Release'): BuildSettings => {
+  const xcode = getXcodeBuildSettings(cwd.ios, mode)[0].buildSettings;
+  return {
+    appPath: path.join(xcode.TARGET_BUILD_DIR, xcode.EXECUTABLE_FOLDER_PATH),
+    bundleId: xcode.PRODUCT_BUNDLE_IDENTIFIER,
+    bundleBuildDir: xcode.CONFIGURATION_BUILD_DIR,
+    bundleResourceDir: path.join(
       xcode.CONFIGURATION_BUILD_DIR,
       xcode.UNLOCALIZED_RESOURCES_FOLDER_PATH,
-    );
-  }
-  // $FlowIgnore[prop-missing]
-  return Object.assign({}, _buildSettings);
+    ),
+  };
 };
 
-// $FlowIgnore[prop-missing]
-let _device: IOSDevice = {};
-const getIOSDevice = async (
-  device: string = 'simulator',
-): Promise<IOSDevice> => {
-  if (_device.udid == null) {
-    try {
-      _device = await getSimulatorDetails(device);
-    } catch (e) {
-      console.log(chalk.bold.red(e.message));
-      process.exit(1);
-    }
-  }
-  // $FlowIgnore[prop-missing]
-  return Object.assign({}, _device);
-};
-
-type IOSEnvironment = {
-  device: IOSDevice,
-  settings: BuildSettings,
-};
-
-const getIOSBuildEnvironment = async (
-  device: string = 'simulator',
-): Promise<IOSEnvironment> => {
-  return await new Listr<IOSEnvironment>(
-    [
-      {
-        title: 'Getting devices',
-        task: async (ctx, task) => {
-          ctx.device = await getIOSDevice(device);
-        },
-      },
-      {
-        title: 'Getting settings',
-        task: async (ctx, task) => {
-          ctx.settings = getBuildSettings();
-        },
-      },
-    ],
-    // $FlowIgnore[prop-missing]
-  ).run({});
-};
+const build = program.command('build');
 
 build
   .command('ios')
   .description('Builds your app for iOS')
-  .option('--debug [bool]', 'Production build', optionalBool, true)
   .option(
     '--hermes [bool]',
     'Use Hermes or point to a prebuilt tarball',
@@ -173,17 +125,20 @@ build
     'Any simulator or a specific device (choices: "simulator", "device", other)',
     'simulator',
   )
-  .action(async (options: BuildOptions) => {
+  .option('--prod', 'Production build', () => true, false)
+  .action(async ({device: _device, prod}: BuildOptions) => {
+    const mode = prod ? 'Release' : 'Debug';
+
     let destination = 'simulator';
-    switch (options.device) {
+    switch (_device) {
       case 'simulator':
         break;
       case 'device':
-        const {device} = await getIOSBuildEnvironment(options.device);
+        const device = await getSimulatorDetails(_device);
         destination = `id=${device.udid}`;
         break;
       default:
-        destination = options.device;
+        destination = _device;
         break;
     }
 
@@ -192,11 +147,13 @@ build
         apple.build({
           isWorkspace: true,
           name: 'HelloWorld.xcworkspace',
-          mode: 'Debug',
+          mode,
           scheme: 'HelloWorld',
           cwd: cwd.ios,
           env: {
-            FORCE_BUNDLING: 'true',
+            // TODO: This has to be fixed to just use metro and not the CLI
+            // FORCE_BUNDLING: only === 'both' ? 'true' : 'false',
+            SKIP_BUNDLING: 'true',
           },
           destination,
         }),
@@ -204,17 +161,32 @@ build
     });
   });
 
+type BundleOptions = {
+  prod: boolean,
+  watch: boolean,
+  vm: 'hermes' | 'jsc',
+};
+
 const bundle = program.command('bundle');
 
 bundle
   .command('ios')
-  .addOption(
-    new Option('--vm <type>', 'JavaScript VM')
-      .choices(['hermes', 'jsc'])
-      .default('hermes'),
+  // TODO: Not sure if this is required, possibly just checking if hermes has been installed
+  //       Q: does Pods/hermes-engine check work for prebuilt?
+  //       Q: HERMES_ENGINE_TARBALL_PATH -> can we point
+  .addOption(vmOption)
+  .option(
+    '--watch',
+    'Watch and update JS changes',
+    optionalBool,
+    false,
   )
-  .action(async (options: {vm: 'hermes' | 'jsc'}) => {
-    const {settings, device} = await getIOSBuildEnvironment();
+  .option('--prod', 'Production build', () => true, false)
+  .action(async ({ prod, watch, vm }: BundleOptions) => {
+    const mode = prod ? 'Release' : 'Debug';
+
+    const isHermesInstalled = expensivePodCheck(cwd.ios, 'hermes-engine');
+    const settings = await getBuildSettings(mode);
 
     // Metro: src -> js
     const jsBundlePath = path.join(settings.bundleBuildDir, 'main.jsbundle.js');
@@ -224,6 +196,7 @@ bundle
       'main.jsbundle',
     );
 
+    // Validate only after initial build, as hermesc may not be prebuilt
     const hermesc = getExistingPath(possibleHermescPaths);
 
     if (hermesc == null) {
@@ -234,33 +207,72 @@ bundle
       );
     }
 
-    await run(
-      app.bundle({
-        mode: 'bundle',
-        cwd: cwd.root,
-        entryFile: 'index.js',
-        platform: 'ios',
-        outputJsBundle: jsBundlePath,
-        minify: false,
-        optimize: false,
-        outputSourceMap: settings.bundleResourceDir,
-        outputBundle: binaryBundlePath,
-        dev: true,
-        target: options.vm,
-        hermes: {
-          hermesc,
-        },
-      }),
-    );
+    const bundler = watch
+      ? app.bundle({
+          mode: 'watch',
+          cwd: cwd.root,
+          entryFile: 'index.js',
+          platform: 'ios',
+          outputJsBundle: jsBundlePath,
+          minify: false,
+          optimize: false,
+          outputSourceMap: settings.bundleResourceDir,
+          outputBundle: binaryBundlePath,
+          dev: !prod,
+          vm: isHermesInstalled ? 'hermes' : 'jsc',
+          hermes: {
+            path: path.join(cwd.ios, 'Pods', 'hermes-engine'),
+            hermesc: 'build_host_hermesc/bin/hermesc',
+          },
+          callback: metroProcess => {
+            const readline = require('readline');
+            readline.emitKeypressEvents(process.stdin);
+            process.stdout.write('Press any key to close Metro...');
+            // $FlowFixMe[prop-missing]
+            process.stdin.setRawMode(true);
+            process.stdin.once('keypress', () => {
+              metroProcess.kill('SIGTERM');
+            });
+          },
+        })
+      : app.bundle({
+          mode: 'bundle',
+          cwd: cwd.root,
+          entryFile: 'index.js',
+          platform: 'ios',
+          outputJsBundle: jsBundlePath,
+          minify: false,
+          optimize: false,
+          outputSourceMap: settings.bundleResourceDir,
+          outputBundle: binaryBundlePath,
+          dev: !prod,
+          vm: isHermesInstalled ? 'hermes' : 'jsc',
+          hermes: {
+            path: path.join(cwd.ios, 'Pods', 'hermes-engine'),
+            hermesc: 'build_host_hermesc/bin/hermesc',
+          },
+        });
+
+    // JS Bundle
+    await run(bundler);
   });
 
-const upload = program.command('upload');
+type ShipOptions = {
+  prod: boolean,
+  device: string,
+};
 
-upload
+const ship = program.command('ship');
+
+ship
   .command('ios')
+  .option('--prod', 'Production build')
   .option('--device', 'Any simulator or a specific device', 'simulator')
-  .action(async (options: {device: string}) => {
-    const {device, settings} = await getIOSBuildEnvironment(options.device);
+  .action(async ({device: _device, prod}: ShipOptions) => {
+    const [device, settings] = await Promise.all([
+      getSimulatorDetails(_device),
+      getBuildSettings(prod ? 'Release' : 'Debug'),
+    ]);
 
     const {install} = apple.ios.install({
       cwd: cwd.ios,

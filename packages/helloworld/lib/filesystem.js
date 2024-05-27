@@ -20,6 +20,7 @@ export async function pauseWatchman(command: () => Promise<mixed | void>) {
   try {
     const raw: string = execSync('watchman watch-project .', {
       cwd: process.cwd(),
+      stdio: 'pipe',
     }).toString();
     const {watch} = JSON.parse(raw);
 
