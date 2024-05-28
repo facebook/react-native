@@ -58,6 +58,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   _responseBlock = nil;
   _uploadProgressBlock = nil;
   _requestToken = nil;
+  _status = RCTNetworkTaskPending;
 }
 
 - (void)dispatchCallback:(dispatch_block_t)callback
