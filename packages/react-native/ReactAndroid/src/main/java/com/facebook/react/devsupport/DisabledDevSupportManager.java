@@ -16,6 +16,7 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.SurfaceDelegate;
 import com.facebook.react.devsupport.interfaces.BundleLoadCallback;
+import com.facebook.react.devsupport.interfaces.DevLoadingViewManager;
 import com.facebook.react.devsupport.interfaces.DevOptionHandler;
 import com.facebook.react.devsupport.interfaces.DevSplitBundleCallback;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
@@ -124,6 +125,11 @@ public class DisabledDevSupportManager implements DevSupportManager {
 
   @Override
   public String getDownloadedJSBundleFile() {
+    return null;
+  }
+
+  @Override
+  public DevLoadingViewManager getDevLoadingViewManager() {
     return null;
   }
 

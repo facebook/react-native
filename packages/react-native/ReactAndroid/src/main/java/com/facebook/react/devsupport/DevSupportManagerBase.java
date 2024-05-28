@@ -770,7 +770,11 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
     return mDevServerHelper;
   }
 
-  protected ReactInstanceDevHelper getReactInstanceDevHelper() {
+  public DevLoadingViewManager getDevLoadingViewManager() {
+    return mDevLoadingViewManager;
+  }
+
+  public ReactInstanceDevHelper getReactInstanceDevHelper() {
     return mReactInstanceDevHelper;
   }
 

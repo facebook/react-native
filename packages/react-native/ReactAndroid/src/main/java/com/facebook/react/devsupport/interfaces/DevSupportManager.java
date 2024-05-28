@@ -66,6 +66,8 @@ public interface DevSupportManager extends JSExceptionHandler {
 
   String getDownloadedJSBundleFile();
 
+  DevLoadingViewManager getDevLoadingViewManager();
+
   boolean hasUpToDateJSBundleInCache();
 
   void reloadSettings();
