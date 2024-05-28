@@ -7,6 +7,22 @@
 //
 
 #import <XCTest/XCTest.h>
+#import <React/RCTNetworkTask.h>
+#import <React/RCTURLRequestHandler.h>
+
+@interface TestHandler<RCTURLRequestHandler> : NSObject
+@end
+
+@implementation TestHandler
+- (BOOL)canHandleRequest:(NSURLRequest *)request
+{
+  return YES;
+}
+- (id)sendRequest:(NSURLRequest *)request withDelegate:(id<RCTURLRequestDelegate>)delegate
+{
+  return [[NSUUID UUID] UUIDString];
+}
+@end
 
 @interface RCTNetworkTaskTests : XCTestCase
 
@@ -14,24 +30,20 @@
 
 @implementation RCTNetworkTaskTests
 
-- (void)setUp {
-    // Put setup code here. This method is called before the invocation of each test method in the class.
-}
-
-- (void)tearDown {
-    // Put teardown code here. This method is called after the invocation of each test method in the class.
-}
-
-- (void)testExample {
-    // This is an example of a functional test case.
-    // Use XCTAssert and related functions to verify your tests produce the correct results.
-}
-
-- (void)testPerformanceExample {
-    // This is an example of a performance test case.
-    [self measureBlock:^{
-        // Put the code you want to measure the time of here.
-    }];
+-(void)testCanReadTaskStatus
+{
+  NSURL *url = [[NSURL alloc] initWithString:@"https://developers.facebook.com"];
+  NSURLRequest *request = [[NSURLRequest alloc] initWithURL:url];
+  dispatch_queue_t callbackQueue = dispatch_queue_create("RCTNetworkTaskTests-testCanReadTaskStatus", DISPATCH_QUEUE_SERIAL);
+  id<RCTURLRequestHandler> testHandler = (id<RCTURLRequestHandler>)[[TestHandler alloc] init];
+  RCTNetworkTask *task = [[RCTNetworkTask alloc] initWithRequest:request handler:testHandler callbackQueue:callbackQueue];
+  XCTAssertEqual([task getNetworkTaskStatus], RCTNetworkTaskPending);
+  [task start];
+  XCTAssertEqual([task getNetworkTaskStatus], RCTNetworkTaskInProgress);
+  [task cancel];
+  XCTAssertEqual([task getNetworkTaskStatus], RCTNetworkTaskPending);
 }
 
 @end
+
+
