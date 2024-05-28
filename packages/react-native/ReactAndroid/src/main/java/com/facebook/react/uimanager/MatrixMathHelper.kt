@@ -439,11 +439,11 @@ public object MatrixMathHelper {
   public fun applySkewX(m: DoubleArray, radians: Double) {
     val helperMatrix = DoubleArray(16);
     resetIdentityMatrix(helperMatrix);
-    var skew = radians;
-    var rotationY = MatrixMathHelper.degreesToRadians(45);
-    var rotationX = Math.atan(1 / Math.sin(rotationY) * Math.tan(skew));
-    var scaleX = 1 / Math.cos(rotationY);
-    var scaleY = 1 / Math.cos(rotationX);
+    val skew = radians;
+    val rotationY = MatrixMathHelper.degreesToRadians(45.0);
+    val rotationX = Math.atan(1 / Math.sin(rotationY) * Math.tan(skew));
+    val scaleX = 1 / Math.cos(rotationY);
+    val scaleY = 1 / Math.cos(rotationX);
 
     applyRotateY(m, rotationY);
     applyRotateX(helperMatrix, rotationX);
@@ -452,7 +452,7 @@ public object MatrixMathHelper {
     resetIdentityMatrix(helperMatrix);
     applyScaleX(helperMatrix, scaleX);
     applyScaleY(helperMatrix, scaleY);
-    applyPerspective(helperMatrix, 100000);
+    applyPerspective(helperMatrix, 100000.0);
     multiplyInto(m, m, helperMatrix);
   }
 
@@ -460,11 +460,11 @@ public object MatrixMathHelper {
   public fun applySkewY(m: DoubleArray, radians: Double) {
     val helperMatrix = DoubleArray(16);
     resetIdentityMatrix(helperMatrix);
-    var skew = radians;
-    var rotationX = MatrixMathHelper.degreesToRadians(45);
-    var rotationY = Math.atan(1 / Math.sin(rotationX) * Math.tan(skew));
-    var scaleX = 1 / Math.cos(rotationY);
-    var scaleY = 1 / Math.cos(rotationX);
+    val skew = radians;
+    val rotationX = MatrixMathHelper.degreesToRadians(45.0);
+    val rotationY = Math.atan(1 / Math.sin(rotationX) * Math.tan(skew));
+    val scaleX = 1 / Math.cos(rotationY);
+    val scaleY = 1 / Math.cos(rotationX);
 
     applyRotateX(m, rotationX);
     applyRotateY(helperMatrix, rotationY);
@@ -473,7 +473,7 @@ public object MatrixMathHelper {
     resetIdentityMatrix(helperMatrix);
     applyScaleX(helperMatrix, scaleX);
     applyScaleY(helperMatrix, scaleY);
-    applyPerspective(helperMatrix, 100000);
+    applyPerspective(helperMatrix, 100000.0);
     multiplyInto(m, m, helperMatrix);
   }
 
