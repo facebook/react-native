@@ -27,12 +27,12 @@
 #import <React/RCTUtils.h>
 
 #import <react/config/ReactNativeConfig.h>
+#import <react/featureflags/ReactNativeFeatureFlags.h>
 #import <react/renderer/componentregistry/ComponentDescriptorFactory.h>
 #import <react/renderer/components/text/BaseTextProps.h>
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import <react/renderer/scheduler/AsynchronousEventBeat.h>
 #import <react/renderer/scheduler/SchedulerToolbox.h>
-#import <react/renderer/scheduler/SynchronousEventBeat.h>
 #import <react/utils/ContextContainer.h>
 #import <react/utils/CoreFeatures.h>
 #import <react/utils/ManagedObjectWrapper.h>
@@ -260,24 +260,8 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     CoreFeatures::enablePropIteratorSetter = true;
   }
 
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:cancel_image_downloads_on_recycle")) {
-    CoreFeatures::cancelImageDownloadsOnRecycle = true;
-  }
-
   if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_granular_scroll_view_state_updates_ios")) {
     CoreFeatures::enableGranularScrollViewStateUpdatesIOS = true;
-  }
-
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_mount_hooks_ios")) {
-    CoreFeatures::enableMountHooks = true;
-  }
-
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_default_async_batched_priority")) {
-    CoreFeatures::enableDefaultAsyncBatchedPriority = true;
-  }
-
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_cloneless_state_progression")) {
-    CoreFeatures::enableClonelessStateProgression = true;
   }
 
   auto componentRegistryFactory =
@@ -304,26 +288,14 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
   toolbox.runtimeExecutor = runtimeExecutor;
   toolbox.bridgelessBindingsExecutor = _bridgelessBindingsExecutor;
 
-  toolbox.mainRunLoopObserverFactory = [](RunLoopObserver::Activity activities,
-                                          const RunLoopObserver::WeakOwner &owner) {
-    return std::make_unique<MainRunLoopObserver>(activities, owner);
-  };
-
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_background_executor_ios")) {
+  if (ReactNativeFeatureFlags::enableBackgroundExecutor()) {
     toolbox.backgroundExecutor = RCTGetBackgroundExecutor();
   }
-
-  toolbox.synchronousEventBeatFactory =
-      [runtimeExecutor, runtimeScheduler = runtimeScheduler](const EventBeat::SharedOwnerBox &ownerBox) {
-        auto runLoopObserver =
-            std::make_unique<MainRunLoopObserver const>(RunLoopObserver::Activity::BeforeWaiting, ownerBox->owner);
-        return std::make_unique<SynchronousEventBeat>(std::move(runLoopObserver), runtimeExecutor, runtimeScheduler);
-      };
 
   toolbox.asynchronousEventBeatFactory =
       [runtimeExecutor](const EventBeat::SharedOwnerBox &ownerBox) -> std::unique_ptr<EventBeat> {
     auto runLoopObserver =
-        std::make_unique<MainRunLoopObserver const>(RunLoopObserver::Activity::BeforeWaiting, ownerBox->owner);
+        std::make_unique<const MainRunLoopObserver>(RunLoopObserver::Activity::BeforeWaiting, ownerBox->owner);
     return std::make_unique<AsynchronousEventBeat>(std::move(runLoopObserver), runtimeExecutor);
   };
 
@@ -361,6 +333,11 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 #pragma mark - RCTSchedulerDelegate
 
 - (void)schedulerDidFinishTransaction:(MountingCoordinator::Shared)mountingCoordinator
+{
+  // no-op, we will flush the transaction from schedulerShouldRenderTransactions
+}
+
+- (void)schedulerShouldRenderTransactions:(MountingCoordinator::Shared)mountingCoordinator
 {
   [_mountingManager scheduleTransaction:mountingCoordinator];
 }

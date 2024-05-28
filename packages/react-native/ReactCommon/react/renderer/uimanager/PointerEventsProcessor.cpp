@@ -7,6 +7,8 @@
 
 #include "PointerEventsProcessor.h"
 
+#include <glog/logging.h>
+
 namespace facebook::react {
 
 ShadowNode::Shared PointerEventsProcessor::getShadowNodeFromEventTarget(

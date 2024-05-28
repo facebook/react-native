@@ -6,14 +6,14 @@
  */
 
 package com.facebook.react.turbomodule.core.interfaces
+/** All turbo modules should inherit from this interface */
+public interface TurboModule {
+  /** Initialize the TurboModule. */
+  public fun initialize()
 
-import com.facebook.react.common.annotations.DeprecatedInNewArchitecture
-
-/**
- * This interface was introduced for backward compatibility purposes. This interface will be
- * deprecated as part of the deprecation and removal of ReactModuleInfoProvider in the near future.
- *
- * See description of https://github.com/facebook/react-native/pull/41412 for more context.
- */
-@DeprecatedInNewArchitecture
-interface TurboModule : com.facebook.react.internal.turbomodule.core.interfaces.TurboModule {}
+  /**
+   * Called during the turn down process of ReactHost. This method is called before React Native is
+   * stopped. Override this method to clean up resources used by the TurboModule.
+   */
+  public fun invalidate()
+}

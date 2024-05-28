@@ -45,7 +45,9 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
             diff: require('../../Utilities/differ/pointsDiffer'),
           },
           decelerationRate: true,
+          enableSyncOnScroll: true, // Fabric only.
           disableIntervalMomentum: true,
+          maintainVisibleContentPosition: true,
           pagingEnabled: true,
           scrollEnabled: true,
           showsVerticalScrollIndicator: true,
@@ -59,6 +61,7 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
           sendMomentumEvents: true,
           borderRadius: true,
           nestedScrollEnabled: true,
+          scrollEventThrottle: true,
           borderStyle: true,
           borderRightColor: {
             process: require('../../StyleSheet/processColor').default,
@@ -70,6 +73,7 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
             process: require('../../StyleSheet/processColor').default,
           },
           persistentScrollbar: true,
+          horizontal: true,
           endFillColor: {
             process: require('../../StyleSheet/processColor').default,
           },
@@ -130,6 +134,8 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
           },
           contentInsetAdjustmentBehavior: true,
           decelerationRate: true,
+          endDraggingSensitivityMultiplier: true,
+          enableSyncOnScroll: true, // Fabric only.
           directionalLockEnabled: true,
           disableIntervalMomentum: true,
           indicatorStyle: true,

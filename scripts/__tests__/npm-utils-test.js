@@ -10,13 +10,13 @@
 const {
   applyPackageVersions,
   getNpmInfo,
-  getPackageVersionStrByTag,
   getVersionsBySpec,
   publishPackage,
 } = require('../npm-utils');
 
 const execMock = jest.fn();
 const getCurrentCommitMock = jest.fn();
+const exitIfNotOnGitMock = jest.fn();
 
 jest.mock('shelljs', () => ({
   exec: execMock,
@@ -24,6 +24,7 @@ jest.mock('shelljs', () => ({
 
 jest.mock('./../scm-utils', () => ({
   getCurrentCommit: getCurrentCommitMock,
+  exitIfNotOnGit: exitIfNotOnGitMock,
 }));
 
 describe('npm-utils', () => {
@@ -73,26 +74,6 @@ describe('npm-utils', () => {
     });
   });
 
-  describe('getPackageVersionStrByTag', () => {
-    it('should return package version string', () => {
-      execMock.mockImplementationOnce(() => ({code: 0, stdout: '0.34.2 \n'}));
-      const versionStr = getPackageVersionStrByTag('my-package', 'next');
-      expect(versionStr).toBe('0.34.2');
-    });
-    it('should throw error when invalid result', () => {
-      execMock.mockImplementationOnce(() => ({
-        code: 1,
-        stderr: 'Some error message',
-      }));
-
-      expect(() => {
-        getPackageVersionStrByTag('my-package', 'next');
-      }).toThrow(
-        "Failed to run 'npm view my-package@next version'\nSome error message",
-      );
-    });
-  });
-
   describe('publishPackage', () => {
     it('should run publish command', () => {
       publishPackage(
@@ -124,6 +105,13 @@ describe('npm-utils', () => {
         {cwd: 'path/to/my-package'},
       );
     });
+
+    it('should handle -no-tag', () => {
+      publishPackage('path/to/my-package', {tags: ['--no-tag'], otp: 'otp'});
+      expect(execMock).toHaveBeenCalledWith('npm publish --no-tag --otp otp', {
+        cwd: 'path/to/my-package',
+      });
+    });
   });
 
   describe('getNpmInfo', () => {
@@ -137,6 +125,29 @@ describe('npm-utils', () => {
         version: `0.0.0-prealpha-2023100415`,
         tag: 'prealpha',
       });
+    });
+
+    it('return the expected format for patch-prereleases', () => {
+      const isoStringSpy = jest.spyOn(Date.prototype, 'toISOString');
+      isoStringSpy.mockReturnValue('2023-10-04T15:43:55.123Z');
+      getCurrentCommitMock.mockImplementation(() => 'abcd1234');
+      // exitIfNotOnGit takes a function as a param and it:
+      // 1. checks if we are on git => if not it exits
+      // 2. run the function passed as a param and return the output to the caller
+      // For the mock, we are assuming we are on github and we are returning `false`
+      // as the `getNpmInfo` function will pass a function that checks if the
+      // current commit is a tagged with 'latest'.
+      // In the Mock, we are assuming that we are on git (it does not exits) and the
+      // checkIfLatest function returns `false`
+      exitIfNotOnGitMock.mockImplementation(() => false);
+
+      process.env.CIRCLE_TAG = 'v0.74.1-rc.0';
+      const returnedValue = getNpmInfo('release');
+      expect(returnedValue).toMatchObject({
+        version: `0.74.1-rc.0`,
+        tag: '--no-tag',
+      });
+      process.env.CIRCLE_TAG = null;
     });
   });
 

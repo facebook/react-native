@@ -6,6 +6,7 @@
  */
 
 #import "RCTSampleTurboModule.h"
+#import "RCTSampleTurboModulePlugin.h"
 
 #import <React/RCTAssert.h>
 #import <React/RCTUtils.h>
@@ -193,3 +194,8 @@ RCT_EXPORT_METHOD(promiseAssert
 }
 
 @end
+
+Class _Nonnull RCTSampleTurboModuleCls(void)
+{
+  return RCTSampleTurboModule.class;
+}

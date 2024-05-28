@@ -12,15 +12,23 @@ parameters:
     default: false
     type: boolean
 
-  release_latest:
+  run_nightly_workflow:
     default: false
     type: boolean
 
   release_version:
-    default: "9999"
+    default: ""
     type: string
 
-  run_nightly_workflow:
+  release_monorepo_packages_version:
+    default: ""
+    type: string
+
+  release_tag:
+    default: ""
+    type: string
+
+  release_dry_run:
     default: false
     type: boolean
 

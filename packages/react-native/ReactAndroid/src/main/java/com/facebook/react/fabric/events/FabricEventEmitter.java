@@ -7,8 +7,8 @@
 
 package com.facebook.react.fabric.events;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.fabric.FabricUIManager;
@@ -18,16 +18,17 @@ import com.facebook.react.uimanager.events.RCTModernEventEmitter;
 import com.facebook.react.uimanager.events.TouchEvent;
 import com.facebook.systrace.Systrace;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class FabricEventEmitter implements RCTModernEventEmitter {
 
-  @NonNull private final FabricUIManager mUIManager;
+  private final FabricUIManager mUIManager;
 
-  public FabricEventEmitter(@NonNull FabricUIManager uiManager) {
+  public FabricEventEmitter(FabricUIManager uiManager) {
     mUIManager = uiManager;
   }
 
   @Override
-  public void receiveEvent(int reactTag, @NonNull String eventName, @Nullable WritableMap params) {
+  public void receiveEvent(int reactTag, String eventName, @Nullable WritableMap params) {
     receiveEvent(ViewUtil.NO_SURFACE_ID, reactTag, eventName, params);
   }
 
@@ -59,9 +60,7 @@ public class FabricEventEmitter implements RCTModernEventEmitter {
   /** Touches are dispatched by {@link #receiveTouches(TouchEvent)} */
   @Override
   public void receiveTouches(
-      @NonNull String eventName,
-      @NonNull WritableArray touches,
-      @NonNull WritableArray changedIndices) {
+      String eventName, WritableArray touches, WritableArray changedIndices) {
     throw new UnsupportedOperationException(
         "EventEmitter#receiveTouches is not supported by Fabric");
   }

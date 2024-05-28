@@ -223,18 +223,6 @@ const char* YGPositionTypeToString(const YGPositionType value) {
   return "unknown";
 }
 
-const char* YGPrintOptionsToString(const YGPrintOptions value) {
-  switch (value) {
-    case YGPrintOptionsLayout:
-      return "layout";
-    case YGPrintOptionsStyle:
-      return "style";
-    case YGPrintOptionsChildren:
-      return "children";
-  }
-  return "unknown";
-}
-
 const char* YGUnitToString(const YGUnit value) {
   switch (value) {
     case YGUnitUndefined:

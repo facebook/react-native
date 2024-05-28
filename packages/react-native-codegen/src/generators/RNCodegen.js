@@ -19,6 +19,7 @@ TODO:
 import type {SchemaType} from '../CodegenSchema';
 
 const schemaValidator = require('../SchemaValidator.js');
+const generateComponentDescriptorCpp = require('./components/GenerateComponentDescriptorCpp.js');
 const generateComponentDescriptorH = require('./components/GenerateComponentDescriptorH.js');
 const generateComponentHObjCpp = require('./components/GenerateComponentHObjCpp.js');
 const generateEventEmitterCpp = require('./components/GenerateEventEmitterCpp.js');
@@ -46,6 +47,7 @@ const path = require('path');
 
 const ALL_GENERATORS = {
   generateComponentDescriptorH: generateComponentDescriptorH.generate,
+  generateComponentDescriptorCpp: generateComponentDescriptorCpp.generate,
   generateComponentHObjCpp: generateComponentHObjCpp.generate,
   generateEventEmitterCpp: generateEventEmitterCpp.generate,
   generateEventEmitterH: generateEventEmitterH.generate,
@@ -126,6 +128,7 @@ const LIBRARY_GENERATORS = {
   componentsAndroid: [
     // JNI/C++ files
     generateComponentDescriptorH.generate,
+    generateComponentDescriptorCpp.generate,
     generateEventEmitterCpp.generate,
     generateEventEmitterH.generate,
     generatePropsCpp.generate,
@@ -140,6 +143,7 @@ const LIBRARY_GENERATORS = {
   ],
   componentsIOS: [
     generateComponentDescriptorH.generate,
+    generateComponentDescriptorCpp.generate,
     generateEventEmitterCpp.generate,
     generateEventEmitterH.generate,
     generateComponentHObjCpp.generate,

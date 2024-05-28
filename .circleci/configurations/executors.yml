@@ -35,11 +35,4 @@ executors:
       xcode: *xcode_version
     resource_class: macos.x86.medium.gen2
     environment:
-      - BUILD_FROM_SOURCE: true
-  reactnativeios-lts:
-    <<: *defaults
-    macos:
-      xcode: '14.3.1'
-    resource_class: macos.x86.medium.gen2
-    environment:
-      - BUILD_FROM_SOURCE: true
+      - RCT_BUILD_HERMES_FROM_SOURCE: true

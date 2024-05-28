@@ -457,6 +457,52 @@ inline std::string toString(const TextAlignment& textAlignment) {
 }
 
 inline void fromRawValue(
+    const PropsParserContext& /*context*/,
+    const RawValue& value,
+    TextAlignmentVertical& result) {
+  react_native_expect(value.hasType<std::string>());
+  if (value.hasType<std::string>()) {
+    auto string = (std::string)value;
+    if (string == "auto") {
+      result = TextAlignmentVertical::Auto;
+    } else if (string == "top") {
+      result = TextAlignmentVertical::Top;
+    } else if (string == "bottom") {
+      result = TextAlignmentVertical::Bottom;
+    } else if (string == "center") {
+      result = TextAlignmentVertical::Center;
+    } else {
+      LOG(ERROR) << "Unsupported TextAlignment value: " << string;
+      react_native_expect(false);
+      // sane default for prod
+      result = TextAlignmentVertical::Auto;
+    }
+    return;
+  }
+
+  LOG(ERROR) << "Unsupported TextAlignmentVertical type";
+  // sane default for prod
+  result = TextAlignmentVertical::Auto;
+}
+
+inline std::string toString(const TextAlignmentVertical& textAlignment) {
+  switch (textAlignment) {
+    case TextAlignmentVertical::Auto:
+      return "auto";
+    case TextAlignmentVertical::Top:
+      return "top";
+    case TextAlignmentVertical::Bottom:
+      return "bottom";
+    case TextAlignmentVertical::Center:
+      return "center";
+  }
+
+  LOG(ERROR) << "Unsupported TextAlignmentVertical value";
+  // sane default for prod
+  return "auto";
+}
+
+inline void fromRawValue(
     const PropsParserContext& context,
     const RawValue& value,
     WritingDirection& result) {
@@ -767,172 +813,6 @@ inline std::string toString(const AttributedString::Range& range) {
 
 #ifdef ANDROID
 
-inline folly::dynamic toDynamic(
-    const ParagraphAttributes& paragraphAttributes) {
-  auto values = folly::dynamic::object();
-  values("maximumNumberOfLines", paragraphAttributes.maximumNumberOfLines);
-  values("ellipsizeMode", toString(paragraphAttributes.ellipsizeMode));
-  values("textBreakStrategy", toString(paragraphAttributes.textBreakStrategy));
-  values("adjustsFontSizeToFit", paragraphAttributes.adjustsFontSizeToFit);
-  values("includeFontPadding", paragraphAttributes.includeFontPadding);
-  values(
-      "android_hyphenationFrequency",
-      toString(paragraphAttributes.android_hyphenationFrequency));
-
-  return values;
-}
-
-inline folly::dynamic toDynamic(const FontVariant& fontVariant) {
-  auto result = folly::dynamic::array();
-  if ((int)fontVariant & (int)FontVariant::SmallCaps) {
-    result.push_back("small-caps");
-  }
-  if ((int)fontVariant & (int)FontVariant::OldstyleNums) {
-    result.push_back("oldstyle-nums");
-  }
-  if ((int)fontVariant & (int)FontVariant::LiningNums) {
-    result.push_back("lining-nums");
-  }
-  if ((int)fontVariant & (int)FontVariant::TabularNums) {
-    result.push_back("tabular-nums");
-  }
-  if ((int)fontVariant & (int)FontVariant::ProportionalNums) {
-    result.push_back("proportional-nums");
-  }
-
-  return result;
-}
-
-inline folly::dynamic toDynamic(const TextAttributes& textAttributes) {
-  auto _textAttributes = folly::dynamic::object();
-  if (textAttributes.foregroundColor) {
-    _textAttributes(
-        "foregroundColor", toAndroidRepr(textAttributes.foregroundColor));
-  }
-  if (textAttributes.backgroundColor) {
-    _textAttributes(
-        "backgroundColor", toAndroidRepr(textAttributes.backgroundColor));
-  }
-  if (!std::isnan(textAttributes.opacity)) {
-    _textAttributes("opacity", textAttributes.opacity);
-  }
-  if (!textAttributes.fontFamily.empty()) {
-    _textAttributes("fontFamily", textAttributes.fontFamily);
-  }
-  if (!std::isnan(textAttributes.fontSize)) {
-    _textAttributes("fontSize", textAttributes.fontSize);
-  }
-  if (!std::isnan(textAttributes.fontSizeMultiplier)) {
-    _textAttributes("fontSizeMultiplier", textAttributes.fontSizeMultiplier);
-  }
-  if (textAttributes.fontWeight.has_value()) {
-    _textAttributes("fontWeight", toString(*textAttributes.fontWeight));
-  }
-  if (textAttributes.fontStyle.has_value()) {
-    _textAttributes("fontStyle", toString(*textAttributes.fontStyle));
-  }
-  if (textAttributes.fontVariant.has_value()) {
-    _textAttributes("fontVariant", toDynamic(*textAttributes.fontVariant));
-  }
-  if (textAttributes.allowFontScaling.has_value()) {
-    _textAttributes("allowFontScaling", *textAttributes.allowFontScaling);
-  }
-  if (!std::isnan(textAttributes.letterSpacing)) {
-    _textAttributes("letterSpacing", textAttributes.letterSpacing);
-  }
-  if (textAttributes.textTransform.has_value()) {
-    _textAttributes("textTransform", toString(*textAttributes.textTransform));
-  }
-  if (!std::isnan(textAttributes.lineHeight)) {
-    _textAttributes("lineHeight", textAttributes.lineHeight);
-  }
-  if (textAttributes.alignment.has_value()) {
-    _textAttributes("alignment", toString(*textAttributes.alignment));
-  }
-  if (textAttributes.baseWritingDirection.has_value()) {
-    _textAttributes(
-        "baseWritingDirection", toString(*textAttributes.baseWritingDirection));
-  }
-  if (textAttributes.lineBreakStrategy.has_value()) {
-    _textAttributes(
-        "lineBreakStrategyIOS", toString(*textAttributes.lineBreakStrategy));
-  }
-  // Decoration
-  if (textAttributes.textDecorationColor) {
-    _textAttributes(
-        "textDecorationColor",
-        toAndroidRepr(textAttributes.textDecorationColor));
-  }
-  if (textAttributes.textDecorationLineType.has_value()) {
-    _textAttributes(
-        "textDecorationLine", toString(*textAttributes.textDecorationLineType));
-  }
-  if (textAttributes.textDecorationStyle.has_value()) {
-    _textAttributes(
-        "textDecorationStyle", toString(*textAttributes.textDecorationStyle));
-  }
-  // Shadow
-  // textShadowOffset = textAttributes.textShadowOffset.has_value() ?
-  // textAttributes.textShadowOffset.value() : textShadowOffset;
-  if (!std::isnan(textAttributes.textShadowRadius)) {
-    _textAttributes("textShadowRadius", textAttributes.textShadowRadius);
-  }
-  if (textAttributes.textShadowColor) {
-    _textAttributes(
-        "textShadowColor", toAndroidRepr(textAttributes.textShadowColor));
-  }
-  // Special
-  if (textAttributes.isHighlighted.has_value()) {
-    _textAttributes("isHighlighted", *textAttributes.isHighlighted);
-  }
-  if (textAttributes.layoutDirection.has_value()) {
-    _textAttributes(
-        "layoutDirection", toString(*textAttributes.layoutDirection));
-  }
-  if (textAttributes.accessibilityRole.has_value()) {
-    _textAttributes(
-        "accessibilityRole", toString(*textAttributes.accessibilityRole));
-  }
-  return _textAttributes;
-}
-
-inline folly::dynamic toDynamic(const AttributedString::Fragment& fragment) {
-  folly::dynamic value = folly::dynamic::object();
-
-  value["string"] = fragment.string;
-  if (fragment.parentShadowView.componentHandle) {
-    value["reactTag"] = fragment.parentShadowView.tag;
-  }
-  if (fragment.isAttachment()) {
-    value["isAttachment"] = true;
-    value["width"] = fragment.parentShadowView.layoutMetrics.frame.size.width;
-    value["height"] = fragment.parentShadowView.layoutMetrics.frame.size.height;
-  }
-  value["textAttributes"] = toDynamic(fragment.textAttributes);
-
-  return value;
-}
-
-inline folly::dynamic toDynamic(const AttributedString& attributedString) {
-  auto value = folly::dynamic::object();
-  auto fragments = folly::dynamic::array();
-  for (auto fragment : attributedString.getFragments()) {
-    fragments.push_back(toDynamic(fragment));
-  }
-  value("fragments", fragments);
-  value(
-      "hash", std::hash<facebook::react::AttributedString>{}(attributedString));
-  value("string", attributedString.getString());
-  return value;
-}
-
-inline folly::dynamic toDynamic(const AttributedString::Range& range) {
-  folly::dynamic dynamicValue = folly::dynamic::object();
-  dynamicValue["location"] = range.location;
-  dynamicValue["length"] = range.length;
-  return dynamicValue;
-}
-
 // constants for AttributedString serialization
 constexpr static MapBuffer::Key AS_KEY_HASH = 0;
 constexpr static MapBuffer::Key AS_KEY_STRING = 1;
@@ -975,6 +855,7 @@ constexpr static MapBuffer::Key TA_KEY_ACCESSIBILITY_ROLE = 24;
 constexpr static MapBuffer::Key TA_KEY_LINE_BREAK_STRATEGY = 25;
 constexpr static MapBuffer::Key TA_KEY_ROLE = 26;
 constexpr static MapBuffer::Key TA_KEY_TEXT_TRANSFORM = 27;
+constexpr static MapBuffer::Key TA_KEY_ALIGNMENT_VERTICAL = 28;
 
 // constants for ParagraphAttributes serialization
 constexpr static MapBuffer::Key PA_KEY_MAX_NUMBER_OF_LINES = 0;
@@ -983,6 +864,8 @@ constexpr static MapBuffer::Key PA_KEY_TEXT_BREAK_STRATEGY = 2;
 constexpr static MapBuffer::Key PA_KEY_ADJUST_FONT_SIZE_TO_FIT = 3;
 constexpr static MapBuffer::Key PA_KEY_INCLUDE_FONT_PADDING = 4;
 constexpr static MapBuffer::Key PA_KEY_HYPHENATION_FREQUENCY = 5;
+constexpr static MapBuffer::Key PA_KEY_MINIMUM_FONT_SIZE = 6;
+constexpr static MapBuffer::Key PA_KEY_MAXIMUM_FONT_SIZE = 7;
 
 inline MapBuffer toMapBuffer(const ParagraphAttributes& paragraphAttributes) {
   auto builder = MapBufferBuilder();
@@ -1000,6 +883,10 @@ inline MapBuffer toMapBuffer(const ParagraphAttributes& paragraphAttributes) {
   builder.putString(
       PA_KEY_HYPHENATION_FREQUENCY,
       toString(paragraphAttributes.android_hyphenationFrequency));
+  builder.putDouble(
+      PA_KEY_MINIMUM_FONT_SIZE, paragraphAttributes.minimumFontSize);
+  builder.putDouble(
+      PA_KEY_MAXIMUM_FONT_SIZE, paragraphAttributes.maximumFontSize);
 
   return builder.build();
 }
@@ -1134,6 +1021,10 @@ inline MapBuffer toMapBuffer(const TextAttributes& textAttributes) {
   }
   if (textAttributes.role.has_value()) {
     builder.putInt(TA_KEY_ROLE, static_cast<int32_t>(*textAttributes.role));
+  }
+  if (textAttributes.textAlignVertical.has_value()) {
+    builder.putString(
+        TA_KEY_ALIGNMENT_VERTICAL, toString(*textAttributes.textAlignVertical));
   }
   return builder.build();
 }

@@ -8,6 +8,7 @@
 package com.facebook.react.uimanager.events;
 
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.SystemClock;
 
@@ -27,6 +28,7 @@ import com.facebook.react.common.SystemClock;
  * surfaceId. Fabric will work without surfaceId - making {@code Event} backwards-compatible - but
  * Events without SurfaceId are slightly slower to propagate.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public abstract class Event<T extends Event> {
 
   private static int sUniqueID = 0;
@@ -70,12 +72,16 @@ public abstract class Event<T extends Event> {
     mInitialized = true;
   }
 
-  /** @return the view id for the view that generated this event */
+  /**
+   * @return the view id for the view that generated this event
+   */
   public final int getViewTag() {
     return mViewTag;
   }
 
-  /** @return the surfaceId for the view that generated this event */
+  /**
+   * @return the surfaceId for the view that generated this event
+   */
   public final int getSurfaceId() {
     return mSurfaceId;
   }
@@ -88,7 +94,9 @@ public abstract class Event<T extends Event> {
     return mTimestampMs;
   }
 
-  /** @return false if this Event can *never* be coalesced */
+  /**
+   * @return false if this Event can *never* be coalesced
+   */
   public boolean canCoalesce() {
     return true;
   }
@@ -114,7 +122,9 @@ public abstract class Event<T extends Event> {
     return 0;
   }
 
-  /** @return The unique id of this event. */
+  /**
+   * @return The unique id of this event.
+   */
   public int getUniqueID() {
     return mUniqueID;
   }
@@ -134,7 +144,9 @@ public abstract class Event<T extends Event> {
     onDispose();
   }
 
-  /** @return the name of this event as registered in JS */
+  /**
+   * @return the name of this event as registered in JS
+   */
   public abstract String getEventName();
 
   public EventAnimationDriverMatchSpec getEventAnimationDriverMatchSpec() {
@@ -144,7 +156,8 @@ public abstract class Event<T extends Event> {
             @Override
             public boolean match(int viewTag, String eventName) {
               return viewTag == getViewTag() && eventName.equals(getEventName());
-            };
+            }
+            ;
           };
     }
     return mEventAnimationDriverMatchSpec;
@@ -169,6 +182,10 @@ public abstract class Event<T extends Event> {
   @EventCategoryDef
   protected int getEventCategory() {
     return EventCategoryDef.UNSPECIFIED;
+  }
+
+  protected boolean experimental_isSynchronous() {
+    return false;
   }
 
   /**

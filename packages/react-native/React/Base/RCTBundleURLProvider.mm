@@ -12,6 +12,8 @@
 #import "RCTDefines.h"
 #import "RCTLog.h"
 
+#import <jsinspector-modern/InspectorFlags.h>
+
 NSString *const RCTBundleURLProviderUpdatedNotification = @"RCTBundleURLProviderUpdatedNotification";
 
 const NSUInteger kRCTBundleURLProviderDefaultPort = RCT_METRO_PORT;
@@ -281,6 +283,12 @@ static NSURL *serverRootWithHostPort(NSString *hostPort, NSString *scheme)
     [[NSURLQueryItem alloc] initWithName:@"modulesOnly" value:modulesOnly ? @"true" : @"false"],
     [[NSURLQueryItem alloc] initWithName:@"runModule" value:runModule ? @"true" : @"false"],
   ];
+  auto &inspectorFlags = facebook::react::jsinspector_modern::InspectorFlags::getInstance();
+  if (inspectorFlags.getFuseboxEnabled()) {
+    queryItems = [queryItems arrayByAddingObject:[[NSURLQueryItem alloc] initWithName:@"excludeSource" value:@"true"]];
+    queryItems = [queryItems arrayByAddingObject:[[NSURLQueryItem alloc] initWithName:@"sourcePaths"
+                                                                                value:@"url-server"]];
+  }
 
   NSString *bundleID = [[NSBundle mainBundle] objectForInfoDictionaryKey:(NSString *)kCFBundleIdentifierKey];
   if (bundleID) {

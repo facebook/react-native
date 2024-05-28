@@ -480,14 +480,10 @@ void layoutAbsoluteDescendants(
     LayoutData& layoutMarkerData,
     uint32_t currentDepth,
     uint32_t generationCount,
-    float currentNodeMainOffsetFromContainingBlock,
-    float currentNodeCrossOffsetFromContainingBlock,
+    float currentNodeLeftOffsetFromContainingBlock,
+    float currentNodeTopOffsetFromContainingBlock,
     float containingNodeAvailableInnerWidth,
     float containingNodeAvailableInnerHeight) {
-  const FlexDirection mainAxis = resolveDirection(
-      currentNode->style().flexDirection(), currentNodeDirection);
-  const FlexDirection crossAxis =
-      resolveCrossDirection(mainAxis, currentNodeDirection);
   for (auto child : currentNode->getChildren()) {
     if (child->style().display() == Display::None) {
       continue;
@@ -516,45 +512,73 @@ void layoutAbsoluteDescendants(
           currentDepth,
           generationCount);
 
-      const bool isMainAxisRow = isRow(mainAxis);
-      const bool mainInsetsDefined = isMainAxisRow
-          ? child->style().horizontalInsetsDefined()
-          : child->style().verticalInsetsDefined();
-      const bool crossInsetsDefined = isMainAxisRow
-          ? child->style().verticalInsetsDefined()
-          : child->style().horizontalInsetsDefined();
+      /*
+       * At this point the child has its position set but only on its the
+       * parent's flexStart edge. Additionally, this position should be
+       * interpreted relative to the containing block of the child if it had
+       * insets defined. So we need to adjust the position by subtracting the
+       * the parents offset from the containing block. However, getting that
+       * offset is complicated since the two nodes can have different main/cross
+       * axes.
+       */
+      const FlexDirection parentMainAxis = resolveDirection(
+          currentNode->style().flexDirection(), currentNodeDirection);
+      const FlexDirection parentCrossAxis =
+          resolveCrossDirection(parentMainAxis, currentNodeDirection);
 
-      const float childMainOffsetFromParent = mainInsetsDefined
-          ? (child->getLayout().position(flexStartEdge(mainAxis)) -
-             currentNodeMainOffsetFromContainingBlock)
-          : child->getLayout().position(flexStartEdge(mainAxis));
-      const float childCrossOffsetFromParent = crossInsetsDefined
-          ? (child->getLayout().position(flexStartEdge(crossAxis)) -
-             currentNodeCrossOffsetFromContainingBlock)
-          : child->getLayout().position(flexStartEdge(crossAxis));
-
-      child->setLayoutPosition(
-          childMainOffsetFromParent, flexStartEdge(mainAxis));
-      child->setLayoutPosition(
-          childCrossOffsetFromParent, flexStartEdge(crossAxis));
-
-      if (needsTrailingPosition(mainAxis)) {
-        setChildTrailingPosition(currentNode, child, mainAxis);
+      if (needsTrailingPosition(parentMainAxis)) {
+        const bool mainInsetsDefined = isRow(parentMainAxis)
+            ? child->style().horizontalInsetsDefined()
+            : child->style().verticalInsetsDefined();
+        setChildTrailingPosition(
+            mainInsetsDefined ? containingNode : currentNode,
+            child,
+            parentMainAxis);
       }
-      if (needsTrailingPosition(crossAxis)) {
-        setChildTrailingPosition(currentNode, child, crossAxis);
+      if (needsTrailingPosition(parentCrossAxis)) {
+        const bool crossInsetsDefined = isRow(parentCrossAxis)
+            ? child->style().horizontalInsetsDefined()
+            : child->style().verticalInsetsDefined();
+        setChildTrailingPosition(
+            crossInsetsDefined ? containingNode : currentNode,
+            child,
+            parentCrossAxis);
       }
+
+      /*
+       * At this point we know the left and top physical edges of the child are
+       * set with positions that are relative to the containing block if insets
+       * are defined
+       */
+      const float childLeftPosition =
+          child->getLayout().position(PhysicalEdge::Left);
+      const float childTopPosition =
+          child->getLayout().position(PhysicalEdge::Top);
+
+      const float childLeftOffsetFromParent =
+          child->style().horizontalInsetsDefined()
+          ? (childLeftPosition - currentNodeLeftOffsetFromContainingBlock)
+          : childLeftPosition;
+      const float childTopOffsetFromParent =
+          child->style().verticalInsetsDefined()
+          ? (childTopPosition - currentNodeTopOffsetFromContainingBlock)
+          : childTopPosition;
+
+      child->setLayoutPosition(childLeftOffsetFromParent, PhysicalEdge::Left);
+      child->setLayoutPosition(childTopOffsetFromParent, PhysicalEdge::Top);
     } else if (
         child->style().positionType() == PositionType::Static &&
         !child->alwaysFormsContainingBlock()) {
       const Direction childDirection =
           child->resolveDirection(currentNodeDirection);
-      const float childMainOffsetFromContainingBlock =
-          currentNodeMainOffsetFromContainingBlock +
-          child->getLayout().position(flexStartEdge(mainAxis));
-      const float childCrossOffsetFromContainingBlock =
-          currentNodeCrossOffsetFromContainingBlock +
-          child->getLayout().position(flexStartEdge(crossAxis));
+      // By now all descendants of the containing block that are not absolute
+      // will have their positions set for left and top.
+      const float childLeftOffsetFromContainingBlock =
+          currentNodeLeftOffsetFromContainingBlock +
+          child->getLayout().position(PhysicalEdge::Left);
+      const float childTopOffsetFromContainingBlock =
+          currentNodeTopOffsetFromContainingBlock +
+          child->getLayout().position(PhysicalEdge::Top);
 
       layoutAbsoluteDescendants(
           containingNode,
@@ -564,8 +588,8 @@ void layoutAbsoluteDescendants(
           layoutMarkerData,
           currentDepth + 1,
           generationCount,
-          childMainOffsetFromContainingBlock,
-          childCrossOffsetFromContainingBlock,
+          childLeftOffsetFromContainingBlock,
+          childTopOffsetFromContainingBlock,
           containingNodeAvailableInnerWidth,
           containingNodeAvailableInnerHeight);
     }

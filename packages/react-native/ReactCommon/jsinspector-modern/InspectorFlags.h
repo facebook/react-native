@@ -9,44 +9,42 @@
 
 #include <optional>
 
-#include <react/config/ReactNativeConfig.h>
-
 namespace facebook::react::jsinspector_modern {
 
 /**
  * A container for all inspector related feature flags (Meyers singleton
- * pattern). Flags must be set before they are accessed and are static for the
- * lifetime of the app.
+ * pattern). Enforces that flag values are static for the lifetime of the app.
  */
 class InspectorFlags {
  public:
   static InspectorFlags& getInstance();
 
   /**
-   * Initialize flags from a `ReactNativeConfig` instance. Validates that flag
-   * values are not changed across multiple calls.
-   */
-  void initFromConfig(const ReactNativeConfig& reactNativeConfig);
-
-  /**
    * Flag determining if the modern CDP backend should be enabled.
    */
-  bool getEnableModernCDPRegistry() const;
+  bool getFuseboxEnabled() const;
 
   /**
-   * Flag determining if the C++ implementation of InspectorPackagerConnection
-   * should be used instead of the per-platform one.
+   * Reset flags to their upstream values. The caller must ensure any resources
+   * that have read previous flag values have been cleaned up.
    */
-  bool getEnableCxxInspectorPackagerConnection() const;
+  void dangerouslyResetFlags();
 
  private:
+  struct Values {
+    bool fuseboxEnabledDebug;
+    bool operator==(const Values&) const = default;
+  };
+
   InspectorFlags() = default;
   InspectorFlags(const InspectorFlags&) = delete;
-  InspectorFlags& operator=(const InspectorFlags&) = delete;
+  InspectorFlags& operator=(const InspectorFlags&) = default;
   ~InspectorFlags() = default;
 
-  std::optional<bool> enableModernCDPRegistry_;
-  std::optional<bool> enableCxxInspectorPackagerConnection_;
+  mutable std::optional<Values> cachedValues_;
+  mutable bool inconsistentFlagsStateLogged_{false};
+
+  const Values& loadFlagsAndAssertUnchanged() const;
 };
 
 } // namespace facebook::react::jsinspector_modern

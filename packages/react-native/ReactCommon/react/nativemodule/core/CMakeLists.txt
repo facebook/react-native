@@ -35,5 +35,6 @@ target_link_libraries(react_nativemodule_core
         jsi
         react_bridging
         react_debug
+        react_utils
         reactperflogger
         reactnativejni)

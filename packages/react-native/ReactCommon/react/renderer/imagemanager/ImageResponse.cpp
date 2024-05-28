@@ -24,4 +24,11 @@ std::shared_ptr<void> ImageResponse::getMetadata() const {
   return metadata_;
 }
 
+ImageLoadError::ImageLoadError(std::shared_ptr<void> error)
+    : error_(std::move(error)) {}
+
+std::shared_ptr<void> ImageLoadError::getError() const {
+  return error_;
+}
+
 } // namespace facebook::react

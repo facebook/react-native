@@ -9,13 +9,16 @@ package com.facebook.react;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.KeyEvent;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.devsupport.DoubleTapReloadRecognizer;
+import com.facebook.react.devsupport.ReleaseDevSupportManager;
+import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.interfaces.fabric.ReactSurface;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 
@@ -40,8 +43,17 @@ public class ReactDelegate {
 
   @Nullable private ReactSurface mReactSurface;
 
-  private boolean mFabricEnabled = false;
+  private boolean mFabricEnabled = ReactFeatureFlags.enableFabricRenderer;
 
+  /**
+   * Do not use this constructor as it's not accounting for New Architecture at all. You should
+   * either use {@link ReactDelegate#ReactDelegate(Activity, ReactHost, String, Bundle)} if you're
+   * on bridgeless mode or {@link ReactDelegate#ReactDelegate(Activity, ReactNativeHost, String,
+   * Bundle, boolean)} and use the last parameter to toggle paper/fabric.
+   *
+   * @deprecated Use one of the other constructors instead to account for New Architecture.
+   */
+  @Deprecated
   public ReactDelegate(
       Activity activity,
       ReactNativeHost reactNativeHost,
@@ -75,26 +87,37 @@ public class ReactDelegate {
     mFabricEnabled = fabricEnabled;
     mActivity = activity;
     mMainComponentName = appKey;
-    mLaunchOptions = composeLaunchOptions(launchOptions);
+    mLaunchOptions = launchOptions;
     mDoubleTapReloadRecognizer = new DoubleTapReloadRecognizer();
     mReactNativeHost = reactNativeHost;
   }
 
+  @Nullable
+  private DevSupportManager getDevSupportManager() {
+    if (ReactFeatureFlags.enableBridgelessArchitecture
+        && mReactHost != null
+        && mReactHost.getDevSupportManager() != null) {
+      return mReactHost.getDevSupportManager();
+    } else if (getReactNativeHost().hasInstance()
+        && getReactNativeHost().getReactInstanceManager() != null) {
+      return getReactNativeHost().getReactInstanceManager().getDevSupportManager();
+    } else {
+      return null;
+    }
+  }
+
   public void onHostResume() {
+    if (!(mActivity instanceof DefaultHardwareBackBtnHandler)) {
+      throw new ClassCastException(
+          "Host Activity does not implement DefaultHardwareBackBtnHandler");
+    }
     if (ReactFeatureFlags.enableBridgelessArchitecture) {
-      if (mActivity instanceof DefaultHardwareBackBtnHandler) {
-        mReactHost.onHostResume(mActivity, (DefaultHardwareBackBtnHandler) mActivity);
-      }
+      mReactHost.onHostResume(mActivity, (DefaultHardwareBackBtnHandler) mActivity);
     } else {
       if (getReactNativeHost().hasInstance()) {
-        if (mActivity instanceof DefaultHardwareBackBtnHandler) {
-          getReactNativeHost()
-              .getReactInstanceManager()
-              .onHostResume(mActivity, (DefaultHardwareBackBtnHandler) mActivity);
-        } else {
-          throw new ClassCastException(
-              "Host Activity does not implement DefaultHardwareBackBtnHandler");
-        }
+        getReactNativeHost()
+            .getReactInstanceManager()
+            .onHostResume(mActivity, (DefaultHardwareBackBtnHandler) mActivity);
       }
     }
   }
@@ -136,11 +159,23 @@ public class ReactDelegate {
     return false;
   }
 
+  public boolean onNewIntent(Intent intent) {
+    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      mReactHost.onNewIntent(intent);
+      return true;
+    } else {
+      if (getReactNativeHost().hasInstance()) {
+        getReactNativeHost().getReactInstanceManager().onNewIntent(intent);
+        return true;
+      }
+    }
+    return false;
+  }
+
   public void onActivityResult(
       int requestCode, int resultCode, Intent data, boolean shouldForwardToReactInstance) {
     if (ReactFeatureFlags.enableBridgelessArchitecture) {
-      // TODO T156475655: Implement onActivityResult for Bridgeless
-      return;
+      mReactHost.onActivityResult(mActivity, requestCode, resultCode, data);
     } else {
       if (getReactNativeHost().hasInstance() && shouldForwardToReactInstance) {
         getReactNativeHost()
@@ -148,6 +183,88 @@ public class ReactDelegate {
             .onActivityResult(mActivity, requestCode, resultCode, data);
       }
     }
+  }
+
+  public void onWindowFocusChanged(boolean hasFocus) {
+    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      mReactHost.onWindowFocusChange(hasFocus);
+    } else {
+      if (getReactNativeHost().hasInstance()) {
+        getReactNativeHost().getReactInstanceManager().onWindowFocusChange(hasFocus);
+      }
+    }
+  }
+
+  public void onConfigurationChanged(Configuration newConfig) {
+    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      mReactHost.onConfigurationChanged(Assertions.assertNotNull(mActivity));
+    } else {
+      if (getReactNativeHost().hasInstance()) {
+        getReactInstanceManager()
+            .onConfigurationChanged(Assertions.assertNotNull(mActivity), newConfig);
+      }
+    }
+  }
+
+  public boolean onKeyDown(int keyCode, KeyEvent event) {
+    if (keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD
+        && ((ReactFeatureFlags.enableBridgelessArchitecture
+                && mReactHost != null
+                && mReactHost.getDevSupportManager() != null)
+            || (getReactNativeHost().hasInstance()
+                && getReactNativeHost().getUseDeveloperSupport()))) {
+      event.startTracking();
+      return true;
+    }
+    return false;
+  }
+
+  public boolean onKeyLongPress(int keyCode) {
+    if (keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD) {
+      if (ReactFeatureFlags.enableBridgelessArchitecture && mReactHost != null) {
+        DevSupportManager devSupportManager = mReactHost.getDevSupportManager();
+        // onKeyLongPress is a Dev API and not supported in RELEASE mode.
+        if (devSupportManager != null && !(devSupportManager instanceof ReleaseDevSupportManager)) {
+          devSupportManager.showDevOptionsDialog();
+          return true;
+        }
+      } else {
+        if (getReactNativeHost().hasInstance() && getReactNativeHost().getUseDeveloperSupport()) {
+          getReactNativeHost().getReactInstanceManager().showDevOptionsDialog();
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  public void reload() {
+    DevSupportManager devSupportManager = getDevSupportManager();
+    if (devSupportManager == null) {
+      return;
+    }
+
+    // Reload in RELEASE mode
+    if (devSupportManager instanceof ReleaseDevSupportManager) {
+      // Do not reload the bundle from JS as there is no bundler running in release mode.
+      if (ReactFeatureFlags.enableBridgelessArchitecture) {
+        if (mReactHost != null) {
+          mReactHost.reload("ReactDelegate.reload()");
+        }
+      } else {
+        UiThreadUtil.runOnUiThread(
+            () -> {
+              if (mReactNativeHost.hasInstance()
+                  && mReactNativeHost.getReactInstanceManager() != null) {
+                mReactNativeHost.getReactInstanceManager().recreateReactContextInBackground();
+              }
+            });
+      }
+      return;
+    }
+
+    // Reload in DEBUG mode
+    devSupportManager.handleReloadJS();
   }
 
   public void loadApp() {
@@ -182,6 +299,7 @@ public class ReactDelegate {
     }
   }
 
+  // Not used in bridgeless
   protected ReactRootView createRootView() {
     ReactRootView reactRootView = new ReactRootView(mActivity);
     reactRootView.setIsFabric(isFabricEnabled());
@@ -196,22 +314,22 @@ public class ReactDelegate {
    *     application.
    */
   public boolean shouldShowDevMenuOrReload(int keyCode, KeyEvent event) {
-    if (ReactFeatureFlags.enableBridgelessArchitecture) {
-      // TODO T156475655: Implement shouldShowDevMenuOrReload for Bridgeless
+    DevSupportManager devSupportManager = getDevSupportManager();
+    // shouldShowDevMenuOrReload is a Dev API and not supported in RELEASE mode.
+    if (devSupportManager == null || devSupportManager instanceof ReleaseDevSupportManager) {
       return false;
-    } else if (getReactNativeHost().hasInstance()
-        && getReactNativeHost().getUseDeveloperSupport()) {
-      if (keyCode == KeyEvent.KEYCODE_MENU) {
-        getReactNativeHost().getReactInstanceManager().showDevOptionsDialog();
-        return true;
-      }
-      boolean didDoubleTapR =
-          Assertions.assertNotNull(mDoubleTapReloadRecognizer)
-              .didDoubleTapR(keyCode, mActivity.getCurrentFocus());
-      if (didDoubleTapR) {
-        getReactNativeHost().getReactInstanceManager().getDevSupportManager().handleReloadJS();
-        return true;
-      }
+    }
+
+    if (keyCode == KeyEvent.KEYCODE_MENU) {
+      devSupportManager.showDevOptionsDialog();
+      return true;
+    }
+    boolean didDoubleTapR =
+        Assertions.assertNotNull(mDoubleTapReloadRecognizer)
+            .didDoubleTapR(keyCode, mActivity.getCurrentFocus());
+    if (didDoubleTapR) {
+      devSupportManager.handleReloadJS();
+      return true;
     }
     return false;
   }
@@ -233,15 +351,5 @@ public class ReactDelegate {
    */
   protected boolean isFabricEnabled() {
     return mFabricEnabled;
-  }
-
-  private @NonNull Bundle composeLaunchOptions(Bundle composedLaunchOptions) {
-    if (isFabricEnabled()) {
-      if (composedLaunchOptions == null) {
-        composedLaunchOptions = new Bundle();
-      }
-      composedLaunchOptions.putBoolean("concurrentRoot", true);
-    }
-    return composedLaunchOptions;
   }
 }

@@ -22,13 +22,13 @@ public class ReactViewBackgroundManager {
   private int mColor = Color.TRANSPARENT;
 
   public ReactViewBackgroundManager(View view) {
-    this.mView = view;
+    mView = view;
   }
 
   public void cleanup() {
     ViewCompat.setBackground(mView, null);
-    this.mView = null;
-    this.mReactBackgroundDrawable = null;
+    mView = null;
+    mReactBackgroundDrawable = null;
   }
 
   private ReactViewBackgroundDrawable getOrCreateReactViewBackground() {

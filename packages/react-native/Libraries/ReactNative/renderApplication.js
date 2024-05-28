@@ -83,16 +83,13 @@ export default function renderApplication<Props: Object>(
     );
   }
 
-  if (fabric && !useConcurrentRoot) {
-    console.warn(
-      'Using Fabric without concurrent root is deprecated. Please enable concurrent root for this application.',
-    );
-  }
+  // We want to have concurrentRoot always enabled when you're on Fabric.
+  const useConcurrentRootOverride = fabric;
 
   performanceLogger.startTimespan('renderApplication_React_render');
   performanceLogger.setExtra(
     'usedReactConcurrentRoot',
-    useConcurrentRoot ? '1' : '0',
+    useConcurrentRootOverride ? '1' : '0',
   );
   performanceLogger.setExtra('usedReactFabric', fabric ? '1' : '0');
   performanceLogger.setExtra(
@@ -103,7 +100,7 @@ export default function renderApplication<Props: Object>(
     element: renderable,
     rootTag,
     useFabric: Boolean(fabric),
-    useConcurrentRoot: Boolean(useConcurrentRoot),
+    useConcurrentRoot: Boolean(useConcurrentRootOverride),
   });
   performanceLogger.stopTimespan('renderApplication_React_render');
 }

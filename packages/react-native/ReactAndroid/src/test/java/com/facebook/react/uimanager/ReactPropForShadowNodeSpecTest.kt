@@ -33,7 +33,7 @@ class ReactPropForShadowNodeSpecTest {
             object : ReactShadowNodeImpl() {
                   @Suppress("UNUSED_PARAMETER")
                   @ReactProp(name = "prop")
-                  fun setterWithIncorrectNumberOfArgs(value: Boolean, anotherValue: Int) {}
+                  fun setterWithIncorrectNumberOfArgs(value: Boolean, anotherValue: Int) = Unit
                 }
                 .javaClass)
         .nativeProps
@@ -43,7 +43,7 @@ class ReactPropForShadowNodeSpecTest {
   fun testMethodWithTooFewParams() {
     BaseViewManager(
             object : ReactShadowNodeImpl() {
-                  @ReactProp(name = "prop") fun setterWithNoArgs() {}
+                  @ReactProp(name = "prop") fun setterWithNoArgs() = Unit
                 }
                 .javaClass)
         .nativeProps
@@ -55,7 +55,7 @@ class ReactPropForShadowNodeSpecTest {
             object : ReactShadowNodeImpl() {
                   @Suppress("UNUSED_PARAMETER")
                   @ReactProp(name = "prop")
-                  fun setterWithMap(value: Map<*, *>) {}
+                  fun setterWithMap(value: Map<*, *>) = Unit
                 }
                 .javaClass)
         .nativeProps
@@ -67,7 +67,7 @@ class ReactPropForShadowNodeSpecTest {
             object : ReactShadowNodeImpl() {
                   @Suppress("UNUSED_PARAMETER")
                   @ReactPropGroup(names = ["prop1", "prop2"])
-                  fun setterWithTooManyParams(index: Int, value: Float, boolean: Boolean) {}
+                  fun setterWithTooManyParams(index: Int, value: Float, boolean: Boolean) = Unit
                 }
                 .javaClass)
         .nativeProps
@@ -79,7 +79,7 @@ class ReactPropForShadowNodeSpecTest {
             object : ReactShadowNodeImpl() {
                   @Suppress("UNUSED_PARAMETER")
                   @ReactPropGroup(names = ["props1", "prop2"])
-                  fun setterWithTooFewParams(index: Int) {}
+                  fun setterWithTooFewParams(index: Int) = Unit
                 }
                 .javaClass)
         .nativeProps
@@ -91,7 +91,7 @@ class ReactPropForShadowNodeSpecTest {
             object : ReactShadowNodeImpl() {
                   @Suppress("UNUSED_PARAMETER")
                   @ReactPropGroup(names = ["prop1", "prop2"])
-                  fun setterWithNoIndexParam(value: Float, boolean: Boolean) {}
+                  fun setterWithNoIndexParam(value: Float, boolean: Boolean) = Unit
                 }
                 .javaClass)
         .nativeProps
@@ -110,7 +110,7 @@ class ReactPropForShadowNodeSpecTest {
 
       override fun createViewInstance(reactContext: ThemedReactContext): View = View(null)
 
-      override fun updateExtraData(root: View, extraData: Any?) {}
+      override fun updateExtraData(root: View, extraData: Any?) = Unit
     }
   }
 }

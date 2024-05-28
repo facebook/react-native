@@ -101,7 +101,7 @@ class StyleValuePool {
   static constexpr bool isIntegerPackable(float f) {
     constexpr uint16_t kMaxInlineAbsValue = (1 << 11) - 1;
 
-    int32_t i = static_cast<int32_t>(f);
+    auto i = static_cast<int32_t>(f);
     return static_cast<float>(i) == f && i >= -kMaxInlineAbsValue &&
         i <= +kMaxInlineAbsValue;
   }
@@ -110,7 +110,7 @@ class StyleValuePool {
     uint16_t isNegative = value < 0 ? 1 : 0;
     return static_cast<uint16_t>(
         (isNegative << 11) |
-        (static_cast<int32_t>(value) * (isNegative ? -1 : 1)));
+        (static_cast<int32_t>(value) * (isNegative != 0u ? -1 : 1)));
   }
 
   static constexpr float unpackInlineInteger(uint16_t value) {

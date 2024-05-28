@@ -42,7 +42,7 @@ Pod::Spec.new do |s|
   s.compiler_flags       = folly_compiler_flags + ' ' + boost_compiler_flags
 
   if ENV['USE_FRAMEWORKS']
-    s.header_mappings_dir     = './'
+    s.header_mappings_dir     = '../../'
     s.module_name             = 'React_RuntimeCore'
   end
 
@@ -55,6 +55,7 @@ Pod::Spec.new do |s|
   s.dependency "React-jserrorhandler"
   s.dependency "React-runtimescheduler"
   s.dependency "React-utils"
+  s.dependency "React-featureflags"
 
   if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
     s.dependency "hermes-engine"

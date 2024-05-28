@@ -10,12 +10,14 @@ package com.facebook.react.uimanager.layoutanimation;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
+import com.facebook.infer.annotation.Nullsafe;
 
 /**
  * Animation responsible for updating opacity of a view. It should ideally use hardware texture to
  * optimize rendering performances.
  */
-/* package */ class OpacityAnimation extends Animation {
+/* package */ @Nullsafe(Nullsafe.Mode.LOCAL)
+class OpacityAnimation extends Animation {
 
   static class OpacityAnimationListener implements Animation.AnimationListener {
 

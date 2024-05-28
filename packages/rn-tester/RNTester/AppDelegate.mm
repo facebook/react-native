@@ -9,10 +9,12 @@
 
 #import <UserNotifications/UserNotifications.h>
 
+#import <RCTAppDelegate+Protected.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTDefines.h>
 #import <React/RCTLinkingManager.h>
 #import <ReactCommon/RCTSampleTurboModule.h>
+#import <ReactCommon/RCTTurboModuleManager.h>
 #import <ReactCommon/SampleTurboCxxModule.h>
 
 #import <React/RCTPushNotificationManager.h>
@@ -83,10 +85,12 @@ static NSString *kBundlePath = @"js/RNTesterApp.ios";
   if (name == std::string([@"SampleTurboCxxModule" UTF8String])) {
     return std::make_shared<facebook::react::SampleTurboCxxModule>(jsInvoker);
   }
+
   if (name == facebook::react::NativeCxxModuleExample::kModuleName) {
     return std::make_shared<facebook::react::NativeCxxModuleExample>(jsInvoker);
   }
-  return nullptr;
+
+  return [super getTurboModule:name jsInvoker:jsInvoker];
 }
 
 // Required for the remoteNotificationsRegistered event.
@@ -116,12 +120,20 @@ static NSString *kBundlePath = @"js/RNTesterApp.ios";
 
 // Required for the remoteNotificationReceived and localNotificationReceived events
 // Called when a notification is tapped from background. (Foreground notification will not be shown per
-// the presentation option selected above.)
+// the presentation option selected above).
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
     didReceiveNotificationResponse:(UNNotificationResponse *)response
              withCompletionHandler:(void (^)(void))completionHandler
 {
-  [RCTPushNotificationManager didReceiveNotification:response.notification];
+  UNNotification *notification = response.notification;
+
+  // This condition will be true if tapping the notification launched the app.
+  if ([response.actionIdentifier isEqualToString:UNNotificationDefaultActionIdentifier]) {
+    // This can be retrieved with getInitialNotification.
+    [RCTPushNotificationManager setInitialNotification:notification];
+  }
+
+  [RCTPushNotificationManager didReceiveNotification:notification];
   completionHandler();
 }
 

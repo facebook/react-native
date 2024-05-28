@@ -81,16 +81,16 @@ GraphNode NativeCxxModuleExample::getGraphNode(
   return arg;
 }
 
-NativeCxxModuleExampleCxxEnumFloat NativeCxxModuleExample::getNumEnum(
+NativeCxxModuleExampleEnumInt NativeCxxModuleExample::getNumEnum(
     jsi::Runtime& rt,
-    NativeCxxModuleExampleCxxEnumInt arg) {
-  return NativeCxxModuleExampleCxxEnumFloat::FB;
+    NativeCxxModuleExampleEnumInt arg) {
+  return arg;
 }
 
-NativeCxxModuleExampleCxxEnumStr NativeCxxModuleExample::getStrEnum(
+NativeCxxModuleExampleEnumStr NativeCxxModuleExample::getStrEnum(
     jsi::Runtime& rt,
-    NativeCxxModuleExampleCxxEnumNone arg) {
-  return NativeCxxModuleExampleCxxEnumStr::SB;
+    NativeCxxModuleExampleEnumNone /*arg*/) {
+  return NativeCxxModuleExampleEnumStr::SB;
 }
 
 std::map<std::string, std::optional<int32_t>> NativeCxxModuleExample::getMap(
@@ -180,16 +180,18 @@ void NativeCxxModuleExample::setMenu(jsi::Runtime& rt, MenuItem menuItem) {
 
 void NativeCxxModuleExample::emitCustomDeviceEvent(
     jsi::Runtime& rt,
-    jsi::String eventName) {
+    const std::string& eventName) {
   // Test emitting device events (RCTDeviceEventEmitter.emit) from C++
-  // TurboModule with arbitrary arguments
+  // TurboModule with arbitrary arguments. This can be called from any thread
   emitDeviceEvent(
-      rt,
-      eventName.utf8(rt).c_str(),
-      [](jsi::Runtime& rt, std::vector<jsi::Value>& args) {
+      eventName,
+      [jsInvoker = jsInvoker_](
+          jsi::Runtime& rt, std::vector<jsi::Value>& args) {
         args.emplace_back(jsi::Value(true));
         args.emplace_back(jsi::Value(42));
         args.emplace_back(jsi::String::createFromAscii(rt, "stringArg"));
+        args.emplace_back(bridging::toJs(
+            rt, CustomDeviceEvent{"one", 2, std::nullopt}, jsInvoker));
       });
 }
 

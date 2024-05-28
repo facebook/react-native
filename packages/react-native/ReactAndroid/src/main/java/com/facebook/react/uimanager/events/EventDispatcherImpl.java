@@ -10,6 +10,7 @@ package com.facebook.react.uimanager.events;
 import android.util.LongSparseArray;
 import android.view.Choreographer;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.UiThreadUtil;
@@ -55,6 +56,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * <p>Event Cookie Composition: VIEW_TAG_MASK = 0x00000000ffffffff EVENT_TYPE_ID_MASK =
  * 0x0000ffff00000000 COALESCING_KEY_MASK = 0xffff000000000000
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class EventDispatcherImpl implements EventDispatcher, LifecycleEventListener {
 
   private static final Comparator<Event> EVENT_COMPARATOR =

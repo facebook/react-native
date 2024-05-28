@@ -38,6 +38,7 @@ type State = {|
 
 type Examples =
   | 'callback'
+  | 'callbackWithSubscription'
   | 'getArray'
   | 'getBool'
   | 'getConstants'
@@ -165,7 +166,7 @@ class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
       DeviceEventEmitter.addListener(CUSTOM_EVENT_TYPE, (...args) => {
         this._setResult(
           'emitDeviceEvent',
-          `${CUSTOM_EVENT_TYPE}(${args.map(s => `${s}`).join(', ')})`,
+          `${CUSTOM_EVENT_TYPE}(${args.map(s => (typeof s === 'object' ? JSON.stringify(s) : s)).join(', ')})`,
         );
       });
       NativeCxxModuleExample?.emitCustomDeviceEvent(CUSTOM_EVENT_TYPE);
@@ -221,7 +222,7 @@ class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
   };
 
   _setResult(
-    name: string | Examples,
+    name: Examples | ErrorExamples,
     result:
       | $FlowFixMe
       | void
@@ -271,6 +272,7 @@ class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
             style={[styles.column, styles.button]}
             onPress={() =>
               Object.keys(this._tests).forEach(item =>
+                // $FlowFixMe
                 this._setResult(item, this._tests[item]()),
               )
             }>

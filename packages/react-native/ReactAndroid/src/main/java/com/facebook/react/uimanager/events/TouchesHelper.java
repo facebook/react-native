@@ -8,6 +8,7 @@
 package com.facebook.react.uimanager.events;
 
 import android.view.MotionEvent;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.WritableArray;
@@ -16,6 +17,7 @@ import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.systrace.Systrace;
 
 /** Class responsible for generating catalyst touch events based on android {@link MotionEvent}. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class TouchesHelper {
   @Deprecated public static final String TARGET_KEY = "target";
 
@@ -128,7 +130,8 @@ public class TouchesHelper {
         ReactSoftExceptionLogger.logSoftException(
             TAG,
             new IllegalStateException(
-                "Cannot dispatch a TouchEvent that has no MotionEvent; the TouchEvent has been recycled"));
+                "Cannot dispatch a TouchEvent that has no MotionEvent; the TouchEvent has been"
+                    + " recycled"));
         return;
       }
 
@@ -164,23 +167,25 @@ public class TouchesHelper {
           break;
       }
 
-      for (WritableMap touchData : changedTouches) {
-        WritableMap eventData = touchData.copy();
-        WritableArray changedTouchesArray =
-            getWritableArray(/* copyObjects */ true, changedTouches);
-        WritableArray touchesArray = getWritableArray(/* copyObjects */ true, touches);
+      if (changedTouches != null) {
+        for (WritableMap touchData : changedTouches) {
+          WritableMap eventData = touchData.copy();
+          WritableArray changedTouchesArray =
+              getWritableArray(/* copyObjects */ true, changedTouches);
+          WritableArray touchesArray = getWritableArray(/* copyObjects */ true, touches);
 
-        eventData.putArray(CHANGED_TOUCHES_KEY, changedTouchesArray);
-        eventData.putArray(TOUCHES_KEY, touchesArray);
+          eventData.putArray(CHANGED_TOUCHES_KEY, changedTouchesArray);
+          eventData.putArray(TOUCHES_KEY, touchesArray);
 
-        eventEmitter.receiveEvent(
-            event.getSurfaceId(),
-            event.getViewTag(),
-            event.getEventName(),
-            event.canCoalesce(),
-            0,
-            eventData,
-            event.getEventCategory());
+          eventEmitter.receiveEvent(
+              event.getSurfaceId(),
+              event.getViewTag(),
+              event.getEventName(),
+              event.canCoalesce(),
+              0,
+              eventData,
+              event.getEventCategory());
+        }
       }
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);

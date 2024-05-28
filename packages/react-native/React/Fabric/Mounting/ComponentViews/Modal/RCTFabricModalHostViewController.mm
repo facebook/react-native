@@ -44,7 +44,7 @@
 
 - (UIStatusBarStyle)preferredStatusBarStyle
 {
-  return [RCTSharedApplication() statusBarStyle];
+  return [RCTUIStatusBarManager() statusBarStyle];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -55,7 +55,7 @@
 
 - (BOOL)prefersStatusBarHidden
 {
-  return [RCTSharedApplication() isStatusBarHidden];
+  return [RCTUIStatusBarManager() isStatusBarHidden];
 }
 
 #if RCT_DEV

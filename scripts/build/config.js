@@ -41,13 +41,22 @@ export type BuildConfig = $ReadOnly<{
  * Node.js packages only.
  */
 const buildConfig /*: BuildConfig */ = {
+  /* eslint sort-keys: "error" */
   packages: {
     'community-cli-plugin': {
       target: 'node',
     },
-    'dev-middleware': {
-      target: 'node',
+    'core-cli-utils': {
       emitTypeScriptDefs: true,
+      target: 'node',
+    },
+    'dev-middleware': {
+      emitTypeScriptDefs: true,
+      target: 'node',
+    },
+    'metro-config': {
+      emitTypeScriptDefs: true,
+      target: 'node',
     },
   },
 };

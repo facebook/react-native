@@ -21,5 +21,5 @@ import com.facebook.react.bridge.ReadableArray;
 public interface ViewManagerDelegate<T extends View> {
   void setProperty(T view, String propName, @Nullable Object value);
 
-  void receiveCommand(T view, String commandName, ReadableArray args);
+  void receiveCommand(T view, String commandName, @Nullable ReadableArray args);
 }

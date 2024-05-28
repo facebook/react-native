@@ -157,9 +157,15 @@ folly::dynamic InspectorPackagerConnection::Impl::pages() {
   folly::dynamic array = folly::dynamic::array();
 
   for (const auto& page : pages) {
-    array.push_back(folly::dynamic::object("id", std::to_string(page.id))(
-        "title", page.title + " [C++ connection]")(
-        "app", app_)("vm", page.vm)("type", pageTypeToString(page.type)));
+    folly::dynamic pageDescription = folly::dynamic::object;
+    pageDescription["id"] = std::to_string(page.id);
+    pageDescription["title"] = page.title + " [C++ connection]";
+    pageDescription["app"] = app_;
+    pageDescription["vm"] = page.vm;
+    pageDescription["capabilities"] =
+        targetCapabilitiesToDynamic(page.capabilities);
+
+    array.push_back(pageDescription);
   }
   return array;
 }

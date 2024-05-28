@@ -83,7 +83,12 @@ static NSString *getInspectorDeviceId()
   // An alphanumeric string that uniquely identifies a device to the app's vendor. [Source: Apple docs]
   NSString *identifierForVendor = [[UIDevice currentDevice] identifierForVendor].UUIDString;
 
-  NSString *rawDeviceId = [NSString stringWithFormat:@"apple-%@-%@", identifierForVendor, bundleId];
+  auto &inspectorFlags = facebook::react::jsinspector_modern::InspectorFlags::getInstance();
+
+  NSString *rawDeviceId = [NSString stringWithFormat:@"apple-%@-%@-%s",
+                                                     identifierForVendor,
+                                                     bundleId,
+                                                     inspectorFlags.getFuseboxEnabled() ? "fusebox" : "legacy"];
 
   return getSHA256(rawDeviceId);
 }
@@ -118,6 +123,17 @@ static void sendEventToAllConnections(NSString *event)
   }
 }
 
++ (BOOL)isPackagerDisconnected
+{
+  for (NSString *socketId in socketConnections) {
+    if ([socketConnections[socketId] isConnected]) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 + (void)openDebugger:(NSURL *)bundleURL withErrorMessage:(NSString *)errorMessage
 {
   NSString *appId = [[[NSBundle mainBundle] bundleIdentifier]
@@ -146,7 +162,7 @@ static void sendEventToAllConnections(NSString *event)
 + (void)disableDebugger
 {
   auto &inspectorFlags = facebook::react::jsinspector_modern::InspectorFlags::getInstance();
-  if (!inspectorFlags.getEnableModernCDPRegistry()) {
+  if (!inspectorFlags.getFuseboxEnabled()) {
     sendEventToAllConnections(kDebuggerMsgDisable);
   }
 }
@@ -165,9 +181,10 @@ static void sendEventToAllConnections(NSString *event)
   NSString *key = [inspectorURL absoluteString];
   id<RCTInspectorPackagerConnectionProtocol> connection = socketConnections[key];
   if (!connection || !connection.isConnected) {
-    if (facebook::react::jsinspector_modern::InspectorFlags::getInstance().getEnableCxxInspectorPackagerConnection()) {
+    if (facebook::react::jsinspector_modern::InspectorFlags::getInstance().getFuseboxEnabled()) {
       connection = [[RCTCxxInspectorPackagerConnection alloc] initWithURL:inspectorURL];
     } else {
+      // TODO(T190163403): Remove legacy RCTInspectorPackagerConnection
       connection = [[RCTInspectorPackagerConnection alloc] initWithURL:inspectorURL];
     }
 

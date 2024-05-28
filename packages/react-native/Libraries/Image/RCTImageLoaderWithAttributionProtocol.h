@@ -10,9 +10,6 @@
 #import <React/RCTImageLoaderProtocol.h>
 #import <React/RCTImageURLLoaderWithAttribution.h>
 
-RCT_EXTERN BOOL RCTImageLoadingPerfInstrumentationEnabled(void);
-RCT_EXTERN void RCTEnableImageLoadingPerfInstrumentation(BOOL enabled);
-
 @protocol RCTImageLoaderWithAttributionProtocol <RCTImageLoaderProtocol, RCTImageLoaderLoggableProtocol>
 
 // TODO (T61325135): Remove C++ checks

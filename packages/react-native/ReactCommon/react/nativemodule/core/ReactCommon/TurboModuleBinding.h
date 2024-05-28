@@ -34,6 +34,7 @@ class TurboModuleBinding {
           nullptr);
 
   TurboModuleBinding(
+      jsi::Runtime& runtime,
       TurboModuleProviderFunctionType&& moduleProvider,
       std::shared_ptr<LongLivedObjectCollection> longLivedObjectCollection);
 
@@ -49,6 +50,7 @@ class TurboModuleBinding {
   jsi::Value getModule(jsi::Runtime& runtime, const std::string& moduleName)
       const;
 
+  jsi::Runtime& runtime_;
   TurboModuleProviderFunctionType moduleProvider_;
   std::shared_ptr<LongLivedObjectCollection> longLivedObjectCollection_;
 };

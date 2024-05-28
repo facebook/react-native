@@ -10,14 +10,17 @@ package com.facebook.react.uimanager;
 import android.os.Bundle;
 import android.view.ViewGroup;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.uimanager.common.UIManagerType;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /** Interface for the root native view of a React native application */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public interface ReactRoot {
 
   /** This constant represents that ReactRoot hasn't started yet or it has been destroyed. */
   int STATE_STOPPED = 0;
+
   /** This constant represents that ReactRoot has started. */
   int STATE_STARTED = 1;
 
@@ -44,10 +47,14 @@ public interface ReactRoot {
   /** Return native view for root */
   ViewGroup getRootViewGroup();
 
-  /** @return Cached values for widthMeasureSpec. */
+  /**
+   * @return Cached values for widthMeasureSpec.
+   */
   int getWidthMeasureSpec();
 
-  /** @return Cached values for and heightMeasureSpec. */
+  /**
+   * @return Cached values for and heightMeasureSpec.
+   */
   int getHeightMeasureSpec();
 
   /** Sets a flag that determines whether to log that content appeared on next view added. */
@@ -62,6 +69,8 @@ public interface ReactRoot {
   @Nullable
   String getSurfaceID();
 
-  /** @return an {@link AtomicInteger} that represents the state of the ReactRoot object. */
+  /**
+   * @return an {@link AtomicInteger} that represents the state of the ReactRoot object.
+   */
   AtomicInteger getState();
 }

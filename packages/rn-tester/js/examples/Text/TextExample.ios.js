@@ -13,6 +13,7 @@
 import type {RNTesterModule} from '../../types/RNTesterTypes';
 
 import TextLegend from '../../components/TextLegend';
+import TextInlineViewsExample from './TextInlineViewsExample';
 
 const TextInlineView = require('../../components/TextInlineView');
 const React = require('react');
@@ -1328,6 +1329,7 @@ const examples = [
       );
     },
   },
+  TextInlineViewsExample,
 ];
 
 module.exports = ({

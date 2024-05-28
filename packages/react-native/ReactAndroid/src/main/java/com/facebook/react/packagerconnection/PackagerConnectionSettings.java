@@ -14,8 +14,10 @@ import android.text.TextUtils;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.modules.systeminfo.AndroidInfoHelpers;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class PackagerConnectionSettings {
   private static final String TAG = PackagerConnectionSettings.class.getSimpleName();
   private static final String PREFS_DEBUG_SERVER_HOST_KEY = "debug_http_host";

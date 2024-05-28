@@ -14,8 +14,6 @@ import VirtualizedList from './VirtualizedList';
 import {keyExtractor as defaultKeyExtractor} from './VirtualizeUtils';
 import invariant from 'invariant';
 import * as React from 'react';
-import {View} from 'react-native';
-
 type Item = any;
 
 export type SectionBase<SectionItemT> = {
@@ -593,14 +591,16 @@ function ItemWithSeparator(props: ItemWithSeparatorProps): React.Node {
       {...separatorProps}
     />
   );
-  return leadingSeparator || separator ? (
-    <View>
-      {inverted === false ? leadingSeparator : separator}
+  const RenderSeparator = leadingSeparator || separator;
+  const firstSeparator = inverted === false ? leadingSeparator : separator;
+  const secondSeparator = inverted === false ? separator : leadingSeparator;
+
+  return (
+    <>
+      {RenderSeparator ? firstSeparator : null}
       {element}
-      {inverted === false ? separator : leadingSeparator}
-    </View>
-  ) : (
-    element
+      {RenderSeparator ? secondSeparator : null}
+    </>
   );
 }
 

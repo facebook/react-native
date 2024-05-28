@@ -28,6 +28,30 @@ TEST(TransformTest, transformingPoint) {
   EXPECT_EQ(translatedPoint.y, 100);
 }
 
+TEST(TransformTest, fromTransformOperationPercentage) {
+  auto point = facebook::react::Point{0, 0};
+  facebook::react::Size size = {120, 200};
+
+  auto operation = TransformOperation{
+      TransformOperationType::Translate,
+      ValueUnit{50.0f, UnitType::Percent},
+      ValueUnit{20.0f, UnitType::Percent},
+      {}};
+  auto translatedPoint =
+      point * Transform::FromTransformOperation(operation, size);
+  EXPECT_EQ(translatedPoint.x, 60);
+  EXPECT_EQ(translatedPoint.y, 40);
+
+  operation = TransformOperation{
+      TransformOperationType::Translate,
+      ValueUnit{40.0f, UnitType::Percent},
+      ValueUnit{20.0f, UnitType::Point},
+      {}};
+  translatedPoint = point * Transform::FromTransformOperation(operation, size);
+  EXPECT_EQ(translatedPoint.x, 48);
+  EXPECT_EQ(translatedPoint.y, 20);
+}
+
 TEST(TransformTest, scalingRect) {
   auto point = facebook::react::Point{100, 200};
   auto size = facebook::react::Size{300, 400};
@@ -70,6 +94,26 @@ TEST(TransformTest, rotatingRect) {
   auto rect = facebook::react::Rect{point, size};
 
   auto transformedRect = rect * Transform::RotateZ(M_PI_4);
+
+  ASSERT_NEAR(transformedRect.origin.x, 7.9289, 0.0001);
+  ASSERT_NEAR(transformedRect.origin.y, 7.9289, 0.0001);
+  ASSERT_NEAR(transformedRect.size.width, 14.1421, 0.0001);
+  ASSERT_NEAR(transformedRect.size.height, 14.1421, 0.0001);
+}
+
+TEST(TransformTest, rotate3dOverload) {
+  auto point = facebook::react::Point{10, 10};
+  auto size = facebook::react::Size{10, 10};
+  auto rect = facebook::react::Rect{point, size};
+
+  auto transform = Transform::Rotate(0, 0, M_PI_4);
+  EXPECT_EQ(transform.operations.size(), 1);
+  EXPECT_EQ(transform.operations[0].type, TransformOperationType::Rotate);
+  EXPECT_EQ(transform.operations[0].x.resolve(0), 0);
+  EXPECT_EQ(transform.operations[0].y.resolve(0), 0);
+  ASSERT_NEAR(transform.operations[0].z.resolve(0), M_PI_4, 0.0001);
+
+  auto transformedRect = rect * Transform::Rotate(0, 0, M_PI_4);
 
   ASSERT_NEAR(transformedRect.origin.x, 7.9289, 0.0001);
   ASSERT_NEAR(transformedRect.origin.y, 7.9289, 0.0001);

@@ -12,4 +12,4 @@ package com.facebook.react.common.annotations
 @RequiresOptIn(
     level = RequiresOptIn.Level.ERROR,
     message = "This API is experimental and is likely to change or to be removed in the future")
-annotation class UnstableReactNativeAPI
+public annotation class UnstableReactNativeAPI

@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @generate-docs
  */
 
 import type {ColorValue} from '../../StyleSheet/StyleSheet';

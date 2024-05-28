@@ -21,6 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol RCTTurboModuleManagerDelegate;
 
+typedef NSURL *_Nullable (^RCTHostBundleURLProvider)(void);
+
 // Runtime API
 
 @protocol RCTHostDelegate <NSObject>
@@ -35,18 +37,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-/**
- * This is a private protocol used to configure internal behavior of the runtime.
- * DO NOT USE THIS OUTSIDE OF THE REACT NATIVE CODEBASE.
- */
-@protocol RCTHostDelegateInternal <NSObject>
-
-// TODO(T166383606): Remove this method when we remove the legacy runtime scheduler or we have access to
-// ReactNativeConfig before we initialize it.
-- (BOOL)useModernRuntimeScheduler:(RCTHost *)host;
-
-@end
-
 @protocol RCTHostRuntimeDelegate <NSObject>
 
 - (void)host:(RCTHost *)host didInitializeRuntime:(facebook::jsi::Runtime &)runtime;
@@ -57,12 +47,23 @@ typedef std::shared_ptr<facebook::react::JSRuntimeFactory> (^RCTHostJSEngineProv
 
 @interface RCTHost : NSObject
 
+- (instancetype)initWithBundleURLProvider:(RCTHostBundleURLProvider)provider
+                             hostDelegate:(id<RCTHostDelegate>)hostDelegate
+               turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
+                         jsEngineProvider:(RCTHostJSEngineProvider)jsEngineProvider
+                            launchOptions:(nullable NSDictionary *)launchOptions NS_DESIGNATED_INITIALIZER;
+
 - (instancetype)initWithBundleURL:(NSURL *)bundleURL
                      hostDelegate:(id<RCTHostDelegate>)hostDelegate
        turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
-                 jsEngineProvider:(RCTHostJSEngineProvider)jsEngineProvider NS_DESIGNATED_INITIALIZER;
+                 jsEngineProvider:(RCTHostJSEngineProvider)jsEngineProvider
+                    launchOptions:(nullable NSDictionary *)launchOptions __deprecated;
 
 @property (nonatomic, weak, nullable) id<RCTHostRuntimeDelegate> runtimeDelegate;
+
+@property (nonatomic, readonly) RCTSurfacePresenter *surfacePresenter;
+
+@property (nonatomic, readonly) RCTModuleRegistry *moduleRegistry;
 
 - (void)start;
 
@@ -75,12 +76,6 @@ typedef std::shared_ptr<facebook::react::JSRuntimeFactory> (^RCTHostJSEngineProv
                                 initialProperties:(NSDictionary *)properties;
 
 - (RCTFabricSurface *)createSurfaceWithModuleName:(NSString *)moduleName initialProperties:(NSDictionary *)properties;
-
-- (RCTSurfacePresenter *)getSurfacePresenter;
-
-// Native module API
-
-- (RCTModuleRegistry *)getModuleRegistry;
 
 @end
 

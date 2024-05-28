@@ -71,6 +71,32 @@ exports[`RN Codegen TypeScript Parser can generate fixture CXX_ONLY_NATIVE_MODUL
             }
           ]
         },
+        'CustomDeviceEvent': {
+          'type': 'ObjectTypeAnnotation',
+          'properties': [
+            {
+              'name': 'type',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'StringTypeAnnotation'
+              }
+            },
+            {
+              'name': 'level',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'NumberTypeAnnotation'
+              }
+            },
+            {
+              'name': 'degree',
+              'optional': true,
+              'typeAnnotation': {
+                'type': 'NumberTypeAnnotation'
+              }
+            }
+          ]
+        },
         'GraphNode': {
           'type': 'ObjectTypeAnnotation',
           'properties': [
@@ -123,21 +149,6 @@ exports[`RN Codegen TypeScript Parser can generate fixture CXX_ONLY_NATIVE_MODUL
             {
               'name': 'High',
               'value': 1080
-            }
-          ]
-        },
-        'Floppy': {
-          'name': 'Floppy',
-          'type': 'EnumDeclarationWithMembers',
-          'memberType': 'NumberTypeAnnotation',
-          'members': [
-            {
-              'name': 'LowDensity',
-              'value': 0.72
-            },
-            {
-              'name': 'HighDensity',
-              'value': 1.44
             }
           ]
         },
@@ -220,15 +231,6 @@ exports[`RN Codegen TypeScript Parser can generate fixture CXX_ONLY_NATIVE_MODUL
                   'optional': true,
                   'typeAnnotation': {
                     'name': 'Resolution',
-                    'type': 'EnumDeclaration',
-                    'memberType': 'NumberTypeAnnotation'
-                  }
-                },
-                {
-                  'name': 'floppy',
-                  'optional': false,
-                  'typeAnnotation': {
-                    'name': 'Floppy',
                     'type': 'EnumDeclaration',
                     'memberType': 'NumberTypeAnnotation'
                   }
@@ -453,21 +455,6 @@ exports[`RN Codegen TypeScript Parser can generate fixture IOS_ONLY_NATIVE_MODUL
             }
           ]
         },
-        'Floppy': {
-          'name': 'Floppy',
-          'type': 'EnumDeclarationWithMembers',
-          'memberType': 'NumberTypeAnnotation',
-          'members': [
-            {
-              'name': 'LowDensity',
-              'value': 0.72
-            },
-            {
-              'name': 'HighDensity',
-              'value': 1.44
-            }
-          ]
-        },
         'StringOptions': {
           'name': 'StringOptions',
           'type': 'EnumDeclarationWithMembers',
@@ -513,15 +500,6 @@ exports[`RN Codegen TypeScript Parser can generate fixture IOS_ONLY_NATIVE_MODUL
                   'optional': true,
                   'typeAnnotation': {
                     'name': 'Resolution',
-                    'type': 'EnumDeclaration',
-                    'memberType': 'NumberTypeAnnotation'
-                  }
-                },
-                {
-                  'name': 'floppy',
-                  'optional': false,
-                  'typeAnnotation': {
-                    'name': 'Floppy',
                     'type': 'EnumDeclaration',
                     'memberType': 'NumberTypeAnnotation'
                   }
