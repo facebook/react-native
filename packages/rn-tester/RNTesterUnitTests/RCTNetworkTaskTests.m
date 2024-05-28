@@ -41,7 +41,7 @@
   [task start];
   XCTAssertEqual([task getNetworkTaskStatus], RCTNetworkTaskInProgress);
   [task cancel];
-  XCTAssertEqual([task getNetworkTaskStatus], RCTNetworkTaskPending);
+  XCTAssertEqual([task getNetworkTaskStatus], RCTNetworkTaskFinished);
 }
 
 @end
