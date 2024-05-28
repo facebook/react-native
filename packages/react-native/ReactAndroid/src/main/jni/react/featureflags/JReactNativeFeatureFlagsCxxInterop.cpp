@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4267f2de5ad71437875b03a26ac80d13>>
+ * @generated SignedSource<<82d20aa409496b17df21a077088894a6>>
  */
 
 /**
@@ -48,12 +48,6 @@ class ReactNativeFeatureFlagsProviderHolder
   bool allowCollapsableChildren() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("allowCollapsableChildren");
-    return method(javaProvider_);
-  }
-
-  bool androidEnablePendingFabricTransactions() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("androidEnablePendingFabricTransactions");
     return method(javaProvider_);
   }
 
@@ -179,11 +173,6 @@ bool JReactNativeFeatureFlagsCxxInterop::allowCollapsableChildren(
   return ReactNativeFeatureFlags::allowCollapsableChildren();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::androidEnablePendingFabricTransactions(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::androidEnablePendingFabricTransactions();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::batchRenderingUpdatesInEventLoop(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop();
@@ -297,9 +286,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "allowCollapsableChildren",
         JReactNativeFeatureFlagsCxxInterop::allowCollapsableChildren),
-      makeNativeMethod(
-        "androidEnablePendingFabricTransactions",
-        JReactNativeFeatureFlagsCxxInterop::androidEnablePendingFabricTransactions),
       makeNativeMethod(
         "batchRenderingUpdatesInEventLoop",
         JReactNativeFeatureFlagsCxxInterop::batchRenderingUpdatesInEventLoop),

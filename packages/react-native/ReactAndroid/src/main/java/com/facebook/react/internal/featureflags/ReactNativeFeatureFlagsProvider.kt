@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0f008837f44348e62dba2a65e813d49e>>
+ * @generated SignedSource<<7a63b1fc14ccc86efb0929452755744d>>
  */
 
 /**
@@ -26,8 +26,6 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun commonTestFlag(): Boolean
 
   @DoNotStrip public fun allowCollapsableChildren(): Boolean
-
-  @DoNotStrip public fun androidEnablePendingFabricTransactions(): Boolean
 
   @DoNotStrip public fun batchRenderingUpdatesInEventLoop(): Boolean
 
