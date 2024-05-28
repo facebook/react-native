@@ -1,10 +1,9 @@
-//
-//  RCTNetworkTaskTests.m
-//  RNTesterUnitTests
-//
-//  Created by Håkon Knutzen on 28/05/2024.
-//  Copyright © 2024 Facebook. All rights reserved.
-//
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #import <XCTest/XCTest.h>
 #import <React/RCTNetworkTask.h>
