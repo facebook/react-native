@@ -35,13 +35,12 @@ typedef NS_ENUM(NSInteger, RCTNetworkTaskStatus) {
 @property (nonatomic, copy) RCTURLRequestResponseBlock responseBlock;
 @property (nonatomic, copy) RCTURLRequestProgressBlock uploadProgressBlock;
 
-@property (nonatomic, readonly) RCTNetworkTaskStatus status;
-
 - (instancetype)initWithRequest:(NSURLRequest *)request
                         handler:(id<RCTURLRequestHandler>)handler
                   callbackQueue:(dispatch_queue_t)callbackQueue NS_DESIGNATED_INITIALIZER;
 
 - (void)start;
 - (void)cancel;
+- (RCTNetworkTaskStatus)getNetworkTaskStatus;
 
 @end

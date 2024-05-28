@@ -16,7 +16,7 @@
   id<RCTURLRequestHandler> _handler;
   dispatch_queue_t _callbackQueue;
   std::mutex _mutex;
-
+  std::atomic<RCTNetworkTaskStatus> _status;
   RCTNetworkTask *_selfReference;
 }
 
@@ -43,6 +43,11 @@
 }
 
 RCT_NOT_IMPLEMENTED(-(instancetype)init)
+
+-(RCTNetworkTaskStatus)getNetworkTaskStatus
+{
+  return _status;
+}
 
 - (void)invalidate
 {

@@ -34,8 +34,9 @@ static NSInteger RCTImageBytesForImage(UIImage *image)
 
 static uint64_t getNextImageRequestCount(void)
 {
-  static uint64_t requestCounter = 0;
-  return requestCounter++;
+  static std::atomic<uint64_t> requestCounter = 0;
+  ++requestCounter;
+  return requestCounter.load();
 }
 
 static NSError *addResponseHeadersToError(NSError *originalError, NSHTTPURLResponse *response)
@@ -392,7 +393,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image, CGSize size, CGFloat scal
     // Remove completed tasks
     NSMutableArray *tasksToRemove = nil;
     for (RCTNetworkTask *task in self->_pendingTasks.reverseObjectEnumerator) {
-      switch (task.status) {
+      switch ([task getNetworkTaskStatus]) {
         case RCTNetworkTaskFinished:
           if (!tasksToRemove) {
             tasksToRemove = [NSMutableArray new];
@@ -440,7 +441,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image, CGSize size, CGFloat scal
       if (MAX(self->_activeTasks, self->_scheduledDecodes) >= self->_maxConcurrentLoadingTasks) {
         break;
       }
-      if (task.status == RCTNetworkTaskPending) {
+      if ([task getNetworkTaskStatus] == RCTNetworkTaskPending) {
         [task start];
         self->_activeTasks++;
       }
