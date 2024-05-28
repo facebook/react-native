@@ -34,9 +34,8 @@ static NSInteger RCTImageBytesForImage(UIImage *image)
 
 static uint64_t getNextImageRequestCount(void)
 {
-  static std::atomic<uint64_t> requestCounter = 0;
-  ++requestCounter;
-  return requestCounter.load();
+  static uint64_t requestCounter = 0;
+  return requestCounter++;
 }
 
 static NSError *addResponseHeadersToError(NSError *originalError, NSHTTPURLResponse *response)
