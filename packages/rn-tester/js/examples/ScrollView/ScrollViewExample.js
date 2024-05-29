@@ -217,7 +217,7 @@ function ScrollViewScrollToExample(): React.Node {
           setScrolledToTop(true);
         }}
         scrollEventThrottle={200}
-        style={styles.scrollView}
+        style={[styles.scrollView, {height: 200}]}
         testID="scroll_vertical">
         {ITEMS.map(createItemRow)}
       </ScrollView>
