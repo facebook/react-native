@@ -1961,7 +1961,6 @@ public class com/facebook/react/config/ReactFeatureFlags {
 	public static field enableFabricRenderer Z
 	public static field enableFabricRendererExclusively Z
 	public static field enableRemoveDeleteTreeInstruction Z
-	public static field enableTextSpannableCache Z
 	public static field enableViewRecycling Z
 	public static field excludeYogaFromRawProps Z
 	public static field rejectTurboModulePromiseOnNativeError Z
