@@ -16,7 +16,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Path;
 import android.graphics.Rect;
-import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.view.MotionEvent;
@@ -27,7 +26,6 @@ import android.view.animation.Animation;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.UiThreadUtil;
@@ -37,7 +35,6 @@ import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.touch.OnInterceptTouchEventListener;
 import com.facebook.react.touch.ReactHitSlopView;
 import com.facebook.react.touch.ReactInterceptingViewGroup;
-import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.LengthPercentage;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
 import com.facebook.react.uimanager.PointerEvents;
@@ -47,15 +44,13 @@ import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 import com.facebook.react.uimanager.ReactOverflowViewWithInset;
 import com.facebook.react.uimanager.ReactPointerEventsView;
 import com.facebook.react.uimanager.ReactZIndexedViewGroup;
-import com.facebook.react.uimanager.RootView;
-import com.facebook.react.uimanager.RootViewUtil;
 import com.facebook.react.uimanager.ViewGroupDrawingOrderHelper;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.drawable.CSSBackgroundDrawable;
 import com.facebook.react.uimanager.style.BorderRadiusProp;
-import com.facebook.react.uimanager.style.ComputedBorderRadius;
+import java.util.Objects;
 
 /**
  * Backing for a React View. Has support for borders, but since borders aren't common, lazy
@@ -129,7 +124,6 @@ public class ReactViewGroup extends ViewGroup
   private @Nullable OnInterceptTouchEventListener mOnInterceptTouchEventListener;
   private boolean mNeedsOffscreenAlphaCompositing;
   private @Nullable ViewGroupDrawingOrderHelper mDrawingOrderHelper;
-  private @Nullable Path mPath;
   private float mBackfaceOpacity;
   private String mBackfaceVisibility;
 
@@ -158,7 +152,6 @@ public class ReactViewGroup extends ViewGroup
     mOnInterceptTouchEventListener = null;
     mNeedsOffscreenAlphaCompositing = false;
     mDrawingOrderHelper = null;
-    mPath = null;
     mBackfaceOpacity = 1.f;
     mBackfaceVisibility = "visible";
   }
@@ -850,25 +843,18 @@ public class ReactViewGroup extends ViewGroup
 
   @Override
   protected void dispatchDraw(Canvas canvas) {
-    try {
-      dispatchOverflowDraw(canvas);
-      super.dispatchDraw(canvas);
-    } catch (NullPointerException | StackOverflowError e) {
-      // Adding special exception management for StackOverflowError for logging purposes.
-      // This will be removed in the future.
-      RootView rootView = RootViewUtil.getRootView(ReactViewGroup.this);
-      if (rootView != null) {
-        rootView.handleException(e);
+    if (mCSSBackgroundDrawable != null
+        && (Objects.equals(mOverflow, ViewProps.HIDDEN)
+            || Objects.equals(mOverflow, ViewProps.SCROLL))) {
+      @Nullable Path paddingBoxPath = mCSSBackgroundDrawable.getPaddingBoxPath();
+      if (paddingBoxPath != null) {
+        canvas.clipPath(paddingBoxPath);
       } else {
-        if (getContext() instanceof ReactContext) {
-          ReactContext reactContext = (ReactContext) getContext();
-          reactContext.handleException(
-              new IllegalViewOperationException("StackOverflowException", this, e));
-        } else {
-          throw e;
-        }
+        canvas.clipRect(mCSSBackgroundDrawable.getPaddingBoxRect());
       }
     }
+
+    super.dispatchDraw(canvas);
   }
 
   @Override
@@ -885,73 +871,6 @@ public class ReactViewGroup extends ViewGroup
       CanvasUtil.enableZ(canvas, false);
     }
     return result;
-  }
-
-  private void dispatchOverflowDraw(Canvas canvas) {
-    if (mOverflow != null) {
-      switch (mOverflow) {
-        case ViewProps.VISIBLE:
-          if (mPath != null) {
-            mPath.rewind();
-          }
-          break;
-        case ViewProps.HIDDEN:
-        case ViewProps.SCROLL:
-          float left = 0f;
-          float top = 0f;
-          float right = getWidth();
-          float bottom = getHeight();
-
-          boolean hasClipPath = false;
-
-          if (mCSSBackgroundDrawable != null) {
-            final RectF borderWidth = mCSSBackgroundDrawable.getDirectionAwareBorderInsets();
-
-            if (borderWidth.top > 0
-                || borderWidth.left > 0
-                || borderWidth.bottom > 0
-                || borderWidth.right > 0) {
-              left += borderWidth.left;
-              top += borderWidth.top;
-              right -= borderWidth.right;
-              bottom -= borderWidth.bottom;
-            }
-
-            final ComputedBorderRadius borderRadius =
-                mCSSBackgroundDrawable.getComputedBorderRadius();
-
-            if (borderRadius.hasRoundedBorders()) {
-              if (mPath == null) {
-                mPath = new Path();
-              }
-
-              mPath.rewind();
-              mPath.addRoundRect(
-                  new RectF(left, top, right, bottom),
-                  new float[] {
-                    Math.max(borderRadius.getTopLeft() - borderWidth.left, 0),
-                    Math.max(borderRadius.getTopLeft() - borderWidth.top, 0),
-                    Math.max(borderRadius.getTopRight() - borderWidth.right, 0),
-                    Math.max(borderRadius.getTopRight() - borderWidth.top, 0),
-                    Math.max(borderRadius.getBottomRight() - borderWidth.right, 0),
-                    Math.max(borderRadius.getBottomRight() - borderWidth.bottom, 0),
-                    Math.max(borderRadius.getBottomLeft() - borderWidth.left, 0),
-                    Math.max(borderRadius.getBottomLeft() - borderWidth.bottom, 0),
-                  },
-                  Path.Direction.CW);
-              canvas.clipPath(mPath);
-              hasClipPath = true;
-            }
-          }
-
-          if (!hasClipPath) {
-            canvas.clipRect(new RectF(left, top, right, bottom));
-          }
-          break;
-        default:
-          break;
-      }
-    }
   }
 
   public void setOpacityIfPossible(float opacity) {
