@@ -121,8 +121,8 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
 {
   if (self = [super initWithFrame:frame]) {
     _props = ScrollViewShadowNode::defaultSharedProps();
-
     _scrollView = [[RCTEnhancedScrollView alloc] initWithFrame:self.bounds];
+    _scrollView.clipsToBounds = _props->getClipsContentToBounds();
     _scrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     _scrollView.delaysContentTouches = NO;
     ((RCTEnhancedScrollView *)_scrollView).overridingDelegate = self;
@@ -248,6 +248,11 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
     } else {
       _scrollEventThrottle = throttleInSeconds;
     }
+  }
+
+  // Overflow prop
+  if (oldScrollViewProps.getClipsContentToBounds() != newScrollViewProps.getClipsContentToBounds()) {
+    _scrollView.clipsToBounds = newScrollViewProps.getClipsContentToBounds();
   }
 
   MAP_SCROLL_VIEW_PROP(zoomScale);
