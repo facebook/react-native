@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e2b6e70ce74cd84040583c68b41a285d>>
+ * @generated SignedSource<<0a8bc71d703e92e1aaba25203e0211b3>>
  * @flow strict-local
  */
 
@@ -42,7 +42,6 @@ export type ReactNativeFeatureFlags = {
   ...ReactNativeFeatureFlagsJsOnly,
   commonTestFlag: Getter<boolean>,
   allowCollapsableChildren: Getter<boolean>,
-  androidEnablePendingFabricTransactions: Getter<boolean>,
   batchRenderingUpdatesInEventLoop: Getter<boolean>,
   destroyFabricSurfacesInReactInstanceManager: Getter<boolean>,
   enableBackgroundExecutor: Getter<boolean>,
@@ -111,10 +110,6 @@ export const commonTestFlag: Getter<boolean> = createNativeFlagGetter('commonTes
  * Enables the differentiator to understand the "collapsableChildren" prop
  */
 export const allowCollapsableChildren: Getter<boolean> = createNativeFlagGetter('allowCollapsableChildren', true);
-/**
- * To be used with batchRenderingUpdatesInEventLoop. When enbled, the Android mounting layer will concatenate pending transactions to ensure they're applied atomatically
- */
-export const androidEnablePendingFabricTransactions: Getter<boolean> = createNativeFlagGetter('androidEnablePendingFabricTransactions', false);
 /**
  * When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.
  */

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8fdad69a7bbf55bdf967292958de6f61>>
+ * @generated SignedSource<<705dba656bfb228227399bcda638c404>>
  */
 
 /**
@@ -46,11 +46,6 @@ class ReactNativeFeatureFlags {
    * Enables the differentiator to understand the "collapsableChildren" prop
    */
   RN_EXPORT static bool allowCollapsableChildren();
-
-  /**
-   * To be used with batchRenderingUpdatesInEventLoop. When enbled, the Android mounting layer will concatenate pending transactions to ensure they're applied atomatically
-   */
-  RN_EXPORT static bool androidEnablePendingFabricTransactions();
 
   /**
    * When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5abf40ebbabb3c0bebead668c1b24ff9>>
+ * @generated SignedSource<<a66642e4f6027ab0f5280baa2169d901>>
  */
 
 /**
@@ -26,7 +26,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
 
   private var commonTestFlagCache: Boolean? = null
   private var allowCollapsableChildrenCache: Boolean? = null
-  private var androidEnablePendingFabricTransactionsCache: Boolean? = null
   private var batchRenderingUpdatesInEventLoopCache: Boolean? = null
   private var destroyFabricSurfacesInReactInstanceManagerCache: Boolean? = null
   private var enableBackgroundExecutorCache: Boolean? = null
@@ -62,16 +61,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.allowCollapsableChildren()
       accessedFeatureFlags.add("allowCollapsableChildren")
       allowCollapsableChildrenCache = cached
-    }
-    return cached
-  }
-
-  override fun androidEnablePendingFabricTransactions(): Boolean {
-    var cached = androidEnablePendingFabricTransactionsCache
-    if (cached == null) {
-      cached = currentProvider.androidEnablePendingFabricTransactions()
-      accessedFeatureFlags.add("androidEnablePendingFabricTransactions")
-      androidEnablePendingFabricTransactionsCache = cached
     }
     return cached
   }

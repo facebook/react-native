@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<38587efd4ed8e4ad7cca2e96eda6632f>>
+ * @generated SignedSource<<a13aa1f123eb1f90039bc08436349c83>>
  */
 
 /**
@@ -38,8 +38,6 @@ class NativeReactNativeFeatureFlags
   bool commonTestFlag(jsi::Runtime& runtime);
 
   bool allowCollapsableChildren(jsi::Runtime& runtime);
-
-  bool androidEnablePendingFabricTransactions(jsi::Runtime& runtime);
 
   bool batchRenderingUpdatesInEventLoop(jsi::Runtime& runtime);
 
