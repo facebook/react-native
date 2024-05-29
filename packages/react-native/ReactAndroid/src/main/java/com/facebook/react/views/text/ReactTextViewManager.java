@@ -12,6 +12,7 @@ import android.os.Build;
 import android.text.Spannable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import com.facebook.common.logging.FLog;
 import com.facebook.react.R;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.annotations.VisibleForTesting;
@@ -36,6 +37,8 @@ import java.util.Map;
 public class ReactTextViewManager
     extends ReactTextAnchorViewManager<ReactTextView, ReactTextShadowNode>
     implements IViewManagerWithChildren {
+
+  private static final String TAG = "ReactTextViewManager";
 
   private static final short TX_STATE_KEY_ATTRIBUTED_STRING = 0;
   private static final short TX_STATE_KEY_PARAGRAPH_ATTRIBUTES = 1;
@@ -134,7 +137,25 @@ public class ReactTextViewManager
       ReactTextView view, ReactStylesDiffMap props, StateWrapper stateWrapper) {
     MapBuffer stateMapBuffer = stateWrapper.getStateDataMapBuffer();
     if (stateMapBuffer != null) {
-      return getReactTextUpdate(view, props, stateMapBuffer);
+      try {
+        return getReactTextUpdate(view, props, stateMapBuffer);
+      } catch (IllegalArgumentException e) {
+        FLog.e(TAG, "IllegalArgumentException while updating text state from MapBuffer");
+        FLog.e(TAG, "State: %s", stateMapBuffer.toString());
+        FLog.e(
+            TAG,
+            "Attributed String: %s",
+            stateMapBuffer.contains(TX_STATE_KEY_ATTRIBUTED_STRING)
+                ? stateMapBuffer.getMapBuffer(TX_STATE_KEY_ATTRIBUTED_STRING).toString()
+                : "<empty>");
+        FLog.e(
+            TAG,
+            "Paragraph Attributes: %s",
+            stateMapBuffer.contains(TX_STATE_KEY_PARAGRAPH_ATTRIBUTES)
+                ? stateMapBuffer.getMapBuffer(TX_STATE_KEY_PARAGRAPH_ATTRIBUTES).toString()
+                : "<empty>");
+        throw e;
+      }
     } else {
       return null;
     }
