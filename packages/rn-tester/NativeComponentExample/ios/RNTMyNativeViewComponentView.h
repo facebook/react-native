@@ -15,8 +15,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, copy) RCTBubblingEventBlock onIntArrayChanged;
 
-- (UIColor *)UIColorFromHexString:(const std::string)hexString;
-
 @end
 
 NS_ASSUME_NONNULL_END

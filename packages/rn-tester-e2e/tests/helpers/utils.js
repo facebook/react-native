@@ -33,6 +33,7 @@ class Utils {
 
   platformSelect(platforms: PlatformsReference): string {
     // if something goes wrong, we fallback to ios. But it should never happent, the process will fail way earlier.
+    // $FlowFixMe[invalid-computed-prop]
     return platforms[process?.env?.E2E_DEVICE || 'ios'];
   }
 

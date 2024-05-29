@@ -14,6 +14,6 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Returns UIFont instance corresponded to given font properties.
  */
-UIFont* RCTFontWithFontProperties(RCTFontProperties fontProperties);
+UIFont *RCTFontWithFontProperties(RCTFontProperties fontProperties);
 
 NS_ASSUME_NONNULL_END

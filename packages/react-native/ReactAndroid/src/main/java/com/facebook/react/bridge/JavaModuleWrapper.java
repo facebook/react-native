@@ -20,10 +20,8 @@ import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * This is part of the glue which wraps a java BaseJavaModule in a C++ NativeModule. This could all
@@ -32,8 +30,15 @@ import java.util.Set;
  */
 @DoNotStrip
 class JavaModuleWrapper {
+
+  interface NativeMethod {
+    void invoke(JSInstance jsInstance, ReadableArray parameters);
+
+    String getType();
+  }
+
   @DoNotStrip
-  public class MethodDescriptor {
+  public static class MethodDescriptor {
     @DoNotStrip Method method;
     @DoNotStrip String signature;
     @DoNotStrip String name;
@@ -42,15 +47,14 @@ class JavaModuleWrapper {
 
   private final JSInstance mJSInstance;
   private final ModuleHolder mModuleHolder;
-  private final ArrayList<NativeModule.NativeMethod> mMethods;
+  private final ArrayList<NativeMethod> mMethods;
   private final ArrayList<MethodDescriptor> mDescs;
-  private static final String TAG = JavaModuleWrapper.class.getSimpleName();
 
   public JavaModuleWrapper(JSInstance jsInstance, ModuleHolder moduleHolder) {
     mJSInstance = jsInstance;
     mModuleHolder = moduleHolder;
     mMethods = new ArrayList<>();
-    mDescs = new ArrayList();
+    mDescs = new ArrayList<>();
   }
 
   @DoNotStrip
@@ -66,7 +70,6 @@ class JavaModuleWrapper {
   @DoNotStrip
   private void findMethods() {
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "findMethods");
-    Set<String> methodNames = new HashSet<>();
 
     Class<? extends NativeModule> classForMethods = mModuleHolder.getModule().getClass();
     Class<? extends NativeModule> superClass =
@@ -83,18 +86,12 @@ class JavaModuleWrapper {
       ReactMethod annotation = targetMethod.getAnnotation(ReactMethod.class);
       if (annotation != null) {
         String methodName = targetMethod.getName();
-        if (methodNames.contains(methodName)) {
-          // We do not support method overloading since js sees a function as an object regardless
-          // of number of params.
-          throw new IllegalArgumentException(
-              "Java Module " + getName() + " method name already registered: " + methodName);
-        }
         MethodDescriptor md = new MethodDescriptor();
         JavaMethodWrapper method =
             new JavaMethodWrapper(this, targetMethod, annotation.isBlockingSynchronousMethod());
         md.name = methodName;
         md.type = method.getType();
-        if (md.type == BaseJavaModule.METHOD_TYPE_SYNC) {
+        if (BaseJavaModule.METHOD_TYPE_SYNC.equals(md.type)) {
           md.signature = method.getSignature();
           md.method = targetMethod;
         }
@@ -142,7 +139,7 @@ class JavaModuleWrapper {
 
   @DoNotStrip
   public void invoke(int methodId, ReadableNativeArray parameters) {
-    if (mMethods == null || methodId >= mMethods.size()) {
+    if (methodId >= mMethods.size()) {
       return;
     }
 

@@ -424,6 +424,7 @@ class MessageQueue {
           A frequent cause of the error is that the application entry file path is incorrect. This can also happen when the JS bundle is corrupt or there is an early initialization error when loading React Native.`,
         );
       }
+      // $FlowFixMe[invalid-computed-prop]
       if (!moduleMethods[method]) {
         invariant(
           false,

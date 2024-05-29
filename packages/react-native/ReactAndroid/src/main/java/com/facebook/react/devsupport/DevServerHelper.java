@@ -9,6 +9,7 @@ package com.facebook.react.devsupport;
 
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.provider.Settings;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
@@ -30,6 +31,9 @@ import com.facebook.react.packagerconnection.Responder;
 import com.facebook.react.util.RNLog;
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -103,17 +107,14 @@ public class DevServerHelper {
   private final String mPackageName;
 
   private @Nullable JSPackagerClient mPackagerClient;
-  private @Nullable InspectorPackagerConnection mInspectorPackagerConnection;
-  private final InspectorPackagerConnection.BundleStatusProvider mBundlerStatusProvider;
+  private @Nullable IInspectorPackagerConnection mInspectorPackagerConnection;
 
   public DevServerHelper(
       DeveloperSettings developerSettings,
       String packageName,
-      InspectorPackagerConnection.BundleStatusProvider bundleStatusProvider,
       PackagerConnectionSettings packagerConnectionSettings) {
     mSettings = developerSettings;
     mPackagerConnectionSettings = packagerConnectionSettings;
-    mBundlerStatusProvider = bundleStatusProvider;
     mClient =
         new OkHttpClient.Builder()
             .connectTimeout(HTTP_CONNECT_TIMEOUT_MS, TimeUnit.MILLISECONDS)
@@ -209,9 +210,14 @@ public class DevServerHelper {
     new AsyncTask<Void, Void, Void>() {
       @Override
       protected Void doInBackground(Void... params) {
-        mInspectorPackagerConnection =
-            new InspectorPackagerConnection(
-                getInspectorDeviceUrl(), mPackageName, mBundlerStatusProvider);
+        if (InspectorFlags.getFuseboxEnabled()) {
+          mInspectorPackagerConnection =
+              new CxxInspectorPackagerConnection(getInspectorDeviceUrl(), mPackageName);
+        } else {
+          // TODO(T190163403): Remove legacy InspectorPackagerConnection
+          mInspectorPackagerConnection =
+              new InspectorPackagerConnection(getInspectorDeviceUrl(), mPackageName);
+        }
         mInspectorPackagerConnection.connect();
         return null;
       }
@@ -244,13 +250,79 @@ public class DevServerHelper {
         mPackagerConnectionSettings.getDebugServerHost());
   }
 
+  private static String getSHA256(String string) {
+    MessageDigest digest = null;
+    try {
+      digest = MessageDigest.getInstance("SHA-256");
+    } catch (NoSuchAlgorithmException e) {
+      throw new AssertionError("Could not get standard SHA-256 algorithm", e);
+    }
+    digest.reset();
+    byte[] result;
+    try {
+      result = digest.digest(string.getBytes("UTF-8"));
+    } catch (UnsupportedEncodingException e) {
+      throw new AssertionError("This environment doesn't support UTF-8 encoding", e);
+    }
+    return String.format(
+        "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
+        result[0],
+        result[1],
+        result[2],
+        result[3],
+        result[4],
+        result[5],
+        result[6],
+        result[7],
+        result[8],
+        result[9],
+        result[10],
+        result[11],
+        result[12],
+        result[13],
+        result[14],
+        result[15],
+        result[16],
+        result[17],
+        result[18],
+        result[19]);
+  }
+
+  // Returns an opaque ID which is stable for the current combination of device and app, stable
+  // across installs, and unique across devices.
+  private String getInspectorDeviceId() {
+    // Every Android app has a unique application ID that looks like a Java or Kotlin package name,
+    // such as com.example.myapp. This ID uniquely identifies your app on the device and in the
+    // Google Play Store.
+    // [Source: Android docs]
+    String packageName = mPackageName;
+
+    // A 64-bit number expressed as a hexadecimal string, which is either:
+    // * unique to each combination of app-signing key, user, and device (API level >= 26), or
+    // * randomly generated when the user first sets up the device and should remain constant for
+    // the lifetime of the user's device (API level < 26).
+    // [Source: Android docs]
+    String androidId = Settings.Secure.ANDROID_ID;
+
+    String rawDeviceId =
+        String.format(
+            Locale.US,
+            "android-%s-%s-%s",
+            packageName,
+            androidId,
+            InspectorFlags.getFuseboxEnabled() ? "fusebox" : "legacy");
+
+    return getSHA256(rawDeviceId);
+  }
+
   private String getInspectorDeviceUrl() {
     return String.format(
         Locale.US,
-        "http://%s/inspector/device?name=%s&app=%s",
-        mPackagerConnectionSettings.getInspectorServerHost(),
-        AndroidInfoHelpers.getFriendlyDeviceName(),
-        mPackageName);
+        "http://%s/inspector/device?name=%s&app=%s&device=%s",
+        mPackagerConnectionSettings.getDebugServerHost(),
+        Uri.encode(AndroidInfoHelpers.getFriendlyDeviceName()),
+        Uri.encode(mPackageName),
+        Uri.encode(getInspectorDeviceId()));
   }
 
   public void downloadBundleFromURL(
@@ -271,7 +343,9 @@ public class DevServerHelper {
         callback, outputFile, bundleURL, bundleInfo, requestBuilder);
   }
 
-  /** @return the host to use when connecting to the bundle server from the host itself. */
+  /**
+   * @return the host to use when connecting to the bundle server from the host itself.
+   */
   private String getHostForJSProxy() {
     // Use custom port if configured. Note that host stays "localhost".
     String host = Assertions.assertNotNull(mPackagerConnectionSettings.getDebugServerHost());
@@ -283,12 +357,16 @@ public class DevServerHelper {
     }
   }
 
-  /** @return whether we should enable dev mode when requesting JS bundles. */
+  /**
+   * @return whether we should enable dev mode when requesting JS bundles.
+   */
   private boolean getDevMode() {
     return mSettings.isJSDevModeEnabled();
   }
 
-  /** @return whether we should request minified JS bundles. */
+  /**
+   * @return whether we should request minified JS bundles.
+   */
   private boolean getJSMinifyMode() {
     return mSettings.isJSMinifyEnabled();
   }
@@ -305,17 +383,18 @@ public class DevServerHelper {
       String mainModuleID, BundleType type, String host, boolean modulesOnly, boolean runModule) {
     boolean dev = getDevMode();
     return String.format(
-        Locale.US,
-        "http://%s/%s.%s?platform=android&dev=%s&lazy=%s&minify=%s&app=%s&modulesOnly=%s&runModule=%s",
-        host,
-        mainModuleID,
-        type.typeID(),
-        dev, // dev
-        dev, // lazy
-        getJSMinifyMode(),
-        mPackageName,
-        modulesOnly ? "true" : "false",
-        runModule ? "true" : "false");
+            Locale.US,
+            "http://%s/%s.%s?platform=android&dev=%s&lazy=%s&minify=%s&app=%s&modulesOnly=%s&runModule=%s",
+            host,
+            mainModuleID,
+            type.typeID(),
+            dev, // dev
+            dev, // lazy
+            getJSMinifyMode(),
+            mPackageName,
+            modulesOnly ? "true" : "false",
+            runModule ? "true" : "false")
+        + (InspectorFlags.getFuseboxEnabled() ? "&excludeSource=true&sourcePaths=url-server" : "");
   }
 
   private String createBundleURL(String mainModuleID, BundleType type) {
@@ -420,14 +499,15 @@ public class DevServerHelper {
   }
 
   /** Attempt to open the JS debugger on the host machine (on-device CDP debugging). */
-  public void openDebugger(final ReactContext context, final String errorMessage) {
+  public void openDebugger(@Nullable final ReactContext context, final String errorMessage) {
     // TODO(huntie): Requests to dev server should not assume 'http' URL scheme
     String requestUrl =
         String.format(
             Locale.US,
-            "http://%s/open-debugger?appId=%s",
-            mPackagerConnectionSettings.getInspectorServerHost(),
-            Uri.encode(mPackageName));
+            "http://%s/open-debugger?appId=%s&device=%s",
+            mPackagerConnectionSettings.getDebugServerHost(),
+            Uri.encode(mPackageName),
+            Uri.encode(getInspectorDeviceId()));
     Request request =
         new Request.Builder().url(requestUrl).method("POST", RequestBody.create(null, "")).build();
 

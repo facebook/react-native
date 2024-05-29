@@ -89,7 +89,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   private Integer mHeightMeasureSpec;
 
   public ReactShadowNodeImpl() {
-    mDefaultPadding = new Spacing(0);
+    mDefaultPadding = new Spacing(0f);
     if (!isVirtual()) {
       YogaNode node = YogaNodePool.get().acquire();
       mYogaNode = node == null ? YogaNodeFactory.create(sYogaConfig) : node;
@@ -337,9 +337,32 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   @Override
   public void onCollectExtraUpdates(UIViewOperationQueue uiViewOperationQueue) {}
 
-  /** @return true if layout (position or dimensions) changed, false otherwise. */
   @Override
-  public boolean dispatchUpdates(
+  public boolean dispatchUpdatesWillChangeLayout(float absoluteX, float absoluteY) {
+    if (!hasNewLayout()) {
+      return false;
+    }
+
+    float layoutX = getLayoutX();
+    float layoutY = getLayoutY();
+    int newAbsoluteLeft = Math.round(absoluteX + layoutX);
+    int newAbsoluteTop = Math.round(absoluteY + layoutY);
+    int newAbsoluteRight = Math.round(absoluteX + layoutX + getLayoutWidth());
+    int newAbsoluteBottom = Math.round(absoluteY + layoutY + getLayoutHeight());
+
+    int newScreenX = Math.round(layoutX);
+    int newScreenY = Math.round(layoutY);
+    int newScreenWidth = newAbsoluteRight - newAbsoluteLeft;
+    int newScreenHeight = newAbsoluteBottom - newAbsoluteTop;
+
+    return newScreenX != mScreenX
+        || newScreenY != mScreenY
+        || newScreenWidth != mScreenWidth
+        || newScreenHeight != mScreenHeight;
+  }
+
+  @Override
+  public void dispatchUpdates(
       float absoluteX,
       float absoluteY,
       UIViewOperationQueue uiViewOperationQueue,
@@ -386,10 +409,6 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
               getScreenHeight());
         }
       }
-
-      return layoutHasChanged;
-    } else {
-      return false;
     }
   }
 
@@ -666,25 +685,33 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
     return mYogaNode.getLayoutHeight();
   }
 
-  /** @return the x position of the corresponding view on the screen, rounded to pixels */
+  /**
+   * @return the x position of the corresponding view on the screen, rounded to pixels
+   */
   @Override
   public int getScreenX() {
     return mScreenX;
   }
 
-  /** @return the y position of the corresponding view on the screen, rounded to pixels */
+  /**
+   * @return the y position of the corresponding view on the screen, rounded to pixels
+   */
   @Override
   public int getScreenY() {
     return mScreenY;
   }
 
-  /** @return width corrected for rounding to pixels. */
+  /**
+   * @return width corrected for rounding to pixels.
+   */
   @Override
   public int getScreenWidth() {
     return mScreenWidth;
   }
 
-  /** @return height corrected for rounding to pixels. */
+  /**
+   * @return height corrected for rounding to pixels.
+   */
   @Override
   public int getScreenHeight() {
     return mScreenHeight;
@@ -801,13 +828,28 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   }
 
   @Override
+  public void setRowGapPercent(float percent) {
+    mYogaNode.setGapPercent(YogaGutter.ROW, percent);
+  }
+
+  @Override
   public void setColumnGap(float columnGap) {
     mYogaNode.setGap(YogaGutter.COLUMN, columnGap);
   }
 
   @Override
+  public void setColumnGapPercent(float percent) {
+    mYogaNode.setGapPercent(YogaGutter.COLUMN, percent);
+  }
+
+  @Override
   public void setGap(float gap) {
     mYogaNode.setGap(YogaGutter.ALL, gap);
+  }
+
+  @Override
+  public void setGapPercent(float percent) {
+    mYogaNode.setGap(YogaGutter.ALL, percent);
   }
 
   @Override

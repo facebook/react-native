@@ -13,6 +13,7 @@
 #include <react/renderer/attributedstring/AttributedStringBox.h>
 #include <react/renderer/attributedstring/ParagraphAttributes.h>
 #include <react/renderer/core/LayoutConstraints.h>
+#include <react/renderer/textlayoutmanager/TextLayoutContext.h>
 #include <react/renderer/textlayoutmanager/TextMeasureCache.h>
 #include <react/utils/ContextContainer.h>
 
@@ -29,20 +30,31 @@ class TextLayoutManager {
  public:
   TextLayoutManager(const ContextContainer::Shared& contextContainer) {}
 
+  virtual ~TextLayoutManager() = default;
+
   /*
    * Measures `attributedStringBox` using native text rendering infrastructure.
    */
-  TextMeasurement measure(
+  virtual TextMeasurement measure(
       AttributedStringBox attributedStringBox,
       ParagraphAttributes paragraphAttributes,
-      LayoutConstraints layoutConstraints,
-      std::shared_ptr<void>) const;
+      const TextLayoutContext& layoutContext,
+      LayoutConstraints layoutConstraints) const;
+
+  /**
+   * Measures an AttributedString on the platform, as identified by some
+   * opaque cache ID.
+   */
+  virtual TextMeasurement measureCachedSpannableById(
+      int64_t cacheId,
+      const ParagraphAttributes& paragraphAttributes,
+      LayoutConstraints layoutConstraints) const;
 
   /*
    * Measures lines of `attributedString` using native text rendering
    * infrastructure.
    */
-  LinesMeasurements measureLines(
+  virtual LinesMeasurements measureLines(
       AttributedString attributedString,
       ParagraphAttributes paragraphAttributes,
       Size size) const;
@@ -52,11 +64,6 @@ class TextLayoutManager {
    * Is used on a native views layer to delegate text rendering to the manager.
    */
   void* getNativeTextLayoutManager() const;
-
-  std::shared_ptr<void> getHostTextStorage(
-      AttributedString attributedStringBox,
-      ParagraphAttributes paragraphAttributes,
-      LayoutConstraints layoutConstraints) const;
 };
 
 } // namespace facebook::react

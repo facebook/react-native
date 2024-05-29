@@ -32,8 +32,16 @@ BlobCollector::~BlobCollector() {
   });
 }
 
+size_t BlobCollector::getBlobLength() {
+  static auto getLengthMethod =
+      jni::findClassStatic(kBlobModuleJavaDescriptor)
+          ->getMethod<jlong(jstring)>("getLengthOfBlob");
+  auto length = getLengthMethod(blobModule_, jni::make_jstring(blobId_).get());
+  return static_cast<size_t>(length);
+}
+
 void BlobCollector::nativeInstall(
-    jni::alias_ref<jhybridobject> jThis,
+    jni::alias_ref<jclass>,
     jni::alias_ref<jobject> blobModule,
     jlong jsContextNativePointer) {
   auto& runtime = *((jsi::Runtime*)jsContextNativePointer);
@@ -53,7 +61,11 @@ void BlobCollector::nativeInstall(
             auto blobId = args[0].asString(rt).utf8(rt);
             auto blobCollector =
                 std::make_shared<BlobCollector>(blobModuleRef, blobId);
-            return jsi::Object::createFromHostObject(rt, blobCollector);
+            auto blobCollectorJsObject =
+                jsi::Object::createFromHostObject(rt, blobCollector);
+            blobCollectorJsObject.setExternalMemoryPressure(
+                rt, blobCollector->getBlobLength());
+            return blobCollectorJsObject;
           }));
 }
 

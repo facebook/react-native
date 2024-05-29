@@ -14,7 +14,7 @@ import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.events.Event;
 
 /** Event emitted by EditText native view when key pressed */
-public class ReactTextInputKeyPressEvent extends Event<ReactTextInputEvent> {
+/* package */ class ReactTextInputKeyPressEvent extends Event<ReactTextInputKeyPressEvent> {
 
   public static final String EVENT_NAME = "topKeyPress";
 

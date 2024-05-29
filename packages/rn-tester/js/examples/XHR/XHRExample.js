@@ -10,13 +10,13 @@
 
 'use strict';
 
-const React = require('react');
 const XHRExampleAbortController = require('./XHRExampleAbortController');
 const XHRExampleBinaryUpload = require('./XHRExampleBinaryUpload');
 const XHRExampleDownload = require('./XHRExampleDownload');
 const XHRExampleFetch = require('./XHRExampleFetch');
 const XHRExampleHeaders = require('./XHRExampleHeaders');
 const XHRExampleOnTimeOut = require('./XHRExampleOnTimeOut');
+const React = require('react');
 
 exports.framework = 'React';
 exports.title = 'XMLHttpRequest';

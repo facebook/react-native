@@ -11,57 +11,55 @@
 'use strict';
 
 import type {
-  Nullable,
   BooleanTypeAnnotation,
   DoubleTypeAnnotation,
   EventTypeAnnotation,
   Int32TypeAnnotation,
   NamedShape,
   NativeModuleAliasMap,
-  NativeModuleEnumMap,
   NativeModuleBaseTypeAnnotation,
-  NativeModuleTypeAnnotation,
+  NativeModuleEnumDeclaration,
+  NativeModuleEnumMap,
   NativeModuleFloatTypeAnnotation,
   NativeModuleFunctionTypeAnnotation,
   NativeModuleGenericObjectTypeAnnotation,
   NativeModuleMixedTypeAnnotation,
   NativeModuleNumberTypeAnnotation,
+  NativeModuleObjectTypeAnnotation,
   NativeModulePromiseTypeAnnotation,
   NativeModuleTypeAliasTypeAnnotation,
+  NativeModuleTypeAnnotation,
   NativeModuleUnionTypeAnnotation,
+  Nullable,
   ObjectTypeAnnotation,
   ReservedTypeAnnotation,
   StringTypeAnnotation,
   VoidTypeAnnotation,
-  NativeModuleObjectTypeAnnotation,
-  NativeModuleEnumDeclaration,
 } from '../CodegenSchema';
 import type {Parser} from './parser';
 import type {
   ParserErrorCapturer,
-  TypeResolutionStatus,
   TypeDeclarationMap,
+  TypeResolutionStatus,
 } from './utils';
-
-const {
-  UnsupportedUnionTypeAnnotationParserError,
-  UnsupportedTypeAnnotationParserError,
-  ParserError,
-} = require('./errors');
 
 const {
   throwIfArrayElementTypeAnnotationIsUnsupported,
   throwIfPartialNotAnnotatingTypeParameter,
   throwIfPartialWithMoreParameter,
 } = require('./error-utils');
-const {nullGuard} = require('./parsers-utils');
+const {
+  ParserError,
+  UnsupportedTypeAnnotationParserError,
+  UnsupportedUnionTypeAnnotationParserError,
+} = require('./errors');
 const {
   assertGenericTypeAnnotationHasExactlyOneTypeParameter,
-  wrapNullable,
-  unwrapNullable,
   translateFunctionTypeAnnotation,
+  unwrapNullable,
+  wrapNullable,
 } = require('./parsers-commons');
-
+const {nullGuard} = require('./parsers-utils');
 const {isModuleRegistryCall} = require('./utils');
 
 function emitBoolean(nullable: boolean): Nullable<BooleanTypeAnnotation> {
@@ -605,6 +603,7 @@ function emitCommonTypes(
     typeAnnotation.type,
   );
 
+  // $FlowFixMe[invalid-computed-prop]
   const simpleEmitter = typeMap[typeAnnotationName];
   if (simpleEmitter) {
     return simpleEmitter(nullable);
@@ -613,6 +612,7 @@ function emitCommonTypes(
   const genericTypeAnnotationName =
     parser.getTypeAnnotationName(typeAnnotation);
 
+  // $FlowFixMe[invalid-computed-prop]
   const emitter = typeMap[genericTypeAnnotationName];
   if (!emitter) {
     return null;

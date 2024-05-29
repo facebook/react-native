@@ -16,7 +16,7 @@ import java.io.Closeable;
  *
  * @see CancellationToken#register(Runnable)
  */
-public class CancellationTokenRegistration implements Closeable {
+class CancellationTokenRegistration implements Closeable {
 
   private final Object lock = new Object();
   private @Nullable CancellationTokenSource tokenSource;

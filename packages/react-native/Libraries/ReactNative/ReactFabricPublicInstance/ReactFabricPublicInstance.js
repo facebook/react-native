@@ -8,8 +8,13 @@
  * @flow strict-local
  */
 
-import type ReactNativeElement from '../../DOM/Nodes/ReactNativeElement';
-import type ReadOnlyText from '../../DOM/Nodes/ReadOnlyText';
+/**
+ * This module is meant to be used by the React renderers to create public
+ * instances and get some data from them (like their instance handle / fiber).
+ */
+
+import type ReactNativeElement from '../../../src/private/webapis/dom/nodes/ReactNativeElement';
+import type ReadOnlyText from '../../../src/private/webapis/dom/nodes/ReadOnlyText';
 import typeof ReactFabricType from '../../Renderer/shims/ReactFabric';
 import type {
   InternalInstanceHandle,
@@ -18,7 +23,7 @@ import type {
 } from '../../Renderer/shims/ReactNativeTypes';
 import type ReactFabricHostComponent from './ReactFabricHostComponent';
 
-import ReactNativeFeatureFlags from '../ReactNativeFeatureFlags';
+import * as ReactNativeFeatureFlags from '../../../src/private/featureflags/ReactNativeFeatureFlags';
 
 // Lazy loaded to avoid evaluating the module when using the legacy renderer.
 let PublicInstanceClass:
@@ -39,7 +44,7 @@ export function createPublicInstance(
     // the right module to avoid eagerly loading both.
     if (ReactNativeFeatureFlags.enableAccessToHostTreeInFabric()) {
       PublicInstanceClass =
-        require('../../DOM/Nodes/ReactNativeElement').default;
+        require('../../../src/private/webapis/dom/nodes/ReactNativeElement').default;
     } else {
       PublicInstanceClass = require('./ReactFabricHostComponent').default;
     }
@@ -52,7 +57,8 @@ export function createPublicTextInstance(
   internalInstanceHandle: InternalInstanceHandle,
 ): ReadOnlyText {
   if (ReadOnlyTextClass == null) {
-    ReadOnlyTextClass = require('../../DOM/Nodes/ReadOnlyText').default;
+    ReadOnlyTextClass =
+      require('../../../src/private/webapis/dom/nodes/ReadOnlyText').default;
   }
 
   return new ReadOnlyTextClass(internalInstanceHandle);
@@ -78,4 +84,17 @@ export function getNodeFromPublicInstance(
   return ReactFabric.getNodeFromInternalInstanceHandle(
     publicInstance.__internalInstanceHandle,
   );
+}
+
+export function getInternalInstanceHandleFromPublicInstance(
+  publicInstance: ReactFabricHostComponent | ReactNativeElement,
+): InternalInstanceHandle {
+  // TODO(T174762768): Remove this once OSS versions of renderers will be synced.
+  // $FlowExpectedError[prop-missing] Keeping this for backwards-compatibility with the renderers versions in open source.
+  if (publicInstance._internalInstanceHandle != null) {
+    // $FlowExpectedError[incompatible-return] Keeping this for backwards-compatibility with the renderers versions in open source.
+    return publicInstance._internalInstanceHandle;
+  }
+
+  return publicInstance.__internalInstanceHandle;
 }

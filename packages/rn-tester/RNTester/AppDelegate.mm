@@ -7,19 +7,27 @@
 
 #import "AppDelegate.h"
 
+#import <UserNotifications/UserNotifications.h>
+
+#import <RCTAppDelegate+Protected.h>
 #import <React/RCTBundleURLProvider.h>
+#import <React/RCTDefines.h>
 #import <React/RCTLinkingManager.h>
 #import <ReactCommon/RCTSampleTurboModule.h>
+#import <ReactCommon/RCTTurboModuleManager.h>
 #import <ReactCommon/SampleTurboCxxModule.h>
 
-#if !TARGET_OS_TV && !TARGET_OS_UIKITFORMAC
 #import <React/RCTPushNotificationManager.h>
-#endif
 
-#if RCT_NEW_ARCH_ENABLED
 #import <NativeCxxModuleExample/NativeCxxModuleExample.h>
+#ifndef RN_DISABLE_OSS_PLUGIN_HEADER
 #import <RNTMyNativeViewComponentView.h>
 #endif
+
+static NSString *kBundlePath = @"js/RNTesterApp.ios";
+
+@interface AppDelegate () <UNUserNotificationCenterDelegate>
+@end
 
 @implementation AppDelegate
 
@@ -30,7 +38,14 @@
   // They will be passed down to the ViewController used by React Native.
   self.initialProps = [self prepareInitialProps];
 
+  [[UNUserNotificationCenter currentNotificationCenter] setDelegate:self];
+
   return [super application:application didFinishLaunchingWithOptions:launchOptions];
+}
+
+- (void)applicationDidEnterBackground:(UIApplication *)application
+{
+  [super applicationDidEnterBackground:application];
 }
 
 - (NSDictionary *)prepareInitialProps
@@ -47,7 +62,7 @@
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
 {
-  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"js/RNTesterApp.ios"];
+  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:kBundlePath];
 }
 
 - (BOOL)application:(UIApplication *)app
@@ -70,21 +85,12 @@
   if (name == std::string([@"SampleTurboCxxModule" UTF8String])) {
     return std::make_shared<facebook::react::SampleTurboCxxModule>(jsInvoker);
   }
-#ifdef RCT_NEW_ARCH_ENABLED
+
   if (name == facebook::react::NativeCxxModuleExample::kModuleName) {
     return std::make_shared<facebook::react::NativeCxxModuleExample>(jsInvoker);
   }
-#endif
-  return nullptr;
-}
 
-#if !TARGET_OS_TV && !TARGET_OS_UIKITFORMAC
-
-// Required to register for notifications
-- (void)application:(__unused UIApplication *)application
-    didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
-{
-  [RCTPushNotificationManager didRegisterUserNotificationSettings:notificationSettings];
+  return [super getTurboModule:name jsInvoker:jsInvoker];
 }
 
 // Required for the remoteNotificationsRegistered event.
@@ -101,33 +107,55 @@
   [RCTPushNotificationManager didFailToRegisterForRemoteNotificationsWithError:error];
 }
 
-// Required for the remoteNotificationReceived event.
-- (void)application:(__unused UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification
+#pragma mark - UNUserNotificationCenterDelegate
+
+// Required for the remoteNotificationReceived and localNotificationReceived events
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center
+       willPresentNotification:(UNNotification *)notification
+         withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler
 {
-  [RCTPushNotificationManager didReceiveRemoteNotification:notification];
+  [RCTPushNotificationManager didReceiveNotification:notification];
+  completionHandler(UNNotificationPresentationOptionNone);
 }
 
-// Required for the localNotificationReceived event.
-- (void)application:(__unused UIApplication *)application
-    didReceiveLocalNotification:(UILocalNotification *)notification
+// Required for the remoteNotificationReceived and localNotificationReceived events
+// Called when a notification is tapped from background. (Foreground notification will not be shown per
+// the presentation option selected above).
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center
+    didReceiveNotificationResponse:(UNNotificationResponse *)response
+             withCompletionHandler:(void (^)(void))completionHandler
 {
-  [RCTPushNotificationManager didReceiveLocalNotification:notification];
+  UNNotification *notification = response.notification;
+
+  // This condition will be true if tapping the notification launched the app.
+  if ([response.actionIdentifier isEqualToString:UNNotificationDefaultActionIdentifier]) {
+    // This can be retrieved with getInitialNotification.
+    [RCTPushNotificationManager setInitialNotification:notification];
+  }
+
+  [RCTPushNotificationManager didReceiveNotification:notification];
+  completionHandler();
 }
 
-#endif
+#pragma mark - New Arch Enabled settings
+
+- (BOOL)bridgelessEnabled
+{
+  return [super bridgelessEnabled];
+}
 
 #pragma mark - RCTComponentViewFactoryComponentProvider
 
-#if RCT_NEW_ARCH_ENABLED
+#ifndef RN_DISABLE_OSS_PLUGIN_HEADER
 - (nonnull NSDictionary<NSString *, Class<RCTComponentViewProtocol>> *)thirdPartyFabricComponents
 {
   return @{@"RNTMyNativeView" : RNTMyNativeViewComponentView.class};
 }
-
-- (NSURL *)getBundleURL
-{
-  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"js/RNTesterApp.ios"];
-}
 #endif
+
+- (NSURL *)bundleURL
+{
+  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:kBundlePath];
+}
 
 @end

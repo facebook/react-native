@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 import * as React from 'react';
@@ -38,7 +38,6 @@ export type RNTesterModuleInfo = $ReadOnly<{|
   module: RNTesterModule,
   category?: string,
   documentationURL?: string,
-  isBookmarked?: boolean,
   exampleType?: 'components' | 'apis',
 |}>;
 
@@ -51,10 +50,9 @@ export type SectionData<T> = {
 export type ExamplesList = $ReadOnly<{|
   components: $ReadOnlyArray<SectionData<RNTesterModuleInfo>>,
   apis: $ReadOnlyArray<SectionData<RNTesterModuleInfo>>,
-  bookmarks: $ReadOnlyArray<SectionData<RNTesterModuleInfo>>,
 |}>;
 
-export type ScreenTypes = 'components' | 'apis' | 'bookmarks' | null;
+export type ScreenTypes = 'components' | 'apis' | null;
 
 export type ComponentList = null | {components: string[], apis: string[]};
 
@@ -63,8 +61,8 @@ export type RNTesterNavigationState = {
   activeModuleTitle: null | string,
   activeModuleExampleKey: null | string,
   screen: ScreenTypes,
-  bookmarks: ComponentList,
   recentlyUsed: ComponentList,
+  hadDeepLink: boolean,
 };
 
 export type RNTesterJsStallsState = {

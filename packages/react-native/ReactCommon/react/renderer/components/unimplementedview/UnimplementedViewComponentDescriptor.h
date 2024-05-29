@@ -35,7 +35,7 @@ class UnimplementedViewComponentDescriptor final
   Props::Shared cloneProps(
       const PropsParserContext& context,
       const Props::Shared& props,
-      const RawProps& rawProps) const override;
+      RawProps rawProps) const override;
 };
 
 } // namespace facebook::react

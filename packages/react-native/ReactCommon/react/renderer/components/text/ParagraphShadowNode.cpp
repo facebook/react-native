@@ -10,13 +10,13 @@
 #include <cmath>
 
 #include <react/debug/react_native_assert.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/attributedstring/AttributedStringBox.h>
 #include <react/renderer/components/view/ViewShadowNode.h>
 #include <react/renderer/components/view/conversions.h>
-#include <react/renderer/core/TraitCast.h>
 #include <react/renderer/graphics/rounding.h>
 #include <react/renderer/telemetry/TransactionTelemetry.h>
-#include <react/utils/CoreFeatures.h>
+#include <react/renderer/textlayoutmanager/TextLayoutContext.h>
 
 #include "ParagraphState.h"
 
@@ -30,13 +30,14 @@ ParagraphShadowNode::ParagraphShadowNode(
     const ShadowNode& sourceShadowNode,
     const ShadowNodeFragment& fragment)
     : ConcreteViewShadowNode(sourceShadowNode, fragment) {
-  if (CoreFeatures::enableCleanParagraphYogaNode) {
-    if (!fragment.children && !fragment.props) {
-      // This ParagraphShadowNode was cloned but did not change
-      // in a way that affects its layout. Let's mark it clean
-      // to stop Yoga from traversing it.
-      cleanLayout();
-    }
+  auto& sourceParagraphShadowNode =
+      static_cast<const ParagraphShadowNode&>(sourceShadowNode);
+  if (!fragment.children && !fragment.props &&
+      sourceParagraphShadowNode.getIsLayoutClean()) {
+    // This ParagraphShadowNode was cloned but did not change
+    // in a way that affects its layout. Let's mark it clean
+    // to stop Yoga from traversing it.
+    cleanLayout();
   }
 }
 
@@ -83,7 +84,7 @@ Content ParagraphShadowNode::getContentWithMeasuredAttachments(
 
   for (const auto& attachment : content.attachments) {
     auto laytableShadowNode =
-        traitCast<const LayoutableShadowNode*>(attachment.shadowNode);
+        dynamic_cast<const LayoutableShadowNode*>(attachment.shadowNode);
 
     if (laytableShadowNode == nullptr) {
       continue;
@@ -110,8 +111,7 @@ Content ParagraphShadowNode::getContentWithMeasuredAttachments(
 void ParagraphShadowNode::setTextLayoutManager(
     std::shared_ptr<const TextLayoutManager> textLayoutManager) {
   ensureUnsealed();
-  getStateData().paragraphLayoutManager.setTextLayoutManager(
-      std::move(textLayoutManager));
+  textLayoutManager_ = std::move(textLayoutManager);
 }
 
 void ParagraphShadowNode::updateStateIfNeeded(const Content& content) {
@@ -119,7 +119,7 @@ void ParagraphShadowNode::updateStateIfNeeded(const Content& content) {
 
   auto& state = getStateData();
 
-  react_native_assert(state.paragraphLayoutManager.getTextLayoutManager());
+  react_native_assert(textLayoutManager_);
 
   if (state.attributedString == content.attributedString) {
     return;
@@ -128,7 +128,7 @@ void ParagraphShadowNode::updateStateIfNeeded(const Content& content) {
   setStateData(ParagraphState{
       content.attributedString,
       content.paragraphAttributes,
-      state.paragraphLayoutManager});
+      textLayoutManager_});
 }
 
 #pragma mark - LayoutableShadowNode
@@ -152,9 +152,14 @@ Size ParagraphShadowNode::measureContent(
     attributedString.appendFragment({string, textAttributes, {}});
   }
 
-  return getStateData()
-      .paragraphLayoutManager
-      .measure(attributedString, content.paragraphAttributes, layoutConstraints)
+  TextLayoutContext textLayoutContext{};
+  textLayoutContext.pointScaleFactor = layoutContext.pointScaleFactor;
+  return textLayoutManager_
+      ->measure(
+          AttributedStringBox{attributedString},
+          content.paragraphAttributes,
+          textLayoutContext,
+          layoutConstraints)
       .size;
 }
 
@@ -162,29 +167,45 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
   ensureUnsealed();
 
   auto layoutMetrics = getLayoutMetrics();
-  auto availableSize = layoutMetrics.getContentFrame().size;
+  auto size = layoutMetrics.getContentFrame().size;
 
-  auto layoutConstraints = LayoutConstraints{
-      availableSize, availableSize, layoutMetrics.layoutDirection};
+  auto layoutConstraints =
+      LayoutConstraints{size, size, layoutMetrics.layoutDirection};
   auto content =
       getContentWithMeasuredAttachments(layoutContext, layoutConstraints);
 
   updateStateIfNeeded(content);
 
-  auto measurement = getStateData().paragraphLayoutManager.measure(
-      content.attributedString, content.paragraphAttributes, layoutConstraints);
+  TextLayoutContext textLayoutContext{};
+  textLayoutContext.pointScaleFactor = layoutContext.pointScaleFactor;
+  auto measurement = TextMeasurement{};
+
+  if (!ReactNativeFeatureFlags::preventDoubleTextMeasure()) {
+    measurement = textLayoutManager_->measure(
+        AttributedStringBox{content.attributedString},
+        content.paragraphAttributes,
+        textLayoutContext,
+        layoutConstraints);
+  }
 
   if (getConcreteProps().onTextLayout) {
-    auto linesMeasurements = getStateData().paragraphLayoutManager.measureLines(
-        content.attributedString,
-        content.paragraphAttributes,
-        measurement.size);
+    auto linesMeasurements = textLayoutManager_->measureLines(
+        content.attributedString, content.paragraphAttributes, size);
     getConcreteEventEmitter().onTextLayout(linesMeasurements);
   }
 
   if (content.attachments.empty()) {
     // No attachments to layout.
     return;
+  }
+
+  if (ReactNativeFeatureFlags::preventDoubleTextMeasure()) {
+    // Only measure if attachments are not empty.
+    measurement = textLayoutManager_->measure(
+        AttributedStringBox{content.attributedString},
+        content.paragraphAttributes,
+        textLayoutContext,
+        layoutConstraints);
   }
 
   //  Iterating on attachments, we clone shadow nodes and moving
@@ -201,7 +222,7 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
   for (size_t i = 0; i < content.attachments.size(); i++) {
     auto& attachment = content.attachments.at(i);
 
-    if (traitCast<const LayoutableShadowNode*>(attachment.shadowNode) ==
+    if (dynamic_cast<const LayoutableShadowNode*>(attachment.shadowNode) ==
         nullptr) {
       // Not a layoutable `ShadowNode`, no need to lay it out.
       continue;
@@ -219,9 +240,12 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
         static_cast<ParagraphShadowNode*>(paragraphOwningShadowNode.get());
 
     auto& layoutableShadowNode =
-        traitCast<LayoutableShadowNode&>(*clonedShadowNode);
+        dynamic_cast<LayoutableShadowNode&>(*clonedShadowNode);
 
     auto attachmentFrame = measurement.attachments[i].frame;
+    attachmentFrame.origin.x += layoutMetrics.contentInsets.left;
+    attachmentFrame.origin.y += layoutMetrics.contentInsets.top;
+
     auto attachmentSize = roundToPixel<&ceil>(
         attachmentFrame.size, layoutMetrics.pointScaleFactor);
     auto attachmentOrigin = roundToPixel<&round>(

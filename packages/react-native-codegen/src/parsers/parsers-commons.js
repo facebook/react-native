@@ -11,69 +11,67 @@
 'use strict';
 
 import type {
-  Nullable,
+  EventTypeAnnotation,
+  EventTypeShape,
   NamedShape,
   NativeModuleAliasMap,
   NativeModuleBaseTypeAnnotation,
-  NativeModuleSchema,
-  NativeModuleTypeAnnotation,
+  NativeModuleEnumMap,
   NativeModuleFunctionTypeAnnotation,
   NativeModuleParamTypeAnnotation,
   NativeModulePropertyShape,
-  SchemaType,
-  NativeModuleEnumMap,
+  NativeModuleSchema,
+  NativeModuleTypeAnnotation,
+  Nullable,
+  ObjectTypeAnnotation,
   OptionsShape,
   PropTypeAnnotation,
-  EventTypeAnnotation,
-  ObjectTypeAnnotation,
-  EventTypeShape,
+  SchemaType,
 } from '../CodegenSchema.js';
-
-import type {Parser} from './parser';
 import type {ParserType} from './errors';
+import type {Parser} from './parser';
+import type {ComponentSchemaBuilderConfig} from './schema.js';
 import type {
   ParserErrorCapturer,
-  TypeDeclarationMap,
   PropAST,
+  TypeDeclarationMap,
   TypeResolutionStatus,
 } from './utils';
-import type {ComponentSchemaBuilderConfig} from './schema.js';
 
 const {
-  getConfigType,
-  extractNativeModuleName,
-  createParserErrorCapturer,
-  visit,
-  isModuleRegistryCall,
-  verifyPlatforms,
-} = require('./utils');
-
-const {
+  throwIfConfigNotfound,
+  throwIfIncorrectModuleRegistryCallArgument,
+  throwIfIncorrectModuleRegistryCallTypeParameterParserError,
+  throwIfModuleInterfaceIsMisnamed,
+  throwIfModuleInterfaceNotFound,
+  throwIfModuleTypeIsUnsupported,
+  throwIfMoreThanOneCodegenNativecommands,
+  throwIfMoreThanOneConfig,
+  throwIfMoreThanOneModuleInterfaceParserError,
+  throwIfMoreThanOneModuleRegistryCalls,
   throwIfPropertyValueTypeIsUnsupported,
+  throwIfTypeAliasIsNotInterface,
   throwIfUnsupportedFunctionParamTypeAnnotationParserError,
   throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
-  throwIfModuleTypeIsUnsupported,
-  throwIfUnusedModuleInterfaceParserError,
-  throwIfMoreThanOneModuleRegistryCalls,
-  throwIfWrongNumberOfCallExpressionArgs,
   throwIfUntypedModule,
-  throwIfIncorrectModuleRegistryCallTypeParameterParserError,
-  throwIfIncorrectModuleRegistryCallArgument,
-  throwIfModuleInterfaceNotFound,
-  throwIfMoreThanOneModuleInterfaceParserError,
-  throwIfModuleInterfaceIsMisnamed,
-  throwIfMoreThanOneCodegenNativecommands,
-  throwIfConfigNotfound,
-  throwIfMoreThanOneConfig,
-  throwIfTypeAliasIsNotInterface,
+  throwIfUnusedModuleInterfaceParserError,
+  throwIfWrongNumberOfCallExpressionArgs,
 } = require('./error-utils');
-
 const {
   MissingTypeParameterGenericParserError,
   MoreThanOneTypeParameterGenericParserError,
   UnnamedFunctionParamParserError,
+  UnsupportedObjectDirectRecursivePropertyParserError,
 } = require('./errors');
-
+const {
+  createParserErrorCapturer,
+  extractNativeModuleName,
+  getConfigType,
+  getSortedObject,
+  isModuleRegistryCall,
+  verifyPlatforms,
+  visit,
+} = require('./utils');
 const invariant = require('invariant');
 
 export type CommandOptions = $ReadOnly<{
@@ -174,7 +172,54 @@ function isObjectProperty(property: $FlowFixMe, language: ParserType): boolean {
   }
 }
 
+function getObjectTypeAnnotations(
+  hasteModuleName: string,
+  types: TypeDeclarationMap,
+  tryParse: ParserErrorCapturer,
+  translateTypeAnnotation: $FlowFixMe,
+  parser: Parser,
+): {...NativeModuleAliasMap} {
+  const aliasMap: {...NativeModuleAliasMap} = {};
+  Object.entries(types).forEach(([key, value]) => {
+    const isTypeAlias =
+      value.type === 'TypeAlias' || value.type === 'TSTypeAliasDeclaration';
+    if (!isTypeAlias) {
+      return;
+    }
+    const parent = parser.nextNodeForTypeAlias(value);
+    if (
+      parent.type !== 'ObjectTypeAnnotation' &&
+      parent.type !== 'TSTypeLiteral'
+    ) {
+      return;
+    }
+    const typeProperties = parser
+      .getAnnotatedElementProperties(value)
+      .map(prop =>
+        parseObjectProperty(
+          parent,
+          prop,
+          hasteModuleName,
+          types,
+          aliasMap,
+          {}, // enumMap
+          tryParse,
+          true, // cxxOnly
+          prop?.optional || false,
+          translateTypeAnnotation,
+          parser,
+        ),
+      );
+    aliasMap[key] = {
+      type: 'ObjectTypeAnnotation',
+      properties: typeProperties,
+    };
+  });
+  return aliasMap;
+}
+
 function parseObjectProperty(
+  parentObject?: $FlowFixMe,
   property: $FlowFixMe,
   hasteModuleName: string,
   types: TypeDeclarationMap,
@@ -195,6 +240,41 @@ function parseObjectProperty(
       ? property.typeAnnotation.typeAnnotation
       : property.value;
 
+  // Handle recursive types
+  if (parentObject) {
+    const propertyType = parser.getResolveTypeAnnotationFN()(
+      languageTypeAnnotation,
+      types,
+      parser,
+    );
+    if (
+      propertyType.typeResolutionStatus.successful === true &&
+      propertyType.typeResolutionStatus.type === 'alias' &&
+      (language === 'TypeScript'
+        ? parentObject.typeName &&
+          parentObject.typeName.name === languageTypeAnnotation.typeName?.name
+        : parentObject.id &&
+          parentObject.id.name === languageTypeAnnotation.id?.name)
+    ) {
+      if (!optional) {
+        throw new UnsupportedObjectDirectRecursivePropertyParserError(
+          name,
+          languageTypeAnnotation,
+          hasteModuleName,
+        );
+      }
+      return {
+        name,
+        optional,
+        typeAnnotation: {
+          type: 'TypeAliasTypeAnnotation',
+          name: propertyType.typeResolutionStatus.name,
+        },
+      };
+    }
+  }
+
+  // Handle non-recursive types
   const [propertyTypeAnnotation, isPropertyNullable] =
     unwrapNullable<$FlowFixMe>(
       translateTypeAnnotation(
@@ -210,7 +290,7 @@ function parseObjectProperty(
     );
 
   if (
-    propertyTypeAnnotation.type === 'FunctionTypeAnnotation' ||
+    (propertyTypeAnnotation.type === 'FunctionTypeAnnotation' && !cxxOnly) ||
     propertyTypeAnnotation.type === 'PromiseTypeAnnotation' ||
     propertyTypeAnnotation.type === 'VoidTypeAnnotation'
   ) {
@@ -484,7 +564,7 @@ function buildSchema(
     return {modules: {}};
   }
 
-  const ast = parser.getAst(contents);
+  const ast = parser.getAst(contents, filename);
   const configType = getConfigType(ast, Visitor);
 
   return buildSchemaFromConfigType(
@@ -626,11 +706,21 @@ const buildModuleSchema = (
     moduleName,
   );
 
+  const aliasMap: {...NativeModuleAliasMap} = cxxOnly
+    ? getObjectTypeAnnotations(
+        hasteModuleName,
+        types,
+        tryParse,
+        translateTypeAnnotation,
+        parser,
+      )
+    : {};
+
   const properties: $ReadOnlyArray<$FlowFixMe> =
     language === 'Flow' ? moduleSpec.body.properties : moduleSpec.body.body;
 
   // $FlowFixMe[missing-type-arg]
-  return properties
+  const nativeModuleSchema = properties
     .filter(
       property =>
         property.type === 'ObjectTypeProperty' ||
@@ -642,9 +732,7 @@ const buildModuleSchema = (
       enumMap: NativeModuleEnumMap,
       propertyShape: NativeModulePropertyShape,
     }>(property => {
-      const aliasMap: {...NativeModuleAliasMap} = {};
       const enumMap: {...NativeModuleEnumMap} = {};
-
       return tryParse(() => ({
         aliasMap,
         enumMap,
@@ -663,10 +751,7 @@ const buildModuleSchema = (
     })
     .filter(Boolean)
     .reduce(
-      (
-        moduleSchema: NativeModuleSchema,
-        {aliasMap, enumMap, propertyShape},
-      ) => ({
+      (moduleSchema: NativeModuleSchema, {enumMap, propertyShape}) => ({
         type: 'NativeModule',
         aliasMap: {...moduleSchema.aliasMap, ...aliasMap},
         enumMap: {...moduleSchema.enumMap, ...enumMap},
@@ -686,6 +771,15 @@ const buildModuleSchema = (
           excludedPlatforms.length !== 0 ? [...excludedPlatforms] : undefined,
       },
     );
+
+  return {
+    type: 'NativeModule',
+    aliasMap: getSortedObject(nativeModuleSchema.aliasMap),
+    enumMap: getSortedObject(nativeModuleSchema.enumMap),
+    spec: {properties: nativeModuleSchema.spec.properties.sort()},
+    moduleName,
+    excludedPlatforms: nativeModuleSchema.excludedPlatforms,
+  };
 };
 
 /**
@@ -707,6 +801,7 @@ function findNativeComponentType(
   // expression so we need to go one level deeper
   if (
     declaration.type === 'TSAsExpression' ||
+    declaration.type === 'AsExpression' ||
     declaration.type === 'TypeCastExpression'
   ) {
     declaration = declaration.expression;

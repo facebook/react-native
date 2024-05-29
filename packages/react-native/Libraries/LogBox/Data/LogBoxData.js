@@ -30,6 +30,7 @@ export type LogData = $ReadOnly<{|
   message: Message,
   category: Category,
   componentStack: ComponentStack,
+  stack?: string,
 |}>;
 
 export type Observer = (
@@ -198,7 +199,7 @@ export function addLog(log: LogData): void {
   // otherwise spammy logs would pause rendering.
   setImmediate(() => {
     try {
-      const stack = parseErrorStack(errorForStackTrace?.stack);
+      const stack = parseErrorStack(log.stack ?? errorForStackTrace?.stack);
 
       appendNewLog(
         new LogBoxLog({
@@ -448,31 +449,6 @@ export function withSubscription(
         this._subscription.unsubscribe();
       }
     }
-
-    _handleDismiss = (): void => {
-      // Here we handle the cases when the log is dismissed and it
-      // was either the last log, or when the current index
-      // is now outside the bounds of the log array.
-      const {selectedLogIndex, logs: stateLogs} = this.state;
-      const logsArray = Array.from(stateLogs);
-      if (selectedLogIndex != null) {
-        if (logsArray.length - 1 <= 0) {
-          setSelectedLog(-1);
-        } else if (selectedLogIndex >= logsArray.length - 1) {
-          setSelectedLog(selectedLogIndex - 1);
-        }
-
-        dismiss(logsArray[selectedLogIndex]);
-      }
-    };
-
-    _handleMinimize = (): void => {
-      setSelectedLog(-1);
-    };
-
-    _handleSetSelectedLog = (index: number): void => {
-      setSelectedLog(index);
-    };
   }
 
   return LogBoxStateSubscription;

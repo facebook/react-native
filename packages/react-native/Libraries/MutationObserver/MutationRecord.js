@@ -10,11 +10,13 @@
 
 // flowlint unsafe-getters-setters:off
 
-import type ReactNativeElement from '../DOM/Nodes/ReactNativeElement';
-import type ReadOnlyNode from '../DOM/Nodes/ReadOnlyNode';
+import type ReactNativeElement from '../../src/private/webapis/dom/nodes/ReactNativeElement';
+import type ReadOnlyNode from '../../src/private/webapis/dom/nodes/ReadOnlyNode';
 import type {NativeMutationRecord} from './NativeMutationObserver';
 
-import NodeList, {createNodeList} from '../DOM/OldStyleCollections/NodeList';
+import NodeList, {
+  createNodeList,
+} from '../../src/private/webapis/dom/oldstylecollections/NodeList';
 
 export type MutationType = 'attributes' | 'characterData' | 'childList';
 
@@ -30,15 +32,15 @@ export default class MutationRecord {
   _removedNodes: NodeList<ReadOnlyNode>;
 
   constructor(nativeRecord: NativeMutationRecord) {
-    // $FlowExpectedError[incompatible-cast] the codegen doesn't support the actual type.
-    const target = (nativeRecord.target: ReactNativeElement);
+    // $FlowExpectedError[incompatible-type] the codegen doesn't support the actual type.
+    const target: ReactNativeElement = nativeRecord.target;
     this._target = target;
-    // $FlowExpectedError[incompatible-cast] the codegen doesn't support the actual type.
-    const addedNodes = (nativeRecord.addedNodes: $ReadOnlyArray<ReadOnlyNode>);
+    // $FlowExpectedError[incompatible-type] the codegen doesn't support the actual type.
+    const addedNodes: $ReadOnlyArray<ReadOnlyNode> = nativeRecord.addedNodes;
     this._addedNodes = createNodeList(addedNodes);
-    const removedNodes =
-      // $FlowExpectedError[incompatible-cast] the codegen doesn't support the actual type.
-      (nativeRecord.removedNodes: $ReadOnlyArray<ReadOnlyNode>);
+    const removedNodes: $ReadOnlyArray<ReadOnlyNode> =
+      // $FlowFixMe[incompatible-type]
+      nativeRecord.removedNodes;
     this._removedNodes = createNodeList(removedNodes);
   }
 

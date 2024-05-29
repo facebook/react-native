@@ -12,37 +12,72 @@
 import type {Experiments} from '../types/Experiments';
 
 /**
- * The Chrome DevTools frontend revision to use. This should be set to the
- * latest version known to be compatible with Hermes.
- *
- * Revision should be the full identifier from:
- * https://chromium.googlesource.com/chromium/src.git
- */
-const DEVTOOLS_FRONTEND_REV = 'd9568d04d7dd79269c5a655d7ada69650c5a8336'; // Chrome 100.0.4896.75
-
-/**
- * Construct the URL to Chrome DevTools connected to a given debugger target.
+ * Get the DevTools frontend URL to debug a given React Native CDP target.
  */
 export default function getDevToolsFrontendUrl(
+  experiments: Experiments,
   webSocketDebuggerUrl: string,
   devServerUrl: string,
-  experiments: Experiments,
+  options?: $ReadOnly<{
+    relative?: boolean,
+    launchId?: string,
+    /** Whether to use the modern `rn_fusebox.html` entry point. */
+    useFuseboxEntryPoint?: boolean,
+  }>,
 ): string {
-  const scheme = new URL(webSocketDebuggerUrl).protocol.slice(0, -1);
-  const webSocketUrlWithoutProtocol = webSocketDebuggerUrl.replace(
-    /^wss?:\/\//,
-    '',
-  );
+  const wsParam = getWsParam({
+    webSocketDebuggerUrl,
+    devServerUrl,
+  });
 
-  if (experiments.enableCustomDebuggerFrontend) {
-    const urlBase = `${devServerUrl}/debugger-frontend/rn_inspector.html`;
-    return `${urlBase}?${scheme}=${encodeURIComponent(
-      webSocketUrlWithoutProtocol,
-    )}&sources.hide_add_folder=true`;
+  const appUrl =
+    (options?.relative === true ? '' : devServerUrl) +
+    '/debugger-frontend/' +
+    (options?.useFuseboxEntryPoint === true
+      ? 'rn_fusebox.html'
+      : 'rn_inspector.html');
+
+  const searchParams = new URLSearchParams([
+    [wsParam.key, wsParam.value],
+    ['sources.hide_add_folder', 'true'],
+  ]);
+  if (experiments.enableNetworkInspector) {
+    searchParams.append('unstable_enableNetworkPanel', 'true');
+  }
+  if (
+    options?.useFuseboxEntryPoint === true &&
+    experiments.useFuseboxInternalBranding
+  ) {
+    searchParams.append('unstable_useInternalBranding', 'true');
+  }
+  if (options?.launchId != null && options.launchId !== '') {
+    searchParams.append('launchId', options.launchId);
   }
 
-  const urlBase = `https://chrome-devtools-frontend.appspot.com/serve_rev/@${DEVTOOLS_FRONTEND_REV}/devtools_app.html`;
-  return `${urlBase}?panel=console&${scheme}=${encodeURIComponent(
-    webSocketUrlWithoutProtocol,
-  )}`;
+  return appUrl + '?' + searchParams.toString();
+}
+
+function getWsParam({
+  webSocketDebuggerUrl,
+  devServerUrl,
+}: $ReadOnly<{
+  webSocketDebuggerUrl: string,
+  devServerUrl: string,
+}>): {
+  key: string,
+  value: string,
+} {
+  const wsUrl = new URL(webSocketDebuggerUrl);
+  const serverHost = new URL(devServerUrl).host;
+  let value;
+  if (wsUrl.host === serverHost) {
+    // Use a path-absolute (host-relative) URL
+    // Depends on https://github.com/facebookexperimental/rn-chrome-devtools-frontend/pull/4
+    value = wsUrl.pathname + wsUrl.search + wsUrl.hash;
+  } else {
+    // Standard URL format accepted by the DevTools frontend
+    value = wsUrl.host + wsUrl.pathname + wsUrl.search + wsUrl.hash;
+  }
+  const key = wsUrl.protocol.slice(0, -1);
+  return {key, value};
 }

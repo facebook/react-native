@@ -11,14 +11,12 @@ import android.content.ComponentCallbacks2;
 import android.content.Context;
 import android.content.res.Configuration;
 import com.facebook.react.bridge.MemoryPressureListener;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-/** Translates and routes memory pressure events to the current catalyst instance. */
+/** Translates and routes memory pressure events. */
 public class MemoryPressureRouter implements ComponentCallbacks2 {
-  private final Set<MemoryPressureListener> mListeners =
-      Collections.synchronizedSet(new LinkedHashSet<MemoryPressureListener>());
+  private final CopyOnWriteArrayList<MemoryPressureListener> mListeners =
+      new CopyOnWriteArrayList();
 
   public MemoryPressureRouter(Context context) {
     context.getApplicationContext().registerComponentCallbacks(this);
@@ -30,7 +28,9 @@ public class MemoryPressureRouter implements ComponentCallbacks2 {
 
   /** Add a listener to be notified of memory pressure events. */
   public void addMemoryPressureListener(MemoryPressureListener listener) {
-    mListeners.add(listener);
+    if (!mListeners.contains(listener)) {
+      mListeners.add(listener);
+    }
   }
 
   /** Remove a listener previously added with {@link #addMemoryPressureListener}. */
@@ -50,11 +50,7 @@ public class MemoryPressureRouter implements ComponentCallbacks2 {
   public void onLowMemory() {}
 
   private void dispatchMemoryPressure(int level) {
-    // copy listeners array to avoid ConcurrentModificationException if any of the listeners remove
-    // themselves in handleMemoryPressure()
-    MemoryPressureListener[] listeners =
-        mListeners.toArray(new MemoryPressureListener[mListeners.size()]);
-    for (MemoryPressureListener listener : listeners) {
+    for (MemoryPressureListener listener : mListeners) {
       listener.handleMemoryPressure(level);
     }
   }

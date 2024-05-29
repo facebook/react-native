@@ -22,8 +22,8 @@ typedef NS_OPTIONS(NSInteger, RNComponentViewUpdateMask) {
   RNComponentViewUpdateMaskNone = 0,
   RNComponentViewUpdateMaskProps = 1 << 0,
   RNComponentViewUpdateMaskEventEmitter = 1 << 1,
-  RNComponentViewUpdateMaskState = 1 << 3,
-  RNComponentViewUpdateMaskLayoutMetrics = 1 << 4,
+  RNComponentViewUpdateMaskState = 1 << 2,
+  RNComponentViewUpdateMaskLayoutMetrics = 1 << 3,
 
   RNComponentViewUpdateMaskAll = RNComponentViewUpdateMaskProps | RNComponentViewUpdateMaskEventEmitter |
       RNComponentViewUpdateMaskState | RNComponentViewUpdateMaskLayoutMetrics

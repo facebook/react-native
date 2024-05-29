@@ -64,11 +64,35 @@ struct BridgingDynamic {
 
 template <typename T, size_t N>
 struct Bridging<std::array<T, N>>
-    : array_detail::BridgingStatic<std::array<T, N>, N> {};
+    : array_detail::BridgingStatic<std::array<T, N>, N> {
+  static std::array<T, N> fromJs(
+      facebook::jsi::Runtime& rt,
+      const jsi::Array& array,
+      const std::shared_ptr<CallInvoker>& jsInvoker) {
+    size_t length = array.length(rt);
+
+    std::array<T, N> result;
+    for (size_t i = 0; i < length; i++) {
+      result[i] =
+          bridging::fromJs<T>(rt, array.getValueAtIndex(rt, i), jsInvoker);
+    }
+
+    return result;
+  }
+};
 
 template <typename T1, typename T2>
 struct Bridging<std::pair<T1, T2>>
-    : array_detail::BridgingStatic<std::pair<T1, T2>, 2> {};
+    : array_detail::BridgingStatic<std::pair<T1, T2>, 2> {
+  static std::pair<T1, T1> fromJs(
+      facebook::jsi::Runtime& rt,
+      const jsi::Array& array,
+      const std::shared_ptr<CallInvoker>& jsInvoker) {
+    return std::make_pair(
+        bridging::fromJs<T1>(rt, array.getValueAtIndex(rt, 0), jsInvoker),
+        bridging::fromJs<T2>(rt, array.getValueAtIndex(rt, 1), jsInvoker));
+  }
+};
 
 template <typename... Types>
 struct Bridging<std::tuple<Types...>>

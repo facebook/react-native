@@ -16,26 +16,26 @@ RuntimeSchedulerCallInvoker::RuntimeSchedulerCallInvoker(
     std::weak_ptr<RuntimeScheduler> runtimeScheduler)
     : runtimeScheduler_(std::move(runtimeScheduler)) {}
 
-void RuntimeSchedulerCallInvoker::invokeAsync(CallFunc&& func) {
+void RuntimeSchedulerCallInvoker::invokeAsync(CallFunc&& func) noexcept {
   if (auto runtimeScheduler = runtimeScheduler_.lock()) {
     runtimeScheduler->scheduleWork(
-        [func = std::move(func)](jsi::Runtime&) { func(); });
+        [func = std::move(func)](jsi::Runtime& rt) { func(rt); });
   }
 }
 
 void RuntimeSchedulerCallInvoker::invokeSync(CallFunc&& func) {
   if (auto runtimeScheduler = runtimeScheduler_.lock()) {
     runtimeScheduler->executeNowOnTheSameThread(
-        [func = std::move(func)](jsi::Runtime&) { func(); });
+        [func = std::move(func)](jsi::Runtime& rt) { func(rt); });
   }
 }
 
 void RuntimeSchedulerCallInvoker::invokeAsync(
     SchedulerPriority priority,
-    CallFunc&& func) {
+    CallFunc&& func) noexcept {
   if (auto runtimeScheduler = runtimeScheduler_.lock()) {
     runtimeScheduler->scheduleTask(
-        priority, [func = std::move(func)](jsi::Runtime&) { func(); });
+        priority, [func = std::move(func)](jsi::Runtime& rt) { func(rt); });
   }
 }
 

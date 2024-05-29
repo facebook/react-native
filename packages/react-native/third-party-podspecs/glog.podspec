@@ -29,6 +29,8 @@ Pod::Spec.new do |spec|
                         'src/base/*.h'
   spec.exclude_files       = "src/windows/**/*"
   spec.compiler_flags      = '-Wno-shorten-64-to-32'
+  spec.resource_bundles = {'glog_privacy' => 'glog/PrivacyInfo.xcprivacy'}
+
   spec.pod_target_xcconfig = {
     "USE_HEADERMAP" => "NO",
     "HEADER_SEARCH_PATHS" => "$(PODS_TARGET_SRCROOT)/src",

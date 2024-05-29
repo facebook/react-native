@@ -18,27 +18,19 @@ namespace facebook::yoga {
 enum class Errata : uint32_t {
   None = YGErrataNone,
   StretchFlexBasis = YGErrataStretchFlexBasis,
+  AbsolutePositioningIncorrect = YGErrataAbsolutePositioningIncorrect,
+  AbsolutePercentAgainstInnerSize = YGErrataAbsolutePercentAgainstInnerSize,
   All = YGErrataAll,
   Classic = YGErrataClassic,
 };
 
 YG_DEFINE_ENUM_FLAG_OPERATORS(Errata)
 
-template <>
-constexpr inline int32_t ordinalCount<Errata>() {
-  return 4;
-} 
-
-template <>
-constexpr inline int32_t bitCount<Errata>() {
-  return 2;
-} 
-
-constexpr inline Errata scopedEnum(YGErrata unscoped) {
+constexpr Errata scopedEnum(YGErrata unscoped) {
   return static_cast<Errata>(unscoped);
 }
 
-constexpr inline YGErrata unscopedEnum(Errata scoped) {
+constexpr YGErrata unscopedEnum(Errata scoped) {
   return static_cast<YGErrata>(scoped);
 }
 

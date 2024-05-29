@@ -14,7 +14,7 @@ import androidx.annotation.Nullable;
  *
  * @param <T>
  */
-public class Capture<T> {
+class Capture<T> {
   private @Nullable T value;
 
   public Capture() {}

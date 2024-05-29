@@ -11,10 +11,9 @@
 
 'use strict';
 
-const {TypeScriptParser} = require('../../parser');
-
-const fixtures = require('../__test_fixtures__/fixtures.js');
 const failureFixtures = require('../__test_fixtures__/failures.js');
+const fixtures = require('../__test_fixtures__/fixtures.js');
+const {TypeScriptParser} = require('../../parser');
 
 const typeScriptParser = new TypeScriptParser();
 

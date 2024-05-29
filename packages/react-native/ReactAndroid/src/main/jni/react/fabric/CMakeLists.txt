@@ -26,6 +26,7 @@ target_link_libraries(
         mapbufferjni
         react_codegen_rncore
         react_debug
+        react_featureflags
         react_render_animations
         react_render_attributedstring
         react_render_componentregistry
@@ -38,7 +39,6 @@ target_link_libraries(
         react_render_runtimescheduler
         react_render_scheduler
         react_render_telemetry
-        react_render_templateprocessor
         react_render_textlayoutmanager
         react_render_uimanager
         react_utils

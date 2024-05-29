@@ -11,4 +11,4 @@ package com.facebook.react.common.annotations
  * Annotates a method that should have restricted visibility but it's required to be public for use
  * in test code only.
  */
-annotation class VisibleForTesting
+public annotation class VisibleForTesting

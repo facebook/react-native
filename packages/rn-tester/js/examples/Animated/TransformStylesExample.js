@@ -9,13 +9,14 @@
  */
 
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
-import {RNTesterThemeContext} from '../../components/RNTesterTheme';
-import RNTOption from '../../components/RNTOption';
-import * as React from 'react';
-import {Animated, Text, View, StyleSheet} from 'react-native';
+
 import RNTConfigurationBlock from '../../components/RNTConfigurationBlock';
 import RNTesterButton from '../../components/RNTesterButton';
+import {RNTesterThemeContext} from '../../components/RNTesterTheme';
+import RNTOption from '../../components/RNTOption';
 import ToggleNativeDriver from './utils/ToggleNativeDriver';
+import * as React from 'react';
+import {Animated, StyleSheet, Text, View} from 'react-native';
 
 const transformProperties = {
   rotate: {outputRange: ['0deg', '360deg'], selected: false},
@@ -43,6 +44,7 @@ function AnimatedView({
   const transformStyles = properties.map(property => ({
     [property]: animatedValue.interpolate({
       inputRange: [0, 1],
+      // $FlowFixMe[invalid-computed-prop]
       outputRange: transformProperties[property].outputRange,
     }),
   }));
@@ -81,7 +83,9 @@ function AnimatedTransformStyleExample(): React.Node {
     setProperties({
       ...properties,
       [property]: {
+        // $FlowFixMe[invalid-computed-prop]
         ...properties[property],
+        // $FlowFixMe[invalid-computed-prop]
         selected: !properties[property].selected,
       },
     });
@@ -97,7 +101,9 @@ function AnimatedTransformStyleExample(): React.Node {
             borderBottomColor: theme.SeparatorColor,
           })}
         />
-        <Text style={styles.optionsTitle}>Selected Styles</Text>
+        <Text style={[styles.optionsTitle, {color: theme.SecondaryLabelColor}]}>
+          Selected Styles
+        </Text>
         <View style={styles.options}>
           {Object.keys(properties).map(property => {
             return (
@@ -123,6 +129,12 @@ function AnimatedTransformStyleExample(): React.Node {
           property => properties[property].selected,
         )}
       />
+      <View style={styles.section}>
+        <Text style={{color: theme.SecondaryLabelColor}}>
+          {'Should not crash when transform style key is undefined'}
+        </Text>
+        <Animated.View style={[styles.animatedView, {transform: undefined}]} />
+      </View>
     </View>
   );
 }
@@ -148,6 +160,9 @@ const styles = StyleSheet.create({
     paddingBottom: 6,
     marginBottom: 6,
     borderBottomWidth: 1,
+  },
+  section: {
+    marginTop: 20,
   },
 });
 

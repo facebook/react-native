@@ -9,7 +9,6 @@
 #include <sys/mman.h>
 
 #include <cxxreact/JSBigString.h>
-#include <folly/File.h>
 #include <gtest/gtest.h>
 
 using namespace facebook::react;

@@ -197,7 +197,7 @@ function generateBubblingEventInfo(
 ) {
   return j.property(
     'init',
-    j.identifier(nameOveride || normalizeInputEventName(event.name)),
+    j.identifier(normalizeInputEventName(nameOveride || event.name)),
     j.objectExpression([
       j.property(
         'init',
@@ -221,7 +221,7 @@ function generateDirectEventInfo(
 ) {
   return j.property(
     'init',
-    j.identifier(nameOveride || normalizeInputEventName(event.name)),
+    j.identifier(normalizeInputEventName(nameOveride || event.name)),
     j.objectExpression([
       j.property(
         'init',

@@ -8,19 +8,19 @@
  * @flow strict-local
  */
 
-import NativeSampleTurboModule from 'react-native/Libraries/TurboModule/samples/NativeSampleTurboModule';
-import {EnumInt} from 'react-native/Libraries/TurboModule/samples/NativeSampleTurboModule';
 import type {RootTag} from 'react-native/Libraries/ReactNative/RootTag';
-import {
-  Text,
-  View,
-  FlatList,
-  TouchableOpacity,
-  RootTagContext,
-} from 'react-native';
 
 import styles from './TurboModuleExampleCommon';
 import * as React from 'react';
+import {
+  FlatList,
+  RootTagContext,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import NativeSampleTurboModule from 'react-native/Libraries/TurboModule/samples/NativeSampleTurboModule';
+import {EnumInt} from 'react-native/Libraries/TurboModule/samples/NativeSampleTurboModule';
 
 type State = {|
   testResults: {
@@ -32,6 +32,39 @@ type State = {|
     ...
   },
 |};
+
+type Examples =
+  | 'callback'
+  | 'getArray'
+  | 'getBool'
+  | 'getConstants'
+  | 'getCustomEnum'
+  | 'getCustomHostObject'
+  | 'getBinaryTreeNode'
+  | 'getGraphNode'
+  | 'getNumEnum'
+  | 'getStrEnum'
+  | 'getMap'
+  | 'getNumber'
+  | 'getObject'
+  | 'getSet'
+  | 'getString'
+  | 'getUnion'
+  | 'getValue'
+  | 'promise'
+  | 'rejectPromise'
+  | 'voidFunc'
+  | 'setMenuItem'
+  | 'optionalArgs'
+  | 'emitDeviceEvent';
+
+type ErrorExamples =
+  | 'voidFuncThrows'
+  | 'getObjectThrows'
+  | 'promiseThrows'
+  | 'voidFuncAssert'
+  | 'getObjectAssert'
+  | 'promiseAssert';
 
 class SampleTurboModuleExample extends React.Component<{||}, State> {
   static contextType: React$Context<RootTag> = RootTagContext;
@@ -54,7 +87,9 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
     rejectPromise: () =>
       NativeSampleTurboModule.getValueWithPromise(true)
         .then(() => {})
-        .catch(e => this._setResult('rejectPromise', e.message)),
+        .catch(e => {
+          this._setResult('rejectPromise', e.message);
+        }),
     getConstants: () => NativeSampleTurboModule.getConstants(),
     voidFunc: () => NativeSampleTurboModule.voidFunc(),
     getBool: () => NativeSampleTurboModule.getBool(true),
@@ -77,10 +112,15 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
     getRootTag: () => NativeSampleTurboModule.getRootTag(this.context),
     getValue: () =>
       NativeSampleTurboModule.getValue(5, 'test', {a: 1, b: 'foo'}),
+  };
+
+  // $FlowFixMe[missing-local-annot]
+  _errorTests = {
     voidFuncThrows: () => {
       try {
         NativeSampleTurboModule.voidFuncThrows?.();
       } catch (e) {
+        console.error(e);
         return e.message;
       }
     },
@@ -88,21 +128,22 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
       try {
         NativeSampleTurboModule.getObjectThrows?.({a: 1, b: 'foo', c: null});
       } catch (e) {
+        console.error(e);
         return e.message;
       }
     },
     promiseThrows: () => {
-      try {
-        // $FlowFixMe[unused-promise]
-        NativeSampleTurboModule.promiseThrows?.();
-      } catch (e) {
-        return e.message;
-      }
+      NativeSampleTurboModule.promiseThrows?.()
+        .then(() => {})
+        .catch(e => {
+          console.error(e);
+        });
     },
     voidFuncAssert: () => {
       try {
         NativeSampleTurboModule.voidFuncAssert?.();
       } catch (e) {
+        console.error(e);
         return e.message;
       }
     },
@@ -110,42 +151,21 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
       try {
         NativeSampleTurboModule.getObjectAssert?.({a: 1, b: 'foo', c: null});
       } catch (e) {
+        console.error(e);
         return e.message;
       }
     },
     promiseAssert: () => {
-      try {
-        // $FlowFixMe[unused-promise]
-        NativeSampleTurboModule.promiseAssert?.();
-      } catch (e) {
-        return e.message;
-      }
+      NativeSampleTurboModule.promiseAssert?.()
+        .then(() => {})
+        .catch(e => {
+          console.error(e);
+        });
     },
   };
 
   _setResult(
-    name:
-      | string
-      | 'callback'
-      | 'getArray'
-      | 'getBool'
-      | 'getEnum'
-      | 'getConstants'
-      | 'getNumber'
-      | 'getObject'
-      | 'getRootTag'
-      | 'getString'
-      | 'getUnsafeObject'
-      | 'getValue'
-      | 'promise'
-      | 'rejectPromise'
-      | 'voidFunc'
-      | 'voidFuncThrows'
-      | 'getObjectThrows'
-      | 'promiseThrows'
-      | 'voidFuncAssert'
-      | 'getObjectAssert'
-      | 'promiseAssert',
+    name: Examples | ErrorExamples,
     result:
       | $FlowFixMe
       | void
@@ -197,6 +217,7 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
             style={[styles.column, styles.button]}
             onPress={() =>
               Object.keys(this._tests).forEach(item =>
+                // $FlowFixMe[incompatible-call]
                 this._setResult(item, this._tests[item]()),
               )
             }>
@@ -209,13 +230,32 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
           </TouchableOpacity>
         </View>
         <FlatList
+          // $FlowFixMe[incompatible-type-arg]
           data={Object.keys(this._tests)}
           keyExtractor={item => item}
-          renderItem={({item}) => (
+          renderItem={({item}: {item: Examples, ...}) => (
             <View style={styles.item}>
               <TouchableOpacity
                 style={[styles.column, styles.button]}
                 onPress={e => this._setResult(item, this._tests[item]())}>
+                <Text style={styles.buttonText}>{item}</Text>
+              </TouchableOpacity>
+              <View style={[styles.column]}>{this._renderResult(item)}</View>
+            </View>
+          )}
+        />
+        <View style={styles.item}>
+          <Text style={styles.buttonTextLarge}>Report errors tests</Text>
+        </View>
+        <FlatList
+          // $FlowFixMe[incompatible-type-arg]
+          data={Object.keys(this._errorTests)}
+          keyExtractor={item => item}
+          renderItem={({item}: {item: ErrorExamples, ...}) => (
+            <View style={styles.item}>
+              <TouchableOpacity
+                style={[styles.column, styles.button]}
+                onPress={e => this._setResult(item, this._errorTests[item]())}>
                 <Text style={styles.buttonText}>{item}</Text>
               </TouchableOpacity>
               <View style={[styles.column]}>{this._renderResult(item)}</View>

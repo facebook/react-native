@@ -14,21 +14,20 @@ const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleA
 const resolveAssetSource = require('../Image/resolveAssetSource');
 const processColor = require('../StyleSheet/processColor').default;
 const processColorArray = require('../StyleSheet/processColorArray');
+const processFilter = require('../StyleSheet/processFilter').default;
 const insetsDiffer = require('../Utilities/differ/insetsDiffer');
 const matricesDiffer = require('../Utilities/differ/matricesDiffer');
 const pointsDiffer = require('../Utilities/differ/pointsDiffer');
 const sizesDiffer = require('../Utilities/differ/sizesDiffer');
 const UIManager = require('./UIManager');
-const invariant = require('invariant');
+const nullthrows = require('nullthrows');
 
 function getNativeComponentAttributes(uiViewClassName: string): any {
   const viewConfig = UIManager.getViewManagerConfig(uiViewClassName);
 
-  invariant(
-    viewConfig != null && viewConfig.NativeProps != null,
-    'requireNativeComponent: "%s" was not found in the UIManager.',
-    uiViewClassName,
-  );
+  if (viewConfig == null) {
+    return null;
+  }
 
   // TODO: This seems like a whole lot of runtime initialization for every
   // native component that can be either avoided or simplified.
@@ -76,8 +75,8 @@ function getNativeComponentAttributes(uiViewClassName: string): any {
           ? true
           : {process}
         : process == null
-        ? {diff}
-        : {diff, process};
+          ? {diff}
+          : {diff, process};
   }
 
   // Unfortunately, the current setup declares style properties as top-level
@@ -105,7 +104,10 @@ function attachDefaultEventTypes(viewConfig: any) {
   const constants = UIManager.getConstants();
   if (constants.ViewManagerNames || constants.LazyViewManagersEnabled) {
     // Lazy view managers enabled.
-    viewConfig = merge(viewConfig, UIManager.getDefaultEventTypes());
+    viewConfig = merge(
+      viewConfig,
+      nullthrows(UIManager.getDefaultEventTypes)(),
+    );
   } else {
     viewConfig.bubblingEventTypes = merge(
       viewConfig.bubblingEventTypes,
@@ -187,6 +189,8 @@ function getProcessorForType(typeName: string): ?(nextProp: any) => any {
       return processColor;
     case 'ColorArray':
       return processColorArray;
+    case 'Filter':
+      return processFilter;
     case 'ImageSource':
       return resolveAssetSource;
   }

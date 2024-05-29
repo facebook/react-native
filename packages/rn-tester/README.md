@@ -13,7 +13,7 @@ yarn install
 
 ### Running on iOS
 
-If you are testing non-fabric component, modify [the fabric_enabled flag in RNTester's Podfile](https://github.com/facebook/react-native/blob/main/packages/rn-tester/Podfile#L24).
+If you are testing non-fabric component, search for and modify the `fabric_enabled` flag in [RNTester's Podfile](https://github.com/facebook/react-native/blob/main/packages/rn-tester/Podfile).
 
 ```ruby
 fabric_enabled = false
@@ -45,35 +45,26 @@ If you own a Mac laptop with Apple Silicon, you need to run some different comma
 
 You'll need to have all the [prerequisites](https://reactnative.dev/contributing/how-to-build-from-source#prerequisites) (SDK, NDK) for Building React Native installed.
 
-Start an Android emulator.
+You can build and run RN-Tester by using this command from the root of the repo:
+
+```sh
+yarn android
+```
+
+If you wish to use JSC instead you should invoke:
+
 ```sh
 cd packages/rn-tester
-# In order to use Hermes engine, run `yarn install-android-hermes` instead.
 yarn install-android-jsc
 yarn start
 ```
 
-_Note: Building for the first time can take a while._
+> [!NOTE]
+> Building for the first time can take a while.
 
-Open the RNTester app in your emulator.
-If you want to use a physical device, run `adb devices`, then `adb -s <device name> reverse tcp:8081 tcp:8081`.
+If you're using a physical device, run `adb reverse tcp:8081 tcp:8081` to make sure the device can access Metro.
+
 See [Running on Device](https://reactnative.dev/docs/running-on-device) for additional instructions on using a physical device.
-
-### Running with Buck
-
-Follow the same setup as running with gradle.
-
-Install Buck from [here](https://buckbuild.com/setup/install.html).
-
-Run the following commands from the react-native folder:
-```sh
-./gradlew :ReactAndroid:packageReactNdkLibsForBuck
-buck fetch rntester
-buck install -r rntester
-./scripts/packager.sh
-```
-
-_Note: The native libs are still built using gradle. Full build with buck is coming soon(tm)._
 
 ## Building from source
 

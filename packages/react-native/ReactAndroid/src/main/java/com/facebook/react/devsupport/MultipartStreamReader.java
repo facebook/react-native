@@ -15,7 +15,7 @@ import okio.BufferedSource;
 import okio.ByteString;
 
 /** Utility class to parse the body of a response of type multipart/mixed. */
-public class MultipartStreamReader {
+class MultipartStreamReader {
   // Standard line separator for HTTP.
   private static final String CRLF = "\r\n";
 

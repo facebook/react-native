@@ -16,8 +16,9 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-gnu-zero-variadic-macro-arguments'
-folly_version = '2022.05.16.00'
+folly_config = get_folly_config()
+folly_compiler_flags = folly_config[:compiler_flags]
+folly_version = folly_config[:version]
 folly_dep_name = 'RCT-Folly/Fabric'
 boost_compiler_flags = '-Wno-documentation'
 react_native_path = ".."
@@ -33,17 +34,19 @@ Pod::Spec.new do |s|
   s.source                 = source
   s.header_dir             = "jserrorhandler"
   s.source_files           = "JsErrorHandler.{cpp,h}"
-  s.pod_target_xcconfig = {  "HEADER_SEARCH_PATHS" => "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Mapbuffer/React_Mapbuffer.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-debug/React_debug.framework/Headers\"", "USE_HEADERMAP" => "YES",
-  "CLANG_CXX_LANGUAGE_STANDARD" => "c++20" }
+  s.pod_target_xcconfig = {
+    "USE_HEADERMAP" => "YES",
+    "CLANG_CXX_LANGUAGE_STANDARD" => "c++20"
+  }
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
 
   if ENV['USE_FRAMEWORKS']
-    s.header_mappings_dir     = './'
+    s.header_mappings_dir     = '../'
     s.module_name             = 'React_jserrorhandler'
   end
 
   s.dependency folly_dep_name, folly_version
-  s.dependency "React-jsi", version
-  s.dependency "React-Mapbuffer"
+  s.dependency "React-jsi"
+  add_dependency(s, "React-debug")
 
 end

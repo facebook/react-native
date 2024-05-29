@@ -6,10 +6,13 @@
  */
 
 #import "RCTBridgeProxy.h"
+#import "RCTBridgeProxy+Cxx.h"
+
 #import <React/RCTBridge+Private.h>
 #import <React/RCTBridge.h>
 #import <React/RCTLog.h>
 #import <React/RCTUIManager.h>
+#import <ReactCommon/CallInvoker.h>
 #import <jsi/jsi.h>
 
 using namespace facebook;
@@ -21,13 +24,21 @@ using namespace facebook;
 - (void)forwardInvocation:(NSInvocation *)invocation;
 @end
 
+@interface RCTBridgeProxy ()
+
+@property (nonatomic, readwrite) std::shared_ptr<facebook::react::CallInvoker> jsCallInvoker;
+
+@end
+
 @implementation RCTBridgeProxy {
   RCTUIManagerProxy *_uiManagerProxy;
   RCTModuleRegistry *_moduleRegistry;
   RCTBundleManager *_bundleManager;
   RCTCallableJSModules *_callableJSModules;
+  NSDictionary *_launchOptions;
   void (^_dispatchToJSThread)(dispatch_block_t);
   void (^_registerSegmentWithId)(NSNumber *, NSString *);
+  void *_runtime;
 }
 
 - (instancetype)initWithViewRegistry:(RCTViewRegistry *)viewRegistry
@@ -36,15 +47,19 @@ using namespace facebook;
                    callableJSModules:(RCTCallableJSModules *)callableJSModules
                   dispatchToJSThread:(void (^)(dispatch_block_t))dispatchToJSThread
                registerSegmentWithId:(void (^)(NSNumber *, NSString *))registerSegmentWithId
+                             runtime:(void *)runtime
+                       launchOptions:(nullable NSDictionary *)launchOptions
 {
   self = [super self];
   if (self) {
-    self->_uiManagerProxy = [[RCTUIManagerProxy alloc] initWithViewRegistry:viewRegistry];
-    self->_moduleRegistry = moduleRegistry;
-    self->_bundleManager = bundleManager;
-    self->_callableJSModules = callableJSModules;
-    self->_dispatchToJSThread = dispatchToJSThread;
-    self->_registerSegmentWithId = registerSegmentWithId;
+    _uiManagerProxy = [[RCTUIManagerProxy alloc] initWithViewRegistry:viewRegistry];
+    _moduleRegistry = moduleRegistry;
+    _bundleManager = bundleManager;
+    _callableJSModules = callableJSModules;
+    _dispatchToJSThread = dispatchToJSThread;
+    _registerSegmentWithId = registerSegmentWithId;
+    _runtime = runtime;
+    _launchOptions = [launchOptions copy];
   }
   return self;
 }
@@ -75,10 +90,16 @@ using namespace facebook;
  * Used By:
  *  - RCTBlobCollector
  */
-- (jsi::Runtime *)runtime
+- (void *)runtime
 {
-  [self logWarning:@"This method is unsupported. Returning nullptr." cmd:_cmd];
-  return nullptr;
+  [self logWarning:@"Please migrate to C++ TurboModule or RuntimeExecutor." cmd:_cmd];
+  return _runtime;
+}
+
+- (std::shared_ptr<facebook::react::CallInvoker>)jsCallInvoker
+{
+  [self logWarning:@"Please migrate to RuntimeExecutor" cmd:_cmd];
+  return _jsCallInvoker;
 }
 
 /**
@@ -162,7 +183,7 @@ using namespace facebook;
 
 - (void)registerSegmentWithId:(NSUInteger)segmentId path:(NSString *)path
 {
-  self->_registerSegmentWithId(@(segmentId), path);
+  _registerSegmentWithId(@(segmentId), path);
 }
 
 - (id<RCTBridgeDelegate>)delegate
@@ -173,8 +194,7 @@ using namespace facebook;
 
 - (NSDictionary *)launchOptions
 {
-  [self logError:@"This method is not supported. Returning nil." cmd:_cmd];
-  return nil;
+  return _launchOptions;
 }
 
 - (BOOL)loading
@@ -351,6 +371,11 @@ using namespace facebook;
   return (RCTUIManager *)_uiManagerProxy;
 }
 
+- (RCTBridgeProxy *)object
+{
+  return self;
+}
+
 /**
  * NSProxy setup
  */
@@ -387,12 +412,14 @@ using namespace facebook;
 
 @implementation RCTUIManagerProxy {
   RCTViewRegistry *_viewRegistry;
+  NSMutableDictionary<NSNumber *, UIView *> *_legacyViewRegistry;
 }
 - (instancetype)initWithViewRegistry:(RCTViewRegistry *)viewRegistry
 {
   self = [super self];
   if (self) {
     _viewRegistry = viewRegistry;
+    _legacyViewRegistry = [NSMutableDictionary new];
   }
   return self;
 }
@@ -404,20 +431,26 @@ using namespace facebook;
 {
   [self logWarning:@"Please migrate to RCTViewRegistry: @synthesize viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED."
                cmd:_cmd];
-  return [_viewRegistry viewForReactTag:reactTag];
+  UIView *view = [_viewRegistry viewForReactTag:reactTag] ? [_viewRegistry viewForReactTag:reactTag]
+                                                          : [_legacyViewRegistry objectForKey:reactTag];
+  return [RCTUIManager paperViewOrCurrentView:view];
 }
 
 - (void)addUIBlock:(RCTViewManagerUIBlock)block
 {
   [self
       logWarning:
-          @"This method isn't implemented faithfully: the viewRegistry passed to RCTViewManagerUIBlock is nil. Please migrate to RCTViewRegistry: @synthesize viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED."
+          @"This method isn't implemented faithfully. Please migrate to RCTViewRegistry if possible: @synthesize viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED."
              cmd:_cmd];
   __weak __typeof(self) weakSelf = self;
   RCTExecuteOnMainQueue(^{
     __typeof(self) strongSelf = weakSelf;
     if (strongSelf) {
-      block((RCTUIManager *)strongSelf, nil);
+      RCTUIManager *proxiedManager = (RCTUIManager *)strongSelf;
+      RCTComposedViewRegistry *composedViewRegistry =
+          [[RCTComposedViewRegistry alloc] initWithUIManager:proxiedManager
+                                                 andRegistry:strongSelf->_legacyViewRegistry];
+      block(proxiedManager, composedViewRegistry);
     }
   });
 }

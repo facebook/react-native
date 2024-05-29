@@ -59,14 +59,6 @@ RCT_EXPORT_MODULE();
   [_surfacePresenter removeObserver:self];
 }
 
-- (dispatch_queue_t)methodQueue
-{
-  // This module needs to be on the same queue as the UIManager to avoid
-  // having to lock `_operations` and `_preOperations` since `uiManagerWillPerformMounting`
-  // will be called from that queue.
-  return RCTGetUIManagerQueue();
-}
-
 /*
  * In bridgeless mode, `setBridge` is never called during initializtion. Instead this selector is invoked via
  * BridgelessTurboModuleSetup.
@@ -90,32 +82,40 @@ RCT_EXPORT_METHOD(finishOperationBatch)
 
 RCT_EXPORT_METHOD(createAnimatedNode : (double)tag config : (NSDictionary<NSString *, id> *)config)
 {
-  [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-    [nodesManager createAnimatedNode:[NSNumber numberWithDouble:tag] config:config];
-  }];
+  dispatch_async(RCTGetUIManagerQueue(), ^{
+    [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
+      [nodesManager createAnimatedNode:[NSNumber numberWithDouble:tag] config:config];
+    }];
+  });
 }
 
 RCT_EXPORT_METHOD(updateAnimatedNodeConfig : (double)tag config : (NSDictionary<NSString *, id> *)config)
 {
-  [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-    [nodesManager updateAnimatedNodeConfig:[NSNumber numberWithDouble:tag] config:config];
-  }];
+  dispatch_async(RCTGetUIManagerQueue(), ^{
+    [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
+      [nodesManager updateAnimatedNodeConfig:[NSNumber numberWithDouble:tag] config:config];
+    }];
+  });
 }
 
 RCT_EXPORT_METHOD(connectAnimatedNodes : (double)parentTag childTag : (double)childTag)
 {
-  [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-    [nodesManager connectAnimatedNodes:[NSNumber numberWithDouble:parentTag]
-                              childTag:[NSNumber numberWithDouble:childTag]];
-  }];
+  dispatch_async(RCTGetUIManagerQueue(), ^{
+    [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
+      [nodesManager connectAnimatedNodes:[NSNumber numberWithDouble:parentTag]
+                                childTag:[NSNumber numberWithDouble:childTag]];
+    }];
+  });
 }
 
 RCT_EXPORT_METHOD(disconnectAnimatedNodes : (double)parentTag childTag : (double)childTag)
 {
-  [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-    [nodesManager disconnectAnimatedNodes:[NSNumber numberWithDouble:parentTag]
-                                 childTag:[NSNumber numberWithDouble:childTag]];
-  }];
+  dispatch_async(RCTGetUIManagerQueue(), ^{
+    [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
+      [nodesManager disconnectAnimatedNodes:[NSNumber numberWithDouble:parentTag]
+                                   childTag:[NSNumber numberWithDouble:childTag]];
+    }];
+  });
 }
 
 RCT_EXPORT_METHOD(startAnimatingNode
@@ -124,101 +124,126 @@ RCT_EXPORT_METHOD(startAnimatingNode
                   : (NSDictionary<NSString *, id> *)config endCallback
                   : (RCTResponseSenderBlock)callBack)
 {
-  [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-    [nodesManager startAnimatingNode:[NSNumber numberWithDouble:animationId]
-                             nodeTag:[NSNumber numberWithDouble:nodeTag]
-                              config:config
-                         endCallback:callBack];
-  }];
+  dispatch_async(RCTGetUIManagerQueue(), ^{
+    [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
+      [nodesManager startAnimatingNode:[NSNumber numberWithDouble:animationId]
+                               nodeTag:[NSNumber numberWithDouble:nodeTag]
+                                config:config
+                           endCallback:callBack];
+    }];
 
-  [self flushOperationQueues];
+    [self flushOperationQueues];
+  });
 }
 
 RCT_EXPORT_METHOD(stopAnimation : (double)animationId)
 {
-  [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-    [nodesManager stopAnimation:[NSNumber numberWithDouble:animationId]];
-  }];
-  [self flushOperationQueues];
+  dispatch_async(RCTGetUIManagerQueue(), ^{
+    [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
+      [nodesManager stopAnimation:[NSNumber numberWithDouble:animationId]];
+    }];
+    [self flushOperationQueues];
+  });
 }
 
 RCT_EXPORT_METHOD(setAnimatedNodeValue : (double)nodeTag value : (double)value)
 {
-  [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-    [nodesManager setAnimatedNodeValue:[NSNumber numberWithDouble:nodeTag] value:[NSNumber numberWithDouble:value]];
-  }];
-  // In Bridge, flushing of native animations is done from RCTCxxBridge batchDidComplete().
-  // Since RCTCxxBridge doesn't exist in Bridgeless, and components are not remounted in Fabric for native animations,
-  // flush here for changes in Animated.Value for Animated.event.
-  [self flushOperationQueues];
+  dispatch_async(RCTGetUIManagerQueue(), ^{
+    [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
+      [nodesManager setAnimatedNodeValue:[NSNumber numberWithDouble:nodeTag] value:[NSNumber numberWithDouble:value]];
+    }];
+    // In Bridge, flushing of native animations is done from RCTCxxBridge batchDidComplete().
+    // Since RCTCxxBridge doesn't exist in Bridgeless, and components are not remounted in Fabric for native animations,
+    // flush here for changes in Animated.Value for Animated.event.
+    [self flushOperationQueues];
+  });
 }
 
 RCT_EXPORT_METHOD(setAnimatedNodeOffset : (double)nodeTag offset : (double)offset)
 {
-  [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-    [nodesManager setAnimatedNodeOffset:[NSNumber numberWithDouble:nodeTag] offset:[NSNumber numberWithDouble:offset]];
-  }];
+  dispatch_async(RCTGetUIManagerQueue(), ^{
+    [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
+      [nodesManager setAnimatedNodeOffset:[NSNumber numberWithDouble:nodeTag]
+                                   offset:[NSNumber numberWithDouble:offset]];
+    }];
+  });
 }
 
 RCT_EXPORT_METHOD(flattenAnimatedNodeOffset : (double)nodeTag)
 {
-  [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-    [nodesManager flattenAnimatedNodeOffset:[NSNumber numberWithDouble:nodeTag]];
-  }];
+  dispatch_async(RCTGetUIManagerQueue(), ^{
+    [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
+      [nodesManager flattenAnimatedNodeOffset:[NSNumber numberWithDouble:nodeTag]];
+    }];
+  });
 }
 
 RCT_EXPORT_METHOD(extractAnimatedNodeOffset : (double)nodeTag)
 {
-  [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-    [nodesManager extractAnimatedNodeOffset:[NSNumber numberWithDouble:nodeTag]];
-  }];
+  dispatch_async(RCTGetUIManagerQueue(), ^{
+    [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
+      [nodesManager extractAnimatedNodeOffset:[NSNumber numberWithDouble:nodeTag]];
+    }];
+  });
 }
 
 RCT_EXPORT_METHOD(connectAnimatedNodeToView : (double)nodeTag viewTag : (double)viewTag)
 {
-  [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-    // viewName is not used when node is managed by Fabric, and nodes are always managed by Fabric in Bridgeless.
-    [nodesManager connectAnimatedNodeToView:[NSNumber numberWithDouble:nodeTag]
-                                    viewTag:[NSNumber numberWithDouble:viewTag]
-                                   viewName:nil];
-  }];
+  dispatch_async(RCTGetUIManagerQueue(), ^{
+    [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
+      // viewName is not used when node is managed by Fabric, and nodes are always managed by Fabric in Bridgeless.
+      [nodesManager connectAnimatedNodeToView:[NSNumber numberWithDouble:nodeTag]
+                                      viewTag:[NSNumber numberWithDouble:viewTag]
+                                     viewName:nil];
+    }];
+  });
 }
 
 RCT_EXPORT_METHOD(disconnectAnimatedNodeFromView : (double)nodeTag viewTag : (double)viewTag)
 {
-  [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-    [nodesManager disconnectAnimatedNodeFromView:[NSNumber numberWithDouble:nodeTag]
-                                         viewTag:[NSNumber numberWithDouble:viewTag]];
-  }];
+  dispatch_async(RCTGetUIManagerQueue(), ^{
+    [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
+      [nodesManager disconnectAnimatedNodeFromView:[NSNumber numberWithDouble:nodeTag]
+                                           viewTag:[NSNumber numberWithDouble:viewTag]];
+    }];
+  });
 }
 
 RCT_EXPORT_METHOD(restoreDefaultValues : (double)nodeTag)
 {
-  [self addPreOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-    [nodesManager restoreDefaultValues:[NSNumber numberWithDouble:nodeTag]];
-  }];
+  dispatch_async(RCTGetUIManagerQueue(), ^{
+    [self addPreOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
+      [nodesManager restoreDefaultValues:[NSNumber numberWithDouble:nodeTag]];
+    }];
+  });
 }
 
 RCT_EXPORT_METHOD(dropAnimatedNode : (double)tag)
 {
-  [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-    [nodesManager dropAnimatedNode:[NSNumber numberWithDouble:tag]];
-  }];
+  dispatch_async(RCTGetUIManagerQueue(), ^{
+    [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
+      [nodesManager dropAnimatedNode:[NSNumber numberWithDouble:tag]];
+    }];
+  });
 }
 
 RCT_EXPORT_METHOD(startListeningToAnimatedNodeValue : (double)tag)
 {
-  __weak id<RCTValueAnimatedNodeObserver> valueObserver = self;
-  [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-    [nodesManager startListeningToAnimatedNodeValue:[NSNumber numberWithDouble:tag] valueObserver:valueObserver];
-  }];
+  dispatch_async(RCTGetUIManagerQueue(), ^{
+    __weak id<RCTValueAnimatedNodeObserver> valueObserver = self;
+    [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
+      [nodesManager startListeningToAnimatedNodeValue:[NSNumber numberWithDouble:tag] valueObserver:valueObserver];
+    }];
+  });
 }
 
 RCT_EXPORT_METHOD(stopListeningToAnimatedNodeValue : (double)tag)
 {
-  [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-    [nodesManager stopListeningToAnimatedNodeValue:[NSNumber numberWithDouble:tag]];
-  }];
+  dispatch_async(RCTGetUIManagerQueue(), ^{
+    [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
+      [nodesManager stopListeningToAnimatedNodeValue:[NSNumber numberWithDouble:tag]];
+    }];
+  });
 }
 
 RCT_EXPORT_METHOD(addAnimatedEventToView
@@ -233,11 +258,13 @@ RCT_EXPORT_METHOD(addAnimatedEventToView
     eventMappingDict[@"animatedValueTag"] = @(*eventMapping.animatedValueTag());
   }
 
-  [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-    [nodesManager addAnimatedEventToView:[NSNumber numberWithDouble:viewTag]
-                               eventName:eventName
-                            eventMapping:eventMappingDict];
-  }];
+  dispatch_async(RCTGetUIManagerQueue(), ^{
+    [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
+      [nodesManager addAnimatedEventToView:[NSNumber numberWithDouble:viewTag]
+                                 eventName:eventName
+                              eventMapping:eventMappingDict];
+    }];
+  });
 }
 
 RCT_EXPORT_METHOD(removeAnimatedEventFromView
@@ -245,18 +272,22 @@ RCT_EXPORT_METHOD(removeAnimatedEventFromView
                   : (nonnull NSString *)eventName animatedNodeTag
                   : (double)animatedNodeTag)
 {
-  [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-    [nodesManager removeAnimatedEventFromView:[NSNumber numberWithDouble:viewTag]
-                                    eventName:eventName
-                              animatedNodeTag:[NSNumber numberWithDouble:animatedNodeTag]];
-  }];
+  dispatch_async(RCTGetUIManagerQueue(), ^{
+    [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
+      [nodesManager removeAnimatedEventFromView:[NSNumber numberWithDouble:viewTag]
+                                      eventName:eventName
+                                animatedNodeTag:[NSNumber numberWithDouble:animatedNodeTag]];
+    }];
+  });
 }
 
 RCT_EXPORT_METHOD(getValue : (double)nodeTag saveValueCallback : (RCTResponseSenderBlock)saveValueCallback)
 {
-  [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-    [nodesManager getValue:[NSNumber numberWithDouble:nodeTag] saveCallback:saveValueCallback];
-  }];
+  dispatch_async(RCTGetUIManagerQueue(), ^{
+    [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
+      [nodesManager getValue:[NSNumber numberWithDouble:nodeTag] saveCallback:saveValueCallback];
+    }];
+  });
 }
 
 RCT_EXPORT_METHOD(queueAndExecuteBatchedOperations : (NSArray *)operationsAndArgs)

@@ -25,6 +25,7 @@ import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.systrace.Systrace;
@@ -91,41 +92,6 @@ public class UIViewOperationQueue {
     @Override
     public void execute() {
       mNativeViewHierarchyManager.updateProperties(mTag, mProps);
-    }
-  }
-
-  private final class EmitOnLayoutEventOperation extends ViewOperation {
-
-    private final int mScreenX;
-    private final int mScreenY;
-    private final int mScreenWidth;
-    private final int mScreenHeight;
-
-    public EmitOnLayoutEventOperation(
-        int tag, int screenX, int screenY, int screenWidth, int screenHeight) {
-      super(tag);
-      mScreenX = screenX;
-      mScreenY = screenY;
-      mScreenWidth = screenWidth;
-      mScreenHeight = screenHeight;
-    }
-
-    @Override
-    public void execute() {
-      UIManagerModule uiManager = mReactApplicationContext.getNativeModule(UIManagerModule.class);
-
-      if (uiManager != null) {
-        uiManager
-            .getEventDispatcher()
-            .dispatchEvent(
-                OnLayoutEvent.obtain(
-                    -1 /* SurfaceId not used in classic renderer */,
-                    mTag,
-                    mScreenX,
-                    mScreenY,
-                    mScreenWidth,
-                    mScreenHeight));
-      }
     }
   }
 
@@ -374,32 +340,6 @@ public class UIViewOperationQueue {
     @Override
     public int getRetries() {
       return numRetries;
-    }
-  }
-
-  private final class ShowPopupMenuOperation extends ViewOperation {
-
-    private final ReadableArray mItems;
-    private final Callback mError;
-    private final Callback mSuccess;
-
-    public ShowPopupMenuOperation(int tag, ReadableArray items, Callback error, Callback success) {
-      super(tag);
-      mItems = items;
-      mError = error;
-      mSuccess = success;
-    }
-
-    @Override
-    public void execute() {
-      mNativeViewHierarchyManager.showPopupMenu(mTag, mItems, mSuccess, mError);
-    }
-  }
-
-  private final class DismissPopupMenuOperation implements UIOperation {
-    @Override
-    public void execute() {
-      mNativeViewHierarchyManager.dismissPopupMenu();
     }
   }
 
@@ -737,15 +677,6 @@ public class UIViewOperationQueue {
     mOperations.add(new UpdateViewExtraData(reactTag, extraData));
   }
 
-  public void enqueueShowPopupMenu(
-      int reactTag, ReadableArray items, Callback error, Callback success) {
-    mOperations.add(new ShowPopupMenuOperation(reactTag, items, error, success));
-  }
-
-  public void enqueueDismissPopupMenu() {
-    mOperations.add(new DismissPopupMenuOperation());
-  }
-
   public void enqueueCreateView(
       ThemedReactContext themedContext,
       int viewReactTag,
@@ -765,12 +696,6 @@ public class UIViewOperationQueue {
   public void enqueueUpdateProperties(int reactTag, String className, ReactStylesDiffMap props) {
     mUpdatePropertiesOperationCount++;
     mOperations.add(new UpdatePropertiesOperation(reactTag, props));
-  }
-
-  public void enqueueOnLayoutEvent(
-      int tag, int screenX, int screenY, int screenWidth, int screenHeight) {
-    mOperations.add(
-        new EmitOnLayoutEventOperation(tag, screenX, screenY, screenWidth, screenHeight));
   }
 
   public void enqueueUpdateLayout(
@@ -1003,8 +928,10 @@ public class UIViewOperationQueue {
 
   /* package */ void resumeFrameCallback() {
     mIsDispatchUIFrameCallbackEnqueued = true;
-    ReactChoreographer.getInstance()
-        .postFrameCallback(ReactChoreographer.CallbackType.DISPATCH_UI, mDispatchUIFrameCallback);
+    if (!ReactFeatureFlags.enableFabricRendererExclusively) {
+      ReactChoreographer.getInstance()
+          .postFrameCallback(ReactChoreographer.CallbackType.DISPATCH_UI, mDispatchUIFrameCallback);
+    }
   }
 
   /* package */ void pauseFrameCallback() {

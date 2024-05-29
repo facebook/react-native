@@ -9,11 +9,11 @@
  * @oncall react_native
  */
 
+const {BUILD_DIR, PACKAGES_DIR} = require('./build');
+const {buildConfig} = require('./config');
 const {parseArgs} = require('@pkgjs/parseargs');
 const fs = require('fs');
 const path = require('path');
-const {BUILD_DIR, PACKAGES_DIR} = require('./build');
-const {buildConfig} = require('./config');
 
 const config = {
   options: {

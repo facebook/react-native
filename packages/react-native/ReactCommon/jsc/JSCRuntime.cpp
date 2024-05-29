@@ -13,8 +13,8 @@
 #include <atomic>
 #include <condition_variable>
 #include <cstdlib>
+#include <deque>
 #include <mutex>
-#include <queue>
 #include <sstream>
 #include <thread>
 
@@ -51,6 +51,12 @@ class JSCRuntime : public jsi::Runtime {
       const std::shared_ptr<const jsi::Buffer>& buffer,
       const std::string& sourceURL) override;
 
+  // If we use this interface to implement microtasks in the host we need to
+  // polyfill `Promise` to use these methods, because JSC doesn't currently
+  // support providing a custom queue for its built-in implementation.
+  // Not doing this would result in a non-compliant behavior, as microtasks
+  // wouldn't execute in the order in which they were queued.
+  void queueMicrotask(const jsi::Function& callback) override;
   bool drainMicrotasks(int maxMicrotasksHint = -1) override;
 
   jsi::Object global() override;
@@ -233,6 +239,7 @@ class JSCRuntime : public jsi::Runtime {
   bool strictEquals(const jsi::String& a, const jsi::String& b) const override;
   bool strictEquals(const jsi::Object& a, const jsi::Object& b) const override;
   bool instanceOf(const jsi::Object& o, const jsi::Function& f) override;
+  void setExternalMemoryPressure(const jsi::Object&, size_t) override;
 
  private:
   // Basically convenience casts
@@ -240,10 +247,7 @@ class JSCRuntime : public jsi::Runtime {
   static JSStringRef stringRef(const jsi::String& str);
   static JSStringRef stringRef(const jsi::PropNameID& sym);
   static JSObjectRef objectRef(const jsi::Object& obj);
-
-#ifdef RN_FABRIC_ENABLED
   static JSObjectRef objectRef(const jsi::WeakObject& obj);
-#endif
 
   // Factory methods for creating String/Object
   jsi::Symbol createSymbol(JSValueRef symbolRef) const;
@@ -256,6 +260,8 @@ class JSCRuntime : public jsi::Runtime {
   jsi::Runtime::PointerValue* makeStringValue(JSStringRef str) const;
   jsi::Runtime::PointerValue* makeObjectValue(JSObjectRef obj) const;
 
+  JSValueRef getNativeStateSymbol();
+
   void checkException(JSValueRef exc);
   void checkException(JSValueRef res, JSValueRef exc);
   void checkException(JSValueRef exc, const char* msg);
@@ -264,6 +270,8 @@ class JSCRuntime : public jsi::Runtime {
   JSGlobalContextRef ctx_;
   std::atomic<bool> ctxInvalid_;
   std::string desc_;
+  JSValueRef nativeStateSymbol_ = nullptr;
+  std::deque<jsi::Function> microtaskQueue_;
 #ifndef NDEBUG
   mutable std::atomic<intptr_t> objectCounter_;
   mutable std::atomic<intptr_t> symbolCounter_;
@@ -369,14 +377,20 @@ JSCRuntime::JSCRuntime(JSGlobalContextRef ctx)
 {
 #ifndef NDEBUG
 #ifdef _JSC_HAS_INSPECTABLE
+#if (__OSX_AVAILABLE_STARTING(MAC_NA, IPHONE_16_4))
   if (__builtin_available(macOS 13.3, iOS 16.4, tvOS 16.4, *)) {
     JSGlobalContextSetInspectable(ctx_, true);
   }
 #endif
 #endif
+#endif
 }
 
 JSCRuntime::~JSCRuntime() {
+  // We need to clear the microtask queue to remove all references to the
+  // callbacks, so objectCounter_ would be 0 below.
+  microtaskQueue_.clear();
+
   // On shutting down and cleaning up: when JSC is actually torn down,
   // it calls JSC::Heap::lastChanceToFinalize internally which
   // finalizes anything left over.  But at this point,
@@ -384,6 +398,8 @@ JSCRuntime::~JSCRuntime() {
   // atomic<bool> to avoid unsafe unprotects happening after shutdown
   // has started.
   ctxInvalid_ = true;
+  // No need to unprotect nativeStateSymbol_ since the heap is getting torn down
+  // anyway
   JSGlobalContextRelease(ctx_);
 #ifndef NDEBUG
   assert(
@@ -431,7 +447,23 @@ jsi::Value JSCRuntime::evaluateJavaScript(
   return createValue(res);
 }
 
-bool JSCRuntime::drainMicrotasks(int maxMicrotasksHint) {
+void JSCRuntime::queueMicrotask(const jsi::Function& callback) {
+  microtaskQueue_.emplace_back(callback.getFunction(*this));
+}
+
+bool JSCRuntime::drainMicrotasks(int /*maxMicrotasksHint*/) {
+  // Note that new jobs can be enqueued during the draining.
+  while (!microtaskQueue_.empty()) {
+    jsi::Function callback = std::move(microtaskQueue_.front());
+
+    // We need to pop before calling the callback because that might throw.
+    // When that happens, the host will call `drainMicrotasks` again to execute
+    // the remaining microtasks, and this one shouldn't run again.
+    microtaskQueue_.pop_front();
+
+    callback.call(*this);
+  }
+
   return true;
 }
 
@@ -450,25 +482,6 @@ bool JSCRuntime::isInspectable() {
   return false;
 }
 
-namespace {
-
-bool smellsLikeES6Symbol(JSGlobalContextRef ctx, JSValueRef ref) {
-  // Since iOS 13, JSValueGetType will return kJSTypeSymbol
-  // Before: Empirically, an es6 Symbol is not an object, but its type is
-  // object.  This makes no sense, but we'll run with it.
-  // https://github.com/WebKit/webkit/blob/master/Source/JavaScriptCore/API/JSValueRef.cpp#L79-L82
-
-  JSType type = JSValueGetType(ctx, ref);
-
-  if (type == /* kJSTypeSymbol */ 6) {
-    return true;
-  }
-
-  return (!JSValueIsObject(ctx, ref) && type == kJSTypeObject);
-}
-
-} // namespace
-
 JSCRuntime::JSCSymbolValue::JSCSymbolValue(
     JSGlobalContextRef ctx,
     const std::atomic<bool>& ctxInvalid,
@@ -486,7 +499,7 @@ JSCRuntime::JSCSymbolValue::JSCSymbolValue(
       counter_(counter)
 #endif
 {
-  assert(smellsLikeES6Symbol(ctx_, sym_));
+  assert(JSValueIsSymbol(ctx_, sym_));
   JSValueProtect(ctx_, sym_);
 #ifndef NDEBUG
   counter_ += 1;
@@ -723,7 +736,7 @@ jsi::Object JSCRuntime::createObject() {
 }
 
 // HostObject details
-namespace detail {
+namespace {
 struct HostObjectProxyBase {
   HostObjectProxyBase(
       JSCRuntime& rt,
@@ -733,15 +746,13 @@ struct HostObjectProxyBase {
   JSCRuntime& runtime;
   std::shared_ptr<jsi::HostObject> hostObject;
 };
-} // namespace detail
 
-namespace {
 std::once_flag hostObjectClassOnceFlag;
 JSClassRef hostObjectClass{};
 } // namespace
 
 jsi::Object JSCRuntime::createObject(std::shared_ptr<jsi::HostObject> ho) {
-  struct HostObjectProxy : public detail::HostObjectProxyBase {
+  struct HostObjectProxy : public HostObjectProxyBase {
     static JSValueRef getProperty(
         JSContextRef ctx,
         JSObjectRef object,
@@ -873,25 +884,107 @@ std::shared_ptr<jsi::HostObject> JSCRuntime::getHostObject(
   // We are guaranteed at this point to have isHostObject(obj) == true
   // so the private data should be HostObjectMetadata
   JSObjectRef object = objectRef(obj);
-  auto metadata =
-      static_cast<detail::HostObjectProxyBase*>(JSObjectGetPrivate(object));
+  auto metadata = static_cast<HostObjectProxyBase*>(JSObjectGetPrivate(object));
   assert(metadata);
   return metadata->hostObject;
 }
 
-bool JSCRuntime::hasNativeState(const jsi::Object&) {
-  throw std::logic_error("Not implemented");
+// NativeState details
+namespace {
+struct NativeStateContainer {
+  NativeStateContainer(std::shared_ptr<jsi::NativeState> state)
+      : nativeState(std::move(state)) {}
+
+  std::shared_ptr<jsi::NativeState> nativeState;
+
+  static void finalize(JSObjectRef obj) {
+    auto container =
+        static_cast<NativeStateContainer*>(JSObjectGetPrivate(obj));
+    delete container;
+  }
+};
+
+JSClassRef getNativeStateClass() {
+  static JSClassRef nativeStateClass = [] {
+    JSClassDefinition nativeStateClassDef = kJSClassDefinitionEmpty;
+    nativeStateClassDef.version = 0;
+    nativeStateClassDef.attributes = kJSClassAttributeNoAutomaticPrototype;
+    nativeStateClassDef.finalize = NativeStateContainer::finalize;
+    return JSClassCreate(&nativeStateClassDef);
+  }();
+  return nativeStateClass;
+}
+} // namespace
+
+JSValueRef JSCRuntime::getNativeStateSymbol() {
+  if (!nativeStateSymbol_) {
+    JSStringRef symbolName =
+        JSStringCreateWithUTF8CString("__internal_nativeState");
+    JSValueRef symbol = JSValueMakeSymbol(ctx_, symbolName);
+    JSValueProtect(ctx_, symbol);
+    nativeStateSymbol_ = symbol;
+    JSStringRelease(symbolName);
+  }
+  return nativeStateSymbol_;
+}
+
+bool JSCRuntime::hasNativeState(const jsi::Object& obj) {
+  JSValueRef exc = nullptr;
+  JSValueRef state = JSObjectGetPropertyForKey(
+      ctx_, objectRef(obj), getNativeStateSymbol(), &exc);
+  checkException(exc);
+
+  return JSValueIsObjectOfClass(ctx_, state, getNativeStateClass());
 }
 
 std::shared_ptr<jsi::NativeState> JSCRuntime::getNativeState(
-    const jsi::Object&) {
-  throw std::logic_error("Not implemented");
+    const jsi::Object& obj) {
+  JSValueRef exc = nullptr;
+  JSValueRef state = JSObjectGetPropertyForKey(
+      ctx_, objectRef(obj), getNativeStateSymbol(), &exc);
+  checkException(exc);
+
+  JSObjectRef stateObj = JSValueToObject(ctx_, state, &exc);
+  checkException(exc);
+
+  auto container =
+      static_cast<NativeStateContainer*>(JSObjectGetPrivate(stateObj));
+  assert(container);
+  return container->nativeState;
 }
 
 void JSCRuntime::setNativeState(
-    const jsi::Object&,
-    std::shared_ptr<jsi::NativeState>) {
-  throw std::logic_error("Not implemented");
+    const jsi::Object& obj,
+    std::shared_ptr<jsi::NativeState> nativeState) {
+  JSValueRef nativeStateSymbol = getNativeStateSymbol();
+
+  JSValueRef exc = nullptr;
+  JSValueRef state =
+      JSObjectGetPropertyForKey(ctx_, objectRef(obj), nativeStateSymbol, &exc);
+  checkException(exc);
+  if (JSValueIsUndefined(ctx_, state)) {
+    JSObjectRef stateObj = JSObjectMake(
+        ctx_,
+        getNativeStateClass(),
+        new NativeStateContainer(std::move(nativeState)));
+    JSObjectSetPropertyForKey(
+        ctx_,
+        objectRef(obj),
+        nativeStateSymbol,
+        stateObj,
+        kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontEnum |
+            kJSPropertyAttributeDontDelete,
+        &exc);
+    checkException(exc);
+  } else {
+    JSObjectRef stateObj = JSValueToObject(ctx_, state, &exc);
+    checkException(exc);
+
+    auto container =
+        static_cast<NativeStateContainer*>(JSObjectGetPrivate(stateObj));
+    assert(container);
+    container->nativeState = std::move(nativeState);
+  }
 }
 
 jsi::Value JSCRuntime::getProperty(
@@ -999,23 +1092,15 @@ jsi::Array JSCRuntime::getPropertyNames(const jsi::Object& obj) {
 }
 
 jsi::WeakObject JSCRuntime::createWeakObject(const jsi::Object& obj) {
-#ifdef RN_FABRIC_ENABLED
   // TODO: revisit this implementation
   JSObjectRef objRef = objectRef(obj);
   return make<jsi::WeakObject>(makeObjectValue(objRef));
-#else
-  throw std::logic_error("Not implemented");
-#endif
 }
 
 jsi::Value JSCRuntime::lockWeakObject(const jsi::WeakObject& obj) {
-#ifdef RN_FABRIC_ENABLED
   // TODO: revisit this implementation
   JSObjectRef objRef = objectRef(obj);
   return jsi::Value(createObject(objRef));
-#else
-  throw std::logic_error("Not implemented");
-#endif
 }
 
 jsi::Array JSCRuntime::createArray(size_t length) {
@@ -1337,6 +1422,8 @@ bool JSCRuntime::instanceOf(const jsi::Object& o, const jsi::Function& f) {
   return res;
 }
 
+void JSCRuntime::setExternalMemoryPressure(const jsi::Object&, size_t) {}
+
 jsi::Runtime::PointerValue* JSCRuntime::makeSymbolValue(
     JSValueRef symbolRef) const {
 #ifndef NDEBUG
@@ -1415,16 +1502,11 @@ jsi::Value JSCRuntime::createValue(JSValueRef value) const {
       JSObjectRef objRef = JSValueToObject(ctx_, value, nullptr);
       return jsi::Value(createObject(objRef));
     }
-      // TODO: Uncomment this when all supported JSC versions have this symbol
-      //    case kJSTypeSymbol:
-    default: {
-      if (smellsLikeES6Symbol(ctx_, value)) {
-        return jsi::Value(createSymbol(value));
-      } else {
-        // WHAT ARE YOU
-        abort();
-      }
-    }
+    case kJSTypeSymbol:
+      return jsi::Value(createSymbol(value));
+    default:
+      // WHAT ARE YOU
+      abort();
   }
 }
 
@@ -1466,12 +1548,10 @@ JSObjectRef JSCRuntime::objectRef(const jsi::Object& obj) {
   return static_cast<const JSCObjectValue*>(getPointerValue(obj))->obj_;
 }
 
-#ifdef RN_FABRIC_ENABLED
 JSObjectRef JSCRuntime::objectRef(const jsi::WeakObject& obj) {
   // TODO: revisit this implementation
   return static_cast<const JSCObjectValue*>(getPointerValue(obj))->obj_;
 }
-#endif
 
 void JSCRuntime::checkException(JSValueRef exc) {
   if (JSC_UNLIKELY(exc)) {

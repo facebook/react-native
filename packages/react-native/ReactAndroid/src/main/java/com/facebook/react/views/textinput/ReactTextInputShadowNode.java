@@ -7,8 +7,6 @@
 
 package com.facebook.react.views.textinput;
 
-import android.annotation.TargetApi;
-import android.os.Build;
 import android.text.Layout;
 import android.util.TypedValue;
 import android.view.ViewGroup;
@@ -35,11 +33,10 @@ import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.yoga.YogaNode;
 
 @VisibleForTesting
-@TargetApi(Build.VERSION_CODES.M)
 public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
     implements YogaMeasureFunction {
 
-  private int mMostRecentEventCount = UNSET;
+  private int mMostRecentEventCount = ReactConstants.UNSET;
   private @Nullable EditText mInternalEditText;
   private @Nullable ReactTextInputLocalData mLocalData;
 
@@ -53,10 +50,7 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
   public ReactTextInputShadowNode(
       @Nullable ReactTextViewManagerCallback reactTextViewManagerCallback) {
     super(reactTextViewManagerCallback);
-    mTextBreakStrategy =
-        (Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
-            ? Layout.BREAK_STRATEGY_SIMPLE
-            : Layout.BREAK_STRATEGY_HIGH_QUALITY;
+    mTextBreakStrategy = Layout.BREAK_STRATEGY_HIGH_QUALITY;
 
     initMeasureFunction();
   }
@@ -114,12 +108,11 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
     } else {
       editText.setTextSize(TypedValue.COMPLEX_UNIT_PX, mTextAttributes.getEffectiveFontSize());
 
-      if (mNumberOfLines != UNSET) {
+      if (mNumberOfLines != ReactConstants.UNSET) {
         editText.setLines(mNumberOfLines);
       }
 
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-          && editText.getBreakStrategy() != mTextBreakStrategy) {
+      if (editText.getBreakStrategy() != mTextBreakStrategy) {
         editText.setBreakStrategy(mTextBreakStrategy);
       }
     }
@@ -182,10 +175,6 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
 
   @Override
   public void setTextBreakStrategy(@Nullable String textBreakStrategy) {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-      return;
-    }
-
     if (textBreakStrategy == null || "simple".equals(textBreakStrategy)) {
       mTextBreakStrategy = Layout.BREAK_STRATEGY_SIMPLE;
     } else if ("highQuality".equals(textBreakStrategy)) {
@@ -202,7 +191,7 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
   public void onCollectExtraUpdates(UIViewOperationQueue uiViewOperationQueue) {
     super.onCollectExtraUpdates(uiViewOperationQueue);
 
-    if (mMostRecentEventCount != UNSET) {
+    if (mMostRecentEventCount != ReactConstants.UNSET) {
       ReactTextUpdate reactTextUpdate =
           new ReactTextUpdate(
               spannedFromShadowNode(

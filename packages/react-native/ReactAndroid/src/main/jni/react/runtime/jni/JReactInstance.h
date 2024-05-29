@@ -18,15 +18,16 @@
 #include <react/jni/JRuntimeScheduler.h>
 #include <react/jni/JSLoader.h>
 #include <react/jni/ReadableNativeMap.h>
-#include <react/runtime/JSEngineInstance.h>
+#include <react/runtime/JSRuntimeFactory.h>
 #include <react/runtime/PlatformTimerRegistry.h>
 #include <react/runtime/ReactInstance.h>
 
 #include "JBindingsInstaller.h"
-#include "JJSEngineInstance.h"
+#include "JJSRuntimeFactory.h"
 #include "JJSTimerExecutor.h"
 #include "JJavaTimerManager.h"
 #include "JReactExceptionManager.h"
+#include "JReactHostInspectorTarget.h"
 
 namespace facebook::react {
 
@@ -37,7 +38,7 @@ class JReactInstance : public jni::HybridClass<JReactInstance> {
 
   static jni::local_ref<jhybriddata> initHybrid(
       jni::alias_ref<jhybridobject>,
-      jni::alias_ref<JJSEngineInstance::javaobject> jsEngineInstance,
+      jni::alias_ref<JJSRuntimeFactory::javaobject> jsRuntimeFactory,
       jni::alias_ref<JavaMessageQueueThread::javaobject> jsMessageQueueThread,
       jni::alias_ref<JavaMessageQueueThread::javaobject>
           nativeMessageQueueThread,
@@ -45,7 +46,9 @@ class JReactInstance : public jni::HybridClass<JReactInstance> {
       jni::alias_ref<JJSTimerExecutor::javaobject> jsTimerExecutor,
       jni::alias_ref<JReactExceptionManager::javaobject> jReactExceptionManager,
       jni::alias_ref<JBindingsInstaller::javaobject> jBindingsInstaller,
-      bool isProfiling);
+      bool isProfiling,
+      jni::alias_ref<JReactHostInspectorTarget::javaobject>
+          jReactHostInspectorTarget);
 
   /*
    * Instantiates and returns an instance of `JSTimerExecutor`.
@@ -78,11 +81,13 @@ class JReactInstance : public jni::HybridClass<JReactInstance> {
 
   void handleMemoryPressureJs(jint level);
 
+  void unregisterFromInspector();
+
  private:
   friend HybridBase;
 
   explicit JReactInstance(
-      jni::alias_ref<JJSEngineInstance::javaobject> jsEngineInstance,
+      jni::alias_ref<JJSRuntimeFactory::javaobject> jsRuntimeFactory,
       jni::alias_ref<JavaMessageQueueThread::javaobject> jsMessageQueueThread,
       jni::alias_ref<JavaMessageQueueThread::javaobject>
           nativeMessageQueueThread,
@@ -90,7 +95,9 @@ class JReactInstance : public jni::HybridClass<JReactInstance> {
       jni::alias_ref<JJSTimerExecutor::javaobject> jsTimerExecutor,
       jni::alias_ref<JReactExceptionManager::javaobject> jReactExceptionManager,
       jni::alias_ref<JBindingsInstaller::javaobject> jBindingsInstaller,
-      bool isProfiling) noexcept;
+      bool isProfiling,
+      jni::alias_ref<JReactHostInspectorTarget::javaobject>
+          jReactHostInspectorTarget) noexcept;
 
   jni::alias_ref<CallInvokerHolder::javaobject> getJSCallInvokerHolder();
   jni::alias_ref<NativeMethodCallInvokerHolder::javaobject>
@@ -105,6 +112,8 @@ class JReactInstance : public jni::HybridClass<JReactInstance> {
       nativeMethodCallInvokerHolder_;
   jni::global_ref<JReactExceptionManager::javaobject> jReactExceptionManager_;
   jni::global_ref<JBindingsInstaller::javaobject> jBindingsInstaller_;
+
+  jlong getJavaScriptContext();
 };
 
 } // namespace facebook::react

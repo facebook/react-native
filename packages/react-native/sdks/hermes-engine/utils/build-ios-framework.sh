@@ -4,6 +4,11 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+if [ "$CI" ]; then
+  set -x
+fi
+set -e
+
 # Given a specific target, retrieve the right architecture for it
 # $1 the target you want to build. Allowed values: iphoneos, iphonesimulator, catalyst
 function get_architecture {
@@ -14,7 +19,7 @@ function get_architecture {
     elif [[ $1 == "catalyst" ]]; then
       echo "x86_64;arm64"
     else
-      echo "Error: unknown arkitecture passed $1"
+      echo "Error: unknown architecture passed $1"
       exit 1
     fi
 }

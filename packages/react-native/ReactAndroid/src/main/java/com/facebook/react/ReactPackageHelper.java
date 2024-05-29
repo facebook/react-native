@@ -7,7 +7,6 @@
 
 package com.facebook.react;
 
-import androidx.annotation.NonNull;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.ModuleHolder;
 import com.facebook.react.bridge.NativeModule;
@@ -16,7 +15,7 @@ import com.facebook.react.common.ReactConstants;
 import java.util.Iterator;
 import java.util.List;
 
-public class ReactPackageHelper {
+class ReactPackageHelper {
   /**
    * A helper method to iterate over a list of Native Modules and convert them to an iterable.
    *
@@ -27,26 +26,15 @@ public class ReactPackageHelper {
    */
   /** package */
   static Iterable<ModuleHolder> getNativeModuleIterator(
-      ReactPackage reactPackage,
-      ReactApplicationContext reactApplicationContext,
-      ReactInstanceManager reactInstanceManager) {
+      ReactPackage reactPackage, ReactApplicationContext reactApplicationContext) {
     FLog.d(
         ReactConstants.TAG,
         reactPackage.getClass().getSimpleName()
             + " is not a LazyReactPackage, falling back to old version.");
-    final List<NativeModule> nativeModules;
-    if (reactPackage instanceof ReactInstancePackage) {
-      ReactInstancePackage reactInstancePackage = (ReactInstancePackage) reactPackage;
-      nativeModules =
-          reactInstancePackage.createNativeModules(reactApplicationContext, reactInstanceManager);
-    } else {
-      nativeModules = reactPackage.createNativeModules(reactApplicationContext);
-    }
-    return new Iterable<ModuleHolder>() {
-      @NonNull
-      @Override
-      public Iterator<ModuleHolder> iterator() {
-        return new Iterator<ModuleHolder>() {
+    final List<NativeModule> nativeModules =
+        reactPackage.createNativeModules(reactApplicationContext);
+    return () ->
+        new Iterator<ModuleHolder>() {
           int position = 0;
 
           @Override
@@ -64,7 +52,5 @@ public class ReactPackageHelper {
             throw new UnsupportedOperationException("Cannot remove methods ");
           }
         };
-      }
-    };
   }
 }

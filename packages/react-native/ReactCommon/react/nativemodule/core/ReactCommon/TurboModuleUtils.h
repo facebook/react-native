@@ -26,7 +26,6 @@ struct Promise : public LongLivedObject {
   void resolve(const jsi::Value& result);
   void reject(const std::string& error);
 
-  jsi::Runtime& runtime_;
   jsi::Function resolve_;
   jsi::Function reject_;
 };
@@ -37,6 +36,7 @@ jsi::Value createPromiseAsJSIValue(
     jsi::Runtime& rt,
     PromiseSetupFunctionType&& func);
 
+// Deprecated. Use AsyncCallback instead.
 class RAIICallbackWrapperDestroyer {
  public:
   RAIICallbackWrapperDestroyer(std::weak_ptr<CallbackWrapper> callbackWrapper)

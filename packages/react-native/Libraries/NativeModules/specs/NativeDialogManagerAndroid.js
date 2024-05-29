@@ -8,41 +8,6 @@
  * @format
  */
 
-import type {TurboModule} from '../../TurboModule/RCTExport';
-
-import * as TurboModuleRegistry from '../../TurboModule/TurboModuleRegistry';
-
-/* 'buttonClicked' | 'dismissed' */
-type DialogAction = string;
-/*
-  buttonPositive = -1,
-  buttonNegative = -2,
-  buttonNeutral = -3
-*/
-type DialogButtonKey = number;
-export type DialogOptions = {|
-  title?: string,
-  message?: string,
-  buttonPositive?: string,
-  buttonNegative?: string,
-  buttonNeutral?: string,
-  items?: Array<string>,
-  cancelable?: boolean,
-|};
-
-export interface Spec extends TurboModule {
-  +getConstants: () => {|
-    +buttonClicked: DialogAction,
-    +dismissed: DialogAction,
-    +buttonPositive: DialogButtonKey,
-    +buttonNegative: DialogButtonKey,
-    +buttonNeutral: DialogButtonKey,
-  |};
-  +showAlert: (
-    config: DialogOptions,
-    onError: (error: string) => void,
-    onAction: (action: DialogAction, buttonKey?: DialogButtonKey) => void,
-  ) => void;
-}
-
-export default (TurboModuleRegistry.get<Spec>('DialogManagerAndroid'): ?Spec);
+export * from '../../../src/private/specs/modules/NativeDialogManagerAndroid';
+import NativeDialogManagerAndroid from '../../../src/private/specs/modules/NativeDialogManagerAndroid';
+export default NativeDialogManagerAndroid;

@@ -9,7 +9,6 @@
 
 #include <hermes/hermes.h>
 #include <jsireact/JSIExecutor.h>
-#include <functional>
 #include <utility>
 
 namespace facebook::react {
@@ -52,10 +51,17 @@ class HermesExecutor : public JSIExecutor {
       std::shared_ptr<ExecutorDelegate> delegate,
       std::shared_ptr<MessageQueueThread> jsQueue,
       const JSIScopedTimeoutInvoker& timeoutInvoker,
-      RuntimeInstaller runtimeInstaller);
+      RuntimeInstaller runtimeInstaller,
+      hermes::HermesRuntime& hermesRuntime);
+
+  jsinspector_modern::RuntimeTargetDelegate& getRuntimeTargetDelegate()
+      override;
 
  private:
   JSIScopedTimeoutInvoker timeoutInvoker_;
+  std::shared_ptr<jsi::Runtime> runtime_;
+  std::shared_ptr<hermes::HermesRuntime> hermesRuntime_;
+  std::unique_ptr<jsinspector_modern::RuntimeTargetDelegate> targetDelegate_;
 };
 
 } // namespace facebook::react

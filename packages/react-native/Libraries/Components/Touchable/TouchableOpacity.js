@@ -314,14 +314,22 @@ class TouchableOpacity extends React.Component<Props, State> {
     }
   }
 
+  componentDidMount(): void {
+    this.state.pressability.configure(this._createPressabilityConfig());
+  }
+
   componentWillUnmount(): void {
     this.state.pressability.reset();
+    this.state.anim.resetAnimation();
   }
 }
 
-const Touchable = (React.forwardRef((props, ref) => (
+const Touchable: React.AbstractComponent<
+  Props,
+  React.ElementRef<typeof Animated.View>,
+> = React.forwardRef((props, ref) => (
   <TouchableOpacity {...props} hostRef={ref} />
-)): React.AbstractComponent<Props, React.ElementRef<typeof Animated.View>>);
+));
 
 Touchable.displayName = 'TouchableOpacity';
 

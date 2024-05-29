@@ -7,13 +7,13 @@
 
 package com.facebook.react.turbomodule.core.interfaces
 /** All turbo modules should inherit from this interface */
-interface TurboModule {
+public interface TurboModule {
   /** Initialize the TurboModule. */
-  fun initialize()
+  public fun initialize()
 
   /**
    * Called during the turn down process of ReactHost. This method is called before React Native is
    * stopped. Override this method to clean up resources used by the TurboModule.
    */
-  fun invalidate()
+  public fun invalidate()
 }

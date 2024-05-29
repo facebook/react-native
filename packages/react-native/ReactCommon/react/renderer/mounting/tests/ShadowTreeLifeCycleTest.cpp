@@ -17,7 +17,7 @@
 #include <react/renderer/mounting/Differentiator.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
 
-#include <react/renderer/mounting/stubs.h>
+#include <react/renderer/mounting/stubs/stubs.h>
 #include <react/test_utils/Entropy.h>
 #include <react/test_utils/shadowTreeGeneration.h>
 
@@ -160,8 +160,7 @@ static void testShadowNodeTreeLifeCycle(
                    << getDebugDescription(
                           rebuiltViewTree.getRootStubView(), {});
 
-        LOG(ERROR) << "Mutations:"
-                   << "\n"
+        LOG(ERROR) << "Mutations:" << "\n"
                    << getDebugDescription(mutations, {});
 #endif
 
@@ -312,8 +311,7 @@ static void testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
                    << getDebugDescription(
                           rebuiltViewTree.getRootStubView(), {});
 
-        LOG(ERROR) << "Mutations:"
-                   << "\n"
+        LOG(ERROR) << "Mutations:" << "\n"
                    << getDebugDescription(mutations, {});
 #endif
 

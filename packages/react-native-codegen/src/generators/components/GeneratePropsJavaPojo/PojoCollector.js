@@ -11,17 +11,17 @@
 'use strict';
 
 import type {
-  ReservedPropTypeAnnotation,
-  NamedShape,
-  ObjectTypeAnnotation,
+  ArrayTypeAnnotation,
   BooleanTypeAnnotation,
-  StringTypeAnnotation,
   DoubleTypeAnnotation,
   FloatTypeAnnotation,
   Int32TypeAnnotation,
-  PropTypeAnnotation,
   MixedTypeAnnotation,
-  ArrayTypeAnnotation,
+  NamedShape,
+  ObjectTypeAnnotation,
+  PropTypeAnnotation,
+  ReservedPropTypeAnnotation,
+  StringTypeAnnotation,
 } from '../../../CodegenSchema';
 
 const {capitalize} = require('../../Utils');

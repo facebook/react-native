@@ -11,10 +11,11 @@
 #include "MountItem.h"
 #include "StateWrapperImpl.h"
 
+#include <cxxreact/SystraceSection.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/jni/ReadableNativeMap.h>
 #include <react/renderer/components/scrollview/ScrollViewProps.h>
 #include <react/renderer/core/conversions.h>
-#include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/mounting/MountingTransaction.h>
 #include <react/renderer/mounting/ShadowView.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
@@ -30,22 +31,10 @@
 
 namespace facebook::react {
 
-constexpr static auto kReactFeatureFlagsJavaDescriptor =
-    "com/facebook/react/config/ReactFeatureFlags";
-
-static bool getFeatureFlagValue(const char* name) {
-  static const auto reactFeatureFlagsClass =
-      jni::findClassStatic(kReactFeatureFlagsJavaDescriptor);
-  const auto field = reactFeatureFlagsClass->getStaticField<jboolean>(name);
-  return reactFeatureFlagsClass->getStaticFieldValue(field);
-}
-
 FabricMountingManager::FabricMountingManager(
     std::shared_ptr<const ReactNativeConfig>& config,
     jni::global_ref<JFabricUIManager::javaobject>& javaUIManager)
-    : javaUIManager_(javaUIManager),
-      reduceDeleteCreateMutation_(
-          getFeatureFlagValue("reduceDeleteCreateMutation")) {}
+    : javaUIManager_(javaUIManager) {}
 
 void FabricMountingManager::onSurfaceStart(SurfaceId surfaceId) {
   std::lock_guard lock(allocatedViewsMutex_);
@@ -74,7 +63,9 @@ static inline int getIntBufferSizeForType(CppMountItem::Type mountItemType) {
     case CppMountItem::Type::UpdatePadding:
       return 5; // tag, top, left, bottom, right
     case CppMountItem::Type::UpdateLayout:
-      return 7; // tag, parentTag, x, y, w, h, DisplayType
+      return ReactNativeFeatureFlags::setAndroidLayoutDirection()
+          ? 8 // tag, parentTag, x, y, w, h, DisplayType, LayoutDirection
+          : 7; // tag, parentTag, x, y, w, h, DisplayType
     case CppMountItem::Type::UpdateOverflowInset:
       return 5; // tag, left, top, right, bottom
     case CppMountItem::Undefined:
@@ -85,7 +76,7 @@ static inline int getIntBufferSizeForType(CppMountItem::Type mountItemType) {
 
 static inline void updateBufferSizes(
     CppMountItem::Type mountItemType,
-    int numInstructions,
+    size_t numInstructions,
     int& batchMountItemIntsSize,
     int& batchMountItemObjectsSize) {
   if (numInstructions == 0) {
@@ -182,7 +173,7 @@ static inline void computeBufferSizes(
 
 static inline void writeIntBufferTypePreamble(
     int mountItemType,
-    int numItems,
+    size_t numItems,
     _JNIEnv* env,
     jintArray& intBufferArray,
     int& intBufferPosition) {
@@ -193,7 +184,7 @@ static inline void writeIntBufferTypePreamble(
     intBufferPosition += 1;
   } else {
     temp[0] = mountItemType | CppMountItem::Type::Multiple;
-    temp[1] = numItems;
+    temp[1] = static_cast<jint>(numItems);
     env->SetIntArrayRegion(intBufferArray, intBufferPosition, 2, temp);
     intBufferPosition += 2;
   }
@@ -288,30 +279,6 @@ void FabricMountingManager::executeMount(
         case ShadowViewMutation::Create: {
           bool shouldCreateView =
               !allocatedViewTags.contains(newChildShadowView.tag);
-          if (reduceDeleteCreateMutation_) {
-            // Detect DELETE...CREATE situation on the same node and do NOT push
-            // back to the mount items. This is an edge case that may happen
-            // when for example animation runs while commit happened, and we
-            // want to filter them out here to capture all possible sources of
-            // such mutations. The re-ordering logic here assumes no
-            // DELETE...CREATE in the mutations, as we will re-order mutations
-            // and batch all DELETE instructions in the end.
-            auto it = std::remove_if(
-                cppDeleteMountItems.begin(),
-                cppDeleteMountItems.end(),
-                [&](auto& deletedMountItem) -> bool {
-                  return deletedMountItem.oldChildShadowView.tag ==
-                      newChildShadowView.tag;
-                });
-            bool hasDeletedViewsWithSameTag = it != cppDeleteMountItems.end();
-            cppDeleteMountItems.erase(it, cppDeleteMountItems.end());
-
-            if (hasDeletedViewsWithSameTag) {
-              shouldCreateView = false;
-              LOG(ERROR)
-                  << "XIN: Detect DELETE...CREATE on the same tag from mutations in the same batch. The DELETE and CREATE mutations are removed before sending to the native platforms";
-            }
-          }
 
           if (shouldCreateView) {
             cppCommonMountItems.push_back(
@@ -531,7 +498,7 @@ void FabricMountingManager::executeMount(
   int intBufferPosition = 0;
   int objBufferPosition = 0;
   int prevMountItemType = -1;
-  jint temp[7];
+  jint temp[8];
   for (int i = 0; i < cppCommonMountItems.size(); i++) {
     const auto& mountItem = cppCommonMountItems[i];
     const auto& mountItemType = mountItem.type;
@@ -691,7 +658,7 @@ void FabricMountingManager::executeMount(
         intBufferPosition);
 
     for (const auto& mountItem : cppUpdateLayoutMountItems) {
-      auto layoutMetrics = mountItem.newChildShadowView.layoutMetrics;
+      const auto& layoutMetrics = mountItem.newChildShadowView.layoutMetrics;
       auto pointScaleFactor = layoutMetrics.pointScaleFactor;
       auto frame = layoutMetrics.frame;
 
@@ -699,8 +666,8 @@ void FabricMountingManager::executeMount(
       int y = round(scale(frame.origin.y, pointScaleFactor));
       int w = round(scale(frame.size.width, pointScaleFactor));
       int h = round(scale(frame.size.height, pointScaleFactor));
-      int displayType =
-          toInt(mountItem.newChildShadowView.layoutMetrics.displayType);
+      int displayType = toInt(layoutMetrics.displayType);
+      int layoutDirection = toInt(layoutMetrics.layoutDirection);
 
       temp[0] = mountItem.newChildShadowView.tag;
       temp[1] = mountItem.parentShadowView.tag;
@@ -709,8 +676,15 @@ void FabricMountingManager::executeMount(
       temp[4] = w;
       temp[5] = h;
       temp[6] = displayType;
-      env->SetIntArrayRegion(intBufferArray, intBufferPosition, 7, temp);
-      intBufferPosition += 7;
+
+      if (ReactNativeFeatureFlags::setAndroidLayoutDirection()) {
+        temp[7] = layoutDirection;
+        env->SetIntArrayRegion(intBufferArray, intBufferPosition, 8, temp);
+        intBufferPosition += 8;
+      } else {
+        env->SetIntArrayRegion(intBufferArray, intBufferPosition, 7, temp);
+        intBufferPosition += 7;
+      }
     }
   }
   if (!cppUpdateOverflowInsetMountItems.empty()) {
@@ -811,20 +785,22 @@ void FabricMountingManager::executeMount(
 }
 
 void FabricMountingManager::preallocateShadowView(
-    SurfaceId surfaceId,
-    const ShadowView& shadowView) {
+    const ShadowNode& shadowNode) {
   {
     std::lock_guard lock(allocatedViewsMutex_);
-    auto allocatedViewsIterator = allocatedViewRegistry_.find(surfaceId);
+    auto allocatedViewsIterator =
+        allocatedViewRegistry_.find(shadowNode.getSurfaceId());
     if (allocatedViewsIterator == allocatedViewRegistry_.end()) {
       return;
     }
     auto& allocatedViews = allocatedViewsIterator->second;
-    if (allocatedViews.find(shadowView.tag) != allocatedViews.end()) {
+    if (allocatedViews.find(shadowNode.getTag()) != allocatedViews.end()) {
       return;
     }
-    allocatedViews.insert(shadowView.tag);
+    allocatedViews.insert(shadowNode.getTag());
   }
+
+  auto shadowView = ShadowView(shadowNode);
 
   bool isLayoutableShadowNode = shadowView.layoutMetrics != EmptyLayoutMetrics;
 
@@ -853,7 +829,7 @@ void FabricMountingManager::preallocateShadowView(
 
   preallocateView(
       javaUIManager_,
-      surfaceId,
+      shadowNode.getSurfaceId(),
       shadowView.tag,
       component.get(),
       props.get(),

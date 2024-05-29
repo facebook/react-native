@@ -21,7 +21,7 @@ import java.util.List;
  *
  * @see Task#whenAll(java.util.Collection)
  */
-public class AggregateException extends Exception {
+class AggregateException extends Exception {
   private static final long serialVersionUID = 1L;
 
   private static final String DEFAULT_MESSAGE = "There were multiple errors.";
@@ -103,7 +103,9 @@ public class AggregateException extends Exception {
     }
   }
 
-  /** @deprecated Please use {@link #getInnerThrowables()} instead. */
+  /**
+   * @deprecated Please use {@link #getInnerThrowables()} instead.
+   */
   @Deprecated
   public @NonNull List<Exception> getErrors() {
     List<Exception> errors = new ArrayList<Exception>();
@@ -121,7 +123,9 @@ public class AggregateException extends Exception {
     return errors;
   }
 
-  /** @deprecated Please use {@link #getInnerThrowables()} instead. */
+  /**
+   * @deprecated Please use {@link #getInnerThrowables()} instead.
+   */
   @Deprecated
   public @NonNull Throwable[] getCauses() {
     return innerThrowables.toArray(new Throwable[innerThrowables.size()]);

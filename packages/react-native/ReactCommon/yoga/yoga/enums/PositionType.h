@@ -22,20 +22,15 @@ enum class PositionType : uint8_t {
 };
 
 template <>
-constexpr inline int32_t ordinalCount<PositionType>() {
+constexpr int32_t ordinalCount<PositionType>() {
   return 3;
-} 
+}
 
-template <>
-constexpr inline int32_t bitCount<PositionType>() {
-  return 2;
-} 
-
-constexpr inline PositionType scopedEnum(YGPositionType unscoped) {
+constexpr PositionType scopedEnum(YGPositionType unscoped) {
   return static_cast<PositionType>(unscoped);
 }
 
-constexpr inline YGPositionType unscopedEnum(PositionType scoped) {
+constexpr YGPositionType unscopedEnum(PositionType scoped) {
   return static_cast<YGPositionType>(scoped);
 }
 

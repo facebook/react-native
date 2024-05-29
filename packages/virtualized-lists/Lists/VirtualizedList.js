@@ -8,12 +8,7 @@
  * @format
  */
 
-import type {ScrollResponderType} from 'react-native/Libraries/Components/ScrollView/ScrollView';
-import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
-import type {
-  LayoutEvent,
-  ScrollEvent,
-} from 'react-native/Libraries/Types/CoreEventTypes';
+import type {CellMetricProps, ListOrientation} from './ListMetricsAggregator';
 import type {ViewToken} from './ViewabilityHelper';
 import type {
   Item,
@@ -22,17 +17,13 @@ import type {
   RenderItemType,
   Separators,
 } from './VirtualizedListProps';
-import type {CellMetricProps, ListOrientation} from './ListMetricsAggregator';
+import type {ScrollResponderType} from 'react-native/Libraries/Components/ScrollView/ScrollView';
+import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
+import type {
+  LayoutEvent,
+  ScrollEvent,
+} from 'react-native/Libraries/Types/CoreEventTypes';
 
-import {
-  I18nManager,
-  Platform,
-  RefreshControl,
-  ScrollView,
-  View,
-  StyleSheet,
-  findNodeHandle,
-} from 'react-native';
 import Batchinator from '../Interaction/Batchinator';
 import clamp from '../Utilities/clamp';
 import infoLog from '../Utilities/infoLog';
@@ -49,21 +40,29 @@ import {
   VirtualizedListContextProvider,
 } from './VirtualizedListContext.js';
 import {
+  horizontalOrDefault,
+  initialNumToRenderOrDefault,
+  maxToRenderPerBatchOrDefault,
+  onEndReachedThresholdOrDefault,
+  onStartReachedThresholdOrDefault,
+  windowSizeOrDefault,
+} from './VirtualizedListProps';
+import {
   computeWindowedRenderLimits,
   keyExtractor as defaultKeyExtractor,
 } from './VirtualizeUtils';
 import invariant from 'invariant';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
-
 import {
-  horizontalOrDefault,
-  initialNumToRenderOrDefault,
-  maxToRenderPerBatchOrDefault,
-  onStartReachedThresholdOrDefault,
-  onEndReachedThresholdOrDefault,
-  windowSizeOrDefault,
-} from './VirtualizedListProps';
+  I18nManager,
+  Platform,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  View,
+  findNodeHandle,
+} from 'react-native';
 
 export type {RenderItemProps, RenderItemType, Separators};
 
@@ -90,19 +89,6 @@ type State = {
   // When > 0 the scroll position available in JS is considered stale and should not be used.
   pendingScrollUpdateCount: number,
 };
-
-function findLastWhere<T>(
-  arr: $ReadOnlyArray<T>,
-  predicate: (element: T) => boolean,
-): T | null {
-  for (let i = arr.length - 1; i >= 0; i--) {
-    if (predicate(arr[i])) {
-      return arr[i];
-    }
-  }
-
-  return null;
-}
 
 function getScrollingThreshold(threshold: number, visibleLength: number) {
   return (threshold * visibleLength) / 2;
@@ -825,7 +811,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
           key={key}
           prevCellKey={prevCellKey}
           onUpdateSeparators={this._onUpdateSeparators}
-          onCellFocusCapture={e => this._onCellFocusCapture(key)}
+          onCellFocusCapture={this._onCellFocusCapture}
           onUnmount={this._onCellUnmount}
           ref={ref => {
             this._cellRefs[key] = ref;
@@ -969,10 +955,12 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
           {React.cloneElement(element, {
             onLayout: (event: LayoutEvent) => {
               this._onLayoutEmpty(event);
+              // $FlowFixMe[prop-missing] React.Element internal inspection
               if (element.props.onLayout) {
                 element.props.onLayout(event);
               }
             },
+            // $FlowFixMe[prop-missing] React.Element internal inspection
             style: StyleSheet.compose(inversionStyle, element.props.style),
           })}
         </VirtualizedListCellContextProvider>,
@@ -986,7 +974,8 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       const spacerKey = this._getSpacerKey(!horizontal);
 
       const renderRegions = this.state.renderMask.enumerateRegions();
-      const lastSpacer = findLastWhere(renderRegions, r => r.isSpacer);
+      const lastRegion = renderRegions[renderRegions.length - 1];
+      const lastSpacer = lastRegion?.isSpacer ? lastRegion : null;
 
       for (const section of renderRegions) {
         if (section.isSpacer) {
@@ -1146,7 +1135,6 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
               this.context == null &&
               this.props.scrollEnabled !== false
             ) {
-              // TODO (T46547044): use React.warn once 16.9 is sync'd: https://github.com/facebook/react/pull/15170
               console.error(
                 'VirtualizedLists should never be nested inside plain ScrollViews with the same ' +
                   'orientation because it can break windowing and other functionality - use another ' +
@@ -1255,8 +1243,10 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
   _defaultRenderScrollComponent = props => {
     const onRefresh = props.onRefresh;
     if (this._isNestedWithSameOrientation()) {
-      // $FlowFixMe[prop-missing] - Typing ReactNativeComponent revealed errors
-      return <View {...props} />;
+      // Prevent VirtualizedList._onContentSizeChange from being triggered by a bubbling onContentSizeChange event.
+      // This could lead to internal inconsistencies within VirtualizedList.
+      const {onContentSizeChange, ...otherProps} = props;
+      return <View {...otherProps} />;
     } else if (onRefresh) {
       invariant(
         typeof props.refreshing === 'boolean',
@@ -1302,45 +1292,19 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       orientation: this._orientation(),
     });
 
-    // In RTL layout we need parent content length to calculate the offset of a
-    // cell from the start of the list. In Paper, layout events are bottom up,
-    // so we do not know this yet, and must defer calculation until after
-    // `onContentSizeChange` is called.
-    const deferCellMetricCalculation =
-      this._listMetrics.getLayoutEventDirection() === 'bottom-up' &&
-      this._listMetrics.needsContentLengthForCellMetrics();
-
-    // Note: In Paper RTL logical position may have changed when
-    // `layoutHasChanged` is false if a cell maintains same X/Y coordinates,
-    // but contentLength shifts. This will be corrected by
-    // `onContentSizeChange` triggering a cell update.
     if (layoutHasChanged) {
-      this._scheduleCellsToRenderUpdate({
-        allowImmediateExecution: !deferCellMetricCalculation,
-      });
+      this._scheduleCellsToRenderUpdate();
     }
 
     this._triggerRemeasureForChildListsInCell(cellKey);
-
     this._computeBlankness();
-
-    if (deferCellMetricCalculation) {
-      if (!this._pendingViewabilityUpdate) {
-        this._pendingViewabilityUpdate = true;
-        setTimeout(() => {
-          this._updateViewableItems(this.props, this.state.cellsAroundViewport);
-          this._pendingViewabilityUpdate = false;
-        }, 0);
-      }
-    } else {
-      this._updateViewableItems(this.props, this.state.cellsAroundViewport);
-    }
+    this._updateViewableItems(this.props, this.state.cellsAroundViewport);
   };
 
-  _onCellFocusCapture(cellKey: string) {
+  _onCellFocusCapture = (cellKey: string) => {
     this._lastFocusedCellKey = cellKey;
     this._updateCellsToRender();
-  }
+  };
 
   _onCellUnmount = (cellKey: string) => {
     delete this._cellRefs[cellKey];
@@ -1584,7 +1548,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     // Next check if the user just scrolled within the start threshold
     // and call onStartReached only once for a given content length,
     // and only if onEndReached is not being executed
-    else if (
+    if (
       onStartReached != null &&
       this.state.cellsAroundViewport.first === 0 &&
       isWithinStartThreshold &&
@@ -1596,13 +1560,11 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
 
     // If the user scrolls away from the start or end and back again,
     // cause onStartReached or onEndReached to be triggered again
-    else {
-      this._sentStartForContentLength = isWithinStartThreshold
-        ? this._sentStartForContentLength
-        : 0;
-      this._sentEndForContentLength = isWithinEndThreshold
-        ? this._sentEndForContentLength
-        : 0;
+    if (!isWithinStartThreshold) {
+      this._sentStartForContentLength = 0;
+    }
+    if (!isWithinEndThreshold) {
+      this._sentEndForContentLength = 0;
     }
   }
 
@@ -1765,9 +1727,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     }
   }
 
-  _scheduleCellsToRenderUpdate(opts?: {allowImmediateExecution?: boolean}) {
-    const allowImmediateExecution = opts?.allowImmediateExecution ?? true;
-
+  _scheduleCellsToRenderUpdate() {
     // Only trigger high-priority updates if we've actually rendered cells,
     // and with that size estimate, accurately compute how many cells we should render.
     // Otherwise, it would just render as many cells as it can (of zero dimension),
@@ -1776,9 +1736,9 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     // If this is triggered in an `componentDidUpdate` followed by a hiPri cellToRenderUpdate
     // We shouldn't do another hipri cellToRenderUpdate
     if (
-      allowImmediateExecution &&
+      (this._listMetrics.getAverageCellLength() > 0 ||
+        this.props.getItemLayout != null) &&
       this._shouldRenderWithPriority() &&
-      (this._listMetrics.getAverageCellLength() || this.props.getItemLayout) &&
       !this._hiPriInProgress
     ) {
       this._hiPriInProgress = true;

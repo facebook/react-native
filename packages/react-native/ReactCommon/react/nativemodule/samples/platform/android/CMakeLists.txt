@@ -12,7 +12,6 @@ add_compile_options(
         -std=c++20
         -Wall
         -Wpedantic
-        -Wno-gnu-zero-variadic-macro-arguments
         -DFOLLY_NO_CONFIG=1
         -DLOG_TAG=\"ReactNative\")
 

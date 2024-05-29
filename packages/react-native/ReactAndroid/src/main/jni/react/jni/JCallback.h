@@ -29,16 +29,9 @@ class JCxxCallbackImpl : public jni::HybridClass<JCxxCallbackImpl, JCallback> {
       "Lcom/facebook/react/bridge/CxxCallbackImpl;";
 
   static void registerNatives() {
-#if __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
-#endif
     javaClassStatic()->registerNatives({
         makeNativeMethod("nativeInvoke", JCxxCallbackImpl::invoke),
     });
-#if __clang__
-#pragma clang diagnostic pop
-#endif
   }
 
  private:

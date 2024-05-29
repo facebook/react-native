@@ -7,65 +7,25 @@
 
 package com.facebook.react.bridge;
 
-import static com.facebook.infer.annotation.ThreadConfined.ANY;
-
 import android.app.Activity;
 import androidx.annotation.Nullable;
-import com.facebook.common.logging.FLog;
-import com.facebook.infer.annotation.Assertions;
-import com.facebook.infer.annotation.ThreadConfined;
-import com.facebook.react.common.ReactConstants;
-import com.facebook.react.common.build.ReactBuildConfig;
+import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
 
 /**
  * Base class for Catalyst native modules that require access to the {@link ReactContext} instance.
  */
+@DeprecatedInNewArchitecture(
+    message =
+        "ReactContextBaseJavaModule will be deprecated in new Architecture of React Native, use"
+            + " BaseJavaModule instead")
 public abstract class ReactContextBaseJavaModule extends BaseJavaModule {
 
-  private final @Nullable ReactApplicationContext mReactApplicationContext;
-
   public ReactContextBaseJavaModule() {
-    mReactApplicationContext = null;
+    super(null);
   }
 
   public ReactContextBaseJavaModule(@Nullable ReactApplicationContext reactContext) {
-    mReactApplicationContext = reactContext;
-  }
-
-  /** Subclasses can use this method to access catalyst context passed as a constructor. */
-  protected final ReactApplicationContext getReactApplicationContext() {
-    return Assertions.assertNotNull(
-        mReactApplicationContext,
-        "Tried to get ReactApplicationContext even though NativeModule wasn't instantiated with one");
-  }
-
-  /**
-   * Subclasses can use this method to access catalyst context passed as a constructor. Use this
-   * version to check that the underlying CatalystInstance is active before returning, and
-   * automatically have SoftExceptions or debug information logged for you. Consider using this
-   * whenever calling ReactApplicationContext methods that require the Catalyst instance be alive.
-   *
-   * <p>This can return null at any time, but especially during teardown methods it's
-   * possible/likely.
-   *
-   * <p>Threading implications have not been analyzed fully yet, so assume this method is not
-   * thread-safe.
-   */
-  @ThreadConfined(ANY)
-  protected @Nullable final ReactApplicationContext getReactApplicationContextIfActiveOrWarn() {
-    if (mReactApplicationContext.hasActiveReactInstance()) {
-      return mReactApplicationContext;
-    }
-
-    // We want to collect data about how often this happens, but SoftExceptions will cause a crash
-    // in debug mode, which isn't usually desirable.
-    String msg = "Catalyst Instance has already disappeared: requested by " + this.getName();
-    if (ReactBuildConfig.DEBUG) {
-      FLog.w(ReactConstants.TAG, msg);
-    } else {
-      ReactSoftExceptionLogger.logSoftException(ReactConstants.TAG, new RuntimeException(msg));
-    }
-    return null;
+    super(reactContext);
   }
 
   /**
@@ -78,7 +38,9 @@ public abstract class ReactContextBaseJavaModule extends BaseJavaModule {
    * call this method whenever you actually need the Activity and make sure to check for {@code
    * null}.
    */
+  @DeprecatedInNewArchitecture(
+      message = "Use 'getReactApplicationContext.getCurrentActivity() instead.")
   protected @Nullable final Activity getCurrentActivity() {
-    return mReactApplicationContext.getCurrentActivity();
+    return getReactApplicationContext().getCurrentActivity();
   }
 }

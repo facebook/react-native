@@ -12,51 +12,52 @@
 namespace facebook::yoga {
 
 static inline bool sizeIsExactAndMatchesOldMeasuredSize(
-    MeasureMode sizeMode,
+    SizingMode sizeMode,
     float size,
     float lastComputedSize) {
-  return sizeMode == MeasureMode::Exactly &&
+  return sizeMode == SizingMode::StretchFit &&
       yoga::inexactEquals(size, lastComputedSize);
 }
 
-static inline bool oldSizeIsUnspecifiedAndStillFits(
-    MeasureMode sizeMode,
+static inline bool oldSizeIsMaxContentAndStillFits(
+    SizingMode sizeMode,
     float size,
-    MeasureMode lastSizeMode,
+    SizingMode lastSizeMode,
     float lastComputedSize) {
-  return sizeMode == MeasureMode::AtMost &&
-      lastSizeMode == MeasureMode::Undefined &&
+  return sizeMode == SizingMode::FitContent &&
+      lastSizeMode == SizingMode::MaxContent &&
       (size >= lastComputedSize || yoga::inexactEquals(size, lastComputedSize));
 }
 
-static inline bool newMeasureSizeIsStricterAndStillValid(
-    MeasureMode sizeMode,
+static inline bool newSizeIsStricterAndStillValid(
+    SizingMode sizeMode,
     float size,
-    MeasureMode lastSizeMode,
+    SizingMode lastSizeMode,
     float lastSize,
     float lastComputedSize) {
-  return lastSizeMode == MeasureMode::AtMost &&
-      sizeMode == MeasureMode::AtMost && !std::isnan(lastSize) &&
-      !std::isnan(size) && !std::isnan(lastComputedSize) && lastSize > size &&
+  return lastSizeMode == SizingMode::FitContent &&
+      sizeMode == SizingMode::FitContent && yoga::isDefined(lastSize) &&
+      yoga::isDefined(size) && yoga::isDefined(lastComputedSize) &&
+      lastSize > size &&
       (lastComputedSize <= size || yoga::inexactEquals(size, lastComputedSize));
 }
 
 bool canUseCachedMeasurement(
-    const MeasureMode widthMode,
+    const SizingMode widthMode,
     const float availableWidth,
-    const MeasureMode heightMode,
+    const SizingMode heightMode,
     const float availableHeight,
-    const MeasureMode lastWidthMode,
+    const SizingMode lastWidthMode,
     const float lastAvailableWidth,
-    const MeasureMode lastHeightMode,
+    const SizingMode lastHeightMode,
     const float lastAvailableHeight,
     const float lastComputedWidth,
     const float lastComputedHeight,
     const float marginRow,
     const float marginColumn,
     const yoga::Config* const config) {
-  if ((!std::isnan(lastComputedHeight) && lastComputedHeight < 0) ||
-      (!std::isnan(lastComputedWidth) && lastComputedWidth < 0)) {
+  if ((yoga::isDefined(lastComputedHeight) && lastComputedHeight < 0) ||
+      ((yoga::isDefined(lastComputedWidth)) && lastComputedWidth < 0)) {
     return false;
   }
 
@@ -87,33 +88,32 @@ bool canUseCachedMeasurement(
       hasSameWidthSpec ||
       sizeIsExactAndMatchesOldMeasuredSize(
           widthMode, availableWidth - marginRow, lastComputedWidth) ||
-      oldSizeIsUnspecifiedAndStillFits(
+      oldSizeIsMaxContentAndStillFits(
           widthMode,
           availableWidth - marginRow,
           lastWidthMode,
           lastComputedWidth) ||
-      newMeasureSizeIsStricterAndStillValid(
+      newSizeIsStricterAndStillValid(
           widthMode,
           availableWidth - marginRow,
           lastWidthMode,
           lastAvailableWidth,
           lastComputedWidth);
 
-  const bool heightIsCompatible =
-      hasSameHeightSpec ||
+  const bool heightIsCompatible = hasSameHeightSpec ||
       sizeIsExactAndMatchesOldMeasuredSize(
-          heightMode, availableHeight - marginColumn, lastComputedHeight) ||
-      oldSizeIsUnspecifiedAndStillFits(
-          heightMode,
-          availableHeight - marginColumn,
-          lastHeightMode,
-          lastComputedHeight) ||
-      newMeasureSizeIsStricterAndStillValid(
-          heightMode,
-          availableHeight - marginColumn,
-          lastHeightMode,
-          lastAvailableHeight,
-          lastComputedHeight);
+                                      heightMode,
+                                      availableHeight - marginColumn,
+                                      lastComputedHeight) ||
+      oldSizeIsMaxContentAndStillFits(heightMode,
+                                      availableHeight - marginColumn,
+                                      lastHeightMode,
+                                      lastComputedHeight) ||
+      newSizeIsStricterAndStillValid(heightMode,
+                                     availableHeight - marginColumn,
+                                     lastHeightMode,
+                                     lastAvailableHeight,
+                                     lastComputedHeight);
 
   return widthIsCompatible && heightIsCompatible;
 }

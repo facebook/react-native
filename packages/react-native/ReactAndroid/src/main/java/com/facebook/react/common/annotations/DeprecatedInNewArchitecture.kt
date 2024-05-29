@@ -13,4 +13,4 @@ package com.facebook.react.common.annotations
  */
 @Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
-annotation class DeprecatedInNewArchitecture()
+public annotation class DeprecatedInNewArchitecture(val message: String = "")

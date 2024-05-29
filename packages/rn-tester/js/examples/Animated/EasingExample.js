@@ -9,17 +9,19 @@
  */
 
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
-import * as React from 'react';
-import RNTesterButton from '../../components/RNTesterButton';
-import ToggleNativeDriver from './utils/ToggleNativeDriver';
+
 import RNTConfigurationBlock from '../../components/RNTConfigurationBlock';
+import RNTesterButton from '../../components/RNTesterButton';
+import {RNTesterThemeContext} from '../../components/RNTesterTheme';
+import ToggleNativeDriver from './utils/ToggleNativeDriver';
+import * as React from 'react';
 import {
-  Text,
-  StyleSheet,
-  View,
   Animated,
-  SectionList,
   Easing,
+  SectionList,
+  StyleSheet,
+  Text,
+  View,
 } from 'react-native';
 
 type Props = $ReadOnly<{||}>;
@@ -102,10 +104,14 @@ function EasingItem({
     },
   ];
 
+  const theme = React.useContext(RNTesterThemeContext);
+
   return (
     <View style={styles.itemContainer}>
       <View style={styles.itemMeta}>
-        <Text style={styles.itemTitle}>{item.title}</Text>
+        <Text style={[styles.itemTitle, {color: theme.SecondaryLabelColor}]}>
+          {item.title}
+        </Text>
         <RNTesterButton
           onPress={() => {
             opacityAndScale.current.setValue(0);
@@ -135,7 +141,7 @@ function EasingExample(props: Props): React.Node {
       <SectionList
         sections={easingSections}
         renderItem={info => {
-          const item = (info.item: EasingListItem);
+          const item: EasingListItem = info.item;
 
           return (
             <EasingItem

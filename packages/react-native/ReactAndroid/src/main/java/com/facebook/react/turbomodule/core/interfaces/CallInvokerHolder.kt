@@ -14,4 +14,4 @@ package com.facebook.react.turbomodule.core.interfaces
  * This interface represents the opaque Java object that contains a pointer to and instance of
  * CallInvoker.
  */
-interface CallInvokerHolder
+public interface CallInvokerHolder

@@ -91,6 +91,12 @@ static TextAttributes convertRawProp(
       "textTransform",
       sourceTextAttributes.textTransform,
       defaultTextAttributes.textTransform);
+  textAttributes.textAlignVertical = convertRawProp(
+      context,
+      rawProps,
+      "textAlignVertical",
+      sourceTextAttributes.textAlignVertical,
+      defaultTextAttributes.textAlignVertical);
 
   // Paragraph
   textAttributes.lineHeight = convertRawProp(
@@ -165,6 +171,12 @@ static TextAttributes convertRawProp(
       "isHighlighted",
       sourceTextAttributes.isHighlighted,
       defaultTextAttributes.isHighlighted);
+  textAttributes.isPressable = convertRawProp(
+      context,
+      rawProps,
+      "isPressable",
+      sourceTextAttributes.isPressable,
+      defaultTextAttributes.isPressable);
 
   // In general, we want this class to access props in the same order
   // that ViewProps accesses them in, so that RawPropParser can optimize
@@ -260,6 +272,12 @@ void BaseTextProps::setProp(
         defaults,
         value,
         textAttributes,
+        textAlignVertical,
+        "textAlignVertical");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults,
+        value,
+        textAttributes,
         baseWritingDirection,
         "baseWritingDirection");
     REBUILD_FIELD_SWITCH_CASE(
@@ -294,6 +312,8 @@ void BaseTextProps::setProp(
         defaults, value, textAttributes, textShadowColor, "textShadowColor");
     REBUILD_FIELD_SWITCH_CASE(
         defaults, value, textAttributes, isHighlighted, "isHighlighted");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults, value, textAttributes, isPressable, "isPressable");
     REBUILD_FIELD_SWITCH_CASE(
         defaults,
         value,

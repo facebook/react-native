@@ -7,11 +7,16 @@
 
 package com.facebook.react.uimanager.events;
 
+import android.view.Choreographer;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactNoCrashSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
+import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UiThreadUtil;
-import com.facebook.react.modules.core.ChoreographerCompat;
 import com.facebook.react.modules.core.ReactChoreographer;
+import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.systrace.Systrace;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -20,6 +25,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * A singleton class that overrides {@link EventDispatcher} with no-op methods, to be used by
  * callers that expect an EventDispatcher when the instance doesn't exist.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class FabricEventDispatcher implements EventDispatcher, LifecycleEventListener {
   private final ReactEventEmitter mReactEventEmitter;
   private final ReactApplicationContext mReactContext;
@@ -38,13 +44,44 @@ public class FabricEventDispatcher implements EventDispatcher, LifecycleEventLis
 
   @Override
   public void dispatchEvent(Event event) {
-    event.dispatchModern(mReactEventEmitter);
     for (EventDispatcherListener listener : mListeners) {
       listener.onEventDispatch(event);
+    }
+    if (event.experimental_isSynchronous()) {
+      dispatchSynchronous(event);
+    } else {
+      event.dispatchModern(mReactEventEmitter);
     }
 
     event.dispose();
     maybePostFrameCallbackFromNonUI();
+  }
+
+  private void dispatchSynchronous(Event event) {
+    Systrace.beginSection(
+        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+        "FabricEventDispatcher.dispatchSynchronous('" + event.getEventName() + "')");
+    try {
+      UIManager fabricUIManager = UIManagerHelper.getUIManager(mReactContext, UIManagerType.FABRIC);
+      if (fabricUIManager instanceof SynchronousEventReceiver) {
+        ((SynchronousEventReceiver) fabricUIManager)
+            .receiveEvent(
+                event.getSurfaceId(),
+                event.getViewTag(),
+                event.getEventName(),
+                event.canCoalesce(),
+                event.getEventData(),
+                event.getEventCategory(),
+                true);
+      } else {
+        ReactSoftExceptionLogger.logSoftException(
+            "FabricEventDispatcher",
+            new ReactNoCrashSoftException(
+                "Fabric UIManager expected to implement SynchronousEventReceiver."));
+      }
+    } finally {
+      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+    }
   }
 
   public void dispatchAllEvents() {
@@ -125,7 +162,7 @@ public class FabricEventDispatcher implements EventDispatcher, LifecycleEventLis
     mReactEventEmitter.unregister(uiManagerType);
   }
 
-  private class ScheduleDispatchFrameCallback extends ChoreographerCompat.FrameCallback {
+  private class ScheduleDispatchFrameCallback implements Choreographer.FrameCallback {
     private volatile boolean mIsPosted = false;
     private boolean mShouldStop = false;
 

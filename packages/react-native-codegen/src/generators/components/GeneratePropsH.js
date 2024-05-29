@@ -10,27 +10,24 @@
 
 'use strict';
 import type {ComponentShape} from '../../CodegenSchema';
-
-const {
-  getNativeTypeFromAnnotation,
-  getLocalImports,
-} = require('./ComponentsGeneratorUtils.js');
-
-const {
-  convertDefaultTypeToString,
-  getEnumMaskName,
-  generateStructName,
-  toIntEnumValueName,
-} = require('./CppHelpers.js');
-
-const {getEnumName, toSafeCppString} = require('../Utils');
-
 import type {
   ExtendsPropsShape,
   NamedShape,
   PropTypeAnnotation,
   SchemaType,
 } from '../../CodegenSchema';
+
+const {getEnumName, toSafeCppString} = require('../Utils');
+const {
+  getLocalImports,
+  getNativeTypeFromAnnotation,
+} = require('./ComponentsGeneratorUtils.js');
+const {
+  generateStructName,
+  getDefaultInitializerString,
+  getEnumMaskName,
+  toIntEnumValueName,
+} = require('./CppHelpers.js');
 
 // File path -> contents
 type FilesOutput = Map<string, string>;
@@ -55,13 +52,11 @@ const FileTemplate = ({
 
 ${imports}
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 ${componentClasses}
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 `;
 
 const ClassTemplate = ({
@@ -219,6 +214,10 @@ const ArrayEnumTemplate = ({
   `
 using ${enumMask} = uint32_t;
 
+struct ${enumMask}Wrapped {
+  ${enumMask} value;
+};
+
 enum class ${enumName}: ${enumMask} {
   ${values}
 };
@@ -241,7 +240,7 @@ constexpr void operator|=(
   lhs = lhs | static_cast<${enumMask}>(rhs);
 }
 
-static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ${enumMask} &result) {
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ${enumMask}Wrapped &wrapped) {
   auto items = std::vector<std::string>{value};
   for (const auto &item : items) {
     ${fromCases}
@@ -249,7 +248,7 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
   }
 }
 
-static inline std::string toString(const ${enumMask} &value) {
+static inline std::string toString(const ${enumMask}Wrapped &wrapped) {
     auto result = std::string{};
     auto separator = std::string{", "};
 
@@ -307,7 +306,7 @@ function generateArrayEnumString(
     .map(
       option =>
         `if (item == "${option}") {
-      result |= ${enumName}::${toSafeCppString(option)};
+      wrapped.value |= ${enumName}::${toSafeCppString(option)};
       continue;
     }`,
     )
@@ -316,7 +315,7 @@ function generateArrayEnumString(
   const toCases = options
     .map(
       option =>
-        `if (value & ${enumName}::${toSafeCppString(option)}) {
+        `if (wrapped.value & ${enumName}::${toSafeCppString(option)}) {
       result += "${option}" + separator;
     }`,
     )
@@ -461,13 +460,21 @@ function generateEnumString(
 function generatePropsString(
   componentName: string,
   props: $ReadOnlyArray<NamedShape<PropTypeAnnotation>>,
+  nameParts: $ReadOnlyArray<string>,
 ) {
   return props
     .map(prop => {
-      const nativeType = getNativeTypeFromAnnotation(componentName, prop, []);
-      const defaultValue = convertDefaultTypeToString(componentName, prop);
+      const nativeType = getNativeTypeFromAnnotation(
+        componentName,
+        prop,
+        nameParts,
+      );
+      const defaultInitializer = getDefaultInitializerString(
+        componentName,
+        prop,
+      );
 
-      return `${nativeType} ${prop.name}{${defaultValue}};`;
+      return `${nativeType} ${prop.name}${defaultInitializer};`;
     })
     .join('\n' + '  ');
 }
@@ -634,16 +641,11 @@ function generateStruct(
 ): void {
   const structNameParts = nameParts;
   const structName = generateStructName(componentName, structNameParts);
-
-  const fields = properties
-    .map(property => {
-      return `${getNativeTypeFromAnnotation(
-        componentName,
-        property,
-        structNameParts,
-      )} ${property.name};`;
-    })
-    .join('\n' + '  ');
+  const fields = generatePropsString(
+    componentName,
+    properties,
+    structNameParts,
+  );
 
   properties.forEach((property: NamedShape<PropTypeAnnotation>) => {
     const name = property.name;
@@ -711,6 +713,7 @@ module.exports = {
     schema: SchemaType,
     packageName?: string,
     assumeNonnull: boolean = false,
+    headerPrefix?: string,
   ): FilesOutput {
     const fileName = 'Props.h';
 
@@ -742,6 +745,7 @@ module.exports = {
             const propsString = generatePropsString(
               componentName,
               component.props,
+              [],
             );
             const extendString = getClassExtendString(component);
             const extendsImports = getExtendsImports(component.extendsProps);

@@ -24,18 +24,24 @@
 
 using namespace facebook::react;
 
+@interface RCTParagraphComponentView () <UIEditMenuInteractionDelegate>
+
+@property (nonatomic, nullable) UIEditMenuInteraction *editMenuInteraction API_AVAILABLE(ios(16.0));
+
+@end
+
 @implementation RCTParagraphComponentView {
   ParagraphShadowNode::ConcreteState::Shared _state;
   ParagraphAttributes _paragraphAttributes;
   RCTParagraphComponentAccessibilityProvider *_accessibilityProvider;
   UILongPressGestureRecognizer *_longPressGestureRecognizer;
+  CAShapeLayer *_highlightLayer;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-    static const auto defaultProps = std::make_shared<const ParagraphProps>();
-    _props = defaultProps;
+    _props = ParagraphShadowNode::defaultSharedProps();
 
     self.opaque = NO;
     self.contentMode = UIViewContentModeRedraw;
@@ -99,7 +105,7 @@ using namespace facebook::react;
 
 - (void)updateState:(const State::Shared &)state oldState:(const State::Shared &)oldState
 {
-  _state = std::static_pointer_cast<ParagraphShadowNode::ConcreteState const>(state);
+  _state = std::static_pointer_cast<const ParagraphShadowNode::ConcreteState>(state);
   [self setNeedsDisplay];
 }
 
@@ -116,8 +122,11 @@ using namespace facebook::react;
     return;
   }
 
-  auto textLayoutManager = _state->getData().paragraphLayoutManager.getTextLayoutManager();
-  auto nsTextStorage = _state->getData().paragraphLayoutManager.getHostTextStorage();
+  auto textLayoutManager = _state->getData().layoutManager.lock();
+
+  if (!textLayoutManager) {
+    return;
+  }
 
   RCTTextLayoutManager *nativeTextLayoutManager =
       (RCTTextLayoutManager *)unwrapManagedObject(textLayoutManager->getNativeTextLayoutManager());
@@ -127,7 +136,20 @@ using namespace facebook::react;
   [nativeTextLayoutManager drawAttributedString:_state->getData().attributedString
                             paragraphAttributes:_paragraphAttributes
                                           frame:frame
-                                    textStorage:unwrapManagedObject(nsTextStorage)];
+                              drawHighlightPath:^(UIBezierPath *highlightPath) {
+                                if (highlightPath) {
+                                  if (!self->_highlightLayer) {
+                                    self->_highlightLayer = [CAShapeLayer layer];
+                                    self->_highlightLayer.fillColor = [UIColor colorWithWhite:0 alpha:0.25].CGColor;
+                                    [self.layer addSublayer:self->_highlightLayer];
+                                  }
+                                  self->_highlightLayer.position = frame.origin;
+                                  self->_highlightLayer.path = highlightPath.CGPath;
+                                } else {
+                                  [self->_highlightLayer removeFromSuperlayer];
+                                  self->_highlightLayer = nil;
+                                }
+                              }];
 }
 
 #pragma mark - Accessibility
@@ -159,15 +181,18 @@ using namespace facebook::react;
   auto &data = _state->getData();
 
   if (![_accessibilityProvider isUpToDate:data.attributedString]) {
-    auto textLayoutManager = data.paragraphLayoutManager.getTextLayoutManager();
-    RCTTextLayoutManager *nativeTextLayoutManager =
-        (RCTTextLayoutManager *)unwrapManagedObject(textLayoutManager->getNativeTextLayoutManager());
-    CGRect frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
-    _accessibilityProvider = [[RCTParagraphComponentAccessibilityProvider alloc] initWithString:data.attributedString
-                                                                                  layoutManager:nativeTextLayoutManager
-                                                                            paragraphAttributes:data.paragraphAttributes
-                                                                                          frame:frame
-                                                                                           view:self];
+    auto textLayoutManager = data.layoutManager.lock();
+    if (textLayoutManager) {
+      RCTTextLayoutManager *nativeTextLayoutManager =
+          (RCTTextLayoutManager *)unwrapManagedObject(textLayoutManager->getNativeTextLayoutManager());
+      CGRect frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
+      _accessibilityProvider =
+          [[RCTParagraphComponentAccessibilityProvider alloc] initWithString:data.attributedString
+                                                               layoutManager:nativeTextLayoutManager
+                                                         paragraphAttributes:data.paragraphAttributes
+                                                                       frame:frame
+                                                                        view:self];
+    }
   }
 
   return _accessibilityProvider.accessibilityElements;
@@ -186,7 +211,11 @@ using namespace facebook::react;
     return _eventEmitter;
   }
 
-  auto textLayoutManager = _state->getData().paragraphLayoutManager.getTextLayoutManager();
+  auto textLayoutManager = _state->getData().layoutManager.lock();
+
+  if (!textLayoutManager) {
+    return _eventEmitter;
+  }
 
   RCTTextLayoutManager *nativeTextLayoutManager =
       (RCTTextLayoutManager *)unwrapManagedObject(textLayoutManager->getNativeTextLayoutManager());
@@ -211,32 +240,41 @@ using namespace facebook::react;
 {
   _longPressGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self
                                                                               action:@selector(handleLongPress:)];
+
+  if (@available(iOS 16.0, *)) {
+    _editMenuInteraction = [[UIEditMenuInteraction alloc] initWithDelegate:self];
+    [self addInteraction:_editMenuInteraction];
+  }
   [self addGestureRecognizer:_longPressGestureRecognizer];
 }
 
 - (void)disableContextMenu
 {
   [self removeGestureRecognizer:_longPressGestureRecognizer];
+  if (@available(iOS 16.0, *)) {
+    [self removeInteraction:_editMenuInteraction];
+    _editMenuInteraction = nil;
+  }
   _longPressGestureRecognizer = nil;
 }
 
 - (void)handleLongPress:(UILongPressGestureRecognizer *)gesture
 {
-  // TODO: Adopt showMenuFromRect (necessary for UIKitForMac)
-#if !TARGET_OS_UIKITFORMAC
-  UIMenuController *menuController = [UIMenuController sharedMenuController];
+  if (@available(iOS 16.0, macCatalyst 16.0, *)) {
+    CGPoint location = [gesture locationInView:self];
+    UIEditMenuConfiguration *config = [UIEditMenuConfiguration configurationWithIdentifier:nil sourcePoint:location];
+    if (_editMenuInteraction) {
+      [_editMenuInteraction presentEditMenuWithConfiguration:config];
+    }
+  } else {
+    UIMenuController *menuController = [UIMenuController sharedMenuController];
 
-  if (menuController.isMenuVisible) {
-    return;
+    if (menuController.isMenuVisible) {
+      return;
+    }
+
+    [menuController showMenuFromView:self rect:self.bounds];
   }
-
-  if (!self.isFirstResponder) {
-    [self becomeFirstResponder];
-  }
-
-  [menuController setTargetRect:self.bounds inView:self];
-  [menuController setMenuVisible:YES animated:YES];
-#endif
 }
 
 - (BOOL)canBecomeFirstResponder

@@ -11,7 +11,7 @@
 'use strict';
 
 const React = require('react');
-const {Text, View, TouchableOpacity, Alert} = require('react-native');
+const {Alert, Text, TouchableOpacity, View} = require('react-native');
 
 class TransparentHitTestExample extends React.Component<{...}> {
   render(): React.Node {

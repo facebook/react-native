@@ -7,8 +7,10 @@
 
 #include "HermesInstance.h"
 
-#include <JSITracing.h>
+#include <hermes/inspector-modern/chrome/HermesRuntimeTargetDelegate.h>
 #include <jsi/jsilib.h>
+#include <jsinspector-modern/InspectorFlags.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 
 #ifdef HERMES_ENABLE_DEBUGGER
 #include <hermes/inspector-modern/chrome/Registration.h>
@@ -90,7 +92,30 @@ class DecoratedRuntime : public jsi::RuntimeDecorator<jsi::Runtime> {
 
 #endif
 
-std::unique_ptr<jsi::Runtime> HermesInstance::createJSRuntime(
+class HermesJSRuntime : public JSRuntime {
+ public:
+  HermesJSRuntime(std::unique_ptr<HermesRuntime> runtime)
+      : runtime_(std::move(runtime)) {}
+
+  jsi::Runtime& getRuntime() noexcept override {
+    return *runtime_;
+  }
+
+  jsinspector_modern::RuntimeTargetDelegate& getRuntimeTargetDelegate()
+      override {
+    if (!targetDelegate_) {
+      targetDelegate_.emplace(runtime_);
+    }
+    return *targetDelegate_;
+  }
+
+ private:
+  std::shared_ptr<HermesRuntime> runtime_;
+  std::optional<jsinspector_modern::HermesRuntimeTargetDelegate>
+      targetDelegate_;
+};
+
+std::unique_ptr<JSRuntime> HermesInstance::createJSRuntime(
     std::shared_ptr<const ReactNativeConfig> reactNativeConfig,
     std::shared_ptr<::hermes::vm::CrashManager> cm,
     std::shared_ptr<MessageQueueThread> msgQueueThread) noexcept {
@@ -99,17 +124,11 @@ std::unique_ptr<jsi::Runtime> HermesInstance::createJSRuntime(
       ? reactNativeConfig->getInt64("ios_hermes:vm_experiment_flags")
       : 0;
 
-  int64_t heapSizeConfig = reactNativeConfig
-      ? reactNativeConfig->getInt64("ios_hermes:rn_heap_size_mb")
-      : 0;
-  // Default to 3GB if MobileConfigs is not available
-  auto heapSizeMB = heapSizeConfig > 0
-      ? static_cast<::hermes::vm::gcheapsize_t>(heapSizeConfig)
-      : 3072;
   ::hermes::vm::RuntimeConfig::Builder runtimeConfigBuilder =
       ::hermes::vm::RuntimeConfig::Builder()
           .withGCConfig(::hermes::vm::GCConfig::Builder()
-                            .withMaxHeapSize(heapSizeMB << 20)
+                            // Default to 3GB
+                            .withMaxHeapSize(3072 << 20)
                             .withName("RNBridgeless")
                             // For the next two arguments: avoid GC before TTI
                             // by initializing the runtime to allocate directly
@@ -118,8 +137,8 @@ std::unique_ptr<jsi::Runtime> HermesInstance::createJSRuntime(
                             .withAllocInYoung(false)
                             .withRevertToYGAtTTI(true)
                             .build())
-          .withES6Proxy(false)
           .withEnableSampleProfiling(true)
+          .withMicrotaskQueue(ReactNativeFeatureFlags::enableMicrotasks())
           .withVMExperimentFlags(vmExperimentFlags);
 
   if (cm) {
@@ -129,16 +148,19 @@ std::unique_ptr<jsi::Runtime> HermesInstance::createJSRuntime(
   std::unique_ptr<HermesRuntime> hermesRuntime =
       hermes::makeHermesRuntime(runtimeConfigBuilder.build());
 
-  jsi::addNativeTracingHooks(*hermesRuntime);
-
 #ifdef HERMES_ENABLE_DEBUGGER
-  std::unique_ptr<DecoratedRuntime> decoratedRuntime =
-      std::make_unique<DecoratedRuntime>(
-          std::move(hermesRuntime), msgQueueThread);
-  return decoratedRuntime;
+  auto& inspectorFlags = jsinspector_modern::InspectorFlags::getInstance();
+  if (!inspectorFlags.getFuseboxEnabled()) {
+    std::unique_ptr<DecoratedRuntime> decoratedRuntime =
+        std::make_unique<DecoratedRuntime>(
+            std::move(hermesRuntime), msgQueueThread);
+    return std::make_unique<JSIRuntimeHolder>(std::move(decoratedRuntime));
+  }
+#else
+  (void)msgQueueThread;
 #endif
 
-  return hermesRuntime;
+  return std::make_unique<HermesJSRuntime>(std::move(hermesRuntime));
 }
 
 } // namespace facebook::react

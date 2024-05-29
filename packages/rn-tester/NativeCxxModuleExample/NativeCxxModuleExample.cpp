@@ -20,6 +20,18 @@ void NativeCxxModuleExample::getValueWithCallback(
   callback({"value from callback!"});
 }
 
+std::function<void()> NativeCxxModuleExample::setValueCallbackWithSubscription(
+    jsi::Runtime& rt,
+    AsyncCallback<std::string> callback) {
+  valueCallback_ = std::make_optional(callback);
+  return [&]() {
+    if (valueCallback_.has_value()) {
+      valueCallback_.value()({"value from callback on clean up!"});
+      valueCallback_ = std::nullopt;
+    }
+  };
+}
+
 std::vector<std::optional<ObjectStruct>> NativeCxxModuleExample::getArray(
     jsi::Runtime& rt,
     std::vector<std::optional<ObjectStruct>> arg) {
@@ -53,16 +65,32 @@ std::string NativeCxxModuleExample::consumeCustomHostObject(
   return value->a_ + std::to_string(value->b_);
 }
 
-NativeCxxModuleExampleCxxEnumFloat NativeCxxModuleExample::getNumEnum(
+BinaryTreeNode NativeCxxModuleExample::getBinaryTreeNode(
     jsi::Runtime& rt,
-    NativeCxxModuleExampleCxxEnumInt arg) {
-  return NativeCxxModuleExampleCxxEnumFloat::FB;
+    BinaryTreeNode arg) {
+  return arg;
 }
 
-NativeCxxModuleExampleCxxEnumStr NativeCxxModuleExample::getStrEnum(
+GraphNode NativeCxxModuleExample::getGraphNode(
     jsi::Runtime& rt,
-    NativeCxxModuleExampleCxxEnumNone arg) {
-  return NativeCxxModuleExampleCxxEnumStr::SB;
+    GraphNode arg) {
+  if (arg.neighbors) {
+    arg.neighbors->emplace_back(GraphNode{.label = "top"});
+    arg.neighbors->emplace_back(GraphNode{.label = "down"});
+  }
+  return arg;
+}
+
+NativeCxxModuleExampleEnumInt NativeCxxModuleExample::getNumEnum(
+    jsi::Runtime& rt,
+    NativeCxxModuleExampleEnumInt arg) {
+  return arg;
+}
+
+NativeCxxModuleExampleEnumStr NativeCxxModuleExample::getStrEnum(
+    jsi::Runtime& rt,
+    NativeCxxModuleExampleEnumNone /*arg*/) {
+  return NativeCxxModuleExampleEnumStr::SB;
 }
 
 std::map<std::string, std::optional<int32_t>> NativeCxxModuleExample::getMap(
@@ -141,18 +169,29 @@ void NativeCxxModuleExample::voidFunc(jsi::Runtime& rt) {
   // Nothing to do
 }
 
+void NativeCxxModuleExample::setMenu(jsi::Runtime& rt, MenuItem menuItem) {
+  menuItem.onPress("value", true);
+  if (menuItem.items) {
+    for (auto subMenuItem : *menuItem.items) {
+      subMenuItem.onPress("another value", false);
+    }
+  }
+}
+
 void NativeCxxModuleExample::emitCustomDeviceEvent(
     jsi::Runtime& rt,
-    jsi::String eventName) {
+    const std::string& eventName) {
   // Test emitting device events (RCTDeviceEventEmitter.emit) from C++
-  // TurboModule with arbitrary arguments
+  // TurboModule with arbitrary arguments. This can be called from any thread
   emitDeviceEvent(
-      rt,
-      eventName.utf8(rt).c_str(),
-      [](jsi::Runtime& rt, std::vector<jsi::Value>& args) {
+      eventName,
+      [jsInvoker = jsInvoker_](
+          jsi::Runtime& rt, std::vector<jsi::Value>& args) {
         args.emplace_back(jsi::Value(true));
         args.emplace_back(jsi::Value(42));
         args.emplace_back(jsi::String::createFromAscii(rt, "stringArg"));
+        args.emplace_back(bridging::toJs(
+            rt, CustomDeviceEvent{"one", 2, std::nullopt}, jsInvoker));
       });
 }
 

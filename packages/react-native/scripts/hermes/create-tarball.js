@@ -9,16 +9,15 @@
 
 'use strict';
 
+const {createHermesPrebuiltArtifactsTarball} = require('./hermes-utils');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
-
 /**
  * This script creates a Hermes prebuilt artifacts tarball.
  * Must be invoked after Hermes has been built.
  */
 const yargs = require('yargs');
-const {createHermesPrebuiltArtifactsTarball} = require('./hermes-utils');
 
 let argv = yargs
   .option('i', {

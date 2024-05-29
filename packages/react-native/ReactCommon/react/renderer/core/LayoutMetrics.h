@@ -29,6 +29,8 @@ struct LayoutMetrics {
   EdgeInsets borderWidth{0};
   // See `DisplayType` for all possible options.
   DisplayType displayType{DisplayType::Flex};
+  // See `PositionType` for all possible options.
+  PositionType positionType{PositionType::Relative};
   // See `LayoutDirection` for all possible options.
   LayoutDirection layoutDirection{LayoutDirection::Undefined};
   // Whether React Native treated cardinal directions as flow-relative
@@ -63,28 +65,9 @@ struct LayoutMetrics {
             frame.size.height - borderWidth.top - borderWidth.bottom}};
   }
 
-  bool operator==(const LayoutMetrics& rhs) const {
-    return std::tie(
-               this->frame,
-               this->contentInsets,
-               this->borderWidth,
-               this->displayType,
-               this->layoutDirection,
-               this->pointScaleFactor,
-               this->overflowInset) ==
-        std::tie(
-               rhs.frame,
-               rhs.contentInsets,
-               rhs.borderWidth,
-               rhs.displayType,
-               rhs.layoutDirection,
-               rhs.pointScaleFactor,
-               rhs.overflowInset);
-  }
+  bool operator==(const LayoutMetrics& rhs) const = default;
 
-  bool operator!=(const LayoutMetrics& rhs) const {
-    return !(*this == rhs);
-  }
+  bool operator!=(const LayoutMetrics& rhs) const = default;
 };
 
 /*

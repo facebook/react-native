@@ -9,6 +9,7 @@
  */
 
 import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
+
 import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 export type StateType = {|
@@ -33,30 +34,21 @@ export enum StatusNumEnum {
   Off = 0,
 }
 
-export enum StatusFractionEnum {
-  Active = 0.2,
-  Paused = 0.1,
-  Off = 0.0,
-}
-
 export type StateTypeWithEnums = {|
   state: string,
   regular: StatusRegularEnum,
   str: StatusStrEnum,
   num: StatusNumEnum,
-  fraction: StatusFractionEnum,
 |};
 
 export interface Spec extends TurboModule {
   +getStatusRegular: (statusProp: StateType) => StatusRegularEnum;
   +getStatusStr: (statusProp: StateType) => StatusStrEnum;
   +getStatusNum: (statusProp: StateType) => StatusNumEnum;
-  +getStatusFraction: (statusProp: StateType) => StatusFractionEnum;
   +getStateType: (
     a: StatusRegularEnum,
     b: StatusStrEnum,
     c: StatusNumEnum,
-    d: StatusFractionEnum,
   ) => StateType;
   +getStateTypeWithEnums: (
     paramOfTypeWithEnums: StateTypeWithEnums,

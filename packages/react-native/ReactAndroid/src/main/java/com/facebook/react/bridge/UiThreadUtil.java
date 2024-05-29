@@ -15,9 +15,23 @@ import com.facebook.react.common.build.ReactBuildConfig;
 /** Utility for interacting with the UI thread. */
 public class UiThreadUtil {
 
-  @Nullable private static Handler sMainHandler;
+  private static volatile @Nullable Handler sMainHandler;
 
-  /** @return {@code true} if the current thread is the UI thread. */
+  public static Handler getUiThreadHandler() {
+    // Double null-check to avoid unnecessary lock
+    if (sMainHandler == null) {
+      synchronized (UiThreadUtil.class) {
+        if (sMainHandler == null) {
+          sMainHandler = new Handler(Looper.getMainLooper());
+        }
+      }
+    }
+    return sMainHandler;
+  }
+
+  /**
+   * @return {@code true} if the current thread is the UI thread.
+   */
   public static boolean isOnUiThread() {
     return Looper.getMainLooper().getThread() == Thread.currentThread();
   }
@@ -45,17 +59,17 @@ public class UiThreadUtil {
   }
 
   /** Runs the given {@code Runnable} on the UI thread. */
-  public static void runOnUiThread(Runnable runnable) {
-    runOnUiThread(runnable, 0);
+  public static boolean runOnUiThread(Runnable runnable) {
+    return getUiThreadHandler().postDelayed(runnable, 0);
   }
 
   /** Runs the given {@code Runnable} on the UI thread with the specified delay. */
-  public static void runOnUiThread(Runnable runnable, long delayInMs) {
-    synchronized (UiThreadUtil.class) {
-      if (sMainHandler == null) {
-        sMainHandler = new Handler(Looper.getMainLooper());
-      }
-    }
-    sMainHandler.postDelayed(runnable, delayInMs);
+  public static boolean runOnUiThread(Runnable runnable, long delayInMs) {
+    return getUiThreadHandler().postDelayed(runnable, delayInMs);
+  }
+
+  /** Removes the given {@code Runnable} on the UI thread. */
+  public static void removeOnUiThread(Runnable runnable) {
+    getUiThreadHandler().removeCallbacks(runnable);
   }
 }

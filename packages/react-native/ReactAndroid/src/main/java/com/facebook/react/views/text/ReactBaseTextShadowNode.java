@@ -7,7 +7,6 @@
 
 package com.facebook.react.views.text;
 
-import android.annotation.TargetApi;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Build;
@@ -22,7 +21,6 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.common.assets.ReactFontManager;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.NativeViewHierarchyOptimizer;
@@ -32,6 +30,22 @@ import com.facebook.react.uimanager.ReactAccessibilityDelegate.Role;
 import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.views.text.internal.ReactTextInlineImageShadowNode;
+import com.facebook.react.views.text.internal.span.CustomLetterSpacingSpan;
+import com.facebook.react.views.text.internal.span.CustomLineHeightSpan;
+import com.facebook.react.views.text.internal.span.CustomStyleSpan;
+import com.facebook.react.views.text.internal.span.ReactAbsoluteSizeSpan;
+import com.facebook.react.views.text.internal.span.ReactBackgroundColorSpan;
+import com.facebook.react.views.text.internal.span.ReactClickableSpan;
+import com.facebook.react.views.text.internal.span.ReactForegroundColorSpan;
+import com.facebook.react.views.text.internal.span.ReactSpan;
+import com.facebook.react.views.text.internal.span.ReactStrikethroughSpan;
+import com.facebook.react.views.text.internal.span.ReactTagSpan;
+import com.facebook.react.views.text.internal.span.ReactUnderlineSpan;
+import com.facebook.react.views.text.internal.span.SetSpanOperation;
+import com.facebook.react.views.text.internal.span.ShadowStyleSpan;
+import com.facebook.react.views.text.internal.span.TextInlineImageSpan;
+import com.facebook.react.views.text.internal.span.TextInlineViewPlaceholderSpan;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaUnit;
 import com.facebook.yoga.YogaValue;
@@ -50,14 +64,12 @@ import java.util.Map;
  * <p>This also node calculates {@link Spannable} object based on subnodes of the same type, which
  * can be used in concrete classes to feed native views and compute layout.
  */
-@TargetApi(Build.VERSION_CODES.M)
 public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
 
   // Use a direction weak character so the placeholder doesn't change the direction of the previous
   // character.
   // https://en.wikipedia.org/wiki/Bi-directional_text#weak_characters
   private static final String INLINE_VIEW_PLACEHOLDER = "0";
-  public static final int UNSET = ReactFontManager.TypefaceStyle.UNSET;
 
   public static final String PROP_SHADOW_OFFSET = "textShadowOffset";
   public static final String PROP_SHADOW_OFFSET_WIDTH = "width";
@@ -75,9 +87,9 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       ReactBaseTextShadowNode textShadowNode,
       SpannableStringBuilder sb,
       List<SetSpanOperation> ops,
-      TextAttributes parentTextAttributes,
+      @Nullable TextAttributes parentTextAttributes,
       boolean supportsInlineViews,
-      Map<Integer, ReactShadowNode> inlineViews,
+      @Nullable Map<Integer, ReactShadowNode> inlineViews,
       int start) {
 
     TextAttributes textAttributes;
@@ -179,8 +191,8 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
           || parentTextAttributes.getEffectiveFontSize() != effectiveFontSize) {
         ops.add(new SetSpanOperation(start, end, new ReactAbsoluteSizeSpan(effectiveFontSize)));
       }
-      if (textShadowNode.mFontStyle != UNSET
-          || textShadowNode.mFontWeight != UNSET
+      if (textShadowNode.mFontStyle != ReactConstants.UNSET
+          || textShadowNode.mFontWeight != ReactConstants.UNSET
           || textShadowNode.mFontFamily != null) {
         ops.add(
             new SetSpanOperation(
@@ -226,7 +238,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   // `nativeViewHierarchyOptimizer` can be `null` as long as `supportsInlineViews` is `false`.
   protected Spannable spannedFromShadowNode(
       ReactBaseTextShadowNode textShadowNode,
-      String text,
+      @Nullable String text,
       boolean supportsInlineViews,
       NativeViewHierarchyOptimizer nativeViewHierarchyOptimizer) {
     Assertions.assertCondition(
@@ -240,8 +252,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     // up-to-bottom, otherwise all the spannables that are within the region for which one may set
     // a new spannable will be wiped out
     List<SetSpanOperation> ops = new ArrayList<>();
-    Map<Integer, ReactShadowNode> inlineViews =
-        supportsInlineViews ? new HashMap<Integer, ReactShadowNode>() : null;
+    Map<Integer, ReactShadowNode> inlineViews = supportsInlineViews ? new HashMap<>() : null;
 
     if (text != null) {
       // Handle text that is provided via a prop (e.g. the `value` and `defaultValue` props on
@@ -259,15 +270,16 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     // or images.
     for (int priorityIndex = 0; priorityIndex < ops.size(); priorityIndex++) {
       final SetSpanOperation op = ops.get(ops.size() - priorityIndex - 1);
+      final ReactSpan what = op.what;
 
-      boolean isInlineImage = op.what instanceof TextInlineImageSpan;
-      if (isInlineImage || op.what instanceof TextInlineViewPlaceholderSpan) {
+      boolean isInlineImage = what instanceof TextInlineImageSpan;
+      if (isInlineImage || what instanceof TextInlineViewPlaceholderSpan) {
         int height;
         if (isInlineImage) {
-          height = ((TextInlineImageSpan) op.what).getHeight();
+          height = ((TextInlineImageSpan) what).getHeight();
           textShadowNode.mContainsImages = true;
         } else {
-          TextInlineViewPlaceholderSpan placeholder = (TextInlineViewPlaceholderSpan) op.what;
+          TextInlineViewPlaceholderSpan placeholder = (TextInlineViewPlaceholderSpan) what;
           height = placeholder.getHeight();
 
           // Inline views cannot be layout-only because the ReactTextView needs to be able to grab
@@ -310,12 +322,10 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   protected @Nullable AccessibilityRole mAccessibilityRole = null;
   protected @Nullable Role mRole = null;
 
-  protected int mNumberOfLines = UNSET;
+  protected int mNumberOfLines = ReactConstants.UNSET;
   protected int mTextAlign = Gravity.NO_GRAVITY;
-  protected int mTextBreakStrategy =
-      (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ? 0 : Layout.BREAK_STRATEGY_HIGH_QUALITY;
-  protected int mHyphenationFrequency =
-      (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ? 0 : Layout.HYPHENATION_FREQUENCY_NONE;
+  protected int mTextBreakStrategy = Layout.BREAK_STRATEGY_HIGH_QUALITY;
+  protected int mHyphenationFrequency = Layout.HYPHENATION_FREQUENCY_NONE;
   protected int mJustificationMode =
       (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? 0 : Layout.JUSTIFICATION_MODE_NONE;
 
@@ -334,9 +344,10 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
    * mFontStyle can be {@link Typeface#NORMAL} or {@link Typeface#ITALIC}. mFontWeight can be {@link
    * Typeface#NORMAL} or {@link Typeface#BOLD}.
    */
-  protected int mFontStyle = UNSET;
+  protected int mFontStyle = ReactConstants.UNSET;
 
-  protected int mFontWeight = UNSET;
+  protected int mFontWeight = ReactConstants.UNSET;
+
   /**
    * NB: If a font family is used that does not have a style in a certain Android version (ie.
    * monospace bold pre Android 5.0), that style (ie. bold) will not be inherited by nested Text
@@ -360,7 +371,9 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
    */
   protected @Nullable String mFontFamily = null;
 
-  /** @see android.graphics.Paint#setFontFeatureSettings */
+  /**
+   * @see android.graphics.Paint#setFontFeatureSettings
+   */
   protected @Nullable String mFontFeatureSettings = null;
 
   protected boolean mContainsImages = false;
@@ -389,9 +402,9 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     return textAlign;
   }
 
-  @ReactProp(name = ViewProps.NUMBER_OF_LINES, defaultInt = UNSET)
+  @ReactProp(name = ViewProps.NUMBER_OF_LINES, defaultInt = ReactConstants.UNSET)
   public void setNumberOfLines(int numberOfLines) {
-    mNumberOfLines = numberOfLines == 0 ? UNSET : numberOfLines;
+    mNumberOfLines = numberOfLines == 0 ? ReactConstants.UNSET : numberOfLines;
     markUpdated();
   }
 
@@ -401,7 +414,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     markUpdated();
   }
 
-  @ReactProp(name = ViewProps.LETTER_SPACING, defaultFloat = Float.NaN)
+  @ReactProp(name = ViewProps.LETTER_SPACING, defaultFloat = 0.f)
   public void setLetterSpacing(float letterSpacing) {
     mTextAttributes.setLetterSpacing(letterSpacing);
     markUpdated();
@@ -554,10 +567,6 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
 
   @ReactProp(name = ViewProps.TEXT_BREAK_STRATEGY)
   public void setTextBreakStrategy(@Nullable String textBreakStrategy) {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-      return;
-    }
-
     if (textBreakStrategy == null || "highQuality".equals(textBreakStrategy)) {
       mTextBreakStrategy = Layout.BREAK_STRATEGY_HIGH_QUALITY;
     } else if ("simple".equals(textBreakStrategy)) {

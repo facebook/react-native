@@ -14,7 +14,7 @@ export interface StyleSheetProperties {
   flatten<T extends string>(style: T): T;
 }
 
-type Falsy = undefined | null | false;
+type Falsy = undefined | null | false | '';
 interface RecursiveArray<T>
   extends Array<T | ReadonlyArray<T> | RecursiveArray<T>> {}
 /** Keep a brand of 'T' so that calls to `StyleSheet.flatten` can take `RegisteredStyle<T>` and return `T`. */
@@ -32,7 +32,7 @@ export namespace StyleSheet {
   type NamedStyles<T> = {[P in keyof T]: ViewStyle | TextStyle | ImageStyle};
 
   /**
-   * Creates a StyleSheet style reference from the given object.
+   * An identity function for creating style sheets.
    */
   export function create<T extends NamedStyles<T> | NamedStyles<any>>(
     // The extra & NamedStyles<any> here helps Typescript catch typos: e.g.,
@@ -49,14 +49,6 @@ export namespace StyleSheet {
 
   /**
    * Flattens an array of style objects, into one aggregated style object.
-   * Alternatively, this method can be used to lookup IDs, returned by
-   * StyleSheet.register.
-   *
-   * > **NOTE**: Exercise caution as abusing this can tax you in terms of
-   * > optimizations.
-   * >
-   * > IDs enable optimizations through the bridge and memory in general. Referring
-   * > to style objects directly will deprive you of these optimizations.
    *
    * Example:
    * ```
@@ -74,17 +66,6 @@ export namespace StyleSheet {
    * StyleSheet.flatten([styles.listItem, styles.selectedListItem])
    * // returns { flex: 1, fontSize: 16, color: 'green' }
    * ```
-   * Alternative use:
-   * ```
-   * StyleSheet.flatten(styles.listItem);
-   * // return { flex: 1, fontSize: 16, color: 'white' }
-   * // Simply styles.listItem would return its ID (number)
-   * ```
-   * This method internally uses `StyleSheetRegistry.getStyleByID(style)`
-   * to resolve style objects represented by IDs. Thus, an array of style
-   * objects (instances of StyleSheet.create), are individually resolved to,
-   * their respective objects, merged as one and then returned. This also explains
-   * the alternative use.
    */
   export function flatten<T>(
     style?: StyleProp<T>,

@@ -15,7 +15,7 @@
 namespace facebook::react {
 
 /**
- * Implementation of ReactNativeConfig that wraps a FabricMobileConfig Java
+ * Implementation of ReactNativeConfig that wraps a ReactNativeConfig Java
  * object.
  */
 class ReactNativeConfigHolder : public ReactNativeConfig {

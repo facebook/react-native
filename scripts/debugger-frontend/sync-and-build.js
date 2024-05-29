@@ -9,13 +9,15 @@
  * @oncall react_native
  */
 
+const {PACKAGES_DIR} = require('../consts');
 const {parseArgs} = require('@pkgjs/parseargs');
 // $FlowFixMe[untyped-import]: TODO type ansi-styles
 const ansiStyles = require('ansi-styles');
 const chalk = require('chalk');
 const {execSync, spawnSync} = require('child_process');
 const {promises: fs} = require('fs');
-const {tmpdir, hostname, userInfo} = require('os');
+const nullthrows = require('nullthrows');
+const {hostname, tmpdir, userInfo} = require('os');
 const path = require('path');
 // $FlowFixMe[untyped-import]: TODO type rimraf
 const rimraf = require('rimraf');
@@ -25,42 +27,55 @@ const SignedSource = require('signedsource');
 const supportsColor = require('supports-color');
 
 const DEVTOOLS_FRONTEND_REPO_URL =
-  'https://github.com/motiz88/rn-chrome-devtools-frontend';
-const DEVTOOLS_FRONTEND_REPO_BRANCH = 'rn-0.73-chromium-5845';
-
-const REPO_ROOT = path.resolve(__dirname, '../..');
-const PACKAGES_DIR /*: string */ = path.join(REPO_ROOT, 'packages');
+  'https://github.com/facebookexperimental/rn-chrome-devtools-frontend';
 
 const config = {
   allowPositionals: true,
   options: {
+    branch: {type: 'string'},
     'keep-scratch': {type: 'boolean'},
     nohooks: {type: 'boolean'},
     help: {type: 'boolean'},
+    'create-diff': {type: 'boolean'},
   },
 };
+
+/*::
+type DiffBaseInfo = {
+  packagePath: string,
+  baseGitRevision: string,
+};
+
+type ParsedBuildInfo = {
+  gitRevision: string,
+  isLocalCheckout: boolean,
+};
+*/
 
 async function main() {
   const {
     positionals,
-    values: {help, nohooks, 'keep-scratch': keepScratch},
+    values: {
+      help,
+      branch,
+      nohooks,
+      'keep-scratch': keepScratch,
+      'create-diff': createDiff,
+    },
   } = parseArgs(config);
 
   if (help === true) {
-    console.log(`
-  Usage: node scripts/debugger-frontend/sync-and-build [OPTIONS] [checkout path]
-
-  Sync and build the debugger frontend into @react-native/debugger-frontend.
-
-  By default, checks out the currently pinned revision of the DevTools frontend.
-  If an existing checkout path is provided, builds it instead.
-
-  Options:
-    --nohooks          Don't run gclient hooks in the devtools checkout (useful
-                       for existing checkouts).
-    --keep-scratch     Don't clean up temporary files.
-`);
+    showHelp();
     process.exitCode = 0;
+    return;
+  }
+
+  const localCheckoutPath = positionals?.[0];
+
+  if (branch == null && !localCheckoutPath?.length) {
+    console.error(chalk.red('Error: Missing option --branch'));
+    showHelp();
+    process.exitCode = 1;
     return;
   }
 
@@ -72,15 +87,41 @@ async function main() {
   process.stdout.write(chalk.dim(`Scratch path: ${scratchPath}\n\n`));
 
   await checkRequiredTools();
-  const localCheckoutPath = positionals.length ? positionals[0] : undefined;
-  await buildDebuggerFrontend(scratchPath, localCheckoutPath, {
+  const packagePath = path.join(PACKAGES_DIR, 'debugger-frontend');
+  let diffBaseInfo;
+  if (createDiff) {
+    diffBaseInfo = await checkCanCreateDiff(packagePath);
+  }
+  await buildDebuggerFrontend(packagePath, scratchPath, localCheckoutPath, {
+    branch: branch ?? '',
     gclientSyncOptions: {nohooks: nohooks === true},
   });
+  if (createDiff && diffBaseInfo) {
+    await createSyncDiff(diffBaseInfo, scratchPath);
+  }
   await cleanup(scratchPath, keepScratch === true);
   process.stdout.write(
     chalk.green('Sync done.') +
       ' Check in any updated files under packages/debugger-frontend.\n',
   );
+}
+
+function showHelp() {
+  console.log(`
+  Usage: node scripts/debugger-frontend/sync-and-build [OPTIONS] [checkout path]
+
+  Sync and build the debugger frontend into @react-native/debugger-frontend.
+
+  By default, checks out the currently pinned revision of the DevTools frontend.
+  If an existing checkout path is provided, builds it instead.
+
+  Options:
+    --branch           The DevTools frontend branch to use. Ignored when
+                       providing a local checkout path.
+    --nohooks          Don't run gclient hooks in the devtools checkout (useful
+                       for existing checkouts).
+    --keep-scratch     Don't clean up temporary files.
+`);
 }
 
 async function checkRequiredTools() {
@@ -102,11 +143,13 @@ async function checkRequiredTools() {
 }
 
 async function buildDebuggerFrontend(
+  packagePath /*: string */,
   scratchPath /*: string */,
   localCheckoutPath /*: ?string */,
-  {
-    gclientSyncOptions,
-  } /*: $ReadOnly<{gclientSyncOptions: $ReadOnly<{nohooks: boolean}>}>*/,
+  {branch, gclientSyncOptions} /*: $ReadOnly<{
+    branch: string,
+    gclientSyncOptions: $ReadOnly<{nohooks: boolean}>,
+  }>*/,
 ) {
   let checkoutPath;
   if (localCheckoutPath == null) {
@@ -114,7 +157,7 @@ async function buildDebuggerFrontend(
 
     await fs.mkdir(scratchPath, {recursive: true});
 
-    await checkoutDevToolsFrontend(scratchCheckoutPath);
+    await checkoutDevToolsFrontend(scratchCheckoutPath, branch);
     checkoutPath = scratchCheckoutPath;
   } else {
     checkoutPath = localCheckoutPath;
@@ -124,7 +167,6 @@ async function buildDebuggerFrontend(
 
   const {buildPath, gnArgsSummary} = await performReleaseBuild(checkoutPath);
 
-  const packagePath = path.join(PACKAGES_DIR, 'debugger-frontend');
   const destPathInPackage = path.join(packagePath, 'dist', 'third-party');
   await cleanPackageFiles(destPathInPackage);
 
@@ -133,20 +175,24 @@ async function buildDebuggerFrontend(
   await generateBuildInfo({
     checkoutPath,
     packagePath,
+    branch,
     isLocalCheckout: localCheckoutPath != null,
     gclientSyncOptions,
     gnArgsSummary,
   });
 }
 
-async function checkoutDevToolsFrontend(checkoutPath /*: string */) {
+async function checkoutDevToolsFrontend(
+  checkoutPath /*: string */,
+  branch /*: string */,
+) {
   process.stdout.write('Checking out devtools-frontend\n');
   await fs.mkdir(checkoutPath, {recursive: true});
   await spawnSafe('git', [
     'clone',
     DEVTOOLS_FRONTEND_REPO_URL,
     '--branch',
-    DEVTOOLS_FRONTEND_REPO_BRANCH,
+    branch,
     '--single-branch',
     '--depth',
     '1',
@@ -262,6 +308,7 @@ async function generateBuildInfo(
   info /*: $ReadOnly<{
   checkoutPath: string,
   isLocalCheckout: boolean,
+  branch: string,
   packagePath: string,
   gclientSyncOptions: $ReadOnly<{nohooks: boolean}>,
   gnArgsSummary: string,
@@ -298,7 +345,7 @@ async function generateBuildInfo(
     ...(!info.isLocalCheckout
       ? [
           'Remote URL: ' + DEVTOOLS_FRONTEND_REPO_URL,
-          'Remote branch: ' + DEVTOOLS_FRONTEND_REPO_BRANCH,
+          'Remote branch: ' + info.branch,
         ]
       : ['Hostname: ' + hostname(), 'User: ' + userInfo().username]),
     'GN build args (overrides only): ',
@@ -360,6 +407,114 @@ async function spawnSafe(
       process.stderr.write(ansiStyles.dim.close);
     }
   }
+}
+
+async function checkCanCreateDiff(
+  packagePath /*: string */,
+) /*: Promise<DiffBaseInfo> */ {
+  process.stdout.write('Checking that we can create a diff' + '\n');
+  try {
+    const {stdout: hgRootStdout} = await spawnSafe('hg', ['root'], {
+      cwd: packagePath,
+      stdio: ['ignore', 'pipe', 'inherit'],
+    });
+    const repoRoot = hgRootStdout.toString().trim();
+    const projectid = (
+      await fs.readFile(path.join(repoRoot, '.projectid'), 'utf8')
+    ).trim();
+    if (projectid !== 'fbsource') {
+      throw new Error(
+        'Expected .projectid to contain "fbsource" but found: ' + projectid,
+      );
+    }
+    await spawnSafe('jf', ['-v'], {cwd: packagePath, stdio: 'ignore'});
+  } catch (e) {
+    process.stderr.write(
+      'Must be in an fbsource checkout (Meta-only) to create a diff\n',
+    );
+    throw e;
+  }
+  try {
+    const {stdout: hgStatusStdout} = await spawnSafe(
+      'hg',
+      ['status', 'BUILD_INFO'],
+      {cwd: packagePath, stdio: ['ignore', 'pipe', 'inherit']},
+    );
+    if (hgStatusStdout.toString().trim() !== '') {
+      throw new Error(
+        'Must have a clean base BUILD_INFO file to create a diff',
+      );
+    }
+    const {gitRevision: baseGitRevision} = await readBuildInfo(packagePath);
+    return {
+      packagePath,
+      baseGitRevision,
+    };
+  } catch (e) {
+    process.stderr.write('Must have a BUILD_INFO file to create a diff\n');
+    throw e;
+  }
+}
+
+async function readBuildInfo(
+  packagePath /*: string*/,
+) /*: Promise<ParsedBuildInfo> */ {
+  const buildInfo = await fs.readFile(
+    path.join(packagePath, 'BUILD_INFO'),
+    'utf8',
+  );
+  const GIT_REV_RE = /^Git revision: ([0-9a-f]{40})/m;
+  const gitRevision = nullthrows(
+    GIT_REV_RE.exec(buildInfo),
+    'Could not extract git revision from BUILD_INFO',
+  )[1];
+  const isLocalCheckout = !/^Is local checkout: false$/m.test(buildInfo);
+  return {
+    isLocalCheckout,
+    gitRevision,
+  };
+}
+
+async function createSyncDiff(
+  diffBaseInfo /*: DiffBaseInfo */,
+  scratchPath /*: string */,
+) {
+  process.stdout.write('Creating a sync diff\n');
+  const {packagePath, baseGitRevision} = diffBaseInfo;
+  const baseGitRevisionShort = baseGitRevision.slice(0, 7);
+  const {gitRevision: newGitRevision, isLocalCheckout} =
+    await readBuildInfo(packagePath);
+  const newGitRevisionShort = newGitRevision.slice(0, 7);
+
+  const commitMessage = [
+    (isLocalCheckout ? 'DO NOT LAND ' : '') +
+      `[RN] Update debugger-frontend from ${baseGitRevisionShort}...${newGitRevisionShort}`,
+    '',
+    'Summary:',
+    `Changelog: [Internal] - Update \`@react-native/debugger-frontend\` from ${baseGitRevisionShort}...${newGitRevisionShort}`,
+    '',
+    `Resyncs \`@react-native/debugger-frontend\` from GitHub - see \`rn-chrome-devtools-frontend\` [changelog](${DEVTOOLS_FRONTEND_REPO_URL}/compare/${baseGitRevision}...${newGitRevision}).`,
+    '',
+    'Test Plan: CI',
+    '',
+    'Reviewers: #rn-debugging',
+    '',
+    'Tags: msdkland[metro]',
+    '',
+  ].join('\n');
+
+  // TODO: Generate a detailed inline changelog from Git commits?
+
+  const commitMessageFile = path.join(scratchPath, 'commit-msg');
+  await fs.writeFile(commitMessageFile, commitMessage);
+  await spawnSafe(
+    'hg',
+    ['commit', packagePath, '--addremove', '-l', commitMessageFile],
+    {cwd: packagePath},
+  );
+  await spawnSafe('jf', ['submit', '--draft'], {
+    cwd: packagePath,
+  });
 }
 
 if (require.main === module) {

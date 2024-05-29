@@ -7,93 +7,30 @@
 
 package com.facebook.react.fabric;
 
-import static com.facebook.react.bridge.ReactMarkerConstants.*;
+import static com.facebook.react.bridge.ReactMarkerConstants.FABRIC_BATCH_EXECUTION_END;
+import static com.facebook.react.bridge.ReactMarkerConstants.FABRIC_BATCH_EXECUTION_START;
+import static com.facebook.react.bridge.ReactMarkerConstants.FABRIC_COMMIT_END;
+import static com.facebook.react.bridge.ReactMarkerConstants.FABRIC_COMMIT_START;
+import static com.facebook.react.bridge.ReactMarkerConstants.FABRIC_DIFF_END;
+import static com.facebook.react.bridge.ReactMarkerConstants.FABRIC_DIFF_START;
+import static com.facebook.react.bridge.ReactMarkerConstants.FABRIC_FINISH_TRANSACTION_END;
+import static com.facebook.react.bridge.ReactMarkerConstants.FABRIC_FINISH_TRANSACTION_START;
+import static com.facebook.react.bridge.ReactMarkerConstants.FABRIC_LAYOUT_AFFECTED_NODES;
+import static com.facebook.react.bridge.ReactMarkerConstants.FABRIC_LAYOUT_END;
+import static com.facebook.react.bridge.ReactMarkerConstants.FABRIC_LAYOUT_START;
+import static com.facebook.react.bridge.ReactMarkerConstants.FABRIC_UPDATE_UI_MAIN_THREAD_END;
+import static com.facebook.react.bridge.ReactMarkerConstants.FABRIC_UPDATE_UI_MAIN_THREAD_START;
 
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.Queue;
 
-class LongStreamingStats {
-  // TODO(T138627466): Calculate median value with better algorithm after Android API 24.
-  private Queue<Long> minHeap =
-      new PriorityQueue<>(
-          11,
-          new Comparator<Long>() {
-            @Override
-            public int compare(Long first, Long second) {
-              // Natural order
-              return Long.compare(first, second);
-            }
-          });
-  private Queue<Long> maxHeap =
-      new PriorityQueue<>(
-          11,
-          new Comparator<Long>() {
-            @Override
-            public int compare(Long first, Long second) {
-              // Reversed order
-              return Long.compare(second, first);
-            }
-          });
-  private double streamingAverage = 0.0;
-  private int len = 0;
-  private long max = 0;
-
-  LongStreamingStats() {}
-
-  public void add(long n) {
-    // To make medians more useful, we discard all zero values
-    // This isn't perfect and certainly makes this a totally invalid median, but, alas...
-    if (n != 0) {
-      if (minHeap.size() == maxHeap.size()) {
-        maxHeap.offer(n);
-        minHeap.offer(maxHeap.poll());
-      } else {
-        minHeap.offer(n);
-        maxHeap.offer(minHeap.poll());
-      }
-    }
-
-    len++;
-    if (len == 1) {
-      streamingAverage = n;
-    } else {
-      streamingAverage = (streamingAverage / (len / (len - 1))) + (n / len);
-    }
-
-    max = (n > max ? n : max);
-  }
-
-  public double getMedian() {
-    if (minHeap.size() == 0 && maxHeap.size() == 0) {
-      return 0;
-    }
-
-    long median;
-    if (minHeap.size() > maxHeap.size()) {
-      median = minHeap.peek();
-    } else {
-      median = (minHeap.peek() + maxHeap.peek()) / 2;
-    }
-    return median;
-  }
-
-  public double getAverage() {
-    return streamingAverage;
-  }
-
-  public long getMax() {
-    return max;
-  }
-}
-
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class DevToolsReactPerfLogger implements ReactMarker.FabricMarkerListener {
 
   private final Map<Integer, FabricCommitPoint> mFabricCommitMarkers = new HashMap<>();
@@ -116,8 +53,8 @@ public class DevToolsReactPerfLogger implements ReactMarker.FabricMarkerListener
     private final int mCounter;
 
     public FabricCommitPointData(long timeStamp, int counter) {
-      this.mTimeStamp = timeStamp;
-      this.mCounter = counter;
+      mTimeStamp = timeStamp;
+      mCounter = counter;
     }
 
     public long getTimeStamp() {
@@ -134,7 +71,7 @@ public class DevToolsReactPerfLogger implements ReactMarker.FabricMarkerListener
     private final Map<ReactMarkerConstants, FabricCommitPointData> mPoints = new HashMap<>();
 
     private FabricCommitPoint(int commitNumber) {
-      this.mCommitNumber = commitNumber;
+      mCommitNumber = commitNumber;
     }
 
     private void addPoint(ReactMarkerConstants key, FabricCommitPointData data) {
@@ -191,6 +128,10 @@ public class DevToolsReactPerfLogger implements ReactMarker.FabricMarkerListener
       return getCounter(FABRIC_LAYOUT_AFFECTED_NODES);
     }
 
+    public long getAffectedLayoutNodesCountTime() {
+      return getTimestamp(FABRIC_LAYOUT_AFFECTED_NODES);
+    }
+
     public long getBatchExecutionStart() {
       return getTimestamp(FABRIC_BATCH_EXECUTION_START);
     }
@@ -228,6 +169,7 @@ public class DevToolsReactPerfLogger implements ReactMarker.FabricMarkerListener
       return getBatchExecutionEnd() - getBatchExecutionStart();
     }
 
+    @Override
     public String toString() {
       StringBuilder builder = new StringBuilder("FabricCommitPoint{");
       builder.append("mCommitNumber=").append(mCommitNumber);

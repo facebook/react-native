@@ -11,16 +11,18 @@
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type {CompositeAnimation} from 'react-native/Libraries/Animated/AnimatedMock';
 import type AnimatedValue from 'react-native/Libraries/Animated/nodes/AnimatedValue';
-import * as React from 'react';
-import RNTesterButton from '../../components/RNTesterButton';
-import ToggleNativeDriver from './utils/ToggleNativeDriver';
+
 import RNTConfigurationBlock from '../../components/RNTConfigurationBlock';
+import RNTesterButton from '../../components/RNTesterButton';
+import {RNTesterThemeContext} from '../../components/RNTesterTheme';
+import ToggleNativeDriver from './utils/ToggleNativeDriver';
+import * as React from 'react';
 import {
-  Text,
-  StyleSheet,
-  View,
   Animated,
   FlatList,
+  StyleSheet,
+  Text,
+  View,
   useWindowDimensions,
 } from 'react-native';
 
@@ -151,11 +153,14 @@ function ComposingExampleItem({
   const animation = React.useRef(
     compositeAnimation(xTranslations.current, useNativeDriver),
   );
+  const theme = React.useContext(RNTesterThemeContext);
 
   return (
     <View style={styles.itemContainer}>
-      <Text style={styles.itemTitle}>{title}</Text>
-      <Text>{description}</Text>
+      <Text style={[styles.itemTitle, {color: theme.SecondaryLabelColor}]}>
+        {title}
+      </Text>
+      <Text style={{color: theme.SecondaryLabelColor}}>{description}</Text>
       <View style={styles.boxesContainer}>
         {boxIndexes.map(boxIndex => {
           const translateX = xTranslations.current[boxIndex].interpolate({

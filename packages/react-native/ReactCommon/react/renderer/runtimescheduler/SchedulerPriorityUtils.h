@@ -38,7 +38,7 @@ static inline SchedulerPriority fromRawValue(double value) {
 }
 
 static inline std::chrono::milliseconds timeoutForSchedulerPriority(
-    SchedulerPriority schedulerPriority) {
+    SchedulerPriority schedulerPriority) noexcept {
   switch (schedulerPriority) {
     case SchedulerPriority::ImmediatePriority:
       return std::chrono::milliseconds(-1);

@@ -12,6 +12,7 @@
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
 
+#include <ReactCommon/CxxTurboModuleUtils.h>
 #include <ReactCommon/JavaInteropTurboModule.h>
 #include <ReactCommon/TurboCxxModule.h>
 #include <ReactCommon/TurboModuleBinding.h>
@@ -26,7 +27,7 @@ namespace {
 class JMethodDescriptor : public jni::JavaClass<JMethodDescriptor> {
  public:
   static auto constexpr kJavaDescriptor =
-      "Lcom/facebook/react/turbomodule/core/TurboModuleInteropUtils$MethodDescriptor;";
+      "Lcom/facebook/react/internal/turbomodule/core/TurboModuleInteropUtils$MethodDescriptor;";
 
   JavaInteropTurboModule::MethodDescriptor toMethodDescriptor() {
     return JavaInteropTurboModule::MethodDescriptor{
@@ -92,28 +93,25 @@ class JMethodDescriptor : public jni::JavaClass<JMethodDescriptor> {
 } // namespace
 
 TurboModuleManager::TurboModuleManager(
-    jni::alias_ref<TurboModuleManager::javaobject> jThis,
     RuntimeExecutor runtimeExecutor,
     std::shared_ptr<CallInvoker> jsCallInvoker,
     std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker,
     jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate)
-    : javaPart_(jni::make_global(jThis)),
-      runtimeExecutor_(runtimeExecutor),
-      jsCallInvoker_(jsCallInvoker),
-      nativeMethodCallInvoker_(nativeMethodCallInvoker),
+    : runtimeExecutor_(std::move(runtimeExecutor)),
+      jsCallInvoker_(std::move(jsCallInvoker)),
+      nativeMethodCallInvoker_(std::move(nativeMethodCallInvoker)),
       delegate_(jni::make_global(delegate)),
       turboModuleCache_(std::make_shared<ModuleCache>()),
       legacyModuleCache_(std::make_shared<ModuleCache>()) {}
 
 jni::local_ref<TurboModuleManager::jhybriddata> TurboModuleManager::initHybrid(
-    jni::alias_ref<jhybridobject> jThis,
+    jni::alias_ref<jhybridobject> /* unused */,
     jni::alias_ref<JRuntimeExecutor::javaobject> runtimeExecutor,
     jni::alias_ref<CallInvokerHolder::javaobject> jsCallInvokerHolder,
     jni::alias_ref<NativeMethodCallInvokerHolder::javaobject>
         nativeMethodCallInvokerHolder,
     jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate) {
   return makeCxxInstance(
-      jThis,
       runtimeExecutor->cthis()->get(),
       jsCallInvokerHolder->cthis()->getCallInvoker(),
       nativeMethodCallInvokerHolder->cthis()->getNativeMethodCallInvoker(),
@@ -128,20 +126,22 @@ void TurboModuleManager::registerNatives() {
   });
 }
 
-TurboModuleProviderFunctionType
-TurboModuleManager::createTurboModuleProvider() {
+TurboModuleProviderFunctionType TurboModuleManager::createTurboModuleProvider(
+    jni::alias_ref<jhybridobject> javaPart,
+    bool enableSyncVoidMethods) {
   return [turboModuleCache_ = std::weak_ptr<ModuleCache>(turboModuleCache_),
           jsCallInvoker_ = std::weak_ptr<CallInvoker>(jsCallInvoker_),
           nativeMethodCallInvoker_ =
               std::weak_ptr<NativeMethodCallInvoker>(nativeMethodCallInvoker_),
-          delegate_ = jni::make_weak(delegate_),
-          javaPart_ = jni::make_weak(javaPart_)](
+          weakDelegate = jni::make_weak(delegate_),
+          weakJavaPart = jni::make_weak(javaPart),
+          enableSyncVoidMethods](
              const std::string& name) -> std::shared_ptr<TurboModule> {
     auto turboModuleCache = turboModuleCache_.lock();
     auto jsCallInvoker = jsCallInvoker_.lock();
     auto nativeMethodCallInvoker = nativeMethodCallInvoker_.lock();
-    auto delegate = delegate_.lockLocal();
-    auto javaPart = javaPart_.lockLocal();
+    auto delegate = weakDelegate.lockLocal();
+    auto javaPart = weakJavaPart.lockLocal();
 
     if (!turboModuleCache || !jsCallInvoker || !nativeMethodCallInvoker ||
         !delegate || !javaPart) {
@@ -165,6 +165,14 @@ TurboModuleManager::createTurboModuleProvider() {
     if (cxxModule) {
       turboModuleCache->insert({name, cxxModule});
       return cxxModule;
+    }
+
+    auto& cxxTurboModuleMapProvider = globalExportedCxxTurboModuleMap();
+    auto it = cxxTurboModuleMapProvider.find(name);
+    if (it != cxxTurboModuleMapProvider.end()) {
+      auto turboModule = it->second(jsCallInvoker);
+      turboModuleCache->insert({name, turboModule});
+      return turboModule;
     }
 
     static auto getTurboLegacyCxxModule =
@@ -196,7 +204,8 @@ TurboModuleManager::createTurboModuleProvider() {
           .moduleName = name,
           .instance = moduleInstance,
           .jsInvoker = jsCallInvoker,
-          .nativeMethodCallInvoker = nativeMethodCallInvoker};
+          .nativeMethodCallInvoker = nativeMethodCallInvoker,
+          .shouldVoidMethodsExecuteSync = enableSyncVoidMethods};
 
       auto turboModule = delegate->cthis()->getTurboModule(name, params);
       turboModuleCache->insert({name, turboModule});
@@ -208,20 +217,20 @@ TurboModuleManager::createTurboModuleProvider() {
   };
 }
 
-TurboModuleProviderFunctionType
-TurboModuleManager::createLegacyModuleProvider() {
+TurboModuleProviderFunctionType TurboModuleManager::createLegacyModuleProvider(
+    jni::alias_ref<jhybridobject> javaPart) {
   return [legacyModuleCache_ = std::weak_ptr<ModuleCache>(legacyModuleCache_),
           jsCallInvoker_ = std::weak_ptr<CallInvoker>(jsCallInvoker_),
           nativeMethodCallInvoker_ =
               std::weak_ptr<NativeMethodCallInvoker>(nativeMethodCallInvoker_),
-          delegate_ = jni::make_weak(delegate_),
-          javaPart_ = jni::make_weak(javaPart_)](
+          weakDelegate = jni::make_weak(delegate_),
+          weakJavaPart = jni::make_weak(javaPart)](
              const std::string& name) -> std::shared_ptr<TurboModule> {
     auto legacyModuleCache = legacyModuleCache_.lock();
     auto jsCallInvoker = jsCallInvoker_.lock();
     auto nativeMethodCallInvoker = nativeMethodCallInvoker_.lock();
-    auto delegate = delegate_.lockLocal();
-    auto javaPart = javaPart_.lockLocal();
+    auto delegate = weakDelegate.lockLocal();
+    auto javaPart = weakJavaPart.lockLocal();
 
     if (!legacyModuleCache || !jsCallInvoker || !nativeMethodCallInvoker ||
         !delegate || !javaPart) {
@@ -270,7 +279,8 @@ TurboModuleManager::createLegacyModuleProvider() {
           .moduleName = name,
           .instance = moduleInstance,
           .jsInvoker = jsCallInvoker,
-          .nativeMethodCallInvoker = nativeMethodCallInvoker};
+          .nativeMethodCallInvoker = nativeMethodCallInvoker,
+          .shouldVoidMethodsExecuteSync = false};
 
       static auto getMethodDescriptorsFromModule =
           javaPart->getClass()
@@ -300,21 +310,25 @@ TurboModuleManager::createLegacyModuleProvider() {
   };
 }
 
-void TurboModuleManager::installJSIBindings(bool shouldCreateLegacyModules) {
-  if (!jsCallInvoker_) {
+void TurboModuleManager::installJSIBindings(
+    jni::alias_ref<jhybridobject> javaPart,
+    bool shouldCreateLegacyModules,
+    bool enableSyncVoidMethods) {
+  auto cxxPart = javaPart->cthis();
+  if (cxxPart == nullptr || !cxxPart->jsCallInvoker_) {
     return; // Runtime doesn't exist when attached to Chrome debugger.
   }
 
-  bool isInteropLayerDisabled = !shouldCreateLegacyModules;
-
-  runtimeExecutor_([this, isInteropLayerDisabled](jsi::Runtime& runtime) {
-    if (isInteropLayerDisabled) {
-      TurboModuleBinding::install(runtime, createTurboModuleProvider());
-      return;
-    }
-
+  cxxPart->runtimeExecutor_([cxxPart,
+                             javaPart = jni::make_global(javaPart),
+                             shouldCreateLegacyModules,
+                             enableSyncVoidMethods](jsi::Runtime& runtime) {
     TurboModuleBinding::install(
-        runtime, createTurboModuleProvider(), createLegacyModuleProvider());
+        runtime,
+        cxxPart->createTurboModuleProvider(javaPart, enableSyncVoidMethods),
+        shouldCreateLegacyModules
+            ? cxxPart->createLegacyModuleProvider(javaPart)
+            : nullptr);
   });
 }
 

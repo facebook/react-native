@@ -14,12 +14,9 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class ArrayPropsNativeComponentState {
 public:
@@ -30,14 +27,10 @@ public:
   folly::dynamic getDynamic() const {
     return {};
   };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
-  };
 #endif
 };
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -55,12 +48,9 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class ArrayPropsNativeComponentState {
 public:
@@ -71,14 +61,10 @@ public:
   folly::dynamic getDynamic() const {
     return {};
   };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
-  };
 #endif
 };
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -96,12 +82,9 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class BooleanPropNativeComponentState {
 public:
@@ -112,14 +95,10 @@ public:
   folly::dynamic getDynamic() const {
     return {};
   };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
-  };
 #endif
 };
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -137,12 +116,9 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class ColorPropNativeComponentState {
 public:
@@ -153,14 +129,10 @@ public:
   folly::dynamic getDynamic() const {
     return {};
   };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
-  };
 #endif
 };
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -178,12 +150,9 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class CommandNativeComponentState {
 public:
@@ -194,14 +163,10 @@ public:
   folly::dynamic getDynamic() const {
     return {};
   };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
-  };
 #endif
 };
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -219,12 +184,9 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class CommandNativeComponentState {
 public:
@@ -235,14 +197,10 @@ public:
   folly::dynamic getDynamic() const {
     return {};
   };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
-  };
 #endif
 };
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -260,12 +218,9 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class DimensionPropNativeComponentState {
 public:
@@ -276,14 +231,10 @@ public:
   folly::dynamic getDynamic() const {
     return {};
   };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
-  };
 #endif
 };
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -301,12 +252,9 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class DoublePropNativeComponentState {
 public:
@@ -317,14 +265,10 @@ public:
   folly::dynamic getDynamic() const {
     return {};
   };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
-  };
 #endif
 };
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -342,12 +286,9 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class EventsNestedObjectNativeComponentState {
 public:
@@ -358,14 +299,10 @@ public:
   folly::dynamic getDynamic() const {
     return {};
   };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
-  };
 #endif
 };
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -383,12 +320,9 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class EventsNativeComponentState {
 public:
@@ -399,14 +333,10 @@ public:
   folly::dynamic getDynamic() const {
     return {};
   };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
-  };
 #endif
 };
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -424,17 +354,13 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -452,12 +378,9 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class ExcludedAndroidComponentState {
 public:
@@ -468,14 +391,10 @@ public:
   folly::dynamic getDynamic() const {
     return {};
   };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
-  };
 #endif
 };
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -493,12 +412,9 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class ExcludedAndroidIosComponentState {
 public:
@@ -509,14 +425,10 @@ public:
   folly::dynamic getDynamic() const {
     return {};
   };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
-  };
 #endif
 };
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -534,12 +446,9 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class ExcludedIosComponentState {
 public:
@@ -549,9 +458,6 @@ public:
   ExcludedIosComponentState(ExcludedIosComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
-  };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
   };
 #endif
 };
@@ -565,14 +471,10 @@ public:
   folly::dynamic getDynamic() const {
     return {};
   };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
-  };
 #endif
 };
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -590,12 +492,9 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class FloatPropNativeComponentState {
 public:
@@ -606,14 +505,10 @@ public:
   folly::dynamic getDynamic() const {
     return {};
   };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
-  };
 #endif
 };
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -631,12 +526,9 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class ImagePropNativeComponentState {
 public:
@@ -647,14 +539,10 @@ public:
   folly::dynamic getDynamic() const {
     return {};
   };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
-  };
 #endif
 };
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -672,12 +560,9 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class InsetsPropNativeComponentState {
 public:
@@ -688,14 +573,10 @@ public:
   folly::dynamic getDynamic() const {
     return {};
   };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
-  };
 #endif
 };
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -713,12 +594,9 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class Int32EnumPropsNativeComponentState {
 public:
@@ -729,14 +607,10 @@ public:
   folly::dynamic getDynamic() const {
     return {};
   };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
-  };
 #endif
 };
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -754,12 +628,9 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class IntegerPropNativeComponentState {
 public:
@@ -770,14 +641,10 @@ public:
   folly::dynamic getDynamic() const {
     return {};
   };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
-  };
 #endif
 };
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -795,17 +662,13 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -823,12 +686,9 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class MixedPropNativeComponentState {
 public:
@@ -839,14 +699,10 @@ public:
   folly::dynamic getDynamic() const {
     return {};
   };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
-  };
 #endif
 };
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -864,12 +720,9 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class ImageColorPropNativeComponentState {
 public:
@@ -880,14 +733,10 @@ public:
   folly::dynamic getDynamic() const {
     return {};
   };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
-  };
 #endif
 };
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -905,12 +754,9 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class NoPropsNoEventsComponentState {
 public:
@@ -921,14 +767,10 @@ public:
   folly::dynamic getDynamic() const {
     return {};
   };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
-  };
 #endif
 };
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -946,12 +788,9 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class ObjectPropsState {
 public:
@@ -962,14 +801,10 @@ public:
   folly::dynamic getDynamic() const {
     return {};
   };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
-  };
 #endif
 };
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -987,12 +822,9 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class PointPropNativeComponentState {
 public:
@@ -1003,14 +835,10 @@ public:
   folly::dynamic getDynamic() const {
     return {};
   };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
-  };
 #endif
 };
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -1028,12 +856,9 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class StringEnumPropsNativeComponentState {
 public:
@@ -1044,14 +869,10 @@ public:
   folly::dynamic getDynamic() const {
     return {};
   };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
-  };
 #endif
 };
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -1069,12 +890,9 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class StringPropComponentState {
 public:
@@ -1085,14 +903,10 @@ public:
   folly::dynamic getDynamic() const {
     return {};
   };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
-  };
 #endif
 };
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -1110,12 +924,9 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class MultiFile1NativeComponentState {
 public:
@@ -1125,9 +936,6 @@ public:
   MultiFile1NativeComponentState(MultiFile1NativeComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
-  };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
   };
 #endif
 };
@@ -1141,14 +949,10 @@ public:
   folly::dynamic getDynamic() const {
     return {};
   };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
-  };
 #endif
 };
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;
 
@@ -1166,12 +970,9 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class MultiComponent1NativeComponentState {
 public:
@@ -1181,9 +982,6 @@ public:
   MultiComponent1NativeComponentState(MultiComponent1NativeComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
-  };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
   };
 #endif
 };
@@ -1197,13 +995,9 @@ public:
   folly::dynamic getDynamic() const {
     return {};
   };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
-  };
 #endif
 };
 
-} // namespace react
-} // namespace facebook",
+} // namespace facebook::react",
 }
 `;

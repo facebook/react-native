@@ -46,7 +46,7 @@ class RawPropsParser final {
     ContextContainer contextContainer{};
     PropsParserContext parserContext{-1, contextContainer};
 
-    emptyRawProps.parse(*this, parserContext);
+    emptyRawProps.parse(*this);
     PropsT(parserContext, {}, emptyRawProps);
     postPrepare();
   }
@@ -79,7 +79,7 @@ class RawPropsParser final {
   void iterateOverValues(
       const RawProps& rawProps,
       const std::function<
-          void(RawPropsPropNameHash, const char*, RawValue const&)>& visit)
+          void(RawPropsPropNameHash, const char*, const RawValue&)>& visit)
       const;
 
   mutable std::vector<RawPropsKey> keys_{};

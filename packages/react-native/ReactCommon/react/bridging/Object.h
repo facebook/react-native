@@ -31,7 +31,7 @@ struct Bridging<
     std::shared_ptr<T>,
     std::enable_if_t<std::is_base_of_v<jsi::HostObject, T>>> {
   static std::shared_ptr<T> fromJs(jsi::Runtime& rt, const jsi::Object& value) {
-    return value.asHostObject<T>(rt);
+    return value.getHostObject<T>(rt);
   }
 
   static jsi::Object toJs(jsi::Runtime& rt, std::shared_ptr<T> value) {

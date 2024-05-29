@@ -10,7 +10,11 @@
 #include <yoga/Yoga.h>
 
 #include <yoga/debug/AssertFatal.h>
+#include <yoga/enums/Dimension.h>
+#include <yoga/enums/Direction.h>
+#include <yoga/enums/Edge.h>
 #include <yoga/enums/FlexDirection.h>
+#include <yoga/enums/PhysicalEdge.h>
 
 namespace facebook::yoga {
 
@@ -46,46 +50,68 @@ inline FlexDirection resolveCrossDirection(
       : FlexDirection::Column;
 }
 
-inline YGEdge leadingEdge(const FlexDirection flexDirection) {
+inline PhysicalEdge flexStartEdge(FlexDirection flexDirection) {
   switch (flexDirection) {
     case FlexDirection::Column:
-      return YGEdgeTop;
+      return PhysicalEdge::Top;
     case FlexDirection::ColumnReverse:
-      return YGEdgeBottom;
+      return PhysicalEdge::Bottom;
     case FlexDirection::Row:
-      return YGEdgeLeft;
+      return PhysicalEdge::Left;
     case FlexDirection::RowReverse:
-      return YGEdgeRight;
+      return PhysicalEdge::Right;
   }
 
   fatalWithMessage("Invalid FlexDirection");
 }
 
-inline YGEdge trailingEdge(const FlexDirection flexDirection) {
+inline PhysicalEdge flexEndEdge(FlexDirection flexDirection) {
   switch (flexDirection) {
     case FlexDirection::Column:
-      return YGEdgeBottom;
+      return PhysicalEdge::Bottom;
     case FlexDirection::ColumnReverse:
-      return YGEdgeTop;
+      return PhysicalEdge::Top;
     case FlexDirection::Row:
-      return YGEdgeRight;
+      return PhysicalEdge::Right;
     case FlexDirection::RowReverse:
-      return YGEdgeLeft;
+      return PhysicalEdge::Left;
   }
 
   fatalWithMessage("Invalid FlexDirection");
 }
 
-inline YGDimension dimension(const FlexDirection flexDirection) {
+inline PhysicalEdge inlineStartEdge(
+    FlexDirection flexDirection,
+    Direction direction) {
+  if (isRow(flexDirection)) {
+    return direction == Direction::RTL ? PhysicalEdge::Right
+                                       : PhysicalEdge::Left;
+  }
+
+  return PhysicalEdge::Top;
+}
+
+inline PhysicalEdge inlineEndEdge(
+    FlexDirection flexDirection,
+    Direction direction) {
+  if (isRow(flexDirection)) {
+    return direction == Direction::RTL ? PhysicalEdge::Left
+                                       : PhysicalEdge::Right;
+  }
+
+  return PhysicalEdge::Bottom;
+}
+
+inline Dimension dimension(FlexDirection flexDirection) {
   switch (flexDirection) {
     case FlexDirection::Column:
-      return YGDimensionHeight;
+      return Dimension::Height;
     case FlexDirection::ColumnReverse:
-      return YGDimensionHeight;
+      return Dimension::Height;
     case FlexDirection::Row:
-      return YGDimensionWidth;
+      return Dimension::Width;
     case FlexDirection::RowReverse:
-      return YGDimensionWidth;
+      return Dimension::Width;
   }
 
   fatalWithMessage("Invalid FlexDirection");

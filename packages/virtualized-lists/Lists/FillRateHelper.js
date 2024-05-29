@@ -11,6 +11,7 @@
 'use strict';
 
 import type {CellMetricProps} from './ListMetricsAggregator';
+
 import ListMetricsAggregator from './ListMetricsAggregator';
 
 export type FillRateInfo = Info;
@@ -121,6 +122,7 @@ class FillRateHelper {
       };
       for (const key in derived) {
         // $FlowFixMe[prop-missing]
+        // $FlowFixMe[invalid-computed-prop]
         derived[key] = Math.round(1000 * derived[key]) / 1000;
       }
       console.debug('FillRateHelper deactivateAndFlush: ', {derived, info});

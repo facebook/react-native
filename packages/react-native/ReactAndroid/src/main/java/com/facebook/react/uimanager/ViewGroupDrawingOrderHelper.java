@@ -10,11 +10,15 @@ package com.facebook.react.uimanager;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.Nullable;
+import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Nullsafe;
+import com.facebook.react.common.ReactConstants;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
 /** Helper to handle implementing ViewGroups with custom drawing order based on z-index. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ViewGroupDrawingOrderHelper {
   private final ViewGroup mViewGroup;
   private int mNumberOfChildrenWithZIndex = 0;
@@ -65,6 +69,17 @@ public class ViewGroupDrawingOrderHelper {
    * ViewGroup#getChildDrawingOrder}.
    */
   public int getChildDrawingOrder(int childCount, int index) {
+    if (mDrawingOrderIndices != null
+        && (index >= mDrawingOrderIndices.length || mDrawingOrderIndices[index] >= childCount)) {
+      FLog.w(
+          ReactConstants.TAG,
+          "getChildDrawingOrder index out of bounds! Please check any custom view manipulations you"
+              + " may have done. childCount = %d, index = %d",
+          childCount,
+          index);
+      update();
+    }
+
     if (mDrawingOrderIndices == null) {
       ArrayList<View> viewsToSort = new ArrayList<>();
       for (int i = 0; i < childCount; i++) {

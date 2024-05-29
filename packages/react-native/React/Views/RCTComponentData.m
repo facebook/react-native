@@ -71,7 +71,7 @@ static SEL selectorForType(NSString *type)
                                                         object:nil
                                                       userInfo:@{@"module" : _bridgelessViewManager}];
   }
-  return _manager ?: _bridgelessViewManager;
+  return _manager ? _manager : _bridgelessViewManager;
 }
 
 RCT_NOT_IMPLEMENTED(-(instancetype)init)
@@ -366,23 +366,22 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
 
 - (void)setProps:(NSDictionary<NSString *, id> *)props forView:(id<RCTComponent>)view
 {
+  [self setProps:props forView:view isShadowView:NO];
+}
+
+- (void)setProps:(NSDictionary<NSString *, id> *)props forShadowView:(RCTShadowView *)shadowView
+{
+  [self setProps:props forView:shadowView isShadowView:YES];
+}
+
+- (void)setProps:(NSDictionary<NSString *, id> *)props forView:(id<RCTComponent>)view isShadowView:(BOOL)isShadowView
+{
   if (!view) {
     return;
   }
 
   [props enumerateKeysAndObjectsUsingBlock:^(NSString *key, id json, __unused BOOL *stop) {
-    [self propBlockForKey:key isShadowView:NO](view, json);
-  }];
-}
-
-- (void)setProps:(NSDictionary<NSString *, id> *)props forShadowView:(RCTShadowView *)shadowView
-{
-  if (!shadowView) {
-    return;
-  }
-
-  [props enumerateKeysAndObjectsUsingBlock:^(NSString *key, id json, __unused BOOL *stop) {
-    [self propBlockForKey:key isShadowView:YES](shadowView, json);
+    [self propBlockForKey:key isShadowView:isShadowView](view, json);
   }];
 }
 
@@ -412,6 +411,27 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
     commands[@"getConstants"] = @(commandCount);
   }
   return commands;
+}
+
++ (NSDictionary<NSString *, id> *)constantsForViewMangerClass:(Class)managerClass
+{
+  if ([managerClass instancesRespondToSelector:@selector(constantsToExport)]) {
+    BOOL shouldRunOnMainThread = NO;
+
+    if ([managerClass respondsToSelector:@selector(requiresMainQueueSetup)]) {
+      shouldRunOnMainThread = [managerClass requiresMainQueueSetup];
+    }
+    if (shouldRunOnMainThread) {
+      __block NSDictionary<NSString *, id> *constants;
+      RCTUnsafeExecuteOnMainQueueSync(^{
+        constants = [[managerClass new] constantsToExport];
+      });
+      return constants;
+    } else {
+      return [[managerClass new] constantsToExport];
+    }
+  }
+  return @{};
 }
 
 + (NSDictionary<NSString *, id> *)viewConfigForViewMangerClass:(Class)managerClass
@@ -472,11 +492,6 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
     }
   }
 
-  NSDictionary<NSString *, NSNumber *> *commands = [self commandsForViewMangerClass:managerClass
-                                                                            methods:methods
-                                                                        methodCount:count];
-  free(methods);
-
 #if RCT_DEBUG
   for (NSString *event in bubblingEvents) {
     if ([directEvents containsObject:event]) {
@@ -491,14 +506,22 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
 
   Class superClass = [managerClass superclass];
 
-  return @{
+  NSMutableDictionary *result = [[NSMutableDictionary alloc] initWithDictionary:@{
     @"propTypes" : propTypes,
     @"directEvents" : directEvents,
     @"bubblingEvents" : bubblingEvents,
     @"capturingEvents" : capturingEvents,
     @"baseModuleName" : superClass == [NSObject class] ? (id)kCFNull : RCTViewManagerModuleNameForClass(superClass),
-    @"Commands" : commands,
-  };
+  }];
+
+  if (RCTGetUseNativeViewConfigsInBridgelessMode()) {
+    result[@"Commands"] = [self commandsForViewMangerClass:managerClass methods:methods methodCount:count];
+    result[@"Constants"] = [self constantsForViewMangerClass:managerClass];
+  }
+
+  free(methods);
+
+  return result;
 }
 
 - (NSDictionary<NSString *, id> *)viewConfig

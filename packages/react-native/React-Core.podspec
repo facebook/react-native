@@ -16,13 +16,14 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -Wno-comma -Wno-shorten-64-to-32'
-folly_version = '2022.05.16.00'
-socket_rocket_version = '0.6.0'
+folly_config = get_folly_config()
+folly_compiler_flags = folly_config[:compiler_flags]
+folly_version = folly_config[:version]
+socket_rocket_version = '0.7.0'
 boost_compiler_flags = '-Wno-documentation'
 
 use_hermes = ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == '1'
-use_frameworks = ENV['USE_FRAMEWORKS'] != nil
+use_hermes_flag = use_hermes ? "-DUSE_HERMES=1" : ""
 
 header_subspecs = {
   'CoreModulesHeaders'          => 'React/CoreModules/**/*.h',
@@ -40,8 +41,6 @@ header_subspecs = {
 
 frameworks_search_paths = []
 frameworks_search_paths << "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-hermes\"" if use_hermes
-frameworks_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon\"" if use_frameworks
-frameworks_search_paths << "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-RCTFabric\"" if use_frameworks
 
 header_search_paths = [
   "$(PODS_TARGET_SRCROOT)/ReactCommon",
@@ -51,15 +50,10 @@ header_search_paths = [
   "$(PODS_ROOT)/RCT-Folly",
   "${PODS_ROOT}/Headers/Public/FlipperKit",
   "$(PODS_ROOT)/Headers/Public/ReactCommon",
-  "$(PODS_ROOT)/Headers/Public/React-RCTFabric"
 ].concat(use_hermes ? [
   "$(PODS_ROOT)/Headers/Public/React-hermes",
   "$(PODS_ROOT)/Headers/Public/hermes-engine"
-] : []).concat(use_frameworks ? [
-  "$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers",
-  "$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core",
-  "$(PODS_CONFIGURATION_BUILD_DIR)/React-NativeModulesApple/React_NativeModulesApple.framework/Headers"
-] : []).map{|p| "\"#{p}\""}.join(" ")
+] : [])
 
 Pod::Spec.new do |s|
   s.name                   = "React-Core"
@@ -71,7 +65,7 @@ Pod::Spec.new do |s|
   s.platforms              = min_supported_versions
   s.source                 = source
   s.resource_bundle        = { "RCTI18nStrings" => ["React/I18n/strings/*.lproj"]}
-  s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
+  s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags + ' ' + use_hermes_flag
   s.header_dir             = "React"
   s.framework              = "JavaScriptCore"
   s.pod_target_xcconfig    = {
@@ -109,7 +103,7 @@ Pod::Spec.new do |s|
 
     ss.dependency "React-Core/Default", version
     ss.dependency "React-Core/RCTWebSocket", version
-    ss.dependency "React-jsinspector", version
+    ss.private_header_files = "React/Inspector/RCTCxx*.h"
   end
 
   s.subspec "RCTWebSocket" do |ss|
@@ -132,10 +126,16 @@ Pod::Spec.new do |s|
   s.dependency "React-jsi"
   s.dependency "React-jsiexecutor"
   s.dependency "React-utils"
+  s.dependency "React-featureflags"
   s.dependency "SocketRocket", socket_rocket_version
   s.dependency "React-runtimescheduler"
   s.dependency "Yoga"
   s.dependency "glog"
+
+  s.resource_bundles = {'React-Core_privacy' => 'React/Resources/PrivacyInfo.xcprivacy'}
+
+  add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
+  add_dependency(s, "RCTDeprecation")
 
   if use_hermes
     s.dependency 'React-hermes'

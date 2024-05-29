@@ -25,20 +25,15 @@ enum class LogLevel : uint8_t {
 };
 
 template <>
-constexpr inline int32_t ordinalCount<LogLevel>() {
+constexpr int32_t ordinalCount<LogLevel>() {
   return 6;
-} 
+}
 
-template <>
-constexpr inline int32_t bitCount<LogLevel>() {
-  return 3;
-} 
-
-constexpr inline LogLevel scopedEnum(YGLogLevel unscoped) {
+constexpr LogLevel scopedEnum(YGLogLevel unscoped) {
   return static_cast<LogLevel>(unscoped);
 }
 
-constexpr inline YGLogLevel unscopedEnum(LogLevel scoped) {
+constexpr YGLogLevel unscopedEnum(LogLevel scoped) {
   return static_cast<YGLogLevel>(scoped);
 }
 

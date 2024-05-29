@@ -15,9 +15,10 @@ pluginManagement {
 
 include(
     ":packages:react-native:ReactAndroid",
-    ":packages:react-native:ReactAndroid:flipper-integration",
     ":packages:react-native:ReactAndroid:hermes-engine",
     ":packages:react-native:ReactAndroid:external-artifacts",
+    ":packages:react-native-popup-menu-android:android",
+    ":packages:react-native-test-library:android",
     ":packages:rn-tester:android:app")
 
 includeBuild("packages/react-native-gradle-plugin/")

@@ -5,7 +5,6 @@
 
 require "test/unit"
 require_relative "../utils.rb"
-require_relative "../flipper.rb"
 require_relative "./test_utils/PodMock.rb"
 require_relative "./test_utils/InstallerMock.rb"
 require_relative "./test_utils/EnvironmentMock.rb"
@@ -16,6 +15,8 @@ require_relative "./test_utils/PathnameMock.rb"
 require_relative "./test_utils/TargetDefinitionMock.rb"
 require_relative "./test_utils/XcodeprojMock.rb"
 require_relative "./test_utils/XcodebuildMock.rb"
+require_relative "./test_utils/SpecMock.rb"
+require_relative "./test_utils/InstallerMock.rb"
 
 class UtilsTests < Test::Unit::TestCase
     def setup
@@ -36,6 +37,7 @@ class UtilsTests < Test::Unit::TestCase
         ENV['USE_HERMES'] = '1'
         ENV['USE_FRAMEWORKS'] = nil
         system_reset_commands
+        $RN_PLATFORMS = nil
     end
 
     # ======================= #
@@ -101,7 +103,6 @@ class UtilsTests < Test::Unit::TestCase
         assert_equal(flags, {
             :fabric_enabled => false,
             :hermes_enabled => true,
-            :flipper_configuration => FlipperConfiguration.disabled
         })
     end
 
@@ -117,7 +118,6 @@ class UtilsTests < Test::Unit::TestCase
         assert_equal(flags, {
             :fabric_enabled => false,
             :hermes_enabled => false,
-            :flipper_configuration => FlipperConfiguration.disabled
         })
     end
 
@@ -132,7 +132,6 @@ class UtilsTests < Test::Unit::TestCase
         assert_equal(flags, {
             :fabric_enabled => true,
             :hermes_enabled => true,
-            :flipper_configuration => FlipperConfiguration.disabled
         })
     end
 
@@ -148,7 +147,6 @@ class UtilsTests < Test::Unit::TestCase
         assert_equal(flags, {
             :fabric_enabled => true,
             :hermes_enabled => false,
-            :flipper_configuration => FlipperConfiguration.disabled
         })
     end
 
@@ -217,94 +215,6 @@ class UtilsTests < Test::Unit::TestCase
         assert_nil(react_core_release_config.build_settings[build_setting])
         assert_equal(expected_value, hermes_engine_debug_config.build_settings[build_setting])
         assert_nil(hermes_engine_release_config.build_settings[build_setting])
-    end
-
-    # ============================ #
-    # Test - Exclude Architectures #
-    # ============================ #
-    def test_excludeArchitectures_whenHermesEngineIsNotIncluded_withNoValue_leaveUnset
-        # Arrange
-        user_project_mock = prepare_empty_user_project_mock()
-        pods_projects_mock = PodsProjectMock.new()
-        installer = InstallerMock.new(PodsProjectMock.new(), [
-            AggregatedProjectMock.new(user_project_mock)
-        ])
-
-        # Act
-        ReactNativePodsUtils.exclude_i386_architecture_while_using_hermes(installer)
-
-        # Assert
-        user_project_mock.build_configurations.each do |config|
-            assert_equal(config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"], nil)
-        end
-        assert_equal(user_project_mock.save_invocation_count, 0)
-        assert_equal(pods_projects_mock.save_invocation_count, 0)
-    end
-
-    def test_excludeArchitectures_whenHermesEngineIsNotIncluded_withExistingValue_preserveExistingValue
-        # Arrange
-        user_project_mock = prepare_empty_user_project_mock()
-        user_project_mock.build_configurations.each do |config|
-            config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64"
-        end
-        pods_projects_mock = PodsProjectMock.new()
-        installer = InstallerMock.new(pods_projects_mock, [
-            AggregatedProjectMock.new(user_project_mock)
-        ])
-
-        # Act
-        ReactNativePodsUtils.exclude_i386_architecture_while_using_hermes(installer)
-
-        # Assert
-        user_project_mock.build_configurations.each do |config|
-            assert_equal(config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"], "arm64")
-        end
-
-        assert_equal(user_project_mock.save_invocation_count, 0)
-        assert_equal(pods_projects_mock.save_invocation_count, 0)
-    end
-
-    def test_excludeArchitectures_whenHermesEngineIsIncluded_withNoValue_onlyExcludeI386
-        # Arrange
-        user_project_mock = prepare_empty_user_project_mock()
-        pods_projects_mock = PodsProjectMock.new([], {"hermes-engine" => {}})
-        installer = InstallerMock.new(pods_projects_mock, [
-            AggregatedProjectMock.new(user_project_mock)
-        ])
-
-        # Act
-        ReactNativePodsUtils.exclude_i386_architecture_while_using_hermes(installer)
-
-        # Assert
-        user_project_mock.build_configurations.each do |config|
-            assert_equal(config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"], "i386")
-        end
-
-        assert_equal(user_project_mock.save_invocation_count, 1)
-        assert_equal(pods_projects_mock.save_invocation_count, 1)
-    end
-
-    def test_excludeArchitectures_whenHermesEngineIsIncluded_withExistingValue_appendI386
-        # Arrange
-        user_project_mock = prepare_empty_user_project_mock()
-        user_project_mock.build_configurations.each do |config|
-            config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64"
-        end
-        pods_projects_mock = PodsProjectMock.new([], {"hermes-engine" => {}})
-        installer = InstallerMock.new(pods_projects_mock, [
-            AggregatedProjectMock.new(user_project_mock)
-        ])
-
-        # Act
-        ReactNativePodsUtils.exclude_i386_architecture_while_using_hermes(installer)
-
-        # Assert
-        user_project_mock.build_configurations.each do |config|
-            assert_equal(config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"], "arm64 i386")
-        end
-
-        assert_equal(user_project_mock.save_invocation_count, 1)
-        assert_equal(pods_projects_mock.save_invocation_count, 1)
     end
 
     # ================= #
@@ -574,6 +484,52 @@ class UtilsTests < Test::Unit::TestCase
         assert_equal(2, XcodebuildMock.version_invocation_count)
     end
 
+    def test_applyXcode15Patch_whenXcodebuild15_1_does_not_apply_patch
+        # Arrange
+        XcodebuildMock.set_version = "Xcode 15.1"
+        first_target = prepare_target("FirstTarget")
+        second_target = prepare_target("SecondTarget")
+        third_target = TargetMock.new("ThirdTarget", [
+            BuildConfigurationMock.new("Debug", {
+              "GCC_PREPROCESSOR_DEFINITIONS" => '$(inherited) "SomeFlag=1" '
+            }),
+            BuildConfigurationMock.new("Release", {
+              "GCC_PREPROCESSOR_DEFINITIONS" => '$(inherited) "SomeFlag=1" '
+            }),
+        ], nil)
+
+        user_project_mock = UserProjectMock.new("/a/path", [
+                prepare_config("Debug"),
+                prepare_config("Release"),
+            ],
+            :native_targets => [
+                first_target,
+                second_target
+            ]
+        )
+        pods_projects_mock = PodsProjectMock.new([], {"hermes-engine" => {}}, :native_targets => [
+            third_target
+        ])
+        installer = InstallerMock.new(pods_projects_mock, [
+            AggregatedProjectMock.new(user_project_mock)
+        ])
+
+        # Act
+        user_project_mock.build_configurations.each do |config|
+            assert_nil(config.build_settings["OTHER_LDFLAGS"])
+        end
+
+        ReactNativePodsUtils.apply_xcode_15_patch(installer, :xcodebuild_manager => XcodebuildMock)
+
+        # Assert
+        user_project_mock.build_configurations.each do |config|
+            assert_equal("$(inherited) ", config.build_settings["OTHER_LDFLAGS"])
+        end
+
+        # User project and Pods project
+        assert_equal(2, XcodebuildMock.version_invocation_count)
+    end
+
     def test_applyXcode15Patch_whenXcodebuild15_correctlyAppliesNecessaryPatch
         # Arrange
         XcodebuildMock.set_version = "Xcode 15.0"
@@ -613,7 +569,7 @@ class UtilsTests < Test::Unit::TestCase
 
         # Assert
         user_project_mock.build_configurations.each do |config|
-            assert_equal("$(inherited) -Wl -ld_classic ", config.build_settings["OTHER_LDFLAGS"])
+            assert_equal("$(inherited) -Wl -ld_classic", config.build_settings["OTHER_LDFLAGS"])
         end
 
         # User project and Pods project
@@ -662,7 +618,7 @@ class UtilsTests < Test::Unit::TestCase
 
         # Assert
         user_project_mock.build_configurations.each do |config|
-            assert_equal("$(inherited) ", config.build_settings["OTHER_LDFLAGS"])
+            assert_equal("$(inherited)", config.build_settings["OTHER_LDFLAGS"])
         end
 
         # User project and Pods project
@@ -808,7 +764,7 @@ class UtilsTests < Test::Unit::TestCase
         first_target = prepare_target("FirstTarget")
         second_target = prepare_target("SecondTarget", nil, [
             DependencyMock.new("RCT-Folly"),
-            DependencyMock.new("React-Codegen"),
+            DependencyMock.new("ReactCodegen"),
             DependencyMock.new("ReactCommon"),
             DependencyMock.new("React-RCTFabric"),
             DependencyMock.new("React-ImageManager"),
@@ -834,7 +790,7 @@ class UtilsTests < Test::Unit::TestCase
         # Assert
         user_project_mock.build_configurations.each do |config|
             received_search_path = config.build_settings["HEADER_SEARCH_PATHS"]
-            expected_search_path = "$(inherited) ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers/platform/ios ${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx ${PODS_CONFIGURATION_BUILD_DIR}/React-NativeModulesApple/React_NativeModulesApple.framework/Headers ${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios"
+            expected_search_path = "$(inherited) ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers/platform/ios ${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx ${PODS_CONFIGURATION_BUILD_DIR}/React-NativeModulesApple/React_NativeModulesApple.framework/Headers ${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers ${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios"
             assert_equal(expected_search_path, received_search_path)
         end
 
@@ -842,7 +798,7 @@ class UtilsTests < Test::Unit::TestCase
             if pod_name == "SecondTarget"
                 target_installation_result.native_target.build_configurations.each do |config|
                     received_search_path = config.build_settings["HEADER_SEARCH_PATHS"]
-                    expected_Search_path = "$(inherited) \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/fmt/include\" \"$(PODS_ROOT)/boost\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Codegen/React_Codegen.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-FabricImage/React_FabricImage.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Graphics/React_graphics.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/imagemanager/platform/ios\""
+                    expected_Search_path = "$(inherited) \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/fmt/include\" \"$(PODS_ROOT)/boost\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCodegen/ReactCodegen.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-FabricImage/React_FabricImage.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Graphics/React_graphics.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/imagemanager/platform/ios\""
                     assert_equal(received_search_path, expected_Search_path)
                 end
             else
@@ -881,120 +837,244 @@ class UtilsTests < Test::Unit::TestCase
         end
     end
 
-    # ============================= #
-    # Test - Apply Flags For Fabric #
-    # ============================= #
-    def test_applyFlagsForFabric_whenFabricEnabled_addsTheFlag
-        # Arrange
-        first_target = prepare_target("FirstTarget")
-        second_target = prepare_target("SecondTarget")
-        third_target = prepare_target("ThirdTarget", "com.apple.product-type.bundle")
-        user_project_mock = UserProjectMock.new("a/path", [
-                prepare_config("Debug"),
-                prepare_config("Release"),
-            ],
-            :native_targets => [
-                first_target,
-                second_target
+    # =============================================== #
+    # Test - Create Header Search Path For Frameworks #
+    # =============================================== #
+    def test_creatHeaderSearchPathForFrameworks_whenNoPlatformsAndNoExtraPath_createsPlainSearchPath
+        result = ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-RCTFabric", "RCTFabric", [])
+
+        assert_equal(result, [
+            "${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers"
+        ])
+    end
+
+    def test_creatHeaderSearchPathForFrameworks_whenNoPlatformsAndExtraPath_createsPlainSearchPath
+        result = ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-Fabric", "React_Fabric", ["react/renderer/components/view/platform/cxx"])
+
+        assert_equal(result, [
+            "${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers",
+            "${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx",
+        ])
+    end
+
+    def test_creatHeaderSearchPathForFrameworks_whenEmptyPlatformsAndExtraPath_createsPlainSearchPath
+        $RN_PLATFORMS = []
+
+        result = ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-Fabric", "React_Fabric", ["react/renderer/components/view/platform/cxx"])
+
+        assert_equal(result, [
+            "${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers",
+            "${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx",
+        ])
+    end
+
+    def test_creatHeaderSearchPathForFrameworks_whenOnlyOnePlatformsAndExtraPath_createsPlainSearchPath
+        $RN_PLATFORMS = ['iOS']
+
+        result = ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-Fabric", "React_Fabric", ["react/renderer/components/view/platform/cxx"])
+
+        assert_equal(result, [
+            "${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers",
+            "${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx",
+        ])
+    end
+
+    def test_creatHeaderSearchPathForFrameworks_whenMultiplePlatformsAndExtraPath_createsPlainSearchPath
+        $RN_PLATFORMS = ["iOS", "macOS"]
+
+        result = ReactNativePodsUtils.create_header_search_path_for_frameworks(
+            "PODS_CONFIGURATION_BUILD_DIR",
+            "React-Fabric",
+            "React_Fabric",
+            [
+                "react/renderer/components/view/platform/cxx",
+                "react/renderer/components/view/platform/ios"
             ]
         )
-        pods_projects_mock = PodsProjectMock.new([third_target], {"hermes-engine" => {}})
-        installer = InstallerMock.new(pods_projects_mock, [
-            AggregatedProjectMock.new(user_project_mock)
+
+        assert_equal(result, [
+            "${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric-iOS/React_Fabric.framework/Headers",
+            "${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric-iOS/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx",
+            "${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric-iOS/React_Fabric.framework/Headers/react/renderer/components/view/platform/ios",
+            "${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric-macOS/React_Fabric.framework/Headers",
+            "${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric-macOS/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx",
+            "${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric-macOS/React_Fabric.framework/Headers/react/renderer/components/view/platform/ios",
         ])
-
-        # Act
-        ReactNativePodsUtils.apply_flags_for_fabric(installer, fabric_enabled: true)
-
-        # Assert
-        user_project_mock.build_configurations.each do |config|
-            received_cflags = config.build_settings["OTHER_CFLAGS"]
-            expected_cflags = "$(inherited) -DRN_FABRIC_ENABLED"
-            assert_equal(received_cflags, expected_cflags)
-        end
-
     end
 
-    def test_applyFlagsForFabric_whenFabricDisabled_doNothing
+    # ===================== #
+    # TEST - Add Dependency #
+    # ===================== #
+    def test_addDependency_whenNoHeaderSearchPathAndNoVersion_addsThem
+        spec = SpecMock.new
+
+        ReactNativePodsUtils.add_dependency(spec, "React-Fabric", "PODS_CONFIGURATION_BUILD_DIR", "React_Fabric")
+
+        assert_equal(spec.dependencies, [{:dependency_name => "React-Fabric"}])
+        assert_equal(spec.to_hash["pod_target_xcconfig"], {"HEADER_SEARCH_PATHS" =>  "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\""})
+    end
+
+    def test_addDependency_whenNoHeaderSearchPathAndVersion_addsThem
+        spec = SpecMock.new
+
+        ReactNativePodsUtils.add_dependency(spec, "React-Fabric", "PODS_CONFIGURATION_BUILD_DIR", "React_Fabric", :additional_paths => [], :version => '1000.0.0')
+
+        assert_equal(spec.dependencies, [{:dependency_name => "React-Fabric", "version" => '1000.0.0'}])
+        assert_equal(spec.to_hash["pod_target_xcconfig"], {"HEADER_SEARCH_PATHS" =>  "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\""})
+    end
+
+    def test_addDependency_whenHeaderSearchPathAndVersion_addsThemMaintainingTheSearchPaths
+        spec = SpecMock.new
+        spec.pod_target_xcconfig["HEADER_SEARCH_PATHS"] = "\"$(PODS_ROOT)/RCT-Folly\""
+
+        ReactNativePodsUtils.add_dependency(spec, "React-Fabric", "PODS_CONFIGURATION_BUILD_DIR", "React_Fabric", :additional_paths => [], :version => '1000.0.0')
+
+        assert_equal(spec.dependencies, [{:dependency_name => "React-Fabric", "version" => '1000.0.0'}])
+        assert_equal(spec.to_hash["pod_target_xcconfig"], {"HEADER_SEARCH_PATHS" =>  "\"$(PODS_ROOT)/RCT-Folly\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\""})
+    end
+
+    def test_addDependencies_whenHeaderSearchPathAndVersion_addsThemMaintainingTheSearchPaths
+        spec = SpecMock.new
+        spec.pod_target_xcconfig["HEADER_SEARCH_PATHS"] = "\"$(PODS_ROOT)/RCT-Folly\""
+
+        ReactNativePodsUtils.add_dependency(spec, "React-Fabric", "PODS_CONFIGURATION_BUILD_DIR", "React_Fabric", :additional_paths => [], :version => '1000.0.0')
+        ReactNativePodsUtils.add_dependency(spec, "React-RCTFabric", "PODS_CONFIGURATION_BUILD_DIR", "RCTFabric", :additional_paths => [])
+
+        assert_equal(spec.dependencies, [{:dependency_name => "React-Fabric", "version" => '1000.0.0'}, {:dependency_name => "React-RCTFabric" }])
+        assert_equal(spec.to_hash["pod_target_xcconfig"], {
+            "HEADER_SEARCH_PATHS" =>  "\"$(PODS_ROOT)/RCT-Folly\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\""})
+    end
+
+    def test_addDependencies_whenHeaderSearchPathAndVersionWithAdditionalPaths_addsThemMaintainingTheSearchPaths
+        spec = SpecMock.new
+        spec.pod_target_xcconfig["HEADER_SEARCH_PATHS"] = "\"$(PODS_ROOT)/RCT-Folly\""
+
+        ReactNativePodsUtils.add_dependency(spec, "React-Fabric", "PODS_CONFIGURATION_BUILD_DIR", "React_Fabric", :additional_paths => [], :version => '1000.0.0')
+        ReactNativePodsUtils.add_dependency(spec, "React-RCTFabric", "PODS_CONFIGURATION_BUILD_DIR", "RCTFabric", :additional_paths => ["react/renderer/components/view/platform/ios"])
+
+        assert_equal(spec.dependencies, [{:dependency_name => "React-Fabric", "version" => '1000.0.0'}, {:dependency_name => "React-RCTFabric" }])
+        assert_equal(spec.to_hash["pod_target_xcconfig"], {
+            "HEADER_SEARCH_PATHS" =>  "\"$(PODS_ROOT)/RCT-Folly\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers/react/renderer/components/view/platform/ios\""})
+    end
+
+    def test_addDependencies_whenHeaderSearchPathAndVersionWithAdditionalPathsAndPlatforms_addsThemMaintainingTheSearchPaths
+        spec = SpecMock.new
+        spec.pod_target_xcconfig["HEADER_SEARCH_PATHS"] = "\"$(PODS_ROOT)/RCT-Folly\""
+        $RN_PLATFORMS = ['iOS', 'macOS']
+
+        ReactNativePodsUtils.add_dependency(spec, "React-Fabric", "PODS_CONFIGURATION_BUILD_DIR", "React_Fabric", :additional_paths => [], :version => '1000.0.0')
+        ReactNativePodsUtils.add_dependency(spec, "React-RCTFabric", "PODS_CONFIGURATION_BUILD_DIR", "RCTFabric", :additional_paths => ["react/renderer/components/view/platform/ios"])
+
+        expected_search_paths = [
+            "$(PODS_ROOT)/RCT-Folly",
+            "${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric-iOS/React_Fabric.framework/Headers",
+            "${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric-iOS/RCTFabric.framework/Headers",
+            "${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric-iOS/RCTFabric.framework/Headers/react/renderer/components/view/platform/ios",
+            "${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric-macOS/React_Fabric.framework/Headers",
+            "${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric-macOS/RCTFabric.framework/Headers",
+            "${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric-macOS/RCTFabric.framework/Headers/react/renderer/components/view/platform/ios"
+        ]
+        .map { |sp| return "\"#{sp}\"" }
+        .join(" ")
+
+        assert_equal(spec.dependencies, [{:dependency_name => "React-Fabric", "version" => '1000.0.0'}, {:dependency_name => "React-RCTFabric" }])
+        assert_equal(spec.to_hash["pod_target_xcconfig"], {
+            "HEADER_SEARCH_PATHS" => expected_search_paths})
+    end
+
+    def test_addDependencies_whenSubspecsAndHeaderSearchPathAndVersionWithAdditionalPathsAndPlatforms_addsThemMaintainingTheSearchPaths
+        spec = SpecMock.new
+        spec.pod_target_xcconfig["HEADER_SEARCH_PATHS"] = "\"$(PODS_ROOT)/RCT-Folly\""
+        $RN_PLATFORMS = ['iOS', 'macOS']
+
+        ReactNativePodsUtils.add_dependency(spec, "ReactCommon", "PODS_CONFIGURATION_BUILD_DIR", "ReactCommon", :additional_paths => ["react/nativemodule/core"], :subspec_dependency => 'turbomodule/core')
+
+        expected_search_paths = [
+            "$(PODS_ROOT)/RCT-Folly",
+            "${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-iOS/ReactCommon.framework/Headers",
+            "${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-iOS/ReactCommon.framework/Headers/react/nativemodule/core",
+            "${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-macOS/ReactCommon.framework/Headers",
+            "${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-macOS/ReactCommon.framework/Headers/react/nativemodule/core",
+        ]
+        .map { |sp| return "\"#{sp}\"" }
+        .join(" ")
+
+        assert_equal(spec.dependencies, [{:dependency_name => "ReactCommon/turbomodule/core"}])
+        assert_equal(spec.to_hash["pod_target_xcconfig"], {
+            "HEADER_SEARCH_PATHS" => expected_search_paths})
+    end
+
+    def test_add_flag_to_map_with_inheritance_whenUsedWithBuildConfigBuildSettings
         # Arrange
-        first_target = prepare_target("FirstTarget")
-        second_target = prepare_target("SecondTarget")
-        third_target = prepare_target("ThirdTarget", "com.apple.product-type.bundle")
-        user_project_mock = UserProjectMock.new("/a/path", [
-                prepare_config("Debug"),
-                prepare_config("Release"),
-            ],
-            :native_targets => [
-                first_target,
-                second_target
-            ]
+        empty_config = BuildConfigurationMock.new("EmptyConfig")
+        initialized_config = BuildConfigurationMock.new("InitializedConfig", {
+            "OTHER_CPLUSPLUSFLAGS" => "INIT_FLAG"
+        })
+        twiceProcessed_config = BuildConfigurationMock.new("TwiceProcessedConfig");
+        test_flag = " -DTEST_FLAG=1"
+
+        # Act
+        ReactNativePodsUtils.add_flag_to_map_with_inheritance(empty_config.build_settings, "OTHER_CPLUSPLUSFLAGS", test_flag)
+        ReactNativePodsUtils.add_flag_to_map_with_inheritance(initialized_config.build_settings, "OTHER_CPLUSPLUSFLAGS", test_flag)
+        ReactNativePodsUtils.add_flag_to_map_with_inheritance(twiceProcessed_config.build_settings, "OTHER_CPLUSPLUSFLAGS", test_flag)
+        ReactNativePodsUtils.add_flag_to_map_with_inheritance(twiceProcessed_config.build_settings, "OTHER_CPLUSPLUSFLAGS", test_flag)
+
+        # Assert
+        assert_equal("$(inherited)" + test_flag, empty_config.build_settings["OTHER_CPLUSPLUSFLAGS"])
+        assert_equal("$(inherited) INIT_FLAG" + test_flag, initialized_config.build_settings["OTHER_CPLUSPLUSFLAGS"])
+        assert_equal("$(inherited)" + test_flag, twiceProcessed_config.build_settings["OTHER_CPLUSPLUSFLAGS"])
+    end
+
+    def test_add_flag_to_map_with_inheritance_whenUsedWithXCConfigAttributes
+        # Arrange
+        empty_xcconfig = XCConfigMock.new("EmptyConfig")
+        initialized_xcconfig = XCConfigMock.new("InitializedConfig", attributes: {
+            "OTHER_CPLUSPLUSFLAGS" => "INIT_FLAG"
+        })
+        twiceProcessed_xcconfig = XCConfigMock.new("TwiceProcessedConfig");
+        test_flag = " -DTEST_FLAG=1"
+
+        # Act
+        ReactNativePodsUtils.add_flag_to_map_with_inheritance(empty_xcconfig.attributes, "OTHER_CPLUSPLUSFLAGS", test_flag)
+        ReactNativePodsUtils.add_flag_to_map_with_inheritance(initialized_xcconfig.attributes, "OTHER_CPLUSPLUSFLAGS", test_flag)
+        ReactNativePodsUtils.add_flag_to_map_with_inheritance(twiceProcessed_xcconfig.attributes, "OTHER_CPLUSPLUSFLAGS", test_flag)
+        ReactNativePodsUtils.add_flag_to_map_with_inheritance(twiceProcessed_xcconfig.attributes, "OTHER_CPLUSPLUSFLAGS", test_flag)
+
+        # Assert
+        assert_equal("$(inherited)" + test_flag, empty_xcconfig.attributes["OTHER_CPLUSPLUSFLAGS"])
+        assert_equal("$(inherited) INIT_FLAG" + test_flag, initialized_xcconfig.attributes["OTHER_CPLUSPLUSFLAGS"])
+        assert_equal("$(inherited)" + test_flag, twiceProcessed_xcconfig.attributes["OTHER_CPLUSPLUSFLAGS"])
+    end
+
+    def test_add_ndebug_flag_to_pods_in_release
+        # Arrange
+        xcconfig = XCConfigMock.new("Config")
+        default_debug_config = BuildConfigurationMock.new("Debug")
+        default_release_config = BuildConfigurationMock.new("Release")
+        custom_debug_config1 = BuildConfigurationMock.new("CustomDebug")
+        custom_debug_config2 = BuildConfigurationMock.new("Custom")
+        custom_release_config1 = BuildConfigurationMock.new("CustomRelease")
+        custom_release_config2 = BuildConfigurationMock.new("Production")
+
+        installer = prepare_installer_for_cpp_flags(
+            [ xcconfig ],
+            {
+                "Default" => [ default_debug_config, default_release_config ],
+                "Custom1" => [ custom_debug_config1, custom_release_config1 ],
+                "Custom2" => [ custom_debug_config2, custom_release_config2 ]
+            }
         )
-        pods_projects_mock = PodsProjectMock.new([third_target], {"hermes-engine" => {}})
-        installer = InstallerMock.new(pods_projects_mock, [
-            AggregatedProjectMock.new(user_project_mock)
-        ])
-
         # Act
-        ReactNativePodsUtils.apply_flags_for_fabric(installer, fabric_enabled: false)
+        ReactNativePodsUtils.add_ndebug_flag_to_pods_in_release(installer)
 
         # Assert
-        user_project_mock.build_configurations.each do |config|
-            assert_equal(config.build_settings["OTHER_CFLAGS"], "$(inherited)")
-        end
+        assert_equal(nil, default_debug_config.build_settings["OTHER_CPLUSPLUSFLAGS"])
+        assert_equal("$(inherited) -DNDEBUG", default_release_config.build_settings["OTHER_CPLUSPLUSFLAGS"])
+        assert_equal(nil, custom_debug_config1.build_settings["OTHER_CPLUSPLUSFLAGS"])
+        assert_equal("$(inherited) -DNDEBUG", custom_release_config1.build_settings["OTHER_CPLUSPLUSFLAGS"])
+        assert_equal(nil, custom_debug_config2.build_settings["OTHER_CPLUSPLUSFLAGS"])
+        assert_equal("$(inherited) -DNDEBUG", custom_release_config2.build_settings["OTHER_CPLUSPLUSFLAGS"])
     end
-
-    # ============================== #
-    # Test - Apply ATS configuration #
-    # ============================== #
-
-    def test_applyATSConfig_plistNil
-        # Arrange
-        user_project_mock = prepare_user_project_mock_with_plists()
-        pods_projects_mock = PodsProjectMock.new([], {"some_pod" => {}})
-        installer = InstallerMock.new(pods_projects_mock, [
-            AggregatedProjectMock.new(user_project_mock)
-        ])
-
-        # # Act
-        ReactNativePodsUtils.apply_ats_config(installer)
-
-        # # Assert
-        assert_equal(user_project_mock.files.length, 2)
-        user_project_mock.files.each do |file|
-            path = File.join(user_project_mock.path.parent, file.name)
-            plist = Xcodeproj::Plist.read_from_path(path)
-            assert_equal(plist['NSAppTransportSecurity'], {
-                'NSAllowsArbitraryLoads' => false,
-                'NSAllowsLocalNetworking' => true,
-            });
-        end
-    end
-
-    def test_applyATSConfig_plistNonNil
-        # Arrange
-        user_project_mock = prepare_user_project_mock_with_plists()
-        pods_projects_mock = PodsProjectMock.new([], {"some_pod" => {}})
-        installer = InstallerMock.new(pods_projects_mock, [
-            AggregatedProjectMock.new(user_project_mock)
-        ])
-        Xcodeproj::Plist.write_to_path({}, "/test/Info.plist")
-        Xcodeproj::Plist.write_to_path({}, "/test/Extension-Info.plist")
-
-        # # Act
-        ReactNativePodsUtils.apply_ats_config(installer)
-
-        # # Assert
-        assert_equal(user_project_mock.files.length, 2)
-        user_project_mock.files.each do |file|
-            path = File.join(user_project_mock.path.parent, file.name)
-            plist = Xcodeproj::Plist.read_from_path(path)
-            assert_equal(plist['NSAppTransportSecurity'], {
-                'NSAllowsArbitraryLoads' => false,
-                'NSAllowsLocalNetworking' => true,
-            });
-        end
-    end
-
 end
 
 # ===== #
@@ -1036,4 +1116,31 @@ def prepare_Code_Signing_build_configuration(name, param)
     return BuildConfigurationMock.new(name, {
         "CODE_SIGNING_ALLOWED" => param
     })
+end
+
+def prepare_pod_target_installation_results_mock(name, configs)
+    target = TargetMock.new(name, configs)
+    return TargetInstallationResultMock.new(target, target)
+end
+
+def prepare_installer_for_cpp_flags(xcconfigs, build_configs)
+    xcconfigs_map = {}
+    xcconfigs.each do |config|
+        xcconfigs_map[config.name.to_s] = config
+    end
+
+    pod_target_installation_results_map = {}
+    build_configs.each do |name, build_configs|
+        pod_target_installation_results_map[name.to_s] = prepare_pod_target_installation_results_mock(
+            name.to_s, build_configs
+        )
+    end
+
+    return InstallerMock.new(
+        PodsProjectMock.new,
+        [
+            AggregatedProjectMock.new(:xcconfigs => xcconfigs_map, :base_path => "a/path/")
+        ],
+        :pod_target_installation_results => pod_target_installation_results_map
+    )
 end

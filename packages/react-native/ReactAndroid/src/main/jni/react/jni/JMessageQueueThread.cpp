@@ -10,7 +10,6 @@
 #include <condition_variable>
 #include <mutex>
 
-#include <fb/log.h>
 #include <fbjni/NativeRunnable.h>
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
@@ -20,17 +19,6 @@ namespace facebook::react {
 using namespace jni;
 
 namespace {
-
-struct JavaJSException : jni::JavaClass<JavaJSException, JThrowable> {
-  static constexpr auto kJavaDescriptor =
-      "Lcom/facebook/react/devsupport/JSException;";
-
-  static local_ref<JavaJSException>
-  create(const char* message, const char* stack, const std::exception& ex) {
-    local_ref<jthrowable> cause = jni::JCppException::create(ex);
-    return newInstance(make_jstring(message), make_jstring(stack), cause.get());
-  }
-};
 
 std::function<void()> wrapRunnable(std::function<void()>&& runnable) {
   return [runnable = std::move(runnable)]() mutable {
@@ -48,10 +36,10 @@ std::function<void()> wrapRunnable(std::function<void()>&& runnable) {
     try {
       localRunnable();
     } catch (const jsi::JSError& ex) {
+      // We can't do as much parsing here as we do in ExceptionManager.js
+      std::string message = ex.getMessage() + ", stack:\n" + ex.getStack();
       throwNewJavaException(
-          JavaJSException::create(
-              ex.getMessage().c_str(), ex.getStack().c_str(), ex)
-              .get());
+          "com/facebook/react/common/JavascriptException", message.c_str());
     }
   };
 }

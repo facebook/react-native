@@ -46,10 +46,6 @@ commands:
               echo "rbenv found; Skipping installation"
             fi
 
-            brew reinstall libyaml
-            gem install psych -- --with-libyaml-dir=$(brew --prefix libyaml)
-            export RUBY_CONFIGURE_OPTS=--with-libyaml-dir=$(brew --prefix libyaml)
-
             # Install the right version of ruby
             if [[ -z "$(rbenv versions | grep << parameters.ruby_version >>)" ]]; then
               # ensure that `ruby-build` can see all the available versions of Ruby
@@ -61,7 +57,11 @@ commands:
 
             # Set ruby dependencies
             rbenv global << parameters.ruby_version >>
-            gem install bundler
+            if [[ << parameters.ruby_version >> == "2.6.10" ]]; then
+              gem install bundler -v 2.4.22
+            else
+              gem install bundler
+            fi
             bundle check || bundle install --path vendor/bundle --clean
       - save_cache:
           key: *rbenv_cache_key
@@ -167,7 +167,7 @@ commands:
     steps:
       - run:
           name: "Run Tests: << parameters.platform >> End-to-End Tests"
-          command: node ./scripts/run-ci-e2e-tests.js --<< parameters.platform >> --retries << parameters.retries >>
+          command: node ./scripts/e2e/run-ci-e2e-tests.js --<< parameters.platform >> --retries << parameters.retries >>
 
   report_bundle_size:
     parameters:

@@ -29,8 +29,7 @@ using namespace facebook::react;
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-    static const auto defaultProps = std::make_shared<const SwitchProps>();
-    _props = defaultProps;
+    _props = SwitchShadowNode::defaultSharedProps();
 
     _switchView = [[UISwitch alloc] initWithFrame:self.bounds];
 

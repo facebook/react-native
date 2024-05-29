@@ -11,8 +11,14 @@
 'use strict';
 
 const React = require('react');
-
-const {StyleSheet, Text, TextInput, View, Platform} = require('react-native');
+const {
+  Button,
+  Platform,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} = require('react-native');
 
 class XHRExampleFetch extends React.Component<any, any> {
   responseURL: ?string;
@@ -60,6 +66,25 @@ class XHRExampleFetch extends React.Component<any, any> {
     return responseHeaders;
   }
 
+  startRepeatedlyFetch() {
+    const doRequest = () => {
+      const url =
+        'https://microsoftedge.github.io/Demos/json-dummy-data/5MB-min.json';
+      fetch(url, {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+      })
+        .then(() => {
+          console.log('fetch one time');
+        })
+        .catch(error => console.error(error));
+    };
+    setInterval(doRequest, 500);
+  }
+
   render(): React.Node {
     const responseURL = this.responseURL ? (
       <View style={{marginTop: 10}}>
@@ -89,6 +114,10 @@ class XHRExampleFetch extends React.Component<any, any> {
 
     return (
       <View>
+        <Button
+          title="RepeatedlyFetch"
+          onPress={() => this.startRepeatedlyFetch()}
+        />
         <Text style={styles.label}>Edit URL to submit:</Text>
         <TextInput
           returnKeyType="go"

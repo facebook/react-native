@@ -32,7 +32,7 @@ class FabricMountingManager final {
 
   void onSurfaceStop(SurfaceId surfaceId);
 
-  void preallocateShadowView(SurfaceId surfaceId, const ShadowView& shadowView);
+  void preallocateShadowView(const ShadowNode& shadowNode);
 
   void executeMount(const MountingTransaction& transaction);
 
@@ -62,8 +62,6 @@ class FabricMountingManager final {
   std::unordered_map<SurfaceId, std::unordered_set<Tag>>
       allocatedViewRegistry_{};
   std::recursive_mutex allocatedViewsMutex_;
-
-  const bool reduceDeleteCreateMutation_{false};
 
   jni::local_ref<jobject> getProps(
       const ShadowView& oldShadowView,

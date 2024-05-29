@@ -8,9 +8,10 @@
  * @flow
  */
 
+import Platform from 'react-native/Libraries/Utilities/Platform';
+
 const React = require('react');
 const ReactNative = require('react-native');
-import Platform from 'react-native/Libraries/Utilities/Platform';
 const {DynamicColorIOS, PlatformColor, StyleSheet, Text, View} = ReactNative;
 
 function PlatformColorsExample() {
@@ -296,8 +297,8 @@ function VariantColorsExample() {
               Platform.OS === 'ios'
                 ? DynamicColorIOS({light: 'red', dark: 'blue'})
                 : Platform.OS === 'android'
-                ? PlatformColor('?attr/colorAccent')
-                : 'red',
+                  ? PlatformColor('?attr/colorAccent')
+                  : 'red',
           }}
         />
       </View>

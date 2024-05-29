@@ -15,6 +15,7 @@ import android.util.SparseArray;
 import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
 import com.facebook.infer.annotation.Nullsafe;
+import com.facebook.react.common.ReactConstants;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -167,8 +168,6 @@ public class ReactFontManager {
 
     public static final int BOLD = 700;
     public static final int NORMAL = 400;
-    public static final int UNSET = -1;
-
     private static final int MIN_WEIGHT = 1;
     private static final int MAX_WEIGHT = 1000;
 
@@ -177,11 +176,11 @@ public class ReactFontManager {
 
     public TypefaceStyle(int weight, boolean italic) {
       mItalic = italic;
-      mWeight = weight == UNSET ? NORMAL : weight;
+      mWeight = weight == ReactConstants.UNSET ? NORMAL : weight;
     }
 
     public TypefaceStyle(int style) {
-      if (style == UNSET) {
+      if (style == ReactConstants.UNSET) {
         style = Typeface.NORMAL;
       }
 
@@ -194,12 +193,13 @@ public class ReactFontManager {
      * existing weight bit in `style` will be used.
      */
     public TypefaceStyle(int style, int weight) {
-      if (style == UNSET) {
+      if (style == ReactConstants.UNSET) {
         style = Typeface.NORMAL;
       }
 
       mItalic = (style & Typeface.ITALIC) != 0;
-      mWeight = weight == UNSET ? (style & Typeface.BOLD) != 0 ? BOLD : NORMAL : weight;
+      mWeight =
+          weight == ReactConstants.UNSET ? (style & Typeface.BOLD) != 0 ? BOLD : NORMAL : weight;
     }
 
     public int getNearestStyle() {

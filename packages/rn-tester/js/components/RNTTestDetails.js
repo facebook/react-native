@@ -8,9 +8,9 @@
  * @flow strict-local
  */
 
-import * as React from 'react';
-import {View, Text, StyleSheet, Button, Platform} from 'react-native';
 import {type RNTesterTheme} from './RNTesterTheme';
+import * as React from 'react';
+import {Button, Platform, StyleSheet, Text, View} from 'react-native';
 
 function RNTTestDetails({
   description,
@@ -23,7 +23,7 @@ function RNTTestDetails({
   title: string,
   theme: RNTesterTheme,
 }): React.Node {
-  const [collapsed, setCollapsed] = React.useState(false);
+  const [collapsed, setCollapsed] = React.useState(true);
 
   const content = (
     <>
@@ -39,8 +39,12 @@ function RNTTestDetails({
       )}
       {expect == null ? null : (
         <View style={styles.section}>
-          <Text style={styles.heading}>Expectation</Text>
-          <Text style={styles.paragraph}>{expect}</Text>
+          <Text style={[styles.heading, {color: theme.LabelColor}]}>
+            Expectation
+          </Text>
+          <Text style={[styles.paragraph, {color: theme.LabelColor}]}>
+            {expect}
+          </Text>
         </View>
       )}
     </>

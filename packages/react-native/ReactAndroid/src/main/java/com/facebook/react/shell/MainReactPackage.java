@@ -15,6 +15,7 @@ import com.facebook.react.animated.NativeAnimatedModule;
 import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.common.ClassFinder;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.module.annotations.ReactModuleList;
 import com.facebook.react.module.model.ReactModuleInfo;
@@ -26,6 +27,7 @@ import com.facebook.react.modules.blob.BlobModule;
 import com.facebook.react.modules.blob.FileReaderModule;
 import com.facebook.react.modules.camera.ImageStoreManager;
 import com.facebook.react.modules.clipboard.ClipboardModule;
+import com.facebook.react.modules.devloading.DevLoadingModule;
 import com.facebook.react.modules.devtoolssettings.DevToolsSettingsManagerModule;
 import com.facebook.react.modules.dialog.DialogModule;
 import com.facebook.react.modules.fresco.FrescoModule;
@@ -40,7 +42,6 @@ import com.facebook.react.modules.statusbar.StatusBarModule;
 import com.facebook.react.modules.toast.ToastModule;
 import com.facebook.react.modules.vibration.VibrationModule;
 import com.facebook.react.modules.websocket.WebSocketModule;
-import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.views.drawer.ReactDrawerLayoutManager;
@@ -73,6 +74,7 @@ import javax.inject.Provider;
       AppearanceModule.class,
       AppStateModule.class,
       BlobModule.class,
+      DevLoadingModule.class,
       FileReaderModule.class,
       ClipboardModule.class,
       DialogModule.class,
@@ -114,6 +116,8 @@ public class MainReactPackage extends TurboReactPackage implements ViewManagerOn
         return new AppStateModule(context);
       case BlobModule.NAME:
         return new BlobModule(context);
+      case DevLoadingModule.NAME:
+        return new DevLoadingModule(context);
       case FileReaderModule.NAME:
         return new FileReaderModule(context);
       case ClipboardModule.NAME:
@@ -187,7 +191,9 @@ public class MainReactPackage extends TurboReactPackage implements ViewManagerOn
     map.put(name, ModuleSpec.viewManagerSpec(provider));
   }
 
-  /** @return a map of view managers that should be registered with {@link UIManagerModule} */
+  /**
+   * @return a map of view managers that should be registered with {@link UIManagerModule}
+   */
   @SuppressLint("VisibleForTests")
   public Map<String, ModuleSpec> getViewManagersMap() {
     if (mViewManagers == null) {
@@ -247,61 +253,74 @@ public class MainReactPackage extends TurboReactPackage implements ViewManagerOn
 
   @Override
   public ReactModuleInfoProvider getReactModuleInfoProvider() {
+    if (!ClassFinder.canLoadClassesFromAnnotationProcessors()) {
+      return fallbackForMissingClass();
+    }
     try {
       Class<?> reactModuleInfoProviderClass =
-          Class.forName("com.facebook.react.shell.MainReactPackage$$ReactModuleInfoProvider");
+          ClassFinder.findClass(
+              "com.facebook.react.shell.MainReactPackage$$ReactModuleInfoProvider");
       return (ReactModuleInfoProvider) reactModuleInfoProviderClass.newInstance();
     } catch (ClassNotFoundException e) {
-      // In the OSS case, the annotation processor does not run. We fall back to creating this by
-      // hand
-      Class<? extends NativeModule>[] moduleList =
-          new Class[] {
-            AccessibilityInfoModule.class,
-            AppearanceModule.class,
-            AppStateModule.class,
-            BlobModule.class,
-            FileReaderModule.class,
-            ClipboardModule.class,
-            DialogModule.class,
-            FrescoModule.class,
-            I18nManagerModule.class,
-            ImageLoaderModule.class,
-            ImageStoreManager.class,
-            IntentModule.class,
-            NativeAnimatedModule.class,
-            NetworkingModule.class,
-            PermissionsModule.class,
-            DevToolsSettingsManagerModule.class,
-            ShareModule.class,
-            StatusBarModule.class,
-            SoundManagerModule.class,
-            ToastModule.class,
-            VibrationModule.class,
-            WebSocketModule.class
-          };
-
-      final Map<String, ReactModuleInfo> reactModuleInfoMap = new HashMap<>();
-      for (Class<? extends NativeModule> moduleClass : moduleList) {
-        ReactModule reactModule = moduleClass.getAnnotation(ReactModule.class);
-        if (reactModule != null) {
-          reactModuleInfoMap.put(
-              reactModule.name(),
-              new ReactModuleInfo(
-                  reactModule.name(),
-                  moduleClass.getName(),
-                  reactModule.canOverrideExistingModule(),
-                  reactModule.needsEagerInit(),
-                  reactModule.isCxxModule(),
-                  TurboModule.class.isAssignableFrom(moduleClass)));
-        }
-      }
-      return () -> reactModuleInfoMap;
+      return fallbackForMissingClass();
     } catch (InstantiationException e) {
       throw new RuntimeException(
-          "No ReactModuleInfoProvider for CoreModulesPackage$$ReactModuleInfoProvider", e);
+          "No ReactModuleInfoProvider for"
+              + " com.facebook.react.shell.MainReactPackage$$ReactModuleInfoProvider",
+          e);
     } catch (IllegalAccessException e) {
       throw new RuntimeException(
-          "No ReactModuleInfoProvider for CoreModulesPackage$$ReactModuleInfoProvider", e);
+          "No ReactModuleInfoProvider for"
+              + " com.facebook.react.shell.MainReactPackage$$ReactModuleInfoProvider",
+          e);
     }
+  }
+
+  private ReactModuleInfoProvider fallbackForMissingClass() {
+    // In the OSS case, the annotation processor does not run.
+    // We fall back to creating this by hand
+    Class<? extends NativeModule>[] moduleList =
+        new Class[] {
+          AccessibilityInfoModule.class,
+          AppearanceModule.class,
+          AppStateModule.class,
+          BlobModule.class,
+          DevLoadingModule.class,
+          FileReaderModule.class,
+          ClipboardModule.class,
+          DialogModule.class,
+          FrescoModule.class,
+          I18nManagerModule.class,
+          ImageLoaderModule.class,
+          ImageStoreManager.class,
+          IntentModule.class,
+          NativeAnimatedModule.class,
+          NetworkingModule.class,
+          PermissionsModule.class,
+          DevToolsSettingsManagerModule.class,
+          ShareModule.class,
+          StatusBarModule.class,
+          SoundManagerModule.class,
+          ToastModule.class,
+          VibrationModule.class,
+          WebSocketModule.class
+        };
+
+    final Map<String, ReactModuleInfo> reactModuleInfoMap = new HashMap<>();
+    for (Class<? extends NativeModule> moduleClass : moduleList) {
+      ReactModule reactModule = moduleClass.getAnnotation(ReactModule.class);
+      if (reactModule != null) {
+        reactModuleInfoMap.put(
+            reactModule.name(),
+            new ReactModuleInfo(
+                reactModule.name(),
+                moduleClass.getName(),
+                reactModule.canOverrideExistingModule(),
+                reactModule.needsEagerInit(),
+                reactModule.isCxxModule(),
+                ReactModuleInfo.classIsTurboModule(moduleClass)));
+      }
+    }
+    return () -> reactModuleInfoMap;
   }
 }

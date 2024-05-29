@@ -872,6 +872,38 @@ const OBJECT_PROPS: SchemaType = {
                     },
                   },
                   {
+                    name: 'stringUserDefaultProp',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'StringTypeAnnotation',
+                      default: 'user_default',
+                    },
+                  },
+                  {
+                    name: 'booleanUserDefaultProp',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'BooleanTypeAnnotation',
+                      default: true,
+                    },
+                  },
+                  {
+                    name: 'floatUserDefaultProp',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'FloatTypeAnnotation',
+                      default: 3.14,
+                    },
+                  },
+                  {
+                    name: 'intUserDefaultProp',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'Int32TypeAnnotation',
+                      default: 9999,
+                    },
+                  },
+                  {
                     name: 'stringEnumProp',
                     optional: true,
                     typeAnnotation: {
@@ -1718,6 +1750,28 @@ const COMMANDS_AND_PROPS: SchemaType = {
                     optional: false,
                     typeAnnotation: {
                       type: 'Int32TypeAnnotation',
+                    },
+                  },
+                ],
+                returnTypeAnnotation: {
+                  type: 'VoidTypeAnnotation',
+                },
+              },
+            },
+            {
+              name: 'addItems',
+              optional: false,
+              typeAnnotation: {
+                type: 'FunctionTypeAnnotation',
+                params: [
+                  {
+                    name: 'items',
+                    optional: false,
+                    typeAnnotation: {
+                      type: 'ArrayTypeAnnotation',
+                      elementType: {
+                        type: 'StringTypeAnnotation',
+                      },
                     },
                   },
                 ],

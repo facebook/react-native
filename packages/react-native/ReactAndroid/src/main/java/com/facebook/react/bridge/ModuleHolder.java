@@ -19,8 +19,8 @@ import com.facebook.debug.holder.PrinterHolder;
 import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.module.model.ReactModuleInfo;
-import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import com.facebook.systrace.SystraceMessage;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Provider;
@@ -72,7 +72,7 @@ public class ModuleHolder {
             nativeModule.canOverrideExistingModule(),
             true,
             CxxModuleWrapper.class.isAssignableFrom(nativeModule.getClass()),
-            TurboModule.class.isAssignableFrom(nativeModule.getClass()));
+            ReactModuleInfo.classIsTurboModule(nativeModule.getClass()));
 
     mModule = nativeModule;
     PrinterHolder.getPrinter()
@@ -204,7 +204,7 @@ public class ModuleHolder {
        *
        * @todo(T53311351)
        */
-      FLog.e("NativeModuleInitError", "Failed to create NativeModule \"" + getName() + "\"", ex);
+      FLog.e(ReactConstants.TAG, ex, "Failed to create NativeModule '%s'", mName);
       throw ex;
     } finally {
       ReactMarker.logMarker(CREATE_MODULE_END, mName, mInstanceKey);

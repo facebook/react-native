@@ -146,6 +146,7 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
     );
     return {
       type: 'RippleAndroid',
+      // $FlowFixMe[incompatible-type]
       color: processedColor,
       borderless,
       rippleRadius,
@@ -156,7 +157,7 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
    * Whether `useForeground` is supported.
    */
   static canUseNativeForeground: () => boolean = () =>
-    Platform.OS === 'android' && Platform.Version >= 23;
+    Platform.OS === 'android';
 
   state: State = {
     pressability: new Pressability(this._createPressabilityConfig()),
@@ -336,6 +337,10 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
   }
 
   componentDidUpdate(prevProps: Props, prevState: State) {
+    this.state.pressability.configure(this._createPressabilityConfig());
+  }
+
+  componentDidMount(): mixed {
     this.state.pressability.configure(this._createPressabilityConfig());
   }
 

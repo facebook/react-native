@@ -9,6 +9,7 @@ package com.facebook.react.common.mapbuffer
 
 import com.facebook.jni.HybridData
 import com.facebook.proguard.annotations.DoNotStrip
+import com.facebook.react.common.annotations.StableReactNativeAPI
 import com.facebook.react.common.mapbuffer.MapBuffer.Companion.KEY_RANGE
 import java.lang.StringBuilder
 import java.nio.ByteBuffer
@@ -21,29 +22,41 @@ import javax.annotation.concurrent.NotThreadSafe
  *
  * See [MapBuffer] documentation for more details
  */
+@StableReactNativeAPI
 @NotThreadSafe
 @DoNotStrip
-class ReadableMapBuffer : MapBuffer {
+public class ReadableMapBuffer : MapBuffer {
 
   // Hybrid data must be kept in the `mHybridData` field for fbjni to work
   @field:DoNotStrip private val mHybridData: HybridData?
 
   // Byte data of the mapBuffer
   private val buffer: ByteBuffer
+  // Offset to the start of the MapBuffer
+  private val offsetToMapBuffer: Int
   // Amount of items serialized on the ByteBuffer
-  override var count = 0
+  override var count: Int = 0
     private set
 
   @DoNotStrip
   private constructor(hybridData: HybridData) {
-    this.mHybridData = hybridData
-    this.buffer = importByteBuffer()
+    mHybridData = hybridData
+    buffer = importByteBuffer()
+    offsetToMapBuffer = 0
     readHeader()
   }
 
   private constructor(buffer: ByteBuffer) {
-    this.mHybridData = null
+    mHybridData = null
     this.buffer = buffer
+    offsetToMapBuffer = 0
+    readHeader()
+  }
+
+  private constructor(buffer: ByteBuffer, offset: Int) {
+    mHybridData = null
+    this.buffer = buffer.duplicate().apply { position(offset) }
+    offsetToMapBuffer = offset
     readHeader()
   }
 
@@ -113,6 +126,10 @@ class ReadableMapBuffer : MapBuffer {
     return buffer.getInt(bufferPosition)
   }
 
+  private fun readLongValue(bufferPosition: Int): Long {
+    return buffer.getLong(bufferPosition)
+  }
+
   private fun readBooleanValue(bufferPosition: Int): Boolean {
     return readIntValue(bufferPosition) == 1
   }
@@ -129,12 +146,7 @@ class ReadableMapBuffer : MapBuffer {
 
   private fun readMapBufferValue(position: Int): ReadableMapBuffer {
     val offset = offsetForDynamicData + buffer.getInt(position)
-    val sizeMapBuffer = buffer.getInt(offset)
-    val newBuffer = ByteArray(sizeMapBuffer)
-    val bufferOffset = offset + Int.SIZE_BYTES
-    buffer.position(bufferOffset)
-    buffer[newBuffer, 0, sizeMapBuffer]
-    return ReadableMapBuffer(ByteBuffer.wrap(newBuffer))
+    return ReadableMapBuffer(buffer, offset + Int.SIZE_BYTES)
   }
 
   private fun readMapBufferListValue(position: Int): List<ReadableMapBuffer> {
@@ -145,18 +157,15 @@ class ReadableMapBuffer : MapBuffer {
     var curLen = 0
     while (curLen < sizeMapBufferList) {
       val sizeMapBuffer = buffer.getInt(offset + curLen)
-      val newMapBuffer = ByteArray(sizeMapBuffer)
       curLen = curLen + Int.SIZE_BYTES
-      buffer.position(offset + curLen)
-      buffer[newMapBuffer, 0, sizeMapBuffer]
-      readMapBufferList.add(ReadableMapBuffer(ByteBuffer.wrap(newMapBuffer)))
+      readMapBufferList.add(ReadableMapBuffer(buffer, offset + curLen))
       curLen = curLen + sizeMapBuffer
     }
     return readMapBufferList
   }
 
   private fun getKeyOffsetForBucketIndex(bucketIndex: Int): Int {
-    return HEADER_SIZE + BUCKET_SIZE * bucketIndex
+    return offsetToMapBuffer + HEADER_SIZE + BUCKET_SIZE * bucketIndex
   }
 
   override fun contains(key: Int): Boolean {
@@ -177,6 +186,9 @@ class ReadableMapBuffer : MapBuffer {
 
   override fun getInt(key: Int): Int =
       readIntValue(getTypedValueOffsetForKey(key, MapBuffer.DataType.INT))
+
+  override fun getLong(key: Int): Long =
+      readLongValue(getTypedValueOffsetForKey(key, MapBuffer.DataType.LONG))
 
   override fun getDouble(key: Int): Double =
       readDoubleValue(getTypedValueOffsetForKey(key, MapBuffer.DataType.DOUBLE))
@@ -214,18 +226,23 @@ class ReadableMapBuffer : MapBuffer {
 
   override fun toString(): String {
     val builder = StringBuilder("{")
-    for (entry in this) {
-      val key = entry.key
-      builder.append(key)
-      builder.append('=')
-      when (entry.type) {
-        MapBuffer.DataType.BOOL -> builder.append(entry.booleanValue)
-        MapBuffer.DataType.INT -> builder.append(entry.intValue)
-        MapBuffer.DataType.DOUBLE -> builder.append(entry.doubleValue)
-        MapBuffer.DataType.STRING -> builder.append(entry.stringValue)
-        MapBuffer.DataType.MAP -> builder.append(entry.mapBufferValue.toString())
+    joinTo(builder) { entry ->
+      StringBuilder().apply {
+        append(entry.key)
+        append('=')
+        when (entry.type) {
+          MapBuffer.DataType.BOOL -> append(entry.booleanValue)
+          MapBuffer.DataType.INT -> append(entry.intValue)
+          MapBuffer.DataType.LONG -> append(entry.longValue)
+          MapBuffer.DataType.DOUBLE -> append(entry.doubleValue)
+          MapBuffer.DataType.STRING -> {
+            append('"')
+            append(entry.stringValue)
+            append('"')
+          }
+          MapBuffer.DataType.MAP -> append(entry.mapBufferValue.toString())
+        }
       }
-      builder.append(',')
     }
     builder.append('}')
     return builder.toString()
@@ -278,6 +295,12 @@ class ReadableMapBuffer : MapBuffer {
         return readIntValue(bucketOffset + VALUE_OFFSET)
       }
 
+    override val longValue: Long
+      get() {
+        assertType(MapBuffer.DataType.LONG)
+        return readLongValue(bucketOffset + VALUE_OFFSET)
+      }
+
     override val booleanValue: Boolean
       get() {
         assertType(MapBuffer.DataType.BOOL)
@@ -297,7 +320,7 @@ class ReadableMapBuffer : MapBuffer {
       }
   }
 
-  companion object {
+  public companion object {
     // Value used to verify if the data is serialized with LittleEndian order.
     private const val ALIGNMENT = 0xFE
 

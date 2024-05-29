@@ -3,6 +3,4 @@
 <!-- @generated -->
 <!-- FB Locale: lt_LT -->
 <resources exclude-from-buck-resource-map="true">
-    <string name="catalyst_dev_menu_header" gender="unknown">Reagavimo savasis kūrėjo meniu „(%1$s)“</string>
-    <string name="catalyst_dev_menu_sub_header" gender="unknown">Rodoma „%1$s“</string>
 </resources>

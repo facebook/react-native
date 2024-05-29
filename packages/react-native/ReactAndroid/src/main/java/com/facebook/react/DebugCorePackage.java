@@ -11,15 +11,15 @@ import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.common.ClassFinder;
 import com.facebook.react.devsupport.JSCHeapCapture;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.module.annotations.ReactModuleList;
 import com.facebook.react.module.model.ReactModuleInfo;
 import com.facebook.react.module.model.ReactModuleInfoProvider;
-import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
-import com.facebook.react.views.traceupdateoverlay.TraceUpdateOverlayManager;
+import com.facebook.react.views.debuggingoverlay.DebuggingOverlayManager;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -36,48 +36,33 @@ import javax.inject.Provider;
     nativeModules = {
       JSCHeapCapture.class,
     })
+/* package */
 public class DebugCorePackage extends TurboReactPackage implements ViewManagerOnDemandReactPackage {
   private @Nullable Map<String, ModuleSpec> mViewManagers;
 
   public DebugCorePackage() {}
 
   @Override
-  public NativeModule getModule(String name, ReactApplicationContext reactContext) {
+  public @Nullable NativeModule getModule(String name, ReactApplicationContext reactContext) {
     switch (name) {
       case JSCHeapCapture.NAME:
         return new JSCHeapCapture(reactContext);
       default:
-        throw new IllegalArgumentException(
-            "In DebugCorePackage, could not find Native module for " + name);
+        return null;
     }
   }
 
   @Override
   public ReactModuleInfoProvider getReactModuleInfoProvider() {
+    if (!ClassFinder.canLoadClassesFromAnnotationProcessors()) {
+      return fallbackForMissingClass();
+    }
     try {
       Class<?> reactModuleInfoProviderClass =
-          Class.forName("com.facebook.react.DebugCorePackage$$ReactModuleInfoProvider");
+          ClassFinder.findClass("com.facebook.react.DebugCorePackage$$ReactModuleInfoProvider");
       return (ReactModuleInfoProvider) reactModuleInfoProviderClass.newInstance();
     } catch (ClassNotFoundException e) {
-      // In OSS case, the annotation processor does not run. We fall back on creating this by hand
-      Class<? extends NativeModule>[] moduleList = new Class[] {JSCHeapCapture.class};
-
-      final Map<String, ReactModuleInfo> reactModuleInfoMap = new HashMap<>();
-      for (Class<? extends NativeModule> moduleClass : moduleList) {
-        ReactModule reactModule = moduleClass.getAnnotation(ReactModule.class);
-
-        reactModuleInfoMap.put(
-            reactModule.name(),
-            new ReactModuleInfo(
-                reactModule.name(),
-                moduleClass.getName(),
-                reactModule.canOverrideExistingModule(),
-                reactModule.needsEagerInit(),
-                reactModule.isCxxModule(),
-                TurboModule.class.isAssignableFrom(moduleClass)));
-      }
-
-      return () -> reactModuleInfoMap;
+      return fallbackForMissingClass();
     } catch (InstantiationException e) {
       throw new RuntimeException(
           "No ReactModuleInfoProvider for DebugCorePackage$$ReactModuleInfoProvider", e);
@@ -87,17 +72,40 @@ public class DebugCorePackage extends TurboReactPackage implements ViewManagerOn
     }
   }
 
+  private ReactModuleInfoProvider fallbackForMissingClass() {
+    // In OSS case, the annotation processor does not run. We fall back on creating this by hand
+    Class<? extends NativeModule>[] moduleList = new Class[] {JSCHeapCapture.class};
+
+    final Map<String, ReactModuleInfo> reactModuleInfoMap = new HashMap<>();
+    for (Class<? extends NativeModule> moduleClass : moduleList) {
+      ReactModule reactModule = moduleClass.getAnnotation(ReactModule.class);
+
+      reactModuleInfoMap.put(
+          reactModule.name(),
+          new ReactModuleInfo(
+              reactModule.name(),
+              moduleClass.getName(),
+              reactModule.canOverrideExistingModule(),
+              reactModule.needsEagerInit(),
+              reactModule.isCxxModule(),
+              ReactModuleInfo.classIsTurboModule(moduleClass)));
+    }
+
+    return () -> reactModuleInfoMap;
+  }
+
   private static void appendMap(
       Map<String, ModuleSpec> map, String name, Provider<? extends NativeModule> provider) {
     map.put(name, ModuleSpec.viewManagerSpec(provider));
   }
 
-  /** @return a map of view managers that should be registered with {@link UIManagerModule} */
+  /**
+   * @return a map of view managers that should be registered with {@link UIManagerModule}
+   */
   private Map<String, ModuleSpec> getViewManagersMap() {
     if (mViewManagers == null) {
       Map<String, ModuleSpec> viewManagers = new HashMap<>();
-      appendMap(
-          viewManagers, TraceUpdateOverlayManager.REACT_CLASS, TraceUpdateOverlayManager::new);
+      appendMap(viewManagers, DebuggingOverlayManager.REACT_CLASS, DebuggingOverlayManager::new);
 
       mViewManagers = viewManagers;
     }

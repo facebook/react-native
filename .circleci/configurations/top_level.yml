@@ -25,11 +25,11 @@ references:
   android-defaults: &android-defaults
     working_directory: ~/react-native
     docker:
-      - image: reactnativecommunity/react-native-android:v11.0
+      - image: reactnativecommunity/react-native-android:v13.0
     environment:
       - TERM: "dumb"
       - GRADLE_OPTS: '-Dorg.gradle.daemon=false'
-      # By default we only build ARM64 to save time/resources. For release/nightlies, we override this value to build all archs.
+      # By default we only build ARM64 to save time/resources. For release/nightlies/prealpha, we override this value to build all archs.
       - ORG_GRADLE_PROJECT_reactNativeArchitectures: "arm64-v8a"
       # Repeated here, as the environment key in this executor will overwrite the one in defaults
       - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A: *github_analysisbot_token_a
@@ -59,7 +59,7 @@ references:
   #        Dependency Anchors
   # -------------------------
   dependency_versions:
-    xcode_version: &xcode_version "14.3.0"
+    xcode_version: &xcode_version "15.2"
     nodelts_image: &nodelts_image "cimg/node:20.2.0"
     nodeprevlts_image: &nodeprevlts_image "cimg/node:18.12.1"
     nodelts_browser_image: &nodelts_browser_image "cimg/node:20.2.0-browsers"
@@ -81,27 +81,22 @@ references:
     hermes_linux_cache_key: &hermes_linux_cache_key v1-hermes-{{ .Environment.CIRCLE_JOB }}-linux-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
     hermes_windows_cache_key: &hermes_windows_cache_key v2-hermes-{{ .Environment.CIRCLE_JOB }}-windows-{{ checksum "/Users/circleci/project/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
     # Hermes iOS
-    hermesc_apple_cache_key: &hermesc_apple_cache_key v2-hermesc-apple-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
-    hermes_apple_slices_cache_key: &hermes_apple_slices_cache_key v2-hermes-apple-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}-{{ checksum "packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh" }}
-    hermes_tarball_debug_cache_key: &hermes_tarball_debug_cache_key v4-hermes-tarball-debug-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}-{{ checksum "packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh" }}
-    hermes_tarball_release_cache_key: &hermes_tarball_release_cache_key v3-hermes-tarball-release-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}-{{ checksum "packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh" }}
-    hermes_macosx_bin_release_cache_key: &hermes_macosx_bin_release_cache_key v1-hermes-release-macosx-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
-    hermes_macosx_bin_debug_cache_key: &hermes_macosx_bin_debug_cache_key v1-hermes-debug-macosx-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
-    hermes_dsym_debug_cache_key: &hermes_dsym_debug_cache_key v1-hermes-debug-dsym-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
-    hermes_dsym_release_cache_key: &hermes_dsym_release_cache_key v1-hermes-release-dsym-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
+    hermesc_apple_cache_key: &hermesc_apple_cache_key v3-hermesc-apple-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
+    hermes_apple_slices_cache_key: &hermes_apple_slices_cache_key v7-hermes-apple-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}-{{ checksum "packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh" }}
+    hermes_tarball_debug_cache_key: &hermes_tarball_debug_cache_key v5-hermes-tarball-debug-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}-{{ checksum "packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh" }}
+    hermes_tarball_release_cache_key: &hermes_tarball_release_cache_key v4-hermes-tarball-release-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}-{{ checksum "packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh" }}
+    hermes_macosx_bin_release_cache_key: &hermes_macosx_bin_release_cache_key v4-hermes-release-macosx-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
+    hermes_macosx_bin_debug_cache_key: &hermes_macosx_bin_debug_cache_key v2-hermes-debug-macosx-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
+    hermes_dsym_debug_cache_key: &hermes_dsym_debug_cache_key v2-hermes-debug-dsym-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
+    hermes_dsym_release_cache_key: &hermes_dsym_release_cache_key v2-hermes-release-dsym-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
     # Cocoapods - RNTester
-    pods_cache_key: &pods_cache_key v10-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
-    cocoapods_cache_key: &cocoapods_cache_key v8-cocoapods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock" }}-{{ checksum "packages/rn-tester/Podfile" }}-{{ checksum "/tmp/hermes/hermesversion" }}
-    rntester_podfile_lock_cache_key: &rntester_podfile_lock_cache_key v6-podfilelock-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile" }}-{{ checksum "/tmp/week_year" }}-{{ checksum "/tmp/hermes/hermesversion" }}
+    pods_cache_key: &pods_cache_key v11-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
+    cocoapods_cache_key: &cocoapods_cache_key v11-cocoapods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock" }}-{{ checksum "packages/rn-tester/Podfile" }}-{{ checksum "/tmp/hermes/hermesversion" }}
+    rntester_podfile_lock_cache_key: &rntester_podfile_lock_cache_key v10-podfilelock-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile" }}-{{ checksum "/tmp/week_year" }}-{{ checksum "/tmp/hermes/hermesversion" }}
 
     # Cocoapods - Template
-    template_cocoapods_cache_key: &template_cocoapods_cache_key v4-cocoapods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/iOSTemplateProject/ios/Podfile.lock" }}-{{ checksum "/tmp/iOSTemplateProject/ios/Podfile" }}-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "packages/rn-tester/Podfile.lock }}
-    template_podfile_lock_cache_key: &template_podfile_lock_cache_key v4-podfilelock-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/iOSTemplateProject/ios/Podfile" }}-{{ checksum "/tmp/week_year" }}-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "packages/rn-tester/Podfile.lock }}
-
-    # Windows
-    windows_yarn_cache_key: &windows_yarn_cache_key v1-win-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
-    windows_choco_cache_key: &windows_choco_cache_key v1-win-choco-cache-{{ .Environment.CIRCLE_JOB }}
-
+    template_cocoapods_cache_key: &template_cocoapods_cache_key v6-cocoapods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/iOSTemplateProject/ios/Podfile.lock" }}-{{ checksum "/tmp/iOSTemplateProject/ios/Podfile" }}-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "packages/rn-tester/Podfile.lock" }}
+    template_podfile_lock_cache_key: &template_podfile_lock_cache_key v6-podfilelock-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/iOSTemplateProject/ios/Podfile" }}-{{ checksum "/tmp/week_year" }}-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "packages/rn-tester/Podfile.lock" }}
 
   cache_paths:
     hermes_workspace_macos_cache_paths: &hermes_workspace_macos_cache_paths
@@ -134,14 +129,22 @@ parameters:
     default: false
     type: boolean
 
-  release_latest:
+  run_nightly_workflow:
     default: false
     type: boolean
 
   release_version:
-    default: "9999"
+    default: ""
     type: string
 
-  run_nightly_workflow:
+  release_monorepo_packages_version:
+    default: ""
+    type: string
+
+  release_tag:
+    default: ""
+    type: string
+
+  release_dry_run:
     default: false
     type: boolean

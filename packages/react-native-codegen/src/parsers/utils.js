@@ -11,7 +11,6 @@
 'use strict';
 
 const {ParserError} = require('./errors');
-
 const path = require('path');
 
 export type TypeDeclarationMap = {[declarationName: string]: $FlowFixMe};
@@ -82,6 +81,12 @@ function verifyPlatforms(
     }
 
     if (name.endsWith('IOS')) {
+      excludedPlatforms.add('android');
+      return;
+    }
+
+    if (name.endsWith('Windows')) {
+      excludedPlatforms.add('iOS');
       excludedPlatforms.add('android');
       return;
     }
@@ -198,6 +203,17 @@ function isModuleRegistryCall(node: $FlowFixMe): boolean {
   return true;
 }
 
+function getSortedObject<T>(unsortedObject: {[key: string]: T}): {
+  [key: string]: T,
+} {
+  return Object.keys(unsortedObject)
+    .sort()
+    .reduce((sortedObject: {[key: string]: T}, key: string) => {
+      sortedObject[key] = unsortedObject[key];
+      return sortedObject;
+    }, {});
+}
+
 module.exports = {
   getConfigType,
   extractNativeModuleName,
@@ -205,4 +221,5 @@ module.exports = {
   verifyPlatforms,
   visit,
   isModuleRegistryCall,
+  getSortedObject,
 };

@@ -53,16 +53,32 @@ public final class ViewManagerRegistry implements ComponentCallbacks2 {
    * @return the {@link ViewManager} registered to the className received as a parameter
    */
   public synchronized ViewManager get(String className) {
+    // 1. Try to get the manager without the prefix.
     ViewManager viewManager = mViewManagers.get(className);
     if (viewManager != null) {
       return viewManager;
     }
+
+    // 2. Try to get the manager with the RCT prefix.
+    String rctViewManagerName = "RCT" + className;
+    viewManager = mViewManagers.get(rctViewManagerName);
+    if (viewManager != null) {
+      return viewManager;
+    }
     if (mViewManagerResolver != null) {
+      // 1. Try to get the manager without the prefix.
       viewManager = getViewManagerFromResolver(className);
       if (viewManager != null) return viewManager;
+
+      // 2. Try to get the manager with the RCT prefix.
+      viewManager = getViewManagerFromResolver(rctViewManagerName);
+      if (viewManager != null) return viewManager;
+
       throw new IllegalViewOperationException(
-          "ViewManagerResolver returned null for "
+          "ViewManagerResolver returned null for either "
               + className
+              + " or "
+              + rctViewManagerName
               + ", existing names are: "
               + mViewManagerResolver.getViewManagerNames());
     }

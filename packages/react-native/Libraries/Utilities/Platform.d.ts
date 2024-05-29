@@ -50,10 +50,13 @@ interface PlatformIOSStatic extends PlatformStatic {
     interfaceIdiom: string;
     osVersion: string;
     systemName: string;
+    isMacCatalyst?: boolean | undefined;
   };
   OS: 'ios';
   isPad: boolean;
   isTV: boolean;
+  isVision: boolean;
+  isMacCatalyst?: boolean | undefined;
   Version: string;
 }
 

@@ -10,9 +10,9 @@
 
 'use strict';
 
+import {RNTesterThemeContext} from './RNTesterTheme';
 import * as React from 'react';
 import {StyleSheet, View} from 'react-native';
-import {RNTesterThemeContext} from './RNTesterTheme';
 
 type Props = $ReadOnly<{|
   children?: ?React.Node,

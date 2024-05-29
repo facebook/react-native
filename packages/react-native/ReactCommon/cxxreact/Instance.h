@@ -14,6 +14,7 @@
 
 #include <ReactCommon/RuntimeExecutor.h>
 #include <cxxreact/NativeToJsBridge.h>
+#include <jsinspector-modern/ReactCdp.h>
 
 #ifndef RN_EXPORT
 #define RN_EXPORT __attribute__((visibility("default")))
@@ -38,14 +39,15 @@ struct InstanceCallback {
   virtual void decrementPendingJSCalls() {}
 };
 
-class RN_EXPORT Instance {
+class RN_EXPORT Instance : private jsinspector_modern::InstanceTargetDelegate {
  public:
-  ~Instance();
+  ~Instance() override;
   void initializeBridge(
       std::unique_ptr<InstanceCallback> callback,
       std::shared_ptr<JSExecutorFactory> jsef,
       std::shared_ptr<MessageQueueThread> jsQueue,
-      std::shared_ptr<ModuleRegistry> moduleRegistry);
+      std::shared_ptr<ModuleRegistry> moduleRegistry,
+      jsinspector_modern::HostTarget* inspectorTarget = nullptr);
 
   void initializeRuntime();
 
@@ -132,6 +134,12 @@ class RN_EXPORT Instance {
    */
   RuntimeExecutor getRuntimeExecutor();
 
+  /**
+   * Unregisters the instance from the inspector. This method must be called
+   * on the main (non-JS) thread, AFTER \c initializeBridge has completed.
+   */
+  void unregisterFromInspector();
+
  private:
   void callNativeModules(folly::dynamic&& calls, bool isEndOfBatch);
   void loadBundle(
@@ -156,19 +164,23 @@ class RN_EXPORT Instance {
     std::weak_ptr<NativeToJsBridge> m_nativeToJsBridge;
     std::mutex m_mutex;
     bool m_shouldBuffer = true;
-    std::list<std::function<void()>> m_workBuffer;
+    std::list<CallFunc> m_workBuffer;
 
-    void scheduleAsync(std::function<void()>&& work);
+    void scheduleAsync(CallFunc&& work) noexcept;
 
    public:
     void setNativeToJsBridgeAndFlushCalls(
         std::weak_ptr<NativeToJsBridge> nativeToJsBridge);
-    void invokeAsync(std::function<void()>&& work) override;
-    void invokeSync(std::function<void()>&& work) override;
+    void invokeAsync(CallFunc&& work) noexcept override;
+    void invokeSync(CallFunc&& work) override;
   };
 
   std::shared_ptr<JSCallInvoker> jsCallInvoker_ =
       std::make_shared<JSCallInvoker>();
+
+  jsinspector_modern::HostTarget* parentInspectorTarget_{nullptr};
+  jsinspector_modern::InstanceTarget* inspectorTarget_{nullptr};
+  jsinspector_modern::RuntimeTarget* runtimeInspectorTarget_{nullptr};
 };
 
 } // namespace facebook::react

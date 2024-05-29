@@ -89,7 +89,9 @@ const ActionSheetIOS = {
     RCTActionSheetManager.showActionSheetWithOptions(
       {
         ...remainingOptions,
+        // $FlowFixMe[incompatible-call]
         tintColor: processedTintColor,
+        // $FlowFixMe[incompatible-call]
         cancelButtonTintColor: processedCancelButtonTintColor,
         destructiveButtonIndices,
       },
@@ -145,6 +147,10 @@ const ActionSheetIOS = {
     );
   },
 
+  /**
+   * Dismisses the most upper iOS action sheet presented, if no action sheet is
+   * present a warning is displayed.
+   */
   dismissActionSheet: () => {
     invariant(RCTActionSheetManager, "ActionSheetManager doesn't exist");
     if (typeof RCTActionSheetManager.dismissActionSheet === 'function') {

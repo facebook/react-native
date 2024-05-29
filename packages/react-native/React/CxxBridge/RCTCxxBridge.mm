@@ -9,11 +9,13 @@
 #include <future>
 
 #import <React/RCTAssert.h>
+#import <React/RCTBridge+Inspector.h>
 #import <React/RCTBridge+Private.h>
 #import <React/RCTBridge.h>
 #import <React/RCTBridgeMethod.h>
 #import <React/RCTBridgeModule.h>
 #import <React/RCTBridgeModuleDecorator.h>
+#import <React/RCTCallInvoker.h>
 #import <React/RCTConstants.h>
 #import <React/RCTConvert.h>
 #import <React/RCTCxxBridgeDelegate.h>
@@ -28,6 +30,7 @@
 #import <React/RCTPerformanceLogger.h>
 #import <React/RCTProfile.h>
 #import <React/RCTRedBox.h>
+#import <React/RCTRedBoxSetEnabled.h>
 #import <React/RCTReloadCommand.h>
 #import <React/RCTTurboModuleRegistry.h>
 #import <React/RCTUtils.h>
@@ -38,18 +41,11 @@
 #import <cxxreact/ModuleRegistry.h>
 #import <cxxreact/RAMBundleRegistry.h>
 #import <cxxreact/ReactMarker.h>
+#import <jsinspector-modern/ReactCdp.h>
 #import <jsireact/JSIExecutor.h>
 #import <reactperflogger/BridgeNativeModulePerfLogger.h>
 
-#ifndef RCT_USE_HERMES
-#if __has_include(<reacthermes/HermesExecutorFactory.h>)
-#define RCT_USE_HERMES 1
-#else
-#define RCT_USE_HERMES 0
-#endif
-#endif
-
-#if RCT_USE_HERMES
+#if USE_HERMES
 #import <reacthermes/HermesExecutorFactory.h>
 #else
 #import "JSCExecutorFactory.h"
@@ -112,7 +108,7 @@ class GetDescAdapter : public JSExecutorFactory {
   std::shared_ptr<JSExecutorFactory> factory_;
 };
 
-}
+} // namespace
 
 static void mapReactMarkerToPerformanceLogger(
     const ReactMarker::ReactMarkerId markerId,
@@ -173,7 +169,7 @@ static void registerPerformanceLoggerHooks(RCTPerformanceLogger *performanceLogg
   };
 }
 
-@interface RCTCxxBridge ()
+@interface RCTCxxBridge () <RCTModuleDataCallInvokerProvider>
 
 @property (nonatomic, weak, readonly) RCTBridge *parentBridge;
 @property (nonatomic, assign, readonly) BOOL moduleSetupComplete;
@@ -423,7 +419,7 @@ struct RCTInstanceCallback : public InstanceCallback {
     }
     if (!executorFactory) {
       auto installBindings = RCTJSIExecutorRuntimeInstaller(nullptr);
-#if RCT_USE_HERMES
+#if USE_HERMES
       executorFactory = std::make_shared<HermesExecutorFactory>(installBindings);
 #else
       executorFactory = std::make_shared<JSCExecutorFactory>(installBindings);
@@ -438,11 +434,19 @@ struct RCTInstanceCallback : public InstanceCallback {
     }));
   }
 
+  // Grab the inspector target from the parent bridge here, on the main queue, to avoid inadvertently
+  // moving ownership of the parent bridge to the JS thread, which would violate expectations around
+  // the timing and thread affinity of RCTBridge's destruction. This could technically be a dangling
+  // pointer into a member of RCTBridge! But we only use it while _reactInstance exists, meaning we
+  // haven't been invalidated, and therefore RCTBridge hasn't been deallocated yet.
+  RCTAssertMainQueue();
+  facebook::react::jsinspector_modern::HostTarget *parentInspectorTarget = _parentBridge.inspectorTarget;
+
   // Dispatch the instance initialization as soon as the initial module metadata has
   // been collected (see initModules)
   dispatch_group_enter(prepareBridge);
   [self ensureOnJavaScriptThread:^{
-    [weakSelf _initializeBridge:executorFactory];
+    [weakSelf _initializeBridge:executorFactory parentInspectorTarget:parentInspectorTarget];
     dispatch_group_leave(prepareBridge);
   }];
 
@@ -657,6 +661,7 @@ struct RCTInstanceCallback : public InstanceCallback {
 }
 
 - (void)_initializeBridge:(std::shared_ptr<JSExecutorFactory>)executorFactory
+    parentInspectorTarget:(facebook::react::jsinspector_modern::HostTarget *)parentInspectorTarget
 {
   if (!self.valid) {
     return;
@@ -676,7 +681,7 @@ struct RCTInstanceCallback : public InstanceCallback {
     executorFactory = std::make_shared<GetDescAdapter>(self, executorFactory);
 #endif
 
-    [self _initializeBridgeLocked:executorFactory];
+    [self _initializeBridgeLocked:executorFactory parentInspectorTarget:parentInspectorTarget];
 
 #if RCT_PROFILE
     if (RCTProfileIsProfiling()) {
@@ -689,6 +694,7 @@ struct RCTInstanceCallback : public InstanceCallback {
 }
 
 - (void)_initializeBridgeLocked:(std::shared_ptr<JSExecutorFactory>)executorFactory
+          parentInspectorTarget:(facebook::react::jsinspector_modern::HostTarget *)parentInspectorTarget
 {
   std::lock_guard<std::mutex> guard(_moduleRegistryLock);
 
@@ -697,7 +703,8 @@ struct RCTInstanceCallback : public InstanceCallback {
       std::make_unique<RCTInstanceCallback>(self),
       executorFactory,
       _jsMessageThread,
-      [self _buildModuleRegistryUnlocked]);
+      [self _buildModuleRegistryUnlocked],
+      parentInspectorTarget);
   _moduleRegistryCreated = YES;
 }
 
@@ -761,6 +768,7 @@ struct RCTInstanceCallback : public InstanceCallback {
                                     viewRegistry_DEPRECATED:_viewRegistry_DEPRECATED
                                               bundleManager:_bundleManager
                                           callableJSModules:_callableJSModules];
+    moduleData.callInvokerProvider = self;
     BridgeNativeModulePerfLogger::moduleDataCreateEnd([moduleName UTF8String], moduleDataId);
 
     _moduleDataByName[moduleName] = moduleData;
@@ -1080,7 +1088,8 @@ struct RCTInstanceCallback : public InstanceCallback {
 
   if (self->_valid && !self->_loading) {
     if ([error userInfo][RCTJSRawStackTraceKey]) {
-      [self.redBox showErrorMessage:[error localizedDescription] withRawStack:[error userInfo][RCTJSRawStackTraceKey]];
+      RCTRedBox *redBox = RCTRedBoxGetEnabled() ? [self.moduleRegistry moduleForName:"RedBox"] : nil;
+      [redBox showErrorMessage:[error localizedDescription] withRawStack:[error userInfo][RCTJSRawStackTraceKey]];
     }
 
     RCTFatal(error);
@@ -1095,7 +1104,7 @@ struct RCTInstanceCallback : public InstanceCallback {
 
   // Hack: once the bridge is invalidated below, it won't initialize any new native
   // modules. Initialize the redbox module now so we can still report this error.
-  RCTRedBox *redBox = [self redBox];
+  RCTRedBox *redBox = RCTRedBoxGetEnabled() ? [self.moduleRegistry moduleForName:"RedBox"] : nil;
 
   _loading = NO;
   _valid = NO;
@@ -1186,6 +1195,12 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithBundleURL
 
   RCTAssertMainQueue();
   RCTLogInfo(@"Invalidating %@ (parent: %@, executor: %@)", self, _parentBridge, [self executorClass]);
+
+  if (self->_reactInstance) {
+    // Do this synchronously on the main thread to fulfil unregisterFromInspector's
+    // requirements.
+    self->_reactInstance->unregisterFromInspector();
+  }
 
   _loading = NO;
   _valid = NO;
@@ -1556,7 +1571,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithBundleURL
   return _reactInstance->getJavaScriptContext();
 }
 
-- (void)invokeAsync:(std::function<void()> &&)func
+- (void)invokeAsync:(CallFunc &&)func
 {
   __block auto retainedFunc = std::move(func);
   __weak __typeof(self) weakSelf = self;
@@ -1580,6 +1595,13 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithBundleURL
     (std::shared_ptr<NativeMethodCallInvoker>)nativeInvoker
 {
   return _reactInstance ? _reactInstance->getDecoratedNativeMethodCallInvoker(nativeInvoker) : nullptr;
+}
+
+#pragma mark - RCTModuleDataCallInvokerProvider
+
+- (RCTCallInvoker *)callInvokerForModuleData:(RCTModuleData *)moduleData
+{
+  return [[RCTCallInvoker alloc] initWithCallInvoker:self.jsCallInvoker];
 }
 
 @end

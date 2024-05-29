@@ -13,13 +13,13 @@
 #include <ReactCommon/RuntimeExecutor.h>
 #include <fbjni/fbjni.h>
 
-#include "CxxModuleWrapper.h"
 #include "JMessageQueueThread.h"
 #include "JRuntimeExecutor.h"
 #include "JRuntimeScheduler.h"
 #include "JSLoader.h"
 #include "JavaModuleWrapper.h"
 #include "ModuleRegistryBuilder.h"
+#include "ReactInstanceManagerInspectorTarget.h"
 
 namespace facebook::react {
 
@@ -27,9 +27,9 @@ class Instance;
 class JavaScriptExecutorHolder;
 class NativeArray;
 
-struct ReactCallback : public jni::JavaClass<ReactCallback> {
+struct JInstanceCallback : public jni::JavaClass<JInstanceCallback> {
   static constexpr auto kJavaDescriptor =
-      "Lcom/facebook/react/bridge/ReactCallback;";
+      "Lcom/facebook/react/bridge/CatalystInstanceImpl$InstanceCallback;";
 };
 
 class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
@@ -51,7 +51,7 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
   CatalystInstanceImpl();
 
   void initializeBridge(
-      jni::alias_ref<ReactCallback::javaobject> callback,
+      jni::alias_ref<JInstanceCallback::javaobject> callback,
       // This executor is actually a factory holder.
       JavaScriptExecutorHolder* jseh,
       jni::alias_ref<JavaMessageQueueThread::javaobject> jsQueue,
@@ -60,7 +60,9 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
           jni::JCollection<JavaModuleWrapper::javaobject>::javaobject>
           javaModules,
       jni::alias_ref<jni::JCollection<ModuleHolder::javaobject>::javaobject>
-          cxxModules);
+          cxxModules,
+      jni::alias_ref<ReactInstanceManagerInspectorTarget::javaobject>
+          inspectorTarget);
 
   void extendNativeModules(
       jni::alias_ref<jni::JCollection<
@@ -102,6 +104,13 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
   void handleMemoryPressure(int pressureLevel);
 
   void createAndInstallRuntimeSchedulerIfNecessary();
+
+  /**
+   * Unregisters the instance from the inspector. This method must be called
+   * on the main thread, after initializeBridge has finished executing and
+   * before the destructor for Instance has started.
+   */
+  void unregisterFromInspector();
 
   // This should be the only long-lived strong reference, but every C++ class
   // will have a weak reference.

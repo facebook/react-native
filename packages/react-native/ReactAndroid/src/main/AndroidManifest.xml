@@ -8,7 +8,7 @@
    up from the file to lint until it find an AndroidManifest with a minSdkVersion. This is then used
    as the min SDK to lint the file.-->
   <uses-sdk
-      android:minSdkVersion="21"
+      android:minSdkVersion="23"
       android:targetSdkVersion="34"
       />
 

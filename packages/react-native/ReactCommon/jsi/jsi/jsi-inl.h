@@ -227,6 +227,11 @@ inline void Object::setNativeState(
   runtime.setNativeState(*this, state);
 }
 
+inline void Object::setExternalMemoryPressure(Runtime& runtime, size_t amt)
+    const {
+  runtime.setExternalMemoryPressure(*this, amt);
+}
+
 inline Array Object::getPropertyNames(Runtime& runtime) const {
   return runtime.getPropertyNames(*this);
 }
@@ -314,7 +319,7 @@ inline std::vector<PropNameID> PropNameID::names(
 
 template <size_t N>
 inline std::vector<PropNameID> PropNameID::names(
-    PropNameID(&&propertyNames)[N]) {
+    PropNameID (&&propertyNames)[N]) {
   std::vector<PropNameID> result;
   result.reserve(N);
   for (auto& name : propertyNames) {

@@ -12,6 +12,8 @@
 
 #include <cxxreact/NativeModule.h>
 #include <folly/dynamic.h>
+#include <jsinspector-modern/InspectorInterfaces.h>
+#include <jsinspector-modern/ReactCdp.h>
 
 #ifndef RN_EXPORT
 #define RN_EXPORT __attribute__((visibility("default")))
@@ -44,9 +46,6 @@ class ExecutorDelegate {
       unsigned int methodId,
       folly::dynamic&& args) = 0;
 };
-
-using NativeExtensionsProvider =
-    std::function<folly::dynamic(const std::string&)>;
 
 class JSExecutorFactory {
  public:
@@ -114,7 +113,8 @@ class RN_EXPORT JSExecutor {
 
   /**
    * Returns whether or not the underlying executor supports debugging via the
-   * Chrome remote debugging protocol.
+   * Chrome remote debugging protocol. If true, the executor should also
+   * override the \c createAgentDelegate method.
    */
   virtual bool isInspectable() {
     return false;
@@ -130,7 +130,7 @@ class RN_EXPORT JSExecutor {
   virtual void handleMemoryPressure([[maybe_unused]] int pressureLevel) {}
 
   virtual void destroy() {}
-  virtual ~JSExecutor() {}
+  virtual ~JSExecutor() = default;
 
   virtual void flush() {}
 
@@ -139,6 +139,21 @@ class RN_EXPORT JSExecutor {
       const std::string& bundlePath);
 
   static double performanceNow();
+
+  /**
+   * Get a reference to the \c RuntimeTargetDelegate owned (or implemented) by
+   * this executor. This reference must remain valid for the duration of the
+   * executor's lifetime.
+   */
+  virtual jsinspector_modern::RuntimeTargetDelegate& getRuntimeTargetDelegate();
+
+ private:
+  /**
+   * Initialized by \c getRuntimeTargetDelegate if not overridden, and then
+   * never changes.
+   */
+  std::optional<jsinspector_modern::FallbackRuntimeTargetDelegate>
+      runtimeTargetDelegate_;
 };
 
 } // namespace facebook::react

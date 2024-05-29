@@ -12,11 +12,11 @@
 
 import type {RNTesterModule} from '../../types/RNTesterTypes';
 
-const React = require('react');
-const TextAncestor = require('react-native/Libraries/Text/TextAncestor');
-const TextInlineView = require('../../components/TextInlineView');
 import TextLegend from '../../components/TextLegend';
+import TextInlineViewsExample from './TextInlineViewsExample';
 
+const TextInlineView = require('../../components/TextInlineView');
+const React = require('react');
 const {
   Button,
   LayoutAnimation,
@@ -25,6 +25,7 @@ const {
   TextInput,
   View,
 } = require('react-native');
+const TextAncestor = require('react-native/Libraries/Text/TextAncestor');
 
 // TODO: Is there a cleaner way to flip the TextAncestor value to false? I
 //   suspect apps won't even be able to leverage this workaround because
@@ -1328,6 +1329,7 @@ const examples = [
       );
     },
   },
+  TextInlineViewsExample,
 ];
 
 module.exports = ({

@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UIManager;
@@ -30,8 +31,10 @@ import java.lang.ref.WeakReference;
  * <p>This uses UIManager to listen to updates and capture position of items before and after
  * layout.
  */
-public class MaintainVisibleScrollPositionHelper<ScrollViewT extends ViewGroup & HasSmoothScroll>
+@Nullsafe(Nullsafe.Mode.LOCAL)
+class MaintainVisibleScrollPositionHelper<ScrollViewT extends ViewGroup & HasSmoothScroll>
     implements UIManagerListener {
+
   private final ScrollViewT mScrollView;
   private final boolean mHorizontal;
   private @Nullable Config mConfig;
@@ -40,6 +43,7 @@ public class MaintainVisibleScrollPositionHelper<ScrollViewT extends ViewGroup &
   private boolean mListening = false;
 
   public static class Config {
+
     public final int minIndexForVisible;
     public final @Nullable Integer autoScrollToTopThreshold;
 
@@ -114,7 +118,7 @@ public class MaintainVisibleScrollPositionHelper<ScrollViewT extends ViewGroup &
       int deltaX = newFrame.left - mPrevFirstVisibleFrame.left;
       if (deltaX != 0) {
         int scrollX = mScrollView.getScrollX();
-        mScrollView.scrollTo(scrollX + deltaX, mScrollView.getScrollY());
+        mScrollView.scrollToPreservingMomentum(scrollX + deltaX, mScrollView.getScrollY());
         mPrevFirstVisibleFrame = newFrame;
         if (mConfig.autoScrollToTopThreshold != null
             && scrollX <= mConfig.autoScrollToTopThreshold) {
@@ -125,7 +129,7 @@ public class MaintainVisibleScrollPositionHelper<ScrollViewT extends ViewGroup &
       int deltaY = newFrame.top - mPrevFirstVisibleFrame.top;
       if (deltaY != 0) {
         int scrollY = mScrollView.getScrollY();
-        mScrollView.scrollTo(mScrollView.getScrollX(), scrollY + deltaY);
+        mScrollView.scrollToPreservingMomentum(mScrollView.getScrollX(), scrollY + deltaY);
         mPrevFirstVisibleFrame = newFrame;
         if (mConfig.autoScrollToTopThreshold != null
             && scrollY <= mConfig.autoScrollToTopThreshold) {
@@ -158,7 +162,12 @@ public class MaintainVisibleScrollPositionHelper<ScrollViewT extends ViewGroup &
     int currentScroll = mHorizontal ? mScrollView.getScrollX() : mScrollView.getScrollY();
     for (int i = mConfig.minIndexForVisible; i < contentView.getChildCount(); i++) {
       View child = contentView.getChildAt(i);
-      float position = mHorizontal ? child.getX() : child.getY();
+
+      // Compute the position of the end of the child
+      float position =
+          mHorizontal ? child.getX() + child.getWidth() : child.getY() + child.getHeight();
+
+      // If the child is partially visible or this is the last child, select it as the anchor.
       if (position > currentScroll || i == contentView.getChildCount() - 1) {
         mFirstVisibleView = new WeakReference<>(child);
         Rect frame = new Rect();

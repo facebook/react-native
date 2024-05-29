@@ -23,7 +23,7 @@ import java.nio.charset.CharsetDecoder;
  * <p>This class is designed in assumption that original byte stream is correctly formatted string
  * in given encoding. Otherwise some parts of the data won't be decoded.
  */
-public class ProgressiveStringDecoder {
+class ProgressiveStringDecoder {
 
   private static final String EMPTY_STRING = "";
 
@@ -31,7 +31,9 @@ public class ProgressiveStringDecoder {
 
   private byte[] remainder = null;
 
-  /** @param charset expected charset of the data */
+  /**
+   * @param charset expected charset of the data
+   */
   public ProgressiveStringDecoder(Charset charset) {
     mDecoder = charset.newDecoder();
   }

@@ -21,7 +21,7 @@ RCTBlobCollector::~RCTBlobCollector()
 {
   RCTBlobManager *blobManager = blobManager_;
   NSString *blobId = [NSString stringWithUTF8String:blobId_.c_str()];
-  dispatch_async([blobManager_ methodQueue], ^{
+  dispatch_async([blobManager_ executionQueue], ^{
     [blobManager remove:blobId];
   });
 }
@@ -45,7 +45,10 @@ void RCTBlobCollector::install(RCTBlobManager *blobManager)
                 [blobManager](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) {
                   auto blobId = args[0].asString(rt).utf8(rt);
                   auto blobCollector = std::make_shared<RCTBlobCollector>(blobManager, blobId);
-                  return jsi::Object::createFromHostObject(rt, blobCollector);
+                  auto blobCollectorJsObject = jsi::Object::createFromHostObject(rt, blobCollector);
+                  blobCollectorJsObject.setExternalMemoryPressure(
+                      rt, [blobManager lengthOfBlobWithId:[NSString stringWithUTF8String:blobId.c_str()]]);
+                  return blobCollectorJsObject;
                 }));
       }
               queue:RCTJSThread];

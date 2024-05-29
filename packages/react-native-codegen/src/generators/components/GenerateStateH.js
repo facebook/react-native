@@ -35,17 +35,13 @@ const FileTemplate = ({
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 ${stateClasses}
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 `.trim();
 
 const StateTemplate = ({stateName}: {stateName: string}) =>
@@ -59,9 +55,6 @@ public:
   folly::dynamic getDynamic() const {
     return {};
   };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
-  };
 #endif
 };
 `.trim();
@@ -72,6 +65,7 @@ module.exports = {
     schema: SchemaType,
     packageName?: string,
     assumeNonnull: boolean = false,
+    headerPrefix?: string,
   ): FilesOutput {
     const fileName = 'States.h';
 

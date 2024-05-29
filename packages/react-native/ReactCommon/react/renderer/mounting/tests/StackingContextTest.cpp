@@ -17,9 +17,10 @@
 #include <react/renderer/element/ComponentBuilder.h>
 #include <react/renderer/element/Element.h>
 #include <react/renderer/element/testUtils.h>
+#include <react/renderer/graphics/ValueUnit.h>
 #include <react/renderer/mounting/Differentiator.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
-#include <react/renderer/mounting/stubs.h>
+#include <react/renderer/mounting/stubs/stubs.h>
 
 namespace facebook::react {
 
@@ -164,7 +165,7 @@ class StackingContextTest : public ::testing::Test {
   }
 
   void testViewTree_(
-      const std::function<void(StubViewTree const& viewTree)>& callback) {
+      const std::function<void(const StubViewTree& viewTree)>& callback) {
     rootShadowNode_->layoutIfNeeded();
 
     callback(buildStubViewTreeUsingDifferentiator(*rootShadowNode_));
@@ -251,9 +252,9 @@ TEST_F(StackingContextTest, mostPropsDoNotForceViewsToMaterialize) {
 
   mutateViewShadowNodeProps_(nodeAA_, [](ViewProps& props) {
     auto& yogaStyle = props.yogaStyle;
-    yogaStyle.padding()[YGEdgeAll] = YGValue{42, YGUnitPoint};
-    yogaStyle.margin()[YGEdgeAll] = YGValue{42, YGUnitPoint};
-    yogaStyle.positionType() = yoga::PositionType::Absolute;
+    yogaStyle.setPadding(yoga::Edge::All, yoga::value::points(42));
+    yogaStyle.setMargin(yoga::Edge::All, yoga::value::points(42));
+    yogaStyle.setPositionType(yoga::PositionType::Absolute);
     props.shadowRadius = 42;
     props.shadowOffset = Size{42, 42};
     props.backgroundColor = clearColor();
@@ -262,22 +263,24 @@ TEST_F(StackingContextTest, mostPropsDoNotForceViewsToMaterialize) {
   mutateViewShadowNodeProps_(nodeBA_, [](ViewProps& props) {
     auto& yogaStyle = props.yogaStyle;
     props.zIndex = 42;
-    yogaStyle.margin()[YGEdgeAll] = YGValue{42, YGUnitPoint};
+    yogaStyle.setPositionType(yoga::PositionType::Static);
+    yogaStyle.setMargin(yoga::Edge::All, yoga::value::points(42));
     props.shadowColor = clearColor();
     props.shadowOpacity = 0.42;
   });
 
   mutateViewShadowNodeProps_(nodeBBA_, [](ViewProps& props) {
     auto& yogaStyle = props.yogaStyle;
-    yogaStyle.positionType() = yoga::PositionType::Relative;
-
-    props.borderRadii.all = 42;
+    yogaStyle.setPositionType(yoga::PositionType::Relative);
+    props.borderRadii.all = ValueUnit{42, UnitType::Point};
     props.borderColors.all = blackColor();
   });
 
   mutateViewShadowNodeProps_(nodeBD_, [](ViewProps& props) {
+    auto& yogaStyle = props.yogaStyle;
     props.onLayout = true;
     props.hitSlop = EdgeInsets{42, 42, 42, 42};
+    yogaStyle.setPositionType(yoga::PositionType::Static);
   });
 
   testViewTree_([](const StubViewTree& viewTree) {
@@ -456,7 +459,7 @@ TEST_F(StackingContextTest, somePropsForceViewsToMaterialize2) {
 
   mutateViewShadowNodeProps_(nodeBBB_, [](ViewProps& props) {
     auto& yogaStyle = props.yogaStyle;
-    yogaStyle.positionType() = yoga::PositionType::Relative;
+    yogaStyle.setPositionType(yoga::PositionType::Relative);
     props.zIndex = 42;
   });
 
@@ -472,6 +475,176 @@ TEST_F(StackingContextTest, somePropsForceViewsToMaterialize2) {
 
     // The root view has all 9 subviews.
     EXPECT_EQ(viewTree.getRootStubView().children.size(), 9);
+  });
+}
+
+TEST_F(StackingContextTest, nonCollapsableChildren) {
+  //  ┌────────────── (Root) ──────────────┐    ┌─────────── (Root) ──────────┐
+  //  │ ┏━ A (tag: 2) ━━━━━━━━━━━━━━━━━━━┓ │    │ ┏━ BBA (tag: 7) ━━━━━━━━━━┓ │
+  //  │ ┃                                ┃ │    │ ┃                         ┃ │
+  //  │ ┃                                ┃ │    │ ┃                         ┃ │
+  //  │ ┃                                ┃ │    │ ┃                         ┃ │
+  //  │ ┃                                ┃ │    │ ┗━━━━━━━━━━━━━━━━━━━━━━━━━┛ │
+  //  │ ┃ ┏━ AA (tag: 3) ━━━━━━━━━━━━━━┓ ┃ │    │ ┏━ BBB (tag: 8) ━━━━━━━━━━┓ │
+  //  │ ┃ ┃                            ┃ ┃ │    │ ┃                         ┃ │
+  //  │ ┃ ┃                            ┃ ┃ │    │ ┃                         ┃ │
+  //  │ ┃ ┃                            ┃ ┃ │    │ ┃                         ┃ │
+  //  │ ┃ ┃                            ┃ ┃ │    │ ┗━━━━━━━━━━━━━━━━━━━━━━━━━┛ │
+  //  │ ┃ ┃                            ┃ ┃ │    │                             |
+  //  │ ┃ ┃                            ┃ ┃ │    │                             |
+  //  │ ┃ ┃                            ┃ ┃ │    │                             |
+  //  │ ┃ ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛ ┃ │    │                             |
+  //  │ ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛ │    │                             |
+  //  │ ┏━ B (tag: 4) ━━━━━━━━━━━━━━━━━━━┓ │    │                             │
+  //  │ ┃                                ┃ │    │                             │
+  //  │ ┃                                ┃ │    │                             │
+  //  │ ┃                                ┃ │    │                             │
+  //  │ ┃                                ┃ │    │                             │
+  //  │ ┃ ┏━ BA (tag: 5) ━━━━━━━━━━━━━━┓ ┃ │    │                             │
+  //  │ ┃ ┃                            ┃ ┃ │    │                             │
+  //  │ ┃ ┃                            ┃ ┃ │    │                             │
+  //  │ ┃ ┃                            ┃ ┃ │    │                             │
+  //  │ ┃ ┃                            ┃ ┃ │    │                             │
+  //  │ ┃ ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛ ┃ │    │                             │
+  //  │ ┃ ┏━ BB (tag: 6) ━━━━━━━━━━━━━━┓ ┃ │    │                             │
+  //  │ ┃ ┃ collapsableChildren: false ┃ ┃ │    │                             │
+  //  │ ┃ ┃                            ┃ ┃ │━━━▶│                             │
+  //  │ ┃ ┃                            ┃ ┃ │    │                             │
+  //  │ ┃ ┃                            ┃ ┃ │    │                             │
+  //  │ ┃ ┃ ┏━ BBA (tag: 7) ━━━━━━━━━┓ ┃ ┃ │    │                             │
+  //  │ ┃ ┃ ┃                        ┃ ┃ ┃ │    │                             │
+  //  │ ┃ ┃ ┃                        ┃ ┃ ┃ │    │                             │
+  //  │ ┃ ┃ ┃                        ┃ ┃ ┃ │    │                             │
+  //  │ ┃ ┃ ┃                        ┃ ┃ ┃ │    │                             │
+  //  │ ┃ ┃ ┗━━━━━━━━━━━━━━━━━━━━━━━━┛ ┃ ┃ │    │                             │
+  //  │ ┃ ┃ ┏━ BBB (tag: 8) ━━━━━━━━━┓ ┃ ┃ │    │                             │
+  //  │ ┃ ┃ ┃                        ┃ ┃ ┃ │    │                             │
+  //  │ ┃ ┃ ┃                        ┃ ┃ ┃ │    │                             │
+  //  │ ┃ ┃ ┃                        ┃ ┃ ┃ │    │                             │
+  //  │ ┃ ┃ ┃                        ┃ ┃ ┃ │    │                             │
+  //  │ ┃ ┃ ┗━━━━━━━━━━━━━━━━━━━━━━━━┛ ┃ ┃ │    │                             │
+  //  │ ┃ ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛ ┃ │    │                             │
+  //  │ ┃ ┏━ BC (tag: 9) ━━━━━━━━━━━━━━┓ ┃ │    │                             │
+  //  │ ┃ ┃                            ┃ ┃ │    │                             │
+  //  │ ┃ ┃                            ┃ ┃ │    │                             │
+  //  │ ┃ ┃                            ┃ ┃ │    │                             │
+  //  │ ┃ ┃                            ┃ ┃ │    │                             │
+  //  │ ┃ ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛ ┃ │    │                             │
+  //  │ ┃ ┏━ BD (tag: 10) ━━━━━━━━━━━━━┓ ┃ │    │                             │
+  //  │ ┃ ┃                            ┃ ┃ │    │                             │
+  //  │ ┃ ┃                            ┃ ┃ │    │                             │
+  //  │ ┃ ┃                            ┃ ┃ │    │                             │
+  //  │ ┃ ┃                            ┃ ┃ │    │                             │
+  //  │ ┃ ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛ ┃ │    │                             │
+  //  │ ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛ │    │                             │
+  //  └────────────────────────────────────┘    └─────────────────────────────┘
+
+  mutateViewShadowNodeProps_(
+      nodeBB_, [](ViewProps& props) { props.collapsableChildren = false; });
+
+  testViewTree_([](const StubViewTree& viewTree) {
+    // 3 views in total.
+    EXPECT_EQ(viewTree.size(), 3);
+
+    // The root view has all 2 subviews.
+    EXPECT_EQ(viewTree.getRootStubView().children.size(), 2);
+
+    // The root view subviews are [7,8].
+    EXPECT_EQ(viewTree.getRootStubView().children.at(0)->tag, 7);
+    EXPECT_EQ(viewTree.getRootStubView().children.at(1)->tag, 8);
+  });
+}
+
+TEST_F(StackingContextTest, nonCollapsableChildrenMixed) {
+  //  ┌────────────── (Root) ──────────────┐    ┌─────────── (Root) ──────────┐
+  //  │ ┏━ A (tag: 2) ━━━━━━━━━━━━━━━━━━━┓ │    │ ┏━ BA (tag: 5) ━━ ━━━━━━━━┓ │
+  //  │ ┃                                ┃ │    │ ┃                         ┃ │
+  //  │ ┃                                ┃ │    │ ┃                         ┃ │
+  //  │ ┃                                ┃ │    │ ┃                         ┃ │
+  //  │ ┃                                ┃ │    │ ┗━━━━━━━━━━━━━━━━━━━━━━━━━┛ │
+  //  │ ┃ ┏━ AA (tag: 3) ━━━━━━━━━━━━━━┓ ┃ │    │ ┏━ BB (tag: 6)  ━━━━━━━━━━┓ │
+  //  │ ┃ ┃                            ┃ ┃ │    │ ┃ ┏━ BBA (tag: 7) ━━━-━━┓ ┃ │
+  //  │ ┃ ┃                            ┃ ┃ │    │ ┃ ┃FormsView            ┃ ┃ │
+  //  │ ┃ ┃                            ┃ ┃ │    │ ┃ ┃FormsStackingContext ┃ ┃ │
+  //  │ ┃ ┃                            ┃ ┃ │    │ ┃ ┃                     ┃ ┃ │
+  //  │ ┃ ┃                            ┃ ┃ │    │ ┃ ┗━━━━━━━━━━━━━━━━━━━━-┛ ┃ │
+  //  │ ┃ ┃                            ┃ ┃ │    │ ┃                         ┃ │
+  //  │ ┃ ┃                            ┃ ┃ │    │ ┃                         ┃ │
+  //  │ ┃ ┃                            ┃ ┃ │    │ ┗━━━━━━━━━━━━━━━━━━━━━━━━━┛ │
+  //  │ ┃ ┃                            ┃ ┃ │    │ ┏━ BC (tag: 9)  ━━━━━━━━━━┓ │
+  //  │ ┃ ┃                            ┃ ┃ │    │ ┃                         ┃ │
+  //  │ ┃ ┃                            ┃ ┃ │    │ ┃                         ┃ │
+  //  │ ┃ ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛ ┃ │    │ ┃                         ┃ │
+  //  │ ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛ │    │ ┗━━━━━━━━━━━━━━━━━━━━━━━━━┛ │
+  //  │ ┏━ B (tag: 4) ━━━━━━━━━━━━━━━━━━━┓ │    │ ┏━ BD (tag: 10) ━━━━━━━━━━┓ │
+  //  │ ┃ collapsableChildren: false     ┃ │    │ ┃FormsView                ┃ │
+  //  │ ┃                                ┃ │    │ ┃FormsStackingContext     ┃ │
+  //  │ ┃                                ┃ │    │ ┃                         ┃ │
+  //  │ ┃                                ┃ │    │ ┗━━━━━━━━━━━━━━━━━━━━━━━━━┛ │
+  //  │ ┃ ┏━ BA (tag: 5) ━━━━━━━━━━━━━━┓ ┃ │    │                             │
+  //  │ ┃ ┃                            ┃ ┃ │    │                             │
+  //  │ ┃ ┃                            ┃ ┃ │    │                             │
+  //  │ ┃ ┃                            ┃ ┃ │    │                             │
+  //  │ ┃ ┃                            ┃ ┃ │    │                             │
+  //  │ ┃ ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛ ┃ │    │                             │
+  //  │ ┃ ┏━ BB (tag: 6) ━━━━━━━━━━━━━━┓ ┃ │    │                             │
+  //  │ ┃ ┃                            ┃ ┃ │    │                             │
+  //  │ ┃ ┃                            ┃ ┃ │━━━▶│                             │
+  //  │ ┃ ┃                            ┃ ┃ │    │                             │
+  //  │ ┃ ┃                            ┃ ┃ │    │                             │
+  //  │ ┃ ┃ ┏━ BBA (tag: 7) ━━━━━━━━━┓ ┃ ┃ │    │                             │
+  //  │ ┃ ┃ ┃ testId: "42"           ┃ ┃ ┃ │    │                             │
+  //  │ ┃ ┃ ┃                        ┃ ┃ ┃ │    │                             │
+  //  │ ┃ ┃ ┃                        ┃ ┃ ┃ │    │                             │
+  //  │ ┃ ┃ ┃                        ┃ ┃ ┃ │    │                             │
+  //  │ ┃ ┃ ┗━━━━━━━━━━━━━━━━━━━━━━━━┛ ┃ ┃ │    │                             │
+  //  │ ┃ ┃ ┏━ BBB (tag: 8) ━━━━━━━━━┓ ┃ ┃ │    │                             │
+  //  │ ┃ ┃ ┃                        ┃ ┃ ┃ │    │                             │
+  //  │ ┃ ┃ ┃                        ┃ ┃ ┃ │    │                             │
+  //  │ ┃ ┃ ┃                        ┃ ┃ ┃ │    │                             │
+  //  │ ┃ ┃ ┃                        ┃ ┃ ┃ │    │                             │
+  //  │ ┃ ┃ ┗━━━━━━━━━━━━━━━━━━━━━━━━┛ ┃ ┃ │    │                             │
+  //  │ ┃ ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛ ┃ │    │                             │
+  //  │ ┃ ┏━ BC (tag: 9) ━━━━━━━━━━━━━━┓ ┃ │    │                             │
+  //  │ ┃ ┃ collapsable: true          ┃ ┃ │    │                             │
+  //  │ ┃ ┃                            ┃ ┃ │    │                             │
+  //  │ ┃ ┃                            ┃ ┃ │    │                             │
+  //  │ ┃ ┃                            ┃ ┃ │    │                             │
+  //  │ ┃ ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛ ┃ │    │                             │
+  //  │ ┃ ┏━ BD (tag: 10) ━━━━━━━━━━━━━┓ ┃ │    │                             │
+  //  │ ┃ ┃ testId: "123"              ┃ ┃ │    │                             │
+  //  │ ┃ ┃                            ┃ ┃ │    │                             │
+  //  │ ┃ ┃                            ┃ ┃ │    │                             │
+  //  │ ┃ ┃                            ┃ ┃ │    │                             │
+  //  │ ┃ ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛ ┃ │    │                             │
+  //  │ ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛ │    │                             │
+  //  └────────────────────────────────────┘    └─────────────────────────────┘
+
+  mutateViewShadowNodeProps_(
+      nodeB_, [](ViewProps& props) { props.collapsableChildren = false; });
+  mutateViewShadowNodeProps_(
+      nodeBBA_, [](ViewProps& props) { props.testId = "42"; });
+  mutateViewShadowNodeProps_(
+      nodeBC_, [](ViewProps& props) { props.collapsable = true; });
+  mutateViewShadowNodeProps_(
+      nodeBD_, [](ViewProps& props) { props.testId = "43"; });
+
+  testViewTree_([](const StubViewTree& viewTree) {
+    // 6 views in total.
+    EXPECT_EQ(viewTree.size(), 6);
+
+    // The root view has four of the subviews.
+    EXPECT_EQ(viewTree.getRootStubView().children.size(), 4);
+
+    // The root view subviews are [5, 6, 9, 10].
+    EXPECT_EQ(viewTree.getRootStubView().children.at(0)->tag, 5);
+    EXPECT_EQ(viewTree.getRootStubView().children.at(1)->tag, 6);
+    EXPECT_EQ(viewTree.getRootStubView().children.at(2)->tag, 9);
+    EXPECT_EQ(viewTree.getRootStubView().children.at(3)->tag, 10);
+
+    EXPECT_EQ(viewTree.getRootStubView().children.at(1)->children.size(), 1);
+    EXPECT_EQ(
+        viewTree.getRootStubView().children.at(1)->children.at(0)->tag, 7);
   });
 }
 
@@ -538,37 +711,37 @@ TEST_F(StackingContextTest, zIndexAndFlattenedNodes) {
 
   mutateViewShadowNodeProps_(nodeAA_, [](ViewProps& props) {
     auto& yogaStyle = props.yogaStyle;
-    yogaStyle.positionType() = yoga::PositionType::Relative;
+    yogaStyle.setPositionType(yoga::PositionType::Relative);
     props.zIndex = 9001;
   });
 
   mutateViewShadowNodeProps_(nodeBA_, [](ViewProps& props) {
     auto& yogaStyle = props.yogaStyle;
-    yogaStyle.positionType() = yoga::PositionType::Relative;
+    yogaStyle.setPositionType(yoga::PositionType::Relative);
     props.zIndex = 9000;
   });
 
   mutateViewShadowNodeProps_(nodeBBA_, [](ViewProps& props) {
     auto& yogaStyle = props.yogaStyle;
-    yogaStyle.positionType() = yoga::PositionType::Relative;
+    yogaStyle.setPositionType(yoga::PositionType::Relative);
     props.zIndex = 8999;
   });
 
   mutateViewShadowNodeProps_(nodeBBB_, [](ViewProps& props) {
     auto& yogaStyle = props.yogaStyle;
-    yogaStyle.positionType() = yoga::PositionType::Relative;
+    yogaStyle.setPositionType(yoga::PositionType::Relative);
     props.zIndex = 8998;
   });
 
   mutateViewShadowNodeProps_(nodeBC_, [](ViewProps& props) {
     auto& yogaStyle = props.yogaStyle;
-    yogaStyle.positionType() = yoga::PositionType::Relative;
+    yogaStyle.setPositionType(yoga::PositionType::Relative);
     props.zIndex = 8997;
   });
 
   mutateViewShadowNodeProps_(nodeBD_, [](ViewProps& props) {
     auto& yogaStyle = props.yogaStyle;
-    yogaStyle.positionType() = yoga::PositionType::Relative;
+    yogaStyle.setPositionType(yoga::PositionType::Relative);
     props.zIndex = 8996;
   });
 
@@ -652,7 +825,7 @@ TEST_F(StackingContextTest, zIndexAndFlattenedNodes) {
 
   mutateViewShadowNodeProps_(nodeBB_, [](ViewProps& props) {
     auto& yogaStyle = props.yogaStyle;
-    yogaStyle.positionType() = yoga::PositionType::Relative;
+    yogaStyle.setPositionType(yoga::PositionType::Relative);
     props.zIndex = 42;
   });
 
@@ -680,7 +853,7 @@ TEST_F(StackingContextTest, zIndexAndFlattenedNodes) {
 
   mutateViewShadowNodeProps_(nodeBB_, [](ViewProps& props) {
     auto& yogaStyle = props.yogaStyle;
-    yogaStyle.positionType() = yoga::PositionType::Static;
+    yogaStyle.setPositionType(yoga::PositionType::Static);
     props.zIndex = {};
   });
 
@@ -764,7 +937,7 @@ TEST_F(StackingContextTest, zIndexAndFlattenedNodes) {
 
   mutateViewShadowNodeProps_(nodeBB_, [](ViewProps& props) {
     auto& yogaStyle = props.yogaStyle;
-    yogaStyle.display() = yoga::Display::None;
+    yogaStyle.setDisplay(yoga::Display::None);
   });
 
   testViewTree_([](const StubViewTree& viewTree) {

@@ -16,10 +16,10 @@ end
 
 Pod::Spec.new do |spec|
   spec.name = 'Yoga'
-  spec.version = '1.14.0'
+  spec.version = '0.0.0'
   spec.license =  { :type => 'MIT' }
-  spec.homepage = 'https://yogalayout.com'
-  spec.documentation_url = 'https://yogalayout.com/docs/'
+  spec.homepage = 'https://yogalayout.dev'
+  spec.documentation_url = 'https://yogalayout.dev/docs/'
 
   spec.summary = 'Yoga is a cross-platform layout engine which implements Flexbox.'
   spec.description = 'Yoga is a cross-platform layout engine enabling maximum collaboration within your team by implementing an API many designers are familiar with, and opening it up to developers across different platforms.'
@@ -32,7 +32,9 @@ Pod::Spec.new do |spec|
   spec.requires_arc = false
   spec.pod_target_xcconfig = {
       'DEFINES_MODULE' => 'YES'
-  }
+  }.merge!(ENV['USE_FRAMEWORKS'] != nil ? {
+      'HEADER_SEARCH_PATHS' => '"$(PODS_TARGET_SRCROOT)"'
+  } : {})
   spec.compiler_flags = [
       '-fno-omit-frame-pointer',
       '-fexceptions',
@@ -52,7 +54,7 @@ Pod::Spec.new do |spec|
   spec.source_files = source_files
   spec.header_mappings_dir = 'yoga'
 
-  public_header_files = 'yoga/{Yoga,YGEnums,YGMacros,YGValue}.h'
+  public_header_files = 'yoga/*.h'
   public_header_files = File.join('ReactCommon/yoga', public_header_files) if ENV['INSTALL_YOGA_WITHOUT_PATH_OPTION']
   spec.public_header_files = public_header_files
 

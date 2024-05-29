@@ -13,37 +13,36 @@
 import type {
   NamedShape,
   NativeModuleAliasMap,
-  NativeModuleEnumMap,
   NativeModuleBaseTypeAnnotation,
+  NativeModuleEnumMap,
   NativeModuleTypeAnnotation,
   Nullable,
 } from '../../../CodegenSchema';
-
 import type {Parser} from '../../parser';
 import type {ParserErrorCapturer, TypeDeclarationMap} from '../../utils';
 
 const {
-  unwrapNullable,
-  wrapNullable,
+  UnsupportedEnumDeclarationParserError,
+  UnsupportedGenericParserError,
+  UnsupportedTypeAnnotationParserError,
+} = require('../../errors');
+const {
   assertGenericTypeAnnotationHasExactlyOneTypeParameter,
   parseObjectProperty,
+  unwrapNullable,
+  wrapNullable,
 } = require('../../parsers-commons');
 const {
   emitArrayType,
-  emitFunction,
+  emitCommonTypes,
   emitDictionary,
+  emitFunction,
   emitPromise,
   emitRootTag,
   emitUnion,
-  emitCommonTypes,
   typeAliasResolution,
   typeEnumResolution,
 } = require('../../parsers-primitives');
-
-const {
-  UnsupportedTypeAnnotationParserError,
-  UnsupportedGenericParserError,
-} = require('../../errors');
 
 function translateTypeAnnotation(
   hasteModuleName: string,
@@ -178,6 +177,7 @@ function translateTypeAnnotation(
             property => {
               return tryParse(() => {
                 return parseObjectProperty(
+                  flowTypeAnnotation,
                   property,
                   hasteModuleName,
                   types,
@@ -228,6 +228,19 @@ function translateTypeAnnotation(
     }
     case 'EnumStringBody':
     case 'EnumNumberBody': {
+      if (
+        typeAnnotation.type === 'EnumNumberBody' &&
+        typeAnnotation.members.some(
+          m =>
+            m.type === 'EnumNumberMember' && !Number.isInteger(m.init?.value),
+        )
+      ) {
+        throw new UnsupportedEnumDeclarationParserError(
+          hasteModuleName,
+          typeAnnotation,
+          parser.language(),
+        );
+      }
       return typeEnumResolution(
         typeAnnotation,
         typeResolutionStatus,

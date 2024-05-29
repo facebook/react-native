@@ -8,17 +8,17 @@
  * @flow
  */
 
-import {
-  Text,
-  View,
-  SafeAreaView,
-  Button,
-  Platform,
-  StyleSheet,
-} from 'react-native';
-import * as React from 'react';
 import RNTesterDocumentationURL from './RNTesterDocumentationURL';
 import {type RNTesterTheme} from './RNTesterTheme';
+import * as React from 'react';
+import {
+  Button,
+  Platform,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 
 const HeaderIOS = ({
   onBack,
@@ -36,7 +36,7 @@ const HeaderIOS = ({
       <View
         style={[styles.header, {backgroundColor: theme.SystemBackgroundColor}]}>
         <View style={styles.headerCenter}>
-          <Text style={{...styles.title, ...{color: theme.LabelColor}}}>
+          <Text style={{...styles.title, color: theme.LabelColor}}>
             {title}
           </Text>
           {documentationURL && (

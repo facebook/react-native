@@ -10,13 +10,13 @@
 
 'use strict';
 
-import {keyExtractor} from './Lists/VirtualizeUtils';
-
+import typeof FillRateHelper from './Lists/FillRateHelper';
+import typeof ViewabilityHelper from './Lists/ViewabilityHelper';
 import typeof VirtualizedList from './Lists/VirtualizedList';
 import typeof VirtualizedSectionList from './Lists/VirtualizedSectionList';
+
 import {typeof VirtualizedListContextResetter} from './Lists/VirtualizedListContext';
-import typeof ViewabilityHelper from './Lists/ViewabilityHelper';
-import typeof FillRateHelper from './Lists/FillRateHelper';
+import {keyExtractor} from './Lists/VirtualizeUtils';
 
 export type {
   ViewToken,

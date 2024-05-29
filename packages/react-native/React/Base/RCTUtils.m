@@ -33,6 +33,20 @@ NSString *__nullable RCTHomePathForURL(NSURL *__nullable URL);
 // Determines if a given image URL refers to a image in Home directory (~)
 BOOL RCTIsHomeAssetURL(NSURL *__nullable imageURL);
 
+// Whether the New Architecture is enabled or not
+static BOOL _newArchEnabled = false;
+BOOL RCTIsNewArchEnabled(void)
+{
+  return _newArchEnabled;
+}
+void RCTSetNewArchEnabled(BOOL enabled)
+{
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    _newArchEnabled = enabled;
+  });
+}
+
 static NSString *__nullable _RCTJSONStringifyNoRetry(id __nullable jsonObject, NSError **error)
 {
   if (!jsonObject) {
@@ -302,14 +316,14 @@ static CGFloat screenScale;
 void RCTComputeScreenScale(void)
 {
   dispatch_once(&onceTokenScreenScale, ^{
-    screenScale = [UIScreen mainScreen].scale;
+    screenScale = [UITraitCollection currentTraitCollection].displayScale;
   });
 }
 
 CGFloat RCTScreenScale(void)
 {
   RCTUnsafeExecuteOnMainQueueOnceSync(&onceTokenScreenScale, ^{
-    screenScale = [UIScreen mainScreen].scale;
+    screenScale = [UITraitCollection currentTraitCollection].displayScale;
   });
 
   return screenScale;
@@ -454,8 +468,8 @@ BOOL RCTClassOverridesInstanceMethod(Class cls, SEL selector)
   return NO;
 }
 
-NSDictionary<NSString *, id>
-    *RCTMakeError(NSString *message, id __nullable toStringify, NSDictionary<NSString *, id> *__nullable extraData)
+NSDictionary<NSString *, id> *
+RCTMakeError(NSString *message, id __nullable toStringify, NSDictionary<NSString *, id> *__nullable extraData)
 {
   if (toStringify) {
     message = [message stringByAppendingString:[toStringify description]];
@@ -482,8 +496,8 @@ NSDictionary<NSString *, id> *RCTJSErrorFromNSError(NSError *error)
 }
 
 // TODO: Can we just replace RCTMakeError with this function instead?
-NSDictionary<NSString *, id>
-    *RCTJSErrorFromCodeMessageAndNSError(NSString *code, NSString *message, NSError *__nullable error)
+NSDictionary<NSString *, id> *
+RCTJSErrorFromCodeMessageAndNSError(NSString *code, NSString *message, NSError *__nullable error)
 {
   NSString *errorMessage;
   NSArray<NSString *> *stackTrace = [NSThread callStackSymbols];
@@ -548,13 +562,46 @@ UIWindow *__nullable RCTKeyWindow(void)
     return nil;
   }
 
-  // TODO: replace with a more robust solution
-  for (UIWindow *window in RCTSharedApplication().windows) {
-    if (window.keyWindow) {
+  NSSet<UIScene *> *connectedScenes = RCTSharedApplication().connectedScenes;
+
+  UIScene *foregroundActiveScene;
+  UIScene *foregroundInactiveScene;
+
+  for (UIScene *scene in connectedScenes) {
+    if (![scene isKindOfClass:[UIWindowScene class]]) {
+      continue;
+    }
+
+    if (scene.activationState == UISceneActivationStateForegroundActive) {
+      foregroundActiveScene = scene;
+      break;
+    }
+
+    if (!foregroundInactiveScene && scene.activationState == UISceneActivationStateForegroundInactive) {
+      foregroundInactiveScene = scene;
+      // no break, we can have the active scene later in the set.
+    }
+  }
+
+  UIScene *sceneToUse = foregroundActiveScene ? foregroundActiveScene : foregroundInactiveScene;
+  UIWindowScene *windowScene = (UIWindowScene *)sceneToUse;
+
+  if (@available(iOS 15.0, *)) {
+    return windowScene.keyWindow;
+  }
+
+  for (UIWindow *window in windowScene.windows) {
+    if (window.isKeyWindow) {
       return window;
     }
   }
+
   return nil;
+}
+
+UIStatusBarManager *__nullable RCTUIStatusBarManager(void)
+{
+  return RCTKeyWindow().windowScene.statusBarManager;
 }
 
 UIViewController *__nullable RCTPresentedViewController(void)
@@ -578,12 +625,10 @@ BOOL RCTForceTouchAvailable(void)
   static BOOL forceSupported;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    forceSupported =
-        [UITraitCollection class] && [UITraitCollection instancesRespondToSelector:@selector(forceTouchCapability)];
+    forceSupported = [UITraitCollection currentTraitCollection].forceTouchCapability == UIForceTouchCapabilityAvailable;
   });
 
-  return forceSupported &&
-      (RCTKeyWindow() ?: [UIView new]).traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable;
+  return forceSupported;
 }
 
 NSError *RCTErrorWithMessage(NSString *message)

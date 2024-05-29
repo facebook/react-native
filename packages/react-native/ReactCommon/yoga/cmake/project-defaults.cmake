@@ -17,7 +17,7 @@ add_compile_options(
     # "Standard C++ exception handling" (C++ stack unwinding including extern c)
     /EHsc
     # Enable warnings and warnings as errors
-    /W3
+    /W4
     /WX
     # Disable RTTI
     $<$<COMPILE_LANGUAGE:CXX>:/GR->
@@ -33,9 +33,7 @@ add_compile_options(
     -fexceptions
     # Enable warnings and warnings as errors
     -Wall
-    -Wextra
     -Werror
-    -Wconversion
     # Disable RTTI
     $<$<COMPILE_LANGUAGE:CXX>:-fno-rtti>
     # Use -O2 (prioritize speed)

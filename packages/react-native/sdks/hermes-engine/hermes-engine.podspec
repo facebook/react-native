@@ -41,7 +41,7 @@ Pod::Spec.new do |spec|
 
     spec.subspec 'Pre-built' do |ss|
       ss.preserve_paths = ["destroot/bin/*"].concat(["**/*.{h,c,cpp}"])
-      ss.source_files = "destroot/include/**/*.h"
+      ss.source_files = "destroot/include/hermes/**/*.h"
       ss.header_mappings_dir = "destroot/include"
       ss.ios.vendored_frameworks = "destroot/Library/Frameworks/universal/hermes.xcframework"
       ss.osx.vendored_frameworks = "destroot/Library/Frameworks/macosx/hermes.framework"
@@ -60,7 +60,13 @@ Pod::Spec.new do |spec|
         :execution_position => :before_compile,
         :script => <<-EOS
         . "$REACT_NATIVE_PATH/scripts/xcode/with-environment.sh"
-        "$NODE_BINARY" "$REACT_NATIVE_PATH/sdks/hermes-engine/utils/replace_hermes_version.js" -c "$CONFIGURATION" -r "#{version}" -p "$REACT_NATIVE_PATH"
+
+        CONFIG="Release"
+        if echo $GCC_PREPROCESSOR_DEFINITIONS | grep -q "DEBUG=1"; then
+          CONFIG="Debug"
+        fi
+
+        "$NODE_BINARY" "$REACT_NATIVE_PATH/sdks/hermes-engine/utils/replace_hermes_version.js" -c "$CONFIG" -r "#{version}" -p "$PODS_ROOT"
         EOS
       }
     end
@@ -71,6 +77,12 @@ Pod::Spec.new do |spec|
       ss.source_files = ''
       ss.public_header_files = 'API/hermes/*.h'
       ss.header_dir = 'hermes'
+    end
+
+    spec.subspec 'cdp' do |ss|
+      ss.source_files = ''
+      ss.public_header_files = 'API/hermes/cdp/*.h'
+      ss.header_dir = 'hermes/cdp'
     end
 
     spec.subspec 'inspector' do |ss|
@@ -106,7 +118,6 @@ Pod::Spec.new do |spec|
     # This podspec is also run in CI to build Hermes without using Pod install
     # and sometimes CI fails because `Pod::Executable` does not exist if it is not run with Pod Install.
     if defined?(Pod::Executable.to_s)
-      puts "Const Defined!"
       CMAKE_BINARY = Pod::Executable::which!('cmake')
       # NOTE: Script phases are sorted alphabetically inside Xcode project
       spec.script_phases = [

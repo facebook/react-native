@@ -40,7 +40,7 @@ abstract class PrepareBoostTask : DefaultTask() {
       it.into(outputDir)
     }
     File(outputDir.asFile.get(), "boost").apply {
-      renameTo(File(this.parentFile, "boost_${boostVersion.get()}"))
+      renameTo(File(parentFile, "boost_${boostVersion.get()}"))
     }
   }
 }

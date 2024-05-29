@@ -9,12 +9,15 @@ package com.facebook.react.runtime;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Bundle;
 import android.view.View;
+import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.JavaJSExecutor;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.devsupport.DevSupportManagerBase;
 import com.facebook.react.devsupport.HMRClient;
 import com.facebook.react.devsupport.ReactInstanceDevHelper;
@@ -22,7 +25,6 @@ import com.facebook.react.devsupport.interfaces.DevSplitBundleCallback;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.runtime.internal.bolts.Continuation;
 import com.facebook.react.runtime.internal.bolts.Task;
-import javax.annotation.Nullable;
 
 /**
  * An implementation of {@link com.facebook.react.devsupport.interfaces.DevSupportManager} that
@@ -46,7 +48,8 @@ class BridgelessDevSupportManager extends DevSupportManagerBase {
         2 /* minNumShakes */,
         null /* customPackagerCommandHandlers */,
         null /* surfaceDelegateFactory */,
-        null /* devLoadingViewManager */);
+        null /* devLoadingViewManager */,
+        null /* pausedInDebuggerOverlayManager */);
     mReactHost = host;
   }
 
@@ -92,6 +95,9 @@ class BridgelessDevSupportManager extends DevSupportManagerBase {
 
   @Override
   public void handleReloadJS() {
+    UiThreadUtil.assertOnUiThread();
+
+    // dismiss redbox if exists
     hideRedboxDialog();
     mReactHost.reload("BridgelessDevSupportManager.handleReloadJS()");
   }
@@ -100,12 +106,12 @@ class BridgelessDevSupportManager extends DevSupportManagerBase {
     return new ReactInstanceDevHelper() {
       @Override
       public void onReloadWithJSDebugger(JavaJSExecutor.Factory proxyExecutorFactory) {
-        // Not implemented
+        // Not implemented, only used by BridgeDevSupportManager to reload with proxy executor
       }
 
       @Override
       public void onJSBundleLoadedFromServer() {
-        throw new IllegalStateException("Not implemented for bridgeless mode");
+        // Not implemented, only referenced by BridgeDevSupportManager
       }
 
       @Override
@@ -118,7 +124,7 @@ class BridgelessDevSupportManager extends DevSupportManagerBase {
         }
       }
 
-      @androidx.annotation.Nullable
+      @Nullable
       @Override
       public Activity getCurrentActivity() {
         return reactHost.getLastUsedActivity();
@@ -129,14 +135,13 @@ class BridgelessDevSupportManager extends DevSupportManagerBase {
         throw new IllegalStateException("Not implemented for bridgeless mode");
       }
 
-      @androidx.annotation.Nullable
+      @Nullable
       @Override
       public View createRootView(String appKey) {
         Activity currentActivity = getCurrentActivity();
         if (currentActivity != null && !reactHost.isSurfaceWithModuleNameAttached(appKey)) {
           ReactSurfaceImpl reactSurface =
-              ReactSurfaceImpl.createWithView(currentActivity, appKey, null);
-
+              ReactSurfaceImpl.createWithView(currentActivity, appKey, new Bundle());
           reactSurface.attach(reactHost);
           reactSurface.start();
 

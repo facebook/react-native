@@ -4,15 +4,20 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
 'use strict';
 
-const {cp, echo, exec, exit} = require('shelljs');
 const fs = require('fs');
-const path = require('path');
 const mkdirp = require('mkdirp');
+const path = require('path');
+const {cp, echo, exec, exit} = require('shelljs');
+
+/*::
+type Commit = string
+*/
 
 function isGitRepo() {
   try {
@@ -29,7 +34,12 @@ function isGitRepo() {
   return false;
 }
 
-function exitIfNotOnGit(command, errorMessage, gracefulExit = false) {
+function exitIfNotOnGit /*::<T>*/(
+  command /*: () => T */,
+  errorMessage /*: string */,
+  gracefulExit /*: boolean */ = false,
+  // $FlowFixMe[incompatible-return] Asserts return value
+) /*: T */ {
   if (isGitRepo()) {
     return command();
   } else {
@@ -38,7 +48,7 @@ function exitIfNotOnGit(command, errorMessage, gracefulExit = false) {
   }
 }
 
-function isTaggedLatest(commitSha) {
+function isTaggedLatest(commitSha /*: Commit */) /*: boolean */ {
   return (
     exec(`git rev-list -1 latest | grep ${commitSha}`, {
       silent: true,
@@ -46,13 +56,13 @@ function isTaggedLatest(commitSha) {
   );
 }
 
-function getBranchName() {
+function getBranchName() /*: string */ {
   return exec('git rev-parse --abbrev-ref HEAD', {
     silent: true,
   }).stdout.trim();
 }
 
-function getCurrentCommit() {
+function getCurrentCommit() /*: Commit */ {
   return isGitRepo()
     ? exec('git rev-parse HEAD', {
         silent: true,
@@ -60,7 +70,7 @@ function getCurrentCommit() {
     : 'TEMP';
 }
 
-function saveFiles(filePaths, tmpFolder) {
+function saveFiles(filePaths /*: Array<string> */, tmpFolder /*: string */) {
   for (const filePath of filePaths) {
     const dirName = path.dirname(filePath);
     if (dirName !== '.') {
@@ -71,7 +81,7 @@ function saveFiles(filePaths, tmpFolder) {
   }
 }
 
-function revertFiles(filePaths, tmpFolder) {
+function revertFiles(filePaths /*: Array<string> */, tmpFolder /*: string */) {
   for (const filePath of filePaths) {
     const absoluteTmpPath = `${tmpFolder}/${filePath}`;
     if (fs.existsSync(absoluteTmpPath)) {
@@ -86,7 +96,7 @@ function revertFiles(filePaths, tmpFolder) {
 }
 
 // git restore for local path
-function restore(repoPath) {
+function restore(repoPath /*: string */) {
   const result = exec('git restore .', {
     cwd: repoPath,
   });

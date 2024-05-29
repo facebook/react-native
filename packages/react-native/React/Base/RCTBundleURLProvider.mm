@@ -12,6 +12,8 @@
 #import "RCTDefines.h"
 #import "RCTLog.h"
 
+#import <jsinspector-modern/InspectorFlags.h>
+
 NSString *const RCTBundleURLProviderUpdatedNotification = @"RCTBundleURLProviderUpdatedNotification";
 
 const NSUInteger kRCTBundleURLProviderDefaultPort = RCT_METRO_PORT;
@@ -249,23 +251,7 @@ static NSURL *serverRootWithHostPort(NSString *hostPort, NSString *scheme)
                        packagerHost:(NSString *)packagerHost
                           enableDev:(BOOL)enableDev
                  enableMinification:(BOOL)enableMinification
-{
-  return [self jsBundleURLForBundleRoot:bundleRoot
-                           packagerHost:packagerHost
-                         packagerScheme:nil
-                              enableDev:enableDev
-                     enableMinification:enableMinification
-                        inlineSourceMap:NO
-                            modulesOnly:NO
-                              runModule:YES];
-}
-
-+ (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
-                       packagerHost:(NSString *)packagerHost
-                          enableDev:(BOOL)enableDev
-                 enableMinification:(BOOL)enableMinification
                     inlineSourceMap:(BOOL)inlineSourceMap
-
 {
   return [self jsBundleURLForBundleRoot:bundleRoot
                            packagerHost:packagerHost
@@ -275,24 +261,6 @@ static NSURL *serverRootWithHostPort(NSString *hostPort, NSString *scheme)
                         inlineSourceMap:inlineSourceMap
                             modulesOnly:NO
                               runModule:YES];
-}
-
-+ (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
-                       packagerHost:(NSString *)packagerHost
-                     packagerScheme:(NSString *)scheme
-                          enableDev:(BOOL)enableDev
-                 enableMinification:(BOOL)enableMinification
-                        modulesOnly:(BOOL)modulesOnly
-                          runModule:(BOOL)runModule
-{
-  return [self jsBundleURLForBundleRoot:bundleRoot
-                           packagerHost:packagerHost
-                         packagerScheme:nil
-                              enableDev:enableDev
-                     enableMinification:enableMinification
-                        inlineSourceMap:NO
-                            modulesOnly:modulesOnly
-                              runModule:runModule];
 }
 
 + (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
@@ -315,6 +283,12 @@ static NSURL *serverRootWithHostPort(NSString *hostPort, NSString *scheme)
     [[NSURLQueryItem alloc] initWithName:@"modulesOnly" value:modulesOnly ? @"true" : @"false"],
     [[NSURLQueryItem alloc] initWithName:@"runModule" value:runModule ? @"true" : @"false"],
   ];
+  auto &inspectorFlags = facebook::react::jsinspector_modern::InspectorFlags::getInstance();
+  if (inspectorFlags.getFuseboxEnabled()) {
+    queryItems = [queryItems arrayByAddingObject:[[NSURLQueryItem alloc] initWithName:@"excludeSource" value:@"true"]];
+    queryItems = [queryItems arrayByAddingObject:[[NSURLQueryItem alloc] initWithName:@"sourcePaths"
+                                                                                value:@"url-server"]];
+  }
 
   NSString *bundleID = [[NSBundle mainBundle] objectForInfoDictionaryKey:(NSString *)kCFBundleIdentifierKey];
   if (bundleID) {

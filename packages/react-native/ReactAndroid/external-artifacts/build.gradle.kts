@@ -13,7 +13,7 @@ group = "com.facebook.react"
 
 version =
     parent?.extraProperties?.get("publishing_version")
-        ?: error("publishing_version not set for flipper-integration")
+        ?: error("publishing_version not set for external-artifacts")
 
 configurations.maybeCreate("default")
 

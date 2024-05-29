@@ -4,11 +4,12 @@
         - equal: [ false, << pipeline.parameters.run_release_workflow >> ]
         - equal: [ false, << pipeline.parameters.run_nightly_workflow >> ]
     jobs:
-      - prepare_package_for_release:
-          name: prepare_package_for_release
-          version: ''
-          latest : false
-          dryrun: true
+      - prepare_release:
+          name: "prepare_release (dry run test)"
+          version: "0.0.0"
+          monorepo_packages_version: "0.0.0"
+          tag: test
+          dry_run: true
       - prepare_hermes_workspace
       - build_android:
           release_type: "dry-run"
@@ -42,8 +43,6 @@
             - build_hermesc_linux
             - build_hermes_macos
             - build_hermesc_windows
-      - test_e2e_ios:
-          ruby_version: "2.7.7"
       - test_ios_template:
           requires:
             - build_npm_package
@@ -51,118 +50,34 @@
           ruby_version: "3.2.0"
           architecture: "NewArch"
           flavor: "Debug"
+          jsengine: "Hermes"
+          use_frameworks: "StaticLibraries"
       - test_ios_template:
           requires:
             - build_npm_package
           matrix:
             parameters:
-              architecture: ["NewArch", "OldArch"]
               flavor: ["Debug", "Release"]
               jsengine: ["Hermes", "JSC"]
-              flipper: ["WithFlipper", "WithoutFlipper"]
               use_frameworks: ["StaticLibraries", "DynamicFrameworks"]
+              architecture: ["NewArch", "OldArch"]
             exclude:
-              - architecture: "NewArch"
-                flavor: "Release"
+              # This config is tested with Ruby 3.2.0. Let's not double test it.
+              - flavor: "Debug"
                 jsengine: "Hermes"
-                flipper: "WithFlipper"
                 use_frameworks: "StaticLibraries"
-              - architecture: "NewArch"
-                flavor: "Release"
-                jsengine: "Hermes"
-                flipper: "WithFlipper"
-                use_frameworks: "DynamicFrameworks"
-              - architecture: "NewArch"
-                flavor: "Release"
-                jsengine: "JSC"
-                flipper: "WithFlipper"
-                use_frameworks: "StaticLibraries"
-              - architecture: "NewArch"
-                flavor: "Release"
-                jsengine: "JSC"
-                flipper: "WithFlipper"
-                use_frameworks: "DynamicFrameworks"
-              - architecture: "OldArch"
-                flavor: "Release"
-                jsengine: "Hermes"
-                flipper: "WithFlipper"
-                use_frameworks: "StaticLibraries"
-              - architecture: "OldArch"
-                flavor: "Release"
-                jsengine: "Hermes"
-                flipper: "WithFlipper"
-                use_frameworks: "DynamicFrameworks"
-              - architecture: "OldArch"
-                flavor: "Release"
-                jsengine: "JSC"
-                flipper: "WithFlipper"
-                use_frameworks: "StaticLibraries"
-              - architecture: "OldArch"
-                flavor: "Release"
-                jsengine: "JSC"
-                flipper: "WithFlipper"
-                use_frameworks: "DynamicFrameworks"
-              - architecture: "NewArch"
-                flavor: "Debug"
-                jsengine: "Hermes"
-                flipper: "WithFlipper"
-                use_frameworks: "DynamicFrameworks"
-              - architecture: "NewArch"
-                flavor: "Debug"
-                jsengine: "JSC"
-                flipper: "WithFlipper"
-                use_frameworks: "DynamicFrameworks"
-              - architecture: "OldArch"
-                flavor: "Debug"
-                jsengine: "Hermes"
-                flipper: "WithFlipper"
-                use_frameworks: "DynamicFrameworks"
-              - architecture: "OldArch"
-                flavor: "Debug"
-                jsengine: "JSC"
-                flipper: "WithFlipper"
-                use_frameworks: "DynamicFrameworks"
-              - architecture: "NewArch"
-                flavor: "Debug"
-                jsengine: "Hermes"
-                flipper: "WithFlipper"
-                use_frameworks: "StaticLibraries"
-              - architecture: "NewArch"
-                flavor: "Debug"
-                jsengine: "JSC"
-                flipper: "WithFlipper"
-                use_frameworks: "StaticLibraries"
-              - architecture: "OldArch"
-                flavor: "Debug"
-                jsengine: "JSC"
-                flipper: "WithFlipper"
-                use_frameworks: "StaticLibraries"
+                architecture: "NewArch"
       - test_ios_rntester:
           requires:
             - build_hermes_macos
-          name: "Test RNTester with Ruby 3.2.0"
+          use_frameworks: "DynamicFrameworks"
           ruby_version: "3.2.0"
-          architecture: "NewArch"
-      - test_ios_rntester:
-          requires:
-            - build_hermes_macos
           matrix:
             parameters:
-              architecture: ["NewArch", "OldArch"]
               jsengine: ["Hermes", "JSC"]
-              use_frameworks: ["StaticLibraries", "DynamicFrameworks"]
-            exclude:
-              # Tested by test_ios-Hermes
-              - architecture: "OldArch"
-                jsengine: "Hermes"
-                use_frameworks: "StaticLibraries"
-              # Tested by test_ios-JSC
-              - architecture: "OldArch"
-                jsengine: "JSC"
-                use_frameworks: "StaticLibraries"
+              architecture: ["NewArch", "OldArch"]
       - test_ios_rntester:
           run_unit_tests: true
-          architecture: "OldArch"
           use_frameworks: "StaticLibraries"
           ruby_version: "2.6.10"
           requires:
@@ -170,3 +85,4 @@
           matrix:
             parameters:
               jsengine: ["Hermes", "JSC"]
+              architecture: ["NewArch", "OldArch"]

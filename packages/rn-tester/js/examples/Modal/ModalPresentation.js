@@ -10,11 +10,13 @@
 
 /* eslint-disable no-alert */
 
-import * as React from 'react';
-import {Modal, Platform, StyleSheet, Switch, Text, View} from 'react-native';
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type {Props as ModalProps} from 'react-native/Libraries/Modal/Modal';
+
 import RNTOption from '../../components/RNTOption';
+import * as React from 'react';
+import {Modal, Platform, StyleSheet, Switch, Text, View} from 'react-native';
+
 const RNTesterButton = require('../../components/RNTesterButton');
 
 const animationTypes = ['slide', 'none', 'fade'];

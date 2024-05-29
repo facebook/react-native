@@ -30,12 +30,6 @@
 
 NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotification";
 
-@interface RCTUIManager (RCTRootView)
-
-- (NSNumber *)allocateRootTag;
-
-@end
-
 @implementation RCTRootView {
   RCTBridge *_bridge;
   NSString *_moduleName;
@@ -368,6 +362,9 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 - (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection
 {
   [super traitCollectionDidChange:previousTraitCollection];
+  if (RCTSharedApplication().applicationState == UIApplicationStateBackground) {
+    return;
+  }
 
   [[NSNotificationCenter defaultCenter]
       postNotificationName:RCTUserInterfaceStyleDidChangeNotification

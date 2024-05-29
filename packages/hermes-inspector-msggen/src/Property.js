@@ -9,10 +9,10 @@
  */
 
 import {
+  type JsTypeString,
   jsTypeToCppType,
   toCppNamespace,
   toCppType,
-  type JsTypeString,
 } from './Converters';
 
 export class Property {
@@ -194,8 +194,8 @@ class RefProperty extends Property {
     return this.cyclical
       ? `{nullptr, deleter<${fullCppType}>}`
       : this.optional
-      ? ''
-      : '{}';
+        ? ''
+        : '{}';
   }
 }
 

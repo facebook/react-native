@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#pragma once
+
 #include <ReactCommon/CallInvoker.h>
 #include <cxxreact/MessageQueueThread.h>
 #include <functional>
@@ -16,9 +18,10 @@ class BridgelessNativeMethodCallInvoker : public NativeMethodCallInvoker {
  public:
   explicit BridgelessNativeMethodCallInvoker(
       std::shared_ptr<MessageQueueThread> messageQueueThread);
-  void invokeAsync(const std::string& methodName, std::function<void()>&& func)
-      override;
-  void invokeSync(const std::string& methodName, std::function<void()>&& func)
+  void invokeAsync(
+      const std::string& methodName,
+      NativeMethodCallFunc&& func) noexcept override;
+  void invokeSync(const std::string& methodName, NativeMethodCallFunc&& func)
       override;
 
  private:

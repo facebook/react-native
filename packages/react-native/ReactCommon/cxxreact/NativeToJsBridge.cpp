@@ -8,7 +8,6 @@
 #include "NativeToJsBridge.h"
 
 #include <ReactCommon/CallInvoker.h>
-#include <folly/MoveWrapper.h>
 #include <folly/json.h>
 #include <glog/logging.h>
 #include <jsi/jsi.h>
@@ -20,6 +19,7 @@
 #include "MessageQueueThread.h"
 #include "MethodCall.h"
 #include "ModuleRegistry.h"
+#include "MoveWrapper.h"
 #include "RAMBundleRegistry.h"
 #include "SystraceSection.h"
 
@@ -91,7 +91,7 @@ class JsToNativeBridge : public react::ExecutorDelegate {
         moduleId, methodId, std::move(args));
   }
 
-  void recordTurboModuleAsyncMethodCall() {
+  void recordTurboModuleAsyncMethodCall() noexcept {
     m_batchHadNativeModuleOrTurboModuleCalls = true;
   }
 
@@ -101,7 +101,7 @@ class JsToNativeBridge : public react::ExecutorDelegate {
   // executor is destroyed synchronously on its queue.
   std::shared_ptr<ModuleRegistry> m_registry;
   std::shared_ptr<InstanceCallback> m_callback;
-  bool m_batchHadNativeModuleOrTurboModuleCalls = false;
+  std::atomic<bool> m_batchHadNativeModuleOrTurboModuleCalls{false};
 };
 
 NativeToJsBridge::NativeToJsBridge(
@@ -132,8 +132,8 @@ void NativeToJsBridge::loadBundle(
     std::string startupScriptSourceURL) {
   runOnExecutorQueue(
       [this,
-       bundleRegistryWrap = folly::makeMoveWrapper(std::move(bundleRegistry)),
-       startupScript = folly::makeMoveWrapper(std::move(startupScript)),
+       bundleRegistryWrap = makeMoveWrapper(std::move(bundleRegistry)),
+       startupScript = makeMoveWrapper(std::move(startupScript)),
        startupScriptSourceURL =
            std::move(startupScriptSourceURL)](JSExecutor* executor) mutable {
         auto bundleRegistry = bundleRegistryWrap.move();
@@ -249,7 +249,7 @@ void NativeToJsBridge::setGlobalVariable(
     std::string propName,
     std::unique_ptr<const JSBigString> jsonValue) {
   runOnExecutorQueue([propName = std::move(propName),
-                      jsonValue = folly::makeMoveWrapper(std::move(jsonValue))](
+                      jsonValue = makeMoveWrapper(std::move(jsonValue))](
                          JSExecutor* executor) mutable {
     executor->setGlobalVariable(propName, jsonValue.move());
   });
@@ -288,7 +288,7 @@ void NativeToJsBridge::destroy() {
 }
 
 void NativeToJsBridge::runOnExecutorQueue(
-    std::function<void(JSExecutor*)> task) {
+    std::function<void(JSExecutor*)>&& task) noexcept {
   if (*m_destroyed) {
     return;
   }
@@ -326,14 +326,14 @@ NativeToJsBridge::getDecoratedNativeMethodCallInvoker(
 
     void invokeAsync(
         const std::string& methodName,
-        std::function<void()>&& func) override {
+        NativeMethodCallFunc&& func) noexcept override {
       if (auto strongJsToNativeBridge = m_jsToNativeBridge.lock()) {
         strongJsToNativeBridge->recordTurboModuleAsyncMethodCall();
       }
       m_nativeInvoker->invokeAsync(methodName, std::move(func));
     }
 
-    void invokeSync(const std::string& methodName, std::function<void()>&& func)
+    void invokeSync(const std::string& methodName, NativeMethodCallFunc&& func)
         override {
       m_nativeInvoker->invokeSync(methodName, std::move(func));
     }
@@ -341,6 +341,11 @@ NativeToJsBridge::getDecoratedNativeMethodCallInvoker(
 
   return std::make_shared<NativeMethodCallInvokerImpl>(
       m_delegate, std::move(nativeMethodCallInvoker));
+}
+
+jsinspector_modern::RuntimeTargetDelegate&
+NativeToJsBridge::getInspectorTargetDelegate() {
+  return m_executor->getRuntimeTargetDelegate();
 }
 
 } // namespace facebook::react

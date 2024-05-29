@@ -70,6 +70,7 @@ class UIManagerBinding : public jsi::HostObject {
   jsi::Value get(jsi::Runtime& runtime, const jsi::PropNameID& name) override;
 
   UIManager& getUIManager();
+  PointerEventsProcessor& getPointerEventsProcessor();
 
  private:
   /*
@@ -84,7 +85,7 @@ class UIManagerBinding : public jsi::HostObject {
       const EventPayload& payload) const;
 
   std::shared_ptr<UIManager> uiManager_;
-  std::unique_ptr<const EventHandler> eventHandler_;
+  std::unique_ptr<jsi::Function> eventHandler_;
   mutable PointerEventsProcessor pointerEventsProcessor_;
   mutable ReactEventPriority currentEventPriority_;
 };

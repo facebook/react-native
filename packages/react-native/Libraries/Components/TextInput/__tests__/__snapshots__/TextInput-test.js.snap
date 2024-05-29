@@ -9,7 +9,6 @@ exports[`TextInput tests should render as expected: should deep render when mock
   mostRecentEventCount={0}
   onBlur={[Function]}
   onChange={[Function]}
-  onChangeSync={null}
   onClick={[Function]}
   onFocus={[Function]}
   onResponderGrant={[Function]}
@@ -38,7 +37,6 @@ exports[`TextInput tests should render as expected: should deep render when not 
   mostRecentEventCount={0}
   onBlur={[Function]}
   onChange={[Function]}
-  onChangeSync={null}
   onClick={[Function]}
   onFocus={[Function]}
   onResponderGrant={[Function]}

@@ -15,7 +15,7 @@ import type {
 
 import getNativeComponentAttributes from '../ReactNative/getNativeComponentAttributes';
 import UIManager from '../ReactNative/UIManager';
-import ReactNativeViewConfigRegistry from '../Renderer/shims/ReactNativeViewConfigRegistry';
+import * as ReactNativeViewConfigRegistry from '../Renderer/shims/ReactNativeViewConfigRegistry';
 import verifyComponentAttributeEquivalence from '../Utilities/verifyComponentAttributeEquivalence';
 import * as StaticViewConfigValidator from './StaticViewConfigValidator';
 import {createViewConfig} from './ViewConfig';
@@ -55,14 +55,27 @@ export function get<Config>(
 ): HostComponent<Config> {
   ReactNativeViewConfigRegistry.register(name, () => {
     const {native, strict, verify} = getRuntimeConfig?.(name) ?? {
-      native: true,
+      native: !global.RN$Bridgeless,
       strict: false,
       verify: false,
     };
 
-    const viewConfig = native
-      ? getNativeComponentAttributes(name)
-      : createViewConfig(viewConfigProvider());
+    let viewConfig;
+    if (native) {
+      viewConfig =
+        getNativeComponentAttributes(name) ??
+        createViewConfig(viewConfigProvider());
+    } else {
+      viewConfig =
+        createViewConfig(viewConfigProvider()) ??
+        getNativeComponentAttributes(name);
+    }
+
+    invariant(
+      viewConfig != null,
+      'NativeComponentRegistry.get: both static and native view config are missing for native component "%s".',
+      name,
+    );
 
     if (verify) {
       const nativeViewConfig = native

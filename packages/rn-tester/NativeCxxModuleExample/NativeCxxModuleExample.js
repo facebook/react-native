@@ -17,11 +17,6 @@ export enum EnumInt {
   IB = 42,
 }
 
-export enum EnumFloat {
-  FA = 1.23,
-  FB = 4.56,
-}
-
 export enum EnumNone {
   NA,
   NB,
@@ -36,25 +31,49 @@ export type UnionFloat = 1.44 | 2.88 | 5.76;
 export type UnionString = 'One' | 'Two' | 'Three';
 export type UnionObject = {value: number} | {low: string};
 
-export type ConstantsStruct = {|
+export type ConstantsStruct = {
   const1: boolean,
   const2: number,
   const3: string,
-|};
+};
 
-export type ObjectStruct = {|
+export type ObjectStruct = {
   a: number,
   b: string,
   c?: ?string,
-|};
+};
 
-export type ValueStruct = {|
+export type ValueStruct = {
   x: number,
   y: string,
   z: ObjectStruct,
-|};
+};
 
 export type CustomHostObject = {};
+
+export type BinaryTreeNode = {
+  left?: BinaryTreeNode,
+  value: number,
+  right?: BinaryTreeNode,
+};
+
+export type GraphNode = {
+  label: string,
+  neighbors?: Array<GraphNode>,
+};
+
+export type MenuItem = {
+  label: string,
+  onPress: (value: string, flag: boolean) => void,
+  shortcut?: ?string,
+  items?: Array<MenuItem>,
+};
+
+export type CustomDeviceEvent = {
+  type: string,
+  level: number,
+  degree?: ?number,
+};
 
 export interface Spec extends TurboModule {
   +getArray: (arg: Array<ObjectStruct | null>) => Array<ObjectStruct | null>;
@@ -63,7 +82,9 @@ export interface Spec extends TurboModule {
   +getCustomEnum: (arg: EnumInt) => EnumInt;
   +getCustomHostObject: () => CustomHostObject;
   +consumeCustomHostObject: (customHostObject: CustomHostObject) => string;
-  +getNumEnum: (arg: EnumInt) => EnumFloat;
+  +getBinaryTreeNode: (arg: BinaryTreeNode) => BinaryTreeNode;
+  +getGraphNode: (arg: GraphNode) => GraphNode;
+  +getNumEnum: (arg: EnumInt) => EnumInt;
   +getStrEnum: (arg: EnumNone) => EnumStr;
   +getMap: (arg: {[key: string]: ?number}) => {[key: string]: ?number};
   +getNumber: (arg: number) => number;
@@ -73,9 +94,13 @@ export interface Spec extends TurboModule {
   +getUnion: (x: UnionFloat, y: UnionString, z: UnionObject) => string;
   +getValue: (x: number, y: string, z: ObjectStruct) => ValueStruct;
   +getValueWithCallback: (callback: (value: string) => void) => void;
+  +setValueCallbackWithSubscription: (
+    callback: (value: string) => void,
+  ) => () => void;
   +getValueWithPromise: (error: boolean) => Promise<string>;
   +getWithWithOptionalArgs: (optionalArg?: boolean) => ?boolean;
   +voidFunc: () => void;
+  +setMenu: (menuItem: MenuItem) => void;
   +emitCustomDeviceEvent: (eventName: string) => void;
   +voidFuncThrows: () => void;
   +getObjectThrows: (arg: ObjectStruct) => ObjectStruct;

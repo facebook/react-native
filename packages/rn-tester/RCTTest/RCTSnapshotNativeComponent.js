@@ -10,11 +10,11 @@
 
 'use strict';
 
-const {requireNativeComponent} = require('react-native');
-
+import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
 import type {HostComponent} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
 import type {SyntheticEvent} from 'react-native/Libraries/Types/CoreEventTypes';
-import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
+
+const {requireNativeComponent} = require('react-native');
 
 type SnapshotReadyEvent = SyntheticEvent<
   $ReadOnly<{testIdentifier: string, ...}>,

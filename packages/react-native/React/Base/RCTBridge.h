@@ -31,25 +31,42 @@
  */
 typedef NSArray<id<RCTBridgeModule>> * (^RCTBridgeModuleListProvider)(void);
 
+RCT_EXTERN_C_BEGIN
+
 /**
  * This function returns the module name for a given class.
  */
-RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
+NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
 
 /**
  * Experimental.
  * Check/set if JSI-bound NativeModule is enabled. By default it's off.
  */
-RCT_EXTERN BOOL RCTTurboModuleEnabled(void);
-RCT_EXTERN void RCTEnableTurboModule(BOOL enabled);
+BOOL RCTTurboModuleEnabled(void);
+void RCTEnableTurboModule(BOOL enabled);
 
 // Turn on TurboModule interop
-RCT_EXTERN BOOL RCTTurboModuleInteropEnabled(void);
-RCT_EXTERN void RCTEnableTurboModuleInterop(BOOL enabled);
+BOOL RCTTurboModuleInteropEnabled(void);
+void RCTEnableTurboModuleInterop(BOOL enabled);
 
 // Turn on TurboModule interop's Bridge proxy
-RCT_EXTERN BOOL RCTTurboModuleInteropBridgeProxyEnabled(void);
-RCT_EXTERN void RCTEnableTurboModuleInteropBridgeProxy(BOOL enabled);
+BOOL RCTTurboModuleInteropBridgeProxyEnabled(void);
+void RCTEnableTurboModuleInteropBridgeProxy(BOOL enabled);
+
+// Turn on the fabric interop layer
+BOOL RCTFabricInteropLayerEnabled(void);
+void RCTEnableFabricInteropLayer(BOOL enabled);
+
+// Turn on TurboModule sync execution of void methods
+BOOL RCTTurboModuleSyncVoidMethodsEnabled(void);
+void RCTEnableTurboModuleSyncVoidMethods(BOOL enabled);
+
+// Use a shared queue for executing module methods
+BOOL RCTTurboModuleSharedQueueEnabled(void);
+void RCTEnableTurboModuleSharedQueue(BOOL enabled);
+
+BOOL RCTUIManagerDispatchAccessibilityManagerInitOntoMain(void);
+void RCTUIManagerSetDispatchAccessibilityManagerInitOntoMain(BOOL enabled);
 
 typedef enum {
   kRCTBridgeProxyLoggingLevelNone,
@@ -57,12 +74,12 @@ typedef enum {
   kRCTBridgeProxyLoggingLevelError,
 } RCTBridgeProxyLoggingLevel;
 
-RCT_EXTERN RCTBridgeProxyLoggingLevel RCTTurboModuleInteropBridgeProxyLogLevel(void);
-RCT_EXTERN void RCTSetTurboModuleInteropBridgeProxyLogLevel(RCTBridgeProxyLoggingLevel logLevel);
+RCTBridgeProxyLoggingLevel RCTTurboModuleInteropBridgeProxyLogLevel(void);
+void RCTSetTurboModuleInteropBridgeProxyLogLevel(RCTBridgeProxyLoggingLevel logLevel);
 
 // Route all TurboModules through TurboModule interop
-RCT_EXTERN BOOL RCTTurboModuleInteropForAllTurboModulesEnabled(void);
-RCT_EXTERN void RCTEnableTurboModuleInteropForAllTurboModules(BOOL enabled);
+BOOL RCTTurboModuleInteropForAllTurboModulesEnabled(void);
+void RCTEnableTurboModuleInteropForAllTurboModules(BOOL enabled);
 
 typedef enum {
   kRCTGlobalScope,
@@ -70,8 +87,10 @@ typedef enum {
   kRCTTurboModuleManagerScope,
 } RCTTurboModuleCleanupMode;
 
-RCT_EXTERN RCTTurboModuleCleanupMode RCTGetTurboModuleCleanupMode(void);
-RCT_EXTERN void RCTSetTurboModuleCleanupMode(RCTTurboModuleCleanupMode mode);
+RCTTurboModuleCleanupMode RCTGetTurboModuleCleanupMode(void);
+void RCTSetTurboModuleCleanupMode(RCTTurboModuleCleanupMode mode);
+
+RCT_EXTERN_C_END
 
 /**
  * Async batched bridge used to communicate with the JavaScript application.

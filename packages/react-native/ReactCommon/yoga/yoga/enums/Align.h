@@ -24,23 +24,19 @@ enum class Align : uint8_t {
   Baseline = YGAlignBaseline,
   SpaceBetween = YGAlignSpaceBetween,
   SpaceAround = YGAlignSpaceAround,
+  SpaceEvenly = YGAlignSpaceEvenly,
 };
 
 template <>
-constexpr inline int32_t ordinalCount<Align>() {
-  return 8;
-} 
+constexpr int32_t ordinalCount<Align>() {
+  return 9;
+}
 
-template <>
-constexpr inline int32_t bitCount<Align>() {
-  return 3;
-} 
-
-constexpr inline Align scopedEnum(YGAlign unscoped) {
+constexpr Align scopedEnum(YGAlign unscoped) {
   return static_cast<Align>(unscoped);
 }
 
-constexpr inline YGAlign unscopedEnum(Align scoped) {
+constexpr YGAlign unscopedEnum(Align scoped) {
   return static_cast<YGAlign>(scoped);
 }
 

@@ -23,6 +23,10 @@
 #import <React/RCTInspectorDevServerHelper.h>
 #endif
 
+@protocol RCTDevMenuItemProvider
+- (RCTDevMenuItem *)devMenuItem;
+@end
+
 NSString *const RCTShowDevMenuNotification = @"RCTShowDevMenuNotification";
 
 @implementation UIWindow (RCTDevMenu)
@@ -211,11 +215,15 @@ RCT_EXPORT_MODULE()
 
 - (void)toggle
 {
+  if (_actionSheet.isBeingPresented || _actionSheet.beingDismissed) {
+    return;
+  }
   if (_actionSheet) {
     [_actionSheet dismissViewControllerAnimated:YES
-                                     completion:^(void){
+                                     completion:^(void) {
+                                       self->_actionSheet = nil;
                                      }];
-    _actionSheet = nil;
+
   } else {
     [self show];
   }
@@ -261,26 +269,27 @@ RCT_EXPORT_MODULE()
 #if RCT_ENABLE_INSPECTOR
     if (devSettings.isDeviceDebuggingAvailable) {
       // On-device JS debugging (CDP). Render action to open debugger frontend.
-      [items
-          addObject:
-              [RCTDevMenuItem
-                  buttonItemWithTitleBlock:^NSString * {
-                    return @"Open Debugger";
-                  }
-                  handler:^{
-                    [RCTInspectorDevServerHelper
-                            openDebugger:bundleManager.bundleURL
-                        withErrorMessage:
-                            @"Failed to open debugger. Please check that the dev server is running and reload the app."];
-                  }]];
+      BOOL isDisconnected = RCTInspectorDevServerHelper.isPackagerDisconnected;
+      NSString *title = isDisconnected
+          ? [NSString stringWithFormat:@"Connect to %@ to debug JavaScript", RCT_PACKAGER_NAME]
+          : @"Open Debugger";
+      RCTDevMenuItem *item = [RCTDevMenuItem
+          buttonItemWithTitle:title
+                      handler:^{
+                        [RCTInspectorDevServerHelper
+                                openDebugger:bundleManager.bundleURL
+                            withErrorMessage:
+                                @"Failed to open debugger. Please check that the dev server is running and reload the app."];
+                      }];
+      [item setDisabled:isDisconnected];
+      [items addObject:item];
     }
 #endif
   }
 
   [items addObject:[RCTDevMenuItem
                        buttonItemWithTitleBlock:^NSString * {
-                         return devSettings.isElementInspectorShown ? @"Hide Element Inspector"
-                                                                    : @"Show Element Inspector";
+                         return @"Toggle Element Inspector";
                        }
                        handler:^{
                          [devSettings toggleElementInspector];
@@ -295,6 +304,13 @@ RCT_EXPORT_MODULE()
                          handler:^{
                            devSettings.isHotLoadingEnabled = !devSettings.isHotLoadingEnabled;
                          }]];
+  }
+
+  id perfMonitorItemOpaque = [_moduleRegistry moduleForName:"PerfMonitor"];
+  SEL devMenuItem = @selector(devMenuItem);
+  if ([perfMonitorItemOpaque respondsToSelector:devMenuItem]) {
+    RCTDevMenuItem *perfMonitorItem = [perfMonitorItemOpaque devMenuItem];
+    [items addObject:perfMonitorItem];
   }
 
   [items
@@ -380,16 +396,18 @@ RCT_EXPORT_METHOD(show)
       ? UIAlertControllerStyleActionSheet
       : UIAlertControllerStyleAlert;
 
-  NSString *devMenuType = self.bridge ? @"Bridge" : @"Bridgeless";
+  NSString *devMenuType = [self.bridge isKindOfClass:RCTBridge.class] ? @"Bridge" : @"Bridgeless";
   NSString *devMenuTitle = [NSString stringWithFormat:@"React Native Dev Menu (%@)", devMenuType];
 
   _actionSheet = [UIAlertController alertControllerWithTitle:devMenuTitle message:description preferredStyle:style];
 
   NSArray<RCTDevMenuItem *> *items = [self _menuItemsToPresent];
   for (RCTDevMenuItem *item in items) {
-    [_actionSheet addAction:[UIAlertAction actionWithTitle:item.title
+    UIAlertAction *action = [UIAlertAction actionWithTitle:item.title
                                                      style:UIAlertActionStyleDefault
-                                                   handler:[self alertActionHandlerForDevItem:item]]];
+                                                   handler:[self alertActionHandlerForDevItem:item]];
+    [action setEnabled:!item.isDisabled];
+    [_actionSheet addAction:action];
   }
 
   [_actionSheet addAction:[UIAlertAction actionWithTitle:@"Cancel"

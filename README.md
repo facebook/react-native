@@ -67,7 +67,7 @@ React Native is developed and supported by many companies and individual core co
 
 ## 📋 Requirements
 
-React Native apps may target iOS 13.4 and Android 5.0 (API 21) or newer. You may use Windows, macOS, or Linux as your development operating system, though building and running iOS apps is limited to macOS. Tools like [Expo](https://expo.dev) can be used to work around this.
+React Native apps may target iOS 13.4 and Android 6.0 (API 23) or newer. You may use Windows, macOS, or Linux as your development operating system, though building and running iOS apps is limited to macOS. Tools like [Expo](https://expo.dev) can be used to work around this.
 
 ## 🎉 Building your first React Native app
 
