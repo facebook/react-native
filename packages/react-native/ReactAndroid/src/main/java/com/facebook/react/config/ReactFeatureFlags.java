@@ -80,9 +80,6 @@ public class ReactFeatureFlags {
 
   public static boolean dispatchPointerEvents = false;
 
-  /** Feature Flag to enable a cache of Spannable objects used by TextLayoutManager */
-  public static boolean enableTextSpannableCache = false;
-
   /**
    * Feature Flag to enable View Recycling. When enabled, individual ViewManagers must still opt-in.
    */
