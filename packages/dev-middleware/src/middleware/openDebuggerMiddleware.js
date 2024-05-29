@@ -160,6 +160,7 @@ export default function openDebuggerMiddleware({
           launchType,
           status: 'error',
           error: e,
+          prefersFuseboxFrontend: useFuseboxEntryPoint ?? false,
         });
         return;
       }
