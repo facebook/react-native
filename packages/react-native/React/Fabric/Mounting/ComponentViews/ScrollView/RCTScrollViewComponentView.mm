@@ -319,6 +319,26 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
 
   auto contentOffset = RCTCGPointFromPoint(data.contentOffset);
   if (!oldState && !CGPointEqualToPoint(contentOffset, CGPointZero)) {
+    /*
+     * When <ScrollView /> is suspended, it is removed from view hierarchy and its offset is stored in
+     * state. We want to restore this offset from the state but it must be snapped to be within UIScrollView's
+     * content to remove any overscroll.
+     *
+     * This can happen, for example, with pull to refresh. The UIScrollView will be overscrolled into negative offset.
+     * If the offset is not adjusted to be within the content area, it leads to a gap and UIScrollView does not adjust
+     * its offset until user scrolls.
+     */
+
+    // Adjusting overscroll on the top.
+    contentOffset.y = fmax(contentOffset.y, -_scrollView.contentInset.top);
+
+    // Adjusting overscroll on the left.
+    contentOffset.x = fmax(contentOffset.x, -_scrollView.contentInset.left);
+
+    // TODO: T190695447 - Protect against over scroll on the bottom and right as well.
+    // This is not easily done because we need to flip the order of method calls for
+    // ShadowViewMutation::Insert. updateLayout must come before updateState.
+
     _scrollView.contentOffset = contentOffset;
   }
 
