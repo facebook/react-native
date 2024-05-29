@@ -100,11 +100,12 @@ module PrivacyManifestUtils
                 if File.basename(file_path) == 'PrivacyInfo.xcprivacy'
                     content = Xcodeproj::Plist.read_from_path(file_path)
                     accessed_api_types = content["NSPrivacyAccessedAPITypes"]
-                    accessed_api_types.each do |accessed_api|
-                    api_type = accessed_api["NSPrivacyAccessedAPIType"]
-                    reasons = accessed_api["NSPrivacyAccessedAPITypeReasons"]
-                    used_apis[api_type] ||= []
-                    used_apis[api_type] += reasons
+                    accessed_api_types&.each do |accessed_api|
+                      api_type = accessed_api["NSPrivacyAccessedAPIType"]
+                      reasons = accessed_api["NSPrivacyAccessedAPITypeReasons"]
+                      next unless api_type
+                      used_apis[api_type] ||= []
+                      used_apis[api_type] += reasons
                     end
                 end
                 end
