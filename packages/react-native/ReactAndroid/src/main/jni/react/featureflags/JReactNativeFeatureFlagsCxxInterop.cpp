@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<82d20aa409496b17df21a077088894a6>>
+ * @generated SignedSource<<318ea35c5b58c968d7026dbe547200e4>>
  */
 
 /**
@@ -48,6 +48,12 @@ class ReactNativeFeatureFlagsProviderHolder
   bool allowCollapsableChildren() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("allowCollapsableChildren");
+    return method(javaProvider_);
+  }
+
+  bool allowRecursiveCommitsWithSynchronousMountOnAndroid() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("allowRecursiveCommitsWithSynchronousMountOnAndroid");
     return method(javaProvider_);
   }
 
@@ -173,6 +179,11 @@ bool JReactNativeFeatureFlagsCxxInterop::allowCollapsableChildren(
   return ReactNativeFeatureFlags::allowCollapsableChildren();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::allowRecursiveCommitsWithSynchronousMountOnAndroid(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::allowRecursiveCommitsWithSynchronousMountOnAndroid();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::batchRenderingUpdatesInEventLoop(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop();
@@ -286,6 +297,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "allowCollapsableChildren",
         JReactNativeFeatureFlagsCxxInterop::allowCollapsableChildren),
+      makeNativeMethod(
+        "allowRecursiveCommitsWithSynchronousMountOnAndroid",
+        JReactNativeFeatureFlagsCxxInterop::allowRecursiveCommitsWithSynchronousMountOnAndroid),
       makeNativeMethod(
         "batchRenderingUpdatesInEventLoop",
         JReactNativeFeatureFlagsCxxInterop::batchRenderingUpdatesInEventLoop),
