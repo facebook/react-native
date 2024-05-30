@@ -6,6 +6,7 @@
  */
 
 #import "AppDelegate.h"
+#import <mach-o/dyld.h>
 
 #import <React/RCTBundleURLProvider.h>
 
@@ -17,6 +18,11 @@
   // You can add your custom initial props in the dictionary below.
   // They will be passed down to the ViewController used by React Native.
   self.initialProps = @{};
+
+  int imageCount = _dyld_image_count();
+  for (int i = 0; i < imageCount; i++) {
+    NSLog(@"Dylibs: %d - %s", i, _dyld_get_image_name(i));
+  }
 
   return [super application:application didFinishLaunchingWithOptions:launchOptions];
 }
