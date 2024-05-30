@@ -10,9 +10,13 @@
 
 #import <React/RCTAssert.h>
 #import <React/RCTUtils.h>
+#import <ReactCommon/RCTTurboModuleWithJSIBindings.h>
 #import <UIKit/UIKit.h>
 
 using namespace facebook::react;
+
+@interface RCTSampleTurboModule () <RCTTurboModuleWithJSIBindings>
+@end
 
 @implementation RCTSampleTurboModule
 
@@ -65,6 +69,15 @@ RCT_EXPORT_MODULE()
 {
   return [self getConstants];
 }
+
+#pragma mark - RCTTurboModuleWithJSIBindings
+
+- (void)installJSIBindingsWithRuntime:(facebook::jsi::Runtime &)runtime
+{
+  runtime.global().setProperty(runtime, "__SampleTurboModuleJSIBindings", "Hello JSI!");
+}
+
+#pragma mark - Spec Methods
 
 RCT_EXPORT_METHOD(voidFunc)
 {
