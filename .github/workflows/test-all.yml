@@ -4,11 +4,10 @@ on:
     workflow_dispatch:
     pull_request:
     push:
-      tags:
-        - 'v*'
-    # nightly build @ 2:15 AM UTC
-    schedule:
-      - cron: '15 2 * * *'
+      branches:
+        - main
+        - "*-stable"
+
 
 jobs:
   set_release_type:
