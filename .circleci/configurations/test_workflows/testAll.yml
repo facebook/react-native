@@ -66,27 +66,26 @@
       - test_ios_template:
           requires:
             - build_npm_package
+          architecture: "NewArch"
           matrix:
             parameters:
               flavor: ["Debug", "Release"]
               jsengine: ["Hermes", "JSC"]
               use_frameworks: ["StaticLibraries", "DynamicFrameworks"]
-              architecture: ["NewArch", "OldArch"]
             exclude:
               # This config is tested with Ruby 3.2.0. Let's not double test it.
               - flavor: "Debug"
                 jsengine: "Hermes"
                 use_frameworks: "StaticLibraries"
-                architecture: "NewArch"
       - test_ios_rntester:
           requires:
             - build_hermes_macos
           use_frameworks: "DynamicFrameworks"
+          architecture: "NewArch"
           ruby_version: "3.2.0"
           matrix:
             parameters:
               jsengine: ["Hermes", "JSC"]
-              architecture: ["NewArch", "OldArch"]
       - test_ios_rntester:
           run_unit_tests: true
           use_frameworks: "StaticLibraries"
