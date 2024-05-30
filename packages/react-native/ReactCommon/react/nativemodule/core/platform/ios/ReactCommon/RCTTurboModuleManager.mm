@@ -181,6 +181,11 @@ static Class getFallbackClassFromName(const char *name)
   return moduleClass;
 }
 
+typedef struct {
+  id<RCTBridgeModule> module;
+  dispatch_queue_t methodQueue;
+} ModuleQueuePair;
+
 @implementation RCTTurboModuleManager {
   std::shared_ptr<CallInvoker> _jsInvoker;
   __weak id<RCTTurboModuleManagerDelegate> _delegate;
@@ -1046,7 +1051,7 @@ static Class getFallbackClassFromName(const char *name)
 {
   // Backward-compatibility: RCTInvalidating handling.
   dispatch_group_t moduleInvalidationGroup = dispatch_group_create();
-
+  std::vector<ModuleQueuePair> modulesToInvalidate;
   for (auto &pair : _moduleHolders) {
     std::string moduleName = pair.first;
     ModuleHolder *moduleHolder = &pair.second;
@@ -1069,22 +1074,31 @@ static Class getFallbackClassFromName(const char *name)
             [module class]);
         continue;
       }
+      modulesToInvalidate.push_back({module, methodQueue});
+    }
+  }
 
-      dispatch_group_enter(moduleInvalidationGroup);
-      dispatch_block_t invalidateModule = ^{
-        [((id<RCTInvalidating>)module) invalidate];
-        dispatch_group_leave(moduleInvalidationGroup);
-      };
+  for (auto unused : modulesToInvalidate) {
+    dispatch_group_enter(moduleInvalidationGroup);
+  }
 
-      if (_bridge) {
-        [_bridge dispatchBlock:invalidateModule queue:methodQueue];
+  for (auto &moduleQueuePair : modulesToInvalidate) {
+    id<RCTBridgeModule> module = moduleQueuePair.module;
+    dispatch_queue_t methodQueue = moduleQueuePair.methodQueue;
+
+    dispatch_block_t invalidateModule = ^{
+      [((id<RCTInvalidating>)module) invalidate];
+      dispatch_group_leave(moduleInvalidationGroup);
+    };
+
+    if (_bridge) {
+      [_bridge dispatchBlock:invalidateModule queue:methodQueue];
+    } else {
+      // Bridgeless mode
+      if (methodQueue == RCTJSThread) {
+        invalidateModule();
       } else {
-        // Bridgeless mode
-        if (methodQueue == RCTJSThread) {
-          invalidateModule();
-        } else {
-          dispatch_async(methodQueue, invalidateModule);
-        }
+        dispatch_async(methodQueue, invalidateModule);
       }
     }
   }
