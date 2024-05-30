@@ -12,10 +12,10 @@
 import type {Task} from '@react-native/core-cli-utils';
 import type {Result} from 'execa';
 import type {ExecaPromise} from 'execa';
-import type {TaskSpec} from 'listr';
+import type {TaskResult, TaskSpec} from 'listr2';
 
 import chalk from 'chalk';
-import Listr from 'listr';
+import {Listr} from 'listr2';
 import {Observable} from 'rxjs';
 
 export function trim(
@@ -23,6 +23,9 @@ export function trim(
   // $FlowFixMe[prop-missing]
   maxLength: number = Math.min(process.stdout?.columns, 120),
 ): string {
+  if (process.stdout.isTTY == null) {
+    return line;
+  }
   const flattened = line.replaceAll('\n', ' ').trim();
   return flattened.length >= maxLength
     ? flattened.slice(0, maxLength - 3) + '...'
@@ -31,8 +34,8 @@ export function trim(
 
 type ExecaPromiseMetaized = Promise<Result> & child_process$ChildProcess;
 
-export function observe(result: ExecaPromiseMetaized): Observable<string> {
-  return new Observable(observer => {
+export function observe(result: ExecaPromiseMetaized): TaskResult<string> {
+  const obs = new Observable<string>(observer => {
     result.stderr.on('data', (data: Buffer) =>
       data
         .toString('utf8')
@@ -69,6 +72,9 @@ export function observe(result: ExecaPromiseMetaized): Observable<string> {
       }
     };
   });
+
+  // $FlowFixMe
+  return obs;
 }
 
 type MixedTasks = Task<ExecaPromise> | Task<void>;
@@ -89,15 +95,14 @@ export function run(
   }
   ordered = ordered.sort((a, b) => a.order - b.order);
 
-  const spec: TaskSpec<void, Observable<string> | Promise<void> | void>[] =
-    ordered.map(task => ({
-      title: task.label,
-      task: () => {
-        const action = task.action();
-        if (action != null) {
-          return observe(action);
-        }
-      },
-    }));
+  const spec: TaskSpec<void>[] = ordered.map(task => ({
+    title: task.label,
+    task: () => {
+      const action = task.action();
+      if (action != null) {
+        return observe(action);
+      }
+    },
+  }));
   return new Listr(spec).run();
 }
