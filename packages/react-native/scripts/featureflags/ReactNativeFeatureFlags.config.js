@@ -44,6 +44,11 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Enables the differentiator to understand the "collapsableChildren" prop',
     },
+    allowRecursiveCommitsWithSynchronousMountOnAndroid: {
+      defaultValue: false,
+      description:
+        'Adds support for recursively processing commits that mount synchronously (Android only).',
+    },
     batchRenderingUpdatesInEventLoop: {
       defaultValue: false,
       description:
