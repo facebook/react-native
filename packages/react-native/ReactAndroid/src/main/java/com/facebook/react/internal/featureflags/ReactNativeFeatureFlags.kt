@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d6c66f8e1322b8962191fa4af5c8da4b>>
+ * @generated SignedSource<<84f45a19bf93a62da7ce904a2682fc51>>
  */
 
 /**
@@ -39,12 +39,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun allowCollapsableChildren(): Boolean = accessor.allowCollapsableChildren()
-
-  /**
-   * To be used with batchRenderingUpdatesInEventLoop. When enbled, the Android mounting layer will concatenate pending transactions to ensure they're applied atomatically
-   */
-  @JvmStatic
-  public fun androidEnablePendingFabricTransactions(): Boolean = accessor.androidEnablePendingFabricTransactions()
 
   /**
    * When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.

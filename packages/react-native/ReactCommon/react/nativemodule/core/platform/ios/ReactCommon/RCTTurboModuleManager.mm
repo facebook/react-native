@@ -30,6 +30,7 @@
 #import <React/RCTRuntimeExecutorModule.h>
 #import <React/RCTUtils.h>
 #import <ReactCommon/CxxTurboModuleUtils.h>
+#import <ReactCommon/RCTTurboModuleWithJSIBindings.h>
 #import <ReactCommon/TurboCxxModule.h>
 #import <ReactCommon/TurboModulePerfLogger.h>
 #import <ReactCommon/TurboModuleUtils.h>
@@ -300,7 +301,7 @@ static Class getFallbackClassFromName(const char *name)
  * (for now).
  */
 
-- (std::shared_ptr<TurboModule>)provideTurboModule:(const char *)moduleName
+- (std::shared_ptr<TurboModule>)provideTurboModule:(const char *)moduleName runtime:(jsi::Runtime *)runtime
 {
   auto turboModuleLookup = _turboModuleCache.find(moduleName);
   if (turboModuleLookup != _turboModuleCache.end()) {
@@ -404,6 +405,10 @@ static Class getFallbackClassFromName(const char *name)
       RCTLogError(@"TurboModule \"%@\"'s getTurboModule: method returned nil.", moduleClass);
     }
     _turboModuleCache.insert({moduleName, turboModule});
+
+    if ([module respondsToSelector:@selector(installJSIBindingsWithRuntime:)]) {
+      [(id<RCTTurboModuleWithJSIBindings>)module installJSIBindingsWithRuntime:*runtime];
+    }
     return turboModule;
   }
 
@@ -766,7 +771,7 @@ static Class getFallbackClassFromName(const char *name)
    * Attach method queue to id<RCTBridgeModule> object.
    * This is necessary because the id<RCTBridgeModule> object can be eagerly created/initialized before the method
    * queue is required. The method queue is required for an id<RCTBridgeModule> for JS -> Native calls. So, we need it
-   * before we create the id<RCTBridgeModule>'s TurboModule jsi::HostObject in provideTurboModule:.
+   * before we create the id<RCTBridgeModule>'s TurboModule jsi::HostObject in provideTurboModule:runtime:.
    */
   objc_setAssociatedObject(module, &kAssociatedMethodQueueKey, methodQueue, OBJC_ASSOCIATION_RETAIN);
 
@@ -916,7 +921,8 @@ static Class getFallbackClassFromName(const char *name)
    * aren't any strong references to it in ObjC. Hence, we give
    * __turboModuleProxy a strong reference to TurboModuleManager.
    */
-  auto turboModuleProvider = [self](const std::string &name) -> std::shared_ptr<react::TurboModule> {
+  auto turboModuleProvider = [self,
+                              runtime = &runtime](const std::string &name) -> std::shared_ptr<react::TurboModule> {
     auto moduleName = name.c_str();
 
     TurboModulePerfLogger::moduleJSRequireBeginningStart(moduleName);
@@ -930,7 +936,7 @@ static Class getFallbackClassFromName(const char *name)
      * Additionally, if a TurboModule with the name `name` isn't found, then we
      * trigger an assertion failure.
      */
-    auto turboModule = [self provideTurboModule:moduleName];
+    auto turboModule = [self provideTurboModule:moduleName runtime:runtime];
 
     if (moduleWasNotInitialized && [self moduleIsInitialized:moduleName]) {
       [self->_bridge.performanceLogger markStopForTag:RCTPLTurboModuleSetup];

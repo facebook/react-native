@@ -29,6 +29,13 @@ typedef NSURL *_Nullable (^RCTBundleURLBlock)(void);
 typedef NSArray<id<RCTBridgeModule>> *_Nonnull (^RCTExtraModulesForBridgeBlock)(RCTBridge *bridge);
 typedef NSDictionary<NSString *, Class> *_Nonnull (^RCTExtraLazyModuleClassesForBridge)(RCTBridge *bridge);
 typedef BOOL (^RCTBridgeDidNotFindModuleBlock)(RCTBridge *bridge, NSString *moduleName);
+typedef void (^RCTHostDidStartBlock)(RCTHost *host);
+typedef void (^RCTHostDidReceiveJSErrorStackBlock)(
+    RCTHost *host,
+    NSArray<NSDictionary<NSString *, id> *> *stack,
+    NSString *message,
+    NSUInteger exceptionId,
+    BOOL isFatal);
 
 #pragma mark - RCTRootViewFactory Configuration
 @interface RCTRootViewFactoryConfiguration : NSObject
@@ -131,6 +138,22 @@ typedef BOOL (^RCTBridgeDidNotFindModuleBlock)(RCTBridge *bridge, NSString *modu
  * If the module was not registered, return NO to prevent further searches.
  */
 @property (nonatomic, nullable) RCTBridgeDidNotFindModuleBlock bridgeDidNotFindModule;
+
+/**
+ * Called when `RCTHost` started.
+ * @parameter: host - The started `RCTHost`.
+ */
+@property (nonatomic, nullable) RCTHostDidStartBlock hostDidStartBlock;
+
+/**
+ * Called when `RCTHost` received JS error.
+ * @parameter: host - `RCTHost` which received js error.
+ * @parameter: stack - JS error stack.
+ * @parameter: message - Error message.
+ * @parameter: exceptionId - Exception ID.
+ * @parameter: isFatal - YES if JS error is fatal.
+ */
+@property (nonatomic, nullable) RCTHostDidReceiveJSErrorStackBlock hostDidReceiveJSErrorStackBlock;
 
 @end
 
