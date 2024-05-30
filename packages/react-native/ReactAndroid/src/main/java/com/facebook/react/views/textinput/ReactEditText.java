@@ -115,6 +115,7 @@ public class ReactEditText extends AppCompatEditText {
   private TextAttributes mTextAttributes;
   private boolean mTypefaceDirty = false;
   private @Nullable String mFontFamily = null;
+  private @Nullable String mFontVariationSettings = null;
   private int mFontWeight = ReactConstants.UNSET;
   private int mFontStyle = ReactConstants.UNSET;
   private boolean mAutoFocus = false;
@@ -557,6 +558,18 @@ public class ReactEditText extends AppCompatEditText {
     mTypefaceDirty = true;
   }
 
+  @Override
+  public boolean setFontVariationSettings(@Nullable String fontVariationSettings) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      if (!Objects.equals(fontVariationSettings, getFontVariationSettings())) {
+        mTypefaceDirty = true;
+        mFontVariationSettings = fontVariationSettings;
+        return super.setFontVariationSettings(fontVariationSettings);
+      }
+    }
+    return false;
+  }
+
   public void setFontWeight(String fontWeightString) {
     int fontWeight = ReactTypefaceUtils.parseFontWeight(fontWeightString);
     if (fontWeight != mFontWeight) {
@@ -771,6 +784,7 @@ public class ReactEditText extends AppCompatEditText {
           return span.getStyle() == mFontStyle
               && Objects.equals(span.getFontFamily(), mFontFamily)
               && span.getWeight() == mFontWeight
+              && Objects.equals(span.getFontVariationSettings(), mFontVariationSettings)
               && Objects.equals(span.getFontFeatureSettings(), getFontFeatureSettings());
         });
   }
@@ -836,7 +850,7 @@ public class ReactEditText extends AppCompatEditText {
               mFontWeight,
               getFontFeatureSettings(),
               mFontFamily,
-              null,
+              mFontVariationSettings,
               getContext().getAssets()),
           0,
           workingText.length(),

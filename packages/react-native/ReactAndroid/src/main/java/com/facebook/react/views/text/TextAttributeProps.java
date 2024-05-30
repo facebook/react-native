@@ -141,7 +141,7 @@ public class TextAttributeProps {
    * mFontVariationSettings can be used for variable font features e.g: 'wght' 850
    * This works for Android 8.1 and above.
    */
-  protected String mFontVariationSettings = null;
+  protected @Nullable String mFontVariationSettings = null;
 
   /**
    * @see android.graphics.Paint#setFontFeatureSettings
