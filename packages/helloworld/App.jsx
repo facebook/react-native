@@ -27,6 +27,10 @@ function App(): React.JSX.Element {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
+  const uiManager = global?.nativeFabricUIManager
+    ? 'New (Fabric)'
+    : 'Old (Paper)';
+
   return (
     <SafeAreaView style={backgroundStyle}>
       <StatusBar
@@ -42,6 +46,12 @@ function App(): React.JSX.Element {
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
           }}>
           <Text style={styles.title}>Hello, World!</Text>
+        </View>
+        <View
+          style={{
+            backgroundColor: isDarkMode ? Colors.black : Colors.white,
+          }}>
+          <Text style={styles.title}>Architecture: {uiManager}</Text>
         </View>
       </ScrollView>
     </SafeAreaView>
