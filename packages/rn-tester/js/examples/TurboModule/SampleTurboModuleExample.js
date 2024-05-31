@@ -162,6 +162,9 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
           console.error(e);
         });
     },
+    installJSIBindings: () => {
+      return global.__SampleTurboModuleJSIBindings;
+    },
   };
 
   _setResult(
@@ -205,6 +208,14 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
     if (global.__turboModuleProxy == null) {
       throw new Error(
         'Cannot load this example because TurboModule is not configured.',
+      );
+    }
+
+    // Lazily load the module
+    NativeSampleTurboModule.getConstants();
+    if (global.__SampleTurboModuleJSIBindings !== 'Hello JSI!') {
+      throw new Error(
+        'The JSI bindings for SampleTurboModule are not installed.',
       );
     }
   }

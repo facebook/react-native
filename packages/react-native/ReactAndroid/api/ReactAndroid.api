@@ -3971,6 +3971,10 @@ public final class com/facebook/react/turbomodule/core/CallInvokerHolderImpl : c
 public final class com/facebook/react/turbomodule/core/NativeMethodCallInvokerHolderImpl : com/facebook/react/turbomodule/core/interfaces/NativeMethodCallInvokerHolder {
 }
 
+public final class com/facebook/react/turbomodule/core/interfaces/BindingsInstallerHolder {
+	public fun <init> (Lcom/facebook/jni/HybridData;)V
+}
+
 public abstract interface class com/facebook/react/turbomodule/core/interfaces/CallInvokerHolder {
 }
 
@@ -3980,6 +3984,10 @@ public abstract interface class com/facebook/react/turbomodule/core/interfaces/N
 public abstract interface class com/facebook/react/turbomodule/core/interfaces/TurboModule {
 	public abstract fun initialize ()V
 	public abstract fun invalidate ()V
+}
+
+public abstract interface class com/facebook/react/turbomodule/core/interfaces/TurboModuleWithJSIBindings {
+	public abstract fun getBindingsInstaller ()Lcom/facebook/react/turbomodule/core/interfaces/BindingsInstallerHolder;
 }
 
 public abstract class com/facebook/react/uimanager/BaseViewManager : com/facebook/react/uimanager/ViewManager, android/view/View$OnLayoutChangeListener, com/facebook/react/uimanager/BaseViewManagerInterface {
