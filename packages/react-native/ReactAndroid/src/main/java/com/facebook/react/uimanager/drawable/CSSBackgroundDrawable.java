@@ -316,14 +316,39 @@ public class CSSBackgroundDrawable extends Drawable {
     return mColor;
   }
 
-  public Path borderBoxPath() {
-    updatePath();
-    return Preconditions.checkNotNull(mOuterClipPathForBorderRadius);
+  public @Nullable Path getBorderBoxPath() {
+    if (hasRoundedBorders()) {
+      updatePath();
+      return Preconditions.checkNotNull(mOuterClipPathForBorderRadius);
+    }
+
+    return null;
   }
 
-  public Path paddingBoxPath() {
-    updatePath();
-    return Preconditions.checkNotNull(mInnerClipPathForBorderRadius);
+  public RectF getBorderBoxRect() {
+    return new RectF(getBounds());
+  }
+
+  public @Nullable Path getPaddingBoxPath() {
+    if (hasRoundedBorders()) {
+      updatePath();
+      return Preconditions.checkNotNull(mInnerClipPathForBorderRadius);
+    }
+
+    return null;
+  }
+
+  public RectF getPaddingBoxRect() {
+    @Nullable RectF insets = getDirectionAwareBorderInsets();
+    if (insets == null) {
+      return new RectF(0, 0, getBounds().width(), getBounds().height());
+    }
+
+    return new RectF(
+        insets.left,
+        insets.top,
+        getBounds().width() - insets.right,
+        getBounds().height() - insets.bottom);
   }
 
   private void drawRoundedBackgroundWithBorders(Canvas canvas) {
@@ -331,7 +356,7 @@ public class CSSBackgroundDrawable extends Drawable {
     canvas.save();
 
     // Clip outer border
-    canvas.clipPath(borderBoxPath(), Region.Op.INTERSECT);
+    canvas.clipPath(Preconditions.checkNotNull(getBorderBoxPath()), Region.Op.INTERSECT);
 
     // Draws the View without its border first (with background color fill)
     int useColor = ColorUtils.setAlphaComponent(mColor, getOpacity());
@@ -390,7 +415,7 @@ public class CSSBackgroundDrawable extends Drawable {
         mPaint.setStyle(Paint.Style.FILL);
 
         // Clip inner border
-        canvas.clipPath(paddingBoxPath(), Region.Op.DIFFERENCE);
+        canvas.clipPath(Preconditions.checkNotNull(getPaddingBoxPath()), Region.Op.DIFFERENCE);
 
         final boolean isRTL = getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
         int colorStart = getBorderColor(Spacing.START);
