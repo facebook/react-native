@@ -309,6 +309,21 @@ bool ShadowNode::progressStateIfNecessary() {
   return false;
 }
 
+void ShadowNode::setRuntimeShadowNodeReference(
+    ShadowNodeWrapper* runtimeShadowNodeReference) const {
+  runtimeShadowNodeReference_ = runtimeShadowNodeReference;
+}
+
+void ShadowNode::transferRuntimeShadowNodeReference(
+    const Shared& destinationShadowNode) const {
+  destinationShadowNode->runtimeShadowNodeReference_ =
+      runtimeShadowNodeReference_;
+
+  if (runtimeShadowNodeReference_) {
+    runtimeShadowNodeReference_->shadowNode = destinationShadowNode;
+  }
+}
+
 const ShadowNodeFamily& ShadowNode::getFamily() const {
   return *family_;
 }
