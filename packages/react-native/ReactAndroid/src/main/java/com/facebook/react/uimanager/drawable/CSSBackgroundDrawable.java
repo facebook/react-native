@@ -319,7 +319,7 @@ public class CSSBackgroundDrawable extends Drawable {
   public @Nullable Path getBorderBoxPath() {
     if (hasRoundedBorders()) {
       updatePath();
-      return Preconditions.checkNotNull(mOuterClipPathForBorderRadius);
+      return new Path(Preconditions.checkNotNull(mOuterClipPathForBorderRadius));
     }
 
     return null;
@@ -332,7 +332,7 @@ public class CSSBackgroundDrawable extends Drawable {
   public @Nullable Path getPaddingBoxPath() {
     if (hasRoundedBorders()) {
       updatePath();
-      return Preconditions.checkNotNull(mInnerClipPathForBorderRadius);
+      return new Path(Preconditions.checkNotNull(mInnerClipPathForBorderRadius));
     }
 
     return null;
@@ -356,7 +356,7 @@ public class CSSBackgroundDrawable extends Drawable {
     canvas.save();
 
     // Clip outer border
-    canvas.clipPath(Preconditions.checkNotNull(getBorderBoxPath()), Region.Op.INTERSECT);
+    canvas.clipPath(Preconditions.checkNotNull(mOuterClipPathForBorderRadius), Region.Op.INTERSECT);
 
     // Draws the View without its border first (with background color fill)
     int useColor = ColorUtils.setAlphaComponent(mColor, getOpacity());
@@ -415,7 +415,8 @@ public class CSSBackgroundDrawable extends Drawable {
         mPaint.setStyle(Paint.Style.FILL);
 
         // Clip inner border
-        canvas.clipPath(Preconditions.checkNotNull(getPaddingBoxPath()), Region.Op.DIFFERENCE);
+        canvas.clipPath(
+            Preconditions.checkNotNull(mInnerClipPathForBorderRadius), Region.Op.DIFFERENCE);
 
         final boolean isRTL = getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
         int colorStart = getBorderColor(Spacing.START);
