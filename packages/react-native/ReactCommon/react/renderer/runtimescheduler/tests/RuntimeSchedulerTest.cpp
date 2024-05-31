@@ -1021,6 +1021,52 @@ TEST_P(RuntimeSchedulerTest, modernTwoThreadsRequestAccessToTheRuntime) {
   EXPECT_EQ(stubQueue_->size(), 0);
 }
 
+TEST_P(RuntimeSchedulerTest, errorInTaskShouldNotStopMicrotasks) {
+  // Only for modern runtime scheduler
+  if (!GetParam()) {
+    return;
+  }
+
+  auto microtaskRan = false;
+  auto taskRan = false;
+
+  auto callback = createHostFunctionFromLambda([&](bool /* unused */) {
+    taskRan = true;
+
+    auto microtaskCallback = jsi::Function::createFromHostFunction(
+        *runtime_,
+        jsi::PropNameID::forUtf8(*runtime_, "microtask1"),
+        3,
+        [&](jsi::Runtime& /*unused*/,
+            const jsi::Value& /*unused*/,
+            const jsi::Value* /*arguments*/,
+            size_t /*unused*/) -> jsi::Value {
+          microtaskRan = true;
+          return jsi::Value::undefined();
+        });
+
+    runtime_->queueMicrotask(microtaskCallback);
+
+    throw jsi::JSError(*runtime_, "Test error");
+
+    return jsi::Value::undefined();
+  });
+
+  runtimeScheduler_->scheduleTask(
+      SchedulerPriority::NormalPriority, std::move(callback));
+
+  EXPECT_EQ(taskRan, false);
+  EXPECT_EQ(microtaskRan, false);
+  EXPECT_EQ(stubQueue_->size(), 1);
+
+  stubQueue_->tick();
+
+  EXPECT_EQ(taskRan, 1);
+  EXPECT_EQ(microtaskRan, 1);
+  EXPECT_EQ(stubQueue_->size(), 0);
+  EXPECT_EQ(stubErrorUtils_->getReportFatalCallCount(), 1);
+}
+
 INSTANTIATE_TEST_SUITE_P(
     UseModernRuntimeScheduler,
     RuntimeSchedulerTest,
