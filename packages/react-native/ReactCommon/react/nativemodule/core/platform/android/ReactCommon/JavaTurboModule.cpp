@@ -86,12 +86,17 @@ struct JNIArgs {
   std::vector<jobject> globalRefs_;
 };
 
+jsi::Value createJSRuntimeError(jsi::Runtime& runtime, jsi::Value&& message) {
+  return runtime.global()
+      .getPropertyAsFunction(runtime, "Error")
+      .call(runtime, std::move(message));
+}
+
 jsi::Value createJSRuntimeError(
     jsi::Runtime& runtime,
     const std::string& message) {
-  return runtime.global()
-      .getPropertyAsFunction(runtime, "Error")
-      .call(runtime, message);
+  return createJSRuntimeError(
+      runtime, jsi::String::createFromUtf8(runtime, message));
 }
 
 jsi::Value createRejectionError(jsi::Runtime& rt, const folly::dynamic& args) {
@@ -102,10 +107,8 @@ jsi::Value createRejectionError(jsi::Runtime& rt, const folly::dynamic& args) {
   react_native_assert(value.isObject() && "promise reject should return a map");
 
   const jsi::Object& valueAsObject = value.asObject(rt);
-
-  auto messageProperty = valueAsObject.getProperty(rt, "message");
   auto jsError =
-      createJSRuntimeError(rt, messageProperty.asString(rt).utf8(rt));
+      createJSRuntimeError(rt, valueAsObject.getProperty(rt, "message"));
 
   auto jsErrorAsObject = jsError.asObject(rt);
   auto propertyNames = valueAsObject.getPropertyNames(rt);
@@ -480,7 +483,8 @@ jsi::JSError convertThrowableToJSError(
 
   jsi::Object cause(runtime);
   auto name = throwable->getClass()->getCanonicalName()->toStdString();
-  auto message = throwable->getMessage()->toStdString();
+  auto messageStr = throwable->getMessage();
+  auto message = messageStr != nullptr ? messageStr->toStdString() : name;
   cause.setProperty(runtime, "name", name);
   cause.setProperty(runtime, "message", message);
   cause.setProperty(runtime, "stackElements", std::move(stackElements));
@@ -915,11 +919,12 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
       // JS Stack at the time when the promise is created.
       std::optional<std::string> jsInvocationStack;
       if (traceTurboModulePromiseRejections()) {
-        jsInvocationStack = createJSRuntimeError(runtime, "")
-                                .asObject(runtime)
-                                .getProperty(runtime, "stack")
-                                .toString(runtime)
-                                .utf8(runtime);
+        jsInvocationStack =
+            createJSRuntimeError(runtime, jsi::Value::undefined())
+                .asObject(runtime)
+                .getProperty(runtime, "stack")
+                .toString(runtime)
+                .utf8(runtime);
       }
 
       const char* moduleName = name_.c_str();
