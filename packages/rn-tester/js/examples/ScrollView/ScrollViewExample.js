@@ -425,6 +425,24 @@ const examples: Array<RNTesterModuleExample> = [
       return <AppendingList />;
     },
   },
+  {
+    name: 'clipToPaddingBox',
+    title: '<ScrollView> clip to padding box\n',
+    description:
+      'Children should be clipped to the padding box of the ScrollView',
+    render() {
+      return <ClippingExampleVertical />;
+    },
+  },
+  {
+    name: 'clipToPaddingBoxHorizontal',
+    title: '<ScrollView> clip to padding box (horizontal = true)\n',
+    description:
+      'Children should be clipped to the padding box of the horizontal ScrollView',
+    render() {
+      return <ClippingExampleHorizontal />;
+    },
+  },
 ];
 
 if (Platform.OS === 'ios') {
@@ -1276,6 +1294,35 @@ const BouncesExampleVertical = () => {
     </View>
   );
 };
+
+function ClippingExampleVertical() {
+  return (
+    <ScrollView
+      testID="clipping_example_vertical"
+      style={[
+        styles.scrollView,
+        {height: 200, borderRadius: 100, borderColor: 'red', borderWidth: 5},
+      ]}
+      nestedScrollEnabled={true}>
+      {ITEMS.map(createItemRow)}
+    </ScrollView>
+  );
+}
+
+function ClippingExampleHorizontal() {
+  return (
+    <ScrollView
+      testID="clipping_example_horizontal"
+      horizontal={true}
+      style={[
+        styles.scrollView,
+        {height: 200, borderRadius: 100, borderColor: 'red', borderWidth: 5},
+      ]}
+      nestedScrollEnabled={true}>
+      {ITEMS.map(createItemRow)}
+    </ScrollView>
+  );
+}
 
 class Item extends React.PureComponent<{|
   msg?: string,
