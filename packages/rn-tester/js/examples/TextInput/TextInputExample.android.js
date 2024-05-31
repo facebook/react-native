@@ -522,6 +522,19 @@ const examples: Array<RNTesterModuleExample> = [
       return <ToggleDefaultPaddingExample />;
     },
   },
+  {
+    title: 'TextInput with font variation settings',
+    render: function (): React.Node {
+      return (
+        <ExampleTextInput
+          style={{
+            fontFamily: 'inter',
+            fontVariationSettings: "'wght' 800, 'slnt' -10",
+          }}
+        />
+      );
+    },
+  },
 ];
 
 module.exports = ({

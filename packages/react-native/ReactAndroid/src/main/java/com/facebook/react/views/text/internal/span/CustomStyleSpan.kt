@@ -79,7 +79,7 @@ public class CustomStyleSpan(
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
           try {
             fontVariationSettings = fontVariationSettingsParam
-          } catch (e: Exception) {
+          } catch (e: IllegalArgumentException) {
             // Do nothing
           }
         }
