@@ -5563,9 +5563,10 @@ public abstract interface class com/facebook/react/uimanager/debug/NotThreadSafe
 
 public class com/facebook/react/uimanager/drawable/CSSBackgroundDrawable : android/graphics/drawable/Drawable {
 	public fun <init> (Landroid/content/Context;)V
-	public fun borderBoxPath ()Landroid/graphics/Path;
 	public fun draw (Landroid/graphics/Canvas;)V
 	public fun getAlpha ()I
+	public fun getBorderBoxPath ()Landroid/graphics/Path;
+	public fun getBorderBoxRect ()Landroid/graphics/RectF;
 	public fun getBorderColor (I)I
 	public fun getBorderRadius ()Lcom/facebook/react/uimanager/style/BorderRadiusStyle;
 	public fun getBorderWidthOrDefaultTo (FI)F
@@ -5575,9 +5576,10 @@ public class com/facebook/react/uimanager/drawable/CSSBackgroundDrawable : andro
 	public fun getLayoutDirection ()I
 	public fun getOpacity ()I
 	public fun getOutline (Landroid/graphics/Outline;)V
+	public fun getPaddingBoxPath ()Landroid/graphics/Path;
+	public fun getPaddingBoxRect ()Landroid/graphics/RectF;
 	public fun hasRoundedBorders ()Z
 	protected fun onBoundsChange (Landroid/graphics/Rect;)V
-	public fun paddingBoxPath ()Landroid/graphics/Path;
 	public fun setAlpha (I)V
 	public fun setBorderColor (IFF)V
 	public fun setBorderRadius (Lcom/facebook/react/uimanager/style/BorderRadiusProp;Lcom/facebook/react/uimanager/LengthPercentage;)V
