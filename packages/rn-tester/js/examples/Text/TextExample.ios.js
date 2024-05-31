@@ -1329,6 +1329,29 @@ const examples = [
       );
     },
   },
+  {
+    title: 'Clipping',
+    name: 'clipping',
+    render: function (): React.Node {
+      return (
+        <View>
+          <Text
+            testID="text-clipping"
+            style={{
+              borderRadius: 50,
+              padding: 0,
+              borderColor: 'red',
+              borderWidth: 5,
+              overflow: 'hidden',
+              fontSize: 16,
+            }}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </Text>
+        </View>
+      );
+    },
+  },
   TextInlineViewsExample,
 ];
 

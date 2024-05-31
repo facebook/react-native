@@ -84,7 +84,6 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   private final OnScrollDispatchHelper mOnScrollDispatchHelper = new OnScrollDispatchHelper();
   private final @Nullable OverScroller mScroller;
   private final VelocityHelper mVelocityHelper = new VelocityHelper();
-  private final Rect mRect = new Rect();
   private final Rect mOverflowInset = new Rect();
 
   private boolean mActivelyScrolling;
@@ -145,6 +144,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
 
     setOnHierarchyChangeListener(this);
     setClipChildren(false);
+    mReactBackgroundManager.setOverflow(ViewProps.SCROLL);
   }
 
   public boolean getScrollEnabled() {
@@ -273,7 +273,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
 
   public void setOverflow(@Nullable String overflow) {
     mOverflow = overflow;
-    invalidate();
+    mReactBackgroundManager.setOverflow(overflow == null ? ViewProps.SCROLL : overflow);
   }
 
   public void setMaintainVisibleContentPosition(
@@ -306,14 +306,8 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   }
 
   @Override
-  protected void onDraw(Canvas canvas) {
-    if (DEBUG_MODE) {
-      FLog.i(TAG, "onDraw[%d]", getId());
-    }
-    getDrawingRect(mRect);
-    if (!ViewProps.VISIBLE.equals(mOverflow)) {
-      canvas.clipRect(mRect);
-    }
+  public void onDraw(Canvas canvas) {
+    mReactBackgroundManager.maybeClipToPaddingBox(canvas);
     super.onDraw(canvas);
   }
 

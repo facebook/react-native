@@ -10,6 +10,7 @@ package com.facebook.react.views.textinput;
 import static com.facebook.react.uimanager.UIManagerHelper.getReactContext;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -1224,6 +1225,16 @@ public class ReactEditText extends AppCompatEditText {
 
   void setEventDispatcher(@Nullable EventDispatcher eventDispatcher) {
     mEventDispatcher = eventDispatcher;
+  }
+
+  public void setOverflow(@Nullable String overflow) {
+    mReactBackgroundManager.setOverflow(overflow);
+  }
+
+  @Override
+  public void onDraw(Canvas canvas) {
+    mReactBackgroundManager.maybeClipToPaddingBox(canvas);
+    super.onDraw(canvas);
   }
 
   /**
