@@ -309,6 +309,30 @@ bool ShadowNode::progressStateIfNecessary() {
   return false;
 }
 
+void ShadowNode::setRuntimeShadowNodeReference(
+    ShadowNodeWrapper* runtimeShadowNodeReference) const {
+  runtimeShadowNodeReference_ = runtimeShadowNodeReference;
+}
+
+void ShadowNode::transferRuntimeShadowNodeReference(
+    const Shared& destinationShadowNode) const {
+  destinationShadowNode->runtimeShadowNodeReference_ =
+      runtimeShadowNodeReference_;
+
+  if (runtimeShadowNodeReference_ != nullptr) {
+    runtimeShadowNodeReference_->shadowNode = destinationShadowNode;
+  }
+}
+
+void ShadowNode::transferRuntimeShadowNodeReference(
+    const Shared& destinationShadowNode,
+    const ShadowNodeFragment& fragment) const {
+  if (fragment.runtimeShadowNodeReference &&
+      ReactNativeFeatureFlags::useRuntimeShadowNodeReferenceUpdate()) {
+    transferRuntimeShadowNodeReference(destinationShadowNode);
+  }
+}
+
 const ShadowNodeFamily& ShadowNode::getFamily() const {
   return *family_;
 }
