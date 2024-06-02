@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b8ba23ac6a30ed059f6bb5f6b7994c9f>>
+ * @generated SignedSource<<19fe3642ec462c23d361e0f036da887a>>
  */
 
 /**
@@ -91,6 +91,9 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool useRuntimeShadowNodeReferenceUpdate(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool useRuntimeShadowNodeReferenceUpdateOnLayout(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool useStateAlignmentMechanism(

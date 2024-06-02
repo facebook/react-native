@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a704a9fb56393c9ffaef917aacc26421>>
+ * @generated SignedSource<<5f27dd10824706ea065dc0340d46c409>>
  */
 
 /**
@@ -407,6 +407,24 @@ bool ReactNativeFeatureFlagsAccessor::useRuntimeShadowNodeReferenceUpdate() {
   return flagValue.value();
 }
 
+bool ReactNativeFeatureFlagsAccessor::useRuntimeShadowNodeReferenceUpdateOnLayout() {
+  auto flagValue = useRuntimeShadowNodeReferenceUpdateOnLayout_.load();
+
+  if (!flagValue.has_value()) {
+    // This block is not exclusive but it is not necessary.
+    // If multiple threads try to initialize the feature flag, we would only
+    // be accessing the provider multiple times but the end state of this
+    // instance and the returned flag value would be the same.
+
+    markFlagAsAccessed(21, "useRuntimeShadowNodeReferenceUpdateOnLayout");
+
+    flagValue = currentProvider_->useRuntimeShadowNodeReferenceUpdateOnLayout();
+    useRuntimeShadowNodeReferenceUpdateOnLayout_ = flagValue;
+  }
+
+  return flagValue.value();
+}
+
 bool ReactNativeFeatureFlagsAccessor::useStateAlignmentMechanism() {
   auto flagValue = useStateAlignmentMechanism_.load();
 
@@ -416,7 +434,7 @@ bool ReactNativeFeatureFlagsAccessor::useStateAlignmentMechanism() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(21, "useStateAlignmentMechanism");
+    markFlagAsAccessed(22, "useStateAlignmentMechanism");
 
     flagValue = currentProvider_->useStateAlignmentMechanism();
     useStateAlignmentMechanism_ = flagValue;

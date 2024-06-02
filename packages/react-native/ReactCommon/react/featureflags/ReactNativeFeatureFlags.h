@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<977b87c9478cea28cbb1aff61eef1fa4>>
+ * @generated SignedSource<<c4d88f9d9b8c6d5ca917d1ba9e53d9e8>>
  */
 
 /**
@@ -141,6 +141,11 @@ class ReactNativeFeatureFlags {
    * When enabled, cloning shadow nodes within react native will update the reference held by the current JS fiber tree.
    */
   RN_EXPORT static bool useRuntimeShadowNodeReferenceUpdate();
+
+  /**
+   * When enabled, cloning shadow nodes during layout will update the reference held by the current JS fiber tree.
+   */
+  RN_EXPORT static bool useRuntimeShadowNodeReferenceUpdateOnLayout();
 
   /**
    * When enabled, it uses optimised state reconciliation algorithm.
