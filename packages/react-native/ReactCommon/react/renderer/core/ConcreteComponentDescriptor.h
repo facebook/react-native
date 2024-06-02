@@ -78,6 +78,7 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
       const ShadowNode& sourceShadowNode,
       const ShadowNodeFragment& fragment) const override {
     auto shadowNode = std::make_shared<ShadowNodeT>(sourceShadowNode, fragment);
+    sourceShadowNode.transferRuntimeShadowNodeReference(shadowNode, fragment);
 
     adopt(*shadowNode);
     return shadowNode;

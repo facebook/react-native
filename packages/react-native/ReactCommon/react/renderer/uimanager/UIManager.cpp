@@ -153,6 +153,7 @@ std::shared_ptr<ShadowNode> UIManager::cloneNode(
       {
           .props = props,
           .children = children,
+          .runtimeShadowNodeReference = false,
       });
 
   return clonedShadowNode;
