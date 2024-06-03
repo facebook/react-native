@@ -255,7 +255,7 @@ static void sliceChildShadowNodeViewPairsRecursively(
     if (areChildrenFlattened) {
       storedOrigin = origin;
     }
-    if (shadowNodeIsConcrete(shadowNode)){
+    if (shadowNode.getTraits().check(ShadowNodeTraits::Trait::FormsView)){
       unflattenedParentTag = shadowNode.getTag();
     }
     scope.push_back(
