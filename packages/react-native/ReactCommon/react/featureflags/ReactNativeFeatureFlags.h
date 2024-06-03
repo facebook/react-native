@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a75464f590c4f55e64ad2e33cfc52989>>
+ * @generated SignedSource<<977b87c9478cea28cbb1aff61eef1fa4>>
  */
 
 /**
@@ -136,6 +136,11 @@ class ReactNativeFeatureFlags {
    * When enabled, the native view configs are used in bridgeless mode.
    */
   RN_EXPORT static bool useNativeViewConfigsInBridgelessMode();
+
+  /**
+   * When enabled, cloning shadow nodes within react native will update the reference held by the current JS fiber tree.
+   */
+  RN_EXPORT static bool useRuntimeShadowNodeReferenceUpdate();
 
   /**
    * When enabled, it uses optimised state reconciliation algorithm.

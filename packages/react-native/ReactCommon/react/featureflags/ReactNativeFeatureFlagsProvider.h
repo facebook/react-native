@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a7cdc61b76e5db55c4fc54c0d93f426c>>
+ * @generated SignedSource<<6a05970506e696333c7480f6cf094642>>
  */
 
 /**
@@ -45,6 +45,7 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool setAndroidLayoutDirection() = 0;
   virtual bool useModernRuntimeScheduler() = 0;
   virtual bool useNativeViewConfigsInBridgelessMode() = 0;
+  virtual bool useRuntimeShadowNodeReferenceUpdate() = 0;
   virtual bool useStateAlignmentMechanism() = 0;
 };
 
