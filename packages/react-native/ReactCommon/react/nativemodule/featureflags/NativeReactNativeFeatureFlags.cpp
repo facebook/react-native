@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1fdca69483db9e0fc9f9ab7a2cd9ff85>>
+ * @generated SignedSource<<4c02b68cc3b46ec214fe4552f136c5f0>>
  */
 
 /**
@@ -47,9 +47,9 @@ bool NativeReactNativeFeatureFlags::allowCollapsableChildren(
   return ReactNativeFeatureFlags::allowCollapsableChildren();
 }
 
-bool NativeReactNativeFeatureFlags::androidEnablePendingFabricTransactions(
+bool NativeReactNativeFeatureFlags::allowRecursiveCommitsWithSynchronousMountOnAndroid(
     jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::androidEnablePendingFabricTransactions();
+  return ReactNativeFeatureFlags::allowRecursiveCommitsWithSynchronousMountOnAndroid();
 }
 
 bool NativeReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop(
@@ -102,14 +102,14 @@ bool NativeReactNativeFeatureFlags::forceBatchingMountItemsOnAndroid(
   return ReactNativeFeatureFlags::forceBatchingMountItemsOnAndroid();
 }
 
-bool NativeReactNativeFeatureFlags::inspectorEnableCxxInspectorPackagerConnection(
+bool NativeReactNativeFeatureFlags::fuseboxEnabledDebug(
     jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::inspectorEnableCxxInspectorPackagerConnection();
+  return ReactNativeFeatureFlags::fuseboxEnabledDebug();
 }
 
-bool NativeReactNativeFeatureFlags::inspectorEnableModernCDPRegistry(
+bool NativeReactNativeFeatureFlags::fuseboxEnabledRelease(
     jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::inspectorEnableModernCDPRegistry();
+  return ReactNativeFeatureFlags::fuseboxEnabledRelease();
 }
 
 bool NativeReactNativeFeatureFlags::lazyAnimationCallbacks(

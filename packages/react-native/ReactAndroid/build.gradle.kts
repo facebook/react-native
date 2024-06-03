@@ -154,6 +154,8 @@ val preparePrefab by
               PrefabPreprocessingEntry(
                   "fabricjni", Pair("src/main/jni/react/fabric", "react/fabric/")),
               PrefabPreprocessingEntry(
+                  "mapbufferjni", Pair("src/main/jni/react/mapbuffer", "react/mapbuffer/")),
+              PrefabPreprocessingEntry(
                   "react_render_mapbuffer",
                   Pair("../ReactCommon/react/renderer/mapbuffer/", "react/renderer/mapbuffer/")),
               PrefabPreprocessingEntry(
@@ -575,6 +577,7 @@ android {
             "jsi",
             "glog",
             "fabricjni",
+            "mapbufferjni",
             "react_render_mapbuffer",
             "react_render_textlayoutmanager",
             "yoga",
@@ -702,6 +705,7 @@ android {
     create("jsi") { headers = File(prefabHeadersDir, "jsi").absolutePath }
     create("glog") { headers = File(prefabHeadersDir, "glog").absolutePath }
     create("fabricjni") { headers = File(prefabHeadersDir, "fabricjni").absolutePath }
+    create("mapbufferjni") { headers = File(prefabHeadersDir, "mapbufferjni").absolutePath }
     create("react_render_mapbuffer") {
       headers = File(prefabHeadersDir, "react_render_mapbuffer").absolutePath
     }

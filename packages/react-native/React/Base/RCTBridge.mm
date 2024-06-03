@@ -327,7 +327,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 {
 #if RCT_ENABLE_INSPECTOR
   auto &inspectorFlags = facebook::react::jsinspector_modern::InspectorFlags::getInstance();
-  if (!inspectorFlags.getEnableModernCDPRegistry()) {
+  if (!inspectorFlags.getFuseboxEnabled()) {
     // Disable debugger to resume the JsVM & avoid thread locks while reloading
     [RCTInspectorDevServerHelper disableDebugger];
   }
@@ -440,7 +440,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   [_performanceLogger markStartForTag:RCTPLTTI];
 
   auto &inspectorFlags = facebook::react::jsinspector_modern::InspectorFlags::getInstance();
-  if (inspectorFlags.getEnableModernCDPRegistry() && !_inspectorPageId.has_value()) {
+  if (inspectorFlags.getFuseboxEnabled() && !_inspectorPageId.has_value()) {
     _inspectorTarget =
         facebook::react::jsinspector_modern::HostTarget::create(*_inspectorHostDelegate, [](auto callback) {
           RCTExecuteOnMainQueue(^{

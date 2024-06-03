@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2bfa4670757aa340c88ae8ff57270308>>
+ * @generated SignedSource<<5c78cdf7676d56996ea174f08bf4b8a6>>
  */
 
 /**
@@ -35,7 +35,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return true;
   }
 
-  bool androidEnablePendingFabricTransactions() override {
+  bool allowRecursiveCommitsWithSynchronousMountOnAndroid() override {
     return false;
   }
 
@@ -79,11 +79,11 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool inspectorEnableCxxInspectorPackagerConnection() override {
+  bool fuseboxEnabledDebug() override {
     return false;
   }
 
-  bool inspectorEnableModernCDPRegistry() override {
+  bool fuseboxEnabledRelease() override {
     return false;
   }
 
@@ -92,7 +92,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool preventDoubleTextMeasure() override {
-    return false;
+    return true;
   }
 
   bool setAndroidLayoutDirection() override {

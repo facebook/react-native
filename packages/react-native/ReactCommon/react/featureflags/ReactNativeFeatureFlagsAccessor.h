@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7d1c4c90d5e1feb0015376f20943ee51>>
+ * @generated SignedSource<<f4950ca8555466a584af00c972a38f1d>>
  */
 
 /**
@@ -33,7 +33,7 @@ class ReactNativeFeatureFlagsAccessor {
 
   bool commonTestFlag();
   bool allowCollapsableChildren();
-  bool androidEnablePendingFabricTransactions();
+  bool allowRecursiveCommitsWithSynchronousMountOnAndroid();
   bool batchRenderingUpdatesInEventLoop();
   bool destroyFabricSurfacesInReactInstanceManager();
   bool enableBackgroundExecutor();
@@ -44,8 +44,8 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableUIConsistency();
   bool fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak();
   bool forceBatchingMountItemsOnAndroid();
-  bool inspectorEnableCxxInspectorPackagerConnection();
-  bool inspectorEnableModernCDPRegistry();
+  bool fuseboxEnabledDebug();
+  bool fuseboxEnabledRelease();
   bool lazyAnimationCallbacks();
   bool preventDoubleTextMeasure();
   bool setAndroidLayoutDirection();
@@ -66,7 +66,7 @@ class ReactNativeFeatureFlagsAccessor {
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> allowCollapsableChildren_;
-  std::atomic<std::optional<bool>> androidEnablePendingFabricTransactions_;
+  std::atomic<std::optional<bool>> allowRecursiveCommitsWithSynchronousMountOnAndroid_;
   std::atomic<std::optional<bool>> batchRenderingUpdatesInEventLoop_;
   std::atomic<std::optional<bool>> destroyFabricSurfacesInReactInstanceManager_;
   std::atomic<std::optional<bool>> enableBackgroundExecutor_;
@@ -77,8 +77,8 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableUIConsistency_;
   std::atomic<std::optional<bool>> fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak_;
   std::atomic<std::optional<bool>> forceBatchingMountItemsOnAndroid_;
-  std::atomic<std::optional<bool>> inspectorEnableCxxInspectorPackagerConnection_;
-  std::atomic<std::optional<bool>> inspectorEnableModernCDPRegistry_;
+  std::atomic<std::optional<bool>> fuseboxEnabledDebug_;
+  std::atomic<std::optional<bool>> fuseboxEnabledRelease_;
   std::atomic<std::optional<bool>> lazyAnimationCallbacks_;
   std::atomic<std::optional<bool>> preventDoubleTextMeasure_;
   std::atomic<std::optional<bool>> setAndroidLayoutDirection_;

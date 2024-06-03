@@ -75,7 +75,8 @@ final class IntBufferBatchMountItem implements BatchMountItem {
   }
 
   private void beginMarkers(String reason) {
-    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricUIManager::" + reason);
+    Systrace.beginSection(
+        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "IntBufferBatchMountItem::" + reason);
 
     if (mCommitNumber > 0) {
       ReactMarker.logFabricMarker(

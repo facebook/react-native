@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e63ccfcb6e8d1db840cefb3d0a6df6cd>>
+ * @generated SignedSource<<68ec2c046868a2cb1d2d88e4fdd9d993>>
  */
 
 /**
@@ -27,7 +27,7 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun allowCollapsableChildren(): Boolean
 
-  @DoNotStrip public fun androidEnablePendingFabricTransactions(): Boolean
+  @DoNotStrip public fun allowRecursiveCommitsWithSynchronousMountOnAndroid(): Boolean
 
   @DoNotStrip public fun batchRenderingUpdatesInEventLoop(): Boolean
 
@@ -49,9 +49,9 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun forceBatchingMountItemsOnAndroid(): Boolean
 
-  @DoNotStrip public fun inspectorEnableCxxInspectorPackagerConnection(): Boolean
+  @DoNotStrip public fun fuseboxEnabledDebug(): Boolean
 
-  @DoNotStrip public fun inspectorEnableModernCDPRegistry(): Boolean
+  @DoNotStrip public fun fuseboxEnabledRelease(): Boolean
 
   @DoNotStrip public fun lazyAnimationCallbacks(): Boolean
 

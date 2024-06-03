@@ -222,9 +222,20 @@ public class SurfaceMountingManager {
           if (rootView instanceof ReactRoot) {
             ((ReactRoot) rootView).setRootViewTag(mSurfaceId);
           }
-          mRootViewAttached = true;
+
+          if (!ReactNativeFeatureFlags.forceBatchingMountItemsOnAndroid()) {
+            mRootViewAttached = true;
+          }
 
           executeMountItemsOnViewAttach();
+
+          if (ReactNativeFeatureFlags.forceBatchingMountItemsOnAndroid()) {
+            // By doing this after `executeMountItemsOnViewAttach`, we ensure
+            // that any operations scheduled while processing this queue are
+            // also added to the queue, instead of being processed immediately
+            // through the queue in `MountItemDispatcher`.
+            mRootViewAttached = true;
+          }
         };
 
     if (UiThreadUtil.isOnUiThread()) {

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<71ea09d31186aea96ff207b1015f155e>>
+ * @generated SignedSource<<2a748a0a1b92cb0514fec83668ed8b0f>>
  */
 
 /**
@@ -29,8 +29,8 @@ bool ReactNativeFeatureFlags::allowCollapsableChildren() {
   return getAccessor().allowCollapsableChildren();
 }
 
-bool ReactNativeFeatureFlags::androidEnablePendingFabricTransactions() {
-  return getAccessor().androidEnablePendingFabricTransactions();
+bool ReactNativeFeatureFlags::allowRecursiveCommitsWithSynchronousMountOnAndroid() {
+  return getAccessor().allowRecursiveCommitsWithSynchronousMountOnAndroid();
 }
 
 bool ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop() {
@@ -73,12 +73,12 @@ bool ReactNativeFeatureFlags::forceBatchingMountItemsOnAndroid() {
   return getAccessor().forceBatchingMountItemsOnAndroid();
 }
 
-bool ReactNativeFeatureFlags::inspectorEnableCxxInspectorPackagerConnection() {
-  return getAccessor().inspectorEnableCxxInspectorPackagerConnection();
+bool ReactNativeFeatureFlags::fuseboxEnabledDebug() {
+  return getAccessor().fuseboxEnabledDebug();
 }
 
-bool ReactNativeFeatureFlags::inspectorEnableModernCDPRegistry() {
-  return getAccessor().inspectorEnableModernCDPRegistry();
+bool ReactNativeFeatureFlags::fuseboxEnabledRelease() {
+  return getAccessor().fuseboxEnabledRelease();
 }
 
 bool ReactNativeFeatureFlags::lazyAnimationCallbacks() {

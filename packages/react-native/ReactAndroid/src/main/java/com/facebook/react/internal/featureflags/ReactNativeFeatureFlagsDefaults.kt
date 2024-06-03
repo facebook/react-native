@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4f50dab251c41380a14506975355e49d>>
+ * @generated SignedSource<<c74b5434945f63cf42551b188b9f7a48>>
  */
 
 /**
@@ -27,7 +27,7 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun allowCollapsableChildren(): Boolean = true
 
-  override fun androidEnablePendingFabricTransactions(): Boolean = false
+  override fun allowRecursiveCommitsWithSynchronousMountOnAndroid(): Boolean = false
 
   override fun batchRenderingUpdatesInEventLoop(): Boolean = false
 
@@ -49,13 +49,13 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun forceBatchingMountItemsOnAndroid(): Boolean = false
 
-  override fun inspectorEnableCxxInspectorPackagerConnection(): Boolean = false
+  override fun fuseboxEnabledDebug(): Boolean = false
 
-  override fun inspectorEnableModernCDPRegistry(): Boolean = false
+  override fun fuseboxEnabledRelease(): Boolean = false
 
   override fun lazyAnimationCallbacks(): Boolean = false
 
-  override fun preventDoubleTextMeasure(): Boolean = false
+  override fun preventDoubleTextMeasure(): Boolean = true
 
   override fun setAndroidLayoutDirection(): Boolean = false
 

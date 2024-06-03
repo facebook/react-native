@@ -1665,7 +1665,7 @@ public class ReactHostImpl implements ReactHost {
   }
 
   private @Nullable ReactHostInspectorTarget getOrCreateReactHostInspectorTarget() {
-    if (mReactHostInspectorTarget == null && InspectorFlags.getEnableModernCDPRegistry()) {
+    if (mReactHostInspectorTarget == null && InspectorFlags.getFuseboxEnabled()) {
       mReactHostInspectorTarget = new ReactHostInspectorTarget(this);
     }
 

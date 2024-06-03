@@ -150,7 +150,7 @@ std::unique_ptr<JSRuntime> HermesInstance::createJSRuntime(
 
 #ifdef HERMES_ENABLE_DEBUGGER
   auto& inspectorFlags = jsinspector_modern::InspectorFlags::getInstance();
-  if (!inspectorFlags.getEnableModernCDPRegistry()) {
+  if (!inspectorFlags.getFuseboxEnabled()) {
     std::unique_ptr<DecoratedRuntime> decoratedRuntime =
         std::make_unique<DecoratedRuntime>(
             std::move(hermesRuntime), msgQueueThread);

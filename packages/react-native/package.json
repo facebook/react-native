@@ -125,6 +125,7 @@
     "chalk": "^4.0.0",
     "event-target-shim": "^5.0.1",
     "flow-enums-runtime": "^0.0.6",
+    "glob": "^7.1.1",
     "invariant": "^2.2.4",
     "jest-environment-node": "^29.6.3",
     "jsc-android": "^250231.0.0",

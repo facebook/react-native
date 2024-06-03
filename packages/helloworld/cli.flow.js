@@ -24,7 +24,7 @@ import {app, apple} from '@react-native/core-cli-utils';
 import chalk from 'chalk';
 import {program} from 'commander';
 import {readFileSync} from 'fs';
-import Listr from 'listr';
+import {Listr} from 'listr2';
 import path from 'path';
 
 program.version(JSON.parse(readFileSync('./package.json', 'utf8')).version);
@@ -148,16 +148,10 @@ build
           outputSourceMap: settings.bundleResourceDir,
           outputBundle: binaryBundlePath,
           dev: true,
-          target: 'hermes',
+          jsvm: 'hermes',
           hermes: {
-            hermesc: path.join(
-              cwd.ios,
-              'Pods',
-              'hermes-engine',
-              'build_host_hermesc',
-              'bin',
-              'hermesc',
-            ),
+            path: path.join(cwd.ios, 'Pods/hermes-engine'),
+            hermesc: 'build_host_hermesc/bin/hermesc',
           },
         }),
       );

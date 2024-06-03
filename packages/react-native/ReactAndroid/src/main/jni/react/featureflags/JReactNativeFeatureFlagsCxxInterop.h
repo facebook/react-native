@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d2f016e3a0648f6fd0b6c1f45b9a1f62>>
+ * @generated SignedSource<<4d557dc4399d46888205165ee7ae4ab2>>
  */
 
 /**
@@ -36,7 +36,7 @@ class JReactNativeFeatureFlagsCxxInterop
   static bool allowCollapsableChildren(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
-  static bool androidEnablePendingFabricTransactions(
+  static bool allowRecursiveCommitsWithSynchronousMountOnAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool batchRenderingUpdatesInEventLoop(
@@ -69,10 +69,10 @@ class JReactNativeFeatureFlagsCxxInterop
   static bool forceBatchingMountItemsOnAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
-  static bool inspectorEnableCxxInspectorPackagerConnection(
+  static bool fuseboxEnabledDebug(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
-  static bool inspectorEnableModernCDPRegistry(
+  static bool fuseboxEnabledRelease(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool lazyAnimationCallbacks(

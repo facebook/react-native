@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<00a695402781a9f3c45ba0594a785b57>>
+ * @generated SignedSource<<3b94757d58e6adb2bccf4ddfb86e2080>>
  */
 
 /**
@@ -26,7 +26,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
 
   private var commonTestFlagCache: Boolean? = null
   private var allowCollapsableChildrenCache: Boolean? = null
-  private var androidEnablePendingFabricTransactionsCache: Boolean? = null
+  private var allowRecursiveCommitsWithSynchronousMountOnAndroidCache: Boolean? = null
   private var batchRenderingUpdatesInEventLoopCache: Boolean? = null
   private var destroyFabricSurfacesInReactInstanceManagerCache: Boolean? = null
   private var enableBackgroundExecutorCache: Boolean? = null
@@ -37,8 +37,8 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var enableUIConsistencyCache: Boolean? = null
   private var fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeakCache: Boolean? = null
   private var forceBatchingMountItemsOnAndroidCache: Boolean? = null
-  private var inspectorEnableCxxInspectorPackagerConnectionCache: Boolean? = null
-  private var inspectorEnableModernCDPRegistryCache: Boolean? = null
+  private var fuseboxEnabledDebugCache: Boolean? = null
+  private var fuseboxEnabledReleaseCache: Boolean? = null
   private var lazyAnimationCallbacksCache: Boolean? = null
   private var preventDoubleTextMeasureCache: Boolean? = null
   private var setAndroidLayoutDirectionCache: Boolean? = null
@@ -66,12 +66,12 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
     return cached
   }
 
-  override fun androidEnablePendingFabricTransactions(): Boolean {
-    var cached = androidEnablePendingFabricTransactionsCache
+  override fun allowRecursiveCommitsWithSynchronousMountOnAndroid(): Boolean {
+    var cached = allowRecursiveCommitsWithSynchronousMountOnAndroidCache
     if (cached == null) {
-      cached = currentProvider.androidEnablePendingFabricTransactions()
-      accessedFeatureFlags.add("androidEnablePendingFabricTransactions")
-      androidEnablePendingFabricTransactionsCache = cached
+      cached = currentProvider.allowRecursiveCommitsWithSynchronousMountOnAndroid()
+      accessedFeatureFlags.add("allowRecursiveCommitsWithSynchronousMountOnAndroid")
+      allowRecursiveCommitsWithSynchronousMountOnAndroidCache = cached
     }
     return cached
   }
@@ -176,22 +176,22 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
     return cached
   }
 
-  override fun inspectorEnableCxxInspectorPackagerConnection(): Boolean {
-    var cached = inspectorEnableCxxInspectorPackagerConnectionCache
+  override fun fuseboxEnabledDebug(): Boolean {
+    var cached = fuseboxEnabledDebugCache
     if (cached == null) {
-      cached = currentProvider.inspectorEnableCxxInspectorPackagerConnection()
-      accessedFeatureFlags.add("inspectorEnableCxxInspectorPackagerConnection")
-      inspectorEnableCxxInspectorPackagerConnectionCache = cached
+      cached = currentProvider.fuseboxEnabledDebug()
+      accessedFeatureFlags.add("fuseboxEnabledDebug")
+      fuseboxEnabledDebugCache = cached
     }
     return cached
   }
 
-  override fun inspectorEnableModernCDPRegistry(): Boolean {
-    var cached = inspectorEnableModernCDPRegistryCache
+  override fun fuseboxEnabledRelease(): Boolean {
+    var cached = fuseboxEnabledReleaseCache
     if (cached == null) {
-      cached = currentProvider.inspectorEnableModernCDPRegistry()
-      accessedFeatureFlags.add("inspectorEnableModernCDPRegistry")
-      inspectorEnableModernCDPRegistryCache = cached
+      cached = currentProvider.fuseboxEnabledRelease()
+      accessedFeatureFlags.add("fuseboxEnabledRelease")
+      fuseboxEnabledReleaseCache = cached
     }
     return cached
   }

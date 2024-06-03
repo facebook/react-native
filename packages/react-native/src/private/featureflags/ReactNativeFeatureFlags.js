@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<20c3c50d2124fbfc7bbe434c940ce3bf>>
+ * @generated SignedSource<<1cf3f0841a0523baddea551747c425ca>>
  * @flow strict-local
  */
 
@@ -42,7 +42,7 @@ export type ReactNativeFeatureFlags = {
   ...ReactNativeFeatureFlagsJsOnly,
   commonTestFlag: Getter<boolean>,
   allowCollapsableChildren: Getter<boolean>,
-  androidEnablePendingFabricTransactions: Getter<boolean>,
+  allowRecursiveCommitsWithSynchronousMountOnAndroid: Getter<boolean>,
   batchRenderingUpdatesInEventLoop: Getter<boolean>,
   destroyFabricSurfacesInReactInstanceManager: Getter<boolean>,
   enableBackgroundExecutor: Getter<boolean>,
@@ -53,8 +53,8 @@ export type ReactNativeFeatureFlags = {
   enableUIConsistency: Getter<boolean>,
   fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak: Getter<boolean>,
   forceBatchingMountItemsOnAndroid: Getter<boolean>,
-  inspectorEnableCxxInspectorPackagerConnection: Getter<boolean>,
-  inspectorEnableModernCDPRegistry: Getter<boolean>,
+  fuseboxEnabledDebug: Getter<boolean>,
+  fuseboxEnabledRelease: Getter<boolean>,
   lazyAnimationCallbacks: Getter<boolean>,
   preventDoubleTextMeasure: Getter<boolean>,
   setAndroidLayoutDirection: Getter<boolean>,
@@ -112,9 +112,9 @@ export const commonTestFlag: Getter<boolean> = createNativeFlagGetter('commonTes
  */
 export const allowCollapsableChildren: Getter<boolean> = createNativeFlagGetter('allowCollapsableChildren', true);
 /**
- * To be used with batchRenderingUpdatesInEventLoop. When enbled, the Android mounting layer will concatenate pending transactions to ensure they're applied atomatically
+ * Adds support for recursively processing commits that mount synchronously (Android only).
  */
-export const androidEnablePendingFabricTransactions: Getter<boolean> = createNativeFlagGetter('androidEnablePendingFabricTransactions', false);
+export const allowRecursiveCommitsWithSynchronousMountOnAndroid: Getter<boolean> = createNativeFlagGetter('allowRecursiveCommitsWithSynchronousMountOnAndroid', false);
 /**
  * When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.
  */
@@ -156,13 +156,13 @@ export const fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak: Getter<boolea
  */
 export const forceBatchingMountItemsOnAndroid: Getter<boolean> = createNativeFlagGetter('forceBatchingMountItemsOnAndroid', false);
 /**
- * Flag determining if the C++ implementation of InspectorPackagerConnection should be used instead of the per-platform one. This flag is global and should not be changed across React Host lifetimes.
+ * Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled in debug builds. This flag is global and should not be changed across React Host lifetimes.
  */
-export const inspectorEnableCxxInspectorPackagerConnection: Getter<boolean> = createNativeFlagGetter('inspectorEnableCxxInspectorPackagerConnection', false);
+export const fuseboxEnabledDebug: Getter<boolean> = createNativeFlagGetter('fuseboxEnabledDebug', false);
 /**
- * Flag determining if the modern CDP backend should be enabled. This flag is global and should not be changed across React Host lifetimes.
+ * Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled in release builds. This flag is global and should not be changed across React Host lifetimes.
  */
-export const inspectorEnableModernCDPRegistry: Getter<boolean> = createNativeFlagGetter('inspectorEnableModernCDPRegistry', false);
+export const fuseboxEnabledRelease: Getter<boolean> = createNativeFlagGetter('fuseboxEnabledRelease', false);
 /**
  * Only enqueue Choreographer calls if there is an ongoing animation, instead of enqueueing every frame.
  */
@@ -170,7 +170,7 @@ export const lazyAnimationCallbacks: Getter<boolean> = createNativeFlagGetter('l
 /**
  * When enabled, ParagraphShadowNode will no longer call measure twice.
  */
-export const preventDoubleTextMeasure: Getter<boolean> = createNativeFlagGetter('preventDoubleTextMeasure', false);
+export const preventDoubleTextMeasure: Getter<boolean> = createNativeFlagGetter('preventDoubleTextMeasure', true);
 /**
  * Propagate layout direction to Android views.
  */

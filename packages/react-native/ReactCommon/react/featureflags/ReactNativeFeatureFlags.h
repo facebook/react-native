@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c53481eb714387bf0a390fba1c02c331>>
+ * @generated SignedSource<<a75464f590c4f55e64ad2e33cfc52989>>
  */
 
 /**
@@ -48,9 +48,9 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool allowCollapsableChildren();
 
   /**
-   * To be used with batchRenderingUpdatesInEventLoop. When enbled, the Android mounting layer will concatenate pending transactions to ensure they're applied atomatically
+   * Adds support for recursively processing commits that mount synchronously (Android only).
    */
-  RN_EXPORT static bool androidEnablePendingFabricTransactions();
+  RN_EXPORT static bool allowRecursiveCommitsWithSynchronousMountOnAndroid();
 
   /**
    * When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.
@@ -103,14 +103,14 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool forceBatchingMountItemsOnAndroid();
 
   /**
-   * Flag determining if the C++ implementation of InspectorPackagerConnection should be used instead of the per-platform one. This flag is global and should not be changed across React Host lifetimes.
+   * Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled in debug builds. This flag is global and should not be changed across React Host lifetimes.
    */
-  RN_EXPORT static bool inspectorEnableCxxInspectorPackagerConnection();
+  RN_EXPORT static bool fuseboxEnabledDebug();
 
   /**
-   * Flag determining if the modern CDP backend should be enabled. This flag is global and should not be changed across React Host lifetimes.
+   * Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled in release builds. This flag is global and should not be changed across React Host lifetimes.
    */
-  RN_EXPORT static bool inspectorEnableModernCDPRegistry();
+  RN_EXPORT static bool fuseboxEnabledRelease();
 
   /**
    * Only enqueue Choreographer calls if there is an ongoing animation, instead of enqueueing every frame.
