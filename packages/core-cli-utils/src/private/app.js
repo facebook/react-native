@@ -41,14 +41,17 @@ type BundlerOptions = {
   outputBundle: string,
   cwd: string,
 
-  target: 'hermes' | 'jsc',
+  jsvm: 'hermes' | 'jsc',
   hermes?: HermesConfig,
 
   ...Bundler,
 };
 
 type HermesConfig = {
-  // iOS: Pods/hermes-engine/destroot/bin/hermesc
+  // Path where hermes is is installed
+  // iOS: Pods/hermes-engine
+  path: string,
+  // iOS: <hermes.path>/destroot/bin/hermesc
   hermesc: string,
 };
 
@@ -124,7 +127,7 @@ const bundleApp = (
   // to then be converted to bytecode in the outputBundle. Otherwise just write to
   // the outputBundle directly.
   let output =
-    options.target === 'hermes' ? options.outputJsBundle : options.outputBundle;
+    options.jsvm === 'hermes' ? options.outputJsBundle : options.outputBundle;
 
   // TODO: Fix this by not using Metro CLI, which appends a .js extension
   if (output === options.outputJsBundle && !output.endsWith('.js')) {
@@ -146,7 +149,7 @@ const bundleApp = (
         '--out',
         output,
       ];
-      if (options.target === 'hermes' && !options.dev) {
+      if (options.jsvm === 'hermes' && !options.dev) {
         // Hermes doesn't require JS minification
         args.push('--minify', 'false');
       } else {
@@ -159,12 +162,25 @@ const bundleApp = (
     }),
   };
 
-  if (options.target === 'jsc') {
+  if (options.jsvm === 'jsc') {
     return bundle;
   }
 
-  // $FlowIgnore[incompatible-use] We know it's a Hermes config
-  const hermesc: string = options.hermes.hermesc;
+  if (options.hermes?.path == null || options.hermes?.hermesc == null) {
+    throw new Error('If jsvm == "hermes", hermes config must be provided.');
+  }
+
+  const hermes: HermesConfig = options.hermes;
+
+  const isHermesInstalled: boolean = fs.existsSync(hermes.path);
+  if (!isHermesInstalled) {
+    throw new Error(
+      'Hermes Pod must be installed before bundling.\n' +
+        'Did you forget to bootstrap?',
+    );
+  }
+
+  const hermesc: string = path.join(hermes.path, hermes.hermesc);
 
   /*
    * Hermes only tasks:

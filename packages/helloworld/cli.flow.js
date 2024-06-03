@@ -148,16 +148,10 @@ build
           outputSourceMap: settings.bundleResourceDir,
           outputBundle: binaryBundlePath,
           dev: true,
-          target: 'hermes',
+          jsvm: 'hermes',
           hermes: {
-            hermesc: path.join(
-              cwd.ios,
-              'Pods',
-              'hermes-engine',
-              'build_host_hermesc',
-              'bin',
-              'hermesc',
-            ),
+            path: path.join(cwd.ios, 'Pods/hermes-engine'),
+            hermesc: 'build_host_hermesc/bin/hermesc',
           },
         }),
       );
