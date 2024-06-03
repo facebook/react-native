@@ -210,14 +210,8 @@ public class DevServerHelper {
     new AsyncTask<Void, Void, Void>() {
       @Override
       protected Void doInBackground(Void... params) {
-        if (InspectorFlags.getFuseboxEnabled()) {
-          mInspectorPackagerConnection =
-              new CxxInspectorPackagerConnection(getInspectorDeviceUrl(), mPackageName);
-        } else {
-          // TODO(T190163403): Remove legacy InspectorPackagerConnection
-          mInspectorPackagerConnection =
-              new InspectorPackagerConnection(getInspectorDeviceUrl(), mPackageName);
-        }
+        mInspectorPackagerConnection =
+            new CxxInspectorPackagerConnection(getInspectorDeviceUrl(), mPackageName);
         mInspectorPackagerConnection.connect();
         return null;
       }
