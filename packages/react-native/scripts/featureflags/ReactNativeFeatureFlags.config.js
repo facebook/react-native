@@ -137,6 +137,11 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'When enabled, cloning shadow nodes within react native will update the reference held by the current JS fiber tree.',
     },
+    useRuntimeShadowNodeReferenceUpdateOnLayout: {
+      defaultValue: false,
+      description:
+        'When enabled, cloning shadow nodes during layout will update the reference held by the current JS fiber tree.',
+    },
     useStateAlignmentMechanism: {
       defaultValue: false,
       description:
