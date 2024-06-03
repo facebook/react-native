@@ -87,10 +87,13 @@ import com.facebook.react.devsupport.ReactInstanceDevHelper;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevLoadingViewManager;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
+import com.facebook.react.devsupport.interfaces.DevSupportManager.PausedInDebuggerOverlayCommandListener;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
+import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager;
 import com.facebook.react.devsupport.interfaces.RedBoxHandler;
 import com.facebook.react.internal.AndroidChoreographerProvider;
 import com.facebook.react.internal.ChoreographerProvider;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.internal.turbomodule.core.TurboModuleManager;
 import com.facebook.react.internal.turbomodule.core.TurboModuleManagerDelegate;
 import com.facebook.react.modules.appearance.AppearanceModule;
@@ -170,6 +173,7 @@ public class ReactInstanceManager {
   private final DevSupportManager mDevSupportManager;
   private final boolean mUseDeveloperSupport;
   private final boolean mRequireActivity;
+  private final boolean mKeepActivity;
   private final @Nullable NotThreadSafeBridgeIdleDebugListener mBridgeIdleDebugListener;
   private final Object mReactContextLock = new Object();
   private @Nullable volatile ReactContext mCurrentReactContext;
@@ -228,6 +232,7 @@ public class ReactInstanceManager {
       boolean useDeveloperSupport,
       DevSupportManagerFactory devSupportManagerFactory,
       boolean requireActivity,
+      boolean keepActivity,
       @Nullable NotThreadSafeBridgeIdleDebugListener bridgeIdleDebugListener,
       LifecycleState initialLifecycleState,
       JSExceptionHandler jSExceptionHandler,
@@ -241,7 +246,8 @@ public class ReactInstanceManager {
       @Nullable ReactPackageTurboModuleManagerDelegate.Builder tmmDelegateBuilder,
       @Nullable SurfaceDelegateFactory surfaceDelegateFactory,
       @Nullable DevLoadingViewManager devLoadingViewManager,
-      @Nullable ChoreographerProvider choreographerProvider) {
+      @Nullable ChoreographerProvider choreographerProvider,
+      @Nullable PausedInDebuggerOverlayManager pausedInDebuggerOverlayManager) {
     FLog.d(TAG, "ReactInstanceManager.ctor()");
     initializeSoLoaderIfNecessary(applicationContext);
 
@@ -257,6 +263,7 @@ public class ReactInstanceManager {
     mPackages = new ArrayList<>();
     mUseDeveloperSupport = useDeveloperSupport;
     mRequireActivity = requireActivity;
+    mKeepActivity = keepActivity;
     Systrace.beginSection(
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstanceManager.initDevSupportManager");
     mDevSupportManager =
@@ -270,7 +277,8 @@ public class ReactInstanceManager {
             minNumShakes,
             customPackagerCommandHandlers,
             surfaceDelegateFactory,
-            devLoadingViewManager);
+            devLoadingViewManager,
+            pausedInDebuggerOverlayManager);
     Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
     mBridgeIdleDebugListener = bridgeIdleDebugListener;
     mLifecycleState = initialLifecycleState;
@@ -700,7 +708,9 @@ public class ReactInstanceManager {
     }
 
     moveToBeforeCreateLifecycleState();
-    mCurrentActivity = null;
+    if (!mKeepActivity) {
+      mCurrentActivity = null;
+    }
   }
 
   /**
@@ -754,15 +764,28 @@ public class ReactInstanceManager {
     unregisterCxxErrorHandlerFunc();
 
     mCreateReactContextThread = null;
-    synchronized (mReactContextLock) {
-      if (mCurrentReactContext != null) {
-        mCurrentReactContext.destroy();
-        mCurrentReactContext = null;
+    synchronized (mAttachedReactRoots) {
+      synchronized (mReactContextLock) {
+        if (mCurrentReactContext != null) {
+          if (ReactNativeFeatureFlags.destroyFabricSurfacesInReactInstanceManager()) {
+            for (ReactRoot reactRoot : mAttachedReactRoots) {
+              // Fabric surfaces must be cleaned up when React Native is destroyed.
+              if (reactRoot.getUIManagerType() == UIManagerType.FABRIC) {
+                detachRootViewFromInstance(reactRoot, mCurrentReactContext);
+              }
+            }
+          }
+
+          mCurrentReactContext.destroy();
+          mCurrentReactContext = null;
+        }
       }
     }
 
     mHasStartedCreatingInitialContext = false;
-    mCurrentActivity = null;
+    if (!mKeepActivity) {
+      mCurrentActivity = null;
+    }
 
     ResourceDrawableIdHelper.getInstance().clear();
 
@@ -810,7 +833,7 @@ public class ReactInstanceManager {
         mLifecycleState = LifecycleState.BEFORE_RESUME;
       }
       if (mLifecycleState == LifecycleState.BEFORE_RESUME) {
-        currentContext.onHostDestroy();
+        currentContext.onHostDestroy(mKeepActivity);
       }
     }
     mLifecycleState = LifecycleState.BEFORE_CREATE;
@@ -1485,7 +1508,7 @@ public class ReactInstanceManager {
   }
 
   private @Nullable ReactInstanceManagerInspectorTarget getOrCreateInspectorTarget() {
-    if (mInspectorTarget == null && InspectorFlags.getEnableModernCDPRegistry()) {
+    if (mInspectorTarget == null && InspectorFlags.getFuseboxEnabled()) {
 
       mInspectorTarget =
           new ReactInstanceManagerInspectorTarget(
@@ -1493,6 +1516,25 @@ public class ReactInstanceManager {
                 @Override
                 public void onReload() {
                   UiThreadUtil.runOnUiThread(() -> mDevSupportManager.handleReloadJS());
+                }
+
+                @Override
+                public void onSetPausedInDebuggerMessage(@Nullable String message) {
+                  if (message == null) {
+                    mDevSupportManager.hidePausedInDebuggerOverlay();
+                  } else {
+                    mDevSupportManager.showPausedInDebuggerOverlay(
+                        message,
+                        new PausedInDebuggerOverlayCommandListener() {
+                          @Override
+                          public void onResume() {
+                            UiThreadUtil.assertOnUiThread();
+                            if (mInspectorTarget != null) {
+                              mInspectorTarget.sendDebuggerResumeCommand();
+                            }
+                          }
+                        });
+                  }
                 }
               });
     }

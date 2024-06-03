@@ -6,6 +6,7 @@
  */
 
 #include "MountingCoordinator.h"
+#include "updateMountedFlag.h"
 
 #ifdef RN_SHADOW_TREE_INTROSPECTION
 #include <glog/logging.h>
@@ -14,8 +15,8 @@
 
 #include <condition_variable>
 
+#include <cxxreact/SystraceSection.h>
 #include <react/debug/react_native_assert.h>
-#include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
 
 namespace facebook::react {

@@ -104,16 +104,21 @@ export function getConfigWithoutViewProps(
   viewConfig: ViewConfig,
   propName: string,
 ): {...} {
+  // $FlowFixMe[invalid-computed-prop]
   if (!viewConfig[propName]) {
     return {};
   }
 
-  return Object.keys(viewConfig[propName])
-    .filter(prop => !PlatformBaseViewConfig[propName][prop])
-    .reduce<{[string]: any}>((obj, prop) => {
-      obj[prop] = viewConfig[propName][prop];
-      return obj;
-    }, {});
+  return (
+    Object.keys(viewConfig[propName])
+      // $FlowFixMe[invalid-computed-prop]
+      .filter(prop => !PlatformBaseViewConfig[propName][prop])
+      .reduce<{[string]: any}>((obj, prop) => {
+        // $FlowFixMe[invalid-computed-prop]
+        obj[prop] = viewConfig[propName][prop];
+        return obj;
+      }, {})
+  );
 }
 
 export function stringifyViewConfig(viewConfig: any): string {

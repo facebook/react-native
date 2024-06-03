@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.RetryableMountingLayerException;
@@ -39,6 +40,7 @@ import java.util.Map;
  * <p>Note that {@link ReactScrollView} and {@link ReactHorizontalScrollView} are exposed to JS as a
  * single ScrollView component, configured via the {@code horizontal} boolean property.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @ReactModule(name = ReactScrollViewManager.REACT_CLASS)
 public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
     implements ReactScrollViewCommandHelper.ScrollCommandHandler<ReactScrollView> {
@@ -158,6 +160,11 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
   @ReactProp(name = "scrollPerfTag")
   public void setScrollPerfTag(ReactScrollView view, @Nullable String scrollPerfTag) {
     view.setScrollPerfTag(scrollPerfTag);
+  }
+
+  @ReactProp(name = "enableSyncOnScroll")
+  public void setEnableSyncOnScroll(ReactScrollView view, boolean value) {
+    view.setEnableSyncOnScroll(value);
   }
 
   @ReactProp(name = "pagingEnabled")
@@ -336,7 +343,7 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
   }
 
   @Override
-  public Object updateState(
+  public @Nullable Object updateState(
       ReactScrollView view, ReactStylesDiffMap props, StateWrapper stateWrapper) {
     view.setStateWrapper(stateWrapper);
     return null;
@@ -380,6 +387,11 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
   @ReactProp(name = "scrollEventThrottle")
   public void setScrollEventThrottle(ReactScrollView view, int scrollEventThrottle) {
     view.setScrollEventThrottle(scrollEventThrottle);
+  }
+
+  @ReactProp(name = "horizontal")
+  public void setHorizontal(ReactScrollView view, boolean horizontal) {
+    // Do Nothing: Align with static ViewConfigs
   }
 
   @ReactProp(name = "isInvertedVirtualizedList")

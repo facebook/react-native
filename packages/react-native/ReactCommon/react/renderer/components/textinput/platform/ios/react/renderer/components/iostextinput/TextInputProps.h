@@ -36,7 +36,7 @@ class TextInputProps final : public BaseTextInputProps {
    */
   std::optional<Selection> selection{};
 
-  std::string const inputAccessoryViewID{};
+  const std::string inputAccessoryViewID{};
 
   bool onKeyPressSync{false};
   bool onChangeSync{false};

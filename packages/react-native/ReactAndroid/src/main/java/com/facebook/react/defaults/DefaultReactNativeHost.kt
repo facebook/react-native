@@ -15,6 +15,7 @@ import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackageTurboModuleManagerDelegate
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.UIManagerProvider
+import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.fabric.ComponentFactory
 import com.facebook.react.fabric.FabricUIManagerProviderImpl
 import com.facebook.react.fabric.ReactNativeConfig
@@ -103,7 +104,8 @@ protected constructor(
    *
    * @param context the Android [Context] to use for creating the [ReactHost]
    */
-  public fun toReactHost(context: Context): ReactHost =
+  @UnstableReactNativeAPI
+  internal fun toReactHost(context: Context): ReactHost =
       DefaultReactHost.getDefaultReactHost(
           context,
           packages,

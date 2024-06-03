@@ -44,7 +44,7 @@ export default class ReactNativeElement
   __nativeTag: number;
   __internalInstanceHandle: InternalInstanceHandle;
 
-  _viewConfig: ViewConfig;
+  #viewConfig: ViewConfig;
 
   constructor(
     tag: number,
@@ -55,7 +55,7 @@ export default class ReactNativeElement
 
     this.__nativeTag = tag;
     this.__internalInstanceHandle = internalInstanceHandle;
-    this._viewConfig = viewConfig;
+    this.#viewConfig = viewConfig;
   }
 
   get offsetHeight(): number {
@@ -172,12 +172,12 @@ export default class ReactNativeElement
 
   setNativeProps(nativeProps: {...}): void {
     if (__DEV__) {
-      warnForStyleProps(nativeProps, this._viewConfig.validAttributes);
+      warnForStyleProps(nativeProps, this.#viewConfig.validAttributes);
     }
 
     const updatePayload = createAttributePayload(
       nativeProps,
-      this._viewConfig.validAttributes,
+      this.#viewConfig.validAttributes,
     );
 
     const node = getShadowNode(this);

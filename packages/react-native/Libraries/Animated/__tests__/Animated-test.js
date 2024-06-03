@@ -264,6 +264,50 @@ describe('Animated tests', () => {
 
       expect(cb).toBeCalledWith({finished: false});
     });
+
+    it('supports restarting sequence after it was stopped during execution', () => {
+      const anim1 = {start: jest.fn(), stop: jest.fn()};
+      const anim2 = {start: jest.fn(), stop: jest.fn()};
+      const cb = jest.fn();
+
+      const seq = Animated.sequence([anim1, anim2]);
+
+      seq.start(cb);
+
+      anim1.start.mock.calls[0][0]({finished: true});
+      seq.stop();
+
+      // anim1 should be finished so anim2 should also start
+      expect(anim1.start).toHaveBeenCalledTimes(1);
+      expect(anim2.start).toHaveBeenCalledTimes(1);
+
+      seq.start(cb);
+
+      // after restart the sequence should resume from the anim2
+      expect(anim1.start).toHaveBeenCalledTimes(1);
+      expect(anim2.start).toHaveBeenCalledTimes(2);
+    });
+
+    it('supports restarting sequence after it was finished without a reset', () => {
+      const anim1 = {start: jest.fn(), stop: jest.fn()};
+      const anim2 = {start: jest.fn(), stop: jest.fn()};
+      const cb = jest.fn();
+
+      const seq = Animated.sequence([anim1, anim2]);
+
+      seq.start(cb);
+      anim1.start.mock.calls[0][0]({finished: true});
+      anim2.start.mock.calls[0][0]({finished: true});
+
+      // sequence should be finished
+      expect(cb).toBeCalledWith({finished: true});
+
+      seq.start(cb);
+
+      // sequence should successfully restart from the anim1
+      expect(anim1.start).toHaveBeenCalledTimes(2);
+      expect(anim2.start).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('Animated Loop', () => {
@@ -504,6 +548,28 @@ describe('Animated tests', () => {
     animation.start.mock.calls[0][0]({finished: true}); // End of loop 3
     expect(animation.reset).not.toBeCalled();
     expect(cb).not.toBeCalled();
+  });
+
+  it('restarts sequence normally in a loop if resetBeforeIteration is false', () => {
+    const anim1 = {start: jest.fn(), stop: jest.fn()};
+    const anim2 = {start: jest.fn(), stop: jest.fn()};
+    const seq = Animated.sequence([anim1, anim2]);
+
+    const loop = Animated.loop(seq, {resetBeforeIteration: false});
+
+    loop.start();
+
+    expect(anim1.start).toHaveBeenCalledTimes(1);
+
+    anim1.start.mock.calls[0][0]({finished: true});
+
+    expect(anim2.start).toHaveBeenCalledTimes(1);
+
+    anim2.start.mock.calls[0][0]({finished: true});
+
+    // after anim2 is finished, the sequence is finished,
+    // hence the loop iteration is finished, so the next iteration starts
+    expect(anim1.start).toHaveBeenCalledTimes(2);
   });
 
   describe('Animated Parallel', () => {

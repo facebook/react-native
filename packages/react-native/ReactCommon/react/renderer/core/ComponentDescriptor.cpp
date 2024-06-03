@@ -6,6 +6,7 @@
  */
 
 #include "ComponentDescriptor.h"
+#include <react/utils/ContextContainer.h>
 
 namespace facebook::react {
 
@@ -15,8 +16,8 @@ ComponentDescriptor::ComponentDescriptor(
       contextContainer_(parameters.contextContainer),
       flavor_(parameters.flavor) {}
 
-const ContextContainer::Shared& ComponentDescriptor::getContextContainer()
-    const {
+const std::shared_ptr<const ContextContainer>&
+ComponentDescriptor::getContextContainer() const {
   return contextContainer_;
 }
 

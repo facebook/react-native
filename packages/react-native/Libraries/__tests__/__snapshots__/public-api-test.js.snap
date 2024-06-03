@@ -810,7 +810,13 @@ exports[`public API should not change unintentionally Libraries/Animated/compone
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/createAnimatedComponent.js 1`] = `
-"export type AnimatedProps<Props: { ... }> = $ObjMap<Props, () => any>;
+"export type AnimatedProps<Props: { ... }> = $ObjMap<
+  Props &
+    $ReadOnly<{
+      passthroughAnimatedPropExplicitValues?: React.ElementConfig<typeof View>,
+    }>,
+  () => any,
+>;
 export type AnimatedComponentType<
   Props: { ... },
   +Instance = mixed,
@@ -3459,6 +3465,7 @@ exports[`public API should not change unintentionally Libraries/Components/View/
   onMagicTap: true,
   onAccessibilityEscape: true,
   collapsable: true,
+  collapsableChildren: true,
   needsOffscreenAlphaCompositing: true,
   style: ReactNativeStyleAttributes,
   role: true,
@@ -3769,6 +3776,7 @@ export type ViewProps = $ReadOnly<{|
   \\"aria-selected\\"?: ?boolean,
   \\"aria-hidden\\"?: ?boolean,
   collapsable?: ?boolean,
+  collapsableChildren?: ?boolean,
   experimental_layoutConformance?: ?(\\"strict\\" | \\"classic\\"),
   id?: string,
   testID?: ?string,
@@ -3880,6 +3888,26 @@ declare function symbolicateStackTrace(
   extraData?: mixed
 ): Promise<SymbolicatedStackTrace>;
 declare module.exports: symbolicateStackTrace;
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/Core/ErrorHandlers.js 1`] = `
+"type ErrorInfo = {
+  +componentStack?: ?string,
+  +errorBoundary?: ?React$Component<any, any>,
+};
+declare export function onUncaughtError(
+  errorValue: mixed,
+  errorInfo: ErrorInfo
+): void;
+declare export function onCaughtError(
+  errorValue: mixed,
+  errorInfo: ErrorInfo
+): void;
+declare export function onRecoverableError(
+  errorValue: mixed,
+  errorInfo: ErrorInfo
+): void;
 "
 `;
 
@@ -5860,12 +5888,6 @@ declare export function isIgnored(value: mixed): boolean;
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/NativeModules/specs/NativeAnimationsDebugModule.js 1`] = `
-"export * from \\"../../../src/private/specs/modules/NativeAnimationsDebugModule\\";
-declare export default typeof NativeAnimationsDebugModule;
-"
-`;
-
 exports[`public API should not change unintentionally Libraries/NativeModules/specs/NativeDevMenu.js 1`] = `
 "export * from \\"../../../src/private/specs/modules/NativeDevMenu\\";
 declare export default typeof NativeDevMenu;
@@ -7115,6 +7137,23 @@ export type TouchedViewDataAtPoint = $ReadOnly<{
   }>,
   ...InspectorData,
 }>;
+export type RenderRootOptions = {
+  onUncaughtError?: (
+    error: mixed,
+    errorInfo: { +componentStack?: ?string }
+  ) => void,
+  onCaughtError?: (
+    error: mixed,
+    errorInfo: {
+      +componentStack?: ?string,
+      +errorBoundary?: ?React$Component<any, any>,
+    }
+  ) => void,
+  onRecoverableError?: (
+    error: mixed,
+    errorInfo: { +componentStack?: ?string }
+  ) => void,
+};
 export type ReactNativeType = {
   findHostInstance_DEPRECATED<TElementType: ElementType>(
     componentOrHandle: ?(ElementRef<TElementType> | number)
@@ -7138,7 +7177,8 @@ export type ReactNativeType = {
   render(
     element: Element<ElementType>,
     containerTag: number,
-    callback: ?() => void
+    callback: ?() => void,
+    options: ?RenderRootOptions
   ): ?ElementRef<ElementType>,
   unmountComponentAtNode(containerTag: number): void,
   unmountComponentAtNodeAndRemoveContainer(containerTag: number): void,
@@ -7171,7 +7211,8 @@ export type ReactFabricType = {
     element: Element<ElementType>,
     containerTag: number,
     callback: ?() => void,
-    concurrentRoot: ?boolean
+    concurrentRoot: ?boolean,
+    options: ?RenderRootOptions
   ): ?ElementRef<ElementType>,
   unmountComponentAtNode(containerTag: number): void,
   getNodeFromInternalInstanceHandle(
@@ -7455,10 +7496,7 @@ declare module.exports: {
   hairlineWidth: hairlineWidth,
   absoluteFill: any,
   absoluteFillObject: absoluteFill,
-  compose<T: DangerouslyImpreciseStyleProp>(
-    style1: ?T,
-    style2: ?T
-  ): ?T | $ReadOnlyArray<T>,
+  compose: composeStyles,
   flatten: flatten,
   setStyleAttributePreprocessor(
     property: string,
@@ -7578,9 +7616,9 @@ type ____LayoutStyle_Internal = $ReadOnly<{
   aspectRatio?: number | string,
   zIndex?: number,
   direction?: \\"inherit\\" | \\"ltr\\" | \\"rtl\\",
-  rowGap?: number,
-  columnGap?: number,
-  gap?: number,
+  rowGap?: number | string,
+  columnGap?: number | string,
+  gap?: number | string,
 }>;
 export type ____ShadowStyle_InternalCore = $ReadOnly<{
   shadowColor?: ____ColorValue_Internal,
@@ -7595,10 +7633,14 @@ export type ____ShadowStyle_Internal = $ReadOnly<{
   ...____ShadowStyle_InternalCore,
   ...____ShadowStyle_InternalOverrides,
 }>;
+type ____FilterStyle_Internal = $ReadOnly<{
+  experimental_filter?: $ReadOnlyArray<FilterPrimitive>,
+}>;
 export type ____ViewStyle_InternalCore = $ReadOnly<{
   ...$Exact<____LayoutStyle_Internal>,
   ...$Exact<____ShadowStyle_Internal>,
   ...$Exact<____TransformStyle_Internal>,
+  ...____FilterStyle_Internal,
   backfaceVisibility?: \\"visible\\" | \\"hidden\\",
   backgroundColor?: ____ColorValue_Internal,
   borderColor?: ____ColorValue_Internal,
@@ -7612,19 +7654,19 @@ export type ____ViewStyle_InternalCore = $ReadOnly<{
   borderBlockColor?: ____ColorValue_Internal,
   borderBlockEndColor?: ____ColorValue_Internal,
   borderBlockStartColor?: ____ColorValue_Internal,
-  borderRadius?: AnimatableNumericValue,
-  borderBottomEndRadius?: AnimatableNumericValue,
-  borderBottomLeftRadius?: AnimatableNumericValue,
-  borderBottomRightRadius?: AnimatableNumericValue,
-  borderBottomStartRadius?: AnimatableNumericValue,
-  borderEndEndRadius?: AnimatableNumericValue,
-  borderEndStartRadius?: AnimatableNumericValue,
-  borderStartEndRadius?: AnimatableNumericValue,
-  borderStartStartRadius?: AnimatableNumericValue,
-  borderTopEndRadius?: AnimatableNumericValue,
-  borderTopLeftRadius?: AnimatableNumericValue,
-  borderTopRightRadius?: AnimatableNumericValue,
-  borderTopStartRadius?: AnimatableNumericValue,
+  borderRadius?: AnimatableNumericValue | string,
+  borderBottomEndRadius?: AnimatableNumericValue | string,
+  borderBottomLeftRadius?: AnimatableNumericValue | string,
+  borderBottomRightRadius?: AnimatableNumericValue | string,
+  borderBottomStartRadius?: AnimatableNumericValue | string,
+  borderEndEndRadius?: AnimatableNumericValue | string,
+  borderEndStartRadius?: AnimatableNumericValue | string,
+  borderStartEndRadius?: AnimatableNumericValue | string,
+  borderStartStartRadius?: AnimatableNumericValue | string,
+  borderTopEndRadius?: AnimatableNumericValue | string,
+  borderTopLeftRadius?: AnimatableNumericValue | string,
+  borderTopRightRadius?: AnimatableNumericValue | string,
+  borderTopStartRadius?: AnimatableNumericValue | string,
   borderStyle?: \\"solid\\" | \\"dotted\\" | \\"dashed\\",
   borderWidth?: AnimatableNumericValue,
   borderBottomWidth?: AnimatableNumericValue,
@@ -7892,6 +7934,23 @@ exports[`public API should not change unintentionally Libraries/StyleSheet/proce
   colors: ?$ReadOnlyArray<ColorValue>
 ): ?$ReadOnlyArray<ProcessedColorValue>;
 declare module.exports: processColorArray;
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/StyleSheet/processFilter.js 1`] = `
+"export type FilterPrimitive =
+  | { brightness: number | string }
+  | { blur: number | string }
+  | { contrast: number | string }
+  | { grayscale: number | string }
+  | { hueRotate: number | string }
+  | { invert: number | string }
+  | { opacity: number | string }
+  | { saturate: number | string }
+  | { sepia: number | string };
+declare export default function processFilter(
+  filter: $ReadOnlyArray<FilterPrimitive> | string
+): $ReadOnlyArray<FilterPrimitive>;
 "
 `;
 
@@ -8399,6 +8458,14 @@ exports[`public API should not change unintentionally Libraries/Utilities/DebugE
 "
 `;
 
+exports[`public API should not change unintentionally Libraries/Utilities/DevLoadingView.js 1`] = `
+"declare module.exports: {
+  showMessage(message: string, type: \\"load\\" | \\"refresh\\"): void,
+  hide(): void,
+};
+"
+`;
+
 exports[`public API should not change unintentionally Libraries/Utilities/DevSettings.js 1`] = `
 "declare let DevSettings: {
   addMenuItem(title: string, handler: () => mixed): void,
@@ -8513,30 +8580,6 @@ export interface IPerformanceLogger {
   startTimespan(key: string, timestamp?: number, extras?: Extras): void;
   stopTimespan(key: string, timestamp?: number, extras?: Extras): void;
 }
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/Utilities/LoadingView.android.js 1`] = `
-"declare module.exports: {
-  showMessage(message: string, type: \\"load\\" | \\"refresh\\"): void,
-  hide(): void,
-};
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/Utilities/LoadingView.ios.js 1`] = `
-"declare module.exports: {
-  showMessage(message: string, type: \\"load\\" | \\"refresh\\"): void,
-  hide(): void,
-};
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/Utilities/LoadingView.js 1`] = `
-"declare module.exports: {
-  showMessage(message: string, type: \\"load\\" | \\"refresh\\"): void,
-  hide(): void,
-};
 "
 `;
 

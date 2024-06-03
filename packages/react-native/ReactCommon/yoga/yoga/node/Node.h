@@ -66,9 +66,9 @@ class YG_EXPORT Node : public ::YGNode {
   }
 
   YGSize measure(
-      float width,
+      float availableWidth,
       MeasureMode widthMode,
-      float height,
+      float availableHeight,
       MeasureMode heightMode);
 
   bool hasBaselineFunc() const noexcept {
@@ -271,7 +271,7 @@ class YG_EXPORT Node : public ::YGNode {
 
   bool hasNewLayout_ : 1 = true;
   bool isReferenceBaseline_ : 1 = false;
-  bool isDirty_ : 1 = false;
+  bool isDirty_ : 1 = true;
   bool alwaysFormsContainingBlock_ : 1 = false;
   NodeType nodeType_ : bitCount<NodeType>() = NodeType::Default;
   void* context_ = nullptr;

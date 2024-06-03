@@ -141,6 +141,7 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
       const events = [];
 
       for (const propName in props) {
+        // $FlowFixMe[invalid-computed-prop]
         const propValue = props[propName];
         if (propValue instanceof AnimatedEvent && propValue.__isNative) {
           propValue.__attach(target, propName);

@@ -29,6 +29,13 @@ type DeviceMetadata = $ReadOnly<{
 type RequestMetadata = $ReadOnly<{
   pageId: string | null,
   frontendUserAgent: string | null,
+  prefersFuseboxFrontend: boolean | null,
+}>;
+
+type ResponseMetadata = $ReadOnly<{
+  pageId: string | null,
+  frontendUserAgent: string | null,
+  prefersFuseboxFrontend: boolean | null,
 }>;
 
 class DeviceEventReporter {
@@ -72,10 +79,7 @@ class DeviceEventReporter {
   logResponse(
     res: CDPResponse<>,
     origin: 'device' | 'proxy',
-    metadata: $ReadOnly<{
-      pageId: string | null,
-      frontendUserAgent: string | null,
-    }>,
+    metadata: ResponseMetadata,
   ): void {
     const pendingCommand = this.#pendingCommands.get(res.id);
     if (!pendingCommand) {
@@ -93,6 +97,7 @@ class DeviceEventReporter {
         deviceName: this.#metadata.deviceName,
         pageId: metadata.pageId,
         frontendUserAgent: metadata.frontendUserAgent,
+        prefersFuseboxFrontend: metadata.prefersFuseboxFrontend,
       });
       return;
     }
@@ -118,6 +123,7 @@ class DeviceEventReporter {
         deviceName: this.#metadata.deviceName,
         pageId: pendingCommand.metadata.pageId,
         frontendUserAgent: pendingCommand.metadata.frontendUserAgent,
+        prefersFuseboxFrontend: metadata.prefersFuseboxFrontend,
       });
       return;
     }
@@ -134,6 +140,7 @@ class DeviceEventReporter {
       deviceName: this.#metadata.deviceName,
       pageId: pendingCommand.metadata.pageId,
       frontendUserAgent: pendingCommand.metadata.frontendUserAgent,
+      prefersFuseboxFrontend: metadata.prefersFuseboxFrontend,
     });
   }
 
@@ -179,6 +186,7 @@ class DeviceEventReporter {
         deviceName: this.#metadata.deviceName,
         pageId: pendingCommand.metadata.pageId,
         frontendUserAgent: pendingCommand.metadata.frontendUserAgent,
+        prefersFuseboxFrontend: pendingCommand.metadata.prefersFuseboxFrontend,
       });
     }
     this.#pendingCommands.clear();
@@ -218,6 +226,7 @@ class DeviceEventReporter {
       deviceName: this.#metadata.deviceName,
       pageId: pendingCommand.metadata.pageId,
       frontendUserAgent: pendingCommand.metadata.frontendUserAgent,
+      prefersFuseboxFrontend: pendingCommand.metadata.prefersFuseboxFrontend,
     });
   }
 }

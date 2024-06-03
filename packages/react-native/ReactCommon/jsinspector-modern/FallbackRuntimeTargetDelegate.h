@@ -36,6 +36,10 @@ class FallbackRuntimeTargetDelegate : public RuntimeTargetDelegate {
 
   bool supportsConsole() const override;
 
+  std::unique_ptr<StackTrace> captureStackTrace(
+      jsi::Runtime& runtime,
+      size_t framesToSkip) override;
+
  private:
   std::string engineDescription_;
 };

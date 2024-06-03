@@ -62,7 +62,7 @@ void ReactInstanceIntegrationTest::SetUp() {
 
   std::shared_ptr<HostTarget> hostTargetIfModernCDP = nullptr;
 
-  if (InspectorFlags::getInstance().getEnableModernCDPRegistry()) {
+  if (InspectorFlags::getInstance().getFuseboxEnabled()) {
     VoidExecutor inspectorExecutor = [this](auto callback) {
       immediateExecutor_.add(callback);
     };
@@ -131,7 +131,7 @@ void ReactInstanceIntegrationTest::TearDown() {
   clientToVM_.reset();
 
   if (pageId_.has_value() &&
-      InspectorFlags::getInstance().getEnableModernCDPRegistry()) {
+      InspectorFlags::getInstance().getFuseboxEnabled()) {
     // Under modern CDP, clean up the page we added in SetUp and destroy
     // resources owned by HostTarget.
     getInspectorInstance().removePage(pageId_.value());
@@ -235,14 +235,8 @@ INSTANTIATE_TEST_SUITE_P(
     ReactInstanceVaryingInspectorFlags,
     ReactInstanceIntegrationTestWithFlags,
     ::testing::Values(
-        InspectorFlagOverrides{
-            .enableCxxInspectorPackagerConnection = false,
-            .enableModernCDPRegistry = false},
-        InspectorFlagOverrides{
-            .enableCxxInspectorPackagerConnection = true,
-            .enableModernCDPRegistry = false},
-        InspectorFlagOverrides{
-            .enableCxxInspectorPackagerConnection = true,
-            .enableModernCDPRegistry = true}));
+        InspectorFlagOverrides{.fuseboxEnabledDebug = false},
+        InspectorFlagOverrides{.fuseboxEnabledDebug = false},
+        InspectorFlagOverrides{.fuseboxEnabledDebug = true}));
 
 } // namespace facebook::react::jsinspector_modern

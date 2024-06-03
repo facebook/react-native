@@ -41,4 +41,17 @@ Number MountingTransaction::getNumber() const {
   return number_;
 }
 
+void MountingTransaction::mergeWith(MountingTransaction&& transaction) {
+  react_native_assert(transaction.getSurfaceId() == surfaceId_);
+  number_ = transaction.getNumber();
+  mutations_.insert(
+      mutations_.end(),
+      std::make_move_iterator(transaction.mutations_.begin()),
+      std::make_move_iterator(transaction.mutations_.end()));
+
+  // TODO T186641819: Telemetry for merged transactions is not supported, use
+  // the latest instance
+  telemetry_ = std::move(transaction.telemetry_);
+}
+
 } // namespace facebook::react

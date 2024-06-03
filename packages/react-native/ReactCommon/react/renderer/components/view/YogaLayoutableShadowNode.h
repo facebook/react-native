@@ -49,7 +49,7 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
   void replaceChild(
       const ShadowNode& oldChild,
       const ShadowNode::Shared& newChild,
-      int32_t suggestedIndex = -1) override;
+      size_t suggestedIndex = SIZE_MAX) override;
 
   void updateYogaChildren();
 

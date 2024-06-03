@@ -8,7 +8,6 @@
 package com.facebook.react.popupmenu
 
 import com.facebook.react.bridge.ReadableArray
-import com.facebook.react.common.MapBuilder
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.ViewGroupManager
@@ -58,14 +57,11 @@ public class ReactPopupMenuManager :
 
   public companion object {
     public const val REACT_CLASS: String = "AndroidPopupMenu"
+    private const val REGISTRATION_NAME = "registrationName"
     private val DIRECT_EVENT_TYPE_CONSTANT =
-        MapBuilder.builder<String, Any>()
-            .put(
-                PopupMenuSelectionEvent.EVENT_NAME,
-                mapOf("topPopupMenuSelectionChange" to "onPopupMenuSelectionChange"))
-            .put(
-                PopupMenuDismissEvent.EVENT_NAME,
-                mapOf("topPopupMenuDismiss" to "onPopupMenuDismiss"))
-            .build()
+        mapOf(
+            PopupMenuSelectionEvent.EVENT_NAME to
+                mapOf(REGISTRATION_NAME to "onPopupMenuSelectionChange"),
+            PopupMenuDismissEvent.EVENT_NAME to mapOf(REGISTRATION_NAME to "onPopupMenuDismiss"))
   }
 }

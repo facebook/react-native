@@ -174,7 +174,7 @@ TEST_F(YogaDirtyFlagTest, removingLastChildMustDirtyYogaNode) {
 
         return oldShadowNode.clone(
             {ShadowNodeFragment::propsPlaceholder(),
-             std::make_shared<ShadowNode::ListOfShared const>(children)});
+             std::make_shared<const ShadowNode::ListOfShared>(children)});
       });
 
   EXPECT_TRUE(
@@ -193,7 +193,7 @@ TEST_F(YogaDirtyFlagTest, reversingListOfChildrenMustDirtyYogaNode) {
 
         return oldShadowNode.clone(
             {ShadowNodeFragment::propsPlaceholder(),
-             std::make_shared<ShadowNode::ListOfShared const>(children)});
+             std::make_shared<const ShadowNode::ListOfShared>(children)});
       });
 
   EXPECT_TRUE(

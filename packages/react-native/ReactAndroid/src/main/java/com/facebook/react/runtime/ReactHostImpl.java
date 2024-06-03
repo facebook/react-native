@@ -26,6 +26,7 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
+import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.JSEngineResolutionAlgorithm;
 import com.facebook.react.MemoryPressureRouter;
 import com.facebook.react.ReactHost;
@@ -51,7 +52,9 @@ import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.devsupport.DevSupportManagerBase;
 import com.facebook.react.devsupport.InspectorFlags;
 import com.facebook.react.devsupport.ReleaseDevSupportManager;
+import com.facebook.react.devsupport.interfaces.BundleLoadCallback;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
+import com.facebook.react.devsupport.interfaces.DevSupportManager.PausedInDebuggerOverlayCommandListener;
 import com.facebook.react.fabric.ComponentFactory;
 import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.interfaces.TaskInterface;
@@ -466,6 +469,25 @@ public class ReactHostImpl implements ReactHost {
         .continueWithTask(Task::getResult);
   }
 
+  @DoNotStrip
+  private void setPausedInDebuggerMessage(@Nullable String message) {
+    if (message == null) {
+      mDevSupportManager.hidePausedInDebuggerOverlay();
+    } else {
+      mDevSupportManager.showPausedInDebuggerOverlay(
+          message,
+          new PausedInDebuggerOverlayCommandListener() {
+            @Override
+            public void onResume() {
+              UiThreadUtil.assertOnUiThread();
+              if (mReactHostInspectorTarget != null) {
+                mReactHostInspectorTarget.sendDebuggerResumeCommand();
+              }
+            }
+          });
+    }
+  }
+
   /**
    * Entrypoint to destroy the ReactInstance. If the ReactInstance is reloading, will wait until
    * reload is finished, before destroying.
@@ -592,28 +614,37 @@ public class ReactHostImpl implements ReactHost {
 
   /* package */
   @Nullable
+  NativeModule getNativeModule(String nativeModuleName) {
+    final ReactInstance reactInstance = mReactInstanceTaskRef.get().getResult();
+    if (reactInstance != null) {
+      return reactInstance.getNativeModule(nativeModuleName);
+    }
+    return null;
+  }
+
+  /* package */
+  @Nullable
   RuntimeExecutor getRuntimeExecutor() {
+    final String method = "getRuntimeExecutor()";
+
     final ReactInstance reactInstance = mReactInstanceTaskRef.get().getResult();
     if (reactInstance != null) {
       return reactInstance.getBufferedRuntimeExecutor();
     }
-    ReactSoftExceptionLogger.logSoftException(
-        TAG,
-        new ReactNoCrashSoftException("Tried to get runtime executor while instance is not ready"));
+    raiseSoftException(method, "Tried to get runtime executor while instance is not ready");
     return null;
   }
 
   /* package */
   @Nullable
   CallInvokerHolder getJSCallInvokerHolder() {
+    final String method = "getJSCallInvokerHolder()";
+
     final ReactInstance reactInstance = mReactInstanceTaskRef.get().getResult();
     if (reactInstance != null) {
       return reactInstance.getJSCallInvokerHolder();
     }
-    ReactSoftExceptionLogger.logSoftException(
-        TAG,
-        new ReactNoCrashSoftException(
-            "Tried to get JSCallInvokerHolder while instance is not ready"));
+    raiseSoftException(method, "Tried to get JSCallInvokerHolder while instance is not ready");
     return null;
   }
 
@@ -636,16 +667,13 @@ public class ReactHostImpl implements ReactHost {
             + "\", data = \""
             + data
             + "\")";
-    log(method);
 
     ReactContext currentContext = getCurrentReactContext();
     if (currentContext != null) {
       currentContext.onActivityResult(activity, requestCode, resultCode, data);
+    } else {
+      raiseSoftException(method, "Tried to access onActivityResult while context is not ready");
     }
-    ReactSoftExceptionLogger.logSoftException(
-        TAG,
-        new ReactNoCrashSoftException(
-            "Tried to access onActivityResult while context is not ready"));
   }
 
   /* To be called when focus has changed for the hosting window. */
@@ -653,16 +681,13 @@ public class ReactHostImpl implements ReactHost {
   @Override
   public void onWindowFocusChange(boolean hasFocus) {
     final String method = "onWindowFocusChange(hasFocus = \"" + hasFocus + "\")";
-    log(method);
 
     ReactContext currentContext = getCurrentReactContext();
     if (currentContext != null) {
       currentContext.onWindowFocusChange(hasFocus);
+    } else {
+      raiseSoftException(method, "Tried to access onWindowFocusChange while context is not ready");
     }
-    ReactSoftExceptionLogger.logSoftException(
-        TAG,
-        new ReactNoCrashSoftException(
-            "Tried to access onWindowFocusChange while context is not ready"));
   }
 
   /* This method will give JS the opportunity to receive intents via Linking.
@@ -672,7 +697,7 @@ public class ReactHostImpl implements ReactHost {
   @ThreadConfined(UI)
   @Override
   public void onNewIntent(Intent intent) {
-    log("onNewIntent()");
+    final String method = "onNewIntent(intent = \"" + intent + "\")";
 
     ReactContext currentContext = getCurrentReactContext();
     if (currentContext != null) {
@@ -689,10 +714,9 @@ public class ReactHostImpl implements ReactHost {
         }
       }
       currentContext.onNewIntent(getCurrentActivity(), intent);
+    } else {
+      raiseSoftException(method, "Tried to access onNewIntent while context is not ready");
     }
-    ReactSoftExceptionLogger.logSoftException(
-        TAG,
-        new ReactNoCrashSoftException("Tried to access onNewIntent while context is not ready"));
   }
 
   @ThreadConfined(UI)
@@ -1160,10 +1184,6 @@ public class ReactHostImpl implements ReactHost {
     return taskCompletionSource.getTask();
   }
 
-  /**
-   * TODO(T104078367): Ensure that if creating this JSBundleLoader fails, we route the errors
-   * through ReactHost's error reporting pipeline
-   */
   private Task<JSBundleLoader> loadJSBundleFromMetro() {
     final String method = "loadJSBundleFromMetro()";
     log(method);
@@ -1179,12 +1199,20 @@ public class ReactHostImpl implements ReactHost {
 
     asyncDevSupportManager.reloadJSFromServer(
         bundleURL,
-        () -> {
-          log(method, "Creating BundleLoader");
-          JSBundleLoader bundleLoader =
-              JSBundleLoader.createCachedBundleFromNetworkLoader(
-                  bundleURL, asyncDevSupportManager.getDownloadedJSBundleFile());
-          taskCompletionSource.setResult(bundleLoader);
+        new BundleLoadCallback() {
+          @Override
+          public void onSuccess() {
+            log(method, "Creating BundleLoader");
+            JSBundleLoader bundleLoader =
+                JSBundleLoader.createCachedBundleFromNetworkLoader(
+                    bundleURL, asyncDevSupportManager.getDownloadedJSBundleFile());
+            taskCompletionSource.setResult(bundleLoader);
+          }
+
+          @Override
+          public void onError(Exception cause) {
+            taskCompletionSource.setError(cause);
+          }
         });
 
     return taskCompletionSource.getTask();
@@ -1520,9 +1548,9 @@ public class ReactHostImpl implements ReactHost {
 
                     // Step 3: Stop all React Native surfaces
                     stopAttachedSurfaces(method, reactInstance);
-
-                    // TODO(T161461674): Should we clear mAttachedSurfaces?
-                    // Not clearing mAttachedSurfaces could lead to a memory leak.
+                    synchronized (mAttachedSurfaces) {
+                      mAttachedSurfaces.clear();
+                    }
 
                     return task;
                   },
@@ -1637,7 +1665,7 @@ public class ReactHostImpl implements ReactHost {
   }
 
   private @Nullable ReactHostInspectorTarget getOrCreateReactHostInspectorTarget() {
-    if (mReactHostInspectorTarget == null && InspectorFlags.getEnableModernCDPRegistry()) {
+    if (mReactHostInspectorTarget == null && InspectorFlags.getFuseboxEnabled()) {
       mReactHostInspectorTarget = new ReactHostInspectorTarget(this);
     }
 

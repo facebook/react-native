@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<dc699311bdbebb8db4ee313611d192b5>>
+ * @generated SignedSource<<3b94757d58e6adb2bccf4ddfb86e2080>>
  */
 
 /**
@@ -25,20 +25,26 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private val accessedFeatureFlags = mutableSetOf<String>()
 
   private var commonTestFlagCache: Boolean? = null
+  private var allowCollapsableChildrenCache: Boolean? = null
+  private var allowRecursiveCommitsWithSynchronousMountOnAndroidCache: Boolean? = null
   private var batchRenderingUpdatesInEventLoopCache: Boolean? = null
+  private var destroyFabricSurfacesInReactInstanceManagerCache: Boolean? = null
   private var enableBackgroundExecutorCache: Boolean? = null
   private var enableCleanTextInputYogaNodeCache: Boolean? = null
-  private var enableCustomDrawOrderFabricCache: Boolean? = null
-  private var enableFixForClippedSubviewsCrashCache: Boolean? = null
+  private var enableGranularShadowTreeStateReconciliationCache: Boolean? = null
   private var enableMicrotasksCache: Boolean? = null
-  private var enableMountHooksAndroidCache: Boolean? = null
-  private var enableSpannableBuildingUnificationCache: Boolean? = null
   private var enableSynchronousStateUpdatesCache: Boolean? = null
   private var enableUIConsistencyCache: Boolean? = null
-  private var inspectorEnableCxxInspectorPackagerConnectionCache: Boolean? = null
-  private var inspectorEnableModernCDPRegistryCache: Boolean? = null
+  private var fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeakCache: Boolean? = null
+  private var forceBatchingMountItemsOnAndroidCache: Boolean? = null
+  private var fuseboxEnabledDebugCache: Boolean? = null
+  private var fuseboxEnabledReleaseCache: Boolean? = null
+  private var lazyAnimationCallbacksCache: Boolean? = null
+  private var preventDoubleTextMeasureCache: Boolean? = null
+  private var setAndroidLayoutDirectionCache: Boolean? = null
   private var useModernRuntimeSchedulerCache: Boolean? = null
   private var useNativeViewConfigsInBridgelessModeCache: Boolean? = null
+  private var useStateAlignmentMechanismCache: Boolean? = null
 
   override fun commonTestFlag(): Boolean {
     var cached = commonTestFlagCache
@@ -50,12 +56,42 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
     return cached
   }
 
+  override fun allowCollapsableChildren(): Boolean {
+    var cached = allowCollapsableChildrenCache
+    if (cached == null) {
+      cached = currentProvider.allowCollapsableChildren()
+      accessedFeatureFlags.add("allowCollapsableChildren")
+      allowCollapsableChildrenCache = cached
+    }
+    return cached
+  }
+
+  override fun allowRecursiveCommitsWithSynchronousMountOnAndroid(): Boolean {
+    var cached = allowRecursiveCommitsWithSynchronousMountOnAndroidCache
+    if (cached == null) {
+      cached = currentProvider.allowRecursiveCommitsWithSynchronousMountOnAndroid()
+      accessedFeatureFlags.add("allowRecursiveCommitsWithSynchronousMountOnAndroid")
+      allowRecursiveCommitsWithSynchronousMountOnAndroidCache = cached
+    }
+    return cached
+  }
+
   override fun batchRenderingUpdatesInEventLoop(): Boolean {
     var cached = batchRenderingUpdatesInEventLoopCache
     if (cached == null) {
       cached = currentProvider.batchRenderingUpdatesInEventLoop()
       accessedFeatureFlags.add("batchRenderingUpdatesInEventLoop")
       batchRenderingUpdatesInEventLoopCache = cached
+    }
+    return cached
+  }
+
+  override fun destroyFabricSurfacesInReactInstanceManager(): Boolean {
+    var cached = destroyFabricSurfacesInReactInstanceManagerCache
+    if (cached == null) {
+      cached = currentProvider.destroyFabricSurfacesInReactInstanceManager()
+      accessedFeatureFlags.add("destroyFabricSurfacesInReactInstanceManager")
+      destroyFabricSurfacesInReactInstanceManagerCache = cached
     }
     return cached
   }
@@ -80,22 +116,12 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
     return cached
   }
 
-  override fun enableCustomDrawOrderFabric(): Boolean {
-    var cached = enableCustomDrawOrderFabricCache
+  override fun enableGranularShadowTreeStateReconciliation(): Boolean {
+    var cached = enableGranularShadowTreeStateReconciliationCache
     if (cached == null) {
-      cached = currentProvider.enableCustomDrawOrderFabric()
-      accessedFeatureFlags.add("enableCustomDrawOrderFabric")
-      enableCustomDrawOrderFabricCache = cached
-    }
-    return cached
-  }
-
-  override fun enableFixForClippedSubviewsCrash(): Boolean {
-    var cached = enableFixForClippedSubviewsCrashCache
-    if (cached == null) {
-      cached = currentProvider.enableFixForClippedSubviewsCrash()
-      accessedFeatureFlags.add("enableFixForClippedSubviewsCrash")
-      enableFixForClippedSubviewsCrashCache = cached
+      cached = currentProvider.enableGranularShadowTreeStateReconciliation()
+      accessedFeatureFlags.add("enableGranularShadowTreeStateReconciliation")
+      enableGranularShadowTreeStateReconciliationCache = cached
     }
     return cached
   }
@@ -106,26 +132,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.enableMicrotasks()
       accessedFeatureFlags.add("enableMicrotasks")
       enableMicrotasksCache = cached
-    }
-    return cached
-  }
-
-  override fun enableMountHooksAndroid(): Boolean {
-    var cached = enableMountHooksAndroidCache
-    if (cached == null) {
-      cached = currentProvider.enableMountHooksAndroid()
-      accessedFeatureFlags.add("enableMountHooksAndroid")
-      enableMountHooksAndroidCache = cached
-    }
-    return cached
-  }
-
-  override fun enableSpannableBuildingUnification(): Boolean {
-    var cached = enableSpannableBuildingUnificationCache
-    if (cached == null) {
-      cached = currentProvider.enableSpannableBuildingUnification()
-      accessedFeatureFlags.add("enableSpannableBuildingUnification")
-      enableSpannableBuildingUnificationCache = cached
     }
     return cached
   }
@@ -150,22 +156,72 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
     return cached
   }
 
-  override fun inspectorEnableCxxInspectorPackagerConnection(): Boolean {
-    var cached = inspectorEnableCxxInspectorPackagerConnectionCache
+  override fun fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak(): Boolean {
+    var cached = fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeakCache
     if (cached == null) {
-      cached = currentProvider.inspectorEnableCxxInspectorPackagerConnection()
-      accessedFeatureFlags.add("inspectorEnableCxxInspectorPackagerConnection")
-      inspectorEnableCxxInspectorPackagerConnectionCache = cached
+      cached = currentProvider.fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak()
+      accessedFeatureFlags.add("fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak")
+      fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeakCache = cached
     }
     return cached
   }
 
-  override fun inspectorEnableModernCDPRegistry(): Boolean {
-    var cached = inspectorEnableModernCDPRegistryCache
+  override fun forceBatchingMountItemsOnAndroid(): Boolean {
+    var cached = forceBatchingMountItemsOnAndroidCache
     if (cached == null) {
-      cached = currentProvider.inspectorEnableModernCDPRegistry()
-      accessedFeatureFlags.add("inspectorEnableModernCDPRegistry")
-      inspectorEnableModernCDPRegistryCache = cached
+      cached = currentProvider.forceBatchingMountItemsOnAndroid()
+      accessedFeatureFlags.add("forceBatchingMountItemsOnAndroid")
+      forceBatchingMountItemsOnAndroidCache = cached
+    }
+    return cached
+  }
+
+  override fun fuseboxEnabledDebug(): Boolean {
+    var cached = fuseboxEnabledDebugCache
+    if (cached == null) {
+      cached = currentProvider.fuseboxEnabledDebug()
+      accessedFeatureFlags.add("fuseboxEnabledDebug")
+      fuseboxEnabledDebugCache = cached
+    }
+    return cached
+  }
+
+  override fun fuseboxEnabledRelease(): Boolean {
+    var cached = fuseboxEnabledReleaseCache
+    if (cached == null) {
+      cached = currentProvider.fuseboxEnabledRelease()
+      accessedFeatureFlags.add("fuseboxEnabledRelease")
+      fuseboxEnabledReleaseCache = cached
+    }
+    return cached
+  }
+
+  override fun lazyAnimationCallbacks(): Boolean {
+    var cached = lazyAnimationCallbacksCache
+    if (cached == null) {
+      cached = currentProvider.lazyAnimationCallbacks()
+      accessedFeatureFlags.add("lazyAnimationCallbacks")
+      lazyAnimationCallbacksCache = cached
+    }
+    return cached
+  }
+
+  override fun preventDoubleTextMeasure(): Boolean {
+    var cached = preventDoubleTextMeasureCache
+    if (cached == null) {
+      cached = currentProvider.preventDoubleTextMeasure()
+      accessedFeatureFlags.add("preventDoubleTextMeasure")
+      preventDoubleTextMeasureCache = cached
+    }
+    return cached
+  }
+
+  override fun setAndroidLayoutDirection(): Boolean {
+    var cached = setAndroidLayoutDirectionCache
+    if (cached == null) {
+      cached = currentProvider.setAndroidLayoutDirection()
+      accessedFeatureFlags.add("setAndroidLayoutDirection")
+      setAndroidLayoutDirectionCache = cached
     }
     return cached
   }
@@ -186,6 +242,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.useNativeViewConfigsInBridgelessMode()
       accessedFeatureFlags.add("useNativeViewConfigsInBridgelessMode")
       useNativeViewConfigsInBridgelessModeCache = cached
+    }
+    return cached
+  }
+
+  override fun useStateAlignmentMechanism(): Boolean {
+    var cached = useStateAlignmentMechanismCache
+    if (cached == null) {
+      cached = currentProvider.useStateAlignmentMechanism()
+      accessedFeatureFlags.add("useStateAlignmentMechanism")
+      useStateAlignmentMechanismCache = cached
     }
     return cached
   }

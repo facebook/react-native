@@ -27,6 +27,10 @@ namespace facebook::react {
 
 using ArrayPropsNativeComponentSizesMask = uint32_t;
 
+struct ArrayPropsNativeComponentSizesMaskWrapped {
+  ArrayPropsNativeComponentSizesMask value;
+};
+
 enum class ArrayPropsNativeComponentSizes: ArrayPropsNativeComponentSizesMask {
   Small = 1 << 0,
   Large = 1 << 1
@@ -50,29 +54,29 @@ constexpr void operator|=(
   lhs = lhs | static_cast<ArrayPropsNativeComponentSizesMask>(rhs);
 }
 
-static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsNativeComponentSizesMask &result) {
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsNativeComponentSizesMaskWrapped &wrapped) {
   auto items = std::vector<std::string>{value};
   for (const auto &item : items) {
     if (item == \\"small\\") {
-      result |= ArrayPropsNativeComponentSizes::Small;
+      wrapped.value |= ArrayPropsNativeComponentSizes::Small;
       continue;
     }
     if (item == \\"large\\") {
-      result |= ArrayPropsNativeComponentSizes::Large;
+      wrapped.value |= ArrayPropsNativeComponentSizes::Large;
       continue;
     }
     abort();
   }
 }
 
-static inline std::string toString(const ArrayPropsNativeComponentSizesMask &value) {
+static inline std::string toString(const ArrayPropsNativeComponentSizesMaskWrapped &wrapped) {
     auto result = std::string{};
     auto separator = std::string{\\", \\"};
 
-    if (value & ArrayPropsNativeComponentSizes::Small) {
+    if (wrapped.value & ArrayPropsNativeComponentSizes::Small) {
       result += \\"small\\" + separator;
     }
-    if (value & ArrayPropsNativeComponentSizes::Large) {
+    if (wrapped.value & ArrayPropsNativeComponentSizes::Large) {
       result += \\"large\\" + separator;
     }
     if (!result.empty()) {
@@ -81,7 +85,7 @@ static inline std::string toString(const ArrayPropsNativeComponentSizesMask &val
     return result;
 }
 struct ArrayPropsNativeComponentObjectStruct {
-  std::string stringProp;
+  std::string stringProp{\\"\\"};
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsNativeComponentObjectStruct &result) {
@@ -108,7 +112,7 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
 
 
 struct ArrayPropsNativeComponentArrayObjectStruct {
-  std::string stringProp;
+  std::string stringProp{\\"\\"};
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsNativeComponentArrayObjectStruct &result) {
@@ -135,7 +139,7 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
 
 
 struct ArrayPropsNativeComponentArrayStruct {
-  std::vector<ArrayPropsNativeComponentArrayObjectStruct> object;
+  std::vector<ArrayPropsNativeComponentArrayObjectStruct> object{};
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsNativeComponentArrayStruct &result) {
@@ -162,7 +166,7 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
 
 
 struct ArrayPropsNativeComponentArrayOfArrayOfObjectStruct {
-  std::string stringProp;
+  std::string stringProp{\\"\\"};
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsNativeComponentArrayOfArrayOfObjectStruct &result) {
@@ -242,9 +246,9 @@ Map {
 namespace facebook::react {
 
 struct ArrayPropsNativeComponentNativePrimitivesStruct {
-  std::vector<SharedColor> colors;
-  std::vector<ImageSource> srcs;
-  std::vector<Point> points;
+  std::vector<SharedColor> colors{};
+  std::vector<ImageSource> srcs{};
+  std::vector<Point> points{};
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsNativeComponentNativePrimitivesStruct &result) {
@@ -1100,7 +1104,7 @@ static inline std::string toString(const ObjectPropsIntEnumProp &value) {
   }
 }
 struct ObjectPropsObjectPropObjectArrayPropStruct {
-  std::vector<std::string> array;
+  std::vector<std::string> array{};
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsObjectPropObjectArrayPropStruct &result) {
@@ -1117,9 +1121,9 @@ static inline std::string toString(const ObjectPropsObjectPropObjectArrayPropStr
 }
 
 struct ObjectPropsObjectPropObjectPrimitiveRequiredPropStruct {
-  ImageSource image;
-  SharedColor color;
-  Point point;
+  ImageSource image{};
+  SharedColor color{};
+  Point point{};
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsObjectPropObjectPrimitiveRequiredPropStruct &result) {
@@ -1144,7 +1148,7 @@ static inline std::string toString(const ObjectPropsObjectPropObjectPrimitiveReq
 }
 
 struct ObjectPropsObjectPropNestedPropANestedPropBStruct {
-  std::string nestedPropC;
+  std::string nestedPropC{\\"\\"};
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsObjectPropNestedPropANestedPropBStruct &result) {
@@ -1161,7 +1165,7 @@ static inline std::string toString(const ObjectPropsObjectPropNestedPropANestedP
 }
 
 struct ObjectPropsObjectPropNestedPropAStruct {
-  ObjectPropsObjectPropNestedPropANestedPropBStruct nestedPropB;
+  ObjectPropsObjectPropNestedPropANestedPropBStruct nestedPropB{};
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsObjectPropNestedPropAStruct &result) {
@@ -1178,7 +1182,7 @@ static inline std::string toString(const ObjectPropsObjectPropNestedPropAStruct 
 }
 
 struct ObjectPropsObjectPropNestedArrayAsPropertyArrayPropStruct {
-  std::string stringProp;
+  std::string stringProp{\\"\\"};
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsObjectPropNestedArrayAsPropertyArrayPropStruct &result) {
@@ -1205,7 +1209,7 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
 
 
 struct ObjectPropsObjectPropNestedArrayAsPropertyStruct {
-  std::vector<ObjectPropsObjectPropNestedArrayAsPropertyArrayPropStruct> arrayProp;
+  std::vector<ObjectPropsObjectPropNestedArrayAsPropertyArrayPropStruct> arrayProp{};
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsObjectPropNestedArrayAsPropertyStruct &result) {
@@ -1222,16 +1226,20 @@ static inline std::string toString(const ObjectPropsObjectPropNestedArrayAsPrope
 }
 
 struct ObjectPropsObjectPropStruct {
-  std::string stringProp;
-  bool booleanProp;
-  Float floatProp;
-  int intProp;
-  ObjectPropsStringEnumProp stringEnumProp;
-  ObjectPropsIntEnumProp intEnumProp;
-  ObjectPropsObjectPropObjectArrayPropStruct objectArrayProp;
-  ObjectPropsObjectPropObjectPrimitiveRequiredPropStruct objectPrimitiveRequiredProp;
-  ObjectPropsObjectPropNestedPropAStruct nestedPropA;
-  ObjectPropsObjectPropNestedArrayAsPropertyStruct nestedArrayAsProperty;
+  std::string stringProp{\\"\\"};
+  bool booleanProp{false};
+  Float floatProp{0.0};
+  int intProp{0};
+  std::string stringUserDefaultProp{\\"user_default\\"};
+  bool booleanUserDefaultProp{true};
+  Float floatUserDefaultProp{3.14};
+  int intUserDefaultProp{9999};
+  ObjectPropsStringEnumProp stringEnumProp{ObjectPropsStringEnumProp::Option1};
+  ObjectPropsIntEnumProp intEnumProp{ObjectPropsIntEnumProp::IntEnumProp0};
+  ObjectPropsObjectPropObjectArrayPropStruct objectArrayProp{};
+  ObjectPropsObjectPropObjectPrimitiveRequiredPropStruct objectPrimitiveRequiredProp{};
+  ObjectPropsObjectPropNestedPropAStruct nestedPropA{};
+  ObjectPropsObjectPropNestedArrayAsPropertyStruct nestedArrayAsProperty{};
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsObjectPropStruct &result) {
@@ -1252,6 +1260,22 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
   auto tmp_intProp = map.find(\\"intProp\\");
   if (tmp_intProp != map.end()) {
     fromRawValue(context, tmp_intProp->second, result.intProp);
+  }
+  auto tmp_stringUserDefaultProp = map.find(\\"stringUserDefaultProp\\");
+  if (tmp_stringUserDefaultProp != map.end()) {
+    fromRawValue(context, tmp_stringUserDefaultProp->second, result.stringUserDefaultProp);
+  }
+  auto tmp_booleanUserDefaultProp = map.find(\\"booleanUserDefaultProp\\");
+  if (tmp_booleanUserDefaultProp != map.end()) {
+    fromRawValue(context, tmp_booleanUserDefaultProp->second, result.booleanUserDefaultProp);
+  }
+  auto tmp_floatUserDefaultProp = map.find(\\"floatUserDefaultProp\\");
+  if (tmp_floatUserDefaultProp != map.end()) {
+    fromRawValue(context, tmp_floatUserDefaultProp->second, result.floatUserDefaultProp);
+  }
+  auto tmp_intUserDefaultProp = map.find(\\"intUserDefaultProp\\");
+  if (tmp_intUserDefaultProp != map.end()) {
+    fromRawValue(context, tmp_intUserDefaultProp->second, result.intUserDefaultProp);
   }
   auto tmp_stringEnumProp = map.find(\\"stringEnumProp\\");
   if (tmp_stringEnumProp != map.end()) {

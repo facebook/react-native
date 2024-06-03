@@ -2,14 +2,7 @@
   "name": "@react-native/monorepo",
   "private": true,
   "version": "1000.0.0",
-  "description": "A framework for building native apps using React",
   "license": "MIT",
-  "repository": "github:facebook/react-native",
-  "types": "types",
-  "jest-junit": {
-    "outputDirectory": "reports/junit",
-    "outputName": "js-test-results.xml"
-  },
   "scripts": {
     "android": "cd packages/rn-tester && npm run android",
     "build-android": "./gradlew :packages:react-native:ReactAndroid:build",
@@ -45,9 +38,6 @@
     "packages/*",
     "tools/*"
   ],
-  "peerDependencies": {
-    "react": "18.2.0"
-  },
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "@babel/eslint-parser": "^7.20.0",
@@ -85,11 +75,11 @@
     "eslint-plugin-react-native": "^4.0.0",
     "eslint-plugin-redundant-undefined": "^0.4.0",
     "eslint-plugin-relay": "^1.8.3",
-    "flow-api-translator": "0.20.1",
-    "flow-bin": "^0.232.0",
+    "flow-api-translator": "0.21.1",
+    "flow-bin": "^0.237.1",
     "glob": "^7.1.1",
-    "hermes-eslint": "0.20.1",
-    "hermes-transform": "0.20.1",
+    "hermes-eslint": "0.21.1",
+    "hermes-transform": "0.21.1",
     "inquirer": "^7.1.0",
     "jest": "^29.6.3",
     "jest-junit": "^10.0.0",
@@ -101,9 +91,9 @@
     "node-fetch": "^2.2.0",
     "nullthrows": "^1.1.1",
     "prettier": "2.8.8",
-    "prettier-plugin-hermes-parser": "0.20.1",
-    "react": "18.2.0",
-    "react-test-renderer": "18.2.0",
+    "prettier-plugin-hermes-parser": "0.21.1",
+    "react": "18.3.1",
+    "react-test-renderer": "18.3.1",
     "rimraf": "^3.0.2",
     "shelljs": "^0.8.5",
     "signedsource": "^1.0.0",

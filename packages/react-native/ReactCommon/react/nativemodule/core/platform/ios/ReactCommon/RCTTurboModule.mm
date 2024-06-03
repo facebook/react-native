@@ -227,7 +227,7 @@ static jsi::Value convertJSErrorDetailsToJSRuntimeError(jsi::Runtime &runtime, N
   return jsError;
 }
 
-}
+} // namespace TurboModuleConvertUtils
 
 jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string methodName, PromiseInvocationBlock invoke)
 {
@@ -813,5 +813,5 @@ void ObjCTurboModule::setMethodArgConversionSelector(NSString *methodName, size_
   methodArgConversionSelectors_[methodName][argIndex] = selectorValue;
 }
 
-}
-} // namespace facebook::react
+} // namespace react
+} // namespace facebook

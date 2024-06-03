@@ -161,6 +161,7 @@ function checkPackagerRunning() {
 async function setupCircleCIArtifacts(
   circleciToken /*: ?string */,
   branchName /*: string */,
+  useLastSuccessfulPipeline /*: boolean */,
 ) /*: Promise<?typeof circleCIArtifactsUtils> */ {
   if (circleciToken == null) {
     return null;
@@ -171,6 +172,7 @@ async function setupCircleCIArtifacts(
     circleciToken,
     baseTmpPath,
     branchName,
+    useLastSuccessfulPipeline,
   );
   return circleCIArtifactsUtils;
 }

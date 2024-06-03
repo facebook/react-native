@@ -19,7 +19,7 @@ import {createValueIterator} from './ArrayLikeUtils';
 
 // $FlowIssue[prop-missing] Flow doesn't understand [Symbol.iterator]() {} and thinks this class doesn't implement the Iterable<T> interface.
 export default class HTMLCollection<T> implements Iterable<T>, ArrayLike<T> {
-  _length: number;
+  #length: number;
 
   /**
    * Use `createHTMLCollection` to create instances of this class.
@@ -37,15 +37,15 @@ export default class HTMLCollection<T> implements Iterable<T>, ArrayLike<T> {
       });
     }
 
-    this._length = elements.length;
+    this.#length = elements.length;
   }
 
   get length(): number {
-    return this._length;
+    return this.#length;
   }
 
   item(index: number): T | null {
-    if (index < 0 || index >= this._length) {
+    if (index < 0 || index >= this.#length) {
       return null;
     }
 

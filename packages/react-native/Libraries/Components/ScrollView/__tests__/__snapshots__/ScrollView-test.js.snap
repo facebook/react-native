@@ -49,6 +49,7 @@ exports[`ScrollView renders its children: should deep render when not mocked (pl
 >
   <RCTScrollContentView
     collapsable={false}
+    collapsableChildren={true}
     style={
       Array [
         false,

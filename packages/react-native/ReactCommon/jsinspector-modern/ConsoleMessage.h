@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include "StackTrace.h"
+
 #include <vector>
 
 #include <jsi/jsi.h>
@@ -57,18 +59,23 @@ struct SimpleConsoleMessage {
 };
 
 /**
- * A console message made of JSI values.
+ * A console message made of JSI values and a captured stack trace.
  */
 struct ConsoleMessage {
   double timestamp;
   ConsoleAPIType type;
   std::vector<jsi::Value> args;
+  std::unique_ptr<StackTrace> stackTrace;
 
   ConsoleMessage(
       double timestamp,
       ConsoleAPIType type,
-      std::vector<jsi::Value> args)
-      : timestamp(timestamp), type(type), args(std::move(args)) {}
+      std::vector<jsi::Value> args,
+      std::unique_ptr<StackTrace> stackTrace = StackTrace::empty())
+      : timestamp(timestamp),
+        type(type),
+        args(std::move(args)),
+        stackTrace(std::move(stackTrace)) {}
 
   ConsoleMessage(jsi::Runtime& runtime, SimpleConsoleMessage message);
 

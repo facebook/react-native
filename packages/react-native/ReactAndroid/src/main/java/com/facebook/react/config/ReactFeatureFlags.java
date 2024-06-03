@@ -80,12 +80,6 @@ public class ReactFeatureFlags {
 
   public static boolean dispatchPointerEvents = false;
 
-  /** Feature Flag to enable a cache of Spannable objects used by TextLayoutManagerMapBuffer */
-  public static boolean enableTextSpannableCache = false;
-
-  /** Feature Flag to enable the pending event queue in fabric before mounting views */
-  public static boolean enableFabricPendingEventQueue = false;
-
   /**
    * Feature Flag to enable View Recycling. When enabled, individual ViewManagers must still opt-in.
    */
@@ -100,9 +94,6 @@ public class ReactFeatureFlags {
    * Allow Differentiator.cpp and FabricMountingManager.cpp to generate a RemoveDeleteTree mega-op.
    */
   public static boolean enableRemoveDeleteTreeInstruction = false;
-
-  /** When enabled, Fabric will avoid cloning notes to perform state progression. */
-  public static boolean enableClonelessStateProgression = false;
 
   /** When enabled, rawProps in Props will not include Yoga specific props. */
   public static boolean excludeYogaFromRawProps = false;

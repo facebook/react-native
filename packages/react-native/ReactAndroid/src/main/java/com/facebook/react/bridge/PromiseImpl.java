@@ -9,6 +9,7 @@ package com.facebook.react.bridge;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import com.facebook.proguard.annotations.DoNotStrip;
 
 /*
  * Implementation of {@link Promise} that represents a JavaScript Promise which can be passed to the
@@ -17,6 +18,7 @@ import androidx.annotation.Nullable;
  * Methods annotated with {@link ReactMethod} that use a {@link Promise} as the last parameter
  * will be marked as "promise" and will return a promise when invoked from JavaScript.
  */
+@DoNotStrip
 public class PromiseImpl implements Promise {
   // Number of stack frames to parse and return to mReject.invoke
   // for ERROR_MAP_KEY_NATIVE_STACK
@@ -28,6 +30,7 @@ public class PromiseImpl implements Promise {
   // Keys for mReject's WritableMap
   private static final String ERROR_MAP_KEY_CODE = "code";
   private static final String ERROR_MAP_KEY_MESSAGE = "message";
+  private static final String ERROR_MAP_KEY_NAME = "name";
   private static final String ERROR_MAP_KEY_USER_INFO = "userInfo";
   private static final String ERROR_MAP_KEY_NATIVE_STACK = "nativeStackAndroid";
 
@@ -40,6 +43,7 @@ public class PromiseImpl implements Promise {
   private @Nullable Callback mResolve;
   private @Nullable Callback mReject;
 
+  @DoNotStrip
   public PromiseImpl(@Nullable Callback resolve, @Nullable Callback reject) {
     mResolve = resolve;
     mReject = reject;
@@ -187,7 +191,12 @@ public class PromiseImpl implements Promise {
     if (message != null) {
       errorInfo.putString(ERROR_MAP_KEY_MESSAGE, message);
     } else if (throwable != null) {
-      errorInfo.putString(ERROR_MAP_KEY_MESSAGE, throwable.getMessage());
+      String throwableMessage = throwable.getMessage();
+      // Fallback to the trowable name, so we record some useful information
+      if (throwableMessage == null || throwableMessage.isEmpty()) {
+        throwableMessage = throwable.getClass().getCanonicalName();
+      }
+      errorInfo.putString(ERROR_MAP_KEY_MESSAGE, throwableMessage);
     } else {
       // The JavaScript side expects a map with at least an error message.
       // /Libraries/BatchedBridge/NativeModules.js -> createErrorFromErrorData
@@ -207,6 +216,8 @@ public class PromiseImpl implements Promise {
     // this matches iOS behavior - iOS adds a `nativeStackIOS` property
     // iOS: /React/Base/RCTUtils.m -> RCTJSErrorFromCodeMessageAndNSError
     if (throwable != null) {
+      errorInfo.putString(ERROR_MAP_KEY_NAME, throwable.getClass().getCanonicalName());
+
       StackTraceElement[] stackTrace = throwable.getStackTrace();
       WritableNativeArray nativeStackAndroid = new WritableNativeArray();
 

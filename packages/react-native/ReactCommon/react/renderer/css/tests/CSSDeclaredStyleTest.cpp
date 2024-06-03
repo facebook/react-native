@@ -7,7 +7,7 @@
 
 #include <gtest/gtest.h>
 #include <react/renderer/css/CSSDeclaredStyle.h>
-#include <react/renderer/css/CSSParser.h>
+#include <react/renderer/css/CSSSyntaxParser.h>
 
 namespace facebook::react {
 
@@ -32,8 +32,7 @@ TEST(CSSDeclaredStyle, set_keyword) {
 
   auto value = style.get<CSSProp::FlexDirection>();
   EXPECT_EQ(value.type(), CSSValueType::Keyword);
-  EXPECT_EQ(
-      value.getKeyword(), CSSAllowedKeywords<CSSProp::FlexDirection>::Row);
+  EXPECT_EQ(value.getKeyword(), CSSKeyword::Row);
 }
 
 TEST(CSSDeclaredStyle, set_ratio) {
@@ -73,9 +72,7 @@ TEST(CSSDeclaredStyle, set_multiple) {
 
   auto flexDirection = style.get<CSSProp::FlexDirection>();
   EXPECT_EQ(flexDirection.type(), CSSValueType::Keyword);
-  EXPECT_EQ(
-      flexDirection.getKeyword(),
-      CSSAllowedKeywords<CSSProp::FlexDirection>::Row);
+  EXPECT_EQ(flexDirection.getKeyword(), CSSKeyword::Row);
 
   auto aspectRatio = style.get<CSSProp::AspectRatio>();
   EXPECT_EQ(aspectRatio.type(), CSSValueType::Ratio);
@@ -92,9 +89,7 @@ TEST(CSSDeclaredStyle, set_multiple_overwrite) {
 
   auto flexDirection = style.get<CSSProp::FlexDirection>();
   EXPECT_EQ(flexDirection.type(), CSSValueType::Keyword);
-  EXPECT_EQ(
-      flexDirection.getKeyword(),
-      CSSAllowedKeywords<CSSProp::FlexDirection>::Column);
+  EXPECT_EQ(flexDirection.getKeyword(), CSSKeyword::Column);
 
   auto aspectRatio = style.get<CSSProp::AspectRatio>();
   EXPECT_EQ(aspectRatio.type(), CSSValueType::Ratio);
@@ -146,6 +141,24 @@ TEST(CSSDeclaredStyle, get_with_precedence) {
   EXPECT_EQ(margin2.type(), CSSValueType::Length);
   EXPECT_EQ(margin2.getLength().value, 3.0f);
   EXPECT_EQ(margin2.getLength().unit, CSSLengthUnit::Px);
+}
+
+TEST(CSSDeclaredStyle, set_from_string) {
+  CSSDeclaredStyle style;
+
+  EXPECT_TRUE(style.set("flexDirection", "row"));
+
+  EXPECT_EQ(style.get<CSSProp::FlexDirection>().type(), CSSValueType::Keyword);
+  EXPECT_EQ(style.get<CSSProp::FlexDirection>().getKeyword(), CSSKeyword::Row);
+
+  EXPECT_TRUE(style.set("aspectRatio", "16 / 9"));
+
+  EXPECT_EQ(style.get<CSSProp::AspectRatio>().type(), CSSValueType::Ratio);
+  auto ratio = style.get<CSSProp::AspectRatio>();
+  EXPECT_FLOAT_EQ(ratio.getRatio().numerator, 16.0f);
+  EXPECT_FLOAT_EQ(ratio.getRatio().denominator, 9.0f);
+
+  EXPECT_FALSE(style.set("aspectRatio", "16 / 9 / 2"));
 }
 
 } // namespace facebook::react

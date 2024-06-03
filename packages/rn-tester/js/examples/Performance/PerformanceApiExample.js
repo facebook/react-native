@@ -19,6 +19,7 @@ import {Button, StyleSheet, Text, View} from 'react-native';
 import Performance from 'react-native/src/private/webapis/performance/Performance';
 import PerformanceObserver, {
   type PerformanceEntry,
+  type PerformanceEventTiming,
 } from 'react-native/src/private/webapis/performance/PerformanceObserver';
 
 const {useState, useCallback} = React;
@@ -132,18 +133,79 @@ function PerformanceObserverUserTimingExample(): React.Node {
         {entries.map((entry, index) =>
           entry.entryType === 'mark' ? (
             <Text style={{color: theme.LabelColor}} key={index}>
-              Mark {entry.name}: {entry.startTime}
+              Mark {entry.name}: {entry.startTime.toFixed(2)}
             </Text>
           ) : (
             <Text style={{color: theme.LabelColor}} key={index}>
-              Measure {entry.name}: {entry.startTime} -{' '}
-              {entry.startTime + entry.duration} ({entry.duration}ms)
+              Measure {entry.name}: {entry.startTime.toFixed(2)} -{' '}
+              {(entry.startTime + entry.duration).toFixed(2)} (
+              {entry.duration.toFixed(2)}ms)
             </Text>
           ),
         )}
       </View>
     </View>
   );
+}
+
+function PerformanceObserverEventTimingExample(): React.Node {
+  const theme = useContext(RNTesterThemeContext);
+
+  const [count, setCount] = useState(0);
+
+  const [entries, setEntries] = useState<
+    $ReadOnlyArray<PerformanceEventTiming>,
+  >([]);
+
+  useEffect(() => {
+    const observer = new PerformanceObserver(list => {
+      const newEntries: $ReadOnlyArray<PerformanceEventTiming> =
+        // $FlowExpectedError[incompatible-type] This is guaranteed because we're only observing `event` entry types.
+        list.getEntries();
+      setEntries(newEntries);
+    });
+
+    observer.observe({entryTypes: ['event']});
+
+    return () => observer.disconnect();
+  }, []);
+
+  const onPress = useCallback(() => {
+    busyWait(500);
+    // Force a state update to show how/if we're reporting paint times as well.
+    setCount(currentCount => currentCount + 1);
+  }, []);
+
+  return (
+    <View style={styles.container}>
+      <Button
+        onPress={onPress}
+        title={`Click to force a slow event (clicked ${count} times)`}
+      />
+      <View>
+        {entries.map((entry, index) => (
+          <Text style={{color: theme.LabelColor}} key={index}>
+            Event: {entry.name}
+            {'\n'}
+            Start: {entry.startTime.toFixed(2)}
+            {'\n'}
+            End: {(entry.startTime + entry.duration).toFixed(2)}
+            {'\n'}
+            Duration: {entry.duration.toFixed(2)}ms{'\n'}
+            Processing start: {entry.processingStart.toFixed(2)} (delay:{' '}
+            {(entry.processingStart - entry.startTime).toFixed(2)}ms){'\n'}
+            Processing end: {entry.processingEnd.toFixed(2)} (duration:{' '}
+            {(entry.processingEnd - entry.processingStart).toFixed(2)}ms){'\n'}
+          </Text>
+        ))}
+      </View>
+    </View>
+  );
+}
+
+function busyWait(ms: number): void {
+  const end = performance.now() + ms;
+  while (performance.now() < end) {}
 }
 
 const styles = StyleSheet.create({
@@ -172,6 +234,12 @@ exports.examples = [
     title: 'PerformanceObserver (marks and measures)',
     render: function (): React.Element<typeof StartupTimingExample> {
       return <PerformanceObserverUserTimingExample />;
+    },
+  },
+  {
+    title: 'PerformanceObserver (events)',
+    render: function (): React.Element<typeof StartupTimingExample> {
+      return <PerformanceObserverEventTimingExample />;
     },
   },
 ];

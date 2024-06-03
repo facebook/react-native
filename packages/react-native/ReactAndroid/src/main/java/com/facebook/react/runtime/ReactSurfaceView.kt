@@ -102,6 +102,7 @@ public class ReactSurfaceView(context: Context?, private val surface: ReactSurfa
     // views disallow that, but propagate it up the tree if possible.
     parent?.requestDisallowInterceptTouchEvent(disallowIntercept)
   }
+
   /**
    * Called when a child starts a native gesture (e.g. a scroll in a ScrollView). Should be called
    * from the child's onTouchIntercepted implementation.
@@ -115,7 +116,7 @@ public class ReactSurfaceView(context: Context?, private val surface: ReactSurfa
   override fun onChildEndedNativeGesture(childView: View, ev: MotionEvent) {
     val eventDispatcher = surface.eventDispatcher ?: return
     jsTouchDispatcher.onChildEndedNativeGesture(ev, eventDispatcher)
-    jsPointerDispatcher?.onChildStartedNativeGesture(childView, ev, eventDispatcher)
+    jsPointerDispatcher?.onChildEndedNativeGesture()
   }
 
   override fun handleException(t: Throwable) {

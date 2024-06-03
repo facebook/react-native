@@ -26,11 +26,13 @@ target_link_libraries(react_render_scheduler
         react_config
         react_debug
         react_featureflags
+        react_performance_timeline
         react_render_componentregistry
         react_render_core
         react_render_debug
         react_render_graphics
         react_render_mounting
+        react_render_observers_events
         react_render_runtimescheduler
         react_render_uimanager
         react_utils

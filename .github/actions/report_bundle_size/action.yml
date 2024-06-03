@@ -1,0 +1,12 @@
+name: report_bundle_size
+description: Report bundle size
+inputs:
+  platform:
+    description: Platform. Either ios or android
+    default: ios
+runs:
+  using: composite
+  steps:
+    - name: Report size of RNTester.app (analysis-bot)
+      shell: bash
+      run: GITHUB_TOKEN=${{ secrets.PUBLIC_ANALYSISBOT_GITHUB_TOKEN }} scripts/circleci/report-bundle-size.sh ${{ inputs.platform }} || true

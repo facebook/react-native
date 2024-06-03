@@ -183,6 +183,9 @@ class JsiIntegrationPortableTest : public ::testing::Test,
     (void)request;
     reload();
   }
+
+  void onSetPausedInDebuggerMessage(
+      const OverlaySetPausedInDebuggerMessageRequest&) override {}
 };
 
 } // namespace facebook::react::jsinspector_modern

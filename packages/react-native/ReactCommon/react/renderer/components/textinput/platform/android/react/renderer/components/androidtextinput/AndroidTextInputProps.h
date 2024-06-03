@@ -84,7 +84,6 @@ class AndroidTextInputProps final : public BaseTextInputProps {
   int inlineImagePadding{0};
   std::string importantForAutofill{};
   bool showSoftInputOnFocus{false};
-  std::string autoCapitalize{};
   bool autoCorrect{false};
   bool allowFontScaling{false};
   Float maxFontSizeMultiplier{0.0};
@@ -112,7 +111,6 @@ class AndroidTextInputProps final : public BaseTextInputProps {
   bool includeFontPadding{false};
   std::string fontWeight{};
   std::string fontFamily{};
-  std::string textAlignVertical{};
 
   /**
    * Auxiliary information to detect if these props are set or not.

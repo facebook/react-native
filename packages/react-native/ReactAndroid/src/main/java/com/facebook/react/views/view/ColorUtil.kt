@@ -7,7 +7,6 @@
 
 package com.facebook.react.views.view
 
-import android.graphics.PixelFormat
 import kotlin.math.roundToInt
 
 /**
@@ -16,43 +15,6 @@ import kotlin.math.roundToInt
  * adding a dependency on com.facebook.fresco.drawee.
  */
 public object ColorUtil {
-
-  /**
-   * Multiplies the color with the given alpha.
-   *
-   * @param color color to be multiplied
-   * @param alpha value between 0 and 255
-   * @return multiplied color
-   */
-  @JvmStatic
-  public fun multiplyColorAlpha(color: Int, alpha: Int): Int {
-    if (alpha == 255) {
-      return color
-    } else if (alpha == 0) {
-      return color and 0x00FFFFFF
-    }
-
-    val scaledAlpha = alpha + (alpha shr 7) // make it 0..256
-    val colorAlpha = color ushr 24
-    val multipliedAlpha = (colorAlpha * scaledAlpha) shr 8
-    return (multipliedAlpha shl 24) or (color and 0x00FFFFFF)
-  }
-
-  /**
-   * Gets the opacity from a color. Inspired by Android ColorDrawable.
-   *
-   * @param color color to get opacity from
-   * @return opacity expressed by one of PixelFormat constants
-   */
-  @JvmStatic
-  public fun getOpacityFromColor(color: Int): Int {
-    val colorAlpha = color ushr 24
-    return when (colorAlpha) {
-      255 -> PixelFormat.OPAQUE
-      0 -> PixelFormat.TRANSPARENT
-      else -> PixelFormat.TRANSLUCENT
-    }
-  }
 
   /**
    * Converts individual {r, g, b, a} channel values to a single integer representation of the color

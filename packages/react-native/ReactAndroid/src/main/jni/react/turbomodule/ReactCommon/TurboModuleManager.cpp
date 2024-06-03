@@ -12,6 +12,7 @@
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
 
+#include <ReactCommon/BindingsInstallerHolder.h>
 #include <ReactCommon/CxxTurboModuleUtils.h>
 #include <ReactCommon/JavaInteropTurboModule.h>
 #include <ReactCommon/TurboCxxModule.h>
@@ -128,8 +129,10 @@ void TurboModuleManager::registerNatives() {
 
 TurboModuleProviderFunctionType TurboModuleManager::createTurboModuleProvider(
     jni::alias_ref<jhybridobject> javaPart,
+    jsi::Runtime* runtime,
     bool enableSyncVoidMethods) {
   return [turboModuleCache_ = std::weak_ptr<ModuleCache>(turboModuleCache_),
+          runtime,
           jsCallInvoker_ = std::weak_ptr<CallInvoker>(jsCallInvoker_),
           nativeMethodCallInvoker_ =
               std::weak_ptr<NativeMethodCallInvoker>(nativeMethodCallInvoker_),
@@ -208,6 +211,18 @@ TurboModuleProviderFunctionType TurboModuleManager::createTurboModuleProvider(
           .shouldVoidMethodsExecuteSync = enableSyncVoidMethods};
 
       auto turboModule = delegate->cthis()->getTurboModule(name, params);
+      if (moduleInstance->isInstanceOf(
+              JTurboModuleWithJSIBindings::javaClassStatic())) {
+        static auto getBindingsInstaller =
+            JTurboModuleWithJSIBindings::javaClassStatic()
+                ->getMethod<BindingsInstallerHolder::javaobject()>(
+                    "getBindingsInstaller");
+        auto installer = getBindingsInstaller(moduleInstance);
+        if (installer) {
+          installer->cthis()->installBindings(*runtime);
+        }
+      }
+
       turboModuleCache->insert({name, turboModule});
       TurboModulePerfLogger::moduleJSRequireEndingEnd(moduleName);
       return turboModule;
@@ -325,7 +340,8 @@ void TurboModuleManager::installJSIBindings(
                              enableSyncVoidMethods](jsi::Runtime& runtime) {
     TurboModuleBinding::install(
         runtime,
-        cxxPart->createTurboModuleProvider(javaPart, enableSyncVoidMethods),
+        cxxPart->createTurboModuleProvider(
+            javaPart, &runtime, enableSyncVoidMethods),
         shouldCreateLegacyModules
             ? cxxPart->createLegacyModuleProvider(javaPart)
             : nullptr);
