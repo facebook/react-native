@@ -11,6 +11,7 @@
 #import <memory>
 
 #import <React/RCTUtils.h>
+#import <React/RCTImageUtils.h>
 #import <ReactCommon/RCTTurboModule.h>
 
 #import "RCTImagePlugins.h"
@@ -49,7 +50,7 @@ RCT_EXPORT_MODULE()
                                          partialLoadHandler:(RCTImageLoaderPartialLoadBlock)partialLoadHandler
                                           completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
 {
-  UIImage *image = RCTImageFromLocalAssetURL(imageURL);
+    UIImage *image = RCTDecodeImageWithLocalAssetURL(imageURL, size, scale, resizeMode);
   if (image) {
     if (progressHandler) {
       progressHandler(1, 1);
