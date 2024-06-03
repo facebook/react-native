@@ -1333,9 +1333,7 @@ public class ReactHostImpl implements ReactHost {
                     final ReactInstance reactInstance =
                         reactInstanceTaskUnwrapper.unwrap(task, "1: Starting reload");
 
-                    if (reactInstance != null) {
-                      reactInstance.unregisterFromInspector();
-                    }
+                    unregisterInstanceFromInspector(reactInstance);
 
                     final ReactContext reactContext = mBridgelessReactContextRef.getNullable();
                     if (reactContext == null) {
@@ -1512,9 +1510,7 @@ public class ReactHostImpl implements ReactHost {
                     final ReactInstance reactInstance =
                         reactInstanceTaskUnwrapper.unwrap(task, "1: Starting destroy");
 
-                    if (reactInstance != null) {
-                      reactInstance.unregisterFromInspector();
-                    }
+                    unregisterInstanceFromInspector(reactInstance);
 
                     // Step 1: Destroy DevSupportManager
                     if (mUseDevSupport) {
@@ -1676,6 +1672,17 @@ public class ReactHostImpl implements ReactHost {
     if (mReactHostInspectorTarget != null) {
       mReactHostInspectorTarget.close();
       mReactHostInspectorTarget = null;
+    }
+  }
+
+  private void unregisterInstanceFromInspector(final @Nullable ReactInstance reactInstance) {
+    if (reactInstance != null) {
+      if (InspectorFlags.getFuseboxEnabled()) {
+        Assertions.assertCondition(
+            mReactHostInspectorTarget != null && mReactHostInspectorTarget.isValid(),
+            "Host inspector target destroyed before instance was unregistered");
+      }
+      reactInstance.unregisterFromInspector();
     }
   }
 }

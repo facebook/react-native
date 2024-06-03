@@ -7,12 +7,14 @@
 
 package com.facebook.react.bridge;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStripAny;
 import java.util.concurrent.Executor;
 import javax.annotation.Nullable;
 
 @DoNotStripAny
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ReactInstanceManagerInspectorTarget implements AutoCloseable {
   public interface TargetDelegate {
     public void onReload();
@@ -44,6 +46,10 @@ public class ReactInstanceManagerInspectorTarget implements AutoCloseable {
 
   public void close() {
     mHybridData.resetNative();
+  }
+
+  /*internal*/ boolean isValid() {
+    return mHybridData.isValid();
   }
 
   static {
