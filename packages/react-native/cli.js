@@ -52,18 +52,6 @@ function warnWhenRunningInit() {
   }
 }
 
-function warnWithDeprecated() {
-  if (isInitCommand) {
-    return;
-  }
-
-  console.warn(`
-${chalk.yellow('⚠')}️ The \`init\` command is deprecated.
-
-- Switch to ${chalk.dim('npx @react-native-community/cli init')} for the identical behavior.
-- Refer to the documentation for information about alternative tools: ${chalk.dim('https://reactnative.dev/docs/getting-started')}`);
-}
-
 /**
  * npx react-native -> @react-native-community/cli
  *
