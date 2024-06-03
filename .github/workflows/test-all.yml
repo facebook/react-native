@@ -8,7 +8,6 @@ on:
         - main
         - "*-stable"
 
-
 jobs:
   set_release_type:
     runs-on: ubuntu-latest
