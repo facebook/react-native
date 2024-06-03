@@ -231,11 +231,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
                     "phasedRegistrationNames",
                     MapBuilder.of("bubbled", "onEndEditing", "captured", "onEndEditingCapture")))
             .put(
-                "topTextInput",
-                MapBuilder.of(
-                    "phasedRegistrationNames",
-                    MapBuilder.of("bubbled", "onTextInput", "captured", "onTextInputCapture")))
-            .put(
                 "topFocus",
                 MapBuilder.of(
                     "phasedRegistrationNames",
