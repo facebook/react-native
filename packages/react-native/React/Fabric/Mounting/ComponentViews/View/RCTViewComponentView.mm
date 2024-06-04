@@ -633,8 +633,9 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
           // iOS draws borders in front of the content whereas CSS draws them behind
           // the content. For this reason, only use iOS border drawing when clipping
           // or when the border is hidden.
-          borderMetrics.borderWidths.left == 0 ||
-          colorComponentsFromColor(borderMetrics.borderColors.left).alpha == 0 || self.clipsToBounds);
+          borderMetrics.borderWidths.left == 0 || self.clipsToBounds ||
+          (colorComponentsFromColor(borderMetrics.borderColors.left).alpha == 0 &&
+           (*borderMetrics.borderColors.left).getUIColor() != nullptr));
 
   CGColorRef backgroundColor = [_backgroundColor resolvedColorWithTraitCollection:self.traitCollection].CGColor;
 
