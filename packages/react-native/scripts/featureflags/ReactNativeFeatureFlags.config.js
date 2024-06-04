@@ -132,6 +132,11 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'When enabled, the native view configs are used in bridgeless mode.',
     },
+    useRuntimeShadowNodeReferenceUpdate: {
+      defaultValue: false,
+      description:
+        'When enabled, cloning shadow nodes within react native will update the reference held by the current JS fiber tree.',
+    },
     useStateAlignmentMechanism: {
       defaultValue: false,
       description:

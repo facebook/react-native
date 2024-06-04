@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f4950ca8555466a584af00c972a38f1d>>
+ * @generated SignedSource<<7de49cd344ee15e49e2a1cf5e78e0139>>
  */
 
 /**
@@ -51,6 +51,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool setAndroidLayoutDirection();
   bool useModernRuntimeScheduler();
   bool useNativeViewConfigsInBridgelessMode();
+  bool useRuntimeShadowNodeReferenceUpdate();
   bool useStateAlignmentMechanism();
 
   void override(std::unique_ptr<ReactNativeFeatureFlagsProvider> provider);
@@ -62,7 +63,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 21> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 22> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> allowCollapsableChildren_;
@@ -84,6 +85,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> setAndroidLayoutDirection_;
   std::atomic<std::optional<bool>> useModernRuntimeScheduler_;
   std::atomic<std::optional<bool>> useNativeViewConfigsInBridgelessMode_;
+  std::atomic<std::optional<bool>> useRuntimeShadowNodeReferenceUpdate_;
   std::atomic<std::optional<bool>> useStateAlignmentMechanism_;
 };
 
