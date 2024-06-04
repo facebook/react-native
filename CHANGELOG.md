@@ -1,5 +1,29 @@
 # Changelog
 
+## v0.74.2
+
+### Changed
+
+- Updated `typescript-eslint` monorepo to `v7`
+ ([91d725136e](https://github.com/facebook/react-native/commit/91d725136e8fe0fd55fdfca5a4f5bd8ab527f94e) by [@huntie](https://github.com/huntie))
+- Upgrade CLI to `13.6.8` ([335f6ed833](https://github.com/facebook/react-native/commit/335f6ed83306bfa150c818d26dce4b279de4869f) by [@szymonrybczak](https://github.com/szymonrybczak))
+
+### Fixed
+
+- Warn only in `init` command when CLI uses cached `npx` version ([b98c5b960c](https://github.com/facebook/react-native/commit/b98c5b960ccc4fe9d2792c35994c414c709a3d7a) by [@szymonrybczak](https://github.com/szymonrybczak))
+- `selection` prop in `TextInput` was not being applied at component creation ([be09d12667](https://github.com/facebook/react-native/commit/be09d12667044f237f08af410b2838062eb8e657) by [@alanleedev](https://github.com/alanleedev))
+
+#### Android specific
+
+- Fixed dangling `mAttachedSurfaces` after `ReactHost.destroy()` ([c70d791036](https://github.com/facebook/react-native/commit/c70d7910361f56bc361ad825fe13fb2178edfeba) by [@Kudo](https://github.com/Kudo))
+- ReactSoftExceptions in ReactHostImpl only when Context is null ([ac3261ff60](https://github.com/facebook/react-native/commit/ac3261ff608768ff43736b413c5a5ad67668af61) by [@arushikesarwani94](https://github.com/arushikesarwani94))
+
+#### iOS specific
+
+- Privacy Manifest aggregation failing due to no `NSPrivacyAccessedAPITypes` key ([fc4e099920](https://github.com/facebook/react-native/commit/fc4e0999206ec7c1f465bb2b1fea987e43485a82) by [@renchap](https://github.com/renchap))
+- In privacy manifest post install script, handle the case where the file reference doesn't have a path ([4ad65ac59a](https://github.com/facebook/react-native/commit/4ad65ac59a2491db598abb7b32fb793e9693d5ac) by [@robertying](https://github.com/robertying))
+- Fixed an issue where the `selectionColor` prop was not being applied on the `TextInput` component. ([2bde626a9f](https://github.com/facebook/react-native/commit/2bde626a9fa2f782864937a5258ac494afe27f9f) by [@robinshin](https://github.com/robinshin))
+
 ## 0.74.1
 
 ### Added
