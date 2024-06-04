@@ -24,6 +24,7 @@ typedef UIView *_Nonnull (
     ^RCTCreateRootViewWithBridgeBlock)(RCTBridge *bridge, NSString *moduleName, NSDictionary *initProps);
 typedef RCTBridge *_Nonnull (
     ^RCTCreateBridgeWithDelegateBlock)(id<RCTBridgeDelegate> delegate, NSDictionary *launchOptions);
+typedef void (^RCTCustomizeRootViewBlock)(UIView *rootView);
 typedef NSURL *_Nullable (^RCTSourceURLForBridgeBlock)(RCTBridge *bridge);
 typedef NSURL *_Nullable (^RCTBundleURLBlock)(void);
 typedef NSArray<id<RCTBridgeModule>> *_Nonnull (^RCTExtraModulesForBridgeBlock)(RCTBridge *bridge);
@@ -98,6 +99,13 @@ typedef void (^RCTHostDidReceiveJSErrorStackBlock)(
  * @returns: a newly created instance of RCTBridge.
  */
 @property (nonatomic, nullable) RCTCreateBridgeWithDelegateBlock createBridgeWithDelegate;
+
+/**
+ * Block that allows to customize the rootView that is passed to React Native.
+ *
+ * @parameter: rootView - The root view to customize.
+ */
+@property (nonatomic, nullable) RCTCustomizeRootViewBlock customizeRootView;
 
 #pragma mark - RCTBridgeDelegate blocks
 
