@@ -30,6 +30,10 @@ internal class ReactHostInspectorTarget(private val reactHostImpl: ReactHostImpl
     mHybridData.resetNative()
   }
 
+  fun isValid(): Boolean {
+    return mHybridData.isValid()
+  }
+
   private companion object {
     init {
       SoLoader.loadLibrary("rninstance")
