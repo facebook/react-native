@@ -971,18 +971,18 @@ private:
 
 
   
-#pragma mark - SampleTurboModuleAnimal
+#pragma mark - NativeSampleTurboModuleAnimal
 
 template <typename P0>
-struct SampleTurboModuleAnimal {
+struct NativeSampleTurboModuleAnimal {
   P0 name;
-  bool operator==(const SampleTurboModuleAnimal &other) const {
+  bool operator==(const NativeSampleTurboModuleAnimal &other) const {
     return name == other.name;
   }
 };
 
 template <typename T>
-struct SampleTurboModuleAnimalBridging {
+struct NativeSampleTurboModuleAnimalBridging {
   static T types;
 
   static T fromJs(
@@ -1165,18 +1165,18 @@ private:
 
 
   
-#pragma mark - SampleTurboModuleArraysAnimal
+#pragma mark - NativeSampleTurboModuleArraysAnimal
 
 template <typename P0>
-struct SampleTurboModuleArraysAnimal {
+struct NativeSampleTurboModuleArraysAnimal {
   P0 name;
-  bool operator==(const SampleTurboModuleArraysAnimal &other) const {
+  bool operator==(const NativeSampleTurboModuleArraysAnimal &other) const {
     return name == other.name;
   }
 };
 
 template <typename T>
-struct SampleTurboModuleArraysAnimalBridging {
+struct NativeSampleTurboModuleArraysAnimalBridging {
   static T types;
 
   static T fromJs(
@@ -1359,18 +1359,18 @@ private:
 
 
   
-#pragma mark - SampleTurboModuleNullableAnimal
+#pragma mark - NativeSampleTurboModuleNullableAnimal
 
 template <typename P0>
-struct SampleTurboModuleNullableAnimal {
+struct NativeSampleTurboModuleNullableAnimal {
   P0 name;
-  bool operator==(const SampleTurboModuleNullableAnimal &other) const {
+  bool operator==(const NativeSampleTurboModuleNullableAnimal &other) const {
     return name == other.name;
   }
 };
 
 template <typename T>
-struct SampleTurboModuleNullableAnimalBridging {
+struct NativeSampleTurboModuleNullableAnimalBridging {
   static T types;
 
   static T fromJs(
@@ -1553,18 +1553,18 @@ private:
 
 
   
-#pragma mark - SampleTurboModuleNullableAndOptionalAnimal
+#pragma mark - NativeSampleTurboModuleNullableAndOptionalAnimal
 
 template <typename P0>
-struct SampleTurboModuleNullableAndOptionalAnimal {
+struct NativeSampleTurboModuleNullableAndOptionalAnimal {
   P0 name;
-  bool operator==(const SampleTurboModuleNullableAndOptionalAnimal &other) const {
+  bool operator==(const NativeSampleTurboModuleNullableAndOptionalAnimal &other) const {
     return name == other.name;
   }
 };
 
 template <typename T>
-struct SampleTurboModuleNullableAndOptionalAnimalBridging {
+struct NativeSampleTurboModuleNullableAndOptionalAnimalBridging {
   static T types;
 
   static T fromJs(
@@ -1749,18 +1749,18 @@ private:
 
 
   
-#pragma mark - SampleTurboModuleOptionalAnimal
+#pragma mark - NativeSampleTurboModuleOptionalAnimal
 
 template <typename P0>
-struct SampleTurboModuleOptionalAnimal {
+struct NativeSampleTurboModuleOptionalAnimal {
   P0 name;
-  bool operator==(const SampleTurboModuleOptionalAnimal &other) const {
+  bool operator==(const NativeSampleTurboModuleOptionalAnimal &other) const {
     return name == other.name;
   }
 };
 
 template <typename T>
-struct SampleTurboModuleOptionalAnimalBridging {
+struct NativeSampleTurboModuleOptionalAnimalBridging {
   static T types;
 
   static T fromJs(
@@ -2973,18 +2973,18 @@ private:
 
 
   
-#pragma mark - SampleTurboModuleAnimal
+#pragma mark - NativeSampleTurboModuleAnimal
 
 template <typename P0>
-struct SampleTurboModuleAnimal {
+struct NativeSampleTurboModuleAnimal {
   P0 name;
-  bool operator==(const SampleTurboModuleAnimal &other) const {
+  bool operator==(const NativeSampleTurboModuleAnimal &other) const {
     return name == other.name;
   }
 };
 
 template <typename T>
-struct SampleTurboModuleAnimalBridging {
+struct NativeSampleTurboModuleAnimalBridging {
   static T types;
 
   static T fromJs(
@@ -3167,18 +3167,18 @@ private:
 
 
   
-#pragma mark - SampleTurboModuleArraysAnimal
+#pragma mark - NativeSampleTurboModuleArraysAnimal
 
 template <typename P0>
-struct SampleTurboModuleArraysAnimal {
+struct NativeSampleTurboModuleArraysAnimal {
   P0 name;
-  bool operator==(const SampleTurboModuleArraysAnimal &other) const {
+  bool operator==(const NativeSampleTurboModuleArraysAnimal &other) const {
     return name == other.name;
   }
 };
 
 template <typename T>
-struct SampleTurboModuleArraysAnimalBridging {
+struct NativeSampleTurboModuleArraysAnimalBridging {
   static T types;
 
   static T fromJs(
@@ -3361,18 +3361,18 @@ private:
 
 
   
-#pragma mark - SampleTurboModuleNullableAnimal
+#pragma mark - NativeSampleTurboModuleNullableAnimal
 
 template <typename P0>
-struct SampleTurboModuleNullableAnimal {
+struct NativeSampleTurboModuleNullableAnimal {
   P0 name;
-  bool operator==(const SampleTurboModuleNullableAnimal &other) const {
+  bool operator==(const NativeSampleTurboModuleNullableAnimal &other) const {
     return name == other.name;
   }
 };
 
 template <typename T>
-struct SampleTurboModuleNullableAnimalBridging {
+struct NativeSampleTurboModuleNullableAnimalBridging {
   static T types;
 
   static T fromJs(
@@ -3555,18 +3555,18 @@ private:
 
 
   
-#pragma mark - SampleTurboModuleNullableAndOptionalAnimal
+#pragma mark - NativeSampleTurboModuleNullableAndOptionalAnimal
 
 template <typename P0>
-struct SampleTurboModuleNullableAndOptionalAnimal {
+struct NativeSampleTurboModuleNullableAndOptionalAnimal {
   P0 name;
-  bool operator==(const SampleTurboModuleNullableAndOptionalAnimal &other) const {
+  bool operator==(const NativeSampleTurboModuleNullableAndOptionalAnimal &other) const {
     return name == other.name;
   }
 };
 
 template <typename T>
-struct SampleTurboModuleNullableAndOptionalAnimalBridging {
+struct NativeSampleTurboModuleNullableAndOptionalAnimalBridging {
   static T types;
 
   static T fromJs(
@@ -3751,18 +3751,18 @@ private:
 
 
   
-#pragma mark - SampleTurboModuleOptionalAnimal
+#pragma mark - NativeSampleTurboModuleOptionalAnimal
 
 template <typename P0>
-struct SampleTurboModuleOptionalAnimal {
+struct NativeSampleTurboModuleOptionalAnimal {
   P0 name;
-  bool operator==(const SampleTurboModuleOptionalAnimal &other) const {
+  bool operator==(const NativeSampleTurboModuleOptionalAnimal &other) const {
     return name == other.name;
   }
 };
 
 template <typename T>
-struct SampleTurboModuleOptionalAnimalBridging {
+struct NativeSampleTurboModuleOptionalAnimalBridging {
   static T types;
 
   static T fromJs(

@@ -210,13 +210,8 @@ public class DevServerHelper {
     new AsyncTask<Void, Void, Void>() {
       @Override
       protected Void doInBackground(Void... params) {
-        if (InspectorFlags.getEnableCxxInspectorPackagerConnection()) {
-          mInspectorPackagerConnection =
-              new CxxInspectorPackagerConnection(getInspectorDeviceUrl(), mPackageName);
-        } else {
-          mInspectorPackagerConnection =
-              new InspectorPackagerConnection(getInspectorDeviceUrl(), mPackageName);
-        }
+        mInspectorPackagerConnection =
+            new CxxInspectorPackagerConnection(getInspectorDeviceUrl(), mPackageName);
         mInspectorPackagerConnection.connect();
         return null;
       }
@@ -309,7 +304,7 @@ public class DevServerHelper {
             "android-%s-%s-%s",
             packageName,
             androidId,
-            InspectorFlags.getEnableModernCDPRegistry() ? "fusebox" : "legacy");
+            InspectorFlags.getFuseboxEnabled() ? "fusebox" : "legacy");
 
     return getSHA256(rawDeviceId);
   }
@@ -393,9 +388,7 @@ public class DevServerHelper {
             mPackageName,
             modulesOnly ? "true" : "false",
             runModule ? "true" : "false")
-        + (InspectorFlags.getEnableModernCDPRegistry()
-            ? "&excludeSource=true&sourcePaths=url-server"
-            : "");
+        + (InspectorFlags.getFuseboxEnabled() ? "&excludeSource=true&sourcePaths=url-server" : "");
   }
 
   private String createBundleURL(String mainModuleID, BundleType type) {

@@ -24,7 +24,7 @@ type AppleBuildOptions = {
   name: string,
   mode: AppleBuildMode,
   scheme?: string,
-  destination?: string, // Device or Simulator or UUID
+  destination: 'device' | 'simulator' | string,
   ...AppleOptions,
 };
 
@@ -32,6 +32,7 @@ type AppleBootstrapOption = {
   // Enabled by default
   hermes: boolean,
   newArchitecture: boolean,
+  frameworks?: 'static' | 'dynamic',
   ...AppleOptions,
 };
 
@@ -50,6 +51,23 @@ type AppleOptions = {
   // The environment variables to pass to the build command
   env?: {[key: string]: string | void, ...},
 };
+
+function checkPodfileInSyncWithManifest(
+  lockfilePath: string,
+  manifestLockfilePath: string,
+) {
+  try {
+    const expected = fs.readFileSync(lockfilePath, 'utf8');
+    const found = fs.readFileSync(manifestLockfilePath, 'utf8');
+    if (expected !== found) {
+      throw new Error(
+        'Please run: yarn bootstrap ios, Podfile.lock and Pods/Manifest.lock are out of sync',
+      );
+    }
+  } catch (e) {
+    throw new Error('Please run: yarn run boostrap ios: ' + e.message);
+  }
+}
 
 const FIRST = 1,
   SECOND = 2,
@@ -79,8 +97,12 @@ export const tasks = {
     installDependencies: task(THIRD, 'Install CocoaPods dependencies', () => {
       const env = {
         RCT_NEW_ARCH_ENABLED: options.newArchitecture ? '1' : '0',
-        HERMES: options.hermes ? '1' : '0',
+        USE_FRAMEWORKS: options.frameworks,
+        USE_HERMES: options.hermes ? '1' : '0',
       };
+      if (options.frameworks == null) {
+        delete env.USE_FRAMEWORKS;
+      }
       return execa('bundle', ['exec', 'pod', 'install'], {
         cwd: options.cwd,
         env,
@@ -112,22 +134,38 @@ export const tasks = {
             /* eslint-disable-next-line no-bitwise */
             fs.constants.F_OK | fs.constants.R_OK,
           );
-        } catch {
-          throw new Error('Please run: yarn run boostrap ios');
+        } catch (e) {
+          throw new Error('Please run: yarn run boostrap ios: ' + e.message);
         }
       }
+      checkPodfileInSyncWithManifest(
+        path.join(options.cwd, 'Podfile.lock'),
+        path.join(options.cwd, 'Pods/Manifest.lock'),
+      );
     }),
     build: task(SECOND, 'build an app artifact', () => {
       const _args = [
         options.isWorkspace ? '-workspace' : '-project',
         options.name,
+        '-configuration',
+        options.mode,
       ];
       if (options.scheme != null) {
         _args.push('-scheme', options.scheme);
       }
       if (options.destination != null) {
-        _args.push('-destination', options.destination);
+        // The user doesn't want a generic target, they know better.
+        switch (options.destination) {
+          case 'simulator':
+            _args.push('-sdk', 'iphonesimulator');
+            break;
+          case 'device':
+          default:
+            _args.push('-destination', options.destination);
+            break;
+        }
       }
+
       _args.push(...args);
       return execa('xcodebuild', _args, {cwd: options.cwd, env: options.env});
     }),

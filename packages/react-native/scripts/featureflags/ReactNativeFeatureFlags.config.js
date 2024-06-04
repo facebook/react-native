@@ -44,10 +44,10 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Enables the differentiator to understand the "collapsableChildren" prop',
     },
-    androidEnablePendingFabricTransactions: {
+    allowRecursiveCommitsWithSynchronousMountOnAndroid: {
       defaultValue: false,
       description:
-        "To be used with batchRenderingUpdatesInEventLoop. When enbled, the Android mounting layer will concatenate pending transactions to ensure they're applied atomatically",
+        'Adds support for recursively processing commits that mount synchronously (Android only).',
     },
     batchRenderingUpdatesInEventLoop: {
       defaultValue: false,
@@ -98,15 +98,15 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Forces the mounting layer on Android to always batch mount items instead of dispatching them immediately. This might fix some crashes related to synchronous state updates, where some views dispatch state updates during mount.',
     },
-    inspectorEnableCxxInspectorPackagerConnection: {
+    fuseboxEnabledDebug: {
       defaultValue: false,
       description:
-        'Flag determining if the C++ implementation of InspectorPackagerConnection should be used instead of the per-platform one. This flag is global and should not be changed across React Host lifetimes.',
+        'Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled in debug builds. This flag is global and should not be changed across React Host lifetimes.',
     },
-    inspectorEnableModernCDPRegistry: {
+    fuseboxEnabledRelease: {
       defaultValue: false,
       description:
-        'Flag determining if the modern CDP backend should be enabled. This flag is global and should not be changed across React Host lifetimes.',
+        'Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled in release builds. This flag is global and should not be changed across React Host lifetimes.',
     },
     lazyAnimationCallbacks: {
       defaultValue: false,
@@ -114,7 +114,7 @@ const definitions: FeatureFlagDefinitions = {
         'Only enqueue Choreographer calls if there is an ongoing animation, instead of enqueueing every frame.',
     },
     preventDoubleTextMeasure: {
-      defaultValue: false,
+      defaultValue: true,
       description:
         'When enabled, ParagraphShadowNode will no longer call measure twice.',
     },
@@ -131,6 +131,16 @@ const definitions: FeatureFlagDefinitions = {
       defaultValue: false,
       description:
         'When enabled, the native view configs are used in bridgeless mode.',
+    },
+    useRuntimeShadowNodeReferenceUpdate: {
+      defaultValue: false,
+      description:
+        'When enabled, cloning shadow nodes within react native will update the reference held by the current JS fiber tree.',
+    },
+    useRuntimeShadowNodeReferenceUpdateOnLayout: {
+      defaultValue: false,
+      description:
+        'When enabled, cloning shadow nodes during layout will update the reference held by the current JS fiber tree.',
     },
     useStateAlignmentMechanism: {
       defaultValue: false,

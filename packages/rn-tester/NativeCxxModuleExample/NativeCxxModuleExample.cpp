@@ -81,16 +81,16 @@ GraphNode NativeCxxModuleExample::getGraphNode(
   return arg;
 }
 
-NativeCxxModuleExampleCxxEnumInt NativeCxxModuleExample::getNumEnum(
+NativeCxxModuleExampleEnumInt NativeCxxModuleExample::getNumEnum(
     jsi::Runtime& rt,
-    NativeCxxModuleExampleCxxEnumInt arg) {
+    NativeCxxModuleExampleEnumInt arg) {
   return arg;
 }
 
-NativeCxxModuleExampleCxxEnumStr NativeCxxModuleExample::getStrEnum(
+NativeCxxModuleExampleEnumStr NativeCxxModuleExample::getStrEnum(
     jsi::Runtime& rt,
-    NativeCxxModuleExampleCxxEnumNone arg) {
-  return NativeCxxModuleExampleCxxEnumStr::SB;
+    NativeCxxModuleExampleEnumNone /*arg*/) {
+  return NativeCxxModuleExampleEnumStr::SB;
 }
 
 std::map<std::string, std::optional<int32_t>> NativeCxxModuleExample::getMap(

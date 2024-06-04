@@ -11,6 +11,7 @@
 #import <React/RCTRootView.h>
 #import <React/RCTSurfacePresenterBridgeAdapter.h>
 #import <React/RCTUtils.h>
+#import <ReactCommon/RCTHost.h>
 #import <objc/runtime.h>
 #import <react/featureflags/ReactNativeFeatureFlags.h>
 #import <react/featureflags/ReactNativeFeatureFlagsDefaults.h>
@@ -32,7 +33,7 @@
 #endif
 #import <react/nativemodule/defaults/DefaultTurboModules.h>
 
-@interface RCTAppDelegate () <RCTComponentViewFactoryComponentProvider>
+@interface RCTAppDelegate () <RCTComponentViewFactoryComponentProvider, RCTHostDelegate>
 @end
 
 @implementation RCTAppDelegate
@@ -158,6 +159,20 @@
   return nullptr;
 }
 
+#pragma mark - RCTHostDelegate
+
+- (void)hostDidStart:(RCTHost *)host
+{
+}
+
+- (void)host:(RCTHost *)host
+    didReceiveJSErrorStack:(NSArray<NSDictionary<NSString *, id> *> *)stack
+                   message:(NSString *)message
+               exceptionId:(NSUInteger)exceptionId
+                   isFatal:(BOOL)isFatal
+{
+}
+
 #pragma mark - Bridge and Bridge Adapter properties
 
 - (RCTBridge *)bridge
@@ -242,6 +257,19 @@
   {
     return [weakSelf sourceURLForBridge:bridge];
   };
+
+  configuration.hostDidStartBlock = ^(RCTHost *_Nonnull host) {
+    [weakSelf hostDidStart:host];
+  };
+
+  configuration.hostDidReceiveJSErrorStackBlock =
+      ^(RCTHost *_Nonnull host,
+        NSArray<NSDictionary<NSString *, id> *> *_Nonnull stack,
+        NSString *_Nonnull message,
+        NSUInteger exceptionId,
+        BOOL isFatal) {
+        [weakSelf host:host didReceiveJSErrorStack:stack message:message exceptionId:exceptionId isFatal:isFatal];
+      };
 
   if ([self respondsToSelector:@selector(extraModulesForBridge:)]) {
     configuration.extraModulesForBridge = ^NSArray<id<RCTBridgeModule>> *_Nonnull(RCTBridge *_Nonnull bridge)

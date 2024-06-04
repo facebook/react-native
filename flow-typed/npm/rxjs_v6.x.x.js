@@ -211,9 +211,9 @@ declare class rxjs$Observable<T> implements rxjs$Subscribable<T> {
     op9: rxjs$OperatorFunction<H, I>,
     ...operations: rxjs$OperatorFunction<any, any>[]
   ): rxjs$Observable<{...}>;
-  toPromise<T>(): Promise<T>;
-  toPromise<T>(PromiseCtor: typeof Promise): Promise<T>;
-  toPromise<T>(PromiseCtor: typeof Promise.constructor): Promise<T>;
+  toPromise(): Promise<T>;
+  toPromise(PromiseCtor: typeof Promise): Promise<T>;
+  toPromise(PromiseCtor: typeof Promise.constructor): Promise<T>;
 }
 
 declare class rxjs$Subscription implements rxjs$SubscriptionLike {
@@ -238,11 +238,11 @@ declare class rxjs$Subscriber<T>
   extends rxjs$Subscription
   implements rxjs$Observer<T>
 {
-  static create<T>(
-    next?: (x?: T) => void,
+  static create<U>(
+    next?: (x?: U) => void,
     error?: (e?: any) => void,
     complete?: () => void,
-  ): rxjs$Subscriber<T>;
+  ): rxjs$Subscriber<U>;
   // @internal
   syncErrorValue: any;
   // @internal
@@ -327,8 +327,8 @@ declare class rxjs$Notification<T> {
     complete?: () => void,
   ): any;
   toObservable(): rxjs$Observable<T>;
-  static createNext<T>(value: T): rxjs$Notification<T>;
-  static createError<T>(err?: any): rxjs$Notification<T>;
+  static createNext<U>(value: U): rxjs$Notification<U>;
+  static createError<U>(err?: any): rxjs$Notification<U>;
   static createComplete(): rxjs$Notification<any>;
 }
 
@@ -1793,7 +1793,7 @@ declare module 'rxjs' {
       delay?: number,
     ): any;
     _execute(state: T, delay: number): any;
-    static sortActions<T>(a: VirtualAction<T>, b: VirtualAction<T>): 1 | -1 | 0;
+    static sortActions<U>(a: VirtualAction<U>, b: VirtualAction<U>): 1 | -1 | 0;
   }
 
   declare class Scheduler implements rxjs$SchedulerLike {

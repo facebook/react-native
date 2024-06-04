@@ -7,8 +7,6 @@
 
 package com.facebook.react.views.text;
 
-import static com.facebook.react.config.ReactFeatureFlags.enableTextSpannableCache;
-
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Build;
@@ -21,7 +19,6 @@ import android.text.StaticLayout;
 import android.text.TextDirectionHeuristics;
 import android.text.TextPaint;
 import android.util.LayoutDirection;
-import android.util.LruCache;
 import android.view.Gravity;
 import android.view.View;
 import androidx.annotation.NonNull;
@@ -33,7 +30,6 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.common.mapbuffer.MapBuffer;
-import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.Role;
@@ -93,22 +89,14 @@ public class TextLayoutManager {
   // The bug is that unicode emoticons aren't measured properly which causes text to be clipped.
   private static final TextPaint sTextPaintInstance = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
 
-  // Specifies the amount of spannable that are stored into the {@link sSpannableCache}.
-  private static final short spannableCacheSize = 10000;
-
   private static final String INLINE_VIEW_PLACEHOLDER = "0";
 
   private static final boolean DEFAULT_INCLUDE_FONT_PADDING = true;
 
   private static final boolean DEFAULT_ADJUST_FONT_SIZE_TO_FIT = false;
 
-  private static final Object sCacheLock = new Object();
-
   private static final ConcurrentHashMap<Integer, Spannable> sTagToSpannableCache =
       new ConcurrentHashMap<>();
-
-  private static final LruCache<ReadableMapBuffer, Spannable> sSpannableCache =
-      new LruCache<>(spannableCacheSize);
 
   public static void setCachedSpannableForTag(int reactTag, @NonNull Spannable sp) {
     if (ENABLE_MEASURE_LOGGING) {
@@ -314,22 +302,9 @@ public class TextLayoutManager {
       Integer cacheId = attributedString.getInt(AS_KEY_CACHE_ID);
       text = sTagToSpannableCache.get(cacheId);
     } else {
-      if (enableTextSpannableCache && attributedString instanceof ReadableMapBuffer) {
-        ReadableMapBuffer mapBuffer = (ReadableMapBuffer) attributedString;
-        synchronized (sCacheLock) {
-          text = sSpannableCache.get(mapBuffer);
-          if (text == null) {
-            text =
-                createSpannableFromAttributedString(
-                    context, attributedString, reactTextViewManagerCallback);
-            sSpannableCache.put(mapBuffer, text);
-          }
-        }
-      } else {
-        text =
-            createSpannableFromAttributedString(
-                context, attributedString, reactTextViewManagerCallback);
-      }
+      text =
+          createSpannableFromAttributedString(
+              context, attributedString, reactTextViewManagerCallback);
     }
 
     return text;

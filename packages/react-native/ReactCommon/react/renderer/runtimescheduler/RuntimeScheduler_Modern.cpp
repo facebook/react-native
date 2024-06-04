@@ -204,21 +204,17 @@ void RuntimeScheduler_Modern::startWorkLoop(
 
   auto previousPriority = currentPriority_;
 
-  try {
-    while (syncTaskRequests_ == 0) {
-      auto currentTime = now_();
-      auto topPriorityTask = selectTask(currentTime, onlyExpired);
+  while (syncTaskRequests_ == 0) {
+    auto currentTime = now_();
+    auto topPriorityTask = selectTask(currentTime, onlyExpired);
 
-      if (!topPriorityTask) {
-        // No pending work to do.
-        // Events will restart the loop when necessary.
-        break;
-      }
-
-      executeTask(runtime, *topPriorityTask, currentTime);
+    if (!topPriorityTask) {
+      // No pending work to do.
+      // Events will restart the loop when necessary.
+      break;
     }
-  } catch (jsi::JSError& error) {
-    handleJSError(runtime, error, true);
+
+    executeTask(runtime, *topPriorityTask, currentTime);
   }
 
   currentPriority_ = previousPriority;
@@ -310,12 +306,16 @@ void RuntimeScheduler_Modern::executeMacrotask(
     bool didUserCallbackTimeout) const {
   SystraceSection s("RuntimeScheduler::executeMacrotask");
 
-  auto result = task.execute(runtime, didUserCallbackTimeout);
+  try {
+    auto result = task.execute(runtime, didUserCallbackTimeout);
 
-  if (result.isObject() && result.getObject(runtime).isFunction(runtime)) {
-    // If the task returned a continuation callback, we re-assign it to the task
-    // and keep the task in the queue.
-    task.callback = result.getObject(runtime).getFunction(runtime);
+    if (result.isObject() && result.getObject(runtime).isFunction(runtime)) {
+      // If the task returned a continuation callback, we re-assign it to the
+      // task and keep the task in the queue.
+      task.callback = result.getObject(runtime).getFunction(runtime);
+    }
+  } catch (jsi::JSError& error) {
+    handleJSError(runtime, error, true);
   }
 }
 

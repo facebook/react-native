@@ -14,7 +14,6 @@
 
 #import <React/RCTCxxInspectorPackagerConnection.h>
 #import <React/RCTDefines.h>
-#import <React/RCTInspectorPackagerConnection.h>
 
 #import <CommonCrypto/CommonCrypto.h>
 #import <jsinspector-modern/InspectorFlags.h>
@@ -85,11 +84,10 @@ static NSString *getInspectorDeviceId()
 
   auto &inspectorFlags = facebook::react::jsinspector_modern::InspectorFlags::getInstance();
 
-  NSString *rawDeviceId =
-      [NSString stringWithFormat:@"apple-%@-%@-%s",
-                                 identifierForVendor,
-                                 bundleId,
-                                 inspectorFlags.getEnableModernCDPRegistry() ? "fusebox" : "legacy"];
+  NSString *rawDeviceId = [NSString stringWithFormat:@"apple-%@-%@-%s",
+                                                     identifierForVendor,
+                                                     bundleId,
+                                                     inspectorFlags.getFuseboxEnabled() ? "fusebox" : "legacy"];
 
   return getSHA256(rawDeviceId);
 }
@@ -163,7 +161,7 @@ static void sendEventToAllConnections(NSString *event)
 + (void)disableDebugger
 {
   auto &inspectorFlags = facebook::react::jsinspector_modern::InspectorFlags::getInstance();
-  if (!inspectorFlags.getEnableModernCDPRegistry()) {
+  if (!inspectorFlags.getFuseboxEnabled()) {
     sendEventToAllConnections(kDebuggerMsgDisable);
   }
 }
@@ -182,11 +180,7 @@ static void sendEventToAllConnections(NSString *event)
   NSString *key = [inspectorURL absoluteString];
   id<RCTInspectorPackagerConnectionProtocol> connection = socketConnections[key];
   if (!connection || !connection.isConnected) {
-    if (facebook::react::jsinspector_modern::InspectorFlags::getInstance().getEnableCxxInspectorPackagerConnection()) {
-      connection = [[RCTCxxInspectorPackagerConnection alloc] initWithURL:inspectorURL];
-    } else {
-      connection = [[RCTInspectorPackagerConnection alloc] initWithURL:inspectorURL];
-    }
+    connection = [[RCTCxxInspectorPackagerConnection alloc] initWithURL:inspectorURL];
 
     socketConnections[key] = connection;
     [connection connect];

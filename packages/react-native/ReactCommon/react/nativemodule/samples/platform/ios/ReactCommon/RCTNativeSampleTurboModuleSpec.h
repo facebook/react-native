@@ -34,10 +34,10 @@
 - (void)getValueWithPromise:(BOOL)error resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject;
 - (void)voidFuncThrows;
 - (NSDictionary *)getObjectThrows:(NSDictionary *)arg;
-- (void)promiseThrows:(BOOL)error resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject;
+- (void)promiseThrows:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject;
 - (void)voidFuncAssert;
 - (NSDictionary *)getObjectAssert:(NSDictionary *)arg;
-- (void)promiseAssert:(BOOL)error resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject;
+- (void)promiseAssert:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject;
 - (NSDictionary *)constantsToExport;
 - (NSDictionary *)getConstants;
 
