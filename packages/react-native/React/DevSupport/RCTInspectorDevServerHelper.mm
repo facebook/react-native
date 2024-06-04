@@ -14,6 +14,7 @@
 
 #import <React/RCTCxxInspectorPackagerConnection.h>
 #import <React/RCTDefines.h>
+#import <React/RCTInspectorPackagerConnection.h>
 
 #import <CommonCrypto/CommonCrypto.h>
 #import <jsinspector-modern/InspectorFlags.h>
@@ -180,7 +181,11 @@ static void sendEventToAllConnections(NSString *event)
   NSString *key = [inspectorURL absoluteString];
   id<RCTInspectorPackagerConnectionProtocol> connection = socketConnections[key];
   if (!connection || !connection.isConnected) {
-    connection = [[RCTCxxInspectorPackagerConnection alloc] initWithURL:inspectorURL];
+    if (facebook::react::jsinspector_modern::InspectorFlags::getInstance().getFuseboxEnabled()) {
+      connection = [[RCTCxxInspectorPackagerConnection alloc] initWithURL:inspectorURL];
+    } else {
+      connection = [[RCTInspectorPackagerConnection alloc] initWithURL:inspectorURL];
+    }
 
     socketConnections[key] = connection;
     [connection connect];

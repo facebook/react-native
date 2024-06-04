@@ -210,8 +210,13 @@ public class DevServerHelper {
     new AsyncTask<Void, Void, Void>() {
       @Override
       protected Void doInBackground(Void... params) {
-        mInspectorPackagerConnection =
-            new CxxInspectorPackagerConnection(getInspectorDeviceUrl(), mPackageName);
+        if (InspectorFlags.getFuseboxEnabled()) {
+          mInspectorPackagerConnection =
+              new CxxInspectorPackagerConnection(getInspectorDeviceUrl(), mPackageName);
+        } else {
+          mInspectorPackagerConnection =
+              new InspectorPackagerConnection(getInspectorDeviceUrl(), mPackageName);
+        }
         mInspectorPackagerConnection.connect();
         return null;
       }

@@ -2184,6 +2184,13 @@ public final class com/facebook/react/devsupport/InspectorFlags {
 	public static final fun getFuseboxEnabled ()Z
 }
 
+public class com/facebook/react/devsupport/InspectorPackagerConnection : com/facebook/react/devsupport/IInspectorPackagerConnection {
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;)V
+	public fun closeQuietly ()V
+	public fun connect ()V
+	public fun sendEventToAllConnections (Ljava/lang/String;)V
+}
+
 public class com/facebook/react/devsupport/JSCHeapCapture : com/facebook/fbreact/specs/NativeJSCHeapCaptureSpec {
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
 	public fun captureComplete (Ljava/lang/String;Ljava/lang/String;)V
