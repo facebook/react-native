@@ -8,7 +8,6 @@
 package com.facebook.react.runtime;
 
 import static com.facebook.infer.annotation.Assertions.assertNotNull;
-import static com.facebook.infer.annotation.Assertions.nullsafeFIXME;
 import static com.facebook.infer.annotation.ThreadConfined.UI;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
@@ -63,7 +62,6 @@ import com.facebook.react.interfaces.fabric.ReactSurface;
 import com.facebook.react.modules.appearance.AppearanceModule;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.facebook.react.runtime.internal.bolts.Continuation;
 import com.facebook.react.runtime.internal.bolts.Task;
 import com.facebook.react.runtime.internal.bolts.TaskCompletionSource;
 import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder;
@@ -117,10 +115,7 @@ public class ReactHostImpl implements ReactHost {
       Collections.synchronizedList(new ArrayList<>());
 
   private final BridgelessAtomicRef<Task<ReactInstance>> mReactInstanceTaskRef =
-      new BridgelessAtomicRef<>(
-          Task.forResult(
-              nullsafeFIXME(
-                  null, "forResult parameter supports null, but is not annotated as @Nullable")));
+      new BridgelessAtomicRef<>(Task.forResult(null));
 
   private final BridgelessAtomicRef<BridgelessReactContext> mBridgelessReactContextRef =
       new BridgelessAtomicRef<>();
@@ -912,6 +907,7 @@ public class ReactHostImpl implements ReactHost {
         TAG, new ReactNoCrashSoftException(method + ": " + message));
   }
 
+  /** Schedule work on a ReactInstance that is already created. */
   private Task<Boolean> callWithExistingReactInstance(
       final String callingMethod, final VeniceThenable<ReactInstance> continuation) {
     final String method = "callWithExistingReactInstance(" + callingMethod + ")";
@@ -922,7 +918,7 @@ public class ReactHostImpl implements ReactHost {
             task -> {
               final ReactInstance reactInstance = task.getResult();
               if (reactInstance == null) {
-                raiseSoftException(method, "Execute: ReactInstance null. Dropping work.");
+                raiseSoftException(method, "Execute: reactInstance is null. Dropping work.");
                 return FALSE;
               }
 
@@ -932,23 +928,23 @@ public class ReactHostImpl implements ReactHost {
             mBGExecutor);
   }
 
+  /** Create a ReactInstance if it doesn't exist already, and schedule work on it. */
   private Task<Void> callAfterGetOrCreateReactInstance(
       final String callingMethod, final VeniceThenable<ReactInstance> runnable) {
     final String method = "callAfterGetOrCreateReactInstance(" + callingMethod + ")";
 
     return getOrCreateReactInstance()
         .onSuccess(
-            (Continuation<ReactInstance, Void>)
-                task -> {
-                  final ReactInstance reactInstance = task.getResult();
-                  if (reactInstance == null) {
-                    raiseSoftException(method, "Execute: ReactInstance is null");
-                    return null;
-                  }
+            task -> {
+              final ReactInstance reactInstance = task.getResult();
+              if (reactInstance == null) {
+                raiseSoftException(method, "Execute: reactInstance is null. Dropping work.");
+                return null;
+              }
 
-                  runnable.then(reactInstance);
-                  return null;
-                },
+              runnable.then(reactInstance);
+              return null;
+            },
             mBGExecutor)
         .continueWith(
             task -> {
@@ -1253,7 +1249,7 @@ public class ReactHostImpl implements ReactHost {
     ReactInstance unwrap(Task<ReactInstance> task, String stage);
   }
 
-  private ReactInstanceTaskUnwrapper createReactInstanceUnwraper(
+  private ReactInstanceTaskUnwrapper createReactInstanceUnwrapper(
       String tag, String method, String reason) {
 
     return (task, stage) -> {
@@ -1321,7 +1317,7 @@ public class ReactHostImpl implements ReactHost {
     raiseSoftException(method, reason);
 
     ReactInstanceTaskUnwrapper reactInstanceTaskUnwrapper =
-        createReactInstanceUnwraper("Reload", method, reason);
+        createReactInstanceUnwrapper("Reload", method, reason);
 
     if (mReloadTask == null) {
       mReloadTask =
@@ -1497,7 +1493,7 @@ public class ReactHostImpl implements ReactHost {
     raiseSoftException(method, reason, ex);
 
     ReactInstanceTaskUnwrapper reactInstanceTaskUnwrapper =
-        createReactInstanceUnwraper("Destroy", method, reason);
+        createReactInstanceUnwrapper("Destroy", method, reason);
 
     if (mDestroyTask == null) {
       mDestroyTask =
