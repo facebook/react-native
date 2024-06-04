@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<de8e0cd16d4190afde8280f67f6d92d8>>
+ * @generated SignedSource<<b42746e0a2c6e0611c8acc81502a0967>>
  */
 
 /**
@@ -74,6 +74,8 @@ class NativeReactNativeFeatureFlags
   bool useModernRuntimeScheduler(jsi::Runtime& runtime);
 
   bool useNativeViewConfigsInBridgelessMode(jsi::Runtime& runtime);
+
+  bool useRuntimeShadowNodeReferenceUpdate(jsi::Runtime& runtime);
 
   bool useStateAlignmentMechanism(jsi::Runtime& runtime);
 };

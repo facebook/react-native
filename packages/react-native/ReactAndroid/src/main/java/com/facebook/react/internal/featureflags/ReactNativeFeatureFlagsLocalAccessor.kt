@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3b94757d58e6adb2bccf4ddfb86e2080>>
+ * @generated SignedSource<<206771bdb2b95a893dd6a0dcba5dc48a>>
  */
 
 /**
@@ -44,6 +44,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var setAndroidLayoutDirectionCache: Boolean? = null
   private var useModernRuntimeSchedulerCache: Boolean? = null
   private var useNativeViewConfigsInBridgelessModeCache: Boolean? = null
+  private var useRuntimeShadowNodeReferenceUpdateCache: Boolean? = null
   private var useStateAlignmentMechanismCache: Boolean? = null
 
   override fun commonTestFlag(): Boolean {
@@ -242,6 +243,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.useNativeViewConfigsInBridgelessMode()
       accessedFeatureFlags.add("useNativeViewConfigsInBridgelessMode")
       useNativeViewConfigsInBridgelessModeCache = cached
+    }
+    return cached
+  }
+
+  override fun useRuntimeShadowNodeReferenceUpdate(): Boolean {
+    var cached = useRuntimeShadowNodeReferenceUpdateCache
+    if (cached == null) {
+      cached = currentProvider.useRuntimeShadowNodeReferenceUpdate()
+      accessedFeatureFlags.add("useRuntimeShadowNodeReferenceUpdate")
+      useRuntimeShadowNodeReferenceUpdateCache = cached
     }
     return cached
   }
