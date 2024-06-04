@@ -918,14 +918,13 @@ public class ReactHostImpl implements ReactHost {
             task -> {
               final ReactInstance reactInstance = task.getResult();
               if (reactInstance == null) {
-                raiseSoftException(method, "Execute: ReactInstance null. Dropping work.");
+                raiseSoftException(method, "Execute: ReactInstance is null. Dropping work.");
                 return FALSE;
               }
 
               continuation.then(reactInstance);
               return TRUE;
-            },
-            mBGExecutor);
+            });
   }
 
   /** Create a ReactInstance if it doesn't exist already, and schedule work on it. */
@@ -938,22 +937,20 @@ public class ReactHostImpl implements ReactHost {
             task -> {
               final ReactInstance reactInstance = task.getResult();
               if (reactInstance == null) {
-                raiseSoftException(method, "Execute: ReactInstance null. Dropping work.");
+                raiseSoftException(method, "Execute: ReactInstance is null. Dropping work.");
                 return null;
               }
 
               runnable.then(reactInstance);
               return null;
-            },
-            mBGExecutor)
+            })
         .continueWith(
             task -> {
               if (task.isFaulted()) {
                 handleHostException(task.getError());
               }
               return null;
-            },
-            mBGExecutor);
+            });
   }
 
   private BridgelessReactContext getOrCreateReactContext() {
