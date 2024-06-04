@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<98d5ac48b23f6422020b49ed5d8732d0>>
+ * @generated SignedSource<<c3b421b10f05f33a9830fbd730a3786a>>
  * @flow strict-local
  */
 
@@ -61,6 +61,7 @@ export type ReactNativeFeatureFlags = {
   useModernRuntimeScheduler: Getter<boolean>,
   useNativeViewConfigsInBridgelessMode: Getter<boolean>,
   useRuntimeShadowNodeReferenceUpdate: Getter<boolean>,
+  useRuntimeShadowNodeReferenceUpdateOnLayout: Getter<boolean>,
   useStateAlignmentMechanism: Getter<boolean>,
 }
 
@@ -188,6 +189,10 @@ export const useNativeViewConfigsInBridgelessMode: Getter<boolean> = createNativ
  * When enabled, cloning shadow nodes within react native will update the reference held by the current JS fiber tree.
  */
 export const useRuntimeShadowNodeReferenceUpdate: Getter<boolean> = createNativeFlagGetter('useRuntimeShadowNodeReferenceUpdate', false);
+/**
+ * When enabled, cloning shadow nodes during layout will update the reference held by the current JS fiber tree.
+ */
+export const useRuntimeShadowNodeReferenceUpdateOnLayout: Getter<boolean> = createNativeFlagGetter('useRuntimeShadowNodeReferenceUpdateOnLayout', false);
 /**
  * When enabled, it uses optimised state reconciliation algorithm.
  */

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ef2907316ba5f741430090aedd47212a>>
+ * @generated SignedSource<<43b256d5f58743df52f579dc69721083>>
  */
 
 /**
@@ -165,6 +165,12 @@ class ReactNativeFeatureFlagsProviderHolder
     return method(javaProvider_);
   }
 
+  bool useRuntimeShadowNodeReferenceUpdateOnLayout() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useRuntimeShadowNodeReferenceUpdateOnLayout");
+    return method(javaProvider_);
+  }
+
   bool useStateAlignmentMechanism() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useStateAlignmentMechanism");
@@ -280,6 +286,11 @@ bool JReactNativeFeatureFlagsCxxInterop::useRuntimeShadowNodeReferenceUpdate(
   return ReactNativeFeatureFlags::useRuntimeShadowNodeReferenceUpdate();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::useRuntimeShadowNodeReferenceUpdateOnLayout(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::useRuntimeShadowNodeReferenceUpdateOnLayout();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::useStateAlignmentMechanism(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::useStateAlignmentMechanism();
@@ -365,6 +376,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "useRuntimeShadowNodeReferenceUpdate",
         JReactNativeFeatureFlagsCxxInterop::useRuntimeShadowNodeReferenceUpdate),
+      makeNativeMethod(
+        "useRuntimeShadowNodeReferenceUpdateOnLayout",
+        JReactNativeFeatureFlagsCxxInterop::useRuntimeShadowNodeReferenceUpdateOnLayout),
       makeNativeMethod(
         "useStateAlignmentMechanism",
         JReactNativeFeatureFlagsCxxInterop::useStateAlignmentMechanism),

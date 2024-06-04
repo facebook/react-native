@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<987e450aa9db1b9da0e2a5a63deae4fe>>
+ * @generated SignedSource<<bc03d88b59af436b2db4f9048184a881>>
  */
 
 /**
@@ -153,6 +153,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun useRuntimeShadowNodeReferenceUpdate(): Boolean = accessor.useRuntimeShadowNodeReferenceUpdate()
+
+  /**
+   * When enabled, cloning shadow nodes during layout will update the reference held by the current JS fiber tree.
+   */
+  @JvmStatic
+  public fun useRuntimeShadowNodeReferenceUpdateOnLayout(): Boolean = accessor.useRuntimeShadowNodeReferenceUpdateOnLayout()
 
   /**
    * When enabled, it uses optimised state reconciliation algorithm.
