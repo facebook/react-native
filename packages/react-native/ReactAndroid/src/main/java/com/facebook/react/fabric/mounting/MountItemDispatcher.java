@@ -105,40 +105,53 @@ public class MountItemDispatcher {
 
     if (ReactNativeFeatureFlags.forceBatchingMountItemsOnAndroid()) {
       mInDispatch = true;
-    }
 
-    final boolean didDispatchItems;
-    try {
-      didDispatchItems = dispatchMountItems();
-    } catch (Throwable e) {
-      mReDispatchCounter = 0;
-      throw e;
-    } finally {
-      // Clean up after running dispatchMountItems - even if an exception was thrown
-      mInDispatch = false;
-    }
-
-    // We call didDispatchMountItems regardless of whether we actually dispatched anything, since
-    // NativeAnimatedModule relies on this for executing any animations that may have been scheduled
-    mItemDispatchListener.didDispatchMountItems();
-
-    // Decide if we want to try reentering
-    if (mReDispatchCounter < 10 && didDispatchItems) {
-      // Executing twice in a row is normal. Only log after that point.
-      if (mReDispatchCounter > 2) {
-        ReactSoftExceptionLogger.logSoftException(
-            TAG,
-            new ReactNoCrashSoftException(
-                "Re-dispatched "
-                    + mReDispatchCounter
-                    + " times. This indicates setState (?) is likely being called too many times"
-                    + " during mounting."));
+      try {
+        boolean didDispatchItems = true;
+        // Dispatch as many mount items as we find. Some mount items might
+        // trigger state updates that trigger more mount items. This will
+        // process them correctly.
+        while (didDispatchItems) {
+          didDispatchItems = dispatchMountItems();
+        }
+      } finally {
+        mInDispatch = false;
+      }
+    } else {
+      final boolean didDispatchItems;
+      try {
+        didDispatchItems = dispatchMountItems();
+      } catch (Throwable e) {
+        mReDispatchCounter = 0;
+        throw e;
+      } finally {
+        // Clean up after running dispatchMountItems - even if an exception was thrown
+        mInDispatch = false;
       }
 
-      mReDispatchCounter++;
-      tryDispatchMountItems();
+      // We call didDispatchMountItems regardless of whether we actually dispatched anything, since
+      // NativeAnimatedModule relies on this for executing any animations that may have been
+      // scheduled
+      mItemDispatchListener.didDispatchMountItems();
+
+      // Decide if we want to try reentering
+      if (mReDispatchCounter < 10 && didDispatchItems) {
+        // Executing twice in a row is normal. Only log after that point.
+        if (mReDispatchCounter > 2) {
+          ReactSoftExceptionLogger.logSoftException(
+              TAG,
+              new ReactNoCrashSoftException(
+                  "Re-dispatched "
+                      + mReDispatchCounter
+                      + " times. This indicates setState (?) is likely being called too many times"
+                      + " during mounting."));
+        }
+
+        mReDispatchCounter++;
+        tryDispatchMountItems();
+      }
+      mReDispatchCounter = 0;
     }
-    mReDispatchCounter = 0;
   }
 
   @UiThread
@@ -208,7 +221,7 @@ public class MountItemDispatcher {
     if (viewCommandMountItemsToDispatch != null) {
       Systrace.beginSection(
           Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
-          "FabricUIManager::mountViews viewCommandMountItems");
+          "MountItemDispatcher::mountViews viewCommandMountItems");
       for (DispatchCommandMountItem command : viewCommandMountItemsToDispatch) {
         if (ENABLE_FABRIC_LOGS) {
           printMountItem(command, "dispatchMountItems: Executing viewCommandMountItem");
@@ -250,7 +263,7 @@ public class MountItemDispatcher {
     Collection<MountItem> preMountItemsToDispatch = getAndResetPreMountItems();
     if (preMountItemsToDispatch != null) {
       Systrace.beginSection(
-          Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricUIManager::mountViews preMountItems");
+          Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "MountItemDispatcher::mountViews preMountItems");
       for (MountItem preMountItem : preMountItemsToDispatch) {
         if (ENABLE_FABRIC_LOGS) {
           printMountItem(preMountItem, "dispatchMountItems: Executing preMountItem");
@@ -264,7 +277,7 @@ public class MountItemDispatcher {
     if (mountItemsToDispatch != null) {
       Systrace.beginSection(
           Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
-          "FabricUIManager::mountViews mountItems to execute");
+          "MountItemDispatcher::mountViews mountItems to execute");
 
       long batchedExecutionStartTime = SystemClock.uptimeMillis();
 
@@ -301,11 +314,11 @@ public class MountItemDispatcher {
         }
       }
       mBatchedExecutionTime += SystemClock.uptimeMillis() - batchedExecutionStartTime;
+
+      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     }
 
     mItemDispatchListener.didMountItems(mountItemsToDispatch);
-
-    Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
 
     return true;
   }
@@ -324,7 +337,8 @@ public class MountItemDispatcher {
       return;
     }
 
-    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricUIManager::premountViews");
+    Systrace.beginSection(
+        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "MountItemDispatcher::premountViews");
 
     // dispatchPreMountItems cannot be reentrant, but we want to prevent dispatchMountItems from
     // reentering during dispatchPreMountItems

@@ -1085,4 +1085,40 @@ module.exports = ([
     name: 'textStyles',
     render: () => <TextStylesExample />,
   },
+  {
+    title: 'showSoftInputOnFocus',
+    render: function (): React.Node {
+      return (
+        <View>
+          <WithLabel label="showSoftInputOnFocus: false">
+            <ExampleTextInput showSoftInputOnFocus={false} />
+          </WithLabel>
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Clipping',
+    name: 'clipping',
+    render: function (): React.Node {
+      return (
+        <View>
+          <ExampleTextInput
+            multiline={true}
+            testID="textinput-clipping"
+            style={{
+              borderRadius: 50,
+              padding: 0,
+              borderColor: 'red',
+              borderWidth: 5,
+              overflow: 'hidden',
+              fontSize: 16,
+            }}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </ExampleTextInput>
+        </View>
+      );
+    },
+  },
 ]: Array<RNTesterModuleExample>);

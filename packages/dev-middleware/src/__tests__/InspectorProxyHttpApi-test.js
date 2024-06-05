@@ -19,8 +19,6 @@ import {createDeviceMock} from './InspectorDeviceUtils';
 import {withAbortSignalForEachTest} from './ResourceUtils';
 import {withServerForEachTest} from './ServerUtils';
 
-import nullthrows from 'nullthrows';
-
 // Must be greater than or equal to PAGES_POLLING_INTERVAL in `InspectorProxy.js`.
 const PAGES_POLLING_DELAY = 1000;
 

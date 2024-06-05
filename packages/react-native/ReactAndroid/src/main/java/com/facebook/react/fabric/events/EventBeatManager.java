@@ -8,7 +8,6 @@
 package com.facebook.react.fabric.events;
 
 import android.annotation.SuppressLint;
-import androidx.annotation.NonNull;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
@@ -34,7 +33,7 @@ public final class EventBeatManager implements BatchEventDispatchedListener {
   private native void tick();
 
   @Deprecated(forRemoval = true, since = "Deprecated on v0.72.0 Use EventBeatManager() instead")
-  public EventBeatManager(@NonNull ReactApplicationContext reactApplicationContext) {
+  public EventBeatManager(ReactApplicationContext reactApplicationContext) {
     this();
   }
 

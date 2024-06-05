@@ -12,9 +12,6 @@
 
 @implementation RCTConvert (UIActivityIndicatorView)
 
-// NOTE: It's pointless to support UIActivityIndicatorViewStyleGray
-// as we can set the color to any arbitrary value that we want to
-
 RCT_ENUM_CONVERTER(
     UIActivityIndicatorViewStyle,
     (@{

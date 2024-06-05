@@ -166,6 +166,9 @@ const validAttributesForNonEventProps = {
   backgroundColor: {process: require('../StyleSheet/processColor').default},
   transform: true,
   transformOrigin: true,
+  experimental_filter: {
+    process: require('../StyleSheet/processFilter').default,
+  },
   opacity: true,
   elevation: true,
   shadowColor: {process: require('../StyleSheet/processColor').default},
@@ -306,6 +309,7 @@ const validAttributesForEventProps = {
 
   // Pointer events
   onClick: true,
+  onClickCapture: true,
   onPointerEnter: true,
   onPointerEnterCapture: true,
   onPointerLeave: true,

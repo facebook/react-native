@@ -67,6 +67,7 @@ const {
   createParserErrorCapturer,
   extractNativeModuleName,
   getConfigType,
+  getSortedObject,
   isModuleRegistryCall,
   verifyPlatforms,
   visit,
@@ -719,7 +720,7 @@ const buildModuleSchema = (
     language === 'Flow' ? moduleSpec.body.properties : moduleSpec.body.body;
 
   // $FlowFixMe[missing-type-arg]
-  return properties
+  const nativeModuleSchema = properties
     .filter(
       property =>
         property.type === 'ObjectTypeProperty' ||
@@ -770,6 +771,15 @@ const buildModuleSchema = (
           excludedPlatforms.length !== 0 ? [...excludedPlatforms] : undefined,
       },
     );
+
+  return {
+    type: 'NativeModule',
+    aliasMap: getSortedObject(nativeModuleSchema.aliasMap),
+    enumMap: getSortedObject(nativeModuleSchema.enumMap),
+    spec: {properties: nativeModuleSchema.spec.properties.sort()},
+    moduleName,
+    excludedPlatforms: nativeModuleSchema.excludedPlatforms,
+  };
 };
 
 /**

@@ -963,9 +963,13 @@ class ScrollView extends React.Component<Props, State> {
     let subscription: ?EventSubscription;
 
     this.setState(
-      ({onScrollEmitter}) => ({
-        onScrollEmitter: onScrollEmitter ?? new EventEmitter(),
-      }),
+      ({onScrollEmitter}) => {
+        if (onScrollEmitter) {
+          return null;
+        } else {
+          return {onScrollEmitter: new EventEmitter()};
+        }
+      },
       () => {
         // If `subscription` is null, that means it was removed before we got
         // here so do nothing.

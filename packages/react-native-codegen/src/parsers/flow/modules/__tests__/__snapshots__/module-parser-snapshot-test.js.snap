@@ -80,29 +80,6 @@ exports[`RN Codegen Flow Parser can generate fixture CXX_ONLY_NATIVE_MODULE 1`] 
             }
           ]
         },
-        'GraphNode': {
-          'type': 'ObjectTypeAnnotation',
-          'properties': [
-            {
-              'name': 'label',
-              'optional': false,
-              'typeAnnotation': {
-                'type': 'StringTypeAnnotation'
-              }
-            },
-            {
-              'name': 'neighbors',
-              'optional': true,
-              'typeAnnotation': {
-                'type': 'ArrayTypeAnnotation',
-                'elementType': {
-                  'type': 'TypeAliasTypeAnnotation',
-                  'name': 'GraphNode'
-                }
-              }
-            }
-          ]
-        },
         'CustomDeviceEvent': {
           'type': 'ObjectTypeAnnotation',
           'properties': [
@@ -125,6 +102,29 @@ exports[`RN Codegen Flow Parser can generate fixture CXX_ONLY_NATIVE_MODULE 1`] 
               'optional': true,
               'typeAnnotation': {
                 'type': 'NumberTypeAnnotation'
+              }
+            }
+          ]
+        },
+        'GraphNode': {
+          'type': 'ObjectTypeAnnotation',
+          'properties': [
+            {
+              'name': 'label',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'StringTypeAnnotation'
+              }
+            },
+            {
+              'name': 'neighbors',
+              'optional': true,
+              'typeAnnotation': {
+                'type': 'ArrayTypeAnnotation',
+                'elementType': {
+                  'type': 'TypeAliasTypeAnnotation',
+                  'name': 'GraphNode'
+                }
               }
             }
           ]

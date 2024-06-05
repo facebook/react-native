@@ -7,7 +7,8 @@
 
 package com.facebook.react.tasks
 
-import com.facebook.react.model.ModelAutolinkingDependenciesJson
+import com.facebook.react.model.ModelAutolinkingConfigJson
+import com.facebook.react.model.ModelAutolinkingDependenciesPlatformAndroidJson
 import com.facebook.react.utils.JsonUtils
 import java.io.File
 import org.gradle.api.DefaultTask
@@ -31,8 +32,7 @@ abstract class GenerateAutolinkingNewArchitecturesFileTask : DefaultTask() {
   fun taskAction() {
     val model = JsonUtils.fromAutolinkingConfigJson(autolinkInputFile.get().asFile)
 
-    val packages = model?.dependencies?.values ?: emptyList()
-
+    val packages = filterAndroidPackages(model)
     val cmakeFileContent = generateCmakeFileContent(packages)
     val cppFileContent = generateCppFileContent(packages)
 
@@ -43,26 +43,28 @@ abstract class GenerateAutolinkingNewArchitecturesFileTask : DefaultTask() {
     File(outputDir, H_FILENAME).apply { writeText(hTemplate) }
   }
 
+  internal fun filterAndroidPackages(
+      model: ModelAutolinkingConfigJson?
+  ): List<ModelAutolinkingDependenciesPlatformAndroidJson> =
+      model?.dependencies?.values?.mapNotNull { it.platforms?.android } ?: emptyList()
+
   internal fun generateCmakeFileContent(
-      packages: Collection<ModelAutolinkingDependenciesJson>
+      packages: List<ModelAutolinkingDependenciesPlatformAndroidJson>
   ): String {
     val libraryIncludes =
         packages.joinToString("\n") { dep ->
           var addDirectoryString = ""
-          if (dep.platforms?.android?.libraryName != null &&
-              dep.platforms.android.cmakeListsPath != null) {
+          if (dep.libraryName != null && dep.cmakeListsPath != null) {
             // If user provided a custom cmakeListsPath, let's honor it.
-            val nativeFolderPath =
-                dep.platforms.android.cmakeListsPath.replace("CMakeLists.txt", "")
+            val nativeFolderPath = dep.cmakeListsPath.replace("CMakeLists.txt", "")
             addDirectoryString +=
-                "add_subdirectory($nativeFolderPath ${dep.platforms.android.libraryName}_autolinked_build)"
+                "add_subdirectory($nativeFolderPath ${dep.libraryName}_autolinked_build)"
           }
-          if (dep.platforms?.android?.cxxModuleCMakeListsPath != null) {
+          if (dep.cxxModuleCMakeListsPath != null) {
             // If user provided a custom cxxModuleCMakeListsPath, let's honor it.
-            val nativeFolderPath =
-                dep.platforms.android.cxxModuleCMakeListsPath.replace("CMakeLists.txt", "")
+            val nativeFolderPath = dep.cxxModuleCMakeListsPath.replace("CMakeLists.txt", "")
             addDirectoryString +=
-                "\nadd_subdirectory($nativeFolderPath ${dep.platforms.android.libraryName}_cxxmodule_autolinked_build)"
+                "\nadd_subdirectory($nativeFolderPath ${dep.libraryName}_cxxmodule_autolinked_build)"
           }
           addDirectoryString
         }
@@ -70,11 +72,11 @@ abstract class GenerateAutolinkingNewArchitecturesFileTask : DefaultTask() {
     val libraryModules =
         packages.joinToString("\n  ") { dep ->
           var autolinkedLibraries = ""
-          if (dep.platforms?.android?.libraryName != null) {
-            autolinkedLibraries += "$CODEGEN_LIB_PREFIX${dep.platforms.android.libraryName}"
+          if (dep.libraryName != null) {
+            autolinkedLibraries += "$CODEGEN_LIB_PREFIX${dep.libraryName}"
           }
-          if (dep.platforms?.android?.cxxModuleCMakeListsModuleName != null) {
-            autolinkedLibraries += "\n${dep.platforms.android.cxxModuleCMakeListsModuleName}"
+          if (dep.cxxModuleCMakeListsModuleName != null) {
+            autolinkedLibraries += "\n${dep.cxxModuleCMakeListsModuleName}"
           }
           autolinkedLibraries
         }
@@ -84,27 +86,26 @@ abstract class GenerateAutolinkingNewArchitecturesFileTask : DefaultTask() {
   }
 
   internal fun generateCppFileContent(
-      packages: Collection<ModelAutolinkingDependenciesJson>
+      packages: List<ModelAutolinkingDependenciesPlatformAndroidJson>
   ): String {
-    val packagesWithLibraryNames = packages.filter { it.platforms?.android?.libraryName != null }
+    val packagesWithLibraryNames = packages.filter { android -> android.libraryName != null }
 
     val cppIncludes =
         packagesWithLibraryNames.joinToString("\n") { dep ->
-          var include = "#include <${dep.platforms?.android?.libraryName}.h>"
-          if (dep.platforms?.android?.componentDescriptors != null &&
-              dep.platforms.android.componentDescriptors.isNotEmpty()) {
+          var include = "#include <${dep.libraryName}.h>"
+          if (dep.componentDescriptors.isNotEmpty()) {
             include +=
-                "\n#include <${COMPONENT_INCLUDE_PATH}/${dep.platforms.android.libraryName}/${COMPONENT_DESCRIPTOR_FILENAME}>"
+                "\n#include <${COMPONENT_INCLUDE_PATH}/${dep.libraryName}/${COMPONENT_DESCRIPTOR_FILENAME}>"
           }
-          if (dep.platforms?.android?.cxxModuleHeaderName != null) {
-            include += "\n#include <${dep.platforms.android.cxxModuleHeaderName}.h>"
+          if (dep.cxxModuleHeaderName != null) {
+            include += "\n#include <${dep.cxxModuleHeaderName}.h>"
           }
           include
         }
 
     val cppTurboModuleJavaProviders =
         packagesWithLibraryNames.joinToString("\n") { dep ->
-          val libraryName = dep.platforms?.android?.libraryName
+          val libraryName = dep.libraryName
           // language=cpp
           """  
       auto module_$libraryName = ${libraryName}_ModuleProvider(moduleName, params);
@@ -117,9 +118,9 @@ abstract class GenerateAutolinkingNewArchitecturesFileTask : DefaultTask() {
 
     val cppTurboModuleCxxProviders =
         packagesWithLibraryNames
-            .filter { it.platforms?.android?.cxxModuleHeaderName != null }
+            .filter { it.cxxModuleHeaderName != null }
             .joinToString("\n") { dep ->
-              val cxxModuleHeaderName = dep.platforms?.android?.cxxModuleHeaderName
+              val cxxModuleHeaderName = dep.cxxModuleHeaderName
               // language=cpp
               """
       if (moduleName == $cxxModuleHeaderName::kModuleName) {
@@ -131,14 +132,11 @@ abstract class GenerateAutolinkingNewArchitecturesFileTask : DefaultTask() {
 
     val cppComponentDescriptors =
         packagesWithLibraryNames
-            .filter {
-              it.platforms?.android?.componentDescriptors != null &&
-                  it.platforms.android.componentDescriptors.isNotEmpty()
-            }
+            .filter { it.componentDescriptors.isNotEmpty() }
             .joinToString("\n") {
-              it.platforms?.android?.componentDescriptors?.joinToString("\n") {
+              it.componentDescriptors.joinToString("\n") {
                 "providerRegistry->add(concreteComponentDescriptorProvider<$it>());"
-              } ?: ""
+              }
             }
 
     return CPP_TEMPLATE.replace("{{ rncliCppIncludes }}", cppIncludes)

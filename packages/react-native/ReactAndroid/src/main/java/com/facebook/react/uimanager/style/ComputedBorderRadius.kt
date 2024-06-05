@@ -17,4 +17,6 @@ public data class ComputedBorderRadius(
   public fun hasRoundedBorders(): Boolean {
     return topLeft > 0f || topRight > 0f || bottomLeft > 0f || bottomRight > 0f
   }
+
+  public constructor() : this(0f, 0f, 0f, 0f)
 }

@@ -7,6 +7,7 @@
 
 package com.facebook.react.tasks
 
+import com.facebook.react.model.ModelAutolinkingConfigJson
 import com.facebook.react.model.ModelAutolinkingDependenciesJson
 import com.facebook.react.model.ModelAutolinkingDependenciesPlatformAndroidJson
 import com.facebook.react.model.ModelAutolinkingDependenciesPlatformJson
@@ -45,8 +46,7 @@ class GeneratePackageListTaskTest {
   fun composePackageImports_withNoPackages_returnsEmpty() {
     val task = createTestTask<GeneratePackageListTask>()
     val packageName = "com.facebook.react"
-    val packages = emptyList<ModelAutolinkingDependenciesJson>()
-    val result = task.composePackageImports(packageName, packages)
+    val result = task.composePackageImports(packageName, emptyMap())
     assertEquals("", result)
   }
 
@@ -71,8 +71,7 @@ class GeneratePackageListTaskTest {
   fun composePackageInstance_withNoPackages_returnsEmpty() {
     val task = createTestTask<GeneratePackageListTask>()
     val packageName = "com.facebook.react"
-    val packages = emptyList<ModelAutolinkingDependenciesJson>()
-    val result = task.composePackageInstance(packageName, packages)
+    val result = task.composePackageInstance(packageName, emptyMap())
     assertEquals("", result)
   }
 
@@ -118,12 +117,72 @@ class GeneratePackageListTaskTest {
   }
 
   @Test
+  fun filterAndroidPackages_withNull_returnsEmpty() {
+    val task = createTestTask<GeneratePackageListTask>()
+    val result = task.filterAndroidPackages(null)
+    assertEquals(emptyMap<String, ModelAutolinkingDependenciesPlatformAndroidJson>(), result)
+  }
+
+  @Test
+  fun filterAndroidPackages_withEmptyObject_returnsEmpty() {
+    val task = createTestTask<GeneratePackageListTask>()
+    val result = task.filterAndroidPackages(ModelAutolinkingConfigJson("1000.0.0", null, null))
+    assertEquals(emptyMap<String, ModelAutolinkingDependenciesPlatformAndroidJson>(), result)
+  }
+
+  @Test
+  fun filterAndroidPackages_withNoAndroidObject_returnsEmpty() {
+    val task = createTestTask<GeneratePackageListTask>()
+    val result =
+        task.filterAndroidPackages(
+            ModelAutolinkingConfigJson(
+                reactNativeVersion = "1000.0.0",
+                dependencies =
+                    mapOf(
+                        "a-dependency" to
+                            ModelAutolinkingDependenciesJson(
+                                root = "./a/directory",
+                                name = "a-dependency",
+                                platforms =
+                                    ModelAutolinkingDependenciesPlatformJson(android = null))),
+                project = null))
+    assertEquals(emptyMap<String, ModelAutolinkingDependenciesPlatformAndroidJson>(), result)
+  }
+
+  @Test
+  fun filterAndroidPackages_withValidAndroidObject_returnsIt() {
+    val task = createTestTask<GeneratePackageListTask>()
+    val android =
+        ModelAutolinkingDependenciesPlatformAndroidJson(
+            sourceDir = "./a/directory/android",
+            packageImportPath = "import com.facebook.react.aPackage;",
+            packageInstance = "new APackage()",
+            buildTypes = emptyList(),
+        )
+
+    val result =
+        task.filterAndroidPackages(
+            ModelAutolinkingConfigJson(
+                reactNativeVersion = "1000.0.0",
+                dependencies =
+                    mapOf(
+                        "a-dependency" to
+                            ModelAutolinkingDependenciesJson(
+                                root = "./a/directory",
+                                name = "a-dependency",
+                                platforms =
+                                    ModelAutolinkingDependenciesPlatformJson(android = android))),
+                project = null))
+    assertEquals(1, result.entries.size)
+    assertEquals(android, result["a-dependency"])
+  }
+
+  @Test
   fun composeFileContent_withNoPackages_returnsValidFile() {
     val task = createTestTask<GeneratePackageListTask>()
     val packageName = "com.facebook.react"
-    val packages = emptyList<ModelAutolinkingDependenciesJson>()
-    val imports = task.composePackageImports(packageName, packages)
-    val instance = task.composePackageInstance(packageName, packages)
+    val imports = task.composePackageImports(packageName, emptyMap())
+    val instance = task.composePackageInstance(packageName, emptyMap())
     val result = task.composeFileContent(imports, instance)
     // language=java
     assertEquals(
@@ -276,31 +335,25 @@ class GeneratePackageListTaskTest {
   }
 
   private val testDependencies =
-      listOf(
-          ModelAutolinkingDependenciesJson(
-              "root",
-              "@react-native/a-package",
-              ModelAutolinkingDependenciesPlatformJson(
-                  ModelAutolinkingDependenciesPlatformAndroidJson(
-                      sourceDir = "./a/directory",
-                      packageImportPath = "import com.facebook.react.aPackage;",
-                      packageInstance = "new APackage()",
-                      buildTypes = emptyList(),
-                      libraryName = "aPackage",
-                      componentDescriptors = emptyList(),
-                      cmakeListsPath = "./a/directory/CMakeLists.txt",
-                  ))),
-          ModelAutolinkingDependenciesJson(
-              "root",
-              "@react-native/another-package",
-              ModelAutolinkingDependenciesPlatformJson(
-                  ModelAutolinkingDependenciesPlatformAndroidJson(
-                      sourceDir = "./another/directory",
-                      packageImportPath = "import com.facebook.react.anotherPackage;",
-                      packageInstance = "new AnotherPackage()",
-                      buildTypes = emptyList(),
-                      libraryName = "anotherPackage",
-                      componentDescriptors = emptyList(),
-                      cmakeListsPath = "./another/directory/CMakeLists.txt",
-                  ))))
+      mapOf(
+          "@react-native/a-package" to
+              ModelAutolinkingDependenciesPlatformAndroidJson(
+                  sourceDir = "./a/directory",
+                  packageImportPath = "import com.facebook.react.aPackage;",
+                  packageInstance = "new APackage()",
+                  buildTypes = emptyList(),
+                  libraryName = "aPackage",
+                  componentDescriptors = emptyList(),
+                  cmakeListsPath = "./a/directory/CMakeLists.txt",
+              ),
+          "@react-native/another-package" to
+              ModelAutolinkingDependenciesPlatformAndroidJson(
+                  sourceDir = "./another/directory",
+                  packageImportPath = "import com.facebook.react.anotherPackage;",
+                  packageInstance = "new AnotherPackage()",
+                  buildTypes = emptyList(),
+                  libraryName = "anotherPackage",
+                  componentDescriptors = emptyList(),
+                  cmakeListsPath = "./another/directory/CMakeLists.txt",
+              ))
 }

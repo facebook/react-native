@@ -106,6 +106,7 @@ add_react_common_subdir(react/utils)
 add_react_common_subdir(react/bridging)
 add_react_common_subdir(react/renderer/mapbuffer)
 add_react_common_subdir(react/nativemodule/core)
+add_react_common_subdir(react/nativemodule/defaults)
 add_react_common_subdir(react/nativemodule/dom)
 add_react_common_subdir(react/nativemodule/featureflags)
 add_react_common_subdir(react/nativemodule/microtasks)
@@ -145,14 +146,9 @@ add_executable(reactnative_unittest
   ${REACT_COMMON_DIR}/cxxreact/tests/RecoverableErrorTest.cpp
   ${REACT_COMMON_DIR}/react/bridging/tests/BridgingTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/attributedstring/tests/AttributedStringBoxTest.cpp
-  ${REACT_COMMON_DIR}/react/renderer/attributedstring/tests/AttributedStringTest.cpp
-  ${REACT_COMMON_DIR}/react/renderer/attributedstring/tests/ParagraphAttributesTest.cpp
-  ${REACT_COMMON_DIR}/react/renderer/attributedstring/tests/TextAttributesTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/components/image/tests/ImageTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/components/root/tests/RootShadowNodeTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/components/scrollview/tests/ScrollViewTest.cpp
-  ${REACT_COMMON_DIR}/react/renderer/components/text/tests/ParagraphLocalDataTest.cpp
-  ${REACT_COMMON_DIR}/react/renderer/components/text/tests/TextTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/components/view/tests/LayoutTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/components/view/tests/ViewTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/core/tests/DynamicPropsUtilitiesTest.cpp

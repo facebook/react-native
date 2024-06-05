@@ -11,17 +11,23 @@
 'use strict';
 
 const render = require('../../../jest/renderer');
-const React = require('../React');
 const Text = require('../Text');
+const React = require('react');
 
 jest.unmock('../Text');
 jest.unmock('../TextNativeComponent');
+
+function omitRef(json) {
+  // Omit `ref` for forward-compatibility with `enableRefAsProp`.
+  delete json.props.ref;
+  return json;
+}
 
 describe('Text', () => {
   it('default render', () => {
     const instance = render.create(<Text />);
 
-    expect(instance.toJSON()).toMatchInlineSnapshot(`
+    expect(omitRef(instance.toJSON())).toMatchInlineSnapshot(`
       <RCTText
         accessible={true}
         allowFontScaling={true}
@@ -47,7 +53,7 @@ describe('Text compat with web', () => {
 
     const instance = render.create(<Text {...props} />);
 
-    expect(instance.toJSON()).toMatchInlineSnapshot(`
+    expect(omitRef(instance.toJSON())).toMatchInlineSnapshot(`
       <RCTText
         accessible={true}
         allowFontScaling={true}
@@ -113,7 +119,7 @@ describe('Text compat with web', () => {
 
     const instance = render.create(<Text {...props} />);
 
-    expect(instance.toJSON()).toMatchInlineSnapshot(`
+    expect(omitRef(instance.toJSON())).toMatchInlineSnapshot(`
       <RCTText
         accessibilityLabel="label"
         accessibilityState={
@@ -187,7 +193,7 @@ describe('Text compat with web', () => {
 
     const instance = render.create(<Text style={style} />);
 
-    expect(instance.toJSON()).toMatchInlineSnapshot(`
+    expect(omitRef(instance.toJSON())).toMatchInlineSnapshot(`
       <RCTText
         accessible={true}
         allowFontScaling={true}

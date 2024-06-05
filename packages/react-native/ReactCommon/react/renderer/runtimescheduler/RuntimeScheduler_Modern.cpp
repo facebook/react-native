@@ -9,9 +9,9 @@
 #include "SchedulerPriorityUtils.h"
 
 #include <cxxreact/ErrorUtils.h>
+#include <cxxreact/SystraceSection.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/consistency/ScopedShadowTreeRevisionLock.h>
-#include <react/renderer/debug/SystraceSection.h>
 #include <react/utils/OnScopeExit.h>
 #include <utility>
 
@@ -91,24 +91,33 @@ void RuntimeScheduler_Modern::executeNowOnTheSameThread(
     RawCallback&& callback) {
   SystraceSection s("RuntimeScheduler::executeNowOnTheSameThread");
 
-  syncTaskRequests_++;
+  static thread_local jsi::Runtime* runtimePtr = nullptr;
 
-  executeSynchronouslyOnSameThread_CAN_DEADLOCK(
-      runtimeExecutor_,
-      [this, callback = std::move(callback)](jsi::Runtime& runtime) mutable {
-        SystraceSection s2(
-            "RuntimeScheduler::executeNowOnTheSameThread callback");
+  auto currentTime = now_();
+  auto priority = SchedulerPriority::ImmediatePriority;
+  auto expirationTime = currentTime + timeoutForSchedulerPriority(priority);
+  Task task{priority, std::move(callback), expirationTime};
 
-        syncTaskRequests_--;
+  if (runtimePtr == nullptr) {
+    syncTaskRequests_++;
+    executeSynchronouslyOnSameThread_CAN_DEADLOCK(
+        runtimeExecutor_,
+        [this, currentTime, &task](jsi::Runtime& runtime) mutable {
+          SystraceSection s2(
+              "RuntimeScheduler::executeNowOnTheSameThread callback");
 
-        auto currentTime = now_();
-        auto priority = SchedulerPriority::ImmediatePriority;
-        auto expirationTime =
-            currentTime + timeoutForSchedulerPriority(priority);
+          syncTaskRequests_--;
+          runtimePtr = &runtime;
+          executeTask(runtime, task, currentTime);
+          runtimePtr = nullptr;
+        });
 
-        auto task = Task{priority, std::move(callback), expirationTime};
-        executeTask(runtime, task, currentTime);
-      });
+  } else {
+    // Protecting against re-entry into `executeNowOnTheSameThread` from within
+    // `executeNowOnTheSameThread`. Without accounting for re-rentry, a deadlock
+    // will occur when trying to gain access to the runtime.
+    return executeTask(*runtimePtr, task, currentTime);
+  }
 
   bool shouldScheduleWorkLoop = false;
 
@@ -195,21 +204,17 @@ void RuntimeScheduler_Modern::startWorkLoop(
 
   auto previousPriority = currentPriority_;
 
-  try {
-    while (syncTaskRequests_ == 0) {
-      auto currentTime = now_();
-      auto topPriorityTask = selectTask(currentTime, onlyExpired);
+  while (syncTaskRequests_ == 0) {
+    auto currentTime = now_();
+    auto topPriorityTask = selectTask(currentTime, onlyExpired);
 
-      if (!topPriorityTask) {
-        // No pending work to do.
-        // Events will restart the loop when necessary.
-        break;
-      }
-
-      executeTask(runtime, *topPriorityTask, currentTime);
+    if (!topPriorityTask) {
+      // No pending work to do.
+      // Events will restart the loop when necessary.
+      break;
     }
-  } catch (jsi::JSError& error) {
-    handleJSError(runtime, error, true);
+
+    executeTask(runtime, *topPriorityTask, currentTime);
   }
 
   currentPriority_ = previousPriority;
@@ -301,12 +306,16 @@ void RuntimeScheduler_Modern::executeMacrotask(
     bool didUserCallbackTimeout) const {
   SystraceSection s("RuntimeScheduler::executeMacrotask");
 
-  auto result = task.execute(runtime, didUserCallbackTimeout);
+  try {
+    auto result = task.execute(runtime, didUserCallbackTimeout);
 
-  if (result.isObject() && result.getObject(runtime).isFunction(runtime)) {
-    // If the task returned a continuation callback, we re-assign it to the task
-    // and keep the task in the queue.
-    task.callback = result.getObject(runtime).getFunction(runtime);
+    if (result.isObject() && result.getObject(runtime).isFunction(runtime)) {
+      // If the task returned a continuation callback, we re-assign it to the
+      // task and keep the task in the queue.
+      task.callback = result.getObject(runtime).getFunction(runtime);
+    }
+  } catch (jsi::JSError& error) {
+    handleJSError(runtime, error, true);
   }
 }
 

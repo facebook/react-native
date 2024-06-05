@@ -7,10 +7,10 @@
 
 #include "Differentiator.h"
 
+#include <cxxreact/SystraceSection.h>
 #include <react/debug/react_native_assert.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/core/LayoutableShadowNode.h>
-#include <react/renderer/debug/SystraceSection.h>
 #include <algorithm>
 #include "ShadowView.h"
 

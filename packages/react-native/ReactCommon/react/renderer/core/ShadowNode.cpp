@@ -212,18 +212,6 @@ int ShadowNode::getOrderIndex() const {
   return orderIndex_;
 }
 
-void ShadowNode::markPromotedRecursively() const {
-  if (hasBeenPromoted_) {
-    return;
-  }
-
-  hasBeenPromoted_ = true;
-
-  for (const auto& child : *children_) {
-    child->markPromotedRecursively();
-  }
-}
-
 void ShadowNode::sealRecursive() const {
   if (getSealed()) {
     return;
@@ -301,18 +289,11 @@ void ShadowNode::setMounted(bool mounted) const {
 }
 
 bool ShadowNode::getHasBeenPromoted() const {
-  auto hasBeenPromoted =
-      ReactNativeFeatureFlags::fixMountedFlagAndFixPreallocationClone()
-      ? hasBeenPromoted_
-      : hasBeenMounted_.load();
-  return hasBeenPromoted;
+  return hasBeenMounted_.load();
 }
 
 bool ShadowNode::progressStateIfNecessary() {
-  auto hasBeenPromoted =
-      ReactNativeFeatureFlags::fixMountedFlagAndFixPreallocationClone()
-      ? hasBeenPromoted_
-      : hasBeenMounted_.load();
+  auto hasBeenPromoted = hasBeenMounted_.load();
   if (!hasBeenPromoted && state_) {
     ensureUnsealed();
     auto mostRecentState = family_->getMostRecentStateIfObsolete(*state_);
@@ -326,6 +307,30 @@ bool ShadowNode::progressStateIfNecessary() {
     }
   }
   return false;
+}
+
+void ShadowNode::setRuntimeShadowNodeReference(
+    ShadowNodeWrapper* runtimeShadowNodeReference) const {
+  runtimeShadowNodeReference_ = runtimeShadowNodeReference;
+}
+
+void ShadowNode::transferRuntimeShadowNodeReference(
+    const Shared& destinationShadowNode) const {
+  destinationShadowNode->runtimeShadowNodeReference_ =
+      runtimeShadowNodeReference_;
+
+  if (runtimeShadowNodeReference_ != nullptr) {
+    runtimeShadowNodeReference_->shadowNode = destinationShadowNode;
+  }
+}
+
+void ShadowNode::transferRuntimeShadowNodeReference(
+    const Shared& destinationShadowNode,
+    const ShadowNodeFragment& fragment) const {
+  if (fragment.runtimeShadowNodeReference &&
+      ReactNativeFeatureFlags::useRuntimeShadowNodeReferenceUpdate()) {
+    transferRuntimeShadowNodeReference(destinationShadowNode);
+  }
 }
 
 const ShadowNodeFamily& ShadowNode::getFamily() const {

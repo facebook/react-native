@@ -29,9 +29,7 @@ public final class PerftestDevSupportManager extends ReleaseDevSupportManager {
             });
     mDevServerHelper =
         new DevServerHelper(
-            mDevSettings,
-            applicationContext.getPackageName(),
-            mDevSettings.getPackagerConnectionSettings());
+            mDevSettings, applicationContext, mDevSettings.getPackagerConnectionSettings());
   }
 
   @Override

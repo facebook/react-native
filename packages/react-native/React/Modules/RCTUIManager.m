@@ -1385,24 +1385,6 @@ RCT_EXPORT_METHOD(measureLayout
 }
 
 /**
- * Returns the computed recursive offset layout in a dictionary form. The
- * returned values are relative to the `ancestor` shadow view. Returns `nil`, if
- * the `ancestor` shadow view is not actually an `ancestor`. Does not touch
- * anything on the main UI thread. Invokes supplied callback with (x, y, width,
- * height).
- */
-RCT_EXPORT_METHOD(measureLayoutRelativeToParent
-                  : (nonnull NSNumber *)reactTag errorCallback
-                  : (__unused RCTResponseSenderBlock)errorCallback callback
-                  : (RCTResponseSenderBlock)callback)
-{
-  RCTLogWarn(
-      @"RCTUIManager.measureLayoutRelativeToParent method is deprecated and it will not be implemented in newer versions of RN (Fabric) - T47686450");
-  RCTShadowView *shadowView = _shadowViewRegistry[reactTag];
-  RCTMeasureLayout(shadowView, shadowView.reactSuperview, callback);
-}
-
-/**
  * JS sets what *it* considers to be the responder. Later, scroll views can use
  * this in order to determine if scrolling is appropriate.
  */

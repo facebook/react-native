@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<70c5a5fbd9642cc23318fcd08b3e1fb9>>
+ * @generated SignedSource<<1458397650db55d5a985685fa4998e41>>
  */
 
 /**
@@ -39,7 +39,7 @@ class NativeReactNativeFeatureFlags
 
   bool allowCollapsableChildren(jsi::Runtime& runtime);
 
-  bool androidEnablePendingFabricTransactions(jsi::Runtime& runtime);
+  bool allowRecursiveCommitsWithSynchronousMountOnAndroid(jsi::Runtime& runtime);
 
   bool batchRenderingUpdatesInEventLoop(jsi::Runtime& runtime);
 
@@ -57,19 +57,27 @@ class NativeReactNativeFeatureFlags
 
   bool enableUIConsistency(jsi::Runtime& runtime);
 
-  bool fixMountedFlagAndFixPreallocationClone(jsi::Runtime& runtime);
+  bool fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak(jsi::Runtime& runtime);
 
   bool forceBatchingMountItemsOnAndroid(jsi::Runtime& runtime);
 
-  bool inspectorEnableCxxInspectorPackagerConnection(jsi::Runtime& runtime);
+  bool fuseboxEnabledDebug(jsi::Runtime& runtime);
 
-  bool inspectorEnableModernCDPRegistry(jsi::Runtime& runtime);
+  bool fuseboxEnabledRelease(jsi::Runtime& runtime);
+
+  bool lazyAnimationCallbacks(jsi::Runtime& runtime);
 
   bool preventDoubleTextMeasure(jsi::Runtime& runtime);
+
+  bool setAndroidLayoutDirection(jsi::Runtime& runtime);
 
   bool useModernRuntimeScheduler(jsi::Runtime& runtime);
 
   bool useNativeViewConfigsInBridgelessMode(jsi::Runtime& runtime);
+
+  bool useRuntimeShadowNodeReferenceUpdate(jsi::Runtime& runtime);
+
+  bool useRuntimeShadowNodeReferenceUpdateOnLayout(jsi::Runtime& runtime);
 
   bool useStateAlignmentMechanism(jsi::Runtime& runtime);
 };

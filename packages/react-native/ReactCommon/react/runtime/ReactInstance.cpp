@@ -232,20 +232,24 @@ void ReactInstance::loadScript(
 void ReactInstance::callFunctionOnModule(
     const std::string& moduleName,
     const std::string& methodName,
-    const folly::dynamic& args) {
-  // TODO (C++ 20): This code previously implicitly captured `this` in a [=]
-  // capture group. Was it meaning to pass modules_ by value?
-  bufferedRuntimeExecutor_->execute([=, this](jsi::Runtime& runtime) {
+    folly::dynamic&& args) {
+  bufferedRuntimeExecutor_->execute([this,
+                                     moduleName = moduleName,
+                                     methodName = methodName,
+                                     args = std::move(args)](
+                                        jsi::Runtime& runtime) {
     SystraceSection s(
         "ReactInstance::callFunctionOnModule",
         "moduleName",
         moduleName,
         "methodName",
         methodName);
-    if (modules_.find(moduleName) == modules_.end()) {
+    auto it = callableModules_.find(moduleName);
+    if (it == callableModules_.end()) {
       std::ostringstream knownModules;
       int i = 0;
-      for (auto it = modules_.begin(); it != modules_.end(); it++, i++) {
+      for (it = callableModules_.begin(); it != callableModules_.end();
+           it++, i++) {
         const char* space = (i > 0 ? ", " : " ");
         knownModules << space << it->first;
       }
@@ -254,24 +258,25 @@ void ReactInstance::callFunctionOnModule(
           "Failed to call into JavaScript module method " + moduleName + "." +
               methodName +
               "(). Module has not been registered as callable. Registered callable JavaScript modules (n = " +
-              std::to_string(modules_.size()) + "):" + knownModules.str() +
-              ". Did you forget to call `RN$registerCallableModule`?");
+              std::to_string(callableModules_.size()) +
+              "):" + knownModules.str() +
+              ". Did you forget to call `registerCallableModule`?");
     }
 
-    auto module = modules_[moduleName]->factory.call(runtime).asObject(runtime);
-    auto method = module.getProperty(runtime, methodName.c_str());
-    if (method.isUndefined()) {
-      throw jsi::JSError(
-          runtime,
-          "Failed to call into JavaScript module method " + moduleName + "." +
-              methodName + ". Module exists, but the method is undefined.");
+    if (std::holds_alternative<jsi::Function>(it->second)) {
+      auto module =
+          std::get<jsi::Function>(it->second).call(runtime).asObject(runtime);
+      it->second = std::move(module);
     }
+
+    auto& module = std::get<jsi::Object>(it->second);
+    auto method = module.getPropertyAsFunction(runtime, methodName.c_str());
 
     std::vector<jsi::Value> jsArgs;
     for (auto& arg : args) {
       jsArgs.push_back(jsi::valueFromDynamic(runtime, arg));
     }
-    method.asObject(runtime).asFunction(runtime).callWithThis(
+    method.callWithThis(
         runtime, module, (const jsi::Value*)jsArgs.data(), jsArgs.size());
   });
 }
@@ -367,13 +372,14 @@ void ReactInstance::initializeRuntime(
               }
               auto name = args[0].asString(runtime).utf8(runtime);
               if (!args[1].isObject() ||
-                  !args[1].asObject(runtime).isFunction(runtime)) {
+                  !args[1].getObject(runtime).isFunction(runtime)) {
                 throw jsi::JSError(
                     runtime,
                     "The second argument to registerCallableModule must be a function that returns the JS module.");
               }
-              modules_[name] = std::make_shared<CallableModule>(
-                  args[1].getObject(runtime).asFunction(runtime));
+              callableModules_.emplace(
+                  std::move(name),
+                  args[1].getObject(runtime).getFunction(runtime));
               return jsi::Value::undefined();
             }));
 

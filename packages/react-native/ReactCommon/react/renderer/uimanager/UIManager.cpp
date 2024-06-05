@@ -8,12 +8,12 @@
 #include "UIManager.h"
 
 #include <cxxreact/JSExecutor.h>
+#include <cxxreact/SystraceSection.h>
 #include <react/debug/react_native_assert.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/core/DynamicPropsUtilities.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/ShadowNodeFragment.h>
-#include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/uimanager/SurfaceRegistryBinding.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
 #include <react/renderer/uimanager/UIManagerCommitHook.h>
@@ -153,11 +153,8 @@ std::shared_ptr<ShadowNode> UIManager::cloneNode(
       {
           .props = props,
           .children = children,
+          .runtimeShadowNodeReference = false,
       });
-
-  if (!rawProps.isEmpty() && delegate_ != nullptr) {
-    delegate_->uiManagerDidCloneShadowNodeWithNewProps(*clonedShadowNode);
-  }
 
   return clonedShadowNode;
 }

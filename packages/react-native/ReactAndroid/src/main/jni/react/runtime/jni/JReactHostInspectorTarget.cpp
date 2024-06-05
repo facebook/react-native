@@ -20,7 +20,7 @@ JReactHostInspectorTarget::JReactHostInspectorTarget(
     : javaReactHostImpl_(make_global(reactHostImpl)),
       javaExecutor_(make_global(executor)) {
   auto& inspectorFlags = InspectorFlags::getInstance();
-  if (inspectorFlags.getEnableModernCDPRegistry()) {
+  if (inspectorFlags.getFuseboxEnabled()) {
     inspectorTarget_ = HostTarget::create(
         *this,
         [javaExecutor =

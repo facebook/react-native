@@ -33,6 +33,12 @@ void RCTOverrideAppearancePreference(NSString *const colorSchemeOverride)
   sColorSchemeOverride = colorSchemeOverride;
 }
 
+static BOOL sUseKeyWindowForSystemStyle = NO;
+void RCTUseKeyWindowForSystemStyle(BOOL useMainScreen)
+{
+  sUseKeyWindowForSystemStyle = useMainScreen;
+}
+
 NSString *RCTCurrentOverrideAppearancePreference()
 {
   return sColorSchemeOverride;
@@ -64,7 +70,9 @@ NSString *RCTColorSchemePreference(UITraitCollection *traitCollection)
     return appearances[@(traitCollection.userInterfaceStyle)];
   }
 
-  return RCTAppearanceColorSchemeLight;
+  UIUserInterfaceStyle systemStyle = sUseKeyWindowForSystemStyle ? RCTKeyWindow().traitCollection.userInterfaceStyle
+                                                                 : traitCollection.userInterfaceStyle;
+  return appearances[@(systemStyle)] ?: RCTAppearanceColorSchemeLight;
 }
 
 @interface RCTAppearance () <NativeAppearanceSpec>

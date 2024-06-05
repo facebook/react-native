@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<251133cdd333901af532b1442c68996b>>
+ * @generated SignedSource<<af167f52f81a78ac200159717eb55e8e>>
  */
 
 /**
@@ -27,7 +27,7 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun allowCollapsableChildren(): Boolean
 
-  @DoNotStrip public fun androidEnablePendingFabricTransactions(): Boolean
+  @DoNotStrip public fun allowRecursiveCommitsWithSynchronousMountOnAndroid(): Boolean
 
   @DoNotStrip public fun batchRenderingUpdatesInEventLoop(): Boolean
 
@@ -45,19 +45,27 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableUIConsistency(): Boolean
 
-  @DoNotStrip public fun fixMountedFlagAndFixPreallocationClone(): Boolean
+  @DoNotStrip public fun fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak(): Boolean
 
   @DoNotStrip public fun forceBatchingMountItemsOnAndroid(): Boolean
 
-  @DoNotStrip public fun inspectorEnableCxxInspectorPackagerConnection(): Boolean
+  @DoNotStrip public fun fuseboxEnabledDebug(): Boolean
 
-  @DoNotStrip public fun inspectorEnableModernCDPRegistry(): Boolean
+  @DoNotStrip public fun fuseboxEnabledRelease(): Boolean
+
+  @DoNotStrip public fun lazyAnimationCallbacks(): Boolean
 
   @DoNotStrip public fun preventDoubleTextMeasure(): Boolean
+
+  @DoNotStrip public fun setAndroidLayoutDirection(): Boolean
 
   @DoNotStrip public fun useModernRuntimeScheduler(): Boolean
 
   @DoNotStrip public fun useNativeViewConfigsInBridgelessMode(): Boolean
+
+  @DoNotStrip public fun useRuntimeShadowNodeReferenceUpdate(): Boolean
+
+  @DoNotStrip public fun useRuntimeShadowNodeReferenceUpdateOnLayout(): Boolean
 
   @DoNotStrip public fun useStateAlignmentMechanism(): Boolean
 }

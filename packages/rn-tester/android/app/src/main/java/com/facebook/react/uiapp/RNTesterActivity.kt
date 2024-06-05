@@ -8,9 +8,12 @@
 package com.facebook.react.uiapp
 
 import android.os.Bundle
+import com.facebook.react.FBEndToEndDumpsysHelper
 import com.facebook.react.ReactActivity
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled
 import com.facebook.react.defaults.DefaultReactActivityDelegate
+import java.io.FileDescriptor
+import java.io.PrintWriter
 
 class RNTesterActivity : ReactActivity() {
   class RNTesterActivityDelegate(val activity: ReactActivity, mainComponentName: String) :
@@ -37,4 +40,13 @@ class RNTesterActivity : ReactActivity() {
   override fun createReactActivityDelegate() = RNTesterActivityDelegate(this, mainComponentName)
 
   override fun getMainComponentName() = "RNTesterApp"
+
+  override fun dump(
+      prefix: String,
+      fd: FileDescriptor?,
+      writer: PrintWriter,
+      args: Array<String>?
+  ) {
+    FBEndToEndDumpsysHelper.maybeDump(prefix, writer, args)
+  }
 }

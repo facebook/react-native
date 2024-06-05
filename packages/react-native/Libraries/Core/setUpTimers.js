@@ -63,17 +63,12 @@ if (
   // mechanism to pass feature flags from RN to React in OSS.
   global.RN$enableMicrotasksInReact = true;
 
-  polyfillGlobal('queueMicrotask', () => {
-    const nativeQueueMicrotask =
+  polyfillGlobal(
+    'queueMicrotask',
+    () =>
       require('../../src/private/webapis/microtasks/specs/NativeMicrotasks')
-        .default?.queueMicrotask;
-    if (nativeQueueMicrotask) {
-      return nativeQueueMicrotask;
-    } else {
-      // For backwards-compatibility
-      return global.HermesInternal?.enqueueJob;
-    }
-  });
+        .default.queueMicrotask,
+  );
 
   // We shim the immediate APIs via `queueMicrotask` to maintain the backward
   // compatibility.

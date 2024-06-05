@@ -1508,7 +1508,7 @@ public class ReactInstanceManager {
   }
 
   private @Nullable ReactInstanceManagerInspectorTarget getOrCreateInspectorTarget() {
-    if (mInspectorTarget == null && InspectorFlags.getEnableModernCDPRegistry()) {
+    if (mInspectorTarget == null && InspectorFlags.getFuseboxEnabled()) {
 
       mInspectorTarget =
           new ReactInstanceManagerInspectorTarget(

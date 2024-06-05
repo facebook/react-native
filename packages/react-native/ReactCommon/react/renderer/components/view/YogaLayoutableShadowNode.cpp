@@ -6,16 +6,17 @@
  */
 
 #include "YogaLayoutableShadowNode.h"
+#include <cxxreact/SystraceSection.h>
 #include <logger/react_native_log.h>
 #include <react/debug/flags.h>
 #include <react/debug/react_native_assert.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/components/view/ViewShadowNode.h>
 #include <react/renderer/components/view/conversions.h>
 #include <react/renderer/core/LayoutConstraints.h>
 #include <react/renderer/core/LayoutContext.h>
 #include <react/renderer/debug/DebugStringConvertibleItem.h>
-#include <react/renderer/debug/SystraceSection.h>
 #include <react/utils/CoreFeatures.h>
 #include <yoga/Yoga.h>
 #include <algorithm>
@@ -211,6 +212,11 @@ void YogaLayoutableShadowNode::adoptYogaChild(size_t index) {
     // TODO: At this point, React has wrong reference to the node. (T138668036)
     auto clonedChildNode = childNode.clone({});
 
+    if (ReactNativeFeatureFlags::
+            useRuntimeShadowNodeReferenceUpdateOnLayout()) {
+      childNode.transferRuntimeShadowNodeReference(clonedChildNode);
+    }
+
     // Replace the child node with a newly cloned one in the children list.
     replaceChild(childNode, clonedChildNode, index);
   }
@@ -376,8 +382,11 @@ void YogaLayoutableShadowNode::updateYogaProps() {
   yogaNode_.setStyle(styleResult);
   if (getTraits().check(ShadowNodeTraits::ViewKind)) {
     auto& viewProps = static_cast<const ViewProps&>(*props_);
-    YGNodeSetAlwaysFormsContainingBlock(
-        &yogaNode_, viewProps.transform != Transform::Identity());
+    // https://developer.mozilla.org/en-US/docs/Web/CSS/Containing_block#identifying_the_containing_block
+    bool alwaysFormsContainingBlock =
+        viewProps.transform != Transform::Identity() ||
+        !viewProps.filter.empty();
+    YGNodeSetAlwaysFormsContainingBlock(&yogaNode_, alwaysFormsContainingBlock);
   }
 }
 
@@ -514,6 +523,10 @@ YogaLayoutableShadowNode& YogaLayoutableShadowNode::cloneChildInPlace(
       {ShadowNodeFragment::propsPlaceholder(),
        ShadowNodeFragment::childrenPlaceholder(),
        childNode.getState()});
+
+  if (ReactNativeFeatureFlags::useRuntimeShadowNodeReferenceUpdateOnLayout()) {
+    childNode.transferRuntimeShadowNodeReference(clonedChildNode);
+  }
 
   replaceChild(childNode, clonedChildNode, layoutableChildIndex);
   return static_cast<YogaLayoutableShadowNode&>(*clonedChildNode);

@@ -45,12 +45,6 @@ class SchedulerDelegate {
   virtual void schedulerDidRequestPreliminaryViewAllocation(
       const ShadowNode& shadowNode) = 0;
 
-  /*
-   * Called after shadow node is cloned with new props.
-   */
-  virtual void schedulerDidRequestUpdateToPreallocatedView(
-      const ShadowNode& shadowView) = 0;
-
   virtual void schedulerDidDispatchCommand(
       const ShadowView& shadowView,
       const std::string& commandName,

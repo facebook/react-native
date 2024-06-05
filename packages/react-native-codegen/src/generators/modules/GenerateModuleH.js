@@ -211,7 +211,7 @@ function translatePrimitiveJSTypeToCpp(
 }
 
 function createStructsString(
-  moduleName: string,
+  hasteModuleName: string,
   aliasMap: NativeModuleAliasMap,
   resolveAlias: AliasResolver,
   enumMap: NativeModuleEnumMap,
@@ -221,7 +221,7 @@ function createStructsString(
     v: NamedShape<Nullable<NativeModuleBaseTypeAnnotation>>,
   ) =>
     translatePrimitiveJSTypeToCpp(
-      moduleName,
+      hasteModuleName,
       parentObjectAlias,
       v.typeAnnotation,
       false,
@@ -236,7 +236,7 @@ function createStructsString(
       if (value.properties.length === 0) {
         return '';
       }
-      const structName = `${moduleName}${alias}`;
+      const structName = `${hasteModuleName}${alias}`;
       const templateParameter = value.properties.filter(
         v =>
           !isDirectRecursiveMember(alias, v.typeAnnotation) &&
@@ -390,12 +390,12 @@ struct Bridging<${enumName}> {
 };
 
 function generateEnum(
-  moduleName: string,
+  hasteModuleName: string,
   origEnumName: string,
   members: NativeModuleEnumMembers,
   memberType: NativeModuleEnumMemberType,
 ): string {
-  const enumName = getEnumName(moduleName, origEnumName);
+  const enumName = getEnumName(hasteModuleName, origEnumName);
 
   const nativeEnumMemberType: NativeEnumMemberValueType =
     memberType === 'StringTypeAnnotation' ? 'std::string' : 'int32_t';
@@ -437,14 +437,14 @@ function generateEnum(
 }
 
 function createEnums(
-  moduleName: string,
+  hasteModuleName: string,
   enumMap: NativeModuleEnumMap,
   resolveAlias: AliasResolver,
 ): string {
   return Object.entries(enumMap)
     .map(([enumName, enumNode]) => {
       return generateEnum(
-        moduleName,
+        hasteModuleName,
         enumName,
         enumNode.members,
         enumNode.memberType,
@@ -455,7 +455,7 @@ function createEnums(
 }
 
 function translatePropertyToCpp(
-  moduleName: string,
+  hasteModuleName: string,
   prop: NativeModulePropertyShape,
   resolveAlias: AliasResolver,
   enumMap: NativeModuleEnumMap,
@@ -470,7 +470,7 @@ function translatePropertyToCpp(
 
   const paramTypes = propTypeAnnotation.params.map(param => {
     const translatedParam = translatePrimitiveJSTypeToCpp(
-      moduleName,
+      hasteModuleName,
       null,
       param.typeAnnotation,
       param.optional,
@@ -483,7 +483,7 @@ function translatePropertyToCpp(
   });
 
   const returnType = translatePrimitiveJSTypeToCpp(
-    moduleName,
+    hasteModuleName,
     null,
     propTypeAnnotation.returnTypeAnnotation,
     false,
@@ -530,19 +530,19 @@ module.exports = {
       } = nativeModules[hasteModuleName];
       const resolveAlias = createAliasResolver(aliasMap);
       const structs = createStructsString(
-        moduleName,
+        hasteModuleName,
         aliasMap,
         resolveAlias,
         enumMap,
       );
-      const enums = createEnums(moduleName, enumMap, resolveAlias);
+      const enums = createEnums(hasteModuleName, enumMap, resolveAlias);
 
       return [
         ModuleClassDeclarationTemplate({
           hasteModuleName,
           moduleProperties: properties.map(prop =>
             translatePropertyToCpp(
-              moduleName,
+              hasteModuleName,
               prop,
               resolveAlias,
               enumMap,
@@ -556,7 +556,12 @@ module.exports = {
           hasteModuleName,
           moduleName,
           moduleProperties: properties.map(prop =>
-            translatePropertyToCpp(moduleName, prop, resolveAlias, enumMap),
+            translatePropertyToCpp(
+              hasteModuleName,
+              prop,
+              resolveAlias,
+              enumMap,
+            ),
           ),
         }),
       ];
