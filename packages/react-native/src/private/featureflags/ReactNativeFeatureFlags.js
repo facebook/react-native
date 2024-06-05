@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c3b421b10f05f33a9830fbd730a3786a>>
+ * @generated SignedSource<<870e25c844e692bb04ee49fe20cd3baf>>
  * @flow strict-local
  */
 
@@ -58,6 +58,7 @@ export type ReactNativeFeatureFlags = {
   lazyAnimationCallbacks: Getter<boolean>,
   preventDoubleTextMeasure: Getter<boolean>,
   setAndroidLayoutDirection: Getter<boolean>,
+  useImmediateExecutorInAndroidBridgeless: Getter<boolean>,
   useModernRuntimeScheduler: Getter<boolean>,
   useNativeViewConfigsInBridgelessMode: Getter<boolean>,
   useRuntimeShadowNodeReferenceUpdate: Getter<boolean>,
@@ -177,6 +178,10 @@ export const preventDoubleTextMeasure: Getter<boolean> = createNativeFlagGetter(
  * Propagate layout direction to Android views.
  */
 export const setAndroidLayoutDirection: Getter<boolean> = createNativeFlagGetter('setAndroidLayoutDirection', false);
+/**
+ * Invoke callbacks immediately on the ReactInstance rather than going through a background thread for synchronization
+ */
+export const useImmediateExecutorInAndroidBridgeless: Getter<boolean> = createNativeFlagGetter('useImmediateExecutorInAndroidBridgeless', false);
 /**
  * When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.
  */

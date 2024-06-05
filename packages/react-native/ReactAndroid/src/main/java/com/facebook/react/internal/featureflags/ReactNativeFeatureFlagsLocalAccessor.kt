@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3b6ad9b32518e319bb7d11da4eaa262c>>
+ * @generated SignedSource<<d23d2a5f44f2b2068dde9e85e5b1ce9f>>
  */
 
 /**
@@ -42,6 +42,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var lazyAnimationCallbacksCache: Boolean? = null
   private var preventDoubleTextMeasureCache: Boolean? = null
   private var setAndroidLayoutDirectionCache: Boolean? = null
+  private var useImmediateExecutorInAndroidBridgelessCache: Boolean? = null
   private var useModernRuntimeSchedulerCache: Boolean? = null
   private var useNativeViewConfigsInBridgelessModeCache: Boolean? = null
   private var useRuntimeShadowNodeReferenceUpdateCache: Boolean? = null
@@ -224,6 +225,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.setAndroidLayoutDirection()
       accessedFeatureFlags.add("setAndroidLayoutDirection")
       setAndroidLayoutDirectionCache = cached
+    }
+    return cached
+  }
+
+  override fun useImmediateExecutorInAndroidBridgeless(): Boolean {
+    var cached = useImmediateExecutorInAndroidBridgelessCache
+    if (cached == null) {
+      cached = currentProvider.useImmediateExecutorInAndroidBridgeless()
+      accessedFeatureFlags.add("useImmediateExecutorInAndroidBridgeless")
+      useImmediateExecutorInAndroidBridgelessCache = cached
     }
     return cached
   }

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1458397650db55d5a985685fa4998e41>>
+ * @generated SignedSource<<e13caa80ac317feb98cf4db5ac89be79>>
  */
 
 /**
@@ -70,6 +70,8 @@ class NativeReactNativeFeatureFlags
   bool preventDoubleTextMeasure(jsi::Runtime& runtime);
 
   bool setAndroidLayoutDirection(jsi::Runtime& runtime);
+
+  bool useImmediateExecutorInAndroidBridgeless(jsi::Runtime& runtime);
 
   bool useModernRuntimeScheduler(jsi::Runtime& runtime);
 

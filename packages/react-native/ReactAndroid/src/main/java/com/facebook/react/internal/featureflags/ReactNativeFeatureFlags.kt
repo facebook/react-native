@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bc03d88b59af436b2db4f9048184a881>>
+ * @generated SignedSource<<177f05d7b2fadcfffa32cb5a7a21c76b>>
  */
 
 /**
@@ -135,6 +135,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun setAndroidLayoutDirection(): Boolean = accessor.setAndroidLayoutDirection()
+
+  /**
+   * Invoke callbacks immediately on the ReactInstance rather than going through a background thread for synchronization
+   */
+  @JvmStatic
+  public fun useImmediateExecutorInAndroidBridgeless(): Boolean = accessor.useImmediateExecutorInAndroidBridgeless()
 
   /**
    * When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.

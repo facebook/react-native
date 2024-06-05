@@ -122,6 +122,11 @@ const definitions: FeatureFlagDefinitions = {
       defaultValue: false,
       description: 'Propagate layout direction to Android views.',
     },
+    useImmediateExecutorInAndroidBridgeless: {
+      defaultValue: false,
+      description:
+        'Invoke callbacks immediately on the ReactInstance rather than going through a background thread for synchronization',
+    },
     useModernRuntimeScheduler: {
       defaultValue: false,
       description:

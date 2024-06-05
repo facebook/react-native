@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<af167f52f81a78ac200159717eb55e8e>>
+ * @generated SignedSource<<d84816a13ad49b6e1c69c968a8503385>>
  */
 
 /**
@@ -58,6 +58,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun preventDoubleTextMeasure(): Boolean
 
   @DoNotStrip public fun setAndroidLayoutDirection(): Boolean
+
+  @DoNotStrip public fun useImmediateExecutorInAndroidBridgeless(): Boolean
 
   @DoNotStrip public fun useModernRuntimeScheduler(): Boolean
 
