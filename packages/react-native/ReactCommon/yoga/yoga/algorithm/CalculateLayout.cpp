@@ -545,12 +545,8 @@ static float computeFlexBasisForChildren(
     if (performLayout) {
       // Set the initial position (relative to the owner).
       const Direction childDirection = child->resolveDirection(direction);
-      const float mainDim =
-          isRow(mainAxis) ? availableInnerWidth : availableInnerHeight;
-      const float crossDim =
-          isRow(mainAxis) ? availableInnerHeight : availableInnerWidth;
       child->setPosition(
-          childDirection, mainDim, crossDim, availableInnerWidth);
+          childDirection, availableInnerWidth, availableInnerHeight);
     }
 
     if (child->style().positionType() == PositionType::Absolute) {
@@ -2388,8 +2384,7 @@ void calculateLayout(
           markerData,
           0, // tree root
           gCurrentGenerationCount.load(std::memory_order_relaxed))) {
-    node->setPosition(
-        node->getLayout().direction(), ownerWidth, ownerHeight, ownerWidth);
+    node->setPosition(node->getLayout().direction(), ownerWidth, ownerHeight);
     roundLayoutResultsToPixelGrid(node, 0.0f, 0.0f);
   }
 
