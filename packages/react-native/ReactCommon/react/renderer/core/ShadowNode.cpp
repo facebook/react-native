@@ -371,8 +371,8 @@ ShadowNode::Unshared ShadowNode::cloneTree(
 
     childNode = parentNode.clone(
         {.children = std::make_shared<ShadowNode::ListOfShared>(children),
-         .traits = traits,
-         .state = parentNode.getState()});
+         .state = parentNode.getState(),
+         .traits = traits});
   }
 
   return std::const_pointer_cast<ShadowNode>(childNode);
