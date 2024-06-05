@@ -16,6 +16,7 @@ import javax.annotation.Nullable;
 @DoNotStripAny
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class ReactInstanceManagerInspectorTarget implements AutoCloseable {
+  @DoNotStripAny
   public interface TargetDelegate {
     public void onReload();
 
