@@ -9,6 +9,7 @@ package com.facebook.react.devsupport;
 
 import android.content.Context;
 import com.facebook.infer.annotation.Nullsafe;
+import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
 
 /**
  * Interface for accessing and interacting with development features related to performance testing.
@@ -17,7 +18,7 @@ import com.facebook.infer.annotation.Nullsafe;
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public final class PerftestDevSupportManager extends ReleaseDevSupportManager {
   private final DevServerHelper mDevServerHelper;
-  private final DevInternalSettings mDevSettings;
+  private final DeveloperSettings mDevSettings;
 
   public PerftestDevSupportManager(Context applicationContext) {
     mDevSettings =
@@ -33,7 +34,7 @@ public final class PerftestDevSupportManager extends ReleaseDevSupportManager {
   }
 
   @Override
-  public DevInternalSettings getDevSettings() {
+  public DeveloperSettings getDevSettings() {
     return mDevSettings;
   }
 
