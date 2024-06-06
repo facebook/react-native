@@ -396,10 +396,6 @@ void Binding::installFabricUIManager(
   // Keep reference to config object and cache some feature flags here
   reactNativeConfig_ = config;
 
-  contextContainer->insert(
-      "CalculateTransformedFramesEnabled",
-      getFeatureFlagValue("calculateTransformedFramesEnabled"));
-
   CoreFeatures::enablePropIteratorSetter =
       getFeatureFlagValue("enableCppPropsIteratorSetter");
   CoreFeatures::excludeYogaFromRawProps =
