@@ -319,7 +319,7 @@ BOOL RCTUpscalingRequired(
 UIImage *__nullable RCTDecodeImageWithData(NSData *data, CGSize destSize, CGFloat destScale, RCTResizeMode resizeMode)
 {
   CGImageSourceRef sourceRef = CGImageSourceCreateWithData((__bridge CFDataRef)data, NULL);
-    UIImage* image = decodeImageFromCGImageSourceRef(sourceRef, destSize, destScale, resizeMode);
+    return decodeImageFromCGImageSourceRef(sourceRef, destSize, destScale, resizeMode);
 
      return image;
    }
@@ -328,13 +328,13 @@ UIImage *__nullable RCTDecodeImageWithLocalAssetURL(NSURL *url, CGSize destSize,
 {
   CGImageSourceRef sourceRef = CGImageSourceCreateWithURL((__bridge CFURLRef)url, NULL);
   UIImage* image = decodeImageFromCGImageSourceRef(sourceRef, destSize, destScale, resizeMode);
-    
+
     if (!image) {
         image = RCTImageFromLocalAssetURL(url);
- 
+
   }
 
-  
+
   return image;
 }
 
