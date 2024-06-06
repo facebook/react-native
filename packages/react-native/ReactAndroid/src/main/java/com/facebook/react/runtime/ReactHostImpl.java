@@ -887,7 +887,11 @@ public class ReactHostImpl implements ReactHost {
   @ThreadConfined(UI)
   private void moveToHostDestroy(@Nullable ReactContext currentContext) {
     mReactLifecycleStateManager.moveToOnHostDestroy(currentContext);
-    destroyReactHostInspectorTarget();
+    if (currentContext == null) {
+      // There's no current context/instance that requires the host inspector
+      // target to be kept alive, so we can destroy it immediately.
+      destroyInspectorHostTarget();
+    }
     setCurrentActivity(null);
   }
 
@@ -1664,13 +1668,15 @@ public class ReactHostImpl implements ReactHost {
     return mReactHostInspectorTarget;
   }
 
-  private void destroyReactHostInspectorTarget() {
+  @ThreadConfined(UI)
+  private void destroyInspectorHostTarget() {
     if (mReactHostInspectorTarget != null) {
       mReactHostInspectorTarget.close();
       mReactHostInspectorTarget = null;
     }
   }
 
+  @ThreadConfined(UI)
   private void unregisterInstanceFromInspector(final @Nullable ReactInstance reactInstance) {
     if (reactInstance != null) {
       if (InspectorFlags.getFuseboxEnabled()) {
@@ -1679,6 +1685,12 @@ public class ReactHostImpl implements ReactHost {
             "Host inspector target destroyed before instance was unregistered");
       }
       reactInstance.unregisterFromInspector();
+    }
+    if (mReactLifecycleStateManager.getLifecycleState() == LifecycleState.BEFORE_CREATE) {
+      // If the host is being destroyed, now that the current context/instance
+      // has been unregistered, we can safely destroy the host's inspector
+      // target.
+      destroyInspectorHostTarget();
     }
   }
 }
