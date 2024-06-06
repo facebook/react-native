@@ -37,9 +37,9 @@ const cwd = {
 
 const possibleHermescPaths = [
   // OSS checkout
-  path.join(cwd.ios, 'Pods/hermes-engine/destroot/bin/hermesc'),
+  'destroot/bin/hermesc',
   // internal
-  path.join(cwd.ios, 'Pods/hermes-engine/build_host_hermesc/bin/hermesc'),
+  'build_host_hermesc/bin/hermesc',
 ];
 
 type BootstrapOptions = {
@@ -178,9 +178,10 @@ bundle
     );
 
     // Validate only after initial build, as hermesc may not be prebuilt
-    const hermesc = getExistingPath(possibleHermescPaths);
+    const hermesFolder = path.join(cwd.ios, 'Pods/hermes-engine');
+    const hermesc = getExistingPath(hermesFolder, possibleHermescPaths);
 
-    if (hermesc == null) {
+    if (hermesc == null && isHermesInstalled) {
       throw new Error(
         `Unable to find hermesc at:\n-${possibleHermescPaths
           .map(line => ' - ' + line)
@@ -202,8 +203,8 @@ bundle
           dev: !prod,
           jsvm: isHermesInstalled ? 'hermes' : 'jsc',
           hermes: {
-            path: path.join(cwd.ios, 'Pods', 'hermes-engine'),
-            hermesc: 'build_host_hermesc/bin/hermesc',
+            path: hermesFolder,
+            hermesc: hermesc ?? '',
           },
           callback: metroProcess => {
             const readline = require('readline');
@@ -229,8 +230,8 @@ bundle
           dev: !prod,
           jsvm: isHermesInstalled ? 'hermes' : 'jsc',
           hermes: {
-            path: path.join(cwd.ios, 'Pods/hermes-engine'),
-            hermesc: 'build_host_hermesc/bin/hermesc',
+            path: hermesFolder,
+            hermesc: hermesc ?? '',
           },
         });
 
