@@ -321,8 +321,8 @@ UIImage *__nullable RCTDecodeImageWithData(NSData *data, CGSize destSize, CGFloa
   CGImageSourceRef sourceRef = CGImageSourceCreateWithData((__bridge CFDataRef)data, NULL);
     return decodeImageFromCGImageSourceRef(sourceRef, destSize, destScale, resizeMode);
 
-     return image;
-   }
+
+ }
 
 UIImage *__nullable RCTDecodeImageWithLocalAssetURL(NSURL *url, CGSize destSize, CGFloat destScale, RCTResizeMode resizeMode)
 {
