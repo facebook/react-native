@@ -9,6 +9,7 @@
  */
 
 import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
+import type {EventEmitter} from 'react-native/Libraries/Types/CodegenTypes';
 
 import {TurboModuleRegistry} from 'react-native';
 
@@ -76,6 +77,10 @@ export type CustomDeviceEvent = {
 };
 
 export interface Spec extends TurboModule {
+  +onPress: EventEmitter<void>;
+  +onClick: EventEmitter<string>;
+  +onChange: EventEmitter<ObjectStruct>;
+  +onSubmit: EventEmitter<ObjectStruct[]>;
   +getArray: (arg: Array<ObjectStruct | null>) => Array<ObjectStruct | null>;
   +getBool: (arg: boolean) => boolean;
   +getConstants: () => ConstantsStruct;
