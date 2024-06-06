@@ -34,7 +34,7 @@ export function trim(
 
 type ExecaPromiseMetaized = Promise<Result> & child_process$ChildProcess;
 
-export function observe(result: ExecaPromiseMetaized): TaskResult<string> {
+export function observe(result: ExecaPromiseMetaized): TaskResult<{}, string> {
   const obs = new Observable<string>(observer => {
     result.stderr.on('data', (data: Buffer) =>
       data

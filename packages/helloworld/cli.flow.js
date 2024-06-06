@@ -9,27 +9,23 @@
  * @oncall react_native
  */
 
-import type {IOSDevice} from './lib/ios';
-
 import {run} from './lib/cli';
-import {pauseWatchman} from './lib/filesystem';
+import {getExistingPath, pauseWatchman} from './lib/filesystem';
 import {
   bootSimulator,
   getSimulatorDetails,
   getXcodeBuildSettings,
+  hasPodInstalled,
   launchApp,
   launchSimulator,
 } from './lib/ios';
 import {app, apple} from '@react-native/core-cli-utils';
-import chalk from 'chalk';
-import {program} from 'commander';
+import {Option, program} from 'commander';
 import {readFileSync} from 'fs';
 import {Listr} from 'listr2';
 import path from 'path';
 
 program.version(JSON.parse(readFileSync('./package.json', 'utf8')).version);
-
-const FIRST = 1;
 
 const bootstrap = program.command('bootstrap');
 
@@ -39,105 +35,188 @@ const cwd = {
   root: __dirname,
 };
 
+const possibleHermescPaths = [
+  // OSS checkout
+  path.join(cwd.ios, 'Pods/hermes-engine/destroot/bin/hermesc'),
+  // internal
+  path.join(cwd.ios, 'Pods/hermes-engine/build_host_hermesc/bin/hermesc'),
+];
+
+type BootstrapOptions = {
+  arch: 'old' | 'new',
+  jsvm: 'hermes' | 'jsc',
+  frameworks?: 'static' | 'dynamic',
+};
+
 bootstrap
   .command('ios')
   .description('Bootstrap iOS')
-  .option('--hermes', 'Enable Hermes', true)
-  .option('--new-architecture', 'Enable new architecture', true)
-  .action(async (_, options: {newArchitecture: boolean, hermes: boolean}) => {
+  .addOption(
+    new Option('--arch <arch>', "Choose React Native's architecture")
+      .choices(['new', 'old'])
+      .default('new'),
+  )
+  .addOption(
+    new Option(
+      '--frameworks <linkage>',
+      'Use frameworks instead of static libraries',
+    )
+      .choices(['static', 'dynamic'])
+      .default(undefined),
+  )
+  .addOption(
+    new Option('--jsvm <vm>', 'Choose VM used on device')
+      .choices(['jsc', 'hermes'])
+      .default('hermes'),
+  )
+  .action(async ({jsvm, arch, frameworks}: BootstrapOptions) => {
     await run(
       apple.bootstrap({
         cwd: cwd.ios,
-        hermes: options.hermes,
-        newArchitecture: options.newArchitecture,
+        frameworks,
+        hermes: jsvm === 'hermes',
+        newArchitecture: arch === 'new',
       }),
     );
   });
 
-const build = program.command('build');
-
 type BuildOptions = {
-  newArchitecture: boolean,
-  hermes: boolean,
-  onlyBuild: boolean,
   device: string,
+  arch: 'old' | 'new',
+  prod: boolean,
 };
+
+const optionalBool = (value: string | void) => value?.toLowerCase() === 'true';
+
+type BuildSettings = {
+  appPath: string,
+  bundleId: string,
+  bundleBuildDir: string,
+  bundleResourceDir: string,
+};
+
+const getBuildSettings = (mode: 'Debug' | 'Release'): BuildSettings => {
+  const xcode = getXcodeBuildSettings(cwd.ios, mode)[0].buildSettings;
+  return {
+    appPath: path.join(xcode.TARGET_BUILD_DIR, xcode.EXECUTABLE_FOLDER_PATH),
+    bundleId: xcode.PRODUCT_BUNDLE_IDENTIFIER,
+    bundleBuildDir: xcode.CONFIGURATION_BUILD_DIR,
+    bundleResourceDir: path.join(
+      xcode.CONFIGURATION_BUILD_DIR,
+      xcode.UNLOCALIZED_RESOURCES_FOLDER_PATH,
+    ),
+  };
+};
+
+const build = program.command('build');
 
 build
   .command('ios')
-  .description('Builds & run your app for iOS')
-  .option('--new-architecture', 'Enable new architecture')
-  .option('--hermes', 'Use Hermes or point to a prebuilt tarball', true)
-  .option('--only-build', 'Build but do not run', false)
-  .option('--device', 'Any simulator or a specific device', 'simulator')
-  .action(async (options: BuildOptions) => {
-    let device: IOSDevice;
-    try {
-      device = await getSimulatorDetails(options.device);
-    } catch (e) {
-      console.log(chalk.bold.red(e.message));
-      process.exit(1);
-    }
+  .description('Builds your app for iOS')
+  .option(
+    '--device',
+    'Any simulator or a specific device (choices: "simulator", "device", other)',
+    'simulator',
+  )
+  .option('--prod', 'Production build', () => true, false)
+  .action(async ({device: _device, prod}: BuildOptions) => {
+    const mode = prod ? 'Release' : 'Debug';
 
-    if (device == null) {
-      return;
+    let destination = 'simulator';
+    switch (_device) {
+      case 'simulator':
+        break;
+      case 'device':
+        const device = await getSimulatorDetails(_device);
+        destination = `id=${device.udid}`;
+        break;
+      default:
+        destination = _device;
+        break;
     }
-
-    const settings = {
-      appPath: '',
-      bundleId: '',
-      bundleBuildDir: '',
-      bundleResourceDir: '',
-    };
 
     await pauseWatchman(async () => {
-      await run({
-        buildSettings: {
-          order: FIRST,
-          label: 'Getting your build settings',
-          action: (): void => {
-            const xcode = getXcodeBuildSettings(cwd.ios)[0].buildSettings;
-            settings.appPath = path.join(
-              xcode.TARGET_BUILD_DIR,
-              xcode.EXECUTABLE_FOLDER_PATH,
-            );
-            settings.bundleId = xcode.PRODUCT_BUNDLE_IDENTIFIER;
-            settings.bundleBuildDir = xcode.CONFIGURATION_BUILD_DIR;
-            settings.bundleResourceDir = path.join(
-              xcode.CONFIGURATION_BUILD_DIR,
-              xcode.UNLOCALIZED_RESOURCES_FOLDER_PATH,
-            );
-          },
-        },
-      });
-
-      // Metro: src -> js
-      const jsBundlePath = path.join(
-        settings.bundleBuildDir,
-        'main.jsbundle.js',
-      );
-      // Hermes: js -> Hermes Byte Code
-      const binaryBundlePath = path.join(
-        settings.bundleResourceDir,
-        'main.jsbundle',
-      );
-
       await run(
         apple.build({
           isWorkspace: true,
           name: 'HelloWorld.xcworkspace',
-          mode: 'Debug',
+          mode,
           scheme: 'HelloWorld',
           cwd: cwd.ios,
           env: {
-            FORCE_BUNDLING: 'true',
+            SKIP_BUNDLING: 'true',
           },
-          destination: `id=${device.udid}`,
+          destination,
         }),
       );
+    });
+  });
 
-      await run(
-        app.bundle({
+type BundleOptions = {
+  prod: boolean,
+  watch: boolean,
+};
+
+const bundle = program.command('bundle');
+
+bundle
+  .command('ios')
+  .option('--watch', 'Watch and update JS changes', optionalBool, false)
+  .option('--prod', 'Production build', () => true, false)
+  .action(async ({prod, watch}: BundleOptions) => {
+    const mode = prod ? 'Release' : 'Debug';
+
+    const isHermesInstalled = hasPodInstalled(cwd.ios, 'hermes-engine');
+    const settings = await getBuildSettings(mode);
+
+    // Metro: src -> js
+    const jsBundlePath = path.join(settings.bundleBuildDir, 'main.jsbundle.js');
+    // Hermes: js -> Hermes Byte Code
+    const binaryBundlePath = path.join(
+      settings.bundleResourceDir,
+      'main.jsbundle',
+    );
+
+    // Validate only after initial build, as hermesc may not be prebuilt
+    const hermesc = getExistingPath(possibleHermescPaths);
+
+    if (hermesc == null) {
+      throw new Error(
+        `Unable to find hermesc at:\n-${possibleHermescPaths
+          .map(line => ' - ' + line)
+          .join('\n')}`,
+      );
+    }
+
+    const bundler = watch
+      ? app.bundle({
+          mode: 'watch',
+          cwd: cwd.root,
+          entryFile: 'index.js',
+          platform: 'ios',
+          outputJsBundle: jsBundlePath,
+          minify: false,
+          optimize: false,
+          outputSourceMap: settings.bundleResourceDir,
+          outputBundle: binaryBundlePath,
+          dev: !prod,
+          jsvm: isHermesInstalled ? 'hermes' : 'jsc',
+          hermes: {
+            path: path.join(cwd.ios, 'Pods', 'hermes-engine'),
+            hermesc: 'build_host_hermesc/bin/hermesc',
+          },
+          callback: metroProcess => {
+            const readline = require('readline');
+            readline.emitKeypressEvents(process.stdin);
+            process.stdout.write('Press any key to close Metro...');
+            // $FlowFixMe[prop-missing]
+            process.stdin.setRawMode(true);
+            process.stdin.once('keypress', () => {
+              metroProcess.kill('SIGTERM');
+            });
+          },
+        })
+      : app.bundle({
           mode: 'bundle',
           cwd: cwd.root,
           entryFile: 'index.js',
@@ -147,49 +226,66 @@ build
           optimize: false,
           outputSourceMap: settings.bundleResourceDir,
           outputBundle: binaryBundlePath,
-          dev: true,
-          jsvm: 'hermes',
+          dev: !prod,
+          jsvm: isHermesInstalled ? 'hermes' : 'jsc',
           hermes: {
             path: path.join(cwd.ios, 'Pods/hermes-engine'),
             hermesc: 'build_host_hermesc/bin/hermesc',
           },
-        }),
-      );
+        });
+
+    // JS Bundle
+    await run(bundler);
+  });
+
+type ShipOptions = {
+  prod: boolean,
+  device: string,
+};
+
+const installAndRun = program.command('install-and-run');
+
+installAndRun
+  .command('ios')
+  .option('--prod', 'Production build')
+  .option('--device', 'Any simulator or a specific device', 'simulator')
+  .action(async ({device: _device, prod}: ShipOptions) => {
+    const [device, settings] = await Promise.all([
+      getSimulatorDetails(_device),
+      getBuildSettings(prod ? 'Release' : 'Debug'),
+    ]);
+
+    const {install} = apple.ios.install({
+      cwd: cwd.ios,
+      device: device.udid,
+      appPath: settings.appPath,
+      bundleId: settings.bundleId,
     });
 
-    if (!options.onlyBuild) {
-      const {install} = apple.ios.install({
-        cwd: cwd.ios,
-        device: device.udid,
-        appPath: settings.appPath,
-        bundleId: settings.bundleId,
-      });
-
-      await new Listr([
-        {
-          title: 'Booting simulator',
-          task: (_: mixed, task) => {
-            if (device.state === 'Booted') {
-              task.skip('Simulator currently Booted');
-            } else {
-              return bootSimulator(device);
-            }
-          },
+    await new Listr([
+      {
+        title: 'Booting simulator',
+        task: (_: mixed, task) => {
+          if (device.state === 'Booted') {
+            task.skip('Simulator currently Booted');
+          } else {
+            return bootSimulator(device);
+          }
         },
-        {
-          title: 'Launching simulator',
-          task: () => launchSimulator(device),
-        },
-        {
-          title: 'Installing app on simulator',
-          task: () => install.action(),
-        },
-        {
-          title: 'Launching app on simulator',
-          task: () => launchApp(device.udid, settings.bundleId),
-        },
-      ]).run();
-    }
+      },
+      {
+        title: 'Launching simulator',
+        task: () => launchSimulator(device),
+      },
+      {
+        title: 'Installing app on simulator',
+        task: () => install.action(),
+      },
+      {
+        title: 'Launching app on simulator',
+        task: () => launchApp(device.udid, settings.bundleId),
+      },
+    ]).run();
   });
 
 if (require.main === module) {
