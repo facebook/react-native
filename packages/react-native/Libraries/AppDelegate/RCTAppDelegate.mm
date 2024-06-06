@@ -55,7 +55,6 @@
   if (self.newArchEnabled || self.fabricEnabled) {
     [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
   }
-  [self customizeRootView:(RCTRootView *)rootView];
 
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
   UIViewController *rootViewController = [self createRootViewController];
@@ -251,6 +250,10 @@
 
   configuration.createBridgeWithDelegate = ^RCTBridge *(id<RCTBridgeDelegate> delegate, NSDictionary *launchOptions) {
     return [weakSelf createBridgeWithDelegate:delegate launchOptions:launchOptions];
+  };
+
+  configuration.customizeRootView = ^(UIView *_Nonnull rootView) {
+    [weakSelf customizeRootView:(RCTRootView *)rootView];
   };
 
   configuration.sourceURLForBridge = ^NSURL *_Nullable(RCTBridge *_Nonnull bridge)
