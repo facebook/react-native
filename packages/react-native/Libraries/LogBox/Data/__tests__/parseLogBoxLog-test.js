@@ -122,8 +122,7 @@ describe('parseLogBoxLog', () => {
       ]),
     ).toEqual({
       componentStackType: 'legacy',
-      componentStack: [
-      ],
+      componentStack: [],
       category:
         'Warning: Each child in a list should have a unique "key" prop.﻿%s﻿%s See https://fb.me/react-warning-keys for more information.',
       message: {
