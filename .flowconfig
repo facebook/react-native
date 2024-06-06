@@ -21,6 +21,9 @@
 ; Generated build output
 <PROJECT_ROOT>/packages/.*/dist
 
+; helloworld
+<PROJECT_ROOT>/packages/helloworld/ios/Pods/
+
 [untyped]
 .*/node_modules/@react-native-community/cli/.*/.*
 

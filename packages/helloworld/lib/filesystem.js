@@ -11,6 +11,7 @@
 
 import {execSync, spawn} from 'child_process';
 import debug from 'debug';
+import {existsSync} from 'fs';
 
 const logWatchman = debug('helloworld:cli:watchman');
 
@@ -19,6 +20,7 @@ export async function pauseWatchman(command: () => Promise<mixed | void>) {
   try {
     const raw: string = execSync('watchman watch-project .', {
       cwd: process.cwd(),
+      stdio: 'pipe',
     }).toString();
     const {watch} = JSON.parse(raw);
 
@@ -46,4 +48,13 @@ export async function pauseWatchman(command: () => Promise<mixed | void>) {
       p?.kill('SIGTERM');
     }
   }
+}
+
+export function getExistingPath(paths: $ReadOnlyArray<string>): string | null {
+  for (const path of paths) {
+    if (existsSync(path)) {
+      return path;
+    }
+  }
+  return null;
 }
