@@ -43,11 +43,14 @@ protected:
     : TurboModule(std::string{NativeArrayTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
+
 private:
   class Delegate : public NativeArrayTurboModuleCxxSpecJSI {
   public:
     Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeArrayTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
+      NativeArrayTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+
+    }
 
     jsi::Array getArray(jsi::Runtime &rt, jsi::Array a) override {
       static_assert(
@@ -75,6 +78,7 @@ private:
     }
 
   private:
+    friend class NativeArrayTurboModuleCxxSpec;
     T *instance_;
   };
 
@@ -106,11 +110,14 @@ protected:
     : TurboModule(std::string{NativeBooleanTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
+
 private:
   class Delegate : public NativeBooleanTurboModuleCxxSpecJSI {
   public:
     Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeBooleanTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
+      NativeBooleanTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+
+    }
 
     bool getBoolean(jsi::Runtime &rt, bool arg) override {
       static_assert(
@@ -130,6 +137,7 @@ private:
     }
 
   private:
+    friend class NativeBooleanTurboModuleCxxSpec;
     T *instance_;
   };
 
@@ -161,11 +169,14 @@ protected:
     : TurboModule(std::string{NativeCallbackTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
+
 private:
   class Delegate : public NativeCallbackTurboModuleCxxSpecJSI {
   public:
     Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeCallbackTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
+      NativeCallbackTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+
+    }
 
     void getValueWithCallback(jsi::Runtime &rt, jsi::Function callback) override {
       static_assert(
@@ -185,6 +196,7 @@ private:
     }
 
   private:
+    friend class NativeCallbackTurboModuleCxxSpec;
     T *instance_;
   };
 
@@ -416,11 +428,14 @@ protected:
     : TurboModule(std::string{NativeEnumTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
+
 private:
   class Delegate : public NativeEnumTurboModuleCxxSpecJSI {
   public:
     Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeEnumTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
+      NativeEnumTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+
+    }
 
     jsi::String getStatusRegular(jsi::Runtime &rt, jsi::Object statusProp) override {
       static_assert(
@@ -464,6 +479,7 @@ private:
     }
 
   private:
+    friend class NativeEnumTurboModuleCxxSpec;
     T *instance_;
   };
 
@@ -499,11 +515,14 @@ protected:
     : TurboModule(std::string{NativeNullableTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
+
 private:
   class Delegate : public NativeNullableTurboModuleCxxSpecJSI {
   public:
     Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeNullableTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
+      NativeNullableTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+
+    }
 
     std::optional<bool> getBool(jsi::Runtime &rt, std::optional<bool> a) override {
       static_assert(
@@ -555,6 +574,7 @@ private:
     }
 
   private:
+    friend class NativeNullableTurboModuleCxxSpec;
     T *instance_;
   };
 
@@ -586,11 +606,14 @@ protected:
     : TurboModule(std::string{NativeNumberTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
+
 private:
   class Delegate : public NativeNumberTurboModuleCxxSpecJSI {
   public:
     Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeNumberTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
+      NativeNumberTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+
+    }
 
     double getNumber(jsi::Runtime &rt, double arg) override {
       static_assert(
@@ -610,6 +633,7 @@ private:
     }
 
   private:
+    friend class NativeNumberTurboModuleCxxSpec;
     T *instance_;
   };
 
@@ -644,11 +668,14 @@ protected:
     : TurboModule(std::string{NativeObjectTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
+
 private:
   class Delegate : public NativeObjectTurboModuleCxxSpecJSI {
   public:
     Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeObjectTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
+      NativeObjectTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+
+    }
 
     jsi::Object getGenericObject(jsi::Runtime &rt, jsi::Object arg) override {
       static_assert(
@@ -692,6 +719,7 @@ private:
     }
 
   private:
+    friend class NativeObjectTurboModuleCxxSpec;
     T *instance_;
   };
 
@@ -722,11 +750,14 @@ protected:
     : TurboModule(std::string{NativeOptionalObjectTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
+
 private:
   class Delegate : public NativeOptionalObjectTurboModuleCxxSpecJSI {
   public:
     Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeOptionalObjectTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
+      NativeOptionalObjectTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+
+    }
 
     jsi::Object getConstants(jsi::Runtime &rt) override {
       static_assert(
@@ -738,6 +769,7 @@ private:
     }
 
   private:
+    friend class NativeOptionalObjectTurboModuleCxxSpec;
     T *instance_;
   };
 
@@ -820,11 +852,14 @@ protected:
     : TurboModule(std::string{NativePartialAnnotationTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
+
 private:
   class Delegate : public NativePartialAnnotationTurboModuleCxxSpecJSI {
   public:
     Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativePartialAnnotationTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
+      NativePartialAnnotationTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+
+    }
 
     jsi::Object getSomeObj(jsi::Runtime &rt) override {
       static_assert(
@@ -860,6 +895,7 @@ private:
     }
 
   private:
+    friend class NativePartialAnnotationTurboModuleCxxSpec;
     T *instance_;
   };
 
@@ -891,11 +927,14 @@ protected:
     : TurboModule(std::string{NativePromiseTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
+
 private:
   class Delegate : public NativePromiseTurboModuleCxxSpecJSI {
   public:
     Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativePromiseTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
+      NativePromiseTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+
+    }
 
     jsi::Value getValueWithPromise(jsi::Runtime &rt, bool error) override {
       static_assert(
@@ -915,6 +954,7 @@ private:
     }
 
   private:
+    friend class NativePromiseTurboModuleCxxSpec;
     T *instance_;
   };
 
@@ -997,11 +1037,14 @@ protected:
     : TurboModule(std::string{NativeSampleTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
+
 private:
   class Delegate : public NativeSampleTurboModuleCxxSpecJSI {
   public:
     Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeSampleTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
+      NativeSampleTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+
+    }
 
     jsi::Object getConstants(jsi::Runtime &rt) override {
       static_assert(
@@ -1109,6 +1152,7 @@ private:
     }
 
   private:
+    friend class NativeSampleTurboModuleCxxSpec;
     T *instance_;
   };
 
@@ -1191,11 +1235,14 @@ protected:
     : TurboModule(std::string{NativeSampleTurboModuleArraysCxxSpec::kModuleName}, jsInvoker),
       delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
+
 private:
   class Delegate : public NativeSampleTurboModuleArraysCxxSpecJSI {
   public:
     Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeSampleTurboModuleArraysCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
+      NativeSampleTurboModuleArraysCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+
+    }
 
     jsi::Object getConstants(jsi::Runtime &rt) override {
       static_assert(
@@ -1303,6 +1350,7 @@ private:
     }
 
   private:
+    friend class NativeSampleTurboModuleArraysCxxSpec;
     T *instance_;
   };
 
@@ -1385,11 +1433,14 @@ protected:
     : TurboModule(std::string{NativeSampleTurboModuleNullableCxxSpec::kModuleName}, jsInvoker),
       delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
+
 private:
   class Delegate : public NativeSampleTurboModuleNullableCxxSpecJSI {
   public:
     Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeSampleTurboModuleNullableCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
+      NativeSampleTurboModuleNullableCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+
+    }
 
     jsi::Object getConstants(jsi::Runtime &rt) override {
       static_assert(
@@ -1497,6 +1548,7 @@ private:
     }
 
   private:
+    friend class NativeSampleTurboModuleNullableCxxSpec;
     T *instance_;
   };
 
@@ -1581,11 +1633,14 @@ protected:
     : TurboModule(std::string{NativeSampleTurboModuleNullableAndOptionalCxxSpec::kModuleName}, jsInvoker),
       delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
+
 private:
   class Delegate : public NativeSampleTurboModuleNullableAndOptionalCxxSpecJSI {
   public:
     Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeSampleTurboModuleNullableAndOptionalCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
+      NativeSampleTurboModuleNullableAndOptionalCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+
+    }
 
     jsi::Object getConstants(jsi::Runtime &rt) override {
       static_assert(
@@ -1693,6 +1748,7 @@ private:
     }
 
   private:
+    friend class NativeSampleTurboModuleNullableAndOptionalCxxSpec;
     T *instance_;
   };
 
@@ -1777,11 +1833,14 @@ protected:
     : TurboModule(std::string{NativeSampleTurboModuleOptionalCxxSpec::kModuleName}, jsInvoker),
       delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
+
 private:
   class Delegate : public NativeSampleTurboModuleOptionalCxxSpecJSI {
   public:
     Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeSampleTurboModuleOptionalCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
+      NativeSampleTurboModuleOptionalCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+
+    }
 
     jsi::Object getConstants(jsi::Runtime &rt) override {
       static_assert(
@@ -1889,6 +1948,7 @@ private:
     }
 
   private:
+    friend class NativeSampleTurboModuleOptionalCxxSpec;
     T *instance_;
   };
 
@@ -1920,11 +1980,14 @@ protected:
     : TurboModule(std::string{NativeStringTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
+
 private:
   class Delegate : public NativeStringTurboModuleCxxSpecJSI {
   public:
     Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeStringTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
+      NativeStringTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+
+    }
 
     jsi::String getString(jsi::Runtime &rt, jsi::String arg) override {
       static_assert(
@@ -1944,6 +2007,7 @@ private:
     }
 
   private:
+    friend class NativeStringTurboModuleCxxSpec;
     T *instance_;
   };
 
@@ -1997,11 +2061,14 @@ protected:
     : TurboModule(std::string{NativeArrayTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
+
 private:
   class Delegate : public NativeArrayTurboModuleCxxSpecJSI {
   public:
     Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeArrayTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
+      NativeArrayTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+
+    }
 
     jsi::Array getArray(jsi::Runtime &rt, jsi::Array a) override {
       static_assert(
@@ -2029,6 +2096,7 @@ private:
     }
 
   private:
+    friend class NativeArrayTurboModuleCxxSpec;
     T *instance_;
   };
 
@@ -2060,11 +2128,14 @@ protected:
     : TurboModule(std::string{NativeBooleanTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
+
 private:
   class Delegate : public NativeBooleanTurboModuleCxxSpecJSI {
   public:
     Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeBooleanTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
+      NativeBooleanTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+
+    }
 
     bool getBoolean(jsi::Runtime &rt, bool arg) override {
       static_assert(
@@ -2084,6 +2155,7 @@ private:
     }
 
   private:
+    friend class NativeBooleanTurboModuleCxxSpec;
     T *instance_;
   };
 
@@ -2115,11 +2187,14 @@ protected:
     : TurboModule(std::string{NativeCallbackTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
+
 private:
   class Delegate : public NativeCallbackTurboModuleCxxSpecJSI {
   public:
     Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeCallbackTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
+      NativeCallbackTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+
+    }
 
     void getValueWithCallback(jsi::Runtime &rt, jsi::Function callback) override {
       static_assert(
@@ -2139,6 +2214,7 @@ private:
     }
 
   private:
+    friend class NativeCallbackTurboModuleCxxSpec;
     T *instance_;
   };
 
@@ -2370,11 +2446,14 @@ protected:
     : TurboModule(std::string{NativeEnumTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
+
 private:
   class Delegate : public NativeEnumTurboModuleCxxSpecJSI {
   public:
     Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeEnumTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
+      NativeEnumTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+
+    }
 
     jsi::String getStatusRegular(jsi::Runtime &rt, jsi::Object statusProp) override {
       static_assert(
@@ -2418,6 +2497,7 @@ private:
     }
 
   private:
+    friend class NativeEnumTurboModuleCxxSpec;
     T *instance_;
   };
 
@@ -2453,11 +2533,14 @@ protected:
     : TurboModule(std::string{NativeNullableTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
+
 private:
   class Delegate : public NativeNullableTurboModuleCxxSpecJSI {
   public:
     Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeNullableTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
+      NativeNullableTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+
+    }
 
     std::optional<bool> getBool(jsi::Runtime &rt, std::optional<bool> a) override {
       static_assert(
@@ -2509,6 +2592,7 @@ private:
     }
 
   private:
+    friend class NativeNullableTurboModuleCxxSpec;
     T *instance_;
   };
 
@@ -2540,11 +2624,14 @@ protected:
     : TurboModule(std::string{NativeNumberTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
+
 private:
   class Delegate : public NativeNumberTurboModuleCxxSpecJSI {
   public:
     Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeNumberTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
+      NativeNumberTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+
+    }
 
     double getNumber(jsi::Runtime &rt, double arg) override {
       static_assert(
@@ -2564,6 +2651,7 @@ private:
     }
 
   private:
+    friend class NativeNumberTurboModuleCxxSpec;
     T *instance_;
   };
 
@@ -2598,11 +2686,14 @@ protected:
     : TurboModule(std::string{NativeObjectTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
+
 private:
   class Delegate : public NativeObjectTurboModuleCxxSpecJSI {
   public:
     Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeObjectTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
+      NativeObjectTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+
+    }
 
     jsi::Object getGenericObject(jsi::Runtime &rt, jsi::Object arg) override {
       static_assert(
@@ -2646,6 +2737,7 @@ private:
     }
 
   private:
+    friend class NativeObjectTurboModuleCxxSpec;
     T *instance_;
   };
 
@@ -2676,11 +2768,14 @@ protected:
     : TurboModule(std::string{NativeOptionalObjectTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
+
 private:
   class Delegate : public NativeOptionalObjectTurboModuleCxxSpecJSI {
   public:
     Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeOptionalObjectTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
+      NativeOptionalObjectTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+
+    }
 
     jsi::Object getConstants(jsi::Runtime &rt) override {
       static_assert(
@@ -2692,6 +2787,7 @@ private:
     }
 
   private:
+    friend class NativeOptionalObjectTurboModuleCxxSpec;
     T *instance_;
   };
 
@@ -2774,11 +2870,14 @@ protected:
     : TurboModule(std::string{NativePartialAnnotationTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
+
 private:
   class Delegate : public NativePartialAnnotationTurboModuleCxxSpecJSI {
   public:
     Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativePartialAnnotationTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
+      NativePartialAnnotationTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+
+    }
 
     jsi::Object getSomeObj(jsi::Runtime &rt) override {
       static_assert(
@@ -2814,6 +2913,7 @@ private:
     }
 
   private:
+    friend class NativePartialAnnotationTurboModuleCxxSpec;
     T *instance_;
   };
 
@@ -2845,11 +2945,14 @@ protected:
     : TurboModule(std::string{NativePromiseTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
+
 private:
   class Delegate : public NativePromiseTurboModuleCxxSpecJSI {
   public:
     Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativePromiseTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
+      NativePromiseTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+
+    }
 
     jsi::Value getValueWithPromise(jsi::Runtime &rt, bool error) override {
       static_assert(
@@ -2869,6 +2972,7 @@ private:
     }
 
   private:
+    friend class NativePromiseTurboModuleCxxSpec;
     T *instance_;
   };
 
@@ -2951,11 +3055,14 @@ protected:
     : TurboModule(std::string{NativeSampleTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
+
 private:
   class Delegate : public NativeSampleTurboModuleCxxSpecJSI {
   public:
     Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeSampleTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
+      NativeSampleTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+
+    }
 
     jsi::Object getConstants(jsi::Runtime &rt) override {
       static_assert(
@@ -3063,6 +3170,7 @@ private:
     }
 
   private:
+    friend class NativeSampleTurboModuleCxxSpec;
     T *instance_;
   };
 
@@ -3145,11 +3253,14 @@ protected:
     : TurboModule(std::string{NativeSampleTurboModuleArraysCxxSpec::kModuleName}, jsInvoker),
       delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
+
 private:
   class Delegate : public NativeSampleTurboModuleArraysCxxSpecJSI {
   public:
     Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeSampleTurboModuleArraysCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
+      NativeSampleTurboModuleArraysCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+
+    }
 
     jsi::Object getConstants(jsi::Runtime &rt) override {
       static_assert(
@@ -3257,6 +3368,7 @@ private:
     }
 
   private:
+    friend class NativeSampleTurboModuleArraysCxxSpec;
     T *instance_;
   };
 
@@ -3339,11 +3451,14 @@ protected:
     : TurboModule(std::string{NativeSampleTurboModuleNullableCxxSpec::kModuleName}, jsInvoker),
       delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
+
 private:
   class Delegate : public NativeSampleTurboModuleNullableCxxSpecJSI {
   public:
     Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeSampleTurboModuleNullableCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
+      NativeSampleTurboModuleNullableCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+
+    }
 
     jsi::Object getConstants(jsi::Runtime &rt) override {
       static_assert(
@@ -3451,6 +3566,7 @@ private:
     }
 
   private:
+    friend class NativeSampleTurboModuleNullableCxxSpec;
     T *instance_;
   };
 
@@ -3535,11 +3651,14 @@ protected:
     : TurboModule(std::string{NativeSampleTurboModuleNullableAndOptionalCxxSpec::kModuleName}, jsInvoker),
       delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
+
 private:
   class Delegate : public NativeSampleTurboModuleNullableAndOptionalCxxSpecJSI {
   public:
     Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeSampleTurboModuleNullableAndOptionalCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
+      NativeSampleTurboModuleNullableAndOptionalCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+
+    }
 
     jsi::Object getConstants(jsi::Runtime &rt) override {
       static_assert(
@@ -3647,6 +3766,7 @@ private:
     }
 
   private:
+    friend class NativeSampleTurboModuleNullableAndOptionalCxxSpec;
     T *instance_;
   };
 
@@ -3731,11 +3851,14 @@ protected:
     : TurboModule(std::string{NativeSampleTurboModuleOptionalCxxSpec::kModuleName}, jsInvoker),
       delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
+
 private:
   class Delegate : public NativeSampleTurboModuleOptionalCxxSpecJSI {
   public:
     Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeSampleTurboModuleOptionalCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
+      NativeSampleTurboModuleOptionalCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+
+    }
 
     jsi::Object getConstants(jsi::Runtime &rt) override {
       static_assert(
@@ -3843,6 +3966,7 @@ private:
     }
 
   private:
+    friend class NativeSampleTurboModuleOptionalCxxSpec;
     T *instance_;
   };
 
@@ -3874,11 +3998,14 @@ protected:
     : TurboModule(std::string{NativeStringTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
+
 private:
   class Delegate : public NativeStringTurboModuleCxxSpecJSI {
   public:
     Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeStringTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
+      NativeStringTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+
+    }
 
     jsi::String getString(jsi::Runtime &rt, jsi::String arg) override {
       static_assert(
@@ -3898,6 +4025,7 @@ private:
     }
 
   private:
+    friend class NativeStringTurboModuleCxxSpec;
     T *instance_;
   };
 

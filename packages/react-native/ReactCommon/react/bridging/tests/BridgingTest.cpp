@@ -465,6 +465,7 @@ TEST_F(BridgingTest, eventEmitterTest) {
   EXPECT_TRUE(eventEmitter.state_->listeners.contains(1));
   EXPECT_TRUE(eventEmitter.state_->listeners.contains(2));
 
+  // emit with args
   EXPECT_NO_THROW(eventEmitter.emit({"four", "five", "six"}));
   flushQueue();
 
@@ -513,7 +514,12 @@ TEST_F(BridgingTest, eventEmitterTest) {
   }
   flushQueue();
 
-  EXPECT_NO_THROW(eventEmitter.emit({"ten", "eleven", "twelve"}));
+  // Emit with function
+  EXPECT_NO_THROW(eventEmitter.emit(
+      [jsInvoker = invoker,
+       value = {"ten", "eleven", "twelve"}](jsi::Runtime& rt) -> jsi::Value {
+        return bridging::toJs(rt, value, jsInvoker);
+      }));
   flushQueue();
 
   // no new data as listeners had been removed

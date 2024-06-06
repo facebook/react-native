@@ -29,6 +29,7 @@ export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
         excludedPlatforms: undefined,
         moduleName: 'SampleTurboModule',
         spec: {
+          eventEmitters: [],
           properties: [],
         },
         type: 'NativeModule',
