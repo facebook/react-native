@@ -27,7 +27,7 @@ public class Task<TResult> implements TaskInterface<TResult> {
    * stack runs too deep, at which point it will delegate to {@link Task#BACKGROUND_EXECUTOR} in
    * order to trim the stack.
    */
-  private static final Executor IMMEDIATE_EXECUTOR = Executors.IMMEDIATE;
+  public static final Executor IMMEDIATE_EXECUTOR = Executors.IMMEDIATE;
 
   /** An {@link java.util.concurrent.Executor} that executes tasks on the UI thread. */
   public static final Executor UI_THREAD_EXECUTOR = Executors.UI_THREAD;

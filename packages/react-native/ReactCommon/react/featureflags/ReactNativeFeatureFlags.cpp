@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b7969efd5890b7be7be5fd8e6b0bf301>>
+ * @generated SignedSource<<ec12fd62d1dc2109e52a95094d7ad167>>
  */
 
 /**
@@ -91,6 +91,10 @@ bool ReactNativeFeatureFlags::preventDoubleTextMeasure() {
 
 bool ReactNativeFeatureFlags::setAndroidLayoutDirection() {
   return getAccessor().setAndroidLayoutDirection();
+}
+
+bool ReactNativeFeatureFlags::useImmediateExecutorInAndroidBridgeless() {
+  return getAccessor().useImmediateExecutorInAndroidBridgeless();
 }
 
 bool ReactNativeFeatureFlags::useModernRuntimeScheduler() {

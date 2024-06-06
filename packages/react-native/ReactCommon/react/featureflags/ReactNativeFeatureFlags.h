@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c4d88f9d9b8c6d5ca917d1ba9e53d9e8>>
+ * @generated SignedSource<<5f1ae3edfe01ee0545bd89137c5cb3e9>>
  */
 
 /**
@@ -126,6 +126,11 @@ class ReactNativeFeatureFlags {
    * Propagate layout direction to Android views.
    */
   RN_EXPORT static bool setAndroidLayoutDirection();
+
+  /**
+   * Invoke callbacks immediately on the ReactInstance rather than going through a background thread for synchronization
+   */
+  RN_EXPORT static bool useImmediateExecutorInAndroidBridgeless();
 
   /**
    * When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.
