@@ -145,17 +145,25 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
         initWithSurface:surface
         sizeMeasureMode:RCTSurfaceSizeMeasureModeWidthExact | RCTSurfaceSizeMeasureModeHeightExact];
 
+    if (self->_configuration.customizeRootView != nil) {
+      self->_configuration.customizeRootView(surfaceHostingProxyRootView);
+    }
     return surfaceHostingProxyRootView;
   }
 
   [self createBridgeIfNeeded:launchOptions];
   [self createBridgeAdapterIfNeeded];
 
+  UIView *rootView;
   if (self->_configuration.createRootViewWithBridge != nil) {
-    return self->_configuration.createRootViewWithBridge(self.bridge, moduleName, initProps);
+    rootView = self->_configuration.createRootViewWithBridge(self.bridge, moduleName, initProps);
+  } else {
+    rootView = [self createRootViewWithBridge:self.bridge moduleName:moduleName initProps:initProps];
   }
-
-  return [self createRootViewWithBridge:self.bridge moduleName:moduleName initProps:initProps];
+  if (self->_configuration.customizeRootView != nil) {
+    self->_configuration.customizeRootView(rootView);
+  }
+  return rootView;
 }
 
 - (RCTBridge *)createBridgeWithDelegate:(id<RCTBridgeDelegate>)delegate launchOptions:(NSDictionary *)launchOptions
