@@ -54,19 +54,18 @@
               architecture: ["NewArch", "OldArch"]
               jsengine: ["Hermes", "JSC"]
               flavor: ["Debug", "Release"]
-      - test_ios_template:
+      - test_ios_helloworld:
           requires:
-            - build_npm_package
+            - build_hermes_macos
           name: "Test Template with Ruby 3.2.0"
           ruby_version: "3.2.0"
           architecture: "NewArch"
           flavor: "Debug"
           jsengine: "Hermes"
           use_frameworks: "StaticLibraries"
-      - test_ios_template:
+      - test_ios_helloworld:
           requires:
-            - build_npm_package
-          architecture: "NewArch"
+            - build_hermes_macos
           matrix:
             parameters:
               flavor: ["Debug", "Release"]

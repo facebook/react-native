@@ -12,6 +12,7 @@
 import {execSync, spawn} from 'child_process';
 import debug from 'debug';
 import {existsSync} from 'fs';
+import path from 'path';
 
 const logWatchman = debug('helloworld:cli:watchman');
 
@@ -50,10 +51,13 @@ export async function pauseWatchman(command: () => Promise<mixed | void>) {
   }
 }
 
-export function getExistingPath(paths: $ReadOnlyArray<string>): string | null {
-  for (const path of paths) {
-    if (existsSync(path)) {
-      return path;
+export function getExistingPath(
+  folder: string,
+  paths: $ReadOnlyArray<string>,
+): string | null {
+  for (const p of paths) {
+    if (existsSync(path.join(folder, p))) {
+      return p;
     }
   }
   return null;

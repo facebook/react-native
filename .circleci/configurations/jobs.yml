@@ -384,9 +384,9 @@ jobs:
           destination: template-apk
 
   # -------------------------
-  #    JOBS: Test iOS Template
+  #    JOBS: Test iOS HelloWorld
   # -------------------------
-  test_ios_template:
+  test_ios_helloworld:
     parameters:
       flavor:
         default: "Debug"
@@ -412,25 +412,18 @@ jobs:
         default: "2.6.10"
         description: The version of ruby that must be used
         type: string
-      podfile_lock_path:
-        type: string
-        default: "/tmp/iOSTemplateProject/ios/Podfile.lock"
-      pods_build_folder:
-        type: string
-        default: "/tmp/iOSTemplateProject/ios/Pods"
       podfile_lock_cache_key:
         type: string
-        default: *template_podfile_lock_cache_key
+        default: *helloworld_podfile_lock_cache_key
       cocoapods_cache_key:
         type: string
-        default: *template_cocoapods_cache_key
+        default: *helloworld_cocoapods_cache_key
       executor:
         description: The executor to use
         default: reactnativeios
         type: string
     executor: << parameters.executor >>
     environment:
-      - PROJECT_NAME: "iOSTemplateProject"
       - HERMES_WS_DIR: *hermes_workspace_root
       - YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
@@ -451,48 +444,37 @@ jobs:
                   BUILD_TYPE="<< parameters.flavor >>"
                   TARBALL_FILENAME=$(node ./packages/react-native/scripts/hermes/get-tarball-name.js --buildType "$BUILD_TYPE")
                   echo "export HERMES_ENGINE_TARBALL_PATH=$HERMES_WS_DIR/hermes-runtime-darwin/$TARBALL_FILENAME" >> $BASH_ENV
-      - run:
-          name: Create iOS template project
-          command: |
-            REPO_ROOT=$(pwd)
-            PACKAGE=$(cat build/react-native-package-version)
-            PATH_TO_PACKAGE="$REPO_ROOT/build/$PACKAGE"
-            node ./scripts/releases/update-template-package.js "{\"react-native\":\"file:$PATH_TO_PACKAGE\"}"
-            node ./scripts/e2e/init-template-e2e.js --projectName $PROJECT_NAME --templatePath "$REPO_ROOT/packages/react-native" --directory "/tmp/$PROJECT_NAME" --verbose
       - with_xcodebuild_cache:
-          podfile_lock_path: << parameters.podfile_lock_path >>
-          pods_build_folder: << parameters.pods_build_folder >>
+          podfile_lock_path: packages/helloworld/ios/Podfile.lock
+          pods_build_folder: packages/helloworld/ios/Pods
           cocoapods_cache_key: << parameters.cocoapods_cache_key >>
           podfile_lock_cache_key: << parameters.podfile_lock_cache_key >>
           steps:
             - run:
                 name: Install iOS dependencies - Configuration << parameters.flavor >>; New Architecture << parameters.architecture >>; JS Engine << parameters.jsengine>>
                 command: |
-                  cd /tmp/$PROJECT_NAME/ios
-
-                  if [[ << parameters.architecture >> == "NewArch" ]]; then
-                    export RCT_NEW_ARCH_ENABLED=1
+                  cd packages/helloworld
+                  args=()
+                  if [[ << parameters.architecture >> == "OldArch" ]]; then
+                    args+=(--arch old)
                   fi
-
                   if [[ << parameters.jsengine >> == "JSC" ]]; then
-                    export USE_HERMES=0
+                    args+=(--jsvm jsc)
                   fi
-
                   if [[ << parameters.use_frameworks >> == "DynamicFrameworks" ]]; then
-                    export USE_FRAMEWORKS=dynamic
+                    args+=(--frameworks dynamic)
                   fi
-
-                  cd ..
-                  bundle install
-                  bundle exec pod install --project-directory=ios
+                  yarn bootstrap ios "${args[@]}" | cat
             - run:
-                name: Build template project
+                name: Build helloworld project
                 command: |
-                  xcodebuild build \
-                    -configuration << parameters.flavor >> \
-                    -workspace /tmp/$PROJECT_NAME/ios/$PROJECT_NAME.xcworkspace \
-                    -scheme $PROJECT_NAME \
-                    -sdk iphonesimulator
+                  cd packages/helloworld
+                  args=()
+                  if [[ << parameters.flavor >> == "Release" ]]; then
+                    args+=(--prod)
+                  fi
+                  yarn build ios "${args[@]}" | cat
+                  yarn bundle ios "${args[@]}" | cat
 
   # -------------------------
   #    JOBS: Test iOS RNTester
