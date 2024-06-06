@@ -5,9 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "ReactPerfettoCategories.h"
-
 #ifdef WITH_PERFETTO
+
+#include "ReactPerfettoCategories.h"
 
 PERFETTO_TRACK_EVENT_STATIC_STORAGE();
 
