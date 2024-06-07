@@ -1,0 +1,38 @@
+name: Prepare Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'The version of React Native we want to release'
+        required: true
+        type: string
+      tag:
+        description: 'The tag name that will be associated with the published npm packages. A tag of "latest" will also be written as a Git tag.'
+        required: true
+        type: string
+      dry_run:
+        description: 'Whether the job should be executed in dry-run mode or not'
+        type: boolean
+        default: false
+
+jobs:
+  prepare_release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+      - name: Check if on stable branch
+        id: check_stable_branch
+        run: |
+          BRANCH="$(git branch --show-current)"
+          PATTERN='^0\.[0-9]+-stable$'
+          if [[ $BRANCH =~ $PATTERN ]]; then
+            echo "On a stable branch"
+            echo "ON_STABLE_BRANCH=true" >> $GITHUB_OUTPUT
+          fi
+      - name: Print output
+        run: echo "ON_STABLE_BRANCH ${{steps.check_stable_branch.outputs.ON_STABLE_BRANCH}}"
+      - name: Execute Prepare Release
+        if: ${{ steps.check_stable_branch.outputs.ON_STABLE_BRANCH }}
+        uses: ./.github/actions/prepare_release
