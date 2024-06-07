@@ -140,17 +140,13 @@ export default class CellRenderer<ItemT> extends React.Component<
     }
 
     if (ListItemComponent) {
-      /* $FlowFixMe[not-a-component] (>=0.108.0 site=react_native_fb) This
-       * comment suppresses an error found when Flow v0.108 was deployed. To
-       * see the error, delete this comment and run Flow. */
-      /* $FlowFixMe[incompatible-type-arg] (>=0.108.0 site=react_native_fb)
-       * This comment suppresses an error found when Flow v0.108 was deployed.
-       * To see the error, delete this comment and run Flow. */
-      return React.createElement(ListItemComponent, {
-        item,
-        index,
-        separators: this._separators,
-      });
+      return (
+        <ListItemComponent
+          item={item}
+          index={index}
+          separators={this._separators}
+        />
+      );
     }
 
     if (renderItem) {

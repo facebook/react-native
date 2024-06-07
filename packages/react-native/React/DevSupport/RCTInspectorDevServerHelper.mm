@@ -184,7 +184,6 @@ static void sendEventToAllConnections(NSString *event)
     if (facebook::react::jsinspector_modern::InspectorFlags::getInstance().getFuseboxEnabled()) {
       connection = [[RCTCxxInspectorPackagerConnection alloc] initWithURL:inspectorURL];
     } else {
-      // TODO(T190163403): Remove legacy RCTInspectorPackagerConnection
       connection = [[RCTInspectorPackagerConnection alloc] initWithURL:inspectorURL];
     }
 

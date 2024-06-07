@@ -12,6 +12,7 @@ import android.os.Build;
 import android.text.Spannable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import com.facebook.common.logging.FLog;
 import com.facebook.react.R;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.annotations.VisibleForTesting;
@@ -36,6 +37,8 @@ import java.util.Map;
 public class ReactTextViewManager
     extends ReactTextAnchorViewManager<ReactTextView, ReactTextShadowNode>
     implements IViewManagerWithChildren {
+
+  private static final String TAG = "ReactTextViewManager";
 
   private static final short TX_STATE_KEY_ATTRIBUTED_STRING = 0;
   private static final short TX_STATE_KEY_PARAGRAPH_ATTRIBUTES = 1;
@@ -149,9 +152,18 @@ public class ReactTextViewManager
             view.getContext(), attributedString, mReactTextViewManagerCallback);
     view.setSpanned(spanned);
 
-    float minimumFontSize =
-        (float) paragraphAttributes.getDouble(TextLayoutManager.PA_KEY_MINIMUM_FONT_SIZE);
-    view.setMinimumFontSize(minimumFontSize);
+    try {
+      float minimumFontSize =
+          (float) paragraphAttributes.getDouble(TextLayoutManager.PA_KEY_MINIMUM_FONT_SIZE);
+      view.setMinimumFontSize(minimumFontSize);
+    } catch (IllegalArgumentException e) {
+      // T190482857: We see rare crash with MapBuffer without PA_KEY_MINIMUM_FONT_SIZE entry
+      FLog.e(
+          TAG,
+          "Paragraph Attributes: %s",
+          paragraphAttributes != null ? paragraphAttributes.toString() : "<empty>");
+      throw e;
+    }
 
     int textBreakStrategy =
         TextAttributeProps.getTextBreakStrategy(

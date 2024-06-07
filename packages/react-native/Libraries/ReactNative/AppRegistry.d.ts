@@ -9,6 +9,7 @@
 
 import type * as React from 'react';
 import type {IPerformanceLogger} from '../Utilities/IPerformanceLogger';
+import type {ViewStyle} from '../StyleSheet/StyleSheetTypes';
 
 type Task = (taskData: any) => Promise<void>;
 type TaskProvider = () => Task;
@@ -34,6 +35,8 @@ export type WrapperComponentProvider = (
   appParameters: any,
 ) => React.ComponentType<any>;
 
+export type RootViewStyleProvider = (appParameters: any) => ViewStyle;
+
 /**
  * `AppRegistry` is the JS entry point to running all React Native apps.  App
  * root components should register themselves with
@@ -52,6 +55,10 @@ export type WrapperComponentProvider = (
 export namespace AppRegistry {
   export function setWrapperComponentProvider(
     provider: WrapperComponentProvider,
+  ): void;
+
+  export function setRootViewStyleProvider(
+    provider: RootViewStyleProvider,
   ): void;
 
   export function registerConfig(config: AppConfig[]): void;

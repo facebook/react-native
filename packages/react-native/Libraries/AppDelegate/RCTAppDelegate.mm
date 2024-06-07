@@ -55,7 +55,6 @@
   if (self.newArchEnabled || self.fabricEnabled) {
     [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
   }
-  [self customizeRootView:(RCTRootView *)rootView];
 
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
   UIViewController *rootViewController = [self createRootViewController];
@@ -253,6 +252,10 @@
     return [weakSelf createBridgeWithDelegate:delegate launchOptions:launchOptions];
   };
 
+  configuration.customizeRootView = ^(UIView *_Nonnull rootView) {
+    [weakSelf customizeRootView:(RCTRootView *)rootView];
+  };
+
   configuration.sourceURLForBridge = ^NSURL *_Nullable(RCTBridge *_Nonnull bridge)
   {
     return [weakSelf sourceURLForBridge:bridge];
@@ -297,7 +300,21 @@
 
 #pragma mark - Feature Flags
 
-class RCTAppDelegateBridgelessFeatureFlags : public facebook::react::ReactNativeFeatureFlagsDefaults {};
+class RCTAppDelegateBridgelessFeatureFlags : public facebook::react::ReactNativeFeatureFlagsDefaults {
+ public:
+  bool useModernRuntimeScheduler() override
+  {
+    return true;
+  }
+  bool enableMicrotasks() override
+  {
+    return true;
+  }
+  bool batchRenderingUpdatesInEventLoop() override
+  {
+    return true;
+  }
+};
 
 - (void)_setUpFeatureFlags
 {

@@ -21,6 +21,9 @@
 ; Generated build output
 <PROJECT_ROOT>/packages/.*/dist
 
+; helloworld
+<PROJECT_ROOT>/packages/helloworld/ios/Pods/
+
 [untyped]
 .*/node_modules/@react-native-community/cli/.*/.*
 
@@ -85,4 +88,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.237.1
+^0.237.2

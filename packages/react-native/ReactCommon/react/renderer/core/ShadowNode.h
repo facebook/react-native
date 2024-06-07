@@ -26,6 +26,7 @@ namespace facebook::react {
 
 class ComponentDescriptor;
 struct ShadowNodeFragment;
+struct ShadowNodeWrapper;
 
 class ShadowNode : public Sealable,
                    public DebugStringConvertible,
@@ -188,6 +189,27 @@ class ShadowNode : public Sealable,
    */
   bool progressStateIfNecessary();
 
+  /*
+   * Bind the runtime reference to this `ShadowNode` with a raw pointer,
+   * allowing to update the reference to this `ShadowNode` when cloned.
+   */
+  void setRuntimeShadowNodeReference(
+      ShadowNodeWrapper* runtimeShadowNodeReference) const;
+
+  /*
+   * Transfer the runtime reference to this `ShadowNode` to a new instance,
+   * updating the reference to point to the new `ShadowNode` referencing it.
+   */
+  void transferRuntimeShadowNodeReference(
+      const Shared& destinationShadowNode) const;
+
+  /*
+   * Transfer the runtime reference based on the fragment instructions.
+   */
+  void transferRuntimeShadowNodeReference(
+      const Shared& destinationShadowNode,
+      const ShadowNodeFragment& fragment) const;
+
 #pragma mark - DebugStringConvertible
 
 #if RN_DEBUG_STRING_CONVERTIBLE
@@ -245,10 +267,22 @@ class ShadowNode : public Sealable,
    * that class.
    */
   ShadowNodeTraits traits_;
+
+  /*
+   * Pointer to the runtime reference to this `ShadowNode`.
+   */
+  mutable ShadowNodeWrapper* runtimeShadowNodeReference_{};
 };
 
 static_assert(
     std::has_virtual_destructor<ShadowNode>::value,
     "ShadowNode must have a virtual destructor");
+
+struct ShadowNodeWrapper : public jsi::NativeState {
+  explicit ShadowNodeWrapper(ShadowNode::Shared shadowNode)
+      : shadowNode(std::move(shadowNode)) {}
+
+  ShadowNode::Shared shadowNode;
+};
 
 } // namespace facebook::react

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e050c6ce3466ad5c14ee94e61eca189e>>
+ * @generated SignedSource<<81d9543c4231939f31dc5c9bb06c942c>>
  */
 
 /**
@@ -45,6 +45,11 @@ bool NativeReactNativeFeatureFlags::commonTestFlag(
 bool NativeReactNativeFeatureFlags::allowCollapsableChildren(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::allowCollapsableChildren();
+}
+
+bool NativeReactNativeFeatureFlags::allowRecursiveCommitsWithSynchronousMountOnAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::allowRecursiveCommitsWithSynchronousMountOnAndroid();
 }
 
 bool NativeReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop(
@@ -122,6 +127,11 @@ bool NativeReactNativeFeatureFlags::setAndroidLayoutDirection(
   return ReactNativeFeatureFlags::setAndroidLayoutDirection();
 }
 
+bool NativeReactNativeFeatureFlags::useImmediateExecutorInAndroidBridgeless(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::useImmediateExecutorInAndroidBridgeless();
+}
+
 bool NativeReactNativeFeatureFlags::useModernRuntimeScheduler(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::useModernRuntimeScheduler();
@@ -130,6 +140,16 @@ bool NativeReactNativeFeatureFlags::useModernRuntimeScheduler(
 bool NativeReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode();
+}
+
+bool NativeReactNativeFeatureFlags::useRuntimeShadowNodeReferenceUpdate(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::useRuntimeShadowNodeReferenceUpdate();
+}
+
+bool NativeReactNativeFeatureFlags::useRuntimeShadowNodeReferenceUpdateOnLayout(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::useRuntimeShadowNodeReferenceUpdateOnLayout();
 }
 
 bool NativeReactNativeFeatureFlags::useStateAlignmentMechanism(

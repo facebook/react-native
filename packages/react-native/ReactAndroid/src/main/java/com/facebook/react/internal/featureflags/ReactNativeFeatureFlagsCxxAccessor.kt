@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2f84a5455d747e14324f7b79cbbdc763>>
+ * @generated SignedSource<<492902f307361b8f7b7d42973561a3b4>>
  */
 
 /**
@@ -22,6 +22,7 @@ package com.facebook.react.internal.featureflags
 public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccessor {
   private var commonTestFlagCache: Boolean? = null
   private var allowCollapsableChildrenCache: Boolean? = null
+  private var allowRecursiveCommitsWithSynchronousMountOnAndroidCache: Boolean? = null
   private var batchRenderingUpdatesInEventLoopCache: Boolean? = null
   private var destroyFabricSurfacesInReactInstanceManagerCache: Boolean? = null
   private var enableBackgroundExecutorCache: Boolean? = null
@@ -37,8 +38,11 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
   private var lazyAnimationCallbacksCache: Boolean? = null
   private var preventDoubleTextMeasureCache: Boolean? = null
   private var setAndroidLayoutDirectionCache: Boolean? = null
+  private var useImmediateExecutorInAndroidBridgelessCache: Boolean? = null
   private var useModernRuntimeSchedulerCache: Boolean? = null
   private var useNativeViewConfigsInBridgelessModeCache: Boolean? = null
+  private var useRuntimeShadowNodeReferenceUpdateCache: Boolean? = null
+  private var useRuntimeShadowNodeReferenceUpdateOnLayoutCache: Boolean? = null
   private var useStateAlignmentMechanismCache: Boolean? = null
 
   override fun commonTestFlag(): Boolean {
@@ -55,6 +59,15 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.allowCollapsableChildren()
       allowCollapsableChildrenCache = cached
+    }
+    return cached
+  }
+
+  override fun allowRecursiveCommitsWithSynchronousMountOnAndroid(): Boolean {
+    var cached = allowRecursiveCommitsWithSynchronousMountOnAndroidCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.allowRecursiveCommitsWithSynchronousMountOnAndroid()
+      allowRecursiveCommitsWithSynchronousMountOnAndroidCache = cached
     }
     return cached
   }
@@ -194,6 +207,15 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     return cached
   }
 
+  override fun useImmediateExecutorInAndroidBridgeless(): Boolean {
+    var cached = useImmediateExecutorInAndroidBridgelessCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.useImmediateExecutorInAndroidBridgeless()
+      useImmediateExecutorInAndroidBridgelessCache = cached
+    }
+    return cached
+  }
+
   override fun useModernRuntimeScheduler(): Boolean {
     var cached = useModernRuntimeSchedulerCache
     if (cached == null) {
@@ -208,6 +230,24 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.useNativeViewConfigsInBridgelessMode()
       useNativeViewConfigsInBridgelessModeCache = cached
+    }
+    return cached
+  }
+
+  override fun useRuntimeShadowNodeReferenceUpdate(): Boolean {
+    var cached = useRuntimeShadowNodeReferenceUpdateCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.useRuntimeShadowNodeReferenceUpdate()
+      useRuntimeShadowNodeReferenceUpdateCache = cached
+    }
+    return cached
+  }
+
+  override fun useRuntimeShadowNodeReferenceUpdateOnLayout(): Boolean {
+    var cached = useRuntimeShadowNodeReferenceUpdateOnLayoutCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.useRuntimeShadowNodeReferenceUpdateOnLayout()
+      useRuntimeShadowNodeReferenceUpdateOnLayoutCache = cached
     }
     return cached
   }

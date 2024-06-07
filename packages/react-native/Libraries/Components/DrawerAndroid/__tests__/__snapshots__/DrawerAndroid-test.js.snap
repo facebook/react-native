@@ -33,6 +33,7 @@ exports[`<DrawerLayoutAndroid /> should render as expected: should deep render w
   />
   <View
     collapsable={false}
+    pointerEvents="none"
     style={
       Array [
         Object {
@@ -85,6 +86,7 @@ exports[`<DrawerLayoutAndroid /> should render as expected: should deep render w
   />
   <View
     collapsable={false}
+    pointerEvents="none"
     style={
       Array [
         Object {

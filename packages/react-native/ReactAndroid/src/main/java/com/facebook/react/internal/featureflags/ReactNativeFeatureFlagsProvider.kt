@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7a63b1fc14ccc86efb0929452755744d>>
+ * @generated SignedSource<<d84816a13ad49b6e1c69c968a8503385>>
  */
 
 /**
@@ -26,6 +26,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun commonTestFlag(): Boolean
 
   @DoNotStrip public fun allowCollapsableChildren(): Boolean
+
+  @DoNotStrip public fun allowRecursiveCommitsWithSynchronousMountOnAndroid(): Boolean
 
   @DoNotStrip public fun batchRenderingUpdatesInEventLoop(): Boolean
 
@@ -57,9 +59,15 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun setAndroidLayoutDirection(): Boolean
 
+  @DoNotStrip public fun useImmediateExecutorInAndroidBridgeless(): Boolean
+
   @DoNotStrip public fun useModernRuntimeScheduler(): Boolean
 
   @DoNotStrip public fun useNativeViewConfigsInBridgelessMode(): Boolean
+
+  @DoNotStrip public fun useRuntimeShadowNodeReferenceUpdate(): Boolean
+
+  @DoNotStrip public fun useRuntimeShadowNodeReferenceUpdateOnLayout(): Boolean
 
   @DoNotStrip public fun useStateAlignmentMechanism(): Boolean
 }

@@ -487,11 +487,28 @@ void Binding::schedulerShouldRenderTransactions(
     return;
   }
 
-  std::unique_lock<std::mutex> lock(pendingTransactionsMutex_);
-  for (auto& transaction : pendingTransactions_) {
-    mountingManager->executeMount(transaction);
+  if (ReactNativeFeatureFlags::
+          allowRecursiveCommitsWithSynchronousMountOnAndroid()) {
+    std::vector<MountingTransaction> pendingTransactions;
+
+    {
+      // Retain the lock to access the pending transactions but not to execute
+      // the mount operations because that method can call into this method
+      // again.
+      std::unique_lock<std::mutex> lock(pendingTransactionsMutex_);
+      pendingTransactions_.swap(pendingTransactions);
+    }
+
+    for (auto& transaction : pendingTransactions) {
+      mountingManager->executeMount(transaction);
+    }
+  } else {
+    std::unique_lock<std::mutex> lock(pendingTransactionsMutex_);
+    for (auto& transaction : pendingTransactions_) {
+      mountingManager->executeMount(transaction);
+    }
+    pendingTransactions_.clear();
   }
-  pendingTransactions_.clear();
 }
 
 void Binding::schedulerDidRequestPreliminaryViewAllocation(

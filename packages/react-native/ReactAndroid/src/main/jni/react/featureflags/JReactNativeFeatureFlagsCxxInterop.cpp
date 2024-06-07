@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<82d20aa409496b17df21a077088894a6>>
+ * @generated SignedSource<<2af7a8ae4860f81b46e48afb17ee54b6>>
  */
 
 /**
@@ -48,6 +48,12 @@ class ReactNativeFeatureFlagsProviderHolder
   bool allowCollapsableChildren() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("allowCollapsableChildren");
+    return method(javaProvider_);
+  }
+
+  bool allowRecursiveCommitsWithSynchronousMountOnAndroid() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("allowRecursiveCommitsWithSynchronousMountOnAndroid");
     return method(javaProvider_);
   }
 
@@ -141,6 +147,12 @@ class ReactNativeFeatureFlagsProviderHolder
     return method(javaProvider_);
   }
 
+  bool useImmediateExecutorInAndroidBridgeless() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useImmediateExecutorInAndroidBridgeless");
+    return method(javaProvider_);
+  }
+
   bool useModernRuntimeScheduler() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useModernRuntimeScheduler");
@@ -150,6 +162,18 @@ class ReactNativeFeatureFlagsProviderHolder
   bool useNativeViewConfigsInBridgelessMode() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useNativeViewConfigsInBridgelessMode");
+    return method(javaProvider_);
+  }
+
+  bool useRuntimeShadowNodeReferenceUpdate() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useRuntimeShadowNodeReferenceUpdate");
+    return method(javaProvider_);
+  }
+
+  bool useRuntimeShadowNodeReferenceUpdateOnLayout() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useRuntimeShadowNodeReferenceUpdateOnLayout");
     return method(javaProvider_);
   }
 
@@ -171,6 +195,11 @@ bool JReactNativeFeatureFlagsCxxInterop::commonTestFlag(
 bool JReactNativeFeatureFlagsCxxInterop::allowCollapsableChildren(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::allowCollapsableChildren();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::allowRecursiveCommitsWithSynchronousMountOnAndroid(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::allowRecursiveCommitsWithSynchronousMountOnAndroid();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::batchRenderingUpdatesInEventLoop(
@@ -248,6 +277,11 @@ bool JReactNativeFeatureFlagsCxxInterop::setAndroidLayoutDirection(
   return ReactNativeFeatureFlags::setAndroidLayoutDirection();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::useImmediateExecutorInAndroidBridgeless(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::useImmediateExecutorInAndroidBridgeless();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::useModernRuntimeScheduler(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::useModernRuntimeScheduler();
@@ -256,6 +290,16 @@ bool JReactNativeFeatureFlagsCxxInterop::useModernRuntimeScheduler(
 bool JReactNativeFeatureFlagsCxxInterop::useNativeViewConfigsInBridgelessMode(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::useRuntimeShadowNodeReferenceUpdate(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::useRuntimeShadowNodeReferenceUpdate();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::useRuntimeShadowNodeReferenceUpdateOnLayout(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::useRuntimeShadowNodeReferenceUpdateOnLayout();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::useStateAlignmentMechanism(
@@ -286,6 +330,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "allowCollapsableChildren",
         JReactNativeFeatureFlagsCxxInterop::allowCollapsableChildren),
+      makeNativeMethod(
+        "allowRecursiveCommitsWithSynchronousMountOnAndroid",
+        JReactNativeFeatureFlagsCxxInterop::allowRecursiveCommitsWithSynchronousMountOnAndroid),
       makeNativeMethod(
         "batchRenderingUpdatesInEventLoop",
         JReactNativeFeatureFlagsCxxInterop::batchRenderingUpdatesInEventLoop),
@@ -332,11 +379,20 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "setAndroidLayoutDirection",
         JReactNativeFeatureFlagsCxxInterop::setAndroidLayoutDirection),
       makeNativeMethod(
+        "useImmediateExecutorInAndroidBridgeless",
+        JReactNativeFeatureFlagsCxxInterop::useImmediateExecutorInAndroidBridgeless),
+      makeNativeMethod(
         "useModernRuntimeScheduler",
         JReactNativeFeatureFlagsCxxInterop::useModernRuntimeScheduler),
       makeNativeMethod(
         "useNativeViewConfigsInBridgelessMode",
         JReactNativeFeatureFlagsCxxInterop::useNativeViewConfigsInBridgelessMode),
+      makeNativeMethod(
+        "useRuntimeShadowNodeReferenceUpdate",
+        JReactNativeFeatureFlagsCxxInterop::useRuntimeShadowNodeReferenceUpdate),
+      makeNativeMethod(
+        "useRuntimeShadowNodeReferenceUpdateOnLayout",
+        JReactNativeFeatureFlagsCxxInterop::useRuntimeShadowNodeReferenceUpdateOnLayout),
       makeNativeMethod(
         "useStateAlignmentMechanism",
         JReactNativeFeatureFlagsCxxInterop::useStateAlignmentMechanism),

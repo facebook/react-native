@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0a8bc71d703e92e1aaba25203e0211b3>>
+ * @generated SignedSource<<870e25c844e692bb04ee49fe20cd3baf>>
  * @flow strict-local
  */
 
@@ -42,6 +42,7 @@ export type ReactNativeFeatureFlags = {
   ...ReactNativeFeatureFlagsJsOnly,
   commonTestFlag: Getter<boolean>,
   allowCollapsableChildren: Getter<boolean>,
+  allowRecursiveCommitsWithSynchronousMountOnAndroid: Getter<boolean>,
   batchRenderingUpdatesInEventLoop: Getter<boolean>,
   destroyFabricSurfacesInReactInstanceManager: Getter<boolean>,
   enableBackgroundExecutor: Getter<boolean>,
@@ -57,8 +58,11 @@ export type ReactNativeFeatureFlags = {
   lazyAnimationCallbacks: Getter<boolean>,
   preventDoubleTextMeasure: Getter<boolean>,
   setAndroidLayoutDirection: Getter<boolean>,
+  useImmediateExecutorInAndroidBridgeless: Getter<boolean>,
   useModernRuntimeScheduler: Getter<boolean>,
   useNativeViewConfigsInBridgelessMode: Getter<boolean>,
+  useRuntimeShadowNodeReferenceUpdate: Getter<boolean>,
+  useRuntimeShadowNodeReferenceUpdateOnLayout: Getter<boolean>,
   useStateAlignmentMechanism: Getter<boolean>,
 }
 
@@ -110,6 +114,10 @@ export const commonTestFlag: Getter<boolean> = createNativeFlagGetter('commonTes
  * Enables the differentiator to understand the "collapsableChildren" prop
  */
 export const allowCollapsableChildren: Getter<boolean> = createNativeFlagGetter('allowCollapsableChildren', true);
+/**
+ * Adds support for recursively processing commits that mount synchronously (Android only).
+ */
+export const allowRecursiveCommitsWithSynchronousMountOnAndroid: Getter<boolean> = createNativeFlagGetter('allowRecursiveCommitsWithSynchronousMountOnAndroid', false);
 /**
  * When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.
  */
@@ -171,6 +179,10 @@ export const preventDoubleTextMeasure: Getter<boolean> = createNativeFlagGetter(
  */
 export const setAndroidLayoutDirection: Getter<boolean> = createNativeFlagGetter('setAndroidLayoutDirection', false);
 /**
+ * Invoke callbacks immediately on the ReactInstance rather than going through a background thread for synchronization
+ */
+export const useImmediateExecutorInAndroidBridgeless: Getter<boolean> = createNativeFlagGetter('useImmediateExecutorInAndroidBridgeless', false);
+/**
  * When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.
  */
 export const useModernRuntimeScheduler: Getter<boolean> = createNativeFlagGetter('useModernRuntimeScheduler', false);
@@ -178,6 +190,14 @@ export const useModernRuntimeScheduler: Getter<boolean> = createNativeFlagGetter
  * When enabled, the native view configs are used in bridgeless mode.
  */
 export const useNativeViewConfigsInBridgelessMode: Getter<boolean> = createNativeFlagGetter('useNativeViewConfigsInBridgelessMode', false);
+/**
+ * When enabled, cloning shadow nodes within react native will update the reference held by the current JS fiber tree.
+ */
+export const useRuntimeShadowNodeReferenceUpdate: Getter<boolean> = createNativeFlagGetter('useRuntimeShadowNodeReferenceUpdate', false);
+/**
+ * When enabled, cloning shadow nodes during layout will update the reference held by the current JS fiber tree.
+ */
+export const useRuntimeShadowNodeReferenceUpdateOnLayout: Getter<boolean> = createNativeFlagGetter('useRuntimeShadowNodeReferenceUpdateOnLayout', false);
 /**
  * When enabled, it uses optimised state reconciliation algorithm.
  */

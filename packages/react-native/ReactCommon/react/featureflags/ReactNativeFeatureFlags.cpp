@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c51ddd57ad10e748d6e2c5f444ea3765>>
+ * @generated SignedSource<<ec12fd62d1dc2109e52a95094d7ad167>>
  */
 
 /**
@@ -27,6 +27,10 @@ bool ReactNativeFeatureFlags::commonTestFlag() {
 
 bool ReactNativeFeatureFlags::allowCollapsableChildren() {
   return getAccessor().allowCollapsableChildren();
+}
+
+bool ReactNativeFeatureFlags::allowRecursiveCommitsWithSynchronousMountOnAndroid() {
+  return getAccessor().allowRecursiveCommitsWithSynchronousMountOnAndroid();
 }
 
 bool ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop() {
@@ -89,12 +93,24 @@ bool ReactNativeFeatureFlags::setAndroidLayoutDirection() {
   return getAccessor().setAndroidLayoutDirection();
 }
 
+bool ReactNativeFeatureFlags::useImmediateExecutorInAndroidBridgeless() {
+  return getAccessor().useImmediateExecutorInAndroidBridgeless();
+}
+
 bool ReactNativeFeatureFlags::useModernRuntimeScheduler() {
   return getAccessor().useModernRuntimeScheduler();
 }
 
 bool ReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode() {
   return getAccessor().useNativeViewConfigsInBridgelessMode();
+}
+
+bool ReactNativeFeatureFlags::useRuntimeShadowNodeReferenceUpdate() {
+  return getAccessor().useRuntimeShadowNodeReferenceUpdate();
+}
+
+bool ReactNativeFeatureFlags::useRuntimeShadowNodeReferenceUpdateOnLayout() {
+  return getAccessor().useRuntimeShadowNodeReferenceUpdateOnLayout();
 }
 
 bool ReactNativeFeatureFlags::useStateAlignmentMechanism() {

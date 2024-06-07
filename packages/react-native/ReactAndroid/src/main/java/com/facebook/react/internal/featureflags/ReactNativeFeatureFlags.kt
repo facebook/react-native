@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<84f45a19bf93a62da7ce904a2682fc51>>
+ * @generated SignedSource<<177f05d7b2fadcfffa32cb5a7a21c76b>>
  */
 
 /**
@@ -39,6 +39,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun allowCollapsableChildren(): Boolean = accessor.allowCollapsableChildren()
+
+  /**
+   * Adds support for recursively processing commits that mount synchronously (Android only).
+   */
+  @JvmStatic
+  public fun allowRecursiveCommitsWithSynchronousMountOnAndroid(): Boolean = accessor.allowRecursiveCommitsWithSynchronousMountOnAndroid()
 
   /**
    * When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.
@@ -131,6 +137,12 @@ public object ReactNativeFeatureFlags {
   public fun setAndroidLayoutDirection(): Boolean = accessor.setAndroidLayoutDirection()
 
   /**
+   * Invoke callbacks immediately on the ReactInstance rather than going through a background thread for synchronization
+   */
+  @JvmStatic
+  public fun useImmediateExecutorInAndroidBridgeless(): Boolean = accessor.useImmediateExecutorInAndroidBridgeless()
+
+  /**
    * When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.
    */
   @JvmStatic
@@ -141,6 +153,18 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun useNativeViewConfigsInBridgelessMode(): Boolean = accessor.useNativeViewConfigsInBridgelessMode()
+
+  /**
+   * When enabled, cloning shadow nodes within react native will update the reference held by the current JS fiber tree.
+   */
+  @JvmStatic
+  public fun useRuntimeShadowNodeReferenceUpdate(): Boolean = accessor.useRuntimeShadowNodeReferenceUpdate()
+
+  /**
+   * When enabled, cloning shadow nodes during layout will update the reference held by the current JS fiber tree.
+   */
+  @JvmStatic
+  public fun useRuntimeShadowNodeReferenceUpdateOnLayout(): Boolean = accessor.useRuntimeShadowNodeReferenceUpdateOnLayout()
 
   /**
    * When enabled, it uses optimised state reconciliation algorithm.

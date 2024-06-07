@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c82dca47362f4798dfcebda31b2fe2d6>>
+ * @generated SignedSource<<05bf91e1b2a64cdc48615137deec627a>>
  */
 
 /**
@@ -31,6 +31,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun commonTestFlag(): Boolean
 
   @DoNotStrip @JvmStatic public external fun allowCollapsableChildren(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun allowRecursiveCommitsWithSynchronousMountOnAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun batchRenderingUpdatesInEventLoop(): Boolean
 
@@ -62,9 +64,15 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun setAndroidLayoutDirection(): Boolean
 
+  @DoNotStrip @JvmStatic public external fun useImmediateExecutorInAndroidBridgeless(): Boolean
+
   @DoNotStrip @JvmStatic public external fun useModernRuntimeScheduler(): Boolean
 
   @DoNotStrip @JvmStatic public external fun useNativeViewConfigsInBridgelessMode(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun useRuntimeShadowNodeReferenceUpdate(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun useRuntimeShadowNodeReferenceUpdateOnLayout(): Boolean
 
   @DoNotStrip @JvmStatic public external fun useStateAlignmentMechanism(): Boolean
 

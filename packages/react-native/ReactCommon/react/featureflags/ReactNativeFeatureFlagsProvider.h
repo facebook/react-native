@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c0b634ae91683a44ebbbfe3f21b762d1>>
+ * @generated SignedSource<<454a55db4c97f9c28c0a8427d4c0bd57>>
  */
 
 /**
@@ -27,6 +27,7 @@ class ReactNativeFeatureFlagsProvider {
 
   virtual bool commonTestFlag() = 0;
   virtual bool allowCollapsableChildren() = 0;
+  virtual bool allowRecursiveCommitsWithSynchronousMountOnAndroid() = 0;
   virtual bool batchRenderingUpdatesInEventLoop() = 0;
   virtual bool destroyFabricSurfacesInReactInstanceManager() = 0;
   virtual bool enableBackgroundExecutor() = 0;
@@ -42,8 +43,11 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool lazyAnimationCallbacks() = 0;
   virtual bool preventDoubleTextMeasure() = 0;
   virtual bool setAndroidLayoutDirection() = 0;
+  virtual bool useImmediateExecutorInAndroidBridgeless() = 0;
   virtual bool useModernRuntimeScheduler() = 0;
   virtual bool useNativeViewConfigsInBridgelessMode() = 0;
+  virtual bool useRuntimeShadowNodeReferenceUpdate() = 0;
+  virtual bool useRuntimeShadowNodeReferenceUpdateOnLayout() = 0;
   virtual bool useStateAlignmentMechanism() = 0;
 };
 

@@ -701,7 +701,6 @@ public class ReactInstanceManager {
   @Deprecated
   public void onHostDestroy() {
     UiThreadUtil.assertOnUiThread();
-    destroyInspectorTarget();
 
     if (mUseDeveloperSupport) {
       mDevSupportManager.setDevSupportEnabled(false);
@@ -752,7 +751,6 @@ public class ReactInstanceManager {
     }
 
     mHasStartedDestroying = true;
-    destroyInspectorTarget();
 
     if (mUseDeveloperSupport) {
       mDevSupportManager.setDevSupportEnabled(false);
@@ -780,6 +778,12 @@ public class ReactInstanceManager {
           mCurrentReactContext = null;
         }
       }
+    }
+
+    // If the host is being destroyed, now that the current context/instance
+    // has been destroyed, we can safely destroy the host's inspector target.
+    if (mLifecycleState == LifecycleState.BEFORE_CREATE) {
+      destroyInspectorHostTarget();
     }
 
     mHasStartedCreatingInitialContext = false;
@@ -835,6 +839,10 @@ public class ReactInstanceManager {
       if (mLifecycleState == LifecycleState.BEFORE_RESUME) {
         currentContext.onHostDestroy(mKeepActivity);
       }
+    } else {
+      // There's no current context that requires the host inspector target to
+      // be kept alive, so we can destroy it immediately.
+      destroyInspectorHostTarget();
     }
     mLifecycleState = LifecycleState.BEFORE_CREATE;
   }
@@ -1542,7 +1550,8 @@ public class ReactInstanceManager {
     return mInspectorTarget;
   }
 
-  private void destroyInspectorTarget() {
+  @ThreadConfined(UI)
+  private void destroyInspectorHostTarget() {
     if (mInspectorTarget != null) {
       mInspectorTarget.close();
       mInspectorTarget = null;

@@ -179,7 +179,7 @@ class BoundedConsumableBuffer {
 
   void getEntries(std::vector<T>& res, std::function<bool(const T&)> predicate)
       const {
-    for (int i = 0; i < entries_.size(); i++) {
+    for (size_t i = 0; i < entries_.size(); i++) {
       const T& el = entries_[(i + position_) % entries_.size()];
       if (predicate(el)) {
         res.push_back(el);

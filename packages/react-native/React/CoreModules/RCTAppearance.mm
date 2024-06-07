@@ -19,6 +19,8 @@ using namespace facebook::react;
 NSString *const RCTAppearanceColorSchemeLight = @"light";
 NSString *const RCTAppearanceColorSchemeDark = @"dark";
 
+static BOOL sIsAppearancePreferenceSet = NO;
+
 static BOOL sAppearancePreferenceEnabled = YES;
 void RCTEnableAppearancePreference(BOOL enabled)
 {
@@ -62,6 +64,12 @@ NSString *RCTColorSchemePreference(UITraitCollection *traitCollection)
     // Return the default if the app doesn't allow different color schemes.
     return RCTAppearanceColorSchemeLight;
   }
+
+  if (appearances[@(traitCollection.userInterfaceStyle)]) {
+    sIsAppearancePreferenceSet = YES;
+    return appearances[@(traitCollection.userInterfaceStyle)];
+  }
+
   UIUserInterfaceStyle systemStyle = sUseKeyWindowForSystemStyle ? RCTKeyWindow().traitCollection.userInterfaceStyle
                                                                  : traitCollection.userInterfaceStyle;
   return appearances[@(systemStyle)] ?: RCTAppearanceColorSchemeLight;
@@ -116,6 +124,10 @@ RCT_EXPORT_METHOD(setColorScheme : (NSString *)style)
 
 RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString *, getColorScheme)
 {
+  if (!sIsAppearancePreferenceSet) {
+    UITraitCollection *traitCollection = RCTKeyWindow().traitCollection;
+    _currentColorScheme = RCTColorSchemePreference(traitCollection);
+  }
   return _currentColorScheme;
 }
 

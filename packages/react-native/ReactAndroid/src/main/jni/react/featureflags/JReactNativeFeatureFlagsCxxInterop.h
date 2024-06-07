@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<08463d4f487df81332c79c8e85b4dac8>>
+ * @generated SignedSource<<1d1422d073ae40ee4bbc788dc222cc28>>
  */
 
 /**
@@ -34,6 +34,9 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool allowCollapsableChildren(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool allowRecursiveCommitsWithSynchronousMountOnAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool batchRenderingUpdatesInEventLoop(
@@ -81,10 +84,19 @@ class JReactNativeFeatureFlagsCxxInterop
   static bool setAndroidLayoutDirection(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
+  static bool useImmediateExecutorInAndroidBridgeless(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
   static bool useModernRuntimeScheduler(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool useNativeViewConfigsInBridgelessMode(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool useRuntimeShadowNodeReferenceUpdate(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool useRuntimeShadowNodeReferenceUpdateOnLayout(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool useStateAlignmentMechanism(

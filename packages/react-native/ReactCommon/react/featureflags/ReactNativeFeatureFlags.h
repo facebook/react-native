@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<705dba656bfb228227399bcda638c404>>
+ * @generated SignedSource<<5f1ae3edfe01ee0545bd89137c5cb3e9>>
  */
 
 /**
@@ -46,6 +46,11 @@ class ReactNativeFeatureFlags {
    * Enables the differentiator to understand the "collapsableChildren" prop
    */
   RN_EXPORT static bool allowCollapsableChildren();
+
+  /**
+   * Adds support for recursively processing commits that mount synchronously (Android only).
+   */
+  RN_EXPORT static bool allowRecursiveCommitsWithSynchronousMountOnAndroid();
 
   /**
    * When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.
@@ -123,6 +128,11 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool setAndroidLayoutDirection();
 
   /**
+   * Invoke callbacks immediately on the ReactInstance rather than going through a background thread for synchronization
+   */
+  RN_EXPORT static bool useImmediateExecutorInAndroidBridgeless();
+
+  /**
    * When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.
    */
   RN_EXPORT static bool useModernRuntimeScheduler();
@@ -131,6 +141,16 @@ class ReactNativeFeatureFlags {
    * When enabled, the native view configs are used in bridgeless mode.
    */
   RN_EXPORT static bool useNativeViewConfigsInBridgelessMode();
+
+  /**
+   * When enabled, cloning shadow nodes within react native will update the reference held by the current JS fiber tree.
+   */
+  RN_EXPORT static bool useRuntimeShadowNodeReferenceUpdate();
+
+  /**
+   * When enabled, cloning shadow nodes during layout will update the reference held by the current JS fiber tree.
+   */
+  RN_EXPORT static bool useRuntimeShadowNodeReferenceUpdateOnLayout();
 
   /**
    * When enabled, it uses optimised state reconciliation algorithm.

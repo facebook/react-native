@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a13aa1f123eb1f90039bc08436349c83>>
+ * @generated SignedSource<<e13caa80ac317feb98cf4db5ac89be79>>
  */
 
 /**
@@ -39,6 +39,8 @@ class NativeReactNativeFeatureFlags
 
   bool allowCollapsableChildren(jsi::Runtime& runtime);
 
+  bool allowRecursiveCommitsWithSynchronousMountOnAndroid(jsi::Runtime& runtime);
+
   bool batchRenderingUpdatesInEventLoop(jsi::Runtime& runtime);
 
   bool destroyFabricSurfacesInReactInstanceManager(jsi::Runtime& runtime);
@@ -69,9 +71,15 @@ class NativeReactNativeFeatureFlags
 
   bool setAndroidLayoutDirection(jsi::Runtime& runtime);
 
+  bool useImmediateExecutorInAndroidBridgeless(jsi::Runtime& runtime);
+
   bool useModernRuntimeScheduler(jsi::Runtime& runtime);
 
   bool useNativeViewConfigsInBridgelessMode(jsi::Runtime& runtime);
+
+  bool useRuntimeShadowNodeReferenceUpdate(jsi::Runtime& runtime);
+
+  bool useRuntimeShadowNodeReferenceUpdateOnLayout(jsi::Runtime& runtime);
 
   bool useStateAlignmentMechanism(jsi::Runtime& runtime);
 };

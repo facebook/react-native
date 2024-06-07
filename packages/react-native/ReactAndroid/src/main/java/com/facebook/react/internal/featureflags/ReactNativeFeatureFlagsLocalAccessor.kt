@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a66642e4f6027ab0f5280baa2169d901>>
+ * @generated SignedSource<<d23d2a5f44f2b2068dde9e85e5b1ce9f>>
  */
 
 /**
@@ -26,6 +26,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
 
   private var commonTestFlagCache: Boolean? = null
   private var allowCollapsableChildrenCache: Boolean? = null
+  private var allowRecursiveCommitsWithSynchronousMountOnAndroidCache: Boolean? = null
   private var batchRenderingUpdatesInEventLoopCache: Boolean? = null
   private var destroyFabricSurfacesInReactInstanceManagerCache: Boolean? = null
   private var enableBackgroundExecutorCache: Boolean? = null
@@ -41,8 +42,11 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var lazyAnimationCallbacksCache: Boolean? = null
   private var preventDoubleTextMeasureCache: Boolean? = null
   private var setAndroidLayoutDirectionCache: Boolean? = null
+  private var useImmediateExecutorInAndroidBridgelessCache: Boolean? = null
   private var useModernRuntimeSchedulerCache: Boolean? = null
   private var useNativeViewConfigsInBridgelessModeCache: Boolean? = null
+  private var useRuntimeShadowNodeReferenceUpdateCache: Boolean? = null
+  private var useRuntimeShadowNodeReferenceUpdateOnLayoutCache: Boolean? = null
   private var useStateAlignmentMechanismCache: Boolean? = null
 
   override fun commonTestFlag(): Boolean {
@@ -61,6 +65,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.allowCollapsableChildren()
       accessedFeatureFlags.add("allowCollapsableChildren")
       allowCollapsableChildrenCache = cached
+    }
+    return cached
+  }
+
+  override fun allowRecursiveCommitsWithSynchronousMountOnAndroid(): Boolean {
+    var cached = allowRecursiveCommitsWithSynchronousMountOnAndroidCache
+    if (cached == null) {
+      cached = currentProvider.allowRecursiveCommitsWithSynchronousMountOnAndroid()
+      accessedFeatureFlags.add("allowRecursiveCommitsWithSynchronousMountOnAndroid")
+      allowRecursiveCommitsWithSynchronousMountOnAndroidCache = cached
     }
     return cached
   }
@@ -215,6 +229,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
     return cached
   }
 
+  override fun useImmediateExecutorInAndroidBridgeless(): Boolean {
+    var cached = useImmediateExecutorInAndroidBridgelessCache
+    if (cached == null) {
+      cached = currentProvider.useImmediateExecutorInAndroidBridgeless()
+      accessedFeatureFlags.add("useImmediateExecutorInAndroidBridgeless")
+      useImmediateExecutorInAndroidBridgelessCache = cached
+    }
+    return cached
+  }
+
   override fun useModernRuntimeScheduler(): Boolean {
     var cached = useModernRuntimeSchedulerCache
     if (cached == null) {
@@ -231,6 +255,26 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.useNativeViewConfigsInBridgelessMode()
       accessedFeatureFlags.add("useNativeViewConfigsInBridgelessMode")
       useNativeViewConfigsInBridgelessModeCache = cached
+    }
+    return cached
+  }
+
+  override fun useRuntimeShadowNodeReferenceUpdate(): Boolean {
+    var cached = useRuntimeShadowNodeReferenceUpdateCache
+    if (cached == null) {
+      cached = currentProvider.useRuntimeShadowNodeReferenceUpdate()
+      accessedFeatureFlags.add("useRuntimeShadowNodeReferenceUpdate")
+      useRuntimeShadowNodeReferenceUpdateCache = cached
+    }
+    return cached
+  }
+
+  override fun useRuntimeShadowNodeReferenceUpdateOnLayout(): Boolean {
+    var cached = useRuntimeShadowNodeReferenceUpdateOnLayoutCache
+    if (cached == null) {
+      cached = currentProvider.useRuntimeShadowNodeReferenceUpdateOnLayout()
+      accessedFeatureFlags.add("useRuntimeShadowNodeReferenceUpdateOnLayout")
+      useRuntimeShadowNodeReferenceUpdateOnLayoutCache = cached
     }
     return cached
   }

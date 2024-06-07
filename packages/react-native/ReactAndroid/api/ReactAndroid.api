@@ -1954,7 +1954,6 @@ public class com/facebook/react/config/ReactFeatureFlags {
 	public static field calculateTransformedFramesEnabled Z
 	public static field dispatchPointerEvents Z
 	public static field enableBridgelessArchitecture Z
-	public static field enableBridgelessArchitectureNewCreateReloadDestroy Z
 	public static field enableCppPropsIteratorSetter Z
 	public static field enableEagerRootViewAttachment Z
 	public static field enableFabricLogs Z
@@ -2067,7 +2066,7 @@ public final class com/facebook/react/devsupport/DefaultDevSupportManagerFactory
 
 public class com/facebook/react/devsupport/DevServerHelper {
 	public static final field RELOAD_APP_EXTRA_JS_PROXY Ljava/lang/String;
-	public fun <init> (Lcom/facebook/react/modules/debug/interfaces/DeveloperSettings;Ljava/lang/String;Lcom/facebook/react/packagerconnection/PackagerConnectionSettings;)V
+	public fun <init> (Lcom/facebook/react/modules/debug/interfaces/DeveloperSettings;Landroid/content/Context;Lcom/facebook/react/packagerconnection/PackagerConnectionSettings;)V
 	public fun closeInspectorConnection ()V
 	public fun closePackagerConnection ()V
 	public fun disableDebugger ()V
@@ -2114,8 +2113,7 @@ public abstract class com/facebook/react/devsupport/DevSupportManagerBase : com/
 	protected fun getCurrentContext ()Lcom/facebook/react/bridge/ReactContext;
 	public fun getDevLoadingViewManager ()Lcom/facebook/react/devsupport/interfaces/DevLoadingViewManager;
 	public fun getDevServerHelper ()Lcom/facebook/react/devsupport/DevServerHelper;
-	public fun getDevSettings ()Lcom/facebook/react/devsupport/DevInternalSettings;
-	public synthetic fun getDevSettings ()Lcom/facebook/react/modules/debug/interfaces/DeveloperSettings;
+	public fun getDevSettings ()Lcom/facebook/react/modules/debug/interfaces/DeveloperSettings;
 	public fun getDevSupportEnabled ()Z
 	public fun getDownloadedJSBundleFile ()Ljava/lang/String;
 	public fun getJSAppBundleName ()Ljava/lang/String;
@@ -2247,8 +2245,7 @@ public class com/facebook/react/devsupport/PackagerStatusCheck {
 
 public final class com/facebook/react/devsupport/PerftestDevSupportManager : com/facebook/react/devsupport/ReleaseDevSupportManager {
 	public fun <init> (Landroid/content/Context;)V
-	public fun getDevSettings ()Lcom/facebook/react/devsupport/DevInternalSettings;
-	public synthetic fun getDevSettings ()Lcom/facebook/react/modules/debug/interfaces/DeveloperSettings;
+	public fun getDevSettings ()Lcom/facebook/react/modules/debug/interfaces/DeveloperSettings;
 	public fun startInspector ()V
 	public fun stopInspector ()V
 }
@@ -3257,15 +3254,25 @@ public final class com/facebook/react/modules/debug/SourceCodeModule : com/faceb
 
 public abstract interface class com/facebook/react/modules/debug/interfaces/DeveloperSettings {
 	public abstract fun addMenuItem (Ljava/lang/String;)V
+	public abstract fun getPackagerConnectionSettings ()Lcom/facebook/react/packagerconnection/PackagerConnectionSettings;
 	public abstract fun isAnimationFpsDebugEnabled ()Z
 	public abstract fun isDeviceDebugEnabled ()Z
 	public abstract fun isElementInspectorEnabled ()Z
 	public abstract fun isFpsDebugEnabled ()Z
+	public abstract fun isHotModuleReplacementEnabled ()Z
 	public abstract fun isJSDevModeEnabled ()Z
 	public abstract fun isJSMinifyEnabled ()Z
 	public abstract fun isRemoteJSDebugEnabled ()Z
 	public abstract fun isStartSamplingProfilerOnInit ()Z
+	public abstract fun setAnimationFpsDebugEnabled (Z)V
+	public abstract fun setDeviceDebugEnabled (Z)V
+	public abstract fun setElementInspectorEnabled (Z)V
+	public abstract fun setFpsDebugEnabled (Z)V
+	public abstract fun setHotModuleReplacementEnabled (Z)V
+	public abstract fun setJSDevModeEnabled (Z)V
+	public abstract fun setJSMinifyEnabled (Z)V
 	public abstract fun setRemoteJSDebugEnabled (Z)V
+	public abstract fun setStartSamplingProfilerOnInit (Z)V
 }
 
 public final class com/facebook/react/modules/deviceinfo/DeviceInfoModule : com/facebook/fbreact/specs/NativeDeviceInfoSpec, com/facebook/react/bridge/LifecycleEventListener {
@@ -3835,54 +3842,21 @@ public final class com/facebook/react/runtime/hermes/HermesInstance : com/facebo
 public final class com/facebook/react/runtime/hermes/HermesInstance$Companion {
 }
 
-public class com/facebook/react/runtime/internal/bolts/CancellationToken {
-	public fun isCancellationRequested ()Z
-	public fun register (Ljava/lang/Runnable;)Lcom/facebook/react/runtime/internal/bolts/CancellationTokenRegistration;
-	public fun throwIfCancellationRequested ()V
-	public fun toString ()Ljava/lang/String;
-}
-
-public class com/facebook/react/runtime/internal/bolts/CancellationTokenSource : java/io/Closeable {
-	public fun <init> ()V
-	public fun cancel ()V
-	public fun cancelAfter (J)V
-	public fun close ()V
-	public fun getToken ()Lcom/facebook/react/runtime/internal/bolts/CancellationToken;
-	public fun isCancellationRequested ()Z
-	public fun toString ()Ljava/lang/String;
-}
-
 public abstract interface class com/facebook/react/runtime/internal/bolts/Continuation {
 	public abstract fun then (Lcom/facebook/react/runtime/internal/bolts/Task;)Ljava/lang/Object;
 }
 
 public class com/facebook/react/runtime/internal/bolts/Task : com/facebook/react/interfaces/TaskInterface {
-	public static final field BACKGROUND_EXECUTOR Ljava/util/concurrent/ExecutorService;
-	public static final field UI_THREAD_CONDITIONAL_SYNC_EXECUTOR Ljava/util/concurrent/Executor;
+	public static final field IMMEDIATE_EXECUTOR Ljava/util/concurrent/Executor;
 	public static final field UI_THREAD_EXECUTOR Ljava/util/concurrent/Executor;
 	public static fun call (Ljava/util/concurrent/Callable;)Lcom/facebook/react/runtime/internal/bolts/Task;
-	public static fun call (Ljava/util/concurrent/Callable;Lcom/facebook/react/runtime/internal/bolts/CancellationToken;)Lcom/facebook/react/runtime/internal/bolts/Task;
 	public static fun call (Ljava/util/concurrent/Callable;Ljava/util/concurrent/Executor;)Lcom/facebook/react/runtime/internal/bolts/Task;
-	public static fun call (Ljava/util/concurrent/Callable;Ljava/util/concurrent/Executor;Lcom/facebook/react/runtime/internal/bolts/CancellationToken;)Lcom/facebook/react/runtime/internal/bolts/Task;
-	public static fun callInBackground (Ljava/util/concurrent/Callable;)Lcom/facebook/react/runtime/internal/bolts/Task;
-	public static fun callInBackground (Ljava/util/concurrent/Callable;Lcom/facebook/react/runtime/internal/bolts/CancellationToken;)Lcom/facebook/react/runtime/internal/bolts/Task;
 	public static fun cancelled ()Lcom/facebook/react/runtime/internal/bolts/Task;
-	public fun cast ()Lcom/facebook/react/runtime/internal/bolts/Task;
-	public fun continueWhile (Ljava/util/concurrent/Callable;Lcom/facebook/react/runtime/internal/bolts/Continuation;)Lcom/facebook/react/runtime/internal/bolts/Task;
-	public fun continueWhile (Ljava/util/concurrent/Callable;Lcom/facebook/react/runtime/internal/bolts/Continuation;Lcom/facebook/react/runtime/internal/bolts/CancellationToken;)Lcom/facebook/react/runtime/internal/bolts/Task;
-	public fun continueWhile (Ljava/util/concurrent/Callable;Lcom/facebook/react/runtime/internal/bolts/Continuation;Ljava/util/concurrent/Executor;)Lcom/facebook/react/runtime/internal/bolts/Task;
-	public fun continueWhile (Ljava/util/concurrent/Callable;Lcom/facebook/react/runtime/internal/bolts/Continuation;Ljava/util/concurrent/Executor;Lcom/facebook/react/runtime/internal/bolts/CancellationToken;)Lcom/facebook/react/runtime/internal/bolts/Task;
 	public fun continueWith (Lcom/facebook/react/runtime/internal/bolts/Continuation;)Lcom/facebook/react/runtime/internal/bolts/Task;
-	public fun continueWith (Lcom/facebook/react/runtime/internal/bolts/Continuation;Lcom/facebook/react/runtime/internal/bolts/CancellationToken;)Lcom/facebook/react/runtime/internal/bolts/Task;
 	public fun continueWith (Lcom/facebook/react/runtime/internal/bolts/Continuation;Ljava/util/concurrent/Executor;)Lcom/facebook/react/runtime/internal/bolts/Task;
-	public fun continueWith (Lcom/facebook/react/runtime/internal/bolts/Continuation;Ljava/util/concurrent/Executor;Lcom/facebook/react/runtime/internal/bolts/CancellationToken;)Lcom/facebook/react/runtime/internal/bolts/Task;
 	public fun continueWithTask (Lcom/facebook/react/runtime/internal/bolts/Continuation;)Lcom/facebook/react/runtime/internal/bolts/Task;
-	public fun continueWithTask (Lcom/facebook/react/runtime/internal/bolts/Continuation;Lcom/facebook/react/runtime/internal/bolts/CancellationToken;)Lcom/facebook/react/runtime/internal/bolts/Task;
 	public fun continueWithTask (Lcom/facebook/react/runtime/internal/bolts/Continuation;Ljava/util/concurrent/Executor;)Lcom/facebook/react/runtime/internal/bolts/Task;
-	public fun continueWithTask (Lcom/facebook/react/runtime/internal/bolts/Continuation;Ljava/util/concurrent/Executor;Lcom/facebook/react/runtime/internal/bolts/CancellationToken;)Lcom/facebook/react/runtime/internal/bolts/Task;
 	public static fun create ()Lcom/facebook/react/runtime/internal/bolts/TaskCompletionSource;
-	public static fun delay (J)Lcom/facebook/react/runtime/internal/bolts/Task;
-	public static fun delay (JLcom/facebook/react/runtime/internal/bolts/CancellationToken;)Lcom/facebook/react/runtime/internal/bolts/Task;
 	public static fun forError (Ljava/lang/Exception;)Lcom/facebook/react/runtime/internal/bolts/Task;
 	public static fun forResult (Ljava/lang/Object;)Lcom/facebook/react/runtime/internal/bolts/Task;
 	public fun getError ()Ljava/lang/Exception;
@@ -3893,20 +3867,12 @@ public class com/facebook/react/runtime/internal/bolts/Task : com/facebook/react
 	public fun isFaulted ()Z
 	public fun makeVoid ()Lcom/facebook/react/runtime/internal/bolts/Task;
 	public fun onSuccess (Lcom/facebook/react/runtime/internal/bolts/Continuation;)Lcom/facebook/react/runtime/internal/bolts/Task;
-	public fun onSuccess (Lcom/facebook/react/runtime/internal/bolts/Continuation;Lcom/facebook/react/runtime/internal/bolts/CancellationToken;)Lcom/facebook/react/runtime/internal/bolts/Task;
 	public fun onSuccess (Lcom/facebook/react/runtime/internal/bolts/Continuation;Ljava/util/concurrent/Executor;)Lcom/facebook/react/runtime/internal/bolts/Task;
-	public fun onSuccess (Lcom/facebook/react/runtime/internal/bolts/Continuation;Ljava/util/concurrent/Executor;Lcom/facebook/react/runtime/internal/bolts/CancellationToken;)Lcom/facebook/react/runtime/internal/bolts/Task;
 	public fun onSuccessTask (Lcom/facebook/react/runtime/internal/bolts/Continuation;)Lcom/facebook/react/runtime/internal/bolts/Task;
-	public fun onSuccessTask (Lcom/facebook/react/runtime/internal/bolts/Continuation;Lcom/facebook/react/runtime/internal/bolts/CancellationToken;)Lcom/facebook/react/runtime/internal/bolts/Task;
 	public fun onSuccessTask (Lcom/facebook/react/runtime/internal/bolts/Continuation;Ljava/util/concurrent/Executor;)Lcom/facebook/react/runtime/internal/bolts/Task;
-	public fun onSuccessTask (Lcom/facebook/react/runtime/internal/bolts/Continuation;Ljava/util/concurrent/Executor;Lcom/facebook/react/runtime/internal/bolts/CancellationToken;)Lcom/facebook/react/runtime/internal/bolts/Task;
 	public static fun setUnobservedExceptionHandler (Lcom/facebook/react/runtime/internal/bolts/Task$UnobservedExceptionHandler;)V
 	public fun waitForCompletion ()V
 	public fun waitForCompletion (JLjava/util/concurrent/TimeUnit;)Z
-	public static fun whenAll (Ljava/util/Collection;)Lcom/facebook/react/runtime/internal/bolts/Task;
-	public static fun whenAllResult (Ljava/util/Collection;)Lcom/facebook/react/runtime/internal/bolts/Task;
-	public static fun whenAny (Ljava/util/Collection;)Lcom/facebook/react/runtime/internal/bolts/Task;
-	public static fun whenAnyResult (Ljava/util/Collection;)Lcom/facebook/react/runtime/internal/bolts/Task;
 }
 
 public abstract interface class com/facebook/react/runtime/internal/bolts/Task$UnobservedExceptionHandler {
@@ -3971,6 +3937,10 @@ public final class com/facebook/react/turbomodule/core/CallInvokerHolderImpl : c
 public final class com/facebook/react/turbomodule/core/NativeMethodCallInvokerHolderImpl : com/facebook/react/turbomodule/core/interfaces/NativeMethodCallInvokerHolder {
 }
 
+public final class com/facebook/react/turbomodule/core/interfaces/BindingsInstallerHolder {
+	public fun <init> (Lcom/facebook/jni/HybridData;)V
+}
+
 public abstract interface class com/facebook/react/turbomodule/core/interfaces/CallInvokerHolder {
 }
 
@@ -3980,6 +3950,10 @@ public abstract interface class com/facebook/react/turbomodule/core/interfaces/N
 public abstract interface class com/facebook/react/turbomodule/core/interfaces/TurboModule {
 	public abstract fun initialize ()V
 	public abstract fun invalidate ()V
+}
+
+public abstract interface class com/facebook/react/turbomodule/core/interfaces/TurboModuleWithJSIBindings {
+	public abstract fun getBindingsInstaller ()Lcom/facebook/react/turbomodule/core/interfaces/BindingsInstallerHolder;
 }
 
 public abstract class com/facebook/react/uimanager/BaseViewManager : com/facebook/react/uimanager/ViewManager, android/view/View$OnLayoutChangeListener, com/facebook/react/uimanager/BaseViewManagerInterface {
@@ -5555,9 +5529,10 @@ public abstract interface class com/facebook/react/uimanager/debug/NotThreadSafe
 
 public class com/facebook/react/uimanager/drawable/CSSBackgroundDrawable : android/graphics/drawable/Drawable {
 	public fun <init> (Landroid/content/Context;)V
-	public fun borderBoxPath ()Landroid/graphics/Path;
 	public fun draw (Landroid/graphics/Canvas;)V
 	public fun getAlpha ()I
+	public fun getBorderBoxPath ()Landroid/graphics/Path;
+	public fun getBorderBoxRect ()Landroid/graphics/RectF;
 	public fun getBorderColor (I)I
 	public fun getBorderRadius ()Lcom/facebook/react/uimanager/style/BorderRadiusStyle;
 	public fun getBorderWidthOrDefaultTo (FI)F
@@ -5567,9 +5542,10 @@ public class com/facebook/react/uimanager/drawable/CSSBackgroundDrawable : andro
 	public fun getLayoutDirection ()I
 	public fun getOpacity ()I
 	public fun getOutline (Landroid/graphics/Outline;)V
+	public fun getPaddingBoxPath ()Landroid/graphics/Path;
+	public fun getPaddingBoxRect ()Landroid/graphics/RectF;
 	public fun hasRoundedBorders ()Z
 	protected fun onBoundsChange (Landroid/graphics/Rect;)V
-	public fun paddingBoxPath ()Landroid/graphics/Path;
 	public fun setAlpha (I)V
 	public fun setBorderColor (IFF)V
 	public fun setBorderRadius (Lcom/facebook/react/uimanager/style/BorderRadiusProp;Lcom/facebook/react/uimanager/LengthPercentage;)V

@@ -369,6 +369,7 @@ final class ReactInstance {
     }
   }
 
+  @ThreadConfined("ReactHost")
   /* package */ void prerenderSurface(ReactSurfaceImpl surface) {
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstance.prerenderSurface");
     FLog.d(TAG, "call prerenderSurface with surface: " + surface.getModuleName());
