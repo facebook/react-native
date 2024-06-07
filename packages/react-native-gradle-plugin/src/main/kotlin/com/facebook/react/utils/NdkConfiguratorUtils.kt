@@ -98,6 +98,7 @@ internal object NdkConfiguratorUtils {
               "**/libfolly_runtime.so",
               "**/libglog.so",
               "**/libjsi.so",
+              "**/libmapbufferjni.so",
               "**/libreact_codegen_rncore.so",
               "**/libreact_debug.so",
               "**/libreact_nativemodule_core.so",
