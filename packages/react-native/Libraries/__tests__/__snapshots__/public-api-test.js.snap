@@ -6508,6 +6508,7 @@ exports[`public API should not change unintentionally Libraries/ReactNative/AppC
   initialProps?: { ... },
   showArchitectureIndicator?: boolean,
   WrapperComponent?: ?React.ComponentType<any>,
+  rootViewStyle?: ?ViewStyleProp,
   internal_excludeLogBox?: boolean,
   internal_excludeInspector?: boolean,
 |}>;
@@ -6573,8 +6574,10 @@ export type Registry = {
 export type WrapperComponentProvider = (
   appParameters: Object
 ) => React$ComponentType<any>;
+export type RootViewStyleProvider = (appParameters: Object) => ViewStyleProp;
 declare const AppRegistry: {
   setWrapperComponentProvider(provider: WrapperComponentProvider): void,
+  setRootViewStyleProvider(provider: RootViewStyleProvider): void,
   enableArchitectureIndicator(enabled: boolean): void,
   registerConfig(config: Array<AppConfig>): void,
   registerComponent(
@@ -6913,6 +6916,7 @@ exports[`public API should not change unintentionally Libraries/ReactNative/rend
   initialProps: Props,
   rootTag: any,
   WrapperComponent?: ?React.ComponentType<any>,
+  rootViewStyle?: ?ViewStyleProp,
   fabric?: boolean,
   showArchitectureIndicator?: boolean,
   scopedPerformanceLogger?: IPerformanceLogger,
