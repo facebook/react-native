@@ -37,14 +37,14 @@ endif()
 
 file(GLOB input_SRC CONFIGURE_DEPENDS
         *.cpp
-        ${BUILD_DIR}/generated/rncli/src/main/jni/*.cpp)
+        ${BUILD_DIR}/generated/autolinking/src/main/jni/*.cpp)
 
 add_library(${CMAKE_PROJECT_NAME} SHARED ${input_SRC})
 
 target_include_directories(${CMAKE_PROJECT_NAME}
         PUBLIC
                 ${CMAKE_CURRENT_SOURCE_DIR}
-                ${PROJECT_BUILD_DIR}/generated/rncli/src/main/jni)
+                ${PROJECT_BUILD_DIR}/generated/autolinking/src/main/jni)
 
 target_compile_options(${CMAKE_PROJECT_NAME}
         PRIVATE
@@ -126,8 +126,8 @@ target_compile_options(common_flags INTERFACE ${folly_FLAGS})
 target_link_libraries(ReactAndroid::react_codegen_rncore INTERFACE common_flags)
 
 # If project is on RN CLI v9, then we can use the following lines to link against the autolinked 3rd party libraries.
-if(EXISTS ${PROJECT_BUILD_DIR}/generated/rncli/src/main/jni/Android-rncli.cmake)
-        include(${PROJECT_BUILD_DIR}/generated/rncli/src/main/jni/Android-rncli.cmake)
+if(EXISTS ${PROJECT_BUILD_DIR}/generated/autolinking/src/main/jni/Android-autolinking.cmake)
+        include(${PROJECT_BUILD_DIR}/generated/autolinking/src/main/jni/Android-autolinking.cmake)
         target_link_libraries(${CMAKE_PROJECT_NAME} ${AUTOLINKED_LIBRARIES})
         foreach(autolinked_library ${AUTOLINKED_LIBRARIES})
             target_link_libraries(${autolinked_library} common_flags)
