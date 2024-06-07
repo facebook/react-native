@@ -640,7 +640,7 @@ jobs:
           name: rntester-apk
           path: packages/rn-tester/android/app/build/outputs/apk/
   build_npm_package:
-    runs-on: 4-core-ubuntu-latest
+    runs-on: 8-core-ubuntu
     needs: [set_release_type, prepare_hermes_workspace, build_hermes_macos, build_hermesc_linux, build_hermesc_windows,build_android]
     container:
       image: reactnativecommunity/react-native-android:latest
