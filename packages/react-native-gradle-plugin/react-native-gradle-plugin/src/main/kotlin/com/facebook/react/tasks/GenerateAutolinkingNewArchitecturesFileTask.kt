@@ -142,18 +142,17 @@ abstract class GenerateAutolinkingNewArchitecturesFileTask : DefaultTask() {
               }
             }
 
-    return CPP_TEMPLATE.replace("{{ rncliCppIncludes }}", cppIncludes)
-        .replace("{{ rncliCppTurboModuleJavaProviders }}", cppTurboModuleJavaProviders)
-        .replace("{{ rncliCppTurboModuleCxxProviders }}", cppTurboModuleCxxProviders)
-        .replace("{{ rncliCppComponentDescriptors }}", cppComponentDescriptors)
+    return CPP_TEMPLATE.replace("{{ autolinkingCppIncludes }}", cppIncludes)
+        .replace("{{ autolinkingCppTurboModuleJavaProviders }}", cppTurboModuleJavaProviders)
+        .replace("{{ autolinkingCppTurboModuleCxxProviders }}", cppTurboModuleCxxProviders)
+        .replace("{{ autolinkingCppComponentDescriptors }}", cppComponentDescriptors)
   }
 
   companion object {
     const val CMAKE_FILENAME = "Android-autolinking.cmake"
 
-    // This needs to be changed to not be `rncli.h`, but requires change to CMake pipeline
-    const val H_FILENAME = "rncli.h"
-    const val CPP_FILENAME = "rncli.cpp"
+    const val H_FILENAME = "autolinking.h"
+    const val CPP_FILENAME = "autolinking.cpp"
 
     const val CODEGEN_LIB_PREFIX = "react_codegen_"
 
@@ -186,24 +185,24 @@ abstract class GenerateAutolinkingNewArchitecturesFileTask : DefaultTask() {
        *
        */
       
-      #include "rncli.h"
-      {{ rncliCppIncludes }}
+      #include "autolinking.h"
+      {{ autolinkingCppIncludes }}
       
       namespace facebook {
       namespace react {
       
-      std::shared_ptr<TurboModule> rncli_ModuleProvider(const std::string moduleName, const JavaTurboModule::InitParams &params) {
-      {{ rncliCppTurboModuleJavaProviders }}
+      std::shared_ptr<TurboModule> autolinking_ModuleProvider(const std::string moduleName, const JavaTurboModule::InitParams &params) {
+      {{ autolinkingCppTurboModuleJavaProviders }}
         return nullptr;
       }
       
-      std::shared_ptr<TurboModule> rncli_cxxModuleProvider(const std::string moduleName, const std::shared_ptr<CallInvoker>& jsInvoker) {
-      {{ rncliCppTurboModuleCxxProviders }}
+      std::shared_ptr<TurboModule> autolinking_cxxModuleProvider(const std::string moduleName, const std::shared_ptr<CallInvoker>& jsInvoker) {
+      {{ autolinkingCppTurboModuleCxxProviders }}
         return nullptr;
       }
       
-      void rncli_registerProviders(std::shared_ptr<ComponentDescriptorProviderRegistry const> providerRegistry) {
-      {{ rncliCppComponentDescriptors }}
+      void autolinking_registerProviders(std::shared_ptr<ComponentDescriptorProviderRegistry const> providerRegistry) {
+      {{ autolinkingCppComponentDescriptors }}
         return;
       }
       
@@ -234,9 +233,9 @@ abstract class GenerateAutolinkingNewArchitecturesFileTask : DefaultTask() {
       namespace facebook {
       namespace react {
       
-      std::shared_ptr<TurboModule> rncli_ModuleProvider(const std::string moduleName, const JavaTurboModule::InitParams &params);
-      std::shared_ptr<TurboModule> rncli_cxxModuleProvider(const std::string moduleName, const std::shared_ptr<CallInvoker>& jsInvoker);
-      void rncli_registerProviders(std::shared_ptr<ComponentDescriptorProviderRegistry const> providerRegistry);
+      std::shared_ptr<TurboModule> autolinking_ModuleProvider(const std::string moduleName, const JavaTurboModule::InitParams &params);
+      std::shared_ptr<TurboModule> autolinking_cxxModuleProvider(const std::string moduleName, const std::shared_ptr<CallInvoker>& jsInvoker);
+      void autolinking_registerProviders(std::shared_ptr<ComponentDescriptorProviderRegistry const> providerRegistry);
       
       } // namespace react
       } // namespace facebook

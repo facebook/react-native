@@ -165,23 +165,23 @@ class GenerateAutolinkingNewArchitecturesFileTaskTest {
        *
        */
 
-      #include "rncli.h"
+      #include "autolinking.h"
 
 
       namespace facebook {
       namespace react {
 
-      std::shared_ptr<TurboModule> rncli_ModuleProvider(const std::string moduleName, const JavaTurboModule::InitParams &params) {
+      std::shared_ptr<TurboModule> autolinking_ModuleProvider(const std::string moduleName, const JavaTurboModule::InitParams &params) {
 
         return nullptr;
       }
 
-      std::shared_ptr<TurboModule> rncli_cxxModuleProvider(const std::string moduleName, const std::shared_ptr<CallInvoker>& jsInvoker) {
+      std::shared_ptr<TurboModule> autolinking_cxxModuleProvider(const std::string moduleName, const std::shared_ptr<CallInvoker>& jsInvoker) {
 
         return nullptr;
       }
 
-      void rncli_registerProviders(std::shared_ptr<ComponentDescriptorProviderRegistry const> providerRegistry) {
+      void autolinking_registerProviders(std::shared_ptr<ComponentDescriptorProviderRegistry const> providerRegistry) {
 
         return;
       }
@@ -209,14 +209,14 @@ class GenerateAutolinkingNewArchitecturesFileTaskTest {
        *
        */
 
-      #include "rncli.h"
+      #include "autolinking.h"
       #include <aPackage.h>
       #include <anotherPackage.h>
 
       namespace facebook {
       namespace react {
 
-      std::shared_ptr<TurboModule> rncli_ModuleProvider(const std::string moduleName, const JavaTurboModule::InitParams &params) {
+      std::shared_ptr<TurboModule> autolinking_ModuleProvider(const std::string moduleName, const JavaTurboModule::InitParams &params) {
       auto module_aPackage = aPackage_ModuleProvider(moduleName, params);
       if (module_aPackage != nullptr) {
       return module_aPackage;
@@ -228,12 +228,12 @@ class GenerateAutolinkingNewArchitecturesFileTaskTest {
         return nullptr;
       }
 
-      std::shared_ptr<TurboModule> rncli_cxxModuleProvider(const std::string moduleName, const std::shared_ptr<CallInvoker>& jsInvoker) {
+      std::shared_ptr<TurboModule> autolinking_cxxModuleProvider(const std::string moduleName, const std::shared_ptr<CallInvoker>& jsInvoker) {
 
         return nullptr;
       }
 
-      void rncli_registerProviders(std::shared_ptr<ComponentDescriptorProviderRegistry const> providerRegistry) {
+      void autolinking_registerProviders(std::shared_ptr<ComponentDescriptorProviderRegistry const> providerRegistry) {
 
         return;
       }
