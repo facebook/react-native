@@ -599,11 +599,6 @@ UIWindow *__nullable RCTKeyWindow(void)
   return nil;
 }
 
-UIInterfaceOrientation RCTUIInterfaceOrientation(void)
-{
-  return RCTKeyWindow().windowScene.interfaceOrientation;
-}
-
 UIStatusBarManager *__nullable RCTUIStatusBarManager(void)
 {
   return RCTKeyWindow().windowScene.statusBarManager;

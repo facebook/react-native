@@ -95,9 +95,6 @@ RCT_EXTERN UIApplication *__nullable RCTSharedApplication(void);
 // or view controller
 RCT_EXTERN UIWindow *__nullable RCTKeyWindow(void);
 
-// Returns the current window interface orientation
-RCT_EXTERN UIInterfaceOrientation RCTUIInterfaceOrientation(void);
-
 // Returns the presented view controller, useful if you need
 // e.g. to present a modal view controller or alert over it
 RCT_EXTERN UIViewController *__nullable RCTPresentedViewController(void);
