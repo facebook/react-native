@@ -77,7 +77,8 @@ class TestShadowNode final : public ConcreteViewShadowNode<
   facebook::react::Point _contentOriginOffset{};
 
   facebook::react::Point getContentOriginOffset(
-      bool /*includeTransform*/) const override {
+      bool /* includeTransform */) const override {
+
     return _contentOriginOffset;
   }
 };
