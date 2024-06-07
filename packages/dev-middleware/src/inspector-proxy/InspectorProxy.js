@@ -155,11 +155,10 @@ export default class InspectorProxy implements InspectorProxyQueries {
 
     return {
       id: `${deviceId}-${page.id}`,
-      description: page.app,
       title: page.title,
-      faviconUrl: 'https://reactjs.org/favicon.ico',
-      devtoolsFrontendUrl,
+      description: page.app,
       type: 'node',
+      devtoolsFrontendUrl,
       webSocketDebuggerUrl,
       vm: page.vm,
       deviceName: device.getName(),

@@ -188,7 +188,6 @@ describe('inspector proxy HTTP API', () => {
             description: 'bar-app',
             deviceName: 'foo',
             devtoolsFrontendUrl: expect.any(String),
-            faviconUrl: 'https://reactjs.org/favicon.ico',
             id: 'device1-page1',
             reactNative: {
               capabilities: {},
@@ -203,7 +202,6 @@ describe('inspector proxy HTTP API', () => {
             description: 'bar-app',
             deviceName: 'foo',
             devtoolsFrontendUrl: expect.any(String),
-            faviconUrl: 'https://reactjs.org/favicon.ico',
             id: 'device2-page1',
             reactNative: {
               capabilities: {},
