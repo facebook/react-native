@@ -429,7 +429,7 @@ function generateEnum(
 
   return EnumTemplate({
     enumName,
-    values: members.map(member => member.name).join(', '),
+    values: members.map(member => toSafeCppString(member.name)).join(', '),
     fromCases,
     toCases,
     nativeEnumMemberType,
