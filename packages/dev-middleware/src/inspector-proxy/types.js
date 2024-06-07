@@ -108,15 +108,17 @@ export type MessageToDevice =
 // Page description object that is sent in response to /json HTTP request from debugger.
 export type PageDescription = $ReadOnly<{
   id: string,
-  description: string,
   title: string,
-  faviconUrl: string,
-  devtoolsFrontendUrl: string,
+  description: string,
   type: string,
+  devtoolsFrontendUrl: string,
   webSocketDebuggerUrl: string,
+
+  // React Native specific fields
   deviceName: string,
   vm: string,
-  // Metadata specific to React Native
+
+  // React Native specific metadata
   reactNative: $ReadOnly<{
     logicalDeviceId: string,
     capabilities: Page['capabilities'],
