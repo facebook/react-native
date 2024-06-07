@@ -725,6 +725,15 @@ jobs:
             echo "Could not locate macOS hermesc binary."; exit 1;
           fi
 
+          # Sometimes, GHA creates artifacts with lowercase Debug/Release. Make sure that if it happen, we uppercase them.
+          if [[ -f "$HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-debug.tar.gz" ]]; then
+            mv "$HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-debug.tar.gz" "$HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-Debug.tar.gz"
+          fi
+
+          if [[ -f "$HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-release.tar.gz" ]]; then
+            mv "$HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-release.tar.gz" "$HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-Release.tar.gz"
+          fi
+
           cp -r $HERMES_WS_DIR/win64-bin/* ./packages/react-native/sdks/hermesc/win64-bin/.
           cp -r $HERMES_WS_DIR/linux64-bin/* ./packages/react-native/sdks/hermesc/linux64-bin/.
           mkdir -p ./packages/react-native/ReactAndroid/external-artifacts/artifacts/
