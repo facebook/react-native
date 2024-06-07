@@ -56,6 +56,9 @@ react {
     //
     //   The list of flags to pass to the Hermes compiler. By default is "-O", "-output-source-map"
     // hermesFlags = ["-O", "-output-source-map"]
+
+    /* Autolinking */
+    autolinkLibrariesWithApp()
 }
 
 /**
@@ -121,6 +124,3 @@ dependencies {
         implementation jscFlavor
     }
 }
-
-// TODO: This needs to use the new autolinking code in the gradle-plugin instead
-// apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
