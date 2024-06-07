@@ -76,7 +76,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
     return;
   }
 
-    UIInterfaceOrientation currentOrientation = RCTUIInterfaceOrientation();
+  UIInterfaceOrientation currentOrientation = RCTUIInterfaceOrientation();
   if (currentOrientation == _lastKnownOrientation) {
     return;
   }
