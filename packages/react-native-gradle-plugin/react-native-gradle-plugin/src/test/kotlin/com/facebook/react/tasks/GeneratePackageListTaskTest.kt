@@ -201,25 +201,25 @@ class GeneratePackageListTaskTest {
 
 
 
-    public class PackageList2 {
+    public class PackageList {
       private Application application;
       private ReactNativeHost reactNativeHost;
       private MainPackageConfig mConfig;
 
-      public PackageList2(ReactNativeHost reactNativeHost) {
+      public PackageList(ReactNativeHost reactNativeHost) {
         this(reactNativeHost, null);
       }
 
-      public PackageList2(Application application) {
+      public PackageList(Application application) {
         this(application, null);
       }
 
-      public PackageList2(ReactNativeHost reactNativeHost, MainPackageConfig config) {
+      public PackageList(ReactNativeHost reactNativeHost, MainPackageConfig config) {
         this.reactNativeHost = reactNativeHost;
         mConfig = config;
       }
 
-      public PackageList2(Application application, MainPackageConfig config) {
+      public PackageList(Application application, MainPackageConfig config) {
         this.reactNativeHost = null;
         this.application = application;
         mConfig = config;
@@ -280,25 +280,25 @@ class GeneratePackageListTaskTest {
     // @react-native/another-package
     import com.facebook.react.anotherPackage;
 
-    public class PackageList2 {
+    public class PackageList {
       private Application application;
       private ReactNativeHost reactNativeHost;
       private MainPackageConfig mConfig;
 
-      public PackageList2(ReactNativeHost reactNativeHost) {
+      public PackageList(ReactNativeHost reactNativeHost) {
         this(reactNativeHost, null);
       }
 
-      public PackageList2(Application application) {
+      public PackageList(Application application) {
         this(application, null);
       }
 
-      public PackageList2(ReactNativeHost reactNativeHost, MainPackageConfig config) {
+      public PackageList(ReactNativeHost reactNativeHost, MainPackageConfig config) {
         this.reactNativeHost = reactNativeHost;
         mConfig = config;
       }
 
-      public PackageList2(Application application, MainPackageConfig config) {
+      public PackageList(Application application, MainPackageConfig config) {
         this.reactNativeHost = null;
         this.application = application;
         mConfig = config;
