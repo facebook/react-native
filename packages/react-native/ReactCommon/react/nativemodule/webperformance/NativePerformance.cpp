@@ -19,8 +19,7 @@
 #include "Plugins.h"
 
 #ifdef WITH_PERFETTO
-#include <perfetto.h>
-#include <reactperflogger/ReactPerfettoCategories.h>
+#include <reactperflogger/ReactPerfetto.h>
 #endif
 
 std::shared_ptr<facebook::react::TurboModule> NativePerformanceModuleProvider(
@@ -34,21 +33,6 @@ namespace facebook::react {
 namespace {
 
 #ifdef WITH_PERFETTO
-
-// Offset for custom perfetto tracks
-uint64_t trackId = 0x5F3759DF;
-
-// Extract this once we start emitting perfetto markers from other modules
-std::once_flag perfettoInit;
-void initializePerfetto() {
-  std::call_once(perfettoInit, []() {
-    perfetto::TracingInitArgs args;
-    args.backends |= perfetto::kSystemBackend;
-    args.use_monotonic_clock = true;
-    perfetto::Tracing::Initialize(args);
-    perfetto::TrackEvent::Register();
-  });
-}
 
 const std::string TRACK_PREFIX = "Track:";
 const std::string DEFAULT_TRACK_NAME = "Web Performance";
@@ -70,28 +54,7 @@ std::tuple<perfetto::Track, std::string_view> parsePerfettoTrack(
   }
 
   auto& trackNameRef = trackName.has_value() ? *trackName : DEFAULT_TRACK_NAME;
-  static std::unordered_map<std::string, perfetto::Track> tracks;
-  auto it = tracks.find(trackNameRef);
-  if (it == tracks.end()) {
-    auto track = perfetto::Track(trackId++);
-    auto desc = track.Serialize();
-    desc.set_name(trackNameRef);
-    perfetto::TrackEvent::SetTrackDescriptor(track, desc);
-    tracks.emplace(trackNameRef, track);
-    return std::make_tuple(track, eventName);
-  } else {
-    return std::make_tuple(it->second, eventName);
-  }
-}
-
-// Perfetto's monotonic clock seems to match the std::chrono::steady_clock we
-// use in JSExecutor::performanceNow on Android platforms, but if that
-// assumption is incorrect we may need to manually offset perfetto timestamps.
-uint64_t performanceNowToPerfettoTraceTime(double perfNowTime) {
-  if (perfNowTime == 0) {
-    return perfetto::TrackEvent::GetTraceTimeNs();
-  }
-  return static_cast<uint64_t>(perfNowTime * 1.e6);
+  return std::make_tuple(getPerfettoWebPerfTrack(trackNameRef), eventName);
 }
 
 #endif
