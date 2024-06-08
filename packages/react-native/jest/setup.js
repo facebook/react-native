@@ -137,7 +137,9 @@ jest
   .mock('../Libraries/Components/AccessibilityInfo/AccessibilityInfo', () => ({
     __esModule: true,
     default: {
-      addEventListener: jest.fn(),
+      addEventListener: jest.fn(() => ({
+        remove: jest.fn(),
+      })),
       announceForAccessibility: jest.fn(),
       isAccessibilityServiceEnabled: jest.fn(),
       isBoldTextEnabled: jest.fn(),
@@ -200,7 +202,9 @@ jest
     openURL: jest.fn(),
     canOpenURL: jest.fn(() => Promise.resolve(true)),
     openSettings: jest.fn(),
-    addEventListener: jest.fn(),
+    addEventListener: jest.fn(() => ({
+      remove: jest.fn(),
+    })),
     getInitialURL: jest.fn(() => Promise.resolve()),
     sendIntent: jest.fn(),
   }))
