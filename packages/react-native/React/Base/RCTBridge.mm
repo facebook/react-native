@@ -14,6 +14,7 @@
 #import "RCTConvert.h"
 #if RCT_ENABLE_INSPECTOR
 #import "RCTInspectorDevServerHelper.h"
+#import "RCTInspectorNetworkHelper.h"
 #endif
 #import <jsinspector-modern/InspectorFlags.h>
 #import <jsinspector-modern/InspectorInterfaces.h>
@@ -193,7 +194,9 @@ void RCTUIManagerSetDispatchAccessibilityManagerInitOntoMain(BOOL enabled)
 class RCTBridgeHostTargetDelegate : public facebook::react::jsinspector_modern::HostTargetDelegate {
  public:
   RCTBridgeHostTargetDelegate(RCTBridge *bridge)
-      : bridge_(bridge), pauseOverlayController_([[RCTPausedInDebuggerOverlayController alloc] init])
+      : bridge_(bridge),
+        pauseOverlayController_([[RCTPausedInDebuggerOverlayController alloc] init]),
+        networkHelper_([[RCTInspectorNetworkHelper alloc] init])
   {
   }
 
@@ -226,9 +229,15 @@ class RCTBridgeHostTargetDelegate : public facebook::react::jsinspector_modern::
     }
   }
 
+  void networkRequest(const std::string &url, RCTInspectorNetworkListener listener) override
+  {
+    [networkHelper_ networkRequestWithUrl:url listener:listener];
+  }
+
  private:
   __weak RCTBridge *bridge_;
   RCTPausedInDebuggerOverlayController *pauseOverlayController_;
+  RCTInspectorNetworkHelper *networkHelper_;
 };
 
 @interface RCTBridge () <RCTReloadListener>
