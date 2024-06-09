@@ -32,6 +32,7 @@ HostAgent::HostAgent(
     : frontendChannel_(frontendChannel),
       targetController_(targetController),
       sessionMetadata_(std::move(sessionMetadata)),
+      networkIO_(targetController.createNetworkHandler()),
       sessionState_(sessionState) {}
 
 void HostAgent::handleRequest(const cdp::PreparsedRequest& req) {
@@ -151,6 +152,15 @@ void HostAgent::handleRequest(const cdp::PreparsedRequest& req) {
         folly::dynamic::object("dataLossOccurred", false)));
     shouldSendOKResponse = true;
     isFinishedHandlingRequest = true;
+  } else if (req.method == "Network.loadNetworkResource") {
+    handleLoadNetworkResource(req);
+    return;
+  } else if (req.method == "IO.read") {
+    handleIoRead(req);
+    return;
+  } else if (req.method == "IO.close") {
+    handleIoClose(req);
+    return;
   }
 
   if (!isFinishedHandlingRequest && instanceAgent_ &&
@@ -163,10 +173,131 @@ void HostAgent::handleRequest(const cdp::PreparsedRequest& req) {
     return;
   }
 
-  frontendChannel_(cdp::jsonError(
-      req.id,
-      cdp::ErrorCode::MethodNotFound,
-      req.method + " not implemented yet"));
+  throw NotImplementedException(req.method);
+}
+
+void HostAgent::handleLoadNetworkResource(const cdp::PreparsedRequest& req) {
+  long long requestId = req.id;
+  auto res = folly::dynamic::object("id", requestId);
+  if (!req.params.isObject()) {
+    frontendChannel_(cdp::jsonError(
+        req.id,
+        cdp::ErrorCode::InvalidParams,
+        "Invalid params: not an object."));
+    return;
+  }
+  if ((req.params.count("url") == 0u) || !req.params.at("url").isString()) {
+    frontendChannel_(cdp::jsonError(
+        requestId,
+        cdp::ErrorCode::InvalidParams,
+        "Invalid params: url is missing or not a string."));
+    return;
+  }
+
+  networkIO_->loadNetworkResource(
+      {.url = req.params.at("url").asString()},
+      targetController_.getDelegate(),
+      // This callback is always called, with resource.success=false on failure.
+      [requestId,
+       frontendChannel = frontendChannel_](NetworkResource resource) {
+        auto dynamicResource =
+            folly::dynamic::object("success", resource.success);
+
+        if (resource.stream) {
+          dynamicResource("stream", *resource.stream);
+        }
+
+        if (resource.netErrorName) {
+          dynamicResource("netErrorName", *resource.netErrorName);
+        }
+
+        if (resource.httpStatusCode) {
+          dynamicResource("httpStatusCode", *resource.httpStatusCode);
+        }
+
+        if (resource.headers) {
+          auto dynamicHeaders = folly::dynamic::object();
+          for (const auto& pair : *resource.headers) {
+            dynamicHeaders(pair.first, pair.second);
+          }
+          dynamicResource("headers", std::move(dynamicHeaders));
+        }
+
+        frontendChannel(cdp::jsonResult(
+            requestId,
+            folly::dynamic::object("resource", std::move(dynamicResource))));
+      });
+}
+
+void HostAgent::handleIoRead(const cdp::PreparsedRequest& req) {
+  long long requestId = req.id;
+  if (!req.params.isObject()) {
+    frontendChannel_(cdp::jsonError(
+        requestId,
+        cdp::ErrorCode::InvalidParams,
+        "Invalid params: not an object."));
+    return;
+  }
+  if ((req.params.count("handle") == 0u) ||
+      !req.params.at("handle").isString()) {
+    frontendChannel_(cdp::jsonError(
+        requestId,
+        cdp::ErrorCode::InvalidParams,
+        "Invalid params: handle is missing or not a string."));
+    return;
+  }
+  std::optional<unsigned long> size = std::nullopt;
+  if ((req.params.count("size") != 0u) && req.params.at("size").isInt()) {
+    size = req.params.at("size").asInt();
+  }
+  networkIO_->readStream(
+      {.handle = req.params.at("handle").asString(), .size = size},
+      [requestId, frontendChannel = frontendChannel_](
+          std::variant<IOReadError, IOReadResult> resultOrError) {
+        if (std::holds_alternative<IOReadError>(resultOrError)) {
+          frontendChannel(cdp::jsonError(
+              requestId,
+              cdp::ErrorCode::InternalError,
+              std::get<IOReadError>(resultOrError)));
+        } else {
+          const auto& result = std::get<IOReadResult>(resultOrError);
+          auto stringResult = cdp::jsonResult(
+              requestId,
+              folly::dynamic::object("data", result.data)("eof", result.eof)(
+                  "base64Encoded", result.base64Encoded));
+          frontendChannel(stringResult);
+        }
+      });
+}
+
+void HostAgent::handleIoClose(const cdp::PreparsedRequest& req) {
+  long long requestId = req.id;
+  if (!req.params.isObject()) {
+    frontendChannel_(cdp::jsonError(
+        requestId,
+        cdp::ErrorCode::InvalidParams,
+        "Invalid params: not an object."));
+    return;
+  }
+  if ((req.params.count("handle") == 0u) ||
+      !req.params.at("handle").isString()) {
+    frontendChannel_(cdp::jsonError(
+        requestId,
+        cdp::ErrorCode::InvalidParams,
+        "Invalid params: handle is missing or not a string."));
+    return;
+  }
+  networkIO_->closeStream(
+      req.params.at("handle").asString(),
+      [requestId, frontendChannel = frontendChannel_](
+          std::optional<std::string> maybeError) {
+        if (maybeError) {
+          frontendChannel(cdp::jsonError(
+              requestId, cdp::ErrorCode::InternalError, *maybeError));
+        } else {
+          frontendChannel(cdp::jsonResult(requestId));
+        }
+      });
 }
 
 HostAgent::~HostAgent() {

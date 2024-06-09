@@ -11,6 +11,7 @@
 #include "HostCommand.h"
 #include "InspectorInterfaces.h"
 #include "InstanceTarget.h"
+#include "NetworkIO.h"
 #include "ScopedExecutor.h"
 #include "WeakList.h"
 
@@ -41,13 +42,13 @@ class HostTarget;
  * React Native platform needs to implement in order to integrate with the
  * debugging stack.
  */
-class HostTargetDelegate {
+class HostTargetDelegate : public NetworkRequestDelegate {
  public:
   HostTargetDelegate() = default;
   HostTargetDelegate(const HostTargetDelegate&) = delete;
-  HostTargetDelegate(HostTargetDelegate&&) = default;
+  HostTargetDelegate(HostTargetDelegate&&) = delete;
   HostTargetDelegate& operator=(const HostTargetDelegate&) = delete;
-  HostTargetDelegate& operator=(HostTargetDelegate&&) = default;
+  HostTargetDelegate& operator=(HostTargetDelegate&&) = delete;
 
   // TODO(moti): This is 1:1 the shape of the corresponding CDP message -
   // consider reusing typed/generated CDP interfaces when we have those.
@@ -104,6 +105,19 @@ class HostTargetDelegate {
    */
   virtual void onSetPausedInDebuggerMessage(
       const OverlaySetPausedInDebuggerMessageRequest& request) = 0;
+
+  /**
+   * Called by NetworkIO on handling a `Network.loadNetworkResource` CDP
+   * request. Platform implementations should override this to perform a
+   * network request of the given URL, and use listener's callbacks on receipt
+   * of headers, data chunks, and errors.
+   */
+  void networkRequest(
+      const std::string& /*url*/,
+      std::shared_ptr<NetworkRequestListener> /*listener*/) override {
+    throw NotImplementedException(
+        "NetworkRequestDelegate.networkRequest is not implemented by this host target delegate.");
+  }
 };
 
 /**
@@ -115,6 +129,13 @@ class HostTargetController final {
   explicit HostTargetController(HostTarget& target);
 
   HostTargetDelegate& getDelegate();
+
+  /**
+   * Instantiate a new NetworkIO with a scoped executor derived from the
+   * HostTarget's executor. Neither HostTarget nor HostTargetController
+   * retain a reference to the shared_ptr.
+   */
+  std::shared_ptr<NetworkIO> createNetworkHandler();
 
   bool hasInstance() const;
 
@@ -212,6 +233,12 @@ class JSINSPECTOR_EXPORT HostTarget
    * thread.
    */
   void sendCommand(HostCommand command);
+
+  /**
+   * Instantiate a new NetworkIO with a scoped executor derived from the
+   * HostTarget's executor. HostTarget does not retain a reference.
+   */
+  std::shared_ptr<NetworkIO> createNetworkHandler();
 
  private:
   /**

@@ -35,7 +35,7 @@ class IDestructible {
 
 struct InspectorTargetCapabilities {
   bool nativePageReloads = false;
-  bool nativeSourceCodeFetching = false;
+  bool nativeSourceCodeFetching = true;
   bool prefersFuseboxFrontend = false;
 };
 
@@ -128,6 +128,19 @@ class JSINSPECTOR_EXPORT IInspector : public IDestructible {
    */
   virtual void registerPageStatusListener(
       std::weak_ptr<IPageStatusListener> listener) = 0;
+};
+
+class NotImplementedException : public std::exception {
+ public:
+  explicit NotImplementedException(std::string message)
+      : msg_(std::move(message)) {}
+
+  const char* what() const noexcept override {
+    return msg_.c_str();
+  }
+
+ private:
+  std::string msg_;
 };
 
 /// getInspectorInstance retrieves the singleton inspector that tracks all

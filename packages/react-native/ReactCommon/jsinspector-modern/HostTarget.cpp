@@ -62,13 +62,20 @@ class HostTargetSession {
       return;
     }
 
-    // Catch exceptions that may arise from accessing dynamic params during
-    // request handling.
     try {
       hostAgent_.handleRequest(request);
-    } catch (const cdp::TypeError& e) {
+    }
+    // Catch exceptions that may arise from accessing dynamic params during
+    // request handling.
+    catch (const cdp::TypeError& e) {
       frontendChannel_(
           cdp::jsonError(request.id, cdp::ErrorCode::InvalidRequest, e.what()));
+      return;
+    }
+    // Catch exceptions for unrecognised or partially implemented CDP methods.
+    catch (const NotImplementedException& e) {
+      frontendChannel_(
+          cdp::jsonError(request.id, cdp::ErrorCode::MethodNotFound, e.what()));
       return;
     }
   }
@@ -198,12 +205,22 @@ void HostTarget::sendCommand(HostCommand command) {
   });
 }
 
+std::shared_ptr<NetworkIO> HostTarget::createNetworkHandler() {
+  auto networkIO = std::make_shared<NetworkIO>();
+  networkIO->setExecutor(executorFromThis());
+  return networkIO;
+}
+
 HostTargetController::HostTargetController(HostTarget& target)
     : target_(target) {}
 
 HostTargetDelegate& HostTargetController::getDelegate() {
   return target_.getDelegate();
 }
+
+std::shared_ptr<NetworkIO> HostTargetController::createNetworkHandler() {
+  return target_.createNetworkHandler();
+};
 
 bool HostTargetController::hasInstance() const {
   return target_.hasInstance();
