@@ -290,9 +290,7 @@ jest
       scheduleLocalNotification: jest.fn(),
       cancelAllLocalNotifications: jest.fn(),
       removeAllDeliveredNotifications: jest.fn(),
-      getDeliveredNotifications: jest.fn(callback =>
-        process.nextTick(() => []),
-      ),
+      getDeliveredNotifications: jest.fn(() => process.nextTick(() => [])),
       removeDeliveredNotifications: jest.fn(),
       setApplicationIconBadgeNumber: jest.fn(),
       getApplicationIconBadgeNumber: jest.fn(callback =>
