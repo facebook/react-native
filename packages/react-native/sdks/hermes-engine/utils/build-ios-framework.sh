@@ -26,9 +26,9 @@ function get_architecture {
 
 function get_deployment_target {
     if [[ $1 == "xros" || $1 == "xrsimulator" ]]; then
-      "$(get_visionos_deployment_target)"
+      echo "$(get_visionos_deployment_target)"
     else
-      "$(get_ios_deployment_target)"
+      echo "$(get_ios_deployment_target)"
     fi
 }
 
