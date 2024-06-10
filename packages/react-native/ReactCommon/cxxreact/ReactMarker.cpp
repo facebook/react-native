@@ -11,6 +11,29 @@
 namespace facebook::react {
 namespace ReactMarker {
 
+std::string CustomToString(ReactMarkerId id) {
+  switch (id) {
+    case APP_STARTUP_START: return "APP_STARTUP_START";
+    case APP_STARTUP_STOP: return "APP_STARTUP_STOP";
+    case INIT_REACT_RUNTIME_START: return "INIT_REACT_RUNTIME_START";
+    case INIT_REACT_RUNTIME_STOP: return "INIT_REACT_RUNTIME_STOP";
+    case NATIVE_REQUIRE_START: return "NATIVE_REQUIRE_START";
+    case NATIVE_REQUIRE_STOP: return "NATIVE_REQUIRE_STOP";
+    case RUN_JS_BUNDLE_START: return "RUN_JS_BUNDLE_START";
+    case RUN_JS_BUNDLE_STOP: return "RUN_JS_BUNDLE_STOP";
+    case CREATE_REACT_CONTEXT_STOP: return "CREATE_REACT_CONTEXT_STOP";
+    case JS_BUNDLE_STRING_CONVERT_START: return "JS_BUNDLE_STRING_CONVERT_START";
+    case JS_BUNDLE_STRING_CONVERT_STOP: return "JS_BUNDLE_STRING_CONVERT_STOP";
+    case NATIVE_MODULE_SETUP_START: return "NATIVE_MODULE_SETUP_START";
+    case NATIVE_MODULE_SETUP_STOP: return "NATIVE_MODULE_SETUP_STOP";
+    case REGISTER_JS_SEGMENT_START: return "REGISTER_JS_SEGMENT_START";
+    case REGISTER_JS_SEGMENT_STOP: return "REGISTER_JS_SEGMENT_STOP";
+    case REACT_INSTANCE_INIT_START: return "REACT_INSTANCE_INIT_START";
+    case REACT_INSTANCE_INIT_STOP: return "REACT_INSTANCE_INIT_STOP";
+    default: return "Unknown ReactMarkerId";
+  }
+}
+
 #if __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wglobal-constructors"

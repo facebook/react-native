@@ -22,6 +22,8 @@
 #import <RNTMyNativeViewComponentView.h>
 #endif
 
+#import <Sentry/Sentry.h>
+
 static NSString *kBundlePath = @"js/RNTesterApp.ios";
 
 @interface AppDelegate () <UNUserNotificationCenterDelegate>
@@ -31,6 +33,28 @@ static NSString *kBundlePath = @"js/RNTesterApp.ios";
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+  [SentrySDK startWithConfigureOptions:^(SentryOptions *options) {
+      options.dsn = @"https://examplePublicKey@o0.ingest.sentry.io/0";
+      options.debug = YES; // Enabled debug when first installing is always helpful
+      // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
+      // We recommend adjusting this value in production.
+      options.tracesSampleRate = @1.0;
+      options.enableSpotlight = YES;
+    options.enablePreWarmedAppStartTracing = YES;
+    options.enableUIViewControllerTracing = YES;
+    options.enableNetworkTracking = NO;
+    options.enableFileIOTracing = NO;
+    options.enableAutoPerformanceTracing = YES;
+
+  }];
+  id<SentrySpan> test = [SentrySDK startTransactionWithName:@"Application start" operation:@"React Native start" bindToScope:YES];
+  double delayInSeconds = 0.5;
+  dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+  dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+      // Code to be executed after the delay
+      NSLog(@"This is executed after a delay of 2 seconds.");
+      [test finish];
+  });
   self.moduleName = @"RNTesterApp";
   // You can add your custom initial props in the dictionary below.
   // They will be passed down to the ViewController used by React Native.

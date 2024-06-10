@@ -60,6 +60,7 @@ def pods(target_name, options = {})
   pod 'ScreenshotManager', :path => "NativeModuleExample"
   pod 'MyNativeView', :path => "NativeComponentExample"
   pod 'NativeCxxModuleExample', :path => "NativeCxxModuleExample"
+  pod 'Sentry', '8.28.0'
 end
 
 target 'RNTester' do

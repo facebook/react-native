@@ -69,6 +69,11 @@ void registerPerformanceLoggerHooks(RCTPerformanceLogger *performanceLogger)
   __weak RCTPerformanceLogger *weakPerformanceLogger = performanceLogger;
   ReactMarker::logTaggedMarkerBridgelessImpl = [weakPerformanceLogger](
                                                    const ReactMarker::ReactMarkerId markerId, const char *tag) {
+                                                       NSLog(@"markerId");
+                                                       NSLog(@"%@", [NSString stringWithCString:CustomToString(markerId).c_str()
+                                                                                encoding:[NSString defaultCStringEncoding]]);
+                                                       NSLog(@"tag");
+                                                       NSLog(@"%@", [NSString stringWithCString:tag encoding:[NSString defaultCStringEncoding]]);
     mapReactMarkerToPerformanceLogger(markerId, weakPerformanceLogger);
   };
 }

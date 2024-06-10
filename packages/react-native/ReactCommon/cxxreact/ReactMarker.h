@@ -36,6 +36,8 @@ enum ReactMarkerId {
   REACT_INSTANCE_INIT_STOP
 };
 
+std::string CustomToString(ReactMarkerId id);
+
 #ifdef __APPLE__
 using LogTaggedMarker =
     std::function<void(const ReactMarkerId, const char* tag)>; // Bridge only

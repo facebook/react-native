@@ -62,6 +62,8 @@
 #import <React/RCTDevLoadingViewProtocol.h>
 #endif
 
+#import <Sentry/Sentry.h>
+
 static NSString *const RCTJSThreadName = @"com.facebook.react.JavaScript";
 
 typedef void (^RCTPendingCall)();
@@ -158,11 +160,45 @@ static void mapReactMarkerToPerformanceLogger(
   }
 }
 
+static NSMutableDictionary* spanMap = [[NSMutableDictionary alloc] init];
+
 static void registerPerformanceLoggerHooks(RCTPerformanceLogger *performanceLogger)
 {
   __weak RCTPerformanceLogger *weakPerformanceLogger = performanceLogger;
   ReactMarker::logTaggedMarkerImpl = [weakPerformanceLogger](
                                          const ReactMarker::ReactMarkerId markerId, const char *tag) {
+     NSString* marker = [NSString stringWithCString:CustomToString(markerId).c_str()
+                                           encoding:[NSString defaultCStringEncoding]];
+     NSString* tagS = tag != nil
+       ? [NSString stringWithCString:tag encoding:[NSString defaultCStringEncoding]]
+       : @"nil";
+     NSLog(@"markerId %@ tag %@", marker, tagS);
+     id<SentrySpan> span = SentrySDK.span;
+     if ([marker isEqualToString:@"NATIVE_MODULE_SETUP_START"]) {
+         [spanMap setObject:[NSDate now] forKey:tagS];
+     } else if ([marker isEqualToString:@"NATIVE_MODULE_SETUP_STOP"]) {
+         NSDate* date = [spanMap objectForKey:tagS];
+         if (date) {
+             id<SentrySpan> validationSpan = [span startChildWithOperation:tagS
+                                                                description:@"Loading the native module"];
+             [validationSpan setStartTimestamp:date];
+             [validationSpan finish];
+             [spanMap removeObjectForKey:tagS];
+         }
+     }
+
+     if ([marker isEqualToString:@"RUN_JS_BUNDLE_START"]) {
+         [spanMap setObject:[NSDate now] forKey:@"RUN_JS_BUNDLE_START"];
+     } else if ([marker isEqualToString:@"RUN_JS_BUNDLE_STOP"]) {
+         NSDate* date = [spanMap objectForKey:@"RUN_JS_BUNDLE_START"];
+         if (date) {
+             id<SentrySpan> validationSpan = [span startChildWithOperation:@"Evaluate JS Bundle"
+                                                                description:@"main.jsbundle"];
+             [validationSpan setStartTimestamp:date];
+             [validationSpan finish];
+             [spanMap removeObjectForKey:tagS];
+         }
+     }
     mapReactMarkerToPerformanceLogger(markerId, weakPerformanceLogger, tag);
   };
 }

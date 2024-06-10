@@ -1269,6 +1269,9 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
+  - Sentry (8.28.0):
+    - Sentry/Core (= 8.28.0)
+  - Sentry/Core (8.28.0)
   - SocketRocket (0.7.0)
   - Yoga (0.0.0)
 
@@ -1335,11 +1338,13 @@ DEPENDENCIES:
   - ReactCommon-Samples (from `../react-native/ReactCommon/react/nativemodule/samples`)
   - ReactCommon/turbomodule/core (from `../react-native/ReactCommon`)
   - ScreenshotManager (from `NativeModuleExample`)
+  - Sentry (= 8.28.0)
   - Yoga (from `../react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
   trunk:
     - OCMock
+    - Sentry
     - SocketRocket
 
 EXTERNAL SOURCES:
@@ -1470,7 +1475,7 @@ SPEC CHECKSUMS:
   DoubleConversion: 76ab83afb40bddeeee456813d9c04f67f78771b5
   FBLazyVector: 4bc164e5b5e6cfc288d2b5ff28643ea15fa1a589
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
-  glog: fdfdfe5479092de0c4bdbebedd9056951f092c4f
+  glog: c5d68082e772fa1c511173d6b30a9de2c05a69a2
   hermes-engine: 01d3e052018c2a13937aca1860fbedbccd4a41b7
   MyNativeView: a13eaef18acc153aecddff297bd2b0d3c616798f
   NativeCxxModuleExample: de8e0c86469c4aee4528c8a1a30454d5b7a2caf0
@@ -1526,9 +1531,10 @@ SPEC CHECKSUMS:
   ReactCommon: ecad995f26e0d1e24061f60f4e5d74782f003f12
   ReactCommon-Samples: f00190ee5cf6d6b81fa0482c7100daa5434bc7d2
   ScreenshotManager: f91b842c0f6106e39b7ad5a6ffc092ece82ee778
+  Sentry: 1482a20b132098929714143f436a4fe574ad0517
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
   Yoga: ae3c32c514802d30f687a04a6a35b348506d411f
 
-PODFILE CHECKSUM: 60b84dd598fc04e9ed84dbc82e2cb3b99b1d7adf
+PODFILE CHECKSUM: bf7c4a43ccf92c02e3bf10cebe2072f6b76613b8
 
 COCOAPODS: 1.14.3
