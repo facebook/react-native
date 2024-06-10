@@ -29,10 +29,20 @@ class ScrollViewMaintainVisibleContentPosition final {
  public:
   int minIndexForVisible{0};
   std::optional<int> autoscrollToTopThreshold{};
+  int viewOffset{0};
+  float viewPosition{0};
 
   bool operator==(const ScrollViewMaintainVisibleContentPosition& rhs) const {
-    return std::tie(this->minIndexForVisible, this->autoscrollToTopThreshold) ==
-        std::tie(rhs.minIndexForVisible, rhs.autoscrollToTopThreshold);
+    return std::tie(
+               this->minIndexForVisible,
+               this->autoscrollToTopThreshold,
+               this->viewOffset,
+               this->viewPosition) ==
+        std::tie(
+               rhs.minIndexForVisible,
+               rhs.autoscrollToTopThreshold,
+               rhs.viewOffset,
+               rhs.viewPosition);
   }
 
   bool operator!=(const ScrollViewMaintainVisibleContentPosition& rhs) const {

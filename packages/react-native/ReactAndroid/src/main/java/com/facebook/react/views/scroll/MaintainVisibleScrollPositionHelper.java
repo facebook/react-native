@@ -46,10 +46,14 @@ class MaintainVisibleScrollPositionHelper<ScrollViewT extends ViewGroup & HasSmo
 
     public final int minIndexForVisible;
     public final @Nullable Integer autoScrollToTopThreshold;
+    public final int viewOffset;
+    public final int viewPosition;
 
-    Config(int minIndexForVisible, @Nullable Integer autoScrollToTopThreshold) {
+    Config(int minIndexForVisible, @Nullable Integer autoScrollToTopThreshold, int viewOffset, int viewPosition) {
       this.minIndexForVisible = minIndexForVisible;
       this.autoScrollToTopThreshold = autoScrollToTopThreshold;
+      this.viewOffset = viewOffset;
+      this.viewPosition = viewPosition;
     }
 
     static Config fromReadableMap(ReadableMap value) {
@@ -58,7 +62,15 @@ class MaintainVisibleScrollPositionHelper<ScrollViewT extends ViewGroup & HasSmo
           value.hasKey("autoscrollToTopThreshold")
               ? value.getInt("autoscrollToTopThreshold")
               : null;
-      return new Config(minIndexForVisible, autoScrollToTopThreshold);
+      int viewOffset = 
+          value.hasKey("viewOffset")
+              ? value.getInt("viewOffset")
+              : 0;
+      int viewPosition = 
+          value.hasKey("viewPosition")
+              ? value.getInt("viewPosition")
+              : 0;
+      return new Config(minIndexForVisible, autoScrollToTopThreshold, viewOffset, viewPosition);
     }
   }
 
@@ -122,7 +134,8 @@ class MaintainVisibleScrollPositionHelper<ScrollViewT extends ViewGroup & HasSmo
         mPrevFirstVisibleFrame = newFrame;
         if (mConfig.autoScrollToTopThreshold != null
             && scrollX <= mConfig.autoScrollToTopThreshold) {
-          mScrollView.reactSmoothScrollTo(0, mScrollView.getScrollY());
+          int offset = Math.max(0, deltaX - mScrollView.getWidth()) * mConfig.viewPosition - mConfig.viewOffset;
+          mScrollView.reactSmoothScrollTo(offset, mScrollView.getScrollY());
         }
       }
     } else {
@@ -133,7 +146,8 @@ class MaintainVisibleScrollPositionHelper<ScrollViewT extends ViewGroup & HasSmo
         mPrevFirstVisibleFrame = newFrame;
         if (mConfig.autoScrollToTopThreshold != null
             && scrollY <= mConfig.autoScrollToTopThreshold) {
-          mScrollView.reactSmoothScrollTo(mScrollView.getScrollX(), 0);
+          int offset = Math.max(0, deltaY - mScrollView.getHeight()) * mConfig.viewPosition - mConfig.viewOffset;
+          mScrollView.reactSmoothScrollTo(mScrollView.getScrollX(), offset);
         }
       }
     }

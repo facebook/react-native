@@ -457,6 +457,8 @@ export interface ScrollViewPropsIOS {
     | {
         autoscrollToTopThreshold?: number | null | undefined;
         minIndexForVisible: number;
+        viewOffset?: number | null | undefined;
+        viewPosition?: number | null | undefined;
       }
     | undefined;
   /**
