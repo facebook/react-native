@@ -762,7 +762,7 @@ jobs:
         default: "iphoneos"
         description: The Hermes Slice that this job has to build
         type: enum
-        enum: ["macosx", "iphoneos", "iphonesimulator", "catalyst"]
+        enum: ["macosx", "iphoneos", "iphonesimulator", "catalyst", "xros", "xrsimulator"]
     executor: reactnativeios
     environment:
       - HERMES_WS_DIR: *hermes_workspace_root
@@ -867,6 +867,10 @@ jobs:
           key: << parameters.slice_base_cache_key >>-iphonesimulator-<< parameters.flavor >>
       - restore_cache:
           key: << parameters.slice_base_cache_key >>-catalyst-<< parameters.flavor >>
+      - restore_cache:
+          key: << parameters.slice_base_cache_key >>-xros-<< parameters.flavor >>
+      - restore_cache:
+          key: << parameters.slice_base_cache_key >>-xrsimulator-<< parameters.flavor >>
       - run:
           name: "Move back build folders"
           command: |
@@ -875,6 +879,8 @@ jobs:
             mv build_iphoneos_<< parameters.flavor >> build_iphoneos
             mv build_iphonesimulator_<< parameters.flavor >> build_iphonesimulator
             mv build_catalyst_<< parameters.flavor >> build_catalyst
+            mv build_xros_<< parameters.flavor >> build_xros
+            mv build_xrsimulator_<< parameters.flavor >> build_xrsimulator
       - run:
           name: "Prepare destroot folder"
           command: |
@@ -925,6 +931,8 @@ jobs:
             mkdir -p "$WORKING_DIR/catalyst"
             mkdir -p "$WORKING_DIR/iphoneos"
             mkdir -p "$WORKING_DIR/iphonesimulator"
+            mkdir -p "$WORKING_DIR/xros"
+            mkdir -p "$WORKING_DIR/xrsimulator"
 
             cd ./packages/react-native/sdks/hermes || exit 1
 
@@ -933,6 +941,8 @@ jobs:
             cp -r build_catalyst/$DSYM_FILE_PATH "$WORKING_DIR/catalyst/"
             cp -r build_iphoneos/$DSYM_FILE_PATH "$WORKING_DIR/iphoneos/"
             cp -r build_iphonesimulator/$DSYM_FILE_PATH "$WORKING_DIR/iphonesimulator/"
+            cp -r build_xrsimulator/$DSYM_FILE_PATH "$WORKING_DIR/xrsimulator/"
+            cp -r build_xros/$DSYM_FILE_PATH "$WORKING_DIR/xros/"
 
             DEST_DIR="/tmp/hermes/dSYM/$FLAVOR"
             tar -C "$WORKING_DIR" -czvf "hermes.framework.dSYM" .

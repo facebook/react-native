@@ -10,24 +10,30 @@ release_version="$1"; shift
 hermesc_path="$1"; shift
 jsi_path="$1"; shift
 
-# Based on platform name returns the framework copy destination. Used later by `vendored_frameworks` in Podspec. 
+# Based on platform name returns the framework copy destination. Used later by `vendored_frameworks` in Podspec.
 # Fallbacks to "ios" if platform is not recognized.
 function get_platform_copy_destination {
     if [[ $1 == "macosx" ]]; then
       echo "macosx"
       return
+    elif [[ $1 == "xros" || $1 == "xrsimulator" ]]; then
+      echo "xros"
+      return
     fi
-    
+
     echo "ios"
 }
 
 function get_deployment_target {
     if [[ $1 == "macosx" ]]; then
-      echo ${MACOSX_DEPLOYMENT_TARGET}
+      echo "${MACOSX_DEPLOYMENT_TARGET}"
+      return
+    elif [[ $1 == "xrsimulator" || $1 == "xros" ]]; then
+      echo "${XROS_DEPLOYMENT_TARGET}"
       return
     fi
-    
-    echo ${IPHONEOS_DEPLOYMENT_TARGET}
+
+    echo "${IPHONEOS_DEPLOYMENT_TARGET}"
 }
 
 enable_debugger="false"
