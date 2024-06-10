@@ -1,4 +1,4 @@
-name: Mark stale issues and pull requests
+name: Stale bot
 on:
   schedule:
     - cron: "*/10 5 * * *"
