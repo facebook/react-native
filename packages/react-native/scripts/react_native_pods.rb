@@ -17,8 +17,6 @@ require_relative './cocoapods/new_architecture.rb'
 require_relative './cocoapods/local_podspec_patch.rb'
 require_relative './cocoapods/helpers.rb'
 require_relative './cocoapods/privacy_manifest_utils.rb'
-# Importing to expose use_native_modules!
-require_relative './cocoapods/autolinking.rb'
 
 $CODEGEN_OUTPUT_DIR = 'build/generated/ios'
 $CODEGEN_COMPONENT_DIR = 'react/renderer/components'
