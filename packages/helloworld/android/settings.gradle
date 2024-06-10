@@ -6,10 +6,9 @@
  */
 
 // Autolinking has now moved into the React Native Gradle Plugin
-import com.facebook.react.ReactSettingsExtension
 pluginManagement { includeBuild("../node_modules/@react-native/gradle-plugin") }
 plugins { id("com.facebook.react.settings") }
-extensions.configure(ReactSettingsExtension){ ex -> ex.autolinkLibrariesFromCommand() }
+extensions.configure(com.facebook.react.ReactSettingsExtension){ ex -> ex.autolinkLibrariesFromCommand() }
 
 rootProject.name = 'HelloWorld'
 include ':app'
