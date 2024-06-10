@@ -10,6 +10,7 @@ on:
 jobs:
   set_release_type:
     runs-on: ubuntu-latest
+    if: github.repository == 'facebook/react-native'
     outputs:
       RELEASE_TYPE: ${{ steps.set_release_type.outputs.RELEASE_TYPE }}
     env:
