@@ -151,6 +151,11 @@ public abstract class ReactContext extends ContextWrapper {
   public abstract <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface);
 
   /**
+   * @return the instance of the specified module interface associated with this ReactContext.
+   */
+  public abstract @Nullable NativeModule getNativeModule(String moduleName);
+
+  /**
    * Calls RCTDeviceEventEmitter.emit to JavaScript, with given event name and an optional list of
    * arguments.
    */

@@ -130,6 +130,14 @@ public class BridgeReactContext extends ReactApplicationContext {
   }
 
   @Override
+  public @Nullable NativeModule getNativeModule(String moduleName) {
+    if (mCatalystInstance == null) {
+      raiseCatalystInstanceMissingException();
+    }
+    return mCatalystInstance.getNativeModule(moduleName);
+  }
+
+  @Override
   public CatalystInstance getCatalystInstance() {
     return Assertions.assertNotNull(mCatalystInstance);
   }
