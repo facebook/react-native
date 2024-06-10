@@ -700,4 +700,283 @@ TEST_F(HostTargetTest, HostCommands) {
   page_->unregisterInstance(instanceTarget);
 }
 
+TEST_F(HostTargetTest, NetworkLoadNetworkResourceSuccess) {
+  auto& instanceTarget = page_->registerInstance(instanceTargetDelegate_);
+
+  connect();
+
+  InSequence s;
+
+  std::shared_ptr<NetworkRequestListener> listener;
+  EXPECT_CALL(hostTargetDelegate_, networkRequest(Eq("http://example.com"), _))
+      .Times(1)
+      .WillOnce([&listener](
+                    const std::string& /*url*/,
+                    std::shared_ptr<NetworkRequestListener> listenerArg) {
+        // Capture the NetworkRequestLister to use later.
+        listener = listenerArg;
+      })
+      .RetiresOnSaturation();
+
+  // Load the resource, expect a CDP response as soon as headers are received.
+  toPage_->sendMessage(R"({
+                           "id": 1,
+                           "method": "Network.loadNetworkResource",
+                           "params": {
+                             "url": "http://example.com"
+                            }
+                         })");
+
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+                                            "id": 1,
+                                            "result": {
+                                              "resource": {
+                                                "success": true,
+                                                "stream": "0",
+                                                "httpStatusCode": 200,
+                                                "headers": {
+                                                  "x-test": "foo"
+                                                }
+                                              }
+                                            }
+                                          })")));
+
+  listener->onHeaders(200, Headers{{"x-test", "foo"}});
+
+  // Retrieve the first chunk of data.
+  toPage_->sendMessage(R"({
+                          "id": 2,
+                          "method": "IO.read",
+                          "params": {
+                            "handle": "0",
+                            "size": 8
+                          }
+                        })");
+
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+                                            "id": 2,
+                                            "result": {
+                                              "data": "SGVsbG8sIFc=",
+                                              "eof": false,
+                                              "base64Encoded": true
+                                            }
+                                          })")));
+  listener->onData("Hello, World!");
+
+  // Retrieve the remaining data.
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+                                            "id": 3,
+                                            "result": {
+                                              "data": "b3JsZCE=",
+                                              "eof": false,
+                                              "base64Encoded": true
+                                            }
+                                          })")));
+  toPage_->sendMessage(R"({
+                          "id": 3,
+                          "method": "IO.read",
+                          "params": {
+                            "handle": "0",
+                            "size": 8
+                          }
+                        })");
+
+  // No more data - expect empty payload with eof: true.
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+                                            "id": 4,
+                                            "result": {
+                                              "data": "",
+                                              "eof": true,
+                                              "base64Encoded": true
+                                            }
+                                          })")));
+  toPage_->sendMessage(R"({
+                          "id": 4,
+                          "method": "IO.read",
+                          "params": {
+                            "handle": "0",
+                            "size": 8
+                          }
+                        })");
+  listener->onEnd();
+
+  // Close the stream.
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+                                            "id": 5,
+                                            "result": {}
+                                          })")));
+  toPage_->sendMessage(R"({
+                          "id": 5,
+                          "method": "IO.close",
+                          "params": {
+                            "handle": "0"
+                          }
+                        })");
+
+  page_->unregisterInstance(instanceTarget);
+}
+
+TEST_F(HostTargetTest, NetworkLoadNetworkResourceStreamInterrupted) {
+  auto& instanceTarget = page_->registerInstance(instanceTargetDelegate_);
+
+  connect();
+
+  InSequence s;
+
+  std::shared_ptr<NetworkRequestListener> listener;
+  EXPECT_CALL(hostTargetDelegate_, networkRequest(Eq("http://example.com"), _))
+      .Times(1)
+      .WillOnce([&listener](
+                    const std::string& /*url*/,
+                    std::shared_ptr<NetworkRequestListener> listenerArg) {
+        listener = listenerArg;
+      })
+      .RetiresOnSaturation();
+
+  // Load the resource, receiving headers succesfully.
+  toPage_->sendMessage(R"({
+                           "id": 1,
+                           "method": "Network.loadNetworkResource",
+                           "params": {
+                             "url": "http://example.com"
+                            }
+                         })");
+
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+    "id": 1,
+    "result": {
+      "resource": {
+        "success": true,
+        "stream": "0",
+        "httpStatusCode": 200,
+        "headers": {
+          "x-test": "foo"
+        }
+      }
+    }
+  })")));
+
+  listener->onHeaders(200, Headers{{"x-test", "foo"}});
+
+  // Retrieve the first chunk of data.
+  toPage_->sendMessage(R"({
+                          "id": 2,
+                          "method": "IO.read",
+                          "params": {
+                            "handle": "0",
+                            "size": 20
+                          }
+                        })");
+
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+    "id": 2,
+    "result": {
+      "data": "VGhlIG1lYW5pbmcgb2YgbGlmZSA=",
+      "eof": false,
+      "base64Encoded": true
+    }
+  })")));
+  listener->onData("The meaning of life is...");
+
+  // Simulate an error mid-stream, expect in-flight IO.reads to return a CDP
+  // error.
+  toPage_->sendMessage(R"({
+                          "id": 3,
+                          "method": "IO.read",
+                          "params": {
+                            "handle": "0",
+                            "size": 20
+                          }
+                        })");
+
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+    "id": 3,
+    "error": {
+      "code": -32603,
+      "message": "Connection lost"
+    }
+  })")));
+  listener->onError("Connection lost");
+
+  // IO.close should be a successful no-op after an error.
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+    "id": 4,
+    "result": {}
+  })")));
+  toPage_->sendMessage(R"({
+                          "id": 4,
+                          "method": "IO.close",
+                          "params": {
+                            "handle": "0"
+                          }
+                        })");
+
+  page_->unregisterInstance(instanceTarget);
+}
+
+TEST_F(HostTargetTest, NetworkLoadNetworkResource404) {
+  auto& instanceTarget = page_->registerInstance(instanceTargetDelegate_);
+
+  connect();
+
+  InSequence s;
+
+  std::shared_ptr<NetworkRequestListener> listener;
+  EXPECT_CALL(
+      hostTargetDelegate_, networkRequest(Eq("http://notexists.com"), _))
+      .Times(1)
+      .WillOnce([&listener](
+                    const std::string& /*url*/,
+                    std::shared_ptr<NetworkRequestListener> listenerArg) {
+        listener = std::move(listenerArg);
+      })
+      .RetiresOnSaturation();
+
+  // A 404 response should trigger a CDP result with success: false, including
+  // the status code, headers, but *no* stream handle.
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+                                            "id": 1,
+                                            "result": {
+                                              "resource": {
+                                                "success": false,
+                                                "httpStatusCode": 404,
+                                                "headers": {
+                                                  "x-test": "foo"
+                                                }
+                                              }
+                                            }
+                                          })")));
+
+  toPage_->sendMessage(R"({
+                        "id": 1,
+                        "method": "Network.loadNetworkResource",
+                        "params": {
+                          "url": "http://notexists.com"
+                        }
+                      })");
+
+  listener->onHeaders(404, Headers{{"x-test", "foo"}});
+
+  // Assuming a successful request would have assigned handle "0", verify that
+  // handle has *not* been assigned.
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+                                            "id": 2,
+                                            "error": {
+                                              "code": -32603,
+                                              "message": "Stream not found with handle 0"
+                                            }
+                                          })")));
+
+  toPage_->sendMessage(R"({
+                          "id": 2,
+                          "method": "IO.read",
+                          "params": {
+                            "handle": "0",
+                            "size": 20
+                          }
+                        })");
+
+  page_->unregisterInstance(instanceTarget);
+}
+
 } // namespace facebook::react::jsinspector_modern

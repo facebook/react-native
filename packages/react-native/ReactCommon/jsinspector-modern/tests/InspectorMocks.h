@@ -124,6 +124,12 @@ class MockHostTargetDelegate : public HostTargetDelegate {
       onSetPausedInDebuggerMessage,
       (const OverlaySetPausedInDebuggerMessageRequest& request),
       (override));
+  MOCK_METHOD(
+      void,
+      networkRequest,
+      (const std::string& url,
+       std::shared_ptr<NetworkRequestListener> listener),
+      (override));
 };
 
 class MockInstanceTargetDelegate : public InstanceTargetDelegate {};

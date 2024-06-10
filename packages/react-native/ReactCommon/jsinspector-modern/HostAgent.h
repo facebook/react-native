@@ -7,7 +7,9 @@
 
 #pragma once
 
+#include "CdpJson.h"
 #include "HostTarget.h"
+#include "NetworkIO.h"
 #include "SessionState.h"
 
 #include <jsinspector-modern/InspectorInterfaces.h>
@@ -98,12 +100,20 @@ class HostAgent final {
   std::shared_ptr<InstanceAgent> instanceAgent_;
   FuseboxClientType fuseboxClientType_{FuseboxClientType::Unknown};
   bool isPausedInDebuggerOverlayVisible_{false};
+  std::shared_ptr<NetworkIO> networkIO_;
 
   /**
    * A shared reference to the session's state. This is only safe to access
    * during handleRequest and other method calls on the same thread.
    */
   SessionState& sessionState_;
+
+  /** Handle a Network.loadNetworkResource CDP request. */
+  void handleLoadNetworkResource(const cdp::PreparsedRequest& req);
+  /** Handle an IO.read CDP request. */
+  void handleIoRead(const cdp::PreparsedRequest& req);
+  /** Handle an IO.close CDP request. */
+  void handleIoClose(const cdp::PreparsedRequest& req);
 };
 
 } // namespace facebook::react::jsinspector_modern
