@@ -100,6 +100,12 @@ public class ThemedReactContext extends ReactContext {
     return mReactApplicationContext.getNativeModule(nativeModuleInterface);
   }
 
+  @Nullable
+  @Override
+  public NativeModule getNativeModule(String moduleName) {
+    return mReactApplicationContext.getNativeModule(moduleName);
+  }
+
   @Override
   public CatalystInstance getCatalystInstance() {
     return mReactApplicationContext.getCatalystInstance();
