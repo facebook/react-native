@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import com.facebook.react.ReactSettingsExtension
-
 pluginManagement {
   repositories {
     mavenCentral()
@@ -38,7 +36,7 @@ plugins {
   id("com.facebook.react.settings")
 }
 
-configure<ReactSettingsExtension> {
+configure<com.facebook.react.ReactSettingsExtension> {
   autolinkLibrariesFromCommand(
       workingDirectory = file("packages/rn-tester/"), lockFiles = files("yarn.lock"))
 }
