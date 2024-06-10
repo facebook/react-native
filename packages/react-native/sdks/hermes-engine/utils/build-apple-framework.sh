@@ -17,6 +17,8 @@ REACT_NATIVE_PATH=${REACT_NATIVE_PATH:-$CURR_SCRIPT_DIR/../../..}
 
 NUM_CORES=$(sysctl -n hw.ncpu)
 
+PLATFORMS=("macosx" "iphoneos" "iphonesimulator" "catalyst" "xros" "xrsimulator")
+
 if [[ -z "$JSI_PATH" ]]; then
   JSI_PATH="$REACT_NATIVE_PATH/ReactCommon/jsi"
 fi
@@ -35,6 +37,10 @@ function get_release_version {
 
 function get_ios_deployment_target {
   use_env_var_or_ruby_prop "${IOS_DEPLOYMENT_TARGET}" "deployment_target('ios')"
+}
+
+function get_visionos_deployment_target {
+  use_env_var_or_ruby_prop "${XROS_DEPLOYMENT_TARGET}" "deployment_target('visionos')"
 }
 
 function get_mac_deployment_target {
@@ -147,12 +153,12 @@ function build_apple_framework {
 }
 
 function prepare_dest_root_for_ci {
-  mkdir -p "destroot/Library/Frameworks/macosx" "destroot/bin" "destroot/Library/Frameworks/iphoneos" "destroot/Library/Frameworks/iphonesimulator" "destroot/Library/Frameworks/catalyst"
+  mkdir -p  "destroot/bin"
+  for platform in "${PLATFORMS[@]}"; do
+    mkdir -p "destroot/Library/Frameworks/$platform"
+    cp -R "./build_$platform/API/hermes/hermes.framework"* "destroot/Library/Frameworks/$platform"
+  done
 
-  cp -R "./build_macosx/API/hermes/hermes.framework"* "destroot/Library/Frameworks/macosx"
-  cp -R "./build_iphoneos/API/hermes/hermes.framework"* "destroot/Library/Frameworks/iphoneos"
-  cp -R "./build_iphonesimulator/API/hermes/hermes.framework"* "destroot/Library/Frameworks/iphonesimulator"
-  cp -R "./build_catalyst/API/hermes/hermes.framework"* "destroot/Library/Frameworks/catalyst"
   cp "./build_macosx/bin/"* "destroot/bin"
 
   # Copy over Hermes and JSI API headers.
