@@ -28,7 +28,9 @@ import {
 import * as React from 'react';
 import {
   BackHandler,
+  Button,
   Linking,
+  Platform,
   StyleSheet,
   View,
   useColorScheme,
@@ -36,13 +38,17 @@ import {
 
 // RNTester App currently uses in memory storage for storing navigation state
 
+type BackButton = ({onBack: () => void}) => React.Node;
+
 const RNTesterApp = ({
   testList,
+  customBackButton,
 }: {
   testList?: {
     components?: Array<RNTesterModuleInfo>,
     apis?: Array<RNTesterModuleInfo>,
   },
+  customBackButton?: BackButton,
 }): React.Node => {
   const [state, dispatch] = React.useReducer(
     RNTesterNavigationReducer,
@@ -227,6 +233,14 @@ const RNTesterApp = ({
         ? 'Components'
         : 'APIs';
 
+  const BackButtonComponent: ?BackButton = customBackButton
+    ? customBackButton
+    : Platform.OS === 'ios'
+      ? ({onBack}) => (
+          <Button title="Back" onPress={onBack} color={theme.LinkColor} />
+        )
+      : null;
+
   const activeExampleList =
     screen === Screens.COMPONENTS ? examplesList.components : examplesList.apis;
 
@@ -235,9 +249,11 @@ const RNTesterApp = ({
       <RNTTitleBar
         title={title}
         theme={theme}
-        onBack={activeModule ? handleBackPress : null}
-        documentationURL={activeModule?.documentationURL}
-      />
+        documentationURL={activeModule?.documentationURL}>
+        {activeModule && BackButtonComponent ? (
+          <BackButtonComponent onBack={handleBackPress} />
+        ) : undefined}
+      </RNTTitleBar>
       <View
         style={StyleSheet.compose(styles.container, {
           backgroundColor: theme.GroupedBackgroundColor,
