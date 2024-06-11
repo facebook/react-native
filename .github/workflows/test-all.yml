@@ -561,14 +561,12 @@ jobs:
           path: D:\tmp\hermes\win64-bin\
   build_android:
     runs-on: 8-core-ubuntu
-    needs: [set_release_type, prepare_hermes_workspace]
+    needs: [set_release_type]
     container:
       image: reactnativecommunity/react-native-android:latest
       env:
         TERM: "dumb"
         GRADLE_OPTS: "-Dorg.gradle.daemon=false"
-        # By default we only build ARM64 to save time/resources. For release/nightlies/prealpha, we override this value to build all archs.
-        ORG_GRADLE_PROJECT_reactNativeArchitectures: "arm64-v8a"
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.1
@@ -582,86 +580,31 @@ jobs:
         uses: ./.github/actions/setup-gradle
       - name: Build and publish all the Android Artifacts to /tmp/maven-local
         run: |
+          # By default we only build ARM64 to save time/resources. For release/nightlies/prealpha, we override this value to build all archs.
           if [[ "${{ needs.set_release_type.outputs.RELEASE_TYPE }}" == "dry-run" ]]; then
             export ORG_GRADLE_PROJECT_reactNativeArchitectures="arm64-v8a"
           else
             export ORG_GRADLE_PROJECT_reactNativeArchitectures="armeabi-v7a,arm64-v8a,x86,x86_64"
           fi
-          ./gradlew publishAllToMavenTempLocal
+          ./gradlew publishAllToMavenTempLocal build -PenableWarningsAsErrors=true
         shell: bash
-      - name: Cache android build artifacts
-        uses: actions/cache/save@v4.0.0
-        with:
-          key: android-build-cache-${{ github.run_number}}
-          path: |
-            build
-            packages/rn-tester/android/app/.cxx
-            packages/rn-tester/android/app/build
-            packages/react-native/sdks/download
-            packages/react-native/sdks/hermes
-            packages/react-native/ReactAndroid/.cxx
-            packages/react-native/ReactAndroid/build
-            packages/react-native/ReactAndroid/hermes-engine/.cxx
-            packages/react-native/ReactAndroid/hermes-engine/build
-            packages/react-native/ReactAndroid/src/main/jni/prebuilt
-            packages/react-native-gradle-plugin/.gradle
-            packages/react-native-gradle-plugin/build
-            packages/react-native-codegen/lib
-          enableCrossOsArchive: true
-  test_android:
-    runs-on: 8-core-ubuntu
-    needs: [prepare_hermes_workspace, build_android]
-    container:
-      image: reactnativecommunity/react-native-android:latest
-      env:
-        TERM: "dumb"
-        GRADLE_OPTS: "-Dorg.gradle.daemon=false"
-        # By default we only build ARM64 to save time/resources. For release/nightlies/prealpha, we override this value to build all archs.
-        ORG_GRADLE_PROJECT_reactNativeArchitectures: "arm64-v8a"
-        # Repeated here, as the environment key in this executor will overwrite the one in defaults
-        PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A: ${{ secrets.GITHUB_ANALYSISBOT_TOKEN_A }}
-        PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B: ${{ secrets.GITHUB_ANALYSISBOT_TOKEN_B }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4.1.1
-      - name: Setup node.js
-        uses: ./.github/actions/setup-node
-      - name: Install dependencies
-        run: yarn install --non-interactive
-      - name: Set React Native Version
-        run: node ./scripts/releases/set-rn-version.js --build-type dry-run
-      - name: Cache android build artifacts
-        uses: actions/cache@v4.0.0
-        with:
-          key: android-build-cache-${{ github.run_number}}
-          path: |
-            build
-            packages/rn-tester/android/app/.cxx
-            packages/rn-tester/android/app/build
-            packages/react-native/sdks/download
-            packages/react-native/sdks/hermes
-            packages/react-native/ReactAndroid/.cxx
-            packages/react-native/ReactAndroid/build
-            packages/react-native/ReactAndroid/hermes-engine/.cxx
-            packages/react-native/ReactAndroid/hermes-engine/build
-            packages/react-native/ReactAndroid/src/main/jni/prebuilt
-            packages/react-native-gradle-plugin/.gradle
-            packages/react-native-gradle-plugin/build
-            packages/react-native-codegen/lib
-      - name: Build & Test React Native using Gradle
-        run: ./gradlew build -PenableWarningsAsErrors=true
       - name: Upload test results
         if: ${{ always() }}
         uses: actions/upload-artifact@v4.3.0
         with:
-          name: android-test-results
-          path: packages/react-native-gradle-plugin/build/test-results
-      - name: Upload android package
+          name: build-android-results
+          compression-level: 1
+          path: |
+            packages/react-native-gradle-plugin/react-native-gradle-plugin/build/reports
+            packages/react-native-gradle-plugin/settings-plugin/build/reports
+            packages/react-native/ReactAndroid/build/reports
+      - name: Upload RNTester APK
         if: ${{ always() }}
         uses: actions/upload-artifact@v4.3.0
         with:
           name: rntester-apk
           path: packages/rn-tester/android/app/build/outputs/apk/
+          compression-level: 0
   build_npm_package:
     runs-on: 8-core-ubuntu
     needs:

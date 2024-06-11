@@ -198,4 +198,10 @@ afterEvaluate {
   tasks
       .getByName("generateCodegenSchemaFromJavaScript")
       .dependsOn(":packages:react-native:ReactAndroid:buildCodegenCLI")
+  tasks
+      .getByName("createBundleJscReleaseJsAndAssets")
+      .dependsOn(":packages:react-native:ReactAndroid:buildCodegenCLI")
+  tasks
+      .getByName("createBundleHermesReleaseJsAndAssets")
+      .dependsOn(":packages:react-native:ReactAndroid:buildCodegenCLI")
 }

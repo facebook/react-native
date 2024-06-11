@@ -490,15 +490,13 @@ jobs:
           name: hermes-win64-bin
           path: D:\tmp\hermes\win64-bin\
   build_android:
-    runs-on: 16-core-ubuntu
-    needs: [set_release_type, prepare_hermes_workspace]
+    runs-on: 8-core-ubuntu
+    needs: [set_release_type]
     container:
       image: reactnativecommunity/react-native-android:latest
       env:
         TERM: "dumb"
-        GRADLE_OPTS: '-Dorg.gradle.daemon=false'
-        # By default we only build ARM64 to save time/resources. For release/nightlies/prealpha, we override this value to build all archs.
-        ORG_GRADLE_PROJECT_reactNativeArchitectures: "arm64-v8a"
+        GRADLE_OPTS: "-Dorg.gradle.daemon=false"
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.1
@@ -512,32 +510,31 @@ jobs:
         uses: ./.github/actions/setup-gradle
       - name: Build and publish all the Android Artifacts to /tmp/maven-local
         run: |
+          # By default we only build ARM64 to save time/resources. For release/nightlies/prealpha, we override this value to build all archs.
           if [[ "${{ needs.set_release_type.outputs.RELEASE_TYPE }}" == "dry-run" ]]; then
             export ORG_GRADLE_PROJECT_reactNativeArchitectures="arm64-v8a"
           else
             export ORG_GRADLE_PROJECT_reactNativeArchitectures="armeabi-v7a,arm64-v8a,x86,x86_64"
           fi
-          ./gradlew publishAllToMavenTempLocal
+          ./gradlew publishAllToMavenTempLocal build -PenableWarningsAsErrors=true
         shell: bash
-      - name: Cache android build artifacts
-        uses: actions/cache/save@v4.0.0
+      - name: Upload test results
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4.3.0
         with:
-          key: android-build-cache-${{ github.run_number}}
+          name: build-android-results
+          compression-level: 1
           path: |
-            build
-            packages/rn-tester/android/app/.cxx
-            packages/rn-tester/android/app/build
-            packages/react-native/sdks/download
-            packages/react-native/sdks/hermes
-            packages/react-native/ReactAndroid/.cxx
-            packages/react-native/ReactAndroid/build
-            packages/react-native/ReactAndroid/hermes-engine/.cxx
-            packages/react-native/ReactAndroid/hermes-engine/build
-            packages/react-native/ReactAndroid/src/main/jni/prebuilt
-            packages/react-native-gradle-plugin/.gradle
-            packages/react-native-gradle-plugin/build
-            packages/react-native-codegen/lib
-          enableCrossOsArchive: true
+            packages/react-native-gradle-plugin/react-native-gradle-plugin/build/reports
+            packages/react-native-gradle-plugin/settings-plugin/build/reports
+            packages/react-native/ReactAndroid/build/reports
+      - name: Upload RNTester APK
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4.3.0
+        with:
+          name: rntester-apk
+          path: packages/rn-tester/android/app/build/outputs/apk/
+          compression-level: 0
   build_npm_package:
     runs-on: 8-core-ubuntu
     needs: [set_release_type, prepare_hermes_workspace, build_hermes_macos, build_hermesc_linux, build_hermesc_windows,build_android]
