@@ -53,12 +53,16 @@ export type TargetCapabilityFlags = $ReadOnly<{
 export type PageFromDevice = $ReadOnly<{
   id: string,
   title: string,
-  vm: string,
+  /** @deprecated This is sent from legacy targets only */
+  vm?: string,
   app: string,
   capabilities?: TargetCapabilityFlags,
 }>;
 
-export type Page = Required<PageFromDevice>;
+export type Page = $ReadOnly<{
+  ...PageFromDevice,
+  capabilities: $NonMaybeType<PageFromDevice['capabilities']>,
+}>;
 
 // Chrome Debugger Protocol message/event passed between device and debugger.
 export type WrappedEvent = $ReadOnly<{
@@ -116,7 +120,8 @@ export type PageDescription = $ReadOnly<{
 
   // React Native specific fields
   deviceName: string,
-  vm: string,
+  /** @deprecated This is sent from legacy targets only */
+  vm?: string,
 
   // React Native specific metadata
   reactNative: $ReadOnly<{
