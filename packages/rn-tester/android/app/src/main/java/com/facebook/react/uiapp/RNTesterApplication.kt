@@ -136,6 +136,10 @@ class RNTesterApplication : Application(), ReactApplication {
     ReactFontManager.getInstance().addCustomFont(this, "Rubik", R.font.rubik)
     super.onCreate()
     SoLoader.init(this, /* native exopackage */ false)
+
+    // [Experiment] Enable the new debugger stack (codename Fusebox)
+    // unstable_loadFusebox(BuildConfig.IS_NEW_ARCHITECTURE_ENABLED)
+
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
       load()
     }
