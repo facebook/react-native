@@ -1994,6 +1994,7 @@ public final class com/facebook/react/defaults/DefaultNewArchitectureEntryPoint 
 	public static final fun load (ZZ)V
 	public static final fun load (ZZZ)V
 	public static synthetic fun load$default (ZZZILjava/lang/Object;)V
+	public static final fun unstable_loadFusebox (Z)V
 }
 
 public class com/facebook/react/defaults/DefaultReactActivityDelegate : com/facebook/react/ReactActivityDelegate {
