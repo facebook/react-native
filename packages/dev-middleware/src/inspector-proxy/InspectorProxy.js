@@ -160,7 +160,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
       type: 'node',
       devtoolsFrontendUrl,
       webSocketDebuggerUrl,
-      vm: page.vm,
+      ...(page.vm != null ? {vm: page.vm} : null),
       deviceName: device.getName(),
       reactNative: {
         logicalDeviceId: deviceId,

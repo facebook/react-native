@@ -216,7 +216,6 @@ TEST_F(InspectorPackagerConnectionTest, TestGetPages) {
               ElementsAreArray({AllOf(
                   AtJsonPtr("/app", Eq("my-app")),
                   AtJsonPtr("/title", Eq("mock-title [C++ connection]")),
-                  AtJsonPtr("/vm", Eq("mock-vm")),
                   AtJsonPtr("/id", Eq(std::to_string(pageId))),
                   AtJsonPtr("/capabilities/nativePageReloads", Eq(true)),
                   AtJsonPtr(

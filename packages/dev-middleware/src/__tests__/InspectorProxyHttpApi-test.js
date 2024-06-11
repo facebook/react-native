@@ -172,7 +172,6 @@ describe('inspector proxy HTTP API', () => {
           app: 'bar-app',
           id: 'page1',
           title: 'bar-title',
-          vm: 'bar-vm',
         },
       ]);
 
@@ -209,7 +208,6 @@ describe('inspector proxy HTTP API', () => {
             },
             title: 'bar-title',
             type: 'node',
-            vm: 'bar-vm',
             webSocketDebuggerUrl: expect.any(String),
           },
         ]);
