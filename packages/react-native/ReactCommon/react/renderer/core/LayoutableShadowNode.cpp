@@ -193,7 +193,7 @@ Transform LayoutableShadowNode::getTransform() const {
 }
 
 Point LayoutableShadowNode::getContentOriginOffset(
-    bool /*includeTransform*/) const {
+    bool includeTransform) const {
   return {0, 0};
 }
 
