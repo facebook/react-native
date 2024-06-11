@@ -3425,11 +3425,11 @@ public abstract interface class com/facebook/react/modules/network/CustomClientB
 	public abstract fun apply (Lokhttp3/OkHttpClient$Builder;)V
 }
 
-public class com/facebook/react/modules/network/ForwardingCookieHandler : java/net/CookieHandler {
+public final class com/facebook/react/modules/network/ForwardingCookieHandler : java/net/CookieHandler {
 	public fun <init> (Lcom/facebook/react/bridge/ReactContext;)V
-	public fun addCookies (Ljava/lang/String;Ljava/util/List;)V
-	public fun clearCookies (Lcom/facebook/react/bridge/Callback;)V
-	public fun destroy ()V
+	public final fun addCookies (Ljava/lang/String;Ljava/util/List;)V
+	public final fun clearCookies (Lcom/facebook/react/bridge/Callback;)V
+	public final fun destroy ()V
 	public fun get (Ljava/net/URI;Ljava/util/Map;)Ljava/util/Map;
 	public fun put (Ljava/net/URI;Ljava/util/Map;)V
 }
@@ -3482,15 +3482,15 @@ public abstract interface class com/facebook/react/modules/network/OkHttpClientF
 	public abstract fun createNewNetworkModuleClient ()Lokhttp3/OkHttpClient;
 }
 
-public class com/facebook/react/modules/network/OkHttpClientProvider {
-	public fun <init> ()V
-	public static fun createClient ()Lokhttp3/OkHttpClient;
-	public static fun createClient (Landroid/content/Context;)Lokhttp3/OkHttpClient;
-	public static fun createClientBuilder ()Lokhttp3/OkHttpClient$Builder;
-	public static fun createClientBuilder (Landroid/content/Context;)Lokhttp3/OkHttpClient$Builder;
-	public static fun createClientBuilder (Landroid/content/Context;I)Lokhttp3/OkHttpClient$Builder;
-	public static fun getOkHttpClient ()Lokhttp3/OkHttpClient;
-	public static fun setOkHttpClientFactory (Lcom/facebook/react/modules/network/OkHttpClientFactory;)V
+public final class com/facebook/react/modules/network/OkHttpClientProvider {
+	public static final field INSTANCE Lcom/facebook/react/modules/network/OkHttpClientProvider;
+	public static final fun createClient ()Lokhttp3/OkHttpClient;
+	public static final fun createClient (Landroid/content/Context;)Lokhttp3/OkHttpClient;
+	public static final fun createClientBuilder ()Lokhttp3/OkHttpClient$Builder;
+	public static final fun createClientBuilder (Landroid/content/Context;)Lokhttp3/OkHttpClient$Builder;
+	public static final fun createClientBuilder (Landroid/content/Context;I)Lokhttp3/OkHttpClient$Builder;
+	public static final fun getOkHttpClient ()Lokhttp3/OkHttpClient;
+	public static final fun setOkHttpClientFactory (Lcom/facebook/react/modules/network/OkHttpClientFactory;)V
 }
 
 public abstract interface class com/facebook/react/modules/network/ProgressListener {
@@ -3505,7 +3505,7 @@ public class com/facebook/react/modules/network/ProgressResponseBody : okhttp3/R
 	public fun totalBytesRead ()J
 }
 
-public class com/facebook/react/modules/network/ReactCookieJarContainer : com/facebook/react/modules/network/CookieJarContainer {
+public final class com/facebook/react/modules/network/ReactCookieJarContainer : com/facebook/react/modules/network/CookieJarContainer {
 	public fun <init> ()V
 	public fun loadForRequest (Lokhttp3/HttpUrl;)Ljava/util/List;
 	public fun removeCookieJar ()V
