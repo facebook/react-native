@@ -230,9 +230,8 @@ float Node::relativePosition(
 
 void Node::setPosition(
     const Direction direction,
-    const float mainSize,
-    const float crossSize,
-    const float ownerWidth) {
+    const float ownerWidth,
+    const float ownerHeight) {
   /* Root nodes should be always layouted as LTR, so we don't return negative
    * values. */
   const Direction directionRespectingRoot =
@@ -244,10 +243,14 @@ void Node::setPosition(
 
   // In the case of position static these are just 0. See:
   // https://www.w3.org/TR/css-position-3/#valdef-position-static
-  const float relativePositionMain =
-      relativePosition(mainAxis, directionRespectingRoot, mainSize);
-  const float relativePositionCross =
-      relativePosition(crossAxis, directionRespectingRoot, crossSize);
+  const float relativePositionMain = relativePosition(
+      mainAxis,
+      directionRespectingRoot,
+      isRow(mainAxis) ? ownerWidth : ownerHeight);
+  const float relativePositionCross = relativePosition(
+      crossAxis,
+      directionRespectingRoot,
+      isRow(mainAxis) ? ownerHeight : ownerWidth);
 
   const auto mainAxisLeadingEdge = inlineStartEdge(mainAxis, direction);
   const auto mainAxisTrailingEdge = inlineEndEdge(mainAxis, direction);
