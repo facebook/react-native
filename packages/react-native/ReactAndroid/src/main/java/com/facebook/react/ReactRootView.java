@@ -435,7 +435,9 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     if (mShouldLogContentAppeared) {
       mShouldLogContentAppeared = false;
       String jsModuleName = getJSModuleName();
-      ReactMarker.logMarker(ReactMarkerConstants.CONTENT_APPEARED, jsModuleName, mRootViewTag);
+      if (jsModuleName != null) {
+        ReactMarker.logMarker(ReactMarkerConstants.CONTENT_APPEARED, jsModuleName, mRootViewTag);
+      }
     }
   }
 
@@ -630,7 +632,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
   @Override
   public String getJSModuleName() {
-    return Assertions.assertNotNull(mJSModuleName);
+    return mJSModuleName;
   }
 
   @Override
@@ -665,7 +667,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       }
 
       CatalystInstance catalystInstance = reactContext.getCatalystInstance();
-      String jsAppModuleName = getJSModuleName();
+      String jsAppModuleName = Assertions.assertNotNull(getJSModuleName());
 
       if (mWasMeasured) {
         updateRootLayoutSpecs(true, mWidthMeasureSpec, mHeightMeasureSpec);

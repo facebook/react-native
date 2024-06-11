@@ -1284,7 +1284,7 @@ public class ReactInstanceManager {
       rootTag =
           uiManager.startSurface(
               reactRoot.getRootViewGroup(),
-              reactRoot.getJSModuleName(),
+              Assertions.assertNotNull(reactRoot.getJSModuleName()),
               initialProperties == null
                   ? new WritableNativeMap()
                   : Arguments.fromBundle(initialProperties),
