@@ -7,10 +7,11 @@
 
 package com.facebook.react.modules.dialog
 
-import android.app.AlertDialog
 import android.content.DialogInterface
 import android.os.Looper.getMainLooper
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.FragmentActivity
+import com.facebook.react.R
 import com.facebook.react.bridge.Callback
 import com.facebook.react.bridge.JavaOnlyMap
 import com.facebook.react.bridge.ReactApplicationContext
@@ -48,6 +49,9 @@ class DialogModuleTest {
   fun setUp() {
     activityController = Robolectric.buildActivity(FragmentActivity::class.java)
     activity = activityController.create().start().resume().get()
+    // We must set the theme to a descendant of AppCompat for the AlertDialog to show without
+    // raising an exception
+    activity.setTheme(APP_COMPAT_THEME)
 
     val context: ReactApplicationContext = mock(ReactApplicationContext::class.java)
     whenever(context.hasActiveReactInstance()).thenReturn(true)
@@ -60,6 +64,19 @@ class DialogModuleTest {
   @After
   fun tearDown() {
     activityController.pause().stop().destroy()
+  }
+
+  @Test
+  fun testIllegalActivityTheme() {
+    val options = JavaOnlyMap()
+    activity.setTheme(NON_APP_COMPAT_THEME)
+
+    assertThrows(NullPointerException::class.java) {
+      dialogModule.showAlert(options, null, null)
+      shadowOf(getMainLooper()).idle()
+    }
+
+    activity.setTheme(APP_COMPAT_THEME)
   }
 
   @Test
@@ -157,5 +174,10 @@ class DialogModuleTest {
   private fun getFragment(): AlertFragment? {
     return activity.supportFragmentManager.findFragmentByTag(DialogModule.FRAGMENT_TAG)
         as? AlertFragment
+  }
+
+  companion object {
+    private val APP_COMPAT_THEME: Int = R.style.Theme_ReactNative_AppCompat_Light
+    private val NON_APP_COMPAT_THEME: Int = android.R.style.Theme_DeviceDefault_Light
   }
 }
