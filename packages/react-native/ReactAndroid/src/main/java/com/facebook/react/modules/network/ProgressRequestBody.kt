@@ -7,6 +7,7 @@
 
 package com.facebook.react.modules.network
 
+import java.io.FilterOutputStream
 import java.io.IOException
 import okhttp3.MediaType
 import okhttp3.RequestBody
@@ -48,16 +49,20 @@ internal class ProgressRequestBody(
 
   private fun outputStreamSink(sink: BufferedSink): Sink =
       Okio.sink(
-          object : CountingOutputStream(sink.outputStream()) {
+          object : FilterOutputStream(sink.outputStream()) {
+            private var count = 0L
+
             @Throws(IOException::class)
             override fun write(b: ByteArray, off: Int, len: Int) {
               super.write(b, off, len)
+              count += len.toLong()
               sendProgressUpdate()
             }
 
             @Throws(IOException::class)
             override fun write(b: Int) {
               super.write(b)
+              count++
               sendProgressUpdate()
             }
 
