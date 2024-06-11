@@ -112,6 +112,36 @@ describe('parseLogBoxLog', () => {
     });
   });
 
+  it('does not duplicate message if component stack found but not parsed', () => {
+    expect(
+      parseLogBoxLog([
+        'Warning: Each child in a list should have a unique "key" prop.%s%s See https://fb.me/react-warning-keys for more information.%s',
+        '\n\nCheck the render method of `MyOtherComponent`.',
+        '',
+        '\n    in\n    in\n    in',
+      ]),
+    ).toEqual({
+      componentStackType: 'legacy',
+      componentStack: [],
+      category:
+        'Warning: Each child in a list should have a unique "key" prop.﻿%s﻿%s See https://fb.me/react-warning-keys for more information.',
+      message: {
+        content:
+          'Warning: Each child in a list should have a unique "key" prop.\n\nCheck the render method of `MyOtherComponent`. See https://fb.me/react-warning-keys for more information.',
+        substitutions: [
+          {
+            length: 48,
+            offset: 62,
+          },
+          {
+            length: 0,
+            offset: 110,
+          },
+        ],
+      },
+    });
+  });
+
   it('detects a component stack in an interpolated warning', () => {
     expect(
       parseLogBoxLog([

@@ -462,7 +462,7 @@ export function parseLogBoxLog(args: $ReadOnlyArray<mixed>): {|
     }
   }
 
-  if (componentStack.length === 0) {
+  if (componentStack.length === 0 && argsWithoutComponentStack.length === 0) {
     // Try finding the component stack elsewhere.
     for (const arg of args) {
       if (typeof arg === 'string' && isComponentStack(arg)) {
