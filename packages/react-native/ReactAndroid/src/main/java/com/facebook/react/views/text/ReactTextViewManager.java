@@ -23,6 +23,7 @@ import com.facebook.react.uimanager.ReactAccessibilityDelegate;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ThemedReactContext;
+import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.views.text.internal.span.ReactClickableSpan;
 import com.facebook.react.views.text.internal.span.TextInlineImageSpan;
 import com.facebook.yoga.YogaMeasureMode;
@@ -219,5 +220,10 @@ public class ReactTextViewManager
   @Override
   public void setPadding(ReactTextView view, int left, int top, int right, int bottom) {
     view.setPadding(left, top, right, bottom);
+  }
+
+  @ReactProp(name = "overflow")
+  public void setOverflow(ReactTextView view, @Nullable String overflow) {
+    view.setOverflow(overflow);
   }
 }

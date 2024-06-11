@@ -6703,7 +6703,7 @@ public class com/facebook/react/views/scroll/ReactHorizontalScrollView : android
 	public fun onChildViewAdded (Landroid/view/View;Landroid/view/View;)V
 	public fun onChildViewRemoved (Landroid/view/View;Landroid/view/View;)V
 	protected fun onDetachedFromWindow ()V
-	protected fun onDraw (Landroid/graphics/Canvas;)V
+	public fun onDraw (Landroid/graphics/Canvas;)V
 	public fun onInterceptTouchEvent (Landroid/view/MotionEvent;)Z
 	protected fun onLayout (ZIIII)V
 	public fun onLayoutChange (Landroid/view/View;IIIIIIII)V
@@ -6832,6 +6832,7 @@ public class com/facebook/react/views/scroll/ReactScrollView : android/widget/Sc
 	public fun onChildViewAdded (Landroid/view/View;Landroid/view/View;)V
 	public fun onChildViewRemoved (Landroid/view/View;Landroid/view/View;)V
 	protected fun onDetachedFromWindow ()V
+	public fun onDraw (Landroid/graphics/Canvas;)V
 	public fun onInitializeAccessibilityNodeInfo (Landroid/view/accessibility/AccessibilityNodeInfo;)V
 	public fun onInterceptTouchEvent (Landroid/view/MotionEvent;)Z
 	protected fun onLayout (ZIIII)V
@@ -7383,6 +7384,7 @@ public class com/facebook/react/views/text/ReactTextView : androidx/appcompat/wi
 	public fun setMinimumFontSize (F)V
 	public fun setNotifyOnInlineViewLayout (Z)V
 	public fun setNumberOfLines (I)V
+	public fun setOverflow (Ljava/lang/String;)V
 	public fun setSpanned (Landroid/text/Spannable;)V
 	public fun setText (Lcom/facebook/react/views/text/ReactTextUpdate;)V
 	public fun setTextIsSelectable (Z)V
@@ -7408,6 +7410,7 @@ public class com/facebook/react/views/text/ReactTextViewManager : com/facebook/r
 	protected fun onAfterUpdateTransaction (Lcom/facebook/react/views/text/ReactTextView;)V
 	protected synthetic fun prepareToRecycleView (Lcom/facebook/react/uimanager/ThemedReactContext;Landroid/view/View;)Landroid/view/View;
 	protected fun prepareToRecycleView (Lcom/facebook/react/uimanager/ThemedReactContext;Lcom/facebook/react/views/text/ReactTextView;)Lcom/facebook/react/views/text/ReactTextView;
+	public fun setOverflow (Lcom/facebook/react/views/text/ReactTextView;Ljava/lang/String;)V
 	public synthetic fun setPadding (Landroid/view/View;IIII)V
 	public fun setPadding (Lcom/facebook/react/views/text/ReactTextView;IIII)V
 	public synthetic fun updateExtraData (Landroid/view/View;Ljava/lang/Object;)V
@@ -7687,6 +7690,7 @@ public class com/facebook/react/views/textinput/ReactEditText : androidx/appcomp
 	public fun onAttachedToWindow ()V
 	public fun onCreateInputConnection (Landroid/view/inputmethod/EditorInfo;)Landroid/view/inputmethod/InputConnection;
 	public fun onDetachedFromWindow ()V
+	public fun onDraw (Landroid/graphics/Canvas;)V
 	public fun onFinishTemporaryDetach ()V
 	protected fun onFocusChanged (ZILandroid/graphics/Rect;)V
 	public fun onKeyUp (ILandroid/view/KeyEvent;)Z
@@ -7719,6 +7723,7 @@ public class com/facebook/react/views/textinput/ReactEditText : androidx/appcomp
 	public fun setLineHeight (I)V
 	public fun setMaxFontSizeMultiplier (F)V
 	public fun setOnKeyPress (Z)V
+	public fun setOverflow (Ljava/lang/String;)V
 	public fun setPlaceholder (Ljava/lang/String;)V
 	public fun setReturnKeyType (Ljava/lang/String;)V
 	public fun setScrollWatcher (Lcom/facebook/react/views/textinput/ScrollWatcher;)V
@@ -7804,6 +7809,7 @@ public class com/facebook/react/views/textinput/ReactTextInputManager : com/face
 	public fun setOnKeyPress (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
 	public fun setOnScroll (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
 	public fun setOnSelectionChange (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
+	public fun setOverflow (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
 	public synthetic fun setPadding (Landroid/view/View;IIII)V
 	public fun setPadding (Lcom/facebook/react/views/textinput/ReactEditText;IIII)V
 	public fun setPlaceholder (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
@@ -7912,12 +7918,14 @@ public class com/facebook/react/views/view/ReactViewBackgroundManager {
 	public fun cleanup ()V
 	public fun getBackgroundColor ()I
 	public fun getBorderColor (I)I
+	public fun maybeClipToPaddingBox (Landroid/graphics/Canvas;)V
 	public fun setBackgroundColor (I)V
 	public fun setBorderColor (IFF)V
 	public fun setBorderRadius (F)V
 	public fun setBorderRadius (FI)V
 	public fun setBorderStyle (Ljava/lang/String;)V
 	public fun setBorderWidth (IF)V
+	public fun setOverflow (Ljava/lang/String;)V
 }
 
 public class com/facebook/react/views/view/ReactViewGroup : android/view/ViewGroup, com/facebook/react/touch/ReactHitSlopView, com/facebook/react/touch/ReactInterceptingViewGroup, com/facebook/react/uimanager/ReactClippingViewGroup, com/facebook/react/uimanager/ReactOverflowViewWithInset, com/facebook/react/uimanager/ReactPointerEventsView, com/facebook/react/uimanager/ReactZIndexedViewGroup {

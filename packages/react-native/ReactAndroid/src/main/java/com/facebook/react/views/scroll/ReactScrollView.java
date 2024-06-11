@@ -83,7 +83,6 @@ public class ReactScrollView extends ScrollView
   private final OnScrollDispatchHelper mOnScrollDispatchHelper = new OnScrollDispatchHelper();
   private final @Nullable OverScroller mScroller;
   private final VelocityHelper mVelocityHelper = new VelocityHelper();
-  private final Rect mRect = new Rect(); // for reuse to avoid allocation
   private final Rect mTempRect = new Rect();
   private final Rect mOverflowInset = new Rect();
 
@@ -136,6 +135,7 @@ public class ReactScrollView extends ScrollView
     setOnHierarchyChangeListener(this);
     setScrollBarStyle(SCROLLBARS_OUTSIDE_OVERLAY);
     setClipChildren(false);
+    mReactBackgroundManager.setOverflow(ViewProps.SCROLL);
 
     ViewCompat.setAccessibilityDelegate(this, new ReactScrollViewAccessibilityDelegate());
   }
@@ -261,7 +261,7 @@ public class ReactScrollView extends ScrollView
 
   public void setOverflow(@Nullable String overflow) {
     mOverflow = overflow;
-    invalidate();
+    mReactBackgroundManager.setOverflow(overflow == null ? ViewProps.SCROLL : overflow);
   }
 
   public void setMaintainVisibleContentPosition(
@@ -640,13 +640,14 @@ public class ReactScrollView extends ScrollView
         mEndBackground.draw(canvas);
       }
     }
-    getDrawingRect(mRect);
-
-    if (!ViewProps.VISIBLE.equals(mOverflow)) {
-      canvas.clipRect(mRect);
-    }
 
     super.draw(canvas);
+  }
+
+  @Override
+  public void onDraw(Canvas canvas) {
+    mReactBackgroundManager.maybeClipToPaddingBox(canvas);
+    super.onDraw(canvas);
   }
 
   /**

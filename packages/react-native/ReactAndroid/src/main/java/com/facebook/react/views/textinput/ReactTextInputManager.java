@@ -1038,6 +1038,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     view.setBorderColor(SPACING_TYPES[index], rgbComponent, alphaComponent);
   }
 
+  @ReactProp(name = "overflow")
+  public void setOverflow(ReactEditText view, @Nullable String overflow) {
+    view.setOverflow(overflow);
+  }
+
   @Override
   protected void onAfterUpdateTransaction(ReactEditText view) {
     super.onAfterUpdateTransaction(view);
