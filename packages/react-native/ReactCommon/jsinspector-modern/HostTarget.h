@@ -251,4 +251,6 @@ class JSINSPECTOR_EXPORT HostTarget
   friend class HostTargetController;
 };
 
+folly::dynamic hostMetadataToDynamic(const HostTargetMetadata& metadata);
+
 } // namespace facebook::react::jsinspector_modern
