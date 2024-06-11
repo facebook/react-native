@@ -764,7 +764,7 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
       if (header == null || header.size() != 2) {
         return null;
       }
-      String headerName = HeaderUtil.stripHeaderName(header.getString(0));
+      String headerName = HeaderUtil.INSTANCE.stripHeaderName(header.getString(0));
       String headerValue = header.getString(1);
       if (headerName == null || headerValue == null) {
         return null;
