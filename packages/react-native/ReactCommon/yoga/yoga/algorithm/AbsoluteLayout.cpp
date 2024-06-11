@@ -342,6 +342,7 @@ void layoutAbsoluteChild(
       childWidth = boundAxis(
           child,
           FlexDirection::Row,
+          direction,
           childWidth,
           containingBlockWidth,
           containingBlockWidth);
@@ -373,6 +374,7 @@ void layoutAbsoluteChild(
       childHeight = boundAxis(
           child,
           FlexDirection::Column,
+          direction,
           childHeight,
           containingBlockHeight,
           containingBlockWidth);
