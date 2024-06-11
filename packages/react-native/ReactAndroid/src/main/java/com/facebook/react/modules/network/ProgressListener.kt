@@ -5,8 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.modules.network;
+package com.facebook.react.modules.network
 
-public interface ProgressListener {
-  void onProgress(long bytesWritten, long contentLength, boolean done);
+public fun interface ProgressListener {
+  public fun onProgress(bytesWritten: Long, contentLength: Long, done: Boolean)
 }
