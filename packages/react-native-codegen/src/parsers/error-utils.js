@@ -26,6 +26,8 @@ const {
   UnsupportedArrayElementTypeAnnotationParserError,
   UnsupportedFunctionParamTypeAnnotationParserError,
   UnsupportedFunctionReturnTypeAnnotationParserError,
+  UnsupportedModuleEventEmitterPropertyParserError,
+  UnsupportedModuleEventEmitterTypePropertyParserError,
   UnsupportedModulePropertyParserError,
   UnsupportedObjectPropertyValueTypeAnnotationParserError,
   UntypedModuleRegistryCallParserError,
@@ -151,6 +153,46 @@ function throwIfUntypedModule(
       callExpression,
       methodName,
       moduleName,
+    );
+  }
+}
+
+function throwIfEventEmitterTypeIsUnsupported(
+  nativeModuleName: string,
+  propertyName: string,
+  propertyValueType: string,
+  parser: Parser,
+  nullable: boolean,
+  untyped: boolean,
+  cxxOnly: boolean,
+) {
+  if (nullable || untyped || !cxxOnly) {
+    throw new UnsupportedModuleEventEmitterPropertyParserError(
+      nativeModuleName,
+      propertyName,
+      propertyValueType,
+      parser.language(),
+      nullable,
+      untyped,
+      cxxOnly,
+    );
+  }
+}
+
+function throwIfEventEmitterEventTypeIsUnsupported(
+  nativeModuleName: string,
+  propertyName: string,
+  propertyValueType: string,
+  parser: Parser,
+  nullable: boolean,
+) {
+  if (nullable) {
+    throw new UnsupportedModuleEventEmitterTypePropertyParserError(
+      nativeModuleName,
+      propertyName,
+      propertyValueType,
+      parser.language(),
+      nullable,
     );
   }
 }
@@ -363,6 +405,8 @@ module.exports = {
   throwIfWrongNumberOfCallExpressionArgs,
   throwIfIncorrectModuleRegistryCallTypeParameterParserError,
   throwIfUntypedModule,
+  throwIfEventEmitterTypeIsUnsupported,
+  throwIfEventEmitterEventTypeIsUnsupported,
   throwIfModuleTypeIsUnsupported,
   throwIfMoreThanOneModuleInterfaceParserError,
   throwIfUnsupportedFunctionParamTypeAnnotationParserError,

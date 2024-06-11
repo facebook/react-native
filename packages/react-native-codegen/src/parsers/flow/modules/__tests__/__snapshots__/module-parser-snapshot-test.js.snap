@@ -15,7 +15,7 @@ exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_ARR
 
 exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_ARRAY_WITH_NO_TYPE_FOR_CONTENT_AS_PARAM 1`] = `"Module NativeSampleTurboModule: Generic 'Array' must have type parameters."`;
 
-exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_NOT_ONLY_METHODS 1`] = `"Module NativeSampleTurboModule: Flow interfaces extending TurboModule must only contain 'FunctionTypeAnnotation's. Property 'sampleBool' refers to a 'BooleanTypeAnnotation'."`;
+exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_NOT_ONLY_METHODS 1`] = `"Module NativeSampleTurboModule: Flow interfaces extending TurboModule must only contain 'FunctionTypeAnnotation's or non nullable 'EventEmitter's. Property 'sampleBool' refers to a 'BooleanTypeAnnotation'."`;
 
 exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_PROMISE_WITHOUT_TYPE 1`] = `"Module NativeSampleTurboModule: Generic 'Promise' must have type parameters."`;
 
@@ -35,6 +35,7 @@ exports[`RN Codegen Flow Parser can generate fixture ANDROID_ONLY_NATIVE_MODULE 
       'aliasMap': {},
       'enumMap': {},
       'spec': {
+        'eventEmitters': [],
         'properties': []
       },
       'moduleName': 'SampleTurboModuleAndroid',
@@ -182,6 +183,7 @@ exports[`RN Codegen Flow Parser can generate fixture CXX_ONLY_NATIVE_MODULE 1`] 
         }
       },
       'spec': {
+        'eventEmitters': [],
         'properties': [
           {
             'name': 'getCallback',
@@ -419,6 +421,7 @@ exports[`RN Codegen Flow Parser can generate fixture EMPTY_NATIVE_MODULE 1`] = `
       'aliasMap': {},
       'enumMap': {},
       'spec': {
+        'eventEmitters': [],
         'properties': []
       },
       'moduleName': 'SampleTurboModule'
@@ -485,6 +488,7 @@ exports[`RN Codegen Flow Parser can generate fixture IOS_ONLY_NATIVE_MODULE 1`] 
         }
       },
       'spec': {
+        'eventEmitters': [],
         'properties': [
           {
             'name': 'getEnums',
@@ -578,6 +582,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ALIASES 
       },
       'enumMap': {},
       'spec': {
+        'eventEmitters': [],
         'properties': [
           {
             'name': 'getNumber',
@@ -742,6 +747,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ARRAY_WI
       'aliasMap': {},
       'enumMap': {},
       'spec': {
+        'eventEmitters': [],
         'properties': [
           {
             'name': 'getArray',
@@ -784,6 +790,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ARRAY_WI
       'aliasMap': {},
       'enumMap': {},
       'spec': {
+        'eventEmitters': [],
         'properties': [
           {
             'name': 'getArray',
@@ -820,6 +827,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_BASIC_AR
       'aliasMap': {},
       'enumMap': {},
       'spec': {
+        'eventEmitters': [],
         'properties': [
           {
             'name': 'getArray',
@@ -887,6 +895,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_BASIC_PA
       'aliasMap': {},
       'enumMap': {},
       'spec': {
+        'eventEmitters': [],
         'properties': [
           {
             'name': 'passBool',
@@ -980,6 +989,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_CALLBACK
       'aliasMap': {},
       'enumMap': {},
       'spec': {
+        'eventEmitters': [],
         'properties': [
           {
             'name': 'getValueWithCallback',
@@ -1041,6 +1051,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_COMPLEX_
       'aliasMap': {},
       'enumMap': {},
       'spec': {
+        'eventEmitters': [],
         'properties': [
           {
             'name': 'getArray',
@@ -1101,6 +1112,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_COMPLEX_
       'aliasMap': {},
       'enumMap': {},
       'spec': {
+        'eventEmitters': [],
         'properties': [
           {
             'name': 'getObject',
@@ -1314,6 +1326,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_COMPLEX_
       'aliasMap': {},
       'enumMap': {},
       'spec': {
+        'eventEmitters': [],
         'properties': [
           {
             'name': 'getConstants',
@@ -1419,6 +1432,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_FLOAT_AN
       'aliasMap': {},
       'enumMap': {},
       'spec': {
+        'eventEmitters': [],
         'properties': [
           {
             'name': 'getInt',
@@ -1508,6 +1522,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_NESTED_A
       },
       'enumMap': {},
       'spec': {
+        'eventEmitters': [],
         'properties': [
           {
             'name': 'foo1',
@@ -1566,6 +1581,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_NULLABLE
       'aliasMap': {},
       'enumMap': {},
       'spec': {
+        'eventEmitters': [],
         'properties': [
           {
             'name': 'voidFunc',
@@ -1618,6 +1634,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_OBJECT_W
       },
       'enumMap': {},
       'spec': {
+        'eventEmitters': [],
         'properties': [
           {
             'name': 'getConstants',
@@ -1715,6 +1732,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_PARTIALS
       },
       'enumMap': {},
       'spec': {
+        'eventEmitters': [],
         'properties': [
           {
             'name': 'getSomeObj',
@@ -1827,6 +1845,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_PARTIALS
       },
       'enumMap': {},
       'spec': {
+        'eventEmitters': [],
         'properties': [
           {
             'name': 'getPartialPartial',
@@ -1916,6 +1935,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_PROMISE 
       },
       'enumMap': {},
       'spec': {
+        'eventEmitters': [],
         'properties': [
           {
             'name': 'getValueWithPromise',
@@ -1976,6 +1996,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ROOT_TAG
       'aliasMap': {},
       'enumMap': {},
       'spec': {
+        'eventEmitters': [],
         'properties': [
           {
             'name': 'getRootTag',
@@ -2014,6 +2035,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_SIMPLE_O
       'aliasMap': {},
       'enumMap': {},
       'spec': {
+        'eventEmitters': [],
         'properties': [
           {
             'name': 'getObject',
@@ -2050,6 +2072,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_UNION 1`
       'aliasMap': {},
       'enumMap': {},
       'spec': {
+        'eventEmitters': [],
         'properties': [
           {
             'name': 'getUnion',
@@ -2112,6 +2135,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_UNSAFE_O
       'aliasMap': {},
       'enumMap': {},
       'spec': {
+        'eventEmitters': [],
         'properties': [
           {
             'name': 'getUnsafeObject',
@@ -2186,6 +2210,7 @@ exports[`RN Codegen Flow Parser can generate fixture PROMISE_WITH_COMMONLY_USED_
       },
       'enumMap': {},
       'spec': {
+        'eventEmitters': [],
         'properties': [
           {
             'name': 'returnStringArray',

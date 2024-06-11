@@ -44,6 +44,7 @@ const SCHEMA_WITH_TM_AND_FC: SchemaType = {
       aliasMap: {},
       enumMap: {},
       spec: {
+        eventEmitters: [],
         properties: [
           {
             name: 'add',

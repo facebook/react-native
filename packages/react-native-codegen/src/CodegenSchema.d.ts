@@ -58,6 +58,11 @@ export interface MixedTypeAnnotation {
   readonly type: 'MixedTypeAnnotation';
 }
 
+export interface EventEmitterTypeAnnotation {
+  readonly type: 'EventEmitterTypeAnnotation';
+  readonly typeAnnotation: NativeModuleBaseTypeAnnotation;
+}
+
 export interface FunctionTypeAnnotation<P, R> {
   readonly type: 'FunctionTypeAnnotation';
   readonly params: readonly NamedShape<P>[];
@@ -241,12 +246,15 @@ export interface NativeModuleSchema {
 }
 
 export interface NativeModuleSpec {
+  readonly eventEmitters: readonly NativeModuleEventEmitterShape[];
   readonly properties: readonly NativeModulePropertyShape[];
 }
 
 export type NativeModulePropertyShape = NamedShape<
   Nullable<NativeModuleFunctionTypeAnnotation>
 >;
+
+export type NativeModuleEventEmitterShape = NamedShape<EventEmitterTypeAnnotation>;
 
 export interface NativeModuleEnumMap {
   readonly [enumName: string]: NativeModuleEnumDeclarationWithMembers;

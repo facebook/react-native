@@ -85,6 +85,15 @@ class AsyncEventEmitter : public IAsyncEventEmitter {
   AsyncEventEmitter(const AsyncEventEmitter&) = delete;
   AsyncEventEmitter& operator=(const AsyncEventEmitter&) = delete;
 
+  void emit(std::function<jsi::Value(jsi::Runtime&)>&& converter) {
+    std::lock_guard<std::mutex> lock(state_->mutex);
+    for (auto& [_, listener] : state_->listeners) {
+      listener.call([converter](jsi::Runtime& rt, jsi::Function& jsFunction) {
+        jsFunction.call(rt, converter(rt));
+      });
+    }
+  }
+
   void emit(Args... value) {
     std::lock_guard<std::mutex> lock(state_->mutex);
     for (const auto& [_, listener] : state_->listeners) {
