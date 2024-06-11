@@ -94,11 +94,8 @@ void ReactInstanceIntegrationTest::SetUp() {
         "mock-vm",
         [hostTargetIfModernCDP](std::unique_ptr<IRemoteConnection> remote)
             -> std::unique_ptr<ILocalConnection> {
-          auto localConnection = hostTargetIfModernCDP->connect(
-              std::move(remote),
-              {
-                  .integrationName = "ReactInstanceIntegrationTest",
-              });
+          auto localConnection =
+              hostTargetIfModernCDP->connect(std::move(remote));
           return localConnection;
         },
         // TODO: Allow customisation of InspectorTargetCapabilities

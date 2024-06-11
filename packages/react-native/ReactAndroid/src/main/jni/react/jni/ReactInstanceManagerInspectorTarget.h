@@ -51,6 +51,7 @@ class ReactInstanceManagerInspectorTarget
   jsinspector_modern::HostTarget* getInspectorTarget();
 
   // HostTargetDelegate methods
+  jsinspector_modern::HostTargetMetadata getMetadata() override;
   void onReload(const PageReloadRequest& request) override;
   void onSetPausedInDebuggerMessage(
       const OverlaySetPausedInDebuggerMessageRequest&) override;
