@@ -377,7 +377,7 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
     if (data == null
         || method.toLowerCase(Locale.ROOT).equals("get")
         || method.toLowerCase(Locale.ROOT).equals("head")) {
-      requestBody = RequestBodyUtil.getEmptyBody(method);
+      requestBody = RequestBodyUtil.INSTANCE.getEmptyBody(method);
     } else if (handler != null) {
       requestBody = handler.toRequestBody(data, contentType);
     } else if (data.hasKey(REQUEST_BODY_KEY_STRING)) {
@@ -391,8 +391,8 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
       }
       String body = data.getString(REQUEST_BODY_KEY_STRING);
       MediaType contentMediaType = MediaType.parse(contentType);
-      if (RequestBodyUtil.isGzipEncoding(contentEncoding)) {
-        requestBody = RequestBodyUtil.createGzip(contentMediaType, body);
+      if (RequestBodyUtil.INSTANCE.isGzipEncoding(contentEncoding)) {
+        requestBody = RequestBodyUtil.INSTANCE.createGzip(contentMediaType, body);
         if (requestBody == null) {
           ResponseUtil.onRequestError(
               reactApplicationContext, requestId, "Failed to gzip request body", null);
@@ -431,13 +431,13 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
       }
       String uri = data.getString(REQUEST_BODY_KEY_URI);
       InputStream fileInputStream =
-          RequestBodyUtil.getFileInputStream(getReactApplicationContext(), uri);
+          RequestBodyUtil.INSTANCE.getFileInputStream(getReactApplicationContext(), uri);
       if (fileInputStream == null) {
         ResponseUtil.onRequestError(
             reactApplicationContext, requestId, "Could not retrieve file for uri " + uri, null);
         return;
       }
-      requestBody = RequestBodyUtil.create(MediaType.parse(contentType), fileInputStream);
+      requestBody = RequestBodyUtil.INSTANCE.create(MediaType.parse(contentType), fileInputStream);
     } else if (data.hasKey(REQUEST_BODY_KEY_FORMDATA)) {
       if (contentType == null) {
         contentType = "multipart/form-data";
@@ -451,7 +451,7 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
       requestBody = multipartBuilder.build();
     } else {
       // Nothing in data payload, at least nothing we could understand anyway.
-      requestBody = RequestBodyUtil.getEmptyBody(method);
+      requestBody = RequestBodyUtil.INSTANCE.getEmptyBody(method);
     }
 
     requestBuilder.method(method, wrapRequestBodyWithProgressEmitter(requestBody, requestId));
@@ -571,7 +571,7 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
     }
     final ReactApplicationContext reactApplicationContext =
         getReactApplicationContextIfActiveOrWarn();
-    return RequestBodyUtil.createProgressRequest(
+    return RequestBodyUtil.INSTANCE.createProgressRequest(
         requestBody,
         new ProgressListener() {
           long last = System.nanoTime();
@@ -732,7 +732,8 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
         }
         String fileContentUriStr = bodyPart.getString(REQUEST_BODY_KEY_URI);
         InputStream fileInputStream =
-            RequestBodyUtil.getFileInputStream(getReactApplicationContext(), fileContentUriStr);
+            RequestBodyUtil.INSTANCE.getFileInputStream(
+                getReactApplicationContext(), fileContentUriStr);
         if (fileInputStream == null) {
           ResponseUtil.onRequestError(
               reactApplicationContext,
@@ -741,7 +742,8 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
               null);
           return null;
         }
-        multipartBuilder.addPart(headers, RequestBodyUtil.create(partContentType, fileInputStream));
+        multipartBuilder.addPart(
+            headers, RequestBodyUtil.INSTANCE.create(partContentType, fileInputStream));
       } else {
         ResponseUtil.onRequestError(
             reactApplicationContext, requestId, "Unrecognized FormData part.", null);
