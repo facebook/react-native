@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.facebook.react.modules.network
 
-package com.facebook.react.modules.network;
-
-import java.io.FilterOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.FilterOutputStream
+import java.io.IOException
+import java.io.OutputStream
 
 /**
  * An OutputStream that counts the number of bytes written.
@@ -26,42 +25,35 @@ import java.io.OutputStream;
  * @author Chris Nokleberg
  * @since 1.0
  */
-class CountingOutputStream extends FilterOutputStream {
-
-  private long mCount;
-
-  /**
-   * Constructs a new {@code FilterOutputStream} with {@code out} as its target stream.
-   *
-   * @param out the target stream that this stream writes to.
-   */
-  public CountingOutputStream(OutputStream out) {
-    super(out);
-    mCount = 0;
-  }
+internal open class CountingOutputStream
+/**
+ * Constructs a new `FilterOutputStream` with `out` as its target stream.
+ *
+ * @param out the target stream that this stream writes to.
+ */
+(out: OutputStream?) : FilterOutputStream(out) {
 
   /** Returns the number of bytes written. */
-  public long getCount() {
-    return mCount;
+  var count: Long = 0
+    private set
+
+  @Throws(IOException::class)
+  override fun write(b: ByteArray, off: Int, len: Int) {
+    out.write(b, off, len)
+    count += len.toLong()
   }
 
-  @Override
-  public void write(byte[] b, int off, int len) throws IOException {
-    out.write(b, off, len);
-    mCount += len;
-  }
-
-  @Override
-  public void write(int b) throws IOException {
-    out.write(b);
-    mCount++;
+  @Throws(IOException::class)
+  override fun write(b: Int) {
+    out.write(b)
+    count++
   }
 
   // Overriding close() because FilterOutputStream's close() method pre-JDK8 has bad behavior:
   // it silently ignores any exception thrown by flush(). Instead, just close the delegate stream.
   // It should flush itself if necessary.
-  @Override
-  public void close() throws IOException {
-    out.close();
+  @Throws(IOException::class)
+  override fun close() {
+    out.close()
   }
 }
