@@ -19,57 +19,6 @@ namespace facebook::react {
 template <class T>
 using LayoutableSmallVector = std::vector<T>;
 
-static LayoutableSmallVector<Rect> calculateTransformedFrames(
-    const LayoutableSmallVector<const ShadowNode*>& shadowNodeList,
-    LayoutableShadowNode::LayoutInspectingPolicy policy) {
-  auto size = shadowNodeList.size();
-  auto transformedFrames = LayoutableSmallVector<Rect>{size};
-  auto transformation = Transform::Identity();
-
-  for (auto i = size; i > 0; --i) {
-    auto currentShadowNode =
-        dynamic_cast<const LayoutableShadowNode*>(shadowNodeList.at(i - 1));
-    auto currentFrame = currentShadowNode->getLayoutMetrics().frame;
-
-    if (policy.includeTransform) {
-      if (Transform::isVerticalInversion(transformation)) {
-        auto parentShadowNode =
-            dynamic_cast<const LayoutableShadowNode*>(shadowNodeList.at(i));
-        currentFrame.origin.y =
-            parentShadowNode->getLayoutMetrics().frame.size.height -
-            currentFrame.size.height - currentFrame.origin.y;
-      }
-
-      if (Transform::isHorizontalInversion(transformation)) {
-        auto parentShadowNode =
-            dynamic_cast<const LayoutableShadowNode*>(shadowNodeList.at(i));
-        currentFrame.origin.x =
-            parentShadowNode->getLayoutMetrics().frame.size.width -
-            currentFrame.size.width - currentFrame.origin.x;
-      }
-
-      if (i != size) {
-        auto parentShadowNode =
-            dynamic_cast<const LayoutableShadowNode*>(shadowNodeList.at(i));
-        auto contentOriginOffset = parentShadowNode->getContentOriginOffset();
-        if (Transform::isVerticalInversion(transformation)) {
-          contentOriginOffset.y = -contentOriginOffset.y;
-        }
-        if (Transform::isHorizontalInversion(transformation)) {
-          contentOriginOffset.x = -contentOriginOffset.x;
-        }
-        currentFrame.origin += contentOriginOffset;
-      }
-
-      transformation = transformation * currentShadowNode->getTransform();
-    }
-
-    transformedFrames[i - 1] = currentFrame;
-  }
-
-  return transformedFrames;
-}
-
 LayoutableShadowNode::LayoutableShadowNode(
     const ShadowNodeFragment& fragment,
     const ShadowNodeFamily::Shared& family,
@@ -157,22 +106,6 @@ LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
     return EmptyLayoutMetrics;
   }
 
-  // ------------------------------
-  // TODO: T127619309 remove after validating that T127619309 is fixed
-  auto optionalCalculateTransformedFrames =
-      descendantNode->getContextContainer()
-      ? descendantNode->getContextContainer()->find<bool>(
-            "CalculateTransformedFramesEnabled")
-      : std::optional<bool>(false);
-
-  bool shouldCalculateTransformedFrames =
-      optionalCalculateTransformedFrames.has_value()
-      ? optionalCalculateTransformedFrames.value()
-      : false;
-
-  auto transformedFrames = shouldCalculateTransformedFrames
-      ? calculateTransformedFrames(shadowNodeList, policy)
-      : LayoutableSmallVector<Rect>();
   auto layoutMetrics = descendantLayoutableNode->getLayoutMetrics();
   auto& resultFrame = layoutMetrics.frame;
   resultFrame.origin = {0, 0};
@@ -194,9 +127,7 @@ LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
       return EmptyLayoutMetrics;
     }
 
-    auto currentFrame = shouldCalculateTransformedFrames
-        ? transformedFrames[i]
-        : currentShadowNode->getLayoutMetrics().frame;
+    auto currentFrame = currentShadowNode->getLayoutMetrics().frame;
     if (i == size - 1) {
       // If it's the last element, its origin is irrelevant.
       currentFrame.origin = {0, 0};
@@ -219,8 +150,7 @@ LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
           resultFrame, currentFrame.getCenter());
     }
 
-    if (!shouldCalculateTransformedFrames && i != 0 &&
-        policy.includeTransform) {
+    if (i != 0 && policy.includeTransform) {
       resultFrame.origin += currentShadowNode->getContentOriginOffset();
     }
 
