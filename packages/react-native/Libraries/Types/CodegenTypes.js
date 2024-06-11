@@ -42,6 +42,4 @@ type DefaultTypes = number | boolean | string | $ReadOnlyArray<string>;
 // eslint-disable-next-line no-unused-vars
 export type WithDefault<Type: DefaultTypes, Value: ?Type | string> = ?Type;
 
-export type EventEmitter<T> = {
-  addListener(handler: (T) => mixed): EventSubscription,
-};
+export type EventEmitter<T> = (handler: (T) => mixed) => EventSubscription;

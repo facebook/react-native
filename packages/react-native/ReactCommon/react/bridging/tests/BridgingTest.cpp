@@ -445,7 +445,7 @@ void addEventSubscription(
       [lastEvent = lastEvent](const EventType& event) { *lastEvent = event; },
       invoker);
   eventSubscriptionsWithListener.emplace_back(std::make_pair(
-      jsi::Object(eventEmitterJs.getPropertyAsFunction(rt, "addListener")
+      jsi::Object(eventEmitterJs.asFunction(rt)
                       .callWithThis(rt, eventEmitterJs, listenJs)
                       .asObject(rt)),
       std::move(lastEvent)));

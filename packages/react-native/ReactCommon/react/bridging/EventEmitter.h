@@ -104,10 +104,7 @@ class AsyncEventEmitter : public IAsyncEventEmitter {
   jsi::Object get(
       jsi::Runtime& rt,
       const std::shared_ptr<CallInvoker>& jsInvoker) const override {
-    auto result = jsi::Object(rt);
-    result.setProperty(
-        rt, "addListener", bridging::toJs(rt, listen_, jsInvoker));
-    return result;
+    return bridging::toJs(rt, listen_, jsInvoker);
   }
 
  private:
