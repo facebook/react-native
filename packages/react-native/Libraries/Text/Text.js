@@ -212,33 +212,28 @@ const Text: React.AbstractComponent<
     default: accessible,
   });
 
-  // $FlowFixMe[underconstrained-implicit-instantiation]
-  style = flattenStyle(style);
-
-  if (typeof style?.fontWeight === 'number') {
-    // $FlowFixMe[prop-missing]
-    // $FlowFixMe[cannot-write]
-    style.fontWeight = style?.fontWeight.toString();
-  }
-
   let _selectable = restProps.selectable;
-  if (style?.userSelect != null) {
-    // $FlowFixMe[invalid-computed-prop]
-    _selectable = userSelectToSelectableMap[style.userSelect];
-    // $FlowFixMe[prop-missing]
-    // $FlowFixMe[cannot-write]
-    delete style.userSelect;
-  }
 
-  if (style?.verticalAlign != null) {
-    // $FlowFixMe[prop-missing]
-    // $FlowFixMe[cannot-write]
-    style.textAlignVertical =
-      // $FlowFixMe[invalid-computed-prop]
-      verticalAlignToTextAlignVerticalMap[style.verticalAlign];
-    // $FlowFixMe[prop-missing]
-    // $FlowFixMe[cannot-write]
-    delete style.verticalAlign;
+  const processedStyle = flattenStyle(style);
+  if (processedStyle != null) {
+    if (typeof processedStyle.fontWeight === 'number') {
+      // $FlowFixMe[cannot-write]
+      processedStyle.fontWeight = processedStyle.fontWeight.toString();
+    }
+
+    if (processedStyle.userSelect != null) {
+      _selectable = userSelectToSelectableMap[processedStyle.userSelect];
+      // $FlowFixMe[cannot-write]
+      delete processedStyle.userSelect;
+    }
+
+    if (processedStyle.verticalAlign != null) {
+      // $FlowFixMe[cannot-write]
+      processedStyle.textAlignVertical =
+        verticalAlignToTextAlignVerticalMap[processedStyle.verticalAlign];
+      // $FlowFixMe[cannot-write]
+      delete processedStyle.verticalAlign;
+    }
   }
 
   const _hasOnPressOrOnLongPress =
@@ -257,7 +252,7 @@ const Text: React.AbstractComponent<
       ref={forwardedRef}
       selectable={_selectable}
       selectionColor={selectionColor}
-      style={style}
+      style={processedStyle}
     />
   ) : (
     <TextAncestor.Provider value={true}>
@@ -280,7 +275,7 @@ const Text: React.AbstractComponent<
         ref={forwardedRef}
         selectable={_selectable}
         selectionColor={selectionColor}
-        style={style}
+        style={processedStyle}
       />
     </TextAncestor.Provider>
   );
