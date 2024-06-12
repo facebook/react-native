@@ -40,6 +40,13 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
   {
   }
 
+  jsinspector_modern::HostTargetMetadata getMetadata() override
+  {
+    return {
+        .integrationName = "iOS Bridgeless (RCTHost)",
+    };
+  }
+
   void onReload(const PageReloadRequest &request) override
   {
     RCTAssertMainQueue();
@@ -233,11 +240,7 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
             // This can happen if we're about to be dealloc'd. Reject the connection.
             return nullptr;
           }
-          return strongSelf->_inspectorTarget->connect(
-              std::move(remote),
-              {
-                  .integrationName = "iOS Bridgeless (RCTHost)",
-              });
+          return strongSelf->_inspectorTarget->connect(std::move(remote));
         },
         {.nativePageReloads = true, .prefersFuseboxFrontend = true});
   }

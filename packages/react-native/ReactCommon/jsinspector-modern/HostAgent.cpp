@@ -27,11 +27,11 @@ namespace facebook::react::jsinspector_modern {
 HostAgent::HostAgent(
     FrontendChannel frontendChannel,
     HostTargetController& targetController,
-    HostTarget::SessionMetadata sessionMetadata,
+    HostTargetMetadata hostMetadata,
     SessionState& sessionState)
     : frontendChannel_(frontendChannel),
       targetController_(targetController),
-      sessionMetadata_(std::move(sessionMetadata)),
+      hostMetadata_(std::move(hostMetadata)),
       sessionState_(sessionState) {}
 
 void HostAgent::handleRequest(const cdp::PreparsedRequest& req) {
@@ -49,10 +49,10 @@ void HostAgent::handleRequest(const cdp::PreparsedRequest& req) {
     }
 
     // Send a log entry with the integration name.
-    if (sessionMetadata_.integrationName) {
+    if (hostMetadata_.integrationName) {
       sendInfoLogEntry(
           ANSI_COLOR_BG_YELLOW "Debugger integration: " +
-          *sessionMetadata_.integrationName);
+          *hostMetadata_.integrationName);
     }
 
     shouldSendOKResponse = true;

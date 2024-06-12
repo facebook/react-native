@@ -197,6 +197,13 @@ class RCTBridgeHostTargetDelegate : public facebook::react::jsinspector_modern::
   {
   }
 
+  facebook::react::jsinspector_modern::HostTargetMetadata getMetadata() override
+  {
+    return {
+        .integrationName = "iOS Bridge (RCTBridge)",
+    };
+  }
+
   void onReload(const PageReloadRequest &request) override
   {
     RCTAssertMainQueue();
@@ -458,11 +465,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
             // This can happen if we're about to be dealloc'd. Reject the connection.
             return nullptr;
           }
-          return strongSelf->_inspectorTarget->connect(
-              std::move(remote),
-              {
-                  .integrationName = "iOS Bridge (RCTBridge)",
-              });
+          return strongSelf->_inspectorTarget->connect(std::move(remote));
         },
         {.nativePageReloads = true, .prefersFuseboxFrontend = true});
   }

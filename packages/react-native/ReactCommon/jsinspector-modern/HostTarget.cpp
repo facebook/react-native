@@ -29,7 +29,7 @@ class HostTargetSession {
   explicit HostTargetSession(
       std::unique_ptr<IRemoteConnection> remote,
       HostTargetController& targetController,
-      HostTarget::SessionMetadata sessionMetadata)
+      HostTargetMetadata hostMetadata)
       : remote_(std::make_shared<RAIIRemoteConnection>(std::move(remote))),
         frontendChannel_(
             [remoteWeak = std::weak_ptr(remote_)](std::string_view message) {
@@ -40,7 +40,7 @@ class HostTargetSession {
         hostAgent_(
             frontendChannel_,
             targetController,
-            std::move(sessionMetadata),
+            std::move(hostMetadata),
             state_) {}
 
   /**
@@ -146,10 +146,9 @@ HostTarget::HostTarget(HostTargetDelegate& delegate)
       executionContextManager_{std::make_shared<ExecutionContextManager>()} {}
 
 std::unique_ptr<ILocalConnection> HostTarget::connect(
-    std::unique_ptr<IRemoteConnection> connectionToFrontend,
-    SessionMetadata sessionMetadata) {
+    std::unique_ptr<IRemoteConnection> connectionToFrontend) {
   auto session = std::make_shared<HostTargetSession>(
-      std::move(connectionToFrontend), controller_, std::move(sessionMetadata));
+      std::move(connectionToFrontend), controller_, delegate_.getMetadata());
   session->setCurrentInstance(currentInstance_.get());
   sessions_.insert(std::weak_ptr(session));
   return std::make_unique<CallbackLocalConnection>(
