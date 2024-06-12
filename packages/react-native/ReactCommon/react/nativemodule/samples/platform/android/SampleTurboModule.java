@@ -104,7 +104,26 @@ public class SampleTurboModule extends NativeSampleTurboModuleSpec
   @Override
   public void voidFunc() {
     log("voidFunc", "<void>", "<void>");
-    return;
+    emitOnPress();
+    emitOnClick("click");
+    {
+      WritableNativeMap map = new WritableNativeMap();
+      map.putInt("a", 1);
+      map.putString("b", "two");
+      emitOnChange(map);
+    }
+    {
+      WritableNativeArray array = new WritableNativeArray();
+      WritableNativeMap map = new WritableNativeMap();
+      map.putInt("a", 1);
+      map.putString("b", "two");
+      array.pushMap(map);
+      WritableNativeMap map1 = new WritableNativeMap();
+      map1.putInt("a", 3);
+      map1.putString("b", "four");
+      array.pushMap(map1);
+      emitOnSubmit(array);
+    }
   }
 
   // This function returns {@link WritableMap} instead of {@link Map} for backward compat with

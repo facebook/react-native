@@ -992,4 +992,34 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
   }
 }
 
+void JavaTurboModule::setEventEmitterCallback(
+    jni::alias_ref<jobject> jinstance) {
+  JNIEnv* env = jni::Environment::current();
+  auto instance = jinstance.get();
+  static jmethodID cachedMethodId = nullptr;
+  if (cachedMethodId == nullptr) {
+    jclass cls = env->GetObjectClass(instance);
+    cachedMethodId = env->GetMethodID(
+        cls,
+        "setEventEmitterCallback",
+        "(Lcom/facebook/react/bridge/CxxCallbackImpl;)V");
+  }
+
+  auto eventEmitterLookup =
+      [&](const std::string& eventName) -> AsyncEventEmitter<folly::dynamic>& {
+    return static_cast<AsyncEventEmitter<folly::dynamic>&>(
+        *eventEmitterMap_[eventName].get());
+  };
+
+  jvalue arg;
+  arg.l = JCxxCallbackImpl::newObjectCxxArgs([eventEmitterLookup = std::move(
+                                                  eventEmitterLookup)](
+                                                 folly::dynamic args) {
+            auto eventName = args.at(0).asString();
+            auto eventArgs = args.size() > 1 ? args.at(1) : nullptr;
+            eventEmitterLookup(eventName).emit(std::move(eventArgs));
+          }).release();
+  env->CallVoidMethod(instance, cachedMethodId, arg);
+}
+
 } // namespace facebook::react

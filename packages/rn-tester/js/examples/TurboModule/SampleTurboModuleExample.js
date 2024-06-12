@@ -9,6 +9,7 @@
  */
 
 import type {RootTag} from 'react-native/Libraries/ReactNative/RootTag';
+import type {EventSubscription} from 'react-native/Libraries/vendor/emitter/EventEmitter';
 
 import styles from './TurboModuleExampleCommon';
 import * as React from 'react';
@@ -68,6 +69,7 @@ type ErrorExamples =
 
 class SampleTurboModuleExample extends React.Component<{||}, State> {
   static contextType: React$Context<RootTag> = RootTagContext;
+  eventSubscriptions: EventSubscription[] = [];
 
   state: State = {
     testResults: {},
@@ -217,6 +219,30 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
       throw new Error(
         'The JSI bindings for SampleTurboModule are not installed.',
       );
+    }
+    this.eventSubscriptions.push(
+      NativeSampleTurboModule.onPress(value => console.log('onPress: ()')),
+    );
+    this.eventSubscriptions.push(
+      NativeSampleTurboModule.onClick(value =>
+        console.log(`onClick: (${value})`),
+      ),
+    );
+    this.eventSubscriptions.push(
+      NativeSampleTurboModule.onChange(value =>
+        console.log(`onChange: (${JSON.stringify(value)})`),
+      ),
+    );
+    this.eventSubscriptions.push(
+      NativeSampleTurboModule.onSubmit(value =>
+        console.log(`onSubmit: (${JSON.stringify(value)})`),
+      ),
+    );
+  }
+
+  componentWillUnmount() {
+    for (const subscription of this.eventSubscriptions) {
+      subscription.remove();
     }
   }
 
