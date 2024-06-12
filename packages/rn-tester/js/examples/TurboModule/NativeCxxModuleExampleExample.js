@@ -9,6 +9,7 @@
  */
 
 import type {RootTag} from 'react-native/Libraries/ReactNative/RootTag';
+import type {EventSubscription} from 'react-native/Libraries/vendor/emitter/EventEmitter';
 
 import NativeCxxModuleExample, {
   EnumInt,
@@ -72,6 +73,7 @@ type ErrorExamples =
 
 class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
   static contextType: React$Context<RootTag> = RootTagContext;
+  eventSubscriptions: EventSubscription[] = [];
 
   state: State = {
     testResults: {},
@@ -261,6 +263,34 @@ class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
       throw new Error(
         'Cannot load this example because TurboModule is not configured.',
       );
+    }
+    if (NativeCxxModuleExample) {
+      this.eventSubscriptions.push(
+        NativeCxxModuleExample.onPress.addListener(value =>
+          console.log('onPress: ()'),
+        ),
+      );
+      this.eventSubscriptions.push(
+        NativeCxxModuleExample.onClick.addListener(value =>
+          console.log(`onClick: (${value})`),
+        ),
+      );
+      this.eventSubscriptions.push(
+        NativeCxxModuleExample.onChange.addListener(value =>
+          console.log(`onChange: (${JSON.stringify(value)})`),
+        ),
+      );
+      this.eventSubscriptions.push(
+        NativeCxxModuleExample.onSubmit.addListener(value =>
+          console.log(`onSubmit: (${JSON.stringify(value)})`),
+        ),
+      );
+    }
+  }
+
+  componentWillUnmount() {
+    for (const subscription of this.eventSubscriptions) {
+      subscription.remove();
     }
   }
 
