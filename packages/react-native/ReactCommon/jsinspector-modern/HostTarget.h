@@ -37,11 +37,7 @@ class HostCommandSender;
 class HostTarget;
 
 struct HostTargetMetadata {
-  std::optional<std::string> appIdentifier;
-  std::optional<std::string> deviceName;
   std::optional<std::string> integrationName;
-  std::optional<std::string> platform;
-  std::optional<std::string> reactNativeVersion;
 };
 
 /**
@@ -94,8 +90,7 @@ class HostTargetDelegate {
   virtual ~HostTargetDelegate();
 
   /**
-   * Returns a metadata object describing the host. This is called on an
-   * initial response to @cdp ReactNativeApplication.enable.
+   * Returns a metadata object describing the host.
    */
   virtual HostTargetMetadata getMetadata() = 0;
 
