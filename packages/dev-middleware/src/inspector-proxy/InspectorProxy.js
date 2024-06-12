@@ -295,6 +295,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
   //
   // https://datatracker.ietf.org/doc/html/rfc6455#section-5.5.2
   #startHeartbeat(socket: WS, intervalMs: number) {
+    let shouldSetTerminateTimeout = false;
     let terminateTimeout = null;
 
     const pingTimeout: Timeout = setTimeout(() => {
@@ -303,27 +304,45 @@ export default class InspectorProxy implements InspectorProxyQueries {
         pingTimeout.refresh();
         return;
       }
-      socket.ping();
-      terminateTimeout = setTimeout(() => {
-        if (socket.readyState !== WS.OPEN) {
+
+      shouldSetTerminateTimeout = true;
+      socket.ping(() => {
+        if (!shouldSetTerminateTimeout) {
+          // Sometimes, this `sent` callback fires later than
+          // the actual pong reply.
+          //
+          // If any message came in between ping `sending` and `sent`,
+          // then the connection exists; and we don't need to do anything.
           return;
         }
-        // We don't use close() here because that initiates a closing handshake,
-        // which will not complete if the other end has gone away - 'close'
-        // would not be emitted.
-        //
-        // terminate() emits 'close' immediately, allowing us to handle it and
-        // inform any clients.
-        socket.terminate();
-      }, MAX_PONG_LATENCY_MS).unref();
+
+        shouldSetTerminateTimeout = false;
+        terminateTimeout = setTimeout(() => {
+          if (socket.readyState !== WS.OPEN) {
+            return;
+          }
+          // We don't use close() here because that initiates a closing handshake,
+          // which will not complete if the other end has gone away - 'close'
+          // would not be emitted.
+          //
+          // terminate() emits 'close' immediately, allowing us to handle it and
+          // inform any clients.
+          socket.terminate();
+        }, MAX_PONG_LATENCY_MS).unref();
+      });
     }, intervalMs).unref();
 
-    socket.on('pong', () => {
+    const onAnyMessageFromDebugger = () => {
+      shouldSetTerminateTimeout = false;
       terminateTimeout && clearTimeout(terminateTimeout);
       pingTimeout.refresh();
-    });
+    };
+
+    socket.on('pong', onAnyMessageFromDebugger);
+    socket.on('message', onAnyMessageFromDebugger);
 
     socket.on('close', () => {
+      shouldSetTerminateTimeout = false;
       terminateTimeout && clearTimeout(terminateTimeout);
       clearTimeout(pingTimeout);
     });
