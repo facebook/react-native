@@ -13,6 +13,8 @@
 
 import type {FilterPrimitive} from '../processFilter';
 
+import processColor from '../processColor';
+
 const processFilter = require('../processFilter').default;
 
 // js1 test processFilter
@@ -130,6 +132,25 @@ describe('processFilter', () => {
   it('string brightness(.5)', () => {
     // $FlowExpectedError[incompatible-call]
     expect(processFilter('brightness(.5)')).toEqual([{brightness: 0.5}]);
+  });
+
+  it('should parse string drop-shadow', () => {
+    expect(processFilter('dropShadow(4px 4) brightness(.5)')).toEqual([
+      {dropShadow: {offsetX: 4, offsetY: 4}},
+      {brightness: 0.5},
+    ]);
+  });
+
+  it('should parse string drop-shadow with color', () => {
+    expect(processFilter('dropShadow(50 50 purple)')).toEqual([
+      {dropShadow: {offsetX: 50, offsetY: 50, color: processColor('purple')}},
+    ]);
+  });
+
+  it('should parse object drop-shadow', () => {
+    expect(processFilter([{dropShadow: {offsetX: 4, offsetY: 4}}])).toEqual([
+      {dropShadow: {offsetX: 4, offsetY: 4}},
+    ]);
   });
 });
 
