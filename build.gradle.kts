@@ -7,7 +7,7 @@
 
 plugins {
   alias(libs.plugins.nexus.publish)
-  alias(libs.plugins.android.library) apply false
+  id(libs.plugins.android.library.get().pluginId) version libs.plugins.android.library.get().version.requiredVersion apply false
   alias(libs.plugins.android.application) apply false
   alias(libs.plugins.download) apply false
   alias(libs.plugins.kotlin.android) apply false

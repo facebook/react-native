@@ -12,8 +12,8 @@ import org.apache.tools.ant.taskdefs.condition.Os
 plugins {
   id("maven-publish")
   id("signing")
-  alias(libs.plugins.android.library)
-  alias(libs.plugins.download)
+  id(libs.plugins.android.library.get().pluginId)
+  id(libs.plugins.download.get().pluginId)
 }
 
 group = "com.facebook.react"
