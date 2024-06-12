@@ -214,16 +214,16 @@ jest
       alertWithArgs: jest.fn(),
     },
     AsyncLocalStorage: {
-      multiGet: jest.fn((_, callback) =>
+      multiGet: jest.fn((_keys, callback) =>
         process.nextTick(() => callback(null, [])),
       ),
-      multiSet: jest.fn((_, callback) =>
+      multiSet: jest.fn((_entries, callback) =>
         process.nextTick(() => callback(null)),
       ),
-      multiRemove: jest.fn((_, callback) =>
+      multiRemove: jest.fn((_keys, callback) =>
         process.nextTick(() => callback(null)),
       ),
-      multiMerge: jest.fn((_, callback) =>
+      multiMerge: jest.fn((_entries, callback) =>
         process.nextTick(() => callback(null)),
       ),
       clear: jest.fn(callback => process.nextTick(() => callback(null))),
@@ -256,8 +256,8 @@ jest
       reload: jest.fn(),
     },
     ImageLoader: {
-      getSize: jest.fn(_ => Promise.resolve([320, 240])),
-      getSizeWithHeaders: jest.fn((_, __) =>
+      getSize: jest.fn(_url => Promise.resolve([320, 240])),
+      getSizeWithHeaders: jest.fn((_url, _headers) =>
         Promise.resolve({height: 222, width: 333}),
       ),
       prefetchImage: jest.fn(),
@@ -265,7 +265,7 @@ jest
       queryCache: jest.fn(),
     },
     ImageViewManager: {
-      getSize: jest.fn((_, success) =>
+      getSize: jest.fn((_uri, success) =>
         process.nextTick(() => success(320, 240)),
       ),
       prefetchImage: jest.fn(),
@@ -366,10 +366,10 @@ jest
   }))
   .mock('../Libraries/NativeComponent/NativeComponentRegistry', () => {
     return {
-      get: jest.fn((name, _) => {
+      get: jest.fn((name, _viewConfigProvider) => {
         return jest.requireActual('./mockNativeComponent').default(name);
       }),
-      getWithFallback_DEPRECATED: jest.fn((name, _) => {
+      getWithFallback_DEPRECATED: jest.fn((name, _viewConfigProvider) => {
         return jest.requireActual('./mockNativeComponent').default(name);
       }),
       setRuntimeConfigProvider: jest.fn(),
