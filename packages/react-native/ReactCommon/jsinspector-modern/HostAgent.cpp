@@ -131,6 +131,20 @@ void HostAgent::handleRequest(const cdp::PreparsedRequest& req) {
 
     shouldSendOKResponse = true;
     isFinishedHandlingRequest = true;
+  } else if (req.method == "ReactNativeApplication.enable") {
+    sessionState_.isReactNativeApplicationDomainEnabled = true;
+
+    frontendChannel_(cdp::jsonNotification(
+        "ReactNativeApplication.metadataUpdated",
+        hostMetadataToDynamic(hostMetadata_)));
+
+    shouldSendOKResponse = true;
+    isFinishedHandlingRequest = true;
+  } else if (req.method == "ReactNativeApplication.disable") {
+    sessionState_.isReactNativeApplicationDomainEnabled = false;
+
+    shouldSendOKResponse = true;
+    isFinishedHandlingRequest = true;
   } else if (req.method == "Tracing.start") {
     // @cdp Tracing.start is implemented as a stub only.
     frontendChannel_(cdp::jsonNotification(

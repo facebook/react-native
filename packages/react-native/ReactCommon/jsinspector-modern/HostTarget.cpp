@@ -220,4 +220,12 @@ bool HostTargetController::decrementPauseOverlayCounter() {
   return true;
 }
 
+folly::dynamic hostMetadataToDynamic(const HostTargetMetadata& metadata) {
+  folly::dynamic result = folly::dynamic::object;
+
+  result["integrationName"] = metadata.integrationName.value_or(nullptr);
+
+  return result;
+}
+
 } // namespace facebook::react::jsinspector_modern
