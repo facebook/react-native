@@ -190,7 +190,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
       incrementalDataBlock(data, length, total);
     }];
   }
-  if (_downloadProgressBlock && total > 0) {
+  if (_downloadProgressBlock) {
     RCTURLRequestProgressBlock downloadProgressBlock = _downloadProgressBlock;
     [self dispatchCallback:^{
       downloadProgressBlock(length, total);
