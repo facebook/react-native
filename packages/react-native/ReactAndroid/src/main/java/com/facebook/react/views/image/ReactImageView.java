@@ -134,6 +134,7 @@ public class ReactImageView extends GenericDraweeView {
   private int mFadeDurationMs = -1;
   private boolean mProgressiveRenderingEnabled;
   private ReadableMap mHeaders;
+  private float mResizeMultiplier = 1.0f;
 
   // We can't specify rounding in XML, so have to do so here
   private static GenericDraweeHierarchy buildHierarchy(Context context) {
@@ -303,6 +304,14 @@ public class ReactImageView extends GenericDraweeView {
   public void setResizeMethod(ImageResizeMethod resizeMethod) {
     if (mResizeMethod != resizeMethod) {
       mResizeMethod = resizeMethod;
+      mIsDirty = true;
+    }
+  }
+
+  public void setResizeMultiplier(float multiplier) {
+    boolean isNewMultiplier = Math.abs(mResizeMultiplier - multiplier) > 0.0001f;
+    if (isNewMultiplier) {
+      mResizeMultiplier = multiplier;
       mIsDirty = true;
     }
   }
@@ -478,7 +487,7 @@ public class ReactImageView extends GenericDraweeView {
     }
     Postprocessor postprocessor = MultiPostprocessor.from(postprocessors);
 
-    ResizeOptions resizeOptions = doResize ? new ResizeOptions(getWidth(), getHeight()) : null;
+    ResizeOptions resizeOptions = doResize ? getResizeOptions() : null;
 
     ImageRequestBuilder imageRequestBuilder =
         ImageRequestBuilder.newBuilderWithSource(mImageSource.getUri())
@@ -599,6 +608,16 @@ public class ReactImageView extends GenericDraweeView {
     } else {
       return false;
     }
+  }
+
+  @Nullable
+  private ResizeOptions getResizeOptions() {
+    int width = Math.round((float) getWidth() * mResizeMultiplier);
+    int height = Math.round((float) getHeight() * mResizeMultiplier);
+    if (width <= 0 || height <= 0) {
+      return null;
+    }
+    return new ResizeOptions(width, height);
   }
 
   private void warnImageSource(String uri) {

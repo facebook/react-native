@@ -4445,6 +4445,8 @@ type AndroidImageProps = $ReadOnly<{|
   loadingIndicatorSource?: ?(number | $ReadOnly<{| uri: string |}>),
   progressiveRenderingEnabled?: ?boolean,
   fadeDuration?: ?number,
+  resizeMethod?: ?(\\"auto\\" | \\"resize\\" | \\"scale\\"),
+  resizeMultiplier?: ?number,
 |}>;
 export type ImageProps = {|
   ...$Diff<ViewProps, $ReadOnly<{| style: ?ViewStyleProp |}>>,
@@ -4472,7 +4474,6 @@ export type ImageProps = {|
   onLoad?: ?(event: ImageLoadEvent) => void,
   onLoadEnd?: ?() => void,
   onLoadStart?: ?() => void,
-  resizeMethod?: ?(\\"auto\\" | \\"resize\\" | \\"scale\\"),
   source?: ?ImageSource,
   style?: ?ImageStyleProp,
   referrerPolicy?: ?(
