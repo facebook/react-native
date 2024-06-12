@@ -6,6 +6,9 @@ runs:
     - name: Yarn install
       shell: bash
       run: yarn install --non-interactive
+    - name: Validate version
+      shell: bash
+      run: node ./scripts/releases/validate-version.js --build-type release --version "${{ inputs.version }}"
     - name: Versioning workspace packages
       shell: bash
       run: |
@@ -17,7 +20,14 @@ runs:
     - name: Creating release commit
       shell: bash
       run: |
-        git commit -a -m "Release ${{ inputs.version }}" -m "#publish-packages-to-npm&${{ inputs.tag }}"
+        BRANCH="$(git branch --show-current)"
+        NPM_TAG="$(node ./scripts/releases/compute-npm-tag.js --version ${{ inputs.version }} --branch $BRANCH)"
+
+        if [[ "${{ inputs.is-latest-on-npm }}" ]]; then
+          NPM_TAG="$(node ./scripts/releases/compute-npm-tag.js --is_latest_on_npm --version ${{ inputs.version }} --branch $BRANCH)"
+        fi
+
+        git commit -a -m "Release ${{ inputs.version }}" -m "#publish-packages-to-npm&$NPM_TAG"
         git tag -a "v${{ inputs.version }}" -m "v${{ inputs.version }}"
         GIT_PAGER=cat git show HEAD
     - name: Update "latest" tag if needed
