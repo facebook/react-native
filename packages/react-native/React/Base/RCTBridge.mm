@@ -20,7 +20,6 @@
 #import <jsinspector-modern/ReactCdp.h>
 #import <optional>
 #import "RCTDevLoadingViewProtocol.h"
-#import "RCTInspectorUtils.h"
 #import "RCTJSThread.h"
 #import "RCTLog.h"
 #import "RCTModuleData.h"
@@ -200,14 +199,8 @@ class RCTBridgeHostTargetDelegate : public facebook::react::jsinspector_modern::
 
   facebook::react::jsinspector_modern::HostTargetMetadata getMetadata() override
   {
-    auto metadata = [RCTInspectorUtils getHostMetadata];
-
     return {
-        .appIdentifier = metadata.appIdentifier,
-        .deviceName = metadata.deviceName,
         .integrationName = "iOS Bridge (RCTBridge)",
-        .platform = metadata.platform,
-        .reactNativeVersion = metadata.reactNativeVersion,
     };
   }
 

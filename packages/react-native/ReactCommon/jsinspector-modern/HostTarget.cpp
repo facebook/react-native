@@ -223,11 +223,7 @@ bool HostTargetController::decrementPauseOverlayCounter() {
 folly::dynamic hostMetadataToDynamic(const HostTargetMetadata& metadata) {
   folly::dynamic result = folly::dynamic::object;
 
-  result["appIdentifier"] = metadata.appIdentifier.value_or(nullptr);
-  result["deviceName"] = metadata.deviceName.value_or(nullptr);
   result["integrationName"] = metadata.integrationName.value_or(nullptr);
-  result["platform"] = metadata.platform.value_or(nullptr);
-  result["reactNativeVersion"] = metadata.reactNativeVersion.value_or(nullptr);
 
   return result;
 }
