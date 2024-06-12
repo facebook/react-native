@@ -332,6 +332,42 @@ TYPED_TEST(JsiIntegrationPortableTest, FuseboxSetClientMetadata) {
                                })");
 }
 
+TYPED_TEST(JsiIntegrationPortableTest, ReactNativeApplicationEnable) {
+  this->connect();
+
+  this->expectMessageFromPage(JsonEq(R"({
+                                          "id": 1,
+                                          "result": {}
+                                        })"));
+  this->expectMessageFromPage(JsonEq(R"({
+                                          "method": "ReactNativeApplication.metadataUpdated",
+                                          "params": {
+                                            "integrationName": "JsiIntegrationTest"
+                                          }
+                                        })"));
+
+  this->toPage_->sendMessage(R"({
+                                 "id": 1,
+                                 "method": "ReactNativeApplication.enable",
+                                 "params": {}
+                               })");
+}
+
+TYPED_TEST(JsiIntegrationPortableTest, ReactNativeApplicationDisable) {
+  this->connect();
+
+  this->expectMessageFromPage(JsonEq(R"({
+                                          "id": 1,
+                                          "result": {}
+                                        })"));
+
+  this->toPage_->sendMessage(R"({
+                                 "id": 1,
+                                 "method": "ReactNativeApplication.disable",
+                                 "params": {}
+                               })");
+}
+
 #pragma endregion // AllEngines
 #pragma region AllHermesVariants
 
