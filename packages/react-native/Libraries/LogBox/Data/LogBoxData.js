@@ -15,6 +15,7 @@ import type {LogLevel} from './LogBoxLog';
 import type {
   Category,
   ComponentStack,
+  ComponentStackType,
   ExtendedExceptionData,
   Message,
 } from './parseLogBoxLog';
@@ -30,6 +31,7 @@ export type LogData = $ReadOnly<{|
   message: Message,
   category: Category,
   componentStack: ComponentStack,
+  componentStackType?: ComponentStackType,
   stack?: string,
 |}>;
 
@@ -209,6 +211,7 @@ export function addLog(log: LogData): void {
           stack,
           category: log.category,
           componentStack: log.componentStack,
+          componentStackType: log.componentStackType,
         }),
       );
     } catch (error) {
