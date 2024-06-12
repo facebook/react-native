@@ -1143,6 +1143,6 @@ TEST(LayoutableShadowNodeTest, inversedContentOriginOffset) {
       LayoutableShadowNode::computeRelativeLayoutMetrics(
           childShadowNode->getFamily(), *parentShadowNode, {});
 
-  EXPECT_EQ(relativeLayoutMetrics.frame.origin.x, 160);
-  EXPECT_EQ(relativeLayoutMetrics.frame.origin.y, 90);
+  EXPECT_EQ(relativeLayoutMetrics.frame.origin.x, 180);
+  EXPECT_EQ(relativeLayoutMetrics.frame.origin.y, 130);
 }
