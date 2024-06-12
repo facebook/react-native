@@ -29,6 +29,7 @@ jobs:
             echo "Setting release type to dry-run"
             echo "RELEASE_TYPE=dry-run" >> $GITHUB_OUTPUT
           fi
+
   prepare_hermes_workspace:
     runs-on: ubuntu-latest
     env:
@@ -82,6 +83,7 @@ jobs:
           cp -r packages/react-native/sdks/hermes/* $HERMES_WS_DIR/hermes/.
 
           echo ${{ steps.hermes-version.outputs.version }}
+
   build_hermesc_apple:
     runs-on: macos-13
     needs: prepare_hermes_workspace
@@ -111,6 +113,7 @@ jobs:
           cd ./packages/react-native/sdks/hermes || exit 1
           . ./utils/build-apple-framework.sh
           build_host_hermesc_if_needed
+
   build_apple_slices_hermes:
     runs-on: macos-14
     needs: [build_hermesc_apple, prepare_hermes_workspace]
@@ -140,21 +143,20 @@ jobs:
       - name: Check if the required artifacts already exist
         id: check_if_apple_artifacts_are_there
         run: |
-          if ${{ matrix.flavor == 'Debug' }} && \\
-            ${{ steps.cache_setup.outputs.cache-hit-hermes-tarball-debug == true }} && \
-            ${{ steps.cache_setup.outputs.cache-hit-macos-bin-debug == true }} && \
-            ${{ steps.cache_setup.outputs.cache-hit-dsym-debug == true }} ; then
-            echo "ARTIFACTS_EXIST=true" >> $GITHUB_ENV
-          fi
+          FLAVOR="${{ matrix.flavor }}"
+          echo "Flavor is $FLAVOR"
+          OSX_BIN="/tmp/hermes/osx-bin/$FLAVOR"
+          DSYM="/tmp/hermes/dSYM/$FLAVOR"
+          HERMES="/tmp/hermes/hermes-runtime-darwin/hermes-ios-$FLAVOR.tar.gz"
 
-          if ${{ matrix.flavor == 'Release' }} && \\
-            ${{ steps.cache_setup.outputs.cache-hit-hermes-tarball-release == true }} && \
-            ${{ steps.cache_setup.outputs.cache-hit-macos-bin-release == true }} && \
-            ${{ steps.cache_setup.outputs.cache-hit-dsym-release == true }} ; then
+          if [[ -d "$OSX_BIN" ]] && \
+             [[ -d "$DSYM" ]] && \
+             [[ -f "$HERMES" ]]; then
+
+            echo "Artifacts are there!"
             echo "ARTIFACTS_EXIST=true" >> $GITHUB_ENV
           fi
       - name: Build the Hermes ${{ matrix.slice }} frameworks
-        if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != true }}
         run: |
           cd ./packages/react-native/sdks/hermes || exit 1
           SLICE=${{ matrix.slice }}
@@ -164,6 +166,11 @@ jobs:
 
           if [[ -d "$FINAL_PATH" ]]; then
             echo "[HERMES] Skipping! Found the requested slice at $FINAL_PATH".
+            exit 0
+          fi
+
+          if [[ "$ARTIFACTS_EXIST" ]]; then
+            echo "[HERMES] Skipping! Artifacts exists already."
             exit 0
           fi
 
@@ -194,11 +201,11 @@ jobs:
             exit 1
           fi
       - name: Save slice cache
-        if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != true }}
         uses: actions/cache@v4.0.0
         with:
           path: ./packages/react-native/sdks/hermes/build_${{ matrix.slice }}_${{ matrix.flavor }}
           key: v4-hermes-apple-${{ needs.prepare_hermes_workspace.outputs.hermes-version }}-${{ needs.prepare_hermes_workspace.outputs.react-native-version }}-${{ hashfiles('packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh') }}-${{ matrix.slice }}-${{ matrix.flavor }}
+
   build_hermes_macos:
     runs-on: macos-13
     needs: [build_apple_slices_hermes, prepare_hermes_workspace]
@@ -228,22 +235,21 @@ jobs:
       - name: Check if the required artifacts already exist
         id: check_if_apple_artifacts_are_there
         run: |
-          if ${{ matrix.flavor == 'Debug' }} &&
-            ${{ steps.cache_setup.outputs.cache-hit-hermes-tarball-debug == true }} && \
-            ${{ steps.cache_setup.outputs.cache-hit-macos-bin-debug == true }} && \
-            ${{ steps.cache_setup.outputs.cache-hit-dsym-debug == true }} ; then
-            echo "ARTIFACTS_EXIST=true" >> $GITHUB_ENV
-          fi
+          FLAVOR="${{ matrix.flavor }}"
+          echo "Flavor is $FLAVOR"
+          OSX_BIN="/tmp/hermes/osx-bin/$FLAVOR"
+          DSYM="/tmp/hermes/dSYM/$FLAVOR"
+          HERMES="/tmp/hermes/hermes-runtime-darwin/hermes-ios-$FLAVOR.tar.gz"
 
-          if ${{ matrix.flavor == 'Release' }} && \\
-            ${{ steps.cache_setup.outputs.cache-hit-hermes-tarball-release == true }} && \
-            ${{ steps.cache_setup.outputs.cache-hit-macos-bin-release == true }} && \
-            ${{ steps.cache_setup.outputs.cache-hit-dsym-release == true }} ; then
-            echo "ARTIFACTS_EXIST=true" >> $GITHUB_ENV
-          fi
+          if [[ -d "$OSX_BIN" ]] && \
+             [[ -d "$DSYM" ]] && \
+             [[ -f "$HERMES" ]]; then
 
+            echo "Artifacts are there!"
+            echo "ARTIFACTS_EXIST=true" >> $GITHUB_ENV
+            echo "ARTIFACTS_EXIST=true" >> $GITHUB_OUTPUT
+          fi
       - name: Yarn- Install Dependencies
-        if: ${{ ! contains(github.event.head_commit.message, 'Bump metro@') && steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != true }}
         run: yarn install --non-interactive
       - name: Slice cache macosx
         if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != true }}
@@ -372,6 +378,7 @@ jobs:
         with:
           name: hermes-dSYM-${{ matrix.flavor }}
           path: /tmp/hermes/dSYM/${{ matrix.flavor }}
+
   test_ios_rntester_ruby_3_2_0:
     runs-on: macos-13
     needs:
@@ -410,6 +417,7 @@ jobs:
           use-frameworks: DynamicFrameworks
           hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
+
   test_ios_rntester:
     runs-on: macos-13
     needs:
@@ -435,6 +443,7 @@ jobs:
           use-frameworks: StaticLibraries
           hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
+
   build_hermesc_linux:
     runs-on: ubuntu-latest
     needs: prepare_hermes_workspace
@@ -479,6 +488,7 @@ jobs:
         with:
           name: hermes-linux-bin
           path: /tmp/hermes/linux64-bin
+
   build_hermesc_windows:
     runs-on: windows-2019
     needs: prepare_hermes_workspace
@@ -559,6 +569,7 @@ jobs:
         with:
           name: hermes-win64-bin
           path: D:\tmp\hermes\win64-bin\
+
   build_android:
     runs-on: 8-core-ubuntu
     needs: [set_release_type]
@@ -605,6 +616,7 @@ jobs:
           name: rntester-apk
           path: packages/rn-tester/android/app/build/outputs/apk/
           compression-level: 0
+
   build_npm_package:
     runs-on: 8-core-ubuntu
     needs:
@@ -780,6 +792,7 @@ jobs:
             -H "Accept: application/vnd.github.v3+json" \
             -H "Authorization: Bearer $REACT_NATIVE_BOT_GITHUB_TOKEN" \
             -d "{\"event_type\": \"publish\", \"client_payload\": { \"version\": \"${{ github.ref_name }}\" }}"
+
   test_android_template:
     runs-on: ubuntu-latest
     needs: [prepare_hermes_workspace, build_npm_package]
@@ -851,9 +864,10 @@ jobs:
           name: template-apk-${{ matrix.flavor }}-${{ matrix.architecture }}-${{ matrix.jsengine }}
           path: /tmp/AndroidTemplateProject/android/app/build/outputs/apk/
           compression-level: 0
-  test_ios_template_with_ruby_3_2_0:
+
+  test_ios_helloworld_with_ruby_3_2_0:
     runs-on: macos-13
-    needs: [prepare_hermes_workspace, build_npm_package]
+    needs: [prepare_hermes_workspace, build_hermes_macos] # prepare_hermes_workspace must be there because we need its reference to retrieve a couple of outputs
     env:
       PROJECT_NAME: iOSTemplateProject
       HERMES_WS_DIR: /tmp/hermes
@@ -861,16 +875,17 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.1
-      - uses: ./.github/actions/test_ios_template
+      - uses: ./.github/actions/test_ios_helloworld
         with:
           ruby-version: 3.2.0
           architecture: NewArch
           flavor: Debug
           hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
-  test_ios_template:
+
+  test_ios_helloworld:
     runs-on: macos-13
-    needs: [prepare_hermes_workspace, build_npm_package]
+    needs: [prepare_hermes_workspace, build_hermes_macos] # prepare_hermes_workspace must be there because we need its reference to retrieve a couple of outputs
     strategy:
       matrix:
         flavor: [Debug, Release]
@@ -888,7 +903,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.1
-      - uses: ./.github/actions/test_ios_template
+      - uses: ./.github/actions/test_ios_helloworld
         with:
           flavor: ${{ matrix.flavor }}
           jsengine: ${{ matrix.jsengine }}
