@@ -313,10 +313,20 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   // NOTE: RCTCxxBridge will use _inspectorTarget during [self invalidate], so we must
   // keep it alive until after the call returns.
   [self invalidate];
+
+  // `invalidate` is asynchronous if we aren't on the main queue. Unregister
+  // the HostTarget on the main queue so that `invalidate` can complete safely
+  // in that case.
   if (_inspectorPageId.has_value()) {
-    facebook::react::jsinspector_modern::getInspectorInstance().removePage(*_inspectorPageId);
-    _inspectorPageId.reset();
-    _inspectorTarget.reset();
+    // Since we can't keep using `self` after dealloc, steal its inspector
+    // state into block-mutable variables
+    __block auto inspectorPageId = std::move(_inspectorPageId);
+    __block auto inspectorTarget = std::move(_inspectorTarget);
+    RCTExecuteOnMainQueue(^{
+      facebook::react::jsinspector_modern::getInspectorInstance().removePage(*inspectorPageId);
+      inspectorPageId.reset();
+      inspectorTarget.reset();
+    });
   }
 }
 
