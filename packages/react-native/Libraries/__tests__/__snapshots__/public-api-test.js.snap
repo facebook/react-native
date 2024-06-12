@@ -8133,9 +8133,7 @@ export type UnsafeObject = $FlowFixMe;
 export type UnsafeMixed = mixed;
 type DefaultTypes = number | boolean | string | $ReadOnlyArray<string>;
 export type WithDefault<Type: DefaultTypes, Value: ?Type | string> = ?Type;
-export type EventEmitter<T> = {
-  addListener(handler: (T) => mixed): EventSubscription,
-};
+export type EventEmitter<T> = (handler: (T) => mixed) => EventSubscription;
 "
 `;
 

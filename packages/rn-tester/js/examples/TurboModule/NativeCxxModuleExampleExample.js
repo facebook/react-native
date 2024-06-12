@@ -266,22 +266,20 @@ class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
     }
     if (NativeCxxModuleExample) {
       this.eventSubscriptions.push(
-        NativeCxxModuleExample.onPress.addListener(value =>
-          console.log('onPress: ()'),
-        ),
+        NativeCxxModuleExample.onPress(value => console.log('onPress: ()')),
       );
       this.eventSubscriptions.push(
-        NativeCxxModuleExample.onClick.addListener(value =>
+        NativeCxxModuleExample.onClick(value =>
           console.log(`onClick: (${value})`),
         ),
       );
       this.eventSubscriptions.push(
-        NativeCxxModuleExample.onChange.addListener(value =>
-          console.log(`onChange: (${JSON.stringify(value)})`),
+        NativeCxxModuleExample.onChange(value =>
+          console.log(`onChange: ${JSON.stringify(value)})`),
         ),
       );
       this.eventSubscriptions.push(
-        NativeCxxModuleExample.onSubmit.addListener(value =>
+        NativeCxxModuleExample.onSubmit(value =>
           console.log(`onSubmit: (${JSON.stringify(value)})`),
         ),
       );
