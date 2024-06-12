@@ -47,36 +47,12 @@ class DialogModuleTest {
 
   @Before
   fun setUp() {
-    activityController = Robolectric.buildActivity(FragmentActivity::class.java)
-    activity = activityController.create().start().resume().get()
-    // We must set the theme to a descendant of AppCompat for the AlertDialog to show without
-    // raising an exception
-    activity.setTheme(APP_COMPAT_THEME)
-
-    val context: ReactApplicationContext = mock(ReactApplicationContext::class.java)
-    whenever(context.hasActiveReactInstance()).thenReturn(true)
-    whenever(context.currentActivity).thenReturn(activity)
-
-    dialogModule = DialogModule(context)
-    dialogModule.onHostResume()
+    setupActivity()
   }
 
   @After
   fun tearDown() {
     activityController.pause().stop().destroy()
-  }
-
-  @Test
-  fun testIllegalActivityTheme() {
-    val options = JavaOnlyMap()
-    activity.setTheme(NON_APP_COMPAT_THEME)
-
-    assertThrows(NullPointerException::class.java) {
-      dialogModule.showAlert(options, null, null)
-      shadowOf(getMainLooper()).idle()
-    }
-
-    activity.setTheme(APP_COMPAT_THEME)
   }
 
   @Test
@@ -96,8 +72,7 @@ class DialogModuleTest {
 
     val fragment = getFragment()
 
-    assertNotNull("Fragment was not displayed", fragment)
-    assertFalse(fragment!!.isCancelable)
+    assertFalse(fragment.isCancelable)
 
     val dialog = fragment.dialog as AlertDialog
     assertEquals("OK", dialog.getButton(DialogInterface.BUTTON_POSITIVE).text.toString())
@@ -113,13 +88,13 @@ class DialogModuleTest {
     dialogModule.showAlert(options, null, actionCallback)
     shadowOf(getMainLooper()).idle()
 
-    val dialog = getFragment()!!.dialog as AlertDialog
+    val dialog = getFragment().dialog as AlertDialog
     dialog.getButton(DialogInterface.BUTTON_POSITIVE).performClick()
     shadowOf(getMainLooper()).idle()
 
     assertEquals(1, actionCallback.calls)
-    assertEquals(DialogModule.ACTION_BUTTON_CLICKED, actionCallback.args!![0])
-    assertEquals(DialogInterface.BUTTON_POSITIVE, actionCallback.args!![1])
+    assertEquals(DialogModule.ACTION_BUTTON_CLICKED, actionCallback.args?.get(0))
+    assertEquals(DialogInterface.BUTTON_POSITIVE, actionCallback.args?.get(1))
   }
 
   @Test
@@ -130,13 +105,13 @@ class DialogModuleTest {
     dialogModule.showAlert(options, null, actionCallback)
     shadowOf(getMainLooper()).idle()
 
-    val dialog = getFragment()!!.dialog as AlertDialog
+    val dialog = getFragment().dialog as AlertDialog
     dialog.getButton(DialogInterface.BUTTON_NEGATIVE).performClick()
     shadowOf(getMainLooper()).idle()
 
     assertEquals(1, actionCallback.calls)
-    assertEquals(DialogModule.ACTION_BUTTON_CLICKED, actionCallback.args!![0])
-    assertEquals(DialogInterface.BUTTON_NEGATIVE, actionCallback.args!![1])
+    assertEquals(DialogModule.ACTION_BUTTON_CLICKED, actionCallback.args?.get(0))
+    assertEquals(DialogInterface.BUTTON_NEGATIVE, actionCallback.args?.get(1))
   }
 
   @Test
@@ -147,13 +122,13 @@ class DialogModuleTest {
     dialogModule.showAlert(options, null, actionCallback)
     shadowOf(getMainLooper()).idle()
 
-    val dialog = getFragment()!!.dialog as AlertDialog
+    val dialog = getFragment().dialog as AlertDialog
     dialog.getButton(DialogInterface.BUTTON_NEUTRAL).performClick()
     shadowOf(getMainLooper()).idle()
 
     assertEquals(1, actionCallback.calls)
-    assertEquals(DialogModule.ACTION_BUTTON_CLICKED, actionCallback.args!![0])
-    assertEquals(DialogInterface.BUTTON_NEUTRAL, actionCallback.args!![1])
+    assertEquals(DialogModule.ACTION_BUTTON_CLICKED, actionCallback.args?.get(0))
+    assertEquals(DialogInterface.BUTTON_NEUTRAL, actionCallback.args?.get(1))
   }
 
   @Test
@@ -164,16 +139,52 @@ class DialogModuleTest {
     dialogModule.showAlert(options, null, actionCallback)
     shadowOf(getMainLooper()).idle()
 
-    getFragment()!!.dialog!!.dismiss()
+    getFragment().dialog?.dismiss()
     shadowOf(getMainLooper()).idle()
 
     assertEquals(1, actionCallback.calls)
-    assertEquals(DialogModule.ACTION_DISMISSED, actionCallback.args!![0])
+    assertEquals(DialogModule.ACTION_DISMISSED, actionCallback.args?.get(0))
   }
 
-  private fun getFragment(): AlertFragment? {
-    return activity.supportFragmentManager.findFragmentByTag(DialogModule.FRAGMENT_TAG)
-        as? AlertFragment
+  @Test
+  fun testNonAppCompatActivityTheme() {
+    setupActivity(NON_APP_COMPAT_THEME)
+
+    val options = JavaOnlyMap()
+
+    val actionCallback = SimpleCallback()
+    dialogModule.showAlert(options, null, actionCallback)
+    shadowOf(getMainLooper()).idle()
+
+    getFragment().dialog?.dismiss()
+    shadowOf(getMainLooper()).idle()
+
+    assertEquals(1, actionCallback.calls)
+    assertEquals(DialogModule.ACTION_DISMISSED, actionCallback.args?.get(0))
+  }
+
+  private fun setupActivity(theme: Int = APP_COMPAT_THEME) {
+    activityController = Robolectric.buildActivity(FragmentActivity::class.java)
+    activity = activityController.create().start().resume().get()
+
+    // We must set the theme to a descendant of AppCompat for the AlertDialog to show without
+    // raising an exception
+    activity.setTheme(theme)
+
+    val context: ReactApplicationContext = mock(ReactApplicationContext::class.java)
+    whenever(context.hasActiveReactInstance()).thenReturn(true)
+    whenever(context.currentActivity).thenReturn(activity)
+
+    dialogModule = DialogModule(context)
+    dialogModule.onHostResume()
+  }
+
+  private fun getFragment(): AlertFragment {
+    val maybeFragment = activity.supportFragmentManager.findFragmentByTag(DialogModule.FRAGMENT_TAG)
+    if (maybeFragment == null || !(maybeFragment is AlertFragment)) {
+      error("Fragment was not displayed")
+    }
+    return maybeFragment
   }
 
   companion object {
