@@ -357,7 +357,7 @@ DOMPoint getScrollPosition(
     return DOMPoint{};
   }
 
-  auto scrollPosition = layoutableShadowNode->getContentOriginOffset();
+  auto scrollPosition = layoutableShadowNode->getContentOriginOffset(false);
 
   return DOMPoint{
       .x = scrollPosition.x == 0 ? 0 : -scrollPosition.x,

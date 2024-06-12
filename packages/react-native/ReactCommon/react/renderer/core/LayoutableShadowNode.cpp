@@ -151,7 +151,11 @@ LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
     }
 
     if (i != 0 && policy.includeTransform) {
-      resultFrame.origin += currentShadowNode->getContentOriginOffset();
+      // Transformation is not applied here and instead we delegated out in
+      // getContentOriginOffset. The reason is that for `ScrollViewShadowNode`,
+      // we need to consider `scrollAwayPaddingTop` which should NOT be included
+      // in the transform.
+      resultFrame.origin += currentShadowNode->getContentOriginOffset(true);
     }
 
     if (policy.enableOverflowClipping) {
@@ -188,7 +192,8 @@ Transform LayoutableShadowNode::getTransform() const {
   return Transform::Identity();
 }
 
-Point LayoutableShadowNode::getContentOriginOffset() const {
+Point LayoutableShadowNode::getContentOriginOffset(
+    bool /*includeTransform*/) const {
   return {0, 0};
 }
 
@@ -269,7 +274,7 @@ ShadowNode::Shared LayoutableShadowNode::findNodeAtPoint(
   }
 
   auto newPoint = point - transformedFrame.origin -
-      layoutableShadowNode->getContentOriginOffset();
+      layoutableShadowNode->getContentOriginOffset(false);
 
   auto sortedChildren = node->getChildren();
   std::stable_sort(
