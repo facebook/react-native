@@ -101,41 +101,47 @@ const Text: React.AbstractComponent<
     _disabled !== true;
 
   const initialized = useLazyInitialization(isPressable);
-  const config = useMemo(
-    () =>
-      initialized
-        ? {
-            disabled: !isPressable,
-            pressRectOffset: pressRetentionOffset,
-            onLongPress,
-            onPress,
-            onPressIn(event: PressEvent) {
-              // Updating isHighlighted causes unnecessary re-renders for platforms that don't use it
-              // in the best case, and cause issues with text selection in the worst case. Forcing
-              // the isHighlighted prop to false on all platforms except iOS.
-              setHighlighted(
-                (suppressHighlighting == null || !suppressHighlighting) &&
-                  Platform.OS === 'ios',
-              );
-              onPressIn?.(event);
-            },
-            onPressOut(event: PressEvent) {
-              setHighlighted(false);
-              onPressOut?.(event);
-            },
-          }
-        : null,
-    [
-      initialized,
-      isPressable,
-      pressRetentionOffset,
+  const config = useMemo(() => {
+    if (!initialized) {
+      return null;
+    }
+
+    let _onPressIn = onPressIn;
+    let _onPressOut = onPressOut;
+
+    // Updating isHighlighted causes unnecessary re-renders for platforms that don't use it
+    // in the best case, and cause issues with text selection in the worst case. Forcing
+    // the isHighlighted prop to false on all platforms except iOS.
+    if (Platform.OS === 'ios') {
+      _onPressIn = (event: PressEvent) => {
+        setHighlighted(suppressHighlighting == null || !suppressHighlighting);
+        onPressIn?.(event);
+      };
+
+      _onPressOut = (event: PressEvent) => {
+        setHighlighted(false);
+        onPressOut?.(event);
+      };
+    }
+
+    return {
+      disabled: !isPressable,
+      pressRectOffset: pressRetentionOffset,
       onLongPress,
       onPress,
-      onPressIn,
-      onPressOut,
-      suppressHighlighting,
-    ],
-  );
+      onPressIn: _onPressIn,
+      onPressOut: _onPressOut,
+    };
+  }, [
+    initialized,
+    isPressable,
+    pressRetentionOffset,
+    onLongPress,
+    onPress,
+    onPressIn,
+    onPressOut,
+    suppressHighlighting,
+  ]);
 
   const eventHandlers = usePressability(config);
   const eventHandlersForText = useMemo(
