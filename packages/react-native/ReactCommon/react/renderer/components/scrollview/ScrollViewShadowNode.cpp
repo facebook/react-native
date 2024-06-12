@@ -63,9 +63,11 @@ void ScrollViewShadowNode::layout(LayoutContext layoutContext) {
   updateStateIfNeeded();
 }
 
-Point ScrollViewShadowNode::getContentOriginOffset() const {
+Point ScrollViewShadowNode::getContentOriginOffset(
+    bool /*includeTransform*/) const {
   auto stateData = getStateData();
   auto contentOffset = stateData.contentOffset;
+
   return {-contentOffset.x, -contentOffset.y + stateData.scrollAwayPaddingTop};
 }
 
