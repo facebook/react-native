@@ -43,6 +43,20 @@
 
 @end
 
+@interface BaseRCTSampleTurboModule : NSObject
+
+- (void)emitOnPress;
+
+- (void)emitOnClick:(NSString *)value;
+
+- (void)emitOnChange:(NSDictionary *)value;
+
+- (void)emitOnSubmit:(NSArray *)value;
+
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+
+@end
+
 namespace facebook::react {
 
 /**
