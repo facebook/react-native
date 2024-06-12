@@ -31,7 +31,6 @@ dependencyResolutionManagement {
 rootProject.name = "react-native-github"
 
 plugins {
-  id("com.gradle.enterprise").version("3.7.1")
   id("org.gradle.toolchains.foojay-resolver-convention").version("0.5.0")
   id("com.facebook.react.settings")
 }
@@ -39,10 +38,4 @@ plugins {
 configure<com.facebook.react.ReactSettingsExtension> {
   autolinkLibrariesFromCommand(
       workingDirectory = file("packages/rn-tester/"), lockFiles = files("yarn.lock"))
-}
-
-// If you specify a file inside gradle/gradle-enterprise.gradle.kts
-// you can configure your custom Gradle Enterprise instance
-if (File("./gradle/gradle-enterprise.gradle.kts").exists()) {
-  apply(from = "./gradle/gradle-enterprise.gradle.kts")
 }

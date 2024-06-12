@@ -7,3 +7,6 @@ runs:
       uses: gradle/actions/setup-gradle@v3
       with:
         gradle-version: wrapper
+        build-scan-publish: true
+        build-scan-terms-of-use-url: "https://gradle.com/terms-of-service"
+        build-scan-terms-of-use-agree: "yes"
