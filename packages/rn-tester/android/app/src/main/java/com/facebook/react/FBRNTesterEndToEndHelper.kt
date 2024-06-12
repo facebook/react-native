@@ -7,9 +7,15 @@
 
 package com.facebook.react
 
+import android.app.Application
 import java.io.PrintWriter
 
-object FBEndToEndDumpsysHelper {
+object FBRNTesterEndToEndHelper {
+  fun onCreate(application: Application) {
+    // no-op This is an empty implementation to stub out Meta's internal test coverage
+    // instrumentation.
+  }
+
   fun maybeDump(prefix: String, writer: PrintWriter, args: Array<String>?) {
     // no-op This is an empty implementation to stub out Meta's internal dumpsys helper.
   }
