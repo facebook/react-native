@@ -1,13 +1,13 @@
-name: Prepare Release
+name: Create release
 
 on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'The version of React Native we want to release'
+        description: 'The version of React Native we want to release. For example 0.75.0-rc.0'
         required: true
         type: string
-      is-latest-on-npm:
+      is_latest_on_npm:
         description: 'Whether we want to tag this release as latest on NPM'
         required: true
         type: boolean
@@ -45,4 +45,4 @@ jobs:
           fi
       - name: Execute Prepare Release
         if: ${{ steps.check_stable_branch.outputs.ON_STABLE_BRANCH && !steps.check_if_tag_exists.outputs.TAG_EXISTS }}
-        uses: ./.github/actions/prepare_release
+        uses: ./.github/actions/create-release
