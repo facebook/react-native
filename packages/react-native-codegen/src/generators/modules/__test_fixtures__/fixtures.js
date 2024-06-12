@@ -19,6 +19,7 @@ const EMPTY_NATIVE_MODULES: SchemaType = {
       aliasMap: {},
       enumMap: {},
       spec: {
+        eventEmitters: [],
         properties: [],
       },
       moduleName: 'SampleTurboModule',
@@ -83,6 +84,7 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
         },
       },
       spec: {
+        eventEmitters: [],
         properties: [
           {
             name: 'getConstants',
@@ -412,6 +414,7 @@ const TWO_MODULES_DIFFERENT_FILES: SchemaType = {
       aliasMap: {},
       enumMap: {},
       spec: {
+        eventEmitters: [],
         properties: [
           {
             name: 'voidFunc',
@@ -433,6 +436,7 @@ const TWO_MODULES_DIFFERENT_FILES: SchemaType = {
       aliasMap: {},
       enumMap: {},
       spec: {
+        eventEmitters: [],
         properties: [
           {
             name: 'getConstants',
@@ -471,6 +475,7 @@ const COMPLEX_OBJECTS: SchemaType = {
       aliasMap: {},
       enumMap: {},
       spec: {
+        eventEmitters: [],
         properties: [
           {
             name: 'difficult',
@@ -927,6 +932,7 @@ const NATIVE_MODULES_WITH_TYPE_ALIASES: SchemaType = {
       },
       enumMap: {},
       spec: {
+        eventEmitters: [],
         properties: [
           {
             name: 'getConstants',
@@ -1212,6 +1218,7 @@ const REAL_MODULE_EXAMPLE: SchemaType = {
       },
       enumMap: {},
       spec: {
+        eventEmitters: [],
         properties: [
           {
             name: 'getConstants',
@@ -1408,6 +1415,7 @@ const REAL_MODULE_EXAMPLE: SchemaType = {
       },
       enumMap: {},
       spec: {
+        eventEmitters: [],
         properties: [
           {
             name: 'reportFatalException',
@@ -1829,6 +1837,7 @@ const CXX_ONLY_NATIVE_MODULES: SchemaType = {
         },
       },
       spec: {
+        eventEmitters: [],
         properties: [
           {
             name: 'getArray',
@@ -2414,6 +2423,7 @@ const SAMPLE_WITH_UPPERCASE_NAME: SchemaType = {
       enumMap: {},
       aliasMap: {},
       spec: {
+        eventEmitters: [],
         properties: [],
       },
       moduleName: 'SampleTurboModule',
