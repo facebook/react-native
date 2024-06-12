@@ -8,7 +8,7 @@
 package com.facebook.react.uiapp
 
 import android.os.Bundle
-import com.facebook.react.FBEndToEndDumpsysHelper
+import com.facebook.react.FBRNTesterEndToEndHelper
 import com.facebook.react.ReactActivity
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled
 import com.facebook.react.defaults.DefaultReactActivityDelegate
@@ -29,7 +29,7 @@ class RNTesterActivity : ReactActivity() {
         val routeUri = "rntester://example/${bundle.getString(PARAM_ROUTE)}Example"
         initialProps = Bundle().apply { putString("exampleFromAppetizeParams", routeUri) }
       }
-
+      FBRNTesterEndToEndHelper.onCreate(activity.application)
       super.onCreate(savedInstanceState)
     }
 
@@ -47,6 +47,6 @@ class RNTesterActivity : ReactActivity() {
       writer: PrintWriter,
       args: Array<String>?
   ) {
-    FBEndToEndDumpsysHelper.maybeDump(prefix, writer, args)
+    FBRNTesterEndToEndHelper.maybeDump(prefix, writer, args)
   }
 }
