@@ -667,7 +667,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       }
 
       CatalystInstance catalystInstance = reactContext.getCatalystInstance();
-      String jsAppModuleName = Assertions.assertNotNull(getJSModuleName());
+      String jsAppModuleName = getJSModuleName();
 
       if (mWasMeasured) {
         updateRootLayoutSpecs(true, mWidthMeasureSpec, mHeightMeasureSpec);
