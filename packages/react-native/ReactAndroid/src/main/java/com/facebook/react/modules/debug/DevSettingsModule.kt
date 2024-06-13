@@ -61,10 +61,6 @@ public class DevSettingsModule(
     }
   }
 
-  override fun openDebugger() {
-    devSupportManager.openDebugger()
-  }
-
   override fun setIsShakeToShowDevMenuEnabled(enabled: Boolean) {
     // iOS only
   }
