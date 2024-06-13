@@ -747,6 +747,11 @@ jobs:
       - name: Publish NPM
         shell: bash
         run: |
+          # The checkout command puts react-native in a folder that is not "safe" for git
+          # Every git command run in an unsafe folder fails. We need to pick the current commit to use it as part of the version
+          # The following line marks the folder where react-native lives as "safe"
+          git config --global --add safe.directory /__w/react-native/react-native
+
           echo "GRADLE_OPTS = $GRADLE_OPTS"
           # We can't have a separate step because each command is executed in a separate shell
           # so variables exported in a command are not visible in another.
