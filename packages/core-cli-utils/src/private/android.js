@@ -12,102 +12,92 @@
 import type {Task} from './types';
 import type {ExecaPromise} from 'execa';
 
-import {isWindows, task, toPascalCase} from './utils';
+import {isWindows, task} from './utils';
 import execa from 'execa';
 
-type AndroidBuildMode = 'debug' | 'release';
+type AndroidBuildMode = 'Debug' | 'Release';
 
-type AndroidBuild = {
-  sourceDir: string,
-  appName: string,
+type Path = string;
+type Args = $ReadOnlyArray<string>;
+
+type Config = {
+  cwd: Path,
+  hermes?: boolean,
   mode: AndroidBuildMode,
-  gradleArgs?: Array<string>,
+  name: string,
+  newArchitecture?: boolean,
+  sdk?: Path,
 };
 
-function gradle(cwd: string, ...args: string[]): ExecaPromise {
+function gradle(
+  taskName: string,
+  args: Args,
+  options: {cwd: string, env?: {[k: string]: string | void}},
+): ExecaPromise {
   const gradlew = isWindows ? 'gradlew.bat' : './gradlew';
-  return execa(gradlew, args, {
-    cwd,
-    stdio: 'inherit',
+  return execa(gradlew, [taskName, ...args], {
+    cwd: options.cwd,
+    env: options.env,
   });
 }
 
-//
-// Gradle Task wrappers
-//
+function androidSdkPath(sdk?: string): string {
+  return sdk ?? process.env.ANDROID_HOME ?? process.env.ANDROID_SDK ?? '';
+}
 
-/**
- * Assembles an Android app using Gradle
- */
-export const assemble = (
-  cwd: string,
-  appName: string,
-  mode: AndroidBuildMode,
-  ...args: $ReadOnlyArray<string>
-): ExecaPromise =>
-  gradle(cwd, `${appName}:assemble${toPascalCase(mode)}`, ...args);
-
-/**
- * Assembles and tests an Android app using Gradle
- */
-export const build = (
-  cwd: string,
-  appName: string,
-  mode: AndroidBuildMode,
-  ...args: $ReadOnlyArray<string>
-): ExecaPromise =>
-  gradle(cwd, `${appName}:build${toPascalCase(mode)}`, ...args);
-
-/**
- * Installs an Android app using Gradle
- */
-export const install = (
-  cwd: string,
-  appName: string,
-  mode: AndroidBuildMode,
-  ...args: $ReadOnlyArray<string>
-): ExecaPromise =>
-  gradle(cwd, `${appName}:install${toPascalCase(mode)}`, ...args);
-
-/**
- * Runs a custom Gradle task if your frameworks needs aren't handled by assemble, build or install.
- */
-export const customTask = (
-  cwd: string,
-  customTaskName: string,
-  ...args: $ReadOnlyArray<string>
-): ExecaPromise => gradle(cwd, customTaskName, ...args);
+function boolToStr(value: boolean): string {
+  return value ? 'true' : 'false';
+}
 
 const FIRST = 1;
 
 //
 // Android Tasks
 //
-type AndroidTasks = {
-  assemble: (
-    options: AndroidBuild,
-    ...args: $ReadOnlyArray<string>
-  ) => {run: Task<ExecaPromise>},
-  build: (
-    options: AndroidBuild,
-    ...args: $ReadOnlyArray<string>
-  ) => {run: Task<ExecaPromise>},
-  install: (
-    options: AndroidBuild,
-    ...args: $ReadOnlyArray<string>
-  ) => {run: Task<ExecaPromise>},
-};
-
-export const tasks: AndroidTasks = {
-  assemble: (options: AndroidBuild, ...gradleArgs: $ReadOnlyArray<string>) => ({
-    run: task(FIRST, 'Assemble Android App', () =>
-      assemble(options.sourceDir, options.appName, options.mode, ...gradleArgs),
-    ),
+export const tasks = (
+  config: Config,
+): ({
+  assemble: (...gradleArgs: Args) => {
+    run: Task<ExecaPromise>,
+  },
+  build: (...gradleArgs: Args) => {
+    run: Task<ExecaPromise>,
+  },
+  install: (...gradleArgs: Args) => {
+    run: Task<ExecaPromise>,
+  },
+}) => ({
+  assemble: (...gradleArgs: Args) => ({
+    run: task(FIRST, 'Assemble Android App', () => {
+      const args = [];
+      if (config.hermes != null) {
+        args.push(`-PhermesEnabled=${boolToStr(config.hermes)}`);
+      }
+      if (config.newArchitecture != null) {
+        args.push(`-PnewArchEnabled=${boolToStr(config.newArchitecture)}`);
+      }
+      args.push(...gradleArgs);
+      return gradle(`${config.name}:assemble${config.mode}`, gradleArgs, {
+        cwd: config.cwd,
+        env: {ANDROID_HOME: androidSdkPath(config.sdk)},
+      });
+    }),
   }),
-  build: (options: AndroidBuild, ...gradleArgs: $ReadOnlyArray<string>) => ({
-    run: task(FIRST, 'Assembles and tests Android App', () =>
-      build(options.sourceDir, options.appName, options.mode, ...gradleArgs),
-    ),
+  build: (...gradleArgs: Args) => ({
+    run: task(FIRST, 'Assembles and tests Android App', () => {
+      const args = [];
+      if (config.hermes != null) {
+        args.push(`-PhermesEnabled=${boolToStr(config.hermes)}`);
+      }
+      if (config.newArchitecture != null) {
+        args.push(`-PnewArchEnabled=${boolToStr(config.newArchitecture)}`);
+      }
+      args.push(...gradleArgs);
+      return gradle(`${config.name}:bundle${config.mode}`, args, {
+        cwd: config.cwd,
+        env: {ANDROID_HOME: androidSdkPath(config.sdk)},
+      });
+    }),
   }),
   /**
    * Useful extra gradle arguments:
@@ -115,9 +105,12 @@ export const tasks: AndroidTasks = {
    * -PreactNativeDevServerPort=8081 sets the port for the installed app to point towards a Metro
    *                                 server on (for example) 8081.
    */
-  install: (options: AndroidBuild, ...gradleArgs: $ReadOnlyArray<string>) => ({
+  install: (...gradleArgs: Args) => ({
     run: task(FIRST, 'Installs the assembled Android App', () =>
-      install(options.sourceDir, options.appName, options.mode, ...gradleArgs),
+      gradle(`${config.name}:install${config.mode}`, gradleArgs, {
+        cwd: config.cwd,
+        env: {ANDROID_HOME: androidSdkPath(config.sdk)},
+      }),
     ),
   }),
 
@@ -125,4 +118,4 @@ export const tasks: AndroidTasks = {
   // a framework concern. For an example of how one could do this, please look at the community
   // CLI's code:
   // https://github.com/react-native-community/cli/blob/54d48a4e08a1aef334ae6168788e0157a666b4f5/packages/cli-platform-android/src/commands/runAndroid/index.ts#L272C1-L290C2
-};
+});
