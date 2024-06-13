@@ -606,7 +606,7 @@ module.exports = {
       return [
         ModuleClassDeclarationTemplate({
           hasteModuleName,
-          moduleProperties: spec.properties.map(prop =>
+          moduleProperties: spec.methods.map(prop =>
             translatePropertyToCpp(
               hasteModuleName,
               prop,
@@ -629,7 +629,7 @@ module.exports = {
               enumMap,
             ),
           ),
-          moduleProperties: spec.properties.map(prop =>
+          moduleProperties: spec.methods.map(prop =>
             translatePropertyToCpp(
               hasteModuleName,
               prop,

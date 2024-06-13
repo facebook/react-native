@@ -844,7 +844,7 @@ const buildModuleSchema = (
           eventEmitters: [...moduleSchema.spec.eventEmitters].concat(
             propertyShape.type === 'eventEmitter' ? [propertyShape.value] : [],
           ),
-          properties: [...moduleSchema.spec.properties].concat(
+          methods: [...moduleSchema.spec.methods].concat(
             propertyShape.type === 'method' ? [propertyShape.value] : [],
           ),
         },
@@ -855,7 +855,7 @@ const buildModuleSchema = (
         type: 'NativeModule',
         aliasMap: {},
         enumMap: {},
-        spec: {eventEmitters: [], properties: []},
+        spec: {eventEmitters: [], methods: []},
         moduleName,
         excludedPlatforms:
           excludedPlatforms.length !== 0 ? [...excludedPlatforms] : undefined,
@@ -868,7 +868,7 @@ const buildModuleSchema = (
     enumMap: getSortedObject(nativeModuleSchema.enumMap),
     spec: {
       eventEmitters: nativeModuleSchema.spec.eventEmitters.sort(),
-      properties: nativeModuleSchema.spec.properties.sort(),
+      methods: nativeModuleSchema.spec.methods.sort(),
     },
     moduleName,
     excludedPlatforms: nativeModuleSchema.excludedPlatforms,
