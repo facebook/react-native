@@ -19,8 +19,8 @@ import {
   launchApp,
   launchSimulator,
 } from './lib/ios';
-import {app, apple} from '@react-native/core-cli-utils';
-import {Option, program} from 'commander';
+import {android, app, apple} from '@react-native/core-cli-utils';
+import {Command, Option, program} from 'commander';
 import {readFileSync} from 'fs';
 import {Listr} from 'listr2';
 import path from 'path';
@@ -109,6 +109,46 @@ const getBuildSettings = (mode: 'Debug' | 'Release'): BuildSettings => {
 };
 
 const build = program.command('build');
+
+type AndroidBuildOptions = {
+  device: string,
+  arch: 'old' | 'new',
+  jsvm: 'hermes' | 'jsc',
+  prod: boolean,
+  P: string[],
+};
+
+build
+  .command('android')
+  .addOption(
+    new Option('--arch <arch>', "Choose React Native's architecture")
+      .choices(['new', 'old'])
+      .default('new'),
+  )
+  .addOption(
+    new Option('--jsvm <vm>', 'Choose VM used on device')
+      .choices(['jsc', 'hermes'])
+      .default('hermes'),
+  )
+  .option('--prod', 'Production build', () => true, false)
+  .addOption(
+    new Option('-P <value>', 'Additional Gradle project properties')
+      .argParser((value, previous: string[] = []) => previous.concat(value))
+      .default([]),
+  )
+  .action(
+    async ({prod, jsvm, arch, P}: AndroidBuildOptions, options: Command) => {
+      const mode = prod ? 'Release' : 'Debug';
+      const {assemble} = android({
+        cwd: cwd.android,
+        hermes: jsvm === 'hermes',
+        mode,
+        name: 'app',
+        newArchitecture: arch === 'new',
+      });
+      await run(assemble(...P.map(prop => `-P${prop}`), ...options.args));
+    },
+  );
 
 build
   .command('ios')
