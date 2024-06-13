@@ -134,8 +134,6 @@ public class ReactSurfaceView(context: Context?, private val surface: ReactSurfa
   // This surface view is always on Fabric.
   @UIManagerType override fun getUIManagerType(): Int = UIManagerType.FABRIC
 
-  override fun getJSModuleName(): String = surface.moduleName
-
   override fun dispatchJSTouchEvent(event: MotionEvent) {
     val eventDispatcher = surface.eventDispatcher
     if (eventDispatcher != null) {

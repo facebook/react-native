@@ -434,8 +434,10 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
     if (mShouldLogContentAppeared) {
       mShouldLogContentAppeared = false;
-      String jsModuleName = getJSModuleName();
-      ReactMarker.logMarker(ReactMarkerConstants.CONTENT_APPEARED, jsModuleName, mRootViewTag);
+
+      if (mJSModuleName != null) {
+        ReactMarker.logMarker(ReactMarkerConstants.CONTENT_APPEARED, mJSModuleName, mRootViewTag);
+      }
     }
   }
 
