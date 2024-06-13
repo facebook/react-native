@@ -60,11 +60,6 @@ runs:
           exit 0
         fi
 
-        if [ ! -d ~/react-native ]; then
-          echo "No React Native checkout found. Run `checkout` first."
-          exit 0
-        fi
-
         TARBALL_FILENAME=$(node ./packages/react-native/scripts/hermes/get-tarball-name.js --buildType "${{ inputs.flavor }}")
         TARBALL_PATH=$HERMES_TARBALL_ARTIFACTS_DIR/$TARBALL_FILENAME
 
@@ -102,6 +97,8 @@ runs:
       run: |
         if [[ ${{ inputs.jsengine }} == "JSC" ]]; then
           export USE_HERMES=0
+        else
+          export HERMES_ENGINE_TARBALL_PATH=$HERMES_ENGINE_TARBALL_PATH
         fi
 
         if [[ ${{ inputs.use-frameworks }} == "DynamicFrameworks" ]]; then
