@@ -119,9 +119,6 @@ const countStyles = StyleSheet.create({
   error: {
     backgroundColor: LogBoxStyle.getErrorColor(1),
   },
-  log: {
-    backgroundColor: LogBoxStyle.getLogColor(1),
-  },
   outside: {
     padding: 2,
     borderRadius: 25,

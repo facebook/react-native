@@ -5270,13 +5270,13 @@ declare module.exports: VirtualizedSectionList;
 
 exports[`public API should not change unintentionally Libraries/LogBox/Data/LogBoxData.js 1`] = `
 "export type LogBoxLogs = Set<LogBoxLog>;
-export type LogData = $ReadOnly<{|
+export type LogData = $ReadOnly<{
   level: LogLevel,
   message: Message,
   category: Category,
   componentStack: ComponentStack,
   stack?: string,
-|}>;
+}>;
 export type Observer = (
   $ReadOnly<{|
     logs: LogBoxLogs,
@@ -5346,7 +5346,7 @@ declare export function withSubscription(
 exports[`public API should not change unintentionally Libraries/LogBox/Data/LogBoxLog.js 1`] = `
 "type SymbolicationStatus = \\"NONE\\" | \\"PENDING\\" | \\"COMPLETE\\" | \\"FAILED\\";
 export type LogLevel = \\"warn\\" | \\"error\\" | \\"fatal\\" | \\"syntax\\";
-export type LogBoxLogData = $ReadOnly<{|
+export type LogBoxLogData = $ReadOnly<{
   level: LogLevel,
   type?: ?string,
   message: Message,
@@ -5357,7 +5357,8 @@ export type LogBoxLogData = $ReadOnly<{|
   codeFrame?: ?CodeFrame,
   isComponentError: boolean,
   extraData?: mixed,
-|}>;
+  onNotificationPress?: ?() => void,
+}>;
 declare class LogBoxLog {
   message: Message;
   type: ?string;
@@ -5384,6 +5385,7 @@ declare class LogBoxLog {
         status: \\"COMPLETE\\",
       |}>
     | $ReadOnly<{| error: Error, componentStack: null, status: \\"FAILED\\" |}>;
+  onNotificationPress: ?() => void;
   constructor(data: LogBoxLogData): void;
   incrementCount(): void;
   getAvailableStack(): Stack;
