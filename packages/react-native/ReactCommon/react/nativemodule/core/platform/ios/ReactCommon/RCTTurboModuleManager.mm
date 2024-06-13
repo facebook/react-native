@@ -217,7 +217,6 @@ typedef struct {
   RCTBridgeProxy *_bridgeProxy;
   RCTBridgeModuleDecorator *_bridgeModuleDecorator;
 
-  BOOL _enableSharedModuleQueue;
   dispatch_queue_t _sharedModuleQueue;
 }
 
@@ -234,11 +233,7 @@ typedef struct {
     _bridgeProxy = bridgeProxy;
     _bridgeModuleDecorator = bridgeModuleDecorator;
     _invalidating = false;
-    _enableSharedModuleQueue = RCTTurboModuleSharedQueueEnabled();
-
-    if (_enableSharedModuleQueue) {
-      _sharedModuleQueue = dispatch_queue_create("com.meta.react.turbomodulemanager.queue", DISPATCH_QUEUE_SERIAL);
-    }
+    _sharedModuleQueue = dispatch_queue_create("com.meta.react.turbomodulemanager.queue", DISPATCH_QUEUE_SERIAL);
 
     if (RCTTurboModuleInteropEnabled()) {
       // TODO(T174674274): Implement lazy loading of legacy modules in the new architecture.
@@ -728,12 +723,7 @@ typedef struct {
    * following if condition's block.
    */
   if (!methodQueue) {
-    if (_enableSharedModuleQueue) {
-      methodQueue = _sharedModuleQueue;
-    } else {
-      NSString *methodQueueName = [NSString stringWithFormat:@"com.facebook.react.%sQueue", moduleName];
-      methodQueue = dispatch_queue_create(methodQueueName.UTF8String, DISPATCH_QUEUE_SERIAL);
-    }
+    methodQueue = _sharedModuleQueue;
 
     if (moduleHasMethodQueueGetter) {
       /**
