@@ -378,7 +378,9 @@ public class ReactHostImpl implements ReactHost {
   public ReactSurface createSurface(
       Context context, String moduleName, @Nullable Bundle initialProps) {
     ReactSurfaceImpl surface = new ReactSurfaceImpl(context, moduleName, initialProps);
-    surface.attachView(new ReactSurfaceView(context, surface));
+    ReactSurfaceView surfaceView = new ReactSurfaceView(context, surface);
+    surfaceView.setShouldLogContentAppeared(true);
+    surface.attachView(surfaceView);
     surface.attach(this);
     return surface;
   }
