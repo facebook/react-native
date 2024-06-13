@@ -149,7 +149,7 @@ static NSString *kBundlePath = @"js/RNTesterApp.ios";
 // [Experiment] Enable the new debugger stack (codename Fusebox)
 - (BOOL)unstable_fuseboxEnabled
 {
-  return false;
+  return true;
 }
 
 #pragma mark - RCTComponentViewFactoryComponentProvider

@@ -61,33 +61,38 @@ const Text: React.AbstractComponent<
 
   const [isHighlighted, setHighlighted] = useState(false);
 
-  let _accessibilityState;
+  const _accessibilityLabel = ariaLabel ?? accessibilityLabel;
+
+  let _accessibilityState: ?TextProps['accessibilityState'] =
+    accessibilityState;
   if (
-    accessibilityState != null ||
     ariaBusy != null ||
     ariaChecked != null ||
     ariaDisabled != null ||
     ariaExpanded != null ||
     ariaSelected != null
   ) {
-    _accessibilityState = {
-      busy: ariaBusy ?? accessibilityState?.busy,
-      checked: ariaChecked ?? accessibilityState?.checked,
-      disabled: ariaDisabled ?? accessibilityState?.disabled,
-      expanded: ariaExpanded ?? accessibilityState?.expanded,
-      selected: ariaSelected ?? accessibilityState?.selected,
-    };
+    if (_accessibilityState != null) {
+      _accessibilityState = {
+        busy: ariaBusy ?? _accessibilityState.busy,
+        checked: ariaChecked ?? _accessibilityState.checked,
+        disabled: ariaDisabled ?? _accessibilityState.disabled,
+        expanded: ariaExpanded ?? _accessibilityState.expanded,
+        selected: ariaSelected ?? _accessibilityState.selected,
+      };
+    } else {
+      _accessibilityState = {
+        busy: ariaBusy,
+        checked: ariaChecked,
+        disabled: ariaDisabled,
+        expanded: ariaExpanded,
+        selected: ariaSelected,
+      };
+    }
   }
 
-  const _disabled =
-    restProps.disabled != null
-      ? restProps.disabled
-      : _accessibilityState?.disabled;
-
-  const nativeTextAccessibilityState =
-    _disabled !== _accessibilityState?.disabled
-      ? {..._accessibilityState, disabled: _disabled}
-      : _accessibilityState;
+  const _accessibilityStateDisabled = _accessibilityState?.disabled;
+  const _disabled = restProps.disabled ?? _accessibilityStateDisabled;
 
   const isPressable =
     (onPress != null ||
@@ -190,7 +195,6 @@ const Text: React.AbstractComponent<
       : processColor(restProps.selectionColor);
 
   let style = restProps.style;
-
   if (__DEV__) {
     if (PressabilityDebug.isEnabled() && onPress != null) {
       style = [restProps.style, {color: 'magenta'}];
@@ -204,13 +208,6 @@ const Text: React.AbstractComponent<
     );
     numberOfLines = 0;
   }
-
-  const hasTextAncestor = useContext(TextAncestor);
-
-  const _accessible = Platform.select({
-    ios: accessible !== false,
-    default: accessible,
-  });
 
   let _selectable = restProps.selectable;
 
@@ -236,41 +233,59 @@ const Text: React.AbstractComponent<
     }
   }
 
-  const _hasOnPressOrOnLongPress =
-    props.onPress != null || props.onLongPress != null;
+  const _nativeID = id ?? nativeID;
 
-  return hasTextAncestor ? (
-    <NativeVirtualText
-      {...restProps}
-      {...eventHandlersForText}
-      accessibilityLabel={ariaLabel ?? accessibilityLabel}
-      accessibilityState={_accessibilityState}
-      isHighlighted={isHighlighted}
-      isPressable={isPressable}
-      nativeID={id ?? nativeID}
-      numberOfLines={numberOfLines}
-      ref={forwardedRef}
-      selectable={_selectable}
-      selectionColor={selectionColor}
-      style={processedStyle}
-    />
-  ) : (
+  const hasTextAncestor = useContext(TextAncestor);
+  if (hasTextAncestor) {
+    return (
+      <NativeVirtualText
+        {...restProps}
+        {...eventHandlersForText}
+        accessibilityLabel={_accessibilityLabel}
+        accessibilityState={_accessibilityState}
+        isHighlighted={isHighlighted}
+        isPressable={isPressable}
+        nativeID={_nativeID}
+        numberOfLines={numberOfLines}
+        ref={forwardedRef}
+        selectable={_selectable}
+        selectionColor={selectionColor}
+        style={processedStyle}
+      />
+    );
+  }
+
+  // If the disabled prop and accessibilityState.disabled are out of sync but not both in
+  // falsy states we need to update the accessibilityState object to use the disabled prop.
+  if (
+    _disabled !== _accessibilityStateDisabled &&
+    ((_disabled != null && _disabled !== false) ||
+      (_accessibilityStateDisabled != null &&
+        _accessibilityStateDisabled !== false))
+  ) {
+    _accessibilityState = {..._accessibilityState, disabled: _disabled};
+  }
+
+  const _accessible = Platform.select({
+    ios: accessible !== false,
+    android:
+      accessible == null ? onPress != null || onLongPress != null : accessible,
+    default: accessible,
+  });
+
+  return (
     <TextAncestor.Provider value={true}>
       <NativeText
         {...restProps}
         {...eventHandlersForText}
-        accessibilityLabel={ariaLabel ?? accessibilityLabel}
-        accessibilityState={nativeTextAccessibilityState}
-        accessible={
-          accessible == null && Platform.OS === 'android'
-            ? _hasOnPressOrOnLongPress
-            : _accessible
-        }
+        accessibilityLabel={_accessibilityLabel}
+        accessibilityState={_accessibilityState}
+        accessible={_accessible}
         allowFontScaling={allowFontScaling !== false}
         disabled={_disabled}
         ellipsizeMode={ellipsizeMode ?? 'tail'}
         isHighlighted={isHighlighted}
-        nativeID={id ?? nativeID}
+        nativeID={_nativeID}
         numberOfLines={numberOfLines}
         ref={forwardedRef}
         selectable={_selectable}

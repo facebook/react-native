@@ -197,6 +197,13 @@ class RCTBridgeHostTargetDelegate : public facebook::react::jsinspector_modern::
   {
   }
 
+  facebook::react::jsinspector_modern::HostTargetMetadata getMetadata() override
+  {
+    return {
+        .integrationName = "iOS Bridge (RCTBridge)",
+    };
+  }
+
   void onReload(const PageReloadRequest &request) override
   {
     RCTAssertMainQueue();
@@ -306,10 +313,20 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   // NOTE: RCTCxxBridge will use _inspectorTarget during [self invalidate], so we must
   // keep it alive until after the call returns.
   [self invalidate];
+
+  // `invalidate` is asynchronous if we aren't on the main queue. Unregister
+  // the HostTarget on the main queue so that `invalidate` can complete safely
+  // in that case.
   if (_inspectorPageId.has_value()) {
-    facebook::react::jsinspector_modern::getInspectorInstance().removePage(*_inspectorPageId);
-    _inspectorPageId.reset();
-    _inspectorTarget.reset();
+    // Since we can't keep using `self` after dealloc, steal its inspector
+    // state into block-mutable variables
+    __block auto inspectorPageId = std::move(_inspectorPageId);
+    __block auto inspectorTarget = std::move(_inspectorTarget);
+    RCTExecuteOnMainQueue(^{
+      facebook::react::jsinspector_modern::getInspectorInstance().removePage(*inspectorPageId);
+      inspectorPageId.reset();
+      inspectorTarget.reset();
+    });
   }
 }
 
@@ -458,11 +475,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
             // This can happen if we're about to be dealloc'd. Reject the connection.
             return nullptr;
           }
-          return strongSelf->_inspectorTarget->connect(
-              std::move(remote),
-              {
-                  .integrationName = "iOS Bridge (RCTBridge)",
-              });
+          return strongSelf->_inspectorTarget->connect(std::move(remote));
         },
         {.nativePageReloads = true, .prefersFuseboxFrontend = true});
   }

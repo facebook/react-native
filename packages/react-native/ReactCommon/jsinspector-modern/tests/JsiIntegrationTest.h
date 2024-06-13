@@ -91,9 +91,7 @@ class JsiIntegrationPortableTest : public ::testing::Test,
 
   void connect() {
     ASSERT_FALSE(toPage_) << "Can only connect once in a JSI integration test.";
-    toPage_ = page_->connect(
-        remoteConnections_.make_unique(),
-        {.integrationName = "JsiIntegrationTest"});
+    toPage_ = page_->connect(remoteConnections_.make_unique());
 
     using namespace ::testing;
     // Default to ignoring console messages originating inside the backend.
@@ -178,6 +176,10 @@ class JsiIntegrationPortableTest : public ::testing::Test,
 
  private:
   // HostTargetDelegate methods
+
+  HostTargetMetadata getMetadata() override {
+    return {.integrationName = "JsiIntegrationTest"};
+  }
 
   void onReload(const PageReloadRequest& request) override {
     (void)request;

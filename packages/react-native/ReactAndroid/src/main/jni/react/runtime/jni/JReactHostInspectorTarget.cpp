@@ -40,11 +40,7 @@ JReactHostInspectorTarget::JReactHostInspectorTarget(
             std::unique_ptr<IRemoteConnection> remote)
             -> std::unique_ptr<ILocalConnection> {
           if (auto inspectorTarget = inspectorTargetWeak.lock()) {
-            return inspectorTarget->connect(
-                std::move(remote),
-                {
-                    .integrationName = "Android Bridgeless (ReactHostImpl)",
-                });
+            return inspectorTarget->connect(std::move(remote));
           }
           // Reject the connection.
           return nullptr;
@@ -84,6 +80,13 @@ void JReactHostInspectorTarget::registerNatives() {
           "sendDebuggerResumeCommand",
           JReactHostInspectorTarget::sendDebuggerResumeCommand),
   });
+}
+
+jsinspector_modern::HostTargetMetadata
+JReactHostInspectorTarget::getMetadata() {
+  return {
+      .integrationName = "Android Bridgeless (ReactHostImpl)",
+  };
 }
 
 void JReactHostInspectorTarget::onReload(const PageReloadRequest& request) {

@@ -3083,9 +3083,14 @@ public final class com/facebook/react/modules/camera/ImageStoreManager$Companion
 }
 
 public final class com/facebook/react/modules/clipboard/ClipboardModule : com/facebook/fbreact/specs/NativeClipboardSpec {
+	public static final field Companion Lcom/facebook/react/modules/clipboard/ClipboardModule$Companion;
+	public static final field NAME Ljava/lang/String;
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
 	public fun getString (Lcom/facebook/react/bridge/Promise;)V
 	public fun setString (Ljava/lang/String;)V
+}
+
+public final class com/facebook/react/modules/clipboard/ClipboardModule$Companion {
 }
 
 public final class com/facebook/react/modules/common/ModuleDataCleaner {
@@ -6390,6 +6395,7 @@ public class com/facebook/react/views/image/ReactImageManager : com/facebook/rea
 	public fun setProgressiveRenderingEnabled (Lcom/facebook/react/views/image/ReactImageView;Z)V
 	public fun setResizeMethod (Lcom/facebook/react/views/image/ReactImageView;Ljava/lang/String;)V
 	public fun setResizeMode (Lcom/facebook/react/views/image/ReactImageView;Ljava/lang/String;)V
+	public fun setResizeMultiplier (Lcom/facebook/react/views/image/ReactImageView;F)V
 	public fun setSource (Lcom/facebook/react/views/image/ReactImageView;Lcom/facebook/react/bridge/ReadableArray;)V
 	public fun setSrc (Lcom/facebook/react/views/image/ReactImageView;Lcom/facebook/react/bridge/ReadableArray;)V
 	public fun setTintColor (Lcom/facebook/react/views/image/ReactImageView;Ljava/lang/Integer;)V
@@ -6423,6 +6429,7 @@ public class com/facebook/react/views/image/ReactImageView : com/facebook/drawee
 	public fun setOverlayColor (I)V
 	public fun setProgressiveRenderingEnabled (Z)V
 	public fun setResizeMethod (Lcom/facebook/react/views/image/ImageResizeMethod;)V
+	public fun setResizeMultiplier (F)V
 	public fun setScaleType (Lcom/facebook/drawee/drawable/ScalingUtils$ScaleType;)V
 	public fun setShouldNotifyLoadEvents (Z)V
 	public fun setSource (Lcom/facebook/react/bridge/ReadableArray;)V

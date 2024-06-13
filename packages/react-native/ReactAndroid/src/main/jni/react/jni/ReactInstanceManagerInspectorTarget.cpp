@@ -56,12 +56,7 @@ ReactInstanceManagerInspectorTarget::ReactInstanceManagerInspectorTarget(
         [inspectorTarget =
              inspectorTarget_](std::unique_ptr<IRemoteConnection> remote)
             -> std::unique_ptr<ILocalConnection> {
-          return inspectorTarget->connect(
-              std::move(remote),
-              {
-                  .integrationName =
-                      "Android Bridge (ReactInstanceManagerInspectorTarget)",
-              });
+          return inspectorTarget->connect(std::move(remote));
         },
         {.nativePageReloads = true, .prefersFuseboxFrontend = true});
   }
@@ -101,6 +96,13 @@ void ReactInstanceManagerInspectorTarget::registerNatives() {
           "sendDebuggerResumeCommand",
           ReactInstanceManagerInspectorTarget::sendDebuggerResumeCommand),
   });
+}
+
+jsinspector_modern::HostTargetMetadata
+ReactInstanceManagerInspectorTarget::getMetadata() {
+  return {
+      .integrationName = "Android Bridge (ReactInstanceManagerInspectorTarget)",
+  };
 }
 
 void ReactInstanceManagerInspectorTarget::onReload(

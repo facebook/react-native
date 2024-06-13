@@ -223,6 +223,14 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
     }
   }
 
+  @ReactProp(name = "resizeMultiplier")
+  public void setResizeMultiplier(ReactImageView view, float resizeMultiplier) {
+    if (resizeMultiplier < 0.01f) {
+      FLog.w(ReactConstants.TAG, "Invalid resize multiplier: '" + resizeMultiplier + "'");
+    }
+    view.setResizeMultiplier(resizeMultiplier);
+  }
+
   @ReactProp(name = "tintColor", customType = "Color")
   public void setTintColor(ReactImageView view, @Nullable Integer tintColor) {
     if (tintColor == null) {

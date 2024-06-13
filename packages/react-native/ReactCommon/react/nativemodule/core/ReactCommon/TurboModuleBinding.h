@@ -9,9 +9,10 @@
 
 #include <string>
 
-#include <ReactCommon/LongLivedObject.h>
-#include <ReactCommon/TurboModule.h>
 #include <jsi/jsi.h>
+#include <react/bridging/LongLivedObject.h>
+
+#include <ReactCommon/TurboModule.h>
 
 namespace facebook::react {
 

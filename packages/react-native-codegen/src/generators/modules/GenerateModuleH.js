@@ -568,9 +568,9 @@ function translateEventEmitterToCpp(
       isArray ? `std::vector<${templateName}>` : templateName
     }, ${jsiType}>, "value cannnot be converted to ${jsiType}");`
     }
-    std::static_pointer_cast<AsyncEventEmitter<${
+    static_cast<AsyncEventEmitter<${
       isVoidTypeAnnotation ? '' : 'jsi::Value'
-    }>>(delegate_.eventEmitterMap_["${eventEmitter.name}"])->emit(${
+    }>&>(*delegate_.eventEmitterMap_["${eventEmitter.name}"]).emit(${
       isVoidTypeAnnotation
         ? ''
         : `[jsInvoker = jsInvoker_, eventValue = value](jsi::Runtime& rt) -> jsi::Value {
