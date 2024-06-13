@@ -3083,9 +3083,14 @@ public final class com/facebook/react/modules/camera/ImageStoreManager$Companion
 }
 
 public final class com/facebook/react/modules/clipboard/ClipboardModule : com/facebook/fbreact/specs/NativeClipboardSpec {
+	public static final field Companion Lcom/facebook/react/modules/clipboard/ClipboardModule$Companion;
+	public static final field NAME Ljava/lang/String;
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
 	public fun getString (Lcom/facebook/react/bridge/Promise;)V
 	public fun setString (Ljava/lang/String;)V
+}
+
+public final class com/facebook/react/modules/clipboard/ClipboardModule$Companion {
 }
 
 public final class com/facebook/react/modules/common/ModuleDataCleaner {
