@@ -21,3 +21,7 @@ Updates relevant files in the `react-native` package and template to materialize
 ### `update-template-package`
 
 Updates workspace dependencies in the template app`package.json`
+
+### `create-release-commit`
+
+Creates a release commit to trigger a new release
