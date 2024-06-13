@@ -35,6 +35,12 @@
 #define YG_EXPORT
 #endif
 
+#ifdef __OBJC__
+#if __has_include(<Foundation/Foundation.h>)
+#import <Foundation/Foundation.h>
+#endif
+#endif
+
 #ifdef NS_ENUM
 // Cannot use NSInteger as NSInteger has a different size than int (which is the
 // default type of a enum). Therefor when linking the Yoga C library into obj-c
