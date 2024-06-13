@@ -153,7 +153,7 @@
 
 - (BOOL)unstable_fuseboxEnabled
 {
-  return [self unstable_fuseboxEnabled];
+  return NO;
 }
 
 - (NSURL *)bundleURL
