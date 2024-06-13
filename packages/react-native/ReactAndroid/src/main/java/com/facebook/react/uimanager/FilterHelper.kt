@@ -8,11 +8,15 @@
 package com.facebook.react.uimanager
 
 import android.annotation.TargetApi
+import android.graphics.BlendMode
+import android.graphics.BlendModeColorFilter
+import android.graphics.Color
 import android.graphics.ColorMatrix
 import android.graphics.ColorMatrixColorFilter
 import android.graphics.RenderEffect
 import android.graphics.Shader
 import com.facebook.react.bridge.ReadableArray
+import com.facebook.react.bridge.ReadableMap
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -26,19 +30,22 @@ internal object FilterHelper {
     for (i in 0 until filters.size()) {
       val filter = filters.getMap(i).getEntryIterator().next()
       val filterName = filter.key
-      val amount = (filter.value as Double).toFloat()
+
+      val filterValues = filter.value
 
       chainedEffects =
           when (filterName) {
-            "brightness" -> createBrightnessEffect(amount, chainedEffects)
-            "contrast" -> createContrastEffect(amount, chainedEffects)
-            "grayscale" -> createGrayscaleEffect(amount, chainedEffects)
-            "sepia" -> createSepiaEffect(amount, chainedEffects)
-            "saturate" -> createSaturateEffect(amount, chainedEffects)
-            "hueRotate" -> createHueRotateEffect(amount, chainedEffects)
-            "invert" -> createInvertEffect(amount, chainedEffects)
-            "blur" -> createBlurEffect(amount, chainedEffects)
-            "opacity" -> createOpacityEffect(amount, chainedEffects)
+            "brightness" ->
+                createBrightnessEffect((filterValues as Double).toFloat(), chainedEffects)
+            "contrast" -> createContrastEffect((filterValues as Double).toFloat(), chainedEffects)
+            "grayscale" -> createGrayscaleEffect((filterValues as Double).toFloat(), chainedEffects)
+            "sepia" -> createSepiaEffect((filterValues as Double).toFloat(), chainedEffects)
+            "saturate" -> createSaturateEffect((filterValues as Double).toFloat(), chainedEffects)
+            "hueRotate" -> createHueRotateEffect((filterValues as Double).toFloat(), chainedEffects)
+            "invert" -> createInvertEffect((filterValues as Double).toFloat(), chainedEffects)
+            "blur" -> createBlurEffect((filterValues as Double).toFloat(), chainedEffects)
+            "opacity" -> createOpacityEffect((filterValues as Double).toFloat(), chainedEffects)
+            "dropShadow" -> createDropShadowEffect(filterValues as ReadableMap, chainedEffects)
             else -> throw IllegalArgumentException("Invalid filter name: $filterName")
           }
     }
@@ -80,7 +87,7 @@ internal object FilterHelper {
     for (i in 0 until filters.size()) {
       val filter = filters.getMap(i).getEntryIterator().next()
       val filterName = filter.key
-      if (filterName == "blur") {
+      if (filterName == "blur" || filterName == "dropShadow") {
         return false
       }
     }
@@ -125,6 +132,37 @@ internal object FilterHelper {
       chainedEffects: RenderEffect? = null
   ): RenderEffect {
     return createColorMatrixEffect(createOpacityColorMatrix(amount), chainedEffects)
+  }
+
+  public fun createDropShadowEffect(
+      filterValues: ReadableMap,
+      chainedEffects: RenderEffect? = null
+  ): RenderEffect {
+    val offsetX = filterValues.getDouble("offsetX").toFloat()
+    val offsetY = filterValues.getDouble("offsetY").toFloat()
+    val color = if (filterValues.hasKey("color")) filterValues.getInt("color") else Color.BLACK
+    val standardDeviation: Float =
+        if (filterValues.hasKey("standardDeviation"))
+            filterValues.getDouble("standardDeviation").toFloat()
+        else 0f
+
+    val original: RenderEffect
+    val offsetEffect: RenderEffect
+    if (chainedEffects == null) {
+      original = RenderEffect.createOffsetEffect(0f, 0f)
+      offsetEffect = RenderEffect.createOffsetEffect(offsetX, offsetY)
+    } else {
+      original = RenderEffect.createOffsetEffect(0f, 0f, chainedEffects)
+      offsetEffect = RenderEffect.createOffsetEffect(offsetX, offsetY, chainedEffects)
+    }
+
+    val colorEffect: RenderEffect =
+        RenderEffect.createColorFilterEffect(
+            BlendModeColorFilter(color, BlendMode.SRC_IN), offsetEffect)
+    val blurEffect: RenderEffect =
+        RenderEffect.createBlurEffect(
+            standardDeviation, standardDeviation, colorEffect, Shader.TileMode.DECAL)
+    return RenderEffect.createBlendModeEffect(blurEffect, original, BlendMode.SRC_OVER)
   }
 
   public fun createOpacityColorMatrix(amount: Float): ColorMatrix {
