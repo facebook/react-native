@@ -3215,6 +3215,7 @@ public final class com/facebook/react/modules/debug/DevSettingsModule : com/face
 	public fun addListener (Ljava/lang/String;)V
 	public fun addMenuItem (Ljava/lang/String;)V
 	public fun onFastRefresh ()V
+	public fun openDebugger ()V
 	public fun reload ()V
 	public fun reloadWithReason (Ljava/lang/String;)V
 	public fun removeListeners (D)V
@@ -3829,6 +3830,7 @@ public class com/facebook/react/runtime/ReactSurfaceImpl : com/facebook/react/in
 public final class com/facebook/react/runtime/ReactSurfaceView : com/facebook/react/ReactRootView {
 	public fun <init> (Landroid/content/Context;Lcom/facebook/react/runtime/ReactSurfaceImpl;)V
 	public fun getCurrentReactContext ()Lcom/facebook/react/bridge/ReactContext;
+	public fun getJSModuleName ()Ljava/lang/String;
 	public fun getUIManagerType ()I
 	public fun handleException (Ljava/lang/Throwable;)V
 	public fun hasActiveReactContext ()Z
