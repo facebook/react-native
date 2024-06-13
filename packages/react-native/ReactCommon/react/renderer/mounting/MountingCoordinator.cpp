@@ -104,9 +104,8 @@ std::optional<MountingTransaction> MountingCoordinator::pullTransaction()
   }
 
   // Override case
-  for(auto it = mountingOverrideDelegates_.begin(); it < mountingOverrideDelegates_.end(); it++)
+  for(const auto &delegate : mountingOverrideDelegates_)
   {
-    auto &delegate = *it;
     auto mountingOverrideDelegate = delegate.lock();
     auto shouldOverridePullTransaction = mountingOverrideDelegate &&
     mountingOverrideDelegate->shouldOverridePullTransaction();
