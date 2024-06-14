@@ -405,11 +405,6 @@ void FabricMountingManager::executeMount(
             }
           }
 
-          // EventEmitter
-          cppUpdateEventEmitterMountItems.push_back(
-              CppMountItem::UpdateEventEmitterMountItem(
-                  mutation.newChildShadowView));
-
           break;
         }
         default: {
@@ -821,7 +816,8 @@ void FabricMountingManager::preallocateShadowView(
   }
 
   // Do not hold a reference to javaEventEmitter from the C++ side.
-  jni::local_ref<EventEmitterWrapper::JavaPart> javaEventEmitter = nullptr;
+  auto javaEventEmitter = EventEmitterWrapper::newObjectCxxArgs(
+          shadowView.eventEmitter);
 
   jni::local_ref<jobject> props = getProps({}, shadowView);
 
@@ -834,7 +830,7 @@ void FabricMountingManager::preallocateShadowView(
       component.get(),
       props.get(),
       (javaStateWrapper != nullptr ? javaStateWrapper.get() : nullptr),
-      (javaEventEmitter != nullptr ? javaEventEmitter.get() : nullptr),
+      javaEventEmitter.get(),
       isLayoutableShadowNode);
 }
 
