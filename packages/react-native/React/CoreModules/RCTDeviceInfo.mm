@@ -52,7 +52,7 @@ RCT_EXPORT_MODULE()
                                                name:RCTAccessibilityManagerDidUpdateMultiplierNotification
                                              object:[_moduleRegistry moduleForName:"AccessibilityManager"]];
 
-  _currentInterfaceOrientation = RCTKeyWindow().windowScene.interfaceOrientation;;
+  _currentInterfaceOrientation = RCTKeyWindow().windowScene.interfaceOrientation;
 
   _currentInterfaceDimensions = [self _exportedDimensions];
 
