@@ -903,11 +903,13 @@ public class ReactHostImpl implements ReactHost {
     setCurrentActivity(null);
   }
 
-  private void raiseSoftException(String method, String message) {
-    raiseSoftException(method, message, null);
+  private void raiseSoftException(String callingMethod, String message) {
+    raiseSoftException(callingMethod, message, null);
   }
 
-  private void raiseSoftException(String method, String message, @Nullable Throwable throwable) {
+  private void raiseSoftException(
+      String callingMethod, String message, @Nullable Throwable throwable) {
+    final String method = "raiseSoftException(" + callingMethod + ")";
     log(method, message);
     if (throwable != null) {
       ReactSoftExceptionLogger.logSoftException(
