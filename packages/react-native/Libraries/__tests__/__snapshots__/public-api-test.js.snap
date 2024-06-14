@@ -5460,6 +5460,7 @@ declare export function parseComponentStack(message: string): {
 declare export function parseLogBoxException(
   error: ExtendedExceptionData
 ): LogBoxLogData;
+declare export function withoutANSIColorStyles(message: mixed): mixed;
 declare export function parseLogBoxLog(args: $ReadOnlyArray<mixed>): {|
   componentStack: ComponentStack,
   componentStackType: ComponentStackType,
