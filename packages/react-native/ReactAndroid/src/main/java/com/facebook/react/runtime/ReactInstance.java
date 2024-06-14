@@ -198,11 +198,6 @@ final class ReactInstance {
             getJSCallInvokerHolder(),
             getNativeMethodCallInvokerHolder());
 
-    // Eagerly initialize TurboModules
-    for (String moduleName : mTurboModuleManager.getEagerInitModuleNames()) {
-      mTurboModuleManager.getModule(moduleName);
-    }
-
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
 
     // Set up Fabric
@@ -298,6 +293,13 @@ final class ReactInstance {
 
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+  }
+
+  void initializeEagerTurboModules() {
+    // Eagerly initialize TurboModules
+    for (String moduleName : mTurboModuleManager.getEagerInitModuleNames()) {
+      mTurboModuleManager.getModule(moduleName);
+    }
   }
 
   private static synchronized void loadLibraryIfNeeded() {
