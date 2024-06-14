@@ -116,7 +116,7 @@ jobs:
     executor: reactnativeios
     parameters:
       ruby_version:
-        default: "2.7.7"
+        default: "2.7.8"
         description: The version of ruby that must be used
         type: string
     steps:
@@ -1094,15 +1094,13 @@ jobs:
       dry_run:
         type: boolean
         default: false
-    executor: reactnativeios
+    executor: nodelts
     steps:
       - checkout_code_with_cache
       - run_yarn
       - add_ssh_keys:
           fingerprints:
             - "1f:c7:61:c4:e2:ff:77:e3:cc:ca:a7:34:c2:79:e3:3c"
-      - brew_install:
-          package: cmake
       - run:
           name: Versioning workspace packages
           command: |
@@ -1114,6 +1112,11 @@ jobs:
       - run:
           name: Creating release commit
           command: |
+            # I'm seeing failures in automatically detect the email for the
+            # agent that should push the commit.
+            git config --global user.name "Distiller"
+            git config --global user.email "distiller@circleci.com"
+
             git commit -a -m "Release << parameters.version >>" -m "#publish-packages-to-npm&<< parameters.tag >>"
             git tag -a "v<< parameters.version >>" -m "v<< parameters.version >>"
             GIT_PAGER=cat git show HEAD
