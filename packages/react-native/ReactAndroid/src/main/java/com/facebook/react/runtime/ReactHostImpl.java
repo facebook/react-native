@@ -457,8 +457,12 @@ public class ReactHostImpl implements ReactHost {
               return reloadTask.continueWithTask(
                   task -> {
                     if (task.isFaulted()) {
-                      mReactHostDelegate.handleInstanceException(task.getError());
-                      return getOrCreateDestroyTask("Reload failed", task.getError());
+                      final Exception ex = task.getError();
+                      if (mUseDevSupport) {
+                        mDevSupportManager.handleException(ex);
+                      }
+                      mReactHostDelegate.handleInstanceException(ex);
+                      return getOrCreateDestroyTask("Reload failed", ex);
                     }
 
                     return task;
