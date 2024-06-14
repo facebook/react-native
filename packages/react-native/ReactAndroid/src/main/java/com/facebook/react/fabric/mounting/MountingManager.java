@@ -349,7 +349,6 @@ public class MountingManager {
    * @param componentName
    * @param localData
    * @param props
-   * @param state
    * @param width
    * @param widthMode
    * @param height
@@ -359,49 +358,6 @@ public class MountingManager {
    */
   @AnyThread
   public long measure(
-      @NonNull ReactContext context,
-      @NonNull String componentName,
-      @NonNull ReadableMap localData,
-      @NonNull ReadableMap props,
-      @NonNull ReadableMap state,
-      float width,
-      @NonNull YogaMeasureMode widthMode,
-      float height,
-      @NonNull YogaMeasureMode heightMode,
-      @Nullable float[] attachmentsPositions) {
-
-    return mViewManagerRegistry
-        .get(componentName)
-        .measure(
-            context,
-            localData,
-            props,
-            state,
-            width,
-            widthMode,
-            height,
-            heightMode,
-            attachmentsPositions);
-  }
-
-  /**
-   * Measure a component, given localData, props, state, and measurement information. This needs to
-   * remain here for now - and not in SurfaceMountingManager - because sometimes measures are made
-   * outside of the context of a Surface; especially from C++ before StartSurface is called.
-   *
-   * @param context
-   * @param componentName
-   * @param localData
-   * @param props
-   * @param width
-   * @param widthMode
-   * @param height
-   * @param heightMode
-   * @param attachmentsPositions
-   * @return
-   */
-  @AnyThread
-  public long measureMapBuffer(
       @NonNull ReactContext context,
       @NonNull String componentName,
       @NonNull MapBuffer localData,

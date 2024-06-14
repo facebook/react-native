@@ -60,7 +60,7 @@ Size measureAndroidComponent(
               jfloat,
               jfloat,
               jfloat,
-              jfloatArray)>("measureMapBuffer");
+              jfloatArray)>("measure");
 
   auto localDataMap =
       JReadableMapBuffer::createWithContents(std::move(localData));

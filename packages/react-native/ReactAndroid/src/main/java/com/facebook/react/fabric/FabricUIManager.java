@@ -504,30 +504,6 @@ public class FabricUIManager
   }
 
   @SuppressWarnings("unused")
-  private long measure(
-      int rootTag,
-      String componentName,
-      ReadableMap localData,
-      ReadableMap props,
-      ReadableMap state,
-      float minWidth,
-      float maxWidth,
-      float minHeight,
-      float maxHeight) {
-    return measure(
-        rootTag,
-        componentName,
-        localData,
-        props,
-        state,
-        minWidth,
-        maxWidth,
-        minHeight,
-        maxHeight,
-        null);
-  }
-
-  @SuppressWarnings("unused")
   public int getColor(int surfaceId, String[] resourcePaths) {
     ThemedReactContext context =
         mMountingManager.getSurfaceManagerEnforced(surfaceId, "getColor").getContext();
@@ -547,44 +523,6 @@ public class FabricUIManager
 
   @SuppressWarnings("unused")
   private long measure(
-      int surfaceId,
-      String componentName,
-      ReadableMap localData,
-      ReadableMap props,
-      ReadableMap state,
-      float minWidth,
-      float maxWidth,
-      float minHeight,
-      float maxHeight,
-      @Nullable float[] attachmentsPositions) {
-
-    ReactContext context;
-    if (surfaceId > 0) {
-      SurfaceMountingManager surfaceMountingManager =
-          mMountingManager.getSurfaceManagerEnforced(surfaceId, "measure");
-      if (surfaceMountingManager.isStopped()) {
-        return 0;
-      }
-      context = surfaceMountingManager.getContext();
-    } else {
-      context = mReactApplicationContext;
-    }
-
-    return mMountingManager.measure(
-        context,
-        componentName,
-        localData,
-        props,
-        state,
-        getYogaSize(minWidth, maxWidth),
-        getYogaMeasureMode(minWidth, maxWidth),
-        getYogaSize(minHeight, maxHeight),
-        getYogaMeasureMode(minHeight, maxHeight),
-        attachmentsPositions);
-  }
-
-  @SuppressWarnings("unused")
-  private long measureMapBuffer(
       int surfaceId,
       String componentName,
       ReadableMapBuffer localData,
@@ -609,7 +547,7 @@ public class FabricUIManager
     }
 
     // TODO: replace ReadableNativeMap -> ReadableMapBuffer
-    return mMountingManager.measureMapBuffer(
+    return mMountingManager.measure(
         context,
         componentName,
         localData,
