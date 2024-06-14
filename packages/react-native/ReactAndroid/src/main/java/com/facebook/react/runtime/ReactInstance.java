@@ -10,6 +10,7 @@ package com.facebook.react.runtime;
 import android.content.res.AssetManager;
 import android.view.View;
 import com.facebook.common.logging.FLog;
+import com.facebook.fbreact.specs.NativeExceptionsManagerSpec;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
@@ -21,6 +22,7 @@ import com.facebook.react.ViewManagerOnDemandReactPackage;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.JSBundleLoaderDelegate;
+import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.NativeArray;
 import com.facebook.react.bridge.NativeMap;
@@ -35,6 +37,7 @@ import com.facebook.react.bridge.queue.QueueThreadExceptionHandler;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationImpl;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
+import com.facebook.react.devsupport.StackTraceHelper;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.fabric.Binding;
 import com.facebook.react.fabric.BindingImpl;
@@ -110,7 +113,7 @@ final class ReactInstance {
       ComponentFactory componentFactory,
       DevSupportManager devSupportManager,
       QueueThreadExceptionHandler exceptionHandler,
-      ReactJsExceptionHandler reactExceptionManager,
+      @Nullable ReactJsExceptionHandler reactExceptionManager,
       boolean useDevSupport,
       @Nullable ReactHostInspectorTarget reactHostInspectorTarget) {
     mBridgelessReactContext = bridgelessReactContext;
@@ -154,6 +157,12 @@ final class ReactInstance {
     // Notify JS if profiling is enabled
     boolean isProfiling =
         Systrace.isTracing(Systrace.TRACE_TAG_REACT_APPS | Systrace.TRACE_TAG_REACT_JS_VM_CALLS);
+
+    ReactJsExceptionHandler reactJsExceptionHandlerImpl =
+        reactExceptionManager != null
+            ? reactExceptionManager
+            : new ReactJsExceptionHandlerImpl(nativeModulesMessageQueueThread);
+
     mHybridData =
         initHybrid(
             jsRuntimeFactory,
@@ -161,7 +170,7 @@ final class ReactInstance {
             nativeModulesMessageQueueThread,
             mJavaTimerManager,
             jsTimerExecutor,
-            reactExceptionManager,
+            reactJsExceptionHandlerImpl,
             bindingsInstaller,
             isProfiling,
             reactHostInspectorTarget);
@@ -309,6 +318,27 @@ final class ReactInstance {
 
   public ReactQueueConfiguration getReactQueueConfiguration() {
     return mQueueConfiguration;
+  }
+
+  private class ReactJsExceptionHandlerImpl implements ReactJsExceptionHandler {
+    private final MessageQueueThread mNativeModulesMessageQueueThread;
+
+    ReactJsExceptionHandlerImpl(MessageQueueThread nativeModulesMessageQueueThread) {
+      this.mNativeModulesMessageQueueThread = nativeModulesMessageQueueThread;
+    }
+
+    @Override
+    public void reportJsException(ParsedError error) {
+      JavaOnlyMap data = StackTraceHelper.convertParsedError(error);
+
+      // Simulate async native module method call
+      mNativeModulesMessageQueueThread.runOnQueue(
+          () -> {
+            NativeExceptionsManagerSpec exceptionsManager =
+                (NativeExceptionsManagerSpec) getNativeModule(NativeExceptionsManagerSpec.NAME);
+            exceptionsManager.reportException(data);
+          });
+    }
   }
 
   public void loadJSBundle(JSBundleLoader bundleLoader) {

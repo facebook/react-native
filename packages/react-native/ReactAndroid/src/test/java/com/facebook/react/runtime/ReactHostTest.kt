@@ -88,7 +88,7 @@ class ReactHostTest {
             reactHostDelegate,
             componentFactory,
             false,
-            {},
+            null,
             false)
     val taskCompletionSource = TaskCompletionSource<Boolean>().apply { setResult(true) }
     mockedTaskCompletionSourceCtor =
