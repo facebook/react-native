@@ -115,8 +115,10 @@ public class ReactHostImpl implements ReactHost {
   private final Collection<ReactInstanceEventListener> mReactInstanceEventListeners =
       Collections.synchronizedList(new ArrayList<>());
 
-  private final BridgelessAtomicRef<Task<ReactInstance>> mReactInstanceTaskRef =
+  // todo: T192399917 This no longer needs to store the react instance
+  private final BridgelessAtomicRef<Task<ReactInstance>> mCreateReactInstanceTaskRef =
       new BridgelessAtomicRef<>(Task.forResult(null));
+  private @Nullable ReactInstance mReactInstance;
 
   private final BridgelessAtomicRef<BridgelessReactContext> mBridgelessReactContextRef =
       new BridgelessAtomicRef<>();
@@ -388,15 +390,14 @@ public class ReactHostImpl implements ReactHost {
   }
 
   /* package */ boolean isInstanceInitialized() {
-    final ReactInstance reactInstance = mReactInstanceTaskRef.get().getResult();
-    return reactInstance != null;
+    return mReactInstance != null;
   }
 
   @ThreadConfined(UI)
   @Override
   public boolean onBackPressed() {
     UiThreadUtil.assertOnUiThread();
-    final ReactInstance reactInstance = mReactInstanceTaskRef.get().getResult();
+    final ReactInstance reactInstance = mReactInstance;
     if (reactInstance == null) {
       return false;
     }
@@ -412,11 +413,9 @@ public class ReactHostImpl implements ReactHost {
   }
 
   public @Nullable ReactQueueConfiguration getReactQueueConfiguration() {
-    synchronized (mReactInstanceTaskRef) {
-      Task<ReactInstance> task = mReactInstanceTaskRef.get();
-      if (!task.isFaulted() && !task.isCancelled() && task.getResult() != null) {
-        return task.getResult().getReactQueueConfiguration();
-      }
+    final ReactInstance reactInstance = mReactInstance;
+    if (reactInstance != null) {
+      return reactInstance.getReactQueueConfiguration();
     }
     return null;
   }
@@ -561,7 +560,7 @@ public class ReactHostImpl implements ReactHost {
    *     BlackHoleEventDispatcher}.
    */
   /* package */ EventDispatcher getEventDispatcher() {
-    final ReactInstance reactInstance = mReactInstanceTaskRef.get().getResult();
+    final ReactInstance reactInstance = mReactInstance;
     if (reactInstance == null) {
       return BlackHoleEventDispatcher.get();
     }
@@ -572,7 +571,7 @@ public class ReactHostImpl implements ReactHost {
   /* package */
   @Nullable
   FabricUIManager getUIManager() {
-    final ReactInstance reactInstance = mReactInstanceTaskRef.get().getResult();
+    final ReactInstance reactInstance = mReactInstance;
     if (reactInstance == null) {
       return null;
     }
@@ -580,7 +579,7 @@ public class ReactHostImpl implements ReactHost {
   }
 
   /* package */ <T extends NativeModule> boolean hasNativeModule(Class<T> nativeModuleInterface) {
-    final ReactInstance reactInstance = mReactInstanceTaskRef.get().getResult();
+    final ReactInstance reactInstance = mReactInstance;
     if (reactInstance != null) {
       return reactInstance.hasNativeModule(nativeModuleInterface);
     }
@@ -588,7 +587,7 @@ public class ReactHostImpl implements ReactHost {
   }
 
   /* package */ Collection<NativeModule> getNativeModules() {
-    final ReactInstance reactInstance = mReactInstanceTaskRef.get().getResult();
+    final ReactInstance reactInstance = mReactInstance;
     if (reactInstance != null) {
       return reactInstance.getNativeModules();
     }
@@ -606,7 +605,7 @@ public class ReactHostImpl implements ReactHost {
                   + " disabled"));
     }
 
-    final ReactInstance reactInstance = mReactInstanceTaskRef.get().getResult();
+    final ReactInstance reactInstance = mReactInstance;
     if (reactInstance != null) {
       return reactInstance.getNativeModule(nativeModuleInterface);
     }
@@ -616,7 +615,7 @@ public class ReactHostImpl implements ReactHost {
   /* package */
   @Nullable
   NativeModule getNativeModule(String nativeModuleName) {
-    final ReactInstance reactInstance = mReactInstanceTaskRef.get().getResult();
+    final ReactInstance reactInstance = mReactInstance;
     if (reactInstance != null) {
       return reactInstance.getNativeModule(nativeModuleName);
     }
@@ -628,7 +627,7 @@ public class ReactHostImpl implements ReactHost {
   RuntimeExecutor getRuntimeExecutor() {
     final String method = "getRuntimeExecutor()";
 
-    final ReactInstance reactInstance = mReactInstanceTaskRef.get().getResult();
+    final ReactInstance reactInstance = mReactInstance;
     if (reactInstance != null) {
       return reactInstance.getBufferedRuntimeExecutor();
     }
@@ -641,7 +640,7 @@ public class ReactHostImpl implements ReactHost {
   CallInvokerHolder getJSCallInvokerHolder() {
     final String method = "getJSCallInvokerHolder()";
 
-    final ReactInstance reactInstance = mReactInstanceTaskRef.get().getResult();
+    final ReactInstance reactInstance = mReactInstance;
     if (reactInstance != null) {
       return reactInstance.getJSCallInvokerHolder();
     }
@@ -736,7 +735,7 @@ public class ReactHostImpl implements ReactHost {
 
   @Nullable
   JavaScriptContextHolder getJavaScriptContextHolder() {
-    final ReactInstance reactInstance = mReactInstanceTaskRef.get().getResult();
+    final ReactInstance reactInstance = mReactInstance;
     if (reactInstance != null) {
       return reactInstance.getJavaScriptContextHolder();
     }
@@ -937,11 +936,11 @@ public class ReactHostImpl implements ReactHost {
       executor = getDefaultReactInstanceExecutor();
     }
 
-    return mReactInstanceTaskRef
+    return mCreateReactInstanceTaskRef
         .get()
         .onSuccess(
             task -> {
-              final ReactInstance reactInstance = task.getResult();
+              final ReactInstance reactInstance = mReactInstance;
               if (reactInstance == null) {
                 raiseSoftException(method, "Execute: reactInstance is null. Dropping work.");
                 return FALSE;
@@ -967,7 +966,7 @@ public class ReactHostImpl implements ReactHost {
     return getOrCreateReactInstance()
         .onSuccess(
             task -> {
-              final ReactInstance reactInstance = task.getResult();
+              final ReactInstance reactInstance = mReactInstance;
               if (reactInstance == null) {
                 raiseSoftException(method, "Execute: reactInstance is null. Dropping work.");
                 return null;
@@ -1047,7 +1046,7 @@ public class ReactHostImpl implements ReactHost {
     final String method = "getOrCreateReactInstanceTask()";
     log(method);
 
-    return mReactInstanceTaskRef.getOrCreate(
+    return mCreateReactInstanceTaskRef.getOrCreate(
         () -> {
           log(method, "Start");
           ReactMarker.logMarker(
@@ -1072,6 +1071,7 @@ public class ReactHostImpl implements ReactHost {
                             mReactJsExceptionHandler,
                             mUseDevSupport,
                             getOrCreateReactHostInspectorTarget());
+                    mReactInstance = instance;
 
                     MemoryPressureListener memoryPressureListener =
                         createMemoryPressureListener(instance);
@@ -1284,7 +1284,7 @@ public class ReactHostImpl implements ReactHost {
 
     return (task, stage) -> {
       final ReactInstance reactInstance = task.getResult();
-      final ReactInstance currentReactInstance = mReactInstanceTaskRef.get().getResult();
+      final ReactInstance currentReactInstance = mReactInstance;
 
       final String stageLabel = "Stage: " + stage;
       final String reasonLabel = tag + " reason: " + reason;
@@ -1351,7 +1351,7 @@ public class ReactHostImpl implements ReactHost {
 
     if (mReloadTask == null) {
       mReloadTask =
-          mReactInstanceTaskRef
+          mCreateReactInstanceTaskRef
               .get()
               .continueWithTask(
                   (task) -> {
@@ -1448,7 +1448,10 @@ public class ReactHostImpl implements ReactHost {
                     mBridgelessReactContextRef.reset();
 
                     log(method, "Resetting ReactInstance task ref");
-                    mReactInstanceTaskRef.reset();
+                    mCreateReactInstanceTaskRef.reset();
+
+                    log(method, "Resetting ReactInstance ptr");
+                    mReactInstance = null;
 
                     log(method, "Resetting preload task ref");
                     mStartTask = null;
@@ -1527,7 +1530,7 @@ public class ReactHostImpl implements ReactHost {
 
     if (mDestroyTask == null) {
       mDestroyTask =
-          mReactInstanceTaskRef
+          mCreateReactInstanceTaskRef
               .get()
               .continueWithTask(
                   task -> {
@@ -1638,7 +1641,10 @@ public class ReactHostImpl implements ReactHost {
                     mBridgelessReactContextRef.reset();
 
                     log(method, "Resetting ReactInstance task ref");
-                    mReactInstanceTaskRef.reset();
+                    mCreateReactInstanceTaskRef.reset();
+
+                    log(method, "Resetting ReactInstance ptr");
+                    mReactInstance = null;
 
                     log(method, "Resetting Preload task ref");
                     mStartTask = null;
