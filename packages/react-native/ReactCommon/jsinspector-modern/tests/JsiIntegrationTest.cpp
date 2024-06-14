@@ -6,6 +6,8 @@
  */
 
 #include <folly/Format.h>
+#include <folly/executors/ManualExecutor.h>
+#include <folly/executors/QueuedImmediateExecutor.h>
 
 #include "JsiIntegrationTest.h"
 #include "engines/JsiIntegrationTestGenericEngineAdapter.h"
@@ -31,11 +33,40 @@ using AllEngines = Types<
 
 using AllHermesVariants = Types<JsiIntegrationTestHermesEngineAdapter>;
 
+template <typename EngineAdapter>
+using JsiIntegrationPortableTest = JsiIntegrationPortableTestBase<
+    EngineAdapter,
+    folly::QueuedImmediateExecutor>;
+
 TYPED_TEST_SUITE(JsiIntegrationPortableTest, AllEngines);
 
 template <typename EngineAdapter>
-using JsiIntegrationHermesTest = JsiIntegrationPortableTest<EngineAdapter>;
+using JsiIntegrationHermesTest = JsiIntegrationPortableTestBase<
+    EngineAdapter,
+    folly::QueuedImmediateExecutor>;
+
+/**
+ * Fixture class for tests that run on a ManualExecutor. Work scheduled
+ * on the executor is *not* run automatically; it must be manually advanced
+ * in the body of the test.
+ */
+template <typename EngineAdapter>
+class JsiIntegrationHermesTestAsync : public JsiIntegrationPortableTestBase<
+                                          EngineAdapter,
+                                          folly::ManualExecutor> {
+ public:
+  void TearDown() override {
+    // Assert there are no pending tasks on the ManualExecutor.
+    auto tasksCleared = this->executor_.clear();
+    EXPECT_EQ(tasksCleared, 0)
+        << "There were still pending tasks on executor_ at the end of the test. Use advance() or run() as needed.";
+    JsiIntegrationPortableTestBase<EngineAdapter, folly::ManualExecutor>::
+        TearDown();
+  }
+};
+
 TYPED_TEST_SUITE(JsiIntegrationHermesTest, AllHermesVariants);
+TYPED_TEST_SUITE(JsiIntegrationHermesTestAsync, AllHermesVariants);
 
 #pragma region AllEngines
 
@@ -370,6 +401,56 @@ TYPED_TEST(JsiIntegrationPortableTest, ReactNativeApplicationDisable) {
 
 #pragma endregion // AllEngines
 #pragma region AllHermesVariants
+
+TYPED_TEST(JsiIntegrationHermesTestAsync, HermesObjectsTableDoesNotMemoryLeak) {
+  // This is a regression test for T186157855 (CDPAgent leaking JSI data in
+  // RemoteObjectsTable past the Runtime's lifetime)
+  this->connect();
+  this->executor_.run();
+
+  InSequence s;
+
+  this->expectMessageFromPage(JsonParsed(
+      AllOf(AtJsonPtr("/method", "Runtime.executionContextCreated"))));
+  this->expectMessageFromPage(JsonEq(R"({
+                                         "id": 1,
+                                         "result": {}
+                                       })"));
+  this->toPage_->sendMessage(R"({
+                                 "id": 1,
+                                 "method": "Runtime.enable"
+                               })");
+  this->executor_.run();
+
+  this->expectMessageFromPage(JsonParsed(AllOf(
+      AtJsonPtr("/method", "Runtime.consoleAPICalled"),
+      AtJsonPtr("/params/args/0/objectId", "1"))));
+  this->eval(R"(console.log({a: 1});)");
+  this->executor_.run();
+
+  this->expectMessageFromPage(JsonEq(R"({
+                                          "method": "Runtime.executionContextDestroyed",
+                                          "params": {
+                                            "executionContextId": 1
+                                          }
+                                        })"));
+  this->expectMessageFromPage(JsonEq(R"({
+                                          "method": "Runtime.executionContextsCleared"
+                                        })"));
+  this->expectMessageFromPage(JsonEq(R"({
+                                          "method": "Runtime.executionContextCreated",
+                                          "params": {
+                                            "context": {
+                                              "id": 2,
+                                              "origin": "",
+                                              "name": "main"
+                                            }
+                                          }
+                                        })"));
+  // NOTE: Doesn't crash when Hermes checks for JSI value leaks
+  this->reload();
+  this->executor_.run();
+}
 
 TYPED_TEST(JsiIntegrationHermesTest, EvaluateExpression) {
   this->connect();
