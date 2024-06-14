@@ -71,6 +71,24 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
       RawCallback&& callback) noexcept override;
 
   /*
+   * Adds a JavaScript callback to the idle queue with the given timeout.
+   * Triggers workloop if needed.
+   */
+  std::shared_ptr<Task> scheduleIdleTask(
+      jsi::Function&& callback,
+      RuntimeSchedulerTimeout customTimeout = timeoutForSchedulerPriority(
+          SchedulerPriority::IdlePriority)) noexcept override;
+
+  /*
+   * Adds a custom callback to the idle queue with the given timeout.
+   * Triggers workloop if needed.
+   */
+  std::shared_ptr<Task> scheduleIdleTask(
+      RawCallback&& callback,
+      RuntimeSchedulerTimeout customTimeout = timeoutForSchedulerPriority(
+          SchedulerPriority::IdlePriority)) noexcept override;
+
+  /*
    * Cancelled task will never be executed.
    *
    * Operates on JSI object.

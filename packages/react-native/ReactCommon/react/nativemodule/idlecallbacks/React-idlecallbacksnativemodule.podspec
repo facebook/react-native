@@ -19,33 +19,31 @@ end
 header_search_paths = []
 
 if ENV['USE_FRAMEWORKS']
-  header_search_paths << "\"$(PODS_TARGET_SRCROOT)/../../..\"" # this is needed to allow the defaultsnativemodule to access its own files
+  header_search_paths << "\"$(PODS_TARGET_SRCROOT)/../../..\"" # this is needed to allow the module access its own files
 end
 
 Pod::Spec.new do |s|
-  s.name                   = "React-defaultsnativemodule"
+  s.name                   = "React-idlecallbacksnativemodule"
   s.version                = version
-  s.summary                = "React Native Default native modules"
+  s.summary                = "React Native idle callbacks native module"
   s.homepage               = "https://reactnative.dev/"
   s.license                = package["license"]
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = min_supported_versions
   s.source                 = source
   s.source_files           = "*.{cpp,h}"
-  s.header_dir             = "react/nativemodule/defaults"
+  s.header_dir             = "react/nativemodule/idlecallbacks"
   s.pod_target_xcconfig    = { "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
                                "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
                                "DEFINES_MODULE" => "YES" }
 
   if ENV['USE_FRAMEWORKS']
-    s.module_name            = "React_defaultsnativemodule"
+    s.module_name            = "idlecallbacksnativemodule"
     s.header_mappings_dir  = "../.."
   end
 
   install_modules_dependencies(s)
 
-  s.dependency "React-domnativemodule"
-  s.dependency "React-featureflagsnativemodule"
-  s.dependency "React-microtasksnativemodule"
-  s.dependency "React-idlecallbacksnativemodule"
+  s.dependency "ReactCommon/turbomodule/core"
+  s.dependency "React-runtimescheduler"
 end

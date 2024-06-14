@@ -17,6 +17,17 @@
 
 namespace facebook::react {
 
+namespace {
+std::chrono::milliseconds getResolvedTimeoutForIdleTask(
+    std::chrono::milliseconds customTimeout) {
+  return customTimeout <
+          timeoutForSchedulerPriority(SchedulerPriority::IdlePriority)
+      ? timeoutForSchedulerPriority(SchedulerPriority::LowPriority) +
+          customTimeout
+      : timeoutForSchedulerPriority(SchedulerPriority::IdlePriority);
+}
+} // namespace
+
 #pragma mark - Public
 
 RuntimeScheduler_Modern::RuntimeScheduler_Modern(
@@ -61,6 +72,45 @@ std::shared_ptr<Task> RuntimeScheduler_Modern::scheduleTask(
   auto expirationTime = now_() + timeoutForSchedulerPriority(priority);
   auto task =
       std::make_shared<Task>(priority, std::move(callback), expirationTime);
+
+  scheduleTask(task);
+
+  return task;
+}
+
+std::shared_ptr<Task> RuntimeScheduler_Modern::scheduleIdleTask(
+    jsi::Function&& callback,
+    RuntimeSchedulerTimeout customTimeout) noexcept {
+  SystraceSection s(
+      "RuntimeScheduler::scheduleIdleTask",
+      "customTimeout",
+      customTimeout.count(),
+      "callbackType",
+      "jsi::Function");
+
+  auto timeout = getResolvedTimeoutForIdleTask(customTimeout);
+  auto expirationTime = now_() + timeout;
+  auto task = std::make_shared<Task>(
+      SchedulerPriority::IdlePriority, std::move(callback), expirationTime);
+
+  scheduleTask(task);
+
+  return task;
+}
+
+std::shared_ptr<Task> RuntimeScheduler_Modern::scheduleIdleTask(
+    RawCallback&& callback,
+    RuntimeSchedulerTimeout customTimeout) noexcept {
+  SystraceSection s(
+      "RuntimeScheduler::scheduleIdleTask",
+      "customTimeout",
+      customTimeout.count(),
+      "callbackType",
+      "RawCallback");
+
+  auto expirationTime = now_() + getResolvedTimeoutForIdleTask(customTimeout);
+  auto task = std::make_shared<Task>(
+      SchedulerPriority::IdlePriority, std::move(callback), expirationTime);
 
   scheduleTask(task);
 

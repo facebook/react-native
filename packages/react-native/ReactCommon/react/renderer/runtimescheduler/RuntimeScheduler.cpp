@@ -53,6 +53,18 @@ std::shared_ptr<Task> RuntimeScheduler::scheduleTask(
   return runtimeSchedulerImpl_->scheduleTask(priority, std::move(callback));
 }
 
+std::shared_ptr<Task> RuntimeScheduler::scheduleIdleTask(
+    jsi::Function&& callback,
+    RuntimeSchedulerTimeout timeout) noexcept {
+  return runtimeSchedulerImpl_->scheduleIdleTask(std::move(callback), timeout);
+}
+
+std::shared_ptr<Task> RuntimeScheduler::scheduleIdleTask(
+    RawCallback&& callback,
+    RuntimeSchedulerTimeout timeout) noexcept {
+  return runtimeSchedulerImpl_->scheduleIdleTask(std::move(callback), timeout);
+}
+
 bool RuntimeScheduler::getShouldYield() const noexcept {
   return runtimeSchedulerImpl_->getShouldYield();
 }
