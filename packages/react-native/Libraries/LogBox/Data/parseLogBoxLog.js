@@ -435,13 +435,25 @@ export function parseLogBoxException(
   };
 }
 
+export function withoutANSIColorStyles(message: mixed): mixed {
+  if (typeof message !== 'string') {
+    return message;
+  }
+
+  return message.replace(
+    // eslint-disable-next-line no-control-regex
+    /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
+    '',
+  );
+}
+
 export function parseLogBoxLog(args: $ReadOnlyArray<mixed>): {|
   componentStack: ComponentStack,
   componentStackType: ComponentStackType,
   category: Category,
   message: Message,
 |} {
-  const message = args[0];
+  const message = withoutANSIColorStyles(args[0]);
   let argsWithoutComponentStack: Array<mixed> = [];
   let componentStack: ComponentStack = [];
   let componentStackType = 'legacy';

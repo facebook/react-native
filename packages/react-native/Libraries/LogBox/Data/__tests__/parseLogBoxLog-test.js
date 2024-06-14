@@ -13,7 +13,11 @@
 
 import type {StackFrame} from '../../../Core/NativeExceptionsManager';
 
-const {parseLogBoxException, parseLogBoxLog} = require('../parseLogBoxLog');
+const {
+  parseLogBoxException,
+  parseLogBoxLog,
+  withoutANSIColorStyles,
+} = require('../parseLogBoxLog');
 
 describe('parseLogBoxLog', () => {
   it('parses strings', () => {
@@ -1654,5 +1658,38 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
         },
       });
     });
+  });
+});
+
+describe('withoutANSIColorStyles', () => {
+  it('works with non-strings', () => {
+    expect(withoutANSIColorStyles(null)).toEqual(null);
+    expect(withoutANSIColorStyles(undefined)).toEqual(undefined);
+    expect(withoutANSIColorStyles({})).toEqual({});
+    expect(withoutANSIColorStyles(1)).toEqual(1);
+  });
+
+  it('works with empty string', () => {
+    expect(withoutANSIColorStyles('')).toEqual('');
+  });
+
+  it("doesn't modify string that don't have ANSI escape sequences", () => {
+    expect(
+      withoutANSIColorStyles('Warning: this is the React warning %s'),
+    ).toEqual('Warning: this is the React warning %s');
+  });
+
+  it('filters out ANSI escape sequences and preserves console substitutions', () => {
+    expect(
+      withoutANSIColorStyles(
+        '\x1b[2;38;2;124;124;124mWarning: this is the React warning %s\x1b[0m',
+      ),
+    ).toEqual('Warning: this is the React warning %s');
+  });
+
+  it('filters out ANSI escape sequences for string with only console substitutions', () => {
+    expect(
+      withoutANSIColorStyles('\x1b[2;38;2;124;124;124m%s %s\x1b[0m'),
+    ).toEqual('%s %s');
   });
 });
