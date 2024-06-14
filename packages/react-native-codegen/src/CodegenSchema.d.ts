@@ -247,7 +247,7 @@ export interface NativeModuleSchema {
 
 export interface NativeModuleSpec {
   readonly eventEmitters: readonly NativeModuleEventEmitterShape[];
-  readonly properties: readonly NativeModulePropertyShape[];
+  readonly methods: readonly NativeModulePropertyShape[];
 }
 
 export type NativeModulePropertyShape = NamedShape<

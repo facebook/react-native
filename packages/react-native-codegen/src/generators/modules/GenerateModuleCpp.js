@@ -249,11 +249,11 @@ module.exports = {
         const {
           aliasMap,
           enumMap,
-          spec: {properties},
+          spec: {methods},
           moduleName,
         } = nativeModule;
         const resolveAlias = createAliasResolver(aliasMap);
-        const hostFunctions = properties.map(property =>
+        const hostFunctions = methods.map(property =>
           serializePropertyIntoHostFunction(
             moduleName,
             hasteModuleName,
@@ -267,7 +267,7 @@ module.exports = {
           hasteModuleName,
           hostFunctions,
           moduleName,
-          methods: properties.map(
+          methods: methods.map(
             ({name: propertyName, typeAnnotation: nullableTypeAnnotation}) => {
               const [{params}] = unwrapNullable(nullableTypeAnnotation);
               return {

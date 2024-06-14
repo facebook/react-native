@@ -248,7 +248,7 @@ export type NativeModuleSchema = $ReadOnly<{
 
 type NativeModuleSpec = $ReadOnly<{
   eventEmitters: $ReadOnlyArray<NativeModuleEventEmitterShape>,
-  properties: $ReadOnlyArray<NativeModulePropertyShape>,
+  methods: $ReadOnlyArray<NativeModulePropertyShape>,
 }>;
 
 export type NativeModuleEventEmitterShape =
