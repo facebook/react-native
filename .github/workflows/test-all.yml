@@ -792,17 +792,19 @@ jobs:
             -H "Authorization: Bearer $REACT_NATIVE_BOT_GITHUB_TOKEN" \
             -d "{\"event_type\": \"publish\", \"client_payload\": { \"version\": \"${{ github.ref_name }}\" }}"
 
-  test_android_template:
+  test_android_helloworld:
     runs-on: ubuntu-latest
-    needs: [prepare_hermes_workspace, build_npm_package]
+    needs: prepare_hermes_workspace
     container:
       image: reactnativecommunity/react-native-android:latest
     env:
-      PROJECT_NAME: AndroidTemplateProject
+      # Set the encoding to resolve a known character encoding issue with decompressing tar.gz files in conatiners
+      # via Gradle: https://github.com/gradle/gradle/issues/23391#issuecomment-1878979127
+      LC_ALL: C.UTF8
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
       TERM: "dumb"
       GRADLE_OPTS: "-Dorg.gradle.daemon=false"
-      ORG_GRADLE_PROJECT_reactNativeArchitectures: "arm64-v8a"
+      TARGET_ARCHITECTURE: "arm64-v8a"
     continue-on-error: true
     strategy:
       fail-fast: false
@@ -819,49 +821,43 @@ jobs:
         with:
           hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
-      - name: Download npm package artifact
-        uses: actions/download-artifact@v4.1.3
-        with:
-          name: react-native-package
-          path: build
       - name: Run yarn
         shell: bash
         run: yarn install --non-interactive
-      - name: Download maven-local artifact
-        uses: actions/download-artifact@v4.1.3
-        with:
-          name: maven-local
-          path: /tmp
-      - name: Unzip maven-local
-        working-directory: /tmp
-        run: unzip -q maven-local.zip
-      - name: Create Android template project
-        run: |
-          node ./scripts/releases/update-template-package.js "{\"react-native\":\"file:$GITHUB_WORKSPACE/build/$(cat build/react-native-package-version)\"}"
-          node ./scripts/e2e/init-template-e2e.js --projectName $PROJECT_NAME --templatePath "$GITHUB_WORKSPACE/packages/react-native" --directory "/tmp/$PROJECT_NAME" --verbose
       - name: Setup gradle
         uses: ./.github/actions/setup-gradle
-      - name: Build the template application for ${{ matrix.flavor }} with Architecture set to ${{ matrix.architecture }}, and using the ${{ matrix.jsengine }} JS engine.
+      - name: Build CodeGen JS scripts
         shell: bash
         run: |
-          sudo chmod +x /tmp/$PROJECT_NAME/node_modules/react-native/sdks/hermesc/linux64-bin/hermesc
-          cd /tmp/$PROJECT_NAME/android/
-          if [[ ${{ matrix.architecture }} == "NewArch" ]]; then
-            export ORG_GRADLE_PROJECT_newArchEnabled=true
-          else
-            export ORG_GRADLE_PROJECT_newArchEnabled=false
+          cd packages/react-native-codegen
+          yarn run build
+      - name: Build the Helloworld application for ${{ matrix.flavor }} with Architecture set to ${{ matrix.architecture }}, and using the ${{ matrix.jsengine }} JS engine.
+        shell: bash
+        run: |
+          cd packages/helloworld/android
+          args=()
+          if [[ ${{ matrix.architecture }} == "OldArch" ]]; then
+            args+=(--arch old)
           fi
-          if [[ ${{ matrix.jsengine }} == "Hermes" ]]; then
-            export ORG_GRADLE_PROJECT_hermesEnabled=true
-          else
-            export ORG_GRADLE_PROJECT_hermesEnabled=false
+          if [[ ${{ matrix.jsengine }} == "JSC" ]]; then
+            args+=(--jsvm jsc)
           fi
-          ./gradlew assemble${{ matrix.flavor }} -Preact.internal.mavenLocalRepo=/tmp/maven-local
+          if [[ ${{ matrix.flavor }} == "Release" ]]; then
+            args+=(--prod)
+          fi
+          yarn build android "${args[@]}" -P reactNativeArchitectures="$TARGET_ARCHITECTURE"
+      - name: Monitor Disk utilization
+        shell: bash
+        run: |
+          echo "On Runner:\n=========="
+          df -h
+          echo "In Project:\n==========="
+          du -hs *
       - name: Upload artifact
         uses: actions/upload-artifact@v4.3.1
         with:
           name: template-apk-${{ matrix.flavor }}-${{ matrix.architecture }}-${{ matrix.jsengine }}
-          path: /tmp/AndroidTemplateProject/android/app/build/outputs/apk/
+          path: ./app/build/outputs/apk/
           compression-level: 0
 
   test_ios_helloworld_with_ruby_3_2_0:
