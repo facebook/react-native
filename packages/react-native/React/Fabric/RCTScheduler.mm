@@ -172,7 +172,7 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
 
 - (void)setupAnimationDriver:(const facebook::react::SurfaceHandler &)surfaceHandler
 {
-  surfaceHandler.getMountingCoordinator()->setMountingOverrideDelegate(_animationDriver);
+  surfaceHandler.getMountingCoordinator()->addMountingOverrideDelegate(_animationDriver);
 }
 
 - (void)onAnimationStarted

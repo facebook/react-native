@@ -203,7 +203,7 @@ ShadowTreeRevision MountingCoordinator::getBaseRevision() const {
   return baseRevision_;
 }
 
-void MountingCoordinator::setMountingOverrideDelegate(
+void MountingCoordinator::addMountingOverrideDelegate(
     std::weak_ptr<const MountingOverrideDelegate> delegate) const {
   std::scoped_lock lock(mutex_);
   mountingOverrideDelegates_.insert(mountingOverrideDelegates_.end(), std::move(delegate));

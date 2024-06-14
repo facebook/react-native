@@ -129,7 +129,7 @@ void Binding::startSurface(
 
   surfaceHandler.start();
 
-  surfaceHandler.getMountingCoordinator()->setMountingOverrideDelegate(
+  surfaceHandler.getMountingCoordinator()->addMountingOverrideDelegate(
       animationDriver_);
 
   {
@@ -197,7 +197,7 @@ void Binding::startSurfaceWithConstraints(
 
   surfaceHandler.start();
 
-  surfaceHandler.getMountingCoordinator()->setMountingOverrideDelegate(
+  surfaceHandler.getMountingCoordinator()->addMountingOverrideDelegate(
       animationDriver_);
 
   {

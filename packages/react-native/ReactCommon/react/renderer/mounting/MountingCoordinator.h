@@ -89,7 +89,7 @@ class MountingCoordinator final {
   void updateBaseRevision(const ShadowTreeRevision& baseRevision) const;
   void resetLatestRevision() const;
 
-  void setMountingOverrideDelegate(
+  void addMountingOverrideDelegate(
       std::weak_ptr<const MountingOverrideDelegate> delegate) const;
 
   /*
