@@ -19,7 +19,6 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.mounting.MountingManager;
 import com.facebook.react.fabric.mounting.SurfaceMountingManager;
-import com.facebook.react.uimanager.StateWrapper;
 
 /** {@link MountItem} that is used to pre-allocate views for JS components. */
 @Nullsafe(Nullsafe.Mode.LOCAL)
@@ -29,7 +28,6 @@ final class PreAllocateViewMountItem implements MountItem {
   private final int mSurfaceId;
   private final int mReactTag;
   private final @Nullable ReadableMap mProps;
-  private final @Nullable StateWrapper mStateWrapper;
   private final @Nullable EventEmitterWrapper mEventEmitterWrapper;
   private final boolean mIsLayoutable;
 
@@ -38,13 +36,11 @@ final class PreAllocateViewMountItem implements MountItem {
       int reactTag,
       @NonNull String component,
       @Nullable ReadableMap props,
-      @Nullable StateWrapper stateWrapper,
       @Nullable EventEmitterWrapper eventEmitterWrapper,
       boolean isLayoutable) {
     mComponent = getFabricComponentName(component);
     mSurfaceId = surfaceId;
     mProps = props;
-    mStateWrapper = stateWrapper;
     mEventEmitterWrapper = eventEmitterWrapper;
     mReactTag = reactTag;
     mIsLayoutable = isLayoutable;
@@ -65,7 +61,7 @@ final class PreAllocateViewMountItem implements MountItem {
       return;
     }
     surfaceMountingManager.preallocateView(
-        mComponent, mReactTag, mProps, mStateWrapper, mEventEmitterWrapper, mIsLayoutable);
+        mComponent, mReactTag, mProps, mEventEmitterWrapper, mIsLayoutable);
   }
 
   @Override
@@ -82,11 +78,7 @@ final class PreAllocateViewMountItem implements MountItem {
             .append(mIsLayoutable);
 
     if (IS_DEVELOPMENT_ENVIRONMENT) {
-      result
-          .append(" props: ")
-          .append(mProps != null ? mProps.toString() : "<null>")
-          .append(" state: ")
-          .append(mStateWrapper != null ? mStateWrapper.toString() : "<null>");
+      result.append(" props: ").append(mProps != null ? mProps.toString() : "<null>");
     }
 
     return result.toString();
