@@ -137,3 +137,11 @@ dependencies {
         implementation jscFlavor
     }
 }
+
+afterEvaluate {
+    // As HelloWorld is building from source, we need to make sure hermesc is built before the JS bundle is created.
+    // Otherwise the release version of the app will fail to build due to missing hermesc.
+    tasks
+        .getByName("createBundleReleaseJsAndAssets")
+        .dependsOn(gradle.includedBuild("react-native").task(":packages:react-native:ReactAndroid:hermes-engine:buildHermesC"))
+}
