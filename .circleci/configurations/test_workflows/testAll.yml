@@ -57,8 +57,8 @@
       - test_ios_helloworld:
           requires:
             - build_hermes_macos
-          name: "Test Template with Ruby 3.2.0"
-          ruby_version: "3.2.0"
+          name: "Test Template with Ruby 3.2.2"
+          ruby_version: "3.2.2"
           architecture: "NewArch"
           flavor: "Debug"
           jsengine: "Hermes"
@@ -72,7 +72,7 @@
               jsengine: ["Hermes", "JSC"]
               use_frameworks: ["StaticLibraries", "DynamicFrameworks"]
             exclude:
-              # This config is tested with Ruby 3.2.0. Let's not double test it.
+              # This config is tested with Ruby 3.2.2. Let's not double test it.
               - flavor: "Debug"
                 jsengine: "Hermes"
                 use_frameworks: "StaticLibraries"
@@ -81,7 +81,7 @@
             - build_hermes_macos
           use_frameworks: "DynamicFrameworks"
           architecture: "NewArch"
-          ruby_version: "3.2.0"
+          ruby_version: "3.2.2"
           matrix:
             parameters:
               jsengine: ["Hermes", "JSC"]

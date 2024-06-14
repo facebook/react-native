@@ -31,7 +31,7 @@ commands:
       - restore_cache:
           key: *rbenv_cache_key
       - run:
-          name: Bundle Install
+          name: Install the proper Ruby and run Bundle install
           command: |
             # Check if rbenv is installed. CircleCI is migrating to rbenv so we may not need to always install it.
 
@@ -60,8 +60,10 @@ commands:
             if [[ << parameters.ruby_version >> == "2.6.10" ]]; then
               # RubyGems 3.0.3.1 breaks Bundler
               gem update --system 3.2.3
+              rbenv rehash
               gem install bundler -v 2.4.22
             else
+              rbenv rehash
               gem install bundler
             fi
             bundle check || bundle install --path vendor/bundle --clean
