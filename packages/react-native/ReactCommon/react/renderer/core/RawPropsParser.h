@@ -21,7 +21,7 @@ namespace facebook::react {
  * Specialized (to a particular type of Props) parser that provides the most
  * efficient access to `RawProps` content.
  */
-class RawPropsParser final {
+class RawPropsParser {
  public:
   /*
    * Default constructor.
