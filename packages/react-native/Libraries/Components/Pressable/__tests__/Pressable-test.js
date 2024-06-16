@@ -15,8 +15,8 @@ import Pressable from '../Pressable';
 import * as React from 'react';
 
 describe('<Pressable />', () => {
-  it('should render as expected', () => {
-    expectRendersMatchingSnapshot(
+  it('should render as expected', async () => {
+    await expectRendersMatchingSnapshot(
       'Pressable',
       () => (
         <Pressable>
@@ -31,8 +31,8 @@ describe('<Pressable />', () => {
 });
 
 describe('<Pressable disabled={true} />', () => {
-  it('should be disabled when disabled is true', () => {
-    expectRendersMatchingSnapshot(
+  it('should be disabled when disabled is true', async () => {
+    await expectRendersMatchingSnapshot(
       'Pressable',
       () => (
         <Pressable disabled={true}>
@@ -47,8 +47,8 @@ describe('<Pressable disabled={true} />', () => {
 });
 
 describe('<Pressable disabled={true} accessibilityState={{}} />', () => {
-  it('should be disabled when disabled is true and accessibilityState is empty', () => {
-    expectRendersMatchingSnapshot(
+  it('should be disabled when disabled is true and accessibilityState is empty', async () => {
+    await expectRendersMatchingSnapshot(
       'Pressable',
       () => (
         <Pressable disabled={true} accessibilityState={{}}>
@@ -63,8 +63,8 @@ describe('<Pressable disabled={true} accessibilityState={{}} />', () => {
 });
 
 describe('<Pressable disabled={true} accessibilityState={{checked: true}} />', () => {
-  it('should keep accessibilityState when disabled is true', () => {
-    expectRendersMatchingSnapshot(
+  it('should keep accessibilityState when disabled is true', async () => {
+    await expectRendersMatchingSnapshot(
       'Pressable',
       () => (
         <Pressable disabled={true} accessibilityState={{checked: true}}>
@@ -79,8 +79,8 @@ describe('<Pressable disabled={true} accessibilityState={{checked: true}} />', (
 });
 
 describe('<Pressable disabled={true} accessibilityState={{disabled: false}} />', () => {
-  it('should overwrite accessibilityState with value of disabled prop', () => {
-    expectRendersMatchingSnapshot(
+  it('should overwrite accessibilityState with value of disabled prop', async () => {
+    await expectRendersMatchingSnapshot(
       'Pressable',
       () => (
         <Pressable disabled={true} accessibilityState={{disabled: false}}>
