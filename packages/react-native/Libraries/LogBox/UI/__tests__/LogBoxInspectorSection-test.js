@@ -17,7 +17,7 @@ const React = require('react');
 
 describe('LogBoxInspectorSection', () => {
   it('should render with only heading', () => {
-    const output = render.shallowRender(
+    const output = render.create(
       <LogBoxInspectorSection heading="Test Section">
         <Text>Child</Text>
       </LogBoxInspectorSection>,
@@ -27,7 +27,7 @@ describe('LogBoxInspectorSection', () => {
   });
 
   it('should render with action on the right', () => {
-    const output = render.shallowRender(
+    const output = render.create(
       <LogBoxInspectorSection
         heading="Test Section"
         action={<Text>Right</Text>}>
