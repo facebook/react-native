@@ -5275,6 +5275,7 @@ export type LogData = $ReadOnly<{
   message: Message,
   category: Category,
   componentStack: ComponentStack,
+  componentStackType: ComponentStackType | null,
   stack?: string,
 }>;
 export type Observer = (
@@ -5421,7 +5422,8 @@ declare export function symbolicate(
 `;
 
 exports[`public API should not change unintentionally Libraries/LogBox/Data/parseLogBoxLog.js 1`] = `
-"export type ExtendedExceptionData = ExceptionData & {
+"declare export function hasComponentStack(args: $ReadOnlyArray<mixed>): boolean;
+export type ExtendedExceptionData = ExceptionData & {
   isComponentError: boolean,
   ...
 };

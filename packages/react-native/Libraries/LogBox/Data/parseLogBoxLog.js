@@ -93,6 +93,15 @@ const RE_BABEL_CODE_FRAME_MARKER_PATTERN = new RegExp(
   'm',
 );
 
+export function hasComponentStack(args: $ReadOnlyArray<mixed>): boolean {
+  for (const arg of args) {
+    if (typeof arg === 'string' && isComponentStack(arg)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 export type ExtendedExceptionData = ExceptionData & {
   isComponentError: boolean,
   ...
