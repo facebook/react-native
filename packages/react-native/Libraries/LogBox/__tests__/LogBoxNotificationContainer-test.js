@@ -26,8 +26,8 @@ jest.mock('../UI/LogBoxInspector', () => ({
 }));
 
 describe('LogBoxNotificationContainer', () => {
-  it('should render inspector with logs, even when disabled', () => {
-    const output = render.create(
+  it('should render inspector with logs, even when disabled', async () => {
+    const output = await render.create(
       <LogBoxInspectorContainer
         isDisabled
         selectedLogIndex={-1}

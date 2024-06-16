@@ -23,8 +23,8 @@ jest.mock('../LogBoxInspectorFooterButton', () => ({
 }));
 
 describe('LogBoxInspectorFooter', () => {
-  it('should render two buttons for warning', () => {
-    const output = render.create(
+  it('should render two buttons for warning', async () => {
+    const output = await render.create(
       <LogBoxInspectorFooter
         onMinimize={() => {}}
         onDismiss={() => {}}
@@ -35,8 +35,8 @@ describe('LogBoxInspectorFooter', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render two buttons for error', () => {
-    const output = render.create(
+  it('should render two buttons for error', async () => {
+    const output = await render.create(
       <LogBoxInspectorFooter
         onMinimize={() => {}}
         onDismiss={() => {}}
@@ -47,8 +47,8 @@ describe('LogBoxInspectorFooter', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render two buttons for fatal', () => {
-    const output = render.create(
+  it('should render two buttons for fatal', async () => {
+    const output = await render.create(
       <LogBoxInspectorFooter
         onMinimize={() => {}}
         onDismiss={() => {}}
@@ -59,8 +59,8 @@ describe('LogBoxInspectorFooter', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render no buttons and a message for syntax error', () => {
-    const output = render.create(
+  it('should render no buttons and a message for syntax error', async () => {
+    const output = await render.create(
       <LogBoxInspectorFooter
         onMinimize={() => {}}
         onDismiss={() => {}}
