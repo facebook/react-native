@@ -139,7 +139,6 @@
     "promise": "^8.3.0",
     "react-devtools-core": "5.1.0",
     "react-refresh": "^0.14.0",
-    "react-shallow-renderer": "^16.15.0",
     "regenerator-runtime": "^0.13.2",
     "scheduler": "0.24.0-canary-efb381bbf-20230505",
     "semver": "^7.1.3",
