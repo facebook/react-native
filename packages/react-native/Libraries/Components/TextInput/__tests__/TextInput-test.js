@@ -192,8 +192,8 @@ describe('TextInput tests', () => {
     `);
   });
 
-  it('should render as expected', () => {
-    expectRendersMatchingSnapshot(
+  it('should render as expected', async () => {
+    await expectRendersMatchingSnapshot(
       'TextInput',
       () => <TextInput />,
       () => {

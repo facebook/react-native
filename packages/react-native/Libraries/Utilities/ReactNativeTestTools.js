@@ -119,7 +119,7 @@ function expectNoConsoleError() {
   });
 }
 
-function expectRendersMatchingSnapshot(
+async function expectRendersMatchingSnapshot(
   name: string,
   ComponentProvider: () => React.Element<any>,
   unmockComponent: () => mixed,
