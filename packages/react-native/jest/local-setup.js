@@ -14,6 +14,9 @@
 
 require('./setup');
 
+global.IS_REACT_NATIVE_TEST_ENVIRONMENT = true;
+global.IS_REACT_ACT_ENVIRONMENT = true;
+
 const consoleError = console.error;
 const consoleWarn = console.warn;
 
