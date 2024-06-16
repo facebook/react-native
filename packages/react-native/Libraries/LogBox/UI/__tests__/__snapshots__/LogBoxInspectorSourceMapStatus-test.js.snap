@@ -101,6 +101,11 @@ exports[`LogBoxInspectorSourceMapStatus should render for pending 1`] = `
         "height": 14,
         "marginEnd": 4,
         "tintColor": "rgba(250, 186, 48, 1)",
+        "transform": Array [
+          Object {
+            "rotate": "0deg",
+          },
+        ],
         "width": 16,
       }
     }

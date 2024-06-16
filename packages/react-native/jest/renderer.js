@@ -11,11 +11,16 @@
 
 import type {ReactTestRenderer} from 'react-test-renderer';
 
+import nullthrows from 'nullthrows';
 import * as React from 'react';
 import TestRenderer from 'react-test-renderer';
 
 export async function create(
   Component: React.Element<any>,
 ): Promise<ReactTestRenderer> {
-  return TestRenderer.create(Component);
+  let component;
+  await TestRenderer.act(async () => {
+    component = TestRenderer.create(Component);
+  });
+  return nullthrows(component);
 }
