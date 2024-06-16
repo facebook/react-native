@@ -24,8 +24,8 @@ jest.mock('../LogBoxButton', () => ({
 }));
 
 describe('LogBoxInspectorStackFrame', () => {
-  it('should render stack frame', () => {
-    const output = render.create(
+  it('should render stack frame', async () => {
+    const output = await render.create(
       <LogBoxInspectorStackFrame
         onPress={() => {}}
         frame={{
@@ -41,8 +41,8 @@ describe('LogBoxInspectorStackFrame', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render stack frame without press feedback', () => {
-    const output = render.create(
+  it('should render stack frame without press feedback', async () => {
+    const output = await render.create(
       <LogBoxInspectorStackFrame
         frame={{
           column: 1,
@@ -58,8 +58,8 @@ describe('LogBoxInspectorStackFrame', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render collapsed stack frame with dimmed text', () => {
-    const output = render.create(
+  it('should render collapsed stack frame with dimmed text', async () => {
+    const output = await render.create(
       <LogBoxInspectorStackFrame
         onPress={() => {}}
         frame={{

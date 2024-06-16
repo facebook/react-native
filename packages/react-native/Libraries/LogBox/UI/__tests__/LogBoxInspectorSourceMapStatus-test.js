@@ -24,24 +24,24 @@ jest.mock('../LogBoxButton', () => ({
 }));
 
 describe('LogBoxInspectorSourceMapStatus', () => {
-  it('should render for failed', () => {
-    const output = render.create(
+  it('should render for failed', async () => {
+    const output = await render.create(
       <LogBoxInspectorSourceMapStatus onPress={() => {}} status="FAILED" />,
     );
 
     expect(output).toMatchSnapshot();
   });
 
-  it('should render for pending', () => {
-    const output = render.create(
+  it('should render for pending', async () => {
+    const output = await render.create(
       <LogBoxInspectorSourceMapStatus onPress={() => {}} status="PENDING" />,
     );
 
     expect(output).toMatchSnapshot();
   });
 
-  it('should render null for complete', () => {
-    const output = render.create(
+  it('should render null for complete', async () => {
+    const output = await render.create(
       <LogBoxInspectorSourceMapStatus onPress={() => {}} status="COMPLETE" />,
     );
 

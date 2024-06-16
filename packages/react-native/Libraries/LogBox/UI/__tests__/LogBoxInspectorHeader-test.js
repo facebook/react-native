@@ -23,8 +23,8 @@ jest.mock('../LogBoxInspectorHeaderButton', () => ({
 }));
 
 describe('LogBoxInspectorHeader', () => {
-  it('should render no buttons for one total', () => {
-    const output = render.create(
+  it('should render no buttons for one total', async () => {
+    const output = await render.create(
       <LogBoxInspectorHeader
         onSelectIndex={() => {}}
         selectedIndex={0}
@@ -36,8 +36,8 @@ describe('LogBoxInspectorHeader', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render both buttons for two total', () => {
-    const output = render.create(
+  it('should render both buttons for two total', async () => {
+    const output = await render.create(
       <LogBoxInspectorHeader
         onSelectIndex={() => {}}
         selectedIndex={1}
@@ -49,8 +49,8 @@ describe('LogBoxInspectorHeader', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render two buttons for three or more total', () => {
-    const output = render.create(
+  it('should render two buttons for three or more total', async () => {
+    const output = await render.create(
       <LogBoxInspectorHeader
         onSelectIndex={() => {}}
         selectedIndex={0}
@@ -62,8 +62,8 @@ describe('LogBoxInspectorHeader', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render syntax error header', () => {
-    const output = render.create(
+  it('should render syntax error header', async () => {
+    const output = await render.create(
       <LogBoxInspectorHeader
         onSelectIndex={() => {}}
         selectedIndex={0}
