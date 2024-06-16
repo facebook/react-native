@@ -1,3 +1,12 @@
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ */
+
 const ReactNative = require('../../../ReactNative/RendererProxy');
 const {
   enter,
@@ -40,7 +49,7 @@ describe('TextInput tests', () => {
     input = renderTree.root.findByType(TextInput);
   });
   it('has expected instance functions', () => {
-    expect(inputRef.current.isFocused).toBeInstanceOf(Function);  // Would have prevented S168585
+    expect(inputRef.current.isFocused).toBeInstanceOf(Function); // Would have prevented S168585
     expect(inputRef.current.clear).toBeInstanceOf(Function);
     expect(inputRef.current.focus).toBeInstanceOf(jest.fn().constructor);
     expect(inputRef.current.blur).toBeInstanceOf(jest.fn().constructor);
@@ -192,8 +201,8 @@ describe('TextInput tests', () => {
     `);
   });
 
-  it('should render as expected', () => {
-    expectRendersMatchingSnapshot(
+  it('should render as expected', async () => {
+    await expectRendersMatchingSnapshot(
       'TextInput',
       () => <TextInput />,
       () => {
