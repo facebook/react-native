@@ -10,20 +10,7 @@
  */
 
 import * as React from 'react';
-import ShallowRenderer from 'react-shallow-renderer';
 import TestRenderer from 'react-test-renderer';
-
-const renderer = new ShallowRenderer();
-
-export const shallow = (Component: React.Element<any>): any => {
-  const Wrapper = (): React.Element<any> => Component;
-
-  return renderer.render(<Wrapper />);
-};
-
-export const shallowRender = (Component: React.Element<any>): any => {
-  return renderer.render(Component);
-};
 
 export const create = (Component: React.Element<any>): any => {
   return TestRenderer.create(Component);
