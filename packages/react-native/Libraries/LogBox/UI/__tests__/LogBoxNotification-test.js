@@ -48,8 +48,8 @@ const log = new LogBoxLog({
 });
 
 describe('LogBoxNotification', () => {
-  it('should render log', () => {
-    const output = render.create(
+  it('should render log', async () => {
+    const output = await render.create(
       <LogBoxNotification
         log={log}
         totalLogCount={1}

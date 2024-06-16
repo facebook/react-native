@@ -9,6 +9,8 @@
  * @oncall react_native
  */
 
+import type {ReactTestRenderer} from 'react-test-renderer';
+
 import * as React from 'react';
 import ShallowRenderer from 'react-shallow-renderer';
 import TestRenderer from 'react-test-renderer';
@@ -25,6 +27,8 @@ export const shallowRender = (Component: React.Element<any>): any => {
   return renderer.render(Component);
 };
 
-export const create = (Component: React.Element<any>): any => {
+export const create = async (
+  Component: React.Element<any>,
+): Promise<ReactTestRenderer> => {
   return TestRenderer.create(Component);
 };

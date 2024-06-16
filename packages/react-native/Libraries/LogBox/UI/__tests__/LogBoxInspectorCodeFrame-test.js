@@ -35,14 +35,16 @@ jest.mock('../LogBoxInspectorSection', () => ({
 }));
 
 describe('LogBoxInspectorCodeFrame', () => {
-  it('should render null for no code frame', () => {
-    const output = render.create(<LogBoxInspectorCodeFrame codeFrame={null} />);
+  it('should render null for no code frame', async () => {
+    const output = await render.create(
+      <LogBoxInspectorCodeFrame codeFrame={null} />,
+    );
 
     expect(output).toMatchSnapshot();
   });
 
-  it('should render a code frame', () => {
-    const output = render.create(
+  it('should render a code frame', async () => {
+    const output = await render.create(
       <LogBoxInspectorCodeFrame
         codeFrame={{
           fileName: '/path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js',
@@ -59,8 +61,8 @@ describe('LogBoxInspectorCodeFrame', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render a code frame without a location', () => {
-    const output = render.create(
+  it('should render a code frame without a location', async () => {
+    const output = await render.create(
       <LogBoxInspectorCodeFrame
         codeFrame={{
           fileName: '/path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js',

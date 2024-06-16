@@ -23,8 +23,8 @@ jest.mock('../../../Components/Touchable/TouchableWithoutFeedback', () => ({
 }));
 
 describe('LogBoxButton', () => {
-  it('should render only a view without an onPress', () => {
-    const output = render.create(
+  it('should render only a view without an onPress', async () => {
+    const output = await render.create(
       <LogBoxButton
         backgroundColor={{
           default: 'black',
@@ -37,8 +37,8 @@ describe('LogBoxButton', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render TouchableWithoutFeedback and pass through props', () => {
-    const output = render.create(
+  it('should render TouchableWithoutFeedback and pass through props', async () => {
+    const output = await render.create(
       <LogBoxButton
         backgroundColor={{
           default: 'black',
