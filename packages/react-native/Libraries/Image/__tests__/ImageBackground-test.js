@@ -15,7 +15,7 @@ const render = require('../../../jest/renderer');
 const ImageBackground = require('../ImageBackground');
 const React = require('react');
 
-describe('<ImageBackground />', () => {
+describe('ImageBackground', () => {
   it('should render as <ImageBackground> when mocked', () => {
     const instance = render.create(
       <ImageBackground
@@ -24,28 +24,6 @@ describe('<ImageBackground />', () => {
       />,
     );
     expect(instance).toMatchSnapshot();
-  });
-
-  it('should shallow render as <ImageBackground> when mocked', () => {
-    const output = render.shallow(
-      <ImageBackground
-        style={{width: 150, height: 50}}
-        source={{uri: 'foo-bar.jpg'}}
-      />,
-    );
-    expect(output).toMatchSnapshot();
-  });
-
-  it('should shallow render as <ForwardRef(ImageBackground)> when not mocked', () => {
-    jest.dontMock('../ImageBackground');
-
-    const output = render.shallow(
-      <ImageBackground
-        style={{width: 150, height: 50}}
-        source={{uri: 'foo-bar.jpg'}}
-      />,
-    );
-    expect(output).toMatchSnapshot();
   });
 
   it('should render as <RCTImageView> when not mocked', () => {
