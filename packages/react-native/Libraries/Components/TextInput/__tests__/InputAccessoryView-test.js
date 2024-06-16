@@ -17,8 +17,8 @@ const InputAccessoryView = require('../InputAccessoryView').default;
 const React = require('react');
 
 describe('InputAccessoryView', () => {
-  it('should render as <RCTInputAccessoryView> when mocked', () => {
-    const instance = render.create(
+  it('should render as <RCTInputAccessoryView> when mocked', async () => {
+    const instance = await render.create(
       <InputAccessoryView nativeID="1">
         <View />
       </InputAccessoryView>,
@@ -26,10 +26,10 @@ describe('InputAccessoryView', () => {
     expect(instance).toMatchSnapshot();
   });
 
-  it('should render as <RCTInputAccessoryView> when not mocked', () => {
+  it('should render as <RCTInputAccessoryView> when not mocked', async () => {
     jest.dontMock('../InputAccessoryView');
 
-    const instance = render.create(
+    const instance = await render.create(
       <InputAccessoryView nativeID="1">
         <View />
       </InputAccessoryView>,

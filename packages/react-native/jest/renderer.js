@@ -9,9 +9,13 @@
  * @oncall react_native
  */
 
+import type {ReactTestRenderer} from 'react-test-renderer';
+
 import * as React from 'react';
 import TestRenderer from 'react-test-renderer';
 
-export const create = (Component: React.Element<any>): any => {
+export async function create(
+  Component: React.Element<any>,
+): Promise<ReactTestRenderer> {
   return TestRenderer.create(Component);
-};
+}

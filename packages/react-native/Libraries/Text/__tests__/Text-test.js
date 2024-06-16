@@ -24,8 +24,8 @@ function omitRef(json) {
 }
 
 describe('Text', () => {
-  it('default render', () => {
-    const instance = render.create(<Text />);
+  it('default render', async () => {
+    const instance = await render.create(<Text />);
 
     expect(omitRef(instance.toJSON())).toMatchInlineSnapshot(`
       <RCTText
@@ -44,14 +44,14 @@ describe('Text', () => {
 });
 
 describe('Text compat with web', () => {
-  it('renders core props', () => {
+  it('renders core props', async () => {
     const props = {
       id: 'id',
       tabIndex: 0,
       testID: 'testID',
     };
 
-    const instance = render.create(<Text {...props} />);
+    const instance = await render.create(<Text {...props} />);
 
     expect(omitRef(instance.toJSON())).toMatchInlineSnapshot(`
       <RCTText
@@ -67,7 +67,7 @@ describe('Text compat with web', () => {
     `);
   });
 
-  it('renders "aria-*" props', () => {
+  it('renders "aria-*" props', async () => {
     const props = {
       'aria-activedescendant': 'activedescendant',
       'aria-atomic': true,
@@ -117,7 +117,7 @@ describe('Text compat with web', () => {
       'aria-valuetext': '3',
     };
 
-    const instance = render.create(<Text {...props} />);
+    const instance = await render.create(<Text {...props} />);
 
     expect(omitRef(instance.toJSON())).toMatchInlineSnapshot(`
       <RCTText
@@ -181,7 +181,7 @@ describe('Text compat with web', () => {
     `);
   });
 
-  it('renders styles', () => {
+  it('renders styles', async () => {
     const style = {
       display: 'flex',
       flex: 1,
@@ -191,7 +191,7 @@ describe('Text compat with web', () => {
       verticalAlign: 'middle',
     };
 
-    const instance = render.create(<Text style={style} />);
+    const instance = await render.create(<Text style={style} />);
 
     expect(omitRef(instance.toJSON())).toMatchInlineSnapshot(`
       <RCTText
