@@ -30,6 +30,12 @@ jest.mock('../LogBoxInspectorHeader', () => ({
   __esModule: true,
   default: 'LogBoxInspectorHeader',
 }));
+jest.mock('../../Data/LogBoxData', () => ({
+  __esModule: true,
+  ...jest.requireActual('../../Data/LogBoxData'),
+  symbolicateLogLazy: () => {},
+  symbolicateLogNow: () => {},
+}));
 
 const logs = [
   new LogBoxLog({
