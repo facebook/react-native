@@ -23,15 +23,19 @@ const ImageInjection = require('../ImageInjection');
 const React = require('react');
 
 describe('Image', () => {
-  it('should render as <Image> when mocked', () => {
-    const instance = render.create(<Image source={{uri: 'foo-bar.jpg'}} />);
+  it('should render as <Image> when mocked', async () => {
+    const instance = await render.create(
+      <Image source={{uri: 'foo-bar.jpg'}} />,
+    );
     expect(instance).toMatchSnapshot();
   });
 
-  it('should render as <RCTImageView> when not mocked', () => {
+  it('should render as <RCTImageView> when not mocked', async () => {
     jest.dontMock('../Image');
 
-    const instance = render.create(<Image source={{uri: 'foo-bar.jpg'}} />);
+    const instance = await render.create(
+      <Image source={{uri: 'foo-bar.jpg'}} />,
+    );
     expect(instance).toMatchSnapshot();
   });
 

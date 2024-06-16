@@ -29,8 +29,8 @@ jest.mock('../LogBoxInspectorSection', () => ({
 }));
 
 describe('LogBoxInspectorReactFrames', () => {
-  it('should render null for no componentStack frames', () => {
-    const output = render.create(
+  it('should render null for no componentStack frames', async () => {
+    const output = await render.create(
       <LogBoxInspectorReactFrames
         log={
           new LogBoxLog({
@@ -51,8 +51,8 @@ describe('LogBoxInspectorReactFrames', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render componentStack frames without full path pressable', () => {
-    const output = render.create(
+  it('should render componentStack frames without full path pressable', async () => {
+    const output = await render.create(
       <LogBoxInspectorReactFrames
         log={
           new LogBoxLog({
@@ -82,8 +82,8 @@ describe('LogBoxInspectorReactFrames', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render componentStack frames with full path pressable', () => {
-    const output = render.create(
+  it('should render componentStack frames with full path pressable', async () => {
+    const output = await render.create(
       <LogBoxInspectorReactFrames
         log={
           new LogBoxLog({
@@ -113,8 +113,8 @@ describe('LogBoxInspectorReactFrames', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render componentStack frames with parent folder of index.js', () => {
-    const output = render.create(
+  it('should render componentStack frames with parent folder of index.js', async () => {
+    const output = await render.create(
       <LogBoxInspectorReactFrames
         log={
           new LogBoxLog({
@@ -144,8 +144,8 @@ describe('LogBoxInspectorReactFrames', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render componentStack frames with more than 3 stacks', () => {
-    const output = render.create(
+  it('should render componentStack frames with more than 3 stacks', async () => {
+    const output = await render.create(
       <LogBoxInspectorReactFrames
         log={
           new LogBoxLog({

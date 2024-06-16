@@ -51,8 +51,8 @@ const createCollapsedFrames = (collapsedOptions: Array<?boolean>) => {
 };
 
 describe('LogBoxInspectorStackFrames', () => {
-  it('should render stack frames with 1 frame collapsed', () => {
-    const output = render.create(
+  it('should render stack frames with 1 frame collapsed', async () => {
+    const output = await render.create(
       <LogBoxInspectorStackFrames
         onRetry={() => {}}
         log={createLogWithFrames([false, true])}
@@ -62,8 +62,8 @@ describe('LogBoxInspectorStackFrames', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render null for empty stack frames', () => {
-    const output = render.create(
+  it('should render null for empty stack frames', async () => {
+    const output = await render.create(
       <LogBoxInspectorStackFrames
         onRetry={() => {}}
         log={createLogWithFrames([])}
