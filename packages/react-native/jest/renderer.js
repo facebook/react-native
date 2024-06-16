@@ -24,3 +24,18 @@ export async function create(
   });
   return nullthrows(component);
 }
+
+export async function unmount(testRenderer: ReactTestRenderer) {
+  await TestRenderer.act(async () => {
+    testRenderer.unmount();
+  });
+}
+
+export async function update(
+  testRenderer: ReactTestRenderer,
+  element: React.Element<any>,
+) {
+  await TestRenderer.act(async () => {
+    testRenderer.update(element);
+  });
+}
