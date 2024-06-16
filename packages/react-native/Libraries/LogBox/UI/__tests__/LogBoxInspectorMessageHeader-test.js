@@ -16,9 +16,16 @@ const LogBoxInspectorMessageHeader =
   require('../LogBoxInspectorMessageHeader').default;
 const React = require('react');
 
+// Mock `LogBoxMessage` because we are interested in snapshotting the
+// behavior of `LogBoxInspectorMessageHeader`, not `LogBoxMessage`.
+jest.mock('../LogBoxMessage', () => ({
+  __esModule: true,
+  default: 'LogBoxMessage',
+}));
+
 describe('LogBoxInspectorMessageHeader', () => {
   it('should render error', () => {
-    const output = render.shallowRender(
+    const output = render.create(
       <LogBoxInspectorMessageHeader
         title="Error"
         level="error"
@@ -35,7 +42,7 @@ describe('LogBoxInspectorMessageHeader', () => {
   });
 
   it('should render fatal', () => {
-    const output = render.shallowRender(
+    const output = render.create(
       <LogBoxInspectorMessageHeader
         title="Fatal Error"
         level="fatal"
@@ -52,7 +59,7 @@ describe('LogBoxInspectorMessageHeader', () => {
   });
 
   it('should render syntax error', () => {
-    const output = render.shallowRender(
+    const output = render.create(
       <LogBoxInspectorMessageHeader
         title="Syntax Error"
         level="syntax"
@@ -69,7 +76,7 @@ describe('LogBoxInspectorMessageHeader', () => {
   });
 
   it('should not render See More button for short content', () => {
-    const output = render.shallowRender(
+    const output = render.create(
       <LogBoxInspectorMessageHeader
         title="Warning"
         level="warn"
@@ -86,7 +93,7 @@ describe('LogBoxInspectorMessageHeader', () => {
   });
 
   it('should not render "See More" if expanded', () => {
-    const output = render.shallowRender(
+    const output = render.create(
       <LogBoxInspectorMessageHeader
         title="Warning"
         level="warn"
@@ -100,7 +107,7 @@ describe('LogBoxInspectorMessageHeader', () => {
   });
 
   it('should render "See More" if collapsed', () => {
-    const output = render.shallowRender(
+    const output = render.create(
       <LogBoxInspectorMessageHeader
         title="Warning"
         level="warn"
