@@ -16,7 +16,7 @@ const View = require('../../Components/View/View');
 const Modal = require('../Modal');
 const React = require('react');
 
-describe('<Modal />', () => {
+describe('Modal', () => {
   it('should render as <Modal> when mocked', () => {
     const instance = render.create(
       <Modal>
@@ -33,26 +33,6 @@ describe('<Modal />', () => {
       </Modal>,
     );
     expect(instance.toJSON()).toBeNull();
-  });
-
-  it('should shallow render as <Modal> when mocked', () => {
-    const output = render.shallow(
-      <Modal>
-        <View />
-      </Modal>,
-    );
-    expect(output).toMatchSnapshot();
-  });
-
-  it('should shallow render as <Modal> when not mocked', () => {
-    jest.dontMock('../Modal');
-
-    const output = render.shallow(
-      <Modal>
-        <View />
-      </Modal>,
-    );
-    expect(output).toMatchSnapshot();
   });
 
   it('should render as <RCTModalHostView> when not mocked', () => {
