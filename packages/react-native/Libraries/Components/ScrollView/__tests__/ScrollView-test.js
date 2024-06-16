@@ -23,8 +23,8 @@ describe('ScrollView', () => {
     jest.resetModules();
   });
 
-  it('renders its children', () => {
-    ReactNativeTestTools.expectRendersMatchingSnapshot(
+  it('renders its children', async () => {
+    await ReactNativeTestTools.expectRendersMatchingSnapshot(
       'ScrollView',
       () => (
         <ScrollView>
