@@ -2323,12 +2323,19 @@ public class com/facebook/react/devsupport/ReleaseDevSupportManager : com/facebo
 
 public class com/facebook/react/devsupport/StackTraceHelper {
 	public static final field COLUMN_KEY Ljava/lang/String;
+	public static final field FILE_KEY Ljava/lang/String;
+	public static final field ID_KEY Ljava/lang/String;
+	public static final field IS_FATAL_KEY Ljava/lang/String;
 	public static final field LINE_NUMBER_KEY Ljava/lang/String;
+	public static final field MESSAGE_KEY Ljava/lang/String;
+	public static final field METHOD_NAME_KEY Ljava/lang/String;
+	public static final field STACK_KEY Ljava/lang/String;
 	public fun <init> ()V
 	public static fun convertJavaStackTrace (Ljava/lang/Throwable;)[Lcom/facebook/react/devsupport/interfaces/StackFrame;
 	public static fun convertJsStackTrace (Lcom/facebook/react/bridge/ReadableArray;)[Lcom/facebook/react/devsupport/interfaces/StackFrame;
 	public static fun convertJsStackTrace (Ljava/lang/String;)[Lcom/facebook/react/devsupport/interfaces/StackFrame;
 	public static fun convertJsStackTrace (Lorg/json/JSONArray;)[Lcom/facebook/react/devsupport/interfaces/StackFrame;
+	public static fun convertParsedError (Lcom/facebook/react/interfaces/exceptionmanager/ReactJsExceptionHandler$ParsedError;)Lcom/facebook/react/bridge/JavaOnlyMap;
 	public static fun formatFrameSource (Lcom/facebook/react/devsupport/interfaces/StackFrame;)Ljava/lang/String;
 	public static fun formatStackTrace (Ljava/lang/String;[Lcom/facebook/react/devsupport/interfaces/StackFrame;)Ljava/lang/String;
 }

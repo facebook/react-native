@@ -7,11 +7,6 @@
 
 package com.facebook.react.runtime;
 
-import static com.facebook.react.util.JSStackTrace.COLUMN_KEY;
-import static com.facebook.react.util.JSStackTrace.FILE_KEY;
-import static com.facebook.react.util.JSStackTrace.LINE_NUMBER_KEY;
-import static com.facebook.react.util.JSStackTrace.METHOD_NAME_KEY;
-
 import android.content.res.AssetManager;
 import android.view.View;
 import com.facebook.common.logging.FLog;
@@ -28,7 +23,6 @@ import com.facebook.react.ViewManagerOnDemandReactPackage;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.JSBundleLoaderDelegate;
-import com.facebook.react.bridge.JavaOnlyArray;
 import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.NativeArray;
@@ -36,7 +30,6 @@ import com.facebook.react.bridge.NativeMap;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
-import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.RuntimeExecutor;
 import com.facebook.react.bridge.RuntimeScheduler;
 import com.facebook.react.bridge.queue.MessageQueueThread;
@@ -45,6 +38,7 @@ import com.facebook.react.bridge.queue.QueueThreadExceptionHandler;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationImpl;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
+import com.facebook.react.devsupport.StackTraceHelper;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.fabric.Binding;
 import com.facebook.react.fabric.BindingImpl;
@@ -332,22 +326,7 @@ final class ReactInstance {
 
     @Override
     public void reportJsException(ParsedError error) {
-      List<ReactJsExceptionHandler.ParsedError.StackFrame> frames = error.getFrames();
-      List<ReadableMap> readableMapList = new ArrayList<>();
-      for (ReactJsExceptionHandler.ParsedError.StackFrame frame : frames) {
-        JavaOnlyMap map = new JavaOnlyMap();
-        map.putDouble(COLUMN_KEY, frame.getColumnNumber());
-        map.putDouble(LINE_NUMBER_KEY, frame.getLineNumber());
-        map.putString(FILE_KEY, (String) frame.getFileName());
-        map.putString(METHOD_NAME_KEY, (String) frame.getMethodName());
-        readableMapList.add(map);
-      }
-
-      JavaOnlyMap data = new JavaOnlyMap();
-      data.putString("message", error.getMessage());
-      data.putArray("stack", JavaOnlyArray.from(readableMapList));
-      data.putInt("id", error.getExceptionId());
-      data.putBoolean("isFatal", error.isFatal());
+      JavaOnlyMap data = StackTraceHelper.convertParsedError(error);
 
       // Simulate async native module method call
       mNativemodulesmessagequeuethread.runOnQueue(
