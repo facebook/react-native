@@ -43,15 +43,16 @@
             - build_hermesc_linux
             - build_hermes_macos
             - build_hermesc_windows
-      - test_android:
-          requires:
-            - build_android
-      # - test_e2e_android
-      - test_android_template:
-          requires:
-            - build_npm_package
-          matrix:
-            parameters:
-              architecture: ["NewArch", "OldArch"]
-              jsengine: ["Hermes", "JSC"]
-              flavor: ["Debug", "Release"]
+      ## Disabled to land removing react-native/template. Re-enable once switched over
+      ## to Helloworld.
+      # - test_android:
+      #     requires:
+      #       - build_android
+      # - test_android_template:
+      #     requires:
+      #       - build_npm_package
+      #     matrix:
+      #       parameters:
+      #         architecture: ["NewArch", "OldArch"]
+      #         jsengine: ["Hermes", "JSC"]
+      #         flavor: ["Debug", "Release"]
