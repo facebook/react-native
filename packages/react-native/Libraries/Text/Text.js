@@ -212,9 +212,11 @@ const Text: React.AbstractComponent<
 
   let _numberOfLines = numberOfLines;
   if (_numberOfLines != null && !(_numberOfLines >= 0)) {
-    console.error(
-      `'numberOfLines' in <Text> must be a non-negative number, received: ${_numberOfLines}. The value will be set to 0.`,
-    );
+    if (__DEV__) {
+      console.error(
+        `'numberOfLines' in <Text> must be a non-negative number, received: ${_numberOfLines}. The value will be set to 0.`,
+      );
+    }
     _numberOfLines = 0;
   }
 
