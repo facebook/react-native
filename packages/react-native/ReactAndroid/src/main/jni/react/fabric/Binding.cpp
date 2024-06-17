@@ -509,10 +509,6 @@ void Binding::schedulerShouldRenderTransactions(
 
 void Binding::schedulerDidRequestPreliminaryViewAllocation(
     const ShadowNode& shadowNode) {
-  if (!shadowNode.getTraits().check(ShadowNodeTraits::Trait::FormsView)) {
-    return;
-  }
-
   auto mountingManager = getMountingManager("preallocateView");
   if (!mountingManager) {
     return;
