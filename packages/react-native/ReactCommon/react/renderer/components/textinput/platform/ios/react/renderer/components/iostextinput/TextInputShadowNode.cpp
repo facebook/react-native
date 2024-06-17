@@ -140,6 +140,10 @@ Size TextInputShadowNode::measureContent(
       .size;
 }
 
+float TextInputShadowNode::baseline(float width, float height) const {
+  return 0;
+}
+
 void TextInputShadowNode::layout(LayoutContext layoutContext) {
   updateStateIfNeeded(layoutContext);
   ConcreteViewShadowNode::layout(layoutContext);

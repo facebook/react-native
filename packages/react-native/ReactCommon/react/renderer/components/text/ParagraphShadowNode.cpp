@@ -163,6 +163,10 @@ Size ParagraphShadowNode::measureContent(
       .size;
 }
 
+float ParagraphShadowNode::baseline(float width, float height) const {
+  return 0;
+}
+
 void ParagraphShadowNode::layout(LayoutContext layoutContext) {
   ensureUnsealed();
 

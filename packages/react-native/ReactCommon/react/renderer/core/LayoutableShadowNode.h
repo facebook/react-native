@@ -82,6 +82,12 @@ class LayoutableShadowNode : public ShadowNode {
   virtual Size measureContent(
       const LayoutContext& layoutContext,
       const LayoutConstraints& layoutConstraints) const;
+    
+  /*
+   * Calculates the baseline of the node.
+   * Default implementation returns zero.
+   */
+  virtual float baseline(float width, float height) const;
 
   /*
    * Measures the node with given `layoutContext` and `layoutConstraints`.
