@@ -325,9 +325,9 @@ jobs:
           destination: rntester-apk
 
   # -------------------------
-  #    JOBS: Test Android Template
+  #    JOBS: Test Android HelloWorld
   # -------------------------
-  test_android_template:
+  test_android_helloworld:
     executor: reactnativeandroid-large
     parameters:
       flavor:
@@ -346,37 +346,37 @@ jobs:
         type: enum
         enum: ["Hermes", "JSC"]
     environment:
+      - LC_ALL: C.UTF8
       - PROJECT_NAME: "AndroidTemplateProject"
       - YARN_ENABLE_IMMUTABLE_INSTALLS: false
+      - TARGET_ARCHITECTURE: "arm64-v8a"
     steps:
       - checkout_code_with_cache
       - run_yarn
       - attach_workspace:
           at: .
       - run:
-          name: Create Android template project
+          name: Build codegen js scripts from flow -> JS
           command: |
-            REPO_ROOT=$(pwd)
-            node ./scripts/releases/update-template-package.js "{\"react-native\":\"file:$REPO_ROOT/build/$(cat build/react-native-package-version)\"}"
-            node ./scripts/e2e/init-template-e2e.js --projectName $PROJECT_NAME --templatePath "$REPO_ROOT/packages/react-native" --directory "/tmp/$PROJECT_NAME" --verbose
+            cd packages/react-native-codegen
+            yarn run build
       - with_gradle_cache:
           steps:
             - run:
-                name: Build the template application for << parameters.flavor >> with Architecture set to << parameters.architecture >>, and using the << parameters.jsengine>> JS engine.
+                name: Build the Helloworld application for << parameters.flavor >> with Architecture set to << parameters.architecture >>, and using the << parameters.jsengine>> JS engine.
                 command: |
-                  cd /tmp/$PROJECT_NAME/android/
-                  if [[ << parameters.architecture >> == "NewArch" ]]; then
-                    export ORG_GRADLE_PROJECT_newArchEnabled=true
-                  else
-                    export ORG_GRADLE_PROJECT_newArchEnabled=false
+                  cd packages/helloworld/android
+                  args=()
+                  if [[ << parameters.architecture >> == "OldArch" ]]; then
+                    args+=(--arch old)
                   fi
-                  if [[ << parameters.jsengine >> == "Hermes" ]]; then
-                    export ORG_GRADLE_PROJECT_hermesEnabled=true
-                  else
-                    export ORG_GRADLE_PROJECT_hermesEnabled=false
+                  if [[ << parameters.jsengine >> == "JSC" ]]; then
+                    args+=(--jsvm jsc)
                   fi
-                  ./gradlew assemble<< parameters.flavor >> -Preact.internal.mavenLocalRepo=/root/react-native/maven-local
-
+                  if [[ << parameters.flavor >> == "Release" ]]; then
+                    args+=(--prod)
+                  fi
+                  yarn build android "${args[@]}" -P reactNativeArchitectures="$TARGET_ARCHITECTURE"
       - store_artifacts:
           path: /tmp/AndroidTemplateProject/android/app/build/outputs/apk/
           destination: template-apk
