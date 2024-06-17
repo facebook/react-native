@@ -119,6 +119,7 @@ public class ReactEditText extends AppCompatEditText {
   private int mFontStyle = ReactConstants.UNSET;
   private boolean mAutoFocus = false;
   private boolean mDidAttachToWindow = false;
+  private boolean mSelectTextOnFocus = false;
   private @Nullable String mPlaceholder = null;
 
   private final ReactViewBackgroundManager mReactBackgroundManager;
@@ -234,6 +235,12 @@ public class ReactEditText extends AppCompatEditText {
   @Override
   protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
     onContentSizeChange();
+    if (mSelectTextOnFocus) {
+      // Explicitly call this method to select text when layout is drawn
+      selectAll();
+      // Prevent text on being selected for next layout pass
+      mSelectTextOnFocus = false;
+    }
   }
 
   @Override
@@ -1119,6 +1126,11 @@ public class ReactEditText extends AppCompatEditText {
 
   public void setAutoFocus(boolean autoFocus) {
     mAutoFocus = autoFocus;
+  }
+
+  public void setSelectTextOnFocus(boolean selectTextOnFocus) {
+    super.setSelectAllOnFocus(selectTextOnFocus);
+    mSelectTextOnFocus = selectTextOnFocus;
   }
 
   protected void applyTextAttributes() {
