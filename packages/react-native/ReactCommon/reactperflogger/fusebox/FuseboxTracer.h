@@ -9,7 +9,7 @@
 
 #include <functional>
 #include <vector>
-#include "folly/json/dynamic.h"
+#include "folly/dynamic.h"
 
 namespace facebook::react {
 

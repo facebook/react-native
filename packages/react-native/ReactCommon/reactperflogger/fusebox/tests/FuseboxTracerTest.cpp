@@ -7,24 +7,13 @@
 
 #include <gtest/gtest.h>
 
-#include "fusebox/FuseboxTracer.h"
+#include <reactperflogger/fusebox/FuseboxTracer.h>
 
 using namespace ::testing;
 
 namespace facebook::react {
 
 namespace {
-
-folly::dynamic stopTracingAndCollect() {
-  folly::dynamic trace = folly::dynamic::array;
-  FuseboxTracer::getFuseboxTracer().stopTracing(
-      [&trace](const folly::dynamic& eventsChunk) {
-        for (const auto& event : eventsChunk) {
-          trace.push_back(event);
-        }
-      });
-  return trace;
-}
 
 class FuseboxTracerTest : public ::testing::Test {
  protected:
@@ -38,6 +27,17 @@ class FuseboxTracerTest : public ::testing::Test {
 
   void TearDown() override {
     stopTracingAndCollect();
+  }
+
+  folly::dynamic stopTracingAndCollect() {
+    folly::dynamic trace = folly::dynamic::array;
+    FuseboxTracer::getFuseboxTracer().stopTracing(
+        [&trace](const folly::dynamic& eventsChunk) {
+          for (const auto& event : eventsChunk) {
+            trace.push_back(event);
+          }
+        });
+    return trace;
   }
 };
 

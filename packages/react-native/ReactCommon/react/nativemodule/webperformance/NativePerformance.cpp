@@ -13,9 +13,9 @@
 
 #include <cxxreact/JSExecutor.h>
 #include <cxxreact/ReactMarker.h>
-#include <fusebox/FuseboxTracer.h>
 #include <jsi/instrumentation.h>
 #include <react/performance/timeline/PerformanceEntryReporter.h>
+#include <reactperflogger/fusebox/FuseboxTracer.h>
 #include "NativePerformance.h"
 #include "Plugins.h"
 
