@@ -347,7 +347,6 @@ jobs:
         enum: ["Hermes", "JSC"]
     environment:
       - LC_ALL: C.UTF8
-      - PROJECT_NAME: "AndroidTemplateProject"
       - YARN_ENABLE_IMMUTABLE_INSTALLS: false
       - TARGET_ARCHITECTURE: "arm64-v8a"
     steps:
