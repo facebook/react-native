@@ -13,9 +13,10 @@
 
 #include <cxxreact/JSExecutor.h>
 #include <cxxreact/ReactMarker.h>
+#include <fusebox/FuseboxTracer.h>
 #include <jsi/instrumentation.h>
 #include <react/performance/timeline/PerformanceEntryReporter.h>
-
+#include "NativePerformance.h"
 #include "Plugins.h"
 
 #ifdef WITH_PERFETTO
@@ -112,6 +113,17 @@ void NativePerformance::measure(
     }
   }
 #endif
+  std::string trackName = "Web Performance";
+  const int TRACK_PREFIX = 6;
+  if (name.starts_with("Track:")) {
+    const auto trackNameDelimiter = name.find(':', TRACK_PREFIX);
+    if (trackNameDelimiter != std::string::npos) {
+      trackName = name.substr(TRACK_PREFIX, trackNameDelimiter - TRACK_PREFIX);
+      name = name.substr(trackNameDelimiter + 1);
+    }
+  }
+  FuseboxTracer::getFuseboxTracer().addEvent(
+      name, (uint64_t)startTime, (uint64_t)endTime, trackName);
   PerformanceEntryReporter::getInstance()->measure(
       name, startTime, endTime, duration, startMark, endMark);
 }
