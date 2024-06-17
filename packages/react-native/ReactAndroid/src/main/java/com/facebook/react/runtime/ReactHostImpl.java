@@ -57,7 +57,6 @@ import com.facebook.react.devsupport.interfaces.DevSupportManager.PausedInDebugg
 import com.facebook.react.fabric.ComponentFactory;
 import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.interfaces.TaskInterface;
-import com.facebook.react.interfaces.exceptionmanager.ReactJsExceptionHandler;
 import com.facebook.react.interfaces.fabric.ReactSurface;
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.modules.appearance.AppearanceModule;
@@ -102,7 +101,6 @@ public class ReactHostImpl implements ReactHost {
   private final Context mContext;
   private final ReactHostDelegate mReactHostDelegate;
   private final ComponentFactory mComponentFactory;
-  private final ReactJsExceptionHandler mReactJsExceptionHandler;
   private final DevSupportManager mDevSupportManager;
   private final Executor mBGExecutor;
   private final Executor mUIExecutor;
@@ -145,7 +143,6 @@ public class ReactHostImpl implements ReactHost {
       ReactHostDelegate delegate,
       ComponentFactory componentFactory,
       boolean allowPackagerServerAccess,
-      ReactJsExceptionHandler reactJsExceptionHandler,
       boolean useDevSupport) {
     this(
         context,
@@ -153,7 +150,6 @@ public class ReactHostImpl implements ReactHost {
         componentFactory,
         Executors.newSingleThreadExecutor(),
         Task.UI_THREAD_EXECUTOR,
-        reactJsExceptionHandler,
         allowPackagerServerAccess,
         useDevSupport);
   }
@@ -164,7 +160,6 @@ public class ReactHostImpl implements ReactHost {
       ComponentFactory componentFactory,
       Executor bgExecutor,
       Executor uiExecutor,
-      ReactJsExceptionHandler reactJsExceptionHandler,
       boolean allowPackagerServerAccess,
       boolean useDevSupport) {
     mContext = context;
@@ -172,7 +167,6 @@ public class ReactHostImpl implements ReactHost {
     mComponentFactory = componentFactory;
     mBGExecutor = bgExecutor;
     mUIExecutor = uiExecutor;
-    mReactJsExceptionHandler = reactJsExceptionHandler;
     mQueueThreadExceptionHandler = ReactHostImpl.this::handleHostException;
     mMemoryPressureRouter = new MemoryPressureRouter(context);
     mAllowPackagerServerAccess = allowPackagerServerAccess;
@@ -1074,7 +1068,6 @@ public class ReactHostImpl implements ReactHost {
                             mComponentFactory,
                             devSupportManager,
                             mQueueThreadExceptionHandler,
-                            mReactJsExceptionHandler,
                             mUseDevSupport,
                             getOrCreateReactHostInspectorTarget());
                     mReactInstance = instance;

@@ -7,9 +7,16 @@
 
 package com.facebook.react.runtime;
 
+import static com.facebook.react.util.JSStackTrace.COLUMN_KEY;
+import static com.facebook.react.util.JSStackTrace.FILE_KEY;
+import static com.facebook.react.util.JSStackTrace.LINE_NUMBER_KEY;
+import static com.facebook.react.util.JSStackTrace.METHOD_NAME_KEY;
+
 import android.content.res.AssetManager;
 import android.view.View;
 import com.facebook.common.logging.FLog;
+import com.facebook.fbreact.specs.NativeExceptionsManagerSpec;
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
@@ -21,12 +28,15 @@ import com.facebook.react.ViewManagerOnDemandReactPackage;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.JSBundleLoaderDelegate;
+import com.facebook.react.bridge.JavaOnlyArray;
+import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.NativeArray;
 import com.facebook.react.bridge.NativeMap;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.RuntimeExecutor;
 import com.facebook.react.bridge.RuntimeScheduler;
 import com.facebook.react.bridge.queue.MessageQueueThread;
@@ -110,7 +120,6 @@ final class ReactInstance {
       ComponentFactory componentFactory,
       DevSupportManager devSupportManager,
       QueueThreadExceptionHandler exceptionHandler,
-      ReactJsExceptionHandler reactExceptionManager,
       boolean useDevSupport,
       @Nullable ReactHostInspectorTarget reactHostInspectorTarget) {
     mBridgelessReactContext = bridgelessReactContext;
@@ -154,6 +163,7 @@ final class ReactInstance {
     // Notify JS if profiling is enabled
     boolean isProfiling =
         Systrace.isTracing(Systrace.TRACE_TAG_REACT_APPS | Systrace.TRACE_TAG_REACT_JS_VM_CALLS);
+
     mHybridData =
         initHybrid(
             jsRuntimeFactory,
@@ -161,7 +171,7 @@ final class ReactInstance {
             nativeModulesMessageQueueThread,
             mJavaTimerManager,
             jsTimerExecutor,
-            reactExceptionManager,
+            new ReactJsExceptionHandlerImpl(nativeModulesMessageQueueThread),
             bindingsInstaller,
             isProfiling,
             reactHostInspectorTarget);
@@ -311,6 +321,44 @@ final class ReactInstance {
 
   public ReactQueueConfiguration getReactQueueConfiguration() {
     return mQueueConfiguration;
+  }
+
+  private class ReactJsExceptionHandlerImpl implements ReactJsExceptionHandler {
+    private final MessageQueueThread mNativemodulesmessagequeuethread;
+
+    ReactJsExceptionHandlerImpl(MessageQueueThread nativeModulesMessageQueueThread) {
+      this.mNativemodulesmessagequeuethread = nativeModulesMessageQueueThread;
+    }
+
+    @Override
+    public void reportJsException(ParsedError error) {
+      List<ReactJsExceptionHandler.ParsedError.StackFrame> frames = error.getFrames();
+      List<ReadableMap> readableMapList = new ArrayList<>();
+      for (ReactJsExceptionHandler.ParsedError.StackFrame frame : frames) {
+        JavaOnlyMap map = new JavaOnlyMap();
+        map.putDouble(COLUMN_KEY, frame.getColumnNumber());
+        map.putDouble(LINE_NUMBER_KEY, frame.getLineNumber());
+        map.putString(FILE_KEY, (String) frame.getFileName());
+        map.putString(METHOD_NAME_KEY, (String) frame.getMethodName());
+        readableMapList.add(map);
+      }
+
+      JavaOnlyMap data = new JavaOnlyMap();
+      data.putString("message", error.getMessage());
+      data.putArray("stack", JavaOnlyArray.from(readableMapList));
+      data.putInt("id", error.getExceptionId());
+      data.putBoolean("isFatal", error.isFatal());
+
+      // Simulate async native module method call
+      mNativemodulesmessagequeuethread.runOnQueue(
+          () -> {
+            NativeExceptionsManagerSpec exceptionsManager =
+                (NativeExceptionsManagerSpec)
+                    Assertions.assertNotNull(
+                        mTurboModuleManager.getModule(NativeExceptionsManagerSpec.NAME));
+            exceptionsManager.reportException(data);
+          });
+    }
   }
 
   public void loadJSBundle(JSBundleLoader bundleLoader) {
