@@ -59,7 +59,10 @@ class TextInputShadowNode final : public ConcreteViewShadowNode<
       const LayoutConstraints& layoutConstraints) const override;
   void layout(LayoutContext layoutContext) override;
 
-  float baseline(float width, float height) const override;
+  float baseline(
+      const LayoutContext& layoutContext,
+      float width,
+      float height) const override;
 
  private:
   /*

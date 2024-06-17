@@ -225,7 +225,10 @@ Size LayoutableShadowNode::measureContent(
   return {};
 }
 
-float LayoutableShadowNode::baseline(float width, float height) const {
+float LayoutableShadowNode::baseline(
+    const LayoutContext& /*layoutContext*/,
+    float /*width*/,
+    float /*height*/) const {
   return 0;
 }
 

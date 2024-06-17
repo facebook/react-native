@@ -70,7 +70,10 @@ class ParagraphShadowNode final : public ConcreteViewShadowNode<
       const LayoutContext& layoutContext,
       const LayoutConstraints& layoutConstraints) const override;
 
-  float baseline(float width, float height) const override;
+  float baseline(
+      const LayoutContext& layoutContext,
+      float width,
+      float height) const override;
 
   /*
    * Internal representation of the nested content of the node in a format

@@ -140,7 +140,10 @@ Size TextInputShadowNode::measureContent(
       .size;
 }
 
-float TextInputShadowNode::baseline(float width, float height) const {
+float TextInputShadowNode::baseline(
+    const LayoutContext& layoutContext,
+    float width,
+    float height) const {
   return 0;
 }
 
