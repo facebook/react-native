@@ -845,7 +845,7 @@ jobs:
           echo "Root:"
           du -hs *
           echo "Projects folder:"
-          du -hs projects/*
+          du -hs ./packages/*
       - name: Build the Helloworld application for ${{ matrix.flavor }} with Architecture set to ${{ matrix.architecture }}, and using the ${{ matrix.jsengine }} JS engine.
         shell: bash
         run: |
@@ -870,7 +870,7 @@ jobs:
           echo "Root:"
           du -hs *
           echo "Projects folder:"
-          du -hs projects/*
+          du -hs ./packages/*
       - name: Upload artifact
         uses: actions/upload-artifact@v4.3.1
         with:
