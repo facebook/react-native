@@ -57,7 +57,7 @@ async function runServer(
   const metroConfig = await loadMetroConfig(ctx, {
     config: args.config,
     maxWorkers: args.maxWorkers,
-    port: args.port ?? 8081,
+    port: args.port,
     resetCache: args.resetCache,
     watchFolders: args.watchFolders,
     projectRoot: args.projectRoot,
