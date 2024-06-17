@@ -230,7 +230,9 @@ export default class InspectorProxy implements InspectorProxyQueries {
         );
 
         socket.on('close', () => {
-          this.#devices.delete(deviceId);
+          if (this.#devices.get(deviceId) === newDevice) {
+            this.#devices.delete(deviceId);
+          }
           debug(`Device ${deviceName} disconnected.`);
         });
       } catch (e) {
