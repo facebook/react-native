@@ -80,7 +80,9 @@ runTests() {
     -scheme RNTester \
     -sdk iphonesimulator \
     -destination "platform=iOS Simulator,name=$IOS_DEVICE,OS=$IOS_TARGET_OS" \
-      "${SKIPPED_TESTS[@]}"
+      "${SKIPPED_TESTS[@]}" \
+    CODE_SIGNING_REQUIRED=NO \
+    CODE_SIGNING_ALLOWED=NO 
 }
 
 buildProject() {
