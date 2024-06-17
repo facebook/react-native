@@ -836,6 +836,16 @@ jobs:
         run: |
           cd packages/react-native-codegen
           yarn run build
+      - name: Monitor Disk utilization (before build)
+        shell: bash
+        if: always()
+        run: |
+          echo "On Runner:"
+          df -h
+          echo "Root:"
+          du -hs *
+          echo "Projects folder:"
+          du -hs projects/*
       - name: Build the Helloworld application for ${{ matrix.flavor }} with Architecture set to ${{ matrix.architecture }}, and using the ${{ matrix.jsengine }} JS engine.
         shell: bash
         run: |
@@ -851,13 +861,16 @@ jobs:
             args+=(--prod)
           fi
           yarn build android "${args[@]}" -P reactNativeArchitectures="$TARGET_ARCHITECTURE"
-      - name: Monitor Disk utilization
+      - name: Monitor Disk utilization (after build)
         shell: bash
+        if: always()
         run: |
-          echo "On Runner:\n=========="
+          echo "On Runner:"
           df -h
-          echo "In Project:\n==========="
+          echo "Root:"
           du -hs *
+          echo "Projects folder:"
+          du -hs projects/*
       - name: Upload artifact
         uses: actions/upload-artifact@v4.3.1
         with:
