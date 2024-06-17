@@ -17,7 +17,6 @@ import com.facebook.react.bridge.ReactContext
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.fabric.ComponentFactory
-import com.facebook.react.interfaces.exceptionmanager.ReactJsExceptionHandler
 import com.facebook.react.runtime.JSCInstance
 import com.facebook.react.runtime.ReactHostImpl
 import com.facebook.react.runtime.cxxreactpackage.CxxReactPackage
@@ -74,8 +73,6 @@ public object DefaultReactHost {
               reactPackages = packageList,
               jsRuntimeFactory = jsRuntimeFactory,
               turboModuleManagerDelegateBuilder = defaultTmmDelegateBuilder)
-      // TODO: T180971255 Improve default exception handler
-      val reactJsExceptionHandler = ReactJsExceptionHandler { _ -> }
       val componentFactory = ComponentFactory()
       DefaultComponentsRegistry.register(componentFactory)
       // TODO: T164788699 find alternative of accessing ReactHostImpl for initialising reactHost
@@ -85,7 +82,6 @@ public object DefaultReactHost {
                   defaultReactHostDelegate,
                   componentFactory,
                   true /* allowPackagerServerAccess */,
-                  reactJsExceptionHandler,
                   useDevSupport,
               )
               .apply {
