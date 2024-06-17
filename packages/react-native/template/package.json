@@ -11,16 +11,16 @@
   },
   "dependencies": {
     "react": "19.0.0-rc-fb9a90fa48-20240614",
-    "react-native": "1000.0.0"
+    "react-native": "0.76.0-main"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "@babel/preset-env": "^7.20.0",
     "@babel/runtime": "^7.20.0",
-    "@react-native/babel-preset": "0.75.0-main",
-    "@react-native/eslint-config": "0.75.0-main",
-    "@react-native/metro-config": "0.75.0-main",
-    "@react-native/typescript-config": "0.75.0-main",
+    "@react-native/babel-preset": "0.76.0-main",
+    "@react-native/eslint-config": "0.76.0-main",
+    "@react-native/metro-config": "0.76.0-main",
+    "@react-native/typescript-config": "0.76.0-main",
     "@types/react": "^18.2.6",
     "@types/react-test-renderer": "^18.0.0",
     "babel-jest": "^29.6.3",
