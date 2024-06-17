@@ -108,14 +108,14 @@ class RawProps final {
    * This API is used by pure JSI-based React Native Frameworks that skip the `RawPropsParser` route.
    * DO NOT store this `jsi::Value` in memory.
    */
-  jsi::Value& getJsiValue() const { return value_; }
+  const jsi::Value& getJsiValue() const { return value_; }
 
   /**
    * Get the `jsi::Runtime` if this `RawProps` instance stores a `jsi::Value`, or `nullptr` otherwise.
    * This API is used by pure JSI-based React Native Frameworks that skip the `RawPropsParser` route.
    * DO NOT store this `jsi::Value` in memory.
    */
-  jsi::Runtime* getJsiRuntime() const { return runtime_; }
+  const jsi::Runtime* getJsiRuntime() const { return runtime_; }
 
  private:
   friend class RawPropsParser;
