@@ -122,7 +122,9 @@ async function expectRendersMatchingSnapshot(
 
   jest.resetAllMocks();
 
-  instance = ReactTestRenderer.create(<ComponentProvider />);
+  await ReactTestRenderer.act(() => {
+    instance = ReactTestRenderer.create(<ComponentProvider />);
+  });
   expect(instance).toMatchSnapshot(
     'should deep render when mocked (please verify output manually)',
   );
@@ -130,7 +132,9 @@ async function expectRendersMatchingSnapshot(
   jest.resetAllMocks();
   unmockComponent();
 
-  instance = ReactTestRenderer.create(<ComponentProvider />);
+  await ReactTestRenderer.act(() => {
+    instance = ReactTestRenderer.create(<ComponentProvider />);
+  });
   expect(instance).toMatchSnapshot(
     'should deep render when not mocked (please verify output manually)',
   );
