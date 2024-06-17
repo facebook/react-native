@@ -8059,7 +8059,7 @@ declare module.exports: TextAncestorContext;
 `;
 
 exports[`public API should not change unintentionally Libraries/Text/TextNativeComponent.js 1`] = `
-"type NativeTextProps = $ReadOnly<{
+"export type NativeTextProps = $ReadOnly<{
   ...TextProps,
   isHighlighted?: ?boolean,
   selectionColor?: ?ProcessedColorValue,
@@ -8068,6 +8068,15 @@ exports[`public API should not change unintentionally Libraries/Text/TextNativeC
 }>;
 declare export const NativeText: HostComponent<NativeTextProps>;
 declare export const NativeVirtualText: HostComponent<NativeTextProps>;
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/Text/TextOptimized.js 1`] = `
+"type TextForwardRef = React.ElementRef<
+  typeof NativeText | typeof NativeVirtualText,
+>;
+declare const TextOptimized: React.AbstractComponent<TextProps, TextForwardRef>;
+declare module.exports: TextOptimized;
 "
 `;
 
