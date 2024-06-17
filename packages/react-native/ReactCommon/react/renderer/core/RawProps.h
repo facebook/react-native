@@ -104,16 +104,18 @@ class RawProps final {
           void(RawPropsPropNameHash, const char*, RawValue const&)>& fn) const;
 
   /**
-   * Get the `jsi::Value` if this `RawProps` instance stores a `jsi::Value`, `jsi::Value::undefined()` otherwise.
+   * Get the `jsi::Value` if this `RawProps` instance stores a `jsi::Value`, or `jsi::Value::undefined()` otherwise.
    * This API is used by pure JSI-based React Native Frameworks that skip the `RawPropsParser` route.
+   * DO NOT store this `jsi::Value` in memory.
    */
-  jsi::Value& getJsiValue() { return value_; }
+  jsi::Value& getJsiValue() const { return value_; }
 
   /**
-   * Get the `jsi::Runtime` if this `RawProps` instance stores a `jsi::Value`, `nullptr` otherwise.
+   * Get the `jsi::Runtime` if this `RawProps` instance stores a `jsi::Value`, or `nullptr` otherwise.
    * This API is used by pure JSI-based React Native Frameworks that skip the `RawPropsParser` route.
+   * DO NOT store this `jsi::Value` in memory.
    */
-  jsi::Runtime* getJsiRuntime() { return runtime_; }
+  jsi::Runtime* getJsiRuntime() const { return runtime_; }
 
  private:
   friend class RawPropsParser;
