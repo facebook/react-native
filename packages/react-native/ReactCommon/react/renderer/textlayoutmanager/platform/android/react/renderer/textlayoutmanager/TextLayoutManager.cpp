@@ -201,6 +201,35 @@ LinesMeasurements TextLayoutManager::measureLines(
   return lineMeasurements;
 }
 
+float TextLayoutManager::baseline(
+    AttributedString attributedString,
+    ParagraphAttributes paragraphAttributes,
+    Size size) const {
+    const jni::global_ref<jobject>& fabricUIManager =
+            contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
+    static auto baseline =
+            jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
+                    ->getMethod<jfloat(
+                            JReadableMapBuffer::javaobject,
+                            JReadableMapBuffer::javaobject,
+                            jfloat,
+                            jfloat)>("baseline");
+
+    auto attributedStringMB =
+            JReadableMapBuffer::createWithContents(toMapBuffer(attributedString));
+    auto paragraphAttributesMB =
+            JReadableMapBuffer::createWithContents(toMapBuffer(paragraphAttributes));
+
+    auto calculatedBaseline = baseline(
+            fabricUIManager,
+            attributedStringMB.get(),
+            paragraphAttributesMB.get(),
+            size.width,
+            size.height);
+
+    return calculatedBaseline;
+}
+
 TextMeasurement TextLayoutManager::doMeasure(
     AttributedString attributedString,
     const ParagraphAttributes& paragraphAttributes,

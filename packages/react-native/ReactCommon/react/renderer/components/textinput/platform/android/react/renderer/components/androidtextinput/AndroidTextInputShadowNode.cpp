@@ -214,8 +214,15 @@ Size AndroidTextInputShadowNode::measureContent(
       .size;
 }
 
-float AndroidTextInputShadowNode::baseline(float width, float height) const {
-  return 0;
+float AndroidTextInputShadowNode::baseline(
+    const LayoutContext& layoutContext,
+    float width,
+    float height) const {
+  return textLayoutManager_
+      ->baseline(
+          getMostRecentAttributedString(),
+          getConcreteProps().paragraphAttributes,
+          {.width = width, .height = height});
 }
 
 void AndroidTextInputShadowNode::layout(LayoutContext layoutContext) {

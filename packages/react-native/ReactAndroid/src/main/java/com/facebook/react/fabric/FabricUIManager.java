@@ -505,6 +505,20 @@ public class FabricUIManager
   }
 
   @SuppressWarnings("unused")
+  private float baseline(
+    ReadableMapBuffer attributedString,
+    ReadableMapBuffer paragraphAttributes,
+    float width,
+    float height) {
+    return TextLayoutManager.getLastBaseline(
+      mReactApplicationContext,
+      attributedString,
+      paragraphAttributes,
+      PixelUtil.toPixelFromDIP(width),
+      PixelUtil.toPixelFromDIP(height));
+  }
+
+  @SuppressWarnings("unused")
   private long measure(
       int rootTag,
       String componentName,

@@ -744,4 +744,76 @@ public class TextLayoutManager {
         createLayout(context, attributedString, paragraphAttributes, width, height, null);
     return FontMetricsUtil.getFontMetrics(layout.getText(), layout, sTextPaintInstance, context);
   }
+
+  public static float getLastBaseline(
+    @NonNull Context context,
+    MapBuffer attributedString,
+    MapBuffer paragraphAttributes,
+    float width,
+    float height) {
+
+    Spannable text = getOrCreateSpannableForText(context, attributedString, null);
+    BoringLayout.Metrics boring = BoringLayout.isBoring(text, sTextPaintInstance);
+
+    int textBreakStrategy =
+      TextAttributeProps.getTextBreakStrategy(
+        paragraphAttributes.getString(PA_KEY_TEXT_BREAK_STRATEGY));
+    boolean includeFontPadding =
+      paragraphAttributes.contains(PA_KEY_INCLUDE_FONT_PADDING)
+        ? paragraphAttributes.getBoolean(PA_KEY_INCLUDE_FONT_PADDING)
+        : DEFAULT_INCLUDE_FONT_PADDING;
+    int hyphenationFrequency =
+      TextAttributeProps.getTextBreakStrategy(
+        paragraphAttributes.getString(PA_KEY_HYPHENATION_FREQUENCY));
+    boolean adjustFontSizeToFit =
+      paragraphAttributes.contains(PA_KEY_ADJUST_FONT_SIZE_TO_FIT)
+        ? paragraphAttributes.getBoolean(PA_KEY_ADJUST_FONT_SIZE_TO_FIT)
+        : DEFAULT_ADJUST_FONT_SIZE_TO_FIT;
+    int maximumNumberOfLines =
+      paragraphAttributes.contains(PA_KEY_MAX_NUMBER_OF_LINES)
+        ? paragraphAttributes.getInt(PA_KEY_MAX_NUMBER_OF_LINES)
+        : ReactConstants.UNSET;
+
+    Layout.Alignment alignment = getTextAlignment(attributedString, text);
+
+    if (adjustFontSizeToFit) {
+      double minimumFontSize =
+        paragraphAttributes.contains(PA_KEY_MINIMUM_FONT_SIZE)
+          ? paragraphAttributes.getDouble(PA_KEY_MINIMUM_FONT_SIZE)
+          : Double.NaN;
+
+      adjustSpannableFontToFit(
+        text,
+        width,
+        YogaMeasureMode.EXACTLY,
+        height,
+        YogaMeasureMode.UNDEFINED,
+        minimumFontSize,
+        maximumNumberOfLines,
+        includeFontPadding,
+        textBreakStrategy,
+        hyphenationFrequency,
+        alignment);
+    }
+
+    Layout layout =
+      createLayout(
+        text,
+        boring,
+        width,
+        YogaMeasureMode.EXACTLY,
+        includeFontPadding,
+        textBreakStrategy,
+        hyphenationFrequency,
+        alignment);
+
+    float maxDescent = 0;
+    for (int i = 0; i < layout.getLineCount(); i++) {
+      if (maxDescent < layout.getLineDescent(i)) {
+        maxDescent = layout.getLineDescent(i);
+      }
+    }
+
+    return PixelUtil.toDIPFromPixel(height - maxDescent);
+  }
 }
