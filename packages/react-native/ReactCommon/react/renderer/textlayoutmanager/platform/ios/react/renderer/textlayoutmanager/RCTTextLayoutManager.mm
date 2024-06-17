@@ -167,6 +167,29 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
   return paragraphLines;
 }
 
+- (float)getBaselineForAttributedString:(facebook::react::AttributedString)attributedString
+                    paragraphAttributes:
+                        (facebook::react::ParagraphAttributes)paragraphAttributes
+                                   size:(CGSize)size
+{
+    NSTextStorage *attributedText = [self
+        _textStorageAndLayoutManagerWithAttributesString:[self _nsAttributedStringFromAttributedString:attributedString]
+                                     paragraphAttributes:paragraphAttributes
+                                                    size:size];
+    __block CGFloat maximumDescender = 0.0;
+
+    [attributedText enumerateAttribute:NSFontAttributeName
+                               inRange:NSMakeRange(0, attributedText.length)
+                               options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired
+                            usingBlock:^(UIFont *font, NSRange range, __unused BOOL *stop) {
+                              if (maximumDescender > font.descender) {
+                                maximumDescender = font.descender;
+                              }
+                            }];
+
+    return size.height + maximumDescender;
+}
+
 - (NSTextStorage *)_textStorageAndLayoutManagerWithAttributesString:(NSAttributedString *)attributedString
                                                 paragraphAttributes:(ParagraphAttributes)paragraphAttributes
                                                                size:(CGSize)size

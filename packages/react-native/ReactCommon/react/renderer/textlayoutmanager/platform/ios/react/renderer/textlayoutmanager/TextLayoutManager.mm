@@ -95,4 +95,15 @@ LinesMeasurements TextLayoutManager::measureLines(
                                                    size:{size.width, size.height}];
 }
 
+float TextLayoutManager::baseline(
+    AttributedString attributedString,
+    ParagraphAttributes paragraphAttributes,
+    Size size) const
+{
+  RCTTextLayoutManager *textLayoutManager = (RCTTextLayoutManager *)unwrapManagedObject(self_);
+    return [textLayoutManager getBaselineForAttributedString:attributedString
+                                         paragraphAttributes:paragraphAttributes
+                                                        size:{size.width, size.height}];
+}
+
 } // namespace facebook::react

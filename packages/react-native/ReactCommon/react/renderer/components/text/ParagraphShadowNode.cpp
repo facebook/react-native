@@ -167,7 +167,14 @@ float ParagraphShadowNode::baseline(
     const LayoutContext& layoutContext,
     float width,
     float height) const {
-  return 0;
+  auto content = getContent(layoutContext);
+  auto attributedString = content.attributedString;
+
+  return textLayoutManager_
+      ->baseline(
+          attributedString,
+          content.paragraphAttributes,
+          {.width = width, .height = height});
 }
 
 void ParagraphShadowNode::layout(LayoutContext layoutContext) {

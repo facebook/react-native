@@ -144,7 +144,11 @@ float TextInputShadowNode::baseline(
     const LayoutContext& layoutContext,
     float width,
     float height) const {
-  return 0;
+  return textLayoutManager_
+      ->baseline(
+        getAttributedString(layoutContext),
+        getConcreteProps().getEffectiveParagraphAttributes(),
+        {.width = width, .height = height});
 }
 
 void TextInputShadowNode::layout(LayoutContext layoutContext) {
