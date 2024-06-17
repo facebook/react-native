@@ -157,22 +157,6 @@ commands:
             - packages/react-native/ReactAndroid/build/third-party-ndk
           key: *gradle_cache_key
 
-  run_e2e:
-    parameters:
-      platform:
-        description: Target platform
-        type: enum
-        enum: ["android", "ios", "js"]
-        default: "js"
-      retries:
-        description: How many times the job should try to run these tests
-        type: integer
-        default: 3
-    steps:
-      - run:
-          name: "Run Tests: << parameters.platform >> End-to-End Tests"
-          command: node ./scripts/e2e/run-ci-e2e-tests.js --<< parameters.platform >> --retries << parameters.retries >>
-
   report_bundle_size:
     parameters:
       platform:
