@@ -86,7 +86,7 @@ class RequestIdleCallbackTester extends React.Component<
         message = 'Burned CPU for 10ms,';
       }
       this.setState({
-        message: `${message} ${deadline.timeRemaining()}ms remaining in frame`,
+        message: `${message} ${deadline.timeRemaining()}ms remaining in frame (timeout: ${String(deadline.didTimeout)})`,
       });
     });
   }
