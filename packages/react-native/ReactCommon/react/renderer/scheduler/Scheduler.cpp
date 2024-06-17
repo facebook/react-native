@@ -310,8 +310,6 @@ void Scheduler::uiManagerDidFinishTransaction(
 }
 
 void Scheduler::uiManagerDidCreateShadowNode(const ShadowNode& shadowNode) {
-  SystraceSection s("Scheduler::uiManagerDidCreateShadowNode");
-
   if (delegate_ != nullptr) {
     delegate_->schedulerDidRequestPreliminaryViewAllocation(shadowNode);
   }
