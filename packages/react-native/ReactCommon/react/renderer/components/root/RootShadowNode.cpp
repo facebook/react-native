@@ -49,7 +49,9 @@ RootShadowNode::Unshared RootShadowNode::clone(
           /* .props = */ props,
       });
 
-  if (layoutConstraints != getConcreteProps().layoutConstraints) {
+  if (layoutConstraints != getConcreteProps().layoutConstraints ||
+      layoutContext.pointScaleFactor !=
+          getConcreteProps().layoutContext.pointScaleFactor) {
     newRootShadowNode->dirtyLayout();
   }
 

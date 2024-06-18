@@ -2140,7 +2140,8 @@ bool calculateLayoutInternal(
 
   const bool needToVisitNode =
       (node->isDirty() && layout->generationCount != generationCount) ||
-      layout->lastOwnerDirection != ownerDirection;
+      layout->lastOwnerDirection != ownerDirection ||
+      layout->lastScale != node->getConfig()->getPointScaleFactor();
 
   if (needToVisitNode) {
     // Invalidate the cached results.
@@ -2255,6 +2256,7 @@ bool calculateLayoutInternal(
         reason);
 
     layout->lastOwnerDirection = ownerDirection;
+    layout->lastScale = node->getConfig()->getPointScaleFactor();
 
     if (cachedResults == nullptr) {
       layoutMarkerData.maxMeasureCache = std::max(

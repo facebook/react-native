@@ -31,6 +31,7 @@ struct LayoutResults {
   // information to break early when nothing changed
   uint32_t generationCount = 0;
   Direction lastOwnerDirection = Direction::Inherit;
+  float lastScale = 1.0f;
 
   uint32_t nextCachedMeasurementsIndex = 0;
   std::array<CachedMeasurement, MaxCachedMeasurements> cachedMeasurements = {};
