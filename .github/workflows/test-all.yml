@@ -798,7 +798,7 @@ jobs:
             -d "{\"event_type\": \"publish\", \"client_payload\": { \"version\": \"${{ github.ref_name }}\" }}"
 
   test_android_helloworld:
-    runs-on: ubuntu-latest
+    runs-on: 4-core-ubuntu
     needs: prepare_hermes_workspace
     container:
       image: reactnativecommunity/react-native-android:latest
