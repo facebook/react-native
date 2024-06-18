@@ -642,7 +642,6 @@ export default class Device {
       if ('sourceMapURL' in params) {
         for (const hostToRewrite of REWRITE_HOSTS_TO_LOCALHOST) {
           if (params.sourceMapURL.includes(hostToRewrite)) {
-            // $FlowFixMe[cannot-write]
             payload.params.sourceMapURL = params.sourceMapURL.replace(
               hostToRewrite,
               'localhost',
@@ -660,7 +659,6 @@ export default class Device {
           // message to the debug client.
           try {
             const sourceMap = await this.#fetchText(sourceMapURL);
-            // $FlowFixMe[cannot-write]
             payload.params.sourceMapURL =
               'data:application/json;charset=utf-8;base64,' +
               Buffer.from(sourceMap).toString('base64');
@@ -674,7 +672,6 @@ export default class Device {
       if ('url' in params) {
         for (const hostToRewrite of REWRITE_HOSTS_TO_LOCALHOST) {
           if (params.url.includes(hostToRewrite)) {
-            // $FlowFixMe[cannot-write]
             payload.params.url = params.url.replace(hostToRewrite, 'localhost');
             debuggerInfo.originalSourceURLAddress = hostToRewrite;
           }
@@ -685,7 +682,6 @@ export default class Device {
         // Chrome to not download source maps. In this case we want to prepend script ID
         // with 'file://' prefix.
         if (payload.params.url.match(/^[0-9a-z]+$/)) {
-          // $FlowFixMe[cannot-write]
           payload.params.url = FILE_PREFIX + payload.params.url;
           debuggerInfo.prependedFilePrefix = true;
         }
