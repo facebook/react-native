@@ -247,19 +247,16 @@ describe.each(['HTTP', 'HTTPS'])(
             event: 'create-debugger-mock',
             name: 'debugger2',
           },
-          // FIXME: We currently send `connect` (for debugger2) before
-          // `disconnect` (for debugger1), which is wrong - it leaves the
-          // device thinking the connection is gone while the proxy keeps the
-          // debugger connection open. The user of debugger2 sees the frontend
-          // in a "zombie" state (not disconnected, but unresponsive).
           {
-            event: 'connect',
+            // NOTE: For debugger1
+            event: 'disconnect',
             payload: {
               pageId: 'page1',
             },
           },
           {
-            event: 'disconnect',
+            // NOTE: For debugger2
+            event: 'connect',
             payload: {
               pageId: 'page1',
             },
