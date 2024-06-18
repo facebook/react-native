@@ -209,18 +209,28 @@ export default class InspectorProxy implements InspectorProxyQueries {
         const appName = query.app || 'Unknown';
 
         const oldDevice = this.#devices.get(deviceId);
-        const newDevice = new Device(
-          deviceId,
-          deviceName,
-          appName,
-          socket,
-          this.#projectRoot,
-          this.#eventReporter,
-          this.#customMessageHandler,
-        );
-
+        let newDevice;
         if (oldDevice) {
-          oldDevice.handleDuplicateDeviceConnection(newDevice);
+          oldDevice.dangerouslyRecreateDevice(
+            deviceId,
+            deviceName,
+            appName,
+            socket,
+            this.#projectRoot,
+            this.#eventReporter,
+            this.#customMessageHandler,
+          );
+          newDevice = oldDevice;
+        } else {
+          newDevice = new Device(
+            deviceId,
+            deviceName,
+            appName,
+            socket,
+            this.#projectRoot,
+            this.#eventReporter,
+            this.#customMessageHandler,
+          );
         }
 
         this.#devices.set(deviceId, newDevice);
@@ -230,7 +240,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
         );
 
         socket.on('close', () => {
-          if (this.#devices.get(deviceId) === newDevice) {
+          if (this.#devices.get(deviceId)?.dangerouslyGetSocket() === socket) {
             this.#devices.delete(deviceId);
           }
           debug(`Device ${deviceName} disconnected.`);

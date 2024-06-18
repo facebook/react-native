@@ -29,6 +29,7 @@ import type {
 
 import DeviceEventReporter from './DeviceEventReporter';
 import * as fs from 'fs';
+import invariant from 'invariant';
 import fetch from 'node-fetch';
 import * as path from 'path';
 import WS from 'ws';
@@ -98,7 +99,7 @@ export default class Device {
   #deviceSocket: WS;
 
   // Stores the most recent listing of device's pages, keyed by the `id` field.
-  #pages: $ReadOnlyMap<string, Page>;
+  #pages: $ReadOnlyMap<string, Page> = new Map();
 
   // Stores information about currently connected debugger (if any).
   #debuggerConnection: ?DebuggerConnection = null;
@@ -136,10 +137,29 @@ export default class Device {
     eventReporter: ?EventReporter,
     createMessageMiddleware: ?CreateCustomMessageHandlerFn,
   ) {
+    this.#dangerouslyConstruct(
+      id,
+      name,
+      app,
+      socket,
+      projectRoot,
+      eventReporter,
+      createMessageMiddleware,
+    );
+  }
+
+  #dangerouslyConstruct(
+    id: string,
+    name: string,
+    app: string,
+    socket: WS,
+    projectRoot: string,
+    eventReporter: ?EventReporter,
+    createMessageMiddleware: ?CreateCustomMessageHandlerFn,
+  ) {
     this.#id = id;
     this.#name = name;
     this.#app = app;
-    this.#pages = new Map();
     this.#deviceSocket = socket;
     this.#projectRoot = projectRoot;
     this.#deviceEventReporter = eventReporter
@@ -192,14 +212,65 @@ export default class Device {
       PAGES_POLLING_INTERVAL,
     );
     this.#deviceSocket.on('close', () => {
-      this.#deviceEventReporter?.logDisconnection('device');
-      // Device disconnected - close debugger connection.
-      if (this.#debuggerConnection) {
-        this.#debuggerConnection.socket.close();
-        this.#debuggerConnection = null;
+      if (socket === this.#deviceSocket) {
+        this.#deviceEventReporter?.logDisconnection('device');
+        // Device disconnected - close debugger connection.
+        if (this.#debuggerConnection) {
+          this.#debuggerConnection.socket.close();
+          this.#debuggerConnection = null;
+        }
+        clearInterval(this.#pagesPollingIntervalId);
       }
-      clearInterval(this.#pagesPollingIntervalId);
     });
+  }
+
+  /**
+   * Used to recreate the device connection if there is a device ID collision.
+   * 1. Checks if the same device is attempting to reconnect for the same app.
+   * 2. If not, close both the device and debugger socket.
+   * 3. If the debugger connection can be reused, close the device socket only.
+   *
+   * This hack attempts to allow users to reload the app, either as result of a
+   * crash, or manually reloading, without having to restart the debugger.
+   */
+  dangerouslyRecreateDevice(
+    id: string,
+    name: string,
+    app: string,
+    socket: WS,
+    projectRoot: string,
+    eventReporter: ?EventReporter,
+    createMessageMiddleware: ?CreateCustomMessageHandlerFn,
+  ) {
+    invariant(
+      id === this.#id,
+      'dangerouslyRecreateDevice() can only be used for the same device ID',
+    );
+    if (this.#app !== app || this.#name !== name) {
+      this.#deviceSocket.close();
+      this.#debuggerConnection?.socket.close();
+    }
+
+    const oldDebugger = this.#debuggerConnection;
+    this.#debuggerConnection = null;
+
+    if (oldDebugger) {
+      oldDebugger.socket.removeAllListeners();
+      this.#deviceSocket.close();
+      this.handleDebuggerConnection(oldDebugger.socket, oldDebugger.pageId, {
+        userAgent: oldDebugger.userAgent,
+      });
+    }
+
+    this.#dangerouslyConstruct(
+      id,
+      name,
+      app,
+      socket,
+      projectRoot,
+      eventReporter,
+      createMessageMiddleware,
+    );
   }
 
   getName(): string {
@@ -371,40 +442,6 @@ export default class Device {
       debug('(Debugger) <- (Proxy)    (Device): ' + message);
       return sendFunc.call(socket, message);
     };
-  }
-
-  /**
-   * Handles cleaning up a duplicate device connection, by client-side device ID.
-   * 1. Checks if the same device is attempting to reconnect for the same app.
-   * 2. If not, close both the device and debugger socket.
-   * 3. If the debugger connection can be reused, close the device socket only.
-   *
-   * This allows users to reload the app, either as result of a crash, or manually
-   * reloading, without having to restart the debugger.
-   */
-  handleDuplicateDeviceConnection(newDevice: Device) {
-    if (
-      this.#app !== newDevice.getApp() ||
-      this.#name !== newDevice.getName()
-    ) {
-      this.#deviceSocket.close();
-      this.#debuggerConnection?.socket.close();
-    }
-
-    const oldDebugger = this.#debuggerConnection;
-    this.#debuggerConnection = null;
-
-    if (oldDebugger) {
-      oldDebugger.socket.removeAllListeners();
-      this.#deviceSocket.close();
-      newDevice.handleDebuggerConnection(
-        oldDebugger.socket,
-        oldDebugger.pageId,
-        {
-          userAgent: oldDebugger.userAgent,
-        },
-      );
-    }
   }
 
   /**
@@ -926,5 +963,9 @@ export default class Device {
     }
 
     return this.#pageHasCapability(page, 'prefersFuseboxFrontend');
+  }
+
+  dangerouslyGetSocket(): WS {
+    return this.#deviceSocket;
   }
 }
