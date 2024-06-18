@@ -289,16 +289,17 @@ async function testRNTestProject(
   // Cloning the template repo
   // TODO: handle versioning of the template to make sure that we are downloading the right version of
   // the template, given a specific React Native version
-  exec(`git clone https://github.com/react-native-community/template ${templateRepoFolder} --depth=1`);
+  exec(
+    `git clone https://github.com/react-native-community/template ${templateRepoFolder} --depth=1`,
+  );
 
   // Update template version.
   const appPackageJsonPath = path.join(pathToTemplate, 'package.json');
-  const appPackageJson = JSON.parse(fs.readFileSync(appPackageJsonPath, 'utf8'));
-  appPackageJson.dependencies['react-native'] = `file:${newLocalNodeTGZ}`;
-  fs.writeFileSync(
-    appPackageJsonPath,
-    JSON.stringify(appPackageJson, null, 2),
+  const appPackageJson = JSON.parse(
+    fs.readFileSync(appPackageJsonPath, 'utf8'),
   );
+  appPackageJson.dependencies['react-native'] = `file:${newLocalNodeTGZ}`;
+  fs.writeFileSync(appPackageJsonPath, JSON.stringify(appPackageJson, null, 2));
 
   pushd('/tmp/');
 
