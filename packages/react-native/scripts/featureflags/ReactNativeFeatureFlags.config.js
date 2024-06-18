@@ -187,6 +187,10 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Enables use of AnimatedObject for animating transform values.',
     },
+    shouldUseOptimizedText: {
+      defaultValue: false,
+      description: 'Use optimized version of <Text /> component.',
+    },
     shouldUseRemoveClippedSubviewsAsDefaultOnIOS: {
       defaultValue: false,
       description:
