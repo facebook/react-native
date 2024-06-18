@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d23d2a5f44f2b2068dde9e85e5b1ce9f>>
+ * @generated SignedSource<<d991cac9311ee91e5e9401b143b69145>>
  */
 
 /**
@@ -35,6 +35,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var enableMicrotasksCache: Boolean? = null
   private var enableSynchronousStateUpdatesCache: Boolean? = null
   private var enableUIConsistencyCache: Boolean? = null
+  private var fixMappingOfEventPrioritiesBetweenFabricAndReactCache: Boolean? = null
   private var fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeakCache: Boolean? = null
   private var forceBatchingMountItemsOnAndroidCache: Boolean? = null
   private var fuseboxEnabledDebugCache: Boolean? = null
@@ -155,6 +156,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.enableUIConsistency()
       accessedFeatureFlags.add("enableUIConsistency")
       enableUIConsistencyCache = cached
+    }
+    return cached
+  }
+
+  override fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean {
+    var cached = fixMappingOfEventPrioritiesBetweenFabricAndReactCache
+    if (cached == null) {
+      cached = currentProvider.fixMappingOfEventPrioritiesBetweenFabricAndReact()
+      accessedFeatureFlags.add("fixMappingOfEventPrioritiesBetweenFabricAndReact")
+      fixMappingOfEventPrioritiesBetweenFabricAndReactCache = cached
     }
     return cached
   }
