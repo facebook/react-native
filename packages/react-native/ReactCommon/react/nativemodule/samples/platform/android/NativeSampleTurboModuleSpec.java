@@ -35,6 +35,22 @@ public abstract class NativeSampleTurboModuleSpec extends ReactContextBaseJavaMo
     super(reactContext);
   }
 
+  protected final void emitOnPress() {
+    mEventEmitterCallback.invoke("onPress");
+  }
+
+  protected final void emitOnClick(String value) {
+    mEventEmitterCallback.invoke("onClick", value);
+  }
+
+  protected final void emitOnChange(ReadableMap value) {
+    mEventEmitterCallback.invoke("onChange", value);
+  }
+
+  protected void emitOnSubmit(ReadableArray value) {
+    mEventEmitterCallback.invoke("onSubmit", value);
+  }
+
   @Override
   public @Nonnull String getName() {
     return NAME;
