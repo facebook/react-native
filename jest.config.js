@@ -33,7 +33,6 @@ module.exports = {
     '<rootDir>/packages/react-native/template',
     '<rootDir>/packages/react-native/sdks',
     '<rootDir>/packages/react-native/Libraries/Renderer',
-    '<rootDir>/packages/rn-tester/e2e',
     '<rootDir>/packages/react-native-test-renderer/src',
   ],
   transformIgnorePatterns: ['node_modules/(?!@react-native/)'],
