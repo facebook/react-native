@@ -55,6 +55,7 @@
     "@typescript-eslint/parser": "^7.1.1",
     "ansi-styles": "^4.2.1",
     "babel-plugin-minify-dead-code-elimination": "^0.5.2",
+    "babel-plugin-syntax-hermes-parser": "0.22.0",
     "babel-plugin-transform-define": "^2.1.2",
     "babel-plugin-transform-flow-enums": "^0.0.2",
     "babel-preset-fbjs": "^3.4.0",
