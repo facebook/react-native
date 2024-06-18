@@ -5956,6 +5956,7 @@ public final class com/facebook/react/uimanager/style/ComputedBorderRadius {
 	public final fun copy (FFFF)Lcom/facebook/react/uimanager/style/ComputedBorderRadius;
 	public static synthetic fun copy$default (Lcom/facebook/react/uimanager/style/ComputedBorderRadius;FFFFILjava/lang/Object;)Lcom/facebook/react/uimanager/style/ComputedBorderRadius;
 	public fun equals (Ljava/lang/Object;)Z
+	public final fun get (Lcom/facebook/react/uimanager/style/ComputedBorderRadiusProp;)F
 	public final fun getBottomLeft ()F
 	public final fun getBottomRight ()F
 	public final fun getTopLeft ()F
@@ -5963,6 +5964,16 @@ public final class com/facebook/react/uimanager/style/ComputedBorderRadius {
 	public final fun hasRoundedBorders ()Z
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/facebook/react/uimanager/style/ComputedBorderRadiusProp : java/lang/Enum {
+	public static final field COMPUTED_BORDER_BOTTOM_LEFT_RADIUS Lcom/facebook/react/uimanager/style/ComputedBorderRadiusProp;
+	public static final field COMPUTED_BORDER_BOTTOM_RIGHT_RADIUS Lcom/facebook/react/uimanager/style/ComputedBorderRadiusProp;
+	public static final field COMPUTED_BORDER_TOP_LEFT_RADIUS Lcom/facebook/react/uimanager/style/ComputedBorderRadiusProp;
+	public static final field COMPUTED_BORDER_TOP_RIGHT_RADIUS Lcom/facebook/react/uimanager/style/ComputedBorderRadiusProp;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/uimanager/style/ComputedBorderRadiusProp;
+	public static fun values ()[Lcom/facebook/react/uimanager/style/ComputedBorderRadiusProp;
 }
 
 public class com/facebook/react/uimanager/util/ReactFindViewUtil {
