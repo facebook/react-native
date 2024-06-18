@@ -8,11 +8,15 @@
 package com.facebook.react.uimanager
 
 import android.annotation.TargetApi
+import android.graphics.BlendMode
+import android.graphics.BlendModeColorFilter
+import android.graphics.Color
 import android.graphics.ColorMatrix
 import android.graphics.ColorMatrixColorFilter
 import android.graphics.RenderEffect
 import android.graphics.Shader
 import com.facebook.react.bridge.ReadableArray
+import com.facebook.react.bridge.ReadableMap
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -26,19 +30,22 @@ internal object FilterHelper {
     for (i in 0 until filters.size()) {
       val filter = filters.getMap(i).getEntryIterator().next()
       val filterName = filter.key
-      val amount = (filter.value as Double).toFloat()
 
       chainedEffects =
           when (filterName) {
-            "brightness" -> createBrightnessEffect(amount, chainedEffects)
-            "contrast" -> createContrastEffect(amount, chainedEffects)
-            "grayscale" -> createGrayscaleEffect(amount, chainedEffects)
-            "sepia" -> createSepiaEffect(amount, chainedEffects)
-            "saturate" -> createSaturateEffect(amount, chainedEffects)
-            "hueRotate" -> createHueRotateEffect(amount, chainedEffects)
-            "invert" -> createInvertEffect(amount, chainedEffects)
-            "blur" -> createBlurEffect(amount, chainedEffects)
-            "opacity" -> createOpacityEffect(amount, chainedEffects)
+            "brightness" ->
+                createBrightnessEffect((filter.value as Double).toFloat(), chainedEffects)
+            "contrast" -> createContrastEffect((filter.value as Double).toFloat(), chainedEffects)
+            "grayscale" -> createGrayscaleEffect((filter.value as Double).toFloat(), chainedEffects)
+            "sepia" -> createSepiaEffect((filter.value as Double).toFloat(), chainedEffects)
+            "saturate" -> createSaturateEffect((filter.value as Double).toFloat(), chainedEffects)
+            "hue-rotate" ->
+                createHueRotateEffect((filter.value as Double).toFloat(), chainedEffects)
+            "invert" -> createInvertEffect((filter.value as Double).toFloat(), chainedEffects)
+            "blur" -> createBlurEffect((filter.value as Double).toFloat(), chainedEffects)
+            "opacity" -> createOpacityEffect((filter.value as Double).toFloat(), chainedEffects)
+            "drop-shadow" ->
+                parseAndCreateDropShadowEffect(filter.value as ReadableMap, chainedEffects)
             else -> throw IllegalArgumentException("Invalid filter name: $filterName")
           }
     }
@@ -62,7 +69,7 @@ internal object FilterHelper {
             "grayscale" -> createGrayscaleColorMatrix(amount)
             "sepia" -> createSepiaColorMatrix(amount)
             "saturate" -> createSaturateColorMatrix(amount)
-            "hueRotate" -> createHueRotateColorMatrix(amount)
+            "hue-rotate" -> createHueRotateColorMatrix(amount)
             "invert" -> createInvertColorMatrix(amount)
             "opacity" -> createOpacityColorMatrix(amount)
             else -> throw IllegalArgumentException("Invalid color matrix filter: $filterName")
@@ -80,7 +87,7 @@ internal object FilterHelper {
     for (i in 0 until filters.size()) {
       val filter = filters.getMap(i).getEntryIterator().next()
       val filterName = filter.key
-      if (filterName == "blur") {
+      if (filterName == "blur" || filterName == "drop-shadow") {
         return false
       }
     }
@@ -93,11 +100,7 @@ internal object FilterHelper {
       return null
     }
 
-    // Android takes blur amount as a radius while web takes a sigma. This value
-    // is used under the hood to convert between them on Android
-    // https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/libs/hwui/jni/RenderEffect.cpp
-    val sigmaToRadiusRatio = 0.57_735f
-    val radius = (PixelUtil.toPixelFromDIP(sigma) - 0.5f) / sigmaToRadiusRatio
+    val radius: Float = sigmaToRadius(sigma)
     return if (chainedEffects == null) {
       RenderEffect.createBlurEffect(radius, radius, Shader.TileMode.DECAL)
     } else {
@@ -125,6 +128,64 @@ internal object FilterHelper {
       chainedEffects: RenderEffect? = null
   ): RenderEffect {
     return createColorMatrixEffect(createOpacityColorMatrix(amount), chainedEffects)
+  }
+
+  // https://www.w3.org/TR/filter-effects-1/#dropshadowEquivalent
+  public fun createDropShadowEffect(
+      offsetX: Float,
+      offsetY: Float,
+      blurRadius: Float,
+      color: Int,
+      chainedEffects: RenderEffect? = null
+  ): RenderEffect {
+    val identity: RenderEffect
+    val offsetEffect: RenderEffect
+
+    /*
+     * identity is set to an offset RenderEffect of 0 to keep track of the identity/original content.
+     * we then create offset effect for the first step of the shadow
+     */
+    if (chainedEffects == null) {
+      identity = RenderEffect.createOffsetEffect(0f, 0f)
+      offsetEffect = RenderEffect.createOffsetEffect(offsetX, offsetY)
+    } else {
+      identity = RenderEffect.createOffsetEffect(0f, 0f, chainedEffects)
+      offsetEffect = RenderEffect.createOffsetEffect(offsetX, offsetY, chainedEffects)
+    }
+
+    /*
+     * create color effect, blend with offset effect with SRC_IN and apply blur on top
+     * SRC_IN finds the alpha intersection of colorEffect and offset
+     * https://developer.android.com/reference/android/graphics/BlendMode#SRC_IN
+     */
+    val colorEffect: RenderEffect =
+        RenderEffect.createColorFilterEffect(
+            BlendModeColorFilter(color, BlendMode.SRC_IN), offsetEffect)
+    val blurEffect: RenderEffect =
+        RenderEffect.createBlurEffect(blurRadius, blurRadius, colorEffect, Shader.TileMode.DECAL)
+
+    /*
+     * at this point blurEffect contains all of drop-shadow's combined effects (offset, color & blur)
+     * we then blend it with identity/original content with SRC_OVER
+     * SRC_OVER layers blurEffect's alpha behind identity for the desired result
+     * https://developer.android.com/reference/android/graphics/BlendMode#SRC_OVER
+     */
+    return RenderEffect.createBlendModeEffect(blurEffect, identity, BlendMode.SRC_OVER)
+  }
+
+  public fun parseAndCreateDropShadowEffect(
+      filterValues: ReadableMap,
+      chainedEffects: RenderEffect? = null
+  ): RenderEffect {
+    val offsetX: Float = PixelUtil.toPixelFromDIP(filterValues.getDouble("offsetX").toFloat())
+    val offsetY: Float = PixelUtil.toPixelFromDIP(filterValues.getDouble("offsetY").toFloat())
+    val color: Int = if (filterValues.hasKey("color")) filterValues.getInt("color") else Color.BLACK
+    val radius: Float =
+        if (filterValues.hasKey("standardDeviation"))
+            sigmaToRadius(filterValues.getDouble("standardDeviation").toFloat())
+        else 0f
+
+    return createDropShadowEffect(offsetX, offsetY, radius, color, chainedEffects)
   }
 
   public fun createOpacityColorMatrix(amount: Float): ColorMatrix {
@@ -325,5 +386,13 @@ internal object FilterHelper {
     } else {
       RenderEffect.createColorFilterEffect(ColorMatrixColorFilter(colorMatrix), chainedEffects)
     }
+  }
+
+  private fun sigmaToRadius(sigma: Float): Float {
+    // Android takes blur amount as a radius while web takes a sigma. This value
+    // is used under the hood to convert between them on Android
+    // https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/libs/hwui/jni/RenderEffect.cpp
+    val sigmaToRadiusRatio = 0.57_735f
+    return (PixelUtil.toPixelFromDIP(sigma) - 0.5f) / sigmaToRadiusRatio
   }
 }
