@@ -58,7 +58,7 @@ const REWRITE_HOSTS_TO_LOCALHOST: Array<string> = [
 // more details.
 const FILE_PREFIX = 'file://';
 
-type DebuggerInfo = {
+type DebuggerConnection = {
   // Debugger web socket connection
   socket: WS,
   // If we replaced address (like '10.0.2.2') to localhost we need to store original
@@ -67,10 +67,6 @@ type DebuggerInfo = {
   prependedFilePrefix: boolean,
   pageId: string,
   userAgent: string | null,
-};
-
-type DebuggerConnection = {
-  ...DebuggerInfo,
   customHandler: ?CustomMessageHandler,
 };
 
@@ -127,6 +123,8 @@ export default class Device {
 
   // The device message middleware factory function allowing implementers to handle unsupported CDP messages.
   #createCustomMessageHandler: ?CreateCustomMessageHandlerFn;
+
+  #connectedPageIds: Set<string> = new Set();
 
   constructor(
     id: string,
@@ -215,13 +213,21 @@ export default class Device {
       if (socket === this.#deviceSocket) {
         this.#deviceEventReporter?.logDisconnection('device');
         // Device disconnected - close debugger connection.
-        if (this.#debuggerConnection) {
-          this.#debuggerConnection.socket.close();
-          this.#debuggerConnection = null;
-        }
+        this.#terminateDebuggerConnection();
         clearInterval(this.#pagesPollingIntervalId);
       }
     });
+  }
+
+  #terminateDebuggerConnection() {
+    const debuggerConnection = this.#debuggerConnection;
+    if (debuggerConnection) {
+      this.#sendDisconnectEventToDevice(
+        this.#mapToDevicePageId(debuggerConnection.pageId),
+      );
+      debuggerConnection.socket.close();
+      this.#debuggerConnection = null;
+    }
   }
 
   /**
@@ -246,12 +252,14 @@ export default class Device {
       id === this.#id,
       'dangerouslyRecreateDevice() can only be used for the same device ID',
     );
-    if (this.#app !== app || this.#name !== name) {
-      this.#deviceSocket.close();
-      this.#debuggerConnection?.socket.close();
-    }
 
     const oldDebugger = this.#debuggerConnection;
+
+    if (this.#app !== app || this.#name !== name) {
+      this.#deviceSocket.close();
+      this.#terminateDebuggerConnection();
+    }
+
     this.#debuggerConnection = null;
 
     if (oldDebugger) {
@@ -309,10 +317,7 @@ export default class Device {
     });
 
     // Disconnect current debugger if we already have debugger connected.
-    if (this.#debuggerConnection) {
-      this.#debuggerConnection.socket.close();
-      this.#debuggerConnection = null;
-    }
+    this.#terminateDebuggerConnection();
 
     const debuggerInfo = {
       socket,
@@ -377,12 +382,7 @@ export default class Device {
       }
     }
 
-    this.#sendMessageToDevice({
-      event: 'connect',
-      payload: {
-        pageId: this.#mapToDevicePageId(pageId),
-      },
-    });
+    this.#sendConnectEventToDevice(this.#mapToDevicePageId(pageId));
 
     // $FlowFixMe[incompatible-call]
     socket.on('message', (message: string) => {
@@ -426,13 +426,9 @@ export default class Device {
     socket.on('close', () => {
       debug(`Debugger for page ${pageId} and ${this.#name} disconnected.`);
       this.#deviceEventReporter?.logDisconnection('debugger');
-      this.#sendMessageToDevice({
-        event: 'disconnect',
-        payload: {
-          pageId: this.#mapToDevicePageId(pageId),
-        },
-      });
-      this.#debuggerConnection = null;
+      if (this.#debuggerConnection?.socket === socket) {
+        this.#terminateDebuggerConnection();
+      }
     });
 
     // $FlowFixMe[method-unbinding]
@@ -442,6 +438,28 @@ export default class Device {
       debug('(Debugger) <- (Proxy)    (Device): ' + message);
       return sendFunc.call(socket, message);
     };
+  }
+
+  #sendConnectEventToDevice(devicePageId: string) {
+    if (this.#connectedPageIds.has(devicePageId)) {
+      return;
+    }
+    this.#connectedPageIds.add(devicePageId);
+    this.#sendMessageToDevice({
+      event: 'connect',
+      payload: {pageId: devicePageId},
+    });
+  }
+
+  #sendDisconnectEventToDevice(devicePageId: string) {
+    if (!this.#connectedPageIds.has(devicePageId)) {
+      return;
+    }
+    this.#connectedPageIds.delete(devicePageId);
+    this.#sendMessageToDevice({
+      event: 'disconnect',
+      payload: {pageId: devicePageId},
+    });
   }
 
   /**
@@ -621,20 +639,10 @@ export default class Device {
     // page.
 
     if (oldPageId != null) {
-      this.#sendMessageToDevice({
-        event: 'disconnect',
-        payload: {
-          pageId: oldPageId,
-        },
-      });
+      this.#sendDisconnectEventToDevice(oldPageId);
     }
 
-    this.#sendMessageToDevice({
-      event: 'connect',
-      payload: {
-        pageId: page.id,
-      },
-    });
+    this.#sendConnectEventToDevice(page.id);
 
     const toSend = [
       {method: 'Runtime.enable', id: 1e9},
