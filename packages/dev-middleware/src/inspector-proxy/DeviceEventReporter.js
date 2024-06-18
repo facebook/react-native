@@ -10,6 +10,7 @@
 
 import type {EventReporter} from '../types/EventReporter';
 import type {CDPResponse} from './cdp-types/messages';
+import type {DeepReadOnly} from './types';
 
 import TTLCache from '@isaacs/ttlcache';
 
@@ -77,7 +78,7 @@ class DeviceEventReporter {
   }
 
   logResponse(
-    res: CDPResponse<>,
+    res: DeepReadOnly<CDPResponse<>>,
     origin: 'device' | 'proxy',
     metadata: ResponseMetadata,
   ): void {
