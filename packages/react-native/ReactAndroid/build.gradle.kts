@@ -154,6 +154,8 @@ val preparePrefab by
               PrefabPreprocessingEntry(
                   "fabricjni", Pair("src/main/jni/react/fabric", "react/fabric/")),
               PrefabPreprocessingEntry(
+                  "mapbufferjni", Pair("src/main/jni/react/mapbuffer", "react/mapbuffer/")),
+              PrefabPreprocessingEntry(
                   "react_render_mapbuffer",
                   Pair("../ReactCommon/react/renderer/mapbuffer/", "react/renderer/mapbuffer/")),
               PrefabPreprocessingEntry(
@@ -541,7 +543,6 @@ android {
         targets(
             "jsijniprofiler",
             "reactnativeblob",
-            "reactperfloggerjni",
             "bridgeless",
             "rninstance",
             "hermesinstancejni",
@@ -557,6 +558,7 @@ android {
             "react_codegen_rncore",
             "react_debug",
             "react_featureflags",
+            "react_performance_timeline",
             "react_utils",
             "react_render_componentregistry",
             "react_newarchdefaults",
@@ -565,6 +567,7 @@ android {
             "react_render_consistency",
             "react_render_dom",
             "react_render_graphics",
+            "react_render_observers_events",
             "rrc_image",
             "rrc_root",
             "rrc_view",
@@ -574,6 +577,7 @@ android {
             "jsi",
             "glog",
             "fabricjni",
+            "mapbufferjni",
             "react_render_mapbuffer",
             "react_render_textlayoutmanager",
             "yoga",
@@ -701,6 +705,7 @@ android {
     create("jsi") { headers = File(prefabHeadersDir, "jsi").absolutePath }
     create("glog") { headers = File(prefabHeadersDir, "glog").absolutePath }
     create("fabricjni") { headers = File(prefabHeadersDir, "fabricjni").absolutePath }
+    create("mapbufferjni") { headers = File(prefabHeadersDir, "mapbufferjni").absolutePath }
     create("react_render_mapbuffer") {
       headers = File(prefabHeadersDir, "react_render_mapbuffer").absolutePath
     }
@@ -789,7 +794,15 @@ react {
 // module to apply the plugin to, so it's codegenDir and reactNativeDir won't be evaluated.
 if (rootProject.name == "react-native-build-from-source") {
   rootProject.extensions.getByType(PrivateReactExtension::class.java).apply {
-    codegenDir = file("$rootDir/../@react-native/codegen")
+    // We try to guess where codegen lives. Generally is inside
+    // node_modules/@react-native/codegen. If the file is not existing, we
+    // fallback to ../react-native-codegen (used for hello-world app).
+    codegenDir =
+        if (file("$rootDir/../@react-native/codegen").exists()) {
+          file("$rootDir/../@react-native/codegen")
+        } else {
+          file("$rootDir/../react-native-codegen")
+        }
     reactNativeDir = file("$rootDir")
   }
 }

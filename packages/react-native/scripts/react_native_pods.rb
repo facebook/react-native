@@ -16,24 +16,15 @@ require_relative './cocoapods/new_architecture.rb'
 require_relative './cocoapods/local_podspec_patch.rb'
 require_relative './cocoapods/runtime.rb'
 require_relative './cocoapods/helpers.rb'
+require_relative './cocoapods/privacy_manifest_utils.rb'
+# Importing to expose use_native_modules!
+require_relative './cocoapods/autolinking.rb'
 
 $CODEGEN_OUTPUT_DIR = 'build/generated/ios'
 $CODEGEN_COMPONENT_DIR = 'react/renderer/components'
 $CODEGEN_MODULE_DIR = '.'
 
 $START_TIME = Time.now.to_i
-
-# `@react-native-community/cli-platform-ios/native_modules` defines
-# use_native_modules. We use node to resolve its path to allow for
-# different packager and workspace setups. This is reliant on
-# `@react-native-community/cli-platform-ios` being a direct dependency
-# of `react-native`.
-require Pod::Executable.execute_command('node', ['-p',
-  'require.resolve(
-    "@react-native-community/cli-platform-ios/native_modules.rb",
-    {paths: [process.argv[1]]},
-  )', __dir__]).strip
-
 
 def min_ios_version_supported
   return Helpers::Constants.min_ios_version_supported
@@ -73,7 +64,8 @@ def use_react_native! (
   production: false, # deprecated
   hermes_enabled: ENV['USE_HERMES'] && ENV['USE_HERMES'] == '0' ? false : true,
   app_path: '..',
-  config_file_dir: ''
+  config_file_dir: '',
+  privacy_file_aggregation_enabled: true
 )
 
   # Set the app_path as env variable so the podspecs can access it.
@@ -97,6 +89,7 @@ def use_react_native! (
 
   ENV['RCT_FABRIC_ENABLED'] = fabric_enabled ? "1" : "0"
   ENV['USE_HERMES'] = hermes_enabled ? "1" : "0"
+  ENV['RCT_AGGREGATE_PRIVACY_FILES'] = privacy_file_aggregation_enabled ? "1" : "0"
 
   prefix = path
 
@@ -129,7 +122,9 @@ def use_react_native! (
   pod 'React-featureflags', :path => "#{prefix}/ReactCommon/react/featureflags"
   pod 'React-featureflagsnativemodule', :path => "#{prefix}/ReactCommon/react/nativemodule/featureflags"
   pod 'React-microtasksnativemodule', :path => "#{prefix}/ReactCommon/react/nativemodule/microtasks"
+  pod 'React-idlecallbacksnativemodule', :path => "#{prefix}/ReactCommon/react/nativemodule/idlecallbacks"
   pod 'React-domnativemodule', :path => "#{prefix}/ReactCommon/react/nativemodule/dom"
+  pod 'React-defaultsnativemodule', :path => "#{prefix}/ReactCommon/react/nativemodule/defaults"
   pod 'React-Mapbuffer', :path => "#{prefix}/ReactCommon"
   pod 'React-jserrorhandler', :path => "#{prefix}/ReactCommon/jserrorhandler"
   pod 'React-nativeconfig', :path => "#{prefix}/ReactCommon"
@@ -145,6 +140,7 @@ def use_react_native! (
   pod 'React-jsinspector', :path => "#{prefix}/ReactCommon/jsinspector-modern"
 
   pod 'React-callinvoker', :path => "#{prefix}/ReactCommon/callinvoker"
+  pod 'React-performancetimeline', :path => "#{prefix}/ReactCommon/react/performance/timeline"
   pod 'React-runtimeexecutor', :path => "#{prefix}/ReactCommon/runtimeexecutor"
   pod 'React-runtimescheduler', :path => "#{prefix}/ReactCommon/react/renderer/runtimescheduler"
   pod 'React-rendererdebug', :path => "#{prefix}/ReactCommon/react/renderer/debug"
@@ -282,6 +278,7 @@ def react_native_post_install(
 
   fabric_enabled = ENV['RCT_FABRIC_ENABLED'] == '1'
   hermes_enabled = ENV['USE_HERMES'] == '1'
+  privacy_file_aggregation_enabled = ENV['RCT_AGGREGATE_PRIVACY_FILES'] == '1'
 
   if hermes_enabled
     ReactNativePodsUtils.set_gcc_preprocessor_definition_for_React_hermes(installer)
@@ -289,14 +286,23 @@ def react_native_post_install(
 
   ReactNativePodsUtils.fix_library_search_paths(installer)
   ReactNativePodsUtils.update_search_paths(installer)
-  ReactNativePodsUtils.set_use_hermes_build_setting(installer, hermes_enabled)
-  ReactNativePodsUtils.set_node_modules_user_settings(installer, react_native_path)
+  ReactNativePodsUtils.set_build_setting(installer, build_setting: "USE_HERMES", value: hermes_enabled)
+  ReactNativePodsUtils.set_build_setting(installer, build_setting: "REACT_NATIVE_PATH", value: File.join("${PODS_ROOT}", "..", react_native_path))
+  ReactNativePodsUtils.set_build_setting(installer, build_setting: "SWIFT_ACTIVE_COMPILATION_CONDITIONS", value: ['$(inherited)', 'DEBUG'], config_name: "Debug")
+
   ReactNativePodsUtils.set_ccache_compiler_and_linker_build_settings(installer, react_native_path, ccache_enabled)
-  ReactNativePodsUtils.apply_xcode_15_patch(installer)
+  if Environment.new().ruby_platform().include?('darwin')
+    ReactNativePodsUtils.apply_xcode_15_patch(installer)
+  end
   ReactNativePodsUtils.updateOSDeploymentTarget(installer)
   ReactNativePodsUtils.set_dynamic_frameworks_flags(installer)
   ReactNativePodsUtils.add_ndebug_flag_to_pods_in_release(installer)
-  ReactNativePodsUtils.add_privacy_manifest_if_needed(installer)
+
+  if privacy_file_aggregation_enabled
+    PrivacyManifestUtils.add_aggregated_privacy_manifest(installer)
+  else
+    PrivacyManifestUtils.add_privacy_manifest_if_needed(installer)
+  end
 
   NewArchitectureHelper.set_clang_cxx_language_standard_if_needed(installer)
   NewArchitectureHelper.modify_flags_for_new_architecture(installer, NewArchitectureHelper.new_arch_enabled)

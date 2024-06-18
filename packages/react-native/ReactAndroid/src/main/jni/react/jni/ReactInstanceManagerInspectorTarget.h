@@ -22,6 +22,8 @@ class ReactInstanceManagerInspectorTarget
         "Lcom/facebook/react/bridge/ReactInstanceManagerInspectorTarget$TargetDelegate;";
 
     void onReload() const;
+    void onSetPausedInDebuggerMessage(
+        const OverlaySetPausedInDebuggerMessageRequest& request) const;
   };
 
  public:
@@ -42,10 +44,17 @@ class ReactInstanceManagerInspectorTarget
           ReactInstanceManagerInspectorTarget::TargetDelegate::javaobject>
           delegate);
 
+  void sendDebuggerResumeCommand();
+
   static void registerNatives();
 
-  void onReload(const PageReloadRequest& request) override;
   jsinspector_modern::HostTarget* getInspectorTarget();
+
+  // HostTargetDelegate methods
+  jsinspector_modern::HostTargetMetadata getMetadata() override;
+  void onReload(const PageReloadRequest& request) override;
+  void onSetPausedInDebuggerMessage(
+      const OverlaySetPausedInDebuggerMessageRequest&) override;
 
  private:
   friend HybridBase;

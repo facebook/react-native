@@ -364,7 +364,7 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
                       options:animationOptionsWithCurve(curve)
                    animations:^{
                      self->_scrollView.contentInset = newEdgeInsets;
-                     self->_scrollView.scrollIndicatorInsets = newEdgeInsets;
+                     self->_scrollView.verticalScrollIndicatorInsets = newEdgeInsets;
                      [self scrollToOffset:newContentOffset animated:NO];
                    }
                    completion:nil];
@@ -1034,7 +1034,6 @@ RCT_SET_AND_PRESERVE_OFFSET(setScrollsToTop, scrollsToTop, BOOL)
 RCT_SET_AND_PRESERVE_OFFSET(setShowsHorizontalScrollIndicator, showsHorizontalScrollIndicator, BOOL)
 RCT_SET_AND_PRESERVE_OFFSET(setShowsVerticalScrollIndicator, showsVerticalScrollIndicator, BOOL)
 RCT_SET_AND_PRESERVE_OFFSET(setZoomScale, zoomScale, CGFloat);
-RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, scrollIndicatorInsets, UIEdgeInsets);
 
 - (void)setAutomaticallyAdjustsScrollIndicatorInsets:(BOOL)automaticallyAdjusts API_AVAILABLE(ios(13.0))
 {

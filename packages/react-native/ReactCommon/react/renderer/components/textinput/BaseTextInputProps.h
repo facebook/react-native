@@ -61,6 +61,8 @@ class BaseTextInputProps : public ViewProps, public BaseTextProps {
   int mostRecentEventCount{0};
 
   bool autoFocus{false};
+
+  std::string autoCapitalize{};
 };
 
 } // namespace facebook::react

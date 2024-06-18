@@ -16,28 +16,23 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.StaticLayout;
+import android.text.TextDirectionHeuristics;
 import android.text.TextPaint;
 import android.util.LayoutDirection;
-import android.util.LruCache;
+import android.view.Gravity;
 import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
-import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.build.ReactBuildConfig;
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
+import com.facebook.react.common.mapbuffer.MapBuffer;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.Role;
-import com.facebook.react.uimanager.ReactStylesDiffMap;
-import com.facebook.react.uimanager.ViewProps;
-import com.facebook.react.views.text.fragments.BridgeTextFragmentList;
 import com.facebook.react.views.text.internal.span.CustomLetterSpacingSpan;
 import com.facebook.react.views.text.internal.span.CustomLineHeightSpan;
 import com.facebook.react.views.text.internal.span.CustomStyleSpan;
@@ -61,7 +56,30 @@ import java.util.concurrent.ConcurrentHashMap;
 /** Class responsible of creating {@link Spanned} object for the JS representation of Text */
 public class TextLayoutManager {
 
-  // TODO T67606397: Refactor configuration of fabric logs
+  // constants for AttributedString serialization
+  public static final short AS_KEY_HASH = 0;
+  public static final short AS_KEY_STRING = 1;
+  public static final short AS_KEY_FRAGMENTS = 2;
+  public static final short AS_KEY_CACHE_ID = 3;
+
+  // constants for Fragment serialization
+  public static final short FR_KEY_STRING = 0;
+  public static final short FR_KEY_REACT_TAG = 1;
+  public static final short FR_KEY_IS_ATTACHMENT = 2;
+  public static final short FR_KEY_WIDTH = 3;
+  public static final short FR_KEY_HEIGHT = 4;
+  public static final short FR_KEY_TEXT_ATTRIBUTES = 5;
+
+  // constants for ParagraphAttributes serialization
+  public static final short PA_KEY_MAX_NUMBER_OF_LINES = 0;
+  public static final short PA_KEY_ELLIPSIZE_MODE = 1;
+  public static final short PA_KEY_TEXT_BREAK_STRATEGY = 2;
+  public static final short PA_KEY_ADJUST_FONT_SIZE_TO_FIT = 3;
+  public static final short PA_KEY_INCLUDE_FONT_PADDING = 4;
+  public static final short PA_KEY_HYPHENATION_FREQUENCY = 5;
+  public static final short PA_KEY_MINIMUM_FONT_SIZE = 6;
+  public static final short PA_KEY_MAXIMUM_FONT_SIZE = 7;
+
   private static final boolean ENABLE_MEASURE_LOGGING = ReactBuildConfig.DEBUG && false;
 
   private static final String TAG = TextLayoutManager.class.getSimpleName();
@@ -71,35 +89,16 @@ public class TextLayoutManager {
   // The bug is that unicode emoticons aren't measured properly which causes text to be clipped.
   private static final TextPaint sTextPaintInstance = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
 
-  // Specifies the amount of spannable that are stored into the {@link sSpannableCache}.
-  private static final int spannableCacheSize = 100;
-
   private static final String INLINE_VIEW_PLACEHOLDER = "0";
 
-  private static final Object sSpannableCacheLock = new Object();
   private static final boolean DEFAULT_INCLUDE_FONT_PADDING = true;
-  private static final String INCLUDE_FONT_PADDING_KEY = "includeFontPadding";
-  private static final String TEXT_BREAK_STRATEGY_KEY = "textBreakStrategy";
-  private static final String HYPHENATION_FREQUENCY_KEY = "android_hyphenationFrequency";
-  private static final String MAXIMUM_NUMBER_OF_LINES_KEY = "maximumNumberOfLines";
-  private static final LruCache<ReadableNativeMap, Spannable> sSpannableCache =
-      new LruCache<>(spannableCacheSize);
+
+  private static final boolean DEFAULT_ADJUST_FONT_SIZE_TO_FIT = false;
+
   private static final ConcurrentHashMap<Integer, Spannable> sTagToSpannableCache =
       new ConcurrentHashMap<>();
 
-  public static boolean isRTL(ReadableMap attributedString) {
-    ReadableArray fragments = attributedString.getArray("fragments");
-    if (fragments != null && fragments.size() > 0) {
-      ReadableMap fragment = fragments.getMap(0);
-      ReadableMap map = fragment.getMap("textAttributes");
-      return map != null
-          && TextAttributeProps.getLayoutDirection(map.getString(ViewProps.LAYOUT_DIRECTION))
-              == LayoutDirection.RTL;
-    }
-    return false;
-  }
-
-  public static void setCachedSpannabledForTag(int reactTag, @NonNull Spannable sp) {
+  public static void setCachedSpannableForTag(int reactTag, @NonNull Spannable sp) {
     if (ENABLE_MEASURE_LOGGING) {
       FLog.e(TAG, "Set cached spannable for tag[" + reactTag + "]: " + sp.toString());
     }
@@ -113,41 +112,111 @@ public class TextLayoutManager {
     sTagToSpannableCache.remove(reactTag);
   }
 
-  private static void buildSpannableFromFragments(
-      Context context,
-      ReadableArray fragments,
-      SpannableStringBuilder sb,
-      List<SetSpanOperation> ops) {
-    if (ReactNativeFeatureFlags.enableSpannableBuildingUnification()) {
-      buildSpannableFromFragmentsUnified(context, fragments, sb, ops);
-    } else {
-      buildSpannableFromFragmentsDuplicated(context, fragments, sb, ops);
+  public static boolean isRTL(MapBuffer attributedString) {
+    // TODO: Don't read AS_KEY_FRAGMENTS, which may be expensive, and is not present when using
+    // cached Spannable
+    if (!attributedString.contains(AS_KEY_FRAGMENTS)) {
+      return false;
     }
+
+    MapBuffer fragments = attributedString.getMapBuffer(AS_KEY_FRAGMENTS);
+    if (fragments.getCount() == 0) {
+      return false;
+    }
+
+    MapBuffer fragment = fragments.getMapBuffer(0);
+    MapBuffer textAttributes = fragment.getMapBuffer(FR_KEY_TEXT_ATTRIBUTES);
+
+    if (!textAttributes.contains(TextAttributeProps.TA_KEY_LAYOUT_DIRECTION)) {
+      return false;
+    }
+
+    return TextAttributeProps.getLayoutDirection(
+            textAttributes.getString(TextAttributeProps.TA_KEY_LAYOUT_DIRECTION))
+        == LayoutDirection.RTL;
   }
 
-  private static void buildSpannableFromFragmentsDuplicated(
-      Context context,
-      ReadableArray fragments,
-      SpannableStringBuilder sb,
-      List<SetSpanOperation> ops) {
+  public static Layout.Alignment getTextAlignment(MapBuffer attributedString, Spannable spanned) {
+    // TODO: Don't read AS_KEY_FRAGMENTS, which may be expensive, and is not present when using
+    // cached Spannable
+    if (!attributedString.contains(AS_KEY_FRAGMENTS)) {
+      return Layout.Alignment.ALIGN_NORMAL;
+    }
 
-    for (int i = 0, length = fragments.size(); i < length; i++) {
-      ReadableMap fragment = fragments.getMap(i);
+    // Android will align text based on the script, so normal and opposite alignment needs to be
+    // swapped when the directions of paragraph and script don't match.
+    // I.e. paragraph is LTR but script is RTL, text needs to be aligned to the left, which means
+    // ALIGN_OPPOSITE needs to be used to align RTL script to the left
+    boolean isParagraphRTL = isRTL(attributedString);
+    boolean isScriptRTL =
+        TextDirectionHeuristics.FIRSTSTRONG_LTR.isRtl(spanned, 0, spanned.length());
+    boolean swapNormalAndOpposite = isParagraphRTL != isScriptRTL;
+
+    Layout.Alignment alignment =
+        swapNormalAndOpposite ? Layout.Alignment.ALIGN_OPPOSITE : Layout.Alignment.ALIGN_NORMAL;
+
+    MapBuffer fragments = attributedString.getMapBuffer(AS_KEY_FRAGMENTS);
+    if (fragments.getCount() != 0) {
+      MapBuffer fragment = fragments.getMapBuffer(0);
+      MapBuffer textAttributes = fragment.getMapBuffer(FR_KEY_TEXT_ATTRIBUTES);
+
+      if (textAttributes.contains(TextAttributeProps.TA_KEY_ALIGNMENT)) {
+        String alignmentAttr = textAttributes.getString(TextAttributeProps.TA_KEY_ALIGNMENT);
+
+        if (alignmentAttr.equals("center")) {
+          alignment = Layout.Alignment.ALIGN_CENTER;
+        } else if (alignmentAttr.equals("right")) {
+          alignment =
+              swapNormalAndOpposite
+                  ? Layout.Alignment.ALIGN_NORMAL
+                  : Layout.Alignment.ALIGN_OPPOSITE;
+        }
+      }
+    }
+
+    return alignment;
+  }
+
+  public static int getTextGravity(
+      MapBuffer attributedString, Spannable spanned, int defaultValue) {
+    int gravity = defaultValue;
+    Layout.Alignment alignment = getTextAlignment(attributedString, spanned);
+
+    // depending on whether the script is LTR or RTL, ALIGN_NORMAL and ALIGN_OPPOSITE may mean
+    // different things
+    boolean swapLeftAndRight =
+        TextDirectionHeuristics.FIRSTSTRONG_LTR.isRtl(spanned, 0, spanned.length());
+
+    if (alignment == Layout.Alignment.ALIGN_NORMAL) {
+      gravity = swapLeftAndRight ? Gravity.RIGHT : Gravity.LEFT;
+    } else if (alignment == Layout.Alignment.ALIGN_OPPOSITE) {
+      gravity = swapLeftAndRight ? Gravity.LEFT : Gravity.RIGHT;
+    } else if (alignment == Layout.Alignment.ALIGN_CENTER) {
+      gravity = Gravity.CENTER_HORIZONTAL;
+    }
+
+    return gravity;
+  }
+
+  private static void buildSpannableFromFragments(
+      Context context, MapBuffer fragments, SpannableStringBuilder sb, List<SetSpanOperation> ops) {
+
+    for (int i = 0, length = fragments.getCount(); i < length; i++) {
+      MapBuffer fragment = fragments.getMapBuffer(i);
       int start = sb.length();
 
-      // ReactRawText
       TextAttributeProps textAttributes =
-          TextAttributeProps.fromReadableMap(
-              new ReactStylesDiffMap(fragment.getMap("textAttributes")));
+          TextAttributeProps.fromMapBuffer(fragment.getMapBuffer(FR_KEY_TEXT_ATTRIBUTES));
 
-      sb.append(TextTransform.apply(fragment.getString("string"), textAttributes.mTextTransform));
+      sb.append(
+          TextTransform.apply(fragment.getString(FR_KEY_STRING), textAttributes.mTextTransform));
 
       int end = sb.length();
-      int reactTag = fragment.hasKey("reactTag") ? fragment.getInt("reactTag") : View.NO_ID;
-      if (fragment.hasKey(ViewProps.IS_ATTACHMENT)
-          && fragment.getBoolean(ViewProps.IS_ATTACHMENT)) {
-        float width = PixelUtil.toPixelFromSP(fragment.getDouble(ViewProps.WIDTH));
-        float height = PixelUtil.toPixelFromSP(fragment.getDouble(ViewProps.HEIGHT));
+      int reactTag =
+          fragment.contains(FR_KEY_REACT_TAG) ? fragment.getInt(FR_KEY_REACT_TAG) : View.NO_ID;
+      if (fragment.contains(FR_KEY_IS_ATTACHMENT) && fragment.getBoolean(FR_KEY_IS_ATTACHMENT)) {
+        float width = PixelUtil.toPixelFromSP(fragment.getDouble(FR_KEY_WIDTH));
+        float height = PixelUtil.toPixelFromSP(fragment.getDouble(FR_KEY_HEIGHT));
         ops.add(
             new SetSpanOperation(
                 sb.length() - INLINE_VIEW_PLACEHOLDER.length(),
@@ -223,30 +292,27 @@ public class TextLayoutManager {
     }
   }
 
-  private static void buildSpannableFromFragmentsUnified(
-      Context context,
-      ReadableArray fragments,
-      SpannableStringBuilder sb,
-      List<SetSpanOperation> ops) {
-
-    final BridgeTextFragmentList textFragmentList = new BridgeTextFragmentList(fragments);
-
-    TextLayoutUtils.buildSpannableFromTextFragmentList(context, textFragmentList, sb, ops);
-  }
-
   // public because both ReactTextViewManager and ReactTextInputManager need to use this
   public static Spannable getOrCreateSpannableForText(
       Context context,
-      ReadableMap attributedString,
+      MapBuffer attributedString,
       @Nullable ReactTextViewManagerCallback reactTextViewManagerCallback) {
+    Spannable text = null;
+    if (attributedString.contains(AS_KEY_CACHE_ID)) {
+      Integer cacheId = attributedString.getInt(AS_KEY_CACHE_ID);
+      text = sTagToSpannableCache.get(cacheId);
+    } else {
+      text =
+          createSpannableFromAttributedString(
+              context, attributedString, reactTextViewManagerCallback);
+    }
 
-    return createSpannableFromAttributedString(
-        context, attributedString, reactTextViewManagerCallback);
+    return text;
   }
 
   private static Spannable createSpannableFromAttributedString(
       Context context,
-      ReadableMap attributedString,
+      MapBuffer attributedString,
       @Nullable ReactTextViewManagerCallback reactTextViewManagerCallback) {
 
     SpannableStringBuilder sb = new SpannableStringBuilder();
@@ -256,7 +322,7 @@ public class TextLayoutManager {
     // a new spannable will be wiped out
     List<SetSpanOperation> ops = new ArrayList<>();
 
-    buildSpannableFromFragments(context, attributedString.getArray("fragments"), sb, ops);
+    buildSpannableFromFragments(context, attributedString.getMapBuffer(AS_KEY_FRAGMENTS), sb, ops);
 
     // TODO T31905686: add support for inline Images
     // While setting the Spans on the final text, we also check whether any of them are images.
@@ -281,12 +347,14 @@ public class TextLayoutManager {
       YogaMeasureMode widthYogaMeasureMode,
       boolean includeFontPadding,
       int textBreakStrategy,
-      int hyphenationFrequency) {
+      int hyphenationFrequency,
+      Layout.Alignment alignment) {
     Layout layout;
     int spanLength = text.length();
     boolean unconstrainedWidth = widthYogaMeasureMode == YogaMeasureMode.UNDEFINED || width < 0;
     float desiredWidth =
         boring == null ? Layout.getDesiredWidth(text, sTextPaintInstance) : Float.NaN;
+    boolean isScriptRTL = TextDirectionHeuristics.FIRSTSTRONG_LTR.isRtl(text, 0, spanLength);
 
     if (boring == null
         && (unconstrainedWidth
@@ -294,23 +362,32 @@ public class TextLayoutManager {
       // Is used when the width is not known and the text is not boring, ie. if it contains
       // unicode characters.
 
+      if (widthYogaMeasureMode == YogaMeasureMode.EXACTLY) {
+        desiredWidth = width;
+      }
+
       int hintWidth = (int) Math.ceil(desiredWidth);
       layout =
           StaticLayout.Builder.obtain(text, 0, spanLength, sTextPaintInstance, hintWidth)
-              .setAlignment(Layout.Alignment.ALIGN_NORMAL)
+              .setAlignment(alignment)
               .setLineSpacing(0.f, 1.f)
               .setIncludePad(includeFontPadding)
               .setBreakStrategy(textBreakStrategy)
               .setHyphenationFrequency(hyphenationFrequency)
+              .setTextDirection(
+                  isScriptRTL ? TextDirectionHeuristics.RTL : TextDirectionHeuristics.LTR)
               .build();
+
     } else if (boring != null && (unconstrainedWidth || boring.width <= width)) {
       int boringLayoutWidth = boring.width;
+      if (widthYogaMeasureMode == YogaMeasureMode.EXACTLY) {
+        boringLayoutWidth = (int) Math.ceil(width);
+      }
       if (boring.width < 0) {
         ReactSoftExceptionLogger.logSoftException(
             TAG, new ReactNoCrashSoftException("Text width is invalid: " + boring.width));
         boringLayoutWidth = 0;
       }
-
       // Is used for single-line, boring text when the width is either unknown or bigger
       // than the width of the text.
       layout =
@@ -318,7 +395,7 @@ public class TextLayoutManager {
               text,
               sTextPaintInstance,
               boringLayoutWidth,
-              Layout.Alignment.ALIGN_NORMAL,
+              alignment,
               1.f,
               0.f,
               boring,
@@ -326,12 +403,15 @@ public class TextLayoutManager {
     } else {
       // Is used for multiline, boring text and the width is known.
       StaticLayout.Builder builder =
-          StaticLayout.Builder.obtain(text, 0, spanLength, sTextPaintInstance, (int) width)
-              .setAlignment(Layout.Alignment.ALIGN_NORMAL)
+          StaticLayout.Builder.obtain(
+                  text, 0, spanLength, sTextPaintInstance, (int) Math.ceil(width))
+              .setAlignment(alignment)
               .setLineSpacing(0.f, 1.f)
               .setIncludePad(includeFontPadding)
               .setBreakStrategy(textBreakStrategy)
-              .setHyphenationFrequency(hyphenationFrequency);
+              .setHyphenationFrequency(hyphenationFrequency)
+              .setTextDirection(
+                  isScriptRTL ? TextDirectionHeuristics.RTL : TextDirectionHeuristics.LTR);
 
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
         builder.setUseLineSpacingFromFallbacks(true);
@@ -342,56 +422,19 @@ public class TextLayoutManager {
     return layout;
   }
 
-  public static long measureText(
-      Context context,
-      ReadableMap attributedString,
-      ReadableMap paragraphAttributes,
+  public static void adjustSpannableFontToFit(
+      Spannable text,
       float width,
       YogaMeasureMode widthYogaMeasureMode,
       float height,
       YogaMeasureMode heightYogaMeasureMode,
-      ReactTextViewManagerCallback reactTextViewManagerCallback,
-      @Nullable float[] attachmentsPositions) {
-
-    // TODO(5578671): Handle text direction (see View#getTextDirectionHeuristic)
-    Spannable text;
-    if (attributedString.hasKey("cacheId")) {
-      int cacheId = attributedString.getInt("cacheId");
-      if (ENABLE_MEASURE_LOGGING) {
-        FLog.e(TAG, "Get cached spannable for cacheId[" + cacheId + "]");
-      }
-      if (sTagToSpannableCache.containsKey(cacheId)) {
-        text = sTagToSpannableCache.get(cacheId);
-        if (ENABLE_MEASURE_LOGGING) {
-          FLog.e(TAG, "Text for spannable found for cacheId[" + cacheId + "]: " + text);
-        }
-      } else {
-        if (ENABLE_MEASURE_LOGGING) {
-          FLog.e(TAG, "No cached spannable found for cacheId[" + cacheId + "]");
-        }
-        return 0;
-      }
-    } else {
-      text = getOrCreateSpannableForText(context, attributedString, reactTextViewManagerCallback);
-    }
-
-    int textBreakStrategy =
-        TextAttributeProps.getTextBreakStrategy(
-            paragraphAttributes.getString(TEXT_BREAK_STRATEGY_KEY));
-    boolean includeFontPadding =
-        paragraphAttributes.hasKey(INCLUDE_FONT_PADDING_KEY)
-            ? paragraphAttributes.getBoolean(INCLUDE_FONT_PADDING_KEY)
-            : DEFAULT_INCLUDE_FONT_PADDING;
-    int hyphenationFrequency =
-        TextAttributeProps.getHyphenationFrequency(
-            paragraphAttributes.getString(HYPHENATION_FREQUENCY_KEY));
-
-    if (text == null) {
-      throw new IllegalStateException("Spannable element has not been prepared in onBeforeLayout");
-    }
-
+      double minimumFontSizeAttr,
+      int maximumNumberOfLines,
+      boolean includeFontPadding,
+      int textBreakStrategy,
+      int hyphenationFrequency,
+      Layout.Alignment alignment) {
     BoringLayout.Metrics boring = BoringLayout.isBoring(text, sTextPaintInstance);
-
     Layout layout =
         createLayout(
             text,
@@ -400,12 +443,127 @@ public class TextLayoutManager {
             widthYogaMeasureMode,
             includeFontPadding,
             textBreakStrategy,
-            hyphenationFrequency);
+            hyphenationFrequency,
+            alignment);
 
+    // Minimum font size is 4pts to match the iOS implementation.
+    int minimumFontSize =
+        (int)
+            (Double.isNaN(minimumFontSizeAttr) ? PixelUtil.toPixelFromDIP(4) : minimumFontSizeAttr);
+
+    // Find the largest font size used in the spannable to use as a starting point.
+    int currentFontSize = minimumFontSize;
+    ReactAbsoluteSizeSpan[] spans = text.getSpans(0, text.length(), ReactAbsoluteSizeSpan.class);
+    for (ReactAbsoluteSizeSpan span : spans) {
+      currentFontSize = Math.max(currentFontSize, span.getSize());
+    }
+
+    int initialFontSize = currentFontSize;
+    while (currentFontSize > minimumFontSize
+        && ((maximumNumberOfLines != ReactConstants.UNSET
+                && maximumNumberOfLines != 0
+                && layout.getLineCount() > maximumNumberOfLines)
+            || (heightYogaMeasureMode != YogaMeasureMode.UNDEFINED
+                && layout.getHeight() > height))) {
+      // TODO: We could probably use a smarter algorithm here. This will require 0(n)
+      // measurements based on the number of points the font size needs to be reduced by.
+      currentFontSize -= Math.max(1, (int) PixelUtil.toPixelFromDIP(1));
+
+      float ratio = (float) currentFontSize / (float) initialFontSize;
+      ReactAbsoluteSizeSpan[] sizeSpans =
+          text.getSpans(0, text.length(), ReactAbsoluteSizeSpan.class);
+      for (ReactAbsoluteSizeSpan span : sizeSpans) {
+        text.setSpan(
+            new ReactAbsoluteSizeSpan((int) Math.max((span.getSize() * ratio), minimumFontSize)),
+            text.getSpanStart(span),
+            text.getSpanEnd(span),
+            text.getSpanFlags(span));
+        text.removeSpan(span);
+      }
+      layout =
+          createLayout(
+              text,
+              boring,
+              width,
+              widthYogaMeasureMode,
+              includeFontPadding,
+              textBreakStrategy,
+              hyphenationFrequency,
+              alignment);
+    }
+  }
+
+  public static long measureText(
+      Context context,
+      MapBuffer attributedString,
+      MapBuffer paragraphAttributes,
+      float width,
+      YogaMeasureMode widthYogaMeasureMode,
+      float height,
+      YogaMeasureMode heightYogaMeasureMode,
+      ReactTextViewManagerCallback reactTextViewManagerCallback,
+      @Nullable float[] attachmentsPositions) {
+
+    // TODO(5578671): Handle text direction (see View#getTextDirectionHeuristic)
+    Spannable text =
+        getOrCreateSpannableForText(context, attributedString, reactTextViewManagerCallback);
+
+    if (text == null) {
+      return 0;
+    }
+
+    int textBreakStrategy =
+        TextAttributeProps.getTextBreakStrategy(
+            paragraphAttributes.getString(PA_KEY_TEXT_BREAK_STRATEGY));
+    boolean includeFontPadding =
+        paragraphAttributes.contains(PA_KEY_INCLUDE_FONT_PADDING)
+            ? paragraphAttributes.getBoolean(PA_KEY_INCLUDE_FONT_PADDING)
+            : DEFAULT_INCLUDE_FONT_PADDING;
+    int hyphenationFrequency =
+        TextAttributeProps.getHyphenationFrequency(
+            paragraphAttributes.getString(PA_KEY_HYPHENATION_FREQUENCY));
+    boolean adjustFontSizeToFit =
+        paragraphAttributes.contains(PA_KEY_ADJUST_FONT_SIZE_TO_FIT)
+            ? paragraphAttributes.getBoolean(PA_KEY_ADJUST_FONT_SIZE_TO_FIT)
+            : DEFAULT_ADJUST_FONT_SIZE_TO_FIT;
     int maximumNumberOfLines =
-        paragraphAttributes.hasKey(MAXIMUM_NUMBER_OF_LINES_KEY)
-            ? paragraphAttributes.getInt(MAXIMUM_NUMBER_OF_LINES_KEY)
+        paragraphAttributes.contains(PA_KEY_MAX_NUMBER_OF_LINES)
+            ? paragraphAttributes.getInt(PA_KEY_MAX_NUMBER_OF_LINES)
             : ReactConstants.UNSET;
+
+    Layout.Alignment alignment = getTextAlignment(attributedString, text);
+
+    if (adjustFontSizeToFit) {
+      double minimumFontSize =
+          paragraphAttributes.contains(PA_KEY_MINIMUM_FONT_SIZE)
+              ? paragraphAttributes.getDouble(PA_KEY_MINIMUM_FONT_SIZE)
+              : Double.NaN;
+
+      adjustSpannableFontToFit(
+          text,
+          width,
+          widthYogaMeasureMode,
+          height,
+          heightYogaMeasureMode,
+          minimumFontSize,
+          maximumNumberOfLines,
+          includeFontPadding,
+          textBreakStrategy,
+          hyphenationFrequency,
+          alignment);
+    }
+
+    BoringLayout.Metrics boring = BoringLayout.isBoring(text, sTextPaintInstance);
+    Layout layout =
+        createLayout(
+            text,
+            boring,
+            width,
+            widthYogaMeasureMode,
+            includeFontPadding,
+            textBreakStrategy,
+            hyphenationFrequency,
+            alignment);
 
     int calculatedLineCount =
         maximumNumberOfLines == ReactConstants.UNSET || maximumNumberOfLines == 0
@@ -435,7 +593,7 @@ public class TextLayoutManager {
     // Android 11+ introduces changes in text width calculation which leads to cases
     // where the container is measured smaller than text. Math.ceil prevents it
     // See T136756103 for investigation
-    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
+    if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
       calculatedWidth = (float) Math.ceil(calculatedWidth);
     }
 
@@ -447,9 +605,9 @@ public class TextLayoutManager {
       }
     }
 
-    // Calculate the positions of the attachments (views) that will be rendered inside the Spanned
-    // Text. The following logic is only executed when a text contains views inside. This
-    // follows a similar logic than used in pre-fabric (see ReactTextView.onLayout method).
+    // Calculate the positions of the attachments (views) that will be rendered inside the
+    // Spanned Text. The following logic is only executed when a text contains views inside.
+    // This follows a similar logic than used in pre-fabric (see ReactTextView.onLayout method).
     int attachmentIndex = 0;
     int lastAttachmentFoundInSpan;
     for (int i = 0; i < text.length(); i = lastAttachmentFoundInSpan) {
@@ -463,8 +621,8 @@ public class TextLayoutManager {
         boolean isLineTruncated = layout.getEllipsisCount(line) > 0;
         // This truncation check works well on recent versions of Android (tested on 5.1.1 and
         // 6.0.1) but not on Android 4.4.4. The reason is that getEllipsisCount is buggy on
-        // Android 4.4.4. Specifically, it incorrectly returns 0 if an inline view is the first
-        // thing to be truncated.
+        // Android 4.4.4. Specifically, it incorrectly returns 0 if an inline view is the
+        // first thing to be truncated.
         if (!(isLineTruncated && start >= layout.getLineStart(line) + layout.getEllipsisStart(line))
             || start >= layout.getLineEnd(line)) {
           float placeholderWidth = placeholder.getWidth();
@@ -482,14 +640,17 @@ public class TextLayoutManager {
             float lineWidth = endsWithNewLine ? layout.getLineMax(line) : layout.getLineWidth(line);
             placeholderLeftPosition =
                 isRtlParagraph
-                    // Equivalent to `layout.getLineLeft(line)` but `getLineLeft` returns incorrect
+                    // Equivalent to `layout.getLineLeft(line)` but `getLineLeft` returns
+                    // incorrect
                     // values when the paragraph is RTL and `setSingleLine(true)`.
                     ? calculatedWidth - lineWidth
                     : layout.getLineRight(line) - placeholderWidth;
           } else {
-            // The direction of the paragraph may not be exactly the direction the string is heading
+            // The direction of the paragraph may not be exactly the direction the string is
+            // heading
             // in at the
-            // position of the placeholder. So, if the direction of the character is the same as the
+            // position of the placeholder. So, if the direction of the character is the same
+            // as the
             // paragraph
             // use primary, secondary otherwise.
             boolean characterAndParagraphDirectionMatch = isRtlParagraph == isRtlChar;
@@ -497,12 +658,13 @@ public class TextLayoutManager {
                 characterAndParagraphDirectionMatch
                     ? layout.getPrimaryHorizontal(start)
                     : layout.getSecondaryHorizontal(start);
-            if (isRtlParagraph) {
+            if (isRtlParagraph && !isRtlChar) {
               // Adjust `placeholderLeftPosition` to work around an Android bug.
               // The bug is when the paragraph is RTL and `setSingleLine(true)`, some layout
               // methods such as `getPrimaryHorizontal`, `getSecondaryHorizontal`, and
               // `getLineRight` return incorrect values. Their return values seem to be off
-              // by the same number of pixels so subtracting these values cancels out the error.
+              // by the same number of pixels so subtracting these values cancels out the
+              // error.
               //
               // The result is equivalent to bugless versions of
               // `getPrimaryHorizontal`/`getSecondaryHorizontal`.
@@ -551,22 +713,54 @@ public class TextLayoutManager {
 
   public static WritableArray measureLines(
       @NonNull Context context,
-      ReadableMap attributedString,
-      ReadableMap paragraphAttributes,
-      float width) {
+      MapBuffer attributedString,
+      MapBuffer paragraphAttributes,
+      float width,
+      float height) {
+
     Spannable text = getOrCreateSpannableForText(context, attributedString, null);
     BoringLayout.Metrics boring = BoringLayout.isBoring(text, sTextPaintInstance);
 
     int textBreakStrategy =
         TextAttributeProps.getTextBreakStrategy(
-            paragraphAttributes.getString(TEXT_BREAK_STRATEGY_KEY));
+            paragraphAttributes.getString(PA_KEY_TEXT_BREAK_STRATEGY));
     boolean includeFontPadding =
-        paragraphAttributes.hasKey(INCLUDE_FONT_PADDING_KEY)
-            ? paragraphAttributes.getBoolean(INCLUDE_FONT_PADDING_KEY)
+        paragraphAttributes.contains(PA_KEY_INCLUDE_FONT_PADDING)
+            ? paragraphAttributes.getBoolean(PA_KEY_INCLUDE_FONT_PADDING)
             : DEFAULT_INCLUDE_FONT_PADDING;
     int hyphenationFrequency =
         TextAttributeProps.getTextBreakStrategy(
-            paragraphAttributes.getString(HYPHENATION_FREQUENCY_KEY));
+            paragraphAttributes.getString(PA_KEY_HYPHENATION_FREQUENCY));
+    boolean adjustFontSizeToFit =
+        paragraphAttributes.contains(PA_KEY_ADJUST_FONT_SIZE_TO_FIT)
+            ? paragraphAttributes.getBoolean(PA_KEY_ADJUST_FONT_SIZE_TO_FIT)
+            : DEFAULT_ADJUST_FONT_SIZE_TO_FIT;
+    int maximumNumberOfLines =
+        paragraphAttributes.contains(PA_KEY_MAX_NUMBER_OF_LINES)
+            ? paragraphAttributes.getInt(PA_KEY_MAX_NUMBER_OF_LINES)
+            : ReactConstants.UNSET;
+
+    Layout.Alignment alignment = getTextAlignment(attributedString, text);
+
+    if (adjustFontSizeToFit) {
+      double minimumFontSize =
+          paragraphAttributes.contains(PA_KEY_MINIMUM_FONT_SIZE)
+              ? paragraphAttributes.getDouble(PA_KEY_MINIMUM_FONT_SIZE)
+              : Double.NaN;
+
+      adjustSpannableFontToFit(
+          text,
+          width,
+          YogaMeasureMode.EXACTLY,
+          height,
+          YogaMeasureMode.UNDEFINED,
+          minimumFontSize,
+          maximumNumberOfLines,
+          includeFontPadding,
+          textBreakStrategy,
+          hyphenationFrequency,
+          alignment);
+    }
 
     Layout layout =
         createLayout(
@@ -576,7 +770,8 @@ public class TextLayoutManager {
             YogaMeasureMode.EXACTLY,
             includeFontPadding,
             textBreakStrategy,
-            hyphenationFrequency);
+            hyphenationFrequency,
+            alignment);
     return FontMetricsUtil.getFontMetrics(text, layout, sTextPaintInstance, context);
   }
 }

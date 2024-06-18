@@ -6,6 +6,8 @@
  */
 
 #include <folly/Format.h>
+#include <folly/executors/ManualExecutor.h>
+#include <folly/executors/QueuedImmediateExecutor.h>
 
 #include "JsiIntegrationTest.h"
 #include "engines/JsiIntegrationTestGenericEngineAdapter.h"
@@ -31,11 +33,40 @@ using AllEngines = Types<
 
 using AllHermesVariants = Types<JsiIntegrationTestHermesEngineAdapter>;
 
+template <typename EngineAdapter>
+using JsiIntegrationPortableTest = JsiIntegrationPortableTestBase<
+    EngineAdapter,
+    folly::QueuedImmediateExecutor>;
+
 TYPED_TEST_SUITE(JsiIntegrationPortableTest, AllEngines);
 
 template <typename EngineAdapter>
-using JsiIntegrationHermesTest = JsiIntegrationPortableTest<EngineAdapter>;
+using JsiIntegrationHermesTest = JsiIntegrationPortableTestBase<
+    EngineAdapter,
+    folly::QueuedImmediateExecutor>;
+
+/**
+ * Fixture class for tests that run on a ManualExecutor. Work scheduled
+ * on the executor is *not* run automatically; it must be manually advanced
+ * in the body of the test.
+ */
+template <typename EngineAdapter>
+class JsiIntegrationHermesTestAsync : public JsiIntegrationPortableTestBase<
+                                          EngineAdapter,
+                                          folly::ManualExecutor> {
+ public:
+  void TearDown() override {
+    // Assert there are no pending tasks on the ManualExecutor.
+    auto tasksCleared = this->executor_.clear();
+    EXPECT_EQ(tasksCleared, 0)
+        << "There were still pending tasks on executor_ at the end of the test. Use advance() or run() as needed.";
+    JsiIntegrationPortableTestBase<EngineAdapter, folly::ManualExecutor>::
+        TearDown();
+  }
+};
+
 TYPED_TEST_SUITE(JsiIntegrationHermesTest, AllHermesVariants);
+TYPED_TEST_SUITE(JsiIntegrationHermesTestAsync, AllHermesVariants);
 
 #pragma region AllEngines
 
@@ -332,8 +363,94 @@ TYPED_TEST(JsiIntegrationPortableTest, FuseboxSetClientMetadata) {
                                })");
 }
 
+TYPED_TEST(JsiIntegrationPortableTest, ReactNativeApplicationEnable) {
+  this->connect();
+
+  this->expectMessageFromPage(JsonEq(R"({
+                                          "id": 1,
+                                          "result": {}
+                                        })"));
+  this->expectMessageFromPage(JsonEq(R"({
+                                          "method": "ReactNativeApplication.metadataUpdated",
+                                          "params": {
+                                            "integrationName": "JsiIntegrationTest"
+                                          }
+                                        })"));
+
+  this->toPage_->sendMessage(R"({
+                                 "id": 1,
+                                 "method": "ReactNativeApplication.enable",
+                                 "params": {}
+                               })");
+}
+
+TYPED_TEST(JsiIntegrationPortableTest, ReactNativeApplicationDisable) {
+  this->connect();
+
+  this->expectMessageFromPage(JsonEq(R"({
+                                          "id": 1,
+                                          "result": {}
+                                        })"));
+
+  this->toPage_->sendMessage(R"({
+                                 "id": 1,
+                                 "method": "ReactNativeApplication.disable",
+                                 "params": {}
+                               })");
+}
+
 #pragma endregion // AllEngines
 #pragma region AllHermesVariants
+
+TYPED_TEST(JsiIntegrationHermesTestAsync, HermesObjectsTableDoesNotMemoryLeak) {
+  // This is a regression test for T186157855 (CDPAgent leaking JSI data in
+  // RemoteObjectsTable past the Runtime's lifetime)
+  this->connect();
+  this->executor_.run();
+
+  InSequence s;
+
+  this->expectMessageFromPage(JsonParsed(
+      AllOf(AtJsonPtr("/method", "Runtime.executionContextCreated"))));
+  this->expectMessageFromPage(JsonEq(R"({
+                                         "id": 1,
+                                         "result": {}
+                                       })"));
+  this->toPage_->sendMessage(R"({
+                                 "id": 1,
+                                 "method": "Runtime.enable"
+                               })");
+  this->executor_.run();
+
+  this->expectMessageFromPage(JsonParsed(AllOf(
+      AtJsonPtr("/method", "Runtime.consoleAPICalled"),
+      AtJsonPtr("/params/args/0/objectId", "1"))));
+  this->eval(R"(console.log({a: 1});)");
+  this->executor_.run();
+
+  this->expectMessageFromPage(JsonEq(R"({
+                                          "method": "Runtime.executionContextDestroyed",
+                                          "params": {
+                                            "executionContextId": 1
+                                          }
+                                        })"));
+  this->expectMessageFromPage(JsonEq(R"({
+                                          "method": "Runtime.executionContextsCleared"
+                                        })"));
+  this->expectMessageFromPage(JsonEq(R"({
+                                          "method": "Runtime.executionContextCreated",
+                                          "params": {
+                                            "context": {
+                                              "id": 2,
+                                              "origin": "",
+                                              "name": "main"
+                                            }
+                                          }
+                                        })"));
+  // NOTE: Doesn't crash when Hermes checks for JSI value leaks
+  this->reload();
+  this->executor_.run();
+}
 
 TYPED_TEST(JsiIntegrationHermesTest, EvaluateExpression) {
   this->connect();
@@ -458,8 +575,7 @@ TYPED_TEST(JsiIntegrationHermesTest, ResolveBreakpointAfterReload) {
 TYPED_TEST(JsiIntegrationHermesTest, CDPAgentReentrancyRegressionTest) {
   this->connect();
 
-  // TODO(moti): Add an InSequence guard here once Hermes processes the messages
-  // in the order they were received.
+  InSequence s;
 
   this->inspectorExecutor_([&]() {
     // Tasks scheduled on our executor here will be executed when this lambda
@@ -467,31 +583,32 @@ TYPED_TEST(JsiIntegrationHermesTest, CDPAgentReentrancyRegressionTest) {
     // place the EXPECT_* calls at the end of the lambda body to ensure the
     // test fails if we get eager (unexpected) responses.
 
-    // 1. Cause CDPAgent to schedule a task on the JS executor to process the
-    //    message. The task is simultaneously scheduled as an interrupt on the
-    //    JS VM (but will be called via the executor, since the interpreter is
-    //    idle at the moment).
+    // 1. Cause CDPAgent to schedule a task to process the message. Originally,
+    //    the task would be simultaneously scheduled on the JS executor, and as
+    //    an interrupt on the JS interpreter. It's called via the executor
+    //    regardless, since the interpreter is idle at the moment.
     this->toPage_->sendMessage(R"({
                                    "id": 1,
                                    "method": "Runtime.evaluate",
-                                   "params": {"expression": "1 + 2"}
+                                   "params": {"expression": "Math.random(); /* Interrupts processed here. */ globalThis.x = 1 + 2"}
                                  })");
 
-    // 2. Cause CDPAgent to schedule another task+interrupt.
+    // 2. Cause CDPAgent to schedule another task. If scheduled as an interrupt,
+    //    this task will run _during_ the first task.
     this->toPage_->sendMessage(R"({
                                    "id": 2,
                                    "method": "Runtime.evaluate",
-                                   "params": {"expression": "3 + 4"}
+                                   "params": {"expression": "globalThis.x = 3 + 4"}
                                  })");
 
-    // 3. When the first scheduled task runs (via the executor), it enters the
-    //    interpreter to evaluate the expression, at which point the
-    //    interpreter begins processing interrupts and enters the second task.
-    //    This used to trigger two distinct bugs in CDPAgent:
-    //      - The first task would be triggered twice due to a race condition
-    //        between the executor and the interrupt handler. (D54771697)
-    //      - The second task would deadlock due to the first task holding a
-    //        lock preventing any other CDPAgent tasks from running. (D54838179)
+    //  This setup used to trigger three distinct bugs in CDPAgent:
+    //    - The first task would be triggered twice due to a race condition
+    //      between the executor and the interrupt handler. (D54771697)
+    //    - The second task would deadlock due to the first task holding a lock
+    //      preventing any other CDPAgent tasks from running. (D54838179)
+    //    - The second task would complete first, returning `evaluate`
+    //      responses out of order and (crucially) performing any JS side
+    //      effects out of order. (D55250610)
 
     this->expectMessageFromPage(JsonEq(R"({
                                             "id": 1,
@@ -513,6 +630,9 @@ TYPED_TEST(JsiIntegrationHermesTest, CDPAgentReentrancyRegressionTest) {
                                             }
                                           })"));
   });
+
+  // Make sure the second task ran last.
+  EXPECT_EQ(this->eval("globalThis.x").getNumber(), 7);
 }
 
 TYPED_TEST(JsiIntegrationHermesTest, ScriptParsedExactlyOnce) {
@@ -541,6 +661,27 @@ TYPED_TEST(JsiIntegrationHermesTest, ScriptParsedExactlyOnce) {
                                  "id": 1,
                                  "method": "Debugger.enable"
                                })");
+}
+
+TYPED_TEST(JsiIntegrationHermesTest, FunctionDescriptionIncludesName) {
+  // See
+  // https://github.com/facebookexperimental/rn-chrome-devtools-frontend/blob/9a23d4c7c4c2d1a3d9e913af38d6965f474c4284/front_end/ui/legacy/components/object_ui/ObjectPropertiesSection.ts#L311-L391
+
+  this->connect();
+
+  InSequence s;
+
+  this->expectMessageFromPage(JsonParsed(AllOf(
+      AtJsonPtr("/id", 1),
+      AtJsonPtr("/result/result/type", "function"),
+      AtJsonPtr(
+          "/result/result/description",
+          DynamicString(StartsWith("function foo() {"))))));
+  this->toPage_->sendMessage(R"({
+                               "id": 1,
+                               "method": "Runtime.evaluate",
+                               "params": {"expression": "(function foo() {Math.random()});"}
+                             })");
 }
 
 #pragma endregion // AllHermesVariants

@@ -350,14 +350,14 @@ DOMPoint getScrollPosition(
     return DOMPoint{};
   }
 
-  auto layoutableShadowNode = dynamic_cast<LayoutableShadowNode const*>(
+  auto layoutableShadowNode = dynamic_cast<const LayoutableShadowNode*>(
       shadowNodeInCurrentRevision.get());
   // This should never happen
   if (layoutableShadowNode == nullptr) {
     return DOMPoint{};
   }
 
-  auto scrollPosition = layoutableShadowNode->getContentOriginOffset();
+  auto scrollPosition = layoutableShadowNode->getContentOriginOffset(false);
 
   return DOMPoint{
       .x = scrollPosition.x == 0 ? 0 : -scrollPosition.x,
@@ -385,7 +385,7 @@ DOMSizeRounded getScrollSize(
     return DOMSizeRounded{};
   }
 
-  auto layoutableShadowNode = dynamic_cast<YogaLayoutableShadowNode const*>(
+  auto layoutableShadowNode = dynamic_cast<const YogaLayoutableShadowNode*>(
       shadowNodeInCurrentRevision.get());
   // This should never happen
   if (layoutableShadowNode == nullptr) {

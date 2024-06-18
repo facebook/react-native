@@ -66,9 +66,9 @@ class YG_EXPORT Node : public ::YGNode {
   }
 
   YGSize measure(
-      float width,
+      float availableWidth,
       MeasureMode widthMode,
-      float height,
+      float availableHeight,
       MeasureMode heightMode);
 
   bool hasBaselineFunc() const noexcept {
@@ -229,11 +229,7 @@ class YG_EXPORT Node : public ::YGNode {
   void setLayoutBorder(float border, PhysicalEdge edge);
   void setLayoutPadding(float padding, PhysicalEdge edge);
   void setLayoutPosition(float position, PhysicalEdge edge);
-  void setPosition(
-      Direction direction,
-      float mainSize,
-      float crossSize,
-      float ownerWidth);
+  void setPosition(Direction direction, float ownerWidth, float ownerHeight);
 
   // Other methods
   Style::Length resolveFlexBasisPtr() const;
@@ -271,7 +267,7 @@ class YG_EXPORT Node : public ::YGNode {
 
   bool hasNewLayout_ : 1 = true;
   bool isReferenceBaseline_ : 1 = false;
-  bool isDirty_ : 1 = false;
+  bool isDirty_ : 1 = true;
   bool alwaysFormsContainingBlock_ : 1 = false;
   NodeType nodeType_ : bitCount<NodeType>() = NodeType::Default;
   void* context_ = nullptr;

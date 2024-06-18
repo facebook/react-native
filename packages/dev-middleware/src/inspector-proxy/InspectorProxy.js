@@ -19,9 +19,14 @@ import type {
   PageDescription,
 } from './types';
 import type {IncomingMessage, ServerResponse} from 'http';
+// $FlowFixMe[cannot-resolve-module] libdef missing in RN OSS
+import type {Timeout} from 'timers';
 
 import Device from './Device';
 import nullthrows from 'nullthrows';
+// Import these from node:timers to get the correct Flow types.
+// $FlowFixMe[cannot-resolve-module] libdef missing in RN OSS
+import {clearTimeout, setTimeout} from 'timers';
 import url from 'url';
 import WS from 'ws';
 
@@ -32,6 +37,8 @@ const WS_DEBUGGER_URL = '/inspector/debug';
 const PAGES_LIST_JSON_URL = '/json';
 const PAGES_LIST_JSON_URL_2 = '/json/list';
 const PAGES_LIST_JSON_VERSION_URL = '/json/version';
+const MAX_PONG_LATENCY_MS = 5000;
+const DEBUGGER_HEARTBEAT_INTERVAL_MS = 10000;
 
 const INTERNAL_ERROR_CODE = 1011;
 
@@ -148,13 +155,12 @@ export default class InspectorProxy implements InspectorProxyQueries {
 
     return {
       id: `${deviceId}-${page.id}`,
-      description: page.app,
       title: page.title,
-      faviconUrl: 'https://reactjs.org/favicon.ico',
-      devtoolsFrontendUrl,
+      description: page.app,
       type: 'node',
+      devtoolsFrontendUrl,
       webSocketDebuggerUrl,
-      vm: page.vm,
+      ...(page.vm != null ? {vm: page.vm} : null),
       deviceName: device.getName(),
       reactNative: {
         logicalDeviceId: deviceId,
@@ -224,7 +230,9 @@ export default class InspectorProxy implements InspectorProxyQueries {
         );
 
         socket.on('close', () => {
-          this.#devices.delete(deviceId);
+          if (this.#devices.get(deviceId) === newDevice) {
+            this.#devices.delete(deviceId);
+          }
           debug(`Device ${deviceName} disconnected.`);
         });
       } catch (e) {
@@ -264,6 +272,8 @@ export default class InspectorProxy implements InspectorProxyQueries {
           throw new Error('Unknown device with ID ' + deviceId);
         }
 
+        this.#startHeartbeat(socket, DEBUGGER_HEARTBEAT_INTERVAL_MS);
+
         device.handleDebuggerConnection(socket, pageId, {
           userAgent: req.headers['user-agent'] ?? query.userAgent ?? null,
         });
@@ -278,5 +288,65 @@ export default class InspectorProxy implements InspectorProxyQueries {
       }
     });
     return wss;
+  }
+
+  // Starts pinging the socket at the given interval. Compliant clients will
+  // respond with pong frame. This serves both to detect when the client
+  // has gone away without sending a close frame, and as a keepalive in cases
+  // where proxies may drop idle connections (e.g., VS Code tunnels).
+  //
+  // https://datatracker.ietf.org/doc/html/rfc6455#section-5.5.2
+  #startHeartbeat(socket: WS, intervalMs: number) {
+    let shouldSetTerminateTimeout = false;
+    let terminateTimeout = null;
+
+    const pingTimeout: Timeout = setTimeout(() => {
+      if (socket.readyState !== WS.OPEN) {
+        // May be connecting or closing, try again later.
+        pingTimeout.refresh();
+        return;
+      }
+
+      shouldSetTerminateTimeout = true;
+      socket.ping(() => {
+        if (!shouldSetTerminateTimeout) {
+          // Sometimes, this `sent` callback fires later than
+          // the actual pong reply.
+          //
+          // If any message came in between ping `sending` and `sent`,
+          // then the connection exists; and we don't need to do anything.
+          return;
+        }
+
+        shouldSetTerminateTimeout = false;
+        terminateTimeout = setTimeout(() => {
+          if (socket.readyState !== WS.OPEN) {
+            return;
+          }
+          // We don't use close() here because that initiates a closing handshake,
+          // which will not complete if the other end has gone away - 'close'
+          // would not be emitted.
+          //
+          // terminate() emits 'close' immediately, allowing us to handle it and
+          // inform any clients.
+          socket.terminate();
+        }, MAX_PONG_LATENCY_MS).unref();
+      });
+    }, intervalMs).unref();
+
+    const onAnyMessageFromDebugger = () => {
+      shouldSetTerminateTimeout = false;
+      terminateTimeout && clearTimeout(terminateTimeout);
+      pingTimeout.refresh();
+    };
+
+    socket.on('pong', onAnyMessageFromDebugger);
+    socket.on('message', onAnyMessageFromDebugger);
+
+    socket.on('close', () => {
+      shouldSetTerminateTimeout = false;
+      terminateTimeout && clearTimeout(terminateTimeout);
+      clearTimeout(pingTimeout);
+    });
   }
 }

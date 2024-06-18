@@ -66,7 +66,6 @@ import com.facebook.react.fabric.mounting.mountitems.DispatchCommandMountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItemFactory;
 import com.facebook.react.interfaces.fabric.SurfaceHandler;
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.internal.interop.InteropEventEmitter;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
@@ -85,13 +84,15 @@ import com.facebook.react.uimanager.events.EventCategoryDef;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.FabricEventDispatcher;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
+import com.facebook.react.uimanager.events.SynchronousEventReceiver;
 import com.facebook.react.views.text.TextLayoutManager;
-import com.facebook.react.views.text.TextLayoutManagerMapBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -100,7 +101,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 @SuppressLint("MissingNativeLoadLibrary")
 @DoNotStripAny
-public class FabricUIManager implements UIManager, LifecycleEventListener, UIBlockViewResolver {
+public class FabricUIManager
+    implements UIManager, LifecycleEventListener, UIBlockViewResolver, SynchronousEventReceiver {
   public static final String TAG = FabricUIManager.class.getSimpleName();
 
   // The IS_DEVELOPMENT_ENVIRONMENT variable is used to log extra data when running fabric in a
@@ -181,6 +183,9 @@ public class FabricUIManager implements UIManager, LifecycleEventListener, UIBlo
   @ThreadConfined(UI)
   @NonNull
   private final DispatchUIFrameCallback mDispatchUIFrameCallback;
+
+  /** Set of events sent synchronously during the current frame render. Cleared after each frame. */
+  private final Set<SynchronousEvent> mSynchronousEvents = new HashSet<>();
 
   /**
    * This is used to keep track of whether or not the FabricUIManager has been destroyed. Once the
@@ -486,27 +491,17 @@ public class FabricUIManager implements UIManager, LifecycleEventListener, UIBlo
 
   @SuppressWarnings("unused")
   private NativeArray measureLines(
-      ReadableMap attributedString, ReadableMap paragraphAttributes, float width, float height) {
-    return (NativeArray)
-        TextLayoutManager.measureLines(
-            mReactApplicationContext,
-            attributedString,
-            paragraphAttributes,
-            PixelUtil.toPixelFromDIP(width));
-  }
-
-  @SuppressWarnings("unused")
-  private NativeArray measureLinesMapBuffer(
       ReadableMapBuffer attributedString,
       ReadableMapBuffer paragraphAttributes,
       float width,
       float height) {
     return (NativeArray)
-        TextLayoutManagerMapBuffer.measureLines(
+        TextLayoutManager.measureLines(
             mReactApplicationContext,
             attributedString,
             paragraphAttributes,
-            PixelUtil.toPixelFromDIP(width));
+            PixelUtil.toPixelFromDIP(width),
+            PixelUtil.toPixelFromDIP(height));
   }
 
   @SuppressWarnings("unused")
@@ -773,9 +768,12 @@ public class FabricUIManager implements UIManager, LifecycleEventListener, UIBlo
   @AnyThread
   @ThreadConfined(ANY)
   private MountItem createIntBufferBatchMountItem(
-      int rootTag, int[] intBuffer, Object[] objBuffer, int commitNumber) {
+      int rootTag, @Nullable int[] intBuffer, @Nullable Object[] objBuffer, int commitNumber) {
     return MountItemFactory.createIntBufferBatchMountItem(
-        rootTag, intBuffer, objBuffer, commitNumber);
+        rootTag,
+        intBuffer == null ? new int[0] : intBuffer,
+        objBuffer == null ? new Object[0] : objBuffer,
+        commitNumber);
   }
 
   /**
@@ -959,6 +957,19 @@ public class FabricUIManager implements UIManager, LifecycleEventListener, UIBlo
       boolean canCoalesceEvent,
       @Nullable WritableMap params,
       @EventCategoryDef int eventCategory) {
+    receiveEvent(surfaceId, reactTag, eventName, canCoalesceEvent, params, eventCategory, false);
+  }
+
+  @Override
+  public void receiveEvent(
+      int surfaceId,
+      int reactTag,
+      String eventName,
+      boolean canCoalesceEvent,
+      @Nullable WritableMap params,
+      @EventCategoryDef int eventCategory,
+      boolean experimental_isSynchronous) {
+
     if (ReactBuildConfig.DEBUG && surfaceId == View.NO_ID) {
       FLog.d(TAG, "Emitted event without surfaceId: [%d] %s", reactTag, eventName);
     }
@@ -970,8 +981,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener, UIBlo
 
     EventEmitterWrapper eventEmitter = mMountingManager.getEventEmitter(surfaceId, reactTag);
     if (eventEmitter == null) {
-      if (ReactFeatureFlags.enableFabricPendingEventQueue
-          && mMountingManager.getViewExists(reactTag)) {
+      if (mMountingManager.getViewExists(reactTag)) {
         // The view is preallocated and created. However, it hasn't been mounted yet. We will have
         // access to the event emitter later when the view is mounted. For now just save the event
         // in the view state and trigger it later.
@@ -984,10 +994,19 @@ public class FabricUIManager implements UIManager, LifecycleEventListener, UIBlo
       return;
     }
 
-    if (canCoalesceEvent) {
-      eventEmitter.dispatchUnique(eventName, params);
+    if (experimental_isSynchronous) {
+      // add() returns true only if there are no equivalent events already in the set
+      boolean firstEventForFrame =
+          mSynchronousEvents.add(new SynchronousEvent(surfaceId, reactTag, eventName));
+      if (firstEventForFrame) {
+        eventEmitter.dispatchEventSynchronously(eventName, params);
+      }
     } else {
-      eventEmitter.dispatch(eventName, params, eventCategory);
+      if (canCoalesceEvent) {
+        eventEmitter.dispatchUnique(eventName, params);
+      } else {
+        eventEmitter.dispatch(eventName, params, eventCategory);
+      }
     }
   }
 
@@ -1225,9 +1244,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener, UIBlo
         listener.didMountItems(FabricUIManager.this);
       }
 
-      if (!ReactNativeFeatureFlags.enableMountHooksAndroid()
-          || mountItems == null
-          || mountItems.isEmpty()) {
+      if (mountItems == null || mountItems.isEmpty()) {
         return;
       }
 
@@ -1339,6 +1356,8 @@ public class FabricUIManager implements UIManager, LifecycleEventListener, UIBlo
             .postFrameCallback(
                 ReactChoreographer.CallbackType.DISPATCH_UI, mDispatchUIFrameCallback);
       }
+
+      mSynchronousEvents.clear();
     }
   }
 }

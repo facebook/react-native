@@ -29,6 +29,7 @@ using namespace facebook::react;
 @implementation RCTViewComponentView {
   UIColor *_backgroundColor;
   __weak CALayer *_borderLayer;
+  CALayer *_filterLayer;
   BOOL _needsInvalidateLayer;
   BOOL _isJSResponder;
   BOOL _removeClippedSubviews;
@@ -195,7 +196,7 @@ using namespace facebook::react;
   RCTAssert(
       propsRawPtr &&
           ([self class] == [RCTViewComponentView class] ||
-           typeid(*propsRawPtr).hash_code() != typeid(ViewProps const).hash_code()),
+           typeid(*propsRawPtr).hash_code() != typeid(const ViewProps).hash_code()),
       @"`RCTViewComponentView` subclasses (and `%@` particularly) must setup `_props`"
        " instance variable with a default value in the constructor.",
       NSStringFromClass([self class]));
@@ -388,6 +389,11 @@ using namespace facebook::react;
     self.accessibilityIdentifier = RCTNSStringFromString(newViewProps.testId);
   }
 
+  // `filter`
+  if (oldViewProps.filter != newViewProps.filter) {
+    _needsInvalidateLayer = YES;
+  }
+
   _needsInvalidateLayer = _needsInvalidateLayer || needsInvalidateLayer;
 
   _props = std::static_pointer_cast<const ViewProps>(props);
@@ -415,7 +421,8 @@ using namespace facebook::react;
     _contentView.frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
   }
 
-  if (_props->transformOrigin.isSet()) {
+  if ((_props->transformOrigin.isSet() || _props->transform.operations.size() > 0) &&
+      layoutMetrics.frame.size != oldLayoutMetrics.frame.size) {
     auto newTransform = _props->resolveTransform(layoutMetrics);
     self.layer.transform = RCTCATransform3DFromTransformMatrix(newTransform);
   }
@@ -633,8 +640,9 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
           // iOS draws borders in front of the content whereas CSS draws them behind
           // the content. For this reason, only use iOS border drawing when clipping
           // or when the border is hidden.
-          borderMetrics.borderWidths.left == 0 ||
-          colorComponentsFromColor(borderMetrics.borderColors.left).alpha == 0 || self.clipsToBounds);
+          borderMetrics.borderWidths.left == 0 || self.clipsToBounds ||
+          (colorComponentsFromColor(borderMetrics.borderColors.left).alpha == 0 &&
+           (*borderMetrics.borderColors.left).getUIColor() != nullptr));
 
   CGColorRef backgroundColor = [_backgroundColor resolvedColorWithTraitCollection:self.traitCollection].CGColor;
 
@@ -725,6 +733,33 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
 
     layer.cornerRadius = cornerRadius;
     layer.mask = maskLayer;
+  }
+
+  [_filterLayer removeFromSuperlayer];
+  _filterLayer = nil;
+  self.layer.opacity = (float)_props->opacity;
+  if (!_props->filter.empty()) {
+    float multiplicativeBrightness = 1;
+    for (const auto &primitive : _props->filter) {
+      if (primitive.type == FilterType::Brightness) {
+        multiplicativeBrightness *= primitive.amount;
+      } else if (primitive.type == FilterType::Opacity) {
+        self.layer.opacity *= primitive.amount;
+      }
+    }
+
+    _filterLayer = [CALayer layer];
+    _filterLayer.frame = CGRectMake(0, 0, layer.frame.size.width, layer.frame.size.height);
+    _filterLayer.compositingFilter = @"multiplyBlendMode";
+    _filterLayer.backgroundColor = [UIColor colorWithRed:multiplicativeBrightness
+                                                   green:multiplicativeBrightness
+                                                    blue:multiplicativeBrightness
+                                                   alpha:self.layer.opacity]
+                                       .CGColor;
+    // So that this layer is always above any potential sublayers this view may
+    // add
+    _filterLayer.zPosition = CGFLOAT_MAX;
+    [self.layer addSublayer:_filterLayer];
   }
 }
 

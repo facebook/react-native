@@ -55,7 +55,7 @@ class SurfaceManager final {
  private:
   void visit(
       SurfaceId surfaceId,
-      const std::function<void(SurfaceHandler const& surfaceHandler)>& callback)
+      const std::function<void(const SurfaceHandler& surfaceHandler)>& callback)
       const noexcept;
 
   const Scheduler& scheduler_;

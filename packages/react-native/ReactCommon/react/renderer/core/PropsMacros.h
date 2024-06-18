@@ -21,7 +21,7 @@
 
 // Get hash at compile-time. sizeof(str) - 1 == strlen
 #define CONSTEXPR_RAW_PROPS_KEY_HASH(s)                   \
-  ([]() constexpr->RawPropsPropNameHash {                 \
+  ([]() constexpr -> RawPropsPropNameHash {               \
     CLANG_PRAGMA("clang diagnostic push")                 \
     CLANG_PRAGMA("clang diagnostic ignored \"-Wshadow\"") \
     return RAW_PROPS_KEY_HASH(s);                         \

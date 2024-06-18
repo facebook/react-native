@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6b07d06ca1f100cca35e2b8b108f1993>>
+ * @generated SignedSource<<97c824bb63734389fae8eea61b92d440>>
  */
 
 /**
@@ -31,7 +31,19 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool allowCollapsableChildren() override {
+    return true;
+  }
+
+  bool allowRecursiveCommitsWithSynchronousMountOnAndroid() override {
+    return false;
+  }
+
   bool batchRenderingUpdatesInEventLoop() override {
+    return false;
+  }
+
+  bool destroyFabricSurfacesInReactInstanceManager() override {
     return false;
   }
 
@@ -43,23 +55,11 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool enableCustomDrawOrderFabric() override {
-    return false;
-  }
-
-  bool enableFixForClippedSubviewsCrash() override {
+  bool enableGranularShadowTreeStateReconciliation() override {
     return false;
   }
 
   bool enableMicrotasks() override {
-    return false;
-  }
-
-  bool enableMountHooksAndroid() override {
-    return false;
-  }
-
-  bool enableSpannableBuildingUnification() override {
     return false;
   }
 
@@ -71,11 +71,35 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool inspectorEnableCxxInspectorPackagerConnection() override {
+  bool fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak() override {
     return false;
   }
 
-  bool inspectorEnableModernCDPRegistry() override {
+  bool forceBatchingMountItemsOnAndroid() override {
+    return false;
+  }
+
+  bool fuseboxEnabledDebug() override {
+    return false;
+  }
+
+  bool fuseboxEnabledRelease() override {
+    return false;
+  }
+
+  bool lazyAnimationCallbacks() override {
+    return false;
+  }
+
+  bool preventDoubleTextMeasure() override {
+    return true;
+  }
+
+  bool setAndroidLayoutDirection() override {
+    return false;
+  }
+
+  bool useImmediateExecutorInAndroidBridgeless() override {
     return false;
   }
 
@@ -84,6 +108,18 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool useNativeViewConfigsInBridgelessMode() override {
+    return false;
+  }
+
+  bool useRuntimeShadowNodeReferenceUpdate() override {
+    return false;
+  }
+
+  bool useRuntimeShadowNodeReferenceUpdateOnLayout() override {
+    return false;
+  }
+
+  bool useStateAlignmentMechanism() override {
     return false;
   }
 };

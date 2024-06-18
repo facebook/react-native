@@ -37,14 +37,21 @@ class HostAgent final {
    * \param targetController An interface to the HostTarget that this agent is
    * attached to. The caller is responsible for ensuring that the
    * HostTargetDelegate and underlying HostTarget both outlive the agent.
-   * \param sessionMetadata Metadata about the session that created this agent.
+   * \param hostMetadata Metadata about the host that created this agent.
    * \param sessionState The state of the session that created this agent.
    */
   HostAgent(
       FrontendChannel frontendChannel,
       HostTargetController& targetController,
-      HostTarget::SessionMetadata sessionMetadata,
+      HostTargetMetadata hostMetadata,
       SessionState& sessionState);
+
+  HostAgent(const HostAgent&) = delete;
+  HostAgent(HostAgent&&) = delete;
+  HostAgent& operator=(const HostAgent&) = delete;
+  HostAgent& operator=(HostAgent&&) = delete;
+
+  ~HostAgent();
 
   /**
    * Handle a CDP request. The response will be sent over the provided
@@ -87,9 +94,10 @@ class HostAgent final {
 
   FrontendChannel frontendChannel_;
   HostTargetController& targetController_;
-  const HostTarget::SessionMetadata sessionMetadata_;
+  const HostTargetMetadata hostMetadata_;
   std::shared_ptr<InstanceAgent> instanceAgent_;
   FuseboxClientType fuseboxClientType_{FuseboxClientType::Unknown};
+  bool isPausedInDebuggerOverlayVisible_{false};
 
   /**
    * A shared reference to the session's state. This is only safe to access

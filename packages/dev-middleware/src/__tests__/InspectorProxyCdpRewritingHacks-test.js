@@ -9,8 +9,6 @@
  * @oncall react_native
  */
 
-import type {TargetCapabilityFlags} from '../inspector-proxy/types';
-
 import {allowSelfSignedCertsInNodeFetch} from './FetchUtils';
 import {
   createAndConnectTarget,
@@ -192,7 +190,7 @@ describe.each(['HTTP', 'HTTPS'])(
       }
     });
 
-    describe.each(['10.0.2.2', '10.0.3.2'])(
+    describe.each(['10.0.2.2', '10.0.3.2', '127.0.0.1'])(
       '%s aliasing to and from localhost',
       sourceHost => {
         test('in source map fetching during Debugger.scriptParsed', async () => {

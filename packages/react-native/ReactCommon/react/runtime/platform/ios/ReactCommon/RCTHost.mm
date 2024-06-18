@@ -16,6 +16,7 @@
 #import <React/RCTJSThread.h>
 #import <React/RCTLog.h>
 #import <React/RCTMockDef.h>
+#import <React/RCTPausedInDebuggerOverlayController.h>
 #import <React/RCTPerformanceLogger.h>
 #import <React/RCTReloadCommand.h>
 #import <jsinspector-modern/InspectorFlags.h>
@@ -28,9 +29,23 @@ RCT_MOCK_DEF(RCTHost, _RCTLogNativeInternal);
 
 using namespace facebook::react;
 
+@interface RCTHost () <RCTReloadListener, RCTInstanceDelegate>
+@property (nonatomic, readonly) jsinspector_modern::HostTarget *inspectorTarget;
+@end
+
 class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::HostTargetDelegate {
  public:
-  RCTHostHostTargetDelegate(RCTHost *host) : host_(host) {}
+  RCTHostHostTargetDelegate(RCTHost *host)
+      : host_(host), pauseOverlayController_([[RCTPausedInDebuggerOverlayController alloc] init])
+  {
+  }
+
+  jsinspector_modern::HostTargetMetadata getMetadata() override
+  {
+    return {
+        .integrationName = "iOS Bridgeless (RCTHost)",
+    };
+  }
 
   void onReload(const PageReloadRequest &request) override
   {
@@ -38,12 +53,33 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
     [static_cast<id<RCTReloadListener>>(host_) didReceiveReloadCommand];
   }
 
+  void onSetPausedInDebuggerMessage(const OverlaySetPausedInDebuggerMessageRequest &request) override
+  {
+    RCTAssertMainQueue();
+    if (!request.message.has_value()) {
+      [pauseOverlayController_ hide];
+    } else {
+      __weak RCTHost *hostWeak = host_;
+      [pauseOverlayController_
+          showWithMessage:@(request.message.value().c_str())
+                 onResume:^{
+                   RCTAssertMainQueue();
+                   RCTHost *hostStrong = hostWeak;
+                   if (!hostStrong) {
+                     return;
+                   }
+                   if (!hostStrong.inspectorTarget) {
+                     return;
+                   }
+                   hostStrong.inspectorTarget->sendCommand(jsinspector_modern::HostCommand::DebuggerResume);
+                 }];
+    }
+  }
+
  private:
   __weak RCTHost *host_;
+  RCTPausedInDebuggerOverlayController *pauseOverlayController_;
 };
-
-@interface RCTHost () <RCTReloadListener, RCTInstanceDelegate>
-@end
 
 @implementation RCTHost {
   RCTInstance *_instance;
@@ -79,15 +115,31 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
   _RCTInitializeJSThreadConstantInternal();
 }
 
-/**
- Host initialization should not be resource intensive. A host may be created before any intention of using React Native
- has been expressed.
- */
 - (instancetype)initWithBundleURL:(NSURL *)bundleURL
                      hostDelegate:(id<RCTHostDelegate>)hostDelegate
        turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
                  jsEngineProvider:(RCTHostJSEngineProvider)jsEngineProvider
                     launchOptions:(nullable NSDictionary *)launchOptions
+{
+  return [self
+       initWithBundleURLProvider:^{
+         return bundleURL;
+       }
+                    hostDelegate:hostDelegate
+      turboModuleManagerDelegate:turboModuleManagerDelegate
+                jsEngineProvider:jsEngineProvider
+                   launchOptions:launchOptions];
+}
+
+/**
+ Host initialization should not be resource intensive. A host may be created before any intention of using React Native
+ has been expressed.
+ */
+- (instancetype)initWithBundleURLProvider:(RCTHostBundleURLProvider)provider
+                             hostDelegate:(id<RCTHostDelegate>)hostDelegate
+               turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
+                         jsEngineProvider:(RCTHostJSEngineProvider)jsEngineProvider
+                            launchOptions:(nullable NSDictionary *)launchOptions
 {
   if (self = [super init]) {
     _hostDelegate = hostDelegate;
@@ -99,9 +151,7 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
     _launchOptions = [launchOptions copy];
 
     __weak RCTHost *weakSelf = self;
-
-    auto bundleURLGetter = ^NSURL *()
-    {
+    auto bundleURLGetter = ^NSURL *() {
       RCTHost *strongSelf = weakSelf;
       if (!strongSelf) {
         return nil;
@@ -114,8 +164,7 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
       [weakSelf _setBundleURL:bundleURL_];
     };
 
-    auto defaultBundleURLGetter = ^NSURL *()
-    {
+    auto defaultBundleURLGetter = ^NSURL *() {
       RCTHost *strongSelf = weakSelf;
       if (!strongSelf || !strongSelf->_bundleURLProvider) {
         return nil;
@@ -124,7 +173,6 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
       return strongSelf->_bundleURLProvider();
     };
 
-    [self _setBundleURL:bundleURL];
     [_bundleManager setBridgelessBundleURLGetter:bundleURLGetter
                                        andSetter:bundleURLSetter
                                 andDefaultGetter:defaultBundleURLGetter];
@@ -170,8 +218,11 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
 
 - (void)start
 {
+  if (_bundleURLProvider) {
+    [self _setBundleURL:_bundleURLProvider()];
+  }
   auto &inspectorFlags = jsinspector_modern::InspectorFlags::getInstance();
-  if (inspectorFlags.getEnableModernCDPRegistry() && !_inspectorPageId.has_value()) {
+  if (inspectorFlags.getFuseboxEnabled() && !_inspectorPageId.has_value()) {
     _inspectorTarget =
         facebook::react::jsinspector_modern::HostTarget::create(*_inspectorHostDelegate, [](auto callback) {
           RCTExecuteOnMainQueue(^{
@@ -189,11 +240,7 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
             // This can happen if we're about to be dealloc'd. Reject the connection.
             return nullptr;
           }
-          return strongSelf->_inspectorTarget->connect(
-              std::move(remote),
-              {
-                  .integrationName = "iOS Bridgeless (RCTHost)",
-              });
+          return strongSelf->_inspectorTarget->connect(std::move(remote));
         },
         {.nativePageReloads = true, .prefersFuseboxFrontend = true});
   }
@@ -245,21 +292,9 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
   return _moduleRegistry;
 }
 
-// Deprecated
-- (RCTModuleRegistry *)getModuleRegistry
-{
-  return self.moduleRegistry;
-}
-
 - (RCTSurfacePresenter *)surfacePresenter
 {
   return [_instance surfacePresenter];
-}
-
-// Deprecated
-- (RCTSurfacePresenter *)getSurfacePresenter
-{
-  return self.surfacePresenter;
 }
 
 - (void)callFunctionOnJSModule:(NSString *)moduleName method:(NSString *)method args:(NSArray *)args
@@ -390,6 +425,11 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
 
   // Update the global bundle URLq
   RCTReloadCommandSetBundleURL(_bundleURL);
+}
+
+- (jsinspector_modern::HostTarget *)inspectorTarget
+{
+  return _inspectorTarget.get();
 }
 
 @end

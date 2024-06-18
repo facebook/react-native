@@ -93,6 +93,8 @@ Pod::Spec.new do |spec|
 
   spec.default_subspec = 'Default'
 
+  spec.resource_bundles = {'RCT-Folly_privacy' => 'RCT-Folly/PrivacyInfo.xcprivacy'}
+
   spec.subspec 'Default' do
     # no-op
   end

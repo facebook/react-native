@@ -108,6 +108,7 @@ public class YogaNative {
   static native void jni_YGNodeStyleSetAspectRatioJNI(long nativePointer, float aspectRatio);
   static native float jni_YGNodeStyleGetGapJNI(long nativePointer, int gutter);
   static native void jni_YGNodeStyleSetGapJNI(long nativePointer, int gutter, float gapLength);
+  static native void jni_YGNodeStyleSetGapPercentJNI(long nativePointer, int gutter, float gapLength);
   static native void jni_YGNodeSetHasMeasureFuncJNI(long nativePointer, boolean hasMeasureFunc);
   static native void jni_YGNodeSetHasBaselineFuncJNI(long nativePointer, boolean hasMeasureFunc);
   static native void jni_YGNodeSetStyleInputsJNI(long nativePointer, float[] styleInputsArray, int size);

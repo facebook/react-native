@@ -139,9 +139,6 @@ public class ReleaseDevSupportManager implements DevSupportManager {
   public void handleReloadJS() {}
 
   @Override
-  public void reloadJSFromServer(String bundleURL) {}
-
-  @Override
   public void reloadJSFromServer(final String bundleURL, final BundleLoadCallback callback) {}
 
   @Override
@@ -207,4 +204,11 @@ public class ReleaseDevSupportManager implements DevSupportManager {
 
   @Override
   public void openDebugger() {}
+
+  @Override
+  public void showPausedInDebuggerOverlay(
+      String message, PausedInDebuggerOverlayCommandListener listener) {}
+
+  @Override
+  public void hidePausedInDebuggerOverlay() {}
 }

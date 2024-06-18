@@ -26,4 +26,47 @@ inline Align resolveChildAlignment(
   return align;
 }
 
+/**
+ * Fallback alignment to use on overflow
+ * https://www.w3.org/TR/css-align-3/#distribution-values
+ */
+constexpr Align fallbackAlignment(Align align) {
+  switch (align) {
+      // Fallback to flex-start
+    case Align::SpaceBetween:
+    case Align::Stretch:
+      return Align::FlexStart;
+
+    // Fallback to safe center. TODO: This should be aligned to Start
+    // instead of FlexStart (for row-reverse containers)
+    case Align::SpaceAround:
+    case Align::SpaceEvenly:
+      return Align::FlexStart;
+    default:
+      return align;
+  }
+}
+
+/**
+ * Fallback alignment to use on overflow
+ * https://www.w3.org/TR/css-align-3/#distribution-values
+ */
+constexpr Justify fallbackAlignment(Justify align) {
+  switch (align) {
+      // Fallback to flex-start
+    case Justify::SpaceBetween:
+      // TODO: Support `justify-content: stretch`
+      // case Justify::Stretch:
+      return Justify::FlexStart;
+
+    // Fallback to safe center. TODO: This should be aligned to Start
+    // instead of FlexStart (for row-reverse containers)
+    case Justify::SpaceAround:
+    case Justify::SpaceEvenly:
+      return Justify::FlexStart;
+    default:
+      return align;
+  }
+}
+
 } // namespace facebook::yoga

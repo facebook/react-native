@@ -33,6 +33,7 @@ import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.R;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.ReactConstants;
@@ -62,6 +63,7 @@ import java.util.List;
  * <p>ReactScrollView only supports vertical scrolling. For horizontal scrolling, use {@link
  * ReactHorizontalScrollView}.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ReactScrollView extends ScrollView
     implements ReactClippingViewGroup,
         ViewGroup.OnHierarchyChangeListener,
@@ -81,7 +83,6 @@ public class ReactScrollView extends ScrollView
   private final OnScrollDispatchHelper mOnScrollDispatchHelper = new OnScrollDispatchHelper();
   private final @Nullable OverScroller mScroller;
   private final VelocityHelper mVelocityHelper = new VelocityHelper();
-  private final Rect mRect = new Rect(); // for reuse to avoid allocation
   private final Rect mTempRect = new Rect();
   private final Rect mOverflowInset = new Rect();
 
@@ -93,9 +94,11 @@ public class ReactScrollView extends ScrollView
   private @Nullable Runnable mPostTouchRunnable;
   private boolean mRemoveClippedSubviews;
   private boolean mScrollEnabled = true;
+  private boolean mPreventReentry = false;
   private boolean mSendMomentumEvents;
   private @Nullable FpsListener mFpsListener = null;
   private @Nullable String mScrollPerfTag;
+  private boolean mEnableSyncOnScroll = false;
   private @Nullable Drawable mEndBackground;
   private int mEndFillColor = Color.TRANSPARENT;
   private boolean mDisableIntervalMomentum = false;
@@ -109,7 +112,7 @@ public class ReactScrollView extends ScrollView
   private @Nullable ReadableMap mCurrentContentOffset = null;
   private int pendingContentOffsetX = UNSET_CONTENT_OFFSET;
   private int pendingContentOffsetY = UNSET_CONTENT_OFFSET;
-  private StateWrapper mStateWrapper = null;
+  private @Nullable StateWrapper mStateWrapper = null;
   private final ReactScrollViewScrollState mReactScrollViewScrollState =
       new ReactScrollViewScrollState(ViewCompat.LAYOUT_DIRECTION_LTR);
   private final ValueAnimator DEFAULT_FLING_ANIMATOR = ObjectAnimator.ofInt(this, "scrollY", 0, 0);
@@ -132,6 +135,7 @@ public class ReactScrollView extends ScrollView
     setOnHierarchyChangeListener(this);
     setScrollBarStyle(SCROLLBARS_OUTSIDE_OVERLAY);
     setClipChildren(false);
+    mReactBackgroundManager.setOverflow(ViewProps.SCROLL);
 
     ViewCompat.setAccessibilityDelegate(this, new ReactScrollViewAccessibilityDelegate());
   }
@@ -201,6 +205,10 @@ public class ReactScrollView extends ScrollView
     mScrollPerfTag = scrollPerfTag;
   }
 
+  public void setEnableSyncOnScroll(boolean enableSyncOnScroll) {
+    mEnableSyncOnScroll = enableSyncOnScroll;
+  }
+
   public void setScrollEnabled(boolean scrollEnabled) {
     mScrollEnabled = scrollEnabled;
   }
@@ -231,7 +239,7 @@ public class ReactScrollView extends ScrollView
     mSnapInterval = snapInterval;
   }
 
-  public void setSnapOffsets(List<Integer> snapOffsets) {
+  public void setSnapOffsets(@Nullable List<Integer> snapOffsets) {
     mSnapOffsets = snapOffsets;
   }
 
@@ -251,9 +259,9 @@ public class ReactScrollView extends ScrollView
     awakenScrollBars();
   }
 
-  public void setOverflow(String overflow) {
+  public void setOverflow(@Nullable String overflow) {
     mOverflow = overflow;
-    invalidate();
+    mReactBackgroundManager.setOverflow(overflow == null ? ViewProps.SCROLL : overflow);
   }
 
   public void setMaintainVisibleContentPosition(
@@ -388,11 +396,16 @@ public class ReactScrollView extends ScrollView
       if (mRemoveClippedSubviews) {
         updateClippingRect();
       }
-
+      if (mPreventReentry) {
+        return;
+      }
+      mPreventReentry = true;
       ReactScrollViewHelper.updateStateOnScrollChanged(
           this,
           mOnScrollDispatchHelper.getXFlingVelocity(),
-          mOnScrollDispatchHelper.getYFlingVelocity());
+          mOnScrollDispatchHelper.getYFlingVelocity(),
+          mEnableSyncOnScroll);
+      mPreventReentry = false;
     }
   }
 
@@ -604,7 +617,7 @@ public class ReactScrollView extends ScrollView
   }
 
   private int getMaxScrollY() {
-    int contentHeight = mContentView.getHeight();
+    int contentHeight = mContentView == null ? 0 : mContentView.getHeight();
     int viewportHeight = getHeight() - getPaddingBottom() - getPaddingTop();
     return Math.max(0, contentHeight - viewportHeight);
   }
@@ -627,13 +640,14 @@ public class ReactScrollView extends ScrollView
         mEndBackground.draw(canvas);
       }
     }
-    getDrawingRect(mRect);
-
-    if (!ViewProps.VISIBLE.equals(mOverflow)) {
-      canvas.clipRect(mRect);
-    }
 
     super.draw(canvas);
+  }
+
+  @Override
+  public void onDraw(Canvas canvas) {
+    mReactBackgroundManager.maybeClipToPaddingBox(canvas);
+    super.onDraw(canvas);
   }
 
   /**

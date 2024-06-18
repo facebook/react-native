@@ -161,7 +161,6 @@ folly::dynamic InspectorPackagerConnection::Impl::pages() {
     pageDescription["id"] = std::to_string(page.id);
     pageDescription["title"] = page.title + " [C++ connection]";
     pageDescription["app"] = app_;
-    pageDescription["vm"] = page.vm;
     pageDescription["capabilities"] =
         targetCapabilitiesToDynamic(page.capabilities);
 

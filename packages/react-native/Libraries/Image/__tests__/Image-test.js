@@ -22,28 +22,20 @@ const Image = require('../Image');
 const ImageInjection = require('../ImageInjection');
 const React = require('react');
 
-describe('<Image />', () => {
-  it('should render as <Image> when mocked', () => {
-    const instance = render.create(<Image source={{uri: 'foo-bar.jpg'}} />);
+describe('Image', () => {
+  it('should render as <Image> when mocked', async () => {
+    const instance = await render.create(
+      <Image source={{uri: 'foo-bar.jpg'}} />,
+    );
     expect(instance).toMatchSnapshot();
   });
 
-  it('should shallow render as <Image> when mocked', () => {
-    const output = render.shallow(<Image source={{uri: 'foo-bar.jpg'}} />);
-    expect(output).toMatchSnapshot();
-  });
-
-  it('should shallow render as <ForwardRef(Image)> when not mocked', () => {
+  it('should render as <RCTImageView> when not mocked', async () => {
     jest.dontMock('../Image');
 
-    const output = render.shallow(<Image source={{uri: 'foo-bar.jpg'}} />);
-    expect(output).toMatchSnapshot();
-  });
-
-  it('should render as <RCTImageView> when not mocked', () => {
-    jest.dontMock('../Image');
-
-    const instance = render.create(<Image source={{uri: 'foo-bar.jpg'}} />);
+    const instance = await render.create(
+      <Image source={{uri: 'foo-bar.jpg'}} />,
+    );
     expect(instance).toMatchSnapshot();
   });
 

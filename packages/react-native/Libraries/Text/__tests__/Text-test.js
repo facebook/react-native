@@ -11,17 +11,23 @@
 'use strict';
 
 const render = require('../../../jest/renderer');
-const React = require('../React');
 const Text = require('../Text');
+const React = require('react');
 
 jest.unmock('../Text');
 jest.unmock('../TextNativeComponent');
 
-describe('Text', () => {
-  it('default render', () => {
-    const instance = render.create(<Text />);
+function omitRef(json) {
+  // Omit `ref` for forward-compatibility with `enableRefAsProp`.
+  delete json.props.ref;
+  return json;
+}
 
-    expect(instance.toJSON()).toMatchInlineSnapshot(`
+describe('Text', () => {
+  it('default render', async () => {
+    const instance = await render.create(<Text />);
+
+    expect(omitRef(instance.toJSON())).toMatchInlineSnapshot(`
       <RCTText
         accessible={true}
         allowFontScaling={true}
@@ -38,16 +44,16 @@ describe('Text', () => {
 });
 
 describe('Text compat with web', () => {
-  it('renders core props', () => {
+  it('renders core props', async () => {
     const props = {
       id: 'id',
       tabIndex: 0,
       testID: 'testID',
     };
 
-    const instance = render.create(<Text {...props} />);
+    const instance = await render.create(<Text {...props} />);
 
-    expect(instance.toJSON()).toMatchInlineSnapshot(`
+    expect(omitRef(instance.toJSON())).toMatchInlineSnapshot(`
       <RCTText
         accessible={true}
         allowFontScaling={true}
@@ -61,7 +67,7 @@ describe('Text compat with web', () => {
     `);
   });
 
-  it('renders "aria-*" props', () => {
+  it('renders "aria-*" props', async () => {
     const props = {
       'aria-activedescendant': 'activedescendant',
       'aria-atomic': true,
@@ -111,9 +117,9 @@ describe('Text compat with web', () => {
       'aria-valuetext': '3',
     };
 
-    const instance = render.create(<Text {...props} />);
+    const instance = await render.create(<Text {...props} />);
 
-    expect(instance.toJSON()).toMatchInlineSnapshot(`
+    expect(omitRef(instance.toJSON())).toMatchInlineSnapshot(`
       <RCTText
         accessibilityLabel="label"
         accessibilityState={
@@ -175,7 +181,7 @@ describe('Text compat with web', () => {
     `);
   });
 
-  it('renders styles', () => {
+  it('renders styles', async () => {
     const style = {
       display: 'flex',
       flex: 1,
@@ -185,9 +191,9 @@ describe('Text compat with web', () => {
       verticalAlign: 'middle',
     };
 
-    const instance = render.create(<Text style={style} />);
+    const instance = await render.create(<Text style={style} />);
 
-    expect(instance.toJSON()).toMatchInlineSnapshot(`
+    expect(omitRef(instance.toJSON())).toMatchInlineSnapshot(`
       <RCTText
         accessible={true}
         allowFontScaling={true}

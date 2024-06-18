@@ -8,10 +8,7 @@
  */
 
 import type * as React from 'react';
-import {Constructor} from '../../../types/private/Utilities';
-import {TimerMixin} from '../../../types/private/TimerMixin';
-import {NativeMethods} from '../../../types/public/ReactNativeTypes';
-import {TouchableMixin} from './Touchable';
+import {View} from '../../Components/View/View';
 import {TouchableWithoutFeedbackProps} from './TouchableWithoutFeedback';
 
 export interface TVProps {
@@ -79,14 +76,6 @@ export interface TouchableOpacityProps
  *
  * @see https://reactnative.dev/docs/touchableopacity
  */
-declare class TouchableOpacityComponent extends React.Component<TouchableOpacityProps> {}
-declare const TouchableOpacityBase: Constructor<TimerMixin> &
-  Constructor<TouchableMixin> &
-  Constructor<NativeMethods> &
-  typeof TouchableOpacityComponent;
-export class TouchableOpacity extends TouchableOpacityBase {
-  /**
-   * Animate the touchable to a new opacity.
-   */
-  setOpacityTo: (value: number) => void;
-}
+export const TouchableOpacity: React.ForwardRefExoticComponent<
+  React.PropsWithoutRef<TouchableOpacityProps> & React.RefAttributes<View>
+>;

@@ -9,14 +9,24 @@
 #include "SchedulerPriorityUtils.h"
 
 #include <cxxreact/ErrorUtils.h>
+#include <cxxreact/SystraceSection.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/consistency/ScopedShadowTreeRevisionLock.h>
-#include <react/renderer/debug/SystraceSection.h>
 #include <react/utils/OnScopeExit.h>
 #include <utility>
-#include "ErrorUtils.h"
 
 namespace facebook::react {
+
+namespace {
+std::chrono::milliseconds getResolvedTimeoutForIdleTask(
+    std::chrono::milliseconds customTimeout) {
+  return customTimeout <
+          timeoutForSchedulerPriority(SchedulerPriority::IdlePriority)
+      ? timeoutForSchedulerPriority(SchedulerPriority::LowPriority) +
+          customTimeout
+      : timeoutForSchedulerPriority(SchedulerPriority::IdlePriority);
+}
+} // namespace
 
 #pragma mark - Public
 
@@ -68,11 +78,50 @@ std::shared_ptr<Task> RuntimeScheduler_Modern::scheduleTask(
   return task;
 }
 
+std::shared_ptr<Task> RuntimeScheduler_Modern::scheduleIdleTask(
+    jsi::Function&& callback,
+    RuntimeSchedulerTimeout customTimeout) noexcept {
+  SystraceSection s(
+      "RuntimeScheduler::scheduleIdleTask",
+      "customTimeout",
+      customTimeout.count(),
+      "callbackType",
+      "jsi::Function");
+
+  auto timeout = getResolvedTimeoutForIdleTask(customTimeout);
+  auto expirationTime = now_() + timeout;
+  auto task = std::make_shared<Task>(
+      SchedulerPriority::IdlePriority, std::move(callback), expirationTime);
+
+  scheduleTask(task);
+
+  return task;
+}
+
+std::shared_ptr<Task> RuntimeScheduler_Modern::scheduleIdleTask(
+    RawCallback&& callback,
+    RuntimeSchedulerTimeout customTimeout) noexcept {
+  SystraceSection s(
+      "RuntimeScheduler::scheduleIdleTask",
+      "customTimeout",
+      customTimeout.count(),
+      "callbackType",
+      "RawCallback");
+
+  auto expirationTime = now_() + getResolvedTimeoutForIdleTask(customTimeout);
+  auto task = std::make_shared<Task>(
+      SchedulerPriority::IdlePriority, std::move(callback), expirationTime);
+
+  scheduleTask(task);
+
+  return task;
+}
+
 bool RuntimeScheduler_Modern::getShouldYield() const noexcept {
   std::shared_lock lock(schedulingMutex_);
 
   return syncTaskRequests_ > 0 ||
-      (!taskQueue_.empty() && taskQueue_.top() != currentTask_);
+      (!taskQueue_.empty() && taskQueue_.top().get() != currentTask_);
 }
 
 void RuntimeScheduler_Modern::cancelTask(Task& task) noexcept {
@@ -92,25 +141,33 @@ void RuntimeScheduler_Modern::executeNowOnTheSameThread(
     RawCallback&& callback) {
   SystraceSection s("RuntimeScheduler::executeNowOnTheSameThread");
 
-  syncTaskRequests_++;
+  static thread_local jsi::Runtime* runtimePtr = nullptr;
 
-  executeSynchronouslyOnSameThread_CAN_DEADLOCK(
-      runtimeExecutor_,
-      [this, callback = std::move(callback)](jsi::Runtime& runtime) mutable {
-        SystraceSection s2(
-            "RuntimeScheduler::executeNowOnTheSameThread callback");
+  auto currentTime = now_();
+  auto priority = SchedulerPriority::ImmediatePriority;
+  auto expirationTime = currentTime + timeoutForSchedulerPriority(priority);
+  Task task{priority, std::move(callback), expirationTime};
 
-        syncTaskRequests_--;
+  if (runtimePtr == nullptr) {
+    syncTaskRequests_++;
+    executeSynchronouslyOnSameThread_CAN_DEADLOCK(
+        runtimeExecutor_,
+        [this, currentTime, &task](jsi::Runtime& runtime) mutable {
+          SystraceSection s2(
+              "RuntimeScheduler::executeNowOnTheSameThread callback");
 
-        auto currentTime = now_();
-        auto priority = SchedulerPriority::ImmediatePriority;
-        auto expirationTime =
-            currentTime + timeoutForSchedulerPriority(priority);
-        auto task = std::make_shared<Task>(
-            priority, std::move(callback), expirationTime);
+          syncTaskRequests_--;
+          runtimePtr = &runtime;
+          executeTask(runtime, task, currentTime);
+          runtimePtr = nullptr;
+        });
 
-        executeTask(runtime, task, currentTime);
-      });
+  } else {
+    // Protecting against re-entry into `executeNowOnTheSameThread` from within
+    // `executeNowOnTheSameThread`. Without accounting for re-rentry, a deadlock
+    // will occur when trying to gain access to the runtime.
+    return executeTask(*runtimePtr, task, currentTime);
+  }
 
   bool shouldScheduleWorkLoop = false;
 
@@ -197,21 +254,17 @@ void RuntimeScheduler_Modern::startWorkLoop(
 
   auto previousPriority = currentPriority_;
 
-  try {
-    while (syncTaskRequests_ == 0) {
-      auto currentTime = now_();
-      auto topPriorityTask = selectTask(currentTime, onlyExpired);
+  while (syncTaskRequests_ == 0) {
+    auto currentTime = now_();
+    auto topPriorityTask = selectTask(currentTime, onlyExpired);
 
-      if (!topPriorityTask) {
-        // No pending work to do.
-        // Events will restart the loop when necessary.
-        break;
-      }
-
-      executeTask(runtime, topPriorityTask, currentTime);
+    if (!topPriorityTask) {
+      // No pending work to do.
+      // Events will restart the loop when necessary.
+      break;
     }
-  } catch (jsi::JSError& error) {
-    handleFatalError(runtime, error);
+
+    executeTask(runtime, *topPriorityTask, currentTime);
   }
 
   currentPriority_ = previousPriority;
@@ -246,19 +299,19 @@ std::shared_ptr<Task> RuntimeScheduler_Modern::selectTask(
 
 void RuntimeScheduler_Modern::executeTask(
     jsi::Runtime& runtime,
-    const std::shared_ptr<Task>& task,
+    Task& task,
     RuntimeSchedulerTimePoint currentTime) {
-  auto didUserCallbackTimeout = task->expirationTime <= currentTime;
+  auto didUserCallbackTimeout = task.expirationTime <= currentTime;
 
   SystraceSection s(
       "RuntimeScheduler::executeTask",
       "priority",
-      serialize(task->priority),
+      serialize(task.priority),
       "didUserCallbackTimeout",
       didUserCallbackTimeout);
 
-  currentTask_ = task;
-  currentPriority_ = task->priority;
+  currentTask_ = &task;
+  currentPriority_ = task.priority;
 
   {
     ScopedShadowTreeRevisionLock revisionLock(
@@ -276,6 +329,8 @@ void RuntimeScheduler_Modern::executeTask(
       updateRendering();
     }
   }
+
+  currentTask_ = nullptr;
 }
 
 /**
@@ -297,16 +352,20 @@ void RuntimeScheduler_Modern::updateRendering() {
 
 void RuntimeScheduler_Modern::executeMacrotask(
     jsi::Runtime& runtime,
-    std::shared_ptr<Task> task,
+    Task& task,
     bool didUserCallbackTimeout) const {
   SystraceSection s("RuntimeScheduler::executeMacrotask");
 
-  auto result = task->execute(runtime, didUserCallbackTimeout);
+  try {
+    auto result = task.execute(runtime, didUserCallbackTimeout);
 
-  if (result.isObject() && result.getObject(runtime).isFunction(runtime)) {
-    // If the task returned a continuation callback, we re-assign it to the task
-    // and keep the task in the queue.
-    task->callback = result.getObject(runtime).getFunction(runtime);
+    if (result.isObject() && result.getObject(runtime).isFunction(runtime)) {
+      // If the task returned a continuation callback, we re-assign it to the
+      // task and keep the task in the queue.
+      task.callback = result.getObject(runtime).getFunction(runtime);
+    }
+  } catch (jsi::JSError& error) {
+    handleJSError(runtime, error, true);
   }
 }
 

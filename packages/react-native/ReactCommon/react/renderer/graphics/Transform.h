@@ -47,9 +47,10 @@ enum class TransformOperationType {
 
 struct TransformOperation {
   TransformOperationType type;
-  Float x;
-  Float y;
-  Float z;
+  ValueUnit x;
+  ValueUnit y;
+  ValueUnit z;
+  bool operator==(const TransformOperation& other) const = default;
 };
 
 struct TransformOrigin {
@@ -88,7 +89,8 @@ struct Transform {
    * Given a TransformOperation, return the proper transform.
    */
   static Transform FromTransformOperation(
-      TransformOperation transformOperation);
+      TransformOperation transformOperation,
+      const Size& size);
   static TransformOperation DefaultTransformOperation(
       TransformOperationType type);
 
@@ -151,7 +153,8 @@ struct Transform {
   static Transform Interpolate(
       Float animationProgress,
       const Transform& lhs,
-      const Transform& rhs);
+      const Transform& rhs,
+      const Size& size);
 
   static bool isVerticalInversion(const Transform& transform);
   static bool isHorizontalInversion(const Transform& transform);

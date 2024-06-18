@@ -124,6 +124,7 @@ class RNTesterPlatformTestEventRecorder {
               'on' + eventName[0].toUpperCase() + eventName.slice(1);
             return {
               ...acc,
+              // $FlowFixMe[missing-local-annot]
               [eventPropName]: e => {
                 recordedEventHandler(e, eventName);
               },

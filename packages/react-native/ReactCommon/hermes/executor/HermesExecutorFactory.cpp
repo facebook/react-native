@@ -13,6 +13,7 @@
 #include <jsi/decorator.h>
 #include <jsinspector-modern/InspectorFlags.h>
 
+#include <hermes/inspector-modern/chrome/HermesRuntimeTargetDelegate.h>
 #include <hermes/inspector-modern/chrome/Registration.h>
 #include <hermes/inspector/RuntimeAdapter.h>
 
@@ -202,8 +203,7 @@ std::unique_ptr<JSExecutor> HermesExecutorFactory::createJSExecutor(
 
   HermesRuntime& hermesRuntimeRef = *hermesRuntime;
   auto& inspectorFlags = jsinspector_modern::InspectorFlags::getInstance();
-  bool enableDebugger =
-      !inspectorFlags.getEnableModernCDPRegistry() && enableDebugger_;
+  bool enableDebugger = !inspectorFlags.getFuseboxEnabled() && enableDebugger_;
   auto decoratedRuntime = std::make_shared<DecoratedRuntime>(
       std::move(hermesRuntime),
       hermesRuntimeRef,
@@ -258,7 +258,9 @@ HermesExecutor::HermesExecutor(
 jsinspector_modern::RuntimeTargetDelegate&
 HermesExecutor::getRuntimeTargetDelegate() {
   if (!targetDelegate_) {
-    targetDelegate_.emplace(hermesRuntime_);
+    targetDelegate_ =
+        std::make_unique<jsinspector_modern::HermesRuntimeTargetDelegate>(
+            hermesRuntime_);
   }
   return *targetDelegate_;
 }

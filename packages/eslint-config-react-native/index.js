@@ -312,7 +312,7 @@ module.exports = {
     'react/no-did-mount-set-state': 1,
     'react/no-did-update-set-state': 1,
     'react/no-multi-comp': 0,
-    'react/no-string-refs': 1,
+    'react/no-string-refs': 2,
     'react/no-unknown-property': 0,
     'react/no-unstable-nested-components': 1,
     'react/prop-types': 0,

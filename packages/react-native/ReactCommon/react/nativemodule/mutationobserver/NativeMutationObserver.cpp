@@ -6,9 +6,9 @@
  */
 
 #include "NativeMutationObserver.h"
+#include <cxxreact/SystraceSection.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/core/ShadowNode.h>
-#include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
 #include <react/renderer/uimanager/primitives.h>
 

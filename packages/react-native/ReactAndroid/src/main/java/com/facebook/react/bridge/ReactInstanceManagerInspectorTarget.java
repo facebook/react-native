@@ -7,14 +7,20 @@
 
 package com.facebook.react.bridge;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStripAny;
 import java.util.concurrent.Executor;
+import javax.annotation.Nullable;
 
 @DoNotStripAny
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ReactInstanceManagerInspectorTarget implements AutoCloseable {
+  @DoNotStripAny
   public interface TargetDelegate {
     public void onReload();
+
+    public void onSetPausedInDebuggerMessage(@Nullable String message);
   }
 
   private final HybridData mHybridData;
@@ -37,8 +43,14 @@ public class ReactInstanceManagerInspectorTarget implements AutoCloseable {
 
   private native HybridData initHybrid(Executor executor, TargetDelegate delegate);
 
+  public native void sendDebuggerResumeCommand();
+
   public void close() {
     mHybridData.resetNative();
+  }
+
+  /*internal*/ boolean isValid() {
+    return mHybridData.isValid();
   }
 
   static {

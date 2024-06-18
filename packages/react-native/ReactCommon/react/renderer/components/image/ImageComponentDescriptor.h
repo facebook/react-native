@@ -9,10 +9,10 @@
 
 #include <react/renderer/components/image/ImageShadowNode.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
-#include <react/renderer/imagemanager/ImageManager.h>
-#include <react/utils/ContextContainer.h>
 
 namespace facebook::react {
+
+class ImageManager;
 
 /*
  * Descriptor for <Image> component.
@@ -20,22 +20,13 @@ namespace facebook::react {
 class ImageComponentDescriptor final
     : public ConcreteComponentDescriptor<ImageShadowNode> {
  public:
-  ImageComponentDescriptor(const ComponentDescriptorParameters& parameters)
-      : ConcreteComponentDescriptor(parameters),
-        imageManager_(std::make_shared<ImageManager>(contextContainer_)){};
+  explicit ImageComponentDescriptor(
+      const ComponentDescriptorParameters& parameters);
 
-  void adopt(ShadowNode& shadowNode) const override {
-    ConcreteComponentDescriptor::adopt(shadowNode);
-
-    auto& imageShadowNode = static_cast<ImageShadowNode&>(shadowNode);
-
-    // `ImageShadowNode` uses `ImageManager` to initiate image loading and
-    // communicate the loading state and results to mounting layer.
-    imageShadowNode.setImageManager(imageManager_);
-  }
+  void adopt(ShadowNode& shadowNode) const override;
 
  private:
-  const SharedImageManager imageManager_;
+  const std::shared_ptr<ImageManager> imageManager_;
 };
 
 } // namespace facebook::react

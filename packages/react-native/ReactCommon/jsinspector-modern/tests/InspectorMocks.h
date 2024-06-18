@@ -118,7 +118,15 @@ class MockInspectorPackagerConnectionDelegate
 class MockHostTargetDelegate : public HostTargetDelegate {
  public:
   // HostTargetDelegate methods
+  HostTargetMetadata getMetadata() override {
+    return {.integrationName = "MockHostTargetDelegate"};
+  }
   MOCK_METHOD(void, onReload, (const PageReloadRequest& request), (override));
+  MOCK_METHOD(
+      void,
+      onSetPausedInDebuggerMessage,
+      (const OverlaySetPausedInDebuggerMessageRequest& request),
+      (override));
 };
 
 class MockInstanceTargetDelegate : public InstanceTargetDelegate {};
@@ -142,6 +150,11 @@ class MockRuntimeTargetDelegate : public RuntimeTargetDelegate {
       (jsi::Runtime & runtime, ConsoleMessage message),
       (override));
   MOCK_METHOD(bool, supportsConsole, (), (override, const));
+  MOCK_METHOD(
+      std::unique_ptr<StackTrace>,
+      captureStackTrace,
+      (jsi::Runtime & runtime, size_t framesToSkip),
+      (override));
 };
 
 class MockRuntimeAgentDelegate : public RuntimeAgentDelegate {

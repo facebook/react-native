@@ -11,6 +11,7 @@
 #import <React/RCTRootView.h>
 #import <React/RCTSurfacePresenterBridgeAdapter.h>
 #import <React/RCTUtils.h>
+#import <ReactCommon/RCTHost.h>
 #import <objc/runtime.h>
 #import <react/featureflags/ReactNativeFeatureFlags.h>
 #import <react/featureflags/ReactNativeFeatureFlagsDefaults.h>
@@ -30,11 +31,9 @@
 #else
 #import <ReactCommon/RCTJscInstance.h>
 #endif
-#import <react/nativemodule/dom/NativeDOM.h>
-#import <react/nativemodule/featureflags/NativeReactNativeFeatureFlags.h>
-#import <react/nativemodule/microtasks/NativeMicrotasks.h>
+#import <react/nativemodule/defaults/DefaultTurboModules.h>
 
-@interface RCTAppDelegate () <RCTComponentViewFactoryComponentProvider>
+@interface RCTAppDelegate () <RCTComponentViewFactoryComponentProvider, RCTHostDelegate>
 @end
 
 @implementation RCTAppDelegate
@@ -56,8 +55,6 @@
   if (self.newArchEnabled || self.fabricEnabled) {
     [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
   }
-  [self _logWarnIfCreateRootViewWithBridgeIsOverridden];
-  [self customizeRootView:(RCTRootView *)rootView];
 
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
   UIViewController *rootViewController = [self createRootViewController];
@@ -96,21 +93,6 @@
   rootView.backgroundColor = [UIColor systemBackgroundColor];
 
   return rootView;
-}
-
-// TODO T173939093 - Remove _logWarnIfCreateRootViewWithBridgeIsOverridden after 0.74 is cut
-- (void)_logWarnIfCreateRootViewWithBridgeIsOverridden
-{
-  SEL selector = @selector(createRootViewWithBridge:moduleName:initProps:);
-  IMP baseClassImp = method_getImplementation(class_getInstanceMethod([RCTAppDelegate class], selector));
-  IMP currentClassImp = method_getImplementation(class_getInstanceMethod([self class], selector));
-  if (currentClassImp != baseClassImp) {
-    NSString *warnMessage =
-        @"If you are using the `createRootViewWithBridge` to customize the root view appearence,"
-         "for example to set the backgroundColor, please migrate to `customiseView` method.\n"
-         "The `createRootViewWithBridge` method is not invoked in bridgeless.";
-    RCTLogWarn(@"%@", warnMessage);
-  }
 }
 
 - (UIViewController *)createRootViewController
@@ -169,11 +151,30 @@
   return [self newArchEnabled];
 }
 
+- (BOOL)unstable_fuseboxEnabled
+{
+  return NO;
+}
+
 - (NSURL *)bundleURL
 {
   [NSException raise:@"RCTAppDelegate::bundleURL not implemented"
               format:@"Subclasses must implement a valid getBundleURL method"];
   return nullptr;
+}
+
+#pragma mark - RCTHostDelegate
+
+- (void)hostDidStart:(RCTHost *)host
+{
+}
+
+- (void)host:(RCTHost *)host
+    didReceiveJSErrorStack:(NSArray<NSDictionary<NSString *, id> *> *)stack
+                   message:(NSString *)message
+               exceptionId:(NSUInteger)exceptionId
+                   isFatal:(BOOL)isFatal
+{
 }
 
 #pragma mark - Bridge and Bridge Adapter properties
@@ -212,19 +213,7 @@
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
                                                       jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
 {
-  if (name == facebook::react::NativeReactNativeFeatureFlags::kModuleName) {
-    return std::make_shared<facebook::react::NativeReactNativeFeatureFlags>(jsInvoker);
-  }
-
-  if (name == facebook::react::NativeMicrotasks::kModuleName) {
-    return std::make_shared<facebook::react::NativeMicrotasks>(jsInvoker);
-  }
-
-  if (name == facebook::react::NativeDOM::kModuleName) {
-    return std::make_shared<facebook::react::NativeDOM>(jsInvoker);
-  }
-
-  return nullptr;
+  return facebook::react::DefaultTurboModules::getTurboModule(name, jsInvoker);
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
@@ -248,27 +237,47 @@
 
 - (RCTRootViewFactory *)createRCTRootViewFactory
 {
-  RCTRootViewFactoryConfiguration *configuration =
-      [[RCTRootViewFactoryConfiguration alloc] initWithBundleURL:self.bundleURL
-                                                  newArchEnabled:self.fabricEnabled
-                                              turboModuleEnabled:self.turboModuleEnabled
-                                               bridgelessEnabled:self.bridgelessEnabled];
-
   __weak __typeof(self) weakSelf = self;
-  configuration.createRootViewWithBridge = ^UIView *(RCTBridge *bridge, NSString *moduleName, NSDictionary *initProps)
-  {
+  RCTBundleURLBlock bundleUrlBlock = ^{
+    RCTAppDelegate *strongSelf = weakSelf;
+    return strongSelf.bundleURL;
+  };
+
+  RCTRootViewFactoryConfiguration *configuration =
+      [[RCTRootViewFactoryConfiguration alloc] initWithBundleURLBlock:bundleUrlBlock
+                                                       newArchEnabled:self.fabricEnabled
+                                                   turboModuleEnabled:self.turboModuleEnabled
+                                                    bridgelessEnabled:self.bridgelessEnabled];
+
+  configuration.createRootViewWithBridge = ^UIView *(RCTBridge *bridge, NSString *moduleName, NSDictionary *initProps) {
     return [weakSelf createRootViewWithBridge:bridge moduleName:moduleName initProps:initProps];
   };
 
-  configuration.createBridgeWithDelegate = ^RCTBridge *(id<RCTBridgeDelegate> delegate, NSDictionary *launchOptions)
-  {
+  configuration.createBridgeWithDelegate = ^RCTBridge *(id<RCTBridgeDelegate> delegate, NSDictionary *launchOptions) {
     return [weakSelf createBridgeWithDelegate:delegate launchOptions:launchOptions];
+  };
+
+  configuration.customizeRootView = ^(UIView *_Nonnull rootView) {
+    [weakSelf customizeRootView:(RCTRootView *)rootView];
   };
 
   configuration.sourceURLForBridge = ^NSURL *_Nullable(RCTBridge *_Nonnull bridge)
   {
     return [weakSelf sourceURLForBridge:bridge];
   };
+
+  configuration.hostDidStartBlock = ^(RCTHost *_Nonnull host) {
+    [weakSelf hostDidStart:host];
+  };
+
+  configuration.hostDidReceiveJSErrorStackBlock =
+      ^(RCTHost *_Nonnull host,
+        NSArray<NSDictionary<NSString *, id> *> *_Nonnull stack,
+        NSString *_Nonnull message,
+        NSUInteger exceptionId,
+        BOOL isFatal) {
+        [weakSelf host:host didReceiveJSErrorStack:stack message:message exceptionId:exceptionId isFatal:isFatal];
+      };
 
   if ([self respondsToSelector:@selector(extraModulesForBridge:)]) {
     configuration.extraModulesForBridge = ^NSArray<id<RCTBridgeModule>> *_Nonnull(RCTBridge *_Nonnull bridge)
@@ -296,8 +305,26 @@
 
 #pragma mark - Feature Flags
 
-class RCTAppDelegateBridgelessFeatureFlags : public facebook::react::ReactNativeFeatureFlagsDefaults {
+class RCTAppDelegateFeatureFlags : public facebook::react::ReactNativeFeatureFlagsDefaults {
  public:
+  RCTAppDelegateFeatureFlags(bool fuseboxEnabled)
+  {
+    fuseboxEnabled_ = fuseboxEnabled;
+  }
+
+  bool fuseboxEnabledDebug() override
+  {
+    return fuseboxEnabled_;
+  }
+
+ private:
+  bool fuseboxEnabled_;
+};
+
+class RCTAppDelegateBridgelessFeatureFlags : public RCTAppDelegateFeatureFlags {
+ public:
+  RCTAppDelegateBridgelessFeatureFlags(bool fuseboxEnabled) : RCTAppDelegateFeatureFlags(fuseboxEnabled) {}
+
   bool useModernRuntimeScheduler() override
   {
     return true;
@@ -315,7 +342,11 @@ class RCTAppDelegateBridgelessFeatureFlags : public facebook::react::ReactNative
 - (void)_setUpFeatureFlags
 {
   if ([self bridgelessEnabled]) {
-    facebook::react::ReactNativeFeatureFlags::override(std::make_unique<RCTAppDelegateBridgelessFeatureFlags>());
+    facebook::react::ReactNativeFeatureFlags::override(
+        std::make_unique<RCTAppDelegateBridgelessFeatureFlags>([self unstable_fuseboxEnabled]));
+  } else {
+    facebook::react::ReactNativeFeatureFlags::override(
+        std::make_unique<RCTAppDelegateFeatureFlags>([self unstable_fuseboxEnabled]));
   }
 }
 

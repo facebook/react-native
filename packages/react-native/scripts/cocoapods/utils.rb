@@ -44,6 +44,7 @@ class ReactNativePodsUtils
     def self.set_gcc_preprocessor_definition_for_React_hermes(installer)
         self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1", "React-hermes", "Debug")
         self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1", "hermes-engine", "Debug")
+        self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1", "React-RuntimeHermes", "Debug")
     end
 
     def self.turn_off_resource_bundle_react_core(installer)
@@ -60,26 +61,15 @@ class ReactNativePodsUtils
         end
     end
 
-    def self.set_use_hermes_build_setting(installer, hermes_enabled)
-        Pod::UI.puts("Setting USE_HERMES build settings")
+    def self.set_build_setting(installer, build_setting:, value:, config_name: nil)
+        Pod::UI.puts("Setting #{build_setting} build settings")
         projects = self.extract_projects(installer)
 
         projects.each do |project|
             project.build_configurations.each do |config|
-                config.build_settings["USE_HERMES"] = hermes_enabled
-            end
-
-            project.save()
-        end
-    end
-
-    def self.set_node_modules_user_settings(installer, react_native_path)
-        Pod::UI.puts("Setting REACT_NATIVE build settings")
-        projects = self.extract_projects(installer)
-
-        projects.each do |project|
-            project.build_configurations.each do |config|
-                config.build_settings["REACT_NATIVE_PATH"] = File.join("${PODS_ROOT}", "..", react_native_path)
+                if config_name == nil || config.name == config_name
+                    config.build_settings[build_setting] = value
+                end
             end
 
             project.save()
@@ -98,11 +88,12 @@ class ReactNativePodsUtils
             Pod::UI.puts("#{message_prefix}: Ccache found at #{ccache_path}")
         end
 
+        # Using scripts wrapping the ccache executable, to allow injection of configurations
+        ccache_clang_sh = File.join("$(REACT_NATIVE_PATH)", 'scripts', 'xcode', 'ccache-clang.sh')
+        ccache_clangpp_sh = File.join("$(REACT_NATIVE_PATH)", 'scripts', 'xcode', 'ccache-clang++.sh')
+
         if ccache_available and ccache_enabled
             Pod::UI.puts("#{message_prefix}: Setting CC, LD, CXX & LDPLUSPLUS build settings")
-            # Using scripts wrapping the ccache executable, to allow injection of configurations
-            ccache_clang_sh = File.join("$(REACT_NATIVE_PATH)", 'scripts', 'xcode', 'ccache-clang.sh')
-            ccache_clangpp_sh = File.join("$(REACT_NATIVE_PATH)", 'scripts', 'xcode', 'ccache-clang++.sh')
 
             projects.each do |project|
                 project.build_configurations.each do |config|
@@ -119,6 +110,20 @@ class ReactNativePodsUtils
             Pod::UI.puts("#{message_prefix}: Pass ':ccache_enabled => true' to 'react_native_post_install' in your Podfile or set environment variable 'USE_CCACHE=1' to increase the speed of subsequent builds")
         elsif !ccache_available and ccache_enabled
             Pod::UI.warn("#{message_prefix}: Install ccache or ensure your neither passing ':ccache_enabled => true' nor setting environment variable 'USE_CCACHE=1'")
+        else
+            Pod::UI.puts("#{message_prefix}: Removing Ccache from CC, LD, CXX & LDPLUSPLUS build settings")
+
+            projects.each do |project|
+                project.build_configurations.each do |config|
+                    # Using the un-qualified names means you can swap in different implementations, for example ccache
+                    config.build_settings["CC"] = config.build_settings["CC"] ? config.build_settings["CC"].gsub(/#{Regexp.escape(ccache_clang_sh)}/, '') : ""
+                    config.build_settings["LD"] = config.build_settings["LD"] ? config.build_settings["LD"].gsub(/#{Regexp.escape(ccache_clang_sh)}/, "") : ""
+                    config.build_settings["CXX"] = config.build_settings["CXX"] ? config.build_settings["CXX"].gsub(/#{Regexp.escape(ccache_clangpp_sh)}/, "") : ""
+                    config.build_settings["LDPLUSPLUS"] = config.build_settings["LDPLUSPLUS"] ? config.build_settings["LDPLUSPLUS"].gsub(/#{Regexp.escape(ccache_clangpp_sh)}/, "") : ""
+                end
+
+                project.save()
+            end
         end
     end
 
@@ -574,44 +579,6 @@ class ReactNativePodsUtils
         header_search_paths = ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-Fabric", "React_Fabric", ["react/renderer/imagemanager/platform/ios"])
             .map { |search_path| "\"#{search_path}\"" }
         ReactNativePodsUtils.update_header_paths_if_depends_on(target_installation_result, "React-ImageManager", header_search_paths)
-    end
-
-    def self.get_privacy_manifest_paths_from(user_project)
-        privacy_manifests = user_project
-            .files
-            .select { |p|
-                p.path&.end_with?('PrivacyInfo.xcprivacy')
-            }
-        return privacy_manifests
-    end
-
-    def self.add_privacy_manifest_if_needed(installer)
-        user_project = installer.aggregate_targets
-                    .map{ |t| t.user_project }
-                    .first
-        privacy_manifest = self.get_privacy_manifest_paths_from(user_project).first
-        if privacy_manifest.nil?
-            file_timestamp_reason = {
-                "NSPrivacyAccessedAPIType" => "NSPrivacyAccessedAPICategoryFileTimestamp",
-                "NSPrivacyAccessedAPITypeReasons" => ["C617.1"],
-            }
-            user_defaults_reason = {
-                "NSPrivacyAccessedAPIType" => "NSPrivacyAccessedAPICategoryUserDefaults",
-                "NSPrivacyAccessedAPITypeReasons" => ["CA92.1"],
-            }
-            boot_time_reason = {
-                "NSPrivacyAccessedAPIType" => "NSPrivacyAccessedAPICategorySystemBootTime",
-                "NSPrivacyAccessedAPITypeReasons" => ["35F9.1"],
-            }
-            privacy_manifest = {
-                "NSPrivacyCollectedDataTypes" => [],
-                "NSPrivacyTracking" => false,
-                "NSPrivacyAccessedAPITypes" => [file_timestamp_reason, user_defaults_reason, boot_time_reason]
-            }
-            path = File.join(user_project.path.parent, "PrivacyInfo.xcprivacy")
-            Xcodeproj::Plist.write_to_path(privacy_manifest, path)
-            Pod::UI.puts "Your app does not have a privacy manifest! A template has been generated containing Required Reasons API usage in the core React Native library. Please add the PrivacyInfo.xcprivacy file to your project and complete data use, tracking and any additional required reasons your app is using according to Apple's guidance: https://developer.apple.com/.../privacy_manifest_files. Then, you will need to manually add this file to your project in Xcode.".red
-        end
     end
 
     def self.react_native_pods

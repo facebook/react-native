@@ -12,6 +12,14 @@
 
 import type {FeatureFlagDefinitions} from './types';
 
+/**
+ * This is the source of truth for React Native feature flags.
+ *
+ * If you modify this file, you need to update all the generated files
+ * running the following script from the repo root:
+ *   yarn featureflags-update
+ */
+
 // These flags are only used in tests for the feature flags system
 const testDefinitions: FeatureFlagDefinitions = {
   common: {
@@ -31,11 +39,25 @@ const testDefinitions: FeatureFlagDefinitions = {
 const definitions: FeatureFlagDefinitions = {
   common: {
     ...testDefinitions.common,
-
+    allowCollapsableChildren: {
+      defaultValue: true,
+      description:
+        'Enables the differentiator to understand the "collapsableChildren" prop',
+    },
+    allowRecursiveCommitsWithSynchronousMountOnAndroid: {
+      defaultValue: false,
+      description:
+        'Adds support for recursively processing commits that mount synchronously (Android only).',
+    },
     batchRenderingUpdatesInEventLoop: {
       defaultValue: false,
       description:
         'When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.',
+    },
+    destroyFabricSurfacesInReactInstanceManager: {
+      defaultValue: false,
+      description:
+        'When enabled, ReactInstanceManager will clean up Fabric surfaces on destroy().',
     },
     enableBackgroundExecutor: {
       defaultValue: false,
@@ -46,30 +68,15 @@ const definitions: FeatureFlagDefinitions = {
       defaultValue: false,
       description: 'Clean yoga node when <TextInput /> does not change.',
     },
-    enableCustomDrawOrderFabric: {
+    enableGranularShadowTreeStateReconciliation: {
       defaultValue: false,
       description:
-        'When enabled, Fabric will use customDrawOrder in ReactViewGroup (similar to old architecture).',
-    },
-    enableFixForClippedSubviewsCrash: {
-      defaultValue: false,
-      description:
-        'Attempt at fixing a crash related to subview clipping on Android. This is a kill switch for the fix',
+        'When enabled, the renderer would only fail commits when they propagate state and the last commit that updated state changed before committing.',
     },
     enableMicrotasks: {
       defaultValue: false,
       description:
         'Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).',
-    },
-    enableMountHooksAndroid: {
-      defaultValue: false,
-      description:
-        'Enables the notification of mount operations to mount hooks on Android.',
-    },
-    enableSpannableBuildingUnification: {
-      defaultValue: false,
-      description:
-        'Uses new, deduplicated logic for constructing Android Spannables from text fragments',
     },
     enableSynchronousStateUpdates: {
       defaultValue: false,
@@ -81,15 +88,44 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).',
     },
-    inspectorEnableCxxInspectorPackagerConnection: {
+    fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak: {
       defaultValue: false,
       description:
-        'Flag determining if the C++ implementation of InspectorPackagerConnection should be used instead of the per-platform one. This flag is global and should not be changed across React Host lifetimes.',
+        'Fixes a leak in SurfaceMountingManager.mRemoveDeleteTreeUIFrameCallback',
     },
-    inspectorEnableModernCDPRegistry: {
+    forceBatchingMountItemsOnAndroid: {
       defaultValue: false,
       description:
-        'Flag determining if the modern CDP backend should be enabled. This flag is global and should not be changed across React Host lifetimes.',
+        'Forces the mounting layer on Android to always batch mount items instead of dispatching them immediately. This might fix some crashes related to synchronous state updates, where some views dispatch state updates during mount.',
+    },
+    fuseboxEnabledDebug: {
+      defaultValue: false,
+      description:
+        'Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled in debug builds. This flag is global and should not be changed across React Host lifetimes.',
+    },
+    fuseboxEnabledRelease: {
+      defaultValue: false,
+      description:
+        'Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled in release builds. This flag is global and should not be changed across React Host lifetimes.',
+    },
+    lazyAnimationCallbacks: {
+      defaultValue: false,
+      description:
+        'Only enqueue Choreographer calls if there is an ongoing animation, instead of enqueueing every frame.',
+    },
+    preventDoubleTextMeasure: {
+      defaultValue: true,
+      description:
+        'When enabled, ParagraphShadowNode will no longer call measure twice.',
+    },
+    setAndroidLayoutDirection: {
+      defaultValue: false,
+      description: 'Propagate layout direction to Android views.',
+    },
+    useImmediateExecutorInAndroidBridgeless: {
+      defaultValue: false,
+      description:
+        'Invoke callbacks immediately on the ReactInstance rather than going through a background thread for synchronization',
     },
     useModernRuntimeScheduler: {
       defaultValue: false,
@@ -100,6 +136,21 @@ const definitions: FeatureFlagDefinitions = {
       defaultValue: false,
       description:
         'When enabled, the native view configs are used in bridgeless mode.',
+    },
+    useRuntimeShadowNodeReferenceUpdate: {
+      defaultValue: false,
+      description:
+        'When enabled, cloning shadow nodes within react native will update the reference held by the current JS fiber tree.',
+    },
+    useRuntimeShadowNodeReferenceUpdateOnLayout: {
+      defaultValue: false,
+      description:
+        'When enabled, cloning shadow nodes during layout will update the reference held by the current JS fiber tree.',
+    },
+    useStateAlignmentMechanism: {
+      defaultValue: false,
+      description:
+        'When enabled, it uses optimised state reconciliation algorithm.',
     },
   },
 

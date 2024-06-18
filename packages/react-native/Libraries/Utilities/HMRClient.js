@@ -70,7 +70,7 @@ const HMRClient: HMRClientNativeInterface = {
     }
 
     invariant(hmrClient, 'Expected HMRClient.setup() call at startup.');
-    const LoadingView = require('./LoadingView');
+    const DevLoadingView = require('./DevLoadingView');
 
     // We use this for internal logging only.
     // It doesn't affect the logic.
@@ -81,13 +81,13 @@ const HMRClient: HMRClientNativeInterface = {
     const hasUpdates = hmrClient.hasPendingUpdates();
 
     if (hasUpdates) {
-      LoadingView.showMessage('Refreshing...', 'refresh');
+      DevLoadingView.showMessage('Refreshing...', 'refresh');
     }
     try {
       hmrClient.enable();
     } finally {
       if (hasUpdates) {
-        LoadingView.hide();
+        DevLoadingView.hide();
       }
     }
 
@@ -181,7 +181,7 @@ const HMRClient: HMRClientNativeInterface = {
     invariant(!hmrClient, 'Cannot initialize hmrClient twice');
 
     // Moving to top gives errors due to NativeModules not being initialized
-    const LoadingView = require('./LoadingView');
+    const DevLoadingView = require('./DevLoadingView');
 
     const serverHost = port !== null && port !== '' ? `${host}:${port}` : host;
 
@@ -230,7 +230,7 @@ Error: ${e.message}`;
       didConnect = true;
 
       if (client.isEnabled() && !isInitialUpdate) {
-        LoadingView.showMessage('Refreshing...', 'refresh');
+        DevLoadingView.showMessage('Refreshing...', 'refresh');
       }
     });
 
@@ -242,11 +242,11 @@ Error: ${e.message}`;
     });
 
     client.on('update-done', () => {
-      LoadingView.hide();
+      DevLoadingView.hide();
     });
 
     client.on('error', data => {
-      LoadingView.hide();
+      DevLoadingView.hide();
 
       if (data.type === 'GraphNotFoundError') {
         client.close();
@@ -267,7 +267,7 @@ Error: ${e.message}`;
     });
 
     client.on('close', closeEvent => {
-      LoadingView.hide();
+      DevLoadingView.hide();
 
       // https://www.rfc-editor.org/rfc/rfc6455.html#section-7.4.1
       // https://www.rfc-editor.org/rfc/rfc6455.html#section-7.1.5

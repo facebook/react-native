@@ -34,22 +34,20 @@ void ReactInstanceIntegrationTest::SetUp() {
   auto timerManager =
       std::make_shared<react::TimerManager>(std::move(mockRegistry));
 
-  auto jsErrorHandlingFunc =
-      [](const JsErrorHandler::ParsedError& errorMap) noexcept {
-        LOG(INFO) << "[jsErrorHandlingFunc called]";
-        LOG(INFO) << "message: " << errorMap.message;
-        LOG(INFO) << "exceptionId: " << std::to_string(errorMap.exceptionId);
-        LOG(INFO) << "isFatal: "
-                  << std::to_string(static_cast<int>(errorMap.isFatal));
-        auto frames = errorMap.frames;
-        for (const auto& mapBuffer : frames) {
-          LOG(INFO) << "[Frame]" << std::endl
-                    << "\tfile: " << mapBuffer.fileName;
-          LOG(INFO) << "\tmethodName: " << mapBuffer.methodName;
-          LOG(INFO) << "\tlineNumber: " << std::to_string(mapBuffer.lineNumber);
-          LOG(INFO) << "\tcolumn: " << std::to_string(mapBuffer.columnNumber);
-        }
-      };
+  auto onJsError = [](const JsErrorHandler::ParsedError& errorMap) noexcept {
+    LOG(INFO) << "[jsErrorHandlingFunc called]";
+    LOG(INFO) << "message: " << errorMap.message;
+    LOG(INFO) << "exceptionId: " << std::to_string(errorMap.exceptionId);
+    LOG(INFO) << "isFatal: "
+              << std::to_string(static_cast<int>(errorMap.isFatal));
+    auto frames = errorMap.frames;
+    for (const auto& mapBuffer : frames) {
+      LOG(INFO) << "[Frame]" << std::endl << "\tfile: " << mapBuffer.fileName;
+      LOG(INFO) << "\tmethodName: " << mapBuffer.methodName;
+      LOG(INFO) << "\tlineNumber: " << std::to_string(mapBuffer.lineNumber);
+      LOG(INFO) << "\tcolumn: " << std::to_string(mapBuffer.columnNumber);
+    }
+  };
 
   auto jsRuntimeFactory = std::make_unique<react::HermesInstance>();
   std::unique_ptr<react::JSRuntime> runtime_ =
@@ -64,7 +62,7 @@ void ReactInstanceIntegrationTest::SetUp() {
 
   std::shared_ptr<HostTarget> hostTargetIfModernCDP = nullptr;
 
-  if (InspectorFlags::getInstance().getEnableModernCDPRegistry()) {
+  if (InspectorFlags::getInstance().getFuseboxEnabled()) {
     VoidExecutor inspectorExecutor = [this](auto callback) {
       immediateExecutor_.add(callback);
     };
@@ -77,7 +75,7 @@ void ReactInstanceIntegrationTest::SetUp() {
       std::move(runtime_),
       messageQueueThread,
       timerManager,
-      std::move(jsErrorHandlingFunc),
+      std::move(onJsError),
       hostTargetIfModernCDP == nullptr ? nullptr : hostTargetIfModernCDP.get());
 
   timerManager->setRuntimeExecutor(instance->getBufferedRuntimeExecutor());
@@ -96,11 +94,8 @@ void ReactInstanceIntegrationTest::SetUp() {
         "mock-vm",
         [hostTargetIfModernCDP](std::unique_ptr<IRemoteConnection> remote)
             -> std::unique_ptr<ILocalConnection> {
-          auto localConnection = hostTargetIfModernCDP->connect(
-              std::move(remote),
-              {
-                  .integrationName = "ReactInstanceIntegrationTest",
-              });
+          auto localConnection =
+              hostTargetIfModernCDP->connect(std::move(remote));
           return localConnection;
         },
         // TODO: Allow customisation of InspectorTargetCapabilities
@@ -133,7 +128,7 @@ void ReactInstanceIntegrationTest::TearDown() {
   clientToVM_.reset();
 
   if (pageId_.has_value() &&
-      InspectorFlags::getInstance().getEnableModernCDPRegistry()) {
+      InspectorFlags::getInstance().getFuseboxEnabled()) {
     // Under modern CDP, clean up the page we added in SetUp and destroy
     // resources owned by HostTarget.
     getInspectorInstance().removePage(pageId_.value());
@@ -237,14 +232,8 @@ INSTANTIATE_TEST_SUITE_P(
     ReactInstanceVaryingInspectorFlags,
     ReactInstanceIntegrationTestWithFlags,
     ::testing::Values(
-        InspectorFlagOverrides{
-            .enableCxxInspectorPackagerConnection = false,
-            .enableModernCDPRegistry = false},
-        InspectorFlagOverrides{
-            .enableCxxInspectorPackagerConnection = true,
-            .enableModernCDPRegistry = false},
-        InspectorFlagOverrides{
-            .enableCxxInspectorPackagerConnection = true,
-            .enableModernCDPRegistry = true}));
+        InspectorFlagOverrides{.fuseboxEnabledDebug = false},
+        InspectorFlagOverrides{.fuseboxEnabledDebug = false},
+        InspectorFlagOverrides{.fuseboxEnabledDebug = true}));
 
 } // namespace facebook::react::jsinspector_modern

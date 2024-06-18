@@ -112,8 +112,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 
 - (void)setLoadingView:(UIView *)loadingView
 {
-  super.activityIndicatorViewFactory = ^UIView *(void)
-  {
+  super.activityIndicatorViewFactory = ^UIView *(void) {
     return loadingView;
   };
 }

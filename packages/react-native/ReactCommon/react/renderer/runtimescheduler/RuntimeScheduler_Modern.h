@@ -23,8 +23,7 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
  public:
   explicit RuntimeScheduler_Modern(
       RuntimeExecutor runtimeExecutor,
-      std::function<RuntimeSchedulerTimePoint()> now =
-          RuntimeSchedulerClock::now);
+      std::function<RuntimeSchedulerTimePoint()> now);
 
   /*
    * Not copyable.
@@ -70,6 +69,24 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
   std::shared_ptr<Task> scheduleTask(
       SchedulerPriority priority,
       RawCallback&& callback) noexcept override;
+
+  /*
+   * Adds a JavaScript callback to the idle queue with the given timeout.
+   * Triggers workloop if needed.
+   */
+  std::shared_ptr<Task> scheduleIdleTask(
+      jsi::Function&& callback,
+      RuntimeSchedulerTimeout customTimeout = timeoutForSchedulerPriority(
+          SchedulerPriority::IdlePriority)) noexcept override;
+
+  /*
+   * Adds a custom callback to the idle queue with the given timeout.
+   * Triggers workloop if needed.
+   */
+  std::shared_ptr<Task> scheduleIdleTask(
+      RawCallback&& callback,
+      RuntimeSchedulerTimeout customTimeout = timeoutForSchedulerPriority(
+          SchedulerPriority::IdlePriority)) noexcept override;
 
   /*
    * Cancelled task will never be executed.
@@ -136,7 +153,7 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
       TaskPriorityComparer>
       taskQueue_;
 
-  std::shared_ptr<Task> currentTask_;
+  Task* currentTask_{};
 
   /**
    * This protects the access to `taskQueue_` and `isWorkLoopScheduled_`.
@@ -163,12 +180,12 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
    */
   void executeTask(
       jsi::Runtime& runtime,
-      const std::shared_ptr<Task>& task,
+      Task& task,
       RuntimeSchedulerTimePoint currentTime);
 
   void executeMacrotask(
       jsi::Runtime& runtime,
-      std::shared_ptr<Task> task,
+      Task& task,
       bool didUserCallbackTimeout) const;
 
   void updateRendering();

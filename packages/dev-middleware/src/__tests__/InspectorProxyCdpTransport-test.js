@@ -9,7 +9,10 @@
  * @oncall react_native
  */
 
-import type {PageDescription} from '../inspector-proxy/types';
+import type {
+  JsonPagesListResponse,
+  PageDescription,
+} from '../inspector-proxy/types';
 
 import {fetchJson} from './FetchUtils';
 import {createDebuggerMock} from './InspectorDebuggerUtils';
@@ -51,7 +54,7 @@ describe.each(['HTTP', 'HTTPS'])(
           },
         ]);
 
-        let pageList: Array<PageDescription> = [];
+        let pageList: JsonPagesListResponse = [];
         await until(async () => {
           pageList = (await fetchJson(
             `${serverRef.serverBaseUrl}/json`,

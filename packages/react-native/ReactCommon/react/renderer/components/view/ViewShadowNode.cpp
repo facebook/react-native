@@ -61,6 +61,7 @@ void ViewShadowNode::initialize() noexcept {
       viewProps.accessibilityViewIsModal ||
       viewProps.importantForAccessibility != ImportantForAccessibility::Auto ||
       viewProps.removeClippedSubviews || viewProps.cursor != Cursor::Auto ||
+      !viewProps.filter.empty() ||
       HostPlatformViewTraitsInitializer::formsStackingContext(viewProps);
 
   bool formsView = formsStackingContext ||
@@ -78,6 +79,12 @@ void ViewShadowNode::initialize() noexcept {
     traits_.set(ShadowNodeTraits::Trait::FormsStackingContext);
   } else {
     traits_.unset(ShadowNodeTraits::Trait::FormsStackingContext);
+  }
+
+  if (!viewProps.collapsableChildren) {
+    traits_.set(ShadowNodeTraits::Trait::ChildrenFormStackingContext);
+  } else {
+    traits_.unset(ShadowNodeTraits::Trait::ChildrenFormStackingContext);
   }
 }
 

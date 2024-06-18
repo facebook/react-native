@@ -10,10 +10,9 @@
 #include "RuntimeScheduler_Modern.h"
 #include "SchedulerPriorityUtils.h"
 
+#include <cxxreact/SystraceSection.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
-#include <react/renderer/debug/SystraceSection.h>
 #include <utility>
-#include "ErrorUtils.h"
 
 namespace facebook::react {
 
@@ -52,6 +51,18 @@ std::shared_ptr<Task> RuntimeScheduler::scheduleTask(
     SchedulerPriority priority,
     RawCallback&& callback) noexcept {
   return runtimeSchedulerImpl_->scheduleTask(priority, std::move(callback));
+}
+
+std::shared_ptr<Task> RuntimeScheduler::scheduleIdleTask(
+    jsi::Function&& callback,
+    RuntimeSchedulerTimeout timeout) noexcept {
+  return runtimeSchedulerImpl_->scheduleIdleTask(std::move(callback), timeout);
+}
+
+std::shared_ptr<Task> RuntimeScheduler::scheduleIdleTask(
+    RawCallback&& callback,
+    RuntimeSchedulerTimeout timeout) noexcept {
+  return runtimeSchedulerImpl_->scheduleIdleTask(std::move(callback), timeout);
 }
 
 bool RuntimeScheduler::getShouldYield() const noexcept {

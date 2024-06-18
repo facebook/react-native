@@ -37,8 +37,21 @@ const debug = require('debug')('Metro:InspectorProxy');
 
 const PAGES_POLLING_INTERVAL = 1000;
 
-// Android's stock emulator and other emulators such as genymotion use a standard localhost alias.
-const EMULATOR_LOCALHOST_ADDRESSES: Array<string> = ['10.0.2.2', '10.0.3.2'];
+// Replace hosts appearing in the `url` and `sourceMapURL` fields of
+// `Debugger.scriptParsed`, and back again in messages from the debugger,
+// to account for device/debugger/proxy running on different networks.
+const REWRITE_HOSTS_TO_LOCALHOST: Array<string> = [
+  // A device may retrieve a bundle through 127.0.0.1 via a (SSH) tunnel, but
+  // the (remote) Metro server may be on a host without an IPv4 loopback, so
+  // 127.0.0.1 may not be addressible locally for (e.g., for source map
+  // fetching). Replacing with the more general 'localhost' should always be
+  // safe while also more compatible with IPv6-only setups.
+  '127.0.0.1',
+  // Android's stock emulator and other emulators such as genymotion use a
+  // standard localhost alias.
+  '10.0.2.2',
+  '10.0.3.2',
+];
 
 // Prefix for script URLs that are alphanumeric IDs. See comment in #processMessageFromDeviceLegacy method for
 // more details.
@@ -307,6 +320,9 @@ export default class Device {
       this.#deviceEventReporter?.logRequest(debuggerRequest, 'debugger', {
         pageId: this.#debuggerConnection?.pageId ?? null,
         frontendUserAgent: metadata.userAgent,
+        prefersFuseboxFrontend: this.#isPageFuseboxFrontend(
+          this.#debuggerConnection?.pageId,
+        ),
       });
       let processedReq = debuggerRequest;
 
@@ -508,6 +524,7 @@ export default class Device {
         this.#deviceEventReporter?.logResponse(parsedPayload, 'device', {
           pageId,
           frontendUserAgent: this.#debuggerConnection?.userAgent ?? null,
+          prefersFuseboxFrontend: this.#isPageFuseboxFrontend(pageId),
         });
       }
 
@@ -588,9 +605,11 @@ export default class Device {
     ];
 
     for (const message of toSend) {
+      const pageId = this.#debuggerConnection?.pageId ?? null;
       this.#deviceEventReporter?.logRequest(message, 'proxy', {
-        pageId: this.#debuggerConnection?.pageId ?? null,
+        pageId,
         frontendUserAgent: this.#debuggerConnection?.userAgent ?? null,
+        prefersFuseboxFrontend: this.#isPageFuseboxFrontend(pageId),
       });
       this.#sendMessageToDevice({
         event: 'wrappedEvent',
@@ -621,15 +640,14 @@ export default class Device {
     ) {
       const params = payload.params;
       if ('sourceMapURL' in params) {
-        for (let i = 0; i < EMULATOR_LOCALHOST_ADDRESSES.length; ++i) {
-          const address = EMULATOR_LOCALHOST_ADDRESSES[i];
-          if (params.sourceMapURL.includes(address)) {
+        for (const hostToRewrite of REWRITE_HOSTS_TO_LOCALHOST) {
+          if (params.sourceMapURL.includes(hostToRewrite)) {
             // $FlowFixMe[cannot-write]
             payload.params.sourceMapURL = params.sourceMapURL.replace(
-              address,
+              hostToRewrite,
               'localhost',
             );
-            debuggerInfo.originalSourceURLAddress = address;
+            debuggerInfo.originalSourceURLAddress = hostToRewrite;
           }
         }
 
@@ -654,12 +672,11 @@ export default class Device {
         }
       }
       if ('url' in params) {
-        for (let i = 0; i < EMULATOR_LOCALHOST_ADDRESSES.length; ++i) {
-          const address = EMULATOR_LOCALHOST_ADDRESSES[i];
-          if (params.url.indexOf(address) >= 0) {
+        for (const hostToRewrite of REWRITE_HOSTS_TO_LOCALHOST) {
+          if (params.url.includes(hostToRewrite)) {
             // $FlowFixMe[cannot-write]
-            payload.params.url = params.url.replace(address, 'localhost');
-            debuggerInfo.originalSourceURLAddress = address;
+            payload.params.url = params.url.replace(hostToRewrite, 'localhost');
+            debuggerInfo.originalSourceURLAddress = hostToRewrite;
           }
         }
 
@@ -702,6 +719,9 @@ export default class Device {
       this.#deviceEventReporter?.logRequest(resumeMessage, 'proxy', {
         pageId: this.#debuggerConnection?.pageId ?? null,
         frontendUserAgent: this.#debuggerConnection?.userAgent ?? null,
+        prefersFuseboxFrontend: this.#isPageFuseboxFrontend(
+          this.#debuggerConnection?.pageId,
+        ),
       });
       this.#sendMessageToDevice({
         event: 'wrappedEvent',
@@ -785,9 +805,11 @@ export default class Device {
         result,
       };
       socket.send(JSON.stringify(response));
+      const pageId = this.#debuggerConnection?.pageId ?? null;
       this.#deviceEventReporter?.logResponse(response, 'proxy', {
-        pageId: this.#debuggerConnection?.pageId ?? null,
+        pageId,
         frontendUserAgent: this.#debuggerConnection?.userAgent ?? null,
+        prefersFuseboxFrontend: this.#isPageFuseboxFrontend(pageId),
       });
     };
     const sendErrorResponse = (error: string) => {
@@ -798,9 +820,11 @@ export default class Device {
 
       // Send to the console as well, so the user can see it
       this.#sendErrorToDebugger(error);
+      const pageId = this.#debuggerConnection?.pageId ?? null;
       this.#deviceEventReporter?.logResponse(response, 'proxy', {
-        pageId: this.#debuggerConnection?.pageId ?? null,
+        pageId,
         frontendUserAgent: this.#debuggerConnection?.userAgent ?? null,
+        prefersFuseboxFrontend: this.#isPageFuseboxFrontend(pageId),
       });
     };
 
@@ -897,5 +921,14 @@ export default class Device {
         }),
       );
     }
+  }
+
+  #isPageFuseboxFrontend(pageId: ?string): boolean | null {
+    const page = pageId == null ? null : this.#pages.get(pageId);
+    if (page == null) {
+      return null;
+    }
+
+    return this.#pageHasCapability(page, 'prefersFuseboxFrontend');
   }
 }

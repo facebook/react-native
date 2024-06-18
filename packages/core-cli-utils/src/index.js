@@ -9,15 +9,12 @@
  * @oncall react_native
  */
 
-import {tasks as android} from './private/android.js';
-import {tasks as apple} from './private/apple.js';
-import {tasks as clean} from './private/clean.js';
+/*::
+export type * from './index.flow';
+*/
 
-/* eslint sort-keys : "error" */
-export default {
-  android: typeof android,
-  apple: typeof apple,
-  clean: typeof clean,
-};
+if (process.env.BUILD_EXCLUDE_BABEL_REGISTER == null) {
+  require('../../../scripts/build/babel-register').registerForMonorepo();
+}
 
-export type {Task} from './private/types';
+module.exports = require('./index.flow');

@@ -78,7 +78,7 @@ class UIManager final : public ShadowTreeDelegate {
    * The callback is called synchronously on the same thread.
    */
   void visitBinding(
-      const std::function<void(UIManagerBinding const& uiManagerBinding)>&
+      const std::function<void(const UIManagerBinding& uiManagerBinding)>&
           callback,
       jsi::Runtime& runtime) const;
 

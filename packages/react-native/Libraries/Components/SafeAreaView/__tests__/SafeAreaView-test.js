@@ -19,8 +19,8 @@ const View = require('../../View/View');
 const React = require('react');
 
 describe('<SafeAreaView />', () => {
-  it('should render as expected', () => {
-    ReactNativeTestTools.expectRendersMatchingSnapshot(
+  it('should render as expected', async () => {
+    await ReactNativeTestTools.expectRendersMatchingSnapshot(
       'SafeAreaView',
       () => (
         <SafeAreaView>

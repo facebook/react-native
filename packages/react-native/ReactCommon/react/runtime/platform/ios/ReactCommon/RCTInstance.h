@@ -9,7 +9,6 @@
 
 #import <React/RCTDefines.h>
 #import <jsinspector-modern/ReactCdp.h>
-#import <react/renderer/mapbuffer/MapBuffer.h>
 #import <react/runtime/JSRuntimeFactory.h>
 #import <react/runtime/ReactInstance.h>
 

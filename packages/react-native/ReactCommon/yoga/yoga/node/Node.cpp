@@ -10,6 +10,7 @@
 #include <iostream>
 
 #include <yoga/debug/AssertFatal.h>
+#include <yoga/debug/Log.h>
 #include <yoga/node/Node.h>
 #include <yoga/numeric/Comparison.h>
 
@@ -49,12 +50,31 @@ Node::Node(Node&& node) noexcept
 }
 
 YGSize Node::measure(
-    float width,
+    float availableWidth,
     MeasureMode widthMode,
-    float height,
+    float availableHeight,
     MeasureMode heightMode) {
-  return measureFunc_(
-      this, width, unscopedEnum(widthMode), height, unscopedEnum(heightMode));
+  const auto size = measureFunc_(
+      this,
+      availableWidth,
+      unscopedEnum(widthMode),
+      availableHeight,
+      unscopedEnum(heightMode));
+
+  if (yoga::isUndefined(size.height) || size.height < 0 ||
+      yoga::isUndefined(size.width) || size.width < 0) {
+    yoga::log(
+        this,
+        LogLevel::Warn,
+        "Measure function returned an invalid dimension to Yoga: [width=%f, height=%f]",
+        size.width,
+        size.height);
+    return {
+        .width = maxOrDefined(0.0f, size.width),
+        .height = maxOrDefined(0.0f, size.height)};
+  }
+
+  return size;
 }
 
 float Node::baseline(float width, float height) const {
@@ -210,9 +230,8 @@ float Node::relativePosition(
 
 void Node::setPosition(
     const Direction direction,
-    const float mainSize,
-    const float crossSize,
-    const float ownerWidth) {
+    const float ownerWidth,
+    const float ownerHeight) {
   /* Root nodes should be always layouted as LTR, so we don't return negative
    * values. */
   const Direction directionRespectingRoot =
@@ -224,10 +243,14 @@ void Node::setPosition(
 
   // In the case of position static these are just 0. See:
   // https://www.w3.org/TR/css-position-3/#valdef-position-static
-  const float relativePositionMain =
-      relativePosition(mainAxis, directionRespectingRoot, mainSize);
-  const float relativePositionCross =
-      relativePosition(crossAxis, directionRespectingRoot, crossSize);
+  const float relativePositionMain = relativePosition(
+      mainAxis,
+      directionRespectingRoot,
+      isRow(mainAxis) ? ownerWidth : ownerHeight);
+  const float relativePositionCross = relativePosition(
+      crossAxis,
+      directionRespectingRoot,
+      isRow(mainAxis) ? ownerHeight : ownerWidth);
 
   const auto mainAxisLeadingEdge = inlineStartEdge(mainAxis, direction);
   const auto mainAxisTrailingEdge = inlineEndEdge(mainAxis, direction);

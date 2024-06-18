@@ -9,7 +9,6 @@
 #include <cxxreact/JSExecutor.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/core/StateUpdate.h>
-#include "EventLogger.h"
 
 #include "EventQueue.h"
 #include "RawEvent.h"
@@ -21,12 +20,14 @@ EventDispatcher::EventDispatcher(
     const EventBeat::Factory& asynchronousEventBeatFactory,
     const EventBeat::SharedOwnerBox& ownerBox,
     RuntimeScheduler& runtimeScheduler,
-    StatePipe statePipe)
+    StatePipe statePipe,
+    std::weak_ptr<EventLogger> eventLogger)
     : eventQueue_(EventQueue(
           eventProcessor,
           asynchronousEventBeatFactory(ownerBox),
           runtimeScheduler)),
-      statePipe_(std::move(statePipe)) {}
+      statePipe_(std::move(statePipe)),
+      eventLogger_(std::move(eventLogger)) {}
 
 void EventDispatcher::dispatchEvent(RawEvent&& rawEvent) const {
   // Allows the event listener to interrupt default event dispatch
@@ -34,7 +35,7 @@ void EventDispatcher::dispatchEvent(RawEvent&& rawEvent) const {
     return;
   }
 
-  auto eventLogger = getEventLogger();
+  auto eventLogger = eventLogger_.lock();
   if (eventLogger != nullptr) {
     rawEvent.loggingTag = eventLogger->onEventStart(rawEvent.type);
   }

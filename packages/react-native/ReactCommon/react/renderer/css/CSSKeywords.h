@@ -80,11 +80,16 @@ enum class CSSKeyword : uint8_t {
 };
 
 /**
- * Represents a contrained set of CSS keywords.
+ * Represents a constrained set of CSS keywords.
  */
 template <typename T>
-concept CSSKeywordSet = std::is_enum_v<T> && std::
-    is_same_v<std::underlying_type_t<T>, std::underlying_type_t<CSSKeyword>>;
+concept CSSKeywordSet = std::is_enum_v<T> &&
+    std::is_same_v<std::underlying_type_t<T>,
+                   std::underlying_type_t<CSSKeyword>>;
+
+constexpr bool operator==(CSSKeywordSet auto a, CSSKeyword b) {
+  return to_underlying(a) == to_underlying(b);
+}
 
 /**
  * CSS-wide keywords.
@@ -170,16 +175,7 @@ CSS_DEFINE_KEYWORD_CONEPTS(WrapReverse)
  */
 template <CSSKeywordSet KeywordT>
 constexpr std::optional<KeywordT> parseCSSKeyword(std::string_view ident) {
-  struct LowerCaseTransform {
-    constexpr char operator()(char c) const {
-      if (c >= 'A' && c <= 'Z') {
-        return c + static_cast<char>('a' - 'A');
-      }
-      return c;
-    }
-  };
-
-  switch (fnv1a<LowerCaseTransform>(ident)) {
+  switch (fnv1aLowercase(ident)) {
     case fnv1a("absolute"):
       if constexpr (detail::hasAbsolute<KeywordT>) {
         return KeywordT::Absolute;

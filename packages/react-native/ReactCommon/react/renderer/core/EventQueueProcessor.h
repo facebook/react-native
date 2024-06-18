@@ -22,7 +22,8 @@ class EventQueueProcessor {
   EventQueueProcessor(
       EventPipe eventPipe,
       EventPipeConclusion eventPipeConclusion,
-      StatePipe statePipe);
+      StatePipe statePipe,
+      std::weak_ptr<EventLogger> eventLogger);
 
   void flushEvents(jsi::Runtime& runtime, std::vector<RawEvent>&& events) const;
   void flushStateUpdates(std::vector<StateUpdate>&& states) const;
@@ -31,6 +32,7 @@ class EventQueueProcessor {
   const EventPipe eventPipe_;
   const EventPipeConclusion eventPipeConclusion_;
   const StatePipe statePipe_;
+  const std::weak_ptr<EventLogger> eventLogger_;
 
   mutable bool hasContinuousEventStarted_{false};
 };

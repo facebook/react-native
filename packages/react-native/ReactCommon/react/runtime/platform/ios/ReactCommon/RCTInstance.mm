@@ -128,13 +128,6 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
     }
     _launchOptions = launchOptions;
 
-    NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];
-
-    [defaultCenter addObserver:self
-                      selector:@selector(_notifyEventDispatcherObserversOfEvent_DEPRECATED:)
-                          name:@"RCTNotifyEventDispatcherObserversOfEvent_DEPRECATED"
-                        object:nil];
-
     [self _start];
   }
   return self;
@@ -242,14 +235,14 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   objCTimerRegistryRawPtr->setTimerManager(timerManager);
 
   __weak __typeof(self) weakSelf = self;
-  auto jsErrorHandlingFunc = [=](const JsErrorHandler::ParsedError &error) { [weakSelf _handleJSError:error]; };
+  auto onJsError = [=](const JsErrorHandler::ParsedError &error) { [weakSelf _handleJSError:error]; };
 
   // Create the React Instance
   _reactInstance = std::make_unique<ReactInstance>(
       _jsRuntimeFactory->createJSRuntime(_jsThreadManager.jsMessageThread),
       _jsThreadManager.jsMessageThread,
       timerManager,
-      jsErrorHandlingFunc,
+      onJsError,
       _parentInspectorTarget);
   _valid = true;
 
@@ -478,19 +471,6 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   if (_onInitialBundleLoad) {
     _onInitialBundleLoad();
     _onInitialBundleLoad = nil;
-  }
-}
-
-- (void)_notifyEventDispatcherObserversOfEvent_DEPRECATED:(NSNotification *)notification
-{
-  NSDictionary *userInfo = notification.userInfo;
-  id<RCTEvent> event = [userInfo objectForKey:@"event"];
-
-  RCTModuleRegistry *moduleRegistry = _bridgeModuleDecorator.moduleRegistry;
-  if (event && moduleRegistry) {
-    id<RCTEventDispatcherProtocol> legacyEventDispatcher = [moduleRegistry moduleForName:"EventDispatcher"
-                                                                   lazilyLoadIfNecessary:YES];
-    [legacyEventDispatcher notifyObserversOfEvent:event];
   }
 }
 

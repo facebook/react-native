@@ -60,11 +60,11 @@ exports[`LogBoxInspectorFooter should render two buttons for error 1`] = `
     }
   }
 >
-  <FooterButton
+  <LogBoxInspectorFooterButton
     onPress={[Function]}
     text="Dismiss"
   />
-  <FooterButton
+  <LogBoxInspectorFooterButton
     onPress={[Function]}
     text="Minimize"
   />
@@ -87,11 +87,11 @@ exports[`LogBoxInspectorFooter should render two buttons for fatal 1`] = `
     }
   }
 >
-  <FooterButton
+  <LogBoxInspectorFooterButton
     onPress={[Function]}
     text="Dismiss"
   />
-  <FooterButton
+  <LogBoxInspectorFooterButton
     onPress={[Function]}
     text="Minimize"
   />
@@ -114,11 +114,11 @@ exports[`LogBoxInspectorFooter should render two buttons for warning 1`] = `
     }
   }
 >
-  <FooterButton
+  <LogBoxInspectorFooterButton
     onPress={[Function]}
     text="Dismiss"
   />
-  <FooterButton
+  <LogBoxInspectorFooterButton
     onPress={[Function]}
     text="Minimize"
   />

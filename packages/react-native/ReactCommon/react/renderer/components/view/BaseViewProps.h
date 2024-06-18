@@ -14,6 +14,7 @@
 #include <react/renderer/core/Props.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/graphics/Color.h>
+#include <react/renderer/graphics/Filter.h>
 #include <react/renderer/graphics/Transform.h>
 
 #include <optional>
@@ -54,6 +55,9 @@ class BaseViewProps : public YogaStylableProps, public AccessibilityProps {
 
   Cursor cursor{};
 
+  // Filter
+  std::vector<FilterPrimitive> filter{};
+
   // Transform
   Transform transform{};
   TransformOrigin transformOrigin{
@@ -76,6 +80,7 @@ class BaseViewProps : public YogaStylableProps, public AccessibilityProps {
   ViewEvents events{};
 
   bool collapsable{true};
+  bool collapsableChildren{true};
 
   bool removeClippedSubviews{false};
 
