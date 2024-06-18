@@ -10,7 +10,10 @@
 
 'use strict';
 
-type FormDataValue = string | {name?: string, type?: string, uri: string};
+type FormDataValue =
+  | string
+  | {name?: string, type?: string, uri: string}
+  | {type?: string, string: string};
 type FormDataNameValuePair = [string, FormDataValue];
 
 type Headers = {[name: string]: string, ...};
@@ -44,7 +47,7 @@ type FormDataPart =
  *   body.append('authToken', 'secret');
  *   body.append('photo', photo);
  *   body.append('title', 'A beautiful photo!');
- *
+ *   body.append('title', {type: 'application/json', string: JSON.stringify({text:'hello world'})});
  *   xhr.open('POST', serverURL);
  *   xhr.send(body);
  */
@@ -73,24 +76,34 @@ class FormData {
   getParts(): Array<FormDataPart> {
     return this._parts.map(([name, value]) => {
       const contentDisposition = 'form-data; name="' + name + '"';
-
       const headers: Headers = {'content-disposition': contentDisposition};
 
-      // The body part is a "blob", which in React Native just means
-      // an object with a `uri` attribute. Optionally, it can also
-      // have a `name` and `type` attribute to specify filename and
-      // content type (cf. web Blob interface.)
       if (typeof value === 'object' && !Array.isArray(value) && value) {
-        if (typeof value.name === 'string') {
-          headers['content-disposition'] += `; filename="${
-            value.name
-          }"; filename*=utf-8''${encodeURI(value.name)}`;
-        }
         if (typeof value.type === 'string') {
           headers['content-type'] = value.type;
         }
-        return {...value, headers, fieldName: name};
+
+        // The body part is a "blob", which in React Native just means
+        // an object with a `uri` attribute. Optionally, it can also
+        // have a `name` and `type` attribute to specify filename and
+        // content type (cf. web Blob interface.)
+        if (typeof value.uri === 'string') {
+          if (typeof value.name === 'string') {
+            headers['content-disposition'] += `; filename="${
+              value.name
+            }"; filename*=utf-8''${encodeURI(value.name)}`;
+          }
+          return {...value, headers, fieldName: name};
+        }
+
+        // The body part is a "string object", which in React Native just means
+        // an object with a `string` attribute. Optionally, it can also
+        // `type` attribute to specify content type
+        if (typeof value.string === 'string') {
+          return {string: String(value.string), headers, fieldName: name};
+        }
       }
+
       // Convert non-object values to strings as per FormData.append() spec
       return {string: String(value), headers, fieldName: name};
     });

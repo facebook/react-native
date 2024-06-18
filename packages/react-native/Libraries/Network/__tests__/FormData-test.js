@@ -130,4 +130,32 @@ describe('FormData', function () {
 
     expect(formData.getAll('file').length).toBe(0);
   });
+
+  it('should return string with custom content-type', function () {
+    formData.append('withText', {string: 'Alice', type: 'text/plain'});
+    formData.append('withJson', {
+      string: JSON.stringify({name: 'Bob'}),
+      type: 'application/json',
+    });
+
+    expect(formData.getParts().length).toBe(2);
+    expect(formData.getParts()[0]).toMatchObject({
+      string: 'Alice',
+      headers: {
+        'content-disposition': 'form-data; name="withText"',
+        'content-type': 'text/plain',
+      },
+      fieldName: 'withText',
+    });
+    expect(formData.getParts()[1]).toMatchObject({
+      // prettier-ignore
+      // eslint-disable-next-line quotes
+      string: "{\"name\":\"Bob\"}",
+      headers: {
+        'content-disposition': 'form-data; name="withJson"',
+        'content-type': 'application/json',
+      },
+      fieldName: 'withJson',
+    });
+  });
 });
