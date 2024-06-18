@@ -2,6 +2,7 @@ name: Test All
 
 on:
   workflow_dispatch:
+  pull_request:
   push:
     branches:
       - main
@@ -875,7 +876,7 @@ jobs:
         uses: actions/upload-artifact@v4.3.1
         with:
           name: template-apk-${{ matrix.flavor }}-${{ matrix.architecture }}-${{ matrix.jsengine }}
-          path: ./app/build/outputs/apk/
+          path: packages/helloworld/app/build/outputs/apk/
           compression-level: 0
 
   test_ios_helloworld_with_ruby_3_2_0:
