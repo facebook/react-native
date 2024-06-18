@@ -11,6 +11,7 @@
 import type {PressEvent} from '../Types/CoreEventTypes';
 import type {TextProps} from './TextProps';
 
+import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
 import * as PressabilityDebug from '../Pressability/PressabilityDebug';
 import usePressability from '../Pressability/usePressability';
 import flattenStyle from '../StyleSheet/flattenStyle';
@@ -337,4 +338,8 @@ const verticalAlignToTextAlignVerticalMap = {
   middle: 'center',
 };
 
-module.exports = Text;
+module.exports = (
+  ReactNativeFeatureFlags.shouldUseOptimizedText()
+    ? require('./TextOptimized')
+    : Text
+) as typeof Text;
