@@ -46,3 +46,7 @@ jobs:
       - name: Execute Prepare Release
         if: ${{ steps.check_stable_branch.outputs.ON_STABLE_BRANCH && !steps.check_if_tag_exists.outputs.TAG_EXISTS }}
         uses: ./.github/actions/create-release
+        with:
+          version: ${{ inputs.version }}
+          is_latest_on_npm: ${{ inputs.is_latest_on_npm }}
+          dry_run: ${{ inputs.dry_run }}
