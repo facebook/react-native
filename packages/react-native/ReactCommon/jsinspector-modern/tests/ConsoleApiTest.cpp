@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <folly/executors/QueuedImmediateExecutor.h>
 #include "JsiIntegrationTest.h"
 
 #include "engines/JsiIntegrationTestHermesEngineAdapter.h"
@@ -44,12 +45,13 @@ struct Params {
 /**
  * A test fixture for the Console API.
  */
-class ConsoleApiTest
-    : public JsiIntegrationPortableTest<JsiIntegrationTestHermesEngineAdapter>,
-      public WithParamInterface<Params> {
+class ConsoleApiTest : public JsiIntegrationPortableTestBase<
+                           JsiIntegrationTestHermesEngineAdapter,
+                           folly::QueuedImmediateExecutor>,
+                       public WithParamInterface<Params> {
  protected:
   void SetUp() override {
-    JsiIntegrationPortableTest::SetUp();
+    JsiIntegrationPortableTestBase::SetUp();
     connect();
     EXPECT_CALL(
         fromPage(),
@@ -81,7 +83,7 @@ class ConsoleApiTest
     if (!GetParam().runtimeEnabledAtStart) {
       enableRuntimeDomain();
     }
-    JsiIntegrationPortableTest::TearDown();
+    JsiIntegrationPortableTestBase::TearDown();
   }
 
   /**

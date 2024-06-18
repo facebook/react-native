@@ -27,7 +27,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture ANDROID_ONLY_NATIVE_M
       'enumMap': {},
       'spec': {
         'eventEmitters': [],
-        'properties': []
+        'methods': []
       },
       'moduleName': 'SampleTurboModuleAndroid',
       'excludedPlatforms': [
@@ -175,7 +175,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture CXX_ONLY_NATIVE_MODUL
       },
       'spec': {
         'eventEmitters': [],
-        'properties': [
+        'methods': [
           {
             'name': 'getCallback',
             'optional': false,
@@ -413,7 +413,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EMPTY_NATIVE_MODULE 1
       'enumMap': {},
       'spec': {
         'eventEmitters': [],
-        'properties': []
+        'methods': []
       },
       'moduleName': 'SampleTurboModule'
     }
@@ -480,7 +480,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture IOS_ONLY_NATIVE_MODUL
       },
       'spec': {
         'eventEmitters': [],
-        'properties': [
+        'methods': [
           {
             'name': 'getEnums',
             'optional': false,
@@ -574,7 +574,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_AL
       'enumMap': {},
       'spec': {
         'eventEmitters': [],
-        'properties': [
+        'methods': [
           {
             'name': 'getNumber',
             'optional': false,
@@ -739,7 +739,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_AR
       'enumMap': {},
       'spec': {
         'eventEmitters': [],
-        'properties': [
+        'methods': [
           {
             'name': 'getArray',
             'optional': false,
@@ -782,7 +782,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_AR
       'enumMap': {},
       'spec': {
         'eventEmitters': [],
-        'properties': [
+        'methods': [
           {
             'name': 'getArray',
             'optional': false,
@@ -819,7 +819,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_AR
       'enumMap': {},
       'spec': {
         'eventEmitters': [],
-        'properties': [
+        'methods': [
           {
             'name': 'getArray',
             'optional': false,
@@ -862,7 +862,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_AR
       'enumMap': {},
       'spec': {
         'eventEmitters': [],
-        'properties': [
+        'methods': [
           {
             'name': 'getArray',
             'optional': false,
@@ -899,7 +899,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_BA
       'enumMap': {},
       'spec': {
         'eventEmitters': [],
-        'properties': [
+        'methods': [
           {
             'name': 'getArray',
             'optional': false,
@@ -967,7 +967,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_BA
       'enumMap': {},
       'spec': {
         'eventEmitters': [],
-        'properties': [
+        'methods': [
           {
             'name': 'getArray',
             'optional': false,
@@ -1035,7 +1035,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_BA
       'enumMap': {},
       'spec': {
         'eventEmitters': [],
-        'properties': [
+        'methods': [
           {
             'name': 'passBool',
             'optional': true,
@@ -1129,7 +1129,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_CA
       'enumMap': {},
       'spec': {
         'eventEmitters': [],
-        'properties': [
+        'methods': [
           {
             'name': 'getValueWithCallback',
             'optional': false,
@@ -1191,7 +1191,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_CO
       'enumMap': {},
       'spec': {
         'eventEmitters': [],
-        'properties': [
+        'methods': [
           {
             'name': 'getArray',
             'optional': false,
@@ -1252,7 +1252,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_CO
       'enumMap': {},
       'spec': {
         'eventEmitters': [],
-        'properties': [
+        'methods': [
           {
             'name': 'getArray',
             'optional': false,
@@ -1313,7 +1313,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_CO
       'enumMap': {},
       'spec': {
         'eventEmitters': [],
-        'properties': [
+        'methods': [
           {
             'name': 'getObject',
             'optional': false,
@@ -1527,7 +1527,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_CO
       'enumMap': {},
       'spec': {
         'eventEmitters': [],
-        'properties': [
+        'methods': [
           {
             'name': 'getConstants',
             'optional': false,
@@ -1633,7 +1633,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_FL
       'enumMap': {},
       'spec': {
         'eventEmitters': [],
-        'properties': [
+        'methods': [
           {
             'name': 'getInt',
             'optional': false,
@@ -1739,7 +1739,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_IN
       'enumMap': {},
       'spec': {
         'eventEmitters': [],
-        'properties': [
+        'methods': [
           {
             'name': 'foo1',
             'optional': false,
@@ -1832,7 +1832,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_NE
       'enumMap': {},
       'spec': {
         'eventEmitters': [],
-        'properties': [
+        'methods': [
           {
             'name': 'foo1',
             'optional': false,
@@ -1995,7 +1995,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_NE
       'enumMap': {},
       'spec': {
         'eventEmitters': [],
-        'properties': [
+        'methods': [
           {
             'name': 'foo1',
             'optional': false,
@@ -2054,7 +2054,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_NU
       'enumMap': {},
       'spec': {
         'eventEmitters': [],
-        'properties': [
+        'methods': [
           {
             'name': 'voidFunc',
             'optional': false,
@@ -2107,7 +2107,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_OB
       'enumMap': {},
       'spec': {
         'eventEmitters': [],
-        'properties': [
+        'methods': [
           {
             'name': 'getConstants',
             'optional': false,
@@ -2205,7 +2205,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_PA
       'enumMap': {},
       'spec': {
         'eventEmitters': [],
-        'properties': [
+        'methods': [
           {
             'name': 'getSomeObj',
             'optional': false,
@@ -2318,7 +2318,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_PA
       'enumMap': {},
       'spec': {
         'eventEmitters': [],
-        'properties': [
+        'methods': [
           {
             'name': 'getPartialPartial',
             'optional': false,
@@ -2408,7 +2408,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_PR
       'enumMap': {},
       'spec': {
         'eventEmitters': [],
-        'properties': [
+        'methods': [
           {
             'name': 'getValueWithPromise',
             'optional': false,
@@ -2469,7 +2469,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_RO
       'enumMap': {},
       'spec': {
         'eventEmitters': [],
-        'properties': [
+        'methods': [
           {
             'name': 'getRootTag',
             'optional': false,
@@ -2508,7 +2508,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_SI
       'enumMap': {},
       'spec': {
         'eventEmitters': [],
-        'properties': [
+        'methods': [
           {
             'name': 'getObject',
             'optional': false,
@@ -2545,7 +2545,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_UN
       'enumMap': {},
       'spec': {
         'eventEmitters': [],
-        'properties': [
+        'methods': [
           {
             'name': 'getUnion',
             'optional': false,
@@ -2608,7 +2608,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_UN
       'enumMap': {},
       'spec': {
         'eventEmitters': [],
-        'properties': [
+        'methods': [
           {
             'name': 'getUnsafeObject',
             'optional': false,

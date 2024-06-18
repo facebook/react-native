@@ -104,31 +104,33 @@ std::optional<MountingTransaction> MountingCoordinator::pullTransaction()
   }
 
   // Override case
-  auto mountingOverrideDelegate = mountingOverrideDelegate_.lock();
-  auto shouldOverridePullTransaction = mountingOverrideDelegate &&
-      mountingOverrideDelegate->shouldOverridePullTransaction();
+  for (const auto& delegate : mountingOverrideDelegates_) {
+    auto mountingOverrideDelegate = delegate.lock();
+    auto shouldOverridePullTransaction = mountingOverrideDelegate &&
+        mountingOverrideDelegate->shouldOverridePullTransaction();
 
-  if (shouldOverridePullTransaction) {
-    SystraceSection section2("MountingCoordinator::overridePullTransaction");
+    if (shouldOverridePullTransaction) {
+      SystraceSection section2("MountingCoordinator::overridePullTransaction");
 
-    auto mutations = ShadowViewMutation::List{};
-    auto telemetry = TransactionTelemetry{};
+      auto mutations = ShadowViewMutation::List{};
+      auto telemetry = TransactionTelemetry{};
 
-    if (transaction.has_value()) {
-      mutations = transaction->getMutations();
-      telemetry = transaction->getTelemetry();
-    } else {
-      number_++;
-      telemetry.willLayout();
-      telemetry.didLayout();
-      telemetry.willCommit();
-      telemetry.didCommit();
-      telemetry.willDiff();
-      telemetry.didDiff();
+      if (transaction.has_value()) {
+        mutations = transaction->getMutations();
+        telemetry = transaction->getTelemetry();
+      } else {
+        number_++;
+        telemetry.willLayout();
+        telemetry.didLayout();
+        telemetry.willCommit();
+        telemetry.didCommit();
+        telemetry.willDiff();
+        telemetry.didDiff();
+      }
+
+      transaction = mountingOverrideDelegate->pullTransaction(
+          surfaceId_, number_, telemetry, std::move(mutations));
     }
-
-    transaction = mountingOverrideDelegate->pullTransaction(
-        surfaceId_, number_, telemetry, std::move(mutations));
   }
 
 #ifdef RN_SHADOW_TREE_INTROSPECTION
@@ -203,7 +205,8 @@ ShadowTreeRevision MountingCoordinator::getBaseRevision() const {
 void MountingCoordinator::setMountingOverrideDelegate(
     std::weak_ptr<const MountingOverrideDelegate> delegate) const {
   std::scoped_lock lock(mutex_);
-  mountingOverrideDelegate_ = std::move(delegate);
+  mountingOverrideDelegates_.insert(
+      mountingOverrideDelegates_.end(), std::move(delegate));
 }
 
 } // namespace facebook::react

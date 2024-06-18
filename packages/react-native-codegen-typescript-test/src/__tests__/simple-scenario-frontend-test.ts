@@ -30,7 +30,7 @@ export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
         moduleName: 'SampleTurboModule',
         spec: {
           eventEmitters: [],
-          properties: [],
+          methods: [],
         },
         type: 'NativeModule',
       },

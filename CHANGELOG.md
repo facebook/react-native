@@ -713,6 +713,20 @@
 - Fix race condition between A11yManager and UIManager ([f39f34ed82](https://github.com/facebook/react-native/commit/f39f34ed82997d0595522a285c3cb8693594e718) by [@cipolleschi](https://github.com/cipolleschi))
 - Fix symbol not found _jump_fcontext with use_frameworks ([a2771ce58a](https://github.com/facebook/react-native/commit/a2771ce58ac221d1ac0de265c1ce571212fbcf83) by [@cipolleschi](https://github.com/cipolleschi))
 
+## v0.72.15
+
+### Added
+
+#### iOS specific
+
+- Add privacy manifest aggregation. ([61f584c3af](https://github.com/facebook/react-native/commit/61f584c3afb79ba705be8b6372ff9b6c5599680e) by [@aleqsio](https://github.com/aleqsio))
+
+### Fixed
+
+#### iOS specific
+
+- Privacy Manifest aggregation failing due to no `NSPrivacyAccessedAPITypes` key. ([fc4e099920](https://github.com/facebook/react-native/commit/fc4e0999206ec7c1f465bb2b1fea987e43485a82) by [@renchap](https://github.com/renchap))
+
 ## v0.72.14
 
 ### Added

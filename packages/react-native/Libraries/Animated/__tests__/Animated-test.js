@@ -10,6 +10,7 @@
 
 import * as React from 'react';
 
+const {create, update, unmount} = require('../../../jest/renderer');
 const {PlatformColor} = require('../../StyleSheet/PlatformColorValueTypes');
 let Animated = require('../Animated').default;
 const AnimatedProps = require('../nodes/AnimatedProps').default;
@@ -101,25 +102,25 @@ describe('Animated tests', () => {
       expect(callback.mock.calls.length).toBe(1);
     });
 
-    it('does not detach on updates', () => {
+    it('does not detach on updates', async () => {
       const opacity = new Animated.Value(0);
       opacity.__detach = jest.fn();
 
-      const root = TestRenderer.create(<Animated.View style={{opacity}} />);
+      const root = await create(<Animated.View style={{opacity}} />);
       expect(opacity.__detach).not.toBeCalled();
 
-      root.update(<Animated.View style={{opacity}} />);
+      await update(root, <Animated.View style={{opacity}} />);
       expect(opacity.__detach).not.toBeCalled();
 
-      root.unmount();
+      await unmount(root);
       expect(opacity.__detach).toBeCalled();
     });
 
-    it('stops animation when detached', () => {
+    it('stops animation when detached', async () => {
       const opacity = new Animated.Value(0);
       const callback = jest.fn();
 
-      const root = TestRenderer.create(<Animated.View style={{opacity}} />);
+      const root = await create(<Animated.View style={{opacity}} />);
 
       Animated.timing(opacity, {
         toValue: 10,
@@ -127,7 +128,7 @@ describe('Animated tests', () => {
         useNativeDriver: false,
       }).start(callback);
 
-      root.unmount();
+      await unmount(root);
 
       expect(callback).toBeCalledWith({finished: false});
     });
@@ -165,12 +166,10 @@ describe('Animated tests', () => {
       expect(JSON.stringify(new Animated.Value(10))).toBe('10');
     });
 
-    it('bypasses `setNativeProps` in test environments', () => {
+    it('bypasses `setNativeProps` in test environments', async () => {
       const opacity = new Animated.Value(0);
 
-      const testRenderer = TestRenderer.create(
-        <Animated.View style={{opacity}} />,
-      );
+      const testRenderer = await create(<Animated.View style={{opacity}} />);
 
       expect(testRenderer.toJSON().props.style.opacity).toEqual(0);
 

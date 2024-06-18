@@ -80,6 +80,24 @@ std::shared_ptr<Task> RuntimeScheduler_Legacy::scheduleTask(
   return task;
 }
 
+std::shared_ptr<Task> RuntimeScheduler_Legacy::scheduleIdleTask(
+    jsi::Function&& /*callback*/,
+    RuntimeSchedulerTimeout /*timeout*/) noexcept {
+  // Idle tasks are not supported on Legacy RuntimeScheduler.
+  // Because the method is `noexcept`, we return `nullptr` here and handle it
+  // on the caller side.
+  return nullptr;
+}
+
+std::shared_ptr<Task> RuntimeScheduler_Legacy::scheduleIdleTask(
+    RawCallback&& /*callback*/,
+    RuntimeSchedulerTimeout /*timeout*/) noexcept {
+  // Idle tasks are not supported on Legacy RuntimeScheduler.
+  // Because the method is `noexcept`, we return `nullptr` here and handle it
+  // on the caller side.
+  return nullptr;
+}
+
 bool RuntimeScheduler_Legacy::getShouldYield() const noexcept {
   return runtimeAccessRequests_ > 0;
 }

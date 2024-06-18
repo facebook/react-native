@@ -445,12 +445,8 @@ module.exports = {
     const outputDir = `java/${normalizedPackageName.replace(/\./g, '/')}`;
 
     Object.keys(nativeModules).forEach(hasteModuleName => {
-      const {
-        aliasMap,
-        excludedPlatforms,
-        moduleName,
-        spec: {properties},
-      } = nativeModules[hasteModuleName];
+      const {aliasMap, excludedPlatforms, moduleName, spec} =
+        nativeModules[hasteModuleName];
       if (excludedPlatforms != null && excludedPlatforms.includes('android')) {
         return;
       }
@@ -467,7 +463,7 @@ module.exports = {
         'javax.annotation.Nonnull',
       ]);
 
-      const methods = properties.map(method => {
+      const methods = spec.methods.map(method => {
         if (method.name === 'getConstants') {
           return buildGetConstantsMethod(method, imports, resolveAlias);
         }

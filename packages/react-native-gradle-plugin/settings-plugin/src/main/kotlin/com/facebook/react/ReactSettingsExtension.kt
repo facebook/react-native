@@ -40,7 +40,9 @@ abstract class ReactSettingsExtension @Inject constructor(val settings: Settings
       command: List<String> = listOf("npx", "@react-native-community/cli", "config"),
       workingDirectory: File? = settings.layout.rootDirectory.dir("../").asFile,
       lockFiles: FileCollection =
-          settings.layout.rootDirectory.dir("../").files("yarn.lock", "package-lock.json")
+          settings.layout.rootDirectory
+              .dir("../")
+              .files("yarn.lock", "package-lock.json", "package.json")
   ) {
     outputFile.parentFile.mkdirs()
     val lockFilesChanged = checkAndUpdateLockfiles(lockFiles, outputFolder)

@@ -40,6 +40,7 @@ class XHRExampleDownload extends React.Component<{...}, Object> {
     readystateHandler: false,
     progressHandler: true,
     arraybuffer: false,
+    chunked: false,
   };
 
   xhr: ?XMLHttpRequest = null;
@@ -107,12 +108,19 @@ class XHRExampleDownload extends React.Component<{...}, Object> {
         Alert.alert('Error', xhr.responseText);
       }
     };
-    xhr.open(
-      'GET',
-      'http://aleph.gutenberg.org/cache/epub/100/pg100-images.html.utf8',
-    );
-    // Avoid gzip so we can actually show progress
-    xhr.setRequestHeader('Accept-Encoding', '');
+    if (this.state.chunked) {
+      xhr.open(
+        'GET',
+        'https://filesamples.com/samples/ebook/azw3/Around%20the%20World%20in%2028%20Languages.azw3',
+      );
+    } else {
+      xhr.open(
+        'GET',
+        'http://aleph.gutenberg.org/cache/epub/100/pg100-images.html.utf8',
+      );
+      // Avoid gzip so we can actually show progress
+      xhr.setRequestHeader('Accept-Encoding', '');
+    }
     xhr.send();
 
     this.setState({downloading: true});
@@ -133,7 +141,11 @@ class XHRExampleDownload extends React.Component<{...}, Object> {
     ) : (
       <TouchableHighlight style={styles.wrapper} onPress={this._download}>
         <View style={styles.button}>
-          <Text>Download 7MB Text File</Text>
+          <Text>
+            {this.state.chunked
+              ? 'Download 10MB File'
+              : 'Download 19KB pdf File'}
+          </Text>
         </View>
       </TouchableHighlight>
     );
@@ -186,6 +198,13 @@ class XHRExampleDownload extends React.Component<{...}, Object> {
           <Switch
             value={this.state.arraybuffer}
             onValueChange={arraybuffer => this.setState({arraybuffer})}
+          />
+        </View>
+        <View style={styles.configRow}>
+          <Text>transfer-encoding: chunked</Text>
+          <Switch
+            value={this.state.chunked}
+            onValueChange={chunked => this.setState({chunked})}
           />
         </View>
         {button}

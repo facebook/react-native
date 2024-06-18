@@ -1,0 +1,29 @@
+name: create_release
+description: Creates a new React Native release
+runs:
+  using: composite
+  steps:
+    - name: Yarn install
+      shell: bash
+      run: yarn install --non-interactive
+    - name: Creating release commit
+      shell: bash
+      run: |
+        node scripts/releases/create-release-commit.js \
+          --reactNativeVersion "${{ inputs.version }}" \
+          --tagAsLatestRelease "${{ inputs.is_latest_on_npm }}" \
+          --dryRun "${{ inputs.dry_run }}"
+        GIT_PAGER=cat git show HEAD
+    - name: Update "latest" tag if needed
+      shell: bash
+      if: ${{ inputs.tag == 'latest' }}
+      run: |
+        git tag -d "latest"
+        git push origin :latest
+        git tag -a "latest" -m "latest"
+    - name: Pushing release commit
+      shell: bash
+      if: ${{ inputs.dry_run == false }}
+      run: |
+        CURR_BRANCH="$(git branch --show-current)"
+        git push origin "$CURR_BRANCH" --follow-tags

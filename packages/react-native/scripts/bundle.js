@@ -31,14 +31,13 @@ program
     'npx react-native config',
   )
   .option('--load-config <string>', 'JSON project config')
-  .action(async function handleAction(options, ...args) {
+  .action(async function handleAction(_, options) {
     let config = null;
 
     if (options.loadConfig != null) {
-      const rawText = existsSync(options.loadConfig)
-        ? readFileSync(options.loadConfig, 'utf8')
-        : options.loadConfig;
-      config = JSON.parse(rawText);
+      config = JSON.parse(
+        options.loadConfig.replace(/^\W*'/, '').replace(/'\W*$/, ''),
+      );
     } else if (options.configCmd != null) {
       config = JSON.parse(
         execSync(options.configCmd.trim(), {encoding: 'utf8'}),
@@ -49,7 +48,7 @@ program
       throw new Error('No config provided');
     }
 
-    await bc.func(args, config, options);
+    await bc.func(program.args, config, options);
   });
 
 if (bc.options != null) {

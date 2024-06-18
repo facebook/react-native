@@ -167,18 +167,6 @@ void RCTEnableTurboModuleSyncVoidMethods(BOOL enabled)
   gTurboModuleEnableSyncVoidMethods = enabled;
 }
 
-// Use a shared queue for executing module methods
-static BOOL gTurboModuleEnableSharedQueue = NO;
-BOOL RCTTurboModuleSharedQueueEnabled(void)
-{
-  return gTurboModuleEnableSharedQueue;
-}
-
-void RCTEnableTurboModuleSharedQueue(BOOL enabled)
-{
-  gTurboModuleEnableSharedQueue = enabled;
-}
-
 BOOL kDispatchAccessibilityManagerInitOntoMain = NO;
 BOOL RCTUIManagerDispatchAccessibilityManagerInitOntoMain(void)
 {

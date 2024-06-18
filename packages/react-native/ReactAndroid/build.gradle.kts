@@ -794,7 +794,15 @@ react {
 // module to apply the plugin to, so it's codegenDir and reactNativeDir won't be evaluated.
 if (rootProject.name == "react-native-build-from-source") {
   rootProject.extensions.getByType(PrivateReactExtension::class.java).apply {
-    codegenDir = file("$rootDir/../@react-native/codegen")
+    // We try to guess where codegen lives. Generally is inside
+    // node_modules/@react-native/codegen. If the file is not existing, we
+    // fallback to ../react-native-codegen (used for hello-world app).
+    codegenDir =
+        if (file("$rootDir/../@react-native/codegen").exists()) {
+          file("$rootDir/../@react-native/codegen")
+        } else {
+          file("$rootDir/../react-native-codegen")
+        }
     reactNativeDir = file("$rootDir")
   }
 }

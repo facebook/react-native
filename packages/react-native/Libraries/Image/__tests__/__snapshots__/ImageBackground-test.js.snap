@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`<ImageBackground /> should be set importantForAccessibility in <View> and <Image> 1`] = `
+exports[`ImageBackground should be set importantForAccessibility in <View> and <Image> 1`] = `
 <View
   accessibilityIgnoresInvertColors={true}
   importantForAccessibility="no"
@@ -38,7 +38,7 @@ exports[`<ImageBackground /> should be set importantForAccessibility in <View> a
 </View>
 `;
 
-exports[`<ImageBackground /> should render as <ImageBackground> when mocked 1`] = `
+exports[`ImageBackground should render as <ImageBackground> when mocked 1`] = `
 <View
   accessibilityIgnoresInvertColors={true}
   style={
@@ -74,7 +74,7 @@ exports[`<ImageBackground /> should render as <ImageBackground> when mocked 1`] 
 </View>
 `;
 
-exports[`<ImageBackground /> should render as <RCTImageView> when not mocked 1`] = `
+exports[`ImageBackground should render as <RCTImageView> when not mocked 1`] = `
 <View
   accessibilityIgnoresInvertColors={true}
   style={
@@ -108,36 +108,4 @@ exports[`<ImageBackground /> should render as <RCTImageView> when not mocked 1`]
     }
   />
 </View>
-`;
-
-exports[`<ImageBackground /> should shallow render as <ForwardRef(ImageBackground)> when not mocked 1`] = `
-<ImageBackground
-  source={
-    Object {
-      "uri": "foo-bar.jpg",
-    }
-  }
-  style={
-    Object {
-      "height": 50,
-      "width": 150,
-    }
-  }
-/>
-`;
-
-exports[`<ImageBackground /> should shallow render as <ImageBackground> when mocked 1`] = `
-<ImageBackground
-  source={
-    Object {
-      "uri": "foo-bar.jpg",
-    }
-  }
-  style={
-    Object {
-      "height": 50,
-      "width": 150,
-    }
-  }
-/>
 `;

@@ -401,7 +401,7 @@ describe('buildSchemaFromConfigType', () => {
     type: 'NativeModule',
     aliasMap: {},
     enumMap: {},
-    spec: {eventEmitters: [], properties: []},
+    spec: {eventEmitters: [], methods: []},
     moduleName: '',
   };
 
@@ -837,7 +837,7 @@ describe('buildSchema', () => {
             enumMap: {},
             spec: {
               eventEmitters: [],
-              properties: [
+              methods: [
                 {
                   name: 'getArray',
                   optional: false,
@@ -1249,7 +1249,7 @@ describe('buildModuleSchema', () => {
       moduleName: 'SampleTurboModule',
       spec: {
         eventEmitters: [],
-        properties: [
+        methods: [
           {
             name: 'getArray',
             optional: false,

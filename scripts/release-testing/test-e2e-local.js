@@ -26,6 +26,7 @@ const {
   maybeLaunchAndroidEmulator,
   prepareArtifacts,
   setupCircleCIArtifacts,
+  setupGHAArtifacts,
 } = require('./utils/testing-utils');
 const chalk = require('chalk');
 const debug = require('debug')('test-e2e-local');
@@ -56,7 +57,7 @@ const argv = yargs
     default: true,
   })
   .option('c', {
-    alias: 'circleciToken',
+    alias: 'ciToken',
     type: 'string',
   })
   .option('useLastSuccessfulPipeline', {
@@ -78,7 +79,7 @@ const argv = yargs
  * - @onReleaseBranch whether we are on a release branch or not
  */
 async function testRNTesterIOS(
-  circleCIArtifacts /*: Unwrap<ReturnType<typeof setupCircleCIArtifacts>> */,
+  ciArtifacts /*: Unwrap<ReturnType<typeof setupCircleCIArtifacts>> */,
   onReleaseBranch /*: boolean */,
 ) {
   console.info(
@@ -90,14 +91,17 @@ async function testRNTesterIOS(
   // remember that for this to be successful
   // you should have run bundle install once
   // in your local setup
-  if (argv.hermes === true && circleCIArtifacts != null) {
-    const hermesURL = await circleCIArtifacts.artifactURLHermesDebug();
-    const hermesPath = path.join(
-      circleCIArtifacts.baseTmpPath(),
-      'hermes-ios-debug.tar.gz',
-    );
+  if (argv.hermes === true && ciArtifacts != null) {
+    const hermesURL = await ciArtifacts.artifactURLHermesDebug();
+    const hermesZipPath = path.join(ciArtifacts.baseTmpPath(), 'hermes.zip');
     // download hermes source code from manifold
-    circleCIArtifacts.downloadArtifact(hermesURL, hermesPath);
+    ciArtifacts.downloadArtifact(hermesURL, hermesZipPath);
+    // GHA zips by default the artifacts.
+    const outputFolder = path.join(ciArtifacts.baseTmpPath(), 'hermes');
+    exec(`rm -rf ${outputFolder}`);
+    exec(`unzip ${hermesZipPath} -d ${outputFolder}`);
+    const hermesPath = path.join(outputFolder, 'hermes-ios-Debug.tar.gz');
+
     console.info(`Downloaded Hermes in ${hermesPath}`);
     exec(
       `HERMES_ENGINE_TARBALL_PATH=${hermesPath} RCT_NEW_ARCH_ENABLED=1 bundle exec pod install --ansi`,
@@ -115,7 +119,9 @@ async function testRNTesterIOS(
   launchPackagerInSeparateWindow(pwd().toString());
 
   // launch the app on iOS simulator
-  exec('npx react-native run-ios --scheme RNTester --simulator "iPhone 14"');
+  exec(
+    'npx react-native run-ios --scheme RNTester --simulator "iPhone 15 Pro"',
+  );
 }
 
 /**
@@ -125,7 +131,7 @@ async function testRNTesterIOS(
  * - @circleCIArtifacts manager object to manage all the download of CircleCIArtifacts. If null, it will fallback not to use them.
  */
 async function testRNTesterAndroid(
-  circleCIArtifacts /*: Unwrap<ReturnType<typeof setupCircleCIArtifacts>> */,
+  ciArtifacts /*: Unwrap<ReturnType<typeof setupCircleCIArtifacts>> */,
 ) {
   maybeLaunchAndroidEmulator();
 
@@ -143,22 +149,37 @@ async function testRNTesterAndroid(
     "adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 1; done; input keyevent 82'",
   );
 
-  if (circleCIArtifacts != null) {
-    const downloadPath = path.join(
-      circleCIArtifacts.baseTmpPath(),
-      'rntester.apk',
-    );
+  if (ciArtifacts != null) {
+    const downloadPath = path.join(ciArtifacts.baseTmpPath(), 'rntester.zip');
 
     const emulatorArch = exec('adb shell getprop ro.product.cpu.abi').trim();
-    const rntesterAPKURL =
-      argv.hermes === true
-        ? await circleCIArtifacts.artifactURLForHermesRNTesterAPK(emulatorArch)
-        : await circleCIArtifacts.artifactURLForJSCRNTesterAPK(emulatorArch);
 
+    // Github Actions zips all the APKs in a single archive
     console.info('Start Downloading APK');
-    circleCIArtifacts.downloadArtifact(rntesterAPKURL, downloadPath);
+    const rntesterAPKURL =
+      await ciArtifacts.artifactURLForHermesRNTesterAPK(emulatorArch);
+    ciArtifacts.downloadArtifact(rntesterAPKURL, downloadPath);
+    const unzipFolder = path.join(ciArtifacts.baseTmpPath(), 'rntester-apks');
+    exec(`rm -rf ${unzipFolder}`);
+    exec(`unzip ${downloadPath} -d ${unzipFolder}`);
+    let apkPath;
+    if (argv.hermes === true) {
+      apkPath = path.join(
+        unzipFolder,
+        'hermes',
+        'release',
+        `app-hermes-${emulatorArch}-release.apk`,
+      );
+    } else {
+      apkPath = path.join(
+        unzipFolder,
+        'jsc',
+        'release',
+        `app-jsc-${emulatorArch}-release.apk`,
+      );
+    }
 
-    exec(`adb install ${downloadPath}`);
+    exec(`adb install ${apkPath}`);
   } else {
     exec(
       `../../gradlew :packages:rn-tester:android:app:${
@@ -205,7 +226,7 @@ async function testRNTester(
 // === RNTestProject === //
 
 async function testRNTestProject(
-  circleCIArtifacts /*: Unwrap<ReturnType<typeof setupCircleCIArtifacts>> */,
+  ciArtifacts /*: Unwrap<ReturnType<typeof setupCircleCIArtifacts>> */,
 ) {
   console.info("We're going to test a fresh new RN project");
 
@@ -227,12 +248,12 @@ async function testRNTestProject(
   const localNodeTGZPath = `${reactNativePackagePath}/react-native-${releaseVersion}.tgz`;
 
   const mavenLocalPath =
-    circleCIArtifacts != null
-      ? path.join(circleCIArtifacts.baseTmpPath(), 'maven-local')
+    ciArtifacts != null
+      ? path.join(ciArtifacts.baseTmpPath(), 'maven-local')
       : '/private/tmp/maven-local';
 
-  const hermesPath = await prepareArtifacts(
-    circleCIArtifacts,
+  const {hermesPath, newLocalNodeTGZ} = await prepareArtifacts(
+    ciArtifacts,
     mavenLocalPath,
     localNodeTGZPath,
     releaseVersion,
@@ -241,12 +262,12 @@ async function testRNTestProject(
   );
 
   // If artifacts were built locally, we need to pack the react-native package
-  if (circleCIArtifacts == null) {
+  if (ciArtifacts == null) {
     exec('npm pack --pack-destination ', {cwd: reactNativePackagePath});
 
     // node pack does not creates a version of React Native with the right name on main.
     // Let's add some defensive programming checks:
-    if (!fs.existsSync(localNodeTGZPath)) {
+    if (!fs.existsSync(newLocalNodeTGZ)) {
       const tarfile = fs
         .readdirSync(reactNativePackagePath)
         .find(
@@ -256,13 +277,13 @@ async function testRNTestProject(
         throw new Error("Couldn't find a zipped version of react-native");
       }
       exec(
-        `cp ${path.join(reactNativePackagePath, tarfile)} ${localNodeTGZPath}`,
+        `cp ${path.join(reactNativePackagePath, tarfile)} ${newLocalNodeTGZ}`,
       );
     }
   }
 
   updateTemplatePackage({
-    'react-native': `file://${localNodeTGZPath}`,
+    'react-native': `file://${newLocalNodeTGZ}`,
   });
 
   pushd('/tmp/');
@@ -281,12 +302,18 @@ async function testRNTestProject(
   // /tmp/maven-local subfolder struct.
   // When we generate the project manually, there is no such structure.
   const expandedMavenLocal =
-    circleCIArtifacts == null
-      ? mavenLocalPath
-      : `${mavenLocalPath}/tmp/maven-local`;
+    ciArtifacts == null ? mavenLocalPath : `${mavenLocalPath}/maven-local`;
   // need to do this here so that Android will be properly setup either way
   exec(
     `echo "react.internal.mavenLocalRepo=${expandedMavenLocal}" >> android/gradle.properties`,
+  );
+
+  // Only build the simulator architecture. CI is however generating only that one.
+  sed(
+    '-i',
+    'reactNativeArchitectures=armeabi-v7a,arm64-v8a,x86,x86_64',
+    'reactNativeArchitectures=arm64-v8a',
+    'android/gradle.properties',
   );
 
   // Update gradle properties to set Hermes as false
@@ -336,18 +363,18 @@ async function main() {
   }).stdout.trim();
   const onReleaseBranch = branchName.endsWith('-stable');
 
-  let circleCIArtifacts = await setupCircleCIArtifacts(
+  let ghaArtifacts = await setupGHAArtifacts(
     // $FlowIgnoreError[prop-missing]
-    argv.circleciToken,
+    argv.ciToken,
     branchName,
     // $FlowIgnoreError[prop-missing]
     argv.useLastSuccessfulPipeline,
   );
 
   if (argv.target === 'RNTester') {
-    await testRNTester(circleCIArtifacts, onReleaseBranch);
+    await testRNTester(ghaArtifacts, onReleaseBranch);
   } else {
-    await testRNTestProject(circleCIArtifacts);
+    await testRNTestProject(ghaArtifacts);
 
     console.warn(
       chalk.yellow(`

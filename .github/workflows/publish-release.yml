@@ -3,8 +3,7 @@ name: Publish release
 on:
   push:
     tags:
-      - "v0\.[0-9]+\.[0-9]+([-]\S+)?" # This should match v0.X.Y, v0.X.Y-rc.0
-
+      - "v0.[0-9]+.[0-9]+(-*)?"  # This should match v0.X.Y and v0.X.Y-RC.0
 jobs:
   set_release_type:
     runs-on: ubuntu-latest
