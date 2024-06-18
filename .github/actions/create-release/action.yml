@@ -20,6 +20,11 @@ runs:
     - name: Yarn install
       shell: bash
       run: yarn install --non-interactive
+    - name: Configure Git
+      shell: bash
+      run: |
+        git config --local user.email "bot@reactnative.dev"
+        git config --local user.name "React Native Bot"
     - name: Creating release commit
       shell: bash
       run: |
