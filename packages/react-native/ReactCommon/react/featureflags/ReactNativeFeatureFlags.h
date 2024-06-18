@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5f1ae3edfe01ee0545bd89137c5cb3e9>>
+ * @generated SignedSource<<e45c35dee2c9e2135995ccf2c8a6def3>>
  */
 
 /**
@@ -91,6 +91,11 @@ class ReactNativeFeatureFlags {
    * Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).
    */
   RN_EXPORT static bool enableUIConsistency();
+
+  /**
+   * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
+   */
+  RN_EXPORT static bool fixMappingOfEventPrioritiesBetweenFabricAndReact();
 
   /**
    * Fixes a leak in SurfaceMountingManager.mRemoveDeleteTreeUIFrameCallback

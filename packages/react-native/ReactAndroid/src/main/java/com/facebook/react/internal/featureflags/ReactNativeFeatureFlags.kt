@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<177f05d7b2fadcfffa32cb5a7a21c76b>>
+ * @generated SignedSource<<9a33a6bc10cdb2b0f9fcb15805a06982>>
  */
 
 /**
@@ -93,6 +93,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableUIConsistency(): Boolean = accessor.enableUIConsistency()
+
+  /**
+   * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
+   */
+  @JvmStatic
+  public fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean = accessor.fixMappingOfEventPrioritiesBetweenFabricAndReact()
 
   /**
    * Fixes a leak in SurfaceMountingManager.mRemoveDeleteTreeUIFrameCallback
