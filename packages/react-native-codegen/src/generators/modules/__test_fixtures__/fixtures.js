@@ -407,6 +407,79 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
   },
 };
 
+const NATIVE_MODULE_WITH_INT_FLOAT_TYPES: SchemaType = {
+  modules: {
+    TurboModuleWithFloatAndInt: {
+      type: 'NativeModule',
+      aliasMap: {},
+      enumMap: {},
+      spec: {
+        eventEmitters: [],
+        methods: [
+          {
+            name: 'getNumber',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'NumberTypeAnnotation',
+              },
+              params: [
+                {
+                  optional: false,
+                  name: 'arg',
+                  typeAnnotation: {
+                    type: 'NumberTypeAnnotation',
+                  },
+                },
+              ],
+            },
+          },
+          {
+            name: 'getFloat',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'FloatTypeAnnotation',
+              },
+              params: [
+                {
+                  optional: true,
+                  name: 'arg',
+                  typeAnnotation: {
+                    type: 'FloatTypeAnnotation',
+                  },
+                },
+              ],
+            },
+          },
+          {
+            name: 'getInt',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'Int32TypeAnnotation',
+              },
+              params: [
+                {
+                  optional: true,
+                  name: 'arg',
+                  typeAnnotation: {
+                    type: 'Int32TypeAnnotation',
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+      moduleName: 'TurboModuleWithFloatAndInt',
+    },
+  },
+};
+
 const TWO_MODULES_DIFFERENT_FILES: SchemaType = {
   modules: {
     NativeSampleTurboModule: {
@@ -2440,4 +2513,5 @@ module.exports = {
   real_module_example: REAL_MODULE_EXAMPLE,
   cxx_only_native_modules: CXX_ONLY_NATIVE_MODULES,
   SampleWithUppercaseName: SAMPLE_WITH_UPPERCASE_NAME,
+  native_module_with_int_float_types: NATIVE_MODULE_WITH_INT_FLOAT_TYPES,
 };

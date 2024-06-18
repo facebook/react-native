@@ -258,9 +258,9 @@ function translateParamTypeToJniType(
     case 'DoubleTypeAnnotation':
       return !isRequired ? 'Ljava/lang/Double;' : 'D';
     case 'FloatTypeAnnotation':
-      return !isRequired ? 'Ljava/lang/Double;' : 'D';
+      return !isRequired ? 'Ljava/lang/Float;' : 'F';
     case 'Int32TypeAnnotation':
-      return !isRequired ? 'Ljava/lang/Double;' : 'D';
+      return !isRequired ? 'Ljava/lang/Integer;' : 'I';
     case 'GenericObjectTypeAnnotation':
       return 'Lcom/facebook/react/bridge/ReadableMap;';
     case 'ObjectTypeAnnotation':

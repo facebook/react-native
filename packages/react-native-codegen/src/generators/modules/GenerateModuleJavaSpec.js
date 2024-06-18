@@ -226,11 +226,11 @@ function translateFunctionReturnTypeToJavaType(
     case 'NumberTypeAnnotation':
       return wrapOptional('double', isRequired);
     case 'FloatTypeAnnotation':
-      return wrapOptional('double', isRequired);
+      return wrapOptional('float', isRequired);
     case 'DoubleTypeAnnotation':
       return wrapOptional('double', isRequired);
     case 'Int32TypeAnnotation':
-      return wrapOptional('double', isRequired);
+      return wrapOptional('int', isRequired);
     case 'BooleanTypeAnnotation':
       return wrapOptional('boolean', isRequired);
     case 'EnumDeclaration':
@@ -302,7 +302,7 @@ function getFalsyReturnStatementFromReturnType(
     case 'NumberTypeAnnotation':
       return nullable ? 'return null;' : 'return 0;';
     case 'FloatTypeAnnotation':
-      return nullable ? 'return null;' : 'return 0.0;';
+      return nullable ? 'return null;' : 'return 0f;';
     case 'DoubleTypeAnnotation':
       return nullable ? 'return null;' : 'return 0.0;';
     case 'Int32TypeAnnotation':

@@ -174,7 +174,7 @@ function translatePrimitiveJSTypeToCpp(
     case 'DoubleTypeAnnotation':
       return wrapOptional('double', isRequired);
     case 'FloatTypeAnnotation':
-      return wrapOptional('double', isRequired);
+      return wrapOptional('float', isRequired);
     case 'Int32TypeAnnotation':
       return wrapOptional('int', isRequired);
     case 'BooleanTypeAnnotation':
