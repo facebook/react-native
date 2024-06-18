@@ -274,13 +274,6 @@ using namespace facebook::react;
 
 - (void)textInputDidBeginEditing
 {
-  const auto &props = static_cast<const TextInputProps &>(*_props);
-
-  if (props.traits.clearTextOnFocus) {
-    _backedTextInputView.attributedText = nil;
-    [self textInputDidChange];
-  }
-
   if (_eventEmitter) {
     static_cast<const TextInputEventEmitter &>(*_eventEmitter).onFocus([self _textInputMetrics]);
   }
@@ -422,6 +415,11 @@ using namespace facebook::react;
   [_backedTextInputView becomeFirstResponder];
   
   const auto &props = static_cast<const TextInputProps &>(*_props);
+  
+  if (props.traits.clearTextOnFocus) {
+    _backedTextInputView.attributedText = nil;
+    [self textInputDidChange];
+  }
 
   if (props.traits.selectTextOnFocus) {
     [_backedTextInputView selectAll:nil];
