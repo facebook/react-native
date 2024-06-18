@@ -107,6 +107,10 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
 
     view.setTag(R.id.use_hardware_layer, null);
     view.setTag(R.id.filter, null);
+    view.setTag(R.id.mix_blend_mode, null);
+
+    setupRenderEffect(view);
+    applyMixBlendMode(view, null);
     applyFilter(view, null);
 
     // setShadowColor
@@ -190,6 +194,12 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   @ReactProp(name = ViewProps.FILTER, customType = "Filter")
   public void setFilter(@NonNull T view, @Nullable ReadableArray filter) {
     view.setTag(R.id.filter, filter);
+  }
+
+  @Override
+  @ReactProp(name = ViewProps.MIX_BLEND_MODE)
+  public void setMixBlendMode(@NonNull T view, @Nullable String mixBlendMode) {
+    view.setTag(R.id.mix_blend_mode, mixBlendMode);
   }
 
   @Override
@@ -498,14 +508,6 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   }
 
   private void applyFilter(@NonNull T view, @Nullable ReadableArray filter) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-      view.setRenderEffect(null);
-    }
-    Boolean useHWLayer = (Boolean) view.getTag(R.id.use_hardware_layer);
-    int layerType =
-        useHWLayer != null && useHWLayer ? View.LAYER_TYPE_HARDWARE : View.LAYER_TYPE_NONE;
-    view.setLayerType(layerType, null);
-
     if (filter == null) {
       return;
     }
@@ -517,6 +519,20 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
       view.setRenderEffect(FilterHelper.parseFilters(filter));
     }
+  }
+
+  private void applyMixBlendMode(@NonNull T view, @Nullable String mixBlendMode) {
+    view.setLayerType(View.LAYER_TYPE_HARDWARE, MixBlendModeHelper.parseMixBlendMode(mixBlendMode));
+  }
+
+  private void setupRenderEffect(@NonNull T view) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+      view.setRenderEffect(null);
+    }
+    Boolean useHWLayer = (Boolean) view.getTag(R.id.use_hardware_layer);
+    int layerType =
+        useHWLayer != null && useHWLayer ? View.LAYER_TYPE_HARDWARE : View.LAYER_TYPE_NONE;
+    view.setLayerType(layerType, null);
   }
 
   protected void setTransformProperty(
@@ -631,7 +647,11 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     }
 
     ReadableArray filter = (ReadableArray) view.getTag(R.id.filter);
+    String mixBlendMode = (String) view.getTag(R.id.mix_blend_mode);
+
+    setupRenderEffect(view);
     applyFilter(view, filter);
+    applyMixBlendMode(view, mixBlendMode);
   }
 
   @Override
