@@ -77,8 +77,7 @@ public class TextLayoutManager {
   public static final short PA_KEY_ADJUST_FONT_SIZE_TO_FIT = 3;
   public static final short PA_KEY_INCLUDE_FONT_PADDING = 4;
   public static final short PA_KEY_HYPHENATION_FREQUENCY = 5;
-  public static final short PA_KEY_MINIMUM_FONT_SIZE = 6;
-  public static final short PA_KEY_MAXIMUM_FONT_SIZE = 7;
+  public static final short PA_KEY_MINIMUM_FONT_SCALE = 6;
 
   private static final boolean ENABLE_MEASURE_LOGGING = ReactBuildConfig.DEBUG && false;
 
@@ -428,7 +427,7 @@ public class TextLayoutManager {
       YogaMeasureMode widthYogaMeasureMode,
       float height,
       YogaMeasureMode heightYogaMeasureMode,
-      double minimumFontSizeAttr,
+      double minimumFontScaleAttr,
       int maximumNumberOfLines,
       boolean includeFontPadding,
       int textBreakStrategy,
@@ -446,18 +445,15 @@ public class TextLayoutManager {
             hyphenationFrequency,
             alignment);
 
-    // Minimum font size is 4pts to match the iOS implementation.
-    int minimumFontSize =
-        (int)
-            (Double.isNaN(minimumFontSizeAttr) ? PixelUtil.toPixelFromDIP(4) : minimumFontSizeAttr);
-
-    // Find the largest font size used in the spannable to use as a starting point.
-    int currentFontSize = minimumFontSize;
+    // Find the largest font size used in the spanable to use as a starting point.
+    int currentFontSize = 0;
     ReactAbsoluteSizeSpan[] spans = text.getSpans(0, text.length(), ReactAbsoluteSizeSpan.class);
     for (ReactAbsoluteSizeSpan span : spans) {
       currentFontSize = Math.max(currentFontSize, span.getSize());
     }
 
+    // Minimum font size is 4pts to match the iOS implementation.
+    int minimumFontSize = (int) Math.max(minimumFontScaleAttr * currentFontSize, PixelUtil.toPixelFromDIP(4));
     int initialFontSize = currentFontSize;
     while (currentFontSize > minimumFontSize
         && ((maximumNumberOfLines != ReactConstants.UNSET
@@ -534,10 +530,10 @@ public class TextLayoutManager {
     Layout.Alignment alignment = getTextAlignment(attributedString, text);
 
     if (adjustFontSizeToFit) {
-      double minimumFontSize =
-          paragraphAttributes.contains(PA_KEY_MINIMUM_FONT_SIZE)
-              ? paragraphAttributes.getDouble(PA_KEY_MINIMUM_FONT_SIZE)
-              : Double.NaN;
+      double minimumFontScale =
+          paragraphAttributes.contains(PA_KEY_MINIMUM_FONT_SCALE)
+              ? paragraphAttributes.getDouble(PA_KEY_MINIMUM_FONT_SCALE)
+              : 0.0;
 
       adjustSpannableFontToFit(
           text,
@@ -545,7 +541,7 @@ public class TextLayoutManager {
           widthYogaMeasureMode,
           height,
           heightYogaMeasureMode,
-          minimumFontSize,
+          minimumFontScale,
           maximumNumberOfLines,
           includeFontPadding,
           textBreakStrategy,
@@ -743,10 +739,10 @@ public class TextLayoutManager {
     Layout.Alignment alignment = getTextAlignment(attributedString, text);
 
     if (adjustFontSizeToFit) {
-      double minimumFontSize =
-          paragraphAttributes.contains(PA_KEY_MINIMUM_FONT_SIZE)
-              ? paragraphAttributes.getDouble(PA_KEY_MINIMUM_FONT_SIZE)
-              : Double.NaN;
+      double minimumFontScale =
+          paragraphAttributes.contains(PA_KEY_MINIMUM_FONT_SCALE)
+              ? paragraphAttributes.getDouble(PA_KEY_MINIMUM_FONT_SCALE)
+              : 0.0;
 
       adjustSpannableFontToFit(
           text,
@@ -754,7 +750,7 @@ public class TextLayoutManager {
           YogaMeasureMode.EXACTLY,
           height,
           YogaMeasureMode.UNDEFINED,
-          minimumFontSize,
+          minimumFontScale,
           maximumNumberOfLines,
           includeFontPadding,
           textBreakStrategy,

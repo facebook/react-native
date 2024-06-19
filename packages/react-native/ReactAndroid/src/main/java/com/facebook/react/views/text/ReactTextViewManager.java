@@ -154,11 +154,11 @@ public class ReactTextViewManager
     view.setSpanned(spanned);
 
     try {
-      float minimumFontSize =
-          (float) paragraphAttributes.getDouble(TextLayoutManager.PA_KEY_MINIMUM_FONT_SIZE);
-      view.setMinimumFontSize(minimumFontSize);
+      float minimumFontScale =
+          (float) paragraphAttributes.getDouble(TextLayoutManager.PA_KEY_MINIMUM_FONT_SCALE);
+      view.setMinimumFontScale(minimumFontScale);
     } catch (IllegalArgumentException e) {
-      // T190482857: We see rare crash with MapBuffer without PA_KEY_MINIMUM_FONT_SIZE entry
+      // T190482857: We see rare crash with MapBuffer without PA_KEY_MINIMUM_FONT_SCALE entry
       FLog.e(
           TAG,
           "Paragraph Attributes: %s",
