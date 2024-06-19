@@ -8045,7 +8045,7 @@ exports[`public API should not change unintentionally Libraries/Text/Text.js 1`]
   TextProps,
   React.ElementRef<typeof NativeText | typeof NativeVirtualText>,
 >;
-declare module.exports: typeof Text;
+declare module.exports: Text;
 "
 `;
 
