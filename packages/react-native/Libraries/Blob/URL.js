@@ -185,11 +185,15 @@ export class URL {
   }
 
   get password(): string {
-    const userinfo = this._url.substring(
-      this._url.indexOf('//') + 2,
-      this._url.indexOf('@'),
-    );
-    return userinfo.includes(':') ? userinfo.split(':')[1] : '';
+    const atIndex = this._url.indexOf('@');
+    if (atIndex !== -1) {
+      const userinfo = this._url.substring(
+        this._url.indexOf('//') + 2,
+        atIndex,
+      );
+      return userinfo.includes(':') ? userinfo.split(':')[1] : '';
+    }
+    return '';
   }
 
   get pathname(): string {
@@ -211,9 +215,11 @@ export class URL {
   }
 
   get port(): string {
-    const portStart = this._url.indexOf(':', this._url.indexOf('//') + 2) + 1;
-    const portEnd = this._url.indexOf('/', portStart);
-    return portEnd !== -1 ? this._url.substring(portStart, portEnd) : '';
+    const host = this.host;
+    const portIndex = host.indexOf(':');
+    return portIndex !== -1 && portIndex < host.length - 1
+      ? host.substring(portIndex + 1)
+      : '';
   }
 
   get protocol(): string {
@@ -241,15 +247,32 @@ export class URL {
   }
 
   get username(): string {
-    const userinfo = this._url.substring(
-      this._url.indexOf('//') + 2,
-      this._url.indexOf('@'),
-    );
-    return userinfo.includes(':') ? userinfo.split(':')[0] : userinfo;
+    const atIndex = this._url.indexOf('@');
+    if (atIndex !== -1) {
+      const userinfo = this._url.substring(
+        this._url.indexOf('//') + 2,
+        atIndex,
+      );
+      return userinfo.includes(':') ? userinfo.split(':')[0] : userinfo;
+    }
+    return '';
   }
 
-  toJSON(): string {
-    return this.toString();
+  toJSON() {
+    return {
+      href: this.href,
+      origin: this.origin,
+      protocol: this.protocol,
+      username: this.username,
+      password: this.password,
+      host: this.host,
+      hostname: this.hostname,
+      port: this.port,
+      pathname: this.pathname,
+      search: this.search,
+      searchParams: this.searchParams.toString(),
+      hash: this.hash,
+    };
   }
 
   toString(): string {
