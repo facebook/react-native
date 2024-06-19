@@ -42,6 +42,21 @@ describe('URL', function () {
     expect(k.href).toBe('https://developer.mozilla.org/en-US/docs');
   });
 
+  it('should handle URLs with no base', () => {
+    const url = new URL('https://example.com');
+    expect(url.href).toBe('https://example.com/');
+    expect(url.hash).toBe('');
+    expect(url.host).toBe('example.com');
+    expect(url.hostname).toBe('example.com');
+    expect(url.origin).toBe('https://example.com');
+    expect(url.password).toBe('');
+    expect(url.pathname).toBe('/');
+    expect(url.port).toBe('');
+    expect(url.protocol).toBe('https:');
+    expect(url.search).toBe('');
+    expect(url.username).toBe('');
+  });
+
   it('should return correct protocol', () => {
     const url = new URL('https://example.com');
     expect(url.protocol).toBe('https:');
