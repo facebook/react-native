@@ -515,7 +515,9 @@ jobs:
       - name: Install dependencies
         run: yarn install --non-interactive
       - name: Set React Native Version
-        run: node ./scripts/releases/set-rn-version.js --build-type ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
+        run: |
+          git config --global --add safe.directory /__w/react-native/react-native
+          node ./scripts/releases/set-rn-version.js --build-type ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
       - name: Setup gradle
         uses: ./.github/actions/setup-gradle
       - name: Build and publish all the Android Artifacts to /tmp/maven-local
