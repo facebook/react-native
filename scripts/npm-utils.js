@@ -90,12 +90,13 @@ function getNpmInfo(buildType /*: BuildType */) /*: NpmInfo */ {
 
   if (buildType === 'release') {
     let versionTag /*: string*/ = '';
-    if (process.env.CIRCLE_TAG != null) {
+    if (process.env.CIRCLE_TAG != null && process.env.CIRCLE_TAG !== '') {
       versionTag = process.env.CIRCLE_TAG;
     } else if (
       process.env.GITHUB_REF != null &&
       process.env.GITHUB_REF.includes('/tags/') &&
-      process.env.GITHUB_REF_NAME != null
+      process.env.GITHUB_REF_NAME != null &&
+      process.env.GITHUB_REF_NAME !== ''
     ) {
       // GITHUB_REF contains the fully qualified ref, for example refs/tags/v0.75.0-rc.0
       // GITHUB_REF_NAME contains the short name, for example v0.75.0-rc.0
