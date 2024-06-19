@@ -107,7 +107,10 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
 
     view.setTag(R.id.use_hardware_layer, null);
     view.setTag(R.id.filter, null);
+    view.setTag(R.id.mix_blend_mode, null);
+
     applyFilter(view, null);
+    applyMixBlendMode(view, null);
 
     // setShadowColor
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -190,6 +193,12 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   @ReactProp(name = ViewProps.FILTER, customType = "Filter")
   public void setFilter(@NonNull T view, @Nullable ReadableArray filter) {
     view.setTag(R.id.filter, filter);
+  }
+
+  @Override
+  @ReactProp(name = ViewProps.MIX_BLEND_MODE)
+  public void setMixBlendMode(@NonNull T view, @Nullable String mixBlendMode) {
+    view.setTag(R.id.mix_blend_mode, mixBlendMode);
   }
 
   @Override
@@ -519,6 +528,10 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     }
   }
 
+  private void applyMixBlendMode(@NonNull T view, @Nullable String mixBlendMode) {
+    view.setLayerType(View.LAYER_TYPE_HARDWARE, MixBlendModeHelper.parseMixBlendMode(mixBlendMode));
+  }
+
   protected void setTransformProperty(
       @NonNull T view,
       @Nullable ReadableArray transforms,
@@ -631,7 +644,10 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     }
 
     ReadableArray filter = (ReadableArray) view.getTag(R.id.filter);
+    String mixBlendMode = (String) view.getTag(R.id.mix_blend_mode);
+
     applyFilter(view, filter);
+    applyMixBlendMode(view, mixBlendMode);
   }
 
   @Override

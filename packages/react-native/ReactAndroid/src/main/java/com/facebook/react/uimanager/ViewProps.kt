@@ -136,6 +136,7 @@ public object ViewProps {
   public const val BORDER_END_COLOR: String = "borderEndColor"
   public const val ON_LAYOUT: String = "onLayout"
   public const val FILTER: String = "experimental_filter"
+  public const val MIX_BLEND_MODE: String = "experimental_mixBlendMode"
   public const val TRANSFORM: String = "transform"
   public const val TRANSFORM_ORIGIN: String = "transformOrigin"
   public const val ELEVATION: String = "elevation"
