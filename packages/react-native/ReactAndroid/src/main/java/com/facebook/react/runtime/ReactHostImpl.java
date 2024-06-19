@@ -44,7 +44,6 @@ import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.RuntimeExecutor;
 import com.facebook.react.bridge.UiThreadUtil;
-import com.facebook.react.bridge.queue.QueueThreadExceptionHandler;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.build.ReactBuildConfig;
@@ -72,8 +71,8 @@ import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -104,14 +103,10 @@ public class ReactHostImpl implements ReactHost {
   private final DevSupportManager mDevSupportManager;
   private final Executor mBGExecutor;
   private final Executor mUIExecutor;
-  private final QueueThreadExceptionHandler mQueueThreadExceptionHandler;
-  private final Set<ReactSurfaceImpl> mAttachedSurfaces =
-      Collections.synchronizedSet(new HashSet<>());
+  private final Set<ReactSurfaceImpl> mAttachedSurfaces = new HashSet<>();
   private final MemoryPressureRouter mMemoryPressureRouter;
   private final boolean mAllowPackagerServerAccess;
   private final boolean mUseDevSupport;
-  private final Collection<ReactInstanceEventListener> mReactInstanceEventListeners =
-      Collections.synchronizedList(new ArrayList<>());
 
   // todo: T192399917 This no longer needs to store the react instance
   private final BridgelessAtomicRef<Task<ReactInstance>> mCreateReactInstanceTaskRef =
@@ -133,8 +128,8 @@ public class ReactHostImpl implements ReactHost {
   private @Nullable MemoryPressureListener mMemoryPressureListener;
   private @Nullable DefaultHardwareBackBtnHandler mDefaultHardwareBackBtnHandler;
 
-  private final Set<Function0<Unit>> mBeforeDestroyListeners =
-      Collections.synchronizedSet(new HashSet<>());
+  private final List<ReactInstanceEventListener> mReactInstanceEventListeners = new ArrayList<>();
+  private final List<Function0<Unit>> mBeforeDestroyListeners = new ArrayList<>();
 
   private @Nullable ReactHostInspectorTarget mReactHostInspectorTarget;
 
@@ -167,7 +162,6 @@ public class ReactHostImpl implements ReactHost {
     mComponentFactory = componentFactory;
     mBGExecutor = bgExecutor;
     mUIExecutor = uiExecutor;
-    mQueueThreadExceptionHandler = ReactHostImpl.this::handleHostException;
     mMemoryPressureRouter = new MemoryPressureRouter(context);
     mAllowPackagerServerAccess = allowPackagerServerAccess;
     mUseDevSupport = useDevSupport;
@@ -416,12 +410,16 @@ public class ReactHostImpl implements ReactHost {
 
   /** Add a listener to be notified of ReactInstance events. */
   public void addReactInstanceEventListener(ReactInstanceEventListener listener) {
-    mReactInstanceEventListeners.add(listener);
+    synchronized (mReactInstanceEventListeners) {
+      mReactInstanceEventListeners.add(listener);
+    }
   }
 
   /** Remove a listener previously added with {@link #addReactInstanceEventListener}. */
   public void removeReactInstanceEventListener(ReactInstanceEventListener listener) {
-    mReactInstanceEventListeners.remove(listener);
+    synchronized (mReactInstanceEventListeners) {
+      mReactInstanceEventListeners.remove(listener);
+    }
   }
 
   /**
@@ -1067,7 +1065,7 @@ public class ReactHostImpl implements ReactHost {
                             mReactHostDelegate,
                             mComponentFactory,
                             devSupportManager,
-                            mQueueThreadExceptionHandler,
+                            this::handleHostException,
                             mUseDevSupport,
                             getOrCreateReactHostInspectorTarget());
                     mReactInstance = instance;
@@ -1147,13 +1145,13 @@ public class ReactHostImpl implements ReactHost {
                           reactContext, getCurrentActivity());
                     }
 
-                    ReactInstanceEventListener[] listeners =
-                        new ReactInstanceEventListener[mReactInstanceEventListeners.size()];
-                    final ReactInstanceEventListener[] finalListeners =
-                        mReactInstanceEventListeners.toArray(listeners);
-
                     log(method, "Executing ReactInstanceEventListeners");
-                    for (ReactInstanceEventListener listener : finalListeners) {
+                    ReactInstanceEventListener[] instanceEventListeners;
+                    synchronized (mReactInstanceEventListeners) {
+                      instanceEventListeners =
+                          mReactInstanceEventListeners.toArray(new ReactInstanceEventListener[0]);
+                    }
+                    for (ReactInstanceEventListener listener : instanceEventListeners) {
                       if (listener != null) {
                         listener.onReactContextInitialized(reactContext);
                       }
@@ -1397,11 +1395,10 @@ public class ReactHostImpl implements ReactHost {
                     reactInstanceTaskUnwrapper.unwrap(
                         task, "3: Executing Before Destroy Listeners");
 
-                    Set<Function0<Unit>> beforeDestroyListeners;
+                    Function0<Unit>[] beforeDestroyListeners;
                     synchronized (mBeforeDestroyListeners) {
-                      beforeDestroyListeners = new HashSet<>(mBeforeDestroyListeners);
+                      beforeDestroyListeners = mBeforeDestroyListeners.toArray(new Function0[0]);
                     }
-
                     for (Function0<Unit> destroyListener : beforeDestroyListeners) {
                       destroyListener.invoke();
                     }
