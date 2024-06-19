@@ -258,7 +258,7 @@ export class URL {
     return '';
   }
 
-  toJSON() {
+  toJSON(): string {
     return {
       href: this.href,
       origin: this.origin,
