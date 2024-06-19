@@ -55,7 +55,7 @@ jobs:
           else
             echo "Hermes Version file not found!!!"
             echo "Using the last commit from main for the build:"
-            HERMES_TAG_SHA=$(git ls-remote https://github.com/$GITHUB_REPOSITORY main | cut -f 1 | tr -d '[:space:]')
+            HERMES_TAG_SHA=$(git ls-remote https://github.com/facebook/hermes main | cut -f 1 | tr -d '[:space:]')
             echo "VERSION=$HERMES_TAG_SHA" >> "$GITHUB_OUTPUT"
           fi
           echo "Hermes commit is $HERMES_TAG_SHA"
