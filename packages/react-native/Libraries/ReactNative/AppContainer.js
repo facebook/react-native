@@ -18,7 +18,6 @@ export type Props = $ReadOnly<{|
   fabric?: boolean,
   rootTag: number | RootTag,
   initialProps?: {...},
-  showArchitectureIndicator?: boolean,
   WrapperComponent?: ?React.ComponentType<any>,
   rootViewStyle?: ?ViewStyleProp,
   internal_excludeLogBox?: boolean,
