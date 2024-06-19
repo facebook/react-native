@@ -78,7 +78,7 @@ const REQUEST_EVENTS = [
 
 const XHR_EVENTS = REQUEST_EVENTS.concat('readystatechange');
 
-class XMLHttpRequestEventTarget extends (EventTarget(...REQUEST_EVENTS): any) {
+class XMLHttpRequestEventTarget extends (EventTarget(...REQUEST_EVENTS): typeof EventTargetStub) {
   onload: ?Function;
   onloadstart: ?Function;
   onprogress: ?Function;
@@ -91,7 +91,7 @@ class XMLHttpRequestEventTarget extends (EventTarget(...REQUEST_EVENTS): any) {
 /**
  * Shared base for platform-specific XMLHttpRequest implementations.
  */
-class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): any) {
+class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): typeof EventTargetStub) {
   static UNSENT: number = UNSENT;
   static OPENED: number = OPENED;
   static HEADERS_RECEIVED: number = HEADERS_RECEIVED;
@@ -656,7 +656,7 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): any) {
   }
 
   /* global EventListener */
-  addEventListener(type: string, listener: EventListener): void {
+  addEventListener = (type: string, listener: EventListener): void => {
     // If we dont' have a 'readystatechange' event handler, we don't
     // have to send repeated LOADING events with incremental updates
     // to responseText, which will avoid a bunch of native -> JS

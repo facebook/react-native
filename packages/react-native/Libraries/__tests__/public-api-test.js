@@ -29,32 +29,7 @@ const IGNORE_PATTERNS = [
 
 // Exclude list for files that fail to parse under flow-api-translator. Please
 // review your changes before adding new entries.
-const FILES_WITH_KNOWN_ERRORS = new Set([
-  'Libraries/Blob/FileReader.js',
-  'Libraries/Components/DrawerAndroid/DrawerLayoutAndroid.android.js',
-  'Libraries/Components/Keyboard/KeyboardAvoidingView.js',
-  'Libraries/Components/RefreshControl/RefreshControl.js',
-  'Libraries/Components/ScrollView/ScrollView.js',
-  'Libraries/Components/StatusBar/StatusBar.js',
-  'Libraries/Components/StaticRenderer.js',
-  'Libraries/Components/Touchable/TouchableNativeFeedback.js',
-  'Libraries/Components/UnimplementedViews/UnimplementedView.js',
-  'Libraries/Image/ImageBackground.js',
-  'Libraries/Inspector/ElementProperties.js',
-  'Libraries/Inspector/BorderBox.js',
-  'Libraries/Inspector/BoxInspector.js',
-  'Libraries/Inspector/InspectorPanel.js',
-  'Libraries/Inspector/NetworkOverlay.js',
-  'Libraries/Inspector/PerformanceOverlay.js',
-  'Libraries/Inspector/StyleInspector.js',
-  'Libraries/Inspector/ElementBox.js',
-  'Libraries/Lists/FlatList.js',
-  'Libraries/Lists/SectionList.js',
-  'Libraries/LogBox/LogBoxInspectorContainer.js',
-  'Libraries/Modal/Modal.js',
-  'Libraries/Network/XMLHttpRequest.js',
-  'Libraries/WebSocket/WebSocket.js',
-]);
+const FILES_WITH_KNOWN_ERRORS: Set<string> = new Set([]);
 
 const sourceFiles = [
   'index.js',
