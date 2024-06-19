@@ -136,74 +136,101 @@ export class URL {
     // Do nothing.
   }
 
-  // $FlowFixMe[missing-local-annot]
-  constructor(url: string, base: string | URL) {
-    let baseUrl = null;
+  constructor(url: string, base?: string | URL) {
     if (!base || validateBaseUrl(url)) {
-      this._url = url;
-      if (!this._url.endsWith('/')) {
-        this._url += '/';
-      }
+      this._url = encodeURI(url);
     } else {
       if (typeof base === 'string') {
-        baseUrl = base;
-        if (!validateBaseUrl(baseUrl)) {
-          throw new TypeError(`Invalid base URL: ${baseUrl}`);
-        }
-      } else {
-        baseUrl = base.toString();
+        base = new URL(base);
       }
-      if (baseUrl.endsWith('/')) {
-        baseUrl = baseUrl.slice(0, baseUrl.length - 1);
-      }
-      if (!url.startsWith('/')) {
-        url = `/${url}`;
-      }
-      if (baseUrl.endsWith(url)) {
-        url = '';
-      }
-      this._url = `${baseUrl}${url}`;
+      this._url = resolveRelativeUrl(url, base.href);
+    }
+
+    const pathEndIndex = this._url.indexOf('/', this._url.indexOf('//') + 2);
+    if (pathEndIndex === -1) {
+      this._url += '/';
     }
   }
 
   get hash(): string {
-    throw new Error('URL.hash is not implemented');
+    const hashIndex = this._url.indexOf('#');
+    return hashIndex !== -1
+      ? this._url.substring(hashIndex).replace(/\/$/, '')
+      : '';
   }
 
   get host(): string {
-    throw new Error('URL.host is not implemented');
+    const hostStart = this._url.indexOf('//') + 2;
+    const hostEnd = this._url.indexOf('/', hostStart);
+    return hostEnd !== -1
+      ? this._url.substring(hostStart, hostEnd)
+      : this._url.substring(hostStart);
   }
 
   get hostname(): string {
-    throw new Error('URL.hostname is not implemented');
+    return this.host.split(':')[0];
   }
 
   get href(): string {
-    return this.toString();
+    return this._url;
   }
 
   get origin(): string {
-    throw new Error('URL.origin is not implemented');
+    const portIndex = this._url.indexOf(':', this._url.indexOf('//') + 2);
+    const originEnd =
+      portIndex !== -1
+        ? this._url.indexOf('/', portIndex)
+        : this._url.indexOf('/', this._url.indexOf('//') + 2);
+    return originEnd !== -1 ? this._url.substring(0, originEnd) : this._url;
   }
 
   get password(): string {
-    throw new Error('URL.password is not implemented');
+    const userinfo = this._url.substring(
+      this._url.indexOf('//') + 2,
+      this._url.indexOf('@'),
+    );
+    return userinfo.includes(':') ? userinfo.split(':')[1] : '';
   }
 
   get pathname(): string {
-    throw new Error('URL.pathname not implemented');
+    const pathStart = this._url.indexOf('/', this._url.indexOf('//') + 2);
+    const pathEnd = this._url.indexOf('?', pathStart);
+
+    let pathname =
+      pathStart !== -1
+        ? pathEnd !== -1
+          ? this._url.substring(pathStart, pathEnd)
+          : this._url.substring(pathStart)
+        : '/';
+
+    if (pathname.length > 1 && pathname.endsWith('/')) {
+      pathname = pathname.slice(0, -1);
+    }
+
+    return pathname;
   }
 
   get port(): string {
-    throw new Error('URL.port is not implemented');
+    const portStart = this._url.indexOf(':', this._url.indexOf('//') + 2) + 1;
+    const portEnd = this._url.indexOf('/', portStart);
+    return portEnd !== -1 ? this._url.substring(portStart, portEnd) : '';
   }
 
   get protocol(): string {
-    throw new Error('URL.protocol is not implemented');
+    return this._url.substring(0, this._url.indexOf(':') + 1);
   }
 
   get search(): string {
-    throw new Error('URL.search is not implemented');
+    const searchIndex = this._url.indexOf('?');
+    const hashIndex = this._url.indexOf('#');
+    if (searchIndex !== -1) {
+      return (
+        hashIndex !== -1
+          ? this._url.substring(searchIndex, hashIndex)
+          : this._url.substring(searchIndex)
+      ).replace(/\/$/, '');
+    }
+    return '';
   }
 
   get searchParams(): URLSearchParams {
@@ -213,21 +240,48 @@ export class URL {
     return this._searchParamsInstance;
   }
 
+  get username(): string {
+    const userinfo = this._url.substring(
+      this._url.indexOf('//') + 2,
+      this._url.indexOf('@'),
+    );
+    return userinfo.includes(':') ? userinfo.split(':')[0] : userinfo;
+  }
+
   toJSON(): string {
     return this.toString();
   }
 
   toString(): string {
-    if (this._searchParamsInstance === null) {
-      return this._url;
-    }
-    // $FlowFixMe[incompatible-use]
-    const instanceString = this._searchParamsInstance.toString();
-    const separator = this._url.indexOf('?') > -1 ? '&' : '?';
-    return this._url + separator + instanceString;
+    return this.href;
+  }
+}
+
+function resolveRelativeUrl(relative: string, base: string): string {
+  const baseUrl = new URL(base);
+  if (relative.startsWith('/')) {
+    return `${baseUrl.origin}${relative}`;
   }
 
-  get username(): string {
-    throw new Error('URL.username is not implemented');
+  let basePath = baseUrl.pathname;
+  if (!basePath.endsWith('/')) {
+    basePath = basePath.substring(0, basePath.lastIndexOf('/') + 1);
   }
+
+  const baseParts = basePath.split('/').filter(part => part.length > 0);
+  const relativeParts = relative.split('/').filter(part => part.length > 0);
+
+  const paths = baseParts.concat(relativeParts);
+  const resolvedParts = [];
+
+  for (const path of paths) {
+    if (path === '..') {
+      resolvedParts.pop();
+    } else if (path !== '.') {
+      resolvedParts.push(path);
+    }
+  }
+
+  const resolvedPath = resolvedParts.join('/');
+  return `${baseUrl.origin}/${resolvedPath}`;
 }
