@@ -491,6 +491,7 @@ export default class Device {
   // locations).
   async #handleMessageFromDevice(message: MessageFromDevice) {
     if (message.event === 'getPages') {
+      // Preserve ordering - getPages guarantees addition order.
       this.#pages = new Map(
         message.payload.map(({capabilities, ...page}) => [
           page.id,

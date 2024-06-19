@@ -109,7 +109,11 @@ class JSINSPECTOR_EXPORT IInspector : public IDestructible {
   /// debuggable pages.
   virtual void removePage(int pageId) = 0;
 
-  /// getPages is called by the client to list all debuggable pages.
+  /**
+   * Called by the client to retrieve all debuggable pages.
+   * \returns A vector of page descriptions in the order in which they were
+   * added with \c addPage.
+   */
   virtual std::vector<InspectorPageDescription> getPages() const = 0;
 
   /**
