@@ -89,14 +89,18 @@ function getNpmInfo(buildType /*: BuildType */) /*: NpmInfo */ {
   }
 
   if (buildType === 'release') {
-    if (process.env.CIRCLE_TAG == null) {
+    // GITHUB_REF contains the fully qualified ref, for example refs/tags/v0.75.0-rc.0
+    // GITHUB_REF_NAME contains the short name, for example v0.75.0-rc.0
+    if (process.env.CIRCLE_TAG == null || process.env.GITHUB_REF == null || !process.env.GITHUB_REF.includes('/tags/') || process.env.GITHUB_REF_NAME == null) {
       throw new Error(
-        'CIRCLE_TAG is not set for release. This should only be run in CircleCI. See https://circleci.com/docs/variables/ for how CIRCLE_TAG is set.',
+        'No version tag found in CI. It looks like this script is running in release mode, but the CIRCLE_TAG or the GITHUB_REF_NAME are missing.',
       );
     }
 
+    const versionTag /*: string*/ = process.env.CIRCLE_TAG != null ? process.env.CIRCLE_TAG : process.env.GITHUB_REF_NAME;
+
     const {version, major, minor, patch, prerelease} = parseVersion(
-      process.env.CIRCLE_TAG,
+      versionTag,
       buildType,
     );
 
