@@ -86,12 +86,12 @@ export default function openDebuggerMiddleware({
         if (!target && typeof appId === 'string') {
           target = targets.find(_target => _target.description === appId);
         }
-      } else {
+      } else if (targets.length > 0) {
         logger?.info(
           (launchType === 'launch' ? 'Launching' : 'Redirecting to') +
-            ' JS debugger for first available target...',
+            ` JS debugger${targets.length === 1 ? '' : ' for most recently connected target'}...`,
         );
-        target = targets[0];
+        target = targets[targets.length - 1];
       }
 
       if (!target) {
