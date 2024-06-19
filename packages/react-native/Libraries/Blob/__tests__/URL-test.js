@@ -97,7 +97,6 @@ describe('URL', function () {
     expect(url.password).toBe('pass');
   });
 
-  // 추가된 테스트 케이스
   it('should handle URLs with special characters', () => {
     const url = new URL('https://example.com/path with spaces');
     expect(url.href).toBe('https://example.com/path%20with%20spaces');
