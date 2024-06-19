@@ -364,9 +364,9 @@ std::shared_ptr<UIManager> Scheduler::getUIManager() const {
 }
 
 void Scheduler::addEventListener(
-    const std::shared_ptr<const EventListener>& listener) {
+    std::shared_ptr<const EventListener> listener) {
   if (eventDispatcher_->has_value()) {
-    eventDispatcher_->value().addListener(listener);
+    eventDispatcher_->value().addListener(std::move(listener));
   }
 }
 
