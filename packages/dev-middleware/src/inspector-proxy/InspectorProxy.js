@@ -43,6 +43,10 @@ const DEBUGGER_HEARTBEAT_INTERVAL_MS = 10000;
 const INTERNAL_ERROR_CODE = 1011;
 
 export interface InspectorProxyQueries {
+  /**
+   * Returns list of page descriptions ordered by device connection order, then
+   * page addition order.
+   */
   getPageDescriptions(): Array<PageDescription>;
 }
 
