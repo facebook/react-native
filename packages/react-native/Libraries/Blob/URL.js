@@ -258,21 +258,8 @@ export class URL {
     return '';
   }
 
-  toJSON(): {
-    href: string,
-    origin: string,
-    protocol: string,
-    username: string,
-    password: string,
-    host: string,
-    hostname: string,
-    port: string,
-    pathname: string,
-    search: string,
-    searchParams: string,
-    hash: string,
-  } {
-    return {
+  toJSON(): string {
+    return JSON.stringify({
       href: this.href,
       origin: this.origin,
       protocol: this.protocol,
@@ -285,7 +272,7 @@ export class URL {
       search: this.search,
       searchParams: this.searchParams.toString(),
       hash: this.hash,
-    };
+    });
   }
 
   toString(): string {
