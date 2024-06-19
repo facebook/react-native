@@ -338,8 +338,6 @@ const verticalAlignToTextAlignVerticalMap = {
   middle: 'center',
 };
 
-module.exports = (
-  ReactNativeFeatureFlags.shouldUseOptimizedText()
-    ? require('./TextOptimized')
-    : Text
-) as typeof Text;
+module.exports = ((ReactNativeFeatureFlags.shouldUseOptimizedText()
+  ? require('./TextOptimized')
+  : Text): typeof Text);
