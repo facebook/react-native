@@ -175,7 +175,6 @@ describe('npm-utils', () => {
     process.env.GITHUB_REF = null;
     process.env.GITHUB_REF_NAME = null;
   });
-});
 
   describe('getVersionsBySpec', () => {
     it('should return array when single version returned', () => {

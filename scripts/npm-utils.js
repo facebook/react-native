@@ -89,17 +89,24 @@ function getNpmInfo(buildType /*: BuildType */) /*: NpmInfo */ {
   }
 
   if (buildType === 'release') {
-    // GITHUB_REF contains the fully qualified ref, for example refs/tags/v0.75.0-rc.0
-    // GITHUB_REF_NAME contains the short name, for example v0.75.0-rc.0
-    if (process.env.CIRCLE_TAG == null || process.env.GITHUB_REF == null || !process.env.GITHUB_REF.includes('/tags/') || process.env.GITHUB_REF_NAME == null) {
-      console.log('GITHUB_REF:', process.env.GITHUB_REF);
-      console.log('GITHUB_REF_NAME:', process.env.GITHUB_REF_NAME);
+    let versionTag /*: string*/ = '';
+    if (process.env.CIRCLE_TAG != null) {
+      versionTag = process.env.CIRCLE_TAG;
+    } else if (
+      process.env.GITHUB_REF != null &&
+      process.env.GITHUB_REF.includes('/tags/') &&
+      process.env.GITHUB_REF_NAME != null
+    ) {
+      // GITHUB_REF contains the fully qualified ref, for example refs/tags/v0.75.0-rc.0
+      // GITHUB_REF_NAME contains the short name, for example v0.75.0-rc.0
+      versionTag = process.env.GITHUB_REF_NAME;
+    }
+
+    if (versionTag == '') {
       throw new Error(
         'No version tag found in CI. It looks like this script is running in release mode, but the CIRCLE_TAG or the GITHUB_REF_NAME are missing.',
       );
     }
-
-    const versionTag /*: string*/ = process.env.CIRCLE_TAG != null ? process.env.CIRCLE_TAG : process.env.GITHUB_REF_NAME;
 
     const {version, major, minor, patch, prerelease} = parseVersion(
       versionTag,
