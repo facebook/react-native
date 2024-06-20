@@ -413,7 +413,7 @@ inline void fromRawValue(
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
-    if (string == "auto") {
+    if (string == "auto" || string == "start") {
       result = TextAlignment::Natural;
     } else if (string == "left") {
       result = TextAlignment::Left;
@@ -425,7 +425,6 @@ inline void fromRawValue(
       result = TextAlignment::Justified;
     } else {
       LOG(ERROR) << "Unsupported TextAlignment value: " << string;
-      react_native_expect(false);
       // sane default for prod
       result = TextAlignment::Natural;
     }
