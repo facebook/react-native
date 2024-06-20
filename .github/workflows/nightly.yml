@@ -30,52 +30,14 @@ jobs:
       BUILD_FROM_SOURCE: true
       GRADLE_OPTS: '-Dorg.gradle.daemon=false'
     outputs:
-      react-native-version: ${{ steps.react-native-version.outputs.version }}
-      hermes-version: ${{ steps.hermes-version.outputs.version }}
+      react-native-version: ${{ steps.prepare-hermes-workspace.outputs.react-native-version }}
+      hermes-version: ${{ steps.prepare-hermes-workspace.outputs.hermes-version }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.1
-      - name: Setup node.js
-        uses: ./.github/actions/setup-node
-      - name: Setup hermes version
-        id: hermes-version
-        run: |
-          mkdir -p "/tmp/hermes" "/tmp/hermes/download" "/tmp/hermes/hermes"
-
-          if [ -f "$HERMES_VERSION_FILE" ]; then
-            echo "Hermes Version file found! Using this version for the build:"
-            echo "VERSION=$(cat $HERMES_VERSION_FILE)" >> "$GITHUB_OUTPUT"
-          else
-            echo "Hermes Version file not found!!!"
-            echo "Using the last commit from main for the build:"
-            HERMES_TAG_SHA=$(git ls-remote https://github.com/facebook/hermes main | cut -f 1 | tr -d '[:space:]')
-            echo "VERSION=$HERMES_TAG_SHA" >> "$GITHUB_OUTPUT"
-          fi
-          echo "Hermes commit is $HERMES_TAG_SHA"
-      - name: Get react-native version
-        id: react-native-version
-        run: |
-          VERSION=$(cat packages/react-native/package.json | jq -r '.version')
-          # Save the react native version we are building in an output variable so we can use that file as part of the cache key.
-          echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
-          echo "React Native Version is $VERSION"
-      - name: Cache hermes workspace
-        uses: actions/cache@v4.0.0
-        with:
-          path: |
-            /tmp/hermes/download/
-            /tmp/hermes/hermes/
-          key: v1-hermes-${{ steps.hermes-version.outputs.version }}-${{ github.run_number }}
-          enableCrossOsArchive: true
-      - name: Yarn- Install Dependencies
-        run: yarn install --non-interactive
-      - name: Download Hermes tarball
-        run: |
-          node packages/react-native/scripts/hermes/prepare-hermes-for-build ${{ github.event.pull_request.html_url }}
-          cp packages/react-native/sdks/download/* $HERMES_WS_DIR/download/.
-          cp -r packages/react-native/sdks/hermes/* $HERMES_WS_DIR/hermes/.
-
-          echo ${{ steps.hermes-version.outputs.version }}
+      - name: Prepare Hermes Workspace
+        id: prepare-hermes-workspace
+        uses: ./.github/actions/prepare-hermes-workspace
 
   build_hermesc_apple:
     runs-on: macos-13
@@ -86,16 +48,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.1
-      - name: Cache hermes workspace
-        uses: actions/cache@v4.0.0
-        with:
-          path: |
-            /tmp/hermes/download/
-            /tmp/hermes/hermes/
-          key: v1-hermes-${{ needs.prepare_hermes_workspace.outputs.hermes-version }}-${{ github.run_number }}
-          enableCrossOsArchive: true
-      - name: Setup Hermes workspace
-        uses: ./.github/actions/setup_hermes_workspace
+      - name: Restore Hermes workspace
+        uses: ./.github/actions/restore-hermes-workspace
       - name: Hermes apple cache
         uses: actions/cache@v4.0.0
         with:
@@ -131,8 +85,8 @@ jobs:
         with:
           hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
-      - name: Setup Hermes workspace
-        uses: ./.github/actions/setup_hermes_workspace
+      - name: Restore Hermes workspace
+        uses: ./.github/actions/restore-hermes-workspace
       - name: Check if the required artifacts already exist
         id: check_if_apple_artifacts_are_there
         run: |
@@ -226,8 +180,8 @@ jobs:
         with:
           hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
-      - name: Setup Hermes workspace
-        uses: ./.github/actions/setup_hermes_workspace
+      - name: Restore Hermes workspace
+        uses: ./.github/actions/restore-hermes-workspace
       - name: Check if the required artifacts already exist
         id: check_if_apple_artifacts_are_there
         run: |
@@ -306,6 +260,7 @@ jobs:
         run: |
           cd ./packages/react-native/sdks/hermes || exit 1
           echo "[HERMES] Creating the universal framework"
+          chmod +x ./utils/build-ios-framework.sh
           ./utils/build-ios-framework.sh build_framework
       - name: Package the Hermes Apple frameworks
         if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != true }}
