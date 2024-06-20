@@ -27,6 +27,8 @@
 #include <cmath>
 #include <optional>
 #include <unordered_map>
+#include <react/renderer/graphics/Background.h>
+#include <react/renderer/core/graphicsConversions.h>
 
 namespace facebook::react {
 
@@ -1067,6 +1069,89 @@ inline void fromRawValue(
   }
 
   result = filter;
+}
+
+inline void fromRawValue(
+    const PropsParserContext& context,
+    const RawValue& value,
+    std::vector<BackgroundPrimitive>& result) {
+  react_native_expect(value.hasType<std::vector<RawValue>>());
+  if (!value.hasType<std::vector<RawValue>>()) {
+    result = {};
+    return;
+  }
+  
+  std::vector<BackgroundPrimitive> background{};
+  auto rawBackground = static_cast<std::vector<RawValue>>(value);
+  for (const auto& rawBackgroundPrimitive : rawBackground) {
+    bool isMap =
+    rawBackgroundPrimitive.hasType<std::unordered_map<std::string, RawValue>>();
+    react_native_expect(isMap);
+    if (!isMap) {
+      result = {};
+      return;
+    }
+    
+    auto rawBackgroundPrimitiveMap = static_cast<std::unordered_map<std::string, RawValue>>(rawBackgroundPrimitive);
+    BackgroundPrimitive backgroundPrimitive{};
+    
+    auto typeIt = rawBackgroundPrimitiveMap.find("type");
+    if (typeIt != rawBackgroundPrimitiveMap.end() && typeIt->second.hasType<std::string>()) {
+      backgroundPrimitive.type = gradientTypeFromString((std::string)(typeIt->second));
+    }
+    
+    auto startIt = rawBackgroundPrimitiveMap.find("start");
+    if (startIt != rawBackgroundPrimitiveMap.end() &&
+        startIt->second.hasType<std::unordered_map<std::string, RawValue>>()) {
+      auto startPoints = static_cast<std::unordered_map<std::string, RawValue>>(startIt->second);
+      auto xIt = startPoints.find("x");
+      auto yIt = startPoints.find("y");
+      if (xIt != startPoints.end() && yIt != startPoints.end() &&
+          xIt->second.hasType<Float>() && yIt->second.hasType<Float>()) {
+        backgroundPrimitive.startX = (Float)(xIt->second);
+        backgroundPrimitive.startY = (Float)(yIt->second);
+      }
+    }
+    
+    auto endIt = rawBackgroundPrimitiveMap.find("end");
+    if (endIt != rawBackgroundPrimitiveMap.end() &&
+        endIt->second.hasType<std::unordered_map<std::string, RawValue>>()) {
+      auto endPoints = static_cast<std::unordered_map<std::string, RawValue>>(endIt->second);
+      auto xIt = endPoints.find("x");
+      auto yIt = endPoints.find("y");
+      if (xIt != endPoints.end() && yIt != endPoints.end() &&
+          xIt->second.hasType<Float>() && yIt->second.hasType<Float>()) {
+        backgroundPrimitive.endX = (Float)(xIt->second);
+        backgroundPrimitive.endY = (Float)(yIt->second);
+      }
+    }
+    
+    auto colorStopsIt = rawBackgroundPrimitiveMap.find("colorStops");
+    if (colorStopsIt != rawBackgroundPrimitiveMap.end() &&
+        colorStopsIt->second.hasType<std::vector<RawValue>>()) {
+      auto rawColorStops = static_cast<std::vector<RawValue>>(colorStopsIt->second);
+      
+      for (const auto& stop : rawColorStops) {
+        if (stop.hasType<std::unordered_map<std::string, RawValue>>()) {
+          auto stopMap = static_cast<std::unordered_map<std::string, RawValue>>(stop);
+          auto positionIt = stopMap.find("position");
+          auto colorIt = stopMap.find("color");
+          
+          if (positionIt != stopMap.end() && colorIt != stopMap.end() &&
+              positionIt->second.hasType<Float>()) {
+            ColorStop colorStop{};
+            colorStop.position = (Float)(positionIt->second);
+            fromRawValue(context, colorIt->second, colorStop.color);
+            backgroundPrimitive.colorStops.push_back(colorStop);
+          }
+        }
+      }
+    }
+    
+    background.push_back(backgroundPrimitive);
+  }
+  
+  result = background;
 }
 
 template <size_t N>

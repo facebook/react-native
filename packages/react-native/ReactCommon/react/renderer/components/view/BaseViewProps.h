@@ -17,6 +17,7 @@
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/graphics/Filter.h>
 #include <react/renderer/graphics/Transform.h>
+#include <react/renderer/graphics/Background.h>
 
 #include <optional>
 
@@ -61,6 +62,9 @@ class BaseViewProps : public YogaStylableProps, public AccessibilityProps {
 
   // Filter
   std::vector<FilterPrimitive> filter{};
+  
+  // Linear gradient
+  std::vector<BackgroundPrimitive> background{};
 
   // MixBlendMode
   std::string mixBlendMode;

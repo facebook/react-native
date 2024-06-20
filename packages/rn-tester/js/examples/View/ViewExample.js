@@ -474,6 +474,22 @@ export default ({
       },
     },
     {
+      title: 'Linear Gradient',
+      name: 'linear-gradient',
+      render(): React.Node {
+        return (
+          <View
+            testID="view-test-linear-gradient"
+            style={{
+              background: 'linear-gradient(#e66465, #9198e5);',
+              width: 100,
+              height: 100,
+            }}
+          />
+        );
+      },
+    },
+    {
       title: 'Border',
       name: 'border',
       render(): React.Node {

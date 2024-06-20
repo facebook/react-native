@@ -76,6 +76,8 @@ public interface BaseViewManagerInterface<T extends View> {
 
   void setTransform(T view, @Nullable ReadableArray matrix);
 
+  void setBackground(T view, @Nullable ReadableArray matrix);
+
   void setTransformOrigin(T view, @Nullable ReadableArray transformOrigin);
 
   void setTranslateX(T view, float translateX);

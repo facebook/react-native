@@ -31,6 +31,7 @@ import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
+import com.facebook.react.uimanager.drawable.CSSGradient;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.style.BorderRadiusProp;
 import java.util.Map;
@@ -85,6 +86,20 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
       view.setFocusable(true);
       view.setFocusableInTouchMode(true);
       view.requestFocus();
+    }
+  }
+
+  @ReactProp(name = ViewProps.BACKGROUND)
+  public void setBackground(ReactViewGroup view, @Nullable ReadableArray background) {
+    if (background != null && background.size() > 0) {
+      CSSGradient[] cssGradients = new CSSGradient[background.size()];
+      for (int i = 0; i < background.size(); i++) {
+        ReadableMap gradientMap = background.getMap(i);
+        cssGradients[i] = new CSSGradient(gradientMap);
+      }
+      view.setGradients(cssGradients);
+    } else {
+      view.setGradients(null);
     }
   }
 

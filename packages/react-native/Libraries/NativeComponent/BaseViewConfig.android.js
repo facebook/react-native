@@ -164,6 +164,7 @@ const directEventTypes = {
 const validAttributesForNonEventProps = {
   // @ReactProps from BaseViewManager
   backgroundColor: {process: require('../StyleSheet/processColor').default},
+  background: {process: require('../StyleSheet/processBackground').default},
   transform: true,
   transformOrigin: true,
   experimental_filter: {

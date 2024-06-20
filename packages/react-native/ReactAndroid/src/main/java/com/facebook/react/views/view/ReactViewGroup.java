@@ -54,6 +54,7 @@ import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.drawable.CSSBackgroundDrawable;
+import com.facebook.react.uimanager.drawable.CSSGradient;
 import com.facebook.react.uimanager.style.BorderRadiusProp;
 import com.facebook.react.uimanager.style.ComputedBorderRadius;
 
@@ -228,6 +229,10 @@ public class ReactViewGroup extends ViewGroup
   public void setBackground(Drawable drawable) {
     throw new UnsupportedOperationException(
         "This method is not supported for ReactViewGroup instances");
+  }
+
+  public void setGradients(CSSGradient[] gradient) {
+    getOrCreateReactViewBackground().setGradients(gradient);
   }
 
   public void setTranslucentBackgroundDrawable(@Nullable Drawable background) {

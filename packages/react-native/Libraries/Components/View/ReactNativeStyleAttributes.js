@@ -11,6 +11,7 @@
 import type {AnyAttributeType} from '../../Renderer/shims/ReactNativeTypes';
 
 import processAspectRatio from '../../StyleSheet/processAspectRatio';
+import processBackground from '../../StyleSheet/processBackground';
 import processColor from '../../StyleSheet/processColor';
 import processFilter from '../../StyleSheet/processFilter';
 import processFontVariant from '../../StyleSheet/processFontVariant';
@@ -124,6 +125,11 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
    * MixBlendMode
    */
   experimental_mixBlendMode: true,
+
+  /**
+   * Linear Gradient
+   */
+  background: {process: processBackground},
 
   /**
    * View

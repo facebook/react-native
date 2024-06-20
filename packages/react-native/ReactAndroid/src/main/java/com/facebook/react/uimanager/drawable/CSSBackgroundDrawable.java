@@ -12,15 +12,19 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
+import android.graphics.ComposeShader;
 import android.graphics.DashPathEffect;
+import android.graphics.LinearGradient;
 import android.graphics.Outline;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PathEffect;
 import android.graphics.PointF;
+import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Region;
+import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import androidx.annotation.Nullable;
@@ -114,6 +118,7 @@ public class CSSBackgroundDrawable extends Drawable {
   /* Used by all types of background and for drawing borders */
   private final Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private int mColor = Color.TRANSPARENT;
+  private CSSGradient[] mCSSGradients = null;
   private int mAlpha = 255;
 
   // There is a small gap between the edges of adjacent paths
@@ -316,6 +321,11 @@ public class CSSBackgroundDrawable extends Drawable {
     invalidateSelf();
   }
 
+  public void setGradients(CSSGradient[] gradients) {
+    mCSSGradients = gradients;
+    invalidateSelf();
+  }
+
   @VisibleForTesting
   public int getColor() {
     return mColor;
@@ -365,7 +375,12 @@ public class CSSBackgroundDrawable extends Drawable {
 
     // Draws the View without its border first (with background color fill)
     int useColor = ColorUtils.setAlphaComponent(mColor, getOpacity());
-    if (Color.alpha(useColor) != 0) { // color is not transparent
+    if (mCSSGradients != null && mCSSGradients.length > 0) {
+      mPaint.setShader(getGradientShader());
+      mPaint.setStyle(Paint.Style.FILL);
+      canvas.drawPath(Preconditions.checkNotNull(mBackgroundColorRenderPath), mPaint);
+      mPaint.setShader(null);
+    } else if (Color.alpha(useColor) != 0) {
       mPaint.setColor(useColor);
       mPaint.setStyle(Paint.Style.FILL);
       canvas.drawPath(Preconditions.checkNotNull(mBackgroundColorRenderPath), mPaint);
@@ -1077,12 +1092,15 @@ public class CSSBackgroundDrawable extends Drawable {
             | (borderBottom > 0 ? colorBottom : ALL_BITS_UNSET);
     return andSmear == orSmear ? andSmear : 0;
   }
-
   private void drawRectangularBackgroundWithBorders(Canvas canvas) {
     mPaint.setStyle(Paint.Style.FILL);
 
     int useColor = multiplyColorAlpha(mColor, mAlpha);
-    if (Color.alpha(useColor) != 0) { // color is not transparent
+    if (mCSSGradients != null && mCSSGradients.length > 0) {
+      mPaint.setShader(getGradientShader());
+      canvas.drawRect(getBounds(), mPaint);
+      mPaint.setShader(null);
+    } else if (Color.alpha(useColor) != 0) {
       mPaint.setColor(useColor);
       canvas.drawRect(getBounds(), mPaint);
     }
@@ -1376,6 +1394,19 @@ public class CSSBackgroundDrawable extends Drawable {
     }
 
     return new RectF(borderLeftWidth, borderTopWidth, borderRightWidth, borderBottomWidth);
+  }
+
+  private Shader getGradientShader() {
+    Shader compositeShader = null;
+    for (CSSGradient mCSSGradient: mCSSGradients) {
+      Shader currentShader = mCSSGradient.getShader(getBounds());
+      if (compositeShader == null) {
+        compositeShader = currentShader;
+      } else {
+        compositeShader = new ComposeShader(currentShader, compositeShader, PorterDuff.Mode.SRC_OVER);
+      }
+    }
+    return compositeShader;
   }
 
   /**
