@@ -21,4 +21,4 @@ include(
     ":shared",
 )
 
-rootProject.name = "gradle-plugins-root"
+rootProject.name = "gradle-plugin-root"

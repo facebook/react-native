@@ -6,9 +6,9 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/facebook/react-native.git",
-    "directory": "packages/react-native-gradle-plugin"
+    "directory": "packages/gradle-plugin"
   },
-  "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/react-native-gradle-plugin#readme",
+  "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/gradle-plugin#readme",
   "keywords": [
     "gradle",
     "plugin",
