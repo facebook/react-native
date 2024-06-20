@@ -7732,6 +7732,7 @@ public class com/facebook/react/views/textinput/ReactEditText : androidx/appcomp
 	public fun setBorderStyle (Ljava/lang/String;)V
 	public fun setBorderWidth (IF)V
 	public fun setContentSizeWatcher (Lcom/facebook/react/views/textinput/ContentSizeWatcher;)V
+	public fun setContextMenuHidden (Z)V
 	public fun setDisableFullscreenUI (Z)V
 	public fun setFontFamily (Ljava/lang/String;)V
 	public fun setFontFeatureSettings (Ljava/lang/String;)V
