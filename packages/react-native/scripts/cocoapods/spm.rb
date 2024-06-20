@@ -35,12 +35,25 @@ class SPMManager
         end
       end
     end
+
+    unless @dependencies_by_pod.empty?
+      log_warning "If you're using Xcode 15 or earlier you might need to close and reopen the Xcode workspace"
+      unless ENV["USE_FRAMEWORKS"] == "dynamic"
+        @dependencies_by_pod.each do |pod_name, dependencies|
+          log_warning "Pod #{pod_name} is using swift package(s) #{dependencies.map{|i| i[:products]}.flatten.uniq.join(", ")} with static linking, this might cause linker errors. Consider using USE_FRAMEOWRKS=dynamic, see https://github.com/facebook/react-native/pull/44627#issuecomment-2123119711 for more information"
+        end
+      end
+    end
   end
 
   private
 
   def log(msg)
     ::Pod::UI.puts "[SPM] #{msg}"
+  end
+
+  def log_warning(msg)
+    ::Pod::UI.puts "\n\n[SPM] WARNING!!! #{msg}\n\n"
   end
 
   def clean_spm_dependencies_from_target(project, new_targets)
@@ -52,7 +65,6 @@ class SPMManager
     ref_class = Xcodeproj::Project::Object::XCSwiftPackageProductDependency
     pkg = project.root_object.package_references.find { |p| p.class == pkg_class && p.repositoryURL == url }
     if !pkg
-      log(" UUID: #{project.generate_uuid}")
       pkg = project.new(pkg_class)
       pkg.repositoryURL = url
       pkg.requirement = requirement
