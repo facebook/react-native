@@ -904,14 +904,15 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   }
 
   @ReactPropGroup(
-      names = {
-        ViewProps.BORDER_RADIUS,
-        ViewProps.BORDER_TOP_LEFT_RADIUS,
-        ViewProps.BORDER_TOP_RIGHT_RADIUS,
-        ViewProps.BORDER_BOTTOM_RIGHT_RADIUS,
-        ViewProps.BORDER_BOTTOM_LEFT_RADIUS
-      },
-      defaultFloat = YogaConstants.UNDEFINED)
+    names = {
+      ViewProps.BORDER_RADIUS,
+      ViewProps.BORDER_TOP_LEFT_RADIUS,
+      ViewProps.BORDER_TOP_RIGHT_RADIUS,
+      ViewProps.BORDER_BOTTOM_RIGHT_RADIUS,
+      ViewProps.BORDER_BOTTOM_LEFT_RADIUS
+    },
+    defaultFloat = YogaConstants.UNDEFINED
+  )
   public void setBorderRadius(ReactEditText view, int index, float borderRadius) {
     if (!YogaConstants.isUndefined(borderRadius)) {
       borderRadius = PixelUtil.toPixelFromDIP(borderRadius);
@@ -954,14 +955,15 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   }
 
   @ReactPropGroup(
-      names = {
-        ViewProps.BORDER_WIDTH,
-        ViewProps.BORDER_LEFT_WIDTH,
-        ViewProps.BORDER_RIGHT_WIDTH,
-        ViewProps.BORDER_TOP_WIDTH,
-        ViewProps.BORDER_BOTTOM_WIDTH,
-      },
-      defaultFloat = YogaConstants.UNDEFINED)
+    names = {
+      ViewProps.BORDER_WIDTH,
+      ViewProps.BORDER_LEFT_WIDTH,
+      ViewProps.BORDER_RIGHT_WIDTH,
+      ViewProps.BORDER_TOP_WIDTH,
+      ViewProps.BORDER_BOTTOM_WIDTH,
+    },
+    defaultFloat = YogaConstants.UNDEFINED
+  )
   public void setBorderWidth(ReactEditText view, int index, float width) {
     if (!YogaConstants.isUndefined(width)) {
       width = PixelUtil.toPixelFromDIP(width);
@@ -970,14 +972,15 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   }
 
   @ReactPropGroup(
-      names = {
-        "borderColor",
-        "borderLeftColor",
-        "borderRightColor",
-        "borderTopColor",
-        "borderBottomColor"
-      },
-      customType = "Color")
+    names = {
+      "borderColor",
+      "borderLeftColor",
+      "borderRightColor",
+      "borderTopColor",
+      "borderBottomColor"
+    },
+    customType = "Color"
+  )
   public void setBorderColor(ReactEditText view, int index, Integer color) {
     float rgbComponent =
         color == null ? YogaConstants.UNDEFINED : (float) ((int) color & 0x00FFFFFF);

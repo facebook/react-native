@@ -119,6 +119,7 @@ public class ReactEditText extends AppCompatEditText {
   private int mFontWeight = UNSET;
   private int mFontStyle = UNSET;
   private boolean mAutoFocus = false;
+  private boolean mContextMenuHidden = false;
   private boolean mDidAttachToWindow = false;
   private @Nullable String mPlaceholder = null;
 
@@ -192,6 +193,9 @@ public class ReactEditText extends AppCompatEditText {
            */
           @Override
           public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            if (mContextMenuHidden) {
+              return false;
+            }
             menu.removeItem(android.R.id.pasteAsPlainText);
             return true;
           }
@@ -1137,6 +1141,10 @@ public class ReactEditText extends AppCompatEditText {
 
   public void setAutoFocus(boolean autoFocus) {
     mAutoFocus = autoFocus;
+  }
+
+  public void setContextMenuHidden(boolean contextMenuHidden) {
+    mContextMenuHidden = contextMenuHidden;
   }
 
   protected void applyTextAttributes() {
