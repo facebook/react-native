@@ -7628,6 +7628,7 @@ public class com/facebook/react/views/text/TextLayoutManager {
 	public static final field PA_KEY_TEXT_BREAK_STRATEGY S
 	public fun <init> ()V
 	public static fun adjustSpannableFontToFit (Landroid/text/Spannable;FLcom/facebook/yoga/YogaMeasureMode;FLcom/facebook/yoga/YogaMeasureMode;DIZIILandroid/text/Layout$Alignment;)V
+	public static fun createLayout (Landroid/content/Context;Lcom/facebook/react/common/mapbuffer/MapBuffer;Lcom/facebook/react/common/mapbuffer/MapBuffer;FFLcom/facebook/react/views/text/ReactTextViewManagerCallback;)Landroid/text/Layout;
 	public static fun deleteCachedSpannableForTag (I)V
 	public static fun getOrCreateSpannableForText (Landroid/content/Context;Lcom/facebook/react/common/mapbuffer/MapBuffer;Lcom/facebook/react/views/text/ReactTextViewManagerCallback;)Landroid/text/Spannable;
 	public static fun getTextAlignment (Lcom/facebook/react/common/mapbuffer/MapBuffer;Landroid/text/Spannable;)Landroid/text/Layout$Alignment;
