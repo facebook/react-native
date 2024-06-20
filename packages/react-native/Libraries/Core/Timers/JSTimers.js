@@ -206,14 +206,17 @@ const JSTimers = {
    */
   setTimeout: function (
     func: Function,
-    duration: number,
+    duration: number = 0,
     ...args: any
   ): number {
+    if (typeof func !== 'function') {
+      throw new TypeError('The first argument must be a function.');
+    }
     const id = _allocateCallback(
       () => func.apply(undefined, args),
       'setTimeout',
     );
-    createTimer(id, duration || 0, Date.now(), /* recurring */ false);
+    createTimer(id, duration, Date.now(), /* recurring */ false);
     return id;
   },
 
@@ -226,6 +229,9 @@ const JSTimers = {
     duration: number,
     ...args: any
   ): number {
+    if (typeof func !== 'function') {
+      throw new TypeError('The first argument must be a function.');
+    }
     const id = _allocateCallback(
       () => func.apply(undefined, args),
       'setInterval',
@@ -325,10 +331,16 @@ const JSTimers = {
   },
 
   clearTimeout: function (timerID: number) {
+    if (typeof timerID !== 'number') {
+      return;
+    }
     _freeCallback(timerID);
   },
 
   clearInterval: function (timerID: number) {
+    if (typeof timerID !== 'number') {
+      return;
+    }
     _freeCallback(timerID);
   },
 
