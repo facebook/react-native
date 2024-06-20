@@ -25,7 +25,7 @@ references:
   android-defaults: &android-defaults
     working_directory: ~/react-native
     docker:
-      - image: reactnativecommunity/react-native-android:v13.0
+      - image: reactnativecommunity/react-native-android:v13.1
     environment:
       - TERM: "dumb"
       - GRADLE_OPTS: '-Dorg.gradle.daemon=false'

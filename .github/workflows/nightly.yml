@@ -668,7 +668,6 @@ jobs:
         run: echo "//registry.npmjs.org/:_authToken=${{ secrets.GHA_NPM_TOKEN }}" > ~/.npmrc
       - name: Publish NPM
         run: |
-          git config --global --add safe.directory /__w/react-native/react-native
           echo "GRADLE_OPTS = $GRADLE_OPTS"
           export ORG_GRADLE_PROJECT_reactNativeArchitectures="armeabi-v7a,arm64-v8a,x86,x86_64"
           node ./scripts/releases-ci/publish-npm.js -t nightly
