@@ -18,11 +18,13 @@ on:
         default: false
 
 jobs:
-  prepare_release:
+  create_release:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.1
+        with:
+          token: ${{ secrets.REACT_NATIVE_BOT_GITHUB_TOKEN }}
       - name: Check if on stable branch
         id: check_stable_branch
         run: |
@@ -46,3 +48,7 @@ jobs:
       - name: Execute Prepare Release
         if: ${{ steps.check_stable_branch.outputs.ON_STABLE_BRANCH && !steps.check_if_tag_exists.outputs.TAG_EXISTS }}
         uses: ./.github/actions/create-release
+        with:
+            version: ${{ inputs.version }}
+            is_latest_on_npm: ${{ inputs.is_latest_on_npm }}
+            dry_run: ${{ inputs.dry_run }}
