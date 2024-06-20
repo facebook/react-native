@@ -54,8 +54,8 @@ runs:
     - name: Run yarn
       shell: bash
       run: yarn install --non-interactive
-    - name: Setup Hermes workspace
-      uses: ./.github/actions/setup_hermes_workspace
+    - name: Restore Hermes workspace
+      uses: ./.github/actions/restore-hermes-workspace
     - name: Setup ruby
       uses: ruby/setup-ruby@v1.170.0
       with:
