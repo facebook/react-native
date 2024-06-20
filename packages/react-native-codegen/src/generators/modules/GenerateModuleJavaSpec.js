@@ -136,11 +136,11 @@ function translateFunctionParamToJavaType(
     case 'NumberTypeAnnotation':
       return wrapOptional('double', isRequired);
     case 'FloatTypeAnnotation':
-      return wrapOptional('float', isRequired);
+      return wrapOptional('double', isRequired);
     case 'DoubleTypeAnnotation':
       return wrapOptional('double', isRequired);
     case 'Int32TypeAnnotation':
-      return wrapOptional('int', isRequired);
+      return wrapOptional('double', isRequired);
     case 'BooleanTypeAnnotation':
       return wrapOptional('boolean', isRequired);
     case 'EnumDeclaration':
