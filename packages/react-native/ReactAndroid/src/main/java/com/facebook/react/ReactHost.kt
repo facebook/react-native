@@ -131,6 +131,10 @@ public interface ReactHost {
 
   public fun onConfigurationChanged(context: Context)
 
+  public fun addReactInstanceEventListener(listener: ReactInstanceEventListener)
+
+  public fun removeReactInstanceEventListener(listener: ReactInstanceEventListener)
+
   public fun addBeforeDestroyListener(onBeforeDestroy: () -> Unit)
 
   public fun removeBeforeDestroyListener(onBeforeDestroy: () -> Unit)
