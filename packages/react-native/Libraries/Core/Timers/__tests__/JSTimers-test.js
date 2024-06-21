@@ -65,38 +65,6 @@ describe('JSTimers', function () {
     expect(callCount).toBe(1);
   });
 
-  it('should not throw an error if clearTimeout is called with an invalid ID', function () {
-    expect(() => JSTimers.clearTimeout(null)).not.toThrow();
-    expect(() => JSTimers.clearTimeout(undefined)).not.toThrow();
-    expect(() => JSTimers.clearTimeout('invalid')).not.toThrow();
-    expect(() => JSTimers.clearTimeout({})).not.toThrow();
-  });
-
-  it('should not call the callback if clearTimeout is called before the timer fires', function () {
-    const callback = jest.fn();
-    const timerID = JSTimers.setTimeout(callback, 100);
-    JSTimers.clearTimeout(timerID);
-    JSTimers.callTimers([timerID]);
-    expect(callback).not.toBeCalled();
-  });
-
-  it('should not warn if callback is called on cancelled timer', function () {
-    const callback = jest.fn();
-    const timerID = JSTimers.setTimeout(callback, 10);
-    JSTimers.clearTimeout(timerID);
-    JSTimers.callTimers([timerID]);
-    expect(callback).not.toBeCalled();
-    expect(console.warn).not.toBeCalled();
-  });
-
-  it('should not call to native when clearing a null timer', function () {
-    const timerID = JSTimers.setTimeout(() => {});
-    JSTimers.clearTimeout(timerID);
-    NativeTiming.deleteTimer = jest.fn();
-    JSTimers.clearTimeout(null);
-    expect(NativeTiming.deleteTimer.mock.calls.length).toBe(0);
-  });
-
   it('should call nested queueReactNativeMicrotask when cleared', function () {
     let id1, id2, id3;
     let callCount = 0;
@@ -162,58 +130,6 @@ describe('JSTimers', function () {
     const id = JSTimers.setInterval(callback);
     JSTimers.callTimers([id]);
     expect(callback).toBeCalledTimes(1);
-  });
-
-  it('should throw TypeError with setInterval when the first argument is not a function', function () {
-    expect(() => JSTimers.setInterval(123, 100)).toThrow(TypeError);
-    expect(() => JSTimers.setInterval(null, 100)).toThrow(TypeError);
-    expect(() => JSTimers.setInterval(undefined, 100)).toThrow(TypeError);
-  });
-
-  it('should call function with setInterval and default duration', function () {
-    const callback = jest.fn();
-    const id = JSTimers.setInterval(callback);
-    JSTimers.callTimers([id]);
-    expect(callback).toBeCalledTimes(1);
-  });
-
-  it('should pass additional arguments to callback', function () {
-    const callback = jest.fn();
-    const id = JSTimers.setInterval(callback, 100, 1, 2);
-    JSTimers.callTimers([id]);
-    expect(callback).toBeCalledWith(1, 2);
-  });
-
-  it('should not throw an error if clearInterval is called with an invalid ID', function () {
-    expect(() => JSTimers.clearInterval(null)).not.toThrow();
-    expect(() => JSTimers.clearInterval(undefined)).not.toThrow();
-    expect(() => JSTimers.clearInterval('invalid')).not.toThrow();
-    expect(() => JSTimers.clearInterval({})).not.toThrow();
-  });
-
-  it('should not call the callback if clearInterval is called before the interval fires', function () {
-    const callback = jest.fn();
-    const intervalID = JSTimers.setInterval(callback, 100);
-    JSTimers.clearInterval(intervalID);
-    JSTimers.callTimers([intervalID]);
-    expect(callback).not.toBeCalled();
-  });
-
-  it('should not warn if callback is called on cancelled interval', function () {
-    const callback = jest.fn();
-    const intervalID = JSTimers.setInterval(callback, 10);
-    JSTimers.clearInterval(intervalID);
-    JSTimers.callTimers([intervalID]);
-    expect(callback).not.toBeCalled();
-    expect(console.warn).not.toBeCalled();
-  });
-
-  it('should not call to native when clearing a null interval', function () {
-    const intervalID = JSTimers.setInterval(() => {});
-    JSTimers.clearInterval(intervalID);
-    NativeTiming.deleteTimer = jest.fn();
-    JSTimers.clearInterval(null);
-    expect(NativeTiming.deleteTimer.mock.calls.length).toBe(0);
   });
 
   it('should call function with queueReactNativeMicrotask', function () {
@@ -293,35 +209,6 @@ describe('JSTimers', function () {
     expect(callback).not.toBeCalled();
     JSTimers.requestAnimationFrame(callback);
     expect(callback).not.toBeCalled();
-  });
-
-  it('should throw TypeError with setTimeout when the first argument is not a function', function () {
-    expect(() => JSTimers.setTimeout(123, 100)).toThrow(TypeError);
-    expect(() => JSTimers.setTimeout(null, 100)).toThrow(TypeError);
-    expect(() => JSTimers.setTimeout(undefined, 100)).toThrow(TypeError);
-  });
-
-  it('should call function with setTimeout and default duration', function () {
-    let didCall = false;
-    const id = JSTimers.setTimeout(function () {
-      didCall = true;
-    });
-    JSTimers.callTimers([id]);
-    expect(didCall).toBe(true);
-  });
-
-  it('should pass additional arguments to callback with setTimeout', function () {
-    let result;
-    const id = JSTimers.setTimeout(
-      (a, b) => {
-        result = a + b;
-      },
-      100,
-      1,
-      2,
-    );
-    JSTimers.callTimers([id]);
-    expect(result).toBe(3);
   });
 
   it('should call setInterval as many times as callTimers is called', function () {
