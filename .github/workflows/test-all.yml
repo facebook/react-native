@@ -565,8 +565,8 @@ jobs:
           name: build-android-results
           compression-level: 1
           path: |
-            packages/react-native-gradle-plugin/react-native-gradle-plugin/build/reports
-            packages/react-native-gradle-plugin/settings-plugin/build/reports
+            packages/gradle-plugin/react-native-gradle-plugin/build/reports
+            packages/gradle-plugin/settings-plugin/build/reports
             packages/react-native/ReactAndroid/build/reports
       - name: Upload RNTester APK
         if: ${{ always() }}

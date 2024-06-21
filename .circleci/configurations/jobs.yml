@@ -151,8 +151,10 @@ jobs:
             - packages/react-native/ReactAndroid/hermes-engine/.cxx/
             - packages/react-native/ReactAndroid/hermes-engine/build/
             - packages/react-native/ReactAndroid/src/main/jni/prebuilt/
-            - packages/react-native-gradle-plugin/.gradle/
-            - packages/react-native-gradle-plugin/build/
+            - packages/gradle-plugin/.gradle/
+            - packages/gradle-plugin/react-native-gradle-plugin/build/
+            - packages/gradle-plugin/settings-plugin/build/
+            - packages/gradle-plugin/shared/build/
             - packages/react-native-codegen/lib/
 
   # -------------------------
@@ -181,8 +183,9 @@ jobs:
           platform: android
 
       - store_test_results:
-          path: ~/react-native/packages/react-native-gradle-plugin/build/test-results
-
+          path: ~/react-native/packages/gradle-plugin/react-native-gradle-plugin/build/test-results
+      - store_test_results:
+          path: ~/react-native/packages/gradle-plugin/settings-plugin/build/test-results
       - store_test_results:
           path: ~/react-native/packages/react-native/ReactAndroid/build/test-results
 
