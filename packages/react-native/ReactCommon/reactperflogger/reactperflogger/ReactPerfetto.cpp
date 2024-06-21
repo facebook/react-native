@@ -17,6 +17,10 @@ std::once_flag perfettoInit;
 void initializePerfetto() {
   std::call_once(perfettoInit, []() {
     perfetto::TracingInitArgs args;
+    // Raise the size of the shared memory buffer. Since this
+    // is only used in tracing build, large buffers are okay
+    // for now.
+    args.shmem_size_hint_kb = 20 * 1024;
     args.backends |= perfetto::kSystemBackend;
     args.use_monotonic_clock = true;
     perfetto::Tracing::Initialize(args);

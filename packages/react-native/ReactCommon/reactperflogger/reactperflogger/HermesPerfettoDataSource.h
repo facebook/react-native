@@ -27,6 +27,9 @@ class HermesPerfettoDataSource
     dsd.set_name("com.facebook.hermes.profiler");
     HermesPerfettoDataSource::Register(dsd);
   }
+
+  constexpr static perfetto::BufferExhaustedPolicy kBufferExhaustedPolicy =
+      perfetto::BufferExhaustedPolicy::kStall;
 };
 
 PERFETTO_DECLARE_DATA_SOURCE_STATIC_MEMBERS(HermesPerfettoDataSource);
