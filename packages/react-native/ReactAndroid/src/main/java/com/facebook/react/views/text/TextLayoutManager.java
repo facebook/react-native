@@ -808,11 +808,11 @@ public class TextLayoutManager {
   }
 
   public static float getLastBaseline(
-    @NonNull Context context,
-    MapBuffer attributedString,
-    MapBuffer paragraphAttributes,
-    float width,
-    float height) {
+      @NonNull Context context,
+      MapBuffer attributedString,
+      MapBuffer paragraphAttributes,
+      float width,
+      float height) {
 
     Layout layout =
         createLayout(context, attributedString, paragraphAttributes, width, height, null);

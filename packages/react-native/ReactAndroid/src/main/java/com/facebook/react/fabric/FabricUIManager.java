@@ -506,16 +506,16 @@ public class FabricUIManager
 
   @SuppressWarnings("unused")
   private float getLastBaseline(
-    ReadableMapBuffer attributedString,
-    ReadableMapBuffer paragraphAttributes,
-    float width,
-    float height) {
+      ReadableMapBuffer attributedString,
+      ReadableMapBuffer paragraphAttributes,
+      float width,
+      float height) {
     return TextLayoutManager.getLastBaseline(
-      mReactApplicationContext,
-      attributedString,
-      paragraphAttributes,
-      PixelUtil.toPixelFromDIP(width),
-      PixelUtil.toPixelFromDIP(height));
+        mReactApplicationContext,
+        attributedString,
+        paragraphAttributes,
+        PixelUtil.toPixelFromDIP(width),
+        PixelUtil.toPixelFromDIP(height));
   }
 
   @SuppressWarnings("unused")
