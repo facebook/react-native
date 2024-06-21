@@ -225,17 +225,12 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
               throw jsi::JSError(
                   rt, "The first argument to setTimeout must be a function.");
             }
+
             auto callback = args[0].getObject(rt).getFunction(rt);
 
-            if (count > 1 && !args[1].isNumber() && !args[1].isUndefined()) {
-              throw jsi::JSError(
-                  rt,
-                  "The second argument to setTimeout must be a number or undefined.");
-            }
             auto delay =
-                count > 1 && args[1].isNumber() ? args[1].getNumber() : 0;
+                (count > 1 && args[1].isNumber()) ? args[1].getNumber() : 0;
 
-            // Package up the remaining argument values into one place.
             std::vector<jsi::Value> moreArgs;
             for (size_t extraArgNum = 2; extraArgNum < count; extraArgNum++) {
               moreArgs.emplace_back(rt, args[extraArgNum]);
@@ -258,7 +253,9 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
               size_t count) {
             if (count > 0 && args[0].isNumber()) {
               auto handle = (TimerHandle)args[0].asNumber();
-              deleteTimer(rt, handle);
+              if (timers_.find(handle) != timers_.end()) {
+                deleteTimer(rt, handle);
+              }
             }
             return jsi::Value::undefined();
           }));
@@ -285,11 +282,11 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
               throw jsi::JSError(
                   rt, "The first argument to setInterval must be a function.");
             }
+
             auto callback = args[0].getObject(rt).getFunction(rt);
             auto delay =
-                count > 1 && args[1].isNumber() ? args[1].getNumber() : 0;
+                (count > 1 && args[1].isNumber()) ? args[1].getNumber() : 0;
 
-            // Package up the remaining argument values into one place.
             std::vector<jsi::Value> moreArgs;
             for (size_t extraArgNum = 2; extraArgNum < count; extraArgNum++) {
               moreArgs.emplace_back(rt, args[extraArgNum]);
