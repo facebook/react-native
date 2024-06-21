@@ -814,7 +814,8 @@ public class TextLayoutManager {
     float width,
     float height) {
 
-    Layout layout = createLayout(context, attributedString, paragraphAttributes, width, height, null);
+    Layout layout =
+        createLayout(context, attributedString, paragraphAttributes, width, height, null);
 
     float maxDescent = 0;
     for (int i = 0; i < layout.getLineCount(); i++) {
