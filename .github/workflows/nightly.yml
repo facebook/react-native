@@ -493,8 +493,8 @@ jobs:
           name: build-android-results
           compression-level: 1
           path: |
-            packages/react-native-gradle-plugin/react-native-gradle-plugin/build/reports
-            packages/react-native-gradle-plugin/settings-plugin/build/reports
+            packages/gradle-plugin/settings-plugin/build/reports
+            packages/gradle-plugin/react-native-gradle-plugin/build/reports
             packages/react-native/ReactAndroid/build/reports
       - name: Upload RNTester APK
         if: ${{ always() }}
@@ -503,6 +503,7 @@ jobs:
           name: rntester-apk
           path: packages/rn-tester/android/app/build/outputs/apk/
           compression-level: 0
+
   build_npm_package:
     runs-on: 8-core-ubuntu
     needs: [set_release_type, prepare_hermes_workspace, build_hermes_macos, build_hermesc_linux, build_hermesc_windows,build_android]

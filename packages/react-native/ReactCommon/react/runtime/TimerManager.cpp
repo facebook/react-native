@@ -8,9 +8,25 @@
 #include "TimerManager.h"
 
 #include <cxxreact/SystraceSection.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <utility>
 
 namespace facebook::react {
+
+namespace {
+inline const char* getTimerSourceName(TimerSource source) {
+  switch (source) {
+    case TimerSource::Unknown:
+      return "unknown";
+    case TimerSource::SetTimeout:
+      return "setTimeout";
+    case TimerSource::SetInterval:
+      return "setInterval";
+    case TimerSource::RequestAnimationFrame:
+      return "requestAnimationFrame";
+  }
+}
+} // namespace
 
 TimerManager::TimerManager(
     std::unique_ptr<PlatformTimerRegistry> platformTimerRegistry) noexcept
@@ -59,14 +75,28 @@ void TimerManager::callReactNativeMicrotasks(jsi::Runtime& runtime) {
 TimerHandle TimerManager::createTimer(
     jsi::Function&& callback,
     std::vector<jsi::Value>&& args,
-    double delay) {
+    double delay,
+    TimerSource source) {
   // Get the id for the callback.
   TimerHandle timerID = timerIndex_++;
+
+  SystraceSection s(
+      "TimerManager::createTimer",
+      "id",
+      timerID,
+      "type",
+      getTimerSourceName(source),
+      "delay",
+      delay);
+
   timers_.emplace(
       std::piecewise_construct,
       std::forward_as_tuple(timerID),
       std::forward_as_tuple(
-          std::move(callback), std::move(args), /* repeat */ false));
+          std::move(callback),
+          std::move(args),
+          /* repeat */ false,
+          source));
 
   platformTimerRegistry_->createTimer(timerID, delay);
 
@@ -76,14 +106,25 @@ TimerHandle TimerManager::createTimer(
 TimerHandle TimerManager::createRecurringTimer(
     jsi::Function&& callback,
     std::vector<jsi::Value>&& args,
-    double delay) {
+    double delay,
+    TimerSource source) {
   // Get the id for the callback.
   TimerHandle timerID = timerIndex_++;
+
+  SystraceSection s(
+      "TimerManager::createRecurringTimer",
+      "id",
+      timerID,
+      "type",
+      getTimerSourceName(source),
+      "delay",
+      delay);
+
   timers_.emplace(
       std::piecewise_construct,
       std::forward_as_tuple(timerID),
       std::forward_as_tuple(
-          std::move(callback), std::move(args), /* repeat */ true));
+          std::move(callback), std::move(args), /* repeat */ true, source));
 
   platformTimerRegistry_->createRecurringTimer(timerID, delay);
 
@@ -130,11 +171,20 @@ void TimerManager::deleteRecurringTimer(
 
 void TimerManager::callTimer(TimerHandle timerHandle) {
   runtimeExecutor_([this, timerHandle](jsi::Runtime& runtime) {
-    SystraceSection s("TimerManager::callTimer");
     auto it = timers_.find(timerHandle);
     if (it != timers_.end()) {
-      bool repeats = it->second.repeat;
-      it->second.invoke(runtime);
+      auto& timerCallback = it->second;
+      bool repeats = timerCallback.repeat;
+
+      {
+        SystraceSection s(
+            "TimerManager::callTimer",
+            "id",
+            timerHandle,
+            "type",
+            getTimerSourceName(timerCallback.source));
+        timerCallback.invoke(runtime);
+      }
 
       if (!repeats) {
         // Invoking a timer has the potential to delete it. Do not re-use the
@@ -148,84 +198,96 @@ void TimerManager::callTimer(TimerHandle timerHandle) {
 void TimerManager::attachGlobals(jsi::Runtime& runtime) {
   // Install host functions for timers.
   // TODO (T45786383): Add missing timer functions from JSTimers
-  // TODO (T96212789): Remove when JSVM microtask queue is used everywhere in
-  // bridgeless mode. This is being overwritten in JS in that case.
+
+  // Ensure that we don't define `setImmediate` and `clearImmediate` if
+  // microtasks are enabled (as we polyfill them using `queueMicrotask` then).
+  if (!ReactNativeFeatureFlags::enableMicrotasks()) {
+    runtime.global().setProperty(
+        runtime,
+        "setImmediate",
+        jsi::Function::createFromHostFunction(
+            runtime,
+            jsi::PropNameID::forAscii(runtime, "setImmediate"),
+            2, // Function, ...args
+            [this](
+                jsi::Runtime& rt,
+                const jsi::Value& thisVal,
+                const jsi::Value* args,
+                size_t count) {
+              if (count == 0) {
+                throw jsi::JSError(
+                    rt,
+                    "setImmediate must be called with at least one argument (a function to call)");
+              }
+
+              if (!args[0].isObject() || !args[0].asObject(rt).isFunction(rt)) {
+                throw jsi::JSError(
+                    rt,
+                    "The first argument to setImmediate must be a function.");
+              }
+              auto callback = args[0].getObject(rt).getFunction(rt);
+
+              // Package up the remaining argument values into one place.
+              std::vector<jsi::Value> moreArgs;
+              for (size_t extraArgNum = 1; extraArgNum < count; extraArgNum++) {
+                moreArgs.emplace_back(rt, args[extraArgNum]);
+              }
+
+              return createReactNativeMicrotask(
+                  std::move(callback), std::move(moreArgs));
+            }));
+
+    runtime.global().setProperty(
+        runtime,
+        "clearImmediate",
+        jsi::Function::createFromHostFunction(
+            runtime,
+            jsi::PropNameID::forAscii(runtime, "clearImmediate"),
+            1, // handle
+            [this](
+                jsi::Runtime& rt,
+                const jsi::Value& thisVal,
+                const jsi::Value* args,
+                size_t count) {
+              if (count > 0 && args[0].isNumber()) {
+                auto handle = (TimerHandle)args[0].asNumber();
+                deleteReactNativeMicrotask(rt, handle);
+              }
+              return jsi::Value::undefined();
+            }));
+  }
+
   runtime.global().setProperty(
-      runtime,
-      "setImmediate",
-      jsi::Function::createFromHostFunction(
-          runtime,
-          jsi::PropNameID::forAscii(runtime, "setImmediate"),
-          2, // Function, ...args
-          [this](
-              jsi::Runtime& rt,
-              const jsi::Value& thisVal,
-              const jsi::Value* args,
-              size_t count) {
+    runtime,
+    "setTimeout",
+    jsi::Function::createFromHostFunction(
+        runtime,
+        jsi::PropNameID::forAscii(runtime, "setTimeout"),
+        3, // Function, delay, ...args
+        [this](jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
             if (count == 0) {
-              throw jsi::JSError(
-                  rt,
-                  "setImmediate must be called with at least one argument (a function to call)");
+                throw jsi::JSError(rt, "setTimeout must be called with at least one argument (the function to call).");
             }
 
-            if (!args[0].isObject() || !args[0].asObject(rt).isFunction(rt)) {
-              throw jsi::JSError(
-                  rt, "The first argument to setImmediate must be a function.");
-            }
-            auto callback = args[0].getObject(rt).getFunction(rt);
+            auto callback = args[0].isObject() && args[0].asObject(rt).isFunction(rt)
+                                ? args[0].getObject(rt).getFunction(rt)
+                                : jsi::Function::createFromHostFunction(
+                                      rt,
+                                      jsi::PropNameID::forAscii(rt, "dummyFunction"),
+                                      0,
+                                      [](jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+                                          return jsi::Value::undefined();
+                                      });
 
-            // Package up the remaining argument values into one place.
+            auto delay = (count > 1 && args[1].isNumber()) ? args[1].getNumber() : 0;
+
             std::vector<jsi::Value> moreArgs;
-            for (size_t extraArgNum = 1; extraArgNum < count; extraArgNum++) {
-              moreArgs.emplace_back(rt, args[extraArgNum]);
+            for (size_t extraArgNum = 2; extraArgNum < count; extraArgNum++) {
+                moreArgs.emplace_back(rt, args[extraArgNum]);
             }
 
-            return createReactNativeMicrotask(
-                std::move(callback), std::move(moreArgs));
-          }));
-
-  runtime.global().setProperty(
-      runtime,
-      "clearImmediate",
-      jsi::Function::createFromHostFunction(
-          runtime,
-          jsi::PropNameID::forAscii(runtime, "clearImmediate"),
-          1, // handle
-          [this](
-              jsi::Runtime& rt,
-              const jsi::Value& thisVal,
-              const jsi::Value* args,
-              size_t count) {
-            if (count > 0 && args[0].isNumber()) {
-              auto handle = (TimerHandle)args[0].asNumber();
-              deleteReactNativeMicrotask(rt, handle);
-            }
-            return jsi::Value::undefined();
-          }));
-
-  runtime.global().setProperty(
-      runtime,
-      "setTimeout",
-      jsi::Function::createFromHostFunction(
-          runtime,
-          jsi::PropNameID::forAscii(runtime, "setTimeout"),
-          3, // Function, delay, ...args
-          [this](
-              jsi::Runtime& rt,
-              const jsi::Value& thisVal,
-              const jsi::Value* args,
-              size_t count) {
-            if (count == 0 || !args[0].isObject() ||
-                !args[0].asObject(rt).isFunction(rt)) {
-              throw jsi::JSError(
-                  rt, "setTimeout must be called with a function.");
-            }
-            auto callback = args[0].getObject(rt).getFunction(rt);
-            auto delay =
-                (count > 1 && args[1].isNumber()) ? args[1].getNumber() : 0;
-            std::vector<jsi::Value> moreArgs(args + 2, args + count);
             return createTimer(std::move(callback), std::move(moreArgs), delay);
-          }));
+        }));
 
   runtime.global().setProperty(
       runtime,
@@ -268,7 +330,10 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
                 (count > 1 && args[1].isNumber()) ? args[1].getNumber() : 0;
             std::vector<jsi::Value> moreArgs(args + 2, args + count);
             return createRecurringTimer(
-                std::move(callback), std::move(moreArgs), delay);
+                std::move(callback),
+                std::move(moreArgs),
+                delay,
+                TimerSource::SetInterval);
           }));
 
   runtime.global().setProperty(
@@ -337,7 +402,8 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
             return createTimer(
                 std::move(callback),
                 std::vector<jsi::Value>(),
-                /* delay */ 0);
+                /* delay */ 0,
+                TimerSource::RequestAnimationFrame);
           }));
 
   runtime.global().setProperty(

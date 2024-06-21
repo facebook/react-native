@@ -67,26 +67,34 @@ module PrivacyManifestUtils
     end
 
     def self.ensure_reference(file_path, user_project, target)
-        reference_exists = target.resources_build_phase.files_references.any? { |file_ref| file_ref.path&.end_with? "PrivacyInfo.xcprivacy" }
+        reference_exists = target.resources_build_phase.files_references.any? { |file_ref| file_ref&.path&.end_with? "PrivacyInfo.xcprivacy" }
         unless reference_exists
             # We try to find the main group, but if it doesn't exist, we default to adding the file to the project root – both work
-            file_root = user_project.root_object.main_group.children.find { |group| group.class == Xcodeproj::Project::Object::PBXGroup && (group.name == target.name || group.path == target.name) } || user_project
+            file_root = user_project.root_object.main_group.children.find { |group|
+                group.class == Xcodeproj::Project::Object::PBXGroup && (group.name == target.name || group.path == target.name)
+            } || user_project
             file_ref = file_root.new_file(file_path)
             build_file = target.resources_build_phase.add_file_reference(file_ref, true)
         end
     end
 
     def self.get_privacyinfo_file_path(user_project, targets)
+        
         file_refs = targets.flat_map { |target| target.resources_build_phase.files_references }
-        existing_file = file_refs.find { |file_ref| file_ref.path&.end_with? "PrivacyInfo.xcprivacy" }
+        existing_file = file_refs.find { |file_ref| file_ref&.path&.end_with?("PrivacyInfo.xcprivacy") }
+
+
         if existing_file
             return existing_file.real_path
         end
+
         # We try to find a file we know exists in the project to get the path to the main group directory
         info_plist_path = user_project.files.find { |file_ref| file_ref.name == "Info.plist" }
         if info_plist_path.nil?
             # return path that is sibling to .xcodeproj
+
             path = user_project.path
+
             return File.join(File.dirname(path), "PrivacyInfo.xcprivacy")
         end
         return File.join(File.dirname(info_plist_path.real_path),"PrivacyInfo.xcprivacy")
@@ -117,6 +125,7 @@ module PrivacyManifestUtils
             end
             end
         end
+
         return used_apis
     end
 
@@ -124,7 +133,7 @@ module PrivacyManifestUtils
         privacy_manifests = user_project
             .files
             .select { |p|
-                p.path&.end_with?('PrivacyInfo.xcprivacy')
+                p&.path&.end_with?('PrivacyInfo.xcprivacy')
             }
         return privacy_manifests
     end
@@ -162,7 +171,7 @@ module PrivacyManifestUtils
                 "NSPrivacyTracking" => false,
                 "NSPrivacyAccessedAPITypes" => get_core_accessed_apis
             }
-            path = File.join(user_project.path.parent, "PrivacyInfo.xcprivacy")
+            path = File.join(user_project&.path.parent, "PrivacyInfo.xcprivacy")
             Xcodeproj::Plist.write_to_path(privacy_manifest, path)
             Pod::UI.puts "Your app does not have a privacy manifest! A template has been generated containing Required Reasons API usage in the core React Native library. Please add the PrivacyInfo.xcprivacy file to your project and complete data use, tracking and any additional required reasons your app is using according to Apple's guidance: https://developer.apple.com/documentation/bundleresources/privacy_manifest_files. Then, you will need to manually add this file to your project in Xcode.".red
         end
