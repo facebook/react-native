@@ -215,27 +215,15 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
               const jsi::Value& thisVal,
               const jsi::Value* args,
               size_t count) {
-            if (count == 0) {
+            if (count == 0 || !args[0].isObject() ||
+                !args[0].asObject(rt).isFunction(rt)) {
               throw jsi::JSError(
-                  rt,
-                  "setTimeout must be called with at least one argument (the function to call).");
+                  rt, "setTimeout must be called with a function.");
             }
-
-            if (!args[0].isObject() || !args[0].asObject(rt).isFunction(rt)) {
-              throw jsi::JSError(
-                  rt, "The first argument to setTimeout must be a function.");
-            }
-
             auto callback = args[0].getObject(rt).getFunction(rt);
-
             auto delay =
                 (count > 1 && args[1].isNumber()) ? args[1].getNumber() : 0;
-
-            std::vector<jsi::Value> moreArgs;
-            for (size_t extraArgNum = 2; extraArgNum < count; extraArgNum++) {
-              moreArgs.emplace_back(rt, args[extraArgNum]);
-            }
-
+            std::vector<jsi::Value> moreArgs(args + 2, args + count);
             return createTimer(std::move(callback), std::move(moreArgs), delay);
           }));
 
@@ -253,9 +241,7 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
               size_t count) {
             if (count > 0 && args[0].isNumber()) {
               auto handle = (TimerHandle)args[0].asNumber();
-              if (timers_.find(handle) != timers_.end()) {
-                deleteTimer(rt, handle);
-              }
+              deleteTimer(rt, handle);
             }
             return jsi::Value::undefined();
           }));
@@ -272,26 +258,15 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
               const jsi::Value& thisVal,
               const jsi::Value* args,
               size_t count) {
-            if (count == 0) {
+            if (count == 0 || !args[0].isObject() ||
+                !args[0].asObject(rt).isFunction(rt)) {
               throw jsi::JSError(
-                  rt,
-                  "setInterval must be called with at least one argument (the function to call).");
+                  rt, "setInterval must be called with a function.");
             }
-
-            if (!args[0].isObject() || !args[0].asObject(rt).isFunction(rt)) {
-              throw jsi::JSError(
-                  rt, "The first argument to setInterval must be a function.");
-            }
-
             auto callback = args[0].getObject(rt).getFunction(rt);
             auto delay =
                 (count > 1 && args[1].isNumber()) ? args[1].getNumber() : 0;
-
-            std::vector<jsi::Value> moreArgs;
-            for (size_t extraArgNum = 2; extraArgNum < count; extraArgNum++) {
-              moreArgs.emplace_back(rt, args[extraArgNum]);
-            }
-
+            std::vector<jsi::Value> moreArgs(args + 2, args + count);
             return createRecurringTimer(
                 std::move(callback), std::move(moreArgs), delay);
           }));
