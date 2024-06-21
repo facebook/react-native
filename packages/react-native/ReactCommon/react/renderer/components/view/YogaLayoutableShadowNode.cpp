@@ -858,10 +858,10 @@ float YogaLayoutableShadowNode::yogaNodeBaselineCallbackConnector(
       "YogaLayoutableShadowNode::yogaNodeBaselineCallbackConnector");
 
   auto& shadowNode = shadowNodeFromContext(yogaNode);
-  auto baseline = shadowNode.baseline(
+  auto baseline = shadowNode.lastBaseline(
       threadLocalLayoutContext,
-      floatFromYogaFloat(width),
-      floatFromYogaFloat(height));
+      {.width = floatFromYogaFloat(width),
+      .height = floatFromYogaFloat(height)});
 
   return yogaFloatFromFloat(baseline);
 }

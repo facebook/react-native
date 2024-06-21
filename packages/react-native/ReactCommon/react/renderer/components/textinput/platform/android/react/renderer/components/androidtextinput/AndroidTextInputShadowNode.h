@@ -66,10 +66,9 @@ class AndroidTextInputShadowNode final
       const LayoutConstraints& layoutConstraints) const override;
   void layout(LayoutContext layoutContext) override;
 
-  float baseline(
+  Float lastBaseline(
       const LayoutContext& layoutContext,
-      float width,
-      float height) const override;
+      Size size) const override;
 
  private:
   ContextContainer* contextContainer_{};

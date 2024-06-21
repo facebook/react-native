@@ -163,10 +163,9 @@ Size ParagraphShadowNode::measureContent(
       .size;
 }
 
-float ParagraphShadowNode::baseline(
+Float ParagraphShadowNode::lastBaseline(
     const LayoutContext& layoutContext,
-    float width,
-    float height) const {
+    Size size) const {
   auto content = getContent(layoutContext);
   auto attributedString = content.attributedString;
 
@@ -174,7 +173,7 @@ float ParagraphShadowNode::baseline(
       ->baseline(
           attributedString,
           content.paragraphAttributes,
-          {.width = width, .height = height});
+          size);
 }
 
 void ParagraphShadowNode::layout(LayoutContext layoutContext) {
