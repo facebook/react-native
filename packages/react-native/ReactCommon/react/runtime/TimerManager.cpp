@@ -13,6 +13,21 @@
 
 namespace facebook::react {
 
+namespace {
+inline const char* getTimerSourceName(TimerSource source) {
+  switch (source) {
+    case TimerSource::Unknown:
+      return "unknown";
+    case TimerSource::SetTimeout:
+      return "setTimeout";
+    case TimerSource::SetInterval:
+      return "setInterval";
+    case TimerSource::RequestAnimationFrame:
+      return "requestAnimationFrame";
+  }
+}
+} // namespace
+
 TimerManager::TimerManager(
     std::unique_ptr<PlatformTimerRegistry> platformTimerRegistry) noexcept
     : platformTimerRegistry_(std::move(platformTimerRegistry)) {}
@@ -60,14 +75,28 @@ void TimerManager::callReactNativeMicrotasks(jsi::Runtime& runtime) {
 TimerHandle TimerManager::createTimer(
     jsi::Function&& callback,
     std::vector<jsi::Value>&& args,
-    double delay) {
+    double delay,
+    TimerSource source) {
   // Get the id for the callback.
   TimerHandle timerID = timerIndex_++;
+
+  SystraceSection s(
+      "TimerManager::createTimer",
+      "id",
+      timerID,
+      "type",
+      getTimerSourceName(source),
+      "delay",
+      delay);
+
   timers_.emplace(
       std::piecewise_construct,
       std::forward_as_tuple(timerID),
       std::forward_as_tuple(
-          std::move(callback), std::move(args), /* repeat */ false));
+          std::move(callback),
+          std::move(args),
+          /* repeat */ false,
+          source));
 
   platformTimerRegistry_->createTimer(timerID, delay);
 
@@ -77,14 +106,25 @@ TimerHandle TimerManager::createTimer(
 TimerHandle TimerManager::createRecurringTimer(
     jsi::Function&& callback,
     std::vector<jsi::Value>&& args,
-    double delay) {
+    double delay,
+    TimerSource source) {
   // Get the id for the callback.
   TimerHandle timerID = timerIndex_++;
+
+  SystraceSection s(
+      "TimerManager::createRecurringTimer",
+      "id",
+      timerID,
+      "type",
+      getTimerSourceName(source),
+      "delay",
+      delay);
+
   timers_.emplace(
       std::piecewise_construct,
       std::forward_as_tuple(timerID),
       std::forward_as_tuple(
-          std::move(callback), std::move(args), /* repeat */ true));
+          std::move(callback), std::move(args), /* repeat */ true, source));
 
   platformTimerRegistry_->createRecurringTimer(timerID, delay);
 
@@ -131,11 +171,20 @@ void TimerManager::deleteRecurringTimer(
 
 void TimerManager::callTimer(TimerHandle timerHandle) {
   runtimeExecutor_([this, timerHandle](jsi::Runtime& runtime) {
-    SystraceSection s("TimerManager::callTimer");
     auto it = timers_.find(timerHandle);
     if (it != timers_.end()) {
-      bool repeats = it->second.repeat;
-      it->second.invoke(runtime);
+      auto& timerCallback = it->second;
+      bool repeats = timerCallback.repeat;
+
+      {
+        SystraceSection s(
+            "TimerManager::callTimer",
+            "id",
+            timerHandle,
+            "type",
+            getTimerSourceName(timerCallback.source));
+        timerCallback.invoke(runtime);
+      }
 
       if (!repeats) {
         // Invoking a timer has the potential to delete it. Do not re-use the
@@ -246,7 +295,11 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
               moreArgs.emplace_back(rt, args[extraArgNum]);
             }
 
-            return createTimer(std::move(callback), std::move(moreArgs), delay);
+            return createTimer(
+                std::move(callback),
+                std::move(moreArgs),
+                delay,
+                TimerSource::SetTimeout);
           }));
 
   runtime.global().setProperty(
@@ -301,7 +354,10 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
             }
 
             return createRecurringTimer(
-                std::move(callback), std::move(moreArgs), delay);
+                std::move(callback),
+                std::move(moreArgs),
+                delay,
+                TimerSource::SetInterval);
           }));
 
   runtime.global().setProperty(
@@ -370,7 +426,8 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
             return createTimer(
                 std::move(callback),
                 std::vector<jsi::Value>(),
-                /* delay */ 0);
+                /* delay */ 0,
+                TimerSource::RequestAnimationFrame);
           }));
 
   runtime.global().setProperty(
