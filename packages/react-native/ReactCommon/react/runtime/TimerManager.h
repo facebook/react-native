@@ -18,6 +18,13 @@ namespace facebook::react {
 
 using TimerHandle = int;
 
+enum class TimerSource {
+  Unknown,
+  SetTimeout,
+  SetInterval,
+  RequestAnimationFrame
+};
+
 /*
  * Wraps a jsi::Function to make it copyable so we can pass it into a lambda.
  */
@@ -25,10 +32,12 @@ struct TimerCallback {
   TimerCallback(
       jsi::Function callback,
       std::vector<jsi::Value> args,
-      bool repeat)
+      bool repeat,
+      TimerSource source = TimerSource::Unknown)
       : callback_(std::move(callback)),
         args_(std::move(args)),
-        repeat(repeat) {}
+        repeat(repeat),
+        source(source) {}
 
   void invoke(jsi::Runtime& runtime) {
     callback_.call(runtime, args_.data(), args_.size());
@@ -37,6 +46,7 @@ struct TimerCallback {
   jsi::Function callback_;
   const std::vector<jsi::Value> args_;
   bool repeat;
+  TimerSource source;
 };
 
 class TimerManager {
@@ -62,14 +72,16 @@ class TimerManager {
   TimerHandle createTimer(
       jsi::Function&& callback,
       std::vector<jsi::Value>&& args,
-      double delay);
+      double delay,
+      TimerSource source = TimerSource::Unknown);
 
   void deleteTimer(jsi::Runtime& runtime, TimerHandle handle);
 
   TimerHandle createRecurringTimer(
       jsi::Function&& callback,
       std::vector<jsi::Value>&& args,
-      double delay);
+      double delay,
+      TimerSource source = TimerSource::Unknown);
 
   void deleteRecurringTimer(jsi::Runtime& runtime, TimerHandle handle);
 
