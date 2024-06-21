@@ -45,7 +45,7 @@ Pod::Spec.new do |s|
                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
                                "HEADER_SEARCH_PATHS" => header_search_paths.join(' ')
                              }
-  s.framework              = ["Accelerate", "UIKit"]
+  s.framework              = ["Accelerate", "UIKit", "QuartzCore", "ImageIO", "CoreGraphics"]
 
   s.dependency "RCT-Folly", folly_version
   s.dependency "RCTTypeSafety"
