@@ -170,7 +170,7 @@ Float ParagraphShadowNode::lastBaseline(
   auto attributedString = content.attributedString;
 
   return textLayoutManager_
-      ->baseline(
+      ->getLastBaseline(
           attributedString,
           content.paragraphAttributes,
           size);

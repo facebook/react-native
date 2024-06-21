@@ -505,7 +505,7 @@ public class FabricUIManager
   }
 
   @SuppressWarnings("unused")
-  private float baseline(
+  private float getLastBaseline(
     ReadableMapBuffer attributedString,
     ReadableMapBuffer paragraphAttributes,
     float width,

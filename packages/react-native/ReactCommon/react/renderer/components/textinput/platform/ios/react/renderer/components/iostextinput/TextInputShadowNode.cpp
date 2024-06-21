@@ -144,7 +144,7 @@ Float TextInputShadowNode::lastBaseline(
     const LayoutContext& layoutContext,
     Size size) const {
   return textLayoutManager_
-      ->baseline(
+      ->getLastBaseline(
         getAttributedString(layoutContext),
         getConcreteProps().getEffectiveParagraphAttributes(),
         size);

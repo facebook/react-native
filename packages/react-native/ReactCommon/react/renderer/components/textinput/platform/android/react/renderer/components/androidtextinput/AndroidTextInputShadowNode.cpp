@@ -218,7 +218,7 @@ Float AndroidTextInputShadowNode::lastBaseline(
     const LayoutContext& layoutContext,
     Size size) const {
   return textLayoutManager_
-      ->baseline(
+      ->getLastBaseline(
           getMostRecentAttributedString(),
           getConcreteProps().paragraphAttributes,
           size);
