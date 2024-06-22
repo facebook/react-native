@@ -25,7 +25,6 @@
 
 #import "RCTImagePlugins.h"
 
-
 using namespace facebook::react;
 
 static NSInteger RCTImageBytesForImage(UIImage *image)
