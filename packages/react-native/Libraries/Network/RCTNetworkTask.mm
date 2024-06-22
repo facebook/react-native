@@ -10,6 +10,7 @@
 #import <React/RCTLog.h>
 #import <React/RCTNetworkTask.h>
 #import <React/RCTUtils.h>
+#import <React/RCTSharedCounter.h>
 
 @implementation RCTNetworkTask {
   NSMutableData *_data;
@@ -20,6 +21,8 @@
   RCTNetworkTask *_selfReference;
 }
 
+static const auto generateRequestId = RCTCreateSharedNSUIntegerCounter();
+
 - (instancetype)initWithRequest:(NSURLRequest *)request
                         handler:(id<RCTURLRequestHandler>)handler
                   callbackQueue:(dispatch_queue_t)callbackQueue
@@ -28,10 +31,8 @@
   RCTAssertParam(handler);
   RCTAssertParam(callbackQueue);
 
-  static NSUInteger requestID = 0;
-
   if ((self = [super init])) {
-    _requestID = @(requestID++);
+    _requestID = @(generateRequestId());
     _request = request;
     _handler = handler;
     _callbackQueue = callbackQueue;

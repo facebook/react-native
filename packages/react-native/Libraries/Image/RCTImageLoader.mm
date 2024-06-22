@@ -21,8 +21,10 @@
 #import <React/RCTLog.h>
 #import <React/RCTNetworking.h>
 #import <React/RCTUtils.h>
+#import <React/RCTSharedCounter.h>
 
 #import "RCTImagePlugins.h"
+
 
 using namespace facebook::react;
 
@@ -32,11 +34,7 @@ static NSInteger RCTImageBytesForImage(UIImage *image)
   return image.images ? image.images.count * singleImageBytes : singleImageBytes;
 }
 
-static uint64_t getNextImageRequestCount(void)
-{
-  static uint64_t requestCounter = 0;
-  return requestCounter++;
-}
+static const auto generateImageRequestId = RCTCreateSharedUInt64Counter();
 
 static NSError *addResponseHeadersToError(NSError *originalError, NSHTTPURLResponse *response)
 {
@@ -510,7 +508,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image, CGSize size, CGFloat scal
   auto cancelled = std::make_shared<std::atomic<int>>(0);
   __block dispatch_block_t cancelLoad = nil;
   __block NSLock *cancelLoadLock = [NSLock new];
-  NSString *requestId = [NSString stringWithFormat:@"%@-%llu", [[NSUUID UUID] UUIDString], getNextImageRequestCount()];
+  NSString *requestId = [NSString stringWithFormat:@"%@-%llu", [[NSUUID UUID] UUIDString], generateImageRequestId()];
 
   void (^completionHandler)(NSError *, id, id, NSURLResponse *) =
       ^(NSError *error, id imageOrData, id imageMetadata, NSURLResponse *response) {
