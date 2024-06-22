@@ -13,7 +13,16 @@
 
 @implementation RCTSharedCounterTests
 
-- (void)test {
+-(void)testIncrement {
+  NSUIntegerCounter nsUIntegerCounter = RCTCreateSharedNSUIntegerCounter();
+  XCTAssertEqual(nsUIntegerCounter(), 0);
+  XCTAssertEqual(nsUIntegerCounter(), 1);
+  UInt64Counter uint64Counter = RCTCreateSharedUInt64Counter();
+  XCTAssertEqual(uint64Counter(), 0);
+  XCTAssertEqual(uint64Counter(), 1);
+}
+
+- (void)testConcurrent {
   XCTestExpectation *expectation1 = [self expectationWithDescription:@"wait for NSUInteger shared counter"];
   NSUIntegerCounter nsUIntegerCounter = RCTCreateSharedNSUIntegerCounter();
   XCTestExpectation *expectation2 = [self expectationWithDescription:@"wait for uint64_t shared counter"];
