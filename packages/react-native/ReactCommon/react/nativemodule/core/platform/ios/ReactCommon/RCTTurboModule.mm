@@ -815,3 +815,6 @@ void ObjCTurboModule::setMethodArgConversionSelector(NSString *methodName, size_
 
 } // namespace react
 } // namespace facebook
+
+@implementation RCTTurboModule
+@end

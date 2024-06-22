@@ -159,6 +159,9 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
     (const facebook::react::ObjCTurboModule::InitParams &)params;
 @end
 
+@interface RCTTurboModule : NSObject
+@end
+
 /**
  * These methods are all implemented by RCTCxxBridge, which subclasses RCTBridge. Hence, they must only be used in
  * contexts where the concrete class of an RCTBridge instance is RCTCxxBridge. This happens, for example, when

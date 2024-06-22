@@ -43,6 +43,9 @@
 
 @end
 
+@interface NativeSampleTurboModuleSpec : RCTTurboModule
+@end
+
 namespace facebook::react {
 
 /**
