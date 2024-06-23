@@ -167,6 +167,11 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Enables an experimental flush-queue debouncing in Animated.js.',
     },
+    animatedShouldUsePermanentAnimationId: {
+      defaultValue: false,
+      description:
+        'Enables an experimental option to reuse the native ID for an animation.',
+    },
     animatedShouldUseSingleOp: {
       defaultValue: false,
       description:

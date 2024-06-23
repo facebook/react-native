@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<522f11a571457cb932f451cf81bd384a>>
+ * @generated SignedSource<<3ff3985c50d0b1abc5116a657e148938>>
  * @flow strict-local
  */
 
@@ -28,6 +28,7 @@ import {
 export type ReactNativeFeatureFlagsJsOnly = {
   jsOnlyTestFlag: Getter<boolean>,
   animatedShouldDebounceQueueFlush: Getter<boolean>,
+  animatedShouldUsePermanentAnimationId: Getter<boolean>,
   animatedShouldUseSingleOp: Getter<boolean>,
   enableAccessToHostTreeInFabric: Getter<boolean>,
   isLayoutAnimationEnabled: Getter<boolean>,
@@ -77,6 +78,11 @@ export const jsOnlyTestFlag: Getter<boolean> = createJavaScriptFlagGetter('jsOnl
  * Enables an experimental flush-queue debouncing in Animated.js.
  */
 export const animatedShouldDebounceQueueFlush: Getter<boolean> = createJavaScriptFlagGetter('animatedShouldDebounceQueueFlush', false);
+
+/**
+ * Enables an experimental option to reuse the native ID for an animation.
+ */
+export const animatedShouldUsePermanentAnimationId: Getter<boolean> = createJavaScriptFlagGetter('animatedShouldUsePermanentAnimationId', false);
 
 /**
  * Enables an experimental mega-operation for Animated.js that replaces many calls to native with a single call into native, to reduce JSI/JNI traffic.

@@ -14,6 +14,7 @@ import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type AnimatedNode from '../nodes/AnimatedNode';
 import type AnimatedValue from '../nodes/AnimatedValue';
 
+import * as ReactNativeFeatureFlags from '../../../src/private/featureflags/ReactNativeFeatureFlags';
 import NativeAnimatedHelper from '../NativeAnimatedHelper';
 import AnimatedProps from '../nodes/AnimatedProps';
 
@@ -92,7 +93,12 @@ export default class Animation {
     try {
       const config = this.__getNativeAnimationConfig();
       animatedValue.__makeNative(config.platformConfig);
-      this._nativeId = NativeAnimatedHelper.generateNewAnimationId();
+      if (
+        !this._nativeId ||
+        !ReactNativeFeatureFlags.animatedShouldUsePermanentAnimationId()
+      ) {
+        this._nativeId = NativeAnimatedHelper.generateNewAnimationId();
+      }
       NativeAnimatedHelper.API.startAnimatingNode(
         this._nativeId,
         animatedValue.__getNativeTag(),
