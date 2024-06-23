@@ -21,7 +21,7 @@
   RCTNetworkTask *_selfReference;
 }
 
-static const auto generateRequestId = RCTCreateSharedNSUIntegerCounter();
+static const auto generateRequestId = RCTCreateAtomicNSUIntegerCounter();
 
 - (instancetype)initWithRequest:(NSURLRequest *)request
                         handler:(id<RCTURLRequestHandler>)handler

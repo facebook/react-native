@@ -10,5 +10,5 @@
 typedef NSUInteger (^NSUIntegerCounter)(void);
 typedef uint64_t (^UInt64Counter)(void);
 
-RCT_EXTERN NSUIntegerCounter RCTCreateSharedNSUIntegerCounter(void);
-RCT_EXTERN UInt64Counter RCTCreateSharedUInt64Counter(void);
+RCT_EXTERN NSUIntegerCounter RCTCreateAtomicNSUIntegerCounter(void);
+RCT_EXTERN UInt64Counter RCTCreateAtomicUInt64Counter(void);

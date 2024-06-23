@@ -33,7 +33,7 @@ static NSInteger RCTImageBytesForImage(UIImage *image)
   return image.images ? image.images.count * singleImageBytes : singleImageBytes;
 }
 
-static const auto generateImageRequestId = RCTCreateSharedUInt64Counter();
+static const auto generateImageRequestId = RCTCreateAtomicUInt64Counter();
 
 static NSError *addResponseHeadersToError(NSError *originalError, NSHTTPURLResponse *response)
 {

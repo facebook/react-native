@@ -14,19 +14,19 @@
 @implementation RCTSharedCounterTests
 
 -(void)testIncrement {
-  NSUIntegerCounter nsUIntegerCounter = RCTCreateSharedNSUIntegerCounter();
+  NSUIntegerCounter nsUIntegerCounter = RCTCreateAtomicNSUIntegerCounter();
   XCTAssertEqual(nsUIntegerCounter(), 0);
   XCTAssertEqual(nsUIntegerCounter(), 1);
-  UInt64Counter uint64Counter = RCTCreateSharedUInt64Counter();
+  UInt64Counter uint64Counter = RCTCreateAtomicUInt64Counter();
   XCTAssertEqual(uint64Counter(), 0);
   XCTAssertEqual(uint64Counter(), 1);
 }
 
 - (void)testConcurrent {
   XCTestExpectation *expectation1 = [self expectationWithDescription:@"wait for NSUInteger shared counter"];
-  NSUIntegerCounter nsUIntegerCounter = RCTCreateSharedNSUIntegerCounter();
+  NSUIntegerCounter nsUIntegerCounter = RCTCreateAtomicNSUIntegerCounter();
   XCTestExpectation *expectation2 = [self expectationWithDescription:@"wait for uint64_t shared counter"];
-  UInt64Counter uint64Counter = RCTCreateSharedUInt64Counter();
+  UInt64Counter uint64Counter = RCTCreateAtomicUInt64Counter();
   size_t iterations = 1000;
   dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
   dispatch_apply(iterations, queue, ^(__unused size_t iteration) {

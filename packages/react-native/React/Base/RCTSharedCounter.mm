@@ -8,14 +8,14 @@
 #import <atomic>
 #include <memory>
 
-NSUIntegerCounter RCTCreateSharedNSUIntegerCounter(void) {
+NSUIntegerCounter RCTCreateAtomicNSUIntegerCounter(void) {
   auto count = std::make_shared<std::atomic<NSUInteger>>(0);
   return ^NSUInteger() {
     return (*count)++;
   };
 }
 
-UInt64Counter RCTCreateSharedUInt64Counter(void) {
+UInt64Counter RCTCreateAtomicUInt64Counter(void) {
   auto count = std::make_shared<std::atomic<uint64_t>>(0);
   return ^uint64_t() {
     return (*count)++;
