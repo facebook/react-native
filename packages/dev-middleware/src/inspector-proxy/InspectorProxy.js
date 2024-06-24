@@ -157,8 +157,10 @@ export default class InspectorProxy implements InspectorProxyQueries {
       `devtools://devtools/bundled/js_app.html?experiments=true&v8only=true&${webSocketScheme}=` +
       encodeURIComponent(webSocketUrlWithoutProtocol);
 
+    const id = `${deviceId}-${page.id}`;
+
     return {
-      id: `${deviceId}-${page.id}`,
+      id,
       title: page.title,
       description: page.app,
       type: 'node',
@@ -169,6 +171,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
       reactNative: {
         logicalDeviceId: deviceId,
         capabilities: nullthrows(page.capabilities),
+        openDebuggerPath: '/open-debugger?target=' + encodeURIComponent(id),
       },
     };
   }

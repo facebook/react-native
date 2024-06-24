@@ -191,6 +191,7 @@ describe('inspector proxy HTTP API', () => {
             reactNative: {
               capabilities: {},
               logicalDeviceId: 'device1',
+              openDebuggerPath: '/open-debugger?target=device1-page1',
             },
             title: 'bar-title',
             type: 'node',
@@ -205,6 +206,7 @@ describe('inspector proxy HTTP API', () => {
             reactNative: {
               capabilities: {},
               logicalDeviceId: 'device2',
+              openDebuggerPath: '/open-debugger?target=device1-page1',
             },
             title: 'bar-title',
             type: 'node',
