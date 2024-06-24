@@ -9,11 +9,34 @@
 
 #include <cxxreact/SystraceSection.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
+
+#include <cmath>
 #include <utility>
 
 namespace facebook::react {
 
 namespace {
+
+double coerceNumberTimeout(jsi::Runtime& rt, const jsi::Value& timeout) {
+  double delay = 0.0;
+
+  // fast-path
+  if (timeout.isNumber()) {
+    delay = timeout.getNumber();
+  } else {
+    // perform number coercion for timeout to be web spec compliant
+    auto numberCtor = rt.global().getPropertyAsObject(rt, "Number");
+    auto delayNumberObject =
+        numberCtor.getFunction(rt).callAsConstructor(rt, timeout).getObject(rt);
+    auto delayNumericValue =
+        delayNumberObject.getPropertyAsFunction(rt, "valueOf")
+            .callWithThis(rt, delayNumberObject);
+    delay = delayNumericValue.isNumber() ? delayNumericValue.getNumber() : 0;
+  }
+
+  return std::isnan(delay) ? 0.0 : std::max(0.0, delay);
+}
+
 inline const char* getTimerSourceName(TimerSource source) {
   switch (source) {
     case TimerSource::Unknown:
@@ -26,6 +49,7 @@ inline const char* getTimerSourceName(TimerSource source) {
       return "requestAnimationFrame";
   }
 }
+
 } // namespace
 
 TimerManager::TimerManager(
@@ -221,9 +245,8 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
               }
 
               if (!args[0].isObject() || !args[0].asObject(rt).isFunction(rt)) {
-                throw jsi::JSError(
-                    rt,
-                    "The first argument to setImmediate must be a function.");
+                // Do not throw any error to match web spec
+                return timerIndex_++;
               }
               auto callback = args[0].getObject(rt).getFunction(rt);
 
@@ -276,18 +299,12 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
             }
 
             if (!args[0].isObject() || !args[0].asObject(rt).isFunction(rt)) {
-              throw jsi::JSError(
-                  rt, "The first argument to setTimeout must be a function.");
+              // Do not throw any error to match web spec
+              return timerIndex_++;
             }
-            auto callback = args[0].getObject(rt).getFunction(rt);
 
-            if (count > 1 && !args[1].isNumber() && !args[1].isUndefined()) {
-              throw jsi::JSError(
-                  rt,
-                  "The second argument to setTimeout must be a number or undefined.");
-            }
-            auto delay =
-                count > 1 && args[1].isNumber() ? args[1].getNumber() : 0;
+            auto callback = args[0].getObject(rt).getFunction(rt);
+            auto delay = count > 1 ? coerceNumberTimeout(rt, args[1]) : 0.0;
 
             // Package up the remaining argument values into one place.
             std::vector<jsi::Value> moreArgs;
@@ -344,8 +361,9 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
                   rt, "The first argument to setInterval must be a function.");
             }
             auto callback = args[0].getObject(rt).getFunction(rt);
-            auto delay =
-                count > 1 && args[1].isNumber() ? args[1].getNumber() : 0;
+            auto delay = count > 1
+                ? coerceNumberTimeout(rt, jsi::Value{rt, args[1]})
+                : 0.0;
 
             // Package up the remaining argument values into one place.
             std::vector<jsi::Value> moreArgs;
