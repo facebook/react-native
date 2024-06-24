@@ -60,7 +60,7 @@ export interface MixedTypeAnnotation {
 
 export interface EventEmitterTypeAnnotation {
   readonly type: 'EventEmitterTypeAnnotation';
-  readonly typeAnnotation: NativeModuleBaseTypeAnnotation;
+  readonly typeAnnotation: NativeModuleEventEmitterTypeAnnotation;
 }
 
 export interface FunctionTypeAnnotation<P, R> {
@@ -360,6 +360,23 @@ export interface NativeModuleMixedTypeAnnotation {
   readonly type: 'MixedTypeAnnotation';
 }
 
+export type NativeModuleEventEmitterBaseTypeAnnotation =
+  | NativeModuleBooleanTypeAnnotation
+  | NativeModuleDoubleTypeAnnotation
+  | NativeModuleFloatTypeAnnotation
+  | NativeModuleInt32TypeAnnotation
+  | NativeModuleNumberTypeAnnotation
+  | NativeModuleStringTypeAnnotation
+  | NativeModuleTypeAliasTypeAnnotation
+  | VoidTypeAnnotation;
+
+export type NativeModuleEventEmitterTypeAnnotation =
+  | NativeModuleEventEmitterBaseTypeAnnotation
+  | {
+    readonly type: 'ArrayTypeAnnotation';
+    readonly elementType: NativeModuleEventEmitterBaseTypeAnnotation | {type: string};
+  };
+
 export type NativeModuleBaseTypeAnnotation =
   | NativeModuleStringTypeAnnotation
   | NativeModuleNumberTypeAnnotation
@@ -387,7 +404,8 @@ export type NativeModuleReturnTypeAnnotation =
 export type NativeModuleTypeAnnotation =
   | NativeModuleBaseTypeAnnotation
   | NativeModuleParamOnlyTypeAnnotation
-  | NativeModuleReturnOnlyTypeAnnotation;
+  | NativeModuleReturnOnlyTypeAnnotation
+  | NativeModuleEventEmitterTypeAnnotation;
 
 type NativeModuleParamOnlyTypeAnnotation = NativeModuleFunctionTypeAnnotation;
 

@@ -107,7 +107,7 @@ class UnsupportedModuleEventEmitterPropertyParserError extends ParserError {
       message += `'${propertyValue}' must non nullable.`;
     } else if (untyped) {
       message += `'${propertyValue}' must have a concrete or void eventType.`;
-    } else if (cxxOnly) {
+    } else if (!cxxOnly) {
       message += `'${propertyValue}' is only supported in C++ Turbo Modules.`;
     }
     super(nativeModuleName, propertyValue, message);
