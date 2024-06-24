@@ -9,8 +9,6 @@
  * @oncall react_native
  */
 
-import querystring from 'querystring';
-
 export default function parseKeyValueParamArray(
   keyValueArray: $ReadOnlyArray<string>,
 ): Record<string, string> {
@@ -23,7 +21,10 @@ export default function parseKeyValueParamArray(
     if (item.indexOf('&') !== -1) {
       throw new Error('Parameter cannot include "&" but found: ' + item);
     }
-    Object.assign(result, querystring.parse(item));
+    const params = new URLSearchParam(item);
+    for (const [key, value] of params) {
+      result[key] = value;
+    }
   }
 
   return result;
