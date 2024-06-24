@@ -117,8 +117,9 @@ async function initNewProjectFromSource(
 
     console.log('Running react-native init without install');
     execSync(
-      `node @react-native-community/cli init ${projectName} \
-        --template @react-native-community/template \
+      `npx @react-native-community/cli@next init ${projectName} \
+        --directory ${directory} \
+        --version 0.75.0-rc.1 \
         --verbose \
         --pm npm \
         --skip-install`,
@@ -130,24 +131,8 @@ async function initNewProjectFromSource(
     );
     console.log('\nDone ✅');
 
-    if (pathToLocalReactNative != null) {
-      console.log('Updating the template version to local react-native');
-      // Update template version.
-      const appPackageJsonPath = path.join(
-        '/tmp/RNTestProject',
-        'package.json',
-      );
-      const appPackageJson = JSON.parse(
-        fs.readFileSync(appPackageJsonPath, 'utf8'),
-      );
-      appPackageJson.dependencies['react-native'] =
-        `file:${pathToLocalReactNative}`;
-      fs.writeFileSync(
-        appPackageJsonPath,
-        JSON.stringify(appPackageJson, null, 2),
-      );
-      console.log('Done ✅');
-    }
+    _updateScopedPackages(packages, directory);
+    _updateReactNativeInTemplateIfNeeded(pathToLocalReactNative, directory);
 
     console.log('Installing project dependencies');
     await installProjectUsingProxy(directory);
@@ -184,6 +169,62 @@ async function installProjectUsingProxy(cwd /*: string */) {
 
   if (!success) {
     throw new Error('Failed to install project dependencies');
+  }
+}
+
+function _updateScopedPackages(packages, directory) {
+  console.log('Updating the scoped packagesto match the version published in Verdaccio');
+
+  // Packages are updated in a lockstep and all with the same version.
+  // Pick the version from the first package
+  const version = packages[Object.keys(packages)[0]].packageJson.version;
+
+  // Update scoped packages which starts with @react-native
+  const appPackageJsonPath = path.join(
+    directory,
+    'package.json',
+  );
+  const appPackageJson = JSON.parse(
+    fs.readFileSync(appPackageJsonPath, 'utf8'),
+  );
+
+  for (const [key, _] of Object.entries(appPackageJson.dependencies)) {
+    if (key.startsWith('@react-native')) {
+      appPackageJson.dependencies[key] = version
+    }
+  }
+  for (const [key, _] of Object.entries(appPackageJson.devDependencies)) {
+    if (key.startsWith('@react-native')) {
+      appPackageJson.devDependencies[key] = version
+    }
+  }
+
+  fs.writeFileSync(
+    appPackageJsonPath,
+    JSON.stringify(appPackageJson, null, 2),
+  );
+
+  console.log('Done ✅');
+}
+
+function _updateReactNativeInTemplateIfNeeded(pathToLocalReactNative, directory) {
+  if (pathToLocalReactNative != null) {
+    console.log('Updating the template version to local react-native');
+    // Update template version.
+    const appPackageJsonPath = path.join(
+      directory,
+      'package.json',
+    );
+    const appPackageJson = JSON.parse(
+      fs.readFileSync(appPackageJsonPath, 'utf8'),
+    );
+    appPackageJson.dependencies['react-native'] =
+      `file:${pathToLocalReactNative}`;
+    fs.writeFileSync(
+      appPackageJsonPath,
+      JSON.stringify(appPackageJson, null, 2),
+    );
+    console.log('Done ✅');
   }
 }
 
