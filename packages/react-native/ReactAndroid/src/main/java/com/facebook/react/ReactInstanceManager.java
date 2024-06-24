@@ -113,6 +113,7 @@ import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
 import com.facebook.soloader.SoLoader;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -781,10 +782,13 @@ public class ReactInstanceManager {
       }
     }
 
-    // If the host is being destroyed, now that the current context/instance
+    // If the host has been invalidated, now that the current context/instance
     // has been destroyed, we can safely destroy the host's inspector target.
-    if (mLifecycleState == LifecycleState.BEFORE_CREATE) {
-      destroyInspectorHostTarget();
+    if (mInstanceManagerInvalidated) {
+      if (mInspectorTarget != null) {
+        mInspectorTarget.close();
+        mInspectorTarget = null;
+      }
     }
 
     mHasStartedCreatingInitialContext = false;
@@ -840,10 +844,6 @@ public class ReactInstanceManager {
       if (mLifecycleState == LifecycleState.BEFORE_RESUME) {
         currentContext.onHostDestroy(mKeepActivity);
       }
-    } else {
-      // There's no current context that requires the host inspector target to
-      // be kept alive, so we can destroy it immediately.
-      destroyInspectorHostTarget();
     }
     mLifecycleState = LifecycleState.BEFORE_CREATE;
   }
@@ -1539,46 +1539,59 @@ public class ReactInstanceManager {
     SystraceMessage.endSection(TRACE_TAG_REACT_JAVA_BRIDGE).flush();
   }
 
+  private static class InspectorTargetDelegateImpl
+      implements ReactInstanceManagerInspectorTarget.TargetDelegate {
+    // This weak reference breaks the cycle between the C++ HostTarget and the
+    // Java ReactInstanceManager, preventing memory leaks in apps that create
+    // multiple ReactInstanceManagers over time.
+    private WeakReference<ReactInstanceManager> mReactInstanceManagerWeak;
+
+    public InspectorTargetDelegateImpl(ReactInstanceManager inspectorTarget) {
+      mReactInstanceManagerWeak = new WeakReference<ReactInstanceManager>(inspectorTarget);
+    }
+
+    @Override
+    public void onReload() {
+      UiThreadUtil.runOnUiThread(
+          () -> {
+            ReactInstanceManager reactInstanceManager = mReactInstanceManagerWeak.get();
+            if (reactInstanceManager != null) {
+              reactInstanceManager.mDevSupportManager.handleReloadJS();
+            }
+          });
+    }
+
+    @Override
+    public void onSetPausedInDebuggerMessage(@Nullable String message) {
+      ReactInstanceManager reactInstanceManager = mReactInstanceManagerWeak.get();
+      if (reactInstanceManager == null) {
+        return;
+      }
+      if (message == null) {
+        reactInstanceManager.mDevSupportManager.hidePausedInDebuggerOverlay();
+      } else {
+        reactInstanceManager.mDevSupportManager.showPausedInDebuggerOverlay(
+            message,
+            new PausedInDebuggerOverlayCommandListener() {
+              @Override
+              public void onResume() {
+                UiThreadUtil.assertOnUiThread();
+                if (reactInstanceManager.mInspectorTarget != null) {
+                  reactInstanceManager.mInspectorTarget.sendDebuggerResumeCommand();
+                }
+              }
+            });
+      }
+    }
+  }
+
   private @Nullable ReactInstanceManagerInspectorTarget getOrCreateInspectorTarget() {
     if (mInspectorTarget == null && InspectorFlags.getFuseboxEnabled()) {
 
       mInspectorTarget =
-          new ReactInstanceManagerInspectorTarget(
-              new ReactInstanceManagerInspectorTarget.TargetDelegate() {
-                @Override
-                public void onReload() {
-                  UiThreadUtil.runOnUiThread(() -> mDevSupportManager.handleReloadJS());
-                }
-
-                @Override
-                public void onSetPausedInDebuggerMessage(@Nullable String message) {
-                  if (message == null) {
-                    mDevSupportManager.hidePausedInDebuggerOverlay();
-                  } else {
-                    mDevSupportManager.showPausedInDebuggerOverlay(
-                        message,
-                        new PausedInDebuggerOverlayCommandListener() {
-                          @Override
-                          public void onResume() {
-                            UiThreadUtil.assertOnUiThread();
-                            if (mInspectorTarget != null) {
-                              mInspectorTarget.sendDebuggerResumeCommand();
-                            }
-                          }
-                        });
-                  }
-                }
-              });
+          new ReactInstanceManagerInspectorTarget(new InspectorTargetDelegateImpl(this));
     }
 
     return mInspectorTarget;
-  }
-
-  @ThreadConfined(UI)
-  private void destroyInspectorHostTarget() {
-    if (mInspectorTarget != null) {
-      mInspectorTarget.close();
-      mInspectorTarget = null;
-    }
   }
 }

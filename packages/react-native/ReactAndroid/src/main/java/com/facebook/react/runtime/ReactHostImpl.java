@@ -893,11 +893,6 @@ public class ReactHostImpl implements ReactHost {
   @ThreadConfined(UI)
   private void moveToHostDestroy(@Nullable ReactContext currentContext) {
     mReactLifecycleStateManager.moveToOnHostDestroy(currentContext);
-    if (currentContext == null) {
-      // There's no current context/instance that requires the host inspector
-      // target to be kept alive, so we can destroy it immediately.
-      destroyInspectorHostTarget();
-    }
     setCurrentActivity(null);
   }
 
@@ -1545,6 +1540,16 @@ public class ReactHostImpl implements ReactHost {
 
                     unregisterInstanceFromInspector(reactInstance);
 
+                    if (mHostInvalidated) {
+                      // If the host has been invalidated, now that the current context/instance
+                      // has been unregistered, we can safely destroy the host's inspector
+                      // target.
+                      if (mReactHostInspectorTarget != null) {
+                        mReactHostInspectorTarget.close();
+                        mReactHostInspectorTarget = null;
+                      }
+                    }
+
                     // Step 1: Destroy DevSupportManager
                     if (mUseDevSupport) {
                       log(method, "DevSupportManager cleanup");
@@ -1698,18 +1703,11 @@ public class ReactHostImpl implements ReactHost {
 
   private @Nullable ReactHostInspectorTarget getOrCreateReactHostInspectorTarget() {
     if (mReactHostInspectorTarget == null && InspectorFlags.getFuseboxEnabled()) {
+      // NOTE: ReactHostInspectorTarget only retains a weak reference to `this`.
       mReactHostInspectorTarget = new ReactHostInspectorTarget(this);
     }
 
     return mReactHostInspectorTarget;
-  }
-
-  @ThreadConfined(UI)
-  private void destroyInspectorHostTarget() {
-    if (mReactHostInspectorTarget != null) {
-      mReactHostInspectorTarget.close();
-      mReactHostInspectorTarget = null;
-    }
   }
 
   @ThreadConfined(UI)
@@ -1721,12 +1719,6 @@ public class ReactHostImpl implements ReactHost {
             "Host inspector target destroyed before instance was unregistered");
       }
       reactInstance.unregisterFromInspector();
-    }
-    if (mReactLifecycleStateManager.getLifecycleState() == LifecycleState.BEFORE_CREATE) {
-      // If the host is being destroyed, now that the current context/instance
-      // has been unregistered, we can safely destroy the host's inspector
-      // target.
-      destroyInspectorHostTarget();
     }
   }
 
