@@ -133,6 +133,8 @@ public class ReactHostImpl implements ReactHost {
 
   private @Nullable ReactHostInspectorTarget mReactHostInspectorTarget;
 
+  private volatile boolean mHostInvalidated = false;
+
   public ReactHostImpl(
       Context context,
       ReactHostDelegate delegate,
@@ -1047,6 +1049,9 @@ public class ReactHostImpl implements ReactHost {
     return mCreateReactInstanceTaskRef.getOrCreate(
         () -> {
           log(method, "Start");
+          Assertions.assertCondition(
+              !mHostInvalidated, "Cannot start a new ReactInstance on an invalidated ReactHost");
+
           ReactMarker.logMarker(
               ReactMarkerConstants.REACT_BRIDGELESS_LOADING_START, BRIDGELESS_MARKER_INSTANCE_KEY);
 
@@ -1723,5 +1728,12 @@ public class ReactHostImpl implements ReactHost {
       // target.
       destroyInspectorHostTarget();
     }
+  }
+
+  @Override
+  public void invalidate() {
+    FLog.d(TAG, "ReactHostImpl.invalidate()");
+    mHostInvalidated = true;
+    destroy("ReactHostImpl.invalidate()", null);
   }
 }

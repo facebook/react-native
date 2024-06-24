@@ -196,6 +196,7 @@ public class ReactInstanceManager {
   private final @Nullable ReactPackageTurboModuleManagerDelegate.Builder mTMMDelegateBuilder;
   private List<ViewManager> mViewManagers;
   private boolean mUseFallbackBundle = true;
+  private volatile boolean mInstanceManagerInvalidated = false;
 
   private class ReactContextInitParams {
     private final JavaScriptExecutorFactory mJsExecutorFactory;
@@ -1083,6 +1084,25 @@ public class ReactInstanceManager {
     return mJavaScriptExecutorFactory.toString();
   }
 
+  /**
+   * Permanently destroys the ReactInstanceManager, including the CatalystInstance (if any). The
+   * application MUST NOT call any further methods on an invalidated ReactInstanceManager.
+   *
+   * <p>Applications where the ReactInstanceManager may be destroyed before the end of the process
+   * SHOULD call invalidate() before releasing the reference to the ReactInstanceManager, to ensure
+   * resources are freed in a timely manner.
+   *
+   * <p>NOTE: This method is designed for complex integrations. Integrators MAY instead hold a
+   * long-lived reference to a single ReactInstanceManager for the lifetime of the Application,
+   * without ever calling invalidate(). This is explicitly allowed.
+   */
+  @ThreadConfined(UI)
+  public void invalidate() {
+    FLog.d(ReactConstants.TAG, "ReactInstanceManager.invalidate()");
+    mInstanceManagerInvalidated = true;
+    destroy();
+  }
+
   @ThreadConfined(UI)
   private void onReloadWithJSDebugger(JavaJSExecutor.Factory jsExecutorFactory) {
     FLog.d(ReactConstants.TAG, "ReactInstanceManager.onReloadWithJSDebugger()");
@@ -1382,7 +1402,11 @@ public class ReactInstanceManager {
   private ReactApplicationContext createReactContext(
       JavaScriptExecutor jsExecutor, JSBundleLoader jsBundleLoader) {
     FLog.d(ReactConstants.TAG, "ReactInstanceManager.createReactContext()");
+    Assertions.assertCondition(
+        !mInstanceManagerInvalidated,
+        "Cannot create a new React context on an invalidated ReactInstanceManager");
     ReactMarker.logMarker(CREATE_REACT_CONTEXT_START, jsExecutor.getName());
+
     final BridgeReactContext reactContext = new BridgeReactContext(mApplicationContext);
 
     JSExceptionHandler exceptionHandler =
