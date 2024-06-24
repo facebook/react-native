@@ -244,11 +244,6 @@ async function testRNTestProject(
   const buildType = 'dry-run';
 
   const reactNativePackagePath = `${REPO_ROOT}/packages/react-native`;
-  const templateRepoFolder = '/tmp/template';
-  const pathToTemplate = path.join(templateRepoFolder, 'template');
-
-  // Cleanup template clone folder
-  exec(`rm -rf ${templateRepoFolder}`);
   const localNodeTGZPath = `${reactNativePackagePath}/react-native-${releaseVersion}.tgz`;
 
   const mavenLocalPath =
@@ -286,21 +281,6 @@ async function testRNTestProject(
     }
   }
 
-  // Cloning the template repo
-  // TODO: handle versioning of the template to make sure that we are downloading the right version of
-  // the template, given a specific React Native version
-  exec(
-    `git clone https://github.com/react-native-community/template ${templateRepoFolder} --depth=1`,
-  );
-
-  // Update template version.
-  const appPackageJsonPath = path.join(pathToTemplate, 'package.json');
-  const appPackageJson = JSON.parse(
-    fs.readFileSync(appPackageJsonPath, 'utf8'),
-  );
-  appPackageJson.dependencies['react-native'] = `file:${newLocalNodeTGZ}`;
-  fs.writeFileSync(appPackageJsonPath, JSON.stringify(appPackageJson, null, 2));
-
   pushd('/tmp/');
 
   debug('Creating RNTestProject from template');
@@ -311,7 +291,7 @@ async function testRNTestProject(
   await initNewProjectFromSource({
     projectName: 'RNTestProject',
     directory: '/tmp/RNTestProject',
-    templatePath: templateRepoFolder,
+    pathToLocalReactNative: newLocalNodeTGZ,
   });
 
   cd('RNTestProject');
