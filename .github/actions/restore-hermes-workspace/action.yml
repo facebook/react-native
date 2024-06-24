@@ -1,8 +1,13 @@
-name: setup_hermes_workspace
-description: "Setup hermes workspace"
+name: restore-hermes-workspace
+description: "Restore hermes workspace that has been created in Prepare Hermes Workspace"
 runs:
   using: composite
   steps:
+    - name: Download Previous Artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: hermes-workspace
+        path: /tmp/hermes
     - name: Set up workspace
       shell: bash
       run: |
