@@ -216,6 +216,7 @@ public abstract interface class com/facebook/react/ReactHost {
 	public abstract fun getLifecycleState ()Lcom/facebook/react/common/LifecycleState;
 	public abstract fun getMemoryPressureRouter ()Lcom/facebook/react/MemoryPressureRouter;
 	public abstract fun getReactQueueConfiguration ()Lcom/facebook/react/bridge/queue/ReactQueueConfiguration;
+	public abstract fun invalidate ()V
 	public abstract fun onActivityResult (Landroid/app/Activity;IILandroid/content/Intent;)V
 	public abstract fun onBackPressed ()Z
 	public abstract fun onConfigurationChanged (Landroid/content/Context;)V
@@ -254,6 +255,7 @@ public class com/facebook/react/ReactInstanceManager {
 	public fun getViewManagerNames ()Ljava/util/Collection;
 	public fun handleCxxError (Ljava/lang/Exception;)V
 	public fun hasStartedCreatingInitialContext ()Z
+	public fun invalidate ()V
 	public fun onActivityResult (Landroid/app/Activity;IILandroid/content/Intent;)V
 	public fun onBackPressed ()V
 	public fun onConfigurationChanged (Landroid/content/Context;Landroid/content/res/Configuration;)V
@@ -3798,6 +3800,7 @@ public class com/facebook/react/runtime/ReactHostImpl : com/facebook/react/React
 	public fun getLifecycleState ()Lcom/facebook/react/common/LifecycleState;
 	public fun getMemoryPressureRouter ()Lcom/facebook/react/MemoryPressureRouter;
 	public fun getReactQueueConfiguration ()Lcom/facebook/react/bridge/queue/ReactQueueConfiguration;
+	public fun invalidate ()V
 	public fun onActivityResult (Landroid/app/Activity;IILandroid/content/Intent;)V
 	public fun onBackPressed ()Z
 	public fun onConfigurationChanged (Landroid/content/Context;)V
