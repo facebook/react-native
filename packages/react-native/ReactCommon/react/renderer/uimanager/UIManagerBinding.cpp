@@ -256,7 +256,8 @@ jsi::Value UIManagerBinding::get(
                     stringFromValue(runtime, arguments[1]),
                     surfaceIdFromValue(runtime, arguments[2]),
                     RawProps(runtime, arguments[3]),
-                    std::move(instanceHandle)));
+                    std::move(instanceHandle)),
+                true);
           } catch (const std::logic_error& ex) {
             LOG(FATAL) << "logic_error in createNode: " << ex.what();
           }
@@ -282,7 +283,8 @@ jsi::Value UIManagerBinding::get(
               uiManager->cloneNode(
                   *shadowNodeFromValue(runtime, arguments[0]),
                   nullptr,
-                  RawProps()));
+                  RawProps()),
+              true);
         });
   }
 
@@ -369,7 +371,8 @@ jsi::Value UIManagerBinding::get(
                   *shadowNodeFromValue(runtime, arguments[0]),
                   count > 1 ? shadowNodeListFromValue(runtime, arguments[1])
                             : ShadowNode::emptySharedShadowNodeSharedList(),
-                  RawProps()));
+                  RawProps()),
+              true);
         });
   }
 
@@ -392,7 +395,8 @@ jsi::Value UIManagerBinding::get(
               uiManager->cloneNode(
                   *shadowNodeFromValue(runtime, arguments[0]),
                   nullptr,
-                  RawProps(runtime, arguments[1])));
+                  RawProps(runtime, arguments[1])),
+              true);
         });
   }
 
@@ -420,7 +424,8 @@ jsi::Value UIManagerBinding::get(
                   hasChildrenArg
                       ? shadowNodeListFromValue(runtime, arguments[1])
                       : ShadowNode::emptySharedShadowNodeSharedList(),
-                  RawProps(runtime, arguments[hasChildrenArg ? 2 : 1])));
+                  RawProps(runtime, arguments[hasChildrenArg ? 2 : 1])),
+              true);
         });
   }
 
