@@ -59,7 +59,14 @@ export default function openDebuggerMiddleware({
         appId,
         device,
         launchId,
-      }: {appId?: string, device?: string, launchId?: string, ...} = query;
+        target: targetId,
+      }: {
+        appId?: string,
+        device?: string,
+        launchId?: string,
+        target?: string,
+        ...
+      } = query;
 
       const targets = inspectorProxy.getPageDescriptions().filter(
         // Only use targets with better reloading support
@@ -73,13 +80,18 @@ export default function openDebuggerMiddleware({
       const launchType: 'launch' | 'redirect' =
         req.method === 'POST' ? 'launch' : 'redirect';
 
-      if (typeof appId === 'string' || typeof device === 'string') {
+      if (
+        typeof targetId === 'string' ||
+        typeof appId === 'string' ||
+        typeof device === 'string'
+      ) {
         logger?.info(
           (launchType === 'launch' ? 'Launching' : 'Redirecting to') +
             ' JS debugger (experimental)...',
         );
         target = targets.find(
           _target =>
+            (targetId == null || _target.id === targetId) &&
             (appId == null || _target.description === appId) &&
             (device == null || _target.reactNative.logicalDeviceId === device),
         );
