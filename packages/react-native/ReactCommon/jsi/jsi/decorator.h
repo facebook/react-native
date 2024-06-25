@@ -654,6 +654,20 @@ class WithRuntimeDecorator : public RuntimeDecorator<Plain, Base> {
     return RD::getHostFunction(f);
   };
 
+  bool hasNativeState(const Object& o) override {
+    Around around{with_};
+    return RD::hasNativeState(o);
+  };
+  std::shared_ptr<NativeState> getNativeState(const Object& o) override {
+    Around around{with_};
+    return RD::getNativeState(o);
+  };
+  void setNativeState(const Object& o, std::shared_ptr<NativeState> state)
+      override {
+    Around around{with_};
+    RD::setNativeState(o, state);
+  };
+
   Value getProperty(const Object& o, const PropNameID& name) override {
     Around around{with_};
     return RD::getProperty(o, name);
