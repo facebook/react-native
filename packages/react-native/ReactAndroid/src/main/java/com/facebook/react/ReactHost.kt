@@ -148,4 +148,10 @@ public interface ReactHost {
   public fun addBeforeDestroyListener(onBeforeDestroy: () -> Unit)
 
   public fun removeBeforeDestroyListener(onBeforeDestroy: () -> Unit)
+
+  /** Add a listener to be notified of ReactInstance events. */
+  public fun addReactInstanceEventListener(listener: ReactInstanceEventListener)
+
+  /** Remove a listener previously added with {@link #addReactInstanceEventListener}. */
+  public fun removeReactInstanceEventListener(listener: ReactInstanceEventListener)
 }
