@@ -940,6 +940,42 @@ function TextBaseLineLayoutExample(props: {}): React.Node {
         {marker}
       </View>
 
+      <Text style={subtitleStyle}>{'Interleaving <View> and <Text>:'}</Text>
+      <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
+        {marker}
+        <Text selectable={true}>
+          Some text.
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'baseline',
+              backgroundColor: '#eee',
+            }}>
+            {marker}
+            <Text>Text inside View.</Text>
+            {marker}
+          </View>
+        </Text>
+        {marker}
+      </View>
+
+      <Text style={subtitleStyle}>
+        {'Multi-line interleaved <View> and <Text>:'}
+      </Text>
+      <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
+        <Text selectable={true}>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris
+          venenatis,{' '}
+          <View
+            style={{
+              backgroundColor: 'yellow',
+            }}>
+            <Text>mauris eu commodo maximus</Text>
+          </View>{' '}
+          , ante arcu vestibulum ligula, et scelerisque diam.
+        </Text>
+      </View>
+
       <Text style={subtitleStyle}>{'<TextInput/>:'}</Text>
       <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
         {marker}
