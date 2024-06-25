@@ -10,7 +10,7 @@
 
 'use strict';
 
-const {name, version: currentVersion} = require('./package.json');
+const {version: currentVersion} = require('./package.json');
 const chalk = require('chalk');
 const {get} = require('https');
 const semver = require('semver');
@@ -174,7 +174,7 @@ async function main() {
 
   warnWhenRunningInit();
 
-  return require('@react-native-community/cli').run(name);
+  return require('@react-native-community/cli').run();
 }
 
 if (require.main === module) {
