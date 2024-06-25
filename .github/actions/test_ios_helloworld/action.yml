@@ -45,6 +45,8 @@ runs:
       uses: ./.github/actions/setup-xcode
     - name: Setup node.js
       uses: ./.github/actions/setup-node
+    - name: Create Hermes folder
+      run: mkdir -p "$HERMES_WS_DIR"
     - name: Download Hermes
       uses: actions/download-artifact@v4
       with:
