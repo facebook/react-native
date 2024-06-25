@@ -8,16 +8,80 @@
 #import <atomic>
 #include <memory>
 
+struct NSUIntegerCounterLifeCycleInfo {
+  std::weak_ptr<std::atomic<NSUInteger>> weakPointer;
+};
+
+struct UInt64CounterLifeCycleInfo {
+  std::weak_ptr<std::atomic<uint64_t>> weakPointer;
+};
+
 NSUIntegerCounter RCTCreateAtomicNSUIntegerCounter(void) {
+  return RCTCreateAtomicNSUIntegerCounterWithSpy(nil);
+}
+
+UInt64Counter RCTCreateAtomicUInt64Counter(void) {
+  return RCTCreateAtomicUInt64CounterWithSpy(nil);
+}
+
+NSUIntegerCounter inline RCTCreateAtomicNSUIntegerCounterWithSpy(CounterLifeCycleSpy spy) {
   auto count = std::make_shared<std::atomic<NSUInteger>>(0);
+#ifdef DEBUG
+  if (spy) {
+    NSUIntegerCounterLifeCycleInfo *privateInfo = new NSUIntegerCounterLifeCycleInfo;
+    privateInfo->weakPointer = std::weak_ptr<std::atomic<NSUInteger>>(count);
+    spy(privateInfo);
+  }
+#else
+  if (spy) {
+    [NSException raise:@"Illegal use of counter spy"
+                format:@"Spy should not be provided for %s in production", __FUNCTION__];
+  }
+#endif
   return ^NSUInteger() {
     return (*count)++;
   };
 }
 
-UInt64Counter RCTCreateAtomicUInt64Counter(void) {
+UInt64Counter inline RCTCreateAtomicUInt64CounterWithSpy(CounterLifeCycleSpy spy) {
   auto count = std::make_shared<std::atomic<uint64_t>>(0);
+#ifdef DEBUG
+  if (spy) {
+    UInt64CounterLifeCycleInfo *privateInfo = new UInt64CounterLifeCycleInfo;
+    privateInfo->weakPointer = std::weak_ptr<std::atomic<uint64_t>>(count);
+    spy(privateInfo);
+  }
+#else
+  if (spy) {
+    [NSException raise:@"Illegal use of counter spy"
+                format:@"Spy should not be provided for %s in production", __FUNCTION__];
+  }
+#endif
   return ^uint64_t() {
     return (*count)++;
   };
+}
+
+BOOL RCTAssertAtomicNSUIntegerCounterIsDeallocated(void *ptr) {
+#ifndef DEBUG
+  [NSException raise:@"Illegal use of counter deallocation observation"
+              format:@"%s should not be called in production code", __FUNCTION__];
+#endif
+  NSUIntegerCounterLifeCycleInfo* info = static_cast<NSUIntegerCounterLifeCycleInfo *>(ptr);
+  if (info) {
+    return info->weakPointer.expired();
+  }
+  return NO;
+}
+
+BOOL RCTAssertAtomicUInt64CounterIsDeallocated(void *ptr) {
+#ifndef DEBUG
+  [NSException raise:@"Illegal use of counter deallocation observation"
+              format:@"%s should not be called in production code", __FUNCTION__];
+#endif
+  UInt64CounterLifeCycleInfo* info = static_cast<UInt64CounterLifeCycleInfo *>(ptr);
+  if (info) {
+    return info->weakPointer.expired();
+  }
+  return NO;
 }

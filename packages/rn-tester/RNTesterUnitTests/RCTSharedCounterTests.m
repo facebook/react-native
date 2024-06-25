@@ -44,4 +44,35 @@
   [self waitForExpectations:@[expectation1, expectation2] timeout:1.0];
 }
 
+-(void)testMemorySpy {
+  __block void *nsUIntegercounterLifeCycleInfo;
+  __block void *uint64CounterLifeCycleInfo;
+
+  // Carry out operations in autoreleasepool to ensure counter blocks are deallocated
+  // immediately when assigning `nil` to the variables that hold them. This is necessary
+  // for carrying out RCTAssertAtomicNSUIntegerCounterIsDeallocated and
+  // RCTAssertAtomicUInt64CounterIsDeallocated below.
+  @autoreleasepool {
+    NSUIntegerCounter nsUIntegerCount = RCTCreateAtomicNSUIntegerCounterWithSpy(^(void *lifeCycleInfo) {
+      nsUIntegercounterLifeCycleInfo = lifeCycleInfo;
+    });
+    XCTAssertEqual(nsUIntegerCount(), 0);
+    XCTAssertEqual(nsUIntegerCount(), 1);
+    XCTAssertFalse(RCTAssertAtomicNSUIntegerCounterIsDeallocated(nsUIntegercounterLifeCycleInfo));
+    nsUIntegerCount = nil;
+
+    UInt64Counter uint64Count = RCTCreateAtomicUInt64CounterWithSpy(^(void *lifeCycleInfo) {
+      uint64CounterLifeCycleInfo = lifeCycleInfo;
+    });
+    XCTAssertEqual(uint64Count(), 0);
+    XCTAssertEqual(uint64Count(), 1);
+    XCTAssertFalse(RCTAssertAtomicUInt64CounterIsDeallocated(uint64CounterLifeCycleInfo));
+    uint64Count = nil;
+  }
+  XCTAssertTrue(RCTAssertAtomicNSUIntegerCounterIsDeallocated(nsUIntegercounterLifeCycleInfo));
+  XCTAssertTrue(RCTAssertAtomicUInt64CounterIsDeallocated(uint64CounterLifeCycleInfo));
+  free(nsUIntegercounterLifeCycleInfo);
+  free(uint64CounterLifeCycleInfo);
+}
+
 @end

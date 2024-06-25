@@ -12,3 +12,12 @@ typedef uint64_t (^UInt64Counter)(void);
 
 RCT_EXTERN NSUIntegerCounter RCTCreateAtomicNSUIntegerCounter(void);
 RCT_EXTERN UInt64Counter RCTCreateAtomicUInt64Counter(void);
+
+// NB! Code below is only to be used for testing and debugging
+typedef void (^CounterLifeCycleSpy)(void*);
+/// Creates an atomic counter. The provided closure exposes an opaque value that can be passed to `RCTAssertAtomicNSUIntegerCounterIsDeallocated` to assert whether the underlying storage has been deallocated.
+RCT_EXTERN inline NSUIntegerCounter RCTCreateAtomicNSUIntegerCounterWithSpy(CounterLifeCycleSpy);
+/// Creates an atomic counter. The provided closure exposes an opaque value that can be passed to `RCTAssertAtomicUInt64CounterIsDeallocated` to assert whether the underlying storage has been deallocated.
+RCT_EXTERN inline UInt64Counter RCTCreateAtomicUInt64CounterWithSpy(CounterLifeCycleSpy);
+RCT_EXTERN BOOL RCTAssertAtomicNSUIntegerCounterIsDeallocated(void*);
+RCT_EXTERN BOOL RCTAssertAtomicUInt64CounterIsDeallocated(void*);
