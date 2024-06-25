@@ -323,24 +323,27 @@ UIImage *__nullable RCTDecodeImageWithData(NSData *data, CGSize destSize, CGFloa
 
 
  }
-UIImage *__nullable RCTDecodeImageWithLocalAssetURL(NSURL *url, CGSize destSize, CGFloat destScale, RCTResizeMode resizeMode)
-{
-    // If the resizeMode is the default (assuming it's RCTResizeModeCover), directly return the image from the local asset URL
+
+UIImage *__nullable RCTDecodeImageWithLocalAssetURL(NSURL *url, CGSize destSize, CGFloat destScale, RCTResizeMode resizeMode) {
+    
+  
+    UIImage *image = nil;
     if (resizeMode == RCTResizeModeCover) {
-        return RCTImageFromLocalAssetURL(url);
+        image = RCTImageFromLocalAssetURL(url);
+    } else {
+        CGImageSourceRef sourceRef = CGImageSourceCreateWithURL((__bridge CFURLRef)url, NULL);
+        image = decodeImageFromCGImageSourceRef(sourceRef, destSize, destScale, resizeMode);
+        CFRelease(sourceRef);
     }
 
-    // Otherwise, proceed with the original logic using decodeImageFromCGImageSourceRef
-    CGImageSourceRef sourceRef = CGImageSourceCreateWithURL((__bridge CFURLRef)url, NULL);
-    UIImage *image = decodeImageFromCGImageSourceRef(sourceRef, destSize, destScale, resizeMode);
-
-    // If decoding the image failed, fallback to getting the image from the local asset URL
+  
     if (!image) {
         image = RCTImageFromLocalAssetURL(url);
     }
 
     return image;
 }
+
 
 NSDictionary<NSString *, id> *__nullable RCTGetImageMetadata(NSData *data)
 {
