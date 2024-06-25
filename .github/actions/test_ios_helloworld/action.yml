@@ -45,17 +45,19 @@ runs:
       uses: ./.github/actions/setup-xcode
     - name: Setup node.js
       uses: ./.github/actions/setup-node
-    - name: Cache setup
-      id: cache_setup
-      uses: ./.github/actions/cache_setup
+    - name: Create Hermes folder
+      run: mkdir -p "$HERMES_WS_DIR"
+    - name: Download Hermes
+      uses: actions/download-artifact@v4
       with:
-        hermes-version: ${{ inputs.hermes-version }}
-        react-native-version: ${{ inputs.react-native-version }}
+        name: hermes-darwin-bin-${{ inputs.flavor }}
+        path: $HERMES_WS_DIR/hermes-runtime-darwin/
+    - name: Print Downloaded hermes
+      shell: bash
+      run: ls -lR "$HERMES_WS_DIR"
     - name: Run yarn
       shell: bash
       run: yarn install --non-interactive
-    - name: Restore Hermes workspace
-      uses: ./.github/actions/restore-hermes-workspace
     - name: Setup ruby
       uses: ruby/setup-ruby@v1.170.0
       with:
@@ -78,9 +80,10 @@ runs:
           args+=(--jsvm jsc)
           yarn bootstrap ios "${args[@]}" | cat
         else
+
           BUILD_TYPE="${{ inputs.flavor }}"
           TARBALL_FILENAME=$(node ../react-native/scripts/hermes/get-tarball-name.js --buildType "$BUILD_TYPE")
-          HERMES_PATH="$HERMES_WS_DIR/hermes-runtime-darwin/$TARBALL_FILENAME"
+          HERMES_PATH="$HERMES_WS_DIR/hermes-runtime-darwin/hermes-darwin-bin-${{ inputs.flavor }}/$TARBALL_FILENAME"
           HERMES_ENGINE_TARBALL_PATH="$HERMES_PATH" yarn bootstrap ios "${args[@]}" | cat
         fi
     - name: Build HelloWorld  project

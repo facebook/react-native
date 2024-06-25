@@ -38,12 +38,11 @@ runs:
     - name: Run yarn
       shell: bash
       run: yarn install --non-interactive
-    - name: Cache setup
-      id: cache_setup
-      uses: ./.github/actions/cache_setup
+    - name: Download Hermes
+      uses: actions/download-artifact@v4
       with:
-        hermes-version: ${{ inputs.hermes-version }}
-        react-native-version: ${{ inputs.react-native-version }}
+        name: hermes-darwin-bin-${{ inputs.flavor }}
+        path: ${{ inputs.hermes-tarball-artifacts-dir }}
     - name: Setup ruby
       uses: ruby/setup-ruby@v1.170.0
       with:
@@ -82,6 +81,7 @@ runs:
         if [[ -e $TARBALL_PATH ]]; then
           tar -xf $TARBALL_PATH
           echo 'print(HermesInternal?.getRuntimeProperties?.()["OSS Release Version"])' > test.js
+          chmod +x ./destroot/bin/hermes
           ./destroot/bin/hermes test.js
           rm test.js
           rm -rf destroot
