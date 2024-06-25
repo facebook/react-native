@@ -17,10 +17,12 @@ bool isColorMeaningful(const SharedColor& color) noexcept {
   return colorComponentsFromColor(color).alpha > 0;
 }
 
+// Create Color from float RGBA values in [0, 1] range
 SharedColor colorFromComponents(ColorComponents components) {
   return {hostPlatformColorFromComponents(components)};
 }
 
+// Read Color components in [0, 1] range
 ColorComponents colorComponentsFromColor(SharedColor sharedColor) {
   return colorComponentsFromHostPlatformColor(*sharedColor);
 }
