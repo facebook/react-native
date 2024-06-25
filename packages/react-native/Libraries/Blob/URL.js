@@ -114,197 +114,104 @@ export class URLSearchParams {
   }
 }
 
-function validateBaseUrl(url: string) {
-  // from this MIT-licensed gist: https://gist.github.com/dperini/729294
-  return /^(?:(?:(?:https?|ftp):)?\/\/)(?:(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z0-9\u00a1-\uffff][a-z0-9\u00a1-\uffff_-]{0,62})?[a-z0-9\u00a1-\uffff]\.)*(?:[a-z\u00a1-\uffff]{2,}\.?))(?::\d{2,5})?(?:[/?#]\S*)?$/.test(
-    url,
-  );
+function resolveRelativeUrl(relative: string, base: string): string {
+  const baseUrl = new URL(base);
+
+  if (relative.startsWith('http://') || relative.startsWith('https://')) {
+    return relative;
+  }
+
+  if (relative.startsWith('/')) {
+    return baseUrl.protocol + '//' + baseUrl.host + encodeURI(relative);
+  }
+
+  const baseParts = baseUrl.pathname.split('/');
+  const relativeParts = relative.split('/');
+
+  baseParts.pop();
+
+  for (const part of relativeParts) {
+    if (part === '.') continue;
+    if (part === '..') baseParts.pop();
+    else baseParts.push(part);
+  }
+
+  return baseUrl.protocol + '//' + baseUrl.host + baseParts.join('/');
 }
 
 export class URL {
-  _url: string;
-  _searchParamsInstance: ?URLSearchParams = null;
-
-  static createObjectURL(blob: Blob): string {
-    if (BLOB_URL_PREFIX === null) {
-      throw new Error('Cannot create URL for blob!');
-    }
-    return `${BLOB_URL_PREFIX}${blob.data.blobId}?offset=${blob.data.offset}&size=${blob.size}`;
-  }
-
-  static revokeObjectURL(url: string) {
-    // Do nothing.
-  }
+  href: string;
+  protocol: string;
+  username: string;
+  password: string;
+  host: string;
+  hostname: string;
+  port: string;
+  pathname: string;
+  search: string;
+  hash: string;
+  origin: string;
 
   constructor(url: string, base?: string | URL) {
-    if (!base || validateBaseUrl(url)) {
-      this._url = encodeURI(url);
-    } else {
+    if (base) {
       if (typeof base === 'string') {
         base = new URL(base);
       }
-      this._url = resolveRelativeUrl(url, base.href);
+      url = resolveRelativeUrl(url, base.href);
+    } else {
+      url = encodeURI(url);
     }
 
-    const pathEndIndex = this._url.indexOf('/', this._url.indexOf('//') + 2);
-    if (pathEndIndex === -1) {
-      this._url += '/';
+    const parser = this.parseURL(url);
+    this.href = url;
+    this.protocol = parser.protocol;
+    this.username = parser.username;
+    this.password = parser.password;
+    this.host = parser.host;
+    this.hostname = parser.hostname;
+    this.port = parser.port;
+    this.pathname = parser.pathname;
+    this.search = parser.search;
+    this.hash = parser.hash;
+    this.origin = parser.origin;
+
+    if (this.pathname === '/' && !this.href.endsWith('/')) {
+      this.href += '/';
     }
   }
 
-  get hash(): string {
-    const hashIndex = this._url.indexOf('#');
-    return hashIndex !== -1
-      ? this._url.substring(hashIndex).replace(/\/$/, '')
-      : '';
-  }
+  parseURL(url: string): {
+    protocol: string,
+    username: string,
+    password: string,
+    host: string,
+    hostname: string,
+    port: string,
+    pathname: string,
+    search: string,
+    hash: string,
+    origin: string,
+  } {
+    const urlPattern =
+      /^(https?:\/\/)?(([^:\/?#]*)(?::([^:\/?#]*))?@)?([^:\/?#]*)(?::(\d+))?((?:\/[^?#]*)*)(\?[^#]*)?(#.*)?$/;
 
-  get host(): string {
-    const hostStart = this._url.indexOf('//') + 2;
-    const hostEnd = this._url.indexOf('/', hostStart);
-    return hostEnd !== -1
-      ? this._url.substring(hostStart, hostEnd)
-      : this._url.substring(hostStart);
-  }
+    const matches = url.match(urlPattern);
 
-  get hostname(): string {
-    return this.host.split(':')[0];
-  }
-
-  get href(): string {
-    return this._url;
-  }
-
-  get origin(): string {
-    const portIndex = this._url.indexOf(':', this._url.indexOf('//') + 2);
-    const originEnd =
-      portIndex !== -1
-        ? this._url.indexOf('/', portIndex)
-        : this._url.indexOf('/', this._url.indexOf('//') + 2);
-    return originEnd !== -1 ? this._url.substring(0, originEnd) : this._url;
-  }
-
-  get password(): string {
-    const atIndex = this._url.indexOf('@');
-    if (atIndex !== -1) {
-      const userinfo = this._url.substring(
-        this._url.indexOf('//') + 2,
-        atIndex,
-      );
-      return userinfo.includes(':') ? userinfo.split(':')[1] : '';
-    }
-    return '';
-  }
-
-  get pathname(): string {
-    const pathStart = this._url.indexOf('/', this._url.indexOf('//') + 2);
-    const pathEnd = this._url.indexOf('?', pathStart);
-
-    let pathname =
-      pathStart !== -1
-        ? pathEnd !== -1
-          ? this._url.substring(pathStart, pathEnd)
-          : this._url.substring(pathStart)
-        : '/';
-
-    if (pathname.length > 1 && pathname.endsWith('/')) {
-      pathname = pathname.slice(0, -1);
-    }
-
-    return pathname;
-  }
-
-  get port(): string {
-    const host = this.host;
-    const portIndex = host.indexOf(':');
-    return portIndex !== -1 && portIndex < host.length - 1
-      ? host.substring(portIndex + 1)
-      : '';
-  }
-
-  get protocol(): string {
-    return this._url.substring(0, this._url.indexOf(':') + 1);
-  }
-
-  get search(): string {
-    const searchIndex = this._url.indexOf('?');
-    const hashIndex = this._url.indexOf('#');
-    if (searchIndex !== -1) {
-      return (
-        hashIndex !== -1
-          ? this._url.substring(searchIndex, hashIndex)
-          : this._url.substring(searchIndex)
-      ).replace(/\/$/, '');
-    }
-    return '';
-  }
-
-  get searchParams(): URLSearchParams {
-    if (this._searchParamsInstance == null) {
-      this._searchParamsInstance = new URLSearchParams();
-    }
-    return this._searchParamsInstance;
-  }
-
-  get username(): string {
-    const atIndex = this._url.indexOf('@');
-    if (atIndex !== -1) {
-      const userinfo = this._url.substring(
-        this._url.indexOf('//') + 2,
-        atIndex,
-      );
-      return userinfo.includes(':') ? userinfo.split(':')[0] : userinfo;
-    }
-    return '';
-  }
-
-  toJSON(): string {
-    return JSON.stringify({
-      href: this.href,
-      origin: this.origin,
-      protocol: this.protocol,
-      username: this.username,
-      password: this.password,
-      host: this.host,
-      hostname: this.hostname,
-      port: this.port,
-      pathname: this.pathname,
-      search: this.search,
-      searchParams: this.searchParams.toString(),
-      hash: this.hash,
-    });
+    return {
+      protocol: matches?.[1] ? matches[1].slice(0, -2) : '',
+      username: matches?.[3] || '',
+      password: matches?.[4] || '',
+      host: matches?.[6] ? matches[5] + ':' + matches[6] : matches?.[5] || '',
+      hostname: matches?.[5] || '',
+      port: matches?.[6] || '',
+      pathname: matches?.[7] || '/',
+      search: matches?.[8] || '',
+      hash: matches?.[9] || '',
+      origin: matches?.[1] ? matches[1] + matches[5] : '',
+    };
   }
 
   toString(): string {
     return this.href;
   }
-}
-
-function resolveRelativeUrl(relative: string, base: string): string {
-  const baseUrl = new URL(base);
-  if (relative.startsWith('/')) {
-    return `${baseUrl.origin}${relative}`;
-  }
-
-  let basePath = baseUrl.pathname;
-  if (!basePath.endsWith('/')) {
-    basePath = basePath.substring(0, basePath.lastIndexOf('/') + 1);
-  }
-
-  const baseParts = basePath.split('/').filter(part => part.length > 0);
-  const relativeParts = relative.split('/').filter(part => part.length > 0);
-
-  const paths = baseParts.concat(relativeParts);
-  const resolvedParts = [];
-
-  for (const path of paths) {
-    if (path === '..') {
-      resolvedParts.pop();
-    } else if (path !== '.') {
-      resolvedParts.push(path);
-    }
-  }
-
-  const resolvedPath = resolvedParts.join('/');
-  return `${baseUrl.origin}/${resolvedPath}`;
 }
