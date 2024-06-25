@@ -65,17 +65,16 @@ class RawValue {
     return *this;
   }
 
+  explicit RawValue(const folly::dynamic& dynamic) noexcept
+      : dynamic_(dynamic) {}
+
+  explicit RawValue(folly::dynamic&& dynamic) noexcept
+      : dynamic_(std::move(dynamic)) {}
+
  private:
   friend class RawProps;
   friend class RawPropsParser;
   friend class UIManagerBinding;
-
-  /*
-   * Arbitrary constructors are private only for RawProps and internal usage.
-   */
-  RawValue(const folly::dynamic& dynamic) noexcept : dynamic_(dynamic) {}
-
-  RawValue(folly::dynamic&& dynamic) noexcept : dynamic_(std::move(dynamic)) {}
 
   /*
    * Copy constructor and copy assignment operator would be private and only for
