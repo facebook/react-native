@@ -137,7 +137,7 @@
     "nullthrows": "^1.1.1",
     "pretty-format": "^26.5.2",
     "promise": "^8.3.0",
-    "react-devtools-core": "5.1.0",
+    "react-devtools-core": "^5.3.0",
     "react-refresh": "^0.14.0",
     "regenerator-runtime": "^0.13.2",
     "scheduler": "0.25.0-rc-fb9a90fa48-20240614",
