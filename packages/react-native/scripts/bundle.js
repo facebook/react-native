@@ -31,9 +31,9 @@ program
     'npx react-native config',
   )
   .option('--load-config <string>', 'JSON project config')
-  .action(async function handleAction(_, options) {
+  .action(async function handleAction() {
     let config = null;
-
+    let options = program.opts();
     if (options.loadConfig != null) {
       config = JSON.parse(
         options.loadConfig.replace(/^\W*'/, '').replace(/'\W*$/, ''),
