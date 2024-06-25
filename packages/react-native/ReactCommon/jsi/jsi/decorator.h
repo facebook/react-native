@@ -582,6 +582,10 @@ class WithRuntimeDecorator : public RuntimeDecorator<Plain, Base> {
     Around around{with_};
     return RD::cloneSymbol(pv);
   };
+  Runtime::PointerValue* cloneBigInt(const Runtime::PointerValue* pv) override {
+    Around around{with_};
+    return RD::cloneBigInt(pv);
+  };
   Runtime::PointerValue* cloneString(const Runtime::PointerValue* pv) override {
     Around around{with_};
     return RD::cloneString(pv);
@@ -610,6 +614,10 @@ class WithRuntimeDecorator : public RuntimeDecorator<Plain, Base> {
     Around around{with_};
     return RD::createPropNameIDFromString(str);
   };
+  PropNameID createPropNameIDFromSymbol(const Symbol& sym) override {
+    Around around{with_};
+    return RD::createPropNameIDFromSymbol(sym);
+  };
   std::string utf8(const PropNameID& id) override {
     Around around{with_};
     return RD::utf8(id);
@@ -624,6 +632,31 @@ class WithRuntimeDecorator : public RuntimeDecorator<Plain, Base> {
     return RD::symbolToString(sym);
   };
 
+  BigInt createBigIntFromInt64(int64_t i) override {
+    Around around{with_};
+    return RD::createBigIntFromInt64(i);
+  };
+  BigInt createBigIntFromUint64(uint64_t i) override {
+    Around around{with_};
+    return RD::createBigIntFromUint64(i);
+  };
+  bool bigintIsInt64(const BigInt& bi) override {
+    Around around{with_};
+    return RD::bigintIsInt64(bi);
+  };
+  bool bigintIsUint64(const BigInt& bi) override {
+    Around around{with_};
+    return RD::bigintIsUint64(bi);
+  };
+  uint64_t truncate(const BigInt& bi) override {
+    Around around{with_};
+    return RD::truncate(bi);
+  };
+  String bigintToString(const BigInt& bi, int i) override {
+    Around around{with_};
+    return RD::bigintToString(bi, i);
+  };
+
   String createStringFromAscii(const char* str, size_t length) override {
     Around around{with_};
     return RD::createStringFromAscii(str, length);
@@ -636,6 +669,11 @@ class WithRuntimeDecorator : public RuntimeDecorator<Plain, Base> {
     Around around{with_};
     return RD::utf8(s);
   }
+
+  Value createValueFromJsonUtf8(const uint8_t* json, size_t length) override {
+    Around around{with_};
+    return RD::createValueFromJsonUtf8(json, length);
+  };
 
   Object createObject() override {
     Around around{with_};
@@ -797,6 +835,11 @@ class WithRuntimeDecorator : public RuntimeDecorator<Plain, Base> {
     Around around{with_};
     return RD::strictEquals(a, b);
   };
+  bool strictEquals(const BigInt& a, const BigInt& b) const override {
+    Around around{with_};
+    return RD::strictEquals(a, b);
+  };
+
   bool strictEquals(const String& a, const String& b) const override {
     Around around{with_};
     return RD::strictEquals(a, b);
@@ -809,6 +852,12 @@ class WithRuntimeDecorator : public RuntimeDecorator<Plain, Base> {
   bool instanceOf(const Object& o, const Function& f) override {
     Around around{with_};
     return RD::instanceOf(o, f);
+  };
+
+  void setExternalMemoryPressure(const jsi::Object& obj, size_t amount)
+      override {
+    Around around{with_};
+    RD::setExternalMemoryPressure(obj, amount);
   };
 
  private:
