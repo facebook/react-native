@@ -10,7 +10,11 @@
 typedef NSUInteger (^NSUIntegerCounter)(void);
 typedef uint64_t (^UInt64Counter)(void);
 
+/// Creates an Objective-C block that acts as an auto incrementing counter, wherein the backing
+/// storage of the value is atomic. Thus, both this function and its return value are thread safe.
 RCT_EXTERN NSUIntegerCounter RCTCreateAtomicNSUIntegerCounter(void);
+/// Creates an Objective-C block that acts as an auto incrementing counter, wherein the backing
+/// storage of the value is atomic. Thus, both this function and its return value are thread safe.
 RCT_EXTERN UInt64Counter RCTCreateAtomicUInt64Counter(void);
 
 // NB! Code below is only to be used for testing and debugging
