@@ -21,7 +21,7 @@
 #import <React/RCTLog.h>
 #import <React/RCTNetworking.h>
 #import <React/RCTUtils.h>
-#import <React/RCTSharedCounter.h>
+#import <React/RCTAtomicCounter.h>
 
 #import "RCTImagePlugins.h"
 

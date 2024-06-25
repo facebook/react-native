@@ -10,7 +10,7 @@
 #import <React/RCTLog.h>
 #import <React/RCTNetworkTask.h>
 #import <React/RCTUtils.h>
-#import <React/RCTSharedCounter.h>
+#import <React/RCTAtomicCounter.h>
 
 @implementation RCTNetworkTask {
   NSMutableData *_data;

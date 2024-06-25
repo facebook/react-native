@@ -5,13 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 #import <XCTest/XCTest.h>
-#import <React/RCTSharedCounter.h>
+#import <React/RCTAtomicCounter.h>
 
-@interface RCTSharedCounterTests : XCTestCase
+@interface RCTAtomicCounterTests : XCTestCase
 
 @end
 
-@implementation RCTSharedCounterTests
+@implementation RCTAtomicCounterTests
 
 -(void)testIncrement {
   NSUIntegerCounter nsUIntegerCounter = RCTCreateAtomicNSUIntegerCounter();
