@@ -208,6 +208,7 @@ public class com/facebook/react/ReactFragment$Builder {
 
 public abstract interface class com/facebook/react/ReactHost {
 	public abstract fun addBeforeDestroyListener (Lkotlin/jvm/functions/Function0;)V
+	public abstract fun addReactInstanceEventListener (Lcom/facebook/react/ReactInstanceEventListener;)V
 	public abstract fun createSurface (Landroid/content/Context;Ljava/lang/String;Landroid/os/Bundle;)Lcom/facebook/react/interfaces/fabric/ReactSurface;
 	public abstract fun destroy (Ljava/lang/String;Ljava/lang/Exception;)Lcom/facebook/react/interfaces/TaskInterface;
 	public abstract fun getCurrentReactContext ()Lcom/facebook/react/bridge/ReactContext;
@@ -230,6 +231,7 @@ public abstract interface class com/facebook/react/ReactHost {
 	public abstract fun onWindowFocusChange (Z)V
 	public abstract fun reload (Ljava/lang/String;)Lcom/facebook/react/interfaces/TaskInterface;
 	public abstract fun removeBeforeDestroyListener (Lkotlin/jvm/functions/Function0;)V
+	public abstract fun removeReactInstanceEventListener (Lcom/facebook/react/ReactInstanceEventListener;)V
 	public abstract fun setJsEngineResolutionAlgorithm (Lcom/facebook/react/JSEngineResolutionAlgorithm;)V
 	public abstract fun start ()Lcom/facebook/react/interfaces/TaskInterface;
 }
