@@ -33,7 +33,7 @@
     "open": "^7.0.3",
     "selfsigned": "^2.4.1",
     "serve-static": "^1.13.1",
-    "ws": "^6.2.2"
+    "ws": "^6.2.3"
   },
   "engines": {
     "node": ">=18"
