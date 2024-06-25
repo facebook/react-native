@@ -78,14 +78,11 @@ export default function openDebuggerMiddleware({
           (launchType === 'launch' ? 'Launching' : 'Redirecting to') +
             ' JS debugger (experimental)...',
         );
-        if (typeof device === 'string') {
-          target = targets.find(
-            _target => _target.reactNative.logicalDeviceId === device,
-          );
-        }
-        if (!target && typeof appId === 'string') {
-          target = targets.find(_target => _target.description === appId);
-        }
+        target = targets.find(
+          _target =>
+            (appId == null || _target.description === appId) &&
+            (device == null || _target.reactNative.logicalDeviceId === device),
+        );
       } else if (targets.length > 0) {
         logger?.info(
           (launchType === 'launch' ? 'Launching' : 'Redirecting to') +
