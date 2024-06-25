@@ -163,7 +163,7 @@ Size ParagraphShadowNode::measureContent(
       .size;
 }
 
-Float ParagraphShadowNode::lastBaseline(
+Float ParagraphShadowNode::baseline(
     const LayoutContext& layoutContext,
     Size size) const {
   auto content = getContent(layoutContext);

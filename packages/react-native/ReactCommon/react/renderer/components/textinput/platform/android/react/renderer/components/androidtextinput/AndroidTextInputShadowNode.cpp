@@ -214,7 +214,7 @@ Size AndroidTextInputShadowNode::measureContent(
       .size;
 }
 
-Float AndroidTextInputShadowNode::lastBaseline(
+Float AndroidTextInputShadowNode::baseline(
     const LayoutContext& layoutContext,
     Size size) const {
   return textLayoutManager_

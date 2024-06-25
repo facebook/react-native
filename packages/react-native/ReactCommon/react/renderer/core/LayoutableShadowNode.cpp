@@ -240,11 +240,7 @@ Size LayoutableShadowNode::measure(
   return layoutableShadowNode.getLayoutMetrics().frame.size;
 }
 
-Float LayoutableShadowNode::firstBaseline(const LayoutContext& /*layoutContext*/, Size /*size*/) const {
-  return 0;
-}
-
-Float LayoutableShadowNode::lastBaseline(const LayoutContext& /*layoutContext*/, Size /*size*/) const {
+Float LayoutableShadowNode::baseline(const LayoutContext& /*layoutContext*/, Size /*size*/) const {
   return 0;
 }
 

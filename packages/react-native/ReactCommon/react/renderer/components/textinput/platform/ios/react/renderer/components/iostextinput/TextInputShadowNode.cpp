@@ -140,7 +140,7 @@ Size TextInputShadowNode::measureContent(
       .size;
 }
 
-Float TextInputShadowNode::lastBaseline(
+Float TextInputShadowNode::baseline(
     const LayoutContext& layoutContext,
     Size size) const {
   return textLayoutManager_

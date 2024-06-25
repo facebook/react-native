@@ -153,8 +153,7 @@ class LayoutableShadowNode : public ShadowNode {
   /*
    * Unifed methods to access text layout metrics.
    */
-  virtual Float firstBaseline(const LayoutContext& layoutContext, Size size) const;
-  virtual Float lastBaseline(const LayoutContext& layoutContext, Size size) const;
+  virtual Float baseline(const LayoutContext& layoutContext, Size size) const;
 
   virtual bool canBeTouchTarget() const;
   virtual bool canChildrenBeTouchTarget() const;
