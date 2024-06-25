@@ -20,9 +20,18 @@ import type {
 } from '../../Types/CoreEventTypes';
 import type {EventSubscription} from '../../vendor/emitter/EventEmitter';
 import type {KeyboardEvent, KeyboardMetrics} from '../Keyboard/Keyboard';
+import typeof View from '../View/View';
 import type {ViewProps} from '../View/ViewPropTypes';
 import type {Props as ScrollViewStickyHeaderProps} from './ScrollViewStickyHeader';
 
+import {
+  HScrollContentViewNativeComponent,
+  HScrollViewNativeComponent,
+} from '../../../src/private/core/components/HScrollViewNativeComponents';
+import {
+  VScrollContentViewNativeComponent,
+  VScrollViewNativeComponent,
+} from '../../../src/private/core/components/VScrollViewNativeComponents';
 import AnimatedImplementation from '../../Animated/AnimatedImplementation';
 import FrameRateLogger from '../../Interaction/FrameRateLogger';
 import {findNodeHandle} from '../../ReactNative/RendererProxy';
@@ -36,14 +45,9 @@ import Platform from '../../Utilities/Platform';
 import EventEmitter from '../../vendor/emitter/EventEmitter';
 import Keyboard from '../Keyboard/Keyboard';
 import TextInputState from '../TextInput/TextInputState';
-import View from '../View/View';
-import AndroidHorizontalScrollContentViewNativeComponent from './AndroidHorizontalScrollContentViewNativeComponent';
-import AndroidHorizontalScrollViewNativeComponent from './AndroidHorizontalScrollViewNativeComponent';
 import processDecelerationRate from './processDecelerationRate';
-import ScrollContentViewNativeComponent from './ScrollContentViewNativeComponent';
 import Commands from './ScrollViewCommands';
 import ScrollViewContext, {HORIZONTAL, VERTICAL} from './ScrollViewContext';
-import ScrollViewNativeComponent from './ScrollViewNativeComponent';
 import ScrollViewStickyHeader from './ScrollViewStickyHeader';
 import invariant from 'invariant';
 import memoize from 'memoize-one';
@@ -53,26 +57,6 @@ import * as React from 'react';
 if (Platform.OS === 'ios') {
   require('../../Renderer/shims/ReactNative'); // Force side effects to prevent T55744311
 }
-
-const {NativeHorizontalScrollViewTuple, NativeVerticalScrollViewTuple} =
-  Platform.OS === 'android'
-    ? {
-        NativeHorizontalScrollViewTuple: [
-          AndroidHorizontalScrollViewNativeComponent,
-          AndroidHorizontalScrollContentViewNativeComponent,
-        ],
-        NativeVerticalScrollViewTuple: [ScrollViewNativeComponent, View],
-      }
-    : {
-        NativeHorizontalScrollViewTuple: [
-          ScrollViewNativeComponent,
-          ScrollContentViewNativeComponent,
-        ],
-        NativeVerticalScrollViewTuple: [
-          ScrollViewNativeComponent,
-          ScrollContentViewNativeComponent,
-        ],
-      };
 
 /*
  * iOS scroll event timing nuances:
@@ -173,7 +157,7 @@ type PublicScrollViewInstance = $ReadOnly<{|
   ...ScrollViewImperativeMethods,
 |}>;
 
-type InnerViewInstance = React.ElementRef<typeof View>;
+type InnerViewInstance = React.ElementRef<View>;
 
 type IOSProps = $ReadOnly<{|
   /**
@@ -1691,13 +1675,18 @@ class ScrollView extends React.Component<Props, State> {
   };
 
   render(): React.Node | React.Element<string> {
-    const [NativeDirectionalScrollView, NativeDirectionalScrollContentView] =
-      this.props.horizontal === true
-        ? NativeHorizontalScrollViewTuple
-        : NativeVerticalScrollViewTuple;
+    const horizontal = this.props.horizontal === true;
+
+    const NativeScrollView = horizontal
+      ? HScrollViewNativeComponent
+      : VScrollViewNativeComponent;
+
+    const NativeScrollContentView = horizontal
+      ? HScrollContentViewNativeComponent
+      : VScrollContentViewNativeComponent;
 
     const contentContainerStyle = [
-      this.props.horizontal === true && styles.contentContainerHorizontal,
+      horizontal && styles.contentContainerHorizontal,
       this.props.contentContainerStyle,
     ];
     if (__DEV__ && this.props.style !== undefined) {
@@ -1759,8 +1748,7 @@ class ScrollView extends React.Component<Props, State> {
       });
     }
     children = (
-      <ScrollViewContext.Provider
-        value={this.props.horizontal === true ? HORIZONTAL : VERTICAL}>
+      <ScrollViewContext.Provider value={horizontal ? HORIZONTAL : VERTICAL}>
         {children}
       </ScrollViewContext.Provider>
     );
@@ -1776,7 +1764,7 @@ class ScrollView extends React.Component<Props, State> {
       (Platform.OS === 'android' && this.props.snapToAlignment != null);
 
     const contentContainer = (
-      <NativeDirectionalScrollContentView
+      <NativeScrollContentView
         {...contentSizeChangeProps}
         ref={this._innerView.getForwardingRef(this.props.innerViewRef)}
         style={contentContainerStyle}
@@ -1790,7 +1778,7 @@ class ScrollView extends React.Component<Props, State> {
         collapsable={false}
         collapsableChildren={!preserveChildren}>
         {children}
-      </NativeDirectionalScrollContentView>
+      </NativeScrollContentView>
     );
 
     const alwaysBounceHorizontal =
@@ -1803,10 +1791,7 @@ class ScrollView extends React.Component<Props, State> {
         ? this.props.alwaysBounceVertical
         : !this.props.horizontal;
 
-    const baseStyle =
-      this.props.horizontal === true
-        ? styles.baseHorizontal
-        : styles.baseVertical;
+    const baseStyle = horizontal ? styles.baseHorizontal : styles.baseVertical;
 
     const {experimental_endDraggingSensitivityMultiplier, ...otherProps} =
       this.props;
@@ -1879,10 +1864,10 @@ class ScrollView extends React.Component<Props, State> {
       if (Platform.OS === 'ios') {
         // On iOS the RefreshControl is a child of the ScrollView.
         return (
-          <NativeDirectionalScrollView {...props} ref={scrollViewRef}>
+          <NativeScrollView {...props} ref={scrollViewRef}>
             {refreshControl}
             {contentContainer}
-          </NativeDirectionalScrollView>
+          </NativeScrollView>
         );
       } else if (Platform.OS === 'android') {
         // On Android wrap the ScrollView with a AndroidSwipeRefreshLayout.
@@ -1896,19 +1881,19 @@ class ScrollView extends React.Component<Props, State> {
         return React.cloneElement(
           refreshControl,
           {style: StyleSheet.compose(baseStyle, outer)},
-          <NativeDirectionalScrollView
+          <NativeScrollView
             {...props}
             style={StyleSheet.compose(baseStyle, inner)}
             ref={scrollViewRef}>
             {contentContainer}
-          </NativeDirectionalScrollView>,
+          </NativeScrollView>,
         );
       }
     }
     return (
-      <NativeDirectionalScrollView {...props} ref={scrollViewRef}>
+      <NativeScrollView {...props} ref={scrollViewRef}>
         {contentContainer}
-      </NativeDirectionalScrollView>
+      </NativeScrollView>
     );
   }
 }
