@@ -228,8 +228,10 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
     scrollView.abortAnimation();
     if (data.mAnimated) {
       scrollView.reactSmoothScrollTo(data.mDestX, data.mDestY);
+      scrollView.handleSmoothScrollMomentumEvents();
     } else {
       scrollView.scrollTo(data.mDestX, data.mDestY);
+      ReactScrollViewHelper.emitScrollMomentumEndEvent(scrollView);
     }
   }
 

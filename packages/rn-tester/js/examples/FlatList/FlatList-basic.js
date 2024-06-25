@@ -114,6 +114,10 @@ class FlatListExample extends React.PureComponent<Props, State> {
     this._listRef?.scrollToIndex({viewPosition: 0.5, index: Number(text)});
   };
 
+  _onChangeScrollOffset = (text: mixed) => {
+    this._listRef?.scrollToOffset({offset: Number(text), animated: false});
+  };
+
   // $FlowFixMe[missing-local-annot]
   _scrollPos = new Animated.Value(0);
   // $FlowFixMe[missing-local-annot]
@@ -165,6 +169,10 @@ class FlatListExample extends React.PureComponent<Props, State> {
               <PlainInput
                 onChangeText={this._onChangeScrollToIndex}
                 placeholder="scrollToIndex..."
+              />
+              <PlainInput
+                onChangeText={this._onChangeScrollOffset}
+                placeholder="scrollToOffset..."
               />
             </View>
             <View style={styles.options}>
@@ -282,6 +290,12 @@ class FlatListExample extends React.PureComponent<Props, State> {
             onScroll={
               this.state.horizontal ? this._scrollSinkX : this._scrollSinkY
             }
+            onMomentumScrollEnd={() => {
+              console.log('onMomentumScrollEnd');
+            }}
+            onMomentumScrollBegin={e => {
+              console.log('onMomentumScrollBegin', e.nativeEvent);
+            }}
             onScrollToIndexFailed={this._onScrollToIndexFailed}
             onViewableItemsChanged={this._onViewableItemsChanged}
             ref={this._captureRef}
