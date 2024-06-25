@@ -11,6 +11,7 @@
 
 'use strict';
 
+import type {ProjectInfo} from '../utils/monorepo';
 const {retry} = require('../circleci/retry');
 const {REPO_ROOT} = require('../consts');
 const {getPackages} = require('../utils/monorepo');
@@ -172,49 +173,48 @@ async function installProjectUsingProxy(cwd /*: string */) {
   }
 }
 
-function _updateScopedPackages(packages, directory) {
-  console.log('Updating the scoped packagesto match the version published in Verdaccio');
+function _updateScopedPackages(
+  packages /*: ProjectInfo */,
+  directory /*: string */,
+) {
+  console.log(
+    'Updating the scoped packagesto match the version published in Verdaccio',
+  );
 
   // Packages are updated in a lockstep and all with the same version.
   // Pick the version from the first package
   const version = packages[Object.keys(packages)[0]].packageJson.version;
 
   // Update scoped packages which starts with @react-native
-  const appPackageJsonPath = path.join(
-    directory,
-    'package.json',
-  );
+  const appPackageJsonPath = path.join(directory, 'package.json');
   const appPackageJson = JSON.parse(
     fs.readFileSync(appPackageJsonPath, 'utf8'),
   );
 
   for (const [key, _] of Object.entries(appPackageJson.dependencies)) {
     if (key.startsWith('@react-native')) {
-      appPackageJson.dependencies[key] = version
+      appPackageJson.dependencies[key] = version;
     }
   }
   for (const [key, _] of Object.entries(appPackageJson.devDependencies)) {
     if (key.startsWith('@react-native')) {
-      appPackageJson.devDependencies[key] = version
+      appPackageJson.devDependencies[key] = version;
     }
   }
 
-  fs.writeFileSync(
-    appPackageJsonPath,
-    JSON.stringify(appPackageJson, null, 2),
-  );
+  fs.writeFileSync(appPackageJsonPath, JSON.stringify(appPackageJson, null, 2));
 
   console.log('Done ✅');
 }
 
-function _updateReactNativeInTemplateIfNeeded(pathToLocalReactNative, directory) {
+function _updateReactNativeInTemplateIfNeeded(
+  pathToLocalReactNative /*: ?string */,
+  directory /*: string */,
+) {
   if (pathToLocalReactNative != null) {
     console.log('Updating the template version to local react-native');
     // Update template version.
-    const appPackageJsonPath = path.join(
-      directory,
-      'package.json',
-    );
+    const appPackageJsonPath = path.join(directory, 'package.json');
     const appPackageJson = JSON.parse(
       fs.readFileSync(appPackageJsonPath, 'utf8'),
     );
