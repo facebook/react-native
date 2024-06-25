@@ -214,4 +214,8 @@ export class URL {
   toString(): string {
     return this.href;
   }
+
+  toJSON(): string {
+    return this.href;
+  }
 }
