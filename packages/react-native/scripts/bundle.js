@@ -31,7 +31,7 @@ program
     'npx react-native config',
   )
   .option('--load-config <string>', 'JSON project config')
-  .action(async function handleAction(_, options) {
+  .action(async function handleAction(options) {
     let config = null;
 
     if (options.loadConfig != null) {
