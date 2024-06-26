@@ -179,6 +179,8 @@ export class URL {
     if (this.pathname === '/' && !this.href.endsWith('/')) {
       this._url += '/';
     }
+
+    this._searchParamsInstance = new URLSearchParams(this.search);
   }
 
   parseURL(url: string): {
