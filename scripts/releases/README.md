@@ -6,6 +6,10 @@ Scripts related to creating a React Native release. These are the lower level en
 
 For information on command arguments, run `node <command> --help`.
 
+### `create-release-commit`
+
+Creates a release commit to trigger a new release.
+
 ### `remove-new-arch-flags`
 
 Updates native build files to disable the New Architecture.
@@ -16,12 +20,4 @@ Sets a singular version for the entire monorepo (including `react-native` packag
 
 ### `set-rn-version`
 
-Updates relevant files in the `react-native` package and template to materialize the given release version.
-
-### `update-template-package`
-
-Updates workspace dependencies in the template app`package.json`
-
-### `create-release-commit`
-
-Creates a release commit to trigger a new release
+Updates relevant native files in the `react-native` package to materialize the given release version. This is run by `set-version` unless `--skip-react-native-version` is passed.

@@ -42,28 +42,28 @@ async function setVersion(
 ) /*: Promise<void> */ {
   const packages = await getPackages({
     includePrivate: true,
-    includeReactNative: !skipReactNativeVersion,
+    includeReactNative: true,
   });
   const newPackageVersions = Object.fromEntries(
-    Object.keys(packages).map(packageName => [packageName, version]),
+    Object.keys(packages).map(packageName => [
+      packageName,
+      packageName === 'react-native' && skipReactNativeVersion
+        ? '1000.0.0'
+        : version,
+    ]),
   );
 
-  await setReactNativeVersion(
-    skipReactNativeVersion ? '1000.0.0' : version,
-    newPackageVersions,
-  );
+  if (!skipReactNativeVersion) {
+    await setReactNativeVersion(version);
+  }
 
   const packagesToUpdate = [
     await getWorkspaceRoot(),
-    // Exclude the react-native package, since this (and the template) are
-    // handled by `setReactNativeVersion`.
-    ...Object.values(packages).filter(pkg => pkg.name !== 'react-native'),
+    ...Object.values(packages),
   ];
 
   await Promise.all(
-    packagesToUpdate.map(({path: packagePath, packageJson}) =>
-      updatePackageJson(packagePath, packageJson, newPackageVersions),
-    ),
+    packagesToUpdate.map(pkg => updatePackageJson(pkg, newPackageVersions)),
   );
 }
 

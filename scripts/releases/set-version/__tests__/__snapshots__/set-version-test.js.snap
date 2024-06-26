@@ -298,16 +298,6 @@ exports[`setVersion updates monorepo on main after release cut: packages/monorep
 "
 `;
 
-exports[`setVersion updates monorepo on main after release cut: packages/react-native/Libraries/Core/ReactNativeVersion.js 1`] = `"[omitted]"`;
-
-exports[`setVersion updates monorepo on main after release cut: packages/react-native/React/Base/RCTVersion.m 1`] = `"[omitted]"`;
-
-exports[`setVersion updates monorepo on main after release cut: packages/react-native/ReactAndroid/gradle.properties 1`] = `"[omitted]"`;
-
-exports[`setVersion updates monorepo on main after release cut: packages/react-native/ReactAndroid/src/main/java/com/facebook/react/modules/systeminfo/ReactNativeVersion.java 1`] = `"[omitted]"`;
-
-exports[`setVersion updates monorepo on main after release cut: packages/react-native/ReactCommon/cxxreact/ReactNativeVersion.h 1`] = `"[omitted]"`;
-
 exports[`setVersion updates monorepo on main after release cut: packages/react-native/package.json 1`] = `
 "{
   \\"name\\": \\"react-native\\",
