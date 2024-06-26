@@ -44,6 +44,7 @@ exports[`GenerateModuleObjCpp can generate a header file NativeModule specs 1`] 
 @end
 
 @interface NativeArrayTurboModuleSpec : RCTTurboModule
+
 @end
 
 namespace facebook::react {
@@ -64,6 +65,7 @@ namespace facebook::react {
 @end
 
 @interface NativeBooleanTurboModuleSpec : RCTTurboModule
+
 @end
 
 namespace facebook::react {
@@ -84,6 +86,7 @@ namespace facebook::react {
 @end
 
 @interface NativeCallbackTurboModuleSpec : RCTTurboModule
+
 @end
 
 namespace facebook::react {
@@ -144,6 +147,7 @@ namespace JS {
 @end
 
 @interface NativeEnumTurboModuleSpec : RCTTurboModule
+
 @end
 
 namespace facebook::react {
@@ -169,6 +173,7 @@ namespace facebook::react {
 @end
 
 @interface NativeNullableTurboModuleSpec : RCTTurboModule
+
 @end
 
 namespace facebook::react {
@@ -189,6 +194,7 @@ namespace facebook::react {
 @end
 
 @interface NativeNumberTurboModuleSpec : RCTTurboModule
+
 @end
 
 namespace facebook::react {
@@ -362,6 +368,7 @@ namespace JS {
 @end
 
 @interface NativeObjectTurboModuleSpec : RCTTurboModule
+
 @end
 
 namespace facebook::react {
@@ -498,6 +505,7 @@ namespace JS {
 @end
 
 @interface NativeOptionalObjectTurboModuleSpec : RCTTurboModule
+
 @end
 
 namespace facebook::react {
@@ -568,6 +576,7 @@ namespace JS {
 @end
 
 @interface NativePartialAnnotationTurboModuleSpec : RCTTurboModule
+
 @end
 
 namespace facebook::react {
@@ -592,6 +601,7 @@ namespace facebook::react {
 @end
 
 @interface NativePromiseTurboModuleSpec : RCTTurboModule
+
 @end
 
 namespace facebook::react {
@@ -686,6 +696,7 @@ getValuegetValuegetValuegetValuegetValuey:(NSString *)getValuegetValuegetValuege
 @end
 
 @interface NativeSampleTurboModuleSpec : RCTTurboModule
+
 @end
 
 namespace facebook::react {
@@ -778,6 +789,7 @@ namespace JS {
 @end
 
 @interface NativeSampleTurboModuleArraysSpec : RCTTurboModule
+
 @end
 
 namespace facebook::react {
@@ -872,6 +884,7 @@ namespace JS {
 @end
 
 @interface NativeSampleTurboModuleNullableSpec : RCTTurboModule
+
 @end
 
 namespace facebook::react {
@@ -966,6 +979,7 @@ namespace JS {
 @end
 
 @interface NativeSampleTurboModuleNullableAndOptionalSpec : RCTTurboModule
+
 @end
 
 namespace facebook::react {
@@ -1060,6 +1074,7 @@ namespace JS {
 @end
 
 @interface NativeSampleTurboModuleOptionalSpec : RCTTurboModule
+
 @end
 
 namespace facebook::react {
@@ -1080,6 +1095,7 @@ namespace facebook::react {
 @end
 
 @interface NativeStringTurboModuleSpec : RCTTurboModule
+
 @end
 
 namespace facebook::react {
@@ -1460,6 +1476,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @interface NativeArrayTurboModuleSpec : RCTTurboModule
+
 @end
 
 namespace facebook::react {
@@ -1480,6 +1497,7 @@ namespace facebook::react {
 @end
 
 @interface NativeBooleanTurboModuleSpec : RCTTurboModule
+
 @end
 
 namespace facebook::react {
@@ -1500,6 +1518,7 @@ namespace facebook::react {
 @end
 
 @interface NativeCallbackTurboModuleSpec : RCTTurboModule
+
 @end
 
 namespace facebook::react {
@@ -1560,6 +1579,7 @@ namespace JS {
 @end
 
 @interface NativeEnumTurboModuleSpec : RCTTurboModule
+
 @end
 
 namespace facebook::react {
@@ -1585,6 +1605,7 @@ namespace facebook::react {
 @end
 
 @interface NativeNullableTurboModuleSpec : RCTTurboModule
+
 @end
 
 namespace facebook::react {
@@ -1605,6 +1626,7 @@ namespace facebook::react {
 @end
 
 @interface NativeNumberTurboModuleSpec : RCTTurboModule
+
 @end
 
 namespace facebook::react {
@@ -1778,6 +1800,7 @@ namespace JS {
 @end
 
 @interface NativeObjectTurboModuleSpec : RCTTurboModule
+
 @end
 
 namespace facebook::react {
@@ -1914,6 +1937,7 @@ namespace JS {
 @end
 
 @interface NativeOptionalObjectTurboModuleSpec : RCTTurboModule
+
 @end
 
 namespace facebook::react {
@@ -1984,6 +2008,7 @@ namespace JS {
 @end
 
 @interface NativePartialAnnotationTurboModuleSpec : RCTTurboModule
+
 @end
 
 namespace facebook::react {
@@ -2008,6 +2033,7 @@ namespace facebook::react {
 @end
 
 @interface NativePromiseTurboModuleSpec : RCTTurboModule
+
 @end
 
 namespace facebook::react {
@@ -2102,6 +2128,7 @@ getValuegetValuegetValuegetValuegetValuey:(NSString *)getValuegetValuegetValuege
 @end
 
 @interface NativeSampleTurboModuleSpec : RCTTurboModule
+
 @end
 
 namespace facebook::react {
@@ -2194,6 +2221,7 @@ namespace JS {
 @end
 
 @interface NativeSampleTurboModuleArraysSpec : RCTTurboModule
+
 @end
 
 namespace facebook::react {
@@ -2288,6 +2316,7 @@ namespace JS {
 @end
 
 @interface NativeSampleTurboModuleNullableSpec : RCTTurboModule
+
 @end
 
 namespace facebook::react {
@@ -2382,6 +2411,7 @@ namespace JS {
 @end
 
 @interface NativeSampleTurboModuleNullableAndOptionalSpec : RCTTurboModule
+
 @end
 
 namespace facebook::react {
@@ -2476,6 +2506,7 @@ namespace JS {
 @end
 
 @interface NativeSampleTurboModuleOptionalSpec : RCTTurboModule
+
 @end
 
 namespace facebook::react {
@@ -2496,6 +2527,7 @@ namespace facebook::react {
 @end
 
 @interface NativeStringTurboModuleSpec : RCTTurboModule
+
 @end
 
 namespace facebook::react {
@@ -2849,6 +2881,7 @@ exports[`GenerateModuleObjCpp can generate an implementation file NativeModule s
 
 
 @implementation NativeArrayTurboModuleSpec
+
 @end
 
 
@@ -2881,6 +2914,7 @@ namespace facebook::react {
 } // namespace facebook::react
 
 @implementation NativeBooleanTurboModuleSpec
+
 @end
 
 
@@ -2906,6 +2940,7 @@ namespace facebook::react {
 } // namespace facebook::react
 
 @implementation NativeCallbackTurboModuleSpec
+
 @end
 
 
@@ -2931,6 +2966,7 @@ namespace facebook::react {
 } // namespace facebook::react
 
 @implementation NativeEnumTurboModuleSpec
+
 @end
 
 @implementation RCTCxxConvert (NativeEnumTurboModule_StateType)
@@ -2995,6 +3031,7 @@ namespace facebook::react {
 } // namespace facebook::react
 
 @implementation NativeNullableTurboModuleSpec
+
 @end
 
 
@@ -3048,6 +3085,7 @@ namespace facebook::react {
 } // namespace facebook::react
 
 @implementation NativeNumberTurboModuleSpec
+
 @end
 
 
@@ -3073,6 +3111,7 @@ namespace facebook::react {
 } // namespace facebook::react
 
 @implementation NativeObjectTurboModuleSpec
+
 @end
 
 @implementation RCTCxxConvert (NativeObjectTurboModule_SpecDifficultObjectAE)
@@ -3130,6 +3169,7 @@ namespace facebook::react {
 } // namespace facebook::react
 
 @implementation NativeOptionalObjectTurboModuleSpec
+
 @end
 
 
@@ -3148,6 +3188,7 @@ namespace facebook::react {
 } // namespace facebook::react
 
 @implementation NativePartialAnnotationTurboModuleSpec
+
 @end
 
 @implementation RCTCxxConvert (NativePartialAnnotationTurboModule_SpecGetSomeObjFromPartialSomeObjValue)
@@ -3205,6 +3246,7 @@ namespace facebook::react {
 } // namespace facebook::react
 
 @implementation NativePromiseTurboModuleSpec
+
 @end
 
 
@@ -3230,6 +3272,7 @@ namespace facebook::react {
 } // namespace facebook::react
 
 @implementation NativeSampleTurboModuleSpec
+
 @end
 
 @implementation RCTCxxConvert (NativeSampleTurboModule_SpecGetObjectShapeArg)
@@ -3343,6 +3386,7 @@ namespace facebook::react {
 } // namespace facebook::react
 
 @implementation NativeSampleTurboModuleArraysSpec
+
 @end
 
 
@@ -3445,6 +3489,7 @@ namespace facebook::react {
 } // namespace facebook::react
 
 @implementation NativeSampleTurboModuleNullableSpec
+
 @end
 
 @implementation RCTCxxConvert (NativeSampleTurboModuleNullable_SpecGetObjectShapeArg)
@@ -3558,6 +3603,7 @@ namespace facebook::react {
 } // namespace facebook::react
 
 @implementation NativeSampleTurboModuleNullableAndOptionalSpec
+
 @end
 
 @implementation RCTCxxConvert (NativeSampleTurboModuleNullableAndOptional_SpecGetObjectShapeArg)
@@ -3671,6 +3717,7 @@ namespace facebook::react {
 } // namespace facebook::react
 
 @implementation NativeSampleTurboModuleOptionalSpec
+
 @end
 
 @implementation RCTCxxConvert (NativeSampleTurboModuleOptional_SpecGetObjectShapeArg)
@@ -3784,6 +3831,7 @@ namespace facebook::react {
 } // namespace facebook::react
 
 @implementation NativeStringTurboModuleSpec
+
 @end
 
 

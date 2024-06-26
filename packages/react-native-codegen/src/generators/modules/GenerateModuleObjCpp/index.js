@@ -15,6 +15,7 @@ import type {MethodSerializationOutput} from './serializeMethod';
 
 const {createAliasResolver, getModules} = require('../Utils');
 const {serializeStruct} = require('./header/serializeStruct');
+const {EventEmitterHeaderTemplate} = require('./serializeEventEmitter');
 const {serializeMethod} = require('./serializeMethod');
 const {serializeModuleSource} = require('./source/serializeModule');
 const {StructCollector} = require('./StructCollector');
@@ -24,10 +25,12 @@ type FilesOutput = Map<string, string>;
 const ModuleDeclarationTemplate = ({
   hasteModuleName,
   structDeclarations,
+  eventEmitters,
   protocolMethods,
 }: $ReadOnly<{
   hasteModuleName: string,
   structDeclarations: string,
+  eventEmitters: string,
   protocolMethods: string,
 }>) => `${structDeclarations}
 @protocol ${hasteModuleName}Spec <RCTBridgeModule, RCTTurboModule>
@@ -37,6 +40,7 @@ ${protocolMethods}
 @end
 
 @interface ${hasteModuleName}Spec : RCTTurboModule
+${eventEmitters}
 @end
 
 namespace facebook::react {
@@ -191,6 +195,9 @@ module.exports = {
         ModuleDeclarationTemplate({
           hasteModuleName: hasteModuleName,
           structDeclarations: structStrs.join('\n'),
+          eventEmitters: spec.eventEmitters
+            .map(eventEmitter => EventEmitterHeaderTemplate(eventEmitter))
+            .join('\n'),
           protocolMethods: methodSerializations
             .map(({protocolMethod}) => protocolMethod)
             .join('\n'),
@@ -204,6 +211,7 @@ module.exports = {
           hasteModuleName,
           generatedStructs,
           hasteModuleName,
+          spec.eventEmitters,
           methodSerializations.filter(
             ({selector}) => selector !== '@selector(constantsToExport)',
           ),
