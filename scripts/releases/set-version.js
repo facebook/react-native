@@ -20,7 +20,7 @@ const {
   getWorkspaceRoot,
   updatePackageJson,
 } = require('../utils/monorepo');
-const {setReactNativeVersion} = require('./set-rn-version');
+const {updateReactNativeArtifacts} = require('./set-rn-artifacts-version');
 const {parseArgs} = require('@pkgjs/parseargs');
 
 const config = {
@@ -95,7 +95,7 @@ async function setVersion(
 
   // Update generated files in packages/react-native/
   if (!skipReactNativeVersion) {
-    await setReactNativeVersion(version);
+    await updateReactNativeArtifacts(version);
   }
 }
 
