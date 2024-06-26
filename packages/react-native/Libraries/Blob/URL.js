@@ -140,7 +140,6 @@ function resolveRelativeUrl(relative: string, base: string): string {
 }
 
 export class URL {
-  href: string;
   protocol: string;
   username: string;
   password: string;
@@ -215,6 +214,9 @@ export class URL {
   }
 
   get searchParams(): URLSearchParams {
+    if (this._searchParamsInstance == null) {
+      this._searchParamsInstance = new URLSearchParams();
+    }
     return this._searchParamsInstance;
   }
 
