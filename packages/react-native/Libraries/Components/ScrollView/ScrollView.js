@@ -54,10 +54,6 @@ import memoize from 'memoize-one';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
 
-if (Platform.OS === 'ios') {
-  require('../../Renderer/shims/ReactNative'); // Force side effects to prevent T55744311
-}
-
 /*
  * iOS scroll event timing nuances:
  * ===============================
