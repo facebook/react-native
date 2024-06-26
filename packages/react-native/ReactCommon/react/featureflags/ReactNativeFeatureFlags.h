@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c53481eb714387bf0a390fba1c02c331>>
+ * @generated SignedSource<<e45c35dee2c9e2135995ccf2c8a6def3>>
  */
 
 /**
@@ -48,9 +48,9 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool allowCollapsableChildren();
 
   /**
-   * To be used with batchRenderingUpdatesInEventLoop. When enbled, the Android mounting layer will concatenate pending transactions to ensure they're applied atomatically
+   * Adds support for recursively processing commits that mount synchronously (Android only).
    */
-  RN_EXPORT static bool androidEnablePendingFabricTransactions();
+  RN_EXPORT static bool allowRecursiveCommitsWithSynchronousMountOnAndroid();
 
   /**
    * When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.
@@ -93,6 +93,11 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableUIConsistency();
 
   /**
+   * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
+   */
+  RN_EXPORT static bool fixMappingOfEventPrioritiesBetweenFabricAndReact();
+
+  /**
    * Fixes a leak in SurfaceMountingManager.mRemoveDeleteTreeUIFrameCallback
    */
   RN_EXPORT static bool fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak();
@@ -103,14 +108,14 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool forceBatchingMountItemsOnAndroid();
 
   /**
-   * Flag determining if the C++ implementation of InspectorPackagerConnection should be used instead of the per-platform one. This flag is global and should not be changed across React Host lifetimes.
+   * Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled in debug builds. This flag is global and should not be changed across React Host lifetimes.
    */
-  RN_EXPORT static bool inspectorEnableCxxInspectorPackagerConnection();
+  RN_EXPORT static bool fuseboxEnabledDebug();
 
   /**
-   * Flag determining if the modern CDP backend should be enabled. This flag is global and should not be changed across React Host lifetimes.
+   * Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled in release builds. This flag is global and should not be changed across React Host lifetimes.
    */
-  RN_EXPORT static bool inspectorEnableModernCDPRegistry();
+  RN_EXPORT static bool fuseboxEnabledRelease();
 
   /**
    * Only enqueue Choreographer calls if there is an ongoing animation, instead of enqueueing every frame.
@@ -128,6 +133,11 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool setAndroidLayoutDirection();
 
   /**
+   * Invoke callbacks immediately on the ReactInstance rather than going through a background thread for synchronization
+   */
+  RN_EXPORT static bool useImmediateExecutorInAndroidBridgeless();
+
+  /**
    * When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.
    */
   RN_EXPORT static bool useModernRuntimeScheduler();
@@ -136,6 +146,16 @@ class ReactNativeFeatureFlags {
    * When enabled, the native view configs are used in bridgeless mode.
    */
   RN_EXPORT static bool useNativeViewConfigsInBridgelessMode();
+
+  /**
+   * When enabled, cloning shadow nodes within react native will update the reference held by the current JS fiber tree.
+   */
+  RN_EXPORT static bool useRuntimeShadowNodeReferenceUpdate();
+
+  /**
+   * When enabled, cloning shadow nodes during layout will update the reference held by the current JS fiber tree.
+   */
+  RN_EXPORT static bool useRuntimeShadowNodeReferenceUpdateOnLayout();
 
   /**
    * When enabled, it uses optimised state reconciliation algorithm.

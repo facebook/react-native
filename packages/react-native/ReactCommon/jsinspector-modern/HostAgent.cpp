@@ -15,6 +15,8 @@
 
 #include <chrono>
 
+#include <reactperflogger/fusebox/FuseboxTracer.h>
+
 using namespace std::chrono;
 using namespace std::literals::string_view_literals;
 
@@ -27,11 +29,11 @@ namespace facebook::react::jsinspector_modern {
 HostAgent::HostAgent(
     FrontendChannel frontendChannel,
     HostTargetController& targetController,
-    HostTarget::SessionMetadata sessionMetadata,
+    HostTargetMetadata hostMetadata,
     SessionState& sessionState)
     : frontendChannel_(frontendChannel),
       targetController_(targetController),
-      sessionMetadata_(std::move(sessionMetadata)),
+      hostMetadata_(std::move(hostMetadata)),
       sessionState_(sessionState) {}
 
 void HostAgent::handleRequest(const cdp::PreparsedRequest& req) {
@@ -49,10 +51,10 @@ void HostAgent::handleRequest(const cdp::PreparsedRequest& req) {
     }
 
     // Send a log entry with the integration name.
-    if (sessionMetadata_.integrationName) {
+    if (hostMetadata_.integrationName) {
       sendInfoLogEntry(
           ANSI_COLOR_BG_YELLOW "Debugger integration: " +
-          *sessionMetadata_.integrationName);
+          *hostMetadata_.integrationName);
     }
 
     shouldSendOKResponse = true;
@@ -131,26 +133,56 @@ void HostAgent::handleRequest(const cdp::PreparsedRequest& req) {
 
     shouldSendOKResponse = true;
     isFinishedHandlingRequest = true;
-  } else if (req.method == "Tracing.start") {
-    // @cdp Tracing.start is implemented as a stub only.
+  } else if (req.method == "ReactNativeApplication.enable") {
+    sessionState_.isReactNativeApplicationDomainEnabled = true;
+
     frontendChannel_(cdp::jsonNotification(
-        // @cdp Tracing.bufferUsage is implemented as a stub only.
-        "Tracing.bufferUsage",
-        folly::dynamic::object("percentFull", 0)("eventCount", 0)("value", 0)));
+        "ReactNativeApplication.metadataUpdated",
+        hostMetadataToDynamic(hostMetadata_)));
+
     shouldSendOKResponse = true;
+    isFinishedHandlingRequest = true;
+  } else if (req.method == "ReactNativeApplication.disable") {
+    sessionState_.isReactNativeApplicationDomainEnabled = false;
+
+    shouldSendOKResponse = true;
+    isFinishedHandlingRequest = true;
+  } else if (req.method == "Tracing.start") {
+    // @cdp Tracing.start support is experimental.
+    if (FuseboxTracer::getFuseboxTracer().startTracing()) {
+      shouldSendOKResponse = true;
+    } else {
+      frontendChannel_(cdp::jsonError(
+          req.id,
+          cdp::ErrorCode::InternalError,
+          "Tracing session already started"));
+      return;
+    }
     isFinishedHandlingRequest = true;
   } else if (req.method == "Tracing.end") {
-    // @cdp Tracing.end is implemented as a stub only.
+    // @cdp Tracing.end support is experimental.
+    bool firstChunk = true;
+    auto id = req.id;
+    bool wasStopped = FuseboxTracer::getFuseboxTracer().stopTracing(
+        [this, firstChunk, id](const folly::dynamic& eventsChunk) {
+          if (firstChunk) {
+            frontendChannel_(cdp::jsonResult(id));
+          }
+          frontendChannel_(cdp::jsonNotification(
+              "Tracing.dataCollected",
+              folly::dynamic::object("value", eventsChunk)));
+        });
+    if (!wasStopped) {
+      frontendChannel_(cdp::jsonError(
+          req.id,
+          cdp::ErrorCode::InternalError,
+          "Tracing session not started"));
+      return;
+    }
     frontendChannel_(cdp::jsonNotification(
-        // @cdp Tracing.dataCollected is implemented as a stub only.
-        "Tracing.dataCollected",
-        folly::dynamic::object("value", folly::dynamic::array())));
-    frontendChannel_(cdp::jsonNotification(
-        // @cdp Tracing.tracingComplete is implemented as a stub only.
         "Tracing.tracingComplete",
         folly::dynamic::object("dataLossOccurred", false)));
-    shouldSendOKResponse = true;
-    isFinishedHandlingRequest = true;
+    return;
   }
 
   if (!isFinishedHandlingRequest && instanceAgent_ &&

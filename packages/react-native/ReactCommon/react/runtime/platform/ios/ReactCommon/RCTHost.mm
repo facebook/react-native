@@ -13,6 +13,7 @@
 #import <React/RCTConvert.h>
 #import <React/RCTFabricSurface.h>
 #import <React/RCTInspectorDevServerHelper.h>
+#import <React/RCTInspectorUtils.h>
 #import <React/RCTJSThread.h>
 #import <React/RCTLog.h>
 #import <React/RCTMockDef.h>
@@ -38,6 +39,19 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
   RCTHostHostTargetDelegate(RCTHost *host)
       : host_(host), pauseOverlayController_([[RCTPausedInDebuggerOverlayController alloc] init])
   {
+  }
+
+  jsinspector_modern::HostTargetMetadata getMetadata() override
+  {
+    auto metadata = [RCTInspectorUtils getHostMetadata];
+
+    return {
+        .appIdentifier = [metadata.appIdentifier UTF8String],
+        .deviceName = [metadata.deviceName UTF8String],
+        .integrationName = "iOS Bridgeless (RCTHost)",
+        .platform = [metadata.platform UTF8String],
+        .reactNativeVersion = [metadata.reactNativeVersion UTF8String],
+    };
   }
 
   void onReload(const PageReloadRequest &request) override
@@ -215,7 +229,7 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
     [self _setBundleURL:_bundleURLProvider()];
   }
   auto &inspectorFlags = jsinspector_modern::InspectorFlags::getInstance();
-  if (inspectorFlags.getEnableModernCDPRegistry() && !_inspectorPageId.has_value()) {
+  if (inspectorFlags.getFuseboxEnabled() && !_inspectorPageId.has_value()) {
     _inspectorTarget =
         facebook::react::jsinspector_modern::HostTarget::create(*_inspectorHostDelegate, [](auto callback) {
           RCTExecuteOnMainQueue(^{
@@ -233,11 +247,7 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
             // This can happen if we're about to be dealloc'd. Reject the connection.
             return nullptr;
           }
-          return strongSelf->_inspectorTarget->connect(
-              std::move(remote),
-              {
-                  .integrationName = "iOS Bridgeless (RCTHost)",
-              });
+          return strongSelf->_inspectorTarget->connect(std::move(remote));
         },
         {.nativePageReloads = true, .prefersFuseboxFrontend = true});
   }

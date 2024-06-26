@@ -52,7 +52,7 @@ RCT_EXPORT_MODULE()
                                                name:RCTAccessibilityManagerDidUpdateMultiplierNotification
                                              object:[_moduleRegistry moduleForName:"AccessibilityManager"]];
 
-  _currentInterfaceOrientation = [RCTSharedApplication() statusBarOrientation];
+  _currentInterfaceOrientation = RCTKeyWindow().windowScene.interfaceOrientation;
 
   _currentInterfaceDimensions = [self _exportedDimensions];
 
@@ -207,7 +207,7 @@ static NSDictionary *RCTExportedDimensions(CGFloat fontScale)
 - (void)_interfaceOrientationDidChange
 {
   UIApplication *application = RCTSharedApplication();
-  UIInterfaceOrientation nextOrientation = [application statusBarOrientation];
+  UIInterfaceOrientation nextOrientation = RCTKeyWindow().windowScene.interfaceOrientation;
 
   BOOL isRunningInFullScreen =
       CGRectEqualToRect(application.delegate.window.frame, application.delegate.window.screen.bounds);

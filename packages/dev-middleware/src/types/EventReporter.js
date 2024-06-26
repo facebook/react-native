@@ -16,6 +16,7 @@ type SuccessResult<Props: {...} | void = {}> = {
 type ErrorResult<ErrorT = mixed> = {
   status: 'error',
   error: ErrorT,
+  prefersFuseboxFrontend?: ?boolean,
 };
 
 type CodedErrorResult<ErrorCode: string> = {

@@ -1,14 +1,14 @@
 name: Setup gradle
-description: 'Set up your GitHub Actions workflow with a specific version of gradle'
+description: "Set up your GitHub Actions workflow with a specific version of gradle"
 inputs:
-  gradle-version:
-    description: 'The node.js version to use'
-    required: false
-    default: '8.6'
+  cache-allow-write:
+    description: "Wether the Gradle Cache should be allowed to be written by this job or not"
+    default: "false"
 runs:
   using: "composite"
   steps:
     - name: Setup gradle
       uses: gradle/actions/setup-gradle@v3
       with:
-        gradle-version: ${{ inputs.gradle-version }}
+        gradle-version: wrapper
+        cache-read-only: ${{ inputs.cache-allow-write == 'false' }}

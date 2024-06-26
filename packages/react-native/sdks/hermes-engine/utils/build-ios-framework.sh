@@ -10,9 +10,9 @@ fi
 set -e
 
 # Given a specific target, retrieve the right architecture for it
-# $1 the target you want to build. Allowed values: iphoneos, iphonesimulator, catalyst
+# $1 the target you want to build. Allowed values: iphoneos, iphonesimulator, catalyst, xros, xrsimulator
 function get_architecture {
-    if [[ $1 == "iphoneos" ]]; then
+    if [[ $1 == "iphoneos" || $1 == "xros" || $1 == "xrsimulator" ]]; then
       echo "arm64"
     elif [[ $1 == "iphonesimulator" ]]; then
       echo "x86_64;arm64"
@@ -24,15 +24,23 @@ function get_architecture {
     fi
 }
 
+function get_deployment_target {
+    if [[ $1 == "xros" || $1 == "xrsimulator" ]]; then
+      echo "$(get_visionos_deployment_target)"
+    else
+      echo "$(get_ios_deployment_target)"
+    fi
+}
+
 # build a single framework
 # $1 is the target to build
 function build_framework {
   if [ ! -d destroot/Library/Frameworks/universal/hermes.xcframework ]; then
-    ios_deployment_target=$(get_ios_deployment_target)
+    deployment_target=$(get_deployment_target "$1")
 
     architecture=$(get_architecture "$1")
 
-    build_apple_framework "$1" "$architecture" "$ios_deployment_target"
+    build_apple_framework "$1" "$architecture" "$deployment_target"
   else
     echo "Skipping; Clean \"destroot\" to rebuild".
   fi
@@ -41,7 +49,7 @@ function build_framework {
 # group the frameworks together to create a universal framework
 function build_universal_framework {
     if [ ! -d destroot/Library/Frameworks/universal/hermes.xcframework ]; then
-        create_universal_framework "iphoneos" "iphonesimulator" "catalyst"
+        create_universal_framework "iphoneos" "iphonesimulator" "catalyst" "xros" "xrsimulator"
     else
         echo "Skipping; Clean \"destroot\" to rebuild".
     fi
@@ -56,6 +64,8 @@ function create_framework {
         build_framework "iphoneos"
         build_framework "iphonesimulator"
         build_framework "catalyst"
+        build_framework "xros"
+        build_framework "xrsimulator"
 
         build_universal_framework
     else

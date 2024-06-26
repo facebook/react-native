@@ -36,6 +36,7 @@ exports[`LogBoxNotificationContainer should render both an error and warning not
             "content": "Some kind of message",
             "substitutions": Array [],
           },
+          "onNotificationPress": undefined,
           "stack": Array [],
           "symbolicated": Object {
             "error": null,
@@ -80,6 +81,7 @@ exports[`LogBoxNotificationContainer should render both an error and warning not
             "content": "Some kind of message (latest)",
             "substitutions": Array [],
           },
+          "onNotificationPress": undefined,
           "stack": Array [],
           "symbolicated": Object {
             "error": null,
@@ -146,6 +148,7 @@ exports[`LogBoxNotificationContainer should render the latest error notification
             "content": "Some kind of message (latest)",
             "substitutions": Array [],
           },
+          "onNotificationPress": undefined,
           "stack": Array [],
           "symbolicated": Object {
             "error": null,
@@ -204,6 +207,7 @@ exports[`LogBoxNotificationContainer should render the latest warning notificati
             "content": "Some kind of message (latest)",
             "substitutions": Array [],
           },
+          "onNotificationPress": undefined,
           "stack": Array [],
           "symbolicated": Object {
             "error": null,

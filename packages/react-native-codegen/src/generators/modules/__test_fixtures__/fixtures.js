@@ -19,7 +19,8 @@ const EMPTY_NATIVE_MODULES: SchemaType = {
       aliasMap: {},
       enumMap: {},
       spec: {
-        properties: [],
+        eventEmitters: [],
+        methods: [],
       },
       moduleName: 'SampleTurboModule',
     },
@@ -83,7 +84,8 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
         },
       },
       spec: {
-        properties: [
+        eventEmitters: [],
+        methods: [
           {
             name: 'getConstants',
             optional: false,
@@ -412,7 +414,8 @@ const TWO_MODULES_DIFFERENT_FILES: SchemaType = {
       aliasMap: {},
       enumMap: {},
       spec: {
-        properties: [
+        eventEmitters: [],
+        methods: [
           {
             name: 'voidFunc',
             optional: false,
@@ -433,7 +436,8 @@ const TWO_MODULES_DIFFERENT_FILES: SchemaType = {
       aliasMap: {},
       enumMap: {},
       spec: {
-        properties: [
+        eventEmitters: [],
+        methods: [
           {
             name: 'getConstants',
             optional: false,
@@ -471,7 +475,8 @@ const COMPLEX_OBJECTS: SchemaType = {
       aliasMap: {},
       enumMap: {},
       spec: {
-        properties: [
+        eventEmitters: [],
+        methods: [
           {
             name: 'difficult',
             optional: false,
@@ -927,7 +932,8 @@ const NATIVE_MODULES_WITH_TYPE_ALIASES: SchemaType = {
       },
       enumMap: {},
       spec: {
-        properties: [
+        eventEmitters: [],
+        methods: [
           {
             name: 'getConstants',
             optional: false,
@@ -1212,7 +1218,8 @@ const REAL_MODULE_EXAMPLE: SchemaType = {
       },
       enumMap: {},
       spec: {
-        properties: [
+        eventEmitters: [],
+        methods: [
           {
             name: 'getConstants',
             optional: false,
@@ -1408,7 +1415,8 @@ const REAL_MODULE_EXAMPLE: SchemaType = {
       },
       enumMap: {},
       spec: {
-        properties: [
+        eventEmitters: [],
+        methods: [
           {
             name: 'reportFatalException',
             optional: false,
@@ -1829,7 +1837,8 @@ const CXX_ONLY_NATIVE_MODULES: SchemaType = {
         },
       },
       spec: {
-        properties: [
+        eventEmitters: [],
+        methods: [
           {
             name: 'getArray',
             optional: false,
@@ -2414,7 +2423,8 @@ const SAMPLE_WITH_UPPERCASE_NAME: SchemaType = {
       enumMap: {},
       aliasMap: {},
       spec: {
-        properties: [],
+        eventEmitters: [],
+        methods: [],
       },
       moduleName: 'SampleTurboModule',
     },

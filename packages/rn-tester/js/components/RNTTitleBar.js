@@ -11,22 +11,15 @@
 import RNTesterDocumentationURL from './RNTesterDocumentationURL';
 import {type RNTesterTheme} from './RNTesterTheme';
 import * as React from 'react';
-import {
-  Button,
-  Platform,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import {Platform, SafeAreaView, StyleSheet, Text, View} from 'react-native';
 
 const HeaderIOS = ({
-  onBack,
+  children,
   title,
   documentationURL,
   theme,
 }: {
-  onBack?: ?() => mixed,
+  children?: React.Node,
   title: string,
   documentationURL?: string,
   theme: RNTesterTheme,
@@ -43,28 +36,19 @@ const HeaderIOS = ({
             <RNTesterDocumentationURL documentationURL={documentationURL} />
           )}
         </View>
-        {onBack != null && (
-          <View>
-            <Button
-              title="Back"
-              onPress={onBack}
-              color={Platform.select({
-                ios: theme.LinkColor,
-                default: undefined,
-              })}
-            />
-          </View>
-        )}
+        {children != null && <View>{children}</View>}
       </View>
     </SafeAreaView>
   );
 };
 
 const HeaderAndroid = ({
+  children,
   title,
   documentationURL,
   theme,
 }: {
+  children?: React.Node,
   title: string,
   documentationURL?: string,
   theme: RNTesterTheme,
@@ -78,18 +62,19 @@ const HeaderAndroid = ({
             <RNTesterDocumentationURL documentationURL={documentationURL} />
           )}
         </View>
+        {children != null && <View>{children}</View>}
       </View>
     </SafeAreaView>
   );
 };
 
 export default function RNTTitleBar({
-  onBack,
+  children,
   title,
   documentationURL,
   theme,
 }: {
-  onBack?: ?() => mixed,
+  children?: React.Node,
   title: string,
   documentationURL?: string,
   theme: RNTesterTheme,
@@ -99,13 +84,14 @@ export default function RNTTitleBar({
     <HeaderIOS
       documentationURL={documentationURL}
       title={title}
-      onBack={onBack}
+      children={children}
       theme={theme}
     />
   ) : (
     <HeaderAndroid
       documentationURL={documentationURL}
       title={title}
+      children={children}
       theme={theme}
     />
   );
@@ -134,6 +120,7 @@ const styles = StyleSheet.create({
   },
   toolbar: {
     height: 56,
+    flexDirection: 'row',
   },
   toolbarCenter: {
     flex: 1,

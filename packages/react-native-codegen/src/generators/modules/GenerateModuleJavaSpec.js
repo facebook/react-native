@@ -136,11 +136,11 @@ function translateFunctionParamToJavaType(
     case 'NumberTypeAnnotation':
       return wrapOptional('double', isRequired);
     case 'FloatTypeAnnotation':
-      return wrapOptional('float', isRequired);
+      return wrapOptional('double', isRequired);
     case 'DoubleTypeAnnotation':
       return wrapOptional('double', isRequired);
     case 'Int32TypeAnnotation':
-      return wrapOptional('int', isRequired);
+      return wrapOptional('double', isRequired);
     case 'BooleanTypeAnnotation':
       return wrapOptional('boolean', isRequired);
     case 'EnumDeclaration':
@@ -445,12 +445,8 @@ module.exports = {
     const outputDir = `java/${normalizedPackageName.replace(/\./g, '/')}`;
 
     Object.keys(nativeModules).forEach(hasteModuleName => {
-      const {
-        aliasMap,
-        excludedPlatforms,
-        moduleName,
-        spec: {properties},
-      } = nativeModules[hasteModuleName];
+      const {aliasMap, excludedPlatforms, moduleName, spec} =
+        nativeModules[hasteModuleName];
       if (excludedPlatforms != null && excludedPlatforms.includes('android')) {
         return;
       }
@@ -467,7 +463,7 @@ module.exports = {
         'javax.annotation.Nonnull',
       ]);
 
-      const methods = properties.map(method => {
+      const methods = spec.methods.map(method => {
         if (method.name === 'getConstants') {
           return buildGetConstantsMethod(method, imports, resolveAlias);
         }

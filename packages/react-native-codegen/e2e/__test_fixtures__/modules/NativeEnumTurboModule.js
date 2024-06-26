@@ -34,21 +34,30 @@ export enum StatusNumEnum {
   Off = 0,
 }
 
+export enum StatusLowerCaseEnum {
+  Active = 'active',
+  Paused = 'paused',
+  Off = 'off',
+}
+
 export type StateTypeWithEnums = {|
   state: string,
   regular: StatusRegularEnum,
   str: StatusStrEnum,
   num: StatusNumEnum,
+  lowerCase: StatusLowerCaseEnum,
 |};
 
 export interface Spec extends TurboModule {
   +getStatusRegular: (statusProp: StateType) => StatusRegularEnum;
   +getStatusStr: (statusProp: StateType) => StatusStrEnum;
   +getStatusNum: (statusProp: StateType) => StatusNumEnum;
+  +getStatusLowerCase: (statusProp: StateType) => StatusLowerCaseEnum;
   +getStateType: (
     a: StatusRegularEnum,
     b: StatusStrEnum,
     c: StatusNumEnum,
+    d: StatusLowerCaseEnum,
   ) => StateType;
   +getStateTypeWithEnums: (
     paramOfTypeWithEnums: StateTypeWithEnums,

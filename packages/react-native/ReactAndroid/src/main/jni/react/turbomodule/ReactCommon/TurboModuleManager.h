@@ -9,13 +9,13 @@
 
 #include <ReactCommon/CallInvokerHolder.h>
 #include <ReactCommon/JavaTurboModule.h>
-#include <ReactCommon/LongLivedObject.h>
 #include <ReactCommon/NativeMethodCallInvokerHolder.h>
 #include <ReactCommon/RuntimeExecutor.h>
 #include <ReactCommon/TurboModule.h>
 #include <ReactCommon/TurboModuleManagerDelegate.h>
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
+#include <react/bridging/LongLivedObject.h>
 #include <react/jni/CxxModuleWrapper.h>
 #include <react/jni/JRuntimeExecutor.h>
 #include <memory>
@@ -67,6 +67,7 @@ class TurboModuleManager : public jni::HybridClass<TurboModuleManager> {
 
   TurboModuleProviderFunctionType createTurboModuleProvider(
       jni::alias_ref<jhybridobject> javaPart,
+      jsi::Runtime* runtime,
       bool enableSyncVoidMethods);
   TurboModuleProviderFunctionType createLegacyModuleProvider(
       jni::alias_ref<jhybridobject> javaPart);

@@ -182,6 +182,11 @@ class BridgelessReactContext extends ReactApplicationContext implements EventDis
   }
 
   @Override
+  public @Nullable NativeModule getNativeModule(String name) {
+    return mReactHost.getNativeModule(name);
+  }
+
+  @Override
   @FrameworkAPI
   @UnstableReactNativeAPI
   public @Nullable JavaScriptContextHolder getJavaScriptContextHolder() {

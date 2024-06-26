@@ -396,10 +396,6 @@ void Binding::installFabricUIManager(
   // Keep reference to config object and cache some feature flags here
   reactNativeConfig_ = config;
 
-  contextContainer->insert(
-      "CalculateTransformedFramesEnabled",
-      getFeatureFlagValue("calculateTransformedFramesEnabled"));
-
   CoreFeatures::enablePropIteratorSetter =
       getFeatureFlagValue("enableCppPropsIteratorSetter");
   CoreFeatures::excludeYogaFromRawProps =
@@ -458,10 +454,6 @@ std::shared_ptr<FabricMountingManager> Binding::getMountingManager(
 
 void Binding::schedulerDidFinishTransaction(
     const MountingCoordinator::Shared& mountingCoordinator) {
-  if (!ReactNativeFeatureFlags::androidEnablePendingFabricTransactions()) {
-    return;
-  }
-
   auto mountingTransaction = mountingCoordinator->pullTransaction();
   if (!mountingTransaction.has_value()) {
     return;
@@ -491,26 +483,32 @@ void Binding::schedulerShouldRenderTransactions(
     return;
   }
 
-  if (ReactNativeFeatureFlags::androidEnablePendingFabricTransactions()) {
+  if (ReactNativeFeatureFlags::
+          allowRecursiveCommitsWithSynchronousMountOnAndroid()) {
+    std::vector<MountingTransaction> pendingTransactions;
+
+    {
+      // Retain the lock to access the pending transactions but not to execute
+      // the mount operations because that method can call into this method
+      // again.
+      std::unique_lock<std::mutex> lock(pendingTransactionsMutex_);
+      pendingTransactions_.swap(pendingTransactions);
+    }
+
+    for (auto& transaction : pendingTransactions) {
+      mountingManager->executeMount(transaction);
+    }
+  } else {
     std::unique_lock<std::mutex> lock(pendingTransactionsMutex_);
     for (auto& transaction : pendingTransactions_) {
       mountingManager->executeMount(transaction);
     }
     pendingTransactions_.clear();
-  } else {
-    auto mountingTransaction = mountingCoordinator->pullTransaction();
-    if (mountingTransaction.has_value()) {
-      mountingManager->executeMount(*mountingTransaction);
-    }
   }
 }
 
 void Binding::schedulerDidRequestPreliminaryViewAllocation(
     const ShadowNode& shadowNode) {
-  if (!shadowNode.getTraits().check(ShadowNodeTraits::Trait::FormsView)) {
-    return;
-  }
-
   auto mountingManager = getMountingManager("preallocateView");
   if (!mountingManager) {
     return;

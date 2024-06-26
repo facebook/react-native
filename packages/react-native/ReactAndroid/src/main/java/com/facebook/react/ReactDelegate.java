@@ -134,6 +134,10 @@ public class ReactDelegate {
 
   public void onHostDestroy() {
     if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      if (mReactSurface != null) {
+        mReactSurface.stop();
+        mReactSurface = null;
+      }
       mReactHost.onHostDestroy(mActivity);
     } else {
       if (mReactRootView != null) {

@@ -199,35 +199,51 @@ TEST_F(InspectorPackagerConnectionTest, TestGetPages) {
       "event": "getPages"
     })");
 
-  auto pageId = getInspectorInstance().addPage(
-      "mock-title",
+  auto pageId1 = getInspectorInstance().addPage(
+      "mock-title-1",
       "mock-vm",
       localConnections_
           .lazily_make_unique<std::unique_ptr<IRemoteConnection>>(),
       {.nativePageReloads = true});
 
-  // getPages now reports the page we registered.
+  auto pageId2 = getInspectorInstance().addPage(
+      "mock-title-2",
+      "mock-vm",
+      localConnections_
+          .lazily_make_unique<std::unique_ptr<IRemoteConnection>>(),
+      {.nativePageReloads = true});
+
+  // getPages now reports the page we registered, in the order added
   EXPECT_CALL(
       *webSockets_[0],
       send(JsonParsed(AllOf(
           AtJsonPtr("/event", Eq("getPages")),
           AtJsonPtr(
               "/payload",
-              ElementsAreArray({AllOf(
-                  AtJsonPtr("/app", Eq("my-app")),
-                  AtJsonPtr("/title", Eq("mock-title [C++ connection]")),
-                  AtJsonPtr("/vm", Eq("mock-vm")),
-                  AtJsonPtr("/id", Eq(std::to_string(pageId))),
-                  AtJsonPtr("/capabilities/nativePageReloads", Eq(true)),
-                  AtJsonPtr(
-                      "/capabilities/nativeSourceCodeFetching",
-                      Eq(false)))}))))))
+              ElementsAreArray(
+                  {AllOf(
+                       AtJsonPtr("/app", Eq("my-app")),
+                       AtJsonPtr("/title", Eq("mock-title-1 [C++ connection]")),
+                       AtJsonPtr("/id", Eq(std::to_string(pageId1))),
+                       AtJsonPtr("/capabilities/nativePageReloads", Eq(true)),
+                       AtJsonPtr(
+                           "/capabilities/nativeSourceCodeFetching",
+                           Eq(false))),
+                   AllOf(
+                       AtJsonPtr("/app", Eq("my-app")),
+                       AtJsonPtr("/title", Eq("mock-title-2 [C++ connection]")),
+                       AtJsonPtr("/id", Eq(std::to_string(pageId2))),
+                       AtJsonPtr("/capabilities/nativePageReloads", Eq(true)),
+                       AtJsonPtr(
+                           "/capabilities/nativeSourceCodeFetching",
+                           Eq(false)))}))))))
       .RetiresOnSaturation();
   webSockets_[0]->getDelegate().didReceiveMessage(R"({
       "event": "getPages"
     })");
 
-  getInspectorInstance().removePage(pageId);
+  getInspectorInstance().removePage(pageId1);
+  getInspectorInstance().removePage(pageId2);
 
   // getPages is back to reporting no pages.
   EXPECT_CALL(

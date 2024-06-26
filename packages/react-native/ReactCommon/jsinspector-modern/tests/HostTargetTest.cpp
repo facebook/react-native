@@ -49,9 +49,7 @@ class HostTargetTest : public Test {
   std::pair<std::unique_ptr<ILocalConnection>, MockRemoteConnection&>
   makeConnection() {
     size_t connectionIndex = remoteConnections_.objectsVended();
-    auto toPage = page_->connect(
-        remoteConnections_.make_unique(),
-        {.integrationName = "HostTargetTest"});
+    auto toPage = page_->connect(remoteConnections_.make_unique());
 
     // We'll always get an onDisconnect call when we tear
     // down the test. Expect it in order to satisfy the strict mock.

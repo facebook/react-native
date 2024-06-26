@@ -23,4 +23,5 @@ target_link_libraries(react_nativemodule_defaults
         react_nativemodule_dom
         react_nativemodule_featureflags
         react_nativemodule_microtasks
+        react_nativemodule_idlecallbacks
 )

@@ -786,6 +786,12 @@ void FabricMountingManager::executeMount(
 
 void FabricMountingManager::preallocateShadowView(
     const ShadowNode& shadowNode) {
+  if (!shadowNode.getTraits().check(ShadowNodeTraits::Trait::FormsView)) {
+    return;
+  }
+
+  SystraceSection section("FabricMountingManager::preallocateShadowView");
+
   {
     std::lock_guard lock(allocatedViewsMutex_);
     auto allocatedViewsIterator =

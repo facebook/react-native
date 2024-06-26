@@ -108,8 +108,7 @@ async function parsePackageInfo(
  * Update a given package with the package versions.
  */
 async function updatePackageJson(
-  packagePath /*: string */,
-  packageJson /*: PackageJson */,
+  {path: packagePath, packageJson} /*: PackageInfo */,
   newPackageVersions /*: $ReadOnly<{[string]: string}> */,
 ) /*: Promise<void> */ {
   const packageName = packageJson.name;

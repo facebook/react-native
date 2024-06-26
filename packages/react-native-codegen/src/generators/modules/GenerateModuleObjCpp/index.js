@@ -142,11 +142,8 @@ module.exports = {
 
     const hasteModuleNames: Array<string> = Object.keys(nativeModules).sort();
     for (const hasteModuleName of hasteModuleNames) {
-      const {
-        aliasMap,
-        excludedPlatforms,
-        spec: {properties},
-      } = nativeModules[hasteModuleName];
+      const {aliasMap, excludedPlatforms, spec} =
+        nativeModules[hasteModuleName];
       if (excludedPlatforms != null && excludedPlatforms.includes('iOS')) {
         continue;
       }
@@ -169,10 +166,10 @@ module.exports = {
        * Note: As we serialize NativeModule methods, we insert structs into
        * StructCollector, as we encounter them.
        */
-      properties
+      spec.methods
         .filter(property => property.name !== 'getConstants')
         .forEach(serializeProperty);
-      properties
+      spec.methods
         .filter(property => property.name === 'getConstants')
         .forEach(serializeProperty);
 

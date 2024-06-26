@@ -11,6 +11,7 @@
 'use strict';
 
 import type {NativeMethods} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
+import {RNTesterThemeContext} from '../../components/RNTesterTheme';
 
 const ScreenshotManager = require('../../../NativeModuleExample/NativeScreenshotManager');
 const React = require('react');
@@ -37,12 +38,20 @@ class ActionSheetExample extends React.Component<Props, State> {
 
   render(): React.Node {
     return (
-      <View>
-        <Text onPress={this.showActionSheet} style={style.button}>
-          Click to show the ActionSheet
-        </Text>
-        <Text>Clicked button: {this.state.clicked}</Text>
-      </View>
+      <RNTesterThemeContext.Consumer>
+        {theme => (
+          <View>
+            <Text
+              onPress={this.showActionSheet}
+              style={[style.button, {color: theme.SecondaryLabelColor}]}>
+              Click to show the ActionSheet
+            </Text>
+            <Text style={{color: theme.SecondaryLabelColor}}>
+              Clicked button: {this.state.clicked}
+            </Text>
+          </View>
+        )}
+      </RNTesterThemeContext.Consumer>
     );
   }
 
@@ -70,12 +79,20 @@ class ActionSheetTintExample extends React.Component<
 
   render(): React.Node {
     return (
-      <View>
-        <Text onPress={this.showActionSheet} style={style.button}>
-          Click to show the ActionSheet
-        </Text>
-        <Text>Clicked button: {this.state.clicked}</Text>
-      </View>
+      <RNTesterThemeContext.Consumer>
+        {theme => (
+          <View>
+            <Text
+              onPress={this.showActionSheet}
+              style={[style.button, {color: theme.SecondaryLabelColor}]}>
+              Click to show the ActionSheet
+            </Text>
+            <Text style={{color: theme.SecondaryLabelColor}}>
+              Clicked button: {this.state.clicked}
+            </Text>
+          </View>
+        )}
+      </RNTesterThemeContext.Consumer>
     );
   }
 
@@ -104,12 +121,20 @@ class ActionSheetCancelButtonTintExample extends React.Component<
 
   render(): React.Node {
     return (
-      <View>
-        <Text onPress={this.showActionSheet} style={style.button}>
-          Click to show the ActionSheet
-        </Text>
-        <Text>Clicked button: {this.state.clicked}</Text>
-      </View>
+      <RNTesterThemeContext.Consumer>
+        {theme => (
+          <View>
+            <Text
+              onPress={this.showActionSheet}
+              style={[style.button, {color: theme.SecondaryLabelColor}]}>
+              Click to show the ActionSheet
+            </Text>
+            <Text style={{color: theme.SecondaryLabelColor}}>
+              Clicked button: {this.state.clicked}
+            </Text>
+          </View>
+        )}
+      </RNTesterThemeContext.Consumer>
     );
   }
 
@@ -141,20 +166,26 @@ class ActionSheetAnchorExample extends React.Component<
 
   render(): React.Node {
     return (
-      <View>
-        <View style={style.anchorRow}>
-          <Text style={style.button}>
-            Click there to show the ActionSheet ->
-          </Text>
-          <Text
-            onPress={this.showActionSheet}
-            style={style.button}
-            ref={this.anchorRef}>
-            HERE
-          </Text>
-        </View>
-        <Text>Clicked button: {this.state.clicked}</Text>
-      </View>
+      <RNTesterThemeContext.Consumer>
+        {theme => (
+          <View>
+            <View style={style.anchorRow}>
+              <Text style={[style.button, {color: theme.SecondaryLabelColor}]}>
+                Click there to show the ActionSheet ->
+              </Text>
+              <Text
+                onPress={this.showActionSheet}
+                style={[style.button, {color: theme.SecondaryLabelColor}]}
+                ref={this.anchorRef}>
+                HERE
+              </Text>
+            </View>
+            <Text style={{color: theme.SecondaryLabelColor}}>
+              Clicked button: {this.state.clicked}
+            </Text>
+          </View>
+        )}
+      </RNTesterThemeContext.Consumer>
     );
   }
 
@@ -182,12 +213,20 @@ class ActionSheetDisabledExample extends React.Component<Props, State> {
 
   render(): React.Node {
     return (
-      <View>
-        <Text onPress={this.showActionSheet} style={style.button}>
-          Click to show the ActionSheet
-        </Text>
-        <Text>Clicked button: {this.state.clicked}</Text>
-      </View>
+      <RNTesterThemeContext.Consumer>
+        {theme => (
+          <View>
+            <Text
+              onPress={this.showActionSheet}
+              style={[style.button, {color: theme.SecondaryLabelColor}]}>
+              Click to show the ActionSheet
+            </Text>
+            <Text style={{color: theme.SecondaryLabelColor}}>
+              Clicked button: {this.state.clicked}
+            </Text>
+          </View>
+        )}
+      </RNTesterThemeContext.Consumer>
     );
   }
 
@@ -209,12 +248,18 @@ class ActionSheetDisabledExample extends React.Component<Props, State> {
 class ActionSheetDismissExample extends React.Component<{...}> {
   render(): React.Node {
     return (
-      <View>
-        <Text onPress={this.showAndDismissActionSheet} style={style.button}>
-          Click to show and automatically dismiss the ActionSheet after 3
-          seconds
-        </Text>
-      </View>
+      <RNTesterThemeContext.Consumer>
+        {theme => (
+          <View>
+            <Text
+              onPress={this.showAndDismissActionSheet}
+              style={[style.button, {color: theme.SecondaryLabelColor}]}>
+              Click to show and automatically dismiss the ActionSheet after 3
+              seconds
+            </Text>
+          </View>
+        )}
+      </RNTesterThemeContext.Consumer>
     );
   }
 
@@ -244,12 +289,20 @@ class ShareActionSheetExample extends React.Component<
 
   render(): React.Node {
     return (
-      <View>
-        <Text onPress={this.showShareActionSheet} style={style.button}>
-          Click to show the Share ActionSheet
-        </Text>
-        <Text>{this.state.text}</Text>
-      </View>
+      <RNTesterThemeContext.Consumer>
+        {theme => (
+          <View>
+            <Text
+              onPress={this.showShareActionSheet}
+              style={[style.button, {color: theme.SecondaryLabelColor}]}>
+              Click to show the Share ActionSheet
+            </Text>
+            <Text style={{color: theme.SecondaryLabelColor}}>
+              {this.state.text}
+            </Text>
+          </View>
+        )}
+      </RNTesterThemeContext.Consumer>
     );
   }
 
@@ -285,12 +338,20 @@ class ShareScreenshotExample extends React.Component<
 
   render(): React.Node {
     return (
-      <View>
-        <Text onPress={this.showShareActionSheet} style={style.button}>
-          Click to show the Share ActionSheet
-        </Text>
-        <Text>{this.state.text}</Text>
-      </View>
+      <RNTesterThemeContext.Consumer>
+        {theme => (
+          <View>
+            <Text
+              onPress={this.showShareActionSheet}
+              style={[style.button, {color: theme.SecondaryLabelColor}]}>
+              Click to show the Share ActionSheet
+            </Text>
+            <Text style={{color: theme.SecondaryLabelColor}}>
+              {this.state.text}
+            </Text>
+          </View>
+        )}
+      </RNTesterThemeContext.Consumer>
     );
   }
 
@@ -332,20 +393,26 @@ class ShareScreenshotAnchorExample extends React.Component<
 
   render(): React.Node {
     return (
-      <View>
-        <View style={style.anchorRow}>
-          <Text style={style.button}>
-            Click to show the Share ActionSheet ->
-          </Text>
-          <Text
-            onPress={this.showShareActionSheet}
-            style={style.button}
-            ref={this.anchorRef}>
-            HERE
-          </Text>
-        </View>
-        <Text>{this.state.text}</Text>
-      </View>
+      <RNTesterThemeContext.Consumer>
+        {theme => (
+          <View>
+            <View style={style.anchorRow}>
+              <Text style={[style.button, {color: theme.SecondaryLabelColor}]}>
+                Click to show the Share ActionSheet ->
+              </Text>
+              <Text
+                onPress={this.showShareActionSheet}
+                style={[style.button, {color: theme.SecondaryLabelColor}]}
+                ref={this.anchorRef}>
+                HERE
+              </Text>
+            </View>
+            <Text style={{color: theme.SecondaryLabelColor}}>
+              {this.state.text}
+            </Text>
+          </View>
+        )}
+      </RNTesterThemeContext.Consumer>
     );
   }
 

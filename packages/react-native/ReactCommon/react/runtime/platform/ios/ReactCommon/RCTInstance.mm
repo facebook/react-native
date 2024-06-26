@@ -128,13 +128,6 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
     }
     _launchOptions = launchOptions;
 
-    NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];
-
-    [defaultCenter addObserver:self
-                      selector:@selector(_notifyEventDispatcherObserversOfEvent_DEPRECATED:)
-                          name:@"RCTNotifyEventDispatcherObserversOfEvent_DEPRECATED"
-                        object:nil];
-
     [self _start];
   }
   return self;
@@ -478,19 +471,6 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   if (_onInitialBundleLoad) {
     _onInitialBundleLoad();
     _onInitialBundleLoad = nil;
-  }
-}
-
-- (void)_notifyEventDispatcherObserversOfEvent_DEPRECATED:(NSNotification *)notification
-{
-  NSDictionary *userInfo = notification.userInfo;
-  id<RCTEvent> event = [userInfo objectForKey:@"event"];
-
-  RCTModuleRegistry *moduleRegistry = _bridgeModuleDecorator.moduleRegistry;
-  if (event && moduleRegistry) {
-    id<RCTEventDispatcherProtocol> legacyEventDispatcher = [moduleRegistry moduleForName:"EventDispatcher"
-                                                                   lazilyLoadIfNecessary:YES];
-    [legacyEventDispatcher notifyObserversOfEvent:event];
   }
 }
 

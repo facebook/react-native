@@ -209,10 +209,4 @@ const RawValue* RawProps::at(
   return parser_->at(*this, RawPropsKey{prefix, name, suffix});
 }
 
-void RawProps::iterateOverValues(
-    const std::function<
-        void(RawPropsPropNameHash, const char*, const RawValue&)>& fn) const {
-  return parser_->iterateOverValues(*this, fn);
-}
-
 } // namespace facebook::react

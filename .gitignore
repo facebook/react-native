@@ -24,7 +24,6 @@ project.xcworkspace
 
 # Gradle
 /build/
-/packages/react-native-gradle-plugin/build/
 /packages/rn-tester/build
 /packages/rn-tester/android/app/.cxx/
 /packages/rn-tester/android/app/build/
@@ -147,8 +146,11 @@ vendor/
 /packages/react-native/sdks/hermesc
 /packages/react-native/sdks/hermes-engine/hermes-engine-from-local-source-dir.tar.gz
 
-# Visual studio
-.vscode
+# Visual Studio Code (config dir - if present, this merges user defined
+# workspace settings on top of react-native.code-workspace)
+/.vscode
+
+# Visual Studio
 .vs
 
 # Android memory profiler files
@@ -156,10 +158,6 @@ vendor/
 
 # Temporary files created by Metro to check the health of the file watcher
 .metro-health-check*
-
-# E2E files
-/packages/rn-tester-e2e/apps/*.apk
-/packages/rn-tester-e2e/apps/*.app
 
 # CircleCI
 .circleci/generated_config.yml

@@ -61,26 +61,15 @@ class ReactNativePodsUtils
         end
     end
 
-    def self.set_use_hermes_build_setting(installer, hermes_enabled)
-        Pod::UI.puts("Setting USE_HERMES build settings")
+    def self.set_build_setting(installer, build_setting:, value:, config_name: nil)
+        Pod::UI.puts("Setting #{build_setting} build settings")
         projects = self.extract_projects(installer)
 
         projects.each do |project|
             project.build_configurations.each do |config|
-                config.build_settings["USE_HERMES"] = hermes_enabled
-            end
-
-            project.save()
-        end
-    end
-
-    def self.set_node_modules_user_settings(installer, react_native_path)
-        Pod::UI.puts("Setting REACT_NATIVE build settings")
-        projects = self.extract_projects(installer)
-
-        projects.each do |project|
-            project.build_configurations.each do |config|
-                config.build_settings["REACT_NATIVE_PATH"] = File.join("${PODS_ROOT}", "..", react_native_path)
+                if config_name == nil || config.name == config_name
+                    config.build_settings[build_setting] = value
+                end
             end
 
             project.save()

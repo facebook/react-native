@@ -55,7 +55,3 @@ exports[`TextInput tests should render as expected: should deep render when not 
   underlineColorAndroid="transparent"
 />
 `;
-
-exports[`TextInput tests should render as expected: should shallow render as <TextInput /> when mocked 1`] = `<TextInput />`;
-
-exports[`TextInput tests should render as expected: should shallow render as <TextInput /> when not mocked 1`] = `<TextInput />`;

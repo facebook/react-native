@@ -17,7 +17,6 @@ import com.facebook.react.bridge.ReactContext
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.fabric.ComponentFactory
-import com.facebook.react.interfaces.exceptionmanager.ReactJsExceptionHandler
 import com.facebook.react.runtime.JSCInstance
 import com.facebook.react.runtime.ReactHostImpl
 import com.facebook.react.runtime.cxxreactpackage.CxxReactPackage
@@ -57,13 +56,22 @@ public object DefaultReactHost {
       packageList: List<ReactPackage>,
       jsMainModulePath: String = "index",
       jsBundleAssetPath: String = "index",
+      jsBundleFilePath: String? = null,
       isHermesEnabled: Boolean = true,
       useDevSupport: Boolean = ReactBuildConfig.DEBUG,
       cxxReactPackageProviders: List<(ReactContext) -> CxxReactPackage> = emptyList(),
   ): ReactHost {
     if (reactHost == null) {
       val jsBundleLoader =
-          JSBundleLoader.createAssetLoader(context, "assets://$jsBundleAssetPath", true)
+          if (jsBundleFilePath != null) {
+            if (jsBundleFilePath.startsWith("assets://")) {
+              JSBundleLoader.createAssetLoader(context, jsBundleFilePath, true)
+            } else {
+              JSBundleLoader.createFileLoader(jsBundleFilePath)
+            }
+          } else {
+            JSBundleLoader.createAssetLoader(context, "assets://$jsBundleAssetPath", true)
+          }
       val jsRuntimeFactory = if (isHermesEnabled) HermesInstance() else JSCInstance()
       val defaultTmmDelegateBuilder = DefaultTurboModuleManagerDelegate.Builder()
       cxxReactPackageProviders.forEach { defaultTmmDelegateBuilder.addCxxReactPackage(it) }
@@ -74,8 +82,6 @@ public object DefaultReactHost {
               reactPackages = packageList,
               jsRuntimeFactory = jsRuntimeFactory,
               turboModuleManagerDelegateBuilder = defaultTmmDelegateBuilder)
-      // TODO: T180971255 Improve default exception handler
-      val reactJsExceptionHandler = ReactJsExceptionHandler { _ -> }
       val componentFactory = ComponentFactory()
       DefaultComponentsRegistry.register(componentFactory)
       // TODO: T164788699 find alternative of accessing ReactHostImpl for initialising reactHost
@@ -85,7 +91,6 @@ public object DefaultReactHost {
                   defaultReactHostDelegate,
                   componentFactory,
                   true /* allowPackagerServerAccess */,
-                  reactJsExceptionHandler,
                   useDevSupport,
               )
               .apply {

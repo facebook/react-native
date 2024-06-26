@@ -24,67 +24,21 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public abstract class NativeSampleTurboModuleSpec extends ReactContextBaseJavaModule
     implements TurboModule {
+  public static final String NAME = "SampleTurboModule";
+
   public NativeSampleTurboModuleSpec(ReactApplicationContext reactContext) {
     super(reactContext);
   }
 
-  @ReactMethod(isBlockingSynchronousMethod = true)
-  public abstract double getNumber(double arg);
-
-  @ReactMethod(isBlockingSynchronousMethod = true)
-  public abstract WritableMap getValue(double x, String y, ReadableMap z);
-
-  @ReactMethod(isBlockingSynchronousMethod = true)
-  public abstract WritableMap getObject(ReadableMap arg);
-
-  @ReactMethod(isBlockingSynchronousMethod = true)
-  public abstract WritableMap getUnsafeObject(ReadableMap arg);
-
-  @ReactMethod
-  public abstract void voidFunc();
-
-  @ReactMethod(isBlockingSynchronousMethod = true)
-  public abstract WritableArray getArray(ReadableArray arg);
-
-  @ReactMethod
-  public abstract void getValueWithPromise(boolean error, Promise promise);
-
-  @ReactMethod
-  public abstract void getValueWithCallback(Callback callback);
-
-  @ReactMethod(isBlockingSynchronousMethod = true)
-  public abstract String getString(String arg);
-
-  @ReactMethod(isBlockingSynchronousMethod = true)
-  public abstract double getRootTag(double arg);
-
-  @ReactMethod(isBlockingSynchronousMethod = true)
-  public abstract boolean getBool(boolean arg);
-
-  @ReactMethod(isBlockingSynchronousMethod = true)
-  public abstract double getEnum(double arg);
-
-  @ReactMethod()
-  public abstract void voidFuncThrows();
-
-  @ReactMethod(isBlockingSynchronousMethod = true)
-  public abstract WritableMap getObjectThrows(ReadableMap arg);
-
-  @ReactMethod()
-  public abstract void promiseThrows(Promise promise);
-
-  @ReactMethod()
-  public abstract void voidFuncAssert();
-
-  @ReactMethod(isBlockingSynchronousMethod = true)
-  public abstract WritableMap getObjectAssert(ReadableMap arg);
-
-  @ReactMethod()
-  public abstract void promiseAssert(Promise promise);
+  @Override
+  public @Nonnull String getName() {
+    return NAME;
+  }
 
   protected abstract Map<String, Object> getTypedExportedConstants();
 
@@ -93,22 +47,82 @@ public abstract class NativeSampleTurboModuleSpec extends ReactContextBaseJavaMo
     Map<String, Object> constants = getTypedExportedConstants();
     if (ReactBuildConfig.DEBUG || ReactBuildConfig.IS_INTERNAL_BUILD) {
       Set<String> obligatoryFlowConstants =
-          new HashSet<>(Arrays.asList("const2", "const1", "const3"));
+          new HashSet<>(Arrays.asList("const1", "const2", "const3"));
       Set<String> optionalFlowConstants = new HashSet<>();
       Set<String> undeclaredConstants = new HashSet<>(constants.keySet());
       undeclaredConstants.removeAll(obligatoryFlowConstants);
       undeclaredConstants.removeAll(optionalFlowConstants);
       if (!undeclaredConstants.isEmpty()) {
         throw new IllegalStateException(
-            String.format("Native Module Flow doesn't declare constants: %s", undeclaredConstants));
+            "Native Module Flow doesn't declare constants: " + undeclaredConstants);
       }
       undeclaredConstants = obligatoryFlowConstants;
       undeclaredConstants.removeAll(constants.keySet());
       if (!undeclaredConstants.isEmpty()) {
         throw new IllegalStateException(
-            String.format("Native Module doesn't fill in constants: %s", undeclaredConstants));
+            "Native Module doesn't fill in constants: " + undeclaredConstants);
       }
     }
     return constants;
   }
+
+  @ReactMethod
+  public abstract void voidFunc();
+
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  public abstract boolean getBool(boolean arg);
+
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  public double getEnum(double arg) {
+    return 0;
+  }
+
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  public abstract double getNumber(double arg);
+
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  public abstract String getString(String arg);
+
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  public abstract WritableArray getArray(ReadableArray arg);
+
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  public abstract WritableMap getObject(ReadableMap arg);
+
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  public abstract WritableMap getUnsafeObject(ReadableMap arg);
+
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  public abstract double getRootTag(double arg);
+
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  public abstract WritableMap getValue(double x, String y, ReadableMap z);
+
+  @ReactMethod
+  public abstract void getValueWithCallback(Callback callback);
+
+  @ReactMethod
+  public abstract void getValueWithPromise(boolean error, Promise promise);
+
+  @ReactMethod
+  public void voidFuncThrows() {}
+
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  public WritableMap getObjectThrows(ReadableMap arg) {
+    return null;
+  }
+
+  @ReactMethod
+  public void promiseThrows(Promise promise) {}
+
+  @ReactMethod
+  public void voidFuncAssert() {}
+
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  public WritableMap getObjectAssert(ReadableMap arg) {
+    return null;
+  }
+
+  @ReactMethod
+  public void promiseAssert(Promise promise) {}
 }

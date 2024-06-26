@@ -90,7 +90,7 @@ static Rect computeIntersection(
 std::optional<IntersectionObserverEntry>
 IntersectionObserver::updateIntersectionObservation(
     const RootShadowNode& rootShadowNode,
-    double mountTime) {
+    double time) {
   const auto layoutableRootShadowNode =
       dynamic_cast<const LayoutableShadowNode*>(&rootShadowNode);
 
@@ -121,14 +121,12 @@ IntersectionObserver::updateIntersectionObservation(
       : intersectionRectArea / targetBoundingRectArea;
 
   if (intersectionRatio == 0) {
-    return setNotIntersectingState(
-        rootBoundingRect, targetBoundingRect, mountTime);
+    return setNotIntersectingState(rootBoundingRect, targetBoundingRect, time);
   }
 
   auto highestThresholdCrossed = getHighestThresholdCrossed(intersectionRatio);
   if (highestThresholdCrossed == -1) {
-    return setNotIntersectingState(
-        rootBoundingRect, targetBoundingRect, mountTime);
+    return setNotIntersectingState(rootBoundingRect, targetBoundingRect, time);
   }
 
   return setIntersectingState(
@@ -136,7 +134,13 @@ IntersectionObserver::updateIntersectionObservation(
       targetBoundingRect,
       intersectionRect,
       highestThresholdCrossed,
-      mountTime);
+      time);
+}
+
+std::optional<IntersectionObserverEntry>
+IntersectionObserver::updateIntersectionObservationForSurfaceUnmount(
+    double time) {
+  return setNotIntersectingState(Rect{}, Rect{}, time);
 }
 
 Float IntersectionObserver::getHighestThresholdCrossed(
@@ -156,7 +160,7 @@ IntersectionObserver::setIntersectingState(
     const Rect& targetBoundingRect,
     const Rect& intersectionRect,
     Float threshold,
-    double mountTime) {
+    double time) {
   auto newState = IntersectionObserverState::Intersecting(threshold);
 
   if (state_ != newState) {
@@ -168,7 +172,7 @@ IntersectionObserver::setIntersectingState(
         rootBoundingRect,
         intersectionRect,
         true,
-        mountTime,
+        time,
     };
     return std::optional<IntersectionObserverEntry>{std::move(entry)};
   }
@@ -180,7 +184,7 @@ std::optional<IntersectionObserverEntry>
 IntersectionObserver::setNotIntersectingState(
     const Rect& rootBoundingRect,
     const Rect& targetBoundingRect,
-    double mountTime) {
+    double time) {
   if (state_ != IntersectionObserverState::NotIntersecting()) {
     state_ = IntersectionObserverState::NotIntersecting();
     IntersectionObserverEntry entry{
@@ -190,7 +194,7 @@ IntersectionObserver::setNotIntersectingState(
         rootBoundingRect,
         std::nullopt,
         false,
-        mountTime,
+        time,
     };
     return std::optional<IntersectionObserverEntry>(std::move(entry));
   }

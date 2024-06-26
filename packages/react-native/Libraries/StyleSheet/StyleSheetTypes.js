@@ -11,7 +11,6 @@
 'use strict';
 
 import type AnimatedNode from '../Animated/nodes/AnimatedNode';
-import type {FilterPrimitive} from '../StyleSheet/processFilter';
 import type {
   ____DangerouslyImpreciseStyle_InternalOverrides,
   ____ImageStyle_InternalOverrides,
@@ -33,6 +32,25 @@ export type EdgeInsetsValue = {
   left: number,
   right: number,
   bottom: number,
+};
+
+export type FilterPrimitive =
+  | {brightness: number | string}
+  | {blur: number | string}
+  | {contrast: number | string}
+  | {grayscale: number | string}
+  | {'hue-rotate': number | string}
+  | {invert: number | string}
+  | {opacity: number | string}
+  | {saturate: number | string}
+  | {sepia: number | string}
+  | {'drop-shadow': DropShadowPrimitive | string};
+
+export type DropShadowPrimitive = {
+  offsetX: number | string,
+  offsetY: number | string,
+  standardDeviation?: number | string,
+  color?: ____ColorValue_Internal | number,
 };
 
 export type DimensionValue = number | string | 'auto' | AnimatedNode | null;

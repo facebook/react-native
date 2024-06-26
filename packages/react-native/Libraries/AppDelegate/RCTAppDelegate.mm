@@ -11,6 +11,7 @@
 #import <React/RCTRootView.h>
 #import <React/RCTSurfacePresenterBridgeAdapter.h>
 #import <React/RCTUtils.h>
+#import <ReactCommon/RCTHost.h>
 #import <objc/runtime.h>
 #import <react/featureflags/ReactNativeFeatureFlags.h>
 #import <react/featureflags/ReactNativeFeatureFlagsDefaults.h>
@@ -32,7 +33,7 @@
 #endif
 #import <react/nativemodule/defaults/DefaultTurboModules.h>
 
-@interface RCTAppDelegate () <RCTComponentViewFactoryComponentProvider>
+@interface RCTAppDelegate () <RCTComponentViewFactoryComponentProvider, RCTHostDelegate>
 @end
 
 @implementation RCTAppDelegate
@@ -54,7 +55,6 @@
   if (self.newArchEnabled || self.fabricEnabled) {
     [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
   }
-  [self customizeRootView:(RCTRootView *)rootView];
 
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
   UIViewController *rootViewController = [self createRootViewController];
@@ -151,11 +151,30 @@
   return [self newArchEnabled];
 }
 
+- (BOOL)unstable_fuseboxEnabled
+{
+  return NO;
+}
+
 - (NSURL *)bundleURL
 {
   [NSException raise:@"RCTAppDelegate::bundleURL not implemented"
               format:@"Subclasses must implement a valid getBundleURL method"];
   return nullptr;
+}
+
+#pragma mark - RCTHostDelegate
+
+- (void)hostDidStart:(RCTHost *)host
+{
+}
+
+- (void)host:(RCTHost *)host
+    didReceiveJSErrorStack:(NSArray<NSDictionary<NSString *, id> *> *)stack
+                   message:(NSString *)message
+               exceptionId:(NSUInteger)exceptionId
+                   isFatal:(BOOL)isFatal
+{
 }
 
 #pragma mark - Bridge and Bridge Adapter properties
@@ -238,10 +257,27 @@
     return [weakSelf createBridgeWithDelegate:delegate launchOptions:launchOptions];
   };
 
+  configuration.customizeRootView = ^(UIView *_Nonnull rootView) {
+    [weakSelf customizeRootView:(RCTRootView *)rootView];
+  };
+
   configuration.sourceURLForBridge = ^NSURL *_Nullable(RCTBridge *_Nonnull bridge)
   {
     return [weakSelf sourceURLForBridge:bridge];
   };
+
+  configuration.hostDidStartBlock = ^(RCTHost *_Nonnull host) {
+    [weakSelf hostDidStart:host];
+  };
+
+  configuration.hostDidReceiveJSErrorStackBlock =
+      ^(RCTHost *_Nonnull host,
+        NSArray<NSDictionary<NSString *, id> *> *_Nonnull stack,
+        NSString *_Nonnull message,
+        NSUInteger exceptionId,
+        BOOL isFatal) {
+        [weakSelf host:host didReceiveJSErrorStack:stack message:message exceptionId:exceptionId isFatal:isFatal];
+      };
 
   if ([self respondsToSelector:@selector(extraModulesForBridge:)]) {
     configuration.extraModulesForBridge = ^NSArray<id<RCTBridgeModule>> *_Nonnull(RCTBridge *_Nonnull bridge)
@@ -269,12 +305,48 @@
 
 #pragma mark - Feature Flags
 
-class RCTAppDelegateBridgelessFeatureFlags : public facebook::react::ReactNativeFeatureFlagsDefaults {};
+class RCTAppDelegateFeatureFlags : public facebook::react::ReactNativeFeatureFlagsDefaults {
+ public:
+  RCTAppDelegateFeatureFlags(bool fuseboxEnabled)
+  {
+    fuseboxEnabled_ = fuseboxEnabled;
+  }
+
+  bool fuseboxEnabledDebug() override
+  {
+    return fuseboxEnabled_;
+  }
+
+ private:
+  bool fuseboxEnabled_;
+};
+
+class RCTAppDelegateBridgelessFeatureFlags : public RCTAppDelegateFeatureFlags {
+ public:
+  RCTAppDelegateBridgelessFeatureFlags(bool fuseboxEnabled) : RCTAppDelegateFeatureFlags(fuseboxEnabled) {}
+
+  bool useModernRuntimeScheduler() override
+  {
+    return true;
+  }
+  bool enableMicrotasks() override
+  {
+    return true;
+  }
+  bool batchRenderingUpdatesInEventLoop() override
+  {
+    return true;
+  }
+};
 
 - (void)_setUpFeatureFlags
 {
   if ([self bridgelessEnabled]) {
-    facebook::react::ReactNativeFeatureFlags::override(std::make_unique<RCTAppDelegateBridgelessFeatureFlags>());
+    facebook::react::ReactNativeFeatureFlags::override(
+        std::make_unique<RCTAppDelegateBridgelessFeatureFlags>([self unstable_fuseboxEnabled]));
+  } else {
+    facebook::react::ReactNativeFeatureFlags::override(
+        std::make_unique<RCTAppDelegateFeatureFlags>([self unstable_fuseboxEnabled]));
   }
 }
 

@@ -17,17 +17,8 @@ InspectorFlags& InspectorFlags::getInstance() {
   return instance;
 }
 
-bool InspectorFlags::getEnableModernCDPRegistry() const {
-  return loadFlagsAndAssertUnchanged().enableModernCDPRegistry;
-}
-
-bool InspectorFlags::getEnableCxxInspectorPackagerConnection() const {
-  auto& values = loadFlagsAndAssertUnchanged();
-
-  return values.enableCxxInspectorPackagerConnection ||
-      // If we are using the modern CDP registry, then we must also use the C++
-      // InspectorPackagerConnection implementation.
-      values.enableModernCDPRegistry;
+bool InspectorFlags::getFuseboxEnabled() const {
+  return loadFlagsAndAssertUnchanged().fuseboxEnabledDebug;
 }
 
 void InspectorFlags::dangerouslyResetFlags() {
@@ -37,20 +28,13 @@ void InspectorFlags::dangerouslyResetFlags() {
 const InspectorFlags::Values& InspectorFlags::loadFlagsAndAssertUnchanged()
     const {
   InspectorFlags::Values newValues = {
-      .enableCxxInspectorPackagerConnection =
-#ifdef REACT_NATIVE_FORCE_ENABLE_FUSEBOX
-          true,
-#else
-          ReactNativeFeatureFlags::
-              inspectorEnableCxxInspectorPackagerConnection(),
-#endif
-      .enableModernCDPRegistry =
+      .fuseboxEnabledDebug =
 #ifdef REACT_NATIVE_FORCE_ENABLE_FUSEBOX
           true,
 #elif defined(HERMES_ENABLE_DEBUGGER)
-          ReactNativeFeatureFlags::inspectorEnableModernCDPRegistry(),
+          ReactNativeFeatureFlags::fuseboxEnabledDebug(),
 #else
-              false,
+          ReactNativeFeatureFlags::fuseboxEnabledRelease(),
 #endif
   };
 

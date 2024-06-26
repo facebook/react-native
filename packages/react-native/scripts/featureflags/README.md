@@ -32,9 +32,13 @@ module.exports = {
 };
 ```
 
-After any changes to this definitions, the code that provides access to them
-must be regenerated running `yarn featureflags-update` from the `react-native`
-repository.
+**After any change to these definitions**, the code that provides access to them
+must be regenerated running this from the `react-native`
+repository:
+
+```shell
+yarn featureflags-update
+```
 
 ## Access
 

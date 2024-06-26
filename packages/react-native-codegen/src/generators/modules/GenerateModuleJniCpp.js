@@ -334,9 +334,9 @@ function translateReturnTypeToJniType(
     case 'DoubleTypeAnnotation':
       return nullable ? 'Ljava/lang/Double;' : 'D';
     case 'FloatTypeAnnotation':
-      return nullable ? 'Ljava/lang/Float;' : 'F';
+      return nullable ? 'Ljava/lang/Double;' : 'D';
     case 'Int32TypeAnnotation':
-      return nullable ? 'Ljava/lang/Integer;' : 'I';
+      return nullable ? 'Ljava/lang/Double;' : 'D';
     case 'PromiseTypeAnnotation':
       return 'Lcom/facebook/react/bridge/Promise;';
     case 'GenericObjectTypeAnnotation':
@@ -438,11 +438,11 @@ module.exports = {
       .map(hasteModuleName => {
         const {
           aliasMap,
-          spec: {properties},
+          spec: {methods},
         } = nativeModules[hasteModuleName];
         const resolveAlias = createAliasResolver(aliasMap);
 
-        const translatedMethods = properties
+        const translatedMethods = methods
           .map(property =>
             translateMethodForImplementation(
               hasteModuleName,
@@ -457,7 +457,7 @@ module.exports = {
           '\n\n' +
           ModuleClassConstructorTemplate({
             hasteModuleName,
-            methods: properties
+            methods: methods
               .map(({name: propertyName, typeAnnotation}) => {
                 const [{returnTypeAnnotation, params}] =
                   unwrapNullable<NativeModuleFunctionTypeAnnotation>(
