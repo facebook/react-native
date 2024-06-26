@@ -549,6 +549,8 @@ jobs:
         run: node ./scripts/releases/set-rn-version.js --build-type ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
       - name: Setup gradle
         uses: ./.github/actions/setup-gradle
+        with:
+          cache-allow-write: "true"
       - name: Build and publish all the Android Artifacts to /tmp/maven-local
         run: |
           # By default we only build ARM64 to save time/resources. For release/nightlies/prealpha, we override this value to build all archs.
@@ -696,6 +698,8 @@ jobs:
         with:
           node-version: 18
           cache: yarn
+      - name: Setup gradle
+        uses: ./.github/actions/setup-gradle
       - name: Install dependencies
         run: yarn install --non-interactive
       - name: Build packages
