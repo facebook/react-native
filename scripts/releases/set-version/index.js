@@ -42,7 +42,7 @@ async function setVersion(
 ) /*: Promise<void> */ {
   const packages = await getPackages({
     includePrivate: true,
-    includeReactNative: true,
+    includeReactNative: !skipReactNativeVersion,
   });
   const newPackageVersions = Object.fromEntries(
     Object.keys(packages).map(packageName => [packageName, version]),
