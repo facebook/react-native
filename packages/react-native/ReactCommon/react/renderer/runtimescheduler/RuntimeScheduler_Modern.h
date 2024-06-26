@@ -144,6 +144,12 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
       ShadowTreeRevisionConsistencyManager*
           shadowTreeRevisionConsistencyManager) override;
 
+  /*
+   * Identifies whether the runtime scheduler is currently executing tasks via
+   * executeNowOnTheSameThread()
+   */
+  static bool isInSyncBlock() noexcept;
+
  private:
   std::atomic<uint_fast8_t> syncTaskRequests_{0};
 

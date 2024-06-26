@@ -137,18 +137,22 @@ RuntimeSchedulerTimePoint RuntimeScheduler_Modern::now() const noexcept {
   return now_();
 }
 
+static thread_local jsi::Runtime* runtimePtr_ = nullptr;
+
+/* static */ bool RuntimeScheduler_Modern::isInSyncBlock() noexcept {
+  return runtimePtr_ != nullptr;
+}
+
 void RuntimeScheduler_Modern::executeNowOnTheSameThread(
     RawCallback&& callback) {
   SystraceSection s("RuntimeScheduler::executeNowOnTheSameThread");
-
-  static thread_local jsi::Runtime* runtimePtr = nullptr;
 
   auto currentTime = now_();
   auto priority = SchedulerPriority::ImmediatePriority;
   auto expirationTime = currentTime + timeoutForSchedulerPriority(priority);
   Task task{priority, std::move(callback), expirationTime};
 
-  if (runtimePtr == nullptr) {
+  if (runtimePtr_ == nullptr) {
     syncTaskRequests_++;
     executeSynchronouslyOnSameThread_CAN_DEADLOCK(
         runtimeExecutor_,
@@ -157,16 +161,16 @@ void RuntimeScheduler_Modern::executeNowOnTheSameThread(
               "RuntimeScheduler::executeNowOnTheSameThread callback");
 
           syncTaskRequests_--;
-          runtimePtr = &runtime;
+          runtimePtr_ = &runtime;
           runEventLoopTick(runtime, task, currentTime);
-          runtimePtr = nullptr;
+          runtimePtr_ = nullptr;
         });
 
   } else {
     // Protecting against re-entry into `executeNowOnTheSameThread` from within
     // `executeNowOnTheSameThread`. Without accounting for re-rentry, a deadlock
     // will occur when trying to gain access to the runtime.
-    return runEventLoopTick(*runtimePtr, task, currentTime);
+    return runEventLoopTick(*runtimePtr_, task, currentTime);
   }
 
   bool shouldScheduleEventLoop = false;
