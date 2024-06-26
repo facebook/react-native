@@ -13,6 +13,7 @@
 #import <React/RCTBridge.h>
 #import <React/RCTModuleMethod.h>
 #import <React/RCTRootView.h>
+#import <atomic>
 
 @interface AllocationTestModule : NSObject <RCTBridgeModule, RCTInvalidating>
 
@@ -20,7 +21,17 @@
 
 @end
 
-@implementation AllocationTestModule
+@implementation AllocationTestModule {
+  std::atomic<BOOL> _valid;
+}
+
+-(BOOL)isValid {
+  return _valid;
+}
+
+-(void)setValid:(BOOL)newValue {
+  _valid = newValue;
+}
 
 RCT_EXPORT_MODULE();
 
@@ -114,6 +125,7 @@ RCT_EXPORT_METHOD(test
                                                launchOptions:nil];
     XCTAssertTrue(module.isValid, @"AllocationTestModule should be valid");
     (void)bridge;
+    [bridge invalidate];
   }
 
   RCT_RUN_RUNLOOP_WHILE(module.isValid)
@@ -132,7 +144,9 @@ RCT_EXPORT_METHOD(test
                                                launchOptions:nil];
     XCTAssertNotNil(module, @"AllocationTestModule should have been created");
     weakModule = module;
+    [bridge invalidate];
     (void)bridge;
+
   }
 
   RCT_RUN_RUNLOOP_WHILE(weakModule)
@@ -167,6 +181,7 @@ RCT_EXPORT_METHOD(test
     RCT_RUN_RUNLOOP_WHILE(!(rootContentView = [rootView valueForKey:@"contentView"]))
     XCTAssertTrue(rootContentView.userInteractionEnabled, @"RCTContentView should be valid");
     (void)rootView;
+    [bridge invalidate];
   }
 
 #if !TARGET_OS_TV // userInteractionEnabled is true for Apple TV views
