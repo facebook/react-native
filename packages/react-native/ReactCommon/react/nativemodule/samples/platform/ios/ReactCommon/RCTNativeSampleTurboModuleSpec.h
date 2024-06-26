@@ -44,6 +44,10 @@
 @end
 
 @interface NativeSampleTurboModuleSpec : RCTTurboModule
+- (void)emitOnPress;
+- (void)emitOnClick:(NSString *)value;
+- (void)emitOnChange:(NSDictionary *)value;
+- (void)emitOnSubmit:(NSArray *)value;
 @end
 
 namespace facebook::react {

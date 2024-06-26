@@ -813,8 +813,27 @@ void ObjCTurboModule::setMethodArgConversionSelector(NSString *methodName, size_
   methodArgConversionSelectors_[methodName][argIndex] = selectorValue;
 }
 
+void ObjCTurboModule::setEventEmitterCallback(EventEmitterCallback eventEmitterCallback)
+{
+  SEL selector = NSSelectorFromString(@"setEventEmitterCallback:");
+  EventEmitterCallbackWrapper *wrapper = [EventEmitterCallbackWrapper new];
+  wrapper->_eventEmitterCallback = std::move(eventEmitterCallback);
+  NSInvocation *inv =
+      [NSInvocation invocationWithMethodSignature:[[instance_ class] instanceMethodSignatureForSelector:selector]];
+  [inv setSelector:selector];
+  [inv setArgument:(void *)&wrapper atIndex:2];
+  [inv invokeWithTarget:instance_];
+}
+
 } // namespace react
 } // namespace facebook
 
+@implementation EventEmitterCallbackWrapper
+@end
+
 @implementation RCTTurboModule
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper
+{
+  _eventEmitterCallback = std::move(eventEmitterCallbackWrapper->_eventEmitterCallback);
+}
 @end

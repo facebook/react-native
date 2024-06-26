@@ -82,6 +82,10 @@ RCT_EXPORT_MODULE()
 RCT_EXPORT_METHOD(voidFunc)
 {
   // Nothing to do
+  [self emitOnPress];
+  [self emitOnClick:@"click"];
+  [self emitOnChange:@{@"a" : @1, @"b" : @"two"}];
+  [self emitOnSubmit:@[ @{@"a" : @1, @"b" : @"two"}, @{@"a" : @3, @"b" : @"four"} ]];
 }
 
 RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSNumber *, getBool : (BOOL)arg)
