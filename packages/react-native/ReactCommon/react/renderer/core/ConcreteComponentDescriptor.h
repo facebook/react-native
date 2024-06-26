@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include <functional>
 #include <memory>
 
 #include <react/debug/react_native_assert.h>
@@ -119,11 +118,19 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
     // Note that we just check if `Props` has this flag set, no matter
     // the type of ShadowNode; it acts as the single global flag.
     if (CoreFeatures::enablePropIteratorSetter) {
-      rawProps.iterateOverValues([&](RawPropsPropNameHash hash,
-                                     const char* propName,
-                                     const RawValue& fn) {
-        shadowNodeProps.get()->setProp(context, hash, propName, fn);
-      });
+#ifdef ANDROID
+      const auto& dynamic = shadowNodeProps->rawProps;
+#else
+      const auto& dynamic = static_cast<folly::dynamic>(rawProps);
+#endif
+      for (const auto& pair : dynamic.items()) {
+        const auto& name = pair.first.getString();
+        shadowNodeProps->setProp(
+            context,
+            RAW_PROPS_KEY_HASH(name),
+            name.c_str(),
+            RawValue(pair.second));
+      }
     }
 
     return shadowNodeProps;

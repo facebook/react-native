@@ -208,6 +208,7 @@ public class com/facebook/react/ReactFragment$Builder {
 
 public abstract interface class com/facebook/react/ReactHost {
 	public abstract fun addBeforeDestroyListener (Lkotlin/jvm/functions/Function0;)V
+	public abstract fun addReactInstanceEventListener (Lcom/facebook/react/ReactInstanceEventListener;)V
 	public abstract fun createSurface (Landroid/content/Context;Ljava/lang/String;Landroid/os/Bundle;)Lcom/facebook/react/interfaces/fabric/ReactSurface;
 	public abstract fun destroy (Ljava/lang/String;Ljava/lang/Exception;)Lcom/facebook/react/interfaces/TaskInterface;
 	public abstract fun getCurrentReactContext ()Lcom/facebook/react/bridge/ReactContext;
@@ -216,6 +217,7 @@ public abstract interface class com/facebook/react/ReactHost {
 	public abstract fun getLifecycleState ()Lcom/facebook/react/common/LifecycleState;
 	public abstract fun getMemoryPressureRouter ()Lcom/facebook/react/MemoryPressureRouter;
 	public abstract fun getReactQueueConfiguration ()Lcom/facebook/react/bridge/queue/ReactQueueConfiguration;
+	public abstract fun invalidate ()V
 	public abstract fun onActivityResult (Landroid/app/Activity;IILandroid/content/Intent;)V
 	public abstract fun onBackPressed ()Z
 	public abstract fun onConfigurationChanged (Landroid/content/Context;)V
@@ -229,6 +231,7 @@ public abstract interface class com/facebook/react/ReactHost {
 	public abstract fun onWindowFocusChange (Z)V
 	public abstract fun reload (Ljava/lang/String;)Lcom/facebook/react/interfaces/TaskInterface;
 	public abstract fun removeBeforeDestroyListener (Lkotlin/jvm/functions/Function0;)V
+	public abstract fun removeReactInstanceEventListener (Lcom/facebook/react/ReactInstanceEventListener;)V
 	public abstract fun setJsEngineResolutionAlgorithm (Lcom/facebook/react/JSEngineResolutionAlgorithm;)V
 	public abstract fun start ()Lcom/facebook/react/interfaces/TaskInterface;
 }
@@ -254,6 +257,7 @@ public class com/facebook/react/ReactInstanceManager {
 	public fun getViewManagerNames ()Ljava/util/Collection;
 	public fun handleCxxError (Ljava/lang/Exception;)V
 	public fun hasStartedCreatingInitialContext ()Z
+	public fun invalidate ()V
 	public fun onActivityResult (Landroid/app/Activity;IILandroid/content/Intent;)V
 	public fun onBackPressed ()V
 	public fun onConfigurationChanged (Landroid/content/Context;Landroid/content/res/Configuration;)V
@@ -2007,8 +2011,8 @@ public class com/facebook/react/defaults/DefaultReactActivityDelegate : com/face
 public final class com/facebook/react/defaults/DefaultReactHost {
 	public static final field INSTANCE Lcom/facebook/react/defaults/DefaultReactHost;
 	public static final fun getDefaultReactHost (Landroid/content/Context;Lcom/facebook/react/ReactNativeHost;)Lcom/facebook/react/ReactHost;
-	public static final fun getDefaultReactHost (Landroid/content/Context;Ljava/util/List;Ljava/lang/String;Ljava/lang/String;ZZLjava/util/List;)Lcom/facebook/react/ReactHost;
-	public static synthetic fun getDefaultReactHost$default (Landroid/content/Context;Ljava/util/List;Ljava/lang/String;Ljava/lang/String;ZZLjava/util/List;ILjava/lang/Object;)Lcom/facebook/react/ReactHost;
+	public static final fun getDefaultReactHost (Landroid/content/Context;Ljava/util/List;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZZLjava/util/List;)Lcom/facebook/react/ReactHost;
+	public static synthetic fun getDefaultReactHost$default (Landroid/content/Context;Ljava/util/List;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZZLjava/util/List;ILjava/lang/Object;)Lcom/facebook/react/ReactHost;
 }
 
 public abstract class com/facebook/react/defaults/DefaultReactNativeHost : com/facebook/react/ReactNativeHost {
@@ -3798,6 +3802,7 @@ public class com/facebook/react/runtime/ReactHostImpl : com/facebook/react/React
 	public fun getLifecycleState ()Lcom/facebook/react/common/LifecycleState;
 	public fun getMemoryPressureRouter ()Lcom/facebook/react/MemoryPressureRouter;
 	public fun getReactQueueConfiguration ()Lcom/facebook/react/bridge/queue/ReactQueueConfiguration;
+	public fun invalidate ()V
 	public fun onActivityResult (Landroid/app/Activity;IILandroid/content/Intent;)V
 	public fun onBackPressed ()Z
 	public fun onConfigurationChanged (Landroid/content/Context;)V

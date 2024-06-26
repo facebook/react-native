@@ -219,13 +219,13 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
         ViewProps.BORDER_START_WIDTH,
         ViewProps.BORDER_END_WIDTH,
       },
-      defaultFloat = YogaConstants.UNDEFINED)
+      defaultFloat = Float.NaN)
   public void setBorderWidth(ReactViewGroup view, int index, float width) {
-    if (!YogaConstants.isUndefined(width) && width < 0) {
-      width = YogaConstants.UNDEFINED;
+    if (!Float.isNaN(width) && width < 0) {
+      width = Float.NaN;
     }
 
-    if (!YogaConstants.isUndefined(width)) {
+    if (!Float.isNaN(width)) {
       width = PixelUtil.toPixelFromDIP(width);
     }
 

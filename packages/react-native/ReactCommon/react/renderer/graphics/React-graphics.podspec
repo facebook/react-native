@@ -47,6 +47,7 @@ Pod::Spec.new do |s|
                              "platform/cxx",
                              "platform/windows",
   s.header_dir             = "react/renderer/graphics"
+  s.framework = "UIKit"
 
   if ENV['USE_FRAMEWORKS']
     s.module_name            = "React_graphics"
