@@ -11,7 +11,8 @@
 
 'use strict';
 
-import type {ProjectInfo} from '../utils/monorepo';
+/*:: import type {ProjectInfo} from '../utils/monorepo'; */
+
 const {retry} = require('../circleci/retry');
 const {REPO_ROOT} = require('../consts');
 const {getPackages} = require('../utils/monorepo');
