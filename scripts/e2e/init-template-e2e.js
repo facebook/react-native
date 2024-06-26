@@ -120,7 +120,7 @@ async function initNewProjectFromSource(
     execSync(
       `npx @react-native-community/cli@next init ${projectName} \
         --directory ${directory} \
-        --version 0.75.0-rc.1 \
+        --version 0.75.0-rc.2 \
         --verbose \
         --pm npm \
         --skip-install`,
