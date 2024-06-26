@@ -172,36 +172,6 @@ function publishPackage(
 }
 
 /**
- * `package` is an object form of package.json
- * `dependencies` is a map of dependency to version string
- *
- * This replaces both dependencies and devDependencies in package.json
- */
-function applyPackageVersions(
-  originalPackageJson /*: PackageJSON */,
-  packageVersions /*: {[string]: string} */,
-) /*: PackageJSON */ {
-  const packageJson = {...originalPackageJson};
-
-  for (const name of Object.keys(packageVersions)) {
-    if (
-      packageJson.dependencies != null &&
-      packageJson.dependencies[name] != null
-    ) {
-      packageJson.dependencies[name] = packageVersions[name];
-    }
-
-    if (
-      packageJson.devDependencies != null &&
-      packageJson.devDependencies[name] != null
-    ) {
-      packageJson.devDependencies[name] = packageVersions[name];
-    }
-  }
-  return packageJson;
-}
-
-/**
  * `packageName`: name of npm package
  * `tag`: npm tag like `latest` or `next`
  *
@@ -271,7 +241,6 @@ function getVersionsBySpec(
 }
 
 module.exports = {
-  applyPackageVersions,
   getNpmInfo,
   getVersionsBySpec,
   publishPackage,

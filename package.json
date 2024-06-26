@@ -22,7 +22,7 @@
     "print-packages": "node ./scripts/monorepo/print",
     "shellcheck": "./scripts/circleci/analyze_scripts.sh",
     "start": "cd packages/rn-tester && npm run start",
-    "set-version": "node ./scripts/releases/set-version",
+    "set-version": "node ./scripts/releases/set-version.js",
     "test-android": "./gradlew :packages:react-native:ReactAndroid:test",
     "test-ci": "jest --maxWorkers=2 --ci --reporters=\"default\" --reporters=\"jest-junit\"",
     "test-e2e-local-clean": "node ./scripts/release-testing/test-e2e-local-clean.js",

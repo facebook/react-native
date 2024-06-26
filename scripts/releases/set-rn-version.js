@@ -14,7 +14,6 @@ import type {BuildType, Version} from './utils/version-utils';
 */
 
 const {REPO_ROOT} = require('../consts');
-const {applyPackageVersions} = require('../npm-utils');
 const {getNpmInfo} = require('../npm-utils');
 const {parseVersion, validateBuildType} = require('./utils/version-utils');
 const {parseArgs} = require('@pkgjs/parseargs');
@@ -24,10 +23,6 @@ const path = require('path');
 const GRADLE_FILE_PATH = path.join(
   REPO_ROOT,
   'packages/react-native/ReactAndroid/gradle.properties',
-);
-const REACT_NATIVE_PACKAGE_JSON = path.join(
-  REPO_ROOT,
-  'packages/react-native/package.json',
 );
 
 const config = {
@@ -53,8 +48,8 @@ async function main() {
     console.log(`
   Usage: node ./scripts/releases/set-rn-version.js [OPTIONS]
 
-  Updates relevant files in the react-native package and template to
-  materialize the given release version.
+  Updates relevant native files in the react-native package to materialize
+  the given release version. This does not update package.json.
 
   Options:
     --build-type       One of ['dry-run', 'nightly', 'release', 'prealpha'].
@@ -69,44 +64,19 @@ async function main() {
 
   await setReactNativeVersion(
     toVersion ?? getNpmInfo(buildType).version,
-    {},
     buildType,
   );
 }
 
+// updateNativeFiles
 async function setReactNativeVersion(
   version /*: string */,
-  dependencyVersions /*: ?Record<string, string> */,
   buildType /*: ?BuildType */,
 ) {
   const versionInfo = parseVersion(version, buildType);
 
   await updateSourceFiles(versionInfo);
-  await setReactNativePackageVersion(versionInfo.version, dependencyVersions);
   await updateGradleFile(versionInfo.version);
-}
-
-async function setReactNativePackageVersion(
-  version /*: string */,
-  dependencyVersions /*: ?Record<string, string> */,
-) {
-  const originalPackageJsonContent = await fs.readFile(
-    REACT_NATIVE_PACKAGE_JSON,
-    'utf-8',
-  );
-  const originalPackageJson = JSON.parse(originalPackageJsonContent);
-
-  const packageJson =
-    dependencyVersions != null
-      ? applyPackageVersions(originalPackageJson, dependencyVersions)
-      : originalPackageJson;
-
-  packageJson.version = version;
-
-  await fs.writeFile(
-    path.join(REPO_ROOT, 'packages/react-native/package.json'),
-    JSON.stringify(packageJson, null, 2) + '\n',
-  );
 }
 
 function updateSourceFiles(

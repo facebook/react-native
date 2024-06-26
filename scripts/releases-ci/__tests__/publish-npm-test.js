@@ -43,7 +43,9 @@ describe('publish-npm', () => {
         generateAndroidArtifacts: generateAndroidArtifactsMock,
         publishAndroidArtifactsToMaven: publishAndroidArtifactsToMavenMock,
       }))
-      .mock('../../releases/set-version', () => setVersionMock)
+      .mock('../../releases/set-version', () => ({
+        setVersion: setVersionMock,
+      }))
       .mock('../../releases/set-rn-version', () => ({
         setReactNativeVersion: setReactNativeVersionMock,
       }))
@@ -102,11 +104,7 @@ describe('publish-npm', () => {
       expect(removeNewArchFlags).not.toHaveBeenCalled();
 
       expect(setVersionMock).not.toBeCalled();
-      expect(setReactNativeVersionMock).toBeCalledWith(
-        version,
-        null,
-        'dry-run',
-      );
+      expect(setReactNativeVersionMock).toBeCalledWith(version, 'dry-run');
 
       expect(generateAndroidArtifactsMock).toBeCalledWith(version);
       expect(consoleLogMock).toHaveBeenCalledWith(

@@ -37,17 +37,6 @@ describe('setReactNativeVersion', () => {
       ) {
         return 'VERSION_NAME=1000.0.0\n';
       }
-      if (
-        filePath === path.join(REPO_ROOT, 'packages/react-native/package.json')
-      ) {
-        return JSON.stringify({
-          name: 'react-native',
-          version: '1000.0.0',
-          dependencies: {
-            '@react-native/package-a': '1000.0.0',
-          },
-        });
-      }
     });
   });
 
@@ -57,10 +46,7 @@ describe('setReactNativeVersion', () => {
 
   test('should set nightly version', async () => {
     const version = '0.81.0-nightly-29282302-abcd1234';
-    const dependencyVersions = {
-      '@react-native/package-a': version,
-    };
-    await setReactNativeVersion(version, dependencyVersions, 'nightly');
+    await setReactNativeVersion(version, 'nightly');
 
     for (const [filePath, contents] of writeFileMock.mock.calls) {
       // Make snapshot names resilient to platform path sep differences
@@ -72,7 +58,7 @@ describe('setReactNativeVersion', () => {
 
   test('should set release version', async () => {
     const version = '0.81.0';
-    await setReactNativeVersion(version, null, 'release');
+    await setReactNativeVersion(version, 'release');
 
     for (const [filePath, contents] of writeFileMock.mock.calls) {
       // Make snapshot names resilient to platform path sep differences
