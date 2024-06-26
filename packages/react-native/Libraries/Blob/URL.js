@@ -215,9 +215,6 @@ export class URL {
   }
 
   get searchParams(): URLSearchParams {
-    if (this._searchParamsInstance == null) {
-      this._searchParamsInstance = new URLSearchParams();
-    }
     return this._searchParamsInstance;
   }
 
@@ -230,7 +227,7 @@ export class URL {
       return this._url;
     }
     const instanceString = this._searchParamsInstance.toString();
-    const separator = this.href.indexOf('?') > -1 ? '&' : '?';
+    const separator = this._url.indexOf('?') > -1 ? '&' : '?';
     return this._url + separator + instanceString;
   }
 
