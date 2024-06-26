@@ -14,7 +14,6 @@ import android.graphics.Point
 import android.view.View
 import android.view.ViewGroup
 import android.widget.OverScroller
-import androidx.core.view.ViewCompat
 import com.facebook.common.logging.FLog
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.WritableMap
@@ -434,10 +433,7 @@ public object ReactScrollViewHelper {
     scroller.setFriction(1.0f - scrollState.decelerationRate)
 
     // predict where a fling would end up so we can scroll to the nearest snap offset
-    val width =
-        (scrollView.width -
-            ViewCompat.getPaddingStart(scrollView) -
-            ViewCompat.getPaddingEnd(scrollView))
+    val width = scrollView.width - scrollView.getPaddingStart() - scrollView.getPaddingEnd()
     val height = scrollView.height - scrollView.paddingBottom - scrollView.paddingTop
     val finalAnimatedPositionScroll = scrollState.finalAnimatedPositionScroll
     scroller.fling(

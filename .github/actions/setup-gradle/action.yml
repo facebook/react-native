@@ -1,5 +1,9 @@
 name: Setup gradle
 description: "Set up your GitHub Actions workflow with a specific version of gradle"
+inputs:
+  cache-allow-write:
+    description: "Wether the Gradle Cache should be allowed to be written by this job or not"
+    default: "false"
 runs:
   using: "composite"
   steps:
@@ -7,3 +11,4 @@ runs:
       uses: gradle/actions/setup-gradle@v3
       with:
         gradle-version: wrapper
+        cache-read-only: ${{ inputs.cache-allow-write == 'false' }}
