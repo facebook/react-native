@@ -36,7 +36,7 @@ const writeFileMock = jest.fn().mockImplementation((filePath, content) => {
 
   if (!filePath.endsWith('package.json')) {
     // Updated source and build files are already validated in the tests for
-    // `set-rn-version.js`. We also want to avoid polluting this test's
+    // `set-rn-artifacts-version.js`. We also want to avoid polluting this test's
     // snapshots with \@\generated.
     expect('[omitted]').toMatchSnapshot(normalizedFilePath);
     return;

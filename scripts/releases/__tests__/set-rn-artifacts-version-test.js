@@ -22,10 +22,10 @@ jest.mock('fs', () => ({
 }));
 
 const {REPO_ROOT} = require('../../consts');
-const {setReactNativeVersion} = require('../set-rn-version');
+const {updateReactNativeArtifacts} = require('../set-rn-artifacts-version');
 const path = require('path');
 
-describe('setReactNativeVersion', () => {
+describe('updateReactNativeArtifacts', () => {
   beforeAll(() => {
     readFileMock.mockImplementation(filePath => {
       if (
@@ -46,7 +46,7 @@ describe('setReactNativeVersion', () => {
 
   test('should set nightly version', async () => {
     const version = '0.81.0-nightly-29282302-abcd1234';
-    await setReactNativeVersion(version, 'nightly');
+    await updateReactNativeArtifacts(version, 'nightly');
 
     for (const [filePath, contents] of writeFileMock.mock.calls) {
       // Make snapshot names resilient to platform path sep differences
@@ -58,7 +58,7 @@ describe('setReactNativeVersion', () => {
 
   test('should set release version', async () => {
     const version = '0.81.0';
-    await setReactNativeVersion(version, 'release');
+    await updateReactNativeArtifacts(version, 'release');
 
     for (const [filePath, contents] of writeFileMock.mock.calls) {
       // Make snapshot names resilient to platform path sep differences
