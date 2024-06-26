@@ -636,15 +636,15 @@ void UIManager::reportMount(SurfaceId surfaceId) const {
         shadowTree.getMountingCoordinator()->getBaseRevision().rootShadowNode;
   });
 
-  if (!rootShadowNode) {
-    return;
-  }
-
   {
     std::shared_lock lock(mountHookMutex_);
 
     for (auto* mountHook : mountHooks_) {
-      mountHook->shadowTreeDidMount(rootShadowNode, time);
+      if (rootShadowNode) {
+        mountHook->shadowTreeDidMount(rootShadowNode, time);
+      } else {
+        mountHook->shadowTreeDidUnmount(surfaceId, time);
+      }
     }
   }
 }
