@@ -88,9 +88,15 @@ class TextLayoutManager {
       const ParagraphAttributes& paragraphAttributes,
       LayoutConstraints layoutConstraints) const;
 
+  LinesMeasurements doMeasureLines(
+      const AttributedString& attributedString,
+      const ParagraphAttributes& paragraphAttributes,
+      Size size) const;
+
   void* self_{};
   ContextContainer::Shared contextContainer_;
-  TextMeasureCache measureCache_;
+  TextMeasureCache textMeasureCache_;
+  LineMeasureCache lineMeasureCache_;
 };
 
 } // namespace facebook::react

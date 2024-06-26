@@ -62,7 +62,8 @@ class TextLayoutManager {
 
  private:
   std::shared_ptr<void> self_;
-  TextMeasureCache measureCache_{};
+  TextMeasureCache textMeasureCache_{};
+  LineMeasureCache lineMeasureCache_{};
 };
 
 } // namespace facebook::react

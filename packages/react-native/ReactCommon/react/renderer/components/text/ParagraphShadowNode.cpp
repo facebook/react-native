@@ -169,11 +169,18 @@ Float ParagraphShadowNode::baseline(
   auto content = getContent(layoutContext);
   auto attributedString = content.attributedString;
 
-  return textLayoutManager_
-      ->getLastBaseline(
-          attributedString,
-          content.paragraphAttributes,
-          size);
+  auto lines = textLayoutManager_
+      ->measureLines(attributedString, content.paragraphAttributes, size);
+
+  float maximumDescender = 0;
+
+  for (const auto &line : lines) {
+    if (line.descender > maximumDescender) {
+      maximumDescender = line.descender;
+    }
+  }
+        
+  return size.height - maximumDescender;
 }
 
 void ParagraphShadowNode::layout(LayoutContext layoutContext) {

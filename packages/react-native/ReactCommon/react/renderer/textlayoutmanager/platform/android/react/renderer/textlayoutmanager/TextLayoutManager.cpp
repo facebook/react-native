@@ -89,7 +89,8 @@ Size measureAndroidComponent(
 TextLayoutManager::TextLayoutManager(
     const ContextContainer::Shared& contextContainer)
     : contextContainer_(contextContainer),
-      measureCache_(kSimpleThreadSafeCacheSizeCap) {}
+      textMeasureCache_(kSimpleThreadSafeCacheSizeCap),
+      lineMeasureCache_(kSimpleThreadSafeCacheSizeCap) {}
 
 void* TextLayoutManager::getNativeTextLayoutManager() const {
   return self_;
@@ -102,7 +103,7 @@ TextMeasurement TextLayoutManager::measure(
     LayoutConstraints layoutConstraints) const {
   auto& attributedString = attributedStringBox.getValue();
 
-  auto measurement = measureCache_.get(
+  auto measurement = textMeasureCache_.get(
       {attributedString, paragraphAttributes, layoutConstraints},
       [&](const TextMeasureCacheKey& /*key*/) {
         auto telemetry = TransactionTelemetry::threadLocalTelemetry();
@@ -160,7 +161,7 @@ TextMeasurement TextLayoutManager::measureCachedSpannableById(
   return TextMeasurement{size, attachments};
 }
 
-LinesMeasurements TextLayoutManager::measureLines(
+LinesMeasurements TextLayoutManager::doMeasureLines(
     const AttributedString& attributedString,
     const ParagraphAttributes& paragraphAttributes,
     Size size) const {
@@ -197,6 +198,22 @@ LinesMeasurements TextLayoutManager::measureLines(
   // Explicitly release smart pointers to free up space faster in JNI tables
   attributedStringMB.reset();
   paragraphAttributesMB.reset();
+
+  return lineMeasurements;
+}
+
+LinesMeasurements TextLayoutManager::measureLines(
+    const AttributedString& attributedString,
+    const ParagraphAttributes& paragraphAttributes,
+    Size size) const {
+  auto lineMeasurements = lineMeasureCache_.get(
+      {attributedString, paragraphAttributes, size},
+      [&](const LineMeasureCacheKey& /*key*/) {
+        auto measurement =
+            doMeasureLines(attributedString, paragraphAttributes, size);
+
+        return measurement;
+      });
 
   return lineMeasurements;
 }

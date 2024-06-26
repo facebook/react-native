@@ -38,7 +38,7 @@ TextMeasurement TextLayoutManager::measure(
     case AttributedStringBox::Mode::Value: {
       auto &attributedString = attributedStringBox.getValue();
 
-      measurement = measureCache_.get(
+      measurement = textMeasureCache_.get(
           {attributedString, paragraphAttributes, layoutConstraints}, [&](const TextMeasureCacheKey &key) {
             auto telemetry = TransactionTelemetry::threadLocalTelemetry();
             if (telemetry) {
@@ -90,9 +90,16 @@ LinesMeasurements TextLayoutManager::measureLines(
     Size size) const
 {
   RCTTextLayoutManager *textLayoutManager = (RCTTextLayoutManager *)unwrapManagedObject(self_);
-  return [textLayoutManager getLinesForAttributedString:attributedString
-                                    paragraphAttributes:paragraphAttributes
-                                                   size:{size.width, size.height}];
+    
+    auto measurement = lineMeasureCache_.get(
+        {attributedString, paragraphAttributes, size}, [&](const LineMeasureCacheKey &key) {
+          auto measurement = [textLayoutManager getLinesForAttributedString:attributedString
+                                                        paragraphAttributes:paragraphAttributes
+                                                                       size:{size.width, size.height}];
+          return measurement;
+        });
+    
+    return measurement;
 }
 
 float TextLayoutManager::getLastBaseline(
