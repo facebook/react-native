@@ -42,7 +42,7 @@ export type PackageInfo = {
   packageJson: PackageJson,
 };
 
-type ProjectInfo = {
+export type ProjectInfo = {
   [packageName: string]: PackageInfo,
 };
 */
