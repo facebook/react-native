@@ -475,6 +475,8 @@ jobs:
           node ./scripts/releases/set-rn-version.js --build-type ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
       - name: Setup gradle
         uses: ./.github/actions/setup-gradle
+        with:
+          cache-allow-write: "true"
       - name: Build and publish all the Android Artifacts to /tmp/maven-local
         run: |
           # By default we only build ARM64 to save time/resources. For release/nightlies/prealpha, we override this value to build all archs.
@@ -614,6 +616,8 @@ jobs:
           cp $HERMES_WS_DIR/dSYM/Release/hermes.framework.dSYM  ./packages/react-native/ReactAndroid/external-artifacts/artifacts/hermes-framework-dSYM-release.tar.gz
       - name: Setup node.js
         uses: ./.github/actions/setup-node
+      - name: Setup gradle
+        uses: ./.github/actions/setup-gradle
       - name: Install dependencies
         run: yarn install --non-interactive
       - name: Build packages
