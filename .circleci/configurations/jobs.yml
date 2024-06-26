@@ -123,7 +123,7 @@ jobs:
       - run_yarn
       - run:
           name: Set React Native Version
-          command: node ./scripts/releases/set-rn-version.js --build-type << parameters.release_type >>
+          command: node ./scripts/releases/set-rn-artifacts-version.js --build-type << parameters.release_type >>
 
       - with_gradle_cache:
           steps:
@@ -169,7 +169,7 @@ jobs:
           name: Set React Native Version to "dry-run"
           # test_android executes only for dry-run builds. We need to bump the version for caching
           # reasons otherwise we won't reuse the artifacts from the build_android job.
-          command: node ./scripts/releases/set-rn-version.js --build-type "dry-run"
+          command: node ./scripts/releases/set-rn-artifacts-version.js --build-type "dry-run"
       - attach_workspace:
           at: .
 
@@ -971,7 +971,7 @@ jobs:
       - run:
           name: Versioning workspace packages
           command: |
-            node scripts/releases/set-version "<< parameters.monorepo_packages_version >>" --skip-react-native-version
+            node scripts/releases/set-version "<< parameters.monorepo_packages_version >>" --skipReactNativeVersion
       - run:
           name: Versioning react-native package
           command: |

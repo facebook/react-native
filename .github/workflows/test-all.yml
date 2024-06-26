@@ -546,7 +546,7 @@ jobs:
       - name: Install dependencies
         run: yarn install --non-interactive
       - name: Set React Native Version
-        run: node ./scripts/releases/set-rn-version.js --build-type ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
+        run: node ./scripts/releases/set-rn-artifacts-version.js --build-type ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
       - name: Setup gradle
         uses: ./.github/actions/setup-gradle
         with:

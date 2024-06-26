@@ -39,6 +39,10 @@ const config = {
   },
 };
 
+/**
+ * @deprecated This script entry point is deprecated. Please use `set-version`
+ * instead.
+ */
 async function main() {
   const {
     values: {help, 'build-type': buildType, 'to-version': toVersion},
@@ -46,7 +50,7 @@ async function main() {
 
   if (help) {
     console.log(`
-  Usage: node ./scripts/releases/set-rn-version.js [OPTIONS]
+  Usage: node ./scripts/releases/set-rn-artifacts-version.js [OPTIONS]
 
   Updates relevant native files in the react-native package to materialize
   the given release version. This does not update package.json.
@@ -62,14 +66,13 @@ async function main() {
     throw new Error(`Unsupported build type: ${buildType}`);
   }
 
-  await setReactNativeVersion(
+  await updateReactNativeArtifacts(
     toVersion ?? getNpmInfo(buildType).version,
     buildType,
   );
 }
 
-// updateNativeFiles
-async function setReactNativeVersion(
+async function updateReactNativeArtifacts(
   version /*: string */,
   buildType /*: ?BuildType */,
 ) {
@@ -123,7 +126,7 @@ async function updateGradleFile(version /*: string */) /*: Promise<void> */ {
 }
 
 module.exports = {
-  setReactNativeVersion,
+  updateReactNativeArtifacts,
   updateGradleFile,
   updateSourceFiles,
 };
