@@ -151,6 +151,8 @@ export class URL {
   search: string;
   hash: string;
   origin: string;
+  _url: string;
+  _searchParamsInstance: ?URLSearchParams = null;
 
   constructor(url: string, base?: string | URL) {
     if (base) {
@@ -163,7 +165,7 @@ export class URL {
     }
 
     const parser = this.parseURL(url);
-    this.href = url;
+    this._url = url;
     this.protocol = parser.protocol;
     this.username = parser.username;
     this.password = parser.password;
@@ -174,9 +176,10 @@ export class URL {
     this.search = parser.search;
     this.hash = parser.hash;
     this.origin = parser.origin;
+    this.searchParams = new URLSearchParams(this.search);
 
     if (this.pathname === '/' && !this.href.endsWith('/')) {
-      this.href += '/';
+      this._url += '/';
     }
   }
 
@@ -211,11 +214,27 @@ export class URL {
     };
   }
 
+  get searchParams(): URLSearchParams {
+    if (this._searchParamsInstance == null) {
+      this._searchParamsInstance = new URLSearchParams();
+    }
+    return this._searchParamsInstance;
+  }
+
+  get href(): string {
+    return this.toString();
+  }
+
   toString(): string {
-    return this.href;
+    if (this._searchParamsInstance === null) {
+      return this._url;
+    }
+    const instanceString = this._searchParamsInstance.toString();
+    const separator = this.href.indexOf('?') > -1 ? '&' : '?';
+    return this._url + separator + instanceString;
   }
 
   toJSON(): string {
-    return this.href;
+    return this.toString();
   }
 }
