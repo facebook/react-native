@@ -744,24 +744,4 @@ public class TextLayoutManager {
         createLayout(context, attributedString, paragraphAttributes, width, height, null);
     return FontMetricsUtil.getFontMetrics(layout.getText(), layout, sTextPaintInstance, context);
   }
-
-  public static float getLastBaseline(
-      @NonNull Context context,
-      MapBuffer attributedString,
-      MapBuffer paragraphAttributes,
-      float width,
-      float height) {
-
-    Layout layout =
-        createLayout(context, attributedString, paragraphAttributes, width, height, null);
-
-    float maxDescent = 0;
-    for (int i = 0; i < layout.getLineCount(); i++) {
-      if (maxDescent < layout.getLineDescent(i)) {
-        maxDescent = layout.getLineDescent(i);
-      }
-    }
-
-    return PixelUtil.toDIPFromPixel(height - maxDescent);
-  }
 }

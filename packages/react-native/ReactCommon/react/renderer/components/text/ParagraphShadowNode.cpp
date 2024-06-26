@@ -179,7 +179,7 @@ Float ParagraphShadowNode::baseline(
       maximumDescender = line.descender;
     }
   }
-        
+
   return size.height - maximumDescender;
 }
 

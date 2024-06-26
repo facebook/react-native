@@ -107,10 +107,18 @@ float TextLayoutManager::getLastBaseline(
     ParagraphAttributes paragraphAttributes,
     Size size) const
 {
-  RCTTextLayoutManager *textLayoutManager = (RCTTextLayoutManager *)unwrapManagedObject(self_);
-    return [textLayoutManager getBaselineForAttributedString:attributedString
-                                         paragraphAttributes:paragraphAttributes
-                                                        size:{size.width, size.height}];
+  auto lines = this
+      ->measureLines(attributedString, paragraphAttributes, size);
+
+  float maximumDescender = 0;
+
+  for (const auto &line : lines) {
+    if (line.descender > maximumDescender) {
+      maximumDescender = line.descender;
+    }
+  }
+
+  return size.height - maximumDescender;
 }
 
 } // namespace facebook::react

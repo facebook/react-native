@@ -222,29 +222,18 @@ float TextLayoutManager::getLastBaseline(
     AttributedString attributedString,
     ParagraphAttributes paragraphAttributes,
     Size size) const {
-    const jni::global_ref<jobject>& fabricUIManager =
-            contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
-    static auto getLastBaseline =
-            jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
-                    ->getMethod<jfloat(
-                            JReadableMapBuffer::javaobject,
-                            JReadableMapBuffer::javaobject,
-                            jfloat,
-                            jfloat)>("getLastBaseline");
+  auto lines = this
+      ->measureLines(attributedString, paragraphAttributes, size);
 
-    auto attributedStringMB =
-            JReadableMapBuffer::createWithContents(toMapBuffer(attributedString));
-    auto paragraphAttributesMB =
-            JReadableMapBuffer::createWithContents(toMapBuffer(paragraphAttributes));
+  float maximumDescender = 0;
 
-    auto lastBaseline = getLastBaseline(
-            fabricUIManager,
-            attributedStringMB.get(),
-            paragraphAttributesMB.get(),
-            size.width,
-            size.height);
+  for (const auto &line : lines) {
+    if (line.descender > maximumDescender) {
+      maximumDescender = line.descender;
+    }
+  }
 
-    return lastBaseline;
+  return size.height - maximumDescender;
 }
 
 TextMeasurement TextLayoutManager::doMeasure(
