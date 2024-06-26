@@ -22,8 +22,8 @@
     "dist"
   ],
   "dependencies": {
-    "@react-native-community/cli-server-api": "14.0.0-alpha.10",
-    "@react-native-community/cli-tools": "14.0.0-alpha.10",
+    "@react-native-community/cli-server-api": "14.0.0-alpha.11",
+    "@react-native-community/cli-tools": "14.0.0-alpha.11",
     "@react-native/dev-middleware": "0.75.0-rc.1",
     "@react-native/metro-babel-transformer": "0.75.0-rc.1",
     "chalk": "^4.0.0",
