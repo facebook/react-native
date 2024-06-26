@@ -472,7 +472,7 @@ jobs:
       - name: Set React Native Version
         run: |
           git config --global --add safe.directory /__w/react-native/react-native
-          node ./scripts/releases/set-rn-version.js --build-type ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
+          node ./scripts/releases/set-rn-artifacts-version.js --build-type ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
       - name: Setup gradle
         uses: ./.github/actions/setup-gradle
         with:

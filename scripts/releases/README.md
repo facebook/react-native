@@ -23,6 +23,9 @@ Bump the version of all packages.
 
 If `--skipReactNativeVersion` is passed, the `react-native` package version will be left unmodified as `"1000.0.0"` (special static version on `main`), and native files will not be touched.
 
-### `set-rn-version`
+### `set-rn-artifacts-version`
+
+> [!Note]
+> **Deprecated**: Prefer `set-version`. This entry point is a subset of `set-version`, and is used only by test workflows. We will replace these call sites in future.
 
 Updates relevant native files in the `react-native` package to materialize the given release version. This is run by `set-version` unless `--skipReactNativeVersion` is passed.
