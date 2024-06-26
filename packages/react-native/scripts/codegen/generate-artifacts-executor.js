@@ -364,7 +364,7 @@ function computeOutputPath(projectRoot, baseOutputPath, pkgJson, platform) {
   if (baseOutputPath == null) {
     const outputDirFromPkgJson = readOutputDirFromPkgJson(pkgJson, platform);
     if (outputDirFromPkgJson != null) {
-      baseOutputPath = outputDirFromPkgJson;
+      baseOutputPath = path.join(projectRoot, outputDirFromPkgJson);
     } else {
       baseOutputPath = projectRoot;
     }
