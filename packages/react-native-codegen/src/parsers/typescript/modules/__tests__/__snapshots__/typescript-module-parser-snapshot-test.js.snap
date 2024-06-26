@@ -1731,11 +1731,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_EV
         ],
         'methods': []
       },
-      'moduleName': 'SampleTurboModuleCxx',
-      'excludedPlatforms': [
-        'iOS',
-        'android'
-      ]
+      'moduleName': 'SampleTurboModule'
     }
   }
 }"

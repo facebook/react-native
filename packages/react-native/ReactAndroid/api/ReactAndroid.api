@@ -543,6 +543,7 @@ public abstract class com/facebook/react/bridge/BaseJavaModule : com/facebook/re
 	public static final field METHOD_TYPE_ASYNC Ljava/lang/String;
 	public static final field METHOD_TYPE_PROMISE Ljava/lang/String;
 	public static final field METHOD_TYPE_SYNC Ljava/lang/String;
+	protected field mEventEmitterCallback Lcom/facebook/react/bridge/CxxCallbackImpl;
 	public fun <init> ()V
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
 	public fun canOverrideExistingModule ()Z

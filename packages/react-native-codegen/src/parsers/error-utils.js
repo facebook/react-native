@@ -164,9 +164,8 @@ function throwIfEventEmitterTypeIsUnsupported(
   parser: Parser,
   nullable: boolean,
   untyped: boolean,
-  cxxOnly: boolean,
 ) {
-  if (nullable || untyped || !cxxOnly) {
+  if (nullable || untyped) {
     throw new UnsupportedModuleEventEmitterPropertyParserError(
       nativeModuleName,
       propertyName,
@@ -174,7 +173,6 @@ function throwIfEventEmitterTypeIsUnsupported(
       parser.language(),
       nullable,
       untyped,
-      cxxOnly,
     );
   }
 }
