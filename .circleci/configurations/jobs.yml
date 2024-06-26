@@ -969,13 +969,9 @@ jobs:
           fingerprints:
             - "1f:c7:61:c4:e2:ff:77:e3:cc:ca:a7:34:c2:79:e3:3c"
       - run:
-          name: Versioning workspace packages
+          name: Versioning project
           command: |
-            node scripts/releases/set-version "<< parameters.monorepo_packages_version >>" --skipReactNativeVersion
-      - run:
-          name: Versioning react-native package
-          command: |
-            node scripts/releases/set-rn-version.js -v "<< parameters.version >>" --build-type "release"
+            node scripts/releases/set-version.js "<< parameters.monorepo_packages_version >>"
       - run:
           name: Creating release commit
           command: |
