@@ -8,6 +8,7 @@
 #import <atomic>
 #include <memory>
 
+#ifdef DEBUG
 struct NSUIntegerCounterLifeCycleInfo {
   std::weak_ptr<std::atomic<NSUInteger>> weakPointer;
 };
@@ -15,6 +16,7 @@ struct NSUIntegerCounterLifeCycleInfo {
 struct UInt64CounterLifeCycleInfo {
   std::weak_ptr<std::atomic<uint64_t>> weakPointer;
 };
+#endif
 
 NSUIntegerCounter RCTCreateAtomicNSUIntegerCounter(void) {
   return RCTCreateAtomicNSUIntegerCounterWithSpy(nil);
@@ -36,6 +38,7 @@ NSUIntegerCounter inline RCTCreateAtomicNSUIntegerCounterWithSpy(CounterLifeCycl
   if (spy) {
     [NSException raise:@"Illegal use of counter spy"
                 format:@"Spy should not be provided for %s in production", __FUNCTION__];
+    spy(NULL);
   }
 #endif
   return ^NSUInteger() {
@@ -55,6 +58,7 @@ UInt64Counter inline RCTCreateAtomicUInt64CounterWithSpy(CounterLifeCycleSpy spy
   if (spy) {
     [NSException raise:@"Illegal use of counter spy"
                 format:@"Spy should not be provided for %s in production", __FUNCTION__];
+    spy(NULL);
   }
 #endif
   return ^uint64_t() {
@@ -63,25 +67,27 @@ UInt64Counter inline RCTCreateAtomicUInt64CounterWithSpy(CounterLifeCycleSpy spy
 }
 
 BOOL RCTAssertAtomicNSUIntegerCounterIsDeallocated(void *ptr) {
-#ifndef DEBUG
-  [NSException raise:@"Illegal use of counter deallocation observation"
-              format:@"%s should not be called in production code", __FUNCTION__];
-#endif
+#ifdef DEBUG
   NSUIntegerCounterLifeCycleInfo* info = static_cast<NSUIntegerCounterLifeCycleInfo *>(ptr);
   if (info) {
     return info->weakPointer.expired();
   }
+#else
+  [NSException raise:@"Illegal use of counter deallocation observation"
+              format:@"%s should not be called in production code", __FUNCTION__];
+#endif
   return NO;
 }
 
 BOOL RCTAssertAtomicUInt64CounterIsDeallocated(void *ptr) {
-#ifndef DEBUG
-  [NSException raise:@"Illegal use of counter deallocation observation"
-              format:@"%s should not be called in production code", __FUNCTION__];
-#endif
+#ifdef DEBUG
   UInt64CounterLifeCycleInfo* info = static_cast<UInt64CounterLifeCycleInfo *>(ptr);
   if (info) {
     return info->weakPointer.expired();
   }
+#else
+  [NSException raise:@"Illegal use of counter deallocation observation"
+              format:@"%s should not be called in production code", __FUNCTION__];
+#endif
   return NO;
 }
