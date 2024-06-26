@@ -175,7 +175,6 @@ export class URL {
     this.search = parser.search;
     this.hash = parser.hash;
     this.origin = parser.origin;
-    this.searchParams = new URLSearchParams(this.search);
 
     if (this.pathname === '/' && !this.href.endsWith('/')) {
       this._url += '/';
