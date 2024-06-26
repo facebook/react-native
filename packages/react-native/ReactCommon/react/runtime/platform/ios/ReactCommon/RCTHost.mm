@@ -13,6 +13,7 @@
 #import <React/RCTConvert.h>
 #import <React/RCTFabricSurface.h>
 #import <React/RCTInspectorDevServerHelper.h>
+#import <React/RCTInspectorUtils.h>
 #import <React/RCTJSThread.h>
 #import <React/RCTLog.h>
 #import <React/RCTMockDef.h>
@@ -42,8 +43,14 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
 
   jsinspector_modern::HostTargetMetadata getMetadata() override
   {
+    auto metadata = [RCTInspectorUtils getHostMetadata];
+
     return {
+        .appIdentifier = [metadata.appIdentifier UTF8String],
+        .deviceName = [metadata.deviceName UTF8String],
         .integrationName = "iOS Bridgeless (RCTHost)",
+        .platform = [metadata.platform UTF8String],
+        .reactNativeVersion = [metadata.reactNativeVersion UTF8String],
     };
   }
 
