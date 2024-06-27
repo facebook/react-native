@@ -166,7 +166,7 @@ void IntersectionObserverManager::shadowTreeDidMount(
     const RootShadowNode::Shared& rootShadowNode,
     double time) noexcept {
   updateIntersectionObservations(
-      rootShadowNode->getSurfaceId(), rootShadowNode, time);
+      rootShadowNode->getSurfaceId(), rootShadowNode.get(), time);
 }
 
 void IntersectionObserverManager::shadowTreeDidUnmount(
@@ -179,7 +179,7 @@ void IntersectionObserverManager::shadowTreeDidUnmount(
 
 void IntersectionObserverManager::updateIntersectionObservations(
     SurfaceId surfaceId,
-    const RootShadowNode::Shared& rootShadowNode,
+    const RootShadowNode* rootShadowNode,
     double time) {
   SystraceSection s(
       "IntersectionObserverManager::updateIntersectionObservations");
