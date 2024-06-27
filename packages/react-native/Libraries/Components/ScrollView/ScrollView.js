@@ -649,13 +649,13 @@ export type Props = $ReadOnly<{|
    * A ref to the inner View element of the ScrollView. This should be used
    * instead of calling `getInnerViewRef`.
    */
-  innerViewRef?: ForwardedRef<InnerViewInstance>,
+  innerViewRef?: React.RefSetter<InnerViewInstance>,
   /**
    * A ref to the Native ScrollView component. This ref can be used to call
    * all of ScrollView's public methods, in addition to native methods like
    * measure, measureLayout, etc.
    */
-  scrollViewRef?: ForwardedRef<PublicScrollViewInstance>,
+  scrollViewRef?: React.RefSetter<PublicScrollViewInstance>,
 |}>;
 
 type State = {|
@@ -1891,11 +1891,9 @@ const styles = StyleSheet.create({
   },
 });
 
-type ForwardedRef<T> = {current: null | T, ...} | ((null | T) => mixed);
-
 type RefForwarder<TNativeInstance, TPublicInstance> = {
   getForwardingRef: (
-    ?ForwardedRef<TPublicInstance>,
+    ?React.RefSetter<TPublicInstance>,
   ) => (TNativeInstance | null) => void,
   nativeInstance: TNativeInstance | null,
   publicInstance: TPublicInstance | null,
@@ -1933,21 +1931,22 @@ function createRefForwarder<TNativeInstance, TPublicInstance>(
   return state;
 }
 
-/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
- * LTI update could not be added via codemod */
-function Wrapper(props, ref: (mixed => mixed) | {current: mixed, ...}) {
+// NOTE: This wrapper component is necessary because `ScrollView` is a class
+// component and we need to map `ref` to a differently named prop. This can be
+// removed when `ScrollView` is a functional component.
+function Wrapper({
+  ref,
+  ...props
+}: {
+  ...Props,
+  ref: React.RefSetter<PublicScrollViewInstance>,
+}): React.Node {
   return <ScrollView {...props} scrollViewRef={ref} />;
 }
 Wrapper.displayName = 'ScrollView';
-// $FlowFixMe[incompatible-call]
-const ForwardedScrollView = React.forwardRef(Wrapper);
+Wrapper.Context = ScrollViewContext;
 
-// $FlowFixMe[prop-missing] Add static context to ForwardedScrollView
-ForwardedScrollView.Context = ScrollViewContext;
-
-ForwardedScrollView.displayName = 'ScrollView';
-
-module.exports = ((ForwardedScrollView: $FlowFixMe): React.AbstractComponent<
+module.exports = ((Wrapper: $FlowFixMe): React.AbstractComponent<
   React.ElementConfig<typeof ScrollView>,
   PublicScrollViewInstance,
 > &
