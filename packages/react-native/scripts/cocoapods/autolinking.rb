@@ -168,7 +168,7 @@ def link_native_modules!(config)
 
         # Support passing in a path relative to the root of the package
         if phase["path"]
-          phase["script"] = File.read(File.expand_path(phase["path"], package["root"]))
+          phase["script"] = File.read(File.expand_path(phase["path"], package[:path]))
           phase.delete("path")
         end
 
