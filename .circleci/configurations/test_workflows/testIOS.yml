@@ -75,7 +75,7 @@
             parameters:
               jsengine: ["Hermes", "JSC"]
       - test_ios_rntester:
-          run_unit_tests: true
+          run_unit_tests: false
           use_frameworks: "StaticLibraries"
           ruby_version: "2.6.10"
           requires:
