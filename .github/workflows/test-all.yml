@@ -62,7 +62,7 @@ jobs:
       - name: Restore Hermes workspace
         uses: ./.github/actions/restore-hermes-workspace
       - name: Hermes apple cache
-        uses: actions/cache@v4.0.0
+        uses: actions/cache/restore@v4.0.0
         with:
           path: ./packages/react-native/sdks/hermes/build_host_hermesc
           key: v2-hermesc-apple-${{ needs.prepare_hermes_workspace.outputs.hermes-version }}-${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
@@ -71,6 +71,18 @@ jobs:
           cd ./packages/react-native/sdks/hermes || exit 1
           . ./utils/build-apple-framework.sh
           build_host_hermesc_if_needed
+      - name: Upload HermesC Artifact
+        uses: actions/upload-artifact@v4.3.1
+        with:
+          name: hermesc-apple
+          path: ./packages/react-native/sdks/hermes/build_host_hermesc
+      - name: Cache hermesc apple
+        uses: actions/cache/save@v4.0.0
+        if: ${{ github.ref == 'refs/heads/main' || contains(github.ref, '-stable') }} # To avoid that the cache explode.
+        with:
+          path: ./packages/react-native/sdks/hermes/build_host_hermesc
+          key: v2-hermesc-apple-${{ needs.prepare_hermes_workspace.outputs.hermes-version }}-${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
+          enableCrossOsArchive: true
 
   build_apple_slices_hermes:
     runs-on: macos-14
@@ -79,6 +91,9 @@ jobs:
       HERMES_WS_DIR: /tmp/hermes
       HERMES_TARBALL_ARTIFACTS_DIR: /tmp/hermes/hermes-runtime-darwin
       HERMES_OSXBIN_ARTIFACTS_DIR: /tmp/hermes/osx-bin
+      IOS_DEPLOYMENT_TARGET: "13.4"
+      XROS_DEPLOYMENT_TARGET: "1.0"
+      MAC_DEPLOYMENT_TARGET: "10.15"
     continue-on-error: true
     strategy:
       fail-fast: false
@@ -90,30 +105,19 @@ jobs:
         uses: actions/checkout@v4.1.1
       - name: Setup xcode
         uses: ./.github/actions/setup-xcode
-      - name: Cache setup
-        id: cache_setup
-        uses: ./.github/actions/cache_setup
-        with:
-          hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
-          react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
       - name: Restore Hermes workspace
         uses: ./.github/actions/restore-hermes-workspace
-      - name: Check if the required artifacts already exist
-        id: check_if_apple_artifacts_are_there
-        run: |
-          FLAVOR="${{ matrix.flavor }}"
-          echo "Flavor is $FLAVOR"
-          OSX_BIN="/tmp/hermes/osx-bin/$FLAVOR"
-          DSYM="/tmp/hermes/dSYM/$FLAVOR"
-          HERMES="/tmp/hermes/hermes-runtime-darwin/hermes-ios-$FLAVOR.tar.gz"
-
-          if [[ -d "$OSX_BIN" ]] && \
-             [[ -d "$DSYM" ]] && \
-             [[ -f "$HERMES" ]]; then
-
-            echo "Artifacts are there!"
-            echo "ARTIFACTS_EXIST=true" >> $GITHUB_ENV
-          fi
+      - name: Restore HermesC Artifact
+        uses: actions/download-artifact@v4.1.3
+        with:
+          name: hermesc-apple
+          path: ./packages/react-native/sdks/hermes/build_host_hermesc
+      - name: Restore Slice From Cache
+        id: restore-slice-cache
+        uses: actions/cache/restore@v4.0.0
+        with:
+          path: ./packages/react-native/sdks/hermes/build_${{ matrix.slice }}_${{ matrix.flavor }}
+          key: v4-hermes-apple-${{ needs.prepare_hermes_workspace.outputs.hermes-version }}-${{ needs.prepare_hermes_workspace.outputs.react-native-version }}-${{ hashfiles('packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh') }}-${{ matrix.slice }}-${{ matrix.flavor }}
       - name: Build the Hermes ${{ matrix.slice }} frameworks
         run: |
           cd ./packages/react-native/sdks/hermes || exit 1
@@ -132,11 +136,20 @@ jobs:
             exit 0
           fi
 
+          export RELEASE_VERSION=${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
+
+          # HermesC is used to build hermes, so it has to be executable
+          chmod +x ./build_host_hermesc/bin/hermesc
+
           if [[ "$SLICE" == "macosx" ]]; then
             echo "[HERMES] Building Hermes for MacOS"
+
+            chmod +x ./utils/build-mac-framework.sh
             BUILD_TYPE="${{ matrix.flavor }}" ./utils/build-mac-framework.sh
           else
             echo "[HERMES] Building Hermes for iOS: $SLICE"
+
+            chmod +x ./utils/build-ios-framework.sh
             BUILD_TYPE="${{ matrix.flavor }}" ./utils/build-ios-framework.sh "$SLICE"
           fi
 
@@ -158,8 +171,14 @@ jobs:
             echo "Please try again"
             exit 1
           fi
+      - name: Upload Artifact for Slice (${{ matrix.slice }}, ${{ matrix.flavor }}}
+        uses: actions/upload-artifact@v4.3.1
+        with:
+          name: slice-${{ matrix.slice }}-${{ matrix.flavor }}
+          path: ./packages/react-native/sdks/hermes/build_${{ matrix.slice }}_${{ matrix.flavor }}
       - name: Save slice cache
-        uses: actions/cache@v4.0.0
+        if: ${{ github.ref == 'refs/heads/main' || contains(github.ref, '-stable') }} # To avoid that the cache explode.
+        uses: actions/cache/save@v4.0.0
         with:
           path: ./packages/react-native/sdks/hermes/build_${{ matrix.slice }}_${{ matrix.flavor }}
           key: v4-hermes-apple-${{ needs.prepare_hermes_workspace.outputs.hermes-version }}-${{ needs.prepare_hermes_workspace.outputs.react-native-version }}-${{ hashfiles('packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh') }}-${{ matrix.slice }}-${{ matrix.flavor }}
@@ -182,14 +201,16 @@ jobs:
         uses: ./.github/actions/setup-xcode
       - name: Setup node.js
         uses: ./.github/actions/setup-node
-      - name: Cache setup
-        id: cache_setup
-        uses: ./.github/actions/cache_setup
-        with:
-          hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
-          react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
       - name: Restore Hermes workspace
         uses: ./.github/actions/restore-hermes-workspace
+      - name: Restore Cached Artifacts
+        uses: actions/cache/restore@v4.0.0
+        with:
+          key: v3-hermes-artifacts-${{ matrix.flavor }}-${{ needs.prepare_hermes_workspace.outputs.hermes-version }}-${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
+          path: |
+            /tmp/hermes/osx-bin/${{ matrix.flavor }}
+            /tmp/hermes/dSYM/${{ matrix.flavor }}
+            /tmp/hermes/hermes-runtime-darwin/hermes-ios-${{ matrix.flavor }}.tar.gz
       - name: Check if the required artifacts already exist
         id: check_if_apple_artifacts_are_there
         run: |
@@ -212,40 +233,40 @@ jobs:
         run: yarn install --non-interactive
       - name: Slice cache macosx
         if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != 'true' }}
-        uses: actions/cache@v4.0.0
+        uses: actions/download-artifact@v4.1.3
         with:
           path: ./packages/react-native/sdks/hermes/build_macosx_${{ matrix.flavor }}
-          key: v4-hermes-apple-${{ needs.prepare_hermes_workspace.outputs.hermes-version }}-${{ needs.prepare_hermes_workspace.outputs.react-native-version }}-${{ hashfiles('packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh') }}-macosx-${{ matrix.flavor }}
+          name: slice-macosx-${{ matrix.flavor }}
       - name: Slice cache iphoneos
         if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != 'true' }}
-        uses: actions/cache@v4.0.0
+        uses: actions/download-artifact@v4.1.3
         with:
           path: ./packages/react-native/sdks/hermes/build_iphoneos_${{ matrix.flavor }}
-          key: v4-hermes-apple-${{ needs.prepare_hermes_workspace.outputs.hermes-version }}-${{ needs.prepare_hermes_workspace.outputs.react-native-version }}-${{ hashfiles('packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh') }}-iphoneos-${{ matrix.flavor }}
+          name: slice-iphoneos-${{ matrix.flavor }}
       - name: Slice cache iphonesimulator
         if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != 'true' }}
-        uses: actions/cache@v4.0.0
+        uses: actions/download-artifact@v4.1.3
         with:
           path: ./packages/react-native/sdks/hermes/build_iphonesimulator_${{ matrix.flavor }}
-          key: v4-hermes-apple-${{ needs.prepare_hermes_workspace.outputs.hermes-version }}-${{ needs.prepare_hermes_workspace.outputs.react-native-version }}-${{ hashfiles('packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh') }}-iphonesimulator-${{ matrix.flavor }}
+          name: slice-iphonesimulator-${{ matrix.flavor }}
       - name: Slice cache catalyst
         if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != 'true' }}
-        uses: actions/cache@v4.0.0
+        uses: actions/download-artifact@v4.1.3
         with:
           path: ./packages/react-native/sdks/hermes/build_catalyst_${{ matrix.flavor }}
-          key: v4-hermes-apple-${{ needs.prepare_hermes_workspace.outputs.hermes-version }}-${{ needs.prepare_hermes_workspace.outputs.react-native-version }}-${{ hashfiles('packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh') }}-catalyst-${{ matrix.flavor }}
+          name: slice-catalyst-${{ matrix.flavor }}
       - name: Slice cache xros
         if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != 'true' }}
-        uses: actions/cache@v4.0.0
+        uses: actions/download-artifact@v4.1.3
         with:
           path: ./packages/react-native/sdks/hermes/build_xros_${{ matrix.flavor }}
-          key: v4-hermes-apple-${{ needs.prepare_hermes_workspace.outputs.hermes-version }}-${{ needs.prepare_hermes_workspace.outputs.react-native-version }}-${{ hashfiles('packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh') }}-xros-${{ matrix.flavor }}
+          name: slice-xros-${{ matrix.flavor }}
       - name: Slice cache xrsimulator
         if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != 'true' }}
-        uses: actions/cache@v4.0.0
+        uses: actions/download-artifact@v4.1.3
         with:
           path: ./packages/react-native/sdks/hermes/build_xrsimulator_${{ matrix.flavor }}
-          key: v4-hermes-apple-${{ needs.prepare_hermes_workspace.outputs.hermes-version }}-${{ needs.prepare_hermes_workspace.outputs.react-native-version }}-${{ hashfiles('packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh') }}-xrsimulator-${{ matrix.flavor }}
+          name: slice-xrsimulator-${{ matrix.flavor }}
       - name: Move back build folders
         if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != 'true' }}
         run: |
@@ -261,6 +282,7 @@ jobs:
         if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != 'true' }}
         run: |
           cd ./packages/react-native/sdks/hermes || exit 1
+          chmod +x ./utils/build-apple-framework.sh
           . ./utils/build-apple-framework.sh
           prepare_dest_root_for_ci
       - name: Create fat framework for iOS
@@ -270,6 +292,8 @@ jobs:
           echo "[HERMES] Creating the universal framework"
           chmod +x ./utils/build-ios-framework.sh
           ./utils/build-ios-framework.sh build_framework
+
+          chmod +x ./destroot/bin/hermesc
       - name: Package the Hermes Apple frameworks
         if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != 'true' }}
         run: |
@@ -295,16 +319,6 @@ jobs:
           mkdir -p /tmp/hermes/osx-bin/${{ matrix.flavor }}
           cp ./packages/react-native/sdks/hermes/build_macosx/bin/* /tmp/hermes/osx-bin/${{ matrix.flavor }}
           ls -lR /tmp/hermes/osx-bin/
-      - name: Upload darwin artifacts
-        uses: actions/upload-artifact@v4.3.1
-        with:
-          name: hermes-darwin-bin-${{ matrix.flavor }}
-          path: /tmp/hermes/hermes-runtime-darwin
-      - name: Upload osx-bin
-        uses: actions/upload-artifact@v4.3.1
-        with:
-          name: hermes-osx-bin-${{ matrix.flavor }}
-          path: /tmp/hermes/osx-bin
       - name: Create dSYM archive
         if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != 'true' }}
         run: |
@@ -338,6 +352,25 @@ jobs:
         with:
           name: hermes-dSYM-${{ matrix.flavor }}
           path: /tmp/hermes/dSYM/${{ matrix.flavor }}
+      - name: Upload hermes Runtime artifacts
+        uses: actions/upload-artifact@v4.3.1
+        with:
+          name: hermes-darwin-bin-${{ matrix.flavor }}
+          path: /tmp/hermes/hermes-runtime-darwin/hermes-ios-${{ matrix.flavor }}.tar.gz
+      - name: Upload hermes osx artifacts
+        uses: actions/upload-artifact@v4.3.1
+        with:
+          name: hermes-osx-bin-${{ matrix.flavor }}
+          path: /tmp/hermes/osx-bin/${{ matrix.flavor }}
+      - name: Upload Hermes Artifacts
+        uses: actions/cache/save@v4.0.0
+        if: ${{ github.ref == 'refs/heads/main' || contains(github.ref, '-stable') }} # To avoid that the cache explode.
+        with:
+          key: v3-hermes-artifacts-${{ matrix.flavor }}-${{ needs.prepare_hermes_workspace.outputs.hermes-version }}-${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
+          path: |
+            /tmp/hermes/osx-bin/${{ matrix.flavor }}
+            /tmp/hermes/dSYM/${{ matrix.flavor }}
+            /tmp/hermes/hermes-runtime-darwin/hermes-ios-${{ matrix.flavor }}.tar.gz
 
   test_ios_rntester_ruby_3_2_0:
     runs-on: macos-13
@@ -407,6 +440,9 @@ jobs:
   build_hermesc_linux:
     runs-on: ubuntu-latest
     needs: prepare_hermes_workspace
+    env:
+      HERMES_WS_DIR: /tmp/hermes
+      HERMES_TARBALL_ARTIFACTS_DIR: /tmp/hermes/hermes-runtime-darwin
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.1
@@ -415,12 +451,8 @@ jobs:
           sudo apt update
           sudo apt install -y git openssh-client cmake build-essential \
               libreadline-dev libicu-dev jq zip python3
-      - name: Cache setup
-        id: cache_setup
-        uses: ./.github/actions/cache_setup
-        with:
-          hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
-          react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
+      - name: Restore Hermes workspace
+        uses: ./.github/actions/restore-hermes-workspace
       - name: Linux cache
         uses: actions/cache@v4.0.0
         with:
@@ -454,18 +486,25 @@ jobs:
     needs: prepare_hermes_workspace
     env:
       HERMES_WS_DIR: 'D:\tmp\hermes'
+      HERMES_TARBALL_ARTIFACTS_DIR: 'D:\tmp\hermes\hermes-runtime-darwin'
+      HERMES_OSXBIN_ARTIFACTS_DIR: 'D:\tmp\hermes\osx-bin'
       ICU_URL: "https://github.com/unicode-org/icu/releases/download/release-64-2/icu4c-64_2-Win64-MSVC2017.zip"
       MSBUILD_DIR: 'C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\MSBuild\Current\Bin'
       CMAKE_DIR: 'C:\Program Files\CMake\bin'
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.1
-      - name: Cache setup
-        id: cache_setup
-        uses: ./.github/actions/cache_setup
+      - name: Download Previous Artifacts
+        uses: actions/download-artifact@v4
         with:
-          hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
-          react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
+          name: hermes-workspace
+          path: 'D:\tmp\hermes'
+      - name: Set up workspace
+        run: |
+          mkdir -p D:\tmp\hermes\osx-bin
+          mkdir -p .\packages\react-native\sdks\hermes
+          cp -r -Force D:\tmp\hermes\hermes\* .\packages\react-native\sdks\hermes\.
+          cp -r -Force .\packages\react-native\sdks\hermes-engine\utils\* .\packages\react-native\sdks\hermes\.
       - name: Windows cache
         uses: actions/cache@v4.0.0
         with:
@@ -568,8 +607,8 @@ jobs:
           name: build-android-results
           compression-level: 1
           path: |
-            packages/gradle-plugin/react-native-gradle-plugin/build/reports
-            packages/gradle-plugin/settings-plugin/build/reports
+            packages/react-native-gradle-plugin/react-native-gradle-plugin/build/reports
+            packages/react-native-gradle-plugin/settings-plugin/build/reports
             packages/react-native/ReactAndroid/build/reports
       - name: Upload RNTester APK
         if: ${{ always() }}
@@ -614,12 +653,12 @@ jobs:
         uses: actions/download-artifact@v4.1.3
         with:
           name: hermes-osx-bin-Release
-          path: /tmp/hermes/osx-bin
+          path: /tmp/hermes/osx-bin/Release
       - name: Download osx-bin debug artifacts
         uses: actions/download-artifact@v4.1.3
         with:
           name: hermes-osx-bin-Debug
-          path: /tmp/hermes/osx-bin
+          path: /tmp/hermes/osx-bin/Debug
       - name: Download darwin-bin release artifacts
         uses: actions/download-artifact@v4.1.3
         with:
@@ -652,12 +691,6 @@ jobs:
           path: /tmp/hermes/linux64-bin
       - name: Show /tmp/hermes directory
         run: ls -lR /tmp/hermes
-      - name: Cache setup
-        id: cache_setup
-        uses: ./.github/actions/cache_setup
-        with:
-          hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
-          react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
       - name: Copy Hermes binaries
         shell: bash
         run: |
@@ -834,8 +867,8 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4.3.1
         with:
-          name: template-apk-${{ matrix.flavor }}-${{ matrix.architecture }}-${{ matrix.jsengine }}
-          path: packages/helloworld/app/build/outputs/apk/
+          name: helloworld-apk-${{ matrix.flavor }}-${{ matrix.architecture }}-${{ matrix.jsengine }}
+          path: ./packages/helloworld/android/app/build/outputs/apk/
           compression-level: 0
 
   test_ios_helloworld_with_ruby_3_2_0:
