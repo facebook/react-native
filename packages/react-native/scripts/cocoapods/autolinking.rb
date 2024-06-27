@@ -47,11 +47,7 @@ def list_native_modules!(config_command)
 
     name = package["name"]
     podspec_path = package_config["podspecPath"]
-    script_phases = package_config["scriptPhases"].map do |script_phase|
-      script_phase.merge({
-        "path" => File.join(File.dirname(podspec_path), script_phase["path"]),
-      })
-    end
+    script_phases = package_config["scriptPhases"]
     configurations = package_config["configurations"]
 
     # Add a warning to the queue and continue to the next dependency if the podspec_path is nil/empty
