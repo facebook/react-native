@@ -225,15 +225,8 @@ float TextLayoutManager::getLastBaseline(
   auto lines = this
       ->measureLines(attributedString, paragraphAttributes, size);
 
-  float maximumDescender = 0;
-
-  for (const auto &line : lines) {
-    if (line.descender > maximumDescender) {
-      maximumDescender = line.descender;
-    }
-  }
-
-  return size.height - maximumDescender;
+  // TODO: Should this assume there is at least one line?
+  return lines[0].ascender;
 }
 
 TextMeasurement TextLayoutManager::doMeasure(

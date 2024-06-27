@@ -143,11 +143,27 @@ Size TextInputShadowNode::measureContent(
 Float TextInputShadowNode::baseline(
     const LayoutContext& layoutContext,
     Size size) const {
+  auto attributedString = getAttributedString(layoutContext);
+
+  if (attributedString.isEmpty()) {
+    auto placeholder = getConcreteProps().placeholder;
+    auto string = !placeholder.empty()
+        ? placeholder
+        : BaseTextShadowNode::getEmptyPlaceholder();
+    auto textAttributes = getConcreteProps().getEffectiveTextAttributes(
+      layoutContext.fontSizeMultiplier);
+    attributedString.appendFragment({string, textAttributes, {}});
+  }
+  
+  // I don't think I should be reading directly from yogaNode, but leyout metrics
+  // aren't yet set at this point
+  auto paddingTop = yogaNode_.getLayout().padding(yoga::PhysicalEdge::Top);
+
   return textLayoutManager_
       ->getLastBaseline(
-        getAttributedString(layoutContext),
+        attributedString,
         getConcreteProps().getEffectiveParagraphAttributes(),
-        size);
+        size) + paddingTop;
 }
 
 void TextInputShadowNode::layout(LayoutContext layoutContext) {

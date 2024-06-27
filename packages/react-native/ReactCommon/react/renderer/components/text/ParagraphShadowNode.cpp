@@ -168,19 +168,24 @@ Float ParagraphShadowNode::baseline(
     Size size) const {
   auto content = getContent(layoutContext);
   auto attributedString = content.attributedString;
-
-  auto lines = textLayoutManager_
-      ->measureLines(attributedString, content.paragraphAttributes, size);
-
-  float maximumDescender = 0;
-
-  for (const auto &line : lines) {
-    if (line.descender > maximumDescender) {
-      maximumDescender = line.descender;
-    }
+        
+  if (attributedString.isEmpty()) {
+    // Note: `zero-width space` is insufficient in some cases (e.g. when we need
+    // to measure the "height" of the font).
+    // TODO T67606511: We will redefine the measurement of empty strings as part
+    // of T67606511
+    auto string = BaseTextShadowNode::getEmptyPlaceholder();
+    auto textAttributes = TextAttributes::defaultTextAttributes();
+    textAttributes.fontSizeMultiplier = layoutContext.fontSizeMultiplier;
+    textAttributes.apply(getConcreteProps().textAttributes);
+    attributedString.appendFragment({string, textAttributes, {}});
   }
 
-  return size.height - maximumDescender;
+  return textLayoutManager_
+      ->getLastBaseline(
+          attributedString,
+          getConcreteProps().paragraphAttributes,
+          size);
 }
 
 void ParagraphShadowNode::layout(LayoutContext layoutContext) {
