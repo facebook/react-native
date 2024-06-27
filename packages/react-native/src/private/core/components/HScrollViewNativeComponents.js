@@ -12,17 +12,42 @@
 import type {ScrollViewNativeProps} from '../../../../Libraries/Components/ScrollView/ScrollViewNativeComponentType';
 import type {ViewProps} from '../../../../Libraries/Components/View/ViewPropTypes';
 import type {HostComponent} from '../../../../Libraries/Renderer/shims/ReactNativeTypes';
+import type {TScrollViewNativeImperativeHandle} from './useSyncOnScroll';
 
 import AndroidHorizontalScrollViewNativeComponent from '../../../../Libraries/Components/ScrollView/AndroidHorizontalScrollViewNativeComponent';
 import ScrollContentViewNativeComponent from '../../../../Libraries/Components/ScrollView/ScrollContentViewNativeComponent';
 import ScrollViewNativeComponent from '../../../../Libraries/Components/ScrollView/ScrollViewNativeComponent';
 import Platform from '../../../../Libraries/Utilities/Platform';
 import AndroidHorizontalScrollContentViewNativeComponent from '../../specs/components/AndroidHorizontalScrollContentViewNativeComponent';
+import useSyncOnScroll from './useSyncOnScroll';
+import * as React from 'react';
 
-export const HScrollViewNativeComponent: HostComponent<ScrollViewNativeProps> =
+const HScrollViewNativeComponentForPlatform =
   Platform.OS === 'android'
     ? AndroidHorizontalScrollViewNativeComponent
     : ScrollViewNativeComponent;
+
+export const HScrollViewNativeComponent: React.AbstractComponent<
+  ScrollViewNativeProps,
+  TScrollViewNativeImperativeHandle,
+  // $FlowExpectedError[incompatible-type] - Flow cannot model imperative handles, yet.
+> = function HScrollViewNativeComponent(props: {
+  ...ScrollViewNativeProps,
+  ref?: React.RefSetter<TScrollViewNativeImperativeHandle | null>,
+  ...
+}): React.Node {
+  const [ref, enableSyncOnScroll] = useSyncOnScroll(props.ref);
+  // NOTE: When `useSyncOnScroll` triggers an update, `props` will not have
+  // changed. Notably, `props.children` will be the same, allowing React to
+  // bail out during reconciliation.
+  return (
+    <HScrollViewNativeComponentForPlatform
+      {...props}
+      ref={ref}
+      enableSyncOnScroll={enableSyncOnScroll}
+    />
+  );
+};
 
 export const HScrollContentViewNativeComponent: HostComponent<ViewProps> =
   Platform.OS === 'android'
