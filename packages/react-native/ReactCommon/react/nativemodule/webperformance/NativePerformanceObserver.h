@@ -48,17 +48,10 @@ class NativePerformanceObserver
  public:
   NativePerformanceObserver(std::shared_ptr<CallInvoker> jsInvoker);
 
-  void startReporting(jsi::Runtime& rt, PerformanceEntryType entryType);
-
-  void stopReporting(jsi::Runtime& rt, PerformanceEntryType entryType);
-
   void setIsBuffered(
       jsi::Runtime& rt,
       const std::vector<PerformanceEntryType> entryTypes,
       bool isBuffered);
-
-  PerformanceEntryReporter::PopPendingEntriesResult popPendingEntries(
-      jsi::Runtime& rt);
 
   void setOnPerformanceEntryCallback(
       jsi::Runtime& rt,
