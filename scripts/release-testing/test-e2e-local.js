@@ -281,9 +281,11 @@ async function testRNTestProject(
     }
   }
 
-  pushd('/tmp/');
+  const currentBranch = exec(`git rev-parse --abbrev-ref HEAD`)
+    .toString()
+    .trim();
 
-  debug('Creating RNTestProject from template');
+  pushd('/tmp/');
 
   // Cleanup RNTestProject folder. This makes it easier to rerun the script when it fails
   exec('rm -rf /tmp/RNTestProject');
@@ -292,6 +294,7 @@ async function testRNTestProject(
     projectName: 'RNTestProject',
     directory: '/tmp/RNTestProject',
     pathToLocalReactNative: newLocalNodeTGZ,
+    currentBranch,
   });
 
   cd('RNTestProject');
