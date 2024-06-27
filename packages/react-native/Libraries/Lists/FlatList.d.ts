@@ -177,6 +177,11 @@ export abstract class FlatListComponent<
   scrollToEnd: (params?: {animated?: boolean | null | undefined}) => void;
 
   /**
+   * Scrolls to the beginning of the content.
+   */
+  scrollToStart: (params?: {animated?: boolean | null | undefined}) => void;
+
+  /**
    * Scrolls to the item at the specified index such that it is positioned in the viewable area
    * such that viewPosition 0 places it at the top, 1 at the bottom, and 0.5 centered in the middle.
    * Cannot scroll to locations outside the render window without specifying the getItemLayout prop.

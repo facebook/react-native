@@ -841,6 +841,34 @@ export class FlatListTest extends React.Component<FlatListProps<number>, {}> {
   }}
 />;
 
+const FlatListInstanceSignature = () => {
+  const props = {data: [1, 2, 3], renderItem: () => <></>};
+  return (
+    <>
+      <FlatList
+        ref={instance => {
+          instance?.scrollToEnd();
+          instance?.scrollToEnd({animated: true});
+          instance?.scrollToEnd({animated: false});
+          // @ts-expect-error - first argument must be an object
+          instance?.scrollToEnd('non obj arg');
+        }}
+        {...props}
+      />
+      <FlatList
+        ref={instance => {
+          instance?.scrollToStart();
+          instance?.scrollToStart({animated: true});
+          instance?.scrollToStart({animated: false});
+          // @ts-expect-error - first argument must be an object
+          instance?.scrollToStart('non obj arg');
+        }}
+        {...props}
+      />
+    </>
+  );
+};
+
 export class SectionListTest extends React.Component<
   SectionListProps<string>,
   {}
@@ -1652,6 +1680,29 @@ const ScrollViewInsetsTest = () => (
   <>
     <ScrollView automaticallyAdjustKeyboardInsets />
     <ScrollView automaticallyAdjustKeyboardInsets={false} />
+  </>
+);
+
+const ScrollViewInstanceSignature = () => (
+  <>
+    <ScrollView
+      ref={instance => {
+        instance?.scrollToEnd();
+        instance?.scrollToEnd({animated: true});
+        instance?.scrollToEnd({animated: false});
+        // @ts-expect-error - first argument must be an object
+        instance?.scrollToEnd('non obj arg');
+      }}
+    />
+    <ScrollView
+      ref={instance => {
+        instance?.scrollToStart();
+        instance?.scrollToStart({animated: true});
+        instance?.scrollToStart({animated: false});
+        // @ts-expect-error - first argument must be an object
+        instance?.scrollToStart('non obj arg');
+      }}
+    />
   </>
 );
 

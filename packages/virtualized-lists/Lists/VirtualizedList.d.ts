@@ -104,6 +104,7 @@ export class VirtualizedList<ItemT> extends React.Component<
   VirtualizedListProps<ItemT>
 > {
   scrollToEnd: (params?: {animated?: boolean | undefined}) => void;
+  scrollToStart: (params?: {animated?: boolean | undefined}) => void;
   scrollToIndex: (params: {
     animated?: boolean | undefined;
     index: number;

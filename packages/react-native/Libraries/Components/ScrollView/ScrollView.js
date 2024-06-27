@@ -140,6 +140,7 @@ export type ScrollViewImperativeMethods = $ReadOnly<{|
   getNativeScrollRef: $PropertyType<ScrollView, 'getNativeScrollRef'>,
   scrollTo: $PropertyType<ScrollView, 'scrollTo'>,
   scrollToEnd: $PropertyType<ScrollView, 'scrollToEnd'>,
+  scrollToStart: $PropertyType<ScrollView, 'scrollToStart'>,
   flashScrollIndicators: $PropertyType<ScrollView, 'flashScrollIndicators'>,
   scrollResponderZoomTo: $PropertyType<ScrollView, 'scrollResponderZoomTo'>,
   scrollResponderScrollNativeHandleToKeyboard: $PropertyType<
@@ -925,6 +926,20 @@ class ScrollView extends React.Component<Props, State> {
   };
 
   /**
+   * If this is a vertical ScrollView scrolls to the top.
+   * If this is a horizontal ScrollView scrolls to the left.
+   *
+   * Use `scrollToStart({animated: true})` for smooth animated scrolling,
+   * `scrollToStart({animated: false})` for immediate scrolling.
+   * If no options are passed, `animated` defaults to true.
+   */
+  scrollToStart: (options?: ?{animated?: boolean, ...}) => void = (
+    options?: ?{animated?: boolean, ...},
+  ) => {
+    this.scrollTo({...options, x: 0, y: 0});
+  };
+
+  /**
    * Displays the scroll indicators momentarily.
    *
    * @platform ios
@@ -1209,6 +1224,7 @@ class ScrollView extends React.Component<Props, State> {
         getNativeScrollRef: this.getNativeScrollRef,
         scrollTo: this.scrollTo,
         scrollToEnd: this.scrollToEnd,
+        scrollToStart: this.scrollToStart,
         flashScrollIndicators: this.flashScrollIndicators,
         scrollResponderZoomTo: this.scrollResponderZoomTo,
         // TODO: Replace unstable_subscribeToOnScroll once scrollView.addEventListener('scroll', (e: ScrollEvent) => {}, {passive: false});
