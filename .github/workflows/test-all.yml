@@ -577,6 +577,8 @@ jobs:
       env:
         TERM: "dumb"
         GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+        ORG_GRADLE_PROJECT_SIGNING_PWD: ${{ secrets.ORG_GRADLE_PROJECT_SIGNING_PWD }}
+        ORG_GRADLE_PROJECT_SIGNING_KEY: ${{ secrets.ORG_GRADLE_PROJECT_SIGNING_KEY }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.1
@@ -600,6 +602,11 @@ jobs:
           fi
           ./gradlew publishAllToMavenTempLocal build -PenableWarningsAsErrors=true
         shell: bash
+      - name: Upload Maven Artifacts
+        uses: actions/upload-artifact@v4.3.1
+        with:
+          name: maven-local-build-android
+          path: /tmp/maven-local
       - name: Upload test results
         if: ${{ always() }}
         uses: actions/upload-artifact@v4.3.0
