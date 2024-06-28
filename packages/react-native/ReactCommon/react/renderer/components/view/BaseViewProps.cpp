@@ -150,6 +150,14 @@ BaseViewProps::BaseViewProps(
                                                        "cursor",
                                                        sourceProps.cursor,
                                                        {})),
+      boxShadow(
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.boxShadow
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "experimental_boxShadow",
+                                                       sourceProps.boxShadow,
+                                                       {})),
       filter(
           CoreFeatures::enablePropIteratorSetter ? sourceProps.filter
                                                  : convertRawProp(
