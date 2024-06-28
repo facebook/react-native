@@ -13,39 +13,28 @@
 #import <React/RCTBridge.h>
 #import <React/RCTModuleMethod.h>
 #import <React/RCTRootView.h>
-#import <atomic>
 
 @interface AllocationTestModule : NSObject <RCTBridgeModule, RCTInvalidating>
 
-@property (nonatomic, assign, getter=isValid) BOOL valid;
+@property (atomic, assign, getter=isValid) BOOL valid;
 
 @end
 
-@implementation AllocationTestModule {
-  std::atomic<BOOL> _valid;
-}
-
--(BOOL)isValid {
-  return _valid;
-}
-
--(void)setValid:(BOOL)newValue {
-  _valid = newValue;
-}
+@implementation AllocationTestModule
 
 RCT_EXPORT_MODULE();
 
 - (instancetype)init
 {
   if ((self = [super init])) {
-    _valid = YES;
+    self.valid = YES;
   }
   return self;
 }
 
 - (void)invalidate
 {
-  _valid = NO;
+  self.valid = NO;
 }
 
 RCT_EXPORT_METHOD(test
