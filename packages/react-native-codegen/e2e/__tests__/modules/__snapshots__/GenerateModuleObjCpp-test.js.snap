@@ -42,6 +42,10 @@ exports[`GenerateModuleObjCpp can generate a header file NativeModule specs 1`] 
                                          b:(NSArray *)b;
 
 @end
+
+@interface NativeArrayTurboModuleSpecBase : NSObject
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeArrayTurboModule'
@@ -58,6 +62,10 @@ namespace facebook::react {
 - (NSNumber *)getBooleanWithAlias:(BOOL)arg;
 
 @end
+
+@interface NativeBooleanTurboModuleSpecBase : NSObject
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeBooleanTurboModule'
@@ -74,6 +82,10 @@ namespace facebook::react {
 - (void)getValueWithCallbackWithAlias:(RCTResponseSenderBlock)c;
 
 @end
+
+@interface NativeCallbackTurboModuleSpecBase : NSObject
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeCallbackTurboModule'
@@ -130,6 +142,10 @@ namespace JS {
 - (NSDictionary *)getStateTypeWithEnums:(JS::NativeEnumTurboModule::StateTypeWithEnums &)paramOfTypeWithEnums;
 
 @end
+
+@interface NativeEnumTurboModuleSpecBase : NSObject
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeEnumTurboModule'
@@ -151,6 +167,10 @@ namespace facebook::react {
                      reject:(RCTPromiseRejectBlock)reject;
 
 @end
+
+@interface NativeNullableTurboModuleSpecBase : NSObject
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeNullableTurboModule'
@@ -167,6 +187,10 @@ namespace facebook::react {
 - (NSNumber *)getNumberWithAlias:(double)arg;
 
 @end
+
+@interface NativeNumberTurboModuleSpecBase : NSObject
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeNumberTurboModule'
@@ -336,6 +360,10 @@ namespace JS {
 - (facebook::react::ModuleConstants<JS::NativeObjectTurboModule::Constants::Builder>)getConstants;
 
 @end
+
+@interface NativeObjectTurboModuleSpecBase : NSObject
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeObjectTurboModule'
@@ -468,6 +496,10 @@ namespace JS {
 - (facebook::react::ModuleConstants<JS::NativeOptionalObjectTurboModule::Constants::Builder>)getConstants;
 
 @end
+
+@interface NativeOptionalObjectTurboModuleSpecBase : NSObject
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeOptionalObjectTurboModule'
@@ -534,6 +566,10 @@ namespace JS {
                              value2:(JS::NativePartialAnnotationTurboModule::SpecGetPartialPartialValue2 &)value2;
 
 @end
+
+@interface NativePartialAnnotationTurboModuleSpecBase : NSObject
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativePartialAnnotationTurboModule'
@@ -554,6 +590,10 @@ namespace facebook::react {
                               reject:(RCTPromiseRejectBlock)reject;
 
 @end
+
+@interface NativePromiseTurboModuleSpecBase : NSObject
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativePromiseTurboModule'
@@ -644,6 +684,10 @@ getValuegetValuegetValuegetValuegetValuey:(NSString *)getValuegetValuegetValuege
 - (facebook::react::ModuleConstants<JS::NativeSampleTurboModule::Constants::Builder>)getConstants;
 
 @end
+
+@interface NativeSampleTurboModuleSpecBase : NSObject
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeSampleTurboModule'
@@ -732,6 +776,10 @@ namespace JS {
 - (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleArrays::Constants::Builder>)getConstants;
 
 @end
+
+@interface NativeSampleTurboModuleArraysSpecBase : NSObject
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeSampleTurboModuleArrays'
@@ -822,6 +870,10 @@ namespace JS {
 - (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleNullable::Constants::Builder>)getConstants;
 
 @end
+
+@interface NativeSampleTurboModuleNullableSpecBase : NSObject
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeSampleTurboModuleNullable'
@@ -912,6 +964,10 @@ namespace JS {
 - (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleNullableAndOptional::Constants::Builder>)getConstants;
 
 @end
+
+@interface NativeSampleTurboModuleNullableAndOptionalSpecBase : NSObject
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeSampleTurboModuleNullableAndOptional'
@@ -1002,6 +1058,10 @@ namespace JS {
 - (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleOptional::Constants::Builder>)getConstants;
 
 @end
+
+@interface NativeSampleTurboModuleOptionalSpecBase : NSObject
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeSampleTurboModuleOptional'
@@ -1018,6 +1078,10 @@ namespace facebook::react {
 - (NSString *)getStringWithAlias:(NSString *)arg;
 
 @end
+
+@interface NativeStringTurboModuleSpecBase : NSObject
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeStringTurboModule'
@@ -1394,6 +1458,10 @@ NS_ASSUME_NONNULL_BEGIN
                                          b:(NSArray *)b;
 
 @end
+
+@interface NativeArrayTurboModuleSpecBase : NSObject
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeArrayTurboModule'
@@ -1410,6 +1478,10 @@ namespace facebook::react {
 - (NSNumber *)getBooleanWithAlias:(BOOL)arg;
 
 @end
+
+@interface NativeBooleanTurboModuleSpecBase : NSObject
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeBooleanTurboModule'
@@ -1426,6 +1498,10 @@ namespace facebook::react {
 - (void)getValueWithCallbackWithAlias:(RCTResponseSenderBlock)c;
 
 @end
+
+@interface NativeCallbackTurboModuleSpecBase : NSObject
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeCallbackTurboModule'
@@ -1482,6 +1558,10 @@ namespace JS {
 - (NSDictionary *)getStateTypeWithEnums:(JS::NativeEnumTurboModule::StateTypeWithEnums &)paramOfTypeWithEnums;
 
 @end
+
+@interface NativeEnumTurboModuleSpecBase : NSObject
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeEnumTurboModule'
@@ -1503,6 +1583,10 @@ namespace facebook::react {
                      reject:(RCTPromiseRejectBlock)reject;
 
 @end
+
+@interface NativeNullableTurboModuleSpecBase : NSObject
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeNullableTurboModule'
@@ -1519,6 +1603,10 @@ namespace facebook::react {
 - (NSNumber *)getNumberWithAlias:(double)arg;
 
 @end
+
+@interface NativeNumberTurboModuleSpecBase : NSObject
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeNumberTurboModule'
@@ -1688,6 +1776,10 @@ namespace JS {
 - (facebook::react::ModuleConstants<JS::NativeObjectTurboModule::Constants::Builder>)getConstants;
 
 @end
+
+@interface NativeObjectTurboModuleSpecBase : NSObject
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeObjectTurboModule'
@@ -1820,6 +1912,10 @@ namespace JS {
 - (facebook::react::ModuleConstants<JS::NativeOptionalObjectTurboModule::Constants::Builder>)getConstants;
 
 @end
+
+@interface NativeOptionalObjectTurboModuleSpecBase : NSObject
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeOptionalObjectTurboModule'
@@ -1886,6 +1982,10 @@ namespace JS {
                              value2:(JS::NativePartialAnnotationTurboModule::SpecGetPartialPartialValue2 &)value2;
 
 @end
+
+@interface NativePartialAnnotationTurboModuleSpecBase : NSObject
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativePartialAnnotationTurboModule'
@@ -1906,6 +2006,10 @@ namespace facebook::react {
                               reject:(RCTPromiseRejectBlock)reject;
 
 @end
+
+@interface NativePromiseTurboModuleSpecBase : NSObject
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativePromiseTurboModule'
@@ -1996,6 +2100,10 @@ getValuegetValuegetValuegetValuegetValuey:(NSString *)getValuegetValuegetValuege
 - (facebook::react::ModuleConstants<JS::NativeSampleTurboModule::Constants::Builder>)getConstants;
 
 @end
+
+@interface NativeSampleTurboModuleSpecBase : NSObject
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeSampleTurboModule'
@@ -2084,6 +2192,10 @@ namespace JS {
 - (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleArrays::Constants::Builder>)getConstants;
 
 @end
+
+@interface NativeSampleTurboModuleArraysSpecBase : NSObject
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeSampleTurboModuleArrays'
@@ -2174,6 +2286,10 @@ namespace JS {
 - (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleNullable::Constants::Builder>)getConstants;
 
 @end
+
+@interface NativeSampleTurboModuleNullableSpecBase : NSObject
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeSampleTurboModuleNullable'
@@ -2264,6 +2380,10 @@ namespace JS {
 - (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleNullableAndOptional::Constants::Builder>)getConstants;
 
 @end
+
+@interface NativeSampleTurboModuleNullableAndOptionalSpecBase : NSObject
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeSampleTurboModuleNullableAndOptional'
@@ -2354,6 +2474,10 @@ namespace JS {
 - (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleOptional::Constants::Builder>)getConstants;
 
 @end
+
+@interface NativeSampleTurboModuleOptionalSpecBase : NSObject
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeSampleTurboModuleOptional'
@@ -2370,6 +2494,10 @@ namespace facebook::react {
 - (NSString *)getStringWithAlias:(NSString *)arg;
 
 @end
+
+@interface NativeStringTurboModuleSpecBase : NSObject
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeStringTurboModule'
@@ -2720,6 +2848,10 @@ exports[`GenerateModuleObjCpp can generate an implementation file NativeModule s
 #import \\"RNCodegenModuleFixtures.h\\"
 
 
+@implementation NativeArrayTurboModuleSpecBase
+@end
+
+
 namespace facebook::react {
   
     static facebook::jsi::Value __hostFunction_NativeArrayTurboModuleSpecJSI_getArray(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
@@ -2748,6 +2880,10 @@ namespace facebook::react {
   }
 } // namespace facebook::react
 
+@implementation NativeBooleanTurboModuleSpecBase
+@end
+
+
 namespace facebook::react {
   
     static facebook::jsi::Value __hostFunction_NativeBooleanTurboModuleSpecJSI_getBoolean(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
@@ -2769,6 +2905,10 @@ namespace facebook::react {
   }
 } // namespace facebook::react
 
+@implementation NativeCallbackTurboModuleSpecBase
+@end
+
+
 namespace facebook::react {
   
     static facebook::jsi::Value __hostFunction_NativeCallbackTurboModuleSpecJSI_getValueWithCallback(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
@@ -2789,6 +2929,10 @@ namespace facebook::react {
         
   }
 } // namespace facebook::react
+
+@implementation NativeEnumTurboModuleSpecBase
+@end
+
 @implementation RCTCxxConvert (NativeEnumTurboModule_StateType)
 + (RCTManagedPointer *)JS_NativeEnumTurboModule_StateType:(id)json
 {
@@ -2850,6 +2994,10 @@ namespace facebook::react {
   }
 } // namespace facebook::react
 
+@implementation NativeNullableTurboModuleSpecBase
+@end
+
+
 namespace facebook::react {
   
     static facebook::jsi::Value __hostFunction_NativeNullableTurboModuleSpecJSI_getBool(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
@@ -2899,6 +3047,10 @@ namespace facebook::react {
   }
 } // namespace facebook::react
 
+@implementation NativeNumberTurboModuleSpecBase
+@end
+
+
 namespace facebook::react {
   
     static facebook::jsi::Value __hostFunction_NativeNumberTurboModuleSpecJSI_getNumber(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
@@ -2919,6 +3071,10 @@ namespace facebook::react {
         
   }
 } // namespace facebook::react
+
+@implementation NativeObjectTurboModuleSpecBase
+@end
+
 @implementation RCTCxxConvert (NativeObjectTurboModule_SpecDifficultObjectAE)
 + (RCTManagedPointer *)JS_NativeObjectTurboModule_SpecDifficultObjectAE:(id)json
 {
@@ -2973,6 +3129,10 @@ namespace facebook::react {
   }
 } // namespace facebook::react
 
+@implementation NativeOptionalObjectTurboModuleSpecBase
+@end
+
+
 namespace facebook::react {
   
     static facebook::jsi::Value __hostFunction_NativeOptionalObjectTurboModuleSpecJSI_getConstants(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
@@ -2986,6 +3146,10 @@ namespace facebook::react {
         
   }
 } // namespace facebook::react
+
+@implementation NativePartialAnnotationTurboModuleSpecBase
+@end
+
 @implementation RCTCxxConvert (NativePartialAnnotationTurboModule_SpecGetSomeObjFromPartialSomeObjValue)
 + (RCTManagedPointer *)JS_NativePartialAnnotationTurboModule_SpecGetSomeObjFromPartialSomeObjValue:(id)json
 {
@@ -3040,6 +3204,10 @@ namespace facebook::react {
   }
 } // namespace facebook::react
 
+@implementation NativePromiseTurboModuleSpecBase
+@end
+
+
 namespace facebook::react {
   
     static facebook::jsi::Value __hostFunction_NativePromiseTurboModuleSpecJSI_getValueWithPromise(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
@@ -3060,6 +3228,10 @@ namespace facebook::react {
         
   }
 } // namespace facebook::react
+
+@implementation NativeSampleTurboModuleSpecBase
+@end
+
 @implementation RCTCxxConvert (NativeSampleTurboModule_SpecGetObjectShapeArg)
 + (RCTManagedPointer *)JS_NativeSampleTurboModule_SpecGetObjectShapeArg:(id)json
 {
@@ -3170,6 +3342,10 @@ namespace facebook::react {
   }
 } // namespace facebook::react
 
+@implementation NativeSampleTurboModuleArraysSpecBase
+@end
+
+
 namespace facebook::react {
   
     static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleArraysSpecJSI_voidFunc(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
@@ -3267,6 +3443,10 @@ namespace facebook::react {
         
   }
 } // namespace facebook::react
+
+@implementation NativeSampleTurboModuleNullableSpecBase
+@end
+
 @implementation RCTCxxConvert (NativeSampleTurboModuleNullable_SpecGetObjectShapeArg)
 + (RCTManagedPointer *)JS_NativeSampleTurboModuleNullable_SpecGetObjectShapeArg:(id)json
 {
@@ -3376,6 +3556,10 @@ namespace facebook::react {
         
   }
 } // namespace facebook::react
+
+@implementation NativeSampleTurboModuleNullableAndOptionalSpecBase
+@end
+
 @implementation RCTCxxConvert (NativeSampleTurboModuleNullableAndOptional_SpecGetObjectShapeArg)
 + (RCTManagedPointer *)JS_NativeSampleTurboModuleNullableAndOptional_SpecGetObjectShapeArg:(id)json
 {
@@ -3485,6 +3669,10 @@ namespace facebook::react {
         
   }
 } // namespace facebook::react
+
+@implementation NativeSampleTurboModuleOptionalSpecBase
+@end
+
 @implementation RCTCxxConvert (NativeSampleTurboModuleOptional_SpecGetObjectShapeArg)
 + (RCTManagedPointer *)JS_NativeSampleTurboModuleOptional_SpecGetObjectShapeArg:(id)json
 {
@@ -3594,6 +3782,10 @@ namespace facebook::react {
         
   }
 } // namespace facebook::react
+
+@implementation NativeStringTurboModuleSpecBase
+@end
+
 
 namespace facebook::react {
   
