@@ -36,11 +36,11 @@
   dispatch_queue_t callbackQueue = dispatch_queue_create("RCTNetworkTaskTests-testCanReadTaskStatus", DISPATCH_QUEUE_SERIAL);
   id<RCTURLRequestHandler> testHandler = (id<RCTURLRequestHandler>)[[TestHandler alloc] init];
   RCTNetworkTask *task = [[RCTNetworkTask alloc] initWithRequest:request handler:testHandler callbackQueue:callbackQueue];
-  XCTAssertEqual([task getNetworkTaskStatus], RCTNetworkTaskPending);
+  XCTAssertEqual(task.status, RCTNetworkTaskPending);
   [task start];
-  XCTAssertEqual([task getNetworkTaskStatus], RCTNetworkTaskInProgress);
+  XCTAssertEqual(task.status, RCTNetworkTaskInProgress);
   [task cancel];
-  XCTAssertEqual([task getNetworkTaskStatus], RCTNetworkTaskFinished);
+  XCTAssertEqual(task.status, RCTNetworkTaskFinished);
 }
 
 @end
