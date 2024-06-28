@@ -6,11 +6,11 @@
  */
 
 #import <mutex>
+#import <atomic>
 
 #import <React/RCTLog.h>
 #import <React/RCTNetworkTask.h>
 #import <React/RCTUtils.h>
-#import <React/RCTAtomicCounter.h>
 
 @implementation RCTNetworkTask {
   NSMutableData *_data;
@@ -21,7 +21,7 @@
   RCTNetworkTask *_selfReference;
 }
 
-static const auto generateRequestId = RCTCreateAtomicNSUIntegerCounter();
+static auto currentRequestId = std::atomic<NSUInteger>(0);
 
 - (instancetype)initWithRequest:(NSURLRequest *)request
                         handler:(id<RCTURLRequestHandler>)handler
@@ -32,7 +32,7 @@ static const auto generateRequestId = RCTCreateAtomicNSUIntegerCounter();
   RCTAssertParam(callbackQueue);
 
   if ((self = [super init])) {
-    _requestID = @(generateRequestId());
+    _requestID = @(currentRequestId++);
     _request = request;
     _handler = handler;
     _callbackQueue = callbackQueue;
