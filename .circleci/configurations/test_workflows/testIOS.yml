@@ -48,8 +48,8 @@
       - test_ios_template:
           requires:
             - build_npm_package
-          name: "Test Template with Ruby 3.2.0"
-          ruby_version: "3.2.0"
+          name: "Test Template with Ruby 3.2.2"
+          ruby_version: "3.2.2"
           architecture: "NewArch"
           flavor: "Debug"
           executor: reactnativeios-lts
@@ -63,15 +63,15 @@
               jsengine: ["Hermes", "JSC"]
               use_frameworks: ["StaticLibraries", "DynamicFrameworks"]
             exclude:
-             # Tested with Ruby 3.2.0, let's not double test this
+             # Tested with Ruby 3.2.2, let's not double test this
               - flavor: "Debug"
                 jsengine: "Hermes"
                 use_frameworks: "StaticLibraries"
       - test_ios_rntester:
           requires:
             - build_hermes_macos
-          name: "RNTester on Ruby 3.2.0"
-          ruby_version: "3.2.0"
+          name: "RNTester on Ruby 3.2.2"
+          ruby_version: "3.2.2"
           executor: reactnativeios-lts
       - test_ios_rntester:
           name: "RNTester with Dynamic Frameworks"
