@@ -44,7 +44,7 @@
 
 RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
--(RCTNetworkTaskStatus)getStatus
+-(RCTNetworkTaskStatus)status
 {
   return _atomicStatus;
 }
