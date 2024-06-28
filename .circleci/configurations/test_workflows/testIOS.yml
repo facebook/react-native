@@ -43,12 +43,12 @@
             - build_hermes_macos
             - build_hermesc_windows
       - test_e2e_ios:
-          ruby_version: "2.7.7"
+          ruby_version: "2.7.8"
       - test_ios_template:
           requires:
             - build_npm_package
-          name: "Test Template with Ruby 3.2.0"
-          ruby_version: "3.2.0"
+          name: "Test Template with Ruby 3.2.2"
+          ruby_version: "3.2.2"
           architecture: "NewArch"
           flavor: "Debug"
       - test_ios_template:
@@ -140,8 +140,8 @@
       - test_ios_rntester:
           requires:
             - build_hermes_macos
-          name: "Test RNTester with Ruby 3.2.0"
-          ruby_version: "3.2.0"
+          name: "Test RNTester with Ruby 3.2.2"
+          ruby_version: "3.2.2"
           architecture: "NewArch"
       - test_ios_rntester:
           requires:
