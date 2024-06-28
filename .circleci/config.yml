@@ -57,19 +57,19 @@ references:
 
   cache_keys:
     checkout_cache_key: &checkout_cache_key v1-checkout
-    gems_cache_key: &gems_cache_key v1-gems-{{ checksum "Gemfile.lock" }}
+    gems_cache_key: &gems_cache_key v1-gems-{{ arch }}-{{ checksum "Gemfile.lock" }}
     gradle_cache_key: &gradle_cache_key v1-gradle-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}-{{ checksum "packages/react-native/ReactAndroid/gradle.properties" }}
     hermes_workspace_cache_key: &hermes_workspace_cache_key v4-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
-    hermes_workspace_debug_cache_key: &hermes_workspace_debug_cache_key v2-hermes-{{ .Environment.CIRCLE_JOB }}-debug-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}-{{ checksum "packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh" }}
-    hermes_workspace_release_cache_key: &hermes_workspace_release_cache_key v2-hermes-{{ .Environment.CIRCLE_JOB }}-release-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}-{{ checksum "packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh" }}
+    hermes_workspace_debug_cache_key: &hermes_workspace_debug_cache_key v2-hermes-{{ arch }}-{{ .Environment.CIRCLE_JOB }}-debug-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}-{{ checksum "packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh" }}
+    hermes_workspace_release_cache_key: &hermes_workspace_release_cache_key v2-hermes-{{ arch }}-{{ .Environment.CIRCLE_JOB }}-release-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}-{{ checksum "packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh" }}
     hermes_linux_cache_key: &hermes_linux_cache_key v1-hermes-{{ .Environment.CIRCLE_JOB }}-linux-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
     hermes_windows_cache_key: &hermes_windows_cache_key v2-hermes-{{ .Environment.CIRCLE_JOB }}-windows-{{ checksum "/Users/circleci/project/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
-    hermes_tarball_debug_cache_key: &hermes_tarball_debug_cache_key v4-hermes-tarball-debug-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
-    hermes_tarball_release_cache_key: &hermes_tarball_release_cache_key v3-hermes-tarball-release-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
-    pods_cache_key: &pods_cache_key v8-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
+    hermes_tarball_debug_cache_key: &hermes_tarball_debug_cache_key v4-hermes-tarball-debug-{{ arch }}-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
+    hermes_tarball_release_cache_key: &hermes_tarball_release_cache_key v3-hermes-tarball-release-{{ arch }}-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
+    pods_cache_key: &pods_cache_key v8-pods-{{ arch }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
     windows_yarn_cache_key: &windows_yarn_cache_key v1-win-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
     yarn_cache_key: &yarn_cache_key v5-yarn-cache-{{ .Environment.CIRCLE_JOB }}
-    rbenv_cache_key: &rbenv_cache_key v1-rbenv-{{ checksum "/tmp/required_ruby" }}
+    rbenv_cache_key: &rbenv_cache_key v1-rbenv-{{ arch }}-{{ checksum "/tmp/required_ruby" }}
 
   cache_paths:
     hermes_workspace_macos_cache_paths: &hermes_workspace_macos_cache_paths
@@ -128,7 +128,7 @@ executors:
     <<: *defaults
     macos:
       xcode: *xcode_version
-    resource_class: macos.x86.medium.gen2
+    resource_class: macos.m1.medium.gen1
     environment:
       - RCT_BUILD_HERMES_FROM_SOURCE: true
 
@@ -171,7 +171,7 @@ commands:
       - restore_cache:
           key: *rbenv_cache_key
       - run:
-          name: Bundle Install
+          name: Install the proper Ruby and run Bundle install
           command: |
             # Check if rbenv is installed. CircleCI is migrating to rbenv so we may not need to always install it.
 
@@ -202,8 +202,10 @@ commands:
             # Set ruby dependencies
             rbenv global << parameters.ruby_version >>
             if [[ $(echo << parameters.ruby_version >> | awk -F'.' '{print $1}') == "2" ]]; then
+              rbenv rehash
               gem install bundler -v 2.4.22
             else
+              rbenv rehash
               gem install bundler
             fi
             bundle check || bundle install --path vendor/bundle --clean
@@ -1582,15 +1584,15 @@ workflows:
       - test_ios_template:
           requires:
             - build_npm_package
-          name: "Test Template with Ruby 2.7.7"
-          ruby_version: "2.7.7"
+          name: "Test Template with Ruby 2.7.8"
+          ruby_version: "2.7.8"
           architecture: "NewArch"
           flavor: "Debug"
       - test_ios_template:
           requires:
             - build_npm_package
-          name: "Test Template with Ruby 3.2.0"
-          ruby_version: "3.2.0"
+          name: "Test Template with Ruby 3.2.2"
+          ruby_version: "3.2.2"
           architecture: "NewArch"
           flavor: "Debug"
       - test_ios_template:
@@ -1727,14 +1729,14 @@ workflows:
       - test_ios_rntester:
           requires:
             - build_hermes_macos
-          name: "Test RNTester with Ruby 2.7.7"
-          ruby_version: "2.7.7"
+          name: "Test RNTester with Ruby 2.7.8"
+          ruby_version: "2.7.8"
           architecture: "NewArch"
       - test_ios_rntester:
           requires:
             - build_hermes_macos
-          name: "Test RNTester with Ruby 3.2.0"
-          ruby_version: "3.2.0"
+          name: "Test RNTester with Ruby 3.2.2"
+          ruby_version: "3.2.2"
           architecture: "NewArch"
       - test_ios_rntester:
           requires:
@@ -1744,17 +1746,17 @@ workflows:
               architecture: ["NewArch", "OldArch"]
               jsengine: ["Hermes", "JSC"]
       - test_ios:
-          name: "Test iOS with Ruby 2.7.7"
+          name: "Test iOS with Ruby 2.7.8"
           run_unit_tests: true
           requires:
             - build_hermes_macos
-          ruby_version: "2.7.7"
+          ruby_version: "2.7.8"
       - test_ios:
-          name: "Test iOS with Ruby 3.2.0"
+          name: "Test iOS with Ruby 3.2.2"
           run_unit_tests: true
           requires:
             - build_hermes_macos
-          ruby_version: "3.2.0"
+          ruby_version: "3.2.2"
       - test_ios:
           run_unit_tests: true
           requires:
