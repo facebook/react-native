@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#import <atomic>
 #import <mutex>
 
 #import <React/RCTLog.h>
@@ -20,6 +21,8 @@
   RCTNetworkTask *_selfReference;
 }
 
+static auto currentRequestId = std::atomic<NSUInteger>(0);
+
 - (instancetype)initWithRequest:(NSURLRequest *)request
                         handler:(id<RCTURLRequestHandler>)handler
                   callbackQueue:(dispatch_queue_t)callbackQueue
@@ -28,10 +31,8 @@
   RCTAssertParam(handler);
   RCTAssertParam(callbackQueue);
 
-  static NSUInteger requestID = 0;
-
   if ((self = [super init])) {
-    _requestID = @(requestID++);
+    _requestID = @(currentRequestId++);
     _request = request;
     _handler = handler;
     _callbackQueue = callbackQueue;
