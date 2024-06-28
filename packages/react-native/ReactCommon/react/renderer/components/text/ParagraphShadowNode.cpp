@@ -166,7 +166,11 @@ Size ParagraphShadowNode::measureContent(
 Float ParagraphShadowNode::baseline(
     const LayoutContext& layoutContext,
     Size size) const {
-  auto content = getContent(layoutContext);
+  auto layoutMetrics = getLayoutMetrics();
+  auto layoutConstraints =
+      LayoutConstraints{size, size, layoutMetrics.layoutDirection};
+  auto content =
+      getContentWithMeasuredAttachments(layoutContext, layoutConstraints);
   auto attributedString = content.attributedString;
         
   if (attributedString.isEmpty()) {
