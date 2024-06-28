@@ -46,7 +46,7 @@ abstract class ReactSettingsExtension @Inject constructor(val settings: Settings
   ) {
     outputFile.parentFile.mkdirs()
     val lockFilesChanged = checkAndUpdateLockfiles(lockFiles, outputFolder)
-    if (lockFilesChanged || outputFile.exists().not()) {
+    if (lockFilesChanged || outputFile.exists().not() || outputFile.length() != 0L) {
       ProcessBuilder(command)
           .directory(workingDirectory)
           .redirectOutput(ProcessBuilder.Redirect.to(outputFile))
