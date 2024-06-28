@@ -392,7 +392,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image, CGSize size, CGFloat scal
     // Remove completed tasks
     NSMutableArray *tasksToRemove = nil;
     for (RCTNetworkTask *task in self->_pendingTasks.reverseObjectEnumerator) {
-      switch ([task getNetworkTaskStatus]) {
+      switch (task.status) {
         case RCTNetworkTaskFinished:
           if (!tasksToRemove) {
             tasksToRemove = [NSMutableArray new];
@@ -440,7 +440,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image, CGSize size, CGFloat scal
       if (MAX(self->_activeTasks, self->_scheduledDecodes) >= self->_maxConcurrentLoadingTasks) {
         break;
       }
-      if ([task getNetworkTaskStatus] == RCTNetworkTaskPending) {
+      if (task.status == RCTNetworkTaskPending) {
         [task start];
         self->_activeTasks++;
       }
