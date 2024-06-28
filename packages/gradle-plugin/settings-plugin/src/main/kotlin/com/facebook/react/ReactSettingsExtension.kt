@@ -112,9 +112,14 @@ abstract class ReactSettingsExtension @Inject constructor(val settings: Settings
 
     internal fun getLibrariesToAutolink(buildFile: File): Map<String, File> {
       val model = JsonUtils.fromAutolinkingConfigJson(buildFile)
-      return model?.dependencies?.values?.associate { deps ->
-        ":${deps.nameCleansed}" to File(deps.platforms?.android?.sourceDir)
-      } ?: emptyMap()
+      return model?.dependencies?.values?.mapNotNull { deps ->
+          val sourceDir = deps.platforms?.android?.sourceDir
+          if (sourceDir != null) {
+              ":${deps.nameCleansed}" to File(sourceDir)
+          } else {
+              null
+          }
+      }?.toMap() ?: emptyMap()
     }
 
     internal fun computeSha256(lockFile: File) =
