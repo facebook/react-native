@@ -87,11 +87,10 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 - (void)cancel
 {
-  if (_atomicStatus == RCTNetworkTaskFinished) {
+  if (_atomicStatus.exchange(RCTNetworkTaskFinished) == RCTNetworkTaskFinished) {
     return;
   }
 
-  _atomicStatus = RCTNetworkTaskFinished;
   id token = _requestToken;
   if (token && [_handler respondsToSelector:@selector(cancelRequest:)]) {
     [_handler cancelRequest:token];
