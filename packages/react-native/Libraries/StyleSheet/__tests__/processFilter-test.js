@@ -11,7 +11,9 @@
 
 'use strict';
 
-import type {FilterPrimitive} from '../processFilter';
+import type {FilterPrimitive} from '../StyleSheetTypes';
+
+import processColor from '../processColor';
 
 const processFilter = require('../processFilter').default;
 
@@ -38,15 +40,15 @@ describe('processFilter', () => {
     },
   ]);
 
-  testNumericFilter('hueRotate', 0, [{hueRotate: 0}]);
-  testUnitFilter('hueRotate', 90, 'deg', [{hueRotate: 90}]);
-  testUnitFilter('hueRotate', 1.5708, 'rad', [
-    {hueRotate: (180 * 1.5708) / Math.PI},
+  testNumericFilter('hue-rotate', 0, [{'hue-rotate': 0}]);
+  testUnitFilter('hue-rotate', 90, 'deg', [{'hue-rotate': 90}]);
+  testUnitFilter('hue-rotate', 1.5708, 'rad', [
+    {'hue-rotate': (180 * 1.5708) / Math.PI},
   ]);
-  testUnitFilter('hueRotate', -90, 'deg', [{hueRotate: -90}]);
-  testUnitFilter('hueRotate', 1.5, 'grad', []);
-  testNumericFilter('hueRotate', 90, []);
-  testUnitFilter('hueRotate', 50, '%', []);
+  testUnitFilter('hue-rotate', -90, 'deg', [{'hue-rotate': -90}]);
+  testUnitFilter('hue-rotate', 1.5, 'grad', []);
+  testNumericFilter('hue-rotate', 90, []);
+  testUnitFilter('hue-rotate', 50, '%', []);
 
   it('multiple filters', () => {
     expect(
@@ -54,9 +56,14 @@ describe('processFilter', () => {
         {brightness: 0.5},
         {opacity: 0.5},
         {blur: 5},
-        {hueRotate: '90deg'},
+        {'hue-rotate': '90deg'},
       ]),
-    ).toEqual([{brightness: 0.5}, {opacity: 0.5}, {blur: 5}, {hueRotate: 90}]);
+    ).toEqual([
+      {brightness: 0.5},
+      {opacity: 0.5},
+      {blur: 5},
+      {'hue-rotate': 90},
+    ]);
   });
   it('multiple filters one invalid', () => {
     expect(
@@ -64,7 +71,7 @@ describe('processFilter', () => {
         {brightness: 0.5},
         {opacity: 0.5},
         {blur: 5},
-        {hueRotate: '90foo'},
+        {'hue-rotate': '90foo'},
       ]),
     ).toEqual([]);
   });
@@ -83,6 +90,20 @@ describe('processFilter', () => {
       {brightness: 0.5},
     ]);
   });
+
+  it('should parse mixed case filters', () => {
+    expect(
+      processFilter(
+        'brIGhTneSs(0.5) hUE-rOTatE(90deg) briGhtNess(0.5) Brightness(0.5)',
+      ),
+    ).toEqual([
+      {brightness: 0.5},
+      {'hue-rotate': 90},
+      {brightness: 0.5},
+      {brightness: 0.5},
+    ]);
+  });
+
   it('empty', () => {
     expect(processFilter([])).toEqual([]);
   });
@@ -96,12 +117,17 @@ describe('processFilter', () => {
   });
   it('string multiple filters', () => {
     expect(
-      processFilter('brightness(0.5) opacity(0.5) blur(5) hueRotate(90deg)'),
-    ).toEqual([{brightness: 0.5}, {opacity: 0.5}, {blur: 5}, {hueRotate: 90}]);
+      processFilter('brightness(0.5) opacity(0.5) blur(5) hue-rotate(90deg)'),
+    ).toEqual([
+      {brightness: 0.5},
+      {opacity: 0.5},
+      {blur: 5},
+      {'hue-rotate': 90},
+    ]);
   });
   it('string multiple filters one invalid', () => {
     expect(
-      processFilter('brightness(0.5) opacity(0.5) blur(5) hueRotate(90foo)'),
+      processFilter('brightness(0.5) opacity(0.5) blur(5) hue-rotate(90foo)'),
     ).toEqual([]);
   });
   it('string multiple same filters', () => {
@@ -131,6 +157,8 @@ describe('processFilter', () => {
     // $FlowExpectedError[incompatible-call]
     expect(processFilter('brightness(.5)')).toEqual([{brightness: 0.5}]);
   });
+
+  testDropShadow();
 });
 
 function testStandardFilter(filter: string): void {
@@ -191,8 +219,8 @@ function createFilterPrimitive(
       return {contrast: value};
     case 'grayscale':
       return {grayscale: value};
-    case 'hueRotate':
-      return {hueRotate: value};
+    case 'hue-rotate':
+      return {'hue-rotate': value};
     case 'invert':
       return {invert: value};
     case 'opacity':
@@ -204,4 +232,173 @@ function createFilterPrimitive(
     default:
       throw new Error('Invalid filter: ' + filter);
   }
+}
+
+function testDropShadow() {
+  it('should parse string drop-shadow', () => {
+    expect(processFilter('drop-shadow(4px 4 10px red)')).toEqual([
+      {
+        'drop-shadow': {
+          offsetX: 4,
+          offsetY: 4,
+          color: processColor('red'),
+          standardDeviation: 10,
+        },
+      },
+    ]);
+  });
+
+  it('should parse string negative offsets drop-shadow', () => {
+    expect(processFilter('drop-shadow(-4 -4)')).toEqual([
+      {
+        'drop-shadow': {
+          offsetX: -4,
+          offsetY: -4,
+        },
+      },
+    ]);
+  });
+
+  it('should parse string multiple drop-shadows', () => {
+    expect(
+      processFilter('drop-shadow(4 4) drop-shadow(4 4) drop-shadow(4 4)'),
+    ).toEqual([
+      {
+        'drop-shadow': {
+          offsetX: 4,
+          offsetY: 4,
+        },
+      },
+      {
+        'drop-shadow': {
+          offsetX: 4,
+          offsetY: 4,
+        },
+      },
+      {
+        'drop-shadow': {
+          offsetX: 4,
+          offsetY: 4,
+        },
+      },
+    ]);
+  });
+
+  it('should parse string drop-shadow with random whitespaces', () => {
+    expect(
+      processFilter('    drop-shadow(4px  4   10px        red)    '),
+    ).toEqual([
+      {
+        'drop-shadow': {
+          offsetX: 4,
+          offsetY: 4,
+          color: processColor('red'),
+          standardDeviation: 10,
+        },
+      },
+    ]);
+  });
+
+  it('should parse string drop-shadow with multiple filters', () => {
+    expect(
+      processFilter(
+        'drop-shadow(4px 4 10px red) brightness(0.5) brightness(0.5)',
+      ),
+    ).toEqual([
+      {
+        'drop-shadow': {
+          offsetX: 4,
+          offsetY: 4,
+          color: processColor('red'),
+          standardDeviation: 10,
+        },
+      },
+      {brightness: 0.5},
+      {brightness: 0.5},
+    ]);
+  });
+
+  it('should parse string drop-shadow with color', () => {
+    expect(processFilter('drop-shadow(50 50 purple)')).toEqual([
+      {
+        'drop-shadow': {
+          offsetX: 50,
+          offsetY: 50,
+          color: processColor('purple'),
+        },
+      },
+    ]);
+  });
+
+  it('should parse string with mixed case drop-shadow', () => {
+    expect(processFilter('DroP-sHaDOw(50 50 purple)')).toEqual([
+      {
+        'drop-shadow': {
+          offsetX: 50,
+          offsetY: 50,
+          color: processColor('purple'),
+        },
+      },
+    ]);
+  });
+
+  it('should parse object drop-shadow', () => {
+    expect(
+      processFilter([
+        {
+          'drop-shadow': {
+            offsetX: 4,
+            offsetY: 4,
+            color: '#FFFFFF',
+            standardDeviation: '10',
+          },
+        },
+      ]),
+    ).toEqual([
+      {
+        'drop-shadow': {
+          offsetX: 4,
+          offsetY: 4,
+          standardDeviation: 10,
+          color: processColor('#FFFFFF'),
+        },
+      },
+    ]);
+  });
+
+  it('should fail to parse string comma separated drop-shadow', () => {
+    expect(processFilter('drop-shadow(4px, 4, 10px, red)')).toEqual([]);
+  });
+
+  it('should fail to parse other symbols after args comma separated drop-shadow', () => {
+    expect(processFilter('drop-shadow(4& 4* 10$ red)')).toEqual([]);
+  });
+
+  it('should fail on color between lengths string drop-shadow', () => {
+    expect(processFilter('drop-shadow(10 red 10 10')).toEqual([]);
+  });
+
+  it('should fail on color between offset & blur string drop-shadow', () => {
+    expect(processFilter('drop-shadow(10 10 red  10')).toEqual([]);
+  });
+
+  it('should fail on negative blue', () => {
+    expect(processFilter('drop-shadow(10 10 -10')).toEqual([]);
+  });
+
+  it('should fail on invalid object drop-shadow', () => {
+    expect(
+      // $FlowExpectedError[incompatible-call]
+      processFilter([
+        {'drop-shadow': {offsetX: 4, offsetY: 5, invalid: 'invalid arg'}},
+      ]),
+    ).toEqual([]);
+  });
+
+  it('should fail on invalid argument for drop-shadow object', () => {
+    expect(
+      // $FlowExpectedError[incompatible-call]
+      processFilter([{'drop-shadow': 8}]),
+    ).toEqual([]);
+  });
 }

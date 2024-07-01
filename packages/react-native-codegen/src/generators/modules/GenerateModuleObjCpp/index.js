@@ -35,6 +35,10 @@ const ModuleDeclarationTemplate = ({
 ${protocolMethods}
 
 @end
+
+@interface ${hasteModuleName}SpecBase : NSObject
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module '${hasteModuleName}'
@@ -199,6 +203,7 @@ module.exports = {
         serializeModuleSource(
           hasteModuleName,
           generatedStructs,
+          hasteModuleName,
           methodSerializations.filter(
             ({selector}) => selector !== '@selector(constantsToExport)',
           ),

@@ -20,9 +20,9 @@ runs:
       uses: actions/cache@v4.0.0
       with:
         path: packages/rn-tester/Podfile.lock
-        key: v9-podfilelock-${{ github.job }}-${{ hashfiles('packages/rn-tester/Podfile') }}-{{ hashfiles('/tmp/week_year') }}-${{ inputs.hermes-version}}
+        key: v9-podfilelock-${{ github.job }}-${{ hashfiles('packages/rn-tester/Podfile') }}-${{ hashfiles('/tmp/week_year') }}-${{ inputs.hermes-version}}
     - name: Cache cocoapods
       uses: actions/cache@v4.0.0
       with:
         path: packages/rn-tester/Pods
-        key: v11-cocoapods-${{ github.job }}-${{ hashfiles('packages/rn-tester/Podfile.lock') }}-{{ hashfiles('packages/rn-tester/Podfile') }}-${{ inputs.hermes-version}}
+        key: v11-cocoapods-${{ github.job }}-${{ hashfiles('packages/rn-tester/Podfile.lock') }}-${{ hashfiles('packages/rn-tester/Podfile') }}-${{ inputs.hermes-version}}

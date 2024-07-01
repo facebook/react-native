@@ -59,7 +59,14 @@ export default function openDebuggerMiddleware({
         appId,
         device,
         launchId,
-      }: {appId?: string, device?: string, launchId?: string, ...} = query;
+        target: targetId,
+      }: {
+        appId?: string,
+        device?: string,
+        launchId?: string,
+        target?: string,
+        ...
+      } = query;
 
       const targets = inspectorProxy.getPageDescriptions().filter(
         // Only use targets with better reloading support
@@ -73,19 +80,21 @@ export default function openDebuggerMiddleware({
       const launchType: 'launch' | 'redirect' =
         req.method === 'POST' ? 'launch' : 'redirect';
 
-      if (typeof appId === 'string' || typeof device === 'string') {
+      if (
+        typeof targetId === 'string' ||
+        typeof appId === 'string' ||
+        typeof device === 'string'
+      ) {
         logger?.info(
           (launchType === 'launch' ? 'Launching' : 'Redirecting to') +
             ' JS debugger (experimental)...',
         );
-        if (typeof device === 'string') {
-          target = targets.find(
-            _target => _target.reactNative.logicalDeviceId === device,
-          );
-        }
-        if (!target && typeof appId === 'string') {
-          target = targets.find(_target => _target.description === appId);
-        }
+        target = targets.find(
+          _target =>
+            (targetId == null || _target.id === targetId) &&
+            (appId == null || _target.description === appId) &&
+            (device == null || _target.reactNative.logicalDeviceId === device),
+        );
       } else if (targets.length > 0) {
         logger?.info(
           (launchType === 'launch' ? 'Launching' : 'Redirecting to') +

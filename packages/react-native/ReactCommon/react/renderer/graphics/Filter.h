@@ -24,7 +24,8 @@ enum class FilterType {
   Invert,
   Opacity,
   Saturate,
-  Sepia
+  Sepia,
+  DropShadow
 };
 
 struct FilterPrimitive {
@@ -43,7 +44,7 @@ inline FilterType filterTypeFromString(std::string_view filterName) {
     return FilterType::Contrast;
   } else if (filterName == "grayscale") {
     return FilterType::Grayscale;
-  } else if (filterName == "hueRotate") {
+  } else if (filterName == "hue-rotate") {
     return FilterType::HueRotate;
   } else if (filterName == "invert") {
     return FilterType::Invert;
@@ -53,6 +54,8 @@ inline FilterType filterTypeFromString(std::string_view filterName) {
     return FilterType::Saturate;
   } else if (filterName == "sepia") {
     return FilterType::Sepia;
+  } else if (filterName == "drop-shadow") {
+    return FilterType::DropShadow;
   } else {
     throw std::invalid_argument(std::string(filterName));
   }

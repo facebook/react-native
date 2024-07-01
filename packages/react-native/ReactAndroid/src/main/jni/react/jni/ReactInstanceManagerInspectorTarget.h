@@ -39,7 +39,7 @@ class ReactInstanceManagerInspectorTarget
 
   static jni::local_ref<jhybriddata> initHybrid(
       jni::alias_ref<jhybridobject> jobj,
-      jni::alias_ref<JExecutor::javaobject> executor,
+      jni::alias_ref<JExecutor::javaobject> javaExecutor,
       jni::alias_ref<
           ReactInstanceManagerInspectorTarget::TargetDelegate::javaobject>
           delegate);
@@ -61,14 +61,13 @@ class ReactInstanceManagerInspectorTarget
 
   ReactInstanceManagerInspectorTarget(
       jni::alias_ref<ReactInstanceManagerInspectorTarget::jhybridobject> jobj,
-      jni::alias_ref<JExecutor::javaobject> executor,
-      jni::alias_ref<
-          ReactInstanceManagerInspectorTarget::TargetDelegate::javaobject>
+      jni::alias_ref<JExecutor::javaobject> javaExecutor,
+      jni::alias_ref<ReactInstanceManagerInspectorTarget::TargetDelegate>
           delegate);
 
-  jni::global_ref<
-      ReactInstanceManagerInspectorTarget::TargetDelegate::javaobject>
+  jni::global_ref<ReactInstanceManagerInspectorTarget::TargetDelegate>
       delegate_;
+  jsinspector_modern::VoidExecutor inspectorExecutor_;
   std::shared_ptr<jsinspector_modern::HostTarget> inspectorTarget_;
   std::optional<int> inspectorPageId_;
 };

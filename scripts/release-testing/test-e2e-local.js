@@ -24,7 +24,6 @@ const {
   launchPackagerInSeparateWindow,
   maybeLaunchAndroidEmulator,
   prepareArtifacts,
-  setupCircleCIArtifacts,
   setupGHAArtifacts,
 } = require('./utils/testing-utils');
 const chalk = require('chalk');
@@ -78,7 +77,7 @@ const argv = yargs
  * - @onReleaseBranch whether we are on a release branch or not
  */
 async function testRNTesterIOS(
-  ciArtifacts /*: Unwrap<ReturnType<typeof setupCircleCIArtifacts>> */,
+  ciArtifacts /*: Unwrap<ReturnType<typeof setupGHAArtifacts>> */,
   onReleaseBranch /*: boolean */,
 ) {
   console.info(
@@ -130,7 +129,7 @@ async function testRNTesterIOS(
  * - @circleCIArtifacts manager object to manage all the download of CircleCIArtifacts. If null, it will fallback not to use them.
  */
 async function testRNTesterAndroid(
-  ciArtifacts /*: Unwrap<ReturnType<typeof setupCircleCIArtifacts>> */,
+  ciArtifacts /*: Unwrap<ReturnType<typeof setupGHAArtifacts>> */,
 ) {
   maybeLaunchAndroidEmulator();
 
@@ -206,7 +205,7 @@ async function testRNTesterAndroid(
  * - @onReleaseBranch whether we are on a release branch or not
  */
 async function testRNTester(
-  circleCIArtifacts /*:Unwrap<ReturnType<typeof setupCircleCIArtifacts>> */,
+  circleCIArtifacts /*:Unwrap<ReturnType<typeof setupGHAArtifacts>> */,
   onReleaseBranch /*: boolean */,
 ) {
   // FIXME: make sure that the commands retains colors
@@ -225,7 +224,7 @@ async function testRNTester(
 // === RNTestProject === //
 
 async function testRNTestProject(
-  ciArtifacts /*: Unwrap<ReturnType<typeof setupCircleCIArtifacts>> */,
+  ciArtifacts /*: Unwrap<ReturnType<typeof setupGHAArtifacts>> */,
 ) {
   console.info("We're going to test a fresh new RN project");
 
@@ -244,11 +243,6 @@ async function testRNTestProject(
   const buildType = 'dry-run';
 
   const reactNativePackagePath = `${REPO_ROOT}/packages/react-native`;
-  const templateRepoFolder = '/tmp/template';
-  const pathToTemplate = path.join(templateRepoFolder, 'template');
-
-  // Cleanup template clone folder
-  exec(`rm -rf ${templateRepoFolder}`);
   const localNodeTGZPath = `${reactNativePackagePath}/react-native-${releaseVersion}.tgz`;
 
   const mavenLocalPath =
@@ -286,21 +280,6 @@ async function testRNTestProject(
     }
   }
 
-  // Cloning the template repo
-  // TODO: handle versioning of the template to make sure that we are downloading the right version of
-  // the template, given a specific React Native version
-  exec(
-    `git clone https://github.com/react-native-community/template ${templateRepoFolder} --depth=1`,
-  );
-
-  // Update template version.
-  const appPackageJsonPath = path.join(pathToTemplate, 'package.json');
-  const appPackageJson = JSON.parse(
-    fs.readFileSync(appPackageJsonPath, 'utf8'),
-  );
-  appPackageJson.dependencies['react-native'] = `file:${newLocalNodeTGZ}`;
-  fs.writeFileSync(appPackageJsonPath, JSON.stringify(appPackageJson, null, 2));
-
   pushd('/tmp/');
 
   debug('Creating RNTestProject from template');
@@ -311,7 +290,7 @@ async function testRNTestProject(
   await initNewProjectFromSource({
     projectName: 'RNTestProject',
     directory: '/tmp/RNTestProject',
-    templatePath: templateRepoFolder,
+    pathToLocalReactNative: newLocalNodeTGZ,
   });
 
   cd('RNTestProject');

@@ -40,6 +40,10 @@ Map {
 
 
 @end
+
+@interface NativeSampleTurboModuleSpecBase : NSObject
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeSampleTurboModule'
@@ -206,6 +210,10 @@ namespace JS {
 - (NSArray<id<NSObject>> * _Nullable)getNullableArray;
 
 @end
+
+@interface NativeSampleTurboModuleSpecBase : NSObject
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeSampleTurboModule'
@@ -401,6 +409,10 @@ Map {
 
 
 @end
+
+@interface NativeSampleTurboModuleSpecBase : NSObject
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeSampleTurboModule'
@@ -522,6 +534,10 @@ namespace JS {
 - (void)cropImage:(JS::AliasTurboModule::Options &)cropData;
 
 @end
+
+@interface AliasTurboModuleSpecBase : NSObject
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'AliasTurboModule'
@@ -660,6 +676,10 @@ namespace JS {
               reject:(RCTPromiseRejectBlock)reject;
 
 @end
+
+@interface NativeCameraRollManagerSpecBase : NSObject
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeCameraRollManager'
@@ -725,6 +745,10 @@ namespace JS {
 - (void)dismissRedbox;
 
 @end
+
+@interface NativeExceptionsManagerSpecBase : NSObject
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeExceptionsManager'
@@ -929,6 +953,10 @@ namespace JS {
 - (facebook::react::ModuleConstants<JS::NativeSampleTurboModule::Constants::Builder>)getConstants;
 
 @end
+
+@interface NativeSampleTurboModuleSpecBase : NSObject
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeSampleTurboModule'
@@ -996,6 +1024,10 @@ Map {
 - (void)voidFunc;
 
 @end
+
+@interface NativeSampleTurboModuleSpecBase : NSObject
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeSampleTurboModule'
@@ -1011,6 +1043,10 @@ namespace facebook::react {
 - (void)voidFunc;
 
 @end
+
+@interface NativeSampleTurboModule2SpecBase : NSObject
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeSampleTurboModule2'

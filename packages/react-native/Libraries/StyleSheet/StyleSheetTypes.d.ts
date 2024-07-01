@@ -11,6 +11,25 @@ import {Animated} from '../Animated/Animated';
 import {ImageResizeMode} from '../Image/ImageResizeMode';
 import {ColorValue} from './StyleSheet';
 
+export type FilterPrimitive =
+  | {brightness: number | string}
+  | {blur: number | string}
+  | {contrast: number | string}
+  | {grayscale: number | string}
+  | {'hue-rotate': number | string}
+  | {invert: number | string}
+  | {opacity: number | string}
+  | {saturate: number | string}
+  | {sepia: number | string}
+  | {'drop-shadow': DropShadowPrimitive | string};
+
+export type DropShadowPrimitive = {
+  offsetX: number | string;
+  offsetY: number | string;
+  standardDeviation?: number | string | undefined;
+  color?: ColorValue | number | undefined;
+};
+
 type FlexAlignType =
   | 'flex-start'
   | 'flex-end'

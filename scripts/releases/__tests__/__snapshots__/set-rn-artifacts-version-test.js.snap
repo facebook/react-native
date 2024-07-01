@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`setReactNativeVersion should set nightly version: packages/react-native/Libraries/Core/ReactNativeVersion.js 1`] = `
+exports[`updateReactNativeArtifacts should set nightly version: packages/react-native/Libraries/Core/ReactNativeVersion.js 1`] = `
 "/**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -27,7 +27,7 @@ module.exports = {version};
 "
 `;
 
-exports[`setReactNativeVersion should set nightly version: packages/react-native/React/Base/RCTVersion.m 1`] = `
+exports[`updateReactNativeArtifacts should set nightly version: packages/react-native/React/Base/RCTVersion.m 1`] = `
 "/**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -62,12 +62,12 @@ NSDictionary* RCTGetReactNativeVersion(void)
 "
 `;
 
-exports[`setReactNativeVersion should set nightly version: packages/react-native/ReactAndroid/gradle.properties 1`] = `
+exports[`updateReactNativeArtifacts should set nightly version: packages/react-native/ReactAndroid/gradle.properties 1`] = `
 "VERSION_NAME=0.81.0-nightly-29282302-abcd1234
 "
 `;
 
-exports[`setReactNativeVersion should set nightly version: packages/react-native/ReactAndroid/src/main/java/com/facebook/react/modules/systeminfo/ReactNativeVersion.java 1`] = `
+exports[`updateReactNativeArtifacts should set nightly version: packages/react-native/ReactAndroid/src/main/java/com/facebook/react/modules/systeminfo/ReactNativeVersion.java 1`] = `
 "/**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -93,7 +93,7 @@ public class ReactNativeVersion {
 "
 `;
 
-exports[`setReactNativeVersion should set nightly version: packages/react-native/ReactCommon/cxxreact/ReactNativeVersion.h 1`] = `
+exports[`updateReactNativeArtifacts should set nightly version: packages/react-native/ReactCommon/cxxreact/ReactNativeVersion.h 1`] = `
 "/**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -121,18 +121,7 @@ constexpr struct {
 "
 `;
 
-exports[`setReactNativeVersion should set nightly version: packages/react-native/package.json 1`] = `
-"{
-  \\"name\\": \\"react-native\\",
-  \\"version\\": \\"0.81.0-nightly-29282302-abcd1234\\",
-  \\"dependencies\\": {
-    \\"@react-native/package-a\\": \\"0.81.0-nightly-29282302-abcd1234\\"
-  }
-}
-"
-`;
-
-exports[`setReactNativeVersion should set release version: packages/react-native/Libraries/Core/ReactNativeVersion.js 1`] = `
+exports[`updateReactNativeArtifacts should set release version: packages/react-native/Libraries/Core/ReactNativeVersion.js 1`] = `
 "/**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -159,7 +148,7 @@ module.exports = {version};
 "
 `;
 
-exports[`setReactNativeVersion should set release version: packages/react-native/React/Base/RCTVersion.m 1`] = `
+exports[`updateReactNativeArtifacts should set release version: packages/react-native/React/Base/RCTVersion.m 1`] = `
 "/**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -194,12 +183,12 @@ NSDictionary* RCTGetReactNativeVersion(void)
 "
 `;
 
-exports[`setReactNativeVersion should set release version: packages/react-native/ReactAndroid/gradle.properties 1`] = `
+exports[`updateReactNativeArtifacts should set release version: packages/react-native/ReactAndroid/gradle.properties 1`] = `
 "VERSION_NAME=0.81.0
 "
 `;
 
-exports[`setReactNativeVersion should set release version: packages/react-native/ReactAndroid/src/main/java/com/facebook/react/modules/systeminfo/ReactNativeVersion.java 1`] = `
+exports[`updateReactNativeArtifacts should set release version: packages/react-native/ReactAndroid/src/main/java/com/facebook/react/modules/systeminfo/ReactNativeVersion.java 1`] = `
 "/**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -225,7 +214,7 @@ public class ReactNativeVersion {
 "
 `;
 
-exports[`setReactNativeVersion should set release version: packages/react-native/ReactCommon/cxxreact/ReactNativeVersion.h 1`] = `
+exports[`updateReactNativeArtifacts should set release version: packages/react-native/ReactCommon/cxxreact/ReactNativeVersion.h 1`] = `
 "/**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -250,16 +239,5 @@ constexpr struct {
 } ReactNativeVersion;
 
 } // namespace facebook::react
-"
-`;
-
-exports[`setReactNativeVersion should set release version: packages/react-native/package.json 1`] = `
-"{
-  \\"name\\": \\"react-native\\",
-  \\"version\\": \\"0.81.0\\",
-  \\"dependencies\\": {
-    \\"@react-native/package-a\\": \\"1000.0.0\\"
-  }
-}
 "
 `;

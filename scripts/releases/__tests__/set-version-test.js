@@ -8,15 +8,16 @@
  * @format
  */
 
-const setVersion = require('../index');
+const {setVersion} = require('../set-version');
 const path = require('path');
 
-jest.mock('../../../consts', () => ({
-  REPO_ROOT: path.join(__dirname, '__fixtures__'),
-  PACKAGES_DIR: path.join(__dirname, '__fixtures__', 'packages'),
+jest.mock('../../consts', () => ({
+  REPO_ROOT: path.join(__dirname, '__fixtures__', 'set-version'),
+  PACKAGES_DIR: path.join(__dirname, '__fixtures__', 'set-version', 'packages'),
   REACT_NATIVE_PACKAGE_DIR: path.join(
     __dirname,
     '__fixtures__',
+    'set-version',
     'packages',
     'react-native',
   ),
@@ -35,7 +36,7 @@ const writeFileMock = jest.fn().mockImplementation((filePath, content) => {
 
   if (!filePath.endsWith('package.json')) {
     // Updated source and build files are already validated in the tests for
-    // `set-rn-version.js`. We also want to avoid polluting this test's
+    // `set-rn-artifacts-version.js`. We also want to avoid polluting this test's
     // snapshots with \@\generated.
     expect('[omitted]').toMatchSnapshot(normalizedFilePath);
     return;

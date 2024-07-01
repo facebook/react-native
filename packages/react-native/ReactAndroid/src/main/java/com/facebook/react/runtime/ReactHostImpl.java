@@ -133,6 +133,8 @@ public class ReactHostImpl implements ReactHost {
 
   private @Nullable ReactHostInspectorTarget mReactHostInspectorTarget;
 
+  private volatile boolean mHostInvalidated = false;
+
   public ReactHostImpl(
       Context context,
       ReactHostDelegate delegate,
@@ -891,11 +893,6 @@ public class ReactHostImpl implements ReactHost {
   @ThreadConfined(UI)
   private void moveToHostDestroy(@Nullable ReactContext currentContext) {
     mReactLifecycleStateManager.moveToOnHostDestroy(currentContext);
-    if (currentContext == null) {
-      // There's no current context/instance that requires the host inspector
-      // target to be kept alive, so we can destroy it immediately.
-      destroyInspectorHostTarget();
-    }
     setCurrentActivity(null);
   }
 
@@ -1047,6 +1044,9 @@ public class ReactHostImpl implements ReactHost {
     return mCreateReactInstanceTaskRef.getOrCreate(
         () -> {
           log(method, "Start");
+          Assertions.assertCondition(
+              !mHostInvalidated, "Cannot start a new ReactInstance on an invalidated ReactHost");
+
           ReactMarker.logMarker(
               ReactMarkerConstants.REACT_BRIDGELESS_LOADING_START, BRIDGELESS_MARKER_INSTANCE_KEY);
 
@@ -1416,6 +1416,9 @@ public class ReactHostImpl implements ReactHost {
 
                     final ReactContext reactContext = mBridgelessReactContextRef.getNullable();
                     if (reactContext != null) {
+                      log(method, "Resetting ReactContext ref");
+                      mBridgelessReactContextRef.reset();
+
                       log(method, "Destroying ReactContext");
                       reactContext.destroy();
                     }
@@ -1439,20 +1442,17 @@ public class ReactHostImpl implements ReactHost {
                       raiseSoftException(
                           method, "Skipping ReactInstance.destroy(): ReactInstance null");
                     } else {
+                      log(method, "Resetting ReactInstance ptr");
+                      mReactInstance = null;
+
                       log(method, "Destroying ReactInstance");
                       reactInstance.destroy();
                     }
 
-                    log(method, "Resetting ReactContext ref");
-                    mBridgelessReactContextRef.reset();
-
-                    log(method, "Resetting ReactInstance task ref");
+                    log(method, "Resetting createReactInstance task ref");
                     mCreateReactInstanceTaskRef.reset();
 
-                    log(method, "Resetting ReactInstance ptr");
-                    mReactInstance = null;
-
-                    log(method, "Resetting preload task ref");
+                    log(method, "Resetting start task ref");
                     mStartTask = null;
 
                     // Kickstart a new ReactInstance create
@@ -1462,7 +1462,7 @@ public class ReactHostImpl implements ReactHost {
               .continueWithTask(
                   task -> {
                     final ReactInstance reactInstance =
-                        reactInstanceTaskUnwrapper.unwrap(task, "7: Restarting surfaces");
+                        reactInstanceTaskUnwrapper.unwrap(task, "6: Restarting surfaces");
 
                     if (reactInstance == null) {
                       raiseSoftException(method, "Skipping surface restart: ReactInstance null");
@@ -1540,6 +1540,16 @@ public class ReactHostImpl implements ReactHost {
 
                     unregisterInstanceFromInspector(reactInstance);
 
+                    if (mHostInvalidated) {
+                      // If the host has been invalidated, now that the current context/instance
+                      // has been unregistered, we can safely destroy the host's inspector
+                      // target.
+                      if (mReactHostInspectorTarget != null) {
+                        mReactHostInspectorTarget.close();
+                        mReactHostInspectorTarget = null;
+                      }
+                    }
+
                     // Step 1: Destroy DevSupportManager
                     if (mUseDevSupport) {
                       log(method, "DevSupportManager cleanup");
@@ -1600,7 +1610,6 @@ public class ReactHostImpl implements ReactHost {
                     reactInstanceTaskUnwrapper.unwrap(task, "4: Destroying ReactContext");
 
                     final ReactContext reactContext = mBridgelessReactContextRef.getNullable();
-
                     if (reactContext == null) {
                       raiseSoftException(method, "ReactContext is null. Destroy reason: " + reason);
                     }
@@ -1610,6 +1619,9 @@ public class ReactHostImpl implements ReactHost {
                     mMemoryPressureRouter.destroy(mContext);
 
                     if (reactContext != null) {
+                      log(method, "Resetting ReactContext ref");
+                      mBridgelessReactContextRef.reset();
+
                       log(method, "Destroying ReactContext");
                       reactContext.destroy();
                     }
@@ -1632,20 +1644,17 @@ public class ReactHostImpl implements ReactHost {
                       raiseSoftException(
                           method, "Skipping ReactInstance.destroy(): ReactInstance null");
                     } else {
+                      log(method, "Resetting ReactInstance ptr");
+                      mReactInstance = null;
+
                       log(method, "Destroying ReactInstance");
                       reactInstance.destroy();
                     }
 
-                    log(method, "Resetting ReactContext ref ");
-                    mBridgelessReactContextRef.reset();
-
-                    log(method, "Resetting ReactInstance task ref");
+                    log(method, "Resetting createReactInstance task ref");
                     mCreateReactInstanceTaskRef.reset();
 
-                    log(method, "Resetting ReactInstance ptr");
-                    mReactInstance = null;
-
-                    log(method, "Resetting Preload task ref");
+                    log(method, "Resetting start task ref");
                     mStartTask = null;
 
                     log(method, "Resetting destroy task ref");
@@ -1693,18 +1702,11 @@ public class ReactHostImpl implements ReactHost {
 
   private @Nullable ReactHostInspectorTarget getOrCreateReactHostInspectorTarget() {
     if (mReactHostInspectorTarget == null && InspectorFlags.getFuseboxEnabled()) {
+      // NOTE: ReactHostInspectorTarget only retains a weak reference to `this`.
       mReactHostInspectorTarget = new ReactHostInspectorTarget(this);
     }
 
     return mReactHostInspectorTarget;
-  }
-
-  @ThreadConfined(UI)
-  private void destroyInspectorHostTarget() {
-    if (mReactHostInspectorTarget != null) {
-      mReactHostInspectorTarget.close();
-      mReactHostInspectorTarget = null;
-    }
   }
 
   @ThreadConfined(UI)
@@ -1717,11 +1719,12 @@ public class ReactHostImpl implements ReactHost {
       }
       reactInstance.unregisterFromInspector();
     }
-    if (mReactLifecycleStateManager.getLifecycleState() == LifecycleState.BEFORE_CREATE) {
-      // If the host is being destroyed, now that the current context/instance
-      // has been unregistered, we can safely destroy the host's inspector
-      // target.
-      destroyInspectorHostTarget();
-    }
+  }
+
+  @Override
+  public void invalidate() {
+    FLog.d(TAG, "ReactHostImpl.invalidate()");
+    mHostInvalidated = true;
+    destroy("ReactHostImpl.invalidate()", null);
   }
 }

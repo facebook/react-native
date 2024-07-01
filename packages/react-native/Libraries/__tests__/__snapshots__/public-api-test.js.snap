@@ -7568,6 +7568,23 @@ export type EdgeInsetsValue = {
   right: number,
   bottom: number,
 };
+export type FilterPrimitive =
+  | { brightness: number | string }
+  | { blur: number | string }
+  | { contrast: number | string }
+  | { grayscale: number | string }
+  | { \\"hue-rotate\\": number | string }
+  | { invert: number | string }
+  | { opacity: number | string }
+  | { saturate: number | string }
+  | { sepia: number | string }
+  | { \\"drop-shadow\\": DropShadowPrimitive | string };
+export type DropShadowPrimitive = {
+  offsetX: number | string,
+  offsetY: number | string,
+  standardDeviation?: number | string,
+  color?: ____ColorValue_Internal | number,
+};
 export type DimensionValue = number | string | \\"auto\\" | AnimatedNode | null;
 export type AnimatableNumericValue = number | AnimatedNode;
 export type CursorValue = \\"auto\\" | \\"pointer\\";
@@ -7985,19 +8002,26 @@ declare module.exports: processColorArray;
 `;
 
 exports[`public API should not change unintentionally Libraries/StyleSheet/processFilter.js 1`] = `
-"export type FilterPrimitive =
-  | { brightness: number | string }
-  | { blur: number | string }
-  | { contrast: number | string }
-  | { grayscale: number | string }
-  | { hueRotate: number | string }
-  | { invert: number | string }
-  | { opacity: number | string }
-  | { saturate: number | string }
-  | { sepia: number | string };
+"type ParsedFilter =
+  | { brightness: number }
+  | { blur: number }
+  | { contrast: number }
+  | { grayscale: number }
+  | { \\"hue-rotate\\": number }
+  | { invert: number }
+  | { opacity: number }
+  | { saturate: number }
+  | { sepia: number }
+  | { \\"drop-shadow\\": ParsedDropShadow };
+type ParsedDropShadow = {
+  offsetX: number,
+  offsetY: number,
+  standardDeviation?: number,
+  color?: ColorValue,
+};
 declare export default function processFilter(
   filter: $ReadOnlyArray<FilterPrimitive> | string
-): $ReadOnlyArray<FilterPrimitive>;
+): $ReadOnlyArray<ParsedFilter>;
 "
 `;
 
