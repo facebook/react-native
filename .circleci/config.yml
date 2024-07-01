@@ -1,114 +1,245 @@
 version: 2.1
 
-# this allows you to use CircleCI's dynamic configuration feature
-setup: true
+# -------------------------
+#        REFERENCES
+# -------------------------
+references:
+  defaults: &defaults
+    working_directory: ~/react-native
+    environment:
+      - GIT_COMMIT_DESC: git log --format=oneline -n 1 $CIRCLE_SHA1
+      # The public github tokens are publicly visible by design
+      - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A: &github_analysisbot_token_a "312d354b5c36f082cfe9"
+      - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B: &github_analysisbot_token_b "07973d757026bdd9f196"
+      # Homebrew currently breaks while updating:
+      # https://discuss.circleci.com/t/brew-install-fails-while-updating/32992
+      - HOMEBREW_NO_AUTO_UPDATE: 1
 
-orbs:
-  continuation: circleci/continuation@1.0.0
 
-parameters:
-  # Real pipelines parameters
-  run_release_workflow:
-    default: false
-    type: boolean
+  main_or_stable_only: &main_or_stable_only
+    filters:
+      branches:
+        only:
+          - main
+          - /0\.[0-9]+[\.[0-9]+]?-stable/
 
-  run_nightly_workflow:
-    default: false
-    type: boolean
 
-  release_version:
-    default: ""
-    type: string
+  # -------------------------
+  #        Dependency Anchors
+  # -------------------------
+  dependency_versions:
+    nodelts_image: &nodelts_image "cimg/node:20.2.0"
+    nodeprevlts_image: &nodeprevlts_image "cimg/node:18.12.1"
+    nodelts_browser_image: &nodelts_browser_image "cimg/node:20.2.0-browsers"
 
-  release_monorepo_packages_version:
-    default: ""
-    type: string
+  # -------------------------
+  #        Cache Key Anchors
+  # -------------------------
+  # Anchors for the cache keys
 
-  release_tag:
-    default: ""
-    type: string
+  cache_keys:
+    yarn_cache_key: &yarn_cache_key v6-yarn-cache-{{ .Environment.CIRCLE_JOB }}
 
-  release_dry_run:
-    default: false
-    type: boolean
+  # -------------------------
+  #        Filters
+  # -------------------------
+  # CircleCI filters are OR-ed, with all branches triggering by default and tags excluded by default
+  # CircleCI env-vars are only set with the branch OR tag that triggered the job, not both.
 
-jobs:
-  choose_ci_jobs:
+  # In this case, CIRCLE_BRANCH is unset, but CIRCLE_TAG is set.
+  only_release_tags: &only_release_tags
+    # Both of the following conditions must be included!
+    # Ignore any commit on any branch by default.
+    branches:
+      ignore: /.*/
+    # Only act on version tags.
+    tags:
+      only: /v[0-9]+(\.[0-9]+)*(\-rc(\.[0-9]+)?)?/
+
+# -------------------------
+#        EXECUTORS
+# -------------------------
+executors:
+  nodelts:
+    <<: *defaults
     docker:
-      - image: debian:bullseye
-    resource_class: small
+      - image: *nodelts_image
+    resource_class: "large"
+  nodeprevlts:
+    <<: *defaults
+    docker:
+      - image: *nodeprevlts_image
+    resource_class: "large"
+  # Executor with Node & Java used to inspect and lint
+  node-browsers-small:
+    <<: *defaults
+    docker:
+      - image: *nodelts_browser_image
+    resource_class: "small"
+  node-browsers-medium:
+    <<: *defaults
+    docker:
+      - image: *nodelts_browser_image
+    resource_class: "medium"
+
+# -------------------------
+#        COMMANDS
+# -------------------------
+commands:
+
+  run_yarn:
+    parameters:
+      yarn_base_cache_key:
+        default: *yarn_cache_key
+        type: string
+
     steps:
+      - restore_cache:
+          keys:
+            - << parameters.yarn_base_cache_key >>-{{ arch }}-{{ checksum "yarn.lock" }}
+            - << parameters.yarn_base_cache_key >>-{{ arch }}
+            - << parameters.yarn_base_cache_key >>
       - run:
-          name: Install Yarn
+          name: "Yarn: Install Dependencies"
           command: |
-            apt update
-            apt install -y wget git curl jq
+            # Skip yarn install on metro bump commits as the package is not yet
+            # available on npm
+            if [[ $(echo "$GIT_COMMIT_DESC" | grep -c "Bump metro@") -eq 0 ]]; then
+              yarn install --non-interactive --cache-folder ~/.cache/yarn
+            fi
+      - save_cache:
+          paths:
+            - ~/.cache/yarn
+          key: << parameters.yarn_base_cache_key >>-{{ arch }}-{{ checksum "yarn.lock" }}
 
-            apt-get update
-            apt-get install -y ca-certificates curl gnupg
-            mkdir -p /etc/apt/keyrings
-            curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
-
-            NODE_MAJOR=18
-            echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list
-            apt-get update
-
-            apt install -y nodejs
-            npm install --global yarn
+# -------------------------
+#          JOBS
+# -------------------------
+jobs:
+  # -------------------------
+  #     JOBS: Analyze PR
+  # -------------------------
+  # Analyze pull request and raise any lint/flow issues.
+  # Issues will be posted to the PR itself via GitHub bots.
+  # This workflow should only fail if the bots fail to run.
+  analyze_pr:
+    executor: node-browsers-medium
+    steps:
       - checkout
+      - run_yarn
       - run:
-          name: Yarn Install
-          command: yarn install
-      - when:
-          condition:
-            or:
-              - equal: [ main, << pipeline.git.branch >> ]
-              - matches:
-                  pattern: /0\.[0-9]+[\.[0-9]+]?-stable/
-                  value: << pipeline.git.branch >>
-          steps:
-            - run:
-                name: "[Main or Stable] Create input for config to test everything"
-                command: |
-                  mkdir -p /tmp/circleci/
-                  echo '{ "run_all": true }' > /tmp/circleci/pipeline_config.json
-      - when:
-          condition:
-            not:
-              or:
-                - equal: [ main, << pipeline.git.branch >> ]
-                - matches:
-                    pattern: /0\.[0-9]+[\.[0-9]+]?-stable/
-                    value: << pipeline.git.branch >>
-          steps:
-            - run:
-                name: "[PR Branch] Filter jobs"
-                command: |
-                  if [[ -z "$CIRCLE_PULL_REQUEST" ]]; then
-                    echo "Not in a PR. Can't filter properly outside a PR. Please open a PR so that we can run the proper CI tests."
-                    echo "For safety, we run all the tests!"
-                    mkdir -p /tmp/circleci/
-                    echo '{ "run_all": true }' > /tmp/circleci/pipeline_config.json
-                  else
-                    PR_NUMBER="${CIRCLE_PULL_REQUEST##*/}"
-                    node ./scripts/circleci/pipeline_selection.js filter-jobs
-                  fi
-      - run:
-          name: Create config
-          description: Generates a configuration on the fly, depending on the files that have been modified
-          command: |
-            node ./scripts/circleci/pipeline_selection.js create-configs
-      - store_artifacts:
-          path: .circleci/generated_config.yml
-          destination: generated_config.yml
-      - continuation/continue:
-            configuration_path: .circleci/generated_config.yml
+          name: Run linters against modified files (analysis-bot)
+          command: GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" yarn lint-ci
 
-# our single workflow, that triggers the setup job defined above
+  # -------------------------
+  #    JOBS: Analyze Code
+  # -------------------------
+  analyze_code:
+    executor: node-browsers-small
+    steps:
+      - checkout
+      - run_yarn
+
+      - run:
+          name: Lint code
+          command: scripts/circleci/exec_swallow_error.sh yarn lint --format junit -o ./reports/junit/eslint/results.xml
+          when: always
+
+      - run:
+          name: Lint Java
+          command: scripts/circleci/exec_swallow_error.sh yarn lint-java --check
+          when: always
+
+      - run:
+          name: Set server.max_workers=1 in .flowconfig
+          command: |
+            sed -i '/\[options\]/a server.max_workers=1' .flowconfig
+          when: always
+
+      - run:
+          name: Check for errors in code using Flow (iOS)
+          command: yarn flow-check
+          when: always
+
+      - run:
+          name: Check for errors in code using Flow (Android)
+          command: yarn flow-check
+          when: always
+
+      - run:
+          name: Run TypeScript tests
+          command: yarn test-typescript
+          when: always
+
+      - run:
+          name: Sanity checks
+          command: |
+            ./scripts/circleci/check_license.sh
+            ./scripts/circleci/validate_yarn_lockfile.sh
+          when: always
+
+      - run:
+          name: Check formatting
+          command: yarn run format-check
+          when: always
+
+      - store_test_results:
+          path: ./reports/junit
+
+  # -------------------------
+  #   JOBS: Test JavaScript
+  # -------------------------
+  test_js:
+    parameters:
+      executor:
+        type: executor
+        default: nodelts
+      run_disabled_tests:
+        type: boolean
+        default: false
+    executor: << parameters.executor >>
+    steps:
+      - checkout
+      - run_yarn
+      - run:
+          name: Install rsync
+          command: sudo apt update && sudo apt install rsync
+
+      # -------------------------
+      # Run JavaScript tests
+      - run:
+          name: "Run Tests: JavaScript Tests"
+          command: node ./scripts/run-ci-javascript-tests.js --maxWorkers 2
+
+      # Optionally, run disabled tests
+      - when:
+          condition: << parameters.run_disabled_tests >>
+          steps:
+            - run: echo "Failing tests may be moved here temporarily."
+      # -------------------------
+
+      - store_test_results:
+          path: ./reports/junit
+
+# -------------------------
+#        WORKFLOWS
+# -------------------------
+
 workflows:
-  always-run:
+  version: 2
+
+  analysis:
     jobs:
-      - choose_ci_jobs:
-          filters:
-            tags:
-              only: /.*/
+      # Run lints on every commit
+      - analyze_code
+
+      # Run code checks on PRs
+      - analyze_pr
+
+  tests_js:
+    jobs:
+      - test_js:
+          run_disabled_tests: false
+      - test_js:
+          name: test_js_prev_lts
+          executor: nodeprevlts
