@@ -17,11 +17,7 @@ PerformanceEntryReporter::getInstance() {
   return instance;
 }
 
-PerformanceEntryReporter::PerformanceEntryReporter() {
-  // For mark entry types we also want to keep the lookup by name, to make
-  // sure that marks can be referenced by measures
-  getBuffer(PerformanceEntryType::MARK).hasNameLookup = true;
-}
+PerformanceEntryReporter::PerformanceEntryReporter() = default;
 
 void PerformanceEntryReporter::setReportingCallback(
     std::function<void()> callback) {
@@ -57,9 +53,9 @@ void PerformanceEntryReporter::stopReporting(PerformanceEntryType entryType) {
 }
 
 void PerformanceEntryReporter::stopReporting() {
-  for (auto& buffer : buffers_) {
-    buffer.isReporting = false;
-  }
+  eventBuffer_.isReporting = false;
+  markBuffer_.isReporting = false;
+  measureBuffer_.isReporting = false;
 }
 
 PerformanceEntryReporter::PopPendingEntriesResult
@@ -68,21 +64,14 @@ PerformanceEntryReporter::popPendingEntries() {
   PopPendingEntriesResult res = {
       .entries = std::vector<PerformanceEntry>(),
       .droppedEntriesCount = droppedEntriesCount_};
-  for (auto& buffer : buffers_) {
-    buffer.entries.consume(res.entries);
-  }
+
+  eventBuffer_.consume(res.entries);
+  markBuffer_.consume(res.entries);
+  measureBuffer_.consume(res.entries);
 
   // Sort by starting time (or ending time, if starting times are equal)
   std::stable_sort(
-      res.entries.begin(),
-      res.entries.end(),
-      [](const PerformanceEntry& lhs, const PerformanceEntry& rhs) {
-        if (lhs.startTime != rhs.startTime) {
-          return lhs.startTime < rhs.startTime;
-        } else {
-          return lhs.duration < rhs.duration;
-        }
-      });
+      res.entries.begin(), res.entries.end(), PerformanceEntrySorter{});
 
   droppedEntriesCount_ = 0;
   return res;
@@ -106,20 +95,7 @@ void PerformanceEntryReporter::logEntry(const PerformanceEntry& entry) {
     return;
   }
 
-  if (buffer.hasNameLookup) {
-    // If we need to remove an entry because the buffer is null,
-    // we also need to remove it from the name lookup.
-    auto overwriteCandidate = buffer.entries.getNextOverwriteCandidate();
-    if (overwriteCandidate != nullptr) {
-      std::lock_guard lock2(nameLookupMutex_);
-      auto it = buffer.nameLookup.find(overwriteCandidate);
-      if (it != buffer.nameLookup.end() && *it == overwriteCandidate) {
-        buffer.nameLookup.erase(it);
-      }
-    }
-  }
-
-  auto pushResult = buffer.entries.add(std::move(entry));
+  auto pushResult = buffer.add(std::move(entry));
   if (pushResult ==
       BoundedConsumableBuffer<PerformanceEntry>::PushStatus::DROP) {
     // Start dropping entries once reached maximum buffer size.
@@ -128,17 +104,7 @@ void PerformanceEntryReporter::logEntry(const PerformanceEntry& entry) {
     droppedEntriesCount_ += 1;
   }
 
-  if (buffer.hasNameLookup) {
-    std::lock_guard lock2(nameLookupMutex_);
-    auto currentEntry = &buffer.entries.back();
-    auto it = buffer.nameLookup.find(currentEntry);
-    if (it != buffer.nameLookup.end()) {
-      buffer.nameLookup.erase(it);
-    }
-    buffer.nameLookup.insert(currentEntry);
-  }
-
-  if (buffer.entries.getNumToConsume() == 1) {
+  if (buffer.pendingMessagesCount() == 1) {
     // If the buffer was empty, it signals that JS side just has possibly
     // consumed it and is ready to get more
     scheduleFlushBuffer();
@@ -157,44 +123,22 @@ void PerformanceEntryReporter::mark(
 void PerformanceEntryReporter::clearEntries(
     std::optional<PerformanceEntryType> entryType,
     std::string_view entryName) {
+  // Clear all entry types
   if (!entryType) {
-    // Clear all entry types
     for (int i = 1; i < NUM_PERFORMANCE_ENTRY_TYPES; i++) {
       clearEntries(static_cast<PerformanceEntryType>(i), entryName);
     }
+
+    return;
+  }
+
+  auto& buffer = getBuffer(*entryType);
+  if (!entryName.empty()) {
+    std::lock_guard lock(entriesMutex_);
+    buffer.clear(entryName);
   } else {
-    auto& buffer = getBuffer(*entryType);
-    if (!entryName.empty()) {
-      if (buffer.hasNameLookup) {
-        std::lock_guard lock2(nameLookupMutex_);
-        buffer.nameLookup.clear();
-      }
-
-      std::lock_guard lock(entriesMutex_);
-      buffer.entries.clear([entryName](const PerformanceEntry& entry) {
-        return entry.name == entryName;
-      });
-
-      if (buffer.hasNameLookup) {
-        std::lock_guard lock2(nameLookupMutex_);
-        // BoundedConsumableBuffer::clear() invalidates existing references; we
-        // need to rebuild the lookup table. If there are multiple entries with
-        // the same name, make sure the last one gets inserted.
-        for (int i = static_cast<int>(buffer.entries.size()) - 1; i >= 0; i--) {
-          const auto& entry = buffer.entries[i];
-          buffer.nameLookup.insert(&entry);
-        }
-      }
-    } else {
-      {
-        std::lock_guard lock(entriesMutex_);
-        buffer.entries.clear();
-      }
-      {
-        std::lock_guard lock2(nameLookupMutex_);
-        buffer.nameLookup.clear();
-      }
-    }
+    std::lock_guard lock(entriesMutex_);
+    buffer.clear();
   }
 }
 
@@ -203,13 +147,12 @@ void PerformanceEntryReporter::getEntries(
     std::string_view entryName,
     std::vector<PerformanceEntry>& res) const {
   std::lock_guard lock(entriesMutex_);
-  const auto& entries = getBuffer(entryType).entries;
+  auto& buffer = getBuffer(entryType);
+
   if (entryName.empty()) {
-    entries.getEntries(res);
+    buffer.getEntries(std::nullopt, res);
   } else {
-    entries.getEntries(res, [entryName](const PerformanceEntry& entry) {
-      return entry.name == entryName;
-    });
+    buffer.getEntries(entryName, res);
   }
 }
 
@@ -257,14 +200,10 @@ void PerformanceEntryReporter::measure(
 
 DOMHighResTimeStamp PerformanceEntryReporter::getMarkTime(
     const std::string& markName) const {
-  PerformanceEntry mark{
-      .name = markName, .entryType = PerformanceEntryType::MARK};
+  std::lock_guard lock(entriesMutex_);
 
-  std::lock_guard lock(nameLookupMutex_);
-  const auto& marksBuffer = getBuffer(PerformanceEntryType::MARK);
-  auto it = marksBuffer.nameLookup.find(&mark);
-  if (it != marksBuffer.nameLookup.end()) {
-    return (*it)->startTime;
+  if (auto it = markBuffer_.entries.find(markName); it) {
+    return it->startTime;
   } else {
     return 0.0;
   }
