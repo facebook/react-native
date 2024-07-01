@@ -13,8 +13,8 @@
 #include <atomic>
 #include <condition_variable>
 #include <cstdlib>
+#include <deque>
 #include <mutex>
-#include <queue>
 #include <sstream>
 #include <thread>
 
@@ -51,6 +51,12 @@ class JSCRuntime : public jsi::Runtime {
       const std::shared_ptr<const jsi::Buffer>& buffer,
       const std::string& sourceURL) override;
 
+  // If we use this interface to implement microtasks in the host we need to
+  // polyfill `Promise` to use these methods, because JSC doesn't currently
+  // support providing a custom queue for its built-in implementation.
+  // Not doing this would result in a non-compliant behavior, as microtasks
+  // wouldn't execute in the order in which they were queued.
+  void queueMicrotask(const jsi::Function& callback) override;
   bool drainMicrotasks(int maxMicrotasksHint = -1) override;
 
   jsi::Object global() override;
@@ -265,6 +271,7 @@ class JSCRuntime : public jsi::Runtime {
   std::atomic<bool> ctxInvalid_;
   std::string desc_;
   JSValueRef nativeStateSymbol_ = nullptr;
+  std::deque<jsi::Function> microtaskQueue_;
 #ifndef NDEBUG
   mutable std::atomic<intptr_t> objectCounter_;
   mutable std::atomic<intptr_t> symbolCounter_;
@@ -380,6 +387,10 @@ JSCRuntime::JSCRuntime(JSGlobalContextRef ctx)
 }
 
 JSCRuntime::~JSCRuntime() {
+  // We need to clear the microtask queue to remove all references to the
+  // callbacks, so objectCounter_ would be 0 below.
+  microtaskQueue_.clear();
+
   // On shutting down and cleaning up: when JSC is actually torn down,
   // it calls JSC::Heap::lastChanceToFinalize internally which
   // finalizes anything left over.  But at this point,
@@ -436,7 +447,24 @@ jsi::Value JSCRuntime::evaluateJavaScript(
   return createValue(res);
 }
 
-bool JSCRuntime::drainMicrotasks(int maxMicrotasksHint) {
+void JSCRuntime::queueMicrotask(const jsi::Function& callback) {
+  microtaskQueue_.emplace_back(
+      jsi::Value(*this, callback).asObject(*this).asFunction(*this));
+}
+
+bool JSCRuntime::drainMicrotasks(int /*maxMicrotasksHint*/) {
+  // Note that new jobs can be enqueued during the draining.
+  while (!microtaskQueue_.empty()) {
+    jsi::Function callback = std::move(microtaskQueue_.front());
+
+    // We need to pop before calling the callback because that might throw.
+    // When that happens, the host will call `drainMicrotasks` again to execute
+    // the remaining microtasks, and this one shouldn't run again.
+    microtaskQueue_.pop_front();
+
+    callback.call(*this);
+  }
+
   return true;
 }
 
