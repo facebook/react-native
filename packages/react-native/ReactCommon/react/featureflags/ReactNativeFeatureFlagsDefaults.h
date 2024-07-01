@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0f6ca616cc516096ec250d61be440952>>
+ * @generated SignedSource<<d29c738be0332703cdd976db31c9642d>>
  */
 
 /**
@@ -44,10 +44,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool destroyFabricSurfacesInReactInstanceManager() override {
-    return false;
-  }
-
-  bool enableBackgroundExecutor() override {
     return false;
   }
 

@@ -51,8 +51,8 @@ Scheduler::Scheduler(
   eventPerformanceLogger_ =
       std::make_shared<EventPerformanceLogger>(performanceEntryReporter_);
 
-  auto uiManager = std::make_shared<UIManager>(
-      runtimeExecutor_, schedulerToolbox.backgroundExecutor, contextContainer_);
+  auto uiManager =
+      std::make_shared<UIManager>(runtimeExecutor_, contextContainer_);
   auto eventOwnerBox = std::make_shared<EventBeat::OwnerBox>();
   eventOwnerBox->owner = eventDispatcher_;
 

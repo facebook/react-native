@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<88f5b83b8a3d7902eaab333246b59ed3>>
+ * @generated SignedSource<<120158a66c9a948553d9b9da51f25d0a>>
  */
 
 /**
@@ -66,12 +66,6 @@ class ReactNativeFeatureFlagsProviderHolder
   bool destroyFabricSurfacesInReactInstanceManager() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("destroyFabricSurfacesInReactInstanceManager");
-    return method(javaProvider_);
-  }
-
-  bool enableBackgroundExecutor() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableBackgroundExecutor");
     return method(javaProvider_);
   }
 
@@ -218,11 +212,6 @@ bool JReactNativeFeatureFlagsCxxInterop::destroyFabricSurfacesInReactInstanceMan
   return ReactNativeFeatureFlags::destroyFabricSurfacesInReactInstanceManager();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::enableBackgroundExecutor(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::enableBackgroundExecutor();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::enableCleanTextInputYogaNode(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableCleanTextInputYogaNode();
@@ -350,9 +339,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "destroyFabricSurfacesInReactInstanceManager",
         JReactNativeFeatureFlagsCxxInterop::destroyFabricSurfacesInReactInstanceManager),
-      makeNativeMethod(
-        "enableBackgroundExecutor",
-        JReactNativeFeatureFlagsCxxInterop::enableBackgroundExecutor),
       makeNativeMethod(
         "enableCleanTextInputYogaNode",
         JReactNativeFeatureFlagsCxxInterop::enableCleanTextInputYogaNode),

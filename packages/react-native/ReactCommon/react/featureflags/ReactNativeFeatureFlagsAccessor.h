@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<45258896e458cce165b403e043356eb9>>
+ * @generated SignedSource<<78d8ede4b2adc2d069153f47644722cb>>
  */
 
 /**
@@ -36,7 +36,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool allowRecursiveCommitsWithSynchronousMountOnAndroid();
   bool batchRenderingUpdatesInEventLoop();
   bool destroyFabricSurfacesInReactInstanceManager();
-  bool enableBackgroundExecutor();
   bool enableCleanTextInputYogaNode();
   bool enableGranularShadowTreeStateReconciliation();
   bool enableMicrotasks();
@@ -66,14 +65,13 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 25> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 24> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> allowCollapsableChildren_;
   std::atomic<std::optional<bool>> allowRecursiveCommitsWithSynchronousMountOnAndroid_;
   std::atomic<std::optional<bool>> batchRenderingUpdatesInEventLoop_;
   std::atomic<std::optional<bool>> destroyFabricSurfacesInReactInstanceManager_;
-  std::atomic<std::optional<bool>> enableBackgroundExecutor_;
   std::atomic<std::optional<bool>> enableCleanTextInputYogaNode_;
   std::atomic<std::optional<bool>> enableGranularShadowTreeStateReconciliation_;
   std::atomic<std::optional<bool>> enableMicrotasks_;

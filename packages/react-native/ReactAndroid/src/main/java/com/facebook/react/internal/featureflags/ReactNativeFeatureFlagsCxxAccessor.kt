@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5d67280406c16b01ba71b7b75e814a79>>
+ * @generated SignedSource<<c01988f074e940f8c66a72507b429897>>
  */
 
 /**
@@ -25,7 +25,6 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
   private var allowRecursiveCommitsWithSynchronousMountOnAndroidCache: Boolean? = null
   private var batchRenderingUpdatesInEventLoopCache: Boolean? = null
   private var destroyFabricSurfacesInReactInstanceManagerCache: Boolean? = null
-  private var enableBackgroundExecutorCache: Boolean? = null
   private var enableCleanTextInputYogaNodeCache: Boolean? = null
   private var enableGranularShadowTreeStateReconciliationCache: Boolean? = null
   private var enableMicrotasksCache: Boolean? = null
@@ -87,15 +86,6 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.destroyFabricSurfacesInReactInstanceManager()
       destroyFabricSurfacesInReactInstanceManagerCache = cached
-    }
-    return cached
-  }
-
-  override fun enableBackgroundExecutor(): Boolean {
-    var cached = enableBackgroundExecutorCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.enableBackgroundExecutor()
-      enableBackgroundExecutorCache = cached
     }
     return cached
   }

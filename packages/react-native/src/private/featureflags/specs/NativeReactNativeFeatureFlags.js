@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6715ba4954b31464c591597c53a2a0de>>
+ * @generated SignedSource<<dadcbde345f8621a65d82f99de067b23>>
  * @flow strict-local
  */
 
@@ -28,7 +28,6 @@ export interface Spec extends TurboModule {
   +allowRecursiveCommitsWithSynchronousMountOnAndroid?: () => boolean;
   +batchRenderingUpdatesInEventLoop?: () => boolean;
   +destroyFabricSurfacesInReactInstanceManager?: () => boolean;
-  +enableBackgroundExecutor?: () => boolean;
   +enableCleanTextInputYogaNode?: () => boolean;
   +enableGranularShadowTreeStateReconciliation?: () => boolean;
   +enableMicrotasks?: () => boolean;

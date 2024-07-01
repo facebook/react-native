@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<522f11a571457cb932f451cf81bd384a>>
+ * @generated SignedSource<<45fafb9226a77eebc8abac12c4d09548>>
  * @flow strict-local
  */
 
@@ -46,7 +46,6 @@ export type ReactNativeFeatureFlags = {
   allowRecursiveCommitsWithSynchronousMountOnAndroid: Getter<boolean>,
   batchRenderingUpdatesInEventLoop: Getter<boolean>,
   destroyFabricSurfacesInReactInstanceManager: Getter<boolean>,
-  enableBackgroundExecutor: Getter<boolean>,
   enableCleanTextInputYogaNode: Getter<boolean>,
   enableGranularShadowTreeStateReconciliation: Getter<boolean>,
   enableMicrotasks: Getter<boolean>,
@@ -133,10 +132,6 @@ export const batchRenderingUpdatesInEventLoop: Getter<boolean> = createNativeFla
  * When enabled, ReactInstanceManager will clean up Fabric surfaces on destroy().
  */
 export const destroyFabricSurfacesInReactInstanceManager: Getter<boolean> = createNativeFlagGetter('destroyFabricSurfacesInReactInstanceManager', false);
-/**
- * Enables the use of a background executor to compute layout and commit updates on Fabric (this system is deprecated and should not be used).
- */
-export const enableBackgroundExecutor: Getter<boolean> = createNativeFlagGetter('enableBackgroundExecutor', false);
 /**
  * Clean yoga node when <TextInput /> does not change.
  */

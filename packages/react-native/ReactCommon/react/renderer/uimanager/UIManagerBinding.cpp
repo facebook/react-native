@@ -488,14 +488,11 @@ jsi::Value UIManagerBinding::get(
 
   if (methodName == "completeRoot") {
     auto paramCount = 2;
-    std::weak_ptr<UIManager> weakUIManager = uiManager_;
-    // Enhanced version of the method that uses `backgroundExecutor` and
-    // captures a shared pointer to `UIManager`.
     return jsi::Function::createFromHostFunction(
         runtime,
         name,
         paramCount,
-        [weakUIManager, uiManager, methodName, paramCount](
+        [uiManager, methodName, paramCount](
             jsi::Runtime& runtime,
             const jsi::Value& /*thisValue*/,
             const jsi::Value* arguments,
@@ -506,47 +503,13 @@ jsi::Value UIManagerBinding::get(
               RuntimeSchedulerBinding::getBinding(runtime);
           auto surfaceId = surfaceIdFromValue(runtime, arguments[0]);
 
-          if (uiManager->backgroundExecutor_) {
-            auto weakShadowNodeList =
-                weakShadowNodeListFromValue(runtime, arguments[1]);
-            static std::atomic_uint_fast8_t completeRootEventCounter{0};
-            static std::atomic_uint_fast32_t mostRecentSurfaceId{0};
-            completeRootEventCounter += 1;
-            mostRecentSurfaceId = surfaceId;
-            uiManager->backgroundExecutor_(
-                [weakUIManager,
-                 weakShadowNodeList,
-                 surfaceId,
-                 eventCount = completeRootEventCounter.load()] {
-                  auto shouldYield = [=]() -> bool {
-                    // If `completeRootEventCounter` was incremented, another
-                    // `completeSurface` call has been scheduled and current
-                    // `completeSurface` should yield to it.
-                    return completeRootEventCounter > eventCount &&
-                        mostRecentSurfaceId == surfaceId;
-                  };
-                  auto shadowNodeList =
-                      shadowNodeListFromWeakList(weakShadowNodeList);
-                  auto strongUIManager = weakUIManager.lock();
-                  if (shadowNodeList && strongUIManager) {
-                    strongUIManager->completeSurface(
-                        surfaceId,
-                        shadowNodeList,
-                        {.enableStateReconciliation = true,
-                         .mountSynchronously = false,
-                         .shouldYield = shouldYield});
-                  }
-                });
-          } else {
-            auto shadowNodeList =
-                shadowNodeListFromValue(runtime, arguments[1]);
-            uiManager->completeSurface(
-                surfaceId,
-                shadowNodeList,
-                {.enableStateReconciliation = true,
-                 .mountSynchronously = false,
-                 .shouldYield = nullptr});
-          }
+          auto shadowNodeList = shadowNodeListFromValue(runtime, arguments[1]);
+          uiManager->completeSurface(
+              surfaceId,
+              shadowNodeList,
+              {.enableStateReconciliation = true,
+               .mountSynchronously = false,
+               .shouldYield = nullptr});
 
           return jsi::Value::undefined();
         });

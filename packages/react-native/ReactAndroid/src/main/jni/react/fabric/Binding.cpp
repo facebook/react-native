@@ -12,7 +12,6 @@
 #include "EventBeatManager.h"
 #include "EventEmitterWrapper.h"
 #include "FabricMountingManager.h"
-#include "JBackgroundExecutor.h"
 #include "ReactNativeConfigHolder.h"
 #include "SurfaceHandlerBinding.h"
 
@@ -415,11 +414,6 @@ void Binding::installFabricUIManager(
   toolbox.runtimeExecutor = runtimeExecutor;
 
   toolbox.asynchronousEventBeatFactory = asynchronousBeatFactory;
-
-  if (ReactNativeFeatureFlags::enableBackgroundExecutor()) {
-    backgroundExecutor_ = JBackgroundExecutor::create("fabric_bg");
-    toolbox.backgroundExecutor = backgroundExecutor_;
-  }
 
   animationDriver_ = std::make_shared<LayoutAnimationDriver>(
       runtimeExecutor, contextContainer, this);

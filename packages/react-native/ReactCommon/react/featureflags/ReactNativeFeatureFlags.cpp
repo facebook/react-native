@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<dd5872a21f84a41bea247e137541ddfc>>
+ * @generated SignedSource<<25ef80e35f32cc7997566326ea6e18ab>>
  */
 
 /**
@@ -39,10 +39,6 @@ bool ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop() {
 
 bool ReactNativeFeatureFlags::destroyFabricSurfacesInReactInstanceManager() {
   return getAccessor().destroyFabricSurfacesInReactInstanceManager();
-}
-
-bool ReactNativeFeatureFlags::enableBackgroundExecutor() {
-  return getAccessor().enableBackgroundExecutor();
 }
 
 bool ReactNativeFeatureFlags::enableCleanTextInputYogaNode() {
