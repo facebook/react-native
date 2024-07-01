@@ -43,6 +43,9 @@
 
 @end
 
+@interface NativeSampleTurboModuleSpecBase : NSObject
+@end
+
 namespace facebook::react {
 
 /**

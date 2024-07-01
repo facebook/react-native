@@ -43,6 +43,10 @@ const DEBUGGER_HEARTBEAT_INTERVAL_MS = 10000;
 const INTERNAL_ERROR_CODE = 1011;
 
 export interface InspectorProxyQueries {
+  /**
+   * Returns list of page descriptions ordered by device connection order, then
+   * page addition order.
+   */
   getPageDescriptions(): Array<PageDescription>;
 }
 
@@ -209,18 +213,28 @@ export default class InspectorProxy implements InspectorProxyQueries {
         const appName = query.app || 'Unknown';
 
         const oldDevice = this.#devices.get(deviceId);
-        const newDevice = new Device(
-          deviceId,
-          deviceName,
-          appName,
-          socket,
-          this.#projectRoot,
-          this.#eventReporter,
-          this.#customMessageHandler,
-        );
-
+        let newDevice;
         if (oldDevice) {
-          oldDevice.handleDuplicateDeviceConnection(newDevice);
+          oldDevice.dangerouslyRecreateDevice(
+            deviceId,
+            deviceName,
+            appName,
+            socket,
+            this.#projectRoot,
+            this.#eventReporter,
+            this.#customMessageHandler,
+          );
+          newDevice = oldDevice;
+        } else {
+          newDevice = new Device(
+            deviceId,
+            deviceName,
+            appName,
+            socket,
+            this.#projectRoot,
+            this.#eventReporter,
+            this.#customMessageHandler,
+          );
         }
 
         this.#devices.set(deviceId, newDevice);
@@ -230,7 +244,9 @@ export default class InspectorProxy implements InspectorProxyQueries {
         );
 
         socket.on('close', () => {
-          this.#devices.delete(deviceId);
+          if (this.#devices.get(deviceId)?.dangerouslyGetSocket() === socket) {
+            this.#devices.delete(deviceId);
+          }
           debug(`Device ${deviceName} disconnected.`);
         });
       } catch (e) {

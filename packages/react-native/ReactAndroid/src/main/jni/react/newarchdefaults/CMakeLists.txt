@@ -25,4 +25,5 @@ target_link_libraries(react_newarchdefaults
         react_nativemodule_dom
         react_nativemodule_featureflags
         react_nativemodule_microtasks
+        react_nativemodule_idlecallbacks
         jsi)

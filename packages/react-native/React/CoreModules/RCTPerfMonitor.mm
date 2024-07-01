@@ -171,7 +171,7 @@ RCT_EXPORT_MODULE()
 - (UIView *)container
 {
   if (!_container) {
-    CGSize statusBarSize = RCTSharedApplication().statusBarFrame.size;
+    CGSize statusBarSize = RCTUIStatusBarManager().statusBarFrame.size;
     CGFloat statusBarHeight = statusBarSize.height;
     _container = [[UIView alloc] initWithFrame:CGRectMake(10, statusBarHeight, 180, RCTPerfMonitorBarHeight)];
     _container.layer.borderWidth = 2;

@@ -88,6 +88,11 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).',
     },
+    fixMappingOfEventPrioritiesBetweenFabricAndReact: {
+      defaultValue: false,
+      description:
+        'Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.',
+    },
     fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak: {
       defaultValue: false,
       description:
@@ -181,6 +186,10 @@ const definitions: FeatureFlagDefinitions = {
       defaultValue: false,
       description:
         'Enables use of AnimatedObject for animating transform values.',
+    },
+    shouldUseOptimizedText: {
+      defaultValue: false,
+      description: 'Use optimized version of <Text /> component.',
     },
     shouldUseRemoveClippedSubviewsAsDefaultOnIOS: {
       defaultValue: false,

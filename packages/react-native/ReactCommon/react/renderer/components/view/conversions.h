@@ -188,8 +188,7 @@ inline void fromRawValue(
     result = yoga::Direction::RTL;
     return;
   }
-  LOG(ERROR) << "Could not parse Direction:" << stringValue;
-  react_native_expect(false);
+  LOG(ERROR) << "Could not parse yoga::Direction: " << stringValue;
 }
 
 inline void fromRawValue(
@@ -218,8 +217,7 @@ inline void fromRawValue(
     result = yoga::FlexDirection::RowReverse;
     return;
   }
-  LOG(ERROR) << "Could not parse yoga::FlexDirection:" << stringValue;
-  react_native_expect(false);
+  LOG(ERROR) << "Could not parse yoga::FlexDirection: " << stringValue;
 }
 
 inline void fromRawValue(
@@ -256,8 +254,7 @@ inline void fromRawValue(
     result = yoga::Justify::SpaceEvenly;
     return;
   }
-  LOG(ERROR) << "Could not parse yoga::Justify:" << stringValue;
-  react_native_expect(false);
+  LOG(ERROR) << "Could not parse yoga::Justify: " << stringValue;
 }
 
 inline void fromRawValue(
@@ -306,7 +303,7 @@ inline void fromRawValue(
     result = yoga::Align::SpaceEvenly;
     return;
   }
-  LOG(ERROR) << "Could not parse yoga::Align:" << stringValue;
+  LOG(ERROR) << "Could not parse yoga::Align: " << stringValue;
   react_native_expect(false);
 }
 
@@ -332,8 +329,7 @@ inline void fromRawValue(
     result = yoga::PositionType::Absolute;
     return;
   }
-  LOG(ERROR) << "Could not parse yoga::PositionType:" << stringValue;
-  react_native_expect(false);
+  LOG(ERROR) << "Could not parse yoga::PositionType: " << stringValue;
 }
 
 inline void fromRawValue(
@@ -358,8 +354,7 @@ inline void fromRawValue(
     result = yoga::Wrap::WrapReverse;
     return;
   }
-  LOG(ERROR) << "Could not parse yoga::Wrap:" << stringValue;
-  react_native_expect(false);
+  LOG(ERROR) << "Could not parse yoga::Wrap: " << stringValue;
 }
 
 inline void fromRawValue(
@@ -406,8 +401,7 @@ inline void fromRawValue(
     result = yoga::Display::None;
     return;
   }
-  LOG(ERROR) << "Could not parse yoga::Display:" << stringValue;
-  react_native_expect(false);
+  LOG(ERROR) << "Could not parse yoga::Display: " << stringValue;
 }
 
 inline void fromRawValue(

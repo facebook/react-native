@@ -282,7 +282,7 @@ function buildArtifactsLocally(
 ) {
   // this is needed to generate the Android artifacts correctly
   const exitCode = exec(
-    `node scripts/releases/set-rn-version.js --to-version ${releaseVersion} --build-type ${buildType}`,
+    `node scripts/releases/set-rn-artifacts-version.js --to-version ${releaseVersion} --build-type ${buildType}`,
   ).code;
 
   if (exitCode !== 0) {

@@ -20,8 +20,8 @@ const ProgressBarAndroid = require('../ProgressBarAndroid.android');
 const React = require('react');
 
 describe('<ProgressBarAndroid />', () => {
-  it('should render as expected', () => {
-    ReactNativeTestTools.expectRendersMatchingSnapshot(
+  it('should render as expected', async () => {
+    await ReactNativeTestTools.expectRendersMatchingSnapshot(
       'ProgressBarAndroid',
       () => <ProgressBarAndroid styleAttr="Horizontal" indeterminate={true} />,
       () => {

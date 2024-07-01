@@ -294,12 +294,12 @@ TEST_F(ReactInstanceTest, testSetImmediateWithInvalidArgs) {
   EXPECT_EQ(
       getErrorMessage("setImmediate();"),
       "setImmediate must be called with at least one argument (a function to call)");
-  EXPECT_EQ(
-      getErrorMessage("setImmediate('invalid');"),
-      "The first argument to setImmediate must be a function.");
-  EXPECT_EQ(
-      getErrorMessage("setImmediate({});"),
-      "The first argument to setImmediate must be a function.");
+
+  eval("setImmediate('invalid');");
+  expectNoError();
+
+  eval("setImmediate({});");
+  expectNoError();
 }
 
 TEST_F(ReactInstanceTest, testClearImmediate) {
@@ -420,12 +420,12 @@ TEST_F(ReactInstanceTest, testSetTimeoutWithInvalidArgs) {
   EXPECT_EQ(
       getErrorMessage("setTimeout();"),
       "setTimeout must be called with at least one argument (the function to call).");
-  EXPECT_EQ(
-      getErrorMessage("setTimeout('invalid');"),
-      "The first argument to setTimeout must be a function.");
-  EXPECT_EQ(
-      getErrorMessage("setTimeout(() => {}, 'invalid');"),
-      "The second argument to setTimeout must be a number or undefined.");
+
+  eval("setTimeout('invalid');");
+  expectNoError();
+
+  eval("setTimeout(() => {}, 'invalid');");
+  expectNoError();
 }
 
 TEST_F(ReactInstanceTest, testClearTimeout) {

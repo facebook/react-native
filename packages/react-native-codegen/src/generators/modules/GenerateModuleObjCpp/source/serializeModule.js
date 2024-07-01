@@ -19,12 +19,18 @@ import type {Struct} from '../StructCollector';
 const ModuleTemplate = ({
   hasteModuleName,
   structs,
+  moduleName,
   methodSerializationOutputs,
 }: $ReadOnly<{
   hasteModuleName: string,
   structs: $ReadOnlyArray<Struct>,
+  moduleName: string,
   methodSerializationOutputs: $ReadOnlyArray<MethodSerializationOutput>,
-}>) => `${structs
+}>) => `
+@implementation ${hasteModuleName}SpecBase
+@end
+
+${structs
   .map(struct =>
     RCTCxxConvertCategoryTemplate({hasteModuleName, structName: struct.name}),
   )
@@ -105,11 +111,13 @@ const MethodMapEntryTemplate = ({
 function serializeModuleSource(
   hasteModuleName: string,
   structs: $ReadOnlyArray<Struct>,
+  moduleName: string,
   methodSerializationOutputs: $ReadOnlyArray<MethodSerializationOutput>,
 ): string {
   return ModuleTemplate({
     hasteModuleName,
     structs: structs.filter(({context}) => context !== 'CONSTANTS'),
+    moduleName,
     methodSerializationOutputs,
   });
 }

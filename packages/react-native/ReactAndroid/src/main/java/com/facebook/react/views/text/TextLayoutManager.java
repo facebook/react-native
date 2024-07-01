@@ -422,6 +422,69 @@ public class TextLayoutManager {
     return layout;
   }
 
+  public static Layout createLayout(
+      @NonNull Context context,
+      MapBuffer attributedString,
+      MapBuffer paragraphAttributes,
+      float width,
+      float height,
+      ReactTextViewManagerCallback reactTextViewManagerCallback) {
+    Spannable text =
+        getOrCreateSpannableForText(context, attributedString, reactTextViewManagerCallback);
+    BoringLayout.Metrics boring = BoringLayout.isBoring(text, sTextPaintInstance);
+
+    int textBreakStrategy =
+        TextAttributeProps.getTextBreakStrategy(
+            paragraphAttributes.getString(PA_KEY_TEXT_BREAK_STRATEGY));
+    boolean includeFontPadding =
+        paragraphAttributes.contains(PA_KEY_INCLUDE_FONT_PADDING)
+            ? paragraphAttributes.getBoolean(PA_KEY_INCLUDE_FONT_PADDING)
+            : DEFAULT_INCLUDE_FONT_PADDING;
+    int hyphenationFrequency =
+        TextAttributeProps.getTextBreakStrategy(
+            paragraphAttributes.getString(PA_KEY_HYPHENATION_FREQUENCY));
+    boolean adjustFontSizeToFit =
+        paragraphAttributes.contains(PA_KEY_ADJUST_FONT_SIZE_TO_FIT)
+            ? paragraphAttributes.getBoolean(PA_KEY_ADJUST_FONT_SIZE_TO_FIT)
+            : DEFAULT_ADJUST_FONT_SIZE_TO_FIT;
+    int maximumNumberOfLines =
+        paragraphAttributes.contains(PA_KEY_MAX_NUMBER_OF_LINES)
+            ? paragraphAttributes.getInt(PA_KEY_MAX_NUMBER_OF_LINES)
+            : ReactConstants.UNSET;
+
+    Layout.Alignment alignment = getTextAlignment(attributedString, text);
+
+    if (adjustFontSizeToFit) {
+      double minimumFontSize =
+          paragraphAttributes.contains(PA_KEY_MINIMUM_FONT_SIZE)
+              ? paragraphAttributes.getDouble(PA_KEY_MINIMUM_FONT_SIZE)
+              : Double.NaN;
+
+      adjustSpannableFontToFit(
+          text,
+          width,
+          YogaMeasureMode.EXACTLY,
+          height,
+          YogaMeasureMode.UNDEFINED,
+          minimumFontSize,
+          maximumNumberOfLines,
+          includeFontPadding,
+          textBreakStrategy,
+          hyphenationFrequency,
+          alignment);
+    }
+
+    return createLayout(
+        text,
+        boring,
+        width,
+        YogaMeasureMode.EXACTLY,
+        includeFontPadding,
+        textBreakStrategy,
+        hyphenationFrequency,
+        alignment);
+  }
+
   public static void adjustSpannableFontToFit(
       Spannable text,
       float width,
@@ -505,65 +568,24 @@ public class TextLayoutManager {
       @Nullable float[] attachmentsPositions) {
 
     // TODO(5578671): Handle text direction (see View#getTextDirectionHeuristic)
-    Spannable text =
-        getOrCreateSpannableForText(context, attributedString, reactTextViewManagerCallback);
+    Layout layout =
+        createLayout(
+            context,
+            attributedString,
+            paragraphAttributes,
+            width,
+            height,
+            reactTextViewManagerCallback);
+    Spannable text = (Spannable) layout.getText();
 
     if (text == null) {
       return 0;
     }
 
-    int textBreakStrategy =
-        TextAttributeProps.getTextBreakStrategy(
-            paragraphAttributes.getString(PA_KEY_TEXT_BREAK_STRATEGY));
-    boolean includeFontPadding =
-        paragraphAttributes.contains(PA_KEY_INCLUDE_FONT_PADDING)
-            ? paragraphAttributes.getBoolean(PA_KEY_INCLUDE_FONT_PADDING)
-            : DEFAULT_INCLUDE_FONT_PADDING;
-    int hyphenationFrequency =
-        TextAttributeProps.getHyphenationFrequency(
-            paragraphAttributes.getString(PA_KEY_HYPHENATION_FREQUENCY));
-    boolean adjustFontSizeToFit =
-        paragraphAttributes.contains(PA_KEY_ADJUST_FONT_SIZE_TO_FIT)
-            ? paragraphAttributes.getBoolean(PA_KEY_ADJUST_FONT_SIZE_TO_FIT)
-            : DEFAULT_ADJUST_FONT_SIZE_TO_FIT;
     int maximumNumberOfLines =
         paragraphAttributes.contains(PA_KEY_MAX_NUMBER_OF_LINES)
             ? paragraphAttributes.getInt(PA_KEY_MAX_NUMBER_OF_LINES)
             : ReactConstants.UNSET;
-
-    Layout.Alignment alignment = getTextAlignment(attributedString, text);
-
-    if (adjustFontSizeToFit) {
-      double minimumFontSize =
-          paragraphAttributes.contains(PA_KEY_MINIMUM_FONT_SIZE)
-              ? paragraphAttributes.getDouble(PA_KEY_MINIMUM_FONT_SIZE)
-              : Double.NaN;
-
-      adjustSpannableFontToFit(
-          text,
-          width,
-          widthYogaMeasureMode,
-          height,
-          heightYogaMeasureMode,
-          minimumFontSize,
-          maximumNumberOfLines,
-          includeFontPadding,
-          textBreakStrategy,
-          hyphenationFrequency,
-          alignment);
-    }
-
-    BoringLayout.Metrics boring = BoringLayout.isBoring(text, sTextPaintInstance);
-    Layout layout =
-        createLayout(
-            text,
-            boring,
-            width,
-            widthYogaMeasureMode,
-            includeFontPadding,
-            textBreakStrategy,
-            hyphenationFrequency,
-            alignment);
 
     int calculatedLineCount =
         maximumNumberOfLines == ReactConstants.UNSET || maximumNumberOfLines == 0
@@ -718,60 +740,8 @@ public class TextLayoutManager {
       float width,
       float height) {
 
-    Spannable text = getOrCreateSpannableForText(context, attributedString, null);
-    BoringLayout.Metrics boring = BoringLayout.isBoring(text, sTextPaintInstance);
-
-    int textBreakStrategy =
-        TextAttributeProps.getTextBreakStrategy(
-            paragraphAttributes.getString(PA_KEY_TEXT_BREAK_STRATEGY));
-    boolean includeFontPadding =
-        paragraphAttributes.contains(PA_KEY_INCLUDE_FONT_PADDING)
-            ? paragraphAttributes.getBoolean(PA_KEY_INCLUDE_FONT_PADDING)
-            : DEFAULT_INCLUDE_FONT_PADDING;
-    int hyphenationFrequency =
-        TextAttributeProps.getTextBreakStrategy(
-            paragraphAttributes.getString(PA_KEY_HYPHENATION_FREQUENCY));
-    boolean adjustFontSizeToFit =
-        paragraphAttributes.contains(PA_KEY_ADJUST_FONT_SIZE_TO_FIT)
-            ? paragraphAttributes.getBoolean(PA_KEY_ADJUST_FONT_SIZE_TO_FIT)
-            : DEFAULT_ADJUST_FONT_SIZE_TO_FIT;
-    int maximumNumberOfLines =
-        paragraphAttributes.contains(PA_KEY_MAX_NUMBER_OF_LINES)
-            ? paragraphAttributes.getInt(PA_KEY_MAX_NUMBER_OF_LINES)
-            : ReactConstants.UNSET;
-
-    Layout.Alignment alignment = getTextAlignment(attributedString, text);
-
-    if (adjustFontSizeToFit) {
-      double minimumFontSize =
-          paragraphAttributes.contains(PA_KEY_MINIMUM_FONT_SIZE)
-              ? paragraphAttributes.getDouble(PA_KEY_MINIMUM_FONT_SIZE)
-              : Double.NaN;
-
-      adjustSpannableFontToFit(
-          text,
-          width,
-          YogaMeasureMode.EXACTLY,
-          height,
-          YogaMeasureMode.UNDEFINED,
-          minimumFontSize,
-          maximumNumberOfLines,
-          includeFontPadding,
-          textBreakStrategy,
-          hyphenationFrequency,
-          alignment);
-    }
-
     Layout layout =
-        createLayout(
-            text,
-            boring,
-            width,
-            YogaMeasureMode.EXACTLY,
-            includeFontPadding,
-            textBreakStrategy,
-            hyphenationFrequency,
-            alignment);
-    return FontMetricsUtil.getFontMetrics(text, layout, sTextPaintInstance, context);
+        createLayout(context, attributedString, paragraphAttributes, width, height, null);
+    return FontMetricsUtil.getFontMetrics(layout.getText(), layout, sTextPaintInstance, context);
   }
 }

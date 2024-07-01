@@ -9,6 +9,11 @@
 
 'use strict';
 
+global.IS_REACT_ACT_ENVIRONMENT = true;
+// Suppress the `react-test-renderer` warnings until New Architecture and legacy
+// mode are no longer supported by React Native.
+global.IS_REACT_NATIVE_TEST_ENVIRONMENT = true;
+
 const MockNativeMethods = jest.requireActual('./MockNativeMethods');
 const mockComponent = jest.requireActual('./mockComponent');
 

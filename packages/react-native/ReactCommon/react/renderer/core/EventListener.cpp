@@ -16,16 +16,19 @@ bool EventListenerContainer::willDispatchEvent(const RawEvent& event) {
 
   bool handled = false;
   for (const auto& listener : eventListeners_) {
-    handled = handled || listener->operator()(event);
+    handled = (*listener)(event);
+    if (handled) {
+      break;
+    }
   }
   return handled;
 }
 
 void EventListenerContainer::addListener(
-    const std::shared_ptr<const EventListener>& listener) {
+    std::shared_ptr<const EventListener> listener) {
   std::unique_lock lock(mutex_);
 
-  eventListeners_.push_back(listener);
+  eventListeners_.push_back(std::move(listener));
 }
 
 void EventListenerContainer::removeListener(

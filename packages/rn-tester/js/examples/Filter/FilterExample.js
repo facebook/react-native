@@ -159,13 +159,13 @@ exports.examples = [
   },
   {
     title: 'Hue Rotate',
-    description: 'hueRotate(-90deg)',
-    name: 'hueRotate',
+    description: 'hue-rotate(-90deg)',
+    name: 'hue-rotate',
     platform: 'android',
     render(): React.Node {
       return (
         <StaticViewAndImage
-          style={{experimental_filter: [{hueRotate: '-90deg'}]}}
+          style={{experimental_filter: [{'hue-rotate': '-90deg'}]}}
         />
       );
     },

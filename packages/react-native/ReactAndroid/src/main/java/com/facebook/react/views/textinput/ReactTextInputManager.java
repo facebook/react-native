@@ -651,14 +651,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
   @ReactProp(name = "contextMenuHidden", defaultBoolean = false)
   public void setContextMenuHidden(ReactEditText view, boolean contextMenuHidden) {
-    final boolean _contextMenuHidden = contextMenuHidden;
-    view.setOnLongClickListener(
-        new View.OnLongClickListener() {
-          public boolean onLongClick(View v) {
-            return _contextMenuHidden;
-          }
-          ;
-        });
+    view.setContextMenuHidden(contextMenuHidden);
   }
 
   @ReactProp(name = "selectTextOnFocus", defaultBoolean = false)
@@ -964,9 +957,9 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         ViewProps.BORDER_BOTTOM_RIGHT_RADIUS,
         ViewProps.BORDER_BOTTOM_LEFT_RADIUS
       },
-      defaultFloat = YogaConstants.UNDEFINED)
+      defaultFloat = Float.NaN)
   public void setBorderRadius(ReactEditText view, int index, float borderRadius) {
-    if (!YogaConstants.isUndefined(borderRadius)) {
+    if (!Float.isNaN(borderRadius)) {
       borderRadius = PixelUtil.toPixelFromDIP(borderRadius);
     }
 
@@ -1014,9 +1007,9 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         ViewProps.BORDER_TOP_WIDTH,
         ViewProps.BORDER_BOTTOM_WIDTH,
       },
-      defaultFloat = YogaConstants.UNDEFINED)
+      defaultFloat = Float.NaN)
   public void setBorderWidth(ReactEditText view, int index, float width) {
-    if (!YogaConstants.isUndefined(width)) {
+    if (!Float.isNaN(width)) {
       width = PixelUtil.toPixelFromDIP(width);
     }
     view.setBorderWidth(SPACING_TYPES[index], width);

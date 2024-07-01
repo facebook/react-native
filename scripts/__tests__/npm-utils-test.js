@@ -7,12 +7,7 @@
  * @format
  */
 
-const {
-  applyPackageVersions,
-  getNpmInfo,
-  getVersionsBySpec,
-  publishPackage,
-} = require('../npm-utils');
+const {getNpmInfo, getVersionsBySpec, publishPackage} = require('../npm-utils');
 
 const execMock = jest.fn();
 const getCurrentCommitMock = jest.fn();
@@ -31,47 +26,6 @@ describe('npm-utils', () => {
   beforeEach(() => {
     jest.resetModules();
     jest.resetAllMocks();
-  });
-
-  describe('applyPackageVersions', () => {
-    it('should replace package.json with dependencies', () => {
-      const originalPackageJson = {
-        name: 'my-package',
-        dependencies: {
-          'my-dependency-a': 'nightly',
-          'my-dependency-b': '^1.2.3',
-        },
-        devDependencies: {
-          'my-dev-dependency-a': 'nightly',
-          'my-dev-dependency-b': '^1.2.3',
-        },
-        someOtherField: {
-          'my-dependency-a': 'should-be-untouched',
-        },
-      };
-
-      const dependencies = {
-        'my-dependency-a': '0.72.0-nightly-shortcommit',
-        'my-dev-dependency-a': 'updated-version',
-        'my-non-existant-dep': 'some-version',
-      };
-
-      const package = applyPackageVersions(originalPackageJson, dependencies);
-      expect(package).toEqual({
-        name: 'my-package',
-        dependencies: {
-          'my-dependency-a': '0.72.0-nightly-shortcommit',
-          'my-dependency-b': '^1.2.3',
-        },
-        devDependencies: {
-          'my-dev-dependency-a': 'updated-version',
-          'my-dev-dependency-b': '^1.2.3',
-        },
-        someOtherField: {
-          'my-dependency-a': 'should-be-untouched',
-        },
-      });
-    });
   });
 
   describe('publishPackage', () => {
@@ -115,6 +69,12 @@ describe('npm-utils', () => {
   });
 
   describe('getNpmInfo', () => {
+    beforeEach(() => {
+      process.env.CIRCLE_TAG = '';
+      process.env.GITHUB_REF = '';
+      process.env.GITHUB_REF_NAME = '';
+    });
+
     it('return the expected format for prealpha', () => {
       const isoStringSpy = jest.spyOn(Date.prototype, 'toISOString');
       isoStringSpy.mockReturnValue('2023-10-04T15:43:55.123Z');
@@ -147,7 +107,29 @@ describe('npm-utils', () => {
         version: `0.74.1-rc.0`,
         tag: '--no-tag',
       });
-      process.env.CIRCLE_TAG = null;
+    });
+
+    it('return the expected format for patch-prereleases on GHA', () => {
+      const isoStringSpy = jest.spyOn(Date.prototype, 'toISOString');
+      isoStringSpy.mockReturnValue('2023-10-04T15:43:55.123Z');
+      getCurrentCommitMock.mockImplementation(() => 'abcd1234');
+      // exitIfNotOnGit takes a function as a param and it:
+      // 1. checks if we are on git => if not it exits
+      // 2. run the function passed as a param and return the output to the caller
+      // For the mock, we are assuming we are on github and we are returning `false`
+      // as the `getNpmInfo` function will pass a function that checks if the
+      // current commit is a tagged with 'latest'.
+      // In the Mock, we are assuming that we are on git (it does not exits) and the
+      // checkIfLatest function returns `false`
+      exitIfNotOnGitMock.mockImplementation(() => false);
+
+      process.env.GITHUB_REF = 'refs/tags/v0.74.1-rc.0';
+      process.env.GITHUB_REF_NAME = 'v0.74.1-rc.0';
+      const returnedValue = getNpmInfo('release');
+      expect(returnedValue).toMatchObject({
+        version: `0.74.1-rc.0`,
+        tag: '--no-tag',
+      });
     });
   });
 

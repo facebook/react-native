@@ -208,6 +208,7 @@ public class com/facebook/react/ReactFragment$Builder {
 
 public abstract interface class com/facebook/react/ReactHost {
 	public abstract fun addBeforeDestroyListener (Lkotlin/jvm/functions/Function0;)V
+	public abstract fun addReactInstanceEventListener (Lcom/facebook/react/ReactInstanceEventListener;)V
 	public abstract fun createSurface (Landroid/content/Context;Ljava/lang/String;Landroid/os/Bundle;)Lcom/facebook/react/interfaces/fabric/ReactSurface;
 	public abstract fun destroy (Ljava/lang/String;Ljava/lang/Exception;)Lcom/facebook/react/interfaces/TaskInterface;
 	public abstract fun getCurrentReactContext ()Lcom/facebook/react/bridge/ReactContext;
@@ -216,6 +217,7 @@ public abstract interface class com/facebook/react/ReactHost {
 	public abstract fun getLifecycleState ()Lcom/facebook/react/common/LifecycleState;
 	public abstract fun getMemoryPressureRouter ()Lcom/facebook/react/MemoryPressureRouter;
 	public abstract fun getReactQueueConfiguration ()Lcom/facebook/react/bridge/queue/ReactQueueConfiguration;
+	public abstract fun invalidate ()V
 	public abstract fun onActivityResult (Landroid/app/Activity;IILandroid/content/Intent;)V
 	public abstract fun onBackPressed ()Z
 	public abstract fun onConfigurationChanged (Landroid/content/Context;)V
@@ -229,6 +231,7 @@ public abstract interface class com/facebook/react/ReactHost {
 	public abstract fun onWindowFocusChange (Z)V
 	public abstract fun reload (Ljava/lang/String;)Lcom/facebook/react/interfaces/TaskInterface;
 	public abstract fun removeBeforeDestroyListener (Lkotlin/jvm/functions/Function0;)V
+	public abstract fun removeReactInstanceEventListener (Lcom/facebook/react/ReactInstanceEventListener;)V
 	public abstract fun setJsEngineResolutionAlgorithm (Lcom/facebook/react/JSEngineResolutionAlgorithm;)V
 	public abstract fun start ()Lcom/facebook/react/interfaces/TaskInterface;
 }
@@ -254,6 +257,7 @@ public class com/facebook/react/ReactInstanceManager {
 	public fun getViewManagerNames ()Ljava/util/Collection;
 	public fun handleCxxError (Ljava/lang/Exception;)V
 	public fun hasStartedCreatingInitialContext ()Z
+	public fun invalidate ()V
 	public fun onActivityResult (Landroid/app/Activity;IILandroid/content/Intent;)V
 	public fun onBackPressed ()V
 	public fun onConfigurationChanged (Landroid/content/Context;Landroid/content/res/Configuration;)V
@@ -539,6 +543,7 @@ public abstract class com/facebook/react/bridge/BaseJavaModule : com/facebook/re
 	public static final field METHOD_TYPE_ASYNC Ljava/lang/String;
 	public static final field METHOD_TYPE_PROMISE Ljava/lang/String;
 	public static final field METHOD_TYPE_SYNC Ljava/lang/String;
+	protected field mEventEmitterCallback Lcom/facebook/react/bridge/CxxCallbackImpl;
 	public fun <init> ()V
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
 	public fun canOverrideExistingModule ()Z
@@ -2007,8 +2012,8 @@ public class com/facebook/react/defaults/DefaultReactActivityDelegate : com/face
 public final class com/facebook/react/defaults/DefaultReactHost {
 	public static final field INSTANCE Lcom/facebook/react/defaults/DefaultReactHost;
 	public static final fun getDefaultReactHost (Landroid/content/Context;Lcom/facebook/react/ReactNativeHost;)Lcom/facebook/react/ReactHost;
-	public static final fun getDefaultReactHost (Landroid/content/Context;Ljava/util/List;Ljava/lang/String;Ljava/lang/String;ZZLjava/util/List;)Lcom/facebook/react/ReactHost;
-	public static synthetic fun getDefaultReactHost$default (Landroid/content/Context;Ljava/util/List;Ljava/lang/String;Ljava/lang/String;ZZLjava/util/List;ILjava/lang/Object;)Lcom/facebook/react/ReactHost;
+	public static final fun getDefaultReactHost (Landroid/content/Context;Ljava/util/List;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZZLjava/util/List;)Lcom/facebook/react/ReactHost;
+	public static synthetic fun getDefaultReactHost$default (Landroid/content/Context;Ljava/util/List;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZZLjava/util/List;ILjava/lang/Object;)Lcom/facebook/react/ReactHost;
 }
 
 public abstract class com/facebook/react/defaults/DefaultReactNativeHost : com/facebook/react/ReactNativeHost {
@@ -2323,12 +2328,19 @@ public class com/facebook/react/devsupport/ReleaseDevSupportManager : com/facebo
 
 public class com/facebook/react/devsupport/StackTraceHelper {
 	public static final field COLUMN_KEY Ljava/lang/String;
+	public static final field FILE_KEY Ljava/lang/String;
+	public static final field ID_KEY Ljava/lang/String;
+	public static final field IS_FATAL_KEY Ljava/lang/String;
 	public static final field LINE_NUMBER_KEY Ljava/lang/String;
+	public static final field MESSAGE_KEY Ljava/lang/String;
+	public static final field METHOD_NAME_KEY Ljava/lang/String;
+	public static final field STACK_KEY Ljava/lang/String;
 	public fun <init> ()V
 	public static fun convertJavaStackTrace (Ljava/lang/Throwable;)[Lcom/facebook/react/devsupport/interfaces/StackFrame;
 	public static fun convertJsStackTrace (Lcom/facebook/react/bridge/ReadableArray;)[Lcom/facebook/react/devsupport/interfaces/StackFrame;
 	public static fun convertJsStackTrace (Ljava/lang/String;)[Lcom/facebook/react/devsupport/interfaces/StackFrame;
 	public static fun convertJsStackTrace (Lorg/json/JSONArray;)[Lcom/facebook/react/devsupport/interfaces/StackFrame;
+	public static fun convertParsedError (Lcom/facebook/react/interfaces/exceptionmanager/ReactJsExceptionHandler$ParsedError;)Lcom/facebook/react/bridge/JavaOnlyMap;
 	public static fun formatFrameSource (Lcom/facebook/react/devsupport/interfaces/StackFrame;)Ljava/lang/String;
 	public static fun formatStackTrace (Ljava/lang/String;[Lcom/facebook/react/devsupport/interfaces/StackFrame;)Ljava/lang/String;
 }
@@ -3779,8 +3791,8 @@ public abstract class com/facebook/react/runtime/JSRuntimeFactory {
 }
 
 public class com/facebook/react/runtime/ReactHostImpl : com/facebook/react/ReactHost {
-	public fun <init> (Landroid/content/Context;Lcom/facebook/react/runtime/ReactHostDelegate;Lcom/facebook/react/fabric/ComponentFactory;Ljava/util/concurrent/Executor;Ljava/util/concurrent/Executor;Lcom/facebook/react/interfaces/exceptionmanager/ReactJsExceptionHandler;ZZ)V
-	public fun <init> (Landroid/content/Context;Lcom/facebook/react/runtime/ReactHostDelegate;Lcom/facebook/react/fabric/ComponentFactory;ZLcom/facebook/react/interfaces/exceptionmanager/ReactJsExceptionHandler;Z)V
+	public fun <init> (Landroid/content/Context;Lcom/facebook/react/runtime/ReactHostDelegate;Lcom/facebook/react/fabric/ComponentFactory;Ljava/util/concurrent/Executor;Ljava/util/concurrent/Executor;ZZ)V
+	public fun <init> (Landroid/content/Context;Lcom/facebook/react/runtime/ReactHostDelegate;Lcom/facebook/react/fabric/ComponentFactory;ZZ)V
 	public fun addBeforeDestroyListener (Lkotlin/jvm/functions/Function0;)V
 	public fun addReactInstanceEventListener (Lcom/facebook/react/ReactInstanceEventListener;)V
 	public fun createSurface (Landroid/content/Context;Ljava/lang/String;Landroid/os/Bundle;)Lcom/facebook/react/interfaces/fabric/ReactSurface;
@@ -3791,6 +3803,7 @@ public class com/facebook/react/runtime/ReactHostImpl : com/facebook/react/React
 	public fun getLifecycleState ()Lcom/facebook/react/common/LifecycleState;
 	public fun getMemoryPressureRouter ()Lcom/facebook/react/MemoryPressureRouter;
 	public fun getReactQueueConfiguration ()Lcom/facebook/react/bridge/queue/ReactQueueConfiguration;
+	public fun invalidate ()V
 	public fun onActivityResult (Landroid/app/Activity;IILandroid/content/Intent;)V
 	public fun onBackPressed ()Z
 	public fun onConfigurationChanged (Landroid/content/Context;)V
@@ -5949,6 +5962,7 @@ public final class com/facebook/react/uimanager/style/ComputedBorderRadius {
 	public final fun copy (FFFF)Lcom/facebook/react/uimanager/style/ComputedBorderRadius;
 	public static synthetic fun copy$default (Lcom/facebook/react/uimanager/style/ComputedBorderRadius;FFFFILjava/lang/Object;)Lcom/facebook/react/uimanager/style/ComputedBorderRadius;
 	public fun equals (Ljava/lang/Object;)Z
+	public final fun get (Lcom/facebook/react/uimanager/style/ComputedBorderRadiusProp;)F
 	public final fun getBottomLeft ()F
 	public final fun getBottomRight ()F
 	public final fun getTopLeft ()F
@@ -5956,6 +5970,16 @@ public final class com/facebook/react/uimanager/style/ComputedBorderRadius {
 	public final fun hasRoundedBorders ()Z
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/facebook/react/uimanager/style/ComputedBorderRadiusProp : java/lang/Enum {
+	public static final field COMPUTED_BORDER_BOTTOM_LEFT_RADIUS Lcom/facebook/react/uimanager/style/ComputedBorderRadiusProp;
+	public static final field COMPUTED_BORDER_BOTTOM_RIGHT_RADIUS Lcom/facebook/react/uimanager/style/ComputedBorderRadiusProp;
+	public static final field COMPUTED_BORDER_TOP_LEFT_RADIUS Lcom/facebook/react/uimanager/style/ComputedBorderRadiusProp;
+	public static final field COMPUTED_BORDER_TOP_RIGHT_RADIUS Lcom/facebook/react/uimanager/style/ComputedBorderRadiusProp;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/uimanager/style/ComputedBorderRadiusProp;
+	public static fun values ()[Lcom/facebook/react/uimanager/style/ComputedBorderRadiusProp;
 }
 
 public class com/facebook/react/uimanager/util/ReactFindViewUtil {
@@ -7610,6 +7634,7 @@ public class com/facebook/react/views/text/TextLayoutManager {
 	public static final field PA_KEY_TEXT_BREAK_STRATEGY S
 	public fun <init> ()V
 	public static fun adjustSpannableFontToFit (Landroid/text/Spannable;FLcom/facebook/yoga/YogaMeasureMode;FLcom/facebook/yoga/YogaMeasureMode;DIZIILandroid/text/Layout$Alignment;)V
+	public static fun createLayout (Landroid/content/Context;Lcom/facebook/react/common/mapbuffer/MapBuffer;Lcom/facebook/react/common/mapbuffer/MapBuffer;FFLcom/facebook/react/views/text/ReactTextViewManagerCallback;)Landroid/text/Layout;
 	public static fun deleteCachedSpannableForTag (I)V
 	public static fun getOrCreateSpannableForText (Landroid/content/Context;Lcom/facebook/react/common/mapbuffer/MapBuffer;Lcom/facebook/react/views/text/ReactTextViewManagerCallback;)Landroid/text/Spannable;
 	public static fun getTextAlignment (Lcom/facebook/react/common/mapbuffer/MapBuffer;Landroid/text/Spannable;)Landroid/text/Layout$Alignment;
@@ -7721,6 +7746,7 @@ public class com/facebook/react/views/textinput/ReactEditText : androidx/appcomp
 	public fun setBorderStyle (Ljava/lang/String;)V
 	public fun setBorderWidth (IF)V
 	public fun setContentSizeWatcher (Lcom/facebook/react/views/textinput/ContentSizeWatcher;)V
+	public fun setContextMenuHidden (Z)V
 	public fun setDisableFullscreenUI (Z)V
 	public fun setFontFamily (Ljava/lang/String;)V
 	public fun setFontFeatureSettings (Ljava/lang/String;)V

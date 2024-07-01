@@ -44,7 +44,6 @@ import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.RuntimeExecutor;
 import com.facebook.react.bridge.UiThreadUtil;
-import com.facebook.react.bridge.queue.QueueThreadExceptionHandler;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.build.ReactBuildConfig;
@@ -57,7 +56,6 @@ import com.facebook.react.devsupport.interfaces.DevSupportManager.PausedInDebugg
 import com.facebook.react.fabric.ComponentFactory;
 import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.interfaces.TaskInterface;
-import com.facebook.react.interfaces.exceptionmanager.ReactJsExceptionHandler;
 import com.facebook.react.interfaces.fabric.ReactSurface;
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.modules.appearance.AppearanceModule;
@@ -73,8 +71,8 @@ import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -102,18 +100,13 @@ public class ReactHostImpl implements ReactHost {
   private final Context mContext;
   private final ReactHostDelegate mReactHostDelegate;
   private final ComponentFactory mComponentFactory;
-  private final ReactJsExceptionHandler mReactJsExceptionHandler;
   private final DevSupportManager mDevSupportManager;
   private final Executor mBGExecutor;
   private final Executor mUIExecutor;
-  private final QueueThreadExceptionHandler mQueueThreadExceptionHandler;
-  private final Set<ReactSurfaceImpl> mAttachedSurfaces =
-      Collections.synchronizedSet(new HashSet<>());
+  private final Set<ReactSurfaceImpl> mAttachedSurfaces = new HashSet<>();
   private final MemoryPressureRouter mMemoryPressureRouter;
   private final boolean mAllowPackagerServerAccess;
   private final boolean mUseDevSupport;
-  private final Collection<ReactInstanceEventListener> mReactInstanceEventListeners =
-      Collections.synchronizedList(new ArrayList<>());
 
   // todo: T192399917 This no longer needs to store the react instance
   private final BridgelessAtomicRef<Task<ReactInstance>> mCreateReactInstanceTaskRef =
@@ -135,17 +128,18 @@ public class ReactHostImpl implements ReactHost {
   private @Nullable MemoryPressureListener mMemoryPressureListener;
   private @Nullable DefaultHardwareBackBtnHandler mDefaultHardwareBackBtnHandler;
 
-  private final Set<Function0<Unit>> mBeforeDestroyListeners =
-      Collections.synchronizedSet(new HashSet<>());
+  private final List<ReactInstanceEventListener> mReactInstanceEventListeners = new ArrayList<>();
+  private final List<Function0<Unit>> mBeforeDestroyListeners = new ArrayList<>();
 
   private @Nullable ReactHostInspectorTarget mReactHostInspectorTarget;
+
+  private volatile boolean mHostInvalidated = false;
 
   public ReactHostImpl(
       Context context,
       ReactHostDelegate delegate,
       ComponentFactory componentFactory,
       boolean allowPackagerServerAccess,
-      ReactJsExceptionHandler reactJsExceptionHandler,
       boolean useDevSupport) {
     this(
         context,
@@ -153,7 +147,6 @@ public class ReactHostImpl implements ReactHost {
         componentFactory,
         Executors.newSingleThreadExecutor(),
         Task.UI_THREAD_EXECUTOR,
-        reactJsExceptionHandler,
         allowPackagerServerAccess,
         useDevSupport);
   }
@@ -164,7 +157,6 @@ public class ReactHostImpl implements ReactHost {
       ComponentFactory componentFactory,
       Executor bgExecutor,
       Executor uiExecutor,
-      ReactJsExceptionHandler reactJsExceptionHandler,
       boolean allowPackagerServerAccess,
       boolean useDevSupport) {
     mContext = context;
@@ -172,8 +164,6 @@ public class ReactHostImpl implements ReactHost {
     mComponentFactory = componentFactory;
     mBGExecutor = bgExecutor;
     mUIExecutor = uiExecutor;
-    mReactJsExceptionHandler = reactJsExceptionHandler;
-    mQueueThreadExceptionHandler = ReactHostImpl.this::handleHostException;
     mMemoryPressureRouter = new MemoryPressureRouter(context);
     mAllowPackagerServerAccess = allowPackagerServerAccess;
     mUseDevSupport = useDevSupport;
@@ -422,12 +412,16 @@ public class ReactHostImpl implements ReactHost {
 
   /** Add a listener to be notified of ReactInstance events. */
   public void addReactInstanceEventListener(ReactInstanceEventListener listener) {
-    mReactInstanceEventListeners.add(listener);
+    synchronized (mReactInstanceEventListeners) {
+      mReactInstanceEventListeners.add(listener);
+    }
   }
 
   /** Remove a listener previously added with {@link #addReactInstanceEventListener}. */
   public void removeReactInstanceEventListener(ReactInstanceEventListener listener) {
-    mReactInstanceEventListeners.remove(listener);
+    synchronized (mReactInstanceEventListeners) {
+      mReactInstanceEventListeners.remove(listener);
+    }
   }
 
   /**
@@ -899,11 +893,6 @@ public class ReactHostImpl implements ReactHost {
   @ThreadConfined(UI)
   private void moveToHostDestroy(@Nullable ReactContext currentContext) {
     mReactLifecycleStateManager.moveToOnHostDestroy(currentContext);
-    if (currentContext == null) {
-      // There's no current context/instance that requires the host inspector
-      // target to be kept alive, so we can destroy it immediately.
-      destroyInspectorHostTarget();
-    }
     setCurrentActivity(null);
   }
 
@@ -1055,6 +1044,9 @@ public class ReactHostImpl implements ReactHost {
     return mCreateReactInstanceTaskRef.getOrCreate(
         () -> {
           log(method, "Start");
+          Assertions.assertCondition(
+              !mHostInvalidated, "Cannot start a new ReactInstance on an invalidated ReactHost");
+
           ReactMarker.logMarker(
               ReactMarkerConstants.REACT_BRIDGELESS_LOADING_START, BRIDGELESS_MARKER_INSTANCE_KEY);
 
@@ -1073,8 +1065,7 @@ public class ReactHostImpl implements ReactHost {
                             mReactHostDelegate,
                             mComponentFactory,
                             devSupportManager,
-                            mQueueThreadExceptionHandler,
-                            mReactJsExceptionHandler,
+                            this::handleHostException,
                             mUseDevSupport,
                             getOrCreateReactHostInspectorTarget());
                     mReactInstance = instance;
@@ -1154,13 +1145,13 @@ public class ReactHostImpl implements ReactHost {
                           reactContext, getCurrentActivity());
                     }
 
-                    ReactInstanceEventListener[] listeners =
-                        new ReactInstanceEventListener[mReactInstanceEventListeners.size()];
-                    final ReactInstanceEventListener[] finalListeners =
-                        mReactInstanceEventListeners.toArray(listeners);
-
                     log(method, "Executing ReactInstanceEventListeners");
-                    for (ReactInstanceEventListener listener : finalListeners) {
+                    ReactInstanceEventListener[] instanceEventListeners;
+                    synchronized (mReactInstanceEventListeners) {
+                      instanceEventListeners =
+                          mReactInstanceEventListeners.toArray(new ReactInstanceEventListener[0]);
+                    }
+                    for (ReactInstanceEventListener listener : instanceEventListeners) {
                       if (listener != null) {
                         listener.onReactContextInitialized(reactContext);
                       }
@@ -1404,11 +1395,10 @@ public class ReactHostImpl implements ReactHost {
                     reactInstanceTaskUnwrapper.unwrap(
                         task, "3: Executing Before Destroy Listeners");
 
-                    Set<Function0<Unit>> beforeDestroyListeners;
+                    Function0<Unit>[] beforeDestroyListeners;
                     synchronized (mBeforeDestroyListeners) {
-                      beforeDestroyListeners = new HashSet<>(mBeforeDestroyListeners);
+                      beforeDestroyListeners = mBeforeDestroyListeners.toArray(new Function0[0]);
                     }
-
                     for (Function0<Unit> destroyListener : beforeDestroyListeners) {
                       destroyListener.invoke();
                     }
@@ -1426,6 +1416,9 @@ public class ReactHostImpl implements ReactHost {
 
                     final ReactContext reactContext = mBridgelessReactContextRef.getNullable();
                     if (reactContext != null) {
+                      log(method, "Resetting ReactContext ref");
+                      mBridgelessReactContextRef.reset();
+
                       log(method, "Destroying ReactContext");
                       reactContext.destroy();
                     }
@@ -1449,20 +1442,17 @@ public class ReactHostImpl implements ReactHost {
                       raiseSoftException(
                           method, "Skipping ReactInstance.destroy(): ReactInstance null");
                     } else {
+                      log(method, "Resetting ReactInstance ptr");
+                      mReactInstance = null;
+
                       log(method, "Destroying ReactInstance");
                       reactInstance.destroy();
                     }
 
-                    log(method, "Resetting ReactContext ref");
-                    mBridgelessReactContextRef.reset();
-
-                    log(method, "Resetting ReactInstance task ref");
+                    log(method, "Resetting createReactInstance task ref");
                     mCreateReactInstanceTaskRef.reset();
 
-                    log(method, "Resetting ReactInstance ptr");
-                    mReactInstance = null;
-
-                    log(method, "Resetting preload task ref");
+                    log(method, "Resetting start task ref");
                     mStartTask = null;
 
                     // Kickstart a new ReactInstance create
@@ -1472,7 +1462,7 @@ public class ReactHostImpl implements ReactHost {
               .continueWithTask(
                   task -> {
                     final ReactInstance reactInstance =
-                        reactInstanceTaskUnwrapper.unwrap(task, "7: Restarting surfaces");
+                        reactInstanceTaskUnwrapper.unwrap(task, "6: Restarting surfaces");
 
                     if (reactInstance == null) {
                       raiseSoftException(method, "Skipping surface restart: ReactInstance null");
@@ -1550,6 +1540,16 @@ public class ReactHostImpl implements ReactHost {
 
                     unregisterInstanceFromInspector(reactInstance);
 
+                    if (mHostInvalidated) {
+                      // If the host has been invalidated, now that the current context/instance
+                      // has been unregistered, we can safely destroy the host's inspector
+                      // target.
+                      if (mReactHostInspectorTarget != null) {
+                        mReactHostInspectorTarget.close();
+                        mReactHostInspectorTarget = null;
+                      }
+                    }
+
                     // Step 1: Destroy DevSupportManager
                     if (mUseDevSupport) {
                       log(method, "DevSupportManager cleanup");
@@ -1610,7 +1610,6 @@ public class ReactHostImpl implements ReactHost {
                     reactInstanceTaskUnwrapper.unwrap(task, "4: Destroying ReactContext");
 
                     final ReactContext reactContext = mBridgelessReactContextRef.getNullable();
-
                     if (reactContext == null) {
                       raiseSoftException(method, "ReactContext is null. Destroy reason: " + reason);
                     }
@@ -1620,6 +1619,9 @@ public class ReactHostImpl implements ReactHost {
                     mMemoryPressureRouter.destroy(mContext);
 
                     if (reactContext != null) {
+                      log(method, "Resetting ReactContext ref");
+                      mBridgelessReactContextRef.reset();
+
                       log(method, "Destroying ReactContext");
                       reactContext.destroy();
                     }
@@ -1642,20 +1644,17 @@ public class ReactHostImpl implements ReactHost {
                       raiseSoftException(
                           method, "Skipping ReactInstance.destroy(): ReactInstance null");
                     } else {
+                      log(method, "Resetting ReactInstance ptr");
+                      mReactInstance = null;
+
                       log(method, "Destroying ReactInstance");
                       reactInstance.destroy();
                     }
 
-                    log(method, "Resetting ReactContext ref ");
-                    mBridgelessReactContextRef.reset();
-
-                    log(method, "Resetting ReactInstance task ref");
+                    log(method, "Resetting createReactInstance task ref");
                     mCreateReactInstanceTaskRef.reset();
 
-                    log(method, "Resetting ReactInstance ptr");
-                    mReactInstance = null;
-
-                    log(method, "Resetting Preload task ref");
+                    log(method, "Resetting start task ref");
                     mStartTask = null;
 
                     log(method, "Resetting destroy task ref");
@@ -1703,18 +1702,11 @@ public class ReactHostImpl implements ReactHost {
 
   private @Nullable ReactHostInspectorTarget getOrCreateReactHostInspectorTarget() {
     if (mReactHostInspectorTarget == null && InspectorFlags.getFuseboxEnabled()) {
+      // NOTE: ReactHostInspectorTarget only retains a weak reference to `this`.
       mReactHostInspectorTarget = new ReactHostInspectorTarget(this);
     }
 
     return mReactHostInspectorTarget;
-  }
-
-  @ThreadConfined(UI)
-  private void destroyInspectorHostTarget() {
-    if (mReactHostInspectorTarget != null) {
-      mReactHostInspectorTarget.close();
-      mReactHostInspectorTarget = null;
-    }
   }
 
   @ThreadConfined(UI)
@@ -1727,11 +1719,12 @@ public class ReactHostImpl implements ReactHost {
       }
       reactInstance.unregisterFromInspector();
     }
-    if (mReactLifecycleStateManager.getLifecycleState() == LifecycleState.BEFORE_CREATE) {
-      // If the host is being destroyed, now that the current context/instance
-      // has been unregistered, we can safely destroy the host's inspector
-      // target.
-      destroyInspectorHostTarget();
-    }
+  }
+
+  @Override
+  public void invalidate() {
+    FLog.d(TAG, "ReactHostImpl.invalidate()");
+    mHostInvalidated = true;
+    destroy("ReactHostImpl.invalidate()", null);
   }
 }

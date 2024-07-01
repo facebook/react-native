@@ -8,35 +8,49 @@
  * @format
  */
 
-import type {ImageSource} from '../../Image/ImageSource';
+import type {ViewProps} from '../../Components/View/ViewPropTypes';
 import type {LogLevel} from '../Data/LogBoxLog';
 
-import StatusBar from '../../Components/StatusBar/StatusBar';
+import SafeAreaView from '../../Components/SafeAreaView/SafeAreaView';
 import View from '../../Components/View/View';
-import Image from '../../Image/Image';
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import Text from '../../Text/Text';
 import Platform from '../../Utilities/Platform';
-import LogBoxButton from './LogBoxButton';
+import LogBoxInspectorHeaderButton from './LogBoxInspectorHeaderButton';
 import * as LogBoxStyle from './LogBoxStyle';
 import * as React from 'react';
-type Props = $ReadOnly<{|
+
+type Props = $ReadOnly<{
   onSelectIndex: (selectedIndex: number) => void,
   selectedIndex: number,
   total: number,
   level: LogLevel,
-|}>;
+}>;
 
-function LogBoxInspectorHeader(props: Props): React.Node {
+const LogBoxInspectorHeaderSafeArea: React.AbstractComponent<ViewProps> =
+  Platform.OS === 'android'
+    ? function LogBoxInspectorHeaderSafeArea(props) {
+        // NOTE: Inline the import of `StatusBar` so that initializing this module
+        // does not require initializing a TurboModule (and main thread one, too).
+        const {currentHeight} = require('../../Components/StatusBar/StatusBar');
+        const style = StyleSheet.compose(
+          {paddingTop: currentHeight},
+          props.style,
+        );
+        return <View {...props} style={style} />;
+      }
+    : SafeAreaView;
+
+export default function LogBoxInspectorHeader(props: Props): React.Node {
   if (props.level === 'syntax') {
     return (
-      <View style={[styles.safeArea, styles[props.level]]}>
+      <LogBoxInspectorHeaderSafeArea style={styles[props.level]}>
         <View style={styles.header}>
           <View style={styles.title}>
             <Text style={styles.titleText}>Failed to compile</Text>
           </View>
         </View>
-      </View>
+      </LogBoxInspectorHeaderSafeArea>
     );
   }
 
@@ -48,7 +62,7 @@ function LogBoxInspectorHeader(props: Props): React.Node {
   const titleText = `Log ${props.selectedIndex + 1} of ${props.total}`;
 
   return (
-    <View style={[styles.safeArea, styles[props.level]]}>
+    <LogBoxInspectorHeaderSafeArea style={styles[props.level]}>
       <View style={styles.header}>
         <LogBoxInspectorHeaderButton
           disabled={props.total <= 1}
@@ -66,67 +80,9 @@ function LogBoxInspectorHeader(props: Props): React.Node {
           onPress={() => props.onSelectIndex(nextIndex)}
         />
       </View>
-    </View>
+    </LogBoxInspectorHeaderSafeArea>
   );
 }
-
-const backgroundForLevel = (level: LogLevel) =>
-  ({
-    warn: {
-      default: 'transparent',
-      pressed: LogBoxStyle.getWarningDarkColor(),
-    },
-    error: {
-      default: 'transparent',
-      pressed: LogBoxStyle.getErrorDarkColor(),
-    },
-    fatal: {
-      default: 'transparent',
-      pressed: LogBoxStyle.getFatalDarkColor(),
-    },
-    syntax: {
-      default: 'transparent',
-      pressed: LogBoxStyle.getFatalDarkColor(),
-    },
-  })[level];
-
-function LogBoxInspectorHeaderButton(
-  props: $ReadOnly<{|
-    disabled: boolean,
-    image: ImageSource,
-    level: LogLevel,
-    onPress?: ?() => void,
-  |}>,
-): React.Node {
-  return (
-    <LogBoxButton
-      backgroundColor={backgroundForLevel(props.level)}
-      onPress={props.disabled ? null : props.onPress}
-      style={headerStyles.button}>
-      {props.disabled ? null : (
-        <Image source={props.image} style={headerStyles.buttonImage} />
-      )}
-    </LogBoxButton>
-  );
-}
-
-const headerStyles = StyleSheet.create({
-  button: {
-    alignItems: 'center',
-    aspectRatio: 1,
-    justifyContent: 'center',
-    marginTop: 5,
-    marginRight: 6,
-    marginLeft: 6,
-    marginBottom: -8,
-    borderRadius: 3,
-  },
-  buttonImage: {
-    height: 14,
-    width: 8,
-    tintColor: LogBoxStyle.getTextColor(),
-  },
-});
 
 const styles = StyleSheet.create({
   syntax: {
@@ -160,9 +116,4 @@ const styles = StyleSheet.create({
     includeFontPadding: false,
     lineHeight: 20,
   },
-  safeArea: {
-    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 40,
-  },
 });
-
-export default LogBoxInspectorHeader;

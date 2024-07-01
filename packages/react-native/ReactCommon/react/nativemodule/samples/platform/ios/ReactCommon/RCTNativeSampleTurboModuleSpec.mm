@@ -227,3 +227,6 @@ NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(const ObjCTurboMo
 }
 
 } // namespace facebook::react
+
+@implementation NativeSampleTurboModuleSpecBase
+@end

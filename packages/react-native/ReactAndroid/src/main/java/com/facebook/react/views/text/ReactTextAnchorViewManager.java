@@ -137,9 +137,9 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
         ViewProps.BORDER_BOTTOM_RIGHT_RADIUS,
         ViewProps.BORDER_BOTTOM_LEFT_RADIUS
       },
-      defaultFloat = YogaConstants.UNDEFINED)
+      defaultFloat = Float.NaN)
   public void setBorderRadius(ReactTextView view, int index, float borderRadius) {
-    if (!YogaConstants.isUndefined(borderRadius)) {
+    if (!Float.isNaN(borderRadius)) {
       borderRadius = PixelUtil.toPixelFromDIP(borderRadius);
     }
 
@@ -163,9 +163,9 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
         ViewProps.BORDER_TOP_WIDTH,
         ViewProps.BORDER_BOTTOM_WIDTH,
       },
-      defaultFloat = YogaConstants.UNDEFINED)
+      defaultFloat = Float.NaN)
   public void setBorderWidth(ReactTextView view, int index, float width) {
-    if (!YogaConstants.isUndefined(width)) {
+    if (!Float.isNaN(width)) {
       width = PixelUtil.toPixelFromDIP(width);
     }
     view.setBorderWidth(SPACING_TYPES[index], width);

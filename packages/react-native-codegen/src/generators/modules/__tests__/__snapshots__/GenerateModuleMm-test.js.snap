@@ -18,6 +18,10 @@ Map {
 #import \\"SampleWithUppercaseName.h\\"
 
 
+@implementation NativeSampleTurboModuleSpecBase
+@end
+
+
 namespace facebook::react {
   
 
@@ -46,6 +50,10 @@ Map {
  */
 
 #import \\"complex_objects.h\\"
+
+
+@implementation NativeSampleTurboModuleSpecBase
+@end
 
 @implementation RCTCxxConvert (NativeSampleTurboModule_SpecDifficultAE)
 + (RCTManagedPointer *)JS_NativeSampleTurboModule_SpecDifficultAE:(id)json
@@ -182,6 +190,10 @@ Map {
 #import \\"empty_native_modules.h\\"
 
 
+@implementation NativeSampleTurboModuleSpecBase
+@end
+
+
 namespace facebook::react {
   
 
@@ -210,6 +222,10 @@ Map {
  */
 
 #import \\"native_modules_with_type_aliases.h\\"
+
+
+@implementation AliasTurboModuleSpecBase
+@end
 
 @implementation RCTCxxConvert (AliasTurboModule_OptionsOffset)
 + (RCTManagedPointer *)JS_AliasTurboModule_OptionsOffset:(id)json
@@ -269,6 +285,10 @@ Map {
 
 #import \\"real_module_example.h\\"
 
+
+@implementation NativeCameraRollManagerSpecBase
+@end
+
 @implementation RCTCxxConvert (NativeCameraRollManager_GetPhotosParams)
 + (RCTManagedPointer *)JS_NativeCameraRollManager_GetPhotosParams:(id)json
 {
@@ -302,6 +322,10 @@ namespace facebook::react {
         
   }
 } // namespace facebook::react
+
+@implementation NativeExceptionsManagerSpecBase
+@end
+
 @implementation RCTCxxConvert (NativeExceptionsManager_StackFrame)
 + (RCTManagedPointer *)JS_NativeExceptionsManager_StackFrame:(id)json
 {
@@ -375,6 +399,10 @@ Map {
  */
 
 #import \\"simple_native_modules.h\\"
+
+
+@implementation NativeSampleTurboModuleSpecBase
+@end
 
 
 namespace facebook::react {
@@ -503,6 +531,10 @@ Map {
 #import \\"two_modules_different_files.h\\"
 
 
+@implementation NativeSampleTurboModuleSpecBase
+@end
+
+
 namespace facebook::react {
   
     static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_voidFunc(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
@@ -516,6 +548,10 @@ namespace facebook::react {
         
   }
 } // namespace facebook::react
+
+@implementation NativeSampleTurboModule2SpecBase
+@end
+
 
 namespace facebook::react {
   

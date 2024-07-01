@@ -300,7 +300,7 @@ NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(c
   return [attributes copy];
 }
 
-static void RCTApplyBaselineOffset(NSMutableAttributedString *attributedText)
+void RCTApplyBaselineOffset(NSMutableAttributedString *attributedText)
 {
   __block CGFloat maximumLineHeight = 0;
 
@@ -411,7 +411,6 @@ NSAttributedString *RCTNSAttributedStringFromAttributedString(const AttributedSt
 
     [nsAttributedString appendAttributedString:nsAttributedStringFragment];
   }
-  RCTApplyBaselineOffset(nsAttributedString);
   [nsAttributedString endEditing];
 
   return nsAttributedString;

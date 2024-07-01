@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ec12fd62d1dc2109e52a95094d7ad167>>
+ * @generated SignedSource<<dd5872a21f84a41bea247e137541ddfc>>
  */
 
 /**
@@ -63,6 +63,10 @@ bool ReactNativeFeatureFlags::enableSynchronousStateUpdates() {
 
 bool ReactNativeFeatureFlags::enableUIConsistency() {
   return getAccessor().enableUIConsistency();
+}
+
+bool ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact() {
+  return getAccessor().fixMappingOfEventPrioritiesBetweenFabricAndReact();
 }
 
 bool ReactNativeFeatureFlags::fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak() {

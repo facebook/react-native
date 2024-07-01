@@ -63,7 +63,7 @@ export type MixedTypeAnnotation = $ReadOnly<{
 
 type EventEmitterTypeAnnotation = $ReadOnly<{
   type: 'EventEmitterTypeAnnotation',
-  typeAnnotation: NativeModuleBaseTypeAnnotation,
+  typeAnnotation: NativeModuleEventEmitterTypeAnnotation | $FlowFixMe,
 }>;
 
 type FunctionTypeAnnotation<+P, +R> = $ReadOnly<{
@@ -366,6 +366,23 @@ export type NativeModuleMixedTypeAnnotation = $ReadOnly<{
   type: 'MixedTypeAnnotation',
 }>;
 
+type NativeModuleEventEmitterBaseTypeAnnotation =
+  | NativeModuleBooleanTypeAnnotation
+  | NativeModuleDoubleTypeAnnotation
+  | NativeModuleFloatTypeAnnotation
+  | NativeModuleInt32TypeAnnotation
+  | NativeModuleNumberTypeAnnotation
+  | NativeModuleStringTypeAnnotation
+  | NativeModuleTypeAliasTypeAnnotation
+  | VoidTypeAnnotation;
+
+export type NativeModuleEventEmitterTypeAnnotation =
+  | NativeModuleEventEmitterBaseTypeAnnotation
+  | {
+      type: 'ArrayTypeAnnotation',
+      elementType: NativeModuleEventEmitterBaseTypeAnnotation | {type: string},
+    };
+
 export type NativeModuleBaseTypeAnnotation =
   | NativeModuleStringTypeAnnotation
   | NativeModuleNumberTypeAnnotation
@@ -393,7 +410,8 @@ export type NativeModuleReturnTypeAnnotation =
 export type NativeModuleTypeAnnotation =
   | NativeModuleBaseTypeAnnotation
   | NativeModuleParamOnlyTypeAnnotation
-  | NativeModuleReturnOnlyTypeAnnotation;
+  | NativeModuleReturnOnlyTypeAnnotation
+  | NativeModuleEventEmitterTypeAnnotation;
 
 type NativeModuleParamOnlyTypeAnnotation = NativeModuleFunctionTypeAnnotation;
 

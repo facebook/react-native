@@ -19,13 +19,11 @@
 
 const {REPO_ROOT} = require('../consts');
 const {initNewProjectFromSource} = require('../e2e/init-template-e2e');
-const updateTemplatePackage = require('../releases/update-template-package');
 const {
   checkPackagerRunning,
   launchPackagerInSeparateWindow,
   maybeLaunchAndroidEmulator,
   prepareArtifacts,
-  setupCircleCIArtifacts,
   setupGHAArtifacts,
 } = require('./utils/testing-utils');
 const chalk = require('chalk');
@@ -79,7 +77,7 @@ const argv = yargs
  * - @onReleaseBranch whether we are on a release branch or not
  */
 async function testRNTesterIOS(
-  ciArtifacts /*: Unwrap<ReturnType<typeof setupCircleCIArtifacts>> */,
+  ciArtifacts /*: Unwrap<ReturnType<typeof setupGHAArtifacts>> */,
   onReleaseBranch /*: boolean */,
 ) {
   console.info(
@@ -131,7 +129,7 @@ async function testRNTesterIOS(
  * - @circleCIArtifacts manager object to manage all the download of CircleCIArtifacts. If null, it will fallback not to use them.
  */
 async function testRNTesterAndroid(
-  ciArtifacts /*: Unwrap<ReturnType<typeof setupCircleCIArtifacts>> */,
+  ciArtifacts /*: Unwrap<ReturnType<typeof setupGHAArtifacts>> */,
 ) {
   maybeLaunchAndroidEmulator();
 
@@ -207,7 +205,7 @@ async function testRNTesterAndroid(
  * - @onReleaseBranch whether we are on a release branch or not
  */
 async function testRNTester(
-  circleCIArtifacts /*:Unwrap<ReturnType<typeof setupCircleCIArtifacts>> */,
+  circleCIArtifacts /*:Unwrap<ReturnType<typeof setupGHAArtifacts>> */,
   onReleaseBranch /*: boolean */,
 ) {
   // FIXME: make sure that the commands retains colors
@@ -226,7 +224,7 @@ async function testRNTester(
 // === RNTestProject === //
 
 async function testRNTestProject(
-  ciArtifacts /*: Unwrap<ReturnType<typeof setupCircleCIArtifacts>> */,
+  ciArtifacts /*: Unwrap<ReturnType<typeof setupGHAArtifacts>> */,
 ) {
   console.info("We're going to test a fresh new RN project");
 
@@ -282,18 +280,17 @@ async function testRNTestProject(
     }
   }
 
-  updateTemplatePackage({
-    'react-native': `file://${newLocalNodeTGZ}`,
-  });
-
   pushd('/tmp/');
 
   debug('Creating RNTestProject from template');
 
+  // Cleanup RNTestProject folder. This makes it easier to rerun the script when it fails
+  exec('rm -rf /tmp/RNTestProject');
+
   await initNewProjectFromSource({
     projectName: 'RNTestProject',
     directory: '/tmp/RNTestProject',
-    templatePath: reactNativePackagePath,
+    pathToLocalReactNative: newLocalNodeTGZ,
   });
 
   cd('RNTestProject');

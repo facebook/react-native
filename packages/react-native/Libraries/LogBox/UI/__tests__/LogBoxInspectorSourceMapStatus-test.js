@@ -16,25 +16,32 @@ const LogBoxInspectorSourceMapStatus =
   require('../LogBoxInspectorSourceMapStatus').default;
 const React = require('react');
 
+// Mock `LogBoxButton` because we are interested in snapshotting the behavior
+// of `LogBoxInspectorSourceMapStatus`, not `LogBoxButton`.
+jest.mock('../LogBoxButton', () => ({
+  __esModule: true,
+  default: 'LogBoxButton',
+}));
+
 describe('LogBoxInspectorSourceMapStatus', () => {
-  it('should render for failed', () => {
-    const output = render.shallowRender(
+  it('should render for failed', async () => {
+    const output = await render.create(
       <LogBoxInspectorSourceMapStatus onPress={() => {}} status="FAILED" />,
     );
 
     expect(output).toMatchSnapshot();
   });
 
-  it('should render for pending', () => {
-    const output = render.shallowRender(
+  it('should render for pending', async () => {
+    const output = await render.create(
       <LogBoxInspectorSourceMapStatus onPress={() => {}} status="PENDING" />,
     );
 
     expect(output).toMatchSnapshot();
   });
 
-  it('should render null for complete', () => {
-    const output = render.shallowRender(
+  it('should render null for complete', async () => {
+    const output = await render.create(
       <LogBoxInspectorSourceMapStatus onPress={() => {}} status="COMPLETE" />,
     );
 

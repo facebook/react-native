@@ -25,8 +25,8 @@ jest
 
 import {format} from 'node:util';
 import * as React from 'react';
-import {act, create} from 'react-test-renderer';
 
+const {create, unmount, update} = require('../../../jest/renderer');
 const Animated = require('../Animated').default;
 const NativeAnimatedHelper = require('../NativeAnimatedHelper').default;
 
@@ -57,7 +57,7 @@ describe('Native Animated', () => {
   });
 
   describe('Animated Value', () => {
-    it('proxies `setValue` correctly', () => {
+    it('proxies `setValue` correctly', async () => {
       const opacity = new Animated.Value(0);
       const ref = React.createRef(null);
 
@@ -67,7 +67,7 @@ describe('Native Animated', () => {
         useNativeDriver: true,
       }).start();
 
-      create(<Animated.View ref={ref} style={{opacity}} />);
+      await create(<Animated.View ref={ref} style={{opacity}} />);
 
       expect(ref.current).not.toBeNull();
       jest.spyOn(ref.current, 'setNativeProps');
@@ -81,12 +81,12 @@ describe('Native Animated', () => {
       expect(ref.current.setNativeProps).not.toHaveBeenCalled();
     });
 
-    it('should set offset', () => {
+    it('should set offset', async () => {
       const opacity = new Animated.Value(0);
       opacity.setOffset(10);
       opacity.__makeNative();
 
-      create(<Animated.View style={{opacity}} />);
+      await create(<Animated.View style={{opacity}} />);
 
       expect(NativeAnimatedModule.createAnimatedNode).toBeCalledWith(
         expect.any(Number),
@@ -99,11 +99,11 @@ describe('Native Animated', () => {
       );
     });
 
-    it('should flatten offset', () => {
+    it('should flatten offset', async () => {
       const opacity = new Animated.Value(0);
       opacity.__makeNative();
 
-      create(<Animated.View style={{opacity}} />);
+      await create(<Animated.View style={{opacity}} />);
 
       expect(NativeAnimatedModule.createAnimatedNode).toBeCalledWith(
         expect.any(Number),
@@ -115,7 +115,7 @@ describe('Native Animated', () => {
       );
     });
 
-    it('should save value on unmount', () => {
+    it('should save value on unmount', async () => {
       NativeAnimatedModule.getValue = jest.fn((tag, saveCallback) => {
         saveCallback(1);
       });
@@ -123,10 +123,10 @@ describe('Native Animated', () => {
 
       opacity.__makeNative();
 
-      const root = create(<Animated.View style={{opacity}} />);
+      const root = await create(<Animated.View style={{opacity}} />);
       const tag = opacity.__getNativeTag();
 
-      root.unmount();
+      await unmount(root);
 
       expect(NativeAnimatedModule.getValue).toBeCalledWith(
         tag,
@@ -135,7 +135,7 @@ describe('Native Animated', () => {
       expect(opacity.__getValue()).toBe(1);
     });
 
-    it('should deduct offset when saving value on unmount', () => {
+    it('should deduct offset when saving value on unmount', async () => {
       NativeAnimatedModule.getValue = jest.fn((tag, saveCallback) => {
         // Assume current raw value of value node is 0.5, the NativeAnimated
         // getValue API returns the sum of raw value and offset, so return 1.
@@ -145,10 +145,10 @@ describe('Native Animated', () => {
       opacity.setOffset(0.5);
       opacity.__makeNative();
 
-      const root = create(<Animated.View style={{opacity}} />);
+      const root = await create(<Animated.View style={{opacity}} />);
       const tag = opacity.__getNativeTag();
 
-      root.unmount();
+      await unmount(root);
 
       expect(NativeAnimatedModule.getValue).toBeCalledWith(
         tag,
@@ -157,11 +157,11 @@ describe('Native Animated', () => {
       expect(opacity.__getValue()).toBe(1);
     });
 
-    it('should extract offset', () => {
+    it('should extract offset', async () => {
       const opacity = new Animated.Value(0);
       opacity.__makeNative();
 
-      create(<Animated.View style={{opacity}} />);
+      await create(<Animated.View style={{opacity}} />);
 
       expect(NativeAnimatedModule.createAnimatedNode).toBeCalledWith(
         expect.any(Number),
@@ -243,14 +243,14 @@ describe('Native Animated', () => {
   });
 
   describe('Animated Events', () => {
-    it('should map events', () => {
+    it('should map events', async () => {
       const value = new Animated.Value(0);
       value.__makeNative();
       const event = Animated.event([{nativeEvent: {state: {foo: value}}}], {
         useNativeDriver: true,
       });
 
-      const root = create(<Animated.View onTouchMove={event} />);
+      const root = await create(<Animated.View onTouchMove={event} />);
       expect(NativeAnimatedModule.addAnimatedEventToView).toBeCalledWith(
         expect.any(Number),
         'onTouchMove',
@@ -263,7 +263,7 @@ describe('Native Animated', () => {
       expect(
         NativeAnimatedModule.removeAnimatedEventFromView,
       ).not.toHaveBeenCalled();
-      root.unmount();
+      await unmount(root);
       expect(NativeAnimatedModule.removeAnimatedEventFromView).toBeCalledWith(
         expect.any(Number),
         'onTouchMove',
@@ -271,14 +271,14 @@ describe('Native Animated', () => {
       );
     });
 
-    it('should map AnimatedValueXY', () => {
+    it('should map AnimatedValueXY', async () => {
       const value = new Animated.ValueXY({x: 0, y: 0});
       value.__makeNative();
       const event = Animated.event([{nativeEvent: {state: value}}], {
         useNativeDriver: true,
       });
 
-      create(<Animated.View onTouchMove={event} />);
+      await create(<Animated.View onTouchMove={event} />);
       ['x', 'y'].forEach((key, idx) =>
         expect(
           NativeAnimatedModule.addAnimatedEventToView,
@@ -306,9 +306,7 @@ describe('Native Animated', () => {
       });
 
       await expect(async () => {
-        await act(() => {
-          create(<Animated.View onTouchMove={event} />);
-        });
+        await create(<Animated.View onTouchMove={event} />);
       }).rejects.toThrowError(/nativeEvent/);
       expect(NativeAnimatedModule.addAnimatedEventToView).not.toBeCalled();
 
@@ -331,9 +329,9 @@ describe('Native Animated', () => {
   });
 
   describe('Animated Graph', () => {
-    it('creates and detaches nodes', () => {
+    it('creates and detaches nodes', async () => {
       const opacity = new Animated.Value(0);
-      const root = create(<Animated.View style={{opacity}} />);
+      const root = await create(<Animated.View style={{opacity}} />);
 
       Animated.timing(opacity, {
         toValue: 10,
@@ -363,7 +361,7 @@ describe('Native Animated', () => {
       ).not.toHaveBeenCalled();
       expect(NativeAnimatedModule.dropAnimatedNode).not.toHaveBeenCalled();
 
-      root.unmount();
+      await unmount(root);
 
       expect(
         NativeAnimatedModule.disconnectAnimatedNodes,
@@ -371,9 +369,9 @@ describe('Native Animated', () => {
       expect(NativeAnimatedModule.dropAnimatedNode).toHaveBeenCalledTimes(3);
     });
 
-    it('sends a valid description for value, style and props nodes', () => {
+    it('sends a valid description for value, style and props nodes', async () => {
       const opacity = new Animated.Value(0);
-      create(<Animated.View style={{opacity}} />);
+      await create(<Animated.View style={{opacity}} />);
 
       Animated.timing(opacity, {
         toValue: 10,
@@ -395,13 +393,15 @@ describe('Native Animated', () => {
       );
     });
 
-    it('sends a valid graph description for Animated.add nodes', () => {
+    it('sends a valid graph description for Animated.add nodes', async () => {
       const first = new Animated.Value(1);
       const second = new Animated.Value(2);
       first.__makeNative();
       second.__makeNative();
 
-      create(<Animated.View style={{opacity: Animated.add(first, second)}} />);
+      await create(
+        <Animated.View style={{opacity: Animated.add(first, second)}} />,
+      );
 
       expect(NativeAnimatedModule.createAnimatedNode).toBeCalledWith(
         expect.any(Number),
@@ -437,13 +437,13 @@ describe('Native Animated', () => {
       );
     });
 
-    it('sends a valid graph description for Animated.subtract nodes', () => {
+    it('sends a valid graph description for Animated.subtract nodes', async () => {
       const first = new Animated.Value(2);
       const second = new Animated.Value(1);
       first.__makeNative();
       second.__makeNative();
 
-      create(
+      await create(
         <Animated.View style={{opacity: Animated.subtract(first, second)}} />,
       );
 
@@ -481,13 +481,13 @@ describe('Native Animated', () => {
       );
     });
 
-    it('sends a valid graph description for Animated.multiply nodes', () => {
+    it('sends a valid graph description for Animated.multiply nodes', async () => {
       const first = new Animated.Value(2);
       const second = new Animated.Value(1);
       first.__makeNative();
       second.__makeNative();
 
-      create(
+      await create(
         <Animated.View style={{opacity: Animated.multiply(first, second)}} />,
       );
 
@@ -525,13 +525,13 @@ describe('Native Animated', () => {
       );
     });
 
-    it('sends a valid graph description for Animated.divide nodes', () => {
+    it('sends a valid graph description for Animated.divide nodes', async () => {
       const first = new Animated.Value(4);
       const second = new Animated.Value(2);
       first.__makeNative();
       second.__makeNative();
 
-      create(
+      await create(
         <Animated.View style={{opacity: Animated.divide(first, second)}} />,
       );
 
@@ -569,11 +569,13 @@ describe('Native Animated', () => {
       );
     });
 
-    it('sends a valid graph description for Animated.modulo nodes', () => {
+    it('sends a valid graph description for Animated.modulo nodes', async () => {
       const value = new Animated.Value(4);
       value.__makeNative();
 
-      create(<Animated.View style={{opacity: Animated.modulo(value, 4)}} />);
+      await create(
+        <Animated.View style={{opacity: Animated.modulo(value, 4)}} />,
+      );
 
       expect(NativeAnimatedModule.createAnimatedNode).toBeCalledWith(
         expect.any(Number),
@@ -601,11 +603,11 @@ describe('Native Animated', () => {
       );
     });
 
-    it('sends a valid graph description for interpolate() nodes', () => {
+    it('sends a valid graph description for interpolate() nodes', async () => {
       const value = new Animated.Value(10);
       value.__makeNative();
 
-      create(
+      await create(
         <Animated.View
           style={{
             opacity: value.interpolate({
@@ -645,11 +647,13 @@ describe('Native Animated', () => {
       );
     });
 
-    it('sends a valid graph description for transform nodes', () => {
+    it('sends a valid graph description for transform nodes', async () => {
       const translateX = new Animated.Value(0);
       translateX.__makeNative();
 
-      create(<Animated.View style={{transform: [{translateX}, {scale: 2}]}} />);
+      await create(
+        <Animated.View style={{transform: [{translateX}, {scale: 2}]}} />,
+      );
 
       expect(NativeAnimatedModule.createAnimatedNode).toBeCalledWith(
         expect.any(Number),
@@ -671,10 +675,10 @@ describe('Native Animated', () => {
       );
     });
 
-    it('sends create operations before connect operations for multiple animated style props', () => {
+    it('sends create operations before connect operations for multiple animated style props', async () => {
       const opacity = new Animated.Value(0);
       const borderRadius = new Animated.Value(0);
-      create(<Animated.View style={{borderRadius, opacity}} />);
+      await create(<Animated.View style={{borderRadius, opacity}} />);
 
       Animated.timing(opacity, {
         toValue: 10,
@@ -765,10 +769,10 @@ describe('Native Animated', () => {
       );
     });
 
-    it('sends create operations before connect operations for multiple animated transform props', () => {
+    it('sends create operations before connect operations for multiple animated transform props', async () => {
       const translateX = new Animated.Value(0);
       const translateY = new Animated.Value(0);
-      create(
+      await create(
         <Animated.View
           style={{
             transform: [{translateX: translateX}, {translateY: translateY}],
@@ -887,10 +891,10 @@ describe('Native Animated', () => {
       );
     });
 
-    it('sends create operations before connect operations for multiple animated props', () => {
+    it('sends create operations before connect operations for multiple animated props', async () => {
       const propA = new Animated.Value(0);
       const propB = new Animated.Value(0);
-      create(<Animated.View propA={propA} propB={propB} />);
+      await create(<Animated.View propA={propA} propB={propB} />);
 
       Animated.timing(propA, {
         toValue: 10,
@@ -959,11 +963,11 @@ describe('Native Animated', () => {
       );
     });
 
-    it('sends a valid graph description for Animated.diffClamp nodes', () => {
+    it('sends a valid graph description for Animated.diffClamp nodes', async () => {
       const value = new Animated.Value(2);
       value.__makeNative();
 
-      create(
+      await create(
         <Animated.View style={{opacity: Animated.diffClamp(value, 0, 20)}} />,
       );
 
@@ -993,10 +997,10 @@ describe('Native Animated', () => {
       );
     });
 
-    it("doesn't call into native API if useNativeDriver is set to false", () => {
+    it("doesn't call into native API if useNativeDriver is set to false", async () => {
       const opacity = new Animated.Value(0);
 
-      const root = create(<Animated.View style={{opacity}} />);
+      const root = await create(<Animated.View style={{opacity}} />);
 
       Animated.timing(opacity, {
         toValue: 10,
@@ -1004,16 +1008,16 @@ describe('Native Animated', () => {
         useNativeDriver: false,
       }).start();
 
-      root.unmount();
+      await unmount(root);
 
       expect(NativeAnimatedModule.createAnimatedNode).not.toBeCalled();
     });
 
-    it('fails when trying to run non-native animation on native node', () => {
+    it('fails when trying to run non-native animation on native node', async () => {
       const opacity = new Animated.Value(0);
       const ref = React.createRef(null);
 
-      create(<Animated.View ref={ref} style={{opacity}} />);
+      await create(<Animated.View ref={ref} style={{opacity}} />);
 
       // Necessary to simulate the native animation.
       expect(ref.current).not.toBeNull();
@@ -1039,10 +1043,10 @@ describe('Native Animated', () => {
       );
     });
 
-    it('fails for unsupported styles', () => {
+    it('fails for unsupported styles', async () => {
       const left = new Animated.Value(0);
 
-      create(<Animated.View style={{left}} />);
+      await create(<Animated.View style={{left}} />);
 
       const animation = Animated.timing(left, {
         toValue: 10,
@@ -1052,12 +1056,12 @@ describe('Native Animated', () => {
       expect(animation.start).toThrowError(/left/);
     });
 
-    it('works for any `static` props and styles', () => {
+    it('works for any `static` props and styles', async () => {
       // Passing "unsupported" props should work just fine as long as they are not animated
       const opacity = new Animated.Value(0);
       opacity.__makeNative();
 
-      create(
+      await create(
         <Animated.View
           removeClippedSubviews={true}
           style={{left: 10, opacity, top: 20}}
@@ -1261,19 +1265,19 @@ describe('Native Animated', () => {
   });
 
   describe('Animated Components', () => {
-    it('Should restore default values on prop updates only', () => {
+    it('Should restore default values on prop updates only', async () => {
       const opacity = new Animated.Value(0);
       opacity.__makeNative();
 
-      const root = create(<Animated.View style={{opacity}} />);
+      const root = await create(<Animated.View style={{opacity}} />);
       expect(NativeAnimatedModule.restoreDefaultValues).not.toHaveBeenCalled();
 
-      root.update(<Animated.View style={{opacity}} />);
+      await update(root, <Animated.View style={{opacity}} />);
       expect(NativeAnimatedModule.restoreDefaultValues).toHaveBeenCalledWith(
         expect.any(Number),
       );
 
-      root.unmount();
+      await unmount(root);
       // Make sure it doesn't get called on unmount.
       expect(NativeAnimatedModule.restoreDefaultValues).toHaveBeenCalledTimes(
         1,

@@ -84,5 +84,5 @@ runs:
         path: |
           /tmp/hermes/download/
           /tmp/hermes/hermes/
-        key: v1-hermes-${{ inputs.hermes-version }}-${{ github.run_number }}
+        key: v1-hermes-${{ inputs.hermes-version }}
         enableCrossOsArchive: true
