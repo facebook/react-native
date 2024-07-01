@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include <cxxreact/MoveWrapper.h>
 #include <cxxreact/SystraceSection.h>
 #include <fbjni/fbjni.h>
 #include <glog/logging.h>
@@ -81,9 +82,22 @@ bool rejectTurboModulePromiseOnNativeError() {
 }
 
 struct JNIArgs {
-  JNIArgs(size_t count) : args_(count) {}
-  std::vector<jvalue> args_;
-  std::vector<jobject> globalRefs_;
+  JNIArgs(size_t count) : args(count) {}
+  JNIArgs(const JNIArgs&) = delete;
+  JNIArgs(JNIArgs&& jniArgs) noexcept = default;
+
+  JNIArgs& operator=(const JNIArgs& other) = delete;
+  JNIArgs& operator=(JNIArgs&& other) noexcept = default;
+
+  std::vector<jvalue> args;
+  std::vector<jobject> globalRefs;
+
+  ~JNIArgs() {
+    JNIEnv* env = jni::Environment::current();
+    for (auto globalRef : globalRefs) {
+      env->DeleteGlobalRef(globalRef);
+    }
+  }
 };
 
 jsi::Value createJSRuntimeError(jsi::Runtime& runtime, jsi::Value&& message) {
@@ -316,11 +330,10 @@ JNIArgs convertJSIArgsToJNIArgs(
   }
 
   JNIArgs jniArgs(valueKind == PromiseKind ? count + 1 : count);
-  auto& jargs = jniArgs.args_;
-  auto& globalRefs = jniArgs.globalRefs_;
+  auto& jargs = jniArgs.args;
+  auto& globalRefs = jniArgs.globalRefs;
 
-  auto makeGlobalIfNecessary =
-      [&globalRefs, env, valueKind](jobject obj) -> jobject {
+  auto makeGlobalIfNecessary = [&](jobject obj) {
     if (valueKind == VoidKind || valueKind == PromiseKind) {
       jobject globalObj = env->NewGlobalRef(obj);
       globalRefs.push_back(globalObj);
@@ -634,8 +647,8 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
     TMPL::syncMethodCallExecutionStart(moduleName, methodName);
   }
 
-  auto& jargs = jniArgs.args_;
-  auto& globalRefs = jniArgs.globalRefs_;
+  auto& jargs = jniArgs.args;
+  auto& globalRefs = jniArgs.globalRefs;
 
   switch (valueKind) {
     case BooleanKind: {
@@ -820,8 +833,7 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
 
       nativeMethodCallInvoker_->invokeAsync(
           methodName,
-          [jargs,
-           globalRefs,
+          [jniArgs = makeMoveWrapper(std::move(jniArgs)),
            methodID,
            instance_ = jni::make_weak(instance_),
            moduleNameStr = name_,
@@ -848,16 +860,13 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
             const char* methodName = methodNameStr.c_str();
 
             TMPL::asyncMethodCallExecutionStart(moduleName, methodName, id);
-            env->CallVoidMethodA(instance.get(), methodID, jargs.data());
+            env->CallVoidMethodA(
+                instance.get(), methodID, jniArgs->args.data());
             try {
               FACEBOOK_JNI_THROW_PENDING_EXCEPTION();
             } catch (...) {
               TMPL::asyncMethodCallExecutionFail(moduleName, methodName, id);
               throw;
-            }
-
-            for (auto globalRef : globalRefs) {
-              env->DeleteGlobalRef(globalRef);
             }
             TMPL::asyncMethodCallExecutionEnd(moduleName, methodName, id);
           });
@@ -933,10 +942,9 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
       TMPL::asyncMethodCallDispatch(moduleName, methodName);
       nativeMethodCallInvoker_->invokeAsync(
           methodName,
-          [jargs,
+          [jniArgs = makeMoveWrapper(std::move(jniArgs)),
            rejectCallback = std::move(nativeRejectCallback),
            jsInvocationStack = std::move(jsInvocationStack),
-           globalRefs,
            methodID,
            instance_ = jni::make_weak(instance_),
            moduleNameStr = name_,
@@ -962,23 +970,20 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
             const char* moduleName = moduleNameStr.c_str();
             const char* methodName = methodNameStr.c_str();
             TMPL::asyncMethodCallExecutionStart(moduleName, methodName, id);
-            env->CallVoidMethodA(instance.get(), methodID, jargs.data());
+            env->CallVoidMethodA(
+                instance.get(), methodID, jniArgs->args.data());
             try {
               FACEBOOK_JNI_THROW_PENDING_EXCEPTION();
             } catch (...) {
-              TMPL::asyncMethodCallExecutionFail(moduleName, methodName, id);
               if (rejectTurboModulePromiseOnNativeError() && rejectCallback) {
                 auto exception = std::current_exception();
                 rejectWithException(
                     *rejectCallback, exception, jsInvocationStack);
                 rejectCallback = std::nullopt;
               } else {
+                TMPL::asyncMethodCallExecutionFail(moduleName, methodName, id);
                 throw;
               }
-            }
-
-            for (auto globalRef : globalRefs) {
-              env->DeleteGlobalRef(globalRef);
             }
             TMPL::asyncMethodCallExecutionEnd(moduleName, methodName, id);
           });
