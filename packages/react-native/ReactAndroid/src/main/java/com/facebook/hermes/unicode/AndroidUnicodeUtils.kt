@@ -39,6 +39,7 @@ public object AndroidUnicodeUtils {
   }
 
   @DoNotStrip
+  @JvmStatic
   public fun convertToCase(input: String, targetCase: Int, useCurrentLocale: Boolean): String {
     // Note Java's case conversions use the user's locale. For example "I".toLowerCase()
     // will produce a dotless i. From Java's docs: "To obtain correct results for locale
