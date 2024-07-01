@@ -49,7 +49,6 @@ Pod::Spec.new do |s|
                              }
   s.framework = "UIKit"
   s.dependency "DoubleConversion"
-  s.dependency "fmt", "9.1.0"
   s.dependency "RCT-Folly", folly_version
   s.dependency "RCTTypeSafety", version
   s.dependency "React-Core/CoreModulesHeaders", version

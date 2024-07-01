@@ -74,7 +74,6 @@ Pod::Spec.new do |s|
   s.dependency "React-logger"
   s.dependency "glog"
   s.dependency "DoubleConversion"
-  s.dependency "fmt", "9.1.0"
   s.dependency "React-ImageManager"
   s.dependency "React-utils"
   s.dependency "Yoga"

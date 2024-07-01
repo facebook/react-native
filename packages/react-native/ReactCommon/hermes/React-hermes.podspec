@@ -46,7 +46,6 @@ Pod::Spec.new do |s|
   s.dependency "React-perflogger", version
   s.dependency "RCT-Folly", folly_version
   s.dependency "DoubleConversion"
-  s.dependency "fmt", "9.1.0"
   s.dependency "glog"
   s.dependency "hermes-engine"
   s.dependency "React-jsi"

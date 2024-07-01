@@ -62,7 +62,6 @@ Pod::Spec.new do |s|
 
   s.dependency "RCT-Folly"
   s.dependency "DoubleConversion"
-  s.dependency "fmt", "9.1.0"
   s.dependency "React-Core"
   s.dependency "React-cxxreact"
   s.dependency "React-jsi"
