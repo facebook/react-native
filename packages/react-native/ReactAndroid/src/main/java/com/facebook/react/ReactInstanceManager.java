@@ -102,6 +102,7 @@ import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
+import com.facebook.react.modules.systeminfo.AndroidInfoHelpers;
 import com.facebook.react.packagerconnection.RequestHandler;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.ReactRoot;
@@ -1548,6 +1549,14 @@ public class ReactInstanceManager {
 
     public InspectorTargetDelegateImpl(ReactInstanceManager inspectorTarget) {
       mReactInstanceManagerWeak = new WeakReference<ReactInstanceManager>(inspectorTarget);
+    }
+
+    @Override
+    public Map<String, String> getMetadata() {
+      ReactInstanceManager reactInstanceManager = mReactInstanceManagerWeak.get();
+
+      return AndroidInfoHelpers.getInspectorTargetMetadata(
+          reactInstanceManager.mApplicationContext);
     }
 
     @Override
