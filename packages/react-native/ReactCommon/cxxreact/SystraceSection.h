@@ -76,6 +76,7 @@ using SystraceSectionUnwrapped = DummySystraceSection;
  */
 #if defined(__APPLE__) && OS_LOG_TARGET_HAS_10_15_FEATURES && \
     !defined(WITH_LOOM_TRACE)
+
 namespace systrace {
 
 template <typename T, typename = void>
@@ -95,6 +96,14 @@ static auto render(const T& t)
 
 inline os_log_t instrumentsLogHandle = nullptr;
 
+static inline os_log_t getOrCreateInstrumentsLogHandle() {
+  if (!instrumentsLogHandle) {
+    instrumentsLogHandle = os_log_create(
+        "dev.reactnative.instruments", OS_LOG_CATEGORY_DYNAMIC_TRACING);
+  }
+  return instrumentsLogHandle;
+}
+
 } // namespace systrace
 
 struct SystraceSection {
@@ -102,14 +111,11 @@ struct SystraceSection {
   template <typename... ConvertsToStringPiece>
   explicit SystraceSection(const char* name, ConvertsToStringPiece&&... args)
       : systraceSectionUnwrapped_(name, args...) {
-    if (!systrace::instrumentsLogHandle) {
-      systrace::instrumentsLogHandle = os_log_create(
-          "dev.reactnative.instruments", OS_LOG_CATEGORY_DYNAMIC_TRACING);
-    }
+    os_log_t instrumentsLogHandle = systrace::getOrCreateInstrumentsLogHandle();
 
     // If the log isn't enabled, we don't want the performance overhead of the
     // rest of the code below.
-    if (!os_signpost_enabled(systrace::instrumentsLogHandle)) {
+    if (!os_signpost_enabled(instrumentsLogHandle)) {
       return;
     }
 
@@ -121,13 +127,12 @@ struct SystraceSection {
       argsString += argsVector[i] + "=" + argsVector[i + 1] + ";";
     }
 
-    signpostID_ =
-        os_signpost_id_make_with_pointer(systrace::instrumentsLogHandle, this);
+    signpostID_ = os_signpost_id_make_with_pointer(instrumentsLogHandle, this);
 
     os_signpost_interval_begin(
-        systrace::instrumentsLogHandle,
+        instrumentsLogHandle,
         signpostID_,
-        "SystraceSection",
+        "Systrace",
         "%s begin: %s",
         name,
         argsString.c_str());
@@ -139,7 +144,7 @@ struct SystraceSection {
     os_signpost_interval_end(
         systrace::instrumentsLogHandle,
         signpostID_,
-        "SystraceSection",
+        "Systrace",
         "%s end",
         name_.data());
   }
