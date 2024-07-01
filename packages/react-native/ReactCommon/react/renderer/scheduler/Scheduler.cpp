@@ -19,6 +19,7 @@
 #include <react/renderer/mounting/MountingOverrideDelegate.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
 #include <react/renderer/runtimescheduler/RuntimeScheduler.h>
+#include <react/renderer/runtimescheduler/RuntimeScheduler_Modern.h>
 #include <react/renderer/uimanager/UIManager.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
 
@@ -310,7 +311,9 @@ void Scheduler::uiManagerDidFinishTransaction(
 }
 
 void Scheduler::uiManagerDidCreateShadowNode(const ShadowNode& shadowNode) {
-  if (delegate_ != nullptr) {
+  // Iff we are using the modern scheduler, it will mark when it's in a sync
+  // block and view preallocation is not preferred
+  if (delegate_ != nullptr && !RuntimeScheduler_Modern::isInSyncBlock()) {
     delegate_->schedulerDidRequestPreliminaryViewAllocation(shadowNode);
   }
 }
