@@ -1979,13 +1979,8 @@ public class com/facebook/react/config/ReactFeatureFlags {
 }
 
 public final class com/facebook/react/defaults/DefaultComponentsRegistry {
-	public static final field Companion Lcom/facebook/react/defaults/DefaultComponentsRegistry$Companion;
-	public synthetic fun <init> (Lcom/facebook/react/fabric/ComponentFactory;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public static final fun register (Lcom/facebook/react/fabric/ComponentFactory;)Lcom/facebook/react/defaults/DefaultComponentsRegistry;
-}
-
-public final class com/facebook/react/defaults/DefaultComponentsRegistry$Companion {
-	public final fun register (Lcom/facebook/react/fabric/ComponentFactory;)Lcom/facebook/react/defaults/DefaultComponentsRegistry;
+	public static final field INSTANCE Lcom/facebook/react/defaults/DefaultComponentsRegistry;
+	public static final fun register (Lcom/facebook/react/fabric/ComponentFactory;)V
 }
 
 public final class com/facebook/react/defaults/DefaultNewArchitectureEntryPoint {
@@ -2530,16 +2525,6 @@ public final class com/facebook/react/fabric/BindingImpl : com/facebook/react/fa
 
 public final class com/facebook/react/fabric/ComponentFactory {
 	public fun <init> ()V
-}
-
-public final class com/facebook/react/fabric/CoreComponentsRegistry {
-	public static final field Companion Lcom/facebook/react/fabric/CoreComponentsRegistry$Companion;
-	public synthetic fun <init> (Lcom/facebook/react/fabric/ComponentFactory;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public static final fun register (Lcom/facebook/react/fabric/ComponentFactory;)Lcom/facebook/react/fabric/CoreComponentsRegistry;
-}
-
-public final class com/facebook/react/fabric/CoreComponentsRegistry$Companion {
-	public final fun register (Lcom/facebook/react/fabric/ComponentFactory;)Lcom/facebook/react/fabric/CoreComponentsRegistry;
 }
 
 public class com/facebook/react/fabric/DevToolsReactPerfLogger : com/facebook/react/bridge/ReactMarker$FabricMarkerListener {
