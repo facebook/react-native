@@ -416,6 +416,35 @@
 - Use our fork of the react-native-communti/cli-platform-ios use_native_modues.rb script ([c884d19a50](https://github.com/facebook/react-native/commit/c884d19a501081ffbc4b353d751ecc3e32d6f624) by [@blakef](https://github.com/blakef))
 - Enforce Activities using ReactDelegate implement DefaultHardwareBackBtnHandler. ([a2d277f740](https://github.com/facebook/react-native/commit/a2d277f740d8ee95137d42679a1ffd872962a108) by [@javache](https://github.com/javache))
 
+## v0.74.3
+
+### Added
+
+- Add the ReactMarkerConstants.CONTENT_APPEARED support on Android in bridgeless mode. ([3c4d7618f0](https://github.com/facebook/react-native/commit/3c4d7618f00751b08f73ffcec9ef1f69d44136da) by [@Kudo](https://github.com/Kudo))
+
+### Changed
+
+- Feat: update CLI to 13.6.9 ([d1e2a35061](https://github.com/facebook/react-native/commit/d1e2a3506152abde9b870b1a63f16d00ec277ea6) by [@szymonrybczak](https://github.com/szymonrybczak))
+
+
+#### iOS specific
+
+- Support `customizeRootView` from `RCTRootViewFactory` ([3c4d761](https://github.com/facebook/react-native/commit/3c4d7618f00751b08f73ffcec9ef1f69d44136da) by [@Kudo](https://github.com/Kudo))
+
+### Fixed
+
+- Codegen computes output path relative to project root instead of current working directory. ([d3e0430dea](https://github.com/facebook/react-native/commit/d3e0430deac573fd44792e6005d5de20e9ad2797) by [@dmytrorykun](https://github.com/dmytrorykun))
+
+
+### Android specific
+
+- Android native rejections should be instanceof Error ([f4b0fcb9](https://github.com/facebook/react-native/commit/f4b0fcb92263667754348f82030f85cc941846ba) by [huzhanbo1996](https://github.com/huzhanbo1996))
+- Tentative fix for NPE `JavaTimerManager$IdleCallbackRunnable.cancel` ([988bf162a0](https://github.com/facebook/react-native/commit/988bf162a0f36d9919cebbebc1fca27b58be4ae5) by [@cortinico](https://github.com/cortinico))
+
+#### iOS specific
+
+- Fixed Multiline TextInput with a fixed height scrolls to the bottom when changing AttributedText ([e210c7c5](https://github.com/facebook/react-native/commit/e210c7c5741202a6e1b372731b50fdb59a7232bb) by [@fabOnReact](https://github.com/fabOnReact))
+- Fixed border being drawn over children when no color was set ([a2b52af3](https://github.com/facebook/react-native/commit/a2b52af3bcc273cf85f01510c24d4e8da1b45656) by [@j-piasecki](https://github.com/j-piasecki))
 
 ## v0.74.2
 
