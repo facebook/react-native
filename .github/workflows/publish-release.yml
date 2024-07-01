@@ -506,6 +506,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.1
+      - name: Setup git safe folders
+        run: git config --global --add safe.directory '*'
       - name: Setup node.js
         uses: ./.github/actions/setup-node
       - name: Install dependencies
@@ -573,6 +575,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.1
+      - name: Setup git safe folders
+        run: git config --global --add safe.directory '*'
       - name: Create /tmp/hermes/osx-bin directory
         run: mkdir -p /tmp/hermes/osx-bin
       - name: Download osx-bin release artifacts

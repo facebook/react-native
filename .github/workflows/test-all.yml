@@ -582,6 +582,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.1
+      - name: Setup git safe folders
+        run: git config --global --add safe.directory '*'
       - name: Setup node.js
         uses: ./.github/actions/setup-node
       - name: Install dependencies
@@ -654,6 +656,8 @@ jobs:
           echo '|1|If6MU203eXTaaWL678YEfWkVMrw=|kqLeIAyTy8pzpj8x8Ae4Fr8Mtlc= ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==' >> ~/.ssh/known_hosts
       - name: Checkout
         uses: actions/checkout@v4.1.1
+      - name: Setup git safe folders
+        run: git config --global --add safe.directory '*'
       - name: Create /tmp/hermes/osx-bin directory
         run: mkdir -p /tmp/hermes/osx-bin
       - name: Download osx-bin release artifacts
@@ -820,6 +824,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.1
+      - name: Setup git safe folders
+        run: git config --global --add safe.directory '*'
       - name: Cache setup
         id: cache_setup
         uses: ./.github/actions/cache_setup
