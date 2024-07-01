@@ -100,6 +100,7 @@ target_link_libraries(
   react_utils
   rrc_image
   rrc_view
+  turbomodulejsijni
   yoga
 )
 

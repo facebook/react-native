@@ -9,11 +9,12 @@ package com.facebook.react.defaults
 
 import com.facebook.soloader.SoLoader
 
-internal class AppModulesSoLoader {
+internal class DefaultSoLoader {
   companion object {
     @Synchronized
     @JvmStatic
     fun maybeLoadSoLibrary() {
+      SoLoader.loadLibrary("react_newarchdefaults")
       try {
         SoLoader.loadLibrary("appmodules")
       } catch (e: UnsatisfiedLinkError) {

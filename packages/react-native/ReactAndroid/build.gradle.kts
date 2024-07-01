@@ -97,6 +97,8 @@ val preparePrefab by
                       "../ReactCommon/react/renderer/componentregistry/",
                       "react/renderer/componentregistry/")),
               PrefabPreprocessingEntry(
+                  "react_newarchdefaults", Pair("src/main/jni/react/newarchdefaults", "")),
+              PrefabPreprocessingEntry(
                   "react_render_animations",
                   Pair("../ReactCommon/react/renderer/animations/", "react/renderer/animations/")),
               PrefabPreprocessingEntry(
@@ -150,11 +152,7 @@ val preparePrefab by
               PrefabPreprocessingEntry(
                   "glog", Pair(File(buildDir, "third-party-ndk/glog/exported/").absolutePath, "")),
               PrefabPreprocessingEntry(
-                  "fabricjni",
-                  listOf(
-                      Pair("src/main/jni/react/fabric/DefaultComponentsRegistry.h", ""),
-                      Pair("src/main/jni/react/fabric", "react/fabric/"),
-                  )),
+                  "fabricjni", Pair("src/main/jni/react/fabric", "react/fabric/")),
               PrefabPreprocessingEntry(
                   "mapbufferjni", Pair("src/main/jni/react/mapbuffer", "react/mapbuffer/")),
               PrefabPreprocessingEntry(
@@ -563,6 +561,7 @@ android {
             "react_performance_timeline",
             "react_utils",
             "react_render_componentregistry",
+            "react_newarchdefaults",
             "react_render_animations",
             "react_render_core",
             "react_render_consistency",
@@ -682,6 +681,9 @@ android {
     create("react_utils") { headers = File(prefabHeadersDir, "react_utils").absolutePath }
     create("react_render_componentregistry") {
       headers = File(prefabHeadersDir, "react_render_componentregistry").absolutePath
+    }
+    create("react_newarchdefaults") {
+      headers = File(prefabHeadersDir, "react_newarchdefaults").absolutePath
     }
     create("react_render_animations") {
       headers = File(prefabHeadersDir, "react_render_animations").absolutePath

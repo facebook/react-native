@@ -44,7 +44,6 @@ target_link_libraries(callinvokerholder
 add_library(
         turbomodulejsijni
         SHARED
-        DefaultTurboModuleManagerDelegate.cpp
         ReactCommon/BindingsInstallerHolder.cpp
         ReactCommon/CompositeTurboModuleManagerDelegate.cpp
         ReactCommon/OnLoad.cpp
@@ -61,8 +60,6 @@ target_link_libraries(turbomodulejsijni
         fb
         fbjni
         jsi
-        react_cxxreactpackage
         react_nativemodule_core
-        react_nativemodule_defaults
         callinvokerholder
         reactperfloggerjni)

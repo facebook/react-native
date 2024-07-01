@@ -13,7 +13,6 @@ import com.facebook.react.ReactPackage
 import com.facebook.react.ReactPackageTurboModuleManagerDelegate
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
-import com.facebook.react.internal.turbomodule.core.NativeModuleSoLoader
 import com.facebook.react.runtime.cxxreactpackage.CxxReactPackage
 
 /**
@@ -70,8 +69,7 @@ private constructor(
 
   private companion object {
     init {
-      NativeModuleSoLoader.maybeLoadSoLibrary()
-      AppModulesSoLoader.maybeLoadSoLibrary()
+      DefaultSoLoader.maybeLoadSoLibrary()
     }
 
     @DoNotStrip
