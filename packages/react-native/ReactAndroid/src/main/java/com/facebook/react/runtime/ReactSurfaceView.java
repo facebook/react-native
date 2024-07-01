@@ -191,7 +191,7 @@ public class ReactSurfaceView extends ReactRootView {
 
   @Override
   public String getJSModuleName() {
-    return mSurface.moduleName;
+    return mSurface.getModuleName();
   }
 
   @Override
