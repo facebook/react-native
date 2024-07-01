@@ -1,6 +1,6 @@
 {
   "name": "@react-native/babel-preset",
-  "version": "0.74.84",
+  "version": "0.74.85",
   "description": "Babel preset for React Native applications",
   "main": "src/index.js",
   "repository": {
@@ -54,7 +54,7 @@
     "@babel/plugin-transform-typescript": "^7.5.0",
     "@babel/plugin-transform-unicode-regex": "^7.0.0",
     "@babel/template": "^7.0.0",
-    "@react-native/babel-plugin-codegen": "0.74.84",
+    "@react-native/babel-plugin-codegen": "0.74.85",
     "babel-plugin-transform-flow-enums": "^0.0.2",
     "react-refresh": "^0.14.0"
   },
