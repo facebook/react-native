@@ -152,6 +152,7 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
                                                      attribute:NSFontAttributeName
                                                        atIndex:0
                                                 effectiveRange:nil];
+                                            CGRect lineRect = [layoutManager lineFragmentRectForGlyphAtIndex:range.location effectiveRange:nil];
                                             CGFloat baseline = [layoutManager locationForGlyphAtIndex:range.location].y;
                                             auto rect = facebook::react::Rect{
                                                 facebook::react::Point{usedRect.origin.x, usedRect.origin.y},
@@ -159,7 +160,7 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
                                             auto line = LineMeasurement{
                                                 std::string([renderedString UTF8String]),
                                                 rect,
-                                                usedRect.size.height - baseline,
+                                                lineRect.size.height - baseline,
                                                 font.capHeight,
                                                 baseline,
                                                 font.xHeight};
