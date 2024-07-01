@@ -5978,7 +5978,10 @@ declare export default typeof NativeSourceCode;
 `;
 
 exports[`public API should not change unintentionally Libraries/Network/FormData.js 1`] = `
-"type FormDataValue = string | { name?: string, type?: string, uri: string };
+"type FormDataValue =
+  | string
+  | { name?: string, type?: string, uri: string }
+  | { type?: string, string: string };
 type FormDataNameValuePair = [string, FormDataValue];
 type Headers = { [name: string]: string, ... };
 type FormDataPart =
