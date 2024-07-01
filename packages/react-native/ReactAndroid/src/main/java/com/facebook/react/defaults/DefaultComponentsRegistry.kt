@@ -9,6 +9,7 @@ package com.facebook.react.defaults
 
 import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.react.fabric.ComponentFactory
+import com.facebook.react.fabric.FabricSoLoader
 
 /**
  * A utility class that provides users a ComponentRegistry they can customize with a C++
@@ -22,7 +23,8 @@ import com.facebook.react.fabric.ComponentFactory
 @DoNotStrip
 public object DefaultComponentsRegistry {
   init {
-    DefaultSoLoader.maybeLoadSoLibrary()
+    FabricSoLoader.staticInit()
+    AppModulesSoLoader.maybeLoadSoLibrary()
   }
 
   @JvmStatic @DoNotStrip public external fun register(componentFactory: ComponentFactory): Unit

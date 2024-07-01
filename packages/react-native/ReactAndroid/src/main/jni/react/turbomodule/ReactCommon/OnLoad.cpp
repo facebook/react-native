@@ -10,6 +10,7 @@
 #include <reactperflogger/JNativeModulePerfLogger.h>
 
 #include "CompositeTurboModuleManagerDelegate.h"
+#include "DefaultTurboModuleManagerDelegate.h"
 #include "TurboModuleManager.h"
 
 void jniEnableCppLogging(
@@ -26,6 +27,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void*) {
     // "ComponentDescriptorFactory" is defined in Fabric
     facebook::react::TurboModuleManager::registerNatives();
 
+    facebook::react::DefaultTurboModuleManagerDelegate::registerNatives();
     facebook::react::CompositeTurboModuleManagerDelegate::registerNatives();
 
     facebook::jni::registerNatives(

@@ -69,7 +69,7 @@ public object DefaultNewArchitectureEntryPoint {
     privateConcurrentReactEnabled = fabricEnabled
     privateBridgelessEnabled = bridgelessEnabled
 
-    DefaultSoLoader.maybeLoadSoLibrary()
+    AppModulesSoLoader.maybeLoadSoLibrary()
     loaded = true
   }
 
