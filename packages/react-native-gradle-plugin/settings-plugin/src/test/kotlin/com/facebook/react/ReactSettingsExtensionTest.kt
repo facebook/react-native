@@ -104,6 +104,35 @@ class ReactSettingsExtensionTest {
   }
 
   @Test
+  fun getLibrariesToAutolink_withiOSOnlyLibrary_returnsEmptyMap() {
+    val validJsonFile =
+        createJsonFile(
+            """
+      {
+        "reactNativeVersion": "1000.0.0",
+        "dependencies": {
+          "@react-native/oss-library-example": {
+            "root": "./node_modules/@react-native/oss-library-example",
+            "name": "@react-native/oss-library-example",
+            "platforms": {
+              "ios": {
+                "podspecPath": "./node_modules/@react-native/oss-library-example/OSSLibraryExample.podspec",
+                "version": "0.0.1",
+                "configurations": [],
+                "scriptPhases": []
+              }
+            }
+          }
+        }
+      }
+      """
+                .trimIndent())
+
+    val map = getLibrariesToAutolink(validJsonFile)
+    assertEquals(0, map.keys.size)
+  }
+
+  @Test
   fun checkAndUpdateLockfiles_withNothingToCheck_returnsFalse() {
     val project = ProjectBuilder.builder().build()
     val noFiles = project.files()
