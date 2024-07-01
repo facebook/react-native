@@ -43,7 +43,15 @@
 
 @end
 
-@interface NativeSampleTurboModuleSpecBase : NSObject
+@interface NativeSampleTurboModuleSpecBase : NSObject {
+ @protected
+  facebook::react::EventEmitterCallback _eventEmitterCallback;
+}
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper;
+- (void)emitOnPress;
+- (void)emitOnClick:(NSString *)value;
+- (void)emitOnChange:(NSDictionary *)value;
+- (void)emitOnSubmit:(NSArray *)value;
 @end
 
 namespace facebook::react {

@@ -813,5 +813,18 @@ void ObjCTurboModule::setMethodArgConversionSelector(NSString *methodName, size_
   methodArgConversionSelectors_[methodName][argIndex] = selectorValue;
 }
 
+void ObjCTurboModule::setEventEmitterCallback(EventEmitterCallback eventEmitterCallback)
+{
+  if ([instance_ conformsToProtocol:@protocol(RCTTurboModule)] &&
+      [instance_ respondsToSelector:@selector(setEventEmitterCallback:)]) {
+    EventEmitterCallbackWrapper *wrapper = [EventEmitterCallbackWrapper new];
+    wrapper->_eventEmitterCallback = std::move(eventEmitterCallback);
+    [(id<RCTTurboModule>)instance_ setEventEmitterCallback:wrapper];
+  }
+}
+
 } // namespace react
 } // namespace facebook
+
+@implementation EventEmitterCallbackWrapper
+@end
