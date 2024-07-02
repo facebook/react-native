@@ -14,7 +14,6 @@
 #import <React/RCTModuleMethod.h>
 #import <ReactCommon/CallInvoker.h>
 #import <ReactCommon/TurboModule.h>
-#import <react/bridging/bridging.h>
 #import <functional>
 #import <memory>
 #import <string>
