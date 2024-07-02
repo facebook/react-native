@@ -25,7 +25,7 @@
           matrix:
             parameters:
               flavor: ["Debug", "Release"]
-              slice: ["macosx", "iphoneos", "iphonesimulator", "catalyst"]
+              slice: ["macosx", "iphoneos", "iphonesimulator", "catalyst", "xros", "xrsimulator"]
       - build_hermes_macos:
           requires:
             - build_apple_slices_hermes
