@@ -134,7 +134,7 @@ module.exports = function (bundlePathAndQuery: string): Promise<void> {
         global.globalEvalWithSourceUrl(body, requestUrl);
       } else {
         // eslint-disable-next-line no-eval
-        eval(body);
+        eval(body); // CodeQL [js/eval-usage] Debug only. Developer inner loop.
       }
     })
     .catch<void>(e => {
