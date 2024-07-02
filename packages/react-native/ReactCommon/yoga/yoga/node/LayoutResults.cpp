@@ -21,6 +21,7 @@ bool LayoutResults::operator==(LayoutResults layout) const {
       direction() == layout.direction() &&
       hadOverflow() == layout.hadOverflow() &&
       lastOwnerDirection == layout.lastOwnerDirection &&
+      lastScale == layout.lastScale &&
       nextCachedMeasurementsIndex == layout.nextCachedMeasurementsIndex &&
       cachedLayout == layout.cachedLayout &&
       computedFlexBasis == layout.computedFlexBasis;
