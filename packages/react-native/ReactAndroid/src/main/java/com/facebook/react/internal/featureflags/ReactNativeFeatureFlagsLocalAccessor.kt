@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<65a88218f057b56211d84b6d473e8a90>>
+ * @generated SignedSource<<a97af69ca22746594d72410f72a0a1cb>>
  */
 
 /**
@@ -35,6 +35,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var enableMicrotasksCache: Boolean? = null
   private var enableSynchronousStateUpdatesCache: Boolean? = null
   private var enableUIConsistencyCache: Boolean? = null
+  private var fixIncorrectScrollViewStateUpdateOnAndroidCache: Boolean? = null
   private var fixMappingOfEventPrioritiesBetweenFabricAndReactCache: Boolean? = null
   private var fixMissedFabricStateUpdatesOnAndroidCache: Boolean? = null
   private var fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeakCache: Boolean? = null
@@ -157,6 +158,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.enableUIConsistency()
       accessedFeatureFlags.add("enableUIConsistency")
       enableUIConsistencyCache = cached
+    }
+    return cached
+  }
+
+  override fun fixIncorrectScrollViewStateUpdateOnAndroid(): Boolean {
+    var cached = fixIncorrectScrollViewStateUpdateOnAndroidCache
+    if (cached == null) {
+      cached = currentProvider.fixIncorrectScrollViewStateUpdateOnAndroid()
+      accessedFeatureFlags.add("fixIncorrectScrollViewStateUpdateOnAndroid")
+      fixIncorrectScrollViewStateUpdateOnAndroidCache = cached
     }
     return cached
   }

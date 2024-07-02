@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<cb2b8b9fc0efdcde70d12724a2ac6768>>
+ * @generated SignedSource<<79318071dbc264dabddac64a52bd5256>>
  */
 
 /**
@@ -68,6 +68,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableUIConsistency() override {
+    return false;
+  }
+
+  bool fixIncorrectScrollViewStateUpdateOnAndroid() override {
     return false;
   }
 

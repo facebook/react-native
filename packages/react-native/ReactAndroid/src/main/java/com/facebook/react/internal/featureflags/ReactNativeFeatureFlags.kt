@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e031aebb1124ba925f1d725d267043c4>>
+ * @generated SignedSource<<1cad606bd06ab650004955138228d227>>
  */
 
 /**
@@ -93,6 +93,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableUIConsistency(): Boolean = accessor.enableUIConsistency()
+
+  /**
+   * When doing a smooth scroll animation, it stops setting the state with the final scroll position in Fabric before the animation starts.
+   */
+  @JvmStatic
+  public fun fixIncorrectScrollViewStateUpdateOnAndroid(): Boolean = accessor.fixIncorrectScrollViewStateUpdateOnAndroid()
 
   /**
    * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
