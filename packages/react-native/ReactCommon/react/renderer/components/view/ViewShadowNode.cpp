@@ -66,7 +66,7 @@ void ViewShadowNode::initialize() noexcept {
 
   bool formsView = formsStackingContext ||
       isColorMeaningful(viewProps.backgroundColor) || hasBorder() ||
-      !viewProps.testId.empty() ||
+      !viewProps.testId.empty() || !viewProps.boxShadow.empty() ||
       HostPlatformViewTraitsInitializer::formsView(viewProps);
 
   if (formsView) {
