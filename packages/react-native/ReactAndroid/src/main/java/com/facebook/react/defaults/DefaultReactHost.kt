@@ -82,14 +82,12 @@ public object DefaultReactHost {
               reactPackages = packageList,
               jsRuntimeFactory = jsRuntimeFactory,
               turboModuleManagerDelegateBuilder = defaultTmmDelegateBuilder)
-      val componentFactory = ComponentFactory()
-      DefaultComponentsRegistry.register(componentFactory)
       // TODO: T164788699 find alternative of accessing ReactHostImpl for initialising reactHost
       reactHost =
           ReactHostImpl(
                   context,
                   defaultReactHostDelegate,
-                  componentFactory,
+                  ComponentFactory(),
                   true /* allowPackagerServerAccess */,
                   useDevSupport,
               )
@@ -128,5 +126,9 @@ public object DefaultReactHost {
       "You can call getDefaultReactHost only with instances of DefaultReactNativeHost"
     }
     return reactNativeHost.toReactHost(context)
+  }
+
+  init {
+    AppModulesSoLoader.maybeLoadSoLibrary()
   }
 }

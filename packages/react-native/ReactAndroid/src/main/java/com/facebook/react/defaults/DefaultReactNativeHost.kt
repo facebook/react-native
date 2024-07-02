@@ -46,9 +46,6 @@ protected constructor(
   override fun getUIManagerProvider(): UIManagerProvider? =
       if (isNewArchEnabled) {
         UIManagerProvider { reactApplicationContext: ReactApplicationContext ->
-          val componentFactory = ComponentFactory()
-          DefaultComponentsRegistry.register(componentFactory)
-
           val viewManagerRegistry =
               if (lazyViewManagersEnabled) {
                 ViewManagerRegistry(
@@ -62,9 +59,8 @@ protected constructor(
                 ViewManagerRegistry(
                     reactInstanceManager.getOrCreateViewManagers(reactApplicationContext))
               }
-
           FabricUIManagerProviderImpl(
-                  componentFactory, ReactNativeConfig.DEFAULT_CONFIG, viewManagerRegistry)
+                  ComponentFactory(), ReactNativeConfig.DEFAULT_CONFIG, viewManagerRegistry)
               .createUIManager(reactApplicationContext)
         }
       } else {
@@ -115,4 +111,8 @@ protected constructor(
           isHermesEnabled ?: true,
           useDeveloperSupport,
       )
+
+  init {
+    AppModulesSoLoader.maybeLoadSoLibrary()
+  }
 }
