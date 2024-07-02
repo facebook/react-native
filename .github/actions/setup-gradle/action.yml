@@ -1,9 +1,9 @@
 name: Setup gradle
 description: "Set up your GitHub Actions workflow with a specific version of gradle"
 inputs:
-  cache-allow-write:
-    description: "Wether the Gradle Cache should be allowed to be written by this job or not"
-    default: "false"
+  cache-read-only:
+    description: "Wether the Gradle Cache should be in read-only mode so this job won't be allowed to write to it"
+    default: "true"
 runs:
   using: "composite"
   steps:
@@ -11,4 +11,5 @@ runs:
       uses: gradle/actions/setup-gradle@v3
       with:
         gradle-version: wrapper
-        cache-read-only: ${{ inputs.cache-allow-write == 'false' }}
+        # We want the Gradle cache to be written only on main/-stable branches run, and only for jobs with `cache-read-only` == false (i.e. `build_android`).
+        cache-read-only: ${{ (github.ref != 'refs/heads/main' && !contains(github.ref, '-stable')) || inputs.cache-read-only == 'true' }}
