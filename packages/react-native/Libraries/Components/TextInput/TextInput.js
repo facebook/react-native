@@ -1076,7 +1076,9 @@ function InternalTextInput(props: Props): React.Node {
     'aria-checked': ariaChecked,
     'aria-disabled': ariaDisabled,
     'aria-expanded': ariaExpanded,
+    'aria-label': ariaLabel,
     'aria-selected': ariaSelected,
+    accessibilityLabel,
     accessibilityState,
     id,
     tabIndex,
@@ -1401,6 +1403,8 @@ function InternalTextInput(props: Props): React.Node {
     };
   }
 
+  const _accessibilityLabel = ariaLabel ?? accessibilityLabel;
+
   const style = flattenStyle<TextStyleProp>(props.style);
 
   if (typeof style?.fontWeight === 'number') {
@@ -1428,6 +1432,7 @@ function InternalTextInput(props: Props): React.Node {
         ref={ref}
         {...otherProps}
         {...eventHandlers}
+        accessibilityLabel={_accessibilityLabel}
         accessibilityState={_accessibilityState}
         accessible={accessible}
         submitBehavior={submitBehavior}
@@ -1491,6 +1496,7 @@ function InternalTextInput(props: Props): React.Node {
         {...colorProps}
         {...eventHandlers}
         accessibilityState={_accessibilityState}
+        accessibilityLabel={_accessibilityLabel}
         accessibilityLabelledBy={_accessibilityLabelledBy}
         accessible={accessible}
         autoCapitalize={autoCapitalize}
