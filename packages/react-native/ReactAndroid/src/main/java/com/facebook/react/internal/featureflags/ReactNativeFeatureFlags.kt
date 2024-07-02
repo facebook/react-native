@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9a33a6bc10cdb2b0f9fcb15805a06982>>
+ * @generated SignedSource<<e031aebb1124ba925f1d725d267043c4>>
  */
 
 /**
@@ -99,6 +99,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean = accessor.fixMappingOfEventPrioritiesBetweenFabricAndReact()
+
+  /**
+   * Enables a fix to prevent the possibility of state updates in Fabric being missed due to race conditions with previous state updates.
+   */
+  @JvmStatic
+  public fun fixMissedFabricStateUpdatesOnAndroid(): Boolean = accessor.fixMissedFabricStateUpdatesOnAndroid()
 
   /**
    * Fixes a leak in SurfaceMountingManager.mRemoveDeleteTreeUIFrameCallback

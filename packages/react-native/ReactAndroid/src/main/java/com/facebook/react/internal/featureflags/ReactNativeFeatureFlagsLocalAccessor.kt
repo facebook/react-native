@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d991cac9311ee91e5e9401b143b69145>>
+ * @generated SignedSource<<65a88218f057b56211d84b6d473e8a90>>
  */
 
 /**
@@ -36,6 +36,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var enableSynchronousStateUpdatesCache: Boolean? = null
   private var enableUIConsistencyCache: Boolean? = null
   private var fixMappingOfEventPrioritiesBetweenFabricAndReactCache: Boolean? = null
+  private var fixMissedFabricStateUpdatesOnAndroidCache: Boolean? = null
   private var fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeakCache: Boolean? = null
   private var forceBatchingMountItemsOnAndroidCache: Boolean? = null
   private var fuseboxEnabledDebugCache: Boolean? = null
@@ -166,6 +167,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.fixMappingOfEventPrioritiesBetweenFabricAndReact()
       accessedFeatureFlags.add("fixMappingOfEventPrioritiesBetweenFabricAndReact")
       fixMappingOfEventPrioritiesBetweenFabricAndReactCache = cached
+    }
+    return cached
+  }
+
+  override fun fixMissedFabricStateUpdatesOnAndroid(): Boolean {
+    var cached = fixMissedFabricStateUpdatesOnAndroidCache
+    if (cached == null) {
+      cached = currentProvider.fixMissedFabricStateUpdatesOnAndroid()
+      accessedFeatureFlags.add("fixMissedFabricStateUpdatesOnAndroid")
+      fixMissedFabricStateUpdatesOnAndroidCache = cached
     }
     return cached
   }
