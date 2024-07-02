@@ -561,9 +561,6 @@ jobs:
         GRADLE_OPTS: '-Dorg.gradle.daemon=false'
         # By default we only build ARM64 to save time/resources. For release/nightlies/prealpha, we override this value to build all archs.
         ORG_GRADLE_PROJECT_reactNativeArchitectures: "arm64-v8a"
-        # Repeated here, as the environment key in this executor will overwrite the one in defaults
-        PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A: ${{ secrets.GITHUB_ANALYSISBOT_TOKEN_A }}
-        PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B: ${{ secrets.GITHUB_ANALYSISBOT_TOKEN_B }}
         HERMES_WS_DIR: /tmp/hermes
     env:
       GHA_NPM_TOKEN: ${{ secrets.GHA_NPM_TOKEN }}
