@@ -720,6 +720,99 @@ const examples = [
     },
   },
   {
+    title: 'Variable Font Settings',
+    render: function (): React.Node {
+      return (
+        <>
+          <Text
+            style={{fontFamily: 'Inter', fontVariationSettings: '"wght" 100'}}>
+            Inter wght 100
+          </Text>
+          <Text
+            style={{fontFamily: 'Inter', fontVariationSettings: '"wght" 150'}}>
+            Inter wght 150
+          </Text>
+          <Text
+            style={{fontFamily: 'Inter', fontVariationSettings: '"wght" 200'}}>
+            Inter wght 200
+          </Text>
+          <Text
+            style={{fontFamily: 'Inter', fontVariationSettings: '"wght" 250'}}>
+            Inter wght 250
+          </Text>
+          <Text
+            style={{fontFamily: 'Inter', fontVariationSettings: '"wght" 300'}}>
+            Inter wght 300
+          </Text>
+          <Text
+            style={{fontFamily: 'Inter', fontVariationSettings: '"wght" 350'}}>
+            Inter wght 350
+          </Text>
+          <Text
+            style={{fontFamily: 'Inter', fontVariationSettings: '"wght" 400'}}>
+            Inter wght 400
+          </Text>
+          <Text
+            style={{fontFamily: 'Inter', fontVariationSettings: '"wght" 450'}}>
+            Inter wght 450
+          </Text>
+          <Text
+            style={{fontFamily: 'Inter', fontVariationSettings: '"wght" 500'}}>
+            Inter wght 500
+          </Text>
+          <Text
+            style={{fontFamily: 'Inter', fontVariationSettings: '"wght" 550'}}>
+            Inter wght 550
+          </Text>
+          <Text
+            style={{fontFamily: 'Inter', fontVariationSettings: '"wght" 600'}}>
+            Inter wght 600
+          </Text>
+          <Text
+            style={{fontFamily: 'Inter', fontVariationSettings: '"wght" 650'}}>
+            Inter wght 650
+          </Text>
+          <Text
+            style={{fontFamily: 'Inter', fontVariationSettings: '"wght" 700'}}>
+            Inter wght 700
+          </Text>
+          <Text
+            style={{fontFamily: 'Inter', fontVariationSettings: '"wght" 750'}}>
+            Inter wght 750
+          </Text>
+          <Text
+            style={{fontFamily: 'Inter', fontVariationSettings: '"wght" 800'}}>
+            Inter wght 800
+          </Text>
+          <Text
+            style={{
+              fontFamily: 'Inter',
+              fontVariant: ['tabular-nums'],
+              fontVariationSettings: "'wght' 700",
+            }}>
+            Inter wght 1000 w/ tabular-nums
+          </Text>
+          <Text
+            style={{
+              fontFamily: 'Material Symbols Sharp',
+              fontSize: 20,
+              fontVariationSettings: "'wght' 400, 'FILL' 0",
+            }}>
+            {String.fromCodePoint(59576)}
+          </Text>
+          <Text
+            style={{
+              fontFamily: 'Material Symbols Sharp',
+              fontSize: 20,
+              fontVariationSettings: "'wght' 100, 'FILL' 1",
+            }}>
+            {String.fromCodePoint(59576)}
+          </Text>
+        </>
+      );
+    },
+  },
+  {
     title: 'Text Decoration',
     render: function (): React.Node {
       return (

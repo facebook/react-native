@@ -856,6 +856,7 @@ export type ____TextStyle_InternalCore = $ReadOnly<{
   fontStyle?: 'normal' | 'italic',
   fontWeight?: ____FontWeight_Internal,
   fontVariant?: ____FontVariantArray_Internal | string,
+  fontVariationSettings?: string,
   textShadowOffset?: $ReadOnly<{
     width: number,
     height: number,

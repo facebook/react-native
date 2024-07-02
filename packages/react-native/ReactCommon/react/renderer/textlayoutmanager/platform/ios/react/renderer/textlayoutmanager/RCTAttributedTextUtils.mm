@@ -136,6 +136,7 @@ inline static CGFloat RCTEffectiveFontSizeMultiplierFromTextAttributes(const Tex
 inline static UIFont *RCTEffectiveFontFromTextAttributes(const TextAttributes &textAttributes)
 {
   NSString *fontFamily = [NSString stringWithUTF8String:textAttributes.fontFamily.c_str()];
+  NSString *fontVariationSettings = [NSString stringWithUTF8String:textAttributes.fontVariationSettings.c_str()];
 
   RCTFontProperties fontProperties;
   fontProperties.family = fontFamily;
@@ -146,6 +147,8 @@ inline static UIFont *RCTEffectiveFontFromTextAttributes(const TextAttributes &t
   fontProperties.variant = textAttributes.fontVariant.has_value()
       ? RCTFontVariantFromFontVariant(textAttributes.fontVariant.value())
       : RCTFontVariantUndefined;
+  fontProperties.fontVariationSettings = fontVariationSettings;
+	
   fontProperties.weight = textAttributes.fontWeight.has_value()
       ? RCTUIFontWeightFromInteger((NSInteger)textAttributes.fontWeight.value())
       : NAN;

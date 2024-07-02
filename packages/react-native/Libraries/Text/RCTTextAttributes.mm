@@ -58,6 +58,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   _fontWeight = textAttributes->_fontWeight ?: _fontWeight;
   _fontStyle = textAttributes->_fontStyle ?: _fontStyle;
   _fontVariant = textAttributes->_fontVariant ?: _fontVariant;
+  _fontVariationSettings = textAttributes->_fontVariationSettings ?: _fontVariationSettings;
   _allowFontScaling = textAttributes->_allowFontScaling || _allowFontScaling; // *
   _dynamicTypeRamp = textAttributes->_dynamicTypeRamp != RCTDynamicTypeRampUndefined ? textAttributes->_dynamicTypeRamp
                                                                                      : _dynamicTypeRamp;
@@ -223,6 +224,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
                       weight:_fontWeight
                        style:_fontStyle
                      variant:_fontVariant
+	   fontVariationSettings:_fontVariationSettings
              scaleMultiplier:self.effectiveFontSizeMultiplier];
 }
 

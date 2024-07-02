@@ -36,6 +36,7 @@ extern NSString *const RCTTextAttributesTagAttributeName;
 @property (nonatomic, copy, nullable) NSString *fontWeight;
 @property (nonatomic, copy, nullable) NSString *fontStyle;
 @property (nonatomic, copy, nullable) NSArray<NSString *> *fontVariant;
+@property (nonatomic, copy, nullable) NSString *fontVariationSettings;
 @property (nonatomic, assign) BOOL allowFontScaling;
 @property (nonatomic, assign) RCTDynamicTypeRamp dynamicTypeRamp;
 @property (nonatomic, assign) CGFloat letterSpacing;

@@ -31,6 +31,19 @@ static RCTFontProperties RCTDefaultFontProperties()
   return defaultFontProperties;
 }
 
+static NSNumber *openTypeTagToNumber(NSString *tag) {
+    if (tag.length != 4) {
+		NSLog(@"Error: Tag must be exactly 4 characters long");
+		return nil;
+    }
+
+    const unsigned char* bytes = (const unsigned char*)[tag cStringUsingEncoding:NSUTF8StringEncoding];
+
+    uint32_t value = (bytes[0] << 24) | (bytes[1] << 16) | (bytes[2] << 8) | bytes[3];
+
+	return @(value);
+}
+
 static RCTFontProperties RCTResolveFontProperties(
     RCTFontProperties fontProperties,
     RCTFontProperties baseFontProperties)
@@ -207,6 +220,53 @@ UIFont *RCTFontWithFontProperties(RCTFontProperties fontProperties)
         fontDescriptorByAddingAttributes:@{UIFontDescriptorFeatureSettingsAttribute : fontFeatures}];
     font = [UIFont fontWithDescriptor:fontDescriptor size:effectiveFontSize];
   }
-
+	
+	if (fontProperties.fontVariationSettings) {
+		NSArray<NSString *> *variationSettings = [fontProperties.fontVariationSettings componentsSeparatedByString:@","];
+		for (NSString *variationSetting in variationSettings) {
+			NSString *trimmedSetting = [variationSetting stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+			NSArray<NSString *> *setting = [trimmedSetting componentsSeparatedByString:@" "];
+			
+			if (setting.count != 2) {
+				NSLog(@"Error: Setting does not contain exactly 2 components. Setting: %@", setting);
+				continue;
+			}
+			
+			NSString *attribute = [[[setting[0] 
+									 stringByReplacingOccurrencesOfString:@"\"" withString:@""]
+									stringByReplacingOccurrencesOfString:@"\'" withString:@""]
+								   stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+			
+			NSString *value = [setting[1] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+			
+			if (attribute.length == 0 || value.length == 0) {
+				NSLog(@"Error: Invalid attribute or value. Attribute: %@, Value: %@", attribute, value);
+				continue;
+			}
+			
+			NSNumber *tag = openTypeTagToNumber(attribute);
+			if (!tag) {
+				NSLog(@"Error: Invalid attribute in fontVariationSettings: %@", attribute);
+				continue;
+			}
+			
+			NSNumber *valueNumber = @([value intValue]);
+			NSDictionary<NSNumber *, NSNumber *> *variations = @{tag: valueNumber};
+			
+			UIFontDescriptor *fontDescriptor = [UIFontDescriptor fontDescriptorWithFontAttributes:@{
+				UIFontDescriptorNameAttribute: fontProperties.family,
+				(NSString *)kCTFontVariationAttribute: variations
+			}];
+			
+			if (!fontDescriptor) {
+				NSLog(@"Error: Could not create font descriptor with variations. Variations: %@", variations);
+				continue;
+			}
+			
+			UIFontDescriptor *existingFontDescriptors = font.fontDescriptor;
+			UIFontDescriptor *mergedFontDescriptor = [existingFontDescriptors fontDescriptorByAddingAttributes:fontDescriptor.fontAttributes];
+			font = [UIFont fontWithDescriptor:mergedFontDescriptor size:effectiveFontSize];
+		}
+	}
   return font;
 }

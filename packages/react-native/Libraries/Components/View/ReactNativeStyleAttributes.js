@@ -162,6 +162,7 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   fontSize: true,
   fontStyle: true,
   fontVariant: {process: processFontVariant},
+  fontVariationSettings: true,
   fontWeight: true,
   includeFontPadding: true,
   letterSpacing: true,
