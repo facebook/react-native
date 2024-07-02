@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.75.0-rc.2
+## v0.75.0-rc.3
 
 ### Breaking
 
@@ -24,6 +24,7 @@
 
 #### Android specific
 
+- Removing `ReactJsExceptionHandler` param from ReactHostImpl() constructor and providing a default private implementation ([fe7e7a015f](https://github.com/facebook/react-native/commit/fe7e7a015f30697c4ccffb2ba6474611efb4c08a) by [@alanleedev](https://github.com/alanleedev))
 - Set and require `android:supportsRtl="true"` for RTL layout ([82c6f8a580](https://github.com/facebook/react-native/commit/82c6f8a58056cfa163a61a4e6668a54625b15d06) by [@NickGerleman](https://github.com/NickGerleman))
 - Enable flex gap percentage value for RN. ([41a14962fc](https://github.com/facebook/react-native/commit/41a14962fc7adaf434f1634b17f3d66261e30a9f) by [@realsoelynn](https://github.com/realsoelynn))
 - `DevSupportManagerFactory.create()` changed to take an additional parameter of type `PausedInDebuggerOverlayManager` (nullable) ([1d26907ca4](https://github.com/facebook/react-native/commit/1d26907ca4d00cfa52f6395624b3121a7e96aca1) by [@motiz88](https://github.com/motiz88))
@@ -218,6 +219,8 @@
 
 ### Fixed
 
+- Add missing `NativeState` methods to the `WithRuntimeDecorator` class. ([218ea5d44c](https://github.com/facebook/react-native/commit/218ea5d44cae5774b1445cbc9e07d1ea3ef773d1) by [@bartlomiejbloniarz](https://github.com/bartlomiejbloniarz))
+- Codegen computes output path relative to project root instead of current working directory. ([d3e0430dea](https://github.com/facebook/react-native/commit/d3e0430deac573fd44792e6005d5de20e9ad2797) by [@dmytrorykun](https://github.com/dmytrorykun))
 - Fix logbox reporting for React errors ([64e6721b23](https://github.com/facebook/react-native/commit/64e6721b23e9f3c35d42d5b1f1b68220e46a34ed) by [@yungsters](https://github.com/yungsters))
 - Add option for multiple `mountingOverrideDelegates` ([358fe46969](https://github.com/facebook/react-native/commit/358fe46969654932e73af94127c05e6ce5ed7049) by [@WoLewicki](https://github.com/WoLewicki))
 - Fix clicking items on the inverted FlatList on the new architecture ([3753b7a0e7](https://github.com/facebook/react-native/commit/3753b7a0e78f8820e5f5150dd9bdf1b53145a7bd) by [@kosmydel](https://github.com/kosmydel))
@@ -262,6 +265,8 @@
 
 #### Android specific
 
+- Fix autolink plugin for libraries that are platform-specific ([20521cc908](https://github.com/facebook/react-native/commit/20521cc908a347e3a2b3ac0fd6710946f18b1510) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Fix crash due to missing JvmStatic to `convertToCase` ([cef17ba14f](https://github.com/facebook/react-native/commit/cef17ba14f435b966d2ffd9b3660ccf28fe03b6c) by [@cortinico](https://github.com/cortinico))
 - Show RedBox after reloads fail (bridgeless) ([2f8d4f0c25](https://github.com/facebook/react-native/commit/2f8d4f0c253853ec4f56cf01b41a1f73a393f804) by [@RSNara](https://github.com/RSNara))
 - Unmount React root when activity is destroyed on bridgless ([33aa83a0e6](https://github.com/facebook/react-native/commit/33aa83a0e6f63d3d50d4803074ad9e2243439100) by [@fabriziocucci](https://github.com/fabriziocucci))
 - Better overflow support for ScrollView, Text, TextInput ([bfb3b7008d](https://github.com/facebook/react-native/commit/bfb3b7008d3e83400154b0348e7ab680ee06aa8c) by [@NickGerleman](https://github.com/NickGerleman))
@@ -304,6 +309,8 @@
 
 #### iOS specific
 
+
+- Auto linking script of script phase ([e320ab47cf](https://github.com/facebook/react-native/commit/e320ab47cf855f2e5de74ea448ec292cf0bbb29a))
 - Fix the accessibility label not being applied to text components on the new architecture ([9922628032](https://github.com/facebook/react-native/commit/9922628032ace4d87257c1b3d70c2dc6c38a60a6) by [@j-piasecki](https://github.com/j-piasecki))
 - Fixes NSDataBigString length calculation ([9d637e4622](https://github.com/facebook/react-native/commit/9d637e4622781568b143b8585909b73211a0f8ba) by [@zhongwuzw](https://github.com/zhongwuzw))
 - Fix `InputAccessoryView` width on device orientation change ([8597727c28](https://github.com/facebook/react-native/commit/8597727c28d9cb77012f3f4ebb032c335246d589) by [@mauriciomeirelles](https://github.com/mauriciomeirelles))
@@ -359,6 +366,9 @@
 
 ### Unknown
 
+- Release 0.75.0-rc.3 ([15b55714eb](https://github.com/facebook/react-native/commit/15b55714eb4ac0ece5ab9e553601826286a464da) by [@react-native-bot](https://github.com/react-native-bot))
+- Bump hermes to hermes-2024-07-01-RNv0.75.0-1edbe36ce92fef2c4d427f5c4e104f2758f4b692 ([2ab13798f9](https://github.com/facebook/react-native/commit/2ab13798f9636da321cbe5fbffdb47834fc130ac) by [@cortinico](https://github.com/cortinico))
+- Fix type import in testing scripts ([f938e3214c](https://github.com/facebook/react-native/commit/f938e3214c8ecc11d2075494b5fdd535487f71d2) by [@cipolleschi](https://github.com/cipolleschi))
 - Release 0.75.0-rc.2 ([668358c47a](https://github.com/facebook/react-native/commit/668358c47ad9cbe699bc3e497f8cae84dcdd1459) by [@react-native-bot](https://github.com/react-native-bot))
 - Bump RC in testing script ([865aaeda58](https://github.com/facebook/react-native/commit/865aaeda582a4e7ba50a5e3877058bd3d02026c8) by [@cipolleschi](https://github.com/cipolleschi))
 - Bump CLI to 14.0.0-alpha.11 ([6a155dd1cf](https://github.com/facebook/react-native/commit/6a155dd1cf45e7d96811e73db9d455c846e4bc9e) by [@cortinico](https://github.com/cortinico))
@@ -409,6 +419,7 @@
 
 - Fix Helloworld ios jobs ([2a0c175135](https://github.com/facebook/react-native/commit/2a0c1751353d4a245ddd94f1cff6fa543deac7b6) by [@cipolleschi](https://github.com/cipolleschi))
 - Bump Podfile.lock ([52db082576](https://github.com/facebook/react-native/commit/52db082576dba69d1fd092e2a5ad13d3274a6fc3) by [@cipolleschi](https://github.com/cipolleschi))
+- Bump Podfile.lock to RC.2 ([1f10d62700](https://github.com/facebook/react-native/commit/1f10d627002d9606bab08a4096a894eab954a989) by [@cipolleschi](https://github.com/cipolleschi))
 
 #### Failed to parse
 
