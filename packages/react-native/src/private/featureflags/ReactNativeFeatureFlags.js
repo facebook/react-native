@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<522f11a571457cb932f451cf81bd384a>>
+ * @generated SignedSource<<95a692d91055d05301a06fd33636d3fa>>
  * @flow strict-local
  */
 
@@ -53,6 +53,7 @@ export type ReactNativeFeatureFlags = {
   enableSynchronousStateUpdates: Getter<boolean>,
   enableUIConsistency: Getter<boolean>,
   fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean>,
+  fixMissedFabricStateUpdatesOnAndroid: Getter<boolean>,
   fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak: Getter<boolean>,
   forceBatchingMountItemsOnAndroid: Getter<boolean>,
   fuseboxEnabledDebug: Getter<boolean>,
@@ -161,6 +162,10 @@ export const enableUIConsistency: Getter<boolean> = createNativeFlagGetter('enab
  * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
  */
 export const fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean> = createNativeFlagGetter('fixMappingOfEventPrioritiesBetweenFabricAndReact', false);
+/**
+ * Enables a fix to prevent the possibility of state updates in Fabric being missed due to race conditions with previous state updates.
+ */
+export const fixMissedFabricStateUpdatesOnAndroid: Getter<boolean> = createNativeFlagGetter('fixMissedFabricStateUpdatesOnAndroid', false);
 /**
  * Fixes a leak in SurfaceMountingManager.mRemoveDeleteTreeUIFrameCallback
  */

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<45258896e458cce165b403e043356eb9>>
+ * @generated SignedSource<<c4afa05f0c2a175476d82a52d47c3b91>>
  */
 
 /**
@@ -43,6 +43,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableSynchronousStateUpdates();
   bool enableUIConsistency();
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact();
+  bool fixMissedFabricStateUpdatesOnAndroid();
   bool fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak();
   bool forceBatchingMountItemsOnAndroid();
   bool fuseboxEnabledDebug();
@@ -66,7 +67,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 25> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 26> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> allowCollapsableChildren_;
@@ -80,6 +81,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableSynchronousStateUpdates_;
   std::atomic<std::optional<bool>> enableUIConsistency_;
   std::atomic<std::optional<bool>> fixMappingOfEventPrioritiesBetweenFabricAndReact_;
+  std::atomic<std::optional<bool>> fixMissedFabricStateUpdatesOnAndroid_;
   std::atomic<std::optional<bool>> fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak_;
   std::atomic<std::optional<bool>> forceBatchingMountItemsOnAndroid_;
   std::atomic<std::optional<bool>> fuseboxEnabledDebug_;
