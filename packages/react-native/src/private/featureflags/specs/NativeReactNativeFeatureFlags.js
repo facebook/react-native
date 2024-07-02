@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<cd704035749b46f1be6f940806c88df5>>
+ * @generated SignedSource<<5436af4d7f25024a57ef557827a02ecb>>
  * @flow strict-local
  */
 
@@ -34,6 +34,7 @@ export interface Spec extends TurboModule {
   +enableMicrotasks?: () => boolean;
   +enableSynchronousStateUpdates?: () => boolean;
   +enableUIConsistency?: () => boolean;
+  +fixIncorrectScrollViewStateUpdateOnAndroid?: () => boolean;
   +fixMappingOfEventPrioritiesBetweenFabricAndReact?: () => boolean;
   +fixMissedFabricStateUpdatesOnAndroid?: () => boolean;
   +fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak?: () => boolean;

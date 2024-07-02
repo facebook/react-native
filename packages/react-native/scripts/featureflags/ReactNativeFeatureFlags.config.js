@@ -88,6 +88,11 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).',
     },
+    fixIncorrectScrollViewStateUpdateOnAndroid: {
+      defaultValue: false,
+      description:
+        'When doing a smooth scroll animation, it stops setting the state with the final scroll position in Fabric before the animation starts.',
+    },
     fixMappingOfEventPrioritiesBetweenFabricAndReact: {
       defaultValue: false,
       description:

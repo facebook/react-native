@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3a0f547e2b68072a76b1eabc28c371cb>>
+ * @generated SignedSource<<de2cd46cfe4a934b6584e782c4d9d213>>
  */
 
 /**
@@ -44,6 +44,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun enableSynchronousStateUpdates(): Boolean
 
   @DoNotStrip public fun enableUIConsistency(): Boolean
+
+  @DoNotStrip public fun fixIncorrectScrollViewStateUpdateOnAndroid(): Boolean
 
   @DoNotStrip public fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean
 

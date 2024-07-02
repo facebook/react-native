@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c4afa05f0c2a175476d82a52d47c3b91>>
+ * @generated SignedSource<<8b86c11a06dc9f53991482cb6640d806>>
  */
 
 /**
@@ -42,6 +42,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableMicrotasks();
   bool enableSynchronousStateUpdates();
   bool enableUIConsistency();
+  bool fixIncorrectScrollViewStateUpdateOnAndroid();
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact();
   bool fixMissedFabricStateUpdatesOnAndroid();
   bool fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak();
@@ -67,7 +68,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 26> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 27> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> allowCollapsableChildren_;
@@ -80,6 +81,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableMicrotasks_;
   std::atomic<std::optional<bool>> enableSynchronousStateUpdates_;
   std::atomic<std::optional<bool>> enableUIConsistency_;
+  std::atomic<std::optional<bool>> fixIncorrectScrollViewStateUpdateOnAndroid_;
   std::atomic<std::optional<bool>> fixMappingOfEventPrioritiesBetweenFabricAndReact_;
   std::atomic<std::optional<bool>> fixMissedFabricStateUpdatesOnAndroid_;
   std::atomic<std::optional<bool>> fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak_;

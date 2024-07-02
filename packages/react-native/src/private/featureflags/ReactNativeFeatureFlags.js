@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<95a692d91055d05301a06fd33636d3fa>>
+ * @generated SignedSource<<250a4b89541fd36953e204c580123895>>
  * @flow strict-local
  */
 
@@ -52,6 +52,7 @@ export type ReactNativeFeatureFlags = {
   enableMicrotasks: Getter<boolean>,
   enableSynchronousStateUpdates: Getter<boolean>,
   enableUIConsistency: Getter<boolean>,
+  fixIncorrectScrollViewStateUpdateOnAndroid: Getter<boolean>,
   fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean>,
   fixMissedFabricStateUpdatesOnAndroid: Getter<boolean>,
   fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak: Getter<boolean>,
@@ -158,6 +159,10 @@ export const enableSynchronousStateUpdates: Getter<boolean> = createNativeFlagGe
  * Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).
  */
 export const enableUIConsistency: Getter<boolean> = createNativeFlagGetter('enableUIConsistency', false);
+/**
+ * When doing a smooth scroll animation, it stops setting the state with the final scroll position in Fabric before the animation starts.
+ */
+export const fixIncorrectScrollViewStateUpdateOnAndroid: Getter<boolean> = createNativeFlagGetter('fixIncorrectScrollViewStateUpdateOnAndroid', false);
 /**
  * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
  */

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<91a56189178d461874bfff11b14ca318>>
+ * @generated SignedSource<<4f7eb0f1d6cb613d81c9cf5d05a7c6ec>>
  */
 
 /**
@@ -63,6 +63,10 @@ bool ReactNativeFeatureFlags::enableSynchronousStateUpdates() {
 
 bool ReactNativeFeatureFlags::enableUIConsistency() {
   return getAccessor().enableUIConsistency();
+}
+
+bool ReactNativeFeatureFlags::fixIncorrectScrollViewStateUpdateOnAndroid() {
+  return getAccessor().fixIncorrectScrollViewStateUpdateOnAndroid();
 }
 
 bool ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact() {
