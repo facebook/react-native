@@ -929,3 +929,17 @@ jobs:
           use-frameworks: ${{ matrix.use_frameworks }}
           hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
+
+  test_js:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: ["20", "18"]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+      - name: Test JS
+        uses: ./.github/actions/test-js
+        with:
+          node-version: ${{ matrix.node-version }}
