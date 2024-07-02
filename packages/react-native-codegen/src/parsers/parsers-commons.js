@@ -513,7 +513,6 @@ function buildEventEmitterSchema(
     parser,
     typeAnnotationNullable,
     typeAnnotationUntyped,
-    cxxOnly,
   );
   const eventTypeResolutionStatus = resolveTypeAnnotationFN(
     typeAnnotation.typeParameters.params[0],

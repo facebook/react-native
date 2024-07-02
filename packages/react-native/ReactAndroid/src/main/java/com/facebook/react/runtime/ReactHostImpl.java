@@ -1416,6 +1416,9 @@ public class ReactHostImpl implements ReactHost {
 
                     final ReactContext reactContext = mBridgelessReactContextRef.getNullable();
                     if (reactContext != null) {
+                      log(method, "Resetting ReactContext ref");
+                      mBridgelessReactContextRef.reset();
+
                       log(method, "Destroying ReactContext");
                       reactContext.destroy();
                     }
@@ -1439,20 +1442,17 @@ public class ReactHostImpl implements ReactHost {
                       raiseSoftException(
                           method, "Skipping ReactInstance.destroy(): ReactInstance null");
                     } else {
+                      log(method, "Resetting ReactInstance ptr");
+                      mReactInstance = null;
+
                       log(method, "Destroying ReactInstance");
                       reactInstance.destroy();
                     }
 
-                    log(method, "Resetting ReactContext ref");
-                    mBridgelessReactContextRef.reset();
-
-                    log(method, "Resetting ReactInstance task ref");
+                    log(method, "Resetting createReactInstance task ref");
                     mCreateReactInstanceTaskRef.reset();
 
-                    log(method, "Resetting ReactInstance ptr");
-                    mReactInstance = null;
-
-                    log(method, "Resetting preload task ref");
+                    log(method, "Resetting start task ref");
                     mStartTask = null;
 
                     // Kickstart a new ReactInstance create
@@ -1462,7 +1462,7 @@ public class ReactHostImpl implements ReactHost {
               .continueWithTask(
                   task -> {
                     final ReactInstance reactInstance =
-                        reactInstanceTaskUnwrapper.unwrap(task, "7: Restarting surfaces");
+                        reactInstanceTaskUnwrapper.unwrap(task, "6: Restarting surfaces");
 
                     if (reactInstance == null) {
                       raiseSoftException(method, "Skipping surface restart: ReactInstance null");
@@ -1610,7 +1610,6 @@ public class ReactHostImpl implements ReactHost {
                     reactInstanceTaskUnwrapper.unwrap(task, "4: Destroying ReactContext");
 
                     final ReactContext reactContext = mBridgelessReactContextRef.getNullable();
-
                     if (reactContext == null) {
                       raiseSoftException(method, "ReactContext is null. Destroy reason: " + reason);
                     }
@@ -1620,6 +1619,9 @@ public class ReactHostImpl implements ReactHost {
                     mMemoryPressureRouter.destroy(mContext);
 
                     if (reactContext != null) {
+                      log(method, "Resetting ReactContext ref");
+                      mBridgelessReactContextRef.reset();
+
                       log(method, "Destroying ReactContext");
                       reactContext.destroy();
                     }
@@ -1642,20 +1644,17 @@ public class ReactHostImpl implements ReactHost {
                       raiseSoftException(
                           method, "Skipping ReactInstance.destroy(): ReactInstance null");
                     } else {
+                      log(method, "Resetting ReactInstance ptr");
+                      mReactInstance = null;
+
                       log(method, "Destroying ReactInstance");
                       reactInstance.destroy();
                     }
 
-                    log(method, "Resetting ReactContext ref ");
-                    mBridgelessReactContextRef.reset();
-
-                    log(method, "Resetting ReactInstance task ref");
+                    log(method, "Resetting createReactInstance task ref");
                     mCreateReactInstanceTaskRef.reset();
 
-                    log(method, "Resetting ReactInstance ptr");
-                    mReactInstance = null;
-
-                    log(method, "Resetting Preload task ref");
+                    log(method, "Resetting start task ref");
                     mStartTask = null;
 
                     log(method, "Resetting destroy task ref");

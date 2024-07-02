@@ -45,17 +45,20 @@ runs:
       uses: ./.github/actions/setup-xcode
     - name: Setup node.js
       uses: ./.github/actions/setup-node
-    - name: Cache setup
-      id: cache_setup
-      uses: ./.github/actions/cache_setup
+    - name: Create Hermes folder
+      shell: bash
+      run: mkdir -p "$HERMES_WS_DIR"
+    - name: Download Hermes
+      uses: actions/download-artifact@v4
       with:
-        hermes-version: ${{ inputs.hermes-version }}
-        react-native-version: ${{ inputs.react-native-version }}
+        name: hermes-darwin-bin-${{ inputs.flavor }}
+        path: /tmp/hermes/hermes-runtime-darwin/
+    - name: Print Downloaded hermes
+      shell: bash
+      run: ls -lR "$HERMES_WS_DIR"
     - name: Run yarn
       shell: bash
       run: yarn install --non-interactive
-    - name: Restore Hermes workspace
-      uses: ./.github/actions/restore-hermes-workspace
     - name: Setup ruby
       uses: ruby/setup-ruby@v1.170.0
       with:
@@ -78,6 +81,17 @@ runs:
           args+=(--jsvm jsc)
           yarn bootstrap ios "${args[@]}" | cat
         else
+          # Tarball is restored with capital flavors suffix, but somehow the tarball name from JS at line 96 returns as lowercased.
+          # Let's ensure that the tarballs have the right names
+
+          if [[ -f "$HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-Debug.tar.gz" ]]; then
+            mv "$HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-Debug.tar.gz" "$HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-debug.tar.gz"
+          fi
+
+          if [[ -f "$HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-Release.tar.gz" ]]; then
+            mv "$HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-Release.tar.gz" "$HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-release.tar.gz"
+          fi
+
           BUILD_TYPE="${{ inputs.flavor }}"
           TARBALL_FILENAME=$(node ../react-native/scripts/hermes/get-tarball-name.js --buildType "$BUILD_TYPE")
           HERMES_PATH="$HERMES_WS_DIR/hermes-runtime-darwin/$TARBALL_FILENAME"
@@ -87,6 +101,7 @@ runs:
       shell: bash
       run: |
         cd packages/helloworld
+
         args=()
         if [[ ${{ inputs.flavor }} == "Release" ]]; then
           args+=(--prod)

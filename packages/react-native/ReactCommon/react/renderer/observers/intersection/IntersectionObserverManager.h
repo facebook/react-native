@@ -66,7 +66,7 @@ class IntersectionObserverManager final : public UIManagerMountHook {
   // https://w3c.github.io/IntersectionObserver/#update-intersection-observations-algo
   void updateIntersectionObservations(
       SurfaceId surfaceId,
-      const RootShadowNode::Shared& rootShadowNode,
+      const RootShadowNode* rootShadowNode,
       double time);
 
   const IntersectionObserver& getRegisteredIntersectionObserver(

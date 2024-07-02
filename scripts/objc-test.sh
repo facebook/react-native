@@ -93,6 +93,9 @@ buildForTesting() {
 }
 
 runTestsOnly() {
+  # shellcheck disable=SC1091
+  source "$ROOT/scripts/.tests.env"
+  echo "[Testing] Running tests on $IOS_DEVICE for OS $IOS_TARGET_OS"
   xcodebuild test \
     -workspace RNTesterPods.xcworkspace \
     -scheme RNTester \

@@ -652,7 +652,7 @@ export interface Spec extends TurboModule {
   +onEvent6: EventEmitter<ObjectStruct[]>;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModuleCxx');
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
 
 `;
 
