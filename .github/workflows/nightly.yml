@@ -520,7 +520,7 @@ jobs:
       - name: Setup gradle
         uses: ./.github/actions/setup-gradle
         with:
-          cache-allow-write: "true"
+          cache-read-only: "false"
       - name: Build and publish all the Android Artifacts to /tmp/maven-local
         run: |
           # By default we only build ARM64 to save time/resources. For release/nightlies/prealpha, we override this value to build all archs.
