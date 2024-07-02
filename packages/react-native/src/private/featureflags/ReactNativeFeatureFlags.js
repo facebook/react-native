@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<250a4b89541fd36953e204c580123895>>
+ * @generated SignedSource<<c1fa19fca495b0fedc02bce9acab9de8>>
  * @flow strict-local
  */
 
@@ -198,7 +198,7 @@ export const preventDoubleTextMeasure: Getter<boolean> = createNativeFlagGetter(
 /**
  * Propagate layout direction to Android views.
  */
-export const setAndroidLayoutDirection: Getter<boolean> = createNativeFlagGetter('setAndroidLayoutDirection', false);
+export const setAndroidLayoutDirection: Getter<boolean> = createNativeFlagGetter('setAndroidLayoutDirection', true);
 /**
  * Invoke callbacks immediately on the ReactInstance rather than going through a background thread for synchronization
  */
