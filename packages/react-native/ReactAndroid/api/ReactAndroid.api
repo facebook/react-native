@@ -1978,11 +1978,6 @@ public class com/facebook/react/config/ReactFeatureFlags {
 	public fun <init> ()V
 }
 
-public final class com/facebook/react/defaults/DefaultComponentsRegistry {
-	public static final field INSTANCE Lcom/facebook/react/defaults/DefaultComponentsRegistry;
-	public static final fun register (Lcom/facebook/react/fabric/ComponentFactory;)V
-}
-
 public final class com/facebook/react/defaults/DefaultNewArchitectureEntryPoint {
 	public static final field INSTANCE Lcom/facebook/react/defaults/DefaultNewArchitectureEntryPoint;
 	public static final fun getBridgelessEnabled ()Z

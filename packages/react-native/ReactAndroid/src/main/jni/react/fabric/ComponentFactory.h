@@ -22,9 +22,13 @@ class ComponentFactory : public jni::HybridClass<ComponentFactory> {
 
   static void registerNatives();
 
-  ComponentRegistryFactory buildRegistryFunction;
+  ComponentRegistryFactory buildRegistryFunction = defaultBuildRegistry;
 
  private:
+  static SharedComponentDescriptorRegistry defaultBuildRegistry(
+      const EventDispatcher::Weak& eventDispatcher,
+      const ContextContainer::Shared& contextContainer);
+
   static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jclass>);
 };
 

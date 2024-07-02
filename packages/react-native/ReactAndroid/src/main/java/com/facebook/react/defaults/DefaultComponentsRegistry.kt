@@ -7,7 +7,7 @@
 
 package com.facebook.react.defaults
 
-import com.facebook.proguard.annotations.DoNotStrip
+import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.fabric.ComponentFactory
 
 /**
@@ -16,14 +16,18 @@ import com.facebook.react.fabric.ComponentFactory
  *
  * This class works together with the [DefaultNewArchitectureEntryPoint] and it's C++ implementation
  * is hosted inside the React Native framework
- *
- * TODO(T186951312): Should this be @UnstableReactNativeAPI?
  */
-@DoNotStrip
+@Suppress("UNUSED_PARAMETER")
+@UnstableReactNativeAPI
 public object DefaultComponentsRegistry {
   init {
-    DefaultSoLoader.maybeLoadSoLibrary()
+    AppModulesSoLoader.maybeLoadSoLibrary()
   }
 
-  @JvmStatic @DoNotStrip public external fun register(componentFactory: ComponentFactory): Unit
+  @JvmStatic
+  @Deprecated(
+      "This call is no longer necessary. registerComponentDescriptorsFromEntryPoint will be used by default.")
+  public fun register(componentFactory: ComponentFactory): Unit {
+    // No-op
+  }
 }
