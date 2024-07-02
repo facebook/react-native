@@ -22,7 +22,15 @@ const sizesDiffer = require('../Utilities/differ/sizesDiffer');
 const UIManager = require('./UIManager');
 const nullthrows = require('nullthrows');
 
+// Memoization cache for previously computed configurations
+const configCache = {};
+
 function getNativeComponentAttributes(uiViewClassName: string): any {
+  // Check if configuration has been memoized
+  if (configCache[uiViewClassName]) {
+    return configCache[uiViewClassName];
+  }
+
   const viewConfig = UIManager.getViewManagerConfig(uiViewClassName);
 
   if (viewConfig == null) {
@@ -31,52 +39,42 @@ function getNativeComponentAttributes(uiViewClassName: string): any {
 
   // TODO: This seems like a whole lot of runtime initialization for every
   // native component that can be either avoided or simplified.
-  let {baseModuleName, bubblingEventTypes, directEventTypes} = viewConfig;
+  let { baseModuleName, bubblingEventTypes, directEventTypes } = viewConfig;
   let nativeProps = viewConfig.NativeProps;
 
   bubblingEventTypes = bubblingEventTypes ?? {};
   directEventTypes = directEventTypes ?? {};
 
+  // Traverse base modules to inherit properties
   while (baseModuleName) {
     const baseModule = UIManager.getViewManagerConfig(baseModuleName);
     if (!baseModule) {
       baseModuleName = null;
     } else {
-      bubblingEventTypes = {
-        ...baseModule.bubblingEventTypes,
-        ...bubblingEventTypes,
-      };
-      directEventTypes = {
-        ...baseModule.directEventTypes,
-        ...directEventTypes,
-      };
-      nativeProps = {
-        ...baseModule.NativeProps,
-        ...nativeProps,
-      };
+      bubblingEventTypes = { ...baseModule.bubblingEventTypes, ...bubblingEventTypes };
+      directEventTypes = { ...baseModule.directEventTypes, ...directEventTypes };
+      nativeProps = { ...baseModule.NativeProps, ...nativeProps };
       baseModuleName = baseModule.baseModuleName;
     }
   }
 
-  const validAttributes: {[string]: mixed} = {};
+  const validAttributes: { [string]: mixed } = {};
 
+  // Populate valid attributes with type information
   for (const key in nativeProps) {
     const typeName = nativeProps[key];
     const diff = getDifferForType(typeName);
     const process = getProcessorForType(typeName);
 
     // If diff or process == null, omit the corresponding property from the Attribute
-    // Why:
-    //  1. Consistency with AttributeType flow type
-    //  2. Consistency with Static View Configs, which omit the null properties
     validAttributes[key] =
       diff == null
         ? process == null
           ? true
-          : {process}
+          : { process }
         : process == null
-          ? {diff}
-          : {diff, process};
+        ? { diff }
+        : { diff, process };
   }
 
   // Unfortunately, the current setup declares style properties as top-level
@@ -85,6 +83,7 @@ function getNativeComponentAttributes(uiViewClassName: string): any {
   // top-level props on the native side.
   validAttributes.style = ReactNativeStyleAttributes;
 
+  // Update view configuration
   Object.assign(viewConfig, {
     uiViewClassName,
     validAttributes,
@@ -92,35 +91,27 @@ function getNativeComponentAttributes(uiViewClassName: string): any {
     directEventTypes,
   });
 
+  // Attach default event types
   attachDefaultEventTypes(viewConfig);
+
+  // Memoize the configuration
+  configCache[uiViewClassName] = viewConfig;
 
   return viewConfig;
 }
 
+// Attach default event types based on platform support
 function attachDefaultEventTypes(viewConfig: any) {
-  // This is supported on UIManager platforms (ex: Android),
-  // as lazy view managers are not implemented for all platforms.
-  // See [UIManager] for details on constants and implementations.
   const constants = UIManager.getConstants();
   if (constants.ViewManagerNames || constants.LazyViewManagersEnabled) {
-    // Lazy view managers enabled.
-    viewConfig = merge(
-      viewConfig,
-      nullthrows(UIManager.getDefaultEventTypes)(),
-    );
+    viewConfig = merge(viewConfig, nullthrows(UIManager.getDefaultEventTypes)());
   } else {
-    viewConfig.bubblingEventTypes = merge(
-      viewConfig.bubblingEventTypes,
-      constants.genericBubblingEventTypes,
-    );
-    viewConfig.directEventTypes = merge(
-      viewConfig.directEventTypes,
-      constants.genericDirectEventTypes,
-    );
+    viewConfig.bubblingEventTypes = merge(viewConfig.bubblingEventTypes, constants.genericBubblingEventTypes);
+    viewConfig.directEventTypes = merge(viewConfig.directEventTypes, constants.genericDirectEventTypes);
   }
 }
 
-// TODO: Figure out how to avoid all this runtime initialization cost.
+// Merge function for combining event types
 function merge(destination: ?Object, source: ?Object): ?Object {
   if (!source) {
     return destination;
@@ -137,10 +128,7 @@ function merge(destination: ?Object, source: ?Object): ?Object {
     let sourceValue = source[key];
     if (destination.hasOwnProperty(key)) {
       const destinationValue = destination[key];
-      if (
-        typeof sourceValue === 'object' &&
-        typeof destinationValue === 'object'
-      ) {
+      if (typeof sourceValue === 'object' && typeof destinationValue === 'object') {
         sourceValue = merge(destinationValue, sourceValue);
       }
     }
@@ -149,11 +137,9 @@ function merge(destination: ?Object, source: ?Object): ?Object {
   return destination;
 }
 
-function getDifferForType(
-  typeName: string,
-): ?(prevProp: any, nextProp: any) => boolean {
+// Function to retrieve differ function for a given type
+function getDifferForType(typeName: string): ?(prevProp: any, nextProp: any) => boolean {
   switch (typeName) {
-    // iOS Types
     case 'CATransform3D':
       return matricesDiffer;
     case 'CGPoint':
@@ -162,7 +148,6 @@ function getDifferForType(
       return sizesDiffer;
     case 'UIEdgeInsets':
       return insetsDiffer;
-    // Android Types
     case 'Point':
       return pointsDiffer;
     case 'EdgeInsets':
@@ -171,9 +156,9 @@ function getDifferForType(
   return null;
 }
 
+// Function to retrieve processor function for a given type
 function getProcessorForType(typeName: string): ?(nextProp: any) => any {
   switch (typeName) {
-    // iOS Types
     case 'CGColor':
     case 'UIColor':
       return processColor;
@@ -184,7 +169,6 @@ function getProcessorForType(typeName: string): ?(nextProp: any) => any {
     case 'UIImage':
     case 'RCTImageSource':
       return resolveAssetSource;
-    // Android Types
     case 'Color':
       return processColor;
     case 'ColorArray':
