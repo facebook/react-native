@@ -11,14 +11,14 @@
 import Colors from './components/Colors';
 import DebugInstructions from './components/DebugInstructions';
 import Header from './components/Header';
-import HermesBadge from './components/HermesBadge';
+import NewArchitectureBadge from './components/NewArchitectureBadge';
 import LearnMoreLinks from './components/LearnMoreLinks';
 import ReloadInstructions from './components/ReloadInstructions';
 
 export {
   Colors,
   Header,
-  HermesBadge,
+  NewArchitectureBadge,
   LearnMoreLinks,
   DebugInstructions,
   ReloadInstructions,

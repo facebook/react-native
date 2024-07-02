@@ -6157,9 +6157,9 @@ declare export default typeof Header;
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/NewAppScreen/components/HermesBadge.js 1`] = `
-"declare const HermesBadge: () => Node;
-declare export default typeof HermesBadge;
+exports[`public API should not change unintentionally Libraries/NewAppScreen/components/NewArchitectureBadge.js 1`] = `
+"declare const NewArchitectureBadge: () => Node;
+declare export default typeof NewArchitectureBadge;
 "
 `;
 
@@ -6179,7 +6179,7 @@ exports[`public API should not change unintentionally Libraries/NewAppScreen/ind
 "export {
   Colors,
   Header,
-  HermesBadge,
+  NewArchitectureBadge,
   LearnMoreLinks,
   DebugInstructions,
   ReloadInstructions,

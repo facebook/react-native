@@ -17,11 +17,13 @@ import useColorScheme from '../../Utilities/useColorScheme';
 import Colors from './Colors';
 import React from 'react';
 
-const HermesBadge = (): Node => {
+const NewArchitectureBadge = (): Node => {
   const isDarkMode = useColorScheme() === 'dark';
-  const version =
+  const hermesVersion =
     global.HermesInternal?.getRuntimeProperties?.()['OSS Release Version'] ??
     '';
+  const renderer = global?.nativeFabricUIManager ? 'Fabric, New Architecture' : 'Paper';
+  
   return global.HermesInternal ? (
     <View style={styles.badge}>
       <Text
@@ -31,7 +33,16 @@ const HermesBadge = (): Node => {
             color: isDarkMode ? Colors.light : Colors.dark,
           },
         ]}>
-        {`Engine: Hermes ${version}`}
+        {`Engine: Hermes ${hermesVersion}`}
+      </Text>
+      <Text
+        style={[
+          styles.badgeText,
+          {
+            color: isDarkMode ? Colors.light : Colors.dark,
+          },
+        ]}>
+        {`Renderer: ${renderer}`}
       </Text>
     </View>
   ) : null;
@@ -50,4 +61,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HermesBadge;
+export default NewArchitectureBadge;
