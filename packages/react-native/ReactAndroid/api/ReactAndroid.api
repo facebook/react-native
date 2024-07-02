@@ -1186,6 +1186,7 @@ public class com/facebook/react/bridge/ReactInstanceManagerInspectorTarget : jav
 }
 
 public abstract interface class com/facebook/react/bridge/ReactInstanceManagerInspectorTarget$TargetDelegate {
+	public abstract fun getMetadata ()Ljava/util/Map;
 	public abstract fun onReload ()V
 	public abstract fun onSetPausedInDebuggerMessage (Ljava/lang/String;)V
 }
@@ -3585,6 +3586,7 @@ public class com/facebook/react/modules/systeminfo/AndroidInfoHelpers {
 	public static fun getAdbReverseTcpCommand (Landroid/content/Context;)Ljava/lang/String;
 	public static fun getAdbReverseTcpCommand (Ljava/lang/Integer;)Ljava/lang/String;
 	public static fun getFriendlyDeviceName ()Ljava/lang/String;
+	public static fun getInspectorHostMetadata (Landroid/content/Context;)Ljava/util/Map;
 	public static fun getServerHost (Landroid/content/Context;)Ljava/lang/String;
 	public static fun getServerHost (Ljava/lang/Integer;)Ljava/lang/String;
 }

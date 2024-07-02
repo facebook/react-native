@@ -29,6 +29,14 @@ void ReactInstanceManagerInspectorTarget::TargetDelegate::
   method(self(), request.message ? make_jstring(*request.message) : nullptr);
 }
 
+jni::local_ref<jni::JMap<jstring, jstring>>
+ReactInstanceManagerInspectorTarget::TargetDelegate::getMetadata() const {
+  auto method = javaClassStatic()
+                    ->getMethod<jni::local_ref<jni::JMap<jstring, jstring>>()>(
+                        "getMetadata");
+  return method(self());
+}
+
 ReactInstanceManagerInspectorTarget::ReactInstanceManagerInspectorTarget(
     jni::alias_ref<ReactInstanceManagerInspectorTarget::jhybridobject> jobj,
     jni::alias_ref<JExecutor::javaobject> javaExecutor,
@@ -104,8 +112,24 @@ void ReactInstanceManagerInspectorTarget::registerNatives() {
 
 jsinspector_modern::HostTargetMetadata
 ReactInstanceManagerInspectorTarget::getMetadata() {
+  auto mapClass = findClassLocal("java/util/Map");
+  auto getMethod = mapClass->getMethod<jobject(jobject)>("get");
+
+  auto metadata = delegate_->getMetadata();
+
+  auto appIdentifier = getMethod(metadata, make_jstring("appIdentifier").get());
+  auto deviceName = getMethod(metadata, make_jstring("deviceName").get());
+  auto platform = getMethod(metadata, make_jstring("platform").get());
+  auto reactNativeVersion =
+      getMethod(metadata, make_jstring("reactNativeVersion").get());
+
   return {
+      .appIdentifier = appIdentifier ? appIdentifier->toString() : nullptr,
+      .deviceName = deviceName ? deviceName->toString() : nullptr,
       .integrationName = "Android Bridge (ReactInstanceManagerInspectorTarget)",
+      .platform = platform ? platform->toString() : nullptr,
+      .reactNativeVersion =
+          reactNativeVersion ? reactNativeVersion->toString() : nullptr,
   };
 }
 
