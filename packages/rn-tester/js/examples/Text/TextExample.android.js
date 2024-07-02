@@ -506,6 +506,76 @@ function FontWeightExample(props: {}): React.Node {
   );
 }
 
+function FontVariationSettingsExample(props: {}): React.Node {
+  const fontSettings = [
+    "'wght' 100",
+    "'wght' 200",
+    "'wght' 300",
+    "'wght' 400",
+    "'wght' 500",
+    "'wght' 600",
+    "'wght' 700",
+    "'wght' 800",
+    "'wght' 800, 'slnt' -1",
+    "'wght' 800, 'slnt' -2",
+    "'wght' 800, 'slnt' -3",
+    "'wght' 800, 'slnt' -4",
+    "'wght' 800, 'slnt' -5",
+    "'wght' 800, 'slnt' -6",
+    "'wght' 800, 'slnt' -7",
+    "'wght' 800, 'slnt' -8",
+    "'wght' 800, 'slnt' -9",
+    "'wght' 800, 'slnt' -10",
+  ];
+
+  return (
+    <>
+      {fontSettings.map((setting, index) => (
+        <Text
+          key={index}
+          style={{
+            fontFamily: 'inter',
+            fontVariationSettings: setting,
+          }}>
+          Inter variable font - {setting}
+        </Text>
+      ))}
+
+      <View style={{marginVertical: 6}} />
+
+      <Text
+        style={{
+          fontFamily: 'inter',
+          fontVariationSettings: "'wght' 800, slnt -10",
+        }}>
+        {'Invalid font variation settings - should fallback to default font'}
+      </Text>
+
+      <View style={{marginVertical: 6}} />
+
+      {/* Font Icons with custom axes */}
+      <Text>Material Symbols Sharp - 'wght' 400, 'FILL' 0</Text>
+      <Text
+        style={{
+          fontFamily: 'MaterialSymbolsSharp',
+          fontSize: 32,
+          fontVariationSettings: "'wght' 400, 'FILL' 0",
+        }}>
+        {String.fromCodePoint(59576)}
+      </Text>
+      <Text>Material Symbols Sharp - 'wght' 100, 'FILL' 1</Text>
+      <Text
+        style={{
+          fontFamily: 'MaterialSymbolsSharp',
+          fontSize: 32,
+          fontVariationSettings: "'wght' 100, 'FILL' 1",
+        }}>
+        {String.fromCodePoint(59576)}
+      </Text>
+    </>
+  );
+}
+
 function BackgroundColorExample(props: {}): React.Node {
   return (
     <>
@@ -1064,6 +1134,13 @@ const examples = [
     name: 'fontWeight',
     render(): React.Node {
       return <FontWeightExample />;
+    },
+  },
+  {
+    title: 'Variable Font Settings',
+    name: 'fontVariationSettings',
+    render(): React.Node {
+      return <FontVariationSettingsExample />;
     },
   },
   {

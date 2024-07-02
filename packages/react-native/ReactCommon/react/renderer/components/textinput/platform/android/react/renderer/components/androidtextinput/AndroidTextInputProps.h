@@ -111,6 +111,7 @@ class AndroidTextInputProps final : public BaseTextInputProps {
   bool includeFontPadding{false};
   std::string fontWeight{};
   std::string fontFamily{};
+  std::string fontVariationSettings{};
 
   /**
    * Auxiliary information to detect if these props are set or not.
