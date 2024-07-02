@@ -1136,9 +1136,12 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
           EventDispatcher eventDispatcher = getEventDispatcher(reactContext, editText);
           if (hasFocus) {
             eventDispatcher.dispatchEvent(
-                new ReactTextInputFocusEvent(surfaceId, editText.getId()));
+                new ReactTextInputFocusEvent(
+                  surfaceId, editText.getId(), editText.getText().toString(), editText.getEventCounter()));
           } else {
-            eventDispatcher.dispatchEvent(new ReactTextInputBlurEvent(surfaceId, editText.getId()));
+            eventDispatcher.dispatchEvent(
+                new ReactTextInputBlurEvent(
+                  surfaceId, editText.getId(), editText.getText().toString(), editText.getEventCounter()));
 
             eventDispatcher.dispatchEvent(
                 new ReactTextInputEndEditingEvent(

@@ -623,6 +623,10 @@ public class ReactEditText extends AppCompatEditText {
     return ++mNativeEventCount;
   }
 
+  public int getEventCounter() {
+    return mNativeEventCount;
+  }
+
   public void maybeSetTextFromJS(ReactTextUpdate reactTextUpdate) {
     mIsSettingTextFromJS = true;
     maybeSetText(reactTextUpdate);
