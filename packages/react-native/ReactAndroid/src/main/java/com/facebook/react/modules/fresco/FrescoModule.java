@@ -12,6 +12,7 @@ import com.facebook.common.logging.FLog;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.imagepipeline.backends.okhttp3.OkHttpImagePipelineConfigFactory;
 import com.facebook.imagepipeline.core.ImagePipeline;
+import com.facebook.imagepipeline.core.DownsampleMode;
 import com.facebook.imagepipeline.core.ImagePipelineConfig;
 import com.facebook.imagepipeline.listener.RequestListener;
 import com.facebook.react.bridge.LifecycleEventListener;
@@ -190,7 +191,7 @@ public class FrescoModule extends ReactContextBaseJavaModule
 
     return OkHttpImagePipelineConfigFactory.newBuilder(context.getApplicationContext(), client)
         .setNetworkFetcher(new ReactOkHttpNetworkFetcher(client))
-        .setDownsampleEnabled(false)
+        .setDownsampleMode(DownsampleMode.NEVER)
         .setRequestListeners(requestListeners);
   }
 
