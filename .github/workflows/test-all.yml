@@ -432,7 +432,7 @@ jobs:
         with:
           jsengine: ${{ matrix.jsengine }}
           architecture: ${{ matrix.architecture }}
-          run-unit-tests: 'false'
+          run-unit-tests: "false"
           use-frameworks: StaticLibraries
           hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
@@ -939,7 +939,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.1
-      - name: Setup xcode
+      - name: Test JS
         uses: ./.github/actions/test-js
         with:
           node-version: ${{ matrix.node-version }}

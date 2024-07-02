@@ -8,13 +8,13 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Yarn install
-      shell: bash
-      run: yarn install --non-interactive
     - name: Setup node.js
       uses: ./.github/actions/setup-node
       with:
         node-version: ${{ inputs.node-version }}
+    - name: Yarn install
+      shell: bash
+      run: yarn install --non-interactive
     - name: Run Tests - JavaScript Tests
       shell: bash
       run: node ./scripts/run-ci-javascript-tests.js --maxWorkers 2
