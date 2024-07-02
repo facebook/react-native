@@ -92,6 +92,7 @@ public class ReactScrollView extends ScrollView
   private boolean mDragging;
   private boolean mPagingEnabled = false;
   private @Nullable Runnable mPostTouchRunnable;
+  private @Nullable Runnable mPostSmoothScrollRunnable;
   private boolean mRemoveClippedSubviews;
   private boolean mScrollEnabled = true;
   private boolean mPreventReentry = false;
@@ -700,8 +701,8 @@ public class ReactScrollView extends ScrollView
                 mPostTouchRunnable = null;
                 if (mSendMomentumEvents) {
                   ReactScrollViewHelper.emitScrollMomentumEndEvent(ReactScrollView.this);
+                  disableFpsListener();
                 }
-                disableFpsListener();
               } else {
                 if (mPagingEnabled && !mSnappingToPage) {
                   // If we have pagingEnabled and we have not snapped to the page
@@ -718,6 +719,35 @@ public class ReactScrollView extends ScrollView
         };
     ViewCompat.postOnAnimationDelayed(
         this, mPostTouchRunnable, ReactScrollViewHelper.MOMENTUM_DELAY);
+  }
+
+  public void handleSmoothScrollMomentumEvents() {
+    if (!mSendMomentumEvents || null != mPostSmoothScrollRunnable) {
+      return;
+    }
+
+    enableFpsListener();
+    mActivelyScrolling = false;
+    mPostSmoothScrollRunnable = new Runnable() {
+
+      @Override
+      public void run() {
+        if (mActivelyScrolling) {
+          // We are still scrolling so we just post to check again a frame later
+          mActivelyScrolling = false;
+          ViewCompat.postOnAnimationDelayed(
+            ReactScrollView.this, this, ReactScrollViewHelper.MOMENTUM_DELAY);
+        } else {
+          // There has not been a scroll update since the last time this Runnable executed.
+          ReactScrollViewHelper.emitScrollMomentumEndEvent(ReactScrollView.this);
+          ReactScrollView.this.mPostSmoothScrollRunnable = null;
+          disableFpsListener();
+        }
+      }
+    };
+    ViewCompat.postOnAnimationDelayed(
+      ReactScrollView.this, mPostSmoothScrollRunnable, ReactScrollViewHelper.MOMENTUM_DELAY);
+
   }
 
   private void cancelPostTouchScrolling() {
