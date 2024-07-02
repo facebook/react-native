@@ -11,6 +11,7 @@
 'use strict';
 
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+import type {ChangeEvent} from 'react-native/Libraries/Components/TextInput/TextInput';
 import type {TextStyle} from 'react-native/Libraries/StyleSheet/StyleSheet';
 
 import RNTesterButton from '../../components/RNTesterButton';
@@ -816,7 +817,7 @@ function MultilineStyledTextInput({
 function PartialUpdatesTextInput() {
   const [value, setValue] = useState('');
 
-  const onChange = ({nativeEvent}) => {
+  const onChange = ({nativeEvent}: ChangeEvent) => {
     console.log('onChange', nativeEvent);
     setValue((previousValue) => {
       const {count, start, before, text: fullNewText} = nativeEvent;

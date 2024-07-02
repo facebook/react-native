@@ -359,7 +359,14 @@ export type NativeProps = $ReadOnly<{|
    * TODO: differentiate between onChange and onChangeText
    */
   onChange?: ?BubblingEventHandler<
-    $ReadOnly<{|target: Int32, eventCount: Int32, text: string|}>,
+    $ReadOnly<{|
+      target: Int32,
+      eventCount: Int32,
+      text: string,
+      start: Int32,
+      count: Int32,
+      before: Int32,
+    |}>,
   >,
 
   /**

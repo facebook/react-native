@@ -69,6 +69,9 @@ export type ChangeEvent = SyntheticEvent<
     eventCount: number,
     target: number,
     text: string,
+    start: number,
+    count: number,
+    before: number,
   |}>,
 >;
 
