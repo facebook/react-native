@@ -17,6 +17,7 @@ import com.facebook.react.bridge.ReactContext
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.fabric.ComponentFactory
+import com.facebook.react.runtime.BindingsInstaller
 import com.facebook.react.runtime.JSCInstance
 import com.facebook.react.runtime.ReactHostImpl
 import com.facebook.react.runtime.cxxreactpackage.CxxReactPackage
@@ -60,6 +61,7 @@ public object DefaultReactHost {
       isHermesEnabled: Boolean = true,
       useDevSupport: Boolean = ReactBuildConfig.DEBUG,
       cxxReactPackageProviders: List<(ReactContext) -> CxxReactPackage> = emptyList(),
+      unstable_bindingsInstaller: BindingsInstaller? = null,
   ): ReactHost {
     if (reactHost == null) {
       val jsBundleLoader =
@@ -81,6 +83,7 @@ public object DefaultReactHost {
               jsBundleLoader = jsBundleLoader,
               reactPackages = packageList,
               jsRuntimeFactory = jsRuntimeFactory,
+              bindingsInstaller = unstable_bindingsInstaller,
               turboModuleManagerDelegateBuilder = defaultTmmDelegateBuilder)
       val componentFactory = ComponentFactory()
       DefaultComponentsRegistry.register(componentFactory)
