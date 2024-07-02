@@ -23,16 +23,23 @@ public class ReactTextChangedEvent extends Event<ReactTextChangedEvent> {
 
   private String mText;
   private int mEventCount;
+  // See https://developer.android.com/reference/android/text/TextWatcher#onTextChanged(java.lang.CharSequence,%20int,%20int,%20int)
+  private int mStart;
+  private int mCount;
+  private int mBefore;
 
   @Deprecated
-  public ReactTextChangedEvent(int viewId, String text, int eventCount) {
-    this(ViewUtil.NO_SURFACE_ID, viewId, text, eventCount);
+  public ReactTextChangedEvent(int viewId, String text, int eventCount, int start, int count, int before) {
+    this(ViewUtil.NO_SURFACE_ID, viewId, text, eventCount, start, count, before);
   }
 
-  public ReactTextChangedEvent(int surfaceId, int viewId, String text, int eventCount) {
+  public ReactTextChangedEvent(int surfaceId, int viewId, String text, int eventCount, int start, int count, int before) {
     super(surfaceId, viewId);
     mText = text;
     mEventCount = eventCount;
+    mStart = start;
+    mCount = count;
+    mBefore = before;
   }
 
   @Override
@@ -47,6 +54,9 @@ public class ReactTextChangedEvent extends Event<ReactTextChangedEvent> {
     eventData.putString("text", mText);
     eventData.putInt("eventCount", mEventCount);
     eventData.putInt("target", getViewTag());
+    eventData.putInt("start", mStart);
+    eventData.putInt("count", mCount);
+    eventData.putInt("before", mBefore);
     return eventData;
   }
 }
