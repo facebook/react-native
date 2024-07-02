@@ -784,9 +784,14 @@ void FabricMountingManager::executeMount(
   env->DeleteLocalRef(intBufferArray);
 }
 
-void FabricMountingManager::preallocateShadowView(
+void FabricMountingManager::maybePreallocateShadowView(
     const ShadowNode& shadowNode) {
   if (!shadowNode.getTraits().check(ShadowNodeTraits::Trait::FormsView)) {
+    return;
+  }
+  static thread_local bool onMainThread = isOnMainThread();
+  if (onMainThread) {
+    // View preallocation is not beneficial when rendering on the main thread
     return;
   }
 
@@ -842,6 +847,13 @@ void FabricMountingManager::preallocateShadowView(
       (javaStateWrapper != nullptr ? javaStateWrapper.get() : nullptr),
       (javaEventEmitter != nullptr ? javaEventEmitter.get() : nullptr),
       isLayoutableShadowNode);
+}
+
+bool FabricMountingManager::isOnMainThread() {
+  static auto isOnMainThread =
+      JFabricUIManager::javaClassStatic()->getMethod<jboolean()>(
+          "isOnMainThread");
+  return isOnMainThread(javaUIManager_);
 }
 
 void FabricMountingManager::dispatchCommand(

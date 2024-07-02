@@ -764,6 +764,14 @@ public class FabricUIManager
             isLayoutable));
   }
 
+  @SuppressLint("NotInvokedPrivateMethod")
+  @SuppressWarnings("unused")
+  @AnyThread
+  @ThreadConfined(ANY)
+  private boolean isOnMainThread() {
+    return UiThreadUtil.isOnUiThread();
+  }
+
   @SuppressWarnings("unused")
   @AnyThread
   @ThreadConfined(ANY)
