@@ -118,6 +118,8 @@ ReactInstanceManagerInspectorTarget::getMetadata() {
   auto metadata = delegate_->getMetadata();
 
   auto appIdentifier = getMethod(metadata, make_jstring("appIdentifier").get());
+  auto appDisplayName =
+      getMethod(metadata, make_jstring("appDisplayName").get());
   auto deviceName = getMethod(metadata, make_jstring("deviceName").get());
   auto platform = getMethod(metadata, make_jstring("platform").get());
   auto reactNativeVersion =
@@ -125,6 +127,7 @@ ReactInstanceManagerInspectorTarget::getMetadata() {
 
   return {
       .appIdentifier = appIdentifier ? appIdentifier->toString() : nullptr,
+      .appDisplayName = appDisplayName ? appDisplayName->toString() : nullptr,
       .deviceName = deviceName ? deviceName->toString() : nullptr,
       .integrationName = "Android Bridge (ReactInstanceManagerInspectorTarget)",
       .platform = platform ? platform->toString() : nullptr,

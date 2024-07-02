@@ -99,6 +99,8 @@ JReactHostInspectorTarget::getMetadata() {
 
     auto appIdentifier =
         getMethod(javaMetadata, make_jstring("appIdentifier").get());
+    auto appDisplayName =
+        getMethod(javaMetadata, make_jstring("appDisplayName").get());
     auto deviceName = getMethod(javaMetadata, make_jstring("deviceName").get());
     auto platform = getMethod(javaMetadata, make_jstring("platform").get());
     auto reactNativeVersion =
@@ -106,6 +108,8 @@ JReactHostInspectorTarget::getMetadata() {
 
     metadata.appIdentifier =
         appIdentifier ? appIdentifier->toString() : nullptr;
+    metadata.appDisplayName =
+        appDisplayName ? appDisplayName->toString() : nullptr;
     metadata.deviceName = deviceName ? deviceName->toString() : nullptr;
     metadata.platform = platform ? platform->toString() : nullptr;
     metadata.reactNativeVersion =

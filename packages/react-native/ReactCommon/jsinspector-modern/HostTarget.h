@@ -38,6 +38,7 @@ class HostTarget;
 
 struct HostTargetMetadata {
   std::optional<std::string> appIdentifier;
+  std::optional<std::string> appDisplayName;
   std::optional<std::string> deviceName;
   std::optional<std::string> integrationName;
   std::optional<std::string> platform;
