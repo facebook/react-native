@@ -221,11 +221,6 @@ Float AndroidTextInputShadowNode::baseline(
 
   if (attributedString.isEmpty()) {
     attributedString = getPlaceholderAttributedString();
-
-    if (attributedString.isEmpty()) {
-      // TODO: Is this correct?
-      return 0;
-    }
   }
 
   // I don't think I should be reading directly from yogaNode, but layout metrics

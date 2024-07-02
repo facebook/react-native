@@ -225,8 +225,11 @@ float TextLayoutManager::getLastBaseline(
   auto lines = this
       ->measureLines(attributedString, paragraphAttributes, size);
 
-  // TODO: Should this assume there is at least one line?
-  return lines[0].ascender;
+  if (!lines.empty()) {
+      return lines[0].ascender;
+  } else {
+      return 0;
+  }
 }
 
 TextMeasurement TextLayoutManager::doMeasure(
