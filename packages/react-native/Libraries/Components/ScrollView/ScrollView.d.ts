@@ -843,6 +843,16 @@ export class ScrollView extends ScrollViewBase {
   scrollToEnd(options?: {animated?: boolean | undefined}): void;
 
   /**
+   * A helper function that scrolls to the beginning of the scrollview;
+   * If this is a vertical ScrollView, it scrolls to the top.
+   * If this is a horizontal ScrollView scrolls to the left.
+   *
+   * The options object has an animated prop, that enables the scrolling animation or not.
+   * The animated prop defaults to true
+   */
+  scrollToStart(options?: {animated?: boolean | undefined}): void;
+
+  /**
    * Displays the scroll indicators momentarily.
    */
   flashScrollIndicators(): void;
