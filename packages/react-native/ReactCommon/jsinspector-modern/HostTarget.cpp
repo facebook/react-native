@@ -226,6 +226,9 @@ folly::dynamic hostMetadataToDynamic(const HostTargetMetadata& metadata) {
   if (metadata.appIdentifier) {
     result["appIdentifier"] = metadata.appIdentifier.value();
   }
+  if (metadata.appDisplayName) {
+    result["appDisplayName"] = metadata.appDisplayName.value();
+  }
   if (metadata.deviceName) {
     result["deviceName"] = metadata.deviceName.value();
   }

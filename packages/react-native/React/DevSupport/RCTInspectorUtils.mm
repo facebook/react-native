@@ -24,6 +24,7 @@
   CommonHostMetadata *metadata = [[CommonHostMetadata alloc] init];
 
   metadata.appIdentifier = [[NSBundle mainBundle] bundleIdentifier];
+  metadata.appDisplayName = [[[NSBundle mainBundle] infoDictionary] objectForKey:(NSString *)kCFBundleNameKey];
   metadata.platform = RCTPlatformName;
   metadata.deviceName = [device name];
   metadata.reactNativeVersion =
