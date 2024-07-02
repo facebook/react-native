@@ -819,13 +819,16 @@ function PartialUpdatesTextInput() {
 
   const onChange = ({nativeEvent}: ChangeEvent) => {
     console.log('onChange', nativeEvent);
-    setValue((previousValue) => {
+    setValue(previousValue => {
       const {count, start, before, text: fullNewText} = nativeEvent;
       // This method is called to notify you that, within fullNewText, the "count" characters beginning at "start" have just
       // replaced old text that had length "before".
       const newText = fullNewText.substring(start, start + count);
       // Replace newText in the original text:
-      const updatedText = previousValue.substring(0, start) + newText + previousValue.substring(start + before);
+      const updatedText =
+        previousValue.substring(0, start) +
+        newText +
+        previousValue.substring(start + before);
 
       return updatedText;
     });
@@ -1152,9 +1155,7 @@ module.exports = ([
     title: 'Text input with partial updates in onChange',
     name: 'partialUpdates',
     render: function (): React.Node {
-      return (
-        <PartialUpdatesTextInput />
-      );
+      return <PartialUpdatesTextInput />;
     },
   },
 ]: Array<RNTesterModuleExample>);
