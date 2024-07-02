@@ -437,12 +437,44 @@ public object MatrixMathHelper {
 
   @JvmStatic
   public fun applySkewX(m: DoubleArray, radians: Double) {
-    m[4] = Math.tan(radians)
+    val helperMatrix = DoubleArray(16);
+    resetIdentityMatrix(helperMatrix);
+    val skew = radians;
+    val rotationY = MatrixMathHelper.degreesToRadians(45.0);
+    val rotationX = Math.atan(1 / Math.sin(rotationY) * Math.tan(skew));
+    val scaleX = 1 / Math.cos(rotationY);
+    val scaleY = 1 / Math.cos(rotationX);
+
+    applyRotateY(m, rotationY);
+    applyRotateX(helperMatrix, rotationX);
+    multiplyInto(m, m, helperMatrix);
+
+    resetIdentityMatrix(helperMatrix);
+    applyScaleX(helperMatrix, scaleX);
+    applyScaleY(helperMatrix, scaleY);
+    applyPerspective(helperMatrix, 100000.0);
+    multiplyInto(m, m, helperMatrix);
   }
 
   @JvmStatic
   public fun applySkewY(m: DoubleArray, radians: Double) {
-    m[1] = Math.tan(radians)
+    val helperMatrix = DoubleArray(16);
+    resetIdentityMatrix(helperMatrix);
+    val skew = radians;
+    val rotationX = MatrixMathHelper.degreesToRadians(45.0);
+    val rotationY = Math.atan(1 / Math.sin(rotationX) * Math.tan(skew));
+    val scaleX = 1 / Math.cos(rotationY);
+    val scaleY = 1 / Math.cos(rotationX);
+
+    applyRotateX(m, rotationX);
+    applyRotateY(helperMatrix, rotationY);
+    multiplyInto(m, m, helperMatrix);
+
+    resetIdentityMatrix(helperMatrix);
+    applyScaleX(helperMatrix, scaleX);
+    applyScaleY(helperMatrix, scaleY);
+    applyPerspective(helperMatrix, 100000.0);
+    multiplyInto(m, m, helperMatrix);
   }
 
   @JvmStatic
