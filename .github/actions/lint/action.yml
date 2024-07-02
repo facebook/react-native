@@ -22,30 +22,24 @@ runs:
       shell: bash
       run: GITHUB_TOKEN=${{ inputs.github-token}} yarn lint-ci
     - name: Lint code
-      if: ${{ always() }}
       shell: bash
       run: scripts/circleci/exec_swallow_error.sh yarn lint --format junit -o ./reports/junit/eslint/results.xml
     - name: Lint java
-      if: ${{ always() }}
       shell: bash
       run: scripts/circleci/exec_swallow_error.sh yarn lint-java --check
     - name: Run flowcheck
-      if: ${{ always() }}
       shell: bash
       run: |
         sed -i '/\[options\]/a server.max_workers=1' .flowconfig
         yarn flow-check
     - name: Run typescript check
-      if: ${{ always() }}
       shell: bash
       run: yarn test-typescript
     - name: Run sanity checks
-      if: ${{ always() }}
       shell: bash
       run: |
         ./scripts/circleci/check_license.sh
         ./scripts/circleci/validate_yarn_lockfile.sh
     - name: Check formatting
-      if: ${{ always() }}
       shell: bash
       run: yarn run format-check
