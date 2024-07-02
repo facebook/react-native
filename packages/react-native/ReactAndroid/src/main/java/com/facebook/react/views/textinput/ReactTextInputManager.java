@@ -1121,7 +1121,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
               mEditText.incrementAndGetEventCounter(),
               start,
               count,
-              before,
+              before
           )
       );
     }
