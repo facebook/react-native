@@ -12,10 +12,13 @@ import android.content.res.Resources;
 import android.os.Build;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.R;
+import com.facebook.react.common.MapBuilder;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.Locale;
+import java.util.Map;
+import javax.annotation.Nullable;
 
 public class AndroidInfoHelpers {
 
@@ -61,6 +64,34 @@ public class AndroidInfoHelpers {
     } else {
       return Build.MODEL + " - " + Build.VERSION.RELEASE + " - API " + Build.VERSION.SDK_INT;
     }
+  }
+
+  /**
+   * Helper returning common metadata describing the React Native host, used to identify an
+   * inspector {@code HostTarget}. The returned mapping is a subset of {@code
+   * jsinspector_modern::HostTargetMetadata}.
+   */
+  public static Map<String, String> getInspectorHostMetadata(@Nullable Context applicationContext) {
+    return MapBuilder.<String, String>of(
+        "appIdentifier",
+        applicationContext != null ? applicationContext.getPackageName() : null,
+        "platform",
+        "android",
+        "deviceName",
+        Build.MODEL,
+        "reactNativeVersion",
+        getReactNativeVersionString());
+  }
+
+  private static String getReactNativeVersionString() {
+    Map<String, Object> version = ReactNativeVersion.VERSION;
+
+    return version.get("major")
+        + "."
+        + version.get("minor")
+        + "."
+        + version.get("patch")
+        + (version.get("prerelease") != null ? "-" + version.get("prerelease") : "");
   }
 
   private static Integer getDevServerPort(Context context) {
