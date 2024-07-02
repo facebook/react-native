@@ -12,7 +12,22 @@ yarn add --dev eslint @react-native/eslint-plugin
 
 ## Usage
 
-Add to your eslint config (`.eslintrc`, or `eslintConfig` field in `package.json`):
+From [`v8.23.0`](https://github.com/eslint/eslint/releases/tag/v8.23.0) onwards, you can use `eslint.config.js` which uses the new [flat config file format](https://eslint.org/docs/latest/user-guide/configuring/configuration-files-new).
+
+```javascript
+const reactNative = require('@react-native/eslint-plugin');  
+
+module.exports = [  
+  {
+    plugins: {
+       reactNative 
+    },
+    ...
+  },
+];
+```
+
+If you're still using a version of eslint < `v8.23.0` or still using the old configuration files, place the following on your eslint config file (`.eslintrc`, or `eslintConfig` field in `package.json`):
 
 ```json
 {
