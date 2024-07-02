@@ -19,7 +19,7 @@ const _backPressSubscriptions = [];
 
 RCTDeviceEventEmitter.addListener(DEVICE_BACK_EVENT, function () {
   for (let i = _backPressSubscriptions.length - 1; i >= 0; i--) {
-    if (_backPressSubscriptions[i]()) {
+    if (_backPressSubscriptions[i] && _backPressSubscriptions[i]()) {
       return;
     }
   }
