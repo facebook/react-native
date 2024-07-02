@@ -13,6 +13,7 @@
 #include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/core/Props.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/graphics/BoxShadow.h>
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/graphics/Filter.h>
 #include <react/renderer/graphics/Transform.h>
@@ -54,6 +55,9 @@ class BaseViewProps : public YogaStylableProps, public AccessibilityProps {
   Float shadowRadius{3};
 
   Cursor cursor{};
+
+  // Box shadow
+  std::vector<BoxShadow> boxShadow{};
 
   // Filter
   std::vector<FilterPrimitive> filter{};
