@@ -813,6 +813,32 @@ function MultilineStyledTextInput({
   );
 }
 
+function PartialUpdatesTextInput() {
+  const [value, setValue] = useState('');
+
+  const onChange = ({nativeEvent}) => {
+    console.log('onChange', nativeEvent);
+    setValue((previousValue) => {
+      const {count, start, before, text: fullNewText} = nativeEvent;
+      // This method is called to notify you that, within fullNewText, the "count" characters beginning at "start" have just
+      // replaced old text that had length "before".
+      const newText = fullNewText.substring(start, start + count);
+      // Replace newText in the original text:
+      const updatedText = previousValue.substring(0, start) + newText + previousValue.substring(start + before);
+
+      return updatedText;
+    });
+  };
+
+  return (
+    <ExampleTextInput
+      placeholder="Enter some text"
+      onChange={onChange}
+      value={value}
+    />
+  );
+}
+
 module.exports = ([
   {
     title: 'Auto-focus',
@@ -1118,6 +1144,15 @@ module.exports = ([
             eiusmod tempor incididunt ut labore et dolore magna aliqua.
           </ExampleTextInput>
         </View>
+      );
+    },
+  },
+  {
+    title: 'Text input with partial updates in onChange',
+    name: 'partialUpdates',
+    render: function (): React.Node {
+      return (
+        <PartialUpdatesTextInput />
       );
     },
   },
