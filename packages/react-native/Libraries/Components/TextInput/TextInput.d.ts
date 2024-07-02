@@ -446,6 +446,16 @@ export interface TextInputSelectionChangeEventData extends TargetedEvent {
   selection: {
     start: number;
     end: number;
+    cursorPosition: {
+      start: {
+        x: number;
+        y: number;
+      };
+      end: {
+        x: number;
+        y: number;
+      };
+    };
   };
 }
 
@@ -843,7 +853,28 @@ export interface TextInputProps
    * The start and end of the text input's selection. Set start and end to
    * the same value to position the cursor.
    */
-  selection?: {start: number; end?: number | undefined} | undefined;
+  selection?:
+    | {
+        start: number;
+        end?: number | undefined;
+        cursorPosition:
+          | {
+              start:
+                | {
+                    x: number;
+                    y: number;
+                  }
+                | undefined;
+              end:
+                | {
+                    x: number;
+                    y: number;
+                  }
+                | undefined;
+            }
+          | undefined;
+      }
+    | undefined;
 
   /**
    * The highlight (and cursor on ios) color of the text input
