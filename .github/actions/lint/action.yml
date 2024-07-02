@@ -1,0 +1,51 @@
+name: lint
+description: Runs all the linters in the codebase
+inputs:
+  node-version:
+    description: "The node.js version to use"
+    required: false
+    default: "18"
+  github-token:
+    description: "The GitHub token used by pull-bot"
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Setup node.js
+      uses: ./.github/actions/setup-node
+      with:
+        node-version: ${{ inputs.node-version }}
+    - name: Yarn install
+      shell: bash
+      run: yarn install --non-interactive
+    - name: Run linters against modified files (analysis-bot)
+      shell: bash
+      run: GITHUB_TOKEN=${{ inputs.github-token}} yarn lint-ci
+    - name: Lint code
+      if: ${{ always() }}
+      shell: bash
+      run: scripts/circleci/exec_swallow_error.sh yarn lint --format junit -o ./reports/junit/eslint/results.xml
+    - name: Lint java
+      if: ${{ always() }}
+      shell: bash
+      run: scripts/circleci/exec_swallow_error.sh yarn lint-java --check
+    - name: Run flowcheck
+      if: ${{ always() }}
+      shell: bash
+      run: |
+        sed -i '/\[options\]/a server.max_workers=1' .flowconfig
+        yarn flow-check
+    - name: Run typescript check
+      if: ${{ always() }}
+      shell: bash
+      run: yarn test-typescript
+    - name: Run sanity checks
+      if: ${{ always() }}
+      shell: bash
+      run: |
+        ./scripts/circleci/check_license.sh
+        ./scripts/circleci/validate_yarn_lockfile.sh
+    - name: Check formatting
+      if: ${{ always() }}
+      shell: bash
+      run: yarn run format-check

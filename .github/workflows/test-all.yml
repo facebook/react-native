@@ -645,9 +645,6 @@ jobs:
         GRADLE_OPTS: "-Dorg.gradle.daemon=false"
         # By default we only build ARM64 to save time/resources. For release/nightlies/prealpha, we override this value to build all archs.
         ORG_GRADLE_PROJECT_reactNativeArchitectures: "arm64-v8a"
-        # Repeated here, as the environment key in this executor will overwrite the one in defaults
-        PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A: ${{ secrets.GITHUB_ANALYSISBOT_TOKEN_A }}
-        PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B: ${{ secrets.GITHUB_ANALYSISBOT_TOKEN_B }}
         HERMES_WS_DIR: /tmp/hermes
     steps:
       - name: Add github.com to SSH known hosts
@@ -943,3 +940,19 @@ jobs:
         uses: ./.github/actions/test-js
         with:
           node-version: ${{ matrix.node-version }}
+
+  lint:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: ["20", "18"]
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+      - name: Run all the Linters
+        uses: ./.github/actions/lint
+        with:
+          github-token: ${{ env.GH_TOKEN }}
