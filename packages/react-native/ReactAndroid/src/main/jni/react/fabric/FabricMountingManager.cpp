@@ -540,7 +540,7 @@ void FabricMountingManager::executeMount(
       if (mountItem.newChildShadowView.state != nullptr) {
         javaStateWrapper = StateWrapperImpl::newObjectJavaArgs();
         StateWrapperImpl* cStateWrapper = cthis(javaStateWrapper);
-        cStateWrapper->state_ = mountItem.newChildShadowView.state;
+        cStateWrapper->setState(mountItem.newChildShadowView.state);
       }
 
       // Do not hold a reference to javaEventEmitter from the C++ side.
@@ -615,7 +615,7 @@ void FabricMountingManager::executeMount(
       if (state != nullptr) {
         javaStateWrapper = StateWrapperImpl::newObjectJavaArgs();
         StateWrapperImpl* cStateWrapper = cthis(javaStateWrapper);
-        cStateWrapper->state_ = state;
+        cStateWrapper->setState(state);
       }
 
       (*objBufferArray)[objBufferPosition++] =
@@ -823,7 +823,7 @@ void FabricMountingManager::preallocateShadowView(
   if (shadowView.state != nullptr) {
     javaStateWrapper = StateWrapperImpl::newObjectJavaArgs();
     StateWrapperImpl* cStateWrapper = cthis(javaStateWrapper);
-    cStateWrapper->state_ = shadowView.state;
+    cStateWrapper->setState(shadowView.state);
   }
 
   // Do not hold a reference to javaEventEmitter from the C++ side.

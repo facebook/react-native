@@ -28,11 +28,12 @@ class StateWrapperImpl : public jni::HybridClass<StateWrapperImpl> {
   jni::local_ref<JReadableMapBuffer::jhybridobject> getStateMapBufferDataImpl();
   jni::local_ref<ReadableNativeMap::jhybridobject> getStateDataImpl();
   void updateStateImpl(NativeMap* map);
-
-  std::weak_ptr<const State> state_;
+  void setState(std::shared_ptr<const State> state);
 
  private:
   jni::alias_ref<StateWrapperImpl::jhybriddata> jhybridobject_;
+  std::weak_ptr<const State> weakState_;
+  std::shared_ptr<const State> state_;
 
   static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jclass>);
 };
