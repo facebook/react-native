@@ -88,9 +88,31 @@ void JReactHostInspectorTarget::registerNatives() {
 
 jsinspector_modern::HostTargetMetadata
 JReactHostInspectorTarget::getMetadata() {
-  return {
+  jsinspector_modern::HostTargetMetadata metadata = {
       .integrationName = "Android Bridgeless (ReactHostImpl)",
   };
+
+  if (auto javaReactHostImplStrong = javaReactHostImpl_->get()) {
+    auto javaMetadata = javaReactHostImplStrong->getHostMetadata();
+    auto mapClass = findClassLocal("java/util/Map");
+    auto getMethod = mapClass->getMethod<jobject(jobject)>("get");
+
+    auto appIdentifier =
+        getMethod(javaMetadata, make_jstring("appIdentifier").get());
+    auto deviceName = getMethod(javaMetadata, make_jstring("deviceName").get());
+    auto platform = getMethod(javaMetadata, make_jstring("platform").get());
+    auto reactNativeVersion =
+        getMethod(javaMetadata, make_jstring("reactNativeVersion").get());
+
+    metadata.appIdentifier =
+        appIdentifier ? appIdentifier->toString() : nullptr;
+    metadata.deviceName = deviceName ? deviceName->toString() : nullptr;
+    metadata.platform = platform ? platform->toString() : nullptr;
+    metadata.reactNativeVersion =
+        reactNativeVersion ? reactNativeVersion->toString() : nullptr;
+  }
+
+  return metadata;
 }
 
 void JReactHostInspectorTarget::onReload(const PageReloadRequest& request) {
