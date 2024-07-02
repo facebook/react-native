@@ -80,7 +80,7 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
     view.setScrollEnabled(value);
   }
 
-  @ReactProp(name = "showsHorizontalScrollIndicator")
+  @ReactProp(name = "showsHorizontalScrollIndicator", defaultBoolean = true)
   public void setShowsHorizontalScrollIndicator(ReactHorizontalScrollView view, boolean value) {
     view.setHorizontalScrollBarEnabled(value);
   }

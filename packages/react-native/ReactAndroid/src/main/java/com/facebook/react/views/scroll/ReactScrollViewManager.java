@@ -80,7 +80,7 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
     view.setFocusable(value);
   }
 
-  @ReactProp(name = "showsVerticalScrollIndicator")
+  @ReactProp(name = "showsVerticalScrollIndicator", defaultBoolean = true)
   public void setShowsVerticalScrollIndicator(ReactScrollView view, boolean value) {
     view.setVerticalScrollBarEnabled(value);
   }
