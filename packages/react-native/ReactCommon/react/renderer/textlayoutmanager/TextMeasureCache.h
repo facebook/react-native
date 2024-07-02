@@ -66,6 +66,16 @@ class TextMeasureCacheKey final {
   LayoutConstraints layoutConstraints{};
 };
 
+// The Key type that is used for Line Measure Cache.
+// The equivalence and hashing operations of this are defined to respect the
+// nature of text measuring.
+class LineMeasureCacheKey final {
+ public:
+  AttributedString attributedString{};
+  ParagraphAttributes paragraphAttributes{};
+  Size size{};
+};
+
 /*
  * Maximum size of the Cache.
  * The number was empirically chosen based on approximation of an average amount
@@ -80,6 +90,15 @@ constexpr auto kSimpleThreadSafeCacheSizeCap = size_t{1024};
 using TextMeasureCache = SimpleThreadSafeCache<
     TextMeasureCacheKey,
     TextMeasurement,
+    kSimpleThreadSafeCacheSizeCap>;
+
+/*
+ * Thread-safe, evicting hash table designed to store line measurement
+ * information.
+ */
+using LineMeasureCache = SimpleThreadSafeCache<
+    LineMeasureCacheKey,
+    LinesMeasurements,
     kSimpleThreadSafeCacheSizeCap>;
 
 inline bool areTextAttributesEquivalentLayoutWise(
@@ -199,6 +218,21 @@ inline bool operator!=(
   return !(lhs == rhs);
 }
 
+inline bool operator==(
+    const LineMeasureCacheKey& lhs,
+    const LineMeasureCacheKey& rhs) {
+  return areAttributedStringsEquivalentLayoutWise(
+             lhs.attributedString, rhs.attributedString) &&
+      lhs.paragraphAttributes == rhs.paragraphAttributes &&
+      lhs.size == rhs.size;
+}
+
+inline bool operator!=(
+    const LineMeasureCacheKey& lhs,
+    const LineMeasureCacheKey& rhs) {
+  return !(lhs == rhs);
+}
+
 } // namespace facebook::react
 
 namespace std {
@@ -210,6 +244,16 @@ struct hash<facebook::react::TextMeasureCacheKey> {
         attributedStringHashLayoutWise(key.attributedString),
         key.paragraphAttributes,
         key.layoutConstraints.maximumSize.width);
+  }
+};
+
+template <>
+struct hash<facebook::react::LineMeasureCacheKey> {
+  size_t operator()(const facebook::react::LineMeasureCacheKey& key) const {
+    return facebook::react::hash_combine(
+        attributedStringHashLayoutWise(key.attributedString),
+        key.paragraphAttributes,
+        key.size);
   }
 };
 

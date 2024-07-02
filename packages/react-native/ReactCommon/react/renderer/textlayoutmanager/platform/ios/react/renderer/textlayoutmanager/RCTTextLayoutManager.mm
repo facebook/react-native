@@ -152,19 +152,44 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
                                                      attribute:NSFontAttributeName
                                                        atIndex:0
                                                 effectiveRange:nil];
+                                            CGRect lineRect = [layoutManager lineFragmentRectForGlyphAtIndex:range.location effectiveRange:nil];
+                                            CGFloat baseline = [layoutManager locationForGlyphAtIndex:range.location].y;
                                             auto rect = facebook::react::Rect{
                                                 facebook::react::Point{usedRect.origin.x, usedRect.origin.y},
                                                 facebook::react::Size{usedRect.size.width, usedRect.size.height}};
                                             auto line = LineMeasurement{
                                                 std::string([renderedString UTF8String]),
                                                 rect,
-                                                -font.descender,
+                                                lineRect.size.height - baseline,
                                                 font.capHeight,
-                                                font.ascender,
+                                                baseline,
                                                 font.xHeight};
                                             blockParagraphLines->push_back(line);
                                           }];
   return paragraphLines;
+}
+
+- (float)getBaselineForAttributedString:(facebook::react::AttributedString)attributedString
+                    paragraphAttributes:
+                        (facebook::react::ParagraphAttributes)paragraphAttributes
+                                   size:(CGSize)size
+{
+    NSTextStorage *attributedText = [self
+        _textStorageAndLayoutManagerWithAttributesString:[self _nsAttributedStringFromAttributedString:attributedString]
+                                     paragraphAttributes:paragraphAttributes
+                                                    size:size];
+    __block CGFloat maximumDescender = 0.0;
+
+    [attributedText enumerateAttribute:NSFontAttributeName
+                               inRange:NSMakeRange(0, attributedText.length)
+                               options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired
+                            usingBlock:^(UIFont *font, NSRange range, __unused BOOL *stop) {
+                              if (maximumDescender > font.descender) {
+                                maximumDescender = font.descender;
+                              }
+                            }];
+
+    return size.height + maximumDescender;
 }
 
 - (NSTextStorage *)_textStorageAndLayoutManagerWithAttributesString:(NSAttributedString *)attributedString
@@ -303,12 +328,12 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
 
                 CGSize attachmentSize = attachment.bounds.size;
                 CGRect glyphRect = [layoutManager boundingRectForGlyphRange:range inTextContainer:textContainer];
-
+                CGFloat baseline = [layoutManager locationForGlyphAtIndex:range.location].y;
                 UIFont *font = [textStorage attribute:NSFontAttributeName atIndex:range.location effectiveRange:nil];
 
                 CGRect frame = {
                     {glyphRect.origin.x,
-                     glyphRect.origin.y + glyphRect.size.height - attachmentSize.height + font.descender},
+                     baseline - attachmentSize.height},
                     attachmentSize};
 
                 auto rect = facebook::react::Rect{

@@ -214,6 +214,26 @@ Size AndroidTextInputShadowNode::measureContent(
       .size;
 }
 
+Float AndroidTextInputShadowNode::baseline(
+    const LayoutContext& layoutContext,
+    Size size) const {
+  AttributedString attributedString = getMostRecentAttributedString();
+
+  if (attributedString.isEmpty()) {
+    attributedString = getPlaceholderAttributedString();
+  }
+
+  // I don't think I should be reading directly from yogaNode, but layout metrics
+  // aren't yet set at this point
+  auto paddingTop = yogaNode_.getLayout().padding(yoga::PhysicalEdge::Top);
+
+  return textLayoutManager_
+      ->getLastBaseline(
+          attributedString,
+          getConcreteProps().paragraphAttributes,
+          size) + paddingTop;
+}
+
 void AndroidTextInputShadowNode::layout(LayoutContext layoutContext) {
   updateStateIfNeeded();
   ConcreteViewShadowNode::layout(layoutContext);

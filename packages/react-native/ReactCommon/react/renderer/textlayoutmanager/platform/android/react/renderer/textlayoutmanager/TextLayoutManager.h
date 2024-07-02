@@ -68,6 +68,15 @@ class TextLayoutManager {
       Size size) const;
 
   /*
+   * Calculates baseline of `attributedString` using native text rendering
+   * infrastructure.
+   */
+  float getLastBaseline(
+      AttributedString attributedString,
+      ParagraphAttributes paragraphAttributes,
+      Size size) const;
+
+  /*
    * Returns an opaque pointer to platform-specific TextLayoutManager.
    * Is used on a native views layer to delegate text rendering to the manager.
    */
@@ -79,9 +88,15 @@ class TextLayoutManager {
       const ParagraphAttributes& paragraphAttributes,
       LayoutConstraints layoutConstraints) const;
 
+  LinesMeasurements doMeasureLines(
+      const AttributedString& attributedString,
+      const ParagraphAttributes& paragraphAttributes,
+      Size size) const;
+
   void* self_{};
   ContextContainer::Shared contextContainer_;
-  TextMeasureCache measureCache_;
+  TextMeasureCache textMeasureCache_;
+  LineMeasureCache lineMeasureCache_;
 };
 
 } // namespace facebook::react
