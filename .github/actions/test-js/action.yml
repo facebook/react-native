@@ -1,0 +1,27 @@
+name: test-js
+description: Runs all the JS tests in the codebase
+inputs:
+  node-version:
+    description: 'The node.js version to use'
+    required: false
+    default: '18'
+runs:
+  using: composite
+  steps:
+    - name: Setup node.js
+      uses: ./.github/actions/setup-node
+      with:
+        node-version: ${{ inputs.node-version }}
+    - name: Yarn install
+      shell: bash
+      run: yarn install --non-interactive
+    - name: Run Tests - JavaScript Tests
+      shell: bash
+      run: node ./scripts/run-ci-javascript-tests.js --maxWorkers 2
+    - name: Upload test results
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v4.3.0
+      with:
+        name: test-js-results
+        compression-level: 1
+        path: ./reports/junit
