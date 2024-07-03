@@ -21,6 +21,7 @@ class ReactInstanceManagerInspectorTarget
     static constexpr auto kJavaDescriptor =
         "Lcom/facebook/react/bridge/ReactInstanceManagerInspectorTarget$TargetDelegate;";
 
+    jni::local_ref<jni::JMap<jstring, jstring>> getMetadata() const;
     void onReload() const;
     void onSetPausedInDebuggerMessage(
         const OverlaySetPausedInDebuggerMessageRequest& request) const;
