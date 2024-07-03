@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<79318071dbc264dabddac64a52bd5256>>
+ * @generated SignedSource<<323a9038f19970da37a6cbca9d5f119b>>
  */
 
 /**
@@ -108,7 +108,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool setAndroidLayoutDirection() override {
-    return false;
+    return true;
   }
 
   bool useImmediateExecutorInAndroidBridgeless() override {

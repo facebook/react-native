@@ -134,7 +134,7 @@ const definitions: FeatureFlagDefinitions = {
         'When enabled, ParagraphShadowNode will no longer call measure twice.',
     },
     setAndroidLayoutDirection: {
-      defaultValue: false,
+      defaultValue: true,
       description: 'Propagate layout direction to Android views.',
     },
     useImmediateExecutorInAndroidBridgeless: {

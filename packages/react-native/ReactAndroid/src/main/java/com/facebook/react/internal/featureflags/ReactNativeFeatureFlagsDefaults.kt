@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0584cef0a5e682b2b3ba6d46161e0286>>
+ * @generated SignedSource<<221db563def11e4dace19561a8e69d5e>>
  */
 
 /**
@@ -63,7 +63,7 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun preventDoubleTextMeasure(): Boolean = true
 
-  override fun setAndroidLayoutDirection(): Boolean = false
+  override fun setAndroidLayoutDirection(): Boolean = true
 
   override fun useImmediateExecutorInAndroidBridgeless(): Boolean = false
 
