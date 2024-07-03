@@ -29,8 +29,8 @@
   metadata.deviceName = [device name];
   metadata.reactNativeVersion =
       [NSString stringWithFormat:@"%i.%i.%i%@",
-                                 [version[@"minor"] intValue],
                                  [version[@"major"] intValue],
+                                 [version[@"minor"] intValue],
                                  [version[@"patch"] intValue],
                                  [version[@"prerelease"] isKindOfClass:[NSNull class]]
                                      ? @""
