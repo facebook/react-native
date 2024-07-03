@@ -36,6 +36,14 @@ struct JReactHostImpl : public jni::JavaClass<JReactHostImpl> {
             "setPausedInDebuggerMessage");
     method(self(), message ? jni::make_jstring(*message) : nullptr);
   }
+
+  jni::local_ref<jni::JMap<jstring, jstring>> getHostMetadata() const {
+    static auto method =
+        javaClassStatic()
+            ->getMethod<jni::local_ref<jni::JMap<jstring, jstring>>()>(
+                "getHostMetadata");
+    return method(self());
+  }
 };
 
 class JReactHostInspectorTarget
