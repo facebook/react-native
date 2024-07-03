@@ -27,14 +27,13 @@
   metadata.appIdentifier = [[NSBundle mainBundle] bundleIdentifier];
   metadata.platform = RCTPlatformName;
   metadata.deviceName = [device name];
-  metadata.reactNativeVersion =
-      [NSString stringWithFormat:@"%i.%i.%i%@",
-                                 [version[@"major"] intValue],
-                                 [version[@"minor"] intValue],
-                                 [version[@"patch"] intValue],
-                                 [version[@"prerelease"] isKindOfClass:[NSNull class]]
-                                     ? @""
-                                     : [@"-" stringByAppendingString:[version[@"prerelease"] stringValue]]];
+  metadata.reactNativeVersion = [NSString stringWithFormat:@"%i.%i.%i%@",
+                                                           [version[@"major"] intValue],
+                                                           [version[@"minor"] intValue],
+                                                           [version[@"patch"] intValue],
+                                                           [version[@"prerelease"] isKindOfClass:[NSNull class]]
+                                                               ? @""
+                                                               : [@"-" stringByAppendingString:version[@"prerelease"]]];
 
   return metadata;
 }
