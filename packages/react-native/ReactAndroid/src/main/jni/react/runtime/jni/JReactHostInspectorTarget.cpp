@@ -103,6 +103,7 @@ JReactHostInspectorTarget::getMetadata() {
                     : std::nullopt;
     };
 
+    metadata.appDisplayName = getStringOptional("appDisplayName");
     metadata.appIdentifier = getStringOptional("appIdentifier");
     metadata.deviceName = getStringOptional("deviceName");
     metadata.platform = getStringOptional("platform");

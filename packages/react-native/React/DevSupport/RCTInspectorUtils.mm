@@ -23,6 +23,7 @@
 
   CommonHostMetadata *metadata = [[CommonHostMetadata alloc] init];
 
+  metadata.appDisplayName = [[[NSBundle mainBundle] infoDictionary] objectForKey:(NSString *)kCFBundleNameKey];
   metadata.appIdentifier = [[NSBundle mainBundle] bundleIdentifier];
   metadata.platform = RCTPlatformName;
   metadata.deviceName = [device name];
