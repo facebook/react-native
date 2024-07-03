@@ -78,9 +78,7 @@ RCT_EXPORT_MODULE(PlatformConstants)
             {.minor = [versions[@"minor"] doubleValue],
              .major = [versions[@"major"] doubleValue],
              .patch = [versions[@"patch"] doubleValue],
-             .prerelease = [versions[@"prerelease"] isKindOfClass:[NSNull class]]
-                 ? std::optional<double>{}
-                 : [versions[@"prerelease"] doubleValue]}),
+             .prerelease = [versions[@"prerelease"] isKindOfClass:[NSNull class]] ? nullptr : versions[@"prerelease"]}),
 #if TARGET_OS_MACCATALYST
         .isMacCatalyst = true,
 #else
