@@ -11,6 +11,7 @@
 // containing the nonnull members implemented by getHostMetadata.
 @interface CommonHostMetadata : NSObject
 
+@property (nonatomic, strong) NSString *appDisplayName;
 @property (nonatomic, strong) NSString *appIdentifier;
 @property (nonatomic, strong) NSString *deviceName;
 @property (nonatomic, strong) NSString *platform;

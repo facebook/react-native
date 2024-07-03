@@ -8,6 +8,7 @@
 package com.facebook.react.modules.systeminfo;
 
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
 import android.content.res.Resources;
 import android.os.Build;
 import com.facebook.common.logging.FLog;
@@ -72,9 +73,25 @@ public class AndroidInfoHelpers {
    * jsinspector_modern::HostTargetMetadata}.
    */
   public static Map<String, String> getInspectorHostMetadata(@Nullable Context applicationContext) {
+    String appIdentifier = null;
+    String appDisplayName = null;
+
+    if (applicationContext != null) {
+      ApplicationInfo applicationInfo = applicationContext.getApplicationInfo();
+      int labelResourceId = applicationInfo.labelRes;
+
+      appIdentifier = applicationContext.getPackageName();
+      appDisplayName =
+          labelResourceId == 0
+              ? applicationInfo.nonLocalizedLabel.toString()
+              : applicationContext.getString(labelResourceId);
+    }
+
     return MapBuilder.<String, String>of(
+        "appDisplayName",
+        appDisplayName,
         "appIdentifier",
-        applicationContext != null ? applicationContext.getPackageName() : null,
+        appIdentifier,
         "platform",
         "android",
         "deviceName",

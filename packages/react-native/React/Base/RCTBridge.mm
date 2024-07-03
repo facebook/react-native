@@ -191,6 +191,7 @@ class RCTBridgeHostTargetDelegate : public facebook::react::jsinspector_modern::
     auto metadata = [RCTInspectorUtils getHostMetadata];
 
     return {
+        .appDisplayName = [metadata.appDisplayName UTF8String],
         .appIdentifier = [metadata.appIdentifier UTF8String],
         .deviceName = [metadata.deviceName UTF8String],
         .integrationName = "iOS Bridge (RCTBridge)",
