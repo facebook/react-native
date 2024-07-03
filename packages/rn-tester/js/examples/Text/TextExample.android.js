@@ -18,7 +18,13 @@ import TextInlineViewsExample from './TextInlineViewsExample';
 
 const TextInlineView = require('../../components/TextInlineView');
 const React = require('react');
-const {LayoutAnimation, StyleSheet, Text, TextInput, View} = require('react-native');
+const {
+  LayoutAnimation,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} = require('react-native');
 
 class Entity extends React.Component<{|children: React.Node|}> {
   render(): React.Node {
@@ -976,19 +982,19 @@ function TextBaseLineLayoutExample(props: {}): React.Node {
         </Text>
       </View>
 
-      <Text style={subtitleStyle}>
-        {'Multi-line <Text> alignment'}
-      </Text>
+      <Text style={subtitleStyle}>{'Multi-line <Text> alignment'}</Text>
       <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
         <View style={{width: 50, height: 50, backgroundColor: 'gray'}} />
         <View style={{width: 125, backgroundColor: '#eee'}}>
           <Text style={{fontSize: 15}}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
           </Text>
         </View>
         <View style={{width: 125, backgroundColor: '#eee'}}>
           <Text style={{fontSize: 10}}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
           </Text>
         </View>
       </View>
