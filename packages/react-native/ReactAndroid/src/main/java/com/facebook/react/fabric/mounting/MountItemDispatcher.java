@@ -117,6 +117,11 @@ public class MountItemDispatcher {
       } finally {
         mInDispatch = false;
       }
+
+      // We call didDispatchMountItems regardless of whether we actually dispatched anything, since
+      // NativeAnimatedModule relies on this for executing any animations that may have been
+      // scheduled
+      mItemDispatchListener.didDispatchMountItems();
     } else {
       final boolean didDispatchItems;
       try {
