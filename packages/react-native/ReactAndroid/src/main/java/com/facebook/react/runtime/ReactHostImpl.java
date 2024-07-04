@@ -1708,18 +1708,6 @@ public class ReactHostImpl implements ReactHost {
     return mDestroyTask;
   }
 
-  @Nullable
-  @Override
-  public JSEngineResolutionAlgorithm getJsEngineResolutionAlgorithm() {
-    return mJSEngineResolutionAlgorithm;
-  }
-
-  @Override
-  public void setJsEngineResolutionAlgorithm(
-      @Nullable JSEngineResolutionAlgorithm jsEngineResolutionAlgorithm) {
-    mJSEngineResolutionAlgorithm = jsEngineResolutionAlgorithm;
-  }
-
   private @Nullable ReactHostInspectorTarget getOrCreateReactHostInspectorTarget() {
     if (mReactHostInspectorTarget == null && InspectorFlags.getFuseboxEnabled()) {
       // NOTE: ReactHostInspectorTarget only retains a weak reference to `this`.

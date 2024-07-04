@@ -45,9 +45,6 @@ public interface ReactHost {
   /** [ReactQueueConfiguration] for caller to post jobs in React Native threads */
   public val reactQueueConfiguration: ReactQueueConfiguration?
 
-  /** [JSEngineResolutionAlgorithm] used by this host. */
-  public var jsEngineResolutionAlgorithm: JSEngineResolutionAlgorithm?
-
   /** Routes memory pressure events to interested components */
   public val memoryPressureRouter: MemoryPressureRouter
 
