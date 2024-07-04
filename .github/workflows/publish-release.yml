@@ -2,8 +2,8 @@ name: Publish Release
 on:
   push:
     tags:
-      - "v0.*.*"  # This should match v0.X.Y
-      - "v0.*.*-rc.*"  # This should match v0.X.Y-RC.0
+      - "v0.*.*" # This should match v0.X.Y
+      - "v0.*.*-rc.*" # This should match v0.X.Y-RC.0
 jobs:
   set_release_type:
     runs-on: ubuntu-latest
@@ -553,12 +553,20 @@ jobs:
 
   build_npm_package:
     runs-on: 8-core-ubuntu
-    needs: [set_release_type, prepare_hermes_workspace, build_hermes_macos, build_hermesc_linux, build_hermesc_windows,build_android]
+    needs:
+      [
+        set_release_type,
+        prepare_hermes_workspace,
+        build_hermes_macos,
+        build_hermesc_linux,
+        build_hermesc_windows,
+        build_android,
+      ]
     container:
       image: reactnativecommunity/react-native-android:latest
       env:
         TERM: "dumb"
-        GRADLE_OPTS: '-Dorg.gradle.daemon=false'
+        GRADLE_OPTS: "-Dorg.gradle.daemon=false"
         # By default we only build ARM64 to save time/resources. For release/nightlies/prealpha, we override this value to build all archs.
         ORG_GRADLE_PROJECT_reactNativeArchitectures: "arm64-v8a"
         HERMES_WS_DIR: /tmp/hermes
@@ -617,8 +625,8 @@ jobs:
           name: hermes-linux-bin
           path: /tmp/hermes/linux64-bin
       - name: Cache setup
-        id: cache_setup
-        uses: ./.github/actions/cache_setup
+        id: cache-setup
+        uses: ./.github/actions/cache-setup
         with:
           hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}

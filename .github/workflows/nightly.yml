@@ -620,8 +620,8 @@ jobs:
           name: hermes-linux-bin
           path: /tmp/hermes/linux64-bin
       - name: Cache setup
-        id: cache_setup
-        uses: ./.github/actions/cache_setup
+        id: cache-setup
+        uses: ./.github/actions/cache-setup
         with:
           hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}

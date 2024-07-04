@@ -1,12 +1,12 @@
-name: test_ios_rntester
+name: test-ios-rntester
 description: Test iOS RNTester
 inputs:
   jsengine:
     description: Which JavaScript engine to use. Must be one of "Hermes", "JSC".
     default: Hermes
   use-frameworks:
-      description: The dependency building and linking strategy to use. Must be one of "StaticLibraries", "DynamicFrameworks"
-      default: StaticLibraries
+    description: The dependency building and linking strategy to use. Must be one of "StaticLibraries", "DynamicFrameworks"
+    default: StaticLibraries
   architecture:
     description: The React Native architecture to Test. RNTester has always Fabric enabled, but we want to run integration test with the old arch setup
     default: NewArch
@@ -15,7 +15,7 @@ inputs:
     default: 2.6.10
   run-unit-tests:
     description: whether unit tests should run or not.
-    default: false
+    default: "false"
   hermes-tarball-artifacts-dir:
     description: The directory where the hermes tarball artifacts are stored
     default: /tmp/hermes/hermes-runtime-darwin
@@ -49,7 +49,7 @@ runs:
         ruby-version: ${{ inputs.ruby-version }}
     - name: Prepare IOS Tests
       if: ${{ inputs.run-unit-tests == 'true' }}
-      uses: ./.github/actions/prepare_ios_tests
+      uses: ./.github/actions/prepare-ios-tests
     - name: Set HERMES_ENGINE_TARBALL_PATH envvar if Hermes tarball is present
       shell: bash
       run: |
@@ -89,7 +89,7 @@ runs:
           echo 'No Hermes tarball found.'
         fi
     - name: Setup xcode build cache
-      uses: ./.github/actions/setup_xcode_build_cache
+      uses: ./.github/actions/setup-xcode-build-cache
       with:
         hermes-version: ${{ inputs.hermes-version }}
     - name: Install CocoaPods dependencies
@@ -141,7 +141,7 @@ runs:
         path: /Users/distiller/Library/Developer/Xcode/xcresults.tar.gz
     - name: Report bundle size
       if: ${{ inputs.run-unit-tests == 'true' }}
-      uses: ./.github/actions/report_bundle_size
+      uses: ./.github/actions/report-bundle-size
       with:
         platform: ios
     - name: Store test results

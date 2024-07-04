@@ -383,7 +383,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4.1.1
       - name: Run it
-        uses: ./.github/actions/test_ios_rntester
+        uses: ./.github/actions/test-ios-rntester
         with:
           ruby-version: "3.2.0"
           hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
@@ -404,7 +404,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4.1.1
       - name: Run it
-        uses: ./.github/actions/test_ios_rntester
+        uses: ./.github/actions/test-ios-rntester
         with:
           jsengine: ${{ matrix.jsengine }}
           use-frameworks: DynamicFrameworks
@@ -428,7 +428,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4.1.1
       - name: Run it
-        uses: ./.github/actions/test_ios_rntester
+        uses: ./.github/actions/test-ios-rntester
         with:
           jsengine: ${{ matrix.jsengine }}
           architecture: ${{ matrix.architecture }}
@@ -824,8 +824,8 @@ jobs:
       - name: Setup git safe folders
         run: git config --global --add safe.directory '*'
       - name: Cache setup
-        id: cache_setup
-        uses: ./.github/actions/cache_setup
+        id: cache-setup
+        uses: ./.github/actions/cache-setup
         with:
           hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
@@ -891,7 +891,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.1
-      - uses: ./.github/actions/test_ios_helloworld
+      - uses: ./.github/actions/test-ios-helloworld
         with:
           ruby-version: 3.2.0
           architecture: NewArch
@@ -919,7 +919,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.1
-      - uses: ./.github/actions/test_ios_helloworld
+      - uses: ./.github/actions/test-ios-helloworld
         with:
           flavor: ${{ matrix.flavor }}
           jsengine: ${{ matrix.jsengine }}

@@ -2,14 +2,14 @@ name: create_release
 description: Creates a new React Native release
 inputs:
   version:
-    description: 'The version of React Native we want to release. For example 0.75.0-rc.0'
+    description: "The version of React Native we want to release. For example 0.75.0-rc.0"
     required: true
-  is_latest_on_npm:
-    description: 'Whether we want to tag this release as latest on NPM'
+  is-latest-on-npm:
+    description: "Whether we want to tag this release as latest on NPM"
     required: true
     default: "false"
-  dry_run:
-    description: 'Whether the job should be executed in dry-run mode or not'
+  dry-run:
+    description: "Whether the job should be executed in dry-run mode or not"
     default: "true"
 runs:
   using: composite
@@ -27,8 +27,8 @@ runs:
       run: |
         node scripts/releases/create-release-commit.js \
           --reactNativeVersion "${{ inputs.version }}" \
-          --tagAsLatestRelease "${{ inputs.is_latest_on_npm }}" \
-          --dryRun "${{ inputs.dry_run }}"
+          --tagAsLatestRelease "${{ inputs.is-latest-on-npm }}" \
+          --dryRun "${{ inputs.dry-run }}"
         GIT_PAGER=cat git show HEAD
     - name: Update "latest" tag if needed
       shell: bash
@@ -39,7 +39,7 @@ runs:
         git tag -a "latest" -m "latest"
     - name: Pushing release commit
       shell: bash
-      if: ${{ inputs.dry_run == 'false' }}
+      if: ${{ inputs.dry-run == 'false' }}
       run: |
         CURR_BRANCH="$(git branch --show-current)"
         git push origin "$CURR_BRANCH" --follow-tags
