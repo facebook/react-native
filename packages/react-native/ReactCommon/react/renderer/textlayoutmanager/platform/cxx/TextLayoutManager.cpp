@@ -42,7 +42,7 @@ LinesMeasurements TextLayoutManager::measureLines(
   return {};
 };
 
-float TextLayoutManager::baseline(
+Float TextLayoutManager::baseline(
     AttributedString attributedString,
     ParagraphAttributes paragraphAttributes,
     Size size) const {
