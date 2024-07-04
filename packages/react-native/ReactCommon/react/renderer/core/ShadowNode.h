@@ -282,6 +282,11 @@ struct ShadowNodeWrapper : public jsi::NativeState {
   explicit ShadowNodeWrapper(ShadowNode::Shared shadowNode)
       : shadowNode(std::move(shadowNode)) {}
 
+  // The below method needs to be implemented out-of-line in order for the class
+  // to have at least one "key function" (see
+  // https://itanium-cxx-abi.github.io/cxx-abi/abi.html#vague-vtable)
+  ~ShadowNodeWrapper() override;
+
   ShadowNode::Shared shadowNode;
 };
 
