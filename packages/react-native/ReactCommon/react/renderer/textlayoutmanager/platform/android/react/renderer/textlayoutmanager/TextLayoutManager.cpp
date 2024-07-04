@@ -218,7 +218,7 @@ LinesMeasurements TextLayoutManager::measureLines(
   return lineMeasurements;
 }
 
-float TextLayoutManager::getLastBaseline(
+float TextLayoutManager::baseline(
     AttributedString attributedString,
     ParagraphAttributes paragraphAttributes,
     Size size) const {

@@ -63,7 +63,7 @@ class TextLayoutManager {
    * Calculates baseline of `attributedString` using native text rendering
    * infrastructure.
    */
-  virtual float getLastBaseline(
+  virtual float baseline(
       AttributedString attributedString,
       ParagraphAttributes paragraphAttributes,
       Size size) const;

@@ -186,7 +186,7 @@ Float ParagraphShadowNode::baseline(
   }
 
   return textLayoutManager_
-      ->getLastBaseline(
+      ->baseline(
           attributedString,
           getConcreteProps().paragraphAttributes,
           size);

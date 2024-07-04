@@ -102,7 +102,7 @@ LinesMeasurements TextLayoutManager::measureLines(
     return measurement;
 }
 
-float TextLayoutManager::getLastBaseline(
+float TextLayoutManager::baseline(
     AttributedString attributedString,
     ParagraphAttributes paragraphAttributes,
     Size size) const
