@@ -39,7 +39,7 @@ namespace facebook::react {
 // Explicitly define destructors here, as they have to exist in order to act as a
 // "key function" for the ShadowNodeWrapper class -- this allows for RTTI to work
 // properly across dynamic library boundaries (i.e. dynamic_cast that is used by
-// isHostObject method)
+// getNativeState method)
 ShadowNodeListWrapper::~ShadowNodeListWrapper() = default;
 
 UIManager::UIManager(
