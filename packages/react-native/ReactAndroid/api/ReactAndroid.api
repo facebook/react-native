@@ -1675,6 +1675,7 @@ public class com/facebook/react/bridge/queue/ReactQueueConfigurationImpl : com/f
 }
 
 public class com/facebook/react/bridge/queue/ReactQueueConfigurationSpec {
+	public fun <init> (Lcom/facebook/react/bridge/queue/MessageQueueThreadSpec;Lcom/facebook/react/bridge/queue/MessageQueueThreadSpec;)V
 	public static fun builder ()Lcom/facebook/react/bridge/queue/ReactQueueConfigurationSpec$Builder;
 	public static fun createDefault ()Lcom/facebook/react/bridge/queue/ReactQueueConfigurationSpec;
 	public fun getJSQueueThreadSpec ()Lcom/facebook/react/bridge/queue/MessageQueueThreadSpec;
