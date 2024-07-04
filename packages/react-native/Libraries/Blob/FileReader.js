@@ -108,7 +108,7 @@ class FileReader extends (EventTarget(...READER_EVENTS): any) {
   readAsDataURL(blob: ?Blob): void {
     this._aborted = false;
 
-    if (blob == null) {
+    if (!(blob instanceof Blob)) {
       throw new TypeError(
         "Failed to execute 'readAsDataURL' on 'FileReader': parameter 1 is not of type 'Blob'",
       );
