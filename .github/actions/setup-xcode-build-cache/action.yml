@@ -1,4 +1,4 @@
-name: setup_xcode_build_cache
+name: setup-xcode-build-cache
 description: Add caching to iOS jobs to speed up builds
 inputs:
   hermes-version:

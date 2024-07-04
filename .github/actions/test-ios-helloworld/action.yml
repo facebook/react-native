@@ -1,37 +1,21 @@
-name: test_ios_helloworld
+name: test-ios-helloworld
 description: Test iOS Hello World
 inputs:
   jsengine:
     description: Which JavaScript engine to use. Must be one of "Hermes", "JSC".
-    type: choice
     default: Hermes
-    options:
-    - JSC
-    - Hermes
   use-frameworks:
-      description: The dependency building and linking strategy to use. Must be one of "StaticLibraries", "DynamicFrameworks"
-      type: choice
-      default: StaticLibraries
-      options:
-      - StaticLibraries
-      - DynamicFrameworks
+    description: The dependency building and linking strategy to use. Must be one of "StaticLibraries", "DynamicFrameworks"
+    default: StaticLibraries
   architecture:
-    description: The React Native architecture to Test. RNTester has always Fabric enabled, but we want to run integration test with the old arch setup
-    type: choice
+    description: The React Native architecture to Test. RNTester has always Fabric enabled, but we want to run integration test with the old arch setup. Must be one of "OldArch" or "NewArch"
     default: OldArch
-    options:
-    - OldArch
-    - NewArch
   ruby-version:
     description: The version of ruby that must be used
     default: 2.6.10
   flavor:
     description: The flavor of the build. Must be one of "Debug", "Release".
-    type: choice
     default: Debug
-    options:
-    - Debug
-    - Release
   hermes-version:
     description: The version of hermes
     required: true

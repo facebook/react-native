@@ -1,4 +1,4 @@
-name: cache_setup
+name: cache-setup
 description: "Cache setup"
 inputs:
   hermes-version:
