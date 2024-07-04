@@ -155,15 +155,17 @@ Float TextInputShadowNode::baseline(
     attributedString.appendFragment({string, textAttributes, {}});
   }
   
-  // I don't think I should be reading directly from yogaNode, but leyout metrics
-  // aren't yet set at this point
-  auto paddingTop = yogaNode_.getLayout().padding(yoga::PhysicalEdge::Top);
+  // Yoga expects a baseline relative to the Node's border-box edge instead of
+  // the content, so we need to adjust by the padding and border widths, which
+  // have already been set by the time of baseline alignment
+  auto top = YGNodeLayoutGetBorder(&yogaNode_, YGEdgeTop) +
+      YGNodeLayoutGetPadding(&yogaNode_, YGEdgeTop);
 
   return textLayoutManager_
       ->getLastBaseline(
         attributedString,
         getConcreteProps().getEffectiveParagraphAttributes(),
-        size) + paddingTop;
+        size) + top;
 }
 
 void TextInputShadowNode::layout(LayoutContext layoutContext) {
