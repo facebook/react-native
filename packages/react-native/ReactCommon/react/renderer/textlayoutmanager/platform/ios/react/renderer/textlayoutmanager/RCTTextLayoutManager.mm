@@ -306,7 +306,6 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
                 CGSize attachmentSize = attachment.bounds.size;
                 CGRect glyphRect = [layoutManager boundingRectForGlyphRange:range inTextContainer:textContainer];
                 CGFloat baseline = [layoutManager locationForGlyphAtIndex:range.location].y;
-                UIFont *font = [textStorage attribute:NSFontAttributeName atIndex:range.location effectiveRange:nil];
 
                 CGRect frame = {
                     {glyphRect.origin.x,
