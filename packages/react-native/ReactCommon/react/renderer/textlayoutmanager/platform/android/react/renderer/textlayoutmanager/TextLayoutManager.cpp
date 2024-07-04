@@ -161,47 +161,6 @@ TextMeasurement TextLayoutManager::measureCachedSpannableById(
   return TextMeasurement{size, attachments};
 }
 
-LinesMeasurements TextLayoutManager::doMeasureLines(
-    const AttributedString& attributedString,
-    const ParagraphAttributes& paragraphAttributes,
-    Size size) const {
-  const jni::global_ref<jobject>& fabricUIManager =
-      contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
-  static auto measureLines =
-      jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
-          ->getMethod<NativeArray::javaobject(
-              JReadableMapBuffer::javaobject,
-              JReadableMapBuffer::javaobject,
-              jfloat,
-              jfloat)>("measureLines");
-
-  auto attributedStringMB =
-      JReadableMapBuffer::createWithContents(toMapBuffer(attributedString));
-  auto paragraphAttributesMB =
-      JReadableMapBuffer::createWithContents(toMapBuffer(paragraphAttributes));
-
-  auto array = measureLines(
-      fabricUIManager,
-      attributedStringMB.get(),
-      paragraphAttributesMB.get(),
-      size.width,
-      size.height);
-
-  auto dynamicArray = cthis(array)->consume();
-  LinesMeasurements lineMeasurements;
-  lineMeasurements.reserve(dynamicArray.size());
-
-  for (const auto& data : dynamicArray) {
-    lineMeasurements.push_back(LineMeasurement(data));
-  }
-
-  // Explicitly release smart pointers to free up space faster in JNI tables
-  attributedStringMB.reset();
-  paragraphAttributesMB.reset();
-
-  return lineMeasurements;
-}
-
 LinesMeasurements TextLayoutManager::measureLines(
     const AttributedString& attributedString,
     const ParagraphAttributes& paragraphAttributes,
@@ -209,10 +168,41 @@ LinesMeasurements TextLayoutManager::measureLines(
   auto lineMeasurements = lineMeasureCache_.get(
       {attributedString, paragraphAttributes, size},
       [&](const LineMeasureCacheKey& /*key*/) {
-        auto measurement =
-            doMeasureLines(attributedString, paragraphAttributes, size);
+        const jni::global_ref<jobject>& fabricUIManager =
+            contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
+        static auto measureLines =
+            jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
+                ->getMethod<NativeArray::javaobject(
+                    JReadableMapBuffer::javaobject,
+                    JReadableMapBuffer::javaobject,
+                    jfloat,
+                    jfloat)>("measureLines");
 
-        return measurement;
+        auto attributedStringMB =
+            JReadableMapBuffer::createWithContents(toMapBuffer(attributedString));
+        auto paragraphAttributesMB =
+            JReadableMapBuffer::createWithContents(toMapBuffer(paragraphAttributes));
+
+        auto array = measureLines(
+            fabricUIManager,
+            attributedStringMB.get(),
+            paragraphAttributesMB.get(),
+            size.width,
+            size.height);
+
+        auto dynamicArray = cthis(array)->consume();
+        LinesMeasurements lineMeasurements;
+        lineMeasurements.reserve(dynamicArray.size());
+
+        for (const auto& data : dynamicArray) {
+          lineMeasurements.push_back(LineMeasurement(data));
+        }
+
+        // Explicitly release smart pointers to free up space faster in JNI tables
+        attributedStringMB.reset();
+        paragraphAttributesMB.reset();
+
+        return lineMeasurements;
       });
 
   return lineMeasurements;
