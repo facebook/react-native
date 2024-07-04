@@ -146,13 +146,12 @@ Float TextInputShadowNode::baseline(
   auto attributedString = getAttributedString(layoutContext);
 
   if (attributedString.isEmpty()) {
-    auto placeholder = getConcreteProps().placeholder;
-    auto string = !placeholder.empty()
-        ? placeholder
-        : BaseTextShadowNode::getEmptyPlaceholder();
+    auto placeholderString = !getConcreteProps().placeholder.empty()
+      ? getConcreteProps().placeholder
+      : BaseTextShadowNode::getEmptyPlaceholder();
     auto textAttributes = getConcreteProps().getEffectiveTextAttributes(
       layoutContext.fontSizeMultiplier);
-    attributedString.appendFragment({string, textAttributes, {}});
+    attributedString.appendFragment({std::move(placeholderString), textAttributes, {}});
   }
   
   // Yoga expects a baseline relative to the Node's border-box edge instead of
