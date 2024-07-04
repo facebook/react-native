@@ -41,7 +41,7 @@ type IOSProps = $ReadOnly<{|
   /**
    * Title font size.
    */
-  titleFontSize?: ?Number,
+  titleFontSize?: ?number,
   /**
    * Title title font weight.
    */

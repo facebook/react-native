@@ -54,7 +54,7 @@ type NativeProps = $ReadOnly<{|
   /**
    * Title font family.
    */
-  titleFontFamily?: string,
+  titleFontFamily?: ?string,
 
   /**
    * Title font size.
@@ -64,7 +64,7 @@ type NativeProps = $ReadOnly<{|
   /**
    * Title title font weight.
    */
-  titleFontWeight?: string,
+  titleFontWeight?: ?string,
 |}>;
 
 type ComponentType = HostComponent<NativeProps>;
