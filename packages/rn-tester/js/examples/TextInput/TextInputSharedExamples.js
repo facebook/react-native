@@ -77,6 +77,26 @@ const styles = StyleSheet.create({
   },
 });
 
+class AutoFocusWithSelectOnFocusTextExample extends React.Component<
+  $FlowFixMeProps,
+  any,
+> {
+  constructor(props: any | void) {
+    super(props);
+    this.state = {text: 'Hello World'};
+  }
+  render(): React.Node {
+    return (
+      <ExampleTextInput
+        autoFocus={true}
+        selectTextOnFocus={true}
+        value={this.state.text}
+        onChangeText={text => this.setState({text: text})}
+        accessibilityLabel="I am the accessibility label for text input"
+      />
+    );
+  }
+}
 class WithLabel extends React.Component<$FlowFixMeProps> {
   render(): React.Node {
     return (
@@ -815,14 +835,9 @@ function MultilineStyledTextInput({
 
 module.exports = ([
   {
-    title: 'Auto-focus',
+    title: 'Auto-focus & select text on focus',
     render: function (): React.Node {
-      return (
-        <ExampleTextInput
-          autoFocus={true}
-          accessibilityLabel="I am the accessibility label for text input"
-        />
-      );
+      return <AutoFocusWithSelectOnFocusTextExample />;
     },
   },
   {
