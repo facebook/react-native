@@ -166,6 +166,15 @@ BaseViewProps::BaseViewProps(
                                                        "experimental_filter",
                                                        sourceProps.filter,
                                                        {})),
+      mixBlendMode(
+          CoreFeatures::enablePropIteratorSetter
+              ? sourceProps.mixBlendMode
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "experimental_mixBlendMode",
+                    sourceProps.mixBlendMode,
+                    {})),
       transform(
           CoreFeatures::enablePropIteratorSetter ? sourceProps.transform
                                                  : convertRawProp(

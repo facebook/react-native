@@ -62,6 +62,9 @@ class BaseViewProps : public YogaStylableProps, public AccessibilityProps {
   // Filter
   std::vector<FilterPrimitive> filter{};
 
+  // MixBlendMode
+  std::string mixBlendMode;
+
   // Transform
   Transform transform{};
   TransformOrigin transformOrigin{
