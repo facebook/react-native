@@ -4003,6 +4003,7 @@ public abstract class com/facebook/react/uimanager/BaseViewManager : com/faceboo
 	public fun setElevation (Landroid/view/View;F)V
 	public fun setFilter (Landroid/view/View;Lcom/facebook/react/bridge/ReadableArray;)V
 	public fun setImportantForAccessibility (Landroid/view/View;Ljava/lang/String;)V
+	public fun setMixBlendMode (Landroid/view/View;Ljava/lang/String;)V
 	public fun setMoveShouldSetResponder (Landroid/view/View;Z)V
 	public fun setMoveShouldSetResponderCapture (Landroid/view/View;Z)V
 	public fun setNativeId (Landroid/view/View;Ljava/lang/String;)V
@@ -4073,6 +4074,7 @@ public abstract interface class com/facebook/react/uimanager/BaseViewManagerInte
 	public abstract fun setElevation (Landroid/view/View;F)V
 	public abstract fun setFilter (Landroid/view/View;Lcom/facebook/react/bridge/ReadableArray;)V
 	public abstract fun setImportantForAccessibility (Landroid/view/View;Ljava/lang/String;)V
+	public abstract fun setMixBlendMode (Landroid/view/View;Ljava/lang/String;)V
 	public abstract fun setNativeId (Landroid/view/View;Ljava/lang/String;)V
 	public abstract fun setOpacity (Landroid/view/View;F)V
 	public abstract fun setRenderToHardwareTexture (Landroid/view/View;Z)V
@@ -5449,6 +5451,7 @@ public final class com/facebook/react/uimanager/ViewProps {
 	public static final field MINIMUM_FONT_SCALE Ljava/lang/String;
 	public static final field MIN_HEIGHT Ljava/lang/String;
 	public static final field MIN_WIDTH Ljava/lang/String;
+	public static final field MIX_BLEND_MODE Ljava/lang/String;
 	public static final field NATIVE_ID Ljava/lang/String;
 	public static final field NEEDS_OFFSCREEN_ALPHA_COMPOSITING Ljava/lang/String;
 	public static final field NONE Ljava/lang/String;
