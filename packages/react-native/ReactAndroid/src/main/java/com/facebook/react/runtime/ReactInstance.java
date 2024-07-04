@@ -125,13 +125,10 @@ final class ReactInstance {
      * Prepare the ReactInstance by installing JSI bindings, initializing Fabric + TurboModules, and
      * loading the JS bundle.
      */
-    MessageQueueThreadSpec nativeModulesSpec =
-        MessageQueueThreadSpec.newBackgroundThreadSpec("v_native");
     ReactQueueConfigurationSpec spec =
-        ReactQueueConfigurationSpec.builder()
-            .setJSQueueThreadSpec(MessageQueueThreadSpec.newBackgroundThreadSpec("v_js"))
-            .setNativeModulesQueueThreadSpec(nativeModulesSpec)
-            .build();
+        new ReactQueueConfigurationSpec(
+            MessageQueueThreadSpec.newBackgroundThreadSpec("v_native"),
+            MessageQueueThreadSpec.newBackgroundThreadSpec("v_js"));
     mQueueConfiguration = ReactQueueConfigurationImpl.create(spec, exceptionHandler);
     FLog.d(TAG, "Calling initializeMessageQueueThreads()");
     mBridgelessReactContext.initializeMessageQueueThreads(mQueueConfiguration);
