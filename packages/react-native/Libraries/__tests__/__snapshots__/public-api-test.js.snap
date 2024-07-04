@@ -7700,11 +7700,29 @@ export type ____ShadowStyle_Internal = $ReadOnly<{
 type ____FilterStyle_Internal = $ReadOnly<{
   experimental_filter?: $ReadOnlyArray<FilterPrimitive>,
 }>;
+export type ____MixBlendMode_Internal =
+  | \\"normal\\"
+  | \\"multiply\\"
+  | \\"screen\\"
+  | \\"overlay\\"
+  | \\"darken\\"
+  | \\"lighten\\"
+  | \\"color-dodge\\"
+  | \\"color-burn\\"
+  | \\"hard-light\\"
+  | \\"soft-light\\"
+  | \\"difference\\"
+  | \\"exclusion\\"
+  | \\"hue\\"
+  | \\"saturation\\"
+  | \\"color\\"
+  | \\"luminosity\\";
 export type ____ViewStyle_InternalCore = $ReadOnly<{
   ...$Exact<____LayoutStyle_Internal>,
   ...$Exact<____ShadowStyle_Internal>,
   ...$Exact<____TransformStyle_Internal>,
   ...____FilterStyle_Internal,
+  experimental_mixBlendMode?: ____MixBlendMode_Internal,
   backfaceVisibility?: \\"visible\\" | \\"hidden\\",
   backgroundColor?: ____ColorValue_Internal,
   borderColor?: ____ColorValue_Internal,
