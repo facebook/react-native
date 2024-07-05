@@ -16,6 +16,7 @@
 #include <react/renderer/graphics/BoxShadow.h>
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/graphics/Filter.h>
+#include <react/renderer/graphics/MixBlendMode.h>
 #include <react/renderer/graphics/Transform.h>
 
 #include <optional>
@@ -63,7 +64,7 @@ class BaseViewProps : public YogaStylableProps, public AccessibilityProps {
   std::vector<FilterPrimitive> filter{};
 
   // MixBlendMode
-  std::string mixBlendMode;
+  MixBlendMode mixBlendMode;
 
   // Transform
   Transform transform{};

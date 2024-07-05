@@ -17,6 +17,7 @@
 #include <react/renderer/core/RawProps.h>
 #include <react/renderer/graphics/BoxShadow.h>
 #include <react/renderer/graphics/Filter.h>
+#include <react/renderer/graphics/MixBlendMode.h>
 #include <react/renderer/graphics/PlatformColorParser.h>
 #include <react/renderer/graphics/Transform.h>
 #include <react/renderer/graphics/ValueUnit.h>
@@ -1067,6 +1068,22 @@ inline void fromRawValue(
   }
 
   result = filter;
+}
+
+inline void fromRawValue(
+    const PropsParserContext& /*context*/,
+    const RawValue& value,
+    MixBlendMode& result) {
+  react_native_expect(value.hasType<std::string>());
+  result = MixBlendMode::Normal;
+  if (!value.hasType<std::string>()) {
+    return;
+  }
+
+  auto rawMixBlendMode = static_cast<std::string>(value);
+  MixBlendMode mixBlendMode = mixBlendModeFromString(rawMixBlendMode);
+
+  result = mixBlendMode;
 }
 
 template <size_t N>
