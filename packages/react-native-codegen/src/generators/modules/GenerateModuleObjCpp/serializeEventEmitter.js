@@ -22,6 +22,7 @@ function getEventEmitterTypeObjCType(
       return 'NSNumber *_Nonnull';
     case 'BooleanTypeAnnotation':
       return 'BOOL';
+    case 'GenericObjectTypeAnnotation':
     case 'ObjectTypeAnnotation':
     case 'TypeAliasTypeAnnotation':
       return 'NSDictionary *';

@@ -1527,6 +1527,19 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_EVENT_EM
                 }
               }
             }
+          },
+          {
+            'name': 'onEvent7',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'EventEmitterTypeAnnotation',
+              'typeAnnotation': {
+                'type': 'GenericObjectTypeAnnotation',
+                'dictionaryValueType': {
+                  'type': 'StringTypeAnnotation'
+                }
+              }
+            }
           }
         ],
         'methods': []
