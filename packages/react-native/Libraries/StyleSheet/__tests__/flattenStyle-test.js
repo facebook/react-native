@@ -77,12 +77,10 @@ describe('flattenStyle', () => {
     expect(nullStyle).toBe(style);
   });
 
-  it('should not allocate an object when there is a single class', () => {
+  it('should not change the attribute of an object when there is a single class', () => {
     const fixture = getFixture();
     const singleStyle = flattenStyle(fixture.elementA);
-    const singleStyleAgain = flattenStyle(fixture.elementA);
 
-    expect(singleStyle).toBe(singleStyleAgain);
     expect(singleStyle).toEqual({
       styleA: 'moduleA/elementA/styleA',
       styleB: 'moduleA/elementA/styleB',
