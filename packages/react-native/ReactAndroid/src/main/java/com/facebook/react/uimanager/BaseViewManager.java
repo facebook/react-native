@@ -108,7 +108,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
 
     view.setTag(R.id.use_hardware_layer, null);
     view.setTag(R.id.filter, null);
-    applyLayerEffects(view, null, null, null);
+    LayerEffectsHelper.apply(view, null, null, null);
 
     // setShadowColor
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -504,37 +504,41 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     }
   }
 
-  private void applyLayerEffects(
-      @NonNull T view,
-      @Nullable ReadableArray filter,
-      @Nullable BlendMode mixBlendMode,
-      @Nullable Boolean useHWLayer) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-      view.setRenderEffect(null);
-    }
-
-    @Nullable Paint p = null;
-
-    if (filter != null) {
-      if (FilterHelper.isOnlyColorMatrixFilters(filter)) {
-        p = new Paint();
-        p.setColorFilter(FilterHelper.parseColorMatrixFilters(filter));
-      } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        view.setRenderEffect(FilterHelper.parseFilters(filter));
+  // Extracting helper method to inner class to avoid reflection on older Android versions
+  // hitting the unknown BlendMode type
+  private static class LayerEffectsHelper {
+    public static void apply(
+        @NonNull View view,
+        @Nullable ReadableArray filter,
+        @Nullable BlendMode mixBlendMode,
+        @Nullable Boolean useHWLayer) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        view.setRenderEffect(null);
       }
-    }
 
-    if (mixBlendMode != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-      p = p == null ? new Paint() : p;
-      p.setBlendMode(mixBlendMode);
-    }
+      @Nullable Paint p = null;
 
-    if (p == null) {
-      int layerType =
-          useHWLayer != null && useHWLayer ? View.LAYER_TYPE_HARDWARE : View.LAYER_TYPE_NONE;
-      view.setLayerType(layerType, null);
-    } else {
-      view.setLayerType(View.LAYER_TYPE_HARDWARE, p);
+      if (filter != null) {
+        if (FilterHelper.isOnlyColorMatrixFilters(filter)) {
+          p = new Paint();
+          p.setColorFilter(FilterHelper.parseColorMatrixFilters(filter));
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+          view.setRenderEffect(FilterHelper.parseFilters(filter));
+        }
+      }
+
+      if (mixBlendMode != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        p = p == null ? new Paint() : p;
+        p.setBlendMode(mixBlendMode);
+      }
+
+      if (p == null) {
+        int layerType =
+            useHWLayer != null && useHWLayer ? View.LAYER_TYPE_HARDWARE : View.LAYER_TYPE_NONE;
+        view.setLayerType(layerType, null);
+      } else {
+        view.setLayerType(View.LAYER_TYPE_HARDWARE, p);
+      }
     }
   }
 
@@ -651,7 +655,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
             : null;
     Boolean useHWLayer = (Boolean) view.getTag(R.id.use_hardware_layer);
 
-    applyLayerEffects(view, filter, mixBlendMode, useHWLayer);
+    LayerEffectsHelper.apply(view, filter, mixBlendMode, useHWLayer);
   }
 
   @Override
