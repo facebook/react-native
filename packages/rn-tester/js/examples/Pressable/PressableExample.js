@@ -8,6 +8,8 @@
  * @flow strict-local
  */
 
+import type {RNTesterModule} from '../../types/RNTesterTypes';
+
 import * as React from 'react';
 import {
   Alert,
@@ -362,12 +364,6 @@ const styles = StyleSheet.create({
   },
 });
 
-exports.displayName = (undefined: ?string);
-exports.description = 'Component for making views pressable.';
-exports.title = 'Pressable';
-exports.category = 'UI';
-exports.documentationURL = 'https://reactnative.dev/docs/pressable';
-
 const examples = [
   {
     title: 'Change content based on Press',
@@ -594,4 +590,11 @@ if (ReactNativeFeatureFlags.shouldPressibilityUseW3CPointerEventsForHover()) {
   });
 }
 
-exports.examples = examples;
+module.exports = ({
+  title: 'Pressable',
+  documentationURL: 'https://reactnative.dev/docs/pressable',
+  category: 'UI',
+  description: 'Component for making views pressable.',
+  displayName: 'Pressable',
+  examples,
+}: RNTesterModule);
