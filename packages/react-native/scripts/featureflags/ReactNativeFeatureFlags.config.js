@@ -210,6 +210,11 @@ const definitions: FeatureFlagDefinitions = {
       defaultValue: true,
       description: 'Enables use of setNativeProps in JS driven animations.',
     },
+    useRefsForTextInputState: {
+      defaultValue: false,
+      description:
+        'Enable a variant of TextInput that moves some state to refs to avoid unnecessary re-renders',
+    },
   },
 };
 
