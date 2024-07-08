@@ -109,6 +109,10 @@ class HermesJSRuntime : public JSRuntime {
     return *targetDelegate_;
   }
 
+  void unstable_initializeOnJsThread() override {
+    runtime_->registerForProfiling();
+  }
+
  private:
   std::shared_ptr<HermesRuntime> runtime_;
   std::optional<jsinspector_modern::HermesRuntimeTargetDelegate>
