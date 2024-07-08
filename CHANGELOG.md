@@ -1,5 +1,19 @@
 # Changelog
 
+## v0.75.0-rc.4
+
+### Changed
+
+- Upgrade[react-devtools-core]: ^5.3.1 ([2617ec5570](https://github.com/facebook/react-native/commit/2617ec55704d6aaa057fc20dc7e82235e1b3a799) by [@hoxyq](https://github.com/hoxyq))
+
+### Fixed
+
+#### Android specific
+
+- Fix dynamic_cast (RTTI) for ShadowNodeWrapper when accessed by third-party libraries again ([ea958c69f6](https://github.com/facebook/react-native/commit/ea958c69f624be67c770384c203f86255c1eebec) by [@tomekzaw](https://github.com/tomekzaw))
+- Fixed build from source failing due to a missing file ([b2898540c9](https://github.com/facebook/react-native/commit/b2898540c9ba3616f7bb8f9d3d621be1fbba0d85) by [@j-piasecki](https://github.com/j-piasecki))
+- Use `JvmStatic` annotations for all methods from `AndroidUnicodeUtils.kt` ([54dadd7bda](https://github.com/facebook/react-native/commit/54dadd7bda0431548760aab0fade57f083d716a8) by [@WoLewicki](https://github.com/WoLewicki))
+
 ## v0.75.0-rc.3
 
 ### Breaking
