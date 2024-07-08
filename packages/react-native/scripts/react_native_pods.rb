@@ -80,7 +80,7 @@ def use_react_native! (
   flipper_configuration: FlipperConfiguration.disabled,
   app_path: '..',
   config_file_dir: '',
-  ios_folder: 'ios'
+  ios_folder: 'ios',
   privacy_file_aggregation_enabled: true
 )
 
@@ -313,7 +313,6 @@ def react_native_post_install(
   ReactNativePodsUtils.apply_xcode_15_patch(installer)
   ReactNativePodsUtils.updateOSDeploymentTarget(installer)
   ReactNativePodsUtils.fix_flipper_for_xcode_15_3(installer)
-  ReactNativePodsUtils.add_privacy_manifest_if_needed(installer)
 
   if privacy_file_aggregation_enabled
     PrivacyManifestUtils.add_aggregated_privacy_manifest(installer)
