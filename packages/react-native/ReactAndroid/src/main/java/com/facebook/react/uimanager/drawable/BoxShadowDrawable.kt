@@ -16,7 +16,11 @@ import android.graphics.drawable.Drawable
 import androidx.annotation.RequiresApi
 import com.facebook.common.logging.FLog
 import com.facebook.react.uimanager.FilterHelper
+import com.facebook.react.uimanager.LengthPercentage
+import com.facebook.react.uimanager.LengthPercentageType
 import com.facebook.react.uimanager.PixelUtil
+import com.facebook.react.uimanager.style.BorderRadiusProp
+import com.facebook.react.uimanager.style.BorderRadiusStyle
 import kotlin.math.roundToInt
 
 private const val TAG = "BoxShadowDrawable"
@@ -62,7 +66,12 @@ internal class BoxShadowDrawable(
         shadowShapeDrawable.colorFilter != colorFilter) {
       shadowShapeDrawable.bounds = shadowShapeBounds
       shadowShapeDrawable.layoutDirection = layoutDirection
-      shadowShapeDrawable.borderRadius = background.borderRadius
+      shadowShapeDrawable.borderRadius =
+          getShadowBorderRadii(
+              spreadExtent.toFloat(),
+              background.borderRadius,
+              bounds.width().toFloat(),
+              bounds.height().toFloat())
       shadowShapeDrawable.colorFilter = colorFilter
 
       with(renderNode) {
@@ -99,4 +108,44 @@ internal class BoxShadowDrawable(
   override fun setColorFilter(colorFilter: ColorFilter?): Unit = Unit
 
   override fun getOpacity(): Int = (renderNode.alpha * 255).roundToInt()
+
+  private fun getShadowBorderRadii(
+      spread: Float,
+      backgroundBorderRadii: BorderRadiusStyle,
+      width: Float,
+      height: Float,
+  ): BorderRadiusStyle {
+    val adjustedBorderRadii = BorderRadiusStyle()
+    val borderRadiusProps = BorderRadiusProp.values()
+
+    borderRadiusProps.forEach { borderRadiusProp ->
+      adjustedBorderRadii.set(
+          borderRadiusProp,
+          adjustedBorderRadius(spread, backgroundBorderRadii.get(borderRadiusProp), width, height))
+    }
+
+    return adjustedBorderRadii
+  }
+
+  // See https://drafts.csswg.org/css-backgrounds/#shadow-shape
+  private fun adjustedBorderRadius(
+      spread: Float,
+      backgroundBorderRadius: LengthPercentage?,
+      width: Float,
+      height: Float,
+  ): LengthPercentage? {
+    if (backgroundBorderRadius == null) {
+      return null
+    }
+    var adjustment = spread
+    val backgroundBorderRadiusValue = backgroundBorderRadius.resolve(width, height)
+
+    if (backgroundBorderRadiusValue < Math.abs(spread)) {
+      val r = backgroundBorderRadiusValue / Math.abs(spread)
+      val p = Math.pow(r - 1.0, 3.0)
+      adjustment *= 1.0f + p.toFloat()
+    }
+
+    return LengthPercentage(backgroundBorderRadiusValue + adjustment, LengthPercentageType.POINT)
+  }
 }
