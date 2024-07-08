@@ -216,7 +216,8 @@ class JsonUtilsTest {
                 "cxxModuleCMakeListsModuleName": null,
                 "cxxModuleCMakeListsPath": null,
                 "cxxModuleHeaderName": null,
-                "dependencyConfiguration": "implementation"
+                "dependencyConfiguration": "implementation",
+                "isPureCxxDependency": false
               }
             }
           }
@@ -298,6 +299,11 @@ class JsonUtilsTest {
             .platforms!!
             .android!!
             .dependencyConfiguration)
+    assertFalse(
+        parsed.dependencies!!["@react-native/oss-library-example"]!!
+            .platforms!!
+            .android!!
+            .isPureCxxDependency!!)
   }
 
   private fun createJsonFile(@Language("JSON") input: String) =
