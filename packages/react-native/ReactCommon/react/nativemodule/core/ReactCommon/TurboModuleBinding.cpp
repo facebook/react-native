@@ -100,16 +100,14 @@ void TurboModuleBinding::install(
             return binding.getModule(rt, moduleName);
           }));
 
-  if (runtime.global().hasProperty(runtime, "RN$Bridgeless")) {
-    bool rnTurboInterop = legacyModuleProvider != nullptr;
-    auto turboModuleBinding = legacyModuleProvider
-        ? std::make_unique<TurboModuleBinding>(
-              runtime,
-              std::move(legacyModuleProvider),
-              longLivedObjectCollection)
-        : nullptr;
+  bool rnTurboInterop = legacyModuleProvider != nullptr;
+  if (rnTurboInterop &&
+      runtime.global().hasProperty(runtime, "RN$Bridgeless")) {
     auto nativeModuleProxy = std::make_shared<BridgelessNativeModuleProxy>(
-        std::move(turboModuleBinding));
+        std::make_unique<TurboModuleBinding>(
+            runtime,
+            std::move(legacyModuleProvider),
+            longLivedObjectCollection));
     defineReadOnlyGlobal(
         runtime, "RN$TurboInterop", jsi::Value(rnTurboInterop));
     defineReadOnlyGlobal(
