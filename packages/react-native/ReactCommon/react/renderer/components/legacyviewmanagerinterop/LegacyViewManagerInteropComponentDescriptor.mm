@@ -126,7 +126,7 @@ static const std::shared_ptr<void> constructCoordinator(
   }
 
   RCTComponentData *componentData = [[RCTComponentData alloc] initWithManagerClass:viewManagerClass
-                                                                            bridge:bridge
+                                                                            bridge:bridge != nil ? bridge : (RCTBridge *)bridgeProxy
                                                                    eventDispatcher:eventDispatcher];
   return wrapManagedObject([[RCTLegacyViewManagerInteropCoordinator alloc]
       initWithComponentData:componentData
