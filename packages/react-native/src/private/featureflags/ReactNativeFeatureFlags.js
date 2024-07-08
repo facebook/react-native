@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c1fa19fca495b0fedc02bce9acab9de8>>
+ * @generated SignedSource<<26d20b285e4ef25cd3cc991c9659f4f2>>
  * @flow strict-local
  */
 
@@ -35,6 +35,7 @@ export type ReactNativeFeatureFlagsJsOnly = {
   shouldUseOptimizedText: Getter<boolean>,
   shouldUseRemoveClippedSubviewsAsDefaultOnIOS: Getter<boolean>,
   shouldUseSetNativePropsInFabric: Getter<boolean>,
+  useRefsForTextInputState: Getter<boolean>,
 };
 
 export type ReactNativeFeatureFlagsJsOnlyOverrides = Partial<ReactNativeFeatureFlagsJsOnly>;
@@ -114,6 +115,11 @@ export const shouldUseRemoveClippedSubviewsAsDefaultOnIOS: Getter<boolean> = cre
  * Enables use of setNativeProps in JS driven animations.
  */
 export const shouldUseSetNativePropsInFabric: Getter<boolean> = createJavaScriptFlagGetter('shouldUseSetNativePropsInFabric', true);
+
+/**
+ * Enable a variant of TextInput that moves some state to refs to avoid unnecessary re-renders
+ */
+export const useRefsForTextInputState: Getter<boolean> = createJavaScriptFlagGetter('useRefsForTextInputState', false);
 
 /**
  * Common flag for testing. Do NOT modify.
