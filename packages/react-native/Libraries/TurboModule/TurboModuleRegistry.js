@@ -38,17 +38,6 @@ function shouldReportDebugInfo() {
 // TODO(148943970): Consider reversing the lookup here:
 // Lookup on __turboModuleProxy, then lookup on nativeModuleProxy
 function requireModule<T: TurboModule>(name: string): ?T {
-  if (!isBridgeless() || isTurboModuleInteropEnabled()) {
-    // Backward compatibility layer during migration.
-    const legacyModule = NativeModules[name];
-    if (legacyModule != null) {
-      if (shouldReportDebugInfo()) {
-        moduleLoadHistory.NativeModules.push(name);
-      }
-      return ((legacyModule: $FlowFixMe): T);
-    }
-  }
-
   if (turboModuleProxy != null) {
     const module: ?T = turboModuleProxy(name);
     if (module != null) {
@@ -56,6 +45,17 @@ function requireModule<T: TurboModule>(name: string): ?T {
         moduleLoadHistory.TurboModules.push(name);
       }
       return module;
+    }
+  }
+
+  if (!isBridgeless() || isTurboModuleInteropEnabled()) {
+    // Backward compatibility layer during migration.
+    const legacyModule: ?T = NativeModules[name];
+    if (legacyModule != null) {
+      if (shouldReportDebugInfo()) {
+        moduleLoadHistory.NativeModules.push(name);
+      }
+      return legacyModule;
     }
   }
 
