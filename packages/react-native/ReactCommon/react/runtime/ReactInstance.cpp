@@ -346,6 +346,8 @@ void ReactInstance::initializeRuntime(
     RuntimeSchedulerBinding::createAndInstallIfNeeded(
         runtime, runtimeScheduler_);
 
+    runtime_->unstable_initializeOnJsThread();
+
     defineReactInstanceFlags(runtime, options);
 
     defineReadOnlyGlobal(
