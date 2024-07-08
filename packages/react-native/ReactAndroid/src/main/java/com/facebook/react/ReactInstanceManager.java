@@ -1163,6 +1163,9 @@ public class ReactInstanceManager {
   private void runCreateReactContextOnNewThread(final ReactContextInitParams initParams) {
     FLog.d(ReactConstants.TAG, "ReactInstanceManager.runCreateReactContextOnNewThread()");
     UiThreadUtil.assertOnUiThread();
+    Assertions.assertCondition(
+        !mInstanceManagerInvalidated,
+        "Cannot create a new React context on an invalidated ReactInstanceManager");
 
     // Mark start of bridge loading
     ReactMarker.logMarker(ReactMarkerConstants.REACT_BRIDGE_LOADING_START);
@@ -1422,9 +1425,6 @@ public class ReactInstanceManager {
   private ReactApplicationContext createReactContext(
       JavaScriptExecutor jsExecutor, JSBundleLoader jsBundleLoader) {
     FLog.d(ReactConstants.TAG, "ReactInstanceManager.createReactContext()");
-    Assertions.assertCondition(
-        !mInstanceManagerInvalidated,
-        "Cannot create a new React context on an invalidated ReactInstanceManager");
     ReactMarker.logMarker(CREATE_REACT_CONTEXT_START, jsExecutor.getName());
 
     final BridgeReactContext reactContext = new BridgeReactContext(mApplicationContext);
