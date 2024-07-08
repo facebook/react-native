@@ -97,7 +97,7 @@
     "@react-native-community/cli-platform-android": "12.3.7",
     "@react-native-community/cli-platform-ios": "12.3.7",
     "@react-native/assets-registry": "0.73.1",
-    "@react-native/community-cli-plugin": "0.73.17",
+    "@react-native/community-cli-plugin": "0.73.18",
     "@react-native/codegen": "0.73.3",
     "@react-native/gradle-plugin": "0.73.4",
     "@react-native/js-polyfills": "0.73.1",
