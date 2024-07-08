@@ -957,7 +957,99 @@ export type Props = $ReadOnly<{|
   value?: ?Stringish,
 |}>;
 
+type ViewCommands = $NonMaybeType<
+  | typeof AndroidTextInputCommands
+  | typeof RCTMultilineTextInputNativeCommands
+  | typeof RCTSinglelineTextInputNativeCommands,
+>;
+
+type LastNativeSelection = {|
+  selection: Selection,
+  mostRecentEventCount: number,
+|};
+
 const emptyFunctionThatReturnsTrue = () => true;
+
+/**
+ * This hook handles the synchronization between the state of the text input
+ * in native and in JavaScript. This is necessary due to the asynchronous nature
+ * of text input events.
+ */
+function useTextInputStateSynchronization({
+  props,
+  mostRecentEventCount,
+  selection,
+  inputRef,
+  text,
+  viewCommands,
+}: {
+  props: Props,
+  mostRecentEventCount: number,
+  selection: ?Selection,
+  inputRef: React.RefObject<null | React.ElementRef<HostComponent<mixed>>>,
+  text: string,
+  viewCommands: ViewCommands,
+}): {
+  setLastNativeText: string => void,
+  setLastNativeSelection: LastNativeSelection => void,
+} {
+  const [lastNativeText, setLastNativeText] = useState<?Stringish>(props.value);
+  const [lastNativeSelectionState, setLastNativeSelection] =
+    useState<LastNativeSelection>({
+      selection: {start: -1, end: -1},
+      mostRecentEventCount: mostRecentEventCount,
+    });
+
+  const lastNativeSelection = lastNativeSelectionState.selection;
+
+  // This is necessary in case native updates the text and JS decides
+  // that the update should be ignored and we should stick with the value
+  // that we have in JS.
+  useLayoutEffect(() => {
+    const nativeUpdate: {text?: string, selection?: Selection} = {};
+
+    if (lastNativeText !== props.value && typeof props.value === 'string') {
+      nativeUpdate.text = props.value;
+      setLastNativeText(props.value);
+    }
+
+    if (
+      selection &&
+      lastNativeSelection &&
+      (lastNativeSelection.start !== selection.start ||
+        lastNativeSelection.end !== selection.end)
+    ) {
+      nativeUpdate.selection = selection;
+      setLastNativeSelection({selection, mostRecentEventCount});
+    }
+
+    if (Object.keys(nativeUpdate).length === 0) {
+      return;
+    }
+
+    if (inputRef.current != null) {
+      viewCommands.setTextAndSelection(
+        inputRef.current,
+        mostRecentEventCount,
+        text,
+        selection?.start ?? -1,
+        selection?.end ?? -1,
+      );
+    }
+  }, [
+    mostRecentEventCount,
+    inputRef,
+    props.value,
+    props.defaultValue,
+    lastNativeText,
+    selection,
+    lastNativeSelection,
+    text,
+    viewCommands,
+  ]);
+
+  return {setLastNativeText, setLastNativeSelection};
+}
 
 /**
  * A foundational component for inputting text into the app via a
@@ -1098,28 +1190,6 @@ function InternalTextInput(props: Props): React.Node {
           end: propsSelection.end ?? propsSelection.start,
         };
 
-  const [mostRecentEventCount, setMostRecentEventCount] = useState<number>(0);
-  const [lastNativeText, setLastNativeText] = useState<?Stringish>(props.value);
-  const [lastNativeSelectionState, setLastNativeSelection] = useState<{|
-    selection: Selection,
-    mostRecentEventCount: number,
-  |}>({
-    selection: {start: -1, end: -1},
-    mostRecentEventCount: mostRecentEventCount,
-  });
-
-  const lastNativeSelection = lastNativeSelectionState.selection;
-
-  let viewCommands;
-  if (AndroidTextInputCommands) {
-    viewCommands = AndroidTextInputCommands;
-  } else {
-    viewCommands =
-      props.multiline === true
-        ? RCTMultilineTextInputNativeCommands
-        : RCTSinglelineTextInputNativeCommands;
-  }
-
   const text =
     typeof props.value === 'string'
       ? props.value
@@ -1127,51 +1197,22 @@ function InternalTextInput(props: Props): React.Node {
         ? props.defaultValue
         : '';
 
-  // This is necessary in case native updates the text and JS decides
-  // that the update should be ignored and we should stick with the value
-  // that we have in JS.
-  useLayoutEffect(() => {
-    const nativeUpdate: {text?: string, selection?: Selection} = {};
+  const viewCommands =
+    AndroidTextInputCommands ||
+    (props.multiline === true
+      ? RCTMultilineTextInputNativeCommands
+      : RCTSinglelineTextInputNativeCommands);
 
-    if (lastNativeText !== props.value && typeof props.value === 'string') {
-      nativeUpdate.text = props.value;
-      setLastNativeText(props.value);
-    }
-
-    if (
-      selection &&
-      lastNativeSelection &&
-      (lastNativeSelection.start !== selection.start ||
-        lastNativeSelection.end !== selection.end)
-    ) {
-      nativeUpdate.selection = selection;
-      setLastNativeSelection({selection, mostRecentEventCount});
-    }
-
-    if (Object.keys(nativeUpdate).length === 0) {
-      return;
-    }
-
-    if (inputRef.current != null) {
-      viewCommands.setTextAndSelection(
-        inputRef.current,
-        mostRecentEventCount,
-        text,
-        selection?.start ?? -1,
-        selection?.end ?? -1,
-      );
-    }
-  }, [
-    mostRecentEventCount,
-    inputRef,
-    props.value,
-    props.defaultValue,
-    lastNativeText,
-    selection,
-    lastNativeSelection,
-    text,
-    viewCommands,
-  ]);
+  const [mostRecentEventCount, setMostRecentEventCount] = useState<number>(0);
+  const {setLastNativeText, setLastNativeSelection} =
+    useTextInputStateSynchronization({
+      props,
+      inputRef,
+      mostRecentEventCount,
+      selection,
+      text,
+      viewCommands,
+    });
 
   useLayoutEffect(() => {
     const inputRefValue = inputRef.current;
@@ -1187,7 +1228,7 @@ function InternalTextInput(props: Props): React.Node {
         }
       };
     }
-  }, [inputRef]);
+  }, []);
 
   const setLocalRef = useCallback(
     (instance: TextInputInstance | null) => {
