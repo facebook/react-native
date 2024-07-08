@@ -1090,9 +1090,6 @@ public class ReactHostImpl implements ReactHost {
                             getOrCreateReactHostInspectorTarget());
                     mReactInstance = instance;
 
-                    // eagerly initailize turbo modules
-                    instance.initializeEagerTurboModules();
-
                     MemoryPressureListener memoryPressureListener =
                         createMemoryPressureListener(instance);
                     mMemoryPressureListener = memoryPressureListener;
@@ -1100,6 +1097,10 @@ public class ReactHostImpl implements ReactHost {
 
                     log(method, "Loading JS Bundle");
                     instance.loadJSBundle(bundleLoader);
+
+                    // Eagerly initialize turbo modules in parallel with JS bundle execution
+                    // as TurboModuleManager will handle any concurrent creation
+                    instance.initializeEagerTurboModules();
 
                     log(
                         method,
