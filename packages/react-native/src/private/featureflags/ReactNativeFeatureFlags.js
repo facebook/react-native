@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<26d20b285e4ef25cd3cc991c9659f4f2>>
+ * @generated SignedSource<<078eccf0c13142ed0cec1c59fc3d82bf>>
  * @flow strict-local
  */
 
@@ -32,7 +32,6 @@ export type ReactNativeFeatureFlagsJsOnly = {
   enableAccessToHostTreeInFabric: Getter<boolean>,
   isLayoutAnimationEnabled: Getter<boolean>,
   shouldUseAnimatedObjectForTransform: Getter<boolean>,
-  shouldUseOptimizedText: Getter<boolean>,
   shouldUseRemoveClippedSubviewsAsDefaultOnIOS: Getter<boolean>,
   shouldUseSetNativePropsInFabric: Getter<boolean>,
   useRefsForTextInputState: Getter<boolean>,
@@ -100,11 +99,6 @@ export const isLayoutAnimationEnabled: Getter<boolean> = createJavaScriptFlagGet
  * Enables use of AnimatedObject for animating transform values.
  */
 export const shouldUseAnimatedObjectForTransform: Getter<boolean> = createJavaScriptFlagGetter('shouldUseAnimatedObjectForTransform', false);
-
-/**
- * Use optimized version of <Text /> component.
- */
-export const shouldUseOptimizedText: Getter<boolean> = createJavaScriptFlagGetter('shouldUseOptimizedText', false);
 
 /**
  * removeClippedSubviews prop will be used as the default in FlatList on iOS to match Android
