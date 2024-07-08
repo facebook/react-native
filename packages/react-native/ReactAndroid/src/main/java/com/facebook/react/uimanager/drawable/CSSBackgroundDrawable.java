@@ -27,6 +27,7 @@ import androidx.annotation.Nullable;
 import androidx.core.graphics.ColorUtils;
 import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.Nullsafe;
+import com.facebook.react.common.annotations.UnstableReactNativeAPI;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.FloatUtil;
@@ -51,6 +52,7 @@ import java.util.Objects;
  * have a rectangular borders we allocate {@code mBorderWidthResult} and similar. When only
  * background color is set we won't allocate any extra/unnecessary objects.
  */
+@UnstableReactNativeAPI
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class CSSBackgroundDrawable extends Drawable {
 
@@ -219,9 +221,12 @@ public class CSSBackgroundDrawable extends Drawable {
     }
   }
 
-  public void setBorderColor(int position, float rgb, float alpha) {
-    this.setBorderRGB(position, rgb);
-    this.setBorderAlpha(position, alpha);
+  public void setBorderColor(int position, @Nullable Integer color) {
+    float rgbComponent = color == null ? Float.NaN : (float) ((int) color & 0x00FFFFFF);
+    float alphaComponent = color == null ? Float.NaN : (float) ((int) color >>> 24);
+
+    this.setBorderRGB(position, rgbComponent);
+    this.setBorderAlpha(position, alphaComponent);
     mNeedUpdatePathForBorderRadius = true;
   }
 

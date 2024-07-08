@@ -27,7 +27,6 @@ import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
-import com.facebook.yoga.YogaConstants;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -298,11 +297,8 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
         "borderBottomColor"
       },
       customType = "Color")
-  public void setBorderColor(ReactHorizontalScrollView view, int index, Integer color) {
-    float rgbComponent =
-        color == null ? YogaConstants.UNDEFINED : (float) ((int) color & 0x00FFFFFF);
-    float alphaComponent = color == null ? YogaConstants.UNDEFINED : (float) ((int) color >>> 24);
-    view.setBorderColor(SPACING_TYPES[index], rgbComponent, alphaComponent);
+  public void setBorderColor(ReactHorizontalScrollView view, int index, @Nullable Integer color) {
+    view.setBorderColor(SPACING_TYPES[index], color);
   }
 
   @ReactProp(name = "overflow")
