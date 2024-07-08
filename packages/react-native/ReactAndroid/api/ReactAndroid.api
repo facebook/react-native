@@ -363,7 +363,6 @@ public abstract class com/facebook/react/ReactPackageTurboModuleManagerDelegate 
 	public fun unstable_isLegacyModuleRegistered (Ljava/lang/String;)Z
 	public fun unstable_isModuleRegistered (Ljava/lang/String;)Z
 	public fun unstable_shouldEnableLegacyModuleInterop ()Z
-	public fun unstable_shouldRouteTurboModulesThroughLegacyModuleInterop ()Z
 }
 
 public abstract class com/facebook/react/ReactPackageTurboModuleManagerDelegate$Builder {
@@ -1982,7 +1981,6 @@ public class com/facebook/react/config/ReactFeatureFlags {
 	public static field unstable_enableTurboModuleSyncVoidMethods Z
 	public static field unstable_useFabricInterop Z
 	public static field unstable_useTurboModuleInterop Z
-	public static field unstable_useTurboModuleInteropForAllTurboModules Z
 	public static field useTurboModules Z
 	public fun <init> ()V
 }
