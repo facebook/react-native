@@ -388,7 +388,7 @@ internal object FilterHelper {
     }
   }
 
-  private fun sigmaToRadius(sigma: Float): Float {
+  public fun sigmaToRadius(sigma: Float): Float {
     // Android takes blur amount as a radius while web takes a sigma. This value
     // is used under the hood to convert between them on Android
     // https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/libs/hwui/jni/RenderEffect.cpp
