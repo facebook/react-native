@@ -15,6 +15,8 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import org.gradle.api.file.FileCollection
 import org.gradle.api.initialization.Settings
+import org.gradle.api.GradleException
+import org.gradle.api.logging.Logging
 
 abstract class ReactSettingsExtension @Inject constructor(val settings: Settings) {
 
@@ -47,12 +49,23 @@ abstract class ReactSettingsExtension @Inject constructor(val settings: Settings
     outputFile.parentFile.mkdirs()
     val lockFilesChanged = checkAndUpdateLockfiles(lockFiles, outputFolder)
     if (lockFilesChanged || outputFile.exists().not() || outputFile.length() != 0L) {
-      ProcessBuilder(command)
+      val process = ProcessBuilder(command)
           .directory(workingDirectory)
           .redirectOutput(ProcessBuilder.Redirect.to(outputFile))
           .redirectError(ProcessBuilder.Redirect.INHERIT)
           .start()
-          .waitFor(5, TimeUnit.MINUTES)
+      val finished = process.waitFor(5, TimeUnit.MINUTES)
+      if (!finished || (process.exitValue() != 0)) {
+        val prefixCommand = "ERROR: autolinkLibrariesFromCommand: process ${command.joinToString(" ")}"
+        val message = if (!finished) "${prefixCommand} timed out" else "${prefixCommand} exited with error code: ${process.exitValue()}"
+        val logger = Logging.getLogger("ReactSettingsExtension")
+        logger.error(message)
+        if (outputFile.length() != 0L) {
+          logger.error(outputFile.readText().substring(0, 1024))
+        }
+        outputFile.delete()
+        throw GradleException(message)
+      }
     }
     linkLibraries(getLibrariesToAutolink(outputFile))
   }
