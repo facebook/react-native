@@ -135,6 +135,8 @@ abstract class ReactSettingsExtension @Inject constructor(val settings: Settings
           // We handle scenarios where there are deps that are
           // iOS-only or missing the Android configs.
           ?.filter { it.platforms?.android?.sourceDir != null }
+          // We want to skip dependencies that are pure C++ as they won't contain a .gradle file.
+          ?.filterNot { it.platforms?.android?.isPureCxxDependency == true }
           ?.associate { deps ->
             ":${deps.nameCleansed}" to File(deps.platforms?.android?.sourceDir)
           } ?: emptyMap()
