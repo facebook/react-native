@@ -33,14 +33,6 @@ public class ReactFeatureFlags {
   public static volatile boolean unstable_useTurboModuleInterop = false;
 
   /**
-   * Temporary flag that will be used to validate the staibility of the TurboModule interop layer.
-   * Force all Java NativeModules that are TurboModule-compatible (that would have otherwise gone
-   * through the C++ codegen method dispatch path) instead through the TurboModule interop layer
-   * (i.e: the JavaInteropTurboModule method dispatch path).
-   */
-  public static volatile boolean unstable_useTurboModuleInteropForAllTurboModules = false;
-
-  /**
    * By default, native module methods that return void run asynchronously. This flag will make
    * execution of void methods in TurboModules stay on the JS thread.
    */
