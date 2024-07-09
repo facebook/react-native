@@ -817,8 +817,7 @@ void FabricMountingManager::maybePreallocateShadowView(
 
   static auto preallocateView =
       JFabricUIManager::javaClassStatic()
-          ->getMethod<void(
-              jint, jint, jstring, jobject, jobject, jobject, jboolean)>(
+          ->getMethod<void(jint, jint, jstring, jobject, jobject, jboolean)>(
               "preallocateView");
 
   // Do not hold onto Java object from C
@@ -831,9 +830,6 @@ void FabricMountingManager::maybePreallocateShadowView(
     cStateWrapper->setState(shadowView.state);
   }
 
-  // Do not hold a reference to javaEventEmitter from the C++ side.
-  jni::local_ref<EventEmitterWrapper::JavaPart> javaEventEmitter = nullptr;
-
   jni::local_ref<jobject> props = getProps({}, shadowView);
 
   auto component = getPlatformComponentName(shadowView);
@@ -845,7 +841,6 @@ void FabricMountingManager::maybePreallocateShadowView(
       component.get(),
       props.get(),
       (javaStateWrapper != nullptr ? javaStateWrapper.get() : nullptr),
-      (javaEventEmitter != nullptr ? javaEventEmitter.get() : nullptr),
       isLayoutableShadowNode);
 }
 
