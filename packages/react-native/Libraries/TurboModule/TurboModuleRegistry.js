@@ -16,50 +16,25 @@ const NativeModules = require('../BatchedBridge/NativeModules');
 
 const turboModuleProxy = global.__turboModuleProxy;
 
-const moduleLoadHistory = {
-  NativeModules: ([]: Array<string>),
-  TurboModules: ([]: Array<string>),
-  NotFound: ([]: Array<string>),
-};
-
-function isBridgeless() {
-  return global.RN$Bridgeless === true;
-}
-
-function isTurboModuleInteropEnabled() {
-  return global.RN$TurboInterop === true;
-}
-
-// TODO(154308585): Remove "module not found" debug info logging
-function shouldReportDebugInfo() {
-  return true;
-}
+const useLegacyNativeModuleInterop =
+  global.RN$Bridgeless !== true || global.RN$TurboInterop === true;
 
 function requireModule<T: TurboModule>(name: string): ?T {
   if (turboModuleProxy != null) {
     const module: ?T = turboModuleProxy(name);
     if (module != null) {
-      if (shouldReportDebugInfo()) {
-        moduleLoadHistory.TurboModules.push(name);
-      }
       return module;
     }
   }
 
-  if (!isBridgeless() || isTurboModuleInteropEnabled()) {
+  if (useLegacyNativeModuleInterop) {
     // Backward compatibility layer during migration.
     const legacyModule: ?T = NativeModules[name];
     if (legacyModule != null) {
-      if (shouldReportDebugInfo()) {
-        moduleLoadHistory.NativeModules.push(name);
-      }
       return legacyModule;
     }
   }
 
-  if (shouldReportDebugInfo() && !moduleLoadHistory.NotFound.includes(name)) {
-    moduleLoadHistory.NotFound.push(name);
-  }
   return null;
 }
 
@@ -69,20 +44,10 @@ export function get<T: TurboModule>(name: string): ?T {
 
 export function getEnforcing<T: TurboModule>(name: string): T {
   const module = requireModule<T>(name);
-  let message =
+  invariant(
+    module != null,
     `TurboModuleRegistry.getEnforcing(...): '${name}' could not be found. ` +
-    'Verify that a module by this name is registered in the native binary.';
-
-  if (shouldReportDebugInfo()) {
-    message +=
-      ' Bridgeless mode: ' + (isBridgeless() ? 'true' : 'false') + '. ';
-    message +=
-      'TurboModule interop: ' +
-      (isTurboModuleInteropEnabled() ? 'true' : 'false') +
-      '. ';
-    message += 'Modules loaded: ' + JSON.stringify(moduleLoadHistory);
-  }
-
-  invariant(module != null, message);
+      'Verify that a module by this name is registered in the native binary.',
+  );
   return module;
 }
