@@ -223,25 +223,29 @@ const TextLegacy: React.AbstractComponent<
   }
 
   let _selectable = selectable;
-  const processedStyle = flattenStyle(_style);
+  let processedStyle = flattenStyle(_style);
   if (processedStyle != null) {
+    const overrideStyle = null;
     if (typeof processedStyle.fontWeight === 'number') {
-      // $FlowFixMe[cannot-write]
+      overrideStyle = overrideStyle || {};
       processedStyle.fontWeight = processedStyle.fontWeight.toString();
     }
 
     if (processedStyle.userSelect != null) {
       _selectable = userSelectToSelectableMap[processedStyle.userSelect];
-      // $FlowFixMe[cannot-write]
-      delete processedStyle.userSelect;
+      overrideStyle = overrideStyle || {};
+      overrideStyle.userSelect = undefined;
     }
 
     if (processedStyle.verticalAlign != null) {
       // $FlowFixMe[cannot-write]
-      processedStyle.textAlignVertical =
+      overrideStyle.textAlignVertical =
         verticalAlignToTextAlignVerticalMap[processedStyle.verticalAlign];
-      // $FlowFixMe[cannot-write]
-      delete processedStyle.verticalAlign;
+      overrideStyle.verticalAlign = undefined;
+    }
+    
+    if (overriteStyle != null) {
+      processedStyle = {...processedStyle, ...overriteStyle};
     }
   }
 
