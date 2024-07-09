@@ -43,7 +43,13 @@ public abstract class ReactNativeHost {
     mApplication = application;
   }
 
-  /** Get the current {@link ReactInstanceManager} instance, or create one. */
+  /**
+   * Get the current {@link ReactInstanceManager} instance, or create one.
+   *
+   * <p>NOTE: Care must be taken when storing this reference outside of the ReactNativeHost
+   * lifecycle. The ReactInstanceManager will be invalidated during {@link #clear()}, and may not be
+   * used again afterwards.
+   */
   public ReactInstanceManager getReactInstanceManager() {
     if (mReactInstanceManager == null) {
       ReactMarker.logMarker(ReactMarkerConstants.INIT_REACT_RUNTIME_START);
@@ -64,11 +70,12 @@ public abstract class ReactNativeHost {
   }
 
   /**
-   * Destroy the current instance and release the internal reference to it, allowing it to be GCed.
+   * Destroy the current instance and invalidate the internal ReactInstanceManager, reclaiming its
+   * resources and preventing it from being reused.
    */
   public void clear() {
     if (mReactInstanceManager != null) {
-      mReactInstanceManager.destroy();
+      mReactInstanceManager.invalidate();
       mReactInstanceManager = null;
     }
   }

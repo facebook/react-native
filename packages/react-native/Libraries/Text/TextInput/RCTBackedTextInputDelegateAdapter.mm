@@ -234,7 +234,9 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
     return NO;
   }
 
-  if ([newText isEqualToString:text]) {
+  if (range.location + range.length > _backedTextInputView.text.length) {
+    range = NSMakeRange(range.location, _backedTextInputView.text.length - range.location);
+  } else if ([newText isEqualToString:text]) {
     _textDidChangeIsComing = YES;
     return YES;
   }

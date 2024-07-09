@@ -489,15 +489,22 @@ function buildEventEmitterSchema(
   translateTypeAnnotation: $FlowFixMe,
   parser: Parser,
 ): NativeModuleEventEmitterShape {
-  let {key, value} = property;
-  const eventemitterName: string = key.name;
+  const {key} = property;
+  const value =
+    parser.language() === 'TypeScript'
+      ? property.typeAnnotation.typeAnnotation
+      : property.value;
 
+  const eventemitterName: string = key.name;
   const resolveTypeAnnotationFN = parser.getResolveTypeAnnotationFN();
   const [typeAnnotation, typeAnnotationNullable] = unwrapNullable(value);
   const typeAnnotationUntyped =
     value.typeParameters.params.length === 1 &&
-    value.typeParameters.params[0].type === 'ObjectTypeAnnotation' &&
-    value.typeParameters.params[0].properties.length === 0;
+    parser.language() === 'TypeScript'
+      ? value.typeParameters.params[0].type === 'TSTypeLiteral' &&
+        value.typeParameters.params[0].members.length === 0
+      : value.typeParameters.params[0].type === 'ObjectTypeAnnotation' &&
+        value.typeParameters.params[0].properties.length === 0;
 
   throwIfEventEmitterTypeIsUnsupported(
     hasteModuleName,
@@ -506,7 +513,6 @@ function buildEventEmitterSchema(
     parser,
     typeAnnotationNullable,
     typeAnnotationUntyped,
-    cxxOnly,
   );
   const eventTypeResolutionStatus = resolveTypeAnnotationFN(
     typeAnnotation.typeParameters.params[0],
@@ -520,12 +526,24 @@ function buildEventEmitterSchema(
     parser,
     eventTypeResolutionStatus.nullable,
   );
+
+  const eventTypeAnnotation = translateTypeAnnotation(
+    hasteModuleName,
+    typeAnnotation.typeParameters.params[0],
+    types,
+    aliasMap,
+    enumMap,
+    tryParse,
+    cxxOnly,
+    parser,
+  );
+
   return {
     name: eventemitterName,
     optional: false,
     typeAnnotation: {
       type: 'EventEmitterTypeAnnotation',
-      typeAnnotation: {type: eventTypeResolutionStatus.typeAnnotation.type},
+      typeAnnotation: eventTypeAnnotation,
     },
   };
 }
@@ -775,7 +793,6 @@ const buildModuleSchema = (
         parser,
       )
     : {};
-
   const properties: $ReadOnlyArray<$FlowFixMe> =
     language === 'Flow' ? moduleSpec.body.properties : moduleSpec.body.body;
 
@@ -798,8 +815,12 @@ const buildModuleSchema = (
     }>(property => {
       const enumMap: {...NativeModuleEnumMap} = {};
       const isEventEmitter =
-        property?.value?.type === 'GenericTypeAnnotation' &&
-        property?.value?.id?.name === 'EventEmitter';
+        language === 'TypeScript'
+          ? property?.type === 'TSPropertySignature' &&
+            property?.typeAnnotation?.typeAnnotation?.typeName?.name ===
+              'EventEmitter'
+          : property?.value?.type === 'GenericTypeAnnotation' &&
+            property?.value?.id?.name === 'EventEmitter';
       return tryParse(() => ({
         aliasMap,
         enumMap,

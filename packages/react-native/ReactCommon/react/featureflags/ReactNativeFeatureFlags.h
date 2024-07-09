@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5f1ae3edfe01ee0545bd89137c5cb3e9>>
+ * @generated SignedSource<<70c78db13887af269fe4d6b2113510b2>>
  */
 
 /**
@@ -91,6 +91,21 @@ class ReactNativeFeatureFlags {
    * Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).
    */
   RN_EXPORT static bool enableUIConsistency();
+
+  /**
+   * When doing a smooth scroll animation, it stops setting the state with the final scroll position in Fabric before the animation starts.
+   */
+  RN_EXPORT static bool fixIncorrectScrollViewStateUpdateOnAndroid();
+
+  /**
+   * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
+   */
+  RN_EXPORT static bool fixMappingOfEventPrioritiesBetweenFabricAndReact();
+
+  /**
+   * Enables a fix to prevent the possibility of state updates in Fabric being missed due to race conditions with previous state updates.
+   */
+  RN_EXPORT static bool fixMissedFabricStateUpdatesOnAndroid();
 
   /**
    * Fixes a leak in SurfaceMountingManager.mRemoveDeleteTreeUIFrameCallback

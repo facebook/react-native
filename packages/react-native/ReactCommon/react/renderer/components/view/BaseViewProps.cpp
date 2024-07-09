@@ -150,6 +150,14 @@ BaseViewProps::BaseViewProps(
                                                        "cursor",
                                                        sourceProps.cursor,
                                                        {})),
+      boxShadow(
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.boxShadow
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "experimental_boxShadow",
+                                                       sourceProps.boxShadow,
+                                                       {})),
       filter(
           CoreFeatures::enablePropIteratorSetter ? sourceProps.filter
                                                  : convertRawProp(
@@ -158,6 +166,15 @@ BaseViewProps::BaseViewProps(
                                                        "experimental_filter",
                                                        sourceProps.filter,
                                                        {})),
+      mixBlendMode(
+          CoreFeatures::enablePropIteratorSetter
+              ? sourceProps.mixBlendMode
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "experimental_mixBlendMode",
+                    sourceProps.mixBlendMode,
+                    {})),
       transform(
           CoreFeatures::enablePropIteratorSetter ? sourceProps.transform
                                                  : convertRawProp(

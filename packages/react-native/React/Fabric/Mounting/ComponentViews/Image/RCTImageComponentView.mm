@@ -136,7 +136,10 @@ using namespace facebook::react;
     return;
   }
 
-  static_cast<const ImageEventEmitter &>(*_eventEmitter).onLoad(_state->getData().getImageSource());
+  auto imageSource = _state->getData().getImageSource();
+  imageSource.size = {image.size.width, image.size.height};
+
+  static_cast<const ImageEventEmitter &>(*_eventEmitter).onLoad(imageSource);
   static_cast<const ImageEventEmitter &>(*_eventEmitter).onLoadEnd();
 
   const auto &imageProps = static_cast<const ImageProps &>(*_props);

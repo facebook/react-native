@@ -211,11 +211,22 @@ public class SurfaceMountingManager {
                     + " tag: [%d]",
                 rootView.getId(),
                 mSurfaceId);
-            throw new IllegalViewOperationException(
-                "Trying to add a root view with an explicit id already set. React Native uses the"
-                    + " id field to track react tags and will overwrite this field. If that is"
-                    + " fine, explicitly overwrite the id field to View.NO_ID before calling"
-                    + " addRootView.");
+            // This behavior can not be guaranteed in hybrid apps that have a native android layer
+            // over
+            // which reactRootViews are added and the native views need to have ids on them in order
+            // to
+            // work.
+            // Hence this can cause unnecessary crashes at runtime for hybrid apps.
+            // So converting this to a soft exception such that pure react-native devs can still see
+            // the
+            // warning while hybrid apps continue to run without crashes
+            ReactSoftExceptionLogger.logSoftException(
+                TAG,
+                new IllegalViewOperationException(
+                    "Trying to add a root view with an explicit id already set. React Native uses"
+                        + " the id field to track react tags and will overwrite this field. If that"
+                        + " is fine, explicitly overwrite the id field to View.NO_ID before calling"
+                        + " addRootView."));
           }
           rootView.setId(mSurfaceId);
 
@@ -979,10 +990,28 @@ public class SurfaceMountingManager {
               : layoutDirection == 2 ? View.LAYOUT_DIRECTION_RTL : View.LAYOUT_DIRECTION_INHERIT);
     }
 
+    // Even though we have exact dimensions, we still call measure because some platform views (e.g.
+    // Switch) assume that method will always be called before onLayout and onDraw. They use it to
+    // calculate and cache information used in the draw pass. For most views, onMeasure can be
+    // stubbed out to only call setMeasuredDimensions. For ViewGroups, onLayout should be stubbed
+    // out to not recursively call layout on its children: React Native already handles doing
+    // that.
+    //
+    // Also, note measure and layout need to be called *after* all View properties have been updated
+    // because of caching and calculation that may occur in onMeasure and onLayout. Layout
+    // operations should also follow the native view hierarchy and go top to bottom for
+    // consistency with standard layout passes (some views may depend on this).
     viewToUpdate.measure(
         View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
         View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY));
 
+    // We update the layout of the RootView when there is a change in the layout of its child. This
+    // is required to re-measure the size of the native View container (usually a FrameLayout) that
+    // is configured with layout_height = WRAP_CONTENT or layout_width = WRAP_CONTENT
+    //
+    // This code is going to be executed ONLY when there is a change in the size of the root view
+    // defined in the JS side. Changes in the layout of inner views will not trigger an update  on
+    // the layout of the root view.
     ViewParent parent = viewToUpdate.getParent();
     if (parent instanceof RootView) {
       parent.requestLayout();

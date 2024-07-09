@@ -6561,7 +6561,6 @@ exports[`public API should not change unintentionally Libraries/ReactNative/AppC
   fabric?: boolean,
   rootTag: number | RootTag,
   initialProps?: { ... },
-  showArchitectureIndicator?: boolean,
   WrapperComponent?: ?React.ComponentType<any>,
   rootViewStyle?: ?ViewStyleProp,
   internal_excludeLogBox?: boolean,
@@ -6633,7 +6632,6 @@ export type RootViewStyleProvider = (appParameters: Object) => ViewStyleProp;
 declare const AppRegistry: {
   setWrapperComponentProvider(provider: WrapperComponentProvider): void,
   setRootViewStyleProvider(provider: RootViewStyleProvider): void,
-  enableArchitectureIndicator(enabled: boolean): void,
   registerConfig(config: Array<AppConfig>): void,
   registerComponent(
     appKey: string,
@@ -6973,7 +6971,6 @@ exports[`public API should not change unintentionally Libraries/ReactNative/rend
   WrapperComponent?: ?React.ComponentType<any>,
   rootViewStyle?: ?ViewStyleProp,
   fabric?: boolean,
-  showArchitectureIndicator?: boolean,
   scopedPerformanceLogger?: IPerformanceLogger,
   isLogBox?: boolean,
   debugName?: string,
@@ -7571,6 +7568,23 @@ export type EdgeInsetsValue = {
   right: number,
   bottom: number,
 };
+export type FilterPrimitive =
+  | { brightness: number | string }
+  | { blur: number | string }
+  | { contrast: number | string }
+  | { grayscale: number | string }
+  | { \\"hue-rotate\\": number | string }
+  | { invert: number | string }
+  | { opacity: number | string }
+  | { saturate: number | string }
+  | { sepia: number | string }
+  | { \\"drop-shadow\\": DropShadowPrimitive | string };
+export type DropShadowPrimitive = {
+  offsetX: number | string,
+  offsetY: number | string,
+  standardDeviation?: number | string,
+  color?: ____ColorValue_Internal | number,
+};
 export type DimensionValue = number | string | \\"auto\\" | AnimatedNode | null;
 export type AnimatableNumericValue = number | AnimatedNode;
 export type CursorValue = \\"auto\\" | \\"pointer\\";
@@ -7686,11 +7700,29 @@ export type ____ShadowStyle_Internal = $ReadOnly<{
 type ____FilterStyle_Internal = $ReadOnly<{
   experimental_filter?: $ReadOnlyArray<FilterPrimitive>,
 }>;
+export type ____MixBlendMode_Internal =
+  | \\"normal\\"
+  | \\"multiply\\"
+  | \\"screen\\"
+  | \\"overlay\\"
+  | \\"darken\\"
+  | \\"lighten\\"
+  | \\"color-dodge\\"
+  | \\"color-burn\\"
+  | \\"hard-light\\"
+  | \\"soft-light\\"
+  | \\"difference\\"
+  | \\"exclusion\\"
+  | \\"hue\\"
+  | \\"saturation\\"
+  | \\"color\\"
+  | \\"luminosity\\";
 export type ____ViewStyle_InternalCore = $ReadOnly<{
   ...$Exact<____LayoutStyle_Internal>,
   ...$Exact<____ShadowStyle_Internal>,
   ...$Exact<____TransformStyle_Internal>,
   ...____FilterStyle_Internal,
+  experimental_mixBlendMode?: ____MixBlendMode_Internal,
   backfaceVisibility?: \\"visible\\" | \\"hidden\\",
   backgroundColor?: ____ColorValue_Internal,
   borderColor?: ____ColorValue_Internal,
@@ -7988,19 +8020,26 @@ declare module.exports: processColorArray;
 `;
 
 exports[`public API should not change unintentionally Libraries/StyleSheet/processFilter.js 1`] = `
-"export type FilterPrimitive =
-  | { brightness: number | string }
-  | { blur: number | string }
-  | { contrast: number | string }
-  | { grayscale: number | string }
-  | { hueRotate: number | string }
-  | { invert: number | string }
-  | { opacity: number | string }
-  | { saturate: number | string }
-  | { sepia: number | string };
+"type ParsedFilter =
+  | { brightness: number }
+  | { blur: number }
+  | { contrast: number }
+  | { grayscale: number }
+  | { \\"hue-rotate\\": number }
+  | { invert: number }
+  | { opacity: number }
+  | { saturate: number }
+  | { sepia: number }
+  | { \\"drop-shadow\\": ParsedDropShadow };
+type ParsedDropShadow = {
+  offsetX: number,
+  offsetY: number,
+  standardDeviation?: number,
+  color?: ColorValue,
+};
 declare export default function processFilter(
   filter: $ReadOnlyArray<FilterPrimitive> | string
-): $ReadOnlyArray<FilterPrimitive>;
+): $ReadOnlyArray<ParsedFilter>;
 "
 `;
 
@@ -8044,10 +8083,10 @@ exports[`public API should not change unintentionally Libraries/StyleSheet/split
 `;
 
 exports[`public API should not change unintentionally Libraries/Text/Text.js 1`] = `
-"declare const Text: React.AbstractComponent<
-  TextProps,
-  React.ElementRef<typeof NativeText | typeof NativeVirtualText>,
+"type TextForwardRef = React.ElementRef<
+  typeof NativeText | typeof NativeVirtualText,
 >;
+declare const Text: React.AbstractComponent<TextProps, TextForwardRef>;
 declare module.exports: Text;
 "
 `;
@@ -8068,15 +8107,6 @@ exports[`public API should not change unintentionally Libraries/Text/TextNativeC
 }>;
 declare export const NativeText: HostComponent<NativeTextProps>;
 declare export const NativeVirtualText: HostComponent<NativeTextProps>;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/Text/TextOptimized.js 1`] = `
-"type TextForwardRef = React.ElementRef<
-  typeof NativeText | typeof NativeVirtualText,
->;
-declare const TextOptimized: React.AbstractComponent<TextProps, TextForwardRef>;
-declare module.exports: TextOptimized;
 "
 `;
 
@@ -8196,7 +8226,9 @@ export type UnsafeObject = $FlowFixMe;
 export type UnsafeMixed = mixed;
 type DefaultTypes = number | boolean | string | $ReadOnlyArray<string>;
 export type WithDefault<Type: DefaultTypes, Value: ?Type | string> = ?Type;
-export type EventEmitter<T> = (handler: (T) => mixed) => EventSubscription;
+export type EventEmitter<T> = (
+  handler: (T) => void | Promise<void>
+) => EventSubscription;
 "
 `;
 
@@ -8720,7 +8752,7 @@ type IOSPlatform = {
       major: number,
       minor: number,
       patch: number,
-      prerelease: ?number,
+      prerelease: ?string,
     |},
     systemName: string,
     isMacCatalyst?: boolean,
@@ -8744,7 +8776,7 @@ type AndroidPlatform = {
       major: number,
       minor: number,
       patch: number,
-      prerelease: ?number,
+      prerelease: ?string,
     |},
     Version: number,
     Release: string,

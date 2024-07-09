@@ -8,6 +8,7 @@
  * @format
  */
 
+'use client';
 'use strict';
 
 /**

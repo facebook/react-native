@@ -11,6 +11,8 @@
 #include <fbjni/NativeRunnable.h>
 #include <jsinspector-modern/InspectorFlags.h>
 
+#include <optional>
+
 using namespace facebook::jni;
 using namespace facebook::react::jsinspector_modern;
 
@@ -29,26 +31,32 @@ void ReactInstanceManagerInspectorTarget::TargetDelegate::
   method(self(), request.message ? make_jstring(*request.message) : nullptr);
 }
 
+jni::local_ref<jni::JMap<jstring, jstring>>
+ReactInstanceManagerInspectorTarget::TargetDelegate::getMetadata() const {
+  auto method = javaClassStatic()
+                    ->getMethod<jni::local_ref<jni::JMap<jstring, jstring>>()>(
+                        "getMetadata");
+  return method(self());
+}
+
 ReactInstanceManagerInspectorTarget::ReactInstanceManagerInspectorTarget(
     jni::alias_ref<ReactInstanceManagerInspectorTarget::jhybridobject> jobj,
-    jni::alias_ref<JExecutor::javaobject> executor,
-    jni::alias_ref<
-        ReactInstanceManagerInspectorTarget::TargetDelegate::javaobject>
+    jni::alias_ref<JExecutor::javaobject> javaExecutor,
+    jni::alias_ref<ReactInstanceManagerInspectorTarget::TargetDelegate>
         delegate)
-    : delegate_(make_global(delegate)) {
+    : delegate_(make_global(delegate)),
+      inspectorExecutor_([javaExecutor =
+                              // Use a SafeReleaseJniRef because this lambda may
+                              // be copied to arbitrary threads.
+                          SafeReleaseJniRef(make_global(javaExecutor))](
+                             auto callback) mutable {
+        auto jrunnable = JNativeRunnable::newObjectCxxArgs(std::move(callback));
+        javaExecutor->execute(jrunnable);
+      }) {
   auto& inspectorFlags = InspectorFlags::getInstance();
 
   if (inspectorFlags.getFuseboxEnabled()) {
-    inspectorTarget_ = HostTarget::create(
-        *this,
-        [javaExecutor =
-             // Use a SafeReleaseJniRef because this lambda may be copied to
-             // arbitrary threads.
-         SafeReleaseJniRef(make_global(executor))](auto callback) mutable {
-          auto jrunnable =
-              JNativeRunnable::newObjectCxxArgs(std::move(callback));
-          javaExecutor->execute(jrunnable);
-        });
+    inspectorTarget_ = HostTarget::create(*this, inspectorExecutor_);
 
     inspectorPageId_ = getInspectorInstance().addPage(
         "React Native Bridge (Experimental)",
@@ -64,18 +72,24 @@ ReactInstanceManagerInspectorTarget::ReactInstanceManagerInspectorTarget(
 
 ReactInstanceManagerInspectorTarget::~ReactInstanceManagerInspectorTarget() {
   if (inspectorPageId_.has_value()) {
-    getInspectorInstance().removePage(*inspectorPageId_);
+    // Remove the page (terminating all sessions) and destroy the target, both
+    // on the inspector queue.
+    inspectorExecutor_([inspectorPageId = *inspectorPageId_,
+                        inspectorTarget = std::move(inspectorTarget_)]() {
+      getInspectorInstance().removePage(inspectorPageId);
+      (void)inspectorTarget;
+    });
   }
 }
 
 jni::local_ref<ReactInstanceManagerInspectorTarget::jhybriddata>
 ReactInstanceManagerInspectorTarget::initHybrid(
     jni::alias_ref<jhybridobject> jobj,
-    jni::alias_ref<JExecutor::javaobject> executor,
+    jni::alias_ref<JExecutor::javaobject> javaExecutor,
     jni::alias_ref<
         ReactInstanceManagerInspectorTarget::TargetDelegate::javaobject>
         delegate) {
-  return makeCxxInstance(jobj, executor, delegate);
+  return makeCxxInstance(jobj, javaExecutor, delegate);
 }
 
 void ReactInstanceManagerInspectorTarget::sendDebuggerResumeCommand() {
@@ -100,8 +114,23 @@ void ReactInstanceManagerInspectorTarget::registerNatives() {
 
 jsinspector_modern::HostTargetMetadata
 ReactInstanceManagerInspectorTarget::getMetadata() {
+  auto getMethod = jni::JMap<jstring, jstring>::javaClassLocal()
+                       ->getMethod<jobject(jobject)>("get");
+  auto metadata = delegate_->getMetadata();
+
+  auto getStringOptional = [&](const std::string& key) {
+    auto result = getMethod(metadata, make_jstring(key).get());
+    return result ? std::optional<std::string>(result->toString())
+                  : std::nullopt;
+  };
+
   return {
+      .appDisplayName = getStringOptional("appDisplayName"),
+      .appIdentifier = getStringOptional("appIdentifier"),
+      .deviceName = getStringOptional("deviceName"),
       .integrationName = "Android Bridge (ReactInstanceManagerInspectorTarget)",
+      .platform = getStringOptional("platform"),
+      .reactNativeVersion = getStringOptional("reactNativeVersion"),
   };
 }
 

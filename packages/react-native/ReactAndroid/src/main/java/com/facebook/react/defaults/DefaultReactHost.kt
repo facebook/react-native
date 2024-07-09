@@ -8,7 +8,6 @@
 package com.facebook.react.defaults
 
 import android.content.Context
-import com.facebook.react.JSEngineResolutionAlgorithm
 import com.facebook.react.ReactHost
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
@@ -56,13 +55,22 @@ public object DefaultReactHost {
       packageList: List<ReactPackage>,
       jsMainModulePath: String = "index",
       jsBundleAssetPath: String = "index",
+      jsBundleFilePath: String? = null,
       isHermesEnabled: Boolean = true,
       useDevSupport: Boolean = ReactBuildConfig.DEBUG,
       cxxReactPackageProviders: List<(ReactContext) -> CxxReactPackage> = emptyList(),
   ): ReactHost {
     if (reactHost == null) {
       val jsBundleLoader =
-          JSBundleLoader.createAssetLoader(context, "assets://$jsBundleAssetPath", true)
+          if (jsBundleFilePath != null) {
+            if (jsBundleFilePath.startsWith("assets://")) {
+              JSBundleLoader.createAssetLoader(context, jsBundleFilePath, true)
+            } else {
+              JSBundleLoader.createFileLoader(jsBundleFilePath)
+            }
+          } else {
+            JSBundleLoader.createAssetLoader(context, "assets://$jsBundleAssetPath", true)
+          }
       val jsRuntimeFactory = if (isHermesEnabled) HermesInstance() else JSCInstance()
       val defaultTmmDelegateBuilder = DefaultTurboModuleManagerDelegate.Builder()
       cxxReactPackageProviders.forEach { defaultTmmDelegateBuilder.addCxxReactPackage(it) }
@@ -78,20 +86,12 @@ public object DefaultReactHost {
       // TODO: T164788699 find alternative of accessing ReactHostImpl for initialising reactHost
       reactHost =
           ReactHostImpl(
-                  context,
-                  defaultReactHostDelegate,
-                  componentFactory,
-                  true /* allowPackagerServerAccess */,
-                  useDevSupport,
-              )
-              .apply {
-                jsEngineResolutionAlgorithm =
-                    if (isHermesEnabled) {
-                      JSEngineResolutionAlgorithm.HERMES
-                    } else {
-                      JSEngineResolutionAlgorithm.JSC
-                    }
-              }
+              context,
+              defaultReactHostDelegate,
+              componentFactory,
+              true /* allowPackagerServerAccess */,
+              useDevSupport,
+          )
     }
     return reactHost as ReactHost
   }

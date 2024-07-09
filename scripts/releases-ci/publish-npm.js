@@ -18,8 +18,10 @@ import type {BuildType} from '../releases/utils/version-utils';
 const {REPO_ROOT} = require('../consts');
 const {getNpmInfo, publishPackage} = require('../npm-utils');
 const {removeNewArchFlags} = require('../releases/remove-new-arch-flags');
-const {setReactNativeVersion} = require('../releases/set-rn-version');
-const setVersion = require('../releases/set-version');
+const {
+  updateReactNativeArtifacts,
+} = require('../releases/set-rn-artifacts-version');
+const {setVersion} = require('../releases/set-version');
 const {
   generateAndroidArtifacts,
   publishAndroidArtifactsToMaven,
@@ -105,7 +107,7 @@ async function publishNpm(buildType /*: BuildType */) /*: Promise<void> */ {
       await setVersion(version);
       await publishMonorepoPackages(tag);
     } else {
-      await setReactNativeVersion(version, null, buildType);
+      await updateReactNativeArtifacts(version, buildType);
     }
   }
 

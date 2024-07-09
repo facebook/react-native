@@ -474,7 +474,7 @@ void layoutAbsoluteChild(
       containingBlockHeight);
 }
 
-void layoutAbsoluteDescendants(
+bool layoutAbsoluteDescendants(
     yoga::Node* containingNode,
     yoga::Node* currentNode,
     SizingMode widthSizingMode,
@@ -486,6 +486,7 @@ void layoutAbsoluteDescendants(
     float currentNodeTopOffsetFromContainingBlock,
     float containingNodeAvailableInnerWidth,
     float containingNodeAvailableInnerHeight) {
+  bool hasNewLayout = false;
   for (auto child : currentNode->getChildren()) {
     if (child->style().display() == Display::None) {
       continue;
@@ -513,6 +514,8 @@ void layoutAbsoluteDescendants(
           layoutMarkerData,
           currentDepth,
           generationCount);
+
+      hasNewLayout = hasNewLayout || child->getHasNewLayout();
 
       /*
        * At this point the child has its position set but only on its the
@@ -571,6 +574,13 @@ void layoutAbsoluteDescendants(
     } else if (
         child->style().positionType() == PositionType::Static &&
         !child->alwaysFormsContainingBlock()) {
+      // We may write new layout results for absolute descendants of "child"
+      // which are positioned relative to the current containing block instead
+      // of their parent. "child" may not be dirty, or have new constraints, so
+      // absolute positioning may be the first time during this layout pass that
+      // we need to mutate these descendents. Make sure the path of
+      // nodes to them is mutable before positioning.
+      child->cloneChildrenIfNeeded();
       const Direction childDirection =
           child->resolveDirection(currentNodeDirection);
       // By now all descendants of the containing block that are not absolute
@@ -582,19 +592,25 @@ void layoutAbsoluteDescendants(
           currentNodeTopOffsetFromContainingBlock +
           child->getLayout().position(PhysicalEdge::Top);
 
-      layoutAbsoluteDescendants(
-          containingNode,
-          child,
-          widthSizingMode,
-          childDirection,
-          layoutMarkerData,
-          currentDepth + 1,
-          generationCount,
-          childLeftOffsetFromContainingBlock,
-          childTopOffsetFromContainingBlock,
-          containingNodeAvailableInnerWidth,
-          containingNodeAvailableInnerHeight);
+      hasNewLayout = hasNewLayout ||
+          layoutAbsoluteDescendants(
+                         containingNode,
+                         child,
+                         widthSizingMode,
+                         childDirection,
+                         layoutMarkerData,
+                         currentDepth + 1,
+                         generationCount,
+                         childLeftOffsetFromContainingBlock,
+                         childTopOffsetFromContainingBlock,
+                         containingNodeAvailableInnerWidth,
+                         containingNodeAvailableInnerHeight);
+
+      if (hasNewLayout) {
+        child->setHasNewLayout(hasNewLayout);
+      }
     }
   }
+  return hasNewLayout;
 }
 } // namespace facebook::yoga

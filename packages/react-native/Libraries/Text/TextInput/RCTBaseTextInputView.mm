@@ -375,14 +375,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
 
 - (void)textInputDidBeginEditing
 {
-  if (_clearTextOnFocus) {
-    self.backedTextInputView.attributedText = [NSAttributedString new];
-  }
-
-  if (_selectTextOnFocus) {
-    [self.backedTextInputView selectAll:nil];
-  }
-
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeFocus
                                  reactTag:self.reactTag
                                      text:[self.backedTextInputView.attributedText.string copy]
@@ -600,6 +592,14 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
 - (void)reactFocus
 {
   [self.backedTextInputView reactFocus];
+
+  if (_clearTextOnFocus) {
+    self.backedTextInputView.attributedText = [NSAttributedString new];
+  }
+
+  if (_selectTextOnFocus) {
+    [self.backedTextInputView selectAll:nil];
+  }
 }
 
 - (void)reactBlur

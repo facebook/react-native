@@ -66,14 +66,6 @@ const sourceFiles = [
 ];
 
 describe('public API', () => {
-  if (os.platform() === 'win32') {
-    // TODO(huntie): Re-enable once upstream flow-api-translator fixes are made
-    // eslint-disable-next-line jest/no-focused-tests
-    test.only('skipping tests on win32', () => {
-      console.log('skipping tests');
-    });
-  }
-
   describe('should not change unintentionally', () => {
     test.each(sourceFiles)('%s', async (file: string) => {
       const source = await fs.readFile(path.join(PACKAGE_ROOT, file), 'utf-8');
@@ -111,6 +103,8 @@ describe('public API', () => {
 });
 
 async function translateFlowToExportedAPI(source: string): Promise<string> {
+  // Normalize newlines
+  source = source.replace(/\r\n?/g, '\n');
   // Convert to Flow typedefs
   const typeDefSource = await translate.translateFlowToFlowDef(source);
 

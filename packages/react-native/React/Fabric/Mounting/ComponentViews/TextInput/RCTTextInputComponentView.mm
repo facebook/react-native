@@ -191,6 +191,10 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
         RCTUITextSmartInsertDeleteTypeFromOptionalBool(newTextInputProps.traits.smartInsertDelete);
   }
 
+  if (newTextInputProps.traits.showSoftInputOnFocus != oldTextInputProps.traits.showSoftInputOnFocus) {
+    [self _setShowSoftInputOnFocus:newTextInputProps.traits.showSoftInputOnFocus];
+  }
+
   // Traits `blurOnSubmit`, `clearTextOnFocus`, and `selectTextOnFocus` were omitted intentionally here
   // because they are being checked on-demand.
 
@@ -280,18 +284,6 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 
 - (void)textInputDidBeginEditing
 {
-  const auto &props = static_cast<const TextInputProps &>(*_props);
-
-  if (props.traits.clearTextOnFocus) {
-    _backedTextInputView.attributedText = nil;
-    [self textInputDidChange];
-  }
-
-  if (props.traits.selectTextOnFocus) {
-    [_backedTextInputView selectAll:nil];
-    [self textInputDidChangeSelection];
-  }
-
   if (_eventEmitter) {
     static_cast<const TextInputEventEmitter &>(*_eventEmitter).onFocus([self _textInputMetrics]);
   }
@@ -431,6 +423,18 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 - (void)focus
 {
   [_backedTextInputView becomeFirstResponder];
+
+  const auto &props = static_cast<const TextInputProps &>(*_props);
+
+  if (props.traits.clearTextOnFocus) {
+    _backedTextInputView.attributedText = nil;
+    [self textInputDidChange];
+  }
+
+  if (props.traits.selectTextOnFocus) {
+    [_backedTextInputView selectAll:nil];
+    [self textInputDidChangeSelection];
+  }
 }
 
 - (void)blur
@@ -656,6 +660,23 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   RCTCopyBackedTextInput(_backedTextInputView, backedTextInputView);
   _backedTextInputView = backedTextInputView;
   [self addSubview:_backedTextInputView];
+}
+
+- (void)_setShowSoftInputOnFocus:(BOOL)showSoftInputOnFocus
+{
+  if (showSoftInputOnFocus) {
+    // Resets to default keyboard.
+    _backedTextInputView.inputView = nil;
+
+    // Without the call to reloadInputViews, the keyboard will not change until the textInput field (the first
+    // responder) loses and regains focus.
+    if (_backedTextInputView.isFirstResponder) {
+      [_backedTextInputView reloadInputViews];
+    }
+  } else {
+    // Hides keyboard, but keeps blinking cursor.
+    _backedTextInputView.inputView = [UIView new];
+  }
 }
 
 - (BOOL)_textOf:(NSAttributedString *)newText equals:(NSAttributedString *)oldText

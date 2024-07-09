@@ -35,7 +35,6 @@ export default function renderApplication<Props: Object>(
   WrapperComponent?: ?React.ComponentType<any>,
   rootViewStyle?: ?ViewStyleProp,
   fabric?: boolean,
-  showArchitectureIndicator?: boolean,
   scopedPerformanceLogger?: IPerformanceLogger,
   isLogBox?: boolean,
   debugName?: string,
@@ -52,7 +51,6 @@ export default function renderApplication<Props: Object>(
       <AppContainer
         rootTag={rootTag}
         fabric={fabric}
-        showArchitectureIndicator={showArchitectureIndicator}
         WrapperComponent={WrapperComponent}
         rootViewStyle={rootViewStyle}
         initialProps={initialProps ?? Object.freeze({})}

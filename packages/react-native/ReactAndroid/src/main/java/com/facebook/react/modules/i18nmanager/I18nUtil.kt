@@ -9,8 +9,8 @@ package com.facebook.react.modules.i18nmanager
 
 import android.content.Context
 import android.content.pm.ApplicationInfo
+import android.view.View
 import androidx.core.text.TextUtilsCompat
-import androidx.core.view.ViewCompat
 import java.util.Locale
 
 public class I18nUtil private constructor() {
@@ -63,7 +63,7 @@ public class I18nUtil private constructor() {
     // Check if the current device language is RTL
     get() {
       val directionality = TextUtilsCompat.getLayoutDirectionFromLocale(Locale.getDefault())
-      return directionality == ViewCompat.LAYOUT_DIRECTION_RTL
+      return directionality == View.LAYOUT_DIRECTION_RTL
     }
 
   private fun isPrefSet(context: Context, key: String, defaultValue: Boolean): Boolean =

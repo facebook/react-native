@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<492902f307361b8f7b7d42973561a3b4>>
+ * @generated SignedSource<<b03fe019d1bacd13740a3e783197c17b>>
  */
 
 /**
@@ -31,6 +31,9 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
   private var enableMicrotasksCache: Boolean? = null
   private var enableSynchronousStateUpdatesCache: Boolean? = null
   private var enableUIConsistencyCache: Boolean? = null
+  private var fixIncorrectScrollViewStateUpdateOnAndroidCache: Boolean? = null
+  private var fixMappingOfEventPrioritiesBetweenFabricAndReactCache: Boolean? = null
+  private var fixMissedFabricStateUpdatesOnAndroidCache: Boolean? = null
   private var fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeakCache: Boolean? = null
   private var forceBatchingMountItemsOnAndroidCache: Boolean? = null
   private var fuseboxEnabledDebugCache: Boolean? = null
@@ -140,6 +143,33 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableUIConsistency()
       enableUIConsistencyCache = cached
+    }
+    return cached
+  }
+
+  override fun fixIncorrectScrollViewStateUpdateOnAndroid(): Boolean {
+    var cached = fixIncorrectScrollViewStateUpdateOnAndroidCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.fixIncorrectScrollViewStateUpdateOnAndroid()
+      fixIncorrectScrollViewStateUpdateOnAndroidCache = cached
+    }
+    return cached
+  }
+
+  override fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean {
+    var cached = fixMappingOfEventPrioritiesBetweenFabricAndReactCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.fixMappingOfEventPrioritiesBetweenFabricAndReact()
+      fixMappingOfEventPrioritiesBetweenFabricAndReactCache = cached
+    }
+    return cached
+  }
+
+  override fun fixMissedFabricStateUpdatesOnAndroid(): Boolean {
+    var cached = fixMissedFabricStateUpdatesOnAndroidCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.fixMissedFabricStateUpdatesOnAndroid()
+      fixMissedFabricStateUpdatesOnAndroidCache = cached
     }
     return cached
   }

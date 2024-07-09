@@ -15,6 +15,8 @@
 
 #include <chrono>
 
+#include <reactperflogger/fusebox/FuseboxTracer.h>
+
 using namespace std::chrono;
 using namespace std::literals::string_view_literals;
 
@@ -146,25 +148,41 @@ void HostAgent::handleRequest(const cdp::PreparsedRequest& req) {
     shouldSendOKResponse = true;
     isFinishedHandlingRequest = true;
   } else if (req.method == "Tracing.start") {
-    // @cdp Tracing.start is implemented as a stub only.
-    frontendChannel_(cdp::jsonNotification(
-        // @cdp Tracing.bufferUsage is implemented as a stub only.
-        "Tracing.bufferUsage",
-        folly::dynamic::object("percentFull", 0)("eventCount", 0)("value", 0)));
-    shouldSendOKResponse = true;
+    // @cdp Tracing.start support is experimental.
+    if (FuseboxTracer::getFuseboxTracer().startTracing()) {
+      shouldSendOKResponse = true;
+    } else {
+      frontendChannel_(cdp::jsonError(
+          req.id,
+          cdp::ErrorCode::InternalError,
+          "Tracing session already started"));
+      return;
+    }
     isFinishedHandlingRequest = true;
   } else if (req.method == "Tracing.end") {
-    // @cdp Tracing.end is implemented as a stub only.
+    // @cdp Tracing.end support is experimental.
+    bool firstChunk = true;
+    auto id = req.id;
+    bool wasStopped = FuseboxTracer::getFuseboxTracer().stopTracing(
+        [this, firstChunk, id](const folly::dynamic& eventsChunk) {
+          if (firstChunk) {
+            frontendChannel_(cdp::jsonResult(id));
+          }
+          frontendChannel_(cdp::jsonNotification(
+              "Tracing.dataCollected",
+              folly::dynamic::object("value", eventsChunk)));
+        });
+    if (!wasStopped) {
+      frontendChannel_(cdp::jsonError(
+          req.id,
+          cdp::ErrorCode::InternalError,
+          "Tracing session not started"));
+      return;
+    }
     frontendChannel_(cdp::jsonNotification(
-        // @cdp Tracing.dataCollected is implemented as a stub only.
-        "Tracing.dataCollected",
-        folly::dynamic::object("value", folly::dynamic::array())));
-    frontendChannel_(cdp::jsonNotification(
-        // @cdp Tracing.tracingComplete is implemented as a stub only.
         "Tracing.tracingComplete",
         folly::dynamic::object("dataLossOccurred", false)));
-    shouldSendOKResponse = true;
-    isFinishedHandlingRequest = true;
+    return;
   }
 
   if (!isFinishedHandlingRequest && instanceAgent_ &&

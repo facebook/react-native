@@ -146,3 +146,10 @@ export type JSONSerializable =
   | null
   | $ReadOnlyArray<JSONSerializable>
   | {+[string]: JSONSerializable};
+
+export type DeepReadOnly<T> =
+  T extends $ReadOnlyArray<infer V>
+    ? $ReadOnlyArray<DeepReadOnly<V>>
+    : T extends {...}
+      ? {+[K in keyof T]: DeepReadOnly<T[K]>}
+      : T;

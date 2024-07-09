@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e13caa80ac317feb98cf4db5ac89be79>>
+ * @generated SignedSource<<426ae84f1b0deeb7b0fda5fb29042909>>
  */
 
 /**
@@ -56,6 +56,12 @@ class NativeReactNativeFeatureFlags
   bool enableSynchronousStateUpdates(jsi::Runtime& runtime);
 
   bool enableUIConsistency(jsi::Runtime& runtime);
+
+  bool fixIncorrectScrollViewStateUpdateOnAndroid(jsi::Runtime& runtime);
+
+  bool fixMappingOfEventPrioritiesBetweenFabricAndReact(jsi::Runtime& runtime);
+
+  bool fixMissedFabricStateUpdatesOnAndroid(jsi::Runtime& runtime);
 
   bool fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak(jsi::Runtime& runtime);
 

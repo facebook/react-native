@@ -118,7 +118,7 @@ static jsi::Value keyPressMetricsPayload(
     } else if (keyPressMetrics.text.front() == '\t') {
       key = "Tab";
     } else {
-      key = keyPressMetrics.text.front();
+      key = keyPressMetrics.text;
     }
   }
   payload.setProperty(
