@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1cad606bd06ab650004955138228d227>>
+ * @generated SignedSource<<9e8a8beb3d769dbf5067ea8f7f7e083a>>
  */
 
 /**
@@ -93,6 +93,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableUIConsistency(): Boolean = accessor.enableUIConsistency()
+
+  /**
+   * Start image fetching during view preallocation instead of waiting for layout pass
+   */
+  @JvmStatic
+  public fun fetchImagesInViewPreallocation(): Boolean = accessor.fetchImagesInViewPreallocation()
 
   /**
    * When doing a smooth scroll animation, it stops setting the state with the final scroll position in Fabric before the animation starts.

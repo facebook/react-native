@@ -88,6 +88,11 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).',
     },
+    fetchImagesInViewPreallocation: {
+      defaultValue: false,
+      description:
+        'Start image fetching during view preallocation instead of waiting for layout pass',
+    },
     fixIncorrectScrollViewStateUpdateOnAndroid: {
       defaultValue: false,
       description:

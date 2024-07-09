@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e3b1d2259fca22d839d0f99af2d94471>>
+ * @generated SignedSource<<b3f6cda1d6c647053de5b55c47aa05ba>>
  */
 
 /**
@@ -90,6 +90,11 @@ bool NativeReactNativeFeatureFlags::enableSynchronousStateUpdates(
 bool NativeReactNativeFeatureFlags::enableUIConsistency(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableUIConsistency();
+}
+
+bool NativeReactNativeFeatureFlags::fetchImagesInViewPreallocation(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::fetchImagesInViewPreallocation();
 }
 
 bool NativeReactNativeFeatureFlags::fixIncorrectScrollViewStateUpdateOnAndroid(

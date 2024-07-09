@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8b86c11a06dc9f53991482cb6640d806>>
+ * @generated SignedSource<<c18adec4842a4dba2aeb6a1c7cea89ff>>
  */
 
 /**
@@ -42,6 +42,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableMicrotasks();
   bool enableSynchronousStateUpdates();
   bool enableUIConsistency();
+  bool fetchImagesInViewPreallocation();
   bool fixIncorrectScrollViewStateUpdateOnAndroid();
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact();
   bool fixMissedFabricStateUpdatesOnAndroid();
@@ -68,7 +69,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 27> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 28> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> allowCollapsableChildren_;
@@ -81,6 +82,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableMicrotasks_;
   std::atomic<std::optional<bool>> enableSynchronousStateUpdates_;
   std::atomic<std::optional<bool>> enableUIConsistency_;
+  std::atomic<std::optional<bool>> fetchImagesInViewPreallocation_;
   std::atomic<std::optional<bool>> fixIncorrectScrollViewStateUpdateOnAndroid_;
   std::atomic<std::optional<bool>> fixMappingOfEventPrioritiesBetweenFabricAndReact_;
   std::atomic<std::optional<bool>> fixMissedFabricStateUpdatesOnAndroid_;
