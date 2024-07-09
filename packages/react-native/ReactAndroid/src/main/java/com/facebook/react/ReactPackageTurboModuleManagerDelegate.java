@@ -39,10 +39,6 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
       ReactFeatureFlags.enableBridgelessArchitecture
           && ReactFeatureFlags.unstable_useTurboModuleInterop;
 
-  private final boolean mShouldRouteTurboModulesThroughLegacyModuleInterop =
-      mShouldEnableLegacyModuleInterop
-          && ReactFeatureFlags.unstable_useTurboModuleInteropForAllTurboModules;
-
   private final boolean mEnableTurboModuleSyncVoidMethods =
       ReactFeatureFlags.unstable_enableTurboModuleSyncVoidMethods;
 
@@ -145,11 +141,6 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
   @Override
   public boolean unstable_shouldEnableLegacyModuleInterop() {
     return mShouldEnableLegacyModuleInterop;
-  }
-
-  @Override
-  public boolean unstable_shouldRouteTurboModulesThroughLegacyModuleInterop() {
-    return mShouldRouteTurboModulesThroughLegacyModuleInterop;
   }
 
   public boolean unstable_enableSyncVoidMethods() {
