@@ -245,7 +245,7 @@ const TextLegacy: React.AbstractComponent<
     }
     
     if (overriteStyle != null) {
-      processedStyle = {...processedStyle, ...overriteStyle};
+      processedStyle = {...processedStyle, ...overrideStyle};
     }
   }
 
