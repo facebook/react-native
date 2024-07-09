@@ -1238,7 +1238,6 @@ public class SurfaceMountingManager {
       int reactTag,
       @Nullable ReadableMap props,
       @Nullable StateWrapper stateWrapper,
-      @Nullable EventEmitterWrapper eventEmitterWrapper,
       boolean isLayoutable) {
     UiThreadUtil.assertOnUiThread();
 
@@ -1251,8 +1250,7 @@ public class SurfaceMountingManager {
       return;
     }
 
-    createViewUnsafe(
-        componentName, reactTag, props, stateWrapper, eventEmitterWrapper, isLayoutable);
+    createViewUnsafe(componentName, reactTag, props, stateWrapper, null, isLayoutable);
   }
 
   @AnyThread
