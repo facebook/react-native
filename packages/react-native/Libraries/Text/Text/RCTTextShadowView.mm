@@ -237,22 +237,24 @@
                         maximumFontSize:self.textAttributes.effectiveFont.pointSize];
   }
 
-  [layoutManager ensureLayoutForTextContainer:textContainer];
-  NSRange glyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
-  NSRange characterRange = [layoutManager characterRangeForGlyphRange:glyphRange actualGlyphRange:NULL];
+  if (_maximumNumberOfLines > 0) {
+    [layoutManager ensureLayoutForTextContainer:textContainer];
+    NSRange glyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
+    NSRange characterRange = [layoutManager characterRangeForGlyphRange:glyphRange actualGlyphRange:NULL];
 
-  [textStorage enumerateAttribute:NSBackgroundColorAttributeName
-                          inRange:characterRange
-                          options:0
-                       usingBlock:^(id _Nullable value, NSRange range, BOOL *_Nonnull stop) {
-                         NSRange truncatedRange =
-                             [layoutManager truncatedGlyphRangeInLineFragmentForGlyphAtIndex:range.location];
+    [textStorage enumerateAttribute:NSBackgroundColorAttributeName
+                            inRange:characterRange
+                            options:0
+                         usingBlock:^(id _Nullable value, NSRange range, BOOL *_Nonnull stop) {
+                           NSRange truncatedRange =
+                               [layoutManager truncatedGlyphRangeInLineFragmentForGlyphAtIndex:range.location];
 
-                         // Remove background color if glyphs is truncated
-                         if (truncatedRange.location != NSNotFound && range.location >= truncatedRange.location) {
-                           [textStorage removeAttribute:NSBackgroundColorAttributeName range:range];
-                         }
-                       }];
+                           // Remove background color if glyphs is truncated
+                           if (truncatedRange.location != NSNotFound && range.location >= truncatedRange.location) {
+                             [textStorage removeAttribute:NSBackgroundColorAttributeName range:range];
+                           }
+                         }];
+  }
 
   if (!exclusiveOwnership) {
     [_cachedTextStorages setObject:textStorage forKey:key];
