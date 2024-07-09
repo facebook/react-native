@@ -86,7 +86,8 @@ class ReactSettingsExtensionTest {
                 "cxxModuleCMakeListsModuleName": null,
                 "cxxModuleCMakeListsPath": null,
                 "cxxModuleHeaderName": null,
-                "dependencyConfiguration": "implementation"
+                "dependencyConfiguration": "implementation",
+                "isPureCxxDependency": false
               }
             }
           }
@@ -101,6 +102,35 @@ class ReactSettingsExtensionTest {
     assertEquals(
         File("./node_modules/@react-native/oss-library-example/android"),
         map[":react-native_oss-library-example"])
+  }
+
+  @Test
+  fun getLibrariesToAutolink_withiOSOnlyLibrary_returnsEmptyMap() {
+    val validJsonFile =
+        createJsonFile(
+            """
+      {
+        "reactNativeVersion": "1000.0.0",
+        "dependencies": {
+          "@react-native/oss-library-example": {
+            "root": "./node_modules/@react-native/oss-library-example",
+            "name": "@react-native/oss-library-example",
+            "platforms": {
+              "ios": {
+                "podspecPath": "./node_modules/@react-native/oss-library-example/OSSLibraryExample.podspec",
+                "version": "0.0.1",
+                "configurations": [],
+                "scriptPhases": []
+              }
+            }
+          }
+        }
+      }
+      """
+                .trimIndent())
+
+    val map = getLibrariesToAutolink(validJsonFile)
+    assertEquals(0, map.keys.size)
   }
 
   @Test

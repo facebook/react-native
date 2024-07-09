@@ -513,7 +513,7 @@ void Binding::schedulerDidRequestPreliminaryViewAllocation(
   if (!mountingManager) {
     return;
   }
-  mountingManager->preallocateShadowView(shadowNode);
+  mountingManager->maybePreallocateShadowView(shadowNode);
 }
 
 void Binding::schedulerDidDispatchCommand(

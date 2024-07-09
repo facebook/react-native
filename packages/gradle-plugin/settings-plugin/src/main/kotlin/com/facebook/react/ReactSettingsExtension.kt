@@ -46,7 +46,7 @@ abstract class ReactSettingsExtension @Inject constructor(val settings: Settings
   ) {
     outputFile.parentFile.mkdirs()
     val lockFilesChanged = checkAndUpdateLockfiles(lockFiles, outputFolder)
-    if (lockFilesChanged || outputFile.exists().not()) {
+    if (lockFilesChanged || outputFile.exists().not() || outputFile.length() != 0L) {
       ProcessBuilder(command)
           .directory(workingDirectory)
           .redirectOutput(ProcessBuilder.Redirect.to(outputFile))
@@ -112,9 +112,17 @@ abstract class ReactSettingsExtension @Inject constructor(val settings: Settings
 
     internal fun getLibrariesToAutolink(buildFile: File): Map<String, File> {
       val model = JsonUtils.fromAutolinkingConfigJson(buildFile)
-      return model?.dependencies?.values?.associate { deps ->
-        ":${deps.nameCleansed}" to File(deps.platforms?.android?.sourceDir)
-      } ?: emptyMap()
+      return model
+          ?.dependencies
+          ?.values
+          // We handle scenarios where there are deps that are
+          // iOS-only or missing the Android configs.
+          ?.filter { it.platforms?.android?.sourceDir != null }
+          // We want to skip dependencies that are pure C++ as they won't contain a .gradle file.
+          ?.filterNot { it.platforms?.android?.isPureCxxDependency == true }
+          ?.associate { deps ->
+            ":${deps.nameCleansed}" to File(deps.platforms?.android?.sourceDir)
+          } ?: emptyMap()
     }
 
     internal fun computeSha256(lockFile: File) =

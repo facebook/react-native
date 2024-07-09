@@ -1727,15 +1727,24 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_EV
                 }
               }
             }
+          },
+          {
+            'name': 'onEvent7',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'EventEmitterTypeAnnotation',
+              'typeAnnotation': {
+                'type': 'GenericObjectTypeAnnotation',
+                'dictionaryValueType': {
+                  'type': 'StringTypeAnnotation'
+                }
+              }
+            }
           }
         ],
         'methods': []
       },
-      'moduleName': 'SampleTurboModuleCxx',
-      'excludedPlatforms': [
-        'iOS',
-        'android'
-      ]
+      'moduleName': 'SampleTurboModule'
     }
   }
 }"

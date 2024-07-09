@@ -8,7 +8,9 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 
+#include <cxxreact/SystraceSection.h>
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/core/ComponentDescriptor.h>
 #include <react/renderer/core/EventDispatcher.h>
@@ -65,6 +67,7 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   std::shared_ptr<ShadowNode> createShadowNode(
       const ShadowNodeFragment& fragment,
       const ShadowNodeFamily::Shared& family) const override {
+    SystraceSection s("ConcreteComponentDescriptor::createShadowNode");
     auto shadowNode =
         std::make_shared<ShadowNodeT>(fragment, family, getTraits());
 
@@ -96,6 +99,7 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
       const PropsParserContext& context,
       const Props::Shared& props,
       RawProps rawProps) const override {
+    SystraceSection s1("ConcreteComponentDescriptor::cloneProps");
     // Optimization:
     // Quite often nodes are constructed with default/empty props: the base
     // `props` object is `null` (there no base because it's not cloning) and the
@@ -111,18 +115,18 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
 
     rawProps.parse(rawPropsParser_);
 
-    // Call old-style constructor
-    auto shadowNodeProps = ShadowNodeT::Props(context, rawProps, props);
-
     // Use the new-style iterator
     // Note that we just check if `Props` has this flag set, no matter
     // the type of ShadowNode; it acts as the single global flag.
     if (CoreFeatures::enablePropIteratorSetter) {
+      auto shadowNodeProps = ShadowNodeT::Props(context, rawProps, props);
 #ifdef ANDROID
       const auto& dynamic = shadowNodeProps->rawProps;
 #else
       const auto& dynamic = static_cast<folly::dynamic>(rawProps);
 #endif
+      SystraceSection s2(
+          "ConcreteComponentDescriptor::cloneProps - iterateOverValues");
       for (const auto& pair : dynamic.items()) {
         const auto& name = pair.first.getString();
         shadowNodeProps->setProp(
@@ -131,9 +135,13 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
             name.c_str(),
             RawValue(pair.second));
       }
+      return shadowNodeProps;
+    } else {
+      SystraceSection s3(
+          "ConcreteComponentDescriptor::cloneProps - old-style constructor");
+      // Call old-style constructor
+      return ShadowNodeT::Props(context, rawProps, props);
     }
-
-    return shadowNodeProps;
   };
 
   virtual State::Shared createInitialState(

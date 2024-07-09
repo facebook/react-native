@@ -9,7 +9,7 @@
  * @oncall react_native
  */
 
-import {allowSelfSignedCertsInNodeFetch} from './FetchUtils';
+import {withFetchSelfSignedCertsForAllTests} from './FetchUtils';
 import {
   createAndConnectTarget,
   parseJsonFromDataUri,
@@ -33,16 +33,14 @@ jest.useRealTimers();
 
 jest.setTimeout(10000);
 
-beforeAll(() => {
-  // inspector-proxy uses node-fetch for source map fetching.
-  allowSelfSignedCertsInNodeFetch();
-
-  jest.resetModules();
-});
-
 describe.each(['HTTP', 'HTTPS'])(
   'inspector proxy CDP rewriting hacks over %s',
   protocol => {
+    // Inspector proxy tests are using a self-signed certificate for HTTPS tests.
+    if (protocol === 'HTTPS') {
+      withFetchSelfSignedCertsForAllTests();
+    }
+
     const serverRef = withServerForEachTest({
       logger: undefined,
       projectRoot: __dirname,

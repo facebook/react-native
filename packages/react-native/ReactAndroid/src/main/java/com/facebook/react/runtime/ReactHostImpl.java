@@ -61,6 +61,7 @@ import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.modules.appearance.AppearanceModule;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.facebook.react.modules.systeminfo.AndroidInfoHelpers;
 import com.facebook.react.runtime.internal.bolts.Task;
 import com.facebook.react.runtime.internal.bolts.TaskCompletionSource;
 import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder;
@@ -73,6 +74,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -90,6 +92,7 @@ import kotlin.jvm.functions.Function0;
  *
  * @see <a href="https://github.com/BoltsFramework/Bolts-Android#tasks">Bolts Android</a>
  */
+@DoNotStrip
 @ThreadSafe
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class ReactHostImpl implements ReactHost {
@@ -280,6 +283,18 @@ public class ReactHostImpl implements ReactHost {
 
     // TODO(T137233065): Enable DevSupportManager here
     mReactLifecycleStateManager.moveToOnHostResume(currentContext, getCurrentActivity());
+  }
+
+  @ThreadConfined(UI)
+  @Override
+  public void onHostLeaveHint(final @Nullable Activity activity) {
+    final String method = "onUserLeaveHint(activity)";
+    log(method);
+
+    ReactContext currentContext = getCurrentReactContext();
+    if (currentContext != null) {
+      currentContext.onUserLeaveHint(activity);
+    }
   }
 
   @ThreadConfined(UI)
@@ -484,6 +499,11 @@ public class ReactHostImpl implements ReactHost {
             }
           });
     }
+  }
+
+  @DoNotStrip
+  private Map<String, String> getHostMetadata() {
+    return AndroidInfoHelpers.getInspectorHostMetadata(mContext);
   }
 
   /**
@@ -1416,6 +1436,9 @@ public class ReactHostImpl implements ReactHost {
 
                     final ReactContext reactContext = mBridgelessReactContextRef.getNullable();
                     if (reactContext != null) {
+                      log(method, "Resetting ReactContext ref");
+                      mBridgelessReactContextRef.reset();
+
                       log(method, "Destroying ReactContext");
                       reactContext.destroy();
                     }
@@ -1439,20 +1462,17 @@ public class ReactHostImpl implements ReactHost {
                       raiseSoftException(
                           method, "Skipping ReactInstance.destroy(): ReactInstance null");
                     } else {
+                      log(method, "Resetting ReactInstance ptr");
+                      mReactInstance = null;
+
                       log(method, "Destroying ReactInstance");
                       reactInstance.destroy();
                     }
 
-                    log(method, "Resetting ReactContext ref");
-                    mBridgelessReactContextRef.reset();
-
-                    log(method, "Resetting ReactInstance task ref");
+                    log(method, "Resetting createReactInstance task ref");
                     mCreateReactInstanceTaskRef.reset();
 
-                    log(method, "Resetting ReactInstance ptr");
-                    mReactInstance = null;
-
-                    log(method, "Resetting preload task ref");
+                    log(method, "Resetting start task ref");
                     mStartTask = null;
 
                     // Kickstart a new ReactInstance create
@@ -1462,7 +1482,7 @@ public class ReactHostImpl implements ReactHost {
               .continueWithTask(
                   task -> {
                     final ReactInstance reactInstance =
-                        reactInstanceTaskUnwrapper.unwrap(task, "7: Restarting surfaces");
+                        reactInstanceTaskUnwrapper.unwrap(task, "6: Restarting surfaces");
 
                     if (reactInstance == null) {
                       raiseSoftException(method, "Skipping surface restart: ReactInstance null");
@@ -1610,7 +1630,6 @@ public class ReactHostImpl implements ReactHost {
                     reactInstanceTaskUnwrapper.unwrap(task, "4: Destroying ReactContext");
 
                     final ReactContext reactContext = mBridgelessReactContextRef.getNullable();
-
                     if (reactContext == null) {
                       raiseSoftException(method, "ReactContext is null. Destroy reason: " + reason);
                     }
@@ -1620,6 +1639,9 @@ public class ReactHostImpl implements ReactHost {
                     mMemoryPressureRouter.destroy(mContext);
 
                     if (reactContext != null) {
+                      log(method, "Resetting ReactContext ref");
+                      mBridgelessReactContextRef.reset();
+
                       log(method, "Destroying ReactContext");
                       reactContext.destroy();
                     }
@@ -1642,20 +1664,17 @@ public class ReactHostImpl implements ReactHost {
                       raiseSoftException(
                           method, "Skipping ReactInstance.destroy(): ReactInstance null");
                     } else {
+                      log(method, "Resetting ReactInstance ptr");
+                      mReactInstance = null;
+
                       log(method, "Destroying ReactInstance");
                       reactInstance.destroy();
                     }
 
-                    log(method, "Resetting ReactContext ref ");
-                    mBridgelessReactContextRef.reset();
-
-                    log(method, "Resetting ReactInstance task ref");
+                    log(method, "Resetting createReactInstance task ref");
                     mCreateReactInstanceTaskRef.reset();
 
-                    log(method, "Resetting ReactInstance ptr");
-                    mReactInstance = null;
-
-                    log(method, "Resetting Preload task ref");
+                    log(method, "Resetting start task ref");
                     mStartTask = null;
 
                     log(method, "Resetting destroy task ref");
@@ -1687,18 +1706,6 @@ public class ReactHostImpl implements ReactHost {
     }
 
     return mDestroyTask;
-  }
-
-  @Nullable
-  @Override
-  public JSEngineResolutionAlgorithm getJsEngineResolutionAlgorithm() {
-    return mJSEngineResolutionAlgorithm;
-  }
-
-  @Override
-  public void setJsEngineResolutionAlgorithm(
-      @Nullable JSEngineResolutionAlgorithm jsEngineResolutionAlgorithm) {
-    mJSEngineResolutionAlgorithm = jsEngineResolutionAlgorithm;
   }
 
   private @Nullable ReactHostInspectorTarget getOrCreateReactHostInspectorTarget() {

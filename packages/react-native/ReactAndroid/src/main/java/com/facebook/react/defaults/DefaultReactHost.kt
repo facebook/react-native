@@ -8,7 +8,6 @@
 package com.facebook.react.defaults
 
 import android.content.Context
-import com.facebook.react.JSEngineResolutionAlgorithm
 import com.facebook.react.ReactHost
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
@@ -87,20 +86,12 @@ public object DefaultReactHost {
       // TODO: T164788699 find alternative of accessing ReactHostImpl for initialising reactHost
       reactHost =
           ReactHostImpl(
-                  context,
-                  defaultReactHostDelegate,
-                  componentFactory,
-                  true /* allowPackagerServerAccess */,
-                  useDevSupport,
-              )
-              .apply {
-                jsEngineResolutionAlgorithm =
-                    if (isHermesEnabled) {
-                      JSEngineResolutionAlgorithm.HERMES
-                    } else {
-                      JSEngineResolutionAlgorithm.JSC
-                    }
-              }
+              context,
+              defaultReactHostDelegate,
+              componentFactory,
+              true /* allowPackagerServerAccess */,
+              useDevSupport,
+          )
     }
     return reactHost as ReactHost
   }

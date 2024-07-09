@@ -45,9 +45,6 @@ public interface ReactHost {
   /** [ReactQueueConfiguration] for caller to post jobs in React Native threads */
   public val reactQueueConfiguration: ReactQueueConfiguration?
 
-  /** [JSEngineResolutionAlgorithm] used by this host. */
-  public var jsEngineResolutionAlgorithm: JSEngineResolutionAlgorithm?
-
   /** Routes memory pressure events to interested components */
   public val memoryPressureRouter: MemoryPressureRouter
 
@@ -63,6 +60,12 @@ public interface ReactHost {
 
   /** To be called when the host activity is resumed. */
   public fun onHostResume(activity: Activity?)
+
+  /**
+   * To be called when the host activity is about to go into the background as the result of user
+   * choice.
+   */
+  public fun onHostLeaveHint(activity: Activity?)
 
   /** To be called when the host activity is paused. */
   public fun onHostPause(activity: Activity?)

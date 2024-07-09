@@ -1,4 +1,4 @@
-name: report_bundle_size
+name: report-bundle-size
 description: Report bundle size
 inputs:
   platform:

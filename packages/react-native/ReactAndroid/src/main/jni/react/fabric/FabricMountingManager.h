@@ -32,7 +32,7 @@ class FabricMountingManager final {
 
   void onSurfaceStop(SurfaceId surfaceId);
 
-  void preallocateShadowView(const ShadowNode& shadowNode);
+  void maybePreallocateShadowView(const ShadowNode& shadowNode);
 
   void executeMount(const MountingTransaction& transaction);
 
@@ -55,6 +55,8 @@ class FabricMountingManager final {
   void onAllAnimationsComplete();
 
  private:
+  bool isOnMainThread();
+
   jni::global_ref<JFabricUIManager::javaobject> javaUIManager_;
 
   std::recursive_mutex commitMutex_;

@@ -1,12 +1,12 @@
-name: test_ios_rntester
+name: test-ios-rntester
 description: Test iOS RNTester
 inputs:
   jsengine:
     description: Which JavaScript engine to use. Must be one of "Hermes", "JSC".
     default: Hermes
   use-frameworks:
-      description: The dependency building and linking strategy to use. Must be one of "StaticLibraries", "DynamicFrameworks"
-      default: StaticLibraries
+    description: The dependency building and linking strategy to use. Must be one of "StaticLibraries", "DynamicFrameworks"
+    default: StaticLibraries
   architecture:
     description: The React Native architecture to Test. RNTester has always Fabric enabled, but we want to run integration test with the old arch setup
     default: NewArch
@@ -15,7 +15,7 @@ inputs:
     default: 2.6.10
   run-unit-tests:
     description: whether unit tests should run or not.
-    default: false
+    default: "false"
   hermes-tarball-artifacts-dir:
     description: The directory where the hermes tarball artifacts are stored
     default: /tmp/hermes/hermes-runtime-darwin
@@ -38,19 +38,18 @@ runs:
     - name: Run yarn
       shell: bash
       run: yarn install --non-interactive
-    - name: Cache setup
-      id: cache_setup
-      uses: ./.github/actions/cache_setup
+    - name: Download Hermes
+      uses: actions/download-artifact@v4
       with:
-        hermes-version: ${{ inputs.hermes-version }}
-        react-native-version: ${{ inputs.react-native-version }}
+        name: hermes-darwin-bin-${{ inputs.flavor }}
+        path: ${{ inputs.hermes-tarball-artifacts-dir }}
     - name: Setup ruby
       uses: ruby/setup-ruby@v1.170.0
       with:
         ruby-version: ${{ inputs.ruby-version }}
     - name: Prepare IOS Tests
-      if: ${{ inputs.run-unit-tests == true }}
-      uses: ./.github/actions/prepare_ios_tests
+      if: ${{ inputs.run-unit-tests == 'true' }}
+      uses: ./.github/actions/prepare-ios-tests
     - name: Set HERMES_ENGINE_TARBALL_PATH envvar if Hermes tarball is present
       shell: bash
       run: |
@@ -82,6 +81,7 @@ runs:
         if [[ -e $TARBALL_PATH ]]; then
           tar -xf $TARBALL_PATH
           echo 'print(HermesInternal?.getRuntimeProperties?.()["OSS Release Version"])' > test.js
+          chmod +x ./destroot/bin/hermes
           ./destroot/bin/hermes test.js
           rm test.js
           rm -rf destroot
@@ -89,7 +89,7 @@ runs:
           echo 'No Hermes tarball found.'
         fi
     - name: Setup xcode build cache
-      uses: ./.github/actions/setup_xcode_build_cache
+      uses: ./.github/actions/setup-xcode-build-cache
       with:
         hermes-version: ${{ inputs.hermes-version }}
     - name: Install CocoaPods dependencies
@@ -114,7 +114,7 @@ runs:
         bundle install
         bundle exec pod install
     - name: Build RNTester
-      if: ${{ inputs.run-unit-tests != true }}
+      if: ${{ inputs.run-unit-tests != 'true' }}
       shell: bash
       run: |
         xcodebuild build \
@@ -122,11 +122,11 @@ runs:
           -scheme RNTester \
           -sdk iphonesimulator
     - name: "Run Tests: iOS Unit and Integration Tests"
-      if: ${{ inputs.run-unit-tests == true }}
+      if: ${{ inputs.run-unit-tests == 'true' }}
       shell: bash
       run: yarn test-ios
     - name: Zip Derived data folder
-      if: ${{ inputs.run-unit-tests == true }}
+      if: ${{ inputs.run-unit-tests == 'true' }}
       shell: bash
       run: |
         echo "zipping tests results"
@@ -135,17 +135,17 @@ runs:
         tar -zcvf xcresults.tar.gz $XCRESULT_PATH
     - name: Upload artifact
       uses: actions/upload-artifact@v2.2.4
-      if: ${{ inputs.run-unit-tests == true }}
+      if: ${{ inputs.run-unit-tests == 'true' }}
       with:
         name: xcresults
         path: /Users/distiller/Library/Developer/Xcode/xcresults.tar.gz
     - name: Report bundle size
-      if: ${{ inputs.run-unit-tests == true }}
-      uses: ./.github/actions/report_bundle_size
+      if: ${{ inputs.run-unit-tests == 'true' }}
+      uses: ./.github/actions/report-bundle-size
       with:
         platform: ios
     - name: Store test results
-      if: ${{ inputs.run-unit-tests == true }}
+      if: ${{ inputs.run-unit-tests == 'true' }}
       uses: actions/upload-artifact@v2.2.4
       with:
         name: test-results

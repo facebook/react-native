@@ -111,7 +111,9 @@ function copyAll(filesToCopy: CopiedFiles) {
       } else {
         // queue.length === 0 is checked in previous branch, so this is string
         const src = queue.shift();
+        // $FlowFixMe[incompatible-type]
         const dest = filesToCopy[src];
+        // $FlowFixMe[incompatible-call]
         copy(src, dest, copyNext);
       }
     };

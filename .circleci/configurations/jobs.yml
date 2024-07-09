@@ -58,10 +58,8 @@ jobs:
           when: always
 
       - run:
-          name: Sanity checks
-          command: |
-            ./scripts/circleci/check_license.sh
-            ./scripts/circleci/validate_yarn_lockfile.sh
+          name: Check license
+          command: ./scripts/circleci/check_license.sh
           when: always
 
       - run:
@@ -123,7 +121,7 @@ jobs:
       - run_yarn
       - run:
           name: Set React Native Version
-          command: node ./scripts/releases/set-rn-version.js --build-type << parameters.release_type >>
+          command: node ./scripts/releases/set-rn-artifacts-version.js --build-type << parameters.release_type >>
 
       - with_gradle_cache:
           steps:
@@ -169,7 +167,7 @@ jobs:
           name: Set React Native Version to "dry-run"
           # test_android executes only for dry-run builds. We need to bump the version for caching
           # reasons otherwise we won't reuse the artifacts from the build_android job.
-          command: node ./scripts/releases/set-rn-version.js --build-type "dry-run"
+          command: node ./scripts/releases/set-rn-artifacts-version.js --build-type "dry-run"
       - attach_workspace:
           at: .
 
@@ -969,13 +967,9 @@ jobs:
           fingerprints:
             - "1f:c7:61:c4:e2:ff:77:e3:cc:ca:a7:34:c2:79:e3:3c"
       - run:
-          name: Versioning workspace packages
+          name: Versioning project
           command: |
-            node scripts/releases/set-version "<< parameters.monorepo_packages_version >>" --skip-react-native-version
-      - run:
-          name: Versioning react-native package
-          command: |
-            node scripts/releases/set-rn-version.js -v "<< parameters.version >>" --build-type "release"
+            node scripts/releases/set-version.js "<< parameters.monorepo_packages_version >>"
       - run:
           name: Creating release commit
           command: |

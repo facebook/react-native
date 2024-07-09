@@ -30,7 +30,6 @@ import type {
 import DeviceEventReporter from './DeviceEventReporter';
 import * as fs from 'fs';
 import invariant from 'invariant';
-import fetch from 'node-fetch';
 import * as path from 'path';
 import WS from 'ws';
 

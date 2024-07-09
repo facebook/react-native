@@ -121,6 +121,11 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   experimental_filter: {process: processFilter},
 
   /**
+   * MixBlendMode
+   */
+  experimental_mixBlendMode: true,
+
+  /**
    * View
    */
   backfaceVisibility: true,

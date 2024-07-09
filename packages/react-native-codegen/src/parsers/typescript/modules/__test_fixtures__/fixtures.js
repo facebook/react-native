@@ -742,6 +742,8 @@ export type ObjectStruct = {
   c?: string | null;
 };
 
+export type MappedObject = {[key: string]: string};
+
 export interface Spec extends TurboModule {
   readonly onEvent1: EventEmitter<void>;
   readonly onEvent2: EventEmitter<string>;
@@ -749,9 +751,10 @@ export interface Spec extends TurboModule {
   readonly onEvent4: EventEmitter<boolean>;
   readonly onEvent5: EventEmitter<ObjectStruct>;
   readonly onEvent6: EventEmitter<ObjectStruct[]>;
+  readonly onEvent7: EventEmitter<MappedObject>;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModuleCxx');
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
 
 `;
 

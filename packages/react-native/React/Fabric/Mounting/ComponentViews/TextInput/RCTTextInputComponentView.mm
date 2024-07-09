@@ -662,6 +662,23 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   [self addSubview:_backedTextInputView];
 }
 
+- (void)_setShowSoftInputOnFocus:(BOOL)showSoftInputOnFocus
+{
+  if (showSoftInputOnFocus) {
+    // Resets to default keyboard.
+    _backedTextInputView.inputView = nil;
+
+    // Without the call to reloadInputViews, the keyboard will not change until the textInput field (the first
+    // responder) loses and regains focus.
+    if (_backedTextInputView.isFirstResponder) {
+      [_backedTextInputView reloadInputViews];
+    }
+  } else {
+    // Hides keyboard, but keeps blinking cursor.
+    _backedTextInputView.inputView = [UIView new];
+  }
+}
+
 - (BOOL)_textOf:(NSAttributedString *)newText equals:(NSAttributedString *)oldText
 {
   // When the dictation is running we can't update the attributed text on the backed up text view

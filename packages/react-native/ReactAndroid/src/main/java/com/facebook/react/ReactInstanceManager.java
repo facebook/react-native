@@ -102,6 +102,7 @@ import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
+import com.facebook.react.modules.systeminfo.AndroidInfoHelpers;
 import com.facebook.react.packagerconnection.RequestHandler;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.ReactRoot;
@@ -595,6 +596,25 @@ public class ReactInstanceManager {
     }
 
     moveToBeforeResumeLifecycleState();
+  }
+
+  /**
+   * This method should be called from {@link Activity#onUserLeaveHint()}. It notifies all listening
+   * modules that the user is about to leave the activity. The passed Activity is has to be the
+   * current Activity.
+   *
+   * @param activity the activity being backgrounded as a result of user action
+   */
+  @ThreadConfined(UI)
+  public void onUserLeaveHint(@Nullable Activity activity) {
+    if (mCurrentActivity != null && activity == mCurrentActivity) {
+      UiThreadUtil.assertOnUiThread();
+
+      ReactContext currentContext = getCurrentReactContext();
+      if (currentContext != null) {
+        currentContext.onUserLeaveHint(activity);
+      }
+    }
   }
 
   /**
@@ -1143,6 +1163,9 @@ public class ReactInstanceManager {
   private void runCreateReactContextOnNewThread(final ReactContextInitParams initParams) {
     FLog.d(ReactConstants.TAG, "ReactInstanceManager.runCreateReactContextOnNewThread()");
     UiThreadUtil.assertOnUiThread();
+    Assertions.assertCondition(
+        !mInstanceManagerInvalidated,
+        "Cannot create a new React context on an invalidated ReactInstanceManager");
 
     // Mark start of bridge loading
     ReactMarker.logMarker(ReactMarkerConstants.REACT_BRIDGE_LOADING_START);
@@ -1402,9 +1425,6 @@ public class ReactInstanceManager {
   private ReactApplicationContext createReactContext(
       JavaScriptExecutor jsExecutor, JSBundleLoader jsBundleLoader) {
     FLog.d(ReactConstants.TAG, "ReactInstanceManager.createReactContext()");
-    Assertions.assertCondition(
-        !mInstanceManagerInvalidated,
-        "Cannot create a new React context on an invalidated ReactInstanceManager");
     ReactMarker.logMarker(CREATE_REACT_CONTEXT_START, jsExecutor.getName());
 
     final BridgeReactContext reactContext = new BridgeReactContext(mApplicationContext);
@@ -1548,6 +1568,14 @@ public class ReactInstanceManager {
 
     public InspectorTargetDelegateImpl(ReactInstanceManager inspectorTarget) {
       mReactInstanceManagerWeak = new WeakReference<ReactInstanceManager>(inspectorTarget);
+    }
+
+    @Override
+    public Map<String, String> getMetadata() {
+      ReactInstanceManager reactInstanceManager = mReactInstanceManagerWeak.get();
+
+      return AndroidInfoHelpers.getInspectorHostMetadata(
+          reactInstanceManager != null ? reactInstanceManager.mApplicationContext : null);
     }
 
     @Override

@@ -643,6 +643,8 @@ export type ObjectStruct = {
   c?: ?string,
 };
 
+export type MappedObject = {[string]: string};
+
 export interface Spec extends TurboModule {
   +onEvent1: EventEmitter<void>;
   +onEvent2: EventEmitter<string>;
@@ -650,9 +652,10 @@ export interface Spec extends TurboModule {
   +onEvent4: EventEmitter<boolean>;
   +onEvent5: EventEmitter<ObjectStruct>;
   +onEvent6: EventEmitter<ObjectStruct[]>;
+  +onEvent7: EventEmitter<MappedObject>;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModuleCxx');
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
 
 `;
 

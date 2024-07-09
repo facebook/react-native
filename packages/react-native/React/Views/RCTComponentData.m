@@ -61,12 +61,20 @@ static SEL selectorForType(NSString *type)
   return self;
 }
 
+- (BOOL)isBridgeMode
+{
+  // If we are in bridge mode, the bridge is RCTBridge
+  // If we are bridgeless, the bridge is RCTBridgeProxy
+  return [_bridge isKindOfClass:[RCTBridge class]];
+}
+
 - (RCTViewManager *)manager
 {
-  if (!_manager && _bridge) {
+  if (!_manager && [self isBridgeMode]) {
     _manager = [_bridge moduleForClass:_managerClass];
   } else if (!_manager && !_bridgelessViewManager) {
     _bridgelessViewManager = [_managerClass new];
+    _bridgelessViewManager.bridge = _bridge;
     [[NSNotificationCenter defaultCenter] postNotificationName:RCTDidInitializeModuleNotification
                                                         object:nil
                                                       userInfo:@{@"module" : _bridgelessViewManager}];
@@ -265,8 +273,8 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
         type == NSSelectorFromString(@"RCTDirectEventBlock:") ||
         type == NSSelectorFromString(@"RCTCapturingEventBlock:")) {
       // Special case for event handlers
-      setterBlock =
-          createEventSetter(name, setter, self.eventInterceptor, _bridge ? _bridge.eventDispatcher : _eventDispatcher);
+      setterBlock = createEventSetter(
+          name, setter, self.eventInterceptor, [self isBridgeMode] ? _bridge.eventDispatcher : _eventDispatcher);
     } else {
       // Ordinary property handlers
       NSMethodSignature *typeSignature = [[RCTConvert class] methodSignatureForSelector:type];
