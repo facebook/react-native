@@ -567,10 +567,9 @@ public class ReactImageView extends GenericDraweeView {
     }
   }
 
-  /** ReactImageViews only render a single image. */
   @Override
   public boolean hasOverlappingRendering() {
-    return false;
+    return mBackgroundImageDrawable != null || super.hasOverlappingRendering();
   }
 
   private boolean hasMultipleSources() {
