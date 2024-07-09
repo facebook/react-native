@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1b39ae121d8238bbb34c54330700c9e8>>
+ * @generated SignedSource<<46dae6ea607040efd2fc55f7ef3594df>>
  */
 
 /**
@@ -49,6 +49,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun enableSynchronousStateUpdates(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableUIConsistency(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun fetchImagesInViewPreallocation(): Boolean
 
   @DoNotStrip @JvmStatic public external fun fixIncorrectScrollViewStateUpdateOnAndroid(): Boolean
 

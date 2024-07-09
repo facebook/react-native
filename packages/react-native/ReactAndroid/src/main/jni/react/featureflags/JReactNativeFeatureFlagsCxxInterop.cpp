@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2e4bde6040e04475ee137722c9d2df24>>
+ * @generated SignedSource<<9eee86e80b454c80ba6c64efe2a5fcac>>
  */
 
 /**
@@ -102,6 +102,12 @@ class ReactNativeFeatureFlagsProviderHolder
   bool enableUIConsistency() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableUIConsistency");
+    return method(javaProvider_);
+  }
+
+  bool fetchImagesInViewPreallocation() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fetchImagesInViewPreallocation");
     return method(javaProvider_);
   }
 
@@ -260,6 +266,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableUIConsistency(
   return ReactNativeFeatureFlags::enableUIConsistency();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::fetchImagesInViewPreallocation(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::fetchImagesInViewPreallocation();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::fixIncorrectScrollViewStateUpdateOnAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::fixIncorrectScrollViewStateUpdateOnAndroid();
@@ -390,6 +401,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableUIConsistency",
         JReactNativeFeatureFlagsCxxInterop::enableUIConsistency),
+      makeNativeMethod(
+        "fetchImagesInViewPreallocation",
+        JReactNativeFeatureFlagsCxxInterop::fetchImagesInViewPreallocation),
       makeNativeMethod(
         "fixIncorrectScrollViewStateUpdateOnAndroid",
         JReactNativeFeatureFlagsCxxInterop::fixIncorrectScrollViewStateUpdateOnAndroid),

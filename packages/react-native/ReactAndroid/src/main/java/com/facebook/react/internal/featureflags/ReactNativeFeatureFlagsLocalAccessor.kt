@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a97af69ca22746594d72410f72a0a1cb>>
+ * @generated SignedSource<<5d4631b6ae53f2bb2cfc44bad2f05980>>
  */
 
 /**
@@ -35,6 +35,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var enableMicrotasksCache: Boolean? = null
   private var enableSynchronousStateUpdatesCache: Boolean? = null
   private var enableUIConsistencyCache: Boolean? = null
+  private var fetchImagesInViewPreallocationCache: Boolean? = null
   private var fixIncorrectScrollViewStateUpdateOnAndroidCache: Boolean? = null
   private var fixMappingOfEventPrioritiesBetweenFabricAndReactCache: Boolean? = null
   private var fixMissedFabricStateUpdatesOnAndroidCache: Boolean? = null
@@ -158,6 +159,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.enableUIConsistency()
       accessedFeatureFlags.add("enableUIConsistency")
       enableUIConsistencyCache = cached
+    }
+    return cached
+  }
+
+  override fun fetchImagesInViewPreallocation(): Boolean {
+    var cached = fetchImagesInViewPreallocationCache
+    if (cached == null) {
+      cached = currentProvider.fetchImagesInViewPreallocation()
+      accessedFeatureFlags.add("fetchImagesInViewPreallocation")
+      fetchImagesInViewPreallocationCache = cached
     }
     return cached
   }

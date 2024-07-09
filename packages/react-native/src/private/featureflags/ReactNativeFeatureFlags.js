@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<078eccf0c13142ed0cec1c59fc3d82bf>>
+ * @generated SignedSource<<10ac1007b023454a91ce77ccd2642f8a>>
  * @flow strict-local
  */
 
@@ -52,6 +52,7 @@ export type ReactNativeFeatureFlags = {
   enableMicrotasks: Getter<boolean>,
   enableSynchronousStateUpdates: Getter<boolean>,
   enableUIConsistency: Getter<boolean>,
+  fetchImagesInViewPreallocation: Getter<boolean>,
   fixIncorrectScrollViewStateUpdateOnAndroid: Getter<boolean>,
   fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean>,
   fixMissedFabricStateUpdatesOnAndroid: Getter<boolean>,
@@ -159,6 +160,10 @@ export const enableSynchronousStateUpdates: Getter<boolean> = createNativeFlagGe
  * Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).
  */
 export const enableUIConsistency: Getter<boolean> = createNativeFlagGetter('enableUIConsistency', false);
+/**
+ * Start image fetching during view preallocation instead of waiting for layout pass
+ */
+export const fetchImagesInViewPreallocation: Getter<boolean> = createNativeFlagGetter('fetchImagesInViewPreallocation', false);
 /**
  * When doing a smooth scroll animation, it stops setting the state with the final scroll position in Fabric before the animation starts.
  */

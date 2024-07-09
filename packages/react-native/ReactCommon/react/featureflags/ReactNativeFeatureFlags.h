@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<70c78db13887af269fe4d6b2113510b2>>
+ * @generated SignedSource<<ee2d7923b7407f81c25368750ccd06fe>>
  */
 
 /**
@@ -91,6 +91,11 @@ class ReactNativeFeatureFlags {
    * Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).
    */
   RN_EXPORT static bool enableUIConsistency();
+
+  /**
+   * Start image fetching during view preallocation instead of waiting for layout pass
+   */
+  RN_EXPORT static bool fetchImagesInViewPreallocation();
 
   /**
    * When doing a smooth scroll animation, it stops setting the state with the final scroll position in Fabric before the animation starts.
