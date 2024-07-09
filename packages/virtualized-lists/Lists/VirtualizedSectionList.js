@@ -63,22 +63,16 @@ type OptionalProps<SectionT: SectionBase<any>> = {|
       ...
     },
     ...
-  }) => null | React.Element<any>,
+  }) => null | React.Node,
   /**
    * Rendered at the top of each section. These stick to the top of the `ScrollView` by default on
    * iOS. See `stickySectionHeadersEnabled`.
    */
-  renderSectionHeader?: ?(info: {
-    section: SectionT,
-    ...
-  }) => null | React.Element<any>,
+  renderSectionHeader?: ?(info: {section: SectionT, ...}) => null | React.Node,
   /**
    * Rendered at the bottom of each section.
    */
-  renderSectionFooter?: ?(info: {
-    section: SectionT,
-    ...
-  }) => null | React.Element<any>,
+  renderSectionFooter?: ?(info: {section: SectionT, ...}) => null | React.Node,
   /**
    * Rendered at the top and bottom of each section (note this is different from
    * `ItemSeparatorComponent` which is only rendered between items). These are intended to separate

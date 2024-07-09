@@ -46,6 +46,7 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
     auto metadata = [RCTInspectorUtils getHostMetadata];
 
     return {
+        .appDisplayName = [metadata.appDisplayName UTF8String],
         .appIdentifier = [metadata.appIdentifier UTF8String],
         .deviceName = [metadata.deviceName UTF8String],
         .integrationName = "iOS Bridgeless (RCTHost)",

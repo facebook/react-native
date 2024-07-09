@@ -7700,11 +7700,29 @@ export type ____ShadowStyle_Internal = $ReadOnly<{
 type ____FilterStyle_Internal = $ReadOnly<{
   experimental_filter?: $ReadOnlyArray<FilterPrimitive>,
 }>;
+export type ____MixBlendMode_Internal =
+  | \\"normal\\"
+  | \\"multiply\\"
+  | \\"screen\\"
+  | \\"overlay\\"
+  | \\"darken\\"
+  | \\"lighten\\"
+  | \\"color-dodge\\"
+  | \\"color-burn\\"
+  | \\"hard-light\\"
+  | \\"soft-light\\"
+  | \\"difference\\"
+  | \\"exclusion\\"
+  | \\"hue\\"
+  | \\"saturation\\"
+  | \\"color\\"
+  | \\"luminosity\\";
 export type ____ViewStyle_InternalCore = $ReadOnly<{
   ...$Exact<____LayoutStyle_Internal>,
   ...$Exact<____ShadowStyle_Internal>,
   ...$Exact<____TransformStyle_Internal>,
   ...____FilterStyle_Internal,
+  experimental_mixBlendMode?: ____MixBlendMode_Internal,
   backfaceVisibility?: \\"visible\\" | \\"hidden\\",
   backgroundColor?: ____ColorValue_Internal,
   borderColor?: ____ColorValue_Internal,
@@ -8065,10 +8083,10 @@ exports[`public API should not change unintentionally Libraries/StyleSheet/split
 `;
 
 exports[`public API should not change unintentionally Libraries/Text/Text.js 1`] = `
-"declare const Text: React.AbstractComponent<
-  TextProps,
-  React.ElementRef<typeof NativeText | typeof NativeVirtualText>,
+"type TextForwardRef = React.ElementRef<
+  typeof NativeText | typeof NativeVirtualText,
 >;
+declare const Text: React.AbstractComponent<TextProps, TextForwardRef>;
 declare module.exports: Text;
 "
 `;
@@ -8089,15 +8107,6 @@ exports[`public API should not change unintentionally Libraries/Text/TextNativeC
 }>;
 declare export const NativeText: HostComponent<NativeTextProps>;
 declare export const NativeVirtualText: HostComponent<NativeTextProps>;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/Text/TextOptimized.js 1`] = `
-"type TextForwardRef = React.ElementRef<
-  typeof NativeText | typeof NativeVirtualText,
->;
-declare const TextOptimized: React.AbstractComponent<TextProps, TextForwardRef>;
-declare module.exports: TextOptimized;
 "
 `;
 
@@ -8217,7 +8226,9 @@ export type UnsafeObject = $FlowFixMe;
 export type UnsafeMixed = mixed;
 type DefaultTypes = number | boolean | string | $ReadOnlyArray<string>;
 export type WithDefault<Type: DefaultTypes, Value: ?Type | string> = ?Type;
-export type EventEmitter<T> = (handler: (T) => mixed) => EventSubscription;
+export type EventEmitter<T> = (
+  handler: (T) => void | Promise<void>
+) => EventSubscription;
 "
 `;
 
@@ -8741,7 +8752,7 @@ type IOSPlatform = {
       major: number,
       minor: number,
       patch: number,
-      prerelease: ?number,
+      prerelease: ?string,
     |},
     systemName: string,
     isMacCatalyst?: boolean,
@@ -8765,7 +8776,7 @@ type AndroidPlatform = {
       major: number,
       minor: number,
       patch: number,
-      prerelease: ?number,
+      prerelease: ?string,
     |},
     Version: number,
     Release: string,

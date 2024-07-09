@@ -58,10 +58,8 @@ jobs:
           when: always
 
       - run:
-          name: Sanity checks
-          command: |
-            ./scripts/circleci/check_license.sh
-            ./scripts/circleci/validate_yarn_lockfile.sh
+          name: Check license
+          command: ./scripts/circleci/check_license.sh
           when: always
 
       - run:

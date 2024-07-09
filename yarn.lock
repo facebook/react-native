@@ -5321,10 +5321,10 @@ flow-api-translator@0.22.0:
     hermes-transform "0.22.0"
     typescript "5.3.2"
 
-flow-bin@^0.238.3:
-  version "0.238.3"
-  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.238.3.tgz#8b181e35f0c9a4436deeedcecb3965da7bc8d721"
-  integrity sha512-jvpCMXk4Qc5IfMaZJTIcZMiBSN2A5CGYVyJs/DW019Njz1uzbshHWfuUyt5kbnkqUU4e6VsF3OZRJCZR3KM4+w==
+flow-bin@^0.239.1:
+  version "0.239.1"
+  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.239.1.tgz#5637548bc9448f9c21203e89b3ac0b8e6a442d1e"
+  integrity sha512-cOfqvzHBjFwiRBKRjbzWpc4psLEv+HBFR6lCsRVuc+Gvc0XSDOYU2BDaAWWXNi4ynBIsM8QAk4SD6Ul/IXNSdw==
 
 flow-enums-runtime@^0.0.6:
   version "0.0.6"
@@ -8150,11 +8150,6 @@ query-string@^6.12.1:
     split-on-first "^1.0.0"
     strict-uri-encode "^2.0.0"
 
-querystring@^0.2.1:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/querystring/-/querystring-0.2.1.tgz#40d77615bb09d16902a85c3e38aa8b5ed761c2dd"
-  integrity sha512-wkvS7mL/JMugcup3/rMitHmd9ecIGd2lhFhK9N3UUQ450h66d1r3Y9nvXzQAW1Lq+wyx61k/1pfKS5KuKiyEbg==
-
 queue-microtask@^1.2.2:
   version "1.2.3"
   resolved "https://registry.yarnpkg.com/queue-microtask/-/queue-microtask-1.2.3.tgz#4929228bbc724dfac43e0efb058caf7b6cfb6243"
@@ -8177,10 +8172,10 @@ range-parser@~1.2.1:
   resolved "https://registry.yarnpkg.com/range-parser/-/range-parser-1.2.1.tgz#3cf37023d199e1c24d1a55b84800c2f3e6468031"
   integrity sha512-Hrgsx+orqoygnmhFbKaHE6c296J+HTAQXoxEF6gNupROmmGJRoyzfG3ccAveqCBrwr/2yxQ5BVd/GTl5agOwSg==
 
-react-devtools-core@^5.3.0:
-  version "5.3.0"
-  resolved "https://registry.yarnpkg.com/react-devtools-core/-/react-devtools-core-5.3.0.tgz#8062c25a4707c3216333270210bfe06871f7eed4"
-  integrity sha512-IG3T+azv48Oc5VLdHR4XdBNKNZIUOKRtx0sJMRvb++Zom/uqtx73j6u37JCsIBNIaq6vA7RPH5Bbcf/Wj53KXA==
+react-devtools-core@^5.3.1:
+  version "5.3.1"
+  resolved "https://registry.yarnpkg.com/react-devtools-core/-/react-devtools-core-5.3.1.tgz#d57f5b8f74f16e622bd6a7bc270161e4ba162666"
+  integrity sha512-7FSb9meX0btdBQLwdFOwt6bGqvRPabmVMMslv8fgoSPqXyuGpgQe36kx8gR86XPw7aV1yVouTp6fyZ0EH+NfUw==
   dependencies:
     shell-quote "^1.6.1"
     ws "^7"

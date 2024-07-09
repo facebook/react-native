@@ -374,6 +374,7 @@ type NativeModuleEventEmitterBaseTypeAnnotation =
   | NativeModuleNumberTypeAnnotation
   | NativeModuleStringTypeAnnotation
   | NativeModuleTypeAliasTypeAnnotation
+  | NativeModuleGenericObjectTypeAnnotation
   | VoidTypeAnnotation;
 
 export type NativeModuleEventEmitterTypeAnnotation =

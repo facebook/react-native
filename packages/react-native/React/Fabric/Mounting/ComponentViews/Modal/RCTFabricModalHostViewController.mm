@@ -38,7 +38,7 @@
 
 - (void)loadView
 {
-  [super loadView];
+  self.view = [UIView new];
   [_touchHandler attachToView:self.view];
 }
 

@@ -2140,6 +2140,7 @@ bool calculateLayoutInternal(
 
   const bool needToVisitNode =
       (node->isDirty() && layout->generationCount != generationCount) ||
+      layout->configVersion != node->getConfig()->getVersion() ||
       layout->lastOwnerDirection != ownerDirection;
 
   if (needToVisitNode) {
@@ -2255,6 +2256,7 @@ bool calculateLayoutInternal(
         reason);
 
     layout->lastOwnerDirection = ownerDirection;
+    layout->configVersion = node->getConfig()->getVersion();
 
     if (cachedResults == nullptr) {
       layoutMarkerData.maxMeasureCache = std::max(

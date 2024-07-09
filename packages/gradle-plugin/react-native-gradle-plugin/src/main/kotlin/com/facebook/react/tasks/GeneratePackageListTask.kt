@@ -85,6 +85,8 @@ abstract class GeneratePackageListTask : DefaultTask() {
     val packages = model?.dependencies?.values ?: emptyList()
     return packages
         .filter { it.platforms?.android != null }
+        // The pure C++ dependencies won't have a .java/.kt file to import
+        .filterNot { it.platforms?.android?.isPureCxxDependency == true }
         .associate { it.name to checkNotNull(it.platforms?.android) }
   }
 

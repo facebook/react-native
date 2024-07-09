@@ -178,6 +178,33 @@ class GeneratePackageListTaskTest {
   }
 
   @Test
+  fun filterAndroidPackages_withIsPureCxxDependencyObject_returnsIt() {
+    val task = createTestTask<GeneratePackageListTask>()
+    val android =
+        ModelAutolinkingDependenciesPlatformAndroidJson(
+            sourceDir = "./a/directory/android",
+            packageImportPath = "import com.facebook.react.aPackage;",
+            packageInstance = "new APackage()",
+            buildTypes = emptyList(),
+            isPureCxxDependency = true)
+
+    val result =
+        task.filterAndroidPackages(
+            ModelAutolinkingConfigJson(
+                reactNativeVersion = "1000.0.0",
+                dependencies =
+                    mapOf(
+                        "a-pure-cxx-dependency" to
+                            ModelAutolinkingDependenciesJson(
+                                root = "./a/directory",
+                                name = "a-pure-cxx-dependency",
+                                platforms =
+                                    ModelAutolinkingDependenciesPlatformJson(android = android))),
+                project = null))
+    assertEquals(emptyMap<String, ModelAutolinkingDependenciesPlatformAndroidJson>(), result)
+  }
+
+  @Test
   fun composeFileContent_withNoPackages_returnsValidFile() {
     val task = createTestTask<GeneratePackageListTask>()
     val packageName = "com.facebook.react"

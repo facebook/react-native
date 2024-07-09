@@ -86,7 +86,8 @@ class ReactSettingsExtensionTest {
                 "cxxModuleCMakeListsModuleName": null,
                 "cxxModuleCMakeListsPath": null,
                 "cxxModuleHeaderName": null,
-                "dependencyConfiguration": "implementation"
+                "dependencyConfiguration": "implementation",
+                "isPureCxxDependency": false
               }
             }
           }

@@ -287,7 +287,14 @@ jest
     },
     PlatformConstants: {
       getConstants() {
-        return {};
+        return {
+          reactNativeVersion: {
+            major: 1000,
+            minor: 0,
+            patch: 0,
+            prerelease: undefined,
+          },
+        };
       },
     },
     PushNotificationManager: {

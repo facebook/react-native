@@ -20,12 +20,14 @@ import java.util.Locale
 public object AndroidUnicodeUtils {
 
   @DoNotStrip
+  @JvmStatic
   public fun localeCompare(left: String?, right: String?): Int {
     val collator = Collator.getInstance()
     return collator.compare(left, right)
   }
 
   @DoNotStrip
+  @JvmStatic
   public fun dateFormat(unixtimeMs: Double, formatDate: Boolean, formatTime: Boolean): String {
     val format =
         when {
@@ -53,6 +55,7 @@ public object AndroidUnicodeUtils {
   }
 
   @DoNotStrip
+  @JvmStatic
   public fun normalize(input: String?, form: Int): String =
       when (form) {
         FORM_C -> Normalizer.normalize(input, Normalizer.Form.NFC)

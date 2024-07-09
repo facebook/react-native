@@ -11,6 +11,8 @@
 #include <fbjni/NativeRunnable.h>
 #include <jsinspector-modern/InspectorFlags.h>
 
+#include <optional>
+
 using namespace facebook::jni;
 using namespace facebook::react::jsinspector_modern;
 
@@ -27,6 +29,14 @@ void ReactInstanceManagerInspectorTarget::TargetDelegate::
   auto method = javaClassStatic()->getMethod<void(local_ref<JString>)>(
       "onSetPausedInDebuggerMessage");
   method(self(), request.message ? make_jstring(*request.message) : nullptr);
+}
+
+jni::local_ref<jni::JMap<jstring, jstring>>
+ReactInstanceManagerInspectorTarget::TargetDelegate::getMetadata() const {
+  auto method = javaClassStatic()
+                    ->getMethod<jni::local_ref<jni::JMap<jstring, jstring>>()>(
+                        "getMetadata");
+  return method(self());
 }
 
 ReactInstanceManagerInspectorTarget::ReactInstanceManagerInspectorTarget(
@@ -104,8 +114,23 @@ void ReactInstanceManagerInspectorTarget::registerNatives() {
 
 jsinspector_modern::HostTargetMetadata
 ReactInstanceManagerInspectorTarget::getMetadata() {
+  auto getMethod = jni::JMap<jstring, jstring>::javaClassLocal()
+                       ->getMethod<jobject(jobject)>("get");
+  auto metadata = delegate_->getMetadata();
+
+  auto getStringOptional = [&](const std::string& key) {
+    auto result = getMethod(metadata, make_jstring(key).get());
+    return result ? std::optional<std::string>(result->toString())
+                  : std::nullopt;
+  };
+
   return {
+      .appDisplayName = getStringOptional("appDisplayName"),
+      .appIdentifier = getStringOptional("appIdentifier"),
+      .deviceName = getStringOptional("deviceName"),
       .integrationName = "Android Bridge (ReactInstanceManagerInspectorTarget)",
+      .platform = getStringOptional("platform"),
+      .reactNativeVersion = getStringOptional("reactNativeVersion"),
   };
 }
 

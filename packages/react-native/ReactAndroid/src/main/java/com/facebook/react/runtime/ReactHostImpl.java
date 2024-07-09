@@ -61,6 +61,7 @@ import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.modules.appearance.AppearanceModule;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.facebook.react.modules.systeminfo.AndroidInfoHelpers;
 import com.facebook.react.runtime.internal.bolts.Task;
 import com.facebook.react.runtime.internal.bolts.TaskCompletionSource;
 import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder;
@@ -73,6 +74,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -90,6 +92,7 @@ import kotlin.jvm.functions.Function0;
  *
  * @see <a href="https://github.com/BoltsFramework/Bolts-Android#tasks">Bolts Android</a>
  */
+@DoNotStrip
 @ThreadSafe
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class ReactHostImpl implements ReactHost {
@@ -280,6 +283,18 @@ public class ReactHostImpl implements ReactHost {
 
     // TODO(T137233065): Enable DevSupportManager here
     mReactLifecycleStateManager.moveToOnHostResume(currentContext, getCurrentActivity());
+  }
+
+  @ThreadConfined(UI)
+  @Override
+  public void onHostLeaveHint(final @Nullable Activity activity) {
+    final String method = "onUserLeaveHint(activity)";
+    log(method);
+
+    ReactContext currentContext = getCurrentReactContext();
+    if (currentContext != null) {
+      currentContext.onUserLeaveHint(activity);
+    }
   }
 
   @ThreadConfined(UI)
@@ -484,6 +499,11 @@ public class ReactHostImpl implements ReactHost {
             }
           });
     }
+  }
+
+  @DoNotStrip
+  private Map<String, String> getHostMetadata() {
+    return AndroidInfoHelpers.getInspectorHostMetadata(mContext);
   }
 
   /**
@@ -1686,18 +1706,6 @@ public class ReactHostImpl implements ReactHost {
     }
 
     return mDestroyTask;
-  }
-
-  @Nullable
-  @Override
-  public JSEngineResolutionAlgorithm getJsEngineResolutionAlgorithm() {
-    return mJSEngineResolutionAlgorithm;
-  }
-
-  @Override
-  public void setJsEngineResolutionAlgorithm(
-      @Nullable JSEngineResolutionAlgorithm jsEngineResolutionAlgorithm) {
-    mJSEngineResolutionAlgorithm = jsEngineResolutionAlgorithm;
   }
 
   private @Nullable ReactHostInspectorTarget getOrCreateReactHostInspectorTarget() {

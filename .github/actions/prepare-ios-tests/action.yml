@@ -1,4 +1,4 @@
-name: prepare_ios_tests
+name: prepare-ios-tests
 description: Prepare iOS Tests
 runs:
   using: composite

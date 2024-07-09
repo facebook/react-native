@@ -16,7 +16,7 @@ export type ReactNativeVersionAndroid = {|
   major: number,
   minor: number,
   patch: number,
-  prerelease: ?number,
+  prerelease: ?string,
 |};
 
 export type PlatformConstantsAndroid = {|

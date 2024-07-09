@@ -223,6 +223,9 @@ bool HostTargetController::decrementPauseOverlayCounter() {
 folly::dynamic hostMetadataToDynamic(const HostTargetMetadata& metadata) {
   folly::dynamic result = folly::dynamic::object;
 
+  if (metadata.appDisplayName) {
+    result["appDisplayName"] = metadata.appDisplayName.value();
+  }
   if (metadata.appIdentifier) {
     result["appIdentifier"] = metadata.appIdentifier.value();
   }

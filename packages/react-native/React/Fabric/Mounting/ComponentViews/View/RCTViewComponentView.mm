@@ -13,6 +13,7 @@
 
 #import <React/RCTAssert.h>
 #import <React/RCTBorderDrawing.h>
+#import <React/RCTBoxShadow.h>
 #import <React/RCTConversions.h>
 #import <React/RCTLocalizedString.h>
 #import <react/renderer/components/view/ViewComponentDescriptor.h>
@@ -29,6 +30,7 @@ using namespace facebook::react;
 @implementation RCTViewComponentView {
   UIColor *_backgroundColor;
   __weak CALayer *_borderLayer;
+  CALayer *_boxShadowLayer;
   CALayer *_filterLayer;
   BOOL _needsInvalidateLayer;
   BOOL _isJSResponder;
@@ -391,6 +393,11 @@ using namespace facebook::react;
 
   // `filter`
   if (oldViewProps.filter != newViewProps.filter) {
+    _needsInvalidateLayer = YES;
+  }
+
+  // `boxShadow`
+  if (oldViewProps.boxShadow != newViewProps.boxShadow) {
     _needsInvalidateLayer = YES;
   }
 
@@ -760,6 +767,19 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     // add
     _filterLayer.zPosition = CGFLOAT_MAX;
     [self.layer addSublayer:_filterLayer];
+  }
+
+  _boxShadowLayer = nil;
+  if (!_props->boxShadow.empty()) {
+    _boxShadowLayer = [CALayer layer];
+    [self.layer addSublayer:_boxShadowLayer];
+    _boxShadowLayer.zPosition = CGFLOAT_MIN;
+    _boxShadowLayer.frame = RCTGetBoundingRect(_props->boxShadow, self.layer.frame.size);
+
+    UIImage *boxShadowImage =
+        RCTGetBoxShadowImage(_props->boxShadow, RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii), layer);
+
+    _boxShadowLayer.contents = (id)boxShadowImage.CGImage;
   }
 }
 

@@ -24,7 +24,8 @@ void layoutAbsoluteChild(
     uint32_t depth,
     uint32_t generationCount);
 
-void layoutAbsoluteDescendants(
+// Returns if some absolute descendant has new layout
+bool layoutAbsoluteDescendants(
     yoga::Node* containingNode,
     yoga::Node* currentNode,
     SizingMode widthSizingMode,

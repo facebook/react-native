@@ -30,6 +30,14 @@ class JSRuntime {
    */
   virtual jsinspector_modern::RuntimeTargetDelegate& getRuntimeTargetDelegate();
 
+  /**
+   * Run initialize work that must happen on the runtime's JS thread. Used for
+   * initializing TLS and registering profiling.
+   *
+   * TODO T194671568 Move the runtime constructor to the JsThread
+   */
+  virtual void unstable_initializeOnJsThread() {}
+
  private:
   /**
    * Initialized by \c getRuntimeTargetDelegate if not overridden, and then

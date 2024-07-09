@@ -32,14 +32,17 @@ const ReactFiberErrorDialog = {
     if (errorValue instanceof Error) {
       /* $FlowFixMe[class-object-subtyping] added when improving typing for
        * this parameters */
+      // $FlowFixMe[incompatible-cast]
       error = (errorValue: ExtendedError);
     } else if (typeof errorValue === 'string') {
       /* $FlowFixMe[class-object-subtyping] added when improving typing for
        * this parameters */
+      // $FlowFixMe[incompatible-cast]
       error = (new SyntheticError(errorValue): ExtendedError);
     } else {
       /* $FlowFixMe[class-object-subtyping] added when improving typing for
        * this parameters */
+      // $FlowFixMe[incompatible-cast]
       error = (new SyntheticError('Unspecified error'): ExtendedError);
     }
     try {

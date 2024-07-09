@@ -520,7 +520,7 @@ jobs:
       - name: Setup gradle
         uses: ./.github/actions/setup-gradle
         with:
-          cache-allow-write: "true"
+          cache-read-only: "false"
       - name: Build and publish all the Android Artifacts to /tmp/maven-local
         run: |
           # By default we only build ARM64 to save time/resources. For release/nightlies/prealpha, we override this value to build all archs.
@@ -564,9 +564,6 @@ jobs:
         GRADLE_OPTS: '-Dorg.gradle.daemon=false'
         # By default we only build ARM64 to save time/resources. For release/nightlies/prealpha, we override this value to build all archs.
         ORG_GRADLE_PROJECT_reactNativeArchitectures: "arm64-v8a"
-        # Repeated here, as the environment key in this executor will overwrite the one in defaults
-        PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A: ${{ secrets.GITHUB_ANALYSISBOT_TOKEN_A }}
-        PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B: ${{ secrets.GITHUB_ANALYSISBOT_TOKEN_B }}
         HERMES_WS_DIR: /tmp/hermes
     env:
       GHA_NPM_TOKEN: ${{ secrets.GHA_NPM_TOKEN }}
@@ -623,8 +620,8 @@ jobs:
           name: hermes-linux-bin
           path: /tmp/hermes/linux64-bin
       - name: Cache setup
-        id: cache_setup
-        uses: ./.github/actions/cache_setup
+        id: cache-setup
+        uses: ./.github/actions/cache-setup
         with:
           hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}

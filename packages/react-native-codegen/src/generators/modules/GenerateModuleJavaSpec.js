@@ -137,6 +137,7 @@ function translateEventEmitterTypeToJavaType(
       return 'double';
     case 'BooleanTypeAnnotation':
       return 'boolean';
+    case 'GenericObjectTypeAnnotation':
     case 'ObjectTypeAnnotation':
     case 'TypeAliasTypeAnnotation':
       imports.add('com.facebook.react.bridge.ReadableMap');

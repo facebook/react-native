@@ -74,6 +74,7 @@ JReactInstance::JReactInstance(
   timerManager->setRuntimeExecutor(bufferedRuntimeExecutor);
 
   ReactInstance::JSRuntimeFlags options = {.isProfiling = isProfiling};
+  // TODO T194671568 Consider moving runtime init to the JS thread.
   instance_->initializeRuntime(options, [this](jsi::Runtime& runtime) {
     react::Logger androidLogger =
         static_cast<void (*)(const std::string&, unsigned int)>(

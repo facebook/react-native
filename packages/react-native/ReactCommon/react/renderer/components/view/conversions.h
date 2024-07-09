@@ -15,7 +15,9 @@
 #include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/RawProps.h>
+#include <react/renderer/graphics/BoxShadow.h>
 #include <react/renderer/graphics/Filter.h>
+#include <react/renderer/graphics/PlatformColorParser.h>
 #include <react/renderer/graphics/Transform.h>
 #include <react/renderer/graphics/ValueUnit.h>
 #include <stdlib.h>
@@ -929,6 +931,102 @@ inline void fromRawValue(
   react_native_expect(false);
 }
 
+inline void fromRawValue(
+    const PropsParserContext& context,
+    const RawValue& value,
+    std::vector<BoxShadow>& result) {
+  react_native_expect(value.hasType<std::vector<RawValue>>());
+  if (!value.hasType<std::vector<RawValue>>()) {
+    result = {};
+    return;
+  }
+
+  std::vector<BoxShadow> boxShadows{};
+  auto rawBoxShadows = static_cast<std::vector<RawValue>>(value);
+  for (const auto& rawBoxShadow : rawBoxShadows) {
+    bool isMap =
+        rawBoxShadow.hasType<std::unordered_map<std::string, RawValue>>();
+    react_native_expect(isMap);
+    if (!isMap) {
+      // If any box shadow is malformed then we should not apply any of them
+      // which is the web behavior.
+      result = {};
+      return;
+    }
+
+    auto rawBoxShadowMap =
+        static_cast<std::unordered_map<std::string, RawValue>>(rawBoxShadow);
+    BoxShadow boxShadow{};
+    auto offsetX = rawBoxShadowMap.find("offsetX");
+    react_native_expect(offsetX != rawBoxShadowMap.end());
+    if (offsetX == rawBoxShadowMap.end()) {
+      result = {};
+      return;
+    }
+    react_native_expect(offsetX->second.hasType<Float>());
+    if (!offsetX->second.hasType<Float>()) {
+      result = {};
+      return;
+    }
+    boxShadow.offsetX = (Float)offsetX->second;
+
+    auto offsetY = rawBoxShadowMap.find("offsetY");
+    react_native_expect(offsetY != rawBoxShadowMap.end());
+    if (offsetY == rawBoxShadowMap.end()) {
+      result = {};
+      return;
+    }
+    react_native_expect(offsetY->second.hasType<Float>());
+    if (!offsetY->second.hasType<Float>()) {
+      result = {};
+      return;
+    }
+    boxShadow.offsetY = (Float)offsetY->second;
+
+    auto blurRadius = rawBoxShadowMap.find("blurRadius");
+    if (blurRadius != rawBoxShadowMap.end()) {
+      react_native_expect(blurRadius->second.hasType<Float>());
+      if (!blurRadius->second.hasType<Float>()) {
+        result = {};
+        return;
+      }
+      boxShadow.blurRadius = (Float)blurRadius->second;
+    }
+
+    auto spreadRadius = rawBoxShadowMap.find("spreadRadius");
+    if (spreadRadius != rawBoxShadowMap.end()) {
+      react_native_expect(spreadRadius->second.hasType<Float>());
+      if (!spreadRadius->second.hasType<Float>()) {
+        result = {};
+        return;
+      }
+      boxShadow.spreadRadius = (Float)spreadRadius->second;
+    }
+
+    auto inset = rawBoxShadowMap.find("inset");
+    if (inset != rawBoxShadowMap.end()) {
+      react_native_expect(inset->second.hasType<bool>());
+      if (!inset->second.hasType<bool>()) {
+        result = {};
+        return;
+      }
+      boxShadow.inset = (bool)inset->second;
+    }
+
+    auto color = rawBoxShadowMap.find("color");
+    if (color != rawBoxShadowMap.end()) {
+      fromRawValue(
+          context.contextContainer,
+          context.surfaceId,
+          color->second,
+          boxShadow.color);
+    }
+
+    boxShadows.push_back(boxShadow);
+  }
+
+  result = boxShadows;
+}
 inline void fromRawValue(
     const PropsParserContext& /*context*/,
     const RawValue& value,
