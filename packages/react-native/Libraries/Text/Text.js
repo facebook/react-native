@@ -8,6 +8,7 @@
  * @format
  */
 
+import type {____TextStyle_Internal as TextStyleInternal} from '../StyleSheet/StyleSheetTypes';
 import type {PressEvent} from '../Types/CoreEventTypes';
 import type {NativeTextProps} from './TextNativeComponent';
 import type {PressRetentionOffset, TextProps} from './TextProps';
@@ -132,25 +133,32 @@ const Text: React.AbstractComponent<TextProps, TextForwardRef> =
 
       let _selectable = selectable;
 
-      const processedStyle = flattenStyle(_style);
+      let processedStyle: ?TextStyleInternal = flattenStyle(_style);
       if (processedStyle != null) {
+        let overrides: ?{...TextStyleInternal} = null;
         if (typeof processedStyle.fontWeight === 'number') {
-          // $FlowFixMe[cannot-write]
-          processedStyle.fontWeight = processedStyle.fontWeight.toString();
+          overrides = overrides || ({}: {...TextStyleInternal});
+          overrides.fontWeight =
+            // $FlowFixMe[incompatible-cast]
+            (processedStyle.fontWeight.toString(): TextStyleInternal['fontWeight']);
         }
 
         if (processedStyle.userSelect != null) {
           _selectable = userSelectToSelectableMap[processedStyle.userSelect];
-          // $FlowFixMe[cannot-write]
-          delete processedStyle.userSelect;
+          overrides = overrides || ({}: {...TextStyleInternal});
+          overrides.userSelect = undefined;
         }
 
         if (processedStyle.verticalAlign != null) {
-          // $FlowFixMe[cannot-write]
-          processedStyle.textAlignVertical =
+          overrides = overrides || ({}: {...TextStyleInternal});
+          overrides.textAlignVertical =
             verticalAlignToTextAlignVerticalMap[processedStyle.verticalAlign];
-          // $FlowFixMe[cannot-write]
-          delete processedStyle.verticalAlign;
+          overrides.verticalAlign = undefined;
+        }
+
+        if (overrides != null) {
+          // $FlowFixMe[incompatible-type]
+          processedStyle = [processedStyle, overrides];
         }
       }
 
