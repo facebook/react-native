@@ -227,13 +227,13 @@ const TextLegacy: React.AbstractComponent<
   if (processedStyle != null) {
     const overrideStyle = null;
     if (typeof processedStyle.fontWeight === 'number') {
-      overrideStyle = overrideStyle || {};
+      overrideStyle = overrideStyle ?? {};
       overrideStyle.fontWeight = processedStyle.fontWeight.toString();
     }
 
     if (processedStyle.userSelect != null) {
       _selectable = userSelectToSelectableMap[processedStyle.userSelect];
-      overrideStyle = overrideStyle || {};
+      overrideStyle = overrideStyle ?? {};
       overrideStyle.userSelect = undefined;
     }
 
