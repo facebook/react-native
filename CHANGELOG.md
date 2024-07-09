@@ -1069,6 +1069,28 @@
 
 - Bump activesupport to minimum 6.1.7.5 CVE-2023-38037. ([07a159f279](https://github.com/facebook/react-native/commit/07a159f279cdcbed29c9c437dec1c0b8ac2d852f) by [@lunaleaps](https://github.com/lunaleaps))
 
+## v0.73.9
+
+### Added
+
+#### iOS specific
+
+- Add privacy manifest aggregation. ([f4b9d09](https://github.com/facebook/react-native/commit/f4b9d098c863fa36f261e5961ad13dd4cd2706f8) by [@aleqsio](https://github.com/aleqsio))
+
+### Changed
+
+- Feat: update CLI to 12.3.7 ([c7a1f2428f](https://github.com/facebook/react-native/commit/c7a1f2428fd6772e34b547ea23fa1d265c5d8a62) by [@szymonrybczak](https://github.com/szymonrybczak))
+
+### Fixed
+
+#### iOS specific
+
+- Remove invalidate observer instead of re-adding observer in DeviceInfo module ([9db3eb6](https://github.com/facebook/react-native/commit/9db3eb686201f6ad4fddf5300f348f0caf69cfad) by [@zhongwuzw](https://github.com/zhongwuzw))
+- Fix privacy aggregation ([6983a8b](https://github.com/facebook/react-native/commit/6983a8b1b9c33ea4e580a4e94e1e9535b6cb5d81) by [@aleqsio](https://github.com/aleqsio))
+- Privacy Manifest aggregation failing due to missing nil check ([115331b](https://github.com/facebook/react-native/commit/115331b213152df623ad1c7988c9295802af6850) by [@swrobel](https://github.com/swrobel))
+- In privacy manifest post install script, handle the case where the file reference doesn't have a path ([86cb45e](https://github.com/facebook/react-native/commit/86cb45e57786b0a62d9c523f9d5db4f8e5dc52df) by [@robertying](https://github.com/robertying))
+- Privacy Manifest aggregation failing due to no `NSPrivacyAccessedAPITypes` key ([4bb94fe](https://github.com/facebook/react-native/commit/4bb94fe1e6c6174af5c9148bfc00f4bc7a87cf19) by [@renchap](https://github.com/renchap))
+
 ## v0.73.8
 
 ### Added
