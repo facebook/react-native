@@ -9,7 +9,6 @@
 #include <react/config/ReactNativeConfig.h>
 #include <react/renderer/components/view/HostPlatformViewTraitsInitializer.h>
 #include <react/renderer/components/view/primitives.h>
-#include <react/utils/CoreFeatures.h>
 
 namespace facebook::react {
 

@@ -74,7 +74,6 @@ import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactRoot;
 import com.facebook.react.uimanager.ReactRootViewTagGenerator;
 import com.facebook.react.uimanager.RootViewUtil;
-import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.ViewManagerPropertyUpdater;
@@ -749,17 +748,11 @@ public class FabricUIManager
       int reactTag,
       final String componentName,
       @Nullable Object props,
-      @Nullable Object stateWrapper,
       boolean isLayoutable) {
 
     mMountItemDispatcher.addPreAllocateMountItem(
         MountItemFactory.createPreAllocateViewMountItem(
-            rootTag,
-            reactTag,
-            componentName,
-            (ReadableMap) props,
-            (StateWrapper) stateWrapper,
-            isLayoutable));
+            rootTag, reactTag, componentName, (ReadableMap) props, isLayoutable));
   }
 
   @SuppressLint("NotInvokedPrivateMethod")
