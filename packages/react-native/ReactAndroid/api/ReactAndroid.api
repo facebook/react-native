@@ -5547,38 +5547,6 @@ public abstract interface class com/facebook/react/uimanager/debug/NotThreadSafe
 	public abstract fun onViewHierarchyUpdateFinished ()V
 }
 
-public class com/facebook/react/uimanager/drawable/CSSBackgroundDrawable : android/graphics/drawable/Drawable {
-	public fun <init> (Landroid/content/Context;)V
-	public fun draw (Landroid/graphics/Canvas;)V
-	public fun getAlpha ()I
-	public fun getBorderBoxPath ()Landroid/graphics/Path;
-	public fun getBorderBoxRect ()Landroid/graphics/RectF;
-	public fun getBorderColor (I)I
-	public fun getBorderRadius ()Lcom/facebook/react/uimanager/style/BorderRadiusStyle;
-	public fun getBorderWidthOrDefaultTo (FI)F
-	public fun getComputedBorderRadius ()Lcom/facebook/react/uimanager/style/ComputedBorderRadius;
-	public fun getDirectionAwareBorderInsets ()Landroid/graphics/RectF;
-	public fun getFullBorderWidth ()F
-	public fun getLayoutDirection ()I
-	public fun getOpacity ()I
-	public fun getOutline (Landroid/graphics/Outline;)V
-	public fun getPaddingBoxPath ()Landroid/graphics/Path;
-	public fun getPaddingBoxRect ()Landroid/graphics/RectF;
-	public fun hasRoundedBorders ()Z
-	protected fun onBoundsChange (Landroid/graphics/Rect;)V
-	public fun setAlpha (I)V
-	public fun setBorderColor (IFF)V
-	public fun setBorderRadius (Lcom/facebook/react/uimanager/style/BorderRadiusProp;Lcom/facebook/react/uimanager/LengthPercentage;)V
-	public fun setBorderRadius (Lcom/facebook/react/uimanager/style/BorderRadiusStyle;)V
-	public fun setBorderStyle (Ljava/lang/String;)V
-	public fun setBorderWidth (IF)V
-	public fun setColor (I)V
-	public fun setColorFilter (Landroid/graphics/ColorFilter;)V
-	public fun setLayoutDirectionOverride (I)V
-	public fun setRadius (F)V
-	public fun setRadius (FI)V
-}
-
 public abstract interface class com/facebook/react/uimanager/events/BatchEventDispatchedListener {
 	public abstract fun onBatchEventDispatched ()V
 }
@@ -6748,7 +6716,7 @@ public class com/facebook/react/views/scroll/ReactHorizontalScrollView : android
 	public fun scrollTo (II)V
 	public fun scrollToPreservingMomentum (II)V
 	public fun setBackgroundColor (I)V
-	public fun setBorderColor (IFF)V
+	public fun setBorderColor (ILjava/lang/Integer;)V
 	public fun setBorderRadius (F)V
 	public fun setBorderRadius (FI)V
 	public fun setBorderStyle (Ljava/lang/String;)V
@@ -6877,7 +6845,7 @@ public class com/facebook/react/views/scroll/ReactScrollView : android/widget/Sc
 	public fun scrollTo (II)V
 	public fun scrollToPreservingMomentum (II)V
 	public fun setBackgroundColor (I)V
-	public fun setBorderColor (IFF)V
+	public fun setBorderColor (ILjava/lang/Integer;)V
 	public fun setBorderRadius (F)V
 	public fun setBorderRadius (FI)V
 	public fun setBorderStyle (Ljava/lang/String;)V
@@ -7399,7 +7367,7 @@ public class com/facebook/react/views/text/ReactTextView : androidx/appcompat/wi
 	public fun reactTagForTouch (FF)I
 	public fun setAdjustFontSizeToFit (Z)V
 	public fun setBackgroundColor (I)V
-	public fun setBorderColor (IFF)V
+	public fun setBorderColor (ILjava/lang/Integer;)V
 	public fun setBorderRadius (F)V
 	public fun setBorderRadius (FI)V
 	public fun setBorderStyle (Ljava/lang/String;)V
@@ -7737,7 +7705,7 @@ public class com/facebook/react/views/textinput/ReactEditText : androidx/appcomp
 	public fun setAllowFontScaling (Z)V
 	public fun setAutoFocus (Z)V
 	public fun setBackgroundColor (I)V
-	public fun setBorderColor (IFF)V
+	public fun setBorderColor (ILjava/lang/Integer;)V
 	public fun setBorderRadius (F)V
 	public fun setBorderRadius (FI)V
 	public fun setBorderStyle (Ljava/lang/String;)V
@@ -7945,21 +7913,6 @@ public class com/facebook/react/views/view/ReactViewBackgroundDrawable : com/fac
 	public fun <init> (Landroid/content/Context;)V
 }
 
-public class com/facebook/react/views/view/ReactViewBackgroundManager {
-	public fun <init> (Landroid/view/View;)V
-	public fun cleanup ()V
-	public fun getBackgroundColor ()I
-	public fun getBorderColor (I)I
-	public fun maybeClipToPaddingBox (Landroid/graphics/Canvas;)V
-	public fun setBackgroundColor (I)V
-	public fun setBorderColor (IFF)V
-	public fun setBorderRadius (F)V
-	public fun setBorderRadius (FI)V
-	public fun setBorderStyle (Ljava/lang/String;)V
-	public fun setBorderWidth (IF)V
-	public fun setOverflow (Ljava/lang/String;)V
-}
-
 public class com/facebook/react/views/view/ReactViewGroup : android/view/ViewGroup, com/facebook/react/touch/ReactHitSlopView, com/facebook/react/touch/ReactInterceptingViewGroup, com/facebook/react/uimanager/ReactClippingViewGroup, com/facebook/react/uimanager/ReactOverflowViewWithInset, com/facebook/react/uimanager/ReactPointerEventsView, com/facebook/react/uimanager/ReactZIndexedViewGroup {
 	public fun <init> (Landroid/content/Context;)V
 	public fun addView (Landroid/view/View;ILandroid/view/ViewGroup$LayoutParams;)V
@@ -7995,7 +7948,7 @@ public class com/facebook/react/views/view/ReactViewGroup : android/view/ViewGro
 	public fun setBackfaceVisibilityDependantOpacity ()V
 	public fun setBackground (Landroid/graphics/drawable/Drawable;)V
 	public fun setBackgroundColor (I)V
-	public fun setBorderColor (IFF)V
+	public fun setBorderColor (ILjava/lang/Integer;)V
 	public fun setBorderRadius (F)V
 	public fun setBorderRadius (FI)V
 	public fun setBorderRadius (Lcom/facebook/react/uimanager/style/BorderRadiusProp;Lcom/facebook/react/uimanager/LengthPercentage;)V

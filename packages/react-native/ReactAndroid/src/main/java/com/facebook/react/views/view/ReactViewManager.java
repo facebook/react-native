@@ -33,7 +33,6 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.style.BorderRadiusProp;
-import com.facebook.yoga.YogaConstants;
 import java.util.Map;
 
 /** View manager for AndroidViews (plain React Views). */
@@ -246,11 +245,8 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
         ViewProps.BORDER_BLOCK_START_COLOR
       },
       customType = "Color")
-  public void setBorderColor(ReactViewGroup view, int index, Integer color) {
-    float rgbComponent =
-        color == null ? YogaConstants.UNDEFINED : (float) ((int) color & 0x00FFFFFF);
-    float alphaComponent = color == null ? YogaConstants.UNDEFINED : (float) ((int) color >>> 24);
-    view.setBorderColor(SPACING_TYPES[index], rgbComponent, alphaComponent);
+  public void setBorderColor(ReactViewGroup view, int index, @Nullable Integer color) {
+    view.setBorderColor(SPACING_TYPES[index], color);
   }
 
   @ReactProp(name = ViewProps.COLLAPSABLE)
