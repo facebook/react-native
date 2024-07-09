@@ -8,10 +8,9 @@
  * @format
  */
 
-import type {ViewProps} from '../../Components/View/ViewPropTypes';
 import type {LogLevel} from '../Data/LogBoxLog';
 
-import SafeAreaView from '../../Components/SafeAreaView/SafeAreaView';
+import StatusBar from '../../Components/StatusBar/StatusBar';
 import View from '../../Components/View/View';
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import Text from '../../Text/Text';
@@ -27,30 +26,16 @@ type Props = $ReadOnly<{
   level: LogLevel,
 }>;
 
-const LogBoxInspectorHeaderSafeArea: React.AbstractComponent<ViewProps> =
-  Platform.OS === 'android'
-    ? function LogBoxInspectorHeaderSafeArea(props) {
-        // NOTE: Inline the import of `StatusBar` so that initializing this module
-        // does not require initializing a TurboModule (and main thread one, too).
-        const {currentHeight} = require('../../Components/StatusBar/StatusBar');
-        const style = StyleSheet.compose(
-          {paddingTop: currentHeight},
-          props.style,
-        );
-        return <View {...props} style={style} />;
-      }
-    : SafeAreaView;
-
 export default function LogBoxInspectorHeader(props: Props): React.Node {
   if (props.level === 'syntax') {
     return (
-      <LogBoxInspectorHeaderSafeArea style={styles[props.level]}>
+      <View style={[styles.safeArea, styles[props.level]]}>
         <View style={styles.header}>
           <View style={styles.title}>
             <Text style={styles.titleText}>Failed to compile</Text>
           </View>
         </View>
-      </LogBoxInspectorHeaderSafeArea>
+      </View>
     );
   }
 
@@ -62,7 +47,7 @@ export default function LogBoxInspectorHeader(props: Props): React.Node {
   const titleText = `Log ${props.selectedIndex + 1} of ${props.total}`;
 
   return (
-    <LogBoxInspectorHeaderSafeArea style={styles[props.level]}>
+    <View style={[styles.safeArea, styles[props.level]]}>
       <View style={styles.header}>
         <LogBoxInspectorHeaderButton
           disabled={props.total <= 1}
@@ -80,7 +65,7 @@ export default function LogBoxInspectorHeader(props: Props): React.Node {
           onPress={() => props.onSelectIndex(nextIndex)}
         />
       </View>
-    </LogBoxInspectorHeaderSafeArea>
+    </View>
   );
 }
 
@@ -115,5 +100,8 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     includeFontPadding: false,
     lineHeight: 20,
+  },
+  safeArea: {
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 40,
   },
 });
